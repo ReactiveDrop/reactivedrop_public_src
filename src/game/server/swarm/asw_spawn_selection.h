@@ -5,6 +5,7 @@
 #endif
 
 #include "asw_spawn_manager.h"
+#include "globalstate.h"
 
 class CASW_Spawn_Set;
 class CASW_Spawn_Definition;
@@ -116,6 +117,10 @@ public:
 	string_t m_iszVScript;
 	float m_flSpawnChance;
 	CUtlVector<ConVar *> m_pRequireCVar;
+	CUtlStringMap<GLOBALESTATE> m_RequireGlobalState;
+	CUtlStringMap<int> m_RequireGlobalMin;
+	CUtlStringMap<int> m_RequireGlobalMax;
+	CUtlStringMap<bool> m_WantObjective;
 };
 
 #endif // ASW_SPAWN_SELECTION_H

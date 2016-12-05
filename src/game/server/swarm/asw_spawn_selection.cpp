@@ -3,6 +3,7 @@
 #include "filesystem.h"
 #include "convar.h"
 #include "asw_gamerules.h"
+#include "asw_objective.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -541,17 +542,132 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV )
 		m_flSpawnChance = 1;
 	}
 
-	for ( KeyValues *pCVarKV = pKV->GetFirstValue(); pCVarKV; pCVarKV = pCVarKV->GetNextValue() )
+	for ( KeyValues *pChildKV = pKV->GetFirstValue(); pChildKV; pChildKV = pChildKV->GetNextValue() )
 	{
-		if ( !Q_stricmp( pCVarKV->GetName(), "RequireCVar" ) )
+		if ( !Q_stricmp( pChildKV->GetName(), "RequireCVar" ) )
 		{
-			ConVar *pCVar = g_pCVar->FindVar( pCVarKV->GetString() );
+			ConVar *pCVar = g_pCVar->FindVar( pChildKV->GetString() );
 			if ( !pCVar )
 			{
-				Warning( "Unknown convar %s in spawn selection\n", pCVarKV->GetString() );
+				Warning( "Unknown convar %s in spawn selection\n", pChildKV->GetString() );
 				continue;
 			}
 			m_pRequireCVar.AddToTail( pCVar );
+		}
+		else if ( !Q_stricmp( pChildKV->GetName(), "RequireGlobal" ) )
+		{
+			if ( !Q_strnicmp( pChildKV->GetString(), "OFF:", strlen( "OFF:" ) ) )
+			{
+				const char *pszGlobalName = pChildKV->GetString() + strlen( "OFF:" );
+				if ( m_RequireGlobalState.Defined( pszGlobalName ) )
+				{
+					Warning( "Ignoring extra global state %s in spawn selection\n", pChildKV->GetString() );
+					continue;
+				}
+				m_RequireGlobalState[pszGlobalName] = GLOBAL_OFF;
+			}
+			else if ( !Q_strnicmp( pChildKV->GetString(), "ON:", strlen( "ON:" ) ) )
+			{
+				const char *pszGlobalName = pChildKV->GetString() + strlen( "ON:" );
+				if ( m_RequireGlobalState.Defined( pszGlobalName ) )
+				{
+					Warning( "Ignoring extra global state %s in spawn selection\n", pChildKV->GetString() );
+					continue;
+				}
+				m_RequireGlobalState[pszGlobalName] = GLOBAL_ON;
+			}
+			else if ( !Q_strnicmp( pChildKV->GetString(), "DEAD:", strlen( "DEAD:" ) ) )
+			{
+				const char *pszGlobalName = pChildKV->GetString() + strlen( "DEAD:" );
+				if ( m_RequireGlobalState.Defined( pszGlobalName ) )
+				{
+					Warning( "Ignoring extra global state %s in spawn selection\n", pChildKV->GetString() );
+					continue;
+				}
+				m_RequireGlobalState[pszGlobalName] = GLOBAL_DEAD;
+			}
+			else if ( !Q_strnicmp( pChildKV->GetString(), "MIN:", strlen( "MIN:" ) ) )
+			{
+				char *pszEnd = NULL;
+				errno = 0;
+				long int iValue = strtol( pChildKV->GetString() + strlen( "MIN:" ), &pszEnd, 10 );
+				if ( errno != 0 || iValue < INT_MIN || iValue > INT_MAX || pszEnd == NULL || *pszEnd != ':' )
+				{
+					Warning( "Invalid RequireGlobal: expecting the format MIN:[number]:[name], but got %s\n", pChildKV->GetString() );
+					continue;
+				}
+				const char *pszGlobalName = pszEnd + 1;
+				if ( m_RequireGlobalMin.Defined( pszGlobalName ) )
+				{
+					Warning( "Ignoring extra global minimum %s in spawn selection\n", pChildKV->GetString() );
+					continue;
+				}
+				if ( m_RequireGlobalMax.Defined( pszGlobalName ) && m_RequireGlobalMax[pszGlobalName] < (int) iValue )
+				{
+					Warning( "RequireGlobal for %s has a range of [%d, %d], which means this NPC will never spawn\n", pszGlobalName, (int) iValue, m_RequireGlobalMax[pszGlobalName] );
+				}
+				m_RequireGlobalMin[pszGlobalName] = (int) iValue;
+			}
+			else if ( !Q_strnicmp( pChildKV->GetString(), "MAX:", strlen( "MAX:" ) ) )
+			{
+				char *pszEnd = NULL;
+				errno = 0;
+				long int iValue = strtol( pChildKV->GetString() + strlen( "MAX:" ), &pszEnd, 10 );
+				if ( errno != 0 || iValue < INT_MIN || iValue > INT_MAX || pszEnd == NULL || *pszEnd != ':' )
+				{
+					Warning( "Invalid RequireGlobal: expecting the format MAX:[number]:[name], but got %s\n", pChildKV->GetString() );
+					continue;
+				}
+				const char *pszGlobalName = pszEnd + 1;
+				if ( m_RequireGlobalMax.Defined( pszGlobalName ) )
+				{
+					Warning( "Ignoring extra global maximum %s in spawn selection\n", pChildKV->GetString() );
+					continue;
+				}
+				if ( m_RequireGlobalMin.Defined( pszGlobalName ) && m_RequireGlobalMin[pszGlobalName] > (int) iValue )
+				{
+					Warning( "RequireGlobal for %s has a range of [%d, %d], which means this NPC will never spawn\n", pszGlobalName, m_RequireGlobalMin[pszGlobalName], (int) iValue );
+				}
+				m_RequireGlobalMax[pszGlobalName] = (int) iValue;
+			}
+			else
+			{
+				Warning( "Invalid RequireGlobal format: %s\n", pChildKV->GetString() );
+			}
+		}
+		else if ( !Q_stricmp( pChildKV->GetName(), "BeforeObjective" ) )
+		{
+			if ( m_WantObjective.Defined( pChildKV->GetString() ) )
+			{
+				if ( m_WantObjective[pChildKV->GetString()] )
+				{
+					Warning( "Ignoring BeforeObjective %s because we already have AfterObjective %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				else
+				{
+					Warning( "Ignoring BeforeObjective %s because we already have BeforeObjective %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				continue;
+			}
+
+			m_WantObjective[pChildKV->GetString()] = false;
+		}
+		else if ( !Q_stricmp( pChildKV->GetName(), "AfterObjective" ) )
+		{
+			if ( m_WantObjective.Defined( pChildKV->GetString() ) )
+			{
+				if ( m_WantObjective[pChildKV->GetString()] )
+				{
+					Warning( "Ignoring AfterObjective %s because we already have AfterObjective %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				else
+				{
+					Warning( "Ignoring AfterObjective %s because we already have BeforeObjective %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				continue;
+			}
+
+			m_WantObjective[pChildKV->GetString()] = true;
 		}
 	}
 }
@@ -569,7 +685,29 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc )
 	m_iszVScript = npc.m_iszVScript;
 	m_flSpawnChance = npc.m_flSpawnChance;
 	m_pRequireCVar.AddVectorToTail( npc.m_pRequireCVar );
+	for ( int i = 0; i < npc.m_RequireGlobalState.GetNumStrings(); i++ )
+	{
+		m_RequireGlobalState[npc.m_RequireGlobalState.String( i )] = npc.m_RequireGlobalState[i];
+	}
+	for ( int i = 0; i < npc.m_RequireGlobalMin.GetNumStrings(); i++ )
+	{
+		m_RequireGlobalMin[npc.m_RequireGlobalMin.String( i )] = npc.m_RequireGlobalMin[i];
+	}
+	for ( int i = 0; i < npc.m_RequireGlobalMax.GetNumStrings(); i++ )
+	{
+		m_RequireGlobalMax[npc.m_RequireGlobalMax.String( i )] = npc.m_RequireGlobalMax[i];
+	}
+	for ( int i = 0; i < npc.m_WantObjective.GetNumStrings(); i++ )
+	{
+		m_WantObjective[npc.m_WantObjective.String( i )] = npc.m_WantObjective[i];
+	}
 }
+
+static const char *s_pszGlobalStates[] = {
+	"OFF", // GLOBAL_OFF
+	"ON",  // GLOBAL_ON
+	"DEAD" // GLOBAL_DEAD
+};
 
 void CASW_Spawn_NPC::Dump()
 {
@@ -581,6 +719,39 @@ void CASW_Spawn_NPC::Dump()
 	FOR_EACH_VEC( m_pRequireCVar, i )
 	{
 		CmdMsg( "      Required cvar: %s (currently %s)\n", m_pRequireCVar[i]->GetName(), m_pRequireCVar[i]->GetBool() ? "true" : "false" );
+	}
+	for ( int i = 0; i < m_RequireGlobalState.GetNumStrings(); i++ )
+	{
+		CmdMsg( "      Required global state: %s %s (currently %s)\n", m_RequireGlobalState.String( i ), s_pszGlobalStates[m_RequireGlobalState[i]], s_pszGlobalStates[GlobalEntity_GetState( m_RequireGlobalState.String( i ) )] );
+	}
+	for ( int i = 0; i < m_RequireGlobalMin.GetNumStrings(); i++ )
+	{
+		UtlSymId_t j = m_RequireGlobalMax.Find( m_RequireGlobalMin.String( i ) );
+		if ( j != UTL_INVAL_SYMBOL )
+		{
+			CmdMsg( "      Required global counter: %s between %d and %d (currently %d)\n", m_RequireGlobalMin.String( i ), m_RequireGlobalMin[i], m_RequireGlobalMax[j], GlobalEntity_GetCounter( m_RequireGlobalMin.String( i ) ) );
+		}
+		else
+		{
+			CmdMsg( "      Required global counter: %s at least %d (currently %d)\n", m_RequireGlobalMin.String( i ), m_RequireGlobalMin[i], GlobalEntity_GetCounter( m_RequireGlobalMin.String( i ) ) );
+		}
+	}
+	for ( int i = 0; i < m_RequireGlobalMax.GetNumStrings(); i++ )
+	{
+		if ( !m_RequireGlobalMin.Defined( m_RequireGlobalMax.String( i ) ) )
+		{
+			CmdMsg( "      Required global counter: %s no more than %d (currently %d)\n", m_RequireGlobalMax.String( i ), m_RequireGlobalMax[i], GlobalEntity_GetCounter( m_RequireGlobalMax.String( i ) ) );
+		}
+	}
+	for ( int i = 0; i < m_WantObjective.GetNumStrings(); i++ )
+	{
+		const char *pszCurrentState = "unknown, assuming incomplete";
+		CASW_Objective *pObj = dynamic_cast<CASW_Objective *>( gEntList.FindEntityByName( NULL, m_WantObjective.String( i ) ) );
+		if ( pObj )
+		{
+			pszCurrentState = pObj->IsObjectiveComplete() ? "complete" : "incomplete";
+		}
+		CmdMsg( "      Required objective state: %s must be %s (currently %s)\n", m_WantObjective.String( i ), m_WantObjective[i] ? "complete" : "incomplete", pszCurrentState );
 	}
 	if ( m_iHealthBonus != 0 )
 	{

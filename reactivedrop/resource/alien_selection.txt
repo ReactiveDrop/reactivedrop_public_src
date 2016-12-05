@@ -56,7 +56,16 @@
 // - Flinches (0 or 1, default 1)
 // - VScript (name of a file in scripts/vscripts, run with the global "self" variable set to the alien entity)
 // - SpawnChance (>0 to 1, default 1, chance that this NPC spawns at all)
-// - RequireCVar (name of a console variable that must be true to spawn this alien type)
+//
+// These KeyValues affect whether an NPC block is allowed to spawn and may be specified any number of times:
+//
+// - RequireCVar (name of a console variable that must be true)
+// - RequireGlobal (OFF:name, ON:name, or DEAD:name to require a state of a named env_global entity,
+//     MIN:number:name or MAX:number:name to require that an env_global counter is within a range)
+// - BeforeObjective (name of a map objective entity that must be incomplete)
+// - AfterObjective (name of a map objective entity that must be complete)
+//
+// Invalid uses of the NPC block keyvalues are reported to the console when loading a map.
 //
 // SpawnSetOverlay allows overriding settings or adding spawn definitions to a previously
 // defined SpawnSet. The SpawnSetOverlay must come after the last SpawnSet that applies
