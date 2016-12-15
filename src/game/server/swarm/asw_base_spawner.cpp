@@ -34,10 +34,14 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bFlammableSp, FIELD_BOOLEAN, "flammablesp" ),
 	DEFINE_KEYFIELD( m_bTeslableSp, FIELD_BOOLEAN, "teslablesp" ),
 	DEFINE_KEYFIELD( m_bFreezableSp, FIELD_BOOLEAN, "freezablesp" ),
-	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ), 
+	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ),
 	DEFINE_KEYFIELD( m_iHealthBonusSp, FIELD_INTEGER, "healthbonussp"),
-	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ), 
-	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ), 
+	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ),
+	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ),
+
+	DEFINE_KEYFIELD( m_vecMinOffset, FIELD_VECTOR, "minoffset" ),
+	DEFINE_KEYFIELD( m_vecMaxOffset, FIELD_VECTOR, "maxoffset" ),
+	DEFINE_KEYFIELD( m_flYawOffset, FIELD_FLOAT, "yawoffset" ),
 
 	DEFINE_KEYFIELD( m_iszAlienVScripts, FIELD_STRING, "alien_vscripts" ),
 	DEFINE_KEYFIELD( m_iszAlienScriptThinkFunction, FIELD_STRING, "alien_thinkfunction" ),
@@ -59,16 +63,20 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_flLastSpawnTime = 0.0f;
 	m_bEnabled = true;
 
-	m_bFlammableSp = true; 
-	m_bTeslableSp = true; 
-	m_bFreezableSp = true; 
-	m_bFlinchableSp = true; 
+	m_bFlammableSp = true;
+	m_bTeslableSp = true;
+	m_bFreezableSp = true;
+	m_bFlinchableSp = true;
 	m_iHealthBonusSp = 0;
-	m_fSizeScaleSp = 1.0f; 
-	m_fSpeedScaleSp = 1.0f; 
+	m_fSizeScaleSp = 1.0f;
+	m_fSpeedScaleSp = 1.0f;
 
 	m_iszAlienVScripts = NULL_STRING;
 	m_iszAlienScriptThinkFunction = NULL_STRING;
+
+	m_vecMinOffset.Init();
+	m_vecMaxOffset.Init();
+	m_flYawOffset = 0.0f;
 }
 
 CASW_Base_Spawner::~CASW_Base_Spawner()
@@ -108,7 +116,7 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 			CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
 			if ( pMR && pMR->GetMarineEntity() && pMR->GetMarineEntity()->GetHealth() > 0 )
 			{
-				distance = pMR->GetMarineEntity()->GetAbsOrigin().DistTo( GetAbsOrigin() );
+				distance = pMR->GetMarineEntity()->GetAbsOrigin().DistTo( m_vecCurrentSpawnPosition );
 				if ( distance < m_flNearDistance )
 				{
 					if ( asw_debug_spawners.GetBool() )
@@ -119,8 +127,8 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 		}
 	}
 
-	Vector mins = GetAbsOrigin() - Vector( 23, 23, 0 );
-	Vector maxs = GetAbsOrigin() + Vector( 23, 23, 0 );
+	Vector mins = m_vecCurrentSpawnPosition - Vector( 23, 23, 0 );
+	Vector maxs = m_vecCurrentSpawnPosition + Vector( 23, 23, 0 );
 	CBaseEntity *pList[128];
 	int count = UTIL_EntitiesInBox( pList, 128, mins, maxs, FL_CLIENT|FL_NPC );
 	if ( count )
@@ -138,8 +146,8 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				// Since the outer method doesn't work well around striders on account of their huge bounding box.
 				// Find the ground under me and see if a human hull would fit there.
 				trace_t tr;
-				UTIL_TraceHull( GetAbsOrigin() + Vector( 0, 0, 1 ),
-								GetAbsOrigin() - Vector( 0, 0, 1 ),
+				UTIL_TraceHull( m_vecCurrentSpawnPosition + Vector( 0, 0, 1 ),
+								m_vecCurrentSpawnPosition - Vector( 0, 0, 1 ),
 								vecHullMins,
 								vecHullMaxs,
 								MASK_NPCSOLID,
@@ -187,8 +195,8 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 		}
 
 		trace_t tr;
-		UTIL_TraceHull( GetAbsOrigin(),
-					GetAbsOrigin() + Vector( 0, 0, 1 ),
+		UTIL_TraceHull( m_vecCurrentSpawnPosition,
+					m_vecCurrentSpawnPosition + Vector( 0, 0, 1 ),
 					vecHullMins,
 					vecHullMaxs,
 					MASK_NPCSOLID,
@@ -262,6 +270,24 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		return NULL;
 	}
 
+	m_vecCurrentSpawnPosition = GetAbsOrigin();
+	m_vecCurrentSpawnPosition.x += RandomFloat( m_vecMinOffset.x, m_vecMaxOffset.x );
+	m_vecCurrentSpawnPosition.y += RandomFloat( m_vecMinOffset.y, m_vecMaxOffset.y );
+	m_vecCurrentSpawnPosition.z += RandomFloat( m_vecMinOffset.z, m_vecMaxOffset.z );
+	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
+	// raise the position of spawned alien by it's hull because otherwise it
+	// falls through displacement
+	// make this workaround only for parasites, because other aliens seems to
+	// spawn ok
+	if ( !Q_strcmp( "asw_parasite", szAlienClassName ) )
+	{
+		m_vecCurrentSpawnPosition.z += vecHullMaxs.z - vecHullMins.z;
+	}
+	// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
+	m_angCurrentSpawnAngles.Init();
+	m_angCurrentSpawnAngles.y = GetAbsAngles().y;
+	m_angCurrentSpawnAngles.y += RandomFloat( -m_flYawOffset, m_flYawOffset );
+
 	if ( !CanSpawn( vecHullMins, vecHullMaxs ) )	// this may turn off m_bCurrentlySpawningUber if there's no room
 		return NULL;
 
@@ -309,22 +335,8 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	if ( HasSpawnFlags( ASW_SF_NEVER_SLEEP ) )
 		pEntity->AddSpawnFlags( SF_NPC_ALWAYSTHINK );
 
-	// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
-	QAngle angles = GetAbsAngles();
-	angles.x = 0.0;
-	angles.z = 0.0;	
-	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
-	// raise the position of spawned alien by it's hull because otherwise it 
-	// falls through displacement
-	// make this workaround only for parasites, because other aliens seems to
-	// spawn ok
-	Vector vecEntityPos = GetAbsOrigin();
-	if (!Q_strcmp("asw_parasite", szAlienClassName))
-	{
-		vecEntityPos += Vector(0, 0, vecHullMaxs.z - vecHullMins.z);
-	}
-	pEntity->SetAbsOrigin( vecEntityPos );
-	pEntity->SetAbsAngles( angles );
+	pEntity->SetAbsOrigin( m_vecCurrentSpawnPosition );
+	pEntity->SetAbsAngles( m_angCurrentSpawnAngles );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
 	Assert( pSpawnable );	

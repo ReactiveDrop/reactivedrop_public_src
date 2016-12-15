@@ -4770,7 +4770,7 @@
 	playbackrate(float) : "Playback rate" : 0
 ]
 
-@BaseClass = BaseASWSpawner
+@BaseClass wirebox(minoffset, maxoffset) = BaseASWSpawner
 [
 	SpawnIfMarinesAreNear(choices) : "Allow spawn if marines are near" : 0 =
 	[
@@ -4805,14 +4805,18 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	MinSkillLevel(integer) : "Min Skill Level" : 0 : "The minimum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=imba"	
-	MaxSkillLevel(integer) : "Max Skill Level" : 0 : "The maximum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=imba"	
+	MinSkillLevel(integer) : "Min Skill Level" : 0 : "The minimum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
+	MaxSkillLevel(integer) : "Max Skill Level" : 0 : "The maximum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
+
+	minoffset(vector) : "Minimum offset" : "0 0 0" : "X, Y, and Z offset from the spawner. Usually negative or 0."
+	maxoffset(vector) : "Maximum offset" : "0 0 0" : "X, Y, and Z offset from the spawner. Usually positive or 0."
+	yawoffset(float) : "Random yaw offset" : "0" : "The number of degrees to offset the spawned alien's direction by. A value of 180 can result in a yaw offset of -180 to 180, or a full circle. A value of 30 gives an arc from -30 to 30, or 60 degrees."
 
 	alien_vscripts(scriptlist) : "Alien Entity Scripts" : "" : "Name(s) of script files that are executed when an alien is spawned."
 	alien_thinkfunction(string) : "Alien script think function" : "" : "Name of a function in the spawned alien's script scope which will be called automatically."
 
 	output OnSpawned(string) : "Fires when an alien is spawned. The activator is the alien, and the string is the name of the alien." 
-	
+
 	input ToggleEnabled(void) : "Toggles the spawner between enabled and disabled."
 	input Enable(void) : "Allows aliens to spawn from this spawner."
 	input Disable(void) : "Stops aliens spawning from this spawner."	
