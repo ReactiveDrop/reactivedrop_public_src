@@ -77,6 +77,11 @@ ConVar asw_override_footstep_volume( "asw_override_footstep_volume", "0", FCVAR_
 ConVar asw_marine_object_motion_blur_scale( "asw_marine_object_motion_blur_scale", "0.0" );
 ConVar asw_damage_spark_rate( "asw_damage_spark_rate", "0.24", FCVAR_CHEAT, "Base number of seconds between spark sounds/effects at critical damage." );
 ConVar rd_hearbeat("rd_hearbeat", "1", FCVAR_ARCHIVE, "If 0 disables heartbeat low health effect");
+ConVar rd_deathmatch_team_colors( "rd_deathmatch_team_colors", "2", FCVAR_ARCHIVE, "1: allies green enemies red / 2: Counter-Terrorists blue Terrorists yellow" );
+ConVar rd_team_color_alpha( "rd_team_color_alpha", "240 255 210", FCVAR_HIDDEN );
+ConVar rd_team_color_beta( "rd_team_color_beta", "210 220 255", FCVAR_HIDDEN );
+ConVar rd_team_color_ally( "rd_team_color_ally", "220 255 220", FCVAR_HIDDEN );
+ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 220 200", FCVAR_HIDDEN );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern float g_fMarinePoisonDuration;
@@ -997,6 +1002,48 @@ void C_ASW_Marine::ClientThink()
 	else
 	{
 		SetRenderMode( kRenderNormal );
+	}
+
+	if ( ASWDeathmatchMode() )
+	{
+		Color teamColor;
+
+		switch ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ? rd_deathmatch_team_colors.GetInt() : 0 )
+		{
+			case 0:
+			default:
+			{
+				teamColor.SetColor( 255, 255, 255 );
+				break;
+			}
+			case 1:
+			{
+				C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+				int nTeam = pPlayer ? pPlayer->GetSpectatingMarine() ? pPlayer->GetSpectatingMarine()->GetTeamNumber() : pPlayer->GetTeamNumber() : TEAM_ALPHA;
+				if ( nTeam == GetTeamNumber() )
+				{
+					teamColor = rd_team_color_ally.GetColor();
+				}
+				else
+				{
+					teamColor = rd_team_color_enemy.GetColor();
+				}
+				break;
+			}
+			case 2:
+			{
+				if ( GetTeamNumber() == TEAM_ALPHA )
+				{
+					teamColor = rd_team_color_alpha.GetColor();
+				}
+				else
+				{
+					teamColor = rd_team_color_beta.GetColor();
+				}
+				break;
+			}
+		}
+		SetRenderColor( teamColor.r(), teamColor.g(), teamColor.b() );
 	}
 
 	//SetNextClientThink( gpGlobals->curtime + 0.1f );
