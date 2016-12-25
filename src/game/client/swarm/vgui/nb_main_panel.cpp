@@ -245,6 +245,8 @@ void CNB_Main_Panel::OnThink()
         g_pVGuiLocalize->ConstructString( wszBuffer, sizeof(wszBuffer), g_pVGuiLocalize->Find( "#rd_str_team" ), 1, wszTeamName );  // Team: %s1
 
         m_pTeamLabel->SetText( wszBuffer );
+
+        m_pTeamLabel->SetFgColor( Briefing()->GetTeamColor() );
     }
     else
     {

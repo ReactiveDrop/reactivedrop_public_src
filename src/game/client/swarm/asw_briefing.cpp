@@ -287,6 +287,23 @@ const char* CASW_Briefing::GetTeamName()
         return "";
 }
 
+Color CASW_Briefing::GetTeamColor()
+{
+	extern ConVar rd_team_color_alpha;
+	extern ConVar rd_team_color_beta;
+	extern ConVar rd_team_color_ally;
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer )
+		return rd_team_color_ally.GetColor();
+
+	if ( pPlayer->GetTeamNumber() == TEAM_ALPHA )
+		return rd_team_color_alpha.GetColor();
+	if ( pPlayer->GetTeamNumber() == TEAM_BETA )
+		return rd_team_color_beta.GetColor();
+	return rd_team_color_ally.GetColor();
+}
+
 bool CASW_Briefing::IsLocalPlayerLeader()
 {
 	if ( !ASWGameResource() )

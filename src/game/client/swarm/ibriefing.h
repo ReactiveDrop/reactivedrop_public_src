@@ -14,6 +14,7 @@ abstract_class IBriefing
 public:
 	virtual const char* GetLeaderName() = 0;
     virtual const char* GetTeamName() = 0;
+	virtual Color GetTeamColor() = 0;
 
 	virtual bool IsLocalPlayerLeader() = 0;
 	virtual void ToggleLocalPlayerReady() = 0;

@@ -25,6 +25,7 @@ public:
 
 	virtual const char* GetLeaderName();
     virtual const char* GetTeamName();
+	virtual Color GetTeamColor();
 
 	virtual bool IsLocalPlayerLeader();
 	virtual void ToggleLocalPlayerReady();
