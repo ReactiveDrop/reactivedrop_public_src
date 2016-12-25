@@ -78,10 +78,10 @@ ConVar asw_marine_object_motion_blur_scale( "asw_marine_object_motion_blur_scale
 ConVar asw_damage_spark_rate( "asw_damage_spark_rate", "0.24", FCVAR_CHEAT, "Base number of seconds between spark sounds/effects at critical damage." );
 ConVar rd_hearbeat("rd_hearbeat", "1", FCVAR_ARCHIVE, "If 0 disables heartbeat low health effect");
 ConVar rd_deathmatch_team_colors( "rd_deathmatch_team_colors", "2", FCVAR_ARCHIVE, "1: allies green enemies red / 2: Counter-Terrorists blue Terrorists yellow" );
-ConVar rd_team_color_alpha( "rd_team_color_alpha", "240 255 210", FCVAR_HIDDEN );
-ConVar rd_team_color_beta( "rd_team_color_beta", "210 220 255", FCVAR_HIDDEN );
-ConVar rd_team_color_ally( "rd_team_color_ally", "220 255 220", FCVAR_HIDDEN );
-ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 220 200", FCVAR_HIDDEN );
+ConVar rd_team_color_alpha( "rd_team_color_alpha", "255 240 150", FCVAR_HIDDEN );
+ConVar rd_team_color_beta( "rd_team_color_beta", "20 100 255", FCVAR_HIDDEN );
+ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
+ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern float g_fMarinePoisonDuration;
