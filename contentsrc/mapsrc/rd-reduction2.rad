@@ -1,0 +1,276 @@
+forcetextureshadow models/env/ryberg/outside/outsidewall_128_cablebundle/outsidewall_128_cablebundle.mdl
+forcetextureshadow models/env/ryberg/outside/outsidesupportbeam3/outsidesupportbeam3.mdl
+forcetextureshadow models/env/ryberg/outside/outsidesupportbeam/outsidesupportbeam.mdl
+
+forcetextureshadow models/gibs/glass_shard01.mdl
+forcetextureshadow models/gibs/glass_shard02.mdl
+forcetextureshadow models/gibs/glass_shard03.mdl
+forcetextureshadow models/gibs/glass_shard04.mdl
+forcetextureshadow models/gibs/glass_shard05.mdl
+forcetextureshadow models/gibs/glass_shard06.mdl
+
+forcetextureshadow models/props/128_fuse_set09/128_fuse_set09.mdl
+
+forcetextureshadow models/props/floor/wires01_512/wires01_512.mdl
+forcetextureshadow models/props/floor/wires02_512/wires02_512.mdl
+forcetextureshadow models/props/floor/wires03/wire03_1.mdl
+forcetextureshadow models/props/floor/wires03/wire03_2.mdl
+forcetextureshadow models/props/floor/wires03/wire03_4.mdl
+
+forcetextureshadow models/props/furniture/desks/desks/officecart01.mdl
+forcetextureshadow models/props/furniture/desks/desks/laboratorydesk01.mdl
+forcetextureshadow models/props/furniture/desks/desks/laboratorydesk02.mdl
+
+forcetextureshadow models/props/machinery/boilers/refinery_boiler_a.mdl
+forcetextureshadow models/props/machinery/crane/arm.mdl
+forcetextureshadow models/props/machinery/crane/cab.mdl
+forcetextureshadow models/props/machinery/crane/supportbase.mdl
+forcetextureshadow models/props/machinery/crane/support01.mdl
+forcetextureshadow models/props/machinery/generators/generator03.mdl
+forcetextureshadow models/props/machinery/generators/generator04.mdl
+
+forcetextureshadow models/props/pipes/pipeset_2/straight_01.mdl
+forcetextureshadow models/props_pipes/pipeset32d_corner128d_001a.mdl
+
+forcetextureshadow models/props/railings/ind/straight_cap_64.mdl
+forcetextureshadow models/props/railings/ind/straight_cap_128.mdl
+
+forcetextureshadow models/props/supports/crossbeam_3/crossbeam03b.mdl
+forcetextureshadow models/props/supports/crossbeam_3/crossbeam03c.mdl
+forcetextureshadow models/props/supports/ryd_support_beam01/ryd_support_beam03.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01a.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01b.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01c.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01d.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01e.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01f.mdl
+forcetextureshadow models/props/supports/wall_trim/walltrimwire01g.mdl
+
+forcetextureshadow models/props/techdeco/battery_cart/battery_cart.mdl
+forcetextureshadow models/props/techdeco/computers/monitorrack.mdl
+forcetextureshadow models/props/techdeco/computers/suspendedmonitor1.mdl
+forcetextureshadow models/props/techdeco/computers/suspendedmonitor2.mdl
+forcetextureshadow models/props/techdeco/computers/suspendedmonitor3.mdl
+forcetextureshadow models/props/techdeco/ractor_room/control_room_cables.mdl
+forcetextureshadow models/props/techdeco/ractor_room/control_room_monitor.mdl
+
+forcetextureshadow models/props/utilities/vents002a_fan.mdl
+
+forcetextureshadow models/props/vehicles/cargo_carrier/cargo_carrier.mdl
+forcetextureshadow models/props/vehicles/forklift/forklift.mdl
+
+forcetextureshadow models/props_buildings/building_brick_destroyed01.mdl
+
+forcetextureshadow models/props_canal/canal_bridge_railing01.mdl
+
+forcetextureshadow models/props_c17/fence01a.mdl
+forcetextureshadow models/props_c17/fence01b.mdl
+forcetextureshadow models/props_c17/fence03a.mdl
+forcetextureshadow models/props_c17/fence04a.mdl
+forcetextureshadow models/props_c17/metalladder002.mdl
+forcetextureshadow models/props_c17/pillarcluster_001b.mdl
+forcetextureshadow models/props_c17/pillarcluster_001c.mdl
+forcetextureshadow models/props_c17/pillarcluster_001d.mdl
+forcetextureshadow models/props_c17/truss02e.mdl
+
+forcetextureshadow models/props_debris/burnt_building_debrispile_01.mdl
+forcetextureshadow models/props_debris/burnt_building_debrispile_02.mdl
+forcetextureshadow models/props_debris/burnt_building_rafters_01.mdl
+forcetextureshadow models/props_debris/burnt_building_rafters_02.mdl
+forcetextureshadow models/props_debris/concrete_debris128pile001a.mdl
+forcetextureshadow models/props_debris/concrete_debris128pile001b.mdl
+forcetextureshadow models/props_debris/concrete_debris256barricade001a.mdl
+forcetextureshadow models/props_debris/concrete_debris256pile001a.mdl
+forcetextureshadow models/props_debris/debris_brick01.mdl
+forcetextureshadow models/props_debris/floor_rubble1.mdl
+forcetextureshadow models/props_debris/floor_rubble2.mdl
+forcetextureshadow models/props_debris/floor_rubble3.mdl
+forcetextureshadow models/props_debris/wall_rubble1.mdl
+forcetextureshadow models/props_debris/wall_rubble2.mdl
+forcetextureshadow models/props_debris/windowdestroyed01a.mdl
+forcetextureshadow models/props_debris/windowdestroyed01b.mdl
+forcetextureshadow models/props_debris/windowdestroyed01d.mdl
+
+forcetextureshadow models/props_destruction/dest_rubbletile01.mdl
+forcetextureshadow models/props_destruction/dest_rubbletile02.mdl
+forcetextureshadow models/props_destruction/dest_rubbletile03.mdl
+
+forcetextureshadow models/props_farm/pallet001.mdl
+
+forcetextureshadow models/props_foliage/bramble001a.mdl
+forcetextureshadow models/props_foliage/deadtree01.mdl
+forcetextureshadow models/props_foliage/joshuatree02_skybox.mdl
+forcetextureshadow models/props_foliage/mall_bigleaves_plant01.mdl
+forcetextureshadow models/props_foliage/mall_bush01.mdl
+forcetextureshadow models/props_foliage/mall_bush02.mdl
+forcetextureshadow models/props_foliage/mall_grass_bush01.mdl
+forcetextureshadow models/props_foliage/mall_tree_medium01.mdl
+forcetextureshadow models/props_foliage/shrub_03_cluster_skybox.mdl
+forcetextureshadow models/props_foliage/shrub_01a.mdl
+forcetextureshadow models/props_foliage/shrub_02a.mdl
+forcetextureshadow models/props_foliage/shrub_03b.mdl
+forcetextureshadow models/props_foliage/shrub_03_cluster02.mdl
+
+forcetextureshadow models/props_forest/fence_barb_256.mdl
+forcetextureshadow models/props_forest/fence_barb_512.mdl
+
+forcetextureshadow models/props_junk/garbage256_composite002a.mdl
+forcetextureshadow models/props_junk/garbage256_composite002b.mdl
+
+forcetextureshadow models/props_mining/track_rail_bent1.mdl
+forcetextureshadow models/props_mining/track_rail_bent2.mdl
+forcetextureshadow models/props_mining/track_rail_bent3.mdl
+
+forcetextureshadow models/props_nowayhome/custom/arty_base.mdl
+forcetextureshadow models/props_nowayhome/custom/cratecage.mdl
+forcetextureshadow models/props_nowayhome/custom/cratecage_door.mdl
+forcetextureshadow models/props_nowayhome/custom/cratecage_doorphys.mdl
+forcetextureshadow models/props_nowayhome/custom/external_airlock_frame.mdl
+forcetextureshadow models/props_nowayhome/custom/razorwire_64.mdl
+forcetextureshadow models/props_nowayhome/custom/razorwire_128.mdl
+forcetextureshadow models/props_nowayhome/custom/razorwire_256.mdl
+forcetextureshadow models/props_nowayhome/custom/razorwire_512.mdl
+forcetextureshadow models/props_nowayhome/pallet_small/wood_pallet_01.mdl
+
+forcetextureshadow models/props_reduction/custom/bridgewreck_predemo.mdl
+forcetextureshadow models/props_reduction/custom/bridgewreck_remainder.mdl
+forcetextureshadow models/props_reduction/custom/bridgewreck_span.mdl
+forcetextureshadow models/props_reduction/custom/crawlerbloodstain.mdl
+forcetextureshadow models/props_reduction/custom/debris_chainlinkfence_01.mdl
+forcetextureshadow models/props_reduction/custom/debris_groundtrash_large.mdl
+forcetextureshadow models/props_reduction/custom/debris_groundtrash_small.mdl
+forcetextureshadow models/props_reduction/custom/debris_spentcasings.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_inner_frame_sm.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_inner_glass_br_op.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_inner_glass_br_tr.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_inner_glass_sm_op.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_inner_glass_sm_tr.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_frame_sm1.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_frame_sm2.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_br_op.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_br_tr.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_sm1_op.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_sm2_op.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_sm1_tr.mdl
+forcetextureshadow models/props_reduction/custom/fwindow_outer_glass_sm2_tr.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_512.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_256.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_128.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_64.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_endpost.mdl
+forcetextureshadow models/props_reduction/custom/metalrailing_endsmash.mdl
+forcetextureshadow models/props_reduction/custom/paperdebris_01.mdl
+forcetextureshadow models/props_reduction/custom/paperdebris_02.mdl
+forcetextureshadow models/props_reduction/custom/paperdebris_03.mdl
+forcetextureshadow models/props_reduction/custom/paperdebris_04.mdl
+forcetextureshadow models/props_reduction/custom/shoppingcart.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_basic_deep_1.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_basic_deep_2.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_basic_shallow_1.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_basic_shallow_2.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_conc_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_conc_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concdirt_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concdirt_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concrubbleb_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concrubbleb_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concrubblec_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_concrubblec_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirt_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirt_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirtrubbleb_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirtrubbleb_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirtrubblec_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_dirtrubblec_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_long_deep_1.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_long_deep_2.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_long_shallow_1.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_long_shallow_2.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paveconc_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paveconc_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paved_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paved_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_pavedirt_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_pavedirt_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paverubbleb_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paverubbleb_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paverubblec_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_paverubblec_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubbleb_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubbleb_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubblec_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubblec_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubblecb_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_rubblecb_small.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_sewer_large.mdl
+forcetextureshadow models/props_reduction/custom/shellcrater_sewer_small.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_airlockroom_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_airlockroom_roof.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_airlockroom_roof_recce.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_antenna_post.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_door_ext.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_bridge_cage_nose.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_bridge_cage_reardn.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_bridge_cage_rearup.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_bridge_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_bridge_roof.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_engine_thruster.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_engineroom_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_engineroom_roof.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_landinggear_upper.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_opsroom_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_opsroom_roof.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_quarters_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_quarters_roof.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_repairroom_hull.mdl
+forcetextureshadow models/props_reduction/custom/starshipx_repairroom_roof.mdl
+
+forcetextureshadow models/props_rooftop/roof_vent004.mdl
+
+forcetextureshadow models/props_silo/ladderrung.mdl
+
+forcetextureshadow models/props_trainstation/ceiling_arch001a.mdl
+forcetextureshadow models/props_trainstation/ceiling_truss001a.mdl
+forcetextureshadow models/props_trainstation/traintrack006b.mdl
+forcetextureshadow models/props_trainstation/traintrack006c.mdl
+
+forcetextureshadow models/props_wasteland/bridge_railing.mdl
+forcetextureshadow models/props_wasteland/interior_fence001a.mdl
+forcetextureshadow models/props_wasteland/interior_fence001b.mdl
+forcetextureshadow models/props_wasteland/interior_fence001c.mdl
+forcetextureshadow models/props_wasteland/interior_fence001e.mdl
+forcetextureshadow models/props_wasteland/interior_fence001g.mdl
+forcetextureshadow models/props_wasteland/interior_fence002c.mdl
+forcetextureshadow models/props_wasteland/interior_fence003d.mdl
+forcetextureshadow models/props_wasteland/interior_fence004a.mdl
+forcetextureshadow models/props_wasteland/interior_fence004b.mdl
+forcetextureshadow models/props_wasteland/exterior_fence001a.mdl
+forcetextureshadow models/props_wasteland/exterior_fence002b.mdl
+forcetextureshadow models/props_wasteland/exterior_fence002c.mdl
+forcetextureshadow models/props_wasteland/exterior_fence002d.mdl
+forcetextureshadow models/props_wasteland/powertower01.mdl
+forcetextureshadow models/props_wasteland/rockcliff_cluster02b.mdl
+forcetextureshadow models/props_wasteland/rockcliff_cluster03b.mdl
+forcetextureshadow models/props_wasteland/rockgranite01c.mdl
+forcetextureshadow models/props_wasteland/rockgranite04a.mdl
+forcetextureshadow models/props_wasteland/rockgranite04b.mdl
+
+forcetextureshadow models/swarmprops/beamsandpillars/outsidemetalgrille.mdl
+
+forcetextureshadow models/swarmprops/machinery/forkliftmeshbase.mdl
+forcetextureshadow models/swarmprops/miscdeco/framework1.mdl
+forcetextureshadow models/swarmprops/miscdeco/swarmfence1.mdl
+forcetextureshadow models/swarmprops/miscdeco/swarmfence2.mdl
+forcetextureshadow models/swarmprops/miscdeco/swarmfence4.mdl
+forcetextureshadow models/swarmprops/vehicles/bloodhoundmesh.mdl
+
+forcetextureshadow models/swarmprops/pipesboilerscables/swarm_smallpipes2.mdl
+forcetextureshadow models/swarmprops/pipesboilerscables/wiremess1.mdl
+
+forcetextureshadow models/swarmprops/vehicles/bloodhoundmesh.mdl
+
+
+
+
+
+
