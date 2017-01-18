@@ -239,13 +239,22 @@ CASW_Spawn_Definition *CASW_Spawn_Selection::RandomPackDefinition()
 
 CASW_Spawn_Definition *CASW_Spawn_Selection::RandomDefinition( ASW_Spawn_Type iSpawnType )
 {
-	Assert( m_pSelectedSpawnSet );
-	Assert( m_pSelectedSpawnSet->m_SpawnDefinitions[iSpawnType].Count() > 0 );
+	static CASW_Spawn_Definition *s_pNoSpawnDefinition = new CASW_Spawn_Definition( NULL );
 
-	float flSelectedSpawn = random->RandomFloat( 0, m_pSelectedSpawnSet->m_flTotalSelectionWeight[iSpawnType] );
+	Assert( m_pSelectedSpawnSet );
+
+	CASW_Spawn_Definition *pLast = s_pNoSpawnDefinition;
+
+	float flSelectedSpawn = random->RandomFloat( 0, m_pSelectedSpawnSet->ComputeTotalWeight( iSpawnType ) );
 	FOR_EACH_VEC( m_pSelectedSpawnSet->m_SpawnDefinitions[iSpawnType], i )
 	{
 		CASW_Spawn_Definition *pSpawn = m_pSelectedSpawnSet->m_SpawnDefinitions[iSpawnType][i];
+		if ( !pSpawn->m_Requirement.CanSpawn() )
+		{
+			continue;
+		}
+
+		pLast = pSpawn;
 
 		flSelectedSpawn -= pSpawn->m_flSelectionWeight;
 		if ( flSelectedSpawn <= 0 )
@@ -254,7 +263,14 @@ CASW_Spawn_Definition *CASW_Spawn_Selection::RandomDefinition( ASW_Spawn_Type iS
 		}
 	}
 
-	return m_pSelectedSpawnSet->m_SpawnDefinitions[iSpawnType][m_pSelectedSpawnSet->m_SpawnDefinitions[iSpawnType].Count()];
+	return pLast;
+}
+
+float CASW_Spawn_Selection::ComputeTotalWeight( ASW_Spawn_Type iSpawnType )
+{
+	Assert( m_pSelectedSpawnSet );
+
+	return m_pSelectedSpawnSet->ComputeTotalWeight( iSpawnType );
 }
 
 void CASW_Spawn_Selection::PopulateSpawnSets( KeyValues *pKV )
@@ -300,11 +316,6 @@ CASW_Spawn_Set::CASW_Spawn_Set( KeyValues * pKV, bool bOverlay )
 	m_iMinSkill = pKV->GetInt( "MinSkill", 1 );
 	m_iMaxSkill = pKV->GetInt( "MaxSkill", 5 );
 
-	for ( int i = 0; i < NUM_ASW_SPAWN_TYPES; i++ )
-	{
-		m_flTotalSelectionWeight[i] = 0;
-	}
-
 	FOR_EACH_TRUE_SUBKEY( pKV, pSpawnKV )
 	{
 		CSplitString szTypes( pSpawnKV->GetName(), "+" );
@@ -327,7 +338,6 @@ CASW_Spawn_Set::CASW_Spawn_Set( KeyValues * pKV, bool bOverlay )
 					}
 
 					m_SpawnDefinitions[j].AddToTail( pSpawn );
-					m_flTotalSelectionWeight[j] += pSpawn->m_flSelectionWeight;
 					break;
 				}
 			}
@@ -396,7 +406,6 @@ void CASW_Spawn_Set::ApplyOverlay( CASW_Spawn_Set *pTarget )
 			pTarget->m_iMax ## name = m_iMax ## name; \
 		} \
 	} \
-	pTarget->m_flTotalSelectionWeight[type] += m_flTotalSelectionWeight[type]; \
 	FOR_EACH_VEC( m_SpawnDefinitions[type], i ) \
 	{ \
 		pTarget->m_SpawnDefinitions[type].AddToTail( new CASW_Spawn_Definition( *m_SpawnDefinitions[type][i] ) ); \
@@ -431,7 +440,7 @@ void CASW_Spawn_Set::Dump()
 		CmdMsg( "  Maximum " #name ": %d\n", m_iMax ## name ); \
 		FOR_EACH_VEC( m_SpawnDefinitions[ ASW_SPAWN_TYPE_ ## type ], i ) \
 		{ \
-			m_SpawnDefinitions[ ASW_SPAWN_TYPE_ ## type ][i]->Dump( m_flTotalSelectionWeight[ ASW_SPAWN_TYPE_ ## type ] );  \
+			m_SpawnDefinitions[ ASW_SPAWN_TYPE_ ## type ][i]->Dump( ComputeTotalWeight( ASW_SPAWN_TYPE_ ## type ) );  \
 		} \
 	}
 
@@ -444,105 +453,22 @@ void CASW_Spawn_Set::Dump()
 #undef DUMP_DEFINITIONS
 }
 
-CASW_Spawn_Definition::CASW_Spawn_Definition( KeyValues *pKV )
+float CASW_Spawn_Set::ComputeTotalWeight( ASW_Spawn_Type iSpawnType ) const
 {
-	m_flSelectionWeight = pKV->GetFloat( "SelectionWeight", 1.0f );
-
-	for ( KeyValues *pNPCKV = pKV->GetFirstTrueSubKey(); pNPCKV; pNPCKV = pNPCKV->GetNextTrueSubKey() )
+	float flTotal = 0.0f;
+	FOR_EACH_VEC( m_SpawnDefinitions[iSpawnType], i )
 	{
-		if ( !Q_stricmp( pNPCKV->GetName(), "NPC" ) )
+		CASW_Spawn_Definition *pSpawn = m_SpawnDefinitions[iSpawnType][i];
+		if ( pSpawn->m_Requirement.CanSpawn() )
 		{
-			CASW_Spawn_NPC *pNPC = new CASW_Spawn_NPC( pNPCKV );
-			if ( !pNPC->m_pAlienClass )
-			{
-				delete pNPC;
-				continue;
-			}
-
-			m_NPCs.AddToTail( pNPC );
+			flTotal += pSpawn->m_flSelectionWeight;
 		}
 	}
-
-	if ( m_NPCs.Count() == 0 )
-	{
-		Warning( "Spawn definition with no NPCs\n" );
-	}
+	return flTotal;
 }
 
-CASW_Spawn_Definition::CASW_Spawn_Definition( const CASW_Spawn_Definition & def )
+CASW_Spawn_Requirement::CASW_Spawn_Requirement( KeyValues *pKV )
 {
-	m_flSelectionWeight = def.m_flSelectionWeight;
-	m_NPCs.EnsureCapacity( def.m_NPCs.Count() );
-
-	FOR_EACH_VEC( def.m_NPCs, i )
-	{
-		m_NPCs.AddToTail( new CASW_Spawn_NPC( *def.m_NPCs[i] ) );
-	}
-}
-
-void CASW_Spawn_Definition::Dump( float flTotalWeight )
-{
-	CmdMsg( "  %f%% chance (weight %f):\n", m_flSelectionWeight / flTotalWeight * 100, m_flSelectionWeight );
-
-	FOR_EACH_VEC( m_NPCs, i )
-	{
-		m_NPCs[i]->Dump();
-	}
-}
-
-
-CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV )
-{
-	m_pAlienClass = NULL;
-	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
-	{
-		ASW_Alien_Class_Entry *pAlienClass = ASWSpawnManager()->GetAlienClass( i );
-		if ( !Q_stricmp( pKV->GetString( "AlienClass" ), pAlienClass->m_pszAlienClass ) )
-		{
-			m_pAlienClass = pAlienClass;
-			break;
-		}
-	}
-	if ( !m_pAlienClass )
-	{
-		Warning( "Invalid alien class in spawn definitions: %s\n", pKV->GetString( "AlienClass" ) );
-	}
-
-	m_iHealthBonus = pKV->GetInt( "HealthBonus", 0 );
-	if ( m_iHealthBonus < 0 )
-	{
-		m_iHealthBonus = 0;
-	}
-	m_flSpeedScale = pKV->GetFloat( "SpeedScale", 1.0f );
-	if ( m_flSpeedScale <= 0 )
-	{
-		m_flSpeedScale = 1;
-	}
-	m_flSizeScale = pKV->GetFloat( "SizeScale", 1.0f );
-	if ( m_flSizeScale <= 0 )
-	{
-		m_flSizeScale = 1;
-	}
-	m_bFlammable = pKV->GetBool( "Flammable", true );
-	m_bFreezable = pKV->GetBool( "Freezable", true );
-	m_bTeslable = pKV->GetBool( "Teslable", true );
-	m_bFlinches = pKV->GetBool( "Flinches", true );
-
-	if ( pKV->GetString( "VScript", NULL ) == NULL )
-	{
-		m_iszVScript = NULL_STRING;
-	}
-	else
-	{
-		m_iszVScript = AllocPooledString( pKV->GetString( "VScript" ) );
-	}
-
-	m_flSpawnChance = pKV->GetFloat( "SpawnChance", 1.0f );
-	if ( m_flSpawnChance <= 0 )
-	{
-		m_flSpawnChance = 1;
-	}
-
 	for ( KeyValues *pChildKV = pKV->GetFirstValue(); pChildKV; pChildKV = pChildKV->GetNextValue() )
 	{
 		if ( !Q_stricmp( pChildKV->GetName(), "RequireCVar" ) )
@@ -707,38 +633,28 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV )
 	}
 }
 
-CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc )
+CASW_Spawn_Requirement::CASW_Spawn_Requirement(const CASW_Spawn_Requirement & req)
 {
-	m_pAlienClass = npc.m_pAlienClass;
-	m_iHealthBonus = npc.m_iHealthBonus;
-	m_flSpeedScale = npc.m_flSpeedScale;
-	m_flSizeScale = npc.m_flSizeScale;
-	m_bFlammable = npc.m_bFlammable;
-	m_bFreezable = npc.m_bFreezable;
-	m_bTeslable = npc.m_bTeslable;
-	m_bFlinches = npc.m_bFlinches;
-	m_iszVScript = npc.m_iszVScript;
-	m_flSpawnChance = npc.m_flSpawnChance;
-	m_pRequireCVar.AddVectorToTail( npc.m_pRequireCVar );
-	for ( int i = 0; i < npc.m_RequireGlobalState.GetNumStrings(); i++ )
+	m_pRequireCVar.AddVectorToTail( req.m_pRequireCVar );
+	for ( int i = 0; i < req.m_RequireGlobalState.GetNumStrings(); i++ )
 	{
-		m_RequireGlobalState[npc.m_RequireGlobalState.String( i )] = npc.m_RequireGlobalState[i];
+		m_RequireGlobalState[req.m_RequireGlobalState.String( i )] = req.m_RequireGlobalState[i];
 	}
-	for ( int i = 0; i < npc.m_RequireGlobalMin.GetNumStrings(); i++ )
+	for ( int i = 0; i < req.m_RequireGlobalMin.GetNumStrings(); i++ )
 	{
-		m_RequireGlobalMin[npc.m_RequireGlobalMin.String( i )] = npc.m_RequireGlobalMin[i];
+		m_RequireGlobalMin[req.m_RequireGlobalMin.String( i )] = req.m_RequireGlobalMin[i];
 	}
-	for ( int i = 0; i < npc.m_RequireGlobalMax.GetNumStrings(); i++ )
+	for ( int i = 0; i < req.m_RequireGlobalMax.GetNumStrings(); i++ )
 	{
-		m_RequireGlobalMax[npc.m_RequireGlobalMax.String( i )] = npc.m_RequireGlobalMax[i];
+		m_RequireGlobalMax[req.m_RequireGlobalMax.String( i )] = req.m_RequireGlobalMax[i];
 	}
-	for ( int i = 0; i < npc.m_WantObjective.GetNumStrings(); i++ )
+	for ( int i = 0; i < req.m_WantObjective.GetNumStrings(); i++ )
 	{
-		m_WantObjective[npc.m_WantObjective.String( i )] = npc.m_WantObjective[i];
+		m_WantObjective[req.m_WantObjective.String( i )] = req.m_WantObjective[i];
 	}
-	for ( int i = 0; i < npc.m_WantSpawner.GetNumStrings(); i++ )
+	for ( int i = 0; i < req.m_WantSpawner.GetNumStrings(); i++ )
 	{
-		m_WantSpawner[npc.m_WantSpawner.String( i )] = npc.m_WantSpawner[i];
+		m_WantSpawner[req.m_WantSpawner.String( i )] = req.m_WantSpawner[i];
 	}
 }
 
@@ -748,13 +664,8 @@ static const char *s_pszGlobalStates[] = {
 	"DEAD" // GLOBAL_DEAD
 };
 
-void CASW_Spawn_NPC::Dump()
+void CASW_Spawn_Requirement::Dump( const char *szIndent )
 {
-	CmdMsg( "    NPC: %s\n", m_pAlienClass->m_pszAlienClass );
-	if ( m_flSpawnChance != 1 )
-	{
-		CmdMsg( "      Spawn chance: %f%%\n", m_flSpawnChance * 100 );
-	}
 	FOR_EACH_VEC( m_pRequireCVar, i )
 	{
 		CmdMsg( "      Required cvar: %s (currently %s)\n", m_pRequireCVar[i]->GetName(), m_pRequireCVar[i]->GetBool() ? "true" : "false" );
@@ -802,6 +713,187 @@ void CASW_Spawn_NPC::Dump()
 		}
 		CmdMsg( "      Required spawner state: %s must be %s (currently %s)\n", m_WantSpawner.String( i ), m_WantSpawner[i] ? "spawning" : "waiting", pszCurrentState );
 	}
+}
+
+bool CASW_Spawn_Requirement::CanSpawn() const
+{
+	FOR_EACH_VEC( m_pRequireCVar, i )
+	{
+		if ( !m_pRequireCVar[i]->GetBool() )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < m_RequireGlobalState.GetNumStrings(); i++ )
+	{
+		if ( GlobalEntity_GetState( m_RequireGlobalState.String( i ) ) != m_RequireGlobalState[i] )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < m_RequireGlobalMin.GetNumStrings(); i++ )
+	{
+		if ( GlobalEntity_GetCounter( m_RequireGlobalMin.String( i ) ) < m_RequireGlobalMin[i] )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < m_RequireGlobalMax.GetNumStrings(); i++ )
+	{
+		if ( GlobalEntity_GetCounter( m_RequireGlobalMax.String( i ) ) > m_RequireGlobalMax[i] )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < m_WantObjective.GetNumStrings(); i++ )
+	{
+		CASW_Objective *pObj = dynamic_cast<CASW_Objective *>( gEntList.FindEntityByName( NULL, m_WantObjective.String( i ) ) );
+		if ( !pObj && m_WantObjective[i] )
+		{
+			return false;
+		}
+		if ( pObj && pObj->IsObjectiveComplete() != m_WantObjective[i] )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < m_WantSpawner.GetNumStrings(); i++ )
+	{
+		CASW_Spawner *pSpawner = dynamic_cast<CASW_Spawner *>( gEntList.FindEntityByName( NULL, m_WantSpawner.String( i ) ) );
+		if ( !pSpawner && m_WantSpawner[i] )
+		{
+			return false;
+		}
+		if ( pSpawner && pSpawner->WasAllowedToSpawn() != m_WantSpawner[i] )
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+CASW_Spawn_Definition::CASW_Spawn_Definition( KeyValues *pKV ) : m_Requirement( pKV )
+{
+	m_flSelectionWeight = pKV->GetFloat( "SelectionWeight", 1.0f );
+
+	for ( KeyValues *pNPCKV = pKV->GetFirstTrueSubKey(); pNPCKV; pNPCKV = pNPCKV->GetNextTrueSubKey() )
+	{
+		if ( !Q_stricmp( pNPCKV->GetName(), "NPC" ) )
+		{
+			CASW_Spawn_NPC *pNPC = new CASW_Spawn_NPC( pNPCKV );
+			if ( !pNPC->m_pAlienClass )
+			{
+				delete pNPC;
+				continue;
+			}
+
+			m_NPCs.AddToTail( pNPC );
+		}
+	}
+
+	if ( m_NPCs.Count() == 0 )
+	{
+		Warning( "Spawn definition with no NPCs\n" );
+	}
+}
+
+CASW_Spawn_Definition::CASW_Spawn_Definition( const CASW_Spawn_Definition & def ) : m_Requirement( def.m_Requirement )
+{
+	m_flSelectionWeight = def.m_flSelectionWeight;
+	m_NPCs.EnsureCapacity( def.m_NPCs.Count() );
+
+	FOR_EACH_VEC( def.m_NPCs, i )
+	{
+		m_NPCs.AddToTail( new CASW_Spawn_NPC( *def.m_NPCs[i] ) );
+	}
+}
+
+void CASW_Spawn_Definition::Dump( float flTotalWeight )
+{
+	CmdMsg( "  %f%% chance (weight %f):\n", m_flSelectionWeight / flTotalWeight * 100, m_flSelectionWeight );
+
+	m_Requirement.Dump( "    " );
+
+	FOR_EACH_VEC( m_NPCs, i )
+	{
+		m_NPCs[i]->Dump();
+	}
+}
+
+CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
+{
+	m_pAlienClass = NULL;
+	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
+	{
+		ASW_Alien_Class_Entry *pAlienClass = ASWSpawnManager()->GetAlienClass( i );
+		if ( !Q_stricmp( pKV->GetString( "AlienClass" ), pAlienClass->m_pszAlienClass ) )
+		{
+			m_pAlienClass = pAlienClass;
+			break;
+		}
+	}
+	if ( !m_pAlienClass )
+	{
+		Warning( "Invalid alien class in spawn definitions: %s\n", pKV->GetString( "AlienClass" ) );
+	}
+
+	m_iHealthBonus = pKV->GetInt( "HealthBonus", 0 );
+	if ( m_iHealthBonus < 0 )
+	{
+		m_iHealthBonus = 0;
+	}
+	m_flSpeedScale = pKV->GetFloat( "SpeedScale", 1.0f );
+	if ( m_flSpeedScale <= 0 )
+	{
+		m_flSpeedScale = 1;
+	}
+	m_flSizeScale = pKV->GetFloat( "SizeScale", 1.0f );
+	if ( m_flSizeScale <= 0 )
+	{
+		m_flSizeScale = 1;
+	}
+	m_bFlammable = pKV->GetBool( "Flammable", true );
+	m_bFreezable = pKV->GetBool( "Freezable", true );
+	m_bTeslable = pKV->GetBool( "Teslable", true );
+	m_bFlinches = pKV->GetBool( "Flinches", true );
+
+	if ( pKV->GetString( "VScript", NULL ) == NULL )
+	{
+		m_iszVScript = NULL_STRING;
+	}
+	else
+	{
+		m_iszVScript = AllocPooledString( pKV->GetString( "VScript" ) );
+	}
+
+	m_flSpawnChance = pKV->GetFloat( "SpawnChance", 1.0f );
+	if ( m_flSpawnChance <= 0 )
+	{
+		m_flSpawnChance = 1;
+	}
+}
+
+CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc ) : m_Requirement( npc.m_Requirement )
+{
+	m_pAlienClass = npc.m_pAlienClass;
+	m_iHealthBonus = npc.m_iHealthBonus;
+	m_flSpeedScale = npc.m_flSpeedScale;
+	m_flSizeScale = npc.m_flSizeScale;
+	m_bFlammable = npc.m_bFlammable;
+	m_bFreezable = npc.m_bFreezable;
+	m_bTeslable = npc.m_bTeslable;
+	m_bFlinches = npc.m_bFlinches;
+	m_iszVScript = npc.m_iszVScript;
+	m_flSpawnChance = npc.m_flSpawnChance;
+}
+
+void CASW_Spawn_NPC::Dump()
+{
+	CmdMsg( "    NPC: %s\n", m_pAlienClass->m_pszAlienClass );
+	if ( m_flSpawnChance != 1 )
+	{
+		CmdMsg( "      Spawn chance: %f%%\n", m_flSpawnChance * 100 );
+	}
 	if ( m_iHealthBonus != 0 )
 	{
 		CmdMsg( "      Bonus health: %d\n", m_iHealthBonus );
@@ -834,6 +926,7 @@ void CASW_Spawn_NPC::Dump()
 	{
 		CmdMsg( "      Run VScript: scripts/vscripts/%s.nut\n", STRING( m_iszVScript ) );
 	}
+	m_Requirement.Dump( "      " );
 }
 
 CON_COMMAND( rd_dump_alien_selection_set, "" )

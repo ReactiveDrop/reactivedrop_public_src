@@ -41,8 +41,6 @@ ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Int
 ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
 ConVar rd_horde_two_sided( "rd_horde_two_sided", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled a 2nd horde will come from opposite side, e.g. north and south" );
 
-static bool ShouldSpawnAlien( CASW_Spawn_NPC *pNPC );
-
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
 	m_nAwakeAliens = 0;
@@ -360,7 +358,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 		FOR_EACH_VEC( pSpawn->m_NPCs, j )
 		{
 			CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[j];
-			if ( !ShouldSpawnAlien( pNPC ) )
+			if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
 			{
 				continue;
 			}
@@ -845,63 +843,6 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	return pEntity;
 }
 
-static bool ShouldSpawnAlien( CASW_Spawn_NPC *pNPC )
-{
-	FOR_EACH_VEC( pNPC->m_pRequireCVar, i )
-	{
-		if ( !pNPC->m_pRequireCVar[i]->GetBool() )
-		{
-			return false;
-		}
-	}
-	for ( int i = 0; i < pNPC->m_RequireGlobalState.GetNumStrings(); i++ )
-	{
-		if ( GlobalEntity_GetState( pNPC->m_RequireGlobalState.String( i ) ) != pNPC->m_RequireGlobalState[i] )
-		{
-			return false;
-		}
-	}
-	for ( int i = 0; i < pNPC->m_RequireGlobalMin.GetNumStrings(); i++ )
-	{
-		if ( GlobalEntity_GetCounter( pNPC->m_RequireGlobalMin.String( i ) ) < pNPC->m_RequireGlobalMin[i] )
-		{
-			return false;
-		}
-	}
-	for ( int i = 0; i < pNPC->m_RequireGlobalMax.GetNumStrings(); i++ )
-	{
-		if ( GlobalEntity_GetCounter( pNPC->m_RequireGlobalMax.String( i ) ) > pNPC->m_RequireGlobalMax[i] )
-		{
-			return false;
-		}
-	}
-	for ( int i = 0; i < pNPC->m_WantObjective.GetNumStrings(); i++ )
-	{
-		CASW_Objective *pObj = dynamic_cast<CASW_Objective *>( gEntList.FindEntityByName( NULL, pNPC->m_WantObjective.String( i ) ) );
-		if ( !pObj && pNPC->m_WantObjective[i] )
-		{
-			return false;
-		}
-		if ( pObj && pObj->IsObjectiveComplete() != pNPC->m_WantObjective[i] )
-		{
-			return false;
-		}
-	}
-	for ( int i = 0; i < pNPC->m_WantSpawner.GetNumStrings(); i++ )
-	{
-		CASW_Spawner *pSpawner = dynamic_cast<CASW_Spawner *>( gEntList.FindEntityByName( NULL, pNPC->m_WantSpawner.String( i ) ) );
-		if ( !pSpawner && pNPC->m_WantSpawner[i] )
-		{
-			return false;
-		}
-		if ( pSpawner && pSpawner->WasAllowedToSpawn() != pNPC->m_WantSpawner[i] )
-		{
-			return false;
-		}
-	}
-	return pNPC->m_flSpawnChance >= 1 || random->RandomFloat() < pNPC->m_flSpawnChance;
-}
-
 bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle )
 {
 	bool bAny = false;
@@ -910,7 +851,7 @@ bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vect
 	FOR_EACH_VEC( pSpawn->m_NPCs, i )
 	{
 		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
-		if ( !ShouldSpawnAlien( pNPC ) )
+		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
 		{
 			continue;
 		}
@@ -1127,7 +1068,7 @@ bool CASW_Spawn_Manager::PrespawnAliens( CASW_Spawn_Definition *pSpawn )
 		}
 
 		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
-		if ( !ShouldSpawnAlien( pNPC ) )
+		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
 		{
 			continue;
 		}

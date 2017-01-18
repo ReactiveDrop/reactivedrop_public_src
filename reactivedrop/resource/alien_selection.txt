@@ -57,7 +57,10 @@
 // - VScript (name of a file in scripts/vscripts, run with the global "self" variable set to the alien entity)
 // - SpawnChance (>0 to 1, default 1, chance that this NPC spawns at all)
 //
-// These KeyValues affect whether an NPC block is allowed to spawn and may be specified any number of times:
+// The following KeyValues affect whether an NPC block is allowed to spawn and may be specified any number
+// of times. They can also be used on a spawn definition block (HORDE, WANDERER, PACK+WANDERER, etc.).
+// If a spawn definition does not pass these tests, it will be ignored. However, if only NPC blocks inside a
+// spawn definition do not pass the tests, the spawn definition can still be chosen and it will spawn 0 aliens.
 //
 // - RequireCVar (name of a console variable that must be true)
 // - RequireGlobal (OFF:name, ON:name, or DEAD:name to require a state of a named env_global entity,

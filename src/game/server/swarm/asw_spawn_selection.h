@@ -45,7 +45,8 @@ public:
 	CASW_Spawn_Definition *RandomPackDefinition();
 
 private:
-	CASW_Spawn_Definition *RandomDefinition(ASW_Spawn_Type iSpawnType);
+	CASW_Spawn_Definition *RandomDefinition( ASW_Spawn_Type iSpawnType );
+	float ComputeTotalWeight( ASW_Spawn_Type iSpawnType );
 
 	void PopulateSpawnSets( KeyValues *pKV );
 
@@ -62,6 +63,7 @@ public:
 	bool MatchesLevel( string_t iszLevelName ) const;
 	void ApplyOverlay( CASW_Spawn_Set *pTarget );
 	void Dump();
+	float ComputeTotalWeight( ASW_Spawn_Type iSpawnType ) const;
 
 	bool m_bOverlay;
 	CUtlVector<string_t> m_iszAppliedOverlays;
@@ -84,8 +86,23 @@ public:
 	int m_iMinPacks;
 	int m_iMaxPacks;
 	bool m_bHasPacks;
-	float m_flTotalSelectionWeight[NUM_ASW_SPAWN_TYPES];
 	CUtlVectorAutoPurge<CASW_Spawn_Definition *> m_SpawnDefinitions[NUM_ASW_SPAWN_TYPES];
+};
+
+class CASW_Spawn_Requirement
+{
+public:
+	CASW_Spawn_Requirement( KeyValues *pKV );
+	CASW_Spawn_Requirement( const CASW_Spawn_Requirement & req );
+	void Dump( const char *szIndent );
+	bool CanSpawn() const;
+
+	CUtlVector<ConVar *> m_pRequireCVar;
+	CUtlStringMap<GLOBALESTATE> m_RequireGlobalState;
+	CUtlStringMap<int> m_RequireGlobalMin;
+	CUtlStringMap<int> m_RequireGlobalMax;
+	CUtlStringMap<bool> m_WantObjective;
+	CUtlStringMap<bool> m_WantSpawner;
 };
 
 class CASW_Spawn_Definition
@@ -97,6 +114,7 @@ public:
 
 	float m_flSelectionWeight;
 	CUtlVectorAutoPurge<CASW_Spawn_NPC *> m_NPCs;
+	CASW_Spawn_Requirement m_Requirement;
 };
 
 class CASW_Spawn_NPC
@@ -116,12 +134,7 @@ public:
 	bool m_bFlinches;
 	string_t m_iszVScript;
 	float m_flSpawnChance;
-	CUtlVector<ConVar *> m_pRequireCVar;
-	CUtlStringMap<GLOBALESTATE> m_RequireGlobalState;
-	CUtlStringMap<int> m_RequireGlobalMin;
-	CUtlStringMap<int> m_RequireGlobalMax;
-	CUtlStringMap<bool> m_WantObjective;
-	CUtlStringMap<bool> m_WantSpawner;
+	CASW_Spawn_Requirement m_Requirement;
 };
 
 #endif // ASW_SPAWN_SELECTION_H
