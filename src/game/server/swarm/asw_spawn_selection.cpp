@@ -4,6 +4,7 @@
 #include "convar.h"
 #include "asw_gamerules.h"
 #include "asw_objective.h"
+#include "asw_spawner.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -669,6 +670,40 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV )
 
 			m_WantObjective[pChildKV->GetString()] = true;
 		}
+		else if ( !Q_stricmp( pChildKV->GetName(), "SpawnerSpawning" ) )
+		{
+			if ( m_WantSpawner.Defined( pChildKV->GetString() ) )
+			{
+				if ( m_WantSpawner[pChildKV->GetString()] )
+				{
+					Warning( "Ignoring SpawnerSpawning %s because we already have SpawnerSpawning %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				else
+				{
+					Warning( "Ignoring SpawnerSpawning %s because we already have SpawnerWaiting %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				continue;
+			}
+
+			m_WantSpawner[pChildKV->GetString()] = true;
+		}
+		else if ( !Q_stricmp( pChildKV->GetName(), "SpawnerWaiting" ) )
+		{
+			if ( m_WantSpawner.Defined( pChildKV->GetString() ) )
+			{
+				if ( m_WantSpawner[pChildKV->GetString()] )
+				{
+					Warning( "Ignoring SpawnerWaiting %s because we already have SpawnerSpawning %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				else
+				{
+					Warning( "Ignoring SpawnerWaiting %s because we already have SpawnerWaiting %s\n", pChildKV->GetString(), pChildKV->GetString() );
+				}
+				continue;
+			}
+
+			m_WantSpawner[pChildKV->GetString()] = false;
+		}
 	}
 }
 
@@ -700,6 +735,10 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc )
 	for ( int i = 0; i < npc.m_WantObjective.GetNumStrings(); i++ )
 	{
 		m_WantObjective[npc.m_WantObjective.String( i )] = npc.m_WantObjective[i];
+	}
+	for ( int i = 0; i < npc.m_WantSpawner.GetNumStrings(); i++ )
+	{
+		m_WantSpawner[npc.m_WantSpawner.String( i )] = npc.m_WantSpawner[i];
 	}
 }
 
@@ -752,6 +791,16 @@ void CASW_Spawn_NPC::Dump()
 			pszCurrentState = pObj->IsObjectiveComplete() ? "complete" : "incomplete";
 		}
 		CmdMsg( "      Required objective state: %s must be %s (currently %s)\n", m_WantObjective.String( i ), m_WantObjective[i] ? "complete" : "incomplete", pszCurrentState );
+	}
+	for ( int i = 0; i < m_WantSpawner.GetNumStrings(); i++ )
+	{
+		const char *pszCurrentState = "unknown, assuming waiting";
+		CASW_Spawner *pSpawner = dynamic_cast<CASW_Spawner *>( gEntList.FindEntityByName( NULL, m_WantSpawner.String( i ) ) );
+		if ( pSpawner )
+		{
+			pszCurrentState = pSpawner->WasAllowedToSpawn() ? "spawning" : "waiting";
+		}
+		CmdMsg( "      Required spawner state: %s must be %s (currently %s)\n", m_WantSpawner.String( i ), m_WantSpawner[i] ? "spawning" : "waiting", pszCurrentState );
 	}
 	if ( m_iHealthBonus != 0 )
 	{

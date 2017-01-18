@@ -64,6 +64,9 @@
 //     MIN:number:name or MAX:number:name to require that an env_global counter is within a range)
 // - BeforeObjective (name of a map objective entity that must be incomplete)
 // - AfterObjective (name of a map objective entity that must be complete)
+// - SpawnerSpawning (name of an asw_spawner entity that must have had the input StartSpawning
+//     or been set to start spawning at mission start)
+// - SpawnerWaiting (name of an asw_spawner entity that must be stopped or waiting for inputs)
 //
 // Invalid uses of the NPC block keyvalues are reported to the console when loading a map.
 //

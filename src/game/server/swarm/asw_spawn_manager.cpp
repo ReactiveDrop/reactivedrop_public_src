@@ -20,6 +20,7 @@
 #include "asw_door.h"
 #include "asw_spawn_selection.h"
 #include "rd_director_triggers.h"
+#include "asw_spawner.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -882,6 +883,18 @@ static bool ShouldSpawnAlien( CASW_Spawn_NPC *pNPC )
 			return false;
 		}
 		if ( pObj && pObj->IsObjectiveComplete() != pNPC->m_WantObjective[i] )
+		{
+			return false;
+		}
+	}
+	for ( int i = 0; i < pNPC->m_WantSpawner.GetNumStrings(); i++ )
+	{
+		CASW_Spawner *pSpawner = dynamic_cast<CASW_Spawner *>( gEntList.FindEntityByName( NULL, pNPC->m_WantSpawner.String( i ) ) );
+		if ( !pSpawner && pNPC->m_WantSpawner[i] )
+		{
+			return false;
+		}
+		if ( pSpawner && pSpawner->WasAllowedToSpawn() != pNPC->m_WantSpawner[i] )
 		{
 			return false;
 		}

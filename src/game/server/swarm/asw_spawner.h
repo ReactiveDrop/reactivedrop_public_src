@@ -49,7 +49,8 @@ public:
 		SST_Spawning,
 		SST_Finished,
 	};
-	
+
+	bool WasAllowedToSpawn() { return m_SpawnerState == SST_Spawning || m_SpawnerState == SST_Finished; }
 	void SetSpawnerState( SpawnerState_t newState );
 
 	// inputs

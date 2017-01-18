@@ -121,6 +121,7 @@ public:
 	CUtlStringMap<int> m_RequireGlobalMin;
 	CUtlStringMap<int> m_RequireGlobalMax;
 	CUtlStringMap<bool> m_WantObjective;
+	CUtlStringMap<bool> m_WantSpawner;
 };
 
 #endif // ASW_SPAWN_SELECTION_H
