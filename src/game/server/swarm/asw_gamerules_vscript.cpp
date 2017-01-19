@@ -8,6 +8,9 @@
 #include "asw_buffgrenade_projectile.h"
 #include "asw_laser_mine.h"
 #include "asw_mine.h"
+#include "asw_marine.h"
+#include "asw_marine_resource.h"
+#include "asw_game_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -120,6 +123,67 @@ public:
 
 		game->MissionComplete( bSuccess );
 	}
+
+	float GetIntensity( HSCRIPT hMarine )
+	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( ToEnt( hMarine ) );
+		CASW_Marine_Resource *pMR = pMarine ? pMarine->GetMarineResource() : NULL;
+		if ( pMR && pMR->GetIntensity() )
+		{
+			return pMR->GetIntensity()->GetCurrent();
+		}
+		return 0;
+	}
+
+	float GetMaxIntensity()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return 0;
+		}
+
+		return ASWDirector()->GetMaxIntensity();
+	}
+
+	void ResetIntensity( HSCRIPT hMarine )
+	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( ToEnt( hMarine ) );
+		CASW_Marine_Resource *pMR = pMarine ? pMarine->GetMarineResource() : NULL;
+		if ( pMR && pMR->GetIntensity() )
+		{
+			pMR->GetIntensity()->Reset();
+		}
+	}
+
+	void ResetIntensityForAllMarines()
+	{
+		Assert( ASWGameResource() );
+		if ( !ASWGameResource() )
+		{
+			return;
+		}
+
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( pMR && pMR->GetIntensity() )
+			{
+				pMR->GetIntensity()->Reset();
+			}
+		}
+	}
+
+	void StartFinale()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return;
+		}
+
+		ASWDirector()->StartFinale();
+	}
 } g_ASWDirectorVScript;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETON "The AI director" )
@@ -131,6 +195,11 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETO
 	DEFINE_SCRIPTFUNC( IsOfflineGame, "Return true if game is in single player" )
 	DEFINE_SCRIPTFUNC( RestartMission, "Restarts the mission" )
 	DEFINE_SCRIPTFUNC( MissionComplete, "Completes the mission if true" )
+	DEFINE_SCRIPTFUNC( GetIntensity, "Get the intensity value for a marine" )
+	DEFINE_SCRIPTFUNC( GetMaxIntensity, "Get the maximum intensity value for all living marines" )
+	DEFINE_SCRIPTFUNC( ResetIntensity, "Reset the intensity value for a marine to zero" )
+	DEFINE_SCRIPTFUNC( ResetIntensityForAllMarines, "Reset the intensity value for all marines to zero" )
+	DEFINE_SCRIPTFUNC( StartFinale, "Spawn a horde every few seconds for the rest of the level" )
 END_SCRIPTDESC();
 
 // Implemented based on the description from https://developer.valvesoftware.com/wiki/List_of_L4D2_Script_Functions#Convars
