@@ -4808,6 +4808,36 @@
 	MinSkillLevel(integer) : "Min Skill Level" : 0 : "The minimum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
 	MaxSkillLevel(integer) : "Max Skill Level" : 0 : "The maximum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
 
+	flammablesp(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	teslablesp(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	freezablesp(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	flinchablesp(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	healthbonussp(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+
+	sizescalesp(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+
+	speedscalesp(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+
 	minoffset(vector) : "Minimum offset" : "0 0 0" : "X, Y, and Z offset from the spawner. Usually negative or 0."
 	maxoffset(vector) : "Maximum offset" : "0 0 0" : "X, Y, and Z offset from the spawner. Usually positive or 0."
 	yawoffset(float) : "Random yaw offset" : "0" : "The number of degrees to offset the spawned alien's direction by. A value of 180 can result in a yaw offset of -180 to 180, or a full circle. A value of 30 gives an arc from -30 to 30, or 60 degrees."
@@ -4858,58 +4888,35 @@
 		14 : "npc_antlionguard_normal"
 		15 : "npc_antlionguard_cavern"
 	]
-  
-  flammablesp(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+
+	AllowDirectorSpawns(choices) : "Allow director spawns" : 0 : "Should the director be allowed to spawn aliens from this spawner? Director spawns do not count towards the limit of this spawner." =
 	[
 		0 : "No"
 		1 : "Yes"
 	]
-  
-  teslablesp(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-  freezablesp(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-  flinchablesp(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-  healthbonussp(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-  sizescalesp(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-  speedscalesp(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
-	
+
 	SpawnerState(choices) : "Spawner State" : 0 : "Spawner's initial state" =
 	[
 		0 : "Start spawning on mission start"
 		1 : "Wait for inputs"
 	]
-	
-	spawnflags(Flags) = 
+
+	spawnflags(Flags) =
 	[
 		1 : "Infinite even on Easy mode" : 0
 		2 : "Don't spawn Uber aliens here" : 0
 		4 : "Spawned aliens never sleep" : 0
 	]
-	
+
+	output OnDirectorSpawned(string) : "Fires when an alien is spawned by the director. The activator is the alien."
 	output OnAllSpawned(void) : "Fires when all children have been spawned"
 	output OnAllSpawnedDead(void) : "Fires when all the children have been spawned and have died."
 
 	input SpawnOneAlien(void) : "Spawns an alien."
 	input ToggleSpawning(void) : "Toggles the spawner between spawning and waiting for inputs state."
 	input StartSpawning(void) : "Makes the spawner start creating aliens."
-	input StopSpawning(void) : "Stops the spawner from spawning, putting it into the 'Wait for inputs' state."	
+	input StopSpawning(void) : "Stops the spawner from spawning, putting it into the 'Wait for inputs' state."
+	input AllowDirectorSpawns(bool) : "Enable or disable director spawns."
 ]
 
 @PointClass base(Targetname) = asw_spawn_group :

@@ -12,6 +12,7 @@
 #include "asw_buzzer.h"
 #include "asw_director.h"
 #include "asw_fail_advice.h"
+#include "asw_spawn_selection.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -101,7 +102,7 @@ void CASW_Base_Spawner::Precache()
 	//PrecacheModel( "models/editor/asw_spawner/asw_spawner.mdl" );
 }
 
-bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs )
+bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
 {
 	if ( !m_bEnabled )
 		return false;
@@ -262,7 +263,7 @@ CBaseEntity* CASW_Base_Spawner::GetOrderTarget()
 	return GetAlienOrderTarget();
 }
 
-IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs )
+IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
 {
 	if ( !IsValidOnThisSkillLevel() )
 	{
@@ -274,6 +275,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	m_vecCurrentSpawnPosition.x += RandomFloat( m_vecMinOffset.x, m_vecMaxOffset.x );
 	m_vecCurrentSpawnPosition.y += RandomFloat( m_vecMinOffset.y, m_vecMaxOffset.y );
 	m_vecCurrentSpawnPosition.z += RandomFloat( m_vecMinOffset.z, m_vecMaxOffset.z );
+
 	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
 	// raise the position of spawned alien by it's hull because otherwise it
 	// falls through displacement
@@ -288,7 +290,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	m_angCurrentSpawnAngles.y = GetAbsAngles().y;
 	m_angCurrentSpawnAngles.y += RandomFloat( -m_flYawOffset, m_flYawOffset );
 
-	if ( !CanSpawn( vecHullMins, vecHullMaxs ) )	// this may turn off m_bCurrentlySpawningUber if there's no room
+	if ( !CanSpawn( vecHullMins, vecHullMaxs, pDirectorNPC ) )	// this may turn off m_bCurrentlySpawningUber if there's no room
 		return NULL;
 
 	CBaseEntity	*pEntity = CreateEntityByName( szAlienClassName );
@@ -298,16 +300,29 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		return NULL;
 	}
 
-	CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pEntity);
-	if (pAlien)
+	CASW_Alien *pAlien = dynamic_cast<CASW_Alien *>( pEntity );
+	if ( pAlien )
 	{
-		pAlien->m_bFlammable	= m_bFlammableSp; 
-		pAlien->m_bTeslable		= m_bTeslableSp; 
-		pAlien->m_bFreezable	= m_bFreezableSp; 
-		pAlien->m_bFlinchable	= m_bFlinchableSp; 
-		pAlien->m_iHealthBonus =  m_iHealthBonusSp;
-		pAlien->m_fSizeScale	= m_fSizeScaleSp; 
-		pAlien->m_fSpeedScale	= m_fSpeedScaleSp; 
+		if ( pDirectorNPC )
+		{
+			pAlien->m_bFlammable	= pDirectorNPC->m_bFlammable;
+			pAlien->m_bTeslable		= pDirectorNPC->m_bTeslable;
+			pAlien->m_bFreezable	= pDirectorNPC->m_bFreezable;
+			pAlien->m_bFlinchable	= pDirectorNPC->m_bFlinches;
+			pAlien->m_iHealthBonus	= pDirectorNPC->m_iHealthBonus;
+			pAlien->m_fSizeScale	= pDirectorNPC->m_flSizeScale;
+			pAlien->m_fSpeedScale	= pDirectorNPC->m_flSpeedScale;
+		}
+		else
+		{
+			pAlien->m_bFlammable	= m_bFlammableSp;
+			pAlien->m_bTeslable		= m_bTeslableSp;
+			pAlien->m_bFreezable	= m_bFreezableSp;
+			pAlien->m_bFlinchable	= m_bFlinchableSp;
+			pAlien->m_iHealthBonus	= m_iHealthBonusSp;
+			pAlien->m_fSizeScale	= m_fSizeScaleSp;
+			pAlien->m_fSpeedScale	= m_fSpeedScaleSp;
+		}
 	}
 
 	CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer*>(pEntity);
@@ -329,10 +344,10 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	}
 
 	// check if he can see far
-	if ( m_bLongRangeNPC )
+	if ( !pDirectorNPC && m_bLongRangeNPC )
 		pEntity->AddSpawnFlags( SF_NPC_LONG_RANGE );
 
-	if ( HasSpawnFlags( ASW_SF_NEVER_SLEEP ) )
+	if ( !pDirectorNPC && HasSpawnFlags( ASW_SF_NEVER_SLEEP ) )
 		pEntity->AddSpawnFlags( SF_NPC_ALWAYSTHINK );
 
 	pEntity->SetAbsOrigin( m_vecCurrentSpawnPosition );
@@ -361,24 +376,38 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	pEntity->m_iszVScripts = m_iszAlienVScripts;
 	pEntity->m_iszScriptThinkFunction = m_iszAlienScriptThinkFunction;
 
-	DispatchSpawn( pEntity );	
+	DispatchSpawn( pEntity );
 
-	pEntity->SetOwnerEntity( this );
-	pEntity->Activate();
-
-	if ( m_AlienName != NULL_STRING )
+	if ( pDirectorNPC )
 	{
-		pEntity->SetName( m_AlienName );
+		if ( pDirectorNPC->m_iszVScript != NULL_STRING )
+		{
+			pEntity->RunScriptFile( STRING( pDirectorNPC->m_iszVScript ) );
+		}
+
+		pEntity->Activate();
+
+		pSpawnable->SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 	}
-	
-	pSpawnable->SetSpawner( this );
+	else
+	{
+		pEntity->SetOwnerEntity( this );
+		pEntity->Activate();
 
-	RemoveObstructingProps( pEntity );	
-	
-	// give our aliens the orders
-	pSpawnable->SetAlienOrders( m_AlienOrders, vec3_origin, GetOrderTarget() );
+		if ( m_AlienName != NULL_STRING )
+		{
+			pEntity->SetName( m_AlienName );
+		}
 
-	m_OnSpawned.FireOutput(pEntity, this);
+		pSpawnable->SetSpawner( this );
+
+		RemoveObstructingProps( pEntity );
+
+		// give our aliens the orders
+		pSpawnable->SetAlienOrders( m_AlienOrders, vec3_origin, GetOrderTarget() );
+
+		m_OnSpawned.FireOutput(pEntity, this);
+	}
 
 	return pSpawnable;
 }

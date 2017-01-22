@@ -11,6 +11,7 @@ class CAI_Node;
 class CASW_Alien;
 class CASW_Spawn_Definition;
 class CASW_Spawn_NPC;
+class CASW_Spawner;
 
 // The spawn manager can spawn aliens and groups of aliens
 
@@ -65,11 +66,12 @@ public:
 	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	int SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	CBaseEntity *SpawnAlienAt( const char *szAlienClass, const Vector & vecPos, const QAngle & angle );
-	CBaseEntity *SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle );
-	bool SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle );
+	CBaseEntity *SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner = false );
+	bool SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner = false );
 
 	bool ValidSpawnPoint( const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround = true, float flMarineNearDistance = 0 );
 	bool LineBlockedByGeometry( const Vector &vecSrc, const Vector &vecEnd );
+	CASW_Spawner *FindAvailableSpawner( CASW_Spawn_NPC *pNPC, const Vector & vecPos );
 	
 	bool GetAlienBounds( const char *szAlienClass, Vector &vecMins, Vector &vecMaxs );
 	bool GetAlienBounds( string_t iszAlienClass, Vector &vecMins, Vector &vecMaxs );

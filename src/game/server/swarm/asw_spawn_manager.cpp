@@ -40,6 +40,8 @@ ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Int
 
 ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
 ConVar rd_horde_two_sided( "rd_horde_two_sided", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled a 2nd horde will come from opposite side, e.g. north and south" );
+ConVar rd_director_spawner_range("rd_director_spawner_range", "600", FCVAR_CHEAT, "Radius around expected spawn point that the director can look for spawners");
+ConVar rd_director_spawner_bias("rd_director_spawner_bias", "0.9", FCVAR_CHEAT, "0 (search from the node) to 1 (search from the nearest marine)", true, 0, true, 1);
 
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
@@ -221,7 +223,7 @@ void CASW_Spawn_Manager::Update()
 			m_iHordeToSpawn -= iSpawned;
 			if ( m_pHordeWandererDefinition.Count() > 0 )
 			{
-				if ( SpawnAlienAt( m_pHordeWandererDefinition[0], m_vecHordePosition, m_angHordeAngle ) )
+				if ( SpawnAlienAt( m_pHordeWandererDefinition[0], m_vecHordePosition, m_angHordeAngle, true ) )
 				{
 					iSpawned++;
 					m_pHordeWandererDefinition.Remove( 0 );
@@ -370,7 +372,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 			Vector vecSpawnPos = pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ) + Vector( 0, 0, 32 );
 			if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
 			{
-				if ( SpawnAlienAt( pNPC, vecSpawnPos, vec3_angle ) )
+				if ( SpawnAlienAt( pNPC, vecSpawnPos, vec3_angle, true ) )
 				{
 					if ( asw_director_debug.GetBool() )
 					{
@@ -670,6 +672,58 @@ bool CASW_Spawn_Manager::LineBlockedByGeometry( const Vector &vecSrc, const Vect
 	return ( tr.fraction != 1.0f );
 }
 
+CASW_Spawner *CASW_Spawn_Manager::FindAvailableSpawner( CASW_Spawn_NPC *pNPC, const Vector & vecPos )
+{
+	if ( rd_director_spawner_range.GetFloat() < 0 )
+	{
+		return NULL;
+	}
+
+	float flDist;
+	CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecPos, flDist );
+	Vector vecBiased = vecPos;
+	if ( pMarine )
+	{
+		VectorLerp( vecPos, pMarine->GetAbsOrigin(), rd_director_spawner_bias.GetFloat(), vecBiased );
+	}
+
+	float flRangeSqr = Square( rd_director_spawner_range.GetFloat() );
+
+	const Vector & vecMins = NAI_Hull::Mins( pNPC->m_pAlienClass->m_nHullType );
+	const Vector & vecMaxs = NAI_Hull::Maxs( pNPC->m_pAlienClass->m_nHullType );
+	int iSeenSpawners = -1;
+	CASW_Spawner *pSelectedSpawner = NULL;
+	CASW_Spawner *pSpawner = NULL;
+	while ( ( pSpawner = assert_cast<CASW_Spawner *>( gEntList.FindEntityByClassname( pSpawner, "asw_spawner" ) ) ) != NULL )
+	{
+		if ( pSpawner->GetAbsOrigin().DistToSqr( vecBiased ) > flRangeSqr )
+		{
+			continue;
+		}
+		if ( !pSpawner->IsEnabled() || !pSpawner->m_bAllowDirectorSpawns || pSpawner->m_AlienClassName != pNPC->m_pAlienClass->m_iszAlienClass )
+		{
+			continue;
+		}
+		if ( pSpawner->m_flLastDirectorSpawn + pSpawner->m_flSpawnInterval > gpGlobals->curtime )
+		{
+			continue;
+		}
+		pSpawner->m_vecCurrentSpawnPosition = pSpawner->GetAbsOrigin();
+		if ( !pSpawner->CanSpawn( vecMins, vecMaxs, pNPC ) )
+		{
+			continue;
+		}
+		iSeenSpawners++;
+
+		// allow any spawner that fits the criteria with equal probability.
+		if ( RandomInt( 0, iSeenSpawners ) == 0 )
+		{
+			pSelectedSpawner = pSpawner;
+		}
+	}
+	return pSelectedSpawner;
+}
+
 bool CASW_Spawn_Manager::GetAlienBounds( const char *szAlienClass, Vector &vecMins, Vector &vecMaxs )
 {
 	int nCount = GetNumAlienClasses();
@@ -843,7 +897,7 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	return pEntity;
 }
 
-bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle )
+bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner )
 {
 	bool bAny = false;
 	bool bTried = false;
@@ -862,7 +916,7 @@ bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vect
 
 		if ( ValidSpawnPoint( vecPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
 		{
-			if ( SpawnAlienAt( pNPC, vecPos, vec3_angle ) )
+			if ( SpawnAlienAt( pNPC, vecPos, vec3_angle, bAllowSpawner ) )
 			{
 				if ( asw_director_debug.GetBool() )
 				{
@@ -889,8 +943,21 @@ bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vect
 	return bAny || !bTried;
 }
 
-CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle )
+CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner )
 {
+	if ( bAllowSpawner )
+	{
+		CASW_Spawner *pSpawner = FindAvailableSpawner( pNPC, vecPos );
+		if ( pSpawner )
+		{
+			CBaseEntity *pSpawned = dynamic_cast<CBaseEntity *>( pSpawner->SpawnAlien( pNPC->m_pAlienClass->m_pszAlienClass, NAI_Hull::Mins( pNPC->m_pAlienClass->m_nHullType ), NAI_Hull::Maxs( pNPC->m_pAlienClass->m_nHullType ), pNPC ) );
+			if ( pSpawned )
+			{
+				return pSpawned;
+			}
+		}
+	}
+
 	CBaseEntity	*pEntity = CreateEntityByName( pNPC->m_pAlienClass->m_pszAlienClass );
 	if ( !pEntity )
 	{

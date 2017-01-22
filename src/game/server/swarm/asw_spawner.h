@@ -25,9 +25,8 @@ public:
 
 	Class_T Classify() { return (Class_T) CLASS_ASW_SPAWNER; }
 
-	virtual IASW_Spawnable_NPC*	SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs );
-	virtual bool			CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs );
-	bool					MoveSpawnableTo(IASW_Spawnable_NPC* pAlien, CBaseEntity* pGoalEnt, bool bIgnoreMarines);
+	virtual IASW_Spawnable_NPC*	SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL );
+	virtual bool			CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL );
 	void					SpawnerThink();
 	void					SpawnOneAlien();
 
@@ -78,6 +77,12 @@ protected:
 
 	SpawnerState_t m_SpawnerState;
 
+	// BenLubar(director-spawner-improvements)
+	bool m_bAllowDirectorSpawns;
+	COutputEvent m_OnDirectorSpawned;
+	float m_flLastDirectorSpawn;
+	friend class CASW_Spawn_Manager;
+	//
 };
 
 // scales up alien amounts (but makes them weaker)

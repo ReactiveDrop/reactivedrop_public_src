@@ -32,12 +32,14 @@ BEGIN_DATADESC( CASW_Spawner )
 	DEFINE_KEYFIELD( m_flSpawnIntervalJitter,	FIELD_FLOAT,	"SpawnIntervalJitter" ),
 	DEFINE_KEYFIELD( m_AlienClassNum,			FIELD_INTEGER,	"AlienClass" ),
 	DEFINE_KEYFIELD( m_SpawnerState,			FIELD_INTEGER,	"SpawnerState" ),
+	DEFINE_INPUT(    m_bAllowDirectorSpawns,    FIELD_BOOLEAN,  "AllowDirectorSpawns" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SpawnOneAlien",	InputSpawnAlien ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartSpawning",	InputStartSpawning ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StopSpawning",		InputStopSpawning ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"ToggleSpawning",	InputToggleSpawning ),
 
+	DEFINE_OUTPUT( m_OnDirectorSpawned, "OnDirectorSpawned" ),
 	DEFINE_OUTPUT( m_OnAllSpawned,		"OnAllSpawned" ),
 	DEFINE_OUTPUT( m_OnAllSpawnedDead,	"OnAllSpawnedDead" ),
 
@@ -50,6 +52,8 @@ END_DATADESC()
 CASW_Spawner::CASW_Spawner()
 {
 	m_hAlienOrderTarget = NULL;
+	m_bAllowDirectorSpawns = false;
+	m_flLastDirectorSpawn = -FLT_MAX;
 }
 
 CASW_Spawner::~CASW_Spawner()
@@ -99,10 +103,15 @@ void CASW_Spawner::Precache()
 	}
 }
 
-IASW_Spawnable_NPC* CASW_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs )
+IASW_Spawnable_NPC* CASW_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
 {
-	IASW_Spawnable_NPC *pSpawnable = BaseClass::SpawnAlien( szAlienClassName, vecHullMins, vecHullMaxs );
-	if ( pSpawnable )
+	IASW_Spawnable_NPC *pSpawnable = BaseClass::SpawnAlien( szAlienClassName, vecHullMins, vecHullMaxs, pDirectorNPC );
+	if ( pSpawnable && pDirectorNPC )
+	{
+		m_OnDirectorSpawned.FireOutput( dynamic_cast<CBaseEntity *>( pSpawnable ), this );
+		m_flLastDirectorSpawn = gpGlobals->curtime;
+	}
+	else if ( pSpawnable )
 	{
 		m_nCurrentLiveAliens++;
 
@@ -122,8 +131,11 @@ IASW_Spawnable_NPC* CASW_Spawner::SpawnAlien( const char *szAlienClassName, cons
 	return pSpawnable;
 }
 
-bool CASW_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs )
+bool CASW_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
 {
+	if ( pDirectorNPC )
+		return BaseClass::CanSpawn( vecHullMins, vecHullMaxs, pDirectorNPC );
+
 	if ( !asw_spawning_enabled.GetBool() )
 		return false;
 
