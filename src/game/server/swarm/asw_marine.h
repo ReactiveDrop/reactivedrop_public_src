@@ -75,15 +75,13 @@ public:
 	// reactivedrop: usable marine for reviving ability 
 	// IASW_Server_Usable_Entity implementation
 	virtual CBaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual bool IsUsable( CBaseEntity *pUser );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
-	virtual void MarineStartedUsing(CASW_Marine* pMarine);
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
+	virtual void ActivateUseIcon( CASW_Marine *pMarine, int nHoldType );
+	virtual void MarineUsing( CASW_Marine *pMarine, float deltatime );
+	virtual void MarineStartedUsing( CASW_Marine *pMarine );
+	virtual void MarineStoppedUsing( CASW_Marine *pMarine );
 	virtual bool NeedsLOSCheck() { return true; }
-
-	float m_fLastMessageTime; /// used to display a message about reviving 
 
 	// Use this in preference to CASW_Marine::AsMarine( pEnt ) :
 	static inline CASW_Marine *AsMarine( CBaseEntity *pEnt );
@@ -330,6 +328,7 @@ public:
 		SCHED_MELEE_ATTACK_PROP1, // melee a physics prop, typically because it's obstructing
 		SCHED_ENGAGE_AND_MELEE_ATTACK1,
 		SCHED_ASW_HEAL_MARINE,
+		SCHED_ASW_REVIVE_MARINE,
 		NEXT_SCHEDULE,
 
 		TASK_ASW_TRACK_AND_FIRE = BaseClass::NEXT_TASK,		
@@ -358,6 +357,7 @@ public:
 		TASK_ASW_MOVE_TO_HEAL,
 		TASK_ASW_SWAP_TO_HEAL_GUN,
 		TASK_ASW_HEAL_MARINE,
+		TASK_ASW_REVIVE_MARINE,
 		NEXT_TASK,
 	};
 

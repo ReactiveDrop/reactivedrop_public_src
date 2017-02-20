@@ -90,12 +90,6 @@
 
 #define ASW_DEFAULT_MARINE_MODEL "models/swarm/marine/marine.mdl"
 
-// riflemod
-#define MAX_USERMESSAGE_RATE 0.5f;
-#define ASW_MARINE_REVIVE_RADIUS 100.0f
-//
-//#define ASW_MARINE_ALWAYS_VPHYSICS
-
 ConVar rd_frags_limit( "rd_frags_limit", "20",  FCVAR_REPLICATED, "Number of frags a player must reach to win the round");
 ConVar rd_chatter_about_ff( "rd_chatter_about_ff", "1",  FCVAR_REPLICATED, "If 1 marines will shout about friendly fire done to them");
 ConVar rd_chatter_about_marine_death( "rd_chatter_about_marine_death", "1",  FCVAR_REPLICATED, "If 1 marines will shout Marine Down if marine dies");
@@ -622,70 +616,37 @@ CASW_Marine::~CASW_Marine()
 }
 
 // riflemod: methods used for reviving 
-void CASW_Marine::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 	{
-		pMarine->StartUsing(this);
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+		if ( !pMarine->m_hUsingEntity )
+		{
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
+		}
+		pMarine->StartUsing( this );
 	}
 	else if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
 	{
-		//pMarine->StopUsing();
-
 		if ( m_bKnockedOut )
-		{	
-			SetHealth(10);
-			SetKnockedOut(false);
-			
-			//EmitSound( "ASW_Sentry.Dismantled" );
-		}
-	}
-	else if ( nHoldType == ASW_USE_RELEASE_QUICK )
-	{
-		pMarine->StopUsing();
-
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
-
-	}
-}
-
-bool CASW_Marine::IsUsable(CBaseEntity *pUser)
-{
-	bool result = false;
-
-	if (pUser == this)
-		return false;	// immediately return to prevent any printing 
-
-	CASW_Marine *pOtherMarine = dynamic_cast<CASW_Marine*>(pUser);
-	CASW_Player *pOtherPlayer = NULL;
-	if (pOtherMarine)
-		pOtherPlayer = pOtherMarine->GetCommander();
-
-	if (m_bKnockedOut &&
-		pOtherPlayer &&
-		pUser && 
-		pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_REVIVE_RADIUS && // near enough?
-		!pOtherMarine->m_bKnockedOut)	
-	{
-		if (gpGlobals->curtime > m_fLastMessageTime)
 		{
-			ClientPrint(pOtherPlayer, HUD_PRINTCENTER, "Hold <use> (e) to revive.");
-			m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
+			CASW_Marine_Resource *pMR = GetMarineResource();
+			CASW_Marine_Resource *pMROther = pMarine ? pMarine->GetMarineResource() : NULL;
+			if ( pMR && pMROther )
+			{
+				char szName[ 256 ];
+				pMR->GetDisplayName( szName, sizeof( szName ) );
+
+				char szNameOther[ 256 ];
+				pMROther->GetDisplayName( szNameOther, sizeof( szNameOther ) );
+
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_revived_marine", szName, szNameOther );
+			}
+			pMarine->StopUsing();
+			SetHealth( 10 );
+			SetKnockedOut( false );
 		}
-		result = true;
 	}
-
-// 	if (false == result && 
-// 		pOtherPlayer && 
-// 		gpGlobals->curtime > m_fLastMessageTime)
-// 	{
-// 		Msg("NOT USABLE m_bKnockedOut=%d, pOtherPlayer=%d, pUser=%d, pOtherMarine->m_bKnockedOut=%d\n", m_bKnockedOut, pOtherPlayer, pUser, pOtherMarine->m_bKnockedOut);
-// 		ClientPrint(pOtherPlayer, HUD_PRINTCENTER, "");
-// 		m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
-// 	}
-
-	return result;
 }
 
 void CASW_Marine::MarineUsing(CASW_Marine* pMarine, float deltatime)
@@ -748,8 +709,6 @@ void CASW_Marine::Spawn( void )
 	Precache();
 
 	BaseClass::Spawn();
-
-	m_fLastMessageTime = gpGlobals->curtime;
 
 	SelectModel();
 	SetModel( STRING( GetModelName() ) );
@@ -1224,9 +1183,9 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 							if ( pOtherMarine == this )
 							{
 								if ( GetMarineProfile()->m_bFemale )
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 incapacitated herself", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_female_revivable", szName );
 								else
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 incapacitated himself", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_male_revivable", szName );
 							}
 							else
 							{
@@ -1236,7 +1195,7 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 									char szNameOther[ 256 ];
 									pMROther->GetDisplayName( szNameOther, sizeof( szNameOther ) );
 
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 was incapacitated by %s2", szName, szNameOther );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_team_killed_revivable", szName, szNameOther );
 								}
 							}
 						}
@@ -1248,7 +1207,7 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 						{
 							char szName[ 256 ];
 							pMR->GetDisplayName( szName, sizeof( szName ) );
-							UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 is incapacitated", szName );
+							UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_killed_revivable", szName );
 						}
 					}
 

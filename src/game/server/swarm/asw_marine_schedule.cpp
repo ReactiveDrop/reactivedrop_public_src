@@ -939,6 +939,36 @@ int CASW_Marine::SelectHealSchedule()
 		if ( !pMarine )
 			continue;
 
+		if ( pBestMarine && pBestMarine->m_bKnockedOut.Get() && !pMarine->m_bKnockedOut.Get() )
+			continue;
+
+		if ( pMarine->m_bKnockedOut.Get() && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		{
+			bool bAlreadyBeingRevived = false;
+			for ( int j = 0; j < pGameResource->GetMaxMarineResources(); j++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( j );
+				if ( !pMR || pMR->IsInhabited() )
+					continue;
+
+				CASW_Marine *pOtherMarine = pMR->GetMarineEntity();
+				if ( pOtherMarine->IsAlive() && !pOtherMarine->m_bKnockedOut.Get() && pOtherMarine->IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) && pOtherMarine->m_hHealTarget == pMarine )
+				{
+					bAlreadyBeingRevived = true;
+					break;
+				}
+			}
+			if ( bAlreadyBeingRevived )
+			{
+				continue;
+			}
+			if ( !pBestMarine || !pBestMarine->m_bKnockedOut.Get() || GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < GetAbsOrigin().DistToSqr( pBestMarine->GetAbsOrigin() ) )
+			{
+				pBestMarine = pMarine;
+			}
+			continue;
+		}
+
 		// see if the current marine can use ammo I have
 		if ( CanHeal() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_START_HEAL_THRESHOLD && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
@@ -947,7 +977,7 @@ int CASW_Marine::SelectHealSchedule()
 	}
 
 	m_hHealTarget = pBestMarine;
-	return pBestMarine ? SCHED_ASW_HEAL_MARINE : -1;
+	return pBestMarine ? pBestMarine->m_bKnockedOut.Get() ? SCHED_ASW_REVIVE_MARINE : SCHED_ASW_HEAL_MARINE : -1;
 }
 
 void CASW_Marine::SetASWOrders(ASW_Orders NewOrders, float fHoldingYaw, const Vector *pOrderPos)
@@ -1966,6 +1996,17 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 		}
 		break;
 
+	case TASK_ASW_REVIVE_MARINE:
+		{
+			if ( m_hHealTarget && m_hHealTarget->IsUsable( this ) )
+			{
+				m_hHealTarget->ActivateUseIcon( this, ASW_USE_HOLD_RELEASE_FULL );
+				m_hHealTarget = NULL;
+			}
+			TaskComplete();
+		}
+		break;
+
 	default:
 		{
 			return BaseClass::StartTask(pTask);
@@ -2373,7 +2414,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 		{
 			if( m_hHealTarget )
 			{
-				AI_NavGoal_t goal( m_hHealTarget->GetAbsOrigin(), ACT_RUN, CASW_Weapon_Heal_Gun::GetWeaponRange() * 0.5f );
+				AI_NavGoal_t goal( m_hHealTarget->GetAbsOrigin(), ACT_RUN, ( IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) ? ASW_MARINE_USE_RADIUS : CASW_Weapon_Heal_Gun::GetWeaponRange() ) * 0.5f );
 				GetNavigator()->SetGoal( goal );
 			}
 			TaskComplete();
@@ -2777,7 +2818,7 @@ void CASW_Marine::UpdateFacing()
 		float flAimYaw = UTIL_VecToYaw( m_vecFacingPointFromServer.Get() - GetAbsOrigin() );
 		GetMotor()->SetIdealYawAndUpdate( flAimYaw );
 	}
-	else if (IsCurSchedule(SCHED_ASW_HEAL_MARINE))		// face the marine that we want to heal
+	else if ( IsCurSchedule( SCHED_ASW_HEAL_MARINE ) || IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) ) // face the marine that we want to heal
 	{
 		if (m_hHealTarget.Get())
 		{
@@ -3252,6 +3293,7 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 	DECLARE_TASK( TASK_ASW_MOVE_TO_HEAL )
 	DECLARE_TASK( TASK_ASW_SWAP_TO_HEAL_GUN )
 	DECLARE_TASK( TASK_ASW_HEAL_MARINE )
+	DECLARE_TASK( TASK_ASW_REVIVE_MARINE )
 
 	DECLARE_ANIMEVENT( AE_MARINE_KICK )
 	DECLARE_ANIMEVENT( AE_MARINE_UNFREEZE )
@@ -3534,6 +3576,26 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"		TASK_ASW_HEAL_MARINE				0"
 		""
 		"	Interrupts"
+		"		COND_HEAVY_DAMAGE"
+		"		COND_MOBBED_BY_ENEMIES"
+		""
+		);
+
+	//===============================================
+	//===============================================
+	DEFINE_SCHEDULE
+		(
+		SCHED_ASW_REVIVE_MARINE,
+
+		"	Tasks"
+		"		TASK_ASW_GET_PATH_TO_HEAL			0"
+		"		TASK_ASW_MOVE_TO_HEAL				0"
+		"		TASK_WAIT							2"
+		"		TASK_ASW_REVIVE_MARINE				0"
+		""
+		"	Interrupts"
+		"		COND_HEAVY_DAMAGE"
+		"		COND_MOBBED_BY_ENEMIES"
 		""
 		);
 

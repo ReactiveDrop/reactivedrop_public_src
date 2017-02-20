@@ -9,6 +9,7 @@
 #include "c_ai_basenpc.h"
 #include "c_asw_vphysics_npc.h"
 #include "iasw_client_aim_target.h"
+#include "iasw_client_usable_entity.h"
 #include "asw_playeranimstate.h"
 #include "beamdraw.h"
 #include "object_motion_blur_effect.h"
@@ -37,7 +38,7 @@ class CASW_Melee_Attack;
 /*  We inherit C_ASW_Marine from IASW_Client_Aim_Target to allow autoaiming
 	on marines for deathmatch
 */
-class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target
+class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target, public IASW_Client_Usable_Entity
 {
 public:
 	DECLARE_CLASS( C_ASW_Marine, C_ASW_VPhysics_NPC );
@@ -295,6 +296,16 @@ public:
 	void SetFacingPoint(const Vector &vec, float fDuration);
 	Vector m_vecFacingPoint, m_vecFacingPointFromServer;
 	float m_fStopFacingPointTime;
+
+	// client usable entity
+	virtual bool IsUsable( C_BaseEntity *pUser );
+	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser );
+	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) {}
+	virtual bool ShouldPaintBoxAround() { return m_bKnockedOut; }
+	virtual bool NeedsLOSCheck() { return m_bKnockedOut; }
+
+	static int GetReviveIconTextureID();
+	static int s_nReviveIconTextureID;
 
 	// emote system
 	void TickEmotes(float d);

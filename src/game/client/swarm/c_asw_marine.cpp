@@ -42,6 +42,9 @@
 #include "asw_melee_system.h"
 #include "asw_marine_gamemovement.h"
 #include "game_timescale_shared.h"
+#include <vgui_controls/Controls.h>
+#include <vgui/ISurface.h>
+#include <vgui/IScheme.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -401,6 +404,8 @@ void RecvProxy_Marine_LocalVelocityZ( const CRecvProxyData *pData, void *pStruct
 		pMarine->SetLocalVelocity( vecVelocity );
 	}
 }
+
+int C_ASW_Marine::s_nReviveIconTextureID = -1;
 
 C_ASW_Marine::C_ASW_Marine() :
 	m_MotionBlurObject( this, asw_marine_object_motion_blur_scale.GetFloat() ),
@@ -2035,6 +2040,46 @@ const Vector& C_ASW_Marine::GetFacingPoint()
 	}
 
 	return m_vecFacingPoint;
+}
+
+bool C_ASW_Marine::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
+{
+	if ( !m_bKnockedOut )
+	{
+		return false;
+	}
+
+	C_ASW_Player *pPlayer = pUser->GetCommander();
+	if ( pPlayer && pUser->IsInhabited() && pPlayer->m_flUseKeyDownTime != 0.0f && ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) > 0.2f ) // if player has started holding down the USE key
+	{
+		TryLocalize( "#rd_reviving_marine", action.wszText, sizeof( action.wszText ) );
+		action.fProgress = ( ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) - 0.2f ) / ( ASW_USE_KEY_HOLD_SENTRY_TIME - 0.2f );
+		action.fProgress = clamp<float>( action.fProgress, 0.0f, 1.0f );
+		action.bShowHoldButtonUseKey = false;
+		action.bShowUseKey = false;
+		action.bNoFadeIfSameUseTarget = true;
+	}
+	else
+	{
+		action.fProgress = -1;
+		TryLocalize( "#rd_revive_marine", action.wszHoldButtonText, sizeof( action.wszHoldButtonText ) );
+		action.bShowHoldButtonUseKey = true;
+		action.bShowUseKey = false;
+	}
+	action.iUseIconTexture = GetReviveIconTextureID();
+	action.UseTarget = this;
+	return true;
+}
+
+int C_ASW_Marine::GetReviveIconTextureID()
+{
+	if ( s_nReviveIconTextureID == -1 )
+	{
+		s_nReviveIconTextureID = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( s_nReviveIconTextureID, "vgui/swarm/classicons/medicclassicon", true, false );
+	}
+
+	return s_nReviveIconTextureID;
 }
 
 IASW_Client_Vehicle* C_ASW_Marine::GetASWVehicle()

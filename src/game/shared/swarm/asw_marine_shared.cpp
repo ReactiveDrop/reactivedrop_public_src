@@ -59,6 +59,10 @@
 // the amount of damage required to make an alien always gib
 #define ASW_GIB_DAMAGE_LIMIT 200
 
+// knockout and reviving
+#define MAX_USERMESSAGE_RATE 0.5f;
+#define ASW_MARINE_REVIVE_RADIUS 100.0f
+
 extern ConVar	ai_debug_shoot_positions;
 extern ConVar asw_melee_debug;
 extern ConVar asw_debug_marine_damage;
@@ -2746,4 +2750,11 @@ bool CASW_Marine::HasPowerFist()
 {
 	CBaseEntity *pWeapon = GetWeapon( ASW_INVENTORY_SLOT_EXTRA );
 	return( pWeapon && pWeapon->Classify() == CLASS_ASW_FIST );
+}
+
+bool CASW_Marine::IsUsable( CBaseEntity *pUser )
+{
+	CASW_Marine *pOtherMarine = AsMarine( pUser );
+
+	return m_bKnockedOut && pOtherMarine && pOtherMarine->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) < Square( ASW_MARINE_REVIVE_RADIUS ) && !pOtherMarine->m_bKnockedOut;
 }
