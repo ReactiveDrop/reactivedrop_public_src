@@ -150,6 +150,18 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_flares"; }
 };
 
+class CASW_Pickup_Weapon_Gas_Grenades : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Gas_Grenades, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_gas_grenades"; }
+};
+
 class CASW_Pickup_Weapon_T75 : public CASW_Pickup_Weapon
 {
 public:

@@ -113,6 +113,17 @@ public:
 	C_ASW_Pickup_Weapon_Flares();
 };
 
+class C_ASW_Pickup_Weapon_Gas_Grenades : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Gas_Grenades, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_gas_grenades"; }
+	C_ASW_Pickup_Weapon_Gas_Grenades();
+};
+
+
 class C_ASW_Pickup_Weapon_Mines : public C_ASW_Pickup_Weapon
 {
 public:

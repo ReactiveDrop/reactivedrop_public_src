@@ -546,6 +546,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_flashlight_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_flechette_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_freeze_grenades.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_gas_grenades_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenades.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenade_launcher.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_healamp_gun_shared.cpp" />
@@ -1008,6 +1009,7 @@ exit 1
     <ClCompile Include="swarm\asw_gameinterface.cpp" />
     <ClCompile Include="swarm\asw_gamestats.cpp" />
     <ClCompile Include="swarm\asw_game_resource.cpp" />
+    <ClCompile Include="swarm\asw_gas_grenade_projectile.cpp" />
     <ClCompile Include="swarm\asw_generic_emitter_entity.cpp" />
     <ClCompile Include="swarm\asw_grenade_cluster.cpp" />
     <ClCompile Include="swarm\asw_grenade_freeze.cpp" />
@@ -1516,6 +1518,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_weapon_flashlight_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_flechette_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_freeze_grenades.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_gas_grenades_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenades.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenade_launcher.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_healamp_gun_shared.h" />
@@ -1881,6 +1884,7 @@ exit 1
     <ClInclude Include="swarm\asw_flare_projectile.h" />
     <ClInclude Include="swarm\asw_gamestats.h" />
     <ClInclude Include="swarm\asw_game_resource.h" />
+    <ClInclude Include="swarm\asw_gas_grenade_projectile.h" />
     <ClInclude Include="swarm\asw_generic_emitter_entity.h" />
     <ClInclude Include="swarm\asw_grenade_cluster.h" />
     <ClInclude Include="swarm\asw_grenade_freeze.h" />

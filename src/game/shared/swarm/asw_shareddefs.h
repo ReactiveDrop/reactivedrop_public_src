@@ -574,6 +574,8 @@ enum
 	CLASS_ASW_COMBAT_RIFLE_SHOTGUN, // secondary fire of combat rifle
 	CLASS_ASW_HEALAMP_GUN,
 	CLASS_ASW_50CALMG,
+	CLASS_ASW_GAS_GRENADES,
+	CLASS_ASW_GAS_GRENADE,
 
 	// Add new classes here ^^^^
 	CLASS_FUNC_TRACKTRAIN,

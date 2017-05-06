@@ -1,0 +1,21 @@
+UnlitGeneric
+{
+$basetexture "vgui\swarm\EquipIcons\equipgasgrenades"
+$translucent 1
+$distancealpha 1
+$softedges 1
+$edgesoftnessstart .6
+$edgesoftnessend .4
+$scaleedgesoftnessbasedonscreenres 1
+$glow 1
+$glowcolor "[0 0 0]"
+$glowalpha .6
+$glowstart .1
+$glowend .3
+\\$glowx .99
+\\$glowy .99
+$vertexcolor 1
+$vertexalpha 1
+$no_fullbright 1
+$ignorez 1
+}

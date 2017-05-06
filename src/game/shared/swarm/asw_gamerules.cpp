@@ -572,6 +572,11 @@ ConVar	sk_plr_dmg_asw_50calmg			( "sk_plr_dmg_asw_50calmg", "0", FCVAR_REPLICATE
 ConVar	sk_npc_dmg_asw_50calmg			( "sk_npc_dmg_asw_50calmg", "0", FCVAR_REPLICATED);
 ConVar	sk_max_asw_50calmg				( "sk_max_asw_50calmg", "0", FCVAR_REPLICATED);
 
+// Gas_Grenades
+ConVar	sk_plr_dmg_asw_gas_grenades( "sk_plr_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_asw_gas_grenades( "sk_npc_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
+ConVar	sk_max_asw_gas_grenades( "sk_max_asw_gas_grenades", "0", FCVAR_REPLICATED );
+
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_CHEAT, "Total damage from parasite infestation" );
@@ -891,9 +896,11 @@ CAmmoDef *GetAmmoDef()
 		// desert eagle
 		def.AddAmmoType("ASW_DEAGLE",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_deagle",		"sk_npc_dmg_asw_deagle",			"sk_max_asw_deagle",		BULLET_IMPULSE(200, 1225),	0 );
 		// devastator (automated heavy shotgun)
-		def.AddAmmoType("ASW_DEVASTATOR",	DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_devastator",	"sk_npc_dmg_asw_devastator",		"sk_max_asw_devastator",	BULLET_IMPULSE(200, 1225), 0);
+		def.AddAmmoType( "ASW_DEVASTATOR",	DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_devastator",	"sk_npc_dmg_asw_devastator",		"sk_max_asw_devastator",	BULLET_IMPULSE(200, 1225), 0);
 		// 
-		def.AddAmmoType("ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
+		def.AddAmmoType( "ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
+		// gas_grenades
+		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_SONIC,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
 	}
 
 	return &def;
@@ -3693,6 +3700,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		}
 	}
 	if ( !stricmp(szWeaponClass, "asw_weapon_flares") ||
+		 !stricmp(szWeaponClass, "asw_weapon_gas_grenades") || 
 		 !stricmp(szWeaponClass, "asw_weapon_grenades") || 
 		 !stricmp(szWeaponClass, "asw_weapon_mines") ||
 		 !stricmp(szWeaponClass, "asw_weapon_electrified_armor") ||

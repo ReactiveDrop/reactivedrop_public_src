@@ -49,6 +49,7 @@
 	"Extra"			"asw_weapon_grenades"					// 4					// 6				// 6				// 2	
 	"Extra"			"asw_weapon_night_vision"				// 7					// 7				// 8				// 10
 	"Extra"			"asw_weapon_smart_bomb"				
+	"Extra"			"asw_weapon_gas_grenades"
 	
 										
 	// NOTE: Others must come after normals

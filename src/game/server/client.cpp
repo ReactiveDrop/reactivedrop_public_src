@@ -403,6 +403,7 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_flares.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_flashlight.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_freeze_grenades.txt" );
+	engine->ForceExactFile( "scripts/asw_weapon_gas_grenades.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_grenades.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_grenade_launcher.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_deagle.txt" );

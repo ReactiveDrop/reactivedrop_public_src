@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/items/W_grenadesheet"
+	"$selfillum" 1
+	"$model" 1
+}

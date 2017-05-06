@@ -836,6 +836,7 @@ void CASW_Deathmatch_Mode::RemoveAllWeaponsFromMap()
 	RemoveEntitiesByClassName( "asw_weapon_medkit" );
 	RemoveEntitiesByClassName( "asw_weapon_welder" );
 	RemoveEntitiesByClassName( "asw_weapon_flares" );
+	RemoveEntitiesByClassName( "asw_weapon_gas_grenades" );
 	RemoveEntitiesByClassName( "asw_weapon_laser_mines" );
 	RemoveEntitiesByClassName( "asw_weapon_normal_armor" );
 	RemoveEntitiesByClassName( "asw_weapon_buff_grenade" );
