@@ -52,6 +52,7 @@ CASW_VGUI_Computer_Menu::CASW_VGUI_Computer_Menu( vgui::Panel *pParent, const ch
 		m_pMenuIconShadow[i] = new vgui::ImagePanel(this, "ComputerMenuIconShadow");		
 	}
 
+	m_iOptions = 0;
 	m_pBlackBar[0] = new vgui::ImagePanel(this, "ComputerMenuBar1");
 	m_pBlackBar[1] = new vgui::ImagePanel(this, "ComputerMenuBar2");
 	m_hCurrentPage = NULL;

@@ -71,6 +71,9 @@
 #include "cellcoord.h"
 #include "sendprop_priorities.h"
 #include "videocfg/videocfg.h"
+#ifdef INFESTED_DLL
+#include "asw_trace_filter.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -2430,6 +2433,10 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptEyePosition, "EyePosition", "Get vector to eye position - absolute coords")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetAngles, "SetAngles", "Set entity pitch, yaw, roll")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAngles, "GetAngles", "Get entity pitch, yaw, roll as a vector")
+	// BenLubar
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetLocalAngles, "SetLocalAngles", "Set entity pitch, yaw, roll relative to the parent")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLocalAngles, "GetLocalAngles", "Get entity pitch, yaw, roll relative to the parent as a vector")
+	//
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetSize, "SetSize", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoundingMins, "GetBoundingMins", "Get a vector containing min bounds, centered on object")
@@ -2449,6 +2456,9 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromFloat, "__KeyValueFromFloat", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromInt, "__KeyValueFromInt", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromVector, "__KeyValueFromVector", SCRIPT_HIDE )
+#ifdef REACTIVEDROP_VSCRIPT_KEYVALUES
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValue, "GetKeyValue", "" )
+#endif
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetModelKeyValues, "GetModelKeyValues", "Get a KeyValue class instance on this entity's model")
 	
@@ -8411,9 +8421,17 @@ void CC_Ent_Create( const CCommand& args )
 			trace_t tr;
 			Vector forward;
 			pPlayer->EyeVectors( &forward );
-			UTIL_TraceLine(pPlayer->EyePosition(),
-				pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH,MASK_SOLID, 
+#ifdef INFESTED_DLL
+			// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
+			CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
+			UTIL_TraceLine( pPlayer->EyePosition(),
+				pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_SOLID,
+				&filter, &tr );
+#else
+			UTIL_TraceLine( pPlayer->EyePosition(),
+				pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_SOLID,
 				pPlayer, COLLISION_GROUP_NONE, &tr );
+#endif
 			if ( tr.fraction != 1.0 )
 			{
 				// Raise the end position a little up off the floor, place the npc and drop him down

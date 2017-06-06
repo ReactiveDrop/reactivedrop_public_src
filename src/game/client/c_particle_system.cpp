@@ -15,6 +15,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_info_particle_system_enabled("rd_info_particle_system_enabled", "1", FCVAR_ARCHIVE, "If 0 all info_particle_system entities are disabled");
+
 //-----------------------------------------------------------------------------
 // Purpose: An entity that spawns and controls a particle system
 //-----------------------------------------------------------------------------
@@ -110,7 +112,7 @@ C_ParticleSystem::~C_ParticleSystem( void )
 //-----------------------------------------------------------------------------
 void C_ParticleSystem::PreDataUpdate( DataUpdateType_t updateType )
 {
-	m_bOldActive = m_bActive;
+	m_bOldActive = ( m_bActive && rd_info_particle_system_enabled.GetBool() );
 
 	BaseClass::PreDataUpdate( updateType );
 }
@@ -138,7 +140,7 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 			}
 		}
 
-		if ( m_bActive )
+		if ( ( m_bActive && rd_info_particle_system_enabled.GetBool() ) )
 		{
 			// Delayed here so that we don't get invalid abs queries on level init with active particle systems
 			SetNextClientThink( gpGlobals->curtime );
@@ -146,9 +148,9 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 	}
 	else
 	{
-		if ( m_bOldActive != m_bActive )
+		if ( m_bOldActive != ( m_bActive && rd_info_particle_system_enabled.GetBool() ) )
 		{
-			if ( m_bActive )
+			if ( ( m_bActive && rd_info_particle_system_enabled.GetBool() ) )
 			{
 				// Delayed here so that we don't get invalid abs queries on level init with active particle systems
 				SetNextClientThink( gpGlobals->curtime );
@@ -176,7 +178,7 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 			}
 		}
 
-		if( m_bActive && ParticleProp()->IsValidEffect( m_pEffect ) )
+		if( ( m_bActive && rd_info_particle_system_enabled.GetBool() ) && ParticleProp()->IsValidEffect( m_pEffect ) )
 		{
 			//server controlled control points (variables in particle effects instead of literal follow points)
 			for( int i = 0; i != ARRAYSIZE( m_iServerControlPointAssignments ); ++i )
@@ -199,7 +201,7 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_ParticleSystem::ClientThink( void )
 {
-	if ( m_bActive )
+	if ( ( m_bActive && rd_info_particle_system_enabled.GetBool() ) )
 	{
 		const char *pszName = GetParticleSystemNameFromIndex( m_iEffectIndex );
 		if ( pszName && pszName[0] )

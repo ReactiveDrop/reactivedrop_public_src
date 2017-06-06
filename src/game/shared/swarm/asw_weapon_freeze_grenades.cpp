@@ -103,17 +103,8 @@ void CASW_Weapon_Freeze_Grenades::PrimaryAttack( void )
 	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
 
 	// grenade weapon is lost when all grenades are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
-	{		
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
+	{
 		return;
 	}
 
@@ -136,7 +127,13 @@ void CASW_Weapon_Freeze_Grenades::PrimaryAttack( void )
 		if (!bThisActive && pMarine->GetActiveASWWeapon())
 		{
 			// if we're offhand activating, make sure our primary weapon can't fire until we're done
-			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + 0.4f;
+			//pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + 0.4f;
+
+			// reactivedrop: preventing cheating, firing flare can greatly
+			// increase fire rate for primary weapon, when using with scripts
+			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack =
+				MAX(pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack,
+					m_flNextPrimaryAttack + 0.4f);
 			pMarine->GetActiveASWWeapon()->m_bIsFiring = false;
 		}
 	}

@@ -16,7 +16,8 @@ class CASW_Parasite : public CASW_Alien
 	DECLARE_CLASS( CASW_Parasite, CASW_Alien );
 public:
 	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();	
+	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();	// BenLubar(key-values-director)
 	CASW_Parasite();
 	virtual ~CASW_Parasite();
 
@@ -39,6 +40,7 @@ public:
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual void JumpAttack( bool bRandomJump, const Vector &vecPos = vec3_origin, bool bThrown = false );
+	void ScriptJumpAttack() { JumpAttack( true ); }		// BenLubar(key-values-director)
 	void Leap( const Vector &vecVel );
 	int RangeAttack1Conditions( float flDot, float flDist );
 	virtual float InnateRange1MinRange( void );

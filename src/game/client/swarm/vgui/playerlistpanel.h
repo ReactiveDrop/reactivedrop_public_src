@@ -18,6 +18,7 @@ class CNB_Header_Footer;
 class CNB_Button;
 
 class PlayerListLine;
+namespace BaseModUI { class GenericPanelList; };
 
 #define MAX_PLAYER_LINES 8
 
@@ -41,6 +42,8 @@ public:
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_pPlayerHeader;
 	vgui::Label *m_pMarinesHeader;
+	vgui::Label *m_pFragsHeader;
+	vgui::Label *m_pDeathsHeader;
 	vgui::Label *m_pPingHeader;
 	
 	// todo: button to start a map vote
@@ -82,6 +85,8 @@ public:
 
 	vgui::Label* m_pServerLabel;
 	vgui::Label* m_pMissionLabel;
+	vgui::Label* m_pTeam1ScoreLabel;
+	vgui::Label* m_pTeam2ScoreLabel;
 	vgui::Label* m_pDifficultyLabel;
 	float m_fUpdateDifficultyTime;
 	CPanelAnimationVar( vgui::HFont, m_hDefaultFont, "DefaultFont", "Default" );
@@ -89,6 +94,9 @@ public:
 
 	void UpdateServerName();
 	char m_szServerName[128];
+
+	//! reactivedrop: scrollbar for scores board 
+	BaseModUI::GenericPanelList *m_pPlayerListScroll;
 };
 
 #endif // _INCLUDED_PLAYER_LIST_PANEL_H

@@ -86,6 +86,11 @@ void CNB_Select_Campaign_Panel::OnThink()
 			pEntry->m_nCampaignIndex = -1;
 		}
 	}
+
+	// reactivedrop: using SwarmDirector's 2 solution to remove the popping of
+	// campaign list 
+	m_pHorizList->ChangeScrollValue(1);
+	m_pHorizList->ChangeScrollValue(-1);
 }
 
 

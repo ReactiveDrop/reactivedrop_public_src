@@ -14,6 +14,8 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 
+extern ConVar rd_ground_shooting;
+
 class C_ASW_Weapon : public C_BaseCombatWeapon, public IASW_Client_Usable_Entity
 {
 	DECLARE_CLASS( C_ASW_Weapon, C_BaseCombatWeapon );
@@ -56,6 +58,7 @@ public:
 	virtual bool Simulate();
 	virtual bool ShouldMarineFlame() { return false; } // if true, the marine emits flames from his flame emitter
 	virtual bool ShouldMarineFireExtinguish() { return false; } // is true, the marine emits fire extinguisher stuff from his emitter
+	virtual bool ShouldMarineMinigunShoot() { return false; } // if true, the marine shoots from minigun
 	virtual void OnMuzzleFlashed() { }	// called when the weapon muzzle flashes
 	virtual bool HasMuzzleFlashSmoke() { return false; }	
 	virtual void ASWReloadSound(int iType);	// play one of the 3 part reload sounds
@@ -106,7 +109,7 @@ public:
 	bool Holster( CBaseCombatWeapon *pSwitchingTo );
 	virtual void Equip(CBaseCombatCharacter *pOwner);
 	virtual void SetWeaponVisible( bool visible );
-	virtual void ApplyWeaponSwitchTime();
+	virtual void ApplyWeaponSwitchTime(float fSwitchDelay);
 	bool m_bSwitchingWeapons;
 	virtual void SendWeaponSwitchEvents();
 	virtual const float GetAutoAimAmount();
@@ -164,7 +167,7 @@ public:
 	int m_nLastMuzzleAttachment;
 
 	// ground shooting (aiming at the ground)
-	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); } // was false
 
 	// Functions for weapons on the ground
 	virtual bool AllowedToPickup(C_ASW_Marine *pMarine);
@@ -205,6 +208,10 @@ public:
 	void RemoveMuzzleFlashEffect();
 	CUtlReference<CNewParticleEffect> m_pMuzzleFlashEffect;
 	float m_fMuzzleFlashTime;
+
+	// returnw true if secondary attack should aim at ground where
+	// mouse pointer points at 
+	virtual bool GroundSecondary();
 
 private:	
 	C_ASW_Weapon( const C_ASW_Weapon & ); // not defined, not accessible

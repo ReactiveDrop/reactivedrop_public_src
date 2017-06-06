@@ -92,7 +92,6 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 
 	if( m_iClip1 <= 0 )
 	{
-		Assert( false );
 		return;
 	}
 
@@ -196,14 +195,9 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 #endif
 
 	m_iClip1--;
-	if ( m_iClip1 <= 0 )
-	{
-#ifndef CLIENT_DLL
-		pMarine->Weapon_Detach(this);
-		Kill();
+#ifdef GAME_DLL
+	DestroyIfEmpty( true );
 #endif
-		pMarine->SwitchToNextBestWeapon( NULL );
-	}
 }
 
 void CASW_Weapon_Ammo_Satchel::Precache()

@@ -35,6 +35,9 @@ END_DATADESC()
 ConVar asw_boomer_health( "asw_boomer_health", "800", FCVAR_CHEAT );
 ConVar asw_boomer_inflate_speed( "asw_boomer_inflate_speed", "6.0f", FCVAR_CHEAT );
 ConVar asw_boomer_inflate_debug( "asw_boomer_inflate_debug", "1.0f", FCVAR_CHEAT );
+ConVar sk_asw_boomer_bomb_damage( "sk_asw_boomer_bomb_damage", "55", FCVAR_CHEAT );
+ConVar sk_asw_boomer_melee_damage_min( "sk_asw_boomer_melee_damage_min", "4", FCVAR_CHEAT );
+ConVar sk_asw_boomer_melee_damage_max( "sk_asw_boomer_melee_damage_max", "6", FCVAR_CHEAT );
 extern ConVar asw_alien_debug_death_style;
 
 extern ConVar asw_debug_alien_damage;
@@ -305,14 +308,14 @@ bool CASW_Boomer::CreateBehaviors()
 	m_ExplodeBehavior.KeyValue( "max_velocity", "450" );
 	m_ExplodeBehavior.KeyValue( "attach_name", "sack_" );
 	m_ExplodeBehavior.KeyValue( "attach_count", "12" );
-	m_ExplodeBehavior.KeyValue( "damage", "55" );
+	m_ExplodeBehavior.KeyValue( "damage", sk_asw_boomer_bomb_damage.GetString() );
 	m_ExplodeBehavior.KeyValue( "radius", "240" );
 	AddBehavior( &m_ExplodeBehavior );
 	m_ExplodeBehavior.Init();
 
 	m_MeleeBehavior.KeyValue( "range", "140" );
-	m_MeleeBehavior.KeyValue( "min_damage", "4" );
-	m_MeleeBehavior.KeyValue( "max_damage", "6" );
+	m_MeleeBehavior.KeyValue( "min_damage", sk_asw_boomer_melee_damage_min.GetString() );
+	m_MeleeBehavior.KeyValue( "max_damage", sk_asw_boomer_melee_damage_max.GetString() );
 	m_MeleeBehavior.KeyValue( "force", "4" );
 	AddBehavior( &m_MeleeBehavior );
 	m_MeleeBehavior.Init();

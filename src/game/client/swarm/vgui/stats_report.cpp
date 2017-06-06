@@ -18,6 +18,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+Color g_rgbaStatsReportPlayerColors[] =
+{
+	Color( 225, 60, 60, 255 ),
+	Color( 200, 200, 60, 255 ),
+	Color( 60, 225, 60, 255 ),
+	Color( 30, 90, 225, 255 ),
+	Color( 225, 150, 30, 255 ),
+	Color( 225, 60, 150, 255 ),
+	Color( 120, 80, 250, 255 ),
+	Color( 150, 200, 225, 255 )
+};
 
 StatsReport::StatsReport( vgui::Panel *parent, const char *name ) : vgui::EditablePanel( parent, name )
 {
@@ -42,11 +53,6 @@ StatsReport::StatsReport( vgui::Panel *parent, const char *name ) : vgui::Editab
 	m_pStatGraphPlayer = new StatGraphPlayer( this, "StatGraphPlayer" );
 
 	m_pDebrief = new DebriefTextPage( this, "Debrief" );
-
-	m_rgbaStatsReportPlayerColors[ 0 ] = Color( 225, 60, 60, 255 );
-	m_rgbaStatsReportPlayerColors[ 1 ] = Color( 200, 200, 60, 255 );
-	m_rgbaStatsReportPlayerColors[ 2 ] = Color( 60, 225, 60, 255 );
-	m_rgbaStatsReportPlayerColors[ 3 ] = Color( 30, 90, 225, 255 );
 }
 
 StatsReport::~StatsReport()
@@ -61,6 +67,12 @@ void StatsReport::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pObjectiveMap->m_pMapImage->SetAlpha( 90 );
 
 	BaseClass::ApplySchemeSettings(pScheme);
+
+	// Copy the font from the first player name panel for the 4 marines added in Reactive Drop.
+	for ( int i = 4; i < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
+	{
+		m_pPlayerNames[ i ]->SetFont( m_pPlayerNames[ 0 ]->GetFont() );
+	}
 
 	SetPlayerNames();
 }
@@ -167,7 +179,7 @@ void StatsReport::OnThink()
 
 			bool bDead = ( pMR->m_TimelineHealth.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp ) <= 0.0f );
 			
-			m_pObjectiveMap->AddBlip( MapBlip_t( vPos, bDead ? Color( 255, 255, 255, 255 ) : m_rgbaStatsReportPlayerColors[ nMarine ], bDead ? MAP_BLIP_TEXTURE_DEATH : MAP_BLIP_TEXTURE_NORMAL ) );
+			m_pObjectiveMap->AddBlip( MapBlip_t( vPos, bDead ? Color( 255, 255, 255, 255 ) : g_rgbaStatsReportPlayerColors[ nMarine ], bDead ? MAP_BLIP_TEXTURE_DEATH : MAP_BLIP_TEXTURE_NORMAL ) );
 
 			if ( m_pReadyCheckImages[ nMarine ]->IsVisible() )
 			{
@@ -191,11 +203,6 @@ void StatsReport::OnThink()
 
 			nMarine++;
 		}
-	}
-
-	for ( int i = 0; i < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
-	{
-		
 	}
 }
 
@@ -228,10 +235,10 @@ void StatsReport::SetStatCategory( int nCategory )
 	for ( int i = 0; i < ASW_STATS_REPORT_MAX_PLAYERS; ++i )
 	{
 		nRankOrder[ i ] = i;
+		fBestValues[ i ] = -FLT_MAX;
 	}
 
-	//float fMinValue = FLT_MAX;
-	float fMaxValue = -FLT_MAX;
+	float fMaxValue = nCategory == 0 ? 50 : -FLT_MAX;
 
 	int nMarine = 0;
 
@@ -246,7 +253,6 @@ void StatsReport::SetStatCategory( int nCategory )
 			{
 			case 0:
 				m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->SetTimeline( &pMR->m_TimelineFriendlyFire );
-				fMaxValue = MAX( fMaxValue, 50.0f );
 				break;
 
 			case 1:
@@ -264,7 +270,6 @@ void StatsReport::SetStatCategory( int nCategory )
 
 			fBestValues[ nMarine ] = m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->GetFinalValue();
 
-			//fMinValue = MIN( fMinValue, m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->GetTroughValue() );
 			fMaxValue = MAX( fMaxValue, m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->GetCrestValue() );
 
 			nMarine++;
@@ -296,6 +301,11 @@ void StatsReport::SetStatCategory( int nCategory )
 		vgui::GetAnimationController()->RunAnimationCommand( m_pPlayerNames[ nRankOrder[ i ] ], "ypos", m_fPlayerNamePosY[ i ], 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		vgui::GetAnimationController()->RunAnimationCommand( m_pAvatarImages[ nRankOrder[ i ] ], "ypos", m_fPlayerNamePosY[ i ], 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		vgui::GetAnimationController()->RunAnimationCommand( m_pReadyCheckImages[ nRankOrder[ i ] ], "ypos", m_fPlayerNamePosY[ i ], 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+
+		// Fade out names past the fourth so they don't overflow the panel.
+		vgui::GetAnimationController()->RunAnimationCommand( m_pPlayerNames[ nRankOrder[ i ] ], "alpha", i < 4 ? 255 : 0, 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pAvatarImages[ nRankOrder[ i ] ], "alpha", i < 4 ? 255 : 0, 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pReadyCheckImages[ nRankOrder[ i ] ], "alpha", i < 4 ? 255 : 0, 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
 
 	m_pStatGraphPlayer->InvalidateLayout( true );
@@ -318,7 +328,7 @@ void StatsReport::SetPlayerNames( void )
 		{
 			C_ASW_Player *pCommander = pMR->GetCommander();
 
-			Color color = m_rgbaStatsReportPlayerColors[ nMarine ];
+			Color color = g_rgbaStatsReportPlayerColors[ nMarine ];
 
 			if ( pPlayer != pCommander )
 			{

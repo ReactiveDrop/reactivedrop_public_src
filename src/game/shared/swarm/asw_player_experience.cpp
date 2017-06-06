@@ -20,6 +20,7 @@
 	#include "asw_equipment_list.h"
 	#include "asw_marine_profile.h"
 	#include "clientmode_asw.h"
+	#include "c_user_message_register.h"
 #ifndef _X360
 	#include "steam/isteamuserstats.h"
 	#include "steam/isteamfriends.h"
@@ -86,8 +87,14 @@ int g_iLevelExperience[ ASW_NUM_EXPERIENCE_LEVELS ]=
 	35650,
 	37800,
 	40000,	// XP under this = 1evel 25 in UI
-	42250,	// XP under this = level 26 in UI, XP equal to this = level 27 in the UI
+	42250,
+	44550,
+	46900,
+	49300,
+	51750,  // XP under this = level 30 in UI, XP equal to this = level 31 in the UI
 };
+
+const int ASW_XP_CAP = g_iLevelExperience[ASW_NUM_EXPERIENCE_LEVELS - 1];
 
 int g_iXPAward[ ASW_NUM_XP_TYPES ]=
 {
@@ -166,7 +173,11 @@ ASW_Weapon_Unlock g_WeaponUnlocks[]=
 	ASW_Weapon_Unlock( "asw_weapon_night_vision",				23 ),//
 	ASW_Weapon_Unlock( "asw_weapon_sentry_cannon",				24 ),
 	ASW_Weapon_Unlock( "asw_weapon_smart_bomb",					25 ),//
-	ASW_Weapon_Unlock( "asw_weapon_grenade_launcher",			26 ),		// ASW_NUM_EXPERIENCE_LEVELS
+	ASW_Weapon_Unlock( "asw_weapon_grenade_launcher",			26 ),
+	ASW_Weapon_Unlock( "asw_weapon_deagle",						27 ),//
+	ASW_Weapon_Unlock( "asw_weapon_devastator",					28 ),
+	ASW_Weapon_Unlock( "asw_weapon_combat_rifle",				29 ),//
+	ASW_Weapon_Unlock( "asw_weapon_healamp_gun",				30 ),// ASW_NUM_EXPERIENCE_LEVELS
 };
 
 // given an Experience total, this tells you the player's level
@@ -198,8 +209,8 @@ void CASW_Player::CalculateEarnedXP()
 		return;
 
 	// no earning XP in singleplayer
-	if ( gpGlobals->maxClients <= 1 )
-		return;
+	//if ( gpGlobals->maxClients <= 1 )
+	//	return;
 
 	if ( ASWGameRules() && ASWGameRules()->m_bCheated.Get() )
 		return;
@@ -433,16 +444,16 @@ void CASW_Player::RequestExperience()
 		m_flPendingSteamStatsStart = gpGlobals->curtime;
 	}	
 #else
-	Assert( Steam3Server().SteamGameServerStats() );
-	if ( Steam3Server().SteamGameServerStats() )
+	Assert( steamapicontext->SteamUserStats() );
+	if ( steamapicontext->SteamUserStats() )
 	{
 		CSteamID steamID;
 		if ( GetSteamID( &steamID ) )
 		{
-			SteamAPICall_t hSteamAPICall = Steam3Server().SteamGameServerStats()->RequestUserStats( steamID );
+			SteamAPICall_t hSteamAPICall = steamapicontext->SteamUserStats()->RequestUserStats( steamID );
 			if ( hSteamAPICall != 0 )
 			{
-				m_CallbackGSStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnGSStatsReceived );
+				m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
 			}
 		}
 		m_bPendingSteamStats = true;
@@ -505,12 +516,7 @@ void CASW_Player::AwardExperience()
 	Msg( "%s: Awarded %d XP for player %s (total is now %d)\n", IsServerDll() ? "S" : "C", m_iEarnedXP[ ASW_XP_TOTAL ], GetPlayerName(), m_iExperience );
 }
 
-#ifdef CLIENT_DLL
-#ifdef _DEBUG
-ConVar asw_unlock_all_weapons( "asw_unlock_all_weapons", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "If enabled, all weapons will be available in the briefing" );
-#endif
-
-int CASW_Player::GetWeaponLevelRequirement( const char *szWeaponClass )
+int GetWeaponLevelRequirement( const char *szWeaponClass )
 {
 	for ( int i = 0; i < NELEMS( g_WeaponUnlocks ); i++ )
 	{
@@ -520,6 +526,16 @@ int CASW_Player::GetWeaponLevelRequirement( const char *szWeaponClass )
 		}
 	}
 	return -1;
+}
+
+#ifdef CLIENT_DLL
+#ifdef _DEBUG
+ConVar asw_unlock_all_weapons( "asw_unlock_all_weapons", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "If enabled, all weapons will be available in the briefing" );
+#endif
+
+int CASW_Player::GetWeaponLevelRequirement( const char *szWeaponClass )
+{
+	return ::GetWeaponLevelRequirement( szWeaponClass );
 }
 
 bool CASW_Player::IsWeaponUnlocked( const char *szWeaponClass )
@@ -619,11 +635,19 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 	else
 	{
 		Msg( "Error retrieving experience stat for player %s.\n", GetPlayerName() );
+		if ( !IsLocalPlayer() )
+		{
+			m_iExperience = -1;
+		}
 	}
 
 	if ( !steamapicontext->SteamUserStats()->GetUserStat( steamID, "promotion", &m_iPromotion ) )
 	{
 		Msg( "Error retrieving promotion stat for player %s.\n", GetPlayerName() );
+		if ( !IsLocalPlayer() )
+		{
+			m_iPromotion = 0;
+		}
 	}
 #else
 	if ( IsLocalPlayer( this ) )
@@ -769,16 +793,22 @@ void CASW_Player::AcceptPromotion()
 // SERVER
 #if !defined(NO_STEAM)
 
-void CASW_Player::Steam_OnGSStatsReceived( GSStatsReceived_t *pGSStatsReceived, bool bError )
+void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bIOError )
 {
-	Assert( Steam3Server().SteamGameServerStats() );
-	if ( !Steam3Server().SteamGameServerStats() )
+	Assert( steamapicontext->SteamUserStats() );
+	if ( !steamapicontext->SteamUserStats() )
 		return;
 
-	if ( pGSStatsReceived->m_eResult != k_EResultOK )
+	if ( bIOError )
 	{
-		Msg( "CASW_Player: Server failed to download stats from Steam, EResult %d\n", pGSStatsReceived->m_eResult );
-		//Msg( " SteamID = %I64u\n", pGSStatsReceived->m_steamIDUser.ConvertToUint64() );
+		Warning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
+		m_bPendingSteamStats = false;
+		return;
+	}
+
+	if ( pUserStatsReceived->m_eResult != k_EResultOK )
+	{
+		Warning( "CASW_Player: Server failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
 		m_bPendingSteamStats = false;
 		return;
 	}
@@ -786,12 +816,12 @@ void CASW_Player::Steam_OnGSStatsReceived( GSStatsReceived_t *pGSStatsReceived, 
 	CSteamID steamIDForPlayer;
 	if ( !GetSteamID( &steamIDForPlayer ) )
 		return;
-	
-	if ( steamIDForPlayer != pGSStatsReceived->m_steamIDUser )
+
+	if ( steamIDForPlayer != pUserStatsReceived->m_steamIDUser )
 		return;
 
 #ifdef USE_XP_FROM_STEAM
-	if ( Steam3Server().SteamGameServerStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+	if ( steamapicontext->SteamUserStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
 	{
 		m_bPendingSteamStats = false;
 	}
@@ -799,7 +829,7 @@ void CASW_Player::Steam_OnGSStatsReceived( GSStatsReceived_t *pGSStatsReceived, 
 	{
 		Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
 	}
-	Steam3Server().SteamGameServerStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion )
+	steamapicontext->SteamUserStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 #endif
 }
 #endif	// NO_STEAM
@@ -843,3 +873,17 @@ int CASW_Player::GetPromotion()
 
 #endif
 }
+
+#ifdef CLIENT_DLL
+void __MsgFunc_RDPlayerPromoted( bf_read &msg )
+{
+	int client = msg.ReadByte();
+	CASW_Player *pPlayer = assert_cast<CASW_Player *>( UTIL_PlayerByIndex( client + 1 ) );
+	if ( pPlayer )
+	{
+		pPlayer->RequestExperience();
+	}
+}
+
+USER_MESSAGE_REGISTER( RDPlayerPromoted );
+#endif

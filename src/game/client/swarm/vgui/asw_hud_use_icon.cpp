@@ -298,9 +298,9 @@ void CASW_HUD_Use_Icon::PositionIcon()
 {
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bHacking = false;
-	if (pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->m_hUsingEntity.Get())
+	if (pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->m_hUsingEntity.Get())
 	{
-		C_ASW_Use_Area *pArea = dynamic_cast<C_ASW_Use_Area*>(pPlayer->GetMarine()->m_hUsingEntity.Get());
+		C_ASW_Use_Area *pArea = dynamic_cast<C_ASW_Use_Area*>(pPlayer->GetViewMarine()->m_hUsingEntity.Get());
 		if (pArea)
 			bHacking = true;
 	}

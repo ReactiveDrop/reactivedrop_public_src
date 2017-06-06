@@ -13,6 +13,8 @@ class C_ASW_Gun_Smoke_Emitter;
 	#include "asw_weapon_rifle.h"
 #endif
 
+extern ConVar rd_ground_shooting;
+
 class CASW_Weapon_Autogun : public CASW_Weapon_Rifle
 {
 public:
@@ -63,7 +65,7 @@ public:
 	virtual bool SupportsBayonet();
 	virtual void OnStoppedFiring();
 
-	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AUTOGUN; }

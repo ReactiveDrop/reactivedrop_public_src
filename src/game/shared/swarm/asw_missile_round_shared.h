@@ -51,7 +51,7 @@ private:
 	bool			m_bMarineFriendly;			// if set, this round will pass through marines and hit aliens
 
 #else
-	virtual void	PostDataUpdate( DataUpdateType_t updateType );
+	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 private:
 	CNetworkVar( int, m_nParticleTrail );

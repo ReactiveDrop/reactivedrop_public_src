@@ -48,6 +48,7 @@ BEGIN_DATADESC( CEnvProjectedTexture )
 	DEFINE_INPUTFUNC( FIELD_COLOR32, "LightColor", InputSetLightColor ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "Ambient", InputSetAmbient ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SpotlightTexture", InputSetSpotlightTexture ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "BrightnessScale", InputSetBrightnessScale ),
 	DEFINE_THINKFUNC( InitialThink ),
 END_DATADESC()
 
@@ -231,6 +232,11 @@ void CEnvProjectedTexture::InputSetAmbient( inputdata_t &inputdata )
 void CEnvProjectedTexture::InputSetSpotlightTexture( inputdata_t &inputdata )
 {
 	Q_strcpy( m_SpotlightTextureName.GetForModify(), inputdata.value.String() );
+}
+
+void CEnvProjectedTexture::InputSetBrightnessScale( inputdata_t &inputdata )
+{
+	m_flBrightnessScale = inputdata.value.Float();
 }
 
 void CEnvProjectedTexture::Activate( void )

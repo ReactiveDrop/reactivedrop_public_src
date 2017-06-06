@@ -25,6 +25,8 @@
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -256,6 +258,18 @@ void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
 float CASW_Weapon_Sniper_Rifle::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_sniper_dmg;
+		flDamage = rd_pvp_sniper_dmg.GetFloat();
+	}
+
+#ifdef GAME_DLL
+	// Sniper rifle must kill with one shot for Instagib game mode
+	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
+		return 1000;
+#endif 
 
 	if ( GetMarine() )
 	{

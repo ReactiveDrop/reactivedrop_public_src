@@ -341,6 +341,10 @@ void CASW_Mission_Chooser_List::UpdateDetails()
 		for (int i=0;i<m_iNumSlots;i++)
 		{
 			m_pEntry[i]->SetDetails(missions[i].m_szMissionName, m_ChooserType);
+			if ( m_ChooserType == ASW_CHOOSER_CAMPAIGN )
+			{
+				m_pEntry[i]->SetWorkshopID( m_pMissionSource->GetCampaignWorkshopID( i ) );
+			}
 			m_pEntry[i]->SetVisible(true);
 		}
 	}

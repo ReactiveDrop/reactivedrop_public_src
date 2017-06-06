@@ -9,6 +9,7 @@
 
 #include "basemodui.h"
 #include "VFoundGames.h"
+#include "rd_lobby_utils.h"
 
 namespace BaseModUI {
 
@@ -31,7 +32,6 @@ namespace BaseModUI {
 		virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 		virtual void OnCommand( const char *command );
 		virtual void Activate();
-		virtual void OnEvent( KeyValues *pEvent );
 		virtual void OnKeyCodePressed( vgui::KeyCode code );
 		
 	protected:
@@ -58,6 +58,9 @@ namespace BaseModUI {
 		DropDownMenu* m_drpOnslaught;
 		DropDownMenu* m_drpGameStatus;
 		DropDownMenu* m_drpCampaign;
+		DropDownMenu* m_drpDistance;
+		DropDownMenu* m_drpChallenge;
+		DropDownMenu* m_drpDeathmatch;
 		BaseModUI::BaseModHybridButton *m_btnFilters;
 
 		vgui::Label *m_pSupportRequiredDetails;
@@ -67,7 +70,8 @@ namespace BaseModUI {
 		vgui::EditablePanel *m_pSupportRequiredPanel;
 		vgui::EditablePanel *m_pInstallingSupportPanel;
 	public:
-		ISearchManager *m_pSearchManager;
+		CReactiveDropLobbySearch m_LobbySearch;
+		CUtlVector<CSteamID> m_Lobbies;
 	};
 
 };

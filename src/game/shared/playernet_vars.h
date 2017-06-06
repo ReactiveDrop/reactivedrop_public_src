@@ -117,6 +117,8 @@ struct sky3dparams_t
 
 	// 3d skybox fog data
 	CNetworkVarEmbedded( fogparams_t, fog );
+	// reactivedrop: #iss-3dskyfog
+	CNetworkVar( bool, usecurrentfogcolor );
 };
 
 struct audioparams_t

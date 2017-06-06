@@ -11,6 +11,7 @@
 #include "asw_weapon.h"
 #include "asw_shareddefs.h"
 #include "asw_weapon_assault_shotgun_shared.h"
+#include "asw_weapon_deagle_shared.h"
 #include "asw_mortarbug_shell_shared.h"
 #include "particle_parse.h"
 #include "ai_network.h"
@@ -44,6 +45,8 @@ ConVar asw_mortarbug_touch_damage( "asw_mortarbug_touch_damage", "5",FCVAR_CHEAT
 ConVar asw_mortarbug_spitspeed( "asw_mortarbug_spitspeed", "350", FCVAR_CHEAT, "Speed at which mortarbug grenade travels." );
 ConVar asw_debug_mortarbug( "asw_debug_mortarbug", "0", FCVAR_NONE, "Display mortarbug debug info" );
 ConVar asw_mortarbug_face_target("asw_mortarbug_face_target", "1", FCVAR_CHEAT, "Mortarbug faces his target when moving" );
+
+extern ConVar rd_deagle_bigalien_dmg_scale;
 
 extern ConVar sv_gravity;
 extern ConVar asw_mortarbug_shell_gravity;	// TODO: Replace with proper spit projectile's gravity
@@ -111,7 +114,7 @@ float CASW_Mortarbug::GetIdealAccel( ) const
 float CASW_Mortarbug::MaxYawSpeed( void )
 {
 	if ( m_bElectroStunned.Get() )
-		return 0.1f;
+		return 5.0f;
 
 	return 16.0f * asw_mortarbug_speedboost.GetFloat();
 }
@@ -646,6 +649,20 @@ int CASW_Mortarbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					damage *= 0.6f;
 			}
 		}		
+	}
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+			if (pMarine)
+			{
+				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+
+				if (pDeagle)
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+			}
+		}
 	}
 
 	newInfo.SetDamage(damage);

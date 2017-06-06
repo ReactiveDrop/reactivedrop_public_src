@@ -16,6 +16,13 @@ BEGIN_DATADESC( CASW_Jukebox )
 
 END_DATADESC()
 
+void CASW_Jukebox::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound( m_szDefaultMusic );
+}
+
 void CASW_Jukebox::InputMusicStart( inputdata_t &inputdata )
 {
 	// Send each client the music start event

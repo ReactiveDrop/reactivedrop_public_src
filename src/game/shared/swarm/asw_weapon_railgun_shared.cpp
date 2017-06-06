@@ -15,6 +15,7 @@
 #include "precache_register.h"
 #include "c_te_effect_dispatch.h"
 #else
+#include "asw_deathmatch_mode.h"
 #include "asw_lag_compensation.h"
 #include "asw_marine.h"
 #include "asw_player.h"
@@ -539,10 +540,25 @@ bool CASW_Weapon_Railgun::SupportsBayonet()
 	return true;
 }
 
+//ConVar rd_railgun_damage_override("rd_railgun_damage_override", "0", FCVAR_NONE, "The value of this var is an ammount of railgun damage");
+
 float CASW_Weapon_Railgun::GetWeaponDamage()
 {
+#ifdef GAME_DLL
+	// Railgun must kill with one shot for Instagib game mode
+	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
+		return 1000;
+#endif 
+
 	//float flDamage = 35.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+
+	if (ASWDeathmatchMode())
+	{
+		extern ConVar rd_pvp_railgun_dmg;
+		flDamage = rd_pvp_railgun_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{

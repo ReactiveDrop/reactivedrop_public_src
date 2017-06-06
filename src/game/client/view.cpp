@@ -1066,7 +1066,7 @@ static void GetPos( const CCommand &args, Vector &vecOrigin, QAngle &angles )
 	angles = MainViewAngles(nSlot);
 
 #ifdef INFESTED_DLL
-	C_ASW_Marine *pMarine = C_ASW_Marine::GetLocalMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 	if ( pMarine )
 	{
 		vecOrigin = pMarine->GetAbsOrigin();

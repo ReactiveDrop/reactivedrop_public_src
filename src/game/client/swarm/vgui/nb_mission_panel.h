@@ -20,6 +20,7 @@ class ObjectiveMap;
 class ObjectiveIcons;
 class CNB_Button;
 class CNB_Island;
+
 namespace BaseModUI
 {
 	class DropDownMenu;
@@ -36,6 +37,9 @@ public:
 	virtual void PerformLayout();
 	virtual void OnThink();
 	virtual void OnCommand( const char *command );
+
+	bool ForceHardcoreFF();
+	bool ForceOnslaught();
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Label	*m_pRetriesLabel;	
@@ -44,9 +48,11 @@ public:
 	CNB_Header_Footer *m_pHeaderFooter;
 	CNB_Button	*m_pBackButton;
 	BaseModUI::DropDownMenu* m_drpDifficulty;
+	BaseModUI::DropDownMenu* m_drpGameMode;
 	BaseModUI::DropDownMenu* m_drpFixedSkillPoints;
 	BaseModUI::DropDownMenu* m_drpFriendlyFire;
 	BaseModUI::DropDownMenu* m_drpOnslaught;
+	BaseModUI::DropDownMenu* m_drpChallenge;
 
 	ObjectiveListBox* m_pObjectiveList;
 	ObjectiveDetailsPanel* m_pObjectiveDetails;
@@ -60,9 +66,11 @@ public:
 	bool m_bSelectedFirstObjective;
 
 	int m_iLastSkillLevel;
+	int m_iLastGameMode;
 	int m_iLastFixedSkillPoints;
 	int m_iLastHardcoreFF;
 	int m_iLastOnslaught;
+	bool m_bIgnoreSelections;
 };
 
 class InGameMissionPanelFrame : public vgui::Frame

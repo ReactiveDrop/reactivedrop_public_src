@@ -74,6 +74,7 @@ void RegisterUserMessages( void )
 	usermessages->Register( "ASWStopInfoMessageSound", 0 );
 	usermessages->Register( "BroadcastAudio", -1 );
 	usermessages->Register( "BroadcastStopAudio", -1 );
+	usermessages->Register( "BroadcastClientCmd", -1 );
 	usermessages->Register( "BroadcastPatchAudio", -1 );
 	usermessages->Register( "BroadcastStopPatchAudio", -1 );
 	usermessages->Register( "ASWMarineHitByMelee", -1 );
@@ -92,4 +93,7 @@ void RegisterUserMessages( void )
 	usermessages->Register( "ShowObjectives", -1 );
 	usermessages->Register( "ASWBuzzerDeath", -1 );	
 	usermessages->Register( "ASWEggEffects", -1 );	
+	usermessages->Register( "SavedConvar", -1 );
+	usermessages->Register( "RDPlayerPromoted", 1 );
+	usermessages->Register( "RDLeaderboardReady", 0 );
 }

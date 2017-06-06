@@ -458,7 +458,7 @@ static void __MsgFunc_ASWReconnectAfterOutro( bf_read &msg )
 		{
 			if (gpGlobals->maxClients <= 1)
 			{
-				engine->ClientCmd("disconnect\nwait\nwait\nmap_background SwarmSelectionScreen");
+				engine->ClientCmd("disconnect\nwait\nwait\nmap_background RdSelectionScreen");
 			}
 		}
 	}
@@ -882,6 +882,9 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 	else if ( Q_strcmp( "game_newmap", eventname ) == 0 )
 	{
 		engine->ClientCmd("exec newmapsettings\n");
+
+		// BenLubar: Support configloader config files from that one HUD mod: https://steamcommunity.com/app/630/discussions/0/522728268792383118/
+		engine->ClientCmd_Unrestricted( VarArgs( "execifexists configloader/maps/%s\n", engine->GetLevelNameShort() ) );
 	}
 
 	if ( !Q_strcmp( "achievement_earned", eventname ) )
@@ -1082,11 +1085,7 @@ void ClientModeASW::OverrideAudioState( AudioState_t *pAudioState )
 		CASW_Marine *pMarine = NULL;
 		if ( pPlayer && ( asw_hear_from_marine.GetBool() || asw_hear_height.GetFloat() != 0 ) )
 		{
-			pMarine = pPlayer->GetSpectatingMarine();
-			if ( !pMarine )
-			{
-				pMarine = pPlayer->GetMarine();
-			}
+			pMarine = pPlayer->GetViewMarine();
 		}
 		
 		if ( pMarine )
@@ -1198,7 +1197,7 @@ void ClientModeASW::OnColorCorrectionWeightsReset( void )
 
 	if ( m_CCInfestedHandle != INVALID_CLIENT_CCHANDLE && ASWGameRules() )
 	{
-		C_ASW_Marine *pMarine = C_ASW_Marine::GetLocalMarine();
+		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 		m_fInfestedCCWeight = Approach( pMarine && pMarine->IsInfested() ? 1.0f : 0.0f, m_fInfestedCCWeight, gpGlobals->frametime * ( 1.0f / INFESTED_CC_FADE_TIME ) );
 		g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCInfestedHandle, m_fInfestedCCWeight );
 
@@ -1519,3 +1518,15 @@ void __MsgFunc_BroadcastStopAudio( bf_read &msg )
 	C_BaseEntity::StopSound( SOUND_FROM_LOCAL_PLAYER, szString );
 }
 USER_MESSAGE_REGISTER( BroadcastStopAudio );
+
+void __MsgFunc_BroadcastClientCmd( bf_read &msg )
+{
+	ACTIVE_SPLITSCREEN_PLAYER_GUARD( 0 );
+
+	char szString[2048]; 
+	msg.ReadString( szString, sizeof(szString) ); 
+	engine->ClientCmd( szString ); 
+
+	//C_BaseEntity::StopSound( SOUND_FROM_LOCAL_PLAYER, szString );
+}
+USER_MESSAGE_REGISTER( BroadcastClientCmd ); 

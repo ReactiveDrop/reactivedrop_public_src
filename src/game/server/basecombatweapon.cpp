@@ -47,6 +47,7 @@ int		g_sModelIndexBloodSpray;	// holds the sprite index for splattered blood
 
 
 ConVar weapon_showproficiency( "weapon_showproficiency", "0" );
+ConVar rd_weapon_on_ground_time( "rd_weapon_on_ground_time", "600.0",  FCVAR_REPLICATED, "Time in seconds, how much the dropped weapon will lay on the ground until it disappears");
 extern ConVar ai_debug_shoot_positions;
 
 //-----------------------------------------------------------------------------
@@ -551,6 +552,12 @@ void CBaseCombatWeapon::FallThink ( void )
 			EmitSound( "BaseCombatWeapon.WeaponDrop" );
 		}
 		Materialize(); 
+        // remove dropped weapon after some time
+		if ( GetSpawnFlags() & SF_NORESPAWN )
+		{
+			SetThink( &CBaseEntity::SUB_Remove );
+			SetNextThink( gpGlobals->curtime + rd_weapon_on_ground_time.GetFloat() );
+		}
 	}
 }
 

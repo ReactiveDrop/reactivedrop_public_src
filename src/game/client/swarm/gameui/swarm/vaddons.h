@@ -11,6 +11,7 @@
 #include "VGenericPanelList.h"
 #include "vgui_controls/CvarToggleCheckButton.h"
 #include "gameui_util.h"
+#include "rd_workshop.h"
 
 class CNB_Button;
 class CNB_Header_Footer;
@@ -31,6 +32,9 @@ public:
 	void SetAddonEnabled( bool bEnabled );
 	bool GetAddonEnabled( );
 
+	void SetPublishedFile( PublishedFileId_t id );
+	inline PublishedFileId_t GetPublishedFile() { return m_nPublishedFileId; }
+
 	// Inherited from IGenericPanelListItem
 	virtual bool IsLabel() { return false; }
 	void OnMousePressed( vgui::MouseCode code );
@@ -41,6 +45,8 @@ protected:
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
 private:
+	int m_nWorkshopStatistic;
+	void ShowWorkshopStatistic();
 	vgui::Label* m_LblName;
 	vgui::Label* m_LblType;
 	vgui::IBorder* m_DefaultBorder;
@@ -48,6 +54,8 @@ private:
 	vgui::CheckButton* m_BtnEnabled;
 	bool m_bCurrentlySelected;
 	vgui::HFont	m_hTextFont;
+	PublishedFileId_t m_nPublishedFileId;
+	bool m_bWaitingForDetails;
 
 	CPanelAnimationVarAliasType( float, m_flDetailsExtraHeight, "DetailsExtraHeight", "0", "proportional_float" );
 	CPanelAnimationVarAliasType( float, m_flDetailsRowHeight, "DetailsRowHeight", "0", "proportional_float" );
@@ -67,11 +75,15 @@ public:
 
 	virtual void OnThink();
 
+	void OnWorkshopPreviewReady( PublishedFileId_t nFileID, CReactiveDropWorkshopPreviewImage *pPreviewImage );
+
 protected:
 	void ApplySchemeSettings(vgui::IScheme *pScheme);
 	bool LoadAddonListFile( KeyValues *&pAddons );
 	bool LoadAddonInfoFile( KeyValues *&pAddonInfo, const char *pcAddonDir, bool bIsVPK );
 	void SetDetailsUIForAddon( int nIndex );
+	void SetDetailsUIForWorkshopItem( PublishedFileId_t id );
+	void SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopItem_t & item );
 	void GetAddonImage( const char *pcAddonDir, char *pcImagePath, int nImagePathSize, bool bIsVPK );
 	void ExtractAddonMetadata( const char *pcAddonDir );
 

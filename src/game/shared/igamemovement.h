@@ -47,6 +47,7 @@ public:
 	int				m_nImpulseCommand;	// Impulse command issued.
 	QAngle			m_vecViewAngles;	// Command view angles (local space)
 	QAngle			m_vecAbsViewAngles;	// Command view angles (world space)
+	QAngle			m_vecMovementAxis;	// Top Down movement axis is different for every player, since he can rotate camera
 	int				m_nButtons;			// Attack buttons.
 	int				m_nOldButtons;		// From host_client->oldbuttons;
 	float			m_flForwardMove;

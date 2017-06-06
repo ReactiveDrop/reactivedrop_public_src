@@ -22,6 +22,8 @@
 
 float C_EnvProjectedTexture::m_flVisibleBBoxMinHeight = -FLT_MAX;
 
+ConVar rd_env_projectedtexture_enabled("rd_env_projectedtexture_enabled", "1", FCVAR_ARCHIVE, "If 0 all projected textures are disabled(to improve performance)");
+
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )
 	RecvPropEHandle( RECVINFO( m_hTargetEntity )	),
@@ -182,7 +184,9 @@ void C_EnvProjectedTexture::UpdateLight( void )
 		bVisible = IsBBoxVisible();		
 	}
 
-	if ( m_bState == false || !bVisible )
+	if ( m_bState == false || !bVisible || 
+		!rd_env_projectedtexture_enabled.GetBool() ||
+		(GetMinGPULevel() && GetMinGPULevel() - 1 > GetGPULevel()) )
 	{
 		// Spotlight's extents aren't in view
 		ShutDownLightHandle();

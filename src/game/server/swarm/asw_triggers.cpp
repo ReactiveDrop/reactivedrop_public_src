@@ -8,6 +8,11 @@
 #include "asw_weapon.h"
 #include "asw_util_shared.h"
 #include "asw_melee_system.h"
+#include "ai_network.h"
+#include "ai_networkmanager.h"
+#include "ai_node.h"
+#include "asw_marine_gamemovement.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -548,7 +553,7 @@ void CASW_Hurt_Nearest_Marine::InputHurtMarine( inputdata_t &inputdata )
 	}
 	else
 	{
-		Msg("asw_hurt_nearest_marine failed to find a nearest marine\n");
+		DevMsg("asw_hurt_nearest_marine failed to find a nearest marine\n");
 	}
 }
 
@@ -750,4 +755,185 @@ void CASW_Marine_Knockback_Trigger::KnockbackTriggerTouch(CBaseEntity *pOther)
 			}
 		}
 	}
+}
+
+// ===========================
+
+LINK_ENTITY_TO_CLASS( trigger_rd_marine_jumpjet, CASW_Marine_JumpJet_Trigger );
+
+BEGIN_DATADESC( CASW_Marine_JumpJet_Trigger )	
+DEFINE_KEYFIELD( m_sDestination1, FIELD_STRING, "Destination1" ),
+DEFINE_KEYFIELD( m_sDestination2, FIELD_STRING, "Destination2" ),
+DEFINE_KEYFIELD( m_sDestination3, FIELD_STRING, "Destination3" ),
+DEFINE_KEYFIELD( m_sDestination4, FIELD_STRING, "Destination4" ),
+DEFINE_KEYFIELD( m_sDestination5, FIELD_STRING, "Destination5" ),
+DEFINE_KEYFIELD( m_sDestination6, FIELD_STRING, "Destination6" ),
+DEFINE_KEYFIELD( m_sDestination7, FIELD_STRING, "Destination7" ),
+DEFINE_KEYFIELD( m_sDestination8, FIELD_STRING, "Destination8" ),
+DEFINE_KEYFIELD( m_iJumpType,FIELD_INTEGER, "JumpType"),
+DEFINE_KEYFIELD( m_fJumpTimeOverride, FIELD_FLOAT, "JumpTimeOverride"),
+DEFINE_KEYFIELD( m_fAnimationTimeOverride, FIELD_FLOAT, "AnimationTimeOverride"),
+
+
+// Function Pointers
+//DEFINE_FUNCTION( JumpJetTriggerTouch ),
+
+// Outputs
+DEFINE_OUTPUT(m_OnJumpJetDone, "OnJumpJetDone")
+END_DATADESC()
+
+void CASW_Marine_JumpJet_Trigger::Spawn( void )
+{
+	BaseClass::Spawn();
+	
+	if ( m_sDestination1 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination1 );
+	if ( m_sDestination2 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination2 );
+	if ( m_sDestination3 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination3 );
+	if ( m_sDestination4 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination4 );
+	if ( m_sDestination5 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination5 );
+	if ( m_sDestination6 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination6 );
+	if ( m_sDestination7 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination7 );
+	if ( m_sDestination8 != NULL_STRING )
+		m_Destinations.AddToTail( m_sDestination8 );
+
+	//DevMsg("Node7 %i \n", m_iNodeId7);
+	//DevMsg("Node8 %i \n", m_iNodeId8);
+
+	m_iCurEntToJumpTo = 0;
+
+	//ASSERTSZ(m_iHealth == 0, "trigger_multiple with health");
+	//SetTouch( &CASW_Marine_JumpJet_Trigger::JumpJetTriggerTouch );
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Touch function. Activates the trigger.
+// Input  : pOther - The thing that touched us.
+//-----------------------------------------------------------------------------
+//void CASW_Marine_JumpJet_Trigger::JumpJetTriggerTouch(CBaseEntity *pOther)
+//{
+//}
+
+bool CASW_Marine_JumpJet_Trigger::PassesTriggerFilters(CBaseEntity *pOther)
+{
+	if (pOther && BaseClass::PassesTriggerFilters(pOther) && pOther->Classify() == CLASS_ASW_MARINE)
+	{
+		CASW_Marine *pMarine = assert_cast<CASW_Marine*>(pOther);
+		if (pMarine)
+		{
+			CASW_Melee_Attack *pAttack = pMarine->GetCurrentMeleeAttack();
+			if (!pAttack)
+			{
+				if (pMarine->GetForcedActionRequest() == FORCED_ACTION_JUMP_JET ||
+					pMarine->GetForcedActionRequest() == FORCED_ACTION_BLINK ||
+					pMarine->GetForcedActionRequest() == FORCED_ACTION_JUMP_JET_FROM_TRIGGER ||
+					pMarine->GetForcedActionRequest() == FORCED_ACTION_BLINK_FROM_TRIGGER)
+					return false;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void CASW_Marine_JumpJet_Trigger::ActivateMultiTrigger( CBaseEntity *pOther )
+{
+	CASW_Marine *pMarine = static_cast<CASW_Marine*>(pOther);
+
+	if (m_Destinations.Count() == 0)
+	{
+		Error("trigger_rd_marine_jumpjet doesn't have "
+			"any destinations specified to jump to \n");
+		return;
+	}
+
+	string_t szDestEnt = m_Destinations[m_iCurEntToJumpTo];
+	++m_iCurEntToJumpTo;
+	if (m_iCurEntToJumpTo >= (int)m_Destinations.Count())
+		m_iCurEntToJumpTo = 0;
+
+	CBaseEntity	*pEntDest = NULL;	
+	pEntDest = gEntList.FindEntityByName( pEntDest, szDestEnt, NULL, pOther, pOther );
+	if ( !pEntDest )
+	{
+		Warning( "Jump Jet trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName(), szDestEnt );
+		return;
+	}
+	
+	Vector dest = pEntDest->GetAbsOrigin();
+
+	// we teleport bots to the destination because they don't do 
+	// jump jet, and making them to do jump jet will take much 
+	// more time
+	// TODO: implement jump jet for bot marines(uninhabited)
+	if (pMarine->IsInhabited())
+	{
+		//pMarine->m_iJumpJetting = JJ_JUMP_JETS;
+		//pMarine->m_vecJumpJetStart = pMarine->GetAbsOrigin();				
+		pMarine->m_vecJumpJetEnd = dest;
+
+		if (m_fJumpTimeOverride > 0)
+		{
+			pMarine->m_fJumpJetDurationOverride = m_fJumpTimeOverride;
+		}
+		if (m_fAnimationTimeOverride > 0)
+		{
+			pMarine->m_fJumpJetAnimationDurationOverride = m_fAnimationTimeOverride;
+		}
+
+		switch (m_iJumpType)
+		{
+		case 0:
+		default:
+			pMarine->RequestForcedAction(FORCED_ACTION_JUMP_JET_FROM_TRIGGER);
+			break;
+		case 1:
+			pMarine->RequestForcedAction(FORCED_ACTION_BLINK_FROM_TRIGGER);
+			break;
+		}
+	}
+	else
+	{
+		DispatchParticleEffect("Blink", pMarine->GetAbsOrigin(), vec3_angle);
+		DispatchParticleEffect("electrified_armor_burst", pMarine->GetAbsOrigin(), vec3_angle);
+
+		pMarine->Teleport(&dest, &pMarine->GetAbsAngles(), &vec3_origin);
+		//pMarine->PerformResurrectionEffect(); // :)
+		//DispatchParticleEffect("marine_resurrection", PATTACH_ABSORIGIN_FOLLOW, pMarine);
+		DispatchParticleEffect("Blink", pMarine->GetAbsOrigin(), vec3_angle);
+		DispatchParticleEffect("electrified_armor_burst", pMarine->GetAbsOrigin(), vec3_angle);
+
+		pMarine->EmitSound("ASW_Blink.Teleport");
+	}
+
+	// send output
+	m_hActivator = pOther;
+	m_OnJumpJetDone.FireOutput(pOther, this);
+
+	BaseClass::ActivateMultiTrigger( pOther );
+}
+
+
+LINK_ENTITY_TO_CLASS(trigger_rd_sticktogether_area, CASW_StickTogether_Area);
+
+IMPLEMENT_AUTO_LIST(IASW_StickTogether_Area_List);
+
+BEGIN_DATADESC(CASW_StickTogether_Area)
+END_DATADESC()
+
+void CASW_StickTogether_Area::Spawn(void)
+{
+	BaseClass::Spawn();
+}
+
+CASW_StickTogether_Area::CASW_StickTogether_Area()
+{
 }

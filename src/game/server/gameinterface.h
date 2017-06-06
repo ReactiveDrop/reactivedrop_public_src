@@ -252,5 +252,7 @@ private:
 CSteam3Server &Steam3Server();
 #endif
 
+void WorkshopSetupThink();
+
 #endif // GAMEINTERFACE_H
 

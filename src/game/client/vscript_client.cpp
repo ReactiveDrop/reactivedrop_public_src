@@ -14,7 +14,7 @@
 #include "isaverestore.h"
 #include "gamerules.h"
 #ifdef _WIN32
-//#include "vscript_client_nut.h"
+#include "vscript_client_nut.h"
 #endif
 
 extern IScriptManager *scriptmanager;
@@ -115,7 +115,7 @@ bool VScriptClientInit()
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
-					//g_pScriptVM->Run( g_Script_vscript_client );
+					g_pScriptVM->Run( g_Script_vscript_client );
 				}
 
 				VScriptRunScript( "mapspawn", false );

@@ -279,22 +279,38 @@ const Vector& CASW_Spawner::GetAlienMaxs()
 
 bool CASW_Spawner::ApplyCarnageMode( float fScaler, float fInvScaler )
 {
-	
 	if ( m_AlienClassNum == g_nDroneClassEntry ||  m_AlienClassNum == g_nDroneJumperClassEntry )
 	{
-		Msg( "[%d] Found a spawner set to spawn drones or drone jumpers\n", entindex());
-		Msg( "  previous numaliens is %d max live is %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
-		m_nNumAliens *= fScaler;
-		m_nMaxLiveAliens *= fScaler;
+		float flNumAliens = m_nNumAliens * fScaler;
+		float flMaxLiveAliens = m_nMaxLiveAliens * fScaler;
+
+		// fractional part is randomly rounded - 1.25 rounds down to 1 75% of the time and up to 2 25% of the time.
+		float flNumAliensPartial = fmodf( flNumAliens, 1 );
+		if ( flNumAliensPartial != 0 )
+		{
+			flNumAliens += RandomFloat() < flNumAliensPartial ? 1 : 0;
+		}
+		float flMaxLiveAliensPartial = fmodf( flMaxLiveAliens, 1 );
+		if ( flMaxLiveAliensPartial != 0 )
+		{
+			flMaxLiveAliens += RandomFloat() < flMaxLiveAliensPartial ? 1 : 0;
+		}
+
+		m_nNumAliens = flNumAliens;
+		m_nMaxLiveAliens = flMaxLiveAliens;
 		m_flSpawnInterval *= fInvScaler;
-		Msg( "  Set its numaliens to %d max live to %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
 
 		return true;
 	}	
-	
-	Msg( "[%d] Found a spawner but it's not set to spawn drones or drone jumpers\n", entindex() );
+
 	return false;
 }
+
+void CASW_Spawner::SetInfinitelySpawnAliens(bool spawn_infinitely /*= true */)
+{
+	m_bInfiniteAliens = spawn_infinitely;
+}
+
 
 int	CASW_Spawner::DrawDebugTextOverlays()
 {
@@ -312,6 +328,7 @@ int	CASW_Spawner::DrawDebugTextOverlays()
 	return text_offset;
 }
 
+
 void ASW_ApplyCarnage_f(float fScaler)
 {
 	if ( fScaler <= 0 )
@@ -319,8 +336,8 @@ void ASW_ApplyCarnage_f(float fScaler)
 
 	float fInvScaler = 1.0f / fScaler;
 
-	int iNewHealth = fInvScaler * 80.0f;	// note: boosted health a bit here so this mode is harder than normal
-	asw_drone_health.SetValue(iNewHealth);
+	//int iNewHealth = fInvScaler * 80.0f;	// note: boosted health a bit here so this mode is harder than normal
+	//asw_drone_health.SetValue(iNewHealth);
 
 	CBaseEntity* pEntity = NULL;
 	int iSpawnersChanged = 0;
@@ -336,6 +353,22 @@ void ASW_ApplyCarnage_f(float fScaler)
 		}
 	}
 }
+
+void ASW_ApplyInfiniteSpawners_f(void)
+{
+	CBaseEntity* pEntity = NULL;
+	int iSpawnersChanged = 0;
+	while ((pEntity = gEntList.FindEntityByClassname(pEntity, "asw_spawner")) != NULL)
+	{
+		CASW_Spawner* pSpawner = dynamic_cast<CASW_Spawner*>(pEntity);
+		if (pSpawner)
+		{
+			pSpawner->SetInfinitelySpawnAliens();
+			iSpawnersChanged++;
+		}
+	}
+}
+
 
 void asw_carnage_f(const CCommand &args)
 {

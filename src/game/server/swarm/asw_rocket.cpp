@@ -10,6 +10,9 @@
 #include "particle_parse.h"
 #include "asw_shareddefs.h"
 #include "asw_parasite.h"
+#include "asw_player.h"
+#include "asw_marine_resource.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -264,6 +267,8 @@ void CASW_Rocket::IgniteThink( void )
 	SetNextThink( gpGlobals->curtime );
 }
 
+ConVar rd_rocket_target_marine( "rd_rocket_target_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 rockets from hornet barrage will be targeting enemy marines");
+
 CBaseEntity	* CASW_Rocket::FindPotentialTarget( void ) const
 {
 	float		bestdist = 0;		
@@ -298,8 +303,27 @@ CBaseEntity	* CASW_Rocket::FindPotentialTarget( void ) const
 			}
 	
 			// don't autoaim onto marines
-			if (pEntity->Classify() == CLASS_ASW_MARINE)
-				continue;
+			if (pEntity->Classify() == CLASS_ASW_MARINE )
+            {
+                if ( rd_rocket_target_marine.GetBool() ) // skip all marines 
+				{
+					// for team deathmatch don't target friendly marines 
+					if ( this->GetOwnerEntity() && this->GetOwnerEntity()->Classify() == CLASS_ASW_MARINE)
+					{
+						CASW_Marine_Resource *pMR = ((CASW_Marine*)this->GetOwnerEntity())->GetMarineResource();
+						CASW_Marine_Resource *pOtherMR = ((CASW_Marine*)pEntity)->GetMarineResource();
+						if ( pMR && pOtherMR && ( !ASWDeathmatchMode() || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pMR->GetTeamNumber() == pOtherMR->GetTeamNumber() ) ) )
+							continue;
+					}
+				}
+				else 
+				{
+					continue;
+				}
+
+                if ( this->GetOwnerEntity() == pEntity )  // skip parent marine
+				    continue;
+            }
 
 			if ( pEntity->Classify() == CLASS_ASW_PARASITE )
 			{

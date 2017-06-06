@@ -4,7 +4,7 @@
 #pragma once
 #endif
 
-#define ASW_MAX_PORTRAITS 8
+#define ASW_MAX_PORTRAITS ASW_MAX_MARINE_RESOURCES
 
 #include "asw_hudelement.h"
 #include "hud_numericdisplay.h"

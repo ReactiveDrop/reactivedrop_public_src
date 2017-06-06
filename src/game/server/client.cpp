@@ -405,8 +405,10 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_freeze_grenades.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_grenades.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_grenade_launcher.txt" );
+	engine->ForceExactFile( "scripts/asw_weapon_deagle.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_heal_grenade.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_heal_gun.txt" );
+	engine->ForceExactFile( "scripts/asw_weapon_healamp_gun.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_hornet_barrage.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_jump_jet.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_laser_mines.txt" );
@@ -434,6 +436,10 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_tesla_trap.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_vindicator.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_welder.txt" );
+
+	// reactivedrop: if we open clien.dll source, make sure people not start making
+	// easy cheats by recompiling client.dll
+	engine->ForceExactFile( "bin/client.dll" );
 }
 
 CON_COMMAND_F( cast_ray, "Tests collision detection", FCVAR_CHEAT )

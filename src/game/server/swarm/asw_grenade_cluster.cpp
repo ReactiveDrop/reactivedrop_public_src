@@ -23,7 +23,7 @@ extern ConVar asw_vindicator_grenade_friction;
 extern ConVar asw_vindicator_grenade_gravity;
 extern ConVar asw_vindicator_grenade_elasticity;
 ConVar asw_cluster_grenade_min_detonation_time("asw_cluster_grenade_min_detonation_time", "0.9f", FCVAR_CHEAT, "Min. time before cluster grenade can detonate");
-ConVar asw_cluster_grenade_fuse("asw_cluster_grenade_fuse", "4.0f", FCVAR_CHEAT, "Fuse length of cluster grenade");
+ConVar asw_cluster_grenade_fuse("asw_cluster_grenade_fuse", "2.0f", FCVAR_CHEAT, "Fuse length of cluster grenade");
 ConVar asw_cluster_grenade_radius_check_interval("asw_cluster_grenade_radius_check_interval", "0.5f", FCVAR_CHEAT, "How often the cluster grenade checks for nearby drones to explode against");
 ConVar asw_cluster_grenade_radius_check_scale("asw_cluster_grenade_radius_check_scale", "0.6f", FCVAR_CHEAT, "What fraction of the grenade's damage radius is used for the early detonation check");
 ConVar asw_cluster_grenade_child_fuse_min("asw_cluster_grenade_child_fuse_min", "0.5", FCVAR_CHEAT, "Cluster grenade child cluster's minimum fuse length");

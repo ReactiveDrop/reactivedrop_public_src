@@ -100,6 +100,7 @@ BaseClass(parent, panelName)
 	m_btnAdvanced = NULL;
 
 	m_drpModelDetail = NULL;
+	m_drpBloomlDetail = NULL;
 	m_drpPagedPoolMem = NULL;
 	m_drpAntialias = NULL;
 	m_drpFiltering = NULL;
@@ -107,6 +108,7 @@ BaseClass(parent, panelName)
 	m_drpQueuedMode = NULL;
 	m_drpShaderDetail = NULL;
 	m_drpCPUDetail = NULL;
+	m_drpDepthBlur = NULL;
 
 	m_btnUseRecommended = NULL;
 	m_btnCancel = NULL;
@@ -119,7 +121,7 @@ BaseClass(parent, panelName)
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetFooterEnabled( true );
 	m_pHeaderFooter->SetGradientBarEnabled( true );
-	m_pHeaderFooter->SetGradientBarPos( 100, 310 );
+	m_pHeaderFooter->SetGradientBarPos( 80, 340 );
 
 	CGameUIConVarRef mat_grain_scale_override( "mat_grain_scale_override" );
 	m_flFilmGrainInitialValue = mat_grain_scale_override.GetFloat();
@@ -162,6 +164,18 @@ void Video::SetupActivateData( void )
 	CGameUIConVarRef gpu_mem_level( "gpu_mem_level" );
 	m_iModelTextureDetail = clamp( gpu_mem_level.GetInt(), 0, 2);
 
+	CGameUIConVarRef mat_bloom_scalefactor_scalar( "mat_bloom_scalefactor_scalar" );
+	//extern ConVar mat_bloom_scalefactor_scalar;
+	float fBloomScale = clamp( mat_bloom_scalefactor_scalar.GetFloat(), 0, 1 );
+	if ( fBloomScale < 0.24 )
+		m_iBloomDetail = 0;
+	else if ( fBloomScale < 0.49 )
+		m_iBloomDetail = 1;
+	else if ( fBloomScale < 0.99 )
+		m_iBloomDetail = 2;
+	else
+		m_iBloomDetail = 3;
+
 	CGameUIConVarRef mem_level( "mem_level" );
 	m_iPagedPoolMem = clamp( mem_level.GetInt(), 0, 2);
 
@@ -190,6 +204,12 @@ void Video::SetupActivateData( void )
 
 	CGameUIConVarRef in_lock_mouse_to_window( "in_lock_mouse_to_window" );
 	m_bLockMouse = in_lock_mouse_to_window.GetBool();
+
+	CGameUIConVarRef mat_depth_blur_strength_override( "mat_depth_blur_strength_override" );
+	if ( mat_depth_blur_strength_override.GetInt() == -1 )
+		m_bDepthBlur = true;
+	else
+		m_bDepthBlur = false;
 }
 
 //=============================================================================
@@ -215,6 +235,7 @@ bool Video::SetupRecommendedActivateData( void )
 	m_bWindowed = !pConfigKeys->GetBool( "setting.fullscreen", true );
 	m_bNoBorder = pConfigKeys->GetBool( "setting.nowindowborder", false );
 	m_iModelTextureDetail = clamp( pConfigKeys->GetInt( "setting.gpu_mem_level", 0 ), 0, 2 );
+	m_iBloomDetail = clamp( pConfigKeys->GetInt( "setting.mat_bloom", 3 ), 0, 3 );
 	m_iPagedPoolMem = clamp( pConfigKeys->GetInt( "setting.mem_level", 0 ), 0, 2 );
 	m_nAASamples = pConfigKeys->GetInt( "setting.mat_antialias", 0 );
 	m_nAAQuality = pConfigKeys->GetInt( "setting.mat_aaquality", 0 );
@@ -226,6 +247,7 @@ bool Video::SetupRecommendedActivateData( void )
 	m_flFilmGrain = pConfigKeys->GetFloat( "setting.mat_grain_scale_override", 1.0f );
 	m_iQueuedMode = pConfigKeys->GetInt( "setting.mat_queue_mode", -1 );
 	m_bLockMouse = pConfigKeys->GetBool( "setting.in_lock_mouse_to_window", true );
+	m_bDepthBlur = pConfigKeys->GetBool( "setting.depth_blur", true );
 
 	pConfigKeys->deleteThis();
 
@@ -332,6 +354,24 @@ void Video::Activate( bool bRecommendedSettings )
 		}
 	}
 
+	if ( m_drpDepthBlur )
+	{
+		if ( m_bDepthBlur )
+		{
+			m_drpDepthBlur->SetCurrentSelection( "#L4D360UI_Enabled" );
+		}
+		else
+		{
+			m_drpDepthBlur->SetCurrentSelection( "#L4D360UI_Disabled" );
+		}
+
+		FlyoutMenu *pFlyout = m_drpDepthBlur->GetCurrentFlyout();
+		if ( pFlyout )
+		{
+			pFlyout->SetListener( this );
+		}
+	}
+
 	if ( m_sldFilmGrain )
 	{
 		if ( !bRecommendedSettings )
@@ -364,6 +404,31 @@ void Video::Activate( bool bRecommendedSettings )
 		if ( pFlyout )
 		{
 			pFlyout->SetListener( this );
+		}
+	}
+
+	if ( m_drpBloomlDetail )
+	{
+		switch ( m_iBloomDetail )
+		{
+		case 0:
+			m_drpBloomlDetail->SetCurrentSelection("BloomDetailNone");
+			break;
+		case 1:
+			m_drpBloomlDetail->SetCurrentSelection("BloomDetailLow");
+			break;
+		case 2:
+			m_drpBloomlDetail->SetCurrentSelection("BloomDetailMedium");
+			break;
+		case 3:
+			m_drpBloomlDetail->SetCurrentSelection("BloomDetailHigh");
+			break;
+		}
+
+		FlyoutMenu *pFlyout = m_drpBloomlDetail->GetCurrentFlyout();
+		if (pFlyout)
+		{
+			pFlyout->SetListener(this);
 		}
 	}
 
@@ -698,6 +763,12 @@ void Video::OnThink()
 		m_drpLockMouse->SetVisible( m_bWindowed );
 	}
 
+	if ( !m_drpDepthBlur )
+	{
+		m_drpDepthBlur = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpDepthBlur" ) );
+		needsActivate = true;
+	}
+
 	if( !m_sldFilmGrain )
 	{
 		m_sldFilmGrain = dynamic_cast< SliderControl* >( FindChildByName( "SldFilmGrain" ) );
@@ -713,6 +784,12 @@ void Video::OnThink()
 	if( !m_drpModelDetail )
 	{
 		m_drpModelDetail = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpModelDetail" ) );
+		needsActivate = true;
+	}
+
+	if (!m_drpBloomlDetail)
+	{
+		m_drpBloomlDetail = dynamic_cast<DropDownMenu*>( FindChildByName( "DrpBloomDetail" ) );
 		needsActivate = true;
 	}
 
@@ -872,10 +949,22 @@ void Video::OnCommand(const char *command)
 		m_bLockMouse = false;
 		m_bDirtyValues = true;
 	}
+	else if ( !Q_strcmp( command, "DepthBlurEnabled" ) )
+	{
+		m_bDepthBlur = true;
+		m_bDirtyValues = true;
+	}
+	else if ( !Q_strcmp( command, "DepthBlurDisabled" ) )
+	{
+		m_bDepthBlur = false;
+		m_bDirtyValues = true;
+	}
 	else if ( !Q_strcmp( command, "ShowAdvanced" ) )
 	{
 		SetControlVisible( "BtnAdvanced", false );
 		SetControlVisible( "DrpModelDetail", true );
+		SetControlVisible( "DrpBloomDetail", true );
+		SetControlVisible( "DrpDepthBlur", true );
 		SetControlVisible( "DrpPagedPoolMem", true );
 		SetControlVisible( "DrpFiltering", true );
 		SetControlVisible( "DrpVSync", true );
@@ -925,6 +1014,26 @@ void Video::OnCommand(const char *command)
 	else if ( !Q_strcmp( command, "ModelDetailLow" ) )
 	{
 		m_iModelTextureDetail = 0;
+		m_bDirtyValues = true;
+	}
+	else if (!Q_strcmp(command, "BloomDetailHigh"))
+	{
+		m_iBloomDetail = 3;
+		m_bDirtyValues = true;
+	}
+	else if (!Q_strcmp(command, "BloomDetailMedium"))
+	{
+		m_iBloomDetail = 2;
+		m_bDirtyValues = true;
+	}
+	else if (!Q_strcmp(command, "BloomDetailLow"))
+	{
+		m_iBloomDetail = 1;
+		m_bDirtyValues = true;
+	}
+	else if (!Q_strcmp(command, "BloomDetailNone"))
+	{		
+		m_iBloomDetail = 0;
 		m_bDirtyValues = true;
 	}
 	else if ( !Q_strcmp( command, "PagedPoolMemHigh" ) )
@@ -1340,6 +1449,27 @@ void Video::ApplyChanges()
 	CGameUIConVarRef gpu_mem_level( "gpu_mem_level" );
 	gpu_mem_level.SetValue( m_iModelTextureDetail );
 
+	CGameUIConVarRef mat_bloom_scalefactor_scalar("mat_bloom_scalefactor_scalar");
+	//extern ConVar mat_bloom_scalefactor_scalar;
+	switch (m_iBloomDetail)
+	{
+	case 0:
+		mat_bloom_scalefactor_scalar.SetValue(0.0f);
+		break;
+	case 1:
+		mat_bloom_scalefactor_scalar.SetValue(0.25f);
+		break;
+	case 2:
+		mat_bloom_scalefactor_scalar.SetValue(0.50f);
+		break;
+	case 3:
+		mat_bloom_scalefactor_scalar.SetValue(1.0f);
+		break;
+	default:
+		mat_bloom_scalefactor_scalar.SetValue(1);
+		break;
+	}
+
 	CGameUIConVarRef mem_level( "mem_level" );
 	mem_level.SetValue( m_iPagedPoolMem );
 
@@ -1368,6 +1498,12 @@ void Video::ApplyChanges()
 
 	CGameUIConVarRef in_lock_mouse_to_window( "in_lock_mouse_to_window" );
 	in_lock_mouse_to_window.SetValue( m_bLockMouse );
+
+	CGameUIConVarRef mat_depth_blur_strength_override( "mat_depth_blur_strength_override" );
+	if ( m_bDepthBlur )
+		mat_depth_blur_strength_override.SetValue( -1 );
+	else 
+		mat_depth_blur_strength_override.SetValue( 0 );
 
 	// Make sure there is a resolution change
 	const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();

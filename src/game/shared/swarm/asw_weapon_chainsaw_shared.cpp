@@ -38,6 +38,7 @@
 #include "asw_util_shared.h"
 #include "asw_weapon_chainsaw_shared.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 #define ASW_CHAINSAW_CHARGE_UP_TIME  1.0
 #define ASW_CHAINSAW_PULSE_INTERVAL			0.1
@@ -99,6 +100,8 @@ CASW_Weapon_Chainsaw::CASW_Weapon_Chainsaw( void )
 #ifdef GAME_DLL
 	m_fLastForcedFireTime = 0;	// last time we forced an AI marine to push its fire button
 #endif
+
+	m_fMaxRange1 = ASW_CHAINSAW_RANGE;
 }
 
 CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()
@@ -334,7 +337,16 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 				UTIL_TraceHull( vecOrigSrc, vecDest, Vector( -5, -5, -2 ), Vector( 5, 5, 25 ), MASK_SHOT, &filter, &tr );
 
 				ClearMultiDamage();
-				float fDamage = 0.5f * GetWeaponInfo()->m_flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG );
+				float fDamage;
+				if (ASWDeathmatchMode())
+				{
+					extern ConVar rd_pvp_chainsaw_dmg;
+					fDamage = 0.5 * rd_pvp_chainsaw_dmg.GetFloat() + +MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
+				}
+				else
+				{
+					fDamage = 0.5f * GetWeaponInfo()->m_flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
+				}
 				CTakeDamageInfo info( this, pMarine, fDamage * g_pGameRules->GetDamageMultiplier(), DMG_SLASH );
 				info.SetWeapon( this );
 				CalculateMeleeDamageForce( &info, vecDir, tr.endpos );
@@ -626,9 +638,14 @@ void CASW_Weapon_Chainsaw::SetFiringState(CHAINSAW_FIRE_STATE state)
 	m_fireState = state;
 }
 
+ConVar rd_chainsaw_slows_down( "rd_chainsaw_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 chainsaw doesn't slow down when firing");
+
 bool CASW_Weapon_Chainsaw::ShouldMarineMoveSlow()
 {
-	return m_fireState != FIRE_OFF;
+	if ( rd_chainsaw_slows_down.GetBool() )
+		return m_fireState != FIRE_OFF;
+	else 
+		return false;	// don't slow down marines for deathmatch
 }
 
 #ifdef GAME_DLL

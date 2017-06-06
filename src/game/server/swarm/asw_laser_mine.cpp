@@ -25,6 +25,8 @@
 #define ASW_MINE_EXPLODE_TIME 0.6f
 
 extern ConVar asw_debug_mine;
+ConVar rd_laser_mine_takes_damage("rd_laser_mine_takes_damage", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 laser mines can be destroyed by weapons");
+ConVar rd_laser_mine_targets_everything("rd_laser_mine_targets_everything", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 laser mines explode under marines and aliens");
 
 LINK_ENTITY_TO_CLASS( asw_laser_mine, CASW_Laser_Mine );
 
@@ -62,7 +64,11 @@ void CASW_Laser_Mine::Spawn( void )
 	SetSolid( SOLID_NONE );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	SetMoveType( MOVETYPE_NONE );
-	m_takedamage	= DAMAGE_NO;
+
+	if ( rd_laser_mine_takes_damage.GetBool() )
+		m_takedamage	= DAMAGE_YES;
+	else 
+		m_takedamage	= DAMAGE_NO;
 
 	m_flDamageRadius = 256.0f;	// TODO: grab from marine skill
 	m_flDamage = 100.0f;	// TODO: Grab from marine skill
@@ -73,6 +79,10 @@ void CASW_Laser_Mine::Spawn( void )
 
 	SetThink( &CASW_Laser_Mine::LaserThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
+
+	// set health to minimum value to explode on any damage
+	SetMaxHealth(1);
+	SetHealth(1);
 }
 
 void CASW_Laser_Mine::LaserThink( void )
@@ -235,7 +245,7 @@ void CASW_Laser_Mine::Explode( bool bRemove )
 	// damage to nearby things
 	CTakeDamageInfo info( this, GetOwnerEntity(), m_flDamage, DMG_BLAST );
 	info.SetWeapon( m_hCreatorWeapon );
-	ASWGameRules()->RadiusDamage( info, GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, NULL );
+	ASWGameRules()->RadiusDamage( info, GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, this );
 
 	if ( bRemove )
 	{
@@ -310,6 +320,9 @@ bool CASW_Laser_Mine::ValidMineTarget(CBaseEntity *pOther)
 
 	if ( pOther->IsNPC() )
 	{
+		if ( rd_laser_mine_targets_everything.GetBool() )
+			return true;
+
 		if ( m_bFriendly.Get() && pOther->Classify() == CLASS_ASW_MARINE )		// friendly mines don't trigger on marines
 			return false;
 
@@ -334,3 +347,10 @@ void CASW_Laser_Mine::OnEntityDeleted( CBaseEntity *pEntity )
 		Explode( false );
 	}
 }
+
+void CASW_Laser_Mine::Event_Killed(const CTakeDamageInfo &info) {
+	m_takedamage = DAMAGE_NO;
+
+	Explode(true);
+}
+

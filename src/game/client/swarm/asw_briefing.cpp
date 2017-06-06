@@ -4,6 +4,7 @@
 #include "c_asw_marine_resource.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
+#include "c_team.h"
 #include "asw_equipment_list.h"
 #include "asw_marine_profile.h"
 #include "asw_weapon_parse.h"
@@ -15,6 +16,8 @@
 #include "asw_equip_req.h"
 #include "voice_status.h"
 #include "asw_campaign_info.h"
+#include "asw_deathmatch_mode.h"
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -104,6 +107,8 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 		if ( !pMR || pMR->GetCommander() != pLocalPlayer )
 			continue;
+		if ( ASWDeathmatchMode() && !pMR->IsInhabited() )
+			continue;
 
 		m_LobbySlotMapping[ 0 ].m_nMarineResourceIndex = i;
 		m_LobbySlotMapping[ 0 ].m_hMR = pMR;
@@ -173,6 +178,13 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 			if ( bAlreadyInList )
 				continue;
 
+            // don't add this player if he is in another team for team deathmatch
+            if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+            {
+                if ( pMR->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+                    continue;
+            }
+
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
 			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
 			m_LobbySlotMapping[ nSlot ].m_hMR = pMR;
@@ -207,7 +219,17 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		}
 
 		if ( nMarines == 0)
-		{
+        {
+            // don't add this player if he is in another team for team deathmatch
+            if ( ASWDeathmatchMode() /*&& ASWDeathmatchMode()->IsTeamDeathmatchEnabled()*/ )
+            {
+                C_ASW_Player *pPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
+                if ( !pPlayer )
+                    continue;
+                if ( pPlayer->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+                    continue;
+            }
+
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
 			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
 			m_LobbySlotMapping[ nSlot ].m_hMR = NULL;
@@ -248,6 +270,21 @@ const char* CASW_Briefing::GetLeaderName()
 		return "";
 
 	return pLeader->GetPlayerName();
+}
+
+const char* CASW_Briefing::GetTeamName()
+{
+    if ( !ASWGameResource() )
+        return "";
+
+    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+    if (!pPlayer)
+        return "";
+
+    if ( pPlayer->GetTeam() )
+        return pPlayer->GetTeam()->Get_Name();
+    else
+        return "";
 }
 
 bool CASW_Briefing::IsLocalPlayerLeader()
@@ -456,6 +493,20 @@ int CASW_Briefing::GetCommanderPromotion( int nLobbySlot )
 	return pPlayer->GetPromotion();
 }
 
+bool CASW_Briefing::IsFullyConnected( int nLobbySlot )
+{
+	if ( nLobbySlot < 0 || nLobbySlot >= NUM_BRIEFING_LOBBY_SLOTS )
+		return false;
+
+	UpdateLobbySlotMapping();
+
+	C_ASW_Player *pPlayer = m_LobbySlotMapping[ nLobbySlot ].m_hPlayer.Get();
+	if ( !pPlayer )
+		return false;
+
+	return pPlayer->HasFullyJoined();
+}
+
 ASW_Marine_Class CASW_Briefing::GetMarineClass( int nLobbySlot )
 {	
 	int nMarineResourceIndex = LobbySlotToMarineResourceIndex( nLobbySlot );
@@ -626,13 +677,13 @@ void CASW_Briefing::SelectMarine( int nOrder, int nProfileIndex, int nPreferredL
 	if ( !pPlayer )
 		return;
 
-	if ( IsOfflineGame() )
+	if ( ASWDeathmatchMode() )
 	{
-		pPlayer->RosterSelectMarineForSlot( nProfileIndex, nPreferredLobbySlot );
+		pPlayer->RosterSelectSingleMarine( nProfileIndex );
 	}
 	else
 	{
-		pPlayer->RosterSelectSingleMarine( nProfileIndex );
+		pPlayer->RosterSelectMarineForSlot( nProfileIndex, LobbySlotToMarineResourceIndex( nPreferredLobbySlot ) );
 	}
 
 	if ( gpGlobals->curtime - m_flLastSelectionChatterTime < 1.0f )
@@ -657,6 +708,16 @@ void CASW_Briefing::SelectMarine( int nOrder, int nProfileIndex, int nPreferredL
 			m_flLastSelectionChatterTime = gpGlobals->curtime;
 		}
 	}
+}
+
+void CASW_Briefing::SelectBot(int nOrder, int nProfileIndex)
+{
+	// for now, just select him
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (!pPlayer)
+		return;
+
+	pPlayer->RosterSelectMarineForSlot(nProfileIndex, -1);
 }
 
 bool CASW_Briefing::IsWeaponUnlocked( const char *szWeaponClass )
@@ -781,6 +842,10 @@ void CASW_Briefing::StartMission()
 
 bool CASW_Briefing::IsProfileSelectedBySomeoneElse( int nProfileIndex )
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return false;
@@ -802,6 +867,10 @@ bool CASW_Briefing::IsProfileSelectedBySomeoneElse( int nProfileIndex )
 
 bool CASW_Briefing::IsProfileSelected( int nProfileIndex )
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return false;
@@ -848,9 +917,11 @@ bool CASW_Briefing::UsingFixedSkillPoints()
 	return ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints();
 }
 
-void CASW_Briefing::SetChangingWeaponSlot( int nWeaponSlot )
+void CASW_Briefing::SetChangingWeaponSlot( int nLobbySlot, int nWeaponSlot )
 {
-	engine->ClientCmd( VarArgs( "cl_editing_slot %d", nWeaponSlot ) );
+	UpdateLobbySlotMapping();
+
+	engine->ClientCmd( VarArgs( "cl_editing_slot %d %d", nLobbySlot == -1 ? -1 : m_LobbySlotMapping[ nLobbySlot ].m_nMarineResourceIndex, nWeaponSlot ) );
 }
 
 int CASW_Briefing::GetChangingWeaponSlot( int nLobbySlot )
@@ -859,6 +930,9 @@ int CASW_Briefing::GetChangingWeaponSlot( int nLobbySlot )
 
 	C_ASW_Player *pPlayer = m_LobbySlotMapping[ nLobbySlot ].m_hPlayer.Get();
 	if ( !pPlayer )
+		return 0;
+
+	if ( pPlayer->m_nChangingMR.Get() != m_LobbySlotMapping[ nLobbySlot ].m_nMarineResourceIndex )
 		return 0;
 
 	return pPlayer->m_nChangingSlot.Get();

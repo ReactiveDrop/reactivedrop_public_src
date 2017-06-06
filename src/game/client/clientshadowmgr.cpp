@@ -129,8 +129,11 @@ static ConVar r_shadow_deferred_simd( "r_shadow_deferred_simd", "0" );
 
 static ConVar r_shadow_debug_spew( "r_shadow_debug_spew", "0", FCVAR_CHEAT );
 
-
+// reactivedrop: this cvar is changed in several places, we'll not touch it
+// instead we'll add ours cvar to enabled\disable shadows from flashlight
 ConVar r_flashlightdepthtexture( "r_flashlightdepthtexture", "1" );
+
+ConVar rd_flashlightshadows( "rd_flashlightshadows", "0", FCVAR_ARCHIVE, "If 1 marine's flashlight will cast high quality shadows" );
 
 #if defined( _X360 )
 ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "512" );
@@ -1064,6 +1067,7 @@ private:
 	// Initialize, shutdown render-to-texture shadows
 	void InitDepthTextureShadows();
 	void ShutdownDepthTextureShadows();
+	friend static void RDMaxDepthTextureShadowsChanged( IConVar *, const char *, float );
 
 	// Initialize, shutdown render-to-texture shadows
 	void InitRenderToTextureShadows();
@@ -1404,7 +1408,8 @@ void CClientShadowMgr::CalculateRenderTargetsAndSizes( void )
 		char defaultRes[] = "2048";
 		m_nDepthTextureResolution = atoi( CommandLine()->ParmValue( "-sfm_shadowmapres", defaultRes ) );
 	}
-	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : MAX_DEPTH_TEXTURE_SHADOWS;	// Just one shadow depth texture in games, more in tools
+	extern ConVar rd_max_depth_texture_shadows;
+	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : rd_max_depth_texture_shadows.GetInt();	// Just one shadow depth texture in games, more in tools
 }
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1540,6 +1545,19 @@ bool CClientShadowMgr::Init()
 	return true;
 }
 
+static void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	if ( CommandLine()->CheckParm( "-tools" ) != NULL )
+	{
+		return;
+	}
+
+	s_ClientShadowMgr.ShutdownDepthTextureShadows();
+	s_ClientShadowMgr.InitDepthTextureShadows();
+}
+
+ConVar rd_max_depth_texture_shadows( "rd_max_depth_texture_shadows", "1", FCVAR_ARCHIVE | FCVAR_NOT_CONNECTED, "Specifies the maximum number of high quality shadows to render. Watch out for perfomance issues", RDMaxDepthTextureShadowsChanged );
+
 void CClientShadowMgr::InitRenderTargets()
 {
 	m_bRenderTargetNeedsClear = false;
@@ -1572,7 +1590,7 @@ void CClientShadowMgr::InitRenderTargets()
 	if ( m_DepthTextureCache.Count() )
 	{
 		bool bTools = CommandLine()->CheckParm( "-tools" ) != NULL;
-		int nNumShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : MAX_DEPTH_TEXTURE_SHADOWS;
+		int nNumShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : rd_max_depth_texture_shadows.GetInt();
 		m_nLowResStart = bTools ? MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS_TOOLS : MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS;
 
 		if ( m_nLowResStart > nNumShadows )
@@ -5384,7 +5402,11 @@ void CClientShadowMgr::AdvanceFrame()
 //-----------------------------------------------------------------------------
 int CClientShadowMgr::BuildActiveShadowDepthList( const CViewSetup &viewSetup, int nMaxDepthShadows, ClientShadowHandle_t *pActiveDepthShadows, int &nNumHighRes )
 {
+#ifdef INFESTED_DLL
+	float fDist[ 1024 ];
+#else
 	float fDots[ 1024 ];
+#endif
 
 	nNumHighRes = 0;
 
@@ -5474,10 +5496,16 @@ int CClientShadowMgr::BuildActiveShadowDepthList( const CViewSetup &viewSetup, i
 			++nNumHighRes;
 		}
 
-		// Calculate the approximate distance to the nearest side
+#ifdef INFESTED_DLL
+		// Calculate the distance from the screen to the light
+		Vector vLightDirection = flashlightState.m_vecLightOrigin - viewSetup.origin;
+		fDist[ nActiveDepthShadowCount ] = vLightDirection.LengthSqr();
+#else
+		// Calculate the angle from the screen to the light
 		Vector vLightDirection = flashlightState.m_vecLightOrigin - viewSetup.origin;
 		VectorNormalize( vLightDirection );
 		fDots[ nActiveDepthShadowCount ] = vLightDirection.Dot( vViewForward );
+#endif
 
 		pActiveDepthShadows[ nActiveDepthShadowCount++ ] = i;
 	}
@@ -5487,12 +5515,22 @@ int CClientShadowMgr::BuildActiveShadowDepthList( const CViewSetup &viewSetup, i
 	{
 		for ( int j = 0; j < nActiveDepthShadowCount - i - 1; j++ )
 		{
+#ifdef INFESTED_DLL
+			if ( fDist[ j ] > fDist[ j + 1 ] )
+#define ARRAY_NAME fDist
+#else
 			if ( fDots[ j ] < fDots[ j + 1 ] )
+#define ARRAY_NAME fDots
+#endif
 			{
 				ClientShadowHandle_t nTemp = pActiveDepthShadows[ j ];
+				float fTemp = ARRAY_NAME[ j ];
 				pActiveDepthShadows[ j ] = pActiveDepthShadows[ j + 1 ];
+				ARRAY_NAME[ j ] = ARRAY_NAME[ j + 1 ];
 				pActiveDepthShadows[ j + 1 ] = nTemp;
+				ARRAY_NAME[ j + 1 ] = fTemp;
 			}
+#undef ARRAY_NAME
 		}
 	}
 

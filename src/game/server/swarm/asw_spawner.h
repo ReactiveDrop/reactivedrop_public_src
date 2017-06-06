@@ -40,6 +40,7 @@ public:
 	void					MissionStart(); // called by gamerules when mission begins
 
 	bool					ApplyCarnageMode( float fScaler, float fInvScaler );
+	void					SetInfinitelySpawnAliens( bool spawn_infinitely = true );
 
 	enum SpawnerState_t
 	{
@@ -80,5 +81,7 @@ protected:
 
 // scales up alien amounts (but makes them weaker)
 void ASW_ApplyCarnage_f(float fScaler);
+// reactivedrop: 
+void ASW_ApplyInfiniteSpawners_f(void);
 
 #endif /* _INCLUDED_ASW_SPAWNER_H */

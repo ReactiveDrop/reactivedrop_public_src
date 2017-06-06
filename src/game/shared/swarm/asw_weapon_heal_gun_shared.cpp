@@ -20,7 +20,6 @@
 #include "asw_game_resource.h"
 #include "ndebugoverlay.h"
 #include "asw_fail_advice.h"
-#include "asw_marine_speech.h"
 #include "asw_marine_profile.h"
 #include "asw_triggers.h"
 #endif
@@ -45,6 +44,7 @@ static const float SQRT3 = 1.732050807569; // for computing max extents inside a
 
 extern ConVar asw_laser_sight;
 extern ConVar asw_marine_special_heal_chatter_chance;
+ConVar rd_medgun_infinite_ammo( "rd_medgun_infinite_ammo", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If 1 the medgun have infinite ammo" );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Heal_Gun, DT_ASW_Weapon_Heal_Gun );
 
@@ -483,6 +483,9 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 	if ( !pTarget )
 		return;
 
+	if ( m_iClip1 <= 0 )
+		return;
+
 	// apply heal
 	int iHealAmount = MIN( GetHealAmount(), pTarget->GetMaxHealth() - ( pTarget->GetHealth() + pTarget->m_iSlowHealAmount ) );
 
@@ -521,8 +524,11 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 
 #endif
 
-	// decrement ammo
-	m_iClip1 -= 1;
+    if ( false == rd_medgun_infinite_ammo.GetBool() )
+    {
+	    // decrement ammo
+	    m_iClip1 -= 1;
+    }
 
 	// emit heal sound
 	StartHealSound();
@@ -551,17 +557,17 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 
 		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 
-		if ( pMarine )
+		if ( DestroyIfEmpty( true ) )
 		{
-			pMarine->Weapon_Detach(this);
-			if ( pMarine->GetActiveWeapon() == this )
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR )
 			{
-				pMarine->SwitchToNextBestWeapon( NULL );
+				char szName[ 256 ];
+				pMR->GetDisplayName( szName, sizeof( szName ) );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
 			}
 		}
-		Kill();
 
-		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 		bSkipChatter = true;
 	}
 	else if ( m_iClip1 == 10 )

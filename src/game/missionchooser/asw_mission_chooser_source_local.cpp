@@ -498,6 +498,12 @@ ASW_Mission_Chooser_Mission* CASW_Mission_Chooser_Source_Local::GetCampaign( int
 	return &campaign;
 }
 
+PublishedFileId_t CASW_Mission_Chooser_Source_Local::GetCampaignWorkshopID( int nIndex )
+{
+	// TODO
+	return k_PublishedFileIdInvalid;
+}
+
 int	 CASW_Mission_Chooser_Source_Local::GetNumCampaigns()
 {
 	if (!m_bBuiltCampaignList)
@@ -1136,7 +1142,53 @@ bool CASW_Mission_Chooser_Source_Local::ASW_Campaign_CreateNewSaveGame(char *szF
 // normal alphabetical sorting for map/campaigns
 bool CASW_Mission_Chooser_Source_Local::MapNameLess::Less( MapListName const& src1, MapListName const& src2, void *pCtx )
 {
-	return !!Q_strcmp(src1.szMapName,src2.szMapName);
+	return Q_stricmp( src1.szMapName, src2.szMapName ) < 0;
+}
+
+static const char *s_szCampaignNamesFirst[] =
+{
+	"deathmatch_campaign.txt",
+	"jacob.txt",
+	"rd-area9800.txt",
+	"rd_lanasescape_campaign.txt",
+	"rd-operationcleansweep.txt",
+	"rd_orions_threat.txt",
+	"rd_paranoia.txt",
+	"rd_research7.txt",
+	"rd-tarnorcampaign1.txt",
+	"tilarus5.txt",
+	"rd_bonus_missions.txt"
+};
+
+bool CASW_Mission_Chooser_Source_Local::CampaignNameLess::Less( MapListName const& src1, MapListName const& src2, void *pCtx )
+{
+	int index1 = NELEMS( s_szCampaignNamesFirst );
+	int index2 = NELEMS( s_szCampaignNamesFirst );
+
+	for ( int i = 0; i < NELEMS( s_szCampaignNamesFirst ); i++ )
+	{
+		if ( !Q_stricmp( s_szCampaignNamesFirst[i], src1.szMapName ) )
+		{
+			index1 = i;
+			break;
+		}
+	}
+
+	for ( int i = 0; i < NELEMS( s_szCampaignNamesFirst ); i++ )
+	{
+		if ( !Q_stricmp( s_szCampaignNamesFirst[i], src2.szMapName ) )
+		{
+			index2 = i;
+			break;
+		}
+	}
+
+	if ( index1 != index2 )
+	{
+		return index1 < index2;
+	}
+
+	return Q_stricmp( src1.szMapName, src2.szMapName ) < 0;
 }
 
 // sort by the datetime string
@@ -1264,6 +1316,36 @@ const char* CASW_Mission_Chooser_Source_Local::GetCampaignSaveIntroMap(const cha
 	pSaveKeyValues->deleteThis();
 	pCampaignKeyValues->deleteThis();
 	return ASW_DEFAULT_INTRO_MAP;
+}
+
+void CASW_Mission_Chooser_Source_Local::ClearCache()
+{
+	m_MissionDetails.PurgeAndDeleteElements();
+	m_CampaignDetails.PurgeAndDeleteElements();
+
+	if ( m_bBuildingMapList )
+	{
+		Sys_FindClose( g_hmapfind );
+	}
+	m_bBuildingMapList = false;
+	m_bBuiltMapList = false;
+	ClearMapList();
+
+	if ( m_bBuildingCampaignList )
+	{
+		Sys_FindClose( g_hcampaignfind );
+	}
+	m_bBuildingCampaignList = false;
+	m_bBuiltCampaignList = false;
+	ClearCampaignList();
+
+	if ( m_bBuildingSavedCampaignList )
+	{
+		Sys_FindClose( g_hsavedfind );
+	}
+	m_bBuildingSavedCampaignList = false;
+	m_bBuiltSavedCampaignList = false;
+	ClearSavedCampaignList();
 }
 
 KeyValues *CASW_Mission_Chooser_Source_Local::GetMissionDetails( const char *szMissionName )

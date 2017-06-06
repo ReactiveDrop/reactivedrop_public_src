@@ -114,6 +114,12 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
 		return;
 
+	// reactivedrop: added ASW_COLLISION_GROUP_PASSABLE because 
+	// grenades from Grenade Launcher detonate on fire mines while
+	// all other grenades pass it
+	if ( pOther->GetCollisionGroup() == ASW_COLLISION_GROUP_PASSABLE )
+		return;
+
 	if ( m_bExplodeOnWorldContact )
 	{
 		Detonate();

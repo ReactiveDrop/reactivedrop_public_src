@@ -940,6 +940,7 @@ bool CAchievementMgr::CheckAchievementsEnabled( )
 		}
 	}
 
+#if 0
 #ifdef INFESTED_DLL
 #ifndef _DEBUG
 	// no achievements in singleplayer
@@ -948,6 +949,7 @@ bool CAchievementMgr::CheckAchievementsEnabled( )
 		DevMsg( "Achievements disabled in singleplayer.\n" );
 		return false;
 	}
+#endif
 #endif
 #endif
 

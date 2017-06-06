@@ -90,6 +90,7 @@ private:
 	BaseModHybridButton	*m_btnAdvanced;
 
 	DropDownMenu		*m_drpModelDetail;
+	DropDownMenu		*m_drpBloomlDetail;
 	DropDownMenu		*m_drpPagedPoolMem;
 	DropDownMenu		*m_drpAntialias;
 	DropDownMenu		*m_drpFiltering;
@@ -97,6 +98,7 @@ private:
 	DropDownMenu		*m_drpQueuedMode;
 	DropDownMenu		*m_drpShaderDetail;
 	DropDownMenu		*m_drpCPUDetail;
+	DropDownMenu		*m_drpDepthBlur;
 
 	CNB_Header_Footer *m_pHeaderFooter;
 
@@ -117,6 +119,7 @@ private:
 	bool	m_bWindowed;
 	bool	m_bNoBorder;
 	int		m_iModelTextureDetail;
+	int 	m_iBloomDetail;
 	int		m_iPagedPoolMem;
 	int		m_iAntiAlias;
 	int		m_iFiltering;
@@ -129,6 +132,7 @@ private:
 	int		m_iCPUDetail;
 	int		m_flFilmGrain;
 	bool	m_bLockMouse;
+	bool	m_bDepthBlur;
 
 	float	m_flFilmGrainInitialValue;
 

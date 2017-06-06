@@ -13,11 +13,16 @@
 	#include "c_asw_campaign_save.h"
 	#include "c_asw_ammo.h"
 	#include "voice_status.h"
+	#include "gamestringpool.h"
+	#include "c_user_message_register.h"
+	#define CASW_Equip_Req C_ASW_Equip_Req
+	#include "asw_equip_req.h"
 	#define CASW_Weapon C_ASW_Weapon
 	#define CAI_BaseNPC C_AI_BaseNPC
 	#define CASW_Flare_Projectile C_ASW_Flare_Projectile
 	#define CASW_Campaign_Save C_ASW_Campaign_Save
 	#define CASW_Ammo C_ASW_Ammo
+	#include "c_asw_steamstats.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -85,7 +90,9 @@
 	#include "asw_buffgrenade_projectile.h"
 	#include "asw_achievements.h"
 	#include "asw_director.h"
+	#include "team.h"
 #endif
+#include "fmtstr.h"
 #include "game_timescale_shared.h"
 #include "asw_gamerules.h"
 #include "asw_equipment_list.h"
@@ -95,10 +102,14 @@
 #include "asw_weapon_ammo_bag_shared.h"
 #include "takedamageinfo.h"
 #include "asw_holdout_mode.h"
+#include "asw_deathmatch_mode.h"
 #include "asw_powerup_shared.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_random_missions.h"
 #include "missionchooser/iasw_map_builder.h"
+#include "rd_challenges_shared.h"
+#include "rd_workshop.h"
+#include "rd_lobby_utils.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -116,18 +127,32 @@ extern ConVar old_radius_damage;
 	extern ConVar asw_horde;
 	extern ConVar asw_director_controls_spawns;
 	extern ConVar asw_medal_barrel_kills;
+	extern ConVar rd_killingspree_time_limit;
+	extern ConVar rd_quake_sounds;
 	ConVar asw_objective_slowdown_time( "asw_objective_slowdown_time", "1.8", FCVAR_CHEAT, "Length of time that the slowdown effect lasts." );
 	ConVar asw_marine_explosion_protection("asw_marine_explosion_protection", "0.5", FCVAR_CHEAT, "Reduction of explosion radius against marines");
 	ConVar asw_door_explosion_boost("asw_door_explosion_boost", "2.0", FCVAR_CHEAT, "Sets damage scale for grenades vs doors");
-	ConVar asw_difficulty_alien_health_step("asw_difficulty_alien_health_step", "0.2", 0, "How much alien health is changed per mission difficulty level");
-	ConVar asw_difficulty_alien_damage_step("asw_difficulty_alien_damage_step", "0.2", 0, "How much alien damage is changed per mission difficulty level");
+	// Alien modifiers for difficulty level
+	// Base mission difficulty is:
+	//    Easy   = 3
+	//    Normal = 5
+	//    Hard   = 7
+	//    Insane = 10
+	//  With campaign map modifers affecting this number (-2 to +2)
+
+	// Alien health and damage modifiers are applied for every step away from
+	// the base mission difficulty level of 5.
+
+	// 20% extra health for every difficulty above 5
+	ConVar asw_difficulty_alien_health_step("asw_difficulty_alien_health_step", "0.2", FCVAR_CHEAT, "How much alien health is changed per mission difficulty level");
+	// 20% extra damage for every difficulty above 5
+	ConVar asw_difficulty_alien_damage_step("asw_difficulty_alien_damage_step", "0.2", FCVAR_CHEAT, "How much alien damage is changed per mission difficulty level");
 	ConVar asw_ww_chatter_interval_min("asw_ww_chatter_interval_min", "200", 0, "Min time between wildcat and wolfe conversation");
 	ConVar asw_ww_chatter_interval_max("asw_ww_chatter_interval_max", "260", 0, "Max time between wildcat and wolfe conversation");
 	ConVar asw_compliment_chatter_interval_min("asw_compliment_chatter_interval_min", "180", 0, "Min time between kill compliments");
 	ConVar asw_compliment_chatter_interval_max("asw_compliment_chatter_interval_max", "240", 0, "Max time between kill compliments");	
 	ConVar asw_default_campaign("asw_default_campaign", "jacob", FCVAR_ARCHIVE, "Default campaign used when dedicated server restarts");
-	ConVar asw_fair_marine_rules("asw_fair_marine_rules", "1", FCVAR_ARCHIVE, "If set, fair marine selection rules are enforced during the briefing");
-	ConVar asw_override_max_marines("asw_override_max_marines", "0", FCVAR_CHEAT, "Overrides how many marines can be selected for (testing).");
+	ConVar rd_max_marines("rd_max_marines", "-1", FCVAR_CHEAT, "Sets how many marines can be selected"); 
 	ConVar asw_last_game_variation("asw_last_game_variation", "0", FCVAR_ARCHIVE, "Which game variation was used last game");
 	ConVar asw_bonus_charges("asw_bonus_charges", "0", FCVAR_CHEAT, "Bonus ammo given to starting equipment");
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
@@ -136,9 +161,23 @@ extern ConVar old_radius_damage;
 	ConVar sv_vote_kick_ban_duration("sv_vote_kick_ban_duration", "5", 0, "How long should a kick vote ban someone from the server? (in minutes)");
 	ConVar sv_timeout_when_fully_connected( "sv_timeout_when_fully_connected", "30", FCVAR_NONE, "Once fully connected, player will be kicked if he doesn't send a network message within this interval." );
 	ConVar mm_swarm_state( "mm_swarm_state", "ingame", FCVAR_DEVELOPMENTONLY );
+	ConVar rd_request_experience("rd_request_experience", "1", FCVAR_DEVELOPMENTONLY, "For dev, if 1 RequestExperience function is called. Used for standard coop");
+	ConVar rd_reassign_marines("rd_reassign_marines", "1", FCVAR_NONE, "For dev, if 1 ReassignMarines function will be called");
+	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 
-	static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
+	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
+		// don't allow changing challenge convars from their desired values
+		if ( pConVar && ASWGameRules() && ASWGameRules()->m_SavedConvars_Challenge.Defined( pConVar->GetName() ) )
+		{
+			const char *pszDesiredValue = STRING( ASWGameRules()->m_SavedConvars_Challenge[pConVar->GetName()] );
+			if ( Q_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
+			{
+				pConVar->SetValue( pszDesiredValue );
+				return;
+			}
+		}
+
 		// update sv_tags to force an update of the matchmaking tags
 		static ConVarRef sv_tags( "sv_tags" );
 
@@ -149,12 +188,146 @@ extern ConVar old_radius_damage;
 			sv_tags.SetValue( buffer );
 		}
 	}
+	// reactivedrop: this callback function is called when rd_weapon_selection_rules cvar is
+	// changed. It checks whether marine has not allowed weapons selected and replaces them
+	// with an allowed alternative. Such as replace all weapons with rifles for Rifle Mod
+	static void EnforceWeaponSelectionRules( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
+	{
+		if ( ASWGameRules() && ASWGameResource() )
+		{
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( !pMR )
+				{
+					continue;
+				}
+
+				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
+				{
+					pMR->m_iWeaponsInSlots.Set( j, ASWGameRules()->ApplyWeaponSelectionRules( pMR, j, pMR->m_iWeaponsInSlots.Get( j ) ) );
+				}
+			}
+		}
+	}
 #else
 	extern ConVar asw_controls;
 #endif
 
+static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
+{
+#ifdef GAME_DLL
+	UpdateMatchmakingTagsCallback_Server( pConVar, pOldValue, flOldValue );
+#endif
+
+	if ( !ASWGameRules() || !UTIL_RD_IsLobbyOwner() )
+	{
+		return;
+	}
+
+	steamapicontext->SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
+	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
+
+	PublishedFileId_t missionAddonID = ASWGameRules()->m_iMissionWorkshopID.Get();
+	if ( missionAddonID == k_PublishedFileIdInvalid )
+	{
+		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:workshop" );
+	}
+	else
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:workshop", missionAddonID );
+	}
+
+#ifdef CLIENT_DLL
+	if ( g_ASW_Steamstats.IsOfficialCampaign() )
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:official", "1" );
+	}
+	else
+	{
+		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
+	}
+#endif
+
+	if ( ASWDeathmatchMode() )
+	{
+		switch ( ASWDeathmatchMode()->GetGameMode() )
+		{
+		case GAMEMODE_DEATHMATCH:
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", "deathmatch" );
+			break;
+		case GAMEMODE_INSTAGIB:
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", "instagib" );
+			break;
+		case GAMEMODE_GUNGAME:
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", "gungame" );
+			break;
+		case GAMEMODE_TEAMDEATHMATCH:
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", "teamdeathmatch" );
+			break;
+		default:
+			AssertOnce( !"Unhandled deathmatch mode" );
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", CFmtStr( "unknown_%d", ASWDeathmatchMode()->GetGameMode() ) );
+			break;
+		}
+	}
+	else
+	{
+		UTIL_RD_RemoveCurrentLobbyData( "game:deathmatch" );
+	}
+
+	extern ConVar rd_challenge;
+
+	if ( ASWDeathmatchMode() )
+	{
+		UTIL_RD_RemoveCurrentLobbyData( "game:challenge" );
+		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:workshop" );
+		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:displaytitle" );
+	}
+	else if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "game:challenge", "0" );
+		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:workshop" );
+		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:displaytitle" );
+	}
+	else
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "game:challenge", rd_challenge.GetString() );
+		PublishedFileId_t challengeAddonID = ReactiveDropChallenges::WorkshopID( rd_challenge.GetString() );
+		if ( challengeAddonID == k_PublishedFileIdInvalid )
+		{
+			UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:workshop" );
+		}
+		else
+		{
+			UTIL_RD_UpdateCurrentLobbyData( "game:challengeinfo:workshop", challengeAddonID );
+		}
+		UTIL_RD_UpdateCurrentLobbyData( "game:challengeinfo:displaytitle", ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
+	}
+	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", ASWGameRules()->IsOnslaught() ? "1" : "0" );
+	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", ASWGameRules()->IsHardcoreFF() ? "1" : "0" );
+}
+
+// moved here for deathmatch
+ConVar asw_marine_names("asw_marine_names", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Whether to show the marine name");
+ConVar asw_world_healthbars("asw_world_healthbars", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Shows health bars in the game world");
+ConVar asw_world_usingbars("asw_world_usingbars", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Shows using bars in the game world");
+ConVar rd_show_arrow_to_marine("rd_show_arrow_to_marine", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 then arrows show where marines are"); 
+//
+// also for deathmatch
+ConVar rd_show_others_laser_pointer("rd_show_others_laser_pointer", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Allows to show laser pointers of other marines, not my marine");
+ConVar rd_paint_marine_blips("rd_paint_marine_blips", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 marines' position and facing is shown on minimap");
+ConVar rd_paint_scanner_blips("rd_paint_scanner_blips", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 scanner blips are shown on minimap");
+ConVar rd_deathmatch_loadout_allowed("rd_deathmatch_loadout_allowed", "0", FCVAR_REPLICATED, "If set to 1 players can choose weapons they spawn with");
+ConVar rd_respawn_time( "rd_respawn_time", "0.2",  FCVAR_REPLICATED, "Number of seconds after you can respawn in Deathmatch", true, 0.2f, false, 1000.0f);
+ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "1 enable ground shooting, 0 disabled" );
+// for deathmatch
+
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
-ConVar asw_marine_death_cam("asw_marine_death_cam", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Use death cam");
+ConVar asw_marine_death_cam_slowdown("asw_marine_death_cam_slowdown", "1", FCVAR_REPLICATED | FCVAR_DEMO, "Slow down time when a marine dies");
+#ifdef CLIENT_DLL
+ConVar asw_marine_death_cam("asw_marine_death_cam", "1", FCVAR_ARCHIVE | FCVAR_DEMO, "Use death cam");
+#endif
 ConVar asw_marine_death_cam_time_interp("asw_marine_death_cam_time_interp", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to blend into the death cam");
 ConVar asw_marine_death_cam_time_interp_out("asw_marine_death_cam_time_interp_out", "0.75", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to blend out of the death cam");
 ConVar asw_marine_death_cam_time("asw_marine_death_cam_time", "0.4", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to do the slowdown death cam");
@@ -165,33 +338,49 @@ ConVar asw_campaign_death("asw_campaign_death", "0", FCVAR_REPLICATED, "Whether 
 ConVar asw_objective_update_time_scale("asw_objective_update_time_scale", "0.2", FCVAR_CHEAT | FCVAR_REPLICATED, "Time scale during objective updates");
 ConVar asw_stim_time_scale("asw_stim_time_scale", "0.35", FCVAR_REPLICATED | FCVAR_CHEAT, "Time scale during stimpack slomo");
 ConVar asw_time_scale_delay("asw_time_scale_delay", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT, "Delay before timescale changes to give a chance for the client to comply and predict.");
-ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "0", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
+ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "1", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
 ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode, acceptable values are campaign and single_mission.", false, 0.0f, false, 0.0f );
-ConVar mm_max_players( "mm_max_players", "4", FCVAR_REPLICATED | FCVAR_CHEAT, "Max players for matchmaking system" );
-ConVar asw_sentry_friendly_fire_scale( "asw_sentry_friendly_fire_scale", "0", FCVAR_REPLICATED, "Damage scale for sentry gun friendly fire"
+// this cvar is tricky if we want to have lobbies with different number of slots(e.g. 4 or 8)
+// when client creates a lobby it sets the number of slots for lobby
+// when client searches for lobbies and this cvar is set to 3 then all 4+ player lobbies will be unjoinable, the join button will be greyed out
+// when client connects to a dedicated server which has lobbies enabled, the new lobby with this number of slots will be created, no matter what maxplayers value server has, so the client desides how big the lobby will be
+ConVar mm_max_players( "mm_max_players", "32", FCVAR_REPLICATED, "Max players for matchmaking system" );
+ConVar asw_sentry_friendly_fire_scale( "asw_sentry_friendly_fire_scale", "0", FCVAR_REPLICATED, "Damage scale for sentry gun friendly fire", UpdateMatchmakingTagsCallback );
+ConVar asw_marine_ff_absorption( "asw_marine_ff_absorption", "1", FCVAR_REPLICATED, "Friendly fire absorption style (0=none 1=ramp up 2=ramp down)", UpdateMatchmakingTagsCallback );
+ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn", UpdateMatchmakingTagsCallback );
+ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn", UpdateMatchmakingTagsCallback );
+ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
+
+ConVar rd_weapon_selection_rules( "rd_weapon_selection_rules", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 = level 1, 2 = riflemod classic, 3 = no ammo"
 #ifdef GAME_DLL
-	,UpdateMatchmakingTagsCallback );
-#else
-	 );
-#endif
-ConVar asw_marine_ff_absorption("asw_marine_ff_absorption", "1", FCVAR_REPLICATED, "Friendly fire absorption style (0=none 1=ramp up 2=ramp down)"
-#ifdef GAME_DLL
-	,UpdateMatchmakingTagsCallback );
+	, EnforceWeaponSelectionRules );
 #else
 	);
 #endif
-ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn"
+ConVar rd_weapon_requirement_override( "rd_weapon_requirement_override", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 = asw_equip_req wins, 1 = rd_weapon_selection_rules wins"
 #ifdef GAME_DLL
-	  ,UpdateMatchmakingTagsCallback );
+	, EnforceWeaponSelectionRules );
 #else
-	  );
+	);
 #endif
-ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn"
-#ifdef GAME_DLL
-	 ,UpdateMatchmakingTagsCallback );
-#else
-	 );
-#endif
+ConVar rd_carnage_scale( "rd_carnage_scale", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "the factor used to scale the amount of aliens in each drone spawner" );
+ConVar rd_heavy_scale( "rd_heavy_scale", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "the factor used to scale aliens' health" );
+ConVar rd_alien_speed_scale( "rd_alien_speed_scale", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "the factor used to scale aliens' speed" );
+ConVar rd_refill_secondary( "rd_refill_secondary", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 = false, 1 = true. If true the secondary ammo is picked up too" );
+ConVar rd_allow_revive( "rd_allow_revive", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar rd_hp_regen( "rd_hp_regen", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 disable marines' health regeneration" );
+ConVar rd_add_bots( "rd_add_bots", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 add bots to fill free slots, 0 don't add" );
+ConVar rd_restrict_weapon( "rd_restrict_weapon", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Default weapon to give during weapon restricted mode" );
+ConVar rd_ammo_bonus( "rd_ammo_bonus", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar rd_infinite_spawners( "rd_infinite_spawners", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all spawners will be set to infinitely spawn aliens" );
+ConVar rd_hud_hide_clips( "rd_hud_hide_clips", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar rd_biomass_ignite_from_explosions( "rd_biomass_ignite_from_explosions", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1, biomass will ignite from blast damage" );
+ConVar rd_spawn_medkits( "rd_spawn_medkits", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Will spawn a med kit from 31st killed alien is set to 31" );
+ConVar rd_spawn_ammo( "rd_spawn_ammo", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Will spawn an ammo box from 51st killed alien if set to 51" );
+ConVar rd_alien_num_min_players( "rd_alien_num_min_players", "4", FCVAR_REPLICATED | FCVAR_CHEAT, "with this many or fewer players, alien number scale will use the minimum value" );
+ConVar rd_alien_num_max_players( "rd_alien_num_max_players", "8", FCVAR_REPLICATED | FCVAR_CHEAT, "with this many or more players, alien number scale will use the maximum value" );
+ConVar rd_alien_num_min_scale( "rd_alien_num_min_scale", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "the minimum alien number scale for co-op" );
+ConVar rd_alien_num_max_scale( "rd_alien_num_max_scale", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "the maximum alien number scale for co-op" );
 
 // ASW Weapons
 // Rifle
@@ -210,6 +399,10 @@ ConVar	sk_max_asw_ag				( "sk_max_asw_ag","0", FCVAR_REPLICATED);
 ConVar	sk_plr_dmg_asw_sg			( "sk_plr_dmg_asw_sg","0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_asw_sg			( "sk_npc_dmg_asw_sg","0", FCVAR_REPLICATED);
 ConVar	sk_max_asw_sg				( "sk_max_asw_sg","0", FCVAR_REPLICATED);
+// Shotgun (secondary)
+ConVar	sk_plr_dmg_asw_sg_g			( "sk_plr_dmg_asw_sg_g","0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_asw_sg_g			( "sk_npc_dmg_asw_sg_g","0", FCVAR_REPLICATED);
+ConVar	sk_max_asw_sg_g				( "sk_max_asw_sg_g","0", FCVAR_REPLICATED);
 // Assault Shotgun
 ConVar	sk_plr_dmg_asw_asg			( "sk_plr_dmg_asw_asg","0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_asw_asg			( "sk_npc_dmg_asw_asg","0", FCVAR_REPLICATED);
@@ -284,15 +477,66 @@ ConVar	sk_max_asw_gl				( "sk_max_asw_gl","0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_asw_sniper			( "sk_npc_dmg_asw_sniper","0", FCVAR_REPLICATED);
 ConVar	sk_max_asw_sniper				( "sk_max_asw_sniper","0", FCVAR_REPLICATED);
 
+// Desert Eagle
+ConVar	sk_plr_dmg_asw_deagle			( "sk_plr_dmg_asw_deagle","0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_asw_deagle			( "sk_npc_dmg_asw_deagle","0", FCVAR_REPLICATED);
+ConVar	sk_max_asw_deagle				( "sk_max_asw_deagle","0", FCVAR_REPLICATED);
+
+// Devastator Automated Heavy Shotgun  
+ConVar	sk_plr_dmg_asw_devastator		( "sk_plr_dmg_asw_devastator", "0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_devastator		( "sk_npc_dmg_asw_devastator", "0", FCVAR_REPLICATED);
+ConVar	sk_max_asw_devastator			( "sk_max_asw_devastator", "0", FCVAR_REPLICATED);
+
+// 50 Cal Magine Gun
+ConVar	sk_plr_dmg_asw_50calmg			( "sk_plr_dmg_asw_50calmg", "0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_50calmg			( "sk_npc_dmg_asw_50calmg", "0", FCVAR_REPLICATED);
+ConVar	sk_max_asw_50calmg				( "sk_max_asw_50calmg", "0", FCVAR_REPLICATED);
+
+ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
+
+// reactivedrop: adding these weapon damage overrides for PvP 
+ConVar	rd_pvp_shotgun_dmg("rd_pvp_shotgun_dmg",	"0", FCVAR_REPLICATED);
+ConVar	rd_pvp_rifle_dmg("rd_pvp_rifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_prifle_dmg("rd_pvp_prifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_autogun_dmg("rd_pvp_autogun_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_vindicator_dmg("rd_pvp_vindicator_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_pistol_dmg("rd_pvp_pistol_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_railgun_dmg("rd_pvp_railgun_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_pdw_dmg("rd_pvp_pdw_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_flamer_dmg("rd_pvp_flamer_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_minigun_dmg("rd_pvp_minigun_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_sniper_dmg("rd_pvp_sniper_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_chainsaw_dmg("rd_pvp_chainsaw_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_grenade_launcher_dmg("rd_pvp_grenade_launcher_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_mininglaser_dmg("rd_pvp_mininglaser_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_deagle_dmg("rd_pvp_deagle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_devastator_dmg("rd_pvp_devastator_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_combat_rifle_dmg("rd_pvp_combat_rifle_dmg", "0", FCVAR_REPLICATED);
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
-ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Fraction of players needed to activate a kick vote");
-ConVar asw_vote_leader_fraction("asw_vote_leader_fraction", "0.6", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Fraction of players needed to activate a leader vote");
-ConVar asw_vote_map_fraction("asw_vote_map_fraction", "0.6", FCVAR_REPLICATED | FCVAR_ARCHIVE, "Fraction of players needed to activate a map vote");
+ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a kick vote");
+ConVar asw_vote_leader_fraction("asw_vote_leader_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a leader vote");
+ConVar asw_vote_map_fraction("asw_vote_map_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a map vote");
 ConVar asw_marine_collision("asw_marine_collision", "0", FCVAR_REPLICATED, "Whether marines collide with each other or not, in a multiplayer game");
-ConVar asw_skill( "asw_skill","2", FCVAR_REPLICATED | FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX, "Game skill level (1-5).", true, 1, true, 5 );
+ConVar asw_skill( "asw_skill","2", FCVAR_REPLICATED, "Game skill level (1-5).", true, 1, true, 5 );
 ConVar asw_money( "asw_money", "0", FCVAR_REPLICATED, "Can players collect money?" );
 ConVar asw_client_build_maps("asw_client_build_maps", "0", FCVAR_REPLICATED, "Whether clients compile random maps rather than getting sent them");
+ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won");
+ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines");
+ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns");
+ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_REPLICATED, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1 );
+
+#define ADD_STAT( field, amount ) \
+			ConVarRef asw_stats_verbose( "asw_stats_verbose" );\
+			if ( asw_stats_verbose.GetBool() ) \
+			{ \
+				DevMsg( "marine %d (%s %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), #field, pMR->field, amount ); \
+			} \
+			pMR->field += amount;
 
 REGISTER_GAMERULES_CLASS( CAlienSwarm );
 
@@ -326,6 +570,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropFloat(RECVINFO(m_fMarineDeathTime)),
 		RecvPropVector(RECVINFO(m_vMarineDeathPos)),
 		RecvPropInt(RECVINFO(m_nMarineForDeathCam)),
+		RecvPropFloat(RECVINFO(m_fMissionStartedTime)),
+		RecvPropInt(RECVINFO(m_iMissionWorkshopID)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -355,16 +601,39 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropFloat(SENDINFO(m_fMarineDeathTime), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vMarineDeathPos)),
 		SendPropInt(SENDINFO(m_nMarineForDeathCam), 8),
+		SendPropFloat(SENDINFO(m_fMissionStartedTime)),
+		SendPropInt(SENDINFO(m_iMissionWorkshopID), 64, SPROP_UNSIGNED),
 	#endif
 END_NETWORK_TABLE()
 
 
 BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_iSpeedrunTime, FIELD_INTEGER, "speedruntime" ),
+	DEFINE_KEYFIELD( m_iJumpJetType,  FIELD_INTEGER, "jumpjettype" ),
+	DEFINE_KEYFIELD( m_bAllowCameraRotation, FIELD_BOOLEAN, "allowcamerarotation" ),
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( asw_gamerules, CAlienSwarmProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( AlienSwarmProxy, DT_AlienSwarmProxy )
+
+static CAlienSwarmProxy *g_pSwarmProxy = NULL;
+
+CAlienSwarmProxy::CAlienSwarmProxy()
+{
+	m_iSpeedrunTime = 0;
+	m_iJumpJetType = 0;
+	m_bAllowCameraRotation = false;
+
+	g_pSwarmProxy = this;
+}
+
+CAlienSwarmProxy::~CAlienSwarmProxy()
+{
+	if ( g_pSwarmProxy == this )
+	{
+		g_pSwarmProxy = NULL;
+	}
+}
 
 #ifdef CLIENT_DLL
 	void CAlienSwarmProxy::OnDataChanged( DataUpdateType_t updateType )
@@ -384,7 +653,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED( AlienSwarmProxy, DT_AlienSwarmProxy )
 	}
 
 	BEGIN_RECV_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
-		RecvPropDataTable( "asw_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_ASWGameRules ), RecvProxy_ASWGameRules )		
+		RecvPropDataTable( "asw_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_ASWGameRules ), RecvProxy_ASWGameRules ),
+		RecvPropBool( RECVINFO( m_bAllowCameraRotation ) ),		
 	END_RECV_TABLE()
 #else
 	void* SendProxy_ASWGameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
@@ -396,7 +666,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED( AlienSwarmProxy, DT_AlienSwarmProxy )
 	}
 
 	BEGIN_SEND_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
-		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules )
+		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules ),
+		SendPropBool( SENDINFO( m_bAllowCameraRotation ) ),
 	END_SEND_TABLE()
 #endif
 
@@ -487,6 +758,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("ASW_AG",			DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_ag",		"sk_npc_dmg_asw_ag",		"sk_max_asw_ag",		BULLET_IMPULSE(200, 1225),	0 );
 		// shotgun
 		def.AddAmmoType("ASW_SG",			DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_sg",		"sk_npc_dmg_asw_sg",		"sk_max_asw_sg",		BULLET_IMPULSE(200, 1225),	0 );
+		// shotgun (secondary)
+		def.AddAmmoType("ASW_SG_G",			DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_sg_g",		"sk_npc_dmg_asw_sg_g",		"sk_max_asw_sg_g",		BULLET_IMPULSE(200, 1225),	0 );
 		// assault shotgun
 		def.AddAmmoType("ASW_ASG",			DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_asg",		"sk_npc_dmg_asw_asg",		"sk_max_asw_asg",		BULLET_IMPULSE(200, 1225),	0 );
 		// flamer
@@ -527,6 +800,12 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("ASW_GL",			DMG_BURN,					TRACER_NONE,	"sk_npc_dmg_asw_gl",			"sk_npc_dmg_asw_gl",			"sk_max_asw_gl",		BULLET_IMPULSE(200, 1225),	0 );
 		// Sniper Rifle
 		def.AddAmmoType("ASW_SNIPER",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_npc_dmg_asw_sniper",		"sk_npc_dmg_asw_sniper",			"sk_max_asw_sniper",		BULLET_IMPULSE(200, 1225),	0 );
+		// desert eagle
+		def.AddAmmoType("ASW_DEAGLE",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_deagle",		"sk_npc_dmg_asw_deagle",			"sk_max_asw_deagle",		BULLET_IMPULSE(200, 1225),	0 );
+		// devastator (automated heavy shotgun)
+		def.AddAmmoType("ASW_DEVASTATOR",	DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_devastator",	"sk_npc_dmg_asw_devastator",		"sk_max_asw_devastator",	BULLET_IMPULSE(200, 1225), 0);
+		// 
+		def.AddAmmoType("ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
 	}
 
 	return &def;
@@ -548,6 +827,7 @@ CAlienSwarm::CAlienSwarm()
 	m_hMarineDeathRagdoll = NULL;
 	m_fDeathCamYawAngleOffset = 0.0f;
 	m_iPreviousGameState = 200;
+	m_iPreviousMissionWorkshopID = 1; // impossible workshop ID
 
 	engine->SetPitchScale( 1.0f );
 
@@ -559,16 +839,18 @@ CAlienSwarm::CAlienSwarm()
 }
 
 CAlienSwarm::~CAlienSwarm()
-{	
+{
+	RevertSavedConvars();
+
 	Msg("C_AlienSwarm deleted\n");
 
 	GameTimescale()->SetDesiredTimescale( 1.0f );
 	engine->SetPitchScale( 1.0f );
 }
 
-float CAlienSwarm::GetMarineDeathCamInterp( void )
+float CAlienSwarm::GetMarineDeathCamInterp( bool bIgnoreCvar )
 {
-	if ( !asw_marine_death_cam.GetBool() || m_nMarineForDeathCam == -1 || m_fMarineDeathTime <= 0.0f )
+	if ( !asw_marine_death_cam_slowdown.GetBool() || ( !asw_marine_death_cam.GetBool() && !bIgnoreCvar && !ASWDeathmatchMode() ) || m_nMarineForDeathCam == -1 || m_fMarineDeathTime <= 0.0f )
 		return 0.0f;
 
 	bool bNewStep = false;
@@ -602,7 +884,7 @@ float CAlienSwarm::GetMarineDeathCamInterp( void )
 		m_fMarineDeathCamRealtime = gpGlobals->realtime;
 	}
 
-	C_ASW_Marine *pLocalMarine = C_ASW_Marine::GetLocalMarine();
+	C_ASW_Marine *pLocalMarine = C_ASW_Marine::GetViewMarine();
 	bool bLocal = ( !pLocalMarine || !pLocalMarine->IsAlive() );
 
 	float flHoldTime = ( bLocal ? asw_marine_death_cam_time_local_hold.GetFloat() : asw_marine_death_cam_hold.GetFloat() );
@@ -640,6 +922,17 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 			event->SetInt( "state", m_iPreviousGameState );
 			gameeventmanager->FireEventClientSide( event );
 		}
+
+		if ( GetGameState() == ASW_GS_INGAME )
+		{
+			g_ReactiveDropWorkshop.OnMissionStart();
+		}
+	}
+	if ( m_iPreviousMissionWorkshopID != m_iMissionWorkshopID || updateType == DATA_UPDATE_CREATED )
+	{
+		m_iPreviousMissionWorkshopID = m_iMissionWorkshopID;
+
+		UpdateMatchmakingTagsCallback( NULL, NULL, 0 );
 	}
 }
 
@@ -670,6 +963,8 @@ CAlienSwarm::CAlienSwarm()
 {
 	Msg("CAlienSwarm created\n");
 
+	m_szGameDescription = "Alien Swarm: Reactive Drop";
+
 	// create the profile list for the server
 	//  clients do this is in c_asw_player.cpp
 	MarineProfileList();
@@ -686,8 +981,10 @@ CAlienSwarm::CAlienSwarm()
 	m_bForceStylinCam = false;
 
 	m_fMarineDeathTime = 0.0f;
-	m_vMarineDeathPos = Vector( 0.0f, 0.0f, 0.0f );
+	m_vMarineDeathPos = vec3_origin;
+	m_vMarineDeathPosDeathmatch = vec3_origin;
 	m_nMarineForDeathCam = -1;
+	m_nMarineForDeathCamDeathmatch = -1;
 
 	m_bMarineInvuln = false;
 
@@ -721,6 +1018,10 @@ CAlienSwarm::CAlienSwarm()
 	m_MapResetFilter.AddKeepEntity("event_queue_saveload_proxy");
 	m_MapResetFilter.AddKeepEntity("ai_network");
 
+	// riflemod: keep health regen entity all the time 
+	m_MapResetFilter.AddKeepEntity("asw_health_regen");
+	//m_MapResetFilter.AddKeepEntity("asw_item_regen");
+
 	m_iMissionRestartCount = 0;
 	m_bDoneCrashShieldbugConv = false;
 	m_bShouldStartMission = false;
@@ -752,10 +1053,13 @@ CAlienSwarm::CAlienSwarm()
 	m_iForceReadyType = ASW_FR_NONE;
 	m_fForceReadyTime = 0;
 	m_iForceReadyCount = 0;
+	m_iDeathmatchFinishCount = 0;
 	m_fLaunchOutroMapTime = 0;
 	m_bMissionRequiresTech = false;
 	m_hEquipReq = NULL;
 	m_fRemoveAliensTime = 0;
+
+	m_fDeathmatchFinishTime = 0.0f;
 
 	m_fNextLaunchingStep = 0;
 	m_iMarinesSpawned = 0;
@@ -772,10 +1076,20 @@ CAlienSwarm::CAlienSwarm()
 
 	m_fLastPowerupDropTime = 0;
 	m_flTechFailureRestartTime = 0.0f;
+
+	m_bSentLeaderboardReady = false;
+
+	m_bChallengeActiveThisCampaign = false;
+	m_bChallengeActiveThisMission = false;
+
+	m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/overviews/%s.txt", STRING( gpGlobals->mapname ) ) );
+	EnableChallenge( rd_challenge.GetString() );
 }
 
 CAlienSwarm::~CAlienSwarm()
 {
+	RevertSavedConvars();
+
 	Msg("CAlienSwarm destroyed\n");
 	//if (g_pMarineProfileList)
 	//{
@@ -1036,8 +1350,25 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 		AutoselectMarines(ToASW_Player(pPlayer));	
 	}
 
+	// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
+	CSingleUserRecipientFilter filter( pPlayer );
+	filter.MakeReliable();
+	for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
+	{
+		const char *pszCVarName = m_SavedConvars.String( i );
+		if ( ConVarRef( pszCVarName ).IsFlagSet( FCVAR_REPLICATED ) )
+		{
+			UserMessageBegin( filter, "SavedConvar" );
+			WRITE_STRING( pszCVarName );
+			WRITE_STRING( STRING( m_SavedConvars[i] ) );
+			MessageEnd();
+		}
+	}
+
 	// ask Steam for our XP amounts
-	pASWPlayer->RequestExperience();
+	// sometimes caused crashes for a mod
+	if ( rd_request_experience.GetBool() )
+		pASWPlayer->RequestExperience();
 }
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
@@ -1050,9 +1381,9 @@ bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const 
 	if (ASWGameResource())
 	{
 		int index = ENTINDEX(pEntity) - 1;
-		if (index >= 0 && index < 8)
+		if (index >= 0 && index < ASW_MAX_READY_PLAYERS)
 		{
-			ASWGameResource()->m_bPlayerReady.Set(index, false);
+			ASWGameResource()->m_bPlayerReady.Set( index, false );
 		}
 
 		// if we have no leader
@@ -1125,8 +1456,10 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 
 			SetMaxMarines(pPlayer);
 
+			// this function calls LeaveMarines which causes bugs for deathmatch
 			// reassign marines owned by this player to someone else
-			ReassignMarines(pPlayer);
+			if ( rd_reassign_marines.GetBool() )
+				ReassignMarines(pPlayer);
 
 			SetLeaderVote(pPlayer, -1);
 			SetKickVote(pPlayer, -1);
@@ -1154,76 +1487,130 @@ bool CAlienSwarm::ShouldTimeoutClient( int nUserID, float flTimeSinceLastReceive
 
 bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot )
 {
-	if (!ASWGameResource() || GetGameState()!=ASW_GS_BRIEFING)
+	// for deathmatch allow marine selection any time 
+	// if coop and game state is not BRIEFING, then return
+	if ( !ASWGameResource() )
 		return false;
+
+	// BenLubar(deathmatch-improvements): used with deathmatch mode bot 
+	// spawning to make it work (-2 is "spawn as me", -1 is "spawn in any slot")
+	bool bForceInhabited = false;
+	if ( nPreferredSlot == -2 )
+	{
+		nPreferredSlot = -1;
+		bForceInhabited = true;
+	}
+
+	DevMsg("CAlienSwarm::RosterSelect( %d, %d) \n", RosterIndex, nPreferredSlot);
+
+	if ( !ASWDeathmatchMode() && GetGameState() != ASW_GS_BRIEFING )
+		return false;
+
 	if (RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES)
+	{
+		Warning("if (RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES) \n");
 		return false;
+	}
 
 	if (ASWGameResource()->m_iNumMarinesSelected >= ASWGameResource()->m_iMaxMarines)		// too many selected?
 	{
 		if ( nPreferredSlot == -1 )
+		{
+			Warning("if (ASWGameResource()->m_iNumMarinesSelected >= ASWGameResource()->m_iMaxMarines)		// too many selected? if ( nPreferredSlot == -1 ) \n");
 			return false;
+		}
 		
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
+		{
+			Warning("if ( pExisting && pExisting->GetCommander() != pPlayer ) \n");
 			return false;
+		}
 	}
 
 	// one marine each?
 	if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0)
 	{
 		if ( nPreferredSlot == -1 )
+		{
+			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( nPreferredSlot == -1 ) \n");
 			return false;
+		}
 
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
+		{
+			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( pExisting && pExisting->GetCommander() != pPlayer ) \n");
 			return false;
+		}
 	}
 
 	// don't select a dead man
-	bool bDead = false;	
-	if (ASWGameResource()->IsCampaignGame())
-	{
-		CASW_Campaign_Save *pSave = ASWGameResource()->GetCampaignSave();
-		if (pSave)
-		{
-			if (!pSave->IsMarineAlive(RosterIndex))
-			{
-				bDead = true;
-				return false;
-			}
-		}
-	}
+	// reactivedrop: just comment this because we don't use it
+//	bool bDead = false;	
+// 	if (ASWGameResource()->IsCampaignGame())
+// 	{
+// 		CASW_Campaign_Save *pSave = ASWGameResource()->GetCampaignSave();
+// 		if (pSave)
+// 		{
+// 			if (!pSave->IsMarineAlive(RosterIndex))
+// 			{
+// 				bDead = true;
+// 				return false;
+// 			}
+// 		}
+// 	}
 
-	if (!ASWGameResource()->IsRosterSelected(RosterIndex))		// if not already selected
+	// always allow to select every marine for deathmatch
+	// also allow for coop if not already selected
+	if (ASWDeathmatchMode() || !ASWGameResource()->IsRosterSelected(RosterIndex))
 	{
 		bool bCanSelect = true;
 		// check we're allowed to take this marine, if he's reserved
-		if (ASWGameResource()->IsRosterReserved(RosterIndex) && GetCampaignSave() && RosterIndex>=0 && RosterIndex <ASW_NUM_MARINE_PROFILES)
+		// it is unused in deathmatch
+		if ( !ASWDeathmatchMode() )
 		{
-			if (pPlayer)
+			if (ASWGameResource()->IsRosterReserved(RosterIndex) && GetCampaignSave() && RosterIndex>=0 && RosterIndex <ASW_NUM_MARINE_PROFILES)
 			{
-				char buffer[256];
-				Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
-				if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex])))
+				if (pPlayer)
+				{
+					char buffer[256];
+					Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
+					if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex])))
+					{
+						Warning("if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex]))) \n");
+						bCanSelect = false;
+					}
+				}
+			}
+			// check this marine isn't already selected by someone else
+			for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
+				if (pMR && pMR->GetProfileIndex() == RosterIndex)
+				{
+					Warning("if (pMR && pMR->GetProfileIndex() == RosterIndex) \n");
 					bCanSelect = false;
+					break;
+				}
 			}
 		}
-		// check this marine isn't already selected by someone else
-		for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
-		{
-			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
-			if (pMR && pMR->GetProfileIndex() == RosterIndex)
-			{
-				bCanSelect = false;
-				break;
-			}
-		}
+
 		if (bCanSelect)
-		{						
+		{					
+			Warning("We can select bCanSelect \n");
 			CASW_Marine_Resource* m = (CASW_Marine_Resource*)CreateEntityByName("asw_marine_resource");
 			m->SetCommander(pPlayer);
 			m->SetProfileIndex(RosterIndex);
+			if ( bForceInhabited )
+			{
+				m->SetInhabited( true );
+				m->ChangeTeam( pPlayer->GetTeamNumber() );
+			}
+			else if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				m->ChangeTeam( ASWDeathmatchMode()->GetSmallestTeamNumber() );
+			}
 			if ( ASWEquipmentList() )
 			{
 				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
@@ -1241,9 +1628,18 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 							nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, "asw_weapon_rifle" );
 						}
 					}
+					nWeaponIndex = ApplyWeaponSelectionRules( m, iWpnSlot, nWeaponIndex );
+
 					if ( nWeaponIndex >= 0 )
 					{
 						m->m_iWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
+
+						// store also in initial array to disallow marines spawn 
+						// with picked up items 
+						if ( ASWDeathmatchMode() )
+						{
+							m->m_iInitialWeaponsInSlots[iWpnSlot] = nWeaponIndex;
+						}
 					}
 					else
 					{
@@ -1255,6 +1651,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 			if ( !ASWGameResource()->AddMarineResource( m, nPreferredSlot ) )
 			{
 				UTIL_Remove( m );
+				Warning("if ( !ASWGameResource()->AddMarineResource( m, nPreferredSlot ) ) \n");
 				return false;
 			}
 
@@ -1263,6 +1660,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 			return true;
 		}
 	}
+	Warning("Something failed, returning false \n");
 	return false;
 }
 
@@ -1271,12 +1669,15 @@ void CAlienSwarm::RosterDeselect( CASW_Player *pPlayer, int RosterIndex)
 	if (!ASWGameResource())
 		return;
 
-	// only allow roster deselection during briefing
-	if (GetGameState() != ASW_GS_BRIEFING)
-		return;
+	if ( !ASWDeathmatchMode() )
+	{
+		// only allow roster deselection during briefing
+		if (GetGameState() != ASW_GS_BRIEFING)
+			return;
 
-	if (!ASWGameResource()->IsRosterSelected(RosterIndex))		// if not already selected
-		return;
+		if (!ASWGameResource()->IsRosterSelected(RosterIndex))		// if not already selected
+			return;
+	}
 
 	// check if this marine is selected by this player
 	for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
@@ -1284,6 +1685,11 @@ void CAlienSwarm::RosterDeselect( CASW_Player *pPlayer, int RosterIndex)
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR && pMR->GetCommander() == pPlayer && pMR->GetProfileIndex() == RosterIndex)
 		{
+			// if controls marine kill the marine first before choosing new
+			if ( ASWDeathmatchMode() && pPlayer->GetMarine() && pPlayer->GetMarine()->GetHealth() > 0 ) 
+			{
+				pPlayer->GetMarine()->Suicide();
+			}
 			ASWGameResource()->SetRosterSelected(RosterIndex, 0);
 			ASWGameResource()->DeleteMarineResource(pMR);
 			return;
@@ -1304,10 +1710,15 @@ void CAlienSwarm::RosterDeselectAll( CASW_Player *pPlayer )
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR && pMR->GetCommander() == pPlayer)
 		{
-			if (GetGameState() == ASW_GS_BRIEFING)
+			// commented to allow marine resource deleting during game
+			if (GetGameState() == ASW_GS_BRIEFING || ASWDeathmatchMode() )
 			{
 				//Msg("Roster deselecting %d\n", pMR->GetProfileIndex());
 				ASWGameResource()->SetRosterSelected(pMR->GetProfileIndex(), 0);
+				if ( ASWDeathmatchMode() && pMR->GetMarineEntity())
+				{
+					UTIL_Remove(pMR->GetMarineEntity());
+				}
 				ASWGameResource()->DeleteMarineResource(pMR);
 			}
 		}
@@ -1349,6 +1760,11 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 					//Msg("iNewCommander looping\n");
 					iNewCommanderIndex = 1;
 				}
+				// reactivedrop: don't assign marines to a spectator
+				if ( pNewCommander && !pNewCommander->GetMarine() )
+				{
+					pNewCommander = NULL;
+				}
 			}
 			//Msg("after search loop: Newcommander entindex is %d\n", pNewCommander ? pNewCommander->entindex() : -1);
 			
@@ -1366,75 +1782,30 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 
 void CAlienSwarm::SetMaxMarines( CASW_Player *pException )
 {
-	if (GetGameState() != ASW_GS_BRIEFING || !ASWGameResource())
+	// allow this method working during game for deathmatch
+	if ( !ASWDeathmatchMode() && GetGameState() != ASW_GS_BRIEFING )
 		return;
 
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 
-	// count number of player starts
-	int iPlayerStarts = 0;
-	if (IsTutorialMap())	// in the tutorial map we just assume max players starts, since briefing isn't used
+	if ( !pGameResource )
+		return;
+
+	if ( ASWDeathmatchMode() )
 	{
-		iPlayerStarts = 8;
+		pGameResource->SetMaxMarines( ASW_MAX_MARINE_RESOURCES, false );
+	}
+	else if ( rd_max_marines.GetInt() > 0 )
+	{
+		pGameResource->SetMaxMarines( rd_max_marines.GetInt(), false );
+	}
+	else if ( gpGlobals->maxClients == 1 )
+	{
+		pGameResource->SetMaxMarines( 4, false );
 	}
 	else
 	{
-		CBaseEntity *pStartEntity = NULL;
-		do
-		{
-			pStartEntity = gEntList.FindEntityByClassname( pStartEntity, "info_player_start");
-			if (pStartEntity && IsValidMarineStart(pStartEntity))
-				iPlayerStarts++;
-		} while (pStartEntity!=NULL);
-	}
-
-	// count number of non spectating players
-	int iPlayers = 0;	
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
-	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
-
-		if ( pOtherPlayer && pOtherPlayer != pException && pOtherPlayer->IsConnected()
-				&& (!(pGameResource->GetNumMarines(pOtherPlayer) <= 0 && pGameResource->IsPlayerReady(pOtherPlayer))) )	// if player is ready with no marines selected, he's spectating, so don't count him
-		{
-			iPlayers++;
-		}
-	}	
-
-	if (iPlayers < 4)
-	{
-		pGameResource->SetMaxMarines(4, false);
-	}
-	else
-	{
-		if (asw_fair_marine_rules.GetBool())
-		{
-			pGameResource->SetMaxMarines(iPlayers, true);
-			EnforceFairMarineRules();
-		}
-		else
-		{
-			pGameResource->SetMaxMarines(iPlayers, false);
-		}
-	}
-
-	// if we don't have enough player starts, lower the max
-	if (iPlayerStarts < pGameResource->m_iMaxMarines)
-	{
-		pGameResource->SetMaxMarines(iPlayerStarts, pGameResource->m_bOneMarineEach);
-	}
-
-	if (asw_override_max_marines.GetInt() > 0)
-	{
-		pGameResource->SetMaxMarines(asw_override_max_marines.GetInt(), false);
-	}
-
-	// if we have too many selected, deselect some
-	int k = 0;
-	while (pGameResource->m_iNumMarinesSelected > pGameResource->m_iMaxMarines && k < 255)
-	{
-		pGameResource->RemoveAMarine();
-		k++;
+		pGameResource->SetMaxMarines( gpGlobals->maxClients, false );
 	}
 }
 
@@ -1457,6 +1828,46 @@ void CAlienSwarm::EnforceFairMarineRules()
 				k++;
 			}
 		}
+	}
+}
+
+// if players have more marines selected than the current game mode allows
+// deselect marines
+void CAlienSwarm::EnforceMaxMarines()
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if (!pGameResource)
+		return;
+	// deselect excessive marines
+	int nNumSelectedMarines = 0;
+	int nMaxMarines = pGameResource->m_iMaxMarines;
+	CUtlVector<CASW_Marine_Resource*> marineResourcesToDelete;
+	// going in descending order because DeleteMarineResource() shuffles end array elements
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i )
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+		for (int RosterIndex = 0; pMR && RosterIndex < ASW_NUM_MARINE_PROFILES; ++RosterIndex)
+		{
+			if ( pMR->GetProfileIndex() == RosterIndex )
+			{
+				++nNumSelectedMarines;
+				DevMsg("Found marine resource with index %i, nNumSelectedMarines=%i\n", RosterIndex, nNumSelectedMarines);
+				if (nNumSelectedMarines > nMaxMarines)
+				{
+					// we don't delete elements here because 
+					// DeleteMarineResource() shuffles array elements
+					DevMsg("Marking marine %i for deselection\n", RosterIndex);
+					marineResourcesToDelete.AddToTail(pMR);
+				}
+				break;
+			}
+		}
+	}
+	// the actual deletion
+	FOR_EACH_VEC(marineResourcesToDelete, it)
+	{
+		ASWGameResource()->SetRosterSelected(marineResourcesToDelete[it]->GetProfileIndex(), 0);
+		ASWGameResource()->DeleteMarineResource(marineResourcesToDelete[it]);
 	}
 }
 
@@ -1491,7 +1902,7 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		if (!pMR)
 			continue;
 
-		if (pMR->GetProfileIndex() == iRosterIndex)
+		if (pMR->GetProfileIndex() == iRosterIndex && pMR->GetCommander() == pPlayer)
 		{
 			iMarineIndex = i;
 			break;
@@ -1504,20 +1915,28 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 	if (!pMarineResource)
 		return;
 
+	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
+	iEquipIndex = ApplyWeaponSelectionRules( pMarineResource, iInvSlot, iEquipIndex );
+
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( !pNewItem || !pNewItem->m_bSelectableInBriefing )
 		return;
-	
+
 	// Figure out if the marine is already carrying an item in the slot
 	CASW_EquipItem *pOldItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, pMarineResource->m_iWeaponsInSlots.Get( iInvSlot ) );
 	// Can swap the old item for new one?
-	if ( !MarineCanPickup( pMarineResource,
+	if ( !MarineCanSelectInLobby( pMarineResource,
 		pNewItem ? STRING(pNewItem->m_EquipClass) : NULL,
 		pOldItem ? STRING(pOldItem->m_EquipClass) : NULL ) )
 		return;
 
 	pMarineResource->m_iWeaponsInSlots.Set( iInvSlot, iEquipIndex );
+
+	if ( ASWDeathmatchMode() )
+	{
+		pMarineResource->m_iInitialWeaponsInSlots[iInvSlot] = iEquipIndex;
+	}
 
 	if ( ASWHoldoutMode() )
 	{
@@ -1576,7 +1995,9 @@ void CAlienSwarm::StartMission()
 		return;
 
 	int iMaxMarineResources = pGameResource->GetMaxMarineResources();	
-	bool bCanStart = false;
+	bool bCanStart = false;	
+	if ( ASWDeathmatchMode() )
+		bCanStart = true;		// allow start without marines selected
 	bool bTech = false;
 	bool bMedic = false;
 	for ( int i = 0; i < iMaxMarineResources; i++ )
@@ -1613,17 +2034,72 @@ void CAlienSwarm::StartMission()
 	if (m_hEquipReq.Get() && !m_hEquipReq->AreRequirementsMet())
 		return;
 
+	ApplyChallenge();
+
 	// store our current leader (so we can keep the same leader after a map load)
 	pGameResource->RememberLeaderID();
+
+	if ( rd_add_bots.GetBool() )
+	{
+		// riflemod: add bots for missing slots 
+		// find out the actual number of marines, if the number is less than 4 then
+		// add marines for leader player 
+		
+		/* // skip this code, stupidly add 4 bots to leader 
+		int num_selected_marines = 0;
+		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i)
+		{
+			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+			if (pMR)
+				++num_selected_marines;
+		}
+		int num_bots_to_add = 4 - num_selected_marines;
+		//*/
+		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
+		int nPreferredSlot = -1; // we don't care which slot will it take 
+		for (int i = 0; i < 4; ++i)
+		{
+			if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+			{
+				// 0 is Sarge, select fire mines(11) for him
+				if (0 == i)
+					LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
+				if (1 == i)
+					LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
+				if (2 == i)
+					LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
+				if (3 == i)
+					LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+			}
+		}
+		// end of riflemod code
+	}
 
 	// activate the level's ambient sounds
 	StartAllAmbientSounds();
 
 	// carnage mode?
+	float flCarnage = 1;
 	if (IsCarnageMode())
 	{
-		ASW_ApplyCarnage_f(2);
+		flCarnage *= 2;
 	}
+	flCarnage *= rd_carnage_scale.GetFloat();
+
+	if ( rd_alien_num_min_players.GetFloat() == rd_alien_num_max_players.GetFloat() )
+	{
+		// avoid division by 0
+		flCarnage *= ASWGameResource()->m_iNumMarinesSelected > rd_alien_num_min_players.GetInt() ? rd_alien_num_max_scale.GetFloat() : rd_alien_num_min_scale.GetFloat();
+	}
+	else if ( ASWGameResource()->m_iNumMarinesSelected > rd_alien_num_min_players.GetInt() )
+	{
+		flCarnage *= Lerp( clamp( ( ASWGameResource()->m_iNumMarinesSelected - rd_alien_num_min_players.GetFloat() ) / ( rd_alien_num_max_players.GetFloat() - rd_alien_num_min_players.GetFloat() ), 0, 1 ), rd_alien_num_min_scale.GetFloat(), rd_alien_num_max_scale.GetFloat() );
+	}
+	if ( flCarnage > 1.0001 )
+		ASW_ApplyCarnage_f( flCarnage );
+
+	if ( rd_infinite_spawners.GetBool() )
+		ASW_ApplyInfiniteSpawners_f();
 
 	// increase num retries
 	if (IsCampaignGame() && GetCampaignSave())
@@ -1643,6 +2119,9 @@ void CAlienSwarm::StartMission()
 
 	Msg("==STARTMISSION==\n");
 
+	// reset spawn point pointer for deathmatch
+	CASW_Player::spawn_point = NULL;
+
 	SetGameState(ASW_GS_LAUNCHING);
 	mm_swarm_state.SetValue( "ingame" );
 	m_fNextLaunchingStep = gpGlobals->curtime + ASW_LAUNCHING_STEP;
@@ -1659,6 +2138,13 @@ void CAlienSwarm::StartMission()
 	{
 		ASWHoldoutMode()->OnMissionStart();
 	}
+
+	if ( ASWDeathmatchMode() )
+	{
+		ASWDeathmatchMode()->OnMissionStart();
+	}
+
+	g_ReactiveDropWorkshop.OnMissionStart();
 
 	// reset various chatter timers
 	CASW_Drone_Advanced::s_fNextTooCloseChatterTime = 0;
@@ -2144,7 +2630,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		{
 			for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 			{
-				ASWGameResource()->m_bPlayerReady.Set(i, false);
+				ASWGameResource()->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
 			}
 		}
 		SetGameState(ASW_GS_CAMPAIGNMAP);
@@ -2275,6 +2761,14 @@ bool CAlienSwarm::SpawnNextMarine()
 		return false;
 	}	
 
+	// reactivedrop: security measure, in case players were able to hack and 
+	// select more marines than it is allowed by current challenge
+	if (m_iMarinesSpawned + 1 > ASWGameResource()->m_iMaxMarines)
+	{
+		Warning("Attempted to spawn a marine beyond the allowed number of marines!\n");
+		return false;
+	}
+
 	for (int i=m_iMarinesSpawned;i<ASWGameResource()->GetMaxMarineResources() && m_pSpawningSpot;i++)
 	{
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
@@ -2293,11 +2787,18 @@ bool CAlienSwarm::SpawnNextMarine()
 		}
 		else
 		{
-			m_pSpawningSpot = GetMarineSpawnPoint(m_pSpawningSpot);
-			if (!m_pSpawningSpot)
+			
+			// reactivedrop: if we don't find next spawn point then use the 
+			// last one 
+			CBaseEntity *spawn_pt =	GetMarineSpawnPoint(m_pSpawningSpot);
+			if (!spawn_pt)
 			{
-				Warning("Failed to find a pMarine spawn point.  Map must have 8 info_player_start points!\n");
-				return false;
+				Warning("Failed to find a pMarine spawn point.  Map must "
+						"have 8 info_player_start points!\n");
+			}
+			else
+			{
+				m_pSpawningSpot = spawn_pt;
 			}
 		}
 	}
@@ -2323,6 +2824,11 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	{
 		pMarine->SetName(AllocPooledString(pMR->GetProfile()->m_ShortName));
 	}
+	// set the pMarine's commander, pMarine resource, etc
+	pMarine->SetMarineResource( pMR );
+	pMarine->SetCommander( pMR->m_Commander );
+	pMarine->SetInitialCommander( pMR->m_Commander.Get() );
+	pMarine->ChangeTeam( pMR->GetTeamNumber() );
 	pMarine->Spawn();
 
 	// position him
@@ -2332,10 +2838,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	pMarine->SetAbsVelocity( vec3_origin );
 	pMarine->SetAbsAngles( angFacing );
 	pMarine->m_fHoldingYaw = angFacing[YAW];
-	// set the pMarine's commander, pMarine resource, etc
-	pMarine->SetMarineResource(pMR);
-	pMarine->SetCommander(pMR->m_Commander);
-	pMarine->SetInitialCommander( pMR->m_Commander.Get() );
+
 	int iMarineHealth = MarineSkills()->GetSkillBasedValueByMarineResource(pMR, ASW_MARINE_SKILL_HEALTH);
 	int iMarineMaxHealth = iMarineHealth;
 
@@ -2356,6 +2859,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 
 	pMarine->SetHealth(iMarineHealth);
 	pMarine->SetMaxHealth(iMarineMaxHealth);
+	pMR->m_TimelineHealth.RecordValue( iMarineHealth );
 
 	pMarine->SetModelFromProfile();
 	UTIL_SetSize(pMarine, pMarine->GetHullMins(),pMarine->GetHullMaxs());
@@ -2369,9 +2873,49 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	}
 	else
 	{
-		// give the pMarine the equipment selected on the briefing screen
-		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-			GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
+		if ( ASWDeathmatchMode() )
+		{
+			if ( ASWDeathmatchMode()->IsGunGameEnabled() )
+			{
+				int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) );
+				GiveStartingWeaponToMarine( pMarine, weapon_id , 0 );
+			}
+            else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() || 
+					  ( rd_deathmatch_loadout_allowed.GetBool() && 
+					    ASWDeathmatchMode()->IsDeathmatchEnabled() ) )
+            {
+                // give the pMarine the equipment selected on the briefing screen
+                for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+				{
+					int weapon_index = pMR->m_iInitialWeaponsInSlots[ iWpnSlot ];
+					if ( weapon_index < 0 )
+					{
+						Warning( "When spawning marine the weapon_index is -1 \n" );
+						weapon_index = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
+					}
+                    GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
+				}
+            }
+            else 
+			{
+				// give the pistols only in deathmatch, railgun in InstaGib
+				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0 );
+				// give a heal gun for medic by default to compensate theirs weakness
+				if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_MEDIC )
+				{
+					// heal gun
+					GiveStartingWeaponToMarine( pMarine, 11, 1 );
+				}
+			}
+			
+		}
+		else
+		{
+			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; iWpnSlot++ )
+			{
+				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( pMR, iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
+			}
+		}
 
 		// store off his initial equip selection for stats tracking
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
@@ -2438,7 +2982,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 		return;
 	}
 
-	if ( asw_marine_death_cam.GetBool() )
+	if ( asw_marine_death_cam_slowdown.GetBool() )
 	{
 		if ( gpGlobals->curtime >= m_fMarineDeathTime && gpGlobals->curtime <= m_fMarineDeathTime + asw_time_scale_delay.GetFloat() + asw_marine_death_cam_time.GetFloat() )
 		{
@@ -2476,8 +3020,41 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
+ConVar rm_welcome_message( "rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
+	// riflemod: added welcome message to the player. This function was empty 
+	if (!pPlayer)
+		return;
+
+	if (!pPlayer->IsConnected())
+		return;
+	
+	CASW_Player *pAswPlayer = ToASW_Player(pPlayer);
+	if (!pAswPlayer)
+		return;
+	
+	
+	if ( pAswPlayer->HasFullyJoined() ) 
+	{
+#if 0 // disabled welcoming for now 
+		if ( !pAswPlayer->m_bWelcomed ) 
+		{
+			if (gpGlobals->curtime >= m_fBriefingStartedTime + 10) 
+			{
+				pAswPlayer->m_bWelcomed = true;
+
+				char buffer[512];
+				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
+				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+
+				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
+				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+			}
+		}
+#endif
+	}
 }
 
 // --------------------------------------------------------------------------------------------------- //
@@ -2519,6 +3096,13 @@ void CAlienSwarm::Think()
 			{
 				missionchooser->LocalMissionSource()->IdleThink();
 			}
+
+			if ( ASWDeathmatchMode() )
+			{
+				// omit briefing and immediately start mission
+				m_bShouldStartMission = true;
+			}
+
 			if (m_bShouldStartMission)
 				StartMission();
 
@@ -2551,6 +3135,7 @@ void CAlienSwarm::Think()
 				CheckForceReady();
 			}
 			CheckTechFailure();
+			CheckDeathmatchFinish();
 		}
 		break;
 	case ASW_GS_OUTRO:
@@ -2796,6 +3381,34 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 	}
 }
 
+// Respawn a dead marine. DEPRECATED, UNUSED
+void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )  
+{
+	static CBaseEntity *spawn_spot = NULL;
+
+	spawn_spot = ASWGameRules()->GetMarineSpawnPoint(spawn_spot);
+	if (!spawn_spot)
+		spawn_spot = ASWGameRules()->GetMarineSpawnPoint(NULL);
+
+	if (!spawn_spot) {
+		Msg( "Failed to find spawn spot" );
+	}
+	if ( !SpawnMarineAt( pMR, spawn_spot->GetAbsOrigin(), spawn_spot->GetAbsAngles(), true ) )
+	{
+		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
+		return;
+	}
+	else
+	{
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
+		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
+		// switch commander to the marine if he hasn't already got one selected
+		if ( !pMR->GetCommander()->GetMarine() )
+			pMR->GetCommander()->SwitchMarine(0 );
+		pMarine->PerformResurrectionEffect();
+	}
+}
+
 void CAlienSwarm::MarineInvuln()
 {
 	MarineInvuln( !m_bMarineInvuln );
@@ -2808,16 +3421,29 @@ void CAlienSwarm::MarineInvuln( bool bInvuln )
 	/*char text[256];
 	Q_snprintf( text,sizeof(text), m_bMarineInvuln ? "Marines now invulnerable\n" : "Marines can now be hurt\n" );
 	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, text );*/
+}
 
+void CAlienSwarm::KillAllMarines()
+{
 	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR!=NULL && pMR->GetMarineEntity()!=NULL && pMR->GetMarineEntity()->GetHealth() > 0)
 		{
-			if (m_bMarineInvuln)
-				pMR->GetMarineEntity()->m_takedamage = DAMAGE_NO;
-			else
-				pMR->GetMarineEntity()->m_takedamage = DAMAGE_YES;
+			pMR->GetMarineEntity()->Suicide(); 
+		}
+	}
+}
+
+void CAlienSwarm::ResetScores()
+{
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+		if ( pMR != NULL && pMR->GetCommander() != NULL )
+		{
+			CASW_Player *p = pMR->GetCommander();
+			p->ResetScores();
 		}
 	}
 }
@@ -2844,6 +3470,8 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 
 	return false;
 }
+
+ConVar asw_ammo_satchel_bonus( "asw_ammo_satchel_bonus", "3", FCVAR_NONE, "Additional Ammo Satchels" );
 
 void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipIndex, int iSlot)
 {
@@ -2877,7 +3505,8 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES);
 		}
 	}
-	if ( !stricmp(szWeaponClass, "asw_weapon_heal_gun") )
+	if ( !stricmp(szWeaponClass, "asw_weapon_heal_gun") ||
+		 !stricmp(szWeaponClass, "asw_weapon_healamp_gun"))
 	{
 		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
 		{
@@ -2901,6 +3530,12 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	{
 		iPrimaryAmmo += asw_bonus_charges.GetInt();
 	}
+
+	if ( !stricmp(szWeaponClass, "asw_weapon_ammo_satchel" ) ) 
+	{
+		iPrimaryAmmo += rd_ammo_bonus.GetInt();
+	}
+
 	pWeapon->SetClip1( iPrimaryAmmo );
 	// set secondary bullets in the gun
 	//Msg("Setting secondary bullets for %s to %d\n", szWeaponClass, iSecondaryAmmo);
@@ -3077,6 +3712,57 @@ void CAlienSwarm::CheatCompleteMission()
 		GetMissionManager()->CheatCompleteMission();
 }
 
+void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
+{
+	char szName[ MAX_PLAYER_NAME_LENGTH ];
+	winner->GetDisplayName( szName, sizeof( szName ) );
+
+	if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+	{
+		int iTeam = winner->GetTeamNumber();
+		Q_strncpy( szName, GetGlobalTeam( iTeam )->GetName(), sizeof( szName ) );
+
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( !pMR )
+			{
+				continue;
+			}
+
+			if ( pMR->GetTeamNumber() == iTeam )
+			{
+				CASW_Marine *pWinnerMarine = pMR->GetMarineEntity();
+				if ( pWinnerMarine )
+				{
+					char szWinnerName[ MAX_PLAYER_NAME_LENGTH ];
+					pMR->GetDisplayName( szWinnerName, sizeof( szWinnerName ) );
+					UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_invulnurable", szWinnerName );
+					pWinnerMarine->m_takedamage = DAMAGE_NO;
+				}
+			}
+		}
+	}
+	else
+	{
+		CASW_Marine *pWinnerMarine = winner->GetMarineEntity();
+		if ( pWinnerMarine )
+		{
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_invulnurable", szName );
+			pWinnerMarine->m_takedamage = DAMAGE_NO;
+		}
+	}
+
+	UTIL_ClientPrintAll( HUD_PRINTCENTER, "#asw_player_won_deathmatch", szName );
+	
+	m_fDeathmatchFinishTime = gpGlobals->curtime + rd_deathmatch_ending_time.GetFloat();
+	m_iDeathmatchFinishCount = rd_deathmatch_ending_time.GetInt();
+
+	m_fMarineDeathTime = gpGlobals->curtime;
+	m_vMarineDeathPos = m_vMarineDeathPosDeathmatch;
+	m_nMarineForDeathCam = m_nMarineForDeathCamDeathmatch;
+}
+
 void CAlienSwarm::MissionComplete( bool bSuccess )
 {
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
@@ -3100,7 +3786,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		m_bMissionFailed = true;
 		m_nFailAdvice = ASWFailAdvice()->UseCurrentFailAdvice();
 	}
-	SetGameState(ASW_GS_DEBRIEF);
+	SetGameState( ASW_GS_DEBRIEF );
 
 	// Clear out any force ready state if we fail or succeed in the middle so that we always give a chance to award XP
 	SetForceReady( ASW_FR_NONE );
@@ -3115,7 +3801,17 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 		{
 			// make sure all players are marked as not ready to leave debrief
-			pGameResource->m_bPlayerReady.Set(i, false);
+			pGameResource->m_bPlayerReady.Set( i, rd_ready_mark_override.GetBool() );
+
+			if ( !rd_ready_mark_override.GetBool() )
+			{
+				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i + 1 ) );
+				if ( pPlayer && !pGameResource->GetFirstMarineResourceForPlayer( pPlayer ) )
+				{
+					// player had no marines this round - mark them as ready in debriefing
+					pGameResource->m_bPlayerReady.Set( i, true );
+				}
+			}
 		}
 
 		if ( bSuccess )
@@ -3156,27 +3852,21 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	}
 
 	// freeze all the npcs
-	CAI_BaseNPC *npc = gEntList.NextEntByClass( (CAI_BaseNPC *)NULL );
-	while (npc)
+	CAI_BaseNPC *npc = NULL;
+	while ( ( npc = gEntList.NextEntByClass( npc ) ) != NULL )
 	{
-		npc->SetActivity(ACT_IDLE);
-		if (!npc->IsCurSchedule(SCHED_NPC_FREEZE))
-			npc->ToggleFreeze();			
-		npc = gEntList.NextEntByClass(npc);
+		// BenLubar(deathmatch-improvements): reduce network traffic by setting
+		// SCHED_WAIT_FOR_SCRIPT instead of SCHED_NPC_FREEZE
+		npc->SetState( NPC_STATE_IDLE );
+		npc->SetSchedule( SCHED_WAIT_FOR_SCRIPT );
 	}
-	// remove all the spawners	
-	int iCount = 0;
+	// disable all the spawners
 	CBaseEntity *ent = NULL;
-	while ( (ent = gEntList.NextEnt(ent)) != NULL )
+	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_spawner" ) ) != NULL )
 	{
-		if (ent!=NULL && 
-				(ent->ClassMatches("asw_spawner")				
-					)
-			)
-		{
-			UTIL_Remove( ent );
-			iCount++;
-		}
+		// BenLubar(deathmatch-improvements): reduce network traffic by 
+		// disabling spawners instead of deleting them
+		ent->SetThink( NULL );
 	}
 	// make marine invulnerable
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
@@ -3240,15 +3930,52 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			m_hDebriefStats->m_iShotsFired.Set(i,pMR->m_iShotsFired);
 			m_hDebriefStats->m_iShotsHit.Set(i, pMR->m_iPlayerShotsFired - pMR->m_iPlayerShotsMissed );
 			m_hDebriefStats->m_iWounded.Set(i,pMR->m_bTakenWoundDamage);
-			m_hDebriefStats->m_iAliensBurned.Set(i,pMR->m_iMineKills);
+			m_hDebriefStats->m_iAliensBurned.Set(i,pMR->m_iAliensBurned);
 			m_hDebriefStats->m_iHealthHealed.Set(i,pMR->m_iMedicHealing);
 			m_hDebriefStats->m_iFastHacks.Set(i,pMR->m_iFastDoorHacks + pMR->m_iFastComputerHacks);
+			m_hDebriefStats->m_iAmmoDeployed.Set(i,pMR->m_iAmmoDeployed);
+			m_hDebriefStats->m_iSentryGunsDeployed.Set(i,pMR->m_iSentryGunsDeployed);
+			m_hDebriefStats->m_iSentryFlamerDeployed.Set(i,pMR->m_iSentryFlamerDeployed);
+			m_hDebriefStats->m_iSentryFreezeDeployed.Set(i,pMR->m_iSentryFreezeDeployed);
+			m_hDebriefStats->m_iSentryCannonDeployed.Set(i,pMR->m_iSentryCannonDeployed);
+			m_hDebriefStats->m_iMedkitsUsed.Set(i,pMR->m_iMedkitsUsed);
+			m_hDebriefStats->m_iFlaresUsed.Set(i,pMR->m_iFlaresUsed);
+			m_hDebriefStats->m_iAdrenalineUsed.Set(i,pMR->m_iAdrenalineUsed);
+			m_hDebriefStats->m_iTeslaTrapsDeployed.Set(i,pMR->m_iTeslaTrapsDeployed);
+			m_hDebriefStats->m_iFreezeGrenadesThrown.Set(i,pMR->m_iFreezeGrenadesThrown);
+			m_hDebriefStats->m_iElectricArmorUsed.Set(i,pMR->m_iElectricArmorUsed);
+			m_hDebriefStats->m_iHealGunHeals.Set(i,pMR->m_iHealGunHeals);
+			m_hDebriefStats->m_iHealBeaconHeals.Set(i,pMR->m_iHealBeaconHeals);
+			m_hDebriefStats->m_iHealGunHeals_Self.Set(i,pMR->m_iHealGunHeals_Self);
+			m_hDebriefStats->m_iHealBeaconHeals_Self.Set(i,pMR->m_iHealBeaconHeals_Self);
+			m_hDebriefStats->m_iDamageAmpsUsed.Set(i,pMR->m_iDamageAmpsUsed);
+			m_hDebriefStats->m_iHealBeaconsDeployed.Set(i,pMR->m_iHealBeaconsDeployed);
+			m_hDebriefStats->m_iMedkitHeals_Self.Set(i,pMR->m_iMedkitHeals_Self);
+			m_hDebriefStats->m_iGrenadeExtinguishMarine.Set(i,pMR->m_iGrenadeExtinguishMarine);
+			m_hDebriefStats->m_iGrenadeFreezeAlien.Set(i,pMR->m_iGrenadeFreezeAlien);
+			m_hDebriefStats->m_iDamageAmpAmps.Set(i,pMR->m_iDamageAmpAmps);
+			m_hDebriefStats->m_iNormalArmorReduction.Set(i,pMR->m_iNormalArmorReduction);
+			m_hDebriefStats->m_iElectricArmorReduction.Set(i,pMR->m_iElectricArmorReduction);
+			m_hDebriefStats->m_iHealAmpGunHeals.Set(i,pMR->m_iHealAmpGunHeals);
+			m_hDebriefStats->m_iHealAmpGunAmps.Set(i,pMR->m_iHealAmpGunAmps);
 
 			// Set starting equips for the marine
 			m_hDebriefStats->m_iStartingEquip0.Set(i, pMR->m_iInitialWeaponsInSlots[0]);
 			m_hDebriefStats->m_iStartingEquip1.Set(i, pMR->m_iInitialWeaponsInSlots[1]);
 			m_hDebriefStats->m_iStartingEquip2.Set(i, pMR->m_iInitialWeaponsInSlots[2]);
-						
+
+			pMR->m_WeaponStats.Sort( &CASW_Marine_Resource::CompareWeaponStats );
+			for ( int j = 0; j < 8 && j < pMR->m_WeaponStats.Count(); j++ )
+			{
+				m_hDebriefStats->SetWeaponStats( i, j,
+					pMR->m_WeaponStats[j].m_WeaponClass,
+					pMR->m_WeaponStats[j].m_nDamage,
+					pMR->m_WeaponStats[j].m_nFFDamage,
+					pMR->m_WeaponStats[j].m_nShotsFired,
+					pMR->m_WeaponStats[j].m_nShotsHit,
+					pMR->m_WeaponStats[j].m_nKills );
+			}
+
 			// store the worst penalty for use later when penalizing skill points
 			float fPenalty = pMR->m_fFriendlyFireDamageDealt * 2 + pMR->m_fDamageTaken;
 			if (fPenalty > fWorstPenalty)
@@ -3444,36 +4171,25 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 void CAlienSwarm::RemoveAllAliens()
 {
 	m_fRemoveAliensTime = 0;
-	int iCount = 0;
-	CBaseEntity *ent = NULL;
-	while ( (ent = gEntList.NextEnt(ent)) != NULL )
+	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
 	{
-		for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
+		CBaseEntity *ent = NULL;
+		// BenLubar(deathmatch-improvements): refactor
+		while ( ( ent = gEntList.FindEntityByClassnameFast( ent, ASWSpawnManager()->GetAlienClass( i )->m_iszAlienClass ) ) != NULL )
 		{
-			if ( !Q_stricmp( ASWSpawnManager()->GetAlienClass( i )->m_pszAlienClass, ent->GetClassname() ) )
-			{
-				UTIL_Remove( ent );
-				iCount++;
-			}
+			UTIL_Remove( ent );
 		}
 	}
-	//Msg("CAlienSwarm::RemoveAllAliens removed %d\n", iCount);
 }
 
 void CAlienSwarm::RemoveNoisyWeapons()
 {
-	int iCount = 0;
 	CBaseEntity *ent = NULL;
-	while ( (ent = gEntList.NextEnt(ent)) != NULL )
+	// BenLubar(deathmatch-improvements): refactor
+	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_weapon_chainsaw" ) ) != NULL )
 	{
-		if (  FStrEq("asw_weapon_chainsaw", ent->GetClassname())
-			)
-		{
-			UTIL_Remove( ent );
-			iCount++;
-		}
+		UTIL_Remove( ent );
 	}
-	//Msg("CAlienSwarm::RemoveNoisyWeapons removed %d\n", iCount);
 }
 
 // send the minimap line draw to everyone
@@ -3537,13 +4253,66 @@ void CAlienSwarm::MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &inf
 		CASW_Marines_Past_Area *pArea = static_cast< CASW_Marines_Past_Area* >( IASW_Marines_Past_Area_List::AutoList()[ i ] );
 		pArea->OnMarineKilled( pMarine );
 	}
+
+	if ( !ASWDeathmatchMode() && rd_quake_sounds.GetInt() >= 2 )
+	{
+		CASW_Marine *pKillerMarine = CASW_Marine::AsMarine( info.GetAttacker() );
+		CASW_Player *pPlayer = pKillerMarine && pKillerMarine->IsInhabited() ? pKillerMarine->GetCommander() : NULL;
+		if ( pPlayer )
+		{
+			if ( gpGlobals->curtime - pPlayer->m_fLastFragTime < rd_killingspree_time_limit.GetFloat() )
+			{
+				++pPlayer->m_iKillingSpree;
+				switch ( pPlayer->m_iKillingSpree )
+				{
+				case 2:
+					BroadcastSound( "DM.double_kill" );
+					break;
+				case 3:
+					BroadcastSound( "DM.tripple_kill" );
+					break;
+				case 4:
+					BroadcastSound( "DM.monster_kill" );
+					break;
+				case 5:
+					BroadcastSound( "DM.godlike" );
+					break;
+				}
+			}
+			else
+			{
+				pPlayer->m_iKillingSpree = 1;
+			}
+
+			pPlayer->m_fLastFragTime = gpGlobals->curtime;
+		}
+	}
 }
+
+void CAlienSwarm::MarineKnockedOut( CASW_Marine *pMarine )
+{
+	if (GetMissionManager())
+		GetMissionManager()->CheckMissionComplete();
+}
+
+class GroundNodeFilter : public INearestNodeFilter
+{
+public:
+	virtual bool IsValid( CAI_Node *pNode ) 
+	{
+		return pNode->GetType() == NODE_GROUND;
+	};
+	virtual bool ShouldContinue() 
+	{
+		return true;
+	}
+};
 
 void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 {
 	if (asw_debug_alien_damage.GetBool())
 	{
-		Msg("Alien %s killed by attacker %s inflictor %s\n", pAlien->GetClassname(), 
+		Msg("Alien %s killed by attacker %s inflicter %s\n", pAlien->GetClassname(), 
 			info.GetAttacker() ? info.GetAttacker()->GetClassname() : "unknown",
 			info.GetInflictor() ? info.GetInflictor()->GetClassname() : "unknown");
 	}
@@ -3563,8 +4332,9 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 		if ( pMR )
 		{
-			pMR->m_iAliensKilled++;			
-			pMR->m_TimelineKillsTotal.RecordValue( 1.0f );
+			pMR->m_iAliensKilled++;
+			if ( !ASWDeathmatchMode() )
+				pMR->m_TimelineKillsTotal.RecordValue( 1.0f );
 
 			CASW_Game_Resource *pGameResource = ASWGameResource();
 			if ( pGameResource )
@@ -3811,6 +4581,58 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	pEvent->SetInt( "weapon", pWeapon ? pWeapon->Classify() : 0 );
 
 	gameeventmanager->FireEvent( pEvent );
+
+	// riflemod: added frags counter
+	if (!ASWDeathmatchMode() && pMarine && pMarine->IsInhabited() && 
+		pMarine->GetCommander()) 
+	{
+		CASW_Player *pPlayer = pMarine->GetCommander();
+		pPlayer->IncrementFragCount(1);
+
+		// reactivedrop: if enabled we spawn medkits every 31 frags
+		// and ammo every 51 frags
+		// 31 and 51 are taken so they don't intersect, because when
+		// ammo spawns on top of medkit it sticks to medkit
+		// possible fix to spawn ammo before medkit
+		if ( rd_spawn_medkits.GetInt() || rd_spawn_ammo.GetInt() )
+		{
+			const int iFragsForMedkit = rd_spawn_medkits.GetInt();
+			const int iFragsForAmmo = rd_spawn_ammo.GetInt();
+			if (pPlayer->FragCount() % iFragsForMedkit == 0 || pPlayer->FragCount() % iFragsForAmmo == 0)
+			{
+				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
+				if (pNetwork)
+				{
+					GroundNodeFilter filter;
+					int nNode = pNetwork->NearestNodeToPoint(NULL, pAlien->GetAbsOrigin(), false, &filter);
+					if (nNode != NO_NODE)
+					{
+						CAI_Node *pNode = pNetwork->GetNode(nNode);
+
+						if (pNode && pNode->GetType() == NODE_GROUND )
+						{
+							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
+							if ( pPlayer->FragCount() % iFragsForMedkit == 0 && rd_spawn_medkits.GetInt() )
+							{
+								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName( "asw_weapon_medkit" );
+								UTIL_SetOrigin( pMedkit, vecDest );
+								DispatchSpawn( pMedkit );
+								//pMedkit->Spawn();
+							}
+
+							if ( pPlayer->FragCount() % iFragsForAmmo == 0 && rd_spawn_ammo.GetInt() )
+							{
+								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
+								UTIL_SetOrigin( pAmmoDrop, vecDest );
+								DispatchSpawn( pAmmoDrop );
+								//pAmmoDrop->Spawn();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 #endif /* not CLIENT_DLL */
@@ -3927,8 +4749,9 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == COLLISION_GROUP_PLAYER ||
 			collisionGroup0 == COLLISION_GROUP_NPC || collisionGroup0 == COLLISION_GROUP_DEBRIS ||
 			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_FLAMER_PELLETS || 
-			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE 
-			|| collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == COLLISION_GROUP_WEAPON )
+			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE ||
+			collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == COLLISION_GROUP_WEAPON ||
+			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES)
 		{
 			return false;
 		}
@@ -3941,8 +4764,9 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	{
 		if (collisionGroup0 == COLLISION_GROUP_DEBRIS ||
 			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_FLAMER_PELLETS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE
-			|| collisionGroup0 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS || collisionGroup0 == COLLISION_GROUP_WEAPON )
+			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE ||
+			collisionGroup0 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS || collisionGroup0 == COLLISION_GROUP_WEAPON ||
+			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES)
 		{
 			return false;
 		}
@@ -3956,8 +4780,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		if (collisionGroup0 == ASW_COLLISION_GROUP_EGG || collisionGroup0 == ASW_COLLISION_GROUP_PARASITE ||
 			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == COLLISION_GROUP_PLAYER ||
 			collisionGroup0 == COLLISION_GROUP_NPC || collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET 
-			|| collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
+			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_GRENADES ||
+			collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
 		{
 			return false;
 		}
@@ -4033,11 +4857,17 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			collisionGroup0 == COLLISION_GROUP_DEBRIS || 
 			collisionGroup0 == COLLISION_GROUP_WEAPON ||
 			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
-			collisionGroup0 == COLLISION_GROUP_PLAYER ||
+			// reactivedrop: smartbomb now hit players in PvP
+			//collisionGroup0 == COLLISION_GROUP_PLAYER ||	
 			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN_MISSILE )
 		{
 			return false;
 		}
+        // allow missile-player collisions for deathmatch
+        if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
+        {
+            return false;
+        }
 	}
 
 	// HL2 collision rules
@@ -4123,31 +4953,70 @@ bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const c
 		return false;
 	}	
 
-	if (pWeaponData->m_bUnique)
-	{
-		// if we're swapping a unique item for the same unique item, allow the pickup
-		if (szSwappingClass && !Q_strcmp(szWeaponClass, szSwappingClass))
-			return true;
-		
-		// check if we have one of these already
-		// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
-		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-		{
-			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[ iWpnSlot ] );
-			if ( !pItem )
-				continue;
-
-			const char* szItemClass = STRING(pItem->m_EquipClass);
-			if ( !Q_strcmp(szItemClass, szWeaponClass) )
-			{
-				Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_cannot_carry_two");
-				return false;
-			}
-		}
-	}
+	// reactivedrop: this code doesn't work and is not needed 
+	// the pickup of unique weapons is handled correctly in 
+	// CASW_Marine::GetWeaponPositionForPickup(), so turning this code off
+// 	if (pWeaponData->m_bUnique)
+// 	{
+// 		// if we're swapping a unique item for the same unique item, allow the pickup
+// 		if (szSwappingClass && !Q_strcmp(szWeaponClass, szSwappingClass))
+// 			return true;
+// 		
+// 		// check if we have one of these already
+// 		// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
+// 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+// 		{
+// 			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[ iWpnSlot ] );
+// 			if ( !pItem )
+// 				continue;
+// 
+// 			const char* szItemClass = STRING(pItem->m_EquipClass);
+// 			if ( !Q_strcmp(szItemClass, szWeaponClass) )
+// 			{
+// 				Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_cannot_carry_two");
+// 				return false;
+// 			}
+// 		}
+// 	}
 
 	return true;
 }
+
+bool CAlienSwarm::MarineCanSelectInLobby(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass)
+{
+	if (MarineCanPickup(pMarineResource, szWeaponClass, szSwappingClass))
+	{
+		CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor(szWeaponClass);
+		if (!pWeaponData)
+			return false;
+
+		if (pWeaponData->m_bUnique)
+		{
+			// if we're swapping a unique item for the same unique item, allow the pickup
+			if (szSwappingClass && !Q_strcmp(szWeaponClass, szSwappingClass))
+				return true;
+		
+			// check if we have one of these already
+			// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
+			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+			{
+				CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[ iWpnSlot ] );
+				if ( !pItem )
+					continue;
+
+				const char* szItemClass = STRING(pItem->m_EquipClass);
+				if ( !Q_strcmp(szItemClass, szWeaponClass) )
+				{
+					Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_cannot_carry_two");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 
 void CAlienSwarm::CreateStandardEntities( void )
 {
@@ -4162,6 +5031,10 @@ void CAlienSwarm::CreateStandardEntities( void )
 #endif
 	CBaseEntity::Create( "asw_gamerules", vec3_origin, vec3_angle );
 	Assert( pEnt );
+
+	// riflemod: create health and extra item regeneration entities 
+	CBaseEntity::Create("asw_health_regen", vec3_origin, vec3_angle);
+	//CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
 #endif
 }
 
@@ -4553,6 +5426,9 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 ConVar asw_stumble_knockback( "asw_stumble_knockback", "300", FCVAR_CHEAT, "Velocity given to aliens that get knocked back" );
 ConVar asw_stumble_lift( "asw_stumble_lift", "300", FCVAR_CHEAT, "Upwards velocity given to aliens that get knocked back" );
 
+extern ConVar asw_shieldbug_knockdown_force;
+extern ConVar asw_shieldbug_knockdown_lift;
+
 void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &vecSrcIn, float flRadius )
 {
 	const int MASK_RADIUS_DAMAGE = MASK_SHOT&(~CONTENTS_HITBOX);
@@ -4576,9 +5452,22 @@ void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &
 		if ( !pEntity->IsNPC() )
 			continue;
 
-		// don't stumble marines
+		// knockdown marines 
 		if (pEntity->Classify() == CLASS_ASW_MARINE )
 		{
+			if ( rd_jumpjet_knockdown_marines.GetBool() )
+			{
+				// don't knockdown itself
+				if (pEntity == pInflictor)
+					continue;
+				Vector vecForceDir = pEntity->WorldSpaceCenter() - pInflictor->WorldSpaceCenter();
+				vecForceDir.z = 0;
+				vecForceDir.NormalizeInPlace();
+				vecForceDir *= asw_shieldbug_knockdown_force.GetFloat();
+				vecForceDir += Vector( 0, 0, asw_shieldbug_knockdown_lift.GetFloat() );
+				((CASW_Marine*)pEntity)->Knockdown( pInflictor, vecForceDir );
+			}
+
 			continue;
 		}
 
@@ -4704,7 +5593,7 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 		CRecipientFilter filter;
 		filter.AddAllPlayers();
 		UserMessageBegin( filter, "ASWEnemyZappedByThorns" );
-		WRITE_FLOAT( pMarine->entindex() );
+		WRITE_SHORT( pMarine->entindex() );
 		WRITE_SHORT( pNPC->entindex() );
 		MessageEnd();
 
@@ -4731,6 +5620,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 	trace_t		tr;
 	Vector		vecSpot;
 	int nFrozen = 0;
+	int nFrozenStat = 0;
 	Vector vecSrc = vecSrcIn;
 
 	vecSrc.z += 1;// in case grenade is lying on the ground
@@ -4762,6 +5652,13 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 					UTIL_Remove( pFireChild );	
 				}			
 				pAnim->Extinguish();
+
+				CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
+				CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
+				if ( pMR )
+				{
+					ADD_STAT( m_iGrenadeExtinguishMarine, 1 );
+				}
 			}
 #endif
 			continue;
@@ -4849,21 +5746,27 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 			pAnim->Extinguish();
 		}
 
+		if ( pAlien->IsAlive() && !pAlien->IsFrozen() )
+		{
+			nFrozenStat++;
+		}
 		pAlien->Freeze( flFreezeAmount, pInflictor, NULL );
 		nFrozen++;
 #endif
 	}
 #ifdef GAME_DLL
-	if ( nFrozen >= 6 )
+	CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
+	CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
+	if ( pMR && nFrozenStat )
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( pInflictor );
-		if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() )
+		ADD_STAT( m_iGrenadeFreezeAlien, nFrozenStat );
+	}
+	if ( nFrozen >= 6 && pInflictorMarine && pInflictorMarine->IsInhabited() && pInflictorMarine->GetCommander() )
+	{
+		pInflictorMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_FREEZE_GRENADE );
+		if ( pMR )
 		{
-			pMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_FREEZE_GRENADE );
-			if ( pMarine->GetMarineResource() )
-			{
-				pMarine->GetMarineResource()->m_bFreezeGrenadeMedal = true;
-			}
+			pMR->m_bFreezeGrenadeMedal = true;
 		}
 	}
 #endif
@@ -5154,7 +6057,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 {
 	Msg("Skill level changed\n");
-	if ( !( GetGameState() == ASW_GS_BRIEFING || GetGameState() == ASW_GS_DEBRIEF ) )
+	if ( !ASWDeathmatchMode() && !( GetGameState() == ASW_GS_BRIEFING || GetGameState() == ASW_GS_DEBRIEF ) )
 	{
 		m_bCheated = true;
 	}
@@ -5185,6 +6088,15 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 		m_iMissionDifficulty = 5;
 	}
 
+	if (rd_difficulty_tier.GetInt() == 1)
+	{
+		m_iMissionDifficulty += 12;
+	}
+	else if (rd_difficulty_tier.GetInt() == 2)
+	{
+		m_iMissionDifficulty += 24;
+	}
+
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
 	{				
@@ -5203,7 +6115,15 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	if ( ASWGameResource() && asw_adjust_difficulty_by_number_of_marines.GetBool() )
 	{
 		int nMarines = ASWGameResource()->GetNumMarines( NULL, false );
-		if ( nMarines == 3 )
+		if ( nMarines >= 7 )
+		{
+			m_iMissionDifficulty += 2;
+		}
+		else if ( nMarines >= 5 )
+		{
+			m_iMissionDifficulty++;
+		}
+		else if ( nMarines == 3 )
 		{
 			m_iMissionDifficulty--;
 		}
@@ -5321,13 +6241,45 @@ void CAlienSwarm::RequestSkillDown(CASW_Player *pPlayer)
 		//SetSkillLevel(m_iSkillLevel - 1);
 }
 
+/*
+ConVar asw_alien_health_scale_easy(		"asw_alien_health_scale_easy",		"1.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_normal(	"asw_alien_health_scale_normal",	"2.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_hard(		"asw_alien_health_scale_hard",		"3.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_insane(	"asw_alien_health_scale_insane",	"3.5", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_brutal(	"asw_alien_health_scale_brutal",	"4.0", 0, "How much alien health is changed per mission difficulty level");
+*/
+
 // alters alien health by 20% per notch away from 8
 float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 {
 	float fDiff = GetMissionDifficulty() - 5;
 	float f = 1.0 + fDiff * asw_difficulty_alien_health_step.GetFloat();
+	
+	// commented and added mine scale factors
+	/*float f = 1.0f; 
+	switch (m_iSkillLevel)
+	{
+	case 1:
+		f = asw_alien_health_scale_easy.GetFloat();
+		break;
+	case 2:
+		f = asw_alien_health_scale_normal.GetFloat();
+		break;
+	case 3:
+		f = asw_alien_health_scale_hard.GetFloat();
+		break;
+	case 4:
+		f = asw_alien_health_scale_insane.GetFloat();
+		break;
+	case 5:
+		f = asw_alien_health_scale_brutal.GetFloat();
+		break;
+	default:
+		Assert(false && "m_iSkillLevel unknown value found in ModifyAlienHealthBySkillLevel()");
+	}
+	// end of mine code //*/
 
-	return f * health;
+	return f * health * rd_heavy_scale.GetFloat();
 }
 
 // alters damage by 20% per notch away from 8
@@ -5352,7 +6304,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 
 	// first check if new name is really different
 	if (  pszOldName[0] != 0 && 
-		  Q_strncmp( pszOldName, pszNewName, ASW_MAX_PLAYER_NAME_LENGTH-1 ) )
+		  Q_strncmp( pszOldName, pszNewName, MAX_PLAYER_NAME_LENGTH-1 ) )
 	{
 		// ok, player send different name
 
@@ -5987,7 +6939,7 @@ void CAlienSwarm::SetCarnageMode(bool bCarnageMode)
 	else
 		m_iSpecialMode &= ~ASW_SM_CARNAGE;
 
-	Msg("Changed carnage mode to %d\n", bCarnageMode);
+	Msg("Changed carnage mode to %d\n", m_iSpecialMode & ASW_SM_CARNAGE);
 }
 
 void CAlienSwarm::SetUberMode(bool bUberMode)
@@ -6218,7 +7170,7 @@ void CAlienSwarm::FinishForceReady()
 				// make sure all players are marked as not ready
 				for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 				{
-					pGameResource->m_bPlayerReady.Set(i, false);
+					pGameResource->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
 				}				
 				SetGameState(ASW_GS_CAMPAIGNMAP);
 				GetCampaignSave()->SelectDefaultNextCampaignMission();
@@ -6227,6 +7179,29 @@ void CAlienSwarm::FinishForceReady()
 
 		default: break;
 	};	
+}
+
+void CAlienSwarm::CheckDeathmatchFinish()
+{
+	if (m_fDeathmatchFinishTime == 0.0f)
+		return;
+
+	int iSecondsLeft = m_fDeathmatchFinishTime - gpGlobals->curtime;
+	if (iSecondsLeft < m_iDeathmatchFinishCount && iSecondsLeft >= 0)
+	{
+		m_iDeathmatchFinishCount = iSecondsLeft;
+
+		char seconds_left_str[64] = { 0 };
+		itoa(iSecondsLeft, seconds_left_str, 10);
+
+		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_round_ends_in", seconds_left_str );
+	}
+
+	if (gpGlobals->curtime >= m_fDeathmatchFinishTime)
+	{
+		m_fDeathmatchFinishTime = 0.0f;
+		MissionComplete(true);
+	}
 }
 
 void CAlienSwarm::OnSVCheatsChanged()
@@ -6241,10 +7216,16 @@ void CAlienSwarm::OnSVCheatsChanged()
 
 int CAlienSwarm::GetSpeedrunTime( void )
 {
-	CAlienSwarmProxy* pSwarmProxy = dynamic_cast<CAlienSwarmProxy*>(gEntList.FindEntityByClassname( NULL, "asw_gamerules" ));
-	Assert(pSwarmProxy);
+	Assert( g_pSwarmProxy );
 
-	return pSwarmProxy->m_iSpeedrunTime;
+	return g_pSwarmProxy->m_iSpeedrunTime;
+}
+
+int CAlienSwarm::GetJumpJetType(void)
+{
+	Assert( g_pSwarmProxy );
+
+	return g_pSwarmProxy->m_iJumpJetType;
 }
 
 void CAlienSwarm::BroadcastSound( const char *sound )
@@ -6257,10 +7238,55 @@ void CAlienSwarm::BroadcastSound( const char *sound )
 	MessageEnd();
 }
 
+
+
 void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
+
+	bool bHadMarinesLastRound = false;
+	bool bWasSpectatorLastRound = false;
+
+	if ( GetCampaignSave() )
+	{
+		char buffer[256];
+		Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
+		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		{
+			if ( !Q_strcmp( buffer, STRING( GetCampaignSave()->m_LastCommanders[i] ) ) )
+			{
+				bHadMarinesLastRound = true;
+				break;
+			}
+		}
+
+		// BenLubar: Mark connected players as ready if they were spectating in the previous mission.
+		if ( !bHadMarinesLastRound )
+		{
+			const char *pszNetworkID = pPlayer->GetASWNetworkID();
+			FOR_EACH_VEC( GetCampaignSave()->m_PlayerIDs, i )
+			{
+				if ( !V_strcmp( STRING( GetCampaignSave()->m_PlayerIDs[i] ), pszNetworkID ) )
+				{
+					// We were spectating last time, so let's spectate again.
+					bWasSpectatorLastRound = true;
+					break;
+				}
+			}
+		}
+	}
+
+	int index = pPlayer->entindex() - 1;
+	if ( ( rd_ready_mark_override.GetBool() || bWasSpectatorLastRound ) && index >= 0 && index < ASW_MAX_READY_PLAYERS )
+	{
+		ASWGameResource()->m_bPlayerReady.Set( index, true );
+	}
+
+	if ( ASWDeathmatchMode() )
+	{
+		ASWDeathmatchMode()->OnPlayerFullyJoined( pPlayer );
+	}
 }
 
 void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info, const char *pszSourceClass )
@@ -6507,11 +7533,19 @@ void CAlienSwarm::LevelInitPostEntity()
 	m_bIsOutro = ( !Q_strnicmp( mapName, "outro_", 6 ) );
 	m_bIsTutorial = ( !Q_strnicmp( mapName, "tutorial", 8 ) );
 	m_bIsLobby = ( !Q_strnicmp( mapName, "Lobby", 5 ) );
+	
 
 	if ( ASWHoldoutMode() )
 	{
 		ASWHoldoutMode()->LevelInitPostEntity();
 	}
+
+#ifdef GAME_DLL
+	if (ASWDeathmatchMode())
+	{
+		ASWDeathmatchMode()->LevelInitPostEntity();
+	}
+#endif
 
 	if ( missionchooser && missionchooser->RandomMissions() )
 	{
@@ -6569,6 +7603,8 @@ void CAlienSwarm::LevelInitPostEntity()
 			}
 			else
 			{
+				m_bChallengeActiveThisCampaign = ASWGameResource()->GetCampaignSave()->m_bChallengeEverActive;
+
 				// with the save game loaded, now load the campaign info
 				if (!GetCampaignInfo())
 				{
@@ -6633,6 +7669,13 @@ void CAlienSwarm::LevelInitPostEntity()
 #endif  // !CLIENT_DLL
 }
 
+void CAlienSwarm::LevelShutdownPostEntity()
+{
+#ifdef CLIENT_DLL
+	RevertSavedConvars();
+#endif
+}
+
 int CAlienSwarm::TotalInfestDamage()
 {
 	if (IsHardcoreMode())
@@ -6643,15 +7686,15 @@ int CAlienSwarm::TotalInfestDamage()
 	switch ( m_iSkillLevel )
 	{
 	case 1:
-		return 175;
+		return sk_asw_parasite_infest_dmg_easy.GetInt();
 	case 2:
-		return 225;
+		return sk_asw_parasite_infest_dmg_normal.GetInt();
 	case 3:
-		return 270;
+		return sk_asw_parasite_infest_dmg_hard.GetInt();
 	case 4:
-		return 280;	// BARELY survivable with Bastille and heal beacon
+		return sk_asw_parasite_infest_dmg_insane.GetInt();	// BARELY survivable with Bastille and heal beacon
 	case 5:
-		return 280;
+		return sk_asw_parasite_infest_dmg_brutal.GetInt();
 	}
 
 	// ASv1 Total infest damage = 90 + difficulty * 20;
@@ -6673,7 +7716,7 @@ int CAlienSwarm::TotalInfestDamage()
 	//  Medkit heals 50 hps for normal marines and 50 to 80 for medics)
 	// In ASv1 satchel healed 25 to 85.   Charges were: 6, 7 (at 3 star) or 8 (at 4 star+)
 	// Giving a total hps healed for 1 satchel = 150 to 680
-	return 225;
+	return sk_asw_parasite_infest_dmg_normal.GetInt();
 }
 
 bool CAlienSwarm::ShouldPlayStimMusic()
@@ -6813,3 +7856,398 @@ bool CAlienSwarm::IsOnslaught()
 {
 	return ( asw_horde_override.GetBool() || asw_wanderer_override.GetBool() );
 }
+
+bool CAlienSwarm::HaveSavedConvar( const ConVarRef & cvar )
+{
+	Assert( cvar.IsValid() );
+
+	UtlSymId_t iSymbol = m_SavedConvars.Find( cvar.GetName() );
+	if ( iSymbol == m_SavedConvars.InvalidIndex() )
+	{
+		return false;
+	}
+
+	return m_SavedConvars[ iSymbol ] != NULL_STRING;
+}
+
+#ifdef CLIENT_DLL
+void __MsgFunc_SavedConvar( bf_read &msg )
+{
+	Assert( ASWGameRules() );
+	if ( !ASWGameRules() )
+	{
+		return;
+	}
+
+	char szKey[2048];
+	char szValue[2048];
+	bool bReadKey = msg.ReadString( szKey, sizeof( szKey ) );
+	Assert( bReadKey );
+	bool bReadValue = msg.ReadString( szValue, sizeof( szValue ) );
+	Assert( bReadValue );
+	if ( bReadKey && bReadValue )
+	{
+		ConVarRef cvar( szKey );
+		Assert( cvar.IsValid() );
+		Assert( cvar.IsFlagSet( FCVAR_REPLICATED ) );
+		if ( cvar.IsValid() && cvar.IsFlagSet( FCVAR_REPLICATED ) )
+		{
+			ASWGameRules()->m_SavedConvars[szKey] = AllocPooledString( szValue );
+		}
+	}
+}
+USER_MESSAGE_REGISTER( SavedConvar );
+#endif
+
+void CAlienSwarm::SaveConvar( const ConVarRef & cvar )
+{
+	Assert( cvar.IsValid() );
+
+	if ( HaveSavedConvar( cvar ) )
+	{
+		// already saved, don't override.
+		return;
+	}
+
+#ifdef GAME_DLL
+	// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
+	if ( cvar.IsFlagSet( FCVAR_REPLICATED ) )
+	{
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "SavedConvar" );
+		WRITE_STRING( cvar.GetName() );
+		WRITE_STRING( cvar.GetString() );
+		MessageEnd();
+	}
+#endif
+	m_SavedConvars[ cvar.GetName() ] = AllocPooledString( cvar.GetString() );
+}
+
+void CAlienSwarm::RevertSingleConvar( ConVarRef cvar )
+{
+	Assert( cvar.IsValid() );
+
+	if ( !HaveSavedConvar( cvar ) )
+	{
+		// don't have a saved value
+		return;
+	}
+
+	string_t & saved = m_SavedConvars[ cvar.GetName() ];
+	cvar.SetValue( STRING( saved ) );
+	saved = NULL_STRING;
+}
+
+void CAlienSwarm::RevertSavedConvars()
+{
+	// revert saved convars
+	for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
+	{
+		const char *pszName = m_SavedConvars.String( i );
+		string_t iszValue = m_SavedConvars[i];
+		ConVarRef cvar( pszName );
+		Assert( cvar.IsValid() );
+		if ( iszValue != NULL_STRING )
+		{
+			cvar.SetValue( STRING( iszValue ) );
+		}
+	}
+	m_SavedConvars.Purge();
+}
+
+#ifdef GAME_DLL
+
+void CAlienSwarm::EnableChallenge( const char *szChallengeName )
+{
+	extern ConVar rd_challenge;
+
+	bool bChanged = !!V_strcmp( rd_challenge.GetString(), szChallengeName );
+	KeyValues::AutoDelete pKV( "CHALLENGE" );
+	bool bEnabled = ReactiveDropChallenges::ReadData( pKV, szChallengeName );
+
+	ResetChallengeConVars();
+	if ( bEnabled )
+	{
+		ApplyChallengeConVars( pKV );
+		EnforceWeaponSelectionRules();
+	}
+
+	if ( !bEnabled )
+	{
+		szChallengeName = "0";
+
+		if ( V_strcmp( rd_challenge.GetString(), "0" ) )
+		{
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_challenge_disabled" );
+		}
+	}
+	else if ( bChanged )
+	{
+		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_challenge_enabled", pKV->GetString( "name", szChallengeName ) );
+	}
+	// if rd_max_marines changed we need to update marines limits using SetMaxMarines
+	SetMaxMarines();
+	EnforceMaxMarines();
+	rd_challenge.SetValue( szChallengeName );
+	OnSkillLevelChanged( m_iSkillLevel );
+
+	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		m_szGameDescription = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+	}
+	else
+		m_szGameDescription = "Alien Swarm: Reactive Drop";
+}
+
+void CAlienSwarm::ResetChallengeConVars()
+{
+	CUtlStringList names;
+	names.EnsureCapacity( m_SavedConvars_Challenge.GetNumStrings() );
+	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
+	{
+		names.CopyAndAddToTail( m_SavedConvars_Challenge.String( i ) );
+	}
+
+	// purge before we reset the convars so the write protection doesn't trigger.
+	m_SavedConvars_Challenge.Purge();
+
+	FOR_EACH_VEC( names, i )
+	{
+		RevertSingleConvar( names[i] );
+	}
+}
+
+void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
+{
+	KeyValues *pConVars = pKV->FindKey( "convars" );
+	if ( !pConVars )
+	{
+		return;
+	}
+
+	FOR_EACH_VALUE( pConVars, pCV )
+	{
+		ConVarRef cvar( pCV->GetName() );
+		SaveConvar( cvar );
+		cvar.SetValue( pCV->GetString() );
+		// use the actual value to make sure we don't run into issues with truncated values not being equal.
+		m_SavedConvars_Challenge[cvar.GetName()] = AllocPooledString( cvar.GetString() );
+	}
+}
+
+class CASW_Challenge_Thinker : public CLogicalEntity
+{
+public:
+	DECLARE_CLASS( CASW_Challenge_Thinker, CLogicalEntity );
+
+	CASW_Challenge_Thinker()
+	{
+		m_iszScriptThinkFunction = AllocPooledString( "Update" );
+	}
+};
+
+LINK_ENTITY_TO_CLASS( asw_challenge_thinker, CASW_Challenge_Thinker );
+
+void CAlienSwarm::ApplyChallenge()
+{
+	if ( ASWDeathmatchMode() )
+	{
+		EnableChallenge( "0" );
+	}
+
+	if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		// no challenge
+		return;
+	}
+
+	m_bChallengeActiveThisCampaign = true;
+	m_bChallengeActiveThisMission = true;
+	if ( GetCampaignSave() )
+	{
+		GetCampaignSave()->m_bChallengeEverActive = true;
+		GetCampaignSave()->SaveGameToFile();
+	}
+
+	// make sure none of the variables were changed
+	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
+	{
+		ConVarRef cvar( m_SavedConvars_Challenge.String( i ) );
+		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
+
+		if ( cvar.IsValid() && Q_strcmp( cvar.GetString(), pszDesiredValue ) )
+		{
+			Warning( "Fixing challenge convar %s\n", cvar.GetName() );
+			cvar.SetValue( pszDesiredValue );
+		}
+	}
+
+	if ( !filesystem->FileExists( CFmtStr( "scripts/vscripts/challenge_%s.nut", rd_challenge.GetString() ), "GAME" ) )
+	{
+		// no script
+		return;
+	}
+
+	CASW_Challenge_Thinker *pThinker = assert_cast<CASW_Challenge_Thinker *>( CreateEntityByName( "asw_challenge_thinker" ) );
+	if ( !pThinker )
+	{
+		Error( "Could not create challenge thinker!\n" );
+		return;
+	}
+	pThinker->m_iszVScripts = AllocPooledString( CFmtStr( "challenge_%s", rd_challenge.GetString() ) );
+	if ( !pThinker->ValidateScriptScope() )
+	{
+		Error( "Could not create challenge script scope!\n" );
+		UTIL_Remove( pThinker );
+		return;
+	}
+	g_pScriptVM->SetValue( "g_ModeScript", pThinker->GetScriptScope() );
+	DispatchSpawn( pThinker, true );
+}
+
+#endif // GAME_DLL above
+
+// reactivedrop: This function reads rd_weapon_selection_rules and checks whether
+// the iWeaponIndex is allowed for pMR marine. If not it returns an ID of an
+// alternative allowed weapon
+int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex )
+{
+#ifdef CLIENT_DLL
+	if ( !rd_weapon_requirement_override.GetBool() )
+	{
+		if ( CASW_Equip_Req::ForceWeaponUnlocked( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) )
+		{
+			return iWeaponIndex;
+		}
+	}
+#else
+	CASW_Equip_Req *pEquipReq = m_hEquipReq.Get();
+	if ( pEquipReq && !rd_weapon_requirement_override.GetBool() )
+	{
+		for ( int i = 0; i < CASW_Equip_Req::ASW_MAX_EQUIP_REQ_CLASSES; i++ )
+		{
+			if ( !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) )
+			{
+				return iWeaponIndex;
+			}
+		}
+	}
+#endif
+
+	switch ( rd_weapon_selection_rules.GetInt() )
+	{
+		default:
+		case 0:
+			return iWeaponIndex;
+
+		case 1:
+			// level one
+			if ( GetWeaponLevelRequirement( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) > 0 )
+			{
+				return 0;
+			}
+			return iWeaponIndex;
+
+		case 2:
+			// riflemod
+			switch ( iEquipSlot )
+			{
+			case ASW_INVENTORY_SLOT_PRIMARY:
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_rifle" ) == 0 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_prifle" ) == 1 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_combat_rifle" ) == 23 );
+				if (  rd_restrict_weapon.GetInt() == 0 )
+				{
+					if ( iWeaponIndex == 0 || iWeaponIndex == 1 || iWeaponIndex == 23 )
+					{
+						return iWeaponIndex;
+					}
+
+					if ( pMR->GetProfile()->CanUseTechWeapons() )
+					{
+						// techs get the p-rifle instead of the rifle
+						return 1;
+					}
+				}
+				return rd_restrict_weapon.GetInt();
+
+			case ASW_INVENTORY_SLOT_SECONDARY:
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry" ) == 5 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_flamer" ) == 17 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_freeze" ) == 14 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_cannon" ) == 19 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_ammo_satchel" ) == 7 );
+				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_heal_grenade" ) == 6 );
+				if (iWeaponIndex ==  5 || // gun sentry
+					iWeaponIndex ==  6 || // asw_weapon_heal_grenade
+					iWeaponIndex == 17 || // flame sentry
+					iWeaponIndex == 14 || // freeze sentry
+					iWeaponIndex == 19 )  // cannon sentry
+				{
+					return iWeaponIndex;
+				}
+
+				// 7 is the id of ammo satchel. We're giving it by default
+				return 7;
+
+			case ASW_INVENTORY_SLOT_EXTRA:
+			default:
+				// allow any extra weapon
+				return iWeaponIndex;
+			}
+
+		case 3:
+			// no ammo allowed
+			AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_ammo_satchel" ) == 7 );
+			if ( iEquipSlot < ASW_INVENTORY_SLOT_EXTRA && iWeaponIndex == 7 )
+			{
+				return 0;
+			}
+			return iWeaponIndex;
+	}
+}
+
+bool CAlienSwarm::ShouldAllowCameraRotation( void )
+{
+	if ( rd_override_allow_rotate_camera.GetInt() != -1 )
+	{
+		return rd_override_allow_rotate_camera.GetBool();
+	}
+	Assert( g_pSwarmProxy );
+
+	return g_pSwarmProxy->m_bAllowCameraRotation;
+}
+
+#ifdef GAME_DLL
+void CAlienSwarm::CheckLeaderboardReady()
+{
+	Assert( ASWGameResource() );
+	if ( !ASWGameResource() )
+	{
+		return;
+	}
+
+	if ( m_bSentLeaderboardReady )
+	{
+		return;
+	}
+
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CASW_Player *pPlayer = assert_cast<CASW_Player *>( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer ) )
+		{
+			if ( !pPlayer->m_bLeaderboardReady )
+			{
+				return;
+			}
+		}
+	}
+
+	m_bSentLeaderboardReady = true;
+	CBroadcastRecipientFilter filter;
+	UserMessageBegin( filter, "RDLeaderboardReady" );
+	// no content, just a notification
+	MessageEnd();
+}
+#endif

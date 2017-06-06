@@ -53,6 +53,7 @@ BEGIN_DATADESC( CASW_Marine_Resource )
 	//DEFINE_FIELD( m_iLastStandKills, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iMedicHealing, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iCuredInfestation, FIELD_INTEGER ),
+	DEFINE_FIELD( m_iAliensBurned, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iMineKills, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iSentryKills, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iEggKills, FIELD_INTEGER ),
@@ -112,6 +113,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
 	SendPropString	(SENDINFO(m_MedalsAwarded)),
 	SendPropEHandle	(SENDINFO(m_hWeldingDoor)),
 	SendPropBool	(SENDINFO(m_bUsingEngineeringAura)),
+	SendPropInt     (SENDINFO(m_iBotFrags)),
 END_SEND_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -136,6 +138,33 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_bAwardedHealBeaconAchievement = false;
 	m_bDealtNonMeleeDamage = false;
 	m_iDamageTakenDuringHack = 0;
+	m_iBotFrags = 0;
+	m_iAliensBurned = 0;
+	m_iAmmoDeployed = 0;
+	m_iSentryGunsDeployed = 0;
+	m_iSentryFlamerDeployed = 0;
+	m_iSentryFreezeDeployed = 0;
+	m_iSentryCannonDeployed = 0;
+	m_iMedkitsUsed = 0;
+	m_iFlaresUsed = 0;
+	m_iAdrenalineUsed = 0;
+	m_iTeslaTrapsDeployed = 0;
+	m_iFreezeGrenadesThrown = 0;
+	m_iElectricArmorUsed = 0;
+	m_iHealGunHeals = 0;
+	m_iHealBeaconHeals = 0;
+	m_iHealGunHeals_Self = 0;
+	m_iHealBeaconHeals_Self = 0;
+	m_iDamageAmpsUsed = 0;
+	m_iHealBeaconsDeployed = 0;
+	m_iMedkitHeals_Self = 0;
+	m_iGrenadeExtinguishMarine = 0;
+	m_iGrenadeFreezeAlien = 0;
+	m_iDamageAmpAmps = 0;
+	m_iNormalArmorReduction = 0;
+	m_iElectricArmorReduction = 0;
+	m_iHealAmpGunHeals = 0;
+	m_iHealAmpGunAmps = 0;
 
 	m_TimelineFriendlyFire.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 	m_TimelineKillsTotal.SetCompressionType( TIMELINE_COMPRESSION_SUM );
@@ -143,6 +172,24 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_TimelineAmmo.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
 	m_TimelinePosX.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
 	m_TimelinePosY.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
+
+	// BenLubar(deathmatch-improvements): if we're already in game (such as deathmatch mode), make sure we still record stats for the graph
+	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	{
+		float flStart = ASWGameRules()->m_fMissionStartedTime;
+		m_TimelineFriendlyFire.ClearValues();
+		m_TimelineFriendlyFire.StartFromTime( flStart );
+		m_TimelineKillsTotal.ClearValues();
+		m_TimelineKillsTotal.StartFromTime( flStart );
+		m_TimelineHealth.ClearValues();
+		m_TimelineHealth.StartFromTime( flStart );
+		m_TimelineAmmo.ClearValues();
+		m_TimelineAmmo.StartFromTime( flStart );
+		m_TimelinePosX.ClearValues();
+		m_TimelinePosX.StartFromTime( flStart );
+		m_TimelinePosY.ClearValues();
+		m_TimelinePosY.StartFromTime( flStart );
+	}
 
 	m_bHealthHalved = false;
 	m_bTakenWoundDamage = false;
@@ -259,12 +306,16 @@ void CASW_Marine_Resource::UpdateWeaponIndices()
 		{
 			const char *szClassName = pWpn->GetClassname();
 			idx = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, szClassName );
-		}
-		if ( idx != m_iWeaponsInSlots.Get( iWpnSlot ) )
-		{
-			m_iWeaponsInSlots.Set( iWpnSlot, idx );
+
+			// updating current weapon into m_iWeaponsInSlots
+			if ( idx != m_iWeaponsInSlots.Get( iWpnSlot ) )
+			{
+				m_iWeaponsInSlots.Set( iWpnSlot, idx );
+			}
 		}
 	}
+
+	m_TimelineAmmo.RecordValue( m_MarineEntity->GetAllAmmoCount() );
 }
 
 float CASW_Marine_Resource::GetHealthPercent()
@@ -316,25 +367,28 @@ float CASW_Marine_Resource::OnFired_GetDamageScale()
 	//m_iLeadershipCount++;
 
 	// find the shortest leadership interval of our nearby leaders
-	float fChance = MarineSkills()->GetHighestSkillValueNearby(GetMarineEntity()->GetAbsOrigin(),
-		asw_leadership_radius.GetFloat(),
-		ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_ACCURACY_CHANCE );
-	float f = random->RandomFloat();
-	static int iLeadershipAccCount = 0;
-	if ( f < fChance )
-	{		
-		iLeadershipAccCount++;
-
-		flDamageScale *= 2.0f;
-	}
-
-	if (asw_debug_marine_damage.GetBool())
+	if ( pMarine )	// BenLubar(deathmatch-improvements): fixes a crash when a marine dies on the same tick they fired a bullet
 	{
-		Msg("Doing leadership accuracy test.  Chance is %f random float is %f\n", fChance, f);
-		Msg("  Leadership accuracy applied %d times so far\n", iLeadershipAccCount);
-		Msg( "   OnFired_GetDamageScale returning scale of %f\n", flDamageScale );
+		float fChance = MarineSkills()->GetHighestSkillValueNearby( pMarine->GetAbsOrigin(),
+			asw_leadership_radius.GetFloat(),
+			ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_ACCURACY_CHANCE );
+		float f = random->RandomFloat();
+		static int iLeadershipAccCount = 0;
+		if ( f < fChance )
+		{
+			iLeadershipAccCount++;
+
+			flDamageScale *= 2.0f;
+		}
+
+		if ( asw_debug_marine_damage.GetBool() )
+		{
+			Msg("Doing leadership accuracy test.  Chance is %f random float is %f\n", fChance, f);
+			Msg("  Leadership accuracy applied %d times so far\n", iLeadershipAccCount);
+			Msg( "   OnFired_GetDamageScale returning scale of %f\n", flDamageScale );
+		}
 	}
-		
+
 	return flDamageScale;
 }
 
@@ -552,4 +606,48 @@ bool CASW_Marine_Resource::IsReloading()
 		return false;
 
 	return pWeapon->IsReloading();
+}
+
+void CASW_Marine_Resource::IncrementWeaponStats( Class_T weaponClass, int32 nDamage, int32 nFFDamage, int32 nShotsFired, int32 nShotsHit, int32 nKills )
+{
+	ConVarRef asw_stats_verbose( "asw_stats_verbose" );
+
+	FOR_EACH_VEC( m_WeaponStats, i )
+	{
+		if ( m_WeaponStats[i].m_WeaponClass == weaponClass )
+		{
+			if ( asw_stats_verbose.GetBool() )
+			{
+				DevMsg( "marine %d weaponclass %d (d:%d+%d, f:%d+%d, s:%d+%d, h:%d+%d, k:%d+%d)\n", ASWGameResource()->GetMarineResourceIndex( this ), weaponClass,
+					m_WeaponStats[i].m_nDamage, nDamage, m_WeaponStats[i].m_nFFDamage, nFFDamage,
+					m_WeaponStats[i].m_nShotsFired, nShotsFired, m_WeaponStats[i].m_nShotsHit, nShotsHit,
+					m_WeaponStats[i].m_nKills, nKills );
+			}
+			m_WeaponStats[i].m_nDamage += nDamage;
+			m_WeaponStats[i].m_nFFDamage += nFFDamage;
+			m_WeaponStats[i].m_nShotsFired += nShotsFired;
+			m_WeaponStats[i].m_nShotsHit += nShotsHit;
+			m_WeaponStats[i].m_nKills += nKills;
+			return;
+		}
+	}
+
+	if ( asw_stats_verbose.GetBool() )
+	{
+		DevMsg( "marine %d weaponclass %d (d:%d, f:%d, s:%d, h:%d, k:%d)\n", ASWGameResource()->GetMarineResourceIndex( this ), weaponClass,
+			nDamage, nFFDamage, nShotsFired, nShotsHit, nKills );
+	}
+
+	WeaponStats_t weaponStats( weaponClass );
+	weaponStats.m_nDamage = nDamage;
+	weaponStats.m_nFFDamage = nFFDamage;
+	weaponStats.m_nShotsFired = nShotsFired;
+	weaponStats.m_nShotsHit = nShotsHit;
+	weaponStats.m_nKills = nKills;
+	m_WeaponStats.AddToTail( weaponStats );
+}
+
+int __cdecl CASW_Marine_Resource::CompareWeaponStats( const WeaponStats_t *a, const WeaponStats_t *b )
+{
+	return b->m_nShotsFired - a->m_nShotsFired;
 }

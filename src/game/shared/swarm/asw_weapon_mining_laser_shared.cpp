@@ -32,6 +32,8 @@
 
 #include "asw_weapon_mining_laser_shared.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
+#include "asw_marine_skills.h"
 
 #define ASW_MINING_LASER_CHARGE_UP_TIME  1.6
 #define ASW_MINING_LASER_PULSE_INTERVAL			0.1
@@ -493,7 +495,7 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 		if ( pEntity->m_takedamage != DAMAGE_NO )
 		{
 			ClearMultiDamage();
-			float fDamage = GetWeaponInfo()->m_flBaseDamage;  //sk_plr_dmg_asw_ml.GetFloat();
+			float fDamage = GetWeaponDamage();  //sk_plr_dmg_asw_ml.GetFloat();
 			CTakeDamageInfo info( this, pMarine, fDamage * g_pGameRules->GetDamageMultiplier(), DMG_ENERGYBEAM | DMG_ALWAYSGIB );
 			info.SetWeapon( this );
 			CalculateMeleeDamageForce( &info, vecDir, tr.endpos );
@@ -609,6 +611,27 @@ bool CASW_Weapon_Mining_Laser::Holster( CBaseCombatWeapon *pSwitchingTo )
 	return BaseClass::Holster( pSwitchingTo );
 }
 
+
+float CASW_Weapon_Mining_Laser::GetWeaponDamage()
+{
+	//float flDamage = 18.0f;
+	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_mininglaser_dmg;
+		flDamage = rd_pvp_mininglaser_dmg.GetFloat();
+	}
+
+	if (GetMarine())
+	{
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
+	}
+
+	return flDamage;
+}
+
+
 void CASW_Weapon_Mining_Laser::WeaponIdle( void )
 {
 	if ( !HasWeaponIdleTimeElapsed() )
@@ -632,9 +655,14 @@ void CASW_Weapon_Mining_Laser::SetFiringState(MININGLASER_FIRE_STATE state)
 	m_fireState = state;
 }
 
+ConVar rd_mininglaser_slows_down( "rd_mininglaser_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 mining laser doesn't slow down when firing");
+
 bool CASW_Weapon_Mining_Laser::ShouldMarineMoveSlow()
 {
-	return m_fireState != FIRE_OFF;
+	if ( rd_mininglaser_slows_down.GetBool() )
+		return m_fireState != FIRE_OFF;
+	else 
+		return false;	// don't slow down marines for deathmatch
 }
 
 #ifdef CLIENT_DLL

@@ -470,7 +470,7 @@ void COptionsSubKeyboard::FillInCurrentBindings( void )
 			char const *currentKey = item->GetString( "Key", "" );
 			if ( currentKey && currentKey[ 0 ] )
 			{
-				ButtonCode_t currentBC = (ButtonCode_t)gameuifuncs->GetButtonCodeForBind( currentKey );
+				ButtonCode_t currentBC = g_pInputSystem->StringToButtonCode( currentKey );
 
 				// If we're using a joystick, joystick bindings override keyboard ones
 				bool bShouldOverride = bJoystick && bIsJoystickCode && !IsJoystickCode(currentBC);

@@ -12,6 +12,7 @@
 #include "ndebugoverlay.h"
 #include "engine/IEngineSound.h"
 #include "physics_saverestore.h"
+#include "asw_shareddefs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -410,4 +411,10 @@ int CFuncMoveLinear::DrawDebugTextOverlays(void)
 		text_offset++;
 	}
 	return text_offset;
+}
+
+// reactivedrop: we need this for allowing placing turrets on these entities
+Class_T CFuncMoveLinear::Classify(void)
+{
+	return Class_T(CLASS_FUNC_MOVELINEAR);
 }

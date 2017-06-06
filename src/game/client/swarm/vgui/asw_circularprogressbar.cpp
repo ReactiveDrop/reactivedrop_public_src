@@ -578,7 +578,7 @@ float ASWCircularProgressBar::GetMarineFacingYaw( int x, int y )
 	if (!local)
 		return 0;	
 
-	C_ASW_Marine *pMarine = local->GetMarine();
+	C_ASW_Marine *pMarine = local->GetViewMarine();
 	if (!pMarine)
 		return 0;
 

@@ -13,6 +13,7 @@
 #include "asw_objective_escape.h"
 #include "asw_director_control.h"
 #include "asw_mission_manager.h"
+#include "asw_spawn_selection.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -26,8 +27,6 @@ extern ConVar asw_horde_override;
 extern ConVar asw_wanderer_override;
 ConVar asw_horde_interval_min("asw_horde_interval_min", "45", FCVAR_CHEAT, "Min time between hordes" );
 ConVar asw_horde_interval_max("asw_horde_interval_max", "65", FCVAR_CHEAT, "Min time between hordes" );
-ConVar asw_horde_size_min("asw_horde_size_min", "9", FCVAR_CHEAT, "Min horde size" );
-ConVar asw_horde_size_max("asw_horde_size_max", "14", FCVAR_CHEAT, "Max horde size" );
 
 ConVar asw_director_relaxed_min_time("asw_director_relaxed_min_time", "25", FCVAR_CHEAT, "Min time that director stops spawning aliens");
 ConVar asw_director_relaxed_max_time("asw_director_relaxed_max_time", "40", FCVAR_CHEAT, "Max time that director stops spawning aliens");
@@ -38,6 +37,7 @@ ConVar asw_interval_initial_min("asw_interval_initial_min", "5", FCVAR_CHEAT, "D
 ConVar asw_interval_initial_max("asw_interval_initial_max", "7", FCVAR_CHEAT, "Director: Max time between alien spawns when first entering spawning state");
 ConVar asw_interval_change_min("asw_interval_change_min", "0.9", FCVAR_CHEAT, "Director: Min scale applied to alien spawn interval each spawn");
 ConVar asw_interval_change_max("asw_interval_change_max", "0.95", FCVAR_CHEAT, "Director: Max scale applied to alien spawn interval each spawn");
+ConVar rd_prespawn_scale("rd_prespawn_scale", "0", FCVAR_CHEAT, "Director: will populate map with aliens at random positions", true, 0, true, 15);
 
 CASW_Director g_ASWDirector;
 CASW_Director* ASWDirector() { return &g_ASWDirector; }
@@ -288,26 +288,39 @@ void CASW_Director::UpdateHorde()
 	{
 		if ( ASWSpawnManager()->GetAwakeDrones() < 25 )
 		{
-			int iNumAliens = RandomInt( asw_horde_size_min.GetInt(), asw_horde_size_max.GetInt() );
-
-			if ( ASWSpawnManager()->AddHorde( iNumAliens ) )
+			int iNumAliens = ASWSpawnSelection()->RandomHordeSize();
+			if ( iNumAliens == 0 )
 			{
-				if ( asw_director_debug.GetBool() )
-				{
-					Msg("Created horde of size %d\n", iNumAliens);
-				}
-				m_bHordeInProgress = true;
-
-				if ( ASWGameRules() )
-				{
-					ASWGameRules()->BroadcastSound( "Spawner.Horde" );
-				}
 				m_HordeTimer.Invalidate();
 			}
 			else
 			{
-				// if we failed to find a horde position, try again shortly.
-				m_HordeTimer.Start( RandomFloat( 10.0f, 16.0f ) );
+				CASW_Spawn_Definition *pHorde = ASWSpawnSelection()->RandomHordeDefinition();
+				if ( ASWSpawnManager()->AddHorde( iNumAliens, pHorde ) )
+				{
+					if ( asw_director_debug.GetBool() )
+					{
+						Msg( "Created horde of size %d\n", iNumAliens );
+					}
+					m_bHordeInProgress = true;
+
+					int iWanderers = ASWSpawnSelection()->RandomHordeWandererCount();
+					for ( int i = 0; i < iWanderers; i++ )
+					{
+						ASWSpawnManager()->AddHordeWanderer( ASWSpawnSelection()->RandomHordeWandererDefinition() );
+					}
+
+					if ( ASWGameRules() )
+					{
+						ASWGameRules()->BroadcastSound( "Spawner.Horde" );
+					}
+					m_HordeTimer.Invalidate();
+				}
+				else
+				{
+					// if we failed to find a horde position, try again shortly.
+					m_HordeTimer.Start( RandomFloat( 10.0f, 16.0f ) );
+				}
 			}
 		}
 		else
@@ -441,7 +454,12 @@ void CASW_Director::UpdateWanderers()
 		{
 			if ( ASWSpawnManager()->GetAwakeDrones() < 20 )
 			{
-				ASWSpawnManager()->AddAlien();
+				// queue a random number of wanderers to spawn
+				int iWanderers = ASWSpawnSelection()->RandomWandererCount();
+				for ( int i = 0; i < iWanderers; i++ )
+				{
+					ASWSpawnManager()->AddWanderer( ASWSpawnSelection()->RandomWandererDefinition() );
+				}
 			}
 		}
 	}
@@ -524,32 +542,26 @@ void CASW_Director::UpdateMarineInsideEscapeRoom( CASW_Marine *pMarine )
 
 void CASW_Director::OnMissionStarted()
 {
+	ASWSpawnSelection()->OnMissionStarted();
+
 	// if we have wanders turned on, spawn a couple of encounters
 	if ( asw_wanderer_override.GetBool() && ASWGameRules() )
 	{
-		ASWSpawnManager()->SpawnRandomShieldbug();
+		int iPrespawn = ASWSpawnSelection()->RandomPrespawnCount();
+		for ( int i = 0; i < iPrespawn; i++ )
+		{
+			ASWSpawnManager()->PrespawnAliens( ASWSpawnSelection()->RandomPrespawnDefinition() );
+		}
 
-		int nParasites = 1;
-		switch( ASWGameRules()->GetSkillLevel() )
+		int iPacks = ASWSpawnSelection()->RandomPackCount();
+		for ( int i = 0; i < iPacks; i++ )
 		{
-			case 1: nParasites = RandomInt( 4, 6 ); break;
-			default:
-			case 2: nParasites = RandomInt( 4, 6 ); break;
-			case 3: nParasites = RandomInt( 5, 7 ); break;
-			case 4: nParasites = RandomInt( 5, 9 ); break;
-			case 5: nParasites = RandomInt( 5, 10 ); break;
+			ASWSpawnManager()->SpawnAlienPack( ASWSpawnSelection()->RandomPackDefinition() );
 		}
-		while ( nParasites > 0 )
-		{
-			int nParasitesInThisPack = RandomInt( 3, 6 );
-			if ( ASWSpawnManager()->SpawnRandomParasitePack( nParasitesInThisPack ) )
-			{
-				nParasites -= nParasitesInThisPack;
-			}
-			else
-			{
-				break;
-			}
-		}
+	}
+
+	if ( rd_prespawn_scale.GetInt() > 0 )
+	{
+		ASWSpawnManager()->PrespawnAliens(rd_prespawn_scale.GetInt());
 	}
 }

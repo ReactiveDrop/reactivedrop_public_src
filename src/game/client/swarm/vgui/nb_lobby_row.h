@@ -18,6 +18,7 @@ class CAvatarImagePanel;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class CBitmapButton;
 class CNB_Lobby_Tooltip;
+class CNB_Main_Panel;
 namespace BaseModUI
 {
 	class DropDownMenu;
@@ -35,9 +36,12 @@ public:
 	virtual void OnThink();
 	virtual void OnCommand( const char *command );
 	void OpenPlayerFlyout();
+	CNB_Main_Panel *GetMainPanel();
 
 	virtual void UpdateDetails();
 	virtual void CheckTooltip( CNB_Lobby_Tooltip *pTooltip );
+
+	void UpdateChangingSlot();
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::ImagePanel	*m_pBackground;
@@ -64,6 +68,7 @@ public:
 	CBitmapButton	*m_pWeaponButton2;
 	vgui::ImagePanel *m_pVoiceIcon;
 	vgui::ImagePanel *m_pPromotionIcon;
+	vgui::ImagePanel *m_pChangingSlot[ 4 ];
 
 	char m_szLastWeaponImage[ ASW_NUM_INVENTORY_SLOTS ][ 255 ];
 	char m_szLastPortraitImage[ 255 ];

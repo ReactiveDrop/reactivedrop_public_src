@@ -23,6 +23,7 @@
 #include "gamemodes.h"
 
 #include "vgui/ILocalize.h"
+#include "vgui/ISystem.h"
 #include "vgui_controls/Label.h"
 #include "vgui_controls/Button.h"
 #include "vgui_controls/Tooltip.h"
@@ -37,6 +38,8 @@
 #include "vgui/ISurface.h"
 #include "tier0/icommandline.h"
 #include "fmtstr.h"
+#include "cdll_client_int.h"
+#include "inputsystem/iinputsystem.h"
 
 #include "matchmaking/swarm/imatchext_swarm.h"
 
@@ -59,7 +62,9 @@ static ConVar ui_play_online_browser( "ui_play_online_browser",
 #endif
 									 "Whether play online displays a browser or plain search dialog." );
 
-ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "0", FCVAR_NONE, "If set, offline practice option on the main menu will show all maps." );
+ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "1", FCVAR_NONE, "If set, offline practice option on the main menu will show all maps." );
+ConVar rd_never_show_steamgroup_join( "rd_never_show_steamgroup_join", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "If 0 display a dialog that shows a link to Reactive Drop Gamers Steam group" );
+extern ConVar mm_max_players;
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
@@ -80,6 +85,16 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_iQuickJoinHelpText = MMQJHT_NONE;
 
 	SetDeleteSelfOnClose( true );
+
+	// reactivedrop: #iss-depthblur HACK
+	// We need to make mat_depth_blur_strength_override FCVAR_ARCHIVE
+	// but it is defined in Engine_Post_dx9.cpp which is in
+	// separate project and separate DLL, stdshader_dx9_sdk.vcproj
+	// so we add FCVAR_ARCHIVE flag here during creation of main menu
+	// This hack can be moved into more appropriate place though
+	CGameUIConVarRef mat_depth_blur_strength_override("mat_depth_blur_strength_override");
+	if ( mat_depth_blur_strength_override.IsValid() && !mat_depth_blur_strength_override.IsFlagSet( FCVAR_ARCHIVE ) )
+		mat_depth_blur_strength_override.AddFlags( FCVAR_ARCHIVE );
 }
 
 //=============================================================================
@@ -87,6 +102,23 @@ MainMenu::~MainMenu()
 {
 	RemoveFrameListener( this );
 
+}
+
+void AcceptJoinSteamgroupCallback()
+{
+    // open create event page
+    const char *url = "http://steamcommunity.com/groups/reactivedropgamers";
+#ifndef _X360 
+    if ( BaseModUI::CUIGameData::Get() )
+    {
+        BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+    }
+    else if ( vgui::system() )
+    {
+        vgui::system()->ShellExecute("open", url );
+    }
+#endif
+    rd_never_show_steamgroup_join.SetValue(1);
 }
 
 //=============================================================================
@@ -244,6 +276,31 @@ void MainMenu::OnCommand( const char *command )
 	{
 		OnCommand( "FlmScavengeFlyout" );
 		return;
+	}
+	else if ( !Q_strcmp( command, "TrainingPlay" ) )
+	{
+		KeyValues *pSettings = KeyValues::FromString(
+			"settings",
+			" system { "
+			" network offline "
+			" } "
+			" game { "
+			" mode single_mission "
+			" campaign jacob "
+			" mission asi-jac1-landingbay_pract "
+			" } "
+			);
+			KeyValues::AutoDelete autodelete( pSettings );
+
+			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
+
+			g_pMatchFramework->CreateSession( pSettings );
+
+			// Automatically start the credits session, no configuration required
+			if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
+			{
+				pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
+			}
 	}
 	else if ( !Q_strcmp( command, "SoloPlay" ) )
 	{
@@ -418,6 +475,22 @@ void MainMenu::OnCommand( const char *command )
 		// Trigger storage device selector
 		CUIGameData::Get()->SelectStorageDevice( new CChangeStorageDevice( XBX_GetUserId( iUserSlot ) ) );
 	}
+	else if ( !Q_strcmp( command, "Workshop" ) )
+	{
+		const char *url = "https://steamcommunity.com/app/563560/workshop/";
+		if ( BaseModUI::CUIGameData::Get() )
+		{
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+		}
+		else if ( vgui::system() )
+		{
+			vgui::system()->ShellExecute("open", url );
+		}
+	}
+	else if ( !Q_strcmp( command, "WorkshopManage" ) )
+	{
+		CBaseModPanel::GetSingleton().OpenWindow( WT_WORKSHOP, this );
+	}
 	else if (!Q_strcmp(command, "Credits"))
 	{
 #ifdef _X360
@@ -494,6 +567,68 @@ void MainMenu::OnCommand( const char *command )
 			engine->ClientCmd( "quit" );
 		}
 	}
+    else if (!Q_strcmp(command, "CreateEvent"))
+    {
+        if ( IsPC() )
+        {
+            if ( rd_never_show_steamgroup_join.GetBool() )
+            {
+                // open create event web page
+#ifndef _X360 
+                const char *url = "http://steamcommunity.com/groups/reactivedropgamers/eventEdit";
+                if ( BaseModUI::CUIGameData::Get() )
+                {
+                    BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+                }
+                else 
+                {
+                    system()->ShellExecute("open", url );
+                }
+#endif
+            }
+            else
+            {
+                // show a "first time" help dialog that explains this feature 
+                GenericConfirmation* confirmation = 
+                    static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
+
+                GenericConfirmation::Data_t data;
+
+                data.pWindowTitle = "#rd_str_schedule_event"; // Feature Description
+                data.pMessageText = "#rd_schedule_event_information";
+
+                data.bOkButtonEnabled = true;
+                data.pfnOkCallback = &AcceptJoinSteamgroupCallback;
+                data.bCancelButtonEnabled = true;
+
+//                data.bCheckBoxEnabled = true; 
+//                data.pCheckBoxLabelText = "Never show this again";
+//                data.pCheckBoxCvarName = "rd_never_show_steamgroup_join";
+
+                confirmation->SetUsageData(data);
+
+                NavigateFrom();
+            }
+        }
+    }
+    else if (!Q_strcmp(command, "LeaveFeedback"))
+    {
+        if ( IsPC() )
+        {
+            // open feedback tread web page
+#ifndef _X360 
+            const char *url = "http://steamcommunity.com/app/630/discussions/0/828924672576706420/";
+            if ( BaseModUI::CUIGameData::Get() )
+            {
+                BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+            }
+            else 
+            {
+                system()->ShellExecute("open", url );
+            }
+#endif
+        }
+    }
 	else if ( !Q_strcmp( command, "EnableSplitscreen" ) )
 	{
 		Msg( "Enabling splitscreen from main menu...\n" );
@@ -603,6 +738,14 @@ void MainMenu::OnCommand( const char *command )
 			}
 			CBaseModPanel::GetSingleton().OpenWindow(WT_KEYBOARDMOUSE, this, true );
 		}
+	}
+	else if ( !Q_strcmp( command, "Gamepad" ) )
+	{
+		if ( m_ActiveControl )
+		{
+			m_ActiveControl->NavigateFrom();
+		}
+		CBaseModPanel::GetSingleton().OpenWindow( WT_GAMEPAD, this, true );
 	}
 	else if( Q_stricmp( "#L4D360UI_Controller_Edit_Keys_Buttons", command ) == 0 )
 	{
@@ -920,6 +1063,7 @@ void MainMenu::OnThink()
 		{
 			const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();
 			pFlyout->SetControlEnabled( "BtnBrightness", !config.Windowed() );
+			pFlyout->SetControlEnabled( "BtnController", inputsystem->GetJoystickCount() != 0 );
 		}
 	}
 
@@ -986,13 +1130,24 @@ void MainMenu::RunFrame()
 }
 
 //=============================================================================
-#ifdef _X360
 void MainMenu::Activate()
 {
 	BaseClass::Activate();
-	OnFlyoutMenuClose( NULL );
+
+	vgui::Panel *firstPanel = FindChildByName( "BtnMultiplayer" );
+	if ( firstPanel )
+	{
+		if ( m_ActiveControl )
+		{
+			m_ActiveControl->NavigateFrom( );
+		}
+		firstPanel->NavigateTo();
+	}
+
+	// reactivedrop: reset the value each time we go in main menu
+	// for us to be able to browse lobbies with up to 32 slots
+	mm_max_players.Revert();
 }
-#endif
 
 //=============================================================================
 void MainMenu::PaintBackground() 
@@ -1023,7 +1178,7 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	const char *pSettings = "Resource/UI/BaseModUI/MainMenu.res";
+	const char *pSettings = "Resource/UI/BaseModUI/mainmenu_rd.res";
 
 #if !defined( _X360 )
 	if ( !g_pMatchFramework->GetMatchSystem() )
@@ -1126,7 +1281,7 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 			AssertMsg( false, "This branch run on a PC build without IS_WINDOWS_PC defined." );
 #endif
 
-			int32 availableBytes, totalBytes = 0;
+			uint64 availableBytes, totalBytes = 0;
 			if ( pRemoteStorage && pRemoteStorage->GetQuota( &totalBytes, &availableBytes ) )
 			{
 				if ( totalBytes > 0 )
@@ -1141,35 +1296,14 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 
 	SetFooterState();
 
-	if ( IsX360() )
-	{		
-		GameModes *pGameModes =  dynamic_cast< GameModes* >( FindChildByName( "BtnGameModes" ) );	
-		if ( pGameModes )
-		{
-			char lastActive[MAX_PATH];
-			if ( pGameModes->GetLastActiveNameId( lastActive, sizeof( lastActive ) ) )
-			{
-				pGameModes->SetActive( lastActive, true );
-			}
-			else
-			{
-				pGameModes->SetActive( "BtnPlaySolo", true );
-			}
-			m_ActiveControl = pGameModes;
-		}
-	}
-
-	if ( IsPC() )
+	vgui::Panel *firstPanel = FindChildByName( "BtnMultiplayer" );
+	if ( firstPanel )
 	{
-		vgui::Panel *firstPanel = FindChildByName( "BtnCoOp" );
-		if ( firstPanel )
+		if ( m_ActiveControl )
 		{
-			if ( m_ActiveControl )
-			{
-				m_ActiveControl->NavigateFrom( );
-			}
-			firstPanel->NavigateTo();
+			m_ActiveControl->NavigateFrom( );
 		}
+		firstPanel->NavigateTo();
 	}
 
 #if defined( _X360 ) && defined( _DEMO )

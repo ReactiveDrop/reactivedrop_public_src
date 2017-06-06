@@ -27,9 +27,14 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "nb_button.h"
+#include "asw_deathmatch_mode.h"
+#include "c_team.h"
+#include "gameui/swarm/vgenericpanellist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
+
+using BaseModUI::GenericPanelList;
 
 int g_asw_iPlayerListOpen = 0;
 
@@ -60,9 +65,13 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 
 	m_pPlayerHeader = new vgui::Label(this, "PlayerHeader", "#asw_player_list_player");
 	m_pMarinesHeader = new vgui::Label(this, "MarinesHeader", "#asw_player_list_marines");
+	m_pFragsHeader = new vgui::Label(this, "FragsHeader",		"#asw_player_list_frags");
+	m_pDeathsHeader = new vgui::Label(this, "DeathsHeader",		"#asw_player_list_deaths");
 	m_pPingHeader = new vgui::Label(this, "PingHeader", "#asw_player_list_ping");
 
 	m_pMissionLabel = new vgui::Label(this, "MissionLabel", "");
+	m_pTeam1ScoreLabel = new vgui::Label(this, "Team1Score", "");
+	m_pTeam2ScoreLabel = new vgui::Label(this, "Team2Score", "");
 	m_pServerLabel = new vgui::Label(this, "ServerLabel", "");
 	m_pDifficultyLabel = new vgui::Label(this, "DifficultyLabel", "");	
 
@@ -73,9 +82,9 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_fUpdateDifficultyTime = 0;
 
 	// voting buttons
-	m_pVoteBackground = new vgui::Panel(this, "VoteBG");
+	//m_pVoteBackground = new vgui::Panel(this, "VoteBG");
 	m_pLeaderButtonsBackground = new vgui::Panel(this, "LeaderBG");
-	m_pStartVoteTitle = new vgui::Label(this, "StartVoteTitle", "#asw_start_vote");
+	//m_pStartVoteTitle = new vgui::Label(this, "StartVoteTitle", "#asw_start_vote");
 	m_pCurrentVoteTitle = new vgui::Label(this, "CurrentVoteTitle", "#asw_current_vote");	
 	m_pYesVotesLabel = new vgui::Label(this, "YesCount", "");
 	m_pNoVotesLabel = new vgui::Label(this, "NoCount", "");	
@@ -125,6 +134,10 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	g_asw_iPlayerListOpen++;
 
 	m_szServerName[0] = '\0';
+
+	m_pPlayerListScroll = new GenericPanelList( this, "PlayerListScroll", GenericPanelList::ISM_ELEVATOR );
+	m_pPlayerListScroll->SetScrollBarVisible( IsPC() );
+	m_pPlayerListScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
 }
 
 PlayerListPanel::~PlayerListPanel()
@@ -136,13 +149,17 @@ void PlayerListPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	LoadControlSettings( "resource/ui/PlayerListPanel.res" );
+	LoadControlSettings( "resource/ui/PlayerListPanel_rd.res" );
 
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerHeader->SetFont(DefaultFont);
 	m_pPlayerHeader->SetFgColor(Color(255,255,255,255));
 	m_pMarinesHeader->SetFont(DefaultFont);
 	m_pMarinesHeader->SetFgColor(Color(255,255,255,255));
+	m_pFragsHeader->SetFont(DefaultFont);
+	m_pFragsHeader->SetFgColor(Color(255,255,255,255));
+	m_pDeathsHeader->SetFont(DefaultFont);
+	m_pDeathsHeader->SetFgColor(Color(255,255,255,255));
 	m_pPingHeader->SetFont(DefaultFont);
 	m_pPingHeader->SetFgColor(Color(255,255,255,255));
 	SetPaintBackgroundEnabled(true);
@@ -186,10 +203,17 @@ void PlayerListPanel::PerformLayout()
 
 	m_pPlayerHeader->SetBounds( left_edge + PLAYER_LIST_PLAYER_X * fScale, player_list_top, PLAYER_LIST_PLAYER_W * fScale, header_height);
 	m_pMarinesHeader->SetBounds( left_edge + PLAYER_LIST_MARINES_X * fScale, player_list_top, PLAYER_LIST_MARINES_W * fScale, header_height);
+	m_pFragsHeader->SetBounds( left_edge + PLAYER_LIST_FRAGS_X * fScale, player_list_top, PLAYER_LIST_FRAGS_W * fScale, header_height);
+	m_pDeathsHeader->SetBounds( left_edge + PLAYER_LIST_DEATHS_X * fScale, player_list_top, PLAYER_LIST_DEATHS_W * fScale, header_height);
 	m_pPingHeader->SetBounds( left_edge + PLAYER_LIST_PING_X * fScale, player_list_top, PLAYER_LIST_PING_W * fScale, header_height);
-	for (int i=0;i<m_PlayerLine.Count();i++)
+
+	m_pPlayerListScroll->SetBounds(left_edge + border - 5, line_top, YRES( 500 ) - 24.0f * fScale + 5, line_height * 8);
+
+
+	for (int i = m_pPlayerListScroll->GetPanelItemCount(); i < m_PlayerLine.Count(); ++i)
 	{
-		m_PlayerLine[i]->SetBounds( left_edge + border, line_top + i * (line_height + padding), YRES( 500 ) - 24.0f * fScale, line_height);
+		m_pPlayerListScroll->AddPanelItem(m_PlayerLine[i], true);
+		m_PlayerLine[i]->SetBounds( 0, i * (line_height + padding), YRES( 500 ) - 24.0f * fScale, line_height);
 	}
 	
 	int button_height = 32.0f * fScale;
@@ -238,6 +262,8 @@ void PlayerListPanel::OnThink()
 		}
 	}
 
+	//m_pPlayerListScroll->SetScrollBarVisible( IsPC() && iNumPlayersInGame > 6);
+
 	// hide any extra ones we might have
 	for (int i=iNumPlayersInGame;i<m_PlayerLine.Count();i++)
 	{
@@ -250,6 +276,47 @@ void PlayerListPanel::OnThink()
 	{
 		MissionStatsPanel::SetMissionLabels(m_pMissionLabel, m_pDifficultyLabel);
 		m_fUpdateDifficultyTime = gpGlobals->curtime + 1.0f;
+	}
+
+	bool is_team_game = ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled();
+	m_pTeam1ScoreLabel->SetVisible( is_team_game );
+	m_pTeam2ScoreLabel->SetVisible( is_team_game );
+
+	if ( is_team_game )
+	{
+		C_Team *alpha_team = GetGlobalTeam( TEAM_ALPHA );
+		C_Team *beta_team = GetGlobalTeam( TEAM_BETA );
+
+		if ( alpha_team && beta_team )
+		{
+			const char *t1_name = alpha_team->Get_Name();
+			const char *t2_name = beta_team->Get_Name();
+
+			if (t1_name && t2_name)
+			{
+				char t1_score[32];
+				char t2_score[32];
+				itoa(alpha_team->Get_Score(), t1_score, 10);
+				itoa(beta_team->Get_Score(), t2_score, 10);
+				char t1_label[1024];
+				char t2_label[1024];
+				sprintf_s(t1_label, sizeof(t1_label), "%s: %s", t1_name, t1_score);
+				sprintf_s(t2_label, sizeof(t2_label), "%s: %s", t2_name, t2_score);
+
+				wchar_t t1_wlabel[1024];
+				wchar_t t2_wlabel[1024];
+				g_pVGuiLocalize->ConvertANSIToUnicode( t1_label, t1_wlabel, sizeof(t1_wlabel));
+				g_pVGuiLocalize->ConvertANSIToUnicode( t2_label, t2_wlabel, sizeof(t2_wlabel));
+
+				m_pTeam1ScoreLabel->SetText( t1_wlabel );
+				m_pTeam2ScoreLabel->SetText( t2_wlabel );
+			}
+		}
+		else
+		{
+			Warning( "Cannot get the needed team for displayin in UI \n" );
+		}
+
 	}
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
@@ -277,7 +344,7 @@ void PlayerListPanel::KickClicked(PlayerListLine* pLine)
 			if (m_iKickVoteIndex != m_PlayerLine[i]->m_iPlayerIndex)
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_kickvote %d", i+1);
+				Q_snprintf(buffer, sizeof(buffer), "cl_kickvote %d", m_PlayerLine[i]->m_iPlayerIndex);
 				engine->ClientCmd(buffer);
 			}
 			else	// we were already wanting to kick this player, so toggle it off
@@ -300,7 +367,7 @@ void PlayerListPanel::LeaderClicked(PlayerListLine* pLine)
 			if (m_iLeaderVoteIndex != m_PlayerLine[i]->m_iPlayerIndex)
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_leadervote %d", i+1);
+				Q_snprintf(buffer, sizeof(buffer), "cl_leadervote %d", m_PlayerLine[i]->m_iPlayerIndex);
 				engine->ClientCmd(buffer);
 			}
 			else	// we were already wanting to kick this play, so toggle it off
@@ -440,7 +507,7 @@ void PlayerListPanel::UpdateVoteButtons()
 
 void PlayerListPanel::SetShowStartVoteElements(bool bVisible)
 {
-	m_pStartVoteTitle->SetVisible(bVisible);
+	//m_pStartVoteTitle->SetVisible(bVisible);
 	m_pStartCampaignVoteButton->SetVisible(bVisible);
 	m_pStartSavedCampaignVoteButton->SetVisible(false);	// disable loading saves for now
 }

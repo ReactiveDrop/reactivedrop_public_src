@@ -7,6 +7,7 @@
 #include "particle_parse.h"
 #include "asw_util_shared.h"
 #include "cvisibilitymonitor.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,7 +76,8 @@ int CASW_Barrel_Explosive::OnTakeDamage( const CTakeDamageInfo &info )
 
 		pMarine = assert_cast< CASW_Marine* >( info.GetAttacker() );
 		// prevent AI marines blowing up barrels as it makes the player ANGRY ANGRY
-		if ( pMarine && !pMarine->IsInhabited() )
+		// BenLubar(deathmatch-improvements): ...except in deathmatch
+		if ( pMarine && !pMarine->IsInhabited() && !ASWDeathmatchMode() )
 			return 0;
 	}
 

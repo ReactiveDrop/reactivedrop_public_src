@@ -151,6 +151,8 @@ public:
 	bool m_bShowsOnScanner;
 	bool	m_bDoorFallen;
 
+	inline int GetDoorType() { return m_iDoorType; }
+
 private:
 
 	float m_fLastFullyWeldedSound;

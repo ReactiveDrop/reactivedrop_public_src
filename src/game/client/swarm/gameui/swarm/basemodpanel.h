@@ -73,6 +73,8 @@ namespace BaseModUI
 		WT_ADDONASSOCIATION,
 		WT_GETLEGACYDATA,
 		WT_JUKEBOX,
+		WT_WORKSHOP,
+		WT_GAMEPAD,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 

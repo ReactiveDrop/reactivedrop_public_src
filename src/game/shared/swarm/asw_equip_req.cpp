@@ -186,10 +186,15 @@ bool C_ASW_Equip_Req::ForceWeaponUnlocked( const char *szWeaponClass )
 
 // Shared ==================================
 
+extern ConVar rd_weapon_requirement_override;
+
 bool CASW_Equip_Req::AreRequirementsMet( int arrEquippedReqClasses[ASW_MAX_EQUIP_REQ_CLASSES] /*= NULL*/ )
 {
 	if ( !ASWGameResource() )
 		return false;
+
+	if ( rd_weapon_requirement_override.GetBool() )
+		return true;
 
 	// Required classes to equip
 	int *numEquippedClasses = arrEquippedReqClasses ? arrEquippedReqClasses : ( int* ) stackalloc( sizeof( arrEquippedReqClasses[0] ) * ASW_MAX_EQUIP_REQ_CLASSES );

@@ -52,6 +52,7 @@ END_NETWORK_TABLE()
 
 #ifdef GAME_DLL
 ConVar asw_goo_volume("asw_goo_volume", "1.0f", FCVAR_CHEAT, "Volume of the alien goo looping sound");
+extern ConVar rd_biomass_ignite_from_explosions;
 LINK_ENTITY_TO_CLASS( asw_alien_goo, CASW_Alien_Goo );
 PRECACHE_WEAPON_REGISTER(asw_alien_goo);
 #endif
@@ -229,6 +230,37 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( pMarine) 
 			pMarine->HurtAlien(this, info);
 	}
+
+	// riflemod: goo takes blast damage, e.g. from explosions. But they only ignite it
+	if ( rd_biomass_ignite_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST )
+	{
+		Ignite( 30.0f );
+
+		// notify the marine that he's hurting this, so his accuracy doesn't drop
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			if ( pMarine )
+			{
+				pMarine->HurtJunkItem( this, info );
+			}
+		}
+
+		CASW_Player *pPlayerAttacer = NULL;
+		if ( pMarine )
+		{
+			pPlayerAttacer = pMarine->GetCommander();
+		}
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "alien_ignited" );
+		if ( event )
+		{
+			event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
+			event->SetInt( "entindex", entindex() );
+			gameeventmanager->FireEventClientSide( event );
+		}
+		return 0;
+	}
+	// end of riflemod code 
 
 	// goo is only damaged by fire!
 	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) )

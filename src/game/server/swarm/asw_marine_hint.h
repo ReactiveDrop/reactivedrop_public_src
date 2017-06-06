@@ -13,6 +13,7 @@
 
 #include "igamesystem.h"
 #include "ai_initutils.h"
+#include "triggers.h"
 
 class CASW_Marine_Hint_Ent : public CServerOnlyEntity
 {
@@ -60,7 +61,10 @@ public:
 	virtual void LevelShutdownPostEntity();	
 
 	void AddHint( CBaseEntity *pEnt );
+	void AddInfoNode(CAI_Node *pNode);
 	int FindHints( const Vector &position, const float flMinDistance, const float flMaxDistance, CUtlVector<HintData_t *> *pResult );
+	// finds hints inside a volume
+	int FindHints( const CBaseTrigger &volume, CUtlVector<HintData_t *> *pResult );
 	
 	int GetHintCount() { return m_Hints.Count(); }
 	const Vector& GetHintPosition( int nHint ) { return m_Hints[ nHint ]->m_vecPosition; }

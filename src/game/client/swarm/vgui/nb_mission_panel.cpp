@@ -21,6 +21,12 @@
 #include "nb_island.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/VFooterPanel.h"
+#include "asw_hud_chat.h"
+#include "asw_deathmatch_mode.h"
+#include "rd_challenges_shared.h"
+#include "gameui/swarm/vflyoutmenu.h"
+#include "gameui/swarm/vhybridbutton.h"
+#include "gameui/swarm/rd_challenge_selection.h"
 
 using namespace vgui;
 
@@ -47,8 +53,10 @@ CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : 
 	// == MANAGED_MEMBER_CREATION_END ==
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
 	m_drpDifficulty = new BaseModUI::DropDownMenu( this, "DrpDifficulty" );
+	m_drpGameMode = new BaseModUI::DropDownMenu( this, "DrpGameMode" );
 	m_drpFriendlyFire = new BaseModUI::DropDownMenu( this, "DrpFriendlyFire" );
 	m_drpOnslaught = new BaseModUI::DropDownMenu( this, "DrpOnslaught" );
+	m_drpChallenge = new BaseModUI::DropDownMenu(this, "DrpSelectChallenge");
 	m_drpFixedSkillPoints = new BaseModUI::DropDownMenu( this, "DrpFixedSkillPoints" );
 
 	m_pHeaderFooter->SetTitle( "#nb_mission_details" );
@@ -64,9 +72,11 @@ CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : 
 	m_bSelectedFirstObjective = false;
 
 	m_iLastSkillLevel = -1;
+	m_iLastGameMode = -1;
 	m_iLastFixedSkillPoints = -1;
 	m_iLastHardcoreFF = -1;
 	m_iLastOnslaught = -1;
+	m_bIgnoreSelections = false;
 }
 
 CNB_Mission_Panel::~CNB_Mission_Panel()
@@ -78,7 +88,7 @@ void CNB_Mission_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_mission_panel.res" );
+	LoadControlSettings( "resource/ui/nb_mission_panel_rd.res" );
 
 	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
@@ -165,14 +175,20 @@ void CNB_Mission_Panel::OnThink()
 	if ( !ASWGameRules() )
 		return;
 
+	m_bIgnoreSelections = true;
+
 	// disable mission settings flyouts if not leader or the mission has started
 	int iLeaderIndex = ASWGameResource() ? ASWGameResource()->GetLeaderEntIndex() : -1;
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bLeader = ( pPlayer && (pPlayer->entindex() == iLeaderIndex ) );
 
 	m_drpDifficulty->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
-	m_drpFriendlyFire->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
-	m_drpOnslaught->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
+	m_drpFriendlyFire->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader && !ForceHardcoreFF() );
+	const bool bDeathmatchIngme =  ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME;
+	const bool bInBriefing = ASWGameRules()->GetGameState() == ASW_GS_BRIEFING;
+	m_drpGameMode->SetEnabled( ( bDeathmatchIngme || bInBriefing ) && bLeader );
+	m_drpOnslaught->SetEnabled( (bDeathmatchIngme || bInBriefing) && bLeader && !ForceOnslaught() );
+	m_drpChallenge->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader);
 	m_drpFixedSkillPoints->SetEnabled( false ); //ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
 
 	if (m_iLastSkillLevel != ASWGameRules()->GetSkillLevel())
@@ -204,6 +220,28 @@ void CNB_Mission_Panel::OnThink()
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_normald" );
 		}
 	}
+
+	if (ASWDeathmatchMode() && m_iLastGameMode != ASWDeathmatchMode()->GetGameMode())
+	{
+		m_iLastGameMode = ASWDeathmatchMode()->GetGameMode();
+		if (m_iLastGameMode == GAMEMODE_TEAMDEATHMATCH)
+		{
+			m_drpGameMode->SetCurrentSelection("#rdui_tdm_title");
+		}
+		else if (m_iLastGameMode == GAMEMODE_INSTAGIB)
+		{
+			m_drpGameMode->SetCurrentSelection("#rdui_instagib_title");
+		}
+		else if (m_iLastGameMode == GAMEMODE_GUNGAME)
+		{
+			m_drpGameMode->SetCurrentSelection("#rdui_gungame_title");
+		}
+		else if (m_iLastGameMode == GAMEMODE_DEATHMATCH)
+		{
+			m_drpGameMode->SetCurrentSelection("#rdui_deathmatch_title");
+		}
+	}
+
 	extern ConVar asw_sentry_friendly_fire_scale;
 	extern ConVar asw_marine_ff_absorption;
 	int nHardcoreFF = ( asw_sentry_friendly_fire_scale.GetFloat() != 0.0f || asw_marine_ff_absorption.GetInt() != 1 ) ? 1 : 0;
@@ -235,15 +273,24 @@ void CNB_Mission_Panel::OnThink()
 		}
 	}
 
+	extern ConVar rd_challenge;
+	m_drpChallenge->SetCurrentSelection( ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
+
 	BaseModUI::CBaseModFooterPanel *footer = BaseModUI::CBaseModPanel::GetSingleton().GetFooterPanel();
 	if ( footer )
 	{
 		m_pDifficultyDescription->SetText( footer->GetHelpText() );
 	}
 
-	// only show insane in multiplayer
-	m_drpDifficulty->SetFlyoutItemEnabled( "BtnImpossible", gpGlobals->maxClients > 1 );
-	m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", gpGlobals->maxClients > 1 );
+	// reactivedrop: commented. To enable Insane and Brutal for singleplayer
+	// // only show insane in multiplayer
+	// m_drpDifficulty->SetFlyoutItemEnabled( "BtnImpossible", gpGlobals->maxClients > 1 );
+	// m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", gpGlobals->maxClients > 1 );
+
+	// reactivedrop: hide difficulty drop down for deathmatch
+	// and show game mode selection instead
+	m_drpDifficulty->SetVisible( !ASWDeathmatchMode() );
+	m_drpGameMode->SetVisible( ASWDeathmatchMode() );
 
 	if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetGameState() != ASW_GS_INGAME )
 	{
@@ -267,7 +314,8 @@ void CNB_Mission_Panel::OnThink()
 	{
 		m_drpFixedSkillPoints->SetVisible( false );
 	}
-	
+
+	m_bIgnoreSelections = false;
 }
 
 void CNB_Mission_Panel::OnCommand( const char *command )
@@ -285,62 +333,161 @@ void CNB_Mission_Panel::OnCommand( const char *command )
 		}
 		return;
 	}
+	else if ( !Q_stricmp( command, "cmd_change_challenge" ) )
+	{
+		extern ConVar rd_challenge;
+		BaseModUI::ReactiveDropChallengeSelection *pPanel = new BaseModUI::ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection" );
+		pPanel->SetSelectedChallenge( rd_challenge.GetString() );
+		pPanel->MoveToFront();
+
+		return;
+	}
 	else if ( !Q_stricmp( command, "fixed_skill_points" ) )
 	{
-		engine->ClientCmd( "cl_fixedskills 1" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_fixedskills 1" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "custom_skill_points" ) )
 	{
-		engine->ClientCmd( "cl_fixedskills 0" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_fixedskills 0" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_Difficulty_easy" ) )
 	{
-		engine->ClientCmd( "cl_skill 1" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_skill 1" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_Difficulty_normal" ) )
 	{
-		engine->ClientCmd( "cl_skill 2" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_skill 2" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_Difficulty_hard" ) )
 	{
-		engine->ClientCmd( "cl_skill 3" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_skill 3" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_Difficulty_insane" ) )
 	{
-		engine->ClientCmd( "cl_skill 4" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_skill 4" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_Difficulty_imba" ) )
 	{
-		engine->ClientCmd( "cl_skill 5" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_skill 5" );
+		return;
+	}
+	else if ( !Q_stricmp( command, "#rdui_deathmatch_title" ) )
+	{
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "rd_Deathmatch_enable" );
+		return;
+	}
+	else if ( !Q_stricmp( command, "#rdui_gungame_title" ) )
+	{
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "rd_gungame_enable" );
+		return;
+	}
+	else if ( !Q_stricmp( command, "#rdui_instagib_title" ) )
+	{
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "rd_instagib_enable" );
+		return;
+	}
+	else if ( !Q_stricmp( command, "#rdui_tdm_title" ) )
+	{
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "rd_TeamDeathmatch_enable" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_RegularFF" ) )
 	{
-		engine->ClientCmd( "cl_hardcore_ff 0" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_hardcore_ff 0" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_HardcoreFF" ) )
 	{
-		engine->ClientCmd( "cl_hardcore_ff 1" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_hardcore_ff 1" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_OnslaughtDisabled" ) )
 	{
-		engine->ClientCmd( "cl_onslaught 0" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_onslaught 0" );
 		return;
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_OnslaughtEnabled" ) )
 	{
-		engine->ClientCmd( "cl_onslaught 1" );
+		if ( !m_bIgnoreSelections )
+			engine->ClientCmd( "cl_onslaught 1" );
+		return;
+	}
+	else if ( const char *szChallengeName = StringAfterPrefix( command, "cmd_challenge_selected_" ) )
+	{
+		if ( !m_bIgnoreSelections )
+		{
+			m_drpChallenge->SetCurrentSelection( ReactiveDropChallenges::DisplayName( szChallengeName ) );
+			engine->ClientCmd( VarArgs( "rd_set_challenge %s", szChallengeName ) );
+		}
 		return;
 	}
 	BaseClass::OnCommand( command );
+}
+
+bool CNB_Mission_Panel::ForceHardcoreFF()
+{
+	extern ConVar rd_challenge;
+
+	KeyValues::AutoDelete pKV( "CHALLENGE" );
+	if ( ReactiveDropChallenges::ReadData( pKV, rd_challenge.GetString() ) )
+	{
+		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
+		{
+			if ( KeyValues *pFFAbsorption = pConVars->FindKey( "asw_marine_ff_absorption" ) )
+			{
+				return pFFAbsorption->GetInt() != 1 || pConVars->FindKey( "asw_sentry_friendly_fire_scale" );
+			}
+			else if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
+			{
+				return pSentryFFScale->GetFloat() != 0.0f;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CNB_Mission_Panel::ForceOnslaught()
+{
+	extern ConVar rd_challenge;
+
+	KeyValues::AutoDelete pKV( "CHALLENGE" );
+	if ( ReactiveDropChallenges::ReadData( pKV, rd_challenge.GetString() ) )
+	{
+		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
+		{
+			if ( KeyValues *pHordeOverride = pConVars->FindKey( "asw_horde_override" ) )
+			{
+				return pHordeOverride->GetBool() || pConVars->FindKey( "asw_wanderer_override" );
+			}
+			else if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
+			{
+				return pWandererOverride->GetBool();
+			}
+		}
+	}
+
+	return false;
 }
 
 

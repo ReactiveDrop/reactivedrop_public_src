@@ -83,6 +83,7 @@ extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_alien_stunned_speed;
 extern ConVar asw_springcol;
 extern ConVar asw_drone_death_force_pitch;
+extern ConVar rd_alien_speed_scale;
 
 float CASW_Drone_Advanced::s_fNextTooCloseChatterTime = 0;
 
@@ -313,10 +314,34 @@ float CASW_Drone_Advanced::GetIdealSpeed() const
 		default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
 	}
 
+	if (rd_difficulty_tier.GetInt() == 1)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+			case 5: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.6; break;
+			case 4: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.5; break;
+			case 3: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.4; break;
+			case 2: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.3; break;
+			default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.2; break;
+		}
+	}
+
+	if (rd_difficulty_tier.GetInt() == 2)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.1; break;
+		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.0; break;
+		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.9; break;
+		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.8; break;
+		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.7; break;
+		}
+	}
+
 	float flFreezeSpeedScale = 1.0f - m_flFrozen;
 	flFreezeSpeedScale = clamp<float>( flFreezeSpeedScale, 0.0f, 1.0f );
 
-	return boost * BaseClass::GetIdealSpeed() * m_flPlaybackRate * flFreezeSpeedScale;
+	return boost * BaseClass::GetIdealSpeed() * m_flPlaybackRate * flFreezeSpeedScale * rd_alien_speed_scale.GetFloat();
 }
 
 float CASW_Drone_Advanced::GetIdealAccel( ) const
@@ -872,7 +897,7 @@ void CASW_Drone_Advanced::StartTouch( CBaseEntity *pOther )
 	BaseClass::StartTouch( pOther );
 
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
-	if (pMarine)
+	if (pMarine && !pMarine->m_bKnockedOut)
 	{
 		int iTouchDamage = asw_drone_touch_damage.GetInt();
 		if (GetActivity() == ACT_CLIMB_UP || GetActivity() == ACT_CLIMB_DISMOUNT)
@@ -1044,8 +1069,8 @@ Activity CASW_Drone_Advanced::NPC_TranslateActivity( Activity eNewActivity )
 		//eNewActivity = ( Activity ) ACT_DRONE_RUN_ATTACKING;
 		//return eNewActivity;
 	//}
-	//if ( eNewActivity == ACT_CLIMB_DOWN )
-		//return ACT_CLIMB_UP;
+	if ( eNewActivity == ACT_CLIMB_DOWN )
+		return ACT_CLIMB_UP;
 
 	return BaseClass::NPC_TranslateActivity(eNewActivity);
 }
@@ -1282,7 +1307,8 @@ void CASW_Drone_Advanced::Event_Killed( const CTakeDamageInfo &info )
 			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_P"))
 			newInfo.ScaleDamageForce(22.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_PDW")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG"))
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG")
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG_G"))
 			newInfo.ScaleDamageForce(30.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_ASG"))
 			newInfo.ScaleDamageForce(35.0f);
@@ -1558,7 +1584,7 @@ void CASW_Drone_Advanced::StartTask( const Task_t *pTask )
 			if (!m_bDoneAlienCloseChatter && gpGlobals->curtime > s_fNextTooCloseChatterTime)
 			{
 				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetEnemy());
-				if (pMarine)
+				if (pMarine && !pMarine->m_bKnockedOut)
 				{
 					pMarine->GetMarineSpeech()->Chatter(CHATTER_ALIEN_TOO_CLOSE);
 					m_bDoneAlienCloseChatter = true;
@@ -2323,9 +2349,9 @@ void CASW_Drone_Advanced::SetHealthByDifficultyLevel()
 {
 	int iHealth = MAX(25, ASWGameRules()->ModifyAlienHealthBySkillLevel(asw_drone_health.GetInt()));
 	if (asw_debug_alien_damage.GetBool())
-		Msg("Setting drone's initial health to %d\n", iHealth);
-	SetHealth(iHealth);
-	SetMaxHealth(iHealth);
+		Msg("Setting drone's initial health to %d\n", iHealth + m_iHealthBonus);
+	SetHealth(iHealth + m_iHealthBonus);
+	SetMaxHealth(iHealth + m_iHealthBonus);
 	SetHitboxSet(0);
 }
 

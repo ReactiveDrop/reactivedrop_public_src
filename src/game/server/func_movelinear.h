@@ -26,6 +26,8 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecVelocity );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_fFlags );
 
+	virtual Class_T Classify( void );
+
 	void		Spawn( void );
 	void		Precache( void );
 	bool		CreateVPhysics( void );

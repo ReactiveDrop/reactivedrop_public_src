@@ -158,7 +158,11 @@ void CASW_Info_Message::Activate( void )
 // player has read this message
 void CASW_Info_Message::OnMessageRead(CASW_Player *pPlayer)
 {
-	m_OnMessageRead.FireOutput(pPlayer, this);
+	if ( pPlayer )
+	{
+		pPlayer->HideInfoMessage();
+		m_OnMessageRead.FireOutput( pPlayer, this );
+	}
 }
 
 void CASW_Info_Message::InputStopSound( inputdata_t &inputdata )

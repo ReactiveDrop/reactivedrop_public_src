@@ -13,13 +13,17 @@
 #include "tier0/memdbgon.h"
 
 ConVar asw_marine_ai_followspot( "asw_marine_ai_followspot", "0", FCVAR_CHEAT );
-ConVar asw_follow_hint_max_range( "asw_follow_hint_max_range", "300", FCVAR_CHEAT );
+ConVar asw_follow_hint_max_range( "asw_follow_hint_max_range", "300", FCVAR_NONE, "If bot is this far from leader it starts to move closer" );
+ConVar rd_follow_hint_max_search_range("rd_follow_hint_max_search_range", "300", FCVAR_CHEAT, "A range around leader used to search for a node to move bot to" );
 ConVar asw_follow_hint_max_z_dist( "asw_follow_hint_max_z_dist", "120", FCVAR_CHEAT );
-ConVar asw_follow_use_hints( "asw_follow_use_hints", "2", FCVAR_CHEAT, "0 = follow formation, 1 = use hints when in combat, 2 = always use hints" );
+ConVar asw_follow_use_hints( "asw_follow_use_hints", "2", FCVAR_NONE, "0 = follow formation, 1 = use hints when in combat, 2 = always use hints" );
+ConVar rd_follow_hint_delay( "rd_follow_hint_delay", "5", FCVAR_NONE, "The number of seconds marines will ignore follow hints after being told to follow" );
 ConVar asw_follow_hint_debug( "asw_follow_hint_debug", "0", FCVAR_CHEAT );
 ConVar asw_follow_velocity_predict( "asw_follow_velocity_predict", "0.3", FCVAR_CHEAT, "Marines travelling in diamond follow formation will predict their leader's movement ahead by this many seconds" );
 ConVar asw_follow_threshold( "asw_follow_threshold", "40", FCVAR_CHEAT, "Marines in diamond formation will move after leader has moved this much" );
 ConVar asw_squad_debug( "asw_squad_debug", "1", FCVAR_CHEAT, "Draw debug overlays for squad movement" );
+ConVar rd_bots_ignore_bombs("rd_bots_ignore_bombs", "1", FCVAR_NONE, "If 0 AI marines will try to find safe place when they see mortar's or boomer's bomb");
+ConVar rd_use_info_nodes("rd_use_info_nodes", "0", FCVAR_NONE, "If there are no info_marine_hint nodes, info_node will be used instead");
 
 #define OUT_OF_BOOMER_BOMB_RANGE FLT_MAX
 
@@ -34,8 +38,19 @@ void CASW_SquadFormation::LevelInitPostEntity()
 	m_bLevelHasFollowHints = ( CAI_HintManager::FindHint( vec3_origin, hintCriteria ) != NULL );
 #else
 	m_bLevelHasFollowHints = ( MarineHintManager()->GetHintCount() > 0 );
+
+	Msg("Level has follow hints %d\n", m_bLevelHasFollowHints);
+
+	if ( !m_bLevelHasFollowHints && rd_use_info_nodes.GetBool() )
+	{
+		for ( int i = 0; i < g_pBigAINet->NumNodes(); ++i )
+		{
+			MarineHintManager()->AddInfoNode(g_pBigAINet->GetNode(i));
+		}
+		m_bLevelHasFollowHints = (MarineHintManager()->GetHintCount() > 0);
+		Msg("Using nodes if there is no follow hints %d\n", m_bLevelHasFollowHints);
+	}
 #endif
-	Msg( "Level has follow hints %d\n", m_bLevelHasFollowHints );
 }
 
 unsigned int CASW_SquadFormation::Add( CASW_Marine *pMarine )
@@ -105,31 +120,47 @@ bool CASW_SquadFormation::Remove( CASW_Marine *pMarine, bool bIgnoreAssert )
 
 const  Vector CASW_SquadFormation::s_MarineFollowOffset[MAX_SQUAD_SIZE]=
 {
-	Vector( -60, -70, 0 ),
-	Vector( -120, 0, 0 ),
-	Vector( -60, 70, 0 )
+	Vector(-60, -70, 0),
+	Vector(-120, 0, 0),
+	Vector(-60, 70, 0),
+	Vector(-100, 50, 0),
+	Vector(-100, -50, 0),
+	Vector(-20, 50, 0),
+	Vector(-20, -50, 0)
 };
 
 const  float CASW_SquadFormation::s_MarineFollowDirection[MAX_SQUAD_SIZE]=
 {
 	-70,
 	180,
-	70
+	70,
+	125,
+	-125,
+	35,
+	-35
 };
 
 // position offsets when standing around a heal beacon
 const  Vector CASW_SquadFormation::s_MarineBeaconOffset[MAX_SQUAD_SIZE]=
 {
-	Vector( 30, -52, 0 ),
-	Vector( -52, 0, 0 ),
-	Vector( 30, 52, 0 )
+	Vector(30, -52, 0),
+	Vector(-52, 0, 0),
+	Vector(30, 52, 0),
+	Vector(-30, 40, 0),
+	Vector(-30, -40, 0),
+	Vector(-20, 40, 0),
+	Vector(-20, -40, 0)
 };
 
 const  float CASW_SquadFormation::s_MarineBeaconDirection[MAX_SQUAD_SIZE]=
 {
 	-70,
 	180,
-	70
+	70,
+	125,
+	-125,
+	35,
+	-35
 };
 
 float CASW_SquadFormation::GetYaw( unsigned slotnum )
@@ -147,7 +178,7 @@ float CASW_SquadFormation::GetYaw( unsigned slotnum )
 		}
 		return 0.0f;
 	}
-	else if ( m_bLevelHasFollowHints && asw_follow_use_hints.GetBool() && Leader() && ( Leader()->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
+	else if ( m_bLevelHasFollowHints && m_flUseHintsAfter < gpGlobals->curtime && asw_follow_use_hints.GetBool() && Leader() && ( Leader()->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
 	{
 #ifdef HL2_HINTS
 		if ( m_hFollowHint[ slotnum ].Get() )
@@ -159,7 +190,9 @@ float CASW_SquadFormation::GetYaw( unsigned slotnum )
 			return m_hFollowHint[ slotnum ]->Yaw();
 		}
 #else
-		if ( m_nMarineHintIndex[ slotnum ] != INVALID_HINT_INDEX )
+		if (!MarineHintManager())
+			Msg("MarineHintManager() returns NULL");
+		if ( m_nMarineHintIndex[ slotnum ] != INVALID_HINT_INDEX && MarineHintManager())
 		{
 			// 			if ( m_bRearGuard[ slotnum ] )
 			// 			{
@@ -214,7 +247,7 @@ void CASW_SquadFormation::RecomputeFollowerOrder(  const Vector &vProjectedLeade
 	Vector vProjectedFollowPos[ MAX_SQUAD_SIZE ];
 	for ( int i = 0 ; i < MAX_SQUAD_SIZE ; ++i )
 	{
-		if ( m_bLevelHasFollowHints && asw_follow_use_hints.GetBool() && m_hLeader.Get() && ( m_hLeader->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
+		if ( m_bLevelHasFollowHints && m_flUseHintsAfter < gpGlobals->curtime && asw_follow_use_hints.GetBool() && m_hLeader.Get() && ( m_hLeader->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
 		{
 #ifdef HL2_HINTS
 			if ( m_hFollowHint[i].Get() )
@@ -345,15 +378,18 @@ float GetClosestBoomerBlobDistSqr( const Vector &vecPosition )
 {
 	float flClosestBoomerBlobDistSqr = OUT_OF_BOOMER_BOMB_RANGE;
 
-	for( int iBoomerBlob = 0; iBoomerBlob < g_aExplosiveProjectiles.Count(); iBoomerBlob++ )
+	if ( !rd_bots_ignore_bombs.GetBool() )
 	{
- 		CBaseEntity *pExplosive = g_aExplosiveProjectiles[ iBoomerBlob ];
-		const float flExplosiveRadius = 240.0f;	// bad hardcoded to match boomer blob radius
-
-		float flDistSqr = pExplosive->GetAbsOrigin().DistToSqr( vecPosition );
-		if( flDistSqr < Square( flExplosiveRadius ) && flDistSqr < flClosestBoomerBlobDistSqr )
+		for( int iBoomerBlob = 0; iBoomerBlob < g_aExplosiveProjectiles.Count(); iBoomerBlob++ )
 		{
-			flClosestBoomerBlobDistSqr = flDistSqr;
+ 			CBaseEntity *pExplosive = g_aExplosiveProjectiles[ iBoomerBlob ];
+			const float flExplosiveRadius = 240.0f;	// bad hardcoded to match boomer blob radius
+
+			float flDistSqr = pExplosive->GetAbsOrigin().DistToSqr( vecPosition );
+			if( flDistSqr < Square( flExplosiveRadius ) && flDistSqr < flClosestBoomerBlobDistSqr )
+			{
+				flClosestBoomerBlobDistSqr = flDistSqr;
+			}
 		}
 	}
 
@@ -377,7 +413,7 @@ void CASW_SquadFormation::UpdateFollowPositions()
 	}
 	m_flLastSquadUpdateTime = gpGlobals->curtime;
 
-	if ( m_bLevelHasFollowHints && asw_follow_use_hints.GetBool() && ( pLeader->IsInCombat() || asw_follow_use_hints.GetInt() ) )
+	if ( m_bLevelHasFollowHints && m_flUseHintsAfter < gpGlobals->curtime && asw_follow_use_hints.GetBool() && ( pLeader->IsInCombat() || asw_follow_use_hints.GetInt() ) )
 	{
 		FindFollowHintNodes();
 	}
@@ -418,7 +454,7 @@ void CASW_SquadFormation::UpdateFollowPositions()
 			m_vFollowPositions[i] = pBeaconToStandIn->GetAbsOrigin() + s_MarineBeaconOffset[i];
 			m_bStandingInBeacon[i] = true;
 		}
-		else if( g_aExplosiveProjectiles.Count() )
+		else if( !rd_bots_ignore_bombs.GetBool() && g_aExplosiveProjectiles.Count() )
 		{
 			bool bSafeNodeFound = false;
 			bool bUnsafeNodeFound = false;
@@ -482,7 +518,7 @@ void CASW_SquadFormation::UpdateFollowPositions()
 				m_bFleeingBoomerBombs[ i ] = true;
 			}
 		}
-		else if ( m_bLevelHasFollowHints && asw_follow_use_hints.GetBool() && ( pLeader->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
+		else if ( m_bLevelHasFollowHints && m_flUseHintsAfter < gpGlobals->curtime && asw_follow_use_hints.GetBool() && ( pLeader->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
 		{
 #ifdef HL2_HINTS
 			if ( m_hFollowHint[i].Get() )
@@ -510,7 +546,7 @@ void CASW_SquadFormation::UpdateFollowPositions()
 		}
 		if ( asw_marine_ai_followspot.GetBool() )
 		{
-			static float colors[3][3] =	{ { 255, 64, 64	}, { 64, 255, 64 }, { 64, 64, 255 }	};
+			static float colors[MAX_SQUAD_SIZE][3] = { { 255, 64, 64 }, { 64, 255, 64 }, { 64, 64, 255 } };
 			NDebugOverlay::HorzArrow( pLeader->GetAbsOrigin(), m_vFollowPositions[i], 3, 
 				colors[i][0], colors[i][1], colors[i][2], 255, false, 0.35f );
 		}
@@ -634,9 +670,15 @@ void CASW_SquadFormation::Reset()
 		m_nMarineHintIndex[i] = INVALID_HINT_INDEX;
 #endif
 	}
+	m_flUseHintsAfter = -1;
 	m_flLastSquadUpdateTime = 0;
 	m_bLevelHasFollowHints = false;
 	m_vLastLeaderVelocity.Zero();
+}
+
+void CASW_SquadFormation::FollowCommandUsed()
+{
+	m_flUseHintsAfter = gpGlobals->curtime + rd_follow_hint_delay.GetFloat();
 }
 
 //-----------------------------------------------------------------------------
@@ -678,10 +720,37 @@ void CASW_SquadFormation::FindFollowHintNodes()
 			continue;
 		}
 
-		bool bNeedNewNode = ( pMarine->GetAbsOrigin().DistTo( pLeader->GetAbsOrigin() ) > asw_follow_hint_max_range.GetFloat() );
+		// reactivedrop: increase the hint max range if we have more then 3 bots
+		// this fixes the issue where bots get stuck and don't follow leader
+		// because they can't find a hint to stand on
+		float fHintRangeFactor = Count() > 3 ? float(Count()) / 3.0f : 1.0f;
+		//DevMsg("fHintRangeFactor=%f, hint_max_range=%f, hint_search_range=%f\n", fHintRangeFactor, asw_follow_hint_max_range.GetFloat() * fHintRangeFactor, rd_follow_hint_max_search_range.GetFloat() * fHintRangeFactor);
+		bool bNeedNewNode = (pMarine->GetAbsOrigin().DistTo(pLeader->GetAbsOrigin()) > asw_follow_hint_max_range.GetFloat() * fHintRangeFactor);
 		if ( !bNeedNewNode )
 		{
 			bNeedNewNode = !pMarine->FVisible( pLeader );
+		}
+
+		// reactivedrop: if leader is in escape area then bots will follow him
+		// immediately. This fixes a bug when player is at the map finish and 
+		// bots don't follow him
+		CBaseTrigger *pEscapeVolume = pLeader->IsInEscapeVolume();
+		if ( !bNeedNewNode && pEscapeVolume )
+		{
+			if (!pMarine->IsInEscapeVolume())
+				bNeedNewNode = true;
+		}
+
+		CBaseTrigger *pStickTogetherVolume = pLeader->IsInStickTogetherVolume();
+		if (!bNeedNewNode && pStickTogetherVolume)
+		{
+			if (!pMarine->IsInStickTogetherVolume())
+				bNeedNewNode = true;
+		}
+		if (!pEscapeVolume && pStickTogetherVolume)
+		{
+			// a hack, just a hack 
+			pEscapeVolume = pStickTogetherVolume;
 		}
 
 		// find shield bug (if any) nearest each marine
@@ -720,7 +789,15 @@ void CASW_SquadFormation::FindFollowHintNodes()
 		CAI_HintManager::FindAllHints( pLeader, pLeader->GetAbsOrigin(), hintCriteria, &hints );
 #else
 		CUtlVector< HintData_t* > hints;
-		MarineHintManager()->FindHints( pLeader->GetAbsOrigin(), 80.0f, asw_follow_hint_max_range.GetFloat(), &hints );
+		// reactivedrop: for pEscapeVolume find only hints inside pEscapeVolume
+		if ( pEscapeVolume )
+		{
+			MarineHintManager()->FindHints(*pEscapeVolume, &hints);
+		}
+		else
+		{
+			MarineHintManager()->FindHints(pLeader->GetAbsOrigin(), 80.0f, rd_follow_hint_max_search_range.GetFloat() * fHintRangeFactor, &hints);
+		}
 #endif
 		int nCount = hints.Count();
 
@@ -729,7 +806,6 @@ void CASW_SquadFormation::FindFollowHintNodes()
 		int iClosestFlankingNode = INVALID_HINT_INDEX;
 		float flClosestFlankingNodeDistSqr = FLT_MAX;
 
-		CBaseTrigger *pEscapeVolume = pLeader->IsInEscapeVolume();
 		if ( pEscapeVolume && pEscapeVolume->CollisionProp() )
 		{
 			// remove hints that aren't in the escape volume bounds
@@ -843,36 +919,44 @@ void CASW_SquadFormation::FindFollowHintNodes()
 
 		// find the first node not used by another other squaddie
 		int nNode = 0;
-
-		for ( int i = 0; i < MAX_SQUAD_SIZE; i++ )
+		bool bValidNodeFound = false;
+		while ( nNode < hints.Count() )
 		{
 			bool bValidNode = true;
-			while ( nNode < hints.Count() )
+			for ( int k = 0; k < MAX_SQUAD_SIZE; k++ )
 			{
-				for ( int k = 0; k < MAX_SQUAD_SIZE; k++ )
-				{
+				if ( k == slotnum)
+					continue;
 #ifdef HL2_HINTS
-					if ( k != slotnum && hints[ nNode ] == m_hFollowHint[k].Get() )
+				if ( k != slotnum && hints[ nNode ] == m_hFollowHint[k].Get() )
 #else
-					if ( k != slotnum && hints[ nNode ]->m_nHintIndex == m_nMarineHintIndex[ k ] )
+				if ( hints[ nNode ]->m_nHintIndex == m_nMarineHintIndex[ k ] )
 #endif
-					{
-						bValidNode = false;
-						break;
-					}
-				}
-				if ( bValidNode )
 				{
-#ifdef HL2_HINTS
-					m_hFollowHint[ slotnum ] = hints[ nNode ];
-#else
-					m_nMarineHintIndex[ slotnum ] = hints[ nNode ]->m_nHintIndex;
-#endif
-					nNode++;
+					bValidNode = false;
 					break;
 				}
-				nNode++;
 			}
+			if ( bValidNode )
+			{
+#ifdef HL2_HINTS
+				m_hFollowHint[ slotnum ] = hints[ nNode ];
+#else
+				m_nMarineHintIndex[ slotnum ] = hints[ nNode ]->m_nHintIndex;
+#endif
+				nNode++;
+				bValidNodeFound = true;
+				break;
+			}
+			nNode++;
+		}
+
+		// a workaround to handle escape volumes with not enough hint nodes
+		// use the first hint in escape volume 
+		if (pEscapeVolume && !bValidNodeFound && hints.Count() > 0)
+		{
+			DevMsg("Failed to find free node from %i available using first one\n", hints.Count());
+			m_nMarineHintIndex[slotnum] = hints[0]->m_nHintIndex;
 		}
 	}
 }
@@ -885,7 +969,7 @@ bool CASW_SquadFormation::ShouldUpdateFollowPositions() const
 	if ( m_iLastHealBeaconCount != IHealGrenadeAutoList::AutoList().Count() )
 		return true;
 
-	bool bBoomerBombs = g_aExplosiveProjectiles.Count() > 0;
+	bool bBoomerBombs = !rd_bots_ignore_bombs.GetBool() && g_aExplosiveProjectiles.Count() > 0;
 
 	// leader's more than epsilon from previous position, 
 	// and we haven't updated in a quarter second.

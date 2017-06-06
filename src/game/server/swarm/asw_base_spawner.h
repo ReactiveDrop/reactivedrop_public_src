@@ -75,6 +75,17 @@ protected:
 	float m_flLastSpawnTime;
 
 	bool m_bEnabled;
+
+	// reactivedrop: adding more options for spawner to make harder aliens 
+	// Sp suffix is used to distinguish from equal vars in asw_alien.h 
+	// Sp stands for spawner
+	bool m_bFlammableSp; 
+	bool m_bTeslableSp; 
+	bool m_bFreezableSp; 
+	bool m_bFlinchableSp; 
+	int m_iHealthBonusSp;
+	float m_fSizeScaleSp; 
+	float m_fSpeedScaleSp; 
 };
 
 #define ASW_SF_ALWAYS_INFINITE 1

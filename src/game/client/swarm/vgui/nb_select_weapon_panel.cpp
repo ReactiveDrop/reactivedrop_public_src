@@ -249,7 +249,7 @@ void CNB_Select_Weapon_Panel::OnCommand( const char *command )
 	if ( !Q_stricmp( command, "BackButton" ) )
 	{
 		MarkForDeletion();
-		Briefing()->SetChangingWeaponSlot( 0 );
+		Briefing()->SetChangingWeaponSlot( -1, 0 );
 		return;
 	}
 	else if ( !Q_stricmp( command, "AcceptButton" ) )
@@ -272,7 +272,7 @@ void CNB_Select_Weapon_Panel::OnCommand( const char *command )
 			C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.SelectWeapon" );
 
 			MarkForDeletion();
-			Briefing()->SetChangingWeaponSlot( 0 );
+			Briefing()->SetChangingWeaponSlot( -1, 0 );
 		}
 		return;
 	}

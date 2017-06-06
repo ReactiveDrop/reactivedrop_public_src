@@ -181,7 +181,7 @@ void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 		return;
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();	
-	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetViewMarine() : NULL;
 	if ( !pMarine )
 		return;
 
@@ -264,7 +264,7 @@ void CASWInput::UpdateHighlightEntity()
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine* pMarine = pPlayer->GetMarine();
+	C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return;
 
@@ -293,7 +293,7 @@ void CASWInput::SetUseGlowEntity( C_BaseEntity* pEnt )
 		if ( !pPlayer )
 			return;
 
-		C_ASW_Marine* pMarine = pPlayer->GetMarine();
+		C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
 		if ( !pMarine )
 			return;
 

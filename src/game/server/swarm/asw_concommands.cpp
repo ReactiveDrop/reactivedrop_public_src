@@ -18,6 +18,8 @@
 #include "datacache/imdlcache.h"
 #include "asw_spawn_manager.h"
 #include "fmtstr.h"
+#include "asw_deathmatch_mode.h"
+#include "team.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -189,8 +191,238 @@ void asw_ClearHousef()
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_grub_sac");
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_spawner");
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_egg");
+    engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_drone_uber");
 }
 ConCommand ClearHouse( "asw_ClearHouse", asw_ClearHousef, "Removes all Swarm from the map", FCVAR_CHEAT );
+
+void rd_givemeweaponf(const CCommand &args)
+{
+    if (ASWGameRules())
+    {
+        if ( args.ArgC() < 2 )
+        {
+            Msg( "Please supply a weapon index \n" );
+            return;
+        }
+
+        CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+        if ( !pPlayer )
+        {
+            Msg ( "No player found \n ");
+            return;
+        }
+
+        CASW_Marine *mymarine = pPlayer->GetMarine();
+        if ( !mymarine )
+        {
+            Msg ( "No marine found \n" );
+            return;
+        }
+
+        int weapon_index = 0;
+        weapon_index = atoi(args[1]);
+
+        ASWGameRules()->GiveStartingWeaponToMarine(mymarine, weapon_index, 0);
+    }
+}
+ConCommand rd_givemeweapon( "rd_givemeweapon", rd_givemeweaponf, "Gives a specified weapon to me", FCVAR_CHEAT );
+
+static bool isLeader() 
+{
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	if (!pPlayer || !ASWGameResource())
+		return false;
+
+	if (ASWGameResource()->GetLeader() != pPlayer)
+		return false;
+
+	return true;
+}
+
+void rd_InstagibEnablef()
+{
+	if ( ASWDeathmatchMode() )
+	{
+		if ( !isLeader() )
+			return;
+
+		if ( ASWDeathmatchMode()->IsInstagibEnabled() )
+			return;
+
+		ASWDeathmatchMode()->InstagibEnable();
+	}
+	
+}
+ConCommand InstagibEnable( "rd_instagib_enable", rd_InstagibEnablef, "Enables InstaGib game mode", FCVAR_NONE );
+
+void rd_InstagibDisablef() 
+{
+	if ( ASWDeathmatchMode() )
+	{
+		if ( !isLeader() )
+			return;
+
+		if ( !ASWDeathmatchMode()->IsInstagibEnabled() )
+			return;
+
+		ASWDeathmatchMode()->InstagibDisable();
+	}
+}
+//ConCommand InstagibDisable( "rd_instagib_disable", rd_InstagibDisablef, "Disables InstaGib game mode", FCVAR_NONE );
+
+
+void rd_GunGameEnablef()
+{
+	if ( ASWDeathmatchMode() )
+	{
+		if ( !isLeader() )
+			return;
+
+		if ( ASWDeathmatchMode()->IsGunGameEnabled() )
+			return;
+
+		ASWDeathmatchMode()->GunGameEnable();
+	}
+
+}
+ConCommand GunGameEnable( "rd_gungame_enable", rd_GunGameEnablef, "Enables GunGame game mode", FCVAR_NONE );
+
+void rd_GunGameDisablef() 
+{
+	if ( ASWDeathmatchMode() )
+	{
+		if ( !isLeader() )
+			return;
+
+		if ( !ASWDeathmatchMode()->IsGunGameEnabled() )
+			return;
+
+		ASWDeathmatchMode()->GunGameDisable();
+	}
+}
+//ConCommand GunGameDisable( "rd_gungame_disable", rd_GunGameDisablef, "Disables GunGame game mode", FCVAR_NONE );
+
+void rd_TeamDeathmatchEnablef()
+{
+    if ( ASWDeathmatchMode() )
+    {
+        if ( !isLeader() )
+            return;
+
+        if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+            return;
+
+        ASWDeathmatchMode()->TeamDeathmatchEnable();
+    }
+
+}
+ConCommand TeamDeathmatchEnable( "rd_TeamDeathmatch_enable", rd_TeamDeathmatchEnablef, "Enables TeamDeathmatch game mode", FCVAR_NONE );
+
+void rd_TeamDeathmatchDisablef() 
+{
+    if ( ASWDeathmatchMode() )
+    {
+        if ( !isLeader() )
+            return;
+
+        if ( !ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+            return;
+
+        ASWDeathmatchMode()->TeamDeathmatchDisable();
+    }
+}
+//ConCommand TeamDeathmatchDisable( "rd_TeamDeathmatch_disable", rd_TeamDeathmatchDisablef, "Disables TeamDeathmatch game mode", FCVAR_NONE );
+
+void rd_DeathmatchEnablef()
+{
+	if (ASWDeathmatchMode())
+	{
+		if (!isLeader())
+			return;
+
+		ASWDeathmatchMode()->DeathmatchEnable();
+	}
+
+}
+ConCommand DeathmatchEnable("rd_Deathmatch_enable", rd_DeathmatchEnablef, "Enables Deathmatch game mode", FCVAR_NONE);
+
+void ShowReportTeam()
+{
+	if ( !ASWDeathmatchMode() )
+		return;
+
+	if ( gpGlobals->maxClients <= 1 )
+		return;
+
+	using namespace vgui;
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	if (!pPlayer)
+		return;
+
+	int team_number = pPlayer->GetTeamNumber();
+	const char *team_name = pPlayer->TeamID();
+	bool is_in_team = pPlayer->IsInAnyTeam();
+
+    Msg ( "Current player: \n" );
+	Msg( "is_in_team=%i; team_number=%i; team_name=%s;\n", is_in_team, team_number, team_name );
+
+    int global_teams_number = GetNumberOfTeams();
+    Msg ( "Global teams: %i\n", global_teams_number );
+    for (int i = 0; i < global_teams_number; ++i)
+    {
+        Msg( "Team #%i, name = %s \n", i, GetTeamName(i) );
+    }
+
+}
+static ConCommand rd_team_report("rd_team_report", ShowReportTeam, "Outputs debug team information ", FCVAR_CHEAT);
+
+void CreateTeamF(const CCommand &args)
+{
+    if ( args.ArgC() < 2 )
+    {
+        Msg( "Please supply a team name\n" );
+        return;
+    }
+    CTeam *t = new CTeam();
+    t->Init(args[1], GetNumberOfTeams() );
+}
+static ConCommand rd_team_create( "rd_team_create", CreateTeamF, "Create a new team, testing command ", FCVAR_CHEAT );
+
+void rd_team_change_f()
+{
+    if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+    {
+        CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+        if (!pPlayer)
+            return;
+        
+        int team_number = pPlayer->GetTeamNumber();
+        int new_team_number = 0;
+        if ( team_number == TEAM_ALPHA ) new_team_number = TEAM_BETA;
+        else if ( team_number == TEAM_BETA ) new_team_number = TEAM_ALPHA;
+        else
+        {
+            Assert( false && "Uknown team number for player" );
+        }
+
+        pPlayer->ChangeTeam( new_team_number );
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( pMR && pMR->IsInhabited() && pMR->GetCommander() == pPlayer )
+			{
+				pMR->ChangeTeam( new_team_number );
+			}
+		}
+
+        if ( pPlayer->GetMarine() && pPlayer->GetMarine()->GetHealth() > 0 )
+        {
+            pPlayer->GetMarine()->Suicide();
+        }
+    }
+}
+static ConCommand rd_team_change( "rd_team_change", rd_team_change_f, "Change your current team to another ", FCVAR_NONE );
 
 void asw_MarineInvulnf()
 {
@@ -205,6 +437,8 @@ void ASW_DropTest_f()
 	if (pPlayer && pPlayer->GetMarine())
 	{
 		CASW_Marine *pMarine = pPlayer->GetMarine();
+		if (pMarine->m_bKnockedOut) // reactivedrop: don't allow dropping weapons while incapacitated
+			return;
 		if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
 			return;
 		if (pPlayer->GetFlags() & FL_FROZEN)
@@ -237,11 +471,198 @@ void ASW_DropTest_f()
 }
 ConCommand ASW_Drop( "ASW_Drop", ASW_DropTest_f, "Makes your marine drop his current weapon", 0 );
 
+// riflemod: allow dropping exra item 
+void ASW_DropExtraf()
+{
+    CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+
+    if (pPlayer && pPlayer->GetMarine())
+    {
+        CASW_Marine *pMarine = pPlayer->GetMarine();
+		if (pMarine->m_bKnockedOut) // reactivedrop: don't allow dropping weapons while incapacitated
+			return;
+        if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+            return;
+        if (pPlayer->GetFlags() & FL_FROZEN)
+            return;
+
+        pMarine->DropWeapon(2, true);
+
+        IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
+        if ( event )
+        {
+            event->SetInt( "userid", pPlayer->GetUserID() );
+
+            gameeventmanager->FireEvent( event );
+        }
+    }
+}
+ConCommand ASW_DropExtra( "ASW_DropExtra", ASW_DropExtraf, "Makes your marine drop his current extra item", 0 );
+
+void RotateCameraLeft()
+{
+	if ( !ASWGameRules() || !ASWGameRules()->ShouldAllowCameraRotation() )
+		return;
+
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer )
+	{
+		int yaw = pPlayer->m_flMovementAxisYaw;
+		yaw += 90;
+		if ( yaw == 360 )
+			yaw = 0;
+
+		pPlayer->m_flMovementAxisYaw = yaw;
+	}
+}
+
+void RotateCameraRight()
+{
+	if ( !ASWGameRules() || !ASWGameRules()->ShouldAllowCameraRotation() )
+		return;
+
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer )
+	{
+		int yaw = pPlayer->m_flMovementAxisYaw;
+		yaw -= 90;
+		if ( yaw == -90 )
+			yaw = 270;
+
+		pPlayer->m_flMovementAxisYaw = yaw;
+	}
+}
+
+static ConCommand rotatecameraleft("rotatecameraleft", RotateCameraLeft, "Rotates marine camera by 90 degrees", 0);
+static ConCommand rotatecameraright("rotatecameraright", RotateCameraRight, "Rotates marine camera by -90 degrees", 0);
+
+
+// riflemod: allow leaving marine to go afk and leave a bot for you 
+void asw_afkf()
+{
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if ( pPlayer && ASWGameResource() && ASWGameRules() )
+	{
+		// BenLubar: allow TAKE A BREAK when marine is dead
+		// in deathmatch
+		if ( ASWDeathmatchMode() )
+		{
+			for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetCommander() == pPlayer && pMR->IsInhabited() )
+				{
+					if ( pMR->GetMarineEntity() && pMR->GetMarineEntity()->GetHealth() > 0 )
+					{
+						pMR->GetMarineEntity()->Suicide();
+					}
+					ASWGameResource()->DeleteMarineResource( pMR );
+					pPlayer->SpectateNextMarine();
+					return;
+				}
+			}
+		}
+		else if ( pPlayer->GetMarine() )
+		{
+			// prevent players from going afk when they are infested
+			// bots take less damage and players abuse this
+			CASW_Marine *pMarine = pPlayer->GetMarine();
+			if (pMarine->IsInfested())
+			{
+				return;
+			}
+
+			for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetCommander() == pPlayer )
+				{
+					pMR->SetInhabited( false );
+				}
+			}
+			ASWGameRules()->RosterDeselectAll(pPlayer);
+			ASWGameRules()->SetMaxMarines(pPlayer);
+			// reassign marines owned by this player to someone else
+			ASWGameRules()->ReassignMarines(pPlayer);
+			pPlayer->SpectateNextMarine();
+			//*/
+		}
+		else if ( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		{
+			ASWGameRules()->RosterDeselectAll( pPlayer );
+		}
+	}
+}
+ConCommand asw_afk( "asw_afk", asw_afkf, "Leave current marine", 0 );
+
+// reactivedrop: adds bot in PvP game mode
+void rd_addbotf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 1 to 8\n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if ( pPlayer && ASWGameResource() && ASWGameRules() )
+	{
+		if ( ASWGameResource()->m_Leader.Get() != pPlayer )
+		{
+			Msg( "Only leader can add bots\n" );
+			return;
+		}
+
+		int iRosterIndex = atoi( args[1] );
+		if ( iRosterIndex < 1 || iRosterIndex > 8 )
+		{
+			Msg( "Please supply the value from 1 to 8\n" );
+			return;
+		}
+		--iRosterIndex;
+
+		if ( ASWGameRules()->RosterSelect( pPlayer, iRosterIndex, -1 ) )
+		{
+			DevMsg( "Added bot %i \n", iRosterIndex );
+		}
+		else
+		{
+			Msg( "Failed to add bot %i \n", iRosterIndex );
+		}
+	}
+}
+ConCommand rd_botadd("rd_botadd", rd_addbotf, "Adds a bot by index from 1 to 8, where index is the character of bot", FCVAR_NONE);
+
+void RdBotsKickF()
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer && ASWGameResource() && ASWGameRules() )
+	{
+		if ( ASWGameResource()->m_Leader.Get() != pPlayer )
+		{
+			Msg( "Only leader can kick bots\n" );
+			return;
+		}
+
+		ASWGameRules()->RosterDeselectAll( pPlayer );
+	}
+}
+ConCommand rd_bots_kick("rd_bots_kick", RdBotsKickF, "Kicks all bots you added, currently deselects your marine too", FCVAR_NONE);
+
 void ASW_AllowBriefing_f()
 {
 	ASWGameRules()->AllowBriefing();
 }
-ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Let's you restart the briefing", 0 );
+ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Let's "
+							  "you restart the briefing", 0 );
 
 void ASW_PhysicsShove_f()
 {
@@ -385,6 +806,18 @@ void asw_drones_friendly_f()
 	CBaseCombatCharacter::SetDefaultRelationship( (Class_T) CLASS_ASW_DRONE,			(Class_T) CLASS_ASW_MARINE,D_LI, 0);
 }
 ConCommand asw_drones_friendly( "asw_drones_friendly", asw_drones_friendly_f, "Makes drones friendly to marines", FCVAR_CHEAT );
+
+void rd_drones_attack_sentry_f()
+{
+    CBaseCombatCharacter::SetDefaultRelationship( (Class_T) CLASS_ASW_DRONE,			(Class_T) CLASS_ASW_SENTRY_GUN, D_HATE, 0);
+}
+ConCommand rd_drones_attack_sentry( "rd_drones_attack_sentry", rd_drones_attack_sentry_f, "Makes drones attack sentry gun", FCVAR_CHEAT );
+
+void rd_drones_attack_sentry_f1()
+{
+    CBaseCombatCharacter::SetDefaultRelationship( (Class_T) CLASS_ASW_DRONE,			(Class_T) CLASS_ASW_SENTRY_BASE, D_HATE, 0);
+}
+ConCommand rd_drones_attack_sentry1( "rd_drones_attack_sentry1", rd_drones_attack_sentry_f1, "Makes drones attack sentry gun base", FCVAR_CHEAT );
 
 void asw_ai_report_specific(const char* szClass)
 {
@@ -552,7 +985,7 @@ void asw_ragdoll_marine_f()
 		}
 	}
 }
-//ConCommand asw_ragdoll_marine( "asw_ragdoll_marine", asw_ragdoll_marine_f, "Toggle ragdolling of the current marine", FCVAR_CHEAT );
+ConCommand asw_ragdoll_marine( "asw_ragdoll_marine", asw_ragdoll_marine_f, "Toggle ragdolling of the current marine", FCVAR_CHEAT );
 
 void asw_ragdoll_blend_test_f()
 {
@@ -672,7 +1105,7 @@ void asw_mission_complete_f()
 	
 	ASWGameRules()->CheatCompleteMission();
 }
-static ConCommand asw_mission_complete("asw_mission_complete", asw_mission_complete_f, "Cheat to complete the current mission", FCVAR_CHEAT);
+static ConCommand asw_mission_complete("asw_mission_complete", asw_mission_complete_f, "Cheat to complete the current mission", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 
 
 void asw_marine_spectate_f(const CCommand &args)

@@ -159,7 +159,7 @@ void CASWHudPortraits::OnThink()
 						m_hMyMarine[iNumMyMarines] = pMR;
 
 						iNumMyMarines++;
-						if (pMR->GetMarineEntity() == local->GetMarine())
+						if (pMR->GetMarineEntity() == local->GetViewMarine())
 							m_hCurrentlySelectedMarineResource = pMR;
 					}
 					else if (!(ASWGameRules() && ASWGameRules()->IsTutorialMap()))	// in tutorial, don't show marines not under your command

@@ -18,6 +18,8 @@
 #include "c_asw_campaign_save.h"
 #include "c_asw_game_resource.h"
 
+#include "playerlistcontainer.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -48,6 +50,7 @@ CNB_Select_Marine_Panel::CNB_Select_Marine_Panel( vgui::Panel *parent, const cha
 	m_nHighlightedEntry = -1;
 	m_nInitialProfileIndex = -1;
 	m_nPreferredLobbySlot = -1;
+	m_bAddingBot = false;
 }
 
 CNB_Select_Marine_Panel::~CNB_Select_Marine_Panel()
@@ -210,8 +213,19 @@ void CNB_Select_Marine_Panel::OnCommand( const char *command )
 {
 	if ( !Q_stricmp( command, "BackButton" ) )
 	{
-		Briefing()->SetChangingWeaponSlot( 0 );
-		MarkForDeletion();
+		Briefing()->SetChangingWeaponSlot( -1, 0 );
+
+		// delete parent also if it is PlayerListContainerFrame, for deathmatch
+		PlayerListContainerFrame *pParent = dynamic_cast<PlayerListContainerFrame*>( GetParent() );
+		if ( pParent )
+		{
+			pParent->MarkForDeletion();
+		}
+		else
+		{
+			MarkForDeletion();
+		}
+		//MarkForDeletion();
 
 		CLocalPlayerFilter filter;
 		C_BaseEntity::EmitSound( filter, -1, "ASWComputer.MenuBack" );
@@ -226,10 +240,21 @@ void CNB_Select_Marine_Panel::OnCommand( const char *command )
 			int nProfileIndex = pHighlighted->GetProfileIndex();
 			if ( !Briefing()->IsProfileSelectedBySomeoneElse( nProfileIndex ) )
 			{
-				Briefing()->SelectMarine( 0, nProfileIndex, m_nPreferredLobbySlot );
+				if (m_bAddingBot)
+				{
+					Briefing()->SelectBot(0, nProfileIndex );
+				}
+				else 
+				{
+					Briefing()->SelectMarine( 0, nProfileIndex, m_nPreferredLobbySlot );
+				}
 
-				// is this the first marine we've selected?
-				if ( Briefing()->IsOfflineGame() && ASWGameResource() && ASWGameResource()->GetNumMarines( NULL ) <= 0 )
+				// reactivedrop: auto select full squad only in singleplayer on
+				// asi-jac1-landingbay_pract map
+				char mapName[255];
+				Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );	
+				bool bPracticeMap = ( !Q_strnicmp( mapName, "asi-jac1-landingbay_pract", 25 ) );
+				if ( Briefing()->IsOfflineGame() && ASWGameResource() && ASWGameResource()->GetNumMarines( NULL ) <= 0 && bPracticeMap )
 				{
 					Briefing()->AutoSelectFullSquadForSingleplayer( nProfileIndex );
 				}
@@ -246,8 +271,43 @@ void CNB_Select_Marine_Panel::OnCommand( const char *command )
 				}
 				else
 				{
-					MarkForDeletion();
-					Briefing()->SetChangingWeaponSlot( 0 );
+					// delete parent also if it is PlayerListContainerFrame, for deathmatch
+					PlayerListContainerFrame *pParent = dynamic_cast<PlayerListContainerFrame*>( GetParent() );
+					if ( pParent )
+					{
+						pParent->MarkForDeletion();
+					}
+					else
+					{
+						MarkForDeletion();
+					}
+					//MarkForDeletion();
+					Briefing()->SetChangingWeaponSlot( -1, 0 );
+				}
+
+				// BenLubar: Support configloader config files from that one HUD mod: https://steamcommunity.com/app/630/discussions/0/522728268792383118/
+				CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfileByProfileIndex( nProfileIndex );
+				if ( pProfile )
+				{
+					engine->ClientCmd_Unrestricted( VarArgs( "execifexists configloader/chars/%s\n", pProfile->m_PortraitName ) );
+					switch ( pProfile->GetMarineClass() )
+					{
+						case MARINE_CLASS_NCO:
+							engine->ClientCmd_Unrestricted( "execifexists configloader/chars/Officer\n" );
+							break;
+						case MARINE_CLASS_SPECIAL_WEAPONS:
+							engine->ClientCmd_Unrestricted( "execifexists configloader/chars/SpecialWeapons\n" );
+							break;
+						case MARINE_CLASS_MEDIC:
+							engine->ClientCmd_Unrestricted( "execifexists configloader/chars/Medic\n" );
+							break;
+						case MARINE_CLASS_TECH:
+							engine->ClientCmd_Unrestricted( "execifexists configloader/chars/Tech\n" );
+							break;
+						default:
+							Assert( 0 );
+							break;
+					}
 				}
 			}
 			else

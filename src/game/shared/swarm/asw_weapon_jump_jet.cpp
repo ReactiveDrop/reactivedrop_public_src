@@ -59,7 +59,7 @@ extern ConVar asw_blink_debug;
 #endif /* not client */
 
 extern ConVar asw_blink_range;
-ConVar asw_jump_jet_time( "asw_jump_jet_time", "1.32", FCVAR_REPLICATED );
+ConVar asw_jump_jet_time( "asw_jump_jet_time", "0.8", FCVAR_REPLICATED );
 
 CASW_Weapon_Jump_Jet::CASW_Weapon_Jump_Jet()
 {

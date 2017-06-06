@@ -21,6 +21,13 @@
 #define AVATAR_POSTDENT_X		(1)
 #define AVATAR_POSTDENT_Y		(1)
 
+enum EAvatarSize
+{
+	k_EAvatarSize32x32,
+	k_EAvatarSize64x64,
+	k_EAvatarSize184x184
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

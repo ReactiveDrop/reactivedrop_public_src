@@ -139,6 +139,7 @@ protected:
 // Purpose: Shows the minimap in the corner of the screen
 //-----------------------------------------------------------------------------
 extern ConVar asw_draw_hud;
+extern ConVar rd_draw_minimap;
 class CASWHudMinimap : public CASW_HudElement, public CHudNumericDisplay, public CASW_VGUI_Ingame_Panel, public CASWMap
 {
 	DECLARE_CLASS_SIMPLE( CASWHudMinimap, CHudNumericDisplay );
@@ -152,7 +153,7 @@ public:
 	virtual void OnThink();
 	virtual void Paint();
 	virtual void PaintMapSection();
-	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
+	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && rd_draw_minimap.GetBool() && CASW_HudElement::ShouldDraw(); }
 	//virtual void PaintFrame();
 	virtual void PaintObjectiveMarkers();
 	virtual void PaintBlips();

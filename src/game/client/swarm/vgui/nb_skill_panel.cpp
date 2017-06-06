@@ -98,7 +98,7 @@ void CNB_Skill_Panel::OnThink()
 	m_pSkillLabel->SetText( MarineSkills()->GetSkillName( pProfile->GetSkillMapping( m_nSkillSlot ) ) );
 
 	wchar_t wszPointsBuffer[ 24 ];
-	_snwprintf( wszPointsBuffer, sizeof( wszPointsBuffer ), L"%d / %d", m_nSkillPoints, nMaxSkillPoints );
+	V_snwprintf( wszPointsBuffer, sizeof( wszPointsBuffer ), L"%d / %d", m_nSkillPoints, nMaxSkillPoints );
 	m_pSkillNumberLabel->SetText( wszPointsBuffer );
 
 	m_pSkillBar->ClearMinMax();

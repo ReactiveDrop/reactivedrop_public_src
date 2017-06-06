@@ -31,6 +31,8 @@ public:
 	virtual int		DrawModel( int flags, const RenderableInstance_t &instance );
 	virtual bool	ShouldDraw() { return true; }
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
+	// reactivedrop: disabling buggy shadows from frozen aliens 
+	virtual ShadowType_t ShadowCastType() { return SHADOWS_NONE; }
 
 	void			ClientThink( void );
 

@@ -63,6 +63,8 @@ class CFuncTrackTrain : public CBaseEntity
 public:
 	CFuncTrackTrain();
 
+	virtual Class_T Classify(void);
+
 	void Spawn( void );
 	bool CreateVPhysics( void );
 	void Precache( void );

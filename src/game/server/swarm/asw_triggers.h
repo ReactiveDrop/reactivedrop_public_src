@@ -1,6 +1,7 @@
 #ifndef _INCLUDED_ASW_TRIGGERS_H
 #define _INCLUDED_ASW_TRIGGERS_H
 
+#include <vector>
 #include "triggers.h"
 
 class CASW_Marine;
@@ -165,6 +166,61 @@ public:
 	COutputEvent m_OnKnockedBack;
 
 	Vector m_vecKnockbackDir;
+};
+
+class CASW_Marine_JumpJet_Trigger : public CTriggerMultiple
+{
+	DECLARE_CLASS( CASW_Marine_JumpJet_Trigger, CTriggerMultiple );
+public:	
+	//void JumpJetTriggerTouch(CBaseEntity *pOther);
+	void Spawn( void );	
+
+	virtual bool PassesTriggerFilters( CBaseEntity *pOther );
+	virtual void ActivateMultiTrigger( CBaseEntity *pOther );
+
+	DECLARE_DATADESC();
+
+	// Outputs
+	COutputEvent m_OnJumpJetDone;
+
+	string_t m_sDestination1;	// the entity name where marine will jump to 
+	string_t m_sDestination2;	// for the next jump next entity will be used
+	string_t m_sDestination3;	// if it is valid 
+	string_t m_sDestination4;
+	string_t m_sDestination5;
+	string_t m_sDestination6;
+	string_t m_sDestination7;
+	string_t m_sDestination8;
+
+	int  m_iJumpType;		// 0 = jump jet, 1 = blink 
+	bool m_bRequireOffhand; // if true, marine must have a jump jet or blink 
+							// offhand to perform jump
+
+	float m_fJumpTimeOverride;		// overrides the time taken to perform a 
+									// jump jet 
+	float m_fAnimationTimeOverride;	// overrides the time taken to perform 
+									// jump jet animation 
+
+	CUtlVector<string_t> m_Destinations;
+	int m_iCurEntToJumpTo;			// the index in m_Nodes, used to iterate
+									// 
+};
+
+DECLARE_AUTO_LIST(IASW_StickTogether_Area_List);
+
+// A trigger that forces bots(AI marines) to get inside this trigger 
+// when a leader is inside it 
+class CASW_StickTogether_Area : public CTriggerMultiple, public IASW_StickTogether_Area_List
+{
+	DECLARE_CLASS(CASW_StickTogether_Area, CTriggerMultiple);
+public:
+	CASW_StickTogether_Area();
+	void Spawn(void);
+
+	//DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	IMPLEMENT_AUTO_LIST_GET();
 };
 
 #endif // _INCLUDED_ASW_TRIGGERS_H

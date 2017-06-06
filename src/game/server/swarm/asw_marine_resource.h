@@ -62,6 +62,7 @@ public:
 	Vector m_vecOutOfAmmoSpot;
 	int m_iHealCount;	// how many times this marine received a heal
 	int m_iDamageTakenDuringHack;
+	CNetworkVar( int, m_iBotFrags ); // BenLubar(deathmatch-improvements): bots store pvp frags here
 
 	CNetworkVarEmbedded( CTimeline, m_TimelineFriendlyFire );
 	CNetworkVarEmbedded( CTimeline, m_TimelineKillsTotal );
@@ -151,6 +152,50 @@ public:
 
 	// Intensity
 	CASW_Intensity* GetIntensity() { return m_pIntensity; }
+
+	struct WeaponStats_t
+	{
+		WeaponStats_t( Class_T weaponClass ) : m_WeaponClass( weaponClass ), m_nDamage( 0 ), m_nFFDamage( 0 ), m_nShotsFired( 0 ), m_nShotsHit( 0 ), m_nKills( 0 ) {}
+
+		Class_T m_WeaponClass;
+		int32 m_nDamage;
+		int32 m_nFFDamage;
+		int32 m_nShotsFired;
+		int32 m_nShotsHit;
+		int32 m_nKills;
+	};
+
+	CUtlVector<WeaponStats_t> m_WeaponStats;
+
+	void IncrementWeaponStats( Class_T weaponClass, int32 nDamage, int32 nFFDamage, int32 nShotsFired, int32 nShotsHit, int32 nKills );
+	static int __cdecl CompareWeaponStats( const WeaponStats_t *a, const WeaponStats_t *b );
+
+	int m_iAliensBurned;
+	int m_iAmmoDeployed;
+	int m_iSentryGunsDeployed;
+	int m_iSentryFlamerDeployed;
+	int m_iSentryFreezeDeployed;
+	int m_iSentryCannonDeployed;
+	int m_iMedkitsUsed;
+	int m_iFlaresUsed;
+	int m_iAdrenalineUsed;
+	int m_iTeslaTrapsDeployed;
+	int m_iFreezeGrenadesThrown;
+	int m_iElectricArmorUsed;
+	int m_iHealGunHeals;
+	int m_iHealBeaconHeals;
+	int m_iHealGunHeals_Self;
+	int m_iHealBeaconHeals_Self;
+	int m_iDamageAmpsUsed;
+	int m_iHealBeaconsDeployed;
+	int m_iMedkitHeals_Self;
+	int m_iGrenadeExtinguishMarine;
+	int m_iGrenadeFreezeAlien;
+	int m_iDamageAmpAmps;
+	int m_iNormalArmorReduction;
+	int m_iElectricArmorReduction;
+	int m_iHealAmpGunHeals;
+	int m_iHealAmpGunAmps;
 
 private:
 	CASW_Intensity* m_pIntensity;

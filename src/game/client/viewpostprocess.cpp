@@ -81,7 +81,7 @@ ConVar mat_hdr_manual_tonemap_rate( "mat_hdr_manual_tonemap_rate", "1.0" );
 ConVar mat_non_hdr_bloom_scalefactor("mat_non_hdr_bloom_scalefactor",".3");
 
 // Apply addition scale to the final bloom scale
-static ConVar mat_bloom_scalefactor_scalar( "mat_bloom_scalefactor_scalar", "1.0", FCVAR_RELEASE );
+static ConVar mat_bloom_scalefactor_scalar( "mat_bloom_scalefactor_scalar", "1.0", FCVAR_ARCHIVE );
 
 //ConVar mat_exposure_center_region_x( "mat_exposure_center_region_x","0.75", FCVAR_CHEAT );
 //ConVar mat_exposure_center_region_y( "mat_exposure_center_region_y","0.80", FCVAR_CHEAT );
@@ -96,9 +96,9 @@ ConVar mat_tonemap_min_avglum( "mat_tonemap_min_avglum", "3.0", FCVAR_CHEAT );
 ConVar mat_force_tonemap_scale( "mat_force_tonemap_scale", "0.0", FCVAR_CHEAT );
 ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
 
-ConVar mat_grain_enable( "mat_grain_enable", "0" );
+ConVar mat_grain_enable( "mat_grain_enable", "1" );
 ConVar mat_vignette_enable( "mat_vignette_enable", "0" );
-ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "0" );
+ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "1" );
 
 static void SetRenderTargetAndViewPort(ITexture *rt)
 {
@@ -1711,7 +1711,7 @@ static ConVar r_queued_post_processing( "r_queued_post_processing", "0" );
 // This has really marginal effects, but 4x1 does seem vaguely better for post-processing
 static ConVar mat_postprocess_x( "mat_postprocess_x", "4" );
 static ConVar mat_postprocess_y( "mat_postprocess_y", "1" );
-static ConVar mat_postprocess_enable( "mat_postprocess_enable", "1", FCVAR_CHEAT );
+static ConVar mat_postprocess_enable( "mat_postprocess_enable", "1", FCVAR_NONE );
 
 void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, bool bPostVGui )
 {
@@ -2050,7 +2050,7 @@ EXPOSE_MATERIAL_PROXY( CMotionBlurMaterialProxy, MotionBlur );
 //=====================================================================================================================
 // Image-space Motion Blur ============================================================================================
 //=====================================================================================================================
-ConVar mat_motion_blur_enabled( "mat_motion_blur_enabled", "1" );
+ConVar mat_motion_blur_enabled( "mat_motion_blur_enabled", "0" );
 
 ConVar mat_motion_blur_forward_enabled( "mat_motion_blur_forward_enabled", "0" );
 ConVar mat_motion_blur_falling_min( "mat_motion_blur_falling_min", "10.0" );

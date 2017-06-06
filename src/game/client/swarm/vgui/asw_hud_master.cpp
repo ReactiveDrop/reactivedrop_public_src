@@ -18,12 +18,22 @@
 #include "asw_equipment_list.h"
 #include "asw_circularprogressbar.h"
 #include <vgui/IInput.h>
+#include "asw_deathmatch_mode.h"
+#include "asw_hud_minimap.h"
+#include "stats_report.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_draw_hud;
 extern ConVar asw_hud_alpha;
+extern ConVar rd_respawn_time;
+extern ConVar rd_hud_hide_clips;
+
+ConVar rd_draw_avatars_with_frags( "rd_draw_avatars_with_frags", "1",  FCVAR_ARCHIVE, "If 1 In PvP modes a panel with avatars and frags will be shown at top of the screen");
+ConVar rd_draw_portraits( "rd_draw_portraits", "1", FCVAR_NONE );
+ConVar rd_draw_timer( "rd_draw_timer", "0", FCVAR_ARCHIVE, "Display the current mission time above the minimap" );
+ConVar rd_draw_timer_color( "rd_draw_timer_color", "255 255 255 255", FCVAR_ARCHIVE, "The color of the current mission time" );
 
 using namespace vgui;
 
@@ -75,6 +85,13 @@ CASW_Hud_Master::CASW_Hud_Master( const char *pElementName ) :
 		*( m_HudSheets[i].m_pSheetID ) = -1;
 	}
 
+	for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
+	{
+		m_nMostFrags[i] = -1;
+		m_hMostFragsImage[i] = NULL;
+		m_pMostFragsAvatar[i] = NULL;
+	}
+
 	m_pLocalMarine = NULL;
 	m_hLocalMarine = NULL;
 	m_pLocalMarineResource = NULL;
@@ -89,10 +106,16 @@ CASW_Hud_Master::CASW_Hud_Master( const char *pElementName ) :
 	m_flCurHealthPercent = 1.0f;
 	m_flPrevHealthPercent = 1.0f;
 	m_bFading = false;
+
+	m_pLblTimer = new vgui::Label( this, "LblTimer", "" );
 }
 
 CASW_Hud_Master::~CASW_Hud_Master()
 {
+	for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
+	{
+		delete m_pMostFragsAvatar[i];
+	}
 }
 
 void CASW_Hud_Master::Init()
@@ -161,7 +184,7 @@ void CASW_Hud_Master::ApplySchemeSettings( IScheme *scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
-
+	m_pLblTimer->SetFont( scheme->GetFont( "DefaultExtraLarge", true ) );
 }
 
 void CASW_Hud_Master::UpdatePortraitVideo()
@@ -208,18 +231,140 @@ void CASW_Hud_Master::OnThink()
 
 	if ( !pPlayer || !ASWGameResource() || !ASWEquipmentList() )
 		return;
-	
+
+	if ( ASWDeathmatchMode() )
+	{
+		int nFrags[ASW_MAX_MARINE_RESOURCES];
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			nFrags[i] = pMR ? ASWDeathmatchMode()->GetFragCount( pMR ) : INT_MIN;
+		}
+
+		for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
+		{
+			m_nMostFrags[i] = -1;
+			m_hMostFragsImage[i] = NULL;
+		}
+		for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
+		{
+			for ( int j = 0; j < ASW_MAX_MARINE_RESOURCES; j++ )
+			{
+				if ( nFrags[j] == INT_MIN )
+				{
+					continue;
+				}
+
+				if ( m_nMostFrags[i] != -1 && nFrags[j] <= nFrags[m_nMostFrags[i]] )
+				{
+					continue;
+				}
+
+				bool bAlready = false;
+				for ( int k = 0; k < i; k++ )
+				{
+					if ( m_nMostFrags[k] == j )
+					{
+						bAlready = true;
+						break;
+					}
+				}
+				if ( !bAlready )
+				{
+					m_nMostFrags[i] = j;
+				}
+			}
+
+			if ( m_nMostFrags[i] == -1 )
+			{
+				break;
+			}
+
+			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( m_nMostFrags[i] );
+			if ( pMR && pMR->IsInhabited() && pMR->GetCommander() )
+			{
+				if ( m_pMostFragsAvatar[i] == NULL )
+				{
+					m_pMostFragsAvatar[i] = new CAvatarImage();
+					m_pMostFragsAvatar[i]->SetAvatarSize( k_EAvatarSize184x184 );
+				}
+				m_pMostFragsAvatar[i]->SetAvatarSteamID( pMR->GetCommander()->GetSteamID() );
+				m_hMostFragsImage[i] = m_pMostFragsAvatar[i]->GetID();
+			}
+			else if ( pMR && pMR->GetProfile() )
+			{
+				m_hMostFragsImage[i] = pMR->GetProfile()->m_nPortraitTextureID;
+			}
+			else
+			{
+				m_hMostFragsImage[i] = NULL;
+			}
+		}
+	}
+
+	if ( rd_draw_timer.GetBool() && ASWGameRules() )
+	{
+		int iMissionTimeMS = ( gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime ) * 1000;
+		int iMinutes = iMissionTimeMS / 1000 / 60;
+		int iSeconds = ( iMissionTimeMS / 1000 ) % 60;
+		int iMilliseconds = iMissionTimeMS % 1000;
+
+		wchar_t wszTimer[40];
+		Q_snwprintf( wszTimer, sizeof( wszTimer ), L"%d:%02d.%02d", iMinutes, iSeconds, iMilliseconds / 10 );
+		m_pLblTimer->SetBounds( 0, ASWDeathmatchMode() ? YRES( 35 ) : YRES( 5 ), ScreenWidth(), YRES( 20 ) );
+		m_pLblTimer->SetContentAlignment( vgui::Label::a_north );
+		m_pLblTimer->SetText( wszTimer );
+		m_pLblTimer->SetVisible( true );
+		m_pLblTimer->SetFgColor( rd_draw_timer_color.GetColor() );
+	}
+	else
+	{
+		m_pLblTimer->SetVisible( false );
+	}
+
 	// gather squad mate data
 	int nMaxResources = ASWGameResource() ? ASWGameResource()->GetMaxMarineResources() : 0;
 	int nPosition = 0;
+	int nMaxWidth = ScreenWidth();
+	CASWHudMinimap *pMinimap = GET_HUDELEMENT(CASWHudMinimap);
+	if (pMinimap)
+	{
+		int y;
+		pMinimap->GetPos(nMaxWidth, y);
+	}
 	for ( int i = 0; i < nMaxResources && nPosition < MAX_SQUADMATE_HUD_POSITIONS; i++ )
 	{
+		if (nMaxWidth < m_SquadMateInfo[nPosition].xpos + m_nMarinePortrait_spacing)
+		{
+			// don't draw marine info over the minimap.
+			break;
+		}
+
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 		
-		if ( pMR && !( pMR->IsLocal() && pMR->IsInhabited() ) )
+		if ( pMR && pPlayer->GetViewMarine() != pMR->GetMarineEntity() )
 		{
 			CASW_Marine_Profile *pProfile = pMR->GetProfile();
 			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+
+			// for team deathmatch we only add team mates on HUD 
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				if ( !pMarine )
+					continue;
+
+				C_ASW_Marine_Resource *pViewMR = pPlayer->GetViewMarine() ? pPlayer->GetViewMarine()->GetMarineResource() : NULL;
+				if (!pViewMR)
+					break;
+
+				if ( pMR->GetTeamNumber() != pViewMR->GetTeamNumber() )
+					continue;
+			}
+			else if ( ASWDeathmatchMode() )
+			{
+				// for deathmatch we don't add marines on HUD 
+				break;
+			}
 
 			m_SquadMateInfo[ nPosition ].hMarine = pMarine;
 			m_SquadMateInfo[ nPosition ].bPositionActive = true;
@@ -231,6 +376,14 @@ void CASW_Hud_Master::OnThink()
 
 			pMR->GetDisplayName( m_SquadMateInfo[ nPosition ].wszMarineName, sizeof( m_SquadMateInfo[ nPosition ].wszMarineName ) );
 
+			COMPILE_TIME_ASSERT( NELEMS( m_SquadMateInfo[ nPosition ].wszMarineName ) > 24 );
+			// BenLubar: truncate long names for the HUD
+			if ( Q_wcslen( m_SquadMateInfo[ nPosition ].wszMarineName ) > 24 )
+			{
+				m_SquadMateInfo[ nPosition ].wszMarineName[ 23 ] = 0x2026; // ...
+				m_SquadMateInfo[ nPosition ].wszMarineName[ 24 ] = 0;      // null terminator
+			}
+
 			if ( pMarine )			
 			{
 				m_SquadMateInfo[ nPosition ].pWeapon = pMarine->GetActiveASWWeapon();
@@ -238,12 +391,18 @@ void CASW_Hud_Master::OnThink()
 				{
 					int nTotalBullets = pMarine->GetAmmoCount( m_SquadMateInfo[ nPosition ].pWeapon->GetPrimaryAmmoType() );
 					int nMaxClip = m_SquadMateInfo[ nPosition ].pWeapon->GetMaxClip1();
-					m_SquadMateInfo[ nPosition ].nClips = nTotalBullets / nMaxClip;		// TODO: Ammo bag?
+					m_SquadMateInfo[ nPosition ].nClips = nTotalBullets / nMaxClip;
 
 					int nAmmoIndex = m_SquadMateInfo[ nPosition ].pWeapon->GetPrimaryAmmoType();
 					int nGuns = pMarine->GetNumberOfWeaponsUsingAmmo( nAmmoIndex );
 					int nMaxBullets = GetAmmoDef()->MaxCarry( nAmmoIndex, pMarine ) * nGuns;
 					m_SquadMateInfo[ nPosition ].nMaxClips = nMaxBullets / nMaxClip;
+
+					if ( !m_SquadMateInfo[ nPosition ].pWeapon->IsOffensiveWeapon() || m_SquadMateInfo[ nPosition ].pWeapon->Classify() == CLASS_ASW_CHAINSAW || rd_hud_hide_clips.GetBool() )
+					{
+						m_SquadMateInfo[ nPosition ].nClips = 0;
+						m_SquadMateInfo[ nPosition ].nMaxClips = 0;
+					}
 
 					if ( m_SquadMateInfo[ nPosition ].pWeapon->DisplayClipsDoubled() )
 					{
@@ -363,11 +522,11 @@ void CASW_Hud_Master::Paint( void )
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return;
- 
+
 	// gather data for local player
-	m_pLocalMarine = C_ASW_Marine::GetLocalMarine();		// only valid inside OnThink and Paint
+	m_pLocalMarine = pPlayer->GetViewMarine();		// only valid inside OnThink and Paint
 	m_hLocalMarine = m_pLocalMarine;		// take a handle copy for things like the CLocatorPanel which want to find this outside of our Paint
-	m_pLocalMarineResource = m_pLocalMarine ? m_pLocalMarine->GetMarineResource() : ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer );
+	m_pLocalMarineResource = m_pLocalMarine ? m_pLocalMarine->GetMarineResource() : NULL;
 	m_pLocalMarineProfile = m_pLocalMarineResource ? m_pLocalMarineResource->GetProfile() : NULL;
 	m_pLocalMarineActiveWeapon = m_pLocalMarine ? m_pLocalMarine->GetActiveASWWeapon() : NULL;
 	if ( m_pLocalMarineActiveWeapon )
@@ -496,28 +655,12 @@ void CASW_Hud_Master::Paint( void )
 		}
 	}
 
-	// calculate some positions
-	int nCurrentMarine = 0;
-	if ( pPlayer && ASWGameResource() )
-	{
-		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
-		{
-			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
-			if ( pMR && pMR->GetCommander() == pPlayer )
-			{
-				if ( pMR->IsInhabited() )
-					break;
-				nCurrentMarine++;
-			}
-		}
-	}
-
 	// shift along depending on which marine we are
 	int cursor_x = YRES( 18 );
 	int nSquadMate = 0;
-	for ( int i = 0; i < 4; i++ )
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
-		if ( i == nCurrentMarine )
+		if ( i == 0 )
 		{
 			m_nMarinePortrait_x = cursor_x;
 			cursor_x += m_nSquadMates_x;
@@ -538,6 +681,16 @@ void CASW_Hud_Master::Paint( void )
 	m_nMarinePortrait_bar_x2 = m_nMarinePortrait_bar_x + m_nMarinePortrait_bar_bg_w;
 	m_nMarinePortrait_bar_y = m_nMarinePortrait_circle_y + m_nMarinePortrait_circle_bg_t * 0.5f;
 	m_nMarinePortrait_bar_y2 = m_nMarinePortrait_circle_y2;
+
+	if ( !rd_draw_portraits.GetBool() )
+	{
+		return;
+	}
+
+	if ( ASWDeathmatchMode() && ASWGameResource() && rd_draw_avatars_with_frags.GetBool() )
+	{
+		PaintDeathmatchFrags();
+	}
 
 	if ( m_pLocalMarineProfile && m_pLocalMarineResource )
 	{
@@ -603,7 +756,7 @@ bool CASW_Hud_Master::LookupElementBounds( const char *elementName, int &x, int 
 	{
 		int nPanel = atoi( elementName + 10 ) - 1;
 
-		if ( nPanel < 0 && nPanel >= MAX_SQUADMATE_HUD_POSITIONS )
+		if ( nPanel < 0 || nPanel >= MAX_SQUADMATE_HUD_POSITIONS )
 		{
 			return false;
 		}
@@ -811,7 +964,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				);
 		}
 
-		if ( pInfo->m_iShowClipsOnHUD )
+		if ( pInfo->m_iShowClipsOnHUD && !rd_hud_hide_clips.GetBool() )
 		{
 			if ( m_nLocalMarineClips > 5 )
 			{
@@ -1166,7 +1319,7 @@ void CASW_Hud_Master::PaintFastReload()
 
 	float flProgress = 0.0f;
 	// if we're in single player, the progress code in the weapon doesn't run on the client because we aren't predicting
-	if ( !cl_predict->GetInt() )
+	if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingMarine() )
 		flProgress = (gpGlobals->curtime - fStart) / fTotalTime;
 	else
 		flProgress = pWeapon->m_fReloadProgress;
@@ -1388,7 +1541,7 @@ void CASW_Hud_Master::PaintText()
 			int w, t;
 
 			wchar_t wszQuantity[ 12 ];
-			_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", pWeapon->Clip1() );
+			V_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", pWeapon->Clip1() );
 	
 			surface()->DrawSetTextColor( ( pWeapon == m_pLocalMarineActiveWeapon ) ? Color( 255, 255, 255, 255 ) : Color( 66, 142, 192, 255 ) );
 			surface()->DrawSetTextFont( m_hDefaultSmallFont );	
@@ -1397,6 +1550,73 @@ void CASW_Hud_Master::PaintText()
 			surface()->DrawUnicodeString( wszQuantity );
 		}
 	}
+
+    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	// BenLubar(deathmatch-improvements): fix incorrect message displaying
+	// when player have bots added in pvp
+	// Also don't print these messages in co-op mode
+    if ( pPlayer && ASWDeathmatchMode() )
+    {
+		C_ASW_Marine_Resource *pMR = NULL;
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			pMR = ASWGameResource()->GetMarineResource( i );
+			if ( pMR && pMR->IsInhabited() )
+			{
+				if ( pMR->GetCommander() == pPlayer )
+				{
+					break;
+				}
+				pMR = NULL;
+			}
+		}
+
+		if ( !pMR )
+        {
+			surface()->DrawSetTextFont( m_hDefaultFont );
+            surface()->DrawSetTextColor( 200, 25, 25, 255 );
+            surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
+                m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
+            surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#rd_str_press_m_select_marine" ) );
+        }
+        else if ( !pMR->GetMarineEntity() || !pMR->GetMarineEntity()->IsAlive() )
+        {
+            if ( gpGlobals->curtime > pPlayer->m_fMarineDeathTime + rd_respawn_time.GetInt())
+            {
+                if ( ( int( gpGlobals->curtime*4 ) % 2 ) == 0 )
+                {
+					surface()->DrawSetTextFont( m_hDefaultFont );
+                    surface()->DrawSetTextColor( 200, 25, 25, 255 );
+                    surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
+                        m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
+                    surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#rd_str_press_jump_to_respawn" ) );
+                }
+            }
+            else 
+            {
+                int sec_left = pPlayer->m_fMarineDeathTime + rd_respawn_time.GetInt() - gpGlobals->curtime;
+                if ( sec_left < 0 )
+                    sec_left = 0;
+                
+                char sec_left_str[32]; 
+                itoa(sec_left, sec_left_str, 10);
+
+                wchar_t sec_left_wstr[32];
+                g_pVGuiLocalize->ConvertANSIToUnicode( sec_left_str, sec_left_wstr, sizeof(sec_left_wstr));
+
+                wchar_t wszBuffer[128];
+
+                g_pVGuiLocalize->ConstructString( wszBuffer, sizeof(wszBuffer), g_pVGuiLocalize->Find( "#rd_str_respawning_in" ), 1, sec_left_wstr );  // Respawning in %s1...
+
+				surface()->DrawSetTextFont( m_hDefaultFont );
+                surface()->DrawSetTextColor( 200, 25, 25, 255 );
+                surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
+                    m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
+
+                surface()->DrawUnicodeString( wszBuffer );
+            }
+        }
+    }
 }
 
 void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
@@ -1424,7 +1644,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 	if ( m_SquadMateInfo[ nPosition ].nClips > 5 )
 	{
 		static wchar_t wszBullets[ 6 ];
-		_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_SquadMateInfo[ nPosition ].nClips );
+		V_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_SquadMateInfo[ nPosition ].nClips );
 		surface()->DrawSetTextPos( x + m_nSquadMate_clips_x + m_nSquadMate_clips_w,
 			y + m_nSquadMate_clips_y );
 		surface()->DrawUnicodeString( wszBullets );
@@ -1438,7 +1658,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 		{
 			surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );
 			wchar_t wszQuantity[ 12 ];
-			_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", m_SquadMateInfo[ nPosition ].nExtraItemQuantity );
+			V_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", m_SquadMateInfo[ nPosition ].nExtraItemQuantity );
 			surface()->GetTextSize( m_hDefaultSmallFont, wszQuantity, w, t );
 			surface()->DrawSetTextPos( x + m_nSquadMate_ExtraItem_quantity_x - w,
 				y + m_nSquadMate_ExtraItem_quantity_y - t );
@@ -1464,6 +1684,55 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 			surface()->DrawSetTextPos( x + m_nSquadMate_ExtraItem_hotkey_x - w,
 				y + m_nSquadMate_ExtraItem_hotkey_y );
 			surface()->DrawUnicodeString( wszKey );
+		}
+	}
+}
+
+void CASW_Hud_Master::PaintDeathmatchFrags()
+{
+	for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
+	{
+		if ( m_nMostFrags[i] == -1 )
+		{
+			break;
+		}
+
+		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( m_nMostFrags[i] );
+		if ( !pMR )
+		{
+			continue;
+		}
+
+		Color textColor( 255, 255, 255, 255 );
+		if ( m_nMostFrags[i] < NELEMS( g_rgbaStatsReportPlayerColors ) )
+		{
+			textColor = g_rgbaStatsReportPlayerColors[m_nMostFrags[i]];
+		}
+
+		int x = ScreenWidth() / ( NELEMS( m_nMostFrags ) + 5 ) * ( i + 3 );
+
+		if ( ASWDeathmatchMode()->IsGunGameEnabled() )
+		{
+			surface()->DrawSetColor( textColor );
+			surface()->DrawSetTexture( ASWEquipmentList()->GetEquipIconTexture( true, ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) ) ) );
+			surface()->DrawTexturedRect( x, YRES( 5 ), x + YRES( 15 * m_nWeapon_w / m_nWeapon_t ), YRES( 20 ) );
+		}
+		else
+		{
+			wchar_t wszFrags[8];
+			Q_snwprintf( wszFrags, sizeof( wszFrags ), L"%d", ASWDeathmatchMode()->GetFragCount( pMR ) );
+
+			surface()->DrawSetTextPos( x, YRES( 5 ) );
+			surface()->DrawSetTextColor( textColor );
+			surface()->DrawSetTextFont( m_hDefaultLargeFont );
+			surface()->DrawUnicodeString( wszFrags );
+		}
+
+		if ( m_hMostFragsImage[i] != NULL )
+		{
+			surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
+			surface()->DrawSetTexture( m_hMostFragsImage[i] );
+			surface()->DrawTexturedRect( x - YRES( 30 ), YRES( 0 ), x - YRES( 5 ), YRES( 25 ) );
 		}
 	}
 }
@@ -1533,6 +1802,11 @@ bool CASW_Hud_Master::OwnsHotBarSlot( C_ASW_Player *pPlayer, int nSlot )
 	if ( nSlot >= 100 )
 	{
 		nSlot -= 100;
+	}
+
+	if ( nSlot >= MAX_SQUADMATE_HUD_POSITIONS )
+	{
+		return false;
 	}
 
 	C_ASW_Marine *pMarine = m_SquadMateInfo[ nSlot ].hMarine;

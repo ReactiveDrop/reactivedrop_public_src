@@ -265,7 +265,7 @@ bool CAI_LocalNavigator::MoveCalcDirect( AILocalMoveGoal_t *pMoveGoal, bool bOnl
 
 //-------------------------------------
 
-ConVar ai_no_steer( "ai_no_steer", "0" );
+ConVar ai_no_steer( "ai_no_steer", "1" );
 
 bool CAI_LocalNavigator::MoveCalcSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult )
 {

@@ -147,6 +147,7 @@ public:
 	void OpenFriendRequestPanel(int index, uint64 playerXuid);
 	void OpenInviteUI( char const *szInviteUiType );
 	void ExecuteOverlayCommand( char const *szCommand );
+    void ExecuteOverlayUrl( char const *szUrl );
 
 	// Listening for match events
 	virtual void OnEvent( KeyValues *pEvent );

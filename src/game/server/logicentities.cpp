@@ -14,6 +14,7 @@
 #include "saverestore_utlvector.h"
 #include "vstdlib/random.h"
 #include "gameinterface.h"
+#include "logicentities.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -253,49 +254,10 @@ void CLogicCompareInteger::InputCompareValues( inputdata_t &inputdata )
 const int SF_TIMER_UPDOWN = 1;
 const float LOGIC_TIMER_MIN_INTERVAL = 0.01;
 
+/** At this point of code was a declaration of CTimerEntity
+	It was moved into logicentities.h to allow access from source code
+*/
 
-class CTimerEntity : public CLogicalEntity
-{
-public:
-	DECLARE_CLASS( CTimerEntity, CLogicalEntity );
-
-	void Spawn( void );
-	void Think( void );
-
-	void Toggle( void );
-	void Enable( void );
-	void Disable( void );
-	void FireTimer( void );
-
-	int DrawDebugTextOverlays(void);
-
-	// outputs
-	COutputEvent m_OnTimer;
-	COutputEvent m_OnTimerHigh;
-	COutputEvent m_OnTimerLow;
-
-	// inputs
-	void InputToggle( inputdata_t &inputdata );
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
-	void InputFireTimer( inputdata_t &inputdata );
-	void InputRefireTime( inputdata_t &inputdata );
-	void InputResetTimer( inputdata_t &inputdata );
-	void InputAddToTimer( inputdata_t &inputdata );
-	void InputSubtractFromTimer( inputdata_t &inputdata );
-
-	int m_iDisabled;
-	float m_flRefireTime;
-	bool m_bUpDownState;
-	int m_iUseRandomTime;
-	float m_flLowerRandomBound;
-	float m_flUpperRandomBound;
-
-	// methods
-	void ResetTimer( void );
-	
-	DECLARE_DATADESC();
-};
 
 LINK_ENTITY_TO_CLASS( logic_timer, CTimerEntity );
 

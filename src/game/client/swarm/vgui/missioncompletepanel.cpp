@@ -31,6 +31,7 @@
 #include "debrieftextpage.h"
 #include "nb_island.h"
 #include "asw_hud_minimap.h"
+#include "c_user_message_register.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -42,7 +43,8 @@ extern ConVar asw_unlock_all_weapons;
 #endif
 ConVar asw_success_sound_delay( "asw_success_sound_delay", "0.0", FCVAR_CHEAT, "Delay before playing mission success music" );
 ConVar asw_fail_sound_delay( "asw_fail_sound_delay", "0.0", FCVAR_CHEAT, "Delay before playing mission fail music" );
-ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "0", FCVAR_NONE, "Show stats screen in singleplayer" );
+ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "1", FCVAR_NONE, "Show stats screen in singleplayer" );
+ConVar rd_show_leaderboard_debrief( "rd_show_leaderboard_debrief", "0", FCVAR_ARCHIVE, "Show leaderboard during debriefing" );
 
 MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool bSuccess) : vgui::EditablePanel(parent, name)
 {	
@@ -59,6 +61,9 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_bCreditsSeen = false;
 
 	m_bShowQueuedUnlocks = false;
+
+	m_hLeaderboard = 0;
+	m_bLeaderboardReady = false;
 	
 	if ( !bSuccess )
 	{
@@ -169,7 +174,6 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_pTab[ 0 ] = new CNB_Button( this, "XPTab", "#asw_summary", this, "XPTab" );
 	m_pTab[ 1 ] = new CNB_Button( this, "StatsTab", "#asw_stats_tab", this, "StatsTab" );
-	m_pTab[ 2 ] = NULL;
 
 	m_pNextButton = new CNB_Button( this, "NextButton", "#asw_button_next", this, "StatsTab" );
 
@@ -343,6 +347,7 @@ void MissionCompletePanel::OnThink()
 				if ( gpGlobals->maxClients > 1 || asw_show_stats_in_singleplayer.GetBool() )
 				{
 					m_iStage = MCP_STAGE_STATS;
+					LeaderboardReady(); // if we haven't finished uploading stats by now, show an incomplete leaderboard instead of no leaderboard.
 				}
 				else
 				{
@@ -666,6 +671,63 @@ void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 	pPanel->MoveToFront();
 
 	m_hSubScreen = pPanel;
+}
+
+void MissionCompletePanel::OnLeaderboardFound( SteamLeaderboard_t id )
+{
+	m_hLeaderboard = id;
+
+	if ( m_bLeaderboardReady )
+	{
+		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
+		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
+	}
+}
+
+void MissionCompletePanel::LeaderboardReady()
+{
+	if ( m_bLeaderboardReady )
+	{
+		return;
+	}
+
+	m_bLeaderboardReady = true;
+	if ( m_hLeaderboard != 0 )
+	{
+		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
+	}
+}
+
+void __MsgFunc_RDLeaderboardReady( bf_read &msg )
+{
+	MissionCompleteFrame *pMissionCompleteFrame = GetClientModeASW() ? assert_cast<MissionCompleteFrame *>( GetClientModeASW()->m_hMissionCompleteFrame.Get() ) : NULL;
+	MissionCompletePanel *pMissionCompletePanel = pMissionCompleteFrame ? pMissionCompleteFrame->m_pMissionCompletePanel : NULL;
+	if ( pMissionCompletePanel )
+	{
+		pMissionCompletePanel->LeaderboardReady();
+	}
+}
+USER_MESSAGE_REGISTER( RDLeaderboardReady );
+
+void MissionCompletePanel::LeaderboardDownloadedCallback( LeaderboardScoresDownloaded_t *pResult, bool bIOFailure )
+{
+	if ( bIOFailure )
+	{
+		return;
+	}
+
+	CUtlVector<RD_LeaderboardEntry_t> entries;
+	g_ASW_Steamstats.ReadDownloadedLeaderboard( entries, pResult->m_hSteamLeaderboardEntries, pResult->m_cEntryCount );
+
+	m_pExperienceReport->m_pLeaderboard->SetEntries( entries );
+	m_pExperienceReport->m_pLeaderboard->SetVisible( rd_show_leaderboard_debrief.GetBool() );
+}
+
+void MissionCompletePanel::OnLeaderboardScoreUploaded( const RD_LeaderboardEntry_t & entry, int nGlobalRankPrevious )
+{
+	m_pExperienceReport->m_pLeaderboard->OverrideEntry( entry );
+	m_pExperienceReport->m_pLeaderboard->SetVisible( rd_show_leaderboard_debrief.GetBool() );
 }
 
 void ShowCompleteMessage()

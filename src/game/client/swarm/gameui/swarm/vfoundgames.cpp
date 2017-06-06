@@ -16,8 +16,12 @@
 #include "vdownloadcampaign.h"
 #include "gameui_util.h"
 
+#include "rd_workshop.h"
+#include "filesystem.h"
+
 #include "vgui/ISurface.h"
 #include "vgui/IBorder.h"
+#include "vgui/ISystem.h"
 #include "vgui_controls/Label.h"
 #include "vgui_controls/Button.h"
 #include "vgui_controls/ImagePanel.h"
@@ -32,6 +36,8 @@
 #include "smartptr.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+
+#include "rd_lobby_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -80,7 +86,7 @@ static char const * NoTeamGameMode( char const * szGameMode )
 
 bool BaseModUI::FoundGameListItem::Info::IsJoinable() const
 {
-	return mbInGame && mIsJoinable;
+	return mbInGame && mIsJoinable && HaveMap();
 }
 
 bool BaseModUI::FoundGameListItem::Info::IsDLC() const
@@ -91,12 +97,43 @@ bool BaseModUI::FoundGameListItem::Info::IsDLC() const
 	return false;
 }
 
+bool BaseModUI::FoundGameListItem::Info::HaveMap() const
+{
+	if ( *mpGameDetails->GetString( "game/mission" ) )
+	{
+		char szBSPName[MAX_PATH];
+		Q_snprintf( szBSPName, sizeof( szBSPName ), "maps/%s.bsp", mpGameDetails->GetString( "game/mission" ) );
+		return filesystem->FileExists( szBSPName );
+	}
+	return false;
+}
+
 char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
 {
 	if ( mchOtherTitle[0] )
 		return mchOtherTitle;
 
 	return NULL;
+}
+
+PublishedFileId_t BaseModUI::FoundGameListItem::Info::GetWorkshopID() const
+{
+	if ( !mbInGame || !mpGameDetails || !steamapicontext->SteamMatchmaking() )
+	{
+		return k_PublishedFileIdInvalid;
+	}
+
+	CSteamID lobby( mpGameDetails->GetUint64( "options/sessionid" ) );
+	if ( lobby.IsValid() && lobby.IsLobby() )
+	{
+		const char *szWorkshopID = steamapicontext->SteamMatchmaking()->GetLobbyData( lobby, "game:missioninfo:workshop" );
+		if ( *szWorkshopID )
+		{
+			return strtoull( szWorkshopID, NULL, 16 );
+		}
+	}
+
+	return k_PublishedFileIdInvalid;
 }
 
 bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
@@ -112,9 +149,10 @@ bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
 			const char *szMissionName = mpGameDetails->GetString( "game/mission", "" );
 			KeyValues *pMissionKeys = pSource->GetMissionDetails( szMissionName );
 			char const *szWebsite = mpGameDetails->GetString( "game/missioninfo/website", NULL );
+			PublishedFileId_t iWorkshopFile = GetWorkshopID();
 			if ( ( !pMissionKeys || Q_stricmp( pMissionKeys->GetString( "version", "" ),
 				mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
-				&& ( szWebsite && *szWebsite ) )
+				&& ( ( szWebsite && *szWebsite ) || iWorkshopFile != k_PublishedFileIdInvalid ) )
 				return true;
 		}
 	}
@@ -132,7 +170,10 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 	{
 		return "#L4D360UI_FoundGames_Join_Download";
 	}
-
+	if ( !HaveMap() )
+	{
+		return "#L4D360UI_Lobby_CampaignUnavailable";
+	}
 	if ( IsJoinable() )
 	{
 		return "#L4D360UI_FoundGames_Join_Success";
@@ -181,9 +222,12 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	m_pLblPing = NULL;
 	m_pLblPlayerGamerTag = NULL;
 	m_pLblDifficulty = NULL;
+	m_pLblChallenge = NULL;
 	m_pLblSwarmState = NULL;
 	m_pLblPlayers = NULL;
 	m_pLblNotJoinable = NULL;
+
+	m_wszChallengeName[0] = 0;
 
 	SetProportional( true );
 
@@ -326,10 +370,14 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 
 		SetGamePlayerCount( 0, 0 );
 		SetGameDifficulty( "" );
+		SetGameChallenge( "" );
 		SetSwarmState( "" );
 	}
 	else if ( char const *szOtherTitle = fi.IsOtherTitle() )
 	{
+		DevMsg( "Adding an unjoinable game to the list:\n" );
+		KeyValuesDumpAsDevMsg( fi.mpGameDetails );
+
 		if( m_pLblNotJoinable )
 		{
 			wchar_t convertedString[64];
@@ -342,6 +390,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 
 		SetGamePlayerCount( 0, 0 );
 		SetGameDifficulty( "" );
+		SetGameChallenge( "" );
 		SetSwarmState( "" );
 	}
 	else if ( fi.IsJoinable() || fi.IsDownloadable() )
@@ -370,9 +419,10 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 			Q_snprintf( chDiffBuffer, sizeof( chDiffBuffer ), "#L4D360UI_Difficulty_%s_%s", szDiff, szMode );
 			SetGameDifficulty( chDiffBuffer );
 		}
+		SetGameChallenge( fi.mpGameDetails->GetString( "game/challengeinfo/displaytitle" ) );
 
 		char const *szDiff = fi.mpGameDetails->GetString( "game/swarmstate", "ingame" );
-		Msg( "Adding a server to the list:\n" );
+		DevMsg( "Adding a server to the list:\n" );
 		KeyValuesDumpAsDevMsg( fi.mpGameDetails );
 		if ( !Q_stricmp( szDiff, "ingame" ) )
 		{
@@ -396,6 +446,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 		
 		SetGamePlayerCount( 0, 0 );
 		SetGameDifficulty( "" );
+		SetGameChallenge( "" );
 	}
 }
 
@@ -454,6 +505,30 @@ void FoundGameListItem::SetGameDifficulty( const char *difficultyName )
 }
 
 //=============================================================================
+void FoundGameListItem::SetGameChallenge( const char *challengeName )
+{
+	if ( challengeName && *challengeName == '#' )
+	{
+		const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( challengeName );
+		if ( pwszChallengeName )
+		{
+			Q_wcsncpy( m_wszChallengeName, pwszChallengeName, sizeof( m_wszChallengeName ) );
+			if ( m_pLblChallenge )
+			{
+				m_pLblChallenge->SetText( m_wszChallengeName );
+			}
+			return;
+		}
+	}
+
+	Q_UTF8ToUnicode( challengeName ? challengeName : "", m_wszChallengeName, sizeof( m_wszChallengeName ) );
+	if ( m_pLblChallenge )
+	{
+		m_pLblChallenge->SetText( m_wszChallengeName );
+	}
+}
+
+//=============================================================================
 void FoundGameListItem::SetSwarmState( const char *szSwarmStateText )
 {
 	if( m_pLblSwarmState )
@@ -467,7 +542,7 @@ void FoundGameListItem::SetGamePlayerCount( int current, int max )
 {
 	if( m_pLblPlayers )
 	{
-		if ( GetFullInfo().mInfoType == FGT_PUBLICGAME )
+		if ( false && GetFullInfo().mInfoType == FGT_PUBLICGAME )
 		{
 			max = GetFullInfo().mpGameDetails->GetInt( "rollup/game", 0 ) +
 				GetFullInfo().mpGameDetails->GetInt( "rollup/lobby", 0 );
@@ -526,6 +601,10 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 		if ( bHasFocus )
 		{
 			col.SetColor( 255, 255, 255, 255 );
+		}
+		if ( m_wszChallengeName[0] )
+		{
+			col.SetColor( col.r(), col.g(), 0, col.a() );
 		}
 
 		int x, y;
@@ -641,6 +720,7 @@ void FoundGameListItem::PaintBackground()
 	else if ( fi.IsJoinable() || fi.IsDownloadable() )
 	{
 		DrawListItemLabel( m_pLblDifficulty, true );
+		DrawListItemLabel( m_pLblChallenge, true );
 		DrawListItemLabel( m_pLblPlayers, true );
 		DrawListItemLabel( m_pLblSwarmState, true );
 	}
@@ -859,6 +939,11 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	if ( m_pLblDifficulty )
 	{
 		m_pLblDifficulty->SetVisible( false );
+	}
+	m_pLblChallenge = dynamic_cast< vgui::Label * > ( FindChildByName( "LblChallenge" ) );
+	if ( m_pLblChallenge )
+	{
+		m_pLblChallenge->SetVisible( false );
 	}
 	m_pLblSwarmState = dynamic_cast< vgui::Label * > ( FindChildByName( "LblSwarmState" ) );
 	if ( m_pLblSwarmState )
@@ -1099,6 +1184,13 @@ void FoundGames::OnCommand( const char *command )
 		if ( pSelectedItem )
 		{
 			// Open the download window
+			PublishedFileId_t iWorkshopFile = pSelectedItem->GetFullInfo().GetWorkshopID();
+			if ( iWorkshopFile != k_PublishedFileIdInvalid && !V_strcmp( command, "DownloadSelected" ) )
+			{
+				g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopFile );
+
+				return;
+			}
 			KeyValues *pSelectedDetails = pSelectedItem->GetFullInfo().mpGameDetails;
 			if ( pSelectedDetails )
 			{
@@ -1499,6 +1591,7 @@ void FoundGames::SetDetailsPanelVisible( bool bIsVisible )
 	SetControlVisible( "LblPlayerAccessText", bIsVisible );
 	SetControlVisible( "LblGameDifficulty", bIsVisible );
 	SetControlVisible( "LblGameDifficultyText", bIsVisible );
+	SetControlVisible( "LblGameChallenge", bIsVisible );
 	SetControlVisible( "LblNumPlayers", bIsVisible );
 	SetControlVisible( "LblNumPlayersText", bIsVisible );
 	SetControlVisible( "LblViewingGames", bIsVisible );
@@ -1643,34 +1736,74 @@ static void HandleJoinPlayerSession( FoundGameListItem::Info const &fi )
 	if ( fi.mInfoType != FoundGameListItem::FGT_PLAYER )
 		return;
 
-	IPlayerFriend *item = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetFriendByXUID( fi.mFriendXUID );
-	if ( item )
-		item->Join();
+	if ( fi.mbJoinServer )
+	{
+		// BenLubar(dedicated-server-friends-list): join the server the friend is on directly
+		IMatchServer *item = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()->GetServerByOnlineId( fi.mServerXUID );
+		if ( item )
+			item->Join();
+	}
+	else
+	{
+		IPlayerFriend *item = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetFriendByXUID( fi.mFriendXUID );
+		if ( item )
+			item->Join();
+	}
 }
 
 void FoundGames::StartSearching()
 {
 	g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->EnableFriendsUpdate( true );
+	g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()->EnableServersUpdate( true ); // BenLubar(dedicated-server-friends-list)
 }
 
 void FoundGames::AddServersToList()
 {
 	IPlayerManager *mgr = g_pMatchFramework->GetMatchSystem()->GetPlayerManager();
+	IServerManager *srvMgr = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager(); // BenLubar(dedicated-server-friends-list)
 	
 	int numItems = mgr->GetNumFriends();
 	for( int i = 0; i < numItems; ++i )
 	{
 		IPlayerFriend *item = mgr->GetFriendByIndex( i );
 		KeyValues *pGameDetails = item->GetGameDetails();
-		
+
+		if ( pGameDetails->GetUint64( "options/sessionid", 0 ) != 0 )
+		{
+			pGameDetails = UTIL_RD_LobbyToLegacyKeyValues( pGameDetails->GetUint64( "options/sessionid" ) );
+		}
+
 		FoundGameListItem::Info fi;
+
+		fi.mbInGame = item->IsJoinable();
+
+		// BenLubar(dedicated-server-friends-list): if the friend is not in a lobby but they are on a dedicated server
+		// that we know information for, use the dedicated server's game details instead.
+		FriendGameInfo_t friendGameInfo;
+		if ( !pGameDetails && steamapicontext->SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
+		{
+			int numServers = srvMgr->GetNumServers();
+			for ( int j = 0; j < numServers; j++ )
+			{
+				IMatchServer *pServer = srvMgr->GetServerByIndex( j );
+				KeyValues *pServerDetails = pServer->GetGameDetails();
+				const char *pszServerAddress = pServerDetails->GetString( "server/adronline" );
+				// BenLubar(dedicated-server-friends-list): Added ws2_32.lib. It is needed for netadr_t usage to compile. It provides several functions that are used to work with IP addresses.
+				if ( netadr_t( pszServerAddress ) == netadr_t( friendGameInfo.m_unGameIP, friendGameInfo.m_usGamePort ) )
+				{
+					pGameDetails = pServerDetails;
+					fi.mbInGame = pServer->IsJoinable();
+					fi.mServerXUID = pServer->GetOnlineId();
+					fi.mbJoinServer = true;
+					break;
+				}
+			}
+		}
 
 		fi.mInfoType = FoundGameListItem::FGT_PLAYER;
 		Q_strncpy( fi.Name, item->GetName(), sizeof( fi.Name ) );
 
 		fi.mIsJoinable = false;
-
-		fi.mbInGame = item->IsJoinable();
 
 		fi.mPing = fi.GP_HIGH;
 		if ( !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
@@ -1684,7 +1817,7 @@ void FoundGames::AddServersToList()
 		// On X360 check against our registered missions
 		KeyValues *pMissionMapInfo = NULL; pMissionMapInfo;
 
-		const char *szModDir = pGameDetails->GetString( "game/dir", "swarm" );
+		const char *szModDir = pGameDetails->GetString( "game/dir", "reactivedrop" );
 		if ( Q_stricmp( szModDir, COM_GetModDirectory() ) )
 		{
 			Q_snprintf( fi.mchOtherTitle, sizeof( fi.mchOtherTitle ), szModDir );
@@ -1762,7 +1895,7 @@ void FoundGames::AddFakeServersToList()
 		fi.mPing = fi.GP_HIGH;
 		fi.miPing = 0;
 
-		fi.mFriendXUID = ( 0xFFFFFFFFull << 32ull ) | ( n << 8 );
+		fi.mFriendXUID = ( 0xFFFFFFFFull << 32ull ) | ( ( (XUID) n ) << 8 );
 		
 		fi.mpGameDetails = pDetails;
 
@@ -1910,6 +2043,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 		lblGameStatus2 = dynamic_cast< vgui::Label* >( FindChildByName( "LblGameStatus2" ) );
 	}
 	vgui::Label* lblGameDifficulty = dynamic_cast< vgui::Label* >( FindChildByName( "LblGameDifficulty" ) );
+	vgui::Label* lblGameChallenge = dynamic_cast< vgui::Label* >( FindChildByName( "LblGameChallenge" ) );
 	
 	CNB_Button *joinButton = dynamic_cast< CNB_Button* >( FindChildByName( "BtnJoinSelected" ) );
 	BaseModUI::BaseModHybridButton *downloadButton = dynamic_cast< BaseModUI::BaseModHybridButton* >( FindChildByName( "BtnDownloadSelected" ) );
@@ -2350,6 +2484,11 @@ void FoundGames::OnItemSelected( const char* panelName )
 	if( lblGameDifficulty && currentDifficulty )
 	{
 		lblGameDifficulty->SetText( currentDifficulty );
+	}
+
+	if ( lblGameChallenge )
+	{
+		lblGameChallenge->SetText( gameListItem ? gameListItem->m_wszChallengeName : L"" );
 	}
 
 	vgui::Label* lblNumPlayers = dynamic_cast< vgui::Label* >( FindChildByName( "LblNumPlayers" ) );

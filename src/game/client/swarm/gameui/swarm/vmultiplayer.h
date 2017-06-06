@@ -67,8 +67,10 @@ private:
 
 	DropDownMenu		*m_drpAllowLanGames;
 	DropDownMenu		*m_drpAllowCustomContent;
+	DropDownMenu		*m_drpNetworkBandwidth;
 	DropDownMenu		*m_drpColorBlind;
 	DropDownMenu		*m_drpGameInstructor;
+	DropDownMenu		*m_drpDeathCamera;
 	DropDownMenu		*m_drpAllowFreeLook;
 	DropDownMenu		*m_drpSpraypaint;
 	DropDownMenu		*m_drpGore;

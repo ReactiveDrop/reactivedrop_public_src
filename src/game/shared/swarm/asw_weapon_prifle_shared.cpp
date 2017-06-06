@@ -20,6 +20,7 @@
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
 #include "particle_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -82,6 +83,12 @@ float CASW_Weapon_PRifle::GetWeaponDamage()
 {
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if (ASWDeathmatchMode())
+	{
+		extern ConVar rd_pvp_prifle_dmg;
+		flDamage = rd_pvp_prifle_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{
@@ -148,6 +155,7 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 		fGrenadeDamage,
 		fGrenadeRadius,
 		vecSrc, angGrenFacing, vecThrow, AngularImpulse(0,0,0), pMarine, this );
+	pMarine->OnWeaponFired( this, 1, true );
 #endif
 
 	SendWeaponAnim( GetPrimaryAttackActivity() );

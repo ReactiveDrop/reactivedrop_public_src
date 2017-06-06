@@ -446,6 +446,24 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 #endif
 }
 
+void CUIGameData::ExecuteOverlayUrl( char const *szUrl )
+{
+#if !defined( _X360 ) && !defined( NO_STEAM )
+    if ( steamapicontext && steamapicontext->SteamFriends() &&
+        steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
+    {
+        steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( szUrl );
+    }
+    else
+    {
+        DisplayOkOnlyMsgBox( NULL, "#L4D360UI_SteamOverlay_Title", "#L4D360UI_SteamOverlay_Text" );
+    }
+#else
+    ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
+    Assert( !"ExecuteOverlayCommand" );
+#endif
+}
+
 //=============================================================================
 bool CUIGameData::SignedInToLive()
 {

@@ -51,6 +51,7 @@
 #include "eventlist.h"
 #include "particle_parse.h"
 #include "asw_trace_filter_shot.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -63,13 +64,14 @@ extern ConVar asw_melee_debug;
 extern ConVar asw_debug_marine_damage;
 extern ConVar asw_stim_time_scale;
 extern ConVar asw_marine_ff;
-ConVar asw_leadership_radius("asw_leadership_radius", "600", FCVAR_REPLICATED, "Radius of the leadership field around NCOs with the leadership skill");
-ConVar asw_marine_speed_scale_easy("asw_marine_speed_scale_easy", "0.96", FCVAR_REPLICATED);
-ConVar asw_marine_speed_scale_normal("asw_marine_speed_scale_normal", "1.0", FCVAR_REPLICATED);
-ConVar asw_marine_speed_scale_hard("asw_marine_speed_scale_hard", "1.0", FCVAR_REPLICATED);
-ConVar asw_marine_speed_scale_insane("asw_marine_speed_scale_insane", "1.0", FCVAR_REPLICATED);
-ConVar asw_marine_box_collision("asw_marine_box_collision", "1", FCVAR_REPLICATED);
-ConVar asw_allow_hull_shots("asw_allow_hull_shots", "1", FCVAR_REPLICATED);
+ConVar asw_leadership_radius("asw_leadership_radius", "600", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of the leadership field around NCOs with the leadership skill");
+ConVar asw_marine_speed_scale_easy("asw_marine_speed_scale_easy", "0.96", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_speed_scale_normal("asw_marine_speed_scale_normal", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_speed_scale_hard("asw_marine_speed_scale_hard", "1.024", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_speed_scale_insane("asw_marine_speed_scale_insane", "1.048", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_box_collision("asw_marine_box_collision", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+// reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
+ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
@@ -88,6 +90,32 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 
 	if (BaseClass::Weapon_Switch( pWeapon, viewmodelindex ))
 	{
+		#define ASW_WEAPON_SWITCH_TIME 0.5f
+		float fSwitchDelay = ASW_WEAPON_SWITCH_TIME;
+		
+		// reactivedrop: 
+		// To prevent players using scripts that automatically switch weapons
+		// to increase fire rate. E.g. vindicator fire rate is 0.65 s, weapon 
+		// switch time is 0.5 s, players can equip dual vindicators and 
+		// shoot with 0.5 s rate by switching from one vindicator to another. 
+		// To prevent this we need to increase the weapon switch delay to 0.65 
+		// But only if the player switched right after firing(most likely
+		// using a script). 
+		// We also need to skip the situations when a reload occurs in current
+		// weapon and player switches to the next one. E.g. the switch delay 
+		// should not be higher then GetFireRate() and shouldn't be lower then 
+		// 0.5 switch delay 
+		if ( GetLastWeaponSwitchedTo() )
+		{
+			CBaseCombatWeapon *pPrevWeapon = GetLastWeaponSwitchedTo();
+			if (pPrevWeapon->m_flNextPrimaryAttack > gpGlobals->curtime)
+			{
+				fSwitchDelay = MIN(pPrevWeapon->GetFireRate(), 
+								   pPrevWeapon->m_flNextPrimaryAttack - gpGlobals->curtime);
+				fSwitchDelay = MAX( ASW_WEAPON_SWITCH_TIME, fSwitchDelay );
+			}
+		}
+
 		if (pWeapon != GetLastWeaponSwitchedTo() && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
 		{
 			m_hLastWeaponSwitchedTo = pWeapon;
@@ -97,7 +125,7 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		CASW_Weapon* pASWWeapon = dynamic_cast<CASW_Weapon*>(pWeapon);
 		if (pASWWeapon)
 		{
-			pASWWeapon->ApplyWeaponSwitchTime();
+			pASWWeapon->ApplyWeaponSwitchTime(fSwitchDelay);
 		}
 
 #ifndef CLIENT_DLL
@@ -116,7 +144,7 @@ bool CASW_Marine::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 	//if ( !pWeapon->HasAnyAmmo() && !GetAmmoCount( pWeapon->m_iPrimaryAmmoType ) )
 		//return false;
 	CASW_Weapon* pASWWeapon = dynamic_cast<CASW_Weapon*>(pWeapon);
-	if (pASWWeapon && !pASWWeapon->ASWCanBeSelected())
+	if ( !pASWWeapon || !pASWWeapon->ASWCanBeSelected() )
 		return false;
 
 	// disallow selection of offhand item
@@ -178,6 +206,16 @@ void CASW_Marine::SetFacingPoint(const Vector &vec, float fDuration)
 //   to go to 2.0 on all machines and tick down to zero (whereupon it gets set to false again)
 void CASW_Marine::TickEmotes(float d)
 {
+#ifdef CLIENT_DLL
+	if ( bEmoteMedic && !bClientEmoteMedic )
+	{
+		m_flLastMedicCall = gpGlobals->curtime;
+	}
+	if ( bEmoteAmmo && !bClientEmoteAmmo )
+	{
+		m_flLastAmmoCall = gpGlobals->curtime;
+	}
+#endif
 	bEmoteMedic = TickEmote(d, bEmoteMedic, bClientEmoteMedic, fEmoteMedicTime);
 	bEmoteAmmo = TickEmote(d, bEmoteAmmo, bClientEmoteAmmo, fEmoteAmmoTime);
 	bEmoteSmile = TickEmote(d, bEmoteSmile, bClientEmoteSmile, fEmoteSmileTime);
@@ -307,7 +345,8 @@ float CASW_Marine::MaxSpeed()
 	// it's a quadratic interpolation from 110% speed to 175% speed mapped
 	// to a distance of 20 units to 1800 units
 	CBaseEntity *pSquadLeader = GetSquadLeader();
-	if (!IsInhabited() && pSquadLeader )
+	// reactivedrop: we don't want AI marines to run faster in PvP
+	if (!IsInhabited() && pSquadLeader && !ASWDeathmatchMode() )
 	{
 		float distSq = GetAbsOrigin().DistToSqr(pSquadLeader->GetAbsOrigin());
 		float t = (distSq - (20*20)) / (1800*1800);

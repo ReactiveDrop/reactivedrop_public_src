@@ -20,6 +20,7 @@
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -73,6 +74,9 @@ CASW_Weapon_Pistol::CASW_Weapon_Pistol()
 	m_fMaxRange2	= 1024;
 
 	m_fSlowTime = 0;
+
+	// reactivedrop: this member var wasn't initialized
+	m_currentPistol = ASW_WEAPON_PISTOL_LEFT;
 }
 
 
@@ -187,7 +191,7 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 			info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
 #endif
 
-			pMarine->FireBullets( info );
+			FireBullets(pMarine, &info);
 
 			//FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType );
 			//info.m_pAttacker = pMarine;
@@ -263,6 +267,11 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 	}
 }
 
+void CASW_Weapon_Pistol::FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo)
+{
+	pMarine->FireBullets(*pBulletsInfo);
+}
+
 void CASW_Weapon_Pistol::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
@@ -285,9 +294,13 @@ void CASW_Weapon_Pistol::ItemPostFrame( void )
 	if ( m_bInReload )
 		return;
 	
-	CBasePlayer *pOwner = GetCommander();
+	CASW_Player *pOwner = GetCommander();
 
 	if ( pOwner == NULL )
+		return;
+
+	// reactivedrop: don't allow bots to shoot so fast from pistols 
+	if ( pOwner->GetMarine() != GetOwner() )
 		return;
 
 	//Allow a refire as fast as the player can click
@@ -313,6 +326,7 @@ float	CASW_Weapon_Pistol::GetFireRate( void )
 	return flRate;
 
 #else
+	RandomSeed(gpGlobals->curtime * 10.0f);
 	float randomness = 0.1f * random->RandomFloat() - 0.05f;
 
 	// AI firing rate: depends on distance to enemy
@@ -371,6 +385,12 @@ float CASW_Weapon_Pistol::GetWeaponDamage()
 {
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_pistol_dmg;
+		flDamage = rd_pvp_pistol_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{

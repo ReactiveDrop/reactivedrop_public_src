@@ -78,6 +78,14 @@ public:
 	CNetworkArray( int,		m_iHealBeaconHeals_Self,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iDamageAmpsUsed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealBeaconsDeployed,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iMedkitHeals_Self,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iGrenadeExtinguishMarine,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iGrenadeFreezeAlien,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iDamageAmpAmps,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iNormalArmorReduction,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iElectricArmorReduction,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHealAmpGunHeals,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

@@ -15,6 +15,7 @@
 #include "asw_marine_speech.h"
 #include "asw_gamerules.h"
 #include "asw_weapon_assault_shotgun_shared.h"
+#include "asw_weapon_deagle_shared.h"
 #include "te.h"
 #include "props_shared.h"
 #include "asw_fail_advice.h"
@@ -67,8 +68,13 @@ ConVar asw_sb_gallop_min_range("asw_sb_gallop_min_range", "50.0", FCVAR_CHEAT, "
 ConVar asw_sb_gallop_max_range("asw_sb_gallop_max_range", "130.0", FCVAR_CHEAT, "Max range to do ram attack");
 ConVar asw_old_shieldbug ("asw_old_shieldbug", "0", FCVAR_CHEAT, "1= old shield bug, 0 = new model");
 ConVar asw_shieldbug_force_defend("asw_shieldbug_force_defend", "0", FCVAR_CHEAT, "0 = no force, 1 = force open, 2 = force defend");
+ConVar asw_shieldbug_knockdown("asw_shieldbug_knockdown", "1", FCVAR_CHEAT, "If set shieldbug will knock marines down with his melee attacks");
+ConVar asw_shieldbug_knockdown_force("asw_shieldbug_knockdown_force", "500", FCVAR_CHEAT, "Magnitude of knockdown force for shieldbug's melee attack");
+ConVar asw_shieldbug_knockdown_lift("asw_shieldbug_knockdown_lift", "300", FCVAR_CHEAT, "Upwards force for shieldbug's melee attack");
+
 extern ConVar sv_gravity;
 extern ConVar asw_debug_marine_chatter;
+extern ConVar rd_deagle_bigalien_dmg_scale;
 
 IMPLEMENT_AUTO_LIST( IShieldbugAutoList );
 
@@ -221,7 +227,7 @@ float CASW_Shieldbug::MaxYawSpeed( void )
 		return 0.1f;
 
 	if ( m_bElectroStunned.Get() )
-		return 0.1f;
+		return 5.0f;
 
 	switch( eActivity )
 	{
@@ -646,10 +652,6 @@ int CASW_Shieldbug::MeleeAttack1Conditions( float flDot, float flDist )
 	return COND_CAN_MELEE_ATTACK1;
 }
 
-ConVar asw_shieldbug_knockdown( "asw_shieldbug_knockdown", "1", FCVAR_CHEAT, "If set shieldbug will knock marines down with his melee attacks" );
-ConVar asw_shieldbug_knockdown_force( "asw_shieldbug_knockdown_force", "500", FCVAR_CHEAT, "Magnitude of knockdown force for shieldbug's melee attack" );
-ConVar asw_shieldbug_knockdown_lift( "asw_shieldbug_knockdown_lift", "300", FCVAR_CHEAT, "Upwards force for shieldbug's melee attack" );
-
 void CASW_Shieldbug::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
 {
 	Vector vecForceDir;
@@ -767,6 +769,21 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					damage *= 0.6f;
 			}
 		}		
+	}
+
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+			if (pMarine)
+			{
+				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+			
+				if (pDeagle)
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+			}
+		}
 	}
 
 	newInfo.SetDamage( damage );

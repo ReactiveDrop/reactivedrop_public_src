@@ -137,6 +137,7 @@ public:
 	DECLARE_CLASS( CBaseCombatWeapon, BASECOMBATWEAPON_DERIVED_FROM );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
+	DECLARE_ENT_SCRIPTDESC();
 
 							CBaseCombatWeapon();
 	virtual 				~CBaseCombatWeapon();
@@ -337,6 +338,12 @@ public:
 	virtual int				GetSecondaryAmmoType( void )  const { return m_iSecondaryAmmoType; }
 	int						Clip1() const { return m_iClip1; }
 	int						Clip2() const { return m_iClip2; }
+#ifdef GAME_DLL
+	void					ScriptSetClip1( int iClip1 ) { m_iClip1 = iClip1; }
+	void					ScriptSetClip2( int iClip2 ) { m_iClip2 = iClip2; }
+#endif
+	int						ScriptGetMaxAmmo1();
+	int						ScriptGetMaxAmmo2();
 
 	// Ammo quantity queries for weapons that do not use clips. These are only
 	// used to determine how much ammo is in a weapon that does not have an owner.

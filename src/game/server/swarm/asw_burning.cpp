@@ -88,7 +88,7 @@ void CASW_Burning::FireThink()
 					//pEnt->entindex(), pEnt->GetClassName(),
 					//pAttacker->entindex(), pAttacker->GetClassName(),
 					//m_Burning[i]->m_fDamagePerInterval);
-				CTakeDamageInfo info( this, pAttacker, m_Burning[i]->m_fDamagePerInterval, DMG_BURN | DMG_DIRECT );
+				CTakeDamageInfo info(this, pAttacker, m_Burning[i]->m_fDamagePerInterval, DMG_BURN | DMG_DIRECT);
 				info.SetWeapon( m_Burning[i]->m_hDamagingWeapon.Get() );
 				pEnt->TakeDamage( info );
 
@@ -164,6 +164,22 @@ void CASW_Burning::Extinguish(CBaseEntity *pEntity)
 			delete m_Burning[i];
 			m_Burning.Remove(i);
 			//OnEntityExtinguished(pEntity);
+		}
+	}
+}
+
+//reactivedrop 
+void CASW_Burning::ExtendBurning(CBaseEntity *pEntity, float fFireDuration)
+{
+	if (!pEntity)
+		return;
+
+	int c = m_Burning.Count();
+	for (int i = c - 1; i >= 0; i--)
+	{
+		if (m_Burning[i]->m_hEntity.Get() == pEntity)
+		{
+			m_Burning[i]->m_fDieTime = gpGlobals->curtime + fFireDuration;
 		}
 	}
 }

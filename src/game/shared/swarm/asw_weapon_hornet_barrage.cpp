@@ -15,6 +15,8 @@
 #include "te_effect_dispatch.h"
 #include "asw_rocket.h"
 #include "asw_gamerules.h"
+#include "asw_deathmatch_mode.h"
+
 #endif
 #include "asw_marine_skills.h"
 
@@ -94,18 +96,8 @@ void CASW_Weapon_Hornet_Barrage::PrimaryAttack()
 #endif
 
 	// mine weapon is lost when all mines are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
-		//Reload();
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
 		return;
 	}
 
@@ -185,6 +177,11 @@ void CASW_Weapon_Hornet_Barrage::FireRocket()
 
 #ifndef CLIENT_DLL
 	float fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG );
+
+    if ( ASWDeathmatchMode() )
+    {
+        fGrenadeDamage = 10;
+    }
 
 	CASW_Rocket::Create( fGrenadeDamage, vecSrc, GetRocketAngle(), pMarine, this );
 

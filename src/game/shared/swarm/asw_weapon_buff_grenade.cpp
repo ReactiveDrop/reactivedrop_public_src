@@ -102,18 +102,8 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 #endif
 
 	// mine weapon is lost when all mines are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
-		//Reload();
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
 		return;
 	}
 

@@ -41,7 +41,6 @@ BEGIN_NETWORK_TABLE( CASW_Remote_Turret, DT_ASW_Remote_Turret )
 	RecvPropQAngles	(RECVINFO(m_angDefault)),
 	RecvPropQAngles	(RECVINFO(m_angViewLimit)),
 #else
-	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 	SendPropEHandle( SENDINFO( m_hUser ) ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 0), 11, SPROP_CHANGES_OFTEN ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 1), 11, SPROP_CHANGES_OFTEN ),
@@ -72,6 +71,9 @@ ConVar asw_turret_debug_limits("asw_turret_debug_limits", "0", FCVAR_CHEAT, "Pri
 #endif // not client
 
 CASW_Remote_Turret::CASW_Remote_Turret()
+#ifdef CLIENT_DLL
+	: m_iv_angEyeAngles("C_ASW_Remote_Turret::m_iv_angEyeAngles")
+#endif
 {
 	m_angEyeAngles.Init();
 	m_iAmmoType = GetAmmoDef()->Index("ASW_AG");
@@ -79,8 +81,9 @@ CASW_Remote_Turret::CASW_Remote_Turret()
 #ifdef CLIENT_DLL
 	m_pLoopingSound = NULL;
 	m_bLastPlaySound = false;
+	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
 #else
-	m_hUser = false;
+	m_hUser = NULL;
 #endif	
 }
 
@@ -105,10 +108,10 @@ void CASW_Remote_Turret::Spawn()
 	m_iMaxHealth = m_iHealth;
 
 	m_angDefault = GetAbsAngles();
-	if (m_angViewLimit.Get()[0] == 0)
-		m_angViewLimit.GetForModify()[0] = 60;
-	if (m_angViewLimit.Get()[1] == 0)
-		m_angViewLimit.GetForModify()[1] = 60;
+	if ( m_angViewLimit.GetX() <= 0 )
+		m_angViewLimit.SetX( 60 );
+	if ( m_angViewLimit.GetY() <= 0 )
+		m_angViewLimit.SetY( 60 );
 }
 
 void CASW_Remote_Turret::Precache()
@@ -162,48 +165,18 @@ void CASW_Remote_Turret::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove
 
 const QAngle& CASW_Remote_Turret::RealEyeAngles()
 {
-	bool bLocallyControlled = false;
-	if (m_hUser.Get())
-	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(m_hUser.Get());
-		if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == C_ASW_Player::GetLocalASWPlayer())
-			bLocallyControlled = true;
-	}
-
-	if (bLocallyControlled)
+	C_ASW_Marine* pMarine = m_hUser.Get();
+	if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == C_ASW_Player::GetLocalASWPlayer() )
 	{
 		return C_ASW_Player::GetLocalASWPlayer()->EyeAngles();
 	}
-	else
-	{
-		return m_angEyeAngles;
-	}
+
+	return m_angEyeAngles;
 }
 
 const QAngle& CASW_Remote_Turret::EyeAngles()
 {
 	return m_angEyeAngles;
-}
-
-const QAngle& CASW_Remote_Turret::GetRenderAngles()
-{
-	bool bLocallyControlled = false;
-	if (m_hUser.Get())
-	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(m_hUser.Get());
-		if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == C_ASW_Player::GetLocalASWPlayer())
-			bLocallyControlled = true;
-	}
-
-	static QAngle ang;
-	ang = m_angEyeAngles;
-	if (bLocallyControlled)
-	{
-		ang = C_ASW_Player::GetLocalASWPlayer()->EyeAngles();
-	}
-	if (m_bUpsideDown)
-		ang[ROLL] = 180;
-	return ang;
 }
 
 int CASW_Remote_Turret::GetMuzzleAttachment( void )
@@ -321,18 +294,17 @@ void CASW_Remote_Turret::ClientThink(void)
 
 const QAngle& CASW_Remote_Turret::RealEyeAngles()
 {
-	if (m_hUser.Get())
+	CASW_Marine* pMarine = m_hUser.Get();
+
+	if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() )
 	{
-		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(m_hUser.Get());
-		if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander())
-			return pMarine->GetCommander()->EyeAngles();
+		return pMarine->GetCommander()->EyeAngles();
 	}
 	return m_angEyeAngles;	
 }
 
 const QAngle& CASW_Remote_Turret::EyeAngles()
 {
-
 	return m_angEyeAngles;	
 }
 #endif 
@@ -382,18 +354,15 @@ Vector CASW_Remote_Turret::GetTurretMuzzlePosition()
 	return GetAbsOrigin();*/
 }
 
-void CASW_Remote_Turret::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload )
+void CASW_Remote_Turret::GetButtons( bool& bAttack1, bool& bAttack2, bool& bReload )
 {
-	if (m_hUser.Get())
+	CASW_Marine* pMarine = m_hUser.Get();
+	if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() )
 	{
-		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(m_hUser.Get());
-		if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander())
-		{
-			bAttack1 = !!(pMarine->GetCommander()->m_nButtons & IN_ATTACK);
-			bAttack2 = !!(pMarine->GetCommander()->m_nButtons & IN_ATTACK2);
-			bReload = !!(pMarine->GetCommander()->m_nButtons & IN_RELOAD);
-			return;
-		}
+		bAttack1 = !!( pMarine->GetCommander()->m_nButtons & IN_ATTACK );
+		bAttack2 = !!( pMarine->GetCommander()->m_nButtons & IN_ATTACK2 );
+		bReload = !!( pMarine->GetCommander()->m_nButtons & IN_RELOAD );
+		return;
 	}
 
 	bAttack1 = false;
@@ -445,7 +414,7 @@ void CASW_Remote_Turret::FireTurret(CBasePlayer *pPlayer)
 	m_fNextFireTime = gpGlobals->curtime + asw_turret_fire_rate.GetFloat();
 }
 
-CBaseEntity* CASW_Remote_Turret::GetUser()
+CASW_Marine *CASW_Remote_Turret::GetUser()
 {
 	return m_hUser.Get();
 }
@@ -636,7 +605,7 @@ void CASW_Remote_Turret::StopUsingTurret()
 	UpdateTransmitState();
 }
 
-void CASW_Remote_Turret::StartedUsingTurret(CBaseEntity* pUser)
+void CASW_Remote_Turret::StartedUsingTurret(CASW_Marine *pUser)
 {
 	m_hUser = pUser;
 	UpdateTransmitState();

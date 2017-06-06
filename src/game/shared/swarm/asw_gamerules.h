@@ -13,6 +13,7 @@
 #include "gamerules.h"
 #include "singleplay_gamerules.h"
 #include "asw_shareddefs.h"
+#include "steam/steam_api.h"
 
 #ifdef CLIENT_DLL
 	#define CAlienSwarm C_AlienSwarm
@@ -46,11 +47,16 @@ class CASW_Ammo;
 class CAlienSwarmProxy : public CGameRulesProxy
 {
 public:
+	CAlienSwarmProxy();
+	virtual ~CAlienSwarmProxy();
+
 	DECLARE_CLASS( CAlienSwarmProxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
 	DECLARE_DATADESC();
 
 	int m_iSpeedrunTime;
+	int m_iJumpJetType;
+	CNetworkVar( bool, m_bAllowCameraRotation );
 
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );
@@ -83,6 +89,7 @@ public:
 	DECLARE_CLASS( CAlienSwarm, CSingleplayRules );
 
 	virtual void LevelInitPostEntity();
+	virtual void LevelShutdownPostEntity();
 
 #ifdef CLIENT_DLL
 
@@ -91,7 +98,7 @@ public:
 	CAlienSwarm();
 	virtual ~CAlienSwarm();
 	
-	float GetMarineDeathCamInterp( void );
+	float GetMarineDeathCamInterp( bool bIgnoreCvar = false );
 
 #else
 
@@ -102,7 +109,9 @@ public:
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
-	virtual const char *GetGameDescription( void ) { return "Alien Swarm"; }
+	// reactivedrop: m_szGameDescription holds the name of current game mode 
+	const char *m_szGameDescription;
+	virtual const char *GetGameDescription( void ) { return m_szGameDescription; }
 	virtual void			OnServerHibernating();
 	
 	// briefing roster functions
@@ -113,6 +122,7 @@ public:
 	virtual void			SetMaxMarines( CASW_Player *pException = NULL );
 	virtual void			ReviveDeadMarines();
 	virtual void			EnforceFairMarineRules();
+	virtual void			EnforceMaxMarines();
 	
 	virtual void			ReserveMarines();
 	virtual void			UnreserveMarines();
@@ -155,11 +165,15 @@ public:
 
 	// Resurrection
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine );
+	//resurects on the next spawn point
+	void Resurrect( CASW_Marine_Resource * RESTRICT pMR );
 
 	// cheats
 	bool m_bMarineInvuln;
 	virtual void MarineInvuln();
 	virtual void MarineInvuln( bool bInvuln );
+	void KillAllMarines();
+	void ResetScores();
 	void AllowBriefing();
 	virtual void OnSVCheatsChanged();	// called from the engine when sv_cheats is changed
 
@@ -178,6 +192,7 @@ public:
 	virtual int				NumFactions() const	{ return NUM_ASW_FACTIONS; }
 
 	virtual void			MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info );
+	virtual void			MarineKnockedOut( CASW_Marine *pMarine );
 	virtual void			AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info);
 
 	// mission
@@ -262,6 +277,7 @@ public:
 	int m_iNumGrubs;
 	CHandle<CASW_Debrief_Stats> m_hDebriefStats;
 	int GetSpeedrunTime( void );	
+	int GetJumpJetType( void );
 
 	// voting
 	void ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader=true, bool bClearKick=true);	// clears out any kick/leader votes aimed at this player	
@@ -284,6 +300,10 @@ public:
 	float m_fForceReadyTime;
 	int m_iForceReadyCount;
 
+	void CheckDeathmatchFinish();
+	float m_fDeathmatchFinishTime;
+	int m_iDeathmatchFinishCount;
+
 	// chatter
 	bool m_bDoneCrashShieldbugConv;
 	float m_fNextWWKillConv;
@@ -295,7 +315,6 @@ public:
 	void StopAllAmbientSounds();
 	virtual bool AllowSoundscapes( void );
 
-	float m_fMissionStartedTime;
 	float m_fLaunchOutroMapTime;
 
 	// equip req
@@ -332,7 +351,20 @@ public:
 
 	float m_fObjectiveSlowDownEndTime;
 
-#endif
+	void EnableChallenge( const char *szChallengeName );
+	void ApplyChallenge();
+
+	CUtlStringMap<string_t> m_SavedConvars_Challenge;
+	void ResetChallengeConVars();
+	void ApplyChallengeConVars( KeyValues *pKV );
+
+#endif	// GAME_DLL above
+
+	CUtlStringMap<string_t> m_SavedConvars;
+	bool HaveSavedConvar( const ConVarRef &cvar );
+	void SaveConvar( const ConVarRef & cvar );
+	void RevertSingleConvar( ConVarRef cvar );
+	void RevertSavedConvars();
 
 	// stim music
 	bool	ShouldPlayStimMusic();
@@ -360,6 +392,9 @@ public:
 	float m_fMarineDeathCamRealtime;
 	float m_fDeathCamYawAngleOffset;
 	CHandle< C_BaseAnimating > m_hMarineDeathRagdoll;
+#else
+	Vector m_vMarineDeathPosDeathmatch;
+	int m_nMarineForDeathCamDeathmatch;
 #endif
 
 	// voting
@@ -394,6 +429,7 @@ public:
 	
 	// pickups
 	virtual bool MarineCanPickup(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass=NULL);
+	virtual bool MarineCanSelectInLobby(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass = NULL);
 	bool MarineCanPickupAmmo(CASW_Marine *pMarine, CASW_Ammo *pAmmo);
 	bool MarineCanPickupPowerup(CASW_Marine *pMarine, CASW_Powerup *pPowerup);
 	const char* GetPickupDenial() { return m_szPickupDenial; }
@@ -403,11 +439,15 @@ public:
 	virtual int	GetGameState() { return m_iGameState; }
 	virtual void SetGameState(int iNewState) { m_iGameState = iNewState; }
 	CNetworkVar(unsigned char, m_iGameState);
+
+	bool ShouldAllowCameraRotation( void );
+
 #ifdef CLIENT_DLL
 
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	unsigned char m_iPreviousGameState;
 #endif
+	void FinishDeathmatchRound( CASW_Marine_Resource *winner );
 
 	// misc
 	virtual void CreateStandardEntities( void );	
@@ -415,13 +455,18 @@ public:
 	bool IsOfflineGame();
 	bool CanFlareAutoaimAt(CASW_Marine* pMarine, CBaseEntity *pEntity);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
-	
+#ifdef GAME_DLL
+	// BenLubar: add game-specific vscript functions
+	virtual void RegisterScriptFunctions();
+#endif
+
 	// mission
 	virtual bool GetMissionSuccess() { return m_bMissionSuccess; }
 	virtual bool GetMissionFailed() { return m_bMissionFailed; }
 	CNetworkVar(bool, m_bMissionRequiresTech);
 	CNetworkVar(bool, m_bMissionSuccess);
 	CNetworkVar(bool, m_bMissionFailed);
+	CNetworkVar(float, m_fMissionStartedTime);
 
 	// fail advice
 	CNetworkVar(int, m_nFailAdvice);
@@ -460,6 +505,8 @@ public:
 	bool m_bQuickStart;
 
 #endif
+	int ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex );
+
 	bool IsCarnageMode() { return (m_iSpecialMode & ASW_SM_CARNAGE) != 0; }	
 	bool IsUberMode() { return (m_iSpecialMode & ASW_SM_UBER) != 0; }	
 	bool IsHardcoreMode() { return (m_iSpecialMode & ASW_SM_HARDCORE) != 0; }	
@@ -482,7 +529,20 @@ public:
 	bool m_bIsIntro;
 	bool m_bIsOutro;
 	bool m_bIsLobby;		// lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
-	
+
+#ifndef CLIENT_DLL
+	void CheckLeaderboardReady();
+	bool m_bSentLeaderboardReady;
+#endif
+
+	CNetworkVar( PublishedFileId_t, m_iMissionWorkshopID );
+#ifdef CLIENT_DLL
+	PublishedFileId_t m_iPreviousMissionWorkshopID;
+#endif
+
+	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
+	CNetworkVar( bool, m_bChallengeActiveThisMission );
+
 private:
 	char m_szPickupDenial[128];
 

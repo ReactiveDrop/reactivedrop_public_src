@@ -611,7 +611,7 @@ void CSpectatorGUI::Update()
 		int iHealth = gr->GetHealth( playernum );
 		if ( iHealth > 0  && gr->IsAlive(playernum) )
 		{
-			_snwprintf( health, sizeof( health ), L"%i", iHealth );
+			V_snwprintf( health, sizeof( health ), L"%i", iHealth );
 			g_pVGuiLocalize->ConstructString( playerText, sizeof( playerText ), g_pVGuiLocalize->Find( "#Spec_PlayerItem_Team" ), 2, playerName,  health );
 		}
 		else
@@ -676,9 +676,9 @@ void CSpectatorGUI::UpdateTimer()
 
 	int timer = 0;
 
-	_snwprintf ( szText, sizeof( szText ), L"%d:%02d\n", (timer / 60), (timer % 60) );
+	V_snwprintf ( szText, sizeof( szText ), L"%d:%02d\n", (timer / 60), (timer % 60) );
 
-	szText[63] = 0;
+	szText[62] = 0;
 
 
 	SetLabelText("timerlabel", szText );

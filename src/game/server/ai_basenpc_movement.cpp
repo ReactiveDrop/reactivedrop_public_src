@@ -324,9 +324,11 @@ bool CAI_BaseNPC::IsJumpLegal( const Vector &startPos, const Vector &apex, const
 //-----------------------------------------------------------------------------
 bool CAI_BaseNPC::IsJumpLegal( const Vector &startPos, const Vector &apex, const Vector &endPos ) const
 {
-	const float MAX_JUMP_RISE		= 80.0f;
-	const float MAX_JUMP_DISTANCE	= 250.0f;
-	const float MAX_JUMP_DROP		= 192.0f;
+	// reactivedrop: we set these values to much higher, to allow marines 
+	// to do a jump jet far away
+	const float MAX_JUMP_RISE		= 2000.0f; // was 80
+	const float MAX_JUMP_DISTANCE	= 3000.0f; // was 250
+	const float MAX_JUMP_DROP		= 2000.0f; // was 192
 
 	return IsJumpLegal( startPos, apex, endPos, MAX_JUMP_RISE, MAX_JUMP_DROP, MAX_JUMP_DISTANCE );
 }

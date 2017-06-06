@@ -1,4 +1,6 @@
 #include "cbase.h"
+#include "asw_alien_shared_classmembers.h"
+#include "c_asw_clientragdoll.h"
 #include "c_asw_marine.h"
 #include "c_asw_generic_emitter.h"
 #include "c_asw_player.h"
@@ -54,13 +56,13 @@ static ConVar	cl_asw_smoothtime	(
 	true, 0.01,	// min/max is 0.01/2.0
 	true, 2.0
 	 );
-ConVar asw_flashlight_dlight_radius("asw_flashlight_dlight_radius", "100", FCVAR_CHEAT, "Radius of the light around the marine.");
-ConVar asw_flashlight_dlight_offsetx("asw_flashlight_dlight_offsetx", "30", FCVAR_CHEAT, "Offset of the flashlight dlight");
+ConVar asw_flashlight_dlight_radius("asw_flashlight_dlight_radius", "500", FCVAR_NONE, "Radius of the light around the marine.");
+ConVar asw_flashlight_dlight_offsetx("asw_flashlight_dlight_offsetx", "60", FCVAR_NONE, "Offset of the flashlight dlight");
 ConVar asw_flashlight_dlight_offsety("asw_flashlight_dlight_offsety", "0", FCVAR_CHEAT, "Offset of the flashlight dlight");
-ConVar asw_flashlight_dlight_offsetz("asw_flashlight_dlight_offsetz", "60", FCVAR_CHEAT, "Offset of the flashlight dlight");
-ConVar asw_flashlight_dlight_r("asw_flashlight_dlight_r", "250", FCVAR_CHEAT, "Red component of flashlight colour");
-ConVar asw_flashlight_dlight_g("asw_flashlight_dlight_g", "250", FCVAR_CHEAT, "Green component of flashlight colour");
-ConVar asw_flashlight_dlight_b("asw_flashlight_dlight_b", "250", FCVAR_CHEAT, "Blue component of flashlight colour");
+ConVar asw_flashlight_dlight_offsetz("asw_flashlight_dlight_offsetz", "40", FCVAR_NONE, "Offset of the flashlight dlight");
+ConVar asw_flashlight_dlight_r("asw_flashlight_dlight_r", "250", FCVAR_NONE, "Red component of flashlight colour");
+ConVar asw_flashlight_dlight_g("asw_flashlight_dlight_g", "250", FCVAR_NONE, "Green component of flashlight colour");
+ConVar asw_flashlight_dlight_b("asw_flashlight_dlight_b", "250", FCVAR_NONE, "Blue component of flashlight colour");
 ConVar asw_marine_ambient("asw_marine_ambient", "0.02", FCVAR_CHEAT, "Ambient light of the marine");
 ConVar asw_marine_lightscale("asw_marine_lightscale", "4.0", FCVAR_CHEAT, "Light scale on the marine");
 ConVar asw_flashlight_marine_ambient("asw_flashlight_marine_ambient", "0.1", FCVAR_CHEAT, "Ambient light of the marine with flashlight on");
@@ -71,6 +73,7 @@ ConVar asw_hide_local_marine("asw_hide_local_marine", "0", FCVAR_CHEAT, "If enab
 ConVar asw_override_footstep_volume( "asw_override_footstep_volume", "0", FCVAR_CHEAT, "Overrides footstep volume instead of it being surface dependent" );
 ConVar asw_marine_object_motion_blur_scale( "asw_marine_object_motion_blur_scale", "0.0" );
 ConVar asw_damage_spark_rate( "asw_damage_spark_rate", "0.24", FCVAR_CHEAT, "Base number of seconds between spark sounds/effects at critical damage." );
+ConVar rd_hearbeat("rd_hearbeat", "1", FCVAR_ARCHIVE, "If 0 disables heartbeat low health effect");
 extern ConVar asw_DebugAutoAim;
 extern float g_fMarinePoisonDuration;
 
@@ -175,6 +178,9 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropBool	( RECVINFO( m_bAICrouch ) ),
 	
 	RecvPropInt		( RECVINFO( m_iJumpJetting ) ),	
+	RecvPropVector  ( RECVINFO( m_vecJumpJetEnd) ),
+	RecvPropFloat   ( RECVINFO( m_fJumpJetDurationOverride )),
+	RecvPropFloat   ( RECVINFO( m_fJumpJetAnimationDurationOverride )),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )
@@ -226,6 +232,8 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_iOnLandMeleeAttackID, FIELD_INTEGER ),
 	DEFINE_FIELD( m_vecJumpJetStart, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecJumpJetEnd, FIELD_VECTOR ),
+	DEFINE_FIELD( m_fJumpJetDurationOverride, FIELD_FLOAT ),
+	DEFINE_FIELD( m_fJumpJetAnimationDurationOverride, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flJumpJetStartTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flJumpJetEndTime, FIELD_FLOAT ),
 
@@ -420,7 +428,9 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_TouchingDoors.RemoveAll();
 	bPlayingFlamerSound = false;
 	bPlayingFireExtinguisherSound = false;
+	bPlayingMinigunSound = false;
 	m_pFlamerLoopSound = 0;
+	m_pMinigunLoopSound = 0;
 	m_fFlameTime = 0;
 	m_flNextDamageSparkTime = 0.0f;
 	m_bClientElectrifiedArmor = false;
@@ -452,6 +462,8 @@ C_ASW_Marine::C_ASW_Marine() :
 		= bClientEmoteGo = bClientEmoteExclaim = bClientEmoteAnimeSmile = bClientEmoteQuestion = false;
 	fEmoteMedicTime = fEmoteAmmoTime = fEmoteSmileTime = fEmoteStopTime
 		= fEmoteGoTime = fEmoteExclaimTime = fEmoteAnimeSmileTime = fEmoteQuestionTime = 0;
+	m_flLastMedicCall = 0;
+	m_flLastAmmoCall = 0;
 
 	m_surfaceProps = 0;
 	m_pSurfaceData = NULL;
@@ -465,13 +477,16 @@ C_ASW_Marine::C_ASW_Marine() :
 
 C_ASW_Marine::~C_ASW_Marine()
 {
+	//Msg("Destructor C_ASW_Marine::~C_ASW_Marine() \n");
+
 	m_PlayerAnimState->Release();
 	if (m_pFlashlight)
 	{
+		//Msg("Deleting m_pFlashlight \n");
 		delete m_pFlashlight;
 	}
-	StopFlamerLoop();
-	StopFireExtinguisherLoop();
+	StopFlamerLoop();	//Msg("StopFlamerLoop \n");
+	StopFireExtinguisherLoop();	//Msg("StopFireExtinguisherLoop \n");
 	m_bOnFire = false;
 	UpdateFireEmitters();
 	if (m_hOrderArrow.Get())
@@ -479,21 +494,47 @@ C_ASW_Marine::~C_ASW_Marine()
 
 	if ( m_hLowHeathEffect )
 	{
+		//Msg("Stopping m_hLowHeathEffect \n");
+
 		m_hLowHeathEffect->StopEmission(false, false , true);
 		m_hLowHeathEffect = NULL;
+
+		//Msg("m_hLowHeathEffect is Stopped \n");
 	}
 
 	if ( m_hCriticalHeathEffect )
 	{
+		//Msg("Stopping m_hCriticalHeathEffect \n");
 		m_hCriticalHeathEffect->StopEmission(false, false , true);
 		m_hCriticalHeathEffect = NULL;
+		//Msg("m_hCriticalHeathEffect is Stopped \n");
 	}
 
 	if ( m_hSentryBuildDisplay )
 	{
+		//Msg("Stopping m_hSentryBuildDisplay \n");
+
 		m_hSentryBuildDisplay->StopEmission(false, false , true);
 		m_hSentryBuildDisplay = NULL;
+
+		//Msg("m_hSentryBuildDisplay is Stopped \n");
 	}
+	// reactivedrop: jump jet loop sound needs to be stopped if marine dies 
+	if (m_pJumpJetEffect[0])
+	{
+		StopJumpJetEffects();
+	}
+
+	if (IsElectrifiedArmorActive()) 
+	{
+		bool bLocalPlayer = false;
+		C_ASW_Player *pPlayer = GetCommander();
+		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if (pPlayer == pLocalPlayer && IsInhabited())
+			bLocalPlayer = true;
+		StopElectifiedArmorEffects(bLocalPlayer);
+	}
+		
 }
 
 
@@ -877,6 +918,25 @@ void C_ASW_Marine::ClientThink()
 			StopFireExtinguisherLoop();
 	}
 
+	if ( pWeapon && IsAlive() )//m_hFlameEmitter.IsValid() && 
+	{			
+		bool bMinigunOn = pWeapon->ShouldMarineMinigunShoot();
+		if (bMinigunOn && !bPlayingMinigunSound)
+		{
+			StartMinigunLoop();
+		}
+		else if (!bMinigunOn && bPlayingMinigunSound)
+		{
+			StopMinigunLoop();
+		}			
+		bPlayingMinigunSound = bMinigunOn;
+	}
+	else
+	{
+		if (bPlayingMinigunSound)
+			StopMinigunLoop();
+	}
+
 	// if we're healing and we don't have an emitter, create a heal emitter
 	if ( m_bSlowHeal && GetHealth()>0 )
 	{
@@ -895,7 +955,7 @@ void C_ASW_Marine::ClientThink()
 		m_hShoulderCone = NULL;
 	}
 
-	if (ShouldPredict())
+	if (ShouldPredict() && rd_hearbeat.GetBool())
 	{
 		UpdateHeartbeat();		
 	}
@@ -1496,6 +1556,10 @@ void C_ASW_Marine::PostThink()
 
 }
 
+
+ConVar rd_flashlight_dlight_enable("rd_flashlight_dlight_enable", "0", FCVAR_ARCHIVE, "If 1 adds additional dynamic light(ambient) to ordinary flashlight" );
+ConVar rd_flashlight_enable("rd_flashlight_enable", "1", FCVAR_NONE, "If 1 an ordinary flashlight beam is used");
+
 //-----------------------------------------------------------------------------
 // Purpose: Creates, destroys, and updates the flashlight effect as needed.
 //-----------------------------------------------------------------------------
@@ -1510,18 +1574,24 @@ void C_ASW_Marine::UpdateFlashlight()
 			// Turned on the headlight; create it.
 			m_pFlashlight = new CFlashlightEffect(index);
 
-			if ( !m_pFlashlight )
+			if (!m_pFlashlight)
 				return;
 
 			m_pFlashlight->TurnOn();
 		}
-#ifdef ASW_FLASHLIGHT_DLIGHT
-		if ( !m_pFlashlightDLight || (m_pFlashlightDLight->key != index) )
+		//#ifdef ASW_FLASHLIGHT_DLIGHT
+		if (rd_flashlight_dlight_enable.GetBool())
 		{
-			m_pFlashlightDLight = effects->CL_AllocDlight ( index );
+			if (!m_pFlashlightDLight || (m_pFlashlightDLight->key != index))
+			{
+				m_pFlashlightDLight = effects->CL_AllocDlight(index);
+			}
 		}
-#endif
+//#endif
 
+		if (!rd_flashlight_enable.GetBool())
+			m_pFlashlight->TurnOff();
+			
 		//m_fAmbientLight = asw_flashlight_marine_ambient.GetFloat();
 		//m_fLightingScale = asw_flashlight_marine_lightscale.GetFloat();
 
@@ -1745,6 +1815,28 @@ void C_ASW_Marine::StopFireExtinguisherLoop()
 		controller.SoundDestroy( m_pFireExtinguisherLoopSound );
 		m_pFireExtinguisherLoopSound = NULL;
 		EmitSound( "ASW_Extinguisher.Stop" );
+	}
+}
+
+void C_ASW_Marine::StartMinigunLoop()
+{
+	if ( m_pMinigunLoopSound )
+		return;
+
+	CPASAttenuationFilter filter( this );
+	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	m_pMinigunLoopSound = controller.SoundCreate( filter, entindex(), "ASW_Weapon_Minigun.MinigunLoop" );
+	CSoundEnvelopeController::GetController().Play( m_pMinigunLoopSound, 1.0, 100 );
+}
+
+void C_ASW_Marine::StopMinigunLoop()
+{
+	if ( m_pMinigunLoopSound )
+	{
+		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		controller.SoundDestroy( m_pMinigunLoopSound );
+		m_pMinigunLoopSound = NULL;
+		//EmitSound("ASW_Weapon_Flamer.FlameStop");
 	}
 }
 
@@ -2356,6 +2448,11 @@ void C_ASW_Marine::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomI
 	// effects re handled in TraceAttack in the shared file
 }
 
+// for enabling the dead bodies to disappear 
+C_ClientRagdoll *C_ASW_Marine::CreateClientRagdoll( bool bRestoring )
+{
+	return new C_ASW_ClientRagdoll( bRestoring );
+}
 
 
 C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
@@ -2363,7 +2460,16 @@ C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
 	C_BaseAnimating *pRagdoll = BaseClass::BecomeRagdollOnClient();
 	if ( pRagdoll )
 	{
-		pRagdoll->ParticleProp()->Create( "marine_death_ragdoll", PATTACH_ABSORIGIN_FOLLOW );
+		if (UTIL_ShouldShowBlood(BLOOD_COLOR_RED))
+			pRagdoll->ParticleProp()->Create( "marine_death_ragdoll", PATTACH_ABSORIGIN_FOLLOW );
+	}
+
+    // for enabling the dead bodies to disappear 
+	C_ASW_ClientRagdoll *pRag = dynamic_cast<C_ASW_ClientRagdoll*>( pRagdoll );
+	if ( pRag )
+	{
+		pRag->m_nDeathStyle = kDIE_RAGDOLLFADE;
+		pRag->m_fASWGibTime = gpGlobals->curtime + 15.0f;
 	}
 	return pRagdoll;
 }
@@ -2375,6 +2481,15 @@ C_ASW_Marine* C_ASW_Marine::GetLocalMarine()
 		return NULL;
 
 	return pPlayer->GetMarine();
+}
+
+C_ASW_Marine* C_ASW_Marine::GetViewMarine()
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer )
+		return NULL;
+
+	return pPlayer->GetViewMarine();
 }
 
 void C_ASW_Marine::UpdateElectrifiedArmor()
@@ -2407,21 +2522,7 @@ void C_ASW_Marine::UpdateElectrifiedArmor()
 		}
 		else
 		{
-			if ( bLocalPlayer )
-			{
-				StopSound( "ASW_ElectrifiedSuit.LoopFP" );
-				EmitSound( "ASW_ElectrifiedSuit.OffFP" );
-			}
-			else
-			{
-				StopSound( "ASW_ElectrifiedSuit.Loop" );
-			}
-
-			if ( m_pElectrifiedArmorEmitter )
-			{
-				m_pElectrifiedArmorEmitter->StopEmission(false, false, true);
-				m_pElectrifiedArmorEmitter = NULL;
-			}
+			StopElectifiedArmorEffects(bLocalPlayer);
 		}	
 	} 
 }
@@ -2443,10 +2544,35 @@ void C_ASW_Marine::UpdateJumpJetEffects()
 	}
 	else if ( m_pJumpJetEffect[0] )
 	{
-		StopSound( "ASW_JumpJet.Loop" );
-		ParticleProp()->StopEmission( m_pJumpJetEffect[0] );
-		m_pJumpJetEffect[0] = NULL;
-		ParticleProp()->StopEmission( m_pJumpJetEffect[1] );
-		m_pJumpJetEffect[1] = NULL;
+		// moved in function 
+		StopJumpJetEffects();
+	}
+}
+
+void C_ASW_Marine::StopJumpJetEffects() 
+{
+	StopSound( "ASW_JumpJet.Loop" );
+	ParticleProp()->StopEmission( m_pJumpJetEffect[0] );
+	m_pJumpJetEffect[0] = NULL;
+	ParticleProp()->StopEmission( m_pJumpJetEffect[1] );
+	m_pJumpJetEffect[1] = NULL;
+}
+
+void C_ASW_Marine::StopElectifiedArmorEffects(bool bLocalPlayer)
+{
+	if (bLocalPlayer)
+	{
+		StopSound("ASW_ElectrifiedSuit.LoopFP");
+		EmitSound("ASW_ElectrifiedSuit.OffFP");
+	}
+	else
+	{
+		StopSound("ASW_ElectrifiedSuit.Loop");
+	}
+
+	if (m_pElectrifiedArmorEmitter)
+	{
+		m_pElectrifiedArmorEmitter->StopEmission(false, false, true);
+		m_pElectrifiedArmorEmitter = NULL;
 	}
 }

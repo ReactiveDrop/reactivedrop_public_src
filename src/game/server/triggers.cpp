@@ -34,6 +34,9 @@
 #include "ai_behavior_lead.h"
 #include "gameinterface.h"
 #include "fmtstr.h"
+// reactivedrop: #iss-trigger-bots 
+#include "asw_shareddefs.h"
+#include "asw_marine.h"
 
 #ifdef HL2_DLL
 #include "hl2_player.h"
@@ -164,7 +167,8 @@ void CBaseTrigger::InputTouchTest( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CBaseTrigger::Spawn()
 {
-	if ( HasSpawnFlags( SF_TRIGGER_ONLY_PLAYER_ALLY_NPCS ) || HasSpawnFlags( SF_TRIGGER_ONLY_NPCS_IN_VEHICLES ) )
+	// reactivedrop: #iss-trigger-bots add SF_TRIGGER_ONLY_BOTS_MARINES
+	if ( HasSpawnFlags( SF_TRIGGER_ONLY_PLAYER_ALLY_NPCS ) || HasSpawnFlags( SF_TRIGGER_ONLY_NPCS_IN_VEHICLES ) || HasSpawnFlags( SF_TRIGGER_ONLY_BOTS_MARINES ) )
 	{
 		// Automatically set this trigger to work with NPC's.
 		AddSpawnFlags( SF_TRIGGER_ALLOW_NPCS );
@@ -383,6 +387,17 @@ bool CBaseTrigger::PassesTriggerFilters(CBaseEntity *pOther)
 				if ( !pNPC || !pNPC->IsInAVehicle() )
 					return false;
 			}
+
+			// reactivedrop: #iss-trigger-bots
+			if ( HasSpawnFlags( SF_TRIGGER_ONLY_BOTS_MARINES ) )
+			{
+				if ( !pNPC || pNPC->Classify() != CLASS_ASW_MARINE )
+					return false;
+
+				if ( static_cast<CASW_Marine*>(pNPC)->IsInhabited() )
+					return false;
+			}
+
 		}
 
 		bool bOtherIsPlayer = pOther->IsPlayer();
@@ -947,6 +962,11 @@ void CTriggerMultiple::MultiTouch(CBaseEntity *pOther)
 {
 	if (PassesTriggerFilters(pOther))
 	{
+		// reactivedrop: moved this return out from ActivateMultiTrigger()
+		// to be able to inherit from this class and only reimplement 
+		// 2 functions 
+		if (GetNextThink() > gpGlobals->curtime)
+			return;         // still waiting for reset time
 		ActivateMultiTrigger( pOther );
 	}
 }
@@ -958,9 +978,6 @@ void CTriggerMultiple::MultiTouch(CBaseEntity *pOther)
 //-----------------------------------------------------------------------------
 void CTriggerMultiple::ActivateMultiTrigger(CBaseEntity *pActivator)
 {
-	if (GetNextThink() > gpGlobals->curtime)
-		return;         // still waiting for reset time
-
 	m_hActivator = pActivator;
 
 	m_OnTrigger.FireOutput(m_hActivator, this);
@@ -2416,6 +2433,8 @@ END_DATADESC()
 void CTriggerTeleport::Spawn( void )
 {
 	InitTrigger();
+	// reactivedrop: added this to correctly set flags for our SF_TRIGGER_ONLY_BOTS_MARINES
+	BaseClass::Spawn();
 }
 
 
@@ -2526,6 +2545,78 @@ void CTriggerTeleport::Touch( CBaseEntity *pOther )
 
 
 LINK_ENTITY_TO_CLASS( info_teleport_destination, CPointEntity );
+
+// reactivedrop: trigger_catapult implementation is a copy of trigger_teleport
+class CTriggerCatapult : public CBaseTrigger
+{
+public:
+	DECLARE_CLASS( CTriggerCatapult, CBaseTrigger );
+
+	void Spawn( void );
+	void Touch( CBaseEntity *pOther );
+
+	float m_flFlyTime;
+
+	DECLARE_DATADESC();
+};
+
+LINK_ENTITY_TO_CLASS( trigger_catapult, CTriggerCatapult );
+
+BEGIN_DATADESC( CTriggerCatapult )
+DEFINE_KEYFIELD( m_flFlyTime, FIELD_FLOAT, "flytime" ),
+END_DATADESC()
+
+
+
+void CTriggerCatapult::Spawn( void )
+{
+	InitTrigger();
+	// reactivedrop: added this to correctly set flags for our SF_TRIGGER_ONLY_BOTS_MARINES
+	BaseClass::Spawn();
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Teleports the entity that touched us to the location of our target,
+//			setting the toucher's angles to our target's angles if they are a
+//			player.
+//
+//			If a landmark was specified, the toucher is offset from the target
+//			by their initial offset from the landmark and their angles are
+//			left alone.
+//
+// Input  : pOther - The entity that touched us.
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::Touch( CBaseEntity *pOther )
+{
+	CBaseEntity	*pentTarget = NULL;
+
+	if (!PassesTriggerFilters(pOther))
+	{
+		return;
+	}
+
+	if ( m_flFlyTime <= 0.1 )
+	{
+		m_flFlyTime = 1.0f;
+		Warning( "Flight time must be more then 0. Resetting to 1\n" );
+	}
+
+	// The activator and caller are the same
+	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, NULL, pOther, pOther );
+	if (!pentTarget)
+	{
+	   Warning("Catapult trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName(), m_target );
+	   return;
+	}
+	
+	pOther->SetGroundEntity( NULL );
+	
+	Vector vecPentTargetOrigin = pentTarget->GetAbsOrigin();
+	
+	Vector vecNewVelocity = (vecPentTargetOrigin - pOther->GetAbsOrigin() - Vector(0, 0, -sv_gravity.GetFloat() * m_flFlyTime * m_flFlyTime / 2.0f)) * (1.0f / m_flFlyTime);
+	pOther->SetAbsVelocity(vecNewVelocity);
+}
 
 
 //-----------------------------------------------------------------------------

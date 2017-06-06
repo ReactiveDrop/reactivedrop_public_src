@@ -14,6 +14,7 @@
 #include "vgui\FadeInPanel.h"
 #include <vgui_controls/PHandle.h>
 #include "c_asw_game_resource.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -94,7 +95,12 @@ void BriefingImagePanel::OnThink()
 	if (ASWGameRules()->GetGameState() >= ASW_GS_LAUNCHING
 		 && gpGlobals->curtime - pPlayer->GetLastRestartTime() > 5.0f)	// don't close the briefing frame within X seconds of reset, to give the server time to update our gamerules state
 	{
-		CloseBriefingFrame();
+		// don't close briefing in deathmatch 
+		if ( !ASWDeathmatchMode() )
+		{
+			CloseBriefingFrame();
+		}
+
 		return;
 	}
 

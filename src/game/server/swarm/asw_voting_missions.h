@@ -6,6 +6,7 @@
 
 #include "asw_shareddefs.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "steam/steam_api.h"
 
 class CASW_Player;
 
@@ -39,6 +40,7 @@ public:
 
 	CNetworkArray( string_t, m_iszMissionNames, ASW_SAVES_PER_PAGE );
 	CNetworkArray( string_t, m_iszCampaignNames, ASW_CAMPAIGNS_PER_PAGE );
+	CNetworkArray( PublishedFileId_t, m_nCampaignWorkshopID, ASW_CAMPAIGNS_PER_PAGE );
 	CNetworkArray( string_t, m_iszSaveNames, ASW_SAVES_PER_PAGE );
 	CNetworkArray( string_t, m_iszSaveCampaignNames, ASW_SAVES_PER_PAGE );
 	CNetworkArray( string_t, m_iszSaveDateTimes, ASW_SAVES_PER_PAGE );

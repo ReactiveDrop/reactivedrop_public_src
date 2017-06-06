@@ -148,6 +148,10 @@ private:
 	float		m_fShiftFraction;
 	bool		m_bCameraFixed;
 
+	// it is used for camera Yaw animated changing. If the value is 0.0 then
+	// there is no yaw animation running currently
+	float		m_fCamYawRotStartTime;
+
 	void CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, float flDeltaY, float &flShiftX, float &flShiftY );
 	void SmoothCamera( C_ASW_Player *pPlayer, Vector &vecCameraLocation );
 

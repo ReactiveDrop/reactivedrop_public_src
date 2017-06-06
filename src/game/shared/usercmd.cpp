@@ -269,6 +269,38 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 
 		// TrackIR
 	}
+
+	// BenLubar(spectator-mouse): send the screen size and cursor position
+	if ( from->screenw != to->screenw || from->screenh != to->screenh )
+	{
+		buf->WriteOneBit( 1 );
+		buf->WriteShort( to->screenw );
+		buf->WriteShort( to->screenh );
+	}
+	else
+	{
+		buf->WriteOneBit( 0 );
+	}
+
+	if ( from->mousex != to->mousex )
+	{
+		buf->WriteOneBit( 1 );
+		buf->WriteShort( to->mousex );
+	}
+	else
+	{
+		buf->WriteOneBit( 0 );
+	}
+
+	if ( from->mousey != to->mousey )
+	{
+		buf->WriteOneBit( 1 );
+		buf->WriteShort( to->mousey );
+	}
+	else
+	{
+		buf->WriteOneBit( 0 );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -453,4 +485,20 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 		// TrackIR
 	}
 
+	// BenLubar(spectator-mouse): send the screen size and cursor position
+	if ( buf->ReadOneBit() )
+	{
+		move->screenw = buf->ReadShort();
+		move->screenh = buf->ReadShort();
+	}
+
+	if ( buf->ReadOneBit() )
+	{
+		move->mousex = buf->ReadShort();
+	}
+
+	if ( buf->ReadOneBit() )
+	{
+		move->mousey = buf->ReadShort();
+	}
 }

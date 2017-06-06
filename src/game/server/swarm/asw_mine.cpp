@@ -203,10 +203,14 @@ void CASW_Mine::Prime()
 	}
 }
 
+ConVar rd_firemine_target_marine( "rd_firemine_target_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Incendiary(fire) Mines explode when marine is near them");
+
 bool CASW_Mine::ValidMineTarget(CBaseEntity *pOther)
 {
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( pOther );
-	if (pMarine)
+	if (pMarine && rd_firemine_target_marine.GetBool())
+		return true;
+	else if (pMarine)
 		return false;
 
 	CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pOther);

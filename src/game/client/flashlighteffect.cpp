@@ -29,6 +29,7 @@ extern ConVar r_flashlightdepthres;
 #include "tier0/memdbgon.h"
 
 extern ConVar r_flashlightdepthtexture;
+extern ConVar rd_flashlightshadows;
 
 static ConVar r_swingflashlight( "r_swingflashlight", "1", FCVAR_CHEAT );
 static ConVar r_flashlightlockposition( "r_flashlightlockposition", "0", FCVAR_CHEAT );
@@ -45,7 +46,7 @@ static ConVar r_flashlightvisualizetrace( "r_flashlightvisualizetrace", "0", FCV
 static ConVar r_flashlightambient( "r_flashlightambient", "0.0", FCVAR_CHEAT );
 static ConVar r_flashlightshadowatten( "r_flashlightshadowatten", "0.35", FCVAR_CHEAT );
 static ConVar r_flashlightladderdist( "r_flashlightladderdist", "40.0", FCVAR_CHEAT );
-static ConVar r_flashlight_topdown( "r_flashlight_topdown", "0" );
+static ConVar r_flashlight_topdown( "r_flashlight_topdown", "1" );
 
 static ConVar r_flashlightnearoffsetscale( "r_flashlightnearoffsetscale", "1.0", FCVAR_CHEAT );
 static ConVar r_flashlighttracedistcutoff( "r_flashlighttracedistcutoff", "128" );
@@ -190,6 +191,9 @@ void CFlashlightEffect::UpdateLightTopDown(const Vector &vecPos, const Vector &v
 {
 	VPROF_BUDGET( "CFlashlightEffect::UpdateLightTopDown", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
+	if (!m_bIsOn)
+		return;
+
 	FlashlightState_t state;
 
 	state.m_vecLightOrigin = vecPos;
@@ -230,7 +234,7 @@ void CFlashlightEffect::UpdateLightTopDown(const Vector &vecPos, const Vector &v
 	state.m_Color[3] = r_flashlightambient.GetFloat();
 	state.m_NearZ = r_flashlightnear.GetFloat() + m_flCurrentPullBackDist;		// Push near plane out so that we don't clip the world when the flashlight pulls back 
 	state.m_FarZ = state.m_FarZAtten = r_flashlightfar.GetFloat();	// Strictly speaking, these are different, but the game can treat them the same
-	state.m_bEnableShadows = state.m_bEnableShadows && r_flashlightdepthtexture.GetBool();
+	state.m_bEnableShadows = rd_flashlightshadows.GetBool() && r_flashlightdepthtexture.GetBool();
 	state.m_flShadowMapResolution = r_flashlightdepthres.GetInt();
 
 	state.m_pSpotlightTexture = m_FlashlightTexture;

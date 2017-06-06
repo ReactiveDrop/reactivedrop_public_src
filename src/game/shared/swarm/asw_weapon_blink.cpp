@@ -20,6 +20,7 @@
 #include "asw_trace_filter_doors.h"
 #include "ai_navigator.h"
 #include "ai_pathfinder.h"
+#include "asw_gamerules.h"
 #endif
 #include "asw_marine_gamemovement.h"
 #include "asw_melee_system.h"
@@ -64,6 +65,15 @@ ConVar asw_blink_debug( "asw_blink_debug", "0", FCVAR_CHEAT );
 
 #endif /* not client */
 
+#define JUMPJET_GROUND_ROUTE_ONLY 0
+#define JUMPJET_GROUND_AND_JUMP_ROUTE 1
+#define JUMPJET_JUMP_EVERYWHERE 2
+// if route not found we will jump to the nearest node 
+// this will be used for hardcore maps like killzone
+// where a failed jump results in death, and it's better to just jump 
+// anywhere 
+#define JUMPJET_JUMP_NO_MATTER_WHAT 3  
+
 ConVar asw_blink_charge_time( "asw_blink_charge_time", "30.0", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_blink_range( "asw_blink_range", "2000", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_blink_time( "asw_blink_time", "0.6", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -98,6 +108,20 @@ bool CASW_Weapon_Blink::OffhandActivate()
 }
 
 #ifdef GAME_DLL
+
+class GroundNodeFilter : public INearestNodeFilter
+{
+public:
+	virtual bool IsValid( CAI_Node *pNode ) 
+	{
+		return pNode->GetType() == NODE_GROUND;
+	};
+	virtual bool ShouldContinue() 
+	{
+		return true;
+	}
+};
+
 bool CASW_Weapon_Blink::SetBlinkDestination()
 {
 	CASW_Player *pPlayer = GetCommander();
@@ -108,17 +132,20 @@ bool CASW_Weapon_Blink::SetBlinkDestination()
 	if ( !pMarine )
 		return false;
 
+	const int jumpjet_type = ASWGameRules()->GetJumpJetType();
+	const bool bJumpNoMatterWhat = jumpjet_type == JUMPJET_JUMP_NO_MATTER_WHAT;
 	Vector vecStart = pPlayer->GetCrosshairTracePos() + Vector( 0, 0, 30 );
 	Vector vecEnd = pPlayer->GetCrosshairTracePos() - Vector( 0, 0, 30 );
 	trace_t tr;
 	UTIL_TraceHull( vecStart, vecEnd, pMarine->WorldAlignMins(), pMarine->WorldAlignMaxs(), MASK_PLAYERSOLID_BRUSHONLY, pMarine, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-	if ( tr.startsolid || tr.allsolid )
+	if ( (tr.startsolid || tr.allsolid) && !bJumpNoMatterWhat )
 	{
 		m_vecInvalidDestination = vecStart;
 		return false;
 	}
 
-	if ( pMarine->GetAbsOrigin().DistTo( tr.endpos ) > asw_blink_range.GetFloat() )
+	if ( pMarine->GetAbsOrigin().DistTo( tr.endpos ) > asw_blink_range.GetFloat() && 
+		 !bJumpNoMatterWhat )
 	{
 		m_vecInvalidDestination = tr.endpos;
 		return false;
@@ -127,15 +154,15 @@ bool CASW_Weapon_Blink::SetBlinkDestination()
 	Vector vecDest = tr.endpos;
 
 	// now see if we can build an AI path from the marine to this spot
-	bool bValidRoute = false;
-
-	if ( !pMarine->GetPathfinder() )
+	if ( !pMarine->GetPathfinder() && !bJumpNoMatterWhat )
 	{
 		m_vecInvalidDestination = vecDest;
 		return false;
 	}
 
-	AI_Waypoint_t *pRoute = pMarine->GetPathfinder()->BuildRoute( pMarine->GetAbsOrigin(), vecDest, NULL, 30, NAV_GROUND, bits_BUILD_GROUND | bits_BUILD_IGNORE_NPCS );
+	// reactivedrop: from now on we jump only on nodes
+	/*	
+	AI_Waypoint_t *pRoute = pMarine->GetPathfinder()->BuildRoute( pMarine->GetAbsOrigin(), vecDest, NULL, 30, NAV_GROUND, bits_BUILD_GROUND | bits_BUILD_JUMP | bits_BUILD_IGNORE_NPCS );
 	if ( pRoute && !UTIL_ASW_DoorBlockingRoute( pRoute, true ) )
 	{
 		if ( !UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) )
@@ -151,42 +178,112 @@ bool CASW_Weapon_Blink::SetBlinkDestination()
 				}
 			}
 		}
-	}
+	} //*/
 	
-	if ( !bValidRoute )
+	AI_Waypoint_t *pRoute = NULL;
+	bool bValidRoute = false;
+	CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
+
+	switch (jumpjet_type)
 	{
+	case JUMPJET_GROUND_ROUTE_ONLY:
+	default:
 		// find the closest node to the dest and try to path there instead
-		CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
-		if ( pNetwork )
+		
+		if (pNetwork)
 		{
-			int nNode = pNetwork->NearestNodeToPoint( vecDest, false );
-			if ( nNode != NO_NODE )
+			int nNode = pNetwork->NearestNodeToPoint(vecDest, false);
+			if (nNode != NO_NODE)
 			{
-				CAI_Node *pNode = pNetwork->GetNode( nNode );
-				if ( pNode && pNode->GetType() == NODE_GROUND )
+				CAI_Node *pNode = pNetwork->GetNode(nNode);
+				#define MAX_DISTANCE_TO_JUMP_DESTINATION_NODE 200
+				if (pNode && pNode->GetType() == NODE_GROUND &&
+					pNode->GetOrigin().DistTo(vecDest) < MAX_DISTANCE_TO_JUMP_DESTINATION_NODE)
 				{
-					vecDest = pNode->GetOrigin();
-					if ( pRoute )
+					vecDest = pNode->GetPosition(HULL_HUMAN);
+					if (pRoute)
 					{
-						ASWPathUtils()->DeleteRoute( pRoute );
+						ASWPathUtils()->DeleteRoute(pRoute);
 						pRoute = NULL;
 					}
-					pRoute = pMarine->GetPathfinder()->BuildRoute( pMarine->GetAbsOrigin(), vecDest, NULL, 30, NAV_GROUND, bits_BUILD_GROUND | bits_BUILD_IGNORE_NPCS );
-					if ( pRoute && !UTIL_ASW_DoorBlockingRoute( pRoute, true ) )
+
+					pRoute = pMarine->GetPathfinder()->BuildRoute(pMarine->GetAbsOrigin(), vecDest, NULL, 30, NAV_GROUND, 0);
+
+					if (pRoute && !UTIL_ASW_DoorBlockingRoute(pRoute, true))
 					{
-						if ( !UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) )
+						if (!UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
 						{
 							bValidRoute = true;
 						}
 					}
-					if ( !bValidRoute )
+					if (!bValidRoute)
 					{
 						m_vecInvalidDestination = vecDest;
 					}
 				}
 			}
 		}
+		break;
+	case JUMPJET_GROUND_AND_JUMP_ROUTE:
+		if (pNetwork)
+		{
+			int nNode = pNetwork->NearestNodeToPoint(vecDest, false);
+			if (nNode != NO_NODE)
+			{
+				CAI_Node *pNode = pNetwork->GetNode(nNode);
+#define MAX_DISTANCE_TO_JUMP_DESTINATION_NODE 200
+				if (pNode && pNode->GetType() == NODE_GROUND &&
+					pNode->GetOrigin().DistTo(vecDest) < MAX_DISTANCE_TO_JUMP_DESTINATION_NODE)
+				{
+					vecDest = pNode->GetPosition(HULL_HUMAN);
+					if (pRoute)
+					{
+						ASWPathUtils()->DeleteRoute(pRoute);
+						pRoute = NULL;
+					}
+					// reactivedrop: hack to calc path. Save, change, restore 
+					// capabilities 
+					int marine_capabilities = pMarine->CapabilitiesGet();
+					pMarine->CapabilitiesAdd(bits_CAP_MOVE_JUMP);
+
+					pRoute = pMarine->GetPathfinder()->BuildRoute(pMarine->GetAbsOrigin(), vecDest, NULL, 30, NAV_JUMP, 0);
+
+					pMarine->CapabilitiesClear();
+					pMarine->CapabilitiesAdd(marine_capabilities);
+
+					if (pRoute && !UTIL_ASW_DoorBlockingRoute(pRoute, true))
+					{
+						if (!UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
+						{
+							bValidRoute = true;
+						}
+					}
+					if (!bValidRoute)
+					{
+						m_vecInvalidDestination = vecDest;
+					}
+				}
+			}
+		}
+		break;
+	case JUMPJET_JUMP_EVERYWHERE:
+		bValidRoute = true;
+		break;
+	case JUMPJET_JUMP_NO_MATTER_WHAT:
+		if (pNetwork)
+		{
+			GroundNodeFilter filter;
+			int nNode = pNetwork->NearestNodeToPoint(NULL, vecDest, false, &filter);
+			if (nNode != NO_NODE)
+			{
+				CAI_Node *pNode = pNetwork->GetNode(nNode);
+				vecDest = pNode->GetPosition(HULL_HUMAN);
+				bValidRoute = true;
+			}
+		}
+		break; 
 	}
+	
 
 	if ( !bValidRoute )
 	{
@@ -198,7 +295,7 @@ bool CASW_Weapon_Blink::SetBlinkDestination()
 		return false;
 	}
 
-	if ( asw_blink_debug.GetBool() )
+	if ( asw_blink_debug.GetBool() && pRoute)
 	{
 		ASWPathUtils()->DebugDrawRoute( pMarine->GetAbsOrigin(), pRoute );
 	}

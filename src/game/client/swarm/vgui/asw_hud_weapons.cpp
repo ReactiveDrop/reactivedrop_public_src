@@ -138,7 +138,7 @@ void CASWHudWeapons::Paint()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if (!pMarine)
 		return;		
 	char cbuffer[64];

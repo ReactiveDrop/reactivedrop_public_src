@@ -21,6 +21,7 @@
 #include "asw_marine_skills.h"
 #include "particle_parse.h"
 #include "asw_util_shared.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -72,11 +73,7 @@ ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4f", FCV
 #endif
 
 void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
-{	
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-		return;
-
+{
 	// NOTE: this class is now a grenade launcher, do we want to rename it at some point?
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine || pMarine->GetWaterLevel() == 3 )
@@ -94,10 +91,21 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	if (pm.fraction < 1.0f)
 		vecSrc = pm.endpos;
 
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
+	CASW_Player *pPlayer = GetCommander();
+	Vector vecDest = (pPlayer && pMarine->IsInhabited()) ? pPlayer->GetCrosshairTracePos() : pMarine->GetEnemyLKP();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * 28.0f;
 
-	const float &fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
+	float fGrenadeDamage;
+	if (ASWDeathmatchMode())
+	{
+		extern ConVar rd_pvp_grenade_launcher_dmg;
+		fGrenadeDamage = rd_pvp_grenade_launcher_dmg.GetFloat() * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
+	}
+	else
+	{
+		fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
+	}
+	
 	const float &fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
 	int iClusters = 0; //MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS);
 	if (asw_debug_marine_damage.GetBool())

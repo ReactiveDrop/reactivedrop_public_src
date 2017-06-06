@@ -11,6 +11,7 @@
 #include "asw_target_dummy_shared.h"
 #include "asw_drone_advanced.h"
 #include "asw_parasite.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -27,7 +28,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Top, DT_ASW_Sentry_Top)
 	SendPropBool( SENDINFO( m_bLowAmmo ) ),	
 END_SEND_TABLE()
 
-ConVar asw_sentry_friendly_target("asw_sentry_friendly_target", "0", FCVAR_CHEAT, "Whether the sentry targets friendlies or not");
+ConVar asw_sentry_friendly_target("asw_sentry_friendly_target", "0", FCVAR_REPLICATED, "Whether the sentry targets friendlies or not");
 extern ConVar asw_sentry_friendly_fire_scale;
 
 
@@ -56,6 +57,10 @@ BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_FIELD( m_bHasHysteresis, FIELD_BOOLEAN ),	
 	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Top, CBaseAnimating, "sentry top" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptPreventFiringUntil, "PreventFiringUntil", "" )
+END_SCRIPTDESC()
 
 
 #define ASW_SENTRY_FIRE_RATE 0.1f		// time in seconds between each shot
@@ -137,6 +142,10 @@ int CASW_Sentry_Top::UpdateTransmitState()
 	return SetTransmitState( FL_EDICT_FULLCHECK );
 }
 
+void CASW_Sentry_Top::ScriptPreventFiringUntil( float fNextFireTime )
+{
+	m_fNextFireTime = fNextFireTime;
+}
 
 void CASW_Sentry_Top::AnimThink( void )
 {	
@@ -347,6 +356,15 @@ void CASW_Sentry_Top::OnLowAmmo( void )
 void CASW_Sentry_Top::OnOutOfAmmo( void )
 {
 	EmitSound( "ASW_Sentry.OutOfAmmo" );
+    if ( ASWDeathmatchMode() ) 
+    {
+		//Msg ("Sentry top taking damage to death %i \n", GetSentryBase()->GetHealth() + 1);
+        CTakeDamageInfo info(this, 
+                             this, 
+                             GetSentryBase()->GetHealth() + 1,
+                             DMG_GENERIC );
+        GetSentryBase()->TakeDamage(info);
+    }
 }
 
 bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)

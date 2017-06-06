@@ -10,8 +10,10 @@
 #include "vgui_bitmapbutton.h"
 #include "nb_select_weapon_panel.h"
 #include "asw_medal_store.h"
-
 #include "vgui_controls/Panel.h"
+#include "asw_gamerules.h"
+#include "c_asw_game_resource.h"
+#include "c_asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -178,12 +180,36 @@ void CNB_Select_Weapon_Entry::OnThink()
 		m_bCanEquip = false;
 	}
 
-	// TODO: Already equipped ("big" items)
-	// bool		m_bUnique;
+	// reactivedrop: grey out weapons which are not allowed in the
+	// current game mode.
+	//
+	// Also grey out unique weapons, e.g. a second autogun is not allowed
+	// so if player have already selected one autogun for the 1st slot when picking
+	// a gun for 2nd slot the autogun will be greyed out
+	if ( m_bCanEquip )
+	{
+		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+		{
+			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( !pMR )
+				continue;
 
-	// assumes parent's parent is the horiz list!
-	//CNB_Horiz_List *pList = dynamic_cast<CNB_Horiz_List*>( GetParent()->GetParent() );
-	//bool bHighlight = ( pList && pList->GetHighlightedEntry() == this );
+			if ( pMR->GetProfileIndex() == m_nProfileIndex )
+			{
+				if ( ASWGameRules()->ApplyWeaponSelectionRules( pMR, m_nInventorySlot, m_nEquipIndex ) != m_nEquipIndex )
+				{
+					// greay out a not allowed weapon
+					m_bCanEquip = false;
+				}
+				else if ( pWeaponInfo->m_bUnique && pMR->m_iWeaponsInSlots[m_nInventorySlot == ASW_INVENTORY_SLOT_PRIMARY ? ASW_INVENTORY_SLOT_SECONDARY : ASW_INVENTORY_SLOT_PRIMARY] == m_nEquipIndex )
+				{
+					// grey out unique weapon
+					m_bCanEquip = false;
+				}
+				break;
+			}
+		}
+	}
 
 	color32 white;
 	white.r = 255;

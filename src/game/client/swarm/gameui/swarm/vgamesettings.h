@@ -57,6 +57,8 @@ protected:
 	void UpdateSelectMissionButton();
 	void ShowMissionSelect();
 	void ShowStartingMissionSelect();
+	void ShowChallengeSelect();
+	void UpdateChallenge( const char *szChallengeName );
 
 private:
 	void UpdateFooter();
@@ -71,16 +73,21 @@ private:
 	DropDownMenu* m_drpDifficulty;
 	DropDownMenu* m_drpGameType;
 	DropDownMenu* m_drpGameAccess;
+	DropDownMenu* m_drpNumSlots;
 	DropDownMenu* m_drpServerType;
 	DropDownMenu* m_drpStartingMission;
 	DropDownMenu* m_drpFriendlyFire;
 	DropDownMenu* m_drpOnslaught;
+	DropDownMenu* m_drpChallenge;
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_pTitle;
 
 	bool m_bBackButtonMeansDone;
 	bool m_bCloseSessionOnClose;
 	bool m_bAllowChangeToCustomCampaign;
+
+	bool m_bWantHardcoreFF;
+	bool m_bWantOnslaught;
 
 	vgui::DHANDLE<vgui::Panel> m_hSubScreen;
 };

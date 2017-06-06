@@ -22,16 +22,18 @@
 #include "in_buttons.h"
 #include "asw_gamerules.h"
 #include "asw_melee_system.h"
-#ifdef _WIN32
-#undef INVALID_HANDLE_VALUE
-#include <windows.h>
-#endif
+#include "asw_trace_filter.h"
+// commented as it is not needed to be included here
+//#ifdef _WIN32
+//#undef INVALID_HANDLE_VALUE
+//#include <windows.h>
+//#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_controls;
-ConVar asw_marine_linear_turn_rate("asw_marine_linear_turn_rate", "600", FCVAR_CHEAT, "Linear turning rate of the marine (used as minimum when fractional turning is employed)");
+ConVar asw_marine_linear_turn_rate("asw_marine_linear_turn_rate", "1000", FCVAR_CHEAT, "Linear turning rate of the marine (used as minimum when fractional turning is employed)");
 ConVar asw_marine_fraction_turn_scale("asw_marine_fraction_turn_scale", "0", FCVAR_CHEAT, "Scale for the fractional marine turning (large turns)");
 
 ConVar asw_marine_turn_firing_fraction("asw_marine_turn_firing_fraction", "0.6", FCVAR_CHEAT, "Fractional turning value while firing, if using asw_marine_fraction_turn_scale");
@@ -58,6 +60,7 @@ extern ConVar asw_DebugAutoAim;
 extern ConVar in_forceuser;
 extern ConVar asw_item_hotbar_hud;
 extern ConVar in_joystick;
+extern ConVar rd_ground_shooting;
 
 //-----------------------------------------------------------------------------
 // Purpose: ASW Input interface
@@ -266,7 +269,11 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 		Ray_t ray2;
 		trace_t tr;
 		ray2.Init( traceStart, traceEnd, ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
-		UTIL_TraceRay( ray2, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
+		// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
+		CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
+		// reactivedrop: changed MASK_SOLID_BRUSHONLY to MASK_VISIBLE | CONTENTS_GRATE
+		// this fixes flares/grenades to aim correctly on visible surfaces 
+		UTIL_TraceRay( ray2, MASK_SOLID | CONTENTS_IGNORE_NODRAW_OPAQUE, &filter, &tr );
 		if ( tr.fraction >= 1.0f )
 			return false;
 
@@ -309,7 +316,11 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 	{
 		// do a trace into the world to see what we've pointing directly at
 		trace_t tr;
-		UTIL_TraceLine(traceStart, traceEnd, MASK_SOLID_BRUSHONLY, pPlayer, COLLISION_GROUP_NONE, &tr);
+		// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
+		CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
+		// reactivedrop: changed MASK_SOLID_BRUSHONLY to MASK_VISIBLE
+		// this fixes flares/grenades to aim correctly on visible surfaces 
+		UTIL_TraceLine( traceStart, traceEnd, MASK_SOLID | CONTENTS_IGNORE_NODRAW_OPAQUE, &filter, &tr );
 		if ( tr.fraction >= 1.0f )
 			return false;
 		// if we hit tools no light texture, retrace through it
@@ -359,7 +370,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 
 	ASWInput()->SetAutoaimEntity( NULL );
 
-	C_ASW_Marine* pMarine = pPlayer->GetMarine();
+	C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
 	C_ASW_Weapon *pWeapon = pMarine ? pMarine->GetActiveASWWeapon() : NULL;
 	float flWeaponRadiusScale = pWeapon ? pWeapon->GetAutoAimRadiusScale() : 1.0f;
 	bool bWeaponHasRadiusScale = ( flWeaponRadiusScale > 1.0f );
@@ -394,8 +405,10 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	vWorldSpaceCameraToCursor.NormalizeInPlace();
 	vTraceEnd = vCameraLocation + vWorldSpaceCameraToCursor * ASW_MAX_AIM_TRACE;
 
+	// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
+	CASW_Trace_Filter filter( pMarine, COLLISION_GROUP_NONE );
 	// do a trace into the world to see what we've pointing directly at
-	UTIL_TraceLine(vCameraLocation, vTraceEnd, nTraceMask, pPlayer, COLLISION_GROUP_NONE, &tr);
+	UTIL_TraceLine( vCameraLocation, vTraceEnd, nTraceMask, &filter, &tr );
 	if ( tr.fraction >= 1.0f )
 	{
 		if (!pMarine)
@@ -484,6 +497,10 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 				continue;
 			// check it isn't attached to our marine (infesting parasites)
 			if (pEnt->GetMoveParent() == pMarine)
+				continue;
+
+			// autoaiming: skip yourself
+			if (pEnt == pMarine)
 				continue;
 			// check he's in range
 			Vector vecAlienPos = pAimTarget->GetAimTargetRadiusPos(vecWeaponPos); //pEnt->WorldSpaceCenter();
@@ -710,6 +727,8 @@ void RoundToPixel(Vector &vecPos)
 	}
 }
 
+static float s_flLastTurnTime = 0.0f;
+
 // smoothly rotates the current marine's turning yaw to the desired
 void SmoothTurningYaw(CASW_Player *pPlayer, float &yaw)
 {
@@ -724,7 +743,8 @@ void SmoothTurningYaw(CASW_Player *pPlayer, float &yaw)
 		return;
 	}
 
-	float dt = MIN( 0.2, gpGlobals->frametime );
+	float dt = clamp( gpGlobals->curtime - s_flLastTurnTime, 0.0f, 0.2f );
+	s_flLastTurnTime = gpGlobals->curtime;
 
 	// fraction turning method	
 	
@@ -783,7 +803,8 @@ m_flDesiredCursorRadius( 0.0f ),
 m_flTimeSinceLastTurn( 0.0f ),
 //m_MouseOverGlowObject( NULL, Vector( 1.0f, 0.5f, 0.0f ), 0.5f, true, true ),
 m_HighLightGlowObject( NULL, Vector( 0.4f, 0.7f, 0.9f ), 0.8f, true, true ),
-m_UseGlowObject( NULL, Vector( 0.4f, 0.7f, 0.9f ), 0.8f, true, true )
+m_UseGlowObject( NULL, Vector( 0.4f, 0.7f, 0.9f ), 0.8f, true, true ),
+m_fCamYawRotStartTime(0.0f)
 {
 	m_fJoypadPitch = 0;
 	m_fJoypadYaw = 0;
@@ -1169,10 +1190,8 @@ void SmoothControllerYaw(CASW_Player *pPlayer, float &yaw)
 		return;
 	}
 
-	float dt = MIN( 0.2, gpGlobals->frametime );
-#if 0
-	
-#endif
+	float dt = clamp( gpGlobals->curtime - s_flLastTurnTime, 0.0f, 0.2f );
+	s_flLastTurnTime = gpGlobals->curtime;
 
 	// fraction turning method
 	float fFraction = 0.9f;
@@ -1214,8 +1233,17 @@ void SmoothControllerYaw(CASW_Player *pPlayer, float &yaw)
 
 // Returns the mouse cursor location.  If in controller mode we simulate a cursor position based on the analogue stick.
 void CASWInput::GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL*/, int *unclampedy /*=NULL*/ )
-{	
-	if ( ASWInput()->ControllerModeActive() )
+{
+	// BenLubar(spectator-mouse)
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player *pViewPlayer = pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsInhabited() ? pPlayer->GetViewMarine()->GetCommander() : NULL;
+	if ( pViewPlayer && ( pViewPlayer != pPlayer || engine->IsPlayingDemo() ) && pViewPlayer->m_iScreenWidth > 0 && pViewPlayer->m_iScreenHeight > 0 )
+	{
+		// BenLubar: use the spectated player's mouse position
+		*mx = (int) pViewPlayer->m_iMouseX * ScreenWidth() / (int) pViewPlayer->m_iScreenWidth;
+		*my = (int) pViewPlayer->m_iMouseY * ScreenHeight() / (int) pViewPlayer->m_iScreenHeight;
+	}
+	else if ( ASWInput()->ControllerModeActive() )
 	{
 		GetSimulatedFullscreenMousePosFromController( mx, my, m_fJoypadPitch, m_fJoypadYaw );
 	}
@@ -1341,9 +1369,7 @@ void ASW_UpdateControllerCodes()
 
 const char* ASW_FindKeyBoundTo(const char *binding)
 {
-	// JOYPAD REMOVED
-	//const char* pKeyText = engine->Key_LookupBindingEx(binding, ASWInput()->ControllerModeActive());
-	const char *pKeyText = engine->Key_LookupBinding( binding );
+	const char* pKeyText = engine->Key_LookupBindingEx( binding, ASWInput()->ControllerModeActive() );
 	if ( !pKeyText )
 	{
 		return "<NOT BOUND>";
@@ -1353,9 +1379,7 @@ const char* ASW_FindKeyBoundTo(const char *binding)
 
 const char* MakeHumanReadable(const char *key)
 {
-	// JOYPAD REMOVED
-	// if (ASWInput()->ControllerModeActive() && inputsystem->Is360WindowsPad(0))	// NOTE: assumes they're using joypad 0
-	if ( 0 )
+	if ( ASWInput()->ControllerModeActive() )
 	{
 		for (int i=0;i<ASW_NUM_360_READABLE;i++)
 		{
@@ -1399,6 +1423,8 @@ void ASW_AdjustViewAngleForGroundShooting( QAngle &viewangles )
 	}
 
 	C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();	
+	// TODO: investigate the line pWeapon->m_flNextSecondaryAttack
+	// rd_ground_shooting can probably be used here 
 	if ( !pWeapon || !pWeapon->SupportsGroundShooting() || gpGlobals->curtime < pWeapon->m_flNextSecondaryAttack )
 		return;
 	
@@ -1437,61 +1463,64 @@ void ASW_AdjustViewAngleForGroundShooting( QAngle &viewangles )
 		dir.NormalizeInPlace();
 		VectorAngles( dir, viewangles );
 
-		// Don't let it change the pitch or yaw too much (aiming above walls or directly at feet)
-		if ( fOriginalPitch > 180.0f )
+		if ( !rd_ground_shooting.GetBool() )
 		{
-			fOriginalPitch -= 360.0f;
-		}
-
-		if ( viewangles.x > 180.0f )
-		{
-			viewangles.x -= 360.0f;
-		}
-
-		viewangles.x = clamp( viewangles.x, fOriginalPitch - 5.0f, fOriginalPitch + 15.0f );
-
-		if ( viewangles.x < 0.0f )
-		{
-			viewangles.x += 360.0f;
-		}
-
-		float fLowDistance = 360.0f;
-		float fHighDistance = 360.0f;
-		bool bValid = false;
-
-		if ( viewangles.y > fYawMin && viewangles.y < fYawMax )
-		{
-			bValid = true;
-		}
-		else
-		{
-			float fCurrentShiftUp = viewangles.y + 360.0f;
-			float fCurrentShiftDown = viewangles.y - 360.0f;
-
-			if ( fCurrentShiftUp > fYawMin && fCurrentShiftUp < fYawMax )
+			// Don't let it change the pitch or yaw too much (aiming above walls or directly at feet)
+			if ( fOriginalPitch > 180.0f )
 			{
-				bValid = true;
+				fOriginalPitch -= 360.0f;
 			}
-			else if ( fCurrentShiftDown > fYawMin && fCurrentShiftDown < fYawMax )
+
+			if ( viewangles.x > 180.0f )
+			{
+				viewangles.x -= 360.0f;
+			}
+
+			viewangles.x = clamp( viewangles.x, fOriginalPitch - 5.0f, fOriginalPitch + 15.0f );
+
+			if ( viewangles.x < 0.0f )
+			{
+				viewangles.x += 360.0f;
+			}
+
+			float fLowDistance = 360.0f;
+			float fHighDistance = 360.0f;
+			bool bValid = false;
+
+			if ( viewangles.y > fYawMin && viewangles.y < fYawMax )
 			{
 				bValid = true;
 			}
 			else
 			{
-				fLowDistance = MIN( fLowDistance, fabsf( viewangles.y - fYawMin ) );
-				fLowDistance = MIN( fLowDistance, fabsf( fCurrentShiftUp - fYawMin ) );
-				fLowDistance = MIN( fLowDistance, fabsf( fCurrentShiftDown - fYawMin ) );
+				float fCurrentShiftUp = viewangles.y + 360.0f;
+				float fCurrentShiftDown = viewangles.y - 360.0f;
 
-				fHighDistance = MIN( fHighDistance, fabsf( viewangles.y - fYawMax ) );
-				fHighDistance = MIN( fHighDistance, fabsf( fCurrentShiftUp - fYawMax ) );
-				fHighDistance = MIN( fHighDistance, fabsf( fCurrentShiftDown - fYawMax ) );
+				if ( fCurrentShiftUp > fYawMin && fCurrentShiftUp < fYawMax )
+				{
+					bValid = true;
+				}
+				else if ( fCurrentShiftDown > fYawMin && fCurrentShiftDown < fYawMax )
+				{
+					bValid = true;
+				}
+				else
+				{
+					fLowDistance = MIN( fLowDistance, fabsf( viewangles.y - fYawMin ) );
+					fLowDistance = MIN( fLowDistance, fabsf( fCurrentShiftUp - fYawMin ) );
+					fLowDistance = MIN( fLowDistance, fabsf( fCurrentShiftDown - fYawMin ) );
+
+					fHighDistance = MIN( fHighDistance, fabsf( viewangles.y - fYawMax ) );
+					fHighDistance = MIN( fHighDistance, fabsf( fCurrentShiftUp - fYawMax ) );
+					fHighDistance = MIN( fHighDistance, fabsf( fCurrentShiftDown - fYawMax ) );
+				}
 			}
-		}
 
-		if ( !bValid )
-		{
-			viewangles.y = ( fLowDistance < fHighDistance ? fYawMin : fYawMax );
-			viewangles.y = AngleNormalize( viewangles.y );
+			if ( !bValid )
+			{
+				viewangles.y = ( fLowDistance < fHighDistance ? fYawMin : fYawMax );
+				viewangles.y = AngleNormalize( viewangles.y );
+			}
 		}
 	}
 }
@@ -1799,7 +1828,7 @@ void CASWInput::OnEntityDeleted( C_BaseEntity *pEntity )
 
 int CASWInput::CAM_IsThirdPerson( int nSlot )
 {
-	C_ASW_Marine *pMarine = C_ASW_Marine::GetLocalMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 	if ( pMarine && pMarine->IsControllingTurret() )
 	{
 		return 0;

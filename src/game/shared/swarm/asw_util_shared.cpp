@@ -18,6 +18,7 @@
 	#include "asw_button_area.h"
 	#include "fogcontroller.h"
 	#include "asw_point_camera.h"
+	#include "asw_deathmatch_mode.h"
 #else
 	#include "asw_gamerules.h"
 	#include "c_asw_drone_advanced.h"
@@ -338,12 +339,12 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 
 		// find the player's marine
 		CASW_Player *pASWPlayer = dynamic_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetMarine())
+		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
 			continue;
 
-		Vector vecMarinePos = pASWPlayer->GetMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetMarine()->IsControllingTurret() && pASWPlayer->GetMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetMarine()->GetRemoteTurret()->GetAbsOrigin();
+		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
+		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
+			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
 
 		localAmplitude = ASW_ComputeShakeAmplitude( center, vecMarinePos, amplitude, radius );
 
@@ -399,12 +400,12 @@ void UTIL_ASW_ScreenPunch( const Vector &center, float radius, const ScreenShake
 
 		// find the player's marine
 		CASW_Player *pASWPlayer = assert_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetMarine())
+		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
 			continue;
 
-		Vector vecMarinePos = pASWPlayer->GetMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetMarine()->IsControllingTurret() && pASWPlayer->GetMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetMarine()->GetRemoteTurret()->GetAbsOrigin();
+		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
+		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
+			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
 
 		if ( vecMarinePos.DistToSqr(center) > radiusSqr )
 			continue;
@@ -657,8 +658,8 @@ bool CTraceFilterAliensEggsGoo::ShouldHitEntity( IHandleEntity *pServerEntity, i
 	{		
 #ifndef CLIENT_DLL
 		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
-		if ( pEntity->Classify() == CLASS_ASW_MARINE )		// we dont hit marines
-			return false; 
+		if ( pEntity->Classify() == CLASS_ASW_MARINE )		// we dont hit marines in coop
+			return ASWDeathmatchMode();						// but hit them for deathmatch
 
 		if ( IsAlienClass( pEntity->Classify() ) )
 			return true;
@@ -985,7 +986,7 @@ bool UTIL_ASW_MissionHasBriefing(const char* mapname)
 	bool bSpecialMap = (!Q_strnicmp(mapname, "intro_", 6) ||
 			!Q_strnicmp(mapname, "outro_", 6) ||
 			!Q_strnicmp(mapname, "tutorial", 8) ||
-			!Q_strnicmp(mapname, "swarmselectionscreen", 20));
+			!Q_strnicmp(mapname, "rdselectionscreen", 20));
 
 	return !bSpecialMap;
 }

@@ -47,6 +47,7 @@ enum Mod_LessonAction
 	LESSON_ACTION_SENTRY_WANTS_DISMANTLE,
 	LESSON_ACTION_IS_TUTORIAL,
 	LESSON_ACTION_IS_SINGLEPLAYER,
+	LESSON_ACTION_CAN_ROTATE_CAMERA,
 	
 	LESSON_ACTION_TOTAL
 };
@@ -69,6 +70,7 @@ void CScriptedIconLesson::Mod_PreReadLessonsFromFile( void )
 	CScriptedIconLesson::LessonActionMap.Insert( "sentry wants dismantle", LESSON_ACTION_SENTRY_WANTS_DISMANTLE );
 	CScriptedIconLesson::LessonActionMap.Insert( "is tutorial", LESSON_ACTION_IS_TUTORIAL );
 	CScriptedIconLesson::LessonActionMap.Insert( "is singleplayer", LESSON_ACTION_IS_SINGLEPLAYER );
+	CScriptedIconLesson::LessonActionMap.Insert( "can rotate camera", LESSON_ACTION_CAN_ROTATE_CAMERA );
 }
 
 
@@ -648,6 +650,20 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			return ( bNot ) ? ( !bIsSingleplayer ) : ( bIsSingleplayer );
 		}
 
+		case LESSON_ACTION_CAN_ROTATE_CAMERA:
+		{
+			bool bCanRotateCamera = ASWGameRules()->ShouldAllowCameraRotation();
+
+			if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
+			{
+				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "\tASWGameRules()->ShouldAllowCameraRotation()" );
+				ConColorMsg( CBaseLesson::m_rgbaVerboseName, "%s ", ( bCanRotateCamera ? "true" : "false" ) );
+				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, ( bNot ) ? ( "== false\n" ) : ( "== true\n" ) );
+			}
+
+			return ( bNot ) ? ( !bCanRotateCamera ) : ( bCanRotateCamera );
+		}
+
 		default:
 			// Didn't handle this action
 			bModHandled = false;
@@ -659,7 +675,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 
 bool C_GameInstructor::Mod_HiddenByOtherElements( void )
 {
-	C_ASW_Marine *pLocalMarine = C_ASW_Marine::GetLocalMarine();
+	C_ASW_Marine *pLocalMarine = C_ASW_Marine::GetViewMarine();
 	if ( pLocalMarine && pLocalMarine->IsControllingTurret() )
 	{
 		return true;

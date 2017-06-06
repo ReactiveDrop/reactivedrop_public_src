@@ -182,7 +182,7 @@ const char* C_ASW_Button_Area::GetHackIconText(C_ASW_Marine *pUser)
 	if (m_bIsInUse)
 	{
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->m_hUsingEntity.Get() == this)
+		if (pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->m_hUsingEntity.Get() == this)
 		{
 			return "#asw_exit_panel";
 		}

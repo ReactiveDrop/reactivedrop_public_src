@@ -505,7 +505,7 @@ void CFPSPanel::DumpStats()
 		g_pFullFileSystem->FPrintf( m_fhLog, "\n\nTotal Frames : %3i\n\n", m_nNumFramesTotal );
 		g_pFullFileSystem->FPrintf( m_fhLog, "Frame Rate, Number of Frames, Percent of Frames\n" );
 
-		for ( int i = 0; i <= PERF_HISTOGRAM_BUCKET_SIZE; i++ )
+		for ( int i = 0; i < PERF_HISTOGRAM_BUCKET_SIZE; i++ )
 		{
 			float flPercent = m_nNumFramesBucket[i];
 			flPercent /= m_nNumFramesTotal;

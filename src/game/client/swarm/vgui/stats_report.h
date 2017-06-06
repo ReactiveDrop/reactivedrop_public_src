@@ -8,6 +8,7 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 #include "steam/steam_api.h"
+#include "asw_shareddefs.h"
 
 namespace vgui
 {
@@ -21,7 +22,7 @@ class DebriefTextPage;
 class CAvatarImagePanel;
 
 
-#define ASW_STATS_REPORT_MAX_PLAYERS 4
+#define ASW_STATS_REPORT_MAX_PLAYERS ASW_NUM_MARINE_PROFILES
 #define ASW_STATS_REPORT_CATEGORIES 4
 
 
@@ -52,8 +53,9 @@ public:
 
 	DebriefTextPage *m_pDebrief;
 
-	Color m_rgbaStatsReportPlayerColors[ ASW_STATS_REPORT_MAX_PLAYERS ];
 	float m_fPlayerNamePosY[ ASW_STATS_REPORT_MAX_PLAYERS ];
 };
+
+extern Color g_rgbaStatsReportPlayerColors[ ASW_STATS_REPORT_MAX_PLAYERS ];
 
 #endif // _INCLUDED_STATS_REPORT_H

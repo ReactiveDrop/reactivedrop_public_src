@@ -122,8 +122,8 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 				m_hFrame->SetVisible(false);
 				m_hFrame->MarkForDeletion();
 				m_hFrame = NULL;
-				ASWInput()->SetCameraFixed( false );
 			}
+			ASWInput()->SetCameraFixed( false );
 		}
 	}
 	// if we haven't launched the window and data is all present, launch it
@@ -144,25 +144,25 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 		m_bLaunchedHackPanel = true;
 	}
 	// check for hiding the panel if the player has a different marine selected, or if the selected marine is remote controlling a turret
-	if (m_bLaunchedHackPanel && GetHackerMarineResource() && m_hFrame.Get())
+	if ( m_bLaunchedHackPanel && GetHackerMarineResource() && m_hFrame.Get() )
 	{
-		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();		
-		if (!pPlayer)
+		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+		if ( !pMarine )
 		{
-			m_hFrame->SetVisible(false);
+			m_hFrame->SetVisible( false );
 		}
 		else
 		{
-			bool bLocalPlayerControllingHacker = (GetHackerMarineResource()->IsInhabited() && GetHackerMarineResource()->GetCommanderIndex() == pPlayer->entindex());
-			bool bMarineControllingTurret = (GetHackerMarineResource()->GetMarineEntity() && GetHackerMarineResource()->GetMarineEntity()->IsControllingTurret());
+			bool bLocalPlayerControllingHacker = ( GetHackerMarineResource()->GetMarineEntity() == pMarine );
+			bool bMarineControllingTurret = ( GetHackerMarineResource()->GetMarineEntity() && GetHackerMarineResource()->GetMarineEntity()->IsControllingTurret() );
 
-			if (bLocalPlayerControllingHacker && !bMarineControllingTurret)
+			if ( bLocalPlayerControllingHacker && !bMarineControllingTurret )
 			{
 				ASWInput()->SetCameraFixed( true );
 
-				m_hFrame->SetVisible(true);
+				m_hFrame->SetVisible( true );
 
-				if (gpGlobals->curtime > m_fNextLockCycleTime)
+				if ( gpGlobals->curtime > m_fNextLockCycleTime )
 				{
 					m_fNextLockCycleTime = gpGlobals->curtime + asw_hack_cycle_time.GetFloat();
 					CycleRows();
@@ -172,7 +172,7 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 			{
 				ASWInput()->SetCameraFixed( false );
 
-				m_hFrame->SetVisible(false);
+				m_hFrame->SetVisible( false );
 			}
 		}
 	}	

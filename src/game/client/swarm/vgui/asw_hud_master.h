@@ -8,6 +8,7 @@
 #include "asw_shareddefs.h"
 #include <vgui_controls/Panel.h>
 #include "asw_video.h"
+#include "vgui_avatarimage.h"
 
 class C_ASW_Marine;
 class C_ASW_Marine_Resource;
@@ -65,7 +66,7 @@ public:
 	m_##sheet[ full_texture_name ].s, \
 	m_##sheet[ full_texture_name ].t
 
-#define MAX_SQUADMATE_HUD_POSITIONS 3
+#define MAX_SQUADMATE_HUD_POSITIONS (ASW_NUM_MARINE_PROFILES - 1) // (ASW_MAX_MARINE_RESOURCES - 1), was 3 
 
 // ===========================================================================
 //  This manually draws a number of HUD elements quickly using texture sheets
@@ -113,6 +114,7 @@ protected:
 	void PaintFastReload();
 	void PaintText();
 	void PaintSquadMemberText( int nPosition );	
+	void PaintDeathmatchFrags();
 
 	int GetClassIcon( C_ASW_Marine_Resource *pMR );
 
@@ -277,6 +279,10 @@ protected:
 	CASW_Video m_LocalMarineVideo;
 	int m_nLocalMarineVideoTextureID;
 
+	int m_nMostFrags[8];
+	int m_hMostFragsImage[8];
+	CAvatarImage *m_pMostFragsAvatar[8];
+
 	// fonts
 
 	CPanelAnimationVar( vgui::HFont, m_hDefaultSmallFont, "DefaultSmallFont", "DefaultSmall" );
@@ -358,6 +364,8 @@ protected:
 
 	typedef CUtlFixedLinkedList<HotbarOrderEffects_t> HotbarOrderEffectsList_t;
 	HotbarOrderEffectsList_t m_hHotbarOrderEffects;
+
+	vgui::Label *m_pLblTimer;
 };
 
 

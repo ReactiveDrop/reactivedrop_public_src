@@ -18,6 +18,7 @@
 #include "asw_marine_skills.h"
 #include "asw_marine_speech.h"
 #endif
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -101,18 +102,8 @@ void CASW_Weapon_Laser_Mines::PrimaryAttack( void )
 	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
 
 	// mine weapon is lost when all mines are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
-		//Reload();
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
 		return;
 	}
 
@@ -133,7 +124,13 @@ void CASW_Weapon_Laser_Mines::PrimaryAttack( void )
 		if (!bThisActive && pMarine->GetActiveASWWeapon())
 		{
 			// if we're offhand activating, make sure our primary weapon can't fire until we're done
-			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + 0.4f;
+			//pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + 0.4f;
+
+			// reactivedrop: preventing cheating, firing flare can greatly
+			// increase fire rate for primary weapon, when using with scripts
+			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack =
+				MAX(pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack,
+					m_flNextPrimaryAttack + 0.4f);
 			pMarine->GetActiveASWWeapon()->m_bIsFiring = false;
 		}
 	}
@@ -356,5 +353,29 @@ void CASW_Weapon_Laser_Mines::ItemPostFrame( void )
 	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
 	{
 		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
+	}
+}
+
+int CASW_Weapon_Laser_Mines::GetMaxClip1(void) const
+{
+	if (ASWDeathmatchMode())
+	{
+		return 5;
+	}
+	else
+	{
+		return BaseClass::GetMaxClip1();
+	}
+}
+
+int CASW_Weapon_Laser_Mines::GetDefaultClip1(void) const
+{
+	if (ASWDeathmatchMode())
+	{
+		return 5;
+	}
+	else
+	{
+		return BaseClass::GetDefaultClip1();
 	}
 }

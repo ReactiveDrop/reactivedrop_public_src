@@ -251,6 +251,9 @@ public:
 	virtual bool					KeyValue( const char *szKeyName, int nValue );
 	virtual bool					KeyValue( const char *szKeyName, const Vector &vecValue );
 	virtual bool					GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+#ifdef REACTIVEDROP_VSCRIPT_KEYVALUES
+	ScriptVariant_t					ScriptGetKeyValue( const char *szKeyName );
+#endif
 
 		// Entities block Line-Of-Sight for NPCs by default.
 	// Set this to false if you want to change this behavior.

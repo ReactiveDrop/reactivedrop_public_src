@@ -28,6 +28,7 @@ C_ASW_Voting_Mission_Chooser_Source::C_ASW_Voting_Mission_Chooser_Source()
 	}
 	for (int i=0;i<ASW_CAMPAIGNS_PER_PAGE;i++)
 	{
+		m_nCampaignWorkshopID[i] = k_PublishedFileIdInvalid;
 		m_campaigns[i].m_szMissionName[0] = '\0';
 	}
 }
@@ -134,6 +135,7 @@ void C_ASW_Voting_Mission_Chooser_Source::Think()
 	}
 	for (int i=0;i<ASW_CAMPAIGNS_PER_PAGE;i++)
 	{
+		m_nCampaignWorkshopID[i] = m_hVotingMission->m_nCampaignWorkshopID[i];
 		Q_snprintf(m_campaigns[i].m_szMissionName, sizeof(m_campaigns[i].m_szMissionName), "%s", m_hVotingMission->m_iszCampaignNames[i]);
 	}
 }
@@ -184,6 +186,14 @@ ASW_Mission_Chooser_Mission* C_ASW_Voting_Mission_Chooser_Source::GetCampaign( i
 		return NULL;
 
 	return &m_campaigns[ nIndex - m_nCampaignOffset ];
+}
+
+PublishedFileId_t C_ASW_Voting_Mission_Chooser_Source::GetCampaignWorkshopID( int nIndex )
+{
+	if ( nIndex < 0 || nIndex >= ASW_CAMPAIGNS_PER_PAGE )
+		return k_PublishedFileIdInvalid;
+
+	return m_nCampaignWorkshopID[ nIndex ];
 }
 
 ASW_Mission_Chooser_Saved_Campaign* C_ASW_Voting_Mission_Chooser_Source::GetSavedCampaign( int nIndex, bool bMultiplayer, const char *szFilterID )

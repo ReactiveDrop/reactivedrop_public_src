@@ -47,10 +47,11 @@ extern ConVar asw_draw_awake_ai;
 extern ConVar asw_alien_debug_death_style;
 // asw - how much extra damage to do to burning aliens
 ConVar asw_fire_alien_damage_scale("asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
-ConVar asw_alien_speed_scale_easy("asw_alien_speed_scale_easy", "0");
-ConVar asw_alien_speed_scale_normal("asw_alien_speed_scale_normal", "0");
-ConVar asw_alien_speed_scale_hard("asw_alien_speed_scale_hard", "0");
-ConVar asw_alien_speed_scale_insane("asw_alien_speed_scale_insane", "0");
+ConVar asw_alien_speed_scale_easy("asw_alien_speed_scale_easy", "0.7", FCVAR_CHEAT );
+ConVar asw_alien_speed_scale_normal("asw_alien_speed_scale_normal", "1.0", FCVAR_CHEAT );
+ConVar asw_alien_speed_scale_hard("asw_alien_speed_scale_hard", "1.1", FCVAR_CHEAT );
+ConVar asw_alien_speed_scale_insane("asw_alien_speed_scale_insane", "1.2", FCVAR_CHEAT );
+ConVar rd_difficulty_tier("rd_difficulty_tier", "0", FCVAR_CHEAT, "Used to make difficulties higher then Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6");
 ConVar asw_alien_hurt_speed( "asw_alien_hurt_speed", "0.5", FCVAR_CHEAT, "Fraction of speed to use when the alien is hurt after being shot" );
 ConVar asw_alien_stunned_speed( "asw_alien_stunned_speed", "0.3", FCVAR_CHEAT, "Fraction of speed to use when the alien is electrostunned" );
 ConVar asw_drop_money("asw_drop_money", "1", FCVAR_CHEAT, "Do aliens drop money?");
@@ -70,6 +71,7 @@ ConVar asw_springcol_core( "asw_springcol_core", "0.33", FCVAR_CHEAT, "Fraction 
 ConVar asw_springcol_radius( "asw_springcol_radius", "50.0", FCVAR_CHEAT, "Radius of the alien's pushaway cylinder" );
 ConVar asw_springcol_force_scale( "asw_springcol_force_scale", "3.0", FCVAR_CHEAT, "Multiplier for each individual push force" );
 ConVar asw_springcol_debug( "asw_springcol_debug", "0", FCVAR_CHEAT, "Display the direction of the pushaway vector. Set to entity index or -1 to show all." );
+ConVar rd_alien_instagib( "rd_alien_instagib", "0", FCVAR_NONE, "If 1 forces aliens to instantly gib upon death, without any fancy animations" );
 
 float CASW_Alien::sm_flLastHurlTime = 0;
 
@@ -113,6 +115,13 @@ END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Alien )
 	DEFINE_KEYFIELD( m_bVisibleWhenAsleep, FIELD_BOOLEAN, "visiblewhenasleep" ),
+    DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
+    DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
+    DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
+    DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ), 
+	DEFINE_KEYFIELD (m_iHealthBonus, FIELD_INTEGER, "healthbonus"),
+    DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ), 
+    DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ), 
 	DEFINE_KEYFIELD( m_iMoveCloneName, FIELD_STRING, "MoveClone" ),
 	DEFINE_KEYFIELD( m_bStartBurrowed,		FIELD_BOOLEAN,	"startburrowed" ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"BreakWaitForScript", InputBreakWaitForScript ),
@@ -127,6 +136,7 @@ BEGIN_DATADESC( CASW_Alien )
 	DEFINE_FIELD(m_fNextPainSound, FIELD_FLOAT),
 	DEFINE_FIELD(m_fNextStunSound, FIELD_FLOAT),
 	DEFINE_FIELD(m_fHurtSlowMoveTime, FIELD_TIME),
+	DEFINE_FIELD(m_flElectroStunSlowMoveTime, FIELD_TIME),
 	//								m_ActBusyBehavior (auto saved by AI)	
 	DEFINE_FIELD( m_hSpawner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_AlienOrders, FIELD_INTEGER ),
@@ -144,6 +154,10 @@ BEGIN_DATADESC( CASW_Alien )
 	DEFINE_FIELD( m_bPushed, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
 END_DATADESC()
+// BenLubar(key-values-director)
+BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
+	// empty scriptdesc for now to make future additions easier
+END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
 
@@ -160,6 +174,7 @@ CASW_Alien::CASW_Alien( void ) :
 	m_fNextStunSound = 0;
 
 	m_fHurtSlowMoveTime = 0;
+	m_flElectroStunSlowMoveTime = 0;
 	m_hSpawner = NULL;
 	m_AlienOrders = AOT_None;
 	m_vecAlienOrderSpot = vec3_origin;
@@ -167,6 +182,14 @@ CASW_Alien::CASW_Alien( void ) :
 	m_bIgnoreMarines = false;
 	m_fLastSleepCheckTime = 0;
 	m_bVisibleWhenAsleep = false;
+    m_bFlammable = true; 
+    m_bTeslable = true; 
+    m_bFreezable = true; 
+    m_bFlinchable = true; 
+	m_iHealthBonus = 0;
+    m_fSizeScale = 1.0f; 
+    m_fSpeedScale = 1.0f; 
+
 	m_fLastMarineCanSeeTime = -100;
 	m_bLastMarineCanSee = false;
 	//m_bGibber = false;
@@ -309,6 +332,8 @@ void CASW_Alien::Spawn()
 	{
 		SetMoveClone( m_iMoveCloneName, NULL );
 	}
+
+    SetModelScale( m_fSizeScale );
 }
 
 void CASW_Alien::Precache()
@@ -440,7 +465,14 @@ bool CASW_Alien::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC
 
 	if ( pEntity && pEntity->Classify() == CLASS_ASW_BAIT )
 	{
-		return GetAbsOrigin().DistToSqr( pEntity->GetAbsOrigin() ) < 90000.0f;	// only see bait within 300 units
+		return GetAbsOrigin().DistToSqr( pEntity->GetAbsOrigin() ) < 10000.0f;	// only see bait within 100 units // riflemod: changed from 90000 to 10000
+	}
+	// riflemod: aliens shouldn't attack knocked out marines 
+	if (pEntity && pEntity->Classify() == CLASS_ASW_MARINE)
+	{
+		CASW_Marine *m = static_cast<CASW_Marine*>(pEntity);
+		if (m->m_bKnockedOut)
+			return false;
 	}
 	return true;
 }
@@ -573,7 +605,7 @@ void CASW_Alien::NPCThink( void )
 	// stop electro stunning if we're slowed
 	if ( m_bElectroStunned && m_lifeState != LIFE_DYING )
 	{
-		if ( m_fHurtSlowMoveTime < gpGlobals->curtime )
+		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
 		{
 			m_bElectroStunned = false;
 		}
@@ -613,7 +645,7 @@ bool CASW_Alien::MarineNearby(float radius, bool bCheck3D)
 			continue;
 
 		CASW_Marine* pMarine = pMarineResource->GetMarineEntity();
-		if (!pMarine)
+		if (!pMarine || pMarine->m_bKnockedOut)
 			continue;
 		
 		Vector diff = pMarine->GetAbsOrigin() - GetAbsOrigin();
@@ -669,6 +701,9 @@ void CASW_Alien::MeleeBleed(CTakeDamageInfo* info)
 //-----------------------------------------------------------------------------
 void CASW_Alien::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) 
 {
+    if (!m_bFreezable)
+        return;
+
 	if ( flFreezeAmount <= 0.0f )
 	{
 		SetCondition(COND_NPC_FREEZE);
@@ -908,9 +943,10 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	int result = 0;	
 
+	CASW_Burning *pBurning = dynamic_cast<CASW_Burning*>( info.GetInflictor() );
 	// scale burning damage up
 	//if (dynamic_cast<CEntityFlame*>(info.GetAttacker()))
-	if (dynamic_cast<CASW_Burning*>(info.GetInflictor()))
+	if ( pBurning )
 	{
 		CTakeDamageInfo newDamage = info;		
 		newDamage.ScaleDamage(asw_fire_alien_damage_scale.GetFloat());
@@ -930,13 +966,13 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// if we take fire damage, catch on fire
-	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) )
+	if (result > 0 && (info.GetDamageType() & DMG_BURN) && m_bFlammable && info.GetWeapon() && !pBurning )
 	{
 		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds
-	if (info.GetDamageType() & DMG_SHOCK)
+	if (info.GetDamageType() & DMG_SHOCK && m_bTeslable)
 	{
 		ElectroStun( asw_stun_grenade_time.GetFloat() );		
 
@@ -2136,6 +2172,10 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 	{
 		m_nDeathStyle = kDIE_INSTAGIB;
 	}
+	else if ( rd_alien_instagib.GetBool() )
+	{
+		m_nDeathStyle = kDIE_INSTAGIB;
+	}
 	else if ( !m_bNeverInstagib && !m_bElectroStunned && info.GetDamage() > 20.0f && RandomFloat() > 0.05f ) // if the damage inflicted was a high amount of damage, instagib 95% of the time
 	{
 		m_nDeathStyle = kDIE_INSTAGIB;
@@ -2160,7 +2200,7 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 		}
 	}
 
-	if (!ShouldGib(info))
+	if ( !ShouldGib( info ) && !m_bNeverRagdoll )
 	{
 		const unsigned int nDamageTypesThatCauseHurling = DMG_BLAST | DMG_BLAST_SURFACE;
 		SetCollisionGroup(ASW_COLLISION_GROUP_PASSABLE);	// don't block marines by dead bodies
@@ -2263,6 +2303,15 @@ void CASW_Alien::GatherConditions()
 		ClearCondition(COND_LIGHT_DAMAGE);
 		ClearCondition(COND_RECEIVED_ORDERS);
 	}
+
+	// reactivedrop: making unflinchable aliens
+	if ( !m_bFlinchable )
+	{
+		ClearCondition( COND_HEAVY_DAMAGE );
+		ClearCondition( COND_LIGHT_DAMAGE );
+		ClearCondition( COND_ASW_FLINCH );
+	}
+
 
 	if (HasCondition(COND_NEW_ENEMY)
 		&& m_AlienOrders != AOT_MoveToIgnoringMarines)	// if we're not ignoring marines, finish our orders once we spot an enemy
@@ -2367,8 +2416,14 @@ void CASW_Alien::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *p
 {
 	if (AllowedToIgnite())
 	{
-		if( IsOnFire() )
+		if (IsOnFire())
+		{
+			// reactivedrop
+			if (ASWBurning())
+				ASWBurning()->ExtendBurning(this, flFlameLifetime);	// 2.5 dps, applied every 0.4 seconds
+			//
 			return;
+		}
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
@@ -2541,15 +2596,15 @@ float CASW_Alien::GetIdealSpeed() const
 	{
 		if ( m_bElectroStunned.Get() )
 		{
-			return BaseClass::GetIdealSpeed() * asw_alien_stunned_speed.GetFloat();
+			return BaseClass::GetIdealSpeed() * m_fSpeedScale * asw_alien_stunned_speed.GetFloat();
 		}
 		else
 		{
-			return BaseClass::GetIdealSpeed() * asw_alien_hurt_speed.GetFloat();
+			return BaseClass::GetIdealSpeed() * m_fSpeedScale * asw_alien_hurt_speed.GetFloat();
 		}
 	}
 
-	return BaseClass::GetIdealSpeed();
+	return BaseClass::GetIdealSpeed() * m_fSpeedScale;
 }
 
 void CASW_Alien::DropMoney( const CTakeDamageInfo &info )
@@ -2589,6 +2644,8 @@ void CASW_Alien::ElectroStun( float flStunTime )
 {
 	if (m_fHurtSlowMoveTime < gpGlobals->curtime + flStunTime)
 		m_fHurtSlowMoveTime = gpGlobals->curtime + flStunTime;
+	if (m_flElectroStunSlowMoveTime < gpGlobals->curtime + flStunTime)
+		m_flElectroStunSlowMoveTime = gpGlobals->curtime + flStunTime;
 
 	m_bElectroStunned = true;
 

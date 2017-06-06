@@ -9,6 +9,8 @@ class CTriggerMultiple;
 struct AI_Waypoint_t;
 class CAI_Node;
 class CASW_Alien;
+class CASW_Spawn_Definition;
+class CASW_Spawn_NPC;
 
 // The spawn manager can spawn aliens and groups of aliens
 
@@ -48,11 +50,22 @@ public:
 	void LevelInitPreEntity();
 	void LevelInitPostEntity();
 	void Update();
-	bool AddHorde( int iHordeSize );			// creates a large pack of aliens somewhere near the marines
-	void AddAlien();							// creates a single alien somewhere near the marines
+	bool AddHorde( int iHordeSize, CASW_Spawn_Definition *pSpawn ); // creates a large pack of aliens somewhere near the marines
+	void AddHordeWanderer( CASW_Spawn_Definition *pSpawn );         // creates a single alien somewhere near the currently spawning horde
+	void AddWanderer( CASW_Spawn_Definition *pSpawn );              // creates a single alien somewhere near the marines
+	bool PrespawnAliens( CASW_Spawn_Definition *pSpawn );           // creates aliens in separate open spaces
+	bool SpawnAlienPack( CASW_Spawn_Definition *pSpawn );           // creates aliens in a cluster
 
-	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );	
-	CBaseEntity* SpawnAlienAt(const char* szAlienClass, const Vector& vecPos, const QAngle &angle);
+	// ported from riflemod
+	void PrespawnAliens(int multiplier);
+	// ported from riflemod
+	void PrespawnAlienAtRandomNode(const char *szAlienClass, const int iNumAliens, const int iHull, const Vector &playerStartPos, const int iNumNodes);
+
+	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
+	int SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
+	CBaseEntity *SpawnAlienAt( const char *szAlienClass, const Vector & vecPos, const QAngle & angle );
+	CBaseEntity *SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle );
+	bool SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle );
 
 	bool ValidSpawnPoint( const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround = true, float flMarineNearDistance = 0 );
 	bool LineBlockedByGeometry( const Vector &vecSrc, const Vector &vecEnd );
@@ -70,15 +83,12 @@ public:
 	int GetNumAlienClasses();
 	ASW_Alien_Class_Entry* GetAlienClass( int i );
 
-	// spawns a shieldbug somewhere randomly in the map
-	bool SpawnRandomShieldbug();
-	bool SpawnRandomParasitePack( int nParasites );
-
 private:
+	template <typename Alien> int SpawnAlienBatch(Alien szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist, const Vector & vecMins, const Vector & vecMaxs);
 	void UpdateCandidateNodes();
 	bool FindHordePosition();
 	CAI_Network* GetNetwork();
-	bool SpawnAlientAtRandomNode();
+	bool SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn );
 	void FindEscapeTriggers();
 	void DeleteRoute( AI_Waypoint_t *pWaypointList );
 
@@ -89,7 +99,9 @@ private:
 	Vector m_vecHordePosition;
 	QAngle m_angHordeAngle;
 	int m_iHordeToSpawn;
-	int m_iAliensToSpawn;
+	CASW_Spawn_Definition *m_pHordeDefinition;
+	CUtlVector<CASW_Spawn_Definition *> m_pHordeWandererDefinition;
+	CUtlVector<CASW_Spawn_Definition *> m_pAliensToSpawn;
 
 	int m_nAwakeAliens;
 	int m_nAwakeDrones;

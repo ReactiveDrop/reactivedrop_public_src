@@ -14,6 +14,7 @@
 	#include "ilagcompensationmanager.h"
 	#include "tier0/vprof.h"
 	#include "asw_marine.h"
+	#include "asw_player.h"
 #else
 	#include "c_baseplayer.h"	
 	#include "usercmd.h"
@@ -21,6 +22,7 @@
 	#include "asw_marine_command.h"
 	#include "tier0/vprof.h"
 	#include "c_asw_marine.h"
+	#include "c_asw_player.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -182,6 +184,17 @@ void CMarineMove::SetupMarineMove( const CBasePlayer *player, CBaseEntity *marin
 	move->m_vecVelocity			= marine->GetAbsVelocity();
 	
 	move->m_nPlayerHandle		= marine;//player;
+
+	/**
+		
+	*/
+	CASW_Player *aswplayer = aswmarine->GetCommander(); 
+	Assert(aswplayer);
+	if (aswplayer)
+	{
+		move->m_vecMovementAxis.Init(0, aswplayer->m_flMovementAxisYaw, 0);
+
+	}
 
 #ifdef GAME_DLL
 	move->SetAbsOrigin( marine->GetAbsOrigin() );

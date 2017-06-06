@@ -8,9 +8,11 @@
 #include "asw_marine_shared.h"
 #include "c_ai_basenpc.h"
 #include "c_asw_vphysics_npc.h"
+#include "iasw_client_aim_target.h"
 #include "asw_playeranimstate.h"
 #include "beamdraw.h"
 #include "object_motion_blur_effect.h"
+#include "asw_deathmatch_mode.h"
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -32,7 +34,10 @@ class CASW_Melee_Attack;
 
 #define CASW_Remote_Turret C_ASW_Remote_Turret
 
-class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers
+/*  We inherit C_ASW_Marine from IASW_Client_Aim_Target to allow autoaiming
+	on marines for deathmatch
+*/
+class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target
 {
 public:
 	DECLARE_CLASS( C_ASW_Marine, C_ASW_VPhysics_NPC );
@@ -41,6 +46,14 @@ public:
 
 					C_ASW_Marine();
 	virtual			~C_ASW_Marine();
+
+	// aim target interface, allows autoaiming onto marines 
+	IMPLEMENT_AUTO_LIST_GET();
+	virtual float GetRadius() { return 23; }
+	virtual bool IsAimTarget() { return ASWDeathmatchMode() ? true : false; }
+	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming) { return WorldSpaceCenter(); }
+	virtual const Vector& GetAimTargetRadiusPos(const Vector &vecFiringSrc) { return WorldSpaceCenter(); }
+
 
 	virtual void	ClientThink();
 	void			PostThink();	// called after moving when the marine is being inhabited
@@ -224,6 +237,13 @@ public:
 	float m_fFireExtinguisherTime;
 	CSoundPatch* m_pFireExtinguisherLoopSound;
 
+	// these methods are needed for minigun to play looped sound file when shooting
+	void StartMinigunLoop();
+	void StopMinigunLoop();
+	bool bPlayingMinigunSound;
+	//float m_fMinigunTime;	
+	CSoundPatch* m_pMinigunLoopSound;
+
 	// health related
 	float m_flNextDamageSparkTime;
 	CUtlReference<CNewParticleEffect> m_hLowHeathEffect;
@@ -260,7 +280,8 @@ public:
 	float m_fRedNamePulse;	// from 0 to 1, how red the marine's name should appear on the HUD for medics
 	bool m_bRedNamePulseUp;
 	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
-	C_BaseAnimating* BecomeRagdollOnClient();
+	virtual C_ClientRagdoll* CreateClientRagdoll( bool bRestoring = false );
+	virtual C_BaseAnimating* BecomeRagdollOnClient();
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	virtual void Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const Vector &vecDir, trace_t *ptr );
 
@@ -290,6 +311,7 @@ public:
 		bClientEmoteGo, bClientEmoteExclaim, bClientEmoteAnimeSmile, bClientEmoteQuestion;
 	float fEmoteMedicTime, fEmoteAmmoTime, fEmoteSmileTime, fEmoteStopTime,
 		fEmoteGoTime, fEmoteExclaimTime, fEmoteAnimeSmileTime, fEmoteQuestionTime;
+	float m_flLastMedicCall, m_flLastAmmoCall;
 
 	// driving
 	IASW_Client_Vehicle* GetASWVehicle();
@@ -370,11 +392,18 @@ public:
 	// jump jets
 	CNetworkVar( int, m_iJumpJetting );
 	Vector	m_vecJumpJetStart;
-	Vector	m_vecJumpJetEnd;
+	CNetworkVar( Vector, m_vecJumpJetEnd );  // reactivedrop: see same var in asw_marine.h
+	CNetworkVar( float, m_fJumpJetDurationOverride);  // reactivedrop: see same var in asw_marine.h
+	CNetworkVar( float, m_fJumpJetAnimationDurationOverride);  // reactivedrop: see same var in asw_marine.h
 	float	m_flJumpJetStartTime;
 	float	m_flJumpJetEndTime;
 	void UpdateJumpJetEffects();
 	CUtlReference<CNewParticleEffect> m_pJumpJetEffect[2];
+	/**
+		Stops jump jet particle effects and sounds
+	*/
+	void StopJumpJetEffects();
+
 
 	// shoulder cone
 	virtual void CreateShoulderCone();
@@ -391,6 +420,7 @@ public:
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)
 	CNetworkVar( int, m_iForcedActionRequest );
 	static C_ASW_Marine* GetLocalMarine();
+	static C_ASW_Marine* GetViewMarine();
 
 private:
 	CMotionBlurObject m_MotionBlurObject;
@@ -405,6 +435,8 @@ private:
 	{
 		return m_hMarineFollowTarget.Get();
 	}
+
+	void StopElectifiedArmorEffects(bool bLocalPlayer);
 };
 
 

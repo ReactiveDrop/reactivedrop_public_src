@@ -65,6 +65,7 @@ CASW_Campaign_Save::CASW_Campaign_Save()
 	m_fVoteEndTime = 0;	
 	m_bFixedSkillPoints = true;
 	m_iMoveDestination = -1;
+	m_bChallengeEverActive = false;
 	for (int i=0;i<ASW_MAX_MISSIONS_PER_CAMPAIGN;i++)
 	{
 		m_MissionComplete.Set(i, 0);
@@ -123,7 +124,8 @@ bool CASW_Campaign_Save::LoadGameFromFile(const char *szFileName)
 		Q_strncpy( m_DateTime.GetForModify(), pSaveKeyValues->GetString("DateTime"), 255 );		
 		m_iNumDeaths = pSaveKeyValues->GetInt("NumDeaths");
 		m_bFixedSkillPoints = !asw_custom_skill_points.GetBool(); //pSaveKeyValues->GetBool( "FixedSkillPoints", true );
-		
+		m_bChallengeEverActive = pSaveKeyValues->GetBool( "ChallengeEverActive", false );
+
 		m_iNumPlayers = pSaveKeyValues->GetInt("NumPlayers");
 		m_PlayerNames.Purge();
 		m_PlayerIDs.Purge();
@@ -261,6 +263,7 @@ bool CASW_Campaign_Save::SaveGameToFile(const char *szFileName)
 	pSaveKeyValues->SetInt("Multiplayer", m_bMultiplayerGame ? 1 : 0);
 	pSaveKeyValues->SetInt( "NumDeaths", m_iNumDeaths );
 	pSaveKeyValues->SetBool( "FixedSkillPoints", m_bFixedSkillPoints );
+	pSaveKeyValues->SetBool( "ChallengeEverActive", m_bChallengeEverActive );
 
 	// update date
 	int year, month, dayOfWeek, day, hour, minute, second;

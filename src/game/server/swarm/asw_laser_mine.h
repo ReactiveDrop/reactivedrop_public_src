@@ -23,6 +23,8 @@ public:
 	unsigned int		PhysicsSolidMaskForEntity() const { return MASK_NPCSOLID; }
 	static CASW_Laser_Mine* ASW_Laser_Mine_Create( const Vector &position, const QAngle &angles, const QAngle &angLaserAim, CBaseEntity *pOwner, CBaseEntity *pMoveParent, bool bFriendly, CBaseEntity *pCreatorWeapon );
 	void				LaserThink( void );
+
+	virtual void		Event_Killed( const CTakeDamageInfo &info );
 	
 	void				StartSpawnFlipping( Vector vecStart, Vector vecEnd, QAngle angEnd, float flDuration );
 	void				SpawnFlipThink();

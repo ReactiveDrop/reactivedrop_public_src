@@ -82,6 +82,10 @@ BEGIN_DATADESC( CASW_Parasite )
 	DEFINE_ENTITYFUNC( LeapTouch ),
 	DEFINE_ENTITYFUNC( NormalTouch ),
 END_DATADESC()
+// BenLubar(key-values-director)
+BEGIN_ENT_SCRIPTDESC( CASW_Parasite, CASW_Alien, "Alien Swarm parasite" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpAttack, "JumpAttack", "jump and attack something" )
+END_SCRIPTDESC()
 
 enum
 {
@@ -645,7 +649,14 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 		// if marine has electrified armour on, that protects him from infestation
 		if ( pMarine->IsElectrifiedArmorActive() )
 		{
-			CTakeDamageInfo info( NULL, NULL, Vector(0,0,0), GetAbsOrigin(), GetHealth() * 2, DMG_SHOCK );
+			// reactivedrop: fix a rare crash
+			// parasites that have filter_activator_name set and are killed by 
+			// marine's electrified armor crash server in 
+			// CFilterName::PassesFilterImpl()
+			// change NULL, NULL to pMarine, pMarine and calc damage force
+			Vector vecDir = this->WorldSpaceCenter() - pMarine->WorldSpaceCenter();
+			VectorNormalize(vecDir);
+			CTakeDamageInfo info( pMarine, pMarine, vecDir, pMarine->WorldSpaceCenter(), GetHealth() * 2, DMG_SHOCK );
 			TakeDamage(info);
 			return false;
 		}
@@ -678,6 +689,11 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 
 void CASW_Parasite::StartInfestation()
 {
+	if ( !IsAlive() )
+	{
+		return;
+	}
+
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( m_hPrepareToInfest.Get() );
 	if ( pMarine )
 	{
@@ -764,6 +780,7 @@ void CASW_Parasite::InfestMarine(CASW_Marine* pMarine)
 			}
 		}
 		
+		m_takedamage = DAMAGE_NO;
 		AddFlag( FL_NOTARGET );
 		SetThink( &CASW_Parasite::InfestThink );
 		SetTouch( NULL );
@@ -881,7 +898,8 @@ void CASW_Parasite::LeapTouch( CBaseEntity *pOther )
 				TouchDamage( pOther );
 				//ClearSchedule( "About to gib self" );
 				// gib us
-				CTakeDamageInfo info(NULL, NULL, Vector(0,0,0), GetAbsOrigin(), GetHealth() * 2,
+				// reactivedrop: change NULL, NULL to this, this
+				CTakeDamageInfo info( this, this, Vector(0, 0, 0), GetAbsOrigin(), GetHealth() * 2,
 						DMG_ACID);
 				TakeDamage(info);
 				SetSchedule( SCHED_DIE );
@@ -1095,6 +1113,31 @@ void CASW_Parasite::UpdatePlaybackRate()
 		case 2: boost *= asw_alien_speed_scale_normal.GetFloat(); break;
 		default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
 	}
+
+	if (rd_difficulty_tier.GetInt() == 1)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.6; break;
+		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.5; break;
+		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.4; break;
+		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.3; break;
+		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.2; break;
+		}
+	}
+
+	if (rd_difficulty_tier.GetInt() == 2)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.1; break;
+		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.0; break;
+		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.9; break;
+		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.8; break;
+		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.7; break;
+		}
+	}
+
 	m_flPlaybackRate = boost;
 }
 
@@ -1249,7 +1292,8 @@ void CASW_Parasite::NPCThink()
 	if (m_bDefanged && m_fSuicideTime < gpGlobals->curtime && GetEnemy() == NULL)
 	{
 		// suicide!		
-		CTakeDamageInfo info(NULL, NULL, Vector(0,0,0), GetAbsOrigin(), GetHealth() * 2,
+		// reactivedrop: change NULL, NULL to this, this
+		CTakeDamageInfo info(this, this, Vector(0,0,0), GetAbsOrigin(), GetHealth() * 2,
 				DMG_ACID);
 		TakeDamage(info);
 	}

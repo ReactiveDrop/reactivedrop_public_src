@@ -68,16 +68,16 @@ public:
 	float m_fLastForcedFireTime;
 #endif
 
-private:
+protected:
 	void	Attack( void );
 	void	EndAttack( void );
 	void	Fire( const Vector &vecOrigSrc, const Vector &vecDir );
 
-	void	SetFiringState( ASW_Weapon_HealGunFireState_t state );
+	virtual void	SetFiringState( ASW_Weapon_HealGunFireState_t state );
 	
-	bool	TargetCanBeHealed( CBaseEntity* pTargetMarine );
-	void	HealSelf();
-	void	HealEntity();
+	virtual bool	TargetCanBeHealed( CBaseEntity* pTargetMarine );
+	virtual void	HealSelf();
+	virtual void	HealEntity();
 	virtual int		GetHealAmount();
 	virtual float	GetInfestationCureAmount();
 #ifdef GAME_DLL
@@ -87,7 +87,7 @@ private:
 public:
 	bool	HealAttach( CBaseEntity *pEntity );
 	bool	HasHealAttachTarget( void )	{ return (m_hHealEntity.Get()) ? true : false; }
-private:
+protected:
 	void	HealDetach();
 
 	void StartSearchSound();

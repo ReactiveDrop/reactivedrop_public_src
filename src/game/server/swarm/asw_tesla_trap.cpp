@@ -619,7 +619,11 @@ bool CASW_TeslaTrap::ZapTarget( CBaseEntity *pEntity )
 
 		vecAIPos = shockTR.endpos;
 		ClearMultiDamage();	
-		CTakeDamageInfo shockDmgInfo( this, this, m_flDamage, DMG_SHOCK );					
+		CTakeDamageInfo shockDmgInfo( this, this, m_flDamage, DMG_SHOCK );
+		if ( IsPlayerPlaced() && m_hMarineDeployer.Get() )
+		{
+			shockDmgInfo.SetAttacker( m_hMarineDeployer );
+		}
 		Vector vecDir = vecAIPos - vecShockSrc;
 		VectorNormalize( vecDir );
 		shockDmgInfo.SetDamagePosition( shockTR.endpos );

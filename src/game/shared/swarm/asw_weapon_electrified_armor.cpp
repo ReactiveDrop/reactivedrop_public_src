@@ -79,6 +79,9 @@ void CASW_Weapon_Electrified_Armor::PrimaryAttack( void )
 	if ( !pMarine || pMarine->IsElectrifiedArmorActive() )
 		return;
 
+	if ( m_iClip1 <= 0 )
+		return;
+
 #ifndef CLIENT_DLL
 	bool bThisActive = (pMarine->GetActiveASWWeapon() == this);
 #endif
@@ -111,19 +114,9 @@ void CASW_Weapon_Electrified_Armor::PrimaryAttack( void )
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 4.0f;
 
-	if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-	{
-		// weapon is lost when all stims are gone
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
+#ifdef GAME_DLL
+	DestroyIfEmpty( true );
 #endif
-	}
 }
 
 void CASW_Weapon_Electrified_Armor::Precache()

@@ -14,7 +14,7 @@
 #include "tier0/icommandline.h"
 #include "mapentities_shared.h"
 #ifdef IS_WINDOWS_PC
-//#include "spawn_helper_nut.h"
+#include "spawn_helper_nut.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -456,7 +456,7 @@ void ScriptInstallPreSpawnHook()
 #ifdef IS_WINDOWS_PC
 	if ( !g_pScriptVM->ValueExists( "__ExecutePreSpawn " ) )
 	{
-		//g_pScriptVM->Run( g_Script_spawn_helper );
+		g_pScriptVM->Run( g_Script_spawn_helper );
 	}
 #endif
 }

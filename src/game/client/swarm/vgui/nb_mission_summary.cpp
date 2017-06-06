@@ -9,6 +9,7 @@
 #include "c_asw_game_resource.h"
 #include "c_asw_objective.h"
 #include "nb_main_panel.h"
+#include "rd_challenges_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,6 +24,8 @@ CNB_Mission_Summary::CNB_Mission_Summary( vgui::Panel *parent, const char *name 
 	m_pTitle = new vgui::Label( this, "Title", "" );
 	m_pDifficultyTitle = new vgui::Label( this, "DifficultyTitle", "" );
 	m_pDifficultyLabel = new vgui::Label( this, "DifficultyLabel", "" );
+	m_pChallengeTitle = new vgui::Label(this, "ChallengeTitle", "");
+	m_pChallengeLabel = new vgui::Label(this, "ChallengeLabel", "");
 	m_pMissionTitle = new vgui::Label( this, "MissionTitle", "" );
 	m_pMissionLabel = new vgui::Label( this, "MissionLabel", "" );
 	m_pObjectivesTitle = new vgui::Label( this, "ObjectivesTitle", "" );
@@ -43,7 +46,7 @@ void CNB_Mission_Summary::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_mission_summary.res" );
+	LoadControlSettings( "resource/ui/nb_mission_summary_rd.res" );
 
 	color32 blue;
 	blue.r = 83;
@@ -123,7 +126,7 @@ void CNB_Mission_Summary::OnThink()
 	if ( CAlienSwarm::IsOnslaught() )
 	{
 		wchar_t wszText[ 128 ];
-		_snwprintf( wszText, sizeof( wszText ), L"%s %s", pDifficulty, g_pVGuiLocalize->FindSafe( "#nb_onslaught_title" ) );
+		V_snwprintf( wszText, sizeof( wszText ), L"%s %s", pDifficulty, g_pVGuiLocalize->FindSafe( "#nb_onslaught_title" ) );
 		m_pDifficultyLabel->SetText( wszText );
 	}
 	else
@@ -151,12 +154,12 @@ void CNB_Mission_Summary::OnThink()
 		{
 			if ( nObjectives == 0 )
 			{
-				_snwprintf( wszObjectivesBuffer, sizeof( wszObjectivesBuffer ), L"- %s", pObjective->GetObjectiveTitle() );
+				V_snwprintf( wszObjectivesBuffer, sizeof( wszObjectivesBuffer ), L"- %s", pObjective->GetObjectiveTitle() );
 			}
 			else
 			{
-				_snwprintf( wszBuffer, sizeof( wszBuffer ), L"%s\n- %s", wszObjectivesBuffer, pObjective->GetObjectiveTitle() );
-				_snwprintf( wszObjectivesBuffer , sizeof( wszObjectivesBuffer ), L"%s", wszBuffer );
+				V_snwprintf( wszBuffer, sizeof( wszBuffer ), L"%s\n- %s", wszObjectivesBuffer, pObjective->GetObjectiveTitle() );
+				V_snwprintf( wszObjectivesBuffer , sizeof( wszObjectivesBuffer ), L"%s", wszBuffer );
 			}
 			nObjectives++;
 		}
@@ -175,6 +178,10 @@ void CNB_Mission_Summary::OnThink()
 	m_pObjectivesLabel->InvalidateLayout( true );
 	m_pObjectivesLabel->GetTextImage()->GetContentSize( texwide, texttall );
 	m_pObjectivesLabel->InvalidateLayout( true );
+
+	extern ConVar rd_challenge;
+	// find challenge shortname and set it here 
+	m_pChallengeLabel->SetText( ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
 }
 
 

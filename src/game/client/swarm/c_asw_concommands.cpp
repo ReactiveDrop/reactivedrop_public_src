@@ -6,6 +6,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_weapon.h"
 #include "c_asw_objective.h"
+#include "c_team.h"
 #include "asw_marine_profile.h"
 #include "c_asw_generic_emitter.h"
 #include "c_asw_generic_emitter_entity.h"
@@ -21,6 +22,8 @@
 #include "PlayerListPanel.h"
 #include "PlayerListContainer.h"
 #include "vgui\nb_mission_panel.h"
+#include "vgui\nb_select_marine_panel.h"
+#include "vgui\briefingframe.h"
 #ifndef _X360
 #include "steam/isteamuserstats.h"
 #include "steam/isteamfriends.h"
@@ -28,6 +31,7 @@
 #include "steam/steam_api.h"
 #include "matchmaking/imatchframework.h"
 #endif
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -35,6 +39,7 @@
 extern ConVar cam_idealdist;
 extern ConVar cam_idealpitch;
 extern ConVar cam_idealyaw;
+extern ConVar rd_deathmatch_loadout_allowed;
 
 extern vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
@@ -616,6 +621,186 @@ void ShowInGameBriefing()
 
 static ConCommand ingamebriefing("ingamebriefing", ShowInGameBriefing, "Shows the mission briefing panel", 0);
 
+CNB_Select_Marine_Panel* createSelectMarinePanel(vgui::Panel *parent) 
+{
+	CNB_Select_Marine_Panel *pMarinePanel = new CNB_Select_Marine_Panel( parent, "Select_Marine_Panel" );
+
+	pMarinePanel->m_nInitialProfileIndex = -1;
+
+	pMarinePanel->InitMarineList();
+	pMarinePanel->MoveToFront();
+
+	pMarinePanel->SetVisible(true);
+
+	return pMarinePanel;
+}
+
+#define CLOSE_IF_OPENED 0
+#define DONT_CLOSE_IF_OPENED 1
+
+void SelectLoadout(int close_option)
+{
+    if ( !ASWDeathmatchMode() )
+        return;
+
+    using namespace vgui;
+
+    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+    if (!pPlayer)
+        return;
+
+    if (engine->IsLevelMainMenuBackground())		// don't show player list on main menu
+    {		
+        return;
+    }
+
+    if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() || 
+		(rd_deathmatch_loadout_allowed.GetBool() &&
+		 ASWDeathmatchMode()->IsDeathmatchEnabled()) )
+	{
+		/*	At first we check if there is an unclosed panel from standard
+			deathmatch and close it
+		*/
+		vgui::Panel *pContainer = GetClientMode()->GetViewport()->FindChildByName("g_PlayerListFrame", true);
+		if ( pContainer )	
+		{
+			pContainer->SetVisible(false);
+			pContainer->MarkForDeletion();
+			pContainer = NULL;
+		}
+
+		// now check a team deathmatch panel, if it is shown close it and return
+		if ( g_hBriefingFrame.Get() )
+		{
+			if ( CLOSE_IF_OPENED == close_option )
+			{
+				// close it // g_hBriefingFrame->Close
+				if (GetClientModeASW())
+					GetClientModeASW()->StopBriefingMusic();
+				g_hBriefingFrame->SetDeleteSelfOnClose(true);
+				g_hBriefingFrame->Close();
+				g_hBriefingFrame = NULL;
+			}
+		}
+		else
+		{
+			g_hBriefingFrame = new BriefingFrame( GetClientMode()->GetViewport(), "g_BriefingFrame" );
+
+			if (!g_hBriefingFrame.Get())
+			{
+				Warning("Error: Briefing frame was closed immediately on opening - game isn't in briefing state?\n");
+			}
+		}
+	}
+	else 
+	{
+		/*	At first we check if there is an unclosed panel from team
+			deathmatch and close it
+		*/
+		if (g_hBriefingFrame.Get())
+		{
+			// close it // g_hBriefingFrame->Close
+			if (GetClientModeASW())
+				GetClientModeASW()->StopBriefingMusic();
+			g_hBriefingFrame->SetDeleteSelfOnClose(true);
+			g_hBriefingFrame->Close();
+			g_hBriefingFrame = NULL;
+		}
+
+		// now check a select marine panel, if it is shown close it and return
+		vgui::Panel *pContainer = GetClientMode()->GetViewport()->FindChildByName("g_PlayerListFrame", true);
+		if (pContainer && CLOSE_IF_OPENED == close_option )	
+		{
+			pContainer->SetVisible(false);
+			pContainer->MarkForDeletion();
+			pContainer = NULL;
+			return;
+		}
+
+		vgui::Frame* pFrame = NULL;
+
+		if (g_hBriefingFrame.Get())
+			pContainer = new PlayerListContainer( g_hBriefingFrame.Get(), "g_PlayerListFrame" );
+		else
+		{
+			if (GetClientModeASW()->m_hCampaignFrame.Get())
+			{
+				pContainer = new PlayerListContainer( GetClientModeASW()->m_hCampaignFrame.Get(), "g_PlayerListFrame" );
+			}
+			else
+			{
+				if (GetClientModeASW()->m_hMissionCompleteFrame.Get())
+				{
+					pContainer = new PlayerListContainer( GetClientModeASW()->m_hMissionCompleteFrame.Get(), "g_PlayerListFrame" );
+				}
+				else
+				{
+					pFrame = new PlayerListContainerFrame( GetClientMode()->GetViewport(), "g_PlayerListFrame" );
+					pContainer = pFrame;
+				}
+			}
+		}
+		HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
+		pContainer->SetScheme(scheme);		
+
+		CNB_Select_Marine_Panel *playerlistpanel = createSelectMarinePanel(pContainer);
+
+		if (!pContainer)
+		{
+			Msg("Error: Player list pContainer frame was closed immediately on opening\n");
+		}
+		else
+		{
+			pContainer->RequestFocus();
+			pContainer->SetVisible(true);
+			pContainer->SetEnabled(true);
+			pContainer->SetKeyBoardInputEnabled(false);
+			pContainer->SetZPos(200);	
+		}
+	}
+}
+
+void cl_select_loadout_f()
+{
+	SelectLoadout( CLOSE_IF_OPENED );
+}
+static ConCommand cl_select_loadout("cl_select_loadout", cl_select_loadout_f, "Toggles a briefing panel which allows to select marine and loadout", 0);
+
+void cl_select_loadout_noclose_f()
+{
+	SelectLoadout( DONT_CLOSE_IF_OPENED );
+}
+static ConCommand cl_select_loadout_noclose("cl_select_loadout_noclose", cl_select_loadout_noclose_f, "Show a briefing panel which allows to select marine and loadout. Does nothing if panel is already shown", 0);
+
+void ShowReportTeam()
+{
+    if ( !ASWDeathmatchMode() )
+        return;
+
+    using namespace vgui;
+
+    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+    if (!pPlayer)
+        return;
+
+    const char *team_name = "";
+    if ( pPlayer->GetTeam() )
+        team_name = pPlayer->GetTeam()->Get_Name();
+
+    int team_number = pPlayer->GetTeamNumber();
+
+    Msg ( "Current player: \n" );
+    Msg( "in local team=%i; team_number=%i; team_name=%s;\n", pPlayer->InLocalTeam(), team_number, team_name );
+
+    int global_teams_number = GetNumberOfTeams();
+    Msg ( "Global teams: %i\n", global_teams_number );
+    for (int i = 0; i < global_teams_number; ++i)
+    {
+        Msg( "Team #%i, name = %s \n", i, GetGlobalTeam(i)->Get_Name() );
+    }
+
+}
+static ConCommand rd_team_report_client("rd_team_report_client", ShowReportTeam, "Outputs debug team information ", FCVAR_CHEAT);
 
 void ShowMedalCollection()
 {
@@ -735,6 +920,7 @@ void asw_debug_spectator_f()
 	}
 }
 ConCommand asw_debug_spectator( "asw_debug_spectator", asw_debug_spectator_f, "Prints info on spectator", FCVAR_CHEAT );
+
 
 // TODO: Remove this before ship?
 void reset_steam_stats_f()

@@ -37,6 +37,21 @@
 
 extern bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer );
 
+BEGIN_ENT_SCRIPTDESC( CBaseCombatWeapon, CBaseAnimating, "Weapon" )
+	DEFINE_SCRIPTFUNC( GetMaxClip1, "" )
+	DEFINE_SCRIPTFUNC( GetMaxClip2, "" )
+	DEFINE_SCRIPTFUNC( GetDefaultClip1, "" )
+	DEFINE_SCRIPTFUNC( GetDefaultClip2, "" )
+	DEFINE_SCRIPTFUNC( Clip1, "" )
+	DEFINE_SCRIPTFUNC( Clip2, "" )
+#ifdef GAME_DLL
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClip1, "SetClip1", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClip2, "SetClip2", "" )
+#endif
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo1, "GetMaxAmmo1", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo2, "GetMaxAmmo2", "" )
+END_SCRIPTDESC();
+
 CBaseCombatWeapon::CBaseCombatWeapon()
 {
 	// Constructor must call this
@@ -2375,6 +2390,30 @@ int CBaseCombatWeapon::GetAvailableWeaponsInBox( CBaseCombatWeapon **pList, int 
 	return count;
 }
 #endif
+
+int CBaseCombatWeapon::ScriptGetMaxAmmo1()
+{
+	int iAmmo = GetMaxClip1();
+
+	if ( UsesClipsForAmmo1() )
+	{
+		iAmmo += GetAmmoDef()->MaxCarry( GetPrimaryAmmoType(), GetOwner() );
+	}
+
+	return iAmmo;
+}
+
+int CBaseCombatWeapon::ScriptGetMaxAmmo2()
+{
+	int iAmmo = GetMaxClip2();
+
+	if ( UsesClipsForAmmo2() )
+	{
+		iAmmo += GetAmmoDef()->MaxCarry( GetSecondaryAmmoType(), GetOwner() );
+	}
+
+	return iAmmo;
+}
 
 
 #if defined( CLIENT_DLL )

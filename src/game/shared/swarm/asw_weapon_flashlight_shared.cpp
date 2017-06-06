@@ -56,15 +56,6 @@ CASW_Weapon_Flashlight::~CASW_Weapon_Flashlight()
 
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Output : Activity
-//-----------------------------------------------------------------------------
-Activity CASW_Weapon_Flashlight::GetPrimaryAttackActivity( void )
-{
-	return ACT_VM_PRIMARYATTACK;
-}
-
 #ifndef CLIENT_DLL
 
 void CASW_Weapon_Flashlight::MarineDropped(CASW_Marine* pMarine)
@@ -86,12 +77,28 @@ void CASW_Weapon_Flashlight::Equip( CBaseCombatCharacter *pOwner )
 
 #endif // not client
 
-void CASW_Weapon_Flashlight::PrimaryAttack( void )
-{
-	// do nothing
-}
-
 void CASW_Weapon_Flashlight::Precache()
 {
 	BaseClass::Precache();
 }
+
+bool CASW_Weapon_Flashlight::OffhandActivate()
+{
+	PrimaryAttack();
+
+	return true;
+}
+
+void CASW_Weapon_Flashlight::PrimaryAttack()
+{
+#ifdef GAME_DLL
+	if (!GetMarine() || GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+		return;
+
+	// reactivedrop: toggle flashlight
+	CASW_Marine *pOwnerMarine = GetMarine();
+	if (pOwnerMarine)
+		pOwnerMarine->FlashlightToggle();
+#endif
+}
+

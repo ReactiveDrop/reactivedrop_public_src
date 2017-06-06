@@ -259,8 +259,8 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 	{		
 		C_BaseEntity *pUsing = m_hHack.Get() ? m_hHack->GetHackTarget() : NULL;
 		// check if the player's using the hack still
-		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pUsing && pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->m_hUsingEntity.Get() == pUsing)
+		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+		if (pUsing && pMarine && pMarine->m_hUsingEntity.Get() == pUsing)
 		{
 			// if he is, fade us out
 			SetAlpha(254);

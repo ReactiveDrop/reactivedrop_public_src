@@ -240,7 +240,7 @@ public:
 	ASW_Skill GetSkillMapping( int nSkillSlot );
 
 	int m_iStaticSkills[ ASW_NUM_SKILL_SLOTS ];			// skills for single mission mode
-	ASW_Skill m_nSkillMapping[ ASW_NUM_SKILL_SLOTS - 1 ];	// maps skill slot to actual skill
+	ASW_Skill m_nSkillMapping[ ASW_NUM_SKILL_SLOTS ];	// maps skill slot to actual skill
 
 	void LoadTextures();	// loads the portrait textures
 };

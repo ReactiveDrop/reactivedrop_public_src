@@ -28,6 +28,7 @@ extern ISoundEmitterSystemBase *soundemitterbase;
 #define ASW_DIRECTIONAL_HOLDING_CHATTER 0.5f
 
 ConVar asw_debug_marine_chatter("asw_debug_marine_chatter", "0", 0, "Show debug info about when marine chatter is triggered");
+ConVar rd_marine_chatter_enabled("rd_marine_chatter_enabled", "1", 0, "If 0 marines will not speak anything");
 
 #define ACTOR_SARGE (1 << 0)
 #define ACTOR_WILDCAT (1 << 1)
@@ -421,6 +422,9 @@ bool CASW_MarineSpeech::PersonalChatter(int iChatterType)
 
 void CASW_MarineSpeech::InternalPlayChatter(CASW_Marine* pMarine, const char* szSoundName, int iSetTimer, int iChatterType, int iSubChatter, CBasePlayer *pOnlyForPlayer)
 {
+	if (!rd_marine_chatter_enabled.GetBool())
+		return;
+
 	if (!pMarine || !ASWGameRules() || iSubChatter >= NUM_SUB_CHATTERS)
 		return;
 

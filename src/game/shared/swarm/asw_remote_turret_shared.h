@@ -42,7 +42,7 @@ public:
 	int UpdateTransmitState();
 	int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	void StopUsingTurret();
-	void StartedUsingTurret(CBaseEntity* pUser);
+	void StartedUsingTurret( CASW_Marine *pUser );
 	QAngle AutoaimDeflection( Vector &vecSrc, const QAngle &eyeAngles, autoaim_params_t &params );
 	float GetAutoaimScore( const Vector &eyePosition, const Vector &viewDir, const Vector &vecTarget, CBaseEntity *pTarget, float fScale );
 		
@@ -50,7 +50,7 @@ public:
 #else	
 	virtual void ClientThink();
 	QAngle m_angEyeAngles;
-	const QAngle& GetRenderAngles();
+	CInterpolatedVar<QAngle> m_iv_angEyeAngles;
 	float GetMuzzleFlashScale();
 	int GetMuzzleAttachment();
 	void ProcessMuzzleFlashEvent();
@@ -67,8 +67,8 @@ public:
 	void ASWRemoteTurretTracer( const Vector &vecEnd );
 #endif
 	CNetworkVar(bool, m_bUpsideDown);
-	CBaseEntity* GetUser();
-	CNetworkHandle(CBaseEntity, m_hUser);
+	CASW_Marine *GetUser();
+	CNetworkHandle(CASW_Marine, m_hUser);
 	float m_fNextFireTime;
 	int m_iAmmoType;
 	virtual const Vector& GetBulletSpread( void )
@@ -81,8 +81,8 @@ public:
 	}
 	virtual Class_T Classify( void ) { return (Class_T) CLASS_ASW_REMOTE_TURRET; }
 
-	CNetworkVar(QAngle, m_angDefault);	// reference angle for view limits
-	CNetworkVar(QAngle, m_angViewLimit);	// how far we can look either side
+	CNetworkQAngle(m_angDefault);	// reference angle for view limits
+	CNetworkQAngle(m_angViewLimit);	// how far we can look either side
 };
 
 

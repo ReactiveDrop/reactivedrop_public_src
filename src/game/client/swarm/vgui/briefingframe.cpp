@@ -12,6 +12,7 @@
 #include "c_user_message_register.h"
 #include "clientmode_asw.h"
 #include "nb_main_panel.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -79,6 +80,9 @@ void BriefingFrame::OnClose()
 {
 	BaseClass::OnClose();
 
+	if ( ASWDeathmatchMode() )		// skip slow fade out for deathmatch 
+		return;
+	
 	// make the fade out slower
 	vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 0.0f, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
 }

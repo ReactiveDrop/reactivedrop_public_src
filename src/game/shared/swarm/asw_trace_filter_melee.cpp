@@ -27,6 +27,8 @@ extern ConVar asw_debug_marine_damage;
 extern ConVar ai_show_hull_attacks;
 #endif
 
+ConVar rd_marine_ff_fist("rd_marine_ff_fist", "0", FCVAR_REPLICATED, "If set to 1, enables friendly fire for fist attacks.");
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pHandleEntity - 
@@ -90,7 +92,7 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 #ifndef CLIENT_DLL
 		CBaseCombatCharacter *pVictimBCC = pEntity->MyCombatCharacterPointer();
 		// Only do these comparisons between NPCs
-		if ( pAttackerBCC && pVictimBCC )
+		if ( !CASW_Marine::AsMarine( pAttackerBCC ) && pAttackerBCC && pVictimBCC )
 		{
 			// stop aliens from meleeing each other, unless they're on different factions
 			if ( pAttackerBCC->GetFaction() == pVictimBCC->GetFaction() )
@@ -119,7 +121,7 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 
 		// check it's in front
 		CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttackerBCC );
-		if ( pMarine )
+		if ( pMarine && !rd_marine_ff_fist.GetBool() )
 		{			
 			// stop marines melee'ing each other
 			if ( CASW_Marine::AsMarine( pEntity ) != NULL )

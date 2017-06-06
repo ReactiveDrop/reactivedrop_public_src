@@ -6,9 +6,6 @@
 
 #include "const.h"
 
-#define ASW_MAX_PLAYER_NAME_LENGTH 32
-#define ASW_MAX_PLAYER_NAME_LENGTH_3D 20
-
 enum ASW_Inventory_slot_t
 {
 	ASW_INVENTORY_SLOT_PRIMARY = 0,
@@ -50,11 +47,11 @@ enum ASW_Skill_Slot
 
 #define ENGINEERING_AURA_RADIUS 300
 
-#define ASW_MAX_PLAYERS 6			// currently limiting the game to 6 players, more than that feels chaotic
+#define ASW_MAX_PLAYERS 32			// currently limiting the game to 6 players, more than that feels chaotic
 
-#define ASW_MAX_READY_PLAYERS 8		// max number of slots for ready players in the game resource
+#define ASW_MAX_READY_PLAYERS 32		// max number of slots for ready players in the game resource
 
-#define ASW_MAX_MARINE_RESOURCES 5
+#define ASW_MAX_MARINE_RESOURCES 32
 #define ASW_MAX_OBJECTIVES 25
 
 #define ASW_PLAYER_MAX_USE_ENTS 3
@@ -569,8 +566,17 @@ enum
 	CLASS_ASW_FIRE,
 	CLASS_ASW_PHYSICS_PROP,
 	CLASS_ASW_SENTRY_BASE,		// bottom part of a deployed sentry gun
-	
+	CLASS_ASW_DEAGLE, 
+	CLASS_ASW_T75_PROJECTILE, 
+	CLASS_ASW_DEVASTATOR,
+	CLASS_ASW_COMBAT_RIFLE,
+	CLASS_ASW_COMBAT_RIFLE_SHOTGUN, // secondary fire of combat rifle
+	CLASS_ASW_HEALAMP_GUN,
+	CLASS_ASW_50CALMG,
+
 	// Add new classes here ^^^^
+	CLASS_FUNC_TRACKTRAIN,
+	CLASS_FUNC_MOVELINEAR,
 
 	LAST_ASW_ENTITY_CLASS,
 };
@@ -582,7 +588,7 @@ enum
 	HITGROUP_BONE_SHIELD = HITGROUP_GEAR + 1,
 };
 
-#define ASW_XP_CAP 42250
+extern const int ASW_XP_CAP;
 
 extern ConVar asw_visrange_generic;
 
@@ -608,5 +614,7 @@ enum CASW_Flock_Leader_State
 
 	NUM_FLOCK_LEADER_STATES,
 };
+
+#define USE_XP_FROM_STEAM
 
 #endif // ASW_SHAREDDEFS_H

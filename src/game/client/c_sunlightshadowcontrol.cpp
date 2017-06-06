@@ -142,7 +142,7 @@ void C_SunlightShadowControl::ClientThink()
 		HACK_GETLOCALPLAYER_GUARD( "C_SunlightShadowControl::ClientThink" );
 
 #ifdef INFESTED_DLL		// shine sun on your current marine, rather than the player entity
-		C_ASW_Marine *pMarine = C_ASW_Marine::GetLocalMarine();
+		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 		if ( !pMarine )
 			return;
 
@@ -221,10 +221,15 @@ void C_SunlightShadowControl::ClientThink()
 		else
 		{
 			g_pClientShadowMgr->UpdateFlashlightState( m_LocalFlashlightHandle, state );
-#ifndef INFESTED_DLL
-#pragma message("TODO: rebuild sunlight projected texture after sunlight control changes.")
+			// BenLubar: commented preprocessor definitions
+			// Fix sunlight_shadow_control never updating its position.
+			// sunlight_shadow_control is the entity used in CS:GO for global dynamic
+			// lighting. It was supposed to follow the locally controlled marine, but the
+			// code to move the light source when the marine moved was disabled.
+// #ifndef INFESTED_DLL
+// #pragma message("TODO: rebuild sunlight projected texture after sunlight control changes.")
 			g_pClientShadowMgr->UpdateProjectedTexture( m_LocalFlashlightHandle, true );
-#endif
+// #endif
 		}
 	}
 	else if ( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )

@@ -42,6 +42,7 @@ extern int GetAttachTypeFromString( const char *pszString );
 // Parse the particle manifest file & register the effects within it
 // Only needs to be called once per game, unless tools change particle definitions
 void ParseParticleEffects( bool bLoadSheets );
+void ParseParticleEffectsMap( const char *pszMapName, bool bLoadSheets );
 
 // Precaches standard particle systems (only necessary on server)
 // Should be called once per level

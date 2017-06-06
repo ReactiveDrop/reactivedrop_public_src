@@ -467,7 +467,14 @@ BaseClass(parent, panelName, false, true)
 	GameUI().PreventEngineHideGameUI();
 
 	// Determine the slot and controller of the player who opened the dialog
-	m_iStartingUserSlot = CBaseModPanel::GetSingleton().GetLastActiveUserId();
+	if ( IsX360() )
+	{
+		m_iStartingUserSlot = CBaseModPanel::GetSingleton().GetLastActiveUserId();
+	}
+	else
+	{
+		m_iStartingUserSlot = STEAM_PLAYER_SLOT;
+	}
 
 	memset( m_wAchievementsTitle, 0, sizeof( m_wAchievementsTitle ) );
 	if ( IsX360() )

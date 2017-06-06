@@ -8,6 +8,7 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 #include "asw_shareddefs.h"
+#include "steam/steam_api.h"
 
 class RestartMissionButton;
 class ReturnCampaignMapButton;
@@ -20,6 +21,7 @@ class CNB_Header_Footer;
 class CNB_Button;
 class CMission_Complete_Message;
 class CNB_Vote_Panel;
+struct RD_LeaderboardEntry_t;
 namespace vgui
 {
 	class IScheme;
@@ -45,6 +47,13 @@ public:
 	void ApplySchemeSettings( vgui::IScheme *scheme );
 	void ShowImageAndPlaySound();	
 	void OnCommand(const char *command);
+	void OnLeaderboardFound( SteamLeaderboard_t id );
+	void OnLeaderboardScoreUploaded( const RD_LeaderboardEntry_t & entry, int nGlobalRankPrevious );
+	void LeaderboardReady();
+	void LeaderboardDownloadedCallback( LeaderboardScoresDownloaded_t *pResult, bool bIOFailure );
+	CCallResult<MissionCompletePanel, LeaderboardScoresDownloaded_t> m_LeaderboardDownloadedCallback;
+	SteamLeaderboard_t m_hLeaderboard;
+	bool m_bLeaderboardReady;
 
 	vgui::Panel* m_pMainElements;	// all the main elements of debrief are put into this subpanel to keep it behind the win screen
 

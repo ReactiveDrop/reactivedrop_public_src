@@ -32,13 +32,14 @@ public:
 	virtual ~CASW_Weapon_Pistol();
 	void Precache();
 
-	float	GetFireRate( void );
+	virtual float GetFireRate( void );
 	
 	void ItemPostFrame();
 	Activity	GetPrimaryAttackActivity( void );
 	virtual bool ShouldMarineMoveSlow();
 
-	void	PrimaryAttack();
+	virtual void PrimaryAttack();
+	virtual void FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo);
 	int ASW_SelectWeaponActivity(int idealActivity);
 	virtual float GetWeaponDamage();
 	virtual int AmmoClickPoint() { return 2; }

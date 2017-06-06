@@ -11,6 +11,8 @@
 	#include "asw_weapon_rifle.h"
 #endif
 
+extern ConVar rd_ground_shooting;
+
 class CASW_Weapon_Railgun : public CASW_Weapon_Rifle
 {
 public:
@@ -57,7 +59,7 @@ public:
 	#endif
 
 	// aiming grenades at the ground
-	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 
 	CNetworkVar(float, m_fSlowTime);		// marine moves slow until this moment
 	CNetworkVar(int, m_iRailBurst);

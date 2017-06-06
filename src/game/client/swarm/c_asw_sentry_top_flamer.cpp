@@ -191,7 +191,8 @@ void C_ASW_Sentry_Top_Flamer::OnStartFiring()
 
 	if ( !m_hFiringEffect )
 	{
-		if ( GetSentryBase() )
+		// reactivedrop: commented, as it is not needed 
+//		if ( GetSentryBase() )
 		{	
 			m_hFiringEffect = ParticleProp()->Create( m_szParticleEffectFireName, PATTACH_POINT_FOLLOW, "muzzle" );
 			/*

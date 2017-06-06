@@ -48,7 +48,7 @@ private:
 	Vector  m_vecLastPosition;
 
 #else
-	virtual void	PostDataUpdate( DataUpdateType_t updateType );
+	virtual void	OnDataChanged(DataUpdateType_t updateType);
 #endif
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MORTAR_SHELL; }	

@@ -24,6 +24,7 @@ extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for
 
 ConVar asw_sentry_gun_type("asw_sentry_gun_type", "-1", FCVAR_CHEAT, "Force the type of sentry guns built to this. -1, the default, reads from the marine attributes.");
 ConVar asw_sentry_infinite_ammo( "asw_sentry_infinite_ammo", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
+ConVar rd_sentry_take_damage_from_marine("rd_sentry_take_damage_from_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 1, players can destroy sentry by shooting at it.");
 
 LINK_ENTITY_TO_CLASS( asw_sentry_base, CASW_Sentry_Base );
 PRECACHE_REGISTER( asw_sentry_base );
@@ -49,8 +50,18 @@ BEGIN_DATADESC( CASW_Sentry_Base )
 	DEFINE_FIELD( m_hDeployer, FIELD_EHANDLE ),
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Base, CBaseAnimating, "sentry" )
+	DEFINE_SCRIPTFUNC( GetAmmo, "" )
+	DEFINE_SCRIPTFUNC( SetAmmo, "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo, "GetMaxAmmo", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSentryTop, "GetSentryTop", "" )
+END_SCRIPTDESC()
 
 CASW_Sentry_Base::CASW_Sentry_Base()
+: bait1_(NULL),
+bait2_(NULL),
+bait3_(NULL),
+bait4_(NULL)
 {
 	m_iAmmo = -1;
 	m_fSkillMarineHelping = 0;
@@ -63,7 +74,22 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 
 CASW_Sentry_Base::~CASW_Sentry_Base()
 {
-
+    if (bait1_)
+    {
+        UTIL_Remove(bait1_);
+    }
+    if (bait2_)
+    {
+        UTIL_Remove(bait2_);
+    }
+    if (bait3_)
+    {
+        UTIL_Remove(bait3_);
+    }
+    if (bait4_)
+    {
+        UTIL_Remove(bait4_);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -98,14 +124,21 @@ void CASW_Sentry_Base::Spawn( void )
 					GetAbsOrigin() - Vector(0, 0, 32), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 	if ( tr.fraction < 1.0f && tr.m_pEnt && !tr.m_pEnt->IsWorld() && !tr.m_pEnt->IsNPC() )
 	{
-		SetParent( tr.m_pEnt );
+		// reactivedrop: prevent sentry sticking to weapons 
+		// only allow func_movelinear and func_tracktrain(possible elevators)
+		// 
+		if (tr.m_pEnt->Classify() == CLASS_FUNC_MOVELINEAR ||
+			tr.m_pEnt->Classify() == CLASS_FUNC_TRACKTRAIN)
+		{
+			SetParent(tr.m_pEnt);
+		}
 	}
 
+	m_iMaxAmmo = GetBaseAmmoForGunType( GetGunType() );
 	if ( m_iAmmo == -1 )
 	{
-		m_iAmmo = GetBaseAmmoForGunType( GetGunType() );
+		m_iAmmo = m_iMaxAmmo;
 	}
-	m_iMaxAmmo = m_iAmmo;
 }
 
 void CASW_Sentry_Base::PlayDeploySound()
@@ -325,6 +358,11 @@ CASW_Sentry_Top* CASW_Sentry_Base::GetSentryTop()
 	return assert_cast<CASW_Sentry_Top*>(m_hSentryTop.Get());
 }
 
+HSCRIPT CASW_Sentry_Base::ScriptGetSentryTop()
+{
+	return ToHScript( GetSentryTop() );
+}
+
 bool CASW_Sentry_Base::IsUsable(CBaseEntity *pUser)
 {
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
@@ -332,6 +370,9 @@ bool CASW_Sentry_Base::IsUsable(CBaseEntity *pUser)
 
 void CASW_Sentry_Base::OnFiredShots( int nNumShots )
 {
+	if ( !asw_sentry_infinite_ammo.GetBool() )
+		m_iAmmo -= nNumShots;
+
 	if ( GetSentryTop() )
 	{
 		int nThreeQuarterAmmo = GetBaseAmmoForGunType( GetGunType() ) * 0.75f;
@@ -353,23 +394,26 @@ void CASW_Sentry_Base::OnFiredShots( int nNumShots )
 		if( m_hDeployer )
 			m_hDeployer->OnWeaponFired( GetSentryTop(), nNumShots );
 	}
-
-	if ( !asw_sentry_infinite_ammo.GetBool() )
-		m_iAmmo -= nNumShots;
 }
 
 int CASW_Sentry_Base::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	// no friendly fire damage 
-	CBaseEntity *pAttacker = info.GetAttacker();
-	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
-	{
-		return 0;
-	}
-	else
+	
+	if (rd_sentry_take_damage_from_marine.GetBool())
 	{
 		return BaseClass::OnTakeDamage(info);
 	}
+	else
+	{
+		// no friendly fire damage 
+		CBaseEntity *pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		{
+			return 0;
+		}
+	}
+
+	return BaseClass::OnTakeDamage(info);
 }
 
 // explode if we die
@@ -469,6 +513,11 @@ CASW_Sentry_Base::GunType_t CASW_Sentry_Base::GetGunType( void ) const
 	{
 		return (GunType_t) m_nGunType.Get();
 	}
+}
+
+int CASW_Sentry_Base::ScriptGetMaxAmmo()
+{
+	return GetBaseAmmoForGunType( GetGunType() );
 }
 
 

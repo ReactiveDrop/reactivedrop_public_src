@@ -50,6 +50,7 @@ public:
 	virtual void FindCampaigns(int nCampaignOffset, int iNumSlots);
 	virtual ASW_Mission_Chooser_Mission* GetCampaigns();	// Passes an array of campaign names back
 	virtual ASW_Mission_Chooser_Mission* GetCampaign( int nIndex );
+	virtual PublishedFileId_t GetCampaignWorkshopID( int nIndex );
 	virtual int	 GetNumCampaigns();
 
 	virtual void FindSavedCampaigns(int nSaveOffset, int iNumSlots, bool bMultiplayer, const char *szFilterID);
@@ -59,11 +60,18 @@ public:
 	virtual void RefreshSavedCampaigns();
 	virtual void ResetCurrentPage() { }
 	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName);	// returns the intro map for the campaign that this save uses
+	virtual void ClearCache();
 
 	virtual KeyValues *GetMissionDetails( const char *szMissionName );
 	virtual KeyValues *GetCampaignDetails( const char *szCampaignName );
 
 	class MapNameLess
+	{
+	public:
+        bool Less( const MapListName& src1, const MapListName& src2, void *pCtx );
+	};
+
+	class CampaignNameLess
 	{
 	public:
         bool Less( const MapListName& src1, const MapListName& src2, void *pCtx );
@@ -80,7 +88,7 @@ public:
 	void ClearCampaignList();
 	void BuildCampaignList();
 	void AddToCampaignList(const char *szMapName);
-	CUtlSortVector<MapListName, MapNameLess> m_CampaignList;
+	CUtlSortVector<MapListName, CampaignNameLess> m_CampaignList;
 
 	class SavedCampaignLess
 	{

@@ -7,6 +7,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
+#include "rd_vgui_leaderboard_panel.h"
 
 class ExperienceBar;
 class ExperienceStatLine;
@@ -58,6 +59,8 @@ public:
 	WeaponUnlockPanel *m_pWeaponUnlockPanel;
 	vgui::Label *m_pMedalsTitle;
 	// == MANAGED_MEMBER_POINTERS_END ==
+
+	CReactiveDrop_VGUI_Leaderboard_Panel *m_pLeaderboard;
 
 	int m_iPlayerLevel;
 	const char* m_pszWeaponUnlockClass;

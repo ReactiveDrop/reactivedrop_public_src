@@ -22,6 +22,7 @@
 #include "c_asw_game_resource.h"
 #include "c_asw_door.h"
 #include "c_asw_use_area.h"
+#include "asw_input.h"
 
 #include "ConVar.h"
 #include "tier0/vprof.h"
@@ -218,7 +219,10 @@ void CASWHudEmotes::PaintEmote(C_BaseEntity* pEnt, float fTime, int iTexture, fl
 	Vector vecFacing;
 	AngleVectors(pEnt->GetRenderAngles(), &vecFacing);
 	vecFacing *= 5;
-	if (!debugoverlay->ScreenPosition( pEnt->GetRenderOrigin() + Vector(0,40,70) + vecFacing, screenPos )) 
+	// BenLubar: Fix emotes being offset when the camera is rotated
+	float flYaw = ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ) / 180 * M_PI;
+	Vector vecOffset( cosf( flYaw ) * 40, sinf( flYaw ) * 40, 70 );
+	if (!debugoverlay->ScreenPosition( pEnt->GetRenderOrigin() + vecOffset + vecFacing, screenPos ))
 	{
 		//Msg("Emote marinepos: %s\n", VecToString(pEnt->GetRenderOrigin()));
 		//Msg("Emote marinefacing: %s\n", VecToString(vecFacing));

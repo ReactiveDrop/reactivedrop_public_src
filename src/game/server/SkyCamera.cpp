@@ -64,6 +64,8 @@ BEGIN_DATADESC( CSkyCamera )
 	DEFINE_KEYFIELD( m_skyboxData.fog.end,				FIELD_FLOAT, "fogend" ),
 	DEFINE_KEYFIELD( m_skyboxData.fog.maxdensity,		FIELD_FLOAT, "fogmaxdensity" ),
 	DEFINE_KEYFIELD( m_skyboxData.fog.HDRColorScale,	FIELD_FLOAT, "HDRColorScale" ),
+	// reactivedrop: #iss-3dskyfog
+	DEFINE_KEYFIELD( m_skyboxData.usecurrentfogcolor,   FIELD_BOOLEAN, "usecurrentfogcolor" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"ActivateSkybox",	InputActivateSkybox ),
 

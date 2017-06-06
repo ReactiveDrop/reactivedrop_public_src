@@ -13,6 +13,7 @@
 #include "npcevent.h"
 #include "asw_sentry_base.h"
 #include "func_movelinear.h"
+#include "asw_bait.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -279,6 +280,12 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	return true;
 }
 
+#ifndef CLIENT_DLL
+ConVar rm_bait_offsetx("rm_bait_offsetx", "40", FCVAR_NONE, "tmp");
+ConVar rm_bait_offsety("rm_bait_offsety", "40", FCVAR_NONE, "tmp");
+ConVar rm_bait_offsetz("rm_bait_offsetz", "70", FCVAR_NONE, "tmp");
+#endif
+
 void CASW_Weapon_Sentry::DeploySentry()
 {
 	CASW_Marine *pMarine = GetMarine();
@@ -297,6 +304,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 #ifndef CLIENT_DLL
 	CASW_Sentry_Base* pBase = (CASW_Sentry_Base *)CreateEntityByName( "asw_sentry_base" );	
 	
+    //Msg("Abs angles %f %f %f", m_angValidSentryFacing.x, m_angValidSentryFacing.y, m_angValidSentryFacing.z);
     pBase->SetAbsAngles( m_angValidSentryFacing );
     pBase->m_hDeployer = pMarine;
     pBase->SetGunType( m_iSentryMunitionType );
@@ -306,6 +314,59 @@ void CASW_Weapon_Sentry::DeploySentry()
     pBase->SetAbsVelocity( vec3_origin );
     pBase->Spawn();
     pBase->PlayDeploySound();
+
+    // riflemod: create a bait near the sentry for aliens to attack sentry
+    float sentry_angle = m_angValidSentryFacing.y; //degrees 
+    CASW_Bait *pEnt1 = NULL;
+    
+    Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle)), sin(DEG2RAD(sentry_angle)), 0);
+    Vector bait_dir = bait_ang.Normalized() * rm_bait_offsetx.GetFloat();
+    {
+        
+        Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector(0, 0, 10);
+        pEnt1 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
+        if ( pEnt1 )
+        {
+            pEnt1->SetDuration( 10000 );
+        }
+    }
+
+    CASW_Bait *pEnt2 = NULL;
+    {
+        Vector bait_vec = m_vecValidSentrySpot - bait_dir + Vector(0, 0, 10);
+        pEnt2 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
+        if ( pEnt2 )
+        {
+            pEnt2->SetDuration( 10000 );
+        }
+    }
+
+    CASW_Bait *pEnt3 = NULL;
+    {
+        Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle + 90)), sin(DEG2RAD(sentry_angle + 90)), 0);
+        Vector bait_dir = bait_ang.Normalized() * rm_bait_offsety.GetFloat();
+        Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector(0, 0, 10);
+        pEnt3 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
+        if ( pEnt3 )
+        {
+            pEnt3->SetDuration( 10000 );
+        }
+    }
+
+    CASW_Bait *pEnt4 = NULL;
+    {
+        Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle + 90)), sin(DEG2RAD(sentry_angle + 90)), 0);
+        Vector bait_dir = bait_ang.Normalized() * rm_bait_offsety.GetFloat();
+        Vector bait_vec = m_vecValidSentrySpot - bait_dir + Vector(0, 0, 10);
+        pEnt4 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
+        if ( pEnt4 )
+        {
+            pEnt4->SetDuration( 10000 );
+        }
+    }
+
+    pBase->SetBait(pEnt1, pEnt2, pEnt3, pEnt4);
+    //
 
 	IGameEvent * event = gameeventmanager->CreateEvent( "sentry_placed" );
 	if ( event )

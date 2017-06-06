@@ -164,14 +164,16 @@ void ExperienceStatLine::InitFor( C_ASW_Player *pPlayer )
 		case ASW_XP_KILLS:
 		{
 			wchar_t num[ 8 ];
-			if ( pPlayer->GetStatNumXP( ASW_XP_KILLS ) > 100 )
-			{
-				V_snwprintf( num, sizeof( num ), L"100+" );
-			}
-			else
-			{
+			// reactivedrop: show actual number of kills instead of 100+
+			// commented 100+ part
+// 			if ( pPlayer->GetStatNumXP( ASW_XP_KILLS ) > 100 )
+// 			{
+// 				V_snwprintf( num, sizeof( num ), L"100+" );
+// 			}
+// 			else
+// 			{
 				V_snwprintf( num, sizeof( num ), L"%d", pPlayer->GetStatNumXP( ASW_XP_KILLS ) );
-			}
+//			}
 			m_pStatNum->SetText( num );
 
 			m_pStatsBar->Init( 0, pPlayer->GetEarnedXP( ASW_XP_KILLS ), flRate, true, false );
@@ -199,14 +201,15 @@ void ExperienceStatLine::InitFor( C_ASW_Player *pPlayer )
 		case ASW_XP_FRIENDLY_FIRE:
 		{
 			wchar_t num[ 8 ];
-			if ( pPlayer->GetStatNumXP( ASW_XP_FRIENDLY_FIRE ) > 100 )
-			{
-				V_snwprintf( num, sizeof( num ), L"100+" );
-			}
-			else
-			{
+			// reactivedrop: 
+// 			if ( pPlayer->GetStatNumXP( ASW_XP_FRIENDLY_FIRE ) > 100 )
+// 			{
+// 				V_snwprintf( num, sizeof( num ), L"100+" );
+// 			}
+// 			else
+// 			{
 				V_snwprintf( num, sizeof( num ), L"%d", pPlayer->GetStatNumXP( ASW_XP_FRIENDLY_FIRE ) );
-			}
+//			}
 			m_pStatNum->SetText( num );
 
 			m_pStatsBar->Init( 0, pPlayer->GetEarnedXP( ASW_XP_FRIENDLY_FIRE ), flRate, true, false );
@@ -217,14 +220,15 @@ void ExperienceStatLine::InitFor( C_ASW_Player *pPlayer )
 		case ASW_XP_DAMAGE_TAKEN:
 		{
 			wchar_t num[ 8 ];
-			if ( pPlayer->GetStatNumXP( ASW_XP_DAMAGE_TAKEN ) > 100 )
-			{
-				V_snwprintf( num, sizeof( num ), L"100+" );
-			}
-			else
-			{
+			// reactivedrop: 
+// 			if ( pPlayer->GetStatNumXP( ASW_XP_DAMAGE_TAKEN ) > 100 )
+// 			{
+// 				V_snwprintf( num, sizeof( num ), L"100+" );
+// 			}
+// 			else
+// 			{
 				V_snwprintf( num, sizeof( num ), L"%d", pPlayer->GetStatNumXP( ASW_XP_DAMAGE_TAKEN ) );
-			}
+//			}
 			m_pStatNum->SetText( num );
 
 			m_pStatsBar->Init( 0, pPlayer->GetEarnedXP( ASW_XP_DAMAGE_TAKEN ), flRate, true, false );
@@ -235,14 +239,15 @@ void ExperienceStatLine::InitFor( C_ASW_Player *pPlayer )
 		case ASW_XP_HEALING:
 		{
 			wchar_t num[ 8 ];
-			if ( pPlayer->GetStatNumXP( ASW_XP_HEALING ) > 500 )
-			{
-				V_snwprintf( num, sizeof( num ), L"500+" );
-			}
-			else
-			{
+// 			if ( pPlayer->GetStatNumXP( ASW_XP_HEALING ) > 500 )
+			// reactivedrop: 
+// 			{
+// 				V_snwprintf( num, sizeof( num ), L"500+" );
+// 			}
+// 			else
+// 			{
 				V_snwprintf( num, sizeof( num ), L"%d", pPlayer->GetStatNumXP( ASW_XP_HEALING ) );
-			}
+//			}
 			m_pStatNum->SetText( num );
 
 			m_pStatsBar->Init( 0, pPlayer->GetEarnedXP( ASW_XP_HEALING ), flRate, true, false );
@@ -253,14 +258,15 @@ void ExperienceStatLine::InitFor( C_ASW_Player *pPlayer )
 		case ASW_XP_HACKING:
 		{
 			wchar_t num[ 8 ];
-			if ( pPlayer->GetStatNumXP( ASW_XP_HACKING ) > 2 )
-			{
-				V_snwprintf( num, sizeof( num ), L"2+" );
-			}
-			else
-			{
+			// reactivedrop: 
+// 			if ( pPlayer->GetStatNumXP( ASW_XP_HACKING ) > 2 )
+// 			{
+// 				V_snwprintf( num, sizeof( num ), L"2+" );
+// 			}
+// 			else
+// 			{
 				V_snwprintf( num, sizeof( num ), L"%d", pPlayer->GetStatNumXP( ASW_XP_HACKING ) );
-			}
+//			}
 			m_pStatNum->SetText( num );
 
 			m_pStatsBar->Init( 0, pPlayer->GetEarnedXP( ASW_XP_HACKING ), flRate, true, false );

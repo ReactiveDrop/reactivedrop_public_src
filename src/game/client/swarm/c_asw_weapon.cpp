@@ -98,6 +98,7 @@ ConVar asw_laser_sight_min_distance( "asw_laser_sight_min_distance", "9999", 0, 
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
+extern ConVar rd_show_others_laser_pointer;
 
 C_ASW_Weapon::C_ASW_Weapon() :
 m_GlowObject( this, Vector( 0.0f, 0.4f, 0.75f ), 1.0f, false, true )
@@ -144,6 +145,7 @@ C_ASW_Weapon::~C_ASW_Weapon()
 		m_hBayonet = NULL;
 	}
 
+    RemoveLaserPointerEffect();
 	if (m_hLaserSight.Get())
 	{
 		UTIL_Remove( m_hLaserSight.Get() );
@@ -401,9 +403,9 @@ void C_ASW_Weapon::ClientThink()
 	if ( !GetOwner() )
 	{
 		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if ( pLocalPlayer && pLocalPlayer->GetMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetMarine() ) )
+		if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewMarine() ) )
 		{
-			flDistanceToMarineSqr = (pLocalPlayer->GetMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
+			flDistanceToMarineSqr = (pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
 			if ( flDistanceToMarineSqr < flWithinDistSqr )
 				bShouldGlow = true;
 		}
@@ -724,6 +726,13 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	if ( pPlayer == pLocalPlayer && pMarine->IsInhabited() )
 		bLocalPlayer = true;
 
+	// don't show laser pointers of non local players
+	if (rd_show_others_laser_pointer.GetBool() == 0 && bLocalPlayer == false)
+	{
+		RemoveLaserPointerEffect();
+		return;
+	}
+
 	Vector vecOrigin;
 	QAngle angWeapon;
 
@@ -918,4 +927,11 @@ void C_ASW_Weapon::RemoveMuzzleFlashEffect( void )
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_pMuzzleFlashEffect );
 		m_pMuzzleFlashEffect = NULL;
 	}
+}
+
+extern ConVar asw_ground_secondary;
+
+bool C_ASW_Weapon::GroundSecondary()
+{
+	return asw_ground_secondary.GetBool();
 }

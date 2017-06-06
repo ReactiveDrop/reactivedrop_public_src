@@ -25,7 +25,9 @@
 extern ConVar asw_controls; // asw, whether to use swarm controls or not
 ConVar joy_pan_camera("joy_pan_camera", "0", FCVAR_ARCHIVE);
 ConVar asw_ground_secondary("asw_ground_secondary", "1", FCVAR_NONE, "Set to 1 to make marines aim grenades at the floor instead of firing them straight");
-
+extern ConVar rd_ground_shooting;
+// BenLubar(spectator-mouse)
+ConVar rd_networked_mouse("rd_networked_mouse", "1", FCVAR_NONE, "Send the mouse position to the server for spectating");
 
 static  kbutton_t	in_holdorder;
 
@@ -213,7 +215,7 @@ void IN_HoldOrderDown()
 				if (pTarget->m_hOrderArrow.Get())
 				{
 					// work out yaw to my marine
-					C_ASW_Marine *pMyMarine = pPlayer->GetMarine();
+					C_ASW_Marine *pMyMarine = pPlayer->GetViewMarine();
 					float fYaw = 0;
 					if (pMyMarine)
 					{
@@ -260,10 +262,10 @@ void IN_HoldOrderUp()
 			Vector vecOrderDir(dx, dy, 0);
 			fYaw = -UTIL_VecToYaw(vecOrderDir);
 		}
-		else if ( pPlayer->GetMarine() )
+		else if ( pPlayer->GetViewMarine() )
 		{
 			// otherwise order the marine to face away from current marine
-			Vector diff = s_vecMarineOrderPos - pPlayer->GetMarine()->GetAbsOrigin();
+			Vector diff = s_vecMarineOrderPos - pPlayer->GetViewMarine()->GetAbsOrigin();
 			diff.z = 0;
 			fYaw = UTIL_VecToYaw(diff);
 		}
@@ -282,7 +284,7 @@ void UpdateOrderArrow()
 	if (!(in_holdorder.GetPerUser().state & 1))
 		return;
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer || !pPlayer->GetMarine() || s_hOrderTarget.Get() == NULL || s_fMarineDownTime == 0)
+	if (!pPlayer || !pPlayer->GetViewMarine() || s_hOrderTarget.Get() == NULL || s_fMarineDownTime == 0)
 		return;
 	// find how much the mouse has moved
 	int cx, cy;
@@ -303,7 +305,7 @@ void UpdateOrderArrow()
 	else
 	{
 		// otherwise order the marine to face away from current marine
-		Vector diff = s_vecMarineOrderPos - pPlayer->GetMarine()->GetAbsOrigin();
+		Vector diff = s_vecMarineOrderPos - pPlayer->GetViewMarine()->GetAbsOrigin();
 		diff.z = 0;
 		fYaw = UTIL_VecToYaw(diff);
 	}
@@ -562,8 +564,10 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		}
 	}
 
+	C_ASW_Weapon *pWeapon = pMarine ? pMarine->GetActiveASWWeapon() : NULL;
+	const bool bGroundSecondary = pWeapon ? pWeapon->GroundSecondary() : false;
 	// asw - alter view angles for this move if it's one where we're firing off a ground grenade
-	if ( asw_ground_secondary.GetBool() && cmd->buttons & IN_ATTACK2 )
+	if ( bGroundSecondary && cmd->buttons & IN_ATTACK2 || rd_ground_shooting.GetBool() )
 	{
 		ASW_AdjustViewAngleForGroundShooting(viewangles);
 	}
@@ -598,10 +602,28 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 	cmd->forced_action = pMarine ? pMarine->GetForcedActionRequest() : 0;
 	cmd->sync_kill_ent = 0;
 
-	C_ASW_Weapon *pWeapon = pMarine ? pMarine->GetActiveASWWeapon() : NULL;
 	if ( pWeapon )
 	{
 		pWeapon->CheckSyncKill( cmd->forced_action, cmd->sync_kill_ent );
+	}
+
+	// BenLubar(spectator-mouse)
+	if ( rd_networked_mouse.GetBool() )
+	{
+		// BenLubar: send the screen size and cursor position to the server
+		cmd->screenw = (short) ScreenWidth();
+		cmd->screenh = (short) ScreenHeight();
+		int mx, my;
+		ASWInput()->GetFullscreenMousePos( &mx, &my );
+		cmd->mousex = (short) mx;
+		cmd->mousey = (short) my;
+	}
+	else
+	{
+		cmd->screenw = 0;
+		cmd->screenh = 0;
+		cmd->mousex = 0;
+		cmd->mousey = 0;
 	}
 
 	pVerified->m_cmd = *cmd;

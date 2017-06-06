@@ -1,0 +1,2970 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>Client (Swarm)</ProjectName>
+    <ProjectGuid>{A26C0361-6B09-9E3D-5194-C9CB89243710}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug_swarm\</OutDir>
+    <IntDir>.\Debug_swarm\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>client</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release_swarm\</OutDir>
+    <IntDir>.\Release_swarm\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>client</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
+set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
+if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
+if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
+if ERRORLEVEL 1 exit 1
+</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>cbase.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <BrowseInformation />
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)client.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)$(TargetName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>
+      </BaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Manifest>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Manifest>
+    <Xdcmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Xdcmake>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)client.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
+      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
+mkdir "..\..\..\reactivedrop\bin\."
+:ValveStart
+copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
+if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
+if ERRORLEVEL 1 goto BuildEventFailed
+goto BuildEventOK
+:BuildEventFailed
+echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
+del /q "$(TargetDir)"$(TargetFileName)
+exit 1
+:BuildEventOK
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
+set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
+if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
+if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
+if ERRORLEVEL 1 exit 1
+</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>cbase.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <BrowseInformation />
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)client.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)$(TargetName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <BaseAddress>
+      </BaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Manifest>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Manifest>
+    <Xdcmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Xdcmake>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)client.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
+      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
+mkdir "..\..\..\reactivedrop\bin\."
+:ValveStart
+copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
+if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
+if ERRORLEVEL 1 goto BuildEventFailed
+goto BuildEventOK
+:BuildEventFailed
+echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
+del /q "$(TargetDir)"$(TargetFileName)
+exit 1
+:BuildEventOK
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\vpc_scripts\loadaddress.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_base.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_base.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_debug.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_release.vpc" />
+    <None Include="..\..\vpc_scripts\version.vpc" />
+    <None Include="client_base.vpc" />
+    <None Include="client_swarm.vpc" />
+    <None Include="vscript_client.nut" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\blackbox_helper.cpp" />
+    <ClCompile Include="..\..\common\compiledcaptionswap.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\debug_dll_check.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\language.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\randoverride.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\bone_accessor.cpp" />
+    <ClCompile Include="..\..\public\client_class.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\closedcaptions.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\collisionutils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\crtmemdebug.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\dt_recv.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\dt_utlvector_common.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\dt_utlvector_recv.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\filesystem_helpers.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\interpolatortypes.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\jigglebones.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\networkvar.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\phonemeconverter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\posedebugger.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\rope_physics.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\scratchpad3d.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\ScratchPadUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\sentence.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\simple_physics.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\SoundParametersInternal.cpp" />
+    <ClCompile Include="..\..\public\stringregistry.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\studio.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\tier0\memoverride.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\tier1\interpolatedvar.cpp" />
+    <ClCompile Include="..\..\public\tools\bonelist.cpp" />
+    <ClCompile Include="..\..\public\vallocator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\vgui_controls\vgui_controls.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\shared\achievementmgr.cpp" />
+    <ClCompile Include="..\shared\achievement_saverestore.cpp" />
+    <ClCompile Include="..\shared\activitylist.cpp" />
+    <ClCompile Include="..\shared\ai_criteria.cpp" />
+    <ClCompile Include="..\shared\ai_responsesystem.cpp" />
+    <ClCompile Include="..\shared\ai_speechconcept.cpp" />
+    <ClCompile Include="..\shared\ammodef.cpp" />
+    <ClCompile Include="..\shared\animation.cpp" />
+    <ClCompile Include="..\shared\baseachievement.cpp" />
+    <ClCompile Include="..\shared\basecombatcharacter_shared.cpp" />
+    <ClCompile Include="..\shared\basecombatweapon_shared.cpp" />
+    <ClCompile Include="..\shared\baseentity_shared.cpp" />
+    <ClCompile Include="..\shared\basegrenade_shared.cpp" />
+    <ClCompile Include="..\shared\baseparticleentity.cpp" />
+    <ClCompile Include="..\shared\baseplayer_shared.cpp" />
+    <ClCompile Include="..\shared\baseviewmodel_shared.cpp" />
+    <ClCompile Include="..\shared\base_playeranimstate.cpp" />
+    <ClCompile Include="..\shared\beam_shared.cpp" />
+    <ClCompile Include="..\shared\collisionproperty.cpp" />
+    <ClCompile Include="..\shared\death_pose.cpp" />
+    <ClCompile Include="..\shared\debugoverlay_shared.cpp" />
+    <ClCompile Include="..\shared\decals.cpp" />
+    <ClCompile Include="..\shared\effect_dispatch_data.cpp" />
+    <ClCompile Include="..\shared\ehandle.cpp" />
+    <ClCompile Include="..\shared\entitylist_base.cpp" />
+    <ClCompile Include="..\shared\EntityParticleTrail_Shared.cpp" />
+    <ClCompile Include="..\shared\env_detail_controller.cpp" />
+    <ClCompile Include="..\shared\env_wind_shared.cpp" />
+    <ClCompile Include="..\shared\eventlist.cpp" />
+    <ClCompile Include="..\shared\func_ladder.cpp" />
+    <ClCompile Include="..\shared\gamemovement.cpp" />
+    <ClCompile Include="..\shared\gamerules.cpp" />
+    <ClCompile Include="..\shared\gamerules_register.cpp" />
+    <ClCompile Include="..\shared\GameStats.cpp" />
+    <ClCompile Include="..\shared\gamestringpool.cpp" />
+    <ClCompile Include="..\shared\gamevars_shared.cpp" />
+    <ClCompile Include="..\shared\game_timescale_shared.cpp" />
+    <ClCompile Include="..\shared\hintmessage.cpp" />
+    <ClCompile Include="..\shared\hintsystem.cpp" />
+    <ClCompile Include="..\shared\igamesystem.cpp" />
+    <ClCompile Include="..\shared\mapentities_shared.cpp" />
+    <ClCompile Include="..\shared\movevars_shared.cpp" />
+    <ClCompile Include="..\shared\mp_shareddefs.cpp" />
+    <ClCompile Include="..\shared\multiplay_gamerules.cpp" />
+    <ClCompile Include="..\shared\obstacle_pushaway.cpp" />
+    <ClCompile Include="..\shared\particlesystemquery.cpp" />
+    <ClCompile Include="..\shared\particle_parse.cpp" />
+    <ClCompile Include="..\shared\particle_property.cpp" />
+    <ClCompile Include="..\shared\physics_main_shared.cpp" />
+    <ClCompile Include="..\shared\physics_saverestore.cpp" />
+    <ClCompile Include="..\shared\physics_shared.cpp" />
+    <ClCompile Include="..\shared\point_bonusmaps_accessor.cpp" />
+    <ClCompile Include="..\shared\point_posecontroller.cpp" />
+    <ClCompile Include="..\shared\precache_register.cpp" />
+    <ClCompile Include="..\shared\predictableid.cpp" />
+    <ClCompile Include="..\shared\predictioncopy.cpp" />
+    <ClCompile Include="..\shared\predictioncopy_helpers.cpp" />
+    <ClCompile Include="..\shared\predictioncopy_test.cpp" />
+    <ClCompile Include="..\shared\props_shared.cpp" />
+    <ClCompile Include="..\shared\ragdoll_shared.cpp" />
+    <ClCompile Include="..\shared\rope_helpers.cpp" />
+    <ClCompile Include="..\shared\saverestore.cpp" />
+    <ClCompile Include="..\shared\sceneentity_shared.cpp" />
+    <ClCompile Include="..\shared\sequence_Transitioner.cpp" />
+    <ClCompile Include="..\shared\sheetsimulator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\shared\simtimer.cpp" />
+    <ClCompile Include="..\shared\singleplay_gamerules.cpp" />
+    <ClCompile Include="..\shared\SoundEmitterSystem.cpp" />
+    <ClCompile Include="..\shared\soundenvelope.cpp" />
+    <ClCompile Include="..\shared\Sprite.cpp" />
+    <ClCompile Include="..\shared\SpriteTrail.cpp" />
+    <ClCompile Include="..\shared\steamworks_gamestats.cpp" />
+    <ClCompile Include="..\shared\studio_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_achievements.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_alien_goo_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_alien_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_ammo_drop_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_bouncing_pellet_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_campaign_commands.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_campaign_info.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_campaign_save_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_deathmatch_mode.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_env_spark.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_equipment_list.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_equip_req.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_fx_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_gamemovement.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_gamerules.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_gamestats_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_game_resource_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_hack_computer_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_hack_wire_tile_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_health_bar_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_holdout_mode.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_holdout_wave.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_holo_sentry_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_info_message_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_laser_mine_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_command.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_gamemovement.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_profile.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_skills.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_melee_system.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_missile_round_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_mortarbug_shell_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_pickup_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_playeranimstate.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_player_experience.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_player_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_powerup_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_prop_laserable_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_queen_divers_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_queen_grabber_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_remote_turret_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_scanner_objects_enumerator.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_shareddefs.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_shieldbug_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_shotgun_pellet_predicted_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_target_dummy_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_trace_filter.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_trace_filter_melee.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_trace_filter_shot.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_usableobjectsenumerator.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_usermessages.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_util_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_50calmg_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_ammo_bag_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_autogun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_bait.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_blink.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_buff_grenade.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_chainsaw_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_combat_rifle_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_deagle_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_devastator_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_electrified_armor.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_fire_extinguisher_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_fist.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_flamer_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_flares_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_flashlight_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_flechette_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_freeze_grenades.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_grenades.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_grenade_launcher.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_healamp_gun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_healgrenade_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_heal_gun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_hornet_barrage.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_jump_jet.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_laser_mines.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_medical_satchel_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_medkit_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_mines_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_minigun.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_mining_laser_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_night_vision.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_normal_armor.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_parse.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_pdw_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_pistol_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_prifle_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_railgun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_ricochet_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_sentry_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_shotgun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_smart_bomb.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_sniper_rifle.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_stim_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_t75.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_tesla_gun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_tesla_trap.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_workshop.cpp" />
+    <ClCompile Include="..\shared\takedamageinfo.cpp" />
+    <ClCompile Include="..\shared\teamplayroundbased_gamerules.cpp" />
+    <ClCompile Include="..\shared\teamplay_gamerules.cpp" />
+    <ClCompile Include="..\shared\test_ehandle.cpp" />
+    <ClCompile Include="..\shared\usercmd.cpp" />
+    <ClCompile Include="..\shared\usermessages.cpp" />
+    <ClCompile Include="..\shared\util_shared.cpp" />
+    <ClCompile Include="..\shared\vehicle_viewblend_shared.cpp" />
+    <ClCompile Include="..\shared\voice_banmgr.cpp" />
+    <ClCompile Include="..\shared\voice_status.cpp" />
+    <ClCompile Include="..\shared\vscript_shared.cpp" />
+    <ClCompile Include="..\shared\weapon_parse.cpp" />
+    <ClCompile Include="achievement_notification_panel.cpp" />
+    <ClCompile Include="animatedentitytextureproxy.cpp" />
+    <ClCompile Include="animatedoffsettextureproxy.cpp" />
+    <ClCompile Include="animatedtextureproxy.cpp" />
+    <ClCompile Include="AnimateSpecificTextureProxy.cpp" />
+    <ClCompile Include="baseanimatedtextureproxy.cpp" />
+    <ClCompile Include="baseclientrendertargets.cpp" />
+    <ClCompile Include="beamdraw.cpp" />
+    <ClCompile Include="bone_merge_cache.cpp" />
+    <ClCompile Include="camomaterialproxy.cpp" />
+    <ClCompile Include="cdll_bounded_cvars.cpp" />
+    <ClCompile Include="cdll_client_int.cpp" />
+    <ClCompile Include="cdll_util.cpp" />
+    <ClCompile Include="classmap.cpp" />
+    <ClCompile Include="clientalphaproperty.cpp" />
+    <ClCompile Include="cliententitylist.cpp" />
+    <ClCompile Include="clientleafsystem.cpp" />
+    <ClCompile Include="clientmode_shared.cpp" />
+    <ClCompile Include="clientshadowmgr.cpp" />
+    <ClCompile Include="clientsideeffects.cpp" />
+    <ClCompile Include="clientsideeffects_test.cpp" />
+    <ClCompile Include="client_factorylist.cpp" />
+    <ClCompile Include="client_thinklist.cpp" />
+    <ClCompile Include="cl_mat_stub.cpp" />
+    <ClCompile Include="colorcorrectionmgr.cpp" />
+    <ClCompile Include="commentary_modelviewer.cpp" />
+    <ClCompile Include="convarproxy.cpp" />
+    <ClCompile Include="cycleproxy.cpp" />
+    <ClCompile Include="c_ai_basehumanoid.cpp" />
+    <ClCompile Include="c_ai_basenpc.cpp" />
+    <ClCompile Include="c_baseanimating.cpp" />
+    <ClCompile Include="c_baseanimatingoverlay.cpp" />
+    <ClCompile Include="c_basecombatcharacter.cpp" />
+    <ClCompile Include="c_basecombatweapon.cpp" />
+    <ClCompile Include="c_basedoor.cpp" />
+    <ClCompile Include="c_baseentity.cpp" />
+    <ClCompile Include="c_baseflex.cpp" />
+    <ClCompile Include="c_baselesson.cpp" />
+    <ClCompile Include="c_baseplayer.cpp" />
+    <ClCompile Include="c_basetempentity.cpp" />
+    <ClCompile Include="c_basetoggle.cpp" />
+    <ClCompile Include="c_baseviewmodel.cpp" />
+    <ClCompile Include="c_beamspotlight.cpp" />
+    <ClCompile Include="c_breakableprop.cpp" />
+    <ClCompile Include="c_colorcorrection.cpp" />
+    <ClCompile Include="c_colorcorrectionvolume.cpp" />
+    <ClCompile Include="c_dynamiclight.cpp" />
+    <ClCompile Include="c_effects.cpp" />
+    <ClCompile Include="c_entitydissolve.cpp" />
+    <ClCompile Include="c_entityflame.cpp" />
+    <ClCompile Include="c_entityfreezing.cpp" />
+    <ClCompile Include="c_entityparticletrail.cpp" />
+    <ClCompile Include="c_env_ambient_light.cpp" />
+    <ClCompile Include="c_env_dof_controller.cpp" />
+    <ClCompile Include="c_env_fog_controller.cpp" />
+    <ClCompile Include="c_env_global_light.cpp" />
+    <ClCompile Include="c_env_particlescript.cpp" />
+    <ClCompile Include="c_env_projectedtexture.cpp" />
+    <ClCompile Include="c_env_screenoverlay.cpp" />
+    <ClCompile Include="c_env_tonemap_controller.cpp" />
+    <ClCompile Include="c_fire_smoke.cpp" />
+    <ClCompile Include="c_fish.cpp" />
+    <ClCompile Include="c_func_areaportalwindow.cpp" />
+    <ClCompile Include="c_func_breakablesurf.cpp" />
+    <ClCompile Include="c_func_brush.cpp" />
+    <ClCompile Include="c_func_conveyor.cpp" />
+    <ClCompile Include="c_func_dust.cpp" />
+    <ClCompile Include="c_func_lod.cpp" />
+    <ClCompile Include="c_func_movelinear.cpp" />
+    <ClCompile Include="c_func_occluder.cpp" />
+    <ClCompile Include="c_func_reflective_glass.cpp" />
+    <ClCompile Include="c_func_rotating.cpp" />
+    <ClCompile Include="c_func_smokevolume.cpp" />
+    <ClCompile Include="c_func_tracktrain.cpp" />
+    <ClCompile Include="c_gameinstructor.cpp" />
+    <ClCompile Include="c_gib.cpp" />
+    <ClCompile Include="c_hairball.cpp" />
+    <ClCompile Include="c_impact_effects.cpp" />
+    <ClCompile Include="c_info_overlay_accessor.cpp" />
+    <ClCompile Include="c_lightglow.cpp" />
+    <ClCompile Include="C_MaterialModifyControl.cpp" />
+    <ClCompile Include="c_movie_display.cpp" />
+    <ClCompile Include="c_movie_explosion.cpp" />
+    <ClCompile Include="c_particle_fire.cpp" />
+    <ClCompile Include="c_particle_smokegrenade.cpp" />
+    <ClCompile Include="c_particle_system.cpp" />
+    <ClCompile Include="c_physbox.cpp" />
+    <ClCompile Include="c_physicsprop.cpp" />
+    <ClCompile Include="c_physics_prop_statue.cpp" />
+    <ClCompile Include="c_physmagnet.cpp" />
+    <ClCompile Include="c_pixel_visibility.cpp" />
+    <ClCompile Include="c_plasma.cpp" />
+    <ClCompile Include="c_playerresource.cpp" />
+    <ClCompile Include="c_point_camera.cpp" />
+    <ClCompile Include="c_point_commentary_node.cpp" />
+    <ClCompile Include="c_postprocesscontroller.cpp" />
+    <ClCompile Include="c_props.cpp" />
+    <ClCompile Include="c_prop_hallucination.cpp" />
+    <ClCompile Include="c_prop_vehicle.cpp" />
+    <ClCompile Include="c_ragdoll_manager.cpp" />
+    <ClCompile Include="c_recipientfilter.cpp" />
+    <ClCompile Include="c_rope.cpp" />
+    <ClCompile Include="c_rumble.cpp" />
+    <ClCompile Include="c_sceneentity.cpp" />
+    <ClCompile Include="c_shadowcontrol.cpp" />
+    <ClCompile Include="c_slideshow_display.cpp" />
+    <ClCompile Include="c_smokestack.cpp" />
+    <ClCompile Include="c_smoke_trail.cpp" />
+    <ClCompile Include="c_soundscape.cpp" />
+    <ClCompile Include="c_spatialentity.cpp" />
+    <ClCompile Include="c_spotlight_end.cpp" />
+    <ClCompile Include="c_sprite.cpp" />
+    <ClCompile Include="c_sprite_perfmonitor.cpp" />
+    <ClCompile Include="c_steamjet.cpp" />
+    <ClCompile Include="c_stickybolt.cpp" />
+    <ClCompile Include="c_sun.cpp" />
+    <ClCompile Include="c_sunlightshadowcontrol.cpp" />
+    <ClCompile Include="c_surfacerender.cpp" />
+    <ClCompile Include="c_te.cpp" />
+    <ClCompile Include="c_team.cpp" />
+    <ClCompile Include="c_tesla.cpp" />
+    <ClCompile Include="c_testtraceline.cpp" />
+    <ClCompile Include="c_test_proxytoggle.cpp" />
+    <ClCompile Include="c_te_armorricochet.cpp" />
+    <ClCompile Include="c_te_basebeam.cpp" />
+    <ClCompile Include="c_te_beamentpoint.cpp" />
+    <ClCompile Include="c_te_beaments.cpp" />
+    <ClCompile Include="c_te_beamfollow.cpp" />
+    <ClCompile Include="c_te_beamlaser.cpp" />
+    <ClCompile Include="c_te_beampoints.cpp" />
+    <ClCompile Include="c_te_beamring.cpp" />
+    <ClCompile Include="c_te_beamringpoint.cpp" />
+    <ClCompile Include="c_te_beamspline.cpp" />
+    <ClCompile Include="c_te_bloodsprite.cpp" />
+    <ClCompile Include="c_te_bloodstream.cpp" />
+    <ClCompile Include="c_te_breakmodel.cpp" />
+    <ClCompile Include="c_te_bspdecal.cpp" />
+    <ClCompile Include="c_te_bubbles.cpp" />
+    <ClCompile Include="c_te_bubbletrail.cpp" />
+    <ClCompile Include="c_te_clientprojectile.cpp" />
+    <ClCompile Include="c_te_decal.cpp" />
+    <ClCompile Include="c_te_dynamiclight.cpp" />
+    <ClCompile Include="c_te_effect_dispatch.cpp" />
+    <ClCompile Include="c_te_energysplash.cpp" />
+    <ClCompile Include="c_te_explosion.cpp" />
+    <ClCompile Include="c_te_fizz.cpp" />
+    <ClCompile Include="c_te_footprint.cpp" />
+    <ClCompile Include="c_te_glassshatter.cpp" />
+    <ClCompile Include="c_te_glowsprite.cpp" />
+    <ClCompile Include="c_te_impact.cpp" />
+    <ClCompile Include="c_te_killplayerattachments.cpp" />
+    <ClCompile Include="c_te_largefunnel.cpp" />
+    <ClCompile Include="c_te_legacytempents.cpp" />
+    <ClCompile Include="c_te_muzzleflash.cpp" />
+    <ClCompile Include="c_te_particlesystem.cpp" />
+    <ClCompile Include="c_te_physicsprop.cpp" />
+    <ClCompile Include="c_te_playerdecal.cpp" />
+    <ClCompile Include="c_te_projecteddecal.cpp" />
+    <ClCompile Include="c_te_showline.cpp" />
+    <ClCompile Include="c_te_smoke.cpp" />
+    <ClCompile Include="c_te_sparks.cpp" />
+    <ClCompile Include="c_te_sprite.cpp" />
+    <ClCompile Include="c_te_spritespray.cpp" />
+    <ClCompile Include="c_te_worlddecal.cpp" />
+    <ClCompile Include="c_tracer.cpp" />
+    <ClCompile Include="c_triggers.cpp" />
+    <ClCompile Include="c_user_message_register.cpp" />
+    <ClCompile Include="c_vehicle_choreo_generic.cpp" />
+    <ClCompile Include="c_vehicle_jeep.cpp" />
+    <ClCompile Include="c_vguiscreen.cpp" />
+    <ClCompile Include="C_WaterLODControl.cpp" />
+    <ClCompile Include="c_world.cpp" />
+    <ClCompile Include="detailobjectsystem.cpp" />
+    <ClCompile Include="dummyproxy.cpp" />
+    <ClCompile Include="EffectsClient.cpp" />
+    <ClCompile Include="entityoriginmaterialproxy.cpp" />
+    <ClCompile Include="entity_client_tools.cpp" />
+    <ClCompile Include="episodic\c_prop_scalable.cpp" />
+    <ClCompile Include="flashlighteffect.cpp" />
+    <ClCompile Include="foundryhelpers_client.cpp" />
+    <ClCompile Include="functionproxy.cpp" />
+    <ClCompile Include="fx.cpp" />
+    <ClCompile Include="fx_blood.cpp" />
+    <ClCompile Include="fx_cube.cpp" />
+    <ClCompile Include="fx_discreetline.cpp" />
+    <ClCompile Include="fx_envelope.cpp" />
+    <ClCompile Include="fx_explosion.cpp" />
+    <ClCompile Include="fx_fleck.cpp" />
+    <ClCompile Include="fx_impact.cpp" />
+    <ClCompile Include="fx_interpvalue.cpp" />
+    <ClCompile Include="fx_line.cpp" />
+    <ClCompile Include="fx_quad.cpp" />
+    <ClCompile Include="fx_shelleject.cpp" />
+    <ClCompile Include="fx_sparks.cpp" />
+    <ClCompile Include="fx_staticline.cpp" />
+    <ClCompile Include="fx_tracer.cpp" />
+    <ClCompile Include="fx_trail.cpp" />
+    <ClCompile Include="fx_water.cpp" />
+    <ClCompile Include="gametrace_client.cpp" />
+    <ClCompile Include="game_controls\basemodel_panel.cpp" />
+    <ClCompile Include="game_controls\baseviewport.cpp" />
+    <ClCompile Include="game_controls\ClientScoreBoardDialog.cpp" />
+    <ClCompile Include="game_controls\commandmenu.cpp" />
+    <ClCompile Include="game_controls\IconPanel.cpp" />
+    <ClCompile Include="game_controls\intromenu.cpp" />
+    <ClCompile Include="game_controls\MapOverview.cpp" />
+    <ClCompile Include="game_controls\NavProgress.cpp" />
+    <ClCompile Include="game_controls\SpectatorGUI.cpp" />
+    <ClCompile Include="game_controls\teammenu.cpp" />
+    <ClCompile Include="game_controls\vguitextwindow.cpp" />
+    <ClCompile Include="glow_outline_effect.cpp" />
+    <ClCompile Include="glow_overlay.cpp" />
+    <ClCompile Include="history_resource.cpp" />
+    <ClCompile Include="hl2\c_antlion_dust.cpp" />
+    <ClCompile Include="hl2\c_ar2_explosion.cpp" />
+    <ClCompile Include="hl2\c_basehelicopter.cpp" />
+    <ClCompile Include="hl2\C_Func_Monitor.cpp" />
+    <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
+    <ClCompile Include="hl2\c_npc_combinegunship.cpp" />
+    <ClCompile Include="hl2\c_rotorwash.cpp" />
+    <ClCompile Include="hl2\c_waterbullet.cpp" />
+    <ClCompile Include="hltvcamera.cpp" />
+    <ClCompile Include="hud.cpp" />
+    <ClCompile Include="hud_basechat.cpp" />
+    <ClCompile Include="hud_basetimer.cpp" />
+    <ClCompile Include="hud_bitmapnumericdisplay.cpp" />
+    <ClCompile Include="hud_closecaption.cpp" />
+    <ClCompile Include="hud_element_helper.cpp" />
+    <ClCompile Include="hud_lcd.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="hud_locator_target.cpp" />
+    <ClCompile Include="hud_msg.cpp" />
+    <ClCompile Include="hud_numericdisplay.cpp" />
+    <ClCompile Include="hud_pdump.cpp" />
+    <ClCompile Include="hud_redraw.cpp" />
+    <ClCompile Include="initializer.cpp" />
+    <ClCompile Include="in_camera.cpp" />
+    <ClCompile Include="in_joystick.cpp" />
+    <ClCompile Include="in_main.cpp" />
+    <ClCompile Include="in_mouse.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="in_trackir.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="IsNPCProxy.cpp" />
+    <ClCompile Include="lampbeamproxy.cpp" />
+    <ClCompile Include="lamphaloproxy.cpp" />
+    <ClCompile Include="materialproxydict.cpp" />
+    <ClCompile Include="mathproxy.cpp" />
+    <ClCompile Include="matrixproxy.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="message.cpp" />
+    <ClCompile Include="modelrendersystem.cpp" />
+    <ClCompile Include="movehelper_client.cpp" />
+    <ClCompile Include="mp3player.cpp" />
+    <ClCompile Include="object_motion_blur_effect.cpp" />
+    <ClCompile Include="panelmetaclassmgr.cpp" />
+    <ClCompile Include="particlemgr.cpp" />
+    <ClCompile Include="particlesphererenderer.cpp" />
+    <ClCompile Include="particles_attractor.cpp" />
+    <ClCompile Include="particles_ez.cpp" />
+    <ClCompile Include="particles_localspace.cpp" />
+    <ClCompile Include="particles_new.cpp" />
+    <ClCompile Include="particles_simple.cpp" />
+    <ClCompile Include="particle_collision.cpp" />
+    <ClCompile Include="particle_litsmokeemitter.cpp" />
+    <ClCompile Include="particle_proxies.cpp" />
+    <ClCompile Include="particle_simple3d.cpp" />
+    <ClCompile Include="perfvisualbenchmark.cpp" />
+    <ClCompile Include="physics.cpp" />
+    <ClCompile Include="physics_main_client.cpp" />
+    <ClCompile Include="physpropclientside.cpp" />
+    <ClCompile Include="playerandobjectenumerator.cpp" />
+    <ClCompile Include="prediction.cpp" />
+    <ClCompile Include="proxyentity.cpp" />
+    <ClCompile Include="ProxyHealth.cpp" />
+    <ClCompile Include="proxyplayer.cpp" />
+    <ClCompile Include="proxypupil.cpp" />
+    <ClCompile Include="ragdoll.cpp" />
+    <ClCompile Include="recvproxy.cpp" />
+    <ClCompile Include="rendertexture.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="replaycamera.cpp" />
+    <ClCompile Include="ScreenSpaceEffects.cpp" />
+    <ClCompile Include="simple_keys.cpp" />
+    <ClCompile Include="smoke_fog_overlay.cpp" />
+    <ClCompile Include="spatialentitymgr.cpp" />
+    <ClCompile Include="splinepatch.cpp" />
+    <ClCompile Include="spritemodel.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\asw_bone_merge.cpp" />
+    <ClCompile Include="swarm\asw_briefing.cpp" />
+    <ClCompile Include="swarm\asw_client_entities.cpp" />
+    <ClCompile Include="swarm\asw_fx_impacts.cpp" />
+    <ClCompile Include="swarm\asw_input.cpp" />
+    <ClCompile Include="swarm\asw_in_camera.cpp" />
+    <ClCompile Include="swarm\asw_in_main.cpp" />
+    <ClCompile Include="swarm\asw_in_mouse.cpp" />
+    <ClCompile Include="swarm\asw_marineandobjectenumerator.cpp" />
+    <ClCompile Include="swarm\asw_medal_store.cpp" />
+    <ClCompile Include="swarm\asw_prediction.cpp" />
+    <ClCompile Include="swarm\asw_room_thumbnails.cpp" />
+    <ClCompile Include="swarm\asw_video.cpp" />
+    <ClCompile Include="swarm\asw_view_scene.cpp" />
+    <ClCompile Include="swarm\clientmode_asw.cpp" />
+    <ClCompile Include="swarm\c_asw_alien.cpp" />
+    <ClCompile Include="swarm\c_asw_ammo.cpp" />
+    <ClCompile Include="swarm\c_asw_ammo_drop.cpp" />
+    <ClCompile Include="swarm\c_asw_aoegrenade_projectile.cpp" />
+    <ClCompile Include="swarm\c_asw_boomer.cpp" />
+    <ClCompile Include="swarm\c_asw_buffgrenade_projectile.cpp" />
+    <ClCompile Include="swarm\c_asw_button_area.cpp" />
+    <ClCompile Include="swarm\c_asw_buzzer.cpp" />
+    <ClCompile Include="swarm\c_asw_camera_volume.cpp" />
+    <ClCompile Include="swarm\c_asw_campaign_save.cpp" />
+    <ClCompile Include="swarm\c_asw_clientragdoll.cpp" />
+    <ClCompile Include="swarm\c_asw_client_corpse.cpp" />
+    <ClCompile Include="swarm\c_asw_computer_area.cpp" />
+    <ClCompile Include="swarm\c_asw_concommands.cpp" />
+    <ClCompile Include="swarm\c_asw_debrief_stats.cpp" />
+    <ClCompile Include="swarm\c_asw_door.cpp" />
+    <ClCompile Include="swarm\c_asw_door_area.cpp" />
+    <ClCompile Include="swarm\c_asw_drone_advanced.cpp" />
+    <ClCompile Include="swarm\c_asw_dummy_vehicle.cpp" />
+    <ClCompile Include="swarm\c_asw_dynamic_light.cpp" />
+    <ClCompile Include="swarm\c_asw_egg.cpp" />
+    <ClCompile Include="swarm\c_asw_entity_dissolve.cpp" />
+    <ClCompile Include="swarm\c_asw_extinguisher_projectile.cpp" />
+    <ClCompile Include="swarm\c_asw_fire.cpp" />
+    <ClCompile Include="swarm\c_asw_firewall_piece.cpp" />
+    <ClCompile Include="swarm\c_asw_flamer_projectile.cpp" />
+    <ClCompile Include="swarm\c_asw_flare_projectile.cpp" />
+    <ClCompile Include="swarm\c_asw_fourwheelvehiclephysics.cpp" />
+    <ClCompile Include="swarm\c_asw_fx.cpp" />
+    <ClCompile Include="swarm\c_asw_fx_proxy.cpp" />
+    <ClCompile Include="swarm\c_asw_game_resource.cpp" />
+    <ClCompile Include="swarm\c_asw_generic_emitter.cpp" />
+    <ClCompile Include="swarm\c_asw_generic_emitter_entity.cpp" />
+    <ClCompile Include="swarm\c_asw_grub.cpp" />
+    <ClCompile Include="swarm\c_asw_gun_smoke_emitter.cpp" />
+    <ClCompile Include="swarm\c_asw_hack.cpp" />
+    <ClCompile Include="swarm\c_asw_hack_computer.cpp" />
+    <ClCompile Include="swarm\c_asw_hack_wire_tile.cpp" />
+    <ClCompile Include="swarm\c_asw_jeep.cpp" />
+    <ClCompile Include="swarm\c_asw_jeep_clientside.cpp" />
+    <ClCompile Include="swarm\c_asw_jukebox.cpp" />
+    <ClCompile Include="swarm\c_asw_laser_mine.cpp" />
+    <ClCompile Include="swarm\c_asw_lesson.cpp" />
+    <ClCompile Include="swarm\c_asw_level_exploder.cpp" />
+    <ClCompile Include="swarm\c_asw_marine.cpp" />
+    <ClCompile Include="swarm\c_asw_marine_resource.cpp" />
+    <ClCompile Include="swarm\c_asw_marine_speech.cpp" />
+    <ClCompile Include="swarm\c_asw_marker.cpp" />
+    <ClCompile Include="swarm\c_asw_mesh_emitter_entity.cpp" />
+    <ClCompile Include="swarm\c_asw_mine.cpp" />
+    <ClCompile Include="swarm\c_asw_objective.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_countdown.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_kill_aliens.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_kill_eggs.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_kill_goo.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_kill_queen.cpp" />
+    <ClCompile Include="swarm\c_asw_order_arrow.cpp" />
+    <ClCompile Include="swarm\c_asw_parasite.cpp" />
+    <ClCompile Include="swarm\c_asw_physics_prop_statue.cpp" />
+    <ClCompile Include="swarm\c_asw_pickup.cpp" />
+    <ClCompile Include="swarm\c_asw_pickup_equipment.cpp" />
+    <ClCompile Include="swarm\c_asw_pickup_money.cpp" />
+    <ClCompile Include="swarm\c_asw_pickup_weapon.cpp" />
+    <ClCompile Include="swarm\c_asw_player.cpp" />
+    <ClCompile Include="swarm\c_asw_playerlocaldata.cpp" />
+    <ClCompile Include="swarm\c_asw_point_camera.cpp" />
+    <ClCompile Include="swarm\c_asw_prop_physics.cpp" />
+    <ClCompile Include="swarm\c_asw_queen.cpp" />
+    <ClCompile Include="swarm\c_asw_queen_spit.cpp" />
+    <ClCompile Include="swarm\c_asw_railgun_beam.cpp" />
+    <ClCompile Include="swarm\c_asw_ranger.cpp" />
+    <ClCompile Include="swarm\c_asw_render_targets.cpp" />
+    <ClCompile Include="swarm\c_asw_rocket.cpp" />
+    <ClCompile Include="swarm\c_asw_scanner_info.cpp" />
+    <ClCompile Include="swarm\c_asw_scanner_noise.cpp" />
+    <ClCompile Include="swarm\c_asw_sentry_base.cpp" />
+    <ClCompile Include="swarm\c_asw_sentry_top.cpp" />
+    <ClCompile Include="swarm\c_asw_sentry_top_flamer.cpp" />
+    <ClCompile Include="swarm\c_asw_sentry_top_icer.cpp" />
+    <ClCompile Include="swarm\c_asw_shaman.cpp" />
+    <ClCompile Include="swarm\c_asw_shieldbug.cpp" />
+    <ClCompile Include="swarm\c_asw_simple_alien.cpp" />
+    <ClCompile Include="swarm\c_asw_simple_drone.cpp" />
+    <ClCompile Include="swarm\c_asw_snow_emitter.cpp" />
+    <ClCompile Include="swarm\c_asw_snow_volume.cpp" />
+    <ClCompile Include="swarm\c_asw_steamstats.cpp" />
+    <ClCompile Include="swarm\c_asw_t75.cpp" />
+    <ClCompile Include="swarm\c_asw_tesla_trap.cpp" />
+    <ClCompile Include="swarm\c_asw_trail_beam.cpp" />
+    <ClCompile Include="swarm\c_asw_use_area.cpp" />
+    <ClCompile Include="swarm\c_asw_voting_missions.cpp" />
+    <ClCompile Include="swarm\c_asw_voting_mission_chooser_source.cpp" />
+    <ClCompile Include="swarm\c_asw_vphysics_npc.cpp" />
+    <ClCompile Include="swarm\c_asw_weapon.cpp" />
+    <ClCompile Include="swarm\c_asw_weapon_rifle.cpp" />
+    <ClCompile Include="swarm\c_env_sprite_asw_fade.cpp" />
+    <ClCompile Include="swarm\c_func_asw_fade.cpp" />
+    <ClCompile Include="swarm\c_prop_asw_fade.cpp" />
+    <ClCompile Include="swarm\gameui\backgroundmenubutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\basesavegamedialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\bitmapimagepanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\commandcheckbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\contentcontroldialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\createmultiplayergamebotpage.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\createmultiplayergamedialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\createmultiplayergamegameplaypage.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\createmultiplayergameserverpage.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\customtabexplanationdialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\cvarnegatecheckbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\cvarslider.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\cvartextentry.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\cvartogglecheckbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\gameconsole.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\gameconsoledialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\gameui_interface.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\gameui_util.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\keytogglecheckbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\labeledcommandcombobox.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\loadingdialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\loadingtippanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\logofile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\modinfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\mousemessageforwardingpanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\multiplayeradvanceddialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionsdialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubaudio.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubdifficulty.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubgame.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubkeyboard.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubmouse.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubmultiplayer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubportal.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubvideo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\optionssubvoice.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\panellistpanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\playerlistdialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\rungameengine.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\scriptobject.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\basemodframe.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\basemodpanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\gamemodes.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\rd_challenge_selection.cpp" />
+    <ClCompile Include="swarm\gameui\swarm\rd_workshop_frame.cpp" />
+    <ClCompile Include="swarm\gameui\swarm\uiavatarimage.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\uigamedata.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\uigamedata_invite.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\uigamedata_storage.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vachievements.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vaddonassociation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vaddons.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vattractscreen.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vaudio.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vaudiovideo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcloud.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcontrolleroptions.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcontrolleroptionsbuttons.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcontrolleroptionssticks.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcustomcampaigns.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vdownloadcampaign.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vdownloads.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vdropdownmenu.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vflyoutmenu.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfooterpanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfoundgames.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfoundgroupgames.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfoundpublicgames.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgamelobby.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgamelobbychat.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgameoptions.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgamepad.cpp" />
+    <ClCompile Include="swarm\gameui\swarm\vgamesettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgenericconfirmation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgenericpanellist.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgenericwaitscreen.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgetlegacydata.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vhybridbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vingamechapterselect.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vingamedifficultyselect.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vingamekickplayerlist.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vingamemainmenu.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vjukebox.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vkeyboard.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vkeyboardmouse.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vleaderboard.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vloadingprogress.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vmainmenu.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vmenubackground.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vmultiplayer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\voptions.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vpasswordentry.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vquickjoin.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vquickjoingroups.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vsignindialog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vslidercontrol.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vspinnercontrol.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vsteamcloudconfirmation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vtransitionscreen.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vvideo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vvoteoptions.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\sys_utils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\textentrybox.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\urlbutton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\vcontrolslistpanel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\gameui\vguisystemmoduleloader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="swarm\iasw_fade_list.cpp" />
+    <ClCompile Include="swarm\rd_track_first_played.cpp" />
+    <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
+    <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />
+    <ClCompile Include="swarm\vgui\asw_difficulty_chooser.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hudelement.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_3dmarinenames.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_ammo.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_chat.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_crosshair.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_damageindicator.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_emotes.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_floating_number.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_health.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_health_cross.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_holdout.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_marine_portrait.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_master.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_minimap.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_money.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_objective.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_overlay_messages.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_portraits.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_powerups.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_squad_hotbar.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_use_area.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_use_icon.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_voice.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_weapons.cpp" />
+    <ClCompile Include="swarm\vgui\asw_loading_panel.cpp" />
+    <ClCompile Include="swarm\vgui\asw_logo_panel.cpp" />
+    <ClCompile Include="swarm\vgui\asw_mission_chooser_entry.cpp" />
+    <ClCompile Include="swarm\vgui\asw_mission_chooser_frame.cpp" />
+    <ClCompile Include="swarm\vgui\asw_mission_chooser_list.cpp" />
+    <ClCompile Include="swarm\vgui\asw_model_panel.cpp" />
+    <ClCompile Include="swarm\vgui\asw_scalable_text.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_ammo_list.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_camera.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_download_docs.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_frame.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_mail.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_menu.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_news.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_plant.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_splash.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_stocks.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_tumbler_hack.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_computer_weather.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_countdown.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_door_tooltip.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_edit_emitter.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_edit_emitter_dialogs.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_fast_reload.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_frame.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_hack_wire_tile.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_info_message.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_ingame_panel.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_manipulator.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_marine_ammo_report.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_music_importer.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_queen_health.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_skip_intro.cpp" />
+    <ClCompile Include="swarm\vgui\asw_vgui_stylin_cam.cpp" />
+    <ClCompile Include="swarm\vgui\briefingdialog.cpp" />
+    <ClCompile Include="swarm\vgui\briefingframe.cpp" />
+    <ClCompile Include="swarm\vgui\briefingimagepanel.cpp" />
+    <ClCompile Include="swarm\vgui\briefingpropertysheet.cpp" />
+    <ClCompile Include="swarm\vgui\briefingtooltip.cpp" />
+    <ClCompile Include="swarm\vgui\cainmailpanel.cpp" />
+    <ClCompile Include="swarm\vgui\campaignframe.cpp" />
+    <ClCompile Include="swarm\vgui\campaignmaplocation.cpp" />
+    <ClCompile Include="swarm\vgui\campaignmapsearchlights.cpp" />
+    <ClCompile Include="swarm\vgui\campaignpanel.cpp" />
+    <ClCompile Include="swarm\vgui\chatechopanel.cpp" />
+    <ClCompile Include="swarm\vgui\controller_focus.cpp" />
+    <ClCompile Include="swarm\vgui\creditspanel.cpp" />
+    <ClCompile Include="swarm\vgui\debrieftextpage.cpp" />
+    <ClCompile Include="swarm\vgui\experience_bar.cpp" />
+    <ClCompile Include="swarm\vgui\experience_report.cpp" />
+    <ClCompile Include="swarm\vgui\experience_stat_line.cpp" />
+    <ClCompile Include="swarm\vgui\fadeinpanel.cpp" />
+    <ClCompile Include="swarm\vgui\fonttestpanel.cpp" />
+    <ClCompile Include="swarm\vgui\forcereadypanel.cpp" />
+    <ClCompile Include="swarm\vgui\holdout_end_score_panel.cpp" />
+    <ClCompile Include="swarm\vgui\holdout_hud_wave_panel.cpp" />
+    <ClCompile Include="swarm\vgui\holdout_resupply_frame.cpp" />
+    <ClCompile Include="swarm\vgui\holdout_wave_announce_panel.cpp" />
+    <ClCompile Include="swarm\vgui\holdout_wave_end_panel.cpp" />
+    <ClCompile Include="swarm\vgui\imagebutton.cpp" />
+    <ClCompile Include="swarm\vgui\mapedgesbox.cpp" />
+    <ClCompile Include="swarm\vgui\medalarea.cpp" />
+    <ClCompile Include="swarm\vgui\medalcollectionpanel.cpp" />
+    <ClCompile Include="swarm\vgui\medalpanel.cpp" />
+    <ClCompile Include="swarm\vgui\medalstooltip.cpp" />
+    <ClCompile Include="swarm\vgui\missioncompleteframe.cpp" />
+    <ClCompile Include="swarm\vgui\missioncompletepanel.cpp" />
+    <ClCompile Include="swarm\vgui\missioncompletestatsline.cpp" />
+    <ClCompile Include="swarm\vgui\missionstatspanel.cpp" />
+    <ClCompile Include="swarm\vgui\mission_complete_message.cpp" />
+    <ClCompile Include="swarm\vgui\nb_button.cpp" />
+    <ClCompile Include="swarm\vgui\nb_campaign_map.cpp" />
+    <ClCompile Include="swarm\vgui\nb_campaign_mission_details.cpp" />
+    <ClCompile Include="swarm\vgui\nb_commander_list.cpp" />
+    <ClCompile Include="swarm\vgui\nb_commander_list_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_header_footer.cpp" />
+    <ClCompile Include="swarm\vgui\nb_horiz_list.cpp" />
+    <ClCompile Include="swarm\vgui\nb_island.cpp" />
+    <ClCompile Include="swarm\vgui\nb_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_lobby_row.cpp" />
+    <ClCompile Include="swarm\vgui\nb_lobby_row_small.cpp" />
+    <ClCompile Include="swarm\vgui\nb_lobby_tooltip.cpp" />
+    <ClCompile Include="swarm\vgui\nb_main_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_mission_options.cpp" />
+    <ClCompile Include="swarm\vgui\nb_mission_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_mission_summary.cpp" />
+    <ClCompile Include="swarm\vgui\nb_promotion_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_campaign_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_campaign_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_marine_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_marine_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_mission_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_mission_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_save_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_save_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_weapon_entry.cpp" />
+    <ClCompile Include="swarm\vgui\nb_select_weapon_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_skill_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_spend_skill_points.cpp" />
+    <ClCompile Include="swarm\vgui\nb_suggest_difficulty.cpp" />
+    <ClCompile Include="swarm\vgui\nb_vote_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_weapon_detail.cpp" />
+    <ClCompile Include="swarm\vgui\nb_weapon_unlocked.cpp" />
+    <ClCompile Include="swarm\vgui\objectivedetailspanel.cpp" />
+    <ClCompile Include="swarm\vgui\objectiveicons.cpp" />
+    <ClCompile Include="swarm\vgui\objectivelistbox.cpp" />
+    <ClCompile Include="swarm\vgui\objectivemap.cpp" />
+    <ClCompile Include="swarm\vgui\objectivemapmarkpanel.cpp" />
+    <ClCompile Include="swarm\vgui\objectivepanel.cpp" />
+    <ClCompile Include="swarm\vgui\objectivetitlepanel.cpp" />
+    <ClCompile Include="swarm\vgui\outroframe.cpp" />
+    <ClCompile Include="swarm\vgui\playerlistcontainer.cpp" />
+    <ClCompile Include="swarm\vgui\playerlistline.cpp" />
+    <ClCompile Include="swarm\vgui\playerlistpanel.cpp" />
+    <ClCompile Include="swarm\vgui\playerswaitingpanel.cpp" />
+    <ClCompile Include="swarm\vgui\polygonbutton.cpp" />
+    <ClCompile Include="swarm\vgui\radialmenu.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_workshop_download_progress.cpp" />
+    <ClCompile Include="swarm\vgui\rd_workshop_preview_image.cpp" />
+    <ClCompile Include="swarm\vgui\restartmissionbutton.cpp" />
+    <ClCompile Include="swarm\vgui\returncampaignmapbutton.cpp" />
+    <ClCompile Include="swarm\vgui\scanlinepanel.cpp" />
+    <ClCompile Include="swarm\vgui\serveroptionspanel.cpp" />
+    <ClCompile Include="swarm\vgui\skillanimpanel.cpp" />
+    <ClCompile Include="swarm\vgui\softline.cpp" />
+    <ClCompile Include="swarm\vgui\squad_inventory_panel.cpp" />
+    <ClCompile Include="swarm\vgui\statsbar.cpp" />
+    <ClCompile Include="swarm\vgui\stats_report.cpp" />
+    <ClCompile Include="swarm\vgui\stat_graph.cpp" />
+    <ClCompile Include="swarm\vgui\stat_graph_player.cpp" />
+    <ClCompile Include="swarm\vgui\stimmusicselectdialog.cpp" />
+    <ClCompile Include="swarm\vgui\techmarinefailpanel.cpp" />
+    <ClCompile Include="swarm\vgui\weapon_unlock_panel.cpp" />
+    <ClCompile Include="swarm\vgui\wrappedlabel.cpp" />
+    <ClCompile Include="swarm\vgui_rootpanel_asw.cpp" />
+    <ClCompile Include="texturescrollmaterialproxy.cpp" />
+    <ClCompile Include="text_message.cpp" />
+    <ClCompile Include="timematerialproxy.cpp" />
+    <ClCompile Include="toggletextureproxy.cpp" />
+    <ClCompile Include="toolframework_client.cpp" />
+    <ClCompile Include="vgui_avatarimage.cpp" />
+    <ClCompile Include="vgui_basepanel.cpp" />
+    <ClCompile Include="vgui_bindpanel.cpp" />
+    <ClCompile Include="vgui_bitmapbutton.cpp" />
+    <ClCompile Include="vgui_bitmapimage.cpp" />
+    <ClCompile Include="vgui_bitmappanel.cpp" />
+    <ClCompile Include="vgui_centerstringpanel.cpp" />
+    <ClCompile Include="vgui_consolepanel.cpp" />
+    <ClCompile Include="vgui_debugoverlaypanel.cpp" />
+    <ClCompile Include="vgui_fpspanel.cpp" />
+    <ClCompile Include="vgui_game_viewport.cpp" />
+    <ClCompile Include="vgui_grid.cpp" />
+    <ClCompile Include="vgui_hudvideo.cpp" />
+    <ClCompile Include="vgui_int.cpp" />
+    <ClCompile Include="vgui_loadingdiscpanel.cpp" />
+    <ClCompile Include="vgui_messagechars.cpp" />
+    <ClCompile Include="vgui_movie_display.cpp" />
+    <ClCompile Include="vgui_netgraphpanel.cpp" />
+    <ClCompile Include="vgui_slideshow_display_screen.cpp" />
+    <ClCompile Include="vgui_video.cpp" />
+    <ClCompile Include="view.cpp" />
+    <ClCompile Include="viewangleanim.cpp" />
+    <ClCompile Include="ViewConeImage.cpp" />
+    <ClCompile Include="viewdebug.cpp" />
+    <ClCompile Include="viewpostprocess.cpp" />
+    <ClCompile Include="viewrender.cpp" />
+    <ClCompile Include="view_beams.cpp" />
+    <ClCompile Include="view_effects.cpp" />
+    <ClCompile Include="view_scene.cpp" />
+    <ClCompile Include="voice_menu.cpp" />
+    <ClCompile Include="vscript_client.cpp" />
+    <ClCompile Include="warp_overlay.cpp" />
+    <ClCompile Include="WaterLODMaterialProxy.cpp" />
+    <ClCompile Include="weapons_resource.cpp" />
+    <ClCompile Include="weapon_selection.cpp" />
+    <ClCompile Include="WorldDimsProxy.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\blackbox_helper.h" />
+    <ClInclude Include="..\..\engine\iblackbox.h" />
+    <ClInclude Include="..\..\public\appframework\IAppSystem.h" />
+    <ClInclude Include="..\..\public\basehandle.h" />
+    <ClInclude Include="..\..\public\bitvec.h" />
+    <ClInclude Include="..\..\public\bone_accessor.h" />
+    <ClInclude Include="..\..\public\bone_setup.h" />
+    <ClInclude Include="..\..\public\bspfile.h" />
+    <ClInclude Include="..\..\public\bspflags.h" />
+    <ClInclude Include="..\..\public\bsptreedata.h" />
+    <ClInclude Include="..\..\public\cdll_int.h" />
+    <ClInclude Include="..\..\public\clientstats.h" />
+    <ClInclude Include="..\..\public\client_class.h" />
+    <ClInclude Include="..\..\public\client_render_handle.h" />
+    <ClInclude Include="..\..\public\client_textmessage.h" />
+    <ClInclude Include="..\..\public\closedcaptions.h" />
+    <ClInclude Include="..\..\public\cmodel.h" />
+    <ClInclude Include="..\..\public\collisionutils.h" />
+    <ClInclude Include="..\..\public\Color.h" />
+    <ClInclude Include="..\..\public\const.h" />
+    <ClInclude Include="..\..\public\con_nprint.h" />
+    <ClInclude Include="..\..\public\coordsize.h" />
+    <ClInclude Include="..\..\public\crtmemdebug.h" />
+    <ClInclude Include="..\..\public\datamap.h" />
+    <ClInclude Include="..\..\public\dlight.h" />
+    <ClInclude Include="..\..\public\dt_common.h" />
+    <ClInclude Include="..\..\public\dt_recv.h" />
+    <ClInclude Include="..\..\public\dt_send.h" />
+    <ClInclude Include="..\..\public\dt_utlvector_common.h" />
+    <ClInclude Include="..\..\public\dt_utlvector_recv.h" />
+    <ClInclude Include="..\..\public\edict.h" />
+    <ClInclude Include="..\..\public\engine\IClientLeafSystem.h" />
+    <ClInclude Include="..\..\public\engine\ICollideable.h" />
+    <ClInclude Include="..\..\public\engine\IEngineSound.h" />
+    <ClInclude Include="..\..\public\engine\IEngineTrace.h" />
+    <ClInclude Include="..\..\public\engine\ishadowmgr.h" />
+    <ClInclude Include="..\..\public\engine\IStaticPropMgr.h" />
+    <ClInclude Include="..\..\public\engine\ivdebugoverlay.h" />
+    <ClInclude Include="..\..\public\engine\ivmodelinfo.h" />
+    <ClInclude Include="..\..\public\engine\ivmodelrender.h" />
+    <ClInclude Include="..\..\public\filesystem.h" />
+    <ClInclude Include="..\..\public\filesystem_helpers.h" />
+    <ClInclude Include="..\..\public\gamebspfile.h" />
+    <ClInclude Include="..\..\public\gametrace.h" />
+    <ClInclude Include="..\..\public\game\client\iclientrendertargets.h" />
+    <ClInclude Include="..\..\public\game\client\iviewport.h" />
+    <ClInclude Include="..\..\public\globalvars_base.h" />
+    <ClInclude Include="..\..\public\iachievementmgr.h" />
+    <ClInclude Include="..\..\public\iclientalphaproperty.h" />
+    <ClInclude Include="..\..\public\icliententity.h" />
+    <ClInclude Include="..\..\public\icliententitylist.h" />
+    <ClInclude Include="..\..\public\iclientnetworkable.h" />
+    <ClInclude Include="..\..\public\iclientrenderable.h" />
+    <ClInclude Include="..\..\public\iclientthinkable.h" />
+    <ClInclude Include="..\..\public\iclientunknown.h" />
+    <ClInclude Include="..\..\public\icvar.h" />
+    <ClInclude Include="..\..\public\iefx.h" />
+    <ClInclude Include="..\..\public\ienginevgui.h" />
+    <ClInclude Include="..\..\public\igameevents.h" />
+    <ClInclude Include="..\..\public\igameresources.h" />
+    <ClInclude Include="..\..\public\IGameUIFuncs.h" />
+    <ClInclude Include="..\..\public\ihandleentity.h" />
+    <ClInclude Include="..\..\public\imapoverview.h" />
+    <ClInclude Include="..\..\public\inetchannelinfo.h" />
+    <ClInclude Include="..\..\public\interpolatortypes.h" />
+    <ClInclude Include="..\..\public\iprediction.h" />
+    <ClInclude Include="..\..\public\irecipientfilter.h" />
+    <ClInclude Include="..\..\public\isaverestore.h" />
+    <ClInclude Include="..\..\public\iscratchpad3d.h" />
+    <ClInclude Include="..\..\public\iserverentity.h" />
+    <ClInclude Include="..\..\public\iservernetworkable.h" />
+    <ClInclude Include="..\..\public\iserverunknown.h" />
+    <ClInclude Include="..\..\public\ispatialpartition.h" />
+    <ClInclude Include="..\..\public\istudiorender.h" />
+    <ClInclude Include="..\..\public\ivrenderview.h" />
+    <ClInclude Include="..\..\public\jigglebones.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterial.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterialproxy.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterialsystem.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterialsystemhardwareconfig.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterialsystemstub.h" />
+    <ClInclude Include="..\..\public\materialsystem\imaterialvar.h" />
+    <ClInclude Include="..\..\public\materialsystem\imesh.h" />
+    <ClInclude Include="..\..\public\materialsystem\itexture.h" />
+    <ClInclude Include="..\..\public\mathlib\bumpvects.h" />
+    <ClInclude Include="..\..\public\mathlib\compressed_light_cube.h" />
+    <ClInclude Include="..\..\public\mathlib\compressed_vector.h" />
+    <ClInclude Include="..\..\public\mathlib\mathlib.h" />
+    <ClInclude Include="..\..\public\mathlib\polyhedron.h" />
+    <ClInclude Include="..\..\public\mathlib\vector.h" />
+    <ClInclude Include="..\..\public\mathlib\vector2d.h" />
+    <ClInclude Include="..\..\public\mathlib\vector4d.h" />
+    <ClInclude Include="..\..\public\mathlib\vmatrix.h" />
+    <ClInclude Include="..\..\public\mathlib\vplane.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser_source.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_random_missions.h" />
+    <ClInclude Include="..\..\public\model_types.h" />
+    <ClInclude Include="..\..\public\mouthinfo.h" />
+    <ClInclude Include="..\..\public\networkstringtabledefs.h" />
+    <ClInclude Include="..\..\public\networkvar.h" />
+    <ClInclude Include="..\..\public\overlaytext.h" />
+    <ClInclude Include="..\..\public\pixelwriter.h" />
+    <ClInclude Include="..\..\public\PlayerState.h" />
+    <ClInclude Include="..\..\public\responserules\response_types.h" />
+    <ClInclude Include="..\..\public\rope_physics.h" />
+    <ClInclude Include="..\..\public\rope_shared.h" />
+    <ClInclude Include="..\..\public\r_efx.h" />
+    <ClInclude Include="..\..\public\saverestoretypes.h" />
+    <ClInclude Include="..\..\public\scratchpad3d.h" />
+    <ClInclude Include="..\..\public\ScratchPadUtils.h" />
+    <ClInclude Include="..\..\public\sentence.h" />
+    <ClInclude Include="..\..\public\server_class.h" />
+    <ClInclude Include="..\..\public\shake.h" />
+    <ClInclude Include="..\..\public\shattersurfacetypes.h" />
+    <ClInclude Include="..\..\public\simple_physics.h" />
+    <ClInclude Include="..\..\public\soundchars.h" />
+    <ClInclude Include="..\..\public\SoundEmitterSystem\isoundemittersystembase.h" />
+    <ClInclude Include="..\..\public\soundflags.h" />
+    <ClInclude Include="..\..\public\soundinfo.h" />
+    <ClInclude Include="..\..\public\steam\steam_api.h" />
+    <ClInclude Include="..\..\public\stringregistry.h" />
+    <ClInclude Include="..\..\public\string_t.h" />
+    <ClInclude Include="..\..\public\studio.h" />
+    <ClInclude Include="..\..\public\surfinfo.h" />
+    <ClInclude Include="..\..\public\texture_group_names.h" />
+    <ClInclude Include="..\..\public\tier0\basetypes.h" />
+    <ClInclude Include="..\..\public\tier0\commonmacros.h" />
+    <ClInclude Include="..\..\public\tier0\dbg.h" />
+    <ClInclude Include="..\..\public\tier0\fasttimer.h" />
+    <ClInclude Include="..\..\public\tier0\icommandline.h" />
+    <ClInclude Include="..\..\public\tier0\l2cache.h" />
+    <ClInclude Include="..\..\public\tier0\mem.h" />
+    <ClInclude Include="..\..\public\tier0\memalloc.h" />
+    <ClInclude Include="..\..\public\tier0\memdbgoff.h" />
+    <ClInclude Include="..\..\public\tier0\memdbgon.h" />
+    <ClInclude Include="..\..\public\tier0\platform.h" />
+    <ClInclude Include="..\..\public\tier0\protected_things.h" />
+    <ClInclude Include="..\..\public\tier0\vprof.h" />
+    <ClInclude Include="..\..\public\tier1\bitbuf.h" />
+    <ClInclude Include="..\..\public\tier1\characterset.h" />
+    <ClInclude Include="..\..\public\tier1\checksum_md5.h" />
+    <ClInclude Include="..\..\public\tier1\convar.h" />
+    <ClInclude Include="..\..\public\tier1\fmtstr.h" />
+    <ClInclude Include="..\..\public\tier1\interface.h" />
+    <ClInclude Include="..\..\public\tier1\interpolatedvar.h" />
+    <ClInclude Include="..\..\public\tier1\KeyValues.h" />
+    <ClInclude Include="..\..\public\tier1\lerp_functions.h" />
+    <ClInclude Include="..\..\public\tier1\mempool.h" />
+    <ClInclude Include="..\..\public\tier1\processor_detect.h" />
+    <ClInclude Include="..\..\public\tier1\rangecheckedvar.h" />
+    <ClInclude Include="..\..\public\tier1\smartptr.h" />
+    <ClInclude Include="..\..\public\tier1\stringpool.h" />
+    <ClInclude Include="..\..\public\tier1\strtools.h" />
+    <ClInclude Include="..\..\public\tier1\utlbidirectionalset.h" />
+    <ClInclude Include="..\..\public\tier1\utlbuffer.h" />
+    <ClInclude Include="..\..\public\tier1\utldict.h" />
+    <ClInclude Include="..\..\public\tier1\utlfixedmemory.h" />
+    <ClInclude Include="..\..\public\tier1\utlhash.h" />
+    <ClInclude Include="..\..\public\tier1\utllinkedlist.h" />
+    <ClInclude Include="..\..\public\tier1\utlmap.h" />
+    <ClInclude Include="..\..\public\tier1\utlmemory.h" />
+    <ClInclude Include="..\..\public\tier1\utlmultilist.h" />
+    <ClInclude Include="..\..\public\tier1\utlpriorityqueue.h" />
+    <ClInclude Include="..\..\public\tier1\utlqueue.h" />
+    <ClInclude Include="..\..\public\tier1\utlrbtree.h" />
+    <ClInclude Include="..\..\public\tier1\utlstack.h" />
+    <ClInclude Include="..\..\public\tier1\utlsymbol.h" />
+    <ClInclude Include="..\..\public\tier1\utlvector.h" />
+    <ClInclude Include="..\..\public\tier2\interval.h" />
+    <ClInclude Include="..\..\public\tools\bonelist.h" />
+    <ClInclude Include="..\..\public\vallocator.h" />
+    <ClInclude Include="..\..\public\vcollide.h" />
+    <ClInclude Include="..\..\public\vcollide_parse.h" />
+    <ClInclude Include="..\..\public\VGuiMatSurface\IMatSystemSurface.h" />
+    <ClInclude Include="..\..\public\vgui\Cursor.h" />
+    <ClInclude Include="..\..\public\vgui\Dar.h" />
+    <ClInclude Include="..\..\public\vgui\IClientPanel.h" />
+    <ClInclude Include="..\..\public\vgui\IHTML.h" />
+    <ClInclude Include="..\..\public\vgui\IImage.h" />
+    <ClInclude Include="..\..\public\vgui\IInput.h" />
+    <ClInclude Include="..\..\public\vgui\IInputInternal.h" />
+    <ClInclude Include="..\..\public\vgui\ILocalize.h" />
+    <ClInclude Include="..\..\public\vgui\IPanel.h" />
+    <ClInclude Include="..\..\public\vgui\IScheme.h" />
+    <ClInclude Include="..\..\public\vgui\ISurface.h" />
+    <ClInclude Include="..\..\public\vgui\ISystem.h" />
+    <ClInclude Include="..\..\public\vgui\IVGui.h" />
+    <ClInclude Include="..\..\public\vgui\KeyCode.h" />
+    <ClInclude Include="..\..\public\vgui\MouseCode.h" />
+    <ClInclude Include="..\..\public\vgui\VGUI.h" />
+    <ClInclude Include="..\..\public\vgui_controls\AnimationController.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Button.h" />
+    <ClInclude Include="..\..\public\vgui_controls\CircularProgressBar.h" />
+    <ClInclude Include="..\..\public\vgui_controls\ComboBox.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Controls.h" />
+    <ClInclude Include="..\..\public\vgui_controls\EditablePanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\FocusNavGroup.h" />
+    <ClInclude Include="..\..\public\vgui_controls\HTML.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Image.h" />
+    <ClInclude Include="..\..\public\vgui_controls\ImageList.h" />
+    <ClInclude Include="..\..\public\vgui_controls\ImagePanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Label.h" />
+    <ClInclude Include="..\..\public\vgui_controls\ListPanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Menu.h" />
+    <ClInclude Include="..\..\public\vgui_controls\MenuItem.h" />
+    <ClInclude Include="..\..\public\vgui_controls\MessageMap.h" />
+    <ClInclude Include="..\..\public\vgui_controls\Panel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\PanelAnimationVar.h" />
+    <ClInclude Include="..\..\public\vgui_controls\PanelListPanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\PHandle.h" />
+    <ClInclude Include="..\..\public\vgui_controls\RichText.h" />
+    <ClInclude Include="..\..\public\vgui_controls\ScrollBar.h" />
+    <ClInclude Include="..\..\public\vgui_controls\SectionedListPanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\TextEntry.h" />
+    <ClInclude Include="..\..\public\vgui_controls\TextImage.h" />
+    <ClInclude Include="..\..\public\vgui_controls\TreeView.h" />
+    <ClInclude Include="..\..\public\vgui_controls\WizardPanel.h" />
+    <ClInclude Include="..\..\public\vgui_controls\WizardSubPanel.h" />
+    <ClInclude Include="..\..\public\view_shared.h" />
+    <ClInclude Include="..\..\public\vphysics\collision_set.h" />
+    <ClInclude Include="..\..\public\vphysics\constraints.h" />
+    <ClInclude Include="..\..\public\vphysics\friction.h" />
+    <ClInclude Include="..\..\public\vphysics\object_hash.h" />
+    <ClInclude Include="..\..\public\vphysics_interface.h" />
+    <ClInclude Include="..\..\public\vstdlib\IKeyValuesSystem.h" />
+    <ClInclude Include="..\..\public\vstdlib\random.h" />
+    <ClInclude Include="..\..\public\vstdlib\vstdlib.h" />
+    <ClInclude Include="..\..\public\vtf\vtf.h" />
+    <ClInclude Include="..\..\public\worldsize.h" />
+    <ClInclude Include="..\..\public\zip_uncompressed.h" />
+    <ClInclude Include="..\shared\achievementmgr.h" />
+    <ClInclude Include="..\shared\achievement_saverestore.h" />
+    <ClInclude Include="..\shared\activitylist.h" />
+    <ClInclude Include="..\shared\ai_activity.h" />
+    <ClInclude Include="..\shared\ai_criteria.h" />
+    <ClInclude Include="..\shared\ai_debug_shared.h" />
+    <ClInclude Include="..\shared\ai_responsesystem.h" />
+    <ClInclude Include="..\shared\ai_speechconcept.h" />
+    <ClInclude Include="..\shared\ammodef.h" />
+    <ClInclude Include="..\shared\animation.h" />
+    <ClInclude Include="..\shared\apparent_velocity_helper.h" />
+    <ClInclude Include="..\shared\baseachievement.h" />
+    <ClInclude Include="..\shared\baseentity_shared.h" />
+    <ClInclude Include="..\shared\basegrenade_shared.h" />
+    <ClInclude Include="..\shared\baseparticleentity.h" />
+    <ClInclude Include="..\shared\baseplayer_shared.h" />
+    <ClInclude Include="..\shared\baseviewmodel_shared.h" />
+    <ClInclude Include="..\shared\base_playeranimstate.h" />
+    <ClInclude Include="..\shared\beam_flags.h" />
+    <ClInclude Include="..\shared\beam_shared.h" />
+    <ClInclude Include="..\shared\cellcoord.h" />
+    <ClInclude Include="..\shared\choreoactor.h" />
+    <ClInclude Include="..\shared\choreochannel.h" />
+    <ClInclude Include="..\shared\choreoevent.h" />
+    <ClInclude Include="..\shared\choreoscene.h" />
+    <ClInclude Include="..\shared\collisionproperty.h" />
+    <ClInclude Include="..\shared\cstrike\basecsgrenade_projectile.h" />
+    <ClInclude Include="..\shared\cstrike\fx_cs_shared.h" />
+    <ClInclude Include="..\shared\cstrike\weapon_flashbang.h" />
+    <ClInclude Include="..\shared\cstrike\weapon_hegrenade.h" />
+    <ClInclude Include="..\shared\death_pose.h" />
+    <ClInclude Include="..\shared\decals.h" />
+    <ClInclude Include="..\shared\effect_color_tables.h" />
+    <ClInclude Include="..\shared\effect_dispatch_data.h" />
+    <ClInclude Include="..\shared\ehandle.h" />
+    <ClInclude Include="..\shared\entitydatainstantiator.h" />
+    <ClInclude Include="..\shared\entitylist_base.h" />
+    <ClInclude Include="..\shared\entityparticletrail_shared.h" />
+    <ClInclude Include="..\shared\env_detail_controller.h" />
+    <ClInclude Include="..\shared\env_wind_shared.h" />
+    <ClInclude Include="..\shared\eventlist.h" />
+    <ClInclude Include="..\shared\func_dust_shared.h" />
+    <ClInclude Include="..\shared\func_ladder.h" />
+    <ClInclude Include="..\shared\gameeventdefs.h" />
+    <ClInclude Include="..\shared\GameEventListener.h" />
+    <ClInclude Include="..\shared\gamemovement.h" />
+    <ClInclude Include="..\shared\gamerules.h" />
+    <ClInclude Include="..\shared\gamerules_register.h" />
+    <ClInclude Include="..\shared\GameStats.h" />
+    <ClInclude Include="..\shared\gamestringpool.h" />
+    <ClInclude Include="..\shared\gamevars_shared.h" />
+    <ClInclude Include="..\shared\game_timescale_shared.h" />
+    <ClInclude Include="..\shared\groundlink.h" />
+    <ClInclude Include="..\shared\hintmessage.h" />
+    <ClInclude Include="..\shared\hintsystem.h" />
+    <ClInclude Include="..\shared\hl2\basehlcombatweapon_shared.h" />
+    <ClInclude Include="..\shared\hl2\hl2_player_shared.h" />
+    <ClInclude Include="..\shared\hl2\hl_movedata.h" />
+    <ClInclude Include="..\shared\ichoreoeventcallback.h" />
+    <ClInclude Include="..\shared\IEffects.h" />
+    <ClInclude Include="..\shared\igamemovement.h" />
+    <ClInclude Include="..\shared\igamesystem.h" />
+    <ClInclude Include="..\shared\imovehelper.h" />
+    <ClInclude Include="..\shared\in_buttons.h" />
+    <ClInclude Include="..\shared\iplayeranimstate.h" />
+    <ClInclude Include="..\shared\ipredictionsystem.h" />
+    <ClInclude Include="..\shared\itempents.h" />
+    <ClInclude Include="..\shared\IVehicle.h" />
+    <ClInclude Include="..\shared\mapdata_shared.h" />
+    <ClInclude Include="..\shared\mapentities_shared.h" />
+    <ClInclude Include="..\shared\movevars_shared.h" />
+    <ClInclude Include="..\shared\mp_shareddefs.h" />
+    <ClInclude Include="..\shared\multiplay_gamerules.h" />
+    <ClInclude Include="..\shared\npcevent.h" />
+    <ClInclude Include="..\shared\obstacle_pushaway.h" />
+    <ClInclude Include="..\shared\particle_parse.h" />
+    <ClInclude Include="..\shared\particle_property.h" />
+    <ClInclude Include="..\shared\physics_saverestore.h" />
+    <ClInclude Include="..\shared\physics_shared.h" />
+    <ClInclude Include="..\shared\playernet_vars.h" />
+    <ClInclude Include="..\shared\point_bonusmaps_accessor.h" />
+    <ClInclude Include="..\shared\point_posecontroller.h" />
+    <ClInclude Include="..\shared\positionwatcher.h" />
+    <ClInclude Include="..\shared\postprocess_shared.h" />
+    <ClInclude Include="..\shared\precache_register.h" />
+    <ClInclude Include="..\shared\precipitation_shared.h" />
+    <ClInclude Include="..\shared\predictableid.h" />
+    <ClInclude Include="..\shared\predictable_entity.h" />
+    <ClInclude Include="..\shared\predictioncopy.h" />
+    <ClInclude Include="..\shared\ragdoll_shared.h" />
+    <ClInclude Include="..\shared\rope_helpers.h" />
+    <ClInclude Include="..\shared\saverestore.h" />
+    <ClInclude Include="..\shared\saverestore_bitstring.h" />
+    <ClInclude Include="..\shared\saverestore_utlclass.h" />
+    <ClInclude Include="..\shared\saverestore_utlsymbol.h" />
+    <ClInclude Include="..\shared\saverestore_utlvector.h" />
+    <ClInclude Include="..\shared\sceneentity_shared.h" />
+    <ClInclude Include="..\shared\scriptevent.h" />
+    <ClInclude Include="..\shared\sequence_Transitioner.h" />
+    <ClInclude Include="..\shared\shareddefs.h" />
+    <ClInclude Include="..\shared\sharedInterface.h" />
+    <ClInclude Include="..\shared\sharedvar.h" />
+    <ClInclude Include="..\shared\shared_classnames.h" />
+    <ClInclude Include="..\shared\sheetsimulator.h" />
+    <ClInclude Include="..\shared\shot_manipulator.h" />
+    <ClInclude Include="..\shared\simtimer.h" />
+    <ClInclude Include="..\shared\singleplay_gamerules.h" />
+    <ClInclude Include="..\shared\solidsetdefaults.h" />
+    <ClInclude Include="..\shared\soundenvelope.h" />
+    <ClInclude Include="..\shared\Sprite.h" />
+    <ClInclude Include="..\shared\SpriteTrail.h" />
+    <ClInclude Include="..\shared\steamworks_gamestats.h" />
+    <ClInclude Include="..\shared\sun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_achievements.h" />
+    <ClInclude Include="..\shared\swarm\asw_alien_goo_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_alien_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_ammo_drop_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_bouncing_pellet_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_campaign_info.h" />
+    <ClInclude Include="..\shared\swarm\asw_deathmatch_mode_light.h" />
+    <ClInclude Include="..\shared\swarm\asw_equipment_list.h" />
+    <ClInclude Include="..\shared\swarm\asw_equip_req.h" />
+    <ClInclude Include="..\shared\swarm\asw_fx_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_gamerules.h" />
+    <ClInclude Include="..\shared\swarm\asw_gamestats_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_holdout_mode.h" />
+    <ClInclude Include="..\shared\swarm\asw_holdout_wave.h" />
+    <ClInclude Include="..\shared\swarm\asw_holo_sentry_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_imarinegamemovement.h" />
+    <ClInclude Include="..\shared\swarm\asw_info_message_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_marine_command.h" />
+    <ClInclude Include="..\shared\swarm\asw_marine_gamemovement.h" />
+    <ClInclude Include="..\shared\swarm\asw_marine_profile.h" />
+    <ClInclude Include="..\shared\swarm\asw_marine_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_marine_skills.h" />
+    <ClInclude Include="..\shared\swarm\asw_medals_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_melee_system.h" />
+    <ClInclude Include="..\shared\swarm\asw_missile_round_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_mortarbug_shell_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_movedata.h" />
+    <ClInclude Include="..\shared\swarm\asw_playeranimstate.h" />
+    <ClInclude Include="..\shared\swarm\asw_player_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_powerup_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_prop_laserable_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_queen_divers_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_queen_grabber_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_remote_turret_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_scanner_objects_enumerator.h" />
+    <ClInclude Include="..\shared\swarm\asw_shareddefs.h" />
+    <ClInclude Include="..\shared\swarm\asw_shotgun_pellet_predicted_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_target_dummy_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_trace_filter.h" />
+    <ClInclude Include="..\shared\swarm\asw_trace_filter_melee.h" />
+    <ClInclude Include="..\shared\swarm\asw_trace_filter_shot.h" />
+    <ClInclude Include="..\shared\swarm\asw_usableobjectsenumerator.h" />
+    <ClInclude Include="..\shared\swarm\asw_util_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_50calmg_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_ammo_bag_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_autogun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_bait.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_blink.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_buff_grenade.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_chainsaw_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_combat_rifle_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_devastator_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_electrified_armor.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_fire_extinguisher_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_fist.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_flamer_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_flares_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_flashlight_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_flechette_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_freeze_grenades.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_grenades.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_grenade_launcher.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_healamp_gun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_healgrenade_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_heal_gun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_hornet_barrage.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_jump_jet.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_laser_mines.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_medical_satchel_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_medkit_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_mines_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_minigun.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_mining_laser_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_night_vision.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_normal_armor.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_parse.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_pdw_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_pistol_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_prifle_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_railgun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_ricochet_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_sentry_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_shotgun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_smart_bomb.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_sniper_rifle.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_stim_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_t75.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_tesla_gun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_tesla_trap.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_welder_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
+    <ClInclude Include="..\shared\swarm\rd_workshop.h" />
+    <ClInclude Include="..\shared\takedamageinfo.h" />
+    <ClInclude Include="..\shared\teamplayroundbased_gamerules.h" />
+    <ClInclude Include="..\shared\teamplay_gamerules.h" />
+    <ClInclude Include="..\shared\tempentity.h" />
+    <ClInclude Include="..\shared\touchlink.h" />
+    <ClInclude Include="..\shared\usercmd.h" />
+    <ClInclude Include="..\shared\usermessages.h" />
+    <ClInclude Include="..\shared\util_shared.h" />
+    <ClInclude Include="..\shared\vehicle_choreo_generic_shared.h" />
+    <ClInclude Include="..\shared\vehicle_viewblend_shared.h" />
+    <ClInclude Include="..\shared\vgui_defaultinputsignal.h" />
+    <ClInclude Include="..\shared\viewport_panel_names.h" />
+    <ClInclude Include="..\shared\voice_banmgr.h" />
+    <ClInclude Include="..\shared\voice_common.h" />
+    <ClInclude Include="..\shared\voice_gamemgr.h" />
+    <ClInclude Include="..\shared\voice_status.h" />
+    <ClInclude Include="..\shared\vphysics_sound.h" />
+    <ClInclude Include="..\shared\vscript_shared.h" />
+    <ClInclude Include="..\shared\weapon_ifmsteadycam.h" />
+    <ClInclude Include="..\shared\weapon_parse.h" />
+    <ClInclude Include="..\shared\weapon_proficiency.h" />
+    <ClInclude Include="achievement_notification_panel.h" />
+    <ClInclude Include="animationlayer.h" />
+    <ClInclude Include="baseanimatedtextureproxy.h" />
+    <ClInclude Include="baseclientrendertargets.h" />
+    <ClInclude Include="beamdraw.h" />
+    <ClInclude Include="bone_merge_cache.h" />
+    <ClInclude Include="cbase.h" />
+    <ClInclude Include="cdll_bounded_cvars.h" />
+    <ClInclude Include="cdll_client_int.h" />
+    <ClInclude Include="cdll_util.h" />
+    <ClInclude Include="clientalphaproperty.h" />
+    <ClInclude Include="cliententitylist.h" />
+    <ClInclude Include="clientleafsystem.h" />
+    <ClInclude Include="clientmode.h" />
+    <ClInclude Include="clientmode_shared.h" />
+    <ClInclude Include="clientsideeffects.h" />
+    <ClInclude Include="client_factorylist.h" />
+    <ClInclude Include="client_thinklist.h" />
+    <ClInclude Include="cl_animevent.h" />
+    <ClInclude Include="cl_mat_stub.h" />
+    <ClInclude Include="colorcorrectionmgr.h" />
+    <ClInclude Include="commentary_modelviewer.h" />
+    <ClInclude Include="cstrike\fx_cs_blood.h" />
+    <ClInclude Include="cstrike\hud_radar.h" />
+    <ClInclude Include="c_ai_basenpc.h" />
+    <ClInclude Include="c_baseanimating.h" />
+    <ClInclude Include="c_baseanimatingoverlay.h" />
+    <ClInclude Include="c_basecombatcharacter.h" />
+    <ClInclude Include="c_basecombatweapon.h" />
+    <ClInclude Include="c_basedoor.h" />
+    <ClInclude Include="c_baseentity.h" />
+    <ClInclude Include="c_baseflex.h" />
+    <ClInclude Include="c_baselesson.h" />
+    <ClInclude Include="c_baseplayer.h" />
+    <ClInclude Include="c_basetempentity.h" />
+    <ClInclude Include="c_basetoggle.h" />
+    <ClInclude Include="c_baseviewmodel.h" />
+    <ClInclude Include="c_breakableprop.h" />
+    <ClInclude Include="c_colorcorrection.h" />
+    <ClInclude Include="c_effects.h" />
+    <ClInclude Include="c_entitydissolve.h" />
+    <ClInclude Include="c_entityflame.h" />
+    <ClInclude Include="c_entityfreezing.h" />
+    <ClInclude Include="c_env_ambient_light.h" />
+    <ClInclude Include="c_env_fog_controller.h" />
+    <ClInclude Include="c_env_projectedtexture.h" />
+    <ClInclude Include="c_fire_smoke.h" />
+    <ClInclude Include="c_func_dust.h" />
+    <ClInclude Include="c_func_reflective_glass.h" />
+    <ClInclude Include="c_gameinstructor.h" />
+    <ClInclude Include="c_gib.h" />
+    <ClInclude Include="c_impact_effects.h" />
+    <ClInclude Include="c_movie_display.h" />
+    <ClInclude Include="c_physbox.h" />
+    <ClInclude Include="c_physicsprop.h" />
+    <ClInclude Include="c_physics_prop_statue.h" />
+    <ClInclude Include="c_pixel_visibility.h" />
+    <ClInclude Include="c_playerlocaldata.h" />
+    <ClInclude Include="c_playerresource.h" />
+    <ClInclude Include="c_point_camera.h" />
+    <ClInclude Include="c_postprocesscontroller.h" />
+    <ClInclude Include="c_props.h" />
+    <ClInclude Include="c_prop_vehicle.h" />
+    <ClInclude Include="c_recipientfilter.h" />
+    <ClInclude Include="c_rope.h" />
+    <ClInclude Include="c_rumble.h" />
+    <ClInclude Include="c_sceneentity.h" />
+    <ClInclude Include="c_slideshow_display.h" />
+    <ClInclude Include="c_smoke_trail.h" />
+    <ClInclude Include="c_soundscape.h" />
+    <ClInclude Include="c_spatialentity.h" />
+    <ClInclude Include="c_sprite.h" />
+    <ClInclude Include="c_sun.h" />
+    <ClInclude Include="c_surfacerender.h" />
+    <ClInclude Include="c_team.h" />
+    <ClInclude Include="c_tesla.h" />
+    <ClInclude Include="c_te_basebeam.h" />
+    <ClInclude Include="c_te_effect_dispatch.h" />
+    <ClInclude Include="c_te_legacytempents.h" />
+    <ClInclude Include="c_te_particlesystem.h" />
+    <ClInclude Include="c_tracer.h" />
+    <ClInclude Include="c_triggers.h" />
+    <ClInclude Include="c_user_message_register.h" />
+    <ClInclude Include="c_vehicle_jeep.h" />
+    <ClInclude Include="c_vguiscreen.h" />
+    <ClInclude Include="c_weapon__stubs.h" />
+    <ClInclude Include="c_world.h" />
+    <ClInclude Include="detailobjectsystem.h" />
+    <ClInclude Include="enginesprite.h" />
+    <ClInclude Include="flashlighteffect.h" />
+    <ClInclude Include="fontabc.h" />
+    <ClInclude Include="foundryhelpers_client.h" />
+    <ClInclude Include="functionproxy.h" />
+    <ClInclude Include="fx.h" />
+    <ClInclude Include="fx_blood.h" />
+    <ClInclude Include="fx_discreetline.h" />
+    <ClInclude Include="fx_envelope.h" />
+    <ClInclude Include="fx_explosion.h" />
+    <ClInclude Include="fx_fleck.h" />
+    <ClInclude Include="fx_impact.h" />
+    <ClInclude Include="fx_interpvalue.h" />
+    <ClInclude Include="fx_line.h" />
+    <ClInclude Include="fx_quad.h" />
+    <ClInclude Include="fx_sparks.h" />
+    <ClInclude Include="fx_staticline.h" />
+    <ClInclude Include="fx_trail.h" />
+    <ClInclude Include="fx_water.h" />
+    <ClInclude Include="game_controls\basemodel_panel.h" />
+    <ClInclude Include="game_controls\baseviewport.h" />
+    <ClInclude Include="game_controls\clientscoreboarddialog.h" />
+    <ClInclude Include="game_controls\commandmenu.h" />
+    <ClInclude Include="game_controls\IconPanel.h" />
+    <ClInclude Include="game_controls\imagemouseoverbutton.h" />
+    <ClInclude Include="game_controls\intromenu.h" />
+    <ClInclude Include="game_controls\mapoverview.h" />
+    <ClInclude Include="game_controls\mouseoverhtmlbutton.h" />
+    <ClInclude Include="game_controls\mouseoverpanelbutton.h" />
+    <ClInclude Include="game_controls\NavProgress.h" />
+    <ClInclude Include="game_controls\spectatorgui.h" />
+    <ClInclude Include="game_controls\teammenu.h" />
+    <ClInclude Include="game_controls\vguitextwindow.h" />
+    <ClInclude Include="glow_outline_effect.h" />
+    <ClInclude Include="glow_overlay.h" />
+    <ClInclude Include="history_resource.h" />
+    <ClInclude Include="hl2\c_basehelicopter.h" />
+    <ClInclude Include="hltvcamera.h" />
+    <ClInclude Include="hud.h" />
+    <ClInclude Include="hudelement.h" />
+    <ClInclude Include="hudtexturehandle.h" />
+    <ClInclude Include="hud_basechat.h" />
+    <ClInclude Include="hud_basetimer.h" />
+    <ClInclude Include="hud_bitmapnumericdisplay.h" />
+    <ClInclude Include="hud_chat.h" />
+    <ClInclude Include="hud_closecaption.h" />
+    <ClInclude Include="hud_crosshair.h" />
+    <ClInclude Include="hud_element_helper.h" />
+    <ClInclude Include="hud_lcd.h" />
+    <ClInclude Include="hud_locator_target.h" />
+    <ClInclude Include="hud_macros.h" />
+    <ClInclude Include="hud_numericdisplay.h" />
+    <ClInclude Include="hud_pdump.h" />
+    <ClInclude Include="hud_vehicle.h" />
+    <ClInclude Include="iclassmap.h" />
+    <ClInclude Include="icliententityinternal.h" />
+    <ClInclude Include="iclientmode.h" />
+    <ClInclude Include="iclientshadowmgr.h" />
+    <ClInclude Include="iclientvehicle.h" />
+    <ClInclude Include="iconsole.h" />
+    <ClInclude Include="idebugoverlaypanel.h" />
+    <ClInclude Include="ifpspanel.h" />
+    <ClInclude Include="ihudlcd.h" />
+    <ClInclude Include="iinput.h" />
+    <ClInclude Include="iloadingdisc.h" />
+    <ClInclude Include="imaterialproxydict.h" />
+    <ClInclude Include="imessagechars.h" />
+    <ClInclude Include="inetgraphpanel.h" />
+    <ClInclude Include="initializer.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="in_main.h" />
+    <ClInclude Include="iprofiling.h" />
+    <ClInclude Include="itextmessage.h" />
+    <ClInclude Include="ivieweffects.h" />
+    <ClInclude Include="iviewrender.h" />
+    <ClInclude Include="iviewrender_beams.h" />
+    <ClInclude Include="ivmodemanager.h" />
+    <ClInclude Include="kbutton.h" />
+    <ClInclude Include="keybindinglistener.h" />
+    <ClInclude Include="menu.h" />
+    <ClInclude Include="modelrendersystem.h" />
+    <ClInclude Include="movehelper_client.h" />
+    <ClInclude Include="mp3player.h" />
+    <ClInclude Include="networkstringtable_clientdll.h" />
+    <ClInclude Include="object_motion_blur_effect.h" />
+    <ClInclude Include="panelmetaclassmgr.h" />
+    <ClInclude Include="particledraw.h" />
+    <ClInclude Include="particlemgr.h" />
+    <ClInclude Include="particlesphererenderer.h" />
+    <ClInclude Include="particles_attractor.h" />
+    <ClInclude Include="particles_ez.h" />
+    <ClInclude Include="particles_localspace.h" />
+    <ClInclude Include="particles_new.h" />
+    <ClInclude Include="particles_simple.h" />
+    <ClInclude Include="particle_collision.h" />
+    <ClInclude Include="particle_iterators.h" />
+    <ClInclude Include="particle_litsmokeemitter.h" />
+    <ClInclude Include="particle_prototype.h" />
+    <ClInclude Include="particle_simple3d.h" />
+    <ClInclude Include="particle_util.h" />
+    <ClInclude Include="perfvisualbenchmark.h" />
+    <ClInclude Include="physics.h" />
+    <ClInclude Include="physpropclientside.h" />
+    <ClInclude Include="playerandobjectenumerator.h" />
+    <ClInclude Include="playerenumerator.h" />
+    <ClInclude Include="prediction.h" />
+    <ClInclude Include="prediction_private.h" />
+    <ClInclude Include="proxyentity.h" />
+    <ClInclude Include="ragdoll.h" />
+    <ClInclude Include="ragdollexplosionenumerator.h" />
+    <ClInclude Include="recvproxy.h" />
+    <ClInclude Include="rendertexture.h" />
+    <ClInclude Include="replaycamera.h" />
+    <ClInclude Include="ScreenSpaceEffects.h" />
+    <ClInclude Include="simple_keys.h" />
+    <ClInclude Include="smoke_fog_overlay.h" />
+    <ClInclude Include="spatialentitymgr.h" />
+    <ClInclude Include="splinepatch.h" />
+    <ClInclude Include="swarm\asw_bone_merge.h" />
+    <ClInclude Include="swarm\asw_briefing.h" />
+    <ClInclude Include="swarm\asw_client_entities.h" />
+    <ClInclude Include="swarm\asw_input.h" />
+    <ClInclude Include="swarm\asw_marineandobjectenumerator.h" />
+    <ClInclude Include="swarm\asw_medal_store.h" />
+    <ClInclude Include="swarm\asw_video.h" />
+    <ClInclude Include="swarm\asw_view_scene.h" />
+    <ClInclude Include="swarm\clientmode_asw.h" />
+    <ClInclude Include="swarm\c_asw_alien.h" />
+    <ClInclude Include="swarm\c_asw_ammo.h" />
+    <ClInclude Include="swarm\c_asw_ammo_drop.h" />
+    <ClInclude Include="swarm\c_asw_aoegrenade_projectile.h" />
+    <ClInclude Include="swarm\c_asw_boomer.h" />
+    <ClInclude Include="swarm\c_asw_buffgrenade_projectile.h" />
+    <ClInclude Include="swarm\c_asw_button_area.h" />
+    <ClInclude Include="swarm\c_asw_buzzer.h" />
+    <ClInclude Include="swarm\c_asw_camera_volume.h" />
+    <ClInclude Include="swarm\c_asw_campaign_save.h" />
+    <ClInclude Include="swarm\c_asw_clientragdoll.h" />
+    <ClInclude Include="swarm\c_asw_client_corpse.h" />
+    <ClInclude Include="swarm\c_asw_computer_area.h" />
+    <ClInclude Include="swarm\c_asw_debrief_stats.h" />
+    <ClInclude Include="swarm\c_asw_door.h" />
+    <ClInclude Include="swarm\c_asw_door_area.h" />
+    <ClInclude Include="swarm\c_asw_drone_advanced.h" />
+    <ClInclude Include="swarm\c_asw_dummy_vehicle.h" />
+    <ClInclude Include="swarm\c_asw_dynamic_light.h" />
+    <ClInclude Include="swarm\c_asw_egg.h" />
+    <ClInclude Include="swarm\c_asw_entity_dissolve.h" />
+    <ClInclude Include="swarm\c_asw_extinguisher_projectile.h" />
+    <ClInclude Include="swarm\c_asw_fire.h" />
+    <ClInclude Include="swarm\c_asw_firewall_piece.h" />
+    <ClInclude Include="swarm\c_asw_flamer_projectile.h" />
+    <ClInclude Include="swarm\c_asw_flare_projectile.h" />
+    <ClInclude Include="swarm\c_asw_fourwheelvehiclephysics.h" />
+    <ClInclude Include="swarm\c_asw_fx.h" />
+    <ClInclude Include="swarm\c_asw_game_resource.h" />
+    <ClInclude Include="swarm\c_asw_generic_emitter.h" />
+    <ClInclude Include="swarm\c_asw_generic_emitter_entity.h" />
+    <ClInclude Include="swarm\c_asw_grub.h" />
+    <ClInclude Include="swarm\c_asw_gun_smoke_emitter.h" />
+    <ClInclude Include="swarm\c_asw_hack.h" />
+    <ClInclude Include="swarm\c_asw_hack_computer.h" />
+    <ClInclude Include="swarm\c_asw_hack_wire_tile.h" />
+    <ClInclude Include="swarm\c_asw_jeep.h" />
+    <ClInclude Include="swarm\c_asw_jeep_clientside.h" />
+    <ClInclude Include="swarm\c_asw_jukebox.h" />
+    <ClInclude Include="swarm\c_asw_laser_mine.h" />
+    <ClInclude Include="swarm\c_asw_level_exploder.h" />
+    <ClInclude Include="swarm\c_asw_marine.h" />
+    <ClInclude Include="swarm\c_asw_marine_resource.h" />
+    <ClInclude Include="swarm\c_asw_marker.h" />
+    <ClInclude Include="swarm\c_asw_mesh_emitter_entity.h" />
+    <ClInclude Include="swarm\c_asw_mine.h" />
+    <ClInclude Include="swarm\c_asw_objective.h" />
+    <ClInclude Include="swarm\c_asw_objective_countdown.h" />
+    <ClInclude Include="swarm\c_asw_objective_kill_aliens.h" />
+    <ClInclude Include="swarm\c_asw_objective_kill_eggs.h" />
+    <ClInclude Include="swarm\c_asw_objective_kill_goo.h" />
+    <ClInclude Include="swarm\c_asw_objective_kill_queen.h" />
+    <ClInclude Include="swarm\c_asw_order_arrow.h" />
+    <ClInclude Include="swarm\c_asw_parasite.h" />
+    <ClInclude Include="swarm\c_asw_physics_prop_statue.h" />
+    <ClInclude Include="swarm\c_asw_pickup.h" />
+    <ClInclude Include="swarm\c_asw_pickup_equipment.h" />
+    <ClInclude Include="swarm\c_asw_pickup_money.h" />
+    <ClInclude Include="swarm\c_asw_pickup_weapon.h" />
+    <ClInclude Include="swarm\c_asw_player.h" />
+    <ClInclude Include="swarm\c_asw_playerlocaldata.h" />
+    <ClInclude Include="swarm\c_asw_point_camera.h" />
+    <ClInclude Include="swarm\c_asw_prop_physics.h" />
+    <ClInclude Include="swarm\c_asw_queen.h" />
+    <ClInclude Include="swarm\c_asw_queen_spit.h" />
+    <ClInclude Include="swarm\c_asw_railgun_beam.h" />
+    <ClInclude Include="swarm\c_asw_ranger.h" />
+    <ClInclude Include="swarm\c_asw_render_targets.h" />
+    <ClInclude Include="swarm\c_asw_rocket.h" />
+    <ClInclude Include="swarm\c_asw_scanner_info.h" />
+    <ClInclude Include="swarm\c_asw_scanner_noise.h" />
+    <ClInclude Include="swarm\c_asw_sentry_base.h" />
+    <ClInclude Include="swarm\c_asw_sentry_top.h" />
+    <ClInclude Include="swarm\c_asw_sentry_top_flamer.h" />
+    <ClInclude Include="swarm\c_asw_sentry_top_icer.h" />
+    <ClInclude Include="swarm\c_asw_shaman.h" />
+    <ClInclude Include="swarm\c_asw_shieldbug.h" />
+    <ClInclude Include="swarm\c_asw_simple_alien.h" />
+    <ClInclude Include="swarm\c_asw_simple_drone.h" />
+    <ClInclude Include="swarm\c_asw_snow_emitter.h" />
+    <ClInclude Include="swarm\c_asw_snow_volume.h" />
+    <ClInclude Include="swarm\c_asw_steamstats.h" />
+    <ClInclude Include="swarm\c_asw_t75.h" />
+    <ClInclude Include="swarm\c_asw_tesla_trap.h" />
+    <ClInclude Include="swarm\c_asw_trail_beam.h" />
+    <ClInclude Include="swarm\c_asw_use_area.h" />
+    <ClInclude Include="swarm\c_asw_voting_missions.h" />
+    <ClInclude Include="swarm\c_asw_voting_mission_chooser_source.h" />
+    <ClInclude Include="swarm\c_asw_vphysics_npc.h" />
+    <ClInclude Include="swarm\c_asw_weapon.h" />
+    <ClInclude Include="swarm\c_asw_weapon_rifle.h" />
+    <ClInclude Include="swarm\c_env_sprite_asw_fade.h" />
+    <ClInclude Include="swarm\c_func_asw_fade.h" />
+    <ClInclude Include="swarm\c_prop_asw_fade.h" />
+    <ClInclude Include="swarm\gameui\backgroundmenubutton.h" />
+    <ClInclude Include="swarm\gameui\basepaenl.h" />
+    <ClInclude Include="swarm\gameui\basesavegamedialog.h" />
+    <ClInclude Include="swarm\gameui\bitmapimagepanel.h" />
+    <ClInclude Include="swarm\gameui\commandcheckbutton.h" />
+    <ClInclude Include="swarm\gameui\contentcontroldialog.h" />
+    <ClInclude Include="swarm\gameui\createmultiplayergamebotpage.h" />
+    <ClInclude Include="swarm\gameui\createmultiplayergamedialog.h" />
+    <ClInclude Include="swarm\gameui\createmultiplayergamegameplaypage.h" />
+    <ClInclude Include="swarm\gameui\createmultiplayergameserverpage.h" />
+    <ClInclude Include="swarm\gameui\customtabexplanationdialog.h" />
+    <ClInclude Include="swarm\gameui\cvarnegatecheckbutton.h" />
+    <ClInclude Include="swarm\gameui\cvarslider.h" />
+    <ClInclude Include="swarm\gameui\cvartextentry.h" />
+    <ClInclude Include="swarm\gameui\cvartogglecheckbutton.h" />
+    <ClInclude Include="swarm\gameui\engineinterface.h" />
+    <ClInclude Include="swarm\gameui\gameconsole.h" />
+    <ClInclude Include="swarm\gameui\gameconsoledialog.h" />
+    <ClInclude Include="swarm\gameui\gameui_interface.h" />
+    <ClInclude Include="swarm\gameui\gameui_util.h" />
+    <ClInclude Include="swarm\gameui\keytogglecheckbutton.h" />
+    <ClInclude Include="swarm\gameui\labeledcommandcombobox.h" />
+    <ClInclude Include="swarm\gameui\loadingdialog.h" />
+    <ClInclude Include="swarm\gameui\loadingtippanel.h" />
+    <ClInclude Include="swarm\gameui\modinfo.h" />
+    <ClInclude Include="swarm\gameui\mousemessageforwardingpanel.h" />
+    <ClInclude Include="swarm\gameui\multiplayeradvanceddialog.h" />
+    <ClInclude Include="swarm\gameui\optionsdialog.h" />
+    <ClInclude Include="swarm\gameui\optionssubaudio.h" />
+    <ClInclude Include="swarm\gameui\optionssubdifficulty.h" />
+    <ClInclude Include="swarm\gameui\optionssubgame.h" />
+    <ClInclude Include="swarm\gameui\optionssubkeyboard.h" />
+    <ClInclude Include="swarm\gameui\optionssubmouse.h" />
+    <ClInclude Include="swarm\gameui\optionssubmultiplayer.h" />
+    <ClInclude Include="swarm\gameui\optionssubportal.h" />
+    <ClInclude Include="swarm\gameui\optionssubvideo.h" />
+    <ClInclude Include="swarm\gameui\optionssubvoice.h" />
+    <ClInclude Include="swarm\gameui\panellistpanel.h" />
+    <ClInclude Include="swarm\gameui\playerlistdialog.h" />
+    <ClInclude Include="swarm\gameui\rungameengine.h" />
+    <ClInclude Include="swarm\gameui\scriptobject.h" />
+    <ClInclude Include="swarm\gameui\swarm\basemodframe.h" />
+    <ClInclude Include="swarm\gameui\swarm\basemodpanel.h" />
+    <ClInclude Include="swarm\gameui\swarm\basemodui.h" />
+    <ClInclude Include="swarm\gameui\swarm\gamemodes.h" />
+    <ClInclude Include="swarm\gameui\swarm\rd_challenge_selection.h" />
+    <ClInclude Include="swarm\gameui\swarm\rd_workshop_frame.h" />
+    <ClInclude Include="swarm\gameui\swarm\uiavatarimage.h" />
+    <ClInclude Include="swarm\gameui\swarm\uigamedata.h" />
+    <ClInclude Include="swarm\gameui\swarm\vachievements.h" />
+    <ClInclude Include="swarm\gameui\swarm\vaddonassociation.h" />
+    <ClInclude Include="swarm\gameui\swarm\vaddons.h" />
+    <ClInclude Include="swarm\gameui\swarm\vattractscreen.h" />
+    <ClInclude Include="swarm\gameui\swarm\vaudio.h" />
+    <ClInclude Include="swarm\gameui\swarm\vaudiovideo.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcloud.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcontrolleroptions.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionsbuttons.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionssticks.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcustomcampaigns.h" />
+    <ClInclude Include="swarm\gameui\swarm\vdownloadcampaign.h" />
+    <ClInclude Include="swarm\gameui\swarm\vdownloads.h" />
+    <ClInclude Include="swarm\gameui\swarm\vdropdownmenu.h" />
+    <ClInclude Include="swarm\gameui\swarm\vflyoutmenu.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfooterpanel.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfoundgames.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfoundgroupgames.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfoundpublicgames.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgamelobby.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgamelobbychat.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgameoptions.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgamepad.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgamesettings.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgenericconfirmation.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgenericpanellist.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgenericwaitscreen.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgetlegacydata.h" />
+    <ClInclude Include="swarm\gameui\swarm\vhybridbutton.h" />
+    <ClInclude Include="swarm\gameui\swarm\vingamechapterselect.h" />
+    <ClInclude Include="swarm\gameui\swarm\vingamedifficultyselect.h" />
+    <ClInclude Include="swarm\gameui\swarm\vingamekickplayerlist.h" />
+    <ClInclude Include="swarm\gameui\swarm\vingamemainmenu.h" />
+    <ClInclude Include="swarm\gameui\swarm\vjukebox.h" />
+    <ClInclude Include="swarm\gameui\swarm\vkeyboard.h" />
+    <ClInclude Include="swarm\gameui\swarm\vkeyboardmouse.h" />
+    <ClInclude Include="swarm\gameui\swarm\vleaderboard.h" />
+    <ClInclude Include="swarm\gameui\swarm\vloadingprogress.h" />
+    <ClInclude Include="swarm\gameui\swarm\vmainmenu.h" />
+    <ClInclude Include="swarm\gameui\swarm\vmultiplayer.h" />
+    <ClInclude Include="swarm\gameui\swarm\voptions.h" />
+    <ClInclude Include="swarm\gameui\swarm\vpasswordentry.h" />
+    <ClInclude Include="swarm\gameui\swarm\vquickjoin.h" />
+    <ClInclude Include="swarm\gameui\swarm\vquickjoingroups.h" />
+    <ClInclude Include="swarm\gameui\swarm\vsignindialog.h" />
+    <ClInclude Include="swarm\gameui\swarm\vslidercontrol.h" />
+    <ClInclude Include="swarm\gameui\swarm\vspinnercontrol.h" />
+    <ClInclude Include="swarm\gameui\swarm\vsteamcloudconfirmation.h" />
+    <ClInclude Include="swarm\gameui\swarm\vtransitionscreen.h" />
+    <ClInclude Include="swarm\gameui\swarm\vvideo.h" />
+    <ClInclude Include="swarm\gameui\swarm\vvoteoptions.h" />
+    <ClInclude Include="swarm\gameui\sys_utils.h" />
+    <ClInclude Include="swarm\gameui\textentrybox.h" />
+    <ClInclude Include="swarm\gameui\urlbutton.h" />
+    <ClInclude Include="swarm\gameui\vcontrolslistpanel.h" />
+    <ClInclude Include="swarm\gameui\vguisystemmoduleloader.h" />
+    <ClInclude Include="swarm\iasw_client_aim_target.h" />
+    <ClInclude Include="swarm\iasw_client_usable_entity.h" />
+    <ClInclude Include="swarm\iasw_client_vehicle.h" />
+    <ClInclude Include="swarm\iasw_fade_list.h" />
+    <ClInclude Include="swarm\ibriefing.h" />
+    <ClInclude Include="swarm\vgui\asw_build_map_frame.h" />
+    <ClInclude Include="swarm\vgui\asw_circularprogressbar.h" />
+    <ClInclude Include="swarm\vgui\asw_difficulty_chooser.h" />
+    <ClInclude Include="swarm\vgui\asw_hudelement.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_3dmarinenames.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_chat.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_crosshair.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_floating_number.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_health_cross.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_holdout.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_marine_portrait.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_master.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_minimap.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_objective.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_portraits.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_powerups.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_squad_hotbar.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_use_area.h" />
+    <ClInclude Include="swarm\vgui\asw_hud_use_icon.h" />
+    <ClInclude Include="swarm\vgui\asw_loading_panel.h" />
+    <ClInclude Include="swarm\vgui\asw_logo_panel.h" />
+    <ClInclude Include="swarm\vgui\asw_mission_chooser_entry.h" />
+    <ClInclude Include="swarm\vgui\asw_mission_chooser_frame.h" />
+    <ClInclude Include="swarm\vgui\asw_mission_chooser_list.h" />
+    <ClInclude Include="swarm\vgui\asw_model_panel.h" />
+    <ClInclude Include="swarm\vgui\asw_scalable_text.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_ammo_list.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_camera.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_download_docs.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_frame.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_mail.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_menu.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_news.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_plant.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_splash.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_stocks.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_tumbler_hack.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_computer_weather.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_countdown.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_door_tooltip.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_edit_emitter.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_edit_emitter_dialogs.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_fast_reload.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_frame.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_hack_wire_tile.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_info_message.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_ingame_panel.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_manipulator.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_marine_ammo_report.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_music_importer.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_queen_health.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_skip_intro.h" />
+    <ClInclude Include="swarm\vgui\asw_vgui_stylin_cam.h" />
+    <ClInclude Include="swarm\vgui\briefingdialog.h" />
+    <ClInclude Include="swarm\vgui\briefingframe.h" />
+    <ClInclude Include="swarm\vgui\briefingimagepanel.h" />
+    <ClInclude Include="swarm\vgui\briefingpropertysheet.h" />
+    <ClInclude Include="swarm\vgui\briefingtooltip.h" />
+    <ClInclude Include="swarm\vgui\cainmailpanel.h" />
+    <ClInclude Include="swarm\vgui\campaignframe.h" />
+    <ClInclude Include="swarm\vgui\campaignmaplocation.h" />
+    <ClInclude Include="swarm\vgui\campaignmapsearchlights.h" />
+    <ClInclude Include="swarm\vgui\campaignpanel.h" />
+    <ClInclude Include="swarm\vgui\chatechopanel.h" />
+    <ClInclude Include="swarm\vgui\controller_focus.h" />
+    <ClInclude Include="swarm\vgui\creditspanel.h" />
+    <ClInclude Include="swarm\vgui\debrieftextpage.h" />
+    <ClInclude Include="swarm\vgui\experience_bar.h" />
+    <ClInclude Include="swarm\vgui\experience_report.h" />
+    <ClInclude Include="swarm\vgui\experience_stat_line.h" />
+    <ClInclude Include="swarm\vgui\fadeinpanel.h" />
+    <ClInclude Include="swarm\vgui\fonttestpanel.h" />
+    <ClInclude Include="swarm\vgui\forcereadypanel.h" />
+    <ClInclude Include="swarm\vgui\holdout_end_score_panel.h" />
+    <ClInclude Include="swarm\vgui\holdout_hud_wave_panel.h" />
+    <ClInclude Include="swarm\vgui\holdout_resupply_frame.h" />
+    <ClInclude Include="swarm\vgui\holdout_wave_announce_panel.h" />
+    <ClInclude Include="swarm\vgui\holdout_wave_end_panel.h" />
+    <ClInclude Include="swarm\vgui\imagebutton.h" />
+    <ClInclude Include="swarm\vgui\mapedgesbox.h" />
+    <ClInclude Include="swarm\vgui\medalarea.h" />
+    <ClInclude Include="swarm\vgui\medalcollectionpanel.h" />
+    <ClInclude Include="swarm\vgui\medalpanel.h" />
+    <ClInclude Include="swarm\vgui\medalstooltip.h" />
+    <ClInclude Include="swarm\vgui\missioncompleteframe.h" />
+    <ClInclude Include="swarm\vgui\missioncompletepanel.h" />
+    <ClInclude Include="swarm\vgui\missioncompletestatsline.h" />
+    <ClInclude Include="swarm\vgui\missionstatspanel.h" />
+    <ClInclude Include="swarm\vgui\mission_complete_message.h" />
+    <ClInclude Include="swarm\vgui\nb_button.h" />
+    <ClInclude Include="swarm\vgui\nb_campaign_map.h" />
+    <ClInclude Include="swarm\vgui\nb_campaign_mission_details.h" />
+    <ClInclude Include="swarm\vgui\nb_commander_list.h" />
+    <ClInclude Include="swarm\vgui\nb_commander_list_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_header_footer.h" />
+    <ClInclude Include="swarm\vgui\nb_horiz_list.h" />
+    <ClInclude Include="swarm\vgui\nb_island.h" />
+    <ClInclude Include="swarm\vgui\nb_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_lobby_row.h" />
+    <ClInclude Include="swarm\vgui\nb_lobby_row_small.h" />
+    <ClInclude Include="swarm\vgui\nb_lobby_tooltip.h" />
+    <ClInclude Include="swarm\vgui\nb_main_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_mission_options.h" />
+    <ClInclude Include="swarm\vgui\nb_mission_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_mission_summary.h" />
+    <ClInclude Include="swarm\vgui\nb_promotion_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_select_campaign_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_select_campaign_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_select_marine_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_select_marine_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_select_mission_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_select_mission_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_select_save_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_select_save_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_select_weapon_entry.h" />
+    <ClInclude Include="swarm\vgui\nb_select_weapon_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_skill_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_spend_skill_points.h" />
+    <ClInclude Include="swarm\vgui\nb_suggest_difficulty.h" />
+    <ClInclude Include="swarm\vgui\nb_vote_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_weapon_detail.h" />
+    <ClInclude Include="swarm\vgui\nb_weapon_unlocked.h" />
+    <ClInclude Include="swarm\vgui\objectivedetailspanel.h" />
+    <ClInclude Include="swarm\vgui\objectiveicons.h" />
+    <ClInclude Include="swarm\vgui\objectivelistbox.h" />
+    <ClInclude Include="swarm\vgui\objectivemap.h" />
+    <ClInclude Include="swarm\vgui\objectivemapmarkpanel.h" />
+    <ClInclude Include="swarm\vgui\objectivepanel.h" />
+    <ClInclude Include="swarm\vgui\objectivetitlepanel.h" />
+    <ClInclude Include="swarm\vgui\outroframe.h" />
+    <ClInclude Include="swarm\vgui\playerlistcontainer.h" />
+    <ClInclude Include="swarm\vgui\playerlistline.h" />
+    <ClInclude Include="swarm\vgui\playerlistpanel.h" />
+    <ClInclude Include="swarm\vgui\playerswaitingpanel.h" />
+    <ClInclude Include="swarm\vgui\polygonbutton.h" />
+    <ClInclude Include="swarm\vgui\radialmenu.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_workshop_download_progress.h" />
+    <ClInclude Include="swarm\vgui\rd_workshop_preview_image.h" />
+    <ClInclude Include="swarm\vgui\restartmissionbutton.h" />
+    <ClInclude Include="swarm\vgui\returncampaignmapbutton.h" />
+    <ClInclude Include="swarm\vgui\scanlinepanel.h" />
+    <ClInclude Include="swarm\vgui\serveroptionspanel.h" />
+    <ClInclude Include="swarm\vgui\skillanimpanel.h" />
+    <ClInclude Include="swarm\vgui\softline.h" />
+    <ClInclude Include="swarm\vgui\squad_inventory_panel.h" />
+    <ClInclude Include="swarm\vgui\statsbar.h" />
+    <ClInclude Include="swarm\vgui\stats_report.h" />
+    <ClInclude Include="swarm\vgui\stat_graph.h" />
+    <ClInclude Include="swarm\vgui\stat_graph_player.h" />
+    <ClInclude Include="swarm\vgui\stimmusicselectdialog.h" />
+    <ClInclude Include="swarm\vgui\techmarinefailpanel.h" />
+    <ClInclude Include="swarm\vgui\weapon_unlock_panel.h" />
+    <ClInclude Include="swarm\vgui\wrappedlabel.h" />
+    <ClInclude Include="TeamBitmapImage.h" />
+    <ClInclude Include="tempent.h" />
+    <ClInclude Include="text_message.h" />
+    <ClInclude Include="timedevent.h" />
+    <ClInclude Include="toggletextureproxy.h" />
+    <ClInclude Include="toolframework_client.h" />
+    <ClInclude Include="vguicenterprint.h" />
+    <ClInclude Include="vgui_avatarimage.h" />
+    <ClInclude Include="vgui_basepanel.h" />
+    <ClInclude Include="vgui_bindpanel.h" />
+    <ClInclude Include="vgui_bitmapbutton.h" />
+    <ClInclude Include="vgui_bitmapimage.h" />
+    <ClInclude Include="vgui_bitmappanel.h" />
+    <ClInclude Include="vgui_entityimagepanel.h" />
+    <ClInclude Include="vgui_entitypanel.h" />
+    <ClInclude Include="vgui_grid.h" />
+    <ClInclude Include="vgui_helpers.h" />
+    <ClInclude Include="vgui_hudvideo.h" />
+    <ClInclude Include="vgui_imagehealthpanel.h" />
+    <ClInclude Include="vgui_int.h" />
+    <ClInclude Include="vgui_video.h" />
+    <ClInclude Include="view.h" />
+    <ClInclude Include="viewangleanim.h" />
+    <ClInclude Include="ViewConeImage.h" />
+    <ClInclude Include="viewdebug.h" />
+    <ClInclude Include="viewpostprocess.h" />
+    <ClInclude Include="viewrender.h" />
+    <ClInclude Include="view_scene.h" />
+    <ClInclude Include="vscript_client.h" />
+    <ClInclude Include="vscript_client_nut.h" />
+    <ClInclude Include="weapons_resource.h" />
+    <ClInclude Include="weapon_selection.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\common\jpeglib.lib" />
+    <Library Include="..\..\lib\public\bitmap.lib" />
+    <Library Include="..\..\lib\public\bonesetup.lib" />
+    <Library Include="..\..\lib\public\choreoobjects.lib" />
+    <Library Include="..\..\lib\public\dmxloader.lib" />
+    <Library Include="..\..\lib\public\interfaces.lib" />
+    <Library Include="..\..\lib\public\mathlib.lib" />
+    <Library Include="..\..\lib\public\matsys_controls.lib" />
+    <Library Include="..\..\lib\public\npsclient.lib" />
+    <Library Include="..\..\lib\public\particles.lib" />
+    <Library Include="..\..\lib\public\raytrace.lib" />
+    <Library Include="..\..\lib\public\responserules_runtime.lib" />
+    <Library Include="..\..\lib\public\steam_api.lib" />
+    <Library Include="..\..\lib\public\tier0.lib" />
+    <Library Include="..\..\lib\public\tier1.lib" />
+    <Library Include="..\..\lib\public\tier2.lib" />
+    <Library Include="..\..\lib\public\tier3.lib" />
+    <Library Include="..\..\lib\public\vgui_controls.lib" />
+    <Library Include="..\..\lib\public\videocfg.lib" />
+    <Library Include="..\..\lib\public\vpklib.lib" />
+    <Library Include="..\..\lib\public\vstdlib.lib" />
+    <Library Include="..\..\lib\public\vtf.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\server\swarm_sdk_server.vcxproj">
+      <Project>{ee8fad9c-dfaf-414b-a11d-7697e1a28a27}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

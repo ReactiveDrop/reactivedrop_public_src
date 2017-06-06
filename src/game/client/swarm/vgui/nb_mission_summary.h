@@ -33,6 +33,8 @@ public:
 	vgui::Label	*m_pTitle;
 	vgui::Label	*m_pDifficultyTitle;
 	vgui::Label	*m_pDifficultyLabel;
+	vgui::Label	*m_pChallengeTitle;
+	vgui::Label	*m_pChallengeLabel;
 	vgui::Label	*m_pMissionTitle;
 	vgui::Label	*m_pMissionLabel;
 	vgui::Label	*m_pObjectivesTitle;

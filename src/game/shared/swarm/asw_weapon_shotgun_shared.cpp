@@ -25,6 +25,7 @@
 #include "asw_marine_profile.h"
 #include "ai_debug_shared.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -304,6 +305,12 @@ bool CASW_Weapon_Shotgun::SupportsBayonet()
 float CASW_Weapon_Shotgun::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_shotgun_dmg;
+		flDamage = rd_pvp_shotgun_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{

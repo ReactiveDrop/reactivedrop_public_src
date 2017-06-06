@@ -13,6 +13,7 @@ public:
 	DECLARE_CLASS( CASW_Sentry_Top, CBaseAnimating );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	virtual void Precache();
 
@@ -45,6 +46,7 @@ public:
 	float GetPitchTo(CBaseEntity* pEnt);
 	Vector GetFiringPosition();
 	float GetRange();
+	void ScriptPreventFiringUntil( float fNextFireTime );
 	
 	float m_fLastThinkTime;
 	float m_fNextFireTime;

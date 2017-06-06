@@ -42,6 +42,8 @@
 #include "ivtex.h"
 #include "vgetlegacydata.h"
 
+#include "rd_workshop.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -65,15 +67,21 @@ BaseClass(parent, panelName)
 	SetProportional( true );
 
 	m_LblName = new Label( this, "LblName", "" );
-	m_LblName->DisableMouseInputForThisPanel( true );
+	m_LblName->SetMouseInputEnabled( false );
 
 	m_LblType = new Label( this, "LblType", "" );
 	m_LblType->SetTextColorState( Label::CS_DULL );
-	m_LblType->DisableMouseInputForThisPanel( true );
+	m_LblType->SetMouseInputEnabled( false );
 
 	m_BtnEnabled = new CheckButton( this, "AddonEnabledCheckbox", "" );
 
 	m_bCurrentlySelected = false;
+
+	m_nPublishedFileId = k_PublishedFileIdInvalid;
+	m_nWorkshopStatistic = -1;
+	m_bWaitingForDetails = false;
+
+	SetMouseInputEnabled( true );
 }
 
 //=============================================================================
@@ -98,6 +106,29 @@ void AddonListItem::SetAddonEnabled( bool bEnabled )
 bool AddonListItem::GetAddonEnabled( )
 {
 	return m_BtnEnabled->IsSelected();
+}
+
+//=============================================================================
+void AddonListItem::SetPublishedFile( PublishedFileId_t id )
+{
+	m_BtnEnabled->SetSelected( g_ReactiveDropWorkshop.IsAddonEnabled( id ) );
+	m_nPublishedFileId = id;
+	m_bWaitingForDetails = true;
+	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
+	{
+		const CReactiveDropWorkshop::WorkshopItem_t & item = g_ReactiveDropWorkshop.m_EnabledAddons[i];
+		if ( item.details.m_nPublishedFileId != id )
+		{
+			continue;
+		}
+
+		m_bWaitingForDetails = false;
+
+		wchar_t wszTitle[k_cchPublishedDocumentTitleMax];
+		Q_UTF8ToUnicode( item.details.m_rgchTitle, wszTitle, sizeof( wszTitle ) );
+		m_LblName->SetText( wszTitle );
+		break;
+	}
 }
 
 //=============================================================================
@@ -150,8 +181,156 @@ void AddonListItem::OnMessage(const KeyValues *params, vgui::VPANEL ifromPanel)
 
 }
 
+void AddonListItem::ShowWorkshopStatistic()
+{
+	int nWorkshopStatistic = (int) ( Plat_FloatTime() / 5 ) % 7;
+	if ( m_nWorkshopStatistic == nWorkshopStatistic )
+	{
+		return;
+	}
+	m_nWorkshopStatistic = nWorkshopStatistic;
+
+	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
+	{
+		const CReactiveDropWorkshop::WorkshopItem_t & item = g_ReactiveDropWorkshop.m_EnabledAddons[i];
+		if ( item.details.m_nPublishedFileId != m_nPublishedFileId )
+		{
+			continue;
+		}
+
+		wchar_t wszParameter1[1024];
+		const char *pszTranslationKey = NULL;
+		char szTranslationKeySpecific[1024];
+		wszParameter1[0] = 0;
+		szTranslationKeySpecific[0] = 0;
+		switch ( nWorkshopStatistic )
+		{
+		case 0:
+			{
+				Q_UTF8ToUnicode( item.details.m_rgchTags, wszParameter1, sizeof( wszParameter1 ) );
+				pszTranslationKey = "#workshop_stat_tags";
+				break;
+			}
+		case 1:
+			{
+				Q_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wszParameter1, sizeof( wszParameter1 ) );
+				pszTranslationKey = "#workshop_stat_author";
+				break;
+			}
+		case 2:
+			{
+				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nPlaytimeSessions );
+				pszTranslationKey = "#workshop_stat_play_sessions";
+				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nPlaytimeSessions );
+				break;
+			}
+		case 3:
+			{
+				if ( item.nSecondsPlayed >= 2 * 60 * 60 )
+				{
+					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 / 60 );
+					pszTranslationKey = "#workshop_stat_play_time_hours";
+					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 / 60 );
+				}
+				else if ( item.nSecondsPlayed >= 2 * 60 )
+				{
+					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 );
+					pszTranslationKey = "#workshop_stat_play_time_minutes";
+					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 );
+				}
+				else
+				{
+					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed );
+					pszTranslationKey = "#workshop_stat_play_time_seconds";
+					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed );
+				}
+				break;
+			}
+		case 4:
+			{
+				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSubscriptions );
+				pszTranslationKey = "#workshop_stat_current_subscribers";
+				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSubscriptions );
+				break;
+			}
+		case 5:
+			{
+				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nUniqueWebsiteViews );
+				pszTranslationKey = "#workshop_stat_unique_viewers";
+				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nUniqueWebsiteViews );
+				break;
+			}
+		case 6:
+			{
+				struct tm currentTime;
+				Plat_GetLocalTime( &currentTime );
+				struct tm time;
+				Plat_ConvertToLocalTime( item.details.m_rtimeUpdated, &time );
+				if ( currentTime.tm_year != time.tm_year || currentTime.tm_mon != time.tm_mon || currentTime.tm_mday != time.tm_mday )
+				{
+					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%04d-%02d-%02d", time.tm_year + 1900, time.tm_mon + 1, time.tm_mday );
+					pszTranslationKey = "#workshop_stat_updated_date";
+				}
+				else
+				{
+					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%02d:%02d:%02d", time.tm_hour, time.tm_min, time.tm_sec );
+					pszTranslationKey = "#workshop_stat_updated_time";
+				}
+				break;
+			}
+		}
+		wchar_t wszStatistic[1024];
+		if ( szTranslationKeySpecific[0] && g_pVGuiLocalize->Find( szTranslationKeySpecific ) )
+		{
+			pszTranslationKey = szTranslationKeySpecific;
+		}
+		g_pVGuiLocalize->ConstructString( wszStatistic, sizeof( wszStatistic ), g_pVGuiLocalize->FindSafe( pszTranslationKey ), 1, wszParameter1 );
+		m_LblType->SetText( wszStatistic );
+
+		return;
+	}
+}
+
 void AddonListItem::Paint( )
 {
+	// Draw download progress for the background of workshop items
+	if ( m_nPublishedFileId != k_PublishedFileIdInvalid )
+	{
+		if ( m_bWaitingForDetails )
+		{
+			SetPublishedFile( m_nPublishedFileId );
+		}
+		if ( !m_bWaitingForDetails )
+		{
+			ShowWorkshopStatistic();
+		}
+
+		int nPanelWide, nPanelTall;
+		GetSize( nPanelWide, nPanelTall );
+
+		uint32 nState = steamapicontext->SteamUGC()->GetItemState( m_nPublishedFileId );
+		if ( nState & k_EItemStateDownloading )
+		{
+			uint64 nBytesDownloaded, nBytesTotal;
+			if ( steamapicontext->SteamUGC()->GetItemDownloadInfo( m_nPublishedFileId, &nBytesDownloaded, &nBytesTotal ) )
+			{
+				surface()->DrawSetColor( Color( 169, 213, 255, 128 ) );
+				surface()->DrawFilledRect( 0, 0, 10 + ( nPanelWide - 10 ) * nBytesDownloaded / nBytesTotal, nPanelTall );
+			}
+		}
+		else if ( nState & k_EItemStateDownloadPending )
+		{
+			surface()->DrawSetColor( Color( 169, 213, 255, 128 ) );
+			surface()->DrawFilledRect( 0, 0, 10, nPanelTall );
+		}
+		else if ( nState & k_EItemStateNeedsUpdate )
+		{
+			surface()->DrawSetColor( Color( 240, 0, 0, 128 ) );
+			surface()->DrawFilledRect( 0, 0, nPanelWide, nPanelTall );
+			m_LblType->SetText( "#workshop_restart_for_update" );
+		}
+	}
+
 	BaseClass::Paint();
 
 	// Draw the graded outline for the selected item only
@@ -321,18 +500,19 @@ void Addons::Activate()
 				bProp = pAddonInfo->GetInt( "addonContent_prop" ) != 0;
 
 				// Make the addon types string based on the flags
-				addonInfo.szTypes[0] = NULL;
-				bCampaign ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Campaign" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bMaps ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Map" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bSkin ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Skin" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bWeapon ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Weapon" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bBoss ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Boss" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bCommon ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Common" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bSurvivor ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Survivor" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bSound ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Sound" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bScript ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Script" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bMusic ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Music" ), sizeof( addonInfo.szTypes ) ) : NULL;
-				bProp ? wcsncat( addonInfo.szTypes, g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Props" ), sizeof( addonInfo.szTypes ) ) : NULL;
+				addonInfo.szTypes[0] = 0;
+				V_snwprintf( addonInfo.szTypes, sizeof( addonInfo.szTypes ), L"%s%s%s%s%s%s%s%s%s%s%s",
+					bCampaign ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Campaign" ) : L"",
+					bMaps ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Map" ) : L"",
+					bSkin ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Skin" ) : L"",
+					bWeapon ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Weapon" ) : L"",
+					bBoss ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Boss" ) : L"",
+					bCommon ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Common" ) : L"",
+					bSurvivor ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Survivor" ) : L"",
+					bSound ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Sound" ) : L"",
+					bScript ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Script" ) : L"",
+					bMusic ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Music" ) : L"",
+					bProp ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Props" ) : L"" );
 
 				// Remove trailing ','
 				if ( wcslen( addonInfo.szTypes ) )
@@ -375,8 +555,34 @@ void Addons::Activate()
 		panelItem->SetAddonEnabled( m_addonInfoList[i].bEnabled );
 	}
 
+	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
+	{
+		if ( !g_ReactiveDropWorkshop.IsSubscribedToFile( g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId ) )
+		{
+			continue;
+		}
+
+		AddonListItem *panelItem = m_GplAddons->AddPanelItem<AddonListItem>( "AddonListItem" );
+
+		panelItem->SetParent( m_GplAddons );
+		panelItem->SetPublishedFile( g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId );
+	}
+
+	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddonsForQuery, i )
+	{
+		if ( !g_ReactiveDropWorkshop.IsSubscribedToFile( g_ReactiveDropWorkshop.m_EnabledAddonsForQuery[i] ) )
+		{
+			continue;
+		}
+
+		AddonListItem *panelItem = m_GplAddons->AddPanelItem<AddonListItem>( "AddonListItem" );
+
+		panelItem->SetParent( m_GplAddons );
+		panelItem->SetPublishedFile( g_ReactiveDropWorkshop.m_EnabledAddonsForQuery[i] );
+	}
+
 	// Focus on the first item in the list
-	if ( m_addonInfoList.Count() > 0 )
+	if ( m_addonInfoList.Count() > 0 || g_ReactiveDropWorkshop.m_EnabledAddons.Count() > 0 || g_ReactiveDropWorkshop.m_EnabledAddonsForQuery.Count() )
 	{
 		m_GplAddons->NavigateTo();
 		m_GplAddons->SelectPanelItem( 0, GenericPanelList::SD_DOWN );
@@ -456,6 +662,16 @@ void Addons::OnCommand(const char *command)
 			int nEnabled = pPanelItem->GetAddonEnabled() ? 1 : 0;
 			m_pAddonList->SetInt( pCur->GetName(), nEnabled );
 			i++;
+		}
+		for ( ; i < m_GplAddons->GetPanelItemCount(); i++ )
+		{
+			AddonListItem *pPanelItem = static_cast<AddonListItem *>( m_GplAddons->GetPanelItem( i ) );
+			PublishedFileId_t nPublishedFileId = pPanelItem->GetPublishedFile();
+			bool bEnabled = g_ReactiveDropWorkshop.IsAddonEnabled( nPublishedFileId );
+			if ( bEnabled != pPanelItem->GetAddonEnabled() )
+			{
+				g_ReactiveDropWorkshop.SetAddonEnabled( nPublishedFileId, pPanelItem->GetAddonEnabled() );
+			}
 		}
 
 		char szModPath[MAX_PATH];
@@ -607,6 +823,12 @@ void Addons::OnMessage(const KeyValues *params, vgui::VPANEL ifromPanel)
 
 void Addons::SetDetailsUIForAddon( int nIndex )
 {
+	if ( m_addonInfoList.Count() <= nIndex )
+	{
+		SetDetailsUIForWorkshopItem( assert_cast<AddonListItem *>( m_GplAddons->GetPanelItem( nIndex ) )->GetPublishedFile() );
+		return;
+	}
+
 	wchar_t wsAuthorLabel[130];
 
 	V_wcsncpy( wsAuthorLabel, g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), sizeof( wsAuthorLabel ) );
@@ -616,9 +838,56 @@ void Addons::SetDetailsUIForAddon( int nIndex )
 	m_LblType->SetText( m_addonInfoList[nIndex].szTypes );
 	m_LblAuthor->SetText( wsAuthorLabel );
 	m_LblDescription->SetText( m_addonInfoList[nIndex].szDescription );
+	m_ImgAddonIcon->SetImage( "" );
 	m_ImgAddonIcon->SetImage( m_addonInfoList[nIndex].szImageName );
 }
 
+void Addons::SetDetailsUIForWorkshopItem( PublishedFileId_t id )
+{
+
+	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
+	{
+		const CReactiveDropWorkshop::WorkshopItem_t & item = g_ReactiveDropWorkshop.m_EnabledAddons[i];
+		if ( item.details.m_nPublishedFileId != id )
+		{
+			continue;
+		}
+
+		SetDetailsUIForWorkshopItem( item );
+		return;
+	}
+}
+
+void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopItem_t & item )
+{
+	wchar_t wsAuthorName[k_cwchPersonaNameMax];
+	V_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
+
+	wchar_t wsAuthorLabel[130];
+	V_snwprintf( wsAuthorLabel, sizeof( wsAuthorLabel ), L"%s%s", g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), wsAuthorName );
+
+	wchar_t wsNameLabel[k_cchPublishedDocumentTitleMax];
+	V_UTF8ToUnicode( item.details.m_rgchTitle, wsNameLabel, sizeof( wsNameLabel ) );
+	wchar_t wsTypeLabel[k_cchTagListMax];
+	V_UTF8ToUnicode( item.details.m_rgchTags, wsTypeLabel, sizeof( wsTypeLabel ) );
+	wchar_t wsDescriptionLabel[k_cchPublishedDocumentDescriptionMax];
+	// TODO: parse formatting
+	V_UTF8ToUnicode( item.details.m_rgchDescription, wsDescriptionLabel, sizeof( wsDescriptionLabel ) );
+
+	m_LblName->SetText( wsNameLabel );
+	m_LblType->SetText( wsTypeLabel );
+	m_LblAuthor->SetText( wsAuthorLabel );
+	m_LblDescription->SetText( wsDescriptionLabel );
+	if ( item.pPreviewImage() )
+	{
+		m_ImgAddonIcon->SetImage( item.pPreviewImage() );
+	}
+	else
+	{
+		m_ImgAddonIcon->SetImage( "" );
+		m_ImgAddonIcon->SetImage( "common/swarm_cycle" );
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Everything below was copied from the UI options page for converting sprays.
@@ -1024,6 +1293,21 @@ void Addons::OnThink()
 				m_LblNoAddons->SetText( "#L4D360UI_No_Addons_Installed" );
 				m_LblNoAddons->SetVisible( true );
 			}
+			else if ( m_LblNoAddons )
+			{
+				m_LblNoAddons->SetVisible( false );
+			}
+		}
+	}
+}
+
+void Addons::OnWorkshopPreviewReady( PublishedFileId_t nFileID, CReactiveDropWorkshopPreviewImage *pPreviewImage )
+{
+	if ( AddonListItem *pItem = dynamic_cast<AddonListItem *>( m_GplAddons->GetSelectedPanelItem() ) )
+	{
+		if ( pItem->GetPublishedFile() == nFileID )
+		{
+			m_ImgAddonIcon->SetImage( pPreviewImage );
 		}
 	}
 }

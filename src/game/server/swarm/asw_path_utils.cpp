@@ -6,6 +6,7 @@
 #include "asw_marine.h"
 #include "asw_shareddefs.h"
 #include "asw_trace_filter_doors.h"
+#include "ai_network.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -15,6 +16,8 @@ class CASW_Path_Utils_NPC : public CAI_BaseNPC
 public:
 	DECLARE_CLASS( CASW_Path_Utils_NPC, CAI_BaseNPC );
 
+	// BenLubar: don't send asw_pathfinder_npc to clients
+	virtual int UpdateTransmitState() { return SetTransmitState( FL_EDICT_DONTSEND ); }
 	void	Precache( void );
 	void	Spawn( void );
 	float	MaxYawSpeed( void ) { return 90.0f; }
@@ -32,12 +35,16 @@ void CASW_Path_Utils_NPC::Spawn()
 	SetModel( SWARM_NEW_DRONE_MODEL );
 	NPCInit();
 
+	SetHullType( HULL_MEDIUMBIG );
 	UTIL_SetSize(this, NAI_Hull::Mins(HULL_MEDIUMBIG), NAI_Hull::Maxs(HULL_MEDIUMBIG));
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
 	m_takedamage = DAMAGE_NO;
+
+	// reactivedrop: making the drone at (0, 0, 0) invisible
+	AddEffects(EF_NODRAW);
 }
 
 void CASW_Path_Utils_NPC::Precache()
@@ -46,14 +53,19 @@ void CASW_Path_Utils_NPC::Precache()
 }
 
 
-CASW_Path_Utils g_ASWPathfinder;
-CASW_Path_Utils* ASWPathUtils() { return & g_ASWPathfinder; }
+CASW_Path_Utils* ASWPathUtils() 
+{ 
+	static CASW_Path_Utils g_ASWPathfinder;
+	return & g_ASWPathfinder; 
+}
 
 CASW_Path_Utils_NPC* CASW_Path_Utils::GetPathfinderNPC()
 {
 	if ( m_hPathfinderNPC.Get() == NULL )
 	{
-		m_hPathfinderNPC = dynamic_cast<CASW_Path_Utils_NPC*>( CBaseEntity::Create( "asw_pathfinder_npc", vec3_origin, vec3_angle, NULL ) );
+		// BenLubar: spawn at a node instead of the origin, as a valid
+		// node is guaranteed to be inside the map.
+		m_hPathfinderNPC = dynamic_cast<CASW_Path_Utils_NPC*>( CBaseEntity::Create( "asw_pathfinder_npc", g_pBigAINet->GetNodePosition( HULL_MEDIUMBIG, 0 ), vec3_angle, NULL ) );
 	}
 
 	return m_hPathfinderNPC.Get();

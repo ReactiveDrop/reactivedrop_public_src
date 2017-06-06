@@ -195,7 +195,7 @@ void CASWHudUseArea::Paint()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if (!pMarine)
 		return;
 	int r, g, b;
@@ -217,7 +217,7 @@ void CASWHudUseArea::Paint()
 	pPlayer->FindUseEntities();
 
 	// don't add any icons if our marine is dead
-	if (!pPlayer->GetMarine() || !pPlayer->GetMarine()->IsAlive())
+	if (!pPlayer->GetViewMarine() || !pPlayer->GetViewMarine()->IsAlive())
 	{
 		pPlayer->UseIconTarget[0] = NULL;
 		if (m_pUseIcon)
@@ -259,7 +259,7 @@ bool CASWHudUseArea::AddUseIconsFor(C_BaseEntity* pEnt)
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (!pPlayer)
 		return false;
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if (!pMarine)
 		return false;
 

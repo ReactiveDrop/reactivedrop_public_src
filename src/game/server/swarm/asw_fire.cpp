@@ -1782,6 +1782,11 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 			CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
 			if ( pMarine )
 			{
+				CASW_Marine *pFireStarterMarine = dynamic_cast< CASW_Marine* >( m_hOwner.Get() );
+				if ( m_nFireType == FIRE_WALL_MINE && !pMarine->IsOnFire() && pFireStarterMarine && pFireStarterMarine->GetMarineResource() && pFireStarterMarine->IRelationType( pMarine ) != D_LI )
+				{
+					pFireStarterMarine->GetMarineResource()->IncrementWeaponStats( (Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0 );
+				}
 				// Burn for 1/3rd the time decided by difficulty
 				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
 				//Msg("OUCH OUCH BURNING MARINE\n");
@@ -1801,6 +1806,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 					if ( pFireStarterMarine && pFireStarterMarine->GetMarineResource() )
 					{
 						pFireStarterMarine->GetMarineResource()->m_iMineKills++;
+						pFireStarterMarine->GetMarineResource()->IncrementWeaponStats( (Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0 );
 					}
 				}
 				pSpawnable->ASW_Ignite( 10.0f, 0, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );

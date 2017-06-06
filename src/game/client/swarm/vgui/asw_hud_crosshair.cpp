@@ -30,6 +30,7 @@
 #include "asw_vgui_computer_frame.h"
 #include "asw_vgui_computer_menu.h"
 #include "vgui/radialmenu.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -164,7 +165,7 @@ void CASWHudCrosshair::Paint( void )
 	m_curViewAngles = CurrentViewAngles();
 	m_curViewOrigin = CurrentViewOrigin();
 
-	bool bControllingTurret = (pPlayer->GetMarine() && pPlayer->GetMarine()->IsControllingTurret());	
+	bool bControllingTurret = (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsControllingTurret());
 	if ( bControllingTurret )
 	{
 		PaintTurretTextures();
@@ -265,6 +266,12 @@ extern ConVar asw_weapon_max_shooting_distance;
 
 void CASWHudCrosshair::PaintTurretTextures()
 {
+	// BenLubar(spectator-mouse): make the cursor that rotates in the normal 
+	// top-down view not show up when the turret HUD is being used.
+	m_pAmmoProgress->SetVisible( false );
+	m_pFastReloadBar->SetVisible( false );
+	// 
+
 	// draw border in centre of screen
 	//int h = ScreenHeight();
 	//int w = h * 1.333333f;
@@ -337,10 +344,10 @@ void CASWHudCrosshair::PaintTurretTextures()
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
 	{
-		bool bControllingTurret = (pPlayer->GetMarine() && pPlayer->GetMarine()->IsControllingTurret());	
+		bool bControllingTurret = (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsControllingTurret());
 		if (bControllingTurret)
 		{
-			C_ASW_Remote_Turret *pTurret = pPlayer->GetMarine()->GetRemoteTurret();
+			C_ASW_Remote_Turret *pTurret = pPlayer->GetViewMarine()->GetRemoteTurret();
 			if (pTurret)
 			{
 				Vector vecWeaponSrc = pTurret->GetTurretMuzzlePosition();
@@ -382,20 +389,25 @@ ConVar asw_turret_dot("asw_turret_dot", "0.9", FCVAR_CHEAT, "Dot angle above whi
 
 void CASWHudCrosshair::PaintReloadProgressBar( void )
 {
-	if ( !engine->IsActiveApp() )
+	// BenLubar(spectator-mouse)
+	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer )
+		return;
+
+	C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
+	if ( !pMarine || !pMarine->IsInhabited() )
 	{
 		m_pAmmoProgress->SetVisible( false );
 		m_pFastReloadBar->SetVisible( false );
 		return;
 	}
 
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer )
+	if ( !engine->IsActiveApp() && pMarine->GetCommander() == pPlayer && !engine->IsPlayingDemo() )
+	{
+		m_pAmmoProgress->SetVisible( false );
+		m_pFastReloadBar->SetVisible( false );
 		return;
-
-	C_ASW_Marine* pMarine = pPlayer->GetMarine();
-	if ( !pMarine )
-		return;
+	}
 
 	C_ASW_Weapon* pWeapon = pMarine->GetActiveASWWeapon();
 	if ( !pWeapon || !asw_crosshair_use_perspective.GetBool() )
@@ -421,8 +433,9 @@ void CASWHudCrosshair::PaintReloadProgressBar( void )
 		if (fTotalTime <= 0)
 			fTotalTime = 0.1f;
 
+		// BenLubar(spectator-mouse)
 		// if we're in single player, the progress code in the weapon doesn't run on the client because we aren't predicting
-		if ( !cl_predict->GetInt() )
+		if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingMarine() )
 			flProgress = RescaleProgessForArt( (gpGlobals->curtime - fStart) / fTotalTime );
 		else
 			flProgress = RescaleProgessForArt( pWeapon->m_fReloadProgress );
@@ -503,11 +516,11 @@ void CASWHudCrosshair::OnThink()
 
 	PaintReloadProgressBar();
 
-	bool bControllingTurret = (pPlayer->GetMarine() && pPlayer->GetMarine()->IsControllingTurret());	
+	bool bControllingTurret = (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsControllingTurret());
 	if (!bControllingTurret)
 		return;
 
-	C_ASW_Remote_Turret *pTurret = pPlayer->GetMarine()->GetRemoteTurret();
+	C_ASW_Remote_Turret *pTurret = pPlayer->GetViewMarine()->GetRemoteTurret();
 	if (!pTurret)
 		return;
 
@@ -614,8 +627,8 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 	if (!local)
 		return;	
 	
-	C_ASW_Marine *pMarine = local->GetMarine();
-	if (!pMarine)
+	C_ASW_Marine *pMarine = local->GetViewMarine();
+	if (!pMarine || !pMarine->IsInhabited())
 		return;
 
 	Vector MarinePos = pMarine->GetRenderOrigin();
@@ -665,7 +678,8 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 
 	int current_posx = 0;
 	int current_posy = 0;
-	ASWInput()->GetSimulatedFullscreenMousePos( &current_posx, &current_posy );
+	// BenLubar(spectator-mouse): was ASWInput()->GetSimulatedFullscreenMousePos
+	GetCurrentPos( current_posx, current_posy );
 	Vector vecFacing( 0, 0, 0 );
 	vecFacing.x = screenPos.x - current_posx;
 	vecFacing.y = screenPos.y - current_posy;
@@ -706,8 +720,24 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 		C_BaseEntity *pEnt = pWeapon->GetLaserTargetEntity();
 		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 		{
-			bShotWarn = true;
-			colorCross = Color(255,0,0,flAlpha*flAdjust2);
+			// perform team check
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				C_ASW_Marine *marine = static_cast<C_ASW_Marine*>(pEnt);
+				C_ASW_Marine_Resource *pMR = marine->GetMarineResource();
+				C_ASW_Marine_Resource *pViewMR = pMarine->GetMarineResource();
+
+				if ( pMR && pViewMR && pMR->GetTeamNumber() == pViewMR->GetTeamNumber() )
+				{
+					bShotWarn = true;
+				}
+			}
+			else if ( !ASWDeathmatchMode() )		// if coop
+			{
+				bShotWarn = true;
+			}
+			if ( bShotWarn )
+				colorCross = Color(255,0,0,flAlpha*flAdjust2);
 		}
 	}
 	
@@ -754,7 +784,7 @@ void CASWHudCrosshair::GetCurrentPos( int &x, int &y )
 	if ( !pPlayer )
 		return;
 
-	bool bControllingTurret = (pPlayer->GetMarine() && pPlayer->GetMarine()->IsControllingTurret());	
+	bool bControllingTurret = (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsControllingTurret());
 
 	m_pTurretTextTopLeft->SetVisible( bControllingTurret );
 	m_pTurretTextTopRight->SetVisible( bControllingTurret );
@@ -763,11 +793,11 @@ void CASWHudCrosshair::GetCurrentPos( int &x, int &y )
 
 	if (::input->CAM_IsThirdPerson() && !bControllingTurret)
 	{
-		int mx, my, ux, uy;
+		int mx, my;
 		mx = 1;
 		my = 1;
 
-		ASWInput()->GetSimulatedFullscreenMousePos(&mx, &my, &ux, &uy);
+		ASWInput()->GetSimulatedFullscreenMousePos( &mx, &my );
 
 		x = mx;
 		y = my;
@@ -849,8 +879,8 @@ void CASWHudCrosshair::DrawSniperScope( int x, int y )
 	if ( !pPlayer )
 		return;	
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
-	if ( !pMarine )
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	if ( !pMarine || !pMarine->IsInhabited() )
 		return;
 
 	const int NUM_CIRCLE_POINTS = 40;

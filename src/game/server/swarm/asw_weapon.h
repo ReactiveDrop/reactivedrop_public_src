@@ -63,7 +63,7 @@ public:
 	bool Holster( CBaseCombatWeapon *pSwitchingTo );
 	virtual void Equip(CBaseCombatCharacter *pOwner);
 	virtual void			SetWeaponVisible( bool visible );
-	virtual void ApplyWeaponSwitchTime();
+	virtual void ApplyWeaponSwitchTime(float fSwitchDelay);
 	CNetworkVar(bool, m_bSwitchingWeapons);	
 	virtual void SendWeaponSwitchEvents();
 	virtual const float GetAutoAimAmount();

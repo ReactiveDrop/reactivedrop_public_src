@@ -57,16 +57,36 @@ void CASW_Sentry_Top_Cannon::Fire()
 
 	Vector launchVector = diff * 1000.0f;
 
-	CASW_Marine * RESTRICT pMarineDeployer = GetSentryBase()->m_hDeployer.Get();
-	Assert( pMarineDeployer );
+	CASW_Marine * RESTRICT pMarineDeployer = GetSentryBase() ? GetSentryBase()->m_hDeployer.Get() : NULL;
+	
 
-	float fGrenadeDamage = CASW_Weapon_Grenades::GetBoomDamage(pMarineDeployer) * 0.5f;
-	float fGrenadeRadius = CASW_Weapon_Grenades::GetBoomRadius(pMarineDeployer) * 0.5f;
+	float fGrenadeDamage;
+	float fGrenadeRadius;
+
+	if (pMarineDeployer)
+	{
+		fGrenadeDamage = CASW_Weapon_Grenades::GetBoomDamage(pMarineDeployer) * 0.5f;
+		fGrenadeRadius = CASW_Weapon_Grenades::GetBoomRadius(pMarineDeployer) * 0.5f;
+	}
+	else 
+	{
+		extern ConVar asw_skill_grenades_cluster_dmg_base;
+		extern ConVar asw_skill_grenades_radius_base;
+		fGrenadeDamage = asw_skill_grenades_cluster_dmg_base.GetFloat() * 0.5f;
+		fGrenadeRadius = asw_skill_grenades_radius_base.GetFloat() * 0.5f;
+	}
+
+	CBaseEntity *owner;
+	if (pMarineDeployer)
+		owner = pMarineDeployer;
+	else
+		owner = this;
 
 	CASW_Rifle_Grenade::Rifle_Grenade_Create( 
-		fGrenadeDamage,	fGrenadeRadius,
-		GetFiringPosition() + (diff * ( WorldAlignSize().Length() * 0.5f ) ), GetAbsAngles(), launchVector, AngularImpulse(0,0,0), 
-		pMarineDeployer, this );
+		fGrenadeDamage,	fGrenadeRadius, 
+		GetFiringPosition() + (diff * ( WorldAlignSize().Length() * 0.5f ) ), 
+		GetAbsAngles(), launchVector, AngularImpulse(0,0,0), 
+		owner, this );
 
 	if( pMarineDeployer )
 		pMarineDeployer->OnWeaponFired( this, 1 );

@@ -112,6 +112,7 @@ ConVar asw_damageindicator_slash_scale("asw_damageindicator_slash_scale", "0.25f
 ConVar asw_damageindicator_slash_radius("asw_damageindicator_slash_radius", "0.28f", FCVAR_NONE, "Scales the slashes in the HUD damage indicator");
 ConVar asw_damageindicator_slash_alpha("asw_damageindicator_slash_alpha", "0.85f", FCVAR_NONE, "Scales alpha of the slashes in the HUD damage indicator.");
 ConVar asw_damageindicator_bullets_alpha("asw_damageindicator_bullets_alpha", "0.05f", FCVAR_NONE, "Scales alpha of the bullets in the HUD damage indicator.");
+ConVar rd_health_effect("rd_health_effect", "1", FCVAR_ARCHIVE, "If 0 disables the red blinking low health effect");
 
 extern ConVar asw_cam_marine_yshift_static;
 
@@ -187,7 +188,7 @@ bool CHudDamageIndicator::ShouldDraw( void )
 	if ( !pPlayer )
 		return false;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return false;
 
@@ -236,7 +237,7 @@ void CHudDamageIndicator::GetDamagePosition( const Vector &vecDelta, float flRad
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return;
 
@@ -429,7 +430,7 @@ void CHudDamageIndicator::Paint()
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return;
 
@@ -438,6 +439,8 @@ void CHudDamageIndicator::Paint()
 		return;
 
 	//float fHeartDelay = Lerp( percentDead, 1.0f, 0.4f ) * RandomFloat(0.9f,1.1f);
+	if (!rd_health_effect.GetBool())
+		return; 
 
 	float bgalpha = ((245 * pMarine->m_fRedNamePulse) * percentDead) * asw_damageindicator_hurt_flash_alpha.GetFloat();
 
@@ -460,9 +463,9 @@ void CHudDamageIndicator::Paint()
 const Vector& CHudDamageIndicator::GetMarineOrigin()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->GetMarine() )
+	if ( pPlayer && pPlayer->GetViewMarine() )
 	{
-		return pPlayer->GetMarine()->GetAbsOrigin();
+		return pPlayer->GetViewMarine()->GetAbsOrigin();
 	}
 
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();

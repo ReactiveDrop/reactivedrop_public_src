@@ -71,8 +71,10 @@ BaseClass(parent, panelName)
 
 	m_drpAllowLanGames = NULL;
 	m_drpAllowCustomContent = NULL;
+	m_drpNetworkBandwidth = NULL;
 	m_drpColorBlind = NULL;
 	m_drpGameInstructor = NULL;
+	m_drpDeathCamera = NULL;
 	m_drpAllowFreeLook = NULL;
 	m_drpSpraypaint = NULL;
 	m_btnBrowseSpraypaint = NULL;
@@ -142,6 +144,61 @@ void Multiplayer::Activate()
 		}
 	}
 
+	if ( m_drpNetworkBandwidth )
+	{
+		CGameUIConVarRef rate( "rate" );
+		if ( rate.GetInt() <= 24576 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_extremely_restricted" );
+		}
+		else if ( rate.GetInt() <= 49152 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_384kbps" );
+		}
+		else if ( rate.GetInt() <= 65536 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_512kbps" );
+		}
+		else if ( rate.GetInt() <= 98304 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_768kbps" );
+		}
+		else if ( rate.GetInt() <= 131072 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_1mbps" );
+		}
+		else if ( rate.GetInt() <= 196608 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_1_5mbps" );
+		}
+		else if ( rate.GetInt() <= 262144 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_2mbps" );
+		}
+		else if ( rate.GetInt() <= 327680 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_2_5mbps" );
+		}
+		else if ( rate.GetInt() <= 393216 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_3mbps" );
+		}
+		else if ( rate.GetInt() <= 524288 )
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_4mbps" );
+		}
+		else
+		{
+			m_drpNetworkBandwidth->SetCurrentSelection( "#rdui_bandwidth_unrestricted" );
+		}
+
+		FlyoutMenu *pFlyout = m_drpNetworkBandwidth->GetCurrentFlyout();
+		if ( pFlyout )
+		{
+			pFlyout->SetListener( this );
+		}
+	}
+
 	if ( m_drpColorBlind )
 	{
 		CGameUIConVarRef cl_colorblind( "cl_colorblind" );
@@ -168,6 +225,18 @@ void Multiplayer::Activate()
 		}
 
 		FlyoutMenu *pFlyout = m_drpGameInstructor->GetCurrentFlyout();
+		if ( pFlyout )
+		{
+			pFlyout->SetListener( this );
+		}
+	}
+
+	if ( m_drpDeathCamera )
+	{
+		CGameUIConVarRef asw_marine_death_cam( "asw_marine_death_cam" );
+		m_drpDeathCamera->SetCurrentSelection( CFmtStr( "#rdui_deathcam_%s", asw_marine_death_cam.GetString() ) );
+
+		FlyoutMenu *pFlyout = m_drpDeathCamera->GetCurrentFlyout();
 		if ( pFlyout )
 		{
 			pFlyout->SetListener( this );
@@ -265,7 +334,13 @@ void Multiplayer::OnThink()
 		needsActivate = true;
 	}
 
-	if ( !m_drpAllowCustomContent )
+	if ( !m_drpNetworkBandwidth )
+	{
+		m_drpNetworkBandwidth = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpNetworkBandwidth" ) );
+		needsActivate = true;
+	}
+
+/*	if ( !m_drpAllowCustomContent )
 	{
 		m_drpAllowCustomContent = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpAllowCustomContent" ) );
 		needsActivate = true;
@@ -276,13 +351,19 @@ void Multiplayer::OnThink()
 		m_drpColorBlind = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpColorBlind" ) );
 		needsActivate = true;
 	}
-
+*/
 	if ( !m_drpGameInstructor )
 	{
 		m_drpGameInstructor = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpGameInstructor" ) );
 		needsActivate = true;
 	}
 
+	if ( !m_drpDeathCamera )
+	{
+		m_drpDeathCamera = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpDeathCam" ) );
+		needsActivate = true;
+	}
+/*
 	if ( !m_drpAllowFreeLook )
 	{
 		m_drpAllowFreeLook = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpAllowFreeLook" ) );
@@ -318,7 +399,7 @@ void Multiplayer::OnThink()
 		m_drpGore = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpGore" ) );
 		needsActivate = true;
 	}
-
+*/
 	if ( needsActivate )
 	{
 		Activate();
@@ -361,6 +442,11 @@ void Multiplayer::OnCommand(const char *command)
 		CGameUIConVarRef  cl_downloadfilter( "cl_downloadfilter" );
 		cl_downloadfilter.SetValue( sz );
 	}
+	else if ( char const *sz = StringAfterPrefix( command, "#rdui_cmdnetwork_" ) )
+	{
+		CGameUIConVarRef  rate( "rate" );
+		rate.SetValue( sz );
+	}
 	else if ( char const *sz = StringAfterPrefix( command, "ColorBlind" ) )
 	{
 		CGameUIConVarRef cl_colorblind( "cl_colorblind" );
@@ -370,6 +456,11 @@ void Multiplayer::OnCommand(const char *command)
 	{
 		CGameUIConVarRef gameinstructor_enable( "gameinstructor_enable" );
 		gameinstructor_enable.SetValue( !Q_stricmp( sz, "Enabled" ) );
+	}
+	else if ( char const *sz = StringAfterPrefix( command, "rdui_cmd_deathcam_" ) )
+	{
+		CGameUIConVarRef asw_marine_death_cam( "asw_marine_death_cam" );
+		asw_marine_death_cam.SetValue( sz );
 	}
 	else if ( char const *sz = StringAfterPrefix( command, "AllowFreeLook" ) )
 	{

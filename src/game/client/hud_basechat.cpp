@@ -1245,6 +1245,13 @@ void CBaseHudChat::Printf( int iFilter, const char *fmt, ... )
 //-----------------------------------------------------------------------------
 void CBaseHudChat::StartMessageMode( int iMessageModeType )
 {
+	// reactivedrop: #iss-nohud-hanging if asw_draw_hud is 0 we don't 
+	// show chat input box, because this leads to input being stuck and 
+	// inability of client to open Esc menu or console
+	extern ConVar asw_draw_hud;
+	if (!asw_draw_hud.GetBool())
+		return;
+
 	m_nMessageMode = iMessageModeType;
 	cl_chat_active.SetValue( m_nMessageMode );
 
@@ -1580,8 +1587,10 @@ void CBaseHudChatLine::Colorize( int alpha )
 			InsertColorChange( color );
 			InsertString( wText );
 
-			// TERROR: color console echo
-			ConColorMsg( color, "%ls", wText );
+			// BenLubar(chat-log-unicode): ConColorMsg does not handle %ls correctly for non-ASCII characters. Convert to UTF-8 and write the string directly.
+			char szText[4096];
+			V_UnicodeToUTF8( wText, szText, sizeof( szText ) );
+			ConColorMsg( color, "%s", szText );
 
 			CBaseHudChat *pChat = dynamic_cast<CBaseHudChat*>(GetParent() );
 

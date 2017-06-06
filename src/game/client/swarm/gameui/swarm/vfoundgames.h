@@ -43,6 +43,11 @@ public:
 		enum GAME_PING { GP_LOW, GP_MEDIUM, GP_HIGH, GP_SYSTEMLINK, GP_NONE } mPing;
 		KeyValues *mpGameDetails;
 		XUID mFriendXUID;
+
+		// BenLubar(dedicated-server-friends-list)
+		XUID mServerXUID;
+		bool mbJoinServer;
+
 		int miPing;		// actual ping value
 
 		void (*mpfnJoinGame)( Info const& fi );
@@ -57,6 +62,8 @@ public:
 			mbInGame = false;
 			mPing = GP_NONE;
 			mFriendXUID = 0;
+			mServerXUID = 0;
+			mbJoinServer = false;
 			miPing = 0;
 			mpGameDetails = NULL;
 			mpfnJoinGame = NULL;
@@ -65,7 +72,9 @@ public:
 		bool IsJoinable() const;
 		bool IsDownloadable() const;
 		bool IsDLC() const;
+		bool HaveMap() const;
 		char const * IsOtherTitle() const;
+		PublishedFileId_t GetWorkshopID() const;
 
 		char const * GetNonJoinableShortHint() const;
 		char const * GetJoinButtonHint() const;
@@ -84,6 +93,7 @@ public:
 
 	void SetGamePing( Info::GAME_PING ping );
 	void SetGameDifficulty( const char* difficultyName );
+	void SetGameChallenge( const char* challengeName );
 	void SetSwarmState( const char* szSwarmStateText );
 	void SetGamePlayerCount( int current, int max );
 
@@ -114,6 +124,8 @@ public:
 	void SetFocusBgColor( Color focusColor );
 	void SetOutOfFocusBgColor( Color outOfFocusBgColor );
 
+	wchar_t m_wszChallengeName[256];
+
 protected:
 	void ApplySettings( KeyValues *inResourceData );
 	void ApplySchemeSettings( vgui::IScheme *pScheme );
@@ -134,6 +146,7 @@ private:
 	vgui::Label			*m_pLblPing;
 	vgui::Label			*m_pLblPlayerGamerTag;
 	vgui::Label			*m_pLblDifficulty;
+	vgui::Label			*m_pLblChallenge;
 	vgui::Label			*m_pLblSwarmState;
 	vgui::Label			*m_pLblPlayers;
 	vgui::Label			*m_pLblNotJoinable;

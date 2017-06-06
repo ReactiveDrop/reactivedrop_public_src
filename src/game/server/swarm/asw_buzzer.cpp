@@ -744,6 +744,9 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if (pMarine)
 		pMarine->HurtAlien(this, info);
 
+	// Notify gamestats of the damage
+	CASW_GameStats.Event_AlienTookDamage( this, info );
+
 	return nRetVal;
 }
 

@@ -69,9 +69,9 @@ void StatGraphPlayer::PerformLayout()
 
 	for ( int i = 1; i < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
-		m_pStatGraphs[ i ]->SetPos( nGraphX, nGraphY + i * 2 );
+		m_pStatGraphs[ i ]->SetPos( nGraphX, nGraphY + i * 1 );
 		m_pStatGraphs[ i ]->SetSize( nGraphW, nGraphH );
-		m_pStatGraphs[ i ]->SetVerticalPixelSeparation( ASW_STATS_REPORT_MAX_PLAYERS * 2 );
+		m_pStatGraphs[ i ]->SetVerticalPixelSeparation( ASW_STATS_REPORT_MAX_PLAYERS * 1 );
 	}
 
 	int nValueBoxX, nValueBoxY, nValueBoxW, nValueBoxH;

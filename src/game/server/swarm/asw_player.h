@@ -81,20 +81,23 @@ public:
 	// spectating
 	void SpectateNextMarine();
 	void SetSpectatingMarine(CASW_Marine *d);
-	CASW_Marine* GetSpectatingMarine();
+	CASW_Marine* GetSpectatingMarine() const;
 	CNetworkHandle (CASW_Marine, m_hSpectatingMarine);
 	bool m_bLastAttackButton;	// used to detect left clicks for cycling through marines
+	bool m_bLastAttack2Button;	// used to detect right clicks for cycling through marines
 	bool m_bRequestedSpectator;	// this player requested to be a spectator since the start of a match (won't be considered for leader, campaign votes, etc.)
 	float m_fLastControlledMarineTime;
+    CNetworkVar( float, m_fMarineDeathTime);    // same as above but optimized for networking
 
 	void BecomeNonSolid();
 	void OnMarineCommanded( const CASW_Marine *pMarine );
 	void SetMarine( CASW_Marine *pMarine );
-	CASW_Marine* GetMarine();
 	CASW_Marine* GetMarine() const;
 	void SelectNextMarine( bool bReverse );
 	bool CanSwitchToMarine( int num );
-	void SwitchMarine( int num );
+	// BenLubar(deathmatch-improvements)
+	void SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader = true );
+	void SwitchMarine( int num, bool set_squad_leader = true );
 	void OrderMarineFace( int iMarine, float fYaw, Vector &vecOrderPos );
 	void LeaveMarines();
 	bool HasLiveMarines();
@@ -124,11 +127,13 @@ public:
 	virtual	CBaseCombatCharacter *ActivePlayerCombatCharacter( void );
 
 	// shared code
+	CASW_Marine* GetViewMarine() const;
 	void ItemPostFrame();
 	void ASWSelectWeapon(CBaseCombatWeapon* pWeapon, int subtype);	// for switching weapons on the current marine
 	virtual bool Weapon_CanUse( CBaseCombatWeapon *pWeapon );
 	virtual CBaseCombatWeapon*	Weapon_OwnsThisType( const char *pszWeapon, int iSubType = 0 ) const;  // True if already owns a weapon of this class
 	virtual int Weapon_GetSlot( const char *pszWeapon, int iSubType = 0 ) const;  // Returns -1 if they don't have one
+	int GetASWControls();
 
 	// searches for nearby entities that we can use (pickups, buttons, etc)
 	virtual void PlayerUse();
@@ -143,10 +148,20 @@ public:
 	CNetworkVar( float, m_flUseKeyDownTime );
 	CNetworkVar( EHANDLE, m_hUseKeyDownEnt );
 
+	/**
+		In Reactive Drop players can rotate the camera. The marine's movement 
+		must be aligned to the camera axis. So we store this pitch value 
+		inside an ASW_Player class and use it in movement code to determine the
+		movement direction. The value is in degrees an must be in range 0..359.
+		For now only fixed camera angles are used 0, 90, 180, 270. So this 
+		variable will hold only one of these these 4 values. 90 is default val
+	*/
+	CNetworkVar( float, m_flMovementAxisYaw );
+
 	// looking at an info panel
 	void ShowInfoMessage(CASW_Info_Message* pMessage);
+	void HideInfoMessage();
 	CNetworkHandle (CASW_Info_Message, m_pCurrentInfoMessage);
-	float m_fClearInfoMessageTime;	
 
 	virtual void SetAnimation( PLAYER_ANIM playerAnim );
 
@@ -162,7 +177,7 @@ public:
 	bool CanChangeName() { return true; }
 	void ChangeName(const char *pszNewName);
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
-	bool m_bSentJoinedMessage;	// has this player told everyone that he's fully joined yet
+	CNetworkVar(bool, m_bSentJoinedMessage);	// has this player told everyone that he's fully joined yet
 		
 	// voting
 	int m_iKLVotesStarted;	// how many kick or leader votes this player has started, if he starts too many, flood control will be applied to the announcements
@@ -207,6 +222,7 @@ public:
 	EHANDLE m_hHighlightEntity;
 
 	// status of selecting marine/weapons in the briefing
+	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
 
 	// experience
@@ -236,10 +252,22 @@ public:
 	float m_flPendingSteamStatsStart;
 	bool m_bSentPromotedMessage;
 
+	static CBaseEntity *spawn_point;
+	bool m_bWelcomed;
+	float m_fLastFragTime; 
+	int   m_iKillingSpree;
+
 #if !defined(NO_STEAM)
-	CCallResult< CASW_Player, GSStatsReceived_t > m_CallbackGSStatsReceived;
-	void Steam_OnGSStatsReceived( GSStatsReceived_t *pGSStatsReceived, bool bError );
+	CCallResult< CASW_Player, UserStatsReceived_t > m_CallbackUserStatsReceived;
+	void Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bError );
 #endif
+	// BenLubar(spectator-mouse)
+	CNetworkVar( short, m_iScreenWidth );
+	CNetworkVar( short, m_iScreenHeight );
+	CNetworkVar( short, m_iMouseX );
+	CNetworkVar( short, m_iMouseY );
+
+	bool m_bLeaderboardReady;
 
 private:
 

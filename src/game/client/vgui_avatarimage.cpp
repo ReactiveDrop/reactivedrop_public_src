@@ -59,7 +59,21 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 	{
 		m_SteamID = steamIDUser;
 
-		int iAvatar = steamapicontext->SteamFriends()->GetFriendAvatar( steamIDUser, m_SourceArtSize );
+		int iAvatar;
+
+		switch (m_SourceArtSize)
+		{
+		case k_EAvatarSize32x32:
+			iAvatar = steamapicontext->SteamFriends()->GetSmallFriendAvatar( steamIDUser );
+			break;
+		case k_EAvatarSize64x64:
+			iAvatar = steamapicontext->SteamFriends()->GetMediumFriendAvatar( steamIDUser );
+			break;
+		case k_EAvatarSize184x184:
+		default:
+			iAvatar = steamapicontext->SteamFriends()->GetLargeFriendAvatar( steamIDUser );
+			break;
+		}
 
 		/*
 		// See if it's in our list already

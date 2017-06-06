@@ -44,7 +44,7 @@ void CASW_Hud_Powerups::PerformLayout()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if (pMarine && pMarine->GetActiveASWWeapon())
 	{
 		C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
@@ -131,7 +131,7 @@ void CASW_Hud_Powerups::OnThink()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return;
 

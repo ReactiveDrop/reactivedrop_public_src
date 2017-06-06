@@ -74,15 +74,16 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	}
 	m_szLastPortraitImage[0] = 0;
 
+	for ( int i = 0; i < 4; i++ )
+	{
+		m_pChangingSlot[ i ] = new vgui::ImagePanel( this, VarArgs( "ChangingSlot%d", i ) );
+		m_pChangingSlot[ i ]->SetMouseInputEnabled( false );
+	}
+
 	m_pXPBar->SetShowMaxOnCounter( true );
 	m_pXPBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	//m_pXPBar->m_bShowCumulativeTotal = true;
 	m_nLastPromotion = 0;
-	m_pXPBar->AddMinMax( 0, g_iLevelExperience[ 0 ] * g_flPromotionXPScale[ m_nLastPromotion ] );
-	for ( int i = 0; i < ASW_NUM_EXPERIENCE_LEVELS - 1; i++ )
-	{
-		m_pXPBar->AddMinMax( g_iLevelExperience[ i ] * g_flPromotionXPScale[ m_nLastPromotion ], g_iLevelExperience[ i + 1 ] * g_flPromotionXPScale[ m_nLastPromotion ] );
-	}
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
@@ -97,7 +98,7 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_lobby_row.res" );
+	LoadControlSettings( "resource/ui/nb_lobby_row_rd.res" );
 
 	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
@@ -128,6 +129,7 @@ void CNB_Lobby_Row::OnThink()
 	BaseClass::OnThink();
 
 	UpdateDetails();
+	UpdateChangingSlot();
 }
 
 void CNB_Lobby_Row::UpdateDetails()
@@ -170,6 +172,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pNameDropdown->SetVisible( false );
 		m_pAvatarImage->SetVisible( false );
 		m_pClassLabel->SetVisible( false );
+		m_pClassImage->SetVisible( false );
 		return;
 	}
 
@@ -216,14 +219,28 @@ void CNB_Lobby_Row::UpdateDetails()
 	if ( nPromotion <= 0 || nPromotion > ASW_PROMOTION_CAP )
 	{
 		m_pPromotionIcon->SetVisible( false );
+		m_nLastPromotion = 0;
 	}
 	else
 	{
 		m_pPromotionIcon->SetVisible( true );
 		m_pPromotionIcon->SetImage( VarArgs( "briefing/promotion_%d", nPromotion ) );
+		m_nLastPromotion = nPromotion;
+	}
+	m_pXPBar->ClearMinMax();
+	m_pXPBar->AddMinMax( 0, g_iLevelExperience[ 0 ] * g_flPromotionXPScale[ m_nLastPromotion ] );
+	for ( int i = 0; i < ASW_NUM_EXPERIENCE_LEVELS - 1; i++ )
+	{
+		m_pXPBar->AddMinMax( g_iLevelExperience[ i ] * g_flPromotionXPScale[ m_nLastPromotion ], g_iLevelExperience[ i + 1 ] * g_flPromotionXPScale[ m_nLastPromotion ] );
 	}
 
-	if ( nLevel == -1 || nXP == -1 )
+	if ( !Briefing()->IsFullyConnected( m_nLobbySlot ) )
+	{
+		m_pXPBar->SetVisible( false );
+		m_pLevelLabel->SetVisible( true );
+		m_pLevelLabel->SetText( "#nb_commander_connecting" );
+	}
+	else if ( nLevel == -1 || nXP == -1 )
 	{
 		m_pXPBar->SetVisible( false );
 		m_pLevelLabel->SetVisible( false );
@@ -261,8 +278,7 @@ void CNB_Lobby_Row::UpdateDetails()
 	case MARINE_CLASS_MEDIC: m_pClassImage->SetImage( "swarm/ClassIcons/MedicClassIcon" ); break;
 	case MARINE_CLASS_TECH: m_pClassImage->SetImage( "swarm/ClassIcons/TechClassIcon" ); break;
 	}
-
-	m_pClassImage->SetVisible( true );
+	m_pClassImage->SetVisible( nMarineClass != MARINE_CLASS_UNDEFINED );
 		
 	if ( Briefing()->IsOfflineGame() && m_nLobbySlot != 0 )
 	{
@@ -365,6 +381,8 @@ void CNB_Lobby_Row::UpdateDetails()
 			{
 				Q_snprintf( m_szLastWeaponImage[i], sizeof( m_szLastWeaponImage[i] ), "%s", "vgui/white" );
 				pButton->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/white", invisible );
+				pButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", invisible );
+				pButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/white", invisible );
 			}
 			pSilhouette->SetVisible( true );
 		}
@@ -403,12 +421,9 @@ extern ConVar developer;
 
 void CNB_Lobby_Row::OnCommand( const char *command )
 {
-	CNB_Main_Panel *pMainPanel = dynamic_cast<CNB_Main_Panel*>( GetParent() );
+	CNB_Main_Panel *pMainPanel = GetMainPanel();
 	if ( !pMainPanel )
-	{
-		Warning( "Error, parent of lobby row is not the main panel\n" );
 		return;
-	}
 
 	if ( !Q_stricmp( command, "ChangeMarine" ) )
 	{
@@ -453,10 +468,12 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 		{
 			if ( developer.GetBool() )
 			{
-				Msg( "Local player SteamID = %I64d\n", steamapicontext->SteamUser()->GetSteamID().ConvertToUint64() );
-				Msg( "Activating stats for SteamID = %I64d\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+				Msg( "Local player SteamID = %I64u\n", steamapicontext->SteamUser()->GetSteamID().ConvertToUint64() );
+				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
-			steamapicontext->SteamFriends()->ActivateGameOverlayToUser( "stats", Briefing()->GetCommanderSteamID( m_nLobbySlot ) );
+			char statsWeb[128];
+			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://reactive-drop-stats.appspot.com/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+			steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( statsWeb );
 		}
 #endif
 	}
@@ -473,17 +490,17 @@ void CNB_Lobby_Row::OpenPlayerFlyout()
 	pButton->GetPos( x, y );
 	pButton->LocalToScreen( x, y );
 
-	BaseModUI::FlyoutMenu *pFlyout = dynamic_cast< BaseModUI::FlyoutMenu * >( GetParent()->FindChildByName( "FlmPlayerFlyout" ) );
-	
+	CNB_Main_Panel *pMainPanel = GetMainPanel();
+	if ( !pMainPanel )
+		return;
+
+	BaseModUI::FlyoutMenu *pFlyout = dynamic_cast< BaseModUI::FlyoutMenu * >( pMainPanel->FindChildByName( "FlmPlayerFlyout" ) );
+
 	pFlyout->OpenMenu( pButton );
 	pFlyout->SetPos( x + pButton->GetWide(), y );
 	pFlyout->SetOriginalTall( pButton->GetTall() );
 
-	CNB_Main_Panel *pMainPanel = dynamic_cast<CNB_Main_Panel*>( GetParent() );
-	if ( pMainPanel )
-	{
-		pMainPanel->m_FlyoutSteamID = Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64();
-	}
+	pMainPanel->m_FlyoutSteamID = Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64();
 
 	// Disable Send Message if self
 	BaseModHybridButton *sendMessasge = dynamic_cast< BaseModHybridButton * >( pFlyout->FindChildByName( "BtnSendMessage" ) );
@@ -492,4 +509,29 @@ void CNB_Lobby_Row::OpenPlayerFlyout()
 		sendMessasge->SetEnabled( !Briefing()->IsLobbySlotLocal( m_nLobbySlot ) );
 	}
 	
+}
+
+CNB_Main_Panel *CNB_Lobby_Row::GetMainPanel()
+{
+	CNB_Main_Panel *pMainPanel = NULL;
+	for ( vgui::Panel *pPanel = GetParent(); pPanel; pPanel = pPanel->GetParent() )
+	{
+		pMainPanel = dynamic_cast<CNB_Main_Panel *>( pPanel );
+		if ( pMainPanel )
+		{
+			return pMainPanel;
+		}
+	}
+
+	Warning( "Error, parent of lobby row is not the main panel\n" );
+	return NULL;
+}
+
+void CNB_Lobby_Row::UpdateChangingSlot()
+{
+	int nSlot = Briefing()->GetChangingWeaponSlot( m_nLobbySlot );
+	m_pChangingSlot[ 0 ]->SetVisible( nSlot == 1 );
+	m_pChangingSlot[ 1 ]->SetVisible( nSlot == 2 );
+	m_pChangingSlot[ 2 ]->SetVisible( nSlot == 3 );
+	m_pChangingSlot[ 3 ]->SetVisible( nSlot == 4 );
 }

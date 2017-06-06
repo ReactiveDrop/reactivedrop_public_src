@@ -714,11 +714,12 @@ int __cdecl _CrtDbgReport( int nRptType, const char * szFile,
 
 #if defined( _DEBUG )
  
+// reactivedrop: commented as this doesn't compile on VS2013
 // wrapper which passes no debug info; not available in debug
-void __cdecl _invalid_parameter_noinfo(void)
-{
-    Assert(0);
-}
+// void __cdecl _invalid_parameter_noinfo(void)
+// {
+//     Assert(0);
+// }
 
 #endif /* defined( _DEBUG ) */
 
@@ -1179,7 +1180,7 @@ typedef struct setloc_struct {
     LCID lcidLanguage;
     LCID lcidCountry;
     /* expand_locale static variables */
-    LC_ID       _cacheid;
+    LCID       _cacheid;	// reactivedrop: changed from LC_ID to LCID to compile in VS2013
     UINT        _cachecp;
     char        _cachein[MAX_LC_LEN];
     char        _cacheout[MAX_LC_LEN];

@@ -100,12 +100,34 @@ int CASW_Marine_Hint_Manager::FindHints( const Vector &position, const float flM
 	return pResult->Count();
 }
 
+int CASW_Marine_Hint_Manager::FindHints( const CBaseTrigger &volume, CUtlVector<HintData_t *> *pResult )
+{
+	int nCount = m_Hints.Count();
+	for ( int i = 0; i < nCount; i++ )
+	{
+		if (volume.CollisionProp()->IsPointInBounds(m_Hints[i]->GetAbsOrigin()))
+			pResult->AddToTail(m_Hints[i]);		
+	}
+	return pResult->Count();
+}
+
 void CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
 {
 	HintData_t *pHintData = new HintData_t;
 	pHintData->m_vecPosition = pEnt->GetAbsOrigin();
 	pHintData->m_flYaw = pEnt->GetAbsAngles()[ YAW ];
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
+}
+
+void CASW_Marine_Hint_Manager::AddInfoNode(CAI_Node *pNode)
+{
+	if (!pNode)
+		return;
+
+	HintData_t *pHintData = new HintData_t;
+	pHintData->m_vecPosition = pNode->GetPosition(HULL_HUMAN);
+	pHintData->m_flYaw = pNode->GetYaw();
+	pHintData->m_nHintIndex = m_Hints.AddToTail(pHintData);
 }
 
 CON_COMMAND( asw_show_marine_hints, "Show hint manager spots" )

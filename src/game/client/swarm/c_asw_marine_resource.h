@@ -38,6 +38,7 @@ public:
 	// stats
 	float m_fDamageTaken;
 	int m_iAliensKilled;
+	int m_iBotFrags;
 
 	CNetworkVarEmbedded( CTimeline, m_TimelineFriendlyFire );
 	CNetworkVarEmbedded( CTimeline, m_TimelineKillsTotal );
@@ -97,6 +98,8 @@ public:
 	float GetMedsPercent();
 	float m_fCachedMedsPercent;
 	float m_fNextMedsCountTime;
+
+	float GetClipsPercentForHUD();
 
 	// medals
 	char		m_MedalsAwarded[255];

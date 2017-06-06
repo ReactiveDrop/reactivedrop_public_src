@@ -251,10 +251,53 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 		if ( ASWGameRules()->GetSkillLevel() < iSkill )	// check they didn't just complete the last mission on a low skill
 			iSkill = ASWGameRules()->GetSkillLevel();
 
-		bool bJacobCampaign = ASWGameRules()->GetCampaignInfo() && ASWGameRules()->GetCampaignInfo()->IsJacobCampaign();	
-		if ( iSkill >= 2 && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetCampaignSave()->m_iNumDeaths <= 0 && ASWGameRules()->GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && bJacobCampaign )
+		const char *pszCampaignName = ASWGameRules()->GetCampaignInfo() ? ASWGameRules()->GetCampaignInfo()->m_szCampaignFilename : NULL;
+		if ( pszCampaignName && iSkill >= 2 && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetCampaignSave()->m_iNumDeaths <= 0 && ASWGameRules()->GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !ASWGameRules()->m_bChallengeActiveThisCampaign )
 		{
-			pPlayer->AwardAchievement( ACHIEVEMENT_ASW_CAMPAIGN_NO_DEATHS );
+			if ( !Q_stricmp( pszCampaignName, "jacob" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_CAMPAIGN_NO_DEATHS );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd-operationcleansweep" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_OCS );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_research7" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_RES );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd-area9800" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AREA9800 );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd-tarnorcampaign1" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TFT );
+			}
+//			else if ( !Q_stricmp( pszCampaignName, "rd_deadcity" ) )
+//			{
+//				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_DC );
+//			}
+			else if ( !Q_stricmp( pszCampaignName, "tilarus5" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TIL );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_lanasescape_campaign" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_LAN );
+			}
+//			else if ( !Q_stricmp( pszCampaignName, "rd_reduction_campaign" ) )
+//			{
+//				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_REDUCTION );
+//			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_paranoia" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_orions_threat" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ORI );
+			}
 		}
 	}
 
@@ -287,7 +330,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 		AwardSingleMedalTo(MEDAL_EXPLOSIVES_MERIT, pMR);
 
 	// Perfect - awarded for finishing a mission taking no damage
-	if ( !pMR->m_bHurt && pMR->m_iAliensKilled >= 25 && ASWGameRules()->GetSkillLevel() >= 2 && ASWGameRules()->GetMissionSuccess() )
+	if ( !pMR->m_bHurt && pMR->m_iAliensKilled >= 25 && ASWGameRules()->GetSkillLevel() >= 2 && ASWGameRules()->GetMissionSuccess() && !ASWGameRules()->m_bChallengeActiveThisCampaign )
 	{
 		AwardSingleMedalTo( MEDAL_PERFECT, pMR );
 		pPlayer->AwardAchievement( ACHIEVEMENT_ASW_NO_DAMAGE_TAKEN );
@@ -500,66 +543,236 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	
 	if ( ASWGameRules()->GetMissionSuccess() )
 	{
-		if ( m_bAllSurvived )
+		int iCompleteSeconds = gpGlobals->curtime - m_fStartMissionTime;
+
+		bool bHaveSpeedrunTime = false;
+		int speedrun_time = 240;
+		if ( GetWorldEntity() && ASWGameRules()->GetSpeedrunTime() > 0 )
+		{
+			speedrun_time = ASWGameRules()->GetSpeedrunTime();
+			bHaveSpeedrunTime = true;
+		}
+		if ( m_bAllSurvived && ASWGameRules()->GetSkillLevel() > 1 && iCompleteSeconds <= speedrun_time && bHaveSpeedrunTime && !ASWGameRules()->m_bChallengeActiveThisMission )
 		{
 			// speed runs
-			int iCompleteSeconds = gpGlobals->curtime - m_fStartMissionTime;
 			if (asw_debug_medals.GetBool())
 				Msg("Mission complete, took %d seconds\n", iCompleteSeconds);
 
 			const char *mapName = STRING(gpGlobals->mapname);
 			if (asw_debug_medals.GetBool())
 				Msg("Medal checking mapname: %s\n", mapName);
-
-			int speedrun_time = 240;
-			if ( GetWorldEntity() && ASWGameRules()->GetSpeedrunTime() > 0 )
-			{
-				speedrun_time = ASWGameRules()->GetSpeedrunTime();
-			}
 			
-			if ( !Q_stricmp( mapName, "ASI-Jac1-LandingBay_01" ) && iCompleteSeconds <= speedrun_time)
+			if ( !Q_stricmp( mapName, "ASI-Jac1-LandingBay_01" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_LANDING_BAY, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_LANDING_BAY );
 			}
-			else if ( !Q_stricmp( mapName, "ASI-Jac1-LandingBay_02" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac1-LandingBay_02" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_DESCENT, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_DESCENT );
 			}
-			else if ( !Q_stricmp( mapName, "ASI-Jac2-Deima" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac2-Deima" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_OUTSIDE, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_DEIMA );
 			}
-			else if ( !Q_stricmp( mapName, "ASI-Jac3-Rydberg" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac3-Rydberg" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_PLANT, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_RYDBERG );
 			}
-			else if ( !Q_stricmp( mapName, "ASI-Jac4-Residential" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac4-Residential" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_OFFICE, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_RESIDENTIAL );
 			}
- 			/*else if ( !Q_stricmp( mapName, "ASI-Jac5-BioResearch" ) && iCompleteSeconds <= speedrun_time)
- 			{
- 				AwardSingleMedalTo(MEDAL_SPEED_RUN_LABS, pMR);
- 			}*/
-			else if ( !Q_stricmp( mapName, "ASI-Jac6-SewerJunction" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac6-SewerJunction" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_SEWERS, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_SEWER );
 			}
-			else if ( !Q_stricmp( mapName, "ASI-Jac7-TimorStation" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "ASI-Jac7-TimorStation" ) )
 			{
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_MINE, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_TIMOR );
 			}
-			/*else if ( !Q_stricmp( mapName, "ASI-Jac8-LastRites" ) && iCompleteSeconds <= speedrun_time)
+			else if ( !Q_stricmp( mapName, "rd-ocs1storagefacility" ) )
 			{
-				AwardSingleMedalTo(MEDAL_SPEED_RUN_QUEEN_LAIR, pMR);
-			}*/
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_OCS_STORAGE_FACILITY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ocs2landingbay7" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_OCS_LANDING_BAY_7 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ocs3uscmedusa" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_OCS_USC_MEDUSA );
+			}
+			else if ( !Q_stricmp( mapName, "rd-res1forestentrance" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_RES_FOREST_ENTRANCE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-res2research7" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_RES_RESEARCH_7 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-res3miningcamp" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_RES_MINING_CAMP );
+			}
+			else if ( !Q_stricmp( mapName, "rd-res4mines" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_RES_MINES );
+			}
+			else if ( !Q_stricmp( mapName, "rd-area9800lz" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AREA9800_LZ );
+			}
+			else if ( !Q_stricmp( mapName, "rd-area9800pp1" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AREA9800_PP1 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-area9800pp2" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AREA9800_PP2 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-area9800wl" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AREA9800_WL );
+			}
+			else if ( !Q_stricmp( mapName, "rd-tft1desertoutpost" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TFT_DESERT_OUTPOST );
+			}
+			else if ( !Q_stricmp( mapName, "rd-tft2abandonedmaintenance" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TFT_ABANDONED_MAINTENANCE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-tft3spaceport" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TFT_SPACEPORT );
+			}
+// 			else if ( !Q_stricmp( mapName, "rd-dc1_omega_city" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_OMEGA_CITY );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-dc2_breaking_an_entry" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_BREAKING_AN_ENTRY );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-dc3_search_and_rescue" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_SEARCH_AND_RESCUE );
+// 			}
+			else if ( !Q_stricmp( mapName, "rd-til1midnightport" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_MIDNIGHT_PORT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til2roadtodawn" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_ROAD_TO_DAWN );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til3arcticinfiltration" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_ARCTIC_INFILTRATION );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til4area9800" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_AREA9800 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til5coldcatwalks" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_COLD_CATWALKS );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til6yanaurusmine" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_YANAURUS_MINE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til7factory" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_FACTORY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til8comcenter" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_COM_CENTER );
+			}
+			else if ( !Q_stricmp( mapName, "rd-til9syntekhospital" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_SYNTEK_HOSPITAL );
+			}
+			else if ( !Q_stricmp( mapName, "rd-lan1_bridge" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_BRIDGE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-lan2_sewer" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_SEWER );
+			}
+			else if ( !Q_stricmp( mapName, "rd-lan3_maintenance" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_MAINTENANCE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-lan4_vent" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_VENT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-lan5_complex" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_COMPLEX );
+			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction1" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_1 );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction2" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_2 );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction3" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_3 );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction4" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_4 );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction5" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_5 );
+// 			}
+// 			else if ( !Q_stricmp( mapName, "rd-reduction6" ) )
+// 			{
+// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_6 );
+// 			}
+			else if ( !Q_stricmp( mapName, "rd-par1unexpected_encounter" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_UNEXPECTED_ENCOUNTER );
+			}
+			else if ( !Q_stricmp( mapName, "rd-par2hostile_places" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_HOSTILE_PLACES );
+			}
+			else if ( !Q_stricmp( mapName, "rd-par3close_contact" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_CLOSE_CONTACT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-par4high_tension" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_HIGH_TENSION );
+			}
+			else if ( !Q_stricmp( mapName, "rd-par5crucial_point" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_CRUCIAL_POINT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ori1niosarefinary" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ORI_REFINERY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ori2firstanomaly" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ORI_ANOMALY );
+			}
 		}
 
 		// Old medals

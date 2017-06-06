@@ -561,7 +561,7 @@ void CClientScoreBoardDialog::UpdatePlayerAvatar( int playerIndex, KeyValues *kv
 				CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 
 				// See if the avatar's changed
-				int iAvatar = steamapicontext->SteamFriends()->GetFriendAvatar( steamIDForPlayer, k_EAvatarSize32x32 );
+				int iAvatar = steamapicontext->SteamFriends()->GetSmallFriendAvatar( steamIDForPlayer );
 				if ( m_iImageAvatars[playerIndex] != iAvatar )
 				{
 					m_iImageAvatars[playerIndex] = iAvatar;

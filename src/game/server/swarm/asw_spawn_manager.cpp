@@ -17,6 +17,8 @@
 #include "datacache/imdlcache.h"
 #include "ai_link.h"
 #include "asw_alien.h"
+#include "asw_door.h"
+#include "asw_spawn_selection.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,7 +26,7 @@
 CASW_Spawn_Manager g_Spawn_Manager;
 CASW_Spawn_Manager* ASWSpawnManager() { return &g_Spawn_Manager; }
 
-#define CANDIDATE_ALIEN_HULL 11		// TODO: have this use the hull of the alien type we're spawning a horde of?
+#define CANDIDATE_ALIEN_HULL HULL_MEDIUMBIG		// TODO: have this use the hull of the alien type we're spawning a horde of?
 #define MARINE_NEAR_DISTANCE 740.0f
 
 extern ConVar asw_director_debug;
@@ -33,7 +35,8 @@ ConVar asw_horde_max_distance("asw_horde_max_distance", "1500", FCVAR_CHEAT, "Ma
 ConVar asw_max_alien_batch("asw_max_alien_batch", "10", FCVAR_CHEAT, "Max number of aliens spawned in a horde batch" );
 ConVar asw_batch_interval("asw_batch_interval", "5", FCVAR_CHEAT, "Time between successive batches spawning in the same spot");
 ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Interval between updating candidate spawning nodes");
-ConVar asw_horde_class( "asw_horde_class", "asw_drone", FCVAR_CHEAT, "Alien class used when spawning hordes" );
+
+ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
 
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
@@ -58,7 +61,7 @@ ASW_Alien_Class_Entry g_Aliens[]=
 	ASW_Alien_Class_Entry( "asw_drone", HULL_MEDIUMBIG ),
 	ASW_Alien_Class_Entry( "asw_buzzer", HULL_TINY_CENTERED ),
 	ASW_Alien_Class_Entry( "asw_parasite", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_LARGE ),
+	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_WIDE_SHORT ),
 	ASW_Alien_Class_Entry( "asw_grub", HULL_TINY ),
 	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG ),
 	ASW_Alien_Class_Entry( "asw_harvester", HULL_HUMAN ),
@@ -68,6 +71,9 @@ ASW_Alien_Class_Entry g_Aliens[]=
 	ASW_Alien_Class_Entry( "asw_ranger", HULL_HUMAN ),
 	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_LARGE ),
 	ASW_Alien_Class_Entry( "asw_shaman", HULL_LARGE ),
+	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
+	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
+	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE )
 };
 
 // Array indices of drones.  Used by carnage mode.
@@ -103,7 +109,9 @@ void CASW_Spawn_Manager::LevelInitPostEntity()
 	m_batchInterval.Invalidate();
 	m_CandidateUpdateTimer.Invalidate();
 	m_iHordeToSpawn = 0;
-	m_iAliensToSpawn = 0;
+	m_pHordeDefinition = NULL;
+	m_pHordeWandererDefinition.Purge();
+	m_pAliensToSpawn.Purge();
 
 	m_northCandidateNodes.Purge();
 	m_southCandidateNodes.Purge();
@@ -195,15 +203,26 @@ void CASW_Spawn_Manager::FindEscapeTriggers()
 
 void CASW_Spawn_Manager::Update()
 {
-	if ( m_iHordeToSpawn > 0 )
+	if ( m_iHordeToSpawn > 0 || m_pHordeWandererDefinition.Count() > 0 )
 	{		
 		if ( m_vecHordePosition != vec3_origin && ( !m_batchInterval.HasStarted() || m_batchInterval.IsElapsed() ) )
 		{
 			int iToSpawn = MIN( m_iHordeToSpawn, asw_max_alien_batch.GetInt() );
-			int iSpawned = SpawnAlienBatch( asw_horde_class.GetString(), iToSpawn, m_vecHordePosition, m_angHordeAngle, 0 );
+			int iSpawned = iToSpawn > 0 ? SpawnAlienBatch( m_pHordeDefinition, iToSpawn, m_vecHordePosition, m_angHordeAngle, 0 ) : 0;
 			m_iHordeToSpawn -= iSpawned;
-			if ( m_iHordeToSpawn <= 0 )
+			if ( m_pHordeWandererDefinition.Count() > 0 )
 			{
+				if ( SpawnAlienAt( m_pHordeWandererDefinition[0], m_vecHordePosition, m_angHordeAngle ) )
+				{
+					iSpawned++;
+					m_pHordeWandererDefinition.Remove( 0 );
+				}
+			}
+			if ( m_iHordeToSpawn <= 0 && m_pHordeWandererDefinition.Count() == 0 )
+			{
+				m_iHordeToSpawn = 0;
+				m_pHordeDefinition = NULL;
+				m_pHordeWandererDefinition.Purge();
 				ASWDirector()->OnHordeFinishedSpawning();
 				m_vecHordePosition = vec3_origin;
 			}
@@ -216,6 +235,8 @@ void CASW_Spawn_Manager::Update()
 				if ( !FindHordePosition() )		// if we failed to find a new location, just abort this horde
 				{
 					m_iHordeToSpawn = 0;
+					m_pHordeDefinition = NULL;
+					m_pHordeWandererDefinition.Purge();
 					ASWDirector()->OnHordeFinishedSpawning();
 					m_vecHordePosition = vec3_origin;
 				}
@@ -226,6 +247,8 @@ void CASW_Spawn_Manager::Update()
 		{
 			Msg( "Warning: Had horde to spawn but no position, clearing.\n" );
 			m_iHordeToSpawn = 0;
+			m_pHordeDefinition = NULL;
+			m_pHordeWandererDefinition.Purge();
 			ASWDirector()->OnHordeFinishedSpawning();
 		}
 	}
@@ -235,23 +258,33 @@ void CASW_Spawn_Manager::Update()
 		engine->Con_NPrintf( 14, "SM: Batch interval: %f pos = %f %f %f\n", m_batchInterval.HasStarted() ? m_batchInterval.GetRemainingTime() : -1, VectorExpand( m_vecHordePosition ) );		
 	}
 
-	if ( m_iAliensToSpawn > 0 )
+	if ( m_pAliensToSpawn.Count() > 0 )
 	{
-		if ( SpawnAlientAtRandomNode() )
-			m_iAliensToSpawn--;
+		CASW_Spawn_Definition *pSpawn = m_pAliensToSpawn[0];
+		if ( SpawnAlientAtRandomNode( pSpawn ) )
+			m_pAliensToSpawn.Remove( 0 );
 	}
 }
 
-void CASW_Spawn_Manager::AddAlien()
+void CASW_Spawn_Manager::AddWanderer( CASW_Spawn_Definition *pSpawn )
 {
 	// don't stock up more than 10 wanderers at once
-	if ( m_iAliensToSpawn > 10 )
+	if ( m_pAliensToSpawn.Count() > 10 )
 		return;
 
-	m_iAliensToSpawn++;
+	m_pAliensToSpawn.AddToTail( pSpawn );
 }
 
-bool CASW_Spawn_Manager::SpawnAlientAtRandomNode()
+void CASW_Spawn_Manager::AddHordeWanderer( CASW_Spawn_Definition *pSpawn )
+{
+	// don't stock up more than 10 wanderers at once
+	if ( m_pHordeWandererDefinition.Count() > 10 )
+		return;
+
+	m_pHordeWandererDefinition.AddToTail( pSpawn );
+}
+
+bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn )
 {
 	UpdateCandidateNodes();
 
@@ -270,10 +303,6 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode()
 
 	if ( candidateNodes.Count() <= 0 )
 		return false;
-
-	const char *szAlienClass = "asw_drone";
-	Vector vecMins, vecMaxs;
-	GetAlienBounds( szAlienClass, vecMins, vecMaxs );
 
 	int iMaxTries = 1;
 	for ( int i=0 ; i<iMaxTries ; i++ )
@@ -299,46 +328,86 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode()
 			continue;
 		}
 
-		if ( bNorth && UTIL_ASW_DoorBlockingRoute( pRoute, true ) )
+		// reactivedrop: preventing wanderers from spawning behind indestructible doors
+		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute(pRoute, true);
+		if ( bNorth && pDoor || (pDoor && pDoor->GetDoorType() == 2) ) // 2 - indestructible door
 		{
 			DeleteRoute( pRoute );
 			continue;
 		}
-		
-		Vector vecSpawnPos = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
-		if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
+
+		// reactivedrop: preventing wanderers from spawning behind closed airlocks
+		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
 		{
-			if ( SpawnAlienAt( szAlienClass, vecSpawnPos, vec3_angle ) )
+			DeleteRoute(pRoute);
+			continue;
+		}
+
+		bool bAny = false;
+		bool bTried = false;
+		// BenLubar: TODO: spawn aliens in grid, not to be inside each other
+		FOR_EACH_VEC( pSpawn->m_NPCs, j )
+		{
+			CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[j];
+			bool bShouldSpawn = true;
+			FOR_EACH_VEC( pNPC->m_pRequireCVar, k )
+			{
+				if ( !pNPC->m_pRequireCVar[k]->GetBool() )
+				{
+					bShouldSpawn = false;
+					break;
+				}
+			}
+			if ( !bShouldSpawn || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() > pNPC->m_flSpawnChance ) )
+			{
+				continue;
+			}
+			bTried = true;
+
+			const Vector & vecMins = NAI_Hull::Mins( pNPC->m_pAlienClass->m_nHullType );
+			const Vector & vecMaxs = NAI_Hull::Maxs( pNPC->m_pAlienClass->m_nHullType );
+
+			Vector vecSpawnPos = pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ) + Vector( 0, 0, 32 );
+			if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
+			{
+				if ( SpawnAlienAt( pNPC, vecSpawnPos, vec3_angle ) )
+				{
+					if ( asw_director_debug.GetBool() )
+					{
+						NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 255, 255, true, 20.0f );
+						float flDist;
+						CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
+						if ( pMarine )
+						{
+							NDebugOverlay::Line( pMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
+						}
+					}
+					bAny = true;
+				}
+			}
+			else
 			{
 				if ( asw_director_debug.GetBool() )
 				{
-					NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 255, 255, true, 20.0f );
-					float flDist;
-					CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
-					if ( pMarine )
-					{
-						NDebugOverlay::Line( pMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
-					}
+					NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 0, 0, true, 20.0f );
 				}
-				DeleteRoute( pRoute );
-				return true;
 			}
 		}
-		else
-		{
-			if ( asw_director_debug.GetBool() )
-			{
-				NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 0, 0, true, 20.0f );
-			}
-		}
+
 		DeleteRoute( pRoute );
+
+		if ( bAny || !bTried )
+		{
+			return true;
+		}
 	}
 	return false;
 }
 
-bool CASW_Spawn_Manager::AddHorde( int iHordeSize )
+bool CASW_Spawn_Manager::AddHorde( int iHordeSize, CASW_Spawn_Definition *pSpawn )
 {
 	m_iHordeToSpawn = iHordeSize;
+	m_pHordeDefinition = pSpawn;
 
 	if ( m_vecHordePosition == vec3_origin )
 	{
@@ -525,7 +594,9 @@ bool CASW_Spawn_Manager::FindHordePosition()
 			continue;
 		}
 
-		if ( bNorth && UTIL_ASW_DoorBlockingRoute( pRoute, true ) )
+		// reactivedrop: preventing hordes from spawning behind indestructible doors
+		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute(pRoute, true);
+		if ( bNorth && pDoor || (pDoor && pDoor->GetDoorType() == 2)) // 2 - indestructible door
 		{
 			if ( asw_director_debug.GetInt() >= 2 )
 			{
@@ -534,7 +605,18 @@ bool CASW_Spawn_Manager::FindHordePosition()
 			DeleteRoute( pRoute );
 			continue;
 		}
-		
+
+		// reactivedrop: preventing hordes from spawning behind closed airlocks
+		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
+		{
+			if (asw_director_debug.GetInt() >= 2)
+			{
+				Msg("  Discarding horde node %d as there's a brush in the way.\n", iChosen);
+			}
+			DeleteRoute(pRoute);
+			continue;
+		}
+
 		m_vecHordePosition = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
 
 		// spawn facing the nearest marine
@@ -600,14 +682,11 @@ bool CASW_Spawn_Manager::GetAlienBounds( string_t iszAlienClass, Vector &vecMins
 }
 
 // spawn a group of aliens at the target point
-int CASW_Spawn_Manager::SpawnAlienBatch( const char* szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist )
+template <typename Alien>
+int CASW_Spawn_Manager::SpawnAlienBatch( Alien szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist, const Vector & vecMins, const Vector & vecMaxs )
 {
-
 	int iSpawned = 0;
 	bool bCheckGround = true;
-	Vector vecMins = NAI_Hull::Mins(HULL_MEDIUMBIG);
-	Vector vecMaxs = NAI_Hull::Maxs(HULL_MEDIUMBIG);
-	GetAlienBounds( szAlienClass, vecMins, vecMaxs );
 
 	float flAlienWidth = vecMaxs.x - vecMins.x;
 	float flAlienDepth = vecMaxs.y - vecMins.y;
@@ -681,6 +760,24 @@ int CASW_Spawn_Manager::SpawnAlienBatch( const char* szAlienClass, int iNumAlien
 	return iSpawned;
 }
 
+int CASW_Spawn_Manager::SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist )
+{
+	Vector vecMins = NAI_Hull::Mins(HULL_MEDIUMBIG);
+	Vector vecMaxs = NAI_Hull::Maxs(HULL_MEDIUMBIG);
+	GetAlienBounds( szAlienClass, vecMins, vecMaxs );
+
+	return SpawnAlienBatch( szAlienClass, iNumAliens, vecPosition, angle, flMarinesBeyondDist, vecMins, vecMaxs );
+}
+
+int CASW_Spawn_Manager::SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist )
+{
+	int iHull = pSpawn->m_NPCs.Count() == 0 ? HULL_MEDIUMBIG : pSpawn->m_NPCs[0]->m_pAlienClass->m_nHullType;
+	const Vector & vecMins = NAI_Hull::Mins( iHull );
+	const Vector & vecMaxs = NAI_Hull::Maxs( iHull );
+
+	return SpawnAlienBatch( pSpawn, iNumAliens, vecPosition, angle, flMarinesBeyondDist, vecMins, vecMaxs );
+}
+
 CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Vector& vecPos, const QAngle &angle)
 {	
 	CBaseEntity	*pEntity = NULL;	
@@ -698,7 +795,6 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	angles.z = 0.0;	
 	pEntity->SetAbsOrigin( vecPos );	
 	pEntity->SetAbsAngles( angles );
-	UTIL_DropToFloor( pEntity, MASK_SOLID );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
 	ASSERT(pSpawnable);	
@@ -720,8 +816,134 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	DispatchSpawn( pEntity );	
 	pEntity->Activate();	
 
+	UTIL_DropToFloor(pEntity, MASK_NPCSOLID);
+
 	// give our aliens the orders
 	pSpawnable->SetAlienOrders(AOT_MoveToNearestMarine, vec3_origin, NULL);
+
+	return pEntity;
+}
+
+static bool ShouldSpawnAlien( CASW_Spawn_NPC *pNPC )
+{
+	FOR_EACH_VEC( pNPC->m_pRequireCVar, j )
+	{
+		if ( !pNPC->m_pRequireCVar[j]->GetBool() )
+		{
+			return false;
+		}
+	}
+	return pNPC->m_flSpawnChance >= 1 || random->RandomFloat() < pNPC->m_flSpawnChance;
+}
+
+bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle )
+{
+	bool bAny = false;
+	bool bTried = false;
+
+	FOR_EACH_VEC( pSpawn->m_NPCs, i )
+	{
+		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
+		if ( !ShouldSpawnAlien( pNPC ) )
+		{
+			continue;
+		}
+		bTried = true;
+
+		const Vector & vecMins = NAI_Hull::Mins( pNPC->m_pAlienClass->m_nHullType );
+		const Vector & vecMaxs = NAI_Hull::Maxs( pNPC->m_pAlienClass->m_nHullType );
+
+		if ( ValidSpawnPoint( vecPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
+		{
+			if ( SpawnAlienAt( pNPC, vecPos, vec3_angle ) )
+			{
+				if ( asw_director_debug.GetBool() )
+				{
+					NDebugOverlay::Cross3D( vecPos, 25.0f, 255, 255, 255, true, 20.0f );
+					float flDist;
+					CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecPos, flDist );
+					if ( pMarine )
+					{
+						NDebugOverlay::Line( pMarine->GetAbsOrigin(), vecPos, 64, 64, 64, true, 60.0f );
+					}
+				}
+				bAny = true;
+			}
+		}
+		else
+		{
+			if ( asw_director_debug.GetBool() )
+			{
+				NDebugOverlay::Cross3D( vecPos, 25.0f, 255, 0, 0, true, 20.0f );
+			}
+		}
+	}
+
+	return bAny || !bTried;
+}
+
+CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle )
+{
+	CBaseEntity	*pEntity = CreateEntityByName( pNPC->m_pAlienClass->m_pszAlienClass );
+	if ( !pEntity )
+	{
+		return NULL;
+	}
+
+	CASW_Alien *pAlien = dynamic_cast<CASW_Alien *>( pEntity );
+	if ( pAlien )
+	{
+		pAlien->m_bFlammable = pNPC->m_bFlammable;
+		pAlien->m_bTeslable = pNPC->m_bTeslable;
+		pAlien->m_bFreezable = pNPC->m_bFreezable;
+		pAlien->m_bFlinchable = pNPC->m_bFlinches;
+		pAlien->m_iHealthBonus = pNPC->m_iHealthBonus;
+		pAlien->m_fSizeScale = pNPC->m_flSizeScale;
+		pAlien->m_fSpeedScale = pNPC->m_flSpeedScale;
+	}
+
+	CAI_BaseNPC	*pBaseNPC = pEntity->MyNPCPointer();
+	if ( pBaseNPC )
+	{
+		pBaseNPC->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );
+	}
+
+	// Strip pitch and roll from the spawner's angles. Pass only yaw to the spawned NPC.
+	QAngle angles = angle;
+	angles.x = 0.0;
+	angles.z = 0.0;	
+	pEntity->SetAbsOrigin( vecPos );
+	pEntity->SetAbsAngles( angles );
+
+	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC *>( pEntity );
+	Assert( pSpawnable );
+	if ( !pSpawnable )
+	{
+		Warning( "NULL Spawnable Ent in CASW_Spawn_Manager::SpawnAlienAt! AlienClass = %s\n", pNPC->m_pAlienClass->m_pszAlienClass );
+		UTIL_Remove( pEntity );
+		return NULL;
+	}
+
+	// have drones and rangers unburrow by default, so we don't worry so much about them spawning onscreen
+	if ( pNPC->m_pAlienClass->m_nHullType == HULL_MEDIUMBIG )
+	{			
+		pSpawnable->StartBurrowed();
+		pSpawnable->SetUnburrowIdleActivity( NULL_STRING );
+		pSpawnable->SetUnburrowActivity( NULL_STRING );
+	}
+
+	DispatchSpawn( pEntity );	
+	pEntity->Activate();	
+
+	UTIL_DropToFloor( pEntity, MASK_NPCSOLID );
+
+	// give our aliens the orders
+	pSpawnable->SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
+
+	if ( pNPC->m_iszVScript != NULL_STRING )
+	{
+		pEntity->RunScriptFile( STRING( pNPC->m_iszVScript ) );
+	}
 
 	return pEntity;
 }
@@ -789,25 +1011,25 @@ void CASW_Spawn_Manager::DeleteRoute( AI_Waypoint_t *pWaypointList )
 	}
 }
 
-bool CASW_Spawn_Manager::SpawnRandomShieldbug()
+bool CASW_Spawn_Manager::PrespawnAliens( CASW_Spawn_Definition *pSpawn )
 {
-	int iNumNodes = g_pBigAINet->NumNodes();
+	int iNumNodes = GetNetwork()->NumNodes();
 	if ( iNumNodes < 6 )
 		return false;
 
-	int nHull = HULL_WIDE_SHORT;
-	CUtlVector<CASW_Open_Area*> aAreas;
-	for ( int i = 0; i < 6; i++ )
+	int nHull = pSpawn->m_NPCs.Count() == 0 ? HULL_WIDE_SHORT : pSpawn->m_NPCs[0]->m_pAlienClass->m_nHullType;
+	CUtlVectorAutoPurge<CASW_Open_Area *> aAreas;
+	for ( int i = 0; i < pSpawn->m_NPCs.Count() * 2; i++ )
 	{
 		CAI_Node *pNode = NULL;
 		int nTries = 0;
 		while ( nTries < 5 && ( !pNode || pNode->GetType() != NODE_GROUND ) )
 		{
-			pNode = g_pBigAINet->GetNode( RandomInt( 0, iNumNodes ) );
+			pNode = GetNetwork()->GetNode( RandomInt( 0, iNumNodes - 1 ) );
 			nTries++;
 		}
 		
-		if ( pNode )
+		if ( pNode && pNode->GetType() == NODE_GROUND )
 		{
 			CASW_Open_Area *pArea = FindNearbyOpenArea( pNode->GetOrigin(), HULL_MEDIUMBIG );
 			if ( pArea && pArea->m_nTotalLinks > 30 )
@@ -823,36 +1045,48 @@ bool CASW_Spawn_Manager::SpawnRandomShieldbug()
 				}
 			}
 		}
-		// stop searching once we have 3 acceptable candidates
-		if ( aAreas.Count() >= 3 )
+		// stop searching once we have enough acceptable candidates
+		if ( aAreas.Count() >= pSpawn->m_NPCs.Count() )
 			break;
 	}
 
-	// find area with the highest connectivity
-	CASW_Open_Area *pBestArea = NULL;
-	for ( int i = 0; i < aAreas.Count(); i++ )
+	bool bAny = false;
+	bool bTried = false;
+	int iArea = 0;
+	FOR_EACH_VEC( pSpawn->m_NPCs, i )
 	{
-		CASW_Open_Area *pArea = aAreas[i];
-		if ( !pBestArea || pArea->m_nTotalLinks > pBestArea->m_nTotalLinks )
+		if ( iArea >= aAreas.Count() )
 		{
-			pBestArea = pArea;
+			break;
 		}
-	}
 
-	if ( pBestArea )
-	{
-		CBaseEntity *pAlien = SpawnAlienAt( "asw_shieldbug", pBestArea->m_pNode->GetPosition( nHull ), RandomAngle( 0, 360 ) );
-		IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>( pAlien );
+		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
+		if ( !ShouldSpawnAlien( pNPC ) )
+		{
+			continue;
+		}
+		bTried = true;
+
+		CBaseEntity *pAlien = SpawnAlienAt( pNPC, aAreas[iArea]->m_pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ), RandomAngle( 0, 360 ) );
+		if ( pAlien )
+		{
+			bAny = true;
+			if ( asw_director_debug.GetBool() && pAlien )
+			{
+				Msg( "Spawned %s at %f %f %f\n", pNPC->m_pAlienClass->m_pszAlienClass, VectorExpand( pAlien->GetAbsOrigin() ) );
+				NDebugOverlay::Cross3D( pAlien->GetAbsOrigin(), 8.0f, 255, 0, 0, true, 20.0f );
+			}
+		}
+		IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC *>( pAlien );
 		if ( pSpawnable )
 		{
-			pSpawnable->SetAlienOrders(AOT_SpreadThenHibernate, vec3_origin, NULL);
+			pSpawnable->SetAlienOrders( AOT_SpreadThenHibernate, vec3_origin, NULL );
 		}
-		aAreas.PurgeAndDeleteElements();
-		return true;
+
+		iArea++;
 	}
 
-	aAreas.PurgeAndDeleteElements();
-	return false;
+	return bAny || !bTried;
 }
 
 Vector TraceToGround( const Vector &vecPos )
@@ -862,21 +1096,21 @@ Vector TraceToGround( const Vector &vecPos )
 	return tr.endpos;
 }
 
-bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
+bool CASW_Spawn_Manager::SpawnAlienPack( CASW_Spawn_Definition *pSpawn )
 {
-	int iNumNodes = g_pBigAINet->NumNodes();
+	int iNumNodes = GetNetwork()->NumNodes();
 	if ( iNumNodes < 6 )
 		return false;
 
-	int nHull = HULL_TINY;
-	CUtlVector<CASW_Open_Area*> aAreas;
+	int nHull = pSpawn->m_NPCs.Count() == 0 ? HULL_TINY : pSpawn->m_NPCs[0]->m_pAlienClass->m_nHullType;
+	CUtlVectorAutoPurge<CASW_Open_Area *> aAreas;
 	for ( int i = 0; i < 6; i++ )
 	{
 		CAI_Node *pNode = NULL;
 		int nTries = 0;
 		while ( nTries < 5 && ( !pNode || pNode->GetType() != NODE_GROUND ) )
 		{
-			pNode = g_pBigAINet->GetNode( RandomInt( 0, iNumNodes ) );
+			pNode = GetNetwork()->GetNode( RandomInt( 0, iNumNodes ) );
 			nTries++;
 		}
 
@@ -914,26 +1148,122 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 
 	if ( pBestArea )
 	{
-		for ( int i = 0; i < nParasites; i++ )
+		FOR_EACH_VEC( pSpawn->m_NPCs, i )
 		{
-			CBaseEntity *pAlien = SpawnAlienAt( "asw_parasite", TraceToGround( pBestArea->m_pNode->GetPosition( nHull ) ), RandomAngle( 0, 360 ) );
-			IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>( pAlien );
-			if ( pSpawnable )
-			{
-				pSpawnable->SetAlienOrders(AOT_SpreadThenHibernate, vec3_origin, NULL);
-			}
+			CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
+
+			// reactivedrop: 
+			// raise the position by 12 units, a workaround for parasites
+			// falling through displacements
+			CBaseEntity *pAlien = SpawnAlienAt( pNPC, pBestArea->m_pNode->GetPosition( nHull )  + Vector( 0, 0, 12 ), RandomAngle( 0, 360 ) );
 			if ( asw_director_debug.GetBool() && pAlien )
 			{
-				Msg( "Spawned parasite at %f %f %f\n", pAlien->GetAbsOrigin() );
+				Msg( "Spawned %s at %f %f %f\n", pNPC->m_pAlienClass->m_pszAlienClass, VectorExpand( pAlien->GetAbsOrigin() ) );
 				NDebugOverlay::Cross3D( pAlien->GetAbsOrigin(), 8.0f, 255, 0, 0, true, 20.0f );
 			}
+			IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC *>( pAlien );
+			if ( pSpawnable )
+			{
+				pSpawnable->SetAlienOrders( AOT_SpreadThenHibernate, vec3_origin, NULL );
+			}
 		}
-		aAreas.PurgeAndDeleteElements();
 		return true;
 	}
 
-	aAreas.PurgeAndDeleteElements();
 	return false;
+}
+
+ConVar rm_prespawn_num_parasites("rm_prespawn_num_parasites", "7", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_boomers("rm_prespawn_num_boomers", "3", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_harvesters("rm_prespawn_num_harvesters", "4", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_drones("rm_prespawn_num_drones", "15", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+
+void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
+{
+	// spawn random parasites 7, boomers 3, mortars 3, harvesters 4, 
+	// drones 15, uber drones 2, shieldbug 1, shaman 7, flies 1
+	
+	// get num nodes
+	// get random node
+	// check if it's far enough from player start, 1000 units
+	// check if valid spawn point for an alien
+	// spawn alien
+
+	const int NUM_PARASITES		= rm_prespawn_num_parasites.GetInt();
+	const int NUM_BOOMERS		= rm_prespawn_num_boomers.GetInt();
+	const int NUM_MORTARS		= rm_prespawn_num_mortars.GetInt();
+	const int NUM_HARVESTERS	= rm_prespawn_num_harvesters.GetInt();
+	const int NUM_DRONES		= rm_prespawn_num_drones.GetInt();
+	const int NUM_UBER_DRONES	= rm_prespawn_num_uber_drones.GetInt();
+	const int NUM_SHIELDBUGS	= rm_prespawn_num_shieldbugs.GetInt();
+	const int NUM_SHAMANS		= rm_prespawn_num_shamans.GetInt();
+	//const int NUM_FLIES			= rm_prespawn_num_buzzers.GetInt();
+	const int NUM_RANGERS		= rm_prespawn_num_rangers.GetInt();
+
+
+	int iNumNodes = g_pBigAINet->NumNodes();
+	if (iNumNodes < 50)
+		return;
+
+	CBaseEntity *pPlayerStart = gEntList.FindEntityByClassname(NULL, "info_player_start");
+	if (!pPlayerStart)
+		return;
+	Vector playerStartPos = pPlayerStart->GetAbsOrigin();
+
+	PrespawnAlienAtRandomNode("asw_parasite",	NUM_PARASITES * multiplier, HULL_TINY, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_boomer",		NUM_BOOMERS * multiplier, HULL_LARGE, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_mortarbug",	NUM_MORTARS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_harvester",	NUM_HARVESTERS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_drone",		NUM_DRONES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_drone_uber", NUM_UBER_DRONES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_shieldbug",	NUM_SHIELDBUGS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_shaman",		NUM_SHAMANS * multiplier, HULL_MEDIUM, playerStartPos, iNumNodes);
+	//PrespawnAlienAtRandomNode("asw_buzzer",		NUM_FLIES * multiplier, HULL_LARGE, playerStartPos, iNumNodes);	
+	PrespawnAlienAtRandomNode("asw_ranger",		NUM_RANGERS * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+}
+
+
+void CASW_Spawn_Manager::PrespawnAlienAtRandomNode(const char *szAlienClass, const int iNumAliens, const int iHull, const Vector &playerStartPos, const int iNumNodes)
+{
+	for (int i = 0; i < iNumAliens; ++i)
+	{
+		CAI_Node *pNode = NULL;
+		for (int k = 0; k < 30; ++k)
+		{
+			int node_id = RandomInt(0, iNumNodes - 1);
+			pNode = g_pBigAINet->GetNode(node_id);
+			if (!pNode || pNode->GetType() != NODE_GROUND)
+				continue;
+			else if (pNode->GetOrigin().DistToSqr(playerStartPos) < 1000 * 1000)
+			{
+				continue;
+			}
+
+			if (ValidSpawnPoint(pNode->GetPosition(iHull), NAI_Hull::Mins(iHull), NAI_Hull::Maxs(iHull), true, false))
+			{
+				// Raise the end position a little up off the floor, place the npc and drop him down
+				CBaseEntity *pAlien = SpawnAlienAt(szAlienClass, pNode->GetPosition(iHull) + Vector(0.f, 0.f, 12.f), RandomAngle(0, 360));
+				IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pAlien);
+				if (pSpawnable)
+				{
+					pSpawnable->SetAlienOrders(AOT_SpreadThenHibernate, vec3_origin, NULL);
+				}
+				if (asw_director_debug.GetBool() && pAlien)
+				{
+					Msg("Spawned alien at %f %f %f\n", pAlien->GetAbsOrigin());
+					NDebugOverlay::Cross3D(pAlien->GetAbsOrigin(), 8.0f, 255, 0, 0, true, 20.0f);
+				}
+				if (pAlien)
+					break;
+			}
+		}
+	}
 }
 
 // heuristic to find reasonably open space - searches for areas with high node connectivity
@@ -1131,27 +1461,50 @@ void asw_alien_batch_f( const CCommand& args )
 static ConCommand asw_alien_batch("asw_alien_batch", asw_alien_batch_f, "Creates a batch of aliens at the cursor", FCVAR_GAMEDLL | FCVAR_CHEAT);
 
 
-void asw_alien_horde_f( const CCommand& args )
+CON_COMMAND_F( asw_alien_horde, "Creates a horde of aliens somewhere nearby", FCVAR_CHEAT )
 {
 	if ( args.ArgC() < 2 )
 	{
 		Msg("supply horde size!\n");
 		return;
 	}
-	if ( !ASWSpawnManager()->AddHorde( atoi(args[1]) ) )
+
+	int iHordeSize = atoi( args[1] );
+	if ( iHordeSize <= 0 )
 	{
-		Msg("Failed to add horde\n");
+		Msg("invalid horde size\n");
+		return;
+	}
+
+	CASW_Spawn_Definition *pSpawn = ASWSpawnSelection()->RandomHordeDefinition();
+	if ( !pSpawn )
+	{
+		Msg("no HORDE definitions!\n");
+		return;
+	}
+
+	if ( ASWSpawnManager()->AddHorde( iHordeSize, pSpawn ) )
+	{
+		Msg("queued horde of %d aliens\n", iHordeSize);
 	}
 }
-static ConCommand asw_alien_horde("asw_alien_horde", asw_alien_horde_f, "Creates a horde of aliens somewhere nearby", FCVAR_GAMEDLL | FCVAR_CHEAT);
-
 
 CON_COMMAND_F( asw_spawn_shieldbug, "Spawns a shieldbug somewhere randomly in the map", FCVAR_CHEAT )
 {
-	ASWSpawnManager()->SpawnRandomShieldbug();
+	CASW_Spawn_Definition spawn( KeyValues::AutoDeleteInline( KeyValues::FromString( "PRESPAWN", "NPC { AlienClass asw_shieldbug }" ) ) );
+
+	ASWSpawnManager()->PrespawnAliens( &spawn );
 }
 
 CON_COMMAND_F( asw_spawn_parasite_pack, "Spawns a group of parasites somewhere randomly in the map", FCVAR_CHEAT )
 {
-	ASWSpawnManager()->SpawnRandomParasitePack( RandomInt( 3, 5 ) );
+	CASW_Spawn_Definition spawn( KeyValues::AutoDeleteInline( KeyValues::FromString( "PACK",
+		"NPC { AlienClass asw_parasite } "
+		"NPC { AlienClass asw_parasite } "
+		"NPC { AlienClass asw_parasite } "
+		"NPC { AlienClass asw_parasite SpawnChance 0.75 } "
+		"NPC { AlienClass asw_parasite SpawnChance 0.5 } "
+		"NPC { AlienClass asw_parasite SpawnChance 0.25 }" ) ) );
+
+	ASWSpawnManager()->SpawnAlienPack( &spawn );
 }

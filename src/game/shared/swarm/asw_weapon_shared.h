@@ -83,4 +83,6 @@ DECLARE_LOGGING_CHANNEL( LOG_ASW_WeaponDeveloper );
 #define ASW_DMG_MSG_CONVAR(convar, string, ...)
 #endif	// #ifdef ASW_VERBOSE_MESSAGES
 
+int GetWeaponLevelRequirement( const char *szWeaponClass );
+
 #endif // ASW_WEAPON_SHARED_H

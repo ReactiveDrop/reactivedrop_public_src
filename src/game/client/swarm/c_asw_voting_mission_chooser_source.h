@@ -32,6 +32,7 @@ public:
 	virtual void FindCampaigns(int nCampaignOffset, int iNumSlots);
 	virtual ASW_Mission_Chooser_Mission* GetCampaigns() { return m_campaigns; }	// Passes an array of campaign names back
 	virtual ASW_Mission_Chooser_Mission* GetCampaign( int nIndex );		// will return NULL when requesting a campaign outside the found range
+	virtual PublishedFileId_t GetCampaignWorkshopID( int nIndex );
 	virtual int	 GetNumCampaigns();
 
 	virtual void FindSavedCampaigns(int page, int iNumSlots, bool bMultiplayer, const char *szFilterID);
@@ -45,6 +46,7 @@ public:
 
 	ASW_Mission_Chooser_Mission m_missions[ASW_MISSIONS_PER_PAGE]; // this array needs to be large enough for either ASW_SAVES_PER_SCREEN (for when showing save games), or ASW_MISSIONS_PER_SCREEN (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
 	ASW_Mission_Chooser_Mission m_campaigns[ASW_CAMPAIGNS_PER_PAGE]; // this array needs to be large enough for either ASW_SAVES_PER_SCREEN (for when showing save games), or ASW_MISSIONS_PER_SCREEN (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
+	PublishedFileId_t m_nCampaignWorkshopID[ASW_CAMPAIGNS_PER_PAGE];
 	ASW_Mission_Chooser_Saved_Campaign m_savedcampaigns[ASW_SAVES_PER_PAGE]; // this array needs to be large enough for either ASW_SAVES_PER_SCREEN (for when showing save games), or ASW_MISSIONS_PER_SCREEN (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
 
 	void SetVotingMission(C_ASW_Voting_Missions* voting);
@@ -62,6 +64,7 @@ public:
 	virtual int GetNumMissionsCompleted(const char *szSaveName) { return -1; }
 	virtual void NotifySaveDeleted(const char *szSaveName) { } 
 	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName) { return NULL; }
+	virtual void ClearCache() { }
 
 	CHandle<C_ASW_Voting_Missions> m_hVotingMission;	// client entity holding networked map/campaign names from the server
 	int m_nMissionOffset;

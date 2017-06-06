@@ -13,6 +13,7 @@
 #include "nb_main_panel.h"
 #include "c_asw_campaign_save.h"
 #include "c_asw_game_resource.h"
+#include "ammodef.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -46,6 +47,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Mar
 	RecvPropString	(RECVINFO(m_MedalsAwarded) ),
 	RecvPropEHandle	(RECVINFO(m_hWeldingDoor)),
 	RecvPropBool	(RECVINFO(m_bUsingEngineeringAura) ),
+	RecvPropInt     (RECVINFO(m_iBotFrags)),
 END_RECV_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -69,6 +71,7 @@ C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 	m_fCachedMedsPercent = 0;
 	m_MedalsAwarded[0] = '\0';
 	m_bUsingEngineeringAura = false;
+	m_iBotFrags = 0;
 	m_Commander = NULL;
 	m_iCommanderIndex = -1;
 	memset( m_iWeaponsInSlots, -1, sizeof( m_iWeaponsInSlots ) );
@@ -122,9 +125,10 @@ void C_ASW_Marine_Resource::GetDisplayName( wchar_t *pwchDisplayName, int nMaxBy
 	}
 	else
 	{
-		bool bIsInhabited = IsInhabited();
+		// BenLubar: don't use the player name if they're controlling another marine after we died
+		bool bIsInhabited = IsInhabited() && GetCommander() && GetCommander()->m_hMarine.m_Value == m_MarineEntity;
 
-		if ( bIsInhabited && GetCommander() && g_PR->IsConnected( m_iCommanderIndex ) )
+		if ( bIsInhabited && g_PR->IsConnected( m_iCommanderIndex ) )
 		{
 			// Use the player name
 			pchName = g_PR->GetPlayerName( m_iCommanderIndex );
@@ -402,4 +406,24 @@ bool C_ASW_Marine_Resource::IsReloading()
 		return false;
 
 	return pWeapon->IsReloading();
+}
+
+// From player2k's https://code.google.com/p/better-hud-mod-alienswarm
+float C_ASW_Marine_Resource::GetClipsPercentForHUD()
+{
+	C_ASW_Marine *pMarine = GetMarineEntity();
+	if ( !pMarine )
+	{
+		return 1.0f;
+	}
+
+	C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
+	if ( !pWeapon )
+	{
+		return 1.0f;
+	}
+
+	int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo( pWeapon->GetPrimaryAmmoType() );
+	int iMaxAmmo = GetAmmoDef()->MaxCarry( pWeapon->GetPrimaryAmmoType(), pMarine );
+	return (float) pMarine->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) / (float) ( iMaxAmmo * iGuns );
 }

@@ -37,6 +37,8 @@ public:
 
 	void BurnEntity(CBaseEntity *pEntity, CBaseEntity *pAttacker, float fFireDuration, float fBurnInterval, float fDamagePerInterval, CBaseEntity *pDamagingWeapon = NULL );
 	void Extinguish(CBaseEntity *pEntity);
+	// reactivedrop
+	void ExtendBurning(CBaseEntity *pEntity, float fFireDuration);
 
 	//void OnEntityExtinguished(CBaseEntity *pEntity);
 

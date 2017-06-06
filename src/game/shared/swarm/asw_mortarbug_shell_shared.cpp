@@ -52,6 +52,7 @@ extern int g_sModelIndexFireball;
 
 ConVar asw_mortarbug_shell_gravity("asw_mortarbug_shell_gravity", "0.8f", FCVAR_CHEAT, "Gravity of mortarbug shell");
 ConVar asw_mortarbug_shell_fuse("asw_mortarbug_shell_fuse", "3.0f", FCVAR_CHEAT, "Time before mortarbug shell explodes");
+ConVar sk_asw_mortarbug_shell_damage( "sk_asw_mortarbug_shell_damage", "50", FCVAR_CHEAT );
 
 CASW_Mortarbug_Shell::CASW_Mortarbug_Shell()
 {
@@ -86,7 +87,7 @@ void CASW_Mortarbug_Shell::Spawn( void )
 	SetSequence( LookupSequence( "MortarBugProjectile_Closed" ) );
 
 	// TODO: 
-	m_flDamage		= 50;
+	m_flDamage		= sk_asw_mortarbug_shell_damage.GetFloat();
 	m_DmgRadius		= 220.0f;
 
 	//Ignite(3.0, false, 0, false);
@@ -291,20 +292,22 @@ CASW_Mortarbug_Shell::CASW_Mortarbug_Shell()
 	
 }
 
-void CASW_Mortarbug_Shell::PostDataUpdate( DataUpdateType_t updateType )
+// reactivedrop: changed from PostDataUpdate to OnDataChanged 
+// to prevent asserts in GetAbsOrigin() and similar methods 
+void CASW_Mortarbug_Shell::OnDataChanged(DataUpdateType_t updateType)
 {	
-	BaseClass::PostDataUpdate(updateType);
+	BaseClass::OnDataChanged(updateType);
 	// If this entity was new, then latch in various values no matter what.
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		CNewParticleEffect	*pBurningEffect = ParticleProp()->Create( SHELL_AURA, PATTACH_ABSORIGIN_FOLLOW );
 		if (pBurningEffect)
 		{
-		ParticleProp()->AddControlPoint( pBurningEffect, 1, this, PATTACH_ABSORIGIN_FOLLOW );
-		pBurningEffect->SetControlPoint( 0, GetAbsOrigin() );
-		pBurningEffect->SetControlPoint( 1, GetAbsOrigin() );
-		pBurningEffect->SetControlPointEntity( 0, this );
-		pBurningEffect->SetControlPointEntity( 1, this );
+			ParticleProp()->AddControlPoint(pBurningEffect, 1, this, PATTACH_ABSORIGIN_FOLLOW);
+			pBurningEffect->SetControlPoint(0, GetAbsOrigin());
+			pBurningEffect->SetControlPoint(1, GetAbsOrigin());
+			pBurningEffect->SetControlPointEntity(0, this);
+			pBurningEffect->SetControlPointEntity(1, this);
 		}
 	}
 }

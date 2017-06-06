@@ -18,7 +18,7 @@
 
 // includes needed for the creating of a new process and handling its output
 #pragma warning( disable : 4005 )
-#include <windows.h>
+//#include <windows.h>
 #include <iostream>
 
 // memdbgon must be the last include file in a .cpp file!!!

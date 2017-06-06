@@ -38,6 +38,7 @@ public:
 	void InputSetLightColor( inputdata_t &inputdata );
 	void InputSetSpotlightTexture( inputdata_t &inputdata );
 	void InputSetAmbient( inputdata_t &inputdata );
+	void InputSetBrightnessScale(inputdata_t &inputdata);
 
 	void InitialThink( void );
 

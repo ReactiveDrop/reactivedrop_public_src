@@ -100,18 +100,8 @@ void CASW_Weapon_T75::PrimaryAttack( void )
 #endif
 
 	// weapon is lost when all charges are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
-		//Reload();
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
 		return;
 	}
 

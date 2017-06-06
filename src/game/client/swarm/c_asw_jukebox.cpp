@@ -79,6 +79,7 @@ void CASWJukeboxPlaylist::AddMusicToPlaylist( const char *szFilename, const char
 	}
 	
 	m_CombatMusicPlaylist.AddToTail( TrackInfo_t( szFilename, szHexname, szAlbum, szArtist, szGenre ) );
+	enginesound->PrecacheSound( szFilename );
 }
 
 void CASWJukeboxPlaylist::LoadPlaylistKV()
@@ -148,7 +149,7 @@ void CASWJukeboxPlaylist::PlayRandomTrack( float fadeInTime /*= 1.0f*/, const ch
 	CLocalPlayerFilter filter;
 	if( count == 0 )
 	{
-		DevMsg( "JUKEBOX: Playing Track: %s%s.mp3\n", "*#music/_mp3/", szDefaultTrack );
+		DevMsg( "JUKEBOX: Playing Track: %s\n", szDefaultTrack );
 		if( !Q_strcmp("", szDefaultTrack ) )
 			return;
 		pNewSound = CSoundEnvelopeController::GetController().SoundCreate( filter, 0, CHAN_STATIC, szDefaultTrack, SNDLVL_NONE );

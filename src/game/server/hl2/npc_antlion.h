@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -169,7 +169,7 @@ public:
 
 	void	ClearBurrowPoint( const Vector &origin );
 
-	void Flip( bool bZapped = false, Vector vForce = vec3_origin );
+	void	Flip( bool bZapped = false );
 
 	bool CanBecomeRagdoll();
 

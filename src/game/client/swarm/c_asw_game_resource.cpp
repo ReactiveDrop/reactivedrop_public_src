@@ -7,6 +7,7 @@
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "asw_input.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -95,7 +96,7 @@ C_ASW_Objective* C_ASW_Game_Resource::GetObjective(int i)
 
 C_ASW_Marine_Resource* C_ASW_Game_Resource::GetMarineResource(int i)
 {
-	if (i<0 || i>11)
+	if (i<0 || i>ASW_MAX_MARINE_RESOURCES - 1)	// DY: changed from 11 to ASW_MAX_MARINE_RESOURCES - 1
 		return NULL;
 
 	if (m_MarineResources[i] == NULL)
@@ -117,6 +118,10 @@ int C_ASW_Game_Resource::GetIndexFor(C_ASW_Marine_Resource* pMarineResource)
 
 bool C_ASW_Game_Resource::IsRosterSelected(int i)
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
 		return false;
 
@@ -125,6 +130,10 @@ bool C_ASW_Game_Resource::IsRosterSelected(int i)
 
 bool C_ASW_Game_Resource::IsRosterReserved(int i)
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
 		return false;
 	return m_iRosterSelected[i] == 2;

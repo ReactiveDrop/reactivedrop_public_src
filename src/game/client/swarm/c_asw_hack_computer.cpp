@@ -94,7 +94,7 @@ void C_ASW_Hack_Computer::ClientThink()
 	{
 		if (!m_bLaunchedHackPanel)
 		{
-			if ( C_BasePlayer::IsLocalPlayer( GetHackerMarineResource()->GetCommander() ) )
+			if ( C_ASW_Player::GetLocalASWPlayer()->GetViewMarine() == GetHackerMarineResource()->GetMarineEntity() )
 			{
 				vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 
@@ -132,22 +132,22 @@ void C_ASW_Hack_Computer::ClientThink()
 		}
 	}
 	// check for hiding the panel if the player has a different marine selected, or if the selected marine is remote controlling a turret
-	if (m_bLaunchedHackPanel && GetHackerMarineResource() && m_hFrame.Get())
+	if ( m_bLaunchedHackPanel && GetHackerMarineResource() && m_hFrame.Get() )
 	{
-		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();		
-		if (!pPlayer)
+		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+		if ( !pMarine )
 		{
-			if (m_hFrame->IsVisible())
+			if ( m_hFrame->IsVisible() )
 			{
 				ASWInput()->SetCameraFixed( false );
-				m_hFrame->SetVisible(false);
-				//C_BaseEntity::StopSound(-1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Loop");
+				m_hFrame->SetVisible( false );
+				// C_BaseEntity::StopSound( -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Loop" );
 			}
 		}
 		else
 		{
-			bool bLocalPlayerControllingHacker = (GetHackerMarineResource()->IsInhabited() && GetHackerMarineResource()->GetCommanderIndex() == pPlayer->entindex());
-			bool bMarineControllingTurret = (GetHackerMarineResource()->GetMarineEntity() && GetHackerMarineResource()->GetMarineEntity()->IsControllingTurret());
+			bool bLocalPlayerControllingHacker = ( GetHackerMarineResource()->GetMarineEntity() == pMarine );
+			bool bMarineControllingTurret = ( GetHackerMarineResource()->GetMarineEntity() && GetHackerMarineResource()->GetMarineEntity()->IsControllingTurret() );
 
 			if ( bLocalPlayerControllingHacker && !bMarineControllingTurret )
 			{
@@ -155,7 +155,7 @@ void C_ASW_Hack_Computer::ClientThink()
 
 				if ( !m_hFrame->IsVisible() )
 				{
-					m_hFrame->SetVisible(true);
+					m_hFrame->SetVisible( true );
 					//CLocalPlayerFilter filter;
 					//C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Loop" );
 				}
@@ -166,7 +166,7 @@ void C_ASW_Hack_Computer::ClientThink()
 
 				if ( m_hFrame->IsVisible() )
 				{
-					m_hFrame->SetVisible(false);
+					m_hFrame->SetVisible( false );
 					//C_BaseEntity::StopSound(-1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Loop");
 				}
 			}

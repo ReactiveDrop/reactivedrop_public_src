@@ -35,6 +35,7 @@
 #include "asw_melee_system.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "particle_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -46,6 +47,7 @@ ConVar asw_fast_reload_enabled( "asw_fast_reload_enabled", "1", FCVAR_CHEAT | FC
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
 extern ConVar asw_DebugAutoAim;
+extern ConVar rd_bot_strong;
 #endif
 
 BEGIN_DEFINE_LOGGING_CHANNEL( LOG_ASW_Weapons, "ASWWeapons", 0, LS_MESSAGE );
@@ -202,16 +204,12 @@ void CASW_Weapon::ItemBusyFrame( void )
 				EmitSound_t playparams(params);
 				playparams.m_nPitch = params.pitch;
 
-				CASW_Player *pPlayer = GetCommander();
-				if ( pPlayer )
+				CBroadcastRecipientFilter filter;
+				if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
 				{
-					CSingleUserRecipientFilter filter( pMarine->GetCommander() );
-					if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
-					{
-						filter.UsePredictionRules();
-					}
-					EmitSound(filter, entindex(), playparams);
+					filter.UsePredictionRules();
 				}
+				EmitSound(filter, entindex(), playparams);
 				
 				//Msg("%f RELOAD SUCCESS! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD SUCCESS! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
@@ -230,16 +228,13 @@ void CASW_Weapon::ItemBusyFrame( void )
 				EmitSound_t playparams(params);
 				playparams.m_nPitch = params.pitch;
 
-				CASW_Player *pPlayer = GetCommander();
-				if ( pPlayer )
+				CBroadcastRecipientFilter filter;
+				if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
 				{
-					CSingleUserRecipientFilter filter( pMarine->GetCommander() );
-					if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
-					{
-						filter.UsePredictionRules();
-					}
-					EmitSound(filter, entindex(), playparams);
+					filter.UsePredictionRules();
 				}
+				EmitSound(filter, entindex(), playparams);
+
 				//Msg("%f RELOAD MISSED! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD MISSED! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 				m_fFastReloadEnd = 0;
@@ -715,6 +710,15 @@ float CASW_Weapon::GetReloadTime()
 	{
 		float fSpeedScale = MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE);
 		fReloadTime *= fSpeedScale;
+
+#ifdef GAME_DLL
+		// riflemod: bots reload very fast because they are stupid to die 
+		// during long reloads
+		if ( rd_bot_strong.GetBool() && !GetMarine()->IsInhabited() )
+		{
+			fReloadTime = 1.0f;
+		}
+#endif
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( fReloadTime, mod_reload_time );
@@ -748,6 +752,18 @@ bool CASW_Weapon::Reload( void )
 				pMR->m_TimelineAmmo.RecordValue( pMarine->GetAllAmmoCount() );
 			}
 		}
+
+		// riflemod: infinite ammo for rifle, protorifle and flamer
+		/*if ( !stricmp(this->GetPickupClass(), "asw_pickup_rifle")  ||
+			 !stricmp(this->GetPickupClass(), "asw_pickup_prifle") ||
+			 !stricmp(this->GetPickupClass(), "asw_pickup_flamer") )
+		{
+			CASW_Marine *m = this->GetMarine();
+			if (m)
+			{
+				m->GiveAmmo( 1000, this->GetPrimaryAmmoType() );
+			}
+		}//*/
 #endif
 	}
 	return bReloaded;
@@ -1112,15 +1128,14 @@ void CASW_Weapon::SetWeaponVisible( bool visible )
 	}*/
 }
 
-#define ASW_WEAPON_SWITCH_TIME 0.5
-void CASW_Weapon::ApplyWeaponSwitchTime()
+void CASW_Weapon::ApplyWeaponSwitchTime(float fSwitchDelay)
 {
 	// play weaponswitch sound
 	if (ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME)
 	{
 		WeaponSound(SPECIAL3);	
 	}
-	float flSequenceEndTime = gpGlobals->curtime + ASW_WEAPON_SWITCH_TIME;
+	float flSequenceEndTime = gpGlobals->curtime + fSwitchDelay;
 	CBaseCombatCharacter *pOwner = GetOwner();
 	if (pOwner)
 		pOwner->SetNextAttack( flSequenceEndTime );
@@ -1236,6 +1251,12 @@ float CASW_Weapon::GetMovementScale()
 float CASW_Weapon::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if (ASWDeathmatchMode())
+	{
+		extern ConVar rd_pvp_rifle_dmg;
+		flDamage = rd_pvp_rifle_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{
@@ -1449,6 +1470,7 @@ const char* CASW_Weapon::GetUTracerType()
 void CASW_Weapon::UpdateOnRemove( void )
 {
 #ifdef CLIENT_DLL
+    RemoveLaserPointerEffect();
 	if ( m_hLaserSight.Get() )
 	{
 		UTIL_Remove( m_hLaserSight );

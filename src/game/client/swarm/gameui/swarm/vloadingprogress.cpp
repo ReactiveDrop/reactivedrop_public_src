@@ -16,12 +16,16 @@
 #include "KeyValues.h"
 #include "fmtstr.h"
 #include "FileSystem.h"
+#include "c_asw_steamstats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 using namespace vgui;
 using namespace BaseModUI;
+
+ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_ARCHIVE, "show friends' leaderboard entries on the loading screen" );
+ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
 
 static bool IsAvatarFemale( int iAvatar )
 {
@@ -35,6 +39,7 @@ LoadingProgress::LoadingProgress(Panel *parent, const char *panelName, LoadingWi
 	m_LoadingWindowType( eLoadingType )
 {
 	memset( m_szGameMode, 0, sizeof( m_szGameMode ) );
+	memset( m_wszLeaderboardTitle, 0, sizeof( m_wszLeaderboardTitle ) );
 
 	if ( IsPC() && eLoadingType == LWT_LOADINGPLAQUE )
 	{
@@ -95,6 +100,10 @@ LoadingProgress::LoadingProgress(Panel *parent, const char *panelName, LoadingWi
 	{
 		m_pTipPanel = new CLoadingTipPanel( this );
 	}
+
+	m_pLeaderboardBackground = new vgui::Panel( this, "LeaderboardBackground" );
+	m_pLeaderboardPanel = new CReactiveDrop_VGUI_Leaderboard_Panel( this, "Leaderboard" );
+	m_pMissionPic = new vgui::ImagePanel( this, "MissionPic" );
 }
 
 //=============================================================================
@@ -123,7 +132,9 @@ void LoadingProgress::ApplySchemeSettings( IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetPaintBackgroundEnabled( true );
-	
+
+	m_pLeaderboardPanel->SetVisible( false );
+
 	// now have controls, can now do further initing
 	m_bValid = true;
 
@@ -425,7 +436,7 @@ void LoadingProgress::SetupControlStates()
 			int screenWide, screenTall;
 			surface()->GetScreenSize( screenWide, screenTall );
 			char filename[MAX_PATH];
-			V_snprintf( filename, sizeof( filename ), "console/background01" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
+			V_snprintf( filename, sizeof( filename ), "console/background01rd" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
 			m_pBGImage->SetImage( CFmtStr( "../%s", filename ) );
 		}
 
@@ -482,6 +493,77 @@ void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapte
 	RearrangeNames( pMissionInfo->GetString( "poster/character_order", NULL ), pPlayerNames );
 
 	Q_snprintf( m_szGameMode, sizeof( m_szGameMode ), "#L4D360UI_Loading_GameMode_%s", pszGameMode );
+}
+
+void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName )
+{
+	if ( !rd_show_leaderboard_loading.GetBool() || !steamapicontext || !steamapicontext->SteamUserStats() || !steamapicontext->SteamFriends() )
+	{
+		return;
+	}
+
+	wchar_t wszLevelDisplayName[MAX_PATH];
+	if ( const wchar_t *pwszLevelDisplayName = g_pVGuiLocalize->Find( pszLevelDisplayName ) )
+	{
+		Q_wcsncpy( wszLevelDisplayName, pwszLevelDisplayName, sizeof( wszLevelDisplayName ) );
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode( pszLevelDisplayName, wszLevelDisplayName, sizeof( wszLevelDisplayName ) );
+	}
+
+	wchar_t wszChallengeDisplayName[MAX_PATH];
+	if ( const wchar_t *pwszChallengeDisplayName = g_pVGuiLocalize->Find( pszChallengeDisplayName ) )
+	{
+		Q_wcsncpy( wszChallengeDisplayName, pwszChallengeDisplayName, sizeof( wszChallengeDisplayName ) );
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode( pszChallengeDisplayName, wszChallengeDisplayName, sizeof( wszChallengeDisplayName ) );
+	}
+
+	if ( Q_strcmp( pszChallengeName, "0" ) )
+	{
+		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s (%s)", wszLevelDisplayName, wszChallengeDisplayName );
+	}
+	else
+	{
+		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
+	}
+
+	char szLeaderboardName[k_cchLeaderboardNameMax];
+	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+
+	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
+	m_LeaderboardFind.Set( hCall, this, &LoadingProgress::LeaderboardFind );
+}
+
+void LoadingProgress::LeaderboardFind( LeaderboardFindResult_t *pResult, bool bIOError )
+{
+	if ( bIOError || !pResult->m_bLeaderboardFound )
+	{
+		return;
+	}
+
+	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+	m_LeaderboardDownloaded.Set( hCall, this, &LoadingProgress::LeaderboardDownloaded );
+}
+
+void LoadingProgress::LeaderboardDownloaded( LeaderboardScoresDownloaded_t *pResult, bool bIOError )
+{
+	if ( bIOError || pResult->m_cEntryCount == 0 )
+	{
+		return;
+	}
+
+	CUtlVector<RD_LeaderboardEntry_t> entries;
+
+	g_ASW_Steamstats.ReadDownloadedLeaderboard( entries, pResult->m_hSteamLeaderboardEntries, pResult->m_cEntryCount );
+
+	m_pLeaderboardBackground->SetVisible( true );
+	m_pLeaderboardPanel->SetTitle( m_wszLeaderboardTitle );
+	m_pLeaderboardPanel->SetEntries( entries );
+	m_pLeaderboardPanel->SetVisible( true );
 }
 
 //rearrange names to match the poster character order... sigh..
@@ -575,11 +657,11 @@ void LoadingProgress::SetupPoster( void )
 		int nChosenLoadingImage = RandomInt( 1, 4 );
 		switch( nChosenLoadingImage )
 		{
-			case 1: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX01_wide" : "swarm/loading/BGFX01"; break;
-			case 2: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX02_wide" : "swarm/loading/BGFX02"; break;
-			case 3: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX03_wide" : "swarm/loading/BGFX03"; break;
+			//case 1: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX01_wide" : "swarm/loading/BGFX01"; break;
+			//case 2: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX02_wide" : "swarm/loading/BGFX02"; break;
+			//case 3: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX03_wide" : "swarm/loading/BGFX03"; break;
 			case 4:
-			default: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX04_wide" : "swarm/loading/BGFX04"; break;
+			default: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04"; break;
 		}
 
 		// if the image was cached this will just hook it up, otherwise it will load it
@@ -588,6 +670,12 @@ void LoadingProgress::SetupPoster( void )
 		{
 			bNamesVisible = true;
 		}
+	}
+
+	if ( m_pChapterInfo && m_pChapterInfo->GetString( "image", NULL ) )
+	{
+		m_pMissionPic->SetImage( m_pChapterInfo->GetString( "image" ) );
+		m_pMissionPic->SetVisible( rd_show_mission_icon_loading.GetBool() );
 	}
 
 	bool bIsLocalized = false;

@@ -89,6 +89,11 @@ m_MotionBlurObject( this, 0.0f )
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );
+
+	// reactivedrop: workaround to fix aliens red blood
+	// m_bloodColor is not networked
+	// so setting SetBloodColor() on server doesn't affect client 
+	SetBloodColor(BLOOD_COLOR_GREEN);
 }
 
 
@@ -519,6 +524,10 @@ ShadowType_t C_ASW_Alien::ShadowCastType()
 {	
 	if (asw_alien_shadows.GetBool())
 		return BaseClass::ShadowCastType();
+	// reactivedrop: disabling shadows from flashlight dlight
+	else
+		return SHADOWS_NONE;
+
 	float fContribution = 0;
 	Vector vecDir = vec3_origin;
 	GetShadowFromFlashlight(vecDir, fContribution);

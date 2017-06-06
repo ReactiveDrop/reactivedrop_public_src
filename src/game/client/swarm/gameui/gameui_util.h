@@ -34,6 +34,8 @@ public:
 	void Init( const char *pName, bool bIgnoreMissing );
 	bool IsValid() const;
 	bool IsFlagSet( int nFlags ) const;
+	// reactivedrop: added AddFlags() for #iss-depthblur
+	void AddFlags( int nFlags );
 
 	// Get/Set value
 	float GetFloat() const;
@@ -78,6 +80,12 @@ FORCEINLINE int CGameUIConVarRef::GetActiveSplitScreenPlayerSlot() const
 FORCEINLINE bool CGameUIConVarRef::IsFlagSet( int nFlags ) const
 {
 	return ( m_Info[ 0 ].m_pConVar->IsFlagSet( nFlags ) != 0 );
+}
+
+// reactivedrop: #iss-depthblur
+FORCEINLINE_CVAR void CGameUIConVarRef::AddFlags( int nFlags )
+{
+	return m_Info[0].m_pConVarState->AddFlags( nFlags );
 }
 
 FORCEINLINE const char *CGameUIConVarRef::GetName() const

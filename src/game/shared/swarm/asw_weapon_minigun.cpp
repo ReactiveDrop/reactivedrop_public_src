@@ -24,6 +24,7 @@
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -154,7 +155,7 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 
 	m_bIsFiring = true;
 	// MUST call sound before removing a round from the clip of a CMachineGun
-	WeaponSound(SINGLE);
+	//WeaponSound(SINGLE);
 
 	if (m_iClip1 <= AmmoClickPoint())
 	{
@@ -376,6 +377,12 @@ float CASW_Weapon_Minigun::GetWeaponDamage()
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_minigun_dmg;
+		flDamage = rd_pvp_minigun_dmg.GetFloat();
+	}
+
 	if ( GetMarine() )
 	{
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
@@ -389,6 +396,15 @@ float CASW_Weapon_Minigun::GetWeaponDamage()
 const Vector& CASW_Weapon_Minigun::GetBulletSpread( void )
 {
 	static Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
+    static Vector cone_duck = Vector( 0.05234, 0.05234, 0.01 ); // VECTOR_CONE_6DEGREES with flattened Z
+
+    CASW_Marine *marine = GetMarine();
+
+    if ( marine )
+    {
+        if ( marine->GetAbsVelocity() == Vector(0, 0, 0) && marine->m_bWalking )
+            return cone_duck;
+    }
 	return cone;
 }
 
@@ -528,4 +544,14 @@ void CASW_Weapon_Minigun::Drop( const Vector &vecVelocity )
 
 	BaseClass::Drop( vecVelocity );
 }
+#endif
+
+#ifdef CLIENT_DLL
+
+// if true, the marine shoots from minigun
+bool CASW_Weapon_Minigun::ShouldMarineMinigunShoot()
+{
+	return IsFiring();
+}
+
 #endif

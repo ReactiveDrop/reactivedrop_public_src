@@ -187,7 +187,7 @@ void CASWHudAmmo::OnThink()
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
-		C_ASW_Marine *marine = local->GetMarine();
+		C_ASW_Marine *marine = local->GetViewMarine();
 		if (marine)
 		{			
 			C_ASW_Weapon *wpn = marine->GetActiveASWWeapon();
@@ -617,7 +617,7 @@ void CASWHudAmmo::Paint()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer && (m_iDisplayPrimaryValue > 0))
 	{
-		C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(pPlayer->GetMarine());
+		C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(pPlayer->GetViewMarine());
 		if ( pMarine && pMarine->GetMarineResource())
 		{
 			C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
@@ -778,7 +778,7 @@ void CASWHudAmmo::PaintAmmoWarnings()
 	if (!local)
 		return;
 
-	C_ASW_Marine *marine = dynamic_cast<C_ASW_Marine*>(local->GetMarine());
+	C_ASW_Marine *marine = dynamic_cast<C_ASW_Marine*>(local->GetViewMarine());
 	if ( !marine || !marine->GetMarineResource())
 		return;
 

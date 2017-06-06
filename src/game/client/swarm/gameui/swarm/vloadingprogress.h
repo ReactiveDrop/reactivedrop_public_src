@@ -11,6 +11,7 @@
 #include "vgui/IScheme.h"
 #include "const.h"
 #include "loadingtippanel.h"
+#include "rd_vgui_leaderboard_panel.h"
 
 namespace BaseModUI {
 
@@ -49,6 +50,8 @@ public:
 
 	bool				ShouldShowPosterForLevel( KeyValues *pMissionInfo, KeyValues *pChapterInfo );
 	void				SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapterInfo, const char **pPlayerNames, unsigned int botFlags, const char *pszGameMode );
+	void				SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName );
+
 
 	bool				IsDrawingProgressBar( void ) { return m_bDrawProgress; }
 
@@ -74,6 +77,11 @@ private:
 
 	bool				m_bFullscreenPoster;
 
+	CCallResult<LoadingProgress, LeaderboardFindResult_t> m_LeaderboardFind;
+	void LeaderboardFind( LeaderboardFindResult_t *pResult, bool bIOError );
+	CCallResult<LoadingProgress, LeaderboardScoresDownloaded_t> m_LeaderboardDownloaded;
+	void LeaderboardDownloaded( LeaderboardScoresDownloaded_t *pResult, bool bIOError );
+
 	// Poster Data
 	char				m_PlayerNames[NUM_LOADING_CHARACTERS][MAX_PLAYER_NAME_LENGTH];
 	KeyValues			*m_pMissionInfo;
@@ -96,8 +104,13 @@ private:
 	float				m_flLastEngineTime;
 
 	char				m_szGameMode[MAX_PATH];
+	wchar_t             m_wszLeaderboardTitle[MAX_PATH];
 
 	CLoadingTipPanel			*m_pTipPanel;
+
+	vgui::Panel *m_pLeaderboardBackground;
+	CReactiveDrop_VGUI_Leaderboard_Panel *m_pLeaderboardPanel;
+	vgui::ImagePanel *m_pMissionPic;
 };
 
 };

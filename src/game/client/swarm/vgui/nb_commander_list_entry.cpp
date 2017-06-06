@@ -70,14 +70,17 @@ void CNB_Commander_List_Entry::OnThink()
 
 	if ( m_nLastClientIndex != m_nClientIndex )
 	{
-		m_nLastClientIndex = m_nClientIndex;
-
 		m_pAvatar->SetPlayerByIndex( m_nClientIndex );
 
-		int wide, tall;
-		m_pAvatar->GetSize( wide, tall );
-		((CAvatarImage*)m_pAvatar->GetImage())->SetAvatarSize( wide, tall );
-		((CAvatarImage*)m_pAvatar->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+		if ( m_pAvatar->GetImage() )
+		{
+			int wide, tall;
+			m_pAvatar->GetSize( wide, tall );
+			((CAvatarImage*)m_pAvatar->GetImage())->SetAvatarSize( wide, tall );
+			((CAvatarImage*)m_pAvatar->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+
+			m_nLastClientIndex = m_nClientIndex;
+		}
 	}
 
 	C_ASW_Player *pPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( m_nClientIndex ) );

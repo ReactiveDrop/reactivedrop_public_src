@@ -16,6 +16,7 @@
 #include "asw_game_resource.h"
 #include "asw_player.h"
 #include "asw_achievements.h"
+#include "asw_gamestats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -508,6 +509,9 @@ int CASW_Egg::OnTakeDamage( const CTakeDamageInfo &info )
 		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
 		if (pMarine)
 			pMarine->HurtAlien(this, info);
+
+		// Notify gamestats of the damage
+		CASW_GameStats.Event_AlienTookDamage(this, info);
 
 		if (info.GetDamageType() & DMG_BURN ||
 			info.GetDamageType() & DMG_BLAST)

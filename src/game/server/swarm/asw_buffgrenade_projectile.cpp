@@ -76,7 +76,7 @@ void CASW_BuffGrenade_Projectile::StartAOE( CBaseEntity *pEntity )
 		return;
 	}
 
-	pMarine->AddDamageBuff( this, m_flTimeBurnOut - gpGlobals->curtime );
+	pMarine->AddDamageBuff( this, m_flTimeBurnOut - gpGlobals->curtime, (Class_T) CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
 	//NDebugOverlay::Box( pMarine->GetAbsOrigin(), Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), 0, 0, 255, 200, 0.5 );
 
 	EHANDLE hMarine = pMarine;

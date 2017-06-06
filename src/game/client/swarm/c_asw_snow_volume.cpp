@@ -248,9 +248,7 @@ void C_ASW_Snow_Volume::UpdateSnow(C_ASW_Player *pPlayer)
 
 	if (g_hSnowEmitter.IsValid())
 	{
-		C_ASW_Marine *pMarine = pPlayer->GetSpectatingMarine();
-		if (!pMarine)
-			pMarine = pPlayer->GetMarine();
+		C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 
 		Vector vecSnowPos;
 		if (pMarine)

@@ -1020,7 +1020,7 @@ void CASW_MarineGameMovement::CheckWaterJump( void )
 #endif
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward ); 
 	else
 		AngleVectors( mv->m_vecViewAngles, &forward );  // Determine movement angles
 
@@ -1122,7 +1122,7 @@ void CASW_MarineGameMovement::WaterMove( void )
 	Vector forward, right, up;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
 
@@ -1527,7 +1527,7 @@ void CASW_MarineGameMovement::AirMove( void )
 	Vector forward, right, up;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles  
 	
@@ -1559,6 +1559,9 @@ void CASW_MarineGameMovement::AirMove( void )
 	
 	if ( mv->m_bNoAirControl == false )	
 	{
+		// TODO:
+		// reactivedrop: trigger_catapult might want to disable this
+		// for player controled marines not to move in air while flying
 		AirAccelerate( wishdir, wishspeed, sv_airaccelerate.GetFloat() );
 	}
 
@@ -1687,7 +1690,7 @@ void CASW_MarineGameMovement::WalkMove( void )
 	Vector forward, right, up;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles  
 
@@ -1855,7 +1858,9 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 	// x/y linearly between start and end
 	float xy_progress = flJumpJetProgress; //0.5f + 0.5f * sin( -0.5f * M_PI + flJumpJetProgress * M_PI );
 
-	Vector vecJump = marine->m_vecJumpJetEnd - marine->m_vecJumpJetStart;
+	Vector vecJumpJetEnd = marine->m_vecJumpJetEnd.Get();
+
+	Vector vecJump = vecJumpJetEnd - marine->m_vecJumpJetStart;
 	Vector vecDest = marine->m_vecJumpJetStart + vecJump * xy_progress;
 
 	if ( marine->m_iJumpJetting == JJ_JUMP_JETS )
@@ -1924,7 +1929,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 		{
 			// lerp between start and end
 			Vector vecStartTop = marine->m_vecJumpJetStart + Vector( 0, 0, flJumpHeight );
-			Vector vecEndTop = marine->m_vecJumpJetEnd + Vector( 0, 0, flJumpHeight );
+			Vector vecEndTop = vecJumpJetEnd + Vector( 0, 0, flJumpHeight );
 
 			float flSlideProgress = ( flJumpJetProgress - asw_blink_visible_time.GetFloat() ) / ( 1.0f - asw_blink_visible_time.GetFloat() * 2 );
 			flSlideProgress = sin( flSlideProgress * M_PI * 0.5f );
@@ -1934,8 +1939,8 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 		{
 			float flDownProgress = 1.0f - ( ( 1.0f - flJumpJetProgress ) / asw_blink_visible_time.GetFloat() );
 
-			vecDest = marine->m_vecJumpJetEnd;
-			vecDest.z = marine->m_vecJumpJetEnd.z + sin( flDownProgress * M_PI * 0.5f ) * flJumpHeight;
+			vecDest = vecJumpJetEnd;
+			vecDest.z = vecJumpJetEnd.z + sin( flDownProgress * M_PI * 0.5f ) * flJumpHeight;
 		}
 	}
 
@@ -2044,7 +2049,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 			}
 			CTakeDamageInfo dmgInfo( pInflictor, marine, iBaseDamage, DMG_CLUB );
 			dmgInfo.SetWeapon( pInflictor );
-			ASWGameRules()->RadiusDamage( dmgInfo, marine->GetAbsOrigin(), flRadius * 0.5f, CLASS_NONE, NULL );
+			ASWGameRules()->RadiusDamage( dmgInfo, marine->GetAbsOrigin(), flRadius * 0.5f, CLASS_NONE, marine );
 			ASWGameRules()->StumbleAliensInRadius( marine, marine->GetAbsOrigin(), flRadius );
 
 			if ( pWeapon )
@@ -2251,7 +2256,9 @@ void CASW_MarineGameMovement::FullWalkMove( )
 		mv->m_flForwardMove = 0.0f;
 		mv->m_flSideMove = 0.0f;
 		mv->m_flUpMove = 0.0f;
-		mv->m_bNoAirControl = true;
+		// Changed from true to false to allow player movement in air
+		// TODO investigate this part
+		mv->m_bNoAirControl = false;
 		mv->m_nButtons &= ~IN_JUMP;
 	}
 
@@ -2415,7 +2422,7 @@ void CASW_MarineGameMovement::FullObserverMove( void )
 	float wishspeed;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
 	
@@ -2498,7 +2505,7 @@ void CASW_MarineGameMovement::FullNoClipMove( float factor, float maxacceleratio
 	float maxspeed = asw_sv_maxspeed.GetFloat() * factor;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
 
@@ -3605,6 +3612,10 @@ int CASW_MarineGameMovement::CheckStuck( void )
 	//int i;
 	trace_t traceresult;
 
+	// reactivedrop: don't unstuck knocked out marines because it leads to bugs
+	if (marine->m_bKnockedOut)
+		return 0;
+
 	CreateMarineStuckTable();
 
 	hitent = TestPlayerPosition( mv->GetAbsOrigin(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
@@ -4702,7 +4713,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	
 	// use fixed axis?
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &m_vecForward, &m_vecRight, &m_vecUp ); 
+		AngleVectors( mv->m_vecMovementAxis, &m_vecForward, &m_vecRight, &m_vecUp ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &m_vecForward, &m_vecRight, &m_vecUp );  // Determine movement angles
 
@@ -4906,7 +4917,7 @@ void CASW_MarineGameMovement::FullTossMove( void )
 		int i;
 		
 		if ( asw_controls.GetInt() == 1 )
-			AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+			AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 		else
 			AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
 
@@ -5009,7 +5020,7 @@ void CASW_MarineGameMovement::IsometricMove( void )
 	Vector forward, right, up;
 	
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASWGameRules()->GetTopDownMovementAxis(), &forward, &right, &up ); 
+		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
 	

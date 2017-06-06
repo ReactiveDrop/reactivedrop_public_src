@@ -53,6 +53,7 @@ public:
 		PrimaryAttack();
 	}
 
+	virtual float GetWeaponDamage();
 	virtual const float GetAutoAimAmount() { return 0.26f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
 

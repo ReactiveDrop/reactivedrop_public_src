@@ -776,6 +776,10 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ( !sv_cheats )
 		return false;
 
+	ConVar *sv_allow_wait_command = g_pCVar->FindVar( "sv_allow_wait_command" );
+	if ( sv_allow_wait_command )
+		sv_allow_wait_command->SetValue( 0 );
+
 	g_pcv_commentary = g_pCVar->FindVar( "commentary" );
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 
@@ -1057,6 +1061,9 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	VPROF("CServerGameDLL::LevelInit");
 	ResetWindspeed();
 	UpdateChapterRestrictions( pMapName );
+
+	// BenLubar #iss-particles-manifest Load per-map manifests
+	ParseParticleEffectsMap( pMapName, false );
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()
@@ -1406,6 +1413,8 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 
 void CServerGameDLL::Think( bool finalTick )
 {
+	WorkshopSetupThink();
+
 	if ( m_fAutoSaveDangerousTime != 0.0f && m_fAutoSaveDangerousTime < gpGlobals->curtime )
 	{
 		// The safety timer for a dangerous auto save has expired
@@ -1938,7 +1947,16 @@ void CServerGameDLL::GetMatchmakingTags( char *buf, size_t bufSize )
 	len = strlen( buf );
 	buf += len;
 	bufSize -= len;
-	
+
+	extern ConVar rd_challenge;
+	if ( Q_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		Q_snprintf( buf, bufSize, "%s,", rd_challenge.GetString() );
+		len = strlen( buf );
+		buf += len;
+		bufSize -= len;
+	}
+
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
 	{
 		Q_strncpy( buf, "Briefing,", bufSize );

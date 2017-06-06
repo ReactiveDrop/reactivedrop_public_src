@@ -30,6 +30,7 @@ public:
 	void OnMouseReleased(vgui::MouseCode code);
 	void SetDetails(const char *szMapName, int nChooserType = -1);
 	void SetSavedCampaignDetails(ASW_Mission_Chooser_Saved_Campaign *pSaved);
+	void SetWorkshopID(PublishedFileId_t nFileID);
 	void SetVoteDisabled( bool bDisabled );
 
 	int m_ChooserType;
@@ -43,6 +44,8 @@ public:
 	bool m_bMouseOver;
 	bool m_bMouseReleased;
 	bool m_bVoteDisabled;
+	bool m_bWaitingForWorkshop;
+	PublishedFileId_t m_nFileID;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_ENTRY_H

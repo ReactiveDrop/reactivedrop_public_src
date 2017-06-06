@@ -13,6 +13,7 @@
 #include "asw_mission_chooser_entry.h"
 #include "asw_mission_chooser_list.h"
 #include <vgui/IInput.h>
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -42,6 +43,8 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( vgui::Panel *pParent, co
 	m_pDeleteButton = NULL;
 	m_bMouseReleased = false;
 	m_bVoteDisabled = false;
+	m_bWaitingForWorkshop = false;
+	m_nFileID = k_PublishedFileIdInvalid;
 
 	if (iChooserType == ASW_CHOOSER_SAVED_CAMPAIGN && iHostType != ASW_HOST_TYPE_CALLVOTE)
 	{
@@ -55,6 +58,56 @@ CASW_Mission_Chooser_Entry::~CASW_Mission_Chooser_Entry()
 
 void CASW_Mission_Chooser_Entry::OnThink()
 {
+	if ( m_bWaitingForWorkshop )
+	{
+		if ( CReactiveDropWorkshop::WorkshopItem_t addon = g_ReactiveDropWorkshop.TryQueryAddon( m_nFileID ) )
+		{
+			wchar_t wszTitle[k_cchPublishedDocumentTitleMax];
+			Q_UTF8ToUnicode( addon.details.m_rgchTitle, wszTitle, sizeof( wszTitle ) );
+			m_pNameLabel->SetText( wszTitle );
+			m_pDescriptionLabel->SetText( "#workshop_download_from_workshop" );
+			if ( addon.pPreviewImage.IsValid() )
+			{
+				if ( m_pImagePanel )
+				{
+					m_pImagePanel->SetImage( "" );
+					m_pImagePanel->SetImage( addon.pPreviewImage() );
+					m_pImagePanel->SetVisible( true );
+				}
+				m_bWaitingForWorkshop = false;
+			}
+			InvalidateLayout( true );
+		}
+	}
+	else if ( m_bVoteDisabled && m_ChooserType == ASW_CHOOSER_CAMPAIGN && m_nFileID != k_PublishedFileIdInvalid )
+	{
+		if ( g_ReactiveDropWorkshop.IsSubscribedToFile( m_nFileID ) )
+		{
+			if ( g_ReactiveDropWorkshop.LoadAddonEarly( m_nFileID ) )
+			{
+				char szCampaignName[NELEMS( m_szMapName )];
+				Q_strncpy( szCampaignName, m_szMapName, sizeof( szCampaignName ) );
+				m_szMapName[0] = 0;
+				SetDetails( szCampaignName );
+			}
+			else
+			{
+				float flPercent = 0;
+				uint64 nBytesDownloaded, nBytesTotal;
+				if ( steamapicontext->SteamUGC()->GetItemDownloadInfo( m_nFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesTotal != 0 )
+				{
+					flPercent = (float)nBytesDownloaded / (float)nBytesTotal * 100;
+				}
+				wchar_t wszPercent[10];
+				Q_snwprintf( wszPercent, sizeof( wszPercent ), L"%0.2f", flPercent );
+				wchar_t wszDownloading[256];
+				g_pVGuiLocalize->ConstructString( wszDownloading, sizeof( wszDownloading ), g_pVGuiLocalize->FindSafe( "#rd_workshop_downloading" ), 1, wszPercent );
+				m_pDescriptionLabel->SetText( wszDownloading );
+			}
+			InvalidateLayout( true );
+		}
+	}
+
 	bool bCursorOver = IsCursorOver();
 	if (m_pDeleteButton && m_pDeleteButton->IsCursorOver())
 		bCursorOver = false;
@@ -63,12 +116,12 @@ void CASW_Mission_Chooser_Entry::OnThink()
 		m_bMouseOver = bCursorOver;
 		if (m_bMouseOver)
 		{
-			if ( m_szMapName[0] != '\0' && !m_bVoteDisabled )
+			if ( m_szMapName[0] != '\0' && ( !m_bVoteDisabled || m_nFileID != k_PublishedFileIdInvalid ) )
 			{
 				SetBgColor(Color(75,84,106,255));
 			}
 		}
-		else if ( !m_bVoteDisabled )
+		else if ( !m_bVoteDisabled || m_nFileID != k_PublishedFileIdInvalid )
 		{
 			SetBgColor(Color(0,0,0,0));
 		}
@@ -81,6 +134,7 @@ void CASW_Mission_Chooser_Entry::OnThink()
 
 void CASW_Mission_Chooser_Entry::SetDetails(const char *szMapName, int nChooserType)
 {
+	// This comment is just here to cause a merge conflict if a bad version of this code is merged into a good version.
 	if ( nChooserType != -1 )
 	{
 		m_ChooserType = nChooserType;
@@ -88,7 +142,10 @@ void CASW_Mission_Chooser_Entry::SetDetails(const char *szMapName, int nChooserT
 	if ( m_ChooserType == ASW_CHOOSER_SINGLE_MISSION )
 	{
 		if ( Q_stricmp( szMapName, m_szMapName ) )
-		{			
+		{
+			m_bWaitingForWorkshop = false;
+			m_nFileID = k_PublishedFileIdInvalid;
+
 			Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", szMapName);
 
 			if (szMapName[0] == '\0')
@@ -168,6 +225,9 @@ void CASW_Mission_Chooser_Entry::SetDetails(const char *szMapName, int nChooserT
 	{
 		if ( Q_stricmp( szMapName, m_szMapName ) )
 		{
+			m_bWaitingForWorkshop = false;
+			m_nFileID = k_PublishedFileIdInvalid;
+
 			Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", szMapName);
 
 			if (szMapName[0] == '\0')
@@ -231,7 +291,11 @@ void CASW_Mission_Chooser_Entry::SetDetails(const char *szMapName, int nChooserT
 void CASW_Mission_Chooser_Entry::SetSavedCampaignDetails(ASW_Mission_Chooser_Saved_Campaign *pSaved)
 {
 	if (m_ChooserType != ASW_CHOOSER_SAVED_CAMPAIGN)
-		return;	
+		return;
+
+	m_bWaitingForWorkshop = false;
+	m_nFileID = k_PublishedFileIdInvalid;
+
 	if (stricmp(pSaved->m_szSaveName, m_szMapName))
 	{
 		Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", pSaved->m_szSaveName);
@@ -295,6 +359,18 @@ void CASW_Mission_Chooser_Entry::SetSavedCampaignDetails(ASW_Mission_Chooser_Sav
 	}
 }
 
+void CASW_Mission_Chooser_Entry::SetWorkshopID( PublishedFileId_t nFileID )
+{
+	if ( !m_bVoteDisabled || nFileID == k_PublishedFileIdInvalid || m_nFileID == nFileID )
+	{
+		return;
+	}
+
+	m_bWaitingForWorkshop = true;
+	m_nFileID = nFileID;
+	m_pDescriptionLabel->SetText( "#rd_workshop_retrieving_item_details" );
+}
+
 void CASW_Mission_Chooser_Entry::PerformLayout()
 {
 	BaseClass::PerformLayout();
@@ -348,6 +424,15 @@ void CASW_Mission_Chooser_Entry::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_Mission_Chooser_Entry::OnMouseReleased(vgui::MouseCode code)
 {
+	if ( m_bMouseReleased && code == MOUSE_LEFT && m_bVoteDisabled && m_nFileID != k_PublishedFileIdInvalid )
+	{
+		if ( !g_ReactiveDropWorkshop.LoadAddonEarly( m_nFileID ) )
+		{
+			g_ReactiveDropWorkshop.OpenWorkshopPageForFile( m_nFileID );
+		}
+		return;
+	}
+
 	// hack to stop us catching the release event after clicking the main menu
 	if ( !m_bMouseReleased || m_bVoteDisabled )
 		return;

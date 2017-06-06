@@ -11,6 +11,8 @@
 	#include "asw_weapon_rifle.h"
 #endif
 
+extern ConVar rd_ground_shooting;
+
 class CASW_Weapon_PDW : public CASW_Weapon_Rifle
 {
 public:
@@ -56,7 +58,7 @@ public:
 
 	virtual const char* GetUTracerType();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
-	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 
 	CNetworkVar(bool, m_bBulletMod);	// used to skip ammo consumption on every other shot
 

@@ -19,6 +19,7 @@
 #include "asw_colonist.h"
 #include "ndebugoverlay.h"
 #include "asw_weapon_assault_shotgun_shared.h"
+#include "asw_weapon_deagle_shared.h"
 #include "asw_sentry_base.h"
 #include "props.h"
 
@@ -99,6 +100,8 @@ ConVar asw_queen_debug("asw_queen_debug", "0", FCVAR_CHEAT, "Display debug info 
 ConVar asw_queen_flame_flinch_chance("asw_queen_flame_flinch_chance", "0", FCVAR_CHEAT, "Chance of queen flinching when she takes fire damage");
 ConVar asw_queen_force_parasite_spawn("asw_queen_force_parasite_spawn", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spawn parasites");
 ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spit");
+
+extern ConVar rd_deagle_bigalien_dmg_scale;
 
 #define ASW_QUEEN_CLAW_MINS Vector(-asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat() * 2.0f)
 #define ASW_QUEEN_CLAW_MAXS Vector(asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat() * 2.0f)
@@ -1334,12 +1337,26 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			if (pMarine)
 			{
 				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if (pVindicator)
+				if ( pVindicator )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
 			}
 		}		
+	}
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+			if (pMarine)
+			{
+				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+
+				if (pDeagle)
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+			}
+		}
 	}
 
 	// make queen immune to buzzers

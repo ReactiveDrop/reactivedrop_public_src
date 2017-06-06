@@ -18,6 +18,8 @@
 
 #include "vfoundpublicgames.h"
 
+#include "nb_header_footer.h"
+
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 
@@ -28,32 +30,52 @@ using namespace vgui;
 using namespace BaseModUI;
 
 //=============================================================================
-static ConVar ui_public_lobby_filter_difficulty2( "ui_public_lobby_filter_difficulty2", "", FCVAR_ARCHIVE, "Filter type for difficulty on the public lobby display" );
-static ConVar ui_public_lobby_filter_onslaught( "ui_public_lobby_filter_onslaught", "", FCVAR_ARCHIVE, "Filter type for Onslaught mode on the public lobby display");
-ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
+static ConVar ui_public_lobby_filter_difficulty2( "ui_public_lobby_filter_difficulty2", "normal", FCVAR_ARCHIVE, "Filter type for difficulty on the public lobby display" );
+static ConVar ui_public_lobby_filter_onslaught( "ui_public_lobby_filter_onslaught", "0", FCVAR_ARCHIVE, "Filter type for Onslaught mode on the public lobby display");
+static ConVar ui_public_lobby_filter_distance( "ui_public_lobby_filter_distance", "", FCVAR_ARCHIVE, "Filter type for distance on the public lobby display" );
+static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challenge", "none", FCVAR_ARCHIVE, "Filter type for challenge on the public lobby display" );
+static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "none", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
+ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "official", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
 ConVar ui_public_lobby_filter_status( "ui_public_lobby_filter_status", "", FCVAR_ARCHIVE, "Filter type for game status on the public lobby display" );
+
+static void FoundPublicGamesLobbiesFunc( const CUtlVector<CSteamID> & lobbies )
+{
+	FoundPublicGames *pFPG = assert_cast<FoundPublicGames *>( CBaseModPanel::GetSingleton().GetWindow( WT_FOUNDPUBLICGAMES ) );
+	if ( pFPG )
+	{
+		pFPG->m_Lobbies = lobbies;
+		pFPG->UpdateGameDetails();
+	}
+}
 
 //=============================================================================
 FoundPublicGames::FoundPublicGames( Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName ),
-	m_pSearchManager( NULL )
+	m_LobbySearch( "FoundPublicGames::m_LobbySearch" )
 {
 	m_drpDifficulty = NULL;
 	m_drpOnslaught = NULL;
 	m_drpGameStatus = NULL;
 	m_drpCampaign = NULL;
-	
+	m_drpDistance = NULL;
+	m_drpChallenge = NULL;
+	m_drpDeathmatch = NULL;
+
 	m_pSupportRequiredDetails = NULL;
 	m_pInstallSupportBtn = NULL;
 
 	m_numCurrentPlayers = 0;
+
+	// increase footer tall by 10 to fit Advanced button into it
+	CNB_Header_Footer *pHeaderFooter = dynamic_cast< CNB_Header_Footer* >( FindChildByName( "HeaderFooter" ) );
+	pHeaderFooter->SetGradientBarPos( 80, 325 );
+
+	m_LobbySearch.Subscribe( &FoundPublicGamesLobbiesFunc );
 }
 
 FoundPublicGames::~FoundPublicGames()
 {
-	if ( m_pSearchManager )
-		m_pSearchManager->Destroy();
-	m_pSearchManager = NULL;
+	m_LobbySearch.Unsubscribe( &FoundPublicGamesLobbiesFunc );
 }
 
 //=============================================================================
@@ -97,6 +119,9 @@ void FoundPublicGames::ApplySchemeSettings( IScheme *pScheme )
 	m_drpOnslaught = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterOnslaught" ) );
 	m_drpGameStatus = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterGameStatus" ) );
 	m_drpCampaign = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterCampaign" ) );
+	m_drpDistance = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterDistance" ) );
+	m_drpChallenge = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterChallenge" ) );
+	m_drpDeathmatch = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFilterDeathmatch" ) );
 	m_btnFilters = dynamic_cast< BaseModUI::BaseModHybridButton* >( FindChildByName( "BtnFilters" ) );
 
 	bool bHasDifficulty = GameModeHasDifficulty( m_pDataSettings->GetString( "game/mode", "" ) );
@@ -157,36 +182,59 @@ void FoundPublicGames::PaintBackground()
 //=============================================================================
 void FoundPublicGames::StartSearching( void )
 {
-	KeyValues *pKeyValuesSearch = new KeyValues( "Search" );
+	m_LobbySearch.Clear();
+	m_Lobbies.Purge();
 
 	char const *szGameMode = m_pDataSettings->GetString( "game/mode", "" );
 	if ( szGameMode && *szGameMode )
-		pKeyValuesSearch->SetString( "game/mode", szGameMode );
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:mode", szGameMode ) );
 
-	char const *szCampaign = ui_public_lobby_filter_campaign.GetString();
-	if ( szCampaign && *szCampaign )
-		pKeyValuesSearch->SetString( "game/missioninfo/builtin", szCampaign );
-	
 	char const *szDifficulty = ui_public_lobby_filter_difficulty2.GetString();
 	if ( szDifficulty && *szDifficulty && GameModeHasDifficulty( szGameMode ) )
-		pKeyValuesSearch->SetString( "game/difficulty", szDifficulty );
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:difficulty", szDifficulty ) );
+
+	char const *szCampaign = ui_public_lobby_filter_campaign.GetString();
+	if ( szCampaign && !Q_stricmp( szCampaign, "official" ) )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:missioninfo:official", "", k_ELobbyComparisonNotEqual ) );
+	else if ( szCampaign && *szCampaign )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:missioninfo:workshop", "", k_ELobbyComparisonNotEqual ) );
 
 	char const *szOnslaught = ui_public_lobby_filter_onslaught.GetString();
 	if ( szOnslaught && *szOnslaught )
-		pKeyValuesSearch->SetInt( "game/onslaught", 1 );
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:onslaught", szOnslaught ) );
 
 	char const *szStatus = ui_public_lobby_filter_status.GetString();
 	if ( szStatus && *szStatus )
-		pKeyValuesSearch->SetString( "game/state", szStatus );
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:state", szStatus ) );
 
-	if ( !m_pSearchManager )
+	char const *szChallenge = ui_public_lobby_filter_challenge.GetString();
+	if ( szChallenge && !Q_stricmp( szChallenge, "none" ) )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "0" ) );
+	else if ( szChallenge && *szChallenge )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "0", k_ELobbyComparisonNotEqual ) );
+
+	char const *szDeathmatch = ui_public_lobby_filter_deathmatch.GetString();
+	if ( szDeathmatch && !Q_stricmp( szDeathmatch, "any" ) )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:deathmatch", "", k_ELobbyComparisonNotEqual ) );
+	else if ( szDeathmatch && !Q_stricmp( szDeathmatch, "none" ) )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "", k_ELobbyComparisonNotEqual ) );
+	else if ( szDeathmatch && *szDeathmatch )
+		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:deathmatch", szDeathmatch ) );
+
+	if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "close" ) )
 	{
-		m_pSearchManager = g_pMatchFramework->GetMatchSystem()->CreateGameSearchManager( pKeyValuesSearch );
+		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterClose;
 	}
-	else
+	else if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "far" ) )
 	{
-		m_pSearchManager->EnableResultsUpdate( true, pKeyValuesSearch );
+		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterFar;
 	}
+	else if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "worldwide" ) )
+	{
+		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterWorldwide;
+	}
+
+	m_LobbySearch.StartSearching( true );
 }
 
 //=============================================================================
@@ -239,27 +287,17 @@ static void HandleJoinPublicGame( FoundGameListItem::Info const &fi )
 	if ( !pWnd )
 		return;
 
-	if ( !pWnd->m_pSearchManager )
-		return;
-
-	IMatchSearchResult *pResult = pWnd->m_pSearchManager->GetResultByOnlineId( fi.mFriendXUID );
-	if ( !pResult )
-		return;
-
-	pResult->Join();
+	UTIL_RD_JoinByLobbyID( fi.mFriendXUID );
 }
 
 //=============================================================================
 void FoundPublicGames::AddServersToList( void )
 {
-	if ( !m_pSearchManager )
-		return;
-
-	int numItems = m_pSearchManager->GetNumResults();
+	int numItems = m_Lobbies.Count();
 	for ( int i = 0; i < numItems; ++ i )
 	{
-		IMatchSearchResult *item = m_pSearchManager->GetResultByIndex( i );
-		KeyValues *pGameDetails = item->GetGameDetails();
+		CSteamID lobby = m_Lobbies[i];
+		KeyValues *pGameDetails = UTIL_RD_LobbyToLegacyKeyValues( lobby );
 		if ( !pGameDetails )
 			continue;
 		if ( !ShouldShowPublicGame( pGameDetails ) )
@@ -277,7 +315,7 @@ void FoundPublicGames::AddServersToList( void )
 		}
 		Q_strncpy( fi.Name, szDisplayName, sizeof( fi.Name ) );
 
-		fi.mIsJoinable = item->IsJoinable();
+		fi.mIsJoinable = true;
 		fi.mbInGame = true;
 
 		fi.miPing = pGameDetails->GetInt( "server/ping", 0 );
@@ -315,7 +353,7 @@ void FoundPublicGames::AddServersToList( void )
 			}
 		}
 
-		fi.mFriendXUID = item->GetOnlineId();
+		fi.mFriendXUID = lobby.ConvertToUint64();
 
 		// Check if this is actually a non-joinable game
 		if ( fi.IsDLC() )
@@ -523,6 +561,21 @@ void FoundPublicGames::OnCommand( const char *command )
 		ui_public_lobby_filter_status.SetValue( filterGamestatus );
 		StartSearching();
 	}
+	else if ( char const *filterDistance = StringAfterPrefix( command, "filter_distance_" ) )
+	{
+		ui_public_lobby_filter_distance.SetValue( filterDistance );
+		StartSearching();
+	}
+	else if ( char const *filterChallenge = StringAfterPrefix( command, "filter_challenge_" ) )
+	{
+		ui_public_lobby_filter_challenge.SetValue( filterChallenge );
+		StartSearching();
+	}
+	else if ( char const *filterDeathmatch = StringAfterPrefix( command, "filter_deathmatch_" ) )
+	{
+		ui_public_lobby_filter_deathmatch.SetValue( filterDeathmatch );
+		StartSearching();
+	}
 	else if ( !Q_stricmp( command, "InstallSupport" ) )
 	{
 		// install the add-on support package
@@ -530,6 +583,25 @@ void FoundPublicGames::OnCommand( const char *command )
 		// App ID for the legacy addon data is 564
 		ShellExecute ( 0, "open", "steam://install/564", NULL, 0, SW_SHOW );
 #endif		
+	}
+	else if ( !Q_stricmp( command, "ShowAdvanced" ) )
+	{
+		// increase footer height to fit new drop downs
+		CNB_Header_Footer *pHeaderFooter = dynamic_cast< CNB_Header_Footer* >( FindChildByName( "HeaderFooter" ) );
+		pHeaderFooter->SetGradientBarPos( 80, 360 );
+
+		SetControlVisible( "BtnAdvanced", false );
+		SetControlVisible( "DrpFilterChallenge", true );
+		SetControlVisible( "DrpFilterDeathmatch", true );
+		SetControlVisible( "DrpFilterDistance", true );
+
+		if ( m_drpChallenge )
+		{
+			m_drpChallenge->SetVisible( true );
+			m_drpChallenge->NavigateTo();
+		}
+
+		FlyoutMenu::CloseActiveMenu();
 	}
 	else
 	{
@@ -571,6 +643,21 @@ void FoundPublicGames::Activate()
 		m_drpCampaign->SetCurrentSelection( CFmtStr( "filter_campaign_%s", ui_public_lobby_filter_campaign.GetString() ) );
 	}
 
+	if ( m_drpDistance )
+	{
+		m_drpDistance->SetCurrentSelection( CFmtStr( "filter_distance_%s", ui_public_lobby_filter_distance.GetString() ) );
+	}
+
+	if ( m_drpChallenge )
+	{
+		m_drpChallenge->SetCurrentSelection( CFmtStr( "filter_challenge_%s", ui_public_lobby_filter_challenge.GetString() ) );
+	}
+
+	if ( m_drpDeathmatch )
+	{
+		m_drpDeathmatch->SetCurrentSelection( CFmtStr( "filter_deathmatch_%s", ui_public_lobby_filter_deathmatch.GetString() ) );
+	}
+
 #if !defined( _X360 ) && !defined( NO_STEAM )
 	if ( steamapicontext )
 	{
@@ -606,36 +693,6 @@ void FoundPublicGames::OnKeyCodePressed( vgui::KeyCode code )
 	default:
 		BaseClass::OnKeyCodePressed( code );
 		break;
-	}
-}
-
-void FoundPublicGames::OnEvent( KeyValues *pEvent )
-{
-	char const *szName = pEvent->GetName();
-
-	if ( !Q_stricmp( "OnMatchSearchMgrUpdate", szName ) )
-	{
-		if ( !m_pSearchManager || pEvent->GetPtr( "mgr" ) != m_pSearchManager )
-			return;
-
-		char const *szUpdate = pEvent->GetString( "update", "" );
-		if ( !Q_stricmp( "searchstarted", szUpdate ) )
-		{
-			extern ConVar ui_foundgames_spinner_time;
-			m_flSearchStartedTime = Plat_FloatTime();
-			m_flSearchEndTime = m_flSearchStartedTime + ui_foundgames_spinner_time.GetFloat();
-			OnThink();
-		}
-		else if ( !Q_stricmp( "searchfinished", szUpdate ) )
-		{
-			m_flSearchStartedTime = 0.0f;
-			UpdateGameDetails();
-		}
-		else if ( !Q_stricmp( "result", szUpdate ) )
-		{
-			// Search result details have been updated
-			UpdateGameDetails();
-		}
 	}
 }
 

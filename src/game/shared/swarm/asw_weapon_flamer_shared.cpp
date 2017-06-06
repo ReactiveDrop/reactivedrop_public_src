@@ -28,6 +28,7 @@
 #include "IEffects.h"
 #endif
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -71,10 +72,10 @@ END_DATADESC()
 CASW_Weapon_Flamer::CASW_Weapon_Flamer()
 {
 	m_fMinRange1	= 0;
-	m_fMaxRange1	= 320;
+	m_fMaxRange1	= 160;
 
-	m_fMinRange2	= 256;
-	m_fMaxRange2	= 1024;
+	m_fMinRange2	= 0;
+	m_fMaxRange2	= 160;
 
 	m_flLastFireTime = 0;
 	m_bBulletMod = false;
@@ -263,6 +264,10 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 		{
 			newVel *= FLAMER_PROJECTILE_AIR_VELOCITY;
 			newVel *= (1.0 + (0.1 * random->RandomFloat(-1,1)));
+			// add marine velocity to projectile to make if fly realistically 
+			Vector marine_velocity = pMarine->GetAbsVelocity();
+			newVel = newVel + marine_velocity; 
+
 			CASW_Flamer_Projectile::Flamer_Projectile_Create( GetWeaponDamage(), vecSrc, QAngle(0,0,0),
 					newVel, rotSpeed, pMarine, pMarine, this );
 
@@ -447,6 +452,12 @@ float CASW_Weapon_Flamer::GetWeaponDamage()
 {
 	//float flDamage = 35.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( ASWDeathmatchMode() )
+	{
+		extern ConVar rd_pvp_flamer_dmg;
+		flDamage = rd_pvp_flamer_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{

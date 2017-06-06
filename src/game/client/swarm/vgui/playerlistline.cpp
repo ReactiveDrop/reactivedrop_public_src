@@ -26,12 +26,16 @@ PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	m_iPlayerIndex = -1;
 	m_pPlayerLabel = new vgui::Label(this, "PlayerLabel", " ");
 	m_pMarinesLabel = new vgui::Label(this, "MarinesLabel", " ");
+	m_pFragsLabel= new vgui::Label(this, "FragsLabel", " ");
+	m_pDeathsLabel = new vgui::Label(this, "DeathsLabel", " ");
 	m_pPingLabel = new vgui::Label(this, "PingLabel", " ");
 	m_pKickCheck = new VoteCheck(this, "KickCheck", "#asw_player_list_kick_check");
 	m_pKickCheck->AddActionSignalTarget(this);
 	m_pLeaderCheck = new VoteCheck(this, "KickCheck", "#asw_player_list_leader_check");
 	m_pLeaderCheck->AddActionSignalTarget(this);
 	m_szPlayerName[0]='\0';
+	m_szFragsString[0]='\0';
+	m_szDeathsString[0]='\0';
 	m_szPingString[0]='\0';
 	m_wszMarineNames[0]='\0';
 	for (int i=0;i<MAX_VOTE_ICONS;i++)
@@ -61,6 +65,10 @@ void PlayerListLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pPlayerLabel->SetFgColor(Color(255,255,255,255));
 	m_pMarinesLabel->SetFont(DefaultFont);
 	m_pMarinesLabel->SetFgColor(Color(255,255,255,255));
+	m_pFragsLabel->SetFont(DefaultFont);
+	m_pFragsLabel->SetFgColor(Color(255,255,255,255));
+	m_pDeathsLabel->SetFont(DefaultFont);
+	m_pDeathsLabel->SetFgColor(Color(255,255,255,255));
 	m_pPingLabel->SetFont(DefaultFont);
 	m_pPingLabel->SetFgColor(Color(255,255,255,255));
 	m_pKickCheck->SetFont(Verdana);
@@ -84,11 +92,13 @@ void PlayerListLine::PerformLayout()
 	int bottom_line_top = top_line_height + top;
 	int bottom_line_height = 16.0f * fScale;	
 
-	m_pPlayerLabel->SetBounds(PLAYER_LIST_PLAYER_X * fScale, top, PLAYER_LIST_PLAYER_W * fScale, top_line_height);
-	m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale, top, PLAYER_LIST_MARINES_W * fScale, top_line_height);
-	m_pPingLabel->SetBounds(PLAYER_LIST_PING_X * fScale, top, PLAYER_LIST_PING_W * fScale, top_line_height);
-	m_pLeaderCheck->SetBounds(PLAYER_LIST_LEADER_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_LEADER_CHECK_W * fScale, bottom_line_height);
-	m_pKickCheck->SetBounds(PLAYER_LIST_KICK_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_KICK_CHECK_W * fScale, bottom_line_height);
+	m_pPlayerLabel-> SetBounds(PLAYER_LIST_PLAYER_X * fScale,		top,			 PLAYER_LIST_PLAYER_W * fScale,		  top_line_height);
+	m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale,		top,			 PLAYER_LIST_MARINES_W * fScale,	  top_line_height);
+	m_pFragsLabel->	 SetBounds(PLAYER_LIST_FRAGS_X * fScale,		top,			 PLAYER_LIST_FRAGS_W * fScale,		  top_line_height);
+	m_pDeathsLabel-> SetBounds(PLAYER_LIST_DEATHS_X * fScale,		top,			 PLAYER_LIST_DEATHS_W * fScale,		  top_line_height);
+	m_pPingLabel->	 SetBounds(PLAYER_LIST_PING_X * fScale,			top,			 PLAYER_LIST_PING_W * fScale,		  top_line_height);
+	m_pLeaderCheck-> SetBounds(PLAYER_LIST_LEADER_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_LEADER_CHECK_W * fScale, bottom_line_height);
+	m_pKickCheck->   SetBounds(PLAYER_LIST_KICK_CHECK_X * fScale,	bottom_line_top, PLAYER_LIST_KICK_CHECK_W * fScale,   bottom_line_height);
 	//m_pMuteCheck->SetBounds(PLAYER_LIST_MUTE_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_MUTE_CHECK_W * fScale, bottom_line_height);
 
 	for (int i=0;i<MAX_VOTE_ICONS;i++)
@@ -121,6 +131,21 @@ void PlayerListLine::OnThink()
 			//Msg("Setting player label to %s\n", buffer);
 			m_pPlayerLabel->SetText(buffer);
 		}
+
+		const char *frags = GetFragsString();
+		if (Q_strcmp(frags, m_szFragsString))
+		{
+			Q_strcpy(m_szFragsString, frags);
+			m_pFragsLabel->SetText(frags);
+		}
+		
+		const char *deaths = GetDeathsString();
+		if (Q_strcmp(deaths, m_szDeathsString))
+		{
+			Q_strcpy(m_szDeathsString, deaths);
+			m_pDeathsLabel->SetText(deaths);
+		}
+
 		// check ping (todo: only every so often?)
 		const char *ping = GetPingString();
 		if (Q_strcmp(ping, m_szPingString))
@@ -133,7 +158,7 @@ void PlayerListLine::OnThink()
 		wchar_t *marines = GetMarineNames();
 		if ( wcscmp( marines, m_wszMarineNames ) )
 		{
-			_snwprintf( m_wszMarineNames, sizeof( m_wszMarineNames ), L"%s", marines );
+			V_snwprintf( m_wszMarineNames, sizeof( m_wszMarineNames ), L"%s", marines );
 			m_pMarinesLabel->SetText(marines);
 		}
 	}
@@ -143,8 +168,8 @@ void PlayerListLine::OnThink()
 
 wchar_t* PlayerListLine::GetMarineNames()
 {
-	static wchar_t marines[96];
-	wchar_t buffer[96];
+	static wchar_t marines[32 * ASW_MAX_MARINE_RESOURCES];
+	wchar_t buffer[32 * ASW_MAX_MARINE_RESOURCES];
 	marines[0] = '\0';
 
 	if ( !ASWGameResource() )
@@ -157,11 +182,11 @@ wchar_t* PlayerListLine::GetMarineNames()
 		if (pMR && pMR->GetCommanderIndex() == m_iPlayerIndex && pMR->GetProfile())
 		{
 			if (iMarines == 0)
-				_snwprintf(marines, sizeof(marines), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
+				V_snwprintf(marines, sizeof(marines), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
 			else
 			{
-				_snwprintf(buffer, sizeof(buffer), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName) );
-				_snwprintf(marines, sizeof(marines), L"%s", buffer);
+				V_snwprintf(buffer, sizeof(buffer), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName) );
+				V_snwprintf(marines, sizeof(marines), L"%s", buffer);
 			}
 			iMarines++;
 		}
@@ -360,6 +385,20 @@ bool PlayerListLine::SetPlayerIndex(int i)
 	return false;
 }
 
+const char* PlayerListLine::GetFragsString()
+{
+	static char buffer[12];
+	Q_snprintf(buffer, sizeof(buffer), "%d", g_PR->GetPlayerScore(m_iPlayerIndex));
+	return buffer;
+}
+
+const char* PlayerListLine::GetDeathsString()
+{
+	static char buffer[12];
+	Q_snprintf(buffer, sizeof(buffer), "%d", g_PR->GetDeaths(m_iPlayerIndex));
+	return buffer;
+}
+
 const char* PlayerListLine::GetPingString()
 {
 	static char buffer[12];
@@ -392,10 +431,12 @@ VoteCheck::VoteCheck(Panel *parent, const char *panelName, const char *text) :
 
 void VoteCheck::DoClick()
 {
-	if (GetParent() && GetParent()->GetParent())
+	if (GetParent() && GetParent()->GetParent() &&
+		GetParent()->GetParent()->GetParent() && 
+		GetParent()->GetParent()->GetParent()->GetParent())    // lol? 
 	{
 		PlayerListLine *pLine = dynamic_cast<PlayerListLine*>(GetParent());
-		PlayerListPanel *pPanel = dynamic_cast<PlayerListPanel*>(GetParent()->GetParent());
+		PlayerListPanel *pPanel = dynamic_cast<PlayerListPanel*>(GetParent()->GetParent()->GetParent()->GetParent());
 		if (pLine && pPanel)
 		{
 			if (pLine->m_pKickCheck == this)

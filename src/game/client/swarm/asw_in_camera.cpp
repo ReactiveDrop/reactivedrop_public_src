@@ -7,6 +7,7 @@
 #include "asw_input.h"
 #include "missionchooser/iasw_random_missions.h"
 #include "holdout_resupply_frame.h"
+#include "igameevents.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -15,6 +16,8 @@
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT, "Marine Camera: pitch." );
 ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT ); // asw setting
 ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
+ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value" );
+ConVar rd_cam_marine_yaw_rate( "rd_cam_marine_yaw_rate", "0.1", FCVAR_CHEAT, "Time in seconds needed to change camera yaw" );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
 ConVar asw_cam_marine_dist_rate( "asw_cam_marine_dist_rate", "50", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
 
@@ -91,8 +94,6 @@ float s_flCameraHeights55[ASW_TILETYPE_COUNT] =
 	720.0f,			// Corridor1
 	450.0f			// Vents
 };
-
-
 // Panning to much when pulled further out
 
 
@@ -122,9 +123,10 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 
 	// Check to see if we are in a camera volume.
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
+	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetViewMarine() : NULL;
+	if ( pMarine )
 	{
-		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
+		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pMarine->GetAbsOrigin() );
 		if ( fCameraVolumePitch != -1 )
 		{
 			flPitch = fCameraVolumePitch;
@@ -167,6 +169,52 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		return ( 1.0f - fDeathCamInterp ) * asw_cam_marine_yaw.GetFloat() + fDeathCamInterp * ( asw_cam_marine_yaw.GetFloat() + fRotate );
 	}
 
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	// BenLubar: When spectating a player, use their camera yaw.
+	if ( pPlayer && pPlayer->GetSpectatingMarine() && pPlayer->GetSpectatingMarine()->IsInhabited() )
+	{
+		pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
+	}
+
+	if ( pPlayer && asw_cam_marine_yaw.GetFloat() != pPlayer->m_flMovementAxisYaw )
+	{
+		if ( !m_fCamYawRotStartTime )
+			m_fCamYawRotStartTime = gpGlobals->realtime;
+
+		float fCamYawRotEndTime = m_fCamYawRotStartTime + rd_cam_marine_yaw_rate.GetFloat();
+
+		if ( gpGlobals->realtime >= fCamYawRotEndTime ) 
+		{
+			// finish rotation
+			asw_cam_marine_yaw.SetValue(pPlayer->m_flMovementAxisYaw);
+			m_fCamYawRotStartTime = 0.0f;
+		}
+		else
+		{
+			// a value from 0 to 1
+			float fRotProgress = (gpGlobals->realtime - m_fCamYawRotStartTime) / (fCamYawRotEndTime - m_fCamYawRotStartTime);
+			float fTotalDegreesToChange = 0.0f;
+
+			// handle special situations for 0 and 360 angles
+			if ( asw_cam_marine_yaw.GetFloat() == 270.0f && pPlayer->m_flMovementAxisYaw == 0.0f )
+			{
+				fTotalDegreesToChange = 90.0f;
+			}
+			else if ( asw_cam_marine_yaw.GetFloat() == 0.0f && pPlayer->m_flMovementAxisYaw == 270.0f )
+			{
+				fTotalDegreesToChange = -90.0f;
+			}
+			else
+			{
+				fTotalDegreesToChange = pPlayer->m_flMovementAxisYaw - asw_cam_marine_yaw.GetFloat();
+			}
+
+			float fNewYaw = asw_cam_marine_yaw.GetFloat() + fTotalDegreesToChange * fRotProgress;
+
+			return fNewYaw;
+		}
+	}
+
 	return asw_cam_marine_yaw.GetFloat();
 }
 
@@ -189,11 +237,11 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 
 	// Do we have a valid player and marine, if not use the default distance.
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer || !pPlayer->GetMarine() )
+	if ( !pPlayer || !pPlayer->GetViewMarine() )
 		return asw_cam_marine_dist.GetFloat();
 
 	// Do we have a valid room, if not use the default distance.
-	IASW_Room_Details *pRoom = missionchooser->RandomMissions()->GetRoomDetails( pPlayer->GetMarine()->GetAbsOrigin() );
+	IASW_Room_Details *pRoom = missionchooser->RandomMissions()->GetRoomDetails( pPlayer->GetViewMarine()->GetAbsOrigin() );
 	if ( !pRoom )
 		return asw_cam_marine_dist.GetFloat();
 	
@@ -311,7 +359,7 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	if ( !asw_cam_marine_shift_enable.GetBool() )
 		return;
 
-	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingMarine() ) )
+	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingMarine() && !pPlayer->GetSpectatingMarine()->IsInhabited() ) )
 	{
 		m_fShiftFraction = Approach( 0.0f, m_fShiftFraction, gpGlobals->frametime );
 	}
@@ -420,8 +468,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	ASWInput()->ASW_GetWindowCenter( nCenterX, nCenterY );
 
 	// Get the position change.
-	int nUnclampedX, nUnclampedY;
-	ASWInput()->GetSimulatedFullscreenMousePos( &nMouseX, &nMouseY, &nUnclampedX, &nUnclampedY );
+	ASWInput()->GetSimulatedFullscreenMousePos( &nMouseX, &nMouseY );
 
 	// Calculate the movement delta - only needed for mouse control or controller with pan enabled.
 	int nDeltaX = 0;
@@ -454,8 +501,15 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	pPlayer->m_nLastCameraFrame = gpGlobals->framecount;
 	pPlayer->m_angLastCamera = angCamera;
 
-	// Do we still need this???
-	pPlayer->m_hLastMarine = pPlayer->GetMarine();
+	if ( ASWDeathmatchMode() && pPlayer->m_hLastMarine == NULL && !pPlayer->GetSpectatingMarine() && pPlayer->GetMarine() )
+	{
+		IGameEvent *event = gameeventmanager->CreateEvent( "general_hint" );
+		if ( event )
+		{
+			gameeventmanager->FireEventClientSide( event );
+		}
+	}
+	pPlayer->m_hLastMarine = pPlayer->GetViewMarine();
 }
 
 

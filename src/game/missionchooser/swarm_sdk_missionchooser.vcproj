@@ -22,7 +22,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="if EXIST &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
+				CommandLine="if EXIST &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -124,8 +124,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Publishing to ..\..\..\game\swarm\bin\."
-				CommandLine="if exist &quot;..\..\..\game\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\game\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\game\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\game\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				Description="Publishing to ..\..\..\reactivedrop\bin\."
+				CommandLine="if exist &quot;..\..\..\reactivedrop\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\reactivedrop\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\reactivedrop\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\reactivedrop\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -138,7 +138,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="if EXIST &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
+				CommandLine="if EXIST &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -244,8 +244,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Publishing to ..\..\..\game\swarm\bin\."
-				CommandLine="if exist &quot;..\..\..\game\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\game\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\game\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\game\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				Description="Publishing to ..\..\..\reactivedrop\bin\."
+				CommandLine="if exist &quot;..\..\..\reactivedrop\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\reactivedrop\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\reactivedrop\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\reactivedrop\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>

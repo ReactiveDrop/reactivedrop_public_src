@@ -5,6 +5,7 @@
 #endif
 
 #include "tier0/platform.h"
+#include "steam/steam_api.h"
 
 class KeyValues;
 
@@ -62,7 +63,7 @@ public:
 	virtual bool ASW_Campaign_CreateNewSaveGame(char *szFileName, int iFileNameMaxLen, const char *szCampaignName, bool bMultiplayerGame, const char *szStartingMission) = 0;
 	virtual void NotifySaveDeleted(const char *szSaveName) = 0;
 	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName) = 0;	// returns the intro map for the campaign that this save uses
-	
+
 	// returns nice version of the filenames (i.e. title from the overview.txt or from the campaign txt)
 	virtual const char* GetPrettyMissionName(const char *szMapName) = 0;
 	virtual const char* GetPrettyCampaignName(const char *szCampaignName) = 0;
@@ -73,6 +74,10 @@ public:
 
 	virtual KeyValues *GetMissionDetails( const char *szMissionName ) = 0;
 	virtual KeyValues *GetCampaignDetails( const char *szCampaignName ) = 0;
+
+	// New virtual functions have to be last or IMatchFramework crashes!
+	virtual void ClearCache() = 0;
+	virtual PublishedFileId_t GetCampaignWorkshopID( int nIndex ) = 0;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_SOURCE_H

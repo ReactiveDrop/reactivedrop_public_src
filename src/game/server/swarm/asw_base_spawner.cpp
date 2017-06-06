@@ -30,6 +30,14 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_iMinSkillLevel,	FIELD_INTEGER,	"MinSkillLevel" ),
 	DEFINE_KEYFIELD( m_iMaxSkillLevel,	FIELD_INTEGER,	"MaxSkillLevel" ),
 
+	DEFINE_KEYFIELD( m_bFlammableSp, FIELD_BOOLEAN, "flammablesp" ),
+	DEFINE_KEYFIELD( m_bTeslableSp, FIELD_BOOLEAN, "teslablesp" ),
+	DEFINE_KEYFIELD( m_bFreezableSp, FIELD_BOOLEAN, "freezablesp" ),
+	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ), 
+	DEFINE_KEYFIELD( m_iHealthBonusSp, FIELD_INTEGER, "healthbonussp"),
+	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ), 
+	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ), 
+
 	DEFINE_OUTPUT( m_OnSpawned,			"OnSpawned" ),
 
 	DEFINE_FIELD( m_iMoveAsideCount, FIELD_INTEGER ),
@@ -46,6 +54,14 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_hAlienOrderTarget = NULL;
 	m_flLastSpawnTime = 0.0f;
 	m_bEnabled = true;
+
+	m_bFlammableSp = true; 
+	m_bTeslableSp = true; 
+	m_bFreezableSp = true; 
+	m_bFlinchableSp = true; 
+	m_iHealthBonusSp = 0;
+	m_fSizeScaleSp = 1.0f; 
+	m_fSpeedScaleSp = 1.0f; 
 }
 
 CASW_Base_Spawner::~CASW_Base_Spawner()
@@ -127,7 +143,9 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				if (tr.fraction < 1.0f && tr.DidHitNonWorldEntity())
 				{
 					// some non-world entity is blocking the spawn point, so don't spawn
-					if (tr.m_pEnt)
+					// riflemod: Cargo Elevator railing spawn fix for carnage
+					// added && tr.m_pEnt->Classify() != CLASS_ASW_DRONE
+					if (tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_DRONE)
 					{
 						if ( m_iMoveAsideCount < 6 )	// don't send 'move aside' commands more than 5 times in a row, else you'll stop blocked NPCs going to sleep.
 						{
@@ -247,6 +265,18 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		return NULL;
 	}
 
+	CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pEntity);
+	if (pAlien)
+	{
+		pAlien->m_bFlammable	= m_bFlammableSp; 
+		pAlien->m_bTeslable		= m_bTeslableSp; 
+		pAlien->m_bFreezable	= m_bFreezableSp; 
+		pAlien->m_bFlinchable	= m_bFlinchableSp; 
+		pAlien->m_iHealthBonus =  m_iHealthBonusSp;
+		pAlien->m_fSizeScale	= m_fSizeScaleSp; 
+		pAlien->m_fSpeedScale	= m_fSpeedScaleSp; 
+	}
+
 	CAI_BaseNPC	*pNPC = pEntity->MyNPCPointer();
 	if ( pNPC )
 	{
@@ -264,7 +294,17 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	QAngle angles = GetAbsAngles();
 	angles.x = 0.0;
 	angles.z = 0.0;	
-	pEntity->SetAbsOrigin( GetAbsOrigin() );	
+	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
+	// raise the position of spawned alien by it's hull because otherwise it 
+	// falls through displacement
+	// make this workaround only for parasites, because other aliens seems to
+	// spawn ok
+	Vector vecEntityPos = GetAbsOrigin();
+	if (!Q_strcmp("asw_parasite", szAlienClassName))
+	{
+		vecEntityPos += Vector(0, 0, vecHullMaxs.z - vecHullMins.z);
+	}
+	pEntity->SetAbsOrigin( vecEntityPos );
 	pEntity->SetAbsAngles( angles );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
@@ -319,6 +359,12 @@ bool CASW_Base_Spawner::IsValidOnThisSkillLevel()
 	// treat difficulty 5 and 4 as the same
 	int nSkillLevel = ASWGameRules()->GetSkillLevel();
 	nSkillLevel = clamp<int>( nSkillLevel, 1, 4 );
+
+	if (rd_difficulty_tier.GetInt() > 0)
+	{
+		nSkillLevel = 4; // set to max value, means Insane
+	}
+
 	if (m_iMinSkillLevel > 0 && nSkillLevel < m_iMinSkillLevel)
 		return false;
 	if (m_iMaxSkillLevel > 0 && m_iMaxSkillLevel < 10

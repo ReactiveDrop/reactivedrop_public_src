@@ -37,6 +37,9 @@ public:
 	bool	OffhandActivate();
 	virtual void DelayedAttack();
 
+	virtual int				GetMaxClip1(void) const;
+	virtual int				GetDefaultClip1(void) const;
+
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone;

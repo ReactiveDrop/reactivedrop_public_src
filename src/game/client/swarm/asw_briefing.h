@@ -24,6 +24,7 @@ public:
 	~CASW_Briefing();
 
 	virtual const char* GetLeaderName();
+    virtual const char* GetTeamName();
 
 	virtual bool IsLocalPlayerLeader();
 	virtual void ToggleLocalPlayerReady();
@@ -39,6 +40,7 @@ public:
 	virtual int GetCommanderLevel( int nLobbySlot );
 	virtual int GetCommanderXP( int nLobbySlot );
 	virtual int GetCommanderPromotion( int nLobbySlot );
+	virtual bool IsFullyConnected( int nLobbySlot );
 #if !defined(NO_STEAM)
 	CSteamID GetCommanderSteamID( int nLobbySlot );
 #endif
@@ -59,11 +61,12 @@ public:
 	virtual bool IsOfflineGame();
 	virtual bool IsCampaignGame();
 	virtual bool UsingFixedSkillPoints();
-	virtual void SetChangingWeaponSlot( int nWeaponSlot );
+	virtual void SetChangingWeaponSlot( int nLobbySlot, int nWeaponSlot );
 	virtual int GetChangingWeaponSlot( int nLobbySlot );
 	virtual bool IsCommanderSpeaking( int nLobbySlot );
 
 	virtual void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot );
+	virtual void SelectBot( int nOrder, int nProfileIndex );
 	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex );
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex );
 

@@ -33,11 +33,17 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "nb_header_footer.h"
 
+#include "rd_workshop.h"
+
+#include "rd_challenges_shared.h"
+#include "rd_challenge_selection.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" : "0", FCVAR_DEVELOPMENTONLY, "When set user can create public lobbies instead of matching" );
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
+extern ConVar mm_max_players;
 
 using namespace vgui;
 using namespace BaseModUI;
@@ -51,13 +57,17 @@ GameSettings::GameSettings( vgui::Panel *parent, const char *panelName ):
 	m_drpDifficulty( NULL ),
 	m_drpGameType( NULL ),
 	m_drpGameAccess( NULL ),
+	m_drpNumSlots( NULL ),
 	m_drpServerType( NULL ),
 	m_drpStartingMission( NULL ),
 	m_bEditingSession( false ),
 	m_bAllowChangeToCustomCampaign( true ),
 	m_bPreventSessionModifications( false ),
 	m_drpFriendlyFire( NULL ),
-	m_drpOnslaught( NULL )
+	m_drpOnslaught( NULL ),
+	m_drpChallenge( NULL ),
+	m_bWantHardcoreFF( false ),
+	m_bWantOnslaught( false )
 {
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pHeaderFooter->SetTitle( "" );
@@ -180,6 +190,7 @@ void GameSettings::Activate()
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );
+	bool showNumSlots = showGameAccess;
 	
 	// On X360 we cannot allow selecting server type until the
 	// session is actually created
@@ -238,6 +249,17 @@ void GameSettings::Activate()
 			flyout->CloseMenu( NULL );
 	}
 
+	if ( m_drpChallenge )
+	{
+		const char *szChallengeName = m_pSettings->GetString( "game/challenge", "0" );
+		m_drpChallenge->SetCurrentSelection( ReactiveDropChallenges::DisplayName( szChallengeName ) );
+
+		UpdateChallenge( szChallengeName );
+
+		if ( FlyoutMenu* flyout = m_drpChallenge->GetCurrentFlyout() )
+			flyout->CloseMenu( NULL );
+	}
+
 	// If we have an active control, navigate from it since we'll be setting a new one
 	if ( m_ActiveControl )
 	{
@@ -292,7 +314,35 @@ void GameSettings::Activate()
 		m_drpGameAccess->SetVisible( showGameAccess );
 		m_drpGameAccess->SetEnabled( showGameAccess );
 	}
-	
+	if ( m_drpNumSlots )
+	{
+		m_drpNumSlots->SetVisible( showNumSlots );
+		m_drpNumSlots->SetEnabled( showNumSlots );
+
+		if ( m_pSettings->GetInt( "members/numSlots", 4 ) == 4 )
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_4_slots" );
+			mm_max_players.SetValue( 4 );
+		}
+		else
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_8_slots" );
+			mm_max_players.SetValue( 8 );
+		}
+
+		if ( FlyoutMenu* flyout = m_drpNumSlots->GetCurrentFlyout() )
+			flyout->CloseMenu( NULL );
+	}
+
+	if ( showGameAccess )
+	{
+		m_pHeaderFooter->SetGradientBarPos( 140, 210 );
+	}
+	else
+	{
+		m_pHeaderFooter->SetGradientBarPos( 140, 160 );
+	}
+
 	UpdateMissionImage();
 
 	UpdateFooter();
@@ -459,6 +509,10 @@ void GameSettings::OnCommand(const char *command)
 	{
 		ShowStartingMissionSelect();
 	}
+	else if ( V_strcmp( command, "cmd_change_challenge" ) == 0 )
+	{
+		ShowChallengeSelect();
+	}
 	else if ( char const *szMissionSelected = StringAfterPrefix( command, "cmd_mission_selected_" ) )
 	{
 		KeyValues *pSettings = KeyValues::FromString(
@@ -474,6 +528,7 @@ void GameSettings::OnCommand(const char *command)
 		char stripped[MAX_PATH];
 		V_StripExtension( szMissionSelected, stripped, MAX_PATH );
 		pSettings->SetString( "update/game/mission", stripped );
+		pSettings->SetUint64( "update/game/missioninfo/workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( VarArgs( "resource/overviews/%s.txt", stripped ) ) );
 
 		UpdateSessionSettings( pSettings );
 		UpdateMissionImage();
@@ -512,6 +567,7 @@ void GameSettings::OnCommand(const char *command)
 					else
 					{
 						pSettings->SetString( "update/game/mission", pMission->GetString( "MapName", "asi-jac1-landingbay01" ) );
+						pSettings->SetUint64( "update/game/missioninfo/workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( VarArgs( "resource/overviews/%s.txt", pSettings->GetString( "update/game/mission" ) ) ) );
 						break;
 					}
 				}
@@ -520,6 +576,19 @@ void GameSettings::OnCommand(const char *command)
 
 		UpdateSessionSettings( pSettings );
 		UpdateMissionImage();
+	}
+	else if ( char const *szChallengeSelected = StringAfterPrefix( command, "cmd_challenge_selected_" ) )
+	{
+		KeyValues::AutoDelete pSettings( "update" );
+		pSettings->SetString( "update/game/challenge", szChallengeSelected );
+		UpdateSessionSettings( pSettings );
+
+		if ( m_drpChallenge )
+		{
+			m_drpChallenge->SetCurrentSelection( ReactiveDropChallenges::DisplayName( szChallengeSelected ) );
+		}
+
+		UpdateChallenge( szChallengeSelected );
 	}
 	else if( V_strcmp( command, "JoinAny" ) == 0 )	// Join game in progress
 	{
@@ -589,6 +658,7 @@ void GameSettings::OnCommand(const char *command)
 	else if( V_strcmp( command, "Back" ) == 0 )
 	{
 		// Act as though 360 back button was pressed
+		mm_max_players.Revert();
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 	}
 	else if ( const char *szDifficultyValue = StringAfterPrefix( command, "#L4D360UI_Difficulty_" ) )
@@ -631,6 +701,9 @@ void GameSettings::OnCommand(const char *command)
 
 		if( m_drpFriendlyFire )
 		{
+			if ( m_drpFriendlyFire->IsEnabled() )
+				m_bWantHardcoreFF = false;
+
 			if ( FlyoutMenu* pFlyout = m_drpFriendlyFire->GetCurrentFlyout() )
 				pFlyout->SetListener( this );
 		}
@@ -653,6 +726,9 @@ void GameSettings::OnCommand(const char *command)
 
 		if( m_drpFriendlyFire )
 		{
+			if ( m_drpFriendlyFire->IsEnabled() )
+				m_bWantHardcoreFF = true;
+
 			if ( FlyoutMenu* pFlyout = m_drpFriendlyFire->GetCurrentFlyout() )
 				pFlyout->SetListener( this );
 		}
@@ -675,6 +751,9 @@ void GameSettings::OnCommand(const char *command)
 
 		if( m_drpOnslaught )
 		{
+			if ( m_drpOnslaught->IsEnabled() )
+				m_bWantOnslaught = false;
+
 			if ( FlyoutMenu* pFlyout = m_drpOnslaught->GetCurrentFlyout() )
 				pFlyout->SetListener( this );
 		}
@@ -697,6 +776,9 @@ void GameSettings::OnCommand(const char *command)
 
 		if( m_drpOnslaught )
 		{
+			if ( m_drpOnslaught->IsEnabled() )
+				m_bWantOnslaught = true;
+
 			if ( FlyoutMenu* pFlyout = m_drpOnslaught->GetCurrentFlyout() )
 				pFlyout->SetListener( this );
 		}
@@ -742,6 +824,14 @@ void GameSettings::OnCommand(const char *command)
 				pFlyout->SetListener( this );
 		}
 	}
+	else if ( !Q_strcmp( command, "#rd_ui_4_slots" ) )
+	{
+		mm_max_players.SetValue( 4 );
+	}
+	else if ( !Q_strcmp( command, "#rd_ui_8_slots" ) )
+	{
+		mm_max_players.SetValue( 8 );
+	}
 	else
 	{
 		BaseClass::OnCommand( command );
@@ -761,7 +851,7 @@ void GameSettings::ApplySchemeSettings( vgui::IScheme *pScheme )
 		pConditions = new KeyValues( "", "?condition?singleplayer", 0 );
 
 	char szPath[MAX_PATH];
-	V_snprintf( szPath, sizeof( szPath ), "Resource/UI/BaseModUI/GameSettings.res" ); //pSuffix1, pSuffix2, pSuffix3 );
+	V_snprintf( szPath, sizeof( szPath ), "Resource/UI/BaseModUI/GameSettings.res" );
 
 	LoadControlSettings( szPath, NULL, NULL, pConditions );
 
@@ -776,6 +866,7 @@ void GameSettings::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_drpGameType = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpGameType" ) );
 	m_drpFriendlyFire = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpFriendlyFire" ) );
 	m_drpOnslaught = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpOnslaught" ) );
+	m_drpChallenge = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpChallenge" ) );
 
 	m_drpGameAccess = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpGameAccess" ) );
 	if ( m_drpGameAccess )
@@ -794,6 +885,8 @@ void GameSettings::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	m_drpServerType = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpServerType" ) );
 	m_drpStartingMission = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpStartingMission" ) );
+
+	m_drpNumSlots = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpNumSlots" ) );
 
 	// can now be invoked as controls exist
 	Activate();
@@ -837,6 +930,9 @@ void GameSettings::OnClose()
 
 	if( m_drpOnslaught )
 		m_drpOnslaught->CloseDropDown();
+
+	if( m_drpChallenge )
+		m_drpChallenge->CloseDropDown();
 
 	m_pSettings = NULL;	// NULL out settings in case we get some calls
 	// after we are closed
@@ -1148,6 +1244,138 @@ void GameSettings::ShowStartingMissionSelect()
 			m_hSubScreen = pPanel;
 		}
 	}	
+}
+
+void GameSettings::ShowChallengeSelect()
+{
+	if ( m_hSubScreen.Get() )
+	{
+		m_hSubScreen->MarkForDeletion();
+	}
+
+	if ( m_pSettings )
+	{
+		ReactiveDropChallengeSelection *pPanel = new ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection" );
+		pPanel->SetSelectedChallenge( m_pSettings->GetString( "game/challenge", "0" ) );
+		pPanel->MoveToFront();
+
+		m_hSubScreen = pPanel;
+	}	
+}
+
+void GameSettings::UpdateChallenge( const char *szChallengeName )
+{
+	bool bForceOnslaughtOn = false;
+	bool bForceOnslaughtOff = false;
+	bool bForceHardcoreFFOn = false;
+	bool bForceHardcoreFFOff = false;
+
+	KeyValues::AutoDelete pKV( "CHALLENGE" );
+	if ( ReactiveDropChallenges::ReadData( pKV, szChallengeName ) )
+	{
+		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
+		{
+			if ( KeyValues *pFFAbsorption = pConVars->FindKey( "asw_marine_ff_absorption" ) )
+			{
+				if ( pFFAbsorption->GetInt() == 1 )
+				{
+					if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
+					{
+						if ( pSentryFFScale->GetFloat() == 0.0f )
+						{
+							bForceHardcoreFFOff = true;
+						}
+						else
+						{
+							bForceHardcoreFFOn = true;
+						}
+					}
+				}
+				else
+				{
+					bForceHardcoreFFOn = true;
+				}
+			}
+			else if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
+			{
+				if ( pSentryFFScale->GetFloat() != 0.0f )
+				{
+					bForceHardcoreFFOn = true;
+				}
+			}
+
+			if ( KeyValues *pHordeOverride = pConVars->FindKey( "asw_horde_override" ) )
+			{
+				if ( pHordeOverride->GetBool() )
+				{
+					bForceOnslaughtOn = true;
+				}
+				else
+				{
+					if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
+					{
+						if ( pWandererOverride->GetBool() )
+						{
+							bForceOnslaughtOn = true;
+						}
+						else
+						{
+							bForceOnslaughtOff = true;
+						}
+					}
+				}
+			}
+			else if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
+			{
+				if ( pWandererOverride->GetBool() )
+				{
+					bForceOnslaughtOn = true;
+				}
+			}
+		}
+
+		KeyValues::AutoDelete pUpdate( "update" );
+		pUpdate->SetUint64( "update/game/challengeinfo/workshop", pKV->GetUint64( "workshop" ) );
+		pUpdate->SetString( "update/game/challengeinfo/displaytitle", pKV->GetString( "name", szChallengeName ) );
+		UpdateSessionSettings( pUpdate );
+	}
+
+	if ( m_drpOnslaught )
+	{
+		if ( bForceOnslaughtOn )
+		{
+			m_drpOnslaught->SetEnabled( false );
+			m_drpOnslaught->SetCurrentSelection( "#L4D360UI_OnslaughtEnabled" );
+		}
+		else if ( bForceOnslaughtOff )
+		{
+			m_drpOnslaught->SetEnabled( false );
+			m_drpOnslaught->SetCurrentSelection( "#L4D360UI_OnslaughtDisabled" );
+		}
+		else if ( !m_drpOnslaught->IsEnabled() )
+		{
+			m_drpOnslaught->SetCurrentSelection( m_bWantOnslaught ? "#L4D360UI_OnslaughtEnabled" : "#L4D360UI_OnslaughtDisabled" );
+			m_drpOnslaught->SetEnabled( true );
+		}
+	}
+	if ( m_drpFriendlyFire )
+	{
+		if ( bForceHardcoreFFOn )
+		{
+			m_drpFriendlyFire->SetEnabled( false );
+			m_drpFriendlyFire->SetCurrentSelection( "#L4D360UI_HardcoreFF" );
+		}
+		else if ( bForceHardcoreFFOff )
+		{
+			m_drpFriendlyFire->SetEnabled( false );
+			m_drpFriendlyFire->SetCurrentSelection( "#L4D360UI_RegularFF" );
+		}
+		else if ( !m_drpFriendlyFire->IsEnabled() )
+		{
+			m_drpFriendlyFire->SetCurrentSelection( m_bWantHardcoreFF ? "#L4D360UI_HardcoreFF" : "#L4D360UI_RegularFF" );
+			m_drpFriendlyFire->SetEnabled( true );
+		}
+	}
 }
 
 static void ShowGameSettings()

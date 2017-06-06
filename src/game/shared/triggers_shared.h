@@ -29,6 +29,7 @@ enum
 	SF_TRIGGER_ONLY_NPCS_IN_VEHICLES		= 0X800,	// *if* NPCs can fire this trigger, only NPCs in vehicles do so (respects player ally flag too)
 	SF_TRIGGER_PUSH_USE_MASS				= 0x1000,	// Correctly account for an entity's mass (CTriggerPush::Touch used to assume 100Kg)
 	// and multiple component physobjs (car, blob...)
+	SF_TRIGGER_ONLY_BOTS_MARINES			= 0x2000,   // Only bot marines // reactivedrop: #iss-trigger-bots
 };
 
 // Spawnflags for CTriggerPlayerMovement

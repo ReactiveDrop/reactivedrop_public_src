@@ -3595,7 +3595,7 @@ void __MsgFunc_ASWEnemyZappedByTesla( bf_read &msg )
 		C_BaseEntity::EmitSound( filter, 0, ep );
 	}
 
-	C_ASW_Marine *pMarine = C_ASW_Marine::GetLocalMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 	if ( !pMarine )
 		return;
 

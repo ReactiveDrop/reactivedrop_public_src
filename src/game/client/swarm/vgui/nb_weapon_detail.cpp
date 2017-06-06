@@ -116,6 +116,8 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG);
 				else if ( FStrEq("asw_weapon_pistol", pWeaponData->szClassName) )
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG);
+				else if ( FStrEq( "asw_weapon_deagle", pWeaponData->szClassName ) )
+					nBonusDmg = MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG );
 				else if ( FStrEq("asw_weapon_pdw", pWeaponData->szClassName) )
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG);
 				else if ( FStrEq("asw_weapon_sniper_rifle", pWeaponData->szClassName) )
@@ -349,7 +351,12 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			bool bHighlightText = false;
 			//Q_snwprintf( wszAttributesTempText, sizeof( wszAttributesTempText ), g_pVGuiLocalize->Find( pWeaponData->szAttributesText ) );
 			//Q_snwprintf( wszAttributesTempNull, sizeof( wszAttributesTempNull ), "" );
-			if ( !Q_wcscmp( g_pVGuiLocalize->Find( pWeaponData->szAttributesText ), g_pVGuiLocalize->Find( "#asw_weapon_null_line" ) ) )
+			// fixing crash on missing weapon description 
+			const wchar_t *wattributes_str = g_pVGuiLocalize->Find( pWeaponData->szAttributesText );
+			if ( !pWeaponData->szAttributesText					||
+				 !Q_strcmp( pWeaponData->szAttributesText, "" ) ||
+				 !wattributes_str								||
+				 !Q_wcscmp( wattributes_str, g_pVGuiLocalize->Find( "#asw_weapon_null_line" ) ) )
 				//asw_weapon_null_line
 			{
 			//	Q_snwprintf( wszAttributesValue, sizeof( wszAttributesValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );

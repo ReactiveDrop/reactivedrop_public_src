@@ -76,6 +76,9 @@ public:
 	// date/time
 	CNetworkString( m_DateTime, 255 );
 
+	// for achievement disabling
+	bool m_bChallengeEverActive;
+
 	// store Steam IDs and names of each player that has taken part in this save game
 	int m_iNumPlayers;
 

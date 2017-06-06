@@ -9,6 +9,8 @@
 #include <KeyValues.h>
 #include "particle_parse.h"
 #include "particles/particles.h"
+#include "tier2/fileutils.h"		// BenLubar #iss-particles-manifest 
+#include "vpklib/packedstore.h"		// BenLubar #iss-particles-manifest 
 
 #ifdef GAME_DLL
 #include "te_effect_dispatch.h"
@@ -20,6 +22,8 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+#define PARTICLES_MANIFEST_FILE "particles/particles_manifest.txt"
 
 extern void StartParticleEffect( const CEffectData &data, int nSplitScreenPlayerSlot = -1 );
 
@@ -53,6 +57,62 @@ int GetAttachTypeFromString( const char *pszString )
 	return -1;
 }
 
+// BenLubar #iss-particles-manifest 
+static void AddParticleFilesToList( CUtlVector<CUtlString> & files, KeyValues *pKV, const char *pszPath, const char *pszManifestName )
+{
+	FOR_EACH_VALUE( pKV, pFile )
+	{
+		if ( !Q_stricmp( pFile->GetName(), "file" ) )
+		{
+			files.AddToTail( pFile->GetString() );
+		}
+		else
+		{
+			Warning( "Invalid particle file type '%s' in '%s' from '%s'.\n", pFile->GetName(), pszManifestName, pszPath );
+		}
+	}
+}
+
+// BenLubar #iss-particles-manifest load particles_manifest.txt for each 
+// mounted game path and for each VPK file
+static void GetAllParticleManifests( CUtlVector<CUtlString> & files, const char *pszParticlesManifestFile )
+{
+	CUtlVector<CUtlString> path;
+	GetSearchPath( path, "GAME" );
+	FOR_EACH_VEC( path, i )
+	{
+		KeyValues::AutoDelete pKV( pszParticlesManifestFile );
+		if ( pKV->LoadFromFile( filesystem, path[i] + "/" + pszParticlesManifestFile ) )
+		{
+			AddParticleFilesToList( files, pKV, path[i], pszParticlesManifestFile );
+		}
+	}
+
+	CUtlVector<CUtlString> vpkNames;
+	filesystem->GetVPKFileNames( vpkNames );
+	FOR_EACH_VEC( vpkNames, i )
+	{
+		CPackedStore vpk( vpkNames[i], filesystem );
+		CPackedStoreFileHandle hFile = vpk.OpenFile( pszParticlesManifestFile );
+		if ( hFile )
+		{
+			CUtlBuffer buf( 0, hFile.m_nFileSize, CUtlBuffer::TEXT_BUFFER );
+			hFile.Read( buf.Base(), buf.Size() );
+			buf.SeekPut( CUtlBuffer::SEEK_HEAD, hFile.m_nFileSize );
+
+			KeyValues::AutoDelete pKV( pszParticlesManifestFile );
+			if ( pKV->LoadFromBuffer( pszParticlesManifestFile, buf ) )
+			{
+				AddParticleFilesToList( files, pKV, vpkNames[i], pszParticlesManifestFile );
+			}
+			else
+			{
+				Warning( "Cannot parse particle manifest file '%s' from VPK '%s'\n", pszParticlesManifestFile, vpkNames[i] );
+			}
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -63,7 +123,8 @@ void ParseParticleEffects( bool bLoadSheets )
 	g_pParticleSystemMgr->ShouldLoadSheets( bLoadSheets );
 
 	CUtlVector<CUtlString> files;
-	GetParticleManifest( files );
+	// BenLubar #iss-particles-manifest, was GetParticleManifest( files );
+	GetAllParticleManifests( files, PARTICLES_MANIFEST_FILE );
 
 	int nCount = files.Count();
 	for ( int i = 0; i < nCount; ++i )
@@ -74,6 +135,38 @@ void ParseParticleEffects( bool bLoadSheets )
 	g_pParticleSystemMgr->DecommitTempMemory();
 }
 
+// BenLubar #iss-particles-manifest 
+void ParseParticleEffectsMap( const char *pszMapName, bool bLoadSheets )
+{
+	MEM_ALLOC_CREDIT();
+
+	CUtlVector<CUtlString> files;
+	if ( pszMapName && *pszMapName )
+	{
+		char szMapNameStripped[MAX_MAP_NAME];
+		Q_FileBase( pszMapName, szMapNameStripped, sizeof( szMapNameStripped ) );
+		Q_strlower( szMapNameStripped );
+
+		char szMapParticlesManifest[MAX_PATH];
+		Q_snprintf( szMapParticlesManifest, sizeof( szMapParticlesManifest ), "maps/%s_particles.txt", szMapNameStripped );
+		GetAllParticleManifests( files, szMapParticlesManifest );
+	}
+
+	int nCount = files.Count();
+	if ( !nCount )
+	{
+		return;
+	}
+
+	g_pParticleSystemMgr->ShouldLoadSheets( bLoadSheets );
+
+	for ( int i = 0; i < nCount; ++i )
+	{
+		g_pParticleSystemMgr->ReadParticleConfigFile( files[i], true, true );
+	}
+
+	g_pParticleSystemMgr->DecommitTempMemory();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

@@ -12,8 +12,13 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
+#include "asw_spawn_manager.h"
+#include "rd_lobby_utils.h"
+#include "matchmaking/imatchframework.h"
 
 extern ConVar sv_force_transmit_ents;
+extern ConVar mm_max_players;
+ConVar rd_adjust_sv_maxrate( "rd_adjust_sv_maxrate", "1", FCVAR_ARCHIVE, "If 1 for 8 slot listen server sv_maxrate will be set to 60000" );
 
 // -------------------------------------------------------------------------------------------- //
 // Mod-specific CServerGameClients implementation.
@@ -22,7 +27,7 @@ extern ConVar sv_force_transmit_ents;
 void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int &defaultMaxPlayers ) const
 {
 	minplayers = 1; 
-	defaultMaxPlayers = 4;
+	defaultMaxPlayers = 8;
 	maxplayers = ASW_MAX_PLAYERS;
 }
 
@@ -33,8 +38,10 @@ void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int 
 void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 {
 	// precache even if not in the level, for onslaught mode
-	UTIL_PrecacheOther( "asw_shieldbug" );
-	UTIL_PrecacheOther( "asw_parasite" );
+	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
+	{
+		UTIL_PrecacheOther( ASWSpawnManager()->GetAlienClass( i )->m_pszAlienClass );
+	}
 }
 
 bool g_bOfflineGame = false;
@@ -84,7 +91,7 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		{
 			// We are already reserved, but we still need to let the engine
 			// baseserver know how many human slots to allocate
-			pKV->SetInt( "members/numSlots", g_bOfflineGame ? 1 : 4 );
+			pKV->SetInt( "members/numSlots", g_bOfflineGame ? 1 : mm_max_players.GetInt() );
 			return;
 		}
 
@@ -96,6 +103,12 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 
 	//g_bOfflineGame = pKV->GetString( "map/offline", NULL ) != NULL;
 	g_bOfflineGame = !Q_stricmp( pKV->GetString( "system/network", "LIVE" ), "offline" );
+
+	KeyValues *pKeyValuesForChallenge = NULL;
+	if ( g_bOfflineGame && g_pMatchFramework && g_pMatchFramework->GetMatchSession() && g_pMatchFramework->GetMatchSession()->GetSessionSettings() )
+	{
+		pKeyValuesForChallenge = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
+	}
 
 	//Msg( "GameInterface reservation payload:\n" );
 	//KeyValuesDumpAsDevMsg( pKV );
@@ -169,6 +182,45 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		mp_gamemode.SetValue( szGameMode );
 	}
 
+	extern ConVar rd_challenge;
+	char const *szChallenge = pKeyValuesForChallenge->GetString( "game/challenge", "" );
+	if ( szChallenge && *szChallenge )
+	{
+		rd_challenge.SetValue( szChallenge );
+	}
+	else if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
+	{
+		rd_challenge.SetValue( UTIL_RD_GetCurrentLobbyData( "game:challenge", "0" ) );
+	}
+	else
+	{
+		rd_challenge.SetValue( "0" );
+	}
+
+	if ( rd_adjust_sv_maxrate.GetBool() )
+	{
+		int numSlots = pKV->GetInt( "members/numSlots", 0 );
+		if ( numSlots > 4 )
+		{
+			ConVarRef sv_maxrate( "sv_maxrate" );
+			if ( sv_maxrate.IsValid() )
+			{
+				if ( sv_maxrate.GetInt() < 60000 )
+				{
+					sv_maxrate.SetValue( 60000 );	// reactivedrop: for 8 player servers increase sv_maxrate by 2 times(30k is default)
+				}
+			}
+			ConVarRef net_splitpacket_maxrate( "net_splitpacket_maxrate" );
+			if ( net_splitpacket_maxrate.IsValid() )
+			{
+				if ( net_splitpacket_maxrate.GetInt() < 30000 )
+				{
+					net_splitpacket_maxrate.SetValue( 30000 );	// reactivedrop: for 8 player servers increase net_splitpacket_maxrate by 2 times(15k is default)
+				}
+			}
+		}
+	}
+
 	if ( !Q_stricmp( szMode, "campaign" ) )
 	{
 		// TODO: Handle loading a game instead of starting a new one
@@ -183,10 +235,98 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		char szSaveFilename[ MAX_PATH ];
 		szSaveFilename[ 0 ] = 0;
 		const char *szStartingMission = pKV->GetString( "game/mission", NULL );
+
+
+		extern ConVar asw_default_campaign;
+		if ( szStartingMission && !Q_stricmp( szCampaignName, "jacob" ) && !Q_stricmp( pKV->GetString( "game/state" ), "lobby" ) && Q_stricmp( asw_default_campaign.GetString(), "jacob" ) )
+		{
+			// BenLubar: waking up a dedicated server has been giving us Jacob's Rest as the campaign but keeping the default campaign's first mission. This is a hack to detect and fix this situation.
+			if ( KeyValues *pJacob = pSource->GetCampaignDetails( "jacob" ) )
+			{
+				bool bSkippedFirst = false;
+				bool bFound = false;
+				FOR_EACH_TRUE_SUBKEY( pJacob, pKey )
+				{
+					if ( Q_stricmp( pKey->GetName(), "MISSION" ) )
+					{
+						continue;
+					}
+
+					if ( !bSkippedFirst )
+					{
+						bSkippedFirst = true;
+						continue;
+					}
+
+					if ( !Q_stricmp( pKey->GetString( "MapName" ), szStartingMission ) )
+					{
+						bFound = true;
+						break;
+					}
+				}
+
+				if ( bFound )
+				{
+					Warning( "Found mission %s in Jacob's Rest, but we're waking up from hibernation and Jacob's Rest isn't the default campaign!\n", szStartingMission );
+				}
+				else
+				{
+					DevMsg( 2, "Mission %s started as Jacob's Rest while server waking up from hibernation. Attempting to fix.\n", szStartingMission );
+				}
+			}
+			else
+			{
+				Warning( "Could not load Jacob's Rest campaign details. Continuing anyway.\n" );
+			}
+			if ( KeyValues *pDefault = pSource->GetCampaignDetails( asw_default_campaign.GetString() ) )
+			{
+				bool bSkippedFirst = false;
+				bool bFound = false;
+				FOR_EACH_TRUE_SUBKEY( pDefault, pKey )
+				{
+					if ( Q_stricmp( pKey->GetName(), "MISSION" ) )
+					{
+						continue;
+					}
+
+					if ( !bSkippedFirst )
+					{
+						bSkippedFirst = true;
+						continue;
+					}
+
+					if ( !Q_stricmp( pKey->GetString( "MapName" ), szStartingMission ) )
+					{
+						bFound = true;
+						break;
+					}
+				}
+
+				if ( bFound )
+				{
+					Msg( "Fixing campaign in hibernation wakeup: setting to %s for mission %s.\n", asw_default_campaign.GetString(), szStartingMission );
+					szCampaignName = asw_default_campaign.GetString();
+				}
+				else
+				{
+					DevWarning( 2, "Mission %s not in default campaign %s, but we're waking up from hibernation!\n", szStartingMission, asw_default_campaign.GetString() );
+				}
+			}
+			else
+			{
+				Warning( "Could not load default campaign details. Continuing anyway.\n" );
+			}
+		}
+
 		if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, !g_bOfflineGame, szStartingMission ) )
 		{
 			Msg( "Unable to create new save game.\n" );
 			return;
+		}
+
+		if ( engine->IsDedicatedServer() )
+		{
+			mm_max_players.SetValue( gpGlobals->maxClients );
 		}
 
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s reserved\n",

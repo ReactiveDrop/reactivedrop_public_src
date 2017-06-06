@@ -62,6 +62,7 @@ class CASW_Alien : public CAI_BaseAlienBase, public IASW_Spawnable_NPC, public I
 {
 	DECLARE_CLASS( CASW_Alien, CAI_BaseAlienBase );
 	DECLARE_SERVERCLASS();
+	DECLARE_ENT_SCRIPTDESC();	// BenLubar(key-values-director)
 
 	// shared class members
 #include "asw_alien_shared_classmembers.h"
@@ -97,6 +98,14 @@ public:
 	bool m_bRegisteredAsAwake;
 	float m_fLastSleepCheckTime;
 	bool m_bVisibleWhenAsleep;
+
+    bool m_bFlammable; 
+    bool m_bTeslable; 
+    bool m_bFreezable; 
+    bool m_bFlinchable; 
+    int  m_iHealthBonus; 
+    float m_fSizeScale; 
+    float m_fSpeedScale; 
 	
 	DECLARE_DATADESC();
 	CASW_Alien();
@@ -170,6 +179,7 @@ public:
 	float	m_fNextStunSound;
 	void Event_Killed( const CTakeDamageInfo &info );
 	float m_fHurtSlowMoveTime;
+	float m_flElectroStunSlowMoveTime;
 	CNetworkVar(bool, m_bElectroStunned);
 	//CNetworkVar(bool, m_bGibber);
 	CNetworkVar( DeathStyle_t, m_nDeathStyle );
@@ -384,6 +394,7 @@ extern ConVar asw_alien_speed_scale_easy;
 extern ConVar asw_alien_speed_scale_normal;
 extern ConVar asw_alien_speed_scale_hard;
 extern ConVar asw_alien_speed_scale_insane;
+extern ConVar rd_difficulty_tier;
 extern int AE_ALIEN_MELEE_HIT;
 
 // general groundchecks flag used by our alien classes

@@ -45,14 +45,17 @@
 #include "ScreenSpaceEffects.h"
 #include "toolframework_client.h"
 #include "c_func_reflective_glass.h"
+#include "iasw_fade_list.h"
 #include "keyvalues.h"
 #include "renderparm.h"
 #include "modelrendersystem.h"
 #include "vgui/ISurface.h"
+#include "c_asw_marine.h"
 
 #define PARTICLE_USAGE_DEMO									// uncomment to get particle bar thing
 
-
+// reactivedrop: if defined and blackskyfog is set as skybox then set r_skybox 0 and draw fog color instead of skybox
+// #define REACTIVEDROP_SKYBOX_FOG_HACK
 
 
 #if defined( HL2_CLIENT_DLL ) || defined( INFESTED_DLL )
@@ -187,7 +190,8 @@ static ConVar r_waterforcereflectentities( "r_waterforcereflectentities", "0" );
 static ConVar r_WaterDrawRefraction( "r_WaterDrawRefraction", "1", 0, "Enable water refraction" );
 static ConVar r_WaterDrawReflection( "r_WaterDrawReflection", "1", 0, "Enable water reflection" );
 static ConVar r_ForceWaterLeaf( "r_ForceWaterLeaf", "1", 0, "Enable for optimization to water - considers view in leaf under water for purposes of culling" );
-static ConVar mat_drawwater( "mat_drawwater", "1", FCVAR_CHEAT );
+// reactivedrop: made mat_drawwater not cheat to allow slow computers to run the game at stable 60 fps or more 
+static ConVar mat_drawwater( "mat_drawwater", "1", FCVAR_NONE );
 static ConVar mat_clipz( "mat_clipz", "1" );
 
 
@@ -1392,6 +1396,25 @@ bool CViewRender::UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *p
 	return true;
 }
 
+#ifdef REACTIVEDROP_SKYBOX_FOG_HACK
+static class CReactiveDropSkyboxFogHack : public CAutoGameSystem
+{
+public:
+	CReactiveDropSkyboxFogHack() : CAutoGameSystem( "CReactiveDropSkyboxFogHack" ), m_bIsBlackSkyFog( false ) {}
+
+	bool m_bIsBlackSkyFog;
+
+	virtual void LevelInitPostEntity()
+	{
+		extern ConVar sv_skyname;
+		m_bIsBlackSkyFog = !V_stricmp( sv_skyname.GetString(), "blackskyfog" );
+		DevMsg( "CReactiveDropSkyboxFogHack::m_bIsBlackSkyFog = %s\n", m_bIsBlackSkyFog ? "true" : "false" );
+
+		r_skybox.SetValue( !m_bIsBlackSkyFog );
+	}
+} s_ReactiveDropSkyboxFogHack;
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Renders world and all entities, etc.
 //-----------------------------------------------------------------------------
@@ -1439,6 +1462,26 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 	{
 		drawSkybox = false;
 	}
+
+	C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+	if ( pViewMarine && pViewMarine->IsControllingTurret() )
+	{
+		drawSkybox = false;
+		CMatRenderContextPtr pRenderContext( materials );
+		pRenderContext->ClearColor4ub( 0, 0, 0, 255 );
+		pRenderContext->ClearBuffers( true, false, false );
+	}
+
+#ifdef REACTIVEDROP_SKYBOX_FOG_HACK
+	if (s_ReactiveDropSkyboxFogHack.m_bIsBlackSkyFog)
+	{
+		SetClearColorToFogColor();
+
+		CMatRenderContextPtr pRenderContext(materials);
+		pRenderContext->ClearBuffers(true, false, false);
+		pRenderContext->Release();
+	}
+#endif
 
 	ParticleMgr()->IncrementFrameCode();
 
@@ -1790,6 +1833,48 @@ static void GetSkyboxFogColor( float *pColor, bool ignoreOverride, bool ignoreHD
 		return;
 	}
 	CPlayerLocalData	*local		= &pbp->m_Local;
+
+	// reactivedrop: #iss-3dskyfog
+	// if true sky_camera's fog color will be ignored and the color from the 
+	// currently active env_fog_controller will be used as sky_camera's fog 
+	// color. It is useful when we have various fogs on map and we can see 3D 
+	// skybox which will always have the same fog as the playable area. 
+	// Note: you have to disable depth blur in postprocess_controller because 
+	// currently it's not applied to 3D skybox 
+	//
+	// The primary reason to use this are maps(extermination05catwalks) where 
+	// player can see the far part of map, where radius_override cuts geometry
+	// so player see the 2D skybox. At first we simply used skybox with 
+	// parameter nofog 0(makes fog apply to skybox too). But when 
+	// env_projectedtexture was in view it disabled fog on skybox giving 
+	// visual artifacts like pure black color(blackskyfog). 
+	//
+	// Now we will use 3D sky to combat this issue. 
+	//
+	// Note: REACTIVEDROP_SKYBOX_FOG_HACK is no longer used as it didn't 
+	// properly blend colors for tonemap higher than 1. But will be kept for 
+	// reference or future improvement
+	if( local->m_skybox3d.usecurrentfogcolor )
+	{
+
+		fogparams_t *pFogParams = NULL;
+		C_BasePlayer *pbp = C_BasePlayer::GetLocalPlayer();
+		if (pbp)
+		{
+			pFogParams = pbp->GetFogParams();
+		}
+
+		if (GetFogEnable(pFogParams))
+		{
+			float fogColor[3];
+			GetFogColor(pFogParams, fogColor);
+
+			pColor[0] = fogColor[0];
+			pColor[1] = fogColor[1];
+			pColor[2] = fogColor[2];
+		}
+		return;
+	}
 
 	bool bFogOverride = fog_override.GetBool() && !ignoreOverride;
 	float HDRColorScale;
@@ -2904,10 +2989,12 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 	{		     
 		cplane_t glassReflectionPlane;
 		if ( IsReflectiveGlassInView( viewIn, glassReflectionPlane ) )
-		{								    
+		{
+			IASW_Fade_List::DisableFading(); // BenLubar(sd2-ceiling-ents)
 			CRefPtr<CReflectiveGlassView> pGlassReflectionView = new CReflectiveGlassView( this );
 			pGlassReflectionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogVolumeInfo, info, glassReflectionPlane );
 			AddViewToScene( pGlassReflectionView );
+			IASW_Fade_List::EnableFading(); // BenLubar(sd2-ceiling-ents)
 
 			CRefPtr<CRefractiveGlassView> pGlassRefractionView = new CRefractiveGlassView( this );
 			pGlassRefractionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogVolumeInfo, info, glassReflectionPlane );
@@ -3339,6 +3426,8 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 	g_bRenderingCameraView = true;
 #endif
 
+	IASW_Fade_List::DisableFading(); // BenLubar(sd2-ceiling-ents)
+
 	// FIXME: this should check for the ability to do a render target maybe instead.
 	// FIXME: shouldn't have to truck through all of the visible entities for this!!!!
 	ITexture *pCameraTarget = GetCameraTexture();
@@ -3368,6 +3457,8 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 		pRenderContext->CopyRenderTargetToTextureEx( pCameraTarget, 0, NULL, NULL );
 		pRenderContext->PopRenderTargetAndViewport();
 	}
+
+	IASW_Fade_List::EnableFading(); // BenLubar(sd2-ceiling-ents)
 
 #ifdef _DEBUG
 	g_bRenderingCameraView = false;
@@ -5731,8 +5822,10 @@ void CAboveWaterView::Draw()
 	// render the reflection
 	if( m_waterInfo.m_bReflect )
 	{
+		IASW_Fade_List::DisableFading(); // BenLubar(sd2-ceiling-ents)
 		m_ReflectionView.Setup( m_waterInfo.m_bReflectEntities );
 		m_pMainView->AddViewToScene( &m_ReflectionView );
+		IASW_Fade_List::EnableFading(); // BenLubar(sd2-ceiling-ents)
 	}
 	
 	bool bViewIntersectsWater = false;

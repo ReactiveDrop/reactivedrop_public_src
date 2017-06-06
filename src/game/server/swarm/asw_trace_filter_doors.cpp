@@ -76,7 +76,11 @@ CASW_Door* UTIL_ASW_DoorBlockingRoute( AI_Waypoint_t *pRoute, bool bRequireLocke
 
 		if ( tr.DidHit() )
 		{
-			return dynamic_cast<CASW_Door*>(tr.m_pEnt);
+			// reactivedrop: added check for door
+			// if not door continue checking route
+			CASW_Door *pDoor = dynamic_cast<CASW_Door*>(tr.m_pEnt);
+			if (pDoor)
+				return pDoor;
 		}
 
 		pLastPoint = pRoute;

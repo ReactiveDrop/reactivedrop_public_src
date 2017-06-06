@@ -13,6 +13,8 @@ class C_ASW_Gun_Smoke_Emitter;
 	#include "asw_weapon_rifle.h"
 #endif
 
+extern ConVar rd_ground_shooting;
+
 class CASW_Weapon_Minigun : public CASW_Weapon_Rifle
 {
 public:
@@ -47,6 +49,7 @@ public:
 	#else
 		DECLARE_PREDICTABLE();
 
+		virtual bool ShouldMarineMinigunShoot();
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 		virtual float GetMuzzleFlashScale();
 		virtual bool GetMuzzleFlashRed();
@@ -74,7 +77,7 @@ public:
 	virtual bool ShouldMarineMoveSlow();
 	virtual bool SupportsBayonet() { return false; }
 
-	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 
 	float GetSpinRate() { return m_flSpinRate.Get(); }
 

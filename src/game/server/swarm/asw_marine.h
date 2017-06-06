@@ -7,6 +7,7 @@
 #include "asw_shareddefs.h"
 #include "asw_playeranimstate.h"
 #include "asw_lag_compensation.h"
+#include "iasw_server_usable_entity.h"
 
 class CASW_Player;
 class CASW_Marine_Resource;
@@ -58,7 +59,8 @@ class CBaseTrigger;
 #define ASW_MOB_VICTIM_SIZE 3
 #define ASW_MARINE_HISTORY_POSITIONS 6
 
-class CASW_Marine : public CASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers
+// riflemod: making marine a usable entity to allow reviving 
+class CASW_Marine : public CASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Server_Usable_Entity
 {
 public:
 	DECLARE_CLASS( CASW_Marine, CASW_VPhysics_NPC );
@@ -68,6 +70,19 @@ public:
 
 	CASW_Marine();
 	virtual ~CASW_Marine();
+
+	// reactivedrop: usable marine for reviving ability 
+	// IASW_Server_Usable_Entity implementation
+	virtual CBaseEntity* GetEntity() { return this; }
+	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
+	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
+	virtual void MarineStartedUsing(CASW_Marine* pMarine);
+	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
+	virtual bool NeedsLOSCheck() { return true; }
+
+	float m_fLastMessageTime; /// used to display a message about reviving 
 
 	// Use this in preference to CASW_Marine::AsMarine( pEnt ) :
 	static inline CASW_Marine *AsMarine( CBaseEntity *pEnt );
@@ -174,7 +189,7 @@ public:
 	virtual void SetPlayerAvoidState();
 	virtual unsigned int PhysicsSolidMaskForEntity() const;
 	bool TeleportStuckMarine();
-	bool TeleportToFreeNode();
+	bool TeleportToFreeNode( CASW_Marine *pTarget = NULL, float fNearestDist = -1 );
 	CNetworkVar( bool, m_bWalking );
 
 	CASW_Lag_Compensation m_LagCompensation;
@@ -233,7 +248,14 @@ public:
 	// jump jets
 	CNetworkVar( int, m_iJumpJetting );
 	Vector m_vecJumpJetStart;
-	Vector m_vecJumpJetEnd;
+	// reactivedrop: this var was made Networked because we need to specify 
+	// destination from our CASW_Marine_JumpJet_Trigger 
+	// and there is no other way for Client.dll to know this destination 
+	CNetworkVar( Vector, m_vecJumpJetEnd );	
+	// reactivedrop: used to override time taken to do jump jet 
+	CNetworkVar( float, m_fJumpJetDurationOverride );
+	// reactivedrop: used to override time taken animate jump jet 
+	CNetworkVar( float, m_fJumpJetAnimationDurationOverride );
 	float m_flJumpJetStartTime;
 	float m_flJumpJetEndTime;
 
@@ -248,11 +270,19 @@ public:
 	CNetworkVar( bool, m_bPowerupExpires );
 	//CNetworkVar( int, m_iPowerupCount );
 
-	void AddDamageBuff( CASW_BuffGrenade_Projectile *pBuffGrenade, float flDuration ) { m_hLastBuffGrenade = pBuffGrenade; m_flDamageBuffEndTime = MAX( GetDamageBuffEndTime(), gpGlobals->curtime + flDuration ); }
+	void AddDamageBuff( CASW_BuffGrenade_Projectile *pBuffGrenade, float flDuration, Class_T iBuffType, CASW_Marine *pApplier )
+	{
+		m_hLastBuffGrenade = pBuffGrenade;
+		m_flDamageBuffEndTime = MAX( GetDamageBuffEndTime(), gpGlobals->curtime + flDuration );
+		m_iLastDamageBuffType = iBuffType;
+		m_hLastDamageBuffApplier = pApplier;
+	}
 	void RemoveDamageBuff() { m_flDamageBuffEndTime = 0.0f; }
 	float GetDamageBuffEndTime() { return m_flDamageBuffEndTime.Get(); }
 	CNetworkVar( float, m_flDamageBuffEndTime );
 	CHandle<CASW_BuffGrenade_Projectile> m_hLastBuffGrenade;
+	Class_T m_iLastDamageBuffType;
+	CHandle<CASW_Marine> m_hLastDamageBuffApplier;
 
 	void AddElectrifiedArmor( float flDuration ) { m_flElectrifiedArmorEndTime = MAX( GetElectrifiedArmorEndTime(), gpGlobals->curtime + flDuration ); }
 	float GetElectrifiedArmorEndTime() { return m_flElectrifiedArmorEndTime.Get(); }
@@ -263,6 +293,10 @@ public:
 	void ApplyPassiveMeleeDamageEffects( CTakeDamageInfo &dmgInfo );
 
 	CBaseTrigger* IsInEscapeVolume();		// returns pointer to current escape volume, if marine is in the exit
+	CBaseTrigger* IsInStickTogetherVolume();		// returns pointer to sticktogether volume, if marine is in it
+
+	virtual bool ShouldNotDistanceCull();	// BenLubar(deathmatch-improvements):
+	virtual Disposition_t IRelationType( CBaseEntity *pTarget );	// BenLubar(deathmatch-improvements):
 
 	// Custom conditions, schedules and tasks
 	enum
@@ -339,10 +373,10 @@ public:
 	virtual void RunTask( const Task_t *pTask );
 	virtual void StartTask(const Task_t *pTask);
 	virtual void UpdateEfficiency( bool bInPVS );
-	//virtual void TaskFail( AI_TaskFailureCode_t );
 	virtual void		TaskFail( AI_TaskFailureCode_t );
 	void				TaskFail( const char *pszGeneralFailText )	{ TaskFail( MakeFailCode( pszGeneralFailText ) ); }
 	void CheckForAIWeaponSwitch();
+	float m_flFailedPathingTime[64];
 
 private:
 	EHANDLE m_hAlienGooTarget;
@@ -497,6 +531,7 @@ public:
 	bool TakeWeaponPickup(CASW_Weapon* pWeapon);
 	bool TakeWeaponPickup(CASW_Pickup_Weapon* pPickup);				// takes a weapon	
 	bool DropWeapon(int iWeaponIndex, bool bNoSwap = false);		// drops the weapon on the ground as a weapon pickup
+	bool RemoveWeapon(int iWeaponIndex, bool bNoSwap = false);		// removes the weapon from marine without dropping it to the ground
 	bool DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget=NULL, const Vector *pVelocity=NULL);
 	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ );	// HL version	
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
@@ -539,6 +574,8 @@ public:
 	virtual bool FInViewCone( const Vector &vecSpot );
 	virtual bool FInViewCone( CBaseEntity *pEntity ) { return FInViewCone( pEntity->WorldSpaceCenter() ); }
 	virtual bool FInAimCone( const Vector &vecSpot );
+	// BenLubar(deathmatch-improvements):
+	virtual	bool FVisible ( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 	virtual bool WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
 	virtual float GetFollowSightRange();
 	virtual float GetCloseCombatSightRange();
@@ -573,7 +610,12 @@ public:
 	virtual bool BecomeRagdollOnClient( const Vector &force );
 	void Suicide();
 	bool IsWounded() const;	// less than 60% health
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	// riflemod: redefine this method to allow knockout instead of death for marines 
+	virtual int OnTakeDamage( const CTakeDamageInfo &info );
+	// reactivedrop: added Event_Dying() to immediately remove CASW_Marine 
+	// upon death. To prevent crash on fast respawn
+	virtual void Event_Dying( void );
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual bool CorpseGib( const CTakeDamageInfo &info );
 	virtual bool ShouldGib( const CTakeDamageInfo &info );
 	virtual bool Event_Gibbed( const CTakeDamageInfo &info );
@@ -648,6 +690,7 @@ public:
 	// falling over
 	void SetKnockedOut(bool bKnockedOut);
 	CNetworkVar( bool, m_bKnockedOut );
+	bool m_bPreventKnockedOut;
 	//CRagdollProp * m_pKnockedOutRagdoll;
 	CRagdollProp* GetRagdollProp();
 	EHANDLE m_hKnockedOutRagdoll;

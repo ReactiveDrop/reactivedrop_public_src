@@ -25,10 +25,30 @@ public:
 	CASW_Weapon_Flashlight();
 	virtual ~CASW_Weapon_Flashlight();
 	void Precache();
-	
-	Activity	GetPrimaryAttackActivity( void );
 
-	void	PrimaryAttack();
+	virtual float	GetFireRate(void) { return 1.4f; }
+	virtual bool	Reload() { return false;  }
+	virtual bool	ShouldMarineMoveSlow() { return false; }	// firing doesn't slow the marine down
+	
+	virtual bool	OffhandActivate();
+	virtual bool	IsOffensiveWeapon() { return false; }
+
+//	virtual bool	WantsOffhandPostFrame() { return true; }
+	// Classification
+	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLASHLIGHT; }
+	virtual void	HandleFireOnEmpty() { return PrimaryAttack();  }
+
+	Activity		GetPrimaryAttackActivity( void ) { return ACT_VM_PRIMARYATTACK; }
+//	virtual int		ASW_SelectWeaponActivity(int idealActivity) { return idealActivity; }
+	virtual int		AmmoClickPoint() { return 0; }
+	virtual void	PrimaryAttack();
+
+	virtual const Vector& GetBulletSpread( void )
+	{
+		static Vector cone;
+		cone = Vector(0,0,0);
+		return cone;
+	}
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
@@ -41,14 +61,7 @@ public:
 		// for toggling the flashlight effect when we take/drop this weapon
 		virtual void MarineDropped(CASW_Marine* pMarine);
 		virtual void Equip( CBaseCombatCharacter *pOwner );		
-	#endif
-
-	virtual bool IsOffensiveWeapon() { return false; }
-
-	//virtual bool ASWCanBeSelected() { return false; }	// no selecting this
-
-	// Classification
-	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLASHLIGHT; }
+	#endif	
 };
 
 

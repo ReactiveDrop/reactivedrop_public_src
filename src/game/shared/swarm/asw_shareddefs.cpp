@@ -17,7 +17,8 @@ bool IsAlienClass( Class_T npc_class )
 		npc_class == CLASS_ASW_SHAMAN ||
 		npc_class == CLASS_ASW_BOOMER ||
 		npc_class == CLASS_ASW_RANGER ||
-		npc_class == CLASS_ASW_EGG
+		npc_class == CLASS_ASW_EGG ||
+		npc_class == CLASS_ANTLION
 		);
 }
 
@@ -93,6 +94,7 @@ bool IsWeaponClass( Class_T entity_class )
 		entity_class == CLASS_ASW_MEDKIT ||
 		entity_class == CLASS_ASW_MEDICAL_SATCHEL ||
 		entity_class == CLASS_ASW_HEAL_GUN ||
+		entity_class == CLASS_ASW_HEALAMP_GUN ||
 		entity_class == CLASS_ASW_LASER_MINES ||
 		entity_class == CLASS_ASW_HORNET_BARRAGE ||
 		entity_class == CLASS_ASW_HEALGRENADE ||

@@ -135,7 +135,7 @@ void CNB_Spend_Skill_Points::OnCommand( const char *command )
 	{
 		CNB_Main_Panel::RemoveFromSpendQueue( m_nProfileIndex );
 		MarkForDeletion();
-		Briefing()->SetChangingWeaponSlot( 0 );
+		Briefing()->SetChangingWeaponSlot( -1, 0 );
 
 		CNB_Main_Panel *pMainPanel = dynamic_cast<CNB_Main_Panel*>( GetParent() );
 		if ( pMainPanel )

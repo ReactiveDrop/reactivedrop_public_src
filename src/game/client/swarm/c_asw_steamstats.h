@@ -38,6 +38,7 @@ struct MissionStats_t
 	float32 m_fDamageAvg;
 	float32 m_fFFAvg;
 	int32 m_iTimeTotal;
+	int32 m_iTimeSuccess;
 	int32 m_iTimeAvg;
 	int32 m_iHighestDifficulty;
 	int32 m_iBestSpeedrunTimes[5];
@@ -58,6 +59,57 @@ struct WeaponStats_t
 	char *m_szClassName;
 };
 
+#pragma pack(push, 1)
+struct LeaderboardScoreDetails_v1_t
+{
+	uint16 m_iVersion;
+	int16 m_iMarine;
+	int16 m_iSquadSize;
+	int16 m_iPrimaryWeapon;
+	int16 m_iSecondaryWeapon;
+	int16 m_iExtraWeapon;
+	uint64 m_iChallenge;
+	uint64 m_iTimestamp;
+	char m_CountryCode[2];
+	uint8 m_iDifficulty;
+	uint8 m_iModeFlags;
+};
+struct LeaderboardScoreDetails_v2_t
+{
+	uint16 m_iVersion;
+	uint8 m_iMarine;
+	uint8 m_iPrimaryWeapon;
+	uint8 m_iSecondaryWeapon;
+	uint8 m_iExtraWeapon;
+	uint8 m_iSquadDead;
+	uint8 m_iSquadSize;
+	uint64 m_iTimestamp;
+	uint64 m_iSquadMarineSteam[7];
+	uint8 m_iSquadMarine[7];
+	uint8 m_iSquadPrimaryWeapon[7];
+	uint8 m_iSquadSecondaryWeapon[7];
+	uint8 m_iSquadExtraWeapon[7];
+	char m_CountryCode[2];
+	uint8 m_iDifficulty;
+	uint8 m_iModeFlags;
+};
+#pragma pack(pop)
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) % sizeof( int32 ) == 0 );
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
+ASSERT_INVARIANT( ASW_NUM_MARINE_PROFILES - 1 == 7 );
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) % sizeof( int32 ) == 0 );
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
+
+struct RD_LeaderboardEntry_t
+{
+	LeaderboardEntry_t entry;
+	union
+	{
+		uint16 version;
+		LeaderboardScoreDetails_v1_t v1;
+		LeaderboardScoreDetails_v2_t v2;
+	} details;
+};
 
 class CASW_Steamstats
 {
@@ -67,6 +119,16 @@ public:
 
 	// Send the client's stats off to steam
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
+
+	bool IsOfficialCampaign();
+
+	// Send leaderboard entries to Steam
+	void PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial );
+
+	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
+	void DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
+
+	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
 
 private:
 	int32 m_iTotalKills;
@@ -98,6 +160,14 @@ private:
 	int32	m_iHealBeaconHeals_Self;
 	int32	m_iDamageAmpsUsed;
 	int32	m_iHealBeaconsDeployed;
+	int32	m_iMedkitHeals_Self;
+	int32	m_iGrenadeExtinguishMarine;
+	int32	m_iGrenadeFreezeAlien;
+	int32	m_iDamageAmpAmps;
+	int32	m_iNormalArmorReduction;
+	int32	m_iElectricArmorReduction;
+	int32	m_iHealAmpGunHeals;
+	int32	m_iHealAmpGunAmps;
 	int32	m_iTotalPlayTime;
 	
 	typedef CUtlVector<int32> StatList_Int_t;
@@ -122,6 +192,18 @@ private:
 	float GetFavoriteMarinePercent( void );
 	float GetFavoriteMarineClassPercent( void );
 	float GetFavoriteDifficultyPercent( void );
+
+	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardFindResultCallback;
+	void LeaderboardFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
+	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardDifficultyFindResultCallback;
+	void LeaderboardDifficultyFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
+	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardScoreUploadedCallback;
+	void LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
+	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardDifficultyScoreUploadedCallback;
+	void LeaderboardDifficultyScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
+
+	int32 m_iLeaderboardScore;
+	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
 };
 
 extern CASW_Steamstats g_ASW_Steamstats;

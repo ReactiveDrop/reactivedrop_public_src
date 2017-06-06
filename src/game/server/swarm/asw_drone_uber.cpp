@@ -4,6 +4,7 @@
 #include "asw_gamerules.h"
 #include "asw_marine.h"
 #include "asw_weapon_assault_shotgun_shared.h"
+#include "asw_weapon_deagle_shared.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -12,6 +13,7 @@ ConVar asw_uber_speed_scale("asw_uber_speed_scale", "0.5f", FCVAR_CHEAT, "Speed 
 ConVar asw_uber_auto_speed_scale("asw_uber_auto_speed_scale", "0.3f", FCVAR_CHEAT, "Speed scale of uber drones when attacking");
 extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_alien_stunned_speed;
+extern ConVar rd_deagle_bigalien_dmg_scale;
 
 #define	SWARM_DRONE_UBER_MODEL	"models/swarm/drone/UberDrone.mdl"
 
@@ -31,17 +33,19 @@ BEGIN_DATADESC( CASW_Drone_Uber )
 
 END_DATADESC()
 
+ConVar rd_drone_uber_model_scale("rd_drone_uber_model_scale", "1.3", FCVAR_CHEAT, "Scales uber drone model size" );
 void CASW_Drone_Uber::Spawn( void )
 {	
 	BaseClass::Spawn();
 
 	SetModel( SWARM_NEW_DRONE_MODEL );	
+	SetModelScale(rd_drone_uber_model_scale.GetFloat());
 	Precache();	
 
 	SetHullType(HULL_LARGE);
 	SetHullSizeNormal();
 
-	UTIL_SetSize(this, Vector(-40,-40,0), Vector(40,40,130));
+	UTIL_SetSize(this, Vector(-17,-17,0), Vector(17,17,69));	// riflemod: decreased drone uber size, was Vector(-40,-40,0), Vector(40,40,130));
 
 	// make sure uber drones are green
 	m_nSkin = 0;
@@ -98,6 +102,20 @@ int CASW_Drone_Uber::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					damage *= 0.6f;
 			}
 		}		
+	}
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+			if (pMarine)
+			{
+				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+
+				if (pDeagle)
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+			}
+		}
 	}
 
 	newInfo.SetDamage(damage);

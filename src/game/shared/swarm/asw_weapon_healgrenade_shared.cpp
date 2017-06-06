@@ -325,6 +325,9 @@ void CASW_Weapon_HealGrenade::PrimaryAttack( void )
 	if ( !pMarine )
 		return;
 
+	if ( m_iClip1 <= 0 )
+		return;
+
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	WeaponSound(SINGLE);
 
@@ -366,31 +369,29 @@ void CASW_Weapon_HealGrenade::PrimaryAttack( void )
 
 #ifndef CLIENT_DLL
 	// destroy if empty
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
 		ASWFailAdvice()->OnMedSatchelEmpty();
 
 		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 
-		if ( pMarine )
+		if ( DestroyIfEmpty( true ) )
 		{
-			pMarine->Weapon_Detach(this);
-			if ( bThisActive )
-				pMarine->SwitchToNextBestWeapon(NULL);
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR )
+			{
+				char szName[256];
+				pMR->GetDisplayName( szName, sizeof( szName ) );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
+			}
 		}
-		Kill();
 
 		return;
 	}
 #endif
 
 	m_flSoonestPrimaryAttack = gpGlobals->curtime + GetRefireTime();
-	if (m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-	else
-		m_flNextPrimaryAttack = gpGlobals->curtime;
-
-	//m_flLastFireTime = gpGlobals->curtime;
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetRefireTime();
 }
 
 bool CASW_Weapon_HealGrenade::OffhandActivate()

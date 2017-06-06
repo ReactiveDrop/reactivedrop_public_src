@@ -56,6 +56,7 @@ public:
 
 	int m_nInitialProfileIndex;
 	int m_nPreferredLobbySlot;
+	bool m_bAddingBot;
 };
 
 #endif // _INCLUDED_NB_SELECT_MARINE_PANEL_H

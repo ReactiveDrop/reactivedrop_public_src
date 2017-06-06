@@ -208,7 +208,7 @@ void CASW_Hud_Squad_Hotbar::UpdateList()
 		}
 
 		// add your offhand item to the hotbar first
-		CASW_Marine *pPlayerMarine = pPlayer->GetMarine();
+		CASW_Marine *pPlayerMarine = pPlayer->GetViewMarine();
 		if ( pPlayerMarine )
 		{
 			C_ASW_Weapon *pWeapon = pPlayerMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
@@ -494,13 +494,15 @@ void CASW_Hotbar_Entry::UpdateImage()
 
 
 	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
-	if ( !pInfo || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
+	if ( !pInfo )
 	{
-		if ( !asw_hotbar_self.GetBool() || m_iHotKeyIndex != -1 )		// allow your own third item to show even if it's not usable
-		{
-			ClearImage();
-			return;
-		}
+		return;
+	}
+	if ( !pInfo->m_bOffhandActivate && ( !asw_hotbar_self.GetBool() || m_iHotKeyIndex != -1 ) ) // TODO: Fix for sentry guns
+	{
+		// allow your own third item to show even if it's not usable
+		ClearImage();
+		return;
 	}
 
 	m_pWeaponImage->SetVisible( true );

@@ -637,6 +637,20 @@ bool CBaseEntity::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen
 	return false;
 }
 
+#ifdef REACTIVEDROP_VSCRIPT_KEYVALUES
+ScriptVariant_t CBaseEntity::ScriptGetKeyValue( const char *szKeyName )
+{
+	char szValue[ 1024 ];
+
+	if ( !GetKeyValue( szKeyName, szValue, sizeof( szValue) ) )
+	{
+		return SCRIPT_VARIANT_NULL;
+	}
+
+	return ScriptVariant_t( szValue, true );
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : collisionGroup - 

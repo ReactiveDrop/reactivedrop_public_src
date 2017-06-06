@@ -25,6 +25,7 @@
 // STEAM CLOUD FLAGS
 #define STEAMREMOTESTORAGE_CLOUD_CONFIG		(1<<0)
 #define STEAMREMOTESTORAGE_CLOUD_SPRAY		(1<<1)
+#define STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS (1<<2)
 
 #define STEAMREMOTESTORAGE_CLOUD_ALL		0x7fff // all bits set, so any new items added will be on by default
 

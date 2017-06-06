@@ -169,6 +169,7 @@ public:
 	{
 		// make the gamma stick
 		m_flOriginalGamma = m_pGammaSlider->GetValue();
+		engine->ClientCmd_Unrestricted( "mat_savechanges\n" );
 		Close();
 	}
 

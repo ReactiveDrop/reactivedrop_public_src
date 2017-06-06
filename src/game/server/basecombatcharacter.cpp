@@ -44,10 +44,10 @@
 #include "hl2_gamerules.h"
 #endif
 
-
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+#define RD_VSCRIPT_INTERCEPT_ENTITY_DAMAGE
 
 #if defined( HL2_DLL )
 extern int	g_interactionBarnacleVictimReleased;
@@ -96,6 +96,9 @@ BEGIN_DATADESC( CBaseCombatCharacter )
 
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC( CBaseCombatCharacter, CBaseAnimating, "combat character" )
+	DEFINE_SCRIPTFUNC( RemoveAllAmmo, "" )
+END_SCRIPTDESC()
 
 BEGIN_SIMPLE_DATADESC( Relationship_t )
 	DEFINE_FIELD( entity,			FIELD_EHANDLE ),
@@ -1130,6 +1133,90 @@ bool  CBaseCombatCharacter::Event_Gibbed( const CTakeDamageInfo &info )
 		return CorpseGib( info );
 	}
 }
+
+Vector CBaseCombatCharacter::CalcDamageForceVector( const CTakeDamageInfo &info )
+{
+	// Already have a damage force in the data, use that.
+	bool bNoPhysicsForceDamage = g_pGameRules->Damage_NoPhysicsForce( info.GetDamageType() );
+	if ( info.GetDamageForce() != vec3_origin || bNoPhysicsForceDamage )
+	{
+		if( info.GetDamageType() & DMG_BLAST )
+		{
+			// Fudge blast forces a little bit, so that each
+			// victim gets a slightly different trajectory. 
+			// This simulates features that usually vary from
+			// person-to-person variables such as bodyweight,
+			// which are all indentical for characters using the same model.
+			float scale = random->RandomFloat( 0.85, 1.15 );
+			Vector force = info.GetDamageForce();
+			force.x *= scale;
+			force.y *= scale;
+			// Try to always exaggerate the upward force because we've got pretty harsh gravity
+			force.z *= (force.z > 0) ? 1.15 : scale;
+			return force;
+		}
+
+		return info.GetDamageForce();
+	}
+
+	CBaseEntity *pForce = info.GetInflictor();
+	if ( !pForce )
+	{
+		pForce = info.GetAttacker();
+	}
+
+	if ( pForce )
+	{
+		// Calculate an impulse large enough to push a 75kg man 4 in/sec per point of damage
+		float forceScale = info.GetDamage() * 75 * 4;
+
+		Vector forceVector;
+		// If the damage is a blast, point the force vector higher than usual, this gives 
+		// the ragdolls a bodacious "really got blowed up" look.
+		if( info.GetDamageType() & DMG_BLAST )
+		{
+			// exaggerate the force from explosions a little (37.5%)
+			forceVector = (GetLocalOrigin() + Vector(0, 0, WorldAlignSize().z) ) - pForce->GetLocalOrigin();
+			VectorNormalize(forceVector);
+			forceVector *= 1.375f;
+		}
+		else
+		{
+			// taking damage from self?  Take a little random force, but still try to collapse on the spot.
+			if ( this == pForce )
+			{
+				forceVector.x = random->RandomFloat( -1.0f, 1.0f );
+				forceVector.y = random->RandomFloat( -1.0f, 1.0f );
+				forceVector.z = 0.0;
+				forceScale = random->RandomFloat( 1000.0f, 2000.0f );
+			}
+			else
+			{
+				// UNDONE: Collision forces are baked in to CTakeDamageInfo now
+				// UNDONE: Is this MOVETYPE_VPHYSICS code still necessary?
+				if ( pForce->GetMoveType() == MOVETYPE_VPHYSICS )
+				{
+					// killed by a physics object
+					IPhysicsObject *pPhysics = VPhysicsGetObject();
+					if ( !pPhysics )
+					{
+						pPhysics = pForce->VPhysicsGetObject();
+					}
+					pPhysics->GetVelocity( &forceVector, NULL );
+					forceScale = pPhysics->GetMass();
+				}
+				else
+				{
+					forceVector = GetLocalOrigin() - pForce->GetLocalOrigin();
+					VectorNormalize(forceVector);
+				}
+			}
+		}
+		return forceVector * forceScale;
+	}
+	return vec3_origin;
+}
+
 
 
 Vector CBaseCombatCharacter::CalcDeathForceVector( const CTakeDamageInfo &info )
@@ -2183,6 +2270,45 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 
 int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
+	float flDamage = info.GetDamage();
+#ifdef RD_VSCRIPT_INTERCEPT_ENTITY_DAMAGE
+	if ( m_ScriptScope.IsInitialized() && m_ScriptScope.ValueExists( "OnTakeDamage_Alive" ) )
+	{
+		ScriptVariant_t newDamage;
+		ScriptStatus_t nStatus = m_ScriptScope.Call( "OnTakeDamage_Alive", &newDamage, ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+		if ( nStatus != SCRIPT_DONE )
+		{
+			DevWarning( "%s OnTakeDamage_Alive VScript function did not finish!\n", GetDebugName() );
+		}
+		else
+		{
+			newDamage.AssignTo( &flDamage );
+		}
+	}
+	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+	{
+		ScriptVariant_t hModeScript;
+		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+		{
+			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any", hModeScript ) )
+			{
+				ScriptVariant_t newDamage;
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+				if ( nStatus != SCRIPT_DONE )
+				{
+					DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
+				}
+				else
+				{
+					newDamage.AssignTo( &flDamage );
+				}
+				g_pScriptVM->ReleaseFunction( hFunction );
+			}
+			g_pScriptVM->ReleaseValue( hModeScript );
+		}
+	}
+#endif
+
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
 	Vector vecDir = vec3_origin;
 	if (info.GetInflictor())
@@ -2197,8 +2323,8 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( m_takedamage != DAMAGE_EVENTS_ONLY )
 	{
 		// Separate the fractional amount of damage from the whole
-		float flFractionalDamage = info.GetDamage() - floor( info.GetDamage() );
-		float flIntegerDamage = info.GetDamage() - flFractionalDamage;
+		float flFractionalDamage = flDamage - floor( flDamage );
+		float flIntegerDamage = flDamage - flFractionalDamage;
 
 		// Add fractional damage to the accumulator
 		m_flDamageAccumulator += flFractionalDamage;

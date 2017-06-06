@@ -392,7 +392,7 @@ void GenericPanelList::ScrollToPanelItem( unsigned short index )
 		m_PnlItemRegion->GetBounds( x, y, wide, tall );
 
 		int firstVisi = GetFirstVisibleItemNumber();
-		int lastVisi  = GetLastVisibleItemNumber();
+		int lastVisi  = GetLastVisibleItemNumber( true );
 
 		if( index <= firstVisi || index >= lastVisi  ) // outside or on the border (allow re-alignment if it's at the border)
 		{

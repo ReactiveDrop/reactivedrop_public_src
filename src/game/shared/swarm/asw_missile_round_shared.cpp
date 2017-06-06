@@ -427,9 +427,11 @@ void CASW_Missile_Round::ClientThink()
 	}
 }
 
-void CASW_Missile_Round::PostDataUpdate( DataUpdateType_t updateType )
+// reactivedrop: changed from PostDataUpdate to OnDataChanged 
+// to prevent asserts in GetAbsOrigin() and similar methods 
+void CASW_Missile_Round::OnDataChanged(DataUpdateType_t updateType)
 {	
-	BaseClass::PostDataUpdate(updateType);
+	BaseClass::OnDataChanged(updateType);
 
 	// If this entity was new, then latch in various values no matter what.
 	if ( updateType == DATA_UPDATE_CREATED )

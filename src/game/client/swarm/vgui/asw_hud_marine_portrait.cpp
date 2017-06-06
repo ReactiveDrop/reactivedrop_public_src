@@ -263,7 +263,7 @@ void CASW_HUD_Marine_Portrait::OnThink()
 		else
 		{
 			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-			if (pPlayer->GetMarine() && pPlayer->GetMarine()->GetMarineResource() == m_hMarineResource.Get())
+			if (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->GetMarineResource() == m_hMarineResource.Get())
 			{
 				m_pMarineName->SetFgColor(Color(255,255,0,255));
 				m_pMarineNumber->SetFgColor(Color(255,255,0,255));

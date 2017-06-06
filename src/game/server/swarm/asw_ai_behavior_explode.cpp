@@ -108,6 +108,16 @@ bool CAI_ASW_ExplodeBehavior::KeyValue( const char *szKeyName, const char *szVal
 	else if ( V_stricmp( szKeyName, "radius" ) == 0 )
 	{
 		m_flDamageRadius = atof( szValue );
+		// riflemod: workaround to prevent boomers from making huge explosions
+		// swarm.fgd contains incrorrect field radius for asw_boomer
+		// which is named Allert Radius
+		// it is used by some maps
+		// this radius field isn't handled by asw_boomer and is transfered to 
+		// this behavior which interprets it as explosion radius
+		// so we add this hardcoded limit as we see no other way to 
+		// fix this bug
+		if (m_flDamageRadius > 240.f)
+			m_flDamageRadius = 240.f;
 		return true;
 	}
 

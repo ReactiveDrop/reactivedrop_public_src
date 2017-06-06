@@ -77,6 +77,11 @@ public:
 		skill_dest.Init();
 		skill_dest_ent = 0;
 #endif
+		// BenLubar(spectator-mouse)
+		mousex = 0;
+		mousey = 0;
+		screenw = 0;
+		screenh = 0;
 
 	}
 
@@ -124,6 +129,12 @@ public:
 		skill_dest_ent				= src.skill_dest_ent;
 #endif
 
+		// BenLubar(spectator-mouse)
+		mousex = src.mousex;
+		mousey = src.mousey;
+		screenw = src.screenw;
+		screenh = src.screenh;
+
 		return *this;
 	}
 
@@ -166,6 +177,12 @@ public:
 		CRC32_ProcessBuffer( &crc, &skill_dest, sizeof( skill_dest ) );
 		CRC32_ProcessBuffer( &crc, &skill_dest_ent, sizeof( skill_dest_ent ) );
 #endif
+		// BenLubar(spectator-mouse)
+		CRC32_ProcessBuffer( &crc, &mousex, sizeof( mousex ) );
+		CRC32_ProcessBuffer( &crc, &mousey, sizeof( mousey ) );
+		CRC32_ProcessBuffer( &crc, &screenw, sizeof( screenw ) );
+		CRC32_ProcessBuffer( &crc, &screenh, sizeof( screenh ) );
+
 		CRC32_Final( &crc );
 
 		return crc;
@@ -224,6 +241,12 @@ public:
 	Vector skill_dest;
 	short skill_dest_ent;
 #endif
+
+	// BenLubar(spectator-mouse)
+	short mousex;
+	short mousey;
+	short screenw;
+	short screenh;
 };
 
 void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from );

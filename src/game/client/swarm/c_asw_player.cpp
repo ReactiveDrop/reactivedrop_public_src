@@ -237,7 +237,7 @@ public:
 	virtual void PostDataUpdate( DataUpdateType_t updateType )
 	{
 		// ignore events we've already predicted
-		if (C_BasePlayer::IsLocalPlayer( m_hExcludePlayer.Get() ))	// !engine->IsPlayingDemo() && 
+		if ( !engine->IsPlayingDemo() && C_BasePlayer::IsLocalPlayer( m_hExcludePlayer.Get() ) )
 			return;
 		// play anim event
 		C_ASW_Marine *pMarine = dynamic_cast< C_ASW_Marine* >( m_hMarine.Get() );
@@ -274,16 +274,27 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropInt		(RECVINFO(m_iHealth)),
 	RecvPropEHandle( RECVINFO ( m_pCurrentInfoMessage ) ),
 	RecvPropEHandle( RECVINFO ( m_hVotingMissions ) ),	
+    RecvPropFloat(   RECVINFO ( m_fMarineDeathTime ) ),
 	RecvPropEHandle( RECVINFO ( m_hOrderingMarine ) ),	
 	RecvPropInt(RECVINFO(m_iLeaderVoteIndex) ),
 	RecvPropInt(RECVINFO(m_iKickVoteIndex) ),
 	RecvPropFloat(RECVINFO(m_fMapGenerationProgress) ),
 	RecvPropTime( RECVINFO( m_flUseKeyDownTime ) ),
 	RecvPropEHandle( RECVINFO ( m_hUseKeyDownEnt ) ),
+	RecvPropFloat	(RECVINFO(m_flMovementAxisYaw )),
+	RecvPropInt		(RECVINFO(m_nChangingMR)),
 	RecvPropInt		(RECVINFO(m_nChangingSlot)),
 	RecvPropInt		(RECVINFO(m_iMapVoted)),
 	RecvPropInt		(RECVINFO(m_iNetworkedXP)),
 	RecvPropInt		(RECVINFO(m_iNetworkedPromotion)),
+
+	// BenLubar(spectator-mouse)
+	RecvPropInt( RECVINFO( m_iScreenWidth ) ),
+	RecvPropInt( RECVINFO( m_iScreenHeight ) ),
+	RecvPropInt( RECVINFO( m_iMouseX ) ),
+	RecvPropInt( RECVINFO( m_iMouseY ) ),
+
+	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
@@ -297,7 +308,9 @@ END_PREDICTION_DATA()
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
 C_ASW_Player::C_ASW_Player() : 
-	m_iv_angEyeAngles( "C_ASW_Player::m_iv_angEyeAngles" )
+	m_iv_angEyeAngles( "C_ASW_Player::m_iv_angEyeAngles" ),
+	m_iv_iMouseX( "C_ASW_Player::m_iv_iMouseX" ),
+	m_iv_iMouseY( "C_ASW_Player::m_iv_iMouseY" )
 
 #if !defined(NO_STEAM)
 	, m_CallbackUserStatsReceived( this, &C_ASW_Player::Steam_OnUserStatsReceived )
@@ -307,6 +320,8 @@ C_ASW_Player::C_ASW_Player() :
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 			
 	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
+	AddVar( &m_iMouseX, &m_iv_iMouseX, LATCH_SIMULATION_VAR ); // BenLubar(spectator-mouse)
+	AddVar( &m_iMouseY, &m_iv_iMouseY, LATCH_SIMULATION_VAR );
 
 	// create the profile list for clients
 	//  (server creates it in the game rules constructor serverside)
@@ -336,13 +351,15 @@ C_ASW_Player::C_ASW_Player() :
 	m_bGuidingMarine = false;
 	m_bPlayingSingleBreathSound = false;
 	m_bStartedStimMusic = false;
-	m_iExperience = 0;
+	m_iExperience = -1;
 	m_iExperienceBeforeDebrief = 0;
 	m_iPromotion = 0;
 	m_bPendingSteamStats = false;
 	m_flPendingSteamStatsStart = 0.0f;
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
+	m_flMovementAxisYaw = 90.0f;
+    m_fMarineDeathTime = 0.0f;
 	m_roomDetailsCheckTimer.Invalidate();
 	m_szSoundscape[0] = 0;
 	for ( int i = 0; i < ASW_NUM_XP_TYPES; i++ )
@@ -351,7 +368,14 @@ C_ASW_Player::C_ASW_Player() :
 		m_iStatNumXP[ i ] = 0;
 	}
 
+	m_nChangingMR = -1;
 	m_nChangingSlot = 0;
+
+	// BenLubar(spectator-mouse)
+	m_iScreenWidth = 0;
+	m_iScreenHeight = 0;
+	m_iMouseX = 0;
+	m_iMouseY = 0;
 }
 
 
@@ -430,7 +454,12 @@ void C_ASW_Player::UpdateClientSideAnimation()
 		OnLatchInterpolatedVariables( LATCH_ANIMATION_VAR );
 	}
 }
-
+// BenLubar(spectator-mouse)
+bool C_ASW_Player::ShouldInterpolate()
+{
+	// interpolate players so the cursor position is smoothed
+	return !engine->IsPlayingDemo() || !IsLocalPlayer();
+}
 
 void C_ASW_Player::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -914,23 +943,25 @@ void C_ASW_Player::CloseBriefingFrame()
 	}
 }
 
-
-
-C_ASW_Marine* C_ASW_Player::GetMarine()
-{
-	return m_hMarine.Get();
-}
-
 C_ASW_Marine* C_ASW_Player::GetMarine() const
 {
 	return m_hMarine.Get();
 }
 
-C_ASW_Marine* C_ASW_Player::GetSpectatingMarine()
+C_ASW_Marine* C_ASW_Player::GetSpectatingMarine() const
 {
 	return m_hSpectatingMarine.Get();
 }
 
+C_ASW_Marine* C_ASW_Player::GetViewMarine() const
+{
+	C_ASW_Marine *pMarine = GetSpectatingMarine();
+	if (!pMarine)
+	{
+		pMarine = GetMarine();
+	}
+	return pMarine;
+}
 
 Vector C_ASW_Player::GetAutoaimVectorForMarine( C_ASW_Marine* marine, float flDelta, float flNearMissDelta )
 {
@@ -1012,9 +1043,10 @@ void C_ASW_Player::ClientThink()
 		}
 		// we're in slomo, so make sure our stimcam is on
 		if (f < asw_stim_cam_time.GetFloat())
-		{			
+		{
+			CASW_Marine *pMarine = GetViewMarine();
 			// enable the stylin' cam
-			if (GetMarine())
+			if (pMarine)
 			{
 				// check if there's a mapper designed camera turned on
 				C_PointCamera *pCameraEnt = GetPointCameraList();
@@ -1037,16 +1069,15 @@ void C_ASW_Player::ClientThink()
 						if (!GetStimCam())
 							CreateStimCamera();	
 						if (GetStimCam())
-						{																				
+						{
 							// no mapper cam, turn on our stim one
 							GetStimCam()->SetActive( true );
 							Vector offset = Vector(asw_stim_cam_x.GetFloat(), asw_stim_cam_y.GetFloat(), asw_stim_cam_z.GetFloat());
 							Vector offset_r;
-							VectorRotate(offset, QAngle(0, GetMarine()->GetAbsAngles()[YAW] + m_fStimYaw, 0), offset_r);
-							if (GetMarine())
-								GetStimCam()->SetAbsOrigin(GetMarine()->GetAbsOrigin() + offset_r);
+							VectorRotate(offset, QAngle(0, pMarine->GetAbsAngles()[YAW] + m_fStimYaw, 0), offset_r);
+							GetStimCam()->SetAbsOrigin(pMarine->GetAbsOrigin() + offset_r);
 							// rotate it around us
-							GetStimCam()->SetAbsAngles(QAngle(asw_stim_cam_pitch.GetFloat(), m_fStimYaw + GetMarine()->GetAbsAngles()[YAW]+asw_stim_cam_yaw.GetFloat(), asw_stim_cam_roll.GetFloat()));
+							GetStimCam()->SetAbsAngles(QAngle(asw_stim_cam_pitch.GetFloat(), m_fStimYaw + pMarine->GetAbsAngles()[YAW]+asw_stim_cam_yaw.GetFloat(), asw_stim_cam_roll.GetFloat()));
 							m_fStimYaw += gpGlobals->frametime * asw_stim_cam_rotate_speed.GetFloat();
 							//Msg("Showing marine's cam\n");
 						}
@@ -1120,7 +1151,7 @@ void C_ASW_Player::ClientThink()
 		// todo: launch a window with this message
 		if (GetClientModeASW()->m_hLastInfoMessage.Get())
 		{
-			Msg("Launching window cos the info message changed!\n");			
+			DevMsg("Launching window cos the info message changed!\n");
 			// add it to the message log if we haven't seen it before
 			bool bOldMessage = false;
 			for (int i=0;i<GetClientModeASW()->m_InfoMessageLog.Count();i++)
@@ -1144,7 +1175,10 @@ void C_ASW_Player::ClientThink()
 			//pInfoWindow->ASWInit();
 		}
 		else
-			Msg("info message cleared!\n");
+		{
+			CASW_VGUI_Info_Message::CloseInfoMessage();
+			DevMsg("info message cleared!\n");
+		}
 	}
 
 	if ( gpGlobals->curtime >= m_fNextThinkPushAway )
@@ -1263,11 +1297,7 @@ void C_ASW_Player::UpdateRoomDetails()
 		return;
 	}
 
-	C_ASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-	{
-		pMarine = GetSpectatingMarine();
-	}
+	C_ASW_Marine *pMarine = GetViewMarine();
 
 	Vector vecAmbientPos = vec3_origin;
 	if ( pMarine )
@@ -1397,6 +1427,14 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			engine->ClientCmd( "cl_fullyjoined\n" );
 
 			GetClientModeASW()->ClearCurrentColorCorrection();
+
+			// This shows a panel where player can select a marine. 
+			// Called after player have joined the game 
+			// TODO check if this is correct
+			if (ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+			{
+				engine->ClientCmd("cl_select_loadout");
+			}
 		}
 
 		RequestExperience();
@@ -1419,9 +1457,7 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 	// update snow immediately upon changing marine
 	if (g_hSnowEmitter.IsValid() && IsLocalPlayer(this))
 	{
-		C_ASW_Marine *pMarine = GetSpectatingMarine();
-		if (!pMarine)
-			pMarine = GetMarine();
+		C_ASW_Marine *pMarine = GetViewMarine();
 		if (g_hSnowEmitter->m_hLastMarine.Get() != pMarine)
 		{
 			// update snow
@@ -1675,7 +1711,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	Vector currentdir;
 	Vector rightdir;
-	AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+	AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
 
 	Vector vDirection = vecSeparationVelocity;
 	VectorNormalize( vDirection );
@@ -1805,7 +1841,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 	vAngles.x = 0;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
 
@@ -2109,7 +2145,7 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 	if (asw_controls.GetBool())
 	{
-		AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
 	}
 	else
 	{
@@ -2293,7 +2329,7 @@ void C_ASW_Player::CreateStimCamera()
 void C_ASW_Player::SmoothCameraZ(Vector &CameraPos)
 {
 	// no change if we have no marine or just starting out or just changed marine
-	if (!GetMarine() || GetMarine()!=m_hLastMarine.Get() || m_vecLastCameraPosition == vec3_origin)
+	if (!GetViewMarine() || GetViewMarine() != m_hLastMarine.Get() || m_vecLastCameraPosition == vec3_origin)
 	{
 		// clear any poison effects - bad place for this!
 		g_fMarinePoisonDuration = 0;
@@ -2317,10 +2353,10 @@ void C_ASW_Player::SmoothCameraZ(Vector &CameraPos)
 // smooth the camera's overall coords when the player changes from marine to marine
 bool C_ASW_Player::SmoothMarineChangeCamera(Vector &CameraPos)
 {
-	if (GetMarine() && GetMarine() != m_hLastMarine.Get() && m_hLastMarine.Get())
+	if (GetViewMarine() && GetViewMarine() != m_hLastMarine.Get() && m_hLastMarine.Get())
 	{
 		// we changed, need to setup our smoothing vector		
-		if (m_fMarineChangeSmooth <= 0 && GetMarine()->GetAbsOrigin().DistTo(m_vecMarineChangeCameraPos) < asw_marine_switch_blend_max_dist.GetFloat())
+		if (m_fMarineChangeSmooth <= 0 && GetViewMarine()->GetAbsOrigin().DistTo(m_vecMarineChangeCameraPos) < asw_marine_switch_blend_max_dist.GetFloat())
 		{
 			// check the camera can slide between the two camera positions without going inside a solid
 			trace_t tr;
@@ -2390,12 +2426,12 @@ float C_ASW_Player::ASW_ClampYaw( float yawSpeedPerSec, float current, float tar
 // smoothly rotates the camera yaw to the desired value, to give the camera a nice springy feeling when driving
 void C_ASW_Player::SmoothCameraYaw(float &yaw)
 {
-	if (!GetMarine())
+	if (!GetViewMarine())
 		return;
 	// no change if we have no marine or just starting out or just changed marine
-	if (GetMarine()->IsInVehicle()!=m_bLastInVehicle || m_fLastVehicleYaw == 0)
+	if (GetViewMarine()->IsInVehicle()!=m_bLastInVehicle || m_fLastVehicleYaw == 0)
 	{
-		m_bLastInVehicle = GetMarine()->IsInVehicle();
+		m_bLastInVehicle = GetViewMarine()->IsInVehicle();
 		m_fLastVehicleYaw = yaw;
 		return;
 	}
@@ -2404,18 +2440,18 @@ void C_ASW_Player::SmoothCameraYaw(float &yaw)
 	
 	yaw = ASW_ClampYaw( 1000.0f, m_fLastVehicleYaw, yaw, dt );
 
-	m_bLastInVehicle = GetMarine()->IsInVehicle();
-	m_fLastVehicleYaw = yaw;//GetMarine()->EyeAngles()[YAW];
+	m_bLastInVehicle = GetViewMarine()->IsInVehicle();
+	m_fLastVehicleYaw = yaw;//GetViewMarine()->EyeAngles()[YAW];
 }
 
 // smooth the simulated floo rused for aiming
 #define ASW_FLOOR_Z_SPEED 100
 void C_ASW_Player::SmoothAimingFloorZ(float &FloorZ)
 {
-	if (m_fLastFloorZ == 0 || m_hLastAimingFloorZMarine.Get() != GetMarine())
+	if (m_fLastFloorZ == 0 || m_hLastAimingFloorZMarine.Get() != GetViewMarine())
 	{
 		m_fLastFloorZ = FloorZ;
-		m_hLastAimingFloorZMarine = GetMarine();
+		m_hLastAimingFloorZMarine = GetViewMarine();
 		return;
 	}
 	float fAmountToMove = abs(FloorZ - m_fLastFloorZ) / 10.0f;
@@ -2459,7 +2495,7 @@ bool C_ASW_Player::ShouldAutoReload()
 
 C_BaseCombatWeapon *C_ASW_Player::GetActiveWeapon( void ) const
 {
-	const C_ASW_Marine *pMarine = GetMarine();
+	const C_ASW_Marine *pMarine = GetViewMarine();
 	if ( !pMarine )
 	{
 		return BaseClass::GetActiveWeapon();
@@ -2470,7 +2506,7 @@ C_BaseCombatWeapon *C_ASW_Player::GetActiveWeapon( void ) const
 
 C_BaseCombatWeapon *C_ASW_Player::GetWeapon( int i ) const
 {
-	const C_ASW_Marine *pMarine = GetMarine();
+	const C_ASW_Marine *pMarine = GetViewMarine();
 	if ( !pMarine )
 	{
 		return BaseClass::GetWeapon( i );
@@ -2481,7 +2517,7 @@ C_BaseCombatWeapon *C_ASW_Player::GetWeapon( int i ) const
 
 int C_ASW_Player::GetHealth() const
 {
-	const C_ASW_Marine *pMarine = GetMarine();
+	const C_ASW_Marine *pMarine = GetViewMarine();
 	if ( !pMarine )
 	{
 		return BaseClass::GetHealth();
@@ -2492,7 +2528,7 @@ int C_ASW_Player::GetHealth() const
 
 int C_ASW_Player::GetMaxHealth() const
 {
-	const C_ASW_Marine *pMarine = GetMarine();
+	const C_ASW_Marine *pMarine = GetViewMarine();
 	if ( !pMarine )
 	{
 		return BaseClass::GetMaxHealth();
@@ -2598,11 +2634,7 @@ ConVar asw_local_dlight_rotate("asw_local_dlight_rotate", "0", FCVAR_CHEAT, "Whe
 
 void C_ASW_Player::UpdateLocalMarineGlow()
 {
-	C_ASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-	{
-		pMarine = GetSpectatingMarine();		
-	}
+	C_ASW_Marine *pMarine = GetViewMarine();
 
 	if ( !pMarine )
 	{
@@ -2793,7 +2825,7 @@ void C_ASW_Player::UpdateOnRemove()
 fogparams_t* C_ASW_Player::GetFogParams( void )
 {
 	static fogparams_t RemoteTurretFog;
-	if (GetMarine() && GetMarine()->IsControllingTurret())
+	if ( GetViewMarine() && GetViewMarine()->IsControllingTurret() )
 	{
 		RemoteTurretFog.enable = true;
 		RemoteTurretFog.colorPrimary.SetR(0);
@@ -2804,6 +2836,7 @@ fogparams_t* C_ASW_Player::GetFogParams( void )
 		RemoteTurretFog.start = asw_turret_fog_start.GetFloat();
 		RemoteTurretFog.end = asw_turret_fog_end.GetFloat();
 		RemoteTurretFog.farz = asw_turret_fog_end.GetFloat();
+		RemoteTurretFog.maxdensity = 1;
 		return &RemoteTurretFog;
 	}
 	
@@ -2880,7 +2913,7 @@ bool C_ASW_Player::ShouldRegenerateOriginFromCellBits() const
 
 bool C_ASW_Player::IsSniperScopeActive()
 {
-	C_ASW_Marine *pMarine = GetMarine();
+	C_ASW_Marine *pMarine = GetViewMarine();
 	if ( !pMarine )
 		return false;
 

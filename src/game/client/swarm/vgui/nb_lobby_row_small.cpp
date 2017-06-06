@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "nb_lobby_row_small.h"
 #include "asw_briefing.h"
-#include <vgui/IVgui.h>
 #include "vgui_controls/ImagePanel.h"
 
 #include "vgui_controls/Panel.h"
@@ -15,14 +14,7 @@ CNB_Lobby_Row_Small::CNB_Lobby_Row_Small( vgui::Panel *parent, const char *name 
 	m_pReadyCheckImage = new vgui::ImagePanel( this, "ReadyCheckImage" );
 	m_pBackroundPlain = new vgui::Panel( this, "BackroundPlain" );
 	// == MANAGED_MEMBER_CREATION_END ==
-	for ( int i = 0; i < 4; i++ )
-	{
-		m_pChangingSlot[ i ] = new vgui::ImagePanel( this, VarArgs( "ChangingSlot%d", i ) );
-		m_pChangingSlot[ i ]->SetMouseInputEnabled( false );
-	}
 	m_pReadyCheckImage->SetShouldScaleImage( true );
-
-	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
 
 CNB_Lobby_Row_Small::~CNB_Lobby_Row_Small()
@@ -42,23 +34,13 @@ void CNB_Lobby_Row_Small::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	m_szLastPortraitImage[ 0 ] = 0;
 	m_lastSteamID.Set( 0, k_EUniverseInvalid, k_EAccountTypeInvalid );
+
+	SetTall( m_pBackroundPlain->GetTall() );
 }
 
 void CNB_Lobby_Row_Small::PerformLayout()
 {
 	BaseClass::PerformLayout();
-}
-
-void CNB_Lobby_Row_Small::OnThink()
-{
-	BaseClass::OnThink();
-
-	UpdateChangingSlot();
-}
-
-void CNB_Lobby_Row_Small::OnTick()
-{
-	SetVisible( Briefing()->IsLobbySlotOccupied( m_nLobbySlot ) || Briefing()->IsOfflineGame() );
 }
 
 void CNB_Lobby_Row_Small::UpdateDetails()
@@ -85,13 +67,4 @@ void CNB_Lobby_Row_Small::UpdateDetails()
 	}
 
 	BaseClass::UpdateDetails();
-}
-
-void CNB_Lobby_Row_Small::UpdateChangingSlot()
-{
-	int nSlot = Briefing()->GetChangingWeaponSlot( m_nLobbySlot );
-	m_pChangingSlot[ 0 ]->SetVisible( nSlot == 1 );
-	m_pChangingSlot[ 1 ]->SetVisible( nSlot == 2 );
-	m_pChangingSlot[ 2 ]->SetVisible( nSlot == 3 );
-	m_pChangingSlot[ 3 ]->SetVisible( nSlot == 4 );
 }

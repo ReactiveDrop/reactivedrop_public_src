@@ -93,6 +93,8 @@ CASW_Weapon_Tesla_Gun::CASW_Weapon_Tesla_Gun( void )
 #endif
 	m_flLastShockTime = 0.0f;
 	m_flLastDischargeTime = 0.0f;
+
+	m_fMaxRange1 = ASW_TG_RANGE;
 }
 
 //-----------------------------------------------------------------------------

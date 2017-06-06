@@ -22,6 +22,7 @@
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -182,6 +183,12 @@ float CASW_Weapon_Autogun::GetMovementScale()
 float CASW_Weapon_Autogun::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if (ASWDeathmatchMode())
+	{
+		extern ConVar rd_pvp_autogun_dmg;
+		flDamage = rd_pvp_autogun_dmg.GetFloat();
+	}
 
 	if ( GetMarine() )
 	{

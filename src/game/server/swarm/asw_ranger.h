@@ -46,6 +46,7 @@ public:
 	virtual void		Event_Killed( const CTakeDamageInfo &info );
 	virtual bool		CorpseGib( const CTakeDamageInfo &info );
 	virtual void		SetupRangerShot( CASW_AlienShot &shot );
+	virtual int			OnTakeDamage_Alive(const CTakeDamageInfo &info);
 
 	// sounds
 	virtual void DeathSound( const CTakeDamageInfo &info );

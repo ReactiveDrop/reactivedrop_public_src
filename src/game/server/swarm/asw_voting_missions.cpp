@@ -4,6 +4,7 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "vstdlib/random.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -28,6 +29,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Voting_Missions, DT_ASW_Voting_Missions )
 	SendPropStringT( SENDINFO_NETWORKARRAYELEM( m_iszCampaignNames, 0 ) ),
 	SendPropStringT( SENDINFO_NETWORKARRAYELEM( m_iszCampaignNames, 1 ) ),
 	SendPropStringT( SENDINFO_NETWORKARRAYELEM( m_iszCampaignNames, 2 ) ),
+	// campaign workshop IDs
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_nCampaignWorkshopID ), 64, SPROP_UNSIGNED ), m_nCampaignWorkshopID ),
 	// save names
 	SendPropStringT( SENDINFO_NETWORKARRAYELEM( m_iszSaveNames, 0 ) ),
 	SendPropStringT( SENDINFO_NETWORKARRAYELEM( m_iszSaveNames, 1 ) ),
@@ -99,7 +102,12 @@ CASW_Voting_Missions::CASW_Voting_Missions()
 	m_nOffset = 0;
 	m_iNumSlots = ASW_SAVES_PER_PAGE;
 	m_hPlayer = NULL;
-	for (int i=0;i<ASW_SAVES_PER_PAGE;i++)
+	for (int i = 0; i<ASW_CAMPAIGNS_PER_PAGE; i++)
+	{
+		m_iszCampaignNames.Set(i, NULL_STRING);
+		m_nCampaignWorkshopID.Set(i, k_PublishedFileIdInvalid);
+	}
+	for (int i=0;i<ASW_MISSIONS_PER_PAGE;i++)
 	{
 		m_iszMissionNames.Set(i, NULL_STRING);
 	}
@@ -190,6 +198,11 @@ void CASW_Voting_Missions::ScanThink()
 			if (i<ASW_CAMPAIGNS_PER_PAGE && Q_strcmp(campaigns[i].m_szMissionName, STRING(m_iszCampaignNames[i])))
 			{
 				m_iszCampaignNames.Set(i, AllocPooledString(campaigns[i].m_szMissionName));
+				char szCampaignFileBase[MAX_PATH];
+				Q_FileBase( campaigns[i].m_szMissionName, szCampaignFileBase, sizeof( szCampaignFileBase ) );
+				char szCampaignFile[MAX_PATH];
+				Q_snprintf( szCampaignFile, sizeof( szCampaignFile ), "resource/campaigns/%s.txt", szCampaignFileBase );
+				m_nCampaignWorkshopID.Set( i, g_ReactiveDropWorkshop.FindAddonProvidingFile( szCampaignFile ) );
 			}
 		}
 		m_iNumCampaigns = pMissionSource->GetNumCampaigns();

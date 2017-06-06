@@ -975,6 +975,7 @@ void CInput::ComputeSideMove( int nSlot, CUserCmd *cmd )
 	// Otherwise, check strafe keys
 	cmd->sidemove += cl_sidespeed.GetFloat() * KeyState (&in_moveright);
 	cmd->sidemove -= cl_sidespeed.GetFloat() * KeyState (&in_moveleft);
+
 }
 
 /*
@@ -1036,6 +1037,7 @@ void CInput::ComputeForwardMove( int nSlot, CUserCmd *cmd )
 	{	
 		cmd->forwardmove += cl_forwardspeed.GetFloat() * KeyState (&in_forward);
 		cmd->forwardmove -= cl_backspeed.GetFloat() * KeyState (&in_back);
+
 	}	
 }
 

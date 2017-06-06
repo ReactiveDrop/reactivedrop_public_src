@@ -252,6 +252,12 @@ public:
 
 	bool PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity )
 	{
+		// reactivedrop: fix a rare crash
+		// parasites that have filter_activator_name set and are killed by 
+		// marine's electrified armor crash here
+		if ( !pEntity )
+			return false; 
+
 		// special check for !player as GetEntityName for player won't return "!player" as a name
 		if (FStrEq(STRING(m_iFilterName), "!player"))
 		{

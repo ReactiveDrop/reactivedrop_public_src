@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
+//====== Copyright (c) 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to user account information in Steam
 //
@@ -14,7 +14,13 @@
 
 // structure that contains client callback data
 // see callbacks documentation for more details
+#if defined( VALVE_CALLBACK_PACK_SMALL )
+#pragma pack( push, 4 )
+#elif defined( VALVE_CALLBACK_PACK_LARGE )
 #pragma pack( push, 8 )
+#else
+#error isteamclient.h must be included
+#endif 
 struct CallbackMsg_t
 {
 	HSteamUser m_hSteamUser;
@@ -24,8 +30,6 @@ struct CallbackMsg_t
 };
 #pragma pack( pop )
 
-// reference to a steam call, to filter results by
-typedef int32 HSteamCall;
 
 //-----------------------------------------------------------------------------
 // Purpose: Functions for accessing and manipulating a steam account
@@ -89,7 +93,9 @@ public:
 	// This provides both the compressed and uncompressed data. Please note that the uncompressed
 	// data is not the raw feed from the microphone: data may only be available if audible 
 	// levels of speech are detected.
-	virtual EVoiceResult GetAvailableVoice(uint32 *pcbCompressed, uint32 *pcbUncompressed) = 0;
+	// nUncompressedVoiceDesiredSampleRate is necessary to know the number of bytes to return in pcbUncompressed - can be set to 0 if you don't need uncompressed (the usual case)
+	// If you're upgrading from an older Steamworks API, you'll want to pass in 11025 to nUncompressedVoiceDesiredSampleRate
+	virtual EVoiceResult GetAvailableVoice( uint32 *pcbCompressed, uint32 *pcbUncompressed, uint32 nUncompressedVoiceDesiredSampleRate ) = 0;
 
 	// Gets the latest voice data from the microphone. Compressed data is an arbitrary format, and is meant to be handed back to 
 	// DecompressVoice() for playback later as a binary blob. Uncompressed data is 16-bit, signed integer, 11025Hz PCM format.
@@ -101,14 +107,19 @@ public:
 	// You must grab both compressed and uncompressed here at the same time, if you want both.
 	// Matching data that is not read during this call will be thrown away.
 	// GetAvailableVoice() can be used to determine how much data is actually available.
-	virtual EVoiceResult GetVoice( bool bWantCompressed, void *pDestBuffer, uint32 cbDestBufferSize, uint32 *nBytesWritten, bool bWantUncompressed, void *pUncompressedDestBuffer, uint32 cbUncompressedDestBufferSize, uint32 *nUncompressBytesWritten ) = 0;
+	// If you're upgrading from an older Steamworks API, you'll want to pass in 11025 to nUncompressedVoiceDesiredSampleRate
+	virtual EVoiceResult GetVoice( bool bWantCompressed, void *pDestBuffer, uint32 cbDestBufferSize, uint32 *nBytesWritten, bool bWantUncompressed, void *pUncompressedDestBuffer, uint32 cbUncompressedDestBufferSize, uint32 *nUncompressBytesWritten, uint32 nUncompressedVoiceDesiredSampleRate ) = 0;
 
 	// Decompresses a chunk of compressed data produced by GetVoice().
 	// nBytesWritten is set to the number of bytes written to pDestBuffer unless the return value is k_EVoiceResultBufferTooSmall.
 	// In that case, nBytesWritten is set to the size of the buffer required to decompress the given
 	// data. The suggested buffer size for the destination buffer is 22 kilobytes.
-	// The output format of the data is 16-bit signed at 11025 samples per second.
-	virtual EVoiceResult DecompressVoice( const void *pCompressed, uint32 cbCompressed, void *pDestBuffer, uint32 cbDestBufferSize, uint32 *nBytesWritten ) = 0;
+	// The output format of the data is 16-bit signed at the requested samples per second.
+	// If you're upgrading from an older Steamworks API, you'll want to pass in 11025 to nDesiredSampleRate
+	virtual EVoiceResult DecompressVoice( const void *pCompressed, uint32 cbCompressed, void *pDestBuffer, uint32 cbDestBufferSize, uint32 *nBytesWritten, uint32 nDesiredSampleRate ) = 0;
+
+	// This returns the frequency of the voice data as it's stored internally; calling DecompressVoice() with this size will yield the best results
+	virtual uint32 GetVoiceOptimalSampleRate() = 0;
 
 	// Retrieve ticket to be sent to the entity who wishes to authenticate you. 
 	// pcbTicket retrieves the length of the actual ticket.
@@ -127,13 +138,71 @@ public:
 	// After receiving a user's authentication data, and passing it to BeginAuthSession, use this function
 	// to determine if the user owns downloadable content specified by the provided AppID.
 	virtual EUserHasLicenseForAppResult UserHasLicenseForApp( CSteamID steamID, AppId_t appID ) = 0;
+	
+	// returns true if this users looks like they are behind a NAT device. Only valid once the user has connected to steam 
+	// (i.e a SteamServersConnected_t has been issued) and may not catch all forms of NAT.
+	virtual bool BIsBehindNAT() = 0;
+
+	// set data to be replicated to friends so that they can join your game
+	// CSteamID steamIDGameServer - the steamID of the game server, received from the game server by the client
+	// uint32 unIPServer, uint16 usPortServer - the IP address of the game server
+	virtual void AdvertiseGame( CSteamID steamIDGameServer, uint32 unIPServer, uint16 usPortServer ) = 0;
+
+	// Requests a ticket encrypted with an app specific shared key
+	// pDataToInclude, cbDataToInclude will be encrypted into the ticket
+	// ( This is asynchronous, you must wait for the ticket to be completed by the server )
+	CALL_RESULT( EncryptedAppTicketResponse_t )
+	virtual SteamAPICall_t RequestEncryptedAppTicket( void *pDataToInclude, int cbDataToInclude ) = 0;
+
+	// retrieve a finished ticket
+	virtual bool GetEncryptedAppTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket ) = 0;
+
+	// Trading Card badges data access
+	// if you only have one set of cards, the series will be 1
+	// the user has can have two different badges for a series; the regular (max level 5) and the foil (max level 1)
+	virtual int GetGameBadgeLevel( int nSeries, bool bFoil ) = 0;
+
+	// gets the Steam Level of the user, as shown on their profile
+	virtual int GetPlayerSteamLevel() = 0;
+
+	// Requests a URL which authenticates an in-game browser for store check-out,
+	// and then redirects to the specified URL. As long as the in-game browser
+	// accepts and handles session cookies, Steam microtransaction checkout pages
+	// will automatically recognize the user instead of presenting a login page.
+	// The result of this API call will be a StoreAuthURLResponse_t callback.
+	// NOTE: The URL has a very short lifetime to prevent history-snooping attacks,
+	// so you should only call this API when you are about to launch the browser,
+	// or else immediately navigate to the result URL using a hidden browser window.
+	// NOTE 2: The resulting authorization cookie has an expiration time of one day,
+	// so it would be a good idea to request and visit a new auth URL every 12 hours.
+	CALL_RESULT( StoreAuthURLResponse_t )
+	virtual SteamAPICall_t RequestStoreAuthURL( const char *pchRedirectURL ) = 0;
+
+	// gets whether the users phone number is verified 
+	virtual bool BIsPhoneVerified() = 0;
+
+	// gets whether the user has two factor enabled on their account
+	virtual bool BIsTwoFactorEnabled() = 0;
+
+	// gets whether the users phone number is identifying
+	virtual bool BIsPhoneIdentifying() = 0;
+
+	// gets whether the users phone number is awaiting (re)verification
+	virtual bool BIsPhoneRequiringVerification() = 0;
+
 };
 
-#define STEAMUSER_INTERFACE_VERSION "SteamUser013"
+#define STEAMUSER_INTERFACE_VERSION "SteamUser019"
 
 
 // callbacks
+#if defined( VALVE_CALLBACK_PACK_SMALL )
+#pragma pack( push, 4 )
+#elif defined( VALVE_CALLBACK_PACK_LARGE )
 #pragma pack( push, 8 )
+#else
+#error isteamclient.h must be included
+#endif 
 
 //-----------------------------------------------------------------------------
 // Purpose: called when a connections to the Steam back-end has been established
@@ -156,6 +225,7 @@ struct SteamServerConnectFailure_t
 {
 	enum { k_iCallback = k_iSteamUserCallbacks + 2 };
 	EResult m_eResult;
+	bool m_bStillRetrying;
 };
 
 
@@ -206,6 +276,15 @@ struct IPCFailure_t
 
 
 //-----------------------------------------------------------------------------
+// Purpose: Signaled whenever licenses change
+//-----------------------------------------------------------------------------
+struct LicensesUpdated_t
+{
+	enum { k_iCallback = k_iSteamUserCallbacks + 25 };
+};
+
+
+//-----------------------------------------------------------------------------
 // callback for BeginAuthSession
 //-----------------------------------------------------------------------------
 struct ValidateAuthTicketResponse_t
@@ -213,6 +292,7 @@ struct ValidateAuthTicketResponse_t
 	enum { k_iCallback = k_iSteamUserCallbacks + 43 };
 	CSteamID m_SteamID;
 	EAuthSessionResponse m_eAuthSessionResponse;
+	CSteamID m_OwnerSteamID; // different from m_SteamID if borrowed
 };
 
 
@@ -227,6 +307,48 @@ struct MicroTxnAuthorizationResponse_t
 	uint64 m_ulOrderID;			// OrderID provided for the microtransaction
 	uint8 m_bAuthorized;		// if user authorized transaction
 };
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Result from RequestEncryptedAppTicket
+//-----------------------------------------------------------------------------
+struct EncryptedAppTicketResponse_t
+{
+	enum { k_iCallback = k_iSteamUserCallbacks + 54 };
+
+	EResult m_eResult;
+};
+
+//-----------------------------------------------------------------------------
+// callback for GetAuthSessionTicket
+//-----------------------------------------------------------------------------
+struct GetAuthSessionTicketResponse_t
+{
+	enum { k_iCallback = k_iSteamUserCallbacks + 63 };
+	HAuthTicket m_hAuthTicket;
+	EResult m_eResult;
+};
+
+
+//-----------------------------------------------------------------------------
+// Purpose: sent to your game in response to a steam://gamewebcallback/ command
+//-----------------------------------------------------------------------------
+struct GameWebCallback_t
+{
+	enum { k_iCallback = k_iSteamUserCallbacks + 64 };
+	char m_szURL[256];
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: sent to your game in response to ISteamUser::RequestStoreAuthURL
+//-----------------------------------------------------------------------------
+struct StoreAuthURLResponse_t
+{
+	enum { k_iCallback = k_iSteamUserCallbacks + 65 };
+	char m_szURL[512];
+};
+
+
 
 #pragma pack( pop )
 

@@ -89,18 +89,8 @@ void CASW_Weapon_Flares::PrimaryAttack( void )
 	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
 
 	// flare weapon is lost when all flares are gone
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
-		//Reload();
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bThisActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-#endif
 		return;
 	}
 
@@ -120,12 +110,19 @@ void CASW_Weapon_Flares::PrimaryAttack( void )
 		// start our delayed attack
 		m_bShotDelayed = true;
 		m_flDelayedFire = gpGlobals->curtime + asw_flare_launch_delay.GetFloat();
+		// reactivedrop: what's this??? TODO: investigate 
 		m_flNextPrimaryAttack = m_flNextSecondaryAttack = 0.36f;
 		// make sure our primary weapon can't fire while we do the throw anim
 		if (!bThisActive && pMarine->GetActiveASWWeapon())
 		{
 			// if we're offhand activating, make sure our primary weapon can't fire until we're done
-			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + asw_flare_launch_delay.GetFloat();
+			//pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + asw_flare_launch_delay.GetFloat();
+			
+			// reactivedrop: preventing cheating, firing flare can greatly
+			// increase fire rate for primary weapon, when using with scripts
+			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = 
+				MAX(pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack, 
+					m_flNextPrimaryAttack + asw_flare_launch_delay.GetFloat());
 			pMarine->GetActiveASWWeapon()->m_bIsFiring = false;
 		}
 	}

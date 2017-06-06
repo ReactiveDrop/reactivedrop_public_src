@@ -166,6 +166,13 @@ void CGameTimescale::UpdateTimescale( void )
 
 	if ( m_flCurrentTimescale != engine->GetTimescale() )
 	{
+#ifdef CLIENT_DLL
+		// BenLubar(demo-timescale): set the demo timescale to the inverse of the timescale we want so it's not applied twice
+		if ( engine->IsPlayingDemo() )
+		{
+			engine->ClientCmd_Unrestricted( UTIL_VarArgs( "demo_timescale %f\n", 1.0f / m_flCurrentTimescale ) );
+		}
+#endif
 		engine->SetTimescale( m_flCurrentTimescale );
 	}
 }

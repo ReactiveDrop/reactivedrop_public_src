@@ -17,6 +17,8 @@
 #include "tier0/memdbgon.h"
 
 LINK_ENTITY_TO_CLASS( info_player_teamspawn, CTeamSpawnPoint );
+LINK_ENTITY_TO_CLASS( info_player_start_team1, CTeamSpawnPoint );
+LINK_ENTITY_TO_CLASS( info_player_start_team2, CTeamSpawnPoint );
 
 BEGIN_DATADESC( CTeamSpawnPoint )
 
@@ -45,8 +47,12 @@ void CTeamSpawnPoint::Activate( void )
 	}
 	else
 	{
-		Warning( "info_player_teamspawn with invalid team number: %d\n", GetTeamNumber() );
-		UTIL_Remove( this );
+		// reactivedrop: commented 2 lines below 
+		// TODO: think of a more correct solution to spawn points 
+		// unconfirmed: setting team number in info_player_start_team1 or 
+		// info_player_start_team2 crashes game. TODO: confirm and fix 
+		//Warning( "info_player_teamspawn with invalid team number: %d\n", GetTeamNumber() );
+		// UTIL_Remove( this ); // for now don't remove it, deathmatch needs it 
 	}
 }
 
@@ -128,6 +134,6 @@ void CTeamVehicleSpawnPoint::Activate( void )
 	else
 	{
 		Warning( "info_vehicle_groundspawn with invalid team number: %d\n", GetTeamNumber() );
-		UTIL_Remove( this );
+		// UTIL_Remove( this ); // for now don't remove it, deathmatch needs it 
 	}
 }

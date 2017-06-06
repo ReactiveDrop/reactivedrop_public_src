@@ -16,7 +16,7 @@
 #include "isaverestore.h"
 #include "gamerules.h"
 #ifdef _WIN32
-//#include "vscript_server_nut.h"
+#include "vscript_server_nut.h"
 #endif
 
 extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
@@ -324,6 +324,11 @@ HSCRIPT CreateProp( const char *pszEntityName, const Vector &vOrigin, const char
 		pBaseEntity->SetSequence( iSequence );
 	}
 
+	// BenLubar(key-values-director)
+	DispatchSpawn( pBaseEntity );
+	pBaseEntity->Activate();
+	//
+
 	return ToHScript( pBaseEntity );
 }
 
@@ -440,7 +445,7 @@ bool VScriptServerInit()
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
-					//g_pScriptVM->Run( g_Script_vscript_server );
+					g_pScriptVM->Run( g_Script_vscript_server );
 				}
 
 				VScriptRunScript( "mapspawn", false );

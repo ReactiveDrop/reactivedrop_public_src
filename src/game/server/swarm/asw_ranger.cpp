@@ -29,6 +29,8 @@ DEFINE_EMBEDDEDBYREF( m_pExpresser ),
 END_DATADESC()
 
 ConVar asw_ranger_health( "asw_ranger_health", "101.5", FCVAR_CHEAT );
+ConVar sk_asw_ranger_volley_damage_direct( "sk_asw_ranger_volley_damage_direct", "12", FCVAR_CHEAT );
+ConVar sk_asw_ranger_volley_damage_splash( "sk_asw_ranger_volley_damage_splash", "0", FCVAR_CHEAT );
 extern ConVar asw_debug_alien_damage;
 
 extern int AE_MORTARBUG_LAUNCH;		// actual launch of the projectile
@@ -47,8 +49,8 @@ CASW_Ranger::CASW_Ranger()
 void CASW_Ranger::SetupRangerShot( CASW_AlienShot &shot )
 {
 	shot.m_flSize = 4;
-	shot.m_flDamage_direct = 12;
-	shot.m_flDamage_splash = 0;
+	shot.m_flDamage_direct = sk_asw_ranger_volley_damage_direct.GetFloat();
+	shot.m_flDamage_splash = sk_asw_ranger_volley_damage_splash.GetFloat();
 	shot.m_flSeek_strength = 0;
 	shot.m_flGravity = 0;
 	shot.m_flFuse = 5;
@@ -80,6 +82,9 @@ void CASW_Ranger::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
 
 	SetIdealState( NPC_STATE_ALERT );
+
+	// reactivedrop: make rangers not blocking drones
+	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
 
 	m_bNeverRagdoll = true;
 
@@ -295,7 +300,8 @@ void CASW_Ranger::Event_Killed( const CTakeDamageInfo &info )
 			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_P"))
 			newInfo.ScaleDamageForce(22.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_PDW")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG"))
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG")
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG_G"))
 			newInfo.ScaleDamageForce(30.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_ASG"))
 			newInfo.ScaleDamageForce(35.0f);
@@ -345,6 +351,19 @@ bool CASW_Ranger::CorpseGib( const CTakeDamageInfo &info )
 	//EmitSound( "ASW_Drone.Death" );
 
 	return true;
+}
+
+int CASW_Ranger::OnTakeDamage_Alive(const CTakeDamageInfo &info)
+{
+	CTakeDamageInfo newinfo(info);
+
+	if (m_iHealthBonus == 0 &&
+		newinfo.GetAmmoType() == GetAmmoDef()->Index("ASW_DEAGLE"))
+	{
+		newinfo.SetDamage(GetHealth());
+	}
+
+	return BaseClass::OnTakeDamage_Alive(newinfo);
 }
 
 

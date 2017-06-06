@@ -112,7 +112,7 @@ void InGameMainMenu::OnCommand( const char *command )
 	else if ( !Q_strcmp( command, "GoIdle" ) )
 	{
 		engine->ClientCmd("gameui_hide");
-		engine->ClientCmd("go_away_from_keyboard");
+		engine->ClientCmd("asw_afk");
 	}
 	else if (!Q_strcmp(command, "BootPlayer"))
 	{
@@ -408,7 +408,7 @@ void InGameMainMenu::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	else
 	{
-		LoadControlSettings( "Resource/UI/BaseModUI/InGameMainMenu.res" );
+		LoadControlSettings( "Resource/UI/BaseModUI/InGameMainMenu_rd.res" );
 	}
 
 	SetPaintBackgroundEnabled( true );

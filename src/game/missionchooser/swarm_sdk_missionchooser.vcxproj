@@ -1,0 +1,395 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>missionchooser</ProjectName>
+    <ProjectGuid>{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\.\</OutDir>
+    <IntDir>.\Debug\.\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\.\</OutDir>
+    <IntDir>.\Release\.\</IntDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
+set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
+if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
+if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
+if ERRORLEVEL 1 exit 1
+</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;.;vgui;vgui\dialogs;TileSource;keyvalues_editor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=missionchooser;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <BrowseInformation />
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)missionchooser.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)$(TargetName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>
+      </BaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Manifest>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Manifest>
+    <Xdcmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Xdcmake>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)missionchooser.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
+      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
+mkdir "..\..\..\reactivedrop\bin\."
+:ValveStart
+copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
+if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
+if ERRORLEVEL 1 goto BuildEventFailed
+goto BuildEventOK
+:BuildEventFailed
+echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
+del /q "$(TargetDir)"$(TargetFileName)
+exit 1
+:BuildEventOK
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
+set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
+if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
+if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
+if ERRORLEVEL 1 exit 1
+</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;.;vgui;vgui\dialogs;TileSource;keyvalues_editor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=missionchooser;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <BrowseInformation />
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)missionchooser.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)$(TargetName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <BaseAddress>
+      </BaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Manifest>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Manifest>
+    <Xdcmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Xdcmake>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)missionchooser.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
+      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
+mkdir "..\..\..\reactivedrop\bin\."
+:ValveStart
+copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
+if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
+if ERRORLEVEL 1 goto BuildEventFailed
+goto BuildEventOK
+:BuildEventFailed
+echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
+del /q "$(TargetDir)"$(TargetFileName)
+exit 1
+:BuildEventOK
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\debug_dll_check.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\chunkfile.cpp" />
+    <ClCompile Include="..\..\public\tier0\memoverride.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\public\vgui_controls\vgui_controls.cpp" />
+    <ClCompile Include="asw_key_values_database.cpp" />
+    <ClCompile Include="asw_location_grid.cpp" />
+    <ClCompile Include="asw_map_builder.cpp" />
+    <ClCompile Include="asw_mission_chooser.cpp" />
+    <ClCompile Include="asw_mission_chooser_source_local.cpp" />
+    <ClCompile Include="asw_mission_text_database.cpp" />
+    <ClCompile Include="asw_npcs.cpp" />
+    <ClCompile Include="asw_random_missions.cpp" />
+    <ClCompile Include="asw_spawn_selection.cpp" />
+    <ClCompile Include="asw_system.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_combo_leaf_panel.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_editor.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_editor_base_panel.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_editor_frame.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_fit_children_panel.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_leaf_panel.cpp" />
+    <ClCompile Include="keyvalues_editor\kv_node_panel.cpp" />
+    <ClCompile Include="layout_system\tilegen_actions.cpp" />
+    <ClCompile Include="layout_system\tilegen_class_factories.cpp" />
+    <ClCompile Include="layout_system\tilegen_enum.cpp" />
+    <ClCompile Include="layout_system\tilegen_expressions.cpp" />
+    <ClCompile Include="layout_system\tilegen_layout_system.cpp" />
+    <ClCompile Include="layout_system\tilegen_listeners.cpp" />
+    <ClCompile Include="layout_system\tilegen_mission_preprocessor.cpp" />
+    <ClCompile Include="layout_system\tilegen_ranges.cpp" />
+    <ClCompile Include="layout_system\tilegen_rule.cpp" />
+    <ClCompile Include="layout_system_editor\layout_system_kv_editor.cpp" />
+    <ClCompile Include="layout_system_editor\mission_panel.cpp" />
+    <ClCompile Include="layout_system_editor\node_panel.cpp" />
+    <ClCompile Include="layout_system_editor\rule_instance_node_panel.cpp" />
+    <ClCompile Include="layout_system_editor\rule_instance_parameter_panel.cpp" />
+    <ClCompile Include="layout_system_editor\state_node_panel.cpp" />
+    <ClCompile Include="TileSource\LevelTheme.cpp" />
+    <ClCompile Include="TileSource\MapLayout.cpp" />
+    <ClCompile Include="TileSource\Room.cpp" />
+    <ClCompile Include="TileSource\RoomTemplate.cpp" />
+    <ClCompile Include="TileSource\TagList.cpp" />
+    <ClCompile Include="tile_check.cpp" />
+    <ClCompile Include="vgui\dialogs\ExitEditDialog.cpp" />
+    <ClCompile Include="vgui\dialogs\RoomTemplateEditDialog.cpp" />
+    <ClCompile Include="vgui\dialogs\ThemeEditDialog.cpp" />
+    <ClCompile Include="vgui\dialogs\ThemesDialog.cpp" />
+    <ClCompile Include="vgui\dialogs\TileGenDialog.cpp" />
+    <ClCompile Include="vgui\location_editor\location_editor_frame.cpp" />
+    <ClCompile Include="vgui\location_editor\location_layout_panel.cpp" />
+    <ClCompile Include="vgui\location_editor\mission_txt_leaf_panel.cpp" />
+    <ClCompile Include="vgui\MapLayoutPanel.cpp" />
+    <ClCompile Include="vgui\missionchooser_tgaimagepanel.cpp" />
+    <ClCompile Include="vgui\mission_editor\theme_room_picker.cpp" />
+    <ClCompile Include="vgui\npc_spawns_panel.cpp" />
+    <ClCompile Include="vgui\PlacedRoomTemplatePanel.cpp" />
+    <ClCompile Include="vgui\RoomTemplateListPanel.cpp" />
+    <ClCompile Include="vgui\RoomTemplatePanel.cpp" />
+    <ClCompile Include="vgui\ScrollingWindow.cpp" />
+    <ClCompile Include="vgui\tilegen_pages.cpp" />
+    <ClCompile Include="vgui\ToggleExitsPanel.cpp" />
+    <ClCompile Include="VMFExporter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser_source.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_random_missions.h" />
+    <ClInclude Include="..\..\public\missionchooser\iasw_spawn_selection.h" />
+    <ClInclude Include="..\..\public\tier1\interface.h" />
+    <ClInclude Include="asw_key_values_database.h" />
+    <ClInclude Include="asw_location_grid.h" />
+    <ClInclude Include="asw_map_builder.h" />
+    <ClInclude Include="asw_mission_chooser.h" />
+    <ClInclude Include="asw_mission_chooser_source_local.h" />
+    <ClInclude Include="asw_mission_text_database.h" />
+    <ClInclude Include="asw_npcs.h" />
+    <ClInclude Include="asw_random_missions.h" />
+    <ClInclude Include="asw_spawn_selection.h" />
+    <ClInclude Include="asw_system.h" />
+    <ClInclude Include="chunkfile.h" />
+    <ClInclude Include="keyvalues_editor\kv_combo_leaf_panel.h" />
+    <ClInclude Include="keyvalues_editor\kv_editor.h" />
+    <ClInclude Include="keyvalues_editor\kv_editor_base_panel.h" />
+    <ClInclude Include="keyvalues_editor\kv_editor_frame.h" />
+    <ClInclude Include="keyvalues_editor\kv_fit_children_panel.h" />
+    <ClInclude Include="keyvalues_editor\kv_leaf_panel.h" />
+    <ClInclude Include="keyvalues_editor\kv_node_panel.h" />
+    <ClInclude Include="layout_system\tilegen_actions.h" />
+    <ClInclude Include="layout_system\tilegen_class_factories.h" />
+    <ClInclude Include="layout_system\tilegen_class_interfaces.h" />
+    <ClInclude Include="layout_system\tilegen_enum.h" />
+    <ClInclude Include="layout_system\tilegen_expressions.h" />
+    <ClInclude Include="layout_system\tilegen_layout_system.h" />
+    <ClInclude Include="layout_system\tilegen_listeners.h" />
+    <ClInclude Include="layout_system\tilegen_mission_preprocessor.h" />
+    <ClInclude Include="layout_system\tilegen_ranges.h" />
+    <ClInclude Include="layout_system\tilegen_rule.h" />
+    <ClInclude Include="layout_system_editor\layout_system_kv_editor.h" />
+    <ClInclude Include="layout_system_editor\mission_panel.h" />
+    <ClInclude Include="layout_system_editor\node_panel.h" />
+    <ClInclude Include="layout_system_editor\rule_instance_node_panel.h" />
+    <ClInclude Include="layout_system_editor\rule_instance_parameter_panel.h" />
+    <ClInclude Include="layout_system_editor\state_node_panel.h" />
+    <ClInclude Include="tilegen_core.h" />
+    <ClInclude Include="TileSource\LevelTheme.h" />
+    <ClInclude Include="TileSource\MapLayout.h" />
+    <ClInclude Include="TileSource\Room.h" />
+    <ClInclude Include="TileSource\RoomTemplate.h" />
+    <ClInclude Include="TileSource\TagList.h" />
+    <ClInclude Include="tile_check.h" />
+    <ClInclude Include="vgui\dialogs\ExitEditDialog.h" />
+    <ClInclude Include="vgui\dialogs\RoomTemplateEditDialog.h" />
+    <ClInclude Include="vgui\dialogs\ThemeEditDialog.h" />
+    <ClInclude Include="vgui\dialogs\ThemesDialog.h" />
+    <ClInclude Include="vgui\dialogs\TileGenDialog.h" />
+    <ClInclude Include="vgui\location_editor\location_editor_frame.h" />
+    <ClInclude Include="vgui\location_editor\location_layout_panel.h" />
+    <ClInclude Include="vgui\location_editor\mission_txt_leaf_panel.h" />
+    <ClInclude Include="vgui\MapLayoutPanel.h" />
+    <ClInclude Include="vgui\missionchooser_tgaimagepanel.h" />
+    <ClInclude Include="vgui\mission_editor\theme_room_picker.h" />
+    <ClInclude Include="vgui\npc_spawns_panel.h" />
+    <ClInclude Include="vgui\PlacedRoomTemplatePanel.h" />
+    <ClInclude Include="vgui\RoomTemplateListPanel.h" />
+    <ClInclude Include="vgui\RoomTemplatePanel.h" />
+    <ClInclude Include="vgui\ScrollingWindow.h" />
+    <ClInclude Include="vgui\tilegen_pages.h" />
+    <ClInclude Include="vgui\ToggleExitsPanel.h" />
+    <ClInclude Include="VMFExporter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\common\jpeglib.lib" />
+    <Library Include="..\..\lib\public\bitmap.lib" />
+    <Library Include="..\..\lib\public\dmxloader.lib" />
+    <Library Include="..\..\lib\public\fgdlib.lib" />
+    <Library Include="..\..\lib\public\interfaces.lib" />
+    <Library Include="..\..\lib\public\mathlib.lib" />
+    <Library Include="..\..\lib\public\matsys_controls.lib" />
+    <Library Include="..\..\lib\public\steam_api.lib" />
+    <Library Include="..\..\lib\public\tier0.lib" />
+    <Library Include="..\..\lib\public\tier1.lib" />
+    <Library Include="..\..\lib\public\tier2.lib" />
+    <Library Include="..\..\lib\public\tier3.lib" />
+    <Library Include="..\..\lib\public\vbsp2lib.lib" />
+    <Library Include="..\..\lib\public\vgui_controls.lib" />
+    <Library Include="..\..\lib\public\vstdlib.lib" />
+    <Library Include="..\..\lib\public\vtf.lib" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

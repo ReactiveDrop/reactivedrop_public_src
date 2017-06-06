@@ -291,7 +291,7 @@ void CASWNightVisionSelfIllumProxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 	{
 		SetFloatResult( 0.0f );
@@ -328,7 +328,7 @@ void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 	if ( !pMarine )
 		return;
 

@@ -51,6 +51,8 @@
 #include "asw_spawn_manager.h"
 #include "asw_campaign_info.h"
 #include "sendprop_priorities.h"
+#include "asw_deathmatch_mode.h"
+#include "asw_trace_filter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -66,6 +68,7 @@ ConVar asw_debug_pvs("asw_debug_pvs", "0", FCVAR_CHEAT);
 extern ConVar asw_rts_controls;
 extern ConVar asw_DebugAutoAim;
 extern ConVar asw_debug_marine_damage;
+extern ConVar rd_respawn_time;
 
 // -------------------------------------------------------------------------------- //
 // Player animation event. Sent to the client when a player fires, jumps, reloads, etc..
@@ -204,6 +207,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 2), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
 	SendPropEHandle( SENDINFO ( m_hMarine ) ),
 	SendPropEHandle( SENDINFO( m_hSpectatingMarine ) ),
+    SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
 	SendPropEHandle( SENDINFO( m_hOrderingMarine ) ),
 	SendPropEHandle( SENDINFO ( m_pCurrentInfoMessage ) ),
 	SendPropEHandle( SENDINFO ( m_hVotingMissions ) ),
@@ -214,10 +218,21 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 
 	SendPropTime( SENDINFO( m_flUseKeyDownTime ) ),
 	SendPropEHandle( SENDINFO ( m_hUseKeyDownEnt ) ),
+	SendPropFloat	(SENDINFO( m_flMovementAxisYaw)),
+	SendPropInt		(SENDINFO(m_nChangingMR)),
 	SendPropInt		(SENDINFO(m_nChangingSlot)),
 	SendPropInt	(SENDINFO( m_iMapVoted ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
+
+	// BenLubar(spectator-mouse)
+	SendPropInt( SENDINFO( m_iScreenWidth ) ),
+	SendPropInt( SENDINFO( m_iScreenHeight ) ),
+	SendPropInt( SENDINFO( m_iMouseX ), -1, SPROP_CHANGES_OFTEN ),
+	SendPropInt( SENDINFO( m_iMouseY ), -1, SPROP_CHANGES_OFTEN ),
+	//
+
+	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -225,9 +240,8 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_vecLastMarineOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_hMarine, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hSpectatingMarine, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecStoredPosition, FIELD_VECTOR ),	
-	DEFINE_FIELD( m_pCurrentInfoMessage, FIELD_EHANDLE ),	
-	DEFINE_FIELD( m_fClearInfoMessageTime, FIELD_FLOAT ),
+	DEFINE_FIELD( m_vecStoredPosition, FIELD_VECTOR ),
+	DEFINE_FIELD( m_pCurrentInfoMessage, FIELD_EHANDLE ),
 	//DEFINE_FIELD( m_bLastAttackButton, FIELD_BOOLEAN ),		// keep this at no click after restore
 	DEFINE_FIELD( m_iUseEntities, FIELD_INTEGER ),
 	DEFINE_AUTO_ARRAY( m_hUseEntities, FIELD_EHANDLE ),
@@ -245,6 +259,13 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_iMapVoted, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fLastControlledMarineTime, FIELD_TIME ),
 	DEFINE_FIELD( m_vecCrosshairTracePos, FIELD_VECTOR ),
+
+	// BenLubar(spectator-mouse)
+	DEFINE_FIELD( m_iScreenWidth, FIELD_SHORT ),
+	DEFINE_FIELD( m_iScreenHeight, FIELD_SHORT ),
+	DEFINE_FIELD( m_iMouseX, FIELD_SHORT ),
+	DEFINE_FIELD( m_iMouseY, FIELD_SHORT ),
+	//
 END_DATADESC()
 
 // -------------------------------------------------------------------------------- //
@@ -313,6 +334,8 @@ void ASW_DrawAwakeAI()
 }
 ConVar asw_draw_awake_ai( "asw_draw_awake_ai", "0", FCVAR_CHEAT, "Lists how many of each AI are awake");
 
+CBaseEntity *CASW_Player::spawn_point = NULL;
+
 CASW_Player::CASW_Player()
 {
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
@@ -326,6 +349,7 @@ CASW_Player::CASW_Player()
 	m_vecLastMarineOrigin = vec3_origin;
 
 	m_bLastAttackButton= false;
+	m_bLastAttack2Button= false;
 	m_fLastAICountTime = 0;
 	m_bAutoReload = true;	
 	m_bRequestedSpectator = false;
@@ -334,6 +358,8 @@ CASW_Player::CASW_Player()
 	m_bFirstInhabit = false;
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
+	m_flMovementAxisYaw = 90.0;
+    m_fMarineDeathTime = 0.0f;
 	
 	m_Local.m_vecPunchAngle.Set( ROLL, 15 );
 	m_Local.m_vecPunchAngle.Set( PITCH, 8 );
@@ -345,6 +371,9 @@ CASW_Player::CASW_Player()
 	m_bHasAwardedXP = false;
 	m_bSentPromotedMessage = false;
 
+	m_bWelcomed = false; 
+
+	m_nChangingMR = -1;
 	m_nChangingSlot = 0;
 
 	if (ASWGameRules())
@@ -356,6 +385,17 @@ CASW_Player::CASW_Player()
 			SpectateNextMarine();
 		}		
 	}
+	m_fLastFragTime = FLT_MIN;
+	m_iKillingSpree = 0;
+
+	// BenLubar(spectator-mouse)
+	m_iScreenWidth = 0;
+	m_iScreenHeight = 0;
+	m_iMouseX = 0;
+	m_iMouseY = 0;
+	// 
+
+	m_bLeaderboardReady = false;
 }
 
 
@@ -406,22 +446,102 @@ void CASW_Player::PostThink()
 	// find nearby usable items
 	FindUseEntities();
 
-	if (m_pCurrentInfoMessage.Get() && gpGlobals->curtime >= m_fClearInfoMessageTime)
-	{
-		m_pCurrentInfoMessage = NULL;
-	}	
-
 	// clicking while ingame on mission with no marine makes us spectate the next marine
 	if ((!GetMarine() || GetMarine()->GetHealth()<=0)
-		&& !HasLiveMarines() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+		/*&& !HasLiveMarines()*/ && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
 	{
 		//Msg("m_nButtons & IN_ATTACK = %d (m_Local.m_nOldButtons & IN_ATTACK) = %d\n", (m_nButtons & IN_ATTACK), (m_Local.m_nOldButtons & IN_ATTACK));
 		bool bClicked = (!m_bLastAttackButton && (m_nButtons & IN_ATTACK));
+		bool bRightClicked = (!m_bLastAttack2Button && (m_nButtons & IN_ALT1));
+		bool bJumpPressed = (!m_bLastAttackButton && (m_nButtons & IN_JUMP));
 
-		if ( bClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
+		// for deathmatch we spectate after 1.5 sec and respawn marine on click 
+		// after 5 seconds
+		if ( ASWDeathmatchMode() )
 		{
+			if ( bJumpPressed && gpGlobals->curtime > m_fMarineDeathTime + rd_respawn_time.GetFloat() )
+			{
+				ASWDeathmatchMode()->SpawnMarine( this );
+			}
+			else if ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f )
+			{
+				SpectateNextMarine();
+				m_fLastControlledMarineTime = gpGlobals->curtime - 5.0f; // set this again so we don't spam SpectateNextMarine
+			}
+			else if ( ( bClicked || bRightClicked ) && gpGlobals->curtime > m_fMarineDeathTime + 1.5f )
+			{
+				SpectateNextMarine();
+			}
+		}
+		else if ( bClicked && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f )
+		{
+			// riflemod: allow drop in 
+			CASW_Game_Resource *pGameResource = ASWGameResource();
+			if ( !this->HasLiveMarines() && pGameResource )
+			{
+				bool found_available_marine = false;
+				CASW_Marine *pBotMarine = NULL;
+
+				if ( GetSpectatingMarine() && !GetSpectatingMarine()->IsInhabited() )
+				{
+					found_available_marine = true;
+					pBotMarine = GetSpectatingMarine();
+				}
+				else 
+				{
+					for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+					{
+						CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
+						if ( !pMR )
+							continue;
+						CASW_Marine *pMarine = pMR->GetMarineEntity();
+
+						if ( pMarine && !pMarine->IsInhabited() )
+						{
+							found_available_marine = true;
+							pBotMarine = pMarine;
+							break;
+						}
+					}
+				}
+				if (found_available_marine)
+				{
+					DevMsg(" Riflemod Drop-In. Switching player to marine 0\n");
+					pBotMarine->SetCommander(this);
+					pBotMarine->GetMarineResource()->SetCommander(this);
+					SetSpectatingMarine(NULL);
+					SwitchMarine(0, false);
+					// reactivedrop: when player took marine under control
+					// delay his primary attack to prevent immediate shooting at
+					// unknown posisition which can kill teammates
+					pBotMarine->SetNextAttack(gpGlobals->curtime + 1.0f);
+
+					// reactivedrop: additionally check bots. If they have no 
+					// commander then assign to this player
+					//
+					// This happens when the only one player on server plays with bots
+					// and goes asw_afk. When this player takes control over a bot
+					// all other bots are now assigned to this player. Previously
+					// they were assigned to nobody
+					for (int i = 0; i < pGameResource->GetMaxMarineResources(); ++i)
+					{
+						CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
+						if (!pMR || pMR->GetHealthPercent() <= 0)
+							continue;
+						if (pMR->GetCommander() == NULL)
+							pMR->SetCommander( this );
+					}
+				}
+				else 
+				{
+					SpectateNextMarine();
+				}
+			}
+		}
+		else if (bRightClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
+		{
+			// riflemod: right click when spectating cycles through marines 
 			SpectateNextMarine();
-			m_fLastControlledMarineTime = gpGlobals->curtime;		// set this again so we don't spam SpectateNextMarine
 		}
 	}
 	else
@@ -430,6 +550,7 @@ void CASW_Player::PostThink()
 	}
 
 	m_bLastAttackButton = (m_nButtons & IN_ATTACK);
+	m_bLastAttack2Button= (m_nButtons & IN_ALT1);
 
 	RagdollBlendTest();
 
@@ -607,67 +728,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 				return true;
 			}
-			if ( FStrEq( pcmd, "cl_selectsinglem" ) )			// selecting a marine from the roster, deselecting our current
-			{
-				CASW_Game_Resource *pGameResource = ASWGameResource();
-				if (!pGameResource)
-					return true;
-
-				if ( args.ArgC() < 2 )
-				{
-					Warning( "Player sent bad cl_selectsinglem command\n" );
-				}
-
-				// deselect any current marines
-				for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
-				{
-					CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
-					if ( !pMR )
-						break;
-
-					if ( pMR && pMR->GetCommander() == this )
-					{	
-						ASWGameRules()->RosterDeselect( this, pMR->GetProfileIndex() );
-					}
-				}
-
-				// now select the new marine
-				int iRosterIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
-				if (ASWGameRules()->RosterSelect(this, iRosterIndex))
-				{
-
-					// did they specify a previous inventory selection too?
-					if (args.ArgC() == 5)
-					{
-						int iMarineResource = -1;
-						for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-						{
-							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-							if (pMR && pMR->GetProfileIndex() == iRosterIndex)
-							{
-								iMarineResource = i;
-								break;
-							}
-						}
-						if (iMarineResource == -1)
-							return true;
-
-						m_bRequestedSpectator = false;
-						int primary = atoi( args[2] );
-						int secondary = atoi( args[3] );
-						int extra = atoi( args[4] );
-
-						if (primary != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 0, primary);
-						if (secondary != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 1, secondary);
-						if (extra != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 2, extra);
-					}
-				}
-
-				return true;
-			}
 			else if ( FStrEq( pcmd, "cl_revive" ) )			// revive all dead marines, leader only
 			{
 				if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
@@ -691,22 +751,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					}
 				}
 				return true;
-			}
-			else if ( FStrEq( pcmd, "cl_loadout" ) )			// selecting equipment
-			{
-				if ( args.ArgC() < 4 )
-				{
-					Warning( "Player sent bad loadout command\n" );
-				}
-
-				int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
-				int iInvSlot = atoi( args[2] );
-				int iEquipIndex = atoi( args[3] );
-
-				ASWGameRules()->LoadoutSelect(this, iProfileIndex, iInvSlot, iEquipIndex);
-
-				return true;
-
 			}
 			else if ( FStrEq( pcmd, "cl_loadouta" ) )			// selecting equipment
 			{
@@ -824,37 +868,21 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
-			else if ( FStrEq( pcmd, "cl_onslaught") )
+			else if (FStrEq(pcmd, "rd_set_challenge"))
 			{
-				if ( args.ArgC() < 2 )
+				if (args.ArgC() < 2)
 				{
-					Warning("Player sent a bad cl_onslaught command\n");
+					Warning("Player sent a bad rd_set_challenge command\n");
 					return false;
 				}
 
-				if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+				if (ASWGameResource() && ASWGameResource()->GetLeader() == this)
 				{
-					bool bOldOnslaughtMode = CAlienSwarm::IsOnslaught();
-					int nOnslaught = atoi( args[1] );
-					nOnslaught = clamp<int>( nOnslaught, 0, 1 );
+					const char *szChallengeName = args[1];
 
-					extern ConVar asw_horde_override;
-					extern ConVar asw_wanderer_override;
-					asw_horde_override.SetValue( nOnslaught );
-					asw_wanderer_override.SetValue( nOnslaught );
-
-					if ( CAlienSwarm::IsOnslaught() != bOldOnslaughtMode )
+					if (ASWGameRules())
 					{
-						CReliableBroadcastRecipientFilter filter;
-						filter.RemoveRecipient( this );		// notify everyone except the player changing the setting
-						if ( nOnslaught > 0 )
-						{
-							UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_enabled_onslaught", GetPlayerName() );
-						}
-						else
-						{
-							UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_disabled_onslaught", GetPlayerName() );
-						}
+						ASWGameRules()->EnableChallenge(szChallengeName);
 					}
 				}
 				return true;
@@ -934,12 +962,13 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_editing_slot") )
 			{
-				if ( args.ArgC() < 2 )
+				if ( args.ArgC() < 3 )
 				{
 					Warning("Player sent a bad cl_editing_slot command\n");
 					return false;
 				}
-				m_nChangingSlot = atoi( args[1] );
+				m_nChangingMR = atoi( args[1] );
+				m_nChangingSlot = atoi( args[2] );
 
 				return true;
 			}
@@ -959,7 +988,15 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						case 1: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_1", GetPlayerName() ); break;
 						case 2: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_2", GetPlayerName() ); break;
 						case 3: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_3", GetPlayerName() ); break;
+						case 4: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_4", GetPlayerName() ); break;
+						case 5: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_5", GetPlayerName() ); break;
+						case 6: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_6", GetPlayerName() ); break;
 					}
+
+					CReliableBroadcastRecipientFilter filter;
+					UserMessageBegin( filter, "RDPlayerPromoted" );
+						WRITE_BYTE( GetClientIndex() );
+					MessageEnd();
 				}
 				return true;
 			}
@@ -1207,12 +1244,154 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
+			else if ( FStrEq( pcmd, "cl_leaderboard_ready" ) )
+			{
+				if ( !m_bLeaderboardReady && ASWGameRules() )
+				{
+					m_bLeaderboardReady = true;
+					ASWGameRules()->CheckLeaderboardReady();
+				}
+				return true;
+			}
 
 			break;
 		}
 	}
-	
-	if ( FStrEq( pcmd, "cl_wants_restart" ) )			// print a message telling the other players that you want to start
+
+
+	if ( FStrEq( pcmd, "cl_selectsinglem" ) )			// selecting a marine from the roster, deselecting our current
+	{
+		// allow to select marine only in BREIFING for coop
+		if ( !ASWDeathmatchMode() && ASWGameRules()->GetGameState() != ASW_GS_BRIEFING)
+			return false;
+
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		if (!pGameResource)
+			return true;
+
+		if ( args.ArgC() < 2 )
+		{
+			Warning( "Player sent bad cl_selectsinglem command\n" );
+		}
+
+		// deselect any current marines
+		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+		{
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( !pMR )
+				break;
+			// BenLubar: Don't deselect bots when chaning marine
+			if ( pMR && pMR->GetCommander() == this && pMR->IsInhabited() )
+			{
+				ASWGameRules()->RosterDeselect( this, pMR->GetProfileIndex() );
+			}
+		}
+
+		// now select the new marine
+		int iRosterIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
+		if ( ASWGameRules()->RosterSelect( this, iRosterIndex, -2 ) )
+		{
+			// did they specify a previous inventory selection too?
+			if (args.ArgC() == 5)
+			{
+				int iMarineResource = -1;
+				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+				{
+					CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+					if (pMR && pMR->GetProfileIndex() == iRosterIndex)
+					{
+						iMarineResource = i;
+						break;
+					}
+				}
+				if (iMarineResource == -1)
+					return true;
+
+				m_bRequestedSpectator = false;
+				int primary = atoi( args[2] );
+				int secondary = atoi( args[3] );
+				int extra = atoi( args[4] );
+
+				if (primary != -1)
+					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 0, primary);
+				if (secondary != -1)
+					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 1, secondary);
+				if (extra != -1)
+					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 2, extra);
+			}
+		}
+
+//         if ( ASWDeathmatchMode() )
+//         {
+//             ASWDeathmatchMode()->SpawnMarine( this );
+//         }
+
+		return true;
+	}
+	else if ( FStrEq( pcmd, "cl_loadout" ) )			// selecting equipment
+	{
+		if ( ASWDeathmatchMode() || ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		{
+			if ( args.ArgC() < 4 )
+			{
+				Warning( "Player sent bad loadout command\n" );
+			}
+
+			int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
+			int iInvSlot = atoi( args[2] );
+			int iEquipIndex = atoi( args[3] );
+
+			ASWGameRules()->LoadoutSelect(this, iProfileIndex, iInvSlot, iEquipIndex);
+			return true;
+		}
+		else 
+			return false;
+	}
+	// reactivedrop: moved here from case ASW_GS_BRIEFING
+	// to allow onlsaught toggling in PvP
+	else if ( FStrEq( pcmd, "cl_onslaught") )
+	{
+		// works only in deathmatch in game or co-op in briefing
+		if ( ( ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME ) 
+			|| ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		{
+			if ( args.ArgC() < 2 )
+			{
+				Warning("Player sent a bad cl_onslaught command\n");
+				return false;
+			}
+
+			if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+			{
+				bool bOldOnslaughtMode = CAlienSwarm::IsOnslaught();
+				int nOnslaught = atoi( args[1] );
+				nOnslaught = clamp<int>( nOnslaught, 0, 1 );
+
+				extern ConVar asw_horde_override;
+				extern ConVar asw_wanderer_override;
+				asw_horde_override.SetValue( nOnslaught );
+				asw_wanderer_override.SetValue( nOnslaught );
+
+				if ( CAlienSwarm::IsOnslaught() != bOldOnslaughtMode )
+				{
+					CReliableBroadcastRecipientFilter filter;
+					filter.RemoveRecipient( this );		// notify everyone except the player changing the setting
+					if ( nOnslaught > 0 )
+					{
+						UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_enabled_onslaught", GetPlayerName() );
+					}
+					else
+					{
+						UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_disabled_onslaught", GetPlayerName() );
+					}
+				}
+			}
+			return true;
+		}
+		else 
+			return false;
+	}
+	else if ( FStrEq( pcmd, "cl_wants_restart" ) )			// print a message telling the other players that you want to start
 	{
 		if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
 		{
@@ -1244,6 +1423,10 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		{
 			Warning( "Player sent bad switch marine command\n" );
 		}
+
+		// BenLubar: Don't allow taking over bots in PvP
+		if ( ASWDeathmatchMode() )
+			return true;
 
 		int iMarineIndex = atoi( args[1] ) - 1;
 		SwitchMarine(iMarineIndex);
@@ -1687,7 +1870,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		}
 		m_fMapGenerationProgress = clamp(atof(args[1]), 0.0f, 1.0f);
 		return true;
-	}	
+	}
 	
 	return BaseClass::ClientCommand( args );
 }
@@ -1794,11 +1977,6 @@ void CASW_Player::SetMarine( CASW_Marine *pMarine )
 	}
 }
 
-CASW_Marine* CASW_Player::GetMarine()
-{
-	return m_hMarine.Get();
-}
-
 CASW_Marine* CASW_Player::GetMarine() const
 {
 	return m_hMarine.Get();
@@ -1812,11 +1990,6 @@ void CASW_Player::SpectateNextMarine()
 	CASW_Marine *pFirst = NULL;
 	//Msg("CASW_Player::SpectateNextMarine\n");
 
-	if (GetSpectatingMarine() && GetSpectatingMarine()->GetHealth() <= 0)
-	{
-		//Msg("clearing initial spectating marine as he's dead\n");
-		SetSpectatingMarine(NULL);
-	}
 	// loop through all marines
 	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
 	{
@@ -1870,9 +2043,19 @@ void CASW_Player::SetSpectatingMarine(CASW_Marine *pMarine)
 	}
 }
 
-CASW_Marine* CASW_Player::GetSpectatingMarine()
+CASW_Marine* CASW_Player::GetSpectatingMarine() const
 {
 	return m_hSpectatingMarine.Get();
+}
+
+CASW_Marine* CASW_Player::GetViewMarine() const
+{
+	CASW_Marine *pMarine = GetSpectatingMarine();
+	if (!pMarine)
+	{
+		pMarine = GetMarine();
+	}
+	return pMarine;
 }
 
 void CASW_Player::SelectNextMarine(bool bReverse)
@@ -1953,97 +2136,103 @@ bool CASW_Player::CanSwitchToMarine(int num)
 	return false;
 }
 
-// select the nth marine in the marine info list owned by this player
-void CASW_Player::SwitchMarine(int num)
-{	
-	if (!ASWGameResource())
+void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader )
+{
+	CASW_Marine *pOldMarine = GetMarine();
+	CASW_Marine *pNewMarine = pMR->GetMarineEntity();
+
+	// abort if we're trying to switch to a dead marine
+	if ( !pNewMarine || pNewMarine->GetHealth() <= 0 )
+	{
 		return;
-	int max_marines = ASWGameResource()->GetMaxMarineResources();
-	for (int i=0;i<max_marines;i++)
-	{		
-		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-		if (pMR)
+	}
+
+	if ( pOldMarine )
+	{
+		if ( pNewMarine == pOldMarine )
+			return;
+		pOldMarine->UninhabitedBy( this );
+	}
+
+	if ( asw_rts_controls.GetBool() )
+	{
+		DevMsg("Marine is at: %f, %f, %f\n", pMR->GetMarineEntity()->GetAbsOrigin().x, pMR->GetMarineEntity()->GetAbsOrigin().y, pMR->GetMarineEntity()->GetAbsOrigin().z);
+		Vector vecNewOrigin = pMR->GetMarineEntity()->GetAbsOrigin() + Vector(0, -200, 400);
+		SetAbsOrigin( vecNewOrigin );
+		DevMsg("Moved cam to: %f, %f, %f\n", vecNewOrigin.x, vecNewOrigin.y, vecNewOrigin.z);
+		return;
+	}
+
+	m_ASWLocal.m_hAutoAimTarget.Set( NULL );
+
+	SetMarine( pNewMarine );
+	SetSpectatingMarine( NULL );
+	pNewMarine->SetCommander( this );
+	pNewMarine->InhabitedBy( this );
+
+	if ( gpGlobals->curtime > ASWGameRules()->m_fMissionStartedTime + 5.0f )
+	{
+		// If it's not the very beginning of the level... go ahead and say it
+		pNewMarine->GetMarineSpeech()->Chatter( CHATTER_SELECTION );
+	}
+
+	CASW_SquadFormation *pSquad = pNewMarine->GetSquadFormation();
+	if ( pSquad && set_squad_leader )
+	{
+		pSquad->ChangeLeader( pNewMarine, false );
+	}
+
+	if ( pOldMarine )
+	{
+		if ( pOldMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION )
 		{
-			if ((CASW_Player*) pMR->m_Commander == this)
+			pOldMarine->OrdersFromPlayer( this, ASW_ORDER_HOLD_POSITION, pNewMarine, false, GetLocalAngles().y );
+		}
+		else
+		{
+			pOldMarine->OrdersFromPlayer( this, ASW_ORDER_FOLLOW, pNewMarine, false );
+		}
+	}
+
+	if ( !m_bFirstInhabit )
+	{
+		//OrderNearbyMarines( this, ASW_ORDER_FOLLOW );
+		m_bFirstInhabit = true;
+	}
+}
+
+// select the nth marine in the marine info list owned by this player
+void CASW_Player::SwitchMarine(int num, bool set_squad_leader/* = true*/)
+{
+	if ( !ASWGameResource() )
+		return;
+
+	int max_marines = ASWGameResource()->GetMaxMarineResources();
+	for ( int i = 0; i < max_marines; i++ )
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR )
+		{
+			if ( pMR->GetCommander() == this )
 			{
 				num--;
-				if (num < 0 && pMR->GetMarineEntity() )
+				if ( num < 0 && pMR->GetMarineEntity() )
 				{
-					CASW_Marine *pOldMarine = GetMarine();
-					CASW_Marine *pNewMarine = pMR->GetMarineEntity();
-
-					// abort if we're trying to switch to a dead marine
-					if (pNewMarine->GetHealth() <= 0)
-					{
-						return;
-					}
-
-					if ( pOldMarine )
-					{
-						if ( pNewMarine == pOldMarine )
-							return;
-						pOldMarine->UninhabitedBy(this);
-					}
-
-					if (asw_rts_controls.GetBool())
-					{
-						Msg("RTS controls moving above marine %d\n", num);
-						Msg("Marine is at: %f, %f, %f\n", pMR->GetMarineEntity()->GetAbsOrigin().x, pMR->GetMarineEntity()->GetAbsOrigin().y, pMR->GetMarineEntity()->GetAbsOrigin().z);
-						Vector vecNewOrigin = pMR->GetMarineEntity()->GetAbsOrigin() + Vector(0, -200, 400);
-						SetAbsOrigin( vecNewOrigin );
-						Msg("Moved cam to: %f, %f, %f\n", vecNewOrigin.x, vecNewOrigin.y, vecNewOrigin.z);
-						return;
-					}
-
-					m_ASWLocal.m_hAutoAimTarget.Set(NULL);
-
-					SetMarine( pNewMarine );
-					SetSpectatingMarine(NULL);
-					pNewMarine->SetCommander(this);
-					pNewMarine->InhabitedBy(this);
-
-					if ( gpGlobals->curtime > ASWGameRules()->m_fMissionStartedTime + 5.0f )
-					{
-						// If it's not the very beginning of the level... go ahead and say it
-						pNewMarine->GetMarineSpeech()->Chatter(CHATTER_SELECTION);
-					}
-
-					CASW_SquadFormation *pSquad = pNewMarine->GetSquadFormation();
-					if ( pSquad )
-					{
-						pSquad->ChangeLeader( pNewMarine, false );
-					}
-
-					if ( pOldMarine )
-					{
-						if ( pOldMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION )
-						{
-							pOldMarine->OrdersFromPlayer( this, ASW_ORDER_HOLD_POSITION, pNewMarine, false, GetLocalAngles().y );
-						}
-						else
-						{
-							pOldMarine->OrdersFromPlayer( this, ASW_ORDER_FOLLOW, pNewMarine, false );
-						}
-					}
-
-					if ( !m_bFirstInhabit )
-					{
-						//OrderNearbyMarines( this, ASW_ORDER_FOLLOW );
-						m_bFirstInhabit = true;
-					}
+					SwitchMarine( pMR, set_squad_leader );
 					return;
 				}
 			}
 		}
 	}
+
 	// if we got here, it means we pushed a marine number greater than the number of marines we have
 	// check again, this time counting up other player's marines, to see if we're trying to shout out to them (or trying to spectate them, if we're all dead)
 	CASW_Marine *pMarine = GetMarine();
-	bool bSpectating = (!pMarine || pMarine->GetHealth() <= 0) && !HasLiveMarines();
-	for (int i=0;i<max_marines;i++)
+	bool bSpectating = ( !pMarine || pMarine->GetHealth() <= 0 ) && !HasLiveMarines();
+	for (int i = 0; i < max_marines; i++ )
 	{
-		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-		if (pMR)
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR )
 		{
 			if ((CASW_Player*) pMR->m_Commander != this)
 			{
@@ -2161,7 +2350,7 @@ void CASW_Player::LeaveMarines()
 void CASW_Player::ChangeName( const char *pszNewName )
 {
 	// make sure name is not too long
-	char trimmedName[ASW_MAX_PLAYER_NAME_LENGTH];
+	char trimmedName[MAX_PLAYER_NAME_LENGTH];
 	Q_strncpy( trimmedName, pszNewName, sizeof( trimmedName ) );
 
 	const char *pszOldName = GetPlayerName();
@@ -2326,9 +2515,9 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 				continue;
 			}
 	
-			// don't autoaim onto marines
-			if (pEntity->Classify() == CLASS_ASW_MARINE)
-				continue;
+ 			// don't autoaim onto marines for coop
+ 			if ( !ASWDeathmatchMode() && pEntity->Classify() == CLASS_ASW_MARINE)
+ 				continue;
 
 			//if ( !g_pGameRules->ShouldAutoAim( this, pEntity->edict() ) )
 				//continue;
@@ -2553,6 +2742,11 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 		if ( pMyMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 			return;
 
+		// BenLubar: if player gave follow command, bots will follow not 
+		// using hints 
+		if (NewOrders == ASW_ORDER_FOLLOW && bAcknowledge && pMyMarine->GetSquadFormation())
+			pMyMarine->GetSquadFormation()->FollowCommandUsed();
+
 		// go through all marines and tell them to follow our marine
 		CASW_Game_Resource *pGameResource = ASWGameResource();
 		if ( !pGameResource )
@@ -2561,12 +2755,12 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 		// do an emote
 		if ( NewOrders == ASW_ORDER_HOLD_POSITION && bAcknowledge )
 		{
-			pMyMarine->DoEmote( 3 );	// go
+			pMyMarine->DoEmote( 3 );	// stop
 		}
 
 		else if ( NewOrders == ASW_ORDER_FOLLOW && bAcknowledge )
 		{
-			pMyMarine->DoEmote( 4 );	// stop
+			pMyMarine->DoEmote( 4 );	// go
 		}
 
 		// first count how many marines are in range
@@ -2640,9 +2834,12 @@ void CASW_Player::ShowInfoMessage(CASW_Info_Message* pMessage)
 		return;
 
 	m_pCurrentInfoMessage = pMessage;
-	m_fClearInfoMessageTime = gpGlobals->curtime + 1.0f;
 }
 
+void CASW_Player::HideInfoMessage()
+{
+	m_pCurrentInfoMessage = NULL;
+}
 
 void CASW_Player::MoveMarineToPredictedPosition()
 {
@@ -2936,9 +3133,11 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 	MDLCACHE_CRITICAL_SECTION();
 
 	trace_t tr;
+	// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
+	CASW_Trace_Filter filter( this, COLLISION_GROUP_NONE );
 	UTIL_TraceLine( GetCrosshairTracePos(),
 		GetCrosshairTracePos() + Vector( 0, 0, 10 ),
-		MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+		MASK_SOLID, &filter, &tr );
 	if ( tr.fraction != 1.0 && tr.DidHitNonWorldEntity() )
 	{
 		return tr.m_pEnt;
@@ -2963,4 +3162,3 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 	}
 	return pNearestEntity;
 }
-

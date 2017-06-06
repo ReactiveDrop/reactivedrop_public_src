@@ -22,7 +22,7 @@ class CTeamSpawnPoint : public CPointEntity
 public:
 	DECLARE_CLASS( CTeamSpawnPoint, CPointEntity );
 
-	void	Activate( void );
+	virtual void	Activate( void );
 	virtual bool	IsValid( CBasePlayer *pPlayer );
 
 	COutputEvent m_OnPlayerSpawn;

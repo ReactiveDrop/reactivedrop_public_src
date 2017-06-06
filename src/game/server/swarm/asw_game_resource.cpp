@@ -8,6 +8,7 @@
 #include "asw_campaign_info.h"
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -100,7 +101,7 @@ CASW_Game_Resource::CASW_Game_Resource()
 	g_pASWGameResource = this;
 	m_iNumEnumeratedMarines = NULL;
 	m_pCampaignInfo = NULL;
-	m_iMaxMarines = 4;
+	m_iMaxMarines = ASW_MAX_MARINE_RESOURCES; // reactivedrop: was 4
 	m_bOneMarineEach = false;
 	m_iNumMarinesSelected = 0;
 	m_iRandomMapSeed = 0;
@@ -238,6 +239,10 @@ void CASW_Game_Resource::FindObjectives()
 
 bool CASW_Game_Resource::IsRosterSelected(int i)
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
 		return false;
 
@@ -246,6 +251,10 @@ bool CASW_Game_Resource::IsRosterSelected(int i)
 
 bool CASW_Game_Resource::IsRosterReserved(int i)
 {
+	// allow any marine selection for deathmatch
+	if (ASWDeathmatchMode())
+		return false;
+
 	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
 		return false;
 
@@ -401,8 +410,10 @@ CASW_Scanner_Info* CASW_Game_Resource::GetScannerInfo()
 
 void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 {
+	extern ConVar rd_ready_mark_override;
 	// check for auto-readying our old leader
-	if (m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() && m_Leader->m_bRequestedSpectator)
+	if (m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() && 
+		(m_Leader->m_bRequestedSpectator || rd_ready_mark_override.GetBool()))
 	{
 		int iPlayerIndex = m_Leader->entindex() - 1;
 		if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState()==ASW_GS_DEBRIEF)
@@ -410,7 +421,7 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 			// player index is out of range
 			if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS)
 			{
-				Msg("Autoreadying old leader, who wanted to be a spectator\n");
+				//Msg("Autoreadying old leader, who wanted to be a spectator\n");
 				m_bPlayerReady.Set(iPlayerIndex, true);
 			}
 		}

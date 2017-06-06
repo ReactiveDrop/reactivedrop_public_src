@@ -405,22 +405,7 @@ Vector CASW_Player::EyePosition( )
 		}
 		else if ( pMarine && pMarine->IsControllingTurret() )
 		{
-			if ( bSpectating )
-			{
-				ang[PITCH] = ASWInput()->ASW_GetCameraPitch();
-				ang[YAW] = ASWInput()->ASW_GetCameraYaw();
-				ang[ROLL] = 0;
-				AngleVectors(ang, &org);
-				if ( bIsThirdPerson )
-				{
-					org *= -::ASWInput()->ASW_GetCameraDist();
-				}
-				org += pMarine->GetRemoteTurret()->GetRenderOrigin();
-			}
-			else
-			{
-				org = pMarine->GetRemoteTurret()->GetTurretCamPosition();
-			}
+			org = pMarine->GetRemoteTurret()->GetTurretCamPosition();
 		}
 		else
 		{
@@ -891,20 +876,26 @@ const QAngle& CASW_Player::EyeAngles( )
 	}
 #endif
 
-	if (GetMarine())
+	if ( GetViewMarine() )
 	{
 		angAdjustedEyes.z = 0;
-		CASW_Marine* pMarine = GetMarine();
+		CASW_Marine *pMarine = GetViewMarine();
 
 		// if we're driving, return the angle
-		if (pMarine->IsInVehicle())
+		if ( pMarine->IsInVehicle() )
 		{
-	#ifdef CLIENT_DLL
-			if (pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity())
+#ifdef CLIENT_DLL
+			if ( pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity() )
 				return pMarine->GetClientsideVehicle()->GetEntity()->GetAbsAngles();
-	#endif
-			if (pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity())
+#endif
+			if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() )
 				return pMarine->GetASWVehicle()->GetEntity()->GetAbsAngles();
+		}
+
+		// if we're spectating a turret, use the turret's eye angles
+		if ( ( pMarine->GetCommander() != this || !pMarine->IsInhabited() ) && pMarine->IsControllingTurret() )
+		{
+			return pMarine->GetRemoteTurret()->EyeAngles();
 		}
 	}
 
@@ -1160,11 +1151,19 @@ void CASW_Player::HandleSpeedChanges( void )
 
 CBaseEntity* CASW_Player::GetSoundscapeListener()
 {
-	if (GetMarine())
-		return GetMarine();
-
-	if (GetSpectatingMarine())
-		return GetSpectatingMarine();
+	if (GetViewMarine())
+		return GetViewMarine();
 
 	return this;
+}
+
+// BenLubar: for code ported from Swarm Director 2, include this method just in case Reactive Drop ever has per-player asw_controls support.
+int CASW_Player::GetASWControls()
+{
+#ifdef CLIENT_DLL
+	// HACK: hard-code first person mode to asw_controls 0.
+	if ( !::input->CAM_IsThirdPerson( 0 ) )
+		return 0;
+#endif
+	return asw_controls.GetInt();
 }

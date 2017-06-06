@@ -217,9 +217,9 @@ void C_ASW_Ammo_Drop::ClientThink()
 	float flWithinDistSqr = (ASW_MARINE_USE_RADIUS*4)*(ASW_MARINE_USE_RADIUS*4);
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pLocalPlayer && pLocalPlayer->GetMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetMarine() ) )
+	if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewMarine() ) )
 	{
-		flDistanceToMarineSqr = (pLocalPlayer->GetMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
+		flDistanceToMarineSqr = (pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
 		if ( flDistanceToMarineSqr < flWithinDistSqr )
 			bShouldGlow = true;
 	}

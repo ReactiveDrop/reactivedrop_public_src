@@ -16,6 +16,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_simple_beacons("rd_simple_beacons", "0", FCVAR_ARCHIVE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance");
+
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectAOEGrenades )
 	PRECACHE( MATERIAL, "swarm/effects/blueflare" )
@@ -292,6 +294,9 @@ void C_ASW_AOEGrenade_Projectile::UpdateParticleAttachments( CNewParticleEffect 
 
 void C_ASW_AOEGrenade_Projectile::UpdatePingEffects( void )
 {
+	if (rd_simple_beacons.GetBool())
+		return; 
+
 	if ( m_bSettled && m_pPulseEffect.GetObject() == NULL )
 	{	
 		m_pPulseEffect = ParticleProp()->Create( GetPingEffectName(), PATTACH_ABSORIGIN_FOLLOW, -1, Vector( 0, 0, 8 ) );
@@ -379,33 +384,38 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	{
 		m_fStartLightTime = gpGlobals->curtime;
 	}
-	if ( !m_pDLight )
+
+	if (!rd_simple_beacons.GetBool())
 	{
-		m_pDLight = effects->CL_AllocDlight( index );
+		if (!m_pDLight)
+		{
+			m_pDLight = effects->CL_AllocDlight(index);
 
-		Color rgbaGrenadeColor = GetGrenadeColor();
+			Color rgbaGrenadeColor = GetGrenadeColor();
 
-		m_pDLight->color.r = rgbaGrenadeColor.r();
-		m_pDLight->color.g = rgbaGrenadeColor.g();
-		m_pDLight->color.b = rgbaGrenadeColor.b();
-		m_pDLight->color.exponent = 1;
-	}
+			m_pDLight->color.r = rgbaGrenadeColor.r();
+			m_pDLight->color.g = rgbaGrenadeColor.g();
+			m_pDLight->color.b = rgbaGrenadeColor.b();
+			m_pDLight->color.exponent = 1;
+		}
 
-	
-	m_pDLight->origin = GetAbsOrigin() + Vector(0, 0, 5);	// make the dlight slightly higher than the aoegrenade, so it doesn't bury the light being so close to the ground
 
-	if ( m_fLightRadius < 32.0f )
-	{
-		m_fLightRadius += flTimeLeft * (1.0f + random->RandomFloat() * 36.0f);
-		if (m_fLightRadius > 32.0f)
-			m_fLightRadius = 100.0f;
-	}
+		m_pDLight->origin = GetAbsOrigin() + Vector(0, 0, 5);	// make the dlight slightly higher than the aoegrenade, so it doesn't bury the light being so close to the ground
 
-	m_pDLight->radius = baseScale * 120 * (m_fLightRadius/32.0f);
+		if (m_fLightRadius < 32.0f)
+		{
+			m_fLightRadius += flTimeLeft * (1.0f + random->RandomFloat() * 36.0f);
+			if (m_fLightRadius > 32.0f)
+				m_fLightRadius = 100.0f;
+		}
 
-	if ( flTimeLeft > 4.0f )
-	{
-		m_pDLight->die = gpGlobals->curtime + 30.0f;
+		m_pDLight->radius = baseScale * 120 * (m_fLightRadius / 32.0f);
+
+		if (flTimeLeft > 4.0f)
+		{
+			m_pDLight->die = gpGlobals->curtime + 30.0f;
+		}
+
 	}
 
 

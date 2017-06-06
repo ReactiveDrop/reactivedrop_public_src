@@ -66,6 +66,8 @@
 #include "vdownloadcampaign.h"
 #include "vjukebox.h"
 #include "vleaderboard.h"
+#include "rd_workshop_frame.h"
+#include "vgamepad.h"
 #include "gameconsole.h"
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
@@ -401,15 +403,15 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_LOADINGPROGRESSBKGND:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_BKGNDSCREEN );
+			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress_rd", LoadingProgress::LWT_BKGNDSCREEN );
 			break;
 
 		case WT_LOADINGPROGRESS:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_LOADINGPLAQUE );
+			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress_rd", LoadingProgress::LWT_LOADINGPLAQUE );
 			break;
 
 		case WT_MAINMENU:
-			m_Frames[wt] = new MainMenu(this, "MainMenu");
+			m_Frames[wt] = new MainMenu(this, "MainMenu_rd");
 			break;
 
 		case WT_MULTIPLAYER:
@@ -437,11 +439,11 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_ALLGAMESEARCHRESULTS:
-			m_Frames[ wt ] = new FoundGames( this, "FoundGames" );
+			m_Frames[ wt ] = new FoundGames( this, "FoundGames_rd" );
 			break;
 
 		case WT_FOUNDPUBLICGAMES:
-			m_Frames[ wt ] = new FoundPublicGames( this, "FoundPublicGames" );
+			m_Frames[ wt ] = new FoundPublicGames( this, "FoundPublicGames_rd" );
 			break;
 
 		case WT_TRANSITIONSCREEN:
@@ -449,7 +451,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_VIDEO:
-			m_Frames[wt] = new Video(this, "Video");
+			m_Frames[wt] = new Video(this, "video_rd");
 			break;
 
 		case WT_STEAMCLOUDCONFIRM:
@@ -463,7 +465,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_STEAMGROUPSERVERS:
-			m_Frames[ wt ] = new FoundGroupGames( this, "FoundGames" );
+			m_Frames[ wt ] = new FoundGroupGames( this, "FoundGames_rd" );
 			break;
 
 		case WT_CUSTOMCAMPAIGNS:
@@ -500,6 +502,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 #endif
 			break;
 
+		case WT_WORKSHOP:
+			m_Frames[wt] = new ReactiveDropWorkshop( this, "RDWorkshop" );
+			break;
+
 		case WT_JUKEBOX:
 #if defined( _X360 )
 			// not for xbox
@@ -528,6 +534,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 #else
 			m_Frames[wt] = new GetLegacyData( this, "GetLegacyData" );
 #endif
+			break;
+
+		case WT_GAMEPAD:
+			m_Frames[wt] = new Gamepad( this, "Gamepad" );
 			break;
 
 		default:
@@ -1239,6 +1249,16 @@ void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProg
 		}
 	}
 
+	if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
+	{
+		PublishedFileId_t levelAddon = g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/overviews/%s.txt", levelName ) );
+		const char *levelDisplayName = pChapterInfo ? pChapterInfo->GetString( "missiontitle", levelName ) : UTIL_RD_GetCurrentLobbyData( "game:missioninfo:displaytitle", levelName );
+		const char *challengeName = UTIL_RD_GetCurrentLobbyData( "game:challenge", "0" );
+		PublishedFileId_t challengeAddon = strtoull( UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:workshop", "0" ), NULL, 16 );
+		const char *challengeDisplayName = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:displaytitle", challengeName );
+		pLoadingProgress->SetLeaderboardData( levelName, levelAddon, levelDisplayName, challengeName, challengeAddon, challengeDisplayName );
+	}
+
 	//
 	// If we are just loading into some unknown map, then fake chapter information
 	// (static lifetime of fake keyvalues so that we didn't worry about ownership)
@@ -1860,11 +1880,11 @@ void CBaseModPanel::ApplySchemeSettings(IScheme *pScheme)
 	if ( aspectRatio >= 1.6f )
 	{
 		// use the widescreen version
-		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "SwarmSelectionScreen" );
+		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "RdSelectionScreen" );
 	}
 	else
 	{
-		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "SwarmSelectionScreen" );
+		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "RdSelectionScreen" );
 	}
 
 	// TODO: GetBackgroundMusic

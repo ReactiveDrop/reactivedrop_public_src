@@ -27,7 +27,7 @@ enum
 };
 
 #define ASW_PROMOTION_CAP 6
-#define ASW_NUM_EXPERIENCE_LEVELS 26
+#define ASW_NUM_EXPERIENCE_LEVELS 30
 
 extern int g_iLevelExperience[ ASW_NUM_EXPERIENCE_LEVELS ];
 extern float g_flPromotionXPScale[ ASW_PROMOTION_CAP + 1 ];

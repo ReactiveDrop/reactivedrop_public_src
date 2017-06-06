@@ -128,6 +128,7 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
+	DECLARE_ENT_SCRIPTDESC();
 
 public:
 
@@ -178,6 +179,9 @@ public:
 
 	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
 
+
+	// utility function to calc damage force
+	Vector					CalcDamageForceVector(const CTakeDamageInfo &info);
 
 	// -----------------------
 	// Fog

@@ -40,6 +40,7 @@
 #include "datacache/imdlcache.h"
 #include "asw_weapon_blink.h"
 #include "asw_weapon_jump_jet.h"
+#include "asw_marine_gamemovement.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -72,7 +73,7 @@ ConVar asw_melee_require_contact( "asw_melee_require_contact", "0", FCVAR_REPLIC
 ConVar asw_melee_lock( "asw_melee_lock", "0", FCVAR_REPLICATED, "Marine is moved to the nearest enemy when melee attacking" );
 ConVar asw_melee_require_key_release( "asw_melee_require_key_release", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Melee requires key release between attacks" );
 ConVar asw_melee_base_damage( "asw_melee_base_damage", "12.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The melee damage that marines do at level 1 (scales up with level)" );
-ConVar asw_marine_rolls( "asw_marine_rolls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "If set, marine will do rolls when jump is pressed" );
+ConVar asw_marine_rolls( "asw_marine_rolls", "1", FCVAR_REPLICATED, "If set, marine will do rolls when jump is pressed" );
 #ifdef CLIENT_DLL
 ConVar asw_melee_lock_distance( "asw_melee_lock_distance", "35", FCVAR_CHEAT, "Dist marine slides to when locked onto a melee target" );
 ConVar asw_melee_lock_slide_speed( "asw_melee_lock_slide_speed", "200", FCVAR_CHEAT, "Speed at which marine slides into place when target locked in melee" );
@@ -227,6 +228,9 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 		return;
 	}
 
+	if (pMarine->GetFlags() & FL_FROZEN)
+		return;
+
 	CASW_MoveData *pASWMove = static_cast<CASW_MoveData*>( pMoveData );
 
 	if ( !m_bAttacksValidated )
@@ -318,6 +322,63 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 						}
 					}
 					break;
+				case FORCED_ACTION_JUMP_JET_FROM_TRIGGER:
+				{
+					if (pMarine->m_iJumpJetting == JJ_NONE)
+					{
+						pMarine->m_iJumpJetting = JJ_JUMP_JETS;
+
+						pMarine->m_flJumpJetStartTime = gpGlobals->curtime;
+						
+						if (pMarine->m_fJumpJetDurationOverride > 0)
+						{
+							pMarine->m_flJumpJetEndTime = gpGlobals->curtime + pMarine->m_fJumpJetDurationOverride;
+							pMarine->m_fJumpJetDurationOverride = 0;
+						}
+						else
+						{
+							extern ConVar asw_jump_jet_time;
+							pMarine->m_flJumpJetEndTime = gpGlobals->curtime + asw_jump_jet_time.GetFloat();
+						}
+						pMarine->m_vecJumpJetStart = pMarine->GetAbsOrigin();
+
+						//float speedscale = 1.0;
+						CASW_Melee_Attack *pJumpJetAttack = ASWMeleeSystem()->GetMeleeAttackByName("JumpJet");
+						//pJumpJetAttack->m_flSpeedScale = speedscale;
+						//pMarine->m_flJumpJetEndTime = gpGlobals->curtime + speedscale;
+						ASWMeleeSystem()->StartMeleeAttack(pJumpJetAttack, pMarine, ASWGameMovement()->GetMoveData());
+						DevMsg("Performing blink \n");
+					}
+					break;
+				}
+				case FORCED_ACTION_BLINK_FROM_TRIGGER:
+				{
+					if (pMarine->m_iJumpJetting == JJ_NONE)
+					{
+						pMarine->m_iJumpJetting = JJ_BLINK;
+						pMarine->m_vecJumpJetStart = pMarine->GetAbsOrigin();
+						//pMarine->m_vecJumpJetEnd = m_vecAbilityDestination;
+						pMarine->m_flJumpJetStartTime = gpGlobals->curtime;
+						
+						if ( pMarine->m_fJumpJetDurationOverride > 0 )
+						{
+							pMarine->m_flJumpJetEndTime = gpGlobals->curtime + pMarine->m_fJumpJetDurationOverride;
+							pMarine->m_fJumpJetDurationOverride = 0;
+						}
+						else
+						{
+							extern ConVar asw_blink_time;
+							pMarine->m_flJumpJetEndTime = gpGlobals->curtime + asw_blink_time.GetFloat();
+						}
+
+						//float speedscale = 1.0;
+						CASW_Melee_Attack *pBlinkAttack = ASWMeleeSystem()->GetMeleeAttackByName("Blink");
+						//pJumpJetAttack->m_flSpeedScale = speedscale;
+						//pMarine->m_flJumpJetEndTime = gpGlobals->curtime + speedscale;
+						ASWMeleeSystem()->StartMeleeAttack(pBlinkAttack, pMarine, ASWGameMovement()->GetMoveData());
+					}
+					break;
+				}
 			}
 			if ( pAttack )
 			{
@@ -411,6 +472,9 @@ void CASW_Melee_System::OnMeleePressed( CASW_Marine *pMarine, CMoveData *pMoveDa
 	if ( !pMarine || !pMoveData || !pMarine->GetMarineProfile() )
 		return;
 
+	if (pMarine->GetFlags() & FL_FROZEN)
+		return;
+
 	CASW_Melee_Attack *pCurrentAttack = pMarine->GetCurrentMeleeAttack();
 	if ( pCurrentAttack )
 	{
@@ -465,6 +529,9 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	if ( !asw_marine_rolls.GetBool() )
 		return;
 
+	if (pMarine->GetFlags() & FL_FROZEN)	// no jumping when frozen
+		return;
+
 	// no rolling if in the middle of an attack
 	if ( pMarine->GetCurrentMeleeAttack() )
 		return;
@@ -483,7 +550,7 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	}
 	else
 	{
-		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + ASWGameRules()->GetTopDownMovementAxis()[YAW];	// assumes 45 degree cam!
+		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + pMoveData->m_vecMovementAxis[YAW];	// assumes 45 degree cam!
 	}
 	pMarine->m_bFaceMeleeYaw = true;
 
@@ -818,6 +885,8 @@ void CASW_Melee_System::SetupMeleeMovement( CASW_Marine *pMarine, CMoveData *pMo
 
 	//CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
 	float flSpeedScale = pAttack->m_flSpeedScale;
+	if ( pMarine->m_fJumpJetAnimationDurationOverride > 0 )
+		flSpeedScale = pMarine->m_fJumpJetAnimationDurationOverride;
 // 	if ( pWeapon )
 // 	{
 // 		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, flSpeedScale, mod_melee_speed );
@@ -834,7 +903,7 @@ void CASW_Melee_System::SetupMeleeMovement( CASW_Marine *pMarine, CMoveData *pMo
 	
 	if ( pMarine->m_PlayerAnimState )
 	{
-		pMarine->m_PlayerAnimState->SetMiscPlaybackRate( 1.0f / pAttack->m_flSpeedScale );
+		pMarine->m_PlayerAnimState->SetMiscPlaybackRate( 1.0f / flSpeedScale );
 	}
 	
 	if ( asw_melee_debug.GetInt() == 2 )
@@ -1045,7 +1114,10 @@ void CASW_Melee_System::OnMeleeAttackFinished( CASW_Marine *pMarine )
 	}
 
 	pMarine->m_iMeleeAttackID = 0;
-	pMarine->m_bReflectingProjectiles = false;
+	pMarine->m_bReflectingProjectiles = false; 
+
+	if ( pMarine->m_fJumpJetAnimationDurationOverride > 0 )
+		pMarine->m_fJumpJetAnimationDurationOverride = 0.0f;
 }
 
 // ==================================================================================================

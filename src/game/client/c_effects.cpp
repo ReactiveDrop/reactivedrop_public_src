@@ -65,6 +65,7 @@ ConVar r_DrawRain( "r_DrawRain", "1", FCVAR_CHEAT, "Enable/disable rain renderin
 ConVar r_RainProfile( "r_RainProfile", "0", FCVAR_CHEAT, "Enable/disable rain profiling." );
 ConVar r_RainDebugDuration( "r_RainDebugDuration", "0", FCVAR_CHEAT, "Shows rain tracelines for this many seconds (0 disables)" );
 
+ConVar rd_func_precipitation_enable("rd_func_precipitation_enable", "1", FCVAR_ARCHIVE, "If 0 disables all func_precipitation drawing");
 
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, PrecachePrecipitation )
@@ -326,8 +327,11 @@ inline bool CClient_Precipitation::SimulateSnow( CPrecipitationParticle* pPartic
 
 void CClient_Precipitation::Simulate( float dt )
 {
+	if ( rd_func_precipitation_enable.GetBool() == false )
+		return;
+
 	if ( m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAIN || m_nPrecipType == PRECIPITATION_TYPE_PARTICLEASH 
-		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || PRECIPITATION_TYPE_PARTICLESNOW )
+		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || m_nPrecipType == PRECIPITATION_TYPE_PARTICLESNOW )
 	{
 		CreateParticlePrecip();
 		return;
@@ -410,7 +414,7 @@ inline void CClient_Precipitation::RenderParticle( CPrecipitationParticle* pPart
 	Vector start, delta;
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAIN || m_nPrecipType == PRECIPITATION_TYPE_PARTICLEASH
-		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || PRECIPITATION_TYPE_PARTICLESNOW )
+		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || m_nPrecipType == PRECIPITATION_TYPE_PARTICLESNOW )
 		return;
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_ASH )
@@ -506,7 +510,7 @@ void CClient_Precipitation::Render()
 		return;
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAIN || m_nPrecipType == PRECIPITATION_TYPE_PARTICLEASH 
-		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || PRECIPITATION_TYPE_PARTICLESNOW )
+		|| m_nPrecipType == PRECIPITATION_TYPE_PARTICLERAINSTORM || m_nPrecipType == PRECIPITATION_TYPE_PARTICLESNOW )
 		return;
 
 	// Don't render in monitors or in reflections or refractions.

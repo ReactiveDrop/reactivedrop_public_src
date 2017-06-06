@@ -11,59 +11,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-void* SendProxy_SendASWLocalWeaponDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	// Get the weapon entity
-	CASW_Weapon *pWeapon = (CASW_Weapon*)pVarData;
-	if ( pWeapon )
-	{
-		// Only send this chunk of data to the commander of the marine carrying this weapon
-		CASW_Player *pPlayer = pWeapon->GetCommander();
-		if ( pPlayer )
-		{
-			pRecipients->SetOnly( pPlayer->GetClientIndex() );
-		}
-		else
-		{
-			pRecipients->ClearAllRecipients();
-		}
-	}
-	
-	return (void*)pVarData;
-}
-REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendASWLocalWeaponDataTable );
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Only send to local player if this weapon is the active weapon and this marine is the active marine
-// Input  : *pStruct - 
-//			*pVarData - 
-//			*pRecipients - 
-//			objectID - 
-// Output : void*
-//-----------------------------------------------------------------------------
-void* SendProxy_SendASWActiveLocalWeaponDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	// Get the weapon entity
-	CASW_Weapon *pWeapon = (CASW_Weapon*)pVarData;
-	if ( pWeapon )
-	{
-		// Only send this chunk of data to the commander of the marine carrying this weapon
-		CASW_Player *pPlayer = pWeapon->GetCommander();
-		if ( pPlayer && pPlayer->GetMarine() == pWeapon->GetOwner() )
-		{
-			pRecipients->SetOnly( pPlayer->GetClientIndex() );
-		}
-		else
-		{
-			pRecipients->ClearAllRecipients();
-		}
-	}
-
-	return (void*)pVarData;
-}
-REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendASWActiveLocalWeaponDataTable );
-
 LINK_ENTITY_TO_CLASS( asw_weapon, CASW_Weapon );
 
 BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWLocalWeaponData )
@@ -94,8 +41,10 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Weapon, DT_ASW_Weapon)
 	SendPropBool(SENDINFO(m_bSwitchingWeapons)),
 	SendPropExclude( "DT_BaseCombatWeapon", "LocalWeaponData" ),
 	SendPropExclude( "DT_BaseCombatWeapon", "LocalActiveWeaponData" ),
-	SendPropDataTable("ASWLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWLocalWeaponData), SendProxy_SendASWLocalWeaponDataTable ),
-	SendPropDataTable("ASWActiveLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWActiveLocalWeaponData), SendProxy_SendASWActiveLocalWeaponDataTable ),
+	// BenLubar: both of these tables are required for the fast reload bar to work properly,
+	// so we have to send them to all players no matter what.
+	SendPropDataTable("ASWLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWLocalWeaponData) ),
+	SendPropDataTable("ASWActiveLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWActiveLocalWeaponData) ),
 	SendPropBool(SENDINFO(m_bFastReloadSuccess)),
 	SendPropBool(SENDINFO(m_bFastReloadFailure)),
 	SendPropBool(SENDINFO(m_bPoweredUp)),
@@ -295,20 +244,23 @@ bool CASW_Weapon::WeaponLOSCondition( const Vector &ownerPos, const Vector &targ
 	return bHasLOS;
 }
 
+ConVar rm_destroy_empty_weapon( "rm_destroy_empty_weapon", "1", FCVAR_NONE, "If 1 the weapon with 0 clips will be destroyed, e.g. medkit" );
+
 bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryAmmo )
 {
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine )
 		return false;
 
-	bool bActive = (pMarine->GetActiveASWWeapon() == this);
+	bool bActive = ( pMarine->GetActiveASWWeapon() == this );
 	if ( bActive && !bDestroyWhenActive )
 		return false;
 
-	if ( bCheckSecondaryAmmo && (m_iClip2 || pMarine->GetAmmoCount(m_iSecondaryAmmoType) > 0) )
+	if ( bCheckSecondaryAmmo && ( m_iClip2 || ( UsesClipsForAmmo2() &&  pMarine->GetAmmoCount(m_iSecondaryAmmoType) > 0 ) ) )
 		return false;
 
-	if ( !m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	// riflemod: commented weapon destruction on empty
+	if ( rm_destroy_empty_weapon.GetBool() && !m_iClip1 && ( !UsesClipsForAmmo1() || pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) )
 	{
 #ifndef CLIENT_DLL
 		if (pMarine)
@@ -337,6 +289,10 @@ void CASW_Weapon::Drop( const Vector &vecVelocity )
 	SetGravity(1.0);
 	m_iState = WEAPON_NOT_CARRIED;
 	RemoveEffects( EF_NODRAW );
+
+	//If it was dropped then there's no need to respawn it.
+	AddSpawnFlags( SF_NORESPAWN );
+
 	FallInit();
 	SetGroundEntity( NULL );
 	SetTouch(NULL);
@@ -346,6 +302,15 @@ void CASW_Weapon::Drop( const Vector &vecVelocity )
 	{
 		AngularImpulse	angImp( 200, 200, 200 );
 		pObj->AddVelocity( &vecVelocity, &angImp );
+		
+		// reactivedrop: force high mass for weapons, 
+		// to prevent them flying away from explosions 
+		// when marines dies and weapons are droped, we want him to be able
+		// to pick them up if he is revived 
+		if (pObj->GetMass() < 300)
+			pObj->SetMass(300);
+
+		//Msg("Weapon mass: %f \n", pObj->GetMass());
 	}
 	else
 	{

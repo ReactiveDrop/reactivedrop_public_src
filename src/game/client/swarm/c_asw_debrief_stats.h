@@ -43,12 +43,20 @@ public:
 	int	GetTeslaTrapsDeployed( int iMarineIndex ) { return m_iTeslaTrapsDeployed[iMarineIndex]; }
 	int	GetFreezeGrenadesThrown( int iMarineIndex ) { return m_iFreezeGrenadesThrown[iMarineIndex]; }
 	int	GetElectricArmorUsed( int iMarineIndex ) { return m_iElectricArmorUsed[iMarineIndex]; }
-	int	GetHealgunHeals( int iMarineIndex ) { return m_iHealGunHeals[iMarineIndex]; }
-	int	GetHealgunHeals_Self( int iMarineIndex ) { return m_iHealGunHeals_Self[iMarineIndex]; }
-	int	GetHealbeaconHeals( int iMarineIndex ) { return m_iHealBeaconHeals[iMarineIndex]; }
-	int	GetHealbeaconHeals_self( int iMarineIndex ) { return m_iHealBeaconHeals_Self[iMarineIndex]; }
+	int	GetHealGunHeals( int iMarineIndex ) { return m_iHealGunHeals[iMarineIndex]; }
+	int	GetHealGunHeals_Self( int iMarineIndex ) { return m_iHealGunHeals_Self[iMarineIndex]; }
+	int	GetHealBeaconHeals( int iMarineIndex ) { return m_iHealBeaconHeals[iMarineIndex]; }
+	int	GetHealBeaconHeals_Self( int iMarineIndex ) { return m_iHealBeaconHeals_Self[iMarineIndex]; }
 	int	GetDamageAmpsUsed( int iMarineIndex ) { return m_iDamageAmpsUsed[iMarineIndex]; }
-	int	GetHealbeaconsDeployed( int iMarineIndex ) { return m_iHealBeaconsDeployed[iMarineIndex]; }
+	int	GetHealBeaconsDeployed( int iMarineIndex ) { return m_iHealBeaconsDeployed[iMarineIndex]; }
+	int	GetMedkitHeals_Self( int iMarineIndex ) { return m_iMedkitHeals_Self[iMarineIndex]; }
+	int	GetGrenadeExtinguishMarine( int iMarineIndex ) { return m_iGrenadeExtinguishMarine[iMarineIndex]; }
+	int	GetGrenadeFreezeAlien( int iMarineIndex ) { return m_iGrenadeFreezeAlien[iMarineIndex]; }
+	int	GetDamageAmpAmps( int iMarineIndex ) { return m_iDamageAmpAmps[iMarineIndex]; }
+	int	GetNormalArmorReduction( int iMarineIndex ) { return m_iNormalArmorReduction[iMarineIndex]; }
+	int	GetElectricArmorReduction( int iMarineIndex ) { return m_iElectricArmorReduction[iMarineIndex]; }
+	int	GetHealampgunHeals( int iMarineIndex ) { return m_iHealAmpGunHeals[iMarineIndex]; }
+	int	GetHealampgunAmps( int iMarineIndex ) { return m_iHealAmpGunAmps[iMarineIndex]; }
 
 	int GetHighestKills();
 	float GetHighestAccuracy();
@@ -103,6 +111,14 @@ public:
 	CNetworkArray( int,		m_iHealBeaconHeals_Self,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iDamageAmpsUsed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealBeaconsDeployed,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iMedkitHeals_Self,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iGrenadeExtinguishMarine,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iGrenadeFreezeAlien,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iDamageAmpAmps,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iNormalArmorReduction,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iElectricArmorReduction,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHealAmpGunHeals,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

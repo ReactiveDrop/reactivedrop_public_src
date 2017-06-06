@@ -98,6 +98,9 @@ void CASW_Weapon_Stim::InjectStim()
 {
 	CASW_Marine *pMarine = GetMarine();
 
+	if ( m_iClip1 <= 0 )
+		return;
+
 	if (pMarine)		// firing from a marine
 	{
 		//make the proper weapon sound
@@ -128,19 +131,9 @@ void CASW_Weapon_Stim::InjectStim()
 
 		m_flNextPrimaryAttack = gpGlobals->curtime + 4.0f;
 
-		if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-		{
-			// stim weapon is lost when all stims are gone
-#ifndef CLIENT_DLL
-			if (pMarine)
-			{
-				pMarine->Weapon_Detach(this);
-				if (bThisActive)
-					pMarine->SwitchToNextBestWeapon(NULL);
-			}
-			Kill();
+#ifdef GAME_DLL
+		DestroyIfEmpty( true );
 #endif
-		}		
 	}
 }
 

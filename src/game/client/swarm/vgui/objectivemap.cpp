@@ -7,6 +7,8 @@
 #include "ObjectiveMap.h"
 #include "ObjectiveMapMarkPanel.h"
 #include "c_asw_player.h"
+#include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_objective.h"
 #include "vgui_controls/AnimationController.h"
 #include "ObjectiveTitlePanel.h"
@@ -17,11 +19,25 @@
 #include "asw_hud_minimap.h"
 #include "hud_element_helper.h"
 #include "SoftLine.h"
+#include "stats_report.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
 extern ConVar asw_hud_scale;
+
+Color GetColorPerIndex(int player_index)
+{
+	C_ASW_Player *pPlayer = dynamic_cast<C_ASW_Player *>( UTIL_PlayerByIndex( player_index ) );
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	C_ASW_Marine_Resource *pMR = pPlayer && pGameResource ? pGameResource->GetFirstMarineResourceForPlayer( pPlayer ) : NULL;
+	int iMarineResourceIndex = pGameResource && pMR ? pGameResource->GetMarineResourceIndex( pMR ) : -1;
+	if ( iMarineResourceIndex < 0 || iMarineResourceIndex >= NELEMS( g_rgbaStatsReportPlayerColors ) )
+	{
+		return Color( 255, 255, 255, 255 ); // white
+	}
+	return g_rgbaStatsReportPlayerColors[ iMarineResourceIndex ];
+}
 
 ObjectiveMap::ObjectiveMap(Panel *parent, const char *name) : Panel(parent, name)
 {	
@@ -519,16 +535,16 @@ void ObjectiveMapDrawingPanel::Paint()
 				vgui::Vertex_t start, end;		
 
 				// draw main line
-				vgui::surface()->DrawSetColor(Color(DRAWING_LINE_R, DRAWING_LINE_G, DRAWING_LINE_B, 0.5f * alpha));
+				vgui::surface()->DrawSetColor(GetColorPerIndex(pMinimap->m_MapLines[i].player_index));
 
 				//vgui::surface()->DrawTexturedRect(x, y, x2, y2);
 				//surface()->DrawLine(x,y,x2,y2);
 				start.Init(Vector2D(x,y), Vector2D(0,0));
 				end.Init(Vector2D(x2,y2), Vector2D(1,1));
 				SoftLine::DrawPolygonLine(start, end);
-				
+
 				// draw translucent ones around it to give it some softness	
-				vgui::surface()->DrawSetColor(Color(DRAWING_LINE_R, DRAWING_LINE_G, DRAWING_LINE_B, 0.5f * alpha));
+				vgui::surface()->DrawSetColor(GetColorPerIndex(pMinimap->m_MapLines[i].player_index));
 
 				start.Init(Vector2D(x - 0.50f,y - 0.50f), Vector2D(0,0));
 				end.Init(Vector2D(x2 - 0.50f,y2 - 0.50f), Vector2D(1,1));

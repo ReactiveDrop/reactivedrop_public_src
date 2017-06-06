@@ -33,7 +33,7 @@ PRECACHE( MATERIAL, "effects/fleck_tile1" )
 PRECACHE( MATERIAL, "effects/fleck_tile2" )
 PRECACHE_REGISTER_END()
 
-ConVar fx_glass_velocity_cap("fx_glass_velocity_cap", "0", 0, "Maximum downwards speed of shattered glass particles");
+ConVar fx_glass_velocity_cap("fx_glass_velocity_cap", "600", 0, "Maximum downwards speed of shattered glass particles");
 
 //###################################################
 // > C_TEShatterSurface

@@ -39,6 +39,7 @@
 #include "asw_marine_resource.h"
 #include "asw_shareddefs.h"
 #include "asw_weapon_welder_shared.h"
+#include "asw_weapon_deagle_shared.h"
 #include "coordsize.h"
 #include "asw_trace_filter_door_crush.h"
 #include "asw_player.h"
@@ -46,6 +47,8 @@
 #include "particle_parse.h"
 #include "asw_fail_advice.h"
 #include "asw_gamerules.h"
+#include "func_asw_fade.h"
+#include "prop_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -524,6 +527,9 @@ public:
 		
 		if ( pEntity )
 		{
+			if ( dynamic_cast<CFunc_ASW_Fade *>( pEntity ) || dynamic_cast<CProp_ASW_Fade *>( pEntity ) )
+				return false;
+
 			if ( !pEntity->ShouldCollide( m_collisionGroup, contentsMask ) )
 				return false;
 			
@@ -1176,6 +1182,21 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( info.GetInflictor() && info.GetInflictor()->Classify() == CLASS_ASW_T75 )
 		{
 			damage *= 7.0f;		// take extra damage from T75
+		}
+
+		if (info.GetDamageType() & DMG_BULLET)
+		{
+			if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+			{
+				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+				if (pMarine)
+				{
+					CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+			
+					if (pDeagle)
+						damage *= 0.4f; // deagle isn't a door killer gun
+				}
+			}
 		}
 
 		if (info.GetAttacker())

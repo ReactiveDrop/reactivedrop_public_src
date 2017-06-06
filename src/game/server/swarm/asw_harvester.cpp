@@ -12,6 +12,7 @@
 #include "asw_weapon.h"
 #include "asw_shareddefs.h"
 #include "asw_weapon_assault_shotgun_shared.h"
+#include "asw_weapon_deagle_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,6 +39,8 @@ ConVar asw_harverter_suppress_children( "asw_harverter_suppress_children", "0", 
 ConVar asw_harvester_new( "asw_harvester_new", "1", FCVAR_CHEAT, "If set to 1, use the new model");
 ConVar asw_harvester_spawn_height( "asw_harvester_spawn_height", "16", FCVAR_CHEAT, "Height above harvester origin to spawn harvesites at" );
 ConVar asw_harvester_spawn_interval( "asw_harvester_spawn_interval", "1.0", FCVAR_CHEAT, "Time between spawning a harvesite and starting to spawn another" );
+
+extern ConVar rd_deagle_bigalien_dmg_scale;
 
 // Anim Events
 int AE_HARVESTER_SPAWN_CRITTER;
@@ -684,12 +687,26 @@ int CASW_Harvester::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			if (pMarine)
 			{
 				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if (pVindicator)
+				if ( pVindicator )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
 			}
 		}		
+	}
+	if (info.GetDamageType() & DMG_BULLET)
+	{
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+			if (pMarine)
+			{
+				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
+
+				if (pDeagle)
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+			}
+		}
 	}
 
 	newInfo.SetDamage(damage);

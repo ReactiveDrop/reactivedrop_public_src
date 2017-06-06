@@ -53,6 +53,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( team_manager, CTeam );
+LINK_ENTITY_TO_CLASS( rd_team, CTeam );
 
 //-----------------------------------------------------------------------------
 // Purpose: Get a pointer to the specified team manager
@@ -93,6 +94,9 @@ const char* GetTeamName( int iTeam )
 CTeam::CTeam( void )
 {
 	memset( m_szTeamname.GetForModify(), 0, sizeof(m_szTeamname) );
+
+    // Add myself to the global list of team entities
+    g_Teams.AddToTail( this );
 }
 
 //-----------------------------------------------------------------------------
@@ -102,6 +106,8 @@ CTeam::~CTeam( void )
 {
 	m_aSpawnPoints.Purge();
 	m_aPlayers.Purge();
+
+    g_Teams.FindAndRemove( this );
 }
 
 //-----------------------------------------------------------------------------

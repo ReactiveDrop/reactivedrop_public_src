@@ -6,6 +6,7 @@
 
 #include "asw_shareddefs.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "steam/steam_api.h"
 
 // provides lists of missions, saves and campaigns from a client entity
 class C_ASW_Voting_Missions : public C_BaseEntity
@@ -27,6 +28,7 @@ public:
 
 	char	m_iszMissionNames[ASW_SAVES_PER_PAGE][64];
 	char	m_iszCampaignNames[ASW_CAMPAIGNS_PER_PAGE][64];
+	PublishedFileId_t m_nCampaignWorkshopID[ASW_CAMPAIGNS_PER_PAGE];
 	char	m_iszSaveNames[ASW_SAVES_PER_PAGE][64];
 	char	m_iszSaveCampaignNames[ASW_SAVES_PER_PAGE][64];
 	char	m_iszSaveDateTimes[ASW_SAVES_PER_PAGE][64];

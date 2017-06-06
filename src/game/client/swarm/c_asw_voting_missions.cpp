@@ -19,6 +19,8 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Voting_Missions, DT_ASW_Voting_Missions, CASW_Vot
 	RecvPropString( RECVINFO(m_iszCampaignNames[0]) ),
 	RecvPropString( RECVINFO(m_iszCampaignNames[1]) ),
 	RecvPropString( RECVINFO(m_iszCampaignNames[2]) ),
+	// campaign workshop IDs
+	RecvPropArray( RecvPropInt( RECVINFO( m_nCampaignWorkshopID[0] ), SPROP_UNSIGNED ), m_nCampaignWorkshopID ),
 	// save names
 	RecvPropString( RECVINFO(m_iszSaveNames[0]) ),
 	RecvPropString( RECVINFO(m_iszSaveNames[1]) ),

@@ -60,6 +60,7 @@ public:
 	virtual const QAngle& GetPunchAngle() { return vec3_angle; }
 	virtual fogparams_t		*GetFogParams( void );
 	virtual bool ShouldRegenerateOriginFromCellBits() const;
+	virtual bool ShouldInterpolate();  // BenLubar(spectator-mouse)
 
 	float m_fLastFloorZ;
 	CHandle<C_ASW_Marine> m_hLastMarine;
@@ -127,6 +128,7 @@ public:
 // Called by shared code.
 public:
 	void ItemPostFrame();
+	int GetASWControls();
 
 	void DoAnimationEvent( PlayerAnimEvent_t event );
 
@@ -144,9 +146,9 @@ public:
 
 	bool IsSniperScopeActive();
 
-	C_ASW_Marine* GetMarine();
 	C_ASW_Marine* GetMarine() const;
-	C_ASW_Marine* GetSpectatingMarine();
+	C_ASW_Marine* GetSpectatingMarine() const;
+	C_ASW_Marine* GetViewMarine() const;
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 
@@ -170,6 +172,9 @@ public:
 	int m_iUseEntities;
 	CNetworkVar( float, m_flUseKeyDownTime );
 	CNetworkVar( EHANDLE, m_hUseKeyDownEnt );
+
+	//! reactivedrop: see asw_player.h for description
+	CNetworkVar( float, m_flMovementAxisYaw );
 
 	// the HUD fills in these arrays based on the use entities above
 	EHANDLE UseIconTarget[3];
@@ -214,6 +219,11 @@ public:
 	
 	CNetworkHandle(C_ASW_Marine, m_hOrderingMarine);
 
+    CNetworkVar( float, m_fMarineDeathTime);
+
+	bool HasFullyJoined() { return m_bSentJoinedMessage; }
+	CNetworkVar( bool, m_bSentJoinedMessage );
+
 	// voting
 	CNetworkVar(int, m_iLeaderVoteIndex);	// entindex of the player we want to be leader
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
@@ -242,7 +252,16 @@ public:
 	EHANDLE m_hHighlightEntity;
 
 	// status of selecting marine/weapons in the briefing
+	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
+
+	// BenLubar(spectator-mouse)
+	short m_iScreenWidth;
+	short m_iScreenHeight;
+	short m_iMouseX;
+	short m_iMouseY;
+	CInterpolatedVar<short> m_iv_iMouseX;
+	CInterpolatedVar<short> m_iv_iMouseY;
 
 private:	
 	bool m_bCheckedLevel;	// have we checked the level name to see if this is a tutorial yet?

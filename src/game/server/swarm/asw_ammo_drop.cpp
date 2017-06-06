@@ -22,6 +22,8 @@
 
 #define AMMO_DROP_MODEL "models/items/Ammobag/AmmoBag.mdl"
 
+extern ConVar rd_refill_secondary;
+
 LINK_ENTITY_TO_CLASS( asw_ammo_drop, CASW_Ammo_Drop );
 PRECACHE_WEAPON_REGISTER( asw_ammo_drop );
 
@@ -30,7 +32,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Drop, DT_ASW_Ammo_Drop)
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Drop )
-	DEFINE_FIELD( m_iAmmoUnitsRemaining, FIELD_INTEGER ),
+	DEFINE_KEYFIELD( m_iAmmoUnitsRemaining, FIELD_INTEGER, "percent_remaining" ),
 	DEFINE_FIELD( m_bSuppliedAmmo, FIELD_BOOLEAN ),
 END_DATADESC()
 
@@ -72,10 +74,15 @@ void CASW_Ammo_Drop::Spawn( void )
 					GetAbsOrigin() - Vector(0, 0, 32), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 	if ( tr.fraction < 1.0f && tr.m_pEnt && !tr.m_pEnt->IsWorld() && !tr.m_pEnt->IsNPC() )
 	{
-		SetParent( tr.m_pEnt );
+		// reactivedrop: prevent ammo drop sticking to weapons 
+		// only allow func_movelinear and func_tracktrain(possible elevators)
+		// 
+		if (tr.m_pEnt->Classify() == CLASS_FUNC_MOVELINEAR ||
+			tr.m_pEnt->Classify() == CLASS_FUNC_TRACKTRAIN)
+		{
+			SetParent( tr.m_pEnt );
+		}
 	}
-
-	m_iAmmoUnitsRemaining = DEFAULT_AMMO_DROP_UNITS;
 }
 
 void CASW_Ammo_Drop::PlayDeploySound()
@@ -126,6 +133,15 @@ void CASW_Ammo_Drop::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		int iClipsToGive = CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( iAmmoType );
 
 		pMarine->SetAmmoCount( MIN( iBullets + pWeapon->GetMaxClip1() * iClipsToGive, iMaxAmmoCount ), iAmmoType );
+
+		// riflemod: picking ammo adds secondary ammo as well 
+		if ( rd_refill_secondary.GetBool() )
+		{
+			pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
+			if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2())
+				pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+		}
+
 		m_iAmmoUnitsRemaining -= iAmmoCost;
 
 		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);

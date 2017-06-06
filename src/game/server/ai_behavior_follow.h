@@ -14,7 +14,9 @@
 #include "ai_moveshoot.h"
 
 #ifdef HL2_EPISODIC
-	#include "hl2_gamerules.h"
+// reactivedrop: commented because of errors, seems like we don't
+// need this at all 
+//	#include "hl2_gamerules.h"
 #endif
 
 #if defined( _WIN32 )

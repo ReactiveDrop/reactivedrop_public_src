@@ -37,10 +37,12 @@ public:
 	virtual void MissionSuccess(void);
 	virtual void GooKilled(CASW_Alien_Goo *pGoo);
 	virtual bool AllMarinesDead();
+	virtual bool AllMarinesKnockedOut();
 	virtual void CheatCompleteMission();
 	virtual CASW_Objective_Escape* GetEscapeObjective();
 
 	bool m_bAllMarinesDead;
+	bool m_bAllMarinesKnockedOut;
 	float m_flLastMarineDeathTime;
 	bool m_bDoneLeavingChatter;
 

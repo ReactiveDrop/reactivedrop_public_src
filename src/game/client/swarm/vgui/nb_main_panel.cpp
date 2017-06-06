@@ -13,6 +13,7 @@
 #include "nb_vote_panel.h"
 #include "asw_briefing.h"
 #include <vgui/ILocalize.h>
+#include <vgui/IVGui.h>
 #include "asw_marine_profile.h"
 #include "ForceReadyPanel.h"
 #include "asw_gamerules.h"
@@ -25,11 +26,15 @@
 #include "nb_select_mission_panel.h"
 #include "nb_button.h"
 #include "gameui/swarm/uigamedata.h"
+#include "gameui/swarm/vgenericpanellist.h"
 #include "c_asw_game_resource.h"
 #include "vgui_bitmapbutton.h"
 #include "clientmode_asw.h"
 #include "c_asw_player.h"
 #include "nb_promotion_panel.h"
+#include "asw_deathmatch_mode.h"
+#include "rd_lobby_utils.h"
+#include "nb_leaderboard_panel.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,7 +42,11 @@
 
 #define CHAT_BUTTON_ICON "vgui/briefing/chat_icon"
 #define VOTE_BUTTON_ICON "vgui/briefing/vote_icon"
+#define LEADERBOARD_BUTTON_ICON "vgui/briefing/leaderboard_icon"
+#define ADDBOT_BUTTON_ICON "vgui/briefing/addbot_icon"
+#define DESELECT_MARINES_BUTTON_ICON "vgui/briefing/deselectmarines_icon"
 
+using BaseModUI::GenericPanelList;
 
 CUtlVector<int> CNB_Main_Panel::s_QueuedSpendSkillPoints;
 
@@ -65,14 +74,17 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pLeaderLabel = new vgui::Label( this, "LeaderLabel", "" );
+    m_pTeamLabel = new vgui::Label( this, "TeamLabel", "" );
 	m_pReadyCheckImage = new vgui::ImagePanel( this, "ReadyCheckImage" );
 	m_pLobbyRow0 = new CNB_Lobby_Row( this, "LobbyRow0" );
-	m_pLobbyRow1 = new CNB_Lobby_Row_Small( this, "LobbyRow1" );
-	m_pLobbyRow2 = new CNB_Lobby_Row_Small( this, "LobbyRow2" );
-	m_pLobbyRow3 = new CNB_Lobby_Row_Small( this, "LobbyRow3" );
 	m_pLobbyTooltip = new CNB_Lobby_Tooltip( this, "LobbyTooltip" );
 	m_pMissionSummary = new CNB_Mission_Summary( this, "MissionSummary" );
 	// == MANAGED_MEMBER_CREATION_END ==
+
+    m_pLobbyRowsScroll = new GenericPanelList( this, "LobbyRowsScroll", GenericPanelList::ISM_ELEVATOR );
+    m_pLobbyRowsScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
+	m_pLobbyRowsScroll->SetScrollArrowsVisible( false );
+
 	m_pVotePanel = new CNB_Vote_Panel( this, "VotePanel" );
 	m_pReadyButton = new CNB_Button( this, "ReadyButton", "", this, "ReadyButton" );
 	m_pMissionDetailsButton = new CNB_Button( this, "MissionDetailsButton", "", this, "MissionDetailsButton" );
@@ -83,14 +95,30 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_pVoteButton = new CBitmapButton( this, "VoteButton", "" );
 	m_pVoteButton->AddActionSignalTarget( this );
 	m_pVoteButton->SetCommand( "VoteButton" );
+	m_pLeaderboardButton = new CBitmapButton( this, "LeaderboardButton", "" );
+	m_pLeaderboardButton->AddActionSignalTarget( this );
+	m_pLeaderboardButton->SetCommand( "LeaderboardButton" );
+	m_pAddBotButton = new CBitmapButton(this, "AddBotButton", "");
+	m_pAddBotButton->AddActionSignalTarget(this);
+	m_pAddBotButton->SetCommand("AddBotButton");
+	m_pDeselectMarinesButton = new CBitmapButton(this, "DeselectMarines", "");
+	m_pDeselectMarinesButton->AddActionSignalTarget(this);
+	m_pDeselectMarinesButton->SetCommand("DeselectMarines");
+
 	m_pPromotionButton = new CNB_Button( this, "PromotionButton", "", this, "PromotionButton" );
+    m_pTeamChangeButtonButton = new CNB_Button( this, "TeamChangeButton", "", this, "TeamChangeButton" );
 
 	m_pHeaderFooter->SetTitle( "#nb_mission_prep" );
 
-	m_pLobbyRow1->m_nLobbySlot = 1;
-	m_pLobbyRow2->m_nLobbySlot = 2;
-	m_pLobbyRow3->m_nLobbySlot = 3;
 	m_bLocalLeader = false;
+
+	if ( ASWDeathmatchMode() )
+	{
+		m_pReadyButton->SetText( "#nb_ready" );
+		m_pReadyCheckImage->SetVisible( false );
+	}
+
+	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
 
 CNB_Main_Panel::~CNB_Main_Panel()
@@ -116,7 +144,7 @@ void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_main_panel.res" );
+	LoadControlSettings( "resource/ui/nb_main_panel_rd.res" );
 
 	color32 white;
 	white.r = 255;
@@ -130,16 +158,30 @@ void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 	grey.b = 190;
 	grey.a = 255;
 
-	char imagename[255];
-	Q_snprintf( imagename, sizeof(imagename), "vgui/briefing/chat_icon" );
 	m_pChatButton->SetImage( CBitmapButton::BUTTON_ENABLED, CHAT_BUTTON_ICON, grey );
 	m_pChatButton->SetImage( CBitmapButton::BUTTON_DISABLED, CHAT_BUTTON_ICON, grey );
 	m_pChatButton->SetImage( CBitmapButton::BUTTON_PRESSED, CHAT_BUTTON_ICON, white );		
 	m_pChatButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, CHAT_BUTTON_ICON, white );
+
 	m_pVoteButton->SetImage( CBitmapButton::BUTTON_ENABLED, VOTE_BUTTON_ICON, grey );
 	m_pVoteButton->SetImage( CBitmapButton::BUTTON_DISABLED, VOTE_BUTTON_ICON, grey );
 	m_pVoteButton->SetImage( CBitmapButton::BUTTON_PRESSED, VOTE_BUTTON_ICON, white );		
 	m_pVoteButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, VOTE_BUTTON_ICON, white );
+
+	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_ENABLED, LEADERBOARD_BUTTON_ICON, grey );
+	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_DISABLED, LEADERBOARD_BUTTON_ICON, grey );
+	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_PRESSED, LEADERBOARD_BUTTON_ICON, white );
+	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, LEADERBOARD_BUTTON_ICON, white );
+
+	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_ENABLED, ADDBOT_BUTTON_ICON, grey);
+	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_DISABLED, ADDBOT_BUTTON_ICON, grey);
+	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_PRESSED, ADDBOT_BUTTON_ICON, white);
+	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, ADDBOT_BUTTON_ICON, white);
+
+	m_pDeselectMarinesButton->SetImage(CBitmapButton::BUTTON_ENABLED, DESELECT_MARINES_BUTTON_ICON, grey);
+	m_pDeselectMarinesButton->SetImage(CBitmapButton::BUTTON_DISABLED, DESELECT_MARINES_BUTTON_ICON, grey);
+	m_pDeselectMarinesButton->SetImage(CBitmapButton::BUTTON_PRESSED, DESELECT_MARINES_BUTTON_ICON, white);
+	m_pDeselectMarinesButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, DESELECT_MARINES_BUTTON_ICON, white);
 }
 
 void CNB_Main_Panel::PerformLayout()
@@ -154,13 +196,20 @@ void CNB_Main_Panel::OnThink()
 	if ( !Briefing() )
 		return;
 
-	m_pFriendsButton->SetVisible( ! ( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );	
+	m_pFriendsButton->SetVisible( ! ( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
 	m_pChatButton->SetVisible( gpGlobals->maxClients > 1 );
 	m_pVoteButton->SetVisible( gpGlobals->maxClients > 1 );
+	m_pLeaderboardButton->SetVisible( gpGlobals->maxClients > 1 && !ASWDeathmatchMode() && UTIL_RD_GetCurrentLobbyID().IsValid() );
+
+	bool isOffline = ASWGameResource() && ASWGameResource()->IsOfflineGame();
+	bool hasMarineSelected = Briefing()->GetMarineProfile(m_pLobbyRow0->m_nLobbySlot);
+	m_pAddBotButton->SetVisible( !isOffline && hasMarineSelected );
+	m_pDeselectMarinesButton->SetVisible( !isOffline && hasMarineSelected );
+
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	m_pPromotionButton->SetVisible( pPlayer && pPlayer->GetExperience() >= ( ASW_XP_CAP * g_flPromotionXPScale[ pPlayer->GetPromotion() ] ) && pPlayer->GetPromotion() < ASW_PROMOTION_CAP );
 
-	
+	m_pTeamChangeButtonButton->SetVisible( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() );
 	
 	const char *pszLeaderName = Briefing()->GetLeaderName();
 	if ( pszLeaderName )
@@ -180,43 +229,100 @@ void CNB_Main_Panel::OnThink()
 		m_pLeaderLabel->SetVisible( false );
 	}
 
+    const char *pszTeamname = Briefing()->GetTeamName();
+    if ( pszTeamname )
+    {
+        m_pTeamLabel->SetVisible( ASWDeathmatchMode() && GAMEMODE_TEAMDEATHMATCH == ASWDeathmatchMode()->GetGameMode() );
+
+        wchar_t wszTeamName[32];
+        g_pVGuiLocalize->ConvertANSIToUnicode( pszTeamname, wszTeamName, sizeof(wszTeamName));
+
+        wchar_t wszBuffer[128];
+        g_pVGuiLocalize->ConstructString( wszBuffer, sizeof(wszBuffer), g_pVGuiLocalize->Find( "#rd_str_team" ), 1, wszTeamName );  // Team: %s1
+
+        m_pTeamLabel->SetText( wszBuffer );
+    }
+    else
+    {
+        m_pTeamLabel->SetVisible( false );
+    }
+
 	if ( !m_hSubScreen.Get() )
 	{
 		m_pLobbyRow0->CheckTooltip( m_pLobbyTooltip );
-		m_pLobbyRow1->CheckTooltip( m_pLobbyTooltip );
-		m_pLobbyRow2->CheckTooltip( m_pLobbyTooltip );
-		m_pLobbyRow3->CheckTooltip( m_pLobbyTooltip );
+		for ( unsigned short i = 0; i < m_pLobbyRowsScroll->GetPanelItemCount(); i++ )
+		{
+			CNB_Lobby_Row_Small *pRow = assert_cast<CNB_Lobby_Row_Small *>( m_pLobbyRowsScroll->GetPanelItem( i ) );
+			pRow->CheckTooltip( m_pLobbyTooltip );
+		}
 
 		ProcessSkillSpendQueue();
 	}
 
-	bool bLocalLeader = Briefing()->IsLocalPlayerLeader();
-	if ( bLocalLeader != m_bLocalLeader )
+	// these checks are set up only for coop, deathmatch sets it up in constructor 
+	if ( !ASWDeathmatchMode() )
 	{
-		if ( bLocalLeader )
+		bool bLocalLeader = Briefing()->IsLocalPlayerLeader();
+		if ( bLocalLeader != m_bLocalLeader )
 		{
-			m_pReadyButton->SetText( "#nb_start_mission" );
-			m_pReadyCheckImage->SetVisible( false );
+			if ( bLocalLeader )
+			{
+				m_pReadyButton->SetText( "#nb_start_mission" );
+				m_pReadyCheckImage->SetVisible( false );
+			}
+			else
+			{
+				m_pReadyButton->SetText( "#nb_ready" );
+				m_pReadyCheckImage->SetVisible( true );
+			}
+			m_bLocalLeader = bLocalLeader;
 		}
-		else
+
+		if ( !m_bLocalLeader )
 		{
-			m_pReadyButton->SetText( "#nb_ready" );
-			m_pReadyCheckImage->SetVisible( true );
+			if ( Briefing()->GetCommanderReady( 0 ) )
+			{
+				m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxTicked" );
+			}
+			else
+			{
+				m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxEmpty" );
+			}
 		}
-		m_bLocalLeader = bLocalLeader;
+	}
+}
+
+void CNB_Main_Panel::OnTick()
+{
+	BaseClass::OnTick();
+
+	unsigned short nBriefingSlots = 4;
+	if ( !Briefing()->IsOfflineGame() )
+	{
+		for ( nBriefingSlots = 1; nBriefingSlots < NUM_BRIEFING_LOBBY_SLOTS; nBriefingSlots++ )
+		{
+			if ( !Briefing()->IsLobbySlotOccupied( nBriefingSlots ) )
+			{
+				break;
+			}
+		}
 	}
 
-	if ( !m_bLocalLeader )
+	// remove extra rows
+	for ( unsigned short i = m_pLobbyRowsScroll->GetPanelItemCount(); i >= nBriefingSlots; i-- )
 	{
-		if ( Briefing()->GetCommanderReady( 0 ) )
-		{
-			m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxTicked" );
-		}
-		else
-		{
-			m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxEmpty" );
-		}
+		m_pLobbyRowsScroll->RemovePanelItem( i - 1 );
 	}
+
+	// add missing rows
+	for ( unsigned short i = m_pLobbyRowsScroll->GetPanelItemCount() + 1; i < nBriefingSlots; i++ )
+	{
+		CNB_Lobby_Row_Small *pRow = new CNB_Lobby_Row_Small( this, VarArgs( "LobbyRow%d", i ) );
+		pRow->m_nLobbySlot = i;
+		m_pLobbyRowsScroll->AddPanelItem( pRow, true );
+	}
+
+	m_pLobbyRowsScroll->SetScrollBarVisible( nBriefingSlots > 5 );
 }
 
 void CNB_Main_Panel::ChangeMarine( int nLobbySlot )
@@ -232,19 +338,40 @@ void CNB_Main_Panel::ChangeMarine( int nLobbySlot )
 	CNB_Select_Marine_Panel *pMarinePanel = new CNB_Select_Marine_Panel( this, "Select_Marine_Panel" );
 	CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( nLobbySlot );
 	pMarinePanel->m_nInitialProfileIndex = pProfile ? pProfile->m_ProfileIndex : -1;
-
-	if ( Briefing()->IsOfflineGame() )
-	{
-		pMarinePanel->m_nPreferredLobbySlot = nLobbySlot;
-	}
+	pMarinePanel->m_nPreferredLobbySlot = nLobbySlot;
 	pMarinePanel->InitMarineList();
 	pMarinePanel->MoveToFront();
-	Briefing()->SetChangingWeaponSlot( 1 );
+	Briefing()->SetChangingWeaponSlot( nLobbySlot, 1 );
 
 	m_hSubScreen = pMarinePanel;
 
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, -1, "ASWComputer.MenuButton" );
+}
+
+void CNB_Main_Panel::AddBot()
+{
+	if (m_hSubScreen.Get())
+	{
+		m_hSubScreen->MarkForDeletion();
+	}
+
+	CNB_Select_Marine_Panel *pMarinePanel = new CNB_Select_Marine_Panel(this, "Select_Marine_Panel");	
+	pMarinePanel->m_nInitialProfileIndex = -1;
+
+	if (Briefing()->IsOfflineGame())
+	{
+		pMarinePanel->m_nPreferredLobbySlot = -1;
+	}
+	pMarinePanel->m_bAddingBot = true;
+
+	pMarinePanel->InitMarineList();
+	pMarinePanel->MoveToFront();
+
+	m_hSubScreen = pMarinePanel;
+
+	CLocalPlayerFilter filter;
+	C_BaseEntity::EmitSound(filter, -1, "ASWComputer.MenuButton");
 }
 
 void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
@@ -271,7 +398,7 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	pWeaponPanel->InitWeaponList();
 	pWeaponPanel->MoveToFront();
 
-	Briefing()->SetChangingWeaponSlot( 2 + nInventorySlot );
+	Briefing()->SetChangingWeaponSlot( nLobbySlot, 2 + nInventorySlot );
 
 	m_hSubScreen = pWeaponPanel;
 }
@@ -294,16 +421,31 @@ void CNB_Main_Panel::SpendSkillPointsOnMarine( int nProfileIndex )
 	pPanel->Init();
 	pPanel->MoveToFront();
 
-	Briefing()->SetChangingWeaponSlot( 1 );
+	// TODO: Briefing()->SetChangingWeaponSlot( ???, 1 );
 
 	m_hSubScreen = pPanel;
 }
+
+extern vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
 void CNB_Main_Panel::OnCommand( const char *command )
 {
 	if ( !Q_stricmp( command, "ReadyButton" ) )
 	{
-		if ( m_bLocalLeader )
+		// Firstly check if we are in the deathmatch 
+		if ( ASWDeathmatchMode() )
+		{
+			// because briefing frame fades out slowly a user can click the
+			// Ready button one more time and get a crash here, so we do this check
+			if ( g_hBriefingFrame.Get() )	
+			{
+				// for DM we only close the briefing panel
+				g_hBriefingFrame->SetDeleteSelfOnClose(true);
+				g_hBriefingFrame->Close();
+				g_hBriefingFrame = NULL;
+			}
+		}
+		else if ( m_bLocalLeader )
 		{
 			if ( Briefing()->CheckMissionRequirements() )
 			{
@@ -352,10 +494,26 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	{
 		engine->ClientCmd( "playerlist" );
 	}
+	else if ( !Q_stricmp( command, "LeaderboardButton" ) )
+	{
+		ShowLeaderboard();
+	}
+	else if (!Q_stricmp(command, "AddBotButton"))
+	{
+		AddBot();
+	}
+	else if (!Q_stricmp(command, "DeselectMarines"))
+	{
+		engine->ClientCmd("cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;");
+	}
 	else if ( !Q_stricmp( command, "PromotionButton" ) )
 	{
 		ShowPromotionPanel();
 	}
+    else if ( !Q_stricmp( command, "TeamChangeButton" ) )
+    {
+        engine->ServerCmd( "rd_team_change" );
+    }
 	BaseClass::OnCommand( command );
 }
 
@@ -395,6 +553,19 @@ void CNB_Main_Panel::ShowPromotionPanel()
 	}
 
 	CNB_Promotion_Panel *pPanel = new CNB_Promotion_Panel( this, "PromotionPanel" );
+	pPanel->MoveToFront();
+
+	m_hSubScreen = pPanel;
+}
+
+void CNB_Main_Panel::ShowLeaderboard()
+{
+	if ( m_hSubScreen.Get() )
+	{
+		m_hSubScreen->MarkForDeletion();
+	}
+
+	CNB_Leaderboard_Panel *pPanel = new CNB_Leaderboard_Panel( this, "LeaderboardPanel" );
 	pPanel->MoveToFront();
 
 	m_hSubScreen = pPanel;

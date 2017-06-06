@@ -208,8 +208,10 @@ void CASW_Sentry_Top_Flamer::Fire() RESTRICT
 		Assert( flMillisecondsFired > 0 );
 		// subtract from ammo.
 		CASW_Sentry_Base* RESTRICT pSentryBase = GetSentryBase();
-		Assert( pSentryBase );
-		pSentryBase->OnFiredShots( (int)floor(flMillisecondsFired) );
+		if (pSentryBase)
+		{
+			pSentryBase->OnFiredShots( (int)floor(flMillisecondsFired) );
+		}	
 
 		//Msg( "%f == numShotsToFire - %d, ammo used %d\n", gpGlobals->curtime, numShotsToFire, (int)floor(flMillisecondsFired) );
 	}
@@ -233,8 +235,7 @@ void CASW_Sentry_Top_Flamer::FireProjectiles( int numShotsToFire, ///< number of
 											  const AngularImpulse &rotSpeed )
 {
 	CShotManipulator Manipulator( vecAiming );
-	CASW_Marine * RESTRICT const pMarineDeployer = GetSentryBase()->m_hDeployer.Get();
-	Assert( pMarineDeployer );
+	CASW_Marine * RESTRICT const pMarineDeployer = GetSentryBase() ? GetSentryBase()->m_hDeployer.Get() : NULL;
 
 	for ( int i = 0 ; i < numShotsToFire ; i++ )
 	{
@@ -243,9 +244,16 @@ void CASW_Sentry_Top_Flamer::FireProjectiles( int numShotsToFire, ///< number of
 
 		projectileVel *= GetProjectileVelocity();
 		projectileVel *= (1.0 + (0.1 * random->RandomFloat(-1,1)));
-		CASW_Flamer_Projectile *pFlames = CASW_Flamer_Projectile::Flamer_Projectile_Create( GetSentryDamage(), 
-			vecSrc + (projectileVel.Normalized() * BoundingRadius()), QAngle(0,0,0),	projectileVel, rotSpeed, 
-			this, pMarineDeployer, this );
+		CASW_Flamer_Projectile *pFlames = 
+			CASW_Flamer_Projectile::Flamer_Projectile_Create( 
+				GetSentryDamage(), 
+				vecSrc + (projectileVel.Normalized() * BoundingRadius()), 
+				QAngle(0,0,0),	
+				projectileVel, 
+				rotSpeed,
+				this, 
+				pMarineDeployer, 
+				this );
 
 		pFlames->SetHurtIgnited( true );
 	}

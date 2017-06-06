@@ -101,19 +101,19 @@ public:
 	virtual void Event_LevelInit( void ) { }
 	virtual void Event_LevelShutdown( float flElapsed ) { }
 
-	void Event_MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info ) { }
-	void Event_MarineTookDamage( CASW_Marine *pMarine, const CTakeDamageInfo &info ) { }
+	void Event_MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info );
+	void Event_MarineTookDamage( CASW_Marine *pMarine, const CTakeDamageInfo &info );
 	void Event_MarineBreadcrumb( CASW_Marine *pMarine ) { }
 	void Event_MarineReloading( CASW_Marine *pMarine, CBaseEntity *pWeapon ) { }
 	void Event_MarineTookPickup( CASW_Marine *pMarine, CBaseEntity *pPickupClass, CBaseEntity *pDroppedClass ) { }
 	void Event_AlienSpawned( CBaseEntity *pAlien ) { }
-	void Event_AlienKilled( CBaseEntity *pAlien, const CTakeDamageInfo &info ) { }
-	void Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamageInfo &info ) { }
+	void Event_AlienKilled( CBaseEntity *pAlien, const CTakeDamageInfo &info );
+	void Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamageInfo &info );
 	void Event_EntityBurned( CBaseEntity *pEntity, float fTotalDamage, CBaseEntity *pBurningWeapon = NULL ) { }
 	void Event_MissionStarted( void ) { }
 	void Event_MissionComplete( bool bSuccess, int iFinalFailAdvice, const FailAdviceMessageStatus_t *pFailStatus ) { }
-	void Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseEntity *pHealingWeapon = NULL ) { }
-	void Event_MarineWeaponFired( const CBaseEntity *pWeapon, const CASW_Marine *pMarine, int nShotsFired, bool bIsSecondary = false ) { }
+	void Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseEntity *pHealingWeapon = NULL );
+	void Event_MarineWeaponFired( const CBaseEntity *pWeapon, const CASW_Marine *pMarine, int nShotsFired, bool bIsSecondary = false );
 	void Event_MarinesSpawned( void ) { }
 
 	void OnSessionStart( void ) { }

@@ -40,6 +40,7 @@
 #include "weapon_flaregun.h"
 #include "ammodef.h"
 #include "asw_shareddefs.h"
+#include "asw_deathmatch_mode.h"
 #include "asw_sentry_base.h"
 #include "asw_button_area.h"
 #include "asw_equipment_list.h"
@@ -68,6 +69,7 @@
 #include "asw_alien_goo_shared.h"
 #include "asw_prop_physics.h"
 #include "asw_weapon_heal_gun_shared.h"
+#include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -88,6 +90,10 @@ ConVar asw_blind_follow( "asw_blind_follow", "0", FCVAR_NONE, "Set to 1 to give 
 ConVar asw_debug_marine_aim( "asw_debug_marine_aim", "0", FCVAR_CHEAT, "Shows debug info on marine aiming" );
 ConVar asw_debug_throw( "asw_debug_throw", "0", FCVAR_CHEAT, "Show node debug info on throw visibility checks" );
 ConVar asw_debug_order_weld( "asw_debug_order_weld", "0", FCVAR_DEVELOPMENTONLY, "Debug lines for ordering marines to offhand weld a door" );
+ConVar rd_stuck_bot_teleport( "rd_stuck_bot_teleport", "1", FCVAR_NONE, "Teleport stuck bots" );
+ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400", FCVAR_CHEAT | FCVAR_NONE, "Teleport stuck bots to a node within this range of the squad leader. -1 for unlimited." );
+ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16",FCVAR_CHEAT |  FCVAR_NONE, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
+ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT | FCVAR_NONE, "Teleport stuck bots directly to a marine instead of to the nearest node" );
 
 extern ConVar ai_lead_time;
 
@@ -132,6 +138,10 @@ bool CASW_Marine::FInViewCone( const Vector &vecSpot )
 	if ( flDist <= GetCloseCombatSightRange() )		// see 360 up close
 		return true;
 
+	// BenLubar(deathmatch-improvements): see 360 in deathmatch mode
+	if ( ASWDeathmatchMode() )
+		return true;
+
 	if ( GetASWOrders() == ASW_ORDER_HOLD_POSITION )
 	{
 		// otherwise check if this enemy is within our holding cone
@@ -152,6 +162,16 @@ bool CASW_Marine::FInViewCone( const Vector &vecSpot )
 
 	// see 360 otherwise
 	return true;	
+}
+
+// BenLubar(deathmatch-improvements): see marines everywhere
+bool CASW_Marine::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+{
+	if ( ASWDeathmatchMode() && pEntity->Classify() == CLASS_ASW_MARINE )
+	{
+		return true;
+	}
+	return BaseClass::FVisible( pEntity, traceMask, ppBlocker );
 }
 
 float CASW_Marine::GetFollowSightRange()
@@ -296,7 +316,11 @@ int CASW_Marine::SelectSchedule()
 
 	ClearCondition( COND_ASW_NEW_ORDERS );
 
-	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) )
+	// reactivedrop: commented || HasCondition( COND_COMPLETELY_OUT_OF_AMMO )
+	// we prevent melee schedule if out of ammo because 
+	// AI marines run away and die there swarmed by aliens 
+	// on high difficulties 
+	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
@@ -371,7 +395,20 @@ int CASW_Marine::SelectSchedule()
 		if (pEnemy)		// don't shoot unless we actually have an enemy
 			return SCHED_RANGE_ATTACK1;
 	}		
-	
+
+	// BenLubar(deathmatch-improvements): makes bots try to find a place they 
+	// can shoot from in deathmatch
+	if ( ASWDeathmatchMode() )
+	{
+		if ( GetEnemy() && !HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) )
+		{
+			SetPoseParameter( "move_x", 1.0f );
+			SetPoseParameter( "move_y", 0.0f );
+
+			return SCHED_ESTABLISH_LINE_OF_FIRE;
+		}
+	}
+
 	//Msg("Marine's select schedule returning SCHED_ASW_HOLD_POSITION\n");
 	return SCHED_ASW_HOLD_POSITION;
 }
@@ -423,6 +460,42 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 	else if ( IsCurSchedule( SCHED_MELEE_ATTACK_PROP1, false ) )
 	{
 		m_hPhysicsPropTarget = NULL;
+	}
+
+	if ( rd_stuck_bot_teleport.GetBool() && IsPathTaskFailure( code ) && !ASWDeathmatchMode() )
+	{
+		// teleport to the squad leader if we're stuck
+		for ( int i = 1; i < NELEMS( m_flFailedPathingTime ); i++ )
+		{
+			m_flFailedPathingTime[i - 1] = m_flFailedPathingTime[i];
+		}
+		m_flFailedPathingTime[NELEMS( m_flFailedPathingTime ) - 1] = gpGlobals->curtime;
+		if ( m_flFailedPathingTime[NELEMS( m_flFailedPathingTime ) - rd_stuck_bot_teleport_required_failures.GetInt()] > gpGlobals->curtime - rd_stuck_bot_teleport_required_failures.GetInt() )
+		{
+			CASW_Marine *pLeader = GetSquadLeader();
+
+			if ( !pLeader || !pLeader->IsInhabited() )
+			{
+				DevMsg( this, "Could not find an inhabited marine to teleport to.\n" );
+			}
+			else if ( rd_stuck_bot_teleport_to_marine.GetBool() )
+			{
+				Teleport( &pLeader->GetAbsOrigin(), &pLeader->GetAbsAngles(), &pLeader->GetAbsVelocity() );
+			}
+			else if ( TeleportToFreeNode( pLeader, rd_stuck_bot_teleport_max_range.GetFloat() ) )
+			{
+				DevMsg( this, "Teleported stuck marine to %s\n", pLeader->GetDebugName() );
+			}
+			else
+			{
+				DevMsg( this, "Could not teleport stuck marine.\n" );
+			}
+
+			for ( int i = 0; i < NELEMS( m_flFailedPathingTime ); i++ )
+			{
+				m_flFailedPathingTime[i] = FLT_MIN;
+			}
+		}
 	}
 
 	BaseClass::TaskFail( code );
@@ -702,7 +775,7 @@ int CASW_Marine::SelectTakeAmmoSchedule()
 			m_flNextAmmoScanTime = gpGlobals->curtime + 1.0f;
 			return SCHED_ASW_PICKUP_WAIT;
 		}
-		else
+		else if ( GetASWOrders() != ASW_ORDER_HOLD_POSITION )
 		{
 			// move to the ammo
 			m_vecMoveToOrderPos = hAmmo->GetAbsOrigin();
@@ -835,7 +908,7 @@ bool CASW_Marine::CanHeal() const
 	for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 	{
 		CASW_Weapon *pWeapon = GetASWWeapon( iWeapon );
-		if ( pWeapon && pWeapon->Classify() == CLASS_ASW_HEAL_GUN && pWeapon->HasAmmo() )
+		if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && pWeapon->HasAmmo() )
 		{
 			return true;
 		}
@@ -851,6 +924,11 @@ int CASW_Marine::SelectHealSchedule()
 {
 	// iterate over all teammates, looking for most needy target for health
 	CASW_Game_Resource *pGameResource = ASWGameResource();
+
+	CASW_Marine *pBestMarine = NULL;
+
+	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( CASW_Weapon_Heal_Gun::GetWeaponRange() * 0.5f ) : FLT_MAX;
+
 	for ( int i=0; i<pGameResource->GetMaxMarineResources(); i++ )
 	{
 		CASW_Marine_Resource* pMarineResource = pGameResource->GetMarineResource(i);
@@ -862,15 +940,14 @@ int CASW_Marine::SelectHealSchedule()
 			continue;
 
 		// see if the current marine can use ammo I have
-		if ( CanHeal() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_START_HEAL_THRESHOLD )
+		if ( CanHeal() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_START_HEAL_THRESHOLD && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
-			m_hHealTarget = pMarine;
-			return SCHED_ASW_HEAL_MARINE;
+			pBestMarine = pMarine;
 		}
 	}
 
-	m_hHealTarget = NULL;
-	return -1;
+	m_hHealTarget = pBestMarine;
+	return pBestMarine ? SCHED_ASW_HEAL_MARINE : -1;
 }
 
 void CASW_Marine::SetASWOrders(ASW_Orders NewOrders, float fHoldingYaw, const Vector *pOrderPos)
@@ -1492,9 +1569,6 @@ bool CASW_Marine::NeedToFollowMove()
 	if ( !pLeader || pLeader == this )
 		return false;
 
-	if( IsOutOfAmmo() && GetEnemy() )
-		return false;
-
 	// only move if we're not near our saved follow point
 	float dist = ( GetAbsOrigin() - GetFollowPos() ).Length2DSqr();
 	return dist > ( ASW_FORMATION_FOLLOW_DISTANCE * ASW_FORMATION_FOLLOW_DISTANCE );
@@ -1516,35 +1590,15 @@ static bool ValidMarineMeleeTarget( CBaseEntity *pEnt )
 
 int CASW_Marine::SelectMeleeSchedule()
 {
-	if( GetPhysicsPropTarget() )
+	if ( GetPhysicsPropTarget() )
 	{
 		SetEnemy( GetPhysicsPropTarget() );
 
 		return SCHED_MELEE_ATTACK_PROP1;
 	}
-	else if( GetEnemy() )
+	else if ( GetEnemy() && GetAbsOrigin().DistToSqr( GetEnemyLKP() ) < Lerp( (float) GetHealth() / (float) GetMaxHealth(), 0.0f, 100.0f * 100.0f ) && ValidMarineMeleeTarget( GetEnemy() ) )
 	{
-		bool bLastManStanding = true;
-
-		CASW_Game_Resource *pGameResource = ASWGameResource();
-		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-		{
-			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-			CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
-			if( pMarine && pMarine != this && pMarine->GetHealth() > 0 )
-			{
-				bLastManStanding = false;
-				break;
-			}
-		}
-
-		if( GetHealth() > GetMaxHealth() * 0.5f || bLastManStanding || GetAbsOrigin().DistToSqr( GetEnemyLKP() ) < Square( 100.0f ) )
-		{
-			if ( ValidMarineMeleeTarget( GetEnemy() ) )
-			{
-				return SCHED_ENGAGE_AND_MELEE_ATTACK1;
-			}
-		}
+		return SCHED_ENGAGE_AND_MELEE_ATTACK1;
 	} 
 
 	return -1;
@@ -1577,11 +1631,10 @@ int CASW_Marine::SelectFollowSchedule()
 
 	if( IsOutOfAmmo() && GetEnemy() )
 	{
-		SetCondition( COND_COMPLETELY_OUT_OF_AMMO );
-
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
 			return iMeleeSchedule;
+		return SCHED_ASW_FOLLOW_MOVE; // reactivedrop: make bots follow leader when out of ammo
 	}
 
 	// check if we're too near another marine
@@ -1856,12 +1909,12 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 	case TASK_ASW_SWAP_TO_HEAL_GUN:
 		{
 			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if( !pWeapon || pWeapon->Classify() != CLASS_ASW_HEAL_GUN )
+			if ( !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) )
 			{
 				for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 				{
 					CASW_Weapon *pWeapon = GetASWWeapon( iWeapon );
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_HEAL_GUN && pWeapon->HasAmmo() )
+					if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && pWeapon->HasAmmo() )
 					{
 						Weapon_Switch( pWeapon );
 						break;
@@ -1876,7 +1929,7 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 	case TASK_ASW_HEAL_MARINE:
 		{
 			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if( !pWeapon || pWeapon->Classify() != CLASS_ASW_HEAL_GUN || !pWeapon->HasAmmo() )
+			if ( !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) || !pWeapon->HasAmmo() )
 			{
 				TaskComplete();
 			}
@@ -2340,6 +2393,10 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 					TaskComplete();
 					GetNavigator()->StopMoving();
 				}
+				else if ( GetASWOrders() == ASW_ORDER_HOLD_POSITION )
+				{
+					TaskFail( "holding position but target is out of range" );
+				}
 				else if (!GetNavigator()->IsGoalActive())
 				{
 					SetIdealActivity( GetStoppedActivity() );
@@ -2381,7 +2438,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 	case TASK_ASW_HEAL_MARINE:
 		{
 			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if( !m_hHealTarget || !pWeapon || pWeapon->Classify() != CLASS_ASW_HEAL_GUN || !pWeapon->HasAmmo() )
+			if ( !m_hHealTarget || !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) || !pWeapon->HasAmmo() )
 			{
 				TaskComplete();
 			}
@@ -2451,6 +2508,10 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 	if ( pWeapon && pWeapon->IsOffensiveWeapon() && pWeapon->HasPrimaryAmmo() )
 		return;
 
+	// reactivedrop: don't switch weapons while healing 
+	if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
+		return;
+
 	// see if any of our other inventory items are valid weapons
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
@@ -2463,7 +2524,9 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 		}
 	}
 
-	// if we have no guns with primary ammo, search for one with secondary ammo
+	// reactivedrop: commented, not needed to panic here and constantly
+	// switch weapons 
+/*	// if we have no guns with primary ammo, search for one with secondary ammo
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
 		CASW_Weapon *pOtherWeapon = GetASWWeapon( i );
@@ -2474,6 +2537,7 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 			return;
 		}
 	}
+//*/
 }
 
 #define ASW_OVERKILL_TIME random->RandomFloat(0.5f,1.0f)
@@ -2713,6 +2777,23 @@ void CASW_Marine::UpdateFacing()
 		float flAimYaw = UTIL_VecToYaw( m_vecFacingPointFromServer.Get() - GetAbsOrigin() );
 		GetMotor()->SetIdealYawAndUpdate( flAimYaw );
 	}
+	else if (IsCurSchedule(SCHED_ASW_HEAL_MARINE))		// face the marine that we want to heal
+	{
+		if (m_hHealTarget.Get())
+		{
+			float flAimYaw = CalcIdealYaw(m_hHealTarget.Get()->GetAbsOrigin());
+			GetMotor()->SetIdealYawAndUpdate(flAimYaw);
+
+			if (asw_debug_marine_aim.GetBool())
+			{
+				Vector vecAim;
+				QAngle angAim = QAngle(0, flAimYaw, 0);
+				AngleVectors(angAim, &vecAim);
+
+				NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + vecAim * 50, 0, 255, 0, false, 0.2f);
+			}
+		}
+	}
 	else if ( GetEnemy() )
 	{
 		Vector vecEnemyLKP = GetEnemyLKP();
@@ -2751,26 +2832,18 @@ void CASW_Marine::UpdateFacing()
 			Msg( "aim error = %f fAimYaw = %f\n", m_fMarineAimError, flAimYaw );
 		}
 	}
-	else if ( IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )		// face the marine that we want to heal
-	{
-		if ( m_hHealTarget.Get() )
-		{
-			float flAimYaw = CalcIdealYaw( m_hHealTarget.Get()->GetAbsOrigin() );
-			GetMotor()->SetIdealYawAndUpdate( flAimYaw );
-
-			if ( asw_debug_marine_aim.GetBool() )
-			{
-				Vector vecAim;
-				QAngle angAim = QAngle( 0, flAimYaw, 0 );
-				AngleVectors( angAim, &vecAim );
-
-				NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + vecAim * 50, 0, 255, 0, false, 0.2f );
-			}
-		}
-	}
 	else if ( GetASWOrders() == ASW_ORDER_FOLLOW )
 	{
-		float flAimYaw = GetSquadFormation()->GetYaw( GetSquadFormation()->Find(this) );
+		unsigned int slot_num = GetSquadFormation()->Find(this);
+		if (CASW_SquadFormation::INVALID_SQUADDIE == slot_num) 
+		{
+			// TODO check this and fix it
+			//AssertOnce( slot_num != CASW_SquadFormation::INVALID_SQUADDIE );
+			DevWarning("GetSquadFormation()->Find(this) returned INVALID_SQUADDIE \n");
+			return;
+		}
+
+		float flAimYaw = GetSquadFormation()->GetYaw( slot_num );
 		if ( gpGlobals->curtime < m_flLastEnemyYawTime + asw_marine_face_last_enemy_time.GetFloat() )
 		{
 			flAimYaw = m_flLastEnemyYaw;
@@ -2845,6 +2918,10 @@ bool CASW_Marine::CheckAutoWeaponSwitch()
 	CASW_Weapon *pWeapon = GetActiveASWWeapon();
 	if (pWeapon && pWeapon->IsOffensiveWeapon())
 		return true;
+
+	// reactivedrop: don't switch weapons while healing 
+	if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
+		return false;
 
 	// marine doesn't auto switch weapons the first two times he's hurt
 	m_iHurtWithoutOffensiveWeapon++;

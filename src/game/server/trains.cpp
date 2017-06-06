@@ -14,6 +14,8 @@
 #include "physics_npc_solver.h"
 #include "vphysics/friction.h"
 #include "hierarchy.h"
+#include "asw_shareddefs.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -2587,6 +2589,11 @@ void CFuncTrackTrain::MoveDone()
 	m_lastBlockPos.Init();
 	m_lastBlockTick = -1;
 	BaseClass::MoveDone();
+}
+
+Class_T CFuncTrackTrain::Classify(void)
+{
+	return Class_T(CLASS_FUNC_TRACKTRAIN);
 }
 
 

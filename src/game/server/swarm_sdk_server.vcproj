@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="Server (Swarm)"
-	ProjectGUID="{A26C0361-6B09-9E3D-5194-C9CB89243710}"
+	ProjectGUID="{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}"
 	>
 	<Platforms>
 		<Platform
@@ -22,7 +22,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="if EXIST &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
+				CommandLine="if EXIST &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -126,8 +126,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Publishing to ..\..\..\game\swarm\bin\."
-				CommandLine="if exist &quot;..\..\..\game\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\game\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\game\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\game\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				Description="Publishing to ..\..\..\reactivedrop\bin\."
+				CommandLine="if exist &quot;..\..\..\reactivedrop\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\reactivedrop\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\reactivedrop\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\reactivedrop\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -140,7 +140,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="if EXIST &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
+				CommandLine="if EXIST &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -248,8 +248,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Publishing to ..\..\..\game\swarm\bin\."
-				CommandLine="if exist &quot;..\..\..\game\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\game\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\game\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\game\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\game\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				Description="Publishing to ..\..\..\reactivedrop\bin\."
+				CommandLine="if exist &quot;..\..\..\reactivedrop\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;..\..\..\reactivedrop\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;..\..\..\reactivedrop\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;..\..\..\reactivedrop\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;..\..\..\reactivedrop\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -2229,7 +2229,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\logic_random_outputs.h&apos;&#x0A;$File"
+				RelativePath=".\logic_random_outputs.h"
 				>
 			</File>
 			<File
@@ -2238,6 +2238,10 @@
 			</File>
 			<File
 				RelativePath=".\logicentities.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\logicentities.h"
 				>
 			</File>
 			<File
@@ -3273,6 +3277,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\team_spawnpoint.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\shared\teamplay_gamerules.cpp"
 				>
 			</File>
@@ -3936,6 +3944,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\hl2\npc_antlionguard.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\hl2\npc_attackchopper.cpp"
 					>
 				</File>
@@ -4480,6 +4492,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\asw_health_regen.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_holdout_spawner.cpp"
 					>
 				</File>
@@ -4501,6 +4517,10 @@
 				</File>
 				<File
 					RelativePath=".\swarm\asw_intro_control.h"
+					>
+				</File>
+				<File
+					RelativePath=".\asw_item_regen.cpp"
 					>
 				</File>
 				<File
@@ -5407,6 +5427,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\shared\swarm\asw_deathmatch_mode.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\shared\swarm\asw_env_spark.cpp"
 						>
 					</File>
@@ -5780,6 +5804,14 @@
 					</File>
 					<File
 						RelativePath="..\shared\swarm\asw_weapon_chainsaw_shared.h"
+						>
+					</File>
+					<File
+						RelativePath="..\shared\swarm\asw_weapon_deagle_shared.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\shared\swarm\asw_weapon_deagle_shared.h"
 						>
 					</File>
 					<File
@@ -7057,5 +7089,23 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\shared\swarm\asw_weapon_combat_rifle_shared.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\shared\swarm\asw_weapon_combat_rifle_shared.h"
+			>
+		</File>
+		<File
+			RelativePath="..\shared\swarm\asw_weapon_devastator_shared.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\shared\swarm\asw_weapon_devastator_shared.h"
+			>
+		</File>
 	</Files>
+	<Globals>
+	</Globals>
 </VisualStudioProject>

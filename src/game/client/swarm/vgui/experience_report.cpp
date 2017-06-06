@@ -18,11 +18,12 @@
 #include "asw_medal_store.h"
 #include "nb_island.h"
 #include "clientmode_asw.h"
+#include "rd_vgui_leaderboard_panel.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-extern float g_flXPDifficultyScale[4];
+extern float g_flXPDifficultyScale[5];
 
 CExperienceReport::CExperienceReport( vgui::Panel *parent, const char *name ) : vgui::EditablePanel( parent, name )
 {
@@ -64,6 +65,8 @@ CExperienceReport::CExperienceReport( vgui::Panel *parent, const char *name ) : 
 	m_pUnofficialMapLabel = new vgui::Label( this, "UnofficialMapLabel", "#asw_unofficial_map" );
 	m_pUnofficialMapLabel->SetVisible( false ); //GetClientModeASW() && !GetClientModeASW()->IsOfficialMap() );
 
+	m_pLeaderboard = new CReactiveDrop_VGUI_Leaderboard_Panel( this, "Leaderboard" );
+
 	m_iPlayerLevel = 0;
 	m_pszWeaponUnlockClass = NULL;
 	m_flOldBarMin = -1;
@@ -86,7 +89,7 @@ CExperienceReport::~CExperienceReport()
 
 void CExperienceReport::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	LoadControlSettings( "resource/UI/ExperienceReport.res" );
+	LoadControlSettings( "resource/UI/ExperienceReport_rd.res" );
 
 	BaseClass::ApplySchemeSettings(pScheme);
 
@@ -268,7 +271,7 @@ void CExperienceReport::OnThink()
 
 	int nEarnedXP = (int) flTotalXP;
 	wchar_t number_buffer[ 16 ];
-	_snwprintf( number_buffer, sizeof( number_buffer ), L"+%d", nEarnedXP );
+	V_snwprintf( number_buffer, sizeof( number_buffer ), L"+%d", nEarnedXP );
 	m_pEarnedXPNumber->SetText( number_buffer );
 
 	// See if we're still animating
@@ -354,7 +357,7 @@ void CExperienceReport::Init()
 	int iBar = 1;
 
 	// other players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->maxClients && iBar < ASW_EXPERIENCE_REPORT_MAX_PLAYERS; i++ )
 	{
 		if ( !g_PR->IsConnected( i ) )
 			continue;
@@ -366,9 +369,6 @@ void CExperienceReport::Init()
 		pOtherPlayer->AwardExperience();
 		m_pExperienceBar[ iBar ]->InitFor( pOtherPlayer );
 		iBar++;
-
-		if ( iBar >= ASW_EXPERIENCE_REPORT_MAX_PLAYERS )
-			break;
 	}
 
 	for ( int i = iBar; i < ASW_EXPERIENCE_REPORT_MAX_PLAYERS; i++ )
