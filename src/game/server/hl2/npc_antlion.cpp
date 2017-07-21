@@ -47,10 +47,10 @@
 ConVar	g_debug_antlion( "g_debug_antlion", "0" );
 
 // base antlion stuff
-ConVar	sk_antlion_health( "sk_antlion_health", "0" );
-ConVar	sk_antlion_swipe_damage( "sk_antlion_swipe_damage", "0" );
-ConVar	sk_antlion_jump_damage( "sk_antlion_jump_damage", "0" );
-ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "0" );
+ConVar	sk_antlion_health( "sk_antlion_health", "24" );
+ConVar	sk_antlion_swipe_damage( "sk_antlion_swipe_damage", "10" );
+ConVar	sk_antlion_jump_damage( "sk_antlion_jump_damage", "15" );
+ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10" );
 
 
 #ifdef HL2_EPISODIC
@@ -60,8 +60,8 @@ ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "0" );
 #define ANTLION_WORKER_BURST_IS_POISONOUS() (true)
 
 ConVar  sk_antlion_worker_burst_damage( "sk_antlion_worker_burst_damage", "50", FCVAR_NONE, "How much damage is inflicted by an antlion worker's death explosion." );
-ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "0", FCVAR_NONE, "Hitpoints of an antlion worker. If 0, will use base antlion hitpoints."   );
-ConVar  sk_antlion_worker_spit_speed( "sk_antlion_worker_spit_speed", "0", FCVAR_NONE, "Speed at which an antlion spit grenade travels." );
+ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "24", FCVAR_NONE, "Hitpoints of an antlion worker. If 0, will use base antlion hitpoints."   );
+ConVar  sk_antlion_worker_spit_speed( "sk_antlion_worker_spit_speed", "50", FCVAR_NONE, "Speed at which an antlion spit grenade travels." );
 
 // This must agree with the AntlionWorkerBurstRadius() function!
 ConVar  sk_antlion_worker_burst_radius( "sk_antlion_worker_burst_radius", "160", FCVAR_NONE, "Effect radius of an antlion worker's death explosion."  );
@@ -100,7 +100,7 @@ int AE_ANTLION_WORKER_DONT_EXPLODE;
 
 
 //Attack range definitions
-#define	ANTLION_MELEE1_RANGE		100.0f
+#define	ANTLION_MELEE1_RANGE		60.0f
 #define	ANTLION_MELEE2_RANGE		64.0f
 #define	ANTLION_MELEE2_RANGE_MAX	175.0f
 #define	ANTLION_MELEE2_RANGE_MIN	64.0f
@@ -284,12 +284,14 @@ void CNPC_Antlion::Spawn( void )
 #ifdef HL2_EPISODIC
 	if ( IsWorker() )
 	{
+		m_pszAlienModelName = ANTLION_WORKER_MODEL;
 		SetModel( ANTLION_WORKER_MODEL );
 		AddSpawnFlags( SF_NPC_LONG_RANGE );
 		SetBloodColor( BLOOD_COLOR_ANTLION_WORKER );
 	}
 	else
 	{
+		m_pszAlienModelName = ANTLION_MODEL;
 		SetModel( ANTLION_MODEL );
 		SetBloodColor( BLOOD_COLOR_ANTLION );
 	}
@@ -375,6 +377,16 @@ void CNPC_Antlion::Spawn( void )
 	ChangeFaction(FACTION_ALIENS);
 
 	m_nSkin = random->RandomInt( 0, ANTLION_SKIN_COUNT-1 );
+}
+
+void CNPC_Antlion::SetHealthByDifficultyLevel()
+{
+	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_antlion_health.GetInt() ) );
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting antlion's initial health to %d\n", iHealth );
+	SetHealth( iHealth );
+	SetMaxHealth( iHealth );
 }
 
 //-----------------------------------------------------------------------------
@@ -574,7 +586,7 @@ bool CNPC_Antlion::FInViewCone( CBaseEntity *pEntity )
 {
 	m_flFieldOfView = ( GetEnemy() != NULL ) ? ANTLION_VIEW_FIELD_NARROW : VIEW_FIELD_WIDE;
 
-	return BaseClass::FInViewCone( pEntity );
+	return BaseClass::FInViewCone( pEntity->GetAbsOrigin() );
 }
 
 //-----------------------------------------------------------------------------
@@ -668,39 +680,6 @@ void CNPC_Antlion::MeleeAttack( float distance, float damage, QAngle &viewPunch,
 
 	if ( pHurt )
 	{
-		vecForceDir = ( pHurt->WorldSpaceCenter() - WorldSpaceCenter() );
-
-		//FIXME: Until the interaction is setup, kill combine soldiers in one hit -- jdw
-		if ( FClassnameIs( pHurt, "npc_combine_s" ) )
-		{
-			CTakeDamageInfo	dmgInfo( this, this, pHurt->m_iHealth+25, DMG_SLASH );
-			CalculateMeleeDamageForce( &dmgInfo, vecForceDir, pHurt->GetAbsOrigin() );
-			pHurt->TakeDamage( dmgInfo );
-			return;
-		}
-
-		CBasePlayer *pPlayer = ToBasePlayer( pHurt );
-
-		if ( pPlayer != NULL )
-		{
-			//Kick the player angles
-			if ( !(pPlayer->GetFlags() & FL_GODMODE ) && pPlayer->GetMoveType() != MOVETYPE_NOCLIP )
-			{
-				pPlayer->ViewPunch( viewPunch );
-
-				Vector	dir = pHurt->GetAbsOrigin() - GetAbsOrigin();
-				VectorNormalize(dir);
-
-				QAngle angles;
-				VectorAngles( dir, angles );
-				Vector forward, right;
-				AngleVectors( angles, &forward, &right, NULL );
-
-				//Push the target back
-				pHurt->ApplyAbsVelocityImpulse( - right * shove[1] - forward * shove[0] );
-			}
-		}
-
 		// Play a random attack hit sound
 		EmitSound( "NPC_Antlion.MeleeAttack" );
 	}
@@ -1177,7 +1156,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 	{
 		QAngle qa( 20.0f, 0.0f, -12.0f );
 		Vector vec( -250.0f, 1.0f, 1.0f );
-		MeleeAttack( ANTLION_MELEE1_RANGE, sk_antlion_swipe_damage.GetFloat(), qa, vec );
+		MeleeAttack( ANTLION_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_antlion_swipe_damage.GetFloat() ), qa, vec );
 		return;
 	}
 
@@ -1185,7 +1164,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 	{
 		QAngle qa( 20.0f, 0.0f, 0.0f );
 		Vector vec( -350.0f, 1.0f, 1.0f );
-		MeleeAttack( ANTLION_MELEE1_RANGE, sk_antlion_swipe_damage.GetFloat(), qa, vec );
+		MeleeAttack( ANTLION_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_antlion_swipe_damage.GetFloat() ), qa, vec );
 		return;
 	}
 
@@ -1193,7 +1172,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 	{
 		QAngle qa( 4.0f, 0.0f, 0.0f );
 		Vector vec( -250.0f, 1.0f, 1.0f );
-		MeleeAttack( ANTLION_MELEE2_RANGE, sk_antlion_swipe_damage.GetFloat(), qa, vec );
+		MeleeAttack( ANTLION_MELEE2_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_antlion_swipe_damage.GetFloat() ), qa, vec );
 		return;
 	}
 		
@@ -3997,7 +3976,7 @@ bool CNPC_Antlion::ShouldGib( const CTakeDamageInfo &info )
 	if ( m_iHealth < -20 )
 		return true;
 	
-	return false;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -4113,7 +4092,7 @@ void CNPC_Antlion::Touch( CBaseEntity *pOther )
 #ifdef HL2_EPISODIC 
 	if ( GetActivity() == ACT_GLIDE && IsValidEnemy( pOther ) && !m_bHasDoneAirAttack )
 	{
-		CTakeDamageInfo	dmgInfo( this, this, sk_antlion_air_attack_dmg.GetInt(), DMG_SLASH );
+		CTakeDamageInfo	dmgInfo( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_antlion_air_attack_dmg.GetInt() ) , DMG_SLASH );
 
 		CalculateMeleeDamageForce( &dmgInfo, Vector( 0, 0, 1 ), GetAbsOrigin() );
 		pOther->TakeDamage( dmgInfo );

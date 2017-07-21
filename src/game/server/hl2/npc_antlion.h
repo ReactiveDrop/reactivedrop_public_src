@@ -15,6 +15,7 @@
 #include "soundent.h"
 #include "ai_behavior_follow.h"
 #include "ai_behavior_assault.h"
+#include "asw_alien.h"
 
 class CAntlionTemplateMaker;
 
@@ -68,18 +69,20 @@ enum AntlionMoveState_e
 #define	SF_ANTLION_USE_GROUNDCHECKS		( 1 << 17 )
 #define	SF_ANTLION_WORKER				( 1 << 18 ) // Use the "worker" model
 
-typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BlendedNPC> > CAI_BaseAntlionBase;
+// typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BlendedNPC> > CAI_BaseAntlionBase;
 
-class CNPC_Antlion : public CAI_BaseAntlionBase
+class CNPC_Antlion : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CNPC_Antlion, CAI_BaseAntlionBase  );
+	DECLARE_CLASS( CNPC_Antlion, CASW_Alien );
 
 	CNPC_Antlion( void );
 
 	virtual float	InnateRange1MinRange( void ) { return 50*12; }
 	virtual float	InnateRange1MaxRange( void ) { return 250*12; }
+
+	virtual void	SetHealthByDifficultyLevel();
 
 	bool		IsWorker( void ) const { return HasSpawnFlags( SF_ANTLION_WORKER ); }	// NOTE: IsAntlionWorker function must agree!
 
@@ -306,7 +309,7 @@ private:
 
 	enum
 	{
-		COND_ANTLION_FLIPPED = LAST_SHARED_CONDITION,
+		COND_ANTLION_FLIPPED = BaseClass::NEXT_CONDITION,
 		COND_ANTLION_ON_NPC,
 		COND_ANTLION_CAN_JUMP,
 		COND_ANTLION_FOLLOW_TARGET_TOO_FAR,
@@ -322,7 +325,7 @@ private:
 
 	enum
 	{
-		SCHED_ANTLION_CHASE_ENEMY_BURROW = LAST_SHARED_SCHEDULE,
+		SCHED_ANTLION_CHASE_ENEMY_BURROW = LAST_ASW_ALIEN_SHARED_SCHEDULE,
 		SCHED_ANTLION_JUMP,
 		SCHED_ANTLION_RUN_TO_BURROW_IN,
 		SCHED_ANTLION_BURROW_IN,
@@ -357,7 +360,7 @@ private:
 
 	enum
 	{
-		TASK_ANTLION_SET_CHARGE_GOAL = LAST_SHARED_TASK,
+		TASK_ANTLION_SET_CHARGE_GOAL = LAST_ASW_ALIEN_SHARED_TASK,
 		TASK_ANTLION_FIND_BURROW_IN_POINT,
 		TASK_ANTLION_FIND_BURROW_OUT_POINT,
 		TASK_ANTLION_BURROW,
