@@ -76,8 +76,6 @@ ConVar g_debug_antlion_worker( "g_debug_antlion_worker", "0" );
 
 ConVar bugbait_radius("bugbait_radius", "300");
 
-ConVar rd_antlion_spawn_worker("rd_antlion_spawn_worker", "0", FCVAR_CHEAT, "If 1 npc_antlion will be spawned as worker type that spits acid");
-
 int AE_ANTLION_WALK_FOOTSTEP;
 int AE_ANTLION_MELEE_HIT1;
 int AE_ANTLION_MELEE_HIT2;
@@ -195,6 +193,7 @@ CNPC_Antlion::CNPC_Antlion( void )
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlion, CNPC_Antlion );
+LINK_ENTITY_TO_CLASS( npc_antlion_worker, CNPC_Antlion );
 
 //==================================================
 // CNPC_Antlion::m_DataDesc
@@ -271,8 +270,10 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_Antlion::Spawn( void )
 {
-	if (rd_antlion_spawn_worker.GetBool())
-		AddSpawnFlags(SF_ANTLION_WORKER);
+	if ( ClassMatches( "npc_antlion_worker" ) )
+	{
+		AddSpawnFlags( SF_ANTLION_WORKER );
+	}
 
 	Precache();
 

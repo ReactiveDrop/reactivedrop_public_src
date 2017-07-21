@@ -5137,6 +5137,9 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	if ( collisionGroup0 == COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE && ( collisionGroup1 == ASW_COLLISION_GROUP_GRENADES || collisionGroup1 == ASW_COLLISION_GROUP_NPC_GRENADES ) )
 		return true;
 
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_NPC_GRENADES && collisionGroup1 == ASW_COLLISION_GROUP_NPC_GRENADES )
+		return false;
+
 	// Grenades hit everything but debris, weapons, other projectiles and marines
 	if ( collisionGroup1 == ASW_COLLISION_GROUP_GRENADES )
 	{
