@@ -32,6 +32,11 @@ enum ELanguage
 	k_Lang_Finnish,
 	k_Lang_Norwegian,
 	k_Lang_Swedish,
+	k_Lang_Czech,
+	k_Lang_Hungarian,
+	k_Lang_Romanian,
+	k_Lang_Turkish,
+	k_Lang_Ukrainian,
 	k_Lang_MAX
 };
 
