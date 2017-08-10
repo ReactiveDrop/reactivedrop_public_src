@@ -3738,7 +3738,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	int			weaponType = 0;
 
 	// Get the first parameter
-	p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token) );
 
 	// Find the weapon type
 	if ( token ) 
@@ -3782,7 +3782,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	}
 
 	// Get the second parameter
-	p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token) );
 
 	int	attachmentIndex = -1;
 
@@ -3918,14 +3918,14 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the particle effect name
 			const char *p = options;
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
 
 			// Get the attachment type
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				iAttachType = GetAttachTypeFromString( token );
@@ -3937,7 +3937,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			}
 
 			// Get the attachment point index
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token )
 			{
 				iAttachment = atoi(token);
@@ -3958,7 +3958,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			CNewParticleEffect *pEffect = ParticleProp()->Create( szParticleEffect, (ParticleAttachment_t)iAttachType, iAttachment );
 
 			// Get the attachment type for CP1
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( !p )
 				return;
 			if ( token ) 
@@ -3972,7 +3972,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			}
 
 			// Get the attachment point index
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token )
 			{
 				iAttachmentCP1 = atoi(token);
@@ -3999,14 +3999,14 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the particle effect name
 			const char *p = options;
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
 
 			// Get the attachment point index
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			bool bStopInstantly = ( token && !Q_stricmp( token, "instantly" ) );
 
 			ParticleProp()->StopParticlesNamed( szParticleEffect, bStopInstantly );
@@ -4024,21 +4024,21 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the particle effect name
 			const char *p = options;
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
 
 			// Get the control point number
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				iControlPoint = atoi( token );
 			}
 
 			// Get the attachment type
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				iAttachType = GetAttachTypeFromString( token );
@@ -4050,7 +4050,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			}
 
 			// Get the attachment point index
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token )
 			{
 				iAttachment = atoi(token);
@@ -4246,14 +4246,14 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			const char *p = options;
 
 			// Bodygroup Name
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				Q_strncpy( szBodygroupName, token, sizeof(szBodygroupName) );
 			}
 
 			// Get the desired value
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( token ) 
 			{
 				value = atoi( token );
@@ -4293,14 +4293,14 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			const char *p = options;
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token ) 
 			{
 				Q_strncpy( effectFunc, token, sizeof(effectFunc) );
 			}
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token )
 			{
@@ -4314,7 +4314,7 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 				}
 			}
 
-			p = nexttoken(token, p, ' ');
+			p = nexttoken(token, p, ' ', sizeof(token));
 
 			if( token )
 			{

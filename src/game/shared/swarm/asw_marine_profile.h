@@ -272,7 +272,13 @@ extern CASW_Marine_ProfileList* MarineProfileList();
 
 inline bool CASW_Marine_Profile::CanHack( void )
 {
+#ifdef CLIENT_DLL
 	return GetMarineClass() == MARINE_CLASS_TECH;
+#else
+	extern ConVar rd_hackall;
+	return GetMarineClass() == MARINE_CLASS_TECH ||
+		rd_hackall.GetBool();
+#endif
 }
 
 inline bool CASW_Marine_Profile::HasHackSkill( void )

@@ -408,7 +408,7 @@ void InGameMainMenu::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	else
 	{
-		LoadControlSettings( "Resource/UI/BaseModUI/InGameMainMenu_rd.res" );
+		LoadControlSettings( "Resource/UI/BaseModUI/InGameMainMenu.res" );
 	}
 
 	SetPaintBackgroundEnabled( true );

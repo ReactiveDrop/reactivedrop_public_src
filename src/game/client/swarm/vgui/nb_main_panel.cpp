@@ -144,7 +144,7 @@ void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_main_panel_rd.res" );
+	LoadControlSettings( "resource/ui/nb_main_panel.res" );
 
 	color32 white;
 	white.r = 255;

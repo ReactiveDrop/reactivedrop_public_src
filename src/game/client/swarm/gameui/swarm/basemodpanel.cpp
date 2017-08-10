@@ -81,6 +81,7 @@
 #include "fmtstr.h"
 #include "smartptr.h"
 #include "nb_header_footer.h"
+#include "rd_swarmopedia.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -403,15 +404,15 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_LOADINGPROGRESSBKGND:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress_rd", LoadingProgress::LWT_BKGNDSCREEN );
+			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_BKGNDSCREEN );
 			break;
 
 		case WT_LOADINGPROGRESS:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress_rd", LoadingProgress::LWT_LOADINGPLAQUE );
+			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_LOADINGPLAQUE );
 			break;
 
 		case WT_MAINMENU:
-			m_Frames[wt] = new MainMenu(this, "MainMenu_rd");
+			m_Frames[wt] = new MainMenu(this, "MainMenu");
 			break;
 
 		case WT_MULTIPLAYER:
@@ -439,11 +440,11 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_ALLGAMESEARCHRESULTS:
-			m_Frames[ wt ] = new FoundGames( this, "FoundGames_rd" );
+			m_Frames[ wt ] = new FoundGames( this, "FoundGames" );
 			break;
 
 		case WT_FOUNDPUBLICGAMES:
-			m_Frames[ wt ] = new FoundPublicGames( this, "FoundPublicGames_rd" );
+			m_Frames[ wt ] = new FoundPublicGames( this, "FoundPublicGames" );
 			break;
 
 		case WT_TRANSITIONSCREEN:
@@ -451,7 +452,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_VIDEO:
-			m_Frames[wt] = new Video(this, "video_rd");
+			m_Frames[wt] = new Video(this, "video");
 			break;
 
 		case WT_STEAMCLOUDCONFIRM:
@@ -465,7 +466,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_STEAMGROUPSERVERS:
-			m_Frames[ wt ] = new FoundGroupGames( this, "FoundGames_rd" );
+			m_Frames[ wt ] = new FoundGroupGames( this, "FoundGames" );
 			break;
 
 		case WT_CUSTOMCAMPAIGNS:
@@ -538,6 +539,9 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_GAMEPAD:
 			m_Frames[wt] = new Gamepad( this, "Gamepad" );
+
+		case WT_SWARMOPEDIA:
+			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );
 			break;
 
 		default:

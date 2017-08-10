@@ -65,7 +65,7 @@ void CASW_EquipmentList::LoadEquipmentList()
 
 	KeyValues *kv = new KeyValues("Equipment");
 	// load equipment
-	if (kv->LoadFromFile(filesystem, "resource/equipment_rd.res"))
+	if (kv->LoadFromFile(filesystem, "resource/equipment.res"))
 	{		
 		int iNumEquip = 0;
 		KeyValues *pKeys = kv;

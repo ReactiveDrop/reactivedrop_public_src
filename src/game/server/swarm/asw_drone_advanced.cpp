@@ -305,13 +305,16 @@ float CASW_Drone_Advanced::GetIdealSpeed() const
 		boost = asw_drone_override_speedboost.GetFloat();
 	}
 
-	switch (ASWGameRules()->GetSkillLevel())
+	if ( rd_difficulty_tier.GetInt() == 0 )
 	{
-		case 5: boost *= asw_alien_speed_scale_insane.GetFloat(); break;
-		case 4: boost *= asw_alien_speed_scale_insane.GetFloat(); break;
-		case 3: boost *= asw_alien_speed_scale_hard.GetFloat(); break;
-		case 2: boost *= asw_alien_speed_scale_normal.GetFloat(); break;
-		default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
+		switch ( ASWGameRules()->GetSkillLevel() )
+		{
+			case 5: boost *= asw_alien_speed_scale_insane.GetFloat(); break;
+			case 4: boost *= asw_alien_speed_scale_insane.GetFloat(); break;
+			case 3: boost *= asw_alien_speed_scale_hard.GetFloat(); break;
+			case 2: boost *= asw_alien_speed_scale_normal.GetFloat(); break;
+			default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
+		}
 	}
 
 	if (rd_difficulty_tier.GetInt() == 1)

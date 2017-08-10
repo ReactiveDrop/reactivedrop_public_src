@@ -302,7 +302,12 @@ void Audio::Activate()
 			m_nSelectedAudioLanguage = m_nAudioLanguages[ iSelectedLanguage ].languageCode;
 		}
 
-		m_drpLanguage->SetVisible( m_nNumAudioLanguages > 1 );
+		// reactivedrop: don't show language selection drop down in audio settings window
+		// because it cannot hold all of our supported languages
+		// audio language can be choosen in game's properties window in Steam
+		// this is same how it works in Left 4 Dead 2
+		//m_drpLanguage->SetVisible( m_nNumAudioLanguages > 1 );
+		m_drpLanguage->SetVisible( false );
 	}
 
 	if ( !m_pVoiceTweak )

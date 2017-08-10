@@ -350,6 +350,8 @@ ConVar asw_marine_ff_absorption( "asw_marine_ff_absorption", "1", FCVAR_REPLICAT
 ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn", UpdateMatchmakingTagsCallback );
 ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn", UpdateMatchmakingTagsCallback );
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
+ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
+ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
 
 ConVar rd_weapon_selection_rules( "rd_weapon_selection_rules", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 = level 1, 2 = riflemod classic, 3 = no ammo"
 #ifdef GAME_DLL
@@ -1578,7 +1580,9 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 					Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
 					if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex])))
 					{
-						Warning("if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex]))) \n");
+						char buffer[16];
+						Q_snprintf( buffer, sizeof( buffer ), "%i", int( m_fReserveMarinesEndTime - gpGlobals->curtime ) );
+						ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_reserved", buffer );
 						bCanSelect = false;
 					}
 				}
@@ -1971,7 +1975,7 @@ void CAlienSwarm::RequestStartMission(CASW_Player *pPlayer)
 	}
 	if (!bCanStart)
 		return;
-	if (m_bMissionRequiresTech && !bTech)
+	if ( MissionRequiresTech() && !bTech)
 		return;
 	if (m_hEquipReq.Get() && !m_hEquipReq->AreRequirementsMet())
 		return;
@@ -2029,7 +2033,7 @@ void CAlienSwarm::StartMission()
 	}
 	if (!bCanStart)
 		return;
-	if (m_bMissionRequiresTech && !bTech)	
+	if ( MissionRequiresTech() && !bTech )
 		return;
 	if (m_hEquipReq.Get() && !m_hEquipReq->AreRequirementsMet())
 		return;
@@ -8142,7 +8146,8 @@ int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEqui
 
 		case 1:
 			// level one
-			if ( GetWeaponLevelRequirement( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) > 0 )
+			if ( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex ) && // check for NULL first, "More Starting Equipment" crashes Level One challenge here
+				 GetWeaponLevelRequirement( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) > 0 )
 			{
 				return 0;
 			}

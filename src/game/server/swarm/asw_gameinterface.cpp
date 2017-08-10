@@ -210,13 +210,13 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 					sv_maxrate.SetValue( 60000 );	// reactivedrop: for 8 player servers increase sv_maxrate by 2 times(30k is default)
 				}
 			}
-			ConVarRef net_splitpacket_maxrate( "net_splitpacket_maxrate" );
-			if ( net_splitpacket_maxrate.IsValid() )
+		}
+		ConVarRef net_splitpacket_maxrate( "net_splitpacket_maxrate" );
+		if ( net_splitpacket_maxrate.IsValid() )
+		{
+			if ( net_splitpacket_maxrate.GetInt() < 40000 )
 			{
-				if ( net_splitpacket_maxrate.GetInt() < 30000 )
-				{
-					net_splitpacket_maxrate.SetValue( 30000 );	// reactivedrop: for 8 player servers increase net_splitpacket_maxrate by 2 times(15k is default)
-				}
+				net_splitpacket_maxrate.SetValue( 40000 );	// reactivedrop: increase net_splitpacket_maxrate(15k is default) to combat stutter when there is a lot of aliens
 			}
 		}
 	}

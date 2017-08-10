@@ -72,6 +72,7 @@ ConVar asw_marine_speed_scale_insane("asw_marine_speed_scale_insane", "1.048", F
 ConVar asw_marine_box_collision("asw_marine_box_collision", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 // reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher then Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
@@ -332,13 +333,21 @@ float CASW_Marine::MaxSpeed()
 		speedscale = GetActiveASWWeapon()->GetMovementScale();
 
 	// adjust the speed by difficulty level
-	switch (ASWGameRules()->GetSkillLevel())
+	extern ConVar rd_difficulty_tier;
+	if ( rd_difficulty_tier.GetInt() == 0 )
 	{
-		case 5: speedscale *= asw_marine_speed_scale_insane.GetFloat(); break;
-		case 4: speedscale *= asw_marine_speed_scale_insane.GetFloat(); break;
-		case 3: speedscale *= asw_marine_speed_scale_hard.GetFloat(); break;
-		case 2: speedscale *= asw_marine_speed_scale_normal.GetFloat(); break;
-		default: speedscale *= asw_marine_speed_scale_easy.GetFloat(); break;
+		switch ( ASWGameRules()->GetSkillLevel() )
+		{
+			case 5: speedscale *= asw_marine_speed_scale_insane.GetFloat(); break;
+			case 4: speedscale *= asw_marine_speed_scale_insane.GetFloat(); break;
+			case 3: speedscale *= asw_marine_speed_scale_hard.GetFloat(); break;
+			case 2: speedscale *= asw_marine_speed_scale_normal.GetFloat(); break;
+			default: speedscale *= asw_marine_speed_scale_easy.GetFloat(); break;
+		}
+	}
+	else
+	{
+		speedscale *= asw_marine_speed_scale_insane.GetFloat();
 	}
 
 	// if we're an AI following someone, boost our speed as we get far away.
@@ -2161,7 +2170,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 		if ( options[0] )
 		{
 			// Read in yaw start
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 
 			if( token )
 			{
@@ -2169,7 +2178,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 			}
 
 			// Read in yaw end
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 
 			if( token )
 			{
@@ -2235,7 +2244,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 		}
 		char token[256];
 		const char *p = options;
-		p = nexttoken(token, p, ' ');
+		p = nexttoken(token, p, ' ', sizeof(token));
 		if ( token ) 
 		{
 			if ( !Q_stricmp( token, "JumpJet" ) && ASWGameMovement() )

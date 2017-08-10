@@ -277,6 +277,17 @@ void MainMenu::OnCommand( const char *command )
 		OnCommand( "FlmScavengeFlyout" );
 		return;
 	}
+	else if ( !Q_strcmp( command, "BtnStub" ) )
+	{
+		// clicking No Steam will provide some info
+		GenericConfirmation* confirmation =
+			static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, CBaseModPanel::GetSingleton().GetWindow( WT_GAMELOBBY ), false ) );
+		GenericConfirmation::Data_t data;
+		data.pWindowTitle = "#rd_no_steam_service";
+		data.pMessageText = "#rd_no_steam_solutions";
+		data.bOkButtonEnabled = true;
+		confirmation->SetUsageData( data );
+	}
 	else if ( !Q_strcmp( command, "TrainingPlay" ) )
 	{
 		KeyValues *pSettings = KeyValues::FromString(
@@ -819,6 +830,10 @@ void MainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ADDONS, this, true );
 	}
+	else if ( !Q_strcmp( command, "Swarmopedia" ) )
+	{
+		CBaseModPanel::GetSingleton().OpenWindow( WT_SWARMOPEDIA, this, true );
+	}
 	else if( !Q_strcmp( command, "CreateGame" ) )
 	{
 		KeyValues *pSettings = KeyValues::FromString(
@@ -1178,7 +1193,7 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	const char *pSettings = "Resource/UI/BaseModUI/mainmenu_rd.res";
+	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";
 
 #if !defined( _X360 )
 	if ( !g_pMatchFramework->GetMatchSystem() )

@@ -51,7 +51,6 @@ ConVar asw_alien_speed_scale_easy("asw_alien_speed_scale_easy", "0.7", FCVAR_CHE
 ConVar asw_alien_speed_scale_normal("asw_alien_speed_scale_normal", "1.0", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_hard("asw_alien_speed_scale_hard", "1.1", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_insane("asw_alien_speed_scale_insane", "1.2", FCVAR_CHEAT );
-ConVar rd_difficulty_tier("rd_difficulty_tier", "0", FCVAR_CHEAT, "Used to make difficulties higher then Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6");
 ConVar asw_alien_hurt_speed( "asw_alien_hurt_speed", "0.5", FCVAR_CHEAT, "Fraction of speed to use when the alien is hurt after being shot" );
 ConVar asw_alien_stunned_speed( "asw_alien_stunned_speed", "0.3", FCVAR_CHEAT, "Fraction of speed to use when the alien is electrostunned" );
 ConVar asw_drop_money("asw_drop_money", "1", FCVAR_CHEAT, "Do aliens drop money?");

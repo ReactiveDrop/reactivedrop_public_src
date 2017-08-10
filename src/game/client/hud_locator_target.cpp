@@ -512,7 +512,7 @@ void CLocatorTarget::SetBinding( const char *pszBinding )
 	const char	*pchToken = m_szBinding.String();
 	char		szToken[ 128 ];
 
-	pchToken = nexttoken( szToken, pchToken, ';' );
+	pchToken = nexttoken( szToken, pchToken, ';', sizeof(szToken) );
 
 	while ( pchToken )
 	{
@@ -531,7 +531,7 @@ void CLocatorTarget::SetBinding( const char *pszBinding )
 		}
 
 		nOriginalToken++;
-		pchToken = nexttoken( szToken, pchToken, ';' );
+		pchToken = nexttoken( szToken, pchToken, ';', sizeof(szToken) );
 	}
 
 	m_pulseStart = gpGlobals->curtime;

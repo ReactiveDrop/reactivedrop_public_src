@@ -88,7 +88,7 @@ void CNB_Mission_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_mission_panel_rd.res" );
+	LoadControlSettings( "resource/ui/nb_mission_panel.res" );
 
 	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{

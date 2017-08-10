@@ -106,7 +106,7 @@ void MedalArea::OnThink()
 		const char	*p = m_szMedalString;
 		char		token[128];
 		
-		p = nexttoken( token, p, ' ' );
+		p = nexttoken( token, p, ' ', sizeof(token) );
 		int iMedalNum = 0;
 		while ( Q_strlen( token ) > 0 )  
 		{
@@ -125,7 +125,7 @@ void MedalArea::OnThink()
 			}
 			iMedalNum++;
 			if (p)
-				p = nexttoken( token, p, ' ' );
+				p = nexttoken( token, p, ' ', sizeof(token) );
 			else
 				token[0] = '\0';
 		}

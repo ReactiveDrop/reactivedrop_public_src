@@ -983,6 +983,16 @@ void C_ASW_Marine::ClientThink()
 	UpdateJumpJetEffects();
 	UpdateElectrifiedArmor();
 
+	extern ConVar asw_allow_detach;
+	if ( GetViewMarine() == this && asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	{
+		SetRenderMode( kRenderNone );
+	}
+	else
+	{
+		SetRenderMode( kRenderNormal );
+	}
+
 	//SetNextClientThink( gpGlobals->curtime + 0.1f );
 	m_LastThinkTime = gpGlobals->curtime;
 }

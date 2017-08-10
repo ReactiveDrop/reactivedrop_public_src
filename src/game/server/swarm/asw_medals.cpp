@@ -868,7 +868,7 @@ void CASW_Medals::DebugMedals(CASW_Marine_Resource *pMR)
 	const char	*p = pMR->m_MedalsAwarded.Get();
 	char		token[128];
 	
-	p = nexttoken( token, p, ' ' );	
+	p = nexttoken( token, p, ' ', sizeof(token) );	
 	
 	Msg("Marine %s has medals (p=%s token=%s):\n", pMR->GetProfile()->m_ShortName,
 		p, token);
@@ -878,7 +878,7 @@ void CASW_Medals::DebugMedals(CASW_Marine_Resource *pMR)
 		int iHasMedal = atoi(token);
 		Msg("%d ", iHasMedal);
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';
 	}
@@ -894,8 +894,7 @@ bool CASW_Medals::HasMedal(int iMedal, CASW_Marine_Resource *pMR, bool bOnlyThis
 	const char	*p = pMR->m_MedalsAwarded.Get();
 	char		token[128];
 	
-	p = nexttoken( token, p, ' ' );
-	//p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token) );
 
 	while ( Q_strlen( token ) > 0 ) 
 	{
@@ -908,7 +907,7 @@ bool CASW_Medals::HasMedal(int iMedal, CASW_Marine_Resource *pMR, bool bOnlyThis
 		if ( iHasMedal < 0 && MedalMatchesAchievement( iMedal, -iHasMedal ) )
 			return true;
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';
 	}
@@ -925,8 +924,7 @@ bool CASW_Medals::HasMedal(int iMedal, CASW_Marine_Resource *pMR, bool bOnlyThis
 		if (pSave && iProfileIndex >=0 && iProfileIndex <ASW_NUM_MARINE_PROFILES)
 		{
 			p = STRING(pSave->m_Medals[iProfileIndex]);
-			p = nexttoken( token, p, ' ' );
-			//p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 
 			while ( Q_strlen( token ) > 0 ) 
 			{
@@ -937,7 +935,7 @@ bool CASW_Medals::HasMedal(int iMedal, CASW_Marine_Resource *pMR, bool bOnlyThis
 					return true;
 				}
 				if (p)
-					p = nexttoken( token, p, ' ' );
+					p = nexttoken( token, p, ' ', sizeof(token) );
 				else
 					token[0] = '\0';
 			}
@@ -1137,8 +1135,7 @@ void CASW_Medals::DebugMedals(CASW_Player *pPlayer)
 	const char	*p = STRING(ASWGameResource()->m_iszPlayerMedals[iPlayerIndex]);
 	char		token[128];
 	
-	p = nexttoken( token, p, ' ' );
-	//p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token) );
 	
 	Msg("Player %d has medals (p=%s token=%s):\n", iPlayerIndex,
 		p, token);
@@ -1148,7 +1145,7 @@ void CASW_Medals::DebugMedals(CASW_Player *pPlayer)
 		int iHasMedal = atoi(token);
 		Msg("%d ", iHasMedal);
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';
 	}
@@ -1168,8 +1165,7 @@ bool CASW_Medals::HasPlayerMedal(int iMedal, CASW_Player *pPlayer)
 	const char	*p = STRING(ASWGameResource()->m_iszPlayerMedals[iPlayerIndex]);
 	char		token[128];
 	
-	p = nexttoken( token, p, ' ' );
-	//p = nexttoken( token, p, ' ' );
+	p = nexttoken( token, p, ' ', sizeof(token) );
 
 	while ( Q_strlen( token ) > 0 ) 
 	{
@@ -1180,7 +1176,7 @@ bool CASW_Medals::HasPlayerMedal(int iMedal, CASW_Player *pPlayer)
 			return true;
 		}
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';
 	}

@@ -414,13 +414,13 @@ bool C_ASW_Medal_Store::OnAwardedMedals(const char *pszMedalsAwarded, int iProfi
 	char		token[128];
 	bool bAddedMedal = false;
 	
-	p = nexttoken( token, p, ' ' );	
+	p = nexttoken( token, p, ' ', sizeof(token) );	
 	while ( Q_strlen( token ) > 0 )  
 	{
 		int iMedalIndex = atoi(token);
 		bAddedMedal |= AddMarineMedal(iProfileIndex, iMedalIndex, bMultiplayer);
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';
 	}
@@ -450,13 +450,13 @@ bool C_ASW_Medal_Store::OnAwardedPlayerMedals(int iPlayerIndex, const char *pszP
 	char		token[128];
 	bool bAddedMedal = false;
 	
-	p = nexttoken( token, p, ' ' );	
+	p = nexttoken( token, p, ' ', sizeof(token) );	
 	while ( Q_strlen( token ) > 0 )  
 	{
 		int iMedalIndex = atoi(token);
 		bAddedMedal |= AddPlayerMedal(iMedalIndex, bMultiplayer);
 		if (p)
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 		else
 			token[0] = '\0';		
 	}

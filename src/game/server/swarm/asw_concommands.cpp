@@ -536,6 +536,16 @@ void RotateCameraRight()
 static ConCommand rotatecameraleft("rotatecameraleft", RotateCameraLeft, "Rotates marine camera by 90 degrees", 0);
 static ConCommand rotatecameraright("rotatecameraright", RotateCameraRight, "Rotates marine camera by -90 degrees", 0);
 
+CON_COMMAND_F( rotatecameraexact, "Rotates marine camera to exact yaw angle", FCVAR_CHEAT )
+{
+	// Don't check ShouldAllowCameraRotation because this is a cheat
+
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer )
+	{
+		pPlayer->m_flMovementAxisYaw = atof( args[1] );
+	}
+}
 
 // riflemod: allow leaving marine to go afk and leave a bot for you 
 void asw_afkf()

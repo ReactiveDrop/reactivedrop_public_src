@@ -1661,6 +1661,7 @@ exit 1
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
     <ClCompile Include="swarm\rd_track_first_played.cpp" />
+    <ClCompile Include="swarm\rd_swarmopedia.cpp" />
     <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />
     <ClCompile Include="swarm\vgui\asw_difficulty_chooser.cpp" />
@@ -2747,6 +2748,7 @@ exit 1
     <ClInclude Include="swarm\iasw_client_vehicle.h" />
     <ClInclude Include="swarm\iasw_fade_list.h" />
     <ClInclude Include="swarm\ibriefing.h" />
+    <ClInclude Include="swarm\rd_swarmopedia.h" />
     <ClInclude Include="swarm\vgui\asw_build_map_frame.h" />
     <ClInclude Include="swarm\vgui\asw_circularprogressbar.h" />
     <ClInclude Include="swarm\vgui\asw_difficulty_chooser.h" />

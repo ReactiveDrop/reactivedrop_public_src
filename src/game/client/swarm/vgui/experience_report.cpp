@@ -89,7 +89,7 @@ CExperienceReport::~CExperienceReport()
 
 void CExperienceReport::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	LoadControlSettings( "resource/UI/ExperienceReport_rd.res" );
+	LoadControlSettings( "resource/UI/ExperienceReport.res" );
 
 	BaseClass::ApplySchemeSettings(pScheme);
 
@@ -407,7 +407,7 @@ void CExperienceReport::UpdateMedals()
 		const char	*p = m_szMedalString;
 		char		token[128];
 
-		p = nexttoken( token, p, ' ' );
+		p = nexttoken( token, p, ' ', sizeof(token) );
 		while ( Q_strlen( token ) > 0 )  
 		{
 			int iMedalIndex = atoi(token);
@@ -434,7 +434,7 @@ void CExperienceReport::UpdateMedals()
 			iMedalNum++;
 
 			if (p)
-				p = nexttoken( token, p, ' ' );
+				p = nexttoken( token, p, ' ', sizeof(token) );
 			else
 				token[0] = '\0';
 		}

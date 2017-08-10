@@ -12,11 +12,14 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+static bool s_bDontSendDesiredYaw = false;
+static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue );
+
 // Marine Camera ConVars.
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT, "Marine Camera: pitch." );
 ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT ); // asw setting
 ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
-ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value" );
+ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value", SetDesiredCameraYaw );
 ConVar rd_cam_marine_yaw_rate( "rd_cam_marine_yaw_rate", "0.1", FCVAR_CHEAT, "Time in seconds needed to change camera yaw" );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
 ConVar asw_cam_marine_dist_rate( "asw_cam_marine_dist_rate", "50", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
@@ -178,6 +181,10 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 
 	if ( pPlayer && asw_cam_marine_yaw.GetFloat() != pPlayer->m_flMovementAxisYaw )
 	{
+		s_bDontSendDesiredYaw = true;
+		rd_cam_marine_yaw_desired.SetValue( pPlayer->m_flMovementAxisYaw );
+		s_bDontSendDesiredYaw = false;
+
 		if ( !m_fCamYawRotStartTime )
 			m_fCamYawRotStartTime = gpGlobals->realtime;
 
@@ -576,3 +583,13 @@ void ASWDemoCamera_f()
 	engine->ClientCmd("asw_controls 0");
 }
 ConCommand asw_demo_camera("asw_demo_camera", ASWDemoCamera_f);
+
+static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue )
+{
+	if ( s_bDontSendDesiredYaw )
+	{
+		return;
+	}
+
+	engine->ServerCmd( VarArgs( "rotatecameraexact %f\n", rd_cam_marine_yaw_desired.GetFloat() ) );
+}

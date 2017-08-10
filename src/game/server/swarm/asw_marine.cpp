@@ -465,7 +465,7 @@ void CASW_Marine::HandleAnimEvent( animevent_t *pEvent )
 		if ( options[0] )
 		{
 			// Read in yaw start
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 
 			if( token )
 			{
@@ -473,7 +473,7 @@ void CASW_Marine::HandleAnimEvent( animevent_t *pEvent )
 			}
 
 			// Read in yaw end
-			p = nexttoken( token, p, ' ' );
+			p = nexttoken( token, p, ' ', sizeof(token) );
 
 			if( token )
 			{
@@ -3796,7 +3796,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	// check if this mission has a tech req
-	if (ASWGameRules() && ASWGameRules()->m_bMissionRequiresTech)
+	if ( ASWGameRules() && ASWGameRules()->MissionRequiresTech() )
 	{
 		CASW_Game_Resource *pGameResource = ASWGameResource();
 		if ( pGameResource )

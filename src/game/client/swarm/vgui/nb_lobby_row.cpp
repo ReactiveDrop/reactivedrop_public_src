@@ -98,7 +98,7 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_lobby_row_rd.res" );
+	LoadControlSettings( "resource/ui/nb_lobby_row.res" );
 
 	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{

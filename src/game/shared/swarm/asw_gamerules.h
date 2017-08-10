@@ -464,6 +464,7 @@ public:
 	virtual bool GetMissionSuccess() { return m_bMissionSuccess; }
 	virtual bool GetMissionFailed() { return m_bMissionFailed; }
 	CNetworkVar(bool, m_bMissionRequiresTech);
+	inline bool MissionRequiresTech() { extern ConVar rd_techreq;  return m_bMissionRequiresTech && rd_techreq.GetBool(); }
 	CNetworkVar(bool, m_bMissionSuccess);
 	CNetworkVar(bool, m_bMissionFailed);
 	CNetworkVar(float, m_fMissionStartedTime);

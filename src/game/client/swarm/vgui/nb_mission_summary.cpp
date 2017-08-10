@@ -46,7 +46,7 @@ void CNB_Mission_Summary::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_mission_summary_rd.res" );
+	LoadControlSettings( "resource/ui/nb_mission_summary.res" );
 
 	color32 blue;
 	blue.r = 83;

@@ -17,6 +17,7 @@
 #include <vgui/ILocalize.h>
 #include "vgui_controls\PanelListPanel.h"
 #include "vgui_controls\ScrollBar.h"
+#include "rd_challenges_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -142,10 +143,17 @@ void MissionStatsPanel::SetMissionLabels(vgui::Label *pMissionLabel, vgui::Label
 		pCheated = g_pVGuiLocalize->Find( "#asw_cheated" );
 	}	
 
+	wchar_t pChallenge[32] = {};
+	extern ConVar rd_challenge;
+	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode( ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ), pChallenge, sizeof( pChallenge ) );
+	}
+
 	wchar_t mission_difficulty[96];
 	g_pVGuiLocalize->ConstructString( mission_difficulty, sizeof(mission_difficulty),
-		g_pVGuiLocalize->Find("#asw_mission_difficulty"), 4,
-			pDiff, pOnslaught, pHardcoreFF, pCheated);
+		g_pVGuiLocalize->Find("#asw_mission_difficulty"), 5,
+			pDiff, pOnslaught, pHardcoreFF, pChallenge, pCheated );
 	pDifficultyLabel->SetText(mission_difficulty);
 }
 
