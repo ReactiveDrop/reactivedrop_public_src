@@ -944,7 +944,17 @@ void CASW_Melee_System::SetupMeleeMovement( CASW_Marine *pMarine, CMoveData *pMo
 		{
 			pMoveData->m_vecVelocity.z = flVerticalSpeed;
 		}
-
+		if ((gpGlobals->curtime - pMarine->m_flMeleeStartTime) / flMiscDuration - pMarine->m_flMeleeLastCycle > 0.33 || (fabs(pMoveData->m_vecVelocity[0]) > sv_maxvelocity.GetFloat() || fabs(pMoveData->m_vecVelocity[1]) > sv_maxvelocity.GetFloat()))		//DRAVEN ~SUPERROLL~ (alt to .3: ~30 * gpGlobals->frametime)
+		{															//DRAVEN ~SUPERROLL~
+			if (asw_melee_debug.GetInt() == 2)						//DRAVEN ~SUPERROLL~
+			{														//DRAVEN ~SUPERROLL~
+				Msg("%s high velocity %d.  Targetpos is %f units away\n", IsServerDll() ? "S" : "C", (vecTargetPos - pMarine->GetAbsOrigin()).Length());	//DRAVEN ~SUPERROLL~
+				Msg("%s %d  Zeroing velocity because of high cycle diff: %f.  Likely user attempted hack\n", pMarine->IsServer() ? "s" : "                                                     c", iOutputNum, (gpGlobals->curtime - pMarine->m_flMeleeStartTime) / flMiscDuration - pMarine->m_flMeleeLastCycle);		//DRAVEN ~SUPERROLL~
+			}														//DRAVEN ~SUPERROLL~
+			pMoveData->m_vecVelocity.x = 0;							//DRAVEN ~SUPERROLL~
+			pMoveData->m_vecVelocity.y = 0;							//DRAVEN ~SUPERROLL~
+//			pMoveData->m_vecVelocity.z = 0;							//DRAVEN ~SUPERROLL~
+		}															//DRAVEN ~SUPERROLL~
 		if ( asw_melee_debug.GetBool() && ( fabs( pMoveData->m_vecVelocity[0] ) > sv_maxvelocity.GetFloat() || fabs( pMoveData->m_vecVelocity[1] ) > sv_maxvelocity.GetFloat() ) ) 
 		{
 			Msg( "%s high velocity %d.  Targetpos is %f units away\n", IsServerDll() ? "S" : "C", ( vecTargetPos - pMarine->GetAbsOrigin() ).Length() );
