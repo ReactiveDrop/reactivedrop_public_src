@@ -23,6 +23,7 @@ ConVar asw_vindicator_grenade_elasticity("asw_vindicator_grenade_elasticity", "1
 ConVar asw_vindicator_grenade_min_detonation_time("asw_vindicator_grenade_min_detonation_time", "0.05f", FCVAR_CHEAT, "Minimum before this grenade can detonate");
 ConVar asw_vindicator_grenade_mass("asw_vindicator_grenade_mass", "10", FCVAR_CHEAT, "Mass of indendiary/cluster grenade");
 ConVar asw_vindicator_grenade_fuse("asw_vindicator_grenade_fuse", "3", FCVAR_CHEAT, "Fuse time on incendiary grenades");
+ConVar rd_grenade_collision_fix("rd_grenade_collision_fix", "1", FCVAR_CHEAT, "Set to 1 to not impact on dropped weapons & items");	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 
 const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.2f;
 
@@ -119,6 +120,9 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	// all other grenades pass it
 	if ( pOther->GetCollisionGroup() == ASW_COLLISION_GROUP_PASSABLE )
 		return;
+
+	if (rd_grenade_collision_fix.GetBool() && pOther->GetCollisionGroup() == COLLISION_GROUP_WEAPON)	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
+		return;																						//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 
 	if ( m_bExplodeOnWorldContact )
 	{
