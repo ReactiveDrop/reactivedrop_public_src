@@ -4602,7 +4602,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		{
 			const int iFragsForMedkit = rd_spawn_medkits.GetInt();
 			const int iFragsForAmmo = rd_spawn_ammo.GetInt();
-			if (pPlayer->FragCount() % iFragsForMedkit == 0 || pPlayer->FragCount() % iFragsForAmmo == 0)
+			if (( iFragsForMedkit > 0 && pPlayer->FragCount() % iFragsForMedkit == 0 ) || (iFragsForAmmo > 0 && pPlayer->FragCount() % iFragsForAmmo == 0 ))	//DRAVEN ~FRAGD0~
 			{
 				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
 				if (pNetwork)
@@ -4616,7 +4616,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 						if (pNode && pNode->GetType() == NODE_GROUND )
 						{
 							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
-							if ( pPlayer->FragCount() % iFragsForMedkit == 0 && rd_spawn_medkits.GetInt() )
+							if ( rd_spawn_medkits.GetInt() && pPlayer->FragCount() % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName( "asw_weapon_medkit" );
 								UTIL_SetOrigin( pMedkit, vecDest );
@@ -4624,7 +4624,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 								//pMedkit->Spawn();
 							}
 
-							if ( pPlayer->FragCount() % iFragsForAmmo == 0 && rd_spawn_ammo.GetInt() )
+							if ( rd_spawn_ammo.GetInt() && pPlayer->FragCount() % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
 								UTIL_SetOrigin( pAmmoDrop, vecDest );
