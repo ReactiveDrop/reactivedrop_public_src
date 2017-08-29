@@ -992,7 +992,7 @@ void CASW_Player::PlayerUse()
 
 	CASW_Marine *pMarine = GetMarine();
 
-	if (pMarine->m_bKnockedOut)		//DRAVEN ~RMUSEBUG~
+	if ( pMarine->m_bKnockedOut )	//DRAVEN ~RMUSEBUG~
 		return;						//DRAVEN ~RMUSEBUG~
 
 	if ( GetNumUseEntities() > 0 )

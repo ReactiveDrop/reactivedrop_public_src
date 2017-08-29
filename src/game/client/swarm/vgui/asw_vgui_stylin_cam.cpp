@@ -29,6 +29,9 @@
 #include "tier0/memdbgon.h"
 
 ConVar asw_stim_cam_time("asw_stim_cam_time", "0.6", FCVAR_CHEAT, "When time scale drops below this value, the stim cam will show");
+ConVar rd_commander_cam( "rd_commander_cam", "1", FCVAR_CLIENTDLL, "If 0 disables the commander camera." ); 
+ConVar rd_stim_cam( "rd_stim_cam", "1", FCVAR_CLIENTDLL, "If 0 disables the stylin camera." );
+
 extern ConVar asw_spinning_stim_cam;
 
 CASW_VGUI_Stylin_Cam* s_pStylinCamera = NULL;
@@ -126,6 +129,9 @@ bool CASW_VGUI_Stylin_Cam::ShouldShowStylinCam()
 	if ( !ASWGameRules() )
 		return false;
 
+	if ( rd_stim_cam.GetBool() == false ) 
+		return false;
+
 	if ( ASWGameRules()->ShouldShowCommanderFace() )
 		return false;
 
@@ -160,7 +166,7 @@ bool CASW_VGUI_Stylin_Cam::ShouldShowStylinCam()
 
 bool CASW_VGUI_Stylin_Cam::ShouldShowCommanderFace()
 {
-	return ASWGameRules() && ASWGameRules()->ShouldShowCommanderFace();
+	return rd_commander_cam.GetBool() && ASWGameRules() && ASWGameRules()->ShouldShowCommanderFace();
 }
 
 void CASW_VGUI_Stylin_Cam::OnThink()

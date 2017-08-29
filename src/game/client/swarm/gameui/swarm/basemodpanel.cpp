@@ -539,6 +539,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_GAMEPAD:
 			m_Frames[wt] = new Gamepad( this, "Gamepad" );
+			break;
 
 		case WT_SWARMOPEDIA:
 			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );

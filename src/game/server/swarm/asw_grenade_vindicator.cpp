@@ -121,7 +121,7 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	if ( pOther->GetCollisionGroup() == ASW_COLLISION_GROUP_PASSABLE )
 		return;
 
-	if (rd_grenade_collision_fix.GetBool() && pOther->GetCollisionGroup() == COLLISION_GROUP_WEAPON)	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
+	if ( rd_grenade_collision_fix.GetBool() && pOther->GetCollisionGroup() == COLLISION_GROUP_WEAPON )	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 		return;																						//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 
 	if ( m_bExplodeOnWorldContact )

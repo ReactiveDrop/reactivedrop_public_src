@@ -4593,16 +4593,13 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		CASW_Player *pPlayer = pMarine->GetCommander();
 		pPlayer->IncrementFragCount(1);
 
-		// reactivedrop: if enabled we spawn medkits every 31 frags
-		// and ammo every 51 frags
-		// 31 and 51 are taken so they don't intersect, because when
-		// ammo spawns on top of medkit it sticks to medkit
-		// possible fix to spawn ammo before medkit
+		// reactivedrop: if enabled we spawn medkits every rd_spawn_medkits.GetInt() frags
+		// and ammo every rd_spawn_ammo.GetInt() frags
 		if ( rd_spawn_medkits.GetInt() || rd_spawn_ammo.GetInt() )
 		{
 			const int iFragsForMedkit = rd_spawn_medkits.GetInt();
 			const int iFragsForAmmo = rd_spawn_ammo.GetInt();
-			if (( iFragsForMedkit > 0 && pPlayer->FragCount() % iFragsForMedkit == 0 ) || (iFragsForAmmo > 0 && pPlayer->FragCount() % iFragsForAmmo == 0 ))	//DRAVEN ~FRAGD0~
+			if (( iFragsForMedkit && pPlayer->FragCount() % iFragsForMedkit == 0 ) || ( iFragsForAmmo && pPlayer->FragCount() % iFragsForAmmo == 0 ))	//DRAVEN ~FRAGD0~
 			{
 				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
 				if (pNetwork)
@@ -4616,7 +4613,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 						if (pNode && pNode->GetType() == NODE_GROUND )
 						{
 							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
-							if ( rd_spawn_medkits.GetInt() && pPlayer->FragCount() % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
+							if ( iFragsForMedkit && pPlayer->FragCount() % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName( "asw_weapon_medkit" );
 								UTIL_SetOrigin( pMedkit, vecDest );
@@ -4624,7 +4621,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 								//pMedkit->Spawn();
 							}
 
-							if ( rd_spawn_ammo.GetInt() && pPlayer->FragCount() % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
+							if ( iFragsForAmmo && pPlayer->FragCount() % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
 								UTIL_SetOrigin( pAmmoDrop, vecDest );
