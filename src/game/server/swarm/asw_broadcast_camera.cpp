@@ -11,8 +11,11 @@
 #define SF_CAMERA_PLAYER_SNAP_TO		16
 #define SF_CAMERA_PLAYER_NOT_SOLID		32			// NOTE: not supported (all players in asw are non-solid anyway)
 #define SF_CAMERA_PLAYER_INTERRUPT		64			// NOTE: not supported
+#define SF_CAMERA_DISABLE_HUD			128
 
 LINK_ENTITY_TO_CLASS( asw_broadcast_camera, CASW_Broadcast_Camera );
+
+extern ConVar asw_controls;
 
 BEGIN_DATADESC( CASW_Broadcast_Camera )
 
@@ -468,12 +471,16 @@ void CASW_Broadcast_Camera::Move()
 // makes sure all players are viewing this and frozen if needed
 void CASW_Broadcast_Camera::UpdateAllPlayers()
 {
+	asw_controls.SetValue(0);
+
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
 		if ( pPlayer )
 		{
+			if (HasSpawnFlags(SF_CAMERA_DISABLE_HUD ) )
+				pPlayer->m_Local.m_iHideHUD |= HIDEHUD_ALL;
 			if (HasSpawnFlags(SF_CAMERA_PLAYER_TAKECONTROL ) )
 				pPlayer->EnableControl(false);
 			pPlayer->SetViewEntity( this );
@@ -484,14 +491,17 @@ void CASW_Broadcast_Camera::UpdateAllPlayers()
 // puts player views back to normal
 void CASW_Broadcast_Camera::RestoreAllPlayerViews()
 {
+	asw_controls.SetValue(1);
+
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
 		if ( pPlayer )
 		{
-			pPlayer->SetViewEntity( pPlayer );
+			pPlayer->SetViewEntity(NULL);
 			pPlayer->EnableControl(true);
+			pPlayer->m_Local.m_iHideHUD &= ~HIDEHUD_ALL;
 		}
 	}
 }

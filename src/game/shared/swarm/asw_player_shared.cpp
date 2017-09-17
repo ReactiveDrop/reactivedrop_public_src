@@ -86,12 +86,31 @@ extern IMarineGameMovement *g_pMarineGameMovement;
 extern CMoveData *g_pMoveData;	// This is a global because it is subclassed by each game.
 extern ConVar sv_noclipduringpause;
 
+static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOldValue );
+
 ConVar asw_allow_detach("asw_allow_detach", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Allow the camera to detach from the marine.");
 ConVar asw_DebugAutoAim("asw_DebugAutoAim", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar asw_marine_nearby_angle("asw_marine_nearby_angle", "-75", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar asw_rts_controls("asw_rts_controls", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
-ConVar asw_controls("asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Disable to get normal FPS controls (affects all players on the server)");
+ConVar asw_controls("asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Disable to get normal FPS controls (affects all players on the server)", ASWControlsChanged);
 ConVar asw_hl2_camera("asw_hl2_camera", "0", FCVAR_REPLICATED | FCVAR_DONTRECORD | FCVAR_CHEAT);
+
+static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+#ifdef CLIENT_DLL
+	if ( engine && engine->IsInGame() )
+	{
+		if ( asw_controls.GetInt() == 1 )
+		{
+			ASWInput()->CAM_ToThirdPerson();
+		}
+		else
+		{
+			ASWInput()->CAM_ToFirstPerson();
+		}
+	}
+#endif
+}
 
 #ifdef CLIENT_DLL		
 	extern ConVar asw_vehicle_cam_height;
