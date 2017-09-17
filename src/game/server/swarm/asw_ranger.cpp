@@ -44,6 +44,9 @@ extern ConVar asw_drone_death_force_pitch;
 CASW_Ranger::CASW_Ranger()
 {
 	m_pszAlienModelName = "models/aliens/mortar3/mortar3.mdl";
+	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
+	// have incorrect collision group and block other aliens
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 }
 
 void CASW_Ranger::SetupRangerShot( CASW_AlienShot &shot )
@@ -82,9 +85,6 @@ void CASW_Ranger::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
 
 	SetIdealState( NPC_STATE_ALERT );
-
-	// reactivedrop: make rangers not blocking drones
-	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
 
 	m_bNeverRagdoll = true;
 

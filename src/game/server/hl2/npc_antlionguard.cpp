@@ -676,6 +676,7 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 	m_iszPhysicsPropClass = AllocPooledString( "prop_physics" );
 
 	m_pszAlienModelName = ANTLIONGUARD_MODEL;
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
@@ -831,7 +832,6 @@ void CNPC_AntlionGuard::Spawn( void )
 	SetModel( ANTLIONGUARD_MODEL );
 
 	ChangeFaction( FACTION_ALIENS );
-	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
 	
 	if ( ClassMatches( "npc_antlionguard_cavern" ) )
 	{
@@ -912,8 +912,6 @@ void CNPC_AntlionGuard::Spawn( void )
 	SetHealthByDifficultyLevel();
 
 	CapabilitiesRemove(bits_CAP_MOVE_JUMP);
-
-	SetCollisionGroup(ASW_COLLISION_GROUP_ALIEN);
 	// reactivedrop: end of TODO 
 
 	//See if we're supposed to start burrowed

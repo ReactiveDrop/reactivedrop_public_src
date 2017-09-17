@@ -42,6 +42,9 @@ extern ConVar asw_debug_alien_damage;
 CASW_Shaman::CASW_Shaman()
 {
 	m_pszAlienModelName = "models/aliens/shaman/shaman.mdl";
+	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
+	// have incorrect collision group and block other aliens
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 }
 
 
@@ -65,8 +68,6 @@ void CASW_Shaman::Spawn( void )
 
 	SetIdealState( NPC_STATE_ALERT );
 	m_bNeverRagdoll = true;
-
-	SetCollisionGroup( ASW_COLLISION_GROUP_PARASITE );
 }
 	   
 

@@ -31,15 +31,18 @@ BEGIN_NETWORK_TABLE( CASW_Weapon_DEagle, DT_ASW_Weapon_DEagle )
 // #endif
 END_NETWORK_TABLE()
 
+#if defined( CLIENT_DLL )
 BEGIN_PREDICTION_DATA( CASW_Weapon_DEagle )
+	DEFINE_FIELD( m_bCanShoot, FIELD_BOOLEAN ),
 END_PREDICTION_DATA()
+#endif
 
 LINK_ENTITY_TO_CLASS( asw_weapon_deagle, CASW_Weapon_DEagle );
 PRECACHE_WEAPON_REGISTER(asw_weapon_deagle);
 
 #ifndef CLIENT_DLL
 BEGIN_DATADESC( CASW_Weapon_DEagle )
-//DEFINE_FIELD( m_bCanShoot, FIELD_TIME ),
+DEFINE_FIELD( m_bCanShoot, FIELD_TIME ),
 END_DATADESC()
 #endif
 

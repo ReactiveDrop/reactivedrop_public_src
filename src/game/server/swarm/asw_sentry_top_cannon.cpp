@@ -28,6 +28,7 @@ END_SEND_TABLE()
 */
 
 BEGIN_DATADESC( CASW_Sentry_Top_Cannon )
+DEFINE_KEYFIELD( m_flFireRate, FIELD_FLOAT, "FireRate" ),
 END_DATADESC()
 
 void CASW_Sentry_Top_Cannon::SetTopModel()
@@ -35,13 +36,12 @@ void CASW_Sentry_Top_Cannon::SetTopModel()
 	SetModel(SENTRY_TOP_MODEL);
 }
 
-
+#define ASW_SENTRY_CANNON_FIRE_RATE 1.75f		// time in seconds between each shot
 CASW_Sentry_Top_Cannon::CASW_Sentry_Top_Cannon() 
 {
 	m_flShootRange = 1000;
+	m_flFireRate = ASW_SENTRY_CANNON_FIRE_RATE;
 }
-
-#define ASW_SENTRY_CANNON_FIRE_RATE 1.75f		// time in seconds between each shot
 
 /// @TODO: lead target
 void CASW_Sentry_Top_Cannon::Fire()
@@ -93,7 +93,7 @@ void CASW_Sentry_Top_Cannon::Fire()
 
 	EmitSound("ASW_Sentry.CannonFire");
 
-	m_fNextFireTime = gpGlobals->curtime + ASW_SENTRY_CANNON_FIRE_RATE;
+	m_fNextFireTime = gpGlobals->curtime + m_flFireRate;
 
 	// use ammo
 	if ( GetSentryBase() )

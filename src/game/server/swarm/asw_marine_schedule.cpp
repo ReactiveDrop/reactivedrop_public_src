@@ -1327,7 +1327,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 			return SCHED_ASW_FOLLOW_WAIT;
 		}
 
-		return SCHED_ASW_FOLLOW_WAIT;
+		return SCHED_ASW_PICKUP_WAIT;
 	}
 
 	if ( GetASWOrders() != ASW_ORDER_USE_OFFHAND_ITEM )
@@ -3379,11 +3379,9 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"		TASK_STOP_MOVING				1"		
 		""
 		"	Interrupts"
-		"       COND_ASW_NEW_ORDERS"
-		"		COND_NEW_ENEMY"
-		"		COND_SEE_ENEMY"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_CAN_RANGE_ATTACK2"
+		"		COND_ASW_NEW_ORDERS"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
 	)
 
 	DEFINE_SCHEDULE

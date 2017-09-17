@@ -2744,7 +2744,7 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 
 		// BenLubar: if player gave follow command, bots will follow not 
 		// using hints 
-		if (NewOrders == ASW_ORDER_FOLLOW && bAcknowledge && pMyMarine->GetSquadFormation())
+		if ( NewOrders == ASW_ORDER_FOLLOW && bAcknowledge && pMyMarine->GetSquadFormation() && pMyMarine->GetSquadFormation()->Leader() == pMyMarine )
 			pMyMarine->GetSquadFormation()->FollowCommandUsed();
 
 		// go through all marines and tell them to follow our marine

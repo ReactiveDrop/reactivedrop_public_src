@@ -1104,6 +1104,7 @@ exit 1
     <ClCompile Include="swarm\env_sprite_asw_fade.cpp" />
     <ClCompile Include="swarm\func_asw_fade.cpp" />
     <ClCompile Include="swarm\prop_asw_fade.cpp" />
+    <ClCompile Include="swarm\rd_director_triggers.cpp" />
     <ClCompile Include="tanktrain.cpp" />
     <ClCompile Include="te.cpp" />
     <ClCompile Include="team.cpp" />
@@ -1973,6 +1974,7 @@ exit 1
     <ClInclude Include="swarm\iasw_spawnable_npc.h" />
     <ClInclude Include="swarm\iasw_vehicle.h" />
     <ClInclude Include="swarm\prop_asw_fade.h" />
+    <ClInclude Include="swarm\rd_director_triggers.h" />
     <ClInclude Include="te.h" />
     <ClInclude Include="team.h" />
     <ClInclude Include="TemplateEntities.h" />

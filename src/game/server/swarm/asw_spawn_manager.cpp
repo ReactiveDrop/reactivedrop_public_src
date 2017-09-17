@@ -19,6 +19,7 @@
 #include "asw_alien.h"
 #include "asw_door.h"
 #include "asw_spawn_selection.h"
+#include "rd_director_triggers.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,6 +38,7 @@ ConVar asw_batch_interval("asw_batch_interval", "5", FCVAR_CHEAT, "Time between 
 ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Interval between updating candidate spawning nodes");
 
 ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
+ConVar rd_horde_two_sided( "rd_horde_two_sided", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled a 2nd horde will come from opposite side, e.g. north and south" );
 
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
@@ -105,7 +107,9 @@ void CASW_Spawn_Manager::LevelInitPreEntity()
 void CASW_Spawn_Manager::LevelInitPostEntity()
 {
 	m_vecHordePosition = vec3_origin;
+	m_vecHordePosition2 = vec3_origin;
 	m_angHordeAngle = vec3_angle;
+	m_angHordeAngle2 = vec3_angle;
 	m_batchInterval.Invalidate();
 	m_CandidateUpdateTimer.Invalidate();
 	m_iHordeToSpawn = 0;
@@ -209,6 +213,10 @@ void CASW_Spawn_Manager::Update()
 		{
 			int iToSpawn = MIN( m_iHordeToSpawn, asw_max_alien_batch.GetInt() );
 			int iSpawned = iToSpawn > 0 ? SpawnAlienBatch( m_pHordeDefinition, iToSpawn, m_vecHordePosition, m_angHordeAngle, 0 ) : 0;
+			if ( rd_horde_two_sided.GetBool() && iToSpawn > 0 && m_vecHordePosition2 != vec3_origin )
+			{
+				SpawnAlienBatch( m_pHordeDefinition, iToSpawn, m_vecHordePosition2, m_angHordeAngle2, 0 );
+			}
 			m_iHordeToSpawn -= iSpawned;
 			if ( m_pHordeWandererDefinition.Count() > 0 )
 			{
@@ -505,7 +513,7 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 		bool bInsideEscapeArea = false;
 		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
 		{
-			if ( m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
 			{
 				bInsideEscapeArea = true;
 				break;
@@ -533,6 +541,94 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 	}
 }
 
+bool CASW_Spawn_Manager::FindHordePos( bool bNorth, const CUtlVector<int> &candidateNodes, Vector  &vecHordePosition, QAngle &angHordeAngle )
+{
+	if ( candidateNodes.Count() <= 0 )
+	{
+		if ( asw_director_debug.GetBool() )
+		{
+			DevMsg( "  Failed to find horde pos as there are no candidate nodes\n" );
+		}
+		return false;
+	}
+
+	int iMaxTries = 3;
+	for ( int i = 0; i<iMaxTries; i++ )
+	{
+		int iChosen = RandomInt( 0, candidateNodes.Count() - 1 );
+		CAI_Node *pNode = GetNetwork()->GetNode( candidateNodes[iChosen] );
+		if ( !pNode )
+			continue;
+
+		float flDistance = 0;
+		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( UTIL_ASW_NearestMarine( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), flDistance ) );
+		if ( !pMarine )
+		{
+			if ( asw_director_debug.GetBool() )
+			{
+				DevMsg( "  Failed to find horde pos as there is no nearest marine\n" );
+			}
+			return false;
+		}
+
+		// check if there's a route from this node to the marine(s)
+		AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRoute( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), pMarine->GetAbsOrigin(), NULL, 100 );
+		if ( !pRoute )
+		{
+			if ( asw_director_debug.GetInt() >= 2 )
+			{
+				DevMsg( "  Discarding horde node %d as there's no route.\n", iChosen );
+			}
+			continue;
+		}
+
+		// reactivedrop: preventing hordes from spawning behind indestructible doors
+		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute( pRoute, true );
+		if ( bNorth && pDoor || ( pDoor && pDoor->GetDoorType() == 2 ) ) // 2 - indestructible door
+		{
+			if ( asw_director_debug.GetInt() >= 2 )
+			{
+				DevMsg( "  Discarding horde node %d as there's a door in the way.\n", iChosen );
+			}
+			DeleteRoute( pRoute );
+			continue;
+		}
+
+		// reactivedrop: preventing hordes from spawning behind closed airlocks
+		if ( UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) )
+		{
+			if ( asw_director_debug.GetInt() >= 2 )
+			{
+				DevMsg( "  Discarding horde node %d as there's a brush in the way.\n", iChosen );
+			}
+			DeleteRoute( pRoute );
+			continue;
+		}
+
+		vecHordePosition = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
+
+		// spawn facing the nearest marine
+		Vector vecDir = pMarine->GetAbsOrigin() - vecHordePosition;
+		vecDir.z = 0;
+		vecDir.NormalizeInPlace();
+		VectorAngles( vecDir, angHordeAngle );
+
+		if ( asw_director_debug.GetInt() >= 2 )
+		{
+			DevMsg( "  Accepting horde node %d.\n", iChosen );
+		}
+		DeleteRoute( pRoute );
+		return true;
+	}
+
+	if ( asw_director_debug.GetBool() )
+	{
+		DevMsg( "  Failed to find horde pos as we tried 3 times to build routes to possible locations, but failed\n" );
+	}
+
+	return false;
+}
+
 bool CASW_Spawn_Manager::FindHordePosition()
 {
 	// need to find a suitable place from which to spawn a horde
@@ -554,91 +650,13 @@ bool CASW_Spawn_Manager::FindHordePosition()
 	}
 
 	CUtlVector<int> &candidateNodes = bNorth ? m_northCandidateNodes : m_southCandidateNodes;
-
-	if ( candidateNodes.Count() <= 0 )
+	bool bResult = FindHordePos( bNorth, candidateNodes, m_vecHordePosition, m_angHordeAngle );
+	if ( rd_horde_two_sided.GetBool() )
 	{
-		if ( asw_director_debug.GetBool() )
-		{
-			Msg( "  Failed to find horde pos as there are no candidate nodes\n" );
-		}
-		return false;
+		CUtlVector<int> &candidateNodes2 = bNorth ? m_southCandidateNodes : m_northCandidateNodes;
+		FindHordePos( !bNorth, candidateNodes2, m_vecHordePosition2, m_angHordeAngle2 );
 	}
-
-	int iMaxTries = 3;
-	for ( int i=0 ; i<iMaxTries ; i++ )
-	{
-		int iChosen = RandomInt( 0, candidateNodes.Count() - 1);
-		CAI_Node *pNode = GetNetwork()->GetNode( candidateNodes[iChosen] );
-		if ( !pNode )
-			continue;
-
-		float flDistance = 0;
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(UTIL_ASW_NearestMarine( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), flDistance ));
-		if ( !pMarine )
-		{
-			if ( asw_director_debug.GetBool() )
-			{
-				Msg( "  Failed to find horde pos as there is no nearest marine\n" );
-			}
-			return false;
-		}
-
-		// check if there's a route from this node to the marine(s)
-		AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRoute( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), pMarine->GetAbsOrigin(), NULL, 100 );
-		if ( !pRoute )
-		{
-			if ( asw_director_debug.GetInt() >= 2 )
-			{
-				Msg( "  Discarding horde node %d as there's no route.\n", iChosen );
-			}
-			continue;
-		}
-
-		// reactivedrop: preventing hordes from spawning behind indestructible doors
-		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute(pRoute, true);
-		if ( bNorth && pDoor || (pDoor && pDoor->GetDoorType() == 2)) // 2 - indestructible door
-		{
-			if ( asw_director_debug.GetInt() >= 2 )
-			{
-				Msg( "  Discarding horde node %d as there's a door in the way.\n", iChosen );
-			}
-			DeleteRoute( pRoute );
-			continue;
-		}
-
-		// reactivedrop: preventing hordes from spawning behind closed airlocks
-		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
-		{
-			if (asw_director_debug.GetInt() >= 2)
-			{
-				Msg("  Discarding horde node %d as there's a brush in the way.\n", iChosen);
-			}
-			DeleteRoute(pRoute);
-			continue;
-		}
-
-		m_vecHordePosition = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
-
-		// spawn facing the nearest marine
-		Vector vecDir = pMarine->GetAbsOrigin() - m_vecHordePosition;
-		vecDir.z = 0;
-		vecDir.NormalizeInPlace();
-		VectorAngles( vecDir, m_angHordeAngle );
-
-		if ( asw_director_debug.GetInt() >= 2 )
-		{
-			Msg( "  Accepting horde node %d.\n", iChosen );
-		}
-		DeleteRoute( pRoute );
-		return true;
-	}
-
-	if ( asw_director_debug.GetBool() )
-	{
-		Msg( "  Failed to find horde pos as we tried 3 times to build routes to possible locations, but failed\n" );
-	}
-
-	return false;
+	return bResult;
 }
 
 bool CASW_Spawn_Manager::LineBlockedByGeometry( const Vector &vecSrc, const Vector &vecEnd )
@@ -1292,7 +1310,19 @@ CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchO
 		bool bInsideEscapeArea = false;
 		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
 		{
-			if ( m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+			{
+				bInsideEscapeArea = true;
+				break;
+			}
+		}
+		if ( bInsideEscapeArea )
+			continue;
+
+		FOR_EACH_VEC( IRD_No_Director_Aliens::AutoList(), d )
+		{
+			CRD_No_Director_Aliens *pNoDirectorAliens = assert_cast<CRD_No_Director_Aliens *>( IRD_No_Director_Aliens::AutoList()[d] );
+			if ( !pNoDirectorAliens->m_bDisabled && pNoDirectorAliens->CollisionProp()->IsPointInBounds( vecPos ) )
 			{
 				bInsideEscapeArea = true;
 				break;
@@ -1357,7 +1387,7 @@ CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchO
 		bool bInsideEscapeArea = false;
 		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
 		{
-			if ( m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
 			{
 				bInsideEscapeArea = true;
 				break;

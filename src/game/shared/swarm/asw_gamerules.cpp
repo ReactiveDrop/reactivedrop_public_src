@@ -1733,45 +1733,53 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 {
 	if (!ASWGameResource() || !pPlayer)
 		return;
-	//Msg("  ReassignMarines\n");
+
+	CASW_Player *pNewCommander = NULL;
+	int numMarinesByNewCommander = 0;
+	// firstly try to find a player who has the biggest number of bots assigned
+	// or a player who has at least one marine assigned
+	for ( int k = 1; k <= gpGlobals->maxClients; ++k )
+	{
+		CASW_Player *pTmpPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( k ) );
+		if ( pTmpPlayer == pPlayer || !pTmpPlayer || !pTmpPlayer->IsConnected() || !pTmpPlayer->GetMarine() )
+			continue;
+
+		int numMarines = 0;
+		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); ++i )
+		{
+			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+			
+			if ( pMR && pMR->GetCommander() == pTmpPlayer )
+			{
+				++numMarines;
+			}
+		}
+		if ( numMarines > numMarinesByNewCommander )
+		{
+			pNewCommander = pTmpPlayer;
+			numMarinesByNewCommander = numMarines;
+		}
+	}
+	// if nobody has any marines(most likely singe player)
+	// assign bots to the first found valid player
+	if ( !pNewCommander )
+	{
+		for ( int k = 1; k <= gpGlobals->maxClients; ++k )
+		{
+			pNewCommander = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( k ) );
+			if ( pNewCommander )
+				break;
+		}
+	}
 
 	// make sure he's not inhabiting any of them
 	pPlayer->LeaveMarines();
 	int m = ASWGameResource()->GetMaxMarineResources();
-	int iNewCommanderIndex = 1;
 	for (int i=m-1;i>=0;i--)
 	{
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR && pMR->GetCommander() == pPlayer)
 		{
-			//Msg("marine resourceat slot %d belongs to disconnecting player (entindex %d)\n", i, pPlayer->entindex());
-			CASW_Player *pNewCommander = NULL;
-			int k = 1;
-			while (k <= gpGlobals->maxClients && pNewCommander == NULL)	// loop until we've been round all players, or until we've found a valid one to give this marine to
-			{
-				//Msg("while loop, k = %d iNewCommanderIndex = %d\n", k, iNewCommanderIndex);
-				pNewCommander = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iNewCommanderIndex));
-				//Msg("Newcommander entindex is %d\n", pNewCommander ? pNewCommander->entindex() : -1);
-				if (pNewCommander && (!pNewCommander->IsConnected() || pNewCommander == pPlayer))
-					pNewCommander = NULL;
-				//Msg("after connected/match check: Newcommander entindex is %d\n", pNewCommander ? pNewCommander->entindex() : -1);
-				
-				k++;
-				// loop which commander we're trying to find next (this means the marines get given out in a round robin fashion)
-				iNewCommanderIndex++;
-				if (iNewCommanderIndex > gpGlobals->maxClients)
-				{
-					//Msg("iNewCommander looping\n");
-					iNewCommanderIndex = 1;
-				}
-				// reactivedrop: don't assign marines to a spectator
-				if ( pNewCommander && !pNewCommander->GetMarine() )
-				{
-					pNewCommander = NULL;
-				}
-			}
-			//Msg("after search loop: Newcommander entindex is %d\n", pNewCommander ? pNewCommander->entindex() : -1);
-			
 			// sets the marine's commander to the other player we found, or no-one
 			pMR->SetCommander( pNewCommander );
 			CASW_Marine *pMarine = pMR->GetMarineEntity();
@@ -4713,9 +4721,9 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		&& collisionGroup1 == ASW_COLLISION_GROUP_PARASITE)
 		return false;
 
-	// parasites don't get blocked by big aliens
+	// parasites don't get blocked by big aliens (reactivedrop: and normal aliens)
 	if (collisionGroup0 == ASW_COLLISION_GROUP_PARASITE
-		&& collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN)
+		&& ( collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN || collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ))
 		return false;
 
 	// turn our prediction collision into normal player collision and pass it up

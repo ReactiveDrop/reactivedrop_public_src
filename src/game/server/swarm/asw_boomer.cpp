@@ -52,6 +52,9 @@ CASW_Boomer::CASW_Boomer()
 {
 	m_pszAlienModelName = "models/aliens/boomer/boomer.mdl";
 	m_bInflated = false;
+	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
+	// have incorrect collision group and block other aliens
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,7 +69,6 @@ void CASW_Boomer::Spawn( void )
 	BaseClass::Spawn();
 
 	SetHullType( HULL_LARGE );
-	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
 	SetHealthByDifficultyLevel();
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2 );
 	

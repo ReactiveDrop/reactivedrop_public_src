@@ -86,6 +86,7 @@ public:
 private:
 	template <typename Alien> int SpawnAlienBatch(Alien szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist, const Vector & vecMins, const Vector & vecMaxs);
 	void UpdateCandidateNodes();
+	bool FindHordePos( bool bNorth, const CUtlVector<int> &candidateNodes, Vector  &vecHordePosition, QAngle &angHordeAngle );
 	bool FindHordePosition();
 	CAI_Network* GetNetwork();
 	bool SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn );
@@ -97,7 +98,9 @@ private:
 
 	CountdownTimer m_batchInterval;
 	Vector m_vecHordePosition;
+	Vector m_vecHordePosition2; // reactivedrop: for rd_horde_two_sided, this will be a north position for 2nd horde if 1st horde comes from south
 	QAngle m_angHordeAngle;
+	QAngle m_angHordeAngle2;	// reactivedrop: for rd_horde_two_sided
 	int m_iHordeToSpawn;
 	CASW_Spawn_Definition *m_pHordeDefinition;
 	CUtlVector<CASW_Spawn_Definition *> m_pHordeWandererDefinition;
