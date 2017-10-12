@@ -2,6 +2,7 @@
 #include "asw_gamerules.h"
 #include "asw_spawn_manager.h"
 #include "asw_director.h"
+#include "asw_grenade_cluster.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -87,8 +88,15 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Convars_VScript, "Convars", SCRIPT_SINGLETON "
 	DEFINE_SCRIPTFUNC( SetValueString, "Sets the value of the convar to a string." )
 END_SCRIPTDESC();
 
+HSCRIPT Grenade_Cluster_Create_VScript( float flDamage, float flRadius, int iClusters, Vector position, Vector angles, Vector velocity, Vector angVelocity )
+{
+	CASW_Grenade_Cluster *pCluster = CASW_Grenade_Cluster::Cluster_Grenade_Create( flDamage, flRadius, iClusters, position, QAngle( VectorExpand( angles ) ), velocity, angVelocity, NULL, NULL );
+	return ToHScript( pCluster );
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
 	g_pScriptVM->RegisterInstance( &g_ASWConvarsVScript, "Convars" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Grenade_Cluster_Create_VScript, "CreateGrenadeCluster", "create grenade cluster (damage, radius, count, position, angles, velocity, angularVelocity)" );
 }

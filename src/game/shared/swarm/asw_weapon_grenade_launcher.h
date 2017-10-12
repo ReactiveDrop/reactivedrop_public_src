@@ -24,17 +24,18 @@ public:
 
 	CASW_Weapon_Grenade_Launcher();
 	virtual ~CASW_Weapon_Grenade_Launcher();
-	void Precache();
 
-	bool	Reload();
-	void	ItemPostFrame();
 	virtual bool ShouldMarineMoveSlow() { return false; }	// throwing grenades doesn't slow the marine down
 	
 	virtual int AmmoClickPoint() { return 0; }
 	virtual float GetFireRate() { return 0.4f; }
 
-	void	PrimaryAttack();
+	virtual void PrimaryAttack();
 
+	virtual float GetWeaponPvpDamageBase();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
+	
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone;

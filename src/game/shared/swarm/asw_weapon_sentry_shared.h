@@ -107,6 +107,9 @@ public:
 	virtual const char* GetPickupClass() { return "asw_pickup_sentry_cannon"; }
 #endif
 
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
+
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_CANNON_CASE; }
 };

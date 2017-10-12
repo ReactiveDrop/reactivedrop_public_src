@@ -118,11 +118,11 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 		return;
 	}
 	
-	Vector vecSatchelMins = Vector(-20,-20,0);
-	Vector vecSatchelMaxs = Vector(20,20,60);
+	Vector vecSatchelMins( -20, -20, 0 );
+	Vector vecSatchelMaxs( 20, 20, 20 );
 	trace_t tr;
 
-	UTIL_TraceHull( vecSrc + Vector( 0, 0, 50 ),
+	UTIL_TraceHull( vecSrc + Vector( 0, 0, 10 ),
 				vecSrc + Vector( 0, 0, -50 ),
 				vecSatchelMins,
 				vecSatchelMaxs,
@@ -136,8 +136,8 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 		// Try right under the player
 		vecSrc = pMarine->GetAbsOrigin();
 
-		UTIL_TraceHull( vecSrc + Vector( 0, 0, 50 ),
-			vecSrc + Vector( 0, 0, 50 ),
+		UTIL_TraceHull( vecSrc + Vector( 0, 0, 10 ),
+			vecSrc + Vector( 0, 0, -50 ),
 			vecSatchelMins,
 			vecSatchelMaxs,
 			MASK_SOLID,
@@ -157,7 +157,7 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 
 	CASW_Ammo_Drop *pAmmoDrop = (CASW_Ammo_Drop *)CreateEntityByName( "asw_ammo_drop" );	
 
-	UTIL_TraceLine( vecSrc, vecSrc + Vector(0, 0, -60), 
+	UTIL_TraceLine( vecSrc + Vector( 0, 0, 2 ), vecSrc + Vector( 0, 0, -60 ),
 		MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
 
 	UTIL_SetOrigin( pAmmoDrop, tr.endpos );

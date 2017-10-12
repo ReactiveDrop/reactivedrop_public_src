@@ -140,12 +140,15 @@ public:
 	DEFINE_CUSTOM_AI;
 
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	// IASW_Spawnable_NPC implementation
 	CHandle<CASW_Base_Spawner> m_hSpawner;
 	virtual void SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject);
 	AlienOrder_t GetAlienOrders();
 	virtual void ClearAlienOrders();
+	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
+	void ScriptChaseNearestMarine();
 	virtual int SelectAlienOrdersSchedule();
 	virtual void OnMovementComplete();
 	virtual int SelectSchedule();

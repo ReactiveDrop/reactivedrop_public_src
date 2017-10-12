@@ -217,6 +217,8 @@ public:
 	virtual void SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject);
 	virtual AlienOrder_t GetAlienOrders();
 	virtual void ClearAlienOrders();
+	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
+	void ScriptChaseNearestMarine();
 	virtual int SelectAlienOrdersSchedule();
 	virtual void OnMovementComplete();
 	virtual bool ShouldClearOrdersOnMovementComplete();

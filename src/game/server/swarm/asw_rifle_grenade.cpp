@@ -284,11 +284,11 @@ CASW_Rifle_Grenade* CASW_Rifle_Grenade::Rifle_Grenade_Create( float flDamage, fl
 {
 	CASW_Rifle_Grenade *pGrenade = (CASW_Rifle_Grenade *)CreateEntityByName( "asw_rifle_grenade" );	
 	pGrenade->SetAbsAngles( angles );
+	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_DmgRadius = fRadius;
 	pGrenade->SetOwnerEntity( pOwner );
-	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->m_hCreatorWeapon.Set( pCreator );
 

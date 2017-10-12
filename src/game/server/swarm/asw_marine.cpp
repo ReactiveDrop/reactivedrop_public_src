@@ -373,6 +373,11 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
+	DEFINE_SCRIPTFUNC( IsInhabited, "true if the marine is a player, false if the marine is a bot" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "get the player that owns the marine" )
+END_SCRIPTDESC()
+
 extern ConVar weapon_showproficiency;
 extern ConVar asw_leadership_radius;
 extern ConVar asw_buzzer_poison_duration;
@@ -5291,4 +5296,9 @@ Disposition_t CASW_Marine::IRelationType( CBaseEntity *pTarget )
 	}
 
 	return BaseClass::IRelationType( pTarget );
+}
+
+HSCRIPT CASW_Marine::ScriptGetCommander() const
+{
+	return ToHScript( GetCommander() );
 }

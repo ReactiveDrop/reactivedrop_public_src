@@ -43,13 +43,13 @@ CASW_Grenade_Freeze* CASW_Grenade_Freeze::Freeze_Grenade_Create( float flDamage,
 {
 	CASW_Grenade_Freeze *pGrenade = (CASW_Grenade_Freeze *)CreateEntityByName( "asw_grenade_freeze" );
 	pGrenade->SetAbsAngles( angles );
+	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_flFreezeAmount = flFreezeAmount;
 	pGrenade->m_DmgRadius = fRadius;
 	pGrenade->m_hFirer = pOwner;
 	pGrenade->SetOwnerEntity( pOwner );
-	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->SetClusters(iClusters, true);	
 	pGrenade->m_hCreatorWeapon.Set( pCreatorWeapon );
 

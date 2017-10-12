@@ -6,9 +6,12 @@
 #include "rd_lobby_utils.h"
 #include "c_asw_steamstats.h"
 #include "vgui/ILocalize.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern ConVar rd_leaderboard_by_difficulty;
 
 CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -66,7 +69,14 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 	}
 
 	char szLeaderboardName[k_cchLeaderboardNameMax];
-	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
+	if ( rd_leaderboard_by_difficulty.GetBool() )
+	{
+		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules()->GetSkillLevel(), szMap, nMapID, szChallenge, nChallengeID );
+	}
+	else
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
+	}
 
 	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardFind );

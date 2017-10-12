@@ -86,6 +86,9 @@ protected:
 	int m_iHealthBonusSp;
 	float m_fSizeScaleSp; 
 	float m_fSpeedScaleSp; 
+
+	string_t m_iszAlienVScripts;
+	string_t m_iszAlienScriptThinkFunction;
 };
 
 #define ASW_SF_ALWAYS_INFINITE 1

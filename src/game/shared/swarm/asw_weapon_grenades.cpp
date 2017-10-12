@@ -19,6 +19,8 @@
 #endif
 #include "asw_marine_skills.h"
 #include "asw_util_shared.h"
+#include "asw_weapon_parse.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -92,6 +94,18 @@ bool CASW_Weapon_Grenades::OffhandActivate()
 
 #define FLARE_PROJECTILE_AIR_VELOCITY	400
 
+float CASW_Weapon_Grenades::GetWeaponDamage()
+{
+	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	if ( GetMarine() )
+	{
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
+	}
+
+	return flDamage;
+}
+
 void CASW_Weapon_Grenades::PrimaryAttack( void )
 {	
 	CASW_Player *pPlayer = GetCommander();
@@ -141,7 +155,15 @@ void CASW_Weapon_Grenades::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 float CASW_Weapon_Grenades::GetBoomDamage( CASW_Marine *pMarine )
 {
-	return MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
+	float flBaseDamage = 0.0f;
+	if ( ASWEquipmentList() )
+	{
+		CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( "asw_weapon_grenades" );
+		if ( pWeaponInfo )
+			flBaseDamage = pWeaponInfo->m_flBaseDamage;
+	}
+	
+	return flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
 }
 
 float CASW_Weapon_Grenades::GetBoomRadius( CASW_Marine *pMarine )

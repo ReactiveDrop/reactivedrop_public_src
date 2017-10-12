@@ -154,6 +154,7 @@ CASW_Grenade_Vindicator* CASW_Grenade_Vindicator::Vindicator_Grenade_Create( flo
 {
 	CASW_Grenade_Vindicator *pGrenade = (CASW_Grenade_Vindicator *)CreateEntityByName( "asw_grenade_vindicator" );
 	pGrenade->SetAbsAngles( angles );
+	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_DmgRadius = fRadius;
@@ -161,7 +162,6 @@ CASW_Grenade_Vindicator* CASW_Grenade_Vindicator::Vindicator_Grenade_Create( flo
 	pGrenade->SetOwnerEntity( pOwner );
 	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->SetAbsVelocity( velocity );
-	pGrenade->CreateEffects();
 	pGrenade->m_hCreatorWeapon = pCreatorWeapon;
 
 	return pGrenade;

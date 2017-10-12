@@ -28,6 +28,7 @@
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar sk_plr_dmg_asw_sg; 
 extern ConVar asw_weapon_force_scale;
+ConVar rd_pistols_min_delay( "rd_pistols_min_delay", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If more than 0 will set the delay between each shot of Twin Pistols in seconds. 0.1 recommended" );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Pistol, DT_ASW_Weapon_Pistol )
 
@@ -269,6 +270,12 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 
 void CASW_Weapon_Pistol::FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo)
 {
+	if ( rd_pistols_min_delay.GetFloat() > 0 )
+	{
+		// BenLubar: Alien Swarm was missing this very important line from HL2MP
+		m_flSoonestPrimaryAttack = gpGlobals->realtime + rd_pistols_min_delay.GetFloat();
+	}
+
 	pMarine->FireBullets(*pBulletsInfo);
 }
 
@@ -304,7 +311,7 @@ void CASW_Weapon_Pistol::ItemPostFrame( void )
 		return;
 
 	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->realtime ) )
 	{
 		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
 	}

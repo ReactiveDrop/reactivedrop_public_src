@@ -35,6 +35,10 @@
 
 #define WORKSHOP_DISABLED_ADDONS_FILENAME "addonlist_workshop.txt"
 
+#ifdef CLIENT_DLL
+ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
+#endif
+
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
 static void ClearCaches();
@@ -696,7 +700,10 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 			}
 		}
 		m_EnabledAddons[index].pPreviewImage = NULL;
-		m_PreviewRequests.AddToTail( new WorkshopPreviewRequest_t( m_EnabledAddons[index].details ) );
+		if ( rd_download_workshop_previews.GetBool() )
+		{
+			m_PreviewRequests.AddToTail( new WorkshopPreviewRequest_t( m_EnabledAddons[index].details ) );
+		}
 #endif
 	}
 
@@ -887,7 +894,16 @@ static void ClearCaches()
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();
-	engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
+	engine->ClientCmd_Unrestricted( "update_addon_paths; mission_reload; snd_updateaudiocache" );
+
+	// #iss-speaker-reset 
+	// calling snd_restart during game launch causes snd_surround_speakers to reset to default
+	// prevent snd_restart to be called during game launch be call it when loading\unloading add-ons
+	static bool bRestartSoundEngine = false;
+	if ( bRestartSoundEngine )
+		engine->ClientCmd_Unrestricted( "snd_restart" );
+	bRestartSoundEngine = true;
+	//
 #endif
 	missionchooser->LocalMissionSource()->ClearCache();
 

@@ -155,7 +155,9 @@ BEGIN_DATADESC( CASW_Alien )
 END_DATADESC()
 // BenLubar(key-values-director)
 BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
-	// empty scriptdesc for now to make future additions easier
+	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
 END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
@@ -2276,6 +2278,16 @@ void CASW_Alien::ClearAlienOrders()
 	m_AlienOrderObject = NULL;
 	m_bIgnoreMarines = false;
 	m_bFailedMoveTo = false;
+}
+
+void CASW_Alien::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
+{
+	SetAlienOrders( bIgnoreMarines ? AOT_MoveToIgnoringMarines : AOT_MoveTo, vec3_origin, ToEnt( hOrderObject ) );
+}
+
+void CASW_Alien::ScriptChaseNearestMarine()
+{
+	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }
 
 void CASW_Alien::GatherConditions()

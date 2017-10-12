@@ -151,12 +151,12 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 {
 	CASW_Grenade_Cluster *pGrenade = (CASW_Grenade_Cluster *)CreateEntityByName( "asw_grenade_cluster" );
 	pGrenade->SetAbsAngles( angles );
+	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_DmgRadius = fRadius;
 	pGrenade->m_hFirer = pOwner;
-	pGrenade->SetOwnerEntity( pOwner );
-	UTIL_SetOrigin( pGrenade, position );
+	pGrenade->SetOwnerEntity( pOwner );	
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->SetClusters(iClusters, true);
 	pGrenade->m_hCreatorWeapon = pCreatorWeapon;

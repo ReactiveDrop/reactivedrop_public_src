@@ -1248,19 +1248,35 @@ float CASW_Weapon::GetMovementScale()
 	return ShouldMarineMoveSlow() ? 0.5f : 1.0f;
 }
 
+float CASW_Weapon::GetWeaponPvpDamageBase()
+{
+	extern ConVar rd_pvp_rifle_dmg;
+	return rd_pvp_rifle_dmg.GetFloat();
+}
+
+int CASW_Weapon::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+
+int CASW_Weapon::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG;
+}
+
+
 float CASW_Weapon::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if (ASWDeathmatchMode())
+	if ( ASWDeathmatchMode() )
 	{
-		extern ConVar rd_pvp_rifle_dmg;
-		flDamage = rd_pvp_rifle_dmg.GetFloat();
+		flDamage = GetWeaponPvpDamageBase(); 
 	}
 
 	if ( GetMarine() )
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_Skill(GetWeaponSkillId()), GetWeaponSubSkillId() );
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );

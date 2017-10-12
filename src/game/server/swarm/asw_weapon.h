@@ -83,6 +83,12 @@ public:
 	virtual void LowAmmoSound();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 	virtual bool SupportsBayonet();
+	// reactivedrop: added GetWeaponPvpDamageBase(), GetWeaponSkillId() and
+	// GetWeaponSubSkillId() to make polymorphic implementation of GetWeaponDamage()
+	// this can reduce the duplication of code in subclasses
+	virtual float GetWeaponPvpDamageBase();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual float GetWeaponDamage();
 	virtual bool ShouldAlienFlinch(CBaseEntity *pEntity, const CTakeDamageInfo &info);	
 	virtual bool			AllowsAutoSwitchFrom( void ) const;

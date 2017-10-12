@@ -205,7 +205,7 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 			ConVarRef sv_maxrate( "sv_maxrate" );
 			if ( sv_maxrate.IsValid() )
 			{
-				if ( sv_maxrate.GetInt() < 60000 )
+				if ( sv_maxrate.GetInt() < 60000 && sv_maxrate.GetInt() != 0 )
 				{
 					sv_maxrate.SetValue( 60000 );	// reactivedrop: for 8 player servers increase sv_maxrate by 2 times(30k is default)
 				}

@@ -216,6 +216,12 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Buzzer, DT_ASW_Buzzer)
 	SendPropBool(SENDINFO(m_bElectroStunned)),
 END_SEND_TABLE()
 
+BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CBaseCombatCharacter, "Alien Swarm buzzer" )
+	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the buzzer's orders" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the buzzer to move to an entity handle, second parameter ignore marines" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the buzzer to chase the nearest marine" )
+END_SCRIPTDESC()
+
 CASW_Buzzer::CASW_Buzzer()
 {
 #ifdef _DEBUG
@@ -2957,6 +2963,16 @@ void CASW_Buzzer::ClearAlienOrders()
 	m_AlienOrderObject = NULL;
 	m_bIgnoreMarines = false;
 	m_bFailedMoveTo = false;
+}
+
+void CASW_Buzzer::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
+{
+	SetAlienOrders( bIgnoreMarines ? AOT_MoveToIgnoringMarines : AOT_MoveTo, vec3_origin, ToEnt( hOrderObject ) );
+}
+
+void CASW_Buzzer::ScriptChaseNearestMarine()
+{
+	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }
 
 void CASW_Buzzer::GatherConditions()

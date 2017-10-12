@@ -9,6 +9,8 @@
 #include "beam_shared.h"
 #include "asw_rifle_grenade.h"
 #include "asw_weapon_grenades.h"
+#include "asw_equipment_list.h"
+#include "asw_weapon_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -63,16 +65,24 @@ void CASW_Sentry_Top_Cannon::Fire()
 	float fGrenadeDamage;
 	float fGrenadeRadius;
 
+	float fBaseGrenadeDamage = 40.0f;
+	if ( ASWEquipmentList() )
+	{
+		CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( "asw_weapon_sentry_cannon" );
+		if ( pWeaponInfo )
+			fBaseGrenadeDamage = pWeaponInfo->m_flBaseDamage;
+	}
+
 	if (pMarineDeployer)
 	{
-		fGrenadeDamage = CASW_Weapon_Grenades::GetBoomDamage(pMarineDeployer) * 0.5f;
+		fGrenadeDamage = fBaseGrenadeDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarineDeployer, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG ) * 0.5f;
 		fGrenadeRadius = CASW_Weapon_Grenades::GetBoomRadius(pMarineDeployer) * 0.5f;
 	}
 	else 
 	{
 		extern ConVar asw_skill_grenades_cluster_dmg_base;
 		extern ConVar asw_skill_grenades_radius_base;
-		fGrenadeDamage = asw_skill_grenades_cluster_dmg_base.GetFloat() * 0.5f;
+		fGrenadeDamage = fBaseGrenadeDamage;	// reactivedrop: was asw_skill_grenades_cluster_dmg_base.GetFloat() * 0.5f, but we made asw_skill_grenades_cluster_dmg_base 0(zero) to fix the UI 80(+80) bug
 		fGrenadeRadius = asw_skill_grenades_radius_base.GetFloat() * 0.5f;
 	}
 

@@ -33,6 +33,7 @@ CASW_Grenade_PRifle* CASW_Grenade_PRifle::PRifle_Grenade_Create( float flDamage,
 	pGrenade->m_DmgRadius = fRadius;
 	pGrenade->SetOwnerEntity( pOwner );
 	UTIL_SetOrigin( pGrenade, position );
+	pGrenade->CreateEffects();
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->m_hCreatorWeapon.Set( pCreatorWeapon );
 

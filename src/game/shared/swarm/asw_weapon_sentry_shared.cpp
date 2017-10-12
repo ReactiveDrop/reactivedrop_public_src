@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "asw_weapon_sentry_shared.h"
 #include "in_buttons.h"
+#include "asw_marine_skills.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_player.h"
@@ -440,6 +441,15 @@ CASW_Weapon_Sentry_Cannon::CASW_Weapon_Sentry_Cannon()
 	m_iSentryMunitionType = CASW_Sentry_Base::kCANNON;
 	m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (CASW_Sentry_Base::GunType_t) m_iSentryMunitionType );
 #endif
+}
+
+int CASW_Weapon_Sentry_Cannon::GetWeaponSkillId() 
+{
+	return ASW_MARINE_SKILL_GRENADES; 
+}
+int CASW_Weapon_Sentry_Cannon::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG;
 }
 
 //============================================

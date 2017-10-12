@@ -38,6 +38,9 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ), 
 	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ), 
 
+	DEFINE_KEYFIELD( m_iszAlienVScripts, FIELD_STRING, "alien_vscripts" ),
+	DEFINE_KEYFIELD( m_iszAlienScriptThinkFunction, FIELD_STRING, "alien_thinkfunction" ),
+
 	DEFINE_OUTPUT( m_OnSpawned,			"OnSpawned" ),
 
 	DEFINE_FIELD( m_iMoveAsideCount, FIELD_INTEGER ),
@@ -62,6 +65,9 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_iHealthBonusSp = 0;
 	m_fSizeScaleSp = 1.0f; 
 	m_fSpeedScaleSp = 1.0f; 
+
+	m_iszAlienVScripts = NULL_STRING;
+	m_iszAlienScriptThinkFunction = NULL_STRING;
 }
 
 CASW_Base_Spawner::~CASW_Base_Spawner()
@@ -326,6 +332,9 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		pSpawnable->SetUnburrowIdleActivity( m_UnburrowIdleActivity );
 		pSpawnable->SetUnburrowActivity( m_UnburrowActivity );
 	}
+
+	pEntity->m_iszVScripts = m_iszAlienVScripts;
+	pEntity->m_iszScriptThinkFunction = m_iszAlienScriptThinkFunction;
 
 	DispatchSpawn( pEntity );	
 

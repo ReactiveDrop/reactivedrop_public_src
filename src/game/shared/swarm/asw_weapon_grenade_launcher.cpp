@@ -22,6 +22,7 @@
 #include "particle_parse.h"
 #include "asw_util_shared.h"
 #include "asw_deathmatch_mode_light.h"
+#include "asw_weapon_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -95,16 +96,7 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	Vector vecDest = (pPlayer && pMarine->IsInhabited()) ? pPlayer->GetCrosshairTracePos() : pMarine->GetEnemyLKP();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * 28.0f;
 
-	float fGrenadeDamage;
-	if (ASWDeathmatchMode())
-	{
-		extern ConVar rd_pvp_grenade_launcher_dmg;
-		fGrenadeDamage = rd_pvp_grenade_launcher_dmg.GetFloat() * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
-	}
-	else
-	{
-		fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
-	}
+	float fGrenadeDamage = GetWeaponDamage();
 	
 	const float &fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
 	int iClusters = 0; //MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS);
@@ -148,23 +140,18 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 }
 
-
-void CASW_Weapon_Grenade_Launcher::Precache()
-{	
-	BaseClass::Precache();	
-
-#ifndef CLIENT_DLL
-	//UTIL_PrecacheOther( "asw_flare_projectile" );
-#endif
-}
-
-// flares don't reload
-bool CASW_Weapon_Grenade_Launcher::Reload()
+float CASW_Weapon_Grenade_Launcher::GetWeaponPvpDamageBase()
 {
-	return BaseClass::Reload();
+	extern ConVar rd_pvp_grenade_launcher_dmg;
+	return rd_pvp_grenade_launcher_dmg.GetFloat();
 }
 
-void CASW_Weapon_Grenade_Launcher::ItemPostFrame( void )
-{	
-	BaseClass::ItemPostFrame();
+int CASW_Weapon_Grenade_Launcher::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_GRENADES;
+}
+
+int CASW_Weapon_Grenade_Launcher::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG;
 }

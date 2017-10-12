@@ -124,6 +124,9 @@ public:
 	virtual bool SendWeaponAnim( int iActivity );
 	virtual void CalcBoneMerge( CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed );
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
+	virtual float GetWeaponPvpDamageBase();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual float GetWeaponDamage();
 	virtual bool AllowsAutoSwitchFrom( void ) const;
 	virtual int AmmoClickPoint(); // when this many rounds or less left in the gun, it will click when firing

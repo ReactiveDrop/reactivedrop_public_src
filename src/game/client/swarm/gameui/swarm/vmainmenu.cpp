@@ -1162,6 +1162,14 @@ void MainMenu::Activate()
 	// reactivedrop: reset the value each time we go in main menu
 	// for us to be able to browse lobbies with up to 32 slots
 	mm_max_players.Revert();
+
+	// #iss-speaker-reset 
+	// restart sound engine here
+	static bool bRestartSoundEngine = true;
+	if ( bRestartSoundEngine )
+		engine->ClientCmd_Unrestricted( "snd_restart" );
+	bRestartSoundEngine = false;
+	//
 }
 
 //=============================================================================

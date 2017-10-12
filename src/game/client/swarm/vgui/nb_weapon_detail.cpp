@@ -136,8 +136,10 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 				}
 				else if ( FStrEq("asw_weapon_autogun", pWeaponData->szClassName) || FStrEq("asw_weapon_minigun", pWeaponData->szClassName) )
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
-				else if ( FStrEq("asw_weapon_grenade_launcher", pWeaponData->szClassName) || FStrEq("asw_weapon_sentry_cannon", pWeaponData->szClassName) )
+				else if ( FStrEq("asw_weapon_grenade_launcher", pWeaponData->szClassName) )
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
+				else if ( FStrEq("asw_weapon_sentry_cannon", pWeaponData->szClassName) )
+					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG) * 0.5f;
 				else
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
 

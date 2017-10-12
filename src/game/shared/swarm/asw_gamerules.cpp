@@ -158,6 +158,7 @@ extern ConVar old_radius_damage;
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
 	ConVar asw_drop_powerups("asw_drop_powerups", "0", FCVAR_CHEAT, "Do aliens drop powerups?");
 	ConVar asw_adjust_difficulty_by_number_of_marines( "asw_adjust_difficulty_by_number_of_marines", "1", FCVAR_CHEAT, "If enabled, difficulty will be reduced when there are only 3 or 2 marines." );
+	ConVar rd_increase_difficulty_by_number_of_marines( "rd_increase_difficulty_by_number_of_marines", "1", FCVAR_CHEAT, "If enabled, difficulty will be increased when there are more than 4 marines." );	
 	ConVar sv_vote_kick_ban_duration("sv_vote_kick_ban_duration", "5", 0, "How long should a kick vote ban someone from the server? (in minutes)");
 	ConVar sv_timeout_when_fully_connected( "sv_timeout_when_fully_connected", "30", FCVAR_NONE, "Once fully connected, player will be kicked if he doesn't send a network message within this interval." );
 	ConVar mm_swarm_state( "mm_swarm_state", "ingame", FCVAR_DEVELOPMENTONLY );
@@ -3483,8 +3484,6 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-ConVar asw_ammo_satchel_bonus( "asw_ammo_satchel_bonus", "3", FCVAR_NONE, "Additional Ammo Satchels" );
-
 void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipIndex, int iSlot)
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
@@ -6124,21 +6123,36 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	if ( ASWGameResource() && asw_adjust_difficulty_by_number_of_marines.GetBool() )
 	{
 		int nMarines = ASWGameResource()->GetNumMarines( NULL, false );
-		if ( nMarines >= 7 )
-		{
-			m_iMissionDifficulty += 2;
-		}
-		else if ( nMarines >= 5 )
-		{
-			m_iMissionDifficulty++;
-		}
-		else if ( nMarines == 3 )
+		if ( nMarines == 3 )
 		{
 			m_iMissionDifficulty--;
 		}
 		else if ( nMarines <= 2 )
 		{
 			m_iMissionDifficulty -= 2;
+		}
+	}
+	// rd_increase_difficulty_by_number_of_marines exists because ASBI disables
+	// asw_adjust_difficulty_by_number_of_marines, but we want difficulty to still be
+	// higher for 4+ players even in ASBI
+	if ( ASWGameResource() && rd_increase_difficulty_by_number_of_marines.GetBool() )
+	{
+		int nMarines = ASWGameResource()->GetNumMarines( NULL, false );
+		if ( nMarines > 7 )
+		{
+			m_iMissionDifficulty += 4;
+		}
+		else if ( nMarines == 7 )
+		{
+			m_iMissionDifficulty += 3;
+		}
+		else if ( nMarines == 6 )
+		{
+			m_iMissionDifficulty += 2;
+		}
+		else if ( nMarines == 5 )
+		{
+			m_iMissionDifficulty += 1;
 		}
 	}
 	// make sure difficulty doesn't go too low

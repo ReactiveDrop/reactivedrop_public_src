@@ -71,14 +71,16 @@ void CASW_Ammo_Drop::Spawn( void )
 	// check for attaching to elevators
 	trace_t	tr;
 	UTIL_TraceLine( GetAbsOrigin() + Vector(0, 0, 2),
-					GetAbsOrigin() - Vector(0, 0, 32), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+					GetAbsOrigin() - Vector(0, 0, 32), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 	if ( tr.fraction < 1.0f && tr.m_pEnt && !tr.m_pEnt->IsWorld() && !tr.m_pEnt->IsNPC() )
 	{
 		// reactivedrop: prevent ammo drop sticking to weapons 
 		// only allow func_movelinear and func_tracktrain(possible elevators)
 		// 
 		if (tr.m_pEnt->Classify() == CLASS_FUNC_MOVELINEAR ||
-			tr.m_pEnt->Classify() == CLASS_FUNC_TRACKTRAIN)
+			tr.m_pEnt->Classify() == CLASS_FUNC_TRACKTRAIN ||
+			dynamic_cast<CFuncBrush*>(tr.m_pEnt) )
+
 		{
 			SetParent( tr.m_pEnt );
 		}

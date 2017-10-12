@@ -17,6 +17,7 @@
 #include "fmtstr.h"
 #include "FileSystem.h"
 #include "c_asw_steamstats.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -26,6 +27,8 @@ using namespace BaseModUI;
 
 ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_ARCHIVE, "show friends' leaderboard entries on the loading screen" );
 ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
+ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
+extern ConVar asw_skill;
 
 static bool IsAvatarFemale( int iAvatar )
 {
@@ -532,7 +535,14 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 	}
 
 	char szLeaderboardName[k_cchLeaderboardNameMax];
-	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+	if ( rd_leaderboard_by_difficulty.GetBool() )
+	{
+		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt(), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+	}
+	else
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+	}
 
 	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	m_LeaderboardFind.Set( hCall, this, &LoadingProgress::LeaderboardFind );

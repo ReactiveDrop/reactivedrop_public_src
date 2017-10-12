@@ -66,6 +66,7 @@ public:
 	DECLARE_CLASS( CASW_Marine, CASW_VPhysics_NPC );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 	DEFINE_CUSTOM_AI;
 
 	CASW_Marine();
@@ -134,6 +135,7 @@ public:
 	// Commander/Inhabiting	
 	void SetCommander(CASW_Player *player);		// sets which player commands this marine
 	CASW_Player* GetCommander() const;
+	HSCRIPT ScriptGetCommander() const;
 	bool IsInhabited();
 	void SetInhabited(bool bInhabited);
 	void InhabitedBy(CASW_Player *player);		// called when a player takes direct control of this marine
