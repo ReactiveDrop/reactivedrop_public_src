@@ -20,7 +20,7 @@ There are two branches in this repository:
 * Open Git Bash
 * Input commands into Git Bash 
 ```sh
-    git clone https://geotavros@bitbucket.org/geotavros/reactivedrop_public_src.git
+    git clone https://bitbucket.org/reactivedropteam/reactivedrop_public_src.git
     cd reactivedrop_public_src
     git checkout reactivedrop_public
 ```
