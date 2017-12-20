@@ -165,6 +165,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_request_experience("rd_request_experience", "1", FCVAR_DEVELOPMENTONLY, "For dev, if 1 RequestExperience function is called. Used for standard coop");
 	ConVar rd_reassign_marines("rd_reassign_marines", "1", FCVAR_NONE, "For dev, if 1 ReassignMarines function will be called");
 	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
+	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -3424,6 +3425,11 @@ void CAlienSwarm::OnServerHibernating()
 		{
 			Warning( "Unable to create new save game when server started hibernating.\n" );
 			return;
+		}
+		// quit server
+		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
+		{
+			exit( 0 ); // reactivedrop: Isn't the best solution but works. Issuing "quit" doesn't work here. 
 		}
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",
