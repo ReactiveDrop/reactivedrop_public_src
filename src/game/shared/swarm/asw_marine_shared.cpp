@@ -1348,6 +1348,7 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					CPASFilter filter( data.m_vOrigin );
 					//filter.SetIgnorePredictionCull(true);
 					DispatchEffect( filter, 0.0, "PierceSpark", data );
+					//TODO this effect should be red, not green for marines and colonists
 				}
 			}
 			else

@@ -5779,7 +5779,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 			continue;
 
 		// don't stumble marines
-		if ( pEntity->Classify() == CLASS_ASW_MARINE )
+		if ( pEntity->Classify() == CLASS_ASW_MARINE || pEntity->Classify() == CLASS_ASW_COLONIST )
 		{
 #ifdef GAME_DLL		
 			// but, do extinguish them if they are on fire

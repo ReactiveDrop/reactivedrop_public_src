@@ -644,7 +644,7 @@ void CASW_Parasite::NormalTouch( CBaseEntity* pOther )
 bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 {
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( pOther );
-	if ( pOther )
+	if ( pMarine )
 	{
 		// if marine has electrified armour on, that protects him from infestation
 		if ( pMarine->IsElectrifiedArmorActive() )
@@ -680,7 +680,7 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 		}
 		return true;
 	}
-	else if ( pOther->Classify() == CLASS_ASW_COLONIST )
+	else if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST )
 	{
 		return !IsOnFire();
 	}
@@ -721,9 +721,20 @@ void CASW_Parasite::InfestThink( void )
 	DispatchAnimEvents( this );
 
 	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetParent());
-	if ( !pMarine || !pMarine->IsInfested() || pMarine->IsEffectActive( EF_NODRAW ) )
-	{
-		FinishedInfesting();
+	CASW_Colonist *pColonist = dynamic_cast<CASW_Colonist*>(GetParent());
+
+	if (!pColonist) {
+ 		if ( !pMarine || !pMarine->IsInfested() || pMarine->IsEffectActive( EF_NODRAW ) )
+ 		{
+ 			FinishedInfesting();
+ 		}
+	}
+
+	if (!pMarine) {
+		if ( !pColonist || !pColonist->IsInfested() || pColonist->IsEffectActive( EF_NODRAW ) )
+		{
+			FinishedInfesting();
+		}
 	}
 }
 
@@ -815,12 +826,19 @@ void CASW_Parasite::InfestColonist(CASW_Colonist* pColonist)
 		
 		current = GetAbsAngles();
 		
+		Vector vAttachmentPos;
+		pColonist->GetAttachment( attachment, vAttachmentPos );
+
+		Teleport( &vAttachmentPos, &vec3_angle, &vec3_origin );
 		SetParent( pColonist, attachment );
 				Vector vecPosition;
-		float fRaise = random->RandomFloat(0,20);
-		
-		SetLocalOrigin( Vector( -fRaise * 0.2f, 0, fRaise ) );
-		SetLocalAngles( QAngle( 0, angle + asw_infest_angle.GetFloat(), 0 ) );
+		float flRaise = RandomFloat( 12.0f, 15.0f );
+		float flForward = RandomFloat( -1.0f, 0.0f );
+		float flSide = RandomFloat( 0.0f, 0.2f ) * ( RandomInt( 0, 1 ) == 0 ? 1.0f : -1.0f );
+
+		SetLocalOrigin( Vector( flForward, flSide, flRaise ) );
+		SetLocalAngles( QAngle( asw_infest_pitch.GetFloat(), angle + asw_infest_angle.GetFloat(), 0 ) );
+			
 		// play our infesting anim
 		if ( asw_parasite_inside.GetBool() )
 		{

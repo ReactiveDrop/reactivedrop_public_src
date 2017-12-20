@@ -213,6 +213,10 @@ bool CASW_Mine::ValidMineTarget(CBaseEntity *pOther)
 	else if (pMarine)
 		return false;
 
+	if (pOther && pOther->Classify() == CLASS_ASW_COLONIST) {
+		return false;
+	}
+
 	CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pOther);
 	if (pNPC)
 		return true;

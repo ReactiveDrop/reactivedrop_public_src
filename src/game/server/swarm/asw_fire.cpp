@@ -22,6 +22,7 @@
 // asw
 #include "asw_marine.h"
 #include "asw_marine_resource.h"
+#include "asw_colonist.h"
 #include "asw_alien.h"
 #include "asw_extinguisher_projectile.h"
 #include "asw_generic_emitter_entity.h"
@@ -1790,6 +1791,12 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 				// Burn for 1/3rd the time decided by difficulty
 				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
 				//Msg("OUCH OUCH BURNING MARINE\n");
+			}
+
+			CASW_Colonist *pColonist =dynamic_cast<CASW_Colonist*>(pOther);
+			if ( pColonist )
+			{
+				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
 			}
 
 			IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC* >(pOther);

@@ -302,13 +302,17 @@ CBaseEntity	* CASW_Rocket::FindPotentialTarget( void ) const
 				continue;
 			}
 	
+			// don't autoaim onto colonists
+			if ( pEntity->Classify() == CLASS_ASW_COLONIST )
+				continue;
+
 			// don't autoaim onto marines
-			if (pEntity->Classify() == CLASS_ASW_MARINE )
+			if ( pEntity->Classify() == CLASS_ASW_MARINE )
             {
                 if ( rd_rocket_target_marine.GetBool() ) // skip all marines 
 				{
 					// for team deathmatch don't target friendly marines 
-					if ( this->GetOwnerEntity() && this->GetOwnerEntity()->Classify() == CLASS_ASW_MARINE)
+					if ( this->GetOwnerEntity() && this->GetOwnerEntity()->Classify() == CLASS_ASW_MARINE )
 					{
 						CASW_Marine_Resource *pMR = ((CASW_Marine*)this->GetOwnerEntity())->GetMarineResource();
 						CASW_Marine_Resource *pOtherMR = ((CASW_Marine*)pEntity)->GetMarineResource();

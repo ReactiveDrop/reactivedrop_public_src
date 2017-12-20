@@ -6,6 +6,11 @@
 #include "asw_parasite.h"
 #include "asw_fx_shared.h"
 #include "asw_player.h"
+#include "asw_weapon.h"
+#include "asw_burning.h"
+
+#include "effect_dispatch_data.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -14,8 +19,11 @@ const int MAX_PLAYER_SQUAD = 4;
 
 ConVar	asw_colonist_health				( "asw_colonist_health",				"90");
 ConVar	asw_colonist_tom_health				( "asw_colonist_tom_health",				"30");	// tutorial guy who gets eaten
+extern ConVar asw_god;
 
-#define SWARM_COLONIST_MODEL "models/swarm/Colonist/Male/MaleColonist.mdl"
+#define SWARM_COLONIST_MODEL_MALE "models/swarm/Colonist/Male/MaleColonist.mdl"
+#define SWARM_COLONIST_MODEL_FEMALE "models/humans/group01/female_01.mdl"
+
 
 LINK_ENTITY_TO_CLASS( asw_colonist, CASW_Colonist );
 
@@ -29,33 +37,72 @@ BEGIN_DATADESC( CASW_Colonist )
 	DEFINE_FIELD( m_fNextSlowHealTick, FIELD_TIME ),	
 	DEFINE_KEYFIELD(	m_bNotifyNavFailBlocked,	FIELD_BOOLEAN, "notifynavfailblocked" ),
 	DEFINE_OUTPUT(		m_OnNavFailBlocked,		"OnNavFailBlocked" ),
+
+	DEFINE_INPUTFUNC( FIELD_STRING, "GiveWeapon", InputGiveWeapon ),
 END_DATADESC()
 
 extern ConVar asw_debug_marine_damage;
+
+void CASW_Colonist::InputGiveWeapon( inputdata_t &inputdata )
+{
+	const char *pszWeaponName = inputdata.value.String();
+
+	CBaseCombatWeapon *pWeapon = Weapon_Create(pszWeaponName);
+	if ( !pWeapon )
+	{
+		Warning( "Couldn't create weapon %s to give NPC %s.\n", pszWeaponName, STRING(GetEntityName()) );
+		return;
+	}
+
+	// If I have a weapon already, drop it
+	if ( GetActiveWeapon() )
+	{
+		Weapon_Drop( GetActiveWeapon() );
+	}
+
+	pWeapon->MakeWeaponNameFromEntity( this );
+
+	Weapon_Equip( pWeapon );
+
+	// Handle this case
+	OnGivenWeapon( pWeapon );
+
+	GetShotRegulator()->SetBurstShotCountRange(1, pWeapon->Clip1());
+	GetShotRegulator()->SetBurstInterval(pWeapon->GetFireRate(), pWeapon->GetFireRate());
+}
+
 
 CASW_Colonist::CASW_Colonist()
 {
 	m_fInfestedTime = 0;
 	m_iInfestCycle = 0;
-	Msg("CASW_Colonist created\n");
+	
+	selectedBy = -1;
 }
 
 CASW_Colonist::~CASW_Colonist()
 {
-	Msg("CASW_Colonist destroyed\n");
+	
 }
 
 void CASW_Colonist::Precache()
 {
-	PrecacheModel( SWARM_COLONIST_MODEL );	
+	PrecacheModel( SWARM_COLONIST_MODEL_MALE );	
+	PrecacheModel( SWARM_COLONIST_MODEL_FEMALE );	
 	
 	PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
 	PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
-	PrecacheScriptSound( "NPC_Citizen.Die" );
-	PrecacheScriptSound( "MaleMarine.Pain" );
+	PrecacheScriptSound( "Crash.Dead0" );
+	PrecacheScriptSound( "Crash.SmallPain0" );
+	PrecacheScriptSound( "Faith.Dead0" );
+	PrecacheScriptSound( "Faith.SmallPain0" );
 
-	//PrecacheInstancedScene( "scenes/swarmscenes/tutorialscript3.vcd" );
-	//PrecacheInstancedScene( "scenes/swarmscenes/FishermanAlert.vcd" );
+
+	
+
+	PrecacheEffect("MuzzleFlash");
+	PrecacheParticleSystem( "asw_tracer_fx" );
+
 
 	BaseClass::Precache();
 }
@@ -64,7 +111,17 @@ void CASW_Colonist::Spawn()
 {
 	Precache();
 	
-	SetModel( SWARM_COLONIST_MODEL );
+	isFemale = RandomInt(0,1)==0;
+
+	if (isFemale)
+		SetModel( SWARM_COLONIST_MODEL_FEMALE );
+	else
+		SetModel( SWARM_COLONIST_MODEL_MALE );
+
+	SetRenderMode(kRenderNormal);
+	SetRenderColor(180,180,180);
+
+
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
 
@@ -86,7 +143,7 @@ void CASW_Colonist::Spawn()
 		CapabilitiesAdd( bits_CAP_DUCK | bits_CAP_DOORS_GROUP );
 		CapabilitiesAdd( bits_CAP_USE_SHOT_REGULATOR );
 	}
-	CapabilitiesAdd( bits_CAP_NO_HIT_PLAYER | bits_CAP_NO_HIT_SQUADMATES | bits_CAP_FRIENDLY_DMG_IMMUNE );
+	//CapabilitiesAdd( bits_CAP_NO_HIT_PLAYER | bits_CAP_NO_HIT_SQUADMATES );
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 	SetMoveType( MOVETYPE_STEP );
 
@@ -103,18 +160,104 @@ void CASW_Colonist::Spawn()
 	}
 
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
-
+	
 	NPCInit();
-
-	Msg("Colonist health after NPCInit %d\n", m_iHealth);
+	SetActiveWeapon(NULL);
 }
+//void OnChangeActiveWeapon( CBaseCombatWeapon *pOldWeapon, CBaseCombatWeapon *pNewWeapon ) {}
+
+void CASW_Colonist::OnRangeAttack1()
+{
+	BaseClass::OnRangeAttack1();
+
+
+	CASW_Weapon* weapon = dynamic_cast<CASW_Weapon*>(GetActiveWeapon());
+	if (weapon) {
+		CEffectData data;
+
+		data.m_vOrigin = Weapon_ShootPosition();
+		data.m_nEntIndex = weapon->entindex();
+		data.m_fFlags = MUZZLEFLASH_SMG1;
+		DispatchEffect( "MuzzleFlash", data );
+		//"asw_muzzle_fx"
+
+		Vector vecSrc = Weapon_ShootPosition();
+
+
+		Vector forward; AngleVectors(GetAbsAngles(), &forward, NULL, NULL);
+		Vector vecEnd = vecSrc + forward * 2000;
+		
+		if (GetEnemy())
+			vecEnd = GetEnemyLKP();
+
+		trace_t tr;
+		UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT, this, COLLISION_GROUP_PROJECTILE, &tr);
+		UTIL_ParticleTracer("asw_tracer_fx", vecSrc, tr.endpos, weapon->entindex(), weapon->LookupAttachment("muzzle"), true);
+
+
+
+		//FIXME find out what was actually hit
+		if (GetEnemy() && UTIL_DistApprox(GetEnemy()->GetAbsOrigin(), tr.endpos) < 200) {
+			CTakeDamageInfo	info(weapon, this, weapon->GetWeaponDamage(), weapon->GetDamageType());
+			GetEnemy()->TakeDamage(info);
+		}
+
+
+
+		int pitch = 100;
+		const char *shootsound = weapon->GetASWShootSound( SINGLE, pitch );
+		
+		CSoundParameters params;
+		if ( !GetParametersForSound( shootsound, params, NULL ) )
+			return;
+
+		CPASAttenuationFilter filter( this, params.soundlevel );
+		EmitSound(filter, this->entindex(), shootsound);
+
+
+
+		//TODO ammo
+		GetShotRegulator()->SetBurstShotCountRange(1, weapon->Clip1());
+		GetShotRegulator()->SetBurstShotsRemaining(weapon->Clip1());
+	}
+}
+
+Vector CASW_Colonist::Weapon_ShootPosition( )
+{
+	Vector forward, right, up, v;
+
+	v = GetAbsOrigin();
+
+	QAngle ang = EyeAngles();
+	AngleVectors( ang, &forward, &right, &up );
+	Vector vecSrc = v + up * ASW_MARINE_GUN_OFFSET_Z * 1.5
+					+ forward * ASW_MARINE_GUN_OFFSET_X * 2
+					+ right * ASW_MARINE_GUN_OFFSET_Y * 1.5;
+
+	return vecSrc;
+}
+
 
 Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 {
+	if (activity == ACT_IDLE_AIM_STEALTH)
+		return ACT_IDLE_ANGRY_SMG1;
+
 	if ( activity == ACT_MELEE_ATTACK1 )
 	{
 		return ACT_MELEE_ATTACK_SWING;
 	}
+
+	if (activity == ACT_RANGE_ATTACK1)
+		return ACT_RANGE_ATTACK_SMG1;
+
+	if (GetActiveWeapon()) {
+		if (activity == ACT_IDLE)
+			return ACT_IDLE_SMG1_RELAXED;
+		if (activity == ACT_RUN)
+			return ACT_RUN_AIM_RIFLE;
+	}
+		
 
 	// !!!HACK - Citizens don't have the required animations for shotguns, 
 	// so trick them into using the rifle counterparts for now (sjb)
@@ -130,14 +273,39 @@ Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 	return BaseClass::NPC_TranslateActivity( activity );
 }
 
+void CASW_Colonist::ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon ) {
+	Ignite( flFlameLifetime, false, 3, true );
+
+	if ( ASWBurning() ) {
+		ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon );	// 10 dps, applied every 0.4 seconds
+	}
+}
+
 int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	if( (info.GetDamageType() & DMG_BURN) && (info.GetDamageType() & DMG_DIRECT) )
+	if ( asw_god.GetBool() )
 	{
-#define CITIZEN_SCORCH_RATE		6
-#define CITIZEN_SCORCH_FLOOR	75
+		return 0;
+	}
 
-		Scorch( CITIZEN_SCORCH_RATE, CITIZEN_SCORCH_FLOOR );
+	if( info.GetDamageType() & DMG_BURN ) {
+		if (!IsOnFire()) {
+			ASW_Ignite(10, info.GetAttacker(), info.GetWeapon());
+		}
+	} else if (info.GetDamage() > 0) {
+		Vector vecDir = vec3_origin;
+		if (info.GetAttacker()) {
+			vecDir = info.GetAttacker()->GetAbsOrigin() - GetAbsOrigin();
+			VectorNormalize(vecDir);
+		}
+		else {
+			vecDir = RandomVector(-1, 1);
+		}
+
+		Vector offset = RandomVector(30,50);
+		offset.x = 0; offset.y=0;
+ 
+		UTIL_ASW_BloodDrips( GetAbsOrigin()+offset, vecDir, BloodColor(), MAX(1, info.GetDamage()/10) );
 	}
 
 	CTakeDamageInfo newInfo = info;
@@ -155,7 +323,10 @@ void CASW_Colonist::DeathSound( const CTakeDamageInfo &info )
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 
-	EmitSound( "NPC_Citizen.Die" );
+	if (isFemale)
+		EmitSound( "Faith.Dead0" );
+	else 
+		EmitSound( "Crash.Dead0" );
 }
 
 bool CASW_Colonist::IsHeavyDamage( const CTakeDamageInfo &info )
@@ -185,7 +356,11 @@ void CASW_Colonist::BecomeInfested(CASW_Alien* pAlien)
 	CTakeDamageInfo info(NULL, NULL, Vector(0,0,0), GetAbsOrigin(), DamagePerTick,
 		DMG_INFEST);
 	TakeDamage(info);
-	EmitSound("MaleMarine.Pain");
+
+	if (isFemale)
+		EmitSound( "Faith.SmallPain0" );
+	else 
+		EmitSound( "Crash.SmallPain0" );
 }
 
 void CASW_Colonist::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
@@ -325,7 +500,6 @@ void CASW_Colonist::ASWThinkEffects()
 					TakeDamage(info);
 					SetSchedule(SCHED_BIG_FLINCH);
 
-					EmitSound("MaleMarine.Pain");
 					m_iInfestCycle = 0;
 
 					m_fInfestedTime-=1.0f;
@@ -374,6 +548,13 @@ void CASW_Colonist::AddSlowHeal(int iHealAmount, CASW_Marine *pMedic)
 	}
 }	
 
+void CASW_Colonist::Extinguish(){
+	if (ASWBurning()) {
+		ASWBurning()->Extinguish(this);
+	}
+	BaseClass::Extinguish();
+}
+
 int CASW_Colonist::SelectFlinchSchedule_ASW()
 {
 	if ( IsCurSchedule( SCHED_BIG_FLINCH ) )
@@ -389,18 +570,177 @@ int CASW_Colonist::SelectFlinchSchedule_ASW()
 	return SCHED_BIG_FLINCH;
 }
 
+const Vector CASW_Colonist::GetFollowPos() {
+	if (!GetTarget()) {
+		selectedBy = -1;
+		SetSchedule(SCHED_IDLE_STAND);
+		SetRenderColor(180,180,180);
+
+		return GetAbsOrigin();
+	}
+
+	Vector marineForward;
+	
+	AngleVectors( GetTarget()->GetAbsAngles(), &marineForward );
+	Vector offset = marineForward*100;
+
+	trace_t tr;
+	UTIL_TraceLine( GetTarget()->GetAbsOrigin(),
+		GetTarget()->GetAbsOrigin() - offset, MASK_SOLID_BRUSHONLY, 
+		NULL, COLLISION_GROUP_NONE, &tr );
+
+
+	Vector followPos;
+	if (tr.fraction < 1) {
+		followPos = GetTarget()->GetAbsOrigin() - marineForward*(MAX(0, 100*tr.fraction-10));
+	} else {
+		followPos = GetTarget()->GetAbsOrigin() - offset;
+	}
+	
+	return followPos;
+}
+
+
+
+
+void CASW_Colonist::RunTask( const Task_t *pTask ) {
+	switch (pTask->iTask) {
+		case TASK_SA_FACE_FOLLOW_WAIT:
+		{
+			//UpdateFacing();
+			if ( IsWaitFinished())
+			{
+				TaskComplete();
+			}
+			break;
+		}
+		case TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT:
+		{
+			//UpdateFacing();
+			bool fTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->curtime - GetTimeTaskStarted() );
+			if (fTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE)
+			{
+				TaskComplete();
+				GetNavigator()->StopMoving();		// Stop moving
+			}
+			else if (!GetNavigator()->IsGoalActive())
+			{
+				SetIdealActivity( GetStoppedActivity() );
+			}
+			else
+			{
+				// Check validity of goal type
+				ValidateNavGoal();
+
+				const Vector &vecFollowPos = GetFollowPos();
+				if ( ( GetNavigator()->GetGoalPos() - vecFollowPos ).LengthSqr() > Square( 150 ) )
+				{
+					if ( GetNavigator()->GetNavType() != NAV_JUMP )
+					{
+						if ( !GetNavigator()->UpdateGoalPos( vecFollowPos ) )
+						{
+							TaskFail(FAIL_NO_ROUTE);
+						}
+					}
+				}
+
+#define ASW_FOLLOW_DISTANCE 150
+				float dist = ( GetAbsOrigin() - GetFollowPos() ).Length2DSqr();
+				if (dist < ( ASW_FOLLOW_DISTANCE * ASW_FOLLOW_DISTANCE )) {					
+					TaskComplete();
+				}
+				else
+				{
+					// try to keep facing towards the last known position of the enemy
+					//if (GetEnemy())
+					//{
+						//Vector vecEnemyLKP = GetEnemyLKP();
+						//AddFacingTarget( GetEnemy(), vecEnemyLKP, 1.0, 0.8 );
+						//Msg("follow task adding facing target\n");
+					//}
+				}
+			}
+			break;
+		}
+		default:
+			BaseClass::RunTask(pTask);
+			break;
+	}
+}
+
+void CASW_Colonist::StartTask( const Task_t *pTask )
+{
+	switch( pTask->iTask ) {
+		case TASK_SA_GET_PATH_TO_FOLLOW_TARGET:
+		{
+			AI_NavGoal_t goal( GetFollowPos(), ACT_RUN, 60 ); // AIN_HULL_TOLERANCE
+			GetNavigator()->SetGoal( goal );
+			TaskComplete();
+			break;
+		}
+		case TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT:
+		{
+			if (GetNavigator()->GetGoalType() == GOALTYPE_NONE)
+			{
+				TaskComplete();
+				GetNavigator()->ClearGoal();		// Clear residual state
+			}
+			else if (!GetNavigator()->IsGoalActive())
+			{
+				SetIdealActivity( GetStoppedActivity() );
+			}
+			else
+			{
+				// Check validity of goal type
+				ValidateNavGoal();
+			}
+			break;
+		}
+		case TASK_SA_FACE_FOLLOW_WAIT:
+		{
+			SetWait( pTask->flTaskData );
+			break;
+		}
+
+		default:
+			BaseClass::StartTask( pTask );
+			break;
+	}
+}
+
 int CASW_Colonist::SelectSchedule( void )
 {
 	int nSched = SelectFlinchSchedule_ASW();
 	if ( nSched != SCHED_NONE )
 		return nSched;
 
-	return BaseClass::SelectSchedule();
+	if (selectedBy != -1) {
+		return SCHED_SA_FOLLOW_MOVE;
+	}
+	if (!GetActiveWeapon()) {
+		if (HasCondition(COND_SEE_ENEMY))
+			return SCHED_COMBAT_FACE;
+
+		return BaseClass::SelectIdleSchedule();
+	}
+	else {
+		int schedule = BaseClass::SelectSchedule();
+		return schedule;
+	}
 }
 
 Activity CASW_Colonist::GetFlinchActivity( bool bHeavyDamage, bool bGesture )
 {
-	return (Activity) ACT_BIG_FLINCH;
+	if (isFemale) 
+		EmitSound("Faith.SmallPain0");
+	else 
+		EmitSound("Crash.SmallPain0");
+
+
+	if (isFemale)
+		return (Activity) ACT_COWER;
+	else
+		return (Activity) ACT_BIG_FLINCH;
 }
 
 void CASW_Colonist::MeleeBleed(CTakeDamageInfo* info)
@@ -419,11 +759,45 @@ void CASW_Colonist::MeleeBleed(CTakeDamageInfo* info)
 		
 	UTIL_ASW_BloodDrips( GetAbsOrigin()+Vector(0,0,60)+vecDir*3, vecDir, BloodColor(), 5 );
 	SetSchedule(SCHED_BIG_FLINCH);
-	EmitSound("MaleMarine.Pain");
 }
 
 AI_BEGIN_CUSTOM_NPC( asw_colonist, CASW_Colonist )
+	DECLARE_TASK( TASK_SA_GET_PATH_TO_FOLLOW_TARGET )
+	DECLARE_TASK( TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT )
+	DECLARE_TASK( TASK_SA_FACE_FOLLOW_WAIT )
 
+	DEFINE_SCHEDULE
+	(
+		SCHED_SA_FOLLOW_MOVE,
+
+		"	Tasks"
+		"		 TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_SA_FOLLOW_WAIT"
+		"		 TASK_SA_GET_PATH_TO_FOLLOW_TARGET			0"
+		"		 TASK_RUN_PATH								0"
+		"		 TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT			0"
+		"		 TASK_STOP_MOVING							1"
+		"	"
+		"	Interrupts"
+		"		COND_TASK_FAILED"
+		"		COND_REPEATED_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+	)
+
+	DEFINE_SCHEDULE	
+	(
+		SCHED_SA_FOLLOW_WAIT,
+		  
+		"	Tasks"
+		"		TASK_STOP_MOVING						0"
+		"		TASK_SA_FACE_FOLLOW_WAIT				0.3"
+		""
+		"	Interrupts"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+		"		COND_IDLE_INTERRUPT"
+		"       COND_ASW_NEW_ORDERS"
+		"		COND_GIVE_WAY"
+	)
 AI_END_CUSTOM_NPC()
 
 
@@ -448,3 +822,124 @@ void CC_ASW_NPC_Go( void )
 	CAI_BaseNPC::ForceSelectedGo(pPlayer, vecSrc + forward * dist, forward, asw_npc_go_do_run.GetBool());
 }
 static ConCommand asw_npc_go("asw_npc_go", CC_ASW_NPC_Go, "Selected NPC(s) will go to the location that the player is looking (shown with a purple box)\n\tArguments:	-none-", FCVAR_CHEAT);
+
+
+void CASW_Colonist::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	if (!isSelectedBy(pMarine)) {
+		SetPrimaryBehavior( NULL );
+		SetTarget(pMarine);
+		SetSchedule(SCHED_SA_FOLLOW_MOVE);
+		if (m_hCine != NULL) {
+			ExitScriptedSequence();
+		}
+
+		selectedBy = pMarine->entindex();
+		SetEffects(0);
+		SetRenderColor(255,255,255);
+	} else {
+		selectedBy = -1;
+		SetSchedule(SCHED_IDLE_STAND);
+		SetRenderColor(180,180,180);
+	}
+}
+
+bool CASW_Colonist::isSelectedBy(CASW_Marine* marine) {
+	return selectedBy == marine->entindex();
+}
+
+bool CASW_Colonist::IsUsable(CBaseEntity *pUser) {
+	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+}
+
+
+void CC_ASW_Colonist_GoTo( void ) {
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	if ( !pPlayer || !pPlayer->GetMarine() )
+		return;
+
+	trace_t tr;
+	Vector forward;
+	Vector vecSrc = pPlayer->GetMarine()->EyePosition();
+	QAngle angAiming = pPlayer->EyeAnglesWithCursorRoll();
+	float dist = tan(DEG2RAD(90 - angAiming.z)) * 60.0f;
+	AngleVectors( pPlayer->EyeAngles(), &forward );
+	
+	//AI_TraceLine( vecSrc,
+		//vecSrc + forward * dist,  MASK_NPCSOLID,
+		//pPlayer->GetMarine(), COLLISION_GROUP_NONE, &tr );
+	CASW_Colonist::ASW_Colonist_GoTo(pPlayer, vecSrc + forward * dist, forward);
+}
+ 
+void CASW_Colonist::ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &targetPos, const Vector &traceDir) {
+	CASW_Colonist *npc = gEntList.NextEntByClass( (CASW_Colonist *)NULL );
+	for ( ; npc; npc = gEntList.NextEntByClass(npc) ) {
+		if (!npc->isSelectedBy(pPlayer->GetMarine())) {
+			continue;
+		}
+
+		// If a behavior is active, we need to stop running it
+		npc->SetPrimaryBehavior( NULL );
+
+		Vector chasePosition = targetPos;
+		npc->TranslateNavGoal( pPlayer, chasePosition );
+		// It it legal to drop me here
+		Vector	vUpBit = chasePosition;
+		vUpBit.z += 1;
+
+		trace_t tr;
+		AI_TraceHull( chasePosition, vUpBit, npc->GetHullMins(), 
+			npc->GetHullMaxs(), npc->GetAITraceMask(), npc, COLLISION_GROUP_NONE, &tr );
+		if (tr.startsolid || tr.fraction != 1.0 )
+		{
+			NDebugOverlay::BoxAngles(chasePosition, npc->GetHullMins(), 
+				npc->GetHullMaxs(), npc->GetAbsAngles(), 255,0,0,20,0.5);
+		}
+
+		npc->m_vecLastPosition = chasePosition;
+
+		if (npc->m_hCine != NULL)
+		{
+			npc->ExitScriptedSequence();
+		}
+
+		npc->SetSchedule( SCHED_FORCED_GO_RUN );
+		npc->m_flMoveWaitFinished = gpGlobals->curtime;
+
+		npc->selectedBy = -1;
+		npc->SetRenderColor(180,180,180);
+	}
+}
+
+static ConCommand asw_colonist_goto("asw_colonist_goto", CC_ASW_Colonist_GoTo, "Selected Colonist(s) will go to the location that the player is looking\n    Arguments: none", FCVAR_NONE);
+
+int SELECT_DISTANCE = 128;
+void CC_ASW_Colonist_SelectAll( void ) {
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	if ( !pPlayer)
+		return;
+	CASW_Marine *marine = pPlayer->GetMarine();
+	if (!marine)
+		return;
+
+	Vector marinePos = marine->GetAbsOrigin();
+
+
+	CASW_Colonist *npc = gEntList.NextEntByClass( (CASW_Colonist *)NULL );
+	for ( ; npc; npc = gEntList.NextEntByClass(npc) ) {
+		if (npc->isSelectedBy(marine)) {
+			continue;
+		}
+
+		Vector coloPos = npc->GetAbsOrigin();
+
+		float dist = UTIL_DistApprox(coloPos, marinePos);
+		if (dist < SELECT_DISTANCE) {
+			npc->ActivateUseIcon(marine, ASW_USE_RELEASE_QUICK);
+		}
+	}
+}
+static ConCommand asw_colonist_selectall("asw_colonist_selectall", CC_ASW_Colonist_SelectAll, "Make all colonists nearby follow.\n    Arguments: none", FCVAR_NONE);
