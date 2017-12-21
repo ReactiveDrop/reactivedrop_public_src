@@ -894,14 +894,13 @@ static void ClearCaches()
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();
-	engine->ClientCmd_Unrestricted( "update_addon_paths; mission_reload; snd_updateaudiocache" );
 
 	// #iss-speaker-reset 
 	// calling snd_restart during game launch causes snd_surround_speakers to reset to default
 	// prevent snd_restart to be called during game launch be call it when loading\unloading add-ons
 	static bool bRestartSoundEngine = false;
 	if ( bRestartSoundEngine )
-		engine->ClientCmd_Unrestricted( "snd_restart" );
+		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
 	bRestartSoundEngine = true;
 	//
 #endif

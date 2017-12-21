@@ -1167,7 +1167,7 @@ void MainMenu::Activate()
 	// restart sound engine here
 	static bool bRestartSoundEngine = true;
 	if ( bRestartSoundEngine )
-		engine->ClientCmd_Unrestricted( "snd_restart" );
+		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
 	bRestartSoundEngine = false;
 	//
 }
