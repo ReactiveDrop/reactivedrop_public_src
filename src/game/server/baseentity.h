@@ -475,6 +475,7 @@ public:
 
 	// initialization
 	virtual void Spawn( void );
+	virtual void ScriptSpawn( void );
 	virtual void Precache( void ) {}
 
 	virtual void SetModel( const char *szModelName );
@@ -803,6 +804,8 @@ public:
 	const char *GetContextValue( int index ) const; 	// note: context may be expired
 	inline const ResponseContext_t	*GetContextData( int index ) const; // note: context may be expired
 	void		ClearAllContexts( void );
+	void		AddContextForScript( const char *pName, const char *pValue, float duration );
+	const char *GetContextForScript( const char *pName ) const; 	// note: context may be expired
 
 protected:
 	CUtlVector< ResponseContext_t > m_ResponseContexts;
@@ -861,6 +864,7 @@ public:
 
 	// This is what you should call to apply damage to an entity.
 	void TakeDamage( const CTakeDamageInfo &info );
+	void ScriptTakeDamage( float flDamage, int ndamageType, HSCRIPT hAttacker );
 
 	virtual int		TakeHealth( float flHealth, int bitsDamageType );
 

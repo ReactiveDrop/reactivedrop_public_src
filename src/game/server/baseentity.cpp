@@ -1927,6 +1927,19 @@ void CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 }
 
 //-----------------------------------------------------------------------------
+// VScript: Scale damage done and call OnTakeDamage
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptTakeDamage( float flDamage, int ndamageType, HSCRIPT hAttacker )
+{
+	CBaseEntity *pAttacker = ToEnt(hAttacker);
+	if ( !pAttacker )
+		pAttacker = this;
+
+	CTakeDamageInfo info( pAttacker, pAttacker, flDamage, ndamageType );
+	TakeDamage( info );
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Returns a value that scales all damage done by this entity.
 //-----------------------------------------------------------------------------
 float CBaseEntity::GetAttackDamageScale( CBaseEntity *pVictim )
@@ -2446,6 +2459,12 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetOwner, "SetOwner", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( GetTeamNumber, "GetTeam", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( ChangeTeam, "SetTeam", ""  )
+
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSpawn, "Spawn", "Spawns the entity into the game." )
+	DEFINE_SCRIPTFUNC( Activate, "Activates the spawned entity." )
+	DEFINE_SCRIPTFUNC( SetCollisionGroup, "Sets the entity's collision group." )
+	DEFINE_SCRIPTFUNC_NAMED( AddContextForScript, "SetContext", "SetContext( name , value, duration ): store any key/value pair in this entity's dialog contexts. Value must be a string. Will last for duration (set 0 to mean 'forever')." )
+	DEFINE_SCRIPTFUNC_NAMED( GetContextForScript, "GetContext", "GetContext( name ): looks up a context and returns it if available." )
 	
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMoveParent, "GetMoveParent", "If in hierarchy, retrieves the entity's parent" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetRootMoveParent, "GetRootMoveParent", "If in hierarchy, walks up the hierarchy to find the root parent" )
@@ -3960,6 +3979,11 @@ void CBaseEntity::SetMoveType( MoveType_t val, MoveCollide_t moveCollide )
 
 void CBaseEntity::Spawn( void ) 
 {
+}
+
+void CBaseEntity::ScriptSpawn( void ) 
+{
+	DispatchSpawn( this );
 }
 
 // Post KeyValues/Map data parsing hook
@@ -7017,6 +7041,21 @@ int CBaseEntity::FindContextByName( const char *name ) const
 
 //-----------------------------------------------------------------------------
 // Purpose: 
+// Input  : index - 
+// Output : const char
+//-----------------------------------------------------------------------------
+const char *CBaseEntity::GetContextForScript( const char *pName ) const
+{
+	int contextIndex = FindContextByName( pName );
+
+	if ( ContextExpired( contextIndex ) )
+		return "";
+
+	return GetContextValue( contextIndex );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
 // Input  : inputdata - 
 //-----------------------------------------------------------------------------
 void CBaseEntity::InputAddContext( inputdata_t& inputdata )
@@ -7384,6 +7423,18 @@ void CBaseEntity::AddContext( const char *pKey, const char *pValue, float durati
 
 		m_ResponseContexts.AddToTail( newContext );
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: add exactly one context key,value pair to this object
+// Input  : inputdata - 
+//-----------------------------------------------------------------------------
+void CBaseEntity::AddContextForScript( const char *pKey, const char *pValue, float duration )
+{
+	if ( duration > 0 )
+		duration = gpGlobals->curtime + duration;
+
+	AddContext( pKey, pValue, duration );
 }
 
 //-----------------------------------------------------------------------------
