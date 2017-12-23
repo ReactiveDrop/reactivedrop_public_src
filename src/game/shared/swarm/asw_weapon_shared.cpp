@@ -482,6 +482,25 @@ void CASW_Weapon::ItemPostFrame( void )
 			WeaponIdle();
 		}
 	}
+
+#if !defined( CLIENT_DLL )
+	extern ConVar rd_infinite_ammo;
+
+	if (rd_infinite_ammo.GetBool() && (pOwner->GetActiveWeapon() != NULL))
+	{
+		CBaseCombatWeapon *pWeapon = pOwner->GetActiveWeapon();
+		
+		pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
+		int iPrimaryAmmoType = pWeapon->GetPrimaryAmmoType();
+		if( iPrimaryAmmoType >= 0 )
+			pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iPrimaryAmmoType, pOwner ), iPrimaryAmmoType );
+		
+		pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+		int iSecondaryAmmoType = pWeapon->GetSecondaryAmmoType();
+		if( iSecondaryAmmoType >= 0 )
+			pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, pOwner ), iSecondaryAmmoType );
+	}
+#endif
 }
 
 // just dry fire by default

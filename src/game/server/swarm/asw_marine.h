@@ -541,6 +541,14 @@ public:
 	virtual Vector Weapon_ShootPosition();					// source point for firing weapons	
 	virtual bool IsFiring();
 
+	void ScriptGiveAmmo( int iCount, int iAmmoIndex );
+	void ScriptGiveWeapon( const char *pszName, int slot );
+	bool ScriptDropWeapon( int iWeaponIndex );
+	bool ScriptRemoveWeapon( int iWeaponIndex );
+	ScriptVariant_t Script_GetInvTable();
+	const char* Script_GetMarineName();
+	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );
+
 	void DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	int m_iDamageAttributeEffects;
 	virtual void FireBullets( const FireBulletsInfo_t &info );
@@ -595,11 +603,14 @@ public:
 	void MeleeBleed(CTakeDamageInfo* info);
 	void BecomeInfested(CASW_Alien* pAlien);
 	void CureInfestation(CASW_Marine *pHealer, float fCureFraction);
+	void ScriptBecomeInfested();
+	void ScriptCureInfestation();
 	bool m_bPlayedCureScream;	// have we played a scream sound for our parasite?
 	bool IsInfested();
 	CNetworkVar(float, m_fInfestedTime);	// how much time left on the infestation
 	CNetworkVar(float, m_fInfestedStartTime);	// when the marine first got infested
 	int m_iInfestCycle;	
+	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	virtual void Extinguish();

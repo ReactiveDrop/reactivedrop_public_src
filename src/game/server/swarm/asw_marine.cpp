@@ -376,6 +376,17 @@ END_DATADESC()
 BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
 	DEFINE_SCRIPTFUNC( IsInhabited, "true if the marine is a player, false if the marine is a bot" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "get the player that owns the marine" )
+	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning marine." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the marine into flames." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the marine." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptCureInfestation, "CureInfestation", "Cures an infestation." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveAmmo, "GiveAmmo", "Gives the marine ammo for the specified ammo index." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the marine a weapon." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDropWeapon, "DropWeapon", "Makes the marine drop a weapon." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the marine." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetInvTable, "GetInvTable", "Returns a table of the marine's inventory data." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 END_SCRIPTDESC()
 
 extern ConVar weapon_showproficiency;
@@ -420,6 +431,7 @@ ConVar asw_marine_special_idle_chatter_chance( "asw_marine_special_idle_chatter_
 ConVar asw_force_ai_fire("asw_force_ai_fire", "0", FCVAR_CHEAT, "Forces all AI marines to fire constantly");
 ConVar asw_realistic_death_chatter( "asw_realistic_death_chatter", "0", FCVAR_CHEAT, "If true, only 1 nearby marine will shout about marine deaths" );
 ConVar asw_god( "asw_god", "0", FCVAR_CHEAT, "Set to 1 to make marines invulnerable" );
+ConVar rd_infinite_ammo( "rd_infinite_ammo", "0", FCVAR_CHEAT, "Marine's active weapon will never run out of ammo" );
 extern ConVar asw_sentry_friendly_fire_scale;
 extern ConVar asw_marine_ff_absorption;
 ConVar asw_movement_direction_tolerance( "asw_movement_direction_tolerance", "30.0", FCVAR_CHEAT );
@@ -3183,6 +3195,128 @@ void CASW_Marine::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTar
 	}
 }
 
+void CASW_Marine::ScriptGiveAmmo( int iCount, int iAmmoIndex )
+{
+	GiveAmmo( iCount, iAmmoIndex, false );
+}
+
+void CASW_Marine::ScriptGiveWeapon( const char *pszName, int slot )
+{
+	CASW_Weapon* pWeapon = dynamic_cast<CASW_Weapon*>(Weapon_Create(pszName));
+	if ( !pWeapon )
+	{
+		Msg( "NULL Ent in GiveWeapon!\n" );
+		return;
+	}
+
+	int weaponIndex = GetWeaponPositionForPickup(pWeapon->GetClassname());
+	if (( slot < 0 ) || ( weaponIndex == 2 && slot != 2 ) || ( weaponIndex < 2 && slot >= 2 ))
+		slot = weaponIndex;
+
+	bool bshouldSwitch = false;
+
+	if ( GetActiveWeapon() == GetASWWeapon( slot ) )
+		bshouldSwitch = true;
+
+	DropWeapon( slot, true );
+	m_hMyWeapons.Set(slot, pWeapon);
+	Weapon_Equip_Post(pWeapon);
+	if ( bshouldSwitch )
+		Weapon_Switch( pWeapon );
+
+	if ( pWeapon->GetPrimaryAmmoType() != -1 )
+	{
+		int iClips = GetAmmoDef()->MaxCarry( pWeapon->GetPrimaryAmmoType(), this );
+		GiveAmmo( iClips, pWeapon->GetPrimaryAmmoType(), true );
+	}
+}
+
+bool CASW_Marine::ScriptDropWeapon( int iWeaponIndex )
+{
+	bool bshouldSwap = false;
+
+	if ( GetActiveWeapon() == GetASWWeapon( iWeaponIndex ) )
+		bshouldSwap = true;
+
+	bool dropped = DropWeapon(iWeaponIndex, true);
+
+	if ( !dropped )
+		return false;
+
+	if ( bshouldSwap && SwitchToNextBestWeapon( NULL ) )
+	{
+		// explicitly tell this client to play the weapon switch anim, since he didn't predict this change
+		TE_MarineAnimEventJustCommander(this, PLAYERANIMEVENT_WEAPON_SWITCH);
+	}
+
+	return dropped;
+}
+
+bool CASW_Marine::ScriptRemoveWeapon( int iWeaponIndex )
+{
+	bool bshouldSwap = false;
+
+	if ( GetActiveWeapon() == GetASWWeapon( iWeaponIndex ) )
+		bshouldSwap = true;
+
+	bool removed = RemoveWeapon(iWeaponIndex, true);
+
+	if ( !removed )
+		return false;
+
+	if ( bshouldSwap && SwitchToNextBestWeapon( NULL ) )
+	{
+		// explicitly tell this client to play the weapon switch anim, since he didn't predict this change
+		TE_MarineAnimEventJustCommander(this, PLAYERANIMEVENT_WEAPON_SWITCH);
+	}
+
+	return removed;
+}
+
+ScriptVariant_t CASW_Marine::Script_GetInvTable()
+{
+	char szInvSlot[256];
+	ScriptVariant_t hInvTable;
+	g_pScriptVM->CreateTable( hInvTable );
+
+	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)
+	{
+		CBaseCombatWeapon *pWep = m_hMyWeapons[i].Get();
+		if ( pWep )
+		{
+			Q_snprintf( szInvSlot, sizeof(szInvSlot), "slot%i", i );
+			g_pScriptVM->SetValue( hInvTable, szInvSlot, ToHScript(pWep) );
+		}
+	}
+
+	return hInvTable;
+}
+
+const char* CASW_Marine::Script_GetMarineName()
+{
+	if ( !GetMarineResource() )
+		return "";
+
+	char *shortName = GetMarineResource()->GetProfile()->m_ShortName;
+	char *name = new char[14];
+	V_StrSlice( shortName, 10, V_strlen(shortName), name, 14 );
+	name[0] = toupper( name[0] );
+
+	return name;
+}
+
+void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char *pszCriteria )
+{
+	AI_CriteriaSet criteria;
+	if ( V_strlen( pszCriteria ) > 0 )
+	{
+		criteria.Merge( pszCriteria );
+	}
+
+	AIConcept_t concept( pszConcept );
+	QueueSpeak( concept, this, delay, criteria );
+}
+
 // healing
 void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Marine *pMedic, CBaseEntity* pHealingWeapon /*= NULL */ )
 {
@@ -3406,6 +3540,16 @@ void CASW_Marine::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
 			}
 		}
 	}
+}
+
+void CASW_Marine::ScriptBecomeInfested()
+{
+	BecomeInfested( NULL );
+}
+
+void CASW_Marine::ScriptCureInfestation()
+{
+	CureInfestation( NULL, 0 );
 }
 
 // if we died from infestation, then gib
@@ -4484,6 +4628,36 @@ void CASW_Marine::ProjectBeam( const Vector &vecStart, const Vector &vecDir, int
 	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
 	pBeam->LiveForTime( duration );
+}
+
+void CASW_Marine::ScriptIgnite( float flFlameLifetime )
+{
+	if ( m_flFirstBurnTime == 0 )
+		m_flFirstBurnTime = gpGlobals->curtime;
+
+	if( IsOnFire() )
+		return;
+
+	// scream about being on fire
+	GetMarineSpeech()->PersonalChatter(CHATTER_ON_FIRE);
+
+	AddFlag( FL_ONFIRE );
+	m_bOnFire = true;
+	if ( ASWBurning() )
+	{
+		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, 0.4f, 10.0f * 0.4f, NULL );	// 10 dps, applied every 0.4 seconds
+	}
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "marine_ignited" );
+	if ( event )
+	{
+		event->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( event );
+	}
+
+	m_OnIgnite.FireOutput( this, this );
+
+	m_flLastBurnTime = gpGlobals->curtime;
 }
 
 void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
