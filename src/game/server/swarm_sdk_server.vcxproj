@@ -848,6 +848,7 @@ exit 1
     <ClCompile Include="nav_node.cpp" />
     <ClCompile Include="nav_simplify.cpp" />
     <ClCompile Include="ndebugoverlay.cpp" />
+    <ClCompile Include="netpropmanager.cpp" />
     <ClCompile Include="npc_vehicledriver.cpp" />
     <ClCompile Include="particle_fire.cpp" />
     <ClCompile Include="particle_light.cpp" />
@@ -1749,6 +1750,7 @@ exit 1
     <ClInclude Include="nav_node.h" />
     <ClInclude Include="nav_pathfind.h" />
     <ClInclude Include="ndebugoverlay.h" />
+    <ClInclude Include="netpropmanager.h" />
     <ClInclude Include="networkstringtable_gamedll.h" />
     <ClInclude Include="npc_vehicledriver.h" />
     <ClInclude Include="particle_fire.h" />

@@ -15,6 +15,7 @@
 #include "sceneentity.h"		// for exposing scene precache function
 #include "isaverestore.h"
 #include "gamerules.h"
+#include "netpropmanager.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -225,6 +226,39 @@ CScriptKeyValues::~CScriptKeyValues( )
 	}
 	m_pKeyValues = NULL;
 }
+
+
+
+
+// When a scripter wants to change a netprop value, they can use the
+// CNetPropManager class; it checks for errors and such on its own.
+CNetPropManager g_NetProps;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CNetPropManager, "CNetPropManager", SCRIPT_SINGLETON "Used to get/set entity network fields" )
+	DEFINE_SCRIPTFUNC( GetPropInt, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropFloat, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropVector, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropEntity, "Arguments: ( entity, propertyName ) - returns an entity" )
+	DEFINE_SCRIPTFUNC( GetPropString, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( SetPropInt, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( SetPropFloat, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( SetPropVector, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( SetPropEntity, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( SetPropString, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( GetPropIntArray, "Arguments: ( entity, propertyName, arrayElement )" )
+	DEFINE_SCRIPTFUNC( GetPropFloatArray, "Arguments: ( entity, propertyName, arrayElement )" )
+	DEFINE_SCRIPTFUNC( GetPropVectorArray, "Arguments: ( entity, propertyName, arrayElement )" )
+	DEFINE_SCRIPTFUNC( GetPropEntityArray, "Arguments: ( entity, propertyName, arrayElement ) - returns an entity" )
+	DEFINE_SCRIPTFUNC( GetPropStringArray, "Arguments: ( entity, propertyName, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropIntArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropFloatArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropVectorArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropEntityArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropStringArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( GetPropArraySize, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( HasProp, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropType, "Arguments: ( entity, propertyName )" )
+END_SCRIPTDESC()
 
 
 
@@ -442,6 +476,7 @@ bool VScriptServerInit()
 				}
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
+				g_pScriptVM->RegisterInstance( &g_NetProps, "NetProps" );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
