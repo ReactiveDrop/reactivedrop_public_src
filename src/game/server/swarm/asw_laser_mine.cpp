@@ -282,7 +282,9 @@ CASW_Laser_Mine* CASW_Laser_Mine::ASW_Laser_Mine_Create( const Vector &position,
 	ConcatTransforms( wallMatrix, fRotateMatrix, finalMatrix );
 	MatrixAngles( finalMatrix, angMine );
 
-	Vector vecSrc = pOwner->WorldSpaceCenter();
+	Vector vecSrc = Vector( 0, 0, 0 );
+	if ( pOwner )
+		vecSrc = pOwner->WorldSpaceCenter();
 	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( pOwner );
 	if ( pMarine )
 		vecSrc = pMarine->GetOffhandThrowSource();

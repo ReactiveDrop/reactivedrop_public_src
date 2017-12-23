@@ -198,7 +198,7 @@ public:
 	// mission
 	virtual void			RequestStartMission(CASW_Player *pPlayer);
 	virtual void			StartMission();
-	virtual void			RestartMission( CASW_Player *pPlayer, bool bForce = false );
+	virtual void			RestartMission( CASW_Player *pPlayer, bool bForce = false, bool bSkipFail = false );
 	virtual void			RestartMissionCountdown( CASW_Player *pPlayer );			// restart a mission mid-game, with a 5 second countdown
 	virtual void			CheatCompleteMission();
 	CASW_Mission_Manager* GetMissionManager();

@@ -55,6 +55,7 @@ public:
 	void AddWanderer( CASW_Spawn_Definition *pSpawn );              // creates a single alien somewhere near the marines
 	bool PrespawnAliens( CASW_Spawn_Definition *pSpawn );           // creates aliens in separate open spaces
 	bool SpawnAlienPack( CASW_Spawn_Definition *pSpawn );           // creates aliens in a cluster
+	bool ScriptSpawnAlienAtRandomNode( const char *szAlienClass );
 
 	// ported from riflemod
 	void PrespawnAliens(int multiplier);

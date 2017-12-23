@@ -412,6 +412,15 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 	return false;
 }
 
+bool CASW_Spawn_Manager::ScriptSpawnAlienAtRandomNode( const char *szAlienClass )
+{
+	char szSpawn[256];
+	Q_snprintf( szSpawn, sizeof(szSpawn), "NPC { AlienClass %s }", szAlienClass );
+	CASW_Spawn_Definition spawn( KeyValues::AutoDeleteInline( KeyValues::FromString( "WANDERER", szSpawn ) ) );
+
+	return SpawnAlientAtRandomNode( &spawn );
+}
+
 bool CASW_Spawn_Manager::AddHorde( int iHordeSize, CASW_Spawn_Definition *pSpawn )
 {
 	m_iHordeToSpawn = iHordeSize;

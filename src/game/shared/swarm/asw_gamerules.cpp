@@ -2332,7 +2332,7 @@ void CAlienSwarm::RestartMissionCountdown( CASW_Player *pPlayer )
 	SetForceReady( ASW_FR_INGAME_RESTART );
 }
 
-void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce )
+void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipFail )
 {
 	// don't allow restarting if we're on the campaign map, as this does Bad Things (tm)
 	if (GetGameState() >= ASW_GS_CAMPAIGNMAP)
@@ -2349,7 +2349,16 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce )
 		}
 	}
 
-	if ( GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
+	// notify players of our mission restart
+	IGameEvent * event = gameeventmanager->CreateEvent( "asw_mission_restart" );
+	if ( event )
+	{
+		m_iMissionRestartCount++;
+		event->SetInt( "restartcount", m_iMissionRestartCount );		
+		gameeventmanager->FireEvent( event );
+	}
+
+	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
 	{
 		// They've been playing a bit... go to the mission fail screen instead!
 		ASWGameRules()->MissionComplete( false );
@@ -2384,15 +2393,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce )
 
 	CBaseEntity *pEnt;
 	CBaseEntity *pNextEntity;
-
-	// notify players of our mission restart
-	IGameEvent * event = gameeventmanager->CreateEvent( "asw_mission_restart" );
-	if ( event )
-	{
-		m_iMissionRestartCount++;
-		event->SetInt( "restartcount", m_iMissionRestartCount );		
-		gameeventmanager->FireEvent( event );
-	}
 
 	// reset the node count since we'll be loading all these in again
 	CNodeEnt::m_nNodeCount = 0;
