@@ -220,6 +220,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CBaseCombatCharacter, "Alien Swarm buzzer" )
 	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the buzzer's orders" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the buzzer to move to an entity handle, second parameter ignore marines" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the buzzer to chase the nearest marine" )
+	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning buzzer." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the buzzer into flames." )
 END_SCRIPTDESC()
 
 CASW_Buzzer::CASW_Buzzer()
@@ -3129,6 +3131,11 @@ int CASW_Buzzer::SelectSchedule( void )
 	}
 
 	return BaseClass::SelectSchedule();
+}
+
+void CASW_Buzzer::ScriptIgnite( float flFlameLifetime )
+{
+	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
 }
 
 void CASW_Buzzer::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )

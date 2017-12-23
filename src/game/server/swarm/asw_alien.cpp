@@ -158,6 +158,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
 	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
+	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning alien." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
 END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
@@ -2421,6 +2423,11 @@ void CASW_Alien::MoveAside()
 		}
 		//SetSchedule(SCHED_IDLE_WALK);
 	}
+}
+
+void CASW_Alien::ScriptIgnite( float flFlameLifetime )
+{
+	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
 }
 
 void CASW_Alien::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )

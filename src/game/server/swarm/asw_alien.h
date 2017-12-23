@@ -225,6 +225,7 @@ public:
 	virtual void GatherConditions();
 	virtual void IgnoreMarines(bool bIgnoreMarines);
 	virtual void MoveAside();
+	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	virtual void Extinguish();

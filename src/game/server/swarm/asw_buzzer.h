@@ -183,6 +183,7 @@ public:
 	CASW_AI_Senses* GetASWSenses();
 	void SetDistSwarmSense( float flDistSense );
 
+	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
 
