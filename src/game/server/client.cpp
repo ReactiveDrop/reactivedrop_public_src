@@ -1291,6 +1291,87 @@ CON_COMMAND_F( noclip, "Toggle. Player becomes non-solid and flies.  Optional ar
 	}
 }
 
+void EnableRDNoClip( CASW_Marine *pMarine )
+{
+	// Disengage from hierarchy
+	pMarine->SetParent( NULL );
+	pMarine->SetMoveType( MOVETYPE_NOCLIP );
+	ClientPrint( pMarine->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip ON\n");
+	pMarine->AddEFlags( EFL_NOCLIP_ACTIVE );
+
+	UTIL_LogPrintf( "%s entered RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pMarine->GetCommander() ) );
+}
+
+void DisableRDNoClip( CASW_Marine *pMarine )
+{
+	CPlayerState *pl = pMarine->GetCommander()->PlayerData();
+	Assert( pl );
+
+	pMarine->RemoveEFlags( EFL_NOCLIP_ACTIVE );
+	pMarine->SetMoveType( MOVETYPE_WALK );
+
+	ClientPrint( pMarine->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip OFF\n");
+	Vector oldorigin = pMarine->GetAbsOrigin();
+	unsigned int mask = MASK_PLAYERSOLID;
+	if ( noclip_fixup.GetBool() && !TestEntityPosition( pMarine, mask ) )
+	{
+		Vector forward, right, up;
+
+		AngleVectors ( pl->v_angle, &forward, &right, &up);
+
+		if ( !FindEmptySpace( pMarine, mask, forward, right, up, &oldorigin ) )
+		{
+			Msg( "Can't find the world\n" );
+		}
+
+		pMarine->SetAbsOrigin( oldorigin );
+	}
+
+	UTIL_LogPrintf( "%s left RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pMarine->GetCommander() ) );
+}
+
+CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional argument of 0 or 1 to force enable/disable", FCVAR_CHEAT )
+{
+	if ( !sv_cheats->GetBool() )
+		return;
+
+	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
+	if ( !pPlayer )
+		return;
+
+#ifdef INFESTED_DLL
+	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
+	CASW_Marine *pMarine = pASWPlayer->GetMarine();
+	if ( !pMarine )
+		return;
+#endif
+
+	if ( args.ArgC() >= 2 )
+	{
+		bool bEnable = Q_atoi( args.Arg( 1 ) ) ? true : false;
+		if ( bEnable && pMarine->GetMoveType() != MOVETYPE_NOCLIP )
+		{
+			EnableRDNoClip( pMarine );
+		}
+		else if ( !bEnable && pMarine->GetMoveType() == MOVETYPE_NOCLIP )
+		{
+			DisableRDNoClip( pMarine );
+		}
+	}
+	else
+	{
+		// Toggle the noclip state if there aren't any arguments.
+		if ( pMarine->GetMoveType() != MOVETYPE_NOCLIP )
+		{
+			EnableRDNoClip( pMarine );
+		}
+		else
+		{
+			DisableRDNoClip( pMarine );
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 // Sets client to godmode
 //------------------------------------------------------------------------------

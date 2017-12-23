@@ -230,7 +230,7 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 					//ucmd->buttons |= IN_ASW_STOP;
 				}
 
-				m_hMarine->SetMoveType( MOVETYPE_WALK );
+				//m_hMarine->SetMoveType( MOVETYPE_WALK ); // commented out in order for marines to use other movetypes
 				MarineMove()->SetupMarineMove( this, m_hMarine.Get(), ucmd, moveHelper, g_pMoveData);
 				g_pMarineGameMovement->ProcessMovement(this, m_hMarine.Get(), g_pMoveData);
 				MarineMove()->FinishMarineMove( this, m_hMarine.Get(), ucmd, g_pMoveData );
