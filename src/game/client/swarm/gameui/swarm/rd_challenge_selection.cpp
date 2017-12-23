@@ -157,6 +157,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 		m_imgIcon->SetVisible( false );
 	}
 	m_szChallengeDescription = pKV->GetString( "description", "#rd_challenge_selection_no_description" );
+	m_szChallengeAuthor = pKV->GetString( "author", "" );
 
 	if ( m_nWorkshopID == k_PublishedFileIdInvalid )
 	{
@@ -320,6 +321,15 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	else if ( ReactiveDropChallenges::IsOfficial( pChallenge->m_szChallengeName.Get() ) )
 	{
 		m_lblAuthor->SetText( "#rd_challenge_selection_author_official" );
+		m_lblAuthor->SetVisible( true );
+	}
+	else if ( Q_strcmp( pChallenge->m_szChallengeAuthor.Get(), "" ) )
+	{
+		wchar_t kvzName[k_cwchPersonaNameMax];
+		Q_UTF8ToUnicode( pChallenge->m_szChallengeAuthor.Get(), kvzName, sizeof( kvzName ) );
+		wchar_t kvzAuthor[256];
+		g_pVGuiLocalize->ConstructString( kvzAuthor, sizeof( kvzAuthor ), g_pVGuiLocalize->FindSafe( "#rd_challenge_selection_author" ), 1, kvzName );
+		m_lblAuthor->SetText( kvzAuthor );
 		m_lblAuthor->SetVisible( true );
 	}
 	else

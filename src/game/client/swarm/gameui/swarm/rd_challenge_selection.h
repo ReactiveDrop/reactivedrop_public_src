@@ -19,6 +19,7 @@ namespace BaseModUI
 
 		virtual bool IsLabel() { return false; }
 
+		CUtlString m_szChallengeAuthor;
 		CUtlString m_szChallengeName;
 		CUtlString m_szChallengeDescription;
 
