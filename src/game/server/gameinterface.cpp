@@ -50,6 +50,7 @@
 #include "physics.h"
 #include "igameevents.h"
 #include "EventLog.h"
+#include "scriptgameeventlistener.h"
 #include "datacache/idatacache.h"
 #include "engine/ivdebugoverlay.h"
 #include "shareddefs.h"
@@ -584,6 +585,9 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 
 	// Add sound emitter
 	IGameSystem::Add( SoundEmitterSystem() );
+
+	// Add VScript game event listener system
+	IGameSystem::Add( g_pScriptGameEventListener );
 
 #ifdef SERVER_USES_VGUI
 	// Startup vgui

@@ -901,6 +901,7 @@ exit 1
     <ClCompile Include="scratchpad_gamedll_helpers.cpp" />
     <ClCompile Include="scripted.cpp" />
     <ClCompile Include="scriptedtarget.cpp" />
+    <ClCompile Include="ScriptGameEventListener.cpp" />
     <ClCompile Include="sendproxy.cpp" />
     <ClCompile Include="serverbenchmark_base.cpp" />
     <ClCompile Include="ServerNetworkProperty.cpp" />
@@ -1791,6 +1792,7 @@ exit 1
     <ClInclude Include="scratchpad_gamedll_helpers.h" />
     <ClInclude Include="scripted.h" />
     <ClInclude Include="scriptedtarget.h" />
+    <ClInclude Include="ScriptGameEventListener.h" />
     <ClInclude Include="sendprop_priorities.h" />
     <ClInclude Include="sendproxy.h" />
     <ClInclude Include="serverbenchmark_base.h" />

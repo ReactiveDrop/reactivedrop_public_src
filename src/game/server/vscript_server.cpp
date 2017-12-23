@@ -414,6 +414,24 @@ static float ScriptTraceLine( const Vector &vecStart, const Vector &vecEnd, HSCR
 	}
 }
 
+HSCRIPT Script_PlayerInstanceFromIndex( int playerIndex )
+{
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerIndex );
+	return ToHScript( pPlayer );
+}
+
+HSCRIPT Script_GetPlayerFromUserID( int userID )
+{
+	CBasePlayer *pPlayer = UTIL_PlayerByUserId( userID );
+	return ToHScript( pPlayer );
+}
+
+HSCRIPT Script_EntIndexToHScript( int entIndex )
+{
+	CBaseEntity *pBaseEntity = UTIL_EntityByIndex( entIndex );
+	return ToHScript( pBaseEntity );
+}
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -468,6 +486,10 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, NDebugOverlay::Line, "DebugDrawLine", "Draw a debug overlay box" );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
+
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_EntIndexToHScript, "EntIndexToHScript", "Returns the script handle for the given entity index." );
 
 				
 				if ( GameRules() )
