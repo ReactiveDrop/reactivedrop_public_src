@@ -446,6 +446,9 @@ END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CBasePlayer, CBaseAnimating, "The player entity." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIsPlayerNoclipping, "IsNoclipping", "Returns true if the player is in noclip mode." ) 
+	DEFINE_SCRIPTFUNC( GetNetworkIDString, "Get the player's network (i.e. Steam) ID." )
+	DEFINE_SCRIPTFUNC( GetPlayerName, "Get the player's name." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetPlayerUserID, "GetPlayerUserID", "Get the player's userID." )
 END_SCRIPTDESC();
 
 
@@ -6716,6 +6719,14 @@ void CBasePlayer::ShowCrosshair( bool bShow )
 bool CBasePlayer::ScriptIsPlayerNoclipping( void )
 {
 	return ( GetMoveType() == MOVETYPE_NOCLIP );
+}
+
+//-----------------------------------------------------------------------------
+// VScript: Gets the player's UserID
+//-----------------------------------------------------------------------------
+int CBasePlayer::ScriptGetPlayerUserID( void )
+{
+	return GetUserID();
 }
 
 

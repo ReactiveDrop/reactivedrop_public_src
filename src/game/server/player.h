@@ -405,6 +405,8 @@ public:
 	bool					ScriptIsPlayerNoclipping( void );
 	virtual void			NoClipStateChanged( void ) { };
 
+	int						ScriptGetPlayerUserID( void );
+
 	// View model prediction setup
 	void					CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );
 
