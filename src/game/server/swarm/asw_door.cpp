@@ -4,6 +4,7 @@
 #include "npcevent.h"
 #include "engine/IEngineSound.h"
 #include "asw_door.h"
+#include "eventqueue.h"
 #include "locksounds.h"
 #include "filters.h"
 #include "physics.h"
@@ -1427,6 +1428,7 @@ void CASW_Door::DoorSmoke()
 		pEmitter->SetAbsAngles(GetAbsAngles());
 		pEmitter->Spawn();
 		//pEmitter->SetParent( this );
+		g_EventQueue.AddEvent( pEmitter, "Kill", 2.0f, pEmitter, pEmitter );
 	}
 	EmitSound("ASW_Door.Dented");
 }
