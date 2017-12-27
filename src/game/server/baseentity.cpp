@@ -2460,6 +2460,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( GetTeamNumber, "GetTeam", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( ChangeTeam, "SetTeam", ""  )
 
+	DEFINE_SCRIPTFUNC_NAMED( ScriptTakeDamage, "TakeDamage", "Causes the entity to take damage" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSpawn, "Spawn", "Spawns the entity into the game." )
 	DEFINE_SCRIPTFUNC( Activate, "Activates the spawned entity." )
 	DEFINE_SCRIPTFUNC( SetCollisionGroup, "Sets the entity's collision group." )
