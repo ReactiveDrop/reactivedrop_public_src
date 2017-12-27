@@ -83,7 +83,7 @@ void CASW_Grub::Spawn( void )
 	SetNavType( NAV_GROUND );
 	SetBloodColor( BLOOD_COLOR_GREEN );
 	m_NPCState	= NPC_STATE_NONE;
-	m_iHealth	= 1;
+	m_iHealth	= 1 + m_iHealthBonus;
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );

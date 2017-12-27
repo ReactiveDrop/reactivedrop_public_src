@@ -870,7 +870,7 @@ void CNPC_AntlionGuard::Spawn( void )
 	SetNavType( NAV_GROUND );
 	SetBloodColor( BLOOD_COLOR_GREEN );
 
-	m_iHealth = sk_antlionguard_health.GetFloat();
+	m_iHealth = sk_antlionguard_health.GetFloat() + m_iHealthBonus;
 	m_iMaxHealth = m_iHealth;
 	m_flFieldOfView = VIEW_FIELD_FULL;
 	

@@ -74,7 +74,7 @@ void CASW_Harvester::Spawn( void )
 	SetHullType(HULL_WIDE_SHORT);
 	UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 				
-	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(200);
+	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(200) + m_iHealthBonus;
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );
 

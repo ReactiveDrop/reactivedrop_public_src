@@ -9,6 +9,7 @@
 #include "entityoutput.h"
 #include "props.h"
 #include "asw_alien.h"
+#include "asw_buzzer.h"
 #include "asw_director.h"
 #include "asw_fail_advice.h"
 // memdbgon must be the last include file in a .cpp file!!!
@@ -281,6 +282,18 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		pAlien->m_iHealthBonus =  m_iHealthBonusSp;
 		pAlien->m_fSizeScale	= m_fSizeScaleSp; 
 		pAlien->m_fSpeedScale	= m_fSpeedScaleSp; 
+	}
+
+	CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer*>(pEntity);
+	if (pBuzzer)
+	{
+		pBuzzer->m_bFlammable	= m_bFlammableSp;
+		pBuzzer->m_bTeslable	= m_bTeslableSp;
+		pBuzzer->m_bFreezable	= m_bFreezableSp;
+		pBuzzer->m_bFlinchable	= m_bFlinchableSp;
+		pBuzzer->m_iHealthBonus = m_iHealthBonusSp;
+		pBuzzer->m_fSizeScale	= m_fSizeScaleSp;
+		pBuzzer->m_fSpeedScale	= m_fSpeedScaleSp;
 	}
 
 	CAI_BaseNPC	*pNPC = pEntity->MyNPCPointer();

@@ -1268,11 +1268,11 @@ void CASW_Parasite::SetHealthByDifficultyLevel()
 {
 	if (FClassnameIs(this, "asw_parasite_defanged"))
 	{		
-		SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(10));
+		SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(10) + m_iHealthBonus);
 	}
 	else
 	{
-		SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(30));
+		SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(30) + m_iHealthBonus);
 	}
 }
 

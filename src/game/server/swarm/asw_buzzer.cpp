@@ -43,6 +43,7 @@
 #include "asw_director.h"
 #include "asw_weapon.h"
 #include "asw_game_resource.h"
+#include "asw_spawn_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -201,6 +202,14 @@ BEGIN_DATADESC( CASW_Buzzer )
 	DEFINE_FIELD(m_bElectroStunned, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
 
+	DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
+    DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
+    DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
+    DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ),
+	DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
+    DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
+    DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
+
 	// Function Pointers
 	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableSwarm", InputDisableSwarm ),
 
@@ -241,6 +250,13 @@ CASW_Buzzer::CASW_Buzzer()
 	m_fNextPainSound = 0;
 	m_bHoldoutAlien = false;
 	m_flLastDamageTime = 0;
+	m_bFlammable = true;
+	m_bTeslable = true;
+	m_bFreezable = true;
+	m_bFlinchable = true;
+	m_iHealthBonus = 0;
+	m_fSizeScale = 1.0f;
+	m_fSpeedScale = 1.0f;
 }
 
 CASW_Buzzer::~CASW_Buzzer()
@@ -737,13 +753,13 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	{
 		// if we take fire or blast damage, catch on fire
 		if (nRetVal > 0 &&
-			( (info.GetDamageType() & DMG_BURN) || (info.GetDamageType() & DMG_BLAST) )
+			( ((info.GetDamageType() & DMG_BURN) || (info.GetDamageType() & DMG_BLAST)) && m_bFlammable )
 			)
 			ASW_Ignite(30.0f, 0, info.GetAttacker(), info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds
-	if (info.GetDamageType() & DMG_SHOCK)
+	if (info.GetDamageType() & DMG_SHOCK && m_bTeslable)
 	{
 		ElectroStun( asw_stun_grenade_time.GetFloat() );
 	}
@@ -2209,6 +2225,7 @@ void CASW_Buzzer::Spawn(void)
 
 	m_bHeld = false;
 	StopLoitering();
+	SetModelScale( m_fSizeScale );
 }
 
 //-----------------------------------------------------------------------------
@@ -2712,6 +2729,9 @@ float CASW_Buzzer::GetDefaultNavGoalTolerance()
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) 
 {
+	if ( !m_bFreezable )
+        return;
+
 	BaseClass::Freeze( flFreezeAmount, pFreezer, pFreezeRay );
 	
 	if ( GetMoveType() != MOVETYPE_NONE && GetFrozenAmount() > 0.0f )
@@ -3007,6 +3027,13 @@ void CASW_Buzzer::GatherConditions()
 		ClearCondition(COND_RECEIVED_ORDERS);
 	}
 
+	// reactivedrop: making unflinchable aliens
+	if ( !m_bFlinchable )
+	{
+		ClearCondition( COND_HEAVY_DAMAGE );
+		ClearCondition( COND_LIGHT_DAMAGE );
+	}
+
 	if (HasCondition(COND_NEW_ENEMY)
 		&& m_AlienOrders != AOT_MoveToIgnoringMarines)	// if we're not ignoring marines, finish our orders once we spot an enemy
 		ClearAlienOrders();
@@ -3222,7 +3249,7 @@ void CASW_Buzzer::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 
 void CASW_Buzzer::SetHealthByDifficultyLevel()
 {	
-	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(sk_asw_buzzer_health.GetFloat()));		
+	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(sk_asw_buzzer_health.GetFloat()) + m_iHealthBonus);
 }
 
 void CASW_Buzzer::ElectroStun( float flStunTime )

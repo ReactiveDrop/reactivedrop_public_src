@@ -1439,8 +1439,8 @@ void CASW_Queen::SetHealthByDifficultyLevel()
 		default: 5000;
 		}
 	}
-	SetHealth(health);
-	SetMaxHealth(health);
+	SetHealth(health + m_iHealthBonus);
+	SetMaxHealth(health + m_iHealthBonus);
 }
 
 int	CASW_Queen::DrawDebugTextOverlays()

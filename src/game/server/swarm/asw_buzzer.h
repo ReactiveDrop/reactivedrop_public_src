@@ -160,6 +160,14 @@ public:
 	bool m_bIgnoreMarines;
 	bool m_bFailedMoveTo;
 
+	bool m_bFlammable;
+	bool m_bTeslable;
+	bool m_bFreezable;
+	bool m_bFlinchable;
+	int  m_iHealthBonus;
+	float m_fSizeScale;
+	float m_fSpeedScale;
+
 	virtual void SetHealthByDifficultyLevel();
 
 	virtual bool IsAlien(void) const { return true; }

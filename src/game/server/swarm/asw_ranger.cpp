@@ -151,9 +151,9 @@ void CASW_Ranger::SetHealthByDifficultyLevel()
 {
 	int iHealth = MAX( 25, ASWGameRules()->ModifyAlienHealthBySkillLevel( asw_ranger_health.GetInt() ) );
 	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting ranger's initial health to %d\n", iHealth );
-	SetHealth( iHealth );
-	SetMaxHealth( iHealth );
+		Msg( "Setting ranger's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 
