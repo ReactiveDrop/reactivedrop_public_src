@@ -1814,7 +1814,10 @@ void CAlienSwarm::SetMaxMarines( CASW_Player *pException )
 	}
 	else if ( gpGlobals->maxClients == 1 )
 	{
-		pGameResource->SetMaxMarines( 4, false );
+		if ( pGameResource->IsOfflineGame() )
+			pGameResource->SetMaxMarines( mm_max_players.GetInt(), false );
+		else
+			pGameResource->SetMaxMarines( 4, false );
 	}
 	else
 	{

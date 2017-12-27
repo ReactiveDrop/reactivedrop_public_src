@@ -190,7 +190,7 @@ void GameSettings::Activate()
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );
-	bool showNumSlots = showGameAccess;
+	bool showNumSlots = showGameAccess || !Q_stricmp( "offline", szNetwork );
 	
 	// On X360 we cannot allow selecting server type until the
 	// session is actually created
@@ -319,7 +319,7 @@ void GameSettings::Activate()
 		m_drpNumSlots->SetVisible( showNumSlots );
 		m_drpNumSlots->SetEnabled( showNumSlots );
 
-		if ( m_pSettings->GetInt( "members/numSlots", 4 ) == 4 )
+		if ( m_pSettings->GetInt( "members/numSlots", 4 ) <= 4 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_4_slots" );
 			mm_max_players.SetValue( 4 );
@@ -337,6 +337,10 @@ void GameSettings::Activate()
 	if ( showGameAccess )
 	{
 		m_pHeaderFooter->SetGradientBarPos( 140, 210 );
+	}
+	else if ( showNumSlots )
+	{
+		m_pHeaderFooter->SetGradientBarPos( 140, 185 );
 	}
 	else
 	{

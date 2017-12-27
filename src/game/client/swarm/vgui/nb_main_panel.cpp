@@ -46,6 +46,9 @@
 #define ADDBOT_BUTTON_ICON "vgui/briefing/addbot_icon"
 #define DESELECT_MARINES_BUTTON_ICON "vgui/briefing/deselectmarines_icon"
 
+extern ConVar mp_gamemode;
+extern ConVar mm_max_players;
+
 using BaseModUI::GenericPanelList;
 
 CUtlVector<int> CNB_Main_Panel::s_QueuedSpendSkillPoints;
@@ -296,6 +299,10 @@ void CNB_Main_Panel::OnTick()
 {
 	BaseClass::OnTick();
 
+	char mapName[255];
+	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );
+	bool bPracticeMap = ( !Q_strnicmp( mapName, "asi-jac1-landingbay_pract", 25 ) );
+
 	unsigned short nBriefingSlots = 4;
 	if ( !Briefing()->IsOfflineGame() )
 	{
@@ -306,6 +313,11 @@ void CNB_Main_Panel::OnTick()
 				break;
 			}
 		}
+	}
+	else
+	{
+		if ( !bPracticeMap && V_stricmp( mp_gamemode.GetString(), "single_mission" ) != 0 )
+			nBriefingSlots = mm_max_players.GetInt();
 	}
 
 	// remove extra rows
