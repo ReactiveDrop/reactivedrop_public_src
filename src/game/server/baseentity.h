@@ -906,6 +906,7 @@ public:
 	virtual bool	IsBaseTrain( void ) const { return false; }
 	bool			IsBSPModel() const;
 	bool			IsInWorld( void ) const;
+	virtual bool	IsAlien(void) const { return false; }
 
 	virtual bool	IsBaseCombatWeapon( void ) const { return false; }
 	virtual CBaseCombatWeapon *MyCombatWeaponPointer( void ) { return NULL; }

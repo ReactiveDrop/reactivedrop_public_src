@@ -162,6 +162,8 @@ public:
 
 	virtual void SetHealthByDifficultyLevel();
 
+	virtual bool IsAlien(void) const { return true; }
+
 	void SetSpawner(CASW_Base_Spawner* spawner);
 	CAI_BaseNPC* GetNPC() { return this; }
 	virtual bool CanStartBurrowed() { return false; }
