@@ -47,9 +47,12 @@ BEGIN_ENT_SCRIPTDESC( CBaseCombatWeapon, CBaseAnimating, "Weapon" )
 #ifdef GAME_DLL
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClip1, "SetClip1", "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClip2, "SetClip2", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClips, "SetClips", "" )
 #endif
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo1, "GetMaxAmmo1", "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo2, "GetMaxAmmo2", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetClips, "GetClips", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxClips, "GetMaxClips", "" )
 END_SCRIPTDESC();
 
 CBaseCombatWeapon::CBaseCombatWeapon()
@@ -2414,6 +2417,49 @@ int CBaseCombatWeapon::ScriptGetMaxAmmo2()
 
 	return iAmmo;
 }
+
+int CBaseCombatWeapon::ScriptGetClips()
+{
+	if ( !GetOwner() )
+		return -1;
+
+	int nClipSize = GetMaxClip1();
+
+	if ( nClipSize < 1 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
+		return 1;
+
+	int nClips = GetOwner()->GetAmmoCount( m_iPrimaryAmmoType ) / nClipSize;
+
+	return nClips;
+}
+
+int CBaseCombatWeapon::ScriptGetMaxClips()
+{
+	if ( !GetOwner() )
+		return -1;
+
+	int nClipSize = GetMaxClip1();
+
+	if ( nClipSize < 1 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
+		return 1;
+
+	return GetAmmoDef()->MaxCarry( m_iPrimaryAmmoType, GetOwner() ) / nClipSize;
+}
+
+#ifdef GAME_DLL
+void CBaseCombatWeapon::ScriptSetClips( int nClips )
+{
+	if ( !GetOwner() )
+		return;
+
+	int nClipSize = GetMaxClip1();
+
+	if ( nClipSize < 0 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
+		return;
+
+	GetOwner()->VScriptGiveAmmo( (nClipSize * nClips), m_iPrimaryAmmoType );
+}
+#endif
 
 
 #if defined( CLIENT_DLL )

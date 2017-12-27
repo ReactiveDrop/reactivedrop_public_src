@@ -341,9 +341,12 @@ public:
 #ifdef GAME_DLL
 	void					ScriptSetClip1( int iClip1 ) { m_iClip1 = iClip1; }
 	void					ScriptSetClip2( int iClip2 ) { m_iClip2 = iClip2; }
+	void					ScriptSetClips( int nClips );
 #endif
 	int						ScriptGetMaxAmmo1();
 	int						ScriptGetMaxAmmo2();
+	int						ScriptGetClips();
+	int						ScriptGetMaxClips();
 
 	// Ammo quantity queries for weapons that do not use clips. These are only
 	// used to determine how much ammo is in a weapon that does not have an owner.

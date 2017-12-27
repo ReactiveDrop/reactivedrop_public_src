@@ -2285,6 +2285,20 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			newDamage.AssignTo( &flDamage );
 		}
 	}
+	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any" ) )
+	{
+		ScriptVariant_t newDamage;
+		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+		if ( nStatus != SCRIPT_DONE )
+		{
+			DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
+		}
+		else
+		{
+			newDamage.AssignTo( &flDamage );
+		}
+		g_pScriptVM->ReleaseFunction( hFunction );
+	}
 	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
 	{
 		ScriptVariant_t hModeScript;
@@ -3030,6 +3044,17 @@ int CBaseCombatCharacter::GiveAmmo( int iCount, const char *szName, bool bSuppre
 		return 0;
 	}
 	return GiveAmmo( iCount, iAmmoType, bSuppressSound );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Give the player some ammo.
+//-----------------------------------------------------------------------------
+void CBaseCombatCharacter::VScriptGiveAmmo( int iCount, int iAmmoIndex )
+{
+	if (iCount < 0)
+		return;
+
+	m_iAmmo.Set( iAmmoIndex, iCount );
 }
 
 

@@ -237,6 +237,7 @@ public:
 	void				RemoveAllAmmo( );
 	int					GetAmmoCount( int iAmmoIndex ) const;
 	int					GetAmmoCount( char *szName ) const;
+	void				VScriptGiveAmmo( int iCount, int iAmmoIndex );
 
 	virtual Activity	NPC_TranslateActivity( Activity baseAct );
 

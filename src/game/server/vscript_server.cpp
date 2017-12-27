@@ -16,6 +16,7 @@
 #include "isaverestore.h"
 #include "gamerules.h"
 #include "netpropmanager.h"
+#include "ai_speech.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -228,6 +229,67 @@ CScriptKeyValues::~CScriptKeyValues( )
 }
 
 
+class CScriptResponseCriteria
+{
+public:
+	const char *GetValue( HSCRIPT hEntity, const char *pCriteria )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return "";
+
+		AI_CriteriaSet criteria;
+		pBaseEntity->ModifyOrAppendCriteria( criteria );
+
+		int index = criteria.FindCriterionIndex( pCriteria );
+		if ( !criteria.IsValidIndex( index ) )
+			return "";
+
+		return criteria.GetValue( index );
+	}
+
+	HSCRIPT GetTable( HSCRIPT hEntity )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return NULL;
+
+		AI_CriteriaSet criteria;
+		pBaseEntity->ModifyOrAppendCriteria( criteria );
+
+		ScriptVariant_t hCriterionTable;
+		g_pScriptVM->CreateTable( hCriterionTable );
+
+		for ( int nCriteriaIdx = 0; nCriteriaIdx < criteria.GetCount(); nCriteriaIdx++ )
+		{
+			if ( !criteria.IsValidIndex( nCriteriaIdx ) )
+				continue;
+
+			g_pScriptVM->SetValue( hCriterionTable, criteria.GetName( nCriteriaIdx ), criteria.GetValue( nCriteriaIdx ) );
+		}
+
+		return hCriterionTable;
+	}
+
+	bool HasCriterion( HSCRIPT hEntity, const char *pCriteria )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return false;
+
+		AI_CriteriaSet criteria;
+		pBaseEntity->ModifyOrAppendCriteria( criteria );
+
+		int index = criteria.FindCriterionIndex( pCriteria );
+		return criteria.IsValidIndex( index );
+	}
+} g_ScriptResponseCriteria;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptResponseCriteria, "CScriptResponseCriteria", SCRIPT_SINGLETON "Used to get response criteria" )
+	DEFINE_SCRIPTFUNC( GetValue, "Arguments: ( entity, criteriaName ) - returns a string" )
+	DEFINE_SCRIPTFUNC( GetTable, "Arguments: ( entity ) - returns a table of all criteria" )
+	DEFINE_SCRIPTFUNC( HasCriterion, "Arguments: ( entity, criteriaName ) - returns true if the criterion exists" )
+END_SCRIPTDESC();
 
 
 // When a scripter wants to change a netprop value, they can use the
@@ -276,6 +338,11 @@ static float FrameTime()
 	return gpGlobals->frametime;
 }
 
+static int Script_GetFrameCount()
+{
+	return gpGlobals->framecount;
+}
+
 static void SendToConsole( const char *pszCommand )
 {
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayerOrListenServerHost();
@@ -286,6 +353,13 @@ static void SendToConsole( const char *pszCommand )
 	}
 
 	engine->ClientCommand( pPlayer->edict(), pszCommand );
+}
+
+static void SendToServerConsole( const char *pszCommand )
+{
+	char szCommand[512];
+	Q_snprintf( szCommand, sizeof(szCommand), "%s\n", pszCommand );
+	engine->ServerCommand( szCommand );
 }
 
 static const char *GetMapName()
@@ -432,6 +506,87 @@ HSCRIPT Script_EntIndexToHScript( int entIndex )
 	return ToHScript( pBaseEntity );
 }
 
+static void Script_Say( HSCRIPT hPlayer, const char *pText )
+{
+	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBasePlayer *pPlayer = NULL;
+	char szText[256];
+
+	if ( pBaseEntity )
+		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+	if ( pPlayer )
+	{
+		Q_snprintf( szText, sizeof(szText), "say %s", pText );
+		engine->ClientCommand( pPlayer->edict(), szText );
+	}
+	else
+	{
+		Q_snprintf( szText, sizeof(szText), "Console: %s", pText );
+		UTIL_SayTextAll( szText, pPlayer );
+	}
+}
+
+static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
+{
+	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBasePlayer *pPlayer = NULL;
+
+	if ( pBaseEntity )
+		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+	if ( pPlayer )
+		ClientPrint( pPlayer, iDest, pText );
+}
+
+static void Script_StringToFile( const char *pszFileName, const char *pszString )
+{
+	char szFullFileName[256];
+	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
+
+	static char szFolders[256];
+	bool bHasFolders = false;
+	const char *pszDelimiter = V_strrchr( pszFileName, '/' );
+	if ( pszDelimiter )
+	{
+		bHasFolders = true;
+		V_strncpy( szFolders, pszFileName, MIN( ARRAYSIZE(szFolders), pszDelimiter - pszFileName + 1 ) );
+	}
+
+	if ( bHasFolders )
+		g_pFullFileSystem->CreateDirHierarchy( CFmtStr( "save/vscripts/%s", szFolders ), "GAME" );
+	else
+		g_pFullFileSystem->CreateDirHierarchy( "save/vscripts", "GAME" );
+	CUtlBuffer buf;
+	buf.PutString( pszString );
+	g_pFullFileSystem->WriteFile( szFullFileName, "GAME", buf );
+}
+
+static const char *Script_FileToString( const char *pszFileName )
+{
+	char szFullFileName[256];
+	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
+
+	FileHandle_t fh = g_pFullFileSystem->Open( szFullFileName, "rb" );
+	if ( fh == FILESYSTEM_INVALID_HANDLE )
+		return NULL;
+
+	char szString[16384];
+	int size = g_pFullFileSystem->Size(fh) + 1;
+	if ( size > sizeof(szString) )
+	{
+		Log_Warning( LOG_VScript, "File %s (from %s) is len %i too long for a ScriptFileRead\n", szFullFileName, pszFileName, size );
+		return NULL;
+	}
+
+	CUtlBuffer buf( 0, size, CUtlBuffer::TEXT_BUFFER );
+	g_pFullFileSystem->Read( szString, size, fh );
+	g_pFullFileSystem->Close(fh);
+
+	const char *pszString = (const char*)szString;
+	return pszString;
+}
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -473,11 +628,13 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, UTIL_ShowMessageAll, "ShowMessage", "Print a hud message on all clients" );
 
 				ScriptRegisterFunction( g_pScriptVM, SendToConsole, "Send a string to the console as a command" );
+				ScriptRegisterFunction( g_pScriptVM, SendToServerConsole, "Send a string to the server console as a command" );
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptTraceLine, "TraceLine", "given 2 points & ent to ignore, return fraction along line that hits world or models" );
 
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, FrameTime, "Get the time spent on the server in the last frame" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetFrameCount, "GetFrameCount", "Returns the engines current frame count" );
 				ScriptRegisterFunction( g_pScriptVM, DoEntFire, SCRIPT_ALIAS( "EntFire", "Generate and entity i/o event" ) );
 				ScriptRegisterFunctionNamed( g_pScriptVM, DoEntFireByInstanceHandle, "EntFireByHandle", "Generate and entity i/o event. First parameter is an entity instance." );
 				ScriptRegisterFunction( g_pScriptVM, DoUniqueString, SCRIPT_ALIAS( "UniqueString", "Generate a string guaranteed to be unique across the life of the script VM, with an optional root string. Useful for adding data to tables when not sure what keys are already in use in that table." ) );
@@ -486,6 +643,10 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, NDebugOverlay::Line, "DebugDrawLine", "Draw a debug overlay box" );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
@@ -499,6 +660,14 @@ bool VScriptServerInit()
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 				g_pScriptVM->RegisterInstance( &g_NetProps, "NetProps" );
+				g_pScriptVM->RegisterInstance( &g_ScriptResponseCriteria, "ResponseCriteria" );
+
+				// To be used with Script_ClientPrint
+				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );
+				g_pScriptVM->SetValue( "HUD_PRINTCONSOLE", HUD_PRINTCONSOLE );
+				g_pScriptVM->SetValue( "HUD_PRINTTALK", HUD_PRINTTALK );
+				g_pScriptVM->SetValue( "HUD_PRINTCENTER", HUD_PRINTCENTER );
+				g_pScriptVM->SetValue( "ASW_HUD_PRINTTALKANDCONSOLE", 5 );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
@@ -641,6 +810,48 @@ CON_COMMAND( script_reload_think, "Execute an activation script, replacing exist
 		if ( pEntity->m_ScriptScope.IsInitialized() && pEntity->m_iszScriptThinkFunction != NULL_STRING )
 		{
 			VScriptServerReplaceClosures( STRING(pEntity->m_iszScriptThinkFunction), pEntity->m_ScriptScope, true );
+		}
+	}
+}
+
+CON_COMMAND( scripted_user_func, "Call script from this user, with the value" )
+{
+	if ( !g_pScriptVM )
+	{
+		Log_Warning( LOG_VScript, "Scripting disabled or no server running\n" );
+		return;
+	}
+	
+	CBasePlayer* pPlayer = UTIL_GetCommandClient();
+	const char *pszValue = args[1];
+
+	HSCRIPT hUserCommandFunc = g_pScriptVM->LookupFunction( "UserConsoleCommand" );
+	if ( hUserCommandFunc )
+	{
+		ScriptStatus_t nStatus = g_pScriptVM->Call( hUserCommandFunc, NULL, false, NULL, ToHScript( pPlayer ), pszValue );
+		if ( nStatus != SCRIPT_DONE )
+		{
+			DevWarning( "UserConsoleCommand VScript function did not finish!\n" );
+		}
+		g_pScriptVM->ReleaseFunction( hUserCommandFunc );
+	}
+
+	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+	{
+		ScriptVariant_t hModeScript;
+		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+		{
+			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "UserConsoleCommand", hModeScript ) )
+			{
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL, ToHScript( pPlayer ), pszValue );
+				if ( nStatus != SCRIPT_DONE )
+				{
+					DevWarning( "UserConsoleCommand VScript function did not finish!\n" );
+				}
+
+				g_pScriptVM->ReleaseFunction( hFunction );
+			}
+			g_pScriptVM->ReleaseValue( hModeScript );
 		}
 	}
 }

@@ -2216,6 +2216,36 @@ void CAlienSwarm::StartMission()
 	}
 
 	AddBonusChargesToPickups();
+
+	HSCRIPT hMissionStartFunc = g_pScriptVM->LookupFunction( "OnMissionStart" );
+	if ( hMissionStartFunc )
+	{
+		ScriptStatus_t nStatus = g_pScriptVM->Call( hMissionStartFunc, NULL, false, NULL );
+		if ( nStatus != SCRIPT_DONE )
+		{
+			DevWarning( "OnMissionStart VScript function did not finish!\n" );
+		}
+		g_pScriptVM->ReleaseFunction( hMissionStartFunc );
+	}
+
+	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+	{
+		ScriptVariant_t hModeScript;
+		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+		{
+			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnMissionStart", hModeScript ) )
+			{
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+				if ( nStatus != SCRIPT_DONE )
+				{
+					DevWarning( "OnMissionStart VScript function did not finish!\n" );
+				}
+
+				g_pScriptVM->ReleaseFunction( hFunction );
+			}
+			g_pScriptVM->ReleaseValue( hModeScript );
+		}
+	}
 }
 
 void CAlienSwarm::UpdateLaunching()
