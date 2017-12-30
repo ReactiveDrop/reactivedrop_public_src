@@ -1,0 +1,1450 @@
+// =========================
+// SWARM WEAPON SOUNDS
+// =========================
+
+"ASW_Weapon.LowAmmoClick"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"@weapons/2D/weapon_empty.wav"
+}
+
+"ASW_Weapon.Empty"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_65dB"
+
+	"wave"			"weapons/ar2/ar2_empty.wav"
+}
+
+"FastReload.Success"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"wave"			"@weapons/2D/active_reload1.wav"
+}
+
+"FastReload.Miss"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"wave"			"@weapons/2D/active_reload0.wav"
+}
+
+///////////////////////////////////////////////////
+
+"ASW_Weapon_Autogun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.70"
+	"pitch"			"98,103"
+	"wave"			"^weapons\3D\autogun\singleShot.wav"
+}
+
+"ASW_Weapon_Autogun.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.70"
+	"pitch"			"98,103"
+	"wave"			"@weapons\2D\autogun\singleShotFP.wav"
+}
+
+"ASW_Weapon_Autogun.SpinDown"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"98,103"
+	"wave"			"weapons\3D\autogun\spinDown.wav"
+}
+
+"ASW_GrenadeLauncher.Fire"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"volume"		"0.90"
+	"wave"			"weapons/3D/grenade_launcher/fire.wav"
+}
+
+"ASW_GrenadeLauncher.FireFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"wave"			"weapons/2D/grenade_launcher/fire.wav"
+}
+
+"ASW_Weapon_Rifle.Grenade"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.8"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"125"
+
+	"wave"			"weapons/3D/grenade_launcher/fire.wav"
+}
+
+"ASW_Weapon_Minigun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.70"
+	"pitch"			"120, 125"
+	"wave"			"^weapons\3D\autogun\singleShot.wav"
+}
+
+"ASW_Weapon_Minigun.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.70"
+	"pitch"			"120, 125"
+	"wave"			"@weapons\2D\autogun\singleShotFP.wav"
+}
+
+"ASW_Minigun.Spin"
+{
+	"channel"		"CHAN_AUTO"
+	"pitch"			"100"
+	"volume"		"0.25"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			")weapons/3D/minigun/spin.wav"
+}
+
+"ASW_Weapon_Minigun.MinigunLoop"
+{
+        "channel"           "CHAN_WEAPON"
+        "soundlevel"        "SNDLVL_90dB"
+		"pitch"				"90, 110"
+        "wave"              "weapons\3D\minigun\minigunloop.wav"
+}
+
+"ASW_Weapon_PDW.multiShot"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.90"
+	"wave"			"^weapons\3D\pdw\multiShot.wav"
+}
+
+"ASW_Weapon_PDW.multiShotFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"wave"			"@weapons\2D\pdw\multiShotFP.wav"
+}
+
+"ASW_Weapon_Pistol.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\pistol\singleShot.wav"
+}
+
+"ASW_Weapon_Pistol.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"wave"			"@weapons\2D\pistol\singleShotFP.wav"
+}
+
+"ASW_Weapon_Deagle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.35"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\deagle\deagle.wav"
+}
+
+"ASW_Weapon_Deagle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.45"
+	"wave"			"@weapons\2D\deagle\deagleFP.wav"
+}
+
+"ASW_Weapon_Devastator.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\devastator\devastator.wav"
+}
+
+"ASW_Weapon_Devastator.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"wave"			"@weapons\2D\devastator\devastatorfp.wav"
+}
+
+"ASW_Weapon_Prifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\prifle\singleShot.wav"
+}
+
+"ASW_Weapon_Prifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.80"
+	"pitch"			"95,105"
+	"wave"			"@weapons\2D\prifle\singleShotFP.wav"
+}
+
+
+"ASW_Railgun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.9"
+	"soundlevel"	"SNDLVL_95dB"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\railgun\singleShot.wav"
+}
+
+
+"ASW_Railgun.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"95,105"
+	"wave"			"@weapons\2D\railgun\singleShotFP.wav"
+}
+
+"ASW_Weapon_Rifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.8"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\rifle\singleShot.wav"
+}
+
+"ASW_Weapon_Rifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\rifle\singleShotFP.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"volume"		"1.0"
+	"pitch"			"90, 100"
+	"wave"			"^weapons/3D/sniper/singleShot.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"pitch"			"90, 100"
+	"wave"			"@weapons/2D/sniper/singleShotFP.wav"
+}
+
+"ASW_Weapon_Shotgun.FireAndPump"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.80"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\shotgun\fire_and_load.wav"
+}
+
+"ASW_Weapon_Shotgun.FireAndPumpFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"@weapons\2D\shotgun\fire_and_loadFP.wav"
+}
+
+"ASW_Weapon_Vindicator.FireAndPump"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\vindicator\fire_and_load.wav"
+}
+
+"ASW_Weapon_Vindicator.FireAndPumpFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"@weapons\2D\vindicator\fire_and_loadFP.wav"
+}
+
+"ASWFlashlight.FlashlightToggle"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\flashlightToggle.wav"
+}
+
+"ASW_NightVision.TurnOnFP"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"@weapons/2D/nightVis/on.wav"
+}
+
+"ASW_NightVision.TurnOffFP"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.8"
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"@weapons/2D/nightVis/off.wav"
+}
+
+"ASW_NightVision.TurnOn"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/3D/nightVis/on.wav"
+}
+
+"ASW_NightVision.TurnOff"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/3D/nightVis/off.wav"
+}
+
+"ASW_Stim.StimInject"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_100dB"
+
+	"wave"			"weapons\3D\meds\stimInject.wav"
+}
+
+"ASW_Medkit.Use"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\meds\kitInject.wav"
+}
+
+////////////////////////////////////////////////
+//loop based 
+/////////////////////////////////////////////
+
+"ASW_Weapon_Flamer.FlameLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"			"weapons\3D\flamer\flameLoop.wav"
+}
+
+"ASW_Weapon_Flamer.FlameStop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_85dB"
+	"wave"			"weapons\3D\flamer\flameStop.wav"
+}
+
+"ASW_Extinguisher.OnLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.7"
+	"pitch"			"100"
+	"wave"			"weapons\3D\turret\iceLoop.wav"
+}
+
+"ASW_Extinguisher.Stop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.7"
+	"pitch"			"100"
+	"wave"			"weapons\3D\turret\iceStop.wav"
+}
+
+"ASW_Mining_Laser.Start"
+{
+    "channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"			"weapons\2D\mininglaser1\windUp.wav"
+}
+
+"ASW_Mining_Laser.Run"
+{
+    "channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_90dB"
+
+	"wave"			"weapons\2D\mininglaser1\ready.wav"
+}
+
+"ASW_Mining_Laser.Cut"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_90dB"
+
+	"wave"			"weapons\2D\mininglaser1\cutting.wav"
+}
+
+"ASW_Mining_Laser.Damage"
+{
+    "channel"		"CHAN_AUTO"
+	"volume"		"0.8, 1.0"
+	"pitch"			"90, 110"
+	"soundlevel"	"SNDLVL_80dB"
+	"wave"			"weapons/3D/mininglaser1/damage.wav"
+}
+
+
+"ASW_Mining_Laser.Off"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+	"wave"			"weapons\2D\mininglaser1\off.wav"
+}
+
+"ASW_Tesla_Laser.Loop"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\2D\miningLaser2\loop.wav"
+}
+
+"ASW_Tesla_Laser.Stop"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"0.8, 1.0"
+	"pitch"			"95, 105"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\2D\miningLaser2\stop.wav"
+}
+
+"ASW_Tesla_Laser.Damage"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"0.6, 1.0"
+	"pitch"			"110, 140"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/tesla/arcImpact01.wav"
+		"wave"		"weapons/3D/tesla/arcImpact02.wav"
+		"wave"		"weapons/3D/tesla/arcImpact03.wav"
+		"wave"		"weapons/3D/tesla/arcImpact04.wav"
+	}
+}
+
+"ASW_Tesla_Trap.Zap"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"80, 90"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/tesla/arcImpact01.wav"
+		"wave"		"weapons/3D/tesla/arcImpact02.wav"
+		"wave"		"weapons/3D/tesla/arcImpact03.wav"
+		"wave"		"weapons/3D/tesla/arcImpact04.wav"
+	}
+}
+
+"ASW_Chainsaw.Start"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_70dB"
+	"volume"		"0.80"
+	"wave"			"weapons\2D\chainsaw\startLoop.wav"
+}
+
+"ASW_Chainsaw.attackOn"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_70dB"
+	"volume"		"0.80"
+	"wave"			"weapons\2D\chainsaw\attackOnLoop.wav"
+}
+
+"ASW_Chainsaw.attackOff"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_70dB"
+	"volume"		"0.80"
+	"wave"			"weapons\2D\chainsaw\attackOffLoop.wav"
+}
+
+"ASW_Chainsaw.Stop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_70dB"
+	"wave"			"weapons\2D\chainsaw\fullStop.wav"
+}
+
+
+"ASW_BuffGrenade.GrenadeActivate"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"1.0"
+	"wave"			"weapons\3D\buffGrenade\deploy.wav"
+}
+
+"ASW_BuffGrenade.ActiveLoop"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8"
+	"pitch"			"100"
+	"wave"			"weapons\3D\buffGrenade\activeLoop.wav"
+}
+
+"ASW_BuffGrenade.StartBuff"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.7"
+	"wave"			")weapons\2D\buffGrenade\start_FP.wav"
+}
+
+"ASW_BuffGrenade.BuffLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.5"
+	"pitch"			"95, 100"
+	"wave"			"weapons\2D\buffGrenade\loop_FP.wav"
+}
+
+"ASW_MedGrenade.GrenadeActivate"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"1.0"
+	"wave"			"weapons\3D\medGrenade\deploy.wav"
+}
+
+"ASW_MedGrenade.ActiveLoop"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8"
+	"pitch"			"100"
+	"wave"			"weapons\3D\medGrenade\activeLoop.wav"
+}
+
+"ASW_MedGrenade.StartBuff"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.7"
+	"wave"			"weapons\2D\medGrenade\start_FP.wav"
+}
+
+"ASW_MedGrenade.BuffLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.7"
+	"wave"			"weapons\2D\medGrenade\loop_FP.wav"
+}
+
+
+"ASW_HealGun.StartSearch"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.75"
+	"wave"			"weapons\3D\medGrenade\deploy.wav"
+}
+
+"ASW_HealGun.SearchLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.25"
+	"pitch"			"100"
+	"wave"			"weapons\3D\medGrenade\activeLoop.wav"
+}
+
+"ASW_HealGun.StartHeal"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8"
+	"wave"			"weapons\3D\meds\satchelInject.wav"
+}
+
+"ASW_HealGun.HealLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8"
+	"wave"			"weapons\2D\medGrenade\loop_FP.wav"
+}
+
+"ASW_HealGun.Off"
+{
+    "channel"		"CHAN_WEAPON"
+	"volume"		"0.8"
+	"soundlevel"	"SNDLVL_85dB"
+	"wave"			"null.wav"
+}
+
+
+"ASW_Welder.WeldLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.8"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\3D\welder\weldLoop.wav"
+}
+
+"ASW_Welder.WeldDeny"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.4"
+	"soundlevel"	"SNDLVL_65dB"
+
+	"wave"			"weapons\3D\welder\weldDeny.wav"
+}
+
+"ASW_Flare.IgniteFlare"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.8"
+	"pitch"			"95, 105"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\3D\flare\ignite.wav"
+}
+
+"ASW_Flare.FlareLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"			"95, 105"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\flare\loop.wav"
+}
+
+"ASW_Flare.Touch"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\flare\impact.wav"
+}
+
+"ASW_ElectrifiedSuit.TurnOn"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_85dB"
+	
+	"wave"			"weapons/3D/electricArmor/on.wav"
+}
+
+"ASW_ElectrifiedSuit.Loop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NORM"
+	"volume"		"1.0"
+	"wave"			"weapons/3D/electricArmor/loop.wav"
+}
+
+"ASW_ElectrifiedSuit.LoopFP"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"wave"			"weapons/2D/electricArmor/loop_FP.wav"
+}
+
+"ASW_ElectrifiedSuit.OffFP"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"wave"			"weapons/2D/electricArmor/off_FP.wav"
+}
+
+"ASW_ElectrifiedSuit.Zap"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_90dB"
+	"pitch"			"90, 110"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/tesla/arcImpact01.wav"
+		"wave"		"weapons/3D/tesla/arcImpact02.wav"
+		"wave"		"weapons/3D/tesla/arcImpact03.wav"
+		"wave"		"weapons/3D/tesla/arcImpact04.wav"
+	}
+}
+
+///////////////////////////////////////////////////////
+//sentries
+//////////////////////////////////////////////////////
+
+"ASW_Sentry.Fire"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_110dB"
+	"volume"		"0.9"
+	"pitch"			"80"
+	"wave"			"^weapons\3D\autogun\singleShotSentry.wav"
+}
+
+"ASW_Sentry.CannonFire"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"wave"			"^weapons\3D\turret\cannonFire.wav"
+}
+
+
+"ASW_Sentry.FlameLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"			"weapons\3D\flamer\flameLoop.wav"
+}
+
+"ASW_Sentry.FlameStop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_85dB"
+	"wave"			"weapons\3D\flamer\flameStop.wav"
+}
+
+"ASW_Sentry.IceLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"100"
+	"wave"			")weapons\3D\turret\iceLoop.wav"
+}
+
+"ASW_Sentry.IceStop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"100"
+	"wave"			")weapons\3D\turret\iceStop.wav"
+}
+
+"ASW_Sentry.Deploy"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"95, 105"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"			"weapons\3D\turret\deploy.wav"
+}
+
+"ASW_Sentry.SetupLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\3D\turret\setupLoop.wav"
+}
+
+"ASW_Sentry.SetupInterrupt"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"			"weapons\3D\turret\setupStop.wav"
+}
+
+"ASW_Sentry.SetupComplete"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"			"weapons\3D\turret\setupComplete.wav"
+}
+
+"ASW_Sentry.Dismantled"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"			"weapons\3D\turret\setupComplete.wav"
+}
+
+"ASW_Sentry.OutOfAmmo"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\turret\noAmmo.wav"
+}
+
+"ASW_Sentry.AmmoWarning"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\turret\lowAmmo.wav"
+}
+
+"ASW_Sentry.Turn"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_70dB"
+
+	"wave"			"weapons\3D\turret\turn.wav"
+}
+
+////////////////////////////////////
+//explosive weapons
+////////////////////////////////////
+
+
+"ASW_T75.CountdownBeep"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"	"swarm\interface\teletypeblip3.wav"
+}
+
+"ASW_T75.Explode"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"90,110"
+	"rndwave"
+	{
+		"wave"				"^explosions\T7501.wav"
+		"wave"				"^explosions\T7502.wav"
+	}
+}
+
+"ASW_Freeze_Grenade.Explode"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"90,105"
+	"wave"			"^explosions/iceGrenade.wav"
+}
+
+// alien statue shattering
+"IceBody.Shatter"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_90dB"
+	"pitch"			"95,105"
+	"rndwave"
+	{
+		"wave"		"@physics\3D\effects\iceShatter01.wav"
+		"wave"		"@physics\3D\effects\iceShatter02.wav"
+	}
+}
+
+"ASW_Hornet_Barrage.Fire"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_105dB"
+	"pitch"			"95,105"
+	"wave"			"weapons\3D\hornet\fire.wav"
+}
+
+"ASW_Hornet_Barrage.FireFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95,105"
+	"wave"			"@weapons\2D\hornet\fireFP.wav"
+}
+
+"ASWRocket.Loop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_85dB"
+	"pitch"			"90,110"
+	"wave"		    "<weapons/3D/hornet/rocket.wav"
+}
+
+"ASWRocket.Explosion"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"90,110"
+	"rndwave"
+	{
+		"wave"		"^explosions\hornet01.wav"
+		"wave"		"^explosions\hornet02.wav"
+	}
+}
+
+"ASW_Weapon_PRifle.StunGrenadeExplosion"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_100dB"
+	"pitch"			"95, 105"
+	
+	"rndwave"
+	{
+		"wave"			"explosions\stunGrenade01.wav"
+		"wave"			"explosions\stunGrenade02.wav"
+		"wave"			"explosions\stunGrenade03.wav"
+	}
+}
+
+"ASWGrenade.Explode"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"95,105"
+	
+	"rndwave"
+	{
+		"wave"			"^explosions\grenade01.wav"
+		"wave"			"^explosions\grenade02.wav"
+	}
+}
+
+"ASWGrenade.Explosion"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"95, 105"
+	"rndwave"
+		{
+			"wave"		"^explosions\grenade01.wav"
+			"wave"		"^explosions\grenade02.wav"
+		}
+}
+
+"ASWGrenade.Incendiary"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"95, 105"
+
+   "wave"			")explosions\incendiaryGrenade.wav"
+}
+
+"ASWGrenade.FireLoop"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"ambient/fire/large_loop.wav"
+}
+
+"ASWGrenade.Alarm"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_70dB"
+
+	"wave"			"weapons\3D\mines\incendiary_alarm.wav"
+}
+
+"ASW_Mine.Lay"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\3D\mines\incendiary_lay.wav"
+}
+
+"ASW_Mine.Flash"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"weapons\3D\mines\flash.wav"
+}
+
+"ASW_Mine.Explode"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.85, 1.0"
+	"pitch"			"125, 140"
+	"soundlevel"	"SNDLVL_100dB"
+
+	"wave"			")explosions\incendiaryGrenade.wav"
+}
+
+"ASW_Laser_Mine.Lay"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_75dB"
+
+	"wave"			"weapons\3D\mines\laser_lay.wav"
+}
+
+"ASW_Laser_Mine.Explode"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"			"135, 150"
+	"rndwave"
+		{
+			"wave"		"^explosions\grenade01.wav"
+			"wave"		"^explosions\grenade02.wav"
+		}
+}
+
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+"ASW_Rifle.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\assault_A.wav"
+}
+
+"ASW_Rifle.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\assault_B.wav"
+}
+
+"ASW_Rifle.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\assault_C.wav"
+}
+
+"ASW_Autogun.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\autogun_A.wav"
+}
+
+"ASW_Autogun.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\autogun_B.wav"
+}
+
+"ASW_Autogun.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\autogun_C.wav"
+}
+
+"ASW_Flamer.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\flamer_A.wav"
+}
+
+"ASW_Flamer.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\flamer_B.wav"
+}
+
+"ASW_Flamer.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\flamer_C.wav"
+}
+
+"ASW_MiningLaser.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\laser_A.wav"
+}
+
+"ASW_MiningLaser.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\laser_B.wav"
+}
+
+"ASW_MiningLaser.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\laser_C.wav"
+}
+
+
+"ASW_Pistol.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pistol_A.wav"
+}
+
+"ASW_Pistol.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pistol_B.wav"
+}
+
+"ASW_PRifle.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pRifle_A.wav"
+}
+
+"ASW_PRifle.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pRifle_B.wav"
+}
+
+"ASW_PRifle.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pRifle_C.wav"
+}
+
+"ASW_Shotgun.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\shotgun_A.wav"
+}
+
+"ASW_Shotgun.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\shotgun_B.wav"
+}
+
+"ASW_Shotgun.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\shotgun_C.wav"
+}
+
+"ASW_Vindicator.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons\3D\reloads\vindicator_A.wav"
+}
+
+"ASW_Vindicator.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons\3D\reloads\vindicator_B.wav"
+}
+
+"ASW_Vindicator.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons\3D\reloads\vindicator_C.wav"
+}
+
+"ASW_Weapon.Reload1"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\reload1.wav"
+}
+
+"ASW_Weapon.Reload2"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\reload2.wav"
+}
+
+"ASW_Weapon.Reload3"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\reload3.wav"
+}
+
+"ASW_Weapon.Reload4"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\reload4.wav"
+}
+
+
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+
+"ASW_Ammobag.DropImpact"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\mines\incendiary_lay.wav"
+}
+
+"ASW_Ammobag.Pickup_sml"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\pistol_B.wav"
+}
+
+"ASW_Ammobag.Pickup_med"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\vindicator_B.wav"
+}
+
+"ASW_Ammobag.Pickup_lrg"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\shotgun_C.wav"
+}
+
+"ASW_Ammobag.Fail"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"weapons/ar2/ar2_empty.wav"
+}
+
+"ASW_JumpJet.Activate"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_85dB"
+	"volume"		"0.95"
+	"pitch"		"90,110"
+	"wave"		"weapons/3d/jumpjet/jumpjet_fire.wav"
+}
+
+"ASW_JumpJet.Loop"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"		"SNDLVL_85dB"
+	"volume"		"0.40"
+	"pitch"		"90,110"
+	"wave"		"weapons/3d/jumpjet/jumpjet_loop.wav"
+}
+
+"ASW_JumpJet.Impact"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_85dB"
+	"wave"		"weapons/3d/jumpjet/jumpjet_land.wav"
+}
+
+"ASW_Blink.Blink"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.8, 1.0"
+	"pitch"			"90,110"
+	"rndwave"
+	{
+		"wave"		")explosions\teleport_blink.wav"
+	}
+}
+
+"ASW_Blink.Teleport"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"volume"		"0.4, 0.6"
+	"pitch"			"90,110"
+	"rndwave"
+	{
+		"wave"		"explosions\teleport_boom01.wav"
+		"wave"		"explosions\teleport_boom02.wav"
+	}
+}
+
+// played to the local player when blink is recharged and ready to use again
+"ASW_Weapon.BatteryCharged"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_NONE"
+	"wave"		"swarm\interface\buttonclick5.wav"
+}
+
+// played to the local player when he tries to use blink without the battery charged up
+"ASW_Weapon.InsufficientBattery"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_NONE"
+	"wave"		"swarm\interface\buttonclick4.wav"
+}
+
+// played to the local player when he tries to blink or jump jet to an invalid spot
+"ASW_Weapon.InvalidDestination"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.4"
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"swarm\interface\buttonclick4.wav"
+}
+
+"ASW_Weapon_50calmg.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.8"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\50cal\50cal_shoot.wav"
+}
+
+"ASW_Weapon_50calmg.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\50cal\50cal_shoot.wav"
+}
