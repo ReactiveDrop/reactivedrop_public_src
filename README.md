@@ -34,10 +34,12 @@ There are two branches in this repository:
 * Resulting DLLs will be placed into reactivedrop\bin
 
 ### How to modify content files ###
-The reactivedrop folder contains games content: materials, models, scripts, sounds. For now it contains the bare minimum of files to save the repository space. If you want to add new or modify the existing game content files please do it on two commits:
+The reactivedrop folder contains games content: materials, models, scripts, sounds. For now it contains the bare minimum of files to save the repository space. If you want to add new or modify the existing game content files please do it in two commits:
 
 * First commit only adds unmodified content files. You can get them from the Alien Swarm: Reactive Drop game folder
 * Second commit introduces your modifications to both content files and, if necessary, source code
+
+This way we will be able to see which changes did you introduce to the content files. 
 
 ### LICENSE ###
 Alien Swarm SDK Copyright(c) Valve Corp. 
