@@ -7,7 +7,7 @@
 *.cpp text
 *.h text
 *.py text
-*.txt text
+# *.txt text # Warning! Do not enable this or it corrupts our unicode TXT files, e.g. resource/ReactiveDrop_english.txt
 *.vmf text
 
 # Declare files that will always have CRLF line endings on checkout.
