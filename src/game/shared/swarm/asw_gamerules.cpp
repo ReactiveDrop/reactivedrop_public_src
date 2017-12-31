@@ -189,7 +189,7 @@ extern ConVar old_radius_damage;
 			sv_tags.SetValue( buffer );
 		}
 	}
-	// reactivedrop: this callback function is called when rd_weapon_selection_rules cvar is
+	// reactivedrop: this callback function is called when rd_weapons_<slot>_allowed cvar is
 	// changed. It checks whether marine has not allowed weapons selected and replaces them
 	// with an allowed alternative. Such as replace all weapons with rifles for Rifle Mod
 	static void EnforceWeaponSelectionRules( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
@@ -383,13 +383,11 @@ ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activa
 ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
 ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
 
-ConVar rd_weapon_selection_rules( "rd_weapon_selection_rules", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 = level 1, 2 = riflemod classic, 3 = no ammo"
-#ifdef GAME_DLL
-	, EnforceWeaponSelectionRules );
-#else
-	);
-#endif
-ConVar rd_weapon_requirement_override( "rd_weapon_requirement_override", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 = asw_equip_req wins, 1 = rd_weapon_selection_rules wins"
+ConVar rd_weapons_regular_allowed( "rd_weapons_regular_allowed", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of allowed weapon IDs: 0 6 9 15. See asw_list_equipment" );
+ConVar rd_weapons_extra_allowed( "rd_weapons_extra_allowed", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of allowed extra items IDs: 1 2 7 12. See asw_list_equipment" );
+ConVar rd_weapons_regular_allowed_inverted( "rd_weapons_regular_allowed_inverted", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 inverts the allowed weapons for rd_weapons_regular_allowed" );
+ConVar rd_weapons_extra_allowed_inverted( "rd_weapons_extra_allowed_inverted", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 inverts the allowed weapons for rd_weapons_extra_allowed");
+ConVar rd_weapon_requirement_override( "rd_weapon_requirement_override", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 = asw_equip_req wins, 1 = rd_weapons_<slot>_allowed wins"
 #ifdef GAME_DLL
 	, EnforceWeaponSelectionRules );
 #else
@@ -402,7 +400,6 @@ ConVar rd_refill_secondary( "rd_refill_secondary", "0", FCVAR_CHEAT | FCVAR_REPL
 ConVar rd_allow_revive( "rd_allow_revive", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar rd_hp_regen( "rd_hp_regen", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 disable marines' health regeneration" );
 ConVar rd_add_bots( "rd_add_bots", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 add bots to fill free slots, 0 don't add" );
-ConVar rd_restrict_weapon( "rd_restrict_weapon", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Default weapon to give during weapon restricted mode" );
 ConVar rd_ammo_bonus( "rd_ammo_bonus", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar rd_infinite_spawners( "rd_infinite_spawners", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all spawners will be set to infinitely spawn aliens" );
 ConVar rd_hud_hide_clips( "rd_hud_hide_clips", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -8221,7 +8218,65 @@ void CAlienSwarm::ApplyChallenge()
 
 #endif // GAME_DLL above
 
-// reactivedrop: This function reads rd_weapon_selection_rules and checks whether
+static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &allowedGuns, const ConVar &isInverted )
+{
+	int nNumRegular;
+	switch ( iEquipSlot )
+	{
+	case ASW_INVENTORY_SLOT_PRIMARY:
+	case ASW_INVENTORY_SLOT_SECONDARY:
+		nNumRegular = ASWEquipmentList()->GetNumRegular( true );
+		break;
+	case ASW_INVENTORY_SLOT_EXTRA:
+		nNumRegular = ASWEquipmentList()->GetNumExtra( true );
+		break;
+	default:
+		Assert( false && "Invalid iEquipSlot" );
+		return 0;
+	}
+
+	CUtlVector<int> vecWepList;
+	{
+		// convert string array to number array
+		CUtlStringList szWepList;
+		V_SplitString( allowedGuns.GetString(), " ", szWepList );
+		for ( int i = 0; i < szWepList.Count(); ++i )
+		{
+			int iWepId = atoi( szWepList[i] );
+			if ( iWepId < 0 || iWepId >= nNumRegular )
+			{
+				Warning( "Incorrect weapon ID=%i found in %s\n", iWepId, allowedGuns.GetName() );
+				continue;
+			}
+			vecWepList.AddToTail( iWepId );
+		}
+	}
+
+	CUtlVector<int> vecAllowedGuns;
+	for ( int i = 0; i < nNumRegular; ++i )	// fill vecAllowedGuns with allowed guns
+	{
+		if ( isInverted.GetBool() && !vecWepList.HasElement(i) )
+		{
+			vecAllowedGuns.AddToTail( i );
+		}
+		else if ( !isInverted.GetBool() && vecWepList.HasElement( i ) )
+		{
+			vecAllowedGuns.AddToTail( i );
+		}
+	}
+
+	if ( vecAllowedGuns.HasElement( iWeaponIndex ) )
+		return iWeaponIndex;
+	else if ( vecAllowedGuns.Count() > 0 )
+		return vecAllowedGuns[0];
+	else
+	{
+		Warning( "No valid weapon IDs found in %s!\n", allowedGuns.GetName() );
+		return 0;
+	}
+}
+
+// reactivedrop: This function reads rd_weapons_<slot>_allowed and checks whether
 // the iWeaponIndex is allowed for pMR marine. If not it returns an ID of an
 // alternative allowed weapon
 int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex )
@@ -8248,78 +8303,17 @@ int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEqui
 	}
 #endif
 
-	switch ( rd_weapon_selection_rules.GetInt() )
+	if ( V_stricmp( rd_weapons_regular_allowed.GetString(), "-1" ) && iEquipSlot < ASW_INVENTORY_SLOT_EXTRA )
 	{
-		default:
-		case 0:
-			return iWeaponIndex;
-
-		case 1:
-			// level one
-			if ( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex ) && // check for NULL first, "More Starting Equipment" crashes Level One challenge here
-				 GetWeaponLevelRequirement( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) > 0 )
-			{
-				return 0;
-			}
-			return iWeaponIndex;
-
-		case 2:
-			// riflemod
-			switch ( iEquipSlot )
-			{
-			case ASW_INVENTORY_SLOT_PRIMARY:
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_rifle" ) == 0 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_prifle" ) == 1 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_combat_rifle" ) == 23 );
-				if (  rd_restrict_weapon.GetInt() == 0 )
-				{
-					if ( iWeaponIndex == 0 || iWeaponIndex == 1 || iWeaponIndex == 23 )
-					{
-						return iWeaponIndex;
-					}
-
-					if ( pMR->GetProfile()->CanUseTechWeapons() )
-					{
-						// techs get the p-rifle instead of the rifle
-						return 1;
-					}
-				}
-				return rd_restrict_weapon.GetInt();
-
-			case ASW_INVENTORY_SLOT_SECONDARY:
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry" ) == 5 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_flamer" ) == 17 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_freeze" ) == 14 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_sentry_cannon" ) == 19 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_ammo_satchel" ) == 7 );
-				AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_heal_grenade" ) == 6 );
-				if (iWeaponIndex ==  5 || // gun sentry
-					iWeaponIndex ==  6 || // asw_weapon_heal_grenade
-					iWeaponIndex == 17 || // flame sentry
-					iWeaponIndex == 14 || // freeze sentry
-					iWeaponIndex == 19 )  // cannon sentry
-				{
-					return iWeaponIndex;
-				}
-
-				// 7 is the id of ammo satchel. We're giving it by default
-				return 7;
-
-			case ASW_INVENTORY_SLOT_EXTRA:
-			default:
-				// allow any extra weapon
-				return iWeaponIndex;
-			}
-
-		case 3:
-			// no ammo allowed
-			AssertOnce( ASWEquipmentList()->GetRegularIndex( "asw_weapon_ammo_satchel" ) == 7 );
-			if ( iEquipSlot < ASW_INVENTORY_SLOT_EXTRA && iWeaponIndex == 7 )
-			{
-				return 0;
-			}
-			return iWeaponIndex;
+		return GetAllowedWeaponId( iEquipSlot, iWeaponIndex, rd_weapons_regular_allowed, rd_weapons_regular_allowed_inverted );
 	}
+
+	if ( V_stricmp( rd_weapons_extra_allowed.GetString(), "-1" ) && iEquipSlot == ASW_INVENTORY_SLOT_EXTRA )
+	{
+		return GetAllowedWeaponId( iEquipSlot, iWeaponIndex, rd_weapons_extra_allowed, rd_weapons_extra_allowed_inverted );
+	}
+
+	return iWeaponIndex;
 }
 
 bool CAlienSwarm::ShouldAllowCameraRotation( void )

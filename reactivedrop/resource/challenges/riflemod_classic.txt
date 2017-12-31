@@ -3,7 +3,7 @@
 	"description"	"Only rifles. Rifle's secondary ammunition is replenished by picking up regular ammo"
 
 	"convars" {
-		"rd_weapon_selection_rules"	"2"
+		"rd_weapons_regular_allowed"	"0 1 5 6 7 14 17 19 23"
 		"rd_biomass_ignite_from_explosions" "1"
 		"rd_weapon_requirement_override" "1"
 		"rd_refill_secondary" "1"

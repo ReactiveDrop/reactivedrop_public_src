@@ -3,6 +3,7 @@
 	"description"	"Ammo recharges when not shooting, but reloading and ammo pickups are disabled."
 
 	"convars" {
-		"rd_weapon_selection_rules"	"3"
+		"rd_weapons_regular_allowed"	"7"
+		"rd_weapons_regular_allowed_inverted"	"1"
 	}
 }
