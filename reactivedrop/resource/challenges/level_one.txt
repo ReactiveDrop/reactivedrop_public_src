@@ -1,0 +1,11 @@
+"CHALLENGE" {
+	"name"	"Level One"
+	"description"	"Only the weapons available to level 1 commanders may be used."
+
+	"convars" {
+		"rd_weapon_selection_rules"	"1"
+		"rd_biomass_ignite_from_explosions" "1"
+		"rd_weapon_requirement_override" "1"
+		"rd_pistols_min_delay" "0.1"
+	}
+}

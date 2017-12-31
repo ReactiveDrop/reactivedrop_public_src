@@ -1,0 +1,12 @@
+"CHALLENGE" {
+	"name"	"Rifle Mod"
+	"description"	"Only rifles. Rifle's secondary ammunition is replenished by picking up regular ammo"
+
+	"convars" {
+		"rd_weapon_selection_rules"	"2"
+		"rd_biomass_ignite_from_explosions" "1"
+		"rd_weapon_requirement_override" "1"
+		"rd_refill_secondary" "1"
+		"rd_ammo_bonus" "3"
+	}
+}
