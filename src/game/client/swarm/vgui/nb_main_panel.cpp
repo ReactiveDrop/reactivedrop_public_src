@@ -48,6 +48,7 @@
 
 extern ConVar mp_gamemode;
 extern ConVar mm_max_players;
+extern ConVar rd_player_bots_allowed;
 
 using BaseModUI::GenericPanelList;
 
@@ -316,8 +317,13 @@ void CNB_Main_Panel::OnTick()
 	}
 	else
 	{
-		if ( !bPracticeMap && V_stricmp( mp_gamemode.GetString(), "single_mission" ) != 0 )
-			nBriefingSlots = mm_max_players.GetInt();
+		if ( !bPracticeMap )
+		{
+			if ( !rd_player_bots_allowed.GetBool() )
+				nBriefingSlots = 1;
+			else if ( V_stricmp( mp_gamemode.GetString(), "single_mission" ) != 0 )
+				nBriefingSlots = mm_max_players.GetInt();
+		}
 	}
 
 	// remove extra rows
@@ -363,6 +369,13 @@ void CNB_Main_Panel::ChangeMarine( int nLobbySlot )
 
 void CNB_Main_Panel::AddBot()
 {
+	if ( !rd_player_bots_allowed.GetBool() )
+	{
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		pPlayer->SendRosterSelectCommand( "cl_selectm", -1, -1 );
+		return;
+	}
+
 	if (m_hSubScreen.Get())
 	{
 		m_hSubScreen->MarkForDeletion();

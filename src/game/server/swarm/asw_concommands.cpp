@@ -612,6 +612,7 @@ void asw_afkf()
 }
 ConCommand asw_afk( "asw_afk", asw_afkf, "Leave current marine", 0 );
 
+extern ConVar rd_player_bots_allowed;
 // reactivedrop: adds bot in PvP game mode
 void rd_addbotf(const CCommand &args)
 {
@@ -625,6 +626,12 @@ void rd_addbotf(const CCommand &args)
 
 	if ( pPlayer && ASWGameResource() && ASWGameRules() )
 	{
+		if ( !rd_player_bots_allowed.GetBool() )
+		{
+			ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
+			return;
+		}
+
 		if ( ASWGameResource()->m_Leader.Get() != pPlayer )
 		{
 			Msg( "Only leader can add bots\n" );

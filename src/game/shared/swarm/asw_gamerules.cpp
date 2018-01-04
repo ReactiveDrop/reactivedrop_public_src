@@ -211,6 +211,35 @@ extern ConVar old_radius_damage;
 			}
 		}
 	}
+
+	// reactivedrop: this callback function is called when rd_player_bots_allowed cvar is
+	// changed. If the value is 0 it will remove all bots from the briefing
+	static void DeselectMarineBots( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
+	{
+		ConVarRef rd_player_bots_allowed( "rd_player_bots_allowed" );
+		if ( rd_player_bots_allowed.GetBool() )
+			return;
+
+		if ( ASWGameRules() && ASWGameResource() )
+		{
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( !pMR )
+				{
+					continue;
+				}
+
+				CASW_Player *pPlayer = pMR->GetCommander();
+				if ( !pPlayer )
+				{
+					continue;
+				}
+
+				engine->ClientCommand( pPlayer->edict(), "cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;" );
+			}
+		}
+	}
 #else
 	extern ConVar asw_controls;
 #endif
@@ -532,6 +561,13 @@ ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_RE
 ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines");
 ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns");
 ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_REPLICATED, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1 );
+ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 will prevent players from adding bots"
+#ifdef GAME_DLL
+	, DeselectMarineBots );
+#else
+	);
+#endif
+ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 env_slomo will be deleted from map on round start(if present)" );
 
 #define ADD_STAT( field, amount ) \
 			ConVarRef asw_stats_verbose( "asw_stats_verbose" );\
@@ -1532,10 +1568,13 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 	}
 
 	// one marine each?
-	if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0)
+	if ((!rd_player_bots_allowed.GetBool() || ASWGameResource()->m_bOneMarineEach) && ASWGameResource()->GetNumMarines(pPlayer) > 0)
 	{
 		if ( nPreferredSlot == -1 )
 		{
+			if ( !rd_player_bots_allowed.GetBool() )
+				ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
+
 			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( nPreferredSlot == -1 ) \n");
 			return false;
 		}
@@ -1544,6 +1583,11 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
 			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( pExisting && pExisting->GetCommander() != pPlayer ) \n");
+			return false;
+		}
+		else if ( !rd_player_bots_allowed.GetBool() && !pExisting )
+		{
+			ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
 			return false;
 		}
 	}
@@ -2116,6 +2160,20 @@ void CAlienSwarm::StartMission()
 
 	if ( rd_infinite_spawners.GetBool() )
 		ASW_ApplyInfiniteSpawners_f();
+
+	if ( !rd_slowmo.GetBool() )
+	{
+		int iCount = 0;
+		CBaseEntity *ent = NULL;
+		while ((ent = gEntList.NextEnt(ent)) != NULL)
+		{
+			if ( ent->GetClassname() != NULL && FStrEq( "env_slomo", ent->GetClassname() ) )
+			{
+				UTIL_Remove(ent);
+				iCount++;
+			}
+		}
+	}
 
 	// increase num retries
 	if (IsCampaignGame() && GetCampaignSave())
