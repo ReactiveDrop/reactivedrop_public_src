@@ -1,0 +1,338 @@
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
+//
+// Purpose: General game definition file (.fgd) 
+//
+//=============================================================================
+
+@include "base.fgd"
+
+@BaseClass = Targetname 
+[ 
+	targetname(target_source) : "Name" : : "The name that other entities refer to this entity by."
+
+	vscripts(scriptlist) : "Entity Scripts" : "" : "Name(s) of script files that are executed after all entities have spawned."
+	thinkfunction(string) : "Script think function" : "" : "Name of a function in this entity's script scope which will be called automatically."
+
+	input RunScriptFile(script) : "Execute a game script file from disk"
+	input RunScriptCode(string) : "Execute a string of script source code"
+	input CallScriptFunction(string) : "Call a named function from this entity's Activation Script"
+	
+	// Inputs
+	input Kill(void) : "Removes this entity from the world."
+	input KillHierarchy(void) : "Removes this entity and all its children from the world."
+	input AddOutput(string) : "Adds an entity I/O connection to this entity. Format: <output name> <targetname>:<inputname>:<parameter>:<delay>:<max times to fire (-1 == infinite)>. Very dangerous, use with care."
+	input FireUser1(void) : "Causes this entity's OnUser1 output to be fired."
+	input FireUser2(void) : "Causes this entity's OnUser2 output to be fired."
+	input FireUser3(void) : "Causes this entity's OnUser3 output to be fired."
+	input FireUser4(void) : "Causes this entity's OnUser4 output to be fired."
+
+	// Outputs	
+	output OnUser1(void) : "Fired in response to FireUser1 input."
+	output OnUser2(void) : "Fired in response to FireUser2 input."
+	output OnUser3(void) : "Fired in response to FireUser3 input."
+	output OnUser4(void) : "Fired in response to FireUser4 input."
+]
+
+
+@BaseClass base(Targetname, Parentname, Origin, EnableDisable, Global) = TriggerOnce
+[
+	// asw infested version of flags
+	spawnflags(flags) = 
+	[
+		//1: "Clients" : 1
+		2: "Marines and Aliens" : 0
+		4: "Pushables": 0
+		8: "Physics Objects" : 0
+		16: "Only marines" : 1
+		//32: "Only clients in vehicles" : 0
+		64: "Everything (not including physics debris)" : 0
+		//512: "Only clients *not* in vehicles" : 0
+		1024: "Physics debris" : 0
+		2048: "Only NPCs in vehicles (respects player ally flag)" : 0
+		4096: "Correctly account for object mass (trigger_push used to assume 100Kg) and multiple component physobjs (car, blob...)" : 0
+		// reactivedrop: #iss-trigger-bots if checked this trigger will only work for bot marines		
+		8192: "Only bot marines" : 0
+	]
+
+	filtername(filterclass) : "Filter Name" : : "Filter to use to see if activator triggers me. See filter_activator_name for more explanation."
+
+	// Inputs
+	input Toggle(void) : "Toggles this trigger between enabled and disabled states."
+
+	// Outputs
+	output OnStartTouch(void) : "Fired when an entity starts touching this trigger. The touching entity must pass this trigger's filters to cause this output to fire."
+]
+
+@BaseClass = worldbase
+[
+	message(string) : "Map Description / Title"
+	// asw infested default
+	skyname(string) : "SkyBox Texture Name" : "blacksky"
+	//skyname(string) : "SkyBox Texture Name" : "sky_day01_01"
+	chaptertitle(string) : "Chapter Title Message" : "" : "Chapter Title that appears onscreen when this level starts."
+	startdark(boolean) : "Level Fade In" : 0
+
+	gametitle(boolean) : "Display Game Title" : 0 : "Game Title that appears onscreen when this level starts."
+
+	newunit(choices) : "New Level Unit" : 0 : "Used to clear out savegame data of previous levels to keep the savegame size as small as possible. Only set it to Yes if the player cannot return to any previous levels." = 
+	[
+		0 : "No, keep current"
+		1 : "Yes, clear previous levels"
+	]
+	maxoccludeearea(float) : "Max occludee area" : "0" : "[Used on PC] Prevents occlusion testing for entities that take up more than X% of the screen." 
+	minoccluderarea(float) : "Min occluder area" : "0" : "[Used on PC] Prevents occluders from being used if they take up less than X% of the screen." 
+	maxoccludeearea_x360(float) : "Max occludee area (Xbox)" : "0" : "[Used on 360] Prevents occlusion testing for entities that take up more than X% of the screen." 
+	minoccluderarea_x360(float) : "Min occluder area (Xbox)" : "0" : "[Used on 360] Prevents occluders from being used if they take up less than X% of the screen." 
+	maxpropscreenwidth(float) : "Start Fade Pixels" : -1 : "Number of pixels wide at which all props in the level start to fade (<0 = use fademaxdist). This number is ignored if the prop has a specific fade distance specified."
+	minpropscreenwidth(float) : "End Fade Pixels" : 0 : "Minimum number of pixels wide at which the prop is visible (0 = don't fade out). This number is ignored if the prop has a specific fade distance specified."
+	detailvbsp(string) : "Detail.vbsp file" : "detail.vbsp" : "Detail.vbsp file to use for emitting detail props (found in directory <root>/modname)"
+	detailmaterial(string) : "Detail material file" : "detail/detailsprites" : "Material for detail sprites to use for drawing detail props"
+	coldworld(boolean) : "World is cold" : 0
+]
+
+@PointClass base(Targetname, Parentname, EnableDisable) iconsprite("editor/env_fire") color(0 180 0) = env_fire : 
+	"An entity that handles a single flame at its origin. The flame causes heat 'damage' to other env_fire entities around it, and will eventually ignite non-flaming env_fire entities nearby, causing the fire to spread."
+[
+	health(integer) : "Duration" : 30 : "Amount of time the fire will burn."
+	firesize(integer) : "Size" : 64 : "Height (in world units) of the flame."
+	fireattack(integer) : "Attack" : 4 : "Amount of time the fire takes to grow to full strength."
+	firetype(choices) : "Type" : 0 =
+	[
+		0 : "Natural"
+		1 : "Plasma"
+	]
+	spawnflags(flags) =
+	[
+		1:	"Infinite Duration" : 0
+		2:	"Smokeless" : 0
+		4:	"Start On" : 0
+		8:	"Start Full" : 0
+		16:	"Don't drop" : 0
+		32: 	"No glow" : 0
+		128: 	"Delete when out" : 0
+		256: 	"No sound" : 0
+		512: 	"No ignite sound" : 0
+		1024: 	"No fuelling once lit" : 0
+		2048: 	"Fast burn think" : 0
+	]
+
+	ignitionpoint(float) : "Ignition Point" : 32 : "Amount of heat 'damage' to take before this flame should ignite."
+	damagescale(float) : "Damage Scale" : "1.0" : "Multiplier of the burn damage done by the flame."
+	// asw infested fire settings
+	LightRadiusScale(float) : "Light Radius Scale" : "1.0" : "Multiplier for the glow radius."
+	LightBrightness(integer) : "Light Brightness" : 1 : "Integer exponent for the glow brightness."
+	LightColor(color255) : "Light Color" : "255 255 255" : "R G B 0-255 values describing the color of the dynamic light for this fire."
+	LoopSound(sound) : "Loop sound" : "d1_town.LargeFireLoop" : "Looping sound to play while this fire is burning."
+	IgniteSound(sound) : "Ignite sound" : "ASW_Flare.IgniteFlare" : "One shot sound to play when the fire starts."	
+
+	// Inputs
+	input StartFire(void) : "Start the fire."
+	input Extinguish(float) : "Puts out the fire permanently in the number of seconds specified."
+	input ExtinguishTemporary(float): "Puts out the fire temporarily in the number of seconds specified."
+
+	// Outputs
+	output OnIgnited(void) : "Fires when the fire is first ignited."
+	output OnExtinguished(void) : "Fires when the fire is fully extinguished."
+]
+
+
+@PointClass base(Angles) size(-16 -16 -16, 16 16 16) color(0 0 255) = sky_camera : 
+	"An entity used to control the 3D Skybox. Its origin is used to determine the 3D Skybox's position relative to the map. Place this entity, in the 3D Skybox, at the point where the origin of the map should be."
+[
+	scale(integer) : "3D Skybox scale" : 16 : "Scale of the skybox."
+	fogenable(boolean) : "Fog Enable" : 0
+	fogblend(boolean) : "Fog Blend" : 0
+	use_angles(boolean) : "Use Angles for Fog Dir" : 0
+
+	fogcolor(color255) : "Primary Fog Color" : "255 255 255"
+	fogcolor2(color255) : "Secondary Fog Color" : "255 255 255"
+	fogdir(string) : "Primary Fog Dir" : "1 0 0"
+	fogstart(string) : "Fog Start" : "500.0" : "Distance at which the skybox fog should start."
+	fogend(string) : "Fog End" : "2000.0" : "Distance at which the skybox fog should be fully opaque."
+	
+	targetname(target_source) : "Name" : : "The name that other entities refer to this entity by."
+
+	// reactivedrop: #iss-3dskyfog
+	usecurrentfogcolor(boolean) : "Use current env_fog_controller's fog color" : 0 : "If Yes sky_camera's fog color will be ignored and the color from the currently active env_fog_controller will be used as sky_camera's fog color. It is useful when we have various fogs on map and we can see 3D skybox which will always have the same fog as the playable area. Note: you have to disable depth blur in postprocess_controller because currently it's not applied to 3D skybox"
+	
+	input ActivateSkybox(void) : "Make this skybox the active one."
+]
+
+
+//-------------------------------------------------------------------------
+//
+// Lights
+//
+//-------------------------------------------------------------------------
+@PointClass light() iconsprite("editor/light.vmt") base(Targetname, Light) sphere(_fifty_percent_distance) sphere(_zero_percent_distance) sphere(_distance) = light :
+	"An invisible omnidirectional lightsource."
+[
+	target(target_destination) : "Entity To Point At" : : "The name of an entity in the map that the spotlight will point at. This will override the spotlight's angles."
+	spawnflags(Flags) = [ 1 : "Initially dark" : 0 ]
+	_distance(integer) : "Maximum Distance" : 0 : "This is the distance that light is allowed to cast, in inches."
+	
+	// asw infested - previously set default distance to 400.  Lights in old build of AS:I required a maximum distance.
+	// _distance(integer) : "Maximum Distance" : 400 : "This is the distance that light is allowed to cast, in inches."
+]
+
+@BaseClass base(Targetname, Global, Angles, Studiomodel, BreakableProp, DXLevelChoice, BaseFadeProp) = BasePropPhysics
+[ 
+	spawnflags(flags) = 
+	[
+		1 : "Start Asleep" : 0
+		2 : "Don't take physics damage" : 0
+		4 : "Debris - Don't collide with the player or other debris" : 0
+		8 : "Motion Disabled" : 0
+		64 : "Enable motion on Physcannon grab" : 0
+		128 : "Not affected by rotor wash" : 0
+		256 : "Generate output on +USE " : 1
+		512 : "Prevent pickup" : 0
+		1024: "Prevent motion enable on player bump" : 0
+		4096: "Debris with trigger interaction" : 0
+		8192: "Force server-side (Multiplayer only)" : 0
+		// infested asw flag
+		32768: "Autoaim target" : 0
+		// infested asw flag
+		65536: "Disable motion when comes to rest" : 0
+		1048576: "Physgun can ALWAYS pick up. No matter what." : 0
+	]
+	
+	minhealthdmg(integer) : "Min Damage to Hurt" : 0 : "The prop will ignore any damage events if the damage is less than this amount."
+	shadowcastdist(integer) : "Shadow Cast Distance" : 0 : "Use this to override how far this object casts shadows. 0 = default distance."
+	physdamagescale(float) : "Physics Impact Damage Scale" : "0.1" : "Scales damage energy when this object is hit by a physics object. NOTE: 0 means this feature is disabled for backwards compatibility.\nSet to 1.0 for materials as strong as flesh, smaller numbers indicate stronger materials."
+	Damagetype(choices) : "Impact damage type" : 0 =
+	[
+		0: "Blunt"
+		1: "Sharp"
+	]
+
+	nodamageforces(boolean) : "Damaging it Doesn't Push It" : 0 : "Used to determine whether or not damage should cause the brush to move."
+
+	inertiaScale(float) : "Scale Factor For Inertia" : "1.0" : "Scales the angular mass of an object. Used to hack angular damage and collision response."
+	massScale(float) : "Mass Scale" : "0" : "A scale multiplier for the object's mass."
+	overridescript(string) : "Override Parameters" : "" : "A list of physics key/value pairs that are usually in a physics prop .qc file. Format is 'key,value,key,value,etc'."
+	damagetoenablemotion(integer) : "Health Level to Override Motion" : 0 : "If specified, this object will start motion disabled. Once its health has dropped below this specified amount, it will enable motion."
+	forcetoenablemotion(float) : "Physics Impact Force to Override Motion" : 0 : "If specified, this object will start motion disabled. Any impact that imparts a force greater than this value on the physbox will enable motion."
+	
+	puntsound(sound) : "Sound to make when punted"
+
+	addon(string) : "AI AddOn" : "" : "If specified this object will use this addon behavior when installed in a composite AI"
+
+	// Inputs
+	input Wake(void) : "Wake up this physics object, if it is sleeping."
+	input Sleep(void) : "Put this physics object to sleep. It will wake if given the Wake input, or if force is applied to it. Note that physics objects go to sleep automatically after coming to rest for a while, so you don't really need to use this."
+	input EnableMotion(void) : "Enable physics motion/collision response."
+	input DisableMotion(void) : "Disable physics motion/collision response."
+	input DisableFloating(void) : "Disable fluid/floating simulation to reduce cost."
+	input SetBodyGroup(integer) : "Set this prop's body group (from 0 - n)."
+	input physdamagescale(float) : "Set the Physics Impact Damage Scale for this character. NOTE: 0 means this feature is disabled for backwards compatibility."
+	input EnableDamageForces(void) : "Damaging the entity applies physics forces to it."
+	input DisableDamageForces(void) : "Damaging the entity does *not* apply physics forces to it."
+	input EnablePuntSound(void) : "Allow this prop to play its own sound when punted"
+	input DisablePuntSound(void) : "Prevent this prop from playing its own sound when punted"
+
+	// Outputs
+	output OnMotionEnabled(void) : "Fired when motion is enabled on this prop, either via 'Health Level to Override Motion' or from the EnableMotion input."
+	output OnAwakened(void) : "Fired when this entity becomes awake (collision/force is applied to it while it's asleep)."
+	output OnPhysGunPickup(void) : "Fired when the player picks up the prop with the physcannon or +USE."
+	output OnPhysGunPunt(void) : "Fired when a player punts this object with the physgun."
+	output OnPhysGunOnlyPickup(void) : "Fired when a player picks this object up WITH THE PHYSGUN. +USE pickups do not fire this output."
+	output OnPhysGunDrop(void) : "Fired when the player drops the prop with the physcannon or USE."
+	output OnPlayerUse(void) : "Fired when the player tries to +USE the prop. This output will fire only if the Generate output on +USE spawnflag is set."
+	output OnPlayerPickup(void) : "Fired whenever the player picks up this prop (with the physcannon or with +USE)."
+	output OnOutOfWorld(void) : "Fired whenever the prop is out of the allowed world bounds."
+]
+
+@PointClass base(BasePropPhysics, RenderFields) studioprop() sphere(fademindist) sphere(fademaxdist) = prop_physics :
+	"A prop that physically simulates as a single rigid body. It can be constrained to other physics objects using hinges "+
+	"or other constraints. It can also be configured to break when it takes enough damage. "+
+	"Note that the health of the object will be overridden by the health inside the model, to ensure consistent health game-wide. "+
+	"If the model used by the prop is configured to be used as a prop_dynamic (i.e. it should not be physically simulated) then it CANNOT be "+
+	"used as a prop_physics. Upon level load it will display a warning in the console and remove itself. Use a prop_dynamic instead."
+[
+	// asw infested custom settings
+	BulletForceImmune(boolean) : "Immune to bullet forces" : 0 : "Used to determine whether or not bullet damage should cause the prop to move."
+
+	// Inputs
+	input Ignite(void) : "Ignite, burst into flames."
+	input IgniteLifetime(float) : "Ignite, with a parameter lifetime."
+	input IgniteNumHitboxFires(integer) : "Ignite, with a parameternumber of hitbox fires."
+	input IgniteHitboxFireScale(float) : "Ignite, with a parameter hitbox fire scale."
+]
+
+
+@PointClass base(Node) studio("models/editor/ground_node.mdl") color(232 219 8) = info_node :
+	"A navigation node for ground moving NPCs. Navigation nodes are baked into the nodegraph so that NPCs can move " +
+	"to them. Ground nodes fall to the ground when they spawn."
+[
+	// asw added extra ones 512+
+	spawnflags(Flags) = 
+	[
+		1 : "Force human permission" : 0
+		2 : "Force small_centered permission" : 0
+		4 : "Force wide_human permission" : 0
+		8 : "Force tiny permissiont" : 0
+		16 : "Force wide_short permission" : 0
+		32 : "Force medium permission" : 0
+		64 : "Force tiny_centered permission" : 0
+		128 : "Force large permission" : 0
+		256 : "Force large_centered permission" : 0		
+		512 : "Keep editor position" : 0
+		1024 : "Force medium tall permission" : 0
+		2048 : "Force tiny fluid permission" : 0
+		4096 : "Force medium big (Swarm Drone) permission" : 0
+	]
+]
+
+@PointClass base(Targetname) color(220 180 0) size(-8 -8 -8, 8 8 8) line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link :
+	"A dynamic connection between two navigation nodes. You specify the node IDs of the start and end nodes, and then you can use entity I/O " +
+	"to turn on and off the connection. This could be used to create or destroy a connection in the nodegraph because of some event in your map " +
+	"(a bridge being created/destroyed, etc)."
+[
+    StartNode(node_dest) : "Start node ID" : : "The node ID of one end of the node connection."
+    EndNode(node_dest) : "End node ID" : : "The node ID of one end of the node connection."
+	initialstate(choices) : "Initial State" : 1 =
+	[
+		0 : "Off"
+		1 : "On"
+	]
+	linktype(choices) : "Type of Connection" : 1 =
+	[
+		1 : "Ground"
+		2 : "Jump"
+		4 : "Fly"
+		8 : "Climb"
+		16 : "Crawl"
+	]
+	AllowUse(string) : "Allow Pass When Off" : : "Entity or class to allow passage even when node is off"
+	InvertAllow(boolean) : "Invert exclusion rules" : 0 : "Allowed entity is the only entity NOT allowed when this is set to 'yes'"
+
+	preciseMovement(boolean) : "Precise Movement" : 0 : "Movement through this link must be precise. Used for NPCs " +
+														"that have sloppy movement characteristics to move through things like doors or windows"
+	priority(choices) : "Priority" : 0 =
+	[
+		0 : "Normal"
+		1 : "Use As Last Resort"
+	]
+
+	spawnflags( Flags ) =
+	[
+		1 : "Force human connect" : 0
+		2 : "Force small_centered connect" : 0
+		4 : "Force wide_human connect" : 0
+		8 : "Force tiny connect" : 0
+		16 : "Force wide_short connect" : 0
+		32 : "Force medium connect" : 0
+		64 : "Force tiny_centered connect" : 0
+		128 : "Force large connect" : 0
+		256 : "Force large_centered connect" : 0
+		512 : "(Don't drop placeholder)" : 0
+		1024 : "Force medium tall connect" : 0
+		2048 : "Force tiny fluid connect" : 0
+		4096 : "Force medium big (Swarm Drone) connect" : 0
+	]
+
+	// Inputs
+	input TurnOn(void) : "Turn the link on."
+	input TurnOff(void) : "Turn the link off."
+]

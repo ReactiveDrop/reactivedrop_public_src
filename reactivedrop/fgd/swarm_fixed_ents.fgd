@@ -1,0 +1,322 @@
+//Ultility//
+
+// Ammo Satchel // Doesn't Work
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_ammo_satchel : "Ammo Satchel"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	Clips(integer) : "Clips" : 3
+	SkinNumber(integer) : "Skin Number" : 0
+]
+// Medical Beacon //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_heal_grenade : "Medical Beacon"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 9
+	SkinNumber(integer) : "Skin Number" : 1
+]
+// Personal Medkit //
+@PointClass base(ASWPickup) studio
+
+("models/items/personalmedkit/personalmedkit.mdl")= asw_pickup_medkit : "Medkit"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+]
+// Incendiary Mines //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_mines : "Incendiary Mines"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 5
+	Clips(integer) : "Clips" : 0
+	SkinNumber(integer) : "Skin Number" : 1
+]
+// Trip Mines //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_laser_mines : "Trip Mines"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 12
+	SkinNumber(integer) : "Skin Number" : 8
+]
+// Blink Pack //
+@PointClass base(Weapon) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_blink : "Blink Pack"
+[
+	SkinNumber(integer) : "Skin Number" : 12
+]
+// Assault Jets //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_jump_jet : "Assault Jets"
+[
+	SkinNumber(integer) : "Skin Number" : 12
+	BulletsInGun(integer) : "Bullets In Gun" : 5
+]
+// Tesla Trap //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_tesla_trap : "Tesla Trap"
+[
+	SkinNumber(integer) : "Skin Number" : 9
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+]
+// Flares //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_flares : "Flares"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 15
+	SkinNumber(integer) : "Skin Number" : 1 
+]
+// Damage Amp //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_buff_grenade : "Damage Amp"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 5
+	SkinNumber(integer) : "Skin Number" : 4
+]
+// Hand Grenades //
+@PointClass base(ASWPickup) studio("models/swarm/grenades/grenadebox.mdl")= 
+
+asw_weapon_grenades : "Hand Grenades"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 5
+	SkinNumber(integer) : "Skin Number" : 0 
+]
+// Freeze Grenades //
+@PointClass base(ASWPickup) studio("models/swarm/grenades/grenadebox.mdl")= 
+
+asw_weapon_freeze_grenades : "Freeze Grenades"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 5
+	SkinNumber(integer) : "Skin Number" : 1
+]
+// Normal Armor //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_normal_armor : "Normal Armor"
+[
+	SkinNumber(integer) : "Skin Number" : 2
+]
+// Electrified Armor //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_electrified_armor : "Electrified Armor"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	SkinNumber(integer) : "Skin Number" : 7 
+]
+// Power Fist //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_fist : "Power Fist"
+[
+	SkinNumber(integer) : "Skin Number" : 10
+]
+// Night Vision //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_night_vision : "Night Vision"
+[
+	SkinNumber(integer) : "Skin Number" : 5
+]
+//Hornel Barage//
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_hornet_barrage : "Hornet Barage"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	SkinNumber(integer) : "Skin Number" : 3
+]// Smart Bomb //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_smart_bomb : "Smart Bomb"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	SkinNumber(integer) : "Skin Number" : 11 
+]
+// Adrenaline //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= 
+
+asw_weapon_stim : "Adrenaline"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	SkinNumber(integer) : "Skin Number" : 6
+]
+// Sentry Gun Case //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_sentry : "Sentry Gun Case"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	SkinNumber(integer) : "Skin Number" : 2
+]
+// Incendiary Sentry Gun Case //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_sentry_flamer : "Incendiary Sentry Gun Case"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	SkinNumber(integer) : "Skin Number" : 4
+]
+// Freeze Sentry Gun Case //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_sentry_freeze : "Freeze Sentry Gun Case"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	SkinNumber(integer) : "Skin Number" : 3
+]
+// Cannon Sentry Gun Case //
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxlarge.mdl")= 
+
+asw_pickup_sentry_cannon : "Cannon Sentry Gun Case"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	SkinNumber(integer) : "Skin Number" : 5
+]
+
+//WEAPON//zwzwz
+
+// Heal Gun //
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
+
+asw_weapon_heal_gun : "Heal Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 90
+]
+// PDW //
+@PointClass base(ASWPickup) studio("models/weapons/pdw/pdw.mdl")= asw_pickup_pdw : 
+
+"PDW"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 80
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Pistol //
+@PointClass base(ASWPickup) studio("models/weapons/pistol/pistol.mdl")= 
+
+asw_pickup_pistol : "Pistol"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 16
+	Clips(integer) : "Clips" : 10
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Assault Rifle //
+@PointClass base(ASWPickup) studio("models/weapons/assaultrifle/assaultrifle.mdl")= 
+
+asw_pickup_rifle : "Assault Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 98
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 4
+]
+// Prototype Rifle //
+@PointClass base(ASWPickup) studio("models/weapons/prototype/prototyperifle.mdl")= 
+
+asw_pickup_prifle : "Prototype Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 98
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 4
+]
+// Shotgun //
+@PointClass base(ASWPickup) studio("models/weapons/shotgun/shotgun.mdl")= 
+
+asw_pickup_shotgun : "Shotgun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	Clips(integer) : "Clips" : 8
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Vindicator //
+@PointClass base(ASWPickup) studio("models/weapons/vindicator/vindicator.mdl")= 
+
+asw_pickup_vindicator : "vindicator"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 14
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 4
+]
+// Tesla Gun //
+@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
+
+asw_weapon_tesla_gun : "Tesla Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 20
+	Clips(integer) : "Clips" : 13
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Mining Laser //
+@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
+
+asw_pickup_mining_laser : "Mining laser"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 50
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Autogun //
+@PointClass base(ASWPickup) studio("models/weapons/autogun/autogun.mdl")= 
+
+asw_pickup_autogun : "Autogun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 250
+	Clips(integer) : "Clips" : 1
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Minigun //
+@PointClass base(ASWPickup) studio("models/weapons/minigun/minigun.mdl")= 
+
+asw_pickup_minigun : "Minigun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 250
+	Clips(integer) : "Clips" : 1
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Flamethrower //
+@PointClass base(ASWPickup) studio("models/weapons/flamethrower/flamethrower.mdl")= 
+
+asw_pickup_flamer : "Flamethrower"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 60
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Railgun //
+@PointClass base(ASWPickup) studio("models/weapons/railgun/railgun.mdl")= 
+
+asw_pickup_railgun : "Railgun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 1
+	Clips(integer) : "Clips" : 72
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Marksman Rifle //
+@PointClass base(ASWPickup) studio
+
+("models/weapons/marksmanrifle/marksmanrifle.mdl")= asw_weapon_sniper_rifle : 
+
+"Marksman Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 12
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Grenade Launcher //
+@PointClass base(ASWPickup) studio
+
+("models/weapons/grenadelauncher/grenadelauncher.mdl")= asw_weapon_grenade_launcher 
+
+: "Grenade Launcher"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 6
+	Clips(integer) : "Clips" : 3
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]

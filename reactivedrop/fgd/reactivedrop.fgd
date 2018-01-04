@@ -1,0 +1,173 @@
+@include "swarm.fgd"
+@include "swarm_fixed_ents.fgd"
+ 
+@PointClass base(Targetname) = asw_deathmatch_mode : "If this entity is present Deathmatch game rules will be applied"
+[
+]
+
+@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_player_start_team1 :
+	"This entity indicates the position and facing direction at which the player will spawn. Any number of "+
+	"info_player_start entities may be placed in a map for when working in cordoned-off portions of the map. "+
+	"When multiple info_player_start entities are present in a map, set the 'Master' spawnflag on one of them "+
+	"to indicate which one should be used when running the entire map."
+[
+	spawnflags(flags) =
+	[
+		1: "Master (Has priority if multiple info_player_starts exist)" : 0
+	]
+]
+
+@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_player_start_team2 :
+	"This entity indicates the position and facing direction at which the player will spawn. Any number of "+
+	"info_player_start entities may be placed in a map for when working in cordoned-off portions of the map. "+
+	"When multiple info_player_start entities are present in a map, set the 'Master' spawnflag on one of them "+
+	"to indicate which one should be used when running the entire map."
+[
+	spawnflags(flags) =
+	[
+		1: "Master (Has priority if multiple info_player_starts exist)" : 0
+	]
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/flame_top.mdl") = asw_sentry_top_flamer
+[
+	TurretRange(float) : "Turret Range" : "375" : "Maximum distance that it will pick targets."
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/freeze_top.mdl") = asw_sentry_top_icer
+[
+	TurretRange(float) : "Turret Range" : "300" : "Maximum distance that it will pick targets."
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/grenade_top.mdl") = asw_sentry_top_cannon
+[
+	TurretRange(float) : "Turret Range" : "1000" : "Maximum distance that it will pick targets."
+	FireRate(float) : "Fire Rate" : "1.75" : "Time in seconds between each shot"
+]
+
+@SolidClass base(Trigger) = trigger_rd_marine_jumpjet :
+	"A trigger volume that will force marine to perform jump jet or blink effect."
+[
+	wait(float) : "Delay Before Reset" : -1 : "Amount of time, in seconds, after the trigger has triggered before it can be triggered again. If set to -1, it will never trigger again. 0.2 is minimum, 0 will be converted to 0.2"
+	
+	Destination1(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination2(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination3(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination4(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination5(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination6(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination7(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+	Destination8(target_destination) : "Destination" : : "Marine will jump to this entity's origin. Each next jump will be performed to subsequent destination entity"
+  
+	JumpType(choices) : "Jump type" : 0 =
+	[
+		0 : "Jump Jet"
+		1 : "Blink"
+	]	
+	
+	JumpTimeOverride(float) : "Jump duration override" : 0 : "Time in seconds needed to perform Jump Jet or Blink. If 0 the default value is used "
+	AnimationTimeOverride(float) : "Jump Jet animation time override" : 0 : "Time in seconds needed to perform Jump Jet or Blink animation. If 0 the default value is used "
+	 
+	// Outputs
+	output OnJumpJetDone(void) : "Fired whenever the trigger is activated and jump started."
+]
+
+@SolidClass base(Trigger) = trigger_rd_sticktogether_area :
+	"A trigger volume that will force bot marines to immediately follow leader inside this volume. Requires info_marine_hint or info_node_marine_hint entities inside the volume to work "
+[
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_name.vmt") = asw_filter_rolling :
+	"A filter that selects rolling marines."
+[
+]
+
+// BenLubar(sd2-ceiling-ents): func_asw_fade, prop_asw_fade, and env_sprite_asw_fade
+
+@SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow) = func_asw_fade : 
+	"A func_brush that fades when the camera is third person and the marine is below the origin." 
+[
+	spawnflags(flags) =
+	[
+		2: "Ignore player +USE" : 1
+	]
+
+	_minlight(string) : "Minimum Light Level" : : "The minimum level of ambient light that hits this brush."
+	Solidity(choices) : "Solidity" : 2 : "Used to control the solidity/collision of these brushes." =
+	[
+		0 : "Toggle"
+		1 : "Never Solid"
+		2 : "Always Solid"
+	]
+	excludednpc(string) : "NPC class excluded from collisions" : "" : "If an NPC classname is specified here, NPCs of that type won't collide with these brushes. In Episodic, you may also specify an individual entity's name."
+	invert_exclusion(choices) : "Invert NPC class exclusion" : 0 : "If set, then the excluded NPC class will consider this brush solid, and all other NPC classes will consider it non-solid." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	solidbsp(boolean) : "Solid BSP" : 0 : "Set this if this brush is in heirarchy with a moving object of some kind, and the player can stand on this brush."
+
+	vrad_brush_cast_shadows(boolean) : "Shadows" : 1 : "Set this if this brush casts lightmap shadows."
+
+	fade_opacity(integer) : "Fade Alpha (0-255)" : 0 : "Opacity to fade to when in third person and the marine is below the origin."
+	AllowFade(boolean) : "Allow Fade" : 1 : ""
+
+	input SetExcluded( string ) : "Change the NPC class excluded from collisions"
+	input SetInvert( integer ) : "Set the state of invversion for NPC class exclusion (0 or 1)"
+	input AllowFade( integer ) : "Enable or disable fading (0 or 1)"
+]
+
+@PointClass base(prop_dynamic_base, EnableDisable) sphere(fademindist) sphere(fademaxdist) studioprop() = prop_asw_fade :
+	"A prop_dynamic that fades when the camera is third person and the marine is below the origin."
+[
+	fade_opacity(integer) : "Fade Alpha (0-255)" : 0 : "Opacity to fade to when in third person and the marine is below the origin."
+	AllowFade(boolean) : "Allow Fade" : 1 : ""
+	fade_origin(origin) : "Fade Origin (X Y Z)" : : ""
+
+	input AllowFade(integer) : "Enable or disable fading (0 or 1)"
+]
+
+@PointClass base(Targetname, Parentname, RenderFields,DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_asw_fade : 
+	"An env_sprite that fades when the camera is third person and the marine is below the origin." 
+[
+	framerate(string) : "Framerate" : "10.0" : "Rate at which the sprite should animate, if at all."
+	model(sprite) : "Sprite Name" : "sprites/glow01.spr" : "Material of the sprite to be drawn."
+	scale(string) : "Scale" : "" : "Scale multiplier of the sprite."
+	spawnflags(flags) =
+	[
+		1: "Start on" : 0
+		2: "Play Once" : 0
+	]
+
+	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space.  So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
+
+	HDRColorScale(float) : "HDR color scale." : "1.0" : "float value to multiply sprite color by when running in HDR mode."
+
+	fade_opacity(integer) : "Fade Alpha (0-255)" : 0 : "Opacity to fade to when in third person and the marine is below the origin."
+	AllowFade(boolean) : "Allow Fade" : 1 : ""
+	fade_origin(origin) : "Fade Origin (X Y Z)" : : ""
+
+	// Inputs
+	input ColorRedValue(float) : "Sets the red color channel's value (0 - 255)."
+	input ColorGreenValue(float) : "Sets the green color channel's value (0 - 255)."
+	input ColorBlueValue(float) : "Sets the blue color channel's value (0 - 255)."
+	input SetScale(float) : "Set the sprite's scale (0 - 8.0)."
+	input HideSprite(void) : "Hide the sprite. Won't be drawn until the 'ShowSprite' input is received."
+	input ShowSprite(void) : "Show the sprite."
+	input ToggleSprite(void) : "Toggle the sprite between hidden and shown."
+	input AllowFade(integer) : "Enable or disable fading (0 or 1)"
+]
+
+@PointClass base(ASWPickup) studio
+
+("models/weapons/50calmg/50calmg.mdl")= asw_weapon_50calmg 
+
+: "50cal Machine Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 200
+]
+
+@SolidClass base(Targetname, EnableDisable) = func_rd_no_director_aliens : "A volume that prevents the director from spawning aliens on noedes within its bounds."
+[
+]
