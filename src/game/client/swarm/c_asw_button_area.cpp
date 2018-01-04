@@ -21,6 +21,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Button_Area, DT_ASW_Button_Area, CASW_Button_Are
 	RecvPropBool(RECVINFO(m_bNoPower)),
 	RecvPropBool(RECVINFO(m_bWaitingForInput)),
 	RecvPropString( RECVINFO( m_NoPowerMessage ) ),
+	RecvPropBool		(RECVINFO(m_bNeedsTech)),
 END_RECV_TABLE()
 
 bool C_ASW_Button_Area::s_bLoadedLockedIconTexture = false;
@@ -142,7 +143,7 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	{
 		CASW_Marine_Profile *pProfile = pUser->GetMarineProfile();
 
-		if ( pProfile->CanHack() )
+		if ( pProfile->CanHack() || !NeedsTech() )
 		{
 			action.iUseIconTexture = GetHackIconTextureID();
 			TryLocalize( GetHackIconText(pUser), action.wszText, sizeof( action.wszText ) );

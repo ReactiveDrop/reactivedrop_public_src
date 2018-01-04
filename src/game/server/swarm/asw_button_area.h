@@ -38,6 +38,7 @@ public:
 	CNetworkVar( bool, m_bIsDoorButton );
 	CNetworkVar( bool, m_bNoPower );
 	CNetworkVar( bool, m_bWaitingForInput );
+	CNetworkVar( bool, m_bNeedsTech );
 	CNetworkString( m_NoPowerMessage, 255 );
 
 	// settings for the wire puzzle

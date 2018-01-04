@@ -32,6 +32,7 @@ BEGIN_DATADESC( CASW_Button_Area )
 	//DEFINE_KEYFIELD(m_iHackLevel, FIELD_INTEGER, "hacklevel" ),
 	DEFINE_KEYFIELD(m_bIsLocked, FIELD_BOOLEAN, "locked" ),
 	DEFINE_KEYFIELD(m_bNoPower, FIELD_BOOLEAN, "nopower" ),
+	DEFINE_KEYFIELD(m_bNeedsTech, FIELD_BOOLEAN, "needstech"),
 	
 	DEFINE_KEYFIELD(m_bUseAfterHack, FIELD_BOOLEAN, "useafterhack" ),
 	DEFINE_KEYFIELD(m_bDisableAfterUse, FIELD_BOOLEAN, "disableafteruse" ),
@@ -61,6 +62,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)
 	SendPropBool		(SENDINFO(m_bNoPower)),	
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),	
 	SendPropString		(SENDINFO( m_NoPowerMessage ) ),
+	SendPropBool		(SENDINFO(m_bNeedsTech)),
 END_SEND_TABLE()
 
 ConVar asw_ai_button_hacking_scale( "asw_ai_button_hacking_scale", "0.3", FCVAR_CHEAT, "Button panel hacking speed scale for AI marines" );
@@ -139,7 +141,7 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 	}
 	if ( m_bIsLocked )
 	{
-		if ( pMarine->GetMarineProfile()->CanHack() )
+		if ( pMarine->GetMarineProfile()->CanHack() || !m_bNeedsTech )
 		{
 			// can hack, get the player to launch his hacking window				
 			if ( !m_bIsInUse )

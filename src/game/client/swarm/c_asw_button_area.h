@@ -15,6 +15,7 @@ public:
 	bool IsLocked() { return m_bIsLocked; }
 	int GetHackLevel() { return m_iHackLevel; }
 	bool IsDoorButton() { return m_bIsDoorButton; }
+	bool NeedsTech() { return m_bNeedsTech; }
 	C_ASW_Door* GetDoor();
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUTTON_PANEL; }
@@ -55,6 +56,7 @@ protected:
 	bool m_bOldWaitingForInput;
 	int m_iHackLevel;
 	bool m_bIsDoorButton;
+	bool m_bNeedsTech;
 	C_ASW_Button_Area( const C_ASW_Button_Area & ); // not defined, not accessible		
 
 	// icons used to interact with buttons

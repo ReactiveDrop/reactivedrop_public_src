@@ -5665,6 +5665,11 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	needstech(choices) : "Requires tech marine" : 1 : "If set only tech marines can hack this panel." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 	useafterhack(choices) : "Auto-use after hack" : 1 : "If set, when the marine finishes hacking this panel, he will perform a use action on it." =
 	[
 		0 : "No"
@@ -5681,7 +5686,7 @@
 		1 : "No Power"
 	]
 	nopowermessage(string) : "No Power Message" : "" : "Message to show on the use icon when this panel has no power."
-	
+
 	output OnButtonHackStarted(void) : "Fired whenever a marine starts hacking this panel."
 	output OnButtonHackAt25Percent(void) : "Fired whenever the hack gets over halfway through"
 	output OnButtonHackAt50Percent(void) : "Fired whenever the hack gets over halfway through"
