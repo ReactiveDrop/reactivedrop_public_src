@@ -18,6 +18,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_weapons_class_restricted;
+
 CNB_Select_Weapon_Entry::CNB_Select_Weapon_Entry( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
@@ -178,6 +180,10 @@ void CNB_Select_Weapon_Entry::OnThink()
 	if ( !bUnlocked )
 	{
 		m_bCanEquip = false;
+	}
+	else if ( !rd_weapons_class_restricted.GetBool() )
+	{
+		m_bCanEquip = true;
 	}
 
 	// reactivedrop: grey out weapons which are not allowed in the

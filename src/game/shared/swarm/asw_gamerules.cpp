@@ -189,6 +189,36 @@ extern ConVar old_radius_damage;
 			sv_tags.SetValue( buffer );
 		}
 	}
+
+	static void EnforceWeaponClassRestriction( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
+	{
+		ConVarRef rd_weapons_class_restricted( "rd_weapons_class_restricted" );
+		if ( !rd_weapons_class_restricted.GetBool() )
+			return;
+
+		if ( ASWGameRules() && ASWGameResource() && ASWEquipmentList() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		{
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				CASW_Player *pPlayer = pMR->GetCommander();
+				CASW_Marine_Profile *pProfile = pMR->GetProfile();
+				if ( !pPlayer || !pProfile )
+					continue;
+
+				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
+				{
+					const char *szWeaponClass = pProfile->m_DefaultWeaponsInSlots[ j ];
+					int nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( j, szWeaponClass );
+					engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d", pProfile->m_ProfileIndex, j, nWeaponIndex );
+				}
+			}
+		}
+	}
+
 	// reactivedrop: this callback function is called when rd_weapons_<slot>_allowed cvar is
 	// changed. It checks whether marine has not allowed weapons selected and replaces them
 	// with an allowed alternative. Such as replace all weapons with rifles for Rifle Mod
@@ -382,6 +412,12 @@ ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "F
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
 ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
 ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
+ConVar rd_weapons_class_restricted( "rd_weapons_class_restricted", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 all marines can use any weapon regardless of class restriction"
+#ifdef GAME_DLL
+	, EnforceWeaponClassRestriction );
+#else
+	);
+#endif
 
 ConVar rd_weapons_regular_allowed( "rd_weapons_regular_allowed", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of allowed weapon IDs: 0 6 9 15. See asw_list_equipment" );
 ConVar rd_weapons_extra_allowed( "rd_weapons_extra_allowed", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of allowed extra items IDs: 1 2 7 12. See asw_list_equipment" );
@@ -5012,29 +5048,32 @@ bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const c
 	if (!pProfile)
 		return false;
 
-	// check various class skills
-	if (pWeaponData->m_bTech && !pProfile->CanHack())
+	if ( rd_weapons_class_restricted.GetBool() )
 	{
-		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_tech");
-		return false;
-	}
+		// check various class skills
+		if (pWeaponData->m_bTech && !pProfile->CanHack())
+		{
+			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_tech");
+			return false;
+		}
 
-	if (pWeaponData->m_bFirstAid && !pProfile->CanUseFirstAid())
-	{
-		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_medic");
-		return false;
-	}
+		if (pWeaponData->m_bFirstAid && !pProfile->CanUseFirstAid())
+		{
+			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_medic");
+			return false;
+		}
 
-	if (pWeaponData->m_bSpecialWeapons && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS)
-	{
-		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_sw");
-		return false;
-	}
+		if (pWeaponData->m_bSpecialWeapons && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS)
+		{
+			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_sw");
+			return false;
+		}
 
-	if (pWeaponData->m_bSapper && pProfile->GetMarineClass() != MARINE_CLASS_NCO)
-	{
-		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_nco");
-		return false;
+		if (pWeaponData->m_bSapper && pProfile->GetMarineClass() != MARINE_CLASS_NCO)
+		{
+			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_nco");
+			return false;
+		}
 	}
 
 // 	if (pWeaponData->m_bSarge && !pProfile->m_bSarge)
