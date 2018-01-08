@@ -127,6 +127,7 @@ BaseClass(parent, panelName)
 	m_flFilmGrainInitialValue = mat_grain_scale_override.GetFloat();
 
 	m_bDirtyValues = false;
+	m_bBackPressed = false;
 }
 
 //=============================================================================
@@ -878,6 +879,8 @@ void Video::OnKeyCodePressed(KeyCode code)
 	{
 	case KEY_XBUTTON_B:
 		// nav back
+		if ( !m_bBackPressed )
+			m_bDirtyValues = false;
 		BaseClass::OnKeyCodePressed(code);
 		break;
 
@@ -886,6 +889,24 @@ void Video::OnKeyCodePressed(KeyCode code)
 		break;
 	}
 }
+
+#ifndef _X360
+void Video::OnKeyCodeTyped( vgui::KeyCode code )
+{
+	// For PC, this prevents video settings from being saved when esc is pressed
+	switch ( code )
+	{
+	case KEY_ESCAPE:
+		m_bDirtyValues = false;
+		BaseClass::OnKeyCodeTyped( code );
+		break;
+
+	default:
+		BaseClass::OnKeyCodeTyped( code );
+		break;
+	}
+}
+#endif
 
 //=============================================================================
 void Video::OnCommand(const char *command)
@@ -1162,6 +1183,7 @@ void Video::OnCommand(const char *command)
 	}
 	else if( Q_stricmp( "Back", command ) == 0 )
 	{
+		m_bBackPressed = true;
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 	}
 	else if( Q_stricmp( "3rdPartyCredits", command ) == 0 )
