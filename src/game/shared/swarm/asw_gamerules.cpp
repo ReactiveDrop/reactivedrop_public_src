@@ -8178,10 +8178,17 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 	FOR_EACH_VALUE( pConVars, pCV )
 	{
 		ConVarRef cvar( pCV->GetName() );
-		SaveConvar( cvar );
-		cvar.SetValue( pCV->GetString() );
-		// use the actual value to make sure we don't run into issues with truncated values not being equal.
-		m_SavedConvars_Challenge[cvar.GetName()] = AllocPooledString( cvar.GetString() );
+		if ( cvar.IsValid() )
+		{
+			SaveConvar( cvar );
+			cvar.SetValue( pCV->GetString() );
+			// use the actual value to make sure we don't run into issues with truncated values not being equal.
+			m_SavedConvars_Challenge[cvar.GetName()] = AllocPooledString( cvar.GetString() );
+		}
+		else
+		{
+			Warning( "Invalid ConVar %s found in challenge %s\n", pCV->GetName(), pKV->GetString( "name", "unknown" ) );
+		}
 	}
 }
 
