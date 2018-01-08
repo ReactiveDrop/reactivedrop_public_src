@@ -208,7 +208,7 @@ void CNB_Main_Panel::OnThink()
 	bool isOffline = ASWGameResource() && ASWGameResource()->IsOfflineGame();
 	bool hasMarineSelected = Briefing()->GetMarineProfile(m_pLobbyRow0->m_nLobbySlot);
 	m_pAddBotButton->SetVisible( !isOffline && hasMarineSelected );
-	m_pDeselectMarinesButton->SetVisible( !isOffline && hasMarineSelected );
+	m_pDeselectMarinesButton->SetVisible( hasMarineSelected );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	m_pPromotionButton->SetVisible( pPlayer && pPlayer->GetExperience() >= ( ASW_XP_CAP * g_flPromotionXPScale[ pPlayer->GetPromotion() ] ) && pPlayer->GetPromotion() < ASW_PROMOTION_CAP );
