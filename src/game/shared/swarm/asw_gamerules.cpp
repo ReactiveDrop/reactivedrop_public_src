@@ -3141,6 +3141,12 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 			m_fMarineDeathTime = 0.0f;
 		}
 	}
+	else if ( !asw_marine_death_cam_slowdown.GetBool() && m_bMarineInvuln )
+	{
+		MarineInvuln( false );
+		m_nMarineForDeathCam = -1;
+		m_fMarineDeathTime = 0.0f;
+	}
 
 	if ( gpGlobals->curtime >= ( m_fObjectiveSlowDownEndTime - asw_objective_slowdown_time.GetFloat() ) && gpGlobals->curtime < m_fObjectiveSlowDownEndTime )
 	{
