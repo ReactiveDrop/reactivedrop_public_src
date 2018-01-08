@@ -5656,7 +5656,12 @@
 @SolidClass base(trigger_asw_use_area) = trigger_asw_button_area :
 	"A trigger volume in which marines can use a button.  Set the UseTarget to a door to make it a Door Button."
 [
-	panelpropname(target_destination) : "Panel Prop name" : "" : "Name of the prop_dynamic used for this button panel's representation in the world.  Skin # of this prop_dynamic will be set to reflect the locked/unlocked/power status of this panel."
+	panelpropname(target_destination) : "Panel Prop name" : "" : "Name of the prop_dynamic used for this button panel's representation in the world."
+	changepanelskin(choices) : "Change Panel Skin" : 1 : "Skin # of this panel's prop_dynamic will be set to reflect the locked/unlocked/power status of this panel." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 	numwires(integer) : "Num Wires" : 2 : "How many wires this door panel has inside it (from 1 to 4).  Each wire unjumbled will speed up the charging of the actuators."
 	wirecolumns(integer) : "Wire Columns" : 5 : "How many sections across the wire has (from 3 to 8).  Higher values should be used for more difficult panels."
 	wirerows(integer) : "Wire Rows" : 2 : "How many rows each wire has (from 1 to 3)."

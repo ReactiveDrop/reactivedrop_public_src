@@ -75,6 +75,7 @@ public:
 
 	CNetworkVar(bool, m_bIsInUse);
 	CNetworkVar(float, m_fHackProgress);
+	bool m_bChangePanelSkin;
 	bool m_bWasLocked;
 	bool m_bUseAfterHack;
 	bool m_bDisableAfterUse;

@@ -34,6 +34,7 @@ BEGIN_DATADESC( CASW_Button_Area )
 	DEFINE_KEYFIELD(m_bNoPower, FIELD_BOOLEAN, "nopower" ),
 	DEFINE_KEYFIELD(m_bNeedsTech, FIELD_BOOLEAN, "needstech"),
 	
+	DEFINE_KEYFIELD(m_bChangePanelSkin, FIELD_BOOLEAN, "changepanelskin"),
 	DEFINE_KEYFIELD(m_bUseAfterHack, FIELD_BOOLEAN, "useafterhack" ),
 	DEFINE_KEYFIELD(m_bDisableAfterUse, FIELD_BOOLEAN, "disableafteruse" ),
 
@@ -77,6 +78,9 @@ CASW_Button_Area::CASW_Button_Area()
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 	m_iAliensKilledBeforeHack = 0;
 
+	m_bChangePanelSkin = true;
+	m_bNeedsTech = true;
+
 	m_iHackLevel = 6;
 }
 
@@ -116,7 +120,10 @@ void CASW_Button_Area::Spawn( void )
 	}
 
 	UpdateWaitingForInput();
-	UpdatePanelSkin();
+	if ( m_bChangePanelSkin )
+	{
+		UpdatePanelSkin();
+	}
 }
 
 void CASW_Button_Area::Precache()
@@ -341,14 +348,20 @@ void CASW_Button_Area::InputPowerOn( inputdata_t &inputdata )
 {
 	m_bNoPower = false;
 	UpdateWaitingForInput();
-	UpdatePanelSkin();
+	if ( m_bChangePanelSkin )
+	{
+		UpdatePanelSkin();
+	}
 }
 
 void CASW_Button_Area::InputPowerOff( inputdata_t &inputdata )
 {
 	m_bNoPower = true;
 	UpdateWaitingForInput();
-	UpdatePanelSkin();
+	if ( m_bChangePanelSkin )
+	{
+		UpdatePanelSkin();
+	}
 }
 
 void CASW_Button_Area::InputUnlock( inputdata_t &inputdata )
@@ -358,7 +371,10 @@ void CASW_Button_Area::InputUnlock( inputdata_t &inputdata )
 		m_bIsLocked = false;
 		m_fHackProgress = 1.0f;
 		UpdateWaitingForInput();
-		UpdatePanelSkin();
+		if ( m_bChangePanelSkin )
+		{
+			UpdatePanelSkin();
+		}
 
 		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(inputdata.pActivator);
 
@@ -378,7 +394,10 @@ void CASW_Button_Area::InputResetHack( inputdata_t &inputdata )
 		SetHackProgress(0, NULL);
 		m_bIsLocked = true;
 		UpdateWaitingForInput();
-		UpdatePanelSkin();
+		if ( m_bChangePanelSkin )
+		{
+			UpdatePanelSkin();
+		}
 		if (m_hDoorHack.Get())
 		{
 			// need to delete the hack
@@ -471,7 +490,10 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 		m_OnButtonHackCompleted.FireOutput(pActor, this);
 		m_bIsLocked = false;
 		UpdateWaitingForInput();
-		UpdatePanelSkin();
+		if ( m_bChangePanelSkin )
+		{
+			UpdatePanelSkin();
+		}
 
 		EmitSound("ASWComputer.HackComplete");
 
