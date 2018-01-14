@@ -281,12 +281,6 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	return true;
 }
 
-#ifndef CLIENT_DLL
-ConVar rm_bait_offsetx("rm_bait_offsetx", "40", FCVAR_NONE, "tmp");
-ConVar rm_bait_offsety("rm_bait_offsety", "40", FCVAR_NONE, "tmp");
-ConVar rm_bait_offsetz("rm_bait_offsetz", "70", FCVAR_NONE, "tmp");
-#endif
-
 void CASW_Weapon_Sentry::DeploySentry()
 {
 	CASW_Marine *pMarine = GetMarine();
@@ -319,11 +313,12 @@ void CASW_Weapon_Sentry::DeploySentry()
     // riflemod: create a bait near the sentry for aliens to attack sentry
     float sentry_angle = m_angValidSentryFacing.y; //degrees 
     CASW_Bait *pEnt1 = NULL;
-    
+
     Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle)), sin(DEG2RAD(sentry_angle)), 0);
-    Vector bait_dir = bait_ang.Normalized() * rm_bait_offsetx.GetFloat();
+	const float BAIT_OFFSETX = 40.0f;
+	const float BAIT_OFFSETY = 40.0f;
+    Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETX;
     {
-        
         Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector(0, 0, 10);
         pEnt1 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
         if ( pEnt1 )
@@ -345,7 +340,7 @@ void CASW_Weapon_Sentry::DeploySentry()
     CASW_Bait *pEnt3 = NULL;
     {
         Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle + 90)), sin(DEG2RAD(sentry_angle + 90)), 0);
-        Vector bait_dir = bait_ang.Normalized() * rm_bait_offsety.GetFloat();
+        Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
         Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector(0, 0, 10);
         pEnt3 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
         if ( pEnt3 )
@@ -357,7 +352,7 @@ void CASW_Weapon_Sentry::DeploySentry()
     CASW_Bait *pEnt4 = NULL;
     {
         Vector bait_ang = Vector(cos(DEG2RAD(sentry_angle + 90)), sin(DEG2RAD(sentry_angle + 90)), 0);
-        Vector bait_dir = bait_ang.Normalized() * rm_bait_offsety.GetFloat();
+        Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
         Vector bait_vec = m_vecValidSentrySpot - bait_dir + Vector(0, 0, 10);
         pEnt4 = CASW_Bait::Bait_Create( bait_vec, QAngle(90,0,0), vec3_origin, AngularImpulse(0, 0, 0), pBase );
         if ( pEnt4 )
