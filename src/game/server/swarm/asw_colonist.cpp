@@ -8,6 +8,7 @@
 #include "asw_player.h"
 #include "asw_weapon.h"
 #include "asw_burning.h"
+#include "entityflame.h"
 
 #include "effect_dispatch_data.h"
 #include "te_effect_dispatch.h"
@@ -35,11 +36,22 @@ BEGIN_DATADESC( CASW_Colonist )
 	DEFINE_FIELD( m_bSlowHeal, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_iSlowHealAmount, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fNextSlowHealTick, FIELD_TIME ),	
+	DEFINE_KEYFIELD(	m_Gender,	FIELD_INTEGER, "gender" ),
 	DEFINE_KEYFIELD(	m_bNotifyNavFailBlocked,	FIELD_BOOLEAN, "notifynavfailblocked" ),
 	DEFINE_OUTPUT(		m_OnNavFailBlocked,		"OnNavFailBlocked" ),
 
 	DEFINE_INPUTFUNC( FIELD_STRING, "GiveWeapon", InputGiveWeapon ),
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Colonist, CBaseCombatCharacter, "Colonist" )
+	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning colonist." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the colonist into flames." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the colonist." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptCureInfestation, "CureInfestation", "Cures an infestation." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the colonist a weapon." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDropWeapon, "DropWeapon", "Makes the colonist drop a weapon." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the colonist." )
+END_SCRIPTDESC()
 
 extern ConVar asw_debug_marine_damage;
 
@@ -69,6 +81,55 @@ void CASW_Colonist::InputGiveWeapon( inputdata_t &inputdata )
 
 	GetShotRegulator()->SetBurstShotCountRange(1, pWeapon->Clip1());
 	GetShotRegulator()->SetBurstInterval(pWeapon->GetFireRate(), pWeapon->GetFireRate());
+}
+
+void CASW_Colonist::ScriptGiveWeapon( const char *pszName )
+{
+	CBaseCombatWeapon *pWeapon = Weapon_Create(pszName);
+	if ( !pWeapon )
+	{
+		Warning( "Couldn't create weapon %s to give NPC %s.\n", pszName, STRING(GetEntityName()) );
+		return;
+	}
+
+	// If I have a weapon already, drop it
+	if ( GetActiveWeapon() )
+	{
+		Weapon_Drop( GetActiveWeapon() );
+	}
+
+	pWeapon->MakeWeaponNameFromEntity( this );
+
+	Weapon_Equip( pWeapon );
+
+	// Handle this case
+	OnGivenWeapon( pWeapon );
+
+	GetShotRegulator()->SetBurstShotCountRange(1, pWeapon->Clip1());
+	GetShotRegulator()->SetBurstInterval(pWeapon->GetFireRate(), pWeapon->GetFireRate());
+}
+
+bool CASW_Colonist::ScriptDropWeapon()
+{
+	if ( GetActiveWeapon() )
+	{
+		Weapon_Drop( GetActiveWeapon() );
+		return true;
+	}
+
+	return false;
+}
+
+bool CASW_Colonist::ScriptRemoveWeapon()
+{
+	if ( GetActiveWeapon() )
+	{
+		Weapon_Drop( GetActiveWeapon() );
+		UTIL_Remove( GetActiveWeapon() );
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -111,7 +172,10 @@ void CASW_Colonist::Spawn()
 {
 	Precache();
 	
-	isFemale = RandomInt(0,1)==0;
+	if ( m_Gender > 0 && m_Gender < 3 )
+		isFemale = m_Gender==2;
+	else
+		isFemale = RandomInt(0,1)==0;
 
 	if (isFemale)
 		SetModel( SWARM_COLONIST_MODEL_FEMALE );
@@ -273,6 +337,11 @@ Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 	return BaseClass::NPC_TranslateActivity( activity );
 }
 
+void CASW_Colonist::ScriptIgnite( float flFlameLifetime )
+{
+	ASW_Ignite( flFlameLifetime, NULL, NULL );
+}
+
 void CASW_Colonist::ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon ) {
 	Ignite( flFlameLifetime, false, 3, true );
 
@@ -371,6 +440,16 @@ void CASW_Colonist::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
 		if (pHealer)
 			m_hInfestationCurer = pHealer;
 	}
+}
+
+void CASW_Colonist::ScriptBecomeInfested()
+{
+	BecomeInfested( NULL );
+}
+
+void CASW_Colonist::ScriptCureInfestation()
+{
+	CureInfestation( NULL, 0 );
 }
 
 // if we died from infestation, then gib
@@ -549,6 +628,13 @@ void CASW_Colonist::AddSlowHeal(int iHealAmount, CASW_Marine *pMedic)
 }	
 
 void CASW_Colonist::Extinguish(){
+	CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity() );
+	if ( pFireChild )
+	{
+		SetEffectEntity( NULL );
+		UTIL_Remove( pFireChild );
+	}
+
 	if (ASWBurning()) {
 		ASWBurning()->Extinguish(this);
 	}

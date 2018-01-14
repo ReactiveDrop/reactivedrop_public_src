@@ -722,15 +722,19 @@ void CASW_Parasite::InfestThink( void )
 
 	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetParent());
 	CASW_Colonist *pColonist = dynamic_cast<CASW_Colonist*>(GetParent());
+	bool bDoneInfesting = false;
 
-	if (!pColonist) {
+	if ( !pColonist ) 
+	{
  		if ( !pMarine || !pMarine->IsInfested() || pMarine->IsEffectActive( EF_NODRAW ) )
  		{
  			FinishedInfesting();
+			bDoneInfesting = true;
  		}
 	}
 
-	if (!pMarine) {
+	if ( !pMarine && !bDoneInfesting) 
+	{
 		if ( !pColonist || !pColonist->IsInfested() || pColonist->IsEffectActive( EF_NODRAW ) )
 		{
 			FinishedInfesting();

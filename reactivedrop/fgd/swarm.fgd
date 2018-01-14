@@ -6254,6 +6254,12 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	gender(choices) : "Gender of Colonist" : 0 =
+	[
+		0 : "Random"
+		1 : "Male"
+		2 : "Female"
+	]
 ]
 
 @PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_intro_control : 
