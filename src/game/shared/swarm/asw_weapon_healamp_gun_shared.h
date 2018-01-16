@@ -19,11 +19,13 @@ public:
 
 	virtual void    Precache(void);
 
+	virtual void	PrimaryAttack();
 	virtual void	SecondaryAttack();
 
 	virtual Class_T		Classify( void ) { return (Class_T)CLASS_ASW_HEALAMP_GUN; }
 
 	#ifdef CLIENT_DLL
+	virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	virtual void UpdateEffects();
 	#endif
 

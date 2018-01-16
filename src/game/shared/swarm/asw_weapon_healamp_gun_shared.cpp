@@ -6,6 +6,8 @@
 	#include "c_asw_marine.h"
 	#include "c_asw_marine_resource.h"
 	#include "c_asw_game_resource.h"
+	#include "asw_hud_crosshair.h"
+	#include "asw_input.h"
 #else
 	#include "asw_player.h"
 	#include "asw_marine.h"
@@ -109,14 +111,23 @@ void CASW_Weapon_HealAmp_Gun::SetFiringState(ASW_Weapon_HealGunFireState_t state
 	m_FireState = state;
 }
 
+void CASW_Weapon_HealAmp_Gun::PrimaryAttack()
+{
+	m_bIsBuffing = false;
+	BaseClass::PrimaryAttack();
+}
+
 void CASW_Weapon_HealAmp_Gun::SecondaryAttack()
 {
-	// HealSelf();
+	/*// HealSelf();
 	m_bIsBuffing = !m_bIsBuffing;
 
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.4f;
 
-	EmitSound( "ASW_Weapon.Empty" );
+	EmitSound( "ASW_Weapon.Empty" );*/
+
+	m_bIsBuffing = true;
+	BaseClass::PrimaryAttack();
 }
 
 bool CASW_Weapon_HealAmp_Gun::TargetCanBeHealed( CBaseEntity* pTarget )
@@ -377,6 +388,51 @@ void CASW_Weapon_HealAmp_Gun::StartHealSound()
 }
 
 #ifdef CLIENT_DLL
+// if the player has his mouse over another marine, highlight it, cos he's the one we can give health to
+void CASW_Weapon_HealAmp_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor)
+{
+	C_ASW_Marine* pOtherMarine = C_ASW_Marine::AsMarine( pEnt );
+	CASW_Player *pOwner = GetCommander();
+	CASW_Marine *pMarine = GetMarine();
+	if (!pOwner || !pMarine)
+		return;
+
+	if (!pOtherMarine)
+	{
+		C_ASW_Game_Resource *pGameResource = ASWGameResource();
+		if (pGameResource)
+		{
+			// find marine closest to world cursor
+			const float fMustBeThisClose = 70;
+			const C_ASW_Game_Resource::CMarineToCrosshairInfo::tuple_t &info = pGameResource->GetMarineCrosshairCache()->GetClosestMarine();
+			if ( info.m_fDistToCursor <= fMustBeThisClose )
+			{
+				pOtherMarine = info.m_hMarine.Get();
+			}
+		}
+	}
+
+	// if the marine our cursor is over is near enough, highlight him
+	if (pOtherMarine)
+	{
+		float dist = (pMarine->GetAbsOrigin() - pOtherMarine->GetAbsOrigin()).Length2D();
+		if (dist < GetWeaponRange() )
+		{
+			bool bCanGiveHealth = ( pOtherMarine->GetHealth() > 1 && ( pOtherMarine->GetHealth() + pOtherMarine->m_iSlowHealAmount ) < pOtherMarine->GetMaxHealth() && m_iClip1 > 0 );
+			bool bCanHighlight = ( pOtherMarine->GetHealth() > 1 && ( pOtherMarine != pMarine || bCanGiveHealth ) && m_iClip1 > 0 );
+			ASWInput()->SetHighlightEntity( pOtherMarine, bCanHighlight );
+			if ( bCanGiveHealth )		// if he needs healing, show the give health cursor
+			{
+				CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
+				if ( pCrosshair )
+				{
+					pCrosshair->SetShowGiveHealth(true);
+				}
+			}
+		}
+	}
+}
+
 void CASW_Weapon_HealAmp_Gun::UpdateEffects()
 {
 	if ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE || !GetMarine() )
