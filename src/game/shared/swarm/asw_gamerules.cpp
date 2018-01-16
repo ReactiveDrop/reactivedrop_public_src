@@ -412,6 +412,7 @@ ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "F
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
 ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
 ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
+ConVar rd_weapons_show_hidden( "rd_weapons_show_hidden", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 will show the hidden weapons and extra items at briefing" );
 ConVar rd_weapons_class_restricted( "rd_weapons_class_restricted", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 all marines can use any weapon regardless of class restriction"
 #ifdef GAME_DLL
 	, EnforceWeaponClassRestriction );
@@ -2013,7 +2014,7 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
-	if ( !pNewItem || !pNewItem->m_bSelectableInBriefing )
+	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() ) )
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot

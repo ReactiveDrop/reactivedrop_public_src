@@ -20,6 +20,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_weapons_show_hidden;
+
 CNB_Select_Weapon_Panel::CNB_Select_Weapon_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
@@ -57,9 +59,11 @@ CNB_Select_Weapon_Panel::~CNB_Select_Weapon_Panel()
 
 void CNB_Select_Weapon_Panel::InitWeaponList()
 {
+	bool bShowHidden = rd_weapons_show_hidden.GetBool();
+
 	if ( m_nInventorySlot != ASW_INVENTORY_SLOT_EXTRA )
 	{
-		for ( int i = 0; i < ASWEquipmentList()->GetNumRegular( false ); i++ )
+		for ( int i = 0; i < ASWEquipmentList()->GetNumRegular( bShowHidden ); i++ )
 		{
 			CNB_Select_Weapon_Entry *pEntry = new CNB_Select_Weapon_Entry( NULL, VarArgs( "Entry%d", i ) );
 			pEntry->m_nInventorySlot = m_nInventorySlot;
@@ -78,7 +82,7 @@ void CNB_Select_Weapon_Panel::InitWeaponList()
 	}
 	else
 	{
-		for ( int i = 0; i < ASWEquipmentList()->GetNumExtra( false ); i++ )
+		for ( int i = 0; i < ASWEquipmentList()->GetNumExtra( bShowHidden ); i++ )
 		{
 			CNB_Select_Weapon_Entry *pEntry = new CNB_Select_Weapon_Entry( NULL, VarArgs( "Entry%d", i ) );
 			pEntry->m_nInventorySlot = m_nInventorySlot;
