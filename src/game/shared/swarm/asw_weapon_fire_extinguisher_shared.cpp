@@ -21,6 +21,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_fire_extinguisher_infinite( "rd_fire_extinguisher_infinite", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If 1 the fire extinguisher has infinite ammo" );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_FireExtinguisher, DT_ASW_Weapon_FireExtinguisher )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_FireExtinguisher, DT_ASW_Weapon_FireExtinguisher )
@@ -113,7 +115,7 @@ Activity CASW_Weapon_FireExtinguisher::GetPrimaryAttackActivity( void )
 void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 {
 	// If my clip is empty (and I use clips) start reload
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( !rd_fire_extinguisher_infinite.GetBool() && UsesClipsForAmmo1() && !m_iClip1 ) 
 	{
 		Reload();
 		return;
@@ -189,14 +191,17 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 			}
 		}
 #endif
-		// decrement ammo
-		m_iClip1 -= 1;
-
-		if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+		if ( !rd_fire_extinguisher_infinite.GetBool() )
 		{
-			// HEV suit - indicate out of ammo condition
-			if (pPlayer)
-				pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
+			// decrement ammo
+			m_iClip1 -= 1;
+
+			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+			{
+				// HEV suit - indicate out of ammo condition
+				if (pPlayer)
+					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
+			}
 		}
 	}
 	else if (pPlayer)		// firing from a player
@@ -221,7 +226,7 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 		// Fire the bullets, and force the first shot to be perfectly accuracy
 		pPlayer->FireBullets( info );
 
-		if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+		if (!rd_fire_extinguisher_infinite.GetBool() && !m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 		{
 			// HEV suit - indicate out of ammo condition
 			pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
@@ -230,7 +235,7 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 		//Add our view kick in
 		AddViewKick();
 	}
-	if (m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
+	if (!rd_fire_extinguisher_infinite.GetBool() && m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
 		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
