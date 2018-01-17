@@ -16,6 +16,7 @@
 extern ConVar sk_plr_dmg_asw_f;
 extern ConVar sk_npc_dmg_asw_f;
 extern ConVar asw_flamer_debug;
+ConVar rd_extinguisher_freeze_amount( "rd_extinguisher_freeze_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of freezing to apply to the extinguisher" );
 
 #define PELLET_MODEL "models/swarm/Shotgun/ShotgunPellet.mdl"
 
@@ -50,7 +51,7 @@ void CASW_Extinguisher_Projectile::Spawn( void )
 
 	m_flDamage		= sk_plr_dmg_asw_f.GetFloat();
 	m_takedamage	= DAMAGE_NO;
-	
+	m_flFreezeAmount = rd_extinguisher_freeze_amount.GetFloat();
 
 	SetSize( -Vector(4,4,4), Vector(4,4,4) );
 	SetSolid( SOLID_BBOX );
