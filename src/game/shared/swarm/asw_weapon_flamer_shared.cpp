@@ -33,6 +33,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_flamer_infinite_extinguisher( "rd_flamer_infinite_extinguisher", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If 1 the flamer's extinguisher has infinite ammo" );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Flamer, DT_ASW_Weapon_Flamer )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Flamer, DT_ASW_Weapon_Flamer )
@@ -321,7 +323,7 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 void CASW_Weapon_Flamer::SecondaryAttack( void )
 {
 	// If my clip is empty (and I use clips) start reload
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( !rd_flamer_infinite_extinguisher.GetBool() && UsesClipsForAmmo1() && !m_iClip1 ) 
 	{
 		Reload();
 		return;
@@ -399,17 +401,20 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 			pMarine->OnWeaponFired( this, 1, true );
 		}
 #endif
-		// decrement ammo
-		m_iClip1 -= 1;
-
-		if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+		if ( !rd_flamer_infinite_extinguisher.GetBool() )
 		{
-			// HEV suit - indicate out of ammo condition
-			if (pPlayer)
-				pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
+			// decrement ammo
+			m_iClip1 -= 1;
+
+			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+			{
+				// HEV suit - indicate out of ammo condition
+				if (pPlayer)
+					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
+			}
 		}
 	}
-	if (m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
+	if (!rd_flamer_infinite_extinguisher.GetBool() || m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
 	{
 		m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
