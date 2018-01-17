@@ -411,6 +411,8 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 				// HEV suit - indicate out of ammo condition
 				if (pPlayer)
 					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
+
+				m_bIsSecondaryFiring = false;
 			}
 		}
 	}
