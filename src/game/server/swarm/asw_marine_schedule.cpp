@@ -3594,7 +3594,7 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"	Tasks"
 		"		TASK_ASW_GET_PATH_TO_HEAL			0"
 		"		TASK_ASW_MOVE_TO_HEAL				0"
-		"		TASK_WAIT							2"
+		"		TASK_WAIT_REVIVE					2"
 		"		TASK_ASW_REVIVE_MARINE				0"
 		""
 		"	Interrupts"

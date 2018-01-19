@@ -45,6 +45,7 @@ extern ConVar ai_use_think_optimizations;
 #define ShouldUseEfficiency() ( ai_use_think_optimizations.GetBool() && ai_use_efficiency.GetBool() )
 
 ConVar	ai_simulate_task_overtime( "ai_simulate_task_overtime", "0" );
+extern ConVar rd_revive_duration;
 
 #define MAX_TASKS_RUN 10
 
@@ -1682,6 +1683,10 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 	case TASK_WAIT_RANDOM:
 	case TASK_WAIT_FACE_ENEMY_RANDOM:
 		SetWait( 0, pTask->flTaskData );
+		break;
+
+	case TASK_WAIT_REVIVE:
+		SetWait( rd_revive_duration.GetFloat() );
 		break;
 
 	case TASK_MOVE_TO_TARGET_RANGE:
@@ -3511,6 +3516,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 		}
 	case TASK_WAIT:
 	case TASK_WAIT_RANDOM:
+	case TASK_WAIT_REVIVE:
 		{
 			if ( IsWaitFinished() )
 			{

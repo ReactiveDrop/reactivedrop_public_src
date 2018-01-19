@@ -741,6 +741,7 @@ void CAI_FollowBehavior::GatherConditions( void )
 			case TASK_WAIT_RANDOM:
 			case TASK_WAIT_INDEFINITE:
 			case TASK_WAIT:
+			case TASK_WAIT_REVIVE:
 			case TASK_WAIT_FACE_ENEMY:
 			case TASK_WAIT_FACE_ENEMY_RANDOM:
 				{

@@ -85,6 +85,7 @@ extern IGameMovement *g_pGameMovement;
 extern IMarineGameMovement *g_pMarineGameMovement;
 extern CMoveData *g_pMoveData;	// This is a global because it is subclassed by each game.
 extern ConVar sv_noclipduringpause;
+extern ConVar rd_revive_duration;
 
 static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 
@@ -1030,7 +1031,13 @@ void CASW_Player::PlayerUse()
 	
 			if ( m_nButtons & IN_USE )
 			{
-				if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= ASW_USE_KEY_HOLD_SENTRY_TIME )
+				float flUseHoldTime = ASW_USE_KEY_HOLD_SENTRY_TIME;
+
+				CASW_Marine *pUsableMarine = dynamic_cast<CASW_Marine*>( pEnt );
+				if ( pUsableMarine && pUsableMarine->m_bKnockedOut )
+					flUseHoldTime = rd_revive_duration.GetFloat();
+
+				if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= flUseHoldTime )
 				{
 					pActivateEnt = m_hUseKeyDownEnt.Get();
 					nHoldType = ASW_USE_HOLD_RELEASE_FULL;

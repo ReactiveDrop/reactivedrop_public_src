@@ -78,6 +78,7 @@ ConVar asw_marine_object_motion_blur_scale( "asw_marine_object_motion_blur_scale
 ConVar asw_damage_spark_rate( "asw_damage_spark_rate", "0.24", FCVAR_CHEAT, "Base number of seconds between spark sounds/effects at critical damage." );
 ConVar rd_hearbeat("rd_hearbeat", "1", FCVAR_ARCHIVE, "If 0 disables heartbeat low health effect");
 extern ConVar asw_DebugAutoAim;
+extern ConVar rd_revive_duration;
 extern float g_fMarinePoisonDuration;
 
 #define FLASHLIGHT_DISTANCE		1000
@@ -2053,7 +2054,7 @@ bool C_ASW_Marine::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
 	if ( pPlayer && pUser->IsInhabited() && pPlayer->m_flUseKeyDownTime != 0.0f && ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) > 0.2f ) // if player has started holding down the USE key
 	{
 		TryLocalize( "#rd_reviving_marine", action.wszText, sizeof( action.wszText ) );
-		action.fProgress = ( ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) - 0.2f ) / ( ASW_USE_KEY_HOLD_SENTRY_TIME - 0.2f );
+		action.fProgress = ( ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) - 0.2f ) / ( rd_revive_duration.GetFloat() - 0.2f );
 		action.fProgress = clamp<float>( action.fProgress, 0.0f, 1.0f );
 		action.bShowHoldButtonUseKey = false;
 		action.bShowUseKey = false;

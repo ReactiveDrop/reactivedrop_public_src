@@ -498,6 +498,9 @@ enum sharedtasks_e
 		// First task of all schedules for playing back scripted sequences
 		TASK_PRE_SCRIPT,
 
+		// Wait until marine is revived
+		TASK_WAIT_REVIVE,
+
 		// ======================================
 		// IMPORTANT: This must be the last enum
 		// ======================================

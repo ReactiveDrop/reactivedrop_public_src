@@ -436,6 +436,7 @@ ConVar rd_heavy_scale( "rd_heavy_scale", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, 
 ConVar rd_alien_speed_scale( "rd_alien_speed_scale", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "the factor used to scale aliens' speed" );
 ConVar rd_refill_secondary( "rd_refill_secondary", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 = false, 1 = true. If true the secondary ammo is picked up too" );
 ConVar rd_allow_revive( "rd_allow_revive", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar rd_revive_duration( "rd_revive_duration", "2", FCVAR_CHEAT | FCVAR_REPLICATED, "How long it takes to revive an incapacitated marine" );
 ConVar rd_hp_regen( "rd_hp_regen", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 disable marines' health regeneration" );
 ConVar rd_add_bots( "rd_add_bots", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 add bots to fill free slots, 0 don't add" );
 ConVar rd_ammo_bonus( "rd_ammo_bonus", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
