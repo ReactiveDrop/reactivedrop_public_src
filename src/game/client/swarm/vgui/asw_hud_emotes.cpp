@@ -166,6 +166,17 @@ void CASWHudEmotes::PaintEmotesFor(C_ASW_Marine* pMarine)
 		}
 	}
 
+	// paint medic icon over a marine if he is reviving another marine
+	if (pUsing)
+	{
+		C_ASW_Marine* pOtherMarine = dynamic_cast<C_ASW_Marine*>(pUsing);
+		if ( pOtherMarine )
+		{
+			if ( pOtherMarine->m_bKnockedOut )
+				PaintEmote(pMarine, 1.5f, m_nMedicTexture, 0.9f);
+		}
+	}
+
 	// and a welding door
 	if (pMarine->GetMarineResource())
 	{

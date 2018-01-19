@@ -2429,10 +2429,14 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 				UpdateFacing();
 				bool bTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->curtime - GetTimeTaskStarted() );
 				bool bArrived = ( ( GetNavigator()->GetGoalPos() - GetAbsOrigin() ).LengthSqr() < Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.5f ) );
-				if ( bTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE || bArrived )
+				bool bArrivedRevive = ( ( GetNavigator()->GetGoalPos() - GetAbsOrigin() ).LengthSqr() < Square( ASW_MARINE_USE_RADIUS*0.5f ) );
+				if ( bTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE || ( !m_hHealTarget->m_bKnockedOut && bArrived ) || ( m_hHealTarget->m_bKnockedOut && bArrivedRevive ) )
 				{
 					TaskComplete();
 					GetNavigator()->StopMoving();
+
+					if ( m_hHealTarget->m_bKnockedOut && bArrivedRevive )
+						m_hHealTarget->ActivateUseIcon( this, ASW_USE_HOLD_START );
 				}
 				else if ( GetASWOrders() == ASW_ORDER_HOLD_POSITION )
 				{

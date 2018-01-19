@@ -640,11 +640,19 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 				char szNameOther[ 256 ];
 				pMROther->GetDisplayName( szNameOther, sizeof( szNameOther ) );
 
-				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_revived_marine", szName, szNameOther );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_revived_marine", szNameOther, szName );
 			}
 			pMarine->StopUsing();
 			SetHealth( 10 );
 			SetKnockedOut( false );
+			GetMarineSpeech()->Chatter( CHATTER_THANKS );
+
+			CASW_Player *pPlayer = pMarine->GetCommander();
+			if ( pPlayer && pMarine->IsInhabited() )
+			{
+				pPlayer->m_hUseKeyDownEnt = NULL;
+				pPlayer->m_flUseKeyDownTime = 0.0f;
+			}
 		}
 	}
 }
@@ -4312,6 +4320,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		info.SetDamageType( DMG_GENERIC );
 		info.SetDamageForce( vec3_origin );
 		info.SetDamagePosition( WorldSpaceCenter() );
+		GetMarineSpeech()->ForceChatter( CHATTER_PAIN_LARGE, ASW_CHATTER_TIMER_NONE );
 		m_hKnockedOutRagdoll = (CRagdollProp*) CreateServerRagdoll( this, 0, info, COLLISION_GROUP_DEBRIS );
 		if ( GetRagdollProp() )
 		{
@@ -4321,7 +4330,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		}			
 		AddEffects( EF_NODRAW );
 		AddFlag( FL_FROZEN );	
-		
+		StopUsing();
 
 		Msg("%s has been knocked unconscious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
 		if (ASWGameRules())

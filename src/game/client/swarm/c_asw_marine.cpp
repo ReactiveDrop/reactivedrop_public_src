@@ -2062,9 +2062,9 @@ bool C_ASW_Marine::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
 	else
 	{
 		action.fProgress = -1;
-		TryLocalize( "#rd_revive_marine", action.wszHoldButtonText, sizeof( action.wszHoldButtonText ) );
+		TryLocalize( "#rd_revive_marine", action.wszText, sizeof( action.wszText ) );
 		action.bShowHoldButtonUseKey = true;
-		action.bShowUseKey = false;
+		action.bShowUseKey = true;
 	}
 	action.iUseIconTexture = GetReviveIconTextureID();
 	action.UseTarget = this;
