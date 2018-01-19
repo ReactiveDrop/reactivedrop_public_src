@@ -4331,6 +4331,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		AddEffects( EF_NODRAW );
 		AddFlag( FL_FROZEN );	
 		StopUsing();
+		m_flPreventLaserSightTime = -1.0f;
 
 		Msg("%s has been knocked unconscious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
 		if (ASWGameRules())
@@ -4368,6 +4369,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		//m_fUnfreezeTime = gpGlobals->curtime + 1.0f;
 		UTIL_Remove( GetRagdollProp() );
 		m_hKnockedOutRagdoll = NULL; 
+		m_flPreventLaserSightTime = 0.0f;
 
 		// think! to make bots listen orders 
 		if (GetHealth() > 0)

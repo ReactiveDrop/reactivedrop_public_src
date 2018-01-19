@@ -124,7 +124,7 @@ public:
 	Vector GetOffhandThrowSource( const Vector *vecStandingPos = NULL );
 	virtual bool IsFiring();
 
-	bool ShouldPreventLaserSight() { return m_flPreventLaserSightTime.Get() > gpGlobals->curtime; }
+	bool ShouldPreventLaserSight() { return m_flPreventLaserSightTime.Get() < 0.0f || m_flPreventLaserSightTime.Get() > gpGlobals->curtime; }
 	CNetworkVar( float, m_flPreventLaserSightTime );
 
 	// shadow
