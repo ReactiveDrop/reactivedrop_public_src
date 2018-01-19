@@ -431,6 +431,7 @@ extern ConVar asw_marine_ff_absorption;
 ConVar asw_movement_direction_tolerance( "asw_movement_direction_tolerance", "30.0", FCVAR_CHEAT );
 ConVar asw_movement_direction_interval( "asw_movement_direction_interval", "0.5", FCVAR_CHEAT );
 extern ConVar rd_allow_revive;
+extern ConVar rd_revive_health;
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
@@ -643,7 +644,7 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_revived_marine", szNameOther, szName );
 			}
 			pMarine->StopUsing();
-			SetHealth( 10 );
+			SetHealth( rd_revive_health.GetInt() );
 			SetKnockedOut( false );
 			GetMarineSpeech()->Chatter( CHATTER_THANKS );
 
