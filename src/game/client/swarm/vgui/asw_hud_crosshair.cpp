@@ -35,7 +35,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_crosshair_use_perspective("asw_crosshair_use_perspective", "1", FCVAR_CHEAT, "Show the crosshair that has perspective or the old version?");
+ConVar asw_crosshair_use_perspective("asw_crosshair_use_perspective", "1", FCVAR_ARCHIVE, "Show the crosshair that has perspective or the old version?");
 extern ConVar cl_observercrosshair;
 extern ConVar asw_crosshair_progress_size;
 extern ConVar asw_fast_reload_enabled;
