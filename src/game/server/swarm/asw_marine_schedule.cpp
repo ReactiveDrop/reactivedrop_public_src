@@ -952,7 +952,7 @@ int CASW_Marine::SelectHealSchedule()
 					continue;
 
 				CASW_Marine *pOtherMarine = pMR->GetMarineEntity();
-				if ( pOtherMarine->IsAlive() && !pOtherMarine->m_bKnockedOut.Get() && pOtherMarine->IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) && pOtherMarine->m_hHealTarget == pMarine )
+				if ( pOtherMarine && pOtherMarine->IsAlive() && !pOtherMarine->m_bKnockedOut.Get() && pOtherMarine->IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) && pOtherMarine->m_hHealTarget == pMarine )
 				{
 					bAlreadyBeingRevived = true;
 					break;
