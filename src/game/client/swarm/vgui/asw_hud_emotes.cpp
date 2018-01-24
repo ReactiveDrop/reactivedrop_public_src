@@ -69,6 +69,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_nSentryDnTexture,	"SentryDnTexture",	"vgui/swarm/ClassIcons/SentryDismantle", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nHackTexture,		"HackTexture",	"vgui/swarm/ClassIcons/HackIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nWeldTexture,		"WeldTexture",	"vgui/swarm/ClassIcons/WeldIcon", "textureid" );
+	CPanelAnimationVarAliasType( int, m_nReviveMarineTexture,"ReviveMarineTexture",	"vgui/swarm/ClassIcons/revivemarine", "textureid" );
 };	
 
 DECLARE_HUDELEMENT( CASWHudEmotes );
@@ -173,7 +174,7 @@ void CASWHudEmotes::PaintEmotesFor(C_ASW_Marine* pMarine)
 		if ( pOtherMarine )
 		{
 			if ( pOtherMarine->m_bKnockedOut )
-				PaintEmote(pMarine, 1.5f, m_nMedicTexture, 0.9f);
+				PaintEmote(pMarine, 1.5f, m_nReviveMarineTexture, 0.9f);
 		}
 	}
 
