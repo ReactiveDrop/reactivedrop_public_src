@@ -656,6 +656,10 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 			}
 		}
 	}
+	else if ( nHoldType == ASW_USE_RELEASE_QUICK )
+	{
+		pMarine->StopUsing();
+	}
 }
 
 void CASW_Marine::MarineUsing(CASW_Marine* pMarine, float deltatime)
