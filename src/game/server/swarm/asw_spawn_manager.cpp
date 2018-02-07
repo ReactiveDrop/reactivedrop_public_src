@@ -358,7 +358,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 		FOR_EACH_VEC( pSpawn->m_NPCs, j )
 		{
 			CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[j];
-			if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
+			if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() > pNPC->m_flSpawnChance ) )
 			{
 				continue;
 			}
@@ -851,7 +851,7 @@ bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vect
 	FOR_EACH_VEC( pSpawn->m_NPCs, i )
 	{
 		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
-		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
+		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() > pNPC->m_flSpawnChance ) )
 		{
 			continue;
 		}
@@ -1068,7 +1068,7 @@ bool CASW_Spawn_Manager::PrespawnAliens( CASW_Spawn_Definition *pSpawn )
 		}
 
 		CASW_Spawn_NPC *pNPC = pSpawn->m_NPCs[i];
-		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() < pNPC->m_flSpawnChance ) )
+		if ( !pNPC->m_Requirement.CanSpawn() || ( pNPC->m_flSpawnChance < 1 && random->RandomFloat() > pNPC->m_flSpawnChance ) )
 		{
 			continue;
 		}
