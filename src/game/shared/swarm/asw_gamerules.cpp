@@ -1584,7 +1584,6 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 
 	if (RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES)
 	{
-		Warning("if (RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES) \n");
 		return false;
 	}
 
@@ -1592,14 +1591,12 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 	{
 		if ( nPreferredSlot == -1 )
 		{
-			Warning("if (ASWGameResource()->m_iNumMarinesSelected >= ASWGameResource()->m_iMaxMarines)		// too many selected? if ( nPreferredSlot == -1 ) \n");
 			return false;
 		}
 		
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
-			Warning("if ( pExisting && pExisting->GetCommander() != pPlayer ) \n");
 			return false;
 		}
 	}
@@ -1612,14 +1609,12 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 			if ( !rd_player_bots_allowed.GetBool() )
 				ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
 
-			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( nPreferredSlot == -1 ) \n");
 			return false;
 		}
 
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
-			Warning("if (ASWGameResource()->m_bOneMarineEach && ASWGameResource()->GetNumMarines(pPlayer) > 0) if ( pExisting && pExisting->GetCommander() != pPlayer ) \n");
 			return false;
 		}
 		else if ( !rd_player_bots_allowed.GetBool() && !pExisting )
@@ -1675,7 +1670,6 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
 				if (pMR && pMR->GetProfileIndex() == RosterIndex)
 				{
-					Warning("if (pMR && pMR->GetProfileIndex() == RosterIndex) \n");
 					bCanSelect = false;
 					break;
 				}
@@ -1684,7 +1678,6 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 
 		if (bCanSelect)
 		{					
-			Warning("We can select bCanSelect \n");
 			CASW_Marine_Resource* m = (CASW_Marine_Resource*)CreateEntityByName("asw_marine_resource");
 			m->SetCommander(pPlayer);
 			m->SetProfileIndex(RosterIndex);
@@ -1737,7 +1730,6 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 			if ( !ASWGameResource()->AddMarineResource( m, nPreferredSlot ) )
 			{
 				UTIL_Remove( m );
-				Warning("if ( !ASWGameResource()->AddMarineResource( m, nPreferredSlot ) ) \n");
 				return false;
 			}
 
