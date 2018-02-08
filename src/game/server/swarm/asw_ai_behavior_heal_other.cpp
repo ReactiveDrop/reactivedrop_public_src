@@ -91,8 +91,8 @@ void CAI_ASW_HealOtherBehavior::Precache( void )
 
 	CBaseEntity::PrecacheModel( GROUNDTURRET_BEAM_SPRITE );
 //	PRECACHE_INDEX( PARTICLE_SYSTEM, "impact_puddle_pring", s_pHealEffectIndex );
-	PrecacheParticleSystem( "heal_giver" );
-	PrecacheParticleSystem( "heal_receiver" );
+	//PrecacheParticleSystem( "heal_giver" );
+	//PrecacheParticleSystem( "heal_receiver" );
 }
 
 
