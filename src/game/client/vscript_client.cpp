@@ -118,7 +118,7 @@ bool VScriptClientInit()
 					g_pScriptVM->Run( g_Script_vscript_client );
 				}
 
-				VScriptRunScript( "mapspawn", false );
+				//VScriptRunScript( "mapspawn", false );
 
 				VMPROF_SHOW( pszScriptLanguage, "virtual machine startup" );
 
