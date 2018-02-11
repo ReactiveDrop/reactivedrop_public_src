@@ -555,6 +555,10 @@ int CASW_Marine::SelectHackingSchedule()
 
 	if ( m_hAreaToUse.Get() )
 	{
+		CASW_Button_Area *pButton = dynamic_cast< CASW_Button_Area* >( m_hAreaToUse.Get() );
+		if ( pButton && ( pButton->m_bIsInUse || !pButton->IsLocked() ) )
+			return -1;
+
 		if ( m_hAreaToUse->IsUsable( this ) )
 		{
 			// notify to kill the effect in a couple of seconds
