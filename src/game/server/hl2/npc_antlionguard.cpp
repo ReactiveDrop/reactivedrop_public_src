@@ -2214,8 +2214,13 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	CTakeDamageInfo dInfo = info;
 
 	// Don't take damage from another antlion guard!
-	if ( dInfo.GetAttacker() && dInfo.GetAttacker() != this && FClassnameIs( dInfo.GetAttacker(), "npc_antlionguard" ) )
-		return 0;
+	if ( dInfo.GetAttacker() && dInfo.GetAttacker() != this )
+	{
+		CNPC_AntlionGuard *pAntlionGuard = dynamic_cast< CNPC_AntlionGuard* >( dInfo.GetAttacker() );
+
+		if ( pAntlionGuard )
+			return 0;
+	}
 
 	if ( ( dInfo.GetDamageType() & DMG_CRUSH ) && !( dInfo.GetDamageType() & DMG_VEHICLE ) )
 	{
