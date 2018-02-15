@@ -193,8 +193,9 @@ extern ConVar old_radius_damage;
 
 	static void EnforceWeaponClassRestriction( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
 	{
-		ConVarRef rd_weapons_class_restricted( "rd_weapons_class_restricted" );
-		if ( !rd_weapons_class_restricted.GetBool() )
+		ConVarRef rd_weapons_regular_class_unrestricted( "rd_weapons_regular_class_unrestricted" );
+		ConVarRef rd_weapons_extra_class_unrestricted( "rd_weapons_extra_class_unrestricted" );
+		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 && rd_weapons_regular_class_unrestricted.GetInt() == -2 )
 			return;
 
 		if ( ASWGameRules() && ASWGameResource() && ASWEquipmentList() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
@@ -414,7 +415,13 @@ ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activa
 ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
 ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
 ConVar rd_weapons_show_hidden( "rd_weapons_show_hidden", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 will show the hidden weapons and extra items at briefing" );
-ConVar rd_weapons_class_restricted( "rd_weapons_class_restricted", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 all marines can use any weapon regardless of class restriction"
+ConVar rd_weapons_regular_class_unrestricted( "rd_weapons_regular_class_unrestricted", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of unrestricted class weapon IDs: 1 3 16. See asw_list_equipment. -2 value will un-restrict all regular weapons"
+#ifdef GAME_DLL
+	, EnforceWeaponClassRestriction );
+#else
+	);
+#endif
+ConVar rd_weapons_extra_class_unrestricted( "rd_weapons_extra_class_unrestricted", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Space separated array of unrestricted class weapon IDs: 11 17. See asw_list_equipment. -2 value will un-restrict all extra weapons"
 #ifdef GAME_DLL
 	, EnforceWeaponClassRestriction );
 #else
@@ -5042,6 +5049,31 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 ); 
 }
 
+static bool CanPickupUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestrictedGuns )
+{
+	CUtlVector<int> vecWepList;
+	{
+		// convert string array to number array
+		CUtlStringList szWepList;
+		V_SplitString( unrestrictedGuns.GetString(), " ", szWepList );
+		for ( int i = 0; i < szWepList.Count(); ++i )
+		{
+			int iWepId = atoi( szWepList[i] );
+			if ( iWepId < 0 )
+			{
+				Warning( "Incorrect weapon ID=%i found in %s\n", iWepId, unrestrictedGuns.GetName() );
+				continue;
+			}
+			vecWepList.AddToTail( iWepId );
+		}
+	}
+
+	if ( vecWepList.HasElement( iWeaponIndex ) )
+		return true;
+
+	return false;
+}
+
 bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass)
 {
 	if (!ASWEquipmentList() || !pMarineResource)
@@ -5055,7 +5087,19 @@ bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const c
 	if (!pProfile)
 		return false;
 
-	if ( rd_weapons_class_restricted.GetBool() )
+	bool bCheckRestriction = true;
+	if ( !pWeaponData->m_bExtra && rd_weapons_regular_class_unrestricted.GetInt() != -1 )
+	{
+		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( ASWEquipmentList()->GetRegularIndex( szWeaponClass ), rd_weapons_regular_class_unrestricted ) )
+			bCheckRestriction = false;
+	}
+	else if ( pWeaponData->m_bExtra && rd_weapons_extra_class_unrestricted.GetInt() != -1 )
+	{
+		if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( ASWEquipmentList()->GetExtraIndex( szWeaponClass ), rd_weapons_extra_class_unrestricted ) )
+			bCheckRestriction = false;
+	}
+
+	if ( bCheckRestriction )
 	{
 		// check various class skills
 		if (pWeaponData->m_bTech && !pProfile->CanHack())

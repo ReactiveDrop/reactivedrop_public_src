@@ -18,7 +18,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar rd_weapons_class_restricted;
+extern ConVar rd_weapons_regular_class_unrestricted;
+extern ConVar rd_weapons_extra_class_unrestricted;
 
 CNB_Select_Weapon_Entry::CNB_Select_Weapon_Entry( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -86,6 +87,31 @@ void CNB_Select_Weapon_Entry::PerformLayout()
 		//m_pLockedBG->SetBounds( YRES( 9 ), YRES( 37 ), YRES( 100 ), YRES( 50 ) );
 		m_pNewLabel->SetBounds( YRES( 0 ), YRES( 85 ), YRES( 100 ), YRES( 11 ) );
 	}
+}
+
+static bool CanEquipUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestrictedGuns )
+{
+	CUtlVector<int> vecWepList;
+	{
+		// convert string array to number array
+		CUtlStringList szWepList;
+		V_SplitString( unrestrictedGuns.GetString(), " ", szWepList );
+		for ( int i = 0; i < szWepList.Count(); ++i )
+		{
+			int iWepId = atoi( szWepList[i] );
+			if ( iWepId < 0 )
+			{
+				Warning( "Incorrect weapon ID=%i found in %s\n", iWepId, unrestrictedGuns.GetName() );
+				continue;
+			}
+			vecWepList.AddToTail( iWepId );
+		}
+	}
+
+	if ( vecWepList.HasElement( iWeaponIndex ) )
+		return true;
+
+	return false;
 }
 
 void CNB_Select_Weapon_Entry::OnThink()
@@ -181,9 +207,18 @@ void CNB_Select_Weapon_Entry::OnThink()
 	{
 		m_bCanEquip = false;
 	}
-	else if ( !rd_weapons_class_restricted.GetBool() )
+	else
 	{
-		m_bCanEquip = true;
+		if ( !pWeaponInfo->m_bExtra && rd_weapons_regular_class_unrestricted.GetInt() != -1 )
+		{
+			if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanEquipUnrestrictedWeapon( ASWEquipmentList()->GetRegularIndex( pWeaponInfo->szClassName ), rd_weapons_regular_class_unrestricted ) )
+				m_bCanEquip = true;
+		}
+		else if ( pWeaponInfo->m_bExtra && rd_weapons_extra_class_unrestricted.GetInt() != -1 )
+		{
+			if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanEquipUnrestrictedWeapon( ASWEquipmentList()->GetExtraIndex( pWeaponInfo->szClassName ), rd_weapons_extra_class_unrestricted ) )
+				m_bCanEquip = true;
+		}
 	}
 
 	// reactivedrop: grey out weapons which are not allowed in the
