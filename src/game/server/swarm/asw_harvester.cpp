@@ -110,7 +110,7 @@ float CASW_Harvester::GetIdealAccel( ) const
 float CASW_Harvester::MaxYawSpeed( void )
 {
 	if ( m_bElectroStunned.Get() )
-		return 0.1f;
+		return 5.0f;
 
 	return 32.0f;
 
