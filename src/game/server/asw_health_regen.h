@@ -9,7 +9,11 @@ public:
 	~CASW_Health_Regen();
 
 	virtual void Spawn();
-	virtual void Think();
+	//virtual void Think();
+
+private:
+	void HealthIncreaseThink( void );
+	void HealthDecreaseThink( void );
 };
 
 #endif // asw_health_regen_h__
