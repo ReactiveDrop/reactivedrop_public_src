@@ -68,6 +68,7 @@ static ConVar asw_marine_friction( "asw_marine_friction","10", FCVAR_NOTIFY | FC
 static ConVar asw_sv_maxspeed( "asw_sv_maxspeed", "500", FCVAR_NOTIFY | FCVAR_REPLICATED);
 static ConVar asw_debug_steps("asw_debug_steps", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on moving up/down steps");
 static ConVar asw_debug_air_move("asw_debug_air_move", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on air moving");
+static ConVar rd_marine_jump_height( "rd_marine_jump_height", "70.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Sets marine jump height." );
 extern ConVar asw_controls;
 
 // tickcount currently isn't set during prediction, although gpGlobals->curtime and
@@ -2766,7 +2767,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	}
 	else*/
 	{
-		flMul = sqrt(2 * asw_marine_gravity.GetFloat() * GAMEMOVEMENT_ASW_JUMP_HEIGHT);
+		flMul = sqrt(2 * asw_marine_gravity.GetFloat() * rd_marine_jump_height.GetFloat() );
 	}
 
 	// Acclerate upward
