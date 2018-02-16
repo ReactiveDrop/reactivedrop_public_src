@@ -8362,10 +8362,19 @@ static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &a
 		}
 	}
 
-	if ( vecAllowedGuns.HasElement( iWeaponIndex ) )
+	CUtlVector<int> vecAllowedGunsUnsorted;
+	for ( int i = 0; i < vecWepList.Count(); ++i )	// unsort the vecAllowedGuns, we want to give the first available weapon from allowedGuns by default. E.g. in Minigun Carnage we will do this: rd_weapons_regular_allowed "15 7 14 5 17 6" and when selecting a marine player will get minigun as the primary weapon(previously it was giving the sentry gun)
+	{
+		if ( vecAllowedGuns.HasElement( vecWepList[i] ) )
+		{
+			vecAllowedGunsUnsorted.AddToTail( vecWepList[i] );
+		}
+	}
+
+	if ( vecAllowedGunsUnsorted.HasElement( iWeaponIndex ) )
 		return iWeaponIndex;
-	else if ( vecAllowedGuns.Count() > 0 )
-		return vecAllowedGuns[0];
+	else if ( vecAllowedGunsUnsorted.Count() > 0 )
+		return vecAllowedGunsUnsorted[0];
 	else
 	{
 		Warning( "No valid weapon IDs found in %s!\n", allowedGuns.GetName() );
