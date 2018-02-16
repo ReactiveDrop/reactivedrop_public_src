@@ -151,19 +151,17 @@ void CASW_Colonist::Precache()
 	PrecacheModel( SWARM_COLONIST_MODEL_MALE );	
 	PrecacheModel( SWARM_COLONIST_MODEL_FEMALE );	
 	
-	PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
-	PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
+	// reactivedrop: commented because it's missing
+	//PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
+	//PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
 	PrecacheScriptSound( "Crash.Dead0" );
 	PrecacheScriptSound( "Crash.SmallPain0" );
 	PrecacheScriptSound( "Faith.Dead0" );
 	PrecacheScriptSound( "Faith.SmallPain0" );
 
-
-	
-
 	PrecacheEffect("MuzzleFlash");
-	PrecacheParticleSystem( "asw_tracer_fx" );
-
+	// reactivedrop: commented because it's missing
+	//PrecacheParticleSystem( "asw_tracer_fx" ); // missing
 
 	BaseClass::Precache();
 }
@@ -256,9 +254,9 @@ void CASW_Colonist::OnRangeAttack1()
 
 		trace_t tr;
 		UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT, this, COLLISION_GROUP_PROJECTILE, &tr);
-		UTIL_ParticleTracer("asw_tracer_fx", vecSrc, tr.endpos, weapon->entindex(), weapon->LookupAttachment("muzzle"), true);
 
-
+		// reactivedrop: commented because it's missing
+		//UTIL_ParticleTracer("asw_tracer_fx", vecSrc, tr.endpos, weapon->entindex(), weapon->LookupAttachment("muzzle"), true);
 
 		//FIXME find out what was actually hit
 		if (GetEnemy() && UTIL_DistApprox(GetEnemy()->GetAbsOrigin(), tr.endpos) < 200) {
