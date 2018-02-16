@@ -79,6 +79,8 @@ public:
 	bool CanSpawnAlien( CASW_Spawner *pSpawner );			// if director is controlling alien spawns, then mapper set spawners ask permission before spawning	
 
 	void StartFinale();
+	void StartHoldout();
+	void StopHoldout();
 	void SetHordesEnabled( bool bHordes ) { m_bHordesEnabled = bHordes; }
 	void SetWanderersEnabled( bool bWanderers ) { m_bWanderersEnabled = bWanderers; }
 
@@ -107,6 +109,10 @@ private:
 	bool m_bHordesEnabled;
 	bool m_bFiredEscapeRoom;
 	bool m_bDirectorControlsSpawners;
+
+	bool m_bHoldout;				// reactivedrop: similar to finale but can be stopped
+	bool m_bWanderersWereEnabled;	// reactivedrop: whether wanderers were enabled before holdout started
+	bool m_bHordesWereEnabled;		// reactivedrop: whether hordes were enabled before holdout started
 };
 
 CASW_Director* ASWDirector();

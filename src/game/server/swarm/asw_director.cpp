@@ -67,6 +67,9 @@ bool CASW_Director::Init()
 	
 	m_bHordeInProgress = false;
 	m_bFinale = false;
+	m_bHoldout = false;
+	m_bWanderersWereEnabled = false;
+	m_bHordesWereEnabled = false;
 
 	// take horde/wanderer settings from director control
 	CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
@@ -274,7 +277,7 @@ void CASW_Director::UpdateHorde()
 	if ( !m_HordeTimer.HasStarted() )
 	{
 		float flDuration = RandomFloat( asw_horde_interval_min.GetFloat(), asw_horde_interval_max.GetFloat() );
-		if ( m_bFinale )
+		if ( m_bFinale || m_bHoldout )
 		{
 			flDuration = RandomFloat( 5.0f, 10.0f );
 		}
@@ -342,7 +345,7 @@ void CASW_Director::OnHordeFinishedSpawning()
 
 void CASW_Director::UpdateSpawningState()
 {
-	if ( m_bFinale )				// in finale, just keep spawning aliens forever
+	if ( m_bFinale || m_bHoldout )			// in finale, just keep spawning aliens forever
 	{
 		m_bSpawningAliens = true;
 
@@ -512,6 +515,37 @@ void CASW_Director::StartFinale()
 	if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
 	{
 		m_HordeTimer.Start( flQuickStart );
+	}
+}
+
+// reactivedrop: for now it is simply a copy of Finale but with an option to stop it
+void CASW_Director::StartHoldout()
+{
+	if ( !m_bHoldout )
+	{
+		m_bHordesWereEnabled = m_bHordesEnabled;
+		m_bWanderersWereEnabled = m_bWanderersEnabled;
+
+		m_bHoldout = true;
+		m_bHordesEnabled = true;
+		m_bWanderersEnabled = true;
+		DevMsg( "Starting holdout\n" );
+		float flQuickStart = RandomFloat( 2.0f, 5.0f );
+		if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
+		{
+			m_HordeTimer.Start( flQuickStart );
+		}
+	}
+}
+
+void CASW_Director::StopHoldout()
+{
+	if ( m_bHoldout )
+	{
+		m_bHoldout = false;
+		m_bHordesEnabled = m_bHordesWereEnabled;
+		m_bWanderersEnabled = m_bWanderersWereEnabled;
+		DevMsg( "Stopping holdout\n" );
 	}
 }
 

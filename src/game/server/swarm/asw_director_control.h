@@ -34,6 +34,8 @@ private:
 	void InputEnableWanderers( inputdata_t &inputdata );
 	void InputDisableWanderers( inputdata_t &inputdata );
 	void InputStartFinale( inputdata_t &inputdata );
+	void InputStartHoldout( inputdata_t &inputdata );
+	void InputStopHoldout( inputdata_t &inputdata );
 
 	COutputEvent m_OnEscapeRoomStart;
 };

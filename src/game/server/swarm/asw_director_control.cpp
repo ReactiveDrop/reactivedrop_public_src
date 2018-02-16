@@ -22,6 +22,8 @@ BEGIN_DATADESC( CASW_Director_Control )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"EnableWanderers",	InputEnableWanderers ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableWanderers",	InputDisableWanderers ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartFinale",	InputStartFinale ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"StartHoldout",	InputStartHoldout ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"StopHoldout",	InputStopHoldout ),
 	DEFINE_OUTPUT( m_OnEscapeRoomStart, "OnEscapeRoomStart"),
 END_DATADESC()
 
@@ -91,4 +93,26 @@ void CASW_Director_Control::InputStartFinale( inputdata_t &inputdata )
 		return;
 
 	ASWDirector()->StartFinale();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Starts infinite and often hordes and wanderers
+//-----------------------------------------------------------------------------
+void CASW_Director_Control::InputStartHoldout( inputdata_t &inputdata )
+{
+	if ( !ASWDirector() )
+		return;
+
+	ASWDirector()->StartHoldout();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Reverts to pre-holdout state
+//-----------------------------------------------------------------------------
+void CASW_Director_Control::InputStopHoldout( inputdata_t &inputdata )
+{
+	if ( !ASWDirector() )
+		return;
+
+	ASWDirector()->StopHoldout();
 }
