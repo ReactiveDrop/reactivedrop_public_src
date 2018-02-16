@@ -654,6 +654,14 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 				pPlayer->m_hUseKeyDownEnt = NULL;
 				pPlayer->m_flUseKeyDownTime = 0.0f;
 			}
+
+			IGameEvent * event = gameeventmanager->CreateEvent( "marine_revived" );
+			if ( event )
+			{
+				event->SetInt( "entindex", entindex() );
+				event->SetInt( "reviver", pMarine->entindex() );
+				gameeventmanager->FireEvent( event );
+			}
 		}
 	}
 	else if ( nHoldType == ASW_USE_RELEASE_QUICK )
@@ -780,6 +788,16 @@ void CASW_Marine::Spawn( void )
 	// make sure his move_x/y pose parameters are at full moving forwards, so the AI follow movement will detect some sequence motion when calculating goal speed
 	SetPoseParameter( "move_x", 1.0f );
 	SetPoseParameter( "move_y", 0.0f );
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "marine_spawn" );
+	if ( event )
+	{
+		CASW_Player *pPlayer = GetCommander();
+		event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+		event->SetInt( "entindex", entindex() );
+
+		gameeventmanager->FireEvent( event );
+	}
 }
 
 void CASW_Marine::NPCInit()
@@ -4341,6 +4359,13 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		Msg("%s has been knocked unconscious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
 		if (ASWGameRules())
 			ASWGameRules()->MarineKnockedOut(this);
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "marine_incapacitated" );
+		if ( event )
+		{
+			event->SetInt( "entindex", entindex() );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 	else		// marine is already knocked out, let's make him get up again
 	{

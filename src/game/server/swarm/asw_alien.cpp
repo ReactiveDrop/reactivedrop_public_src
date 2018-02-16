@@ -337,6 +337,13 @@ void CASW_Alien::Spawn()
 	}
 
     SetModelScale( m_fSizeScale );
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "alien_spawn" );
+	if ( event )
+	{
+		event->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( event );
+	}
 }
 
 void CASW_Alien::Precache()

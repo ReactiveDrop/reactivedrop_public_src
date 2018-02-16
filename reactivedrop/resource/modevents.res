@@ -329,6 +329,42 @@
 		"strMapName" "string"
 	}
 	
+	"marine_incapacitated"
+	{
+		"entindex"		"short"		// entindex of the marine
+	}
+	
+	"marine_revived"
+	{
+		"entindex"		"short"		// entindex of the marine who was revived
+		"reviver"		"short"		// entindex of the marine doing the reviving
+	}
+	
+	"alien_spawn"
+	{
+		"entindex"		"long"		// entindex of the alien
+	}
+	
+	"buzzer_spawn"
+	{
+		"entindex"		"long"		// entindex of the buzzer
+	}
+	
+	"marine_spawn"
+	{
+		"userid"		"short"		// user ID on server
+		"entindex"		"long"		// entindex of the marine
+	}
+	
+	"weapon_reload_finish"
+	{
+		"userid"			"short"		// user ID on server
+		"marine"			"long"		// entindex of the marine
+		"clipsize"			"short"		// max ammo for that weapon
+		"clipsremaining"	"short"		// remaining clips
+		"clipsmax"			"short"		// max clips
+	}
+	
 // CLIENTSIDE
 
 	"alien_hurt"

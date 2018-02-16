@@ -356,6 +356,8 @@ void CScriptGameEventListener::SetVScriptEventValues( IGameEvent *event, HSCRIPT
 		g_pScriptVM->SetValue( table, "kicked", event->GetBool("kicked") );
 	if ( !event->IsEmpty("bot") )
 		g_pScriptVM->SetValue( table, "bot", event->GetBool("bot") );
+	if ( !event->IsEmpty("reviver") )
+		g_pScriptVM->SetValue( table, "reviver", event->GetInt("reviver") );
 	if ( !event->IsEmpty("splitscreenplayer") )
 		g_pScriptVM->SetValue( table, "splitscreenplayer", event->GetInt("splitscreenplayer") );
 }
@@ -493,6 +495,12 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "hltv_message" );
 	ListenForGameEvent( "hltv_title" );
 	ListenForGameEvent( "hltv_chat" );
+	ListenForGameEvent( "marine_incapacitated" );
+	ListenForGameEvent( "marine_revived" );
+	ListenForGameEvent( "alien_spawn" );
+	ListenForGameEvent( "buzzer_spawn" );
+	ListenForGameEvent( "marine_spawn" );
+	ListenForGameEvent( "weapon_reload_finish" );
 
 	return true;
 }

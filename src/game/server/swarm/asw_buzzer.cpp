@@ -2226,6 +2226,13 @@ void CASW_Buzzer::Spawn(void)
 	m_bHeld = false;
 	StopLoitering();
 	SetModelScale( m_fSizeScale );
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "buzzer_spawn" );
+	if ( event )
+	{
+		event->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( event );
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -1122,6 +1122,24 @@ void CASW_Weapon::FinishReload( void )
 		{
 			pOwner->m_nFastReloadsInARow = 0;
 		}
+
+		// Fire event when a player finishes reloading a weapon
+		IGameEvent * event = gameeventmanager->CreateEvent( "weapon_reload_finish" );
+		if ( event )
+		{
+			CASW_Player *pPlayer = pOwner->GetCommander();
+
+			int nClipSize = GetMaxClip1();
+			int nClips = pOwner->GetAmmoCount( m_iPrimaryAmmoType ) / nClipSize;
+
+			event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+			event->SetInt( "marine", pOwner->entindex() );
+			event->SetInt( "clipsize", nClipSize );
+			event->SetInt( "clipsremaining", nClips );
+			event->SetInt( "clipsmax", GetAmmoDef()->MaxCarry( m_iPrimaryAmmoType, pOwner ) / nClipSize );
+
+			gameeventmanager->FireEvent( event );
+		}
 #endif
 		m_bFastReloadSuccess = false;
 		m_bFastReloadFailure = false;
