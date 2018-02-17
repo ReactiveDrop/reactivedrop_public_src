@@ -34,6 +34,8 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 
 #endif // VMPROFILE
 
+static ConVar cl_mapspawn_nut_exec( "cl_mapspawn_nut_exec", "0", FCVAR_NONE, "If set to 1, client will execute scripts/vscripts/mapspawn.nut file" );
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -118,7 +120,10 @@ bool VScriptClientInit()
 					g_pScriptVM->Run( g_Script_vscript_client );
 				}
 
-				//VScriptRunScript( "mapspawn", false );
+				if ( cl_mapspawn_nut_exec.GetBool() )
+				{
+					VScriptRunScript( "mapspawn", false );
+				}
 
 				VMPROF_SHOW( pszScriptLanguage, "virtual machine startup" );
 
