@@ -469,6 +469,9 @@ float CASW_Spawn_Set::ComputeTotalWeight( ASW_Spawn_Type iSpawnType ) const
 
 CASW_Spawn_Requirement::CASW_Spawn_Requirement( KeyValues *pKV )
 {
+	if ( !pKV )
+		return;
+
 	for ( KeyValues *pChildKV = pKV->GetFirstValue(); pChildKV; pChildKV = pChildKV->GetNextValue() )
 	{
 		if ( !Q_stricmp( pChildKV->GetName(), "RequireCVar" ) )
@@ -774,6 +777,12 @@ bool CASW_Spawn_Requirement::CanSpawn() const
 
 CASW_Spawn_Definition::CASW_Spawn_Definition( KeyValues *pKV ) : m_Requirement( pKV )
 {
+	if ( !pKV )
+	{
+		m_flSelectionWeight = 1.0f;
+		return;
+	}
+
 	m_flSelectionWeight = pKV->GetFloat( "SelectionWeight", 1.0f );
 
 	for ( KeyValues *pNPCKV = pKV->GetFirstTrueSubKey(); pNPCKV; pNPCKV = pNPCKV->GetNextTrueSubKey() )
