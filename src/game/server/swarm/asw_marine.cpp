@@ -97,6 +97,7 @@ ConVar rd_marine_ignite_immediately( "rd_marine_ignite_immediately", "0",  FCVAR
 ConVar rd_pvp_marine_take_damage_from_bots("rd_pvp_marine_take_damage_from_bots", "1", FCVAR_CHEAT, "If 0 players will not take damage from bots in PvP");
 ConVar rd_bot_strong( "rd_bot_strong", "1", FCVAR_CHEAT, "If 1, bots take only 25% of damage in a co-op game" );
 ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_grenade", "1", FCVAR_CHEAT, "Players take damage from bots' grenade launchers" );
+static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
@@ -5030,7 +5031,7 @@ void CASW_Marine::OnWeaponOutOfAmmo(bool bChatter)
 // 		}
 // 	}
 
-	if (bChatter && GetMarineSpeech())
+	if ( bChatter && GetMarineSpeech() && rd_notify_about_out_of_ammo.GetBool() )
 	{
 		GetMarineSpeech()->Chatter(CHATTER_NO_AMMO);
 		bEmoteAmmo = true;
