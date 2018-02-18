@@ -381,6 +381,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInvTable, "GetInvTable", "Returns a table of the marine's inventory data." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
+	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
 
 extern ConVar weapon_showproficiency;
@@ -5207,6 +5209,29 @@ void CASW_Marine::Knockdown( CBaseEntity *pSource, const Vector &vecImpulse, boo
 	VectorAngles( vecKnockdownDir, staggerAngles );
 	float yawDelta = AngleNormalize( GetAbsAngles()[YAW] - staggerAngles[YAW] );
 	//Msg( "yawDelta = %f marine angles = %f staggerangles = %f\n", yawDelta, GetAbsAngles()[YAW], staggerAngles[YAW] );
+
+	if ( yawDelta <= 90 && yawDelta >= -90 )
+		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_FORWARD;
+	else
+		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_BACKWARD;
+
+	ApplyAbsVelocityImpulse( vecImpulse );
+	
+	m_flKnockdownYaw = UTIL_VecToYaw( vecKnockdownDir );
+
+	SetNextStumbleTime( gpGlobals->curtime + asw_knockdown_interval.GetFloat() );
+}
+
+void CASW_Marine::ScriptKnockdown( const Vector &vecImpulse )
+{
+	// already knocked down
+	if ( GetForcedActionRequest() >= FORCED_ACTION_KNOCKDOWN_FORWARD && GetForcedActionRequest() <= FORCED_ACTION_KNOCKDOWN_BACKWARD )
+		return;
+
+	Vector vecKnockdownDir = vecImpulse.Normalized();
+	QAngle staggerAngles;
+	VectorAngles( vecKnockdownDir, staggerAngles );
+	float yawDelta = AngleNormalize( GetAbsAngles()[YAW] - staggerAngles[YAW] );
 
 	if ( yawDelta <= 90 && yawDelta >= -90 )
 		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_FORWARD;

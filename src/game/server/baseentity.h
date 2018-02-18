@@ -517,6 +517,7 @@ public:
 	CBaseEntity *NextMovePeer( void );
 
 	void		SetName( string_t newTarget );
+	void		ScriptSetName( const char *newTarget );
 	void		SetParent( string_t newParent, CBaseEntity *pActivator, int iAttachment = -1 );
 	
 	// Set the movement parent. Your local origin and angles will become relative to this parent.
@@ -1851,6 +1852,7 @@ public:
 
 	const Vector &ScriptEyePosition( void ) { static Vector vec; vec = EyePosition(); return vec;}
 	void ScriptSetAngles( float fPitch, float fYaw, float fRoll ) {QAngle angles(fPitch,fYaw,fRoll); Teleport(NULL, &angles, NULL);}
+	void ScriptSetAnglesVector( const Vector &v ) {QAngle angles(VectorExpand( v )); Teleport(NULL, &angles, NULL);}
 	const Vector &ScriptGetAngles( void ) { static Vector vec; QAngle qa = GetAbsAngles(); vec.x = qa.x; vec.y = qa.y; vec.z = qa.z; return vec;}
 	// BenLubar
 	void ScriptSetLocalAngles( float fPitch, float fYaw, float fRoll ) { QAngle angles( fPitch, fYaw, fRoll ); SetLocalAngles( angles ); }
@@ -2036,6 +2038,11 @@ inline const char *CBaseEntity::GetPreTemplateName()
 inline void CBaseEntity::SetName( string_t newName )
 {
 	m_iName = newName;
+}
+
+inline void CBaseEntity::ScriptSetName( const char *newName )
+{
+	m_iName = AllocPooledString( newName );
 }
 
 

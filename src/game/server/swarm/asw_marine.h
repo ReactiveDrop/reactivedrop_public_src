@@ -747,6 +747,7 @@ public:
 	// stumbling
 	void Stumble( CBaseEntity *pSource, const Vector &vecStumbleDir, bool bShort );
 	void Knockdown( CBaseEntity *pSource, const Vector &vecKnockdownDir, bool bForce = false );
+	void ScriptKnockdown( const Vector &vecKnockdownDir );
 	int GetForcedActionRequest() { return m_iForcedActionRequest.Get(); }
 	void ClearForcedActionRequest() { m_iForcedActionRequest = 0; }
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)

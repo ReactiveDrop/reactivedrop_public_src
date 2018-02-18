@@ -2423,6 +2423,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 
 	DEFINE_SCRIPTFUNC( GetClassname, "" )
 	DEFINE_SCRIPTFUNC_NAMED( GetEntityNameAsCStr, "GetName", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetName, "SetName", "" )
 	DEFINE_SCRIPTFUNC( GetPreTemplateName, "Get the entity name stripped of template unique decoration" )
 
 	DEFINE_SCRIPTFUNC_NAMED( GetAbsOrigin, "GetOrigin", ""  )
@@ -2445,6 +2446,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( WorldSpaceCenter, "GetCenter", "Get vector to center of object - absolute coords")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptEyePosition, "EyePosition", "Get vector to eye position - absolute coords")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetAngles, "SetAngles", "Set entity pitch, yaw, roll")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetAnglesVector, "SetAnglesVector", "Set entity pitch, yaw, roll from a vector")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAngles, "GetAngles", "Get entity pitch, yaw, roll as a vector")
 	// BenLubar
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetLocalAngles, "SetLocalAngles", "Set entity pitch, yaw, roll relative to the parent")

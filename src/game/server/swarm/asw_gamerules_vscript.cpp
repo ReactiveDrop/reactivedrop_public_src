@@ -184,6 +184,28 @@ public:
 
 		ASWDirector()->StartFinale();
 	}
+
+	void StartHoldout()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return;
+		}
+
+		ASWDirector()->StartHoldout();
+	}
+
+	void StopHoldout()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return;
+		}
+
+		ASWDirector()->StopHoldout();
+	}
 } g_ASWDirectorVScript;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETON "The AI director" )
@@ -200,6 +222,8 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETO
 	DEFINE_SCRIPTFUNC( ResetIntensity, "Reset the intensity value for a marine to zero" )
 	DEFINE_SCRIPTFUNC( ResetIntensityForAllMarines, "Reset the intensity value for all marines to zero" )
 	DEFINE_SCRIPTFUNC( StartFinale, "Spawn a horde every few seconds for the rest of the level" )
+	DEFINE_SCRIPTFUNC( StartHoldout, "Starts spawning a horde every few seconds until stopped" )
+	DEFINE_SCRIPTFUNC( StopHoldout, "Stops spawning hordes" )
 END_SCRIPTDESC();
 
 // Implemented based on the description from https://developer.valvesoftware.com/wiki/List_of_L4D2_Script_Functions#Convars
@@ -329,6 +353,30 @@ HSCRIPT Script_PlantIncendiaryMine( const Vector origin, const Vector angles )
 	return ToHScript( pMine );
 }
 
+void ScriptStartStim( float flDuration )
+{
+	CAlienSwarm* game = ASWGameRules();
+	Assert( game );
+	if ( !game )
+	{
+		return;
+	}
+
+	game->StartStim( flDuration, NULL );
+}
+
+void ScriptStopStim()
+{
+	CAlienSwarm* game = ASWGameRules();
+	Assert( game );
+	if ( !game )
+	{
+		return;
+	}
+
+	game->StopStim();
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
@@ -339,4 +387,6 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlaceDamageAmplifier, "PlaceDamageAmplifier", "Places a damage amplifier (duration, radius, position)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlantLaserMine, "PlantLaserMine", "Plants a laser mine (friendly, position, angles)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlantIncendiaryMine, "PlantIncendiaryMine", "Plants an incendiary mine (position, angles)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStartStim, "StartStim", "Activates a stim pack for desired duration" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStopStim, "StopStim", "Stops any active stim pack" );
 }
