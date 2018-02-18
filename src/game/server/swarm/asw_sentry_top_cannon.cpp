@@ -126,7 +126,7 @@ CAI_BaseNPC *CASW_Sentry_Top_Cannon::SelectOptimalEnemy()
 		if (ppAIs[i]->GetHealth() > 0 && CanSee(ppAIs[i]))
 		{
 			// don't shoot marines
-			if ( !asw_sentry_friendly_target.GetBool() && ppAIs[i]->Classify() == CLASS_ASW_MARINE )
+			if ( !asw_sentry_friendly_target.GetBool() && ( ppAIs[i]->Classify() == CLASS_ASW_MARINE || ppAIs[i]->Classify() == CLASS_ASW_COLONIST ) )
 				continue;
 
 			if ( ppAIs[i]->Classify() == CLASS_SCANNER )
