@@ -100,6 +100,7 @@ extern ConVar rd_pistols_min_delay;
 extern ConVar asw_marine_death_protection;
 extern ConVar asw_skill;
 extern ConVar asw_marine_ff_absorption;
+extern ConVar asw_skill_melee_dmg_base;
 
 ConVar rd_killingspree_time_limit( "rd_killingspree_time_limit", "3",  FCVAR_REPLICATED, "Time in seconds. If player doesn't kill anybody during this time his killing spree is ended");
 ConVar rd_quake_sounds( "rd_quake_sounds", "2",  FCVAR_REPLICATED, "Enable or disable quake sounds like doublekill, monsterkill");
@@ -458,6 +459,7 @@ void CASW_Deathmatch_Mode::InstagibEnable()
 
 	// 10 is for railgun
 	SaveSetConvar( rd_default_weapon, 10 );
+	SaveSetConvar( asw_skill_melee_dmg_base, 200 );
 
 	DisableWeaponRespawnTimer();
 	RemoveAllWeaponsFromMap();
