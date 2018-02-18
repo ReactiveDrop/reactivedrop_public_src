@@ -225,6 +225,13 @@ void CASW_Colonist::Spawn()
 	
 	NPCInit();
 	SetActiveWeapon(NULL);
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "colonist_spawn" );
+	if ( event )
+	{
+		event->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( event );
+	}
 }
 //void OnChangeActiveWeapon( CBaseCombatWeapon *pOldWeapon, CBaseCombatWeapon *pNewWeapon ) {}
 

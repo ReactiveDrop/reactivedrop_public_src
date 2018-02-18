@@ -151,9 +151,17 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 
 	float flRadius = 120.0f;
 	float flDuration = 30.0f;
-	CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( vecSrc, ang, newVel, rotSpeed, pMarine, flRadius, flDuration );
+	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create(vecSrc, ang, newVel, rotSpeed, pMarine, flRadius, flDuration);
 
 	pMarine->OnWeaponFired( this, 1 );
+
+	IGameEvent * event = gameeventmanager->CreateEvent( "damage_amplifier_placed" );
+	if ( event )
+	{
+		event->SetInt( "entindex", pBuff->entindex() );
+		event->SetInt( "marine", pMarine->entindex() );
+		gameeventmanager->FireEvent( event );
+	}
 
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
 #endif

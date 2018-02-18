@@ -500,7 +500,10 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "alien_spawn" );
 	ListenForGameEvent( "buzzer_spawn" );
 	ListenForGameEvent( "marine_spawn" );
+	ListenForGameEvent( "colonist_spawn" );
 	ListenForGameEvent( "weapon_reload_finish" );
+	ListenForGameEvent( "heal_beacon_placed" );
+	ListenForGameEvent( "damage_amplifier_placed" );
 
 	return true;
 }

@@ -356,6 +356,11 @@
 		"entindex"		"long"		// entindex of the marine
 	}
 	
+	"colonist_spawn"
+	{
+		"entindex"		"long"		// entindex of the colonist
+	}
+	
 	"weapon_reload_finish"
 	{
 		"userid"			"short"		// user ID on server
@@ -363,6 +368,18 @@
 		"clipsize"			"short"		// max ammo for that weapon
 		"clipsremaining"	"short"		// remaining clips
 		"clipsmax"			"short"		// max clips
+	}
+	
+	"heal_beacon_placed"
+	{
+		"entindex"		"long"		// entindex of the heal beacon
+		"marine"		"long"   	// marine entindex who placed the heal beacon
+	}
+	
+	"damage_amplifier_placed"
+	{
+		"entindex"		"long"		// entindex of the damage amplifier
+		"marine"		"long"   	// marine entindex who placed the damage amplifier
 	}
 	
 // CLIENTSIDE

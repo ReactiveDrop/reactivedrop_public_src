@@ -357,8 +357,16 @@ void CASW_Weapon_HealGrenade::PrimaryAttack( void )
 	Vector newVel = Manipulator.ApplySpread(GetBulletSpread());
 	if ( pMarine->GetWaterLevel() != 3 )
 	{
-		CreateProjectile( vecSrc, ang, newVel, rotSpeed, pMarine );
+		CASW_AOEGrenade_Projectile *pAOEGren = CreateProjectile(vecSrc, ang, newVel, rotSpeed, pMarine);
 		pMarine->OnWeaponFired( this, 1 );
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "heal_beacon_placed" );
+		if ( event )
+		{
+			event->SetInt( "entindex", pAOEGren->entindex() );
+			event->SetInt( "marine", pMarine->entindex() );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MEDKIT);
