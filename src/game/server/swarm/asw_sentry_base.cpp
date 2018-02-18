@@ -24,7 +24,8 @@ extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for
 
 ConVar asw_sentry_gun_type("asw_sentry_gun_type", "-1", FCVAR_CHEAT, "Force the type of sentry guns built to this. -1, the default, reads from the marine attributes.");
 ConVar asw_sentry_infinite_ammo( "asw_sentry_infinite_ammo", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
-ConVar rd_sentry_take_damage_from_marine("rd_sentry_take_damage_from_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 1, players can destroy sentry by shooting at it.");
+ConVar rd_sentry_take_damage_from_marine( "rd_sentry_take_damage_from_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 1, players can destroy sentry by shooting at it." );
+ConVar rd_sentry_invincible( "rd_sentry_invincible", "0", FCVAR_CHEAT, "If set to 1 sentries will not take damage from anything" );
 
 LINK_ENTITY_TO_CLASS( asw_sentry_base, CASW_Sentry_Base );
 PRECACHE_REGISTER( asw_sentry_base );
@@ -398,12 +399,10 @@ void CASW_Sentry_Base::OnFiredShots( int nNumShots )
 
 int CASW_Sentry_Base::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	
-	if (rd_sentry_take_damage_from_marine.GetBool())
-	{
-		return BaseClass::OnTakeDamage(info);
-	}
-	else
+	if ( rd_sentry_invincible.GetBool() )
+		return 0;
+
+	if ( !rd_sentry_take_damage_from_marine.GetBool() )
 	{
 		// no friendly fire damage 
 		CBaseEntity *pAttacker = info.GetAttacker();
