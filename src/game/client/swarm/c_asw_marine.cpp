@@ -2567,12 +2567,15 @@ C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
 			pRagdoll->ParticleProp()->Create( "marine_death_ragdoll", PATTACH_ABSORIGIN_FOLLOW );
 	}
 
-    // for enabling the dead bodies to disappear 
-	C_ASW_ClientRagdoll *pRag = dynamic_cast<C_ASW_ClientRagdoll*>( pRagdoll );
-	if ( pRag )
+	if ( ASWDeathmatchMode() )
 	{
-		pRag->m_nDeathStyle = kDIE_RAGDOLLFADE;
-		pRag->m_fASWGibTime = gpGlobals->curtime + 15.0f;
+		// for enabling the dead bodies to disappear
+		C_ASW_ClientRagdoll *pRag = dynamic_cast<C_ASW_ClientRagdoll*>( pRagdoll );
+		if ( pRag )
+		{
+			pRag->m_nDeathStyle = kDIE_RAGDOLLFADE;
+			pRag->m_fASWGibTime = gpGlobals->curtime + 15.0f;
+		}
 	}
 	return pRagdoll;
 }
