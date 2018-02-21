@@ -8363,11 +8363,18 @@ static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &a
 	}
 
 	CUtlVector<int> vecAllowedGunsUnsorted;
-	for ( int i = 0; i < vecWepList.Count(); ++i )	// unsort the vecAllowedGuns, we want to give the first available weapon from allowedGuns by default. E.g. in Minigun Carnage we will do this: rd_weapons_regular_allowed "15 7 14 5 17 6" and when selecting a marine player will get minigun as the primary weapon(previously it was giving the sentry gun)
+	if ( isInverted.GetBool() )	// don't do unsorting for inverted list, just copy
 	{
-		if ( vecAllowedGuns.HasElement( vecWepList[i] ) )
+		vecAllowedGunsUnsorted = vecAllowedGuns;
+	}
+	else
+	{
+		for ( int i = 0; i < vecWepList.Count(); ++i )	// unsort the vecAllowedGuns, we want to give the first available weapon from allowedGuns by default. E.g. in Minigun Carnage we will do this: rd_weapons_regular_allowed "15 7 14 5 17 6" and when selecting a marine player will get minigun as the primary weapon(previously it was giving the sentry gun)
 		{
-			vecAllowedGunsUnsorted.AddToTail( vecWepList[i] );
+			if ( vecAllowedGuns.HasElement( vecWepList[i] ) )
+			{
+				vecAllowedGunsUnsorted.AddToTail( vecWepList[i] );
+			}
 		}
 	}
 
