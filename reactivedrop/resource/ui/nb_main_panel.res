@@ -265,7 +265,7 @@
 		"ControlName"		"CRD_VGUI_Workshop_Download_Progress"
 		"fieldName"			"WorkshopDownloadProgress"
 		"xpos"				"r150"
-		"ypos"				"r75"
+		"ypos"				"r50"
 		"wide"				"145"
 		"tall"				"45"
 		"zpos"				"20"

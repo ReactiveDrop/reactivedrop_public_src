@@ -60,10 +60,12 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 		g_pVGuiLocalize->ConstructString( wszQueue, sizeof( wszQueue ), g_pVGuiLocalize->FindSafe( "#workshop_number_in_queue" ), 1, wszQueueCount );
 		m_pLblQueue->SetText( wszQueue );
 		m_pLblQueue->SetVisible( true );
+		SetZPos( 20 );
 	}
 	else
 	{
 		m_pLblQueue->SetVisible( false );
+		SetZPos( -1 );
 	}
 
 	int iBestAddonIndex = -1;
