@@ -556,8 +556,17 @@ int CASW_Marine::SelectHackingSchedule()
 	if ( m_hAreaToUse.Get() )
 	{
 		CASW_Button_Area *pButton = dynamic_cast< CASW_Button_Area* >( m_hAreaToUse.Get() );
-		if ( pButton && ( pButton->m_bIsInUse || !pButton->IsLocked() ) )
-			return -1;
+		if ( pButton )
+		{
+			if ( pButton->m_bIsInUse || !pButton->IsLocked() )
+				return -1;
+		}
+		else
+		{
+			CASW_Computer_Area *pComputer = dynamic_cast< CASW_Computer_Area* >( m_hAreaToUse.Get() );
+			if ( pComputer && ( pComputer->m_bIsInUse || !pComputer->IsLocked() ) )
+				return -1;
+		}
 
 		if ( m_hAreaToUse->IsUsable( this ) )
 		{
