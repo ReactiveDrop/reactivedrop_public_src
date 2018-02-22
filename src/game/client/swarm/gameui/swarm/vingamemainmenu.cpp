@@ -489,7 +489,7 @@ void InGameMainMenu::OnThink()
 		}
 	}
 
-	bool bCanGoIdle = !Q_stricmp( "campaign", szGameMode ) || !Q_stricmp( "single_mission", szGameMode );
+	bool bCanGoIdle = ( !Q_stricmp( "campaign", szGameMode ) || !Q_stricmp( "single_mission", szGameMode ) ) && Q_stricmp( "offline", szNetwork );
 
 	// TODO: determine if player can go idle
 #if 0
