@@ -125,10 +125,7 @@ void CASW_VGUI_Stylin_Cam::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 bool CASW_VGUI_Stylin_Cam::ShouldShowStylinCam()
 {
-	if ( !ASWGameRules() )
-		return false;
-
-	if ( ASWGameRules()->ShouldShowCommanderFace() )
+	if ( !ASWGameRules() || ASWGameRules()->ShouldShowCommanderFace() || !asw_spinning_stim_cam.GetBool() )
 		return false;
 
 	C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
@@ -153,7 +150,7 @@ bool CASW_VGUI_Stylin_Cam::ShouldShowStylinCam()
 			}
 			++cameraNum;
 		}
-		if ( !bMapperCam && !asw_spinning_stim_cam.GetBool() && !ASWGameRules()->ShouldShowCommanderFace() )	// don't show the cam if the mapper hasn't set a specific view, unless the convar is set
+		if ( !bMapperCam && !ASWGameRules()->ShouldShowCommanderFace() )	// don't show the cam if the mapper hasn't set a specific view, unless the convar is set
 			bShowCam = false;
 	}
 
