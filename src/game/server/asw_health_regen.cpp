@@ -51,7 +51,7 @@ void CASW_Health_Regen::HealthIncreaseThink()
 			continue;
 		}
 
-		if ( rd_hp_regen.GetBool() && pMarine->GetHealth() < pMarine->GetMaxHealth() )
+		if ( rd_hp_regen.GetBool() && !pMarine->m_bKnockedOut && pMarine->GetHealth() < pMarine->GetMaxHealth() )
 		{
 			pMarine->SetHealth( MIN( pMarine->GetHealth() + rm_health_regen_amount.GetInt(), pMarine->GetMaxHealth() ) );
 		}
