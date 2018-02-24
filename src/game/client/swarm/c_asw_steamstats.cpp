@@ -81,7 +81,6 @@ namespace
 		"rd_lanasescape_campaign",
 		"rd_reduction_campaign",
 		"rd_paranoia",
-		"rd_orions_threat",
 		"rd_bonus_missions",
 	};
 	const char *g_OfficialMaps[] =
@@ -141,8 +140,6 @@ namespace
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
 		"rd-bonus_mission3",
-		"rd-ori1niosarefinary",
-		"rd-ori2firstanomaly",
 	};
 }
 

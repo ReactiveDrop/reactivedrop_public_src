@@ -1169,7 +1169,6 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd-area9800.txt",
 	"rd_lanasescape_campaign.txt",
 	"rd-operationcleansweep.txt",
-	"rd_orions_threat.txt",
 	"rd_paranoia.txt",
 	"rd_research7.txt",
 	"rd-tarnorcampaign1.txt",

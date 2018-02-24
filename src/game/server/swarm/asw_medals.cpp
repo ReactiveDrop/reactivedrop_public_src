@@ -294,10 +294,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR );
 			}
-			else if ( !Q_stricmp( pszCampaignName, "rd_orions_threat" ) )
-			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ORI );
-			}
 		}
 	}
 
@@ -764,14 +760,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( mapName, "rd-par5crucial_point" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_CRUCIAL_POINT );
-			}
-			else if ( !Q_stricmp( mapName, "rd-ori1niosarefinary" ) )
-			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ORI_REFINERY );
-			}
-			else if ( !Q_stricmp( mapName, "rd-ori2firstanomaly" ) )
-			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ORI_ANOMALY );
 			}
 		}
 

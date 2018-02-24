@@ -411,8 +411,6 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-par3close_contact",
 	"rd-par4high_tension",
 	"rd-par5crucial_point",
-	"rd-ori1niosarefinary",
-	"rd-ori2firstanomaly",
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -507,12 +505,6 @@ static const char *g_szAchievementMapNamesPAR[] =
 	"rd-par5crucial_point",
 };
 
-static const char *g_szAchievementMapNamesORI[] =
-{
-	"rd-ori1niosarefinary",
-	"rd-ori2firstanomaly",
-};
-
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(150, ASW_, _CAMPAIGN, Jacob);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(155, RD_, _CAMPAIGN_OCS, OCS);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(160, RD_, _CAMPAIGN_RES, RES);
@@ -523,7 +515,6 @@ DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(180, RD_, _CAMPAIGN_TIL, TIL);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(185, RD_, _CAMPAIGN_LAN, Lana);
 //DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(190, RD_, _CAMPAIGN_REDUCTION, Reduction);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(195, RD_, _CAMPAIGN_PAR, PAR);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(200, RD_, _CAMPAIGN_ORI, ORI);
 
 class CAchievement_Kill_Grind_1 : public CASW_Achievement
 {
@@ -708,9 +699,6 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HOSTILE_PLACES, 1275 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CLOSE_CONTACT, 1276 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HIGH_TENSION, 1277 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CRUCIAL_POINT, 1278 );
-
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ORI_REFINERY, 1279 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ORI_ANOMALY, 1280 );
 
 class CAchievement_Group_Heal : public CASW_Achievement
 {
@@ -1042,17 +1030,6 @@ class CAchievement_Campaign_No_Deaths_PAR : public CASW_Achievement
 	// server fires an event for this achievement, no other code within achievement necessary
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_PAR, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR, "RD_CAMPAIGN_NO_DEATHS_PAR", 5, 1009 );
-
-class CAchievement_Campaign_No_Deaths_ORI : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_ORI, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ORI, "RD_CAMPAIGN_NO_DEATHS_ORI", 5, 1010 );
 
 class CAchievement_Rifle_Kills : public CASW_Achievement
 {
