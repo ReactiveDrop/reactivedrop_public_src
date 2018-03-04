@@ -80,6 +80,7 @@ void CASW_Mortarbug::Spawn( void )
 	UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 				
 	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(350) + m_iHealthBonus;
+	m_iMaxHealth = m_iHealth;
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );
 		

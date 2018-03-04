@@ -126,6 +126,8 @@ void CASW_Parasite::Spawn( void )
 		m_fSuicideTime = 0;
 	}
 
+	m_iMaxHealth = m_iHealth;
+
 	SetMoveType( MOVETYPE_STEP );
 	SetHullType(HULL_TINY);
 	SetCollisionGroup( ASW_COLLISION_GROUP_PARASITE );
@@ -1296,6 +1298,8 @@ void CASW_Parasite::SetHealthByDifficultyLevel()
 	{
 		SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(30) + m_iHealthBonus);
 	}
+
+	SetMaxHealth( GetHealth() );
 }
 
 void CASW_Parasite::NPCThink()

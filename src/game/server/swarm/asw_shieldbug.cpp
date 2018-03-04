@@ -929,6 +929,7 @@ bool CASW_Shieldbug::CanFlinch( void )
 void CASW_Shieldbug::SetHealthByDifficultyLevel()
 {		
 	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( 1000 ) + m_nExtraHeath + m_iHealthBonus ); // was 500 - 2/19/10
+	SetMaxHealth( GetHealth() );
 }
 
 void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
