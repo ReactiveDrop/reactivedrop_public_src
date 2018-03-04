@@ -17,6 +17,7 @@
 #include "datacache/imdlcache.h"
 #include "ai_link.h"
 #include "asw_alien.h"
+#include "asw_buzzer.h"
 #include "asw_door.h"
 #include "asw_spawn_selection.h"
 #include "rd_director_triggers.h"
@@ -974,6 +975,18 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 		pAlien->m_iHealthBonus = pNPC->m_iHealthBonus;
 		pAlien->m_fSizeScale = pNPC->m_flSizeScale;
 		pAlien->m_fSpeedScale = pNPC->m_flSpeedScale;
+	}
+
+	CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer *>( pEntity );
+	if ( pBuzzer )
+	{
+		pBuzzer->m_bFlammable = pNPC->m_bFlammable;
+		pBuzzer->m_bTeslable = pNPC->m_bTeslable;
+		pBuzzer->m_bFreezable = pNPC->m_bFreezable;
+		pBuzzer->m_bFlinchable = pNPC->m_bFlinches;
+		pBuzzer->m_iHealthBonus = pNPC->m_iHealthBonus;
+		pBuzzer->m_fSizeScale = pNPC->m_flSizeScale;
+		pBuzzer->m_fSpeedScale = pNPC->m_flSpeedScale;
 	}
 
 	CAI_BaseNPC	*pBaseNPC = pEntity->MyNPCPointer();
