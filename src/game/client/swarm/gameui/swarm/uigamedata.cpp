@@ -29,6 +29,7 @@
 #include "filesystem/IXboxInstaller.h"
 
 #include <time.h>
+#include "asw_hud_chat.h"
 
 // BaseModUI High-level windows
 
@@ -572,15 +573,42 @@ bool CUIGameData::CheckAndDisplayErrorIfNotSignedInToLive( CBaseModFrame *pCalle
 	return true;
 }
 
+static void CloseGameUI()
+{
+	// Hide game ui
+	if ( CBaseModPanel::GetSingleton().IsVisible() )
+	{
+		engine->ExecuteClientCmd( "gameui_allowescape" ); // Allow escape to close UI again
+		engine->ExecuteClientCmd( "gameui_hide" );
+	}
+}
+
 void CUIGameData::DisplayOkOnlyMsgBox( CBaseModFrame *pCallerFrame, const char *szTitle, const char *szMsg )
 {
+	// If the chat HUD is open when a message box appears, close the chat HUD
+	ConVarRef cl_chat_active( "cl_chat_active" );
+	if ( cl_chat_active.GetBool() )
+	{
+		CBaseHudChat *pHUDChat = (CBaseHudChat *)GET_HUDELEMENT( CHudChat );
+		if ( pHUDChat )
+			pHUDChat->StopMessageMode( false );
+	}
+
 	GenericConfirmation* confirmation = 
 		static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, pCallerFrame, false ) );
 	GenericConfirmation::Data_t data;
 	data.pWindowTitle = szTitle;
 	data.pMessageText = szMsg;
 	data.bOkButtonEnabled = true;
+	data.pfnOkCallback = CloseGameUI;
 	confirmation->SetUsageData(data);
+
+	// Activate game ui to see the dialog
+	if ( !CBaseModPanel::GetSingleton().IsVisible() )
+	{
+		engine->ExecuteClientCmd( "gameui_activate" );
+		engine->ExecuteClientCmd( "gameui_preventescape" ); // Prevent escape from closing UI
+	}
 }
 
 const char *CUIGameData::GetLocalPlayerName( int iController )
