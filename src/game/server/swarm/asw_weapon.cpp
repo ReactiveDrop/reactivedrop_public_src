@@ -282,6 +282,9 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 //-----------------------------------------------------------------------------
 void CASW_Weapon::Drop( const Vector &vecVelocity )
 {
+	// cancel any reload in progress.
+	m_bInReload = false;
+
 	StopAnimation();
 	StopFollowingEntity( );
 	SetMoveType( MOVETYPE_FLYGRAVITY );

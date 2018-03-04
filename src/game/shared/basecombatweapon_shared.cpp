@@ -632,6 +632,9 @@ void CBaseCombatWeapon::Drop( const Vector &vecVelocity )
 	SetRemoveable( true );
 	WeaponManager_AmmoMod( this );
 
+	// cancel any reload in progress.
+	m_bInReload = false;
+
 	//If it was dropped then there's no need to respawn it.
 	AddSpawnFlags( SF_NORESPAWN );
 
