@@ -2013,4 +2013,4 @@ void SpawnBuzzerAboveMe( const CCommand &args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Refills all marine health", FCVAR_CHEAT);
+static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Spawn a buzzer above marine.\n\tFormat: asw_spawn_buzzer <z height above marine>", FCVAR_CHEAT);
