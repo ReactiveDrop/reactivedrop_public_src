@@ -65,6 +65,7 @@ public:
 	CNB_Button	*m_pFriendsButton;
 	CNB_Button	*m_pPromotionButton;
     CNB_Button	*m_pTeamChangeButtonButton;
+	CNB_Button	*m_pChangeMissionButton;
 	CNB_Vote_Panel *m_pVotePanel;
 	CBitmapButton *m_pChatButton;
 	CBitmapButton *m_pVoteButton;

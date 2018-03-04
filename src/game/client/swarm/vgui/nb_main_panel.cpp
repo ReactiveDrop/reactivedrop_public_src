@@ -109,6 +109,8 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_pDeselectMarinesButton->AddActionSignalTarget(this);
 	m_pDeselectMarinesButton->SetCommand("DeselectMarines");
 
+	m_pChangeMissionButton = new CNB_Button( this, "ChangeMissionButton", "", this, "ChangeMissionButton" );
+
 	m_pPromotionButton = new CNB_Button( this, "PromotionButton", "", this, "PromotionButton" );
     m_pTeamChangeButtonButton = new CNB_Button( this, "TeamChangeButton", "", this, "TeamChangeButton" );
 
@@ -204,6 +206,7 @@ void CNB_Main_Panel::OnThink()
 	m_pChatButton->SetVisible( gpGlobals->maxClients > 1 );
 	m_pVoteButton->SetVisible( gpGlobals->maxClients > 1 );
 	m_pLeaderboardButton->SetVisible( gpGlobals->maxClients > 1 && !ASWDeathmatchMode() && UTIL_RD_GetCurrentLobbyID().IsValid() );
+	m_pChangeMissionButton->SetVisible( gpGlobals->maxClients == 1 );
 
 	bool isOffline = ASWGameResource() && ASWGameResource()->IsOfflineGame();
 	bool hasMarineSelected = Briefing()->GetMarineProfile(m_pLobbyRow0->m_nLobbySlot);
@@ -505,6 +508,13 @@ void CNB_Main_Panel::OnCommand( const char *command )
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "LobbyInvite" );
 		}
 #endif
+	}
+	else if ( !Q_stricmp( command, "ChangeMissionButton" ) )
+	{
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+			engine->ClientCmd( "asw_vote_chooser 0" );
+		else
+			engine->ClientCmd( "asw_vote_chooser 0 notrans" );
 	}
 	else if ( !Q_stricmp( command, "MissionDetailsButton" ) )
 	{

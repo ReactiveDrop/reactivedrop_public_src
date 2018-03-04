@@ -65,6 +65,20 @@
 		"fgcolor_override"		"113 142 181 255"
 		"zpos"		"3"
 	}
+	"ChangeMissionButton"
+	{
+		"fieldName"		"ChangeMissionButton"
+		"xpos"		"c10"
+		"ypos"		"r23"
+		"wide"		"117"
+		"tall"		"27"
+		"ControlName"		"CNB_Button"
+		"labelText"		"#asw_campaign_vote"
+		"textAlignment"		"center"
+		"font"		"DefaultMedium"
+		"fgcolor_override"		"113 142 181 255"
+		"zpos"		"3"
+	}
 	"PromotionButton"
 	{
 		"fieldName"		"PromotionButton"
