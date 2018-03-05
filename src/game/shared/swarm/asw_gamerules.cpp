@@ -195,7 +195,7 @@ extern ConVar old_radius_damage;
 	{
 		ConVarRef rd_weapons_regular_class_unrestricted( "rd_weapons_regular_class_unrestricted" );
 		ConVarRef rd_weapons_extra_class_unrestricted( "rd_weapons_extra_class_unrestricted" );
-		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 && rd_weapons_regular_class_unrestricted.GetInt() == -2 )
+		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 && rd_weapons_extra_class_unrestricted.GetInt() == -2 )
 			return;
 
 		if ( ASWGameRules() && ASWGameResource() && ASWEquipmentList() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
