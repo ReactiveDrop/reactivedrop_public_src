@@ -1409,7 +1409,7 @@ void CClientShadowMgr::CalculateRenderTargetsAndSizes( void )
 		m_nDepthTextureResolution = atoi( CommandLine()->ParmValue( "-sfm_shadowmapres", defaultRes ) );
 	}
 	extern ConVar rd_max_depth_texture_shadows;
-	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : rd_max_depth_texture_shadows.GetInt();	// Just one shadow depth texture in games, more in tools
+	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );	// Just one shadow depth texture in games, more in tools
 }
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1590,7 +1590,7 @@ void CClientShadowMgr::InitRenderTargets()
 	if ( m_DepthTextureCache.Count() )
 	{
 		bool bTools = CommandLine()->CheckParm( "-tools" ) != NULL;
-		int nNumShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : rd_max_depth_texture_shadows.GetInt();
+		int nNumShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );
 		m_nLowResStart = bTools ? MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS_TOOLS : MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS;
 
 		if ( m_nLowResStart > nNumShadows )
