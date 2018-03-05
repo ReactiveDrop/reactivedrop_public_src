@@ -375,6 +375,28 @@ static const char *DoUniqueString( const char *pszBase )
 	return szBuf;
 }
 
+static bool Script_IsDedicatedServer()
+{
+	return engine->IsDedicatedServer();
+}
+
+HSCRIPT Script_GetLocalPlayerOrListenServerHost()
+{
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayerOrListenServerHost();
+	return ToHScript( pPlayer );
+}
+
+static void Script_AddThinkToEnt( HSCRIPT entity, const char *funcName )
+{
+	CBaseEntity *pEntity = ToEnt( entity );
+
+	if ( !pEntity )
+		return;
+
+	pEntity->m_iszScriptThinkFunction = AllocPooledString( funcName );
+	pEntity->SetContextThink( &CBaseEntity::ScriptThink, gpGlobals->curtime, "ScriptThink" );
+}
+
 static void DoEntFire( const char *pszTarget, const char *pszAction, const char *pszValue, float delay, HSCRIPT hActivator, HSCRIPT hCaller )
 {
 	const char *target = "", *action = "Use";
@@ -636,6 +658,8 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, FrameTime, "Get the time spent on the server in the last frame" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetFrameCount, "GetFrameCount", "Returns the engines current frame count" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_IsDedicatedServer, "IsDedicatedServer", "Returns true if this is a dedicated server.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetLocalPlayerOrListenServerHost, "GetListenServerHost", "Get the host player on a listen server.");
 				ScriptRegisterFunction( g_pScriptVM, DoEntFire, SCRIPT_ALIAS( "EntFire", "Generate and entity i/o event" ) );
 				ScriptRegisterFunctionNamed( g_pScriptVM, DoEntFireByInstanceHandle, "EntFireByHandle", "Generate and entity i/o event. First parameter is an entity instance." );
 				ScriptRegisterFunction( g_pScriptVM, DoUniqueString, SCRIPT_ALIAS( "UniqueString", "Generate a string guaranteed to be unique across the life of the script VM, with an optional root string. Useful for adding data to tables when not sure what keys are already in use in that table." ) );
@@ -648,6 +672,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );

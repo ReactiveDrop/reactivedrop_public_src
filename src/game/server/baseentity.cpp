@@ -2419,6 +2419,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptEmitSound, "EmitSound", "Plays a sound from this entity." )
 	DEFINE_SCRIPTFUNC_NAMED( VScriptPrecacheScriptSound, "PrecacheSoundScript", "Precache a sound for later playing." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSoundDuration, "GetSoundDuration", "Returns float duration of the sound. Takes soundname and optional actormodelname.")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptStopSound, "StopSound", "Stops a sound from this entity." )
 
 
 	DEFINE_SCRIPTFUNC( GetClassname, "" )

@@ -1567,6 +1567,11 @@ float CBaseEntity::ScriptSoundDuration( const char *soundname, const char *actor
 	float duration = CBaseEntity::GetSoundDuration( soundname, actormodel );
 	return duration;
 }
+
+void CBaseEntity::ScriptStopSound( const char *soundname )
+{
+	StopSound( soundname );
+}
 #endif // !CLIENT
 
 //-----------------------------------------------------------------------------

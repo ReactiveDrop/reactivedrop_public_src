@@ -1326,6 +1326,7 @@ public:
 	void					EmitSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = NULL );  // Override for doing the general case of CPASAttenuationFilter filter( this ), and EmitSound( filter, entindex(), etc. );
 	void					ScriptEmitSound( const char *soundname );
 	float					ScriptSoundDuration( const char *soundname, const char *actormodel );
+	void					ScriptStopSound( const char *soundname );
 	void					StopSound( const char *soundname );
 	void					StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
 	void					GenderExpandString( char const *in, char *out, int maxlen );
