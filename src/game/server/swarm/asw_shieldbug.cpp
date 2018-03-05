@@ -71,6 +71,7 @@ ConVar asw_shieldbug_force_defend("asw_shieldbug_force_defend", "0", FCVAR_CHEAT
 ConVar asw_shieldbug_knockdown("asw_shieldbug_knockdown", "1", FCVAR_CHEAT, "If set shieldbug will knock marines down with his melee attacks");
 ConVar asw_shieldbug_knockdown_force("asw_shieldbug_knockdown_force", "500", FCVAR_CHEAT, "Magnitude of knockdown force for shieldbug's melee attack");
 ConVar asw_shieldbug_knockdown_lift("asw_shieldbug_knockdown_lift", "300", FCVAR_CHEAT, "Upwards force for shieldbug's melee attack");
+ConVar rd_shieldbug_health( "rd_shieldbug_health", "1000", FCVAR_CHEAT, "Health of the shieldbug" );
 
 extern ConVar sv_gravity;
 extern ConVar asw_debug_marine_chatter;
@@ -927,8 +928,8 @@ bool CASW_Shieldbug::CanFlinch( void )
 }
 
 void CASW_Shieldbug::SetHealthByDifficultyLevel()
-{		
-	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( 1000 ) + m_nExtraHeath + m_iHealthBonus ); // was 500 - 2/19/10
+{
+	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_shieldbug_health.GetInt() ) + m_nExtraHeath + m_iHealthBonus );
 	SetMaxHealth( GetHealth() );
 }
 

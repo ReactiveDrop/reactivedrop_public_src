@@ -39,6 +39,7 @@ ConVar asw_harverter_suppress_children( "asw_harverter_suppress_children", "0", 
 ConVar asw_harvester_new( "asw_harvester_new", "1", FCVAR_CHEAT, "If set to 1, use the new model");
 ConVar asw_harvester_spawn_height( "asw_harvester_spawn_height", "16", FCVAR_CHEAT, "Height above harvester origin to spawn harvesites at" );
 ConVar asw_harvester_spawn_interval( "asw_harvester_spawn_interval", "1.0", FCVAR_CHEAT, "Time between spawning a harvesite and starting to spawn another" );
+ConVar rd_harvester_health( "rd_harvester_health", "200", FCVAR_CHEAT, "Health of the harvester" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 
@@ -70,11 +71,11 @@ void CASW_Harvester::Spawn( void )
 	SetHullType(HULL_WIDE_SHORT);
 
 	BaseClass::Spawn();
-	
+
 	SetHullType(HULL_WIDE_SHORT);
 	UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
-				
-	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(200) + m_iHealthBonus;
+
+	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_harvester_health.GetInt()) + m_iHealthBonus;
 	m_iMaxHealth = m_iHealth;
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );

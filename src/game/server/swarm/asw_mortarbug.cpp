@@ -45,6 +45,7 @@ ConVar asw_mortarbug_touch_damage( "asw_mortarbug_touch_damage", "5",FCVAR_CHEAT
 ConVar asw_mortarbug_spitspeed( "asw_mortarbug_spitspeed", "350", FCVAR_CHEAT, "Speed at which mortarbug grenade travels." );
 ConVar asw_debug_mortarbug( "asw_debug_mortarbug", "0", FCVAR_NONE, "Display mortarbug debug info" );
 ConVar asw_mortarbug_face_target("asw_mortarbug_face_target", "1", FCVAR_CHEAT, "Mortarbug faces his target when moving" );
+ConVar rd_mortarbug_health( "rd_mortarbug_health", "350", FCVAR_CHEAT, "Health of the mortarbug" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 
@@ -75,15 +76,15 @@ void CASW_Mortarbug::Spawn( void )
 	SetHullType(HULL_WIDE_SHORT);
 
 	BaseClass::Spawn();
-	
+
 	SetHullType(HULL_WIDE_SHORT);
 	UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
-				
-	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(350) + m_iHealthBonus;
+
+	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_mortarbug_health.GetInt()) + m_iHealthBonus;
 	m_iMaxHealth = m_iHealth;
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );
-		
+
 	m_takedamage = DAMAGE_NO;	// alien is invulnerable until she finds her first enemy
 }
 
