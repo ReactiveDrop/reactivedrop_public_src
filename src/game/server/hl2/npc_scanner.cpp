@@ -304,7 +304,7 @@ void CNPC_CScanner::Spawn(void)
 	}
 
 	m_bNoLight = true;
-	ChangeFaction( FACTION_NONE );
+	ChangeFaction( FACTION_NEUTRAL );
 	//AddSolidFlags( FSOLID_NOT_SOLID );	
 	m_takedamage = DAMAGE_NO;
 	DevMsg("SleepState=%i\n", GetSleepState());
