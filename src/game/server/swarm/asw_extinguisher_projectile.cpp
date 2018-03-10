@@ -17,6 +17,7 @@ extern ConVar sk_plr_dmg_asw_f;
 extern ConVar sk_npc_dmg_asw_f;
 extern ConVar asw_flamer_debug;
 ConVar rd_extinguisher_freeze_amount( "rd_extinguisher_freeze_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of freezing to apply to the extinguisher" );
+ConVar rd_extinguisher_dmg_amount( "rd_extinguisher_dmg_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of damage the extinguisher does to entities" );
 
 #define PELLET_MODEL "models/swarm/Shotgun/ShotgunPellet.mdl"
 
@@ -113,6 +114,12 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 				pAnim->Extinguish();
 			}
+		}
+
+		if ( rd_extinguisher_dmg_amount.GetFloat() > 0.0 && !pMarine )
+		{
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), rd_extinguisher_dmg_amount.GetFloat(), DMG_GENERIC );
+			pOther->TakeDamage( dmgInfo );
 		}
 
 		//FireSystem_ExtinguishInRadius( GetAbsOrigin(), 100, 100 );
