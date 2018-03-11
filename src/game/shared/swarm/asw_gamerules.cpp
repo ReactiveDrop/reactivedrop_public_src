@@ -1602,6 +1602,12 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 		}
 		
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
+		// if there is no this check then players can use console command cl_selectm 5 5 to select more than rd_max_marines
+		if ( !pExisting )
+		{
+			return false;
+		}
+
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
 			return false;
