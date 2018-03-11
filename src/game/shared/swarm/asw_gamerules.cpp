@@ -152,7 +152,7 @@ extern ConVar old_radius_damage;
 	ConVar asw_compliment_chatter_interval_min("asw_compliment_chatter_interval_min", "180", 0, "Min time between kill compliments");
 	ConVar asw_compliment_chatter_interval_max("asw_compliment_chatter_interval_max", "240", 0, "Max time between kill compliments");	
 	ConVar asw_default_campaign("asw_default_campaign", "jacob", FCVAR_ARCHIVE, "Default campaign used when dedicated server restarts");
-	ConVar rd_max_marines("rd_max_marines", "-1", FCVAR_CHEAT, "Sets how many marines can be selected"); 
+	ConVar rd_max_marines("rd_max_marines", "-1", FCVAR_NONE, "Sets how many marines can be selected"); 
 	ConVar asw_last_game_variation("asw_last_game_variation", "0", FCVAR_ARCHIVE, "Which game variation was used last game");
 	ConVar asw_bonus_charges("asw_bonus_charges", "0", FCVAR_CHEAT, "Bonus ammo given to starting equipment");
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
