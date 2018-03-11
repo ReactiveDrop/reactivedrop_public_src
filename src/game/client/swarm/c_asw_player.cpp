@@ -192,6 +192,7 @@ extern ConVar cl_sidespeed;
 
 extern ConVar asw_marine_death_cam_time;
 extern ConVar asw_time_scale_delay;
+extern ConVar asw_stim_time_scale;
 
 extern float g_fMarinePoisonDuration;
 
@@ -999,12 +1000,13 @@ void C_ASW_Player::ClientThink()
 		static float lastTimescale = -1;
 		if ( f != lastTimescale )
 		{
-			if ( !m_bStartedStimMusic && f < lastTimescale && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+			if ( !m_bStartedStimMusic && gpGlobals->curtime < ASWGameRules()->m_flStimEndTime && ( ( asw_stim_time_scale.GetFloat() < 1.0f && f < lastTimescale ) || ( asw_stim_time_scale.GetFloat() > 1.0f && f > lastTimescale ) ) && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 			{
 				if ( !m_bPlayingSingleBreathSound )
 				{
 					EmitSound("noslow.BulletTimeIn");
-					EmitSound("noslow.SingleBreath");
+					if ( asw_stim_time_scale.GetFloat() < 1.0f )
+						EmitSound("noslow.SingleBreath");
 				}
 
 				if ( !bDeathCam )
@@ -1016,12 +1018,12 @@ void C_ASW_Player::ClientThink()
 			}
 			else
 			{
-				if ( lastTimescale <= 0.35f && f > lastTimescale )
+				if ( gpGlobals->curtime >= ASWGameRules()->m_flStimEndTime && ( ( asw_stim_time_scale.GetFloat() < 1.0f && lastTimescale <= asw_stim_time_scale.GetFloat() && f > lastTimescale ) || ( asw_stim_time_scale.GetFloat() > 1.0f && lastTimescale >= asw_stim_time_scale.GetFloat() && f < lastTimescale ) ) )
 				{
 					StopStimSound();
 					StopStimMusic();
 				}
-				if ( lastTimescale < 1.0f && f >= 1.0f )
+				if ( ( asw_stim_time_scale.GetFloat() < 1.0f && lastTimescale < 1.0f && f >= 1.0f ) || ( asw_stim_time_scale.GetFloat() > 1.0f && lastTimescale > 1.0f && f <= 1.0f ) )
 				{
 					// if the stim has completely faded out, then clear the pointer to the music so the music is restarted from the beginning next time
 					ClearStimMusic();
