@@ -1568,12 +1568,28 @@ bool CAlienSwarm::ShouldTimeoutClient( int nUserID, float flTimeSinceLastReceive
 	return ( sv_timeout_when_fully_connected.GetFloat() > 0.0f && flTimeSinceLastReceived > sv_timeout_when_fully_connected.GetFloat() );
 }
 
+static void PrintMaxMarinesCapError( CASW_Player *pPlayer, bool cappedByChallenge, int maxAllowedMarines )
+{
+	char buffer[16];
+	Q_snprintf( buffer, sizeof( buffer ), "%i", maxAllowedMarines );
+	if ( cappedByChallenge )
+	{
+		ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_cap_reached_challenge", buffer );
+	}
+	else
+	{
+		ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_cap_reached_server", buffer );
+	}
+}
+
 bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot )
 {
 	// for deathmatch allow marine selection any time 
 	// if coop and game state is not BRIEFING, then return
 	if ( !ASWGameResource() )
 		return false;
+
+	CASW_Game_Resource &rGameResource = *ASWGameResource();
 
 	// BenLubar(deathmatch-improvements): used with deathmatch mode bot 
 	// spawning to make it work (-2 is "spawn as me", -1 is "spawn in any slot")
@@ -1589,27 +1605,30 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 	if ( !ASWDeathmatchMode() && GetGameState() != ASW_GS_BRIEFING )
 		return false;
 
-	if (RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES)
+	if ( RosterIndex < 0 || RosterIndex >= ASW_NUM_MARINE_PROFILES )
 	{
 		return false;
 	}
 
-	if (ASWGameResource()->m_iNumMarinesSelected >= ASWGameResource()->m_iMaxMarines)		// too many selected?
+	if ( rGameResource.m_iNumMarinesSelected >= rGameResource.m_iMaxMarines )		// too many selected?
 	{
 		if ( nPreferredSlot == -1 )
 		{
+			PrintMaxMarinesCapError( pPlayer, HaveSavedConvar( ConVarRef( "rd_max_marines" ) ), rGameResource.m_iMaxMarines );
 			return false;
 		}
 		
-		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
+		CASW_Marine_Resource *pExisting = rGameResource.GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		// if there is no this check then players can use console command cl_selectm 5 5 to select more than rd_max_marines
 		if ( !pExisting )
 		{
+			PrintMaxMarinesCapError( pPlayer, HaveSavedConvar( ConVarRef( "rd_max_marines" ) ), rGameResource.m_iMaxMarines );
 			return false;
 		}
 
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
+			PrintMaxMarinesCapError( pPlayer, HaveSavedConvar( ConVarRef( "rd_max_marines" ) ), rGameResource.m_iMaxMarines );
 			return false;
 		}
 	}
