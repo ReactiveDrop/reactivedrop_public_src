@@ -44,6 +44,7 @@ public:
 		virtual const char* GetTracerEffectName() { return "tracer_vindicator"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_vindicator"; }	// particle effect name
 		virtual float GetLaserPointerRange( void ) { return 360; }
+		virtual void OnMuzzleFlashed();
 	#endif
 
 	virtual bool ShouldMarineMoveSlow();

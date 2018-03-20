@@ -3,6 +3,7 @@
 #include "in_buttons.h"
 
 #ifdef CLIENT_DLL
+#include "c_asw_fx.h"
 #include "c_asw_player.h"
 #include "c_asw_weapon.h"
 #include "c_asw_marine.h"
@@ -246,4 +247,25 @@ float CASW_Weapon_Assault_Shotgun::GetMuzzleFlashScale( void )
 	}
 	return m_fMuzzleFlashScale;
 }
+
+// reactivedrop: For vindicator and devastator we want to eject weapon_shell_casing_shotgun 
+// after every shot unlike it is done with shotgun. Shotgun's implementation is good for slow fire rate.
+void CASW_Weapon_Assault_Shotgun::OnMuzzleFlashed()
+{
+	C_ASW_Weapon::OnMuzzleFlashed();	// currently empty
+
+	int iAttachment = LookupAttachment( "eject1" );
+	if ( iAttachment != -1 )
+	{
+		EjectParticleBrass( "weapon_shell_casing_shotgun", iAttachment );
+	}
+
+	Vector attachOrigin;
+	QAngle attachAngles;
+	if ( GetAttachment( LookupAttachment( "muzzle" ), attachOrigin, attachAngles ) )
+	{
+		FX_ASW_ShotgunSmoke( attachOrigin, attachAngles );
+	}
+}
+
 #endif
