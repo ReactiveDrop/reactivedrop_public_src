@@ -309,6 +309,9 @@ void CNPC_CScanner::Spawn(void)
 	m_takedamage = DAMAGE_NO;
 	DevMsg("SleepState=%i\n", GetSleepState());
 	GetAbsOrigin();
+
+	// reactivedrop: make scanner not collide with players and grenade launcher's grenades
+	SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
 }
 
 
