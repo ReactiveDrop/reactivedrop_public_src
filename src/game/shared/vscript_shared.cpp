@@ -34,6 +34,13 @@ DEFINE_LOGGING_CHANNEL_NO_TAGS( LOG_VScript, "VScript", LCF_CONSOLE_ONLY, LS_WAR
 #endif // VMPROFILE
 
 
+// Shorten the string and return it
+const char *VScriptCutDownString( const char* str )
+{
+	static char staticStr[MAX_PATH] = {0};
+	Q_strncpy( staticStr, str, MAX_PATH );
+	return staticStr;
+}
 
 HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing )
 {
