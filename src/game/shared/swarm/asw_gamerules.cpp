@@ -4842,6 +4842,12 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		return false;
 	}
 
+	// reactivedrop: bots don't collide with one another
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_BOTS && collisionGroup1 == ASW_COLLISION_GROUP_BOTS )
+	{
+		return false;
+	}
+
 	// asw test, let drones pass through one another
 #ifndef CLIENT_DLL
 	if ((collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
@@ -4916,6 +4922,22 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		return false;
 	}
 
+	// reactivedrop: bots don't collide with zombies, aliens, marines or grenades
+	if (collisionGroup1 == ASW_COLLISION_GROUP_BOTS &&
+		(collisionGroup0 == COLLISION_GROUP_PLAYER ||
+		 collisionGroup0 == COLLISION_GROUP_NPC ||
+		 collisionGroup0 == ASW_COLLISION_GROUP_GRENADES))
+	{
+		return false;
+	}
+	if (collisionGroup0 == ASW_COLLISION_GROUP_BOTS)
+	{
+		if (collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ||
+			collisionGroup1 == COLLISION_GROUP_PLAYER ||
+			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN )
+		return false;
+	}
+
 	if (collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET && collisionGroup1 == ASW_COLLISION_GROUP_SHOTGUN_PELLET )
 		return false;
 
@@ -4980,7 +5002,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			collisionGroup0 == COLLISION_GROUP_WEAPON ||
 			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
 			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES ||
-			collisionGroup0 == COLLISION_GROUP_PLAYER )
+			collisionGroup0 == COLLISION_GROUP_PLAYER ||
+			collisionGroup0 == ASW_COLLISION_GROUP_BOTS )
 		{
 			return false;
 		}

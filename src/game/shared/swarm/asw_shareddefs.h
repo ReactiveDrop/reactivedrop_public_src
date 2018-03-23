@@ -269,6 +269,7 @@ enum
 	ASW_COLLISION_GROUP_IGNORE_NPCS,		// asw (fire walls spreading, collides with everything but aliens, marines) NOTE: Has to be after any NPC collision groups
 	ASW_COLLISION_GROUP_FLAMER_PELLETS,		// the pellets that the flamer shoots.  Doesn not collide with small aliens or marines, DOES collide with doors and shieldbugs
 	ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS,	// the pellets that the extinguisher shoots. Hits lots of things, but not other weapons
+	ASW_COLLISION_GROUP_BOTS,			// reactivedrop: collision group for bots
 	ASW_COLLISION_GROUP_PASSABLE,		// asw (stuff you can walk through) NOTE: Has to be LAST!
 
 	HL2COLLISION_GROUP_COMBINE_BALL_NPC,

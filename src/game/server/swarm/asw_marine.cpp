@@ -960,8 +960,8 @@ void CASW_Marine::Think( void )
 			case TASK_ASW_MOVE_TO_GIVE_AMMO:
 			// this is very weird but bots use this task when they follow marine
 			case TASK_ASW_WAIT_FOR_FOLLOW_MOVEMENT: 
-			// seems like passable are the most suitable collision group for bots
-				SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+			// seems like bots are the most suitable collision group for bots
+				SetCollisionGroup( ASW_COLLISION_GROUP_BOTS );
 			break;
 		default:
 			SetCollisionGroup( COLLISION_GROUP_PLAYER );
@@ -1131,7 +1131,7 @@ void CASW_Marine::SetInhabited(bool bInhabited)
 	}
 	else 
 	{
-		SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );	// seems like "passable" are the most suitable collision group for bots
+		SetCollisionGroup( ASW_COLLISION_GROUP_BOTS );	// seems like bots are the most suitable collision group for bots
 	}
 	// end of riflemod code
 }
@@ -4340,7 +4340,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		AddSolidFlags( FSOLID_NOT_SOLID );	
 		// reactivedrop: setting it to no solid still collides it with aliens 
 		// will try changing collision group
-		SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+		SetCollisionGroup( ASW_COLLISION_GROUP_BOTS );
 		ChangeFaction( FACTION_NEUTRAL );
 		CTakeDamageInfo	info;
 		info.SetDamageType( DMG_GENERIC );
@@ -4391,11 +4391,11 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		RemoveEffects( EF_NODRAW );
 		RemoveFlag( FL_FROZEN );
 		RemoveSolidFlags( FSOLID_NOT_SOLID );		
-		// reactivedrop: restoring collision group, but bots still use ASW_COLLISION_GROUP_PASSABLE
+		// reactivedrop: restoring collision group, but bots still use ASW_COLLISION_GROUP_BOTS
  		if (IsInhabited())
  			SetCollisionGroup( COLLISION_GROUP_PLAYER );
  		else
-			SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+			SetCollisionGroup( ASW_COLLISION_GROUP_BOTS );
 		ChangeFaction( FACTION_MARINES );
 		if (HasFlashlight())
 			FlashlightTurnOn();
