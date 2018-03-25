@@ -5,7 +5,7 @@ GAME
 	"scale"		"12.0"
 	"material" 		"vgui/swarm/Overviews/rd_par_Mission2Overview"
 	"briefingmaterial" 	"vgui/swarm/Overviews/rd_par_Mission2BriefingOverview"
-	"missiontitle"		"Hostile Places"
+	"missiontitle"		"Bonus Mission 5"
 	"description"		"After cleaning the first level, you decide to learn about recent activities of the base."
 	"image"			"swarm/MissionPics/rd_par_mission2"
 
