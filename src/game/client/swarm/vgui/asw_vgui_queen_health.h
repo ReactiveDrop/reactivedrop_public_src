@@ -40,6 +40,9 @@ class CASW_VGUI_Queen_Health_Panel : public vgui::Panel
 	vgui::Panel* m_pBackdrop;
 	vgui::Panel* m_pHealthBar[ASW_QUEEN_HEALTH_BARS];
 
+	int m_iLastQueenHealth;
+	float m_flLastDamageTime;
+
 	CHandle<C_ASW_Queen> m_hQueen;
 };
 

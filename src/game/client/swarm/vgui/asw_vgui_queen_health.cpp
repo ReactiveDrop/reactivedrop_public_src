@@ -19,11 +19,15 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_hud_alpha;
+extern ConVar rd_queen_hud_suppress_time;
 
 CASW_VGUI_Queen_Health_Panel::CASW_VGUI_Queen_Health_Panel( vgui::Panel *pParent, const char *pElementName, C_ASW_Queen *pQueen )
 :	vgui::Panel( pParent, pElementName )
 {	
 	m_hQueen = pQueen;
+
+	m_iLastQueenHealth = -1;
+	m_flLastDamageTime = -1.0f;
 
 	m_pBackdrop = new vgui::Panel(this, "Backdrop");
 	for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
@@ -69,6 +73,12 @@ void CASW_VGUI_Queen_Health_Panel::UpdateBars()
 			//Msg("Queen health changed.  health=%f / %d\n", queen_health, GetQueen()->GetMaxHealth());
 			flasthealth = queen_health;
 		}
+
+		if ( m_iLastQueenHealth == -1 || m_iLastQueenHealth > queen_health )
+		{
+			m_iLastQueenHealth = queen_health;
+			m_flLastDamageTime = gpGlobals->curtime;
+		}
 		
 		for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
 		{
@@ -107,18 +117,32 @@ void CASW_VGUI_Queen_Health_Panel::OnThink()
 {
 	if (GetQueen() && GetQueen()->GetHealth() > 0 && GetQueen()->GetHealth() < GetQueen()->GetMaxHealth())
 	{
-		if (!m_pBackdrop->IsVisible())
+		if ( rd_queen_hud_suppress_time.GetFloat() > -1 && gpGlobals->curtime - m_flLastDamageTime > rd_queen_hud_suppress_time.GetFloat() )
 		{
-			m_pBackdrop->SetVisible(true);
-			m_pBackdrop->SetAlpha(0);
-			vgui::GetAnimationController()->RunAnimationCommand(m_pBackdrop, "Alpha", 255, 0, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
+			if (m_pBackdrop->IsVisible())
 			{
-				m_pHealthBar[i]->SetVisible(true);
-				m_pHealthBar[i]->SetAlpha(0);
-				vgui::GetAnimationController()->RunAnimationCommand(m_pHealthBar[i], "Alpha", 255, 0, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+				m_pBackdrop->SetVisible(false);
+				for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
+				{
+					m_pHealthBar[i]->SetVisible(false);
+				}
 			}
-		}		
+		}
+		else
+		{
+			if (!m_pBackdrop->IsVisible())
+			{
+				m_pBackdrop->SetVisible(true);
+				m_pBackdrop->SetAlpha(0);
+				vgui::GetAnimationController()->RunAnimationCommand(m_pBackdrop, "Alpha", 255, 0, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+				for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
+				{
+					m_pHealthBar[i]->SetVisible(true);
+					m_pHealthBar[i]->SetAlpha(0);
+					vgui::GetAnimationController()->RunAnimationCommand(m_pHealthBar[i], "Alpha", 255, 0, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+				}
+			}
+		}
 		UpdateBars();
 	}
 	else
