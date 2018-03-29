@@ -1448,3 +1448,11 @@
 	"pitch"			"95, 105"
 	"wave"			"@weapons\2D\50cal\50cal_shoot.wav"
 }
+
+"ASW_GasGrenade.Explode"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\smokegrenade\sg_explode.wav"
+}

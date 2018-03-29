@@ -16,6 +16,9 @@ public:
 	DECLARE_DATADESC();
 	CUtlVector<EHANDLE> m_hRadTouching;	
 	EHANDLE m_hCreator;
+	float m_flDamage;
+	float m_flDmgInterval;
+	float m_flBoxWidth;
 };
 
 #endif /* _INCLUDED_ASW_RADIATION_VOLUME_H */

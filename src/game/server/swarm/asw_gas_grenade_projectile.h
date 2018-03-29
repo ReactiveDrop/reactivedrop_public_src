@@ -4,10 +4,13 @@
 
 #include "basecombatcharacter.h"
 
-class CSprite;
-class CSpriteTrail;
 class CASW_Emitter;
 class CASW_Radiation_Volume;
+
+extern ConVar asw_gas_grenade_damage;
+extern ConVar asw_gas_grenade_damage_interval;
+extern ConVar asw_gas_grenade_duration;
+extern ConVar asw_gas_grenade_fuse;
 
 class CASW_Gas_Grenade_Projectile : public CBaseCombatCharacter
 {
@@ -37,23 +40,19 @@ public:
 
 	const Vector& GetEffectOrigin();
 
-	static CASW_Gas_Grenade_Projectile* Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner);
+	static CASW_Gas_Grenade_Projectile* Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float flDamage = asw_gas_grenade_damage.GetFloat(), float flDmgInterval = asw_gas_grenade_damage_interval.GetFloat(), float flDmgDuration = asw_gas_grenade_duration.GetFloat(), float flFuse = asw_gas_grenade_fuse.GetFloat() );
 
 	float GetDuration() { return m_flTimeBurnOut; }
 	void SetDuration( float fDuration ) { m_flTimeBurnOut = fDuration; }
 
 protected:
-	CHandle<CSpriteTrail>	m_pGlowTrail;
-
 	float	m_flDamage;
-	bool	m_inSolid;	
+	float	m_flDmgInterval;
+	float	m_flDmgDuration;
+	float	m_flFuse;
 
 public:
 	int		Restore( IRestore &restore );
-
-	void	Start( float lifeTime );
-	void	Die( float fadeTime );
-	void	Launch( const Vector &direction, float speed );
 
 	Class_T Classify( void );
 

@@ -153,15 +153,15 @@ void CASW_Weapon_Gas_Grenades::DelayedAttack()
 	}
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 		
-	CASW_Gas_Grenade_Projectile *pFlare = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, rotSpeed, pMarine );
-	if ( pFlare )
+	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, rotSpeed, pMarine );
+	if ( pGas_Grenade )
 	{
-		float flDuration = pFlare->GetDuration();
+		float flDuration = pGas_Grenade->GetDuration();
 
 		//CALL_ATTRIB_HOOK_FLOAT( flDuration, mod_duration );
 
-		pFlare->SetDuration( flDuration );
-		pFlare->SetGravity( GetThrowGravity() );
+		pGas_Grenade->SetDuration( flDuration );
+		pGas_Grenade->SetGravity( GetThrowGravity() );
 	}
 #endif
 	// decrement ammo
@@ -181,10 +181,7 @@ void CASW_Weapon_Gas_Grenades::DelayedAttack()
 
 void CASW_Weapon_Gas_Grenades::Precache()
 {
-	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
-	PrecacheModel( "swarm/sprites/greylaser1.vmt" );
-
-	BaseClass::Precache();	
+	BaseClass::Precache();
 
 #ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_gas_grenade_projectile" );

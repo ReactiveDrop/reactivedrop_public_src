@@ -2,8 +2,6 @@
 #define _INCLUDED_C_ASW_GAS_GRENADE_PROJECTILE_H
 #pragma once
 
-struct dlight_t;
-
 #include "c_pixel_visibility.h"
 
 class C_ASW_Gas_Grenade_Projectile : public C_BaseCombatCharacter
@@ -28,25 +26,11 @@ public:
 	bool	m_bSmoke;
 	pixelvis_handle_t m_queryHandle;
 
-	// sound
-	void SoundShutdown();
-	void SoundInit();
-	virtual void UpdateOnRemove();
-	virtual void OnRestore();
-	CSoundPatch		*m_pBurnSound;
-
 
 private:
 	C_ASW_Gas_Grenade_Projectile( const C_ASW_Gas_Grenade_Projectile & );
 
-	CUtlReference<CNewParticleEffect> m_pFlareEffect;
-
 	float m_fDetonateTime;
-
-public:
-//	C_ASW_Flare_Projectile* m_pNextFlare;		// next flare in the linked list of live flares
 };
-
-//extern C_ASW_Flare_Projectile* g_pHeadFlare;	// access to a linked list of live flares
 
 #endif // _INCLUDED_C_ASW_GAS_GRENADE_PROJECTILE_H

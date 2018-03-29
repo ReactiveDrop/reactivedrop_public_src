@@ -20,8 +20,12 @@ extern ConVar sk_plr_dmg_asw_gas_grenades;
 extern ConVar sk_npc_dmg_asw_gas_grenades;
 
 #define GAS_GRENADE_MODEL "models/weapons/w_grenade.mdl"
-	//"models/weapons/flare.mdl"
-#define ASW_FLARE_LIFETIME 30.0f
+
+ConVar asw_gas_grenade_duration("asw_gas_grenade_duration", "30.0", FCVAR_CHEAT, "Duration of the gas grenade");
+ConVar asw_gas_grenade_fuse("asw_gas_grenade_fuse", "1", FCVAR_CHEAT, "Fuse time on gas grenades");
+ConVar asw_gas_grenade_damage("asw_gas_grenade_damage", "20.0", FCVAR_CHEAT, "Damage the gas grenade inflicts");
+ConVar asw_gas_grenade_damage_interval("asw_gas_grenade_damage_interval", "0.3", FCVAR_CHEAT, "Interval of the gas grenade damage");
+ConVar asw_gas_grenade_cloud_width("asw_gas_grenade_cloud_width", "100.0", FCVAR_CHEAT, "Width of the gas grenade cload");
 
 LINK_ENTITY_TO_CLASS( asw_gas_grenade_projectile, CASW_Gas_Grenade_Projectile );
 
@@ -31,9 +35,10 @@ BEGIN_DATADESC( CASW_Gas_Grenade_Projectile )
 	DEFINE_FUNCTION( Gas_GrenadeThink ),
 
 	// Fields
-	DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
+	DEFINE_FIELD( m_flDmgInterval, FIELD_FLOAT ),
+	DEFINE_FIELD( m_flDmgDuration, FIELD_FLOAT ),
+	DEFINE_FIELD( m_flFuse, FIELD_FLOAT ),
 	DEFINE_FIELD( m_nBounces, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flTimeBurnOut, FIELD_TIME ),
 	DEFINE_FIELD( m_flScale, FIELD_FLOAT ),
@@ -72,11 +77,6 @@ int CASW_Gas_Grenade_Projectile::Restore( IRestore &restore )
 {
 	int result = BaseClass::Restore( restore );
 
-	if ( m_spawnflags & SF_FLARE_NO_SMOKE )
-	{
-		m_bSmoke = false;
-	}
-
 	return result;
 }
 
@@ -91,28 +91,11 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 
-	m_flDamage		= 0;
 	m_takedamage	= DAMAGE_NO;
 
 	SetFriction( 0.6f );
-	m_flTimeBurnOut = gpGlobals->curtime + 30;
 
 	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
-
-	if ( m_spawnflags & SF_FLARE_NO_SMOKE )
-	{
-		m_bSmoke = false;
-	}
-
-	if ( m_spawnflags & SF_FLARE_INFINITE )
-	{
-		m_flTimeBurnOut = -1.0f;
-	}
-
-	if ( m_spawnflags & SF_FLARE_START_OFF )
-	{
-		AddEffects( EF_NODRAW );
-	}
 
 	AddFlag( FL_OBJECT );
 	
@@ -129,9 +112,9 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 	
 	//SetThink( &CASW_Gas_Grenade_Projectile::Gas_GrenadeThink );
 
-	if ( ASW_FLARE_LIFETIME > 0 )
+	if ( m_flDmgDuration > 0 )
 	{
-		m_flTimeBurnOut = gpGlobals->curtime + ASW_FLARE_LIFETIME;
+		m_flTimeBurnOut = gpGlobals->curtime + m_flDmgDuration + m_flFuse;
 	}
 	else
 	{
@@ -140,8 +123,7 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 
 	//SetNextThink( gpGlobals->curtime + 0.1f );
 
-	extern ConVar asw_vindicator_grenade_fuse;
-	SetFuseLength( asw_vindicator_grenade_fuse.GetFloat() );
+	SetFuseLength( asw_gas_grenade_fuse.GetFloat() );
 }
 
 unsigned int CASW_Gas_Grenade_Projectile::PhysicsSolidMaskForEntity( void ) const
@@ -151,7 +133,7 @@ unsigned int CASW_Gas_Grenade_Projectile::PhysicsSolidMaskForEntity( void ) cons
 
 void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
 {
-	float	deltaTime = ( m_flTimeBurnOut - gpGlobals->curtime );
+	float deltaTime = ( m_flTimeBurnOut - gpGlobals->curtime );
 
 	if ( m_flTimeBurnOut != -1.0f )
 	{
@@ -164,6 +146,7 @@ void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
 		//Burned out
 		if ( m_flTimeBurnOut < gpGlobals->curtime )
 		{
+			StopSound( "ASW_GasGrenade.Explode" );
 			UTIL_Remove( this );
 			return;
 		}
@@ -174,14 +157,6 @@ void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
 	{
 		UTIL_Bubbles( GetEffectOrigin() + Vector( -2, -2, -2 ), GetEffectOrigin() + Vector( 2, 2, 2 ), 1 );
 		m_bSmoke = false;
-	}
-	else
-	{
-		//Shoot sparks
-		if ( random->RandomInt( 0, 6 ) == 1 )
-		{
-			g_pEffects->Sparks( GetEffectOrigin() );
-		}
 	}
 
 	//Next update
@@ -201,22 +176,22 @@ void CASW_Gas_Grenade_Projectile::Precache( void )
 {
 	PrecacheModel( GAS_GRENADE_MODEL );
 
-	PrecacheScriptSound( "ASW_Flare.IgniteFlare" );
-	PrecacheScriptSound( "ASW_Flare.FlareLoop" );
+	PrecacheScriptSound( "ASW_GasGrenade.Explode" );
 	PrecacheScriptSound( "ASW_Flare.Touch" );
-	//PrecacheScriptSound( "Weapon_FlareGun.Burn" );
-	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
-	PrecacheModel( "swarm/sprites/greylaser1.vmt" );
 
 	BaseClass::Precache();
 }
 
 
 
-CASW_Gas_Grenade_Projectile* CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner )
+CASW_Gas_Grenade_Projectile* CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float flDamage, float flDmgInterval, float flDmgDuration, float flFuse )
 {
 	CASW_Gas_Grenade_Projectile *pGas_Grenade = (CASW_Gas_Grenade_Projectile *)CreateEntityByName( "asw_gas_grenade_projectile" );
 	pGas_Grenade->SetAbsAngles( angles );
+	pGas_Grenade->m_flDamage = flDamage;
+	pGas_Grenade->m_flDmgInterval = flDmgInterval;
+	pGas_Grenade->m_flDmgDuration = flDmgDuration;
+	pGas_Grenade->m_flFuse = flFuse;
 	pGas_Grenade->Spawn();
 	pGas_Grenade->SetOwnerEntity( pOwner );
 	//Msg("making pGas_Grenade with velocity %f,%f,%f\n", velocity.x, velocity.y, velocity.z);
@@ -233,12 +208,6 @@ void CASW_Gas_Grenade_Projectile::Gas_GrenadeTouch( CBaseEntity *pOther )
 		return;
 
 	return;
-
-	if ( ( m_nBounces < 10 ) && ( GetWaterLevel() < 1 ) )
-	{
-		// Throw some real chunks here
-		g_pEffects->Sparks( GetEffectOrigin() );
-	}
 
 	//If the flare hit a person or NPC, do damage here.
 	if ( pOther && pOther->m_takedamage )
@@ -387,8 +356,9 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 {
 	// also spawn our big cloud marking out the area of radiation
 	DispatchParticleEffect( "barrel_rad_gas_cloud", WorldSpaceCenter(), QAngle( 0, 0, 0 ), PATTACH_CUSTOMORIGIN_FOLLOW, this );
+	EmitSound( "ASW_GasGrenade.Explode" );
 
-	StartRadLoopSound();
+	//StartRadLoopSound();
 
 	// create a volume to HURT people
 	m_hRadVolume = ( CASW_Radiation_Volume* ) CreateEntityByName( "asw_radiation_volume" );
@@ -397,6 +367,9 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 		m_hRadVolume->SetParent( this );
 		m_hRadVolume->SetLocalOrigin( vec3_origin );
 		m_hRadVolume->m_hCreator = GetOwnerEntity();
+		m_hRadVolume->m_flDamage = m_flDamage;
+		m_hRadVolume->m_flDmgInterval = m_flDmgInterval;
+		m_hRadVolume->m_flBoxWidth = asw_gas_grenade_cloud_width.GetFloat();
 		m_hRadVolume->Spawn();
 	}
 
