@@ -4910,7 +4910,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	// grubs don't collide with zombies, aliens or marines
 	if (collisionGroup1 == ASW_COLLISION_GROUP_GRUBS &&
 		(collisionGroup0 == COLLISION_GROUP_PLAYER ||
-		 collisionGroup0 == COLLISION_GROUP_NPC))
+		 collisionGroup0 == COLLISION_GROUP_NPC ||
+		 collisionGroup0 == ASW_COLLISION_GROUP_BOTS ) )
 		
 	{
 		return false;
@@ -4919,15 +4920,19 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	{
 		if (collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ||
 			collisionGroup1 == COLLISION_GROUP_PLAYER ||
-			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN )
+			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN  ||
+			collisionGroup1 == ASW_COLLISION_GROUP_BOTS )
 		return false;
 	}
 
-	// reactivedrop: bots don't collide with zombies, aliens, marines or grenades
+	// reactivedrop: bots don't collide with zombies, aliens, marines, grenades and sentries
 	if (collisionGroup1 == ASW_COLLISION_GROUP_BOTS &&
 		(collisionGroup0 == COLLISION_GROUP_PLAYER ||
 		 collisionGroup0 == COLLISION_GROUP_NPC ||
-		 collisionGroup0 == ASW_COLLISION_GROUP_GRENADES))
+		 collisionGroup0 == ASW_COLLISION_GROUP_GRENADES || 
+		 collisionGroup0 == ASW_COLLISION_GROUP_ALIEN ||
+		 collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN  ||
+		 collisionGroup0 == ASW_COLLISION_GROUP_SENTRY ) )
 	{
 		return false;
 	}
@@ -4935,7 +4940,9 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	{
 		if (collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ||
 			collisionGroup1 == COLLISION_GROUP_PLAYER ||
-			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN )
+			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN ||
+			collisionGroup1 == ASW_COLLISION_GROUP_GRENADES  ||
+			collisionGroup1 == ASW_COLLISION_GROUP_SENTRY )
 		return false;
 	}
 
@@ -5016,7 +5023,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		if ( collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE || 
 			collisionGroup0 == ASW_COLLISION_GROUP_PLAYER_MISSILE || 
 			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || 
-			collisionGroup0 == COLLISION_GROUP_PLAYER )
+			collisionGroup0 == COLLISION_GROUP_PLAYER ||
+			collisionGroup0 == ASW_COLLISION_GROUP_BOTS)
 		{
 			return false;
 		}
