@@ -557,6 +557,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_laser_mines.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_medical_satchel_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_medkit_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_medrifle_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_mines_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_minigun.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_mining_laser_shared.cpp" />
@@ -1529,6 +1530,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_weapon_laser_mines.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_medical_satchel_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_medkit_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_medrifle_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_mines_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_minigun.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_mining_laser_shared.h" />

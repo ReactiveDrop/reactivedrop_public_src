@@ -301,6 +301,7 @@ protected:
 	int m_nLocalMarineMaxClips;
 	int m_nLocalMarineBullets;
 	int m_nLocalMarineGrenades;
+	int m_nLocalMarineSecondaryBullets;
 	int m_nLocalMarineHealth;
 	int m_nLastLocalMarineHealth;
 

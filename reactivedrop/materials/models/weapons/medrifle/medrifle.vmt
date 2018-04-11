@@ -1,0 +1,15 @@
+VertexLitGeneric
+{
+	$baseTexture "models/weapons/medrifle/medrifle"
+	$bumpmap "dev/flat_normal"
+	$surfaceprop metal
+	$selfillum 1
+	$phong 1
+	$phongboost 4
+	$phongexponent 30
+	$phongfresnelranges "[1 3 10]"
+
+	$rimlight 1
+	$rimlightexponent 5
+	$rimlightboost 15
+}

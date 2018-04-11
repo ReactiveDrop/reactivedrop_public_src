@@ -415,6 +415,7 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_laser_mines.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_medical_satchel.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_medkit.txt" );
+	engine->ForceExactFile( "scripts/asw_weapon_medrifle.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_mines.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_minigun.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_mining_laser.txt" );

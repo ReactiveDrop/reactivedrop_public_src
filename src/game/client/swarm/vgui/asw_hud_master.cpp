@@ -548,6 +548,8 @@ void CASW_Hud_Master::Paint( void )
 		m_nLocalMarineBullets = m_pLocalMarineActiveWeapon->Clip1();
 		m_nLocalMarineGrenades = m_pLocalMarineActiveWeapon->Clip2();
 		m_nLocalMarineGrenades = MIN( m_nLocalMarineGrenades, 9 );
+		m_nLocalMarineSecondaryBullets = m_pLocalMarineActiveWeapon->Clip2();
+		m_nLocalMarineSecondaryBullets = MIN( m_nLocalMarineSecondaryBullets, 99 );
 	}
 	else
 	{
@@ -961,6 +963,16 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
 				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_grenade )
+				);
+		}
+		else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
+		{
+			surface()->DrawTexturedSubRect(
+				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x,
+				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y,
+				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
+				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
+				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_bullets )
 				);
 		}
 
@@ -1448,6 +1460,13 @@ void CASW_Hud_Master::PaintText()
 		if ( pInfo->m_iShowGrenadesOnHUD )
 		{
 			_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineGrenades );
+			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
+				m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
+			surface()->DrawUnicodeString( wszBullets );
+		}
+		else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
+		{
+			_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineSecondaryBullets );
 			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
 			surface()->DrawUnicodeString( wszBullets );

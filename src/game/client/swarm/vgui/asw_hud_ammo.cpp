@@ -224,7 +224,7 @@ void CASWHudAmmo::OnThink()
 					{
 						m_iDisplayPrimaryValue = pInfo->m_iShowBulletsOnHUD;
 						m_iDisplaySecondaryValue =  pInfo->m_iShowClipsOnHUD;
-						m_iDisplayTertiaryValue = pInfo->m_iShowGrenadesOnHUD;
+						m_iDisplayTertiaryValue = pInfo->m_iShowGrenadesOnHUD || pInfo->m_iShowSecondaryBulletsOnHUD;
 
 						if (!pAmmoBag)
 						{

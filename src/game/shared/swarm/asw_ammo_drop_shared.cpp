@@ -28,6 +28,7 @@ void CASW_Ammo_Drop_Shared::InitAmmoCosts()
 	ms_iAmmoType[ASW_AMMO_DROP_TYPE_SNIPER] = GetAmmoDef()->Index("ASW_SNIPER");
 	ms_iAmmoType[ASW_AMMO_DROP_TYPE_DEAGLE] = GetAmmoDef()->Index("ASW_DEAGLE");
 	ms_iAmmoType[ASW_AMMO_DROP_TYPE_DEVASTATOR] = GetAmmoDef()->Index("ASW_DEVASTATOR");
+	ms_iAmmoType[ASW_AMMO_DROP_TYPE_MEDRIFLE] = GetAmmoDef()->Index( "ASW_MEDRIFLE" );
 
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_RIFLE] = 20;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_AUTOGUN] = 100;
@@ -43,6 +44,7 @@ void CASW_Ammo_Drop_Shared::InitAmmoCosts()
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_SNIPER] = 20;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_DEAGLE] = 10;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_DEVASTATOR] = 100;
+	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_MEDRIFLE] = 20;
 
 	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_RIFLE] = 1;
 	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_AUTOGUN] = 1;
@@ -58,6 +60,7 @@ void CASW_Ammo_Drop_Shared::InitAmmoCosts()
 	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_SNIPER] = 1;
 	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_DEAGLE] = 1;
 	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_DEVASTATOR] = 1;
+	ms_iAmmoClips[ASW_AMMO_DROP_TYPE_MEDRIFLE] = 1;
 
 	ms_bAmmoCostInitiated = true;
 }

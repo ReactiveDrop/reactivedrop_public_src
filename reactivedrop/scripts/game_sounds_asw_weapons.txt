@@ -1456,3 +1456,21 @@
 	"pitch"			"95, 105"
 	"wave"			"@weapons\smokegrenade\sg_explode.wav"
 }
+
+"ASW_Weapon_MedRifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.8"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\medrifle\singleshot.wav"
+}
+
+"ASW_Weapon_MedRifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\medrifle\singleshotfp.wav"
+}

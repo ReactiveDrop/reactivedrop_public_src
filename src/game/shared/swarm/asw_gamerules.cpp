@@ -577,6 +577,11 @@ ConVar	sk_plr_dmg_asw_gas_grenades( "sk_plr_dmg_asw_gas_grenades", "0", FCVAR_RE
 ConVar	sk_npc_dmg_asw_gas_grenades( "sk_npc_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
 ConVar	sk_max_asw_gas_grenades( "sk_max_asw_gas_grenades", "0", FCVAR_REPLICATED );
 
+// Med Rifle
+ConVar	sk_plr_dmg_asw_medrifle			( "sk_plr_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_asw_medrifle			( "sk_npc_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
+ConVar	sk_max_asw_medrifle				( "sk_max_asw_medrifle", "0", FCVAR_REPLICATED );
+
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_CHEAT, "Total damage from parasite infestation" );
@@ -601,6 +606,7 @@ ConVar	rd_pvp_mininglaser_dmg("rd_pvp_mininglaser_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_deagle_dmg("rd_pvp_deagle_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_devastator_dmg("rd_pvp_devastator_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_combat_rifle_dmg("rd_pvp_combat_rifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_medrifle_dmg("rd_pvp_medrifle_dmg", "0", FCVAR_REPLICATED);
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
 ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a kick vote");
@@ -901,6 +907,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
 		// gas_grenades
 		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_SONIC,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
+		// medrifle
+		def.AddAmmoType("ASW_MEDRIFLE",		DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_medrifle",			"sk_npc_dmg_asw_medrifle",			"sk_max_asw_medrifle",			BULLET_IMPULSE(200, 1225),	0 );
 	}
 
 	return &def;

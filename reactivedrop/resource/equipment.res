@@ -28,6 +28,7 @@
 	"Regular"		"asw_weapon_devastator"
 	"Regular"		"asw_weapon_combat_rifle"
 	"Regular"		"asw_weapon_healamp_gun"
+	"Regular"		"asw_weapon_medrifle"
 
 	// extras
 	"Extra"			"asw_weapon_medkit"

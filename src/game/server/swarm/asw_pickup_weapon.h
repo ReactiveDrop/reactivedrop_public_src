@@ -212,6 +212,18 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_grenades"; }
 };
 
+class CASW_Pickup_Weapon_MedRifle : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_MedRifle, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_medrifle"; }
+};
+
 
 
 #endif /* _DEFINED_ASW_PICKUP_WEAPON_H */

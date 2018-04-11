@@ -30,6 +30,7 @@ public:
 	float				flReloadTime;
 	float				m_flBaseDamage;
 	float				m_flFireRate;
+	float				m_flSecondaryFireRate;
 	int					m_iNumPellets;
 	int					m_iDisplayClipSize;
 	float				m_flDisplayReloadTime;
@@ -69,6 +70,7 @@ public:
 	int			m_iShowBulletsOnHUD;
 	int			m_iShowClipsOnHUD;
 	int			m_iShowGrenadesOnHUD;
+	int			m_iShowSecondaryBulletsOnHUD;
 	float		m_bOrientToLaser;		// if true, this weapon will orient itself along the laser sight
 	bool		m_bShowClipsInWeaponDetail;
 	bool		m_bShowClipsDoubled;

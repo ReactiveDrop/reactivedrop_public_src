@@ -79,6 +79,7 @@ void CASW_WeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName
 	flReloadTime = pKeyValuesData->GetFloat( "reload_time", 2.2f );
 	m_flBaseDamage = pKeyValuesData->GetFloat( "base_damage", 0.0f );
 	m_flFireRate = pKeyValuesData->GetFloat( "fire_rate", 0.0f );
+	m_flSecondaryFireRate = pKeyValuesData->GetFloat( "secondary_fire_rate", 0.0f );
 	m_iNumPellets = pKeyValuesData->GetInt("num_pellets", 1 );
 
 	m_iDisplayClipSize = pKeyValuesData->GetFloat( "display_clip_size", -1 );
@@ -126,6 +127,7 @@ void CASW_WeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName
 	m_iShowBulletsOnHUD = pKeyValuesData->GetInt("ShowBulletsOnHUD", 0);
 	m_iShowClipsOnHUD = pKeyValuesData->GetInt("ShowClipsOnHUD", 0);
 	m_iShowGrenadesOnHUD = pKeyValuesData->GetInt("ShowGrenadesOnHUD", 0);
+	m_iShowSecondaryBulletsOnHUD = pKeyValuesData->GetInt("ShowSecondaryBulletsOnHUD", 0);
 	m_bOrientToLaser = pKeyValuesData->GetBool( "OrientToLaser", 1 );
 	m_bShowClipsInWeaponDetail = pKeyValuesData->GetBool( "ShowClipsInWeaponDetail", 1 );
 	m_bShowClipsDoubled = pKeyValuesData->GetBool( "ShowClipsDoubled", 0 );
