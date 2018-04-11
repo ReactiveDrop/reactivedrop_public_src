@@ -193,6 +193,10 @@ extern ConVar old_radius_damage;
 
 	static void EnforceWeaponClassRestriction( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
 	{
+		// don't do anything if the new value is the same as the old value
+		if ( !V_strcmp( ConVarRef( pConVar ).GetString(), pOldValue ) )
+			return;
+
 		ConVarRef rd_weapons_regular_class_unrestricted( "rd_weapons_regular_class_unrestricted" );
 		ConVarRef rd_weapons_extra_class_unrestricted( "rd_weapons_extra_class_unrestricted" );
 		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 && rd_weapons_extra_class_unrestricted.GetInt() == -2 )
