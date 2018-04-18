@@ -1,0 +1,7918 @@
+criterion "Is_bastille"	"who" "Medic2" required
+criterion "Is_crash"	"who" "Tech1" required
+criterion "Is_faith"	"who" "Medic1" required
+criterion "Is_flynn"	"who" "Tech2" required
+criterion "Is_jaeger"	"who" "Officer2" required
+criterion "Is_sarge"	"who" "Officer1" required
+criterion "Is_vegas"	"who" "Tech3" required
+criterion "Is_wildcat"	"who" "Spec1" required
+criterion "Is_wolfe"	"who" "Spec2" required
+
+criterion "ConceptCHATTER_SELECTION"	"concept" "CHATTER_SELECTION" required
+criterion "ConceptCHATTER_SELECTION_INJURED"	"concept" "CHATTER_SELECTION_INJURED" required
+criterion "ConceptCHATTER_USE"	"concept" "CHATTER_USE" required
+criterion "ConceptCHATTER_IDLE"	"concept" "CHATTER_IDLE" required
+criterion "ConceptCHATTER_FRIENDLY_FIRE"	"concept" "CHATTER_FRIENDLY_FIRE" required
+criterion "ConceptCHATTER_FIRING_AT_ALIEN"	"concept" "CHATTER_FIRING_AT_ALIEN" required
+criterion "ConceptCHATTER_FOLLOW_ME"	"concept" "CHATTER_FOLLOW_ME" required
+criterion "ConceptCHATTER_HOLD_POSITION"	"concept" "CHATTER_HOLD_POSITION" required
+criterion "ConceptCHATTER_NEED_AMMO"	"concept" "CHATTER_NEED_AMMO" required
+criterion "ConceptCHATTER_NO_AMMO"	"concept" "CHATTER_NO_AMMO" required
+criterion "ConceptCHATTER_MEDIC"	"concept" "CHATTER_MEDIC" required
+criterion "ConceptCHATTER_RELOADING"	"concept" "CHATTER_RELOADING" required
+criterion "ConceptCHATTER_SENTRY"	"concept" "CHATTER_SENTRY" required
+criterion "ConceptCHATTER_AMMO"	"concept" "CHATTER_AMMO" required
+criterion "ConceptCHATTER_MEDKIT"	"concept" "CHATTER_MEDKIT" required
+criterion "ConceptCHATTER_THANKS"	"concept" "CHATTER_THANKS" required
+criterion "ConceptCHATTER_QUESTION"	"concept" "CHATTER_QUESTION" required
+criterion "ConceptCHATTER_SARGE"	"concept" "CHATTER_SARGE" required
+criterion "ConceptCHATTER_JAEGER"	"concept" "CHATTER_JAEGER" required
+criterion "ConceptCHATTER_WILDCAT"	"concept" "CHATTER_WILDCAT" required
+criterion "ConceptCHATTER_WOLFE"	"concept" "CHATTER_WOLFE" required
+criterion "ConceptCHATTER_FAITH"	"concept" "CHATTER_FAITH" required
+criterion "ConceptCHATTER_BASTILLE"	"concept" "CHATTER_BASTILLE" required
+criterion "ConceptCHATTER_CRASH"	"concept" "CHATTER_CRASH" required
+criterion "ConceptCHATTER_FLYNN"	"concept" "CHATTER_FLYNN" required
+criterion "ConceptCHATTER_VEGAS"	"concept" "CHATTER_VEGAS" required
+criterion "ConceptCHATTER_SUPPLIES"	"concept" "CHATTER_SUPPLIES" required
+criterion "ConceptCHATTER_SUPPLIES_AMMO"	"concept" "CHATTER_SUPPLIES_AMMO" required
+criterion "ConceptCHATTER_LOCKED_TERMINAL"	"concept" "CHATTER_LOCKED_TERMINAL" required
+criterion "ConceptCHATTER_LOCKED_TERMINAL_CRASH"	"concept" "CHATTER_LOCKED_TERMINAL_CRASH" required
+criterion "ConceptCHATTER_LOCKED_TERMINAL_FLYNN"	"concept" "CHATTER_LOCKED_TERMINAL_FLYNN" required
+criterion "ConceptCHATTER_LOCKED_TERMINAL_VEGAS"	"concept" "CHATTER_LOCKED_TERMINAL_VEGAS" required
+criterion "ConceptCHATTER_HOLDING_POSITION"	"concept" "CHATTER_HOLDING_POSITION" required
+criterion "ConceptCHATTER_HOLDING_NORTH"	"concept" "CHATTER_HOLDING_NORTH" required
+criterion "ConceptCHATTER_HOLDING_SOUTH"	"concept" "CHATTER_HOLDING_SOUTH" required
+criterion "ConceptCHATTER_HOLDING_EAST"	"concept" "CHATTER_HOLDING_EAST" required
+criterion "ConceptCHATTER_HOLDING_WEST"	"concept" "CHATTER_HOLDING_WEST" required
+criterion "ConceptCHATTER_GOT_POINT"	"concept" "CHATTER_GOT_POINT" required
+criterion "ConceptCHATTER_GOT_REAR"	"concept" "CHATTER_GOT_REAR" required
+criterion "ConceptCHATTER_REQUEST_SEAL_DOOR"	"concept" "CHATTER_REQUEST_SEAL_DOOR" required
+criterion "ConceptCHATTER_REQUEST_CUT_DOOR"	"concept" "CHATTER_REQUEST_CUT_DOOR" required
+criterion "ConceptCHATTER_REQUEST_SHOOT_DOOR"	"concept" "CHATTER_REQUEST_SHOOT_DOOR" required
+criterion "ConceptCHATTER_CUTTING_DOOR"	"concept" "CHATTER_CUTTING_DOOR" required
+criterion "ConceptCHATTER_SEALING_DOOR"	"concept" "CHATTER_SEALING_DOOR" required
+criterion "ConceptCHATTER_BIOMASS"	"concept" "CHATTER_BIOMASS" required
+criterion "ConceptCHATTER_TIME_TO_LEAVE"	"concept" "CHATTER_TIME_TO_LEAVE" required
+criterion "ConceptCHATTER_WATCH_OUT"	"concept" "CHATTER_WATCH_OUT" required
+criterion "ConceptCHATTER_SHIELDBUG"	"concept" "CHATTER_SHIELDBUG" required
+criterion "ConceptCHATTER_SHIELDBUG_HINT"	"concept" "CHATTER_SHIELDBUG_HINT" required
+criterion "ConceptCHATTER_PARASITE"	"concept" "CHATTER_PARASITE" required
+criterion "ConceptCHATTER_INFESTED"	"concept" "CHATTER_INFESTED" required
+criterion "ConceptCHATTER_EGGS"	"concept" "CHATTER_EGGS" required
+criterion "ConceptCHATTER_GRENADE"	"concept" "CHATTER_GRENADE" required
+criterion "ConceptCHATTER_ALIEN_TOO_CLOSE"	"concept" "CHATTER_ALIEN_TOO_CLOSE" required
+criterion "ConceptCHATTER_MAD_FIRING"	"concept" "CHATTER_MAD_FIRING" required
+criterion "ConceptCHATTER_BREACHED_DOOR"	"concept" "CHATTER_BREACHED_DOOR" required
+criterion "ConceptCHATTER_MARINE_DOWN"	"concept" "CHATTER_MARINE_DOWN" required
+criterion "ConceptCHATTER_PAIN_SMALL"	"concept" "CHATTER_PAIN_SMALL" required
+criterion "ConceptCHATTER_PAIN_LARGE"	"concept" "CHATTER_PAIN_LARGE" required
+criterion "ConceptCHATTER_DIE"	"concept" "CHATTER_DIE" required
+criterion "ConceptCHATTER_ON_FIRE"	"concept" "CHATTER_ON_FIRE" required
+criterion "ConceptCHATTER_COMPLIMENTS"	"concept" "CHATTER_COMPLIMENTS" required
+criterion "ConceptCHATTER_STIM_NOW"	"concept" "CHATTER_STIM_NOW" required
+criterion "ConceptCHATTER_IMPATIENCE"	"concept" "CHATTER_IMPATIENCE" required
+criterion "ConceptCHATTER_COMPLIMENTS_JAEGER"	"concept" "CHATTER_COMPLIMENTS_JAEGER" required
+criterion "ConceptCHATTER_COMPLIMENTS_SARGE"	"concept" "CHATTER_COMPLIMENTS_SARGE" required
+criterion "ConceptCHATTER_COMPLIMENTS_WILDCAT"	"concept" "CHATTER_COMPLIMENTS_WILDCAT" required
+criterion "ConceptCHATTER_COMPLIMENTS_WOLFE"	"concept" "CHATTER_COMPLIMENTS_WOLFE" required
+criterion "ConceptCHATTER_COMPLIMENTS_CRASH"	"concept" "CHATTER_COMPLIMENTS_CRASH" required
+criterion "ConceptCHATTER_HEALING"	"concept" "CHATTER_HEALING" required
+criterion "ConceptCHATTER_MEDS_LOW"	"concept" "CHATTER_MEDS_LOW" required
+criterion "ConceptCHATTER_MEDS_NONE"	"concept" "CHATTER_MEDS_NONE" required
+criterion "ConceptCHATTER_HACK_STARTED"	"concept" "CHATTER_HACK_STARTED" required
+criterion "ConceptCHATTER_HACK_LONG_STARTED"	"concept" "CHATTER_HACK_LONG_STARTED" required
+criterion "ConceptCHATTER_HACK_HALFWAY"	"concept" "CHATTER_HACK_HALFWAY" required
+criterion "ConceptCHATTER_HACK_FINISHED"	"concept" "CHATTER_HACK_FINISHED" required
+criterion "ConceptCHATTER_HACK_BUTTON_FINISHED"	"concept" "CHATTER_HACK_BUTTON_FINISHED" required
+criterion "ConceptCHATTER_SCANNER"	"concept" "CHATTER_SCANNER" required
+criterion "ConceptCHATTER_SCANNER_MULTIPLE"	"concept" "CHATTER_SCANNER_MULTIPLE" required
+criterion "ConceptCHATTER_MINE_DEPLOYED"	"concept" "CHATTER_MINE_DEPLOYED" required
+criterion "ConceptCHATTER_SYNUP_SPOTTED"	"concept" "CHATTER_SYNUP_SPOTTED" required
+criterion "ConceptCHATTER_SYNUP_REPLY"	"concept" "CHATTER_SYNUP_REPLY" required
+criterion "ConceptCHATTER_CRASH_COMPLAIN"	"concept" "CHATTER_CRASH_COMPLAIN" required
+criterion "ConceptCHATTER_CRASH_COMPLAIN_REPLY"	"concept" "CHATTER_CRASH_COMPLAIN_REPLY" required
+criterion "ConceptCHATTER_MEDIC_COMPLAIN"	"concept" "CHATTER_MEDIC_COMPLAIN" required
+criterion "ConceptCHATTER_MEDIC_COMPLAIN_REPLY"	"concept" "CHATTER_MEDIC_COMPLAIN_REPLY" required
+criterion "ConceptCHATTER_HEALING_CRASH"	"concept" "CHATTER_HEALING_CRASH" required
+criterion "ConceptCHATTER_HEALING_CRASH_REPLY"	"concept" "CHATTER_HEALING_CRASH_REPLY" required
+criterion "ConceptCHATTER_TEQUILA_START"	"concept" "CHATTER_TEQUILA_START" required
+criterion "ConceptCHATTER_TEQUILA_REPLY"	"concept" "CHATTER_TEQUILA_REPLY" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_SARGE"	"concept" "CHATTER_TEQUILA_REPLY_SARGE" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_JAEGER"	"concept" "CHATTER_TEQUILA_REPLY_JAEGER" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_WILDCAT"	"concept" "CHATTER_TEQUILA_REPLY_WILDCAT" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_WOLFE"	"concept" "CHATTER_TEQUILA_REPLY_WOLFE" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_FAITH"	"concept" "CHATTER_TEQUILA_REPLY_FAITH" required
+criterion "ConceptCHATTER_TEQUILA_REPLY_BASTILLE"	"concept" "CHATTER_TEQUILA_REPLY_BASTILLE" required
+criterion "ConceptCHATTER_CRASH_IDLE"	"concept" "CHATTER_CRASH_IDLE" required
+criterion "ConceptCHATTER_CRASH_IDLE_REPLY"	"concept" "CHATTER_CRASH_IDLE_REPLY" required
+criterion "ConceptCHATTER_SERIOUS_INJURY"	"concept" "CHATTER_SERIOUS_INJURY" required
+criterion "ConceptCHATTER_SERIOUS_INJURY_REPLY"	"concept" "CHATTER_SERIOUS_INJURY_REPLY" required
+criterion "ConceptCHATTER_SERIOUS_INJURY_FOLLOW_UP"	"concept" "CHATTER_SERIOUS_INJURY_FOLLOW_UP" required
+criterion "ConceptCHATTER_STILL_BREATHING"	"concept" "CHATTER_STILL_BREATHING" required
+criterion "ConceptCHATTER_STILL_BREATHING_REPLY"	"concept" "CHATTER_STILL_BREATHING_REPLY" required
+criterion "ConceptCHATTER_SARGE_IDLE"	"concept" "CHATTER_SARGE_IDLE" required
+criterion "ConceptCHATTER_SARGE_IDLE_REPLY"	"concept" "CHATTER_SARGE_IDLE_REPLY" required
+criterion "ConceptCHATTER_BIG_ALIEN_DEAD"	"concept" "CHATTER_BIG_ALIEN_DEAD" required
+criterion "ConceptCHATTER_BIG_ALIEN_REPLY"	"concept" "CHATTER_BIG_ALIEN_REPLY" required
+criterion "ConceptCHATTER_AUTOGUN"	"concept" "CHATTER_AUTOGUN" required
+criterion "ConceptCHATTER_AUTOGUN_REPLY"	"concept" "CHATTER_AUTOGUN_REPLY" required
+criterion "ConceptCHATTER_WOLFE_BEST"	"concept" "CHATTER_WOLFE_BEST" required
+criterion "ConceptCHATTER_WOLFE_BEST_REPLY"	"concept" "CHATTER_WOLFE_BEST_REPLY" required
+criterion "ConceptCHATTER_FIRST_BLOOD_START"	"concept" "CHATTER_FIRST_BLOOD_START" required
+criterion "ConceptCHATTER_FIRST_BLOOD_WIN"	"concept" "CHATTER_FIRST_BLOOD_WIN" required
+criterion "ConceptCHATTER_SARGE_JAEGER_CONV_1"	"concept" "CHATTER_SARGE_JAEGER_CONV_1" required
+criterion "ConceptCHATTER_SARGE_JAEGER_CONV_1_REPLY"	"concept" "CHATTER_SARGE_JAEGER_CONV_1_REPLY" required
+criterion "ConceptCHATTER_SARGE_JAEGER_CONV_2"	"concept" "CHATTER_SARGE_JAEGER_CONV_2" required
+criterion "ConceptCHATTER_SARGE_JAEGER_CONV_2_REPLY"	"concept" "CHATTER_SARGE_JAEGER_CONV_2_REPLY" required
+criterion "ConceptCHATTER_WILDCAT_KILL"	"concept" "CHATTER_WILDCAT_KILL" required
+criterion "ConceptCHATTER_WILDCAT_KILL_REPLY_AHEAD"	"concept" "CHATTER_WILDCAT_KILL_REPLY_AHEAD" required
+criterion "ConceptCHATTER_WILDCAT_KILL_REPLY_BEHIND"	"concept" "CHATTER_WILDCAT_KILL_REPLY_BEHIND" required
+criterion "ConceptCHATTER_WOLFE_KILL"	"concept" "CHATTER_WOLFE_KILL" required
+criterion "ConceptCHATTER_WOLFE_KILL_REPLY_AHEAD"	"concept" "CHATTER_WOLFE_KILL_REPLY_AHEAD" required
+criterion "ConceptCHATTER_WOLFE_KILL_REPLY_BEHIND"	"concept" "CHATTER_WOLFE_KILL_REPLY_BEHIND" required
+criterion "ConceptCHATTER_MISC"	"concept" "CHATTER_MISC" required
+
+Response faith_CHATTER_HOLDING_POSITION
+{
+	speak "faith.HoldingPosition0"
+	speak "faith.HoldingPosition1"
+	speak "faith.HoldingPosition2"
+	speak "faith.HoldingPosition3"
+}
+
+Rule faith_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_faith
+    response faith_CHATTER_HOLDING_POSITION
+}
+
+Response crash_CHATTER_HOLDING_POSITION
+{
+	speak "crash.HoldingPosition0"
+	speak "crash.HoldingPosition1"
+	speak "crash.HoldingPosition2"
+	speak "crash.HoldingPosition3"
+}
+
+Rule crash_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_crash
+    response crash_CHATTER_HOLDING_POSITION
+}
+
+Response jaeger_CHATTER_HOLDING_POSITION
+{
+	speak "jaeger.HoldingPosition0"
+	speak "jaeger.HoldingPosition1"
+	speak "jaeger.HoldingPosition2"
+}
+
+Rule jaeger_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_jaeger
+    response jaeger_CHATTER_HOLDING_POSITION
+}
+
+Response wolfe_CHATTER_HOLDING_POSITION
+{
+	speak "wolfe.HoldingPosition0"
+	speak "wolfe.HoldingPosition1"
+	speak "wolfe.HoldingPosition2"
+	speak "wolfe.HoldingPosition3"
+	speak "wolfe.HoldingPosition4"
+	speak "wolfe.HoldingPosition5"
+}
+
+Rule wolfe_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_wolfe
+    response wolfe_CHATTER_HOLDING_POSITION
+}
+
+Response vegas_CHATTER_HOLDING_POSITION
+{
+	speak "vegas.HoldingPosition0"
+	speak "vegas.HoldingPosition1"
+	speak "vegas.HoldingPosition2"
+	speak "vegas.HoldingPosition3"
+	speak "vegas.HoldingPosition4"
+}
+
+Rule vegas_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_vegas
+    response vegas_CHATTER_HOLDING_POSITION
+}
+
+Response sarge_CHATTER_HOLDING_POSITION
+{
+	speak "sarge.HoldingPosition0"
+	speak "sarge.HoldingPosition1"
+	speak "sarge.HoldingPosition2"
+}
+
+Rule sarge_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_sarge
+    response sarge_CHATTER_HOLDING_POSITION
+}
+
+Response bastille_CHATTER_HOLDING_POSITION
+{
+	speak "bastille.HoldingPosition0"
+	speak "bastille.HoldingPosition1"
+	speak "bastille.HoldingPosition2"
+	speak "bastille.HoldingPosition3"
+}
+
+Rule bastille_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_bastille
+    response bastille_CHATTER_HOLDING_POSITION
+}
+
+Response wildcat_CHATTER_HOLDING_POSITION
+{
+	speak "wildcat.HoldingPosition0"
+	speak "wildcat.HoldingPosition1"
+	speak "wildcat.HoldingPosition2"
+	speak "wildcat.HoldingPosition3"
+	speak "wildcat.HoldingPosition4"
+}
+
+Rule wildcat_CHATTER_HOLDING_POSITION
+{
+    criteria ConceptCHATTER_HOLDING_POSITION Is_wildcat
+    response wildcat_CHATTER_HOLDING_POSITION
+}
+
+Response faith_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "faith.SeriousInjuryReply0"
+}
+
+Rule faith_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_faith
+    response faith_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response crash_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "crash.SeriousInjuryReply0"
+}
+
+Rule crash_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_crash
+    response crash_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response jaeger_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "jaeger.SeriousInjuryReply0"
+}
+
+Rule jaeger_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_jaeger
+    response jaeger_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response wolfe_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "wolfe.SeriousInjuryReply0"
+}
+
+Rule wolfe_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_wolfe
+    response wolfe_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response vegas_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "vegas.SeriousInjuryReply0"
+}
+
+Rule vegas_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_vegas
+    response vegas_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response sarge_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "sarge.SeriousInjuryReply0"
+	speak "sarge.SeriousInjuryReply1"
+}
+
+Rule sarge_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_sarge
+    response sarge_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response bastille_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "bastille.SeriousInjuryReply0"
+}
+
+Rule bastille_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_bastille
+    response bastille_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response wildcat_CHATTER_SERIOUS_INJURY_REPLY
+{
+	speak "wildcat.SeriousInjuryReply0"
+}
+
+Rule wildcat_CHATTER_SERIOUS_INJURY_REPLY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_REPLY Is_wildcat
+    response wildcat_CHATTER_SERIOUS_INJURY_REPLY
+}
+
+Response vegas_CHATTER_TEQUILA_REPLY_WILDCAT
+{
+	speak "vegas.TequilaReplyWildcat0"
+}
+
+Rule vegas_CHATTER_TEQUILA_REPLY_WILDCAT
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY_WILDCAT Is_vegas
+    response vegas_CHATTER_TEQUILA_REPLY_WILDCAT
+}
+
+Response faith_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "faith.RequestCutDoor0"
+	speak "faith.RequestCutDoor1"
+	speak "faith.RequestCutDoor2"
+}
+
+Rule faith_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_faith
+    response faith_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response crash_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "crash.RequestCutDoor0"
+	speak "crash.RequestCutDoor1"
+}
+
+Rule crash_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_crash
+    response crash_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response jaeger_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "jaeger.RequestCutDoor0"
+	speak "jaeger.RequestCutDoor1"
+}
+
+Rule jaeger_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_jaeger
+    response jaeger_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response wolfe_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "wolfe.RequestCutDoor0"
+	speak "wolfe.RequestCutDoor1"
+	speak "wolfe.RequestCutDoor2"
+}
+
+Rule wolfe_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_wolfe
+    response wolfe_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response vegas_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "vegas.RequestCutDoor0"
+	speak "vegas.RequestCutDoor1"
+	speak "vegas.RequestCutDoor2"
+}
+
+Rule vegas_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_vegas
+    response vegas_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response sarge_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "sarge.RequestCutDoor0"
+	speak "sarge.RequestCutDoor1"
+	speak "sarge.RequestCutDoor2"
+	speak "sarge.RequestCutDoor3"
+	speak "sarge.RequestCutDoor4"
+}
+
+Rule sarge_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_sarge
+    response sarge_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response bastille_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "bastille.RequestCutDoor0"
+	speak "bastille.RequestCutDoor1"
+	speak "bastille.RequestCutDoor2"
+}
+
+Rule bastille_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_bastille
+    response bastille_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response wildcat_CHATTER_REQUEST_CUT_DOOR
+{
+	speak "wildcat.RequestCutDoor0"
+	speak "wildcat.RequestCutDoor1"
+}
+
+Rule wildcat_CHATTER_REQUEST_CUT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_CUT_DOOR Is_wildcat
+    response wildcat_CHATTER_REQUEST_CUT_DOOR
+}
+
+Response vegas_CHATTER_HACK_LONG_STARTED
+{
+	speak "vegas.StartedLongHack0"
+	speak "vegas.StartedLongHack1"
+	speak "vegas.StartedLongHack2"
+	speak "vegas.StartedLongHack3"
+	speak "vegas.StartedLongHack4"
+	speak "vegas.StartedLongHack5"
+	speak "vegas.StartedLongHack6"
+	speak "vegas.StartedLongHack7"
+}
+
+Rule vegas_CHATTER_HACK_LONG_STARTED
+{
+    criteria ConceptCHATTER_HACK_LONG_STARTED Is_vegas
+    response vegas_CHATTER_HACK_LONG_STARTED
+}
+
+Response crash_CHATTER_HACK_LONG_STARTED
+{
+	speak "crash.StartedLongHack0"
+	speak "crash.StartedLongHack1"
+	speak "crash.StartedLongHack2"
+	speak "crash.StartedLongHack3"
+	speak "crash.StartedLongHack4"
+	speak "crash.StartedLongHack5"
+}
+
+Rule crash_CHATTER_HACK_LONG_STARTED
+{
+    criteria ConceptCHATTER_HACK_LONG_STARTED Is_crash
+    response crash_CHATTER_HACK_LONG_STARTED
+}
+
+Response sarge_CHATTER_SARGE_JAEGER_CONV_1
+{
+	speak "sarge.SargeJaegerConv10"
+	speak "sarge.SargeJaegerConv11"
+}
+
+Rule sarge_CHATTER_SARGE_JAEGER_CONV_1
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_1 Is_sarge
+    response sarge_CHATTER_SARGE_JAEGER_CONV_1
+}
+
+Response jaeger_CHATTER_SARGE_JAEGER_CONV_2
+{
+	speak "jaeger.SargeJaegerConv20"
+	speak "jaeger.SargeJaegerConv21"
+}
+
+Rule jaeger_CHATTER_SARGE_JAEGER_CONV_2
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_2 Is_jaeger
+    response jaeger_CHATTER_SARGE_JAEGER_CONV_2
+}
+
+Response faith_CHATTER_FRIENDLY_FIRE
+{
+	speak "faith.FF0"
+	speak "faith.FF1"
+}
+
+Rule faith_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_faith
+    response faith_CHATTER_FRIENDLY_FIRE
+}
+
+Response crash_CHATTER_FRIENDLY_FIRE
+{
+	speak "crash.FF0"
+	speak "crash.FF1"
+}
+
+Rule crash_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_crash
+    response crash_CHATTER_FRIENDLY_FIRE
+}
+
+Response jaeger_CHATTER_FRIENDLY_FIRE
+{
+	speak "jaeger.FF0"
+	speak "jaeger.FF1"
+}
+
+Rule jaeger_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_jaeger
+    response jaeger_CHATTER_FRIENDLY_FIRE
+}
+
+Response wolfe_CHATTER_FRIENDLY_FIRE
+{
+	speak "wolfe.FF0"
+}
+
+Rule wolfe_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_wolfe
+    response wolfe_CHATTER_FRIENDLY_FIRE
+}
+
+Response vegas_CHATTER_FRIENDLY_FIRE
+{
+	speak "vegas.FF0"
+	speak "vegas.FF1"
+	speak "vegas.FF2"
+}
+
+Rule vegas_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_vegas
+    response vegas_CHATTER_FRIENDLY_FIRE
+}
+
+Response sarge_CHATTER_FRIENDLY_FIRE
+{
+	speak "sarge.FF0"
+	speak "sarge.FF1"
+}
+
+Rule sarge_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_sarge
+    response sarge_CHATTER_FRIENDLY_FIRE
+}
+
+Response bastille_CHATTER_FRIENDLY_FIRE
+{
+	speak "bastille.FF0"
+	speak "bastille.FF1"
+	speak "bastille.FF2"
+}
+
+Rule bastille_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_bastille
+    response bastille_CHATTER_FRIENDLY_FIRE
+}
+
+Response wildcat_CHATTER_FRIENDLY_FIRE
+{
+	speak "wildcat.FF0"
+	speak "wildcat.FF1"
+}
+
+Rule wildcat_CHATTER_FRIENDLY_FIRE
+{
+    criteria ConceptCHATTER_FRIENDLY_FIRE Is_wildcat
+    response wildcat_CHATTER_FRIENDLY_FIRE
+}
+
+Response faith_CHATTER_SELECTION
+{
+	speak "faith.Selection0"
+	speak "faith.Selection1"
+	speak "faith.Selection2"
+	speak "faith.Selection3"
+	speak "faith.Selection4"
+	speak "faith.Selection5"
+}
+
+Rule faith_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_faith
+    response faith_CHATTER_SELECTION
+}
+
+Response crash_CHATTER_SELECTION
+{
+	speak "crash.Selection0"
+	speak "crash.Selection1"
+	speak "crash.Selection2"
+}
+
+Rule crash_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_crash
+    response crash_CHATTER_SELECTION
+}
+
+Response jaeger_CHATTER_SELECTION
+{
+	speak "jaeger.Selection0"
+	speak "jaeger.Selection1"
+}
+
+Rule jaeger_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_jaeger
+    response jaeger_CHATTER_SELECTION
+}
+
+Response wolfe_CHATTER_SELECTION
+{
+	speak "wolfe.Selection0"
+	speak "wolfe.Selection1"
+	speak "wolfe.Selection2"
+}
+
+Rule wolfe_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_wolfe
+    response wolfe_CHATTER_SELECTION
+}
+
+Response vegas_CHATTER_SELECTION
+{
+	speak "vegas.Selection0"
+	speak "vegas.Selection1"
+	speak "vegas.Selection2"
+}
+
+Rule vegas_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_vegas
+    response vegas_CHATTER_SELECTION
+}
+
+Response sarge_CHATTER_SELECTION
+{
+	speak "sarge.Selection0"
+	speak "sarge.Selection1"
+	speak "sarge.Selection2"
+	speak "sarge.Selection3"
+}
+
+Rule sarge_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_sarge
+    response sarge_CHATTER_SELECTION
+}
+
+Response bastille_CHATTER_SELECTION
+{
+	speak "bastille.Selection0"
+	speak "bastille.Selection1"
+	speak "bastille.Selection2"
+	speak "bastille.Selection3"
+	speak "bastille.Selection4"
+}
+
+Rule bastille_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_bastille
+    response bastille_CHATTER_SELECTION
+}
+
+Response wildcat_CHATTER_SELECTION
+{
+	speak "wildcat.Selection0"
+	speak "wildcat.Selection1"
+	speak "wildcat.Selection2"
+	speak "wildcat.Selection3"
+}
+
+Rule wildcat_CHATTER_SELECTION
+{
+    criteria ConceptCHATTER_SELECTION Is_wildcat
+    response wildcat_CHATTER_SELECTION
+}
+
+Response sarge_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+{
+	speak "sarge.SargeJaegerConv1Reply0"
+	speak "sarge.SargeJaegerConv1Reply1"
+}
+
+Rule sarge_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_1_REPLY Is_sarge
+    response sarge_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+}
+
+Response jaeger_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+{
+	speak "jaeger.SargeJaegerConv1Reply0"
+	speak "jaeger.SargeJaegerConv1Reply1"
+}
+
+Rule jaeger_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_1_REPLY Is_jaeger
+    response jaeger_CHATTER_SARGE_JAEGER_CONV_1_REPLY
+}
+
+Response vegas_CHATTER_TEQUILA_REPLY_JAEGER
+{
+	speak "vegas.TequilaReplyJaeger0"
+}
+
+Rule vegas_CHATTER_TEQUILA_REPLY_JAEGER
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY_JAEGER Is_vegas
+    response vegas_CHATTER_TEQUILA_REPLY_JAEGER
+}
+
+Response faith_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+	speak "faith.LockedTerminalFlynn0"
+}
+
+Rule faith_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_FLYNN Is_faith
+    response faith_CHATTER_LOCKED_TERMINAL_FLYNN
+}
+
+Response jaeger_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+	speak "jaeger.LockedTerminalFlynn0"
+}
+
+Rule jaeger_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_FLYNN Is_jaeger
+    response jaeger_CHATTER_LOCKED_TERMINAL_FLYNN
+}
+
+Response bastille_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+	speak "bastille.LockedTerminalFlynn0"
+}
+
+Rule bastille_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_FLYNN Is_bastille
+    response bastille_CHATTER_LOCKED_TERMINAL_FLYNN
+}
+
+Response sarge_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+	speak "sarge.LockedTerminalFlynn0"
+}
+
+Rule sarge_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_FLYNN Is_sarge
+    response sarge_CHATTER_LOCKED_TERMINAL_FLYNN
+}
+
+Response wildcat_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+	speak "wildcat.LockedTerminalFlynn0"
+}
+
+Rule wildcat_CHATTER_LOCKED_TERMINAL_FLYNN
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_FLYNN Is_wildcat
+    response wildcat_CHATTER_LOCKED_TERMINAL_FLYNN
+}
+
+Response wolfe_CHATTER_WOLFE_BEST
+{
+	speak "wolfe.WolfeBest0"
+	speak "wolfe.WolfeBest1"
+	speak "wolfe.WolfeBest2"
+}
+
+Rule wolfe_CHATTER_WOLFE_BEST
+{
+    criteria ConceptCHATTER_WOLFE_BEST Is_wolfe
+    response wolfe_CHATTER_WOLFE_BEST
+}
+
+Response faith_CHATTER_HOLDING_SOUTH
+{
+	speak "faith.HoldingSouth0"
+	speak "faith.HoldingSouth1"
+	speak "faith.HoldingSouth2"
+	speak "faith.HoldingSouth3"
+}
+
+Rule faith_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_faith
+    response faith_CHATTER_HOLDING_SOUTH
+}
+
+Response crash_CHATTER_HOLDING_SOUTH
+{
+	speak "crash.HoldingSouth0"
+	speak "crash.HoldingSouth1"
+	speak "crash.HoldingSouth2"
+}
+
+Rule crash_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_crash
+    response crash_CHATTER_HOLDING_SOUTH
+}
+
+Response jaeger_CHATTER_HOLDING_SOUTH
+{
+	speak "jaeger.HoldingSouth0"
+	speak "jaeger.HoldingSouth1"
+	speak "jaeger.HoldingSouth2"
+}
+
+Rule jaeger_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_jaeger
+    response jaeger_CHATTER_HOLDING_SOUTH
+}
+
+Response wolfe_CHATTER_HOLDING_SOUTH
+{
+	speak "wolfe.HoldingSouth0"
+	speak "wolfe.HoldingSouth1"
+	speak "wolfe.HoldingSouth2"
+	speak "wolfe.HoldingSouth3"
+	speak "wolfe.HoldingSouth4"
+	speak "wolfe.HoldingSouth5"
+}
+
+Rule wolfe_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_wolfe
+    response wolfe_CHATTER_HOLDING_SOUTH
+}
+
+Response vegas_CHATTER_HOLDING_SOUTH
+{
+	speak "vegas.HoldingSouth0"
+	speak "vegas.HoldingSouth1"
+	speak "vegas.HoldingSouth2"
+}
+
+Rule vegas_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_vegas
+    response vegas_CHATTER_HOLDING_SOUTH
+}
+
+Response sarge_CHATTER_HOLDING_SOUTH
+{
+	speak "sarge.HoldingSouth0"
+	speak "sarge.HoldingSouth1"
+	speak "sarge.HoldingSouth2"
+	speak "sarge.HoldingSouth3"
+}
+
+Rule sarge_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_sarge
+    response sarge_CHATTER_HOLDING_SOUTH
+}
+
+Response bastille_CHATTER_HOLDING_SOUTH
+{
+	speak "bastille.HoldingSouth0"
+	speak "bastille.HoldingSouth1"
+	speak "bastille.HoldingSouth2"
+	speak "bastille.HoldingSouth3"
+}
+
+Rule bastille_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_bastille
+    response bastille_CHATTER_HOLDING_SOUTH
+}
+
+Response wildcat_CHATTER_HOLDING_SOUTH
+{
+	speak "wildcat.HoldingSouth0"
+	speak "wildcat.HoldingSouth1"
+	speak "wildcat.HoldingSouth2"
+	speak "wildcat.HoldingSouth3"
+}
+
+Rule wildcat_CHATTER_HOLDING_SOUTH
+{
+    criteria ConceptCHATTER_HOLDING_SOUTH Is_wildcat
+    response wildcat_CHATTER_HOLDING_SOUTH
+}
+
+Response faith_CHATTER_HEALING
+{
+	speak "faith.Healing0"
+	speak "faith.Healing1"
+	speak "faith.Healing2"
+	speak "faith.Healing3"
+	speak "faith.Healing4"
+}
+
+Rule faith_CHATTER_HEALING
+{
+    criteria ConceptCHATTER_HEALING Is_faith
+    response faith_CHATTER_HEALING
+}
+
+Response bastille_CHATTER_HEALING
+{
+	speak "bastille.Healing0"
+	speak "bastille.Healing1"
+	speak "bastille.Healing2"
+	speak "bastille.Healing3"
+	speak "bastille.Healing4"
+	speak "bastille.Healing5"
+	speak "bastille.Healing6"
+	speak "bastille.Healing7"
+	speak "bastille.Healing8"
+	speak "bastille.Healing9"
+	speak "bastille.Healing10"
+	speak "bastille.Healing11"
+	speak "bastille.Healing12"
+	speak "bastille.Healing13"
+	speak "bastille.Healing14"
+	speak "bastille.Healing15"
+	speak "bastille.Healing16"
+	speak "bastille.Healing17"
+	speak "bastille.Healing18"
+}
+
+Rule bastille_CHATTER_HEALING
+{
+    criteria ConceptCHATTER_HEALING Is_bastille
+    response bastille_CHATTER_HEALING
+}
+
+Response crash_CHATTER_FAITH
+{
+	speak "crash.CallFaith0"
+	speak "crash.CallFaith1"
+}
+
+Rule crash_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_crash
+    response crash_CHATTER_FAITH
+}
+
+Response jaeger_CHATTER_FAITH
+{
+	speak "jaeger.CallFaith0"
+	speak "jaeger.CallFaith1"
+}
+
+Rule jaeger_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_jaeger
+    response jaeger_CHATTER_FAITH
+}
+
+Response wolfe_CHATTER_FAITH
+{
+	speak "wolfe.CallFaith0"
+	speak "wolfe.CallFaith1"
+	speak "wolfe.CallFaith2"
+	speak "wolfe.CallFaith3"
+}
+
+Rule wolfe_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_wolfe
+    response wolfe_CHATTER_FAITH
+}
+
+Response vegas_CHATTER_FAITH
+{
+	speak "vegas.CallFaith0"
+	speak "vegas.CallFaith1"
+}
+
+Rule vegas_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_vegas
+    response vegas_CHATTER_FAITH
+}
+
+Response sarge_CHATTER_FAITH
+{
+	speak "sarge.CallFaith0"
+	speak "sarge.CallFaith1"
+}
+
+Rule sarge_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_sarge
+    response sarge_CHATTER_FAITH
+}
+
+Response bastille_CHATTER_FAITH
+{
+	speak "bastille.CallFaith0"
+	speak "bastille.CallFaith1"
+}
+
+Rule bastille_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_bastille
+    response bastille_CHATTER_FAITH
+}
+
+Response wildcat_CHATTER_FAITH
+{
+	speak "wildcat.CallFaith0"
+	speak "wildcat.CallFaith1"
+}
+
+Rule wildcat_CHATTER_FAITH
+{
+    criteria ConceptCHATTER_FAITH Is_wildcat
+    response wildcat_CHATTER_FAITH
+}
+
+Response faith_CHATTER_RELOADING
+{
+	speak "faith.Reloading0"
+	speak "faith.Reloading1"
+	speak "faith.Reloading2"
+	speak "faith.Reloading3"
+}
+
+Rule faith_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_faith
+    response faith_CHATTER_RELOADING
+}
+
+Response crash_CHATTER_RELOADING
+{
+	speak "crash.Reloading0"
+	speak "crash.Reloading1"
+	speak "crash.Reloading2"
+	speak "crash.Reloading3"
+}
+
+Rule crash_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_crash
+    response crash_CHATTER_RELOADING
+}
+
+Response jaeger_CHATTER_RELOADING
+{
+	speak "jaeger.Reloading0"
+	speak "jaeger.Reloading1"
+	speak "jaeger.Reloading2"
+	speak "jaeger.Reloading3"
+}
+
+Rule jaeger_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_jaeger
+    response jaeger_CHATTER_RELOADING
+}
+
+Response wolfe_CHATTER_RELOADING
+{
+	speak "wolfe.Reloading0"
+	speak "wolfe.Reloading1"
+	speak "wolfe.Reloading2"
+}
+
+Rule wolfe_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_wolfe
+    response wolfe_CHATTER_RELOADING
+}
+
+Response vegas_CHATTER_RELOADING
+{
+	speak "vegas.Reloading0"
+	speak "vegas.Reloading1"
+	speak "vegas.Reloading2"
+	speak "vegas.Reloading3"
+	speak "vegas.Reloading4"
+}
+
+Rule vegas_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_vegas
+    response vegas_CHATTER_RELOADING
+}
+
+Response sarge_CHATTER_RELOADING
+{
+	speak "sarge.Reloading0"
+	speak "sarge.Reloading1"
+	speak "sarge.Reloading2"
+	speak "sarge.Reloading3"
+}
+
+Rule sarge_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_sarge
+    response sarge_CHATTER_RELOADING
+}
+
+Response bastille_CHATTER_RELOADING
+{
+	speak "bastille.Reloading0"
+	speak "bastille.Reloading1"
+	speak "bastille.Reloading2"
+	speak "bastille.Reloading3"
+	speak "bastille.Reloading4"
+	speak "bastille.Reloading5"
+	speak "bastille.Reloading6"
+	speak "bastille.Reloading7"
+	speak "bastille.Reloading8"
+	speak "bastille.Reloading9"
+}
+
+Rule bastille_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_bastille
+    response bastille_CHATTER_RELOADING
+}
+
+Response wildcat_CHATTER_RELOADING
+{
+	speak "wildcat.Reloading0"
+	speak "wildcat.Reloading1"
+	speak "wildcat.Reloading2"
+	speak "wildcat.Reloading3"
+}
+
+Rule wildcat_CHATTER_RELOADING
+{
+    criteria ConceptCHATTER_RELOADING Is_wildcat
+    response wildcat_CHATTER_RELOADING
+}
+
+Response faith_CHATTER_PAIN_SMALL
+{
+	speak "faith.SmallPain0"
+	speak "faith.SmallPain1"
+	speak "faith.SmallPain2"
+	speak "faith.SmallPain3"
+}
+
+Rule faith_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_faith
+    response faith_CHATTER_PAIN_SMALL
+}
+
+Response crash_CHATTER_PAIN_SMALL
+{
+	speak "crash.SmallPain0"
+	speak "crash.SmallPain1"
+	speak "crash.SmallPain2"
+	speak "crash.SmallPain3"
+}
+
+Rule crash_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_crash
+    response crash_CHATTER_PAIN_SMALL
+}
+
+Response jaeger_CHATTER_PAIN_SMALL
+{
+	speak "jaeger.SmallPain0"
+	speak "jaeger.SmallPain1"
+	speak "jaeger.SmallPain2"
+}
+
+Rule jaeger_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_jaeger
+    response jaeger_CHATTER_PAIN_SMALL
+}
+
+Response wolfe_CHATTER_PAIN_SMALL
+{
+	speak "wolfe.SmallPain0"
+	speak "wolfe.SmallPain1"
+	speak "wolfe.SmallPain2"
+	speak "wolfe.SmallPain3"
+	speak "wolfe.SmallPain4"
+	speak "wolfe.SmallPain5"
+	speak "wolfe.SmallPain6"
+	speak "wolfe.SmallPain7"
+	speak "wolfe.SmallPain8"
+	speak "wolfe.SmallPain9"
+	speak "wolfe.SmallPain10"
+	speak "wolfe.SmallPain11"
+}
+
+Rule wolfe_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_wolfe
+    response wolfe_CHATTER_PAIN_SMALL
+}
+
+Response vegas_CHATTER_PAIN_SMALL
+{
+	speak "vegas.SmallPain0"
+	speak "vegas.SmallPain1"
+	speak "vegas.SmallPain2"
+}
+
+Rule vegas_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_vegas
+    response vegas_CHATTER_PAIN_SMALL
+}
+
+Response sarge_CHATTER_PAIN_SMALL
+{
+	speak "sarge.SmallPain0"
+	speak "sarge.SmallPain1"
+	speak "sarge.SmallPain2"
+	speak "sarge.SmallPain3"
+}
+
+Rule sarge_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_sarge
+    response sarge_CHATTER_PAIN_SMALL
+}
+
+Response bastille_CHATTER_PAIN_SMALL
+{
+	speak "bastille.SmallPain0"
+	speak "bastille.SmallPain1"
+	speak "bastille.SmallPain2"
+	speak "bastille.SmallPain3"
+	speak "bastille.SmallPain4"
+}
+
+Rule bastille_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_bastille
+    response bastille_CHATTER_PAIN_SMALL
+}
+
+Response wildcat_CHATTER_PAIN_SMALL
+{
+	speak "wildcat.SmallPain0"
+	speak "wildcat.SmallPain1"
+	speak "wildcat.SmallPain2"
+}
+
+Rule wildcat_CHATTER_PAIN_SMALL
+{
+    criteria ConceptCHATTER_PAIN_SMALL Is_wildcat
+    response wildcat_CHATTER_PAIN_SMALL
+}
+
+Response vegas_CHATTER_TEQUILA_START
+{
+	speak "vegas.TequilaStart0"
+	speak "vegas.TequilaStart1"
+}
+
+Rule vegas_CHATTER_TEQUILA_START
+{
+    criteria ConceptCHATTER_TEQUILA_START Is_vegas
+    response vegas_CHATTER_TEQUILA_START
+}
+
+Response sarge_CHATTER_COMPLIMENTS_JAEGER
+{
+	speak "sarge.ComplimentsJaeger0"
+	speak "sarge.ComplimentsJaeger1"
+	speak "sarge.ComplimentsJaeger2"
+}
+
+Rule sarge_CHATTER_COMPLIMENTS_JAEGER
+{
+    criteria ConceptCHATTER_COMPLIMENTS_JAEGER Is_sarge
+    response sarge_CHATTER_COMPLIMENTS_JAEGER
+}
+
+Response faith_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+{
+	speak "faith.SeriousInjuryFollowUp0"
+	speak "faith.SeriousInjuryFollowUp1"
+}
+
+Rule faith_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_FOLLOW_UP Is_faith
+    response faith_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+}
+
+Response bastille_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+{
+	speak "bastille.SeriousInjuryFollowUp0"
+	speak "bastille.SeriousInjuryFollowUp1"
+}
+
+Rule bastille_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY_FOLLOW_UP Is_bastille
+    response bastille_CHATTER_SERIOUS_INJURY_FOLLOW_UP
+}
+
+Response faith_CHATTER_MARINE_DOWN
+{
+	speak "faith.MarineDown0"
+}
+
+Rule faith_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_faith
+    response faith_CHATTER_MARINE_DOWN
+}
+
+Response crash_CHATTER_MARINE_DOWN
+{
+	speak "crash.MarineDown0"
+	speak "crash.MarineDown1"
+}
+
+Rule crash_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_crash
+    response crash_CHATTER_MARINE_DOWN
+}
+
+Response jaeger_CHATTER_MARINE_DOWN
+{
+	speak "jaeger.MarineDown0"
+}
+
+Rule jaeger_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_jaeger
+    response jaeger_CHATTER_MARINE_DOWN
+}
+
+Response wolfe_CHATTER_MARINE_DOWN
+{
+	speak "wolfe.MarineDown0"
+	speak "wolfe.MarineDown1"
+	speak "wolfe.MarineDown2"
+}
+
+Rule wolfe_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_wolfe
+    response wolfe_CHATTER_MARINE_DOWN
+}
+
+Response vegas_CHATTER_MARINE_DOWN
+{
+	speak "vegas.MarineDown0"
+	speak "vegas.MarineDown1"
+}
+
+Rule vegas_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_vegas
+    response vegas_CHATTER_MARINE_DOWN
+}
+
+Response sarge_CHATTER_MARINE_DOWN
+{
+	speak "sarge.MarineDown0"
+}
+
+Rule sarge_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_sarge
+    response sarge_CHATTER_MARINE_DOWN
+}
+
+Response bastille_CHATTER_MARINE_DOWN
+{
+	speak "bastille.MarineDown0"
+}
+
+Rule bastille_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_bastille
+    response bastille_CHATTER_MARINE_DOWN
+}
+
+Response wildcat_CHATTER_MARINE_DOWN
+{
+	speak "wildcat.MarineDown0"
+}
+
+Rule wildcat_CHATTER_MARINE_DOWN
+{
+    criteria ConceptCHATTER_MARINE_DOWN Is_wildcat
+    response wildcat_CHATTER_MARINE_DOWN
+}
+
+Response vegas_CHATTER_TEQUILA_REPLY_SARGE
+{
+	speak "vegas.TequilaReplySarge0"
+}
+
+Rule vegas_CHATTER_TEQUILA_REPLY_SARGE
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY_SARGE Is_vegas
+    response vegas_CHATTER_TEQUILA_REPLY_SARGE
+}
+
+Response crash_CHATTER_CRASH_IDLE
+{
+	speak "crash.CrashIdle0"
+}
+
+Rule crash_CHATTER_CRASH_IDLE
+{
+    criteria ConceptCHATTER_CRASH_IDLE Is_crash
+    response crash_CHATTER_CRASH_IDLE
+}
+
+Response faith_CHATTER_EGGS
+{
+	speak "faith.SwarmEggs0"
+	speak "faith.SwarmEggs1"
+	speak "faith.SwarmEggs2"
+}
+
+Rule faith_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_faith
+    response faith_CHATTER_EGGS
+}
+
+Response crash_CHATTER_EGGS
+{
+	speak "crash.SwarmEggs0"
+	speak "crash.SwarmEggs1"
+	speak "crash.SwarmEggs2"
+}
+
+Rule crash_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_crash
+    response crash_CHATTER_EGGS
+}
+
+Response jaeger_CHATTER_EGGS
+{
+	speak "jaeger.SwarmEggs0"
+	speak "jaeger.SwarmEggs1"
+	speak "jaeger.SwarmEggs2"
+}
+
+Rule jaeger_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_jaeger
+    response jaeger_CHATTER_EGGS
+}
+
+Response wolfe_CHATTER_EGGS
+{
+	speak "wolfe.SwarmEggs0"
+	speak "wolfe.SwarmEggs1"
+	speak "wolfe.SwarmEggs2"
+}
+
+Rule wolfe_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_wolfe
+    response wolfe_CHATTER_EGGS
+}
+
+Response vegas_CHATTER_EGGS
+{
+	speak "vegas.SwarmEggs0"
+	speak "vegas.SwarmEggs1"
+	speak "vegas.SwarmEggs2"
+}
+
+Rule vegas_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_vegas
+    response vegas_CHATTER_EGGS
+}
+
+Response sarge_CHATTER_EGGS
+{
+	speak "sarge.SwarmEggs0"
+	speak "sarge.SwarmEggs1"
+	speak "sarge.SwarmEggs2"
+	speak "sarge.SwarmEggs3"
+}
+
+Rule sarge_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_sarge
+    response sarge_CHATTER_EGGS
+}
+
+Response bastille_CHATTER_EGGS
+{
+	speak "bastille.SwarmEggs0"
+	speak "bastille.SwarmEggs1"
+	speak "bastille.SwarmEggs2"
+}
+
+Rule bastille_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_bastille
+    response bastille_CHATTER_EGGS
+}
+
+Response wildcat_CHATTER_EGGS
+{
+	speak "wildcat.SwarmEggs0"
+	speak "wildcat.SwarmEggs1"
+	speak "wildcat.SwarmEggs2"
+}
+
+Rule wildcat_CHATTER_EGGS
+{
+    criteria ConceptCHATTER_EGGS Is_wildcat
+    response wildcat_CHATTER_EGGS
+}
+
+Response faith_CHATTER_LOCKED_TERMINAL_CRASH
+{
+	speak "faith.LockedTerminalCrash0"
+}
+
+Rule faith_CHATTER_LOCKED_TERMINAL_CRASH
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_CRASH Is_faith
+    response faith_CHATTER_LOCKED_TERMINAL_CRASH
+}
+
+Response jaeger_CHATTER_LOCKED_TERMINAL_CRASH
+{
+	speak "jaeger.LockedTerminalCrash0"
+}
+
+Rule jaeger_CHATTER_LOCKED_TERMINAL_CRASH
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_CRASH Is_jaeger
+    response jaeger_CHATTER_LOCKED_TERMINAL_CRASH
+}
+
+Response bastille_CHATTER_LOCKED_TERMINAL_CRASH
+{
+	speak "bastille.LockedTerminalCrash0"
+}
+
+Rule bastille_CHATTER_LOCKED_TERMINAL_CRASH
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_CRASH Is_bastille
+    response bastille_CHATTER_LOCKED_TERMINAL_CRASH
+}
+
+Response sarge_CHATTER_LOCKED_TERMINAL_CRASH
+{
+	speak "sarge.LockedTerminalCrash0"
+	speak "sarge.LockedTerminalCrash1"
+}
+
+Rule sarge_CHATTER_LOCKED_TERMINAL_CRASH
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_CRASH Is_sarge
+    response sarge_CHATTER_LOCKED_TERMINAL_CRASH
+}
+
+Response wildcat_CHATTER_LOCKED_TERMINAL_CRASH
+{
+	speak "wildcat.LockedTerminalCrash0"
+}
+
+Rule wildcat_CHATTER_LOCKED_TERMINAL_CRASH
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_CRASH Is_wildcat
+    response wildcat_CHATTER_LOCKED_TERMINAL_CRASH
+}
+
+Response faith_CHATTER_SELECTION_INJURED
+{
+	speak "faith.InjuredSelection0"
+	speak "faith.InjuredSelection1"
+	speak "faith.InjuredSelection2"
+	speak "faith.InjuredSelection3"
+}
+
+Rule faith_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_faith
+    response faith_CHATTER_SELECTION_INJURED
+}
+
+Response crash_CHATTER_SELECTION_INJURED
+{
+	speak "crash.InjuredSelection0"
+	speak "crash.InjuredSelection1"
+	speak "crash.InjuredSelection4"
+}
+
+Rule crash_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_crash
+    response crash_CHATTER_SELECTION_INJURED
+}
+
+Response jaeger_CHATTER_SELECTION_INJURED
+{
+	speak "jaeger.InjuredSelection0"
+	speak "jaeger.InjuredSelection1"
+	speak "jaeger.InjuredSelection2"
+}
+
+Rule jaeger_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_jaeger
+    response jaeger_CHATTER_SELECTION_INJURED
+}
+
+Response wolfe_CHATTER_SELECTION_INJURED
+{
+	speak "wolfe.InjuredSelection0"
+	speak "wolfe.InjuredSelection1"
+	speak "wolfe.InjuredSelection2"
+	speak "wolfe.InjuredSelection3"
+}
+
+Rule wolfe_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_wolfe
+    response wolfe_CHATTER_SELECTION_INJURED
+}
+
+Response vegas_CHATTER_SELECTION_INJURED
+{
+	speak "vegas.InjuredSelection0"
+	speak "vegas.InjuredSelection1"
+	speak "vegas.InjuredSelection2"
+	speak "vegas.InjuredSelection3"
+	speak "vegas.InjuredSelection4"
+}
+
+Rule vegas_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_vegas
+    response vegas_CHATTER_SELECTION_INJURED
+}
+
+Response sarge_CHATTER_SELECTION_INJURED
+{
+	speak "sarge.InjuredSelection0"
+	speak "sarge.InjuredSelection1"
+	speak "sarge.InjuredSelection2"
+	speak "sarge.InjuredSelection3"
+}
+
+Rule sarge_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_sarge
+    response sarge_CHATTER_SELECTION_INJURED
+}
+
+Response bastille_CHATTER_SELECTION_INJURED
+{
+	speak "bastille.InjuredSelection0"
+	speak "bastille.InjuredSelection1"
+	speak "bastille.InjuredSelection2"
+	speak "bastille.InjuredSelection3"
+	speak "bastille.InjuredSelection4"
+}
+
+Rule bastille_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_bastille
+    response bastille_CHATTER_SELECTION_INJURED
+}
+
+Response wildcat_CHATTER_SELECTION_INJURED
+{
+	speak "wildcat.InjuredSelection0"
+	speak "wildcat.InjuredSelection1"
+	speak "wildcat.InjuredSelection2"
+}
+
+Rule wildcat_CHATTER_SELECTION_INJURED
+{
+    criteria ConceptCHATTER_SELECTION_INJURED Is_wildcat
+    response wildcat_CHATTER_SELECTION_INJURED
+}
+
+Response faith_CHATTER_JAEGER
+{
+	speak "faith.CallJaeger0"
+	speak "faith.CallJaeger1"
+}
+
+Rule faith_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_faith
+    response faith_CHATTER_JAEGER
+}
+
+Response crash_CHATTER_JAEGER
+{
+	speak "crash.CallJaeger0"
+	speak "crash.CallJaeger1"
+	speak "crash.CallJaeger2"
+}
+
+Rule crash_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_crash
+    response crash_CHATTER_JAEGER
+}
+
+Response wolfe_CHATTER_JAEGER
+{
+	speak "wolfe.CallJaeger0"
+	speak "wolfe.CallJaeger1"
+	speak "wolfe.CallJaeger2"
+}
+
+Rule wolfe_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_wolfe
+    response wolfe_CHATTER_JAEGER
+}
+
+Response vegas_CHATTER_JAEGER
+{
+	speak "vegas.CallJaeger0"
+	speak "vegas.CallJaeger1"
+}
+
+Rule vegas_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_vegas
+    response vegas_CHATTER_JAEGER
+}
+
+Response sarge_CHATTER_JAEGER
+{
+	speak "sarge.CallJaeger0"
+	speak "sarge.CallJaeger1"
+}
+
+Rule sarge_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_sarge
+    response sarge_CHATTER_JAEGER
+}
+
+Response bastille_CHATTER_JAEGER
+{
+	speak "bastille.CallJaeger0"
+	speak "bastille.CallJaeger1"
+	speak "bastille.CallJaeger2"
+}
+
+Rule bastille_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_bastille
+    response bastille_CHATTER_JAEGER
+}
+
+Response wildcat_CHATTER_JAEGER
+{
+	speak "wildcat.CallJaeger0"
+	speak "wildcat.CallJaeger1"
+}
+
+Rule wildcat_CHATTER_JAEGER
+{
+    criteria ConceptCHATTER_JAEGER Is_wildcat
+    response wildcat_CHATTER_JAEGER
+}
+
+Response faith_CHATTER_ON_FIRE
+{
+	speak "faith.OnFire0"
+	speak "faith.OnFire1"
+}
+
+Rule faith_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_faith
+    response faith_CHATTER_ON_FIRE
+}
+
+Response crash_CHATTER_ON_FIRE
+{
+	speak "crash.OnFire0"
+}
+
+Rule crash_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_crash
+    response crash_CHATTER_ON_FIRE
+}
+
+Response jaeger_CHATTER_ON_FIRE
+{
+	speak "jaeger.OnFire0"
+	speak "jaeger.OnFire1"
+}
+
+Rule jaeger_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_jaeger
+    response jaeger_CHATTER_ON_FIRE
+}
+
+Response wolfe_CHATTER_ON_FIRE
+{
+	speak "wolfe.OnFire0"
+	speak "wolfe.OnFire1"
+}
+
+Rule wolfe_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_wolfe
+    response wolfe_CHATTER_ON_FIRE
+}
+
+Response vegas_CHATTER_ON_FIRE
+{
+	speak "vegas.OnFire0"
+	speak "vegas.OnFire1"
+}
+
+Rule vegas_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_vegas
+    response vegas_CHATTER_ON_FIRE
+}
+
+Response sarge_CHATTER_ON_FIRE
+{
+	speak "sarge.OnFire0"
+	speak "sarge.OnFire1"
+	speak "sarge.OnFire2"
+}
+
+Rule sarge_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_sarge
+    response sarge_CHATTER_ON_FIRE
+}
+
+Response bastille_CHATTER_ON_FIRE
+{
+	speak "bastille.OnFire0"
+}
+
+Rule bastille_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_bastille
+    response bastille_CHATTER_ON_FIRE
+}
+
+Response wildcat_CHATTER_ON_FIRE
+{
+	speak "wildcat.OnFire0"
+}
+
+Rule wildcat_CHATTER_ON_FIRE
+{
+    criteria ConceptCHATTER_ON_FIRE Is_wildcat
+    response wildcat_CHATTER_ON_FIRE
+}
+
+Response vegas_CHATTER_SCANNER_MULTIPLE
+{
+	speak "vegas.ScannerMultiple0"
+	speak "vegas.ScannerMultiple1"
+	speak "vegas.ScannerMultiple2"
+	speak "vegas.ScannerMultiple3"
+	speak "vegas.ScannerMultiple4"
+}
+
+Rule vegas_CHATTER_SCANNER_MULTIPLE
+{
+    criteria ConceptCHATTER_SCANNER_MULTIPLE Is_vegas
+    response vegas_CHATTER_SCANNER_MULTIPLE
+}
+
+Response crash_CHATTER_SCANNER_MULTIPLE
+{
+	speak "crash.ScannerMultiple0"
+	speak "crash.ScannerMultiple1"
+	speak "crash.ScannerMultiple2"
+	speak "crash.ScannerMultiple3"
+}
+
+Rule crash_CHATTER_SCANNER_MULTIPLE
+{
+    criteria ConceptCHATTER_SCANNER_MULTIPLE Is_crash
+    response crash_CHATTER_SCANNER_MULTIPLE
+}
+
+Response wildcat_CHATTER_COMPLIMENTS_CRASH
+{
+	speak "wildcat.ComplimentsCrash0"
+}
+
+Rule wildcat_CHATTER_COMPLIMENTS_CRASH
+{
+    criteria ConceptCHATTER_COMPLIMENTS_CRASH Is_wildcat
+    response wildcat_CHATTER_COMPLIMENTS_CRASH
+}
+
+Response faith_CHATTER_WILDCAT
+{
+	speak "faith.CallWildcat0"
+	speak "faith.CallWildcat1"
+}
+
+Rule faith_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_faith
+    response faith_CHATTER_WILDCAT
+}
+
+Response crash_CHATTER_WILDCAT
+{
+	speak "crash.CallWildcat0"
+	speak "crash.CallWildcat1"
+}
+
+Rule crash_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_crash
+    response crash_CHATTER_WILDCAT
+}
+
+Response jaeger_CHATTER_WILDCAT
+{
+	speak "jaeger.CallWildcat0"
+	speak "jaeger.CallWildcat1"
+}
+
+Rule jaeger_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_jaeger
+    response jaeger_CHATTER_WILDCAT
+}
+
+Response wolfe_CHATTER_WILDCAT
+{
+	speak "wolfe.CallWildcat0"
+	speak "wolfe.CallWildcat1"
+	speak "wolfe.CallWildcat2"
+	speak "wolfe.CallWildcat3"
+	speak "wolfe.CallWildcat4"
+	speak "wolfe.CallWildcat5"
+}
+
+Rule wolfe_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_wolfe
+    response wolfe_CHATTER_WILDCAT
+}
+
+Response vegas_CHATTER_WILDCAT
+{
+	speak "vegas.CallWildcat0"
+	speak "vegas.CallWildcat1"
+}
+
+Rule vegas_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_vegas
+    response vegas_CHATTER_WILDCAT
+}
+
+Response sarge_CHATTER_WILDCAT
+{
+	speak "sarge.CallWildcat0"
+	speak "sarge.CallWildcat1"
+}
+
+Rule sarge_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_sarge
+    response sarge_CHATTER_WILDCAT
+}
+
+Response bastille_CHATTER_WILDCAT
+{
+	speak "bastille.CallWildcat0"
+	speak "bastille.CallWildcat1"
+}
+
+Rule bastille_CHATTER_WILDCAT
+{
+    criteria ConceptCHATTER_WILDCAT Is_bastille
+    response bastille_CHATTER_WILDCAT
+}
+
+Response wolfe_CHATTER_IMPATIENCE
+{
+	speak "wolfe.Impatience0"
+	speak "wolfe.Impatience1"
+	speak "wolfe.Impatience2"
+}
+
+Rule wolfe_CHATTER_IMPATIENCE
+{
+    criteria ConceptCHATTER_IMPATIENCE Is_wolfe
+    response wolfe_CHATTER_IMPATIENCE
+}
+
+Response vegas_CHATTER_IMPATIENCE
+{
+	speak "vegas.Impatience0"
+}
+
+Rule vegas_CHATTER_IMPATIENCE
+{
+    criteria ConceptCHATTER_IMPATIENCE Is_vegas
+    response vegas_CHATTER_IMPATIENCE
+}
+
+Response sarge_CHATTER_IMPATIENCE
+{
+	speak "sarge.Impatience0"
+	speak "sarge.Impatience1"
+	speak "sarge.Impatience2"
+}
+
+Rule sarge_CHATTER_IMPATIENCE
+{
+    criteria ConceptCHATTER_IMPATIENCE Is_sarge
+    response sarge_CHATTER_IMPATIENCE
+}
+
+Response wildcat_CHATTER_IMPATIENCE
+{
+	speak "wildcat.Impatience0"
+}
+
+Rule wildcat_CHATTER_IMPATIENCE
+{
+    criteria ConceptCHATTER_IMPATIENCE Is_wildcat
+    response wildcat_CHATTER_IMPATIENCE
+}
+
+Response faith_CHATTER_BREACHED_DOOR
+{
+	speak "faith.BreachedDoor0"
+	speak "faith.BreachedDoor1"
+}
+
+Rule faith_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_faith
+    response faith_CHATTER_BREACHED_DOOR
+}
+
+Response crash_CHATTER_BREACHED_DOOR
+{
+	speak "crash.BreachedDoor0"
+	speak "crash.BreachedDoor1"
+	speak "crash.BreachedDoor2"
+}
+
+Rule crash_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_crash
+    response crash_CHATTER_BREACHED_DOOR
+}
+
+Response jaeger_CHATTER_BREACHED_DOOR
+{
+	speak "jaeger.BreachedDoor0"
+	speak "jaeger.BreachedDoor1"
+	speak "jaeger.BreachedDoor2"
+}
+
+Rule jaeger_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_jaeger
+    response jaeger_CHATTER_BREACHED_DOOR
+}
+
+Response wolfe_CHATTER_BREACHED_DOOR
+{
+	speak "wolfe.BreachedDoor0"
+	speak "wolfe.BreachedDoor1"
+	speak "wolfe.BreachedDoor2"
+	speak "wolfe.BreachedDoor3"
+}
+
+Rule wolfe_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_wolfe
+    response wolfe_CHATTER_BREACHED_DOOR
+}
+
+Response vegas_CHATTER_BREACHED_DOOR
+{
+	speak "vegas.BreachedDoor0"
+	speak "vegas.BreachedDoor1"
+	speak "vegas.BreachedDoor2"
+}
+
+Rule vegas_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_vegas
+    response vegas_CHATTER_BREACHED_DOOR
+}
+
+Response sarge_CHATTER_BREACHED_DOOR
+{
+	speak "sarge.BreachedDoor0"
+	speak "sarge.BreachedDoor1"
+	speak "sarge.BreachedDoor2"
+}
+
+Rule sarge_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_sarge
+    response sarge_CHATTER_BREACHED_DOOR
+}
+
+Response bastille_CHATTER_BREACHED_DOOR
+{
+	speak "bastille.BreachedDoor0"
+	speak "bastille.BreachedDoor1"
+	speak "bastille.BreachedDoor2"
+	speak "bastille.BreachedDoor3"
+}
+
+Rule bastille_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_bastille
+    response bastille_CHATTER_BREACHED_DOOR
+}
+
+Response wildcat_CHATTER_BREACHED_DOOR
+{
+	speak "wildcat.BreachedDoor0"
+	speak "wildcat.BreachedDoor1"
+}
+
+Rule wildcat_CHATTER_BREACHED_DOOR
+{
+    criteria ConceptCHATTER_BREACHED_DOOR Is_wildcat
+    response wildcat_CHATTER_BREACHED_DOOR
+}
+
+Response sarge_CHATTER_BIG_ALIEN_REPLY
+{
+	speak "sarge.BigAlienDeadReply0"
+}
+
+Rule sarge_CHATTER_BIG_ALIEN_REPLY
+{
+    criteria ConceptCHATTER_BIG_ALIEN_REPLY Is_sarge
+    response sarge_CHATTER_BIG_ALIEN_REPLY
+}
+
+Response crash_CHATTER_BIG_ALIEN_REPLY
+{
+	speak "crash.BigAlienDeadReply0"
+}
+
+Rule crash_CHATTER_BIG_ALIEN_REPLY
+{
+    criteria ConceptCHATTER_BIG_ALIEN_REPLY Is_crash
+    response crash_CHATTER_BIG_ALIEN_REPLY
+}
+
+Response faith_CHATTER_THANKS
+{
+	speak "faith.Thanks0"
+	speak "faith.Thanks1"
+	speak "faith.Thanks2"
+}
+
+Rule faith_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_faith
+    response faith_CHATTER_THANKS
+}
+
+Response crash_CHATTER_THANKS
+{
+	speak "crash.Thanks0"
+	speak "crash.Thanks1"
+}
+
+Rule crash_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_crash
+    response crash_CHATTER_THANKS
+}
+
+Response jaeger_CHATTER_THANKS
+{
+	speak "jaeger.Thanks0"
+	speak "jaeger.Thanks1"
+}
+
+Rule jaeger_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_jaeger
+    response jaeger_CHATTER_THANKS
+}
+
+Response wolfe_CHATTER_THANKS
+{
+	speak "wolfe.Thanks0"
+	speak "wolfe.Thanks1"
+	speak "wolfe.Thanks2"
+	speak "wolfe.Thanks3"
+	speak "wolfe.Thanks4"
+	speak "wolfe.Thanks5"
+}
+
+Rule wolfe_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_wolfe
+    response wolfe_CHATTER_THANKS
+}
+
+Response vegas_CHATTER_THANKS
+{
+	speak "vegas.Thanks0"
+	speak "vegas.Thanks1"
+	speak "vegas.Thanks2"
+}
+
+Rule vegas_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_vegas
+    response vegas_CHATTER_THANKS
+}
+
+Response sarge_CHATTER_THANKS
+{
+	speak "sarge.Thanks0"
+	speak "sarge.Thanks1"
+}
+
+Rule sarge_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_sarge
+    response sarge_CHATTER_THANKS
+}
+
+Response bastille_CHATTER_THANKS
+{
+	speak "bastille.Thanks0"
+	speak "bastille.Thanks1"
+}
+
+Rule bastille_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_bastille
+    response bastille_CHATTER_THANKS
+}
+
+Response wildcat_CHATTER_THANKS
+{
+	speak "wildcat.Thanks0"
+	speak "wildcat.Thanks1"
+}
+
+Rule wildcat_CHATTER_THANKS
+{
+    criteria ConceptCHATTER_THANKS Is_wildcat
+    response wildcat_CHATTER_THANKS
+}
+
+Response faith_CHATTER_MEDIC_COMPLAIN
+{
+	speak "faith.MedicComplain0"
+	speak "faith.MedicComplain1"
+}
+
+Rule faith_CHATTER_MEDIC_COMPLAIN
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN Is_faith
+    response faith_CHATTER_MEDIC_COMPLAIN
+}
+
+Response bastille_CHATTER_MEDIC_COMPLAIN
+{
+	speak "bastille.MedicComplain0"
+	speak "bastille.MedicComplain1"
+}
+
+Rule bastille_CHATTER_MEDIC_COMPLAIN
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN Is_bastille
+    response bastille_CHATTER_MEDIC_COMPLAIN
+}
+
+Response wolfe_CHATTER_WOLFE_BEST_REPLY
+{
+	speak "wolfe.WolfeBestReply0"
+	speak "wolfe.WolfeBestReply1"
+	speak "wolfe.WolfeBestReply2"
+	speak "wolfe.WolfeBestReply3"
+	speak "wolfe.WolfeBestReply4"
+	speak "wolfe.WolfeBestReply5"
+	speak "wolfe.WolfeBestReply6"
+	speak "wolfe.WolfeBestReply7"
+	speak "wolfe.WolfeBestReply8"
+}
+
+Rule wolfe_CHATTER_WOLFE_BEST_REPLY
+{
+    criteria ConceptCHATTER_WOLFE_BEST_REPLY Is_wolfe
+    response wolfe_CHATTER_WOLFE_BEST_REPLY
+}
+
+Response wildcat_CHATTER_WOLFE_BEST_REPLY
+{
+	speak "wildcat.WolfeBestReply0"
+	speak "wildcat.WolfeBestReply1"
+}
+
+Rule wildcat_CHATTER_WOLFE_BEST_REPLY
+{
+    criteria ConceptCHATTER_WOLFE_BEST_REPLY Is_wildcat
+    response wildcat_CHATTER_WOLFE_BEST_REPLY
+}
+
+Response faith_CHATTER_WOLFE
+{
+	speak "faith.CallWolfe0"
+	speak "faith.CallWolfe1"
+}
+
+Rule faith_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_faith
+    response faith_CHATTER_WOLFE
+}
+
+Response crash_CHATTER_WOLFE
+{
+	speak "crash.CallWolfe0"
+	speak "crash.CallWolfe1"
+}
+
+Rule crash_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_crash
+    response crash_CHATTER_WOLFE
+}
+
+Response jaeger_CHATTER_WOLFE
+{
+	speak "jaeger.CallWolfe0"
+	speak "jaeger.CallWolfe1"
+}
+
+Rule jaeger_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_jaeger
+    response jaeger_CHATTER_WOLFE
+}
+
+Response vegas_CHATTER_WOLFE
+{
+	speak "vegas.CallWolfe0"
+	speak "vegas.CallWolfe1"
+}
+
+Rule vegas_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_vegas
+    response vegas_CHATTER_WOLFE
+}
+
+Response sarge_CHATTER_WOLFE
+{
+	speak "sarge.CallWolfe0"
+	speak "sarge.CallWolfe1"
+}
+
+Rule sarge_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_sarge
+    response sarge_CHATTER_WOLFE
+}
+
+Response bastille_CHATTER_WOLFE
+{
+	speak "bastille.CallWolfe0"
+	speak "bastille.CallWolfe1"
+}
+
+Rule bastille_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_bastille
+    response bastille_CHATTER_WOLFE
+}
+
+Response wildcat_CHATTER_WOLFE
+{
+	speak "wildcat.CallWolfe0"
+	speak "wildcat.CallWolfe1"
+}
+
+Rule wildcat_CHATTER_WOLFE
+{
+    criteria ConceptCHATTER_WOLFE Is_wildcat
+    response wildcat_CHATTER_WOLFE
+}
+
+Response faith_CHATTER_WATCH_OUT
+{
+	speak "faith.WatchOut0"
+	speak "faith.WatchOut1"
+	speak "faith.WatchOut2"
+	speak "faith.WatchOut3"
+}
+
+Rule faith_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_faith
+    response faith_CHATTER_WATCH_OUT
+}
+
+Response crash_CHATTER_WATCH_OUT
+{
+	speak "crash.WatchOut0"
+	speak "crash.WatchOut1"
+	speak "crash.WatchOut2"
+}
+
+Rule crash_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_crash
+    response crash_CHATTER_WATCH_OUT
+}
+
+Response jaeger_CHATTER_WATCH_OUT
+{
+	speak "jaeger.WatchOut0"
+	speak "jaeger.WatchOut1"
+	speak "jaeger.WatchOut2"
+}
+
+Rule jaeger_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_jaeger
+    response jaeger_CHATTER_WATCH_OUT
+}
+
+Response wolfe_CHATTER_WATCH_OUT
+{
+	speak "wolfe.WatchOut0"
+	speak "wolfe.WatchOut1"
+	speak "wolfe.WatchOut2"
+}
+
+Rule wolfe_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_wolfe
+    response wolfe_CHATTER_WATCH_OUT
+}
+
+Response vegas_CHATTER_WATCH_OUT
+{
+	speak "vegas.WatchOut0"
+	speak "vegas.WatchOut1"
+	speak "vegas.WatchOut2"
+}
+
+Rule vegas_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_vegas
+    response vegas_CHATTER_WATCH_OUT
+}
+
+Response sarge_CHATTER_WATCH_OUT
+{
+	speak "sarge.WatchOut0"
+	speak "sarge.WatchOut1"
+	speak "sarge.WatchOut2"
+	speak "sarge.WatchOut3"
+}
+
+Rule sarge_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_sarge
+    response sarge_CHATTER_WATCH_OUT
+}
+
+Response bastille_CHATTER_WATCH_OUT
+{
+	speak "bastille.WatchOut0"
+	speak "bastille.WatchOut1"
+	speak "bastille.WatchOut2"
+	speak "bastille.WatchOut3"
+}
+
+Rule bastille_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_bastille
+    response bastille_CHATTER_WATCH_OUT
+}
+
+Response wildcat_CHATTER_WATCH_OUT
+{
+	speak "wildcat.WatchOut0"
+	speak "wildcat.WatchOut1"
+	speak "wildcat.WatchOut2"
+}
+
+Rule wildcat_CHATTER_WATCH_OUT
+{
+    criteria ConceptCHATTER_WATCH_OUT Is_wildcat
+    response wildcat_CHATTER_WATCH_OUT
+}
+
+Response wildcat_CHATTER_WILDCAT_KILL
+{
+	speak "wildcat.WildcatKillStart0"
+	speak "wildcat.WildcatKillStart1"
+}
+
+Rule wildcat_CHATTER_WILDCAT_KILL
+{
+    criteria ConceptCHATTER_WILDCAT_KILL Is_wildcat
+    response wildcat_CHATTER_WILDCAT_KILL
+}
+
+Response vegas_CHATTER_TEQUILA_REPLY_WOLFE
+{
+	speak "vegas.TequilaReplyWolfe0"
+}
+
+Rule vegas_CHATTER_TEQUILA_REPLY_WOLFE
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY_WOLFE Is_vegas
+    response vegas_CHATTER_TEQUILA_REPLY_WOLFE
+}
+
+Response faith_CHATTER_INFESTED
+{
+	speak "faith.BeenInfested0"
+	speak "faith.BeenInfested1"
+	speak "faith.BeenInfested2"
+	speak "faith.BeenInfested3"
+	speak "faith.BeenInfested4"
+}
+
+Rule faith_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_faith
+    response faith_CHATTER_INFESTED
+}
+
+Response crash_CHATTER_INFESTED
+{
+	speak "crash.BeenInfested0"
+	speak "crash.BeenInfested1"
+	speak "crash.BeenInfested3"
+}
+
+Rule crash_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_crash
+    response crash_CHATTER_INFESTED
+}
+
+Response jaeger_CHATTER_INFESTED
+{
+	speak "jaeger.BeenInfested0"
+	speak "jaeger.BeenInfested1"
+	speak "jaeger.BeenInfested2"
+	speak "jaeger.BeenInfested3"
+}
+
+Rule jaeger_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_jaeger
+    response jaeger_CHATTER_INFESTED
+}
+
+Response wolfe_CHATTER_INFESTED
+{
+	speak "wolfe.BeenInfested0"
+	speak "wolfe.BeenInfested2"
+	speak "wolfe.BeenInfested3"
+	speak "wolfe.BeenInfested4"
+	speak "wolfe.BeenInfested5"
+	speak "wolfe.BeenInfested6"
+	speak "wolfe.BeenInfested8"
+	speak "wolfe.BeenInfested9"
+	speak "wolfe.BeenInfested10"
+}
+
+Rule wolfe_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_wolfe
+    response wolfe_CHATTER_INFESTED
+}
+
+Response vegas_CHATTER_INFESTED
+{
+	speak "vegas.BeenInfested0"
+	speak "vegas.BeenInfested1"
+	speak "vegas.BeenInfested2"
+	speak "vegas.BeenInfested4"
+}
+
+Rule vegas_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_vegas
+    response vegas_CHATTER_INFESTED
+}
+
+Response sarge_CHATTER_INFESTED
+{
+	speak "sarge.BeenInfested0"
+	speak "sarge.BeenInfested1"
+	speak "sarge.BeenInfested2"
+	speak "sarge.BeenInfested3"
+}
+
+Rule sarge_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_sarge
+    response sarge_CHATTER_INFESTED
+}
+
+Response bastille_CHATTER_INFESTED
+{
+	speak "bastille.BeenInfested0"
+	speak "bastille.BeenInfested1"
+	speak "bastille.BeenInfested2"
+}
+
+Rule bastille_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_bastille
+    response bastille_CHATTER_INFESTED
+}
+
+Response wildcat_CHATTER_INFESTED
+{
+	speak "wildcat.BeenInfested0"
+	speak "wildcat.BeenInfested1"
+	speak "wildcat.BeenInfested2"
+}
+
+Rule wildcat_CHATTER_INFESTED
+{
+    criteria ConceptCHATTER_INFESTED Is_wildcat
+    response wildcat_CHATTER_INFESTED
+}
+
+Response faith_CHATTER_MAD_FIRING
+{
+	speak "faith.MadFiring0"
+	speak "faith.MadFiring1"
+	speak "faith.MadFiring2"
+	speak "faith.MadFiring3"
+}
+
+Rule faith_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_faith
+    response faith_CHATTER_MAD_FIRING
+}
+
+Response crash_CHATTER_MAD_FIRING
+{
+	speak "crash.MadFiring0"
+	speak "crash.MadFiring1"
+	speak "crash.MadFiring3"
+	speak "crash.MadFiring4"
+}
+
+Rule crash_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_crash
+    response crash_CHATTER_MAD_FIRING
+}
+
+Response jaeger_CHATTER_MAD_FIRING
+{
+	speak "jaeger.MadFiring0"
+	speak "jaeger.MadFiring1"
+	speak "jaeger.MadFiring2"
+	speak "jaeger.MadFiring3"
+	speak "jaeger.MadFiring4"
+}
+
+Rule jaeger_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_jaeger
+    response jaeger_CHATTER_MAD_FIRING
+}
+
+Response wolfe_CHATTER_MAD_FIRING
+{
+	speak "wolfe.MadFiring0"
+	speak "wolfe.MadFiring1"
+	speak "wolfe.MadFiring2"
+	speak "wolfe.MadFiring3"
+	speak "wolfe.MadFiring4"
+	speak "wolfe.MadFiring5"
+	speak "wolfe.MadFiring6"
+	speak "wolfe.MadFiring7"
+	speak "wolfe.MadFiring8"
+	speak "wolfe.MadFiring9"
+	speak "wolfe.MadFiring10"
+	speak "wolfe.MadFiring11"
+}
+
+Rule wolfe_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_wolfe
+    response wolfe_CHATTER_MAD_FIRING
+}
+
+Response vegas_CHATTER_MAD_FIRING
+{
+	speak "vegas.MadFiring0"
+	speak "vegas.MadFiring2"
+	speak "vegas.MadFiring3"
+}
+
+Rule vegas_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_vegas
+    response vegas_CHATTER_MAD_FIRING
+}
+
+Response sarge_CHATTER_MAD_FIRING
+{
+	speak "sarge.MadFiring0"
+	speak "sarge.MadFiring1"
+	speak "sarge.MadFiring2"
+}
+
+Rule sarge_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_sarge
+    response sarge_CHATTER_MAD_FIRING
+}
+
+Response bastille_CHATTER_MAD_FIRING
+{
+	speak "bastille.MadFiring0"
+	speak "bastille.MadFiring1"
+	speak "bastille.MadFiring2"
+}
+
+Rule bastille_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_bastille
+    response bastille_CHATTER_MAD_FIRING
+}
+
+Response wildcat_CHATTER_MAD_FIRING
+{
+	speak "wildcat.MadFiring0"
+	speak "wildcat.MadFiring1"
+	speak "wildcat.MadFiring2"
+}
+
+Rule wildcat_CHATTER_MAD_FIRING
+{
+    criteria ConceptCHATTER_MAD_FIRING Is_wildcat
+    response wildcat_CHATTER_MAD_FIRING
+}
+
+Response crash_CHATTER_CRASH_COMPLAIN
+{
+	speak "crash.CrashComplain0"
+}
+
+Rule crash_CHATTER_CRASH_COMPLAIN
+{
+    criteria ConceptCHATTER_CRASH_COMPLAIN Is_crash
+    response crash_CHATTER_CRASH_COMPLAIN
+}
+
+Response jaeger_CHATTER_COMPLIMENTS_SARGE
+{
+	speak "jaeger.ComplimentsSarge0"
+}
+
+Rule jaeger_CHATTER_COMPLIMENTS_SARGE
+{
+    criteria ConceptCHATTER_COMPLIMENTS_SARGE Is_jaeger
+    response jaeger_CHATTER_COMPLIMENTS_SARGE
+}
+
+Response vegas_CHATTER_FIRST_BLOOD_START
+{
+	speak "vegas.FirstBloodStart0"
+}
+
+Rule vegas_CHATTER_FIRST_BLOOD_START
+{
+    criteria ConceptCHATTER_FIRST_BLOOD_START Is_vegas
+    response vegas_CHATTER_FIRST_BLOOD_START
+}
+
+Response crash_CHATTER_CRASH_COMPLAIN_REPLY
+{
+	speak "crash.CrashComplainReply0"
+}
+
+Rule crash_CHATTER_CRASH_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_CRASH_COMPLAIN_REPLY Is_crash
+    response crash_CHATTER_CRASH_COMPLAIN_REPLY
+}
+
+Response bastille_CHATTER_CRASH_COMPLAIN_REPLY
+{
+	speak "bastille.CrashComplainReply0"
+}
+
+Rule bastille_CHATTER_CRASH_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_CRASH_COMPLAIN_REPLY Is_bastille
+    response bastille_CHATTER_CRASH_COMPLAIN_REPLY
+}
+
+Response faith_CHATTER_NO_AMMO
+{
+	speak "faith.NoAmmo0"
+	speak "faith.NoAmmo1"
+}
+
+Rule faith_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_faith
+    response faith_CHATTER_NO_AMMO
+}
+
+Response crash_CHATTER_NO_AMMO
+{
+	speak "crash.NoAmmo0"
+}
+
+Rule crash_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_crash
+    response crash_CHATTER_NO_AMMO
+}
+
+Response jaeger_CHATTER_NO_AMMO
+{
+	speak "jaeger.NoAmmo0"
+	speak "jaeger.NoAmmo1"
+}
+
+Rule jaeger_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_jaeger
+    response jaeger_CHATTER_NO_AMMO
+}
+
+Response wolfe_CHATTER_NO_AMMO
+{
+	speak "wolfe.NoAmmo0"
+	speak "wolfe.NoAmmo1"
+}
+
+Rule wolfe_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_wolfe
+    response wolfe_CHATTER_NO_AMMO
+}
+
+Response vegas_CHATTER_NO_AMMO
+{
+	speak "vegas.NoAmmo0"
+	speak "vegas.NoAmmo1"
+}
+
+Rule vegas_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_vegas
+    response vegas_CHATTER_NO_AMMO
+}
+
+Response sarge_CHATTER_NO_AMMO
+{
+	speak "sarge.NoAmmo0"
+	speak "sarge.NoAmmo1"
+	speak "sarge.NoAmmo2"
+	speak "sarge.NoAmmo3"
+}
+
+Rule sarge_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_sarge
+    response sarge_CHATTER_NO_AMMO
+}
+
+Response bastille_CHATTER_NO_AMMO
+{
+	speak "bastille.NoAmmo0"
+	speak "bastille.NoAmmo1"
+	speak "bastille.NoAmmo2"
+	speak "bastille.NoAmmo3"
+	speak "bastille.NoAmmo4"
+}
+
+Rule bastille_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_bastille
+    response bastille_CHATTER_NO_AMMO
+}
+
+Response wildcat_CHATTER_NO_AMMO
+{
+	speak "wildcat.NoAmmo0"
+	speak "wildcat.NoAmmo1"
+	speak "wildcat.NoAmmo2"
+	speak "wildcat.NoAmmo3"
+}
+
+Rule wildcat_CHATTER_NO_AMMO
+{
+    criteria ConceptCHATTER_NO_AMMO Is_wildcat
+    response wildcat_CHATTER_NO_AMMO
+}
+
+Response wolfe_CHATTER_WOLFE_KILL_REPLY_BEHIND
+{
+	speak "wolfe.WolfeKillReplyBehind0"
+	speak "wolfe.WolfeKillReplyBehind1"
+}
+
+Rule wolfe_CHATTER_WOLFE_KILL_REPLY_BEHIND
+{
+    criteria ConceptCHATTER_WOLFE_KILL_REPLY_BEHIND Is_wolfe
+    response wolfe_CHATTER_WOLFE_KILL_REPLY_BEHIND
+}
+
+Response wildcat_CHATTER_WOLFE_KILL_REPLY_BEHIND
+{
+	speak "wildcat.WolfeKillReplyBehind0"
+	speak "wildcat.WolfeKillReplyBehind1"
+}
+
+Rule wildcat_CHATTER_WOLFE_KILL_REPLY_BEHIND
+{
+    criteria ConceptCHATTER_WOLFE_KILL_REPLY_BEHIND Is_wildcat
+    response wildcat_CHATTER_WOLFE_KILL_REPLY_BEHIND
+}
+
+Response faith_CHATTER_FOLLOW_ME
+{
+	speak "faith.FollowMe0"
+	speak "faith.FollowMe1"
+	speak "faith.FollowMe2"
+	speak "faith.FollowMe3"
+}
+
+Rule faith_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_faith
+    response faith_CHATTER_FOLLOW_ME
+}
+
+Response crash_CHATTER_FOLLOW_ME
+{
+	speak "crash.FollowMe0"
+	speak "crash.FollowMe1"
+}
+
+Rule crash_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_crash
+    response crash_CHATTER_FOLLOW_ME
+}
+
+Response jaeger_CHATTER_FOLLOW_ME
+{
+	speak "jaeger.FollowMe0"
+	speak "jaeger.FollowMe1"
+	speak "jaeger.FollowMe2"
+}
+
+Rule jaeger_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_jaeger
+    response jaeger_CHATTER_FOLLOW_ME
+}
+
+Response wolfe_CHATTER_FOLLOW_ME
+{
+	speak "wolfe.FollowMe0"
+	speak "wolfe.FollowMe1"
+}
+
+Rule wolfe_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_wolfe
+    response wolfe_CHATTER_FOLLOW_ME
+}
+
+Response vegas_CHATTER_FOLLOW_ME
+{
+	speak "vegas.FollowMe0"
+	speak "vegas.FollowMe1"
+	speak "vegas.FollowMe2"
+	speak "vegas.FollowMe3"
+}
+
+Rule vegas_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_vegas
+    response vegas_CHATTER_FOLLOW_ME
+}
+
+Response sarge_CHATTER_FOLLOW_ME
+{
+	speak "sarge.FollowMe0"
+	speak "sarge.FollowMe1"
+	speak "sarge.FollowMe2"
+}
+
+Rule sarge_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_sarge
+    response sarge_CHATTER_FOLLOW_ME
+}
+
+Response bastille_CHATTER_FOLLOW_ME
+{
+	speak "bastille.FollowMe0"
+	speak "bastille.FollowMe1"
+	speak "bastille.FollowMe2"
+	speak "bastille.FollowMe3"
+	speak "bastille.FollowMe4"
+	speak "bastille.FollowMe5"
+	speak "bastille.FollowMe6"
+	speak "bastille.FollowMe7"
+	speak "bastille.FollowMe8"
+	speak "bastille.FollowMe9"
+	speak "bastille.FollowMe10"
+}
+
+Rule bastille_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_bastille
+    response bastille_CHATTER_FOLLOW_ME
+}
+
+Response wildcat_CHATTER_FOLLOW_ME
+{
+	speak "wildcat.FollowMe0"
+	speak "wildcat.FollowMe1"
+	speak "wildcat.FollowMe2"
+}
+
+Rule wildcat_CHATTER_FOLLOW_ME
+{
+    criteria ConceptCHATTER_FOLLOW_ME Is_wildcat
+    response wildcat_CHATTER_FOLLOW_ME
+}
+
+Response sarge_CHATTER_SARGE_IDLE_REPLY
+{
+	speak "sarge.SargeIdleReply0"
+	speak "sarge.SargeIdleReply1"
+}
+
+Rule sarge_CHATTER_SARGE_IDLE_REPLY
+{
+    criteria ConceptCHATTER_SARGE_IDLE_REPLY Is_sarge
+    response sarge_CHATTER_SARGE_IDLE_REPLY
+}
+
+Response crash_CHATTER_SARGE_IDLE_REPLY
+{
+	speak "crash.SargeIdleReply0"
+	speak "crash.SargeIdleReply1"
+}
+
+Rule crash_CHATTER_SARGE_IDLE_REPLY
+{
+    criteria ConceptCHATTER_SARGE_IDLE_REPLY Is_crash
+    response crash_CHATTER_SARGE_IDLE_REPLY
+}
+
+Response crash_CHATTER_BIG_ALIEN_DEAD
+{
+	speak "crash.BigAlienDead0"
+}
+
+Rule crash_CHATTER_BIG_ALIEN_DEAD
+{
+    criteria ConceptCHATTER_BIG_ALIEN_DEAD Is_crash
+    response crash_CHATTER_BIG_ALIEN_DEAD
+}
+
+Response faith_CHATTER_STIM_NOW
+{
+	speak "faith.ActivateStims0"
+	speak "faith.ActivateStims1"
+	speak "faith.ActivateStims2"
+}
+
+Rule faith_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_faith
+    response faith_CHATTER_STIM_NOW
+}
+
+Response crash_CHATTER_STIM_NOW
+{
+	speak "crash.ActivateStims0"
+	speak "crash.ActivateStims1"
+	speak "crash.ActivateStims2"
+	speak "crash.ActivateStims3"
+}
+
+Rule crash_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_crash
+    response crash_CHATTER_STIM_NOW
+}
+
+Response jaeger_CHATTER_STIM_NOW
+{
+	speak "jaeger.ActivateStims0"
+	speak "jaeger.ActivateStims1"
+}
+
+Rule jaeger_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_jaeger
+    response jaeger_CHATTER_STIM_NOW
+}
+
+Response wolfe_CHATTER_STIM_NOW
+{
+	speak "wolfe.ActivateStims0"
+	speak "wolfe.ActivateStims1"
+	speak "wolfe.ActivateStims2"
+	speak "wolfe.ActivateStims3"
+	speak "wolfe.ActivateStims4"
+	speak "wolfe.ActivateStims5"
+	speak "wolfe.ActivateStims6"
+}
+
+Rule wolfe_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_wolfe
+    response wolfe_CHATTER_STIM_NOW
+}
+
+Response vegas_CHATTER_STIM_NOW
+{
+	speak "vegas.ActivateStims0"
+	speak "vegas.ActivateStims1"
+	speak "vegas.ActivateStims2"
+}
+
+Rule vegas_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_vegas
+    response vegas_CHATTER_STIM_NOW
+}
+
+Response sarge_CHATTER_STIM_NOW
+{
+	speak "sarge.ActivateStims0"
+	speak "sarge.ActivateStims1"
+	speak "sarge.ActivateStims2"
+	speak "sarge.ActivateStims3"
+	speak "sarge.ActivateStims4"
+}
+
+Rule sarge_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_sarge
+    response sarge_CHATTER_STIM_NOW
+}
+
+Response bastille_CHATTER_STIM_NOW
+{
+	speak "bastille.ActivateStims0"
+	speak "bastille.ActivateStims1"
+}
+
+Rule bastille_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_bastille
+    response bastille_CHATTER_STIM_NOW
+}
+
+Response wildcat_CHATTER_STIM_NOW
+{
+	speak "wildcat.ActivateStims0"
+	speak "wildcat.ActivateStims1"
+	speak "wildcat.ActivateStims2"
+	speak "wildcat.ActivateStims3"
+}
+
+Rule wildcat_CHATTER_STIM_NOW
+{
+    criteria ConceptCHATTER_STIM_NOW Is_wildcat
+    response wildcat_CHATTER_STIM_NOW
+}
+
+Response wolfe_CHATTER_MISC
+{
+	speak "wolfe.Misc0"
+	speak "wolfe.Misc1"
+	speak "wolfe.Misc2"
+	speak "wolfe.Misc3"
+}
+
+Rule wolfe_CHATTER_MISC
+{
+    criteria ConceptCHATTER_MISC Is_wolfe
+    response wolfe_CHATTER_MISC
+}
+
+Response sarge_CHATTER_MISC
+{
+	speak "sarge.Misc0"
+	speak "sarge.Misc1"
+	speak "sarge.Misc2"
+}
+
+Rule sarge_CHATTER_MISC
+{
+    criteria ConceptCHATTER_MISC Is_sarge
+    response sarge_CHATTER_MISC
+}
+
+Response bastille_CHATTER_MISC
+{
+	speak "bastille.Misc0"
+	speak "bastille.Misc1"
+	speak "bastille.Misc2"
+	speak "bastille.Misc3"
+	speak "bastille.Misc4"
+	speak "bastille.Misc5"
+	speak "bastille.Misc6"
+	speak "bastille.Misc7"
+	speak "bastille.Misc8"
+	speak "bastille.Misc9"
+	speak "bastille.Misc10"
+	speak "bastille.Misc11"
+}
+
+Rule bastille_CHATTER_MISC
+{
+    criteria ConceptCHATTER_MISC Is_bastille
+    response bastille_CHATTER_MISC
+}
+
+Response faith_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "faith.RequestSealDoor0"
+	speak "faith.RequestSealDoor1"
+	speak "faith.RequestSealDoor2"
+}
+
+Rule faith_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_faith
+    response faith_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response crash_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "crash.RequestSealDoor0"
+	speak "crash.RequestSealDoor1"
+	speak "crash.RequestSealDoor2"
+}
+
+Rule crash_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_crash
+    response crash_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response jaeger_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "jaeger.RequestSealDoor0"
+	speak "jaeger.RequestSealDoor1"
+}
+
+Rule jaeger_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_jaeger
+    response jaeger_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response wolfe_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "wolfe.RequestSealDoor0"
+	speak "wolfe.RequestSealDoor1"
+	speak "wolfe.RequestSealDoor2"
+	speak "wolfe.RequestSealDoor3"
+}
+
+Rule wolfe_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_wolfe
+    response wolfe_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response vegas_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "vegas.RequestSealDoor0"
+	speak "vegas.RequestSealDoor1"
+	speak "vegas.RequestSealDoor2"
+}
+
+Rule vegas_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_vegas
+    response vegas_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response sarge_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "sarge.RequestSealDoor0"
+	speak "sarge.RequestSealDoor1"
+	speak "sarge.RequestSealDoor2"
+	speak "sarge.RequestSealDoor3"
+}
+
+Rule sarge_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_sarge
+    response sarge_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response bastille_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "bastille.RequestSealDoor0"
+	speak "bastille.RequestSealDoor1"
+	speak "bastille.RequestSealDoor2"
+	speak "bastille.RequestSealDoor3"
+}
+
+Rule bastille_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_bastille
+    response bastille_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response wildcat_CHATTER_REQUEST_SEAL_DOOR
+{
+	speak "wildcat.RequestSealDoor0"
+	speak "wildcat.RequestSealDoor1"
+}
+
+Rule wildcat_CHATTER_REQUEST_SEAL_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SEAL_DOOR Is_wildcat
+    response wildcat_CHATTER_REQUEST_SEAL_DOOR
+}
+
+Response faith_CHATTER_SUPPLIES_AMMO
+{
+	speak "faith.SuppliesAmmo0"
+	speak "faith.SuppliesAmmo1"
+}
+
+Rule faith_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_faith
+    response faith_CHATTER_SUPPLIES_AMMO
+}
+
+Response crash_CHATTER_SUPPLIES_AMMO
+{
+	speak "crash.SuppliesAmmo0"
+	speak "crash.SuppliesAmmo1"
+	speak "crash.SuppliesAmmo2"
+}
+
+Rule crash_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_crash
+    response crash_CHATTER_SUPPLIES_AMMO
+}
+
+Response jaeger_CHATTER_SUPPLIES_AMMO
+{
+	speak "jaeger.SuppliesAmmo0"
+	speak "jaeger.SuppliesAmmo1"
+	speak "jaeger.SuppliesAmmo2"
+}
+
+Rule jaeger_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_jaeger
+    response jaeger_CHATTER_SUPPLIES_AMMO
+}
+
+Response vegas_CHATTER_SUPPLIES_AMMO
+{
+	speak "vegas.SuppliesAmmo0"
+}
+
+Rule vegas_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_vegas
+    response vegas_CHATTER_SUPPLIES_AMMO
+}
+
+Response sarge_CHATTER_SUPPLIES_AMMO
+{
+	speak "sarge.SuppliesAmmo0"
+	speak "sarge.SuppliesAmmo1"
+	speak "sarge.SuppliesAmmo2"
+}
+
+Rule sarge_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_sarge
+    response sarge_CHATTER_SUPPLIES_AMMO
+}
+
+Response bastille_CHATTER_SUPPLIES_AMMO
+{
+	speak "bastille.SuppliesAmmo0"
+	speak "bastille.SuppliesAmmo1"
+	speak "bastille.SuppliesAmmo2"
+	speak "bastille.SuppliesAmmo3"
+	speak "bastille.SuppliesAmmo4"
+}
+
+Rule bastille_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_bastille
+    response bastille_CHATTER_SUPPLIES_AMMO
+}
+
+Response wildcat_CHATTER_SUPPLIES_AMMO
+{
+	speak "wildcat.SuppliesAmmo0"
+	speak "wildcat.SuppliesAmmo1"
+}
+
+Rule wildcat_CHATTER_SUPPLIES_AMMO
+{
+    criteria ConceptCHATTER_SUPPLIES_AMMO Is_wildcat
+    response wildcat_CHATTER_SUPPLIES_AMMO
+}
+
+Response crash_CHATTER_HEALING_CRASH_REPLY
+{
+	speak "crash.HealingCrashReply0"
+}
+
+Rule crash_CHATTER_HEALING_CRASH_REPLY
+{
+    criteria ConceptCHATTER_HEALING_CRASH_REPLY Is_crash
+    response crash_CHATTER_HEALING_CRASH_REPLY
+}
+
+Response bastille_CHATTER_HEALING_CRASH_REPLY
+{
+	speak "bastille.HealingCrashReply0"
+}
+
+Rule bastille_CHATTER_HEALING_CRASH_REPLY
+{
+    criteria ConceptCHATTER_HEALING_CRASH_REPLY Is_bastille
+    response bastille_CHATTER_HEALING_CRASH_REPLY
+}
+
+Response faith_CHATTER_TEQUILA_REPLY
+{
+	speak "faith.TequilaReply0"
+}
+
+Rule faith_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_faith
+    response faith_CHATTER_TEQUILA_REPLY
+}
+
+Response crash_CHATTER_TEQUILA_REPLY
+{
+	speak "crash.TequilaReply0"
+}
+
+Rule crash_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_crash
+    response crash_CHATTER_TEQUILA_REPLY
+}
+
+Response jaeger_CHATTER_TEQUILA_REPLY
+{
+	speak "jaeger.TequilaReply0"
+}
+
+Rule jaeger_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_jaeger
+    response jaeger_CHATTER_TEQUILA_REPLY
+}
+
+Response wolfe_CHATTER_TEQUILA_REPLY
+{
+	speak "wolfe.TequilaReply0"
+	speak "wolfe.TequilaReply1"
+}
+
+Rule wolfe_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_wolfe
+    response wolfe_CHATTER_TEQUILA_REPLY
+}
+
+Response sarge_CHATTER_TEQUILA_REPLY
+{
+	speak "sarge.TequilaReply0"
+	speak "sarge.TequilaReply1"
+}
+
+Rule sarge_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_sarge
+    response sarge_CHATTER_TEQUILA_REPLY
+}
+
+Response bastille_CHATTER_TEQUILA_REPLY
+{
+	speak "bastille.TequilaReply0"
+}
+
+Rule bastille_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_bastille
+    response bastille_CHATTER_TEQUILA_REPLY
+}
+
+Response wildcat_CHATTER_TEQUILA_REPLY
+{
+	speak "wildcat.TequilaReply0"
+}
+
+Rule wildcat_CHATTER_TEQUILA_REPLY
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY Is_wildcat
+    response wildcat_CHATTER_TEQUILA_REPLY
+}
+
+Response wolfe_CHATTER_COMPLIMENTS_WILDCAT
+{
+	speak "wolfe.ComplimentsWildcat0"
+	speak "wolfe.ComplimentsWildcat1"
+	speak "wolfe.ComplimentsWildcat2"
+	speak "wolfe.ComplimentsWildcat3"
+}
+
+Rule wolfe_CHATTER_COMPLIMENTS_WILDCAT
+{
+    criteria ConceptCHATTER_COMPLIMENTS_WILDCAT Is_wolfe
+    response wolfe_CHATTER_COMPLIMENTS_WILDCAT
+}
+
+Response wolfe_CHATTER_AUTOGUN
+{
+	speak "wolfe.Autogun0"
+	speak "wolfe.Autogun1"
+	speak "wolfe.Autogun2"
+}
+
+Rule wolfe_CHATTER_AUTOGUN
+{
+    criteria ConceptCHATTER_AUTOGUN Is_wolfe
+    response wolfe_CHATTER_AUTOGUN
+}
+
+Response wildcat_CHATTER_AUTOGUN
+{
+	speak "wildcat.Autogun0"
+	speak "wildcat.Autogun1"
+	speak "wildcat.Autogun2"
+}
+
+Rule wildcat_CHATTER_AUTOGUN
+{
+    criteria ConceptCHATTER_AUTOGUN Is_wildcat
+    response wildcat_CHATTER_AUTOGUN
+}
+
+Response faith_CHATTER_HOLDING_EAST
+{
+	speak "faith.HoldingEast0"
+	speak "faith.HoldingEast1"
+	speak "faith.HoldingEast2"
+}
+
+Rule faith_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_faith
+    response faith_CHATTER_HOLDING_EAST
+}
+
+Response crash_CHATTER_HOLDING_EAST
+{
+	speak "crash.HoldingEast0"
+	speak "crash.HoldingEast1"
+	speak "crash.HoldingEast2"
+	speak "crash.HoldingEast3"
+}
+
+Rule crash_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_crash
+    response crash_CHATTER_HOLDING_EAST
+}
+
+Response jaeger_CHATTER_HOLDING_EAST
+{
+	speak "jaeger.HoldingEast0"
+	speak "jaeger.HoldingEast1"
+	speak "jaeger.HoldingEast2"
+}
+
+Rule jaeger_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_jaeger
+    response jaeger_CHATTER_HOLDING_EAST
+}
+
+Response wolfe_CHATTER_HOLDING_EAST
+{
+	speak "wolfe.HoldingEast0"
+	speak "wolfe.HoldingEast1"
+	speak "wolfe.HoldingEast2"
+	speak "wolfe.HoldingEast3"
+	speak "wolfe.HoldingEast4"
+	speak "wolfe.HoldingEast5"
+}
+
+Rule wolfe_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_wolfe
+    response wolfe_CHATTER_HOLDING_EAST
+}
+
+Response vegas_CHATTER_HOLDING_EAST
+{
+	speak "vegas.HoldingEast0"
+	speak "vegas.HoldingEast1"
+	speak "vegas.HoldingEast2"
+}
+
+Rule vegas_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_vegas
+    response vegas_CHATTER_HOLDING_EAST
+}
+
+Response sarge_CHATTER_HOLDING_EAST
+{
+	speak "sarge.HoldingEast0"
+	speak "sarge.HoldingEast1"
+	speak "sarge.HoldingEast2"
+	speak "sarge.HoldingEast3"
+}
+
+Rule sarge_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_sarge
+    response sarge_CHATTER_HOLDING_EAST
+}
+
+Response bastille_CHATTER_HOLDING_EAST
+{
+	speak "bastille.HoldingEast0"
+	speak "bastille.HoldingEast1"
+	speak "bastille.HoldingEast2"
+	speak "bastille.HoldingEast3"
+}
+
+Rule bastille_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_bastille
+    response bastille_CHATTER_HOLDING_EAST
+}
+
+Response wildcat_CHATTER_HOLDING_EAST
+{
+	speak "wildcat.HoldingEast0"
+	speak "wildcat.HoldingEast1"
+	speak "wildcat.HoldingEast2"
+}
+
+Rule wildcat_CHATTER_HOLDING_EAST
+{
+    criteria ConceptCHATTER_HOLDING_EAST Is_wildcat
+    response wildcat_CHATTER_HOLDING_EAST
+}
+
+Response wolfe_CHATTER_WOLFE_KILL
+{
+	speak "wolfe.WolfeKillStart0"
+	speak "wolfe.WolfeKillStart1"
+}
+
+Rule wolfe_CHATTER_WOLFE_KILL
+{
+    criteria ConceptCHATTER_WOLFE_KILL Is_wolfe
+    response wolfe_CHATTER_WOLFE_KILL
+}
+
+Response vegas_CHATTER_FIRST_BLOOD_WIN
+{
+	speak "vegas.FirstBloodWin0"
+	speak "vegas.FirstBloodWin1"
+}
+
+Rule vegas_CHATTER_FIRST_BLOOD_WIN
+{
+    criteria ConceptCHATTER_FIRST_BLOOD_WIN Is_vegas
+    response vegas_CHATTER_FIRST_BLOOD_WIN
+}
+
+Response faith_CHATTER_PAIN_LARGE
+{
+	speak "faith.LargePain0"
+	speak "faith.LargePain1"
+}
+
+Rule faith_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_faith
+    response faith_CHATTER_PAIN_LARGE
+}
+
+Response crash_CHATTER_PAIN_LARGE
+{
+	speak "crash.LargePain0"
+	speak "crash.LargePain1"
+	speak "crash.LargePain2"
+	speak "crash.LargePain3"
+}
+
+Rule crash_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_crash
+    response crash_CHATTER_PAIN_LARGE
+}
+
+Response jaeger_CHATTER_PAIN_LARGE
+{
+	speak "jaeger.LargePain0"
+	speak "jaeger.LargePain1"
+}
+
+Rule jaeger_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_jaeger
+    response jaeger_CHATTER_PAIN_LARGE
+}
+
+Response wolfe_CHATTER_PAIN_LARGE
+{
+	speak "wolfe.LargePain0"
+	speak "wolfe.LargePain1"
+	speak "wolfe.LargePain2"
+	speak "wolfe.LargePain3"
+	speak "wolfe.LargePain4"
+}
+
+Rule wolfe_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_wolfe
+    response wolfe_CHATTER_PAIN_LARGE
+}
+
+Response vegas_CHATTER_PAIN_LARGE
+{
+	speak "vegas.LargePain0"
+	speak "vegas.LargePain1"
+}
+
+Rule vegas_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_vegas
+    response vegas_CHATTER_PAIN_LARGE
+}
+
+Response sarge_CHATTER_PAIN_LARGE
+{
+	speak "sarge.LargePain0"
+	speak "sarge.LargePain1"
+}
+
+Rule sarge_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_sarge
+    response sarge_CHATTER_PAIN_LARGE
+}
+
+Response bastille_CHATTER_PAIN_LARGE
+{
+	speak "bastille.LargePain0"
+	speak "bastille.LargePain1"
+}
+
+Rule bastille_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_bastille
+    response bastille_CHATTER_PAIN_LARGE
+}
+
+Response wildcat_CHATTER_PAIN_LARGE
+{
+	speak "wildcat.LargePain0"
+	speak "wildcat.LargePain1"
+}
+
+Rule wildcat_CHATTER_PAIN_LARGE
+{
+    criteria ConceptCHATTER_PAIN_LARGE Is_wildcat
+    response wildcat_CHATTER_PAIN_LARGE
+}
+
+Response faith_CHATTER_CRASH
+{
+	speak "faith.CallCrash0"
+	speak "faith.CallCrash1"
+}
+
+Rule faith_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_faith
+    response faith_CHATTER_CRASH
+}
+
+Response jaeger_CHATTER_CRASH
+{
+	speak "jaeger.CallCrash0"
+	speak "jaeger.CallCrash1"
+}
+
+Rule jaeger_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_jaeger
+    response jaeger_CHATTER_CRASH
+}
+
+Response wolfe_CHATTER_CRASH
+{
+	speak "wolfe.CallCrash0"
+	speak "wolfe.CallCrash1"
+}
+
+Rule wolfe_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_wolfe
+    response wolfe_CHATTER_CRASH
+}
+
+Response vegas_CHATTER_CRASH
+{
+	speak "vegas.CallCrash0"
+	speak "vegas.CallCrash1"
+}
+
+Rule vegas_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_vegas
+    response vegas_CHATTER_CRASH
+}
+
+Response sarge_CHATTER_CRASH
+{
+	speak "sarge.CallCrash0"
+	speak "sarge.CallCrash1"
+}
+
+Rule sarge_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_sarge
+    response sarge_CHATTER_CRASH
+}
+
+Response bastille_CHATTER_CRASH
+{
+	speak "bastille.CallCrash0"
+	speak "bastille.CallCrash1"
+}
+
+Rule bastille_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_bastille
+    response bastille_CHATTER_CRASH
+}
+
+Response wildcat_CHATTER_CRASH
+{
+	speak "wildcat.CallCrash0"
+	speak "wildcat.CallCrash1"
+}
+
+Rule wildcat_CHATTER_CRASH
+{
+    criteria ConceptCHATTER_CRASH Is_wildcat
+    response wildcat_CHATTER_CRASH
+}
+
+Response faith_CHATTER_SYNUP_REPLY
+{
+	speak "faith.SynUpReply0"
+	speak "faith.SynUpReply1"
+}
+
+Rule faith_CHATTER_SYNUP_REPLY
+{
+    criteria ConceptCHATTER_SYNUP_REPLY Is_faith
+    response faith_CHATTER_SYNUP_REPLY
+}
+
+Response bastille_CHATTER_SYNUP_REPLY
+{
+	speak "bastille.SynUpReply0"
+}
+
+Rule bastille_CHATTER_SYNUP_REPLY
+{
+    criteria ConceptCHATTER_SYNUP_REPLY Is_bastille
+    response bastille_CHATTER_SYNUP_REPLY
+}
+
+Response faith_CHATTER_AMMO
+{
+	speak "faith.Ammo0"
+	speak "faith.Ammo1"
+}
+
+Rule faith_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_faith
+    response faith_CHATTER_AMMO
+}
+
+Response crash_CHATTER_AMMO
+{
+	speak "crash.Ammo0"
+}
+
+Rule crash_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_crash
+    response crash_CHATTER_AMMO
+}
+
+Response jaeger_CHATTER_AMMO
+{
+	speak "jaeger.Ammo0"
+}
+
+Rule jaeger_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_jaeger
+    response jaeger_CHATTER_AMMO
+}
+
+Response wolfe_CHATTER_AMMO
+{
+	speak "wolfe.Ammo0"
+}
+
+Rule wolfe_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_wolfe
+    response wolfe_CHATTER_AMMO
+}
+
+Response vegas_CHATTER_AMMO
+{
+	speak "vegas.Ammo0"
+}
+
+Rule vegas_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_vegas
+    response vegas_CHATTER_AMMO
+}
+
+Response sarge_CHATTER_AMMO
+{
+	speak "sarge.Ammo0"
+}
+
+Rule sarge_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_sarge
+    response sarge_CHATTER_AMMO
+}
+
+Response bastille_CHATTER_AMMO
+{
+	speak "bastille.Ammo0"
+}
+
+Rule bastille_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_bastille
+    response bastille_CHATTER_AMMO
+}
+
+Response wildcat_CHATTER_AMMO
+{
+	speak "wildcat.Ammo0"
+}
+
+Rule wildcat_CHATTER_AMMO
+{
+    criteria ConceptCHATTER_AMMO Is_wildcat
+    response wildcat_CHATTER_AMMO
+}
+
+Response faith_CHATTER_SERIOUS_INJURY
+{
+	speak "faith.SeriousInjury0"
+	speak "faith.SeriousInjury1"
+}
+
+Rule faith_CHATTER_SERIOUS_INJURY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY Is_faith
+    response faith_CHATTER_SERIOUS_INJURY
+}
+
+Response bastille_CHATTER_SERIOUS_INJURY
+{
+	speak "bastille.SeriousInjury0"
+	speak "bastille.SeriousInjury1"
+}
+
+Rule bastille_CHATTER_SERIOUS_INJURY
+{
+    criteria ConceptCHATTER_SERIOUS_INJURY Is_bastille
+    response bastille_CHATTER_SERIOUS_INJURY
+}
+
+Response faith_CHATTER_SHIELDBUG_HINT
+{
+	speak "faith.ShieldbugHint0"
+	speak "faith.ShieldbugHint1"
+}
+
+Rule faith_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_faith
+    response faith_CHATTER_SHIELDBUG_HINT
+}
+
+Response crash_CHATTER_SHIELDBUG_HINT
+{
+	speak "crash.ShieldbugHint0"
+	speak "crash.ShieldbugHint1"
+	speak "crash.ShieldbugHint2"
+}
+
+Rule crash_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_crash
+    response crash_CHATTER_SHIELDBUG_HINT
+}
+
+Response jaeger_CHATTER_SHIELDBUG_HINT
+{
+	speak "jaeger.ShieldbugHint0"
+	speak "jaeger.ShieldbugHint1"
+	speak "jaeger.ShieldbugHint2"
+}
+
+Rule jaeger_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_jaeger
+    response jaeger_CHATTER_SHIELDBUG_HINT
+}
+
+Response wolfe_CHATTER_SHIELDBUG_HINT
+{
+	speak "wolfe.ShieldbugHint0"
+	speak "wolfe.ShieldbugHint1"
+	speak "wolfe.ShieldbugHint2"
+	speak "wolfe.ShieldbugHint3"
+}
+
+Rule wolfe_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_wolfe
+    response wolfe_CHATTER_SHIELDBUG_HINT
+}
+
+Response vegas_CHATTER_SHIELDBUG_HINT
+{
+	speak "vegas.ShieldbugHint0"
+	speak "vegas.ShieldbugHint1"
+	speak "vegas.ShieldbugHint2"
+}
+
+Rule vegas_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_vegas
+    response vegas_CHATTER_SHIELDBUG_HINT
+}
+
+Response sarge_CHATTER_SHIELDBUG_HINT
+{
+	speak "sarge.ShieldbugHint0"
+	speak "sarge.ShieldbugHint1"
+	speak "sarge.ShieldbugHint2"
+}
+
+Rule sarge_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_sarge
+    response sarge_CHATTER_SHIELDBUG_HINT
+}
+
+Response bastille_CHATTER_SHIELDBUG_HINT
+{
+	speak "bastille.ShieldbugHint0"
+	speak "bastille.ShieldbugHint1"
+	speak "bastille.ShieldbugHint2"
+}
+
+Rule bastille_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_bastille
+    response bastille_CHATTER_SHIELDBUG_HINT
+}
+
+Response wildcat_CHATTER_SHIELDBUG_HINT
+{
+	speak "wildcat.ShieldbugHint0"
+	speak "wildcat.ShieldbugHint1"
+}
+
+Rule wildcat_CHATTER_SHIELDBUG_HINT
+{
+    criteria ConceptCHATTER_SHIELDBUG_HINT Is_wildcat
+    response wildcat_CHATTER_SHIELDBUG_HINT
+}
+
+Response sarge_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+{
+	speak "sarge.SargeJaegerConv2Reply0"
+	speak "sarge.SargeJaegerConv2Reply1"
+}
+
+Rule sarge_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_2_REPLY Is_sarge
+    response sarge_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+}
+
+Response jaeger_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+{
+	speak "jaeger.SargeJaegerConv2Reply0"
+	speak "jaeger.SargeJaegerConv2Reply1"
+}
+
+Rule jaeger_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+{
+    criteria ConceptCHATTER_SARGE_JAEGER_CONV_2_REPLY Is_jaeger
+    response jaeger_CHATTER_SARGE_JAEGER_CONV_2_REPLY
+}
+
+Response vegas_CHATTER_HACK_BUTTON_FINISHED
+{
+	speak "vegas.FinishedHackButton0"
+	speak "vegas.FinishedHackButton1"
+	speak "vegas.FinishedHackButton2"
+}
+
+Rule vegas_CHATTER_HACK_BUTTON_FINISHED
+{
+    criteria ConceptCHATTER_HACK_BUTTON_FINISHED Is_vegas
+    response vegas_CHATTER_HACK_BUTTON_FINISHED
+}
+
+Response crash_CHATTER_HACK_BUTTON_FINISHED
+{
+	speak "crash.FinishedHackButton0"
+	speak "crash.FinishedHackButton1"
+	speak "crash.FinishedHackButton2"
+	speak "crash.FinishedHackButton3"
+	speak "crash.FinishedHackButton4"
+}
+
+Rule crash_CHATTER_HACK_BUTTON_FINISHED
+{
+    criteria ConceptCHATTER_HACK_BUTTON_FINISHED Is_crash
+    response crash_CHATTER_HACK_BUTTON_FINISHED
+}
+
+Response sarge_CHATTER_SARGE_IDLE
+{
+	speak "sarge.SargeIdle0"
+	speak "sarge.SargeIdle1"
+}
+
+Rule sarge_CHATTER_SARGE_IDLE
+{
+    criteria ConceptCHATTER_SARGE_IDLE Is_sarge
+    response sarge_CHATTER_SARGE_IDLE
+}
+
+Response faith_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "faith.RequestShootDoor0"
+	speak "faith.RequestShootDoor1"
+}
+
+Rule faith_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_faith
+    response faith_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response crash_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "crash.RequestShootDoor0"
+	speak "crash.RequestShootDoor1"
+	speak "crash.RequestShootDoor2"
+}
+
+Rule crash_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_crash
+    response crash_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response jaeger_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "jaeger.RequestShootDoor0"
+	speak "jaeger.RequestShootDoor1"
+}
+
+Rule jaeger_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_jaeger
+    response jaeger_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response wolfe_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "wolfe.RequestShootDoor0"
+	speak "wolfe.RequestShootDoor1"
+	speak "wolfe.RequestShootDoor2"
+	speak "wolfe.RequestShootDoor3"
+}
+
+Rule wolfe_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_wolfe
+    response wolfe_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response vegas_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "vegas.RequestShootDoor0"
+	speak "vegas.RequestShootDoor1"
+	speak "vegas.RequestShootDoor2"
+}
+
+Rule vegas_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_vegas
+    response vegas_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response sarge_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "sarge.RequestShootDoor0"
+	speak "sarge.RequestShootDoor1"
+	speak "sarge.RequestShootDoor2"
+	speak "sarge.RequestShootDoor3"
+}
+
+Rule sarge_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_sarge
+    response sarge_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response bastille_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "bastille.RequestShootDoor0"
+	speak "bastille.RequestShootDoor1"
+	speak "bastille.RequestShootDoor2"
+	speak "bastille.RequestShootDoor3"
+}
+
+Rule bastille_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_bastille
+    response bastille_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response wildcat_CHATTER_REQUEST_SHOOT_DOOR
+{
+	speak "wildcat.RequestShootDoor0"
+	speak "wildcat.RequestShootDoor1"
+}
+
+Rule wildcat_CHATTER_REQUEST_SHOOT_DOOR
+{
+    criteria ConceptCHATTER_REQUEST_SHOOT_DOOR Is_wildcat
+    response wildcat_CHATTER_REQUEST_SHOOT_DOOR
+}
+
+Response wolfe_CHATTER_WOLFE_KILL_REPLY_AHEAD
+{
+	speak "wolfe.WolfeKillReplyAhead0"
+}
+
+Rule wolfe_CHATTER_WOLFE_KILL_REPLY_AHEAD
+{
+    criteria ConceptCHATTER_WOLFE_KILL_REPLY_AHEAD Is_wolfe
+    response wolfe_CHATTER_WOLFE_KILL_REPLY_AHEAD
+}
+
+Response wildcat_CHATTER_WOLFE_KILL_REPLY_AHEAD
+{
+	speak "wildcat.WolfeKillReplyAhead0"
+	speak "wildcat.WolfeKillReplyAhead1"
+}
+
+Rule wildcat_CHATTER_WOLFE_KILL_REPLY_AHEAD
+{
+    criteria ConceptCHATTER_WOLFE_KILL_REPLY_AHEAD Is_wildcat
+    response wildcat_CHATTER_WOLFE_KILL_REPLY_AHEAD
+}
+
+Response faith_CHATTER_SUPPLIES
+{
+	speak "faith.Supplies0"
+	speak "faith.Supplies1"
+}
+
+Rule faith_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_faith
+    response faith_CHATTER_SUPPLIES
+}
+
+Response crash_CHATTER_SUPPLIES
+{
+	speak "crash.Supplies0"
+	speak "crash.Supplies1"
+	speak "crash.Supplies2"
+}
+
+Rule crash_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_crash
+    response crash_CHATTER_SUPPLIES
+}
+
+Response jaeger_CHATTER_SUPPLIES
+{
+	speak "jaeger.Supplies0"
+	speak "jaeger.Supplies1"
+}
+
+Rule jaeger_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_jaeger
+    response jaeger_CHATTER_SUPPLIES
+}
+
+Response wolfe_CHATTER_SUPPLIES
+{
+	speak "wolfe.Supplies0"
+	speak "wolfe.Supplies1"
+	speak "wolfe.Supplies2"
+	speak "wolfe.Supplies3"
+}
+
+Rule wolfe_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_wolfe
+    response wolfe_CHATTER_SUPPLIES
+}
+
+Response vegas_CHATTER_SUPPLIES
+{
+	speak "vegas.Supplies0"
+}
+
+Rule vegas_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_vegas
+    response vegas_CHATTER_SUPPLIES
+}
+
+Response sarge_CHATTER_SUPPLIES
+{
+	speak "sarge.Supplies0"
+	speak "sarge.Supplies1"
+	speak "sarge.Supplies2"
+}
+
+Rule sarge_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_sarge
+    response sarge_CHATTER_SUPPLIES
+}
+
+Response bastille_CHATTER_SUPPLIES
+{
+	speak "bastille.Supplies0"
+	speak "bastille.Supplies1"
+	speak "bastille.Supplies2"
+	speak "bastille.Supplies3"
+}
+
+Rule bastille_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_bastille
+    response bastille_CHATTER_SUPPLIES
+}
+
+Response wildcat_CHATTER_SUPPLIES
+{
+	speak "wildcat.Supplies0"
+}
+
+Rule wildcat_CHATTER_SUPPLIES
+{
+    criteria ConceptCHATTER_SUPPLIES Is_wildcat
+    response wildcat_CHATTER_SUPPLIES
+}
+
+Response jaeger_CHATTER_CRASH_IDLE_REPLY
+{
+	speak "jaeger.CrashIdleReply0"
+}
+
+Rule jaeger_CHATTER_CRASH_IDLE_REPLY
+{
+    criteria ConceptCHATTER_CRASH_IDLE_REPLY Is_jaeger
+    response jaeger_CHATTER_CRASH_IDLE_REPLY
+}
+
+Response sarge_CHATTER_CRASH_IDLE_REPLY
+{
+	speak "sarge.CrashIdleReply0"
+}
+
+Rule sarge_CHATTER_CRASH_IDLE_REPLY
+{
+    criteria ConceptCHATTER_CRASH_IDLE_REPLY Is_sarge
+    response sarge_CHATTER_CRASH_IDLE_REPLY
+}
+
+Response bastille_CHATTER_CRASH_IDLE_REPLY
+{
+	speak "bastille.CrashIdleReply0"
+}
+
+Rule bastille_CHATTER_CRASH_IDLE_REPLY
+{
+    criteria ConceptCHATTER_CRASH_IDLE_REPLY Is_bastille
+    response bastille_CHATTER_CRASH_IDLE_REPLY
+}
+
+Response faith_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "faith.StillBreathingReply0"
+}
+
+Rule faith_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_faith
+    response faith_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response crash_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "crash.StillBreathingReply0"
+}
+
+Rule crash_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_crash
+    response crash_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response jaeger_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "jaeger.StillBreathingReply0"
+}
+
+Rule jaeger_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_jaeger
+    response jaeger_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response vegas_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "vegas.StillBreathingReply0"
+}
+
+Rule vegas_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_vegas
+    response vegas_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response bastille_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "bastille.StillBreathingReply0"
+}
+
+Rule bastille_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_bastille
+    response bastille_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response wildcat_CHATTER_STILL_BREATHING_REPLY
+{
+	speak "wildcat.StillBreathingReply0"
+}
+
+Rule wildcat_CHATTER_STILL_BREATHING_REPLY
+{
+    criteria ConceptCHATTER_STILL_BREATHING_REPLY Is_wildcat
+    response wildcat_CHATTER_STILL_BREATHING_REPLY
+}
+
+Response faith_CHATTER_FLYNN
+{
+	speak "faith.CallFlynn0"
+	speak "faith.CallFlynn1"
+}
+
+Rule faith_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_faith
+    response faith_CHATTER_FLYNN
+}
+
+Response crash_CHATTER_FLYNN
+{
+	speak "crash.CallFlynn0"
+	speak "crash.CallFlynn1"
+}
+
+Rule crash_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_crash
+    response crash_CHATTER_FLYNN
+}
+
+Response jaeger_CHATTER_FLYNN
+{
+	speak "jaeger.CallFlynn0"
+	speak "jaeger.CallFlynn1"
+}
+
+Rule jaeger_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_jaeger
+    response jaeger_CHATTER_FLYNN
+}
+
+Response wolfe_CHATTER_FLYNN
+{
+	speak "wolfe.CallFlynn0"
+	speak "wolfe.CallFlynn1"
+	speak "wolfe.CallFlynn2"
+}
+
+Rule wolfe_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_wolfe
+    response wolfe_CHATTER_FLYNN
+}
+
+Response vegas_CHATTER_FLYNN
+{
+	speak "vegas.CallFlynn0"
+	speak "vegas.CallFlynn1"
+}
+
+Rule vegas_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_vegas
+    response vegas_CHATTER_FLYNN
+}
+
+Response sarge_CHATTER_FLYNN
+{
+	speak "sarge.CallFlynn0"
+	speak "sarge.CallFlynn1"
+}
+
+Rule sarge_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_sarge
+    response sarge_CHATTER_FLYNN
+}
+
+Response bastille_CHATTER_FLYNN
+{
+	speak "bastille.CallFlynn0"
+	speak "bastille.CallFlynn1"
+}
+
+Rule bastille_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_bastille
+    response bastille_CHATTER_FLYNN
+}
+
+Response wildcat_CHATTER_FLYNN
+{
+	speak "wildcat.CallFlynn0"
+	speak "wildcat.CallFlynn1"
+}
+
+Rule wildcat_CHATTER_FLYNN
+{
+    criteria ConceptCHATTER_FLYNN Is_wildcat
+    response wildcat_CHATTER_FLYNN
+}
+
+Response faith_CHATTER_HOLDING_NORTH
+{
+	speak "faith.HoldingNorth0"
+	speak "faith.HoldingNorth1"
+	speak "faith.HoldingNorth2"
+	speak "faith.HoldingNorth3"
+}
+
+Rule faith_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_faith
+    response faith_CHATTER_HOLDING_NORTH
+}
+
+Response crash_CHATTER_HOLDING_NORTH
+{
+	speak "crash.HoldingNorth0"
+	speak "crash.HoldingNorth1"
+	speak "crash.HoldingNorth2"
+	speak "crash.HoldingNorth3"
+}
+
+Rule crash_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_crash
+    response crash_CHATTER_HOLDING_NORTH
+}
+
+Response jaeger_CHATTER_HOLDING_NORTH
+{
+	speak "jaeger.HoldingNorth0"
+	speak "jaeger.HoldingNorth1"
+	speak "jaeger.HoldingNorth2"
+	speak "jaeger.HoldingNorth3"
+}
+
+Rule jaeger_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_jaeger
+    response jaeger_CHATTER_HOLDING_NORTH
+}
+
+Response wolfe_CHATTER_HOLDING_NORTH
+{
+	speak "wolfe.HoldingNorth0"
+	speak "wolfe.HoldingNorth1"
+	speak "wolfe.HoldingNorth2"
+	speak "wolfe.HoldingNorth3"
+	speak "wolfe.HoldingNorth4"
+	speak "wolfe.HoldingNorth5"
+}
+
+Rule wolfe_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_wolfe
+    response wolfe_CHATTER_HOLDING_NORTH
+}
+
+Response vegas_CHATTER_HOLDING_NORTH
+{
+	speak "vegas.HoldingNorth0"
+	speak "vegas.HoldingNorth1"
+	speak "vegas.HoldingNorth2"
+	speak "vegas.HoldingNorth3"
+}
+
+Rule vegas_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_vegas
+    response vegas_CHATTER_HOLDING_NORTH
+}
+
+Response sarge_CHATTER_HOLDING_NORTH
+{
+	speak "sarge.HoldingNorth0"
+	speak "sarge.HoldingNorth1"
+	speak "sarge.HoldingNorth2"
+	speak "sarge.HoldingNorth3"
+}
+
+Rule sarge_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_sarge
+    response sarge_CHATTER_HOLDING_NORTH
+}
+
+Response bastille_CHATTER_HOLDING_NORTH
+{
+	speak "bastille.HoldingNorth0"
+	speak "bastille.HoldingNorth1"
+	speak "bastille.HoldingNorth2"
+	speak "bastille.HoldingNorth3"
+}
+
+Rule bastille_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_bastille
+    response bastille_CHATTER_HOLDING_NORTH
+}
+
+Response wildcat_CHATTER_HOLDING_NORTH
+{
+	speak "wildcat.HoldingNorth0"
+	speak "wildcat.HoldingNorth1"
+	speak "wildcat.HoldingNorth2"
+}
+
+Rule wildcat_CHATTER_HOLDING_NORTH
+{
+    criteria ConceptCHATTER_HOLDING_NORTH Is_wildcat
+    response wildcat_CHATTER_HOLDING_NORTH
+}
+
+Response wildcat_CHATTER_COMPLIMENTS_WOLFE
+{
+	speak "wildcat.ComplimentsWolfe0"
+	speak "wildcat.ComplimentsWolfe1"
+}
+
+Rule wildcat_CHATTER_COMPLIMENTS_WOLFE
+{
+    criteria ConceptCHATTER_COMPLIMENTS_WOLFE Is_wildcat
+    response wildcat_CHATTER_COMPLIMENTS_WOLFE
+}
+
+Response faith_CHATTER_VEGAS
+{
+	speak "faith.CallVegas0"
+	speak "faith.CallVegas1"
+}
+
+Rule faith_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_faith
+    response faith_CHATTER_VEGAS
+}
+
+Response crash_CHATTER_VEGAS
+{
+	speak "crash.CallVegas0"
+	speak "crash.CallVegas1"
+}
+
+Rule crash_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_crash
+    response crash_CHATTER_VEGAS
+}
+
+Response jaeger_CHATTER_VEGAS
+{
+	speak "jaeger.CallVegas0"
+}
+
+Rule jaeger_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_jaeger
+    response jaeger_CHATTER_VEGAS
+}
+
+Response wolfe_CHATTER_VEGAS
+{
+	speak "wolfe.CallVegas0"
+	speak "wolfe.CallVegas1"
+}
+
+Rule wolfe_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_wolfe
+    response wolfe_CHATTER_VEGAS
+}
+
+Response sarge_CHATTER_VEGAS
+{
+	speak "sarge.CallVegas0"
+	speak "sarge.CallVegas1"
+	speak "sarge.CallVegas2"
+}
+
+Rule sarge_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_sarge
+    response sarge_CHATTER_VEGAS
+}
+
+Response bastille_CHATTER_VEGAS
+{
+	speak "bastille.CallVegas0"
+	speak "bastille.CallVegas1"
+}
+
+Rule bastille_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_bastille
+    response bastille_CHATTER_VEGAS
+}
+
+Response wildcat_CHATTER_VEGAS
+{
+	speak "wildcat.CallVegas0"
+	speak "wildcat.CallVegas1"
+}
+
+Rule wildcat_CHATTER_VEGAS
+{
+    criteria ConceptCHATTER_VEGAS Is_wildcat
+    response wildcat_CHATTER_VEGAS
+}
+
+Response faith_CHATTER_CUTTING_DOOR
+{
+	speak "faith.CuttingDoor0"
+	speak "faith.CuttingDoor1"
+	speak "faith.CuttingDoor2"
+}
+
+Rule faith_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_faith
+    response faith_CHATTER_CUTTING_DOOR
+}
+
+Response crash_CHATTER_CUTTING_DOOR
+{
+	speak "crash.CuttingDoor0"
+	speak "crash.CuttingDoor1"
+}
+
+Rule crash_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_crash
+    response crash_CHATTER_CUTTING_DOOR
+}
+
+Response jaeger_CHATTER_CUTTING_DOOR
+{
+	speak "jaeger.CuttingDoor0"
+	speak "jaeger.CuttingDoor1"
+}
+
+Rule jaeger_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_jaeger
+    response jaeger_CHATTER_CUTTING_DOOR
+}
+
+Response wolfe_CHATTER_CUTTING_DOOR
+{
+	speak "wolfe.CuttingDoor0"
+	speak "wolfe.CuttingDoor1"
+	speak "wolfe.CuttingDoor2"
+	speak "wolfe.CuttingDoor3"
+}
+
+Rule wolfe_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_wolfe
+    response wolfe_CHATTER_CUTTING_DOOR
+}
+
+Response vegas_CHATTER_CUTTING_DOOR
+{
+	speak "vegas.CuttingDoor0"
+	speak "vegas.CuttingDoor1"
+	speak "vegas.CuttingDoor2"
+}
+
+Rule vegas_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_vegas
+    response vegas_CHATTER_CUTTING_DOOR
+}
+
+Response sarge_CHATTER_CUTTING_DOOR
+{
+	speak "sarge.CuttingDoor0"
+	speak "sarge.CuttingDoor1"
+}
+
+Rule sarge_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_sarge
+    response sarge_CHATTER_CUTTING_DOOR
+}
+
+Response bastille_CHATTER_CUTTING_DOOR
+{
+	speak "bastille.CuttingDoor0"
+	speak "bastille.CuttingDoor1"
+	speak "bastille.CuttingDoor2"
+}
+
+Rule bastille_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_bastille
+    response bastille_CHATTER_CUTTING_DOOR
+}
+
+Response wildcat_CHATTER_CUTTING_DOOR
+{
+	speak "wildcat.CuttingDoor0"
+	speak "wildcat.CuttingDoor1"
+}
+
+Rule wildcat_CHATTER_CUTTING_DOOR
+{
+    criteria ConceptCHATTER_CUTTING_DOOR Is_wildcat
+    response wildcat_CHATTER_CUTTING_DOOR
+}
+
+Response faith_CHATTER_BIOMASS
+{
+	speak "faith.Biomass0"
+	speak "faith.Biomass1"
+	speak "faith.Biomass2"
+}
+
+Rule faith_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_faith
+    response faith_CHATTER_BIOMASS
+}
+
+Response crash_CHATTER_BIOMASS
+{
+	speak "crash.Biomass0"
+	speak "crash.Biomass1"
+	speak "crash.Biomass2"
+	speak "crash.Biomass3"
+}
+
+Rule crash_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_crash
+    response crash_CHATTER_BIOMASS
+}
+
+Response wolfe_CHATTER_BIOMASS
+{
+	speak "wolfe.Biomass0"
+	speak "wolfe.Biomass1"
+	speak "wolfe.Biomass2"
+	speak "wolfe.Biomass3"
+	speak "wolfe.Biomass4"
+}
+
+Rule wolfe_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_wolfe
+    response wolfe_CHATTER_BIOMASS
+}
+
+Response vegas_CHATTER_BIOMASS
+{
+	speak "vegas.Biomass0"
+	speak "vegas.Biomass1"
+	speak "vegas.Biomass2"
+	speak "vegas.Biomass3"
+	speak "vegas.Biomass4"
+	speak "vegas.Biomass5"
+	speak "vegas.Biomass6"
+	speak "vegas.Biomass7"
+}
+
+Rule vegas_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_vegas
+    response vegas_CHATTER_BIOMASS
+}
+
+Response sarge_CHATTER_BIOMASS
+{
+	speak "sarge.Biomass0"
+	speak "sarge.Biomass1"
+}
+
+Rule sarge_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_sarge
+    response sarge_CHATTER_BIOMASS
+}
+
+Response bastille_CHATTER_BIOMASS
+{
+	speak "bastille.Biomass0"
+	speak "bastille.Biomass1"
+	speak "bastille.Biomass2"
+}
+
+Rule bastille_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_bastille
+    response bastille_CHATTER_BIOMASS
+}
+
+Response wildcat_CHATTER_BIOMASS
+{
+	speak "wildcat.Biomass0"
+	speak "wildcat.Biomass1"
+}
+
+Rule wildcat_CHATTER_BIOMASS
+{
+    criteria ConceptCHATTER_BIOMASS Is_wildcat
+    response wildcat_CHATTER_BIOMASS
+}
+
+Response faith_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "faith.MedicComplainReply0"
+}
+
+Rule faith_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_faith
+    response faith_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response crash_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "crash.MedicComplainReply0"
+}
+
+Rule crash_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_crash
+    response crash_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response jaeger_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "jaeger.MedicComplainReply0"
+}
+
+Rule jaeger_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_jaeger
+    response jaeger_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response wolfe_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "wolfe.MedicComplainReply0"
+	speak "wolfe.MedicComplainReply1"
+}
+
+Rule wolfe_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_wolfe
+    response wolfe_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response vegas_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "vegas.MedicComplainReply0"
+}
+
+Rule vegas_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_vegas
+    response vegas_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response sarge_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "sarge.MedicComplainReply0"
+}
+
+Rule sarge_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_sarge
+    response sarge_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response bastille_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "bastille.MedicComplainReply0"
+}
+
+Rule bastille_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_bastille
+    response bastille_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response wildcat_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+	speak "wildcat.MedicComplainReply0"
+}
+
+Rule wildcat_CHATTER_MEDIC_COMPLAIN_REPLY
+{
+    criteria ConceptCHATTER_MEDIC_COMPLAIN_REPLY Is_wildcat
+    response wildcat_CHATTER_MEDIC_COMPLAIN_REPLY
+}
+
+Response sarge_CHATTER_MINE_DEPLOYED
+{
+	speak "sarge.MineDeployed0"
+	speak "sarge.MineDeployed1"
+	speak "sarge.MineDeployed2"
+	speak "sarge.MineDeployed3"
+}
+
+Rule sarge_CHATTER_MINE_DEPLOYED
+{
+    criteria ConceptCHATTER_MINE_DEPLOYED Is_sarge
+    response sarge_CHATTER_MINE_DEPLOYED
+}
+
+Response jaeger_CHATTER_MINE_DEPLOYED
+{
+	speak "jaeger.MineDeployed0"
+	speak "jaeger.MineDeployed1"
+	speak "jaeger.MineDeployed2"
+	speak "jaeger.MineDeployed3"
+}
+
+Rule jaeger_CHATTER_MINE_DEPLOYED
+{
+    criteria ConceptCHATTER_MINE_DEPLOYED Is_jaeger
+    response jaeger_CHATTER_MINE_DEPLOYED
+}
+
+Response faith_CHATTER_HOLD_POSITION
+{
+	speak "faith.HoldPosition0"
+	speak "faith.HoldPosition1"
+	speak "faith.HoldPosition2"
+	speak "faith.HoldPosition3"
+	speak "faith.HoldPosition4"
+}
+
+Rule faith_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_faith
+    response faith_CHATTER_HOLD_POSITION
+}
+
+Response crash_CHATTER_HOLD_POSITION
+{
+	speak "crash.HoldPosition0"
+	speak "crash.HoldPosition1"
+	speak "crash.HoldPosition2"
+}
+
+Rule crash_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_crash
+    response crash_CHATTER_HOLD_POSITION
+}
+
+Response jaeger_CHATTER_HOLD_POSITION
+{
+	speak "jaeger.HoldPosition0"
+	speak "jaeger.HoldPosition1"
+}
+
+Rule jaeger_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_jaeger
+    response jaeger_CHATTER_HOLD_POSITION
+}
+
+Response wolfe_CHATTER_HOLD_POSITION
+{
+	speak "wolfe.HoldPosition0"
+	speak "wolfe.HoldPosition1"
+	speak "wolfe.HoldPosition2"
+}
+
+Rule wolfe_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_wolfe
+    response wolfe_CHATTER_HOLD_POSITION
+}
+
+Response vegas_CHATTER_HOLD_POSITION
+{
+	speak "vegas.HoldPosition0"
+	speak "vegas.HoldPosition1"
+	speak "vegas.HoldPosition2"
+}
+
+Rule vegas_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_vegas
+    response vegas_CHATTER_HOLD_POSITION
+}
+
+Response sarge_CHATTER_HOLD_POSITION
+{
+	speak "sarge.HoldPosition0"
+	speak "sarge.HoldPosition1"
+}
+
+Rule sarge_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_sarge
+    response sarge_CHATTER_HOLD_POSITION
+}
+
+Response bastille_CHATTER_HOLD_POSITION
+{
+	speak "bastille.HoldPosition0"
+	speak "bastille.HoldPosition1"
+}
+
+Rule bastille_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_bastille
+    response bastille_CHATTER_HOLD_POSITION
+}
+
+Response wildcat_CHATTER_HOLD_POSITION
+{
+	speak "wildcat.HoldPosition0"
+	speak "wildcat.HoldPosition1"
+	speak "wildcat.HoldPosition2"
+}
+
+Rule wildcat_CHATTER_HOLD_POSITION
+{
+    criteria ConceptCHATTER_HOLD_POSITION Is_wildcat
+    response wildcat_CHATTER_HOLD_POSITION
+}
+
+Response faith_CHATTER_FIRING_AT_ALIEN
+{
+	speak "faith.FiringAtAlien0"
+	speak "faith.FiringAtAlien1"
+	speak "faith.FiringAtAlien2"
+	speak "faith.FiringAtAlien3"
+	speak "faith.FiringAtAlien4"
+}
+
+Rule faith_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_faith
+    response faith_CHATTER_FIRING_AT_ALIEN
+}
+
+Response crash_CHATTER_FIRING_AT_ALIEN
+{
+	speak "crash.FiringAtAlien0"
+	speak "crash.FiringAtAlien1"
+	speak "crash.FiringAtAlien2"
+	speak "crash.FiringAtAlien3"
+	speak "crash.FiringAtAlien4"
+	speak "crash.FiringAtAlien5"
+	speak "crash.FiringAtAlien6"
+	speak "crash.FiringAtAlien7"
+}
+
+Rule crash_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_crash
+    response crash_CHATTER_FIRING_AT_ALIEN
+}
+
+Response jaeger_CHATTER_FIRING_AT_ALIEN
+{
+	speak "jaeger.FiringAtAlien0"
+	speak "jaeger.FiringAtAlien1"
+	speak "jaeger.FiringAtAlien2"
+	speak "jaeger.FiringAtAlien3"
+}
+
+Rule jaeger_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_jaeger
+    response jaeger_CHATTER_FIRING_AT_ALIEN
+}
+
+Response wolfe_CHATTER_FIRING_AT_ALIEN
+{
+	speak "wolfe.FiringAtAlien0"
+	speak "wolfe.FiringAtAlien1"
+	speak "wolfe.FiringAtAlien2"
+}
+
+Rule wolfe_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_wolfe
+    response wolfe_CHATTER_FIRING_AT_ALIEN
+}
+
+Response vegas_CHATTER_FIRING_AT_ALIEN
+{
+	speak "vegas.FiringAtAlien0"
+	speak "vegas.FiringAtAlien1"
+	speak "vegas.FiringAtAlien2"
+	speak "vegas.FiringAtAlien3"
+}
+
+Rule vegas_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_vegas
+    response vegas_CHATTER_FIRING_AT_ALIEN
+}
+
+Response sarge_CHATTER_FIRING_AT_ALIEN
+{
+	speak "sarge.FiringAtAlien0"
+	speak "sarge.FiringAtAlien1"
+	speak "sarge.FiringAtAlien2"
+	speak "sarge.FiringAtAlien3"
+}
+
+Rule sarge_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_sarge
+    response sarge_CHATTER_FIRING_AT_ALIEN
+}
+
+Response bastille_CHATTER_FIRING_AT_ALIEN
+{
+	speak "bastille.FiringAtAlien0"
+	speak "bastille.FiringAtAlien1"
+	speak "bastille.FiringAtAlien2"
+	speak "bastille.FiringAtAlien3"
+	speak "bastille.FiringAtAlien4"
+	speak "bastille.FiringAtAlien5"
+	speak "bastille.FiringAtAlien6"
+	speak "bastille.FiringAtAlien7"
+}
+
+Rule bastille_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_bastille
+    response bastille_CHATTER_FIRING_AT_ALIEN
+}
+
+Response wildcat_CHATTER_FIRING_AT_ALIEN
+{
+	speak "wildcat.FiringAtAlien0"
+	speak "wildcat.FiringAtAlien1"
+}
+
+Rule wildcat_CHATTER_FIRING_AT_ALIEN
+{
+    criteria ConceptCHATTER_FIRING_AT_ALIEN Is_wildcat
+    response wildcat_CHATTER_FIRING_AT_ALIEN
+}
+
+Response faith_CHATTER_GOT_REAR
+{
+	speak "faith.GotRear0"
+	speak "faith.GotRear1"
+	speak "faith.GotRear2"
+}
+
+Rule faith_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_faith
+    response faith_CHATTER_GOT_REAR
+}
+
+Response crash_CHATTER_GOT_REAR
+{
+	speak "crash.GotRear0"
+	speak "crash.GotRear1"
+}
+
+Rule crash_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_crash
+    response crash_CHATTER_GOT_REAR
+}
+
+Response jaeger_CHATTER_GOT_REAR
+{
+	speak "jaeger.GotRear0"
+	speak "jaeger.GotRear1"
+	speak "jaeger.GotRear2"
+}
+
+Rule jaeger_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_jaeger
+    response jaeger_CHATTER_GOT_REAR
+}
+
+Response wolfe_CHATTER_GOT_REAR
+{
+	speak "wolfe.GotRear0"
+	speak "wolfe.GotRear1"
+	speak "wolfe.GotRear2"
+}
+
+Rule wolfe_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_wolfe
+    response wolfe_CHATTER_GOT_REAR
+}
+
+Response vegas_CHATTER_GOT_REAR
+{
+	speak "vegas.GotRear0"
+	speak "vegas.GotRear1"
+}
+
+Rule vegas_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_vegas
+    response vegas_CHATTER_GOT_REAR
+}
+
+Response sarge_CHATTER_GOT_REAR
+{
+	speak "sarge.GotRear0"
+	speak "sarge.GotRear1"
+	speak "sarge.GotRear2"
+}
+
+Rule sarge_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_sarge
+    response sarge_CHATTER_GOT_REAR
+}
+
+Response bastille_CHATTER_GOT_REAR
+{
+	speak "bastille.GotRear0"
+	speak "bastille.GotRear1"
+	speak "bastille.GotRear2"
+}
+
+Rule bastille_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_bastille
+    response bastille_CHATTER_GOT_REAR
+}
+
+Response wildcat_CHATTER_GOT_REAR
+{
+	speak "wildcat.GotRear0"
+	speak "wildcat.GotRear1"
+	speak "wildcat.GotRear2"
+}
+
+Rule wildcat_CHATTER_GOT_REAR
+{
+    criteria ConceptCHATTER_GOT_REAR Is_wildcat
+    response wildcat_CHATTER_GOT_REAR
+}
+
+Response faith_CHATTER_MEDIC
+{
+	speak "faith.Medic0"
+}
+
+Rule faith_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_faith
+    response faith_CHATTER_MEDIC
+}
+
+Response crash_CHATTER_MEDIC
+{
+	speak "crash.Medic0"
+}
+
+Rule crash_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_crash
+    response crash_CHATTER_MEDIC
+}
+
+Response jaeger_CHATTER_MEDIC
+{
+	speak "jaeger.Medic0"
+	speak "jaeger.Medic1"
+}
+
+Rule jaeger_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_jaeger
+    response jaeger_CHATTER_MEDIC
+}
+
+Response wolfe_CHATTER_MEDIC
+{
+	speak "wolfe.Medic0"
+}
+
+Rule wolfe_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_wolfe
+    response wolfe_CHATTER_MEDIC
+}
+
+Response vegas_CHATTER_MEDIC
+{
+	speak "vegas.Medic0"
+	speak "vegas.Medic1"
+}
+
+Rule vegas_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_vegas
+    response vegas_CHATTER_MEDIC
+}
+
+Response sarge_CHATTER_MEDIC
+{
+	speak "sarge.Medic0"
+}
+
+Rule sarge_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_sarge
+    response sarge_CHATTER_MEDIC
+}
+
+Response bastille_CHATTER_MEDIC
+{
+	speak "bastille.Medic0"
+	speak "bastille.Medic1"
+	speak "bastille.Medic2"
+}
+
+Rule bastille_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_bastille
+    response bastille_CHATTER_MEDIC
+}
+
+Response wildcat_CHATTER_MEDIC
+{
+	speak "wildcat.Medic0"
+}
+
+Rule wildcat_CHATTER_MEDIC
+{
+    criteria ConceptCHATTER_MEDIC Is_wildcat
+    response wildcat_CHATTER_MEDIC
+}
+
+Response faith_CHATTER_SENTRY
+{
+	speak "faith.SentryInPlace0"
+	speak "faith.SentryInPlace1"
+	speak "faith.SentryInPlace2"
+}
+
+Rule faith_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_faith
+    response faith_CHATTER_SENTRY
+}
+
+Response crash_CHATTER_SENTRY
+{
+	speak "crash.SentryInPlace0"
+	speak "crash.SentryInPlace1"
+	speak "crash.SentryInPlace2"
+	speak "crash.SentryInPlace3"
+	speak "crash.SentryInPlace4"
+	speak "crash.SentryInPlace5"
+}
+
+Rule crash_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_crash
+    response crash_CHATTER_SENTRY
+}
+
+Response jaeger_CHATTER_SENTRY
+{
+	speak "jaeger.SentryInPlace0"
+	speak "jaeger.SentryInPlace1"
+	speak "jaeger.SentryInPlace2"
+}
+
+Rule jaeger_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_jaeger
+    response jaeger_CHATTER_SENTRY
+}
+
+Response wolfe_CHATTER_SENTRY
+{
+	speak "wolfe.SentryInPlace0"
+	speak "wolfe.SentryInPlace1"
+}
+
+Rule wolfe_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_wolfe
+    response wolfe_CHATTER_SENTRY
+}
+
+Response vegas_CHATTER_SENTRY
+{
+	speak "vegas.SentryInPlace0"
+	speak "vegas.SentryInPlace1"
+	speak "vegas.SentryInPlace2"
+	speak "vegas.SentryInPlace3"
+	speak "vegas.SentryInPlace4"
+	speak "vegas.SentryInPlace5"
+}
+
+Rule vegas_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_vegas
+    response vegas_CHATTER_SENTRY
+}
+
+Response sarge_CHATTER_SENTRY
+{
+	speak "sarge.SentryInPlace0"
+	speak "sarge.SentryInPlace1"
+	speak "sarge.SentryInPlace2"
+}
+
+Rule sarge_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_sarge
+    response sarge_CHATTER_SENTRY
+}
+
+Response bastille_CHATTER_SENTRY
+{
+	speak "bastille.SentryInPlace0"
+	speak "bastille.SentryInPlace1"
+	speak "bastille.SentryInPlace2"
+}
+
+Rule bastille_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_bastille
+    response bastille_CHATTER_SENTRY
+}
+
+Response wildcat_CHATTER_SENTRY
+{
+	speak "wildcat.SentryInPlace0"
+	speak "wildcat.SentryInPlace1"
+	speak "wildcat.SentryInPlace2"
+}
+
+Rule wildcat_CHATTER_SENTRY
+{
+    criteria ConceptCHATTER_SENTRY Is_wildcat
+    response wildcat_CHATTER_SENTRY
+}
+
+Response vegas_CHATTER_SYNUP_SPOTTED
+{
+	speak "vegas.SynUpSpotted0"
+}
+
+Rule vegas_CHATTER_SYNUP_SPOTTED
+{
+    criteria ConceptCHATTER_SYNUP_SPOTTED Is_vegas
+    response vegas_CHATTER_SYNUP_SPOTTED
+}
+
+Response crash_CHATTER_SYNUP_SPOTTED
+{
+	speak "crash.SynUpSpotted0"
+}
+
+Rule crash_CHATTER_SYNUP_SPOTTED
+{
+    criteria ConceptCHATTER_SYNUP_SPOTTED Is_crash
+    response crash_CHATTER_SYNUP_SPOTTED
+}
+
+Response faith_CHATTER_BASTILLE
+{
+	speak "faith.CallBastille0"
+	speak "faith.CallBastille1"
+}
+
+Rule faith_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_faith
+    response faith_CHATTER_BASTILLE
+}
+
+Response crash_CHATTER_BASTILLE
+{
+	speak "crash.CallBastille0"
+	speak "crash.CallBastille1"
+}
+
+Rule crash_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_crash
+    response crash_CHATTER_BASTILLE
+}
+
+Response jaeger_CHATTER_BASTILLE
+{
+	speak "jaeger.CallBastille0"
+	speak "jaeger.CallBastille1"
+}
+
+Rule jaeger_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_jaeger
+    response jaeger_CHATTER_BASTILLE
+}
+
+Response wolfe_CHATTER_BASTILLE
+{
+	speak "wolfe.CallBastille0"
+	speak "wolfe.CallBastille1"
+	speak "wolfe.CallBastille2"
+	speak "wolfe.CallBastille3"
+	speak "wolfe.CallBastille4"
+}
+
+Rule wolfe_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_wolfe
+    response wolfe_CHATTER_BASTILLE
+}
+
+Response vegas_CHATTER_BASTILLE
+{
+	speak "vegas.CallBastille0"
+	speak "vegas.CallBastille1"
+}
+
+Rule vegas_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_vegas
+    response vegas_CHATTER_BASTILLE
+}
+
+Response sarge_CHATTER_BASTILLE
+{
+	speak "sarge.CallBastille0"
+	speak "sarge.CallBastille1"
+}
+
+Rule sarge_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_sarge
+    response sarge_CHATTER_BASTILLE
+}
+
+Response wildcat_CHATTER_BASTILLE
+{
+	speak "wildcat.CallBastille0"
+	speak "wildcat.CallBastille1"
+}
+
+Rule wildcat_CHATTER_BASTILLE
+{
+    criteria ConceptCHATTER_BASTILLE Is_wildcat
+    response wildcat_CHATTER_BASTILLE
+}
+
+Response bastille_CHATTER_MEDS_LOW
+{
+	speak "bastille.LowOnMeds0"
+}
+
+Rule bastille_CHATTER_MEDS_LOW
+{
+    criteria ConceptCHATTER_MEDS_LOW Is_bastille
+    response bastille_CHATTER_MEDS_LOW
+}
+
+Response faith_CHATTER_QUESTION
+{
+	speak "faith.Question0"
+	speak "faith.Question1"
+	speak "faith.Question2"
+	speak "faith.Question3"
+}
+
+Rule faith_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_faith
+    response faith_CHATTER_QUESTION
+}
+
+Response crash_CHATTER_QUESTION
+{
+	speak "crash.Question0"
+	speak "crash.Question1"
+	speak "crash.Question2"
+}
+
+Rule crash_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_crash
+    response crash_CHATTER_QUESTION
+}
+
+Response jaeger_CHATTER_QUESTION
+{
+	speak "jaeger.Question0"
+	speak "jaeger.Question1"
+	speak "jaeger.Question2"
+	speak "jaeger.Question3"
+}
+
+Rule jaeger_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_jaeger
+    response jaeger_CHATTER_QUESTION
+}
+
+Response wolfe_CHATTER_QUESTION
+{
+	speak "wolfe.Question0"
+	speak "wolfe.Question1"
+	speak "wolfe.Question2"
+	speak "wolfe.Question3"
+	speak "wolfe.Question4"
+	speak "wolfe.Question5"
+	speak "wolfe.Question6"
+	speak "wolfe.Question7"
+	speak "wolfe.Question8"
+	speak "wolfe.Question9"
+}
+
+Rule wolfe_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_wolfe
+    response wolfe_CHATTER_QUESTION
+}
+
+Response vegas_CHATTER_QUESTION
+{
+	speak "vegas.Question0"
+	speak "vegas.Question1"
+	speak "vegas.Question2"
+	speak "vegas.Question3"
+}
+
+Rule vegas_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_vegas
+    response vegas_CHATTER_QUESTION
+}
+
+Response sarge_CHATTER_QUESTION
+{
+	speak "sarge.Question0"
+	speak "sarge.Question1"
+	speak "sarge.Question2"
+	speak "sarge.Question3"
+}
+
+Rule sarge_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_sarge
+    response sarge_CHATTER_QUESTION
+}
+
+Response bastille_CHATTER_QUESTION
+{
+	speak "bastille.Question0"
+	speak "bastille.Question1"
+	speak "bastille.Question2"
+}
+
+Rule bastille_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_bastille
+    response bastille_CHATTER_QUESTION
+}
+
+Response wildcat_CHATTER_QUESTION
+{
+	speak "wildcat.Question0"
+	speak "wildcat.Question1"
+	speak "wildcat.Question2"
+	speak "wildcat.Question3"
+	speak "wildcat.Question4"
+}
+
+Rule wildcat_CHATTER_QUESTION
+{
+    criteria ConceptCHATTER_QUESTION Is_wildcat
+    response wildcat_CHATTER_QUESTION
+}
+
+Response faith_CHATTER_HOLDING_WEST
+{
+	speak "faith.HoldingWest0"
+	speak "faith.HoldingWest1"
+	speak "faith.HoldingWest2"
+}
+
+Rule faith_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_faith
+    response faith_CHATTER_HOLDING_WEST
+}
+
+Response crash_CHATTER_HOLDING_WEST
+{
+	speak "crash.HoldingWest0"
+	speak "crash.HoldingWest1"
+	speak "crash.HoldingWest2"
+	speak "crash.HoldingWest3"
+}
+
+Rule crash_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_crash
+    response crash_CHATTER_HOLDING_WEST
+}
+
+Response jaeger_CHATTER_HOLDING_WEST
+{
+	speak "jaeger.HoldingWest0"
+	speak "jaeger.HoldingWest1"
+}
+
+Rule jaeger_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_jaeger
+    response jaeger_CHATTER_HOLDING_WEST
+}
+
+Response wolfe_CHATTER_HOLDING_WEST
+{
+	speak "wolfe.HoldingWest0"
+	speak "wolfe.HoldingWest1"
+	speak "wolfe.HoldingWest2"
+	speak "wolfe.HoldingWest3"
+	speak "wolfe.HoldingWest4"
+	speak "wolfe.HoldingWest5"
+}
+
+Rule wolfe_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_wolfe
+    response wolfe_CHATTER_HOLDING_WEST
+}
+
+Response vegas_CHATTER_HOLDING_WEST
+{
+	speak "vegas.HoldingWest0"
+	speak "vegas.HoldingWest1"
+	speak "vegas.HoldingWest2"
+}
+
+Rule vegas_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_vegas
+    response vegas_CHATTER_HOLDING_WEST
+}
+
+Response sarge_CHATTER_HOLDING_WEST
+{
+	speak "sarge.HoldingWest0"
+	speak "sarge.HoldingWest1"
+	speak "sarge.HoldingWest2"
+	speak "sarge.HoldingWest3"
+}
+
+Rule sarge_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_sarge
+    response sarge_CHATTER_HOLDING_WEST
+}
+
+Response bastille_CHATTER_HOLDING_WEST
+{
+	speak "bastille.HoldingWest0"
+	speak "bastille.HoldingWest1"
+	speak "bastille.HoldingWest2"
+	speak "bastille.HoldingWest3"
+}
+
+Rule bastille_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_bastille
+    response bastille_CHATTER_HOLDING_WEST
+}
+
+Response wildcat_CHATTER_HOLDING_WEST
+{
+	speak "wildcat.HoldingWest0"
+	speak "wildcat.HoldingWest1"
+	speak "wildcat.HoldingWest2"
+}
+
+Rule wildcat_CHATTER_HOLDING_WEST
+{
+    criteria ConceptCHATTER_HOLDING_WEST Is_wildcat
+    response wildcat_CHATTER_HOLDING_WEST
+}
+
+Response crash_CHATTER_COMPLIMENTS
+{
+	speak "crash.Compliments0"
+	speak "crash.Compliments1"
+	speak "crash.Compliments2"
+}
+
+Rule crash_CHATTER_COMPLIMENTS
+{
+    criteria ConceptCHATTER_COMPLIMENTS Is_crash
+    response crash_CHATTER_COMPLIMENTS
+}
+
+Response vegas_CHATTER_COMPLIMENTS
+{
+	speak "vegas.Compliments0"
+	speak "vegas.Compliments1"
+	speak "vegas.Compliments2"
+}
+
+Rule vegas_CHATTER_COMPLIMENTS
+{
+    criteria ConceptCHATTER_COMPLIMENTS Is_vegas
+    response vegas_CHATTER_COMPLIMENTS
+}
+
+Response sarge_CHATTER_COMPLIMENTS
+{
+	speak "sarge.Compliments0"
+	speak "sarge.Compliments1"
+	speak "sarge.Compliments2"
+	speak "sarge.Compliments3"
+}
+
+Rule sarge_CHATTER_COMPLIMENTS
+{
+    criteria ConceptCHATTER_COMPLIMENTS Is_sarge
+    response sarge_CHATTER_COMPLIMENTS
+}
+
+Response bastille_CHATTER_COMPLIMENTS
+{
+	speak "bastille.Compliments0"
+	speak "bastille.Compliments1"
+	speak "bastille.Compliments2"
+}
+
+Rule bastille_CHATTER_COMPLIMENTS
+{
+    criteria ConceptCHATTER_COMPLIMENTS Is_bastille
+    response bastille_CHATTER_COMPLIMENTS
+}
+
+Response wildcat_CHATTER_COMPLIMENTS
+{
+	speak "wildcat.Compliments0"
+}
+
+Rule wildcat_CHATTER_COMPLIMENTS
+{
+    criteria ConceptCHATTER_COMPLIMENTS Is_wildcat
+    response wildcat_CHATTER_COMPLIMENTS
+}
+
+Response faith_CHATTER_GOT_POINT
+{
+	speak "faith.GotPoint0"
+}
+
+Rule faith_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_faith
+    response faith_CHATTER_GOT_POINT
+}
+
+Response crash_CHATTER_GOT_POINT
+{
+	speak "crash.GotPoint0"
+}
+
+Rule crash_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_crash
+    response crash_CHATTER_GOT_POINT
+}
+
+Response jaeger_CHATTER_GOT_POINT
+{
+	speak "jaeger.GotPoint0"
+	speak "jaeger.GotPoint1"
+}
+
+Rule jaeger_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_jaeger
+    response jaeger_CHATTER_GOT_POINT
+}
+
+Response wolfe_CHATTER_GOT_POINT
+{
+	speak "wolfe.GotPoint0"
+	speak "wolfe.GotPoint1"
+	speak "wolfe.GotPoint2"
+}
+
+Rule wolfe_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_wolfe
+    response wolfe_CHATTER_GOT_POINT
+}
+
+Response vegas_CHATTER_GOT_POINT
+{
+	speak "vegas.GotPoint0"
+	speak "vegas.GotPoint1"
+}
+
+Rule vegas_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_vegas
+    response vegas_CHATTER_GOT_POINT
+}
+
+Response sarge_CHATTER_GOT_POINT
+{
+	speak "sarge.GotPoint0"
+	speak "sarge.GotPoint1"
+}
+
+Rule sarge_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_sarge
+    response sarge_CHATTER_GOT_POINT
+}
+
+Response bastille_CHATTER_GOT_POINT
+{
+	speak "bastille.GotPoint0"
+	speak "bastille.GotPoint1"
+}
+
+Rule bastille_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_bastille
+    response bastille_CHATTER_GOT_POINT
+}
+
+Response wildcat_CHATTER_GOT_POINT
+{
+	speak "wildcat.GotPoint0"
+	speak "wildcat.GotPoint1"
+}
+
+Rule wildcat_CHATTER_GOT_POINT
+{
+    criteria ConceptCHATTER_GOT_POINT Is_wildcat
+    response wildcat_CHATTER_GOT_POINT
+}
+
+Response faith_CHATTER_GRENADE
+{
+	speak "faith.Grenade0"
+	speak "faith.Grenade1"
+}
+
+Rule faith_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_faith
+    response faith_CHATTER_GRENADE
+}
+
+Response crash_CHATTER_GRENADE
+{
+	speak "crash.Grenade0"
+	speak "crash.Grenade1"
+	speak "crash.Grenade2"
+	speak "crash.Grenade3"
+}
+
+Rule crash_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_crash
+    response crash_CHATTER_GRENADE
+}
+
+Response jaeger_CHATTER_GRENADE
+{
+	speak "jaeger.Grenade0"
+	speak "jaeger.Grenade1"
+}
+
+Rule jaeger_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_jaeger
+    response jaeger_CHATTER_GRENADE
+}
+
+Response wolfe_CHATTER_GRENADE
+{
+	speak "wolfe.Grenade0"
+	speak "wolfe.Grenade1"
+	speak "wolfe.Grenade2"
+	speak "wolfe.Grenade3"
+	speak "wolfe.Grenade4"
+	speak "wolfe.Grenade5"
+}
+
+Rule wolfe_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_wolfe
+    response wolfe_CHATTER_GRENADE
+}
+
+Response vegas_CHATTER_GRENADE
+{
+	speak "vegas.Grenade0"
+	speak "vegas.Grenade1"
+	speak "vegas.Grenade2"
+	speak "vegas.Grenade3"
+}
+
+Rule vegas_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_vegas
+    response vegas_CHATTER_GRENADE
+}
+
+Response sarge_CHATTER_GRENADE
+{
+	speak "sarge.Grenade0"
+	speak "sarge.Grenade1"
+	speak "sarge.Grenade2"
+}
+
+Rule sarge_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_sarge
+    response sarge_CHATTER_GRENADE
+}
+
+Response bastille_CHATTER_GRENADE
+{
+	speak "bastille.Grenade0"
+	speak "bastille.Grenade1"
+	speak "bastille.Grenade2"
+}
+
+Rule bastille_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_bastille
+    response bastille_CHATTER_GRENADE
+}
+
+Response jaeger_CHATTER_STILL_BREATHING
+{
+	speak "jaeger.StillBreathing0"
+}
+
+Rule jaeger_CHATTER_STILL_BREATHING
+{
+    criteria ConceptCHATTER_STILL_BREATHING Is_jaeger
+    response jaeger_CHATTER_STILL_BREATHING
+}
+
+Response wolfe_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+{
+	speak "wolfe.WildcatKillReplyBehind0"
+	speak "wolfe.WildcatKillReplyBehind1"
+	speak "wolfe.WildcatKillReplyBehind2"
+}
+
+Rule wolfe_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+{
+    criteria ConceptCHATTER_WILDCAT_KILL_REPLY_BEHIND Is_wolfe
+    response wolfe_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+}
+
+Response wildcat_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+{
+	speak "wildcat.WildcatKillReplyBehind0"
+	speak "wildcat.WildcatKillReplyBehind1"
+}
+
+Rule wildcat_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+{
+    criteria ConceptCHATTER_WILDCAT_KILL_REPLY_BEHIND Is_wildcat
+    response wildcat_CHATTER_WILDCAT_KILL_REPLY_BEHIND
+}
+
+Response faith_CHATTER_IDLE
+{
+	speak "faith.Idle0"
+	speak "faith.Idle1"
+	speak "faith.Idle2"
+	speak "faith.Idle3"
+	speak "faith.Idle4"
+	speak "faith.Idle5"
+	speak "faith.Idle6"
+	speak "faith.Idle7"
+	speak "faith.Idle8"
+	speak "faith.Idle9"
+	speak "faith.Idle10"
+}
+
+Rule faith_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_faith
+    response faith_CHATTER_IDLE
+}
+
+Response crash_CHATTER_IDLE
+{
+	speak "crash.Idle0"
+	speak "crash.Idle1"
+	speak "crash.Idle2"
+	speak "crash.Idle3"
+	speak "crash.Idle4"
+	speak "crash.Idle5"
+}
+
+Rule crash_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_crash
+    response crash_CHATTER_IDLE
+}
+
+Response jaeger_CHATTER_IDLE
+{
+	speak "jaeger.Idle0"
+	speak "jaeger.Idle1"
+	speak "jaeger.Idle2"
+	speak "jaeger.Idle3"
+	speak "jaeger.Idle4"
+	speak "jaeger.Idle5"
+	speak "jaeger.Idle6"
+	speak "jaeger.Idle7"
+	speak "jaeger.Idle8"
+	speak "jaeger.Idle9"
+	speak "jaeger.Idle10"
+	speak "jaeger.Idle11"
+	speak "jaeger.Idle12"
+	speak "jaeger.Idle13"
+	speak "jaeger.Idle14"
+}
+
+Rule jaeger_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_jaeger
+    response jaeger_CHATTER_IDLE
+}
+
+Response wolfe_CHATTER_IDLE
+{
+	speak "wolfe.Idle0"
+	speak "wolfe.Idle1"
+	speak "wolfe.Idle2"
+	speak "wolfe.Idle3"
+	speak "wolfe.Idle4"
+	speak "wolfe.Idle5"
+	speak "wolfe.Idle6"
+	speak "wolfe.Idle7"
+	speak "wolfe.Idle8"
+}
+
+Rule wolfe_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_wolfe
+    response wolfe_CHATTER_IDLE
+}
+
+Response vegas_CHATTER_IDLE
+{
+	speak "vegas.Idle0"
+	speak "vegas.Idle1"
+	speak "vegas.Idle2"
+	speak "vegas.Idle3"
+	speak "vegas.Idle4"
+	speak "vegas.Idle5"
+	speak "vegas.Idle6"
+	speak "vegas.Idle7"
+	speak "vegas.Idle8"
+	speak "vegas.Idle9"
+}
+
+Rule vegas_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_vegas
+    response vegas_CHATTER_IDLE
+}
+
+Response sarge_CHATTER_IDLE
+{
+	speak "sarge.Idle0"
+	speak "sarge.Idle1"
+	speak "sarge.Idle2"
+	speak "sarge.Idle3"
+	speak "sarge.Idle4"
+	speak "sarge.Idle5"
+	speak "sarge.Idle6"
+	speak "sarge.Idle7"
+	speak "sarge.Idle8"
+	speak "sarge.Idle9"
+	speak "sarge.Idle10"
+	speak "sarge.Idle11"
+	speak "sarge.Idle12"
+	speak "sarge.Idle13"
+	speak "sarge.Idle14"
+	speak "sarge.Idle15"
+	speak "sarge.Idle16"
+	speak "sarge.Idle17"
+}
+
+Rule sarge_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_sarge
+    response sarge_CHATTER_IDLE
+}
+
+Response bastille_CHATTER_IDLE
+{
+	speak "bastille.Idle0"
+	speak "bastille.Idle1"
+	speak "bastille.Idle2"
+	speak "bastille.Idle3"
+	speak "bastille.Idle4"
+	speak "bastille.Idle5"
+	speak "bastille.Idle6"
+	speak "bastille.Idle7"
+	speak "bastille.Idle8"
+	speak "bastille.Idle9"
+	speak "bastille.Idle10"
+	speak "bastille.Idle11"
+	speak "bastille.Idle12"
+	speak "bastille.Idle13"
+	speak "bastille.Idle14"
+	speak "bastille.Idle15"
+	speak "bastille.Idle16"
+	speak "bastille.Idle17"
+	speak "bastille.Idle18"
+}
+
+Rule bastille_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_bastille
+    response bastille_CHATTER_IDLE
+}
+
+Response wildcat_CHATTER_IDLE
+{
+	speak "wildcat.Idle0"
+	speak "wildcat.Idle1"
+	speak "wildcat.Idle2"
+	speak "wildcat.Idle3"
+	speak "wildcat.Idle4"
+	speak "wildcat.Idle5"
+	speak "wildcat.Idle6"
+}
+
+Rule wildcat_CHATTER_IDLE
+{
+    criteria ConceptCHATTER_IDLE Is_wildcat
+    response wildcat_CHATTER_IDLE
+}
+
+Response faith_CHATTER_PARASITE
+{
+	speak "faith.Parasite0"
+	speak "faith.Parasite1"
+	speak "faith.Parasite2"
+}
+
+Rule faith_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_faith
+    response faith_CHATTER_PARASITE
+}
+
+Response crash_CHATTER_PARASITE
+{
+	speak "crash.Parasite0"
+	speak "crash.Parasite1"
+	speak "crash.Parasite2"
+}
+
+Rule crash_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_crash
+    response crash_CHATTER_PARASITE
+}
+
+Response jaeger_CHATTER_PARASITE
+{
+	speak "jaeger.Parasite0"
+	speak "jaeger.Parasite1"
+	speak "jaeger.Parasite2"
+}
+
+Rule jaeger_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_jaeger
+    response jaeger_CHATTER_PARASITE
+}
+
+Response wolfe_CHATTER_PARASITE
+{
+	speak "wolfe.Parasite0"
+	speak "wolfe.Parasite1"
+	speak "wolfe.Parasite2"
+	speak "wolfe.Parasite3"
+	speak "wolfe.Parasite4"
+}
+
+Rule wolfe_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_wolfe
+    response wolfe_CHATTER_PARASITE
+}
+
+Response vegas_CHATTER_PARASITE
+{
+	speak "vegas.Parasite0"
+	speak "vegas.Parasite2"
+	speak "vegas.Parasite3"
+}
+
+Rule vegas_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_vegas
+    response vegas_CHATTER_PARASITE
+}
+
+Response sarge_CHATTER_PARASITE
+{
+	speak "sarge.Parasite0"
+	speak "sarge.Parasite1"
+	speak "sarge.Parasite2"
+}
+
+Rule sarge_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_sarge
+    response sarge_CHATTER_PARASITE
+}
+
+Response bastille_CHATTER_PARASITE
+{
+	speak "bastille.Parasite0"
+	speak "bastille.Parasite1"
+	speak "bastille.Parasite2"
+}
+
+Rule bastille_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_bastille
+    response bastille_CHATTER_PARASITE
+}
+
+Response wildcat_CHATTER_PARASITE
+{
+	speak "wildcat.Parasite0"
+	speak "wildcat.Parasite1"
+}
+
+Rule wildcat_CHATTER_PARASITE
+{
+    criteria ConceptCHATTER_PARASITE Is_wildcat
+    response wildcat_CHATTER_PARASITE
+}
+
+Response faith_CHATTER_SEALING_DOOR
+{
+	speak "faith.SealingDoor0"
+	speak "faith.SealingDoor1"
+	speak "faith.SealingDoor2"
+}
+
+Rule faith_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_faith
+    response faith_CHATTER_SEALING_DOOR
+}
+
+Response crash_CHATTER_SEALING_DOOR
+{
+	speak "crash.SealingDoor0"
+	speak "crash.SealingDoor1"
+}
+
+Rule crash_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_crash
+    response crash_CHATTER_SEALING_DOOR
+}
+
+Response jaeger_CHATTER_SEALING_DOOR
+{
+	speak "jaeger.SealingDoor0"
+	speak "jaeger.SealingDoor1"
+}
+
+Rule jaeger_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_jaeger
+    response jaeger_CHATTER_SEALING_DOOR
+}
+
+Response wolfe_CHATTER_SEALING_DOOR
+{
+	speak "wolfe.SealingDoor0"
+	speak "wolfe.SealingDoor1"
+	speak "wolfe.SealingDoor2"
+	speak "wolfe.SealingDoor3"
+}
+
+Rule wolfe_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_wolfe
+    response wolfe_CHATTER_SEALING_DOOR
+}
+
+Response vegas_CHATTER_SEALING_DOOR
+{
+	speak "vegas.SealingDoor0"
+	speak "vegas.SealingDoor1"
+	speak "vegas.SealingDoor2"
+}
+
+Rule vegas_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_vegas
+    response vegas_CHATTER_SEALING_DOOR
+}
+
+Response sarge_CHATTER_SEALING_DOOR
+{
+	speak "sarge.SealingDoor0"
+	speak "sarge.SealingDoor1"
+	speak "sarge.SealingDoor2"
+}
+
+Rule sarge_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_sarge
+    response sarge_CHATTER_SEALING_DOOR
+}
+
+Response bastille_CHATTER_SEALING_DOOR
+{
+	speak "bastille.SealingDoor0"
+	speak "bastille.SealingDoor1"
+}
+
+Rule bastille_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_bastille
+    response bastille_CHATTER_SEALING_DOOR
+}
+
+Response wildcat_CHATTER_SEALING_DOOR
+{
+	speak "wildcat.SealingDoor0"
+	speak "wildcat.SealingDoor1"
+}
+
+Rule wildcat_CHATTER_SEALING_DOOR
+{
+    criteria ConceptCHATTER_SEALING_DOOR Is_wildcat
+    response wildcat_CHATTER_SEALING_DOOR
+}
+
+Response vegas_CHATTER_TEQUILA_REPLY_FAITH
+{
+	speak "vegas.TequilaReplyFaith0"
+}
+
+Rule vegas_CHATTER_TEQUILA_REPLY_FAITH
+{
+    criteria ConceptCHATTER_TEQUILA_REPLY_FAITH Is_vegas
+    response vegas_CHATTER_TEQUILA_REPLY_FAITH
+}
+
+Response wolfe_CHATTER_AUTOGUN_REPLY
+{
+	speak "wolfe.AutogunReply0"
+	speak "wolfe.AutogunReply1"
+	speak "wolfe.AutogunReply2"
+	speak "wolfe.AutogunReply3"
+}
+
+Rule wolfe_CHATTER_AUTOGUN_REPLY
+{
+    criteria ConceptCHATTER_AUTOGUN_REPLY Is_wolfe
+    response wolfe_CHATTER_AUTOGUN_REPLY
+}
+
+Response sarge_CHATTER_AUTOGUN_REPLY
+{
+	speak "sarge.AutogunReply0"
+	speak "sarge.AutogunReply1"
+	speak "sarge.AutogunReply2"
+}
+
+Rule sarge_CHATTER_AUTOGUN_REPLY
+{
+    criteria ConceptCHATTER_AUTOGUN_REPLY Is_sarge
+    response sarge_CHATTER_AUTOGUN_REPLY
+}
+
+Response jaeger_CHATTER_AUTOGUN_REPLY
+{
+	speak "jaeger.AutogunReply0"
+}
+
+Rule jaeger_CHATTER_AUTOGUN_REPLY
+{
+    criteria ConceptCHATTER_AUTOGUN_REPLY Is_jaeger
+    response jaeger_CHATTER_AUTOGUN_REPLY
+}
+
+Response wildcat_CHATTER_AUTOGUN_REPLY
+{
+	speak "wildcat.AutogunReply0"
+	speak "wildcat.AutogunReply1"
+}
+
+Rule wildcat_CHATTER_AUTOGUN_REPLY
+{
+    criteria ConceptCHATTER_AUTOGUN_REPLY Is_wildcat
+    response wildcat_CHATTER_AUTOGUN_REPLY
+}
+
+Response faith_CHATTER_MEDS_NONE
+{
+	speak "faith.NoMeds0"
+	speak "faith.NoMeds1"
+	speak "faith.NoMeds2"
+	speak "faith.NoMeds3"
+}
+
+Rule faith_CHATTER_MEDS_NONE
+{
+    criteria ConceptCHATTER_MEDS_NONE Is_faith
+    response faith_CHATTER_MEDS_NONE
+}
+
+Response bastille_CHATTER_MEDS_NONE
+{
+	speak "bastille.NoMeds0"
+	speak "bastille.NoMeds1"
+	speak "bastille.NoMeds2"
+	speak "bastille.NoMeds3"
+	speak "bastille.NoMeds4"
+	speak "bastille.NoMeds5"
+	speak "bastille.NoMeds6"
+}
+
+Rule bastille_CHATTER_MEDS_NONE
+{
+    criteria ConceptCHATTER_MEDS_NONE Is_bastille
+    response bastille_CHATTER_MEDS_NONE
+}
+
+Response faith_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "faith.AlienTooClose0"
+	speak "faith.AlienTooClose1"
+	speak "faith.AlienTooClose2"
+}
+
+Rule faith_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_faith
+    response faith_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response crash_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "crash.AlienTooClose0"
+	speak "crash.AlienTooClose1"
+	speak "crash.AlienTooClose2"
+	speak "crash.AlienTooClose3"
+}
+
+Rule crash_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_crash
+    response crash_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response jaeger_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "jaeger.AlienTooClose0"
+	speak "jaeger.AlienTooClose1"
+	speak "jaeger.AlienTooClose2"
+	speak "jaeger.AlienTooClose3"
+}
+
+Rule jaeger_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_jaeger
+    response jaeger_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response wolfe_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "wolfe.AlienTooClose0"
+	speak "wolfe.AlienTooClose1"
+	speak "wolfe.AlienTooClose2"
+	speak "wolfe.AlienTooClose3"
+	speak "wolfe.AlienTooClose4"
+}
+
+Rule wolfe_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_wolfe
+    response wolfe_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response vegas_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "vegas.AlienTooClose0"
+	speak "vegas.AlienTooClose1"
+	speak "vegas.AlienTooClose2"
+	speak "vegas.AlienTooClose3"
+}
+
+Rule vegas_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_vegas
+    response vegas_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response sarge_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "sarge.AlienTooClose0"
+	speak "sarge.AlienTooClose1"
+	speak "sarge.AlienTooClose2"
+	speak "sarge.AlienTooClose3"
+}
+
+Rule sarge_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_sarge
+    response sarge_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response bastille_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "bastille.AlienTooClose0"
+	speak "bastille.AlienTooClose1"
+	speak "bastille.AlienTooClose2"
+	speak "bastille.AlienTooClose3"
+	speak "bastille.AlienTooClose4"
+	speak "bastille.AlienTooClose5"
+}
+
+Rule bastille_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_bastille
+    response bastille_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response wildcat_CHATTER_ALIEN_TOO_CLOSE
+{
+	speak "wildcat.AlienTooClose0"
+	speak "wildcat.AlienTooClose1"
+	speak "wildcat.AlienTooClose2"
+	speak "wildcat.AlienTooClose3"
+}
+
+Rule wildcat_CHATTER_ALIEN_TOO_CLOSE
+{
+    criteria ConceptCHATTER_ALIEN_TOO_CLOSE Is_wildcat
+    response wildcat_CHATTER_ALIEN_TOO_CLOSE
+}
+
+Response vegas_CHATTER_HACK_FINISHED
+{
+	speak "vegas.FinishedHack0"
+	speak "vegas.FinishedHack1"
+	speak "vegas.FinishedHack2"
+	speak "vegas.FinishedHack3"
+	speak "vegas.FinishedHack4"
+}
+
+Rule vegas_CHATTER_HACK_FINISHED
+{
+    criteria ConceptCHATTER_HACK_FINISHED Is_vegas
+    response vegas_CHATTER_HACK_FINISHED
+}
+
+Response crash_CHATTER_HACK_FINISHED
+{
+	speak "crash.FinishedHack0"
+	speak "crash.FinishedHack1"
+	speak "crash.FinishedHack2"
+	speak "crash.FinishedHack3"
+	speak "crash.FinishedHack4"
+}
+
+Rule crash_CHATTER_HACK_FINISHED
+{
+    criteria ConceptCHATTER_HACK_FINISHED Is_crash
+    response crash_CHATTER_HACK_FINISHED
+}
+
+Response faith_CHATTER_LOCKED_TERMINAL
+{
+	speak "faith.LockedTerminal0"
+	speak "faith.LockedTerminal1"
+}
+
+Rule faith_CHATTER_LOCKED_TERMINAL
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL Is_faith
+    response faith_CHATTER_LOCKED_TERMINAL
+}
+
+Response jaeger_CHATTER_LOCKED_TERMINAL
+{
+	speak "jaeger.LockedTerminal0"
+	speak "jaeger.LockedTerminal1"
+}
+
+Rule jaeger_CHATTER_LOCKED_TERMINAL
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL Is_jaeger
+    response jaeger_CHATTER_LOCKED_TERMINAL
+}
+
+Response bastille_CHATTER_LOCKED_TERMINAL
+{
+	speak "bastille.LockedTerminal0"
+	speak "bastille.LockedTerminal1"
+	speak "bastille.LockedTerminal2"
+	speak "bastille.LockedTerminal3"
+	speak "bastille.LockedTerminal4"
+}
+
+Rule bastille_CHATTER_LOCKED_TERMINAL
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL Is_bastille
+    response bastille_CHATTER_LOCKED_TERMINAL
+}
+
+Response sarge_CHATTER_LOCKED_TERMINAL
+{
+	speak "sarge.LockedTerminal0"
+	speak "sarge.LockedTerminal1"
+	speak "sarge.LockedTerminal2"
+}
+
+Rule sarge_CHATTER_LOCKED_TERMINAL
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL Is_sarge
+    response sarge_CHATTER_LOCKED_TERMINAL
+}
+
+Response wildcat_CHATTER_LOCKED_TERMINAL
+{
+	speak "wildcat.LockedTerminal0"
+	speak "wildcat.LockedTerminal1"
+}
+
+Rule wildcat_CHATTER_LOCKED_TERMINAL
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL Is_wildcat
+    response wildcat_CHATTER_LOCKED_TERMINAL
+}
+
+Response vegas_CHATTER_HACK_HALFWAY
+{
+	speak "vegas.HalfwayHack0"
+	speak "vegas.HalfwayHack1"
+	speak "vegas.HalfwayHack2"
+}
+
+Rule vegas_CHATTER_HACK_HALFWAY
+{
+    criteria ConceptCHATTER_HACK_HALFWAY Is_vegas
+    response vegas_CHATTER_HACK_HALFWAY
+}
+
+Response crash_CHATTER_HACK_HALFWAY
+{
+	speak "crash.HalfwayHack0"
+	speak "crash.HalfwayHack1"
+	speak "crash.HalfwayHack2"
+	speak "crash.HalfwayHack3"
+}
+
+Rule crash_CHATTER_HACK_HALFWAY
+{
+    criteria ConceptCHATTER_HACK_HALFWAY Is_crash
+    response crash_CHATTER_HACK_HALFWAY
+}
+
+Response faith_CHATTER_TIME_TO_LEAVE
+{
+	speak "faith.TimeToLeave0"
+	speak "faith.TimeToLeave1"
+	speak "faith.TimeToLeave2"
+}
+
+Rule faith_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_faith
+    response faith_CHATTER_TIME_TO_LEAVE
+}
+
+Response crash_CHATTER_TIME_TO_LEAVE
+{
+	speak "crash.TimeToLeave0"
+	speak "crash.TimeToLeave1"
+	speak "crash.TimeToLeave2"
+}
+
+Rule crash_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_crash
+    response crash_CHATTER_TIME_TO_LEAVE
+}
+
+Response jaeger_CHATTER_TIME_TO_LEAVE
+{
+	speak "jaeger.TimeToLeave0"
+	speak "jaeger.TimeToLeave1"
+}
+
+Rule jaeger_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_jaeger
+    response jaeger_CHATTER_TIME_TO_LEAVE
+}
+
+Response wolfe_CHATTER_TIME_TO_LEAVE
+{
+	speak "wolfe.TimeToLeave0"
+	speak "wolfe.TimeToLeave1"
+	speak "wolfe.TimeToLeave2"
+	speak "wolfe.TimeToLeave3"
+	speak "wolfe.TimeToLeave4"
+	speak "wolfe.TimeToLeave5"
+	speak "wolfe.TimeToLeave6"
+	speak "wolfe.TimeToLeave7"
+}
+
+Rule wolfe_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_wolfe
+    response wolfe_CHATTER_TIME_TO_LEAVE
+}
+
+Response vegas_CHATTER_TIME_TO_LEAVE
+{
+	speak "vegas.TimeToLeave0"
+	speak "vegas.TimeToLeave1"
+}
+
+Rule vegas_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_vegas
+    response vegas_CHATTER_TIME_TO_LEAVE
+}
+
+Response sarge_CHATTER_TIME_TO_LEAVE
+{
+	speak "sarge.TimeToLeave0"
+	speak "sarge.TimeToLeave1"
+	speak "sarge.TimeToLeave2"
+}
+
+Rule sarge_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_sarge
+    response sarge_CHATTER_TIME_TO_LEAVE
+}
+
+Response bastille_CHATTER_TIME_TO_LEAVE
+{
+	speak "bastille.TimeToLeave0"
+	speak "bastille.TimeToLeave1"
+	speak "bastille.TimeToLeave2"
+}
+
+Rule bastille_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_bastille
+    response bastille_CHATTER_TIME_TO_LEAVE
+}
+
+Response wildcat_CHATTER_TIME_TO_LEAVE
+{
+	speak "wildcat.TimeToLeave0"
+	speak "wildcat.TimeToLeave1"
+}
+
+Rule wildcat_CHATTER_TIME_TO_LEAVE
+{
+    criteria ConceptCHATTER_TIME_TO_LEAVE Is_wildcat
+    response wildcat_CHATTER_TIME_TO_LEAVE
+}
+
+Response crash_CHATTER_SCANNER
+{
+	speak "crash.Scanner0"
+	speak "crash.Scanner1"
+	speak "crash.Scanner2"
+	speak "crash.Scanner3"
+}
+
+Rule crash_CHATTER_SCANNER
+{
+    criteria ConceptCHATTER_SCANNER Is_crash
+    response crash_CHATTER_SCANNER
+}
+
+Response vegas_CHATTER_HACK_STARTED
+{
+	speak "vegas.StartedHack0"
+	speak "vegas.StartedHack1"
+	speak "vegas.StartedHack2"
+	speak "vegas.StartedHack3"
+	speak "vegas.StartedHack4"
+	speak "vegas.StartedHack5"
+}
+
+Rule vegas_CHATTER_HACK_STARTED
+{
+    criteria ConceptCHATTER_HACK_STARTED Is_vegas
+    response vegas_CHATTER_HACK_STARTED
+}
+
+Response crash_CHATTER_HACK_STARTED
+{
+	speak "crash.StartedHack0"
+	speak "crash.StartedHack1"
+	speak "crash.StartedHack2"
+	speak "crash.StartedHack3"
+	speak "crash.StartedHack4"
+}
+
+Rule crash_CHATTER_HACK_STARTED
+{
+    criteria ConceptCHATTER_HACK_STARTED Is_crash
+    response crash_CHATTER_HACK_STARTED
+}
+
+Response faith_CHATTER_SARGE
+{
+	speak "faith.CallSarge0"
+	speak "faith.CallSarge1"
+}
+
+Rule faith_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_faith
+    response faith_CHATTER_SARGE
+}
+
+Response crash_CHATTER_SARGE
+{
+	speak "crash.CallSarge0"
+	speak "crash.CallSarge1"
+	speak "crash.CallSarge2"
+}
+
+Rule crash_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_crash
+    response crash_CHATTER_SARGE
+}
+
+Response jaeger_CHATTER_SARGE
+{
+	speak "jaeger.CallSarge0"
+	speak "jaeger.CallSarge1"
+}
+
+Rule jaeger_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_jaeger
+    response jaeger_CHATTER_SARGE
+}
+
+Response wolfe_CHATTER_SARGE
+{
+	speak "wolfe.CallSarge0"
+	speak "wolfe.CallSarge1"
+	speak "wolfe.CallSarge2"
+	speak "wolfe.CallSarge3"
+}
+
+Rule wolfe_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_wolfe
+    response wolfe_CHATTER_SARGE
+}
+
+Response vegas_CHATTER_SARGE
+{
+	speak "vegas.CallSarge0"
+	speak "vegas.CallSarge1"
+}
+
+Rule vegas_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_vegas
+    response vegas_CHATTER_SARGE
+}
+
+Response bastille_CHATTER_SARGE
+{
+	speak "bastille.CallSarge0"
+	speak "bastille.CallSarge1"
+}
+
+Rule bastille_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_bastille
+    response bastille_CHATTER_SARGE
+}
+
+Response wildcat_CHATTER_SARGE
+{
+	speak "wildcat.CallSarge0"
+	speak "wildcat.CallSarge1"
+}
+
+Rule wildcat_CHATTER_SARGE
+{
+    criteria ConceptCHATTER_SARGE Is_wildcat
+    response wildcat_CHATTER_SARGE
+}
+
+Response faith_CHATTER_USE
+{
+	speak "faith.Use0"
+	speak "faith.Use1"
+	speak "faith.Use2"
+	speak "faith.Use3"
+	speak "faith.Use4"
+	speak "faith.Use5"
+	speak "faith.Use6"
+	speak "faith.Use7"
+}
+
+Rule faith_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_faith
+    response faith_CHATTER_USE
+}
+
+Response crash_CHATTER_USE
+{
+	speak "crash.Use0"
+	speak "crash.Use1"
+	speak "crash.Use2"
+	speak "crash.Use3"
+}
+
+Rule crash_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_crash
+    response crash_CHATTER_USE
+}
+
+Response jaeger_CHATTER_USE
+{
+	speak "jaeger.Use0"
+	speak "jaeger.Use1"
+	speak "jaeger.Use2"
+}
+
+Rule jaeger_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_jaeger
+    response jaeger_CHATTER_USE
+}
+
+Response wolfe_CHATTER_USE
+{
+	speak "wolfe.Use0"
+	speak "wolfe.Use1"
+	speak "wolfe.Use2"
+	speak "wolfe.Use3"
+	speak "wolfe.Use4"
+	speak "wolfe.Use5"
+	speak "wolfe.Use6"
+	speak "wolfe.Use7"
+}
+
+Rule wolfe_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_wolfe
+    response wolfe_CHATTER_USE
+}
+
+Response vegas_CHATTER_USE
+{
+	speak "vegas.Use0"
+	speak "vegas.Use1"
+	speak "vegas.Use2"
+	speak "vegas.Use3"
+	speak "vegas.Use4"
+	speak "vegas.Use5"
+}
+
+Rule vegas_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_vegas
+    response vegas_CHATTER_USE
+}
+
+Response sarge_CHATTER_USE
+{
+	speak "sarge.Use0"
+	speak "sarge.Use1"
+	speak "sarge.Use2"
+	speak "sarge.Use3"
+}
+
+Rule sarge_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_sarge
+    response sarge_CHATTER_USE
+}
+
+Response bastille_CHATTER_USE
+{
+	speak "bastille.Use0"
+	speak "bastille.Use1"
+	speak "bastille.Use2"
+	speak "bastille.Use3"
+	speak "bastille.Use4"
+	speak "bastille.Use5"
+	speak "bastille.Use6"
+	speak "bastille.Use7"
+	speak "bastille.Use8"
+	speak "bastille.Use9"
+	speak "bastille.Use10"
+}
+
+Rule bastille_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_bastille
+    response bastille_CHATTER_USE
+}
+
+Response wildcat_CHATTER_USE
+{
+	speak "wildcat.Use0"
+	speak "wildcat.Use1"
+	speak "wildcat.Use2"
+	speak "wildcat.Use3"
+}
+
+Rule wildcat_CHATTER_USE
+{
+    criteria ConceptCHATTER_USE Is_wildcat
+    response wildcat_CHATTER_USE
+}
+
+Response faith_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+	speak "faith.LockedTerminalVegas0"
+}
+
+Rule faith_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_VEGAS Is_faith
+    response faith_CHATTER_LOCKED_TERMINAL_VEGAS
+}
+
+Response jaeger_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+	speak "jaeger.LockedTerminalVegas0"
+}
+
+Rule jaeger_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_VEGAS Is_jaeger
+    response jaeger_CHATTER_LOCKED_TERMINAL_VEGAS
+}
+
+Response bastille_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+	speak "bastille.LockedTerminalVegas0"
+}
+
+Rule bastille_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_VEGAS Is_bastille
+    response bastille_CHATTER_LOCKED_TERMINAL_VEGAS
+}
+
+Response sarge_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+	speak "sarge.LockedTerminalVegas0"
+	speak "sarge.LockedTerminalVegas1"
+}
+
+Rule sarge_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_VEGAS Is_sarge
+    response sarge_CHATTER_LOCKED_TERMINAL_VEGAS
+}
+
+Response wildcat_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+	speak "wildcat.LockedTerminalVegas0"
+}
+
+Rule wildcat_CHATTER_LOCKED_TERMINAL_VEGAS
+{
+    criteria ConceptCHATTER_LOCKED_TERMINAL_VEGAS Is_wildcat
+    response wildcat_CHATTER_LOCKED_TERMINAL_VEGAS
+}
+
+Response faith_CHATTER_DIE
+{
+	speak "faith.Dead0"
+}
+
+Rule faith_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_faith
+    response faith_CHATTER_DIE
+}
+
+Response crash_CHATTER_DIE
+{
+	speak "crash.Dead0"
+	speak "crash.Dead1"
+	speak "crash.Dead2"
+}
+
+Rule crash_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_crash
+    response crash_CHATTER_DIE
+}
+
+Response jaeger_CHATTER_DIE
+{
+	speak "jaeger.Dead0"
+	speak "jaeger.Dead1"
+}
+
+Rule jaeger_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_jaeger
+    response jaeger_CHATTER_DIE
+}
+
+Response wolfe_CHATTER_DIE
+{
+	speak "wolfe.Dead0"
+	speak "wolfe.Dead1"
+	speak "wolfe.Dead2"
+	speak "wolfe.Dead3"
+	speak "wolfe.Dead4"
+	speak "wolfe.Dead5"
+	speak "wolfe.Dead6"
+}
+
+Rule wolfe_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_wolfe
+    response wolfe_CHATTER_DIE
+}
+
+Response vegas_CHATTER_DIE
+{
+	speak "vegas.Dead0"
+	speak "vegas.Dead1"
+}
+
+Rule vegas_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_vegas
+    response vegas_CHATTER_DIE
+}
+
+Response sarge_CHATTER_DIE
+{
+	speak "sarge.Dead0"
+	speak "sarge.Dead1"
+}
+
+Rule sarge_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_sarge
+    response sarge_CHATTER_DIE
+}
+
+Response bastille_CHATTER_DIE
+{
+	speak "bastille.Dead0"
+	speak "bastille.Dead1"
+}
+
+Rule bastille_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_bastille
+    response bastille_CHATTER_DIE
+}
+
+Response wildcat_CHATTER_DIE
+{
+	speak "wildcat.Dead0"
+	speak "wildcat.Dead1"
+}
+
+Rule wildcat_CHATTER_DIE
+{
+    criteria ConceptCHATTER_DIE Is_wildcat
+    response wildcat_CHATTER_DIE
+}
+
+Response bastille_CHATTER_HEALING_CRASH
+{
+	speak "bastille.HealingCrash0"
+}
+
+Rule bastille_CHATTER_HEALING_CRASH
+{
+    criteria ConceptCHATTER_HEALING_CRASH Is_bastille
+    response bastille_CHATTER_HEALING_CRASH
+}
+
+Response wolfe_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+{
+	speak "wolfe.WildcatKillReplyAhead0"
+	speak "wolfe.WildcatKillReplyAhead1"
+}
+
+Rule wolfe_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+{
+    criteria ConceptCHATTER_WILDCAT_KILL_REPLY_AHEAD Is_wolfe
+    response wolfe_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+}
+
+Response wildcat_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+{
+	speak "wildcat.WildcatKillReplyAhead0"
+}
+
+Rule wildcat_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+{
+    criteria ConceptCHATTER_WILDCAT_KILL_REPLY_AHEAD Is_wildcat
+    response wildcat_CHATTER_WILDCAT_KILL_REPLY_AHEAD
+}
+
+Response faith_CHATTER_NEED_AMMO
+{
+	speak "faith.NeedAmmo0"
+	speak "faith.NeedAmmo1"
+}
+
+Rule faith_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_faith
+    response faith_CHATTER_NEED_AMMO
+}
+
+Response crash_CHATTER_NEED_AMMO
+{
+	speak "crash.NeedAmmo0"
+	speak "crash.NeedAmmo1"
+}
+
+Rule crash_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_crash
+    response crash_CHATTER_NEED_AMMO
+}
+
+Response jaeger_CHATTER_NEED_AMMO
+{
+	speak "jaeger.NeedAmmo0"
+	speak "jaeger.NeedAmmo1"
+}
+
+Rule jaeger_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_jaeger
+    response jaeger_CHATTER_NEED_AMMO
+}
+
+Response wolfe_CHATTER_NEED_AMMO
+{
+	speak "wolfe.NeedAmmo0"
+}
+
+Rule wolfe_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_wolfe
+    response wolfe_CHATTER_NEED_AMMO
+}
+
+Response vegas_CHATTER_NEED_AMMO
+{
+	speak "vegas.NeedAmmo0"
+	speak "vegas.NeedAmmo1"
+}
+
+Rule vegas_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_vegas
+    response vegas_CHATTER_NEED_AMMO
+}
+
+Response sarge_CHATTER_NEED_AMMO
+{
+	speak "sarge.NeedAmmo0"
+}
+
+Rule sarge_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_sarge
+    response sarge_CHATTER_NEED_AMMO
+}
+
+Response bastille_CHATTER_NEED_AMMO
+{
+	speak "bastille.NeedAmmo0"
+	speak "bastille.NeedAmmo1"
+	speak "bastille.NeedAmmo2"
+}
+
+Rule bastille_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_bastille
+    response bastille_CHATTER_NEED_AMMO
+}
+
+Response wildcat_CHATTER_NEED_AMMO
+{
+	speak "wildcat.NeedAmmo0"
+}
+
+Rule wildcat_CHATTER_NEED_AMMO
+{
+    criteria ConceptCHATTER_NEED_AMMO Is_wildcat
+    response wildcat_CHATTER_NEED_AMMO
+}
+
+Response faith_CHATTER_SHIELDBUG
+{
+	speak "faith.Shieldbug0"
+	speak "faith.Shieldbug1"
+	speak "faith.Shieldbug2"
+}
+
+Rule faith_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_faith
+    response faith_CHATTER_SHIELDBUG
+}
+
+Response crash_CHATTER_SHIELDBUG
+{
+	speak "crash.Shieldbug0"
+	speak "crash.Shieldbug2"
+}
+
+Rule crash_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_crash
+    response crash_CHATTER_SHIELDBUG
+}
+
+Response jaeger_CHATTER_SHIELDBUG
+{
+	speak "jaeger.Shieldbug0"
+	speak "jaeger.Shieldbug1"
+	speak "jaeger.Shieldbug2"
+}
+
+Rule jaeger_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_jaeger
+    response jaeger_CHATTER_SHIELDBUG
+}
+
+Response wolfe_CHATTER_SHIELDBUG
+{
+	speak "wolfe.Shieldbug0"
+	speak "wolfe.Shieldbug1"
+	speak "wolfe.Shieldbug2"
+	speak "wolfe.Shieldbug3"
+}
+
+Rule wolfe_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_wolfe
+    response wolfe_CHATTER_SHIELDBUG
+}
+
+Response vegas_CHATTER_SHIELDBUG
+{
+	speak "vegas.Shieldbug1"
+	speak "vegas.Shieldbug2"
+	speak "vegas.Shieldbug3"
+}
+
+Rule vegas_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_vegas
+    response vegas_CHATTER_SHIELDBUG
+}
+
+Response sarge_CHATTER_SHIELDBUG
+{
+	speak "sarge.Shieldbug0"
+	speak "sarge.Shieldbug1"
+	speak "sarge.Shieldbug2"
+}
+
+Rule sarge_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_sarge
+    response sarge_CHATTER_SHIELDBUG
+}
+
+Response bastille_CHATTER_SHIELDBUG
+{
+	speak "bastille.Shieldbug0"
+	speak "bastille.Shieldbug1"
+	speak "bastille.Shieldbug2"
+}
+
+Rule bastille_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_bastille
+    response bastille_CHATTER_SHIELDBUG
+}
+
+Response wildcat_CHATTER_SHIELDBUG
+{
+	speak "wildcat.Shieldbug0"
+}
+
+Rule wildcat_CHATTER_SHIELDBUG
+{
+    criteria ConceptCHATTER_SHIELDBUG Is_wildcat
+    response wildcat_CHATTER_SHIELDBUG
+}
+
+Response faith_CHATTER_MEDKIT
+{
+	speak "faith.Medkit0"
+}
+
+Rule faith_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_faith
+    response faith_CHATTER_MEDKIT
+}
+
+Response crash_CHATTER_MEDKIT
+{
+	speak "crash.Medkit0"
+}
+
+Rule crash_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_crash
+    response crash_CHATTER_MEDKIT
+}
+
+Response jaeger_CHATTER_MEDKIT
+{
+	speak "jaeger.Medkit0"
+}
+
+Rule jaeger_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_jaeger
+    response jaeger_CHATTER_MEDKIT
+}
+
+Response wolfe_CHATTER_MEDKIT
+{
+	speak "wolfe.Medkit0"
+	speak "wolfe.Medkit1"
+	speak "wolfe.Medkit2"
+}
+
+Rule wolfe_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_wolfe
+    response wolfe_CHATTER_MEDKIT
+}
+
+Response vegas_CHATTER_MEDKIT
+{
+	speak "vegas.Medkit0"
+}
+
+Rule vegas_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_vegas
+    response vegas_CHATTER_MEDKIT
+}
+
+Response sarge_CHATTER_MEDKIT
+{
+	speak "sarge.Medkit0"
+}
+
+Rule sarge_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_sarge
+    response sarge_CHATTER_MEDKIT
+}
+
+Response bastille_CHATTER_MEDKIT
+{
+	speak "bastille.Medkit0"
+}
+
+Rule bastille_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_bastille
+    response bastille_CHATTER_MEDKIT
+}
+
+Response wildcat_CHATTER_MEDKIT
+{
+	speak "wildcat.Medkit0"
+}
+
+Rule wildcat_CHATTER_MEDKIT
+{
+    criteria ConceptCHATTER_MEDKIT Is_wildcat
+    response wildcat_CHATTER_MEDKIT
+}
