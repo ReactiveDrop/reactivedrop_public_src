@@ -172,4 +172,6 @@
 	"wildcat.WolfeKillReplyAhead1"		"2.539479"
 	"wildcat.WolfeKillReplyBehind0"		"0.779478"
 	"wildcat.WolfeKillReplyBehind1"		"1.246145"
+	"wildcat.Grenade0"		"0.771224"
+	"wildcat.Grenade1"		"0.806145"
 }

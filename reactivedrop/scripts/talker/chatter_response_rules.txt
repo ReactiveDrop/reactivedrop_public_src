@@ -6330,6 +6330,18 @@ Rule bastille_CHATTER_GRENADE
     response bastille_CHATTER_GRENADE
 }
 
+Response wildcat_CHATTER_GRENADE
+{
+	speak "wildcat.Grenade0"
+	speak "wildcat.Grenade1"
+}
+
+Rule wildcat_CHATTER_GRENADE
+{
+    criteria ConceptCHATTER_GRENADE Is_wildcat
+    response wildcat_CHATTER_GRENADE
+}
+
 Response jaeger_CHATTER_STILL_BREATHING
 {
 	speak "jaeger.StillBreathing0"

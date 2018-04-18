@@ -1545,3 +1545,21 @@
 	"soundlevel"	"SNDLVL_95dB"
 	"wave"   "vo\wildcat\yeah.wav"
 }
+
+"wildcat.Grenade0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_lookout.wav"
+}
+
+"wildcat.Grenade1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_watchout.wav"
+}

@@ -76,5 +76,6 @@
 	"wildcat.Compliments"	"1"
 	"wildcat.Impatience"	"1"
 	"wildcat.Selection"	"4"
+	"wildcat.Grenade"	"2"
 }
 
