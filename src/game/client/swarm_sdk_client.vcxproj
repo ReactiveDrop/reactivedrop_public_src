@@ -577,6 +577,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_healamp_gun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_healgrenade_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_heal_gun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_heavy_rifle_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_hornet_barrage.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_jump_jet.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_laser_mines.cpp" />
@@ -2283,6 +2284,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_weapon_healamp_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_healgrenade_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_heal_gun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_heavy_rifle_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_hornet_barrage.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_jump_jet.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_laser_mines.h" />

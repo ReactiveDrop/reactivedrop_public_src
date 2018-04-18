@@ -410,6 +410,7 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_heal_grenade.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_heal_gun.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_healamp_gun.txt" );
+	engine->ForceExactFile( "scripts/asw_weapon_heavy_rifle.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_hornet_barrage.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_jump_jet.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_laser_mines.txt" );

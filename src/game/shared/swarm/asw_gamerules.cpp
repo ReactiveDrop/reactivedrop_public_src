@@ -577,6 +577,11 @@ ConVar	sk_plr_dmg_asw_gas_grenades( "sk_plr_dmg_asw_gas_grenades", "0", FCVAR_RE
 ConVar	sk_npc_dmg_asw_gas_grenades( "sk_npc_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
 ConVar	sk_max_asw_gas_grenades( "sk_max_asw_gas_grenades", "0", FCVAR_REPLICATED );
 
+// Heavy Rifle
+ConVar	sk_plr_dmg_asw_hr			( "sk_plr_dmg_asw_hr","0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_asw_hr			( "sk_npc_dmg_asw_hr","0", FCVAR_REPLICATED);
+ConVar	sk_max_asw_hr				( "sk_max_asw_hr","0", FCVAR_REPLICATED);
+
 // Med Rifle
 ConVar	sk_plr_dmg_asw_medrifle			( "sk_plr_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_asw_medrifle			( "sk_npc_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
@@ -606,6 +611,7 @@ ConVar	rd_pvp_mininglaser_dmg("rd_pvp_mininglaser_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_deagle_dmg("rd_pvp_deagle_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_devastator_dmg("rd_pvp_devastator_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_combat_rifle_dmg("rd_pvp_combat_rifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_pvp_heavy_rifle_dmg("rd_pvp_heavy_rifle_dmg", "0", FCVAR_REPLICATED);
 ConVar	rd_pvp_medrifle_dmg("rd_pvp_medrifle_dmg", "0", FCVAR_REPLICATED);
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
@@ -907,6 +913,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
 		// gas_grenades
 		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_SONIC,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
+		// heavy rifle
+		def.AddAmmoType( "ASW_HR",			DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_hr",			"sk_npc_dmg_asw_hr",			"sk_max_asw_hr",			BULLET_IMPULSE(200, 1225),	0 );
 		// medrifle
 		def.AddAmmoType("ASW_MEDRIFLE",		DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_medrifle",			"sk_npc_dmg_asw_medrifle",			"sk_max_asw_medrifle",			BULLET_IMPULSE(200, 1225),	0 );
 	}

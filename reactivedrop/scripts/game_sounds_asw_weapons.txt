@@ -1474,3 +1474,21 @@
 	"pitch"			"95, 105"
 	"wave"			"@weapons\2D\medrifle\singleshotfp.wav"
 }
+
+"ASW_Weapon_HeavyRifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.8"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\heavyrifle\singleshot.wav"
+}
+
+"ASW_Weapon_HeavyRifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\heavyrifle\singleshotfp.wav"
+}

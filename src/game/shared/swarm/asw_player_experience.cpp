@@ -180,6 +180,7 @@ ASW_Weapon_Unlock g_WeaponUnlocks[]=
 	ASW_Weapon_Unlock( "asw_weapon_combat_rifle",				29 ),//
 	ASW_Weapon_Unlock( "asw_weapon_healamp_gun",				30 ),// ASW_NUM_EXPERIENCE_LEVELS
 	ASW_Weapon_Unlock( "asw_weapon_gas_grenades",				25 ),//
+	ASW_Weapon_Unlock( "asw_weapon_heavy_rifle",				25 ),//
 	ASW_Weapon_Unlock( "asw_weapon_medrifle",					25 ),//
 };
 
