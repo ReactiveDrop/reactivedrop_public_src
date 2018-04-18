@@ -92,6 +92,9 @@ int g_iLevelExperience[ ASW_NUM_EXPERIENCE_LEVELS ]=
 	46900,
 	49300,
 	51750,  // XP under this = level 30 in UI, XP equal to this = level 31 in the UI
+	54250,  // 31
+	56800,  // 32
+	59400,  // 33
 };
 
 const int ASW_XP_CAP = g_iLevelExperience[ASW_NUM_EXPERIENCE_LEVELS - 1];
@@ -177,11 +180,11 @@ ASW_Weapon_Unlock g_WeaponUnlocks[]=
 	ASW_Weapon_Unlock( "asw_weapon_grenade_launcher",			26 ),
 	ASW_Weapon_Unlock( "asw_weapon_deagle",						27 ),//
 	ASW_Weapon_Unlock( "asw_weapon_devastator",					28 ),
-	ASW_Weapon_Unlock( "asw_weapon_combat_rifle",				29 ),//
-	ASW_Weapon_Unlock( "asw_weapon_healamp_gun",				30 ),// ASW_NUM_EXPERIENCE_LEVELS
-	ASW_Weapon_Unlock( "asw_weapon_gas_grenades",				25 ),//
-	ASW_Weapon_Unlock( "asw_weapon_heavy_rifle",				25 ),//
-	ASW_Weapon_Unlock( "asw_weapon_medrifle",					25 ),//
+	ASW_Weapon_Unlock( "asw_weapon_combat_rifle",				29 ),
+	ASW_Weapon_Unlock( "asw_weapon_healamp_gun",				30 ),
+	ASW_Weapon_Unlock( "asw_weapon_gas_grenades",				31 ),
+	ASW_Weapon_Unlock( "asw_weapon_heavy_rifle",				32 ),
+	ASW_Weapon_Unlock( "asw_weapon_medrifle",					33 ), // ASW_NUM_EXPERIENCE_LEVELS
 };
 
 // given an Experience total, this tells you the player's level
