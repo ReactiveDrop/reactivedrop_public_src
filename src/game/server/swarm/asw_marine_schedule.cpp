@@ -1333,6 +1333,22 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 	if ( pWeapon->GetWeaponInfo()->m_nOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
 	{
 		pWeapon->OffhandActivate();
+		if ( pWeapon->GetWeaponInfo()->m_bExtra )
+		{
+			// Fire event when a marine uses an offhand item
+			IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+			if ( event )
+			{
+				CASW_Player *pPlayer = NULL;
+				pPlayer = GetCommander();
+
+				event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+				event->SetInt( "marine", entindex() );
+				event->SetInt( "weapon", pWeapon->entindex() );
+
+				gameeventmanager->FireEvent( event );
+			}
+		}
 		return;
 	}
 
@@ -1392,6 +1408,22 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( ( m_vecOffhandItemSpot - GetAbsOrigin() ).Length2D() < ASW_DEPLOY_RANGE )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
+			if ( m_hOffhandItemToUse->GetWeaponInfo()->m_bExtra )
+			{
+				// Fire event when a marine uses an offhand item
+				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+				if ( event )
+				{
+					CASW_Player *pPlayer = NULL;
+					pPlayer = GetCommander();
+
+					event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+					event->SetInt( "marine", entindex() );
+					event->SetInt( "weapon", m_hOffhandItemToUse->entindex() );
+
+					gameeventmanager->FireEvent( event );
+				}
+			}
 			FinishedUsingOffhandItem( false );
 			if ( m_bWaitingForWeld )
 			{
@@ -1414,6 +1446,22 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( CanThrowOffhand( m_hOffhandItemToUse, GetOffhandThrowSource(), m_vecOffhandItemSpot, asw_debug_throw.GetInt() == 3 ) )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
+			if ( m_hOffhandItemToUse->GetWeaponInfo()->m_bExtra )
+			{
+				// Fire event when a marine uses an offhand item
+				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+				if ( event )
+				{
+					CASW_Player *pPlayer = NULL;
+					pPlayer = GetCommander();
+
+					event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+					event->SetInt( "marine", entindex() );
+					event->SetInt( "weapon", m_hOffhandItemToUse->entindex() );
+
+					gameeventmanager->FireEvent( event );
+				}
+			}
 			FinishedUsingOffhandItem( true );
 		}
 		else

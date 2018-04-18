@@ -2454,6 +2454,8 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetLocalAngles, "SetLocalAngles", "Set entity pitch, yaw, roll relative to the parent")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLocalAngles, "GetLocalAngles", "Get entity pitch, yaw, roll relative to the parent as a vector")
 	//
+	DEFINE_SCRIPTFUNC( SetLocalOrigin, "Moves the entity to this global position vector relative to the parent")
+	DEFINE_SCRIPTFUNC( GetLocalOrigin, "Returns the Entity position in the world relative to the parent as a vector")
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetSize, "SetSize", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoundingMins, "GetBoundingMins", "Get a vector containing min bounds, centered on object")

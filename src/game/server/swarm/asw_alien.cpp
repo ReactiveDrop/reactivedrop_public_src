@@ -160,6 +160,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
 	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
 END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
@@ -744,6 +746,14 @@ void CASW_Alien::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFr
 	}
 
 	UpdateThawRate();
+}
+
+//-----------------------------------------------------------------------------
+// VScript: Freezes this NPC in place for a period of time.
+//-----------------------------------------------------------------------------
+void CASW_Alien::ScriptFreeze( float flFreezeAmount )
+{
+    Freeze( flFreezeAmount, NULL, NULL );
 }
 
 bool CASW_Alien::ShouldBecomeStatue()
@@ -2681,6 +2691,11 @@ void CASW_Alien::ElectroStun( float flStunTime )
 
 	// can't jump after being elecrostunned
 	CapabilitiesRemove( bits_CAP_MOVE_JUMP );
+}
+
+void CASW_Alien::ScriptElectroStun( float flStunTime )
+{
+	ElectroStun( flStunTime );
 }
 
 void CASW_Alien::ForceFlinch( const Vector &vecSrc )

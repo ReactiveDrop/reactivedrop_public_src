@@ -7,6 +7,10 @@
 #include "asw_weapon_healgrenade_shared.h"
 #include "asw_buffgrenade_projectile.h"
 #include "asw_laser_mine.h"
+#include "asw_grenade_prifle.h"
+#include "asw_grenade_vindicator.h"
+#include "asw_rifle_grenade.h"
+#include "asw_gas_grenade_projectile.h"
 #include "asw_mine.h"
 #include "asw_marine.h"
 #include "asw_marine_resource.h"
@@ -353,6 +357,30 @@ HSCRIPT Script_PlantIncendiaryMine( const Vector origin, const Vector angles )
 	return ToHScript( pMine );
 }
 
+HSCRIPT Script_DropStunGrenade( float flDamage, float fRadius, const Vector position )
+{
+	CASW_Grenade_PRifle *pGrenade = CASW_Grenade_PRifle::PRifle_Grenade_Create( flDamage, fRadius, position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL );
+	return ToHScript( pGrenade );
+}
+
+HSCRIPT Script_DropIncendiaryGrenade( float flDamage, float fRadius, const Vector position )
+{
+	CASW_Grenade_Vindicator *pGrenade = CASW_Grenade_Vindicator::Vindicator_Grenade_Create( flDamage, fRadius, position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL );
+	return ToHScript( pGrenade );
+}
+
+HSCRIPT Script_DropFragGrenade( float flDamage, float fRadius, const Vector position )
+{
+	CASW_Rifle_Grenade *pGrenade = CASW_Rifle_Grenade::Rifle_Grenade_Create( flDamage, fRadius, position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL );
+	return ToHScript( pGrenade );
+}
+
+HSCRIPT Script_DropGasGrenade( float flDamage, float fInterval, float fDuration, float fFuse, const Vector position )
+{
+	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, flDamage, fInterval, fDuration, fFuse );
+	return ToHScript( pGas_Grenade );
+}
+
 void ScriptStartStim( float flDuration )
 {
 	CAlienSwarm* game = ASWGameRules();
@@ -387,6 +415,10 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlaceDamageAmplifier, "PlaceDamageAmplifier", "Places a damage amplifier (duration, radius, position)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlantLaserMine, "PlantLaserMine", "Plants a laser mine (friendly, position, angles)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlantIncendiaryMine, "PlantIncendiaryMine", "Plants an incendiary mine (position, angles)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropStunGrenade, "DropStunGrenade", "Drops a stun grenade (damage, radius, position)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropIncendiaryGrenade, "DropIncendiaryGrenade", "Drops an incendiary grenade (damage, radius, position)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropFragGrenade, "DropFragGrenade", "Drops a frag grenade (damage, radius, position)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropGasGrenade, "DropGasGrenade", "Drops a gas grenade (damage, dmgInterval, duration, fuse, position)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStartStim, "StartStim", "Activates a stim pack for desired duration" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStopStim, "StopStim", "Stops any active stim pack" );
 }

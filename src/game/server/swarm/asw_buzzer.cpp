@@ -231,6 +231,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CBaseCombatCharacter, "Alien Swarm buzzer" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the buzzer to chase the nearest marine" )
 	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning buzzer." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the buzzer into flames." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the buzzer." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the buzzer." )
 END_SCRIPTDESC()
 
 CASW_Buzzer::CASW_Buzzer()
@@ -2751,6 +2753,14 @@ void CASW_Buzzer::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pF
 	}
 }
 
+//-----------------------------------------------------------------------------
+// VScript: Freezes this NPC in place for a period of time.
+//-----------------------------------------------------------------------------
+void CASW_Buzzer::ScriptFreeze( float flFreezeAmount )
+{
+    Freeze( flFreezeAmount, NULL, NULL );
+}
+
 bool CASW_Buzzer::ShouldBecomeStatue( void )
 {
 	return false;
@@ -3273,6 +3283,11 @@ void CASW_Buzzer::ElectroStun( float flStunTime )
 
 	// can't jump after being elecrostunned
 	CapabilitiesRemove( bits_CAP_MOVE_JUMP );
+}
+
+void CASW_Buzzer::ScriptElectroStun( float flStunTime )
+{
+	ElectroStun( flStunTime );
 }
 
 //-----------------------------------------------------------------------------

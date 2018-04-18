@@ -504,6 +504,8 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "weapon_reload_finish" );
 	ListenForGameEvent( "heal_beacon_placed" );
 	ListenForGameEvent( "damage_amplifier_placed" );
+	ListenForGameEvent( "weapon_fire" );
+	ListenForGameEvent( "weapon_offhand_activate" );
 
 	return true;
 }

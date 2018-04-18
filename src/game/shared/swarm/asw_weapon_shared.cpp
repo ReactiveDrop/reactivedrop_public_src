@@ -438,6 +438,20 @@ void CASW_Weapon::ItemPostFrame( void )
 					//Msg("[Client] setting nextprimaryattack to now %f\n", gpGlobals->curtime);
 	#else
 					//Msg("[Server] setting nextprimaryattack to now %f\n", gpGlobals->curtime);
+
+					// Fire event when a player fires a weapon
+					IGameEvent * event = gameeventmanager->CreateEvent( "weapon_fire" );
+					if ( event )
+					{
+						CASW_Player *pPlayer = NULL;
+						pPlayer = pOwner->GetCommander();
+
+						event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+						event->SetInt( "marine", pOwner->entindex() );
+						event->SetInt( "weapon", entindex() );
+
+						gameeventmanager->FireEvent( event );
+					}
 	#endif
 					 m_flNextPrimaryAttack = gpGlobals->curtime;
 				}

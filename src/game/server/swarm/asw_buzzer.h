@@ -55,6 +55,7 @@ public:
 	void			TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition );
 	float			GetDefaultNavGoalTolerance();
 	virtual void	Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay );
+	virtual void	ScriptFreeze( float flFreezeAmount );
 	virtual bool	ShouldBecomeStatue( void );
 
 	void			OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
@@ -181,6 +182,7 @@ public:
 	virtual void MoveAside() { }
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
 	virtual void ElectroStun( float flStunTime );
+	virtual void ScriptElectroStun( float flStunTime );
 	virtual void Extinguish();
 	CNetworkVar(bool, m_bOnFire);
 	virtual void OnSwarmSensed(int iDistance);

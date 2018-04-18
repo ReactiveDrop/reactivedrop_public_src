@@ -232,6 +232,7 @@ public:
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	virtual void Extinguish();
 	virtual void ElectroStun( float flStunTime );
+	virtual void ScriptElectroStun( float flStunTime );
 	bool IsElectroStunned() { return m_bElectroStunned.Get(); }
 	CNetworkVar(bool, m_bOnFire);
 	virtual void SetHoldoutAlien() { m_bHoldoutAlien = true; }
@@ -276,6 +277,7 @@ public:
 
 	// freezeing
 	virtual void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay );
+	virtual void ScriptFreeze( float flFreezeAmount );
 	virtual bool ShouldBecomeStatue( void );
 	virtual bool IsMovementFrozen( void ) { return GetFrozenAmount() > 0.5f; }
 	void UpdateThawRate();

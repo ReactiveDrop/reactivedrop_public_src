@@ -382,6 +382,20 @@
 		"marine"		"long"   	// marine entindex who placed the damage amplifier
 	}
 	
+	"weapon_fire"
+	{
+		"userid"			"short"		// user ID on server
+		"marine"			"long"		// entindex of the marine
+		"weapon"			"long"		// entindex of the weapon
+	}
+	
+	"weapon_offhand_activate"
+	{
+		"userid"			"short"		// user ID on server
+		"marine"			"long"		// entindex of the marine
+		"weapon"			"long"		// entindex of the weapon
+	}
+	
 // CLIENTSIDE
 
 	"alien_hurt"

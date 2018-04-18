@@ -344,6 +344,19 @@ void CASW_Player::ItemPostFrame()
 						event->SetInt( "userid", GetUserID() );
 						gameeventmanager->FireEvent( event );
 					}
+
+#ifndef CLIENT_DLL
+					// Fire event when a player uses an offhand item
+					IGameEvent * event2 = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+					if ( event2 )
+					{
+						event2->SetInt( "userid", GetUserID() );
+						event2->SetInt( "marine", pMarine->entindex() );
+						event2->SetInt( "weapon", pExtra->entindex() );
+
+						gameeventmanager->FireEvent( event2 );
+					}
+#endif
 				}
 			}
 			else if ( pExtra->GetWeaponInfo()->m_bOffhandSwitch ) 
