@@ -1,0 +1,1547 @@
+"wildcat.WolfeBestReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_hehehehyeawellseewhosthebestnow.wav"
+}
+
+"wildcat.WolfeBestReply1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_yeahbutivegotsometricksofmyown.wav"
+}
+
+"wildcat.MedicComplainReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyigiveasmuchasitake.wav"
+}
+
+"wildcat.TequilaReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_gotenoughfortwo.wav"
+}
+
+"wildcat.InjuredSelection0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\icanmakeit.wav"
+}
+
+"wildcat.InjuredSelection1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\makeitquick.wav"
+}
+
+"wildcat.InjuredSelection2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\theyllpayforthis.wav"
+}
+
+"wildcat.SeriousInjuryReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_christcantyoujustfixitup.wav"
+}
+
+"wildcat.StillBreathingReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyitsthesamecorpthatmadeyousergeant.wav"
+}
+
+"wildcat.Autogun0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_comeontheresplentytogoaround.wav"
+}
+
+"wildcat.Autogun1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_dieyousonofabitchdie.wav"
+}
+
+"wildcat.Autogun2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wieethoselittlecrawlersaretoast.wav"
+}
+
+"wildcat.AutogunReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_hahahaman.wav"
+}
+
+"wildcat.AutogunReply1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_hellyeah.wav"
+}
+
+"wildcat.Use0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\noproblem.wav"
+}
+
+"wildcat.Use1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\roger.wav"
+}
+
+"wildcat.Use2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\sure.wav"
+}
+
+"wildcat.Use3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\yeah2.wav"
+}
+
+"wildcat.Idle0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\didyouhearthatnoise.wav"
+}
+
+"wildcat.Idle1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\isaywesetsomet75explosivesandgetthehellout.wav"
+}
+
+"wildcat.Idle2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\letsgetthispartystarted.wav"
+}
+
+"wildcat.Idle3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\meow.wav"
+}
+
+"wildcat.Idle4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\peacethroughsuperiorfirepower.wav"
+}
+
+"wildcat.Idle5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\whodareswins.wav"
+}
+
+"wildcat.Idle6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_shouldntwebewastingbugsinsteadofcoolingourheels.wav"
+}
+
+"wildcat.FF0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\christman.wav"
+}
+
+"wildcat.FF1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\watchitman.wav"
+}
+
+"wildcat.FiringAtAlien0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\coveringfire.wav"
+}
+
+"wildcat.FiringAtAlien1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\killemall.wav"
+}
+
+"wildcat.FollowMe0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_followme.wav"
+}
+
+"wildcat.FollowMe1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_letsmove.wav"
+}
+
+"wildcat.FollowMe2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_letsmoveout.wav"
+}
+
+"wildcat.HoldPosition0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_holdposition.wav"
+}
+
+"wildcat.HoldPosition1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_securethisarea.wav"
+}
+
+"wildcat.HoldPosition2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_stayhere.wav"
+}
+
+"wildcat.NeedAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\needammo.wav"
+}
+
+"wildcat.NoAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\damnoutofammo.wav"
+}
+
+"wildcat.NoAmmo1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\noammo.wav"
+}
+
+"wildcat.NoAmmo2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\outofammo.wav"
+}
+
+"wildcat.NoAmmo3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\shitoutaammo.wav"
+}
+
+"wildcat.Medic0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\medic.wav"
+}
+
+"wildcat.WildcatKillStart0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\hahyouseethatonewolfe.wav"
+}
+
+"wildcat.WildcatKillStart1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\thatsanotherformewolfeyouslowingdownoldman.wav"
+}
+
+"wildcat.WildcatKillReplyAhead0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\hehehe.wav"
+}
+
+"wildcat.WildcatKillReplyBehind0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\damnit1.wav"
+}
+
+"wildcat.WildcatKillReplyBehind1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\damnit2.wav"
+}
+
+"wildcat.WolfeKillReplyAhead0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\imstillaheadwolfe.wav"
+}
+
+"wildcat.WolfeKillReplyAhead1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\itlltakemorethanthattobeatmeoldman.wav"
+}
+
+"wildcat.WolfeKillReplyBehind0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\damnit2.wav"
+}
+
+"wildcat.WolfeKillReplyBehind1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\yeahyeah.wav"
+}
+
+"wildcat.Reloading0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\lockandload.wav"
+}
+
+"wildcat.Reloading1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\reload.wav"
+}
+
+"wildcat.Reloading2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\reloadcoverme.wav"
+}
+
+"wildcat.Reloading3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\reloading.wav"
+}
+
+"wildcat.SentryInPlace0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_gogetthemgirl.wav"
+}
+
+"wildcat.SentryInPlace1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_sentryassembled.wav"
+}
+
+"wildcat.SentryInPlace2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_sentrysonline.wav"
+}
+
+"wildcat.Ammo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_ammo.wav"
+}
+
+"wildcat.Medkit0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_medkit.wav"
+}
+
+"wildcat.Thanks0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_ioweyouone.wav"
+}
+
+"wildcat.Thanks1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_thanks.wav"
+}
+
+"wildcat.Question0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_huh.wav"
+}
+
+"wildcat.Question1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_what1.wav"
+}
+
+"wildcat.Question2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_what2.wav"
+}
+
+"wildcat.Question3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_whatisit.wav"
+}
+
+"wildcat.Question4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_whatsup.wav"
+}
+
+"wildcat.CallSarge0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heysarge.wav"
+}
+
+"wildcat.CallSarge1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_sarge.wav"
+}
+
+"wildcat.CallJaeger0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyjaeger.wav"
+}
+
+"wildcat.CallJaeger1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_jaeger.wav"
+}
+
+"wildcat.CallWolfe0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heywolfe.wav"
+}
+
+"wildcat.CallWolfe1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wolfe.wav"
+}
+
+"wildcat.CallFaith0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_faith.wav"
+}
+
+"wildcat.CallFaith1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyfaith.wav"
+}
+
+"wildcat.CallBastille0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_bastille.wav"
+}
+
+"wildcat.CallBastille1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heybastille.wav"
+}
+
+"wildcat.CallCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_crash.wav"
+}
+
+"wildcat.CallCrash1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heycrash.wav"
+}
+
+"wildcat.CallFlynn0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_flynn.wav"
+}
+
+"wildcat.CallFlynn1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyflynn.wav"
+}
+
+"wildcat.CallVegas0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heyvegas.wav"
+}
+
+"wildcat.CallVegas1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_vegas.wav"
+}
+
+"wildcat.SuppliesAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_goodmoreammo.wav"
+}
+
+"wildcat.SuppliesAmmo1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_phooanammostash.wav"
+}
+
+"wildcat.Supplies0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_hahajustwhatweneed.wav"
+}
+
+"wildcat.LockedTerminalCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_crashthisisallyours.wav"
+}
+
+"wildcat.LockedTerminalFlynn0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_flynnthisisallyours.wav"
+}
+
+"wildcat.LockedTerminalVegas0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_vegasthisisallyours.wav"
+}
+
+"wildcat.LockedTerminal0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_damnititsalllockeddown.wav"
+}
+
+"wildcat.LockedTerminal1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_damnitthisthingssecure.wav"
+}
+
+"wildcat.HoldingPosition0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringarea.wav"
+}
+
+"wildcat.HoldingPosition1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_holdingposition.wav"
+}
+
+"wildcat.HoldingPosition2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_inposition.wav"
+}
+
+"wildcat.HoldingPosition3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_securingarea.wav"
+}
+
+"wildcat.HoldingPosition4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_theyrenotgettingthroughhere.wav"
+}
+
+"wildcat.HoldingNorth0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringnorth.wav"
+}
+
+"wildcat.HoldingNorth1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringnorthside.wav"
+}
+
+"wildcat.HoldingNorth2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_northsideinposition.wav"
+}
+
+"wildcat.HoldingSouth0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringsouth.wav"
+}
+
+"wildcat.HoldingSouth1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringsouthside.wav"
+}
+
+"wildcat.HoldingSouth2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_southsidecovered.wav"
+}
+
+"wildcat.HoldingSouth3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_southsideinposition.wav"
+}
+
+"wildcat.HoldingEast0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringeast.wav"
+}
+
+"wildcat.HoldingEast1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringeastside.wav"
+}
+
+"wildcat.HoldingEast2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_eastsideinposition.wav"
+}
+
+"wildcat.HoldingWest0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringwest.wav"
+}
+
+"wildcat.HoldingWest1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_coveringwestside.wav"
+}
+
+"wildcat.HoldingWest2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_westsideinposition.wav"
+}
+
+"wildcat.GotPoint0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_ivegotpoint.wav"
+}
+
+"wildcat.GotPoint1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wildcattakingpoint.wav"
+}
+
+"wildcat.GotRear0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_dontworryguysivegotyourback.wav"
+}
+
+"wildcat.GotRear1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wildcatonsix.wav"
+}
+
+"wildcat.GotRear2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wildcattakingrearguard.wav"
+}
+
+"wildcat.RequestSealDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_sealitup.wav"
+}
+
+"wildcat.RequestSealDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_securethedoor.wav"
+}
+
+"wildcat.RequestCutDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_cutitopen.wav"
+}
+
+"wildcat.RequestCutDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_getitopen.wav"
+}
+
+"wildcat.RequestShootDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_blastitopen.wav"
+}
+
+"wildcat.RequestShootDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_shootit.wav"
+}
+
+"wildcat.CuttingDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_cuttingdoor.wav"
+}
+
+"wildcat.CuttingDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_rogerthatcuttingdoor.wav"
+}
+
+"wildcat.SealingDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_securingdoor.wav"
+}
+
+"wildcat.SealingDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_wildcatsealingdoor.wav"
+}
+
+"wildcat.Biomass0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_swarmbiomassburnitall.wav"
+}
+
+"wildcat.Biomass1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_swarmbiomassihatethisstuff.wav"
+}
+
+"wildcat.TimeToLeave0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_thatsitwereoutahere.wav"
+}
+
+"wildcat.TimeToLeave1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_timetogetthehellout.wav"
+}
+
+"wildcat.WatchOut0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_lookout.wav"
+}
+
+"wildcat.WatchOut1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_watchit.wav"
+}
+
+"wildcat.WatchOut2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_watchout.wav"
+}
+
+"wildcat.Shieldbug0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_ashieldbugkillit.wav"
+}
+
+"wildcat.ShieldbugHint0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_getbehindit.wav"
+}
+
+"wildcat.ShieldbugHint1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_shootitintheback.wav"
+}
+
+"wildcat.Parasite0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_lookoutparasite.wav"
+}
+
+"wildcat.Parasite1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_parasitekillit.wav"
+}
+
+"wildcat.BeenInfested0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_ahhgetitoffme.wav"
+}
+
+"wildcat.BeenInfested1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_getitoff1.wav"
+}
+
+"wildcat.BeenInfested2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_urfitsonme.wav"
+}
+
+"wildcat.SwarmEggs0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_carefulswarmeggs.wav"
+}
+
+"wildcat.SwarmEggs1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_swarmeggs.wav"
+}
+
+"wildcat.SwarmEggs2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_swarmeggstakeemout.wav"
+}
+
+"wildcat.AlienTooClose0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\killit.wav"
+}
+
+"wildcat.AlienTooClose1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_getitoff2.wav"
+}
+
+"wildcat.AlienTooClose2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_killit.wav"
+}
+
+"wildcat.AlienTooClose3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_onme.wav"
+}
+
+"wildcat.MadFiring0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_illkillyouall.wav"
+}
+
+"wildcat.MadFiring1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_paybacksabitchaintit.wav"
+}
+
+"wildcat.MadFiring2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_youlikethis.wav"
+}
+
+"wildcat.BreachedDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_lookouttheyrethrough.wav"
+}
+
+"wildcat.BreachedDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_theyrethrough.wav"
+}
+
+"wildcat.MarineDown0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_shitmarinedown.wav"
+}
+
+"wildcat.SmallPain0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_pain1.wav"
+}
+
+"wildcat.SmallPain1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_pain2.wav"
+}
+
+"wildcat.SmallPain2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_pain3.wav"
+}
+
+"wildcat.LargePain0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heavypain1.wav"
+}
+
+"wildcat.LargePain1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heavypain2.wav"
+}
+
+"wildcat.Dead0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heavypain1.wav"
+}
+
+"wildcat.Dead1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heavypain2.wav"
+}
+
+"wildcat.OnFire0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_onfire.wav"
+}
+
+"wildcat.ActivateStims0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_activatethestimpack.wav"
+}
+
+"wildcat.ActivateStims1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_hitthestims.wav"
+}
+
+"wildcat.ActivateStims2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_stimnow.wav"
+}
+
+"wildcat.ActivateStims3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_stimpacknow.wav"
+}
+
+"wildcat.ComplimentsWolfe0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\niceshotwolfe.wav"
+}
+
+"wildcat.ComplimentsWolfe1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\notbadwolfeforanoldtimer.wav"
+}
+
+"wildcat.ComplimentsCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_heycrashyouremyhero.wav"
+}
+
+"wildcat.Compliments0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_nicejob.wav"
+}
+
+"wildcat.Impatience0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\wildcat_christwhatstakingsolong.wav"
+}
+
+"wildcat.Selection0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\anytimeanywhere.wav"
+}
+
+"wildcat.Selection1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\letsdothis.wav"
+}
+
+"wildcat.Selection2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\sir.wav"
+}
+
+"wildcat.Selection3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\wildcat\yeah.wav"
+}
