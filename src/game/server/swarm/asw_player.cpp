@@ -991,6 +991,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						case 4: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_4", GetPlayerName() ); break;
 						case 5: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_5", GetPlayerName() ); break;
 						case 6: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_6", GetPlayerName() ); break;
+						case 7: UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_promoted_7", GetPlayerName() ); break;
 					}
 
 					CReliableBroadcastRecipientFilter filter;

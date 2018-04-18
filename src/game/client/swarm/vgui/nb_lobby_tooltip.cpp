@@ -173,6 +173,7 @@ void CNB_Lobby_Tooltip::OnTick()
 			case 4: m_pPromotionLabel->SetText( "#nb_fourth_promotion" );  m_pTitle->SetText( "#nb_promotion_medal_4"); break;
 			case 5: m_pPromotionLabel->SetText( "#nb_fifth_promotion" );  m_pTitle->SetText( "#nb_promotion_medal_5"); break;
 			case 6: m_pPromotionLabel->SetText( "#nb_sixth_promotion" );  m_pTitle->SetText( "#nb_promotion_medal_6"); break;
+			case 7: m_pPromotionLabel->SetText( "#nb_seventh_promotion" );  m_pTitle->SetText( "#nb_promotion_medal_7" ); break;
 		}
 		m_pPromotionIcon->SetImage( VarArgs( "briefing/promotion_%d_LG", nPromotion ) );
 	}

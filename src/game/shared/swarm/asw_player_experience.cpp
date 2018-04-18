@@ -117,6 +117,7 @@ float g_flPromotionXPScale[ ASW_PROMOTION_CAP + 1 ]=
 	2.0f,
 	4.0f,
 	6.0f,
+	8.0f,
 };
 
 #define ASW_MISSION_XP_AWARD_ON_FAILURE 750					// XP award divided up between objectives

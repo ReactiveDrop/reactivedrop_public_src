@@ -26,7 +26,7 @@ enum
 	ASW_USE_HOLD_RELEASE_FULL,
 };
 
-#define ASW_PROMOTION_CAP 6
+#define ASW_PROMOTION_CAP 7
 #define ASW_NUM_EXPERIENCE_LEVELS 30
 
 extern int g_iLevelExperience[ ASW_NUM_EXPERIENCE_LEVELS ];
