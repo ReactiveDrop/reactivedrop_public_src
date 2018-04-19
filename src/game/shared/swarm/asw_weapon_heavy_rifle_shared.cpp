@@ -24,13 +24,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+static const char *s_pFastFireThink = "HeavyRifleFastFireThink";
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Heavy_Rifle, DT_ASW_Weapon_Heavy_Rifle )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Heavy_Rifle, DT_ASW_Weapon_Heavy_Rifle )
 #ifdef CLIENT_DLL
 	// recvprops
+	RecvPropBool( RECVINFO( m_bFastFire ) ),
 #else
 	// sendprops
+	SendPropBool( SENDINFO( m_bFastFire ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -83,6 +87,7 @@ float CASW_Weapon_Heavy_Rifle::GetWeaponDamage()
 	{
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG);
 	}
+	GetFireRate();
 
 	return flDamage;
 }
@@ -99,7 +104,65 @@ void CASW_Weapon_Heavy_Rifle::SecondaryAttack()
 	if ( !pMarine )
 		return;
 
-	SendWeaponAnim( ACT_VM_DRYFIRE );
+	//Must have ammo
+	bool bUsesSecondary = UsesSecondaryAmmo();
+	bool bUsesClips = UsesClipsForAmmo2();
+	int iAmmoCount = pMarine->GetAmmoCount(m_iSecondaryAmmoType);
+	if ( ( bUsesSecondary && ( ( bUsesClips && m_iClip2 <= 0) || ( !bUsesClips && iAmmoCount <= 0 ) ) ) || m_bInReload )
+	{
+		SendWeaponAnim( ACT_VM_DRYFIRE );
+		BaseClass::WeaponSound( EMPTY );
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+		return;
+	}
+
+	m_iClip2--;
+	m_bFastFire = true;
 	BaseClass::WeaponSound( EMPTY );
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 3.0f;
+	SetContextThink( &CASW_Weapon_Heavy_Rifle::StopFastFire, gpGlobals->curtime + 3.0f, s_pFastFireThink );
+}
+
+float CASW_Weapon_Heavy_Rifle::GetFireRate()
+{
+	float flRate = GetWeaponInfo()->m_flFireRate;
+
+	if ( m_bFastFire )
+		flRate /= 2;
+
+	return flRate;
+}
+
+const Vector& CASW_Weapon_Heavy_Rifle::GetBulletSpread( void )
+{
+	static Vector cone = VECTOR_CONE_3DEGREES;
+	static Vector cone2 = Vector( 0.13053, 0.13053, 0.02 );
+
+	if ( m_bFastFire )
+		return cone2;
+	else
+		return cone;
+}
+
+void CASW_Weapon_Heavy_Rifle::StopFastFire()
+{
+	m_bFastFire = false;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+
+	DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "muzzle" );
+
+	CSoundParameters params;
+	if ( !GetParametersForSound( "FastReload.Miss", params, NULL ) )
+		return;
+
+	EmitSound_t playparams(params);
+	playparams.m_nPitch = params.pitch;
+
+	CBroadcastRecipientFilter filter;
+	if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
+	{
+		filter.UsePredictionRules();
+	}
+	EmitSound(filter, entindex(), playparams);
 }

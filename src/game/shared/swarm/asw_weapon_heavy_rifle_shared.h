@@ -24,6 +24,9 @@ public:
 
 	virtual float GetWeaponDamage();
 	virtual void SecondaryAttack();
+	virtual const Vector& GetBulletSpread( void );
+	float GetFireRate( void );
+	void StopFastFire();
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
@@ -33,6 +36,9 @@ public:
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_HEAVY_RIFLE; }
+
+protected:
+	CNetworkVar( bool, m_bFastFire );
 };
 
 
