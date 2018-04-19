@@ -139,6 +139,10 @@ ConVar asw_skill_accuracy_sniper_rifle_dmg_base("asw_skill_accuracy_sniper_rifle
 ConVar asw_skill_accuracy_sniper_rifle_dmg_step("asw_skill_accuracy_sniper_rifle_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_tesla_cannon_dmg_base("asw_skill_accuracy_tesla_cannon_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_tesla_cannon_dmg_step("asw_skill_accuracy_tesla_cannon_dmg_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_heavy_rifle_dmg_base( "asw_skill_accuracy_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_heavy_rifle_dmg_step( "asw_skill_accuracy_heavy_rifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_medrifle_dmg_base( "asw_skill_accuracy_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_medrifle_dmg_step( "asw_skill_accuracy_medrifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 namespace
 {
@@ -281,6 +285,8 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 				case ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG:  return asw_skill_accuracy_sniper_rifle_dmg_base.GetFloat() + asw_skill_accuracy_sniper_rifle_dmg_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG:	 return asw_skill_accuracy_tesla_cannon_dmg_base.GetFloat() + asw_skill_accuracy_tesla_cannon_dmg_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG: return asw_skill_accuracy_deagle_dmg_base.GetFloat() + asw_skill_accuracy_deagle_dmg_step.GetFloat() * iSkillPoints; break;
+				case ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG: return asw_skill_accuracy_heavy_rifle_dmg_base.GetFloat() + asw_skill_accuracy_heavy_rifle_dmg_step.GetFloat() * iSkillPoints; break;
+				case ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG: return asw_skill_accuracy_medrifle_dmg_base.GetFloat() + asw_skill_accuracy_medrifle_dmg_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG:
 				default: return asw_skill_accuracy_rifle_dmg_base.GetFloat() + asw_skill_accuracy_rifle_dmg_step.GetFloat() * iSkillPoints; break;
 			}			

@@ -129,7 +129,7 @@ float CASW_Weapon_MedRifle::GetWeaponDamage()
 
 	if ( GetMarine() )
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG );
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG );
 	}
 
 	return flDamage;
