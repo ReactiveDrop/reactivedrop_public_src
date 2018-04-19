@@ -559,15 +559,12 @@ void CASW_Weapon_MedRifle::HealEntity( void )
 
 		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 
-		if ( DestroyIfEmpty( true ) )
+		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if ( pMR )
 		{
-			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			if ( pMR )
-			{
-				char szName[ 256 ];
-				pMR->GetDisplayName( szName, sizeof( szName ) );
-				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
-			}
+			char szName[ 256 ];
+			pMR->GetDisplayName( szName, sizeof( szName ) );
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
 		}
 
 		bSkipChatter = true;
