@@ -24,7 +24,7 @@ WeaponData
 			
 	// asw properties
 	"reload_time"			"2.0"
-	"base_damage"			"9"
+	"base_damage"			"10"
 	"fire_rate"				"0.09"
 	"equipicon"			"swarm/EquipIcons/EquipHeavyRifle"
 	"equiplongname"			"#asw_weaponl_heavy_rifle"
