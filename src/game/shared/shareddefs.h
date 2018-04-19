@@ -119,8 +119,8 @@ inline float FractionUnDucked( int msecs )
 
 #define WEAPON_NOCLIP			-1	// clip sizes set to this tell the weapon it doesn't use a clip
 
-#define	MAX_AMMO_TYPES	33		// ???
-#define MAX_AMMO_SLOTS  32		// not really slots
+#define	MAX_AMMO_TYPES	34		// ???
+#define MAX_AMMO_SLOTS  34		// not really slots
 
 #define HUD_PRINTNOTIFY		1
 #define HUD_PRINTCONSOLE	2
