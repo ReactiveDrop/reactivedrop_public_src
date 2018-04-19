@@ -108,7 +108,7 @@ void CASW_Weapon_Heavy_Rifle::SecondaryAttack()
 	bool bUsesSecondary = UsesSecondaryAmmo();
 	bool bUsesClips = UsesClipsForAmmo2();
 	int iAmmoCount = pMarine->GetAmmoCount(m_iSecondaryAmmoType);
-	if ( ( bUsesSecondary && ( ( bUsesClips && m_iClip2 <= 0) || ( !bUsesClips && iAmmoCount <= 0 ) ) ) || m_bInReload )
+	if ( ( bUsesSecondary && ( ( bUsesClips && m_iClip2 <= 0) || ( !bUsesClips && iAmmoCount <= 0 ) ) ) || m_bInReload || m_bFastFire )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
 		BaseClass::WeaponSound( EMPTY );
@@ -119,7 +119,7 @@ void CASW_Weapon_Heavy_Rifle::SecondaryAttack()
 	m_iClip2--;
 	m_bFastFire = true;
 	BaseClass::WeaponSound( EMPTY );
-	m_flNextSecondaryAttack = gpGlobals->curtime + 3.0f;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
 	SetContextThink( &CASW_Weapon_Heavy_Rifle::StopFastFire, gpGlobals->curtime + 3.0f, s_pFastFireThink );
 }
 
@@ -147,8 +147,12 @@ const Vector& CASW_Weapon_Heavy_Rifle::GetBulletSpread( void )
 void CASW_Weapon_Heavy_Rifle::StopFastFire()
 {
 	m_bFastFire = false;
-	m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+
+	if ( !m_bInReload )
+	{
+		m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
+		m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+	}
 
 	DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "muzzle" );
 
