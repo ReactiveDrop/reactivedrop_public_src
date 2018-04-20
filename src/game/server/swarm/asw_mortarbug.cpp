@@ -657,12 +657,16 @@ int CASW_Mortarbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
 		{
 			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			if ( pMarine && pMarine->GetActiveASWWeapon() )
 			{
-				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
-
-				if (pDeagle)
-					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
+				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				{
+				case CLASS_ASW_DEAGLE:
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;
+				case CLASS_ASW_HEAVY_RIFLE:
+					damage *= rd_heavy_rifle_bigalien_dmg_scale.GetFloat(); break;
+				}
 			}
 		}
 	}

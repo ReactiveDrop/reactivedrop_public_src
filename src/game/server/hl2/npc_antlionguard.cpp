@@ -2400,14 +2400,17 @@ void CNPC_AntlionGuard::TraceAttack( const CTakeDamageInfo &inputInfo, const Vec
 		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
 		{
 			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			if ( pMarine && pMarine->GetActiveASWWeapon() )
 			{
-				CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
-			
+				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
 				extern ConVar rd_deagle_bigalien_dmg_scale;
-
-				if (pDeagle)
-					damage *= rd_deagle_bigalien_dmg_scale.GetFloat();
+				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				{
+				case CLASS_ASW_DEAGLE:
+					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;
+				case CLASS_ASW_HEAVY_RIFLE:
+					damage *= rd_heavy_rifle_bigalien_dmg_scale.GetFloat(); break;
+				}
 			}
 		}
 	}

@@ -26,6 +26,11 @@
 
 static const char *s_pFastFireThink = "HeavyRifleFastFireThink";
 
+ConVar rd_heavy_rifle_bigalien_dmg_scale( "rd_heavy_rifle_bigalien_dmg_scale", "1.3", FCVAR_CHEAT | FCVAR_REPLICATED, "Used to scale up heavy rifle's damage against Shieldbug, Mortarbug, Harvester, Drone Uber, Queen" );
+ConVar rd_heavy_rifle_fastfire_dmg_scale( "rd_heavy_rifle_fastfire_dmg_scale", "2.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Used to scale up heavy rifle's damage during fast fire mode" );
+ConVar rd_heavy_rifle_fastfire_duration(  "rd_heavy_rifle_fastfire_duration",  "3.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Number of seconds fast fire lasts" );
+ConVar rd_heavy_rifle_fastfire_fire_rate_multiplier( "rd_heavy_rifle_fastfire_fire_rate_multiplier", "0.7", FCVAR_CHEAT | FCVAR_REPLICATED, "A multiplier which is applied to rifle's fire rate during fast fire mode" );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Heavy_Rifle, DT_ASW_Weapon_Heavy_Rifle )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Heavy_Rifle, DT_ASW_Weapon_Heavy_Rifle )
@@ -87,7 +92,11 @@ float CASW_Weapon_Heavy_Rifle::GetWeaponDamage()
 	{
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG);
 	}
-	GetFireRate();
+
+	if ( !ASWDeathmatchMode() && m_bFastFire )
+	{
+		flDamage *= rd_heavy_rifle_fastfire_dmg_scale.GetFloat();
+	}
 
 	return flDamage;
 }
@@ -120,7 +129,7 @@ void CASW_Weapon_Heavy_Rifle::SecondaryAttack()
 	m_bFastFire = true;
 	BaseClass::WeaponSound( EMPTY );
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
-	SetContextThink( &CASW_Weapon_Heavy_Rifle::StopFastFire, gpGlobals->curtime + 3.0f, s_pFastFireThink );
+	SetContextThink( &CASW_Weapon_Heavy_Rifle::StopFastFire, gpGlobals->curtime + rd_heavy_rifle_fastfire_duration.GetFloat(), s_pFastFireThink );
 }
 
 float CASW_Weapon_Heavy_Rifle::GetFireRate()
@@ -128,20 +137,26 @@ float CASW_Weapon_Heavy_Rifle::GetFireRate()
 	float flRate = GetWeaponInfo()->m_flFireRate;
 
 	if ( m_bFastFire )
-		flRate /= 2;
+	{
+		flRate *= rd_heavy_rifle_fastfire_fire_rate_multiplier.GetFloat();
+	}
 
 	return flRate;
 }
 
 const Vector& CASW_Weapon_Heavy_Rifle::GetBulletSpread( void )
 {
-	static Vector cone = VECTOR_CONE_3DEGREES;
-	static Vector cone2 = Vector( 0.13053, 0.13053, 0.02 );
+	static Vector vec15degrees = Vector( 0.13053, 0.01, 0.13053 );	// VECTOR_CONE_15DEGREES with flattened Y
+	static Vector vec6degrees = Vector( 0.05234, 0.01, 0.05234 ); // VECTOR_CONE_6DEGREES with flattened Y
 
-	if ( m_bFastFire )
-		return cone2;
-	else
-		return cone;
+	CASW_Marine *marine = GetMarine();
+
+	if ( marine )
+	{
+		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking && !m_bFastFire )
+			return vec6degrees;
+	}
+	return vec15degrees;
 }
 
 void CASW_Weapon_Heavy_Rifle::StopFastFire()
