@@ -620,6 +620,7 @@ enum CASW_Flock_Leader_State
 	NUM_FLOCK_LEADER_STATES,
 };
 
-#define USE_XP_FROM_STEAM
+// commented due to inability to see level and promotion of players with private profiles
+// #define USE_XP_FROM_STEAM
 
 #endif // ASW_SHAREDDEFS_H
