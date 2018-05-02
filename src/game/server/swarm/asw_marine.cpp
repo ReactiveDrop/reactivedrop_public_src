@@ -3758,18 +3758,22 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	{
 		ASWGameRules()->MarineKilled( this, info );
 
-		// Start up the death cam
-		int iMR = ASWGameResource()->GetMarineResourceIndex( GetMarineResource() );
-		if ( ASWDeathmatchMode() )
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		if ( pGameResource && pGameResource->CountAllAliveMarines() > 0 )
 		{
-			ASWGameRules()->m_vMarineDeathPosDeathmatch = GetAbsOrigin();
-			ASWGameRules()->m_nMarineForDeathCamDeathmatch = iMR;
-		}
-		else
-		{
-			ASWGameRules()->m_fMarineDeathTime = gpGlobals->curtime;
-			ASWGameRules()->m_vMarineDeathPos = GetAbsOrigin();
-			ASWGameRules()->m_nMarineForDeathCam = iMR;
+			// Start up the death cam
+			int iMR = ASWGameResource()->GetMarineResourceIndex( GetMarineResource() );
+			if ( ASWDeathmatchMode() )
+			{
+				ASWGameRules()->m_vMarineDeathPosDeathmatch = GetAbsOrigin();
+				ASWGameRules()->m_nMarineForDeathCamDeathmatch = iMR;
+			}
+			else
+			{
+				ASWGameRules()->m_fMarineDeathTime = gpGlobals->curtime;
+				ASWGameRules()->m_vMarineDeathPos = GetAbsOrigin();
+				ASWGameRules()->m_nMarineForDeathCam = iMR;
+			}
 		}
 
 		// Check mission status
