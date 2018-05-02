@@ -1,0 +1,189 @@
+
+
+"asw_song.TimorBattle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\timor_battle.wav"
+}
+
+
+"asw_song.RydbergRumble"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\rydberg_rumble.wav"
+}
+
+"asw_song.briefing"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.75"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\solo\briefing_main.wav"
+}
+
+"asw_song.Stinger"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"rndwave"
+	{
+        "wave"	"#music\shockStinger01.wav"
+        "wave"	"#music\shockStinger02.wav"
+        "wave"	"#music\shockStinger03.wav"
+	}
+}
+
+"asw_song.elevatorMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\AS01.wav"
+}
+
+"asw_song.stims"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/adrenaline.wav"
+}
+
+"noslow.BulletTimeOut"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"1.0"
+	"soundlevel"	"0"
+
+	"wave"	"#music/slomo_out.wav"
+}
+
+"noslow.BulletTimeIn"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"#music\slomo_in.wav"
+}
+
+"noslow.SingleBreath"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"#music\slomo_breath.wav"
+}
+
+"asw_song.statsSuccess"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\solo\stats_success.wav"
+}
+
+"asw_song.statsFail"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\solo\stats_failure.wav"
+}
+
+
+"Game.ObjectiveComplete"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"0.5"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music\ObjectiveComplete.wav"
+}
+
+"Game.MissionWon"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"0.5"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music\ObjectiveComplete.wav"
+}
+
+"Game.MissionLost"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"0.5"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music\GameOverMan.wav"
+}
+
+"Spawner.Horde"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"soundlevel"	"SNDLVL_NONE"
+
+    "rndwave"
+	{
+        "wave"	"*#music\shockStinger01.wav"
+        "wave"	"*#music\shockStinger02.wav"
+        "wave"	"*#music\shockStinger03.wav"
+	}
+}
+
+"Spawner.AreaClear"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"soundlevel"	"SNDLVL_NONE"
+
+    "rndwave"
+	{
+         "wave"	"#music\area_clear.wav"
+	}
+}
+
