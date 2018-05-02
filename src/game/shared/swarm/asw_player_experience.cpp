@@ -629,7 +629,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 		steamID = steamIDForPlayer;
 
-		Msg( "Steam_OnUserStatsReceived for non local player %s (%s)\n", pi.name ? pi.name : "NULL", pi.friendsName ? pi.friendsName : "NULL" );
+		DevMsg( "Steam_OnUserStatsReceived for non local player %s (%s)\n", pi.name ? pi.name : "NULL", pi.friendsName ? pi.friendsName : "NULL" );
 	}
 	if ( steamID != pUserStatsReceived->m_steamIDUser )
 		return;
