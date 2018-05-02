@@ -44,9 +44,9 @@
 
 	"rndwave"
 	{
-        "wave"	"#music\shockStinger01.wav"
-        "wave"	"#music\shockStinger02.wav"
-        "wave"	"#music\shockStinger03.wav"
+        "wave"	"#swarm\shockStinger01.wav"
+        "wave"	"#swarm\shockStinger02.wav"
+        "wave"	"#swarm\shockStinger03.wav"
 	}
 }
 
@@ -168,9 +168,9 @@
 
     "rndwave"
 	{
-        "wave"	"*#music\shockStinger01.wav"
-        "wave"	"*#music\shockStinger02.wav"
-        "wave"	"*#music\shockStinger03.wav"
+        "wave"	"*#swarm\shockStinger01.wav"
+        "wave"	"*#swarm\shockStinger02.wav"
+        "wave"	"*#swarm\shockStinger03.wav"
 	}
 }
 
