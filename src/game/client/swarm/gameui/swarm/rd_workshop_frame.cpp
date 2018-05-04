@@ -21,6 +21,8 @@ using namespace BaseModUI;
 DECLARE_BUILD_FACTORY( ReactiveDropWorkshopListItem );
 DECLARE_BUILD_FACTORY( ReactiveDropWorkshop );
 
+ConVar rd_workshop_allow_item_creation( "rd_workshop_allow_item_creation", "0", FCVAR_ARCHIVE, "If set to 1 then you can create new workshop items." );
+
 ReactiveDropWorkshopListItem::ReactiveDropWorkshopListItem( Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
 {
 	SetProportional( true );
@@ -237,9 +239,17 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 			return;
 		}
 
-		CUIGameData::Get()->OpenWaitScreen( "#rd_workshop_creating_item", 0 );
-		SteamAPICall_t hAPICall = steamapicontext->SteamUGC()->CreateItem( steamapicontext->SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
-		m_CreateItemCall.Set( hAPICall, this, &ReactiveDropWorkshop::CreateItemCall );
+		if ( rd_workshop_allow_item_creation.GetBool() )
+		{
+			CUIGameData::Get()->OpenWaitScreen( "#rd_workshop_creating_item", 0 );
+			SteamAPICall_t hAPICall = steamapicontext->SteamUGC()->CreateItem( steamapicontext->SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
+			m_CreateItemCall.Set( hAPICall, this, &ReactiveDropWorkshop::CreateItemCall );
+		}
+		else
+		{
+			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "Attention!", "Please set rd_workshop_allow_item_creation 1 before doing this action" );
+			Msg( "Please set rd_workshop_allow_item_creation 1 before doing this action\n" );
+		}
 	}
 	else if ( !V_strcmp( command, "EditWorkshopItem" ) )
 	{
