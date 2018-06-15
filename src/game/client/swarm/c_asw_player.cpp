@@ -97,6 +97,7 @@
 #include "c_asw_jukebox.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_random_missions.h"
+#include "rd_rich_presence.h"
 
 #if defined( CASW_Player )
 	#undef CASW_Player
@@ -2355,6 +2356,11 @@ void C_ASW_Player::SmoothCameraZ(Vector &CameraPos)
 // smooth the camera's overall coords when the player changes from marine to marine
 bool C_ASW_Player::SmoothMarineChangeCamera(Vector &CameraPos)
 {
+	if (GetMarine() != m_hMarine.Get())
+	{
+		g_RD_Rich_Presence.UpdatePresence();
+	}
+
 	if (GetViewMarine() && GetViewMarine() != m_hLastMarine.Get() && m_hLastMarine.Get())
 	{
 		// we changed, need to setup our smoothing vector		

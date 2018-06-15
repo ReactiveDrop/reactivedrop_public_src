@@ -1,0 +1,426 @@
+#include "cbase.h"
+#include "rd_rich_presence.h"
+#include "discord_rpc.h"
+#include "c_asw_player.h"
+#include "c_asw_marine.h"
+#include "asw_marine_profile.h"
+#include "asw_gamerules.h"
+#include "rd_lobby_utils.h"
+#include "asw_campaign_info.h"
+#include "rd_challenges_shared.h"
+#include "c_playerresource.h"
+#include "asw_briefing.h"
+#include "localize/ilocalize.h"
+#include "gameui_interface.h"
+#include "c_asw_game_resource.h"
+#include "asw_equipment_list.h"
+#include "asw_weapon_parse.h"
+
+#include <ctime>
+
+#include "steam/isteammatchmaking.h"
+#include "steam/isteamfriends.h"
+
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
+RD_Rich_Presence g_RD_Rich_Presence;
+
+extern ConVar rd_challenge;
+
+#define DISCORD_CLIENT_ID "457248854685777932"
+#define DISCORD_STEAM_ID "563560"
+
+static void handleDiscordReady( const DiscordUser *pRequest )
+{
+	DevMsg( "Discord: connected to user %s#%s\n", pRequest->username, pRequest->discriminator );
+}
+static void handleDiscordError( int iErrorCode, const char *pszMessage )
+{
+	DevWarning( "Discord: error %d: %s\n", iErrorCode, pszMessage );
+}
+static void handleDiscordJoinGame( const char *pszJoinSecret )
+{
+	if ( const char *pszLobbyID = StringAfterPrefix( pszJoinSecret, "lobby:" ) )
+	{
+		char *pEndOfString = NULL;
+		uint64 nLobbyID = strtoull( pszLobbyID, &pEndOfString, 16 );
+		if ( pEndOfString && pEndOfString[0] )
+		{
+			Warning( "Discord: could not parse join game message: %s\n", pszJoinSecret );
+			return;
+		}
+
+		DevMsg( "Discord: connecting to Steam lobby: %llu\n", nLobbyID );
+		UTIL_RD_JoinByLobbyID( CSteamID( nLobbyID ) );
+	}
+	else
+	{
+		Warning( "Discord: could not parse join game message: %s\n", pszJoinSecret );
+	}
+}
+static void handleDiscordJoinRequest( const DiscordUser *pRequest )
+{
+	Msg( "Discord: auto-accepting request from %s#%s\n", pRequest->username, pRequest->discriminator );
+	Discord_Respond( pRequest->userId, DISCORD_REPLY_YES );
+}
+
+bool RD_Rich_Presence::Init()
+{
+	DiscordEventHandlers discordHandlers;
+	V_memset( &discordHandlers, 0, sizeof( discordHandlers ) );
+	discordHandlers.ready = &handleDiscordReady;
+	discordHandlers.errored = &handleDiscordError;
+	discordHandlers.disconnected = &handleDiscordError;
+	discordHandlers.joinGame = &handleDiscordJoinGame;
+	discordHandlers.joinRequest = &handleDiscordJoinRequest;
+	Discord_Initialize( DISCORD_CLIENT_ID, &discordHandlers, 1, DISCORD_STEAM_ID );
+	return true;
+}
+
+void RD_Rich_Presence::Shutdown()
+{
+	ISteamFriends *pSteamFriends = SteamFriends();
+	if ( pSteamFriends )
+	{
+		pSteamFriends->ClearRichPresence();
+	}
+
+	Discord_ClearPresence();
+	Discord_Shutdown();
+}
+
+void RD_Rich_Presence::Update( float frametime )
+{
+	Discord_RunCallbacks();
+
+	if ( m_nLastUpdateTime < time( NULL ) - 5 )
+	{
+		m_nLastUpdateTime = time( NULL );
+		UpdatePresence();
+	}
+}
+
+void RD_Rich_Presence::UpdatePresence()
+{
+	ISteamFriends *pSteamFriends = SteamFriends();
+	if ( !pSteamFriends )
+		return;					// no friends, no fun
+	DiscordRichPresence discordPresence;
+	V_memset( &discordPresence, 0, sizeof( discordPresence ) );
+
+	if ( !engine->IsConnected() )
+	{
+		pSteamFriends->SetRichPresence( "status", "Main Menu" );
+		pSteamFriends->SetRichPresence( "connect", NULL );
+		pSteamFriends->SetRichPresence( "steam_display", "#Main_Menu" );
+		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+
+		discordPresence.state = "Main Menu";
+	}
+	else if ( engine->IsPlayingDemo() )
+	{
+		pSteamFriends->SetRichPresence( "status", "Watching a Demo" );
+		pSteamFriends->SetRichPresence( "connect", NULL );
+		pSteamFriends->SetRichPresence( "steam_display", "#Watching_a_Demo" );
+		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+
+		discordPresence.state = "Watching a Demo";
+	}
+	else
+	{
+		if ( GameUI().HasLoadingBackgroundDialog() )
+		{
+			// Don't update during loading screens.
+			return;
+		}
+
+		CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+		if ( currentLobby.IsValid() )
+		{
+			static char szCurrentLobbyID[17];
+			V_snprintf( szCurrentLobbyID, sizeof( szCurrentLobbyID ), "%016llx", currentLobby.ConvertToUint64() );
+
+			static char szConnectString[40];
+			V_snprintf( szConnectString, sizeof( szConnectString ), "+connect_lobby %llu", currentLobby.ConvertToUint64() );
+			pSteamFriends->SetRichPresence( "steam_player_group", szCurrentLobbyID );
+			pSteamFriends->SetRichPresence( "connect", szConnectString );
+
+			discordPresence.partyId = szCurrentLobbyID;
+
+			ISteamMatchmaking *pSteamMatchmaking = SteamMatchmaking();
+			if ( pSteamMatchmaking )
+			{
+				int memberCount = pSteamMatchmaking->GetNumLobbyMembers( currentLobby );
+				if ( pSteamFriends )
+				{
+					static char szGroupSize[4];
+					V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", memberCount );
+					pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+
+					pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+					V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", gpGlobals->maxClients );
+					pSteamFriends->SetRichPresence( "max_players", szGroupSize );
+				}
+				discordPresence.partySize = memberCount;
+				discordPresence.partyMax = gpGlobals->maxClients;
+				if ( gpGlobals->maxClients > memberCount )
+				{
+					static char szJoinSecret[24];
+					V_snprintf( szJoinSecret, sizeof( szJoinSecret ), "lobby:%s", szCurrentLobbyID );
+					discordPresence.joinSecret = szJoinSecret;
+				}
+			}
+			else if ( pSteamFriends )
+			{
+				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+			}
+		}
+		else if ( engine->IsConnected() && ASWGameResource() && ASWGameResource()->IsOfflineGame() )
+		{
+			// playing Singleplayer mode
+			discordPresence.partyId = NULL;
+			discordPresence.partySize = 1;
+			discordPresence.partyMax = 1;
+			discordPresence.joinSecret = NULL;
+
+			if ( pSteamFriends )
+			{
+				pSteamFriends->SetRichPresence( "connect", NULL );
+				pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+				pSteamFriends->SetRichPresence( "num_players", "1" );
+				pSteamFriends->SetRichPresence( "max_players", "1" );
+			}
+		}
+		else if ( engine->IsConnected() )
+		{
+			// TODO
+			discordPresence.partyId = NULL;
+			discordPresence.partySize = 0;
+			discordPresence.partyMax = 0;
+			discordPresence.joinSecret = NULL;
+
+			if ( pSteamFriends )
+			{
+				// TODO
+				pSteamFriends->SetRichPresence( "connect", NULL );
+				pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+			}
+		}
+
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		C_AlienSwarm *pASW = ASWGameRules();
+		if ( pPlayer && pASW )
+		{
+			static char szSteamDisplay[128];
+			static char szDetails[128];
+			static char szLargeImageText[128];
+			static char szState[128];
+			szSteamDisplay[0] = 0;
+			szDetails[0] = 0;
+			szLargeImageText[0] = 0;
+			szState[0] = 0;
+
+			if ( CASW_Campaign_Info *pCampaign = pASW->GetCampaignInfo() )
+			{
+				if ( ASWDeathmatchMode() )
+				{
+					V_strncpy( szSteamDisplay, "#Deathmatch_", sizeof( szSteamDisplay ) );
+
+					switch ( ASWDeathmatchMode()->GetGameMode() )
+					{
+					case GAMEMODE_DEATHMATCH:
+					default:
+						V_strcat( szSteamDisplay, "DM", sizeof( szSteamDisplay ) );
+						V_strncpy( szDetails, "Deathmatch", sizeof(szDetails) );
+						V_snprintf( szState, sizeof( szState ), "Score: %d", g_PR->GetPlayerScore( pPlayer->entindex() ) );
+						break;
+					case GAMEMODE_TEAMDEATHMATCH:
+						V_strcat( szSteamDisplay, "TDM", sizeof( szSteamDisplay ) );
+						V_snprintf( szDetails, sizeof( szDetails ), "Team Deathmatch (%s)", g_PR->GetTeamName( pPlayer->GetTeamNumber() ) );
+						V_snprintf( szState, sizeof( szState ), "Score: %d (%d team)", g_PR->GetPlayerScore( pPlayer->entindex() ), g_PR->GetTeamScore( pPlayer->GetTeamNumber() ) );
+						break;
+					case GAMEMODE_GUNGAME:
+						V_strcat( szSteamDisplay, "GG", sizeof( szSteamDisplay ) );
+						V_strncpy( szDetails, "Gun Game", sizeof(szDetails) );
+						if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( ASWEquipmentList()->GetRegular( ASWDeathmatchMode()->GetWeaponIndexByFragsCount( g_PR->GetPlayerScore( pPlayer->entindex() ) ) )->m_EquipClass ) ) )
+						{
+							char szWeaponName[128];
+							if ( wchar_t *pwszTranslatedWeaponName = g_pLocalize->Find( pWeaponInfo->szPrintName ) )
+							{
+								V_UnicodeToUTF8( pwszTranslatedWeaponName, szWeaponName, sizeof( szWeaponName ) );
+							}
+							else
+							{
+								V_strncpy( szWeaponName, pWeaponInfo->szPrintName, sizeof( szWeaponName ) );
+							}
+							V_snprintf( szState, sizeof( szState ), "Score: %d (%s)", g_PR->GetPlayerScore( pPlayer->entindex() ), szWeaponName );
+						}
+						break;
+					case GAMEMODE_INSTAGIB:
+						V_strcat( szSteamDisplay, "IG", sizeof( szSteamDisplay ) );
+						V_strncpy( szDetails, "InstaGib", sizeof(szDetails) );
+						V_snprintf( szState, sizeof( szState ), "Score: %d", g_PR->GetPlayerScore( pPlayer->entindex() ) );
+						break;
+					}
+					V_strcat( szSteamDisplay, "_Campaign", sizeof( szSteamDisplay ) );
+				}
+				else if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
+				{
+					V_strncpy( szSteamDisplay, "#Campaign_Difficulty", sizeof( szSteamDisplay ) );
+				}
+				else
+				{
+					V_strncpy( szSteamDisplay, "#Campaign_Difficulty_Challenge", sizeof( szSteamDisplay ) );
+				}
+
+				if ( CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaign->GetMissionByMapName( MapName() ) )
+				{
+					static char szMissionName[128];
+					if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->m_MissionName ) ) )
+					{
+						V_UnicodeToUTF8( pwszTranslatedMissionName, szMissionName, sizeof( szMissionName ) );
+					}
+					else
+					{
+						V_strncpy( szMissionName, STRING( pMission->m_MissionName ), sizeof( szMissionName ) );
+					}
+					pSteamFriends->SetRichPresence( "rd_mission", szMissionName );
+					V_strncpy( szLargeImageText, szMissionName, sizeof( szLargeImageText ) );
+				}
+				else
+				{
+					pSteamFriends->SetRichPresence( "rd_mission", "???" );
+				}
+
+				if ( !ASWDeathmatchMode() )
+				{
+					// set difficulty
+					int nSkillLevel = ASWGameRules()->GetSkillLevel();
+					const char *szDifficulty = NULL;
+					switch ( nSkillLevel )
+					{
+					case 1: szDifficulty = "Easy"; break;
+					default:
+					case 2: szDifficulty = "Normal"; break;
+					case 3: szDifficulty = "Hard"; break;
+					case 4: szDifficulty = "Insane"; break;
+					case 5: szDifficulty = "Brutal"; break;
+					}
+					pSteamFriends->SetRichPresence( "rd_difficulty", szDifficulty );
+
+					// set challenge
+					if ( V_strcmp( rd_challenge.GetString(), "0" ) )
+					{
+						const char *pszDisplayName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+						static char szChallengeName[128];
+						if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
+						{
+							V_UnicodeToUTF8( pwszTranslatedChallengeName, szChallengeName, sizeof( szChallengeName ) );
+						}
+						else
+						{
+							V_strncpy( szChallengeName, pszDisplayName, sizeof( szChallengeName ) );
+						}
+						pSteamFriends->SetRichPresence( "rd_challenge", szChallengeName );
+						V_strncpy( szDetails, szChallengeName, sizeof( szDetails ) );
+						V_strcat( szDetails, " (", sizeof( szDetails ) );
+						V_strcat( szDetails, szDifficulty, sizeof( szDetails ) );
+						V_strcat( szDetails, ")", sizeof( szDetails ) );
+					}
+					else
+					{
+						V_strncpy( szDetails, szDifficulty, sizeof( szDetails ) );
+					}
+
+					switch ( pASW->GetGameState() )
+					{
+					default:
+					case ASW_GS_NONE:
+					case ASW_GS_BRIEFING:
+					case ASW_GS_LAUNCHING:
+						if ( m_LastState != ASW_GS_BRIEFING )
+						{
+							m_LastState = ASW_GS_BRIEFING;
+							m_nLastStateChangeTime = time( NULL );
+						}
+						V_strncpy( szState, "Briefing", sizeof( szState ) );
+						break;
+					case ASW_GS_INGAME:
+						if ( m_LastState != ASW_GS_INGAME )
+						{
+							m_LastState = ASW_GS_INGAME;
+							m_nLastStateChangeTime = time( NULL );
+						}
+						V_strncpy( szState, "In Mission", sizeof( szState ) );
+						break;
+					case ASW_GS_DEBRIEF:
+					case ASW_GS_CAMPAIGNMAP:
+					case ASW_GS_OUTRO:
+						if ( m_LastState != ASW_GS_DEBRIEF)
+						{
+							m_LastState = ASW_GS_DEBRIEF;
+							m_nLastStateChangeTime = time( NULL );
+						}
+						V_strncpy( szState, "Debriefing", sizeof( szState ) );
+						break;
+					}
+					discordPresence.startTimestamp = m_nLastStateChangeTime;
+				}
+			}
+			else
+			{
+				V_strncpy( szSteamDisplay, "#Generic", sizeof( szSteamDisplay ) );
+			}
+
+			discordPresence.state = szState;
+			discordPresence.details = szDetails;
+			discordPresence.largeImageText = szLargeImageText;
+			discordPresence.largeImageKey = "default"; // TODO
+
+			pSteamFriends->SetRichPresence( "status", szDetails );
+			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
+
+			CASW_Marine_Profile *pProfile = NULL;
+			if ( C_ASW_Marine *pMarine = pPlayer->GetMarine() )
+			{
+				pProfile = pMarine->GetMarineProfile();
+			}
+			else if ( pASW->GetGameState() == ASW_GS_BRIEFING )
+			{
+				if ( IBriefing *pBriefing = Briefing() )
+				{
+					pProfile = pBriefing->GetMarineProfile( 0 );
+				}
+			}
+
+			if ( pProfile )
+			{
+				static char marineImageKey[32];
+				V_snprintf( marineImageKey, sizeof( marineImageKey ), "marine_%s", pProfile->m_PortraitName );
+				discordPresence.smallImageKey = V_strlower( marineImageKey );
+				static char szMarineName[128];
+				if ( wchar_t *pwszMarineName = g_pLocalize->Find( pProfile->m_ShortName ) )
+				{
+					V_UnicodeToUTF8( pwszMarineName, szMarineName, sizeof( szMarineName ) );
+				}
+				else
+				{
+					V_strncpy( szMarineName, pProfile->m_ShortName, sizeof( szMarineName ) );
+				}
+				discordPresence.smallImageText = szMarineName;
+			}
+			else
+			{
+				discordPresence.smallImageKey = "marine_none";
+				discordPresence.smallImageText = "No marine selected";
+			}
+		}
+	}
+
+	Discord_UpdatePresence( &discordPresence );
+}

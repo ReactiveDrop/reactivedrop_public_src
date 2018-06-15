@@ -4,6 +4,8 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
+
 #include <ctype.h>
 #include "basemodframe.h"
 #include "basemodpanel.h"
@@ -25,6 +27,8 @@
 #include "filesystem.h"
 #include "fmtstr.h"
 #include "cdll_util.h"
+
+#include "rd_rich_presence.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -393,6 +397,8 @@ Panel* CBaseModFrame::NavigateBack()
 void CBaseModFrame::PostChildPaint()
 {
 	BaseClass::PostChildPaint();
+
+	g_RD_Rich_Presence.Update(0);
 
 	if(m_DrawTitleSafeBorder)
 	{

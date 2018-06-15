@@ -23,6 +23,7 @@
 	#define CASW_Campaign_Save C_ASW_Campaign_Save
 	#define CASW_Ammo C_ASW_Ammo
 	#include "c_asw_steamstats.h"
+	#include "rd_rich_presence.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -1045,6 +1046,8 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 		{
 			g_ReactiveDropWorkshop.OnMissionStart();
 		}
+
+		g_RD_Rich_Presence.UpdatePresence();
 	}
 	if ( m_iPreviousMissionWorkshopID != m_iMissionWorkshopID || updateType == DATA_UPDATE_CREATED )
 	{

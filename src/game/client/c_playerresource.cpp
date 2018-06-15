@@ -8,6 +8,7 @@
 #include "c_playerresource.h"
 #include "c_team.h"
 #include "gamestringpool.h"
+#include "rd_rich_presence.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -98,6 +99,7 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 	{
 		SetNextClientThink( gpGlobals->curtime + PLAYER_RESOURCE_THINK_INTERVAL );
 	}
+	g_RD_Rich_Presence.UpdatePresence();
 }
 
 void C_PlayerResource::UpdatePlayerName( int slot )
