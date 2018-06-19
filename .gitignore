@@ -13,6 +13,7 @@
 *.user
 *.vmx
 *.vpk
+*.lnk
 contentsrc/mapsrc/*.bsp
 autoexec.cfg
 newmapsettings.cfg

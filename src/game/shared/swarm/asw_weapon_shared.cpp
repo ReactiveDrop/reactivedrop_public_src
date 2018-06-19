@@ -33,6 +33,7 @@
 #include "asw_weapon_ammo_bag_shared.h"
 #include "asw_weapon_fire_extinguisher_shared.h"
 #include "asw_weapon_heal_gun_shared.h"
+#include "asw_weapon_medrifle_shared.h"
 #include "asw_gamerules.h"
 #include "asw_melee_system.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
@@ -513,10 +514,13 @@ void CASW_Weapon::ItemPostFrame( void )
 			if( iPrimaryAmmoType >= 0 )
 				pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iPrimaryAmmoType, pOwner ), iPrimaryAmmoType );
 		
-			pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
-			int iSecondaryAmmoType = pWeapon->GetSecondaryAmmoType();
-			if( iSecondaryAmmoType >= 0 )
-				pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, pOwner ), iSecondaryAmmoType );
+			if ( !dynamic_cast< CASW_Weapon_MedRifle* >( pWeapon ) )
+			{
+				pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+				int iSecondaryAmmoType = pWeapon->GetSecondaryAmmoType();
+				if ( iSecondaryAmmoType >= 0 )
+					pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, pOwner ), iSecondaryAmmoType );
+			}
 		}
 	}
 #endif
