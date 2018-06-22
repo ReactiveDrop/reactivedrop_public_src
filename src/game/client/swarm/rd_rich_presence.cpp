@@ -15,6 +15,7 @@
 #include "c_asw_game_resource.h"
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
+#include "c_asw_steamstats.h"
 
 #include <ctime>
 
@@ -117,6 +118,10 @@ void RD_Rich_Presence::UpdatePresence()
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
 
+		discordPresence.largeImageKey = "default";
+		discordPresence.largeImageText = "Main Menu";
+		discordPresence.smallImageKey = "marine_none";
+		discordPresence.smallImageText = "Main Menu";
 		discordPresence.state = "Main Menu";
 	}
 	else if ( engine->IsPlayingDemo() )
@@ -127,6 +132,10 @@ void RD_Rich_Presence::UpdatePresence()
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
 
+		discordPresence.largeImageKey = "default";
+		discordPresence.largeImageText = "Watching a Demo";
+		discordPresence.smallImageKey = "marine_none";
+		discordPresence.smallImageText = "Watching a Demo";
 		discordPresence.state = "Watching a Demo";
 	}
 	else
@@ -236,7 +245,7 @@ void RD_Rich_Presence::UpdatePresence()
 					case GAMEMODE_DEATHMATCH:
 					default:
 						V_strcat( szSteamDisplay, "DM", sizeof( szSteamDisplay ) );
-						V_strncpy( szDetails, "Deathmatch", sizeof(szDetails) );
+						V_strncpy( szDetails, "Deathmatch", sizeof( szDetails ) );
 						V_snprintf( szState, sizeof( szState ), "Score: %d", g_PR->GetPlayerScore( pPlayer->entindex() ) );
 						break;
 					case GAMEMODE_TEAMDEATHMATCH:
@@ -246,7 +255,7 @@ void RD_Rich_Presence::UpdatePresence()
 						break;
 					case GAMEMODE_GUNGAME:
 						V_strcat( szSteamDisplay, "GG", sizeof( szSteamDisplay ) );
-						V_strncpy( szDetails, "Gun Game", sizeof(szDetails) );
+						V_strncpy( szDetails, "Gun Game", sizeof( szDetails ) );
 						if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( ASWEquipmentList()->GetRegular( ASWDeathmatchMode()->GetWeaponIndexByFragsCount( g_PR->GetPlayerScore( pPlayer->entindex() ) ) )->m_EquipClass ) ) )
 						{
 							char szWeaponName[128];
@@ -263,7 +272,7 @@ void RD_Rich_Presence::UpdatePresence()
 						break;
 					case GAMEMODE_INSTAGIB:
 						V_strcat( szSteamDisplay, "IG", sizeof( szSteamDisplay ) );
-						V_strncpy( szDetails, "InstaGib", sizeof(szDetails) );
+						V_strncpy( szDetails, "InstaGib", sizeof( szDetails ) );
 						V_snprintf( szState, sizeof( szState ), "Score: %d", g_PR->GetPlayerScore( pPlayer->entindex() ) );
 						break;
 					}
@@ -336,41 +345,44 @@ void RD_Rich_Presence::UpdatePresence()
 					{
 						V_strncpy( szDetails, szDifficulty, sizeof( szDetails ) );
 					}
-
-					switch ( pASW->GetGameState() )
-					{
-					default:
-					case ASW_GS_NONE:
-					case ASW_GS_BRIEFING:
-					case ASW_GS_LAUNCHING:
-						if ( m_LastState != ASW_GS_BRIEFING )
-						{
-							m_LastState = ASW_GS_BRIEFING;
-							m_nLastStateChangeTime = time( NULL );
-						}
-						V_strncpy( szState, "Briefing", sizeof( szState ) );
-						break;
-					case ASW_GS_INGAME:
-						if ( m_LastState != ASW_GS_INGAME )
-						{
-							m_LastState = ASW_GS_INGAME;
-							m_nLastStateChangeTime = time( NULL );
-						}
-						V_strncpy( szState, "In Mission", sizeof( szState ) );
-						break;
-					case ASW_GS_DEBRIEF:
-					case ASW_GS_CAMPAIGNMAP:
-					case ASW_GS_OUTRO:
-						if ( m_LastState != ASW_GS_DEBRIEF)
-						{
-							m_LastState = ASW_GS_DEBRIEF;
-							m_nLastStateChangeTime = time( NULL );
-						}
-						V_strncpy( szState, "Debriefing", sizeof( szState ) );
-						break;
-					}
-					discordPresence.startTimestamp = m_nLastStateChangeTime;
 				}
+
+				switch ( pASW->GetGameState() )
+				{
+				default:
+				case ASW_GS_NONE:
+				case ASW_GS_BRIEFING:
+				case ASW_GS_LAUNCHING:
+					if ( m_LastState != ASW_GS_BRIEFING )
+					{
+						m_LastState = ASW_GS_BRIEFING;
+						m_nLastStateChangeTime = time( NULL );
+					}
+					if ( !ASWDeathmatchMode() )
+						V_strncpy( szState, "Briefing", sizeof( szState ) );
+					break;
+				case ASW_GS_INGAME:
+					if ( m_LastState != ASW_GS_INGAME )
+					{
+						m_LastState = ASW_GS_INGAME;
+						m_nLastStateChangeTime = time( NULL );
+					}
+					if ( !ASWDeathmatchMode() )
+						V_strncpy( szState, "In Mission", sizeof( szState ) );
+					break;
+				case ASW_GS_DEBRIEF:
+				case ASW_GS_CAMPAIGNMAP:
+				case ASW_GS_OUTRO:
+					if ( m_LastState != ASW_GS_DEBRIEF )
+					{
+						m_LastState = ASW_GS_DEBRIEF;
+						m_nLastStateChangeTime = time( NULL );
+					}
+					if ( !ASWDeathmatchMode() )
+						V_strncpy( szState, "Debriefing", sizeof( szState ) );
+					break;
+				}
+				discordPresence.startTimestamp = m_nLastStateChangeTime;
 			}
 			else
 			{
@@ -380,7 +392,16 @@ void RD_Rich_Presence::UpdatePresence()
 			discordPresence.state = szState;
 			discordPresence.details = szDetails;
 			discordPresence.largeImageText = szLargeImageText;
-			discordPresence.largeImageKey = "default"; // TODO
+			if ( g_ASW_Steamstats.IsOfficialCampaign() )
+			{
+				static char szLargeImageKey[32];
+				V_strncpy( szLargeImageKey, MapName(), sizeof( szLargeImageKey ) );
+				discordPresence.largeImageKey = V_strlower( szLargeImageKey );
+			}
+			else
+			{
+				discordPresence.largeImageKey = "default";
+			}
 
 			pSteamFriends->SetRichPresence( "status", szDetails );
 			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
