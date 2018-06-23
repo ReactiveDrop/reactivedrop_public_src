@@ -25,6 +25,7 @@
 #include <tier0/memdbgon.h>
 
 extern ConVar asw_hud_scale;
+extern ConVar rd_hud_minimap_drawing;
 
 Color GetColorPerIndex(int player_index)
 {
@@ -582,6 +583,9 @@ void ObjectiveMapDrawingPanel::TextureToLinePanel(CASWHudMinimap* pMap, const Ve
 // drawing a map line at point x and y on the panel
 void ObjectiveMapDrawingPanel::SendMapLine(int x, int y, bool bInitial)
 {
+	if ( !rd_hud_minimap_drawing.GetBool() )
+		return;
+
 	CASWHudMinimap *pMinimap = GET_HUDELEMENT( CASWHudMinimap );		
 	if (!pMinimap)
 		return;

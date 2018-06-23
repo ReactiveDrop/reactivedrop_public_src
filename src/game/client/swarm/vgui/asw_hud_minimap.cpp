@@ -65,6 +65,7 @@ ConVar asw_debug_scanner_sound("asw_debug_scanner_sound", "0", FCVAR_CHEAT, "Pri
 ConVar asw_minimap_clicks("asw_minimap_clicks", "1", FCVAR_ARCHIVE, "Is enabled, clicking on the minimap will draw on it.  If disabled, clicking there will fire your weapon as normal");
 ConVar asw_scanner_background("asw_scanner_background", "1", FCVAR_NONE, "Draw black background behind minimap" );
 ConVar asw_scanner_classic("asw_scanner_classic", "0", FCVAR_NONE, "Scanner has white blips, is always pinging." );
+ConVar rd_hud_minimap_drawing("rd_hud_minimap_drawing", "1", FCVAR_NONE, "Allow drawing on the minimap." );
 
 // was 0.75f..
 #define ASW_SCREENSHOT_SCALE 1.0f
@@ -126,6 +127,9 @@ CASWHudMinimapFramePanel::CASWHudMinimapFramePanel(Panel *parent, const char *pa
 
 void MsgFunc_ASWMapLine(bf_read &msg) 
 {
+	if ( !rd_hud_minimap_drawing.GetBool() )
+		return;
+
 	int linetype = msg.ReadByte();
 	int player_index = msg.ReadByte();	
 	int world_x	= msg.ReadLong();
@@ -1509,6 +1513,9 @@ void CASWHudMinimap::ClipToMapBounds(int &x, int &y)
 // drawing a map line at point x and y on the hud element
 void CASWHudMinimap::SendMapLine(int x, int y, bool bInitial)
 {
+	if ( !rd_hud_minimap_drawing.GetBool() )
+		return;
+
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
