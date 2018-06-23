@@ -419,19 +419,17 @@ CBaseEntity* CASW_Base_Spawner::GetAlienOrderTarget()
 
 bool CASW_Base_Spawner::IsValidOnThisSkillLevel()
 {
-	// treat difficulty 5 and 4 as the same
 	int nSkillLevel = ASWGameRules()->GetSkillLevel();
-	nSkillLevel = clamp<int>( nSkillLevel, 1, 4 );
 
-	if (rd_difficulty_tier.GetInt() > 0)
+	if ( rd_difficulty_tier.GetInt() > 0 )
 	{
-		nSkillLevel = 4; // set to max value, means Insane
+		nSkillLevel = 5; // set to max value, means Brutal
 	}
 
-	if (m_iMinSkillLevel > 0 && nSkillLevel < m_iMinSkillLevel)
+	if ( m_iMinSkillLevel > 0 && nSkillLevel < m_iMinSkillLevel )
 		return false;
-	if (m_iMaxSkillLevel > 0 && m_iMaxSkillLevel < 10
-			&& nSkillLevel > m_iMaxSkillLevel)
+	if ( m_iMaxSkillLevel > 0 && m_iMaxSkillLevel < 10
+			&& nSkillLevel > m_iMaxSkillLevel )
 		return false;
 	return true;
 }
