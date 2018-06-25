@@ -2193,6 +2193,8 @@ void CAlienSwarm::StartMission()
 	if (m_hEquipReq.Get() && !m_hEquipReq->AreRequirementsMet())
 		return;
 
+	// Calling OnSkillLevelChanged() here to properly update m_iMissionDifficulty and thus aliens' health, damage and speed
+	OnSkillLevelChanged( m_iSkillLevel );
 	ApplyChallenge();
 
 	// store our current leader (so we can keep the same leader after a map load)
