@@ -1261,17 +1261,17 @@ bool CASW_Spawn_Manager::SpawnAlienPack( CASW_Spawn_Definition *pSpawn )
 	return false;
 }
 
-ConVar rm_prespawn_num_parasites("rm_prespawn_num_parasites", "7", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_boomers("rm_prespawn_num_boomers", "3", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_harvesters("rm_prespawn_num_harvesters", "4", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_drones("rm_prespawn_num_drones", "15", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_biomass( "rm_prespawn_num_biomass", "3", FCVAR_CHEAT, "Num biomass to randomly spawn if rm_prespawn 1" );
+ConVar rm_prespawn_num_parasites("rm_prespawn_num_parasites", "7", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_boomers("rm_prespawn_num_boomers", "3", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_harvesters("rm_prespawn_num_harvesters", "4", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_drones("rm_prespawn_num_drones", "15", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rd_prespawn_scale 1");
+ConVar rm_prespawn_num_biomass( "rm_prespawn_num_biomass", "3", FCVAR_CHEAT, "Num biomass to randomly spawn if rd_prespawn_scale 1" );
 
 void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 {
