@@ -22,6 +22,7 @@
 #include "asw_spawn_selection.h"
 #include "rd_director_triggers.h"
 #include "asw_spawner.h"
+#include "asw_alien_goo_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1270,6 +1271,7 @@ ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_CHEAT
 ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "5", FCVAR_CHEAT, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_biomass( "rm_prespawn_num_biomass", "3", FCVAR_CHEAT, "Num biomass to randomly spawn if rm_prespawn 1" );
 
 void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 {
@@ -1292,6 +1294,7 @@ void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 	const int NUM_SHAMANS		= rm_prespawn_num_shamans.GetInt();
 	//const int NUM_FLIES			= rm_prespawn_num_buzzers.GetInt();
 	const int NUM_RANGERS		= rm_prespawn_num_rangers.GetInt();
+	const int NUM_BIOMASS		= rm_prespawn_num_biomass.GetInt();
 
 
 	int iNumNodes = g_pBigAINet->NumNodes();
@@ -1313,6 +1316,8 @@ void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 	PrespawnAlienAtRandomNode("asw_shaman",		NUM_SHAMANS * multiplier, HULL_MEDIUM, playerStartPos, iNumNodes);
 	//PrespawnAlienAtRandomNode("asw_buzzer",		NUM_FLIES * multiplier, HULL_LARGE, playerStartPos, iNumNodes);	
 	PrespawnAlienAtRandomNode("asw_ranger",		NUM_RANGERS * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+
+	PrespawnEntityAtRandomNode( "asw_alien_goo", NUM_BIOMASS * multiplier, playerStartPos, iNumNodes );
 }
 
 
@@ -1349,6 +1354,77 @@ void CASW_Spawn_Manager::PrespawnAlienAtRandomNode(const char *szAlienClass, con
 				if (pAlien)
 					break;
 			}
+		}
+	}
+}
+
+void CASW_Spawn_Manager::PrespawnEntityAtRandomNode( const char *szEntityClass, const int iNumEntitiesToSpawn, const Vector &playerStartPos, const int iNumNodes )
+{
+	for ( int i = 0; i < iNumEntitiesToSpawn; ++i )
+	{
+		CAI_Node *pNode = NULL;
+		for ( int k = 0; k < 30; ++k )	// 30 tries to find a node
+		{
+			int node_id = RandomInt( 0, iNumNodes - 1 );
+			pNode = g_pBigAINet->GetNode( node_id );
+			if ( !pNode || pNode->GetType() != NODE_GROUND )
+				continue;
+			else if ( pNode->GetOrigin().DistToSqr( playerStartPos ) < 1000 * 1000 )
+			{
+				continue;
+			}
+
+			MDLCACHE_CRITICAL_SECTION();
+
+			bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
+			CBaseEntity::SetAllowPrecache( true );
+
+			// Try to create entity
+			CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName( szEntityClass ) );
+			if ( entity )
+			{
+				Vector vecPositionOffset(0, 0, 0);
+				QAngle ang(0, 0, 0);
+				if ( entity->ClassMatches( "asw_alien_goo" ) )
+				{
+					CASW_Alien_Goo *pBiomass = static_cast< CASW_Alien_Goo* >( entity );
+					const int nBiomassModelId = RandomInt( 1, 4 );
+					switch ( nBiomassModelId )
+					{
+					case 1: 
+					default:
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomasshelix.mdl" ) );
+						// each biomass model needs their own offset and angle not to float into the air
+						vecPositionOffset.Init( 0, 0, -32.f );
+						ang.Init( 0, RandomFloat( 0.0f, 360.0f ), 0.0f );
+						break;
+					case 2: 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassl.mdl" ) ); 
+						vecPositionOffset.Init( 0, 0, -32.f );
+						ang.Init( 40.f, RandomFloat( 0.0f, 360.0f ), 0.0f );
+						break;
+					case 3: 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomasss.mdl" ) ); 
+						vecPositionOffset.Init( 0, 0, -32.f );
+						ang.Init( 0, RandomFloat( 0.0f, 360.0f ), 0.0f );
+						break;
+					case 4: 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassu.mdl" ) ); 
+						vecPositionOffset.Init( 0, 0, 32.f );
+						ang.Init( -81.5, RandomFloat( 0.0f, 360.0f ), 0.0f );
+						break;
+					}
+				}
+				entity->Precache();
+				Vector pos = pNode->GetOrigin() + vecPositionOffset;
+				entity->Teleport( &pos, &ang, NULL );
+
+				DispatchSpawn( entity );
+			}
+			CBaseEntity::SetAllowPrecache( allowPrecache );
+
+			if ( entity )
+				break;			// exit from 30 tries
 		}
 	}
 }

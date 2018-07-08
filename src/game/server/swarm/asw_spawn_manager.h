@@ -62,7 +62,7 @@ public:
 	void PrespawnAliens(int multiplier);
 	// ported from riflemod
 	void PrespawnAlienAtRandomNode(const char *szAlienClass, const int iNumAliens, const int iHull, const Vector &playerStartPos, const int iNumNodes);
-
+	void PrespawnEntityAtRandomNode( const char *szEntityClass, const int iNumEntitiesToSpawn, const Vector &playerStartPos, const int iNumNodes );
 	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	int SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	CBaseEntity *SpawnAlienAt( const char *szAlienClass, const Vector & vecPos, const QAngle & angle );
