@@ -134,6 +134,7 @@ LINK_ENTITY_TO_CLASS(asw_door, CASW_Door);
 ConVar asw_door_drone_damage_scale("asw_door_drone_damage_scale", "2.0f", FCVAR_CHEAT, "Damage scale for drones hitting doors");
 ConVar asw_door_seal_damage_reduction("asw_door_seal_damage_reduction", "0.6f", FCVAR_CHEAT, "Alien damage scale when door is fully sealed");
 ConVar asw_door_physics("asw_door_physics", "0", FCVAR_CHEAT, "If set, doors will turn into vphysics objects upon death.");
+ConVar rd_door_melee_damage("rd_door_melee_damage", "0", FCVAR_CHEAT, "Allow doors to take melee damage.");
 extern ConVar asw_debug_marine_chatter;
 extern ConVar asw_difficulty_alien_damage_step;
 
@@ -1231,7 +1232,8 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			}
 			else if ( pAttacker->Classify() == CLASS_ASW_MARINE && info.GetDamageType() & DMG_CLUB )	// make doors immune to kick damage
 			{
-				damage *= 0;
+				if ( !rd_door_melee_damage.GetBool() )
+					damage *= 0;
 			}			
 			
 			// reduce damage from welding
