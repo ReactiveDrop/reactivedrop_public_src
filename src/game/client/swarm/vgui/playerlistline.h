@@ -7,6 +7,7 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/Panel.h>
 #include <gameui/swarm/vgenericpanellist.h>
+#include <vgui_bitmapbutton.h>
 
 namespace vgui
 {
@@ -56,6 +57,7 @@ public:
 	virtual void OnThink();
 	virtual void PerformLayout();
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void OnCommand( const char *command );
 
 	virtual bool IsLabel() { return false; }
 
@@ -63,6 +65,7 @@ public:
 	void UpdateVoteIcons();
 	void UpdateCheckBoxes();
 
+	CBitmapButton *m_pMuteButton; 
 	vgui::Label *m_pPlayerLabel;
 	vgui::Label *m_pMarinesLabel;
 	vgui::Label *m_pFragsLabel;

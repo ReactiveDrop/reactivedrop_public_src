@@ -13,6 +13,7 @@
 #include "PlayerListLine.h"
 #include "c_playerresource.h"
 #include <vgui/ILocalize.h>
+#include "voice_status.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -20,10 +21,15 @@
 extern ConVar asw_vote_kick_fraction;
 extern ConVar asw_vote_leader_fraction;
 
+#define MUTE_BUTTON_ICON "voice/voice_icon_hud"
+
 PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	vgui::Panel(parent, name)
 {
 	m_iPlayerIndex = -1;
+	m_pMuteButton = new CBitmapButton( this, "MuteButton", " " );
+	m_pMuteButton->AddActionSignalTarget( this );
+	m_pMuteButton->SetCommand( "MuteButton" );
 	m_pPlayerLabel = new vgui::Label(this, "PlayerLabel", " ");
 	m_pMarinesLabel = new vgui::Label(this, "MarinesLabel", " ");
 	m_pFragsLabel= new vgui::Label(this, "FragsLabel", " ");
@@ -59,6 +65,23 @@ void PlayerListLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
+	color32 white;
+	white.r = 255;
+	white.g = 255;
+	white.b = 255;
+	white.a = 255;
+
+	color32 grey;
+	grey.r = 190;
+	grey.g = 190;
+	grey.b = 190;
+	grey.a = 255;
+
+	m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED, MUTE_BUTTON_ICON, grey );
+	m_pMuteButton->SetImage( CBitmapButton::BUTTON_DISABLED, MUTE_BUTTON_ICON, grey );
+	m_pMuteButton->SetImage( CBitmapButton::BUTTON_PRESSED, MUTE_BUTTON_ICON, white );
+	m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, MUTE_BUTTON_ICON, white );
+
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	vgui::HFont Verdana = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerLabel->SetFont(DefaultFont);
@@ -84,6 +107,20 @@ void PlayerListLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 	SetBgColor(Color(0,0,0,128));	
 }
 
+void PlayerListLine::OnCommand( const char *command )
+{
+	if ( !Q_stricmp( command, "MuteButton" ) )
+	{
+		CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
+		if ( pVoiceMgr )
+		{
+			bool bMuted = pVoiceMgr->IsPlayerBlocked( m_iPlayerIndex );
+			pVoiceMgr->SetPlayerBlockedState( m_iPlayerIndex, !bMuted );
+		}
+	}
+	BaseClass::OnCommand( command );
+}
+
 void PlayerListLine::PerformLayout()
 {
 	float fScale = (ScreenHeight() / 768.0f);
@@ -91,6 +128,8 @@ void PlayerListLine::PerformLayout()
 	int top_line_height = 16.0f * fScale;
 	int bottom_line_top = top_line_height + top;
 	int bottom_line_height = 16.0f * fScale;	
+
+	m_pMuteButton->SetBounds( PLAYER_LIST_PLAYER_X * fScale - PLAYER_LIST_KICK_ICON_W * fScale - 5, top, PLAYER_LIST_KICK_ICON_W * fScale, bottom_line_height );
 
 	m_pPlayerLabel-> SetBounds(PLAYER_LIST_PLAYER_X * fScale,		top,			 PLAYER_LIST_PLAYER_W * fScale,		  top_line_height);
 	m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale,		top,			 PLAYER_LIST_MARINES_W * fScale,	  top_line_height);
@@ -160,6 +199,30 @@ void PlayerListLine::OnThink()
 		{
 			V_snwprintf( m_wszMarineNames, sizeof( m_wszMarineNames ), L"%s", marines );
 			m_pMarinesLabel->SetText(marines);
+		}
+
+		CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
+		if ( pVoiceMgr )
+		{
+			bool bMuted = pVoiceMgr->IsPlayerBlocked( m_iPlayerIndex );
+			if ( bMuted )
+			{
+				color32 darkgrey;
+				darkgrey.r = 66;
+				darkgrey.g = 66;
+				darkgrey.b = 66;
+				darkgrey.a = 255;
+				m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED, MUTE_BUTTON_ICON, darkgrey );
+			}
+			else
+			{
+				color32 grey;
+				grey.r = 190;
+				grey.g = 190;
+				grey.b = 190;
+				grey.a = 255;
+				m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED, MUTE_BUTTON_ICON, grey );
+			}
 		}
 	}
 	UpdateCheckBoxes();
