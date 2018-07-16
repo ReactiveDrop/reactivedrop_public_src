@@ -17,6 +17,8 @@
 #include "gamerules.h"
 #include "netpropmanager.h"
 #include "ai_speech.h"
+#include "ai_network.h"
+#include "ai_node.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -290,6 +292,50 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptResponseCriteria, "CScriptResponseCriteria",
 	DEFINE_SCRIPTFUNC( GetValue, "Arguments: ( entity, criteriaName ) - returns a string" )
 	DEFINE_SCRIPTFUNC( GetTable, "Arguments: ( entity ) - returns a table of all criteria" )
 	DEFINE_SCRIPTFUNC( HasCriterion, "Arguments: ( entity, criteriaName ) - returns true if the criterion exists" )
+END_SCRIPTDESC();
+
+
+class CScriptInfoNodes
+{
+public:
+	int GetNumNodes()
+	{
+		return g_pBigAINet->NumNodes();
+	}
+
+	Vector GetNodeOrigin( int node_id )
+	{
+		CAI_Node *pNode = g_pBigAINet->GetNode( node_id );
+		if ( !pNode )
+			return Vector( 0, 0, 0 );
+
+		return pNode->GetOrigin();
+	}
+
+	Vector GetNodePosition( int node_id, int hull )
+	{
+		CAI_Node *pNode = g_pBigAINet->GetNode( node_id );
+		if ( !pNode || ( hull < HULL_HUMAN || hull >= NUM_HULLS ) )
+			return Vector( 0, 0, 0 );
+
+		return pNode->GetPosition( hull );
+	}
+
+	int GetNodeType( int node_id )
+	{
+		CAI_Node *pNode = g_pBigAINet->GetNode( node_id );
+		if ( !pNode )
+			return -1;
+
+		return pNode->GetType();
+	}
+} g_ScriptInfoNodes;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptInfoNodes, "CScriptInfoNodes", SCRIPT_SINGLETON "Used to get info_node data" )
+	DEFINE_SCRIPTFUNC( GetNumNodes, "Returns the amount of info_nodes in the network array" )
+	DEFINE_SCRIPTFUNC( GetNodeOrigin, "Arguments: ( id ) - returns the origin of the node" )
+	DEFINE_SCRIPTFUNC( GetNodePosition, "Arguments: ( id, hull ) - returns the hull specific origin of the node" )
+	DEFINE_SCRIPTFUNC( GetNodeType, "Arguments: ( id ) - returns the type of node" )
 END_SCRIPTDESC();
 
 
@@ -687,6 +733,7 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 				g_pScriptVM->RegisterInstance( &g_NetProps, "NetProps" );
 				g_pScriptVM->RegisterInstance( &g_ScriptResponseCriteria, "ResponseCriteria" );
+				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
 
 				// To be used with Script_ClientPrint
 				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );
@@ -694,6 +741,28 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "HUD_PRINTTALK", HUD_PRINTTALK );
 				g_pScriptVM->SetValue( "HUD_PRINTCENTER", HUD_PRINTCENTER );
 				g_pScriptVM->SetValue( "ASW_HUD_PRINTTALKANDCONSOLE", 5 );
+
+				// To be used with CScriptInfoNode::GetNodeType
+				g_pScriptVM->SetValue( "NODE_ANY", 0 );
+				g_pScriptVM->SetValue( "NODE_DELETED", 1 );
+				g_pScriptVM->SetValue( "NODE_GROUND", 2 );
+				g_pScriptVM->SetValue( "NODE_AIR", 3 );
+				g_pScriptVM->SetValue( "NODE_CLIMB", 4 );
+				g_pScriptVM->SetValue( "NODE_WATER", 5 );
+
+				// Types of hulls
+				g_pScriptVM->SetValue( "HULL_HUMAN", 0 );
+				g_pScriptVM->SetValue( "HULL_SMALL_CENTERED", 1 );
+				g_pScriptVM->SetValue( "HULL_WIDE_HUMAN", 2 );
+				g_pScriptVM->SetValue( "HULL_TINY", 3 );
+				g_pScriptVM->SetValue( "HULL_WIDE_SHORT", 4 );
+				g_pScriptVM->SetValue( "HULL_MEDIUM", 5 );
+				g_pScriptVM->SetValue( "HULL_TINY_CENTERED", 6 );
+				g_pScriptVM->SetValue( "HULL_LARGE", 7 );
+				g_pScriptVM->SetValue( "HULL_LARGE_CENTERED", 8 );
+				g_pScriptVM->SetValue( "HULL_MEDIUM_TALL", 9 );
+				g_pScriptVM->SetValue( "HULL_TINY_FLUID", 10 );
+				g_pScriptVM->SetValue( "HULL_MEDIUMBIG", 11 );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
