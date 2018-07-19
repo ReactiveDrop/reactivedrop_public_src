@@ -1197,7 +1197,9 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 		retVal = OnTakeDamage_Alive( info );
 		if ( m_iHealth <= 0 )
 		{
-			if ( rd_allow_revive.GetBool() && !m_bPreventKnockedOut )
+			// reactivedrop: make sure marines die from asw_trigger_fall immediately, withoug being incapacitated
+			bool bIsTriggerFall = info.GetAttacker() ? info.GetAttacker()->Classify() == CLASS_ASW_TRIGGER_FALL : false;
+			if ( rd_allow_revive.GetBool() && !m_bPreventKnockedOut && !bIsTriggerFall )
 			{
 				if (!m_bKnockedOut)
 				{

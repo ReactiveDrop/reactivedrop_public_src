@@ -6,7 +6,7 @@
 //=============================================================================//
 #include "cbase.h"
 #include "triggers.h"
-
+#include "asw_shareddefs.h"
 //-----------------------------------------------------------------------------
 // Purpose: Used at the bottom of maps where objects should fall away to infinity
 //-----------------------------------------------------------------------------
@@ -16,6 +16,7 @@ class CASW_Trigger_Fall : public CBaseTrigger
 public:
 	void Spawn( void );
 	void FallTouch( CBaseEntity *pOther );
+	virtual Class_T Classify() { return ( Class_T ) CLASS_ASW_TRIGGER_FALL; }
 	
 	DECLARE_DATADESC();
 	
