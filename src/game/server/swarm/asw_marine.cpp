@@ -5172,6 +5172,14 @@ void CASW_Marine::Stumble( CBaseEntity *pSource, const Vector &vecStumbleDir, bo
 	if ( pSource->Classify() == CLASS_ANTLION )		// don't stumble from npc_antlionguard, they do knockdowns instead
 		return;
 
+	// reactivedrop: the reason we use ClassMatches() here is because uber drones do
+	// not have a separate CLASS_ASW_DRONE_UBER. We didn't add CLASS_ASW_DRONE_UBER 
+	// because it would require to review, modify and test all parts of code where CLASS_ASW_DRONE
+	// is used
+	extern ConVar rd_drone_uber_knockdown;
+	if ( rd_drone_uber_knockdown.GetBool() && pSource->ClassMatches( "asw_drone_uber" ) )
+		return;
+
 	if ( pSource->Classify() == CLASS_ASW_MARINE )			// don't stumble from friendly fire
 		return;
 

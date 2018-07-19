@@ -78,6 +78,9 @@ ConVar asw_drone_zig_zagging("asw_drone_zig_zagging", "0", FCVAR_CHEAT, "If set,
 ConVar asw_drone_melee_force("asw_drone_melee_force", "1.67", FCVAR_CHEAT, "Force of the drone's melee attack");
 ConVar asw_drone_touch_damage( "asw_drone_touch_damage", "0",FCVAR_CHEAT , "Damage caused by drones on touch" );
 ConVar asw_new_drone("asw_new_drone", "1", FCVAR_CHEAT, "Set to 1 to use the new drone model");
+ConVar rd_drone_uber_knockdown( "rd_drone_uber_knockdown", "0", FCVAR_CHEAT, "Set to 1 to make uber drones knock down marines like shieldbugs do" );
+ConVar rd_drone_uber_knockdown_force( "rd_drone_uber_knockdown_force", "10", FCVAR_CHEAT, "Magnitude of knockdown force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
+ConVar rd_drone_uber_knockdown_lift( "rd_drone_uber_knockdown_lift", "10", FCVAR_CHEAT, "Upwards force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
 extern ConVar asw_debug_alien_damage;
 extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_alien_stunned_speed;
@@ -959,6 +962,16 @@ void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &vie
 
 		// Play a random attack hit sound
 		EmitSound( "ASW_Drone.Attack" );
+
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pHurt );
+		if ( pMarine && rd_drone_uber_knockdown.GetBool() && ClassMatches( "asw_drone_uber" ) )
+		{
+			vecForceDir = ( pHurt->WorldSpaceCenter() - WorldSpaceCenter() );
+			vecForceDir.NormalizeInPlace();
+			vecForceDir *= rd_drone_uber_knockdown_force.GetFloat();
+			vecForceDir += Vector( 0, 0, rd_drone_uber_knockdown_lift.GetFloat() );
+			pMarine->Knockdown( this, vecForceDir );
+		}
 	}
 }
 
