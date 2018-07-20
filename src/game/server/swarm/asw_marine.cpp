@@ -4252,7 +4252,9 @@ void CASW_Marine::Suicide()
 		TakeDamage(info);
 	}
 
-	RemoveDeferred();
+	// reactivedrop: don't force marine removal, this bugs out challenges with
+	// reviving enabled
+	//RemoveDeferred();
 
 	//SetThink(&CBaseEntity::SUB_Remove);
 	//SetNextThink(gpGlobals->curtime + 2.0f);
