@@ -22,6 +22,7 @@
 
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "asw_medal_store.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -623,9 +624,26 @@ void FoundPublicGames::Activate()
 	if ( Panel *pLabelX = FindChildByName( "LblPressX" ) )
 		pLabelX->SetVisible( CanCreateGame() );
 
+	bool bPlayerIsNew = false;
+	if ( GetMedalStore() )
+	{
+		if ( !GetMedalStore()->GetPromotion() )
+		{
+			int nXp = GetMedalStore()->GetExperience();
+			// players below level 30 are considered new
+			if ( nXp < 51750 )
+				bPlayerIsNew = true;
+		}
+	}
+	bool bShowHardcoreDifficulties = !bPlayerIsNew;	// used to hide Insane, Brutal and any challenges
+
 	if ( m_drpDifficulty )
 	{
 		m_drpDifficulty->SetCurrentSelection( CFmtStr( "filter_difficulty_%s", ui_public_lobby_filter_difficulty2.GetString() ) );
+
+		m_drpDifficulty->SetFlyoutItemEnabled( "BtnAny", bShowHardcoreDifficulties );
+		m_drpDifficulty->SetFlyoutItemEnabled( "BtnExpert", bShowHardcoreDifficulties );
+		m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", bShowHardcoreDifficulties );
 	}
 
 	if ( m_drpOnslaught )
@@ -651,6 +669,9 @@ void FoundPublicGames::Activate()
 	if ( m_drpChallenge )
 	{
 		m_drpChallenge->SetCurrentSelection( CFmtStr( "filter_challenge_%s", ui_public_lobby_filter_challenge.GetString() ) );
+
+		m_drpChallenge->SetFlyoutItemEnabled( "BtnAny", bShowHardcoreDifficulties );
+		m_drpChallenge->SetFlyoutItemEnabled( "BtnRequired", bShowHardcoreDifficulties );
 	}
 
 	if ( m_drpDeathmatch )
