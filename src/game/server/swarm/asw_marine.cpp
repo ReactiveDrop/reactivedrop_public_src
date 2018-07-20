@@ -1201,10 +1201,14 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 			bool bIsTriggerFall = info.GetAttacker() ? info.GetAttacker()->Classify() == CLASS_ASW_TRIGGER_FALL : false;
 			if ( rd_allow_revive.GetBool() && !m_bPreventKnockedOut && !bIsTriggerFall )
 			{
-				if (!m_bKnockedOut)
+				if ( !m_bKnockedOut )
 				{
-					SetHealth(GetMaxHealth() - 10);
-					SetKnockedOut(true);
+					SetHealth( GetMaxHealth() - 10 );
+					SetKnockedOut( true );
+
+					// increment deaths counter for co-op(actually number of times being incapacitated)
+					if ( IsInhabited() && GetCommander() )
+						GetCommander()->IncrementDeathCount( 1 );
 
 					// riflemod: print a message that marine was incapacitated 
 					CASW_Marine *pOtherMarine = dynamic_cast< CASW_Marine* >( info.GetAttacker() );
