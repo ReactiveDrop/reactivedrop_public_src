@@ -167,6 +167,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_reassign_marines("rd_reassign_marines", "1", FCVAR_NONE, "For dev, if 1 ReassignMarines function will be called");
 	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
+	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kick players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -7548,6 +7549,19 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
+
+	if ( rd_auto_kick_low_level_player.GetBool() && engine->IsDedicatedServer() && pPlayer )
+	{
+		if ( !pPlayer->GetPromotion() )
+		{
+			int nXp = pPlayer->GetExperience();
+			// players below level 30 are considered new
+			if ( nXp < 51750 )
+			{
+				engine->ServerCommand( CFmtStr( "kickid %s 'This difficulty level is restricted to players of level 30 or above'\n", pPlayer->GetASWNetworkID() ) );
+			}
+		}
+	}
 
 	bool bHadMarinesLastRound = false;
 	bool bWasSpectatorLastRound = false;
