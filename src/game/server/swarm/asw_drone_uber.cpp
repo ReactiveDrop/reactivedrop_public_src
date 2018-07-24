@@ -42,7 +42,7 @@ void CASW_Drone_Uber::Spawn( void )
 	SetModelScale( m_fSizeScale );
 	Precache();	
 
-	SetHullType(HULL_LARGE);
+	SetHullType( HULL_MEDIUMBIG );	// Setting HULL_MEDIUMBIG(like a regular drone) instead of HULL_LARGE to prevent uber drones getting stuck in doors and windows
 	SetHullSizeNormal();
 
 	UTIL_SetSize(this, Vector(-17,-17,0), Vector(17,17,69));	// riflemod: decreased drone uber size, was Vector(-40,-40,0), Vector(40,40,130));
