@@ -743,7 +743,7 @@ void SelectLoadout(int close_option)
 		HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 		pContainer->SetScheme(scheme);		
 
-		CNB_Select_Marine_Panel *playerlistpanel = createSelectMarinePanel(pContainer);
+		/*CNB_Select_Marine_Panel *playerlistpanel =*/ createSelectMarinePanel(pContainer);
 
 		if (!pContainer)
 		{
