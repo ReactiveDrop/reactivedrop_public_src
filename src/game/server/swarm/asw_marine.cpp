@@ -84,6 +84,8 @@
 #include "asw_deathmatch_mode.h"
 #include "IEffects.h"
 #include "asw_triggers.h"
+#include "triggers.h"
+#include "EnvLaser.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1197,9 +1199,11 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 		retVal = OnTakeDamage_Alive( info );
 		if ( m_iHealth <= 0 )
 		{
-			// reactivedrop: make sure marines die from asw_trigger_fall immediately, withoug being incapacitated
-			bool bIsTriggerFall = info.GetAttacker() ? info.GetAttacker()->Classify() == CLASS_ASW_TRIGGER_FALL : false;
-			if ( rd_allow_revive.GetBool() && !m_bPreventKnockedOut && !bIsTriggerFall )
+			// reactivedrop: make sure marines die from asw_trigger_fall, trigger_hurt or env_laser immediately, withoug being incapacitated
+			bool bIsLethalDanger =	dynamic_cast< CASW_Trigger_Fall* >( info.GetAttacker() ) || 
+									dynamic_cast< CTriggerHurt* >( info.GetAttacker() ) ||
+									dynamic_cast< CEnvLaser* >( info.GetAttacker() );
+			if ( rd_allow_revive.GetBool() && !m_bPreventKnockedOut && !bIsLethalDanger )
 			{
 				if ( !m_bKnockedOut )
 				{

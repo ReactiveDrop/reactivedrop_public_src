@@ -223,4 +223,20 @@ public:
 	IMPLEMENT_AUTO_LIST_GET();
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: Used at the bottom of maps where objects should fall away to infinity
+//-----------------------------------------------------------------------------
+class CASW_Trigger_Fall : public CBaseTrigger
+{
+	DECLARE_CLASS( CASW_Trigger_Fall, CBaseTrigger );
+public:
+	void Spawn( void );
+	void FallTouch( CBaseEntity *pOther );
+
+	DECLARE_DATADESC();
+
+	// Outputs
+	COutputEvent m_OnFallingObject;
+};
+
 #endif // _INCLUDED_ASW_TRIGGERS_H
