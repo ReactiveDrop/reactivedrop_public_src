@@ -23,6 +23,10 @@ extern ConVar asw_vote_leader_fraction;
 
 #define MUTE_BUTTON_ICON "voice/voice_icon_hud"
 
+ConVar rd_speaking_r( "rd_speaking_r", "0", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window(F9)" );
+ConVar rd_speaking_g( "rd_speaking_g", "240", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window(F9)" );
+ConVar rd_speaking_b( "rd_speaking_b", "240", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window(F9)" );
+
 PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	vgui::Panel(parent, name)
 {
@@ -204,6 +208,19 @@ void PlayerListLine::OnThink()
 		CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
 		if ( pVoiceMgr )
 		{
+			C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
+			bool bTalking = false;
+			if ( local )
+			{
+				if ( local->entindex() == m_iPlayerIndex )
+				{
+					bTalking = pVoiceMgr->IsLocalPlayerSpeakingAboveThreshold( FirstValidSplitScreenSlot() );
+				}
+				else
+				{
+					bTalking = pVoiceMgr->IsPlayerSpeaking( m_iPlayerIndex );
+				}
+			}
 			bool bMuted = pVoiceMgr->IsPlayerBlocked( m_iPlayerIndex );
 			if ( bMuted )
 			{
@@ -213,6 +230,15 @@ void PlayerListLine::OnThink()
 				darkgrey.b = 66;
 				darkgrey.a = 255;
 				m_pMuteButton->SetImageColor( CBitmapButton::BUTTON_ENABLED, darkgrey );
+			}
+			else if ( bTalking )
+			{
+				color32 c;
+				c.r = rd_speaking_r.GetInt();
+				c.g = rd_speaking_g.GetInt();
+				c.b = rd_speaking_b.GetInt();
+				c.a = 255;
+				m_pMuteButton->SetImageColor( CBitmapButton::BUTTON_ENABLED, c );
 			}
 			else
 			{
