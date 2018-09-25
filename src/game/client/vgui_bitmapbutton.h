@@ -47,6 +47,7 @@ public:
 	bool Init( KeyValues* pInitData );
 
 	void SetImage( ButtonImageType_t type, const char *pMaterialName, color32 color );
+	void SetImageColor( ButtonImageType_t type, color32 color );
 	bool IsImageLoaded( ButtonImageType_t type ) const;
 
 	// initialization from build-mode dialog style .res files

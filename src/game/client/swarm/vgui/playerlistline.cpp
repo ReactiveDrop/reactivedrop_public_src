@@ -212,7 +212,7 @@ void PlayerListLine::OnThink()
 				darkgrey.g = 66;
 				darkgrey.b = 66;
 				darkgrey.a = 255;
-				m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED, MUTE_BUTTON_ICON, darkgrey );
+				m_pMuteButton->SetImageColor( CBitmapButton::BUTTON_ENABLED, darkgrey );
 			}
 			else
 			{
@@ -221,7 +221,7 @@ void PlayerListLine::OnThink()
 				grey.g = 190;
 				grey.b = 190;
 				grey.a = 255;
-				m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED, MUTE_BUTTON_ICON, grey );
+				m_pMuteButton->SetImageColor( CBitmapButton::BUTTON_ENABLED, grey );
 			}
 		}
 	}

@@ -85,6 +85,15 @@ void CBitmapButton::SetImage( ButtonImageType_t type, const char *pMaterialName,
 	}
 }
 
+void CBitmapButton::SetImageColor( ButtonImageType_t type, color32 color )
+{
+	if ( m_bImageLoaded[type] )
+	{
+		Color vcol( color.r, color.g, color.b, color.a );
+		m_pImage[type].SetColor( vcol );
+	}
+}
+
 bool CBitmapButton::IsImageLoaded( ButtonImageType_t type ) const
 {
 	return m_bImageLoaded[type];
