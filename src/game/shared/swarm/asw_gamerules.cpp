@@ -463,6 +463,8 @@ ConVar rd_alien_num_min_players( "rd_alien_num_min_players", "4", FCVAR_REPLICAT
 ConVar rd_alien_num_max_players( "rd_alien_num_max_players", "8", FCVAR_REPLICATED | FCVAR_CHEAT, "with this many or more players, alien number scale will use the maximum value" );
 ConVar rd_alien_num_min_scale( "rd_alien_num_min_scale", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "the minimum alien number scale for co-op" );
 ConVar rd_alien_num_max_scale( "rd_alien_num_max_scale", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "the maximum alien number scale for co-op" );
+// this cvar is used by client only, but, to support it in challenges we need to make it replicated and set it from server
+ConVar rd_ray_trace_distance( "rd_ray_trace_distance", "3000", FCVAR_REPLICATED | FCVAR_CHEAT, "Increase this parameter for huge maps for grenade launcher to properly aim to far away distances" );
 
 // ASW Weapons
 // Rifle

@@ -33,6 +33,7 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_controls;
+extern ConVar rd_ray_trace_distance;
 ConVar asw_marine_linear_turn_rate("asw_marine_linear_turn_rate", "1000", FCVAR_CHEAT, "Linear turning rate of the marine (used as minimum when fractional turning is employed)");
 ConVar asw_marine_fraction_turn_scale("asw_marine_fraction_turn_scale", "0", FCVAR_CHEAT, "Scale for the fractional marine turning (large turns)");
 
@@ -261,7 +262,7 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 	TraceDirection = projected;
 	TraceDirection.NormalizeInPlace();
 	Vector traceStart = vCameraLocation;
-	traceEnd = traceStart + TraceDirection * 3000;
+	traceEnd = traceStart + TraceDirection * rd_ray_trace_distance.GetFloat();
 
 	if (bUseMarineHull)
 	{
@@ -328,7 +329,7 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 		bool bValidSurface = ValidOrderingSurface(tr);
 		//int iRetrace = 4;
 
-		HitLocation = vCameraLocation + tr.fraction * 3000 * TraceDirection;
+		HitLocation = vCameraLocation + tr.fraction * rd_ray_trace_distance.GetFloat() * TraceDirection;
 
 		return bValidSurface;
 	}
