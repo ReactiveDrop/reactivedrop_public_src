@@ -26,6 +26,7 @@ ConVar asw_sentry_gun_type("asw_sentry_gun_type", "-1", FCVAR_CHEAT, "Force the 
 ConVar asw_sentry_infinite_ammo( "asw_sentry_infinite_ammo", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 ConVar rd_sentry_take_damage_from_marine( "rd_sentry_take_damage_from_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 1, players can destroy sentry by shooting at it." );
 ConVar rd_sentry_invincible( "rd_sentry_invincible", "0", FCVAR_CHEAT, "If set to 1 sentries will not take damage from anything" );
+ConVar rd_sentry_refilled_by_dismantling( "rd_sentry_refilled_by_dismantling", "0", FCVAR_CHEAT, "If set to 1 marine will refill sentry ammo by dismantling it." );
 
 LINK_ENTITY_TO_CLASS( asw_sentry_base, CASW_Sentry_Base );
 PRECACHE_REGISTER( asw_sentry_base );
@@ -218,7 +219,11 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				}
 
 				CASW_Weapon_Sentry *pWeapon = dynamic_cast<CASW_Weapon_Sentry*>( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
-				pWeapon->SetSentryAmmo( m_iAmmo );
+				if ( !rd_sentry_refilled_by_dismantling.GetBool() )
+				{
+					pWeapon->SetSentryAmmo( m_iAmmo );
+				}
+				
 				pMarine->TakeWeaponPickup( pWeapon );
 				EmitSound( "ASW_Sentry.Dismantled" );
 				UTIL_Remove( this );
