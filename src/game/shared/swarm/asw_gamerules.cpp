@@ -4805,11 +4805,22 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	gameeventmanager->FireEvent( pEvent );
 
 	// riflemod: added frags counter
-	if (!ASWDeathmatchMode() && pMarine && pMarine->IsInhabited() && 
-		pMarine->GetCommander()) 
+	if ( !ASWDeathmatchMode() && pMarine &&
+		pMarine->GetCommander() ) 
 	{
 		CASW_Player *pPlayer = pMarine->GetCommander();
-		pPlayer->IncrementFragCount(1);
+		int nFrags = 0;
+		if ( pMarine->IsInhabited() && pPlayer )
+		{
+			pPlayer->IncrementFragCount( 1 );
+			nFrags = pPlayer->FragCount();
+		}
+		else
+		{
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			pMR->m_iBotFrags += 1;
+			nFrags = pMR->m_iBotFrags;
+		}
 
 		// reactivedrop: if enabled we spawn medkits every rd_spawn_medkits.GetInt() frags
 		// and ammo every rd_spawn_ammo.GetInt() frags
@@ -4817,7 +4828,8 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		{
 			const int iFragsForMedkit = rd_spawn_medkits.GetInt();
 			const int iFragsForAmmo = rd_spawn_ammo.GetInt();
-			if (( iFragsForMedkit && pPlayer->FragCount() % iFragsForMedkit == 0 ) || ( iFragsForAmmo && pPlayer->FragCount() % iFragsForAmmo == 0 ))	//DRAVEN ~FRAGD0~
+
+			if ( ( iFragsForMedkit && nFrags % iFragsForMedkit == 0 ) || ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 ) )	//DRAVEN ~FRAGD0~
 			{
 				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
 				if (pNetwork)
@@ -4831,7 +4843,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 						if (pNode && pNode->GetType() == NODE_GROUND )
 						{
 							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
-							if ( iFragsForMedkit && pPlayer->FragCount() % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
+							if ( iFragsForMedkit && nFrags % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName( "asw_weapon_medkit" );
 								UTIL_SetOrigin( pMedkit, vecDest );
@@ -4839,7 +4851,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 								//pMedkit->Spawn();
 							}
 
-							if ( iFragsForAmmo && pPlayer->FragCount() % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
+							if ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
 							{
 								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
 								UTIL_SetOrigin( pAmmoDrop, vecDest );
