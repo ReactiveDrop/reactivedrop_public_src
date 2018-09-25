@@ -1,6 +1,6 @@
 #include "cbase.h"
 #include "rd_rich_presence.h"
-#include "discord_rpc.h"
+
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "asw_marine_profile.h"
@@ -22,6 +22,10 @@
 #include "steam/isteammatchmaking.h"
 #include "steam/isteamfriends.h"
 
+#define DISCRORD_RICH_PRESENCE_ENABLED	// comment this out to disable Discord's rich presence support in game client
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
+	#include "discord_rpc.h"
+#endif
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -32,6 +36,7 @@ extern ConVar rd_challenge;
 #define DISCORD_CLIENT_ID "457248854685777932"
 #define DISCORD_STEAM_ID "563560"
 
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 static void handleDiscordReady( const DiscordUser *pRequest )
 {
 	DevMsg( "Discord: connected to user %s#%s\n", pRequest->username, pRequest->discriminator );
@@ -66,8 +71,11 @@ static void handleDiscordJoinRequest( const DiscordUser *pRequest )
 	Discord_Respond( pRequest->userId, DISCORD_REPLY_YES );
 }
 
+#endif
+
 bool RD_Rich_Presence::Init()
 {
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 	DiscordEventHandlers discordHandlers;
 	V_memset( &discordHandlers, 0, sizeof( discordHandlers ) );
 	discordHandlers.ready = &handleDiscordReady;
@@ -76,6 +84,8 @@ bool RD_Rich_Presence::Init()
 	discordHandlers.joinGame = &handleDiscordJoinGame;
 	discordHandlers.joinRequest = &handleDiscordJoinRequest;
 	Discord_Initialize( DISCORD_CLIENT_ID, &discordHandlers, 1, DISCORD_STEAM_ID );
+#endif
+
 	return true;
 }
 
@@ -87,13 +97,17 @@ void RD_Rich_Presence::Shutdown()
 		pSteamFriends->ClearRichPresence();
 	}
 
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 	Discord_ClearPresence();
 	Discord_Shutdown();
+#endif
 }
 
 void RD_Rich_Presence::Update( float frametime )
 {
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 	Discord_RunCallbacks();
+#endif
 
 	if ( m_nLastUpdateTime < time( NULL ) - 5 )
 	{
@@ -107,8 +121,11 @@ void RD_Rich_Presence::UpdatePresence()
 	ISteamFriends *pSteamFriends = SteamFriends();
 	if ( !pSteamFriends )
 		return;					// no friends, no fun
+
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 	DiscordRichPresence discordPresence;
 	V_memset( &discordPresence, 0, sizeof( discordPresence ) );
+#endif
 
 	if ( !engine->IsConnected() )
 	{
@@ -118,11 +135,13 @@ void RD_Rich_Presence::UpdatePresence()
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
 
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 		discordPresence.largeImageKey = "default";
 		discordPresence.largeImageText = "Main Menu";
 		discordPresence.smallImageKey = "marine_none";
 		discordPresence.smallImageText = "Main Menu";
 		discordPresence.state = "Main Menu";
+#endif
 	}
 	else if ( engine->IsPlayingDemo() )
 	{
@@ -132,11 +151,13 @@ void RD_Rich_Presence::UpdatePresence()
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
 
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 		discordPresence.largeImageKey = "default";
 		discordPresence.largeImageText = "Watching a Demo";
 		discordPresence.smallImageKey = "marine_none";
 		discordPresence.smallImageText = "Watching a Demo";
 		discordPresence.state = "Watching a Demo";
+#endif
 	}
 	else
 	{
@@ -156,8 +177,9 @@ void RD_Rich_Presence::UpdatePresence()
 			V_snprintf( szConnectString, sizeof( szConnectString ), "+connect_lobby %llu", currentLobby.ConvertToUint64() );
 			pSteamFriends->SetRichPresence( "steam_player_group", szCurrentLobbyID );
 			pSteamFriends->SetRichPresence( "connect", szConnectString );
-
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 			discordPresence.partyId = szCurrentLobbyID;
+#endif
 
 			ISteamMatchmaking *pSteamMatchmaking = SteamMatchmaking();
 			if ( pSteamMatchmaking )
@@ -173,6 +195,7 @@ void RD_Rich_Presence::UpdatePresence()
 					V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", gpGlobals->maxClients );
 					pSteamFriends->SetRichPresence( "max_players", szGroupSize );
 				}
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 				discordPresence.partySize = memberCount;
 				discordPresence.partyMax = gpGlobals->maxClients;
 				if ( gpGlobals->maxClients > memberCount )
@@ -181,6 +204,7 @@ void RD_Rich_Presence::UpdatePresence()
 					V_snprintf( szJoinSecret, sizeof( szJoinSecret ), "lobby:%s", szCurrentLobbyID );
 					discordPresence.joinSecret = szJoinSecret;
 				}
+#endif
 			}
 			else if ( pSteamFriends )
 			{
@@ -190,10 +214,12 @@ void RD_Rich_Presence::UpdatePresence()
 		else if ( engine->IsConnected() && ASWGameResource() && ASWGameResource()->IsOfflineGame() )
 		{
 			// playing Singleplayer mode
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 			discordPresence.partyId = NULL;
 			discordPresence.partySize = 1;
 			discordPresence.partyMax = 1;
 			discordPresence.joinSecret = NULL;
+#endif
 
 			if ( pSteamFriends )
 			{
@@ -207,10 +233,12 @@ void RD_Rich_Presence::UpdatePresence()
 		else if ( engine->IsConnected() )
 		{
 			// TODO
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 			discordPresence.partyId = NULL;
 			discordPresence.partySize = 0;
 			discordPresence.partyMax = 0;
 			discordPresence.joinSecret = NULL;
+#endif
 
 			if ( pSteamFriends )
 			{
@@ -382,13 +410,15 @@ void RD_Rich_Presence::UpdatePresence()
 						V_strncpy( szState, "Debriefing", sizeof( szState ) );
 					break;
 				}
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 				discordPresence.startTimestamp = m_nLastStateChangeTime;
+#endif
 			}
 			else
 			{
 				V_strncpy( szSteamDisplay, "#Generic", sizeof( szSteamDisplay ) );
 			}
-
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 			discordPresence.state = szState;
 			discordPresence.details = szDetails;
 			discordPresence.largeImageText = szLargeImageText;
@@ -402,7 +432,7 @@ void RD_Rich_Presence::UpdatePresence()
 			{
 				discordPresence.largeImageKey = "default";
 			}
-
+#endif
 			pSteamFriends->SetRichPresence( "status", szDetails );
 			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
 
@@ -418,7 +448,7 @@ void RD_Rich_Presence::UpdatePresence()
 					pProfile = pBriefing->GetMarineProfile( 0 );
 				}
 			}
-
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 			if ( pProfile )
 			{
 				static char marineImageKey[32];
@@ -440,8 +470,11 @@ void RD_Rich_Presence::UpdatePresence()
 				discordPresence.smallImageKey = "marine_none";
 				discordPresence.smallImageText = "No marine selected";
 			}
+#endif
 		}
 	}
 
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
 	Discord_UpdatePresence( &discordPresence );
+#endif
 }
