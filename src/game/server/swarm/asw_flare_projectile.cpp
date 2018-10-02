@@ -12,6 +12,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_biomass_ignite_from_flares( "rd_biomass_ignite_from_flares", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1, biomass will ignite from a flare" );
 
 extern ConVar sk_plr_dmg_asw_flares;
 extern ConVar sk_npc_dmg_asw_flares;
@@ -299,13 +300,14 @@ void CASW_Flare_Projectile::FlareTouch( CBaseEntity *pOther )
 		m_flNextDamage = gpGlobals->curtime + 1.0f;
 		*/
 
-		//CBaseAnimating *pAnim;
-
-		//pAnim = dynamic_cast<CBaseAnimating*>(pOther);
-		//if( pAnim )
-		//{
-			//pAnim->Ignite( 30.0f );
-		//}
+		if ( rd_biomass_ignite_from_flares.GetBool() && pOther->Classify() == CLASS_ASW_ALIEN_GOO )
+		{
+			CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>( pOther );
+			if ( pAnim )
+			{
+				pAnim->Ignite( 30.0f );
+			}
+		}
 
 		Vector vecNewVelocity = GetAbsVelocity();
 		vecNewVelocity	*= 0.1f;
