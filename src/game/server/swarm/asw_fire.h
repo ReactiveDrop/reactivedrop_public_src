@@ -230,7 +230,7 @@ private:
 //==================================================
 // FireSystem
 //==================================================
-bool FireSystem_StartFire( const Vector &position, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type = FIRE_NATURAL, float flRotation = 0, CBaseEntity *pCreatorWeapon = NULL );
+CFire *FireSystem_StartFire( const Vector &position, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type = FIRE_NATURAL, float flRotation = 0, CBaseEntity *pCreatorWeapon = NULL );
 void FireSystem_ExtinguishInRadius( const Vector &origin, float radius, float rate );
 void FireSystem_AddHeatInRadius( const Vector &origin, float radius, float heat );
 

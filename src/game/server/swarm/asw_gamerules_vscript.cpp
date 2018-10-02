@@ -12,6 +12,7 @@
 #include "asw_rifle_grenade.h"
 #include "asw_gas_grenade_projectile.h"
 #include "asw_mine.h"
+#include "asw_fire.h"
 #include "asw_marine.h"
 #include "asw_marine_resource.h"
 #include "asw_game_resource.h"
@@ -405,6 +406,12 @@ void ScriptStopStim()
 	game->StopStim();
 }
 
+HSCRIPT Script_StartFire( const Vector position, float duration, int flags )
+{
+	CFire *pFire = FireSystem_StartFire( position, 64, 4, duration, flags, NULL, FIRE_NATURAL, 0, NULL );
+	return ToHScript( pFire );
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
@@ -421,4 +428,5 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropGasGrenade, "DropGasGrenade", "Drops a gas grenade (damage, dmgInterval, duration, fuse, position)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStartStim, "StartStim", "Activates a stim pack for desired duration" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStopStim, "StopStim", "Stops any active stim pack" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_StartFire, "StartFire", "Starts a fire (position, duration, flags)" );
 }
