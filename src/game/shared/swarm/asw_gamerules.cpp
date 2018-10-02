@@ -168,6 +168,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
 	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kick players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
+	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -7557,12 +7558,20 @@ void CAlienSwarm::BroadcastSound( const char *sound )
 	MessageEnd();
 }
 
-
-
 void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
+
+	if ( rd_auto_kick_high_ping_player.GetInt() != 0 && pPlayer )
+	{
+		int ping, packetloss;
+		UTIL_GetPlayerConnectionInfo( pPlayer->entindex(), ping, packetloss );
+		if ( ping > rd_auto_kick_high_ping_player.GetInt() )
+		{
+			engine->ServerCommand( CFmtStr( "kickid %s 'Your ping is too high for this server, find a server closer to you'\n", pPlayer->GetASWNetworkID() ) );
+		}
+	}
 
 	if ( rd_auto_kick_low_level_player.GetBool() && engine->IsDedicatedServer() && pPlayer )
 	{
