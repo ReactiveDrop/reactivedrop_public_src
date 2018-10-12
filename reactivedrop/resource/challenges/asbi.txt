@@ -8,6 +8,8 @@
 		"rd_ready_mark_override"			"1"
 		"asw_sentry_friendly_fire_scale"	"1"
 		"asw_marine_ff_absorption"			"0"
+		"asw_adjust_difficulty_by_number_of_marines" "0"
+		"asw_batch_interval" 				"3"
 		
 		"rd_auto_kick_low_level_player"		"1"
 	}

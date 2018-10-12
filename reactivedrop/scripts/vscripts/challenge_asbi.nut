@@ -3,7 +3,6 @@ Convars.SetValue( "asw_realistic_death_chatter", 1 );
 Convars.SetValue( "asw_marine_ff", 2 );
 Convars.SetValue( "asw_marine_ff_dmg_base", 3 );
 Convars.SetValue( "asw_custom_skill_points", 0 );
-Convars.SetValue( "asw_adjust_difficulty_by_number_of_marines", 0 );
 Convars.SetValue( "asw_marine_death_cam_slowdown", 0 );
 Convars.SetValue( "asw_marine_death_protection", 0 );
 Convars.SetValue( "asw_marine_collision", 1 );
