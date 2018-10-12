@@ -3,10 +3,12 @@
 	"description"	"#rd_challenge_desc_asbi"
 
 	"convars" {
-		"asw_horde_override"		"1"
-		"asw_wanderer_override"		"1"
-		"rd_ready_mark_override"	"1"
+		"asw_horde_override"				"1"
+		"asw_wanderer_override"				"1"
+		"rd_ready_mark_override"			"1"
 		"asw_sentry_friendly_fire_scale"	"1"
-		"asw_marine_ff_absorption"	"0"
+		"asw_marine_ff_absorption"			"0"
+		
+		"rd_auto_kick_low_level_player"		"1"
 	}
 }

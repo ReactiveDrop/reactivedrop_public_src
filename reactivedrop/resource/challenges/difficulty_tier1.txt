@@ -4,5 +4,7 @@
 
 	"convars" {
 		"rd_difficulty_tier"	"1"
+		
+		"rd_auto_kick_low_level_player"		"1"
 	}
 }
