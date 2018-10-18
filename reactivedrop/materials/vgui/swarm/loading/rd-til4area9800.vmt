@@ -1,0 +1,9 @@
+UnlitGeneric
+{
+$basetexture "vgui\swarm\loading\rd-til4area9800"
+$surfaceprop metal
+$vertexcolor 1
+$vertexalpha 1
+$no_fullbright 1
+$ignorez 1
+}

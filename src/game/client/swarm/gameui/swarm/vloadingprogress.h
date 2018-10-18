@@ -49,7 +49,7 @@ public:
 	LoadingType			GetLoadingType();
 
 	bool				ShouldShowPosterForLevel( KeyValues *pMissionInfo, KeyValues *pChapterInfo );
-	void				SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapterInfo, const char **pPlayerNames, unsigned int botFlags, const char *pszGameMode );
+	void				SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapterInfo, const char **pPlayerNames, unsigned int botFlags, const char *pszGameMode, const char *levelName );
 	void				SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName );
 
 
@@ -105,6 +105,7 @@ private:
 
 	char				m_szGameMode[MAX_PATH];
 	wchar_t             m_wszLeaderboardTitle[MAX_PATH];
+	char				m_szLevelName[MAX_PATH];
 
 	CLoadingTipPanel			*m_pTipPanel;
 

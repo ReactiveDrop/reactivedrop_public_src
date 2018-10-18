@@ -28,6 +28,7 @@ using namespace BaseModUI;
 ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_ARCHIVE, "show friends' leaderboard entries on the loading screen" );
 ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
 ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
+ConVar rd_loading_image_per_map( "rd_loading_image_per_map", "1", FCVAR_ARCHIVE, "If set to 1 each map can have its own background image during loading screen, 0 means same image for every map" );
 extern ConVar asw_skill;
 
 static bool IsAvatarFemale( int iAvatar )
@@ -43,6 +44,7 @@ LoadingProgress::LoadingProgress(Panel *parent, const char *panelName, LoadingWi
 {
 	memset( m_szGameMode, 0, sizeof( m_szGameMode ) );
 	memset( m_wszLeaderboardTitle, 0, sizeof( m_wszLeaderboardTitle ) );
+	memset( m_szLevelName, 0, sizeof( m_szLevelName ) );
 
 	if ( IsPC() && eLoadingType == LWT_LOADINGPLAQUE )
 	{
@@ -487,7 +489,7 @@ void LoadingProgress::SetupControlStates()
 	m_flLastEngineTime = Plat_FloatTime() + 0.2f;
 }
 
-void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapterInfo, const char **pPlayerNames, unsigned int botFlags, const char *pszGameMode )
+void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapterInfo, const char **pPlayerNames, unsigned int botFlags, const char *pszGameMode, const char *levelName )
 {
 	m_botFlags = botFlags;
 	m_pMissionInfo = pMissionInfo;
@@ -496,6 +498,7 @@ void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapte
 	RearrangeNames( pMissionInfo->GetString( "poster/character_order", NULL ), pPlayerNames );
 
 	Q_snprintf( m_szGameMode, sizeof( m_szGameMode ), "#L4D360UI_Loading_GameMode_%s", pszGameMode );
+	Q_strncpy( m_szLevelName, levelName, sizeof( m_szLevelName ) );
 }
 
 void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName )
@@ -664,14 +667,32 @@ void LoadingProgress::SetupPoster( void )
 		bool bIsWidescreen = mat_xbox_iswidescreen.GetBool();
 #endif
 		const char *pszPosterImage;
-		int nChosenLoadingImage = RandomInt( 1, 4 );
-		switch( nChosenLoadingImage )
-		{
+		//int nChosenLoadingImage = RandomInt( 1, 4 );
+		//switch( nChosenLoadingImage )
+		//{
 			//case 1: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX01_wide" : "swarm/loading/BGFX01"; break;
 			//case 2: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX02_wide" : "swarm/loading/BGFX02"; break;
 			//case 3: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX03_wide" : "swarm/loading/BGFX03"; break;
-			case 4:
-			default: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04"; break;
+			//case 4:
+			//default: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04"; break;
+		//}
+		pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04";
+
+		if ( rd_loading_image_per_map.GetInt() == 1 )
+		{
+			CFmtStr szMapLoadingImageVmt( "materials/vgui/swarm/loading/%s.vmt", m_szLevelName );
+			CFmtStr szMapLoadingImageVmtWide( "materials/vgui/swarm/loading/%s_wide.vmt", m_szLevelName );
+			CFmtStr szMapLoadingImage( "swarm/loading/%s", m_szLevelName );
+			CFmtStr szMapLoadingImageWide( "swarm/loading/%s_wide", m_szLevelName );
+
+			if ( m_bFullscreenPoster && bIsWidescreen && filesystem->FileExists( szMapLoadingImageVmtWide ) )
+			{
+				pszPosterImage = szMapLoadingImageWide;
+			}
+			else if ( filesystem->FileExists( szMapLoadingImageVmt ) )
+			{
+				pszPosterImage = szMapLoadingImage;
+			}
 		}
 
 		// if the image was cached this will just hook it up, otherwise it will load it
