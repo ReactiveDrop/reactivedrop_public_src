@@ -856,13 +856,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 	{
 		m_flSpeedScale = 1;
 	}
-	if ( !V_strcmp( pKV->GetString( "AlienClass" ), "asw_drone_uber" ) )
-	{
-		extern ConVar rd_drone_uber_model_scale;
-		m_flSizeScale = pKV->GetFloat( "SizeScale", rd_drone_uber_model_scale.GetFloat() );
-	}
-	else
-		m_flSizeScale = pKV->GetFloat( "SizeScale", 1.0f );
+	m_flSizeScale = pKV->GetFloat( "SizeScale", 1.0f );
 	if ( m_flSizeScale <= 0 )
 	{
 		m_flSizeScale = 1;
