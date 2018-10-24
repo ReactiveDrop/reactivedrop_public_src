@@ -1,0 +1,8 @@
+"CHALLENGE" {
+	"name"	"Difficulty Tier 2"
+	"description"	"#rd_challenge_desc_difficulty_tier2"
+
+	"convars" {
+		"rd_difficulty_tier"	"2"
+	}
+}
