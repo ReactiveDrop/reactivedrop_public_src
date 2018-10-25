@@ -8571,6 +8571,9 @@ int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEqui
 
 bool CAlienSwarm::ShouldAllowCameraRotation( void )
 {
+	if ( ASWGameRules()->GetGameState() != ASW_GS_INGAME )
+		return false;
+
 	if ( rd_override_allow_rotate_camera.GetInt() != -1 )
 	{
 		return rd_override_allow_rotate_camera.GetBool();
