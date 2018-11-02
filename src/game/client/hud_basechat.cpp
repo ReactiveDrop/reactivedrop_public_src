@@ -41,6 +41,7 @@ ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
 ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
 ConVar cl_chat_active( "cl_chat_active", "0" );
 ConVar cl_chatfilters( "cl_chatfilters", "31", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
+ConVar rd_chatwipe( "rd_chatwipe", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping " );
 
 Color g_ColorBlue( 153, 204, 255, 255 );
 Color g_ColorRed( 255, 63.75, 63.75, 255 );
@@ -681,7 +682,7 @@ void CHudChatHistory::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CHudChatHistory::Paint()
 {
 	BaseClass::Paint();
-	if ( IsAllTextAlphaZero() && HasText() )
+	if ( IsAllTextAlphaZero() && HasText() && rd_chatwipe.GetBool() )
 	{
 		SetText( "" );
 		// Wipe
