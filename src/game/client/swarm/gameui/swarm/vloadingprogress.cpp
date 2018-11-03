@@ -498,7 +498,10 @@ void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapte
 	RearrangeNames( pMissionInfo->GetString( "poster/character_order", NULL ), pPlayerNames );
 
 	Q_snprintf( m_szGameMode, sizeof( m_szGameMode ), "#L4D360UI_Loading_GameMode_%s", pszGameMode );
-	Q_strncpy( m_szLevelName, levelName, sizeof( m_szLevelName ) );
+	if ( levelName )
+	{
+		Q_strncpy( m_szLevelName, levelName, sizeof( m_szLevelName ) );
+	}
 }
 
 void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName )
@@ -678,7 +681,7 @@ void LoadingProgress::SetupPoster( void )
 		//}
 		pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04";
 
-		if ( rd_loading_image_per_map.GetInt() == 1 )
+		if ( rd_loading_image_per_map.GetInt() == 1 && m_szLevelName[0] != 0 )
 		{
 			CFmtStr szMapLoadingImageVmt( "materials/vgui/swarm/loading/%s.vmt", m_szLevelName );
 			CFmtStr szMapLoadingImageVmtWide( "materials/vgui/swarm/loading/%s_wide.vmt", m_szLevelName );
