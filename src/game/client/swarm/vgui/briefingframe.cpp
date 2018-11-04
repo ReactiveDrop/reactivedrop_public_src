@@ -17,6 +17,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_chatwipe;
 
 BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTaskbarIcon) :
 	vgui::Frame(parent, panelName, showTaskbarIcon)
@@ -56,7 +57,8 @@ BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTask
 	CHudChat *pChat = GET_HUDELEMENT( CHudChat );
 	if (pChat)
 	{
-		pChat->InsertBlankPage();
+		if ( rd_chatwipe.GetBool() )
+			pChat->InsertBlankPage();
 		pChat->ShowChatPanel();	// chat up all the time during briefing
 	}
 

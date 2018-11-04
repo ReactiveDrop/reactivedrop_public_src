@@ -9,6 +9,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_chatwipe;
+
 MissionCompleteFrame::MissionCompleteFrame(bool bSuccess, Panel *parent, const char *panelName, bool showTaskbarIcon) :
 	vgui::Frame(parent, panelName, showTaskbarIcon)
 {
@@ -39,10 +41,13 @@ MissionCompleteFrame::MissionCompleteFrame(bool bSuccess, Panel *parent, const c
 	m_fBackgroundFade = 0;
 	m_fWrongState = 0;
 
-	// clear the currently visible part of the chat
-	CHudChat *pChat = GET_HUDELEMENT( CHudChat );
-	if (pChat)
-		pChat->InsertBlankPage();
+	if ( rd_chatwipe.GetBool() )
+	{
+		// clear the currently visible part of the chat
+		CHudChat *pChat = GET_HUDELEMENT( CHudChat );
+		if (pChat)
+			pChat->InsertBlankPage();
+	}
 
 	if (GetClientModeASW() && GetClientModeASW()->m_bSpectator)
 	{
