@@ -1295,10 +1295,14 @@ void CASW_Parasite::SetHealthByDifficultyLevel()
 	if ( FClassnameIs( this, "asw_parasite_defanged" ))
 	{
 		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_parasite_defanged_health.GetInt() ) + m_iHealthBonus );
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting defanged parasite's initial health to %d\n", GetHealth() );
 	}
 	else
 	{
 		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_parasite_health.GetInt() ) + m_iHealthBonus );
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting parasite's initial health to %d\n", GetHealth() );
 	}
 
 	SetMaxHealth( GetHealth() );
