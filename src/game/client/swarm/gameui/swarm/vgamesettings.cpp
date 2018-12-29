@@ -38,6 +38,8 @@
 #include "rd_challenges_shared.h"
 #include "rd_challenge_selection.h"
 
+#include "asw_medal_store.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -187,10 +189,22 @@ void GameSettings::Activate()
 
 	//bool showGameAccess = !Q_stricmp( "create", m_pSettings->GetString( "options/action", "" ) ) &&
 							//!IsEditingExistingLobby();
+	bool bPlayerIsNew = false;
+	if ( GetMedalStore() )
+	{
+		if ( !GetMedalStore()->GetPromotion() )
+		{
+			int nXp = GetMedalStore()->GetExperience();
+			// players below level 30 are considered new
+			if ( nXp < 51750 )
+				bPlayerIsNew = true;
+		}
+	}
+	bool bShowNumSlots = !bPlayerIsNew;
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );
-	bool showNumSlots = showGameAccess || !Q_stricmp( "offline", szNetwork );
+	bool showNumSlots = showGameAccess || ( !Q_stricmp( "offline", szNetwork ) && bShowNumSlots );
 	
 	// On X360 we cannot allow selecting server type until the
 	// session is actually created
