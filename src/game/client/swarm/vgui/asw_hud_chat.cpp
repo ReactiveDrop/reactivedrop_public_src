@@ -534,19 +534,24 @@ void CHudChat::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
-	if ( m_bBriefingPosition )
-	{
-		int x = ( ScreenWidth() * 0.5f ) - YRES( 264 );		
-		SetPos( x, YRES( 360 ) );
+	//if ( m_bBriefingPosition )
+	//{
+		int x = ( ScreenWidth() * 0.5f ) - YRES( 235 );		
+		SetPos( x, YRES( 355 ) );
 
 		int iLines = 7;
-		int iHistoryHeight = m_iFontHeight * iLines;
-		SetSize( YRES( 319 ), YRES( 20 ) + iHistoryHeight + m_iFontHeight );
-	}
-	else
-	{
-		SetPos( YRES( 110 ), YRES( 345 ) );
-	}
+		int iHistoryHeight = ( m_iFontHeight * iLines ) + m_iFontHeight;
+		SetSize( YRES( 275 ), YRES( 20 ) + iHistoryHeight );
+		if ( GetChatHistory() )
+		{
+			GetChatHistory()->GetScrollBar()->SetSize( 16, iHistoryHeight );
+		}
+	//}
+	//else
+	//{
+	//	int x = ( ScreenWidth() * 0.5f ) - YRES( 160 );
+	//	SetPos( x, YRES( 360 ) );
+	//}
 
 	m_pSwarmBackground->SetBounds( 0, 0, GetWide(), GetTall() );
 	m_pSwarmBackground->SetZPos( 0 );
