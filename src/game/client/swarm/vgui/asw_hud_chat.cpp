@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright � 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:  ASW version of hud_chat.cpp (exclude hud_chat.cpp from build)
 //
@@ -384,6 +384,14 @@ void CHudChat::InsertBlankPage()
 	}
 }
 
+void CHudChat::ClearHistory()
+{
+	if ( GetChatHistory() )
+	{
+		GetChatHistory()->SetText( "" );
+	}
+}
+
 Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 {
 	Color c;
@@ -452,27 +460,6 @@ Color CHudChat::GetClientColor( int clientIndex )
 	}
 
 	return cl_chatcolor.GetColor();
-}
-
-void CHudChat::OnTick()
-{
-	BaseClass::OnTick();
-
-	if ( !GetChatHistory() )
-		return;
-
-	if ( ASWGameRules() && 
-		( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF || ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP ) && rd_chatwipe.GetBool() )
-	{
-		//m_flHistoryFadeTime = gpGlobals->curtime;
-		GetChatHistory()->SetVerticalScrollbar( false );
-	}	
-
- 	int iLines = 7;
-	GetChatHistory()->SetBounds( YRES( 10 ), YRES( 10 ), YRES( 300 ), m_iFontHeight * iLines );
-
-	// hack to fix visibility of the scrollbar
-	//GetChatHistory()->SetVerticalScrollbar( IsKeyBoardInputEnabled() );   	// scroll bar always visible if we're hijacked into the debrief
 }
 
 void CHudChat::StartMessageMode( int iMessageModeType )
@@ -550,7 +537,7 @@ void CHudChat::PerformLayout( void )
 	if ( m_bBriefingPosition )
 	{
 		int x = ( ScreenWidth() * 0.5f ) - YRES( 264 );		
-		SetPos( x, YRES( 349 ) );
+		SetPos( x, YRES( 360 ) );
 
 		int iLines = 7;
 		int iHistoryHeight = m_iFontHeight * iLines;

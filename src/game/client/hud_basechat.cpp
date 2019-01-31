@@ -302,7 +302,6 @@ CBaseHudChatLine::CBaseHudChatLine( vgui::Panel *parent, const char *panelName )
 	m_text = NULL;
 
 	SetPaintBackgroundEnabled( true );
-	
 	SetVerticalScrollbar( false );
 }
 
@@ -461,10 +460,7 @@ void CBaseHudChatLine::Expire( void )
 CBaseHudChatInputLine::CBaseHudChatInputLine( CBaseHudChat *parent, char const *panelName ) : 
 	vgui::Panel( parent, panelName )
 {
-	SetMouseInputEnabled( false );
-
 	m_pPrompt = new vgui::Label( this, "ChatInputPrompt", L"Enter text:" );
-
 	m_pInput = new CBaseHudChatEntry( this, "ChatInput", parent );	
 	m_pInput->SetMaximumCharCount( 127 );
 }
@@ -485,9 +481,6 @@ void CBaseHudChatInputLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pPrompt->SetPaintBackgroundEnabled( true );
 	m_pPrompt->SetContentAlignment( vgui::Label::a_west );
 	m_pPrompt->SetTextInset( 2, 0 );
-
-	m_pInput->SetMouseInputEnabled( true );
-
 	SetBgColor( Color( 0, 0, 0, 0) );
 }
 
@@ -1263,6 +1256,8 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 
 	if ( !IsConsole() )
 	{
+		m_pFilterPanel->SetVisible(false);
+
 		m_pChatInput->ClearEntry();
 		SetChatPrompt( iMessageModeType );
 	
@@ -1271,7 +1266,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 			// TERROR: hack to get ChatFont back
 			GetChatHistory()->SetFont( vgui::scheme()->GetIScheme( GetScheme() )->GetFont( "ChatFont", false ) );
 			GetChatHistory()->SetMouseInputEnabled( true );
-			GetChatHistory()->SetKeyBoardInputEnabled( false );
+			GetChatHistory()->SetKeyBoardInputEnabled( true );
 			GetChatHistory()->SetVerticalScrollbar( true );
 			GetChatHistory()->ResetAllFades( true );
 			GetChatHistory()->SetPaintBorderEnabled( true );
@@ -1279,21 +1274,21 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 		}
 
 		vgui::SETUP_PANEL( this );
+		MoveToFront();
+		RequestFocus();
 		SetKeyBoardInputEnabled( true );
 		SetMouseInputEnabled( true );
 		m_pChatInput->SetVisible( true );
 		vgui::surface()->CalculateMouseVisible();
+		m_pChatInput->SetPaintBorderEnabled( true );		
 		m_pChatInput->RequestFocus();
-		m_pChatInput->SetPaintBorderEnabled( true );
-		m_pChatInput->SetMouseInputEnabled( true );
 
-		// Place the mouse cursor near the text so people notice it.
+#ifndef INFESTED_DLL
+		 Place the mouse cursor near the text so people notice it.
 		int x, y, w, h;
 		GetChatHistory()->GetBounds( x, y, w, h );
-#ifndef INFESTED_DLL
 		vgui::input()->SetCursorPos( x + ( w/2), y + (h/2) );
 #endif
-		m_pFilterPanel->SetVisible( false );
 	}
 
 	m_flHistoryFadeTime = gpGlobals->curtime + CHAT_HISTORY_FADE_TIME;

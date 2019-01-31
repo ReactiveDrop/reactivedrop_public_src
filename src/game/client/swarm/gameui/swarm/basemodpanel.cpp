@@ -1075,6 +1075,10 @@ void CBaseModPanel::OpenFrontScreen()
 	{
 		if( GetActiveWindowType() != frontWindow )
 		{
+			// clear the chat history between games
+			CHudChat *pChat = GET_HUDELEMENT( CHudChat );
+			if ( pChat ) pChat->ClearHistory();
+
 			CloseAllWindows();
 			OpenWindow( frontWindow, NULL );
 		}
