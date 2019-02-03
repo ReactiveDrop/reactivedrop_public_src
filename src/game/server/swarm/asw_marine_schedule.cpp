@@ -982,6 +982,12 @@ int CASW_Marine::SelectHealSchedule()
 			continue;
 		}
 
+		if ( CanHeal() && pMarine->IsInfested() && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		{
+			pBestMarine = pMarine;
+			continue;
+		}
+
 		// see if the current marine can use ammo I have
 		if ( CanHeal() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_START_HEAL_THRESHOLD && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
