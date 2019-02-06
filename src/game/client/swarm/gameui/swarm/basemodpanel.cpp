@@ -101,6 +101,7 @@ using namespace vgui;
 //setup in GameUI_Interface.cpp
 extern class IMatchSystem *matchsystem;
 extern const char *COM_GetModDirectory( void );
+extern ConVar rd_chatwipe_mainmenu;
 
 //=============================================================================
 CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
@@ -1075,9 +1076,12 @@ void CBaseModPanel::OpenFrontScreen()
 	{
 		if( GetActiveWindowType() != frontWindow )
 		{
-			// clear the chat history between games
-			CHudChat *pChat = GET_HUDELEMENT( CHudChat );
-			if ( pChat ) pChat->ClearHistory();
+			if ( rd_chatwipe_mainmenu.GetBool() )
+			{
+				// clear the chat history between games
+				CHudChat *pChat = GET_HUDELEMENT(CHudChat);
+				if (pChat) pChat->ClearHistory();
+			}
 
 			CloseAllWindows();
 			OpenWindow( frontWindow, NULL );

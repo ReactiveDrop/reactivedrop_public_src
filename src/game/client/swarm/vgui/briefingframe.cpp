@@ -58,7 +58,7 @@ BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTask
 	if (pChat)
 	{
 		if ( rd_chatwipe.GetBool() )
-			pChat->InsertBlankPage();
+			pChat->ClearHistory();
 		pChat->ShowChatPanel();	// chat up all the time during briefing
 	}
 
