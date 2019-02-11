@@ -87,6 +87,19 @@
 		"ControlName"		"Label"
 		"fgcolor_override"		"83 148 192 255"
 	}
+	"VisibilityLabel"
+	{
+		"fieldName"		"VisibilityLabel"
+		"xpos"		"c-290"
+		"ypos"		"20"
+		"wide"		"420"
+		"tall"		"17"
+		"font"		"Default"
+		"textAlignment"		"west"
+		"ControlName"		"Label"
+		"fgcolor_override"		"224 224 224 255"
+		"zpos" "5"
+	}
 	"DifficultyLabel"
 	{
 		"fieldName"		"DifficultyLabel"
@@ -180,6 +193,33 @@
 		"command"	"Back"
 		"fgcolor_override"		"113 142 181 255"
 		"zpos"		"3"
+	}
+	"VisibilityButton"
+	{
+		"fieldName"		"VisibilityButton"
+		"xpos"		"c-108"
+		"ypos"		"r23"
+		"wide"		"117"
+		"tall"		"27"
+		"ControlName"		"CNB_Button"
+		"labelText"		"#L4D360UI_Lobby_FriendsTitle"
+		"textAlignment"		"center"
+		"font"		"DefaultMedium"
+		"fgcolor_override"		"113 142 181 255"
+		"zpos"		"3"
+	}
+	"TipsLabel"
+	{
+		"fieldName"		"TipsLabel"
+		"xpos"		"c-120"
+		"ypos"		"r39"
+		"wide"		"420"
+		"tall"		"17"
+		"font"		"Default"
+		"textAlignment"		"west"
+		"ControlName"		"Label"
+		"fgcolor_override"		"224 224 224 255"
+		"zpos" "5"
 	}
 	"CampaignVoteButton" 
 	{
