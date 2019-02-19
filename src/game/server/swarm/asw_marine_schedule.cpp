@@ -942,7 +942,7 @@ int CASW_Marine::SelectHealSchedule()
 
 	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( CASW_Weapon_Heal_Gun::GetWeaponRange() * 0.5f ) : FLT_MAX;
 
-	for ( int i=0; i<pGameResource->GetMaxMarineResources(); i++ )
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); ++i )
 	{
 		CASW_Marine_Resource* pMarineResource = pGameResource->GetMarineResource(i);
 		if ( !pMarineResource )
@@ -982,10 +982,18 @@ int CASW_Marine::SelectHealSchedule()
 			continue;
 		}
 
-		if ( CanHeal() && pMarine->IsInfested() && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		// reactivedrop: heal infested marine without waiting for their health dropping to 65%, healing starts when marine's health drops below 85% of max health
+		if ( CanHeal() && pMarine->IsInfested() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD &&  ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
 			pBestMarine = pMarine;
-			continue;
+			break;
+		}
+
+		// reactivedrop: heal ignited marine immediately
+		if ( CanHeal() && pMarine->IsOnFire() && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		{
+			pBestMarine = pMarine;
+			break;
 		}
 
 		// see if the current marine can use ammo I have
@@ -2037,7 +2045,7 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 				// if the gun to longer has a target...
 				if ( !pHealgun || !m_hHealTarget || 
 					m_hHealTarget->GetHealth() <= 0 || 
-					m_hHealTarget->GetHealth() >= m_hHealTarget->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD ||
+					m_hHealTarget->GetHealth() >= m_hHealTarget->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD && !m_hHealTarget->IsOnFire() ||
 					m_hHealTarget->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) >= Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.5 ) )
 				{
 					TaskComplete();
