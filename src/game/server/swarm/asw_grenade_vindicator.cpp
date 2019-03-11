@@ -45,6 +45,8 @@ BEGIN_DATADESC( CASW_Grenade_Vindicator )
 	DEFINE_FIELD( m_fEarliestTouchDetonationTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bKicked, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bExplodeOnWorldContact, FIELD_BOOLEAN ),
+
+	DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
 END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
@@ -377,6 +379,9 @@ int	CASW_Grenade_Vindicator::OnTakeDamage_Dying( const CTakeDamageInfo &info )
 		{
 			m_bKicked = true;
 		}
+
+		//Mad Orange. Fire OnDamaged Output
+		m_OnDamaged.FireOutput(info.GetAttacker(), this);
 	}
 
 	// don't allow grenades to be damage by other grenade explosions
