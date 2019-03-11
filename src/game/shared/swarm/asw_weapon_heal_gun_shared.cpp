@@ -189,7 +189,7 @@ void CASW_Weapon_Heal_Gun::PrimaryAttack( void )
 			// Search for nearby entities to heal
 			if ( !hHealEntity )
 			{
-				if ( pPlayer->GetHighlightEntity() && pPlayer->GetHighlightEntity()->Classify() == CLASS_ASW_MARINE )
+				if ( pPlayer && pPlayer->GetHighlightEntity() && pPlayer->GetHighlightEntity()->Classify() == CLASS_ASW_MARINE )
 				{
 					CASW_Marine* pTargetMarine = static_cast< CASW_Marine* >( pPlayer->GetHighlightEntity() );
 					if ( pTargetMarine )
@@ -709,11 +709,11 @@ void CASW_Weapon_Heal_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 	if( pMarine->IsInhabited() )
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		CASW_Marine *pTargetMarine = NULL;
-		if ( pEntity )
-		{
-			pTargetMarine = CASW_Marine::AsMarine( pEntity );
-		}
+		//CASW_Marine *pTargetMarine = NULL;
+		//if ( pEntity )
+		//{
+		//	pTargetMarine = CASW_Marine::AsMarine( pEntity );
+		//}
 
 		Vector vecUp, vecRight;
 		QAngle angDir;

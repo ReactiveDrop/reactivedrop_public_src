@@ -87,7 +87,11 @@ void CASW_Achievement_Manager::FireGameEvent( IGameEvent *event )
 	{
 		int nMarineIndex = event->GetInt( "marine" );
 
-		C_ASW_Marine *pMarine = nMarineIndex > 0 ? dynamic_cast<CASW_Marine*>( C_BaseEntity::Instance( nMarineIndex ) ) : NULL;
+		C_ASW_Marine* pMarine = NULL;
+		C_BaseEntity* pEnt = C_BaseEntity::Instance(nMarineIndex);
+		if ( nMarineIndex > 0 && pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+			pMarine = assert_cast<CASW_Marine*>(pEnt);
+
 		for ( int j = 0; j < MAX_SPLITSCREEN_PLAYERS; ++j )
 		{
 			// look through all the kill event listeners and notify any achievements whose filters we pass
@@ -755,7 +759,12 @@ class CAchievement_Fast_Reload : public CASW_Achievement
 		if ( !Q_stricmp( event->GetName(), "fast_reload" ) )
 		{
 			int nMarineIndex = event->GetInt( "marine" );
-			C_ASW_Marine *pMarine = nMarineIndex > 0 ? dynamic_cast<CASW_Marine*>( C_BaseEntity::Instance( nMarineIndex ) ) : NULL;
+
+			C_ASW_Marine* pMarine = NULL;
+			C_BaseEntity* pEnt = C_BaseEntity::Instance(nMarineIndex);
+			if ( nMarineIndex > 0 && pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+				pMarine = assert_cast<CASW_Marine*>(pEnt);
+
 			if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == C_ASW_Player::GetLocalASWPlayer() )
 			{
 				IncrementCount();

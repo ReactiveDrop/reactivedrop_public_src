@@ -61,7 +61,7 @@ private:
 	{
 		ModelRenderSystemData_t m_Entry;
 		int32 m_nInitialListIndex : 24;
-		int32 m_bBoneMerge : 1;
+		uint32 m_bBoneMerge : 1;
 		int32 m_nLOD : 7;
 		ShaderStencilState_t *m_pStencilState;
 		ModelListNode_t *m_pNext;

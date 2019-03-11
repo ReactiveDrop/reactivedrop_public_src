@@ -228,9 +228,10 @@ bool CAI_ASW_FlinchBehavior::ShouldStumble( const CTakeDamageInfo &info )
 	if ( ( info.GetDamageType() & DMG_DIRECT ) != 0 )
 		return false;
 
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine *pMarine = assert_cast<CASW_Marine*>( info.GetAttacker() );
+		CASW_Marine *pMarine = assert_cast<CASW_Marine*>(pAttacker);
 		
 		CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
 		if ( pWeapon && pWeapon->ShouldAlienFlinch( GetOuter(), info ) )
@@ -248,13 +249,14 @@ bool CAI_ASW_FlinchBehavior::ShouldStumble( const CTakeDamageInfo &info )
 void CAI_ASW_FlinchBehavior::OnOuterTakeDamage( const CTakeDamageInfo &info )
 {	
 	m_FlinchActivity = ACT_INVALID;
-	if ( !info.GetAttacker() )
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( !pAttacker )
 		return;
 
 	if ( gpGlobals->curtime < m_flNextFlinchTime )
 		return;
 
-	Vector vecSrcDiff = info.GetAttacker()->GetAbsOrigin() - GetAbsOrigin();
+	Vector vecSrcDiff = pAttacker->GetAbsOrigin() - GetAbsOrigin();
 	VectorNormalize( vecSrcDiff );
 	Vector forward;
 	QAngle angFacing = GetAbsAngles();

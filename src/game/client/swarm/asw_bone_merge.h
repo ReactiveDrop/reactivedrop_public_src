@@ -12,6 +12,7 @@ public:
 	typedef CBoneMergeCache BaseClass;
 
 	CASW_Bone_Merge_Cache();
+	virtual ~CASW_Bone_Merge_Cache() {};
 
 	// This copies the transform from all bones in the followed entity that have 
 	// names that match our bones.

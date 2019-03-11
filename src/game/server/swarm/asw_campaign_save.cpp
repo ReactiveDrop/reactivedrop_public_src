@@ -109,101 +109,105 @@ bool CASW_Campaign_Save::LoadGameFromFile(const char *szFileName)
 	const char *pszNoPathName = Q_UnqualifiedFileName(tempbuffer);	
 	Q_snprintf(szFullFileName, sizeof(szFullFileName), "save/%s", pszNoPathName);	
 
-	KeyValues *pSaveKeyValues = new KeyValues( szFileName );
-	if (pSaveKeyValues->LoadFromFile(filesystem, szFullFileName))
+	KeyValues *pSaveKeyValues = new KeyValues(szFileName);
+	if (pSaveKeyValues)
 	{
-		m_CurrentSaveFileName = AllocPooledString(szFullFileName);
-
-		m_iVersion = pSaveKeyValues->GetInt("Version");		
-		m_iLowestSkillLevelPlayed = pSaveKeyValues->GetInt("SkillLevel");
-		Q_strncpy( m_CampaignName.GetForModify(), pSaveKeyValues->GetString("CampaignName"), 255 );
-		m_iCurrentPosition = pSaveKeyValues->GetInt("CurrentPosition");
-		m_iNumMissionsComplete = pSaveKeyValues->GetInt("NumMissionsComplete");
-		m_iInitialNumMissionsComplete = pSaveKeyValues->GetInt("InitialNumMissionsComplete");
-		m_bMultiplayerGame = pSaveKeyValues->GetInt("Multiplayer") != 0;		
-		Q_strncpy( m_DateTime.GetForModify(), pSaveKeyValues->GetString("DateTime"), 255 );		
-		m_iNumDeaths = pSaveKeyValues->GetInt("NumDeaths");
-		m_bFixedSkillPoints = !asw_custom_skill_points.GetBool(); //pSaveKeyValues->GetBool( "FixedSkillPoints", true );
-		m_bChallengeEverActive = pSaveKeyValues->GetBool( "ChallengeEverActive", false );
-
-		m_iNumPlayers = pSaveKeyValues->GetInt("NumPlayers");
-		m_PlayerNames.Purge();
-		m_PlayerIDs.Purge();
-
-		// go through each sub section, adding the relevant details
-		KeyValues *pkvSubSection = pSaveKeyValues->GetFirstSubKey();
-		while ( pkvSubSection )
+		if (pSaveKeyValues->LoadFromFile(filesystem, szFullFileName))
 		{
-			// mission details
-			if (Q_stricmp(pkvSubSection->GetName(), "MISSION")==0)
+			m_CurrentSaveFileName = AllocPooledString(szFullFileName);
+
+			m_iVersion = pSaveKeyValues->GetInt("Version");
+			m_iLowestSkillLevelPlayed = pSaveKeyValues->GetInt("SkillLevel");
+			Q_strncpy(m_CampaignName.GetForModify(), pSaveKeyValues->GetString("CampaignName"), 255);
+			m_iCurrentPosition = pSaveKeyValues->GetInt("CurrentPosition");
+			m_iNumMissionsComplete = pSaveKeyValues->GetInt("NumMissionsComplete");
+			m_iInitialNumMissionsComplete = pSaveKeyValues->GetInt("InitialNumMissionsComplete");
+			m_bMultiplayerGame = pSaveKeyValues->GetInt("Multiplayer") != 0;
+			Q_strncpy(m_DateTime.GetForModify(), pSaveKeyValues->GetString("DateTime"), 255);
+			m_iNumDeaths = pSaveKeyValues->GetInt("NumDeaths");
+			m_bFixedSkillPoints = !asw_custom_skill_points.GetBool(); //pSaveKeyValues->GetBool( "FixedSkillPoints", true );
+			m_bChallengeEverActive = pSaveKeyValues->GetBool("ChallengeEverActive", false);
+
+			m_iNumPlayers = pSaveKeyValues->GetInt("NumPlayers");
+			m_PlayerNames.Purge();
+			m_PlayerIDs.Purge();
+
+			// go through each sub section, adding the relevant details
+			KeyValues *pkvSubSection = pSaveKeyValues->GetFirstSubKey();
+			while (pkvSubSection)
 			{
-				int MissionID = pkvSubSection->GetInt("MissionID");
-				if (MissionID >=0 && MissionID < ASW_MAX_MISSIONS_PER_CAMPAIGN)
+				// mission details
+				if (Q_stricmp(pkvSubSection->GetName(), "MISSION") == 0)
 				{
-					m_MissionComplete.Set(MissionID, pkvSubSection->GetInt("MissionComplete"));
-					m_NumRetries.Set(MissionID, pkvSubSection->GetInt("NumRetries"));
+					int MissionID = pkvSubSection->GetInt("MissionID");
+					if (MissionID >= 0 && MissionID < ASW_MAX_MISSIONS_PER_CAMPAIGN)
+					{
+						m_MissionComplete.Set(MissionID, pkvSubSection->GetInt("MissionComplete"));
+						m_NumRetries.Set(MissionID, pkvSubSection->GetInt("NumRetries"));
+					}
 				}
-			}
 
-			// marine details
-			if (Q_stricmp(pkvSubSection->GetName(), "MARINE")==0)
-			{
-				int MarineID = pkvSubSection->GetInt("MarineID");
-				if (MarineID >=0 && MarineID < ASW_NUM_MARINE_PROFILES)
+				// marine details
+				if (Q_stricmp(pkvSubSection->GetName(), "MARINE") == 0)
 				{
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_0] = pkvSubSection->GetInt("SkillSlot0");
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_1] = pkvSubSection->GetInt("SkillSlot1");
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_2] = pkvSubSection->GetInt("SkillSlot2");
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_3] = pkvSubSection->GetInt("SkillSlot3");
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_4] = pkvSubSection->GetInt("SkillSlot4");
-					m_iMarineSkill[MarineID][ASW_SKILL_SLOT_SPARE] = pkvSubSection->GetInt("SkillSlotSpare");
+					int MarineID = pkvSubSection->GetInt("MarineID");
+					if (MarineID >= 0 && MarineID < ASW_NUM_MARINE_PROFILES)
+					{
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_0] = pkvSubSection->GetInt("SkillSlot0");
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_1] = pkvSubSection->GetInt("SkillSlot1");
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_2] = pkvSubSection->GetInt("SkillSlot2");
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_3] = pkvSubSection->GetInt("SkillSlot3");
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_4] = pkvSubSection->GetInt("SkillSlot4");
+						m_iMarineSkill[MarineID][ASW_SKILL_SLOT_SPARE] = pkvSubSection->GetInt("SkillSlotSpare");
 
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_0] = pkvSubSection->GetInt("UndoSkillSlot0");
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_1] = pkvSubSection->GetInt("UndoSkillSlot1");
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_2] = pkvSubSection->GetInt("UndoSkillSlot2");
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_3] = pkvSubSection->GetInt("UndoSkillSlot3");
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_4] = pkvSubSection->GetInt("UndoSkillSlot4");
-					m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_SPARE] = pkvSubSection->GetInt("UndoSkillSlotSpare");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_0] = pkvSubSection->GetInt("UndoSkillSlot0");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_1] = pkvSubSection->GetInt("UndoSkillSlot1");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_2] = pkvSubSection->GetInt("UndoSkillSlot2");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_3] = pkvSubSection->GetInt("UndoSkillSlot3");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_4] = pkvSubSection->GetInt("UndoSkillSlot4");
+						m_iPreviousMarineSkill[MarineID][ASW_SKILL_SLOT_SPARE] = pkvSubSection->GetInt("UndoSkillSlotSpare");
 
-					m_iParasitesKilled[MarineID] = pkvSubSection->GetInt("ParasitesKilled");
+						m_iParasitesKilled[MarineID] = pkvSubSection->GetInt("ParasitesKilled");
 
-					m_MissionsCompleteNames.Set(MarineID, AllocPooledString(pkvSubSection->GetString("MissionsCompleted")));
-					m_Medals.Set(MarineID, AllocPooledString(pkvSubSection->GetString("Medals")));
+						m_MissionsCompleteNames.Set(MarineID, AllocPooledString(pkvSubSection->GetString("MissionsCompleted")));
+						m_Medals.Set(MarineID, AllocPooledString(pkvSubSection->GetString("Medals")));
 
-					m_bMarineWounded.Set(MarineID, (pkvSubSection->GetInt("Wounded") == 1));
-					m_bMarineDead.Set(MarineID, (pkvSubSection->GetInt("Dead") == 1));
-				}					
-			}
+						m_bMarineWounded.Set(MarineID, (pkvSubSection->GetInt("Wounded") == 1));
+						m_bMarineDead.Set(MarineID, (pkvSubSection->GetInt("Dead") == 1));
+					}
+				}
 
-			// player name
-			if (Q_stricmp(pkvSubSection->GetName(), "PLAYER")==0)
-			{
-				string_t stringName = AllocPooledString(pkvSubSection->GetString("PlayerName"));
-				m_PlayerNames.AddToTail(stringName);				
-			}
-			// player ID
-			if (Q_stricmp(pkvSubSection->GetName(), "DATA")==0)
-			{
-				string_t stringID = AllocPooledString(pkvSubSection->GetString("DataBlock"));
-				m_PlayerIDs.AddToTail(stringID);								
-			}
-			// last commanders
-			if (Q_stricmp(pkvSubSection->GetName(), "COMM")==0)
-			{
-				for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
+				// player name
+				if (Q_stricmp(pkvSubSection->GetName(), "PLAYER") == 0)
 				{
-					char buffer[16];
-					Q_snprintf(buffer, sizeof(buffer), "Comm%d", i);
-					string_t stringID = AllocPooledString(pkvSubSection->GetString(buffer));					
-					m_LastCommanders[i] = stringID;
-					Q_snprintf(buffer, sizeof(buffer), "Slot%d", i);
-					m_LastMarineResourceSlot[i] = pkvSubSection->GetInt(buffer);
-				}				
+					string_t stringName = AllocPooledString(pkvSubSection->GetString("PlayerName"));
+					m_PlayerNames.AddToTail(stringName);
+				}
+				// player ID
+				if (Q_stricmp(pkvSubSection->GetName(), "DATA") == 0)
+				{
+					string_t stringID = AllocPooledString(pkvSubSection->GetString("DataBlock"));
+					m_PlayerIDs.AddToTail(stringID);
+				}
+				// last commanders
+				if (Q_stricmp(pkvSubSection->GetName(), "COMM") == 0)
+				{
+					for (int i = 0; i < ASW_NUM_MARINE_PROFILES; i++)
+					{
+						char buffer[16];
+						Q_snprintf(buffer, sizeof(buffer), "Comm%d", i);
+						string_t stringID = AllocPooledString(pkvSubSection->GetString(buffer));
+						m_LastCommanders[i] = stringID;
+						Q_snprintf(buffer, sizeof(buffer), "Slot%d", i);
+						m_LastMarineResourceSlot[i] = pkvSubSection->GetInt(buffer);
+					}
+				}
+
+				pkvSubSection = pkvSubSection->GetNextKey();
 			}
-			
-			pkvSubSection = pkvSubSection->GetNextKey();
+			return true;
 		}
-		return true;
+		pSaveKeyValues->deleteThis();
 	}
 	Msg("Failed to load KeyValues from file %s\n", szFullFileName);
 	return false;
@@ -318,7 +322,7 @@ bool CASW_Campaign_Save::SaveGameToFile(const char *szFileName)
 	// check for any new players to add to our list
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pPlayer )
 		{
@@ -392,9 +396,10 @@ bool CASW_Campaign_Save::SaveGameToFile(const char *szFileName)
 			const char *pszNoPathName = Q_UnqualifiedFileName(szFullFileName);
 			missionchooser->LocalMissionSource()->OnSaveUpdated(pszNoPathName);
 		}
-		
+		pSaveKeyValues->deleteThis();
 		return true;
 	}
+	pSaveKeyValues->deleteThis();
 	return false;
 }
 
@@ -452,10 +457,10 @@ void CASW_Campaign_Save::DebugInfo()
 	Msg(" Version: %d\n", m_iVersion);
 	Msg(" Lowest Skill Level Played: %d\n", m_iLowestSkillLevelPlayed);	
 	Msg(" Campaign Name: %s\n", m_CampaignName.Get());
-	Msg(" Current Position: %d\n", m_iCurrentPosition);
-	Msg(" Num Missions Complete: %d\n", m_iNumMissionsComplete);
+	Msg(" Current Position: %d\n", m_iCurrentPosition.Get());
+	Msg(" Num Missions Complete: %d\n", m_iNumMissionsComplete.Get());
 	Msg(" Initial Num Missions Complete: %d\n", m_iInitialNumMissionsComplete);
-	Msg( "Num deaths: %d\n", m_iNumDeaths);
+	Msg( "Num deaths: %d\n", m_iNumDeaths.Get());
 	Msg(" [");
 	for (int i=0;i<ASW_MAX_MISSIONS_PER_CAMPAIGN;i++)
 	{
@@ -702,8 +707,11 @@ void CASW_Campaign_Save::MoveThink()
 				// we've got a route, move ourselves to the next step in the route
 				campaign_route_node_t* pNode = FindMissionInClosedList(m_iRouteDest);
 				if (pNode)
+				{
 					pNode = FindMissionInClosedList(pNode->iParentMission);
-				MoveTo(pNode->iMission);
+					if (pNode)
+						MoveTo(pNode->iMission);
+				}
 				SetNextThink(gpGlobals->curtime + 1.0f);	// move again in 1 second
 			}
 		}

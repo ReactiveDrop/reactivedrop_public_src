@@ -1131,7 +1131,7 @@ void CBaseModPanel::RunFrame()
 	if ( deltaTime > 0 )
 	{
 		m_flLastBlurTime = nowTime;
-		m_flBlurScale += deltaTime * bDoBlur ? 0.05f : -0.05f;
+		m_flBlurScale += deltaTime * (bDoBlur ? 0.05f : -0.05f);
 		m_flBlurScale = clamp( m_flBlurScale, 0, 0.85f );
 		engine->SetBlurFade( m_flBlurScale );
 	}
@@ -1889,7 +1889,7 @@ void CBaseModPanel::ApplySchemeSettings(IScheme *pScheme)
 	}
 	else
 	{
-		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "RdSelectionScreen" );
+		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s.vtf", "RdSelectionScreen" );
 	}
 
 	// TODO: GetBackgroundMusic

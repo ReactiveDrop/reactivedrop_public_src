@@ -84,17 +84,20 @@ void DownloadCampaign::UpdateText()
 //=============================================================================
 void DownloadCampaign::SetDataSettings( KeyValues *pSettings )
 {
-	m_campaignName = pSettings->GetString( "game/missioninfo/displaytitle", "#L4D360UI_CampaignName_Unknown" ); 
-	m_author =       pSettings->GetString( "game/missioninfo/author", "" );
-	m_webSite =      pSettings->GetString( "game/missioninfo/website", "" );
+	if (pSettings)
+	{
+		m_campaignName = pSettings->GetString("game/missioninfo/displaytitle", "#L4D360UI_CampaignName_Unknown");
+		m_author = pSettings->GetString("game/missioninfo/author", "");
+		m_webSite = pSettings->GetString("game/missioninfo/website", "");
 
-	char const *szFrom = pSettings->GetString( "game/missioninfo/from", "" );
-	m_fromLobby = !Q_stricmp( szFrom, "lobby" );
+		char const *szFrom = pSettings->GetString("game/missioninfo/from", "");
+		m_fromLobby = !Q_stricmp(szFrom, "lobby");
 
-	char const *szAction = pSettings->GetString( "game/missioninfo/action", "" );
-	m_bDownload = !!Q_stricmp( szAction, "website" );
+		char const *szAction = pSettings->GetString("game/missioninfo/action", "");
+		m_bDownload = !!Q_stricmp(szAction, "website");
 
-	UpdateText();
+		UpdateText();
+	}
 }
 
 //=============================================================================

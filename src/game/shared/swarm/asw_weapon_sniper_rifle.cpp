@@ -157,14 +157,21 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 		m_iClip1 -= info.m_iShots;
 #ifdef GAME_DLL
-		CASW_Marine *pMarine = GetMarine();
-		if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 			if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-			if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+			{
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			}
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 				pMarine->OnWeaponOutOfAmmo(true);
 		}
 #endif
@@ -197,7 +204,7 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine && pMarine->GetMarineResource())
+	if (pMarine->GetMarineResource())
 	{
 		pMarine->GetMarineResource()->UsedWeapon(this, 1);
 		pMarine->OnWeaponFired( this, 1 );

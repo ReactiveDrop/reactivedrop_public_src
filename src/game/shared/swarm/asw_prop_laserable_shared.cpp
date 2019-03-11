@@ -112,10 +112,11 @@ int CASW_Prop_Laserable::OnTakeDamage(const CTakeDamageInfo &info)
 
 	if ( gpGlobals->curtime > m_fNextLaseredEventTime && ( newInfo.GetDamageType() & DMG_ENERGYBEAM ) != 0 )
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
 		CASW_Player *pPlayerAttacer = NULL;
-		if ( pMarine )
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
 			pPlayerAttacer = pMarine->GetCommander();
 		}
 

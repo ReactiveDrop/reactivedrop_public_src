@@ -533,11 +533,11 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 
 	if ( Q_strcmp( pszChallengeName, "0" ) )
 	{
-		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s (%s)", wszLevelDisplayName, wszChallengeDisplayName );
+		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s (%s)", wszLevelDisplayName, wszChallengeDisplayName );
 	}
 	else
 	{
-		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
+		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
 	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
@@ -747,7 +747,7 @@ void LoadingProgress::SetupPoster( void )
 
 		if ( nNumNames != 0 )
 		{
-			wcsncat( szPlayerNames, L", ", sizeof( szPlayerNames ) );
+			wcsncat( szPlayerNames, L", ", MAX_PATH - wcslen(szPlayerNames) - 1 );
 		}
 		wchar_t szName[64];
 
@@ -771,12 +771,12 @@ void LoadingProgress::SetupPoster( void )
 			nNumNames++;
 		}
 
-		wcsncat( szPlayerNames, szName, sizeof( szPlayerNames ) );
+		wcsncat( szPlayerNames, szName, MAX_PATH - wcslen(szPlayerNames) - 1 );
 	}
 
 	if ( nNumNames != 0 )
 	{
-		wcsncat( szPlayerNames, L".", sizeof( szPlayerNames ) );
+		wcsncat( szPlayerNames, L".", MAX_PATH - wcslen(szPlayerNames) - 1 );
 	}
 
 	SetControlString( "GameModeLabel", m_szGameMode );

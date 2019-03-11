@@ -1187,7 +1187,6 @@ exit 1
     <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\hl2orange.spa.h" />
     <ClInclude Include="..\..\public\appframework\IAppSystem.h" />
     <ClInclude Include="..\..\public\basehandle.h" />
     <ClInclude Include="..\..\public\basetypes.h" />
@@ -1404,7 +1403,6 @@ exit 1
     <ClInclude Include="..\shared\groundlink.h" />
     <ClInclude Include="..\shared\hintmessage.h" />
     <ClInclude Include="..\shared\hintsystem.h" />
-    <ClInclude Include="..\shared\hl2\hl2_vehicle_radar.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
     <ClInclude Include="..\shared\IEffects.h" />
     <ClInclude Include="..\shared\igamemovement.h" />

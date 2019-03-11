@@ -6,18 +6,12 @@
 
 #include "cbase.h"
 #include "soundenvelope.h"
-#include "entitylist.h"
 #include "ai_basenpc.h"
-#include "soundent.h"
 #include "physics.h"
 #include "physics_saverestore.h"
 #include "asw_tesla_trap.h"
 #include "movevars_shared.h"
 #include "vphysics/constraints.h"
-#include "ai_hint.h"
-#include "particle_parse.h"
-#include "world.h"
-#include "asw_gamerules.h"
 #include "asw_util_shared.h"
 #include "asw_trace_filter_shot.h"
 #include "asw_alien.h"
@@ -398,11 +392,14 @@ float CASW_TeslaTrap::FindNearestNPC()
 				//UTIL_TraceLine( EyePosition(), pNPC->WorldSpaceCenter(), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_)
 				if( FVisible( pNPC, MASK_SOLID_BRUSHONLY ) )
 				{
-					CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( pNPC );
-					bool bAlreadyZapped = pAlien && pAlien->IsElectroStunned();
+					if ( pNPC->IsAlienClassType() )
+					{
+						CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pNPC);
+						bool bAlreadyZapped = pAlien->IsElectroStunned();
 
-					if ( bAlreadyZapped && m_hNearestNPC.Get() != NULL )
-						continue;
+						if (bAlreadyZapped && m_hNearestNPC.Get() != NULL)
+							continue;
+					}
 
 					flNearest = flDist;
 					SetNearestNPC( pNPC );
@@ -638,11 +635,13 @@ bool CASW_TeslaTrap::ZapTarget( CBaseEntity *pEntity )
 		ApplyMultiDamage();
 
 		//shockTR.m_pEnt->EmitSound( "Electricity.Zap" );
+		/*
 		CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( shockTR.m_pEnt );
 		if ( pAlien )
 		{
 			// pAlien->ElectroShockBig( vecDir * 5, pAlien->GetAbsOrigin() - GetAbsOrigin() );
 		}
+		*/
 
 		// spawn a shock effect
 		/*

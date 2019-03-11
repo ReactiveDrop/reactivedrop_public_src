@@ -127,8 +127,8 @@ void CASW_Scanner_Info::AddBlips(Vector vecScannerCenter, float fDist)
 			else if (pEnt->Classify() == CLASS_ASW_DOOR)		// door
 			{
 				iType = 2;
-				CASW_Door *pDoor = dynamic_cast<CASW_Door*>(pEnt);
-				if (pDoor && !pDoor->m_bShowsOnScanner)	// skip doors that don't want to be on the scanner
+				CASW_Door *pDoor = assert_cast<CASW_Door*>(pEnt);
+				if (!pDoor->m_bShowsOnScanner)	// skip doors that don't want to be on the scanner
 					continue;
 			}
 			if (slot != -1)

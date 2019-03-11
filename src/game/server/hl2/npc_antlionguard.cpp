@@ -2381,13 +2381,13 @@ void CNPC_AntlionGuard::TraceAttack( const CTakeDamageInfo &inputInfo, const Vec
 	if (info.GetDamageType() & DMG_BUCKSHOT)
 	{
 		// hack to reduce vindicator damage (not reducing normal shotty as much as it's not too strong)
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
-				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if ( pVindicator )
+				if ( pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
@@ -2397,14 +2397,15 @@ void CNPC_AntlionGuard::TraceAttack( const CTakeDamageInfo &inputInfo, const Vec
 
 	if (info.GetDamageType() & DMG_BULLET)
 	{
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE)
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if ( pMarine && pMarine->GetActiveASWWeapon() )
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
 				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
 				extern ConVar rd_deagle_bigalien_dmg_scale;
-				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				switch ( ( int )pWeapon->Classify() )
 				{
 				case CLASS_ASW_DEAGLE:
 					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;

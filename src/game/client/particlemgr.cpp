@@ -41,6 +41,9 @@ ConVar cl_particles_show_bbox( "cl_particles_show_bbox", "0", FCVAR_CHEAT );
 ConVar cl_particle_fallback_multiplier( "cl_particle_fallback_multiplier", "1", FCVAR_NONE, "Multiplier for falling back to cheaper effects under load." ); 
 ConVar cl_particle_fallback_base( "cl_particle_fallback_base", "0", FCVAR_NONE, "Base for falling back to cheaper effects under load." ); 
 
+// This reflect the convar so we don't parse the string every particle!
+bool g_cl_particles_show_bbox = false;
+
 #ifdef _X360 
 
 // This is how long simulation has to take before we start going to fallback particle definitions
@@ -102,8 +105,8 @@ CParticleSubTextureGroup::~CParticleSubTextureGroup()
 
 CParticleSubTexture::CParticleSubTexture()
 {
-	m_tCoordMins[0] = m_tCoordMins[0] = 0;
-	m_tCoordMaxs[0] = m_tCoordMaxs[0] = 1;
+	m_tCoordMins[0] = m_tCoordMins[1] = 0;
+	m_tCoordMaxs[0] = m_tCoordMaxs[1] = 1;
 	m_pGroup = &m_DefaultGroup;
 	m_pMaterial = NULL;
 
@@ -165,7 +168,38 @@ CParticleEffectBinding::CParticleEffectBinding()
 
 CParticleEffectBinding::~CParticleEffectBinding()
 {
-	if( m_pParticleMgr )
+	//commit to indicate failure and to recheck stuff maybe later
+	
+	//-----------------------------------------------
+	//m_pParticleMgr->RemoveEffect(this) calls to
+	
+	//if (pEffect->m_pSim)
+	//	pEffect->m_pSim->NotifyRemove();
+	
+	//------------------------------------------------
+	//pEffect->m_pSim->NotifyRemove(); virtual call to 
+	
+	//CParticleEffect::NotifyRemove()
+	//		delete this;								//SO m_pSim IS DELETED!
+	//------------------------------------------------
+
+	//------------------------------------------------
+	//now Term() calls to CParticleEffectBinding::Term() calls to
+	
+	//for (Particle* pCur = pMaterial->m_Particles.m_pNext; pCur != &pMaterial->m_Particles; pCur = pNext)
+	//	RemoveParticle(pCur);
+
+	//------------------------------------------------
+	//CParticleEffectBinding::RemoveParticle calls to
+
+	//m_pSim->NotifyDestroyParticle(pParticle);		//USAGE OF DELETED m_pSim
+
+	//also
+	//virtual call to CParticleEffect::NotifyDestroyParticle forces only
+	//m_ParticleEffect.SetRemoveFlag(); that adds remove flag to CParticleEffectBinding
+	//but we started from its destructor, so definitelly no need to do anything.
+
+	if ( m_pParticleMgr )
 		m_pParticleMgr->RemoveEffect( this );
 
 	Term();
@@ -377,7 +411,7 @@ int CParticleEffectBinding::DrawModel( int flags, const RenderableInstance_t &in
 		}
 	}
 
-	if ( cl_particles_show_bbox.GetBool() )
+	if ( g_cl_particles_show_bbox )
 	{
 		Vector center = (m_Min + m_Max)/2;
 		Vector mins   = m_Min - center;
@@ -869,7 +903,8 @@ void CParticleEffectBinding::RemoveParticle( Particle *pParticle )
 	Assert( m_nActiveParticles >= 0 );
 
 	// Let the effect do any necessary cleanup
-	m_pSim->NotifyDestroyParticle(pParticle);
+	if (m_pSim)
+		m_pSim->NotifyDestroyParticle(pParticle);
 
 	// Remove it from the list of particles and deallocate
 	m_pParticleMgr->FreeParticle(pParticle);
@@ -960,7 +995,7 @@ CParticleMgr::CParticleMgr()
 
 CParticleMgr::~CParticleMgr()
 {
-	Term();
+	Term( false );
 }
 
 
@@ -988,7 +1023,7 @@ bool CParticleMgr::Init(unsigned long count, IMaterialSystem *pMaterials)
 	return true;
 }
 
-void CParticleMgr::Term()
+void CParticleMgr::Term( bool bCanReferenceOtherStaticObjects )
 {
 	// Free all the effects.
 	int iNext;
@@ -1016,7 +1051,8 @@ void CParticleMgr::Term()
 	}
 	m_SubTextureGroups.PurgeAndDeleteElements();
 
-	g_pParticleSystemMgr->UncacheAllParticleSystems();
+	if (bCanReferenceOtherStaticObjects)
+		g_pParticleSystemMgr->UncacheAllParticleSystems();
 	if ( m_pMaterialSystem )
 	{
 		m_pMaterialSystem->UncacheUnusedMaterials();
@@ -1206,7 +1242,8 @@ void CParticleMgr::RemoveEffect( CParticleEffectBinding *pEffect )
 	// This prevents certain recursive situations where a NotifyRemove
 	// call can wind up triggering another one, usually in an effect's
 	// destructor.
-	if( pEffect->GetRemovalInProgressFlag() )
+	Assert( pEffect );
+	if( !pEffect || pEffect->GetRemovalInProgressFlag() )
 		return;
 	pEffect->SetRemovalInProgressFlag();
 
@@ -1239,6 +1276,9 @@ void CParticleMgr::RemoveEffect( CParticleEffectBinding *pEffect )
 
 void CParticleMgr::RemoveEffect( CNewParticleEffect *pEffect )
 {
+	Assert( pEffect );
+	if ( !pEffect )
+		return;
 	// Don't call RemoveEffect while inside an IParticleEffect's Update() function.
 	// Return false from the Update function instead.
 	Assert( !m_bUpdatingEffects );
@@ -1858,6 +1898,9 @@ void CParticleMgr::UpdateNewEffects( float flTimeDelta )
 
 void CParticleMgr::UpdateAllEffects( float flTimeDelta )
 {
+	// This reflect the convar so we don't parse the string every particle.
+	g_cl_particles_show_bbox = cl_particles_show_bbox.GetBool();
+
 	m_bUpdatingEffects = true;
 
 	g_pParticleSystemQuery->PreSimulate();
@@ -1956,6 +1999,16 @@ void CParticleMgr::RemoveOldParticleEffects( float flTime )
 		{
 			pNewEffect->StopEmission( false, true, true );
 		}
+	}
+}
+
+void CParticleMgr::SetRemoveAllParticleEffects()
+{
+	for( CNewParticleEffect *pNewEffect=m_NewEffects.m_pHead; pNewEffect;
+		pNewEffect=pNewEffect->m_pNext )
+	{
+		pNewEffect->StopEmission( false, true, true );
+		pNewEffect->SetRemoveFlag();
 	}
 }
 

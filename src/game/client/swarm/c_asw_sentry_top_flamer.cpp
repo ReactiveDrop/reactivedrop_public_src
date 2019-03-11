@@ -185,8 +185,7 @@ void C_ASW_Sentry_Top_Flamer::OnStartFiring()
 
 	if ( HasPilotLight() && m_hPilotLight )
 	{
-		if ( m_hPilotLight )
-			m_hPilotLight->SetControlPoint( 1, Vector( 0, 0, 0 ) );
+		m_hPilotLight->SetControlPoint( 1, Vector( 0, 0, 0 ) );
 	}
 
 	if ( !m_hFiringEffect )

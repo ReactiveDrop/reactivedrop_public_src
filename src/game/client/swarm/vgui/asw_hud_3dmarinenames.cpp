@@ -872,7 +872,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 				}
 			}
 			// draw the reload bar
-			if ( bLocal && pWeapon && pWeapon->IsReloading() && asw_fast_reload_enabled.GetBool() && asw_fast_reload_under_marine.GetBool() )
+			if ( bLocal && pWeapon->IsReloading() && asw_fast_reload_enabled.GetBool() && asw_fast_reload_under_marine.GetBool() )
 			{
 				PaintReloadBar( pWeapon, nBoxCenterX, nCursorY );
 				nCursorY += nHealthBarHeight + nLineSpacing;
@@ -1168,9 +1168,9 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	{
 		wchar_t wszMarineHealth[ 12 ];
 		if ( rd_health_counter_under_marine_show_max_health.GetBool() )
-			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d/%d", pMarine->GetHealth(), pMarine->GetMaxHealth() );
+			V_snwprintf( wszMarineHealth, ARRAYSIZE( wszMarineHealth ), L"%d/%d", pMarine->GetHealth(), pMarine->GetMaxHealth() );
 		else
-			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d", pMarine->GetHealth() );
+			V_snwprintf( wszMarineHealth, ARRAYSIZE( wszMarineHealth ), L"%d", pMarine->GetHealth() );
 
 		int nHealthCounterLength = Q_wcslen( wszMarineHealth );
 		int nHealthCounterWidth = 0, nHealthCounterHeight = 0;
@@ -1197,20 +1197,27 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 // find if our marine is using something
 float CASWHud3DMarineNames::GetUsingFraction( C_ASW_Marine *pMarine )
 {
-	if ( !pMarine || !pMarine->GetMarineResource() )
+	if ( !pMarine )
+		return 0;
+	
+	CASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
+
+	if ( !pPMR )
 		return 0;
 
-	if (!pMarine->m_hUsingEntity.Get())
+	CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
+
+	if ( !pUsing )
 	{
-		if (pMarine->GetMarineResource()->m_hWeldingDoor.Get())
+		if ( pPMR->m_hWeldingDoor.Get() )
 		{
-			if (pMarine->GetMarineResource()->IsFiring())
-				return pMarine->GetMarineResource()->m_hWeldingDoor->GetSealAmount();
+			if ( pPMR->IsFiring() )
+				return pPMR->m_hWeldingDoor->GetSealAmount();
 		}
 		return 0;
 	}
 
-	IASW_Client_Usable_Entity* pUsable = dynamic_cast<IASW_Client_Usable_Entity*>(pMarine->m_hUsingEntity.Get());
+	IASW_Client_Usable_Entity* pUsable = dynamic_cast<IASW_Client_Usable_Entity*>(pUsing);
 	if (!pUsable)
 		return 0;
 
@@ -1447,16 +1454,16 @@ bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercen
 		if ( rd_ammo_counter_under_marine_show_max_ammo.GetBool() )
 		{
 			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
-				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"\u221E/\u221E"); //infinity symbol
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E/\u221E" ); //infinity symbol
 			else
-				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1());
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
 		}
 		else
 		{
 			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
-				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"\u221E");
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E");
 			else
-				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"%d", pWeapon->Clip1());
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
 		}
 
 		int nAmmoCounterLength = Q_wcslen( wszMarineAmmo );
@@ -1509,10 +1516,23 @@ void CASWHud3DMarineNames::UpdateHealthTooltip()
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer)
 	{
-		if (pPlayer->GetViewMarine() && dynamic_cast<C_ASW_Weapon_Medical_Satchel*>(pPlayer->GetViewMarine()->GetActiveASWWeapon()))
-		{			
-			C_ASW_Marine* pHealMarine = dynamic_cast<C_ASW_Marine*>( ASWInput()->GetHighlightEntity() );
-			SetHealthMarine(pHealMarine);
+		C_ASW_Marine* pViewMarine = pPlayer->GetViewMarine();
+		if ( pViewMarine )
+		{
+			C_ASW_Weapon* pActiveWeapon = pViewMarine->GetActiveASWWeapon();
+			if ( pActiveWeapon && pActiveWeapon->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
+			{
+				C_BaseEntity* pHighlighted = ASWInput()->GetHighlightEntity();
+				if ( pHighlighted && pHighlighted->Classify() == CLASS_ASW_MARINE )
+				{
+					C_ASW_Marine* pHealMarine = assert_cast<C_ASW_Marine*>(pHighlighted);
+					SetHealthMarine(pHealMarine);
+				}
+			}
+			else
+			{
+				SetHealthMarine(NULL);
+			}
 		}
 		else
 		{

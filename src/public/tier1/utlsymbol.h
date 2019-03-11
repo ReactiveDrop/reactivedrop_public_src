@@ -203,9 +203,9 @@ public:
 
 	CUtlSymbol Find( const char* pString ) const
 	{
-		m_lock.LockForWrite();
+		m_lock.LockForRead();
 		CUtlSymbol result = CUtlSymbolTable::Find( pString );
-		m_lock.UnlockWrite();
+		m_lock.UnlockRead();
 		return result;
 	}
 

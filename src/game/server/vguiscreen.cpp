@@ -153,7 +153,7 @@ void CVGuiScreen::Activate()
 
 void CVGuiScreen::OnRestore()
 {
-	UpdateTransmitState();
+	DispatchUpdateTransmitState();
 
 	BaseClass::OnRestore();
 }

@@ -714,7 +714,7 @@ bool CPhysConstraint::ActivateConstraint( void )
 	}
 
 	GetConstraintObjects( info );
-	if ( !info.pObjects[0] && !info.pObjects[1] )
+	if ( !info.pObjects[0] || !info.pObjects[1] )
 		return false;
 
 	if ( info.pObjects[0]->IsStatic() && info.pObjects[1]->IsStatic() )

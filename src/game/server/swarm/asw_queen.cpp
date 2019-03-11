@@ -1037,17 +1037,22 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 			info.SetDamageForce( Vector(0.1, 0.1, 0.1) );
 		else
 			info.SetDamageForce(force * 10000);
-		CASW_Alien* pAlien = dynamic_cast<CASW_Alien*>(pEntity);
-		if (pAlien)
+
+		if ( pEntity->IsAlienClassType() )
+		{
+			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
 			pAlien->MeleeBleed(&info);
-		CASW_Marine* pMarine = CASW_Marine::AsMarine( pEntity );
-		if (pMarine)
+		}
+		else if ( pEntity->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pEntity );
 			pMarine->MeleeBleed(&info);
+		}
 		else
 		{
-			CASW_Colonist *pColonist = dynamic_cast<CASW_Colonist*>(pEntity);
-			if (pColonist)
+			if ( pEntity->Classify() == CLASS_ASW_COLONIST )
 			{
+				CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>(pEntity);
 				pColonist->MeleeBleed(&info);
 			}
 			else
@@ -1320,6 +1325,7 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	CTakeDamageInfo newInfo(info);
 
 	float damage = info.GetDamage();
+	CBaseEntity* pAttacker = info.GetAttacker();
 	
 	// reduce all damage because the queen is TUFF!
 	damage *= 0.2f;
@@ -1332,28 +1338,27 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_BUCKSHOT)
 	{
 		// hack to reduce vindicator damage (not reducing normal shotty as much as it's not too strong)
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
-				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if ( pVindicator )
+				if ( pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
 			}
-		}		
+		}
 	}
 	if (info.GetDamageType() & DMG_BULLET)
 	{
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if ( pMarine && pMarine->GetActiveASWWeapon() )
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
 				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
-				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				switch ( ( int )pWeapon->Classify() )
 				{
 				case CLASS_ASW_DEAGLE:
 					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;
@@ -1365,7 +1370,7 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// make queen immune to buzzers
-	if (dynamic_cast<CASW_Buzzer*>(info.GetAttacker()))
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_BUZZER )
 	{
 		return 0;
 	}
@@ -1544,7 +1549,10 @@ void CASW_Queen::BuildScheduleTestBits( void )
 CAI_BaseNPC* CASW_Queen::SpawnParasite()
 {
 	CBaseEntity	*pEntity = CreateEntityByName( "asw_parasite" );
-	CAI_BaseNPC	*pNPC = dynamic_cast<CAI_BaseNPC*>(pEntity);
+
+	CAI_BaseNPC* pNPC = NULL;
+	if (pEntity)
+		pNPC = pEntity->MyNPCPointer();
 
 	if ( !pNPC )
 	{
@@ -1592,13 +1600,14 @@ CAI_BaseNPC* CASW_Queen::SpawnParasite()
 	pNPC->SetOwnerEntity( this );
 	pNPC->Activate();
 
-	CASW_Parasite *pParasite = dynamic_cast<CASW_Parasite*>(pNPC);
-	if (pParasite)
+	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
 	{
+		CASW_Parasite* pParasite = assert_cast<CASW_Parasite*>(pNPC);
+
 		m_iCrittersAlive++;
 		pParasite->SetMother(this);
 		//pParasite->DoJumpFromEgg();
-	}	
+	}
 
 	return pNPC;
 }
@@ -1638,7 +1647,7 @@ bool CASW_TraceFilterOnlyQueenTargets::ShouldHitEntity( IHandleEntity *pServerEn
 		CBreakableProp* pProp = dynamic_cast<CBreakableProp*>( pServerEntity );
 		if (pProp)
 			return true;
-		return (pEntity->IsNPC() || pEntity->IsPlayer());
+		return (pEntity->IsNPC());
 	}
 	return false;
 }

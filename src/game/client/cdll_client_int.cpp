@@ -70,7 +70,7 @@
 #include "physpropclientside.h"
 #include "panelmetaclassmgr.h"
 #include "c_vguiscreen.h"
-#include "imessagechars.h"
+//#include "imessagechars.h"
 #include "game/client/IGameClientExports.h"
 #include "client_factorylist.h"
 #include "ragdoll_shared.h"
@@ -1966,7 +1966,7 @@ void CHLClient::LevelShutdown( void )
 
 	ClientVoiceMgr_LevelShutdown();
 
-	messagechars->Clear();
+	//messagechars->Clear();
 
 	g_pParticleSystemMgr->LevelShutdown();
 	g_pParticleSystemMgr->UncacheAllParticleSystems();

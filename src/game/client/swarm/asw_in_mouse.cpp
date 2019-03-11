@@ -215,15 +215,17 @@ void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 void CASWInput::SetHighlightEntity( C_BaseEntity* pEnt, bool bGlow )
 {	
 	// if we're currently highlighting something, stop
+	/*
 	if ( m_hHighlightEntity.Get() )
 	{
-		C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>( m_hHighlightEntity.Get() );
+		C_BaseAnimating *pAnimating = m_hHighlightEntity.Get()->GetBaseAnimating();
 		if (pAnimating)
 		{
 			// ASWTODO - put this back in when we have a material proxy that supports lighting a specific marine
 			//pAnimating->SetHighlight(false);
 		}
 	}
+	*/
 	// highlight the next entity
 	m_hHighlightEntity = pEnt;
 	m_HighLightGlowObject.SetEntity( pEnt );
@@ -275,15 +277,17 @@ void CASWInput::UpdateHighlightEntity()
 void CASWInput::SetUseGlowEntity( C_BaseEntity* pEnt )
 {	
 	// if we're currently highlighting something, stop
+	/*
 	if ( m_hUseGlowEntity.Get() )
 	{
-		C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>( m_hUseGlowEntity.Get() );
+		C_BaseAnimating *pAnimating = m_hUseGlowEntity.Get()->GetBaseAnimating();
 		if ( pAnimating )
 		{
 			// ASWTODO - put this back in when we have a material proxy that supports lighting a specific marine
 			//pAnimating->SetHighlight(false);
 		}
 	}
+	*/
 	// highlight the next entity
 	m_hUseGlowEntity = pEnt;
 	bool bIsAllowed = true;

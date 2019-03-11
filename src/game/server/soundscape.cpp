@@ -418,7 +418,7 @@ CEnvSoundscapeTriggerable::CEnvSoundscapeTriggerable()
 
 void CEnvSoundscapeTriggerable::DelegateStartTouch( CBaseEntity *pEnt )
 {
-	CBasePlayer *pPlayer = dynamic_cast< CBasePlayer* >( pEnt );
+	CBasePlayer *pPlayer = ToBasePlayer(pEnt);
 	if ( !pPlayer )
 		return;
 
@@ -434,7 +434,7 @@ void CEnvSoundscapeTriggerable::DelegateStartTouch( CBaseEntity *pEnt )
 
 void CEnvSoundscapeTriggerable::DelegateEndTouch( CBaseEntity *pEnt )
 {
-	CBasePlayer *pPlayer = dynamic_cast< CBasePlayer* >( pEnt );
+	CBasePlayer *pPlayer = ToBasePlayer(pEnt);
 	if ( !pPlayer )
 		return;
 

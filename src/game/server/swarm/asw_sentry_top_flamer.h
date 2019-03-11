@@ -35,7 +35,7 @@ public:
 
 	int GetSentryDamage();
 
-	virtual ITraceFilter *GetVisibilityTraceFilter();
+	//virtual ITraceFilter *GetVisibilityTraceFilter();
 
 	inline float GetProjectileVelocity() const { return m_nProjectileVelocity; }
 

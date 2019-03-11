@@ -201,7 +201,7 @@ void PlayerListLine::OnThink()
 		wchar_t *marines = GetMarineNames();
 		if ( wcscmp( marines, m_wszMarineNames ) )
 		{
-			V_snwprintf( m_wszMarineNames, sizeof( m_wszMarineNames ), L"%s", marines );
+			V_snwprintf( m_wszMarineNames, ARRAYSIZE( m_wszMarineNames ), L"%s", marines );
 			m_pMarinesLabel->SetText(marines);
 		}
 
@@ -271,11 +271,11 @@ wchar_t* PlayerListLine::GetMarineNames()
 		if (pMR && pMR->GetCommanderIndex() == m_iPlayerIndex && pMR->GetProfile())
 		{
 			if (iMarines == 0)
-				V_snwprintf(marines, sizeof(marines), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
+				V_snwprintf(marines, ARRAYSIZE(marines), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
 			else
 			{
-				V_snwprintf(buffer, sizeof(buffer), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName) );
-				V_snwprintf(marines, sizeof(marines), L"%s", buffer);
+				V_snwprintf(buffer, ARRAYSIZE(buffer), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName) );
+				V_snwprintf(marines, ARRAYSIZE(marines), L"%s", buffer);
 			}
 			iMarines++;
 		}
@@ -445,7 +445,7 @@ void PlayerListLine::UpdateVoteIcons()
 			m_iLeaderIconState[i] = iLeaderIconState[i];
 			if (m_iLeaderIconState[i] == 0)
 			{
-				m_pKickVoteIcon[i]->SetVisible(false);
+				m_pLeaderVoteIcon[i]->SetVisible(false);
 			}
 			else if (m_iLeaderIconState[i] == 1)
 			{

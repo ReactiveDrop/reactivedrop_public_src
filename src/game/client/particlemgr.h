@@ -120,7 +120,11 @@ entities. Each one is useful under different conditions.
 #include "utllinkedlist.h"
 #include "UtlDict.h"
 #ifdef WIN32
+#if (defined( _MSC_VER ) && _MSC_VER >= 1900)
+#include <typeinfo>
+#else
 #include <typeinfo.h>
+#endif
 #else
 #include <typeinfo>
 #endif
@@ -571,6 +575,9 @@ private:
 	unsigned short					m_ListIndex;
 
 	IParticleEffect					*m_pSim;
+public:
+	void NullOutParticleEffectPointer(void) { m_pSim = NULL; }
+private:
 	CParticleMgr					*m_pParticleMgr;
 	
 	// Combination of the CParticleEffectBinding::FLAGS_ flags.
@@ -651,7 +658,7 @@ public:
 	bool			Init(unsigned long nPreallocatedParticles, IMaterialSystem *pMaterial);
 
 	// Shutdown - free everything.
-	void			Term();
+	void			Term(bool bCanReferenceOtherStaticObjects = true);
 
 	void			LevelInit();
 
@@ -723,6 +730,7 @@ public:
 	bool ShouldRenderParticleSystems() const;
 
 	void RemoveOldParticleEffects( float flTime );   // Removes all particles created more than flTime in the past immediately
+	void SetRemoveAllParticleEffects( void );	// Flags all particle effects for removal
 	int GetNumParticles() const { return m_nCurrentParticlesAllocated; }
 
 

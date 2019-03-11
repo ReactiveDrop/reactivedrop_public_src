@@ -36,7 +36,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 {
 	BaseClass::OnThink();
 
-	Assert( steamapicontext->SteamUGC() );
+	AssertOnce( steamapicontext->SteamUGC() );
 	if ( !steamapicontext->SteamUGC() )
 	{
 		return;
@@ -55,7 +55,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	if ( nInQueue )
 	{
 		wchar_t wszQueueCount[21];
-		V_snwprintf( wszQueueCount, sizeof( wszQueueCount ), L"%d", nInQueue );
+		V_snwprintf( wszQueueCount, ARRAYSIZE( wszQueueCount ), L"%d", nInQueue );
 		wchar_t wszQueue[128];
 		g_pVGuiLocalize->ConstructString( wszQueue, sizeof( wszQueue ), g_pVGuiLocalize->FindSafe( "#workshop_number_in_queue" ), 1, wszQueueCount );
 		m_pLblQueue->SetText( wszQueue );

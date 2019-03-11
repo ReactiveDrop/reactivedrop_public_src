@@ -352,7 +352,7 @@ void CPlayerMove::RunCommand ( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 	// Do weapon selection
 	if ( ucmd->weaponselect != 0 )
 	{
-		CBaseCombatWeapon *weapon = dynamic_cast< CBaseCombatWeapon * >( CBaseEntity::Instance( ucmd->weaponselect ) );
+		CBaseCombatWeapon *weapon = ToBaseCombatWeapon(CBaseEntity::Instance( ucmd->weaponselect ));
 		if ( weapon )
 		{
 			VPROF( "player->SelectItem()" );

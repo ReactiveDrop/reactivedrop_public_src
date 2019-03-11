@@ -93,7 +93,10 @@ void GameSettings::SetDataSettings( KeyValues *pSettings )
 {
 	IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
 	KeyValues *pMatchSettings = pIMatchSession ? pIMatchSession->GetSessionSettings() : NULL;
-	KeyValuesDumpAsDevMsg( pMatchSettings );
+	if (pMatchSettings)
+	{
+		KeyValuesDumpAsDevMsg(pMatchSettings);
+	}
 
 	if ( pMatchSettings && ( !pSettings || pSettings == pMatchSettings ) )
 	{

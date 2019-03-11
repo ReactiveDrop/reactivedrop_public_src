@@ -102,7 +102,11 @@ void CASW_Mine::Explode()
 		pFirewall->SetOwnerEntity(GetOwnerEntity());
 		pFirewall->SetAbsOrigin( GetAbsOrigin() );			
 
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+		CASW_Marine* pMarine = NULL;
+		if ( GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE )
+		{
+			pMarine = assert_cast<CASW_Marine*>(GetOwnerEntity());
+		}
 		if (!pMarine)
 		{
 			pFirewall->SetSideFire( 3 + m_iExtraFires , 3+ m_iExtraFires );
@@ -211,17 +215,15 @@ ConVar rd_firemine_target_marine( "rd_firemine_target_marine", "0", FCVAR_CHEAT 
 bool CASW_Mine::ValidMineTarget(CBaseEntity *pOther)
 {
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( pOther );
-	if (pMarine && rd_firemine_target_marine.GetBool())
+	if ( pMarine && rd_firemine_target_marine.GetBool() )
 		return true;
 	else if (pMarine)
 		return false;
 
-	if (pOther && pOther->Classify() == CLASS_ASW_COLONIST) {
+	if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST ) 
 		return false;
-	}
 
-	CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pOther);
-	if (pNPC)
+	if ( pOther && pOther->IsNPC() )
 		return true;
 
 	return false;

@@ -22,6 +22,9 @@ public:
 	virtual void SetClusters(int iClusters, bool bMaster = false);
 	virtual float GetEarliestTouchDetonationTime();
 
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
+	bool m_bTeslaAmped;
+
 	float m_fDetonateTime;
 	float m_fEarliestAOEDetonationTime;
 	Class_T m_CreatorWeaponClass;

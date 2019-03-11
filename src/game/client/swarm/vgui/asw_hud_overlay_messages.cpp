@@ -268,7 +268,7 @@ void CASWHudOverlayMessages::PaintOverlays()
 		m_flDeathMessageStartTime = 0.0f;
 	}
 
-	C_ASW_Marine *marine = dynamic_cast<C_ASW_Marine*>(local->GetViewMarine());
+	C_ASW_Marine *marine = local->GetViewMarine();
 	if ( !marine || !marine->GetMarineResource())
 		return;
 	
@@ -481,7 +481,7 @@ bool CASWHudOverlayMessages::PaintDeathMessage()
 	wchar_t wszMarineDeathMessage[ 64 ];
 	if ( pLocalPlayer == pMR->GetCommander() && pMR->IsInhabited() && ( pLocalPlayer->GetMarine() == NULL || pLocalPlayer->GetMarine()->GetHealth() <= 0 ) )
 	{
-		V_snwprintf( wszMarineDeathMessage, sizeof( wszMarineDeathMessage ), L"%s", g_pVGuiLocalize->Find( "#asw_hud_you_died" ) );
+		V_snwprintf( wszMarineDeathMessage, ARRAYSIZE( wszMarineDeathMessage ), L"%s", g_pVGuiLocalize->Find( "#asw_hud_you_died" ) );
 	}
 	else
 	{

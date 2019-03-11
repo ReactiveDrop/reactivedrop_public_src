@@ -88,7 +88,7 @@ void CNB_Mission_Options::OnThink()
 
 	}
 
-	if (!ASWGameRules() || !ASWGameResource())
+	if (!ASWGameResource())
 		return;
 
 	int iLeaderIndex = ASWGameResource()->GetLeaderEntIndex();

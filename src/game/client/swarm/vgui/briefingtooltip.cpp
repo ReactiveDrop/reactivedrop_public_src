@@ -14,8 +14,6 @@ BriefingTooltip::BriefingTooltip(Panel *parent, const char *panelName) :
 {
 	m_pTooltipPanel = NULL;
 	m_pMainLabel = new Label(this, "BriefingTooltipMainLabel", " ");
-	m_pMainLabel->SetContentAlignment(vgui::Label::a_center);	
-	m_pMainLabel = new Label(this, "BriefingTooltipMainLabel", " ");
 	m_pMainLabel->SetContentAlignment(vgui::Label::a_center);
 	m_pSubLabel = new Label(this, "BriefingTooltipSubLabel", " ");
 	m_pSubLabel->SetContentAlignment(vgui::Label::a_center);

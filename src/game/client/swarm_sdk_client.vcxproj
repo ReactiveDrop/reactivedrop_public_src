@@ -1856,7 +1856,6 @@ exit 1
     <ClCompile Include="vgui_hudvideo.cpp" />
     <ClCompile Include="vgui_int.cpp" />
     <ClCompile Include="vgui_loadingdiscpanel.cpp" />
-    <ClCompile Include="vgui_messagechars.cpp" />
     <ClCompile Include="vgui_movie_display.cpp" />
     <ClCompile Include="vgui_netgraphpanel.cpp" />
     <ClCompile Include="vgui_slideshow_display_screen.cpp" />
@@ -2336,7 +2335,6 @@ exit 1
     <ClInclude Include="..\shared\util_shared.h" />
     <ClInclude Include="..\shared\vehicle_choreo_generic_shared.h" />
     <ClInclude Include="..\shared\vehicle_viewblend_shared.h" />
-    <ClInclude Include="..\shared\vgui_defaultinputsignal.h" />
     <ClInclude Include="..\shared\viewport_panel_names.h" />
     <ClInclude Include="..\shared\voice_banmgr.h" />
     <ClInclude Include="..\shared\voice_common.h" />
@@ -2462,7 +2460,6 @@ exit 1
     <ClInclude Include="game_controls\imagemouseoverbutton.h" />
     <ClInclude Include="game_controls\intromenu.h" />
     <ClInclude Include="game_controls\mapoverview.h" />
-    <ClInclude Include="game_controls\mouseoverhtmlbutton.h" />
     <ClInclude Include="game_controls\mouseoverpanelbutton.h" />
     <ClInclude Include="game_controls\NavProgress.h" />
     <ClInclude Include="game_controls\spectatorgui.h" />
@@ -2501,7 +2498,6 @@ exit 1
     <ClInclude Include="iinput.h" />
     <ClInclude Include="iloadingdisc.h" />
     <ClInclude Include="imaterialproxydict.h" />
-    <ClInclude Include="imessagechars.h" />
     <ClInclude Include="inetgraphpanel.h" />
     <ClInclude Include="initializer.h" />
     <ClInclude Include="input.h" />
@@ -2943,7 +2939,6 @@ exit 1
     <ClInclude Include="vgui_grid.h" />
     <ClInclude Include="vgui_helpers.h" />
     <ClInclude Include="vgui_hudvideo.h" />
-    <ClInclude Include="vgui_imagehealthpanel.h" />
     <ClInclude Include="vgui_int.h" />
     <ClInclude Include="vgui_video.h" />
     <ClInclude Include="view.h" />

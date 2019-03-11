@@ -920,7 +920,7 @@ void CASW_Melee_System::SetupMeleeMovement( CASW_Marine *pMarine, CMoveData *pMo
 	
 	if ( asw_melee_debug.GetInt() == 2 )
 	{
-		Msg( "%s %d iMiscSequence = %d %f %f yaw %f\n", pMarine->IsServer() ? "s" : "                                                     c", iOutputNum, iMiscSequence, flMiscCycle, flMiscDuration, pMarine->m_flMeleeYaw );
+		Msg( "%s %d iMiscSequence = %d %f %f yaw %f\n", pMarine->IsServer() ? "s" : "                                                     c", iOutputNum, iMiscSequence, flMiscCycle, flMiscDuration, pMarine->m_flMeleeYaw.Get() );
 	}
 	if ( iMiscSequence <= 0 )
 	{

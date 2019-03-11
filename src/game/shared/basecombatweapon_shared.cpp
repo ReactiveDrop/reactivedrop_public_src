@@ -275,7 +275,7 @@ void CBaseCombatWeapon::Precache( void )
 	}
 
 	const char *pszTracerName = GetTracerType();
-	if ( pszTracerName )
+	if ( pszTracerName && pszTracerName[0] )
 	{
 		PrecacheEffect( pszTracerName );
 	}

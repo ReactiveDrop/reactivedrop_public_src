@@ -565,22 +565,23 @@ int CASW_Marine::SelectHackingSchedule()
 		}
 	}
 
-	if ( m_hAreaToUse.Get() )
+	CASW_Use_Area* pArea = m_hAreaToUse.Get();
+	if ( pArea )
 	{
-		CASW_Button_Area *pButton = dynamic_cast< CASW_Button_Area* >( m_hAreaToUse.Get() );
-		if ( pButton )
+		if ( pArea->Classify() == CLASS_ASW_BUTTON_PANEL )
 		{
+			CASW_Button_Area* pButton = assert_cast<CASW_Button_Area*>(pArea);
 			if ( pButton->m_bIsInUse || !pButton->IsLocked() )
 				return -1;
 		}
-		else
+		else if ( pArea->Classify() == CLASS_ASW_COMPUTER_AREA )
 		{
-			CASW_Computer_Area *pComputer = dynamic_cast< CASW_Computer_Area* >( m_hAreaToUse.Get() );
-			if ( pComputer && ( pComputer->m_bIsInUse || !pComputer->IsLocked() ) )
+			CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area* >(pArea);
+			if ( pComputer->m_bIsInUse || !pComputer->IsLocked() )
 				return -1;
 		}
 
-		if ( m_hAreaToUse->IsUsable( this ) )
+		if ( pArea->IsUsable( this ) )
 		{
 			// notify to kill the effect in a couple of seconds
 			CASW_Player *pPlayer = GetCommander();
@@ -594,7 +595,7 @@ int CASW_Marine::SelectHackingSchedule()
 				MessageEnd();
 			}
 
-			if ( m_hUsingEntity.Get() == m_hAreaToUse.Get() )
+			if ( m_hUsingEntity.Get() == pArea )
 			{
 				return SCHED_ASW_USING_OVER_TIME;
 			}
@@ -605,7 +606,7 @@ int CASW_Marine::SelectHackingSchedule()
 		}
 		else
 		{
-			m_vecMoveToOrderPos = m_hAreaToUse->WorldSpaceCenter();		// TODO: hacking spot marked up in the level?
+			m_vecMoveToOrderPos = pArea->WorldSpaceCenter();		// TODO: hacking spot marked up in the level?
 			return SCHED_ASW_MOVE_TO_ORDER_POS;
 		}
 	}
@@ -816,10 +817,13 @@ bool CASW_Marine::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float dis
 	SetPhysicsPropTarget( NULL );
 	if ( pMoveGoal->directTrace.pObstruction )
 	{
-		CASW_Prop_Physics *pPropPhysics = dynamic_cast< CASW_Prop_Physics *>( pMoveGoal->directTrace.pObstruction );
-		if ( pPropPhysics && pPropPhysics->m_takedamage == DAMAGE_YES && pPropPhysics->m_iHealth > 0 )
+		if ( pMoveGoal->directTrace.pObstruction->Classify() == CLASS_ASW_PHYSICS_PROP )
 		{
-			SetPhysicsPropTarget( pPropPhysics );
+			CASW_Prop_Physics* pPropPhysics = assert_cast<CASW_Prop_Physics*>(pMoveGoal->directTrace.pObstruction);
+			if (pPropPhysics->m_takedamage == DAMAGE_YES && pPropPhysics->m_iHealth > 0)
+			{
+				SetPhysicsPropTarget(pMoveGoal->directTrace.pObstruction);
+			}
 		}
 	}
 
@@ -1367,7 +1371,10 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 {
 	// check we have an item in that slot
 	CASW_Weapon* pWeapon = GetASWWeapon( iInventorySlot );
-	if ( !pWeapon || !pWeapon->GetWeaponInfo() || !pWeapon->GetWeaponInfo()->m_bOffhandActivate )
+	if ( !pWeapon )
+		return;
+	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+	if ( !pWpnInfo || !pWpnInfo->m_bOffhandActivate )
 		return;
 
 	// m_vecOffhandItemSpot = vecDest;
@@ -1378,10 +1385,10 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 		NDebugOverlay::Cross( m_vecOffhandItemSpot, 12.0f, 255, 0, 0, true, 3 );
 	}
 
-	if ( pWeapon->GetWeaponInfo()->m_nOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
+	if ( pWpnInfo->m_nOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
 	{
 		pWeapon->OffhandActivate();
-		if ( pWeapon->GetWeaponInfo()->m_bExtra )
+		if ( pWpnInfo->m_bExtra )
 		{
 			// Fire event when a marine uses an offhand item
 			IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
@@ -1456,7 +1463,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( ( m_vecOffhandItemSpot - GetAbsOrigin() ).Length2D() < ASW_DEPLOY_RANGE )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
-			if ( m_hOffhandItemToUse->GetWeaponInfo()->m_bExtra )
+			if ( pInfo->m_bExtra )
 			{
 				// Fire event when a marine uses an offhand item
 				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
@@ -1494,7 +1501,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( CanThrowOffhand( m_hOffhandItemToUse, GetOffhandThrowSource(), m_vecOffhandItemSpot, asw_debug_throw.GetInt() == 3 ) )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
-			if ( m_hOffhandItemToUse->GetWeaponInfo()->m_bExtra )
+			if ( pInfo->m_bExtra )
 			{
 				// Fire event when a marine uses an offhand item
 				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
@@ -2203,16 +2210,20 @@ bool CASW_Marine::EngageNewAlienGooTarget()
 const Vector &CASW_Marine::GetEnemyLKP() const
 {
 	// Only override default behavior if we're tracking alien goo and have no other target
-	if( GetAlienGooTarget() && ( !GetEnemy() || GetAlienGooTarget() == GetEnemy() ) )
+	CBaseEntity* pEnemy = GetEnemy();
+	if( GetAlienGooTarget() && ( !pEnemy || GetAlienGooTarget() == pEnemy ) )
 	{
 		return GetAlienGooTarget()->GetAbsOrigin();
 	}
 	else
 	{
-		CASW_Prop_Physics *pPropPhysics = dynamic_cast< CASW_Prop_Physics *>( GetEnemy() );
-		if ( pPropPhysics && pPropPhysics->m_takedamage == DAMAGE_YES && pPropPhysics->m_iHealth > 0 )
+		if ( pEnemy && pEnemy->Classify() == CLASS_ASW_PHYSICS_PROP )
 		{
-			return pPropPhysics->GetAbsOrigin();
+			CASW_Prop_Physics* pPropPhysics = assert_cast<CASW_Prop_Physics*>(pEnemy);
+			if (pPropPhysics->m_takedamage == DAMAGE_YES && pPropPhysics->m_iHealth > 0)
+			{
+				return pPropPhysics->GetAbsOrigin();
+			}
 		}
 
 		return BaseClass::GetEnemyLKP();

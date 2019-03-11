@@ -24,10 +24,25 @@ class CGameStringPool : public CStringPool,	public CBaseGameSystem
 	virtual void LevelShutdownPostEntity() 
 	{
 		FreeAll();
+		PurgeDeferredDeleteList();
 		CGameString::IncrementSerialNumber();
 	}
 
 public:
+	~CGameStringPool()
+	{
+		PurgeDeferredDeleteList();
+	}
+	
+	void PurgeDeferredDeleteList()
+	{
+		for ( int i = 0; i < m_DeferredDeleteList.Count(); ++ i )
+		{
+			free( ( void * )m_DeferredDeleteList[ i ] );
+		}
+		m_DeferredDeleteList.Purge();
+	}
+
 	void Dump( void )
 	{
 		for ( int i = m_Strings.FirstInorder(); i != m_Strings.InvalidIndex(); i = m_Strings.NextInorder(i) )
@@ -37,10 +52,22 @@ public:
 		DevMsg( "\n" );
 		DevMsg( "Size:  %d items\n", m_Strings.Count() );
 	}
+
+	void Remove( const char *pszValue )
+	{
+		int i = m_Strings.Find( pszValue );
+		if ( i != m_Strings.InvalidIndex() )
+		{
+			m_DeferredDeleteList.AddToTail( m_Strings[ i ] );
+			m_Strings.RemoveAt( i );
+		}
+	}
+
+private:
+	CUtlVector< const char * > m_DeferredDeleteList;
 };
 
 static CGameStringPool g_GameStringPool;
-
 
 //-----------------------------------------------------------------------------
 // String system accessor
@@ -49,7 +76,6 @@ IGameSystem *GameStringSystem()
 {
 	return &g_GameStringPool;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: The public accessor for the level-global pooled strings
@@ -66,6 +92,11 @@ string_t FindPooledString( const char *pszValue )
 	return MAKE_STRING( g_GameStringPool.Find( pszValue ) );
 }
 
+void RemovePooledString( const char *pszValue )
+{
+	g_GameStringPool.Remove( pszValue );
+}
+
 int CGameString::gm_iSerialNumber = 1;
 
 #ifndef CLIENT_DLL
@@ -74,6 +105,9 @@ int CGameString::gm_iSerialNumber = 1;
 //------------------------------------------------------------------------------
 void CC_DumpGameStringTable( void )
 {
+	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+		return;
+
 	g_GameStringPool.Dump();
 }
 static ConCommand dumpgamestringtable("dumpgamestringtable", CC_DumpGameStringTable, "Dump the contents of the game string table to the console.", FCVAR_CHEAT);

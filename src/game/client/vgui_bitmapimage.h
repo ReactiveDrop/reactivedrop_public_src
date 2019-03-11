@@ -28,6 +28,7 @@ class BitmapImage : public vgui::Image
 public:
 	BitmapImage();
 	BitmapImage( vgui::VPANEL pPanelSize, const char *pFileName );
+	virtual ~BitmapImage( void );
 	bool Init( vgui::VPANEL pParent, const char *pFileName );
 	bool Init( vgui::VPANEL pParent, KeyValues* pInitData );
 

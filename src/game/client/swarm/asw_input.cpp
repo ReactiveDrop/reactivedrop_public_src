@@ -1088,7 +1088,7 @@ void CASWInput::TurnTowardMouse(QAngle& viewangles, CUserCmd *cmd)
 
 	viewangles[ROLL] = 90 - RAD2DEG(atan(ground_x/marine_h));
 
-	if (pPlayer->GetMarine())
+	if (pPlayer && pPlayer->GetMarine())
 		pPlayer->GetMarine()->m_bUseLastRenderedEyePosition = false;
 }
 
@@ -1173,7 +1173,7 @@ void CASWInput::TurnTowardController(QAngle& viewangles)
 	float marine_h = 50.f;
 	viewangles[ROLL] = 90 - RAD2DEG(atan(ground_x/marine_h));
 
-	if (pPlayer->GetMarine())
+	if (pPlayer && pPlayer->GetMarine())
 		pPlayer->GetMarine()->m_bUseLastRenderedEyePosition = false;
 }
 

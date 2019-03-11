@@ -93,9 +93,9 @@ ConVar autoaim_max_deflect( "autoaim_max_deflect", "0.99" );
 ConVar	spec_freeze_time( "spec_freeze_time", "4.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Time spend frozen in observer freeze cam." );
 ConVar	spec_freeze_traveltime( "spec_freeze_traveltime", "0.4", FCVAR_CHEAT | FCVAR_REPLICATED, "Time taken to zoom in to frame a target in observer freeze cam.", true, 0.01, false, 0 );
 
-ConVar sv_bonus_challenge( "sv_bonus_challenge", "0", FCVAR_REPLICATED, "Set to values other than 0 to select a bonus map challenge type." );
+//ConVar sv_bonus_challenge( "sv_bonus_challenge", "0", FCVAR_REPLICATED, "Set to values other than 0 to select a bonus map challenge type." );
 
-ConVar sv_regeneration_wait_time ("sv_regeneration_wait_time", "1.0", FCVAR_REPLICATED );
+//ConVar sv_regeneration_wait_time ("sv_regeneration_wait_time", "1.0", FCVAR_REPLICATED );
 
 static ConVar old_armor( "player_old_armor", "0" );
 
@@ -3771,19 +3771,20 @@ void CBasePlayer::PreThink(void)
 	}
 
 	ItemPreFrame( );
-	WaterMove();
+	//WaterMove();
 
-	if ( g_pGameRules && g_pGameRules->FAllowFlashlight() )
-		m_Local.m_iHideHUD &= ~HIDEHUD_FLASHLIGHT;
-	else
-		m_Local.m_iHideHUD |= HIDEHUD_FLASHLIGHT;
+	//if ( g_pGameRules && g_pGameRules->FAllowFlashlight() )
+	//	m_Local.m_iHideHUD &= ~HIDEHUD_FLASHLIGHT;
+	//else
+	//	m_Local.m_iHideHUD |= HIDEHUD_FLASHLIGHT;
 
 	// checks if new client data (for HUD and view control) needs to be sent to the client
 	UpdateClientData();
 	
-	CheckTimeBasedDamage();
+	//CheckTimeBasedDamage();
 
-	CheckSuitUpdate();
+	//Mad Orange. Suit is unused in ASW
+	//CheckSuitUpdate();
 
 	if ( GetObserverMode() > OBS_MODE_FIXED )
 	{
@@ -3793,26 +3794,26 @@ void CBasePlayer::PreThink(void)
 	if (m_lifeState >= LIFE_DYING)
 		return;
 
-	HandleFuncTrain();
+	//HandleFuncTrain();
 
-	if (m_nButtons & IN_JUMP)
-	{
-		// If on a ladder, jump off the ladder
-		// else Jump
-		Jump();
-	}
+	//if (m_nButtons & IN_JUMP)
+	//{
+	//	// If on a ladder, jump off the ladder
+	//	// else Jump
+	//	Jump();
+	//}
 
-	// If trying to duck, already ducked, or in the process of ducking
-	if ((m_nButtons & IN_DUCK) || (GetFlags() & FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING) )
-		Duck();
+	//// If trying to duck, already ducked, or in the process of ducking
+	//if ((m_nButtons & IN_DUCK) || (GetFlags() & FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING) )
+	//	Duck();
 
-	//
-	// If we're not on the ground, we're falling. Update our falling velocity.
-	//
-	if ( !( GetFlags() & FL_ONGROUND ) )
-	{
-		m_Local.m_flFallVelocity = -GetAbsVelocity().z;
-	}
+	////
+	//// If we're not on the ground, we're falling. Update our falling velocity.
+	////
+	//if ( !( GetFlags() & FL_ONGROUND ) )
+	//{
+	//	m_Local.m_flFallVelocity = -GetAbsVelocity().z;
+	//}
 
 #ifndef _XBOX
 	CNavArea *area = TheNavMesh->GetNavArea( GetAbsOrigin() );
@@ -4496,7 +4497,7 @@ void CBasePlayer::UpdateTonemapController( void )
 void CBasePlayer::PostThink()
 {
 	VPROF( "CBasePlayer::PostThink" );
-	m_vecSmoothedVelocity = m_vecSmoothedVelocity * SMOOTHING_FACTOR + GetAbsVelocity() * ( 1 - SMOOTHING_FACTOR );
+	//m_vecSmoothedVelocity = m_vecSmoothedVelocity * SMOOTHING_FACTOR + GetAbsVelocity() * ( 1 - SMOOTHING_FACTOR );
 
 	UpdateTonemapController();
 	UpdateFXVolume();
@@ -4505,12 +4506,12 @@ void CBasePlayer::PostThink()
 	{
 		if ( IsAlive() )
 		{
-			// set correct collision bounds (may have changed in player movement code)
-			VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-Bounds" );
-			
-			UpdateCollisionBounds();
-			
-			VPROF_SCOPE_END();
+			//// set correct collision bounds (may have changed in player movement code)
+			//VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-Bounds" );
+			//
+			//UpdateCollisionBounds();
+			//
+			//VPROF_SCOPE_END();
 
 			VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-Use" );
 			// Handle controlling an entity
@@ -4538,15 +4539,15 @@ void CBasePlayer::PostThink()
 			ItemPostFrame();
 			VPROF_SCOPE_END();
 
-			if ( GetFlags() & FL_ONGROUND )
-			{		
-				if (m_Local.m_flFallVelocity > 64 && !g_pGameRules->IsMultiplayer())
-				{
-					CSoundEnt::InsertSound ( SOUND_PLAYER, GetAbsOrigin(), m_Local.m_flFallVelocity, 0.2, this );
-					// Msg( "fall %f\n", m_Local.m_flFallVelocity );
-				}
-				m_Local.m_flFallVelocity = 0;
-			}
+			//if ( GetFlags() & FL_ONGROUND )
+			//{		
+			//	if (m_Local.m_flFallVelocity > 64 && !g_pGameRules->IsMultiplayer())
+			//	{
+			//		CSoundEnt::InsertSound ( SOUND_PLAYER, GetAbsOrigin(), m_Local.m_flFallVelocity, 0.2, this );
+			//		// Msg( "fall %f\n", m_Local.m_flFallVelocity );
+			//	}
+			//	m_Local.m_flFallVelocity = 0;
+			//}
 
 			// select the proper animation for the player character	
 			VPROF( "CBasePlayer::PostThink-Animation" );
@@ -4586,9 +4587,9 @@ void CBasePlayer::PostThink()
 		Weapon_FrameUpdate();
 		VPROF_SCOPE_END();
 
-		VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-UpdatePlayerSound" );
-		UpdatePlayerSound();
-		VPROF_SCOPE_END();
+		//VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-UpdatePlayerSound" );
+		//UpdatePlayerSound();
+		//VPROF_SCOPE_END();
 
 		if ( m_bForceOrigin )
 		{
@@ -4608,21 +4609,21 @@ void CBasePlayer::PostThink()
 	SimulatePlayerSimulatedEntities();
 #endif
 
-	// Regenerate heath
-	if ( IsAlive() && GetHealth() < GetMaxHealth() && (GlobalEntity_GetState("player_regenerates_health") != GLOBAL_OFF) )
-	{
-		// Color to overlay on the screen while the player is taking damage
-		color32 hurtScreenOverlay = {64,0,0,64};
+	//// Regenerate heath
+	//if ( IsAlive() && GetHealth() < GetMaxHealth() && (GlobalEntity_GetState("player_regenerates_health") != GLOBAL_OFF) )
+	//{
+	//	// Color to overlay on the screen while the player is taking damage
+	//	color32 hurtScreenOverlay = {64,0,0,64};
 
-		if ( gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat() )
-		{
-			TakeHealth( 1, DMG_GENERIC );
-		}
-		else
-		{
-			UTIL_ScreenFade( this, hurtScreenOverlay, 1.0f, 0.1f, FFADE_IN|FFADE_PURGE );
-		}
-	}
+	//	if ( gpGlobals->curtime > m_fTimeLastHurt + sv_regeneration_wait_time.GetFloat() )
+	//	{
+	//		TakeHealth( 1, DMG_GENERIC );
+	//	}
+	//	else
+	//	{
+	//		UTIL_ScreenFade( this, hurtScreenOverlay, 1.0f, 0.1f, FFADE_IN|FFADE_PURGE );
+	//	}
+	//}
 }
 
 // handles touching physics objects
@@ -4988,8 +4989,8 @@ void CBasePlayer::Spawn( void )
 	
 	m_HackedGunPos		= Vector( 0, 32, 0 );
 
-	m_iBonusChallenge = sv_bonus_challenge.GetInt();
-	sv_bonus_challenge.SetValue( 0 );
+	m_iBonusChallenge = 0;// sv_bonus_challenge.GetInt();
+	//sv_bonus_challenge.SetValue( 0 );
 
 	if ( m_iPlayerSound == SOUNDLIST_EMPTY )
 	{
@@ -6813,7 +6814,7 @@ void CBasePlayer::UpdateClientData( void )
 		world->SetDisplayTitle( false );
 	}
 
-	UpdateBattery();
+	//UpdateBattery();
 
 #if 0 // BYE BYE!!
 	// Update Flashlight
@@ -6853,15 +6854,15 @@ void CBasePlayer::UpdateClientData( void )
 	}
 
 	// update the client with our poison state
-	m_Local.m_bPoisoned = ( m_bitsDamageType & DMG_POISON ) 
+	m_Local.m_bPoisoned = false;/* (m_bitsDamageType & DMG_POISON)
 						&& ( m_nPoisonDmg > m_nPoisonRestored ) 
-						&& ( m_iHealth < 100 );
+						&& ( m_iHealth < 100 );*/
 
-	// Check if the bonus progress HUD element should be displayed
-	if ( m_iBonusChallenge == 0 && m_iBonusProgress == 0 && !( m_Local.m_iHideHUD & HIDEHUD_BONUS_PROGRESS ) )
-		m_Local.m_iHideHUD |= HIDEHUD_BONUS_PROGRESS;
-	if ( ( m_iBonusChallenge != 0 )&& ( m_Local.m_iHideHUD & HIDEHUD_BONUS_PROGRESS ) )
-		m_Local.m_iHideHUD &= ~HIDEHUD_BONUS_PROGRESS;
+	//// Check if the bonus progress HUD element should be displayed
+	//if ( m_iBonusChallenge == 0 && m_iBonusProgress == 0 && !( m_Local.m_iHideHUD & HIDEHUD_BONUS_PROGRESS ) )
+	//	m_Local.m_iHideHUD |= HIDEHUD_BONUS_PROGRESS;
+	//if ( ( m_iBonusChallenge != 0 )&& ( m_Local.m_iHideHUD & HIDEHUD_BONUS_PROGRESS ) )
+	//	m_Local.m_iHideHUD &= ~HIDEHUD_BONUS_PROGRESS;
 
 	// Let any global rules update the HUD, too
 	g_pGameRules->UpdateClientData( this );

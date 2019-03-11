@@ -2525,7 +2525,7 @@ void UTIL_PredictedPosition( CBaseEntity *pTarget, float flTimeDelta, Vector *ve
 		else
 		{
 			// See if we're an animating entity
-			CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating *>(pTarget);
+			CBaseAnimating *pAnimating = pTarget->GetBaseAnimating();
 			if ( pAnimating != NULL )
 			{
 				vecPredictedVel = pAnimating->GetGroundSpeedVelocity();
@@ -2857,8 +2857,11 @@ bool UTIL_LoadAndSpawnEntitiesFromScript( CUtlVector <CBaseEntity*> &entities, c
 		}
 	}
 	else
+	{
+		pkvFile->deleteThis();
 		return false;
-
+	}
+	pkvFile->deleteThis();
 	return true;
 }
 

@@ -312,7 +312,7 @@ void CASW_Hud_Master::OnThink()
 		int iMilliseconds = iMissionTimeMS % 1000;
 
 		wchar_t wszTimer[40];
-		Q_snwprintf( wszTimer, sizeof( wszTimer ), L"%d:%02d.%02d", iMinutes, iSeconds, iMilliseconds / 10 );
+		Q_snwprintf( wszTimer, ARRAYSIZE( wszTimer ), L"%d:%02d.%02d", iMinutes, iSeconds, iMilliseconds / 10 );
 		m_pLblTimer->SetBounds( 0, ASWDeathmatchMode() ? YRES( 35 ) : YRES( 5 ), ScreenWidth(), YRES( 20 ) );
 		m_pLblTimer->SetContentAlignment( vgui::Label::a_north );
 		m_pLblTimer->SetText( wszTimer );
@@ -325,7 +325,7 @@ void CASW_Hud_Master::OnThink()
 	}
 
 	// gather squad mate data
-	int nMaxResources = ASWGameResource() ? ASWGameResource()->GetMaxMarineResources() : 0;
+	int nMaxResources = ASWGameResource()->GetMaxMarineResources();
 	int nPosition = 0;
 	int nMaxWidth = ScreenWidth();
 	CASWHudMinimap *pMinimap = GET_HUDELEMENT(CASWHudMinimap);
@@ -448,11 +448,6 @@ void CASW_Hud_Master::OnThink()
 				}
 
 				bool bWalking = ( pPlayer->GetMarine() && pPlayer->GetMarine()->m_bWalking );
-				if ( bWalking )
-				{
-					int poop = 1;
-					poop = 2;
-				}
 
 				int nItemSelect = bWalking ? 1 : 0;
 				int nItemShift = nItemSelect == 0 ? 1 : 0;
@@ -500,6 +495,7 @@ void CASW_Hud_Master::OnThink()
 	//UpdatePortraitVideo();
 
 	// loops through to see if we have effects that are flagged to die after a certain time
+	C_ASW_Marine* pMarine = NULL;
 	HotbarOrderEffectsList_t::IndexLocalType_t f = m_hHotbarOrderEffects.Head();
 	while ( m_hHotbarOrderEffects.IsValidIndex( f ) )
 	{
@@ -509,9 +505,12 @@ void CASW_Hud_Master::OnThink()
 
 		if ( m_hHotbarOrderEffects[oldf].flRemoveAtTime > 0 && m_hHotbarOrderEffects[oldf].flRemoveAtTime < gpGlobals->curtime )
 		{
-			int iMarine = m_hHotbarOrderEffects[oldf].iEffectID;	
-			C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-			if ( !pMarine )
+			int iMarine = m_hHotbarOrderEffects[oldf].iEffectID;
+			C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
+
+			if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+				pMarine = assert_cast<C_ASW_Marine*>(pEnt); // turn iMarine ent index into the marine
+			else
 				return;
 
 			StopItemFX( pMarine, -1 );
@@ -778,15 +777,12 @@ bool CASW_Hud_Master::LookupElementBounds( const char *elementName, int &x, int 
 			return false;
 		}
 
-		if ( pWeapon )
-		{
-			x = m_SquadMateInfo[ nPanel ].xpos;
-			y = m_nSquadMates_y;
-			x += m_nSquadMate_ExtraItem_x;
-			y += m_nSquadMate_ExtraItem_y;
-			wide = m_nSquadMate_ExtraItem_w;
-			tall = m_nSquadMate_ExtraItem_t;
-		}
+		x = m_SquadMateInfo[nPanel].xpos;
+		y = m_nSquadMates_y;
+		x += m_nSquadMate_ExtraItem_x;
+		y += m_nSquadMate_ExtraItem_y;
+		wide = m_nSquadMate_ExtraItem_w;
+		tall = m_nSquadMate_ExtraItem_t;
 	}
 	else if ( V_strcmp( elementName, "altammo" ) == 0 )
 	{
@@ -1416,13 +1412,12 @@ void CASW_Hud_Master::PaintText()
 		// weapon name
 		surface()->DrawSetTextFont( m_hDefaultSmallFont );
 		surface()->DrawSetTextColor( 255, 255, 255, 255 );
-		surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_weapon_name_x,
-									 m_nMarinePortrait_y + m_nMarinePortrait_weapon_name_y );
+		surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_weapon_name_x, m_nMarinePortrait_y + m_nMarinePortrait_weapon_name_y );
 
-		C_RD_Weapon_Generic_Object *pGenericObject = dynamic_cast<C_RD_Weapon_Generic_Object *>( m_pLocalMarineActiveWeapon );
-		if ( pGenericObject )
+		if (m_pLocalMarineActiveWeapon->Classify() == CLASS_RD_WEAPON_GENERIC_OBJECT)
 		{
-			surface()->DrawUnicodeString( pGenericObject->m_wszCarriedName );
+			C_RD_Weapon_Generic_Object* pGenericObject = assert_cast<C_RD_Weapon_Generic_Object*>(m_pLocalMarineActiveWeapon);
+			surface()->DrawUnicodeString( pGenericObject->m_wszCarriedName) ;
 		}
 		else
 		{
@@ -1432,7 +1427,7 @@ void CASW_Hud_Master::PaintText()
 			static wchar_t wszBullets[ 6 ];
 			if ( pInfo->m_iShowClipsOnHUD && m_nLocalMarineClips > 5 )
 			{
-				_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_nLocalMarineClips );
+				V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"x%d", m_nLocalMarineClips );
 				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y );
 				surface()->DrawUnicodeString( wszBullets );
@@ -1466,7 +1461,7 @@ void CASW_Hud_Master::PaintText()
 
 			if ( pInfo->m_iShowBulletsOnHUD )
 			{
-				_snwprintf( wszBullets, sizeof( wszBullets ), L"%03d", m_nLocalMarineBullets );
+				V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"%03d", m_nLocalMarineBullets );
 				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_bullets_x,
 					m_nMarinePortrait_y + m_nMarinePortrait_bullets_y );
 				surface()->DrawUnicodeString( wszBullets );
@@ -1477,14 +1472,14 @@ void CASW_Hud_Master::PaintText()
 
 			if ( pInfo->m_iShowGrenadesOnHUD )
 			{
-				_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineGrenades );
+				V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"%d", m_nLocalMarineGrenades );
 				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
 					m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
 				surface()->DrawUnicodeString( wszBullets );
 			}
 			else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
 			{
-				_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineSecondaryBullets );
+				V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"%d", m_nLocalMarineSecondaryBullets );
 				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
 					m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
 				surface()->DrawUnicodeString( wszBullets );
@@ -1497,12 +1492,13 @@ void CASW_Hud_Master::PaintText()
 	{
 		int w, t;
 		// quantity for extra item
-		if ( pExtraItem->GetWeaponInfo() )
+		const CASW_WeaponInfo* pInfo = pExtraItem->GetWeaponInfo();
+		if ( pInfo )
 		{
-			if ( pExtraItem->GetWeaponInfo()->m_bShowCharges )
+			if ( pInfo->m_bShowCharges )
 			{
 				wchar_t wszQuantity[ 12 ];
-				_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", pExtraItem->Clip1() );
+				V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pExtraItem->Clip1() );
 
 				surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );		
 				surface()->DrawSetTextFont( m_hDefaultSmallFont );	
@@ -1512,7 +1508,7 @@ void CASW_Hud_Master::PaintText()
 				surface()->DrawUnicodeString( wszQuantity );
 			}		
 
-			if ( pExtraItem->GetWeaponInfo()->m_bShowLocalPlayerHotkey )
+			if ( pInfo->m_bShowLocalPlayerHotkey )
 			{
 				// show hotkey for this marine's extra item
 				const char *pszKey = ASW_FindKeyBoundTo( "+grenade1" );
@@ -1578,7 +1574,7 @@ void CASW_Hud_Master::PaintText()
 			int w, t;
 
 			wchar_t wszQuantity[ 12 ];
-			V_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", pWeapon->Clip1() );
+			V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pWeapon->Clip1() );
 	
 			surface()->DrawSetTextColor( ( pWeapon == m_pLocalMarineActiveWeapon ) ? Color( 255, 255, 255, 255 ) : Color( 66, 142, 192, 255 ) );
 			surface()->DrawSetTextFont( m_hDefaultSmallFont );	
@@ -1670,7 +1666,7 @@ void CASW_Hud_Master::PaintText()
 					);
 
 			wchar_t wszHealth[ 6 ];
-			_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_nLocalMarineHealth );
+			V_snwprintf( wszHealth, ARRAYSIZE( wszHealth ), L"%d", m_nLocalMarineHealth );
 			surface()->DrawSetTextFont( m_hDefaultLargeFont );
 			surface()->DrawSetTextColor( m_MarinePortrait_health_counter_color );
 			surface()->DrawSetTextPos( m_nMarinePortrait_health_counter_x + m_nMarinePortrait_x,
@@ -1705,7 +1701,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 	if ( m_SquadMateInfo[ nPosition ].nClips > 5 )
 	{
 		static wchar_t wszBullets[ 6 ];
-		V_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_SquadMateInfo[ nPosition ].nClips );
+		V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"x%d", m_SquadMateInfo[ nPosition ].nClips );
 		surface()->DrawSetTextPos( x + m_nSquadMate_clips_x + m_nSquadMate_clips_w,
 			y + m_nSquadMate_clips_y );
 		surface()->DrawUnicodeString( wszBullets );
@@ -1719,7 +1715,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 		{
 			surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );
 			wchar_t wszQuantity[ 12 ];
-			V_snwprintf( wszQuantity, sizeof( wszQuantity ), L"x%d", m_SquadMateInfo[ nPosition ].nExtraItemQuantity );
+			V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", m_SquadMateInfo[ nPosition ].nExtraItemQuantity );
 			surface()->GetTextSize( m_hDefaultSmallFont, wszQuantity, w, t );
 			surface()->DrawSetTextPos( x + m_nSquadMate_ExtraItem_quantity_x - w,
 				y + m_nSquadMate_ExtraItem_quantity_y - t );
@@ -1751,7 +1747,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 	if ( rd_draw_marine_health_counter.GetBool() )
 	{
 		wchar_t wszHealth[ 6 ];
-		V_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_SquadMateInfo[ nPosition ].iHealth );
+		V_snwprintf( wszHealth, ARRAYSIZE( wszHealth ), L"%d", m_SquadMateInfo[ nPosition ].iHealth );
 
 		surface()->DrawSetTextFont( m_hDefaultSmallOutlineFont );
 		surface()->DrawSetTextColor( m_SquadMate_health_counter_color );
@@ -1793,7 +1789,7 @@ void CASW_Hud_Master::PaintDeathmatchFrags()
 		else
 		{
 			wchar_t wszFrags[8];
-			Q_snwprintf( wszFrags, sizeof( wszFrags ), L"%d", ASWDeathmatchMode()->GetFragCount( pMR ) );
+			Q_snwprintf( wszFrags, ARRAYSIZE( wszFrags ), L"%d", ASWDeathmatchMode()->GetFragCount( pMR ) );
 
 			surface()->DrawSetTextPos( x, YRES( 5 ) );
 			surface()->DrawSetTextColor( textColor );
@@ -1948,109 +1944,118 @@ void CASW_Hud_Master::StopItemFX( C_ASW_Marine *pMarine, float flDeleteTime, boo
 //-----------------------------------------------------------------------------
 void CASW_Hud_Master::MsgFunc_ASWOrderUseItemFX( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();	
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	int iOrderType = msg.ReadShort();
-	int iInventorySlot = msg.ReadShort();
-
-	Vector vecPosition;
-	vecPosition.x = msg.ReadFloat();
-	vecPosition.y = msg.ReadFloat();
-	vecPosition.z = msg.ReadFloat();
-
-	// loops through to see if we already have an order effect for this marine
-	StopItemFX( pMarine );
-
-	const char *pszClassName = NULL;
-
-	switch( iOrderType )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-	case ASW_USE_ORDER_WITH_ITEM:
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt); // turn iMarine ent index into the marine
+
+		int iOrderType = msg.ReadShort();
+		int iInventorySlot = msg.ReadShort();
+
+		Vector vecPosition;
+		vecPosition.x = msg.ReadFloat();
+		vecPosition.y = msg.ReadFloat();
+		vecPosition.z = msg.ReadFloat();
+
+		// loops through to see if we already have an order effect for this marine
+		StopItemFX(pMarine);
+
+		const char* pszClassName = NULL;
+
+		switch (iOrderType)
+		{
+		case ASW_USE_ORDER_WITH_ITEM:
 		{
 			// check we have an item in that slot
-			CASW_Weapon* pWeapon = pMarine->GetASWWeapon( iInventorySlot );
-			if ( !pWeapon || !pWeapon->GetWeaponInfo() || !pWeapon->GetWeaponInfo()->m_bOffhandActivate )
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(iInventorySlot);
+			if (!pWeapon || !pWeapon->GetWeaponInfo() || !pWeapon->GetWeaponInfo()->m_bOffhandActivate)
 				return;
 
 			pszClassName = pWeapon->GetClassname();
 		}
 		break;
 
-	case ASW_USE_ORDER_HACK:
+		case ASW_USE_ORDER_HACK:
 		{
 			pszClassName = "hacking_icon";	// no weapon class associated with this
 		}
 		break;
 
-	default:
+		default:
 		{
-			Assert( false ); // unspecified order type
+			Assert(false); // unspecified order type
 			return;
 		}
 		break;
-	}
-
-	CNewParticleEffect *pEffect = pMarine->ParticleProp()->Create( "order_use_item", PATTACH_ABSORIGIN );
-	if ( pEffect )
-	{
-		pMarine->ParticleProp()->AddControlPoint( pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN );
-		pEffect->SetControlPoint( 1, vecPosition + Vector( 0.0f, 0.0f, 5.0f ) );
-		for ( int i = 0; i < NUM_USE_ITEM_ORDER_CLASSES; i++ )
-		{
-			if ( pszUseItemOrderClasses[i] && !Q_strcmp (  pszUseItemOrderClasses[i]  ,  pszClassName )  )
-			{
-				pEffect->SetControlPoint( 2, Vector( i, 0, 0 ) );
-				break;
-			}
 		}
 
-		HotbarOrderEffectsList_t::IndexLocalType_t iIndex = m_hHotbarOrderEffects.AddToTail();
-		m_hHotbarOrderEffects[iIndex].iEffectID = iMarine;
-		m_hHotbarOrderEffects[iIndex].pEffect = pEffect;
+		CNewParticleEffect* pEffect = pMarine->ParticleProp()->Create("order_use_item", PATTACH_ABSORIGIN);
+		if (pEffect)
+		{
+			pMarine->ParticleProp()->AddControlPoint(pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN);
+			pEffect->SetControlPoint(1, vecPosition + Vector(0.0f, 0.0f, 5.0f));
+			for (int i = 0; i < NUM_USE_ITEM_ORDER_CLASSES; i++)
+			{
+				if (pszUseItemOrderClasses[i] && !Q_strcmp(pszUseItemOrderClasses[i], pszClassName))
+				{
+					pEffect->SetControlPoint(2, Vector(i, 0, 0));
+					break;
+				}
+			}
+
+			HotbarOrderEffectsList_t::IndexLocalType_t iIndex = m_hHotbarOrderEffects.AddToTail();
+			m_hHotbarOrderEffects[iIndex].iEffectID = iMarine;
+			m_hHotbarOrderEffects[iIndex].pEffect = pEffect;
+		}
 	}
 }
 
 void CASW_Hud_Master::MsgFunc_ASWOrderStopItemFX( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();	
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	bool bShouldDelay = msg.ReadOneBit() ? true : false;
-	bool bFailed = msg.ReadOneBit() ? true : false;
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt); // turn iMarine ent index into the marine
 
-	// loops through to see if we already have an order effect for this marine
-	if ( bFailed )
-		StopItemFX( pMarine, gpGlobals->curtime + 2.0f, true );
-	else if ( bShouldDelay )
-		StopItemFX( pMarine, gpGlobals->curtime + 2.0f );
-	else
-		StopItemFX( pMarine );
+		bool bShouldDelay = msg.ReadOneBit() ? true : false;
+		bool bFailed = msg.ReadOneBit() ? true : false;
+
+		// loops through to see if we already have an order effect for this marine
+		if (bFailed)
+			StopItemFX(pMarine, gpGlobals->curtime + 2.0f, true);
+		else if (bShouldDelay)
+			StopItemFX(pMarine, gpGlobals->curtime + 2.0f);
+		else
+			StopItemFX(pMarine);
+	}
 }
 
 // used by blink and assault jets when player tries to jump to a bad spot
 void CASW_Hud_Master::MsgFunc_ASWInvalidDesination( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();	
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecPosition;
-	vecPosition.x = msg.ReadFloat();
-	vecPosition.y = msg.ReadFloat();
-	vecPosition.z = msg.ReadFloat();
-	CNewParticleEffect *pEffect = pMarine->ParticleProp()->Create( "invalid_destination", PATTACH_ABSORIGIN );
-	if ( pEffect )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE)
 	{
-		pMarine->ParticleProp()->AddControlPoint( pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN );
-		pEffect->SetControlPoint( 1, vecPosition );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);	// turn iMarine ent index into the marine
+
+		Vector vecPosition;
+		vecPosition.x = msg.ReadFloat();
+		vecPosition.y = msg.ReadFloat();
+		vecPosition.z = msg.ReadFloat();
+		CNewParticleEffect* pEffect = pMarine->ParticleProp()->Create("invalid_destination", PATTACH_ABSORIGIN);
+		if (pEffect)
+		{
+			pMarine->ParticleProp()->AddControlPoint(pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN);
+			pEffect->SetControlPoint(1, vecPosition);
+		}
+		pMarine->EmitSound("ASW_Weapon.InvalidDestination");
 	}
-	pMarine->EmitSound( "ASW_Weapon.InvalidDestination" );
 }
 
 extern int g_asw_iPlayerListOpen;

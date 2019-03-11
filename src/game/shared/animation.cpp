@@ -982,7 +982,7 @@ const char *GetBodygroupPartName( CStudioHdr *pstudiohdr, int iGroup, int iPart 
 
 int FindBodygroupByName( CStudioHdr *pstudiohdr, const char *name )
 {
-	if ( !pstudiohdr )
+	if ( !pstudiohdr || !pstudiohdr->IsValid() )
 		return -1;
 
 	int group;

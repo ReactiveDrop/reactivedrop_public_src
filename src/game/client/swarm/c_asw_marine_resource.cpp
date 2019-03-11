@@ -102,7 +102,7 @@ C_ASW_Marine* C_ASW_Marine_Resource::GetMarineEntity()
 
 C_ASW_Player* C_ASW_Marine_Resource::GetCommander()
 {
-	return dynamic_cast<C_ASW_Player*>(m_Commander.Get());
+	return m_Commander.Get();
 }
 
 void C_ASW_Marine_Resource::GetDisplayName( char *pchDisplayName, int nMaxBytes )

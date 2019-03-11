@@ -264,6 +264,7 @@ CRopeKeyframe* CRopeKeyframe::CreateWithSecondPointDetached(
 	pRet->m_RopeLength = ropeLength;
 	pRet->m_Width = ropeWidth;
 	pRet->m_nSegments = clamp( numSegments, 2, ROPE_MAX_SEGMENTS );
+	pRet->Spawn();
 
 	return pRet;
 }
@@ -339,7 +340,7 @@ void CRopeKeyframe::Init()
 	SetLocalAngles( vec3_angle );
 	RecalculateLength();
 
-	m_nSegments = clamp( m_nSegments, 2, ROPE_MAX_SEGMENTS );
+	m_nSegments = clamp( m_nSegments.Get(), 2, ROPE_MAX_SEGMENTS );
 
 	UpdateBBox( true );
 

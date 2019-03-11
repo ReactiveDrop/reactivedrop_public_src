@@ -101,36 +101,36 @@ public:
 	// gets the in-game name of another user, returns NULL if that user doesn't exists
 	virtual const char *GetPlayerName(int trackerID)
 	{
-		// find the player by their friendsID
-		player_info_t pi;
-		for (int i = 0; i < engine->GetMaxClients(); i++)
-		{
-			if  (engine->GetPlayerInfo(i, &pi ))
-			{
-				if (pi.friendsID == (uint)trackerID)
-				{
-					return pi.name;
-				}
-			}
-		}
+		//// find the player by their friendsID
+		//player_info_t pi;
+		//for (int i = 0; i < engine->GetMaxClients(); i++)
+		//{
+		//	if  (engine->GetPlayerInfo(i, &pi ))
+		//	{
+		//		if (pi.friendsID == (uint)trackerID)
+		//		{
+		//			return pi.name;
+		//		}
+		//	}
+		//}
 
 		return NULL;
 	}
 
 	virtual const char *GetPlayerFriendsName(int trackerID)
 	{
-		// find the player by their friendsID
-		player_info_t pi;
-		for (int i = 0; i < engine->GetMaxClients(); i++)
-		{
-			if  (engine->GetPlayerInfo(i, &pi ))
-			{
-				if (pi.friendsID == (uint)trackerID)
-				{
-					return pi.friendsName;
-				}
-			}
-		}
+		//// find the player by their friendsID
+		//player_info_t pi;
+		//for (int i = 0; i < engine->GetMaxClients(); i++)
+		//{
+		//	if  (engine->GetPlayerInfo(i, &pi ))
+		//	{
+		//		if (pi.friendsID == (uint)trackerID)
+		//		{
+		//			return pi.friendsName;
+		//		}
+		//	}
+		//}
 
 		return NULL;
 	}

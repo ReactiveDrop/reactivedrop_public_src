@@ -260,7 +260,8 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 				return false;
 			}
 
-			bool bCanOffhand = pWeapon->GetWeaponInfo()->m_bOffhandActivate;
+			const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+			bool bCanOffhand = pWpnInfo && pWpnInfo->m_bOffhandActivate;
 
 			if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
 			{

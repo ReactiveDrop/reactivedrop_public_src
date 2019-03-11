@@ -591,6 +591,8 @@ void CASW_Deathmatch_Mode::GunGameDisable(bool enable_weapon_respawn_timer /*= t
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
+#pragma warning( push )
+#pragma warning( disable: 4706 )
 void CASW_Deathmatch_Mode::TeamDeathmatchEnable() 
 {
 	if ( IsInstagibEnabled() )
@@ -631,12 +633,12 @@ void CASW_Deathmatch_Mode::TeamDeathmatchEnable()
 	{
 		t3->AddSpawnpoint( p );
 	}
-
+#pragma warning( pop )
 	int count = 0;
 	// Move each player to a random team 
 	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
 	{
-		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+		CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 		if ( !pPlayer || !pPlayer->IsConnected() )
 			continue;
 		pPlayer->ChangeTeam( count % 2 ? TEAM_ALPHA : TEAM_BETA, false, true );
@@ -952,7 +954,7 @@ void CASW_Deathmatch_Mode::BroadcastLoadoutScreen()
 /*	// 2 ways of doing this, one is commented
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+		CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 		if ( !pPlayer || !pPlayer->IsConnected() )
 			continue;
 

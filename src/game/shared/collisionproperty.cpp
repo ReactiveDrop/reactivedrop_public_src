@@ -479,7 +479,7 @@ const matrix3x4_t *CCollisionProperty::GetRootParentToWorldTransform() const
 IClientUnknown* CCollisionProperty::GetIClientUnknown()
 {
 #ifdef CLIENT_DLL
-	return m_pOuter->GetIClientUnknown();
+	return ( m_pOuter != NULL ) ? m_pOuter->GetIClientUnknown() : NULL;
 #else
 	return NULL;
 #endif

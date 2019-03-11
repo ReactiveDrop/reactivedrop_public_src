@@ -2311,8 +2311,8 @@ void CClientLeafSystem::ComputeBounds( int nCount, RenderableInfo_t **ppRenderab
 			// depends on which, on change, doesn't call ClientLeafSystem::RenderableChanged().
 			Vector vecTestMins, vecTestMaxs;
 			CalcRenderableWorldSpaceAABB( pInfo->m_pRenderable, vecTestMins, vecTestMaxs );
-			Assert( VectorsAreEqual( vecTestMins, pInfo->m_vecAbsMins, 1e-3 ) );
-			Assert( VectorsAreEqual( vecTestMaxs, pInfo->m_vecAbsMaxs, 1e-3 ) );
+			AssertOnce( VectorsAreEqual( vecTestMins, pInfo->m_vecAbsMins, 1e-3 ) );
+			AssertOnce( VectorsAreEqual( vecTestMaxs, pInfo->m_vecAbsMaxs, 1e-3 ) );
 		}
 #endif
 

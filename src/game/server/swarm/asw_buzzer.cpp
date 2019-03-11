@@ -261,7 +261,7 @@ CASW_Buzzer::CASW_Buzzer()
 	m_bDoSwarmBehavior = true;
 	m_fNextPainSound = 0;
 	m_bHoldoutAlien = false;
-	m_flLastDamageTime = 0;
+	m_flLastMarineDamageTime = 0;
 	m_bFlammable = true;
 	m_bTeslable = true;
 	m_bFreezable = true;
@@ -411,7 +411,7 @@ void CASW_Buzzer::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 	if ( subInfo.GetDamage() >= 1.0 && !(subInfo.GetDamageType() & DMG_SHOCK ) )
 	{
-		if( !IsPlayer() || ( IsPlayer() && gpGlobals->maxClients > 1 ) )
+		if( !IsPlayer() || gpGlobals->maxClients > 1 )
 		{
 			// NPC's always bleed. Players only bleed in multiplayer.
 			SpawnBlood( ptr->endpos, vecDir, BloodColor(), subInfo.GetDamage() );// a little surface blood.
@@ -721,22 +721,22 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	m_LagCompensation.UndoLaggedPosition();
 
 	// scale damage based on weapons that specifically shoot flyers
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( info.GetAttacker() );
-		if ( pMarine )
+		pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		/*
+		CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
+		if ( pWeapon )
 		{
-			CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
-			if ( pWeapon )
-			{
-				float damage = tdInfo.GetDamage();
-				//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, damage, mod_damage_flyers );
-				tdInfo.SetDamage( damage );
-			}
+			float damage = tdInfo.GetDamage();
+			//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, damage, mod_damage_flyers );
+			tdInfo.SetDamage( damage );
 		}
+		*/
 	}
-	
-	
+
 	m_flWingFlapSpeed = 20.0;
 
 	Vector vecDamageDir = tdInfo.GetDamageForce();
@@ -767,7 +767,7 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (nRetVal > 0 &&
 			( ((info.GetDamageType() & DMG_BURN) || (info.GetDamageType() & DMG_BLAST)) && m_bFlammable )
 			)
-			ASW_Ignite(30.0f, 0, info.GetAttacker(), info.GetWeapon() );
+			ASW_Ignite(30.0f, 0, pAttacker, info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds
@@ -776,7 +776,6 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		ElectroStun( asw_stun_grenade_time.GetFloat() );
 	}
 
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
 	if (pMarine)
 		pMarine->HurtAlien(this, info);
 
@@ -1364,17 +1363,20 @@ void CASW_Buzzer::ComputeSliceBounceVelocity( CBaseEntity *pHitEntity, trace_t &
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr )
 {
+	if (!pHitEntity)
+		return;
+#if PLAYER_CHECKS
 	// Don't hurt the player if I'm in water
 	if( GetWaterLevel() > 0 && pHitEntity->IsPlayer() )
 		return;
-
+#endif
 	if ( pHitEntity->m_takedamage == DAMAGE_NO )
 		return;
 
 	// don't damage marines again so soon
-	if ( pHitEntity && pHitEntity->Classify() == CLASS_ASW_MARINE )
+	if ( pHitEntity->Classify() == CLASS_ASW_MARINE )
 	{
-		if ( ( gpGlobals->curtime - m_flLastDamageTime ) < sk_asw_buzzer_melee_interval.GetFloat() )
+		if ( ( gpGlobals->curtime - m_flLastMarineDamageTime ) < sk_asw_buzzer_melee_interval.GetFloat() )
 			return;
 	}
 
@@ -1453,7 +1455,7 @@ void CASW_Buzzer::Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 	ComputeSliceBounceVelocity( pHitEntity, tr );
 
 	// Save off when we last hit something
-	m_flLastDamageTime = gpGlobals->curtime;
+	m_flLastMarineDamageTime = gpGlobals->curtime;
 
 	// Reset our state and give the player time to react
 	StopBurst( true );
@@ -1795,50 +1797,50 @@ void CASW_Buzzer::MoveExecute_Alive(float flInterval)
 
 	CheckCollisions(flInterval);	
 
-	QAngle angles = GetLocalAngles();
-
-	// ------------------------------------------
-	//  Stalling
-	// ------------------------------------------
-	if (gpGlobals->curtime < m_flEngineStallTime)
-	{
-		/*
-		// If I'm stalled add random noise
-		angles.x += -20+(random->RandomInt(-10,10));
-		angles.z += -20+(random->RandomInt(0,40));
-
-		TurnHeadRandomly(flInterval);
-		*/
-	}
-	else
-	{
-		// Make frame rate independent
-		float	iRate	 = 0.5;
-		float timeToUse = flInterval;
-		while (timeToUse > 0)
-		{
-			m_vCurrentBanking.x = (iRate * m_vCurrentBanking.x) + (1 - iRate)*(m_vTargetBanking.x);
-			m_vCurrentBanking.z = (iRate * m_vCurrentBanking.z) + (1 - iRate)*(m_vTargetBanking.z);
-			timeToUse =- 0.1;
-		}
-		angles.x = m_vCurrentBanking.x;
-		angles.z = m_vCurrentBanking.z;
-		angles.y = 0;
-
-#if 0
-		// Using our steering if we're not otherwise affecting our panels
-		if ( m_flEngineStallTime < gpGlobals->curtime && m_flBurstDuration < gpGlobals->curtime )
-		{
-			Vector delta( 10 * AngleDiff( m_vTargetBanking.x, m_vCurrentBanking.x ), -10 * AngleDiff( m_vTargetBanking.z, m_vCurrentBanking.z ), 0 );
-			//Vector delta( 3 * AngleNormalize( m_vCurrentBanking.x ), -4 * AngleNormalize( m_vCurrentBanking.z ), 0 );
-			VectorYawRotate( delta, -m_fHeadYaw, delta );
-
-			// DevMsg("%.0f %.0f\n", delta.x, delta.y )
-		}
-#endif
-	}
-
-	// SetLocalAngles( angles );
+//	QAngle angles = GetLocalAngles();
+//
+//	// ------------------------------------------
+//	//  Stalling
+//	// ------------------------------------------
+//	if (gpGlobals->curtime < m_flEngineStallTime)
+//	{
+//		/*
+//		// If I'm stalled add random noise
+//		angles.x += -20+(random->RandomInt(-10,10));
+//		angles.z += -20+(random->RandomInt(0,40));
+//
+//		TurnHeadRandomly(flInterval);
+//		*/
+//	}
+//	else
+//	{
+//		// Make frame rate independent
+//		float	iRate	 = 0.5;
+//		float timeToUse = flInterval;
+//		while (timeToUse > 0)
+//		{
+//			m_vCurrentBanking.x = (iRate * m_vCurrentBanking.x) + (1 - iRate)*(m_vTargetBanking.x);
+//			m_vCurrentBanking.z = (iRate * m_vCurrentBanking.z) + (1 - iRate)*(m_vTargetBanking.z);
+//			timeToUse =- 0.1;
+//		}
+//		angles.x = m_vCurrentBanking.x;
+//		angles.z = m_vCurrentBanking.z;
+//		angles.y = 0;
+//
+//#if 0
+//		// Using our steering if we're not otherwise affecting our panels
+//		if ( m_flEngineStallTime < gpGlobals->curtime && m_flBurstDuration < gpGlobals->curtime )
+//		{
+//			Vector delta( 10 * AngleDiff( m_vTargetBanking.x, m_vCurrentBanking.x ), -10 * AngleDiff( m_vTargetBanking.z, m_vCurrentBanking.z ), 0 );
+//			//Vector delta( 3 * AngleNormalize( m_vCurrentBanking.x ), -4 * AngleNormalize( m_vCurrentBanking.z ), 0 );
+//			VectorYawRotate( delta, -m_fHeadYaw, delta );
+//
+//			// DevMsg("%.0f %.0f\n", delta.x, delta.y )
+//		}
+//#endif
+//	}
+//
+//	// SetLocalAngles( angles );
 
 	if( m_lifeState != LIFE_DEAD )
 	{
@@ -1950,13 +1952,13 @@ void CASW_Buzzer::MoveExecute_Dead(float flInterval)
 	// ----------------------
 	LimitSpeed( -1, ASW_BUZZER_MAX_SPEED * 2.0 );
 
-	QAngle angles = GetLocalAngles();
+	//QAngle angles = GetLocalAngles();
 
-	// ------------------------------------------
-	// If I'm dying, add random banking noise
-	// ------------------------------------------
-	angles.x += -20+(random->RandomInt(0,40));
-	angles.z += -20+(random->RandomInt(0,40));
+	//// ------------------------------------------
+	//// If I'm dying, add random banking noise
+	//// ------------------------------------------
+	//angles.x += -20+(random->RandomInt(0,40));
+	//angles.z += -20+(random->RandomInt(0,40));
 
 	CheckCollisions(flInterval);
 	PlayFlySound();
@@ -2010,12 +2012,12 @@ void CASW_Buzzer::GatherEnemyConditions( CBaseEntity *pEnemy )
 	// Don't bother with Z if the enemy is in a vehicle
 	float fl2DDist = 60.0f;
 	float flZDist = 12.0f;
-
+#if PLAYER_CHECKS
 	if ( GetEnemy()->IsPlayer() && assert_cast< CBasePlayer * >(GetEnemy())->IsInAVehicle() )
 	{
 		flZDist = 24.0f;
 	}
-
+#endif
 	if ((GetAbsOrigin() - pEnemy->GetAbsOrigin()).Length2D() > fl2DDist) 
 	{
 		SetCondition(COND_ASW_BUZZER_START_ATTACK);
@@ -2048,13 +2050,14 @@ int CASW_Buzzer::MeleeAttack1Conditions( float flDot, float flDist )
 
 	float flMaxDist = 45;
 	float flMinDist = 24;
+#if PLAYER_CHECKS
 	bool bEnemyInVehicle = GetEnemy()->IsPlayer() && assert_cast< CBasePlayer * >(GetEnemy())->IsInAVehicle();
 	if ( GetEnemy()->IsPlayer() && assert_cast< CBasePlayer * >(GetEnemy())->IsInAVehicle() )
 	{
 		flMinDist = 0;
 		flMaxDist = 200.0f;
 	}
-
+#endif
 	if (flDist > flMaxDist)
 	{
 		return COND_TOO_FAR_TO_ATTACK;
@@ -2066,13 +2069,13 @@ int CASW_Buzzer::MeleeAttack1Conditions( float flDot, float flDist )
 	}
 
 	// Check our current velocity and speed, if it's too far off, we need to settle
-
+#if PLAYER_CHECKS
 	// Don't bother with Z if the enemy is in a vehicle
 	if ( bEnemyInVehicle )
 	{
 		return COND_CAN_MELEE_ATTACK1;
 	}
-
+#endif
 	// Assume the this check is in regards to my current enemy
 	// for the Manhacks spetial condition
 	float deltaZ = GetAbsOrigin().z - GetEnemy()->EyePosition().z;
@@ -2691,7 +2694,7 @@ bool CASW_Buzzer::IsInEffectiveTargetZone( CBaseEntity *pTarget )
 {
 	Vector	vecMaxPos, vecMinPos;
 	float	ourHeight = WorldSpaceCenter().z;
-
+#if PLAYER_CHECKS
 	// If the enemy is in a vehicle, we need to get those bounds
 	if ( pTarget && pTarget->IsPlayer() && assert_cast< CBasePlayer * >(pTarget)->IsInAVehicle() )
 	{
@@ -2704,7 +2707,7 @@ bool CASW_Buzzer::IsInEffectiveTargetZone( CBaseEntity *pTarget )
 
 		return false;
 	}
-	
+#endif	
 	// Get the enemies top and bottom point
 	pTarget->CollisionProp()->NormalizedToWorldSpace( Vector(0.0f,0.0f,1.0f), &vecMaxPos );
 	pTarget->CollisionProp()->NormalizedToWorldSpace( Vector(0.0f,0.0f,0.0f), &vecMinPos );
@@ -2724,6 +2727,7 @@ bool CASW_Buzzer::IsInEffectiveTargetZone( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition )
 {
+#if PLAYER_CHECKS
 	if ( pEnemy && pEnemy->IsPlayer() && assert_cast< CBasePlayer * >(pEnemy)->IsInAVehicle() )
 	{
 		Vector vecNewPos;
@@ -2732,6 +2736,7 @@ void CASW_Buzzer::TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition )
 		chasePosition.z = vecNewPos.z;
 	}
 	else
+#endif
 	{
 		Vector vecTarget;
 		pEnemy->CollisionProp()->NormalizedToCollisionSpace( Vector(0,0,0.75f), &vecTarget );
@@ -2910,12 +2915,13 @@ void CASW_Buzzer::OnSwarmSensed(int iDistance)
 
 	while( pSenseEnt )
 	{
+#if PLAYER_CHECKS
 		if ( pSenseEnt->IsPlayer() )
 		{
 			// if we see a client, remember that (mostly for scripted AI)
 			//SetCondition(COND_SEE_PLAYER);
 		}
-
+#endif
 		Disposition_t relation = IRelationType( pSenseEnt );
 
 		// the looker will want to consider this entity
@@ -3322,7 +3328,7 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 	if (GetSleepState() > AISS_AWAKE)		// buzzer is asleep, check for marines getting near to wake us up
 	{
 		// wake up if we have a script to run
-		if (m_hCine != NULL && GetSleepState() > AISS_AWAKE)
+		if ( m_hCine != NULL )
 		{
 			Wake();
 			VPhysicsGetObject()->Wake();
@@ -3334,7 +3340,7 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 		else
 			ClearCondition(COND_IN_PVS);
 
-		if (GetSleepState() > AISS_AWAKE && GetSleepState() != AISS_WAITING_FOR_INPUT)
+		if ( GetSleepState() != AISS_WAITING_FOR_INPUT )
 		{
 			if (bInPVS)
 			{

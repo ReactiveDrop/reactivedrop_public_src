@@ -450,9 +450,9 @@ void InGameMainMenu::OnThink()
 	IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
 	KeyValues *pGameSettings = pIMatchSession ? pIMatchSession->GetSessionSettings() : NULL;
 	
-	char const *szNetwork = pGameSettings->GetString( "system/network", "offline" );
-	char const *szGameMode = pGameSettings->GetString( "game/mode", "campaign" );
-	char const *szGameState = pGameSettings->GetString( "game/state", "lobby" );
+	char const *szNetwork = pGameSettings ? pGameSettings->GetString( "system/network", "offline" ) : "";
+	char const *szGameMode = pGameSettings ? pGameSettings->GetString( "game/mode", "campaign" ) : "";
+	char const *szGameState = pGameSettings ? pGameSettings->GetString( "game/state", "lobby" ) : "";
 
 	bool bCanInvite = !Q_stricmp( "LIVE", szNetwork );
 	bool bInFinale = !Q_stricmp( "finale", szGameState );
@@ -558,30 +558,39 @@ void InGameMainMenu::PerformLayout( void )
 	IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
 	KeyValues *pGameSettings = pIMatchSession ? pIMatchSession->GetSessionSettings() : NULL;
 
-	char const *szNetwork = pGameSettings->GetString( "system/network", "offline" );
-
-	bool bPlayOffline = !Q_stricmp( "offline", szNetwork );
-
-	bool bInCommentary = engine->IsInCommentaryMode();
-
-	bool bCanInvite = !Q_stricmp( "LIVE", szNetwork );
-	SetControlEnabled( "BtnInviteFriends", bCanInvite );
-
+	bool bPlayOffline;
 	bool bCanVote = true;
-
-	if ( bInCommentary )
+	if (pGameSettings)
 	{
-		bCanVote = false;
+		char const *szNetwork = pGameSettings->GetString("system/network", "offline");
+
+		bPlayOffline = !Q_stricmp( "offline", szNetwork );
+
+		bool bInCommentary = engine->IsInCommentaryMode();
+
+		bool bCanInvite = !Q_stricmp("LIVE", szNetwork);
+		SetControlEnabled("BtnInviteFriends", bCanInvite);
+
+		if (bInCommentary)
+		{
+			bCanVote = false;
+		}
+
+		if (gpGlobals->maxClients <= 1)
+		{
+			bCanVote = false;
+		}
+
+		// Do not allow voting in credits map
+		if (!Q_stricmp(pGameSettings->GetString("game/campaign"), "credits"))
+		{
+			bCanVote = false;
+		}
 	}
-
-	if ( gpGlobals->maxClients <= 1 )
+	else
 	{
-		bCanVote = false;
-	}
-
-	// Do not allow voting in credits map
-	if ( !Q_stricmp( pGameSettings->GetString( "game/campaign" ), "credits" ) )
-	{
+		bPlayOffline = true;
+		SetControlEnabled("BtnInviteFriends", false);
 		bCanVote = false;
 	}
 

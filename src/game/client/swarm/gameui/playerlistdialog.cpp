@@ -214,7 +214,7 @@ void CPlayerListDialog::OnItemSelected()
 
 		int iLocalPlayer = engine->GetLocalPlayer();
 
-		int iPlayerIndex = data->GetInt("index");		
+		int iPlayerIndex = data ? data->GetInt("index"): 0 ;		
 		bool isValidPlayer = engine->GetPlayerInfo( iPlayerIndex, &pi );
 
 		// make sure the player is not a bot, or the user 

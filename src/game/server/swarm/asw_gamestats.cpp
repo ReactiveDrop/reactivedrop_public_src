@@ -118,7 +118,9 @@ void CASWGameStats::Event_MarineTookDamage( CASW_Marine *pMarine, const CTakeDam
 	WEAPON_INIT;
 
 	int nHits = 1;
-	if ( dynamic_cast<CASW_Burning *>( info.GetInflictor() ) )
+	
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
 	{
 		nHits = 0;
 	}
@@ -146,31 +148,45 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 	WEAPON_INIT;
 
 	int nHits = 1;
-	if ( dynamic_cast<CASW_Burning *>( info.GetInflictor() ) )
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
 	{
 		nHits = 0;
 	}
 	else if ( info.GetDamageType() & DMG_BURN )
 	{
-		CASW_Alien *pBaseAlien = dynamic_cast<CASW_Alien *>( pAlien );
-		CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer *>( pAlien );
-		if ( pBaseAlien && pBaseAlien->m_bFlammable )
+		if ( pAlien )
 		{
-			if ( asw_stats_verbose.GetBool() )
-			{
-				DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
-			}
+			CASW_Alien* pBaseAlien = NULL;
+			CASW_Buzzer* pBuzzer = NULL;
 
-			pMR->m_iAliensBurned++;
-		}
-		else if ( pBuzzer && pBuzzer->m_bFlammable )
-		{
-			if ( asw_stats_verbose.GetBool() )
+			if ( pAlien->IsAlienClassType() )
 			{
-				DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
-			}
+				pBaseAlien = assert_cast<CASW_Alien*>(pAlien);
 
-			pMR->m_iAliensBurned++;
+				if ( pBaseAlien->m_bFlammable )
+				{
+					if ( asw_stats_verbose.GetBool() )
+					{
+						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
+					}
+
+					pMR->m_iAliensBurned++;
+				}
+			}
+			else if ( pAlien->Classify() == CLASS_ASW_BUZZER )
+			{
+				pBuzzer = assert_cast<CASW_Buzzer*>(pAlien);
+				if ( pBuzzer->m_bFlammable )
+				{
+					if ( asw_stats_verbose.GetBool() )
+					{
+						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
+					}
+
+					pMR->m_iAliensBurned++;
+				}
+			}
 		}
 	}
 

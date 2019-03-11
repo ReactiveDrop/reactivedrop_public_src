@@ -326,7 +326,6 @@ public:
 	void ReportNeedTwoPlayers();
 
 	bool m_bCheckAllPlayersLeft;
-	float m_fEmptyServerTime;	
 
 	// stepped launching
 	virtual void UpdateLaunching();

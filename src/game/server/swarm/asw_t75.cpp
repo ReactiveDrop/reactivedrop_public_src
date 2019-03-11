@@ -133,11 +133,16 @@ void CASW_T75::Explode()
 	UTIL_ASW_GrenadeExplosion( GetAbsOrigin(), m_flDamageRadius );
 
 	int iPreExplosionKills = 0;
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pOwner = GetOwnerEntity();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>( pOwner );
+
 	if (pMarine && pMarine->GetMarineResource())
 		iPreExplosionKills = pMarine->GetMarineResource()->m_iAliensKilled;
 
-	ASWGameRules()->RadiusDamage ( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, NULL );
+	ASWGameRules()->RadiusDamage ( CTakeDamageInfo( this, pOwner, m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, NULL );
 
 	if (pMarine && pMarine->GetMarineResource())
 	{

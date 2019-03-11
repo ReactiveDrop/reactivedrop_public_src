@@ -210,14 +210,16 @@ void CASW_Queen_Grabber::UpdateChasing()
 	if (!GetQueen())
 		return;
 
-	if (!GetQueenEnemy() || (m_fMaxChasingTime != 0 && gpGlobals->curtime > m_fMaxChasingTime))
+	CBaseEntity* pQueenEnemy = GetQueenEnemy();
+
+	if (!pQueenEnemy || (m_fMaxChasingTime != 0 && gpGlobals->curtime > m_fMaxChasingTime))
 	{
 		//Msg("Killing diver because we lost queen enemy\n");
 		GetQueen()->NotifyGrabberKilled(this);	// will change us to retracting
 		return;
 	}
 
-	Vector vecTowardsEnemy = GetQueenEnemy()->GetAbsOrigin() - GetAbsOrigin();
+	Vector vecTowardsEnemy = pQueenEnemy->GetAbsOrigin() - GetAbsOrigin();
 	// if enemy is too high up, abort
 	if (vecTowardsEnemy.z > 60 && vecTowardsEnemy.Length2D() < 200)
 	{
@@ -229,16 +231,16 @@ void CASW_Queen_Grabber::UpdateChasing()
 	float dist = vecTowardsEnemy.Length2D();
 	vecTowardsEnemy.NormalizeInPlace();
 
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetQueenEnemy());
-	if (pMarine)
+	if ( pQueenEnemy->Classify() == CLASS_ASW_MARINE )
 	{
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pQueenEnemy);
 		if (dist < ASW_GRAB_DISTANCE)
 		{
 			// we're close enough, grab him!
 			GetQueen()->SetDiverState(ASW_QUEEN_DIVER_GRABBING);
 			// move ourselves slightly away from him and facing him			
 			SetAbsAngles(QAngle(0, random->RandomInt(0,360), 0));
-			if (PositionToGrab(GetQueenEnemy()))
+			if (PositionToGrab(pQueenEnemy))
 			{
 				CreatePeers();
 				StartGrabbing();

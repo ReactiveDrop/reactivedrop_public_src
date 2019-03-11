@@ -88,13 +88,18 @@ void CASW_Grenade_PRifle::Detonate()
 
 	int nPreviousStunnedAliens = ASWGameResource()->m_iElectroStunnedAliens;
 
+	CBaseEntity* pOwnerEnt = GetOwnerEntity();
+
 	// do just 1 damage...
-	CTakeDamageInfo info( this, GetOwnerEntity(), 1, DMG_SHOCK );
+	CTakeDamageInfo info( this, pOwnerEnt, 1, DMG_SHOCK );
 	info.SetWeapon( m_hCreatorWeapon );
 	RadiusDamage ( info , GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
 	// count as a shot fired
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+	CASW_Marine* pMarine = NULL;
+	if ( pOwnerEnt && pOwnerEnt->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>( pOwnerEnt );
+
 	if ( pMarine && pMarine->GetMarineResource() )
 	{
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();

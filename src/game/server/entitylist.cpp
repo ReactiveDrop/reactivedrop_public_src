@@ -220,6 +220,8 @@ public:
 				Assert(m_simThinkList[i].nextThinkTick>=0);
 				int entinfoIndex = m_simThinkList[i].entEntry;
 				const CEntInfo *pInfo = gEntList.GetEntInfoPtrByIndex( entinfoIndex );
+				if ( !pInfo->m_pEntity )
+					continue;
 				pList[out] = (CBaseEntity *)pInfo->m_pEntity;
 				Assert(m_simThinkList[i].nextThinkTick==0 || pList[out]->GetFirstThinkTick()==m_simThinkList[i].nextThinkTick);
 				Assert( gEntList.IsEntityPtr( pList[out] ) );
@@ -1640,6 +1642,11 @@ public:
 		m_updateList.AddToTail( pEntity );
 	}
 
+	void RemoveEntity( CBaseEntity *pEntity )
+	{
+		m_updateList.FindAndFastRemove( pEntity );
+	}
+
 private:
 	CUtlVector<CBaseEntity *>	m_updateList;
 };
@@ -1651,6 +1658,10 @@ void EntityTouch_Add( CBaseEntity *pEntity )
 	g_TouchManager.AddEntity( pEntity );
 }
 
+void EntityTouch_Remove( CBaseEntity *pEntity )
+{
+	g_TouchManager.RemoveEntity( pEntity );
+}
 
 void CEntityTouchManager::FrameUpdatePostEntityThink()
 {

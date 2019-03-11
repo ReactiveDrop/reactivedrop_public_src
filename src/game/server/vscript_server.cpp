@@ -939,7 +939,7 @@ static void Script_ScreenShake( const Vector &center, float amplitude, float fre
 static void Script_ScreenFade( HSCRIPT hEntity, int r, int g, int b, int a, float fadeTime, float fadeHold, int flags )
 {
 	CBaseEntity *pEntity = ToEnt(hEntity);
-	color32 color = { r, g, b, a };
+	color32 color = { (byte)r, (byte)g, (byte)b, (byte)a };
 
 	if ( pEntity )
 		UTIL_ScreenFade( pEntity, color, fadeTime, fadeHold, flags );
@@ -1222,10 +1222,13 @@ bool VScriptServerReplaceClosures( const char *pszScriptName, HSCRIPT hScope, bo
 	HSCRIPT hNewScript =  VScriptCompileScript( pszScriptName, bWarnMissing );
 	if ( !hNewScript )
 	{
+		g_pScriptVM->ReleaseFunction( hReplaceClosuresFunc );
 		return false;
 	}
 
 	g_pScriptVM->Call( hReplaceClosuresFunc, NULL, true, NULL, hNewScript, hScope );
+	g_pScriptVM->ReleaseFunction( hReplaceClosuresFunc );
+	g_pScriptVM->ReleaseScript( hNewScript );
 	return true;
 }
 

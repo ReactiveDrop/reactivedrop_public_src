@@ -41,6 +41,8 @@ void CASW_Sentry_Top_Machinegun::Spawn( void )
 	{
 		m_bHasHysteresis = true;
 	}
+
+	m_flFireHysteresisTime = gpGlobals->curtime;
 }
 
 void CASW_Sentry_Top_Machinegun::SetTopModel()

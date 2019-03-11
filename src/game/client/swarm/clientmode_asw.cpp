@@ -881,6 +881,8 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 			pPlayer->OnMissionRestart();
 		}
 
+		// Remove any left over particle effects
+		ParticleMgr()->SetRemoveAllParticleEffects();
 	}
 	else if ( Q_strcmp( "game_newmap", eventname ) == 0 )
 	{

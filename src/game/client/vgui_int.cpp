@@ -11,7 +11,7 @@
 #include "vguicenterprint.h"
 #include "iloadingdisc.h"
 #include "ifpspanel.h"
-#include "imessagechars.h"
+//#include "imessagechars.h"
 #include "inetgraphpanel.h"
 #include "idebugoverlaypanel.h"
 #include <vgui/isurface.h>
@@ -443,7 +443,7 @@ void VGui_CreateGlobalPanels( void )
 		GetCenterPrint()->Create( root );
 	}
 	loadingdisc->Create( gameToolParent );
-	messagechars->Create( gameToolParent );
+	//messagechars->Create( gameToolParent );
 
 	// Debugging or related tool
 	fps->Create( toolParent );
@@ -472,7 +472,7 @@ void VGui_Shutdown()
 #endif
 	fps->Destroy();
 
-	messagechars->Destroy();
+	//messagechars->Destroy();
 	loadingdisc->Destroy();
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{

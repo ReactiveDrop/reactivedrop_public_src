@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Functions and data pertaining to the NPCs' AI scheduling system.
 //			Implements default NPC tasks and schedules.
@@ -2139,7 +2139,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 			case PATH_COVER:	//Get a path to cover FROM our goal
 				{
-					CBaseEntity *pEntity = ( m_hStoredPathTarget == NULL ) ? this : m_hStoredPathTarget;
+					CBaseEntity *pEntity = ( m_hStoredPathTarget == NULL ) ? this : m_hStoredPathTarget.Get();
 
 					//Find later cover first
 					Vector coverPos;
@@ -2322,7 +2322,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 				{
 					// The gun is too far away from its nearest node on the Z axis.
 					TaskFail( "Target not within Z_LENIENCY!\n");
-					CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>( m_hTargetEnt.Get() );
+					CBaseCombatWeapon *pWeapon = ToBaseCombatWeapon( m_hTargetEnt.Get() );
 					if( pWeapon )
 					{
 						// Lock this weapon for a long time so no one else tries to get it.
@@ -2341,7 +2341,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 					if( flDistXY > XY_LENIENCY )
 					{
 						TaskFail( "Target not within XY_LENIENCY!\n" );
-						CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>( m_hTargetEnt.Get() );
+						CBaseCombatWeapon *pWeapon = ToBaseCombatWeapon( m_hTargetEnt.Get() );
 						if( pWeapon )
 						{
 							// Lock this weapon for a long time so no one else tries to get it.
@@ -2364,7 +2364,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 				if( !bHasPath )
 				{
-					CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>( m_hTargetEnt.Get() );
+					CBaseCombatWeapon *pWeapon = ToBaseCombatWeapon( m_hTargetEnt.Get() );
 					if( pWeapon )
 					{
 						// Lock this weapon for a long time so no one else tries to get it.
@@ -3031,7 +3031,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 			if( GetTarget() )
 			{
-				CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>(GetTarget());
+				CBaseCombatWeapon *pWeapon = ToBaseCombatWeapon(GetTarget());
 				if( pWeapon )
 				{
 					if( Weapon_IsOnGround( pWeapon ) )
@@ -3058,7 +3058,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 			if( !GetActiveWeapon() && GetTarget() )
 			{
 				// Create a copy of the weapon this NPC is trying to pick up.
-				CBaseCombatWeapon *pTargetWeapon = dynamic_cast<CBaseCombatWeapon*>(GetTarget());
+				CBaseCombatWeapon *pTargetWeapon = ToBaseCombatWeapon(GetTarget());
 
 				if( pTargetWeapon )
 				{
@@ -4130,7 +4130,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 		{
 			if ( IsActivityFinished() )
 			{
-				CBaseCombatWeapon	 *pWeapon = dynamic_cast<CBaseCombatWeapon *>(	(CBaseEntity *)m_hTargetEnt);
+				CBaseCombatWeapon	 *pWeapon = ToBaseCombatWeapon(	(CBaseEntity *)m_hTargetEnt);
 				CBaseCombatCharacter *pOwner  = pWeapon->GetOwner();
 				if ( !pOwner )
 				{

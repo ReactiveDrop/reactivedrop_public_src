@@ -995,7 +995,7 @@ public:
 	void				SetIdealActivity( Activity NewActivity );
 	void				SetIdealSequence( int iSequence, bool bReset = false ) { if ( bReset ) ResetIdealActivity( ACT_SPECIFIC_SEQUENCE ); else SetIdealActivity( ACT_SPECIFIC_SEQUENCE ); m_nIdealSequence = iSequence; }
 	void				ResetIdealActivity( Activity newIdealActivity );
-	void				SetSequenceByName( char *szSequence );
+	void				SetSequenceByName( const char *szSequence );
 	void				SetSequenceById( int iSequence );
 	Activity			GetScriptCustomMoveActivity( void );
 	int					GetScriptCustomMoveSequence( void );

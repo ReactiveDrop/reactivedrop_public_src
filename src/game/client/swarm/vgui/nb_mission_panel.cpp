@@ -143,7 +143,7 @@ void CNB_Mission_Panel::OnThink()
 		wchar_t wszMissionTitle[ 128 ];
 		if ( pMap->m_szMissionTitle[0] == '#' )
 		{
-			_snwprintf( wszMissionTitle, sizeof( wszMissionTitle ), L"%s", g_pVGuiLocalize->FindSafe( pMap->m_szMissionTitle ) );
+			V_snwprintf( wszMissionTitle, ARRAYSIZE( wszMissionTitle ), L"%s", g_pVGuiLocalize->FindSafe( pMap->m_szMissionTitle ) );
 		}
 		else
 		{

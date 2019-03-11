@@ -18,7 +18,7 @@ END_RECV_TABLE()
 C_ASW_Emitter::C_ASW_Emitter()
 {
 	m_fScale = 1.0f;
-	m_fDieTime = false;
+	m_fDieTime = 0.0f;
 
 	m_hClientAttach = NULL;
 	m_szAttach[0] = 0;

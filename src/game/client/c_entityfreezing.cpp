@@ -58,7 +58,7 @@ void C_EntityFreezing::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 	else
 	{
 		theMins = GetAbsOrigin();
-		theMaxs = theMaxs;
+		theMaxs = theMins;
 	}
 }
 

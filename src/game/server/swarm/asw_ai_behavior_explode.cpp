@@ -353,7 +353,7 @@ void CAI_ASW_ExplodeBehavior::DoExplosion( )
 {
 	m_ExplodeType = EXPLODE_TYPE_EXPLODED;		// prevent recursion
 
-	Vector	vPosition = GetAbsOrigin();
+	//Vector	vPosition = GetAbsOrigin();
 	int		*pnAvailList = ( int * )stackalloc( sizeof( int ) * m_nAttachCount );
 	int		nNumAvail = -1;
 

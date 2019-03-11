@@ -106,10 +106,16 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pOwner || !pMarine )
 		return false;
-	
-	CASW_Marine* pTargetMarine = dynamic_cast< CASW_Marine* >( pOwner->GetHighlightEntity() );
-	if ( !pTargetMarine )
+
+	CBaseEntity* pHighlighted = pOwner->GetHighlightEntity();
+
+	if ( !pHighlighted )
 		return false;
+
+	if ( pHighlighted->Classify() != CLASS_ASW_MARINE )
+		return false;
+
+	CASW_Marine* pTargetMarine = assert_cast< CASW_Marine* >(pHighlighted);
 
 	GiveHealthTo( pTargetMarine );
 #else
@@ -202,7 +208,7 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 		if ( diff.Length() > MAX_HEAL_DISTANCE_SERVER )	// add a bit of leeway to account for lag
 			return;
 
-		bool bMedic = pMarine && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid();
+		bool bMedic = pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid();
 
 		//pMarine->DoAnimationEvent(PLAYERANIMEVENT_HEAL);
 		WeaponSound(SINGLE);
@@ -332,17 +338,22 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 			return 0;
 
 		int iMeds = 0;
-		CASW_Weapon_Medical_Satchel* pSatchel = dynamic_cast<CASW_Weapon_Medical_Satchel*>(pMarine->GetWeapon(0));
-		if (pSatchel)
-		{
-			iMeds += pSatchel->Clip1();
-		}
 
-		pSatchel = dynamic_cast<CASW_Weapon_Medical_Satchel*>(pMarine->GetWeapon(1));
-		if (pSatchel)
-		{
+		CASW_Weapon_Medical_Satchel* pSatchel = NULL;
+		CBaseCombatWeapon* pBCW = pMarine->GetWeapon(0);
+		if ( pBCW && pBCW->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
+			pSatchel = assert_cast<CASW_Weapon_Medical_Satchel*>(pBCW);
+
+		if ( pSatchel )
 			iMeds += pSatchel->Clip1();
-		}
+
+		pBCW = pMarine->GetWeapon(1);
+		if ( pBCW && pBCW->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
+			pSatchel = assert_cast<CASW_Weapon_Medical_Satchel*>(pBCW);
+
+		if ( pSatchel )
+			iMeds += pSatchel->Clip1();
+
 		return iMeds;
 	}
 

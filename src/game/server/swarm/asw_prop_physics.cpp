@@ -66,15 +66,14 @@ void CASW_Prop_Physics::Ignite( float flFlameLifetime, bool bNPCOnly, float flSi
 
 int CASW_Prop_Physics::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 {
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(inputInfo.GetAttacker());
+	CASW_Marine* pMarine = NULL;
 
 	// check for notifying a marine that he's shooting a breakable prop
-	if ( inputInfo.GetAttacker() && inputInfo.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	CBaseEntity* pAttacker = inputInfo.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		if ( pMarine )
-		{
-			pMarine->HurtJunkItem(this, inputInfo);
-		}
+		pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		pMarine->HurtJunkItem(this, inputInfo);
 	}
 
 	if ( m_bBulletForceImmune )

@@ -446,16 +446,19 @@ void GenericConfirmation::LoadLayout()
 			if ( bSingleButton )
 			{
 				// center the button
-				pButton->SetPos( ( dialogWidth - pButton->GetWide() )/2, dialogHeight - borderGap - buttonTall );
+				if ( pButton )
+					pButton->SetPos( ( dialogWidth - pButton->GetWide() )/2, dialogHeight - borderGap - buttonTall );
 			}
 			else
 			{
 				//if( dialogWidth <= minWidth )
 				{
 					// center left the OK
-					pOkButton->SetPos( dialogWidth/2 - buttonWide - borderGap/2, dialogHeight - borderGap - buttonTall );
+					if ( pOkButton )
+						pOkButton->SetPos( dialogWidth/2 - buttonWide - borderGap/2, dialogHeight - borderGap - buttonTall );
 					// center right the CANCEL
-					pCancelButton->SetPos( dialogWidth/2 + borderGap/2, dialogHeight - borderGap - buttonTall );
+					if ( pCancelButton )
+						pCancelButton->SetPos( dialogWidth/2 + borderGap/2, dialogHeight - borderGap - buttonTall );
 				}
 // 				else
 // 				{

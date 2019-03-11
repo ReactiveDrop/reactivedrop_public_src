@@ -75,11 +75,16 @@ CASW_Hack_Wire_Tile::CASW_Hack_Wire_Tile()
 
 bool CASW_Hack_Wire_Tile::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHackingMarine, CBaseEntity* pHackTarget)
 {
-	CASW_Button_Area *pButton = dynamic_cast<CASW_Button_Area*>(pHackTarget);
-	if (!pHackingPlayer || !pHackingMarine || !pButton || !pHackingMarine->GetMarineResource())
-	{
+	if ( !pHackTarget )
 		return false;
-	}
+
+	if ( pHackTarget->Classify() != CLASS_ASW_BUTTON_PANEL )
+		return false;
+
+	if ( !pHackingPlayer || !pHackingMarine || !pHackingMarine->GetMarineResource() )
+		return false;
+
+	CASW_Button_Area* pButton = assert_cast<CASW_Button_Area*>(pHackTarget);
 
 	if (!m_bSetupPuzzle)
 	{
@@ -114,9 +119,16 @@ ConVar asw_hacking_fraction( "asw_hacking_fraction", "0.1f", FCVAR_CHEAT );
 
 void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine,  CUserCmd *ucmd, float fDeltaTime)
 {	
-	CBaseEntity *pEnt = m_hHackTarget;
-	CASW_Button_Area *pButton = dynamic_cast<CASW_Button_Area*>( pEnt );
-	if ( !pButton || !pButton->m_bIsInUse )
+	CBaseEntity* pHackTarget = m_hHackTarget.Get();
+
+	if ( !pHackTarget )
+		return;
+
+	if ( pHackTarget->Classify() != CLASS_ASW_BUTTON_PANEL )
+		return;
+
+	CASW_Button_Area *pButton = assert_cast<CASW_Button_Area*>(pHackTarget);
+	if ( !pButton->m_bIsInUse )
 		return;
 
 	int iHackLevel = pButton->m_iHackLevel;
@@ -540,23 +552,26 @@ void CASW_Hack_Wire_Tile::SelectHackOption(int i)
 		UpdateLitTiles(3);
 		UpdateLitTiles(4);
 
-		CASW_Button_Area *pButton = dynamic_cast<CASW_Button_Area*>(GetHackTarget());
-		if (pButton)
+		CBaseEntity* pHackTarget = GetHackTarget();
+		if ( pHackTarget && pHackTarget->Classify() == CLASS_ASW_BUTTON_PANEL )
 		{
+			CASW_Button_Area* pButton = assert_cast<CASW_Button_Area*>(pHackTarget);
+
 			if (pButton->m_fStartedHackTime == 0)
 			{
 				pButton->m_fStartedHackTime = gpGlobals->curtime;
-				
+
 				float fSpeedScale = 1.0f;
-				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(m_hHackingMarine.Get());
-				if (pMarine)
+				if ( m_hHackingMarine.Get() && m_hHackingMarine.Get()->Classify() == CLASS_ASW_MARINE )
+				{
+					CASW_Marine* pMarine = assert_cast<CASW_Marine*>( m_hHackingMarine.Get() );
 					fSpeedScale *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
+				}
 				float fTimeTaken = UTIL_ASW_CalcFastDoorHackTime(pButton->m_iWireRows, pButton->m_iWireColumns, pButton->m_iNumWires, pButton->m_iHackLevel, fSpeedScale);
 				// notify client of when it should finish, to be a fast hack
 				m_fFastFinishTime = gpGlobals->curtime + fTimeTaken;
 			}
 		}
-		
 	}
 }
 

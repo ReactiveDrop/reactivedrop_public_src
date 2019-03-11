@@ -151,7 +151,7 @@ void ForceReadyPanel::OnThink()
 	else
 	{
 		wchar_t wszNum[ 6 ];
-		V_snwprintf( wszNum, sizeof( wszNum ), L"%i", nTimeTillForceReady );
+		V_snwprintf( wszNum, ARRAYSIZE( wszNum ), L"%i", nTimeTillForceReady );
 
 		wchar_t wszReadyText[ 64 ];
 		g_pVGuiLocalize->ConstructString( wszReadyText, sizeof( wszReadyText ), g_pVGuiLocalize->Find( "#asw_force_ready_delayed" ), 1, wszNum );

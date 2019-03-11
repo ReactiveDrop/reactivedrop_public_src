@@ -1924,7 +1924,7 @@ void C_BasePlayer::PreThink( void )
 
 	UpdateClientData();
 
-	UpdateUnderwaterState();
+	//UpdateUnderwaterState();
 
 	// Update the player's fog data if necessary.
 	UpdateFogController();
@@ -1932,13 +1932,13 @@ void C_BasePlayer::PreThink( void )
 	if (m_lifeState >= LIFE_DYING)
 		return;
 
-	//
-	// If we're not on the ground, we're falling. Update our falling velocity.
-	//
-	if ( !( GetFlags() & FL_ONGROUND ) )
-	{
-		m_Local.m_flFallVelocity = -GetAbsVelocity().z;
-	}
+	////
+	//// If we're not on the ground, we're falling. Update our falling velocity.
+	////
+	//if ( !( GetFlags() & FL_ONGROUND ) )
+	//{
+	//	m_Local.m_flFallVelocity = -GetAbsVelocity().z;
+	//}
 #endif
 }
 
@@ -1949,7 +1949,7 @@ void C_BasePlayer::PostThink( void )
 
 	if ( IsAlive())
 	{
-		UpdateCollisionBounds();
+		//UpdateCollisionBounds();
 
 		if ( !CommentaryModeShouldSwallowInput( this ) )
 		{
@@ -1957,10 +1957,10 @@ void C_BasePlayer::PostThink( void )
 			ItemPostFrame();
 		}
 
-		if ( GetFlags() & FL_ONGROUND )
-		{		
-			m_Local.m_flFallVelocity = 0;
-		}
+		//if ( GetFlags() & FL_ONGROUND )
+		//{		
+		//	m_Local.m_flFallVelocity = 0;
+		//}
 
 		// Don't allow bogus sequence on player
 		if ( GetSequence() == -1 )

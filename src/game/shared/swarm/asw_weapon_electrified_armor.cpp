@@ -82,10 +82,6 @@ void CASW_Weapon_Electrified_Armor::PrimaryAttack( void )
 	if ( m_iClip1 <= 0 )
 		return;
 
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine->GetActiveASWWeapon() == this);
-#endif
-
 	// sets the animation on the marine holding this weapon
 	//pMarine->SetAnimation( PLAYER_ATTACK1 );
 #ifndef CLIENT_DLL

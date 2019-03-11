@@ -91,10 +91,6 @@ void CASW_Weapon_Hornet_Barrage::PrimaryAttack()
 	if ( m_iRocketsToFire.Get() > 0 )
 		return;	
 
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-#endif
-
 	// mine weapon is lost when all mines are gone
 	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
 	{
@@ -171,7 +167,7 @@ void CASW_Weapon_Hornet_Barrage::FireRocket()
 
 	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
-	Vector vecSrc	 = GetRocketFiringPosition();
+	
 	m_iRocketsToFire = m_iRocketsToFire.Get() - 1;
 	m_flNextLaunchTime = gpGlobals->curtime + m_flFireInterval.Get();
 
@@ -183,6 +179,7 @@ void CASW_Weapon_Hornet_Barrage::FireRocket()
         fGrenadeDamage = 10;
     }
 
+	Vector vecSrc = GetRocketFiringPosition();
 	CASW_Rocket::Create( fGrenadeDamage, vecSrc, GetRocketAngle(), pMarine, this );
 
 	if ( ASWGameRules() )

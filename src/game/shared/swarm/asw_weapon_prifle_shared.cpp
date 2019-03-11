@@ -135,7 +135,6 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	BaseClass::WeaponSound( SPECIAL1 );
 
-	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector	vecThrow;
 	// Don't autoaim on grenade tosses
 	vecThrow = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -151,6 +150,8 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	{
 		Msg("Grenade damage = %f radius = %f\n", fGrenadeDamage, fGrenadeRadius);
 	}
+
+	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	CASW_Grenade_PRifle::PRifle_Grenade_Create( 
 		fGrenadeDamage,
 		fGrenadeRadius,

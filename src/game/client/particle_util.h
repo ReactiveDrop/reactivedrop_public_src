@@ -29,7 +29,7 @@ inline Vector VecLerp(const Vector &minVal, const Vector &maxVal, float t)
 // Get a random floating point number between the two specified numbers.
 inline float FRand(float minVal, float maxVal)
 {
-	return minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
+	return RandomFloat( minVal, maxVal );
 }
 
 // Apply velocity and acceleration to position and acceleration to velocity.

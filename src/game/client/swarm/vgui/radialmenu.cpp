@@ -108,7 +108,7 @@ public:
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	void CRadialButton::UpdateHotspots( KeyValues *data )
+	void UpdateHotspots( KeyValues *data )
 	{
 		BaseClass::UpdateHotspots( data );
 
@@ -144,7 +144,7 @@ public:
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	void CRadialButton::PerformLayout( void )
+	void PerformLayout( void )
 	{
 		int wide, tall;
 		GetSize( wide, tall );

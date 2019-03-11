@@ -158,6 +158,8 @@ void CParticleEffect::NotifyRemove()
 	if( m_Flags & FLAG_ALLOCATED )
 	{
 		Assert( IsReleased() );
+
+		GetBinding().NullOutParticleEffectPointer();
 		delete this;
 	}
 }

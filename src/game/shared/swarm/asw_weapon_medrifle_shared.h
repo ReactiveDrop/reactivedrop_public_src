@@ -96,7 +96,7 @@ protected:
 	CNetworkVar(EHANDLE, m_hHealEntity);		// entity we're attached too and healing
 	CNetworkVar(Vector, m_vecHealPos);			// place we're zapping
 
-	float	m_flLastDischargeTime;
+	//float	m_flLastDischargeTime;
 	trace_t m_AttackTrace;
 	float	m_flLastHealTime;
 	float	m_flNextHealMessageTime;

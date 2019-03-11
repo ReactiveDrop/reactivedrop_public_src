@@ -45,7 +45,10 @@ C_ASW_Button_Area::C_ASW_Button_Area()
 
 C_ASW_Door* C_ASW_Button_Area::GetDoor()
 {
-	return dynamic_cast<C_ASW_Door*>(GetUseTargetHandle().Get());
+	CBaseEntity* pUseTargetH = GetUseTargetHandle().Get();
+	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<C_ASW_Door*>(pUseTargetH);
+	return NULL;
 }
 
 // use icon textures

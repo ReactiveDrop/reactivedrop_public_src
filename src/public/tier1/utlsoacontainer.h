@@ -576,7 +576,8 @@ template<BINARYSIMDFUNCTION fn1, BINARYSIMDFUNCTION fn2> void CSOAContainer::App
 			int nColCtr = NumQuadsPerRow();
 			do
 			{
-				*( pOut++ ) = fn1( fn2( *pOut, fl4FnArg2 ), fl4FnArg1 );
+				*pOut = fn1( fn2( *pOut, fl4FnArg2 ), fl4FnArg1 );
+                pOut++;
 			} while ( --nColCtr );
 			pOut += nRowToRowStride;
 		} while ( --nRowCtr );
@@ -613,7 +614,8 @@ template<BINARYSIMDFUNCTION fn> void CSOAContainer::ApplyBinaryFunctionToAttr( i
 			int nColCtr = NumQuadsPerRow();
 			do
 			{
-				*(pOut++) = fn( *pOut, fl4FnArg1 );
+				*pOut = fn( *pOut, fl4FnArg1 );
+                pOut++;
 			} while ( --nColCtr );
 			pOut += nRowToRowStride;
 		} while ( --nRowCtr );

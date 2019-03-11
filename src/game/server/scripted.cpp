@@ -1078,13 +1078,13 @@ void CAI_ScriptedSequence::PostIdleDone( CAI_BaseNPC *pNPC )
 //-----------------------------------------------------------------------------
 void CAI_ScriptedSequence::FixScriptNPCSchedule( CAI_BaseNPC *pNPC, int iSavedCineFlags )
 {
+	if (pNPC == NULL)
+		return;
+
 	if ( pNPC->GetIdealState() != NPC_STATE_DEAD )
 	{
 		pNPC->SetIdealState( NPC_STATE_IDLE );
 	}
-
-	if ( pNPC == NULL )
-		 return;
 
 	FixFlyFlag( pNPC, iSavedCineFlags );
 
@@ -1270,8 +1270,9 @@ void CAI_ScriptedSequence::ModifyScriptedAutoMovement( Vector *vecNewPos )
 			Msg("--\n%s current org: %f %f\n", m_hTargetEnt->GetDebugName(), m_hTargetEnt->GetAbsOrigin().x, m_hTargetEnt->GetAbsOrigin().y );
 			Msg("%s current org: %f %f", m_hInteractionRelativeEntity->GetDebugName(), vecRelativeOrigin.x, vecRelativeOrigin.y );
 		}
-
-		CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating*>(m_hInteractionRelativeEntity.Get());
+		
+		CBaseEntity* pEnt = m_hInteractionRelativeEntity.Get();
+		CBaseAnimating* pAnimating = pEnt ? pEnt->GetBaseAnimating() : NULL;
 		if ( pAnimating )
 		{
 			Vector vecDeltaPos;
@@ -1316,7 +1317,10 @@ void CAI_ScriptedSequence::ModifyScriptedAutoMovement( Vector *vecNewPos )
 			Msg("Automovement's output origin: %f %f\n", (*vecNewPos).x, (*vecNewPos).y );
 			Msg("Vector from automovement to desired: %f %f\n", vecToTarget.x, vecToTarget.y );
 		}
-		*vecNewPos += (vecToTarget * pAnimating->GetCycle());
+		if ( pAnimating )
+			*vecNewPos += (vecToTarget * pAnimating->GetCycle());
+		else
+			*vecNewPos += vecToTarget;
 	}
 }
 

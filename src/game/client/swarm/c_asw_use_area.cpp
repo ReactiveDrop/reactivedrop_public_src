@@ -24,7 +24,7 @@ C_ASW_Use_Area::C_ASW_Use_Area()
 
 C_BaseEntity* C_ASW_Use_Area::GetUseTarget()
 {
-	return dynamic_cast<C_BaseEntity*>(GetUseTargetHandle().Get());
+	return GetUseTargetHandle().Get();
 }
 
 // check we're near enough

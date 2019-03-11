@@ -141,17 +141,17 @@ bool C_ASW_Game_Resource::IsRosterReserved(int i)
 
 C_ASW_Player* C_ASW_Game_Resource::GetLeader()
 {
-	return dynamic_cast<C_ASW_Player*>(m_Leader.Get());
+	return m_Leader.Get();
 }
 
 C_ASW_Scanner_Info* C_ASW_Game_Resource::GetScannerInfo()
 {
-	return dynamic_cast<C_ASW_Scanner_Info*>(m_hScannerInfo.Get());
+	return m_hScannerInfo.Get();
 }
 
 C_ASW_Campaign_Save* C_ASW_Game_Resource::GetCampaignSave()
 {
-	return dynamic_cast<C_ASW_Campaign_Save*>(m_hCampaignSave.Get());
+	return m_hCampaignSave.Get();
 }
 
 int C_ASW_Game_Resource::GetNumMarineResources()

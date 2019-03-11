@@ -3,7 +3,6 @@
 #include "asw_player.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
-#include "vstdlib/random.h"
 #include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

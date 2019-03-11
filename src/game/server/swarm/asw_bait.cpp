@@ -24,8 +24,6 @@ BEGIN_DATADESC( CASW_Bait )
 	DEFINE_FIELD( m_flTimeBurnOut, FIELD_TIME ),
 END_DATADESC()
 
-// flares maintain a linked list of themselves, for quick checking for autoaim
-CASW_Bait* g_pHeadFlare = NULL;
 
 CASW_Bait::CASW_Bait()
 {

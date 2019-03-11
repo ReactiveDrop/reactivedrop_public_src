@@ -236,6 +236,7 @@ void CASWEnvShake::ApplyShake( ShakeCommand_t command, CASW_Marine *pOnlyMarine 
 			break;
 		case SHAKE_AMPLITUDE:
 			m_currentAmp = Amplitude();
+			// fallthrough
 		case SHAKE_FREQUENCY:
 			m_pShakeController->WakeObjects();
 			break;

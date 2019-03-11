@@ -105,9 +105,6 @@ void CASW_Weapon_Stim::InjectStim()
 	{
 		//make the proper weapon sound
 		WeaponSound(SINGLE);
-#ifndef CLIENT_DLL
-		bool bThisActive = (pMarine->GetActiveASWWeapon() == this);
-#endif
 		// sets the animation on the weapon model iteself
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 

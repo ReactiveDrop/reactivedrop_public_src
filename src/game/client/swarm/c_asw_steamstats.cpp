@@ -756,7 +756,15 @@ float CASW_Steamstats::GetFavoriteMarineClassPercent( void )
 		if( !pProfile )
 			continue;
 
-		int iProfileClass = pProfile->GetMarineClass();
+		int iProfileClass;
+		if (pProfile->GetMarineClass() != MARINE_CLASS_UNDEFINED)
+		{
+			iProfileClass = pProfile->GetMarineClass();
+		}
+		else
+		{
+			iProfileClass = MARINE_CLASS_NCO;
+		}
 		iClassCounts[iProfileClass] += m_MarineSelectionCounts[i];
 		fTotal += m_MarineSelectionCounts[i];
 		if( iClassCounts[iFav] < iClassCounts[iProfileClass] )

@@ -343,9 +343,10 @@ void CASW_Player::ItemPostFrame()
 	// check for offhand activation
 	if ( pExtra )
 	{
-		if ( pExtra->GetWeaponInfo() && ( m_afButtonPressed & IN_GRENADE1 ) )
+		const CASW_WeaponInfo* pWpnInfo = pExtra->GetWeaponInfo();
+		if ( pWpnInfo && ( m_afButtonPressed & IN_GRENADE1 ) )
 		{
-			if ( pExtra->GetWeaponInfo()->m_bOffhandActivate )
+			if ( pWpnInfo->m_bOffhandActivate )
 			{
 				if ( pExtra->OffhandActivate() )
 				{
@@ -370,7 +371,7 @@ void CASW_Player::ItemPostFrame()
 #endif
 				}
 			}
-			else if ( pExtra->GetWeaponInfo()->m_bOffhandSwitch ) 
+			else if ( pWpnInfo->m_bOffhandSwitch )
 			{
 #ifdef CLIENT_DLL
 				::input->MakeWeaponSelection( pExtra );
@@ -987,12 +988,10 @@ Vector CASW_Player::EarPosition( void )
 	{
 		return BaseClass::EarPosition();
 	}
-
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(m_hMarine.Get());
+	CASW_Marine* pMarine = m_hMarine.Get();
 	if (pMarine)
-	{
 		return pMarine->EarPosition();
-	}
+
 	if (asw_rts_controls.GetBool())
 	{
 		return GetAbsOrigin();
@@ -1057,9 +1056,12 @@ void CASW_Player::PlayerUse()
 			{
 				float flUseHoldTime = ASW_USE_KEY_HOLD_SENTRY_TIME;
 
-				CASW_Marine *pUsableMarine = dynamic_cast<CASW_Marine*>( pEnt );
-				if ( pUsableMarine && pUsableMarine->m_bKnockedOut )
-					flUseHoldTime = rd_revive_duration.GetFloat();
+				if ( pEnt->Classify() == CLASS_ASW_MARINE )
+				{
+					CASW_Marine* pUsableMarine = assert_cast<CASW_Marine*>( pEnt );
+					if ( pUsableMarine->m_bKnockedOut )
+						flUseHoldTime = rd_revive_duration.GetFloat();
+				}
 
 				CASW_Button_Area *pButtonArea = dynamic_cast<CASW_Button_Area *>( pEnt );
 				if ( pButtonArea && pButtonArea->m_flHoldTime > 0 )
@@ -1156,6 +1158,12 @@ void CASW_Player::PlayerUse()
 					if ( !pMarine->m_hUsingEntity.Get() || pMarine->m_hUsingEntity.Get() == pActivateEnt )		// if we're in the middle of using an entity, only allow reusing that same entity
 					{
 						pUsable->ActivateUseIcon( GetMarine(), nHoldType );
+					}
+					//Mad Orange. This is a litte hacky but fixes ghost weapons may appear in inventory and other use area related issues like fail revives with marines when u press use button for a long time with more than 1 use item nearby.
+					if (nHoldType == ASW_USE_HOLD_RELEASE_FULL)
+					{
+						m_hUseKeyDownEnt = NULL;
+						m_flUseKeyDownTime = 0.0f;
 					}
 				}
 		#endif

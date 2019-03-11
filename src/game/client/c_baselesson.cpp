@@ -107,7 +107,7 @@ void CBaseLesson::SetRoot( CBaseLesson *pRoot )
 {
 	m_pRoot = pRoot;
 
-	if ( m_pRoot->m_OpenOpportunities.Find( this ) == -1 )
+	if ( m_pRoot && m_pRoot->m_OpenOpportunities.Find( this ) == -1 )
 	{
 		m_pRoot->m_OpenOpportunities.AddToTail( this );
 	}
@@ -822,13 +822,13 @@ void CIconLesson::UpdateLocatorTarget( CLocatorTarget *pLocatorTarget, C_BaseEnt
 			bool bNoName = true;
 
 #ifdef INFESTED_DLL
-			C_ASW_Marine *pMarine = dynamic_cast< C_ASW_Marine* >( pIconTarget );
-			if ( pMarine )
+			if ( pIconTarget && pIconTarget->Classify() == CLASS_ASW_MARINE )
 			{
-				C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-				if ( pMR )
+				C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pIconTarget);
+				C_ASW_Marine_Resource* pMR = pMarine->GetMarineResource();
+				if (pMR)
 				{
-					pMR->GetDisplayName( szCustomName, sizeof( szCustomName ) );
+					pMR->GetDisplayName(szCustomName, sizeof(szCustomName));
 					pchDisplayParamText = szCustomName;
 					bNoName = false;
 				}
@@ -2246,7 +2246,7 @@ bool CScriptedIconLesson::ProcessElement( IGameEvent *event, const LessonElement
 		else if ( pParamName[ 0 ] == '0' || pParamName[ 0 ] == '1' )
 		{
 			// This param doesn't exist, try parsing the string
-			eventParam_float = Q_atof( pParamName ) != 0.0f;
+			eventParam_float = ( Q_atof( pParamName ) != 0.0f ) ? 1.0f : 0.0f;
 		}
 		else
 		{
@@ -2810,7 +2810,7 @@ bool CScriptedIconLesson::ProcessElementAction( int iAction, bool bNot, const ch
 
 		case LESSON_ACTION_MODELNAME_IS:
 		{
-			C_BaseAnimating *pBaseAnimating = dynamic_cast<C_BaseAnimating *>( pVar );
+			C_BaseAnimating* pBaseAnimating = pVar->GetBaseAnimating();
 
 			if ( !pBaseAnimating )
 			{
@@ -2885,7 +2885,7 @@ bool CScriptedIconLesson::ProcessElementAction( int iAction, bool bNot, const ch
 			{
 				if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
 				{
-					ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "\t[%s]->HealthFraction() ", pchVarName, pchVarName );
+					ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "\t[%s]->HealthFraction() ", pchVarName );
 					ConColorMsg( CBaseLesson::m_rgbaVerboseName, "... " );
 					ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, ( bNot ) ? ( ">= [%s] " ) : ( "< [%s] " ), pchParamName->String() );
 					ConColorMsg( CBaseLesson::m_rgbaVerboseName, "%f\n", fParam );
@@ -2897,7 +2897,7 @@ bool CScriptedIconLesson::ProcessElementAction( int iAction, bool bNot, const ch
 
 			if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
 			{
-				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "\t[%s]->HealthFraction() ", pchVarName, pchVarName );
+				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "\t[%s]->HealthFraction() ", pchVarName );
 				ConColorMsg( CBaseLesson::m_rgbaVerboseName, "%f ", pVar->HealthFraction() );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, ( bNot ) ? ( ">= [%s] " ) : ( "< [%s] " ), pchParamName->String() );
 				ConColorMsg( CBaseLesson::m_rgbaVerboseName, "%f\n", fParam );
@@ -3432,7 +3432,7 @@ bool CScriptedIconLesson::ProcessElementAction( int iAction, bool bNot, const ch
 
 		case LESSON_ACTION_WEAPON_CAN_USE:
 		{
-			C_BaseCombatWeapon *pBaseCombatWeapon = dynamic_cast<C_BaseCombatWeapon*>( pParam );
+			C_BaseCombatWeapon* pBaseCombatWeapon = pParam->MyCombatWeaponPointer();
 			C_BasePlayer *pBasePlayer = ToBasePlayer( pVar );
 
 			if ( !pBasePlayer )

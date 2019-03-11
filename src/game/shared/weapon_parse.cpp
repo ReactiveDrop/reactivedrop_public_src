@@ -123,7 +123,7 @@ static CASW_WeaponInfo gNullWeaponInfo;
 //-----------------------------------------------------------------------------
 FileWeaponInfo_t *GetFileWeaponInfoFromHandle( WEAPON_FILE_INFO_HANDLE handle )
 {
-	if ( handle >= m_WeaponInfoDatabase.Count() )
+	if ( handle < 0 || handle >= m_WeaponInfoDatabase.Count() )
 	{
 		return &gNullWeaponInfo;
 	}

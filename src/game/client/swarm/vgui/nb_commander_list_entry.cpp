@@ -93,7 +93,7 @@ void CNB_Commander_List_Entry::OnThink()
 	int nLevel = LevelFromXP( nXP, pPlayer->GetPromotion() );
 
 	wchar_t szLevelNum[16]=L"";
-	_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel + 1 );  // levels start at 0 in code, but show from 1 in the UI
+	V_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel + 1 );  // levels start at 0 in code, but show from 1 in the UI
 
 	wchar_t wzLevelLabel[64];
 	g_pVGuiLocalize->ConstructString( wzLevelLabel, sizeof( wzLevelLabel ), g_pVGuiLocalize->Find( "#asw_experience_level" ), 1, szLevelNum );

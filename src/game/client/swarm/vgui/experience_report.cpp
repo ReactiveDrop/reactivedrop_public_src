@@ -271,7 +271,7 @@ void CExperienceReport::OnThink()
 
 	int nEarnedXP = (int) flTotalXP;
 	wchar_t number_buffer[ 16 ];
-	V_snwprintf( number_buffer, sizeof( number_buffer ), L"+%d", nEarnedXP );
+	V_snwprintf( number_buffer, ARRAYSIZE( number_buffer ), L"+%d", nEarnedXP );
 	m_pEarnedXPNumber->SetText( number_buffer );
 
 	// See if we're still animating

@@ -197,16 +197,24 @@ void CASWHudAmmo::OnThink()
 				SetAmmo(wpn->Clip1());	// ammo inside the gun
 				int bullets = marine->GetAmmoCount(wpn->GetPrimaryAmmoType());   // ammo the marine is carrying outside the gun
 				int clips = bullets / wpn->GetMaxClip1();		// divide it down to get the number of clips
+
 				// check ammo bag
-				CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(marine->GetASWWeapon(0));
-				if (!pAmmoBag)
-					pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(marine->GetASWWeapon(1));
+				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+				C_BaseCombatWeapon* pBCW = marine->GetWeapon(0);
+				if ( pBCW && pBCW->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pBCW);
+
+				pBCW = marine->GetWeapon(1);
+				if ( !pAmmoBag && pBCW && pBCW->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pBCW);
+
 				if (pAmmoBag && wpn != pAmmoBag)
 				{
 					clips += pAmmoBag->NumClipsForWeapon(wpn);					
 				}
 
-				pAmmoBag = dynamic_cast<C_ASW_Weapon_Ammo_Bag*>(wpn);
+				if ( wpn->Classify() == CLASS_ASW_AMMO_BAG ) //TODO. Orange. This can be simplified i guess but whatever
+					pAmmoBag = assert_cast<C_ASW_Weapon_Ammo_Bag*>(wpn);
 
 				m_bActiveAmmobag = pAmmoBag != NULL;
 				if (wpn->DisplayClipsDoubled())
@@ -617,7 +625,7 @@ void CASWHudAmmo::Paint()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer && (m_iDisplayPrimaryValue > 0))
 	{
-		C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(pPlayer->GetViewMarine());
+		C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
 		if ( pMarine && pMarine->GetMarineResource())
 		{
 			C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
@@ -778,7 +786,7 @@ void CASWHudAmmo::PaintAmmoWarnings()
 	if (!local)
 		return;
 
-	C_ASW_Marine *marine = dynamic_cast<C_ASW_Marine*>(local->GetViewMarine());
+	C_ASW_Marine *marine = local->GetViewMarine();
 	if ( !marine || !marine->GetMarineResource())
 		return;
 

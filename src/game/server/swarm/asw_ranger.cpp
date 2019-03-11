@@ -332,10 +332,11 @@ void CASW_Ranger::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CASW_Ranger::CorpseGib( const CTakeDamageInfo &info )
 {
+	m_LagCompensation.UndoLaggedPosition();
+
+	/*
 	CEffectData	data;
 
-	m_LagCompensation.UndoLaggedPosition();
-	
 	data.m_vOrigin = WorldSpaceCenter();
 	data.m_vNormal = data.m_vOrigin - info.GetDamagePosition();
 	VectorNormalize( data.m_vNormal );
@@ -344,6 +345,7 @@ bool CASW_Ranger::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = clamp( data.m_flScale, 1, 3 );
 	data.m_nColor = m_nSkin;
 	data.m_fFlags = IsOnFire() ? ASW_GIBFLAG_ON_FIRE : 0;
+	*/
 
 	//DispatchEffect( "DroneGib", data );
 

@@ -53,6 +53,11 @@ CBasePanel::CBasePanel( vgui::Panel *pParent, const char *panelName, int x, int 
 //-----------------------------------------------------------------------------
 CBasePanel::~CBasePanel( void )
 {
+	if ( vgui::surface() && m_nBackgroundMaterial != -1 )
+	{
+		vgui::surface()->DestroyTextureID( m_nBackgroundMaterial );
+		m_nBackgroundMaterial = -1;
+	}
 }
 
 
@@ -120,7 +125,10 @@ void CBasePanel::SetTexture( const char *texname, bool tiled /*=false*/ )
 	m_bTiled = tiled;
 	Q_strncpy( m_szBgTexture, texname, sizeof( m_szBgTexture ) );
 
-	m_nBackgroundMaterial = vgui::surface()->CreateNewTextureID();
+	if ( m_nBackgroundMaterial == -1 )
+	{
+		m_nBackgroundMaterial = vgui::surface()->CreateNewTextureID();
+	}
 	vgui::surface()->DrawSetTextureFile( m_nBackgroundMaterial, m_szBgTexture , true, true);
 }
 

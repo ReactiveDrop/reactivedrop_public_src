@@ -96,11 +96,14 @@ void ImageButton::OnThink()
 	int w = GetWide();
 	int t = GetTall();
 
-	int bw = m_pBackdrop->GetWide();
-	int bt = m_pBackdrop->GetTall();
-	if (bw != w || bt != t)
+	if (m_pBackdrop)
 	{
-		m_pBackdrop->SetSize(w,t);
+		int bw = m_pBackdrop->GetWide();
+		int bt = m_pBackdrop->GetTall();
+		if (bw != w || bt != t)
+		{
+			m_pBackdrop->SetSize(w, t);
+		}
 	}
 
 	int lw = m_pLabel->GetWide();

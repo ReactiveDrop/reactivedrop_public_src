@@ -964,6 +964,11 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	{
 		studioHdr.Init( modelinfo->GetStudiomodel( model ) );
 	}
+	else
+	{
+		Warning("Unable to init breakmodel !\n");
+		return;
+	}
 
 	Vector parentOrigin = vec3_origin;
 	int parentAttachment = 	Studio_FindAttachment( &studioHdr, "placementOrigin" ) + 1;
@@ -1027,7 +1032,11 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			{
 				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
 			}
-
+			else
+			{
+				Warning("Unable to init breakmodel %s !\n", modelName);
+				continue;
+			}
 			// Increment the number of breakable props this frame.
 			++nPropBreakablesPerFrameCount;
 
@@ -1364,6 +1373,11 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 	{
 		studioHdr.Init( modelinfo->GetStudiomodel( model ) );
 	}
+	else
+	{
+		Warning("Unable to init breakmodel !\n");
+		return NULL;
+	}
 
 	Vector parentOrigin = vec3_origin;
 	int parentAttachment = 	Studio_FindAttachment( &studioHdr, "placementOrigin" ) + 1;
@@ -1388,7 +1402,11 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 		{
 			int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
 			if ( modelIndex <= 0 )
+			{ 
+				const char* modelName = list[i].modelName;
+				Warning("Unable to create non-precached breakmodel from list %s\n", modelName);
 				continue;
+			}
 
 			// Skip multiplayer pieces that should be spawning on the other dll
 #ifdef GAME_DLL
@@ -1423,6 +1441,11 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			if ( model )
 			{
 				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+			}
+			else
+			{
+				Warning("Unable to init breakmodel from list!\n");
+				continue;
 			}
 
 			// Increment the number of breakable props this frame.

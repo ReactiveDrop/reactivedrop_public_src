@@ -75,7 +75,7 @@ public:
 	int							AllocateToolParticleEffectId();
 	int							GetToolParticleEffectId() const;
 protected:
-								CParticleEffect( const char *pDebugName );
+	explicit					CParticleEffect( const char *pDebugName );
 	virtual						~CParticleEffect();
 
 	// Returns nonzero if Release() has been called.
@@ -182,7 +182,7 @@ public:
 
 // Overridables for variants like CEmberEffect.
 protected:
-					CSimpleEmitter( const char *pDebugName = NULL );
+	explicit		CSimpleEmitter( const char *pDebugName = NULL );
 	virtual			~CSimpleEmitter();
 
 	virtual	float	UpdateAlpha( const SimpleParticle *pParticle );
@@ -208,7 +208,7 @@ private:
 class CEmberEffect : public CSimpleEmitter
 {
 public:
-							CEmberEffect( const char *pDebugName );
+	explicit						CEmberEffect( const char *pDebugName );
 	static CSmartPtr<CEmberEffect>	Create( const char *pDebugName );
 
 	virtual void UpdateVelocity( SimpleParticle *pParticle, float timeDelta );
@@ -226,7 +226,7 @@ private:
 class CFireSmokeEffect : public CSimpleEmitter
 {
 public:
-								CFireSmokeEffect( const char *pDebugName );
+	explicit							CFireSmokeEffect( const char *pDebugName );
 	static CSmartPtr<CFireSmokeEffect>	Create( const char *pDebugName );
 
 	virtual void UpdateVelocity( SimpleParticle *pParticle, float timeDelta );
@@ -247,7 +247,7 @@ private:
 class CFireParticle : public CSimpleEmitter
 {
 public:
-							CFireParticle( const char *pDebugName );
+	explicit						CFireParticle( const char *pDebugName );
 	static CSmartPtr<CFireParticle>	Create( const char *pDebugName );
 	
 	virtual Vector UpdateColor( const SimpleParticle *pParticle );

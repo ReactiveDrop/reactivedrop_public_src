@@ -1104,6 +1104,7 @@ ConversionErrorType COptionsSubMultiplayer::ConvertBMPToTGA(const char *bmpPath,
 	{
 		// error getting the bitmap info for some reason.
 		free(bitmapInfo);
+		DeleteObject(hBitmap);
 		return CE_ERROR_PARSING_SOURCE;
 	}
 
@@ -1113,6 +1114,7 @@ ConversionErrorType COptionsSubMultiplayer::ConvertBMPToTGA(const char *bmpPath,
 	if (buf == NULL)
 	{
 		free(bitmapInfo);
+		DeleteObject(hBitmap);
 		return CE_MEMORY_ERROR;
 	}
 

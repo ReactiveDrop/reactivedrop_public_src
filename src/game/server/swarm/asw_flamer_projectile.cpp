@@ -172,7 +172,7 @@ void CASW_Flamer_Projectile::FlameHit( CBaseEntity *pOther, const Vector &vecHit
 
 		if ( bOnlyHurtUnignited)
 		{
-			CBaseAnimating* pAnim = dynamic_cast<CBaseAnimating*>(pOther);
+			CBaseAnimating* pAnim = pOther->GetBaseAnimating();
 			if ( pAnim && pAnim->IsOnFire() )
 			{
 				bHurt = false;
@@ -347,7 +347,7 @@ void CASW_Flamer_Projectile::CollideThink()
 	bool bHit = false;
 	if (tr.fraction != 1.0)
 	{
-		if (tr.m_pEnt && !dynamic_cast<CASW_Flamer_Projectile*>(tr.m_pEnt))
+		if (tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_FLAMER_PROJECTILE)
 		{
 			//Msg("Flamer projectile CollideThinked %s\n", tr.m_pEnt->GetClassname());		
 			FlameHit(tr.m_pEnt, tr.endpos, false);
@@ -394,7 +394,12 @@ void CASW_Flamer_Projectile::CollideThink()
 
 void CASW_Flamer_Projectile::UpdateOnRemove()
 {
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pOwnerEnt = GetOwnerEntity();
+	if ( pOwnerEnt && pOwnerEnt->Classify() == CLASS_ASW_MARINE )
+	{
+		pMarine = assert_cast<CASW_Marine*>( pOwnerEnt );
+	}
 	if (pMarine && pMarine->GetMarineResource())
 	{
 		// count as a shot fired

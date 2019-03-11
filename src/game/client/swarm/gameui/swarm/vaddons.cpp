@@ -219,7 +219,7 @@ void AddonListItem::ShowWorkshopStatistic()
 			}
 		case 2:
 			{
-				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nPlaytimeSessions );
+				Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nPlaytimeSessions );
 				pszTranslationKey = "#workshop_stat_play_sessions";
 				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nPlaytimeSessions );
 				break;
@@ -228,19 +228,19 @@ void AddonListItem::ShowWorkshopStatistic()
 			{
 				if ( item.nSecondsPlayed >= 2 * 60 * 60 )
 				{
-					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 / 60 );
+					Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 / 60 );
 					pszTranslationKey = "#workshop_stat_play_time_hours";
 					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 / 60 );
 				}
 				else if ( item.nSecondsPlayed >= 2 * 60 )
 				{
-					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 );
+					Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 );
 					pszTranslationKey = "#workshop_stat_play_time_minutes";
 					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 );
 				}
 				else
 				{
-					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSecondsPlayed );
+					Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed );
 					pszTranslationKey = "#workshop_stat_play_time_seconds";
 					Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed );
 				}
@@ -248,14 +248,14 @@ void AddonListItem::ShowWorkshopStatistic()
 			}
 		case 4:
 			{
-				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nSubscriptions );
+				Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSubscriptions );
 				pszTranslationKey = "#workshop_stat_current_subscribers";
 				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSubscriptions );
 				break;
 			}
 		case 5:
 			{
-				Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%d", item.nUniqueWebsiteViews );
+				Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nUniqueWebsiteViews );
 				pszTranslationKey = "#workshop_stat_unique_viewers";
 				Q_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nUniqueWebsiteViews );
 				break;
@@ -268,12 +268,12 @@ void AddonListItem::ShowWorkshopStatistic()
 				Plat_ConvertToLocalTime( item.details.m_rtimeUpdated, &time );
 				if ( currentTime.tm_year != time.tm_year || currentTime.tm_mon != time.tm_mon || currentTime.tm_mday != time.tm_mday )
 				{
-					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%04d-%02d-%02d", time.tm_year + 1900, time.tm_mon + 1, time.tm_mday );
+					Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%04d-%02d-%02d", time.tm_year + 1900, time.tm_mon + 1, time.tm_mday );
 					pszTranslationKey = "#workshop_stat_updated_date";
 				}
 				else
 				{
-					Q_snwprintf( wszParameter1, sizeof( wszParameter1 ), L"%02d:%02d:%02d", time.tm_hour, time.tm_min, time.tm_sec );
+					Q_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%02d:%02d:%02d", time.tm_hour, time.tm_min, time.tm_sec );
 					pszTranslationKey = "#workshop_stat_updated_time";
 				}
 				break;
@@ -501,7 +501,7 @@ void Addons::Activate()
 
 				// Make the addon types string based on the flags
 				addonInfo.szTypes[0] = 0;
-				V_snwprintf( addonInfo.szTypes, sizeof( addonInfo.szTypes ), L"%s%s%s%s%s%s%s%s%s%s%s",
+				V_snwprintf( addonInfo.szTypes, ARRAYSIZE( addonInfo.szTypes ), L"%s%s%s%s%s%s%s%s%s%s%s",
 					bCampaign ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Campaign" ) : L"",
 					bMaps ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Map" ) : L"",
 					bSkin ? g_pVGuiLocalize->Find( "#L4D360UI_Addon_Type_Skin" ) : L"",
@@ -821,6 +821,7 @@ void Addons::OnMessage(const KeyValues *params, vgui::VPANEL ifromPanel)
 	}
 }
 
+#define LABELSIZE 130
 void Addons::SetDetailsUIForAddon( int nIndex )
 {
 	if ( m_addonInfoList.Count() <= nIndex )
@@ -829,10 +830,10 @@ void Addons::SetDetailsUIForAddon( int nIndex )
 		return;
 	}
 
-	wchar_t wsAuthorLabel[130];
+	wchar_t wsAuthorLabel[LABELSIZE];
 
 	V_wcsncpy( wsAuthorLabel, g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), sizeof( wsAuthorLabel ) );
-	wcsncat( wsAuthorLabel, m_addonInfoList[nIndex].szAuthor, sizeof( wsAuthorLabel ) );
+	wcsncat( wsAuthorLabel, m_addonInfoList[nIndex].szAuthor, LABELSIZE - wcslen(wsAuthorLabel) - 1 );
 
 	m_LblName->SetText( m_addonInfoList[nIndex].szName );
 	m_LblType->SetText( m_addonInfoList[nIndex].szTypes );
@@ -864,7 +865,7 @@ void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopI
 	V_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
 
 	wchar_t wsAuthorLabel[130];
-	V_snwprintf( wsAuthorLabel, sizeof( wsAuthorLabel ), L"%s%s", g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), wsAuthorName );
+	V_snwprintf( wsAuthorLabel, ARRAYSIZE( wsAuthorLabel ), L"%s%s", g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), wsAuthorName );
 
 	wchar_t wsNameLabel[k_cchPublishedDocumentTitleMax];
 	V_UTF8ToUnicode( item.details.m_rgchTitle, wsNameLabel, sizeof( wsNameLabel ) );

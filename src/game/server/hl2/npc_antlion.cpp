@@ -3106,7 +3106,7 @@ void CNPC_Antlion::ClearBurrowPoint( const Vector &origin )
 			continue;
 		}
 
-		if ( pEntity->m_takedamage != DAMAGE_NO && pEntity->Classify() != CLASS_PLAYER && pEntity->VPhysicsGetObject() )
+		if ( pEntity->m_takedamage != DAMAGE_NO && pEntity->Classify() != CLASS_ASW_MARINE && pEntity->VPhysicsGetObject() )
 		{
 			vecSpot	 = pEntity->BodyTarget( origin );
 			vecForce = ( vecSpot - origin ) + Vector( 0, 0, 16 );
@@ -3598,7 +3598,6 @@ void CNPC_Antlion::BuildScheduleTestBits( void )
 		!IsCurSchedule(SCHED_ANTLION_BURROW_WAIT)			&&
 		!IsCurSchedule(SCHED_ANTLION_WAIT_FOR_UNBORROW_TRIGGER)&&
 		!IsCurSchedule(SCHED_ANTLION_WAIT_FOR_CLEAR_UNBORROW)&&
-		!IsCurSchedule(SCHED_ANTLION_WAIT_UNBORROW)			&&
 		!IsCurSchedule(SCHED_ANTLION_JUMP)					&&
 		!IsCurSchedule(SCHED_ANTLION_FLIP)					&&
 		!IsCurSchedule(SCHED_ANTLION_DISMOUNT_NPC)			&& 
@@ -4444,7 +4443,7 @@ void CNPC_Antlion::LookupBurrowActivities()
 		m_UnburrowActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s", STRING( m_iszUnburrowActivityName ) );
+			Warning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
@@ -4460,9 +4459,9 @@ void CNPC_Antlion::LookupBurrowActivities()
 	else
 	{
 		m_UnburrowIdleActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
-		if ( m_UnburrowActivity == ACT_INVALID )
+		if ( m_UnburrowIdleActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s", STRING( m_iszUnburrowIdleActivityName ) );
+			Warning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );

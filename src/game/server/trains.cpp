@@ -1495,7 +1495,7 @@ static CBaseEntity *FindPhysicsBlockerForHierarchy( CBaseEntity *pParentEntity )
 			{
 				IPhysicsObject *pOther = pSnapshot->GetObject(1);
 				CBaseEntity *pOtherEntity = static_cast<CBaseEntity *>(pOther->GetGameData());
-				if ( pOtherEntity->GetMoveType() == MOVETYPE_VPHYSICS )
+				if ( pOtherEntity && pOtherEntity->GetMoveType() == MOVETYPE_VPHYSICS )
 				{
 					Vector normal;
 					pSnapshot->GetSurfaceNormal(normal);
@@ -1606,6 +1606,11 @@ void CFuncTrackTrain::SoundStop( void )
 		if ( m_iszSoundMove != NULL_STRING )
 		{
 			StopSound( entindex(), CHAN_STATIC, STRING( m_iszSoundMove ) );
+		}
+
+		if ( m_iszSoundStart != NULL_STRING )
+		{
+			StopSound( entindex(), CHAN_STATIC, STRING( m_iszSoundStart ) );
 		}
 
 		if ( m_iszSoundStop != NULL_STRING )

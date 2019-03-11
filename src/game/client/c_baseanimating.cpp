@@ -779,9 +779,12 @@ C_BaseAnimating::~C_BaseAnimating()
 
 	TermRopes();
 	delete m_pRagdollInfo;
+	m_pRagdollInfo = NULL;
 	Assert(!m_pRagdoll);
 	delete m_pIk;
+	m_pIk = NULL;
 	delete m_pBoneMergeCache;
+	m_pBoneMergeCache = NULL;
 	UnlockStudioHdr();
 	delete m_pStudioHdr;
 	if ( m_pJiggleBones )
@@ -2731,7 +2734,17 @@ bool C_BaseAnimating::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, 
 {
 	VPROF_BUDGET( "C_BaseAnimating::SetupBones", ( !g_bInThreadedBoneSetup ) ? VPROF_BUDGETGROUP_CLIENT_ANIMATION : "Client_Animation_Threaded" );
 
-	if ( !IsBoneAccessAllowed() )
+	//=============================================================================
+	// HPE_BEGIN:
+	// [pfreese] Added the check for pBoneToWorldOut != NULL in this debug warning
+	// code. SetupBones is called in the CSS anytime an attachment wants its
+	// parent's transform, hence this warning is hit extremely frequently.
+	// I'm not actually sure if this is the right "fix" for this, as the bones are
+	// actually accessed as part of the setup process, but since I'm not clear on the
+	// purpose of this dev warning, I'm including this comment block.
+	//=============================================================================
+
+	if ( pBoneToWorldOut != NULL && !IsBoneAccessAllowed() )
 	{
 		static float lastWarning = 0.0f;
 
@@ -2915,7 +2928,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, 
 			// since we're right in the middle of setting up our new transforms. 
 			//
 			// Setting this flag forces move children to keep their abs transform invalidated.
-			AddFlag( EFL_SETTING_UP_BONES );
+			AddEFlags( EFL_SETTING_UP_BONES );
 
 // NOTE: For model scaling, we need to opt out of IK because it will mark the bones as already being calculated
 #if defined( INFESTED )
@@ -2988,7 +3001,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, 
 				DrawSkeleton( hdr, boneMask );
 			}
 
-			RemoveFlag( EFL_SETTING_UP_BONES );
+			RemoveEFlags( EFL_SETTING_UP_BONES );
 			ControlMouth( hdr );
 		}
 		
@@ -3744,7 +3757,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	p = nexttoken( token, p, ' ', sizeof(token) );
 
 	// Find the weapon type
-	if ( token ) 
+	if ( token[0] )
 	{
 		//TODO: Parse the type from a list instead
 		if ( Q_stricmp( token, "COMBINE" ) == 0 )
@@ -3790,7 +3803,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	int	attachmentIndex = -1;
 
 	// Find the attachment name
-	if ( token ) 
+	if ( token[0] )
 	{
 		attachmentIndex = LookupAttachment( token );
 
@@ -3922,14 +3935,16 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			// Get the particle effect name
 			const char *p = options;
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] )
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
+			else
+				return;
 
 			// Get the attachment type
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] )
 			{
 				iAttachType = GetAttachTypeFromString( token );
 				if ( iAttachType == -1 )
@@ -3941,7 +3956,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the attachment point index
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token )
+			if ( token[0] )
 			{
 				iAttachment = atoi(token);
 
@@ -3964,7 +3979,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			p = nexttoken(token, p, ' ', sizeof(token));
 			if ( !p )
 				return;
-			if ( token ) 
+			if ( token[0] )
 			{
 				iAttachTypeCP1 = GetAttachTypeFromString( token );
 				if ( iAttachTypeCP1 == -1 )
@@ -3976,12 +3991,12 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the attachment point index
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token )
+			if ( token[0] )
 			{
 				iAttachmentCP1 = atoi(token);
 
 				// See if we can find any attachment points matching the name
-				if ( token[0] != '0' && iAttachmentCP1 == 0 )
+				if ( iAttachmentCP1 == 0 )
 				{
 					iAttachmentCP1 = LookupAttachment( token );
 					if ( iAttachmentCP1 == -1 )
@@ -4003,14 +4018,16 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			// Get the particle effect name
 			const char *p = options;
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
+			else
+				return;
 
 			// Get the attachment point index
 			p = nexttoken(token, p, ' ', sizeof(token));
-			bool bStopInstantly = ( token && !Q_stricmp( token, "instantly" ) );
+			bool bStopInstantly = ( token[0] && !Q_stricmp( token, "instantly" ) );
 
 			ParticleProp()->StopParticlesNamed( szParticleEffect, bStopInstantly );
 		}
@@ -4028,21 +4045,23 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			// Get the particle effect name
 			const char *p = options;
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				Q_strncpy( szParticleEffect, token, sizeof(szParticleEffect) );
 			}
+			else
+				return;
 
 			// Get the control point number
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				iControlPoint = atoi( token );
 			}
 
 			// Get the attachment type
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				iAttachType = GetAttachTypeFromString( token );
 				if ( iAttachType == -1 )
@@ -4054,7 +4073,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Get the attachment point index
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token )
+			if ( token[0] )
 			{
 				iAttachment = atoi(token);
 
@@ -4250,14 +4269,16 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 			// Bodygroup Name
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				Q_strncpy( szBodygroupName, token, sizeof(szBodygroupName) );
 			}
+			else
+				return;
 
 			// Get the desired value
 			p = nexttoken(token, p, ' ', sizeof(token));
-			if ( token ) 
+			if ( token[0] ) 
 			{
 				value = atoi( token );
 			}
@@ -4298,14 +4319,14 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			p = nexttoken(token, p, ' ', sizeof(token));
 
-			if( token ) 
+			if( token[0] ) 
 			{
 				Q_strncpy( effectFunc, token, sizeof(effectFunc) );
 			}
 
 			p = nexttoken(token, p, ' ', sizeof(token));
 
-			if( token )
+			if( token[0] )
 			{
 				if ( isdigit( *token ) )
 				{
@@ -4319,7 +4340,7 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			p = nexttoken(token, p, ' ', sizeof(token));
 
-			if( token )
+			if( token[0] )
 			{
 				iParam = atoi(token);
 			}
@@ -4994,7 +5015,7 @@ void C_BaseAnimating::CopySequenceTransitions( C_BaseAnimating *pCopyFrom )
 C_BaseAnimating *C_BaseAnimating::BecomeRagdollOnClient()
 {
 	MoveToLastReceivedPosition( true );
-	GetAbsOrigin();
+	//GetAbsOrigin();
 	m_pClientsideRagdoll = CreateRagdollCopy();
 	if ( !m_pClientsideRagdoll )
 		return NULL;

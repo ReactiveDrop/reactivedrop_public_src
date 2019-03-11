@@ -115,7 +115,8 @@ public:
 	
 	void ForceFlinch( const Vector &vecSrc );
 
-	virtual bool IsAlien(void) const { return true; }
+	virtual bool IsAlien(void) const { return true; } //Orange. For vscript together with buzzers, cant change for compatibility reasons, sad
+	virtual bool IsAlienClassType(void) const { return true; }
 
 	// schedule/task stuff
 	virtual void StartTask(const Task_t *pTask);

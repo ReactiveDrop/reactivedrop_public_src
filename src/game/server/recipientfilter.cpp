@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -101,6 +101,9 @@ void CRecipientFilter::AddAllPlayers( void )
 void CRecipientFilter::AddRecipient( CBasePlayer *player )
 {
 	Assert( player );
+
+	if ( !player )
+		return;
 
 	int index = player->entindex();
 

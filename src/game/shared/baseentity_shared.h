@@ -276,4 +276,56 @@ inline Vector	CBaseEntity::Up() const  RESTRICT      ///< get my up      (+z) ve
 // Shared EntityMessage between game and client .dlls
 #define BASEENTITY_MSG_REMOVE_DECALS	1
 
+extern float k_flMaxEntityPosCoord;
+extern float k_flMaxEntityEulerAngle;
+extern float k_flMaxEntitySpeed;
+extern float k_flMaxEntitySpinRate;
+
+inline bool IsEntityPositionReasonable( const Vector &v )
+{
+	float r = k_flMaxEntityPosCoord;
+	return
+		v.x > -r && v.x < r &&
+		v.y > -r && v.y < r &&
+		v.z > -r && v.z < r;
+}
+
+// Returns:
+//   -1 - velocity is really, REALLY bad and probably should be rejected.
+//   0  - velocity was suspicious and clamped.
+//   1  - velocity was OK and not modified
+extern int CheckEntityVelocity( Vector &v );
+
+inline bool IsEntityQAngleReasonable( const QAngle &q )
+{
+	float r = k_flMaxEntityEulerAngle;
+	return
+		q.x > -r && q.x < r &&
+		q.y > -r && q.y < r &&
+		q.z > -r && q.z < r;
+}
+
+// Angular velocity in exponential map form
+inline bool IsEntityAngularVelocityReasonable( const Vector &q )
+{
+	float r = k_flMaxEntitySpinRate;
+	return
+		q.x > -r && q.x < r &&
+		q.y > -r && q.y < r &&
+		q.z > -r && q.z < r;
+}
+
+// Angular velocity of each Euler angle.
+inline bool IsEntityQAngleVelReasonable( const QAngle &q )
+{
+	float r = k_flMaxEntitySpinRate;
+	return
+		q.x > -r && q.x < r &&
+		q.y > -r && q.y < r &&
+		q.z > -r && q.z < r;
+}
+
+// Should we emit physics spew into the log or not?
+extern bool CheckEmitReasonablePhysicsSpew();
+
 #endif // BASEENTITY_SHARED_H

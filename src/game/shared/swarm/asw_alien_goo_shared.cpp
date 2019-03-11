@@ -159,6 +159,21 @@ void CASW_Alien_Goo::Spawn()
 	{
 		VisibilityMonitor_AddEntity( this, asw_visrange_generic.GetFloat() * 0.9f, NULL, NULL );
 	}
+
+	//hack to fix tracehull crash via this biomass
+	if ( !Q_strcmp( STRING( gpGlobals->mapname ), "rd-til8comcenter") )
+	{
+		if( !Q_strcmp( STRING( GetEntityName() ), "biomass_start" ) )
+		{
+			//SetAbsOrigin( GetAbsOrigin() + Vector(48, -36, 0) ); //moving it doesnt seem to work good, easier to remove for now than to test for valid position
+			UTIL_Remove( this );
+		}
+		else if ( !Q_strcmp( STRING( GetEntityName() ), "biomass_start2") )
+		{
+			//SetAbsOrigin( GetAbsOrigin() + Vector(10, 0, 0) );
+			UTIL_Remove( this );
+		}
+	}
 }
 
 void CASW_Alien_Goo::InitThink()
@@ -222,7 +237,10 @@ void CASW_Alien_Goo::Precache()
 
 int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pAttacker);
 
 	// if has grubs
 	if ( m_bHasGrubs && HasSpawnFlags( ASW_SF_BURST_WHEN_DAMAGED ) )
@@ -239,7 +257,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 		Ignite( 30.0f );
 
 		// notify the marine that he's hurting this, so his accuracy doesn't drop
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
 			if ( pMarine )
 			{
@@ -270,7 +288,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 		return 0;
 	
 	// notify the marine that he's hurting this, so his accuracy doesn't drop
-	if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
 		if ( pMarine )
 		{
@@ -426,15 +444,16 @@ void CASW_Alien_Goo::BurningLinkThink()
 	CBaseEntity *ent = NULL;
 	while ( (ent = gEntList.NextEnt(ent)) != NULL )
 	{
-		CASW_Alien_Goo *pGoo = dynamic_cast<CASW_Alien_Goo*>(ent);
-		if (pGoo)
+		if ( ent->Classify() == CLASS_ASW_ALIEN_GOO )
 		{
-			if (  (pGoo->GetBurningLinkName() != NULL_STRING	&& FStrEq(STRING(m_BurningLinkName), STRING(pGoo->GetBurningLinkName())))	&& 
-					(ent->GetClassname()!=NULL &&
-						(FStrEq("asw_alien_goo", ent->GetClassname()) || FStrEq("asw_grub_sac", ent->GetClassname())
-					)))
-			{				
-					pGoo->Ignite(30.0f);
+			CASW_Alien_Goo* pGoo = assert_cast<CASW_Alien_Goo*>(ent);
+
+			if ((pGoo->GetBurningLinkName() != NULL_STRING && FStrEq(STRING(m_BurningLinkName), STRING(pGoo->GetBurningLinkName()))) &&
+				(ent->GetClassname() != NULL &&
+					(FStrEq("asw_alien_goo", ent->GetClassname()) || FStrEq("asw_grub_sac", ent->GetClassname())
+						)))
+			{
+				pGoo->Ignite(30.0f);
 			}
 		}
 	}
@@ -536,7 +555,7 @@ void CASW_Alien_Goo::SpawnGrubs()
 			continue;
 		UTIL_ASW_DroneBleed( vecSpawnPos[i], Vector(0,0,1), 4 );
 
-		CASW_Simple_Grub* pGrub = dynamic_cast<CASW_Simple_Grub*>(CreateNoSpawn("asw_grub", vecSpawnPos[i], angGrubFacing[i], this));
+		CASW_Simple_Grub* pGrub = assert_cast<CASW_Simple_Grub*>(CreateNoSpawn("asw_grub", vecSpawnPos[i], angGrubFacing[i], this));
 		if (pGrub)
 		{
 			ASWGameRules()->GrubSpawned(pGrub);
@@ -614,7 +633,7 @@ void CASW_Alien_Goo::StopLoopingSounds()
 void CASW_Alien_Goo::StopGooSound()
 {
 	if (m_bPlayingGooScream)
-		UTIL_EmitAmbientSound(GetSoundSourceIndex(), GetAbsOrigin(), "ASWGoo.GooLoop", 
+		UTIL_EmitAmbientSound(GetSoundSourceIndex(), GetAbsOrigin(), "ASWGoo.GooScream", 
 						0, SNDLVL_NONE, SND_STOP, 0);
 	else
 		UTIL_EmitAmbientSound(GetSoundSourceIndex(), GetAbsOrigin(), "ASWGoo.GooLoop", 

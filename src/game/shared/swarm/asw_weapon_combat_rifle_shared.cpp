@@ -120,7 +120,6 @@ void CASW_Weapon_CombatRifle::SecondaryAttack()
 		return;
 
 	CASW_Marine *pMarine = GetMarine();
-
 	if (!pMarine)
 		return;
 	
@@ -169,7 +168,7 @@ void CASW_Weapon_CombatRifle::SecondaryAttack()
 	vecSrc = tr.endpos;
 
 	Vector vecAiming = vec3_origin;
-	if (pPlayer && pMarine->IsInhabited())
+	if ( pMarine->IsInhabited() )
 	{
 		vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
 	}

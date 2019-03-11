@@ -1036,7 +1036,7 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 		{ 1,3 }, // Faith
 		{ 69,10 }, // Bastille
 		{ 2,1 }, // Crash
-		{ 85, }, // Flynn
+		{ 85,0 }, // Flynn
 		{ 73,7 }, // Vegas
 	},
 	{
@@ -1153,6 +1153,12 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 
 bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
 {
+	if (!m_pMarine || !m_pMarine->GetMarineResource() || (m_pMarine->GetHealth() <= 0 && iChatterType != CHATTER_DIE))
+	{
+		AssertMsg(false, "Absent marine tried to chatter\n");
+		return false;
+	}
+
 	CASW_Marine_Profile *pProfile = m_pMarine->GetMarineResource()->GetProfile();
 	if ( !pProfile )
 	{
@@ -1170,12 +1176,6 @@ bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
 	if (iChatterType < 0 || iChatterType >= NUM_CHATTER_LINES)
 	{
 		AssertMsg1( false, "Faulty chatter type %d\n", iChatterType );
-		return false;
-	}
-
-	if (!m_pMarine || !m_pMarine->GetMarineResource() || (m_pMarine->GetHealth()<=0 && iChatterType != CHATTER_DIE))	
-	{
-		AssertMsg( false, "Absent marine tried to chatter\n" );
 		return false;
 	}
 

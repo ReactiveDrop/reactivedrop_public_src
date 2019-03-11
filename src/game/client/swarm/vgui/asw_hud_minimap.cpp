@@ -264,7 +264,7 @@ void CASWMap::PaintMarineBlips()
 					}
 
 					PaintWorldBlip(pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0, 192, 0, 255));
-					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y, Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
+					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y + 90 - GetPlayerYaw(), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
 				}
 			}
 		}
@@ -1101,7 +1101,7 @@ void CASWHudMinimapLinePanel::Paint()
 	//CASWHudMinimap *m_pMap = dynamic_cast<CASWHudMinimap*>(GetParent());
 	if (!m_pMap)
 		return;
-	if (!ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME)
+	if (!ASWGameRules() || ASWGameRules()->GetGameState() < ASW_GS_INGAME)
 		return;
 	// paint a black outline over the lines
 	for (int i=0;i<m_pMap->m_MapLines.Count();i++)
@@ -1351,7 +1351,11 @@ void CASWHudMinimap::PaintRect( int nX, int nY, int nWidth, int nHeight, Color c
 		Vector2D vDirection = vArrowCenter - vPanelCenter;
 		Vector2DNormalize( vDirection );
 
-		float fFacingYaw = RAD2DEG( atanf( vDirection.y / vDirection.x ) ) - ( vDirection.x < 0.0f ? 0.0f : 180.0f );
+		float fFacingYaw;
+		if (vDirection.x == 0.0f)
+			fFacingYaw = 90.0f;
+		else
+			fFacingYaw = RAD2DEG( atanf( vDirection.y / vDirection.x ) ) - ( vDirection.x < 0.0f ? 0.0f : 180.0f );
 
 		int iFacingSize = GetWide() * 0.05f * asw_hud_scale.GetFloat();
 

@@ -419,6 +419,11 @@ void CASW_Gas_Grenade_Projectile::DrawDebugGeometryOverlays()
 
 void CASW_Gas_Grenade_Projectile::StopLoopingSounds()
 {
+	if ( m_pRadSound )
+	{
+		CSoundEnvelopeController::GetController().SoundDestroy( m_pRadSound );
+		m_pRadSound = NULL;
+	}
 	BaseClass::StopLoopingSounds();
 }
 

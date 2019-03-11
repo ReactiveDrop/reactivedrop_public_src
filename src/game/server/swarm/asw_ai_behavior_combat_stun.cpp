@@ -184,9 +184,7 @@ void CAI_ASW_CombatStunBehavior::StartTask( const Task_t *pTask )
 //------------------------------------------------------------------------------
 void CAI_ASW_CombatStunBehavior::RunTask( const Task_t *pTask )
 {
-	CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( GetOuter() );
-
-	if ( !pAlien )
+	if ( !GetOuter()->IsAlienClassType() )
 	{
 		TaskComplete();
 

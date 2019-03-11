@@ -481,7 +481,7 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 	VectorAngles( vecDir, angDir );
 	AngleVectors( angDir, NULL, &vecRight, &vecUp );
 
-	Vector tmpSrc = vecOrigSrc + (vecUp * -8) + (vecRight * 3);
+	//Vector tmpSrc = vecOrigSrc + (vecUp * -8) + (vecRight * 3);
 
 	CBaseEntity *pEntity = tr.m_pEnt;
 	if ( pEntity == NULL )
@@ -518,18 +518,25 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 			m_iClip1 -= 1;
 			m_flAmmoUseTime = gpGlobals->curtime + 0.2;
 #ifdef GAME_DLL
-			CASW_Marine *pMarine = GetMarine();
-			if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 			{
 				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 				if (!pAmmoBag)
-					pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-				if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+				{
+					pWeapon = pMarine->GetASWWeapon(1);
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				}
+				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 					pMarine->OnWeaponOutOfAmmo(true);
 			}
 
-			pMarine->OnWeaponFired( this, 1 );
+			pMarine->OnWeaponFired(this, 1);
 #endif
 		}
 		
@@ -759,5 +766,19 @@ void CASW_Weapon_Mining_Laser::UpdateOnRemove()
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pRunSound );
 		m_pRunSound = NULL;
 	}
+
+#ifdef CLIENT_DLL
+	if (m_pLaserEffect)
+	{
+		m_pLaserEffect->StopEmission(false, true, false);
+		m_pLaserEffect = NULL;
+	}
+	if (m_pChargeEffect)
+	{
+		m_pChargeEffect->StopEmission(false, true, false);
+		m_pChargeEffect = NULL;
+	}
+#endif
+
 	BaseClass::UpdateOnRemove();
 }

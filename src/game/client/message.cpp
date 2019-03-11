@@ -152,13 +152,17 @@ private:
 //-----------------------------------------------------------------------------
 void DispatchHudText( const char *pszText )
 {
-	if ( pszText == NULL )
+	CHudMessage *pHudMessage = (CHudMessage *)GET_HUDELEMENT( CHudMessage );
+	if ( pHudMessage )
 	{
-		(GET_HUDELEMENT( CHudMessage ))->Reset();
-	}
-	else
-	{
-		(GET_HUDELEMENT( CHudMessage ))->MessageAdd( pszText );
+		if ( pszText == NULL )
+		{
+			pHudMessage->Reset();
+		}
+		else
+		{
+			pHudMessage->MessageAdd( pszText );
+		}
 	}
 }
 

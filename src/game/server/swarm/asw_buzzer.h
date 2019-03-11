@@ -262,7 +262,7 @@ private:
 	float			m_flWaterSuspendTime;
 	int				m_nLastSpinSound;
 
-	float			m_flLastDamageTime;
+	float			m_flLastMarineDamageTime;
 
 	// physics influence
 	CHandle<CBasePlayer>	m_hPhysicsAttacker;

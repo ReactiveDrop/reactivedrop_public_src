@@ -261,7 +261,10 @@ void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bAct
 			{
 				iAttachment = pAnim->LookupAttachment(pSpawnList[nEntity].m_pDeferredParentAttachment);
 			}
-			pEntity->SetParent( pParent, iAttachment );
+			if (pEntity)
+			{
+				pEntity->SetParent(pParent, iAttachment);
+			}
 		}
 		if ( pEntity )
 		{

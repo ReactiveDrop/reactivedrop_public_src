@@ -406,6 +406,7 @@ bool CAI_ASW_JumpBehavior::CheckLanding( void )
 			pNPC->SetIdealActivity( (Activity) ACT_ALIEN_LAND );
 			//pNPC->Land();
 
+			/*
 			if ( GetEnemy() && GetEnemy()->IsPlayer()  )
 			{
 				CBasePlayer *pPlayer = ToBasePlayer( GetEnemy() );
@@ -415,6 +416,7 @@ bool CAI_ASW_JumpBehavior::CheckLanding( void )
 					//pNPC->MeleeAttack( m_flDamageDistance, m_flJumpDamage, QAngle( 4.0f, 0.0f, 0.0f ), Vector( -250.0f, 1.0f, 1.0f ) );
 				}
 			}
+			*/
 
 			GetOuter()->SetAbsVelocity( GetOuter()->GetAbsVelocity() * 0.33f );
 			return false;

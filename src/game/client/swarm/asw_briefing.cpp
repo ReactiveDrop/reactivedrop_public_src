@@ -632,7 +632,7 @@ int CASW_Briefing::GetMarineSkillPoints( int nLobbySlot, int nSkillSlot )
 		return -1;
 
 	int nMarineResourceIndex = LobbySlotToMarineResourceIndex( nLobbySlot );
-	C_ASW_Marine_Resource *pMR = ASWGameResource() ? ASWGameResource()->GetMarineResource( nMarineResourceIndex ) : NULL;
+	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(nMarineResourceIndex);
 	if ( !pMR )
 		return -1;
 
@@ -794,14 +794,11 @@ bool CASW_Briefing::CheckMissionRequirements()
 			}
 		}
 		C_ASW_Equip_Req* pReq = C_ASW_Equip_Req::FindEquipReq();
-		if (pReq)
+		if (pReq && !pReq->AreRequirementsMet())
 		{
-			if (pReq && !pReq->AreRequirementsMet())
-			{
-				// have the server print a message about needing equip, so all can see
-				engine->ClientCmd("cl_needequip");
-				return false;
-			}
+			// have the server print a message about needing equip, so all can see
+			engine->ClientCmd("cl_needequip");
+			return false;
 		}
 		if ( !ASWGameResource()->AtLeastOneMarine() )
 		{

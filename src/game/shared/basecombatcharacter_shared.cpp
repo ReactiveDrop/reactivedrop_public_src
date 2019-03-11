@@ -104,7 +104,7 @@ bool CBaseCombatCharacter::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 //-----------------------------------------------------------------------------
 CBaseCombatWeapon *CBaseCombatCharacter::GetActiveWeapon() const
 {
-	return m_hActiveWeapon;
+	return m_hActiveWeapon.Get();
 }
 
 //-----------------------------------------------------------------------------

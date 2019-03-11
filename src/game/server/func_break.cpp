@@ -748,7 +748,7 @@ void CBreakable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 //-----------------------------------------------------------------------------
 int CBreakable::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	Vector	vecTemp;
+	//Vector	vecTemp;
 
 	CTakeDamageInfo subInfo = info;
 
@@ -763,7 +763,7 @@ int CBreakable::OnTakeDamage( const CTakeDamageInfo &info )
 		return 1;
 	}
 
-	vecTemp = subInfo.GetInflictor()->GetAbsOrigin() - WorldSpaceCenter();
+	//vecTemp = subInfo.GetInflictor()->GetAbsOrigin() - WorldSpaceCenter();
 
 	if (!IsBreakable())
 		return 0;

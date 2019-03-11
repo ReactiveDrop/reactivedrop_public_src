@@ -335,7 +335,7 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		}
 
 		// find the player's marine
-		CASW_Player *pASWPlayer = dynamic_cast<CASW_Player *>( pPlayer );
+		CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
 		CASW_Marine *pMarine = pASWPlayer ? pASWPlayer->GetViewMarine() : NULL;
 		if ( !pMarine )
 			continue;
@@ -791,11 +791,12 @@ CASW_Marine* UTIL_ASW_MarineCanSee(CASW_Marine_Resource* pMarineResource, const 
 		bNearby = (pMarine->GetRemoteTurret()->GetAbsOrigin().DistTo(pos) <= 1024);	// assume fog distance of 1024 when in first person
 	}
 	// check if he's looking through a security cam
-	if (!bNearby && pMarine && pMarine->m_hUsingEntity.Get())
+	if (!bNearby && pMarine)
 	{
-		CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pMarine->m_hUsingEntity.Get());
-		if (pComputer)
+		CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
+		if ( pUsing && pUsing->Classify() == CLASS_ASW_COMPUTER_AREA )
 		{
+			CASW_Computer_Area* pComputer = assert_cast<CASW_Computer_Area*>(pUsing);
 			CPointCamera *pCam = pComputer->GetActiveCam();
 			if (pCam)
 			{
@@ -941,7 +942,7 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 			// if we're in here, then wires 1, 2 and 3 will be charging
 			float charge_before_assembling_wire_4 = charge_before_assembling_wire_3
 												+ speed_per_wire * time_to_assemble_wire * 3;	// wire 3's contribution
-			if (charge_before_assembling_wire_3 >= iHackLevel || iNumWires < 4)
+			if (charge_before_assembling_wire_4 >= iHackLevel || iNumWires < 4)
 			{
 				// if we're here, it means we would have finished the hack before wire 4 was assembled
 				float first_wire_time = time_to_assemble_wire + time_to_assemble_wire;
@@ -1067,7 +1068,7 @@ void TryLocalize(const char *token, wchar_t *unicode, int unicodeBufferSizeInByt
 		wchar_t *pLocalized = g_pVGuiLocalize->Find( token );
 		if ( pLocalized )
 		{
-			_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
+			V_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
 			return;
 		}
 	}
@@ -1110,18 +1111,19 @@ void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 	}
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>( info.GetAttacker() );
-		if ( !pMarine )
-			return;
+		if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+		{
+			C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(info.GetAttacker());
 
-		C_ASW_Player *pAttackingPlayer = pMarine->GetCommander();
-		if ( !pAttackingPlayer )
-			return;
+			C_ASW_Player* pAttackingPlayer = pMarine->GetCommander();
+			if (!pAttackingPlayer)
+				return;
 
-		if ( pAttackingPlayer != C_BasePlayer::GetLocalPlayer() )
-			return;
+			if (pAttackingPlayer != C_BasePlayer::GetLocalPlayer())
+				return;
 
-		UTIL_ASW_ParticleDamageNumber( info.GetAttacker(), info.GetDamagePosition(), int(info.GetDamage()), info.GetDamageCustom(), 1.0f, false );
+			UTIL_ASW_ParticleDamageNumber(info.GetAttacker(), info.GetDamagePosition(), int(info.GetDamage()), info.GetDamageCustom(), 1.0f, false);
+		}
 	}
 }
 

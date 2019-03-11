@@ -633,13 +633,16 @@ bool CASW_Mortarbug::IsHeavyDamage( const CTakeDamageInfo &info )
 	// explosions always cause a flinch
 	if (( info.GetDamageType() & DMG_BLAST ) != 0 )
 		return true;
-	
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());	
-	if (pMarine && pMarine->GetActiveASWWeapon())
-	{		
-		return pMarine->GetActiveASWWeapon()->ShouldAlienFlinch(this, info);
-	}
 
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+	{
+		CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+		if ( pWeapon )
+		{
+			return pWeapon->ShouldAlienFlinch(this, info);
+		}
+	}
 	return false;
 }
 
@@ -652,7 +655,8 @@ void CASW_Mortarbug::Event_Killed( const CTakeDamageInfo &info )
 
 int CASW_Mortarbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	if ( info.GetInflictor() && info.GetInflictor()->Classify() == CLASS_ASW_MORTAR_SHELL )
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_MORTAR_SHELL )
 		return 0;
 
 	CTakeDamageInfo newInfo(info);
@@ -666,28 +670,29 @@ int CASW_Mortarbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_BUCKSHOT)
 	{
 		// hack to reduce vindicator damage (not reducing normal shotty as much as it's not too strong)
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
-				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if (pVindicator)
+				if ( pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
 			}
-		}		
+		}
 	}
 	if (info.GetDamageType() & DMG_BULLET)
 	{
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if ( pMarine && pMarine->GetActiveASWWeapon() )
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
 				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
-				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				switch ( (int)pWeapon->Classify() )
 				{
 				case CLASS_ASW_DEAGLE:
 					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;

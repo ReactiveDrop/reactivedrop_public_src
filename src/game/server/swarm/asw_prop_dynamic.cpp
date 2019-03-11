@@ -13,13 +13,11 @@ LINK_ENTITY_TO_CLASS( prop_dynamic_override, CASW_Prop_Dynamic );
 int CASW_Prop_Dynamic::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 {
 	// check for notifying a marine that he's shooting a breakable prop
-	if ( inputInfo.GetAttacker() && inputInfo.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	CBaseEntity* pAttacker = inputInfo.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(inputInfo.GetAttacker());
-		if (pMarine)
-		{
-			pMarine->HurtJunkItem(this, inputInfo);
-		}
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		pMarine->HurtJunkItem(this, inputInfo);
 	}
 
 	return BaseClass::OnTakeDamage(inputInfo);

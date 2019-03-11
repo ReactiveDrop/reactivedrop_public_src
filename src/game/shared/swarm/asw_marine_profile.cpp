@@ -463,21 +463,23 @@ void CASW_Marine_Profile::InitChatterNames(const char *szMarineName)
 	Q_snprintf(szKeyName, sizeof(szKeyName), "%sChatterDuration", szMarineName);
 	Q_snprintf(szFileName, sizeof(szFileName), "scripts/asw_speech_duration_%s.txt", szMarineName);
 	KeyValues *pDurationKeyValues = new KeyValues( szKeyName );
-	if (pDurationKeyValues->LoadFromFile(filesystem, szFileName))
+	if (pDurationKeyValues)
 	{
-		// now go down all the chatters, grabbing the count
-		for (int i=0;i<NUM_CHATTER_LINES;i++)
+		if (pDurationKeyValues->LoadFromFile(filesystem, szFileName))
 		{
-			for (int k=0;k<m_iChatterCount[i];k++)
+			// now go down all the chatters, grabbing the count
+			for (int i = 0; i < NUM_CHATTER_LINES; i++)
 			{
-				char chatterbuffer[128];
-				Q_snprintf(chatterbuffer, sizeof(chatterbuffer), "%s%d", m_Chatter[i], k);
-				m_fChatterDuration[i][k] = pDurationKeyValues->GetFloat(chatterbuffer);
+				for (int k = 0; k < m_iChatterCount[i]; k++)
+				{
+					char chatterbuffer[128];
+					Q_snprintf(chatterbuffer, sizeof(chatterbuffer), "%s%d", m_Chatter[i], k);
+					m_fChatterDuration[i][k] = pDurationKeyValues->GetFloat(chatterbuffer);
+				}
 			}
 		}
-	}
-	if (pDurationKeyValues)
 		pDurationKeyValues->deleteThis();
+	}
 
 #endif
 
@@ -600,7 +602,10 @@ void CASW_Marine_Profile::SaveSpeechDurations(CBaseEntity *pEnt)
 				if ( pEnt->GetParametersForSound( chatterbuffer, params, NULL ) )
 				{
 					if (!params.soundname[0])
+					{
+						pDurationKeyValues->deleteThis();
 						return;
+					}
 					
 					char* skipped = PSkipSoundChars( params.soundname );
 					duration = enginesound->GetSoundDuration( skipped );
@@ -609,10 +614,9 @@ void CASW_Marine_Profile::SaveSpeechDurations(CBaseEntity *pEnt)
 				pDurationKeyValues->SetFloat(chatterbuffer, duration);				
 			}
 		}
-	}
-	pDurationKeyValues->SaveToFile(filesystem, szFileName);
-	if (pDurationKeyValues)
+		pDurationKeyValues->SaveToFile(filesystem, szFileName);
 		pDurationKeyValues->deleteThis();
+	}
 }
 #endif
 void CASW_Marine_Profile::SetMarineClass( ASW_Marine_Class marineClass )

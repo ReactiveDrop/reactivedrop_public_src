@@ -242,14 +242,17 @@ void CASW_Weapon_Welder::ItemPostFrame()
 		{
 			m_bIsFiring = false;
 
-			if ( pMarine->GetMarineResource() )
-			{
-				pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
-			}
-
 			m_pWeldDoor = NULL;
 
-			pMarine->OnWeldFinished();
+			if (pMarine)
+			{
+				if (pMarine->GetMarineResource())
+				{
+					pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
+				}
+
+				pMarine->OnWeldFinished();
+			}
 			//Msg( "Clearing weld door as no marine\n" );
 		}
 		return BaseItemPostFrame();
@@ -347,7 +350,6 @@ void CASW_Weapon_Welder::BaseItemPostFrame()
 {
 	//CBasePlayer *pOwner = GetCommander();
 	CASW_Marine* pOwner = GetMarine();
-	
 	if (!pOwner)
 		return;
 
@@ -387,14 +389,10 @@ void CASW_Weapon_Welder::BaseItemPostFrame()
 		SecondaryAttack();
 	}
 	
+	// If the firing button was just pressed, reset the firing time
 	if ( !bFired && bAttack1 && m_flNextPrimaryAttack <= gpGlobals->curtime )
 	{				
-		// If the firing button was just pressed, reset the firing time
-		if ( pOwner && bAttack1 )
-		{
-			m_flNextPrimaryAttack = gpGlobals->curtime;
-		}
-
+		m_flNextPrimaryAttack = gpGlobals->curtime;
 		PrimaryAttack();
 	}
 
@@ -659,14 +657,15 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 			return NULL;
 
 		// find our door area
+		CBaseEntity* pEnt;
 		for ( int i = 0; i < pPlayer->GetNumUseEntities(); i++ )
 		{
-			CBaseEntity* pEnt = pPlayer->GetUseEntity( i );
-			CASW_Door_Area* pDoorArea = dynamic_cast< CASW_Door_Area* >( pEnt );
-			if ( pDoorArea && pDoorArea->m_bUseAreaEnabled )
+			pEnt = pPlayer->GetUseEntity( i );
+			if ( pEnt && pEnt->Classify() == CLASS_ASW_DOOR_AREA )
 			{
+				CASW_Door_Area* pDoorArea = assert_cast<CASW_Door_Area*>(pEnt);
 				CASW_Door* pDoor = pDoorArea->GetASWDoor();
-				if ( pDoor && pDoor->GetHealth() > 0 && pDoor->m_bCanPlayerWeld )
+				if ( pDoorArea->m_bUseAreaEnabled && pDoor && pDoor->GetHealth() > 0 && pDoor->m_bCanPlayerWeld )
 				{
 					return pDoor;
 				}

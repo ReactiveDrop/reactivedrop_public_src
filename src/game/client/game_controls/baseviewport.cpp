@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Client DLL VGUI2 Viewport
 //
@@ -157,6 +157,7 @@ bool CBaseViewport::LoadHudAnimations( void )
 //================================================================
 CBaseViewport::CBaseViewport() : vgui::EditablePanel( NULL, "CBaseViewport" )
 {	
+	SetSize( 10, 10 ); // Quiet "parent not sized yet" spew
 	m_bInitialized = false;
 	m_bFullscreenViewport = false;
 
@@ -503,17 +504,24 @@ void CBaseViewport::RecreatePanel( const char *szPanelName )
 			}
 		}
 
-		vgui::VPANEL vPanel = panel->GetVPanel();
-		vgui::ipanel()->DeletePanel( vPanel );
-
-		if ( m_pActivePanel == panel )
+		if (m_pActivePanel == panel)
 		{
 			m_pActivePanel = NULL;
 		}
 
-		if ( m_pLastActivePanel == panel )
+		if (m_pLastActivePanel == panel)
 		{
 			m_pLastActivePanel = NULL;
+		}
+
+		vgui::VPANEL vPanel = panel->GetVPanel();
+		if ( vPanel )
+		{
+			vgui::ipanel()->DeletePanel( vPanel );
+		}
+		else
+		{
+			delete panel;
 		}
 
 		AddNewPanel( CreatePanelByName( szPanelName ), szPanelName );
@@ -527,7 +535,14 @@ void CBaseViewport::RemoveAllPanels( void)
 	{
 		IViewPortPanel *p = m_UnorderedPanels[i];
 		vgui::VPANEL vPanel = p->GetVPanel();
-		vgui::ipanel()->DeletePanel( vPanel );
+		if ( vPanel )
+		{
+			vgui::ipanel()->DeletePanel( vPanel );
+		}
+		else
+		{
+			delete p;
+		}
 	}
 #ifndef _XBOX
 	if ( m_pBackGround )

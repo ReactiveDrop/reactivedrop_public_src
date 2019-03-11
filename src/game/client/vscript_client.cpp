@@ -147,11 +147,8 @@ void VScriptClientTerm()
 {
 	if( g_pScriptVM != NULL )
 	{
-		if( g_pScriptVM )
-		{
-			scriptmanager->DestroyVM( g_pScriptVM );
-			g_pScriptVM = NULL;
-		}
+		scriptmanager->DestroyVM(g_pScriptVM);
+		g_pScriptVM = NULL;
 	}
 }
 

@@ -93,7 +93,11 @@ public:
 			HSCRIPT hAddScript = g_pScriptVM->CompileScript( szAddCode );
 			if ( hAddScript )
 			{
-				ValidateScriptScope();
+				if ( !ValidateScriptScope() )
+				{
+					g_pScriptVM->ReleaseScript(hAddScript);
+					return;
+				}
 				m_ScriptScope.Run( hAddScript );
 				HSCRIPT hAddFunc = m_ScriptScope.LookupFunction( "__AppendToScriptGroup" );
 				if ( hAddFunc )

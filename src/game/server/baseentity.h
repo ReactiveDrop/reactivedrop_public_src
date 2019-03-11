@@ -537,6 +537,8 @@ public:
 	bool		NameMatchesExact( string_t nameStr );
 	bool		ClassMatchesExact( string_t nameStr );
 
+	void		MarkNeedsNamePurge();
+
 	template <typename T>
 	bool		Downcast( string_t iszClass, T **ppResult );
 
@@ -906,7 +908,8 @@ public:
 	virtual bool	IsBaseTrain( void ) const { return false; }
 	bool			IsBSPModel() const;
 	bool			IsInWorld( void ) const;
-	virtual bool	IsAlien(void) const { return false; }
+	virtual bool	IsAlien( void ) const { return false; } //Orange. This function sucks since used for vscript and returns also buzzers. We cant change in within DEFINE_SCRIPTFUNC_NAMED without breaking class tables compatibility
+	virtual bool	IsAlienClassType( void ) const { return false; }
 
 	virtual bool	IsBaseCombatWeapon( void ) const { return false; }
 	virtual CBaseCombatWeapon *MyCombatWeaponPointer( void ) { return NULL; }
@@ -1798,6 +1801,8 @@ private:
 
 	bool m_bNetworkQuantizeOriginAndAngles;
 	bool m_bLagCompensate; // Special flag for certain l4d2 props to use
+
+	bool m_bForcePurgeFixedupStrings; // For template entites so we don't leak strings.
 	
 public:
 	// Accessors for above
@@ -2061,6 +2066,11 @@ inline bool CBaseEntity::NameMatches( string_t nameStr )
 	if ( IDENT_STRINGS(m_iName, nameStr) )
 		return true;
 	return NameMatchesComplex( STRING(nameStr) );
+}
+
+inline void CBaseEntity::MarkNeedsNamePurge()
+{
+	m_bForcePurgeFixedupStrings = true;
 }
 
 inline bool CBaseEntity::NameMatchesExact( string_t nameStr )
@@ -2619,15 +2629,15 @@ inline int CBaseEntity::GetModelIndex( void ) const
 //-----------------------------------------------------------------------------
 inline const Vector& CBaseEntity::WorldAlignMins( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMins();
 }
 
 inline const Vector& CBaseEntity::WorldAlignMaxs( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMaxs();
 }
 

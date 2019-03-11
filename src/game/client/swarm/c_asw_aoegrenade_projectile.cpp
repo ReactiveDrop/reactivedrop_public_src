@@ -165,6 +165,7 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 {
 	// Find all the targets we've stopped giving a buff to
 	AOEGrenTargetFXList_t::IndexLocalType_t i = m_hAOETargetEffects.Head();
+	C_BaseEntity* pTar;
 	while ( m_hAOETargetEffects.IsValidIndex(i) )
 	{
 		AOETargetEffects_t &aoeTargetEffect = m_hAOETargetEffects[i];
@@ -190,14 +191,18 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 			ParticleProp()->StopEmission( aoeTargetEffect.pEffect );
 
 			// stop the sound on this marine
-			C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>( m_hAOETargetEffects[oldi].hTarget.Get() );
-			if ( pMarine && pMarine->GetCommander() )
+			pTar = m_hAOETargetEffects[oldi].hTarget.Get();
+			if (pTar && pTar->Classify() == CLASS_ASW_MARINE )
 			{
-				C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-				if ( pMarine->GetCommander() == pLocalPlayer && pMarine->IsInhabited() && m_hAOETargetEffects[oldi].pBuffLoopSound )
+				C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pTar);
+				if (pMarine->GetCommander())
 				{
-					CSoundEnvelopeController::GetController().SoundDestroy( m_hAOETargetEffects[oldi].pBuffLoopSound );
-					m_hAOETargetEffects[oldi].pBuffLoopSound = NULL;
+					C_ASW_Player* pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+					if (pMarine->GetCommander() == pLocalPlayer && pMarine->IsInhabited() && m_hAOETargetEffects[oldi].pBuffLoopSound)
+					{
+						CSoundEnvelopeController::GetController().SoundDestroy(m_hAOETargetEffects[oldi].pBuffLoopSound);
+						m_hAOETargetEffects[oldi].pBuffLoopSound = NULL;
+					}
 				}
 			}
 

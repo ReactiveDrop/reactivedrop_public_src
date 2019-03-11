@@ -19,8 +19,7 @@
 // For vec_t, put this somewhere else?
 #include "tier0/basetypes.h"
 
-// For rand(). We really need a library!
-#include <stdlib.h>
+#include "vstdlib/random.h"
 
 #include "tier0/dbg.h"
 #include "mathlib/math_pfns.h"
@@ -239,8 +238,8 @@ inline void Vector2D::Init( vec_t ix, vec_t iy )
 
 inline void Vector2D::Random( float minVal, float maxVal )
 {
-	x = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	y = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
+	x = RandomFloat( minVal, maxVal );
+	y = RandomFloat( minVal, maxVal );
 }
 
 inline void Vector2DClear( Vector2D& a )

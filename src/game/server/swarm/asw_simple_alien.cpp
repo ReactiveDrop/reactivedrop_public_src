@@ -155,21 +155,22 @@ float CASW_Simple_Alien::GetZigZagChaseDistance() const
 Vector& CASW_Simple_Alien::GetChaseDestination(CBaseEntity *pEnt)
 {
 	static Vector vecDest = vec3_origin;
-	vecDest = pEnt->GetAbsOrigin();
 
 	if (!pEnt)
 		return vecDest;
 
+	vecDest = pEnt->GetAbsOrigin();
+
 	Vector vecDiff = vecDest - GetAbsOrigin();
 	vecDiff.z = 0;
 	float dist = vecDiff.Length2D();
-    if (dist > GetZigZagChaseDistance())	// do we need to zig zag?
+	if (dist > GetZigZagChaseDistance())	// do we need to zig zag?
 	{
 		QAngle angSideways(0, UTIL_VecToYaw(vecDiff), 0);
 		Vector vecForward, vecRight, vecUp;
 		AngleVectors(angSideways, &vecForward, &vecRight, &vecUp);
-		
-        vecDest = GetAbsOrigin() + vecForward * 92.0f + vecRight * (random->RandomFloat() * 144 - 72);
+
+		vecDest = GetAbsOrigin() + vecForward * 92.0f + vecRight * (random->RandomFloat() * 144 - 72);
 	}
 	return vecDest;
 }
@@ -519,8 +520,7 @@ bool CASW_Simple_Alien::FailedMove()
 	{
 		Vector vecNormal = m_MoveFailure.trace.plane.normal;
 		// todo: if we've hit a marine, hurt him?
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(m_MoveFailure.trace.m_pEnt);
-		if (pMarine)
+		if ( m_MoveFailure.trace.m_pEnt->Classify() == CLASS_ASW_MARINE )
 		{
 			// it's okay to be stuck on a marine, since that means we're probably clawing him to bits!
 			return false;
@@ -1050,6 +1050,7 @@ bool CASW_Simple_Alien::ShouldGib( const CTakeDamageInfo &info )
 
 bool CASW_Simple_Alien::CorpseGib( const CTakeDamageInfo &info )
 {
+	/*
 	CEffectData	data;
 
 	data.m_vOrigin = WorldSpaceCenter();
@@ -1059,6 +1060,7 @@ bool CASW_Simple_Alien::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = RemapVal( m_iHealth, 0, -500, 1, 3 );
 	data.m_flScale = clamp( data.m_flScale, 1, 3 );
 	data.m_nColor = m_nSkin;
+	*/
 
 	//DispatchEffect( "DroneGib", data );
 
@@ -1231,7 +1233,7 @@ int CASW_Simple_Alien::DrawDebugTextOverlays()
 	{
 		char tempstr[512];
 		// health
-		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i", m_iHealth );
+		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i", m_iHealth.Get() );
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
 		// state

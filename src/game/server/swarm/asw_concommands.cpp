@@ -900,7 +900,7 @@ void asw_ai_report_specific(const char* szClass)
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
 	{
-		CAI_BaseNPC* pAI = dynamic_cast<CAI_BaseNPC*>(pEntity);			
+		CAI_BaseNPC* pAI = pEntity->MyNPCPointer();			
 		if (pAI)
 		{
 			if (pAI->GetEfficiency() == AIE_NORMAL)
@@ -949,7 +949,7 @@ void asw_drone_cycle_f()
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_drone" )) != NULL)
 	{
-		CAI_BaseNPC* pAI = dynamic_cast<CAI_BaseNPC*>(pEntity);			
+		CAI_BaseNPC* pAI = pEntity->MyNPCPointer();			
 		if (pAI)
 		{
 			Msg("[%d:%s] Cycle=%f", pAI->entindex(),
@@ -1096,7 +1096,7 @@ void asw_marine_server_anim_f()
 				{
 					int iSeq = pLayer->m_nSequence;
 					Msg("Layer %d sequence %d (%s) A:%s W:%f C:%f\n", i, iSeq, pMarine->GetSequenceName(iSeq),
-						pMarine->GetSequenceActivityName(iSeq), pLayer->m_flWeight, pLayer->m_flCycle);
+						pMarine->GetSequenceActivityName(iSeq), pLayer->m_flWeight.Get(), pLayer->m_flCycle.Get());
 				}
 			}
 		}
@@ -1125,7 +1125,7 @@ void listmarineresources_server_f(void)
 		else
 		{
 			Msg("MarineResource %d = present, profileindex %d, commander %d commander index %d\n",
-				i, pGameResource->GetMarineResource(i)->m_MarineProfileIndex,
+				i, pGameResource->GetMarineResource(i)->m_MarineProfileIndex.Get(),
 				pGameResource->GetMarineResource(i)->GetCommander(),
 				pGameResource->GetMarineResource(i)->m_iCommanderIndex.Get());
 		}
@@ -1340,14 +1340,14 @@ void asw_set_drone_skin_f(const CCommand &args)
 	int iSkin = atoi(args[1]);
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_drone_advanced" )) != NULL)
 	{
-		CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pEntity);
+		CBaseAnimating *pAnim = pEntity->GetBaseAnimating();
 		if (pAnim)
 			pAnim->m_nSkin = iSkin;
 	}
 	pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_simple_drone" )) != NULL)
 	{
-		CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pEntity);
+		CBaseAnimating *pAnim = pEntity->GetBaseAnimating();
 		if (pAnim)
 			pAnim->m_nSkin = iSkin;
 	}
@@ -1973,7 +1973,7 @@ void cc_asw_inventory()
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 	if ( pPlayer->GetMarine() )
 	{
-		for (int i=0;i<pPlayer->GetMarine()->WeaponCount();i++)
+		for (int i=0;i<ASW_MAX_MARINE_WEAPONS;i++)
 		{
 			CBaseEntity *pWeapon = pPlayer->GetMarine()->GetWeapon(i);
 			if ( pWeapon )

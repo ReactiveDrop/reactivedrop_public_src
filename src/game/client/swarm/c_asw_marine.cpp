@@ -1199,7 +1199,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		m_bLastNoDraw = bNoDraw;
 
 		// give weapons a chance to update visibility as I'm hidden/shown
-		for ( int i = 0; i < WeaponCount(); i++ )
+		for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 		{
 			C_BaseCombatWeapon	*pWeapon = GetWeapon( i );
 			if ( pWeapon )
@@ -2465,14 +2465,8 @@ void C_ASW_Marine::UpdateOnRemove()
 // helper for movement code which will disable movement in controller mode if you're interacting and need those directionals
 bool C_ASW_Marine::IsUsingComputerOrButtonPanel()
 {
-	return m_hUsingEntity.Get() && (
-									dynamic_cast<C_ASW_Button_Area*>(m_hUsingEntity.Get()) ||
-										(
-											dynamic_cast<C_ASW_Computer_Area*>(m_hUsingEntity.Get()) &&
-											!IsControllingTurret()
-										)
-		
-									);
+	CBaseEntity* pUsing = m_hUsingEntity.Get();
+	return pUsing && ( pUsing->Classify() == CLASS_ASW_BUTTON_PANEL || ( pUsing->Classify() == CLASS_ASW_COMPUTER_AREA && !IsControllingTurret() ) );
 }
 
 void C_ASW_Marine::CreateShoulderCone()

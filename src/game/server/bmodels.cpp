@@ -426,6 +426,9 @@ protected:
 
 	float GetNextMoveInterval() const;
 
+	// If our euler angle is starting to get too big, normalize it
+	void NormalizeAngleIfNeeded();
+
 	// Input handlers
 	void InputSetSpeed( inputdata_t &inputdata );
 	void InputStart( inputdata_t &inputdata );
@@ -695,6 +698,11 @@ void CFuncRotating::Spawn( )
 		SetThink( &CFuncRotating::SUB_CallUseToggle );
 		SetNextThink( gpGlobals->curtime + .2 );	// leave a magic delay for client to start up
 	}
+	else
+	{
+		SetThink( &CFuncRotating::NormalizeAngleIfNeeded );
+		SetNextThink( gpGlobals->curtime + .2 );
+	}
 
 	//
 	// Can this brush inflict pain?
@@ -843,6 +851,42 @@ float CFuncRotating::GetNextMoveInterval() const
 	}
 	return 0.1f;
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: stop our rotation value from becoming too large
+//-----------------------------------------------------------------------------
+void CFuncRotating::NormalizeAngleIfNeeded()
+{
+	// entity max angle is 1000 rotations, so we'll renormalize after ~200.
+	// note that we expect this to be a multiple of 360
+	static const float kMaxAngle = 200 * 360.0f;
+	
+	// check our rotation for normalization every 15-30 seconds.
+	static const float kTimeToRenormalize = 15.0f;
+
+	// check angle
+	QAngle angle = GetLocalAngles();
+	bool ok = true;
+	if ( angle.x > kMaxAngle )  { ok = false; angle.x -= kMaxAngle; }
+	if ( angle.x < -kMaxAngle ) { ok = false; angle.x += kMaxAngle; }
+	if ( angle.y > kMaxAngle )  { ok = false; angle.y -= kMaxAngle; }
+	if ( angle.y < -kMaxAngle ) { ok = false; angle.y += kMaxAngle; }
+	if ( angle.z > kMaxAngle )  { ok = false; angle.z -= kMaxAngle; }
+	if ( angle.z < -kMaxAngle ) { ok = false; angle.z += kMaxAngle; }
+
+	// if we changed it, update with new values
+	if ( !ok )
+	{
+		// Disable interpolation on this entity for 1 frame (so it doesn't 'spin backwards 100 times')
+		AddEffects( EF_NOINTERP );
+		SetLocalAngles( angle );
+	}
+
+	// think at semi-random intervals so func rotatings don't all stack up on the same tick
+	SetThink( &CFuncRotating::NormalizeAngleIfNeeded );
+	SetNextThink( gpGlobals->curtime + RandomFloat( kTimeToRenormalize, kTimeToRenormalize * 2.0f ) );
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets the current speed to the given value and manages the sound effects.
@@ -1201,6 +1245,10 @@ void CFuncRotating::RotatingUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	{
 		SetTargetSpeed( m_flMaxSpeed );
 	}
+
+	// start renormalization thinker
+	SetThink( &CFuncRotating::NormalizeAngleIfNeeded );
+	SetNextThink( gpGlobals->curtime + 0.2f );
 }
 
 

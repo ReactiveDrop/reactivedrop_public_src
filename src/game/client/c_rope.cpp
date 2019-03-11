@@ -893,7 +893,12 @@ C_RopeKeyframe* C_RopeKeyframe::Create(
 {
 	C_RopeKeyframe *pRope = new C_RopeKeyframe;
 
-	pRope->InitializeAsClientEntity( NULL, false );
+	if (!pRope->InitializeAsClientEntity(NULL, false))
+	{
+		Msg("Error, couldn't Initialize Rope AsClientEntity\n");
+		UTIL_Remove(pRope);
+		return NULL;
+	}
 	
 	if ( pStartEnt )
 	{

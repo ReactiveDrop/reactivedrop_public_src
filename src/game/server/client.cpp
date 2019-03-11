@@ -56,6 +56,8 @@ void ClientKill( edict_t *pEdict, const Vector &vecForce, bool bExplode = false 
 	pPlayer->CommitSuicide( vecForce, bExplode );
 }
 
+#define P_MAX_LEN 127 //used in CheckChatText and Host_Say to limit p pointer where pszFormat + pszPrefix + pszLocation + p as main text and few more symbols define the full text string. should be under 256
+//also seems not to be really usefull without client adjustment m_pInput->SetMaximumCharCount( 127 ); in hud_basechat.cpp
 char * CheckChatText( CBasePlayer *pPlayer, char *text )
 {
 	char *p = text;
@@ -74,9 +76,9 @@ char * CheckChatText( CBasePlayer *pPlayer, char *text )
 		p[length] = 0;
 	}
 
-	// cut off after 127 chars
-	if ( length > 127 )
-		text[127] = 0;
+	// cut off after P_MAX_LEN chars
+	if ( length > P_MAX_LEN )
+		p[P_MAX_LEN] = 0;
 
 	GameRules()->CheckChatText( pPlayer, p );
 
@@ -109,7 +111,10 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	{
 		if ( args.ArgC() >= 2 )
 		{
-			p = (char *)args.ArgS();
+			//p = (char *)args.ArgS();
+			Q_strncpy(szTemp, args.ArgS(), sizeof(szTemp) - 1);
+			szTemp[sizeof(szTemp) - 1] = '\0';
+			p = szTemp;
 		}
 		else
 		{
@@ -121,12 +126,12 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	{
 		if ( args.ArgC() >= 2 )
 		{
-			Q_snprintf( szTemp,sizeof(szTemp), "%s %s", ( char * )pcmd, (char *)args.ArgS() );
+			Q_snprintf( szTemp,sizeof(szTemp), "%s %s", pcmd, args.ArgS() );
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_snprintf( szTemp,sizeof(szTemp), "%s", ( char * )pcmd );
+			Q_snprintf( szTemp,sizeof(szTemp), "%s", pcmd );
 		}
 		p = szTemp;
 	}
@@ -150,8 +155,8 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 			return;
 
 		// See if the player wants to modify of check the text
-		pPlayer->CheckChatText( p, 127 );	// though the buffer szTemp that p points to is 256, 
-											// chat text is capped to 127 in CheckChatText above
+		pPlayer->CheckChatText( p, P_MAX_LEN );	// though the buffer szTemp that p points to is 256, 
+											// chat text is capped to P_MAX_LEN in CheckChatText above //this one is actually empty
 
 		// make sure the text has valid content
 		p = CheckChatText( pPlayer, p );
@@ -1855,6 +1860,7 @@ void ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 			}
 		}
 	}
+#ifdef _DEBUG
 	else if ( FStrEq( pCmd, "bugpause" ) )
 	{
 		// bug reporter opening, pause all connected clients
@@ -1867,6 +1873,7 @@ void ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 		// bug reporter closing, unpause all connected clients
 		engine->Pause( false, true );
 	}
+#endif
 	else 
 	{
 		if ( !g_pGameRules->ClientCommand( pPlayer, args ) )

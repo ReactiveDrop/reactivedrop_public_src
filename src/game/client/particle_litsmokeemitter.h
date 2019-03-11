@@ -22,7 +22,7 @@
 class CLitSmokeEmitter : public CSimpleEmitter
 {
 public:
-	CLitSmokeEmitter( const char *pDebugName );
+	explicit CLitSmokeEmitter( const char *pDebugName );
 
 	virtual void	Update( float flTimeDelta );
 	virtual void	StartRender( VMatrix &effectMatrix );

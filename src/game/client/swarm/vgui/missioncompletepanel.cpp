@@ -52,6 +52,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pFailAdvice = new vgui::Label( this, "FailAdvice", "" );
 	m_pFailAdvice->SetMouseInputEnabled( false );
 	m_pIconForwardArrow = new vgui::ImagePanel( this, "IconForwardArrow" );
+	m_pIconForwardArrow->SetMouseInputEnabled( false );
 
 	m_PropertySheet = NULL;
 	m_bSetAlpha = false;

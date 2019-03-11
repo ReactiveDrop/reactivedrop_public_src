@@ -157,16 +157,17 @@ void CASW_Boomer::DeathSound( const CTakeDamageInfo &info )
 int CASW_Boomer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	CTakeDamageInfo infoNew( info );
+	CBaseEntity* pAttacker = infoNew.GetAttacker();
 
-	if ( infoNew.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		EHANDLE hAttacker = infoNew.GetAttacker();
+		EHANDLE hAttacker = pAttacker;
 		if ( m_hMarineAttackers.Find( hAttacker ) == m_hMarineAttackers.InvalidIndex() )
 		{
 			m_hMarineAttackers.AddToTail( hAttacker );
 		}
 
-		if ( infoNew.GetAttacker()->WorldSpaceCenter().DistTo( WorldSpaceCenter() ) < 40 )
+		if ( pAttacker->WorldSpaceCenter().DistTo( WorldSpaceCenter() ) < 40 )
 		{
 			// Stuck inside! Kill it good!
 			infoNew.ScaleDamage( 8 );
@@ -201,15 +202,20 @@ void CASW_Boomer::Event_Killed( const CTakeDamageInfo &info )
 			m_nDeathStyle = kDIE_BREAKABLE;
 		}
 
+		CBaseEntity* pEnt;
 		for ( int i = 0; i < m_hMarineAttackers.Count(); i++ )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( m_hMarineAttackers[i].Get() );
-			if ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() )
+			pEnt = m_hMarineAttackers[i].Get();
+			if (pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 			{
-				pMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_BOOMER_KILL_EARLY );
-				if ( pMarine->GetMarineResource() )
+				CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pEnt);
+				if (pMarine->IsInhabited() && pMarine->GetCommander())
 				{
-					pMarine->GetMarineResource()->m_bKilledBoomerEarly = true;
+					pMarine->GetCommander()->AwardAchievement(ACHIEVEMENT_ASW_BOOMER_KILL_EARLY);
+					if (pMarine->GetMarineResource())
+					{
+						pMarine->GetMarineResource()->m_bKilledBoomerEarly = true;
+					}
 				}
 			}
 		}
@@ -234,9 +240,10 @@ bool CASW_Boomer::CanDoFancyDeath()
 //-----------------------------------------------------------------------------
 bool CASW_Boomer::CorpseGib( const CTakeDamageInfo &info )
 {
-	CEffectData	data;
-
 	m_LagCompensation.UndoLaggedPosition();
+
+	/*
+	CEffectData	data;
 
 	data.m_vOrigin = WorldSpaceCenter();
 	data.m_vNormal = data.m_vOrigin - info.GetDamagePosition();
@@ -245,6 +252,7 @@ bool CASW_Boomer::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = RemapVal( m_iHealth, 0, 3, 0.5f, 2 );
 	data.m_nColor = m_nSkin;
 	data.m_fFlags = IsOnFire() ? ASW_GIBFLAG_ON_FIRE : 0;
+	*/
 
 	return true;
 }

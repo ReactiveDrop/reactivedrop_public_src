@@ -95,13 +95,17 @@ bool CASW_Use_Area::RequirementsMet( CBaseEntity *pUser )
 
 	int nTouchingMarines = 0;
 
+	CBaseEntity* pEnt;
 	for ( int nEnt = 0; nEnt < m_hTouchingEntities.Count(); ++nEnt )
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine *>( m_hTouchingEntities[ nEnt ].Get() );
-
-		if ( pMarine && pMarine->IsAlive() && !pMarine->m_bKnockedOut )
+		pEnt = m_hTouchingEntities[nEnt].Get();
+		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 		{
-			nTouchingMarines++;
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pEnt );
+			if (pMarine->IsAlive() && !pMarine->m_bKnockedOut)
+			{
+				nTouchingMarines++;
+			}
 		}
 	}
 

@@ -1837,7 +1837,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 		CBaseEntity *pEntity = NULL;
 		for ( CEntitySphereQuery sphere( origin, m_explodeRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 		{
-			if( pEntity && pEntity->MyCombatCharacterPointer() )
+			if( pEntity->MyCombatCharacterPointer() )
 			{
 				// Check damage filters so we don't ignite friendlies
 				if ( pEntity->PassesDamageFilter( info ) )
@@ -1860,12 +1860,12 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 		CBaseEntity *pEntity = NULL;
 		for ( CEntitySphereQuery sphere( origin, m_explodeRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 		{
-			if( pEntity && pEntity->MyCombatCharacterPointer() )
+			if( pEntity->MyCombatCharacterPointer() )
 			{
 				// Check damage filters so we don't ignite friendlies
 				if ( pEntity->PassesDamageFilter( info ) )
 				{
-					CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC*>( pEntity );
+					CAI_BaseNPC *pNPC = pEntity->MyNPCPointer();
 					if ( pNPC )
 					{
 						pNPC->Freeze( 4.0f, pAttacker );
@@ -2241,12 +2241,18 @@ void CDynamicProp::AnimThink( void )
 		m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
 	}
 
-	if ( ((m_iTransitionDirection > 0 && GetCycle() >= 0.999f) || (m_iTransitionDirection < 0 && GetCycle() <= 0.0f)) && !SequenceLoops() )
+	float flPlaybackRate = GetPlaybackRate();
+	bool bPlayingForward = (flPlaybackRate >= 0.0f);
+
+	bool bPropFinished = ((bPlayingForward && GetCycle() >= 0.999f) || (!bPlayingForward && GetCycle() <= 0.0f)) && !SequenceLoops();
+
+	if ( bPropFinished )
 	{
 		Assert( m_iGoalSequence >= 0 );
 		if (GetSequence() != m_iGoalSequence)
 		{
 			PropSetSequence( m_iGoalSequence );
+			bPropFinished = false;
 		}
 		else
 		{
@@ -2263,6 +2269,7 @@ void CDynamicProp::AnimThink( void )
 				if ( m_iszDefaultAnim != NULL_STRING && m_bHoldAnimation == false )
 				{
 					PropSetAnim( STRING( m_iszDefaultAnim ) );
+					bPropFinished = false;
 				}
 
 				// We need to wait for an animation change to come in
@@ -2276,6 +2283,12 @@ void CDynamicProp::AnimThink( void )
 	else
 	{
 		SetNextThink( gpGlobals->curtime + 0.1f );
+	}
+
+	// if we've already stopped animating and have nothing left to do, skip the rest
+	if ( bPropFinished && m_nPendingSequence == -1 && IsSequenceFinished() )
+	{
+		return;
 	}
 
 	StudioFrameAdvance();
@@ -2752,7 +2765,17 @@ bool CPhysicsProp::CreateVPhysics()
 			tmpSolid.params.inertia = 0.5;
 	}
 
-	PhysGetMassCenterOverride( this, modelinfo->GetVCollide( GetModelIndex() ), tmpSolid );
+	vcollide_t* pVCollide = modelinfo->GetVCollide( GetModelIndex() );
+
+	if ( !pVCollide )
+	{
+		SetSolid( SOLID_NONE );
+		SetMoveType( MOVETYPE_NONE );
+		Warning( "ERROR!: Can't create collision for %s\n", STRING( GetModelName() ) );
+		return false;
+	}
+
+	PhysGetMassCenterOverride( this, pVCollide, tmpSolid );
 	if ( HasSpawnFlags(SF_PHYSPROP_NO_COLLISIONS) )
 	{
 		tmpSolid.params.enableCollisions = false;
@@ -2765,7 +2788,7 @@ bool CPhysicsProp::CreateVPhysics()
 	{
 		SetSolid( SOLID_NONE );
 		SetMoveType( MOVETYPE_NONE );
-		Warning("ERROR!: Can't create physics object for %s\n", STRING( GetModelName() ) );
+		Warning( "ERROR!: Can't create physics object for %s\n", STRING( GetModelName() ) );
 		return false;
 	}
 
@@ -3628,7 +3651,7 @@ static CBreakableProp *BreakModelCreate_Prop( CBaseEntity *pOwner, breakmodel_t 
 		pEntity->Spawn();
 
 		// If we're burning, break into burning pieces
-		CBaseAnimating *pAnimating = dynamic_cast<CBreakableProp *>(pOwner);
+		CBaseAnimating *pAnimating = pOwner ? pOwner->GetBaseAnimating() : NULL;
 		if ( pAnimating && pAnimating->IsOnFire() )
 		{
 			CEntityFlame *pOwnerFlame = dynamic_cast<CEntityFlame*>( pAnimating->GetEffectEntity() );
@@ -3804,6 +3827,7 @@ bool PropBreakableCapEdictsOnCreateAll(int modelindex, IPhysicsObject *pPhysics,
 {
 	// @Note (toml 10-07-03): this is stop-gap to prevent this function from crashing the engine
 	const int BREATHING_ROOM = 64;
+	int nCurrentEntityCount = engine->GetEntityCount();
 
 	CUtlVector<breakmodel_t> list;
 	BreakModelList( list, modelindex, params.defBurstScale, params.defCollisionGroup );
@@ -3818,12 +3842,21 @@ bool PropBreakableCapEdictsOnCreateAll(int modelindex, IPhysicsObject *pPhysics,
 	{
 		if ( list.Count() ) 
 		{
-			for ( int i = 0; i < list.Count(); i++ )
+			// if there are enough don't bother checking each piece
+			int nCurrentAvailable = MAX_EDICTS - (nCurrentEntityCount + BREATHING_ROOM);
+			if ( nCurrentAvailable > list.Count() )
 			{
-				int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
-				if ( modelIndex <= 0 )
-					continue;
-				numToCreate++;
+				numToCreate = list.Count();
+			}
+			else
+			{
+				for ( int i = 0; i < list.Count(); i++ )
+				{
+					int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
+					if ( modelIndex <= 0 )
+						continue;
+					numToCreate++;
+				}
 			}
 		}
 		// Then see if the propdata specifies any breakable pieces
@@ -3837,7 +3870,7 @@ bool PropBreakableCapEdictsOnCreateAll(int modelindex, IPhysicsObject *pPhysics,
 		}
 	}
 
-	return ( !numToCreate || ( engine->GetEntityCount() + numToCreate + BREATHING_ROOM < MAX_EDICTS ) );
+	return ( !numToCreate || ( nCurrentEntityCount + numToCreate + BREATHING_ROOM < MAX_EDICTS ) );
 }
 
 
@@ -4557,11 +4590,14 @@ void CBasePropDoor::DoorOpenMoveDone(void)
 		}
 	}
 
-	CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC *>(m_hActivator.Get());
-	if (pNPC)
+	if ( m_hActivator.Get() ) //Orange. m_hActivator.Get() seems to be null on asw_door opening. why?? do we need to fix??
 	{
-		// Notify the NPC that opened us.
-		pNPC->OnDoorFullyOpen(this);
+		CAI_BaseNPC* pNPC = m_hActivator.Get()->MyNPCPointer();
+		if (pNPC)
+		{
+			// Notify the NPC that opened us.
+			pNPC->OnDoorFullyOpen(this);
+		}
 	}
 
 	m_OnFullyOpen.FireOutput(this, this);
@@ -4763,14 +4799,15 @@ void CBasePropDoor::OnStartBlocked( CBaseEntity *pOther )
 			DoorClose();
 		}
 
-		CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC *>(m_hActivator.Get());
-		
-		if ( pNPC != NULL )
+		if (m_hActivator.Get())
 		{
-			// Notify the NPC that tried to open us.
-			pNPC->OnDoorBlocked( this );
+			CAI_BaseNPC* pNPC = m_hActivator.Get()->MyNPCPointer();
+			if (pNPC != NULL)
+			{
+				// Notify the NPC that tried to open us.
+				pNPC->OnDoorBlocked(this);
+			}
 		}
-
 		m_OnBlockedOpening.FireOutput( pOther, this );
 	}
 }
@@ -5827,7 +5864,7 @@ void CPropDoorRotating::GetNPCOpenData(CAI_BaseNPC *pNPC, opendata_t &opendata)
 	opendata.vecStandPos = GetAbsOrigin() - (vecRight * 24);
 	opendata.vecStandPos.z -= 54;
 
-	Vector vecNPCOrigin = pNPC->GetAbsOrigin();
+	//Vector vecNPCOrigin = pNPC->GetAbsOrigin();
 
 	if (pNPC->GetAbsOrigin().Dot(vecForward) > GetAbsOrigin().Dot(vecForward))
 	{

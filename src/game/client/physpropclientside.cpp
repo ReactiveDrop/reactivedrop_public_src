@@ -665,7 +665,7 @@ void C_PhysPropClientside::ParseAllEntities(const char *pMapData)
 
 CBaseAnimating *BreakModelCreate_Ragdoll( CBaseEntity *pOwnerEnt, breakmodel_t *pModel, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity )
 {
-	C_BaseAnimating *pOwner = dynamic_cast<C_BaseAnimating *>( pOwnerEnt );
+	C_BaseAnimating *pOwner = pOwnerEnt->GetBaseAnimating();
 	if ( !pOwner )
 		return NULL;
 

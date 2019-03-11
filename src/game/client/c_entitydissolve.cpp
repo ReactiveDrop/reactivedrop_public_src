@@ -55,7 +55,7 @@ PMaterialHandle g_Material_AR2Glow = NULL;
 C_EntityDissolve::C_EntityDissolve( void )
 {
 	m_bLinkedToServerEnt = true;
-	m_pController = false;
+	m_pController = NULL;
 	m_bCoreExplode = false;
 }
 
@@ -71,7 +71,7 @@ void C_EntityDissolve::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 	else
 	{
 		theMins = GetAbsOrigin();
-		theMaxs = theMaxs;
+		theMaxs = theMins;
 	}
 }
 
@@ -556,10 +556,9 @@ void C_EntityDissolve::ClientThink( void )
 		{
 			Release();
 
-			C_ClientRagdoll *pRagdoll = dynamic_cast <C_ClientRagdoll *> ( pAnimating );
-
-			if ( pRagdoll )
+			if ( pAnimating->IsClientRagdoll() )
 			{
+				C_ClientRagdoll* pRagdoll = assert_cast <C_ClientRagdoll*> ( pAnimating );
 				pRagdoll->ReleaseRagdoll();
 			}
 		}

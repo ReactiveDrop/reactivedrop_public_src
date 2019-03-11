@@ -253,7 +253,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pXPBar->Init( nXP, nXP, 1.0, true, false );
 	
 		wchar_t szLevelNum[16]=L"";
-		_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel );
+		V_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel );
 
 		wchar_t wzLevelLabel[64];
 		g_pVGuiLocalize->ConstructString( wzLevelLabel, sizeof( wzLevelLabel ), g_pVGuiLocalize->Find( "#nb_commander_level" ), 1, szLevelNum );

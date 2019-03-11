@@ -152,7 +152,7 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 	
 
 	wchar_t wnumber[8];
-	_snwprintf( wnumber, ARRAYSIZE( wnumber ), L"%d", iRequiredLevel + 1 ); /// levels start from 0 in code, but show from 1 in the UI
+	V_snwprintf( wnumber, ARRAYSIZE( wnumber ), L"%d", iRequiredLevel + 1 ); /// levels start from 0 in code, but show from 1 in the UI
 
 	wchar_t wbuffer[96];
 	g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),

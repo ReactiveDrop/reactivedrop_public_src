@@ -460,7 +460,7 @@ class C_DroneGib : public C_Gib
 	typedef C_Gib BaseClass;
 public:
 	
-	static C_DroneGib *C_DroneGib::CreateClientsideGib( const char *pszModelName,
+	static C_DroneGib* CreateClientsideGib( const char *pszModelName,
 		Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp,
 		float m_flLifetime = DEFAULT_GIB_LIFETIME, int skin=0 )
 	{
@@ -507,6 +507,7 @@ public:
 				else
 				{
 					UTIL_Remove(pEmitter);
+					return NULL;
 				}
 			}
 		}
@@ -1049,43 +1050,48 @@ DECLARE_CLIENT_EFFECT( QueenSpitBurst, QueenSpitBurstCallback );
 // egg gibs
 void FX_EggGibs( const Vector &origin, int flags, int iEntIndex )
 {
-	C_ASW_Egg *pEgg = dynamic_cast<C_ASW_Egg*>(ClientEntityList().GetEnt(iEntIndex));
-	MDLCACHE_CRITICAL_SECTION();
-	C_BaseAnimating::PushAllowBoneAccess( true, false, "FX_EggGibs" );
-
-	if (flags & EGG_FLAG_OPEN && pEgg)
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iEntIndex);
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_EGG )
 	{
-		DispatchParticleEffect( "egg_open", PATTACH_POINT_FOLLOW, pEgg, "attach_death" );
+		C_ASW_Egg* pEgg = assert_cast<C_ASW_Egg*>(pEnt);
+
+		MDLCACHE_CRITICAL_SECTION();
+		C_BaseAnimating::PushAllowBoneAccess(true, false, "FX_EggGibs");
+
+		if (flags & EGG_FLAG_OPEN)
+		{
+			DispatchParticleEffect("egg_open", PATTACH_POINT_FOLLOW, pEgg, "attach_death");
+		}
+
+		if (flags & EGG_FLAG_HATCH)
+		{
+			DispatchParticleEffect("egg_hatch", PATTACH_POINT_FOLLOW, pEgg, "attach_death");
+		}
+
+		if (flags & EGG_FLAG_DIE)
+		{
+			DispatchParticleEffect("egg_death", origin, QAngle(0, 0, 0));
+		}
+
+		if (flags & EGG_FLAG_GRUBSACK_DIE)
+		{
+			DispatchParticleEffect("grubsack_death", origin, QAngle(0, 0, 0));
+		}
+
+		CLocalPlayerFilter filter;
+		CSoundParameters params;
+
+		// make a gib sound
+		if (C_BaseEntity::GetParametersForSound("ASW_Drone.GibSplatQuiet", params, NULL))
+		{
+			EmitSound_t ep(params);
+			ep.m_pOrigin = &origin;
+
+			C_BaseEntity::EmitSound(filter, 0, ep);
+		}
+
+		C_BaseAnimating::PopBoneAccess("FX_EggGibs");
 	}
-
-	if (flags & EGG_FLAG_HATCH && pEgg)
-	{
-		DispatchParticleEffect( "egg_hatch", PATTACH_POINT_FOLLOW, pEgg, "attach_death" );
-	}
-
-	if (flags & EGG_FLAG_DIE)
-	{
-		DispatchParticleEffect( "egg_death", origin, QAngle( 0, 0, 0 ) );
-	}
-
-	if (flags & EGG_FLAG_GRUBSACK_DIE)
-	{
-		DispatchParticleEffect( "grubsack_death", origin, QAngle( 0, 0, 0 ) );
-	}
-
-	CLocalPlayerFilter filter;						
-	CSoundParameters params;
-
-	// make a gib sound
-	if ( C_BaseEntity::GetParametersForSound( "ASW_Drone.GibSplatQuiet", params, NULL ) )
-	{
-		EmitSound_t ep( params );
-		ep.m_pOrigin = &origin;
-
-		C_BaseEntity::EmitSound( filter, 0, ep );
-	}
-
-	C_BaseAnimating::PopBoneAccess( "FX_EggGibs" );
 }
 
 
@@ -1373,7 +1379,7 @@ void FX_ElectoStun(C_BaseAnimating *pAnimating);
 
 void ElectroStunCallback( const CEffectData &data )
 {
-	C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>(data.GetEntity());
+	C_BaseAnimating* pAnimating = data.GetEntity()->GetBaseAnimating();
 	if (pAnimating)
 		FX_ElectroStun( pAnimating );
 }
@@ -1551,7 +1557,7 @@ void FX_ExtinguisherCloud( C_BaseAnimating *pEnt, const Vector &pos)
 
 void ExtinguisherCloudCallback( const CEffectData & data )
 {
-	C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>(data.GetEntity());
+	C_BaseAnimating* pAnimating = data.GetEntity()->GetBaseAnimating();
 	if (pAnimating)
 		FX_ExtinguisherCloud( pAnimating, data.m_vOrigin );
 	else
@@ -2366,22 +2372,27 @@ void DoAttributeTracer( C_ASW_Marine *pMarine, const Vector &vecEnd, int iAttrib
 static int asw_num_tracers = 0;
 void __MsgFunc_ASWUTracer( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracer( pMarine, vecEnd, iAttributeEffects );
-
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracer(pMarine, vecEnd, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracer );
@@ -2389,135 +2400,165 @@ USER_MESSAGE_REGISTER( ASWUTracer );
 void __MsgFunc_ASWUTracerless( bf_read &msg )
 {
 	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerless( pMarine, vecEnd, iAttributeEffects );	
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerless(pMarine, vecEnd, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerless );
 
 void __MsgFunc_ASWUTracerDual( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerDual( pMarine, vecEnd, (ASW_FX_TRACER_DUAL_LEFT | ASW_FX_TRACER_DUAL_RIGHT), iAttributeEffects );	
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerDual(pMarine, vecEnd, (ASW_FX_TRACER_DUAL_LEFT | ASW_FX_TRACER_DUAL_RIGHT), iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerDual );
 
 void __MsgFunc_ASWUTracerDualLeft( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerDual( pMarine, vecEnd, ASW_FX_TRACER_DUAL_LEFT, iAttributeEffects );	
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerDual(pMarine, vecEnd, ASW_FX_TRACER_DUAL_LEFT, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerDualLeft );
 
 void __MsgFunc_ASWUTracerDualRight( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerDual( pMarine, vecEnd, ASW_FX_TRACER_DUAL_RIGHT, iAttributeEffects );	
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerDual(pMarine, vecEnd, ASW_FX_TRACER_DUAL_RIGHT, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerDualRight );
 
 void __MsgFunc_ASWUTracerRG( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerRG( pMarine, vecEnd, iAttributeEffects );
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( pMarine, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerRG(pMarine, vecEnd, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(pMarine, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerRG );
 
 void __MsgFunc_ASWUTracerUnattached( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-	Vector vecStart;
-	vecStart.x = msg.ReadFloat();
-	vecStart.y = msg.ReadFloat();
-	vecStart.z = msg.ReadFloat();
-
-	asw_num_tracers++;
-
-	int iAttributeEffects = msg.ReadShort();
-	ASWUTracerUnattached( pMarine, vecStart, vecEnd, iAttributeEffects );
-	
-	if ( iAttributeEffects > 0 )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		DoAttributeTracer( vecStart, vecEnd, iAttributeEffects );
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+		Vector vecStart;
+		vecStart.x = msg.ReadFloat();
+		vecStart.y = msg.ReadFloat();
+		vecStart.z = msg.ReadFloat();
+
+		asw_num_tracers++;
+
+		int iAttributeEffects = msg.ReadShort();
+		ASWUTracerUnattached(pMarine, vecStart, vecEnd, iAttributeEffects);
+
+		if (iAttributeEffects > 0)
+		{
+			DoAttributeTracer(vecStart, vecEnd, iAttributeEffects);
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWUTracerUnattached );
@@ -2531,9 +2572,14 @@ void ASWUTracerCallback( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracer, ASWUTracerCallback );
 
@@ -2545,9 +2591,14 @@ void ASWUTracerRGCallback( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerRG( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerRG(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerRG, ASWUTracerRGCallback );
 
@@ -2559,9 +2610,14 @@ void ASWUTracerlessCallback( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerless( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerless(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerless, ASWUTracerlessCallback );
 
@@ -2573,9 +2629,14 @@ void ASWUTracerDualCallback( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerDual( pMarine, (Vector&)data.m_vOrigin, (ASW_FX_TRACER_DUAL_LEFT | ASW_FX_TRACER_DUAL_RIGHT), data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerDual(pMarine, (Vector&)data.m_vOrigin, (ASW_FX_TRACER_DUAL_LEFT | ASW_FX_TRACER_DUAL_RIGHT), data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerDual, ASWUTracerDualCallback );
 
@@ -2587,9 +2648,14 @@ void ASWUTracerDualCallbackRight( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerDual( pMarine, (Vector&)data.m_vOrigin, ASW_FX_TRACER_DUAL_RIGHT, data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerDual(pMarine, (Vector&)data.m_vOrigin, ASW_FX_TRACER_DUAL_RIGHT, data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerDualRight, ASWUTracerDualCallbackRight );
 
@@ -2601,9 +2667,14 @@ void ASWUTracerDualCallbackLeft( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerDual( pMarine, (Vector&)data.m_vOrigin, ASW_FX_TRACER_DUAL_LEFT, data.m_nMaterial );
-	DoAttributeTracer( pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerDual(pMarine, (Vector&)data.m_vOrigin, ASW_FX_TRACER_DUAL_LEFT, data.m_nMaterial);
+		DoAttributeTracer(pMarine, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerDualLeft, ASWUTracerDualCallbackLeft );
 
@@ -2615,9 +2686,14 @@ void ASWUTracerUnattachedCallback( const CEffectData &data )
 		return;
 
 	// Do tracer effect
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(data.GetEntity());
-	ASWUTracerUnattached( pMarine, (Vector&)data.m_vStart, (Vector&)data.m_vOrigin, data.m_nMaterial );
-	DoAttributeTracer( (Vector&)data.m_vStart, (Vector&)data.m_vOrigin, data.m_nMaterial );
+	C_BaseEntity* pData = data.GetEntity();
+	if ( pData && pData->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pData);
+
+		ASWUTracerUnattached(pMarine, (Vector&)data.m_vStart, (Vector&)data.m_vOrigin, data.m_nMaterial);
+		DoAttributeTracer((Vector&)data.m_vStart, (Vector&)data.m_vOrigin, data.m_nMaterial);
+	}
 }
 DECLARE_CLIENT_EFFECT( ASWUTracerUnattached, ASWUTracerUnattachedCallback );
 
@@ -2807,31 +2883,34 @@ DECLARE_CLIENT_EFFECT( ASWExplodeMap, ASWExplodeMapCallback );
 
 void ASW_AcidBurnCallback( const CEffectData & data )
 {
-	int iMarine = data.m_nOtherEntIndex;		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = data.m_nOtherEntIndex;
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector vecSourcePos;
-	vecSourcePos = data.m_vOrigin;
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
 
-	//Vector vecMarineOffset = pMarine->GetAbsOrigin() + Vector( 0, 0, 60 );
-	Vector	vecKillDir = pMarine->GetAbsOrigin() - vecSourcePos;
-	VectorNormalize( vecKillDir );
+		Vector vecSourcePos;
+		vecSourcePos = data.m_vOrigin;
 
-	CUtlReference<CNewParticleEffect> pEffect;
-	pEffect = pMarine->ParticleProp()->Create( "acid_touch", PATTACH_ABSORIGIN_FOLLOW, -1, (-vecKillDir * 16) + Vector( 0, 0, 60 ) );
-	pMarine->ParticleProp()->AddControlPoint( pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN );
-	pEffect->SetControlPoint( 1, vecSourcePos );
+		//Vector vecMarineOffset = pMarine->GetAbsOrigin() + Vector( 0, 0, 60 );
+		Vector	vecKillDir = pMarine->GetAbsOrigin() - vecSourcePos;
+		VectorNormalize(vecKillDir);
 
-	/*
-	unsigned char color[3];
-	color[0] = 128;
-	color[1] = 30;
-	color[2] = 30;
-	
-	FX_Smoke( vecPosition, QAngle(-90,0,0), 2.0f, 5, &color[0], 128 );
-	*/
+		CUtlReference<CNewParticleEffect> pEffect;
+		pEffect = pMarine->ParticleProp()->Create("acid_touch", PATTACH_ABSORIGIN_FOLLOW, -1, (-vecKillDir * 16) + Vector(0, 0, 60));
+		pMarine->ParticleProp()->AddControlPoint(pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN);
+		pEffect->SetControlPoint(1, vecSourcePos);
+
+		/*
+		unsigned char color[3];
+		color[0] = 128;
+		color[1] = 30;
+		color[2] = 30;
+
+		FX_Smoke( vecPosition, QAngle(-90,0,0), 2.0f, 5, &color[0], 128 );
+		*/
+	}
 }
 
 DECLARE_CLIENT_EFFECT( ASWAcidBurn, ASW_AcidBurnCallback );
@@ -3364,9 +3443,13 @@ void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEnti
 
 void QueenDieCallback( const CEffectData &data )
 {
-	C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>(data.GetEntity());
-	if (pAnimating)
-		FX_QueenDie( pAnimating );
+	C_BaseEntity* pEnt = data.GetEntity();
+	if ( pEnt )
+	{
+		C_BaseAnimating* pAnimating = pEnt->GetBaseAnimating();
+		if ( pAnimating )
+			FX_QueenDie( pAnimating );
+	}
 }
 
 DECLARE_CLIENT_EFFECT( QueenDie, QueenDieCallback );
@@ -3475,84 +3558,94 @@ USER_MESSAGE_REGISTER( ASWBarrelExplosion );
 
 void __MsgFunc_ASWMarineHitByMelee( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector attachOrigin;
-	attachOrigin.x = msg.ReadFloat();
-	attachOrigin.y = msg.ReadFloat();
-	attachOrigin.z = msg.ReadFloat();
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
 
-	Vector vecDir = attachOrigin - pMarine->GetAbsOrigin();
-	VectorNormalize(vecDir);
+		Vector attachOrigin;
+		attachOrigin.x = msg.ReadFloat();
+		attachOrigin.y = msg.ReadFloat();
+		attachOrigin.z = msg.ReadFloat();
 
-	UTIL_ASW_MarineTakeDamage( (pMarine->WorldSpaceCenter() + Vector(0,0,24)) + vecDir*8, vecDir, pMarine->BloodColor(), 5, pMarine );
+		Vector vecDir = attachOrigin - pMarine->GetAbsOrigin();
+		VectorNormalize(vecDir);
+
+		UTIL_ASW_MarineTakeDamage((pMarine->WorldSpaceCenter() + Vector(0, 0, 24)) + vecDir * 8, vecDir, pMarine->BloodColor(), 5, pMarine);
+	}
 }
 USER_MESSAGE_REGISTER( ASWMarineHitByMelee );
 
 void __MsgFunc_ASWMarineHitByFF( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	Vector attachOrigin;
-	attachOrigin.x = msg.ReadFloat();
-	attachOrigin.y = msg.ReadFloat();
-	attachOrigin.z = msg.ReadFloat();
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE)
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
 
-	Vector vecDir = attachOrigin - pMarine->WorldSpaceCenter();
-	VectorNormalize(vecDir);
+		Vector attachOrigin;
+		attachOrigin.x = msg.ReadFloat();
+		attachOrigin.y = msg.ReadFloat();
+		attachOrigin.z = msg.ReadFloat();
 
-	UTIL_ASW_MarineTakeDamage( attachOrigin, vecDir, pMarine->BloodColor(), 5, pMarine, true );
+		Vector vecDir = attachOrigin - pMarine->WorldSpaceCenter();
+		VectorNormalize(vecDir);
+
+		UTIL_ASW_MarineTakeDamage(attachOrigin, vecDir, pMarine->BloodColor(), 5, pMarine, true);
+	}
 }
 
 USER_MESSAGE_REGISTER( ASWMarineHitByFF );
 
 void __MsgFunc_ASWEnemyZappedByThorns( bf_read &msg )
 {
-	int iMarine = msg.ReadShort();		
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(ClientEntityList().GetEnt(iMarine));		// turn iMarine ent index into the marine
-	if ( !pMarine )
-		return;
+	int iMarine = msg.ReadShort();
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iMarine);
 
-	int iAlien = msg.ReadShort();		
-	C_ASW_Alien *pAlien = dynamic_cast<C_ASW_Alien*>(ClientEntityList().GetEnt(iAlien));		// turn iMarine ent index into the marine
-	if ( !pAlien )
-		return;
-
-	Vector vecDir = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
-	VectorNormalize(vecDir);
-
-	Vector vecCtrl0 = (pAlien->WorldSpaceCenter() + Vector(0,0,20)) + vecDir*8;
-	Vector vecCtrl1 = (pMarine->WorldSpaceCenter() + Vector(0,0,20)) - vecDir*8;
-
-	//QAngle	vecAngles;
-	//VectorAngles( -vecDir, vecAngles );
-	//Vector vecForward, vecRight, vecUp;
-	//AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
-
-	CUtlReference<CNewParticleEffect> pEffect;
-
-	pEffect = pAlien->ParticleProp()->Create( "thorns_zap", PATTACH_ABSORIGIN_FOLLOW );
-	pAlien->ParticleProp()->AddControlPoint( pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN );
-	pEffect->SetControlPoint( 0, vecCtrl0 );
-	pEffect->SetControlPoint( 1, vecCtrl1 );
-	//pEffect->SetControlPointOrientation( 0, vecForward, vecRight, vecUp );
-
-	CLocalPlayerFilter filter;						
-	CSoundParameters params;
-
-	// zap the alien!
-	if ( C_BaseEntity::GetParametersForSound( "ASW_ElectrifiedSuit.Zap", params, NULL ) )
+	if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE)
 	{
-		EmitSound_t ep( params );
-		ep.m_pOrigin = &vecCtrl0;
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pEnt);		// turn iMarine ent index into the marine
 
-		C_BaseEntity::EmitSound( filter, 0, ep );
+		int iAlien = msg.ReadShort();
+		if ( ClientEntityList().GetEnt(iAlien) && ClientEntityList().GetEnt(iAlien)->IsAlienClassType() )
+		{
+			C_ASW_Alien* pAlien = assert_cast<C_ASW_Alien*>(ClientEntityList().GetEnt(iAlien));		// turn iAlien ent index into the alien
+
+			Vector vecDir = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
+			VectorNormalize(vecDir);
+
+			Vector vecCtrl0 = (pAlien->WorldSpaceCenter() + Vector(0, 0, 20)) + vecDir * 8;
+			Vector vecCtrl1 = (pMarine->WorldSpaceCenter() + Vector(0, 0, 20)) - vecDir * 8;
+
+			//QAngle	vecAngles;
+			//VectorAngles( -vecDir, vecAngles );
+			//Vector vecForward, vecRight, vecUp;
+			//AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
+
+			CUtlReference<CNewParticleEffect> pEffect;
+
+			pEffect = pAlien->ParticleProp()->Create("thorns_zap", PATTACH_ABSORIGIN_FOLLOW);
+			pAlien->ParticleProp()->AddControlPoint(pEffect, 1, pMarine, PATTACH_CUSTOMORIGIN);
+			pEffect->SetControlPoint(0, vecCtrl0);
+			pEffect->SetControlPoint(1, vecCtrl1);
+			//pEffect->SetControlPointOrientation( 0, vecForward, vecRight, vecUp );
+
+			CLocalPlayerFilter filter;
+			CSoundParameters params;
+
+			// zap the alien!
+			if (C_BaseEntity::GetParametersForSound("ASW_ElectrifiedSuit.Zap", params, NULL))
+			{
+				EmitSound_t ep(params);
+				ep.m_pOrigin = &vecCtrl0;
+
+				C_BaseEntity::EmitSound(filter, 0, ep);
+			}
+		}
 	}
 }
 USER_MESSAGE_REGISTER( ASWEnemyZappedByThorns );
@@ -3565,7 +3658,7 @@ void __MsgFunc_ASWEnemyZappedByTesla( bf_read &msg )
 	attachOrigin.z = msg.ReadFloat();
 
 	int iEnemy = msg.ReadShort();		
-	C_BaseEntity *pEnemy = dynamic_cast<C_BaseEntity*>(ClientEntityList().GetEnt(iEnemy));		// turn iMarine ent index into the marine
+	C_BaseEntity *pEnemy = ClientEntityList().GetEnt(iEnemy);		// turn iMarine ent index into the marine
 	if ( !pEnemy )
 		return;
 
@@ -3622,12 +3715,12 @@ USER_MESSAGE_REGISTER( ASWEnemyZappedByTesla );
 void __MsgFunc_ASWEnemyTeslaGunArcShock( bf_read &msg )
 {
 	int iSrcEnt = msg.ReadShort();		
-	C_BaseEntity *pSrcEnt = dynamic_cast<C_BaseEntity*>(ClientEntityList().GetEnt(iSrcEnt));		// turn iMarine ent index into the marine
+	C_BaseEntity *pSrcEnt = ClientEntityList().GetEnt(iSrcEnt);		// turn iMarine ent index into the marine
 	if ( !pSrcEnt )
 		return;
 
 	int iEnemy = msg.ReadShort();		
-	C_BaseEntity *pEnemy = dynamic_cast<C_BaseEntity*>(ClientEntityList().GetEnt(iEnemy));		// turn iMarine ent index into the marine
+	C_BaseEntity *pEnemy = ClientEntityList().GetEnt(iEnemy);		// turn iMarine ent index into the marine
 	if ( !pEnemy )
 		return;
 
@@ -3687,7 +3780,7 @@ void __MsgFunc_ASWMiningLaserZap( bf_read &msg )
 	int iTarget = msg.ReadShort();
 	int iAttachmentIndex = msg.ReadShort();
 
-	C_BaseEntity *pMiningLaser = dynamic_cast<C_BaseEntity*>(ClientEntityList().GetEnt(iMiningLaser));
+	C_BaseEntity *pMiningLaser = ClientEntityList().GetEnt(iMiningLaser);
 
 	if ( !pMiningLaser )
 	{
@@ -3718,32 +3811,46 @@ void __MsgFunc_ASWMiningLaserZap( bf_read &msg )
 
 
 	// Use impactOrigin if we didn't hit anything interesting
-	if( !pTarget || pTarget->m_takedamage == DAMAGE_NO )
+	if( !pTarget )
 	{
 		pEffect->SetControlPoint( 1, impactOrigin );
 	}
 	else
-	{	
-		Vector vTargetMins, vTargetMaxs;
-		float flHeight = pTarget->BoundingRadius();
-		Vector vOffset( 0.0f, 0.0f, flHeight * 0.25 );
-
-		C_ASW_Alien* pAlien = dynamic_cast<C_ASW_Alien*>(pTarget);
-		// TODO: get some standardization in the attachment naming
-		if ( pAlien && pAlien->LookupAttachment( "eyes" ) )
+	{
+		if (pTarget->m_takedamage == DAMAGE_NO )
 		{
-			pMiningLaser->ParticleProp()->AddControlPoint( pEffect, 1, pTarget, PATTACH_POINT_FOLLOW, "eyes" );
+			pEffect->SetControlPoint(1, impactOrigin);
 		}
 		else
 		{
-			pMiningLaser->ParticleProp()->AddControlPoint( pEffect, 1, pTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset );
-		}
+			Vector vTargetMins, vTargetMaxs;
+			float flHeight = pTarget->BoundingRadius();
+			Vector vOffset(0.0f, 0.0f, flHeight * 0.25);
 
-		// UNDONE: this gives hit feedback, but is too noisy for now
-		//CUtlReference<CNewParticleEffect> pTargetEffect;
-		//pTargetEffect = pTarget->ParticleProp()->Create( "electrical_arc_01_system", PATTACH_ABSORIGIN_FOLLOW,-1, vOffset );
-		//pTargetEffect->SetControlPointEntity( 0, pTarget );
-		//pTargetEffect->SetControlPoint( 1, impactOrigin );
+			// TODO: get some standardization in the attachment naming
+			if  (pTarget->IsAlienClassType() )
+			{
+				C_ASW_Alien* pAlien = assert_cast<C_ASW_Alien*>(pTarget);
+				if (pAlien->LookupAttachment("eyes"))
+				{
+					pMiningLaser->ParticleProp()->AddControlPoint(pEffect, 1, pTarget, PATTACH_POINT_FOLLOW, "eyes");
+				}
+				else
+				{
+					pMiningLaser->ParticleProp()->AddControlPoint(pEffect, 1, pTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset);
+				}
+			}
+			else
+			{
+				pMiningLaser->ParticleProp()->AddControlPoint(pEffect, 1, pTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset);
+			}
+
+			// UNDONE: this gives hit feedback, but is too noisy for now
+			//CUtlReference<CNewParticleEffect> pTargetEffect;
+			//pTargetEffect = pTarget->ParticleProp()->Create( "electrical_arc_01_system", PATTACH_ABSORIGIN_FOLLOW,-1, vOffset );
+			//pTargetEffect->SetControlPointEntity( 0, pTarget );
+			//pTargetEffect->SetControlPoint( 1, impactOrigin );
+		}
 	}
 	
 	//CLocalPlayerFilter filter;

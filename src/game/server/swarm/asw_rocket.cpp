@@ -59,7 +59,7 @@ ConVar asw_rocket_debug("asw_rocket_debug", "0", FCVAR_CHEAT);
 #define ASW_ROCKET_MAX_SPEED asw_rocket_max_speed.GetFloat()
 #define ASW_ROCKET_ACCELERATION asw_rocket_acceleration.GetFloat()
 #define ASW_ROCKET_DRAG asw_rocket_drag.GetFloat()
-#define ASW_ROCKET_LIFETIME asw_rocket_lifetime.GetFloat();
+#define ASW_ROCKET_LIFETIME asw_rocket_lifetime.GetFloat()
 #define ASW_ROCKET_MAX_HOMING_RANGE asw_rocket_homing_range.GetFloat()
 #define ROCKET_HOVER_HEIGHT asw_rocket_hover_height.GetFloat()
 #define ASW_ROCKET_HOVER_THRUST asw_rocket_hover_thrust.GetFloat()
@@ -562,7 +562,7 @@ void CASW_Rocket::SeekThink( void )
 		float flDist = VectorNormalize( vTargetDir );
 
 		// find current direction
-		Vector	vDir	= GetAbsVelocity();
+		//Vector	vDir	= GetAbsVelocity();
 		//float	flSpeed	= VectorNormalize( vDir );
 
 		vNewVelocity = IntegrateRocketThrust( vTargetDir, flDist );

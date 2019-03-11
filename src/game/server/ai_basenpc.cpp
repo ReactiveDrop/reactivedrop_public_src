@@ -762,6 +762,7 @@ bool CAI_BaseNPC::PassesDamageFilter( const CTakeDamageInfo &info )
 {
 	if ( ai_block_damage.GetBool() )
 		return false;
+#if PLAYER_VELICLE_CHECKS
 	// FIXME: hook a friendly damage filter to the npc instead?
 	if ( (CapabilitiesGet() & bits_CAP_FRIENDLY_DMG_IMMUNE) && info.GetAttacker() && info.GetAttacker() != this )
 	{
@@ -790,7 +791,7 @@ bool CAI_BaseNPC::PassesDamageFilter( const CTakeDamageInfo &info )
 			return false;
 		}
 	}
-	
+#endif	
 	if ( !BaseClass::PassesDamageFilter( info ) )
 	{
 		m_fNoDamageDecal = true;
@@ -813,6 +814,8 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( !BaseClass::OnTakeDamage_Alive( info ) )
 		return 0;
 
+	CBaseEntity* pAttacker = info.GetAttacker();
+
 	if ( GetSleepState() == AISS_WAITING_FOR_THREAT )
 		Wake();
 
@@ -822,7 +825,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// REVISIT: Combine soldiers shoot each other a lot and then talk about it
 	// this improves that case a bunch, but it seems kind of harsh.
-	if ( !m_pSquad || !m_pSquad->SquadIsMember( info.GetAttacker() ) )
+	if ( !m_pSquad || !m_pSquad->SquadIsMember( pAttacker ) )
 	{
 		PainSound( info );// "Ouch!"
 	}
@@ -843,7 +846,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// If we're not allowed to die, refuse to die
 	// Allow my interaction partner to kill me though
-	if ( m_iHealth <= 0 && HasInteractionCantDie() && info.GetAttacker() != m_hInteractionPartner )
+	if ( m_iHealth <= 0 && HasInteractionCantDie() && pAttacker != m_hInteractionPartner )
 	{
 		m_iHealth = 1;
 	}
@@ -864,29 +867,35 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( m_flLastDamageTime != gpGlobals->curtime )
 	{
 		// only fire once per frame
-		m_OnDamaged.FireOutput( info.GetAttacker(), this);
-
-		if( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
+		m_OnDamaged.FireOutput( pAttacker, this );
+#if PLAYER_CHECKS
+//note: inner else works only in singleplayer
+		if ( pAttacker )
 		{
-			m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), this );
-			
-			// This also counts as being harmed by player's squad.
-			m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
-		}
-		else
-		{
-			// See if the person that injured me is an NPC.
-			CAI_BaseNPC *pAttacker = dynamic_cast<CAI_BaseNPC *>( info.GetAttacker() );
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
-
-			if( pAttacker && pAttacker->IsAlive() && pPlayer )
+			if ( pAttacker->IsPlayer() )
 			{
-				if( pAttacker->GetSquad() != NULL && pAttacker->IsInPlayerSquad() )
+				m_OnDamagedByPlayer.FireOutput(pAttacker, this);
+
+				// This also counts as being harmed by player's squad.
+				m_OnDamagedByPlayerSquad.FireOutput(pAttacker, this);
+			}
+			else
+			{
+				// See if the person that injured me is an NPC.
+				CAI_BaseNPC* pAttackerNPC = pAttacker->MyNPCPointer();
+				CBasePlayer* pPlayer = AI_GetSinglePlayer();
+
+				if ( pAttackerNPC && pAttackerNPC->IsAlive() && pPlayer )
 				{
-					m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+					if ( pAttackerNPC->GetSquad() != NULL && pAttackerNPC->IsInPlayerSquad() )
+					{
+						m_OnDamagedByPlayerSquad.FireOutput( pAttacker, this );
+					}
 				}
 			}
 		}
+#endif
+			
 	}
 
 	if( (info.GetDamageType() & DMG_CRUSH) && !(info.GetDamageType() & DMG_PHYSGUN) && info.GetDamage() >= MIN_PHYSICS_FLINCH_DAMAGE )
@@ -896,21 +905,21 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	if ( !bIsBelowHalfHealthBefore && ( m_iHealth <= ( m_iMaxHealth / 2 ) ) )
 	{
-		m_OnHalfHealth.FireOutput( info.GetAttacker(), this );
+		m_OnHalfHealth.FireOutput( pAttacker, this );
 	}
 
 	// react to the damage (get mad)
-	if ( ( (GetFlags() & FL_NPC) == 0 ) || !info.GetAttacker() )
+	if ( ( (GetFlags() & FL_NPC) == 0 ) || !pAttacker )
 		return 1;
 
 	// If the attacker was an NPC or client update my position memory
-	if ( info.GetAttacker()->GetFlags() & (FL_NPC | FL_CLIENT) )
+	if ( pAttacker->GetFlags() & (FL_NPC | FL_CLIENT) )
 	{
 		// ------------------------------------------------------------------
 		//				DO NOT CHANGE THIS CODE W/O CONSULTING
 		// Only update information about my attacker I don't see my attacker
 		// ------------------------------------------------------------------
-		if ( !FInViewCone( info.GetAttacker() ) || !FVisible( info.GetAttacker() ) )
+		if ( !FInViewCone( pAttacker ) || !FVisible( pAttacker ) )
 		{
 			// -------------------------------------------------------------
 			//  If I have an inflictor (enemy / grenade) update memory with
@@ -934,7 +943,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			//  unless I already know about the attacker or I can see my enemy
 			// ----------------------------------------------------------------
 			if ( GetEnemy() != NULL							&&
-				!GetEnemies()->HasMemory( info.GetAttacker() )			&&
+				!GetEnemies()->HasMemory( pAttacker )			&&
 				!HasCondition(COND_SEE_ENEMY)	)
 			{
 				UpdateEnemyMemory(GetEnemy(), vAttackPos, GetEnemy());
@@ -942,9 +951,9 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			// ----------------------------------------------------------------
 			//  If I already know about this enemy, update his position
 			// ----------------------------------------------------------------
-			else if (GetEnemies()->HasMemory( info.GetAttacker() ))
+			else if (GetEnemies()->HasMemory( pAttacker ))
 			{
-				UpdateEnemyMemory(info.GetAttacker(), vAttackPos);
+				UpdateEnemyMemory(pAttacker, vAttackPos);
 			}
 			// -----------------------------------------------------------------
 			//  Otherwise just note the position, but don't add enemy to my list
@@ -977,16 +986,18 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			m_flSumDamage = info.GetDamage();
 		}
 		m_flLastDamageTime = gpGlobals->curtime;
-		if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
+#if PLAYER_CHECKS
+		if ( pAttacker && pAttacker->IsPlayer() )
 			m_flLastPlayerDamageTime = gpGlobals->curtime;
-		GetEnemies()->OnTookDamageFrom( info.GetAttacker() );
+#endif
+		GetEnemies()->OnTookDamageFrom( pAttacker );
 
 		if (m_flSumDamage > m_iMaxHealth*0.3)
 		{
 			SetCondition(COND_REPEATED_DAMAGE);
 		}
 	
-		NotifyFriendsOfDamage( info.GetAttacker() );
+		NotifyFriendsOfDamage( pAttacker );
 	}
 
 	// ---------------------------------------------------------------
@@ -2108,13 +2119,14 @@ void CAI_BaseNPC::OnLooked( int iDistance )
 
 	while( pSightEnt )
 	{
+#if PLAYER_CHECKS
 		if ( pSightEnt->IsPlayer() )
 		{
 			// if we see a client, remember that (mostly for scripted AI)
 			SetCondition(COND_SEE_PLAYER);
 			m_flLastSawPlayerTime = gpGlobals->curtime;
 		}
-
+#endif
 		Disposition_t relation = IRelationType( pSightEnt );
 
 		// the looker will want to consider this entity
@@ -3084,14 +3096,14 @@ void CAI_BaseNPC::RunAnimation( void )
 	if ( !GetModelPtr() )
 		return;
 
-	float flInterval = GetAnimTimeInterval();
+	//float flInterval = GetAnimTimeInterval();
 		
 	StudioFrameAdvance( ); // animate
 
-	if ((CAI_BaseNPC::m_nDebugBits & bits_debugStepAI) && !GetNavigator()->IsGoalActive())
-	{
-		flInterval = 0;
-	}
+	//if ((CAI_BaseNPC::m_nDebugBits & bits_debugStepAI) && !GetNavigator()->IsGoalActive())
+	//{
+	//	flInterval = 0;
+	//}
 
 	// start or end a fidget
 	// This needs a better home -- switching animations over time should be encapsulated on a per-activity basis
@@ -3328,18 +3340,23 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 			float hearingSensitivity = HearingSensitivity();
 			Vector vEarPosition = EarPosition();
 
-			if ( pCurrentSound && (SOUND_DANGER & pCurrentSound->SoundType()) )
+			if ( pCurrentSound )
 			{
-				float flHearDistanceSq = pCurrentSound->Volume() * hearingSensitivity;
-				flHearDistanceSq *= flHearDistanceSq;
-				if ( pCurrentSound->GetSoundOrigin().DistToSqr( vEarPosition ) <= flHearDistanceSq )
+				if ( SOUND_DANGER & pCurrentSound->SoundType() )
 				{
-					bPotentialDanger = true;
-					break;
+					float flHearDistanceSq = pCurrentSound->Volume() * hearingSensitivity;
+					flHearDistanceSq *= flHearDistanceSq;
+					if (pCurrentSound->GetSoundOrigin().DistToSqr(vEarPosition) <= flHearDistanceSq)
+					{
+						bPotentialDanger = true;
+						break;
+					}
 				}
+
+				iSound = pCurrentSound->NextSound();
 			}
-			
-			iSound = pCurrentSound->NextSound();
+			else
+				break;
 		}
 	}
 
@@ -4564,7 +4581,7 @@ void CAI_BaseNPC::Sleep()
 
 	if( GetState() == NPC_STATE_SCRIPT )
 	{
-		Warning( "%s put to sleep while in Scripted state!\n");
+		Warning( "%s put to sleep while in Scripted state!\n", GetClassname() );
 	}
 
 	VacateStrategySlot();
@@ -4654,7 +4671,7 @@ void CAI_BaseNPC::CheckOnGround( void )
 					}
 					else
 					{
-						if ( trace.startsolid && trace.m_pEnt->GetMoveType() == MOVETYPE_VPHYSICS && 
+						if ( trace.startsolid && trace.m_pEnt && trace.m_pEnt->GetMoveType() == MOVETYPE_VPHYSICS &&
 							trace.m_pEnt->VPhysicsGetObject() && trace.m_pEnt->VPhysicsGetObject()->GetMass() < VPHYSICS_LARGE_OBJECT_MASS )
 						{
 							// stuck inside a small physics object?  
@@ -5483,7 +5500,8 @@ bool CAI_BaseNPC::InnateWeaponLOSCondition( const Vector &ownerPos, const Vector
 	}
 	
 	CBaseEntity	*pHitEntity = tr.m_pEnt;
-	
+
+#if PLAYER_VELICLE_CHECKS
 	// Translate a hit vehicle into its passenger if found
 	if ( GetEnemy() != NULL )
 	{
@@ -5498,7 +5516,7 @@ bool CAI_BaseNPC::InnateWeaponLOSCondition( const Vector &ownerPos, const Vector
 				return true;
 		}
 	}
-
+#endif
 	if ( pHitEntity == GetEnemy() )
 	{
 		return true;
@@ -5687,11 +5705,13 @@ void CAI_BaseNPC::GatherEnemyConditions( CBaseEntity *pEnemy )
 			if (HasMemory( bits_MEMORY_HAD_LOS ))
 			{
 				AI_PROFILE_SCOPE(CAI_BaseNPC_GatherEnemyConditions_Outputs);
+#if PLAYER_CHECKS
 				// Send output event
 				if (GetEnemy()->IsPlayer())
 				{
 					m_OnLostPlayerLOS.FireOutput( GetEnemy(), this );
 				}
+#endif
 				m_OnLostEnemyLOS.FireOutput( GetEnemy(), this );
 			}
 			Forget( bits_MEMORY_HAD_LOS );
@@ -5717,13 +5737,14 @@ void CAI_BaseNPC::GatherEnemyConditions( CBaseEntity *pEnemy )
 				// Send output event
 				EHANDLE hEnemy;
 				hEnemy.Set( GetEnemy() );
-
+#if PLAYER_CHECKS
 				if (GetEnemy()->IsPlayer())
 				{
 					m_OnFoundPlayer.Set(hEnemy, this, this);
 					m_OnFoundEnemy.Set(hEnemy, this, this);
 				}
 				else
+#endif
 				{
 					m_OnFoundEnemy.Set(hEnemy, this, this);
 				}
@@ -5875,8 +5896,9 @@ float CAI_BaseNPC::GetGoalRepathTolerance( CBaseEntity *pGoalEnt, GoalType_t typ
 		result = clamp( 120 * t, 0, 120 );
 		// Msg("t %.2f : d %.0f  (%.0f)\n", t, result, distMoved1Sec );
 	}
-		
+#if PLAYER_CHECKS	
 	if ( !pGoalEnt->IsPlayer() )
+#endif
 		result *= 1.20;
 		
 	return result;
@@ -6563,7 +6585,7 @@ void CAI_BaseNPC::OnChangeActivity( Activity eNewActivity )
 //=========================================================
 // SetSequenceByName
 //=========================================================
-void CAI_BaseNPC::SetSequenceByName( char *szSequence )
+void CAI_BaseNPC::SetSequenceByName( const char *szSequence )
 {
 	int iSequence = LookupSequence( szSequence );
 
@@ -6571,7 +6593,7 @@ void CAI_BaseNPC::SetSequenceByName( char *szSequence )
 		SetSequenceById( iSequence );
 	else
 	{
-		DevWarning( 2, "%s has no sequence to match request\n", GetClassname(), szSequence );
+		DevWarning( 2, "%s has no sequence %s to match request\n", GetClassname(), szSequence );
 		SetSequence( 0 );	// Set to the reset anim (if it's there)
 	}
 }
@@ -8440,7 +8462,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 				break;
 			}
 
-			CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon *>( pPickup );
+			CBaseCombatWeapon *pWeapon = ToBaseCombatWeapon( pPickup );
 			if ( pWeapon )
 			{
 				// Picking up a weapon.
@@ -8711,7 +8733,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 					if (act == ACT_INVALID)
 					{
 						// Try and translate it
-						act = Weapon_TranslateActivity( (Activity)CAI_BaseNPC::GetActivityID(pEvent->options), false );
+						act = Weapon_TranslateActivity( (Activity)CAI_BaseNPC::GetActivityID(pEvent->options), NULL );
 					}
 
 					if (act != ACT_INVALID)
@@ -9096,7 +9118,7 @@ int CAI_BaseNPC::DrawDebugTextOverlays(void)
 	{
 		// Print health
 		char tempstr[512];
-		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i",m_iHealth);
+		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i",m_iHealth.Get());
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
 
@@ -9160,7 +9182,7 @@ int CAI_BaseNPC::DrawDebugTextOverlays(void)
 		// --------------
 		// Print Health
 		// --------------
-		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i  (DACC:%1.2f)",m_iHealth, GetDamageAccumulator() );
+		Q_snprintf(tempstr,sizeof(tempstr),"Health: %i  (DACC:%1.2f)",m_iHealth.Get(), GetDamageAccumulator() );
 		EntityText(text_offset,tempstr,0,r,g,b);
 		text_offset++;
 
@@ -9306,7 +9328,7 @@ int CAI_BaseNPC::DrawDebugTextOverlays(void)
 			}
 			if (!bHasConditions)
 			{
-				Q_snprintf(tempstr,sizeof(tempstr),"(no conditions)",m_iHealth);
+				Q_snprintf(tempstr,sizeof(tempstr),"(no conditions)");
 				EntityText(text_offset,tempstr,0,r,g,b);
 				text_offset++;
 			}
@@ -9493,7 +9515,7 @@ void CAI_BaseNPC::ReportAIState( void )
 	DevMsg( "Leader." );
 
 	DevMsg( "\n" );
-	DevMsg( "Yaw speed:%3.1f,Health: %3d\n", GetMotor()->GetYawSpeed(), m_iHealth );
+	DevMsg( "Yaw speed:%3.1f,Health: %3d\n", GetMotor()->GetYawSpeed(), m_iHealth.Get() );
 
 	if ( GetGroundEntity() )
 	{
@@ -10475,7 +10497,11 @@ bool CAI_BaseNPC::ChooseEnemy( void )
 		}
 		else
 		{
+#if PLAYER_CHECKS
 			Remember( ( pChosenEnemy->IsPlayer() ) ? bits_MEMORY_HAD_PLAYER : bits_MEMORY_HAD_ENEMY );
+#else
+			Remember( bits_MEMORY_HAD_ENEMY );
+#endif
 		}
 	}
 
@@ -12791,13 +12817,14 @@ bool CAI_BaseNPC::IsCoverPosition( const Vector &vecThreat, const Vector &vecPos
 		bool bThreatPosIsEnemy = ( (vecThreat - GetEnemy()->EyePosition()).LengthSqr() < 0.1f );
 		if ( bThreatPosIsEnemy )
 		{
+#if PLAYER_VELICLE_CHECKS
 			CBaseCombatCharacter *pCCEnemy = GetEnemy()->MyCombatCharacterPointer();
 			if ( pCCEnemy != NULL && pCCEnemy->IsInAVehicle() )
 			{
 				// Ignore the vehicle
 				filter.SetPassEntity( pCCEnemy->GetVehicleEntity() );
 			}
-
+#endif
 			if ( !filter.GetPassEntity() )
 			{
 				filter.SetPassEntity( pEnemy );

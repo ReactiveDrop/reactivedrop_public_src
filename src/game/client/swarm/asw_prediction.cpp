@@ -233,7 +233,7 @@ void CASW_Prediction::RunCommand( C_BasePlayer *player, CUserCmd *ucmd, IMoveHel
 	// Do weapon selection
 	if ( ucmd->weaponselect != 0 )
 	{
-		C_BaseCombatWeapon *weapon = dynamic_cast< C_BaseCombatWeapon * >( CBaseEntity::Instance( ucmd->weaponselect ) );
+		C_BaseCombatWeapon *weapon = ToBaseCombatWeapon(CBaseEntity::Instance( ucmd->weaponselect )) ;
 		if (weapon)
 		{
 			pASWPlayer->ASWSelectWeapon(weapon, 0); //ucmd->weaponsubtype);		// asw - subtype var used for sending marine profile index instead

@@ -400,11 +400,13 @@ void CASW_Alien::OnSwarmSensed(int iDistance)
 
 	while( pSenseEnt )
 	{
+		/*
 		if ( pSenseEnt->IsPlayer() )
 		{
 			// if we see a client, remember that (mostly for scripted AI)
 			//SetCondition(COND_SEE_PLAYER);
 		}
+		*/
 
 		Disposition_t relation = IRelationType( pSenseEnt );
 
@@ -496,7 +498,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 	if ( GetSleepState() > AISS_AWAKE )		// alien is asleep, check for marines getting near to wake us up
 	{
 		// wake up if we have a script to run
-		if (m_hCine != NULL && GetSleepState() > AISS_AWAKE )
+		if ( m_hCine != NULL )
 			Wake();
 
 		bInPVS = MarineCanSee(384, 0.1f);
@@ -505,7 +507,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 		else
 			ClearCondition( COND_IN_PVS );
 
-		if ( GetSleepState() > AISS_AWAKE && GetSleepState() != AISS_WAITING_FOR_INPUT )
+		if ( GetSleepState() != AISS_WAITING_FOR_INPUT )
 		{
 			if (bInPVS)
 			{
@@ -964,7 +966,12 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	int result = 0;	
 
-	CASW_Burning *pBurning = dynamic_cast<CASW_Burning*>( info.GetInflictor() );
+	CASW_Burning* pBurning = NULL;
+	CBaseEntity* pAttacker = info.GetAttacker();
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
+		pBurning = assert_cast<CASW_Burning*>(pInflictor);
+
 	// scale burning damage up
 	//if (dynamic_cast<CEntityFlame*>(info.GetAttacker()))
 	if ( pBurning )
@@ -989,7 +996,7 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// if we take fire damage, catch on fire
 	if (result > 0 && (info.GetDamageType() & DMG_BURN) && m_bFlammable && info.GetWeapon() && !pBurning )
 	{
-		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
+		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds
@@ -1006,12 +1013,11 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	CASW_Marine* pMarine = NULL;
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		pMarine = static_cast<CASW_Marine*>( info.GetAttacker() );
-	}
-	if (pMarine)
+		pMarine = static_cast<CASW_Marine*>( pAttacker );
 		pMarine->HurtAlien(this, info);
+	}
 
 	// Notify gamestats of the damage
 	CASW_GameStats.Event_AlienTookDamage( this, info );
@@ -1489,8 +1495,9 @@ float CASW_Alien::GetGoalRepathTolerance( CBaseEntity *pGoalEnt, GoalType_t type
 		result = clamp( 120 * t, 0, 120 );
 		// Msg("t %.2f : d %.0f  (%.0f)\n", t, result, distMoved1Sec );
 	}
-		
+#if PLAYER_CHECKS
 	if ( !pGoalEnt->IsPlayer() )
+#endif
 		result *= 1.20;
 		
 	return result;
@@ -2248,7 +2255,7 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 		ASWGameRules()->DropPowerup( this, info, GetClassname() );
 
 	if ( asw_alien_debug_death_style.GetBool() )
-		Msg( "'%s' CASW_Alien::Event_Killed: m_nDeathStyle = %d\n", GetClassname(), m_nDeathStyle );
+		Msg( "'%s' CASW_Alien::Event_Killed: m_nDeathStyle = %d\n", GetClassname(), m_nDeathStyle.Get() );
 
 	BaseClass::Event_Killed(info);
 }
@@ -2974,7 +2981,7 @@ void CASW_Alien::OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior, CAI_Be
 {
 	BaseClass::OnChangeRunningBehavior( pOldBehavior, pNewBehavior );
 
-	m_pPreviousBehavior = m_pPreviousBehavior;
+	m_pPreviousBehavior = pOldBehavior;
 }
 
 void CASW_Alien::SendBehaviorEvent( CBaseEntity *pInflictor, BehaviorEvent_t Event, int nParm, bool bToAllBehaviors )
@@ -3046,7 +3053,7 @@ void CASW_Alien::HandleAnimEvent( animevent_t *pEvent )
 {
 
 	int nEvent = pEvent->Event();
-	CTakeDamageInfo info;
+	//CTakeDamageInfo info;
 	if ( nEvent == AE_NPC_RAGDOLL )
 	{
 		m_bTimeToRagdoll = true;
@@ -3146,7 +3153,7 @@ void CASW_Alien::ClearBurrowPoint( const Vector &origin )
 	for ( CEntitySphereQuery sphere( origin, 128 ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
 		//if ( pEntity->m_takedamage != DAMAGE_NO && pEntity->Classify() != CLASS_PLAYER && pEntity->VPhysicsGetObject() )
-		if ( pEntity->Classify() != CLASS_PLAYER && pEntity->VPhysicsGetObject() )
+		if ( pEntity->Classify() != CLASS_PLAYER && pEntity->Classify() != CLASS_ASW_MARINE && pEntity->VPhysicsGetObject() )
 		{
 			vecSpot	 = pEntity->BodyTarget( origin );
 			vecForce = ( vecSpot - origin ) + Vector( 0, 0, 16 );
@@ -3216,7 +3223,7 @@ void CASW_Alien::LookupBurrowActivities()
 		m_UnburrowActivity = (Activity) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s", STRING( m_iszUnburrowActivityName ) );
+			Warning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
@@ -3232,9 +3239,9 @@ void CASW_Alien::LookupBurrowActivities()
 	else
 	{
 		m_UnburrowIdleActivity = (Activity) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
-		if ( m_UnburrowActivity == ACT_INVALID )
+		if ( m_UnburrowIdleActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s", STRING( m_iszUnburrowIdleActivityName ) );
+			Warning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
