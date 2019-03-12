@@ -178,6 +178,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
 	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 	ConVar rd_high_resolution_timer_ms ( "rd_dedicated_high_resolution_timer_ms", "1", FCVAR_NONE, "Acquire a high resolution timer with specified resolution." );
+	ConVar rda_auto_mission_failed_instant_restart("rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "If mission is failed server does not show mission failed screen but restarts mission");
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -4217,6 +4218,22 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
 		return;
 
+	//Mad Orange. Faster restart.
+	if (!bSuccess && rda_auto_mission_failed_instant_restart.GetBool())
+	{
+		StopStim();
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CASW_Player* pOtherPlayer = dynamic_cast< CASW_Player* >(UTIL_PlayerByIndex(i));
+			if (pOtherPlayer)
+			{
+				pOtherPlayer->AwardExperience();
+			}
+		}
+		RestartMission(NULL, true, true);
+		return;
+	}
+
 	StopStim();
 
 	// setting these variables will make the player's go into their debrief screens
@@ -7678,6 +7695,13 @@ void CAlienSwarm::CheckForceReady()
 			FinishForceReady();
 			return;
 		}
+	}
+
+	//Mad Orange. Faster restart.
+	if (rda_auto_mission_failed_instant_restart.GetBool() && m_iForceReadyType == ASW_FR_INGAME_RESTART)
+	{
+		FinishForceReady();
+		return;
 	}
 
 	int iSecondsLeft = m_fForceReadyTime - gpGlobals->curtime;
