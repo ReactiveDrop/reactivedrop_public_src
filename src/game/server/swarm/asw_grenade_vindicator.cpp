@@ -27,6 +27,8 @@ ConVar asw_vindicator_grenade_fuse("asw_vindicator_grenade_fuse", "3", FCVAR_CHE
 ConVar rd_grenade_collision_fix("rd_grenade_collision_fix", "1", FCVAR_CHEAT, "Set to 1 to not impact on dropped weapons & items");	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 ConVar rd_grenade_launcher_arm_time( "rd_grenade_launcher_arm_time", "0", FCVAR_CHEAT, "Time in seconds until grenade launcher grenade is armed and can explode" );
 ConVar rd_grenade_launcher_projectile_direct_dmg( "rd_grenade_launcher_projectile_direct_dmg", "256", FCVAR_CHEAT, "The direct damage caused by non exploded grenade from GL" );
+ConVar rda_grenade_post_ricochet_velocity_multiplier("rda_grenade_post_ricochet_velocity_multiplier", "2", FCVAR_CHEAT, "Set to change GL grenade post ricochet velocity. Try values within [1..4] range");	//Mad Orange. Advanced grenade behaviour.
+ConVar rda_grenade_max_ricochets("rda_grenade_max_ricochets", "1", FCVAR_CHEAT, "Set to change how many times GL grenade can bouncy, 0 = unlim till timer");	//Mad Orange. Advanced grenade behaviour.
 
 const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.2f;
 
@@ -45,6 +47,8 @@ BEGIN_DATADESC( CASW_Grenade_Vindicator )
 	DEFINE_FIELD( m_fEarliestTouchDetonationTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bKicked, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bExplodeOnWorldContact, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bAdvancedRicochet, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_iMaxRicochets, FIELD_INTEGER ),
 
 	DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
 END_DATADESC()
@@ -103,6 +107,8 @@ void CASW_Grenade_Vindicator::Spawn( void )
 	m_iClusters = 0;
 	m_bMaster = true;
 
+	m_iMaxRicochets = 0;
+
 	//AddSolidFlags(FSOLID_TRIGGER);
 	//m_pLastHit = NULL;
 }
@@ -158,9 +164,46 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 		return;
 	}
 
+	//Mad Orange. Add ricochet stuff. Perhaps better to move into cluster_grenade in the future.
+	if ( m_bAdvancedRicochet && rda_grenade_post_ricochet_velocity_multiplier.GetFloat() >= 0 )
+	{
+		float multip = MIN(rda_grenade_post_ricochet_velocity_multiplier.GetFloat(), 4);
+		if ( rda_grenade_max_ricochets.GetInt() > 0 )
+		{ 
+			if (rda_grenade_max_ricochets.GetInt() >= ++m_iMaxRicochets)
+				this->SetAbsVelocity( multip * (this->GetAbsVelocity()) );
+			else
+				Detonate();
+		}
+		EmitSound( "Grenade.ImpactHard" );		
+
+		//UTIL_Remove( this );			// just removing the grenade is not looking good, let it bounce back and live for a few seconds
+		//StopParticleEffects( this );	// this removes smoke and glow, but for some reason it works only when marine is far from spawn point, tested on ocs2 map
+		SetTouch( NULL );
+
+		SetThink( &CASW_Grenade_Vindicator::SUB_Remove );
+		SetNextThink( gpGlobals->curtime + 5.0f );
+		return;
+	}
+
 	if ( m_bExplodeOnWorldContact )
 	{
 		Detonate();
+	}
+
+	//Mad Orange. Add ricochet stuff. Perhaps better to move into cluster_grenade in the future.
+	if ( m_bAdvancedRicochet && rda_grenade_post_ricochet_velocity_multiplier.GetFloat() >= 0 )
+	{
+		float multip = MIN(rda_grenade_post_ricochet_velocity_multiplier.GetFloat(), 4);
+		if ( rda_grenade_max_ricochets.GetInt() > 0 )
+		{
+			if (rda_grenade_max_ricochets.GetInt() >= ++m_iMaxRicochets)
+				this->SetAbsVelocity( multip * (this->GetAbsVelocity()) );
+			else
+				Detonate();
+		}
+		else
+			this->SetAbsVelocity( multip * (this->GetAbsVelocity()) );
 	}
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
