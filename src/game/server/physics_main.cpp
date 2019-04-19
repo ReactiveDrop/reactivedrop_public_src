@@ -46,6 +46,7 @@ ConVar vprof_scope_entity_thinks( "vprof_scope_entity_thinks", "0" );
 ConVar vprof_scope_entity_gamephys( "vprof_scope_entity_gamephys", "0" );
 
 ConVar	npc_vphysics	( "npc_vphysics","0");
+ConVar rd_interpenetrating_entities_warning( "rd_interpenetrating_entities_warning", "1" );
 //-----------------------------------------------------------------------------
 // helper method for trace hull as used by physics...
 //-----------------------------------------------------------------------------
@@ -273,7 +274,7 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 		if ( (!bRotationalPush) && (info.m_Trace.fraction == 1.0) )
 		{
 			//Assert( pBlocker->PhysicsTestEntityPosition() == false );
-			if ( !IsPushedPositionValid(pBlocker) )
+			if ( !IsPushedPositionValid(pBlocker) && rd_interpenetrating_entities_warning.GetBool() )
 			{
 				Warning("Interpenetrating entities! (%s and %s)\n",
 					pBlocker->GetClassname(), m_rgPusher[0].m_pEntity->GetClassname() );
