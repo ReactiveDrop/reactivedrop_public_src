@@ -194,19 +194,55 @@ void CASW_Mortarbug_Shell::VShellTouch( CBaseEntity *pOther )
 	Vector vecForward = GetAbsVelocity();
 	VectorNormalize(vecForward);
 	trace_t		tr;
-	UTIL_TraceLine ( GetAbsOrigin(), GetAbsOrigin() + 60 * vecForward, MASK_SOLID, 
-		this, GetCollisionGroup(), &tr);
 
-	if ( !tr.DidHit() )
+	// Mad Orange. Fix shell interpenetration with elevators
+	UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + 60 * vecForward, MASK_SOLID, this, GetCollisionGroup(), &tr);
+	if (tr.DidHit())
+	{
+		// check if our entity is in hierarchy with moving brush
+		bool bAddParent = false;
+		CBaseEntity *pEntity = NULL;
+		if ( tr.m_pEnt && !tr.m_pEnt->IsWorld() )
+		{
+			pEntity = tr.m_pEnt;
+			CBaseEntity *pParent = tr.m_pEnt->GetMoveParent();
+
+			if (pParent)
+			{
+				while (pParent)
+				{
+					if (pEntity->Classify() == CLASS_FUNC_MOVELINEAR || pEntity->Classify() == CLASS_FUNC_TRACKTRAIN)
+					{
+						bAddParent = true;
+						break;
+					}
+					pEntity = pParent;
+					pParent = pEntity->GetMoveParent();
+				}
+			}
+			else
+			{
+				if (pEntity->Classify() == CLASS_FUNC_MOVELINEAR || pEntity->Classify() == CLASS_FUNC_TRACKTRAIN)
+				{
+					bAddParent = true;
+				}
+			}
+		}
+		QAngle angles;
+		VectorAngles(tr.plane.normal, angles);
+		angles[PITCH] += 90;		// TODO: rotate pitch properly?
+		SetAbsAngles(angles);
+		SetAbsVelocity(vec3_origin);
+		UTIL_SetOrigin(this, tr.endpos);
+		if (bAddParent)
+		{
+			SetParent(pEntity);
+		}
+	}
+	else
 		return;
-
-	QAngle angles;
-	VectorAngles( tr.plane.normal, angles );
-	angles[PITCH] += 90;		// TODO: rotate pitch properly?
-	SetAbsAngles( angles );
-	SetAbsVelocity( vec3_origin );
-	UTIL_SetOrigin( this, tr.endpos );
-	//SetParent( tr.m_pEnt );
+	
+	SetMoveType(MOVETYPE_NONE); // Some not parented shells near elevator may block it still, so need to make it here for all.
 
 	EmitSound( "ASW_Boomer_Projectile.ImpactHard" );
 
