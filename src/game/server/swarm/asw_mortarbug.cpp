@@ -46,6 +46,7 @@ ConVar asw_mortarbug_spitspeed( "asw_mortarbug_spitspeed", "350", FCVAR_CHEAT, "
 ConVar asw_debug_mortarbug( "asw_debug_mortarbug", "0", FCVAR_NONE, "Display mortarbug debug info" );
 ConVar asw_mortarbug_face_target("asw_mortarbug_face_target", "1", FCVAR_CHEAT, "Mortarbug faces his target when moving" );
 ConVar rd_mortarbug_health( "rd_mortarbug_health", "350", FCVAR_CHEAT, "Health of the mortarbug" );
+ConVar rda_mortarbug_shells_by_alien_sizescale("rda_mortarbug_shells_by_alien_sizescale", "0", FCVAR_CHEAT, "Adjust number of shells fired by mortarbug model size");
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 extern ConVar asw_debug_alien_damage;
@@ -433,8 +434,23 @@ CBaseEntity* CASW_Mortarbug::SpawnProjectile()
 	// Don't fire again until this volley would have hit the ground (with some lag behind it)
 	SetNextAttack( gpGlobals->curtime + flTime + random->RandomFloat( 0.5f, 2.0f ) );
 
+	int iMaxShells;
+	if ( rda_mortarbug_shells_by_alien_sizescale.GetBool() )
+	{
+		if (m_fSizeScale <= 0.5)
+			iMaxShells = 1;
+		else if (m_fSizeScale <= 0.8)
+			iMaxShells = 2;
+		else if (m_fSizeScale <= 1.1)
+			iMaxShells = 3;
+		else
+			iMaxShells = 4;
+	}
+	else
+		iMaxShells = 3;
+
 	CASW_Mortarbug_Shell *pShell = NULL;
-	for ( int i = 0; i < 3; i++ )
+	for ( int i = 0; i < iMaxShells; i++ )
 	{
 		pShell = CASW_Mortarbug_Shell::CreateShell( vSpitPos, vecToss, this );
 		pShell->m_bDoScreenShake = ( i == 1 );
