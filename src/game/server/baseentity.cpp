@@ -2493,6 +2493,11 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFirstMoveChild,  "FirstMoveChild", "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptNextMovePeer, "NextMovePeer", "" )
 
+	// Mad Orange
+	DEFINE_SCRIPTFUNC_NAMED(ScriptSetParent, "SetParent", "Set the entity's parent")
+	DEFINE_SCRIPTFUNC_NAMED(ScriptClearParent, "ClearParent", "Clear the entity's parent")
+	//
+
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromString, "__KeyValueFromString", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromFloat, "__KeyValueFromFloat", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromInt, "__KeyValueFromInt", SCRIPT_HIDE )

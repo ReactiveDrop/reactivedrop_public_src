@@ -1862,6 +1862,11 @@ public:
 	const Vector &ScriptGetLocalAngles() { static Vector vec; QAngle qa = GetLocalAngles(); vec.x = qa.x; vec.y = qa.y; vec.z = qa.z; return vec; }
 	//
 
+	//Mad Orange
+	void ScriptSetParent(HSCRIPT hEntity) { SetParent(ToEnt(hEntity)); }
+	void ScriptClearParent( void ) { SetParent(NULL); }
+	//
+
 	void ScriptSetSize( const Vector &mins, const Vector &maxs ) { UTIL_SetSize( this, mins, maxs ); }
 	void ScriptUtilRemove( void ) { UTIL_Remove( this ); }
 	void ScriptSetOwner( HSCRIPT hEntity ) { SetOwnerEntity( ToEnt( hEntity ) ); }
