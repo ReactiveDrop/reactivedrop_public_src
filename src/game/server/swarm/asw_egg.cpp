@@ -133,24 +133,36 @@ void CASW_Egg::Spawn( void )
 	AddFlag( FL_AIMTARGET );
 
 	// create our parasite to sit inside and await a hapless marine
-	QAngle angParasiteFacing = GetAbsAngles();
+	QAngle angParasiteFacing = QAngle(0, 0, 0);// GetAbsAngles(); //Mad Orange. We do not want parasite to have weird angle after DoJumpFromEgg() if egg is rotated not only around z axis
 	if (!m_bFixedJumpDirection)
 	{
 		angParasiteFacing.y = random->RandomInt(0,360);
 	}
 	
+	//Mad Orange. Correct parasite position with complex egg rotations
+	Vector vecSpawnPos;
+	if (GetAbsAngles().x != 0 || GetAbsAngles().z != 0)
+	{
+		float shft = 54 * GetModelScale(); //parasite shift over GetAbsOrigin() due to animation. LookupSequence("Egg_Idle") in CASW_Parasite;
+		Vector vecUp;
+		GetVectors(NULL, NULL, &vecUp);
+		vecSpawnPos = Vector(GetAbsOrigin().x + vecUp.x*shft, GetAbsOrigin().y + vecUp.y*shft, GetAbsOrigin().z + shft*(vecUp.z - 1));
+	}
+	else
+		vecSpawnPos = GetAbsOrigin();
 
-	m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", GetAbsOrigin(), angParasiteFacing, this));
+	m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", vecSpawnPos, angParasiteFacing, this));
 	if (GetParasite())
 	{
 		//Msg("Telling parasite to idle in egg\n");
 		GetParasite()->IdleInEgg(true);
 		//GetParasite()->AddSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
-		GetParasite()->Spawn();		
+		GetParasite()->Spawn();
+		GetParasite()->SetModelScale(GetModelScale());
 		GetParasite()->SetSleepState(AISS_WAITING_FOR_INPUT);
 		GetParasite()->SetEgg(this);
 
-		GetParasite()->SetParent( this );
+		//GetParasite()->SetParent( this );
 	}
 
 	m_takedamage = DAMAGE_YES;
@@ -343,24 +355,37 @@ void CASW_Egg::ResetEgg()
 	if ( m_bHatched )
 	{
 		// spawn a new parasite
-		QAngle angParasiteFacing = GetAbsAngles();
+		QAngle angParasiteFacing = QAngle(0, 0, 0); //GetAbsAngles();
 		if (!m_bFixedJumpDirection)
 		{
 			angParasiteFacing.y = random->RandomInt(0,360);
 		}
 	
-		m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", GetAbsOrigin(), angParasiteFacing, this));
+		//Mad Orange. Correct parasite position with complex egg rotations
+		Vector vecSpawnPos;
+		if (GetAbsAngles().x != 0 || GetAbsAngles().z != 0)
+		{
+			float shft = 54 * GetModelScale(); //parasite shift over GetAbsOrigin() due to animation. LookupSequence("Egg_Idle") in CASW_Parasite;
+			Vector vecUp;
+			GetVectors(NULL, NULL, &vecUp);
+			vecSpawnPos = Vector(GetAbsOrigin().x + vecUp.x*shft, GetAbsOrigin().y + vecUp.y*shft, GetAbsOrigin().z + shft*(vecUp.z - 1));
+		}
+		else
+			vecSpawnPos = GetAbsOrigin();
+
+		m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", vecSpawnPos, angParasiteFacing, this));
 		if (GetParasite())
 		{
 			//Msg("Telling parasite to idle in egg\n");
 		
 			GetParasite()->IdleInEgg(true);
 			//GetParasite()->AddSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
-			GetParasite()->Spawn();		
+			GetParasite()->Spawn();
+			GetParasite()->SetModelScale(GetModelScale());
 			GetParasite()->SetSleepState(AISS_WAITING_FOR_INPUT);
 			GetParasite()->SetEgg(this);
 			
-			GetParasite()->SetParent( this );
+			//GetParasite()->SetParent( this );
 		}
 	}
 

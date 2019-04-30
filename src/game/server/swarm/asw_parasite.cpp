@@ -135,7 +135,13 @@ void CASW_Parasite::Spawn( void )
 
 	m_iMaxHealth = m_iHealth;
 
-	SetMoveType( MOVETYPE_STEP );
+	//Mad Orange. Parasite is npc that has ground check. So it teleports to ground or falls. Parenting during such a thing may teleport parasite in unpredicatable way.
+	//So we remove corresponding parenting in asw_egg.cpp, add there(MOVETYPE_FLY) and restore original(MOVETYPE_STEP) in CASW_Parasite::DoJumpFromEgg()
+	if (m_bDoEggIdle)
+		SetMoveType(MOVETYPE_FLY);
+	else
+		SetMoveType(MOVETYPE_STEP);
+
 	SetHullType(HULL_TINY);
 	SetCollisionGroup( ASW_COLLISION_GROUP_PARASITE );
 	SetViewOffset( Vector(6, 0, 11) ) ;		// Position of the eyes relative to NPC's origin.
@@ -1211,7 +1217,8 @@ void CASW_Parasite::SetJumpFromEgg(bool b, float flJumpDistance)
 void CASW_Parasite::DoJumpFromEgg()
 {
 	SetContextThink( NULL, gpGlobals->curtime, s_pParasiteAnimThink );
-	SetParent( NULL );
+	SetMoveType(MOVETYPE_STEP);
+	//SetParent( NULL );
 	SetAbsOrigin( GetAbsOrigin() + Vector( 0, 0, 30 ) );	// TODO: position parasite at where his 'idle in egg' animation has him.  This has to be some distance off the ground, else the jump will immediately end.
 	Vector dir = vec3_origin;
 	AngleVectors( GetAbsAngles(), &dir );
@@ -1220,7 +1227,7 @@ void CASW_Parasite::DoJumpFromEgg()
 
 	SetActivity( ACT_RANGE_ATTACK1 );
 	StudioFrameAdvanceManual( 0.0 );
-	SetParent( NULL );
+	//SetParent( NULL );
 	RemoveFlag( FL_FLY );
 	AddEffects( EF_NOINTERP );
 	m_bDoEggIdle = false;
