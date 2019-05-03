@@ -108,6 +108,7 @@ CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 {
 #ifdef CLIENT_DLL
 	m_flLastMuzzleFlashTime = 0;
+	m_bShouldUpdateActivityClient = false;
 #endif
 }
 
@@ -444,13 +445,30 @@ ConVar asw_minigun_pitch_max( "asw_minigun_pitch_max", "150", FCVAR_CHEAT | FCVA
 
 void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 {
+	/*
 	if (GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
 	{
 		SetActivity(ACT_VM_PRIMARYATTACK, 0);
 	}
 	m_flPlaybackRate = GetSpinRate();
+	*/
+	//Mad Orange. Simple barrel spin rotation multiplayer fix. As for complex m_flPlaybackRate change does not seem to work without "updating" sequence\activity.
+	//So need to investigate what many sequence related functions do and make this "update" in a right way.
+	if (GetSpinRate() > 0.1 && GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
+	{
+		m_flPlaybackRate = 1;
+		SetActivity(ACT_VM_PRIMARYATTACK, 0);
+		m_bShouldUpdateActivityClient = true;
+	}
 
-	if ( GetSpinRate() > 0.0f )
+	if (GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient)
+	{
+		SetActivity(ACT_VM_IDLE, 0);
+		m_flPlaybackRate = 0;
+		m_bShouldUpdateActivityClient = false;
+	}
+
+	if ( GetSpinRate() > 0.01f ) //seems always > 0 due to computations, lets increase it a little.
 	{
 		if( !m_pBarrelSpinSound )
 		{
@@ -458,7 +476,7 @@ void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 			m_pBarrelSpinSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), "ASW_Minigun.Spin" );
 			CSoundEnvelopeController::GetController().Play( m_pBarrelSpinSound, 0.0, 100 );
 		}
-		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pBarrelSpinSound, MIN( 1.0f, m_flPlaybackRate * 3.0f ), 0.0f );
+		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pBarrelSpinSound, MIN( 1.0f, GetSpinRate() * 3.0f ), 0.0f );
 		CSoundEnvelopeController::GetController().SoundChangePitch( m_pBarrelSpinSound, asw_minigun_pitch_min.GetFloat() + ( GetSpinRate() * ( asw_minigun_pitch_max.GetFloat() - asw_minigun_pitch_min.GetFloat() ) ), 0.0f );
 	}
 	else
