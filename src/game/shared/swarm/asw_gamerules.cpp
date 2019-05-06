@@ -5067,7 +5067,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
 			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES ||
 			collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == ASW_COLLISION_GROUP_BOTS )
+			collisionGroup0 == ASW_COLLISION_GROUP_BOTS ||
+			collisionGroup0 == COLLISION_GROUP_DOOR_BLOCKER )
 		{
 			return false;
 		}

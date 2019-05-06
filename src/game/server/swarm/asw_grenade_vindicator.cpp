@@ -124,14 +124,14 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	if ( rd_grenade_collision_fix.GetBool() && pOther->GetCollisionGroup() == COLLISION_GROUP_WEAPON )	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 		return;																						//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 
+	// make sure we don't die on things we shouldn't
+	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
+		return;
+
 	if ( m_bExplodeOnWorldContact )
 	{
 		Detonate();
 	}
-
-	// make sure we don't die on things we shouldn't
-	if (!ASWGameRules() || !ASWGameRules()->ShouldCollide(GetCollisionGroup(), pOther->GetCollisionGroup()))
-		return;
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
