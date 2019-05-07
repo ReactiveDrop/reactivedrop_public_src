@@ -71,6 +71,7 @@ CASW_Weapon_Grenade_Launcher::~CASW_Weapon_Grenade_Launcher()
 #ifdef GAME_DLL
 ConVar asw_grenade_launcher_speed( "asw_grenade_launcher_speed", "2.4f", FCVAR_CHEAT, "Scale speed of grenade launcher grenades" );
 ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4f", FCVAR_CHEAT, "Gravity of grenade launcher grenades" );
+ConVar rd_grenade_launcher_explode_on_contact( "rd_grenade_launcher_explode_on_contact", "1", FCVAR_CHEAT, "If set to 0 grenade will not explode on contact with rigid world" );
 #endif
 
 void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
@@ -117,7 +118,7 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	if ( pGrenade )
 	{
 		pGrenade->SetGravity( asw_grenade_launcher_gravity.GetFloat() );
-		pGrenade->SetExplodeOnWorldContact( true );
+		pGrenade->SetExplodeOnWorldContact( rd_grenade_launcher_explode_on_contact.GetBool() );
 
 		pMarine->OnWeaponFired( this, 1 );
 	}
