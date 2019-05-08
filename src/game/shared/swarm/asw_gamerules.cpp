@@ -7620,7 +7620,8 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	}
 
 	int index = pPlayer->entindex() - 1;
-	if ( ( rd_ready_mark_override.GetBool() || bWasSpectatorLastRound ) && index >= 0 && index < ASW_MAX_READY_PLAYERS )
+	// do not mark leader ready, it makes its crown disappear
+	if ( ( rd_ready_mark_override.GetBool() || bWasSpectatorLastRound ) && index >= 0 && index < ASW_MAX_READY_PLAYERS && ASWGameResource()->GetLeader() != pPlayer )
 	{
 		ASWGameResource()->m_bPlayerReady.Set( index, true );
 	}
