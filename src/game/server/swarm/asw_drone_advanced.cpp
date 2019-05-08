@@ -562,6 +562,16 @@ bool CASW_Drone_Advanced::MoveExecute_Alive(float flInterval)
 	bool bFailedToMove = false;
 	if (GetTask() && (GetTask()->iTask == TASK_MELEE_ATTACK1))		// do a non plane sliding movement for attacking
 	{
+		//Mad Orange. Limit RequestedMovement vector length if too high drone velocity to avoid warping through.
+		//Msg("Requested movement vector len %f\n", vecRequestedMovement.Length());
+		float flPreWarpDist = 512;
+		if (vecRequestedMovement.Length() > flPreWarpDist)
+		{
+			Vector vecPreWarp = vecRequestedMovement;
+			VectorNormalize(vecPreWarp);
+			vecRequestedMovement = vecPreWarp * flPreWarpDist;
+		}
+
 		if ( WalkMove( vecRequestedMovement * flInterval, MASK_NPCSOLID ) == false )
 		{
 			//Attempt a half-step
