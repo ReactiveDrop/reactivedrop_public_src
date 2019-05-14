@@ -16,6 +16,8 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
 #include "c_asw_steamstats.h"
+#include "asw_util_shared.h"
+#include "inetchannelinfo.h"
 
 #include <ctime>
 
@@ -232,20 +234,41 @@ void RD_Rich_Presence::UpdatePresence()
 		}
 		else if ( engine->IsConnected() )
 		{
-			// TODO
 #ifdef DISCRORD_RICH_PRESENCE_ENABLED
-			discordPresence.partyId = NULL;
-			discordPresence.partySize = 0;
-			discordPresence.partyMax = 0;
+			discordPresence.partySize = UTIL_ASW_GetNumPlayers();
+			discordPresence.partyMax = gpGlobals->maxClients;
 			discordPresence.joinSecret = NULL;
 #endif
 
 			if ( pSteamFriends )
 			{
-				// TODO
-				pSteamFriends->SetRichPresence( "connect", NULL );
-				pSteamFriends->SetRichPresence( "steam_player_group", NULL );
-				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+				INetChannelInfo *nci = engine->GetNetChannelInfo();
+				if ( nci )
+				{
+					const char *pAddr = nci->GetAddress();
+					if ( pAddr )
+					{
+						static char szHostAdress[32];
+						V_strncpy( szHostAdress, pAddr, sizeof( szHostAdress ) );
+
+						pSteamFriends->SetRichPresence( "steam_player_group", szHostAdress );
+#ifdef DISCRORD_RICH_PRESENCE_ENABLED
+						discordPresence.partyId = szHostAdress;
+#endif 
+
+						static char szConnectString[40];
+						V_snprintf( szConnectString, sizeof( szConnectString ), "+connect %s", pAddr );
+						pSteamFriends->SetRichPresence( "connect", szConnectString );
+					}
+				}
+
+				static char szGroupSize[4];
+				V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", UTIL_ASW_GetNumPlayers() );
+				pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+
+				pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+				V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", gpGlobals->maxClients );
+				pSteamFriends->SetRichPresence( "max_players", szGroupSize );
 			}
 		}
 

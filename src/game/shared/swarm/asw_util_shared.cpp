@@ -968,7 +968,7 @@ int UTIL_ASW_GetNumPlayers()
 	{
 		// found a connected player who isn't ready?
 #ifdef CLIENT_DLL
-		if (g_PR->IsConnected(i+1))
+		if (g_PR && g_PR->IsConnected(i+1))
 			count++;
 #else
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i + 1);
