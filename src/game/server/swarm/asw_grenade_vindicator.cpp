@@ -49,6 +49,7 @@ extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for
 CASW_Grenade_Vindicator::CASW_Grenade_Vindicator()
 {
 	g_aExplosiveProjectiles.AddToTail( this );
+	SetBloodColor( DONT_BLEED ); 
 }
 
 CASW_Grenade_Vindicator::~CASW_Grenade_Vindicator()
