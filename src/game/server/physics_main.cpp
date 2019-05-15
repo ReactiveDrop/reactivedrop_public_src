@@ -46,7 +46,7 @@ ConVar vprof_scope_entity_thinks( "vprof_scope_entity_thinks", "0" );
 ConVar vprof_scope_entity_gamephys( "vprof_scope_entity_gamephys", "0" );
 
 ConVar	npc_vphysics	( "npc_vphysics","0");
-ConVar rd_interpenetrating_entities_warning( "rd_interpenetrating_entities_warning", "1" );
+ConVar rd_interpenetrating_entities_warning( "rd_interpenetrating_entities_warning", "0" );
 //-----------------------------------------------------------------------------
 // helper method for trace hull as used by physics...
 //-----------------------------------------------------------------------------
