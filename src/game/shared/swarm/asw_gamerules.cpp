@@ -169,6 +169,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
 	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kick players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
+	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -3988,6 +3989,44 @@ void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 	m_nMarineForDeathCam = m_nMarineForDeathCamDeathmatch;
 }
 
+// deletes all entities by their name or their class name
+static void DeleteAllEntities( const char *str )
+{
+	// Otherwise remove based on name or classname
+	int iCount = 0;
+	CBaseEntity *ent = NULL;
+	while ( ( ent = gEntList.NextEnt( ent ) ) != NULL )
+	{
+		if ( ( ent->GetEntityName() != NULL_STRING	&& FStrEq( str, STRING( ent->GetEntityName() ) ) ) ||
+			( ent->m_iClassname != NULL_STRING	&& FStrEq( str, STRING( ent->m_iClassname ) ) ) ||
+			( ent->GetClassname() != NULL && FStrEq( str, ent->GetClassname() ) ) )
+		{
+			UTIL_Remove( ent );
+			iCount++;
+		}
+	}
+}
+
+// removes all alien NPCs from map
+static void ClearHouse()
+{
+	if ( ASWSpawnManager() )
+	{
+		int nCount = ASWSpawnManager()->GetNumAlienClasses();
+		for ( int i = 0; i < nCount; i++ )
+		{
+			DeleteAllEntities( ASWSpawnManager()->GetAlienClass( i )->m_pszAlienClass ) ;
+		}
+	}
+	DeleteAllEntities("asw_alien_goo");
+	DeleteAllEntities("asw_grub_sac");
+	DeleteAllEntities("asw_spawner");
+	DeleteAllEntities("asw_egg");
+	DeleteAllEntities("asw_drone_uber");
+	DeleteAllEntities("npc_antlionguard_normal");
+	DeleteAllEntities("npc_antlionguard_cavern");
+}
+
 void CAlienSwarm::MissionComplete( bool bSuccess )
 {
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
@@ -4075,6 +4114,9 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			pPlayer->AddFlag( FL_FROZEN );			
 		}
 	}
+
+	if ( rd_clearhouse_on_mission_complete.GetBool() )
+		ClearHouse();
 
 	// freeze all the npcs
 	CAI_BaseNPC *npc = NULL;
