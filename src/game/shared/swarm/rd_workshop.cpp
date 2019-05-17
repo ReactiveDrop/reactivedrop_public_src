@@ -37,6 +37,8 @@
 
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
+#else
+ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "0", FCVAR_NONE, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 #endif
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
@@ -375,7 +377,10 @@ void CReactiveDropWorkshop::OnMissionStart()
 void CReactiveDropWorkshop::LevelInitPostEntity()
 {
 #ifdef GAME_DLL
-	m_bWorkshopSetupCompleted = false;
+	if ( rd_workshop_update_every_round.GetBool() )
+	{
+		m_bWorkshopSetupCompleted = false;
+	}
 #endif
 }
 
