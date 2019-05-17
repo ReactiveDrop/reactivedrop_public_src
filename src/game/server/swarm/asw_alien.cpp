@@ -2306,6 +2306,10 @@ void CASW_Alien::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
 
 void CASW_Alien::ScriptChaseNearestMarine()
 {
+	if ( GetSleepState() > AISS_AWAKE )		// alien is asleep, wake
+	{
+		Wake( false );
+	}
 	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }
 
