@@ -255,8 +255,8 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				m_OnComputerActivated.FireOutput(pMarine, this);
 				m_fAutoOverrideTime = gpGlobals->curtime + 4.0f;
 
-				//if (!asw_simple_hacking.GetBool())		// if doing complex hacking, launch the interface for it
-				if ( pMarine->IsInhabited() )
+				// if doing complex hacking, launch the interface for it
+				if ( ShouldShowComputer() && pMarine->IsInhabited() )
 				{
 					if (!GetCurrentHack())	// if we haven't created a hack object for this computer yet, then create one
 						m_hComputerHack = (CASW_Hack_Computer*) CreateEntityByName( "asw_hack_computer" );
@@ -289,6 +289,32 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		}
 		return;
 	}
+}
+
+bool CASW_Computer_Area::ShouldShowComputer()
+{
+	if ( !asw_simple_hacking.GetBool() )
+	{
+		return true;
+	}
+	if ( m_hSecurityCam1.Get() )
+	{
+		return true;
+	}
+	if ( m_hTurret1.Get() )
+	{
+		return true;
+	}
+	if ( m_MailFile.Get()[0] != NULL )
+	{
+		return true;
+	}
+	if ( m_PDAName.Get()[0] != NULL )
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)

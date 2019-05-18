@@ -132,6 +132,9 @@ public:
 
 	virtual void UpdateWaitingForInput();
 	virtual void UpdatePanelSkin();
+
+private:
+	bool ShouldShowComputer();
 };
 
 #endif /* _DEFINED_ASW_COMPUTER_AREA_H */
