@@ -36,6 +36,8 @@ public:
 		m_hUpdate( k_UGCUpdateHandleInvalid ),
 		m_hPublishedAddonsQuery( k_UGCQueryHandleInvalid ),
 		m_bHaveAllPublishedAddons( false ),
+#else
+		m_bWorkshopSetupCompleted( false ),
 #endif
 		m_hEnabledAddonsQuery( k_UGCQueryHandleInvalid ),
 		m_hFavoritedAddonsQuery( k_UGCQueryHandleInvalid ) {}
