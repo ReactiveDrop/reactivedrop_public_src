@@ -866,6 +866,7 @@ public:
 	// This is what you should call to apply damage to an entity.
 	void TakeDamage( const CTakeDamageInfo &info );
 	void ScriptTakeDamage( float flDamage, int ndamageType, HSCRIPT hAttacker );
+	void ScriptTakeDamageParams( HSCRIPT hInflictor, HSCRIPT hAttacker, HSCRIPT hWeapon, const Vector damageForce, const Vector damagePosition, float flDamage, int ndamageType );
 
 	virtual int		TakeHealth( float flHealth, int bitsDamageType );
 

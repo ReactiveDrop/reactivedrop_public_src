@@ -1940,6 +1940,19 @@ void CBaseEntity::ScriptTakeDamage( float flDamage, int ndamageType, HSCRIPT hAt
 }
 
 //-----------------------------------------------------------------------------
+// VScript: Scale damage done and call OnTakeDamage with additional parameters
+//-----------------------------------------------------------------------------
+void CBaseEntity::ScriptTakeDamageParams( HSCRIPT hInflictor, HSCRIPT hAttacker, HSCRIPT hWeapon, const Vector damageForce, const Vector damagePosition, float flDamage, int ndamageType )
+{
+	CBaseEntity *pInflictor = ToEnt(hInflictor);
+	CBaseEntity *pAttacker = ToEnt(hAttacker);
+	CBaseEntity *pWeapon = ToEnt(hWeapon);
+
+	CTakeDamageInfo info( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, flDamage, ndamageType );
+	TakeDamage( info );
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Returns a value that scales all damage done by this entity.
 //-----------------------------------------------------------------------------
 float CBaseEntity::GetAttackDamageScale( CBaseEntity *pVictim )
@@ -2467,6 +2480,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ChangeTeam, "SetTeam", ""  )
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptTakeDamage, "TakeDamage", "Causes the entity to take damage" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptTakeDamageParams, "TakeDamageParams", "Causes the entity to take damage with additional parameters" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSpawn, "Spawn", "Spawns the entity into the game." )
 	DEFINE_SCRIPTFUNC( Activate, "Activates the spawned entity." )
 	DEFINE_SCRIPTFUNC( SetCollisionGroup, "Sets the entity's collision group." )

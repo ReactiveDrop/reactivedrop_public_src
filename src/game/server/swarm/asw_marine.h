@@ -545,6 +545,7 @@ public:
 	void ScriptGiveWeapon( const char *pszName, int slot );
 	bool ScriptDropWeapon( int iWeaponIndex );
 	bool ScriptRemoveWeapon( int iWeaponIndex );
+	bool ScriptSwitchWeapon( int iWeaponIndex );
 	ScriptVariant_t Script_GetInvTable();
 	const char* Script_GetMarineName();
 	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );

@@ -135,6 +135,12 @@ IMPLEMENT_SERVERCLASS_ST( CBaseTrigger, DT_BaseTrigger )
 	SendPropInt( SENDINFO(m_spawnflags), -1, SPROP_NOSCALE )
 END_SEND_TABLE()
 
+BEGIN_ENT_SCRIPTDESC( CBaseTrigger, CBaseEntity, "Server-side trigger" )
+	DEFINE_SCRIPTFUNC( Disable, "Disable the trigger" )
+	DEFINE_SCRIPTFUNC( Enable, "Enable the trigger" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIsTouching, "IsTouching", "Checks whether the passed entity is touching the trigger." )
+END_SCRIPTDESC();
+
 CBaseTrigger::CBaseTrigger()
 {
 	AddEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
@@ -548,6 +554,15 @@ bool CBaseTrigger::IsTouching( CBaseEntity *pOther )
 	EHANDLE hOther;
 	hOther = pOther;
 	return ( m_hTouchingEntities.Find( hOther ) != m_hTouchingEntities.InvalidIndex() );
+}
+
+bool CBaseTrigger::ScriptIsTouching( HSCRIPT entity )
+{
+	CBaseEntity *pOther = ToEnt(entity);
+	if ( !pOther )
+		return false;
+
+	return IsTouching( pOther );
 }
 
 //-----------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include "ai_speech.h"
 #include "ai_network.h"
 #include "ai_node.h"
+#include "inetchannelinfo.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -292,6 +293,92 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptResponseCriteria, "CScriptResponseCriteria",
 	DEFINE_SCRIPTFUNC( GetValue, "Arguments: ( entity, criteriaName ) - returns a string" )
 	DEFINE_SCRIPTFUNC( GetTable, "Arguments: ( entity ) - returns a table of all criteria" )
 	DEFINE_SCRIPTFUNC( HasCriterion, "Arguments: ( entity, criteriaName ) - returns true if the criterion exists" )
+END_SCRIPTDESC();
+
+
+class CScriptEntityOutputs
+{
+public:
+	int GetNumElements( HSCRIPT hEntity, const char *szOutputName )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return -1;
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+			return -1;
+
+		return pOutput->NumberOfElements();
+	}
+
+	void GetOutputTable( HSCRIPT hEntity, const char *szOutputName, HSCRIPT hOutputTable, int element )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity || !hOutputTable || element < 0 )
+			return;
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( pOutput )
+		{
+			int iCount = 0;
+			CEventAction *pAction = pOutput->GetFirstAction();
+			while ( pAction )
+			{
+				if ( iCount == element )
+				{
+					g_pScriptVM->SetValue( hOutputTable, "target", STRING( pAction->m_iTarget ) );
+					g_pScriptVM->SetValue( hOutputTable, "input", STRING( pAction->m_iTargetInput ) );
+					g_pScriptVM->SetValue( hOutputTable, "parameter", STRING( pAction->m_iParameter ) );
+					g_pScriptVM->SetValue( hOutputTable, "delay", pAction->m_flDelay );
+					g_pScriptVM->SetValue( hOutputTable, "times_to_fire", pAction->m_nTimesToFire );
+					break;
+				}
+				else
+				{
+					iCount++;
+					pAction = pAction->m_pNext;
+				}
+			}
+		}
+	}
+
+	bool HasOutput( HSCRIPT hEntity, const char *szOutputName )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return false;
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+			return false;
+
+		return true;
+	}
+
+	bool HasAction( HSCRIPT hEntity, const char *szOutputName )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+			return false;
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( pOutput )
+		{
+			CEventAction *pAction = pOutput->GetFirstAction();
+			if ( pAction )
+				return true;
+		}
+
+		return false;
+	}
+} g_ScriptEntityOutputs;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIPT_SINGLETON "Used to get entity output data" )
+	DEFINE_SCRIPTFUNC( GetNumElements, "Arguments: ( entity, outputName ) - returns the number of array elements" )
+	DEFINE_SCRIPTFUNC( GetOutputTable, "Arguments: ( entity, outputName, table, arrayElement ) - returns a table of output information" )
+	DEFINE_SCRIPTFUNC( HasOutput, "Arguments: ( entity, outputName ) - returns true if the output exists" )
+	DEFINE_SCRIPTFUNC( HasAction, "Arguments: ( entity, outputName ) - returns true if an action exists for the output" )
 END_SCRIPTDESC();
 
 
@@ -606,6 +693,8 @@ static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 
 	if ( pPlayer )
 		ClientPrint( pPlayer, iDest, pText );
+	else
+		UTIL_ClientPrintAll( iDest, pText );
 }
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
@@ -654,6 +743,92 @@ static const char *Script_FileToString( const char *pszFileName )
 
 	const char *pszString = (const char*)szString;
 	return pszString;
+}
+
+static void Script_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, int eCommand, bool bAirShake )
+{
+	UTIL_ScreenShake( center, amplitude, frequency, duration, radius, (ShakeCommand_t)eCommand, bAirShake );
+}
+
+static void Script_ScreenFade( HSCRIPT hEntity, int r, int g, int b, int a, float fadeTime, float fadeHold, int flags )
+{
+	CBaseEntity *pEntity = ToEnt(hEntity);
+	color32 color = { r, g, b, a };
+
+	if ( pEntity )
+		UTIL_ScreenFade( pEntity, color, fadeTime, fadeHold, flags );
+	else
+		UTIL_ScreenFadeAll( color, fadeTime, fadeHold, flags );
+}
+
+static void Script_ChangeLevel( const char *mapname )
+{
+	if ( !engine->IsMapValid( mapname ) )
+		return;
+
+	engine->ChangeLevel( mapname, NULL );
+}
+
+bool Script_IsModelPrecached( const char *modelname )
+{
+	return engine->IsModelPrecached( VScriptCutDownString( modelname ) );
+}
+
+static void Script_GetPlayerConnectionInfo( HSCRIPT hPlayer, HSCRIPT hTable )
+{
+	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBasePlayer *pPlayer = NULL;
+
+	if ( pBaseEntity )
+		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+	if ( !pPlayer || !hTable )
+		return;
+
+	INetChannelInfo *nci = engine->GetPlayerNetInfo( pPlayer->entindex() );
+	if ( nci )
+	{
+		g_pScriptVM->SetValue( hTable, "name", nci->GetName() );
+		g_pScriptVM->SetValue( hTable, "address", nci->GetAddress() );
+		g_pScriptVM->SetValue( hTable, "time", nci->GetTime() );
+		g_pScriptVM->SetValue( hTable, "time_connected", nci->GetTimeConnected() );
+		g_pScriptVM->SetValue( hTable, "latency", nci->GetLatency( FLOW_OUTGOING ) );
+		g_pScriptVM->SetValue( hTable, "is_loopback", nci->IsLoopback() );
+		g_pScriptVM->SetValue( hTable, "is_timing_out", nci->IsTimingOut() );
+		g_pScriptVM->SetValue( hTable, "is_playback", nci->IsPlayback() );
+	}
+
+	int ping, packetloss;
+	UTIL_GetPlayerConnectionInfo( pPlayer->entindex(), ping, packetloss );
+	g_pScriptVM->SetValue( hTable, "ping", ping );
+	g_pScriptVM->SetValue( hTable, "packetloss", packetloss );
+}
+
+static const char *Script_GetClientXUID( HSCRIPT hPlayer )
+{
+	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBasePlayer *pPlayer = NULL;
+
+	if ( pBaseEntity )
+		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+	if ( !pPlayer )
+		return "";
+
+	uint64 xuid = engine->GetClientXUID( pPlayer->edict() );
+	return CFmtStr( "%I64u", xuid );
+}
+
+static void Script_FadeClientVolume( HSCRIPT hPlayer, float fadePercent, float fadeOutSeconds, float holdTime, float fadeInSeconds )
+{
+	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBasePlayer *pPlayer = NULL;
+
+	if ( pBaseEntity )
+		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+	if ( pPlayer )
+		engine->FadeClientVolume( pPlayer->edict(), fadePercent, fadeOutSeconds, holdTime, fadeInSeconds );
 }
 
 bool VScriptServerInit()
@@ -719,6 +894,13 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ScreenShake, "ScreenShake", "Start a screenshake with the following parameters. vecCenter, flAmplitude, flFrequency, flDuration, flRadius, eCommand( SHAKE_START = 0, SHAKE_STOP = 1 ), bAirShake" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ScreenFade, "ScreenFade", "Start a screenfade with the following parameters. player, red, green, blue, alpha, flFadeTime, flFadeHold, flags" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ChangeLevel, "ChangeLevel", "Tell engine to change level." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_IsModelPrecached, "IsModelPrecached", "Checks if the modelname is precached." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerConnectionInfo, "GetPlayerConnectionInfo", "Returns a table containing the player's connection info." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetClientXUID, "GetClientXUID", "Get the player's xuid (i.e. SteamID64)." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FadeClientVolume, "FadeClientVolume", "Fade out the client's volume level toward silence (or fadePercent)" );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
@@ -733,6 +915,7 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 				g_pScriptVM->RegisterInstance( &g_NetProps, "NetProps" );
 				g_pScriptVM->RegisterInstance( &g_ScriptResponseCriteria, "ResponseCriteria" );
+				g_pScriptVM->RegisterInstance( &g_ScriptEntityOutputs, "EntityOutputs" );
 				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
 
 				// To be used with Script_ClientPrint

@@ -381,6 +381,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the marine a weapon." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptDropWeapon, "DropWeapon", "Makes the marine drop a weapon." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the marine." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSwitchWeapon, "SwitchWeapon", "Make the marine switch to a weapon" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInvTable, "GetInvTable", "Returns a table of the marine's inventory data." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
@@ -3274,6 +3275,19 @@ bool CASW_Marine::ScriptRemoveWeapon( int iWeaponIndex )
 	}
 
 	return removed;
+}
+
+//-----------------------------------------------------------------------------
+// VScript: Switch the weapon
+//-----------------------------------------------------------------------------
+bool CASW_Marine::ScriptSwitchWeapon( int iWeaponIndex )
+{
+	CBaseCombatWeapon *pWeapon = GetASWWeapon( iWeaponIndex );
+
+	if ( !pWeapon )
+		return false;
+
+	return Weapon_Switch( pWeapon );
 }
 
 ScriptVariant_t CASW_Marine::Script_GetInvTable()

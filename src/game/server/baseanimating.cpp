@@ -273,12 +273,30 @@ END_SEND_TABLE()
 
 
 BEGIN_ENT_SCRIPTDESC( CBaseAnimating, CBaseEntity, "Animating models" )
-
-	DEFINE_SCRIPTFUNC( LookupAttachment, "Get the named attachement id"  )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttachmentOrigin, "GetAttachmentOrigin", "Get the attachement id's origin vector"  )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttachmentAngles, "GetAttachmentAngles", "Get the attachement id's angles as a p,y,r vector"  )
+	DEFINE_SCRIPTFUNC( LookupAttachment, "Get the named attachement id" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttachmentOrigin, "GetAttachmentOrigin", "Get the attachement id's origin vector" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttachmentAngles, "GetAttachmentAngles", "Get the attachement id's angles as a p,y,r vector" )
 	DEFINE_SCRIPTFUNC( IsSequenceFinished, "Ask whether the main sequence is done playing" )
-	DEFINE_SCRIPTFUNC( SetBodygroup, "Sets a bodygroup")
+	DEFINE_SCRIPTFUNC( SetBodygroup, "Sets a bodygroup" )
+	DEFINE_SCRIPTFUNC( GetBodygroup, "Get the bodygroup" )
+	DEFINE_SCRIPTFUNC( GetBodygroupName, "Get the name of the bodygroup" )
+	DEFINE_SCRIPTFUNC( GetBodygroupPartName, "Get the part name of the bodygroup" )
+	DEFINE_SCRIPTFUNC( GetSequence, "Get the active sequence." )
+	DEFINE_SCRIPTFUNC( SetSequence, "Sets the active sequence, keeping the current cycle." )
+	DEFINE_SCRIPTFUNC( GetSequenceName, "Returns the name of the sequence." )
+	DEFINE_SCRIPTFUNC( LookupSequence, "Get the named sequence id" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetPoseParameter, "SetPoseParameter", "Set the specified pose parameter to the specified value." )
+	DEFINE_SCRIPTFUNC( LookupActivity, "Get the named activity id" )
+	DEFINE_SCRIPTFUNC( GetSequenceActivityName, "Get the activity name of the sequence" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSequenceDuration, "GetSequenceDuration", "Returns the duration in seconds of the passed sequence." )
+	DEFINE_SCRIPTFUNC( GetModelScale, "Get scale of entity's model." )
+	DEFINE_SCRIPTFUNC( SetModelScale, "Sets the model's scale with change duration." )
+	DEFINE_SCRIPTFUNC( StopAnimation, "Stop the current animation by setting playback rate to 0.0" )
+	DEFINE_SCRIPTFUNC( ResetSequence, "Sets the active sequence, resetting the current cycle" )
+	DEFINE_SCRIPTFUNC( LookupBone, "Get the named bone id" )
+	DEFINE_SCRIPTFUNC( GetAttachmentBone, "Gets the bone for an attachment" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoneOrigin, "GetBoneOrigin", "Get the bone id's origin vector" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoneAngles, "GetBoneAngles", "Get the bone id's angles" )
 END_SCRIPTDESC();
 
 CBaseAnimating::CBaseAnimating()
@@ -1472,6 +1490,33 @@ void CBaseAnimating::GetBonePosition ( int iBone, Vector &origin, QAngle &angles
 	MatrixAngles( bonetoworld, angles, origin );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Returns the world location and world angles of a bone to vscript caller
+// Input  : bone name
+// Output :	location and angles
+//-----------------------------------------------------------------------------
+const Vector& CBaseAnimating::ScriptGetBoneOrigin( int iBone )
+{
+	static Vector absOrigin;
+	static QAngle qa;
+
+	CBaseAnimating::GetBonePosition( iBone, absOrigin, qa );
+
+	return absOrigin;
+}
+
+const Vector& CBaseAnimating::ScriptGetBoneAngles( int iBone )
+{
+	static Vector absOrigin;
+	static Vector absAngles;
+	static QAngle qa;
+
+	CBaseAnimating::GetBonePosition( iBone, absOrigin, qa );
+	absAngles.x = qa.x;
+	absAngles.y = qa.y;
+	absAngles.z = qa.z;
+	return absAngles;
+}
 
 
 //=========================================================
