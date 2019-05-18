@@ -233,6 +233,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CBaseCombatCharacter, "Alien Swarm buzzer" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the buzzer into flames." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the buzzer." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the buzzer." )
+	DEFINE_SCRIPTFUNC( Wake, "Wake up the buzzer." )
 END_SCRIPTDESC()
 
 CASW_Buzzer::CASW_Buzzer()

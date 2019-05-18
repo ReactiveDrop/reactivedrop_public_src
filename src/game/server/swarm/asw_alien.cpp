@@ -162,6 +162,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
+	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
 END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
