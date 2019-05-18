@@ -600,7 +600,7 @@ bool CASW_Spawn_Manager::FindHordePos( bool bNorth, const CUtlVector<int> &candi
 		}
 
 		// reactivedrop: preventing hordes from spawning behind closed airlocks
-		if ( UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) )
+		if ( UTIL_ASW_BrushBlockingRoute( pRoute, MASK_NPCSOLID_BRUSHONLY, ASW_COLLISION_GROUP_ALIEN ) )
 		{
 			if ( asw_director_debug.GetInt() >= 2 )
 			{
