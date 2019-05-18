@@ -30,7 +30,7 @@ namespace
 	if( !steamapicontext->SteamUserStats()->GetUserStat( playerSteamID, szApiName, &membername ) ) \
 	{ \
 		bOK = false; \
-		Msg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName ); \
+		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName ); \
 } }
 
 #define SEND_STEAM_STATS( apiname, membername ) \
