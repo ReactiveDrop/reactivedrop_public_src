@@ -68,6 +68,7 @@ END_DATADESC()
 
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
 extern ConVar asw_debug_alien_damage;
+extern ConVar rda_marine_backpack;
 
 CASW_Weapon::CASW_Weapon()
 {
@@ -268,6 +269,9 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 #ifndef CLIENT_DLL
 		if (pMarine)
 		{
+			if (rda_marine_backpack.GetBool() && pMarine->GetASWWeapon(2) != this)
+				pMarine->RemoveBackPackModel();
+
 			pMarine->Weapon_Detach(this);
 			if (bActive)
 				pMarine->SwitchToNextBestWeapon(NULL);

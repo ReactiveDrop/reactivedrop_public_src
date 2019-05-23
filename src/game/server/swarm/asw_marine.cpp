@@ -103,6 +103,8 @@ ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_gre
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
+ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE, "Attach unactive weapon model to marine's back");
+ConVar rda_marine_backpack_alt_position("rda_marine_backpack_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
 		{ \
@@ -620,6 +622,9 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	{
 		m_flFailedPathingTime[i] = FLT_MIN;
 	}
+
+	m_BackPackWeaponBaseEntity = NULL;
+	m_bAirStrafeUsed = false;
 }
 
 
@@ -668,6 +673,21 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 			{
 				pPlayer->m_hUseKeyDownEnt = NULL;
 				pPlayer->m_flUseKeyDownTime = 0.0f;
+			}
+
+			if (rda_marine_backpack.GetBool())
+			{
+				if ( GetASWWeapon(0) && GetASWWeapon(1) )
+				{
+					if ( GetActiveASWWeapon() == GetASWWeapon(0) )
+					{
+						CreateBackPackModel( GetASWWeapon(1) );
+					}
+					else
+					{
+						CreateBackPackModel( GetASWWeapon(0) );
+					}
+				}
 			}
 
 			IGameEvent * event = gameeventmanager->CreateEvent( "marine_revived" );
@@ -1219,6 +1239,11 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				if ( !m_bKnockedOut )
 				{
+					if (rda_marine_backpack.GetBool())
+					{
+						RemoveBackPackModel();
+					}
+
 					SetHealth( GetMaxHealth() - 10 );
 					SetKnockedOut( true );
 
@@ -2895,6 +2920,16 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 
 	GetMarineResource()->UpdateWeaponIndices();
 
+	if (rda_marine_backpack.GetBool() && (index == 0 || index == 1))
+	{
+		//if this is pickup into empty slot GetLastWeaponSwitchedTo() gives us weapon we have
+		//if this is switch with existing weapon GetLastWeaponSwitchedTo() gives us weapon we picked up
+		if (GetASWWeapon(0) && GetASWWeapon(1) && GetLastWeaponSwitchedTo() && GetLastWeaponSwitchedTo() != pWeapon)
+		{
+			CreateBackPackModel(pWeapon);
+		}
+	}
+	
 	return true;
 }
 
@@ -2986,6 +3021,16 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 
 		CheckAndRequestAmmo();
 
+		if (rda_marine_backpack.GetBool() && (index == 0 || index == 1))
+		{
+			//if this is pickup into empty slot GetLastWeaponSwitchedTo() gives us weapon we have
+			//if this is switch with existing weapon GetLastWeaponSwitchedTo() gives us weapon we picked up
+			if (GetASWWeapon(0) && GetASWWeapon(1) && GetLastWeaponSwitchedTo() && GetLastWeaponSwitchedTo() != pWeapon)
+			{
+				CreateBackPackModel(pWeapon);
+			}
+		}
+
 		return true;
 	}
 	if ( !GetASWWeapon( index ) )
@@ -3043,6 +3088,10 @@ bool CASW_Marine::DropWeapon(int iWeaponIndex, bool bNoSwap)
 
 	RemoveWeaponPowerup( pWeapon );
 
+	if (rda_marine_backpack.GetBool() && iWeaponIndex != 2 && !bNoSwap)
+	{
+		RemoveBackPackModel();
+	}
 	return DropWeapon(pWeapon, bNoSwap);
 }
 
@@ -5626,4 +5675,92 @@ Disposition_t CASW_Marine::IRelationType( CBaseEntity *pTarget )
 HSCRIPT CASW_Marine::ScriptGetCommander() const
 {
 	return ToHScript( GetCommander() );
+}
+
+
+void CASW_Marine::CreateBackPackModel(CASW_Weapon *pWeapon)
+{
+	if (!pWeapon)
+		return;
+
+	CBaseEntity	*pEntity = CreateEntityByName("prop_dynamic");
+	if (pEntity)
+	{
+		CDynamicProp *pPrevWeaponBPModel = dynamic_cast<CDynamicProp*>(pEntity);
+		if (pPrevWeaponBPModel)
+		{
+			const char *pModelName = STRING(pWeapon->GetModelName());
+			pPrevWeaponBPModel->SetModel(pModelName);
+			
+			int iSkin = pWeapon->GetSkin();
+			char buffer[64];
+			itoa(iSkin, buffer, 10);
+			pPrevWeaponBPModel->KeyValue("skin", buffer);
+			pPrevWeaponBPModel->KeyValue("disableshadows", "1");
+			pPrevWeaponBPModel->KeyValue("disablereceiveshadows", "1");
+			pPrevWeaponBPModel->KeyValue("solid", "0");
+
+			UTIL_SetOrigin(pPrevWeaponBPModel, GetAbsOrigin());
+			pPrevWeaponBPModel->SetParent(this);
+			pPrevWeaponBPModel->SetParentAttachment("SetParentAttachment", "jump_jet_r", true);
+
+			Class_T id = pWeapon->Classify();
+
+			if (id == CLASS_ASW_SENTRY_GUN_CASE || id == CLASS_ASW_SENTRY_FLAMER_CASE || id == CLASS_ASW_SENTRY_FREEZE_CASE || id == CLASS_ASW_SENTRY_CANNON_CASE ||
+				id == CLASS_ASW_AMMO_SATCHEL || id == CLASS_ASW_AMMO_BAG || id == CLASS_ASW_HEALGRENADE || id == CLASS_ASW_MEDICAL_SATCHEL ||
+				id == CLASS_ASW_PISTOL || id == CLASS_ASW_PDW || id == CLASS_ASW_FIRE_EXTINGUISHER)
+			{
+				pPrevWeaponBPModel->SetLocalAngles(QAngle(0, 0, 98)); //98 degree angle fits better
+
+				float zSize = pPrevWeaponBPModel->CollisionProp()->OBBMaxs().z - pPrevWeaponBPModel->CollisionProp()->OBBMins().z;
+				pPrevWeaponBPModel->SetLocalOrigin(pPrevWeaponBPModel->GetLocalOrigin() - Vector(-1, zSize*0.5-2, 0));
+			} 
+			else
+			{
+				if (!rda_marine_backpack_alt_position.GetBool())
+				{
+					pPrevWeaponBPModel->SetLocalAngles(QAngle(0, 90, 0));
+
+					float xSize = pPrevWeaponBPModel->CollisionProp()->OBBMaxs().x - pPrevWeaponBPModel->CollisionProp()->OBBMins().x;
+					float zSize = pPrevWeaponBPModel->CollisionProp()->OBBMaxs().z - pPrevWeaponBPModel->CollisionProp()->OBBMins().z;
+					//Msg("Sizes: %f, %f, \n", xSize, zSize);
+					if (id == CLASS_ASW_DEAGLE) //deagle has different bbox
+					{
+						pPrevWeaponBPModel->SetLocalOrigin(pPrevWeaponBPModel->GetLocalOrigin() - Vector(-7, zSize*0.5 + 3, xSize*0.5));
+					}
+					else
+					{
+						pPrevWeaponBPModel->SetLocalOrigin(pPrevWeaponBPModel->GetLocalOrigin() - Vector(-7, zSize*0.5 - 1, xSize*0.5));
+						//-7 is to slide model a bit up, xSize*0.5 os to center rotated model on the back, zSize*0.5-1 to push model out of marine's back 
+						//note: this is only for QAngle(0, 90, 0)
+					}
+				}
+				else
+				{
+					pPrevWeaponBPModel->SetLocalAngles(QAngle(90, 0, 90));
+				}
+			}
+			DispatchSpawn(pPrevWeaponBPModel);
+
+			m_BackPackWeaponBaseEntity = pEntity;
+		}
+		else
+		{
+			UTIL_Remove(pEntity);
+		}
+	}
+}
+
+void CASW_Marine::RemoveBackPackModel()
+{
+	if (m_BackPackWeaponBaseEntity)
+	{
+		UTIL_Remove(m_BackPackWeaponBaseEntity);
+		m_BackPackWeaponBaseEntity = NULL;
+	}
+}
+
+CBaseEntity* CASW_Marine::GetBackPackModel()
+{
+	return m_BackPackWeaponBaseEntity;
 }

@@ -88,6 +88,7 @@ ConVar rd_explosive_railgun_bullets( "rd_explosive_railgun_bullets", "0", FCVAR_
 ConVar rd_explosive_bullets( "rd_explosive_bullets", "0", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_dmg( "rd_explosive_bullets_dmg", "50", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_CHEAT);
+extern ConVar rda_marine_backpack;
 #endif
 
 static const float ASW_MARINE_MELEE_HULL_TRACE_Z = 32.0f;
@@ -136,10 +137,34 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 
 		if (pWeapon != GetLastWeaponSwitchedTo() && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
 		{
+#ifdef GAME_DLL
+			if (rda_marine_backpack.GetBool() && !m_bKnockedOut) // do not allow backpack switch when incapacitated with reviving enabled
+			{
+				//this related to first keyboard weapon switch and first weapon pickup that changes some gun (not a pickup into empty slot)
+				if ( !GetLastWeaponSwitchedTo() && GetASWWeapon(0) && GetASWWeapon(1) )
+				{
+					RemoveBackPackModel();
+					if (GetASWWeapon(0) == GetActiveASWWeapon())
+						CreateBackPackModel(GetASWWeapon(1));
+					else
+						CreateBackPackModel(GetASWWeapon(0));
+				}
+
+				if (GetLastWeaponSwitchedTo())
+				{
+					CASW_Weapon* pPrevWeapon = dynamic_cast<CASW_Weapon*>(GetLastWeaponSwitchedTo());
+					//check if our weapon is another marine's weapon
+					if (pPrevWeapon && (GetASWWeapon(0) == pPrevWeapon || GetASWWeapon(1) == pPrevWeapon))
+					{
+						RemoveBackPackModel();
+						CreateBackPackModel(pPrevWeapon);
+					}
+				}
+			}
+#endif
 			m_hLastWeaponSwitchedTo = pWeapon;
 			DoAnimationEvent( PLAYERANIMEVENT_WEAPON_SWITCH );
 		}
-
 		CASW_Weapon* pASWWeapon = dynamic_cast<CASW_Weapon*>(pWeapon);
 		if (pASWWeapon)
 		{

@@ -765,9 +765,13 @@ public:
 
 	void SetNextStumbleTime( float flStumbleTime ) { m_flNextStumbleTime = flStumbleTime; }
 	float m_flNextStumbleTime;
+
+	void CreateBackPackModel(CASW_Weapon *pWeapon);
+	void RemoveBackPackModel();
+	CBaseEntity* GetBackPackModel();
 private:
 	float m_flNextBreadcrumbTime;
-
+	EHANDLE m_BackPackWeaponBaseEntity;
 };
 
 
