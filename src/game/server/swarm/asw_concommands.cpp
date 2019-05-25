@@ -26,6 +26,8 @@
 
 // This file contains various debugging and cheat concommands
 
+ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_NONE, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
+
 void cc_CreatePredictionError_f()
 {
 	CBaseEntity *pEnt = CBaseEntity::Instance( 1 );
@@ -554,6 +556,12 @@ CON_COMMAND_F( rotatecameraexact, "Rotates marine camera to exact yaw angle", FC
 void asw_afkf()
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if ( pPlayer && !rd_allow_afk.GetBool() )
+	{
+		ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_afk_not_allowed" );
+		return;
+	}
 
 	if ( pPlayer && ASWGameResource() && ASWGameRules() )
 	{
