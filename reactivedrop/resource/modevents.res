@@ -329,6 +329,11 @@
 		"strMapName" "string"
 	}
 	
+	"mission_failed"
+	{
+		"strMapName" "string"
+	}
+	
 	"marine_incapacitated"
 	{
 		"entindex"		"short"		// entindex of the marine

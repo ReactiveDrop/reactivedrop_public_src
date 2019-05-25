@@ -416,6 +416,7 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "difficulty_changed" );
 	ListenForGameEvent( "achievement_earned" );
 	ListenForGameEvent( "mission_success" );
+	ListenForGameEvent( "mission_failed" );
 	ListenForGameEvent( "alien_hurt" );
 	ListenForGameEvent( "marine_hurt" );
 	ListenForGameEvent( "pickup_selected" );

@@ -4049,6 +4049,12 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	{
 		m_bMissionFailed = true;
 		m_nFailAdvice = ASWFailAdvice()->UseCurrentFailAdvice();
+		IGameEvent * event = gameeventmanager->CreateEvent( "mission_failed" );
+		if ( event )
+		{
+			event->SetString( "strMapName", STRING( gpGlobals->mapname ) );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 	SetGameState( ASW_GS_DEBRIEF );
 
