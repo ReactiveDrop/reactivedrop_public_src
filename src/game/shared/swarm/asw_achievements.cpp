@@ -416,6 +416,8 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-bonus_mission3",
 	"rd-bonus_mission4",
 	"rd-bonus_mission5",
+	"rd-bonus_mission6",
+	"rd-bonus_mission7",
 };
 
 static const char *g_szAchievementMapNamesJacob[] =

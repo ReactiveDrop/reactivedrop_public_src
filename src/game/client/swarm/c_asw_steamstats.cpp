@@ -142,6 +142,8 @@ namespace
 		"rd-bonus_mission3",
 		"rd-bonus_mission4",
 		"rd-bonus_mission5",
+		"rd-bonus_mission6",
+		"rd-bonus_mission7",
 	};
 }
 
