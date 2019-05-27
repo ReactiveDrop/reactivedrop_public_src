@@ -92,7 +92,11 @@ ConVar fire_dmginterval( "fire_dmginterval", "1.0" );
 #ifdef INFESTED_DLL
 ConVar asw_fire_spread_scale( "asw_fire_spread_scale", "2.0", FCVAR_CHEAT);
 ConVar asw_fire_glow_radius( "asw_fire_glow_radius", "280", FCVAR_CHEAT );
-ConVar asw_fire_glow( "asw_fire_glow", "1", FCVAR_CHEAT );
+// reactivedrop: setting this to 0 to prevent framerate drops from 200 to 45 fps from fire mines 
+// on maps like Deima(near the first hack), Arctic Infiltration(near the airlock), dm_desert
+// Lots of asw_dynamic_light entities cause huge framerate decrease when this light lights
+// sufraces with normal maps, especially displacements with two normal maps
+ConVar asw_fire_glow( "asw_fire_glow", "0", FCVAR_CHEAT, "If 1 env_fire and fire mines will have dynamic lights(asw_dynamic_light). Dynamic lights can decrease framerate significantly if they light displacements that have normal maps." );
 #endif
 
 #define VPROF_FIRE(s) VPROF( s )
