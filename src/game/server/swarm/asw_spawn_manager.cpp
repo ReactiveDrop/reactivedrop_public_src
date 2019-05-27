@@ -80,7 +80,9 @@ ASW_Alien_Class_Entry g_Aliens[]=
 	ASW_Alien_Class_Entry( "asw_shaman", HULL_LARGE ),
 	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
 	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE )
+	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE ),
+	ASW_Alien_Class_Entry( "npc_antlion", HULL_MEDIUMBIG ),
+	ASW_Alien_Class_Entry( "npc_antlion_worker", HULL_MEDIUMBIG )
 };
 
 // Array indices of drones.  Used by carnage mode.
