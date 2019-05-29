@@ -27,7 +27,7 @@
 // ACT_FLINCH_PHYSICS
 
 
-ConVar	sk_zombie_health( "sk_zombie_health","0");
+ConVar sk_zombie_health( "sk_zombie_health", "50", FCVAR_CHEAT );
 
 envelopePoint_t envZombieMoanVolumeFast[] =
 {
@@ -82,17 +82,34 @@ envelopePoint_t envZombieMoanIgnited[] =
 //=============================================================================
 //=============================================================================
 
-class CZombie : public CAI_BlendingHost<CNPC_BaseZombie>
+class CZombie : public CNPC_BaseZombie
 {
 	DECLARE_DATADESC();
-	DECLARE_CLASS( CZombie, CAI_BlendingHost<CNPC_BaseZombie> );
+	DECLARE_CLASS( CZombie, CNPC_BaseZombie );
 
 public:
 	CZombie()
 	 : m_DurationDoorBash( 2, 6),
 	   m_NextTimeToStartDoorBash( 3.0 )
 	{
+		if ( FClassnameIs( this, "npc_zombie" ) )
+			m_pszAlienModelName = "models/zombie/classic.mdl";
+		else
+			m_pszAlienModelName = "models/zombie/classic_torso.mdl";
 	}
+
+	// reactivedrop:
+	virtual void SetHealthByDifficultyLevel();
+
+	//=========================================================
+	// Conditions
+	//=========================================================
+	enum
+	{
+		COND_BLOCKED_BY_DOOR = LAST_BASE_ZOMBIE_CONDITION,
+		COND_DOOR_OPENED,
+		COND_ZOMBIE_CHARGE_TARGET_MOVED,
+	};
 
 	void Spawn( void );
 	void Precache( void );
@@ -180,16 +197,6 @@ const char *CZombie::pMoanSounds[] =
 	 "NPC_BaseZombie.Moan2",
 	 "NPC_BaseZombie.Moan3",
 	 "NPC_BaseZombie.Moan4",
-};
-
-//=========================================================
-// Conditions
-//=========================================================
-enum
-{
-	COND_BLOCKED_BY_DOOR = LAST_BASE_ZOMBIE_CONDITION,
-	COND_DOOR_OPENED,
-	COND_ZOMBIE_CHARGE_TARGET_MOVED,
 };
 
 //=========================================================
@@ -297,6 +304,16 @@ void CZombie::Spawn( void )
 	ChangeFaction(FACTION_ALIENS);
 
 	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
+}
+
+void CZombie::SetHealthByDifficultyLevel()
+{
+	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_zombie_health.GetInt() ) );
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting zombie's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 //-----------------------------------------------------------------------------

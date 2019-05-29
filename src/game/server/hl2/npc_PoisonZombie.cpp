@@ -135,14 +135,21 @@ static const char *pMoanSounds[] =
 //-----------------------------------------------------------------------------
 // Skill settings.
 //-----------------------------------------------------------------------------
-ConVar sk_zombie_poison_health( "sk_zombie_poison_health", "0");
-ConVar sk_zombie_poison_dmg_spit( "sk_zombie_poison_dmg_spit","0");
+ConVar sk_zombie_poison_health( "sk_zombie_poison_health", "175", FCVAR_CHEAT );
+ConVar sk_zombie_poison_dmg_spit( "sk_zombie_poison_dmg_spit", "20", FCVAR_CHEAT );
 
-class CNPC_PoisonZombie : public CAI_BlendingHost<CNPC_BaseZombie>
+class CNPC_PoisonZombie : public CNPC_BaseZombie
 {
-	DECLARE_CLASS( CNPC_PoisonZombie, CAI_BlendingHost<CNPC_BaseZombie> );
+	DECLARE_CLASS( CNPC_PoisonZombie, CNPC_BaseZombie );
 
 public:
+	CNPC_PoisonZombie()
+	{
+		m_pszAlienModelName = "models/zombie/poison.mdl";
+	}
+
+	// reactivedrop:
+	virtual void SetHealthByDifficultyLevel();
 
 	//
 	// CBaseZombie implemenation.
@@ -353,6 +360,17 @@ void CNPC_PoisonZombie::Spawn( void )
 
 	// reactivedrop: 
 	ChangeFaction(FACTION_ALIENS);
+}
+
+
+void CNPC_PoisonZombie::SetHealthByDifficultyLevel()
+{
+	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_zombie_poison_health.GetInt() ) );
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting poisonzombie's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 
@@ -728,7 +746,7 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 		QAngle qaPunch( 45, random->RandomInt(-5, 5), random->RandomInt(-5, 5) );
 		AngleVectors( GetLocalAngles(), &forward );
 		forward = forward * 200;
-		ClawAttack( GetClawAttackRange(), sk_zombie_poison_dmg_spit.GetFloat(), qaPunch, forward, ZOMBIE_BLOOD_BITE );
+		ClawAttack( GetClawAttackRange(), ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_zombie_poison_dmg_spit.GetFloat() ), qaPunch, forward, ZOMBIE_BLOOD_BITE );
 		return;
 	}
 

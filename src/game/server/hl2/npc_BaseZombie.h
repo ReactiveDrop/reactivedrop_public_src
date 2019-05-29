@@ -15,6 +15,7 @@
 #include "ai_blended_movement.h"
 #include "soundenvelope.h"
 #include "ai_behavior_actbusy.h"
+#include "asw_alien.h"
 
 #define ZOM_ATTN_FOOTSTEP ATTN_IDLE
 
@@ -60,7 +61,7 @@ enum HeadcrabRelease_t
 //=========================================================
 enum
 {
-	SCHED_ZOMBIE_CHASE_ENEMY = LAST_SHARED_SCHEDULE,
+	SCHED_ZOMBIE_CHASE_ENEMY = LAST_ASW_ALIEN_SHARED_SCHEDULE,
 	SCHED_ZOMBIE_MOVE_SWATITEM,
 	SCHED_ZOMBIE_SWATITEM,
 	SCHED_ZOMBIE_ATTACKITEM,
@@ -81,7 +82,7 @@ enum
 //=========================================================
 enum 
 {
-	TASK_ZOMBIE_DELAY_SWAT = LAST_SHARED_TASK,
+	TASK_ZOMBIE_DELAY_SWAT = LAST_ASW_ALIEN_SHARED_TASK,
 	TASK_ZOMBIE_GET_PATH_TO_PHYSOBJ,
 	TASK_ZOMBIE_SWAT_ITEM,
 	TASK_ZOMBIE_DIE,
@@ -92,36 +93,39 @@ enum
 };
 
 
+
+// typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BaseNPC> > CAI_BaseZombieBase;
+
 //=========================================================
-// Zombie conditions
 //=========================================================
-enum Zombie_Conds
+abstract_class CNPC_BaseZombie : public CASW_Alien
 {
-	COND_ZOMBIE_CAN_SWAT_ATTACK = LAST_SHARED_CONDITION,
-	COND_ZOMBIE_RELEASECRAB,
-	COND_ZOMBIE_LOCAL_MELEE_OBSTRUCTION,
-
-	LAST_BASE_ZOMBIE_CONDITION,
-};
-
-
-
-typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BaseNPC> > CAI_BaseZombieBase;
-
-//=========================================================
-//=========================================================
-abstract_class CNPC_BaseZombie : public CAI_BaseZombieBase
-{
-	DECLARE_CLASS( CNPC_BaseZombie, CAI_BaseZombieBase );
+	DECLARE_CLASS( CNPC_BaseZombie, CASW_Alien );
 
 public:
+	// reactivedrop
+	virtual Vector CalcDeathForceVector( const CTakeDamageInfo &info );
+	virtual bool ShouldGib( const CTakeDamageInfo &info ) { return false; }
+
+	//=========================================================
+	// Zombie conditions
+	//=========================================================
+	enum Zombie_Conds
+	{
+		COND_ZOMBIE_CAN_SWAT_ATTACK = BaseClass::NEXT_CONDITION,
+		COND_ZOMBIE_RELEASECRAB,
+		COND_ZOMBIE_LOCAL_MELEE_OBSTRUCTION,
+
+		LAST_BASE_ZOMBIE_CONDITION,
+	};
+
 	CNPC_BaseZombie( void );
 	~CNPC_BaseZombie( void );
 
 	void Spawn( void );
 	void Precache( void );
 	void StartTouch( CBaseEntity *pOther );
-	bool CreateBehaviors();
+	//bool CreateBehaviors();
 	float MaxYawSpeed( void );
 	bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
 	Class_T Classify( void );

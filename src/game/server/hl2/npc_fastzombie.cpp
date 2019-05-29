@@ -59,11 +59,6 @@ int AE_FASTZOMBIE_VEHICLE_SS_DIE;	// Killed while doing scripted sequence on veh
 
 #endif // HL2_EPISODIC
 
-enum
-{
-	COND_FASTZOMBIE_CLIMB_TOUCH	= LAST_BASE_ZOMBIE_CONDITION,
-};
-
 envelopePoint_t envFastZombieVolumeJump[] =
 {
 	{	1.0f, 1.0f,
@@ -202,6 +197,11 @@ enum
 };
 
 
+//-----------------------------------------------------------------------------
+// Skill settings.
+//-----------------------------------------------------------------------------
+ConVar sk_zombie_fast_health( "sk_zombie_fast_health", "50", FCVAR_CHEAT );
+
 
 //=========================================================
 //=========================================================
@@ -210,6 +210,22 @@ class CFastZombie : public CNPC_BaseZombie
 	DECLARE_CLASS( CFastZombie, CNPC_BaseZombie );
 
 public:
+	CFastZombie()
+	{
+		if ( FClassnameIs( this, "npc_fastzombie" ) )
+			m_pszAlienModelName = "models/zombie/fast.mdl";
+		else
+			m_pszAlienModelName = "models/zombie/fast_torso.mdl";
+	}
+
+	// reactivedrop:
+	virtual void SetHealthByDifficultyLevel();
+
+	enum
+	{
+		COND_FASTZOMBIE_CLIMB_TOUCH	= LAST_BASE_ZOMBIE_CONDITION,
+	};
+
 	void Spawn( void );
 	void Precache( void );
 
@@ -392,8 +408,8 @@ static const char *s_pLegsModel = "models/gibs/fast_zombie_legs.mdl";
 void CFastZombie::Precache( void )
 {
 	PrecacheModel("models/zombie/fast.mdl");
-#ifdef HL2_EPISODIC
 	PrecacheModel("models/zombie/Fast_torso.mdl");
+#ifdef HL2_EPISODIC
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter1" );
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter2" );
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter3" );
@@ -426,6 +442,16 @@ void CFastZombie::Precache( void )
 	PrecacheScriptSound( "NPC_FastZombie.Moan1" );
 
 	BaseClass::Precache();
+}
+
+void CFastZombie::SetHealthByDifficultyLevel()
+{
+	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_zombie_fast_health.GetInt() ) );
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting fastzombie's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 //---------------------------------------------------------
@@ -673,7 +699,7 @@ void CFastZombie::Spawn( void )
 	SetBloodColor( BLOOD_COLOR_YELLOW );
 #endif // HL2_EPISODIC
 
-	m_iHealth			= 50;
+	m_iHealth			= sk_zombie_fast_health.GetFloat();
 	m_flFieldOfView		= 0.2;
 
 	CapabilitiesClear();

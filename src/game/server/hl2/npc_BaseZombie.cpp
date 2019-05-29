@@ -30,7 +30,8 @@
 #include "ai_senses.h"
 #include "bitstring.h"
 #include "EntityFlame.h"
-#include "hl2_shareddefs.h"
+// reactivedrop: commented
+//#include "hl2_shareddefs.h"
 #include "npcevent.h"
 #include "activitylist.h"
 #include "entitylist.h"
@@ -47,6 +48,8 @@
 #include "weapon_physcannon.h"
 #include "ammodef.h"
 #include "vehicle_base.h"
+
+#include "asw_gamerules.h"
  
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -138,8 +141,8 @@ int CNPC_BaseZombie::ACT_ZOM_SWATRIGHTLOW;
 int CNPC_BaseZombie::ACT_ZOM_RELEASECRAB;
 int CNPC_BaseZombie::ACT_ZOM_FALL;
 
-ConVar	sk_zombie_dmg_one_slash( "sk_zombie_dmg_one_slash","0");
-ConVar	sk_zombie_dmg_both_slash( "sk_zombie_dmg_both_slash","0");
+ConVar sk_zombie_dmg_one_slash( "sk_zombie_dmg_one_slash", "10", FCVAR_CHEAT );
+ConVar sk_zombie_dmg_both_slash( "sk_zombie_dmg_both_slash", "25", FCVAR_CHEAT );
 
 
 // When a zombie spawns, he will select a 'base' pitch value
@@ -244,6 +247,9 @@ CNPC_BaseZombie::CNPC_BaseZombie()
 	m_iMoanSound = g_numZombies;
 
 	g_numZombies++;
+
+	// reactivedrop
+	m_bNeverInstagib = true;
 }
 
 
@@ -766,8 +772,8 @@ HeadcrabRelease_t CNPC_BaseZombie::ShouldReleaseHeadcrab( const CTakeDamageInfo 
 		if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
 			return RELEASE_NO;
 
-		if ( info.GetDamageType() & DMG_SNIPER )
-			return RELEASE_RAGDOLL;
+		/*if ( info.GetDamageType() & DMG_SNIPER )
+			return RELEASE_RAGDOLL;*/
 
 		// If I was killed by a bullet...
 		if ( info.GetDamageType() & DMG_BULLET )
@@ -830,7 +836,7 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 	}
 
 	// Take some percentage of damage from bullets (unless hit in the crab). Always take full buckshot & sniper damage
-	if ( !m_bHeadShot && (info.GetDamageType() & DMG_BULLET) && !(info.GetDamageType() & (DMG_BUCKSHOT|DMG_SNIPER)) )
+	if ( !m_bHeadShot && (info.GetDamageType() & DMG_BULLET) && !(info.GetDamageType() & (DMG_BUCKSHOT/*|DMG_SNIPER*/)) )
 	{
 		info.ScaleDamage( ZOMBIE_BULLET_DAMAGE_SCALE );
 	}
@@ -1581,7 +1587,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 
 		QAngle qa( -15, -20, -10 );
 		Vector vec = right + forward;
-		ClawAttack( GetClawAttackRange(), sk_zombie_dmg_one_slash.GetFloat(), qa, vec, ZOMBIE_BLOOD_RIGHT_HAND );
+		ClawAttack( GetClawAttackRange(), ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_zombie_dmg_one_slash.GetFloat() ), qa, vec, ZOMBIE_BLOOD_RIGHT_HAND );
 		return;
 	}
 
@@ -1595,7 +1601,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 
 		QAngle qa( -15, 20, -10 );
 		Vector vec = right + forward;
-		ClawAttack( GetClawAttackRange(), sk_zombie_dmg_one_slash.GetFloat(), qa, vec, ZOMBIE_BLOOD_LEFT_HAND );
+		ClawAttack( GetClawAttackRange(), ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_zombie_dmg_one_slash.GetFloat() ), qa, vec, ZOMBIE_BLOOD_LEFT_HAND );
 		return;
 	}
 
@@ -1605,7 +1611,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 		QAngle qaPunch( 45, random->RandomInt(-5,5), random->RandomInt(-5,5) );
 		AngleVectors( GetLocalAngles(), &forward );
 		forward = forward * 200;
-		ClawAttack( GetClawAttackRange(), sk_zombie_dmg_one_slash.GetFloat(), qaPunch, forward, ZOMBIE_BLOOD_BOTH_HANDS );
+		ClawAttack( GetClawAttackRange(), ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_zombie_dmg_one_slash.GetFloat() ), qaPunch, forward, ZOMBIE_BLOOD_BOTH_HANDS );
 		return;
 	}
 
@@ -1745,12 +1751,12 @@ void CNPC_BaseZombie::StartTouch( CBaseEntity *pOther )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CNPC_BaseZombie::CreateBehaviors()
+/*bool CNPC_BaseZombie::CreateBehaviors()
 {
 	AddBehavior( &m_ActBusyBehavior );
 
 	return BaseClass::CreateBehaviors();
-}
+}*/
 
 //---------------------------------------------------------
 //---------------------------------------------------------
@@ -1921,6 +1927,12 @@ int CNPC_BaseZombie::SelectSchedule ( void )
 	}
 
 	return BaseClass::SelectSchedule();
+}
+
+
+Vector CNPC_BaseZombie::CalcDeathForceVector( const CTakeDamageInfo &info )
+{
+	return CAI_BaseNPC::CalcDeathForceVector( info );
 }
 
 

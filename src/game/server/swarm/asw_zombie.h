@@ -6,10 +6,10 @@
 
 class CSprite;
 
-class CASW_Zombie : public CAI_BlendingHost<CNPC_BaseZombie>, public IASW_Spawnable_NPC
+class CASW_Zombie : public CNPC_BaseZombie
 {
 	DECLARE_DATADESC();
-	DECLARE_CLASS( CASW_Zombie, CAI_BlendingHost<CNPC_BaseZombie> );
+	DECLARE_CLASS( CASW_Zombie, CNPC_BaseZombie );
 	DECLARE_SERVERCLASS();
 
 public:

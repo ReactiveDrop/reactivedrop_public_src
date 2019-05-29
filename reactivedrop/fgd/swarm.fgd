@@ -4887,6 +4887,13 @@
 		13 : "asw_drone_uber"
 		14 : "npc_antlionguard_normal"
 		15 : "npc_antlionguard_cavern"
+		16 : "npc_antlion"
+		17 : "npc_antlion_worker"
+		18 : "npc_zombie"
+		19 : "npc_zombie_torso"
+		20 : "npc_poisonzombie"
+		21 : "npc_fastzombie"
+		22 : "npc_fastzombie_torso"
 	]
 
 	AllowDirectorSpawns(choices) : "Allow director spawns" : 0 : "Should the director be allowed to spawn aliens from this spawner? Director spawns do not count towards the limit of this spawner." =
@@ -4989,6 +4996,13 @@
 		13 : "asw_drone_uber"
 		14 : "npc_antlionguard_normal"
 		15 : "npc_antlionguard_cavern"
+		16 : "npc_antlion"
+		17 : "npc_antlion_worker"
+		18 : "npc_zombie"
+		19 : "npc_zombie_torso"
+		20 : "npc_poisonzombie"
+		21 : "npc_fastzombie"
+		22 : "npc_fastzombie_torso"
 	]
 	AlienOrders(choices) : "Alien Orders" : 2 : "Orders given to nearby aliens." =
 	[
@@ -5851,6 +5865,13 @@
 		13 : "asw_drone_uber"
 		14 : "npc_antlionguard_normal"
 		15 : "npc_antlionguard_cavern"
+		16 : "npc_antlion"
+		17 : "npc_antlion_worker"
+		18 : "npc_zombie"
+		19 : "npc_zombie_torso"
+		20 : "npc_poisonzombie"
+		21 : "npc_fastzombie"
+		22 : "npc_fastzombie_torso"
 	]
 ]
 
