@@ -826,6 +826,24 @@ static void Script_FadeClientVolume( HSCRIPT hPlayer, float fadePercent, float f
 		engine->FadeClientVolume( pPlayer->edict(), fadePercent, fadeOutSeconds, holdTime, fadeInSeconds );
 }
 
+static void Script_LocalTime( HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+
+	struct tm timeinfo;
+	Plat_GetLocalTime( &timeinfo );
+	g_pScriptVM->SetValue( hTable, "year", (timeinfo.tm_year + 1900) );
+	g_pScriptVM->SetValue( hTable, "month", (timeinfo.tm_mon + 1) );
+	g_pScriptVM->SetValue( hTable, "dayofweek", timeinfo.tm_wday );
+	g_pScriptVM->SetValue( hTable, "day", timeinfo.tm_mday );
+	g_pScriptVM->SetValue( hTable, "hour", timeinfo.tm_hour );
+	g_pScriptVM->SetValue( hTable, "minute", timeinfo.tm_min );
+	g_pScriptVM->SetValue( hTable, "second", timeinfo.tm_sec );
+	g_pScriptVM->SetValue( hTable, "dayofyear", timeinfo.tm_yday );
+	g_pScriptVM->SetValue( hTable, "daylightsavings", timeinfo.tm_isdst );
+}
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -896,6 +914,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerConnectionInfo, "GetPlayerConnectionInfo", "Returns a table containing the player's connection info." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetClientXUID, "GetClientXUID", "Get the player's xuid (i.e. SteamID64)." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FadeClientVolume, "FadeClientVolume", "Fade out the client's volume level toward silence (or fadePercent)" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_LocalTime, "LocalTime", "Fills in the passed table with the local system time." );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
