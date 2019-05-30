@@ -252,27 +252,22 @@ public:
 		return criteria.GetValue( index );
 	}
 
-	HSCRIPT GetTable( HSCRIPT hEntity )
+	void GetTable( HSCRIPT hEntity, HSCRIPT hTable )
 	{
 		CBaseEntity *pBaseEntity = ToEnt(hEntity);
-		if ( !pBaseEntity )
-			return NULL;
+		if ( !pBaseEntity || !hTable )
+			return;
 
 		AI_CriteriaSet criteria;
 		pBaseEntity->ModifyOrAppendCriteria( criteria );
-
-		ScriptVariant_t hCriterionTable;
-		g_pScriptVM->CreateTable( hCriterionTable );
 
 		for ( int nCriteriaIdx = 0; nCriteriaIdx < criteria.GetCount(); nCriteriaIdx++ )
 		{
 			if ( !criteria.IsValidIndex( nCriteriaIdx ) )
 				continue;
 
-			g_pScriptVM->SetValue( hCriterionTable, criteria.GetName( nCriteriaIdx ), criteria.GetValue( nCriteriaIdx ) );
+			g_pScriptVM->SetValue( hTable, criteria.GetName( nCriteriaIdx ), criteria.GetValue( nCriteriaIdx ) );
 		}
-
-		return hCriterionTable;
 	}
 
 	bool HasCriterion( HSCRIPT hEntity, const char *pCriteria )

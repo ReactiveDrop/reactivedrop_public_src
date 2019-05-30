@@ -383,6 +383,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the marine." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSwitchWeapon, "SwitchWeapon", "Make the marine switch to a weapon" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInvTable, "GetInvTable", "Returns a table of the marine's inventory data." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetInventoryTable, "GetInventoryTable", "Fills the passed table with the marine's inventory." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
@@ -3290,12 +3291,16 @@ bool CASW_Marine::ScriptSwitchWeapon( int iWeaponIndex )
 	return Weapon_Switch( pWeapon );
 }
 
+//-----------------------------------------------------------------------------
+// DEPRECATED - Use Script_GetInventoryTable instead!
+//-----------------------------------------------------------------------------
 ScriptVariant_t CASW_Marine::Script_GetInvTable()
 {
+	Warning( "GetInvTable has been deprecated use GetInventoryTable instead.\n" );
+
 	char szInvSlot[256];
 	ScriptVariant_t hInvTable;
 	g_pScriptVM->CreateTable( hInvTable );
-
 	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)
 	{
 		CBaseCombatWeapon *pWep = m_hMyWeapons[i].Get();
@@ -3307,6 +3312,23 @@ ScriptVariant_t CASW_Marine::Script_GetInvTable()
 	}
 
 	return hInvTable;
+}
+
+void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+
+	char szInvSlot[256];
+	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)
+	{
+		CBaseCombatWeapon *pWep = m_hMyWeapons[i].Get();
+		if ( pWep )
+		{
+			Q_snprintf( szInvSlot, sizeof(szInvSlot), "slot%i", i );
+			g_pScriptVM->SetValue( hTable, szInvSlot, ToHScript(pWep) );
+		}
+	}
 }
 
 const char* CASW_Marine::Script_GetMarineName()

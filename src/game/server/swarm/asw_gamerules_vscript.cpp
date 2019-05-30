@@ -293,12 +293,10 @@ public:
 
 	void ExecuteConCommand( const char *pszCommand )
 	{
-		CUtlStringList szCommandList;
 		CCommand cmd;
 		cmd.Tokenize( pszCommand );
-		V_SplitString( pszCommand, " ", szCommandList );
 
-		ConCommand *command = (ConCommand *)cvar->FindCommand( szCommandList[0] );
+		ConCommand *command = cvar->FindCommand( cmd[0] );
 		if ( command )
 		{
 			if ( !command->IsFlagSet( FCVAR_GAMEDLL ) )
