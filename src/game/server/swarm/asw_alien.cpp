@@ -2379,6 +2379,14 @@ bool CASW_Alien::ShouldClearOrdersOnMovementComplete()
 		//		this means the marine probably moved somewhere else and we need to chase after him again
 		if (m_AlienOrders == AOT_MoveToNearestMarine && !GetEnemy())
 		{
+			// reactivedrop: not clearing orders makes aliens not sleep forever, 
+			// even if they can't follow marines
+			// preventing hordes and wanderers to spawn if there are more than 25 aliens awake
+			// returning true here will allow aliens that are far away from marine to go to sleep state
+			// returning false here makes aliens stuck in wait for pvs condition
+			// the proper fix would be to make aliens follow marines 
+			return true;
+			
 			float marine_distance;
 			CBaseEntity *pMarine = UTIL_ASW_NearestMarine(GetAbsOrigin(), marine_distance);
 			if (pMarine)
