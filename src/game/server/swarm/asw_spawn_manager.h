@@ -4,6 +4,8 @@
 #pragma once
 #endif
 
+#include "iasw_spawnable_npc.h"
+
 class CAI_Network;
 class CTriggerMultiple;
 struct AI_Waypoint_t;
@@ -66,6 +68,7 @@ public:
 	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	int SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNumAliens, const Vector &vecPosition, const QAngle &angle, float flMarinesBeyondDist = 0 );
 	CBaseEntity *SpawnAlienAt( const char *szAlienClass, const Vector & vecPos, const QAngle & angle );
+	CBaseEntity *SpawnAlienAtWithOrders( const char *szAlienClass, const Vector & vecPos, const QAngle & angle, AlienOrder_t orders );
 	CBaseEntity *SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner = false );
 	bool SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner = false );
 

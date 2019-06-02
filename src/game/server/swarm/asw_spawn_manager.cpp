@@ -853,7 +853,7 @@ int CASW_Spawn_Manager::SpawnAlienBatch( CASW_Spawn_Definition *pSpawn, int iNum
 	return SpawnAlienBatch( pSpawn, iNumAliens, vecPosition, angle, flMarinesBeyondDist, vecMins, vecMaxs );
 }
 
-CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Vector& vecPos, const QAngle &angle)
+CBaseEntity* CASW_Spawn_Manager::SpawnAlienAtWithOrders( const char* szAlienClass, const Vector& vecPos, const QAngle &angle, AlienOrder_t orders )
 {	
 	CBaseEntity	*pEntity = NULL;	
 	pEntity = CreateEntityByName( szAlienClass );
@@ -894,9 +894,14 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	UTIL_DropToFloor(pEntity, MASK_NPCSOLID);
 
 	// give our aliens the orders
-	pSpawnable->SetAlienOrders(AOT_MoveToNearestMarine, vec3_origin, NULL);
+	pSpawnable->SetAlienOrders( orders, vec3_origin, NULL );
 
 	return pEntity;
+}
+
+CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt( const char* szAlienClass, const Vector& vecPos, const QAngle &angle )
+{
+	return SpawnAlienAtWithOrders( szAlienClass, vecPos, angle, AOT_MoveToNearestMarine );
 }
 
 bool CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner )
