@@ -249,7 +249,7 @@ public:
 	void	Unburrow( void );
 	void	CheckForBlockingTraps();
 	void	ClearBurrowPoint( const Vector &origin );
-	void	LookupBurrowActivities();
+	virtual void	LookupBurrowActivities();
 	float	m_flBurrowTime;
 	Activity	m_UnburrowActivity;
 	Activity	m_UnburrowIdleActivity;

@@ -35,6 +35,7 @@
 #include "particle_parse.h"
 #include "ai_tacticalservices.h"
 #include "asw_gamerules.h"
+#include "asw_base_spawner.h"
 
 #ifdef HL2_EPISODIC
 #include "grenade_spit.h"
@@ -190,6 +191,21 @@ CNPC_Antlion::CNPC_Antlion( void )
 	m_bForcedStuckJump = false;
 	m_nBodyBone = -1;
 	m_bSuppressUnburrowEffects = false;
+
+	m_pszAlienModelName = ANTLION_MODEL;
+
+	if ( ClassMatches( "npc_antlion_worker" ) )
+	{
+		AddSpawnFlags( SF_ANTLION_WORKER );
+		m_pszAlienModelName = ANTLION_WORKER_MODEL;
+	}
+
+	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
+	// have incorrect collision group and block other aliens
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+
+	m_UnburrowActivity = ( Activity ) ACT_ANTLION_BURROW_OUT;
+	m_UnburrowIdleActivity = ( Activity ) ACT_ANTLION_BURROW_IDLE;
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlion, CNPC_Antlion );
@@ -273,6 +289,7 @@ void CNPC_Antlion::Spawn( void )
 	if ( ClassMatches( "npc_antlion_worker" ) )
 	{
 		AddSpawnFlags( SF_ANTLION_WORKER );
+		m_pszAlienModelName = ANTLION_WORKER_MODEL;
 	}
 
 	Precache();
@@ -285,16 +302,14 @@ void CNPC_Antlion::Spawn( void )
 #ifdef HL2_EPISODIC
 	if ( IsWorker() )
 	{
-		m_pszAlienModelName = ANTLION_WORKER_MODEL;
-		SetModel( ANTLION_WORKER_MODEL );
 		AddSpawnFlags( SF_NPC_LONG_RANGE );
 		SetBloodColor( BLOOD_COLOR_ANTLION_WORKER );
+		SetModel( ANTLION_WORKER_MODEL );
 	}
 	else
 	{
-		m_pszAlienModelName = ANTLION_MODEL;
-		SetModel( ANTLION_MODEL );
 		SetBloodColor( BLOOD_COLOR_ANTLION );
+		SetModel( ANTLION_MODEL );
 	}
 #else
 	SetModel( ANTLION_MODEL );
@@ -317,7 +332,6 @@ void CNPC_Antlion::Spawn( void )
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
-
 	
 	SetMoveType( MOVETYPE_STEP );
 
@@ -326,9 +340,6 @@ void CNPC_Antlion::Spawn( void )
 	{
 		CapabilitiesAdd( bits_CAP_SQUAD );
 	}
-
-	// reactivedrop: 
-	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_MOVE_JUMP | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2 );
 	
@@ -343,7 +354,8 @@ void CNPC_Antlion::Spawn( void )
 	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) == false )
 		 CapabilitiesAdd( bits_CAP_SKIP_NAV_GROUND_CHECK );
 
-	NPCInit();
+	//NPCInit();
+	BaseClass::Spawn();
 
 	if ( IsWorker() )
 	{
@@ -371,8 +383,6 @@ void CNPC_Antlion::Spawn( void )
 
 		SetUse( &CNPC_Antlion::BurrowUse );
 	}
-
-	BaseClass::Spawn();
 
 	// reactivedrop: 
 	ChangeFaction(FACTION_ALIENS);
@@ -4016,7 +4026,7 @@ bool CNPC_Antlion::CorpseGib( const CTakeDamageInfo &info )
 	params.defBurstScale = 150.0f;
 	params.defCollisionGroup = COLLISION_GROUP_DEBRIS;
 	// reactivedrop: commented for now, because it crashes game 
-	//PropBreakableCreateAll( GetModelIndex(), NULL, params, this, -1, true, true );
+	PropBreakableCreateAll( GetModelIndex(), NULL, params, this, -1, true, true );
 
 	return true;
 }
@@ -4425,6 +4435,45 @@ bool CNPC_Antlion::IsHeavyDamage( const CTakeDamageInfo &info )
 	}
 	
 	return BaseClass::IsHeavyDamage( info );
+}
+
+void CNPC_Antlion::LookupBurrowActivities()
+{
+	if ( m_iszUnburrowActivityName == NULL_STRING )
+	{
+		m_UnburrowActivity = ( Activity ) ACT_ANTLION_BURROW_OUT;
+	}
+	else
+	{
+		m_UnburrowActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowActivityName ) );
+		if ( m_UnburrowActivity == ACT_INVALID )
+		{
+			Warning( "Unknown unburrow activity %s", STRING( m_iszUnburrowActivityName ) );
+			if ( m_hSpawner.Get() )
+			{
+				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+			}
+			m_UnburrowActivity = ( Activity ) ACT_ANTLION_BURROW_OUT;
+		}
+	}
+
+	if ( m_iszUnburrowIdleActivityName == NULL_STRING )
+	{
+		m_UnburrowIdleActivity = ( Activity ) ACT_ANTLION_BURROW_IDLE;
+	}
+	else
+	{
+		m_UnburrowIdleActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
+		if ( m_UnburrowActivity == ACT_INVALID )
+		{
+			Warning( "Unknown unburrow idle activity %s", STRING( m_iszUnburrowIdleActivityName ) );
+			if ( m_hSpawner.Get() )
+			{
+				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+			}
+			m_UnburrowIdleActivity = ( Activity ) ACT_ANTLION_BURROW_IDLE;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

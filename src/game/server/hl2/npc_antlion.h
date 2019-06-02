@@ -156,6 +156,8 @@ public:
 	void		SetMoveState( AntlionMoveState_e state );
 	int			ChooseMoveSchedule( void );
 
+	virtual void	LookupBurrowActivities();
+
 	DECLARE_DATADESC();
 
 	bool		m_bStartBurrowed;
