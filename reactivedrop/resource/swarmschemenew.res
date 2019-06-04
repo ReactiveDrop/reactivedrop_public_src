@@ -417,6 +417,18 @@ Scheme
 				"blur"      "5"
 			}
 		}
+		"DefaultSmallOutline"
+		{
+			"1"
+			{
+				"name"		"Verdana"
+				"tall"		"8"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"outline"	"1"
+			}
+		}
 		"DefaultMedium"
 		{
 			"1"
