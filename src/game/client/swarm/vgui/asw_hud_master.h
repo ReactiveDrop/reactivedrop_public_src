@@ -193,6 +193,13 @@ protected:
 	CPanelAnimationVarAliasType( int, m_nMarinePortrait_clips_t, "MarinePortrait_clips_t", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_nMarinePortrait_spacing, "MarinePortrait_clips_spacing", "0", "proportional_int" );
 
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_x, "MarinePortrait_health_counter_x", "0", "proportional_xpos" );
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_y, "MarinePortrait_health_counter_y", "0", "proportional_ypos" );
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_icon_x, "MarinePortrait_health_counter_icon_x", "0", "proportional_xpos" );
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_icon_y, "MarinePortrait_health_counter_icon_y", "0", "proportional_ypos" );
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_icon_w, "MarinePortrait_health_counter_icon_w", "0", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_nMarinePortrait_health_counter_icon_t, "MarinePortrait_health_counter_icon_t", "0", "proportional_int" );
+
 	CPanelAnimationVarAliasType( int, m_nPrimaryWeapon_x, "PrimaryWeapon_x", "0", "proportional_xpos" );
 	CPanelAnimationVarAliasType( int, m_nPrimaryWeapon_y, "PrimaryWeapon_y", "0", "proportional_ypos" );
 	CPanelAnimationVarAliasType( int, m_nSecondaryWeapon_x, "SecondaryWeapon_x", "0", "proportional_xpos" );
@@ -254,6 +261,9 @@ protected:
 	CPanelAnimationVarAliasType( int, m_nSquadMate_ExtraItem_quantity_x, "SquadMate_ExtraItem_quantity_x", "0", "proportional_xpos" );
 	CPanelAnimationVarAliasType( int, m_nSquadMate_ExtraItem_quantity_y, "SquadMate_ExtraItem_quantity_y", "0", "proportional_ypos" );
 
+	CPanelAnimationVarAliasType( int, m_nSquadMate_health_counter_x, "SquadMate_health_counter_x", "0", "proportional_xpos" );
+	CPanelAnimationVarAliasType( int, m_nSquadMate_health_counter_y, "SquadMate_health_counter_y", "0", "proportional_ypos" );
+
 	CPanelAnimationVar( Color, m_SquadMate_bullets_bg_color, "SquadMate_bullets_bg_color", "0 0 0 0" );
 	CPanelAnimationVar( Color, m_SquadMate_bullets_fg_color, "SquadMate_bullets_fg_color", "0 0 0 0" );
 	CPanelAnimationVar( Color, m_SquadMate_clips_full_color, "SquadMate_clips_full_color", "0 0 0 0" );
@@ -262,6 +272,9 @@ protected:
 	CPanelAnimationVar( Color, m_SquadMate_name_dead_color, "SquadMate_name_dead_color", "0 0 0 0" );
 	CPanelAnimationVar( Color, m_SquadMate_ExtraItem_hotkey_color, "SquadMate_ExtraItem_hotkey_color", "0 0 0 0" );
 	CPanelAnimationVar( Color, m_SquadMate_ExtraItem_quantity_color, "SquadMate_ExtraItem_quantity_color", "0 0 0 0" );
+
+	CPanelAnimationVar( Color, m_MarinePortrait_health_counter_color, "MarinePortrait_health_counter_color", "0 0 0 0" );
+	CPanelAnimationVar( Color, m_SquadMate_health_counter_color, "SquadMate_health_counter_color", "0 0 0 0" );
 
 	// for testing
 	CPanelAnimationVarAliasType( int, m_nWhiteTexture, "WhiteTexture", "vgui/white", "textureid" );
@@ -285,6 +298,7 @@ protected:
 
 	// fonts
 
+	CPanelAnimationVar( vgui::HFont, m_hDefaultSmallOutlineFont, "DefaultSmallOutlineFont", "DefaultSmallOutline" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultSmallFont, "DefaultSmallFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultFont, "DefaultFont", "Default" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultLargeFont, "DefaultLargeFont", "DefaultLarge" );
@@ -339,6 +353,7 @@ protected:
 		int nExtraItemInventoryIndex;
 		float flInfestation;
 		int xpos;
+		int iHealth;
 	};
 	SquadMateInfo_t m_SquadMateInfo[ MAX_SQUADMATE_HUD_POSITIONS ];
 

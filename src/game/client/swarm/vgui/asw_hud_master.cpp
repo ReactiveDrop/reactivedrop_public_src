@@ -34,6 +34,7 @@ ConVar rd_draw_avatars_with_frags( "rd_draw_avatars_with_frags", "1",  FCVAR_ARC
 ConVar rd_draw_portraits( "rd_draw_portraits", "1", FCVAR_NONE );
 ConVar rd_draw_timer( "rd_draw_timer", "0", FCVAR_ARCHIVE, "Display the current mission time above the minimap" );
 ConVar rd_draw_timer_color( "rd_draw_timer_color", "255 255 255 255", FCVAR_ARCHIVE, "The color of the current mission time" );
+ConVar rd_draw_marine_health_counter( "rd_draw_marine_health_counter", "0", FCVAR_ARCHIVE, "Display a numeric counter for marine health on the HUD" );
 
 using namespace vgui;
 
@@ -386,6 +387,8 @@ void CASW_Hud_Master::OnThink()
 
 			if ( pMarine )			
 			{
+				m_SquadMateInfo[ nPosition ].iHealth = pMarine->GetHealth();
+
 				m_SquadMateInfo[ nPosition ].pWeapon = pMarine->GetActiveASWWeapon();
 				if ( m_SquadMateInfo[ nPosition ].pWeapon )
 				{
@@ -1636,6 +1639,27 @@ void CASW_Hud_Master::PaintText()
             }
         }
     }
+
+	if ( rd_draw_marine_health_counter.GetBool() )
+	{
+		surface()->DrawSetColor( m_MarinePortrait_health_counter_color );
+		surface()->DrawSetTexture( m_nSheet1ID );
+		surface()->DrawTexturedSubRect(
+				m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x,
+				m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y,
+				m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x + m_nMarinePortrait_health_counter_icon_w,
+				m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y + m_nMarinePortrait_health_counter_icon_t,
+				HUD_UV_COORDS( Sheet1, UV_hud_ammo_heal )
+				);
+
+		wchar_t wszHealth[ 6 ];
+		_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_nLocalMarineHealth );
+		surface()->DrawSetTextFont( m_hDefaultLargeFont );
+		surface()->DrawSetTextColor( m_MarinePortrait_health_counter_color );
+		surface()->DrawSetTextPos( m_nMarinePortrait_health_counter_x + m_nMarinePortrait_x,
+			m_nMarinePortrait_health_counter_y + m_nMarinePortrait_y );
+		surface()->DrawUnicodeString( wszHealth );
+	}
 }
 
 void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
@@ -1704,6 +1728,18 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 				y + m_nSquadMate_ExtraItem_hotkey_y );
 			surface()->DrawUnicodeString( wszKey );
 		}
+	}
+
+	if ( rd_draw_marine_health_counter.GetBool() )
+	{
+		wchar_t wszHealth[ 6 ];
+		V_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_SquadMateInfo[ nPosition ].iHealth );
+
+		surface()->DrawSetTextFont( m_hDefaultSmallOutlineFont );
+		surface()->DrawSetTextColor( m_SquadMate_health_counter_color );
+		surface()->DrawSetTextPos( x + m_nSquadMate_health_counter_x,
+			y + m_nSquadMate_health_counter_y );
+		surface()->DrawUnicodeString( wszHealth );
 	}
 }
 

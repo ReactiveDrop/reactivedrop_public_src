@@ -75,6 +75,8 @@ ConVar asw_medic_under_marine( "asw_medic_under_marine", "0", FCVAR_ARCHIVE, "En
 ConVar asw_medic_under_marine_offscreen( "asw_medic_under_marine_offscreen", "0", FCVAR_ARCHIVE, "Enable a medic notification if the marine is offscreen.", true, 0, true, 1 );
 ConVar asw_medic_under_marine_frequency( "asw_medic_under_marine_frequency", "60", FCVAR_ARCHIVE, "Time between medic notification flashes in seconds.", true, 0.01f, true, 600 );
 ConVar asw_medic_under_marine_recall_time ("asw_medic_under_marine_recall_time", "10", FCVAR_ARCHIVE, "Time the Medic Call Emote will be remembered and displayed at the left of a marine if enabled", true, 0, true, 60 );
+ConVar rd_health_counter_under_marine( "rd_health_counter_under_marine", "0", FCVAR_ARCHIVE, "Draw a counter of the marine's current health under the marine?" );
+ConVar rd_health_counter_under_marine_alignment( "rd_health_counter_under_marine_alignment", "1", FCVAR_ARCHIVE, "Aligns the health counter under the marine. 0 - Left, 1 - Center, 2 - Right" );
 
 #define ASW_MIN_MARINE_ARROW_SIZE 20
 #define ASW_MAX_MARINE_ARROW_SIZE 60
@@ -1134,6 +1136,30 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 		int fOffset = (fHealth - fInfestPercent) * portrait_size;			
 		vgui::surface()->DrawTexturedRect(portrait_x + fOffset, bar_y, bar_x2, bar_y2);			
 		vgui::surface()->DrawSetColor(Color(255,255,255,255));
+	}
+
+	if ( rd_health_counter_under_marine.GetBool() )
+	{
+		wchar_t wszMarineHealth[ 6 ];
+		V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d", pMarine->GetHealth() );
+		int nHealthCounterLength = Q_wcslen( wszMarineHealth );
+
+		int xOffset = 0;
+		int nHealthCounterWidth = 0, nHealthCounterHeight = 0;
+		g_pMatSystemSurface->GetTextSize( m_hNumberCounterFont, wszMarineHealth, nHealthCounterWidth, nHealthCounterHeight );
+
+		if ( rd_health_counter_under_marine_alignment.GetInt() > 0 )
+		{
+			if ( rd_health_counter_under_marine_alignment.GetInt() == 1 )
+				xOffset = (portrait_size / 2) - (nHealthCounterWidth / 2);
+			else if ( rd_health_counter_under_marine_alignment.GetInt() == 2 )
+				xOffset = portrait_size - nHealthCounterWidth;
+		}
+
+		vgui::surface()->DrawSetTextFont( m_hNumberCounterFont );
+		vgui::surface()->DrawSetTextColor( Color( 255, 255, 255, 255 ) );
+		vgui::surface()->DrawSetTextPos( portrait_x + xOffset, bar_y - ((nHealthCounterHeight - bar_height) / 2) - 1 );
+		vgui::surface()->DrawPrintText( wszMarineHealth, nHealthCounterLength );
 	}
 
 	return true;

@@ -66,6 +66,7 @@ public:
 	CPanelAnimationVar( vgui::HFont, m_hSmallMarineNameFont, "SmallMarineNameFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hPlayerNameFont, "PlayerNameFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hMarineHealthFont, "MarineHealthFont", "Default" );
+	CPanelAnimationVar( vgui::HFont, m_hNumberCounterFont, "NumberCounterFont", "DefaultVerySmall" );
 	CPanelAnimationVarAliasType( int, m_nMarinePointerTexture, "MarinePointerTexture", "vgui/swarm/HUD/MarinePointer", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nBlackBarTexture, "BlackBarTexture", "vgui/swarm/HUD/ASWHUDBlackBar", "textureid" );	
 	CPanelAnimationVarAliasType( int, m_nAutoaimCrosshairTexture, "AutoaimCrosshairTexture", "vgui/swarm/HUD/AutoAimCrosshair", "textureid" );	

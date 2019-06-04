@@ -381,6 +381,15 @@
 		"MarinePortrait_clips_w" "12"
 		"MarinePortrait_clips_t" "12"
 		"MarinePortrait_clips_spacing" "8"
+		
+		"MarinePortrait_health_counter_color" "66 142 192 255"
+		"MarinePortrait_health_counter_x" "80"
+		"MarinePortrait_health_counter_y" "11"
+		"MarinePortrait_health_counter_icon_x" "70"
+		"MarinePortrait_health_counter_icon_y" "14"
+		"MarinePortrait_health_counter_icon_w" "10"
+		"MarinePortrait_health_counter_icon_t" "10"
+		
 		"ExtraItem_x"	"115"		// relative to local portrait too
 		"ExtraItem_y"	"39"
 		"ExtraItem_w"	"35"
@@ -446,5 +455,8 @@
 		"SquadMate_ExtraItem_quantity_x" "83"	// lower right of text
 		"SquadMate_ExtraItem_quantity_y" "36"
 		
+		"SquadMate_health_counter_color" "255 255 255 255"
+		"SquadMate_health_counter_x" "26"
+		"SquadMate_health_counter_y" "11"
 	}
 }
