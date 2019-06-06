@@ -78,6 +78,9 @@ ConVar asw_medic_under_marine_recall_time ("asw_medic_under_marine_recall_time",
 ConVar rd_health_counter_under_marine( "rd_health_counter_under_marine", "0", FCVAR_ARCHIVE, "Draw a counter of the marine's current health under the marine?" );
 ConVar rd_health_counter_under_marine_alignment( "rd_health_counter_under_marine_alignment", "1", FCVAR_ARCHIVE, "Aligns the health counter under the marine. 0 - Left, 1 - Center, 2 - Right" );
 ConVar rd_health_counter_under_marine_show_max_health( "rd_health_counter_under_marine_show_max_health", "0", FCVAR_ARCHIVE, "Should the health counter under the marine also show max health?" );
+ConVar rd_ammo_counter_under_marine( "rd_ammo_counter_under_marine", "0", FCVAR_ARCHIVE, "Draw an ammo counter of the marine's active weapon under the marine?" );
+ConVar rd_ammo_counter_under_marine_alignment( "rd_ammo_counter_under_marine_alignment", "1", FCVAR_ARCHIVE, "Aligns the ammo counter under the marine. 0 - Left, 1 - Center, 2 - Right" );
+ConVar rd_ammo_counter_under_marine_show_max_ammo( "rd_ammo_counter_under_marine_show_max_ammo", "0", FCVAR_ARCHIVE, "Should the ammo counter under the marine also show max ammo?" );
 
 #define ASW_MIN_MARINE_ARROW_SIZE 20
 #define ASW_MAX_MARINE_ARROW_SIZE 60
@@ -864,7 +867,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 				int idx = ASWGameResource()->GetMarineCrosshairCache()->FindIndexForMarine( pMarine );
 				if ( idx >= 0 && ASWGameResource()->GetMarineCrosshairCache()->GetElement( idx ).m_fDistToCursor < asw_marine_labels_cursor_maxdist.GetFloat() )
 				{
-					PaintAmmoBar( pMR->GetAmmoPercent(), nBoxCenterX, nCursorY );
+					PaintAmmoBar( pWeapon, pMR->GetAmmoPercent(), nBoxCenterX, nCursorY );
 					nCursorY += nHealthBarHeight + nLineSpacing;
 				}
 			}
@@ -1368,7 +1371,7 @@ bool CASWHud3DMarineNames::PaintReloadBar( C_ASW_Weapon *pWeapon, float xPos, fl
 	return true;
 }
 
-bool CASWHud3DMarineNames::PaintAmmoBar( float ammoPercentage, float xPos, float yPos )
+bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercentage, float xPos, float yPos )
 {
 	Color colorBG( 32, 32, 32, 255 );
 	Color colorBorder( 255, 255, 255, 128 );
@@ -1415,6 +1418,33 @@ bool CASWHud3DMarineNames::PaintAmmoBar( float ammoPercentage, float xPos, float
 		vgui::Vertex_t(Vector2D(iXPos, iYPos + h), Vector2D(0, 1))
 	};
 	vgui::surface()->DrawTexturedPolygon(4, barpoints);
+
+	if ( rd_ammo_counter_under_marine.GetBool() )
+	{
+		wchar_t wszMarineAmmo[ 12 ];
+		if ( rd_ammo_counter_under_marine_show_max_ammo.GetBool() )
+			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
+		else
+			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
+
+		int nAmmoCounterLength = Q_wcslen( wszMarineAmmo );
+		int nAmmoCounterWidth = 0, nAmmoCounterHeight = 0;
+		int xOffset = 0;
+		g_pMatSystemSurface->GetTextSize( m_hNumberCounterFont, wszMarineAmmo, nAmmoCounterWidth, nAmmoCounterHeight );
+
+		if ( rd_ammo_counter_under_marine_alignment.GetInt() > 0 )
+		{
+			if ( rd_ammo_counter_under_marine_alignment.GetInt() == 1 )
+				xOffset = (w / 2) - (nAmmoCounterWidth / 2);
+			else if ( rd_ammo_counter_under_marine_alignment.GetInt() == 2 )
+				xOffset = w - nAmmoCounterWidth;
+		}
+
+		vgui::surface()->DrawSetTextFont( m_hNumberCounterFont );
+		vgui::surface()->DrawSetTextColor( Color( 255, 255, 255, 255 ) );
+		vgui::surface()->DrawSetTextPos( iXPos + xOffset, iYPos - ((nAmmoCounterHeight - h) / 2) - 1 );
+		vgui::surface()->DrawPrintText( wszMarineAmmo, nAmmoCounterLength );
+	}
 
 	return true;
 }
