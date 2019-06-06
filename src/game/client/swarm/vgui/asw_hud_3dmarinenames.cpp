@@ -77,6 +77,7 @@ ConVar asw_medic_under_marine_frequency( "asw_medic_under_marine_frequency", "60
 ConVar asw_medic_under_marine_recall_time ("asw_medic_under_marine_recall_time", "10", FCVAR_ARCHIVE, "Time the Medic Call Emote will be remembered and displayed at the left of a marine if enabled", true, 0, true, 60 );
 ConVar rd_health_counter_under_marine( "rd_health_counter_under_marine", "0", FCVAR_ARCHIVE, "Draw a counter of the marine's current health under the marine?" );
 ConVar rd_health_counter_under_marine_alignment( "rd_health_counter_under_marine_alignment", "1", FCVAR_ARCHIVE, "Aligns the health counter under the marine. 0 - Left, 1 - Center, 2 - Right" );
+ConVar rd_health_counter_under_marine_show_max_health( "rd_health_counter_under_marine_show_max_health", "0", FCVAR_ARCHIVE, "Should the health counter under the marine also show max health?" );
 
 #define ASW_MIN_MARINE_ARROW_SIZE 20
 #define ASW_MAX_MARINE_ARROW_SIZE 60
@@ -1140,12 +1141,15 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 
 	if ( rd_health_counter_under_marine.GetBool() )
 	{
-		wchar_t wszMarineHealth[ 6 ];
-		V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d", pMarine->GetHealth() );
-		int nHealthCounterLength = Q_wcslen( wszMarineHealth );
+		wchar_t wszMarineHealth[ 12 ];
+		if ( rd_health_counter_under_marine_show_max_health.GetBool() )
+			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d/%d", pMarine->GetHealth(), pMarine->GetMaxHealth() );
+		else
+			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d", pMarine->GetHealth() );
 
-		int xOffset = 0;
+		int nHealthCounterLength = Q_wcslen( wszMarineHealth );
 		int nHealthCounterWidth = 0, nHealthCounterHeight = 0;
+		int xOffset = 0;
 		g_pMatSystemSurface->GetTextSize( m_hNumberCounterFont, wszMarineHealth, nHealthCounterWidth, nHealthCounterHeight );
 
 		if ( rd_health_counter_under_marine_alignment.GetInt() > 0 )
