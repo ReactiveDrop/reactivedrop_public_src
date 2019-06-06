@@ -2497,6 +2497,36 @@ void CAlienSwarm::UpdateLaunching()
 			CASW_Use_Area *pArea = static_cast< CASW_Use_Area* >( IASW_Use_Area_List::AutoList()[ i ] );
 			pArea->UpdateWaitingForInput();
 		}
+
+		HSCRIPT hGameplayStartFunc = g_pScriptVM->LookupFunction( "OnGameplayStart" );
+		if ( hGameplayStartFunc )
+		{
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hGameplayStartFunc, NULL, false, NULL );
+			if ( nStatus != SCRIPT_DONE )
+			{
+				DevWarning( "OnGameplayStart VScript function did not finish!\n" );
+			}
+			g_pScriptVM->ReleaseFunction( hGameplayStartFunc );
+		}
+
+		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+		{
+			ScriptVariant_t hModeScript;
+			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+			{
+				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnGameplayStart", hModeScript ) )
+				{
+					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+					if ( nStatus != SCRIPT_DONE )
+					{
+						DevWarning( "OnGameplayStart VScript function did not finish!\n" );
+					}
+
+					g_pScriptVM->ReleaseFunction( hFunction );
+				}
+				g_pScriptVM->ReleaseValue( hModeScript );
+			}
+		}
 	}
 	else
 	{
