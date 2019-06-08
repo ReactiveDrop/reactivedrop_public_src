@@ -181,6 +181,21 @@ float C_ASW_Marine_Resource::GetHealthPercent()
 	return clamp(health / max_health, 0.0f, 1.0f);
 }
 
+float C_ASW_Marine_Resource::GetOverHealthPercent()
+{
+	C_ASW_Marine *marine = GetMarineEntity();
+	if (!marine)
+		return 0;
+
+	float max_health = marine->GetMaxHealth();
+	if (max_health <= 0)
+		return 0;
+
+	float health = marine->GetHealth();
+
+	return clamp(health / max_health, 0.0f, health / max_health);
+}
+
 float C_ASW_Marine_Resource::GetInfestedPercent()
 {
 	C_ASW_Marine *marine = GetMarineEntity();

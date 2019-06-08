@@ -998,7 +998,11 @@ float CASWHud3DMarineNames::GetTalkingIconSize()
 
 bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, float yPos, bool bOnScreen )
 {
-	if ( !pMarine || !pMarine->GetMarineResource() )
+	if ( !pMarine )
+		return false;
+
+	C_ASW_Marine_Resource* pMR = pMarine->GetMarineResource();
+	if (!pMR)
 		return false;
 
 	// check if the med satchel is out and if we are highlighting another marine
@@ -1047,8 +1051,10 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	// draw health bar
 	int bar_y = yPos;	
 	int bar_y2 = bar_y + bar_height;
-	float fHealth = pMarine->GetMarineResource()->GetHealthPercent();
-	if (pMarine->GetMarineResource()->m_bHealthHalved)		// if he was wounded from the last mission, halve the size of his health bar
+	float fOverHealth = pMR->GetOverHealthPercent();
+	float fHealth = fOverHealth > 1.0f ? 1.0 : fOverHealth;
+
+	if ( pMR->m_bHealthHalved )		// if he was wounded from the last mission, halve the size of his health bar
 	{
 		fHealth *= 0.5f;
 	}
@@ -1059,8 +1065,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	//	float flDevourCurrentTime = gpGlobals->curtime - pMarine->GetDevourStartTime();
 	//	fHealth = 1.0f - clamp( flDevourCurrentTime / flDevourTotalTime, 0.0f, 1.0f );
 	//}
-
-	int health_pixels = (portrait_size * fHealth);
+	
+	bool bUseOverHealth = false;
+	int health_pixels = 0;
+	if (fOverHealth > fHealth)
+	{
+		health_pixels = (portrait_size * (fOverHealth - (int)fOverHealth));
+		bUseOverHealth = true;
+	}
+	else
+	{
+		health_pixels = (portrait_size * fHealth);
+	}
 
 	if (fHealth > 0 && health_pixels <= 0)
 		health_pixels = 1;
@@ -1071,7 +1087,7 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	vgui::surface()->DrawFilledRect( portrait_x - 1, bar_y - 1, portrait_x + portrait_size + 1, bar_y2 + 1 );
 
 	// if he's wounded, draw a grey part
-	if ( pMarine->GetMarineResource()->m_bHealthHalved )
+	if ( pMR->m_bHealthHalved )
 	{
 		vgui::surface()->DrawSetTexture(m_nWhiteTexture);
 		vgui::surface()->DrawSetColor(Color(128,128,128,255));
@@ -1080,12 +1096,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 
 	// colored part
 	Color rgbaBarBrightColor = Color(0,150,150,255);
-	Color rgbaBarDarkColor = Color(0,75,75,255);
+	Color rgbaBarDarkColor = Color(0, 75, 75, 255);
 
 	if ( fHealth < 0.5f )
 	{
 		rgbaBarBrightColor = Color(200,50,0,255);
 		rgbaBarDarkColor = Color(100,25,0,255);
+	}
+	else if (bUseOverHealth)
+	{
+		if (fOverHealth > 2)
+			rgbaBarBrightColor = Color(255, 128, 0, 255);
+		rgbaBarDarkColor = Color(0, 128, 255, 255);
 	}
 
 	if ( pMarine->m_bKnockedOut || pMarine->IsInfested()  )
@@ -1118,18 +1140,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	vgui::surface()->DrawTexturedPolygon( 4, hRemainingPoints );
 
 	// draw hurt over the top
-	if ( m_nWhiteTexture != -1 && pMarine->GetMarineResource()->GetHurtPulse() > 0 )
+	if ( m_nWhiteTexture != -1 && pMR->GetHurtPulse() > 0 )
 	{
-		rgbaBarBrightColor[3] *= pMarine->GetMarineResource()->GetHurtPulse();
+		rgbaBarBrightColor[3] *= pMR->GetHurtPulse();
 		vgui::surface()->DrawSetColor( rgbaBarBrightColor );
 		vgui::surface()->DrawSetTexture( m_nWhiteTexture );
 		vgui::surface()->DrawTexturedPolygon( 4, hPoints );
 	}
 
 	// draw a green bit at the end of the health bar if he's infested
-	if (pMarine->GetMarineResource()->IsInfested())
+	if ( pMR->IsInfested() )
 	{
-		float fInfestPercent = pMarine->GetMarineResource()->GetInfestedPercent();
+		float fInfestPercent = pMR->GetInfestedPercent();
 		if ( fInfestPercent > fHealth )
 		{
 			fInfestPercent = fHealth;
