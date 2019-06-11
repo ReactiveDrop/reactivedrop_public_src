@@ -1183,12 +1183,22 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				CASW_Marine* pMarine = GetMarine();
 				if (pMarine && pMarine->GetHealth()>0 && !(pMarine->GetFlags() & FL_FROZEN))
 				{
-
 					// check we have an item in that slot
 					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-					if (pWeapon && pWeapon->GetWeaponInfo() && pWeapon->GetWeaponInfo()->m_bOffhandActivate)				
-					{				
-						pWeapon->OffhandActivate();				
+					if (pWeapon && pWeapon->GetWeaponInfo() && pWeapon->GetWeaponInfo()->m_bOffhandActivate)
+					{
+						pWeapon->OffhandActivate();
+
+						// Fire event when a player uses an offhand item
+						IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+						if ( event )
+						{
+							event->SetInt( "userid", GetUserID() );
+							event->SetInt( "marine", pMarine->entindex() );
+							event->SetInt( "weapon", pWeapon->entindex() );
+
+							gameeventmanager->FireEvent( event );
+						}
 					}
 				}
 				return true;
