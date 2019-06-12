@@ -1640,25 +1640,28 @@ void CASW_Hud_Master::PaintText()
         }
     }
 
-	if ( rd_draw_marine_health_counter.GetBool() )
+	if ( rd_draw_marine_health_counter.GetBool() && m_pLocalMarine )
 	{
-		surface()->DrawSetColor( m_MarinePortrait_health_counter_color );
-		surface()->DrawSetTexture( m_nSheet1ID );
-		surface()->DrawTexturedSubRect(
-				m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x,
-				m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y,
-				m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x + m_nMarinePortrait_health_counter_icon_w,
-				m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y + m_nMarinePortrait_health_counter_icon_t,
-				HUD_UV_COORDS( Sheet1, UV_hud_ammo_heal )
-				);
+		if ( m_pLocalMarine->IsAlive() )
+		{
+			surface()->DrawSetColor( m_MarinePortrait_health_counter_color );
+			surface()->DrawSetTexture( m_nSheet1ID );
+			surface()->DrawTexturedSubRect(
+					m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x,
+					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y,
+					m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x + m_nMarinePortrait_health_counter_icon_w,
+					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y + m_nMarinePortrait_health_counter_icon_t,
+					HUD_UV_COORDS( Sheet1, UV_hud_ammo_heal )
+					);
 
-		wchar_t wszHealth[ 6 ];
-		_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_nLocalMarineHealth );
-		surface()->DrawSetTextFont( m_hDefaultLargeFont );
-		surface()->DrawSetTextColor( m_MarinePortrait_health_counter_color );
-		surface()->DrawSetTextPos( m_nMarinePortrait_health_counter_x + m_nMarinePortrait_x,
-			m_nMarinePortrait_health_counter_y + m_nMarinePortrait_y );
-		surface()->DrawUnicodeString( wszHealth );
+			wchar_t wszHealth[ 6 ];
+			_snwprintf( wszHealth, sizeof( wszHealth ), L"%d", m_nLocalMarineHealth );
+			surface()->DrawSetTextFont( m_hDefaultLargeFont );
+			surface()->DrawSetTextColor( m_MarinePortrait_health_counter_color );
+			surface()->DrawSetTextPos( m_nMarinePortrait_health_counter_x + m_nMarinePortrait_x,
+				m_nMarinePortrait_health_counter_y + m_nMarinePortrait_y );
+			surface()->DrawUnicodeString( wszHealth );
+		}
 	}
 }
 
