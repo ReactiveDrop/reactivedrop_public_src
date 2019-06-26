@@ -992,8 +992,21 @@ int CASW_Marine::SelectHealSchedule()
 		// reactivedrop: heal ignited marine immediately
 		if ( CanHeal() && pMarine->IsOnFire() && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
-			pBestMarine = pMarine;
-			break;
+			// don't heal yourself if your health is higher than 85%, previously medic bot was stuck in fire trying to heal himself
+			// also don't heal other medic immediately, because two medic bots get stuck in fire trying to heal each other
+			if ( pMarine->CanHeal() )	
+			{
+				if ( pMarine->GetHealth() <  pMarine->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD )
+				{
+					pBestMarine = pMarine;
+					break;
+				}
+			}
+			else
+			{
+				pBestMarine = pMarine;
+				break;
+			}
 		}
 
 		// see if the current marine can use ammo I have
