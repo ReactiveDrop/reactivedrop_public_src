@@ -44,7 +44,7 @@ ConVar asw_skill_engineering_sentry_base("asw_skill_engineering_sentry_base", "1
 
 ConVar asw_skill_grenades_radius_base("asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_base("asw_skill_grenades_dmg_base", "80", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_incendiary_dmg_base("asw_skill_grenades_incendiary_dmg_base", "80", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_grenades_incendiary_dmg_base("asw_skill_grenades_incendiary_dmg_base", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_cluster_dmg_base("asw_skill_grenades_cluster_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_clusters_base("asw_skill_grenades_clusters_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_flechette_dmg_base("asw_skill_grenades_flechette_dmg_base", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -90,7 +90,7 @@ ConVar asw_skill_engineering_sentry_step("asw_skill_engineering_sentry_step", "0
 
 ConVar asw_skill_grenades_radius_step("asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step("asw_skill_grenades_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_incendiary_dmg_step("asw_skill_grenades_incendiary_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_grenades_incendiary_dmg_step("asw_skill_grenades_incendiary_dmg_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_cluster_dmg_step("asw_skill_grenades_cluster_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_clusters_step("asw_skill_grenades_clusters_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_flechette_dmg_step("asw_skill_grenades_flechette_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );

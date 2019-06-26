@@ -224,7 +224,7 @@ void CASW_Grenade_Vindicator::Detonate()
 	if (pMarine && pMarine->GetMarineResource())
 		iPreExplosionKills = pMarine->GetMarineResource()->m_iAliensKilled;
 
-	CTakeDamageInfo info( this, m_hFirer.Get(), 20, DMG_BURN );
+	CTakeDamageInfo info( this, m_hFirer.Get(), m_flDamage, DMG_BURN );
 	info.SetWeapon( m_hCreatorWeapon );
 	RadiusDamage ( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 	//RadiusDamage ( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
