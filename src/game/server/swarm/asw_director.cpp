@@ -37,7 +37,9 @@ ConVar asw_interval_initial_min("asw_interval_initial_min", "5", FCVAR_CHEAT, "D
 ConVar asw_interval_initial_max("asw_interval_initial_max", "7", FCVAR_CHEAT, "Director: Max time between alien spawns when first entering spawning state");
 ConVar asw_interval_change_min("asw_interval_change_min", "0.9", FCVAR_CHEAT, "Director: Min scale applied to alien spawn interval each spawn");
 ConVar asw_interval_change_max("asw_interval_change_max", "0.95", FCVAR_CHEAT, "Director: Max scale applied to alien spawn interval each spawn");
-ConVar rd_prespawn_scale("rd_prespawn_scale", "0", FCVAR_CHEAT, "Director: will populate map with aliens at random positions", true, 0, true, 15);
+ConVar rd_prespawn_scale( "rd_prespawn_scale", "0", FCVAR_CHEAT, "Director: will populate map with aliens at random positions", true, 0, true, 15);
+ConVar rd_director_max_awake_aliens_for_horde( "rd_director_max_awake_aliens_for_horde", "25", FCVAR_CHEAT, "If there are more awake aliens than this number director will not spawn new hordes", true, 0, true, 1000 );
+ConVar rd_director_max_awake_aliens_for_wanderers( "rd_director_max_awake_aliens_for_wanderers", "20", FCVAR_CHEAT, "If there are more awake aliens than this number director will not spawn new wanderers", true, 0, true, 1000 );
 
 CASW_Director g_ASWDirector;
 CASW_Director* ASWDirector() { return &g_ASWDirector; }
@@ -289,7 +291,7 @@ void CASW_Director::UpdateHorde()
 	}
 	else if ( m_HordeTimer.IsElapsed() )
 	{
-		if ( ASWSpawnManager()->GetAwakeAliens() < 25 )
+		if ( ASWSpawnManager()->GetAwakeAliens() < rd_director_max_awake_aliens_for_horde.GetInt() )
 		{
 			int iNumAliens = ASWSpawnSelection()->RandomHordeSize();
 			if ( iNumAliens == 0 )
@@ -455,7 +457,7 @@ void CASW_Director::UpdateWanderers()
 
 		if ( ASWSpawnManager() )
 		{
-			if ( ASWSpawnManager()->GetAwakeAliens() < 20 )
+			if ( ASWSpawnManager()->GetAwakeAliens() < rd_director_max_awake_aliens_for_wanderers.GetInt() )
 			{
 				// queue a random number of wanderers to spawn
 				int iWanderers = ASWSpawnSelection()->RandomWandererCount();
