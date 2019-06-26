@@ -3,14 +3,16 @@
 	"description"	"#rd_challenge_desc_asbi"
 
 	"convars" {
-		"asw_horde_override"				"1"
-		"asw_wanderer_override"				"1"
-		"rd_ready_mark_override"			"1"
-		"asw_sentry_friendly_fire_scale"	"1"
-		"asw_marine_ff_absorption"			"0"
-		"asw_adjust_difficulty_by_number_of_marines" "0"
-		"asw_batch_interval" 				"3"
+		"asw_horde_override"							"1"
+		"asw_wanderer_override"							"1"
+		"rd_ready_mark_override"						"1"
+		"asw_sentry_friendly_fire_scale"				"1"
+		"asw_marine_ff_absorption"						"0"
+		"asw_adjust_difficulty_by_number_of_marines" 	"0"
+		"asw_batch_interval" 							"3"
+		"rd_director_max_awake_aliens_for_horde" 		"45"
+		"rd_director_max_awake_aliens_for_wanderers" 	"45"
 		
-		"rd_auto_kick_low_level_player"		"1"
+		"rd_auto_kick_low_level_player"					"1"
 	}
 }
