@@ -12,7 +12,7 @@
 	
 	"MarineClass"	"0"
 	"Sarge"		"1"
-	"Model"     "models/swarm/marine/marine.mdl"
+	"Model"     "models/swarm/marine/femalemarine.mdl"
 	"Skin"      "1"
 	"PortraitName"	"Sarge"
 	"Voice"			"ASW_VOICE_SARGE"
@@ -152,7 +152,7 @@
 	"Nickname"	"1"
 
 	"MarineClass"	"3"
-	"Model"     "models/swarm/marine/marine.mdl"
+	"Model"     "models/swarm/marine/femalemarine.mdl"
 	"Skin"      "4"
 	"PortraitName"	"Crash"
 	"Voice"			"ASW_VOICE_CRASH"
