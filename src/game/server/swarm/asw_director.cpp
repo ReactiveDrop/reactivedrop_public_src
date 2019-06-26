@@ -289,7 +289,7 @@ void CASW_Director::UpdateHorde()
 	}
 	else if ( m_HordeTimer.IsElapsed() )
 	{
-		if ( ASWSpawnManager()->GetAwakeDrones() < 25 )
+		if ( ASWSpawnManager()->GetAwakeAliens() < 25 )
 		{
 			int iNumAliens = ASWSpawnSelection()->RandomHordeSize();
 			if ( iNumAliens == 0 )
@@ -455,7 +455,7 @@ void CASW_Director::UpdateWanderers()
 
 		if ( ASWSpawnManager() )
 		{
-			if ( ASWSpawnManager()->GetAwakeDrones() < 20 )
+			if ( ASWSpawnManager()->GetAwakeAliens() < 20 )
 			{
 				// queue a random number of wanderers to spawn
 				int iWanderers = ASWSpawnSelection()->RandomWandererCount();
