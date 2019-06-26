@@ -983,14 +983,14 @@ int CASW_Marine::SelectHealSchedule()
 		}
 
 		// reactivedrop: heal infested marine without waiting for their health dropping to 65%, healing starts when marine's health drops below 85% of max health
-		if ( CanHeal() && pMarine->IsInfested() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD &&  ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		if ( CanHeal() && pMarine->IsInfested() && pMarine->GetHealth() < pMarine->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
 			pBestMarine = pMarine;
 			break;
 		}
 
 		// reactivedrop: heal ignited marine immediately
-		if ( CanHeal() && pMarine->IsOnFire() && ( pBestMarine == NULL || pMarine->GetHealth() < pBestMarine->GetHealth() ) && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
+		if ( CanHeal() && pMarine->IsOnFire() && GetAbsOrigin().DistToSqr( pMarine->GetAbsOrigin() ) < flMaxRangeSquare )
 		{
 			pBestMarine = pMarine;
 			break;
