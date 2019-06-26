@@ -44,6 +44,13 @@
 // - asw_drone_uber
 // - npc_antlionguard_normal
 // - npc_antlionguard_cavern
+// - npc_antlion
+// - npc_antlion_worker
+// - npc_zombie
+// - npc_zombie_torso
+// - npc_poisonzombie
+// - npc_fastzombie
+// - npc_fastzombie_torso
 //
 // The following KeyValues are also accepted in the NPC block:
 //
