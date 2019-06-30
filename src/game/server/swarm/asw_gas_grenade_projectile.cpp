@@ -370,6 +370,7 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 		m_hRadVolume->m_flDamage = m_flDamage;
 		m_hRadVolume->m_flDmgInterval = m_flDmgInterval;
 		m_hRadVolume->m_flBoxWidth = asw_gas_grenade_cloud_width.GetFloat();
+		m_hRadVolume->m_hWeapon = this;
 		m_hRadVolume->Spawn();
 	}
 

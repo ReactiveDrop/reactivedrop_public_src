@@ -1275,6 +1275,42 @@ class CAchievement_Mine_Kills : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Mine_Kills, ACHIEVEMENT_ASW_MINE_KILLS, "ASW_MINE_KILLS", 5, 1620 );
 
+class CAchievement_GasGrenade_Kills : public CASW_Achievement
+{
+	void Init()
+	{
+		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_ALIEN_DEATH_EVENTS );
+		SetGoal( 500 );
+		SetStoreProgressInSteam( true );
+		SetWeaponClassFilter( CLASS_ASW_GAS_GRENADE );
+	}
+};
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_GasGrenade_Kills, ACHIEVEMENT_RD_GAS_GRENADE_KILLS, "RD_GAS_GRENADE_KILLS", 5, 1630 );
+
+class CAchievement_HeavyRifle_Kills : public CASW_Achievement
+{
+	void Init()
+	{
+		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_ALIEN_DEATH_EVENTS );
+		SetGoal( 500 );
+		SetStoreProgressInSteam( true );
+		SetWeaponClassFilter( CLASS_ASW_HEAVY_RIFLE );
+	}
+};
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_HeavyRifle_Kills, ACHIEVEMENT_RD_HEAVY_RIFLE_KILLS, "RD_HEAVY_RIFLE_KILLS", 5, 1640 );
+
+class CAchievement_MedicalSMG_Kills : public CASW_Achievement
+{
+	void Init()
+	{
+		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_ALIEN_DEATH_EVENTS );
+		SetGoal( 500 );
+		SetStoreProgressInSteam( true );
+		SetWeaponClassFilter( CLASS_ASW_MEDRIFLE );
+	}
+};
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_MedicalSMG_Kills, ACHIEVEMENT_RD_MEDICAL_SMG_KILLS, "RD_MEDICAL_SMG_KILLS", 5, 1650 );
+
 class CAchievement_Mission_No_Deaths : public CASW_Achievement
 {
 	void Init() 

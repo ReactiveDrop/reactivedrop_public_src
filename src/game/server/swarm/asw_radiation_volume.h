@@ -16,6 +16,7 @@ public:
 	DECLARE_DATADESC();
 	CUtlVector<EHANDLE> m_hRadTouching;	
 	EHANDLE m_hCreator;
+	EHANDLE m_hWeapon;
 	float m_flDamage;
 	float m_flDmgInterval;
 	float m_flBoxWidth;

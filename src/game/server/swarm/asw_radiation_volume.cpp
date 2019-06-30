@@ -14,6 +14,7 @@ BEGIN_DATADESC( CASW_Radiation_Volume )
 	DEFINE_FUNCTION(RadTouch),
 	DEFINE_THINKFUNC(RadThink),
 	DEFINE_FIELD(m_hCreator, FIELD_EHANDLE),
+	DEFINE_FIELD(m_hWeapon, FIELD_EHANDLE),
 	DEFINE_FIELD(m_flDamage, FIELD_FLOAT),
 	DEFINE_FIELD(m_flDmgInterval, FIELD_FLOAT),
 	DEFINE_FIELD(m_flBoxWidth, FIELD_FLOAT),
@@ -81,10 +82,14 @@ void CASW_Radiation_Volume::RadHurt(CBaseEntity *pEnt)
 	if (m_hCreator.Get() && pEnt->Classify() != CLASS_ASW_MARINE)	// don't deal friendly fire damage from rad barrels
 		pAttacker = m_hCreator.Get();
 
+	CBaseEntity *pWeapon = NULL;
+	if (m_hWeapon.Get())
+		pWeapon = m_hWeapon.Get();
+
 	float fDamage = m_flDamage;
 	if (pEnt->Classify() == CLASS_ASW_MARINE)
 		fDamage *= 0.5f;
-	pEnt->TakeDamage( CTakeDamageInfo( this, pAttacker, fDamage, DMG_RADIATION ) );
+	pEnt->TakeDamage( CTakeDamageInfo( this, pAttacker, pWeapon, fDamage, DMG_RADIATION ) );
 }
 
 void CASW_Radiation_Volume::RadThink()
