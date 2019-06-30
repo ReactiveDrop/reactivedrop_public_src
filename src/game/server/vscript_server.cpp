@@ -1024,7 +1024,7 @@ bool VScriptServerReplaceClosures( const char *pszScriptName, HSCRIPT hScope, bo
 	return true;
 }
 
-CON_COMMAND( script_reload_code, "Execute a vscript file, replacing existing functions with the functions in the run script" )
+CON_COMMAND_F( script_reload_code, "Execute a vscript file, replacing existing functions with the functions in the run script", FCVAR_CHEAT )
 {
 	if ( !*args[1] )
 	{
@@ -1041,7 +1041,7 @@ CON_COMMAND( script_reload_code, "Execute a vscript file, replacing existing fun
 	VScriptServerReplaceClosures( args[1], NULL, true );
 }
 
-CON_COMMAND( script_reload_entity_code, "Execute all of this entity's VScripts, replacing existing functions with the functions in the run scripts" )
+CON_COMMAND_F( script_reload_entity_code, "Execute all of this entity's VScripts, replacing existing functions with the functions in the run scripts", FCVAR_CHEAT )
 {
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
 
@@ -1079,7 +1079,7 @@ CON_COMMAND( script_reload_entity_code, "Execute all of this entity's VScripts, 
 	}
 }
 
-CON_COMMAND( script_reload_think, "Execute an activation script, replacing existing functions with the functions in the run script" )
+CON_COMMAND_F( script_reload_think, "Execute an activation script, replacing existing functions with the functions in the run script", FCVAR_CHEAT )
 {
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
 

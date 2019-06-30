@@ -163,9 +163,9 @@ bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMiss
 }
 
 #ifdef CLIENT_DLL
-CON_COMMAND( script_client, "Run the text as a script" )
+CON_COMMAND_F( script_client, "Run the text as a script", FCVAR_CHEAT )
 #else
-CON_COMMAND( script, "Run the text as a script" )
+CON_COMMAND_F( script, "Run the text as a script", FCVAR_CHEAT )
 #endif
 {
 	if ( !*args[1] )
@@ -221,7 +221,7 @@ CON_COMMAND( script, "Run the text as a script" )
 }
 
 
-CON_COMMAND_SHARED( script_execute, "Run a vscript file" )
+CON_COMMAND_F_SHARED( script_execute, "Run a vscript file", FCVAR_CHEAT )
 {
 	if ( !*args[1] )
 	{
@@ -238,7 +238,7 @@ CON_COMMAND_SHARED( script_execute, "Run a vscript file" )
 	VScriptRunScript( args[1], true );
 }
 
-CON_COMMAND_SHARED( script_debug, "Connect the vscript VM to the script debugger" )
+CON_COMMAND_F_SHARED( script_debug, "Connect the vscript VM to the script debugger", FCVAR_CHEAT )
 {
 	if ( !g_pScriptVM )
 	{
@@ -248,7 +248,7 @@ CON_COMMAND_SHARED( script_debug, "Connect the vscript VM to the script debugger
 	g_pScriptVM->ConnectDebugger();
 }
 
-CON_COMMAND_SHARED( script_help, "Output help for script functions, optionally with a search string" )
+CON_COMMAND_F_SHARED( script_help, "Output help for script functions, optionally with a search string", FCVAR_CHEAT )
 {
 	if ( !g_pScriptVM )
 	{
@@ -264,7 +264,7 @@ CON_COMMAND_SHARED( script_help, "Output help for script functions, optionally w
 	g_pScriptVM->Run( CFmtStr( "PrintHelp( \"%s\" );", pszArg1 ) );
 }
 
-CON_COMMAND_SHARED( script_dump_all, "Dump the state of the VM to the console" )
+CON_COMMAND_F_SHARED( script_dump_all, "Dump the state of the VM to the console", FCVAR_CHEAT )
 {
 	if ( !g_pScriptVM )
 	{
