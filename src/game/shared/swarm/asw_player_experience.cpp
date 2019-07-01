@@ -612,6 +612,18 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		return;
 	}
 
+	// Loop through and clear achievements if earned before 2019.01.01, to account for previously removed achievement IDs 1517_4 through 1517_11.
+	const char *pAchievementNames[3] = { "RD_GAS_GRENADE_KILLS", "RD_HEAVY_RIFLE_KILLS", "RD_MEDICAL_SMG_KILLS" };
+	for ( int i = 0; i < ARRAYSIZE( pAchievementNames ); i++ )
+	{
+		bool achievementEarned;
+		uint32 achievementUnlockTime;
+		steamapicontext->SteamUserStats()->GetAchievementAndUnlockTime( pAchievementNames[i], &achievementEarned, &achievementUnlockTime );
+
+		if ( achievementEarned && achievementUnlockTime < 1546300800 )
+			steamapicontext->SteamUserStats()->ClearAchievement( pAchievementNames[i] );
+	}
+
 	CSteamID steamID;
 	if ( IsLocalPlayer() )
 	{
