@@ -1051,6 +1051,16 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		return;
 	}
 
+	extern ConVar rd_leaderboard_enabled;
+	if ( !rd_leaderboard_enabled.GetBool() )
+	{
+		if ( asw_stats_leaderboard_debug.GetBool() )
+		{
+			DevWarning( "Not sending leaderboard entry: rd_leaderboard_enabled is set to 0!\n" );
+		}
+		return;
+	}
+
 	CASW_Marine_Resource *pMR = ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer );
 	if ( !pMR )
 	{
