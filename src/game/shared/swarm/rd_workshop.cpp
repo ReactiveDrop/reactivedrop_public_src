@@ -209,8 +209,11 @@ static bool DedicatedServerWorkshopSetup()
 	return true;
 }
 
+#endif
+
 CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a workshop addon by ID" )
 {
+#ifdef GAME_DLL
 	if ( !engine->IsDedicatedServer() )
 	{
 		Warning( "rd_enable_workshop_item can only be used on dedicated servers.\n" );
@@ -233,8 +236,11 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 
 		UpdateAndLoadAddon( id, false, true );
 	}
-}
+#else
+	Msg( "rd_enable_workshop_item can only be used on dedicated servers.\n" );
 #endif
+}
+
 
 CReactiveDropWorkshop::WorkshopItem_t CReactiveDropWorkshop::TryQueryAddon( PublishedFileId_t nPublishedFileID )
 {
