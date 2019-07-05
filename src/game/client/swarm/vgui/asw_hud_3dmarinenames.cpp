@@ -1419,7 +1419,7 @@ bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercen
 	};
 	vgui::surface()->DrawTexturedPolygon(4, barpoints);
 
-	if ( rd_ammo_counter_under_marine.GetBool() )
+	if ( rd_ammo_counter_under_marine.GetBool() && !FStrEq( "asw_weapon_chainsaw", pWeapon->GetClassname() ) )
 	{
 		wchar_t wszMarineAmmo[ 12 ];
 		if ( rd_ammo_counter_under_marine_show_max_ammo.GetBool() )
