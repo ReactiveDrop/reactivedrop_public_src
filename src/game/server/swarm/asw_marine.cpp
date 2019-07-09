@@ -3296,22 +3296,19 @@ bool CASW_Marine::ScriptSwitchWeapon( int iWeaponIndex )
 //-----------------------------------------------------------------------------
 ScriptVariant_t CASW_Marine::Script_GetInvTable()
 {
-	Warning( "GetInvTable has been deprecated use GetInventoryTable instead.\n" );
-
-	char szInvSlot[256];
-	ScriptVariant_t hInvTable;
-	g_pScriptVM->CreateTable( hInvTable );
-	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)
+	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "CASW_Marine_GetInvTableOverride" ) )
 	{
-		CBaseCombatWeapon *pWep = m_hMyWeapons[i].Get();
-		if ( pWep )
+		ScriptVariant_t hInvTable;
+		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &hInvTable, ToHScript( this ) );
+		g_pScriptVM->ReleaseFunction( hFunction );
+		if ( nStatus != SCRIPT_DONE )
 		{
-			Q_snprintf( szInvSlot, sizeof(szInvSlot), "slot%i", i );
-			g_pScriptVM->SetValue( hInvTable, szInvSlot, ToHScript(pWep) );
+			DevWarning( "CASW_Marine_GetInvTableOverride VScript function did not finish!\n" );
+			return NULL;
 		}
+		return hInvTable;
 	}
-
-	return hInvTable;
+	return NULL;
 }
 
 void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )

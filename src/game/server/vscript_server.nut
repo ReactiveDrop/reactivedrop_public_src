@@ -261,3 +261,10 @@ function Ent( idxorname )
 	printl( "Hey! no entity for " + idxorname );
 }
 
+function CASW_Marine_GetInvTableOverride( CASW_Marine )
+{
+	local table = {};
+	CASW_Marine.GetInventoryTable( table );
+	return table;
+}
+
