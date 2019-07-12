@@ -84,7 +84,11 @@ void CASW_Radiation_Volume::RadHurt(CBaseEntity *pEnt)
 
 	CBaseEntity *pWeapon = NULL;
 	if (m_hWeapon.Get())
+	{
 		pWeapon = m_hWeapon.Get();
+		if ( pWeapon->Classify() == CLASS_ASW_GAS_GRENADE )
+			pAttacker = m_hCreator.Get();
+	}
 
 	float fDamage = m_flDamage;
 	if (pEnt->Classify() == CLASS_ASW_MARINE)
