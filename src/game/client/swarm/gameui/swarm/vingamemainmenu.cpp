@@ -306,6 +306,14 @@ void InGameMainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ADDONS, this, true );
 	}
+	else if ( !Q_strcmp( command, "OpenServerBrowser" ) )
+	{
+		if ( CheckAndDisplayErrorIfNotLoggedIn() )
+			return;
+
+		// on PC, bring up the server browser and switch it to the LAN tab (tab #5)
+		engine->ClientCmd( "openserverbrowser" );
+	}
 	else
 	{
 		const char *pchCommand = command;

@@ -30,7 +30,7 @@
 		"enabled"			"1"
 		"fillColor"			"0 0 0 255"
 	}
-			
+	
 	"BtnReturnToGame"
 	{
 		"ControlName"			"BaseModHybridButton"
@@ -117,7 +117,8 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnCallAVote"
-		"navDown"				"BtnLeaderboard"
+		"navDown"				"BtnOpenServerBrowser"	[$WIN32]
+		"navDown"				"BtnLeaderboard"		[$X360]
 		"labelText"				"#L4D360UI_Lobby_InviteFriends"		[$WIN32]
 		"tooltiptext"			"#L4D360UI_Lobby_InviteFriends_Tip"	[$WIN32]
 		"labelText"				"#L4D360UI_InviteUIOptions"			[$X360]
@@ -139,12 +140,37 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownInviteLive.res"
 	}
 	
+	"BtnOpenServerBrowser" [$WIN32]
+	{
+		"ControlName"			"BaseModHybridButton"
+		"fieldName"				"BtnOpenServerBrowser"
+		"xpos"					"100"
+		"ypos"					"235"
+		"wide"					"240"
+		"tall"					"20"
+		"autoResize"			"1"
+		"pinCorner"				"0"
+		"visible"				"1"
+		"enabled"				"1"
+		"tabPosition"			"0"
+		"navUp"					"BtnInviteFriends"
+		"navDown"				"BtnLeaderboard"
+		"labelText"				"#L4D360UI_MainMenu_DedicatedServerBrowser"
+		"tooltiptext"			"#L4D360UI_MainMenu_DedicatedServerBrowser"
+		"style"					"MainMenuButton"
+		"command"				"OpenServerBrowser"
+		"allcaps"				"1"
+		"ActivationType"		"1"
+		"IgnoreButtonA"			"1" // don't let people accidentally open this with a controller
+	}
+	
 	"BtnLeaderboard"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnLeaderboard"
 		"xpos"					"100"
-		"ypos"					"235"
+		"ypos"					"260"	[$WIN32]
+		"ypos"					"235"	[$X360]
 		"wide"					"240"	[$WIN32]
 		"wide"					"180"	[$X360]
 		"tall"					"20"	
@@ -153,7 +179,8 @@
 		"visible"				"0"
 		"enabled"				"1"
 		"tabPosition"			"0"
-		"navUp"					"BtnInviteFriends"
+		"navUp"					"BtnOpenServerBrowser"	[$WIN32]
+		"navUp"					"BtnInviteFriends"		[$X360]
 		"navDown"				"BtnStatsAndAchievements"
 		"labelText"				"#L4D360UI_Leaderboard_Title"
 		"tooltiptext"			"#L4D360UI_MainMenu_SurvivalLeaderboards_Tip"
@@ -167,7 +194,8 @@
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnStatsAndAchievements"
 		"xpos"					"100"
-		"ypos"					"235"
+		"ypos"					"260"	[$WIN32]
+		"ypos"					"235"	[$X360]
 		"wide"					"240"	[$WIN32]
 		"wide"					"180"	[$X360]
 		"tall"					"20"
@@ -193,7 +221,8 @@
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnOptions"
 		"xpos"					"100"
-		"ypos"					"260"
+		"ypos"					"285"	[$WIN32]
+		"ypos"					"260"	[$X360]
 		"wide"					"240"	[$WIN32]
 		"wide"					"180"	[$X360]
 		"tall"					"20"
@@ -216,7 +245,7 @@
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnExitToMainMenu"
 		"xpos"					"100"
-		"ypos"					"297"
+		"ypos"					"322"
 		"wide"					"240"	[$WIN32]
 		"wide"					"180"	[$X360]
 		"tall"					"20"
