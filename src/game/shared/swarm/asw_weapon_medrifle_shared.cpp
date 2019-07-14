@@ -915,7 +915,7 @@ void CASW_Weapon_MedRifle::ClientThink()
 
 void CASW_Weapon_MedRifle::UpdateEffects()
 {
-	if ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE || !GetMarine() )
+	if ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE || !GetMarine() || m_iClip2 <= 0 )
 	{
 		if ( m_pDischargeEffect )
 		{
