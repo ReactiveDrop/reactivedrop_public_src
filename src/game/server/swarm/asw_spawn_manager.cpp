@@ -666,7 +666,8 @@ bool CASW_Spawn_Manager::FindHordePosition()
 	if ( rd_horde_two_sided.GetBool() )
 	{
 		CUtlVector<int> &candidateNodes2 = bNorth ? m_southCandidateNodes : m_northCandidateNodes;
-		FindHordePos( !bNorth, candidateNodes2, m_vecHordePosition2, m_angHordeAngle2 );
+		bool bResult2 = FindHordePos( !bNorth, candidateNodes2, m_vecHordePosition2, m_angHordeAngle2 );
+		bResult = bResult || bResult2;
 	}
 	return bResult;
 }
