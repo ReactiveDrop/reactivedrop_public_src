@@ -42,6 +42,7 @@ ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Int
 
 ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
 ConVar rd_horde_two_sided( "rd_horde_two_sided", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled a 2nd horde will come from opposite side, e.g. north and south" );
+ConVar rd_horde_retry_on_fail( "rd_horde_retry_on_fail", "1", FCVAR_NONE, "When set to 1 will retry to spawn horde from opposite direction if previous direction spawn failed." );
 ConVar rd_director_spawner_range("rd_director_spawner_range", "600", FCVAR_CHEAT, "Radius around expected spawn point that the director can look for spawners");
 ConVar rd_director_spawner_bias("rd_director_spawner_bias", "0.9", FCVAR_CHEAT, "0 (search from the node) to 1 (search from the nearest marine)", true, 0, true, 1);
 
@@ -663,6 +664,11 @@ bool CASW_Spawn_Manager::FindHordePosition()
 
 	CUtlVector<int> &candidateNodes = bNorth ? m_northCandidateNodes : m_southCandidateNodes;
 	bool bResult = FindHordePos( bNorth, candidateNodes, m_vecHordePosition, m_angHordeAngle );
+	if ( !bResult && rd_horde_retry_on_fail.GetBool() )
+	{
+		CUtlVector<int> &candidateNodes2 = bNorth ? m_southCandidateNodes : m_northCandidateNodes;
+		bResult = candidateNodes2.Count() > 0 && FindHordePos( !bNorth, candidateNodes2, m_vecHordePosition, m_angHordeAngle );
+	}
 	if ( rd_horde_two_sided.GetBool() )
 	{
 		CUtlVector<int> &candidateNodes2 = bNorth ? m_southCandidateNodes : m_northCandidateNodes;
