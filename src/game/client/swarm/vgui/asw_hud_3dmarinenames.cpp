@@ -1419,13 +1419,23 @@ bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercen
 	};
 	vgui::surface()->DrawTexturedPolygon(4, barpoints);
 
-	if ( rd_ammo_counter_under_marine.GetBool() && !FStrEq( "asw_weapon_chainsaw", pWeapon->GetClassname() ) )
+	if ( rd_ammo_counter_under_marine.GetBool() )
 	{
 		wchar_t wszMarineAmmo[ 12 ];
 		if ( rd_ammo_counter_under_marine_show_max_ammo.GetBool() )
-			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
+		{
+			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
+				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"\u221E/\u221E"); //infinity symbol
+			else
+				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1());
+		}
 		else
-			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
+		{
+			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
+				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"\u221E");
+			else
+				V_snwprintf(wszMarineAmmo, sizeof(wszMarineAmmo), L"%d", pWeapon->Clip1());
+		}
 
 		int nAmmoCounterLength = Q_wcslen( wszMarineAmmo );
 		int nAmmoCounterWidth = 0, nAmmoCounterHeight = 0;
