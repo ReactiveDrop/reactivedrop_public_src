@@ -320,16 +320,25 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 		bNorth = true;
 	}
 
-	CUtlVector<int> &candidateNodes = bNorth ? m_northCandidateNodes : m_southCandidateNodes;
+	CUtlVector<int> *candidateNodes = bNorth ? &m_northCandidateNodes : &m_southCandidateNodes;
 
-	if ( candidateNodes.Count() <= 0 )
+	if ( candidateNodes->Count() <= 0 )
 		return false;
 
-	int iMaxTries = 1;
-	for ( int i=0 ; i<iMaxTries ; i++ )
+	int iMaxTries = 2;
+	for ( int i = 0 ; i < iMaxTries ; i++ )
 	{
-		int iChosen = RandomInt( 0, candidateNodes.Count() - 1);
-		CAI_Node *pNode = GetNetwork()->GetNode( candidateNodes[iChosen] );
+		// try to spawn from another direction
+		if ( 1 == i )
+		{
+			candidateNodes = bNorth ? &m_southCandidateNodes : &m_northCandidateNodes;
+			if ( candidateNodes->Count() <= 0 )
+				return false;
+			bNorth = !bNorth;
+		}
+
+		int iChosen = RandomInt( 0, candidateNodes->Count() - 1);
+		CAI_Node *pNode = GetNetwork()->GetNode( (*candidateNodes)[iChosen] );
 		if ( !pNode )
 			continue;
 
