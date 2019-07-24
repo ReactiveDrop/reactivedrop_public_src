@@ -1023,11 +1023,12 @@ bool CASW_Buzzer::OverrideMove( float flInterval )
 		MaintainGroundHeight();
 	}
 
+	// reactivedrop: commented, buzzers have no SOUND_DANGER, which results into "Could not AllocSound() for InsertSound() (Game DLL)" spam in console
 	// So cops, etc. will try to avoid them
-	if ( !HasSpawnFlags( SF_ASW_BUZZER_NO_DANGER_SOUNDS ) && !m_bHeld )
-	{
-		CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin(), 75, flInterval, this );
-	}
+//	if ( !HasSpawnFlags( SF_ASW_BUZZER_NO_DANGER_SOUNDS ) && !m_bHeld )
+//	{
+//		CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin(), 75, flInterval, this );
+//	}
 
 	// -----------------------------------------------------------------
 	//  If I'm being forced to move somewhere
