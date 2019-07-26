@@ -27,7 +27,7 @@ ConVar joy_pan_camera("joy_pan_camera", "0", FCVAR_ARCHIVE);
 ConVar asw_ground_secondary("asw_ground_secondary", "1", FCVAR_NONE, "Set to 1 to make marines aim grenades at the floor instead of firing them straight");
 extern ConVar rd_ground_shooting;
 // BenLubar(spectator-mouse)
-ConVar rd_networked_mouse("rd_networked_mouse", "1", FCVAR_NONE, "Send the mouse position to the server for spectating");
+ConVar rd_networked_mouse( "rd_networked_mouse", "1", FCVAR_DEVELOPMENTONLY, "Send the mouse position to the server for spectating" );
 
 static  kbutton_t	in_holdorder;
 
