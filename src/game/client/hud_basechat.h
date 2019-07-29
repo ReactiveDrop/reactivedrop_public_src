@@ -172,6 +172,7 @@ public:
 
 	virtual void	ApplySchemeSettings(vgui::IScheme *pScheme);
 	virtual void Paint();
+	virtual void OnKeyCodeTyped(vgui::KeyCode code);
 };
 
 class CHudChatFilterButton : public vgui::Button
@@ -284,6 +285,24 @@ public:
 
 	bool			IsVoiceSubtitle( void ) { return m_bEnteringVoice; }
 	void			SetVoiceSubtitleState( bool bState ) { m_bEnteringVoice = bState; }
+	
+	virtual void OnKeyCodeTyped(vgui::KeyCode code)
+	{
+		if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
+		{
+			if (code != KEY_ESCAPE)
+			{
+				Send();
+			}
+
+			// End message mode.
+			StopMessageMode();
+		}
+		else
+		{
+			BaseClass::OnKeyCodeTyped(code);
+		}
+	}
 
 protected:
 	CBaseHudChatLine		*FindUnusedChatLine( void );

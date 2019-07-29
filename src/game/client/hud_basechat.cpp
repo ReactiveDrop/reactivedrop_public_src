@@ -7,7 +7,6 @@
 
 #include "cbase.h"
 #include "hud_basechat.h"
-
 #include <vgui/IScheme.h>
 #include <vgui/IVGui.h>
 #include "iclientmode.h"
@@ -686,6 +685,32 @@ void CHudChatHistory::Paint()
 	}
 }
 
+void CHudChatHistory::OnKeyCodeTyped(vgui::KeyCode code)
+{
+	if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
+	{
+		CBaseHudChat* pChat = dynamic_cast<CBaseHudChat*>(GetParent());
+
+		if (code != KEY_ESCAPE)
+		{
+			if (pChat)
+			{
+				pChat->Send();
+			}
+		}
+
+		// End message mode.
+		if (pChat)
+		{
+			pChat->StopMessageMode();
+		}
+	}
+	else
+	{
+		BaseClass::OnKeyCodeTyped(code);
+	}
+}
+
 CBaseHudChat *g_pHudChat = NULL;
 
 CBaseHudChat *CBaseHudChat::GetHudChat( void )
@@ -734,6 +759,7 @@ CBaseHudChat::CBaseHudChat( const char *pElementName )
 	}
 
 	m_pChatHistory = new CHudChatHistory( this, "HudChatHistory" );
+	m_pChatHistory->SetParent( this );
 
 	CreateChatLines();
 	CreateChatInputLine();
