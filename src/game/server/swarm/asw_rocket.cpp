@@ -302,8 +302,9 @@ CBaseEntity	* CASW_Rocket::FindPotentialTarget( void ) const
 				continue;
 			}
 	
-			// don't autoaim onto colonists
-			if ( pEntity->Classify() == CLASS_ASW_COLONIST )
+			// don't autoaim onto colonists and npc_cscanner
+			if ( pEntity->Classify() == CLASS_ASW_COLONIST || 
+				 pEntity->Classify() == CLASS_SCANNER )
 				continue;
 
 			// don't autoaim onto marines
