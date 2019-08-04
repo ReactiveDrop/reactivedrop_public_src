@@ -588,7 +588,7 @@ void CNPC_CScanner::Precache(void)
 		PrecacheScriptSound( "NPC_CScanner.AttackFlash" );
 		PrecacheScriptSound( "NPC_CScanner.DiveBombFlyby" );
 		PrecacheScriptSound( "NPC_CScanner.DiveBomb" );
-		PrecacheScriptSound( "NPC_CScanner.DeployMine" );
+		//PrecacheScriptSound( "NPC_CScanner.DeployMine" ); // this sound is missing and not necessary
 
 		PrecacheScriptSound( "NPC_CScanner.FlyLoop" );
 	}
