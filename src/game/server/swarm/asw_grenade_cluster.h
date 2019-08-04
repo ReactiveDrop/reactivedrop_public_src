@@ -19,6 +19,7 @@ public:
 	static CASW_Grenade_Cluster *Cluster_Grenade_Create( float flDamage, float fRadius, int iClusters, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon );	
 	virtual float GetEarliestAOEDetonationTime();
 	virtual void SetClusters(int iClusters, bool bMaster = false);
+	virtual float GetEarliestTouchDetonationTime();
 
 	float m_fDetonateTime;
 	float m_fEarliestAOEDetonationTime;

@@ -281,3 +281,9 @@ void CASW_Grenade_Cluster::SetClusters(int iClusters, bool bMaster)
 		SetNextThink( m_fDetonateTime );
 	}
 }
+
+float CASW_Grenade_Cluster::GetEarliestTouchDetonationTime()
+{
+	extern ConVar rd_grenade_launcher_arm_time;
+	return gpGlobals->curtime + rd_grenade_launcher_arm_time.GetFloat();
+}

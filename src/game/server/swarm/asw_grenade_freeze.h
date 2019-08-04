@@ -15,6 +15,7 @@ public:
 	virtual void Precache();
 	virtual void DoExplosion();
 	virtual void CreateEffects();
+	virtual float GetEarliestTouchDetonationTime();
 
 	static CASW_Grenade_Freeze *Freeze_Grenade_Create( float flDamage, float flFreezeAmount, float fRadius, int iClusters, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon );
 

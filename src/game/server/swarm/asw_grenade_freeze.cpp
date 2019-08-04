@@ -70,3 +70,9 @@ void CASW_Grenade_Freeze::CreateEffects()
 	filter.SetIgnorePredictionCull( true );
 	DispatchParticleEffect( "grenade_freeze_main_trail", PATTACH_ABSORIGIN_FOLLOW, this, "fuse", false, -1, &filter );
 }
+
+// this function is required since we added CASW_Grenade_Cluster::GetEarliestTouchDetonationTime() and rd_grenade_launcher_arm_time would also affect freeze grenades
+float CASW_Grenade_Freeze::GetEarliestTouchDetonationTime()
+{
+	return gpGlobals->curtime - 1.0f;
+}

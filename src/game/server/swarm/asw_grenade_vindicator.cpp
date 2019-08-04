@@ -12,6 +12,7 @@
 #include "asw_player.h"
 #include "asw_achievements.h"
 #include "asw_boomer_blob.h"
+#include "asw_fx_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,6 +25,8 @@ ConVar asw_vindicator_grenade_min_detonation_time("asw_vindicator_grenade_min_de
 ConVar asw_vindicator_grenade_mass("asw_vindicator_grenade_mass", "10", FCVAR_CHEAT, "Mass of indendiary/cluster grenade");
 ConVar asw_vindicator_grenade_fuse("asw_vindicator_grenade_fuse", "3", FCVAR_CHEAT, "Fuse time on incendiary grenades");
 ConVar rd_grenade_collision_fix("rd_grenade_collision_fix", "1", FCVAR_CHEAT, "Set to 1 to not impact on dropped weapons & items");	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
+ConVar rd_grenade_launcher_arm_time( "rd_grenade_launcher_arm_time", "0", FCVAR_CHEAT, "Time in seconds until grenade launcher grenade is armed and can explode" );
+ConVar rd_grenade_launcher_projectile_direct_dmg( "rd_grenade_launcher_projectile_direct_dmg", "256", FCVAR_CHEAT, "The direct damage caused by non exploded grenade from GL" );
 
 const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.2f;
 
@@ -128,6 +131,30 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	// make sure we don't die on things we shouldn't
 	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
+
+	if ( m_bExplodeOnWorldContact && rd_grenade_launcher_arm_time.GetFloat() > 0 &&
+		 gpGlobals->curtime < m_fEarliestTouchDetonationTime )
+	{
+		if ( pOther->IsNPC() && pOther->Classify() != CLASS_ASW_MARINE )
+		{
+			if ( pOther->m_takedamage != DAMAGE_NO )
+			{
+				CTakeDamageInfo info( this, m_hFirer.Get(), rd_grenade_launcher_projectile_direct_dmg.GetFloat(), DMG_CRUSH );
+				info.SetWeapon( m_hCreatorWeapon );
+				pOther->TakeDamage( info );
+				UTIL_ASW_DroneBleed( GetAbsOrigin(), Vector( 0, 0, 1 ), 4 );
+			}
+		}
+		EmitSound( "Grenade.ImpactHard" );		
+
+		//UTIL_Remove( this );			// just removing the grenade is not looking good, let it bounce back and live for a few seconds
+		//StopParticleEffects( this );	// this removes smoke and glow, but for some reason it works only when marine is far from spawn point, tested on ocs2 map
+		SetTouch( NULL );
+
+		SetThink( &CASW_Grenade_Vindicator::SUB_Remove );
+		SetNextThink( gpGlobals->curtime + 5.0f );
+		return;
+	}
 
 	if ( m_bExplodeOnWorldContact )
 	{
