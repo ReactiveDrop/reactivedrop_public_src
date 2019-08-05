@@ -194,12 +194,6 @@ CNPC_Antlion::CNPC_Antlion( void )
 
 	m_pszAlienModelName = ANTLION_MODEL;
 
-	if ( ClassMatches( "npc_antlion_worker" ) )
-	{
-		AddSpawnFlags( SF_ANTLION_WORKER );
-		m_pszAlienModelName = ANTLION_WORKER_MODEL;
-	}
-
 	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
 	// have incorrect collision group and block other aliens
 	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
@@ -462,7 +456,7 @@ const char *pszAntlionGibs_Small[NUM_ANTLION_GIBS_SMALL] = {
 void CNPC_Antlion::Precache( void )
 {
 #ifdef HL2_EPISODIC
-	if ( IsWorker() )
+	if ( ClassMatches( "npc_antlion_worker" ) )
 	{
 		PrecacheModel( ANTLION_WORKER_MODEL );
 		PropBreakablePrecacheAll( MAKE_STRING( ANTLION_WORKER_MODEL ) );
