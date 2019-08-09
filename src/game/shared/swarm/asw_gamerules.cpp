@@ -5248,6 +5248,10 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	if ( collisionGroup0 == COLLISION_GROUP_NPC_SCRIPTED && collisionGroup1 == COLLISION_GROUP_NPC_SCRIPTED )
 		return false;
 
+	// reactivedrop: players don't collide with unborrowing aliens
+	if ( collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == COLLISION_GROUP_NPC_SCRIPTED )
+		return false;
+
 	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 ); 
 }
 
