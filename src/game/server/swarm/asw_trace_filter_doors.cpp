@@ -113,7 +113,9 @@ bool UTIL_ASW_BrushBlockingRoute( AI_Waypoint_t *pRoute, const int nCollisionMas
 
 		if ( tr.DidHit() )
 		{
-			return true;
+			CFuncBrush *pBrush = dynamic_cast< CFuncBrush* >( tr.m_pEnt );
+			if ( pBrush )
+				return true;
 		}
 
 		pLastPoint = pRoute;
