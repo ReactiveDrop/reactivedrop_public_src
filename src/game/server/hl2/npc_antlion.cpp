@@ -4410,7 +4410,9 @@ void CNPC_Antlion::DoPoisonBurst()
 		data.m_flScale = 128;
 		data.m_fFlags = ( SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE );
 
-		DispatchEffect( "WaterSurfaceExplosion", data );
+		// reactivedrop: disable this effect because it's not implemented
+		// TODO: port this effect from HL2, located at source-sdk-2013\sp\src\game\client\fx_explosion.cpp 
+		//DispatchEffect( "WaterSurfaceExplosion", data );
 	}
 
 	EmitSound( "NPC_Antlion.PoisonBurstExplode" );
