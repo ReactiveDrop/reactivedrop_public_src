@@ -135,7 +135,7 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	if ( m_bExplodeOnWorldContact && rd_grenade_launcher_arm_time.GetFloat() > 0 &&
 		 gpGlobals->curtime < m_fEarliestTouchDetonationTime )
 	{
-		if ( pOther->IsNPC() && pOther->Classify() != CLASS_ASW_MARINE )
+		if ( pOther->IsNPC() || pOther->Classify() == CLASS_ASW_EGG )
 		{
 			if ( pOther->m_takedamage != DAMAGE_NO )
 			{
