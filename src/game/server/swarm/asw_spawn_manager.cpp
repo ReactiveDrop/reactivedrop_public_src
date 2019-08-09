@@ -40,11 +40,12 @@ ConVar asw_max_alien_batch("asw_max_alien_batch", "10", FCVAR_CHEAT, "Max number
 ConVar asw_batch_interval("asw_batch_interval", "5", FCVAR_CHEAT, "Time between successive batches spawning in the same spot");
 ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Interval between updating candidate spawning nodes");
 
-ConVar rd_prespawn_antlionguard("rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
+ConVar rd_prespawn_antlionguard( "rd_prespawn_antlionguard", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled an npc_antlionguard will be prespawned somewhere on map");
 ConVar rd_horde_two_sided( "rd_horde_two_sided", "0", FCVAR_CHEAT, "If 1 and Onslaught is enabled a 2nd horde will come from opposite side, e.g. north and south" );
-ConVar rd_horde_retry_on_fail( "rd_horde_retry_on_fail", "1", FCVAR_NONE, "When set to 1 will retry to spawn horde from opposite direction if previous direction spawn failed." );
-ConVar rd_director_spawner_range("rd_director_spawner_range", "600", FCVAR_CHEAT, "Radius around expected spawn point that the director can look for spawners");
-ConVar rd_director_spawner_bias("rd_director_spawner_bias", "0.9", FCVAR_CHEAT, "0 (search from the node) to 1 (search from the nearest marine)", true, 0, true, 1);
+ConVar rd_horde_retry_on_fail( "rd_horde_retry_on_fail", "1", FCVAR_CHEAT, "When set to 1 will retry to spawn horde from opposite direction if previous direction spawn failed." );
+ConVar rd_horde_ignore_north_door( "rd_horde_ignore_north_door", "0", FCVAR_CHEAT, "If 1 hordes can spawn behind sealed and locked doors to the north from marines. Excluding indestructible doors." );
+ConVar rd_director_spawner_range( "rd_director_spawner_range", "600", FCVAR_CHEAT, "Radius around expected spawn point that the director can look for spawners");
+ConVar rd_director_spawner_bias( "rd_director_spawner_bias", "0.9", FCVAR_CHEAT, "0 (search from the node) to 1 (search from the nearest marine)", true, 0, true, 1);
 
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
@@ -360,7 +361,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 
 		// reactivedrop: preventing wanderers from spawning behind indestructible doors
 		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute(pRoute, true);
-		if ( bNorth && pDoor || (pDoor && pDoor->GetDoorType() == 2) ) // 2 - indestructible door
+		if ( ( bNorth && pDoor ) || ( pDoor && pDoor->GetDoorType() == 2 ) ) // 2 - indestructible door
 		{
 			DeleteRoute( pRoute );
 			continue;
@@ -606,7 +607,7 @@ bool CASW_Spawn_Manager::FindHordePos( bool bNorth, const CUtlVector<int> &candi
 
 		// reactivedrop: preventing hordes from spawning behind indestructible doors
 		CASW_Door *pDoor = UTIL_ASW_DoorBlockingRoute( pRoute, true );
-		if ( bNorth && pDoor || ( pDoor && pDoor->GetDoorType() == 2 ) ) // 2 - indestructible door
+		if ( ( bNorth && pDoor && !rd_horde_ignore_north_door.GetBool() ) || ( pDoor && pDoor->GetDoorType() == 2 ) ) // 2 - indestructible door
 		{
 			if ( asw_director_debug.GetInt() >= 2 )
 			{
