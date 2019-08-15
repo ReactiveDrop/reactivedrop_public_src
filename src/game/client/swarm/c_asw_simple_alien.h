@@ -20,6 +20,7 @@ public:
 	surfacedata_t* GetGroundSurface();
 	void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 	virtual void DoAlienFootstep( Vector &vecOrigin, float fvol );	
+	virtual float GetInterpolationAmount( int flags );
 
 	C_BaseAnimating * BecomeRagdollOnClient( void );
 	void PostDataUpdate( DataUpdateType_t updateType );
