@@ -51,7 +51,7 @@ LINK_ENTITY_TO_CLASS( asw_weapon_welder, CASW_Weapon_Welder );
 PRECACHE_WEAPON_REGISTER(asw_weapon_welder);
 
 #ifndef CLIENT_DLL
-
+ConVar asw_welding_scale("asw_welding_scale", "0.0f", FCVAR_CHEAT, "Overrides welding skills");
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
@@ -288,6 +288,11 @@ void CASW_Weapon_Welder::ItemPostFrame()
 		if ( fSkillScale < 1.0 )
 		{
 			fSkillScale = 0.6f;
+		}
+
+		if ( asw_welding_scale.GetFloat() > 0.0 )
+		{
+			fSkillScale = asw_welding_scale.GetFloat();
 		}
 
 		float fSealAmount = gpGlobals->frametime * fSkillScale;
