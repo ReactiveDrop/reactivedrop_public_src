@@ -2059,3 +2059,21 @@ void SpawnBuzzerAboveMe( const CCommand &args )
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
 static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Spawn a buzzer above marine.\n\tFormat: asw_spawn_buzzer <z height above marine>", FCVAR_CHEAT);
+
+void MarineStrafePush()
+{
+	if (!ASWGameRules() || !ASWGameRules()->ShouldAllowMarineStrafePush())
+		return;
+
+	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	if (!pPlayer)
+		return;
+
+	CASW_Marine *pMarine = pPlayer->GetMarine();
+	if (!pMarine)
+		return;
+
+	pMarine->StrafePush();
+}
+
+static ConCommand rda_strafepush("rda_strafepush", MarineStrafePush, "Strafe push current marine", 0);

@@ -105,6 +105,10 @@ static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT,
 
 ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE, "Attach unactive weapon model to marine's back");
 ConVar rda_marine_backpack_alt_position("rda_marine_backpack_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
+
+ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");
+ConVar rda_marine_strafe_push_hor_velocity("rda_marine_strafe_push_hor_velocity", "520", FCVAR_CHEAT, "Horizontal velocity for strafe push");
+ConVar rda_marine_strafe_push_vert_velocity("rda_marine_strafe_push_vert_velocity", "260", FCVAR_CHEAT, "Vertical velocity for strafe push");
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
 		{ \
@@ -5763,4 +5767,35 @@ void CASW_Marine::RemoveBackPackModel()
 CBaseEntity* CASW_Marine::GetBackPackModel()
 {
 	return m_BackPackWeaponBaseEntity;
+}
+
+void CASW_Marine::StrafePush()
+{
+	if (m_bKnockedOut)
+		return;
+
+	if (!IsAlive())
+		return;
+
+	if (rda_marine_strafe_allow_air.GetBool())
+	{
+		if (GetGroundEntity())
+			m_bAirStrafeUsed = false; //we are on the ground restore air strafe possibility
+		else
+		{
+			if (!m_bAirStrafeUsed)
+				m_bAirStrafeUsed = true;
+			else
+				return; //do not allow 2nd air strafe and so on since each one adds Z component so we able to go on high walls.
+		}
+	}
+	else
+	{
+		if (!GetGroundEntity())
+			return;
+	}
+
+	Vector forward;
+	AngleVectors(EyeAngles(), &forward);
+	SetAbsVelocity(rda_marine_strafe_push_hor_velocity.GetInt() * forward + Vector(0, 0, rda_marine_strafe_push_vert_velocity.GetInt()));
 }

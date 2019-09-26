@@ -181,6 +181,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_high_resolution_timer_ms ( "rd_dedicated_high_resolution_timer_ms", "1", FCVAR_NONE, "Acquire a high resolution timer with specified resolution." );
 	ConVar rda_auto_mission_failed_instant_restart("rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "If mission is failed server does not show mission failed screen but restarts mission");
 
+	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
 		// don't allow changing challenge convars from their desired values
@@ -9194,5 +9195,18 @@ void CAlienSwarm::CheckLeaderboardReady()
 	UserMessageBegin( filter, "RDLeaderboardReady" );
 	// no content, just a notification
 	MessageEnd();
+}
+#endif
+
+#ifdef GAME_DLL
+bool CAlienSwarm::ShouldAllowMarineStrafePush(void)
+{
+	if (!rda_marine_allow_strafe.GetBool())
+		return false;
+
+	if (ASWGameRules()->GetGameState() != ASW_GS_INGAME)
+		return false;
+
+	return true;
 }
 #endif
