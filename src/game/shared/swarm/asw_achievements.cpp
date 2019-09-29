@@ -1343,6 +1343,14 @@ class CAchievement_Hardcore : public CASW_Achievement
 			if ( LocalPlayerWasSpectating() )
 				return;
 
+			// reactivedrop: if player's marine didn't survive, don't award Hardcore achievement
+			C_ASW_Player *pLocalPlayer = static_cast< C_ASW_Player* >( C_BasePlayer::GetLocalPlayer() );
+			if ( !pLocalPlayer )
+				return;
+
+			if ( !pLocalPlayer->GetMarine() || pLocalPlayer->GetMarine()->GetHealth() <= 0 )
+				return;
+
 			const char *szMapName = event->GetString( "strMapName" );
 			for ( int i = 0; i < NELEMS( g_szAchievementMapNamesAllCoop ); i++ )
 			{
