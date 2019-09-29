@@ -4,6 +4,7 @@
 #include "asw_door.h"
 #include "ai_navtype.h"
 #include "ai_waypoint.h"
+#include "doors.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -111,11 +112,18 @@ bool UTIL_ASW_BrushBlockingRoute( AI_Waypoint_t *pRoute, const int nCollisionMas
 			DebugDrawLine( pLastPoint->GetPos() + vecShiftUp, pRoute->GetPos() + vecShiftUp, 255, 0, 0, true, 30.0f );
 		}
 
-		if ( tr.DidHit() )
+		if ( tr.DidHit() && tr.m_pEnt )
 		{
-			CFuncBrush *pBrush = dynamic_cast< CFuncBrush* >( tr.m_pEnt );
-			if ( pBrush )
+			Class_T iClass = tr.m_pEnt->Classify();
+
+			if ( CLASS_ASW_ALIEN_GOO	== iClass ||			// asw_alien_goo biomass
+				 CLASS_FUNC_MOVELINEAR	== iClass ||			// func_movelinear doors
+				 dynamic_cast< CFuncBrush* >( tr.m_pEnt ) ||	// func_brush airlocks
+				 dynamic_cast< CBaseDoor*  >( tr.m_pEnt )		// func_door doors
+				 )
+			{
 				return true;
+			}
 		}
 
 		pLastPoint = pRoute;
