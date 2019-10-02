@@ -1165,10 +1165,13 @@ void MainMenu::Activate()
 
 	// #iss-speaker-reset 
 	// restart sound engine here
-	static bool bRestartSoundEngine = true;
-	if ( bRestartSoundEngine )
+	static bool bRunOnce = true;
+	if ( bRunOnce )
+	{
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
-	bRestartSoundEngine = false;
+		engine->ClientCmd( "execifexists loadouts" );	// added support for loadout editor, by element109
+	}
+	bRunOnce = false;
 	//
 }
 
