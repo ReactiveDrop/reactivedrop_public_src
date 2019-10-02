@@ -463,8 +463,7 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamStats" ) )
 	{
 #if !defined( _X360 ) && !defined( NO_STEAM )
-		if ( steamapicontext && steamapicontext->SteamFriends() &&
-			steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
+		if ( steamapicontext && steamapicontext->SteamUser() )
 		{
 			if ( developer.GetBool() )
 			{
@@ -473,7 +472,7 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 			}
 			char statsWeb[128];
 			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://reactive-drop-stats.appspot.com/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
-			steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( statsWeb );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif
 	}
