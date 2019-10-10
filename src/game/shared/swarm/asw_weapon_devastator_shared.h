@@ -24,6 +24,7 @@ public:
 
 	virtual float GetWeaponDamage();
 	virtual float GetMovementScale();
+	virtual const Vector& GetAngularBulletSpread();
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();

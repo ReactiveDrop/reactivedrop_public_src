@@ -35,6 +35,8 @@ BEGIN_DATADESC(CASW_Weapon_Devastator)
 END_DATADESC()
 #endif
 
+ConVar rd_devastator_dynamic_bullet_spread( "rd_devastator_dynamic_bullet_spread", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Controls if crouching decreases bullet spread for devastator" );
+
 CASW_Weapon_Devastator::CASW_Weapon_Devastator()
 {
 }
@@ -103,4 +105,19 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Marine *pMarine, const Fire
 	{
 		pMarine->FirePenetratingBullets(info, 0, 1.0f, iSeed, false );
 	}
+}
+
+const Vector& CASW_Weapon_Devastator::GetAngularBulletSpread()
+{
+	static Vector cone( 22, 22, 22 );
+	static Vector cone_duck( 7, 7, 7 );
+
+	CASW_Marine *marine = GetMarine();
+
+	if ( marine && rd_devastator_dynamic_bullet_spread.GetBool() )
+	{
+		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking )
+			return cone_duck;
+	}
+	return cone;
 }
