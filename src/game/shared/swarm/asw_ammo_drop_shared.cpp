@@ -44,7 +44,7 @@ void CASW_Ammo_Drop_Shared::InitAmmoCosts()
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_GRENADE_LAUNCHER] = 20;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_SNIPER] = 20;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_DEAGLE] = 10;
-	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_DEVASTATOR] = 100;
+	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_DEVASTATOR] = 60;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_HEAVY_RIFLE] = 20;
 	ms_iAmmoUnitCost[ASW_AMMO_DROP_TYPE_MEDRIFLE] = 20;
 
