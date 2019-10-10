@@ -181,7 +181,7 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 				//pMarine->FirePenetratingBullets(info, 5, fPiercingChance);
 
 				//pMarine->FirePenetratingBullets(info, 5, 1.0f, i, false );
-				pMarine->FirePenetratingBullets(info, 0, 1.0f, i, false );
+				FireShotgunPellet( pMarine, info, i );
 			}
 		}
 		else	// projectile pellets
@@ -238,6 +238,11 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
 	m_fSlowTime = gpGlobals->curtime + 0.1f;
+}
+
+void CASW_Weapon_Shotgun::FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed )
+{
+	pMarine->FirePenetratingBullets( info, 0, 1.0f, iSeed, false );
 }
 
 void CASW_Weapon_Shotgun::Precache()

@@ -16,6 +16,7 @@
 #include "asw_shareddefs.h"
 
 class CASW_Shotgun_Pellet;
+class CASW_Marine;
 
 class CASW_Weapon_Shotgun : public CASW_Weapon
 {
@@ -38,7 +39,8 @@ public:
 	Activity	GetPrimaryAttackActivity( void );
 	virtual bool ShouldMarineMoveSlow();
 
-	void	PrimaryAttack();
+	virtual void PrimaryAttack();
+	virtual void FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed );	// shotgun specific, re-defined in CASW_Weapon_Devastator
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 
 	virtual const float GetAutoAimAmount() { return 0.26; }

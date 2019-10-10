@@ -19,12 +19,9 @@ public:
 	virtual ~CASW_Weapon_Devastator();
 	virtual void Precache();
 
-	virtual void SecondaryAttack() {}	// don't inherit secondary attack 
+	virtual void SecondaryAttack() {}	// don't inherit secondary attack
+	virtual void FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed );	// shotgun specific, used to add piercing only for Devastator
 
-	//virtual void PrimaryAttack();
-	//virtual void ItemPostFrame();
-
-	//virtual void FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo);
 	virtual float GetWeaponDamage();
 	virtual float GetMovementScale();
 
@@ -38,10 +35,6 @@ public:
 
 	virtual bool ShouldMarineMoveSlow();
 	virtual Class_T		Classify(void) { return (Class_T)CLASS_ASW_DEVASTATOR; }
-protected:
-	//CNetworkVar( bool, m_bCanShoot);	// marine moves slow until this moment
-	//bool m_bCanShoot;
-
 };
 
 #endif // asw_weapon_devastator_shared_h__

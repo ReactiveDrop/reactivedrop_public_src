@@ -13,6 +13,7 @@
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
 #include "asw_deathmatch_mode_light.h"
+#include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -45,13 +46,12 @@ CASW_Weapon_Devastator::~CASW_Weapon_Devastator()
 
 void CASW_Weapon_Devastator::Precache()
 {
-	PrecacheModel("swarm/sprites/whiteglow1.vmt");
-	PrecacheModel("swarm/sprites/greylaser1.vmt");
-	PrecacheScriptSound("ASW_Weapon.Empty");
-	PrecacheScriptSound("ASW_Weapon.Reload3");
-	PrecacheScriptSound("ASW_Weapon_Devastator.SingleFP");
-	PrecacheScriptSound("ASW_Weapon_Devastator.Single");
-
+	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
+	PrecacheModel( "swarm/sprites/greylaser1.vmt ");
+	PrecacheScriptSound( "ASW_Weapon.Empty" );
+	PrecacheScriptSound( "ASW_Weapon.Reload3" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.SingleFP" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.Single" );
 
 	BaseClass::Precache();
 }
@@ -86,5 +86,21 @@ bool CASW_Weapon_Devastator::ShouldMarineMoveSlow()
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1);
 
-	return (BaseClass::ShouldMarineMoveSlow() || bAttack1 );
+	return ( BaseClass::ShouldMarineMoveSlow() || bAttack1 );
+}
+
+void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed )
+{
+	float fPiercingChance = 0;
+	if (pMarine->GetMarineResource() && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
+		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_PIERCING);
+
+	if (fPiercingChance > 0)
+	{
+		pMarine->FirePenetratingBullets(info, 1, fPiercingChance, iSeed, false );
+	}
+	else
+	{
+		pMarine->FirePenetratingBullets(info, 0, 1.0f, iSeed, false );
+	}
 }
