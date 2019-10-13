@@ -168,6 +168,22 @@
 	BulletsInGun(integer) : "Bullets In Gun" : 200
 ]
 
-@SolidClass base(Targetname, EnableDisable) = func_rd_no_director_aliens : "A volume that prevents the director from spawning aliens on noedes within its bounds."
+@SolidClass base(Targetname, EnableDisable) = func_rd_no_director_aliens : "A volume that prevents the director from spawning aliens on nodes within its bounds."
 [
+]
+
+@PointClass base(Targetname, Parentname) iconsprite("editor/flat.vmt") = asw_health_bar :
+    "Displays health of parent entity"
+[
+	StartDisabled(boolean) : "Start Disabled" : 0 : ""
+	hideatfullhealth(boolean) : "Hide at Full Health" : 1 : "Health bar won't be displayed if its parent entity has full health"
+	
+	color(color255) : "Color" : "255 0 0 255" : "Color of this health bar." 
+	
+	scale(string) : "Scale" : "1.0" : "Scale multiplier of the sprite."
+	
+	// Inputs
+	input Disable(void) : "Hide the health bar. Won't be drawn until the 'Enable' input is received."
+	input Enable(void) : "Show the health bar."
+	input SetScale(float) : "Set the sprite's scale (0 - 8.0)."
 ]
