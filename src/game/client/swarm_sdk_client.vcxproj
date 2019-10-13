@@ -955,6 +955,7 @@ exit 1
     <ClCompile Include="swarm\c_asw_campaign_save.cpp" />
     <ClCompile Include="swarm\c_asw_clientragdoll.cpp" />
     <ClCompile Include="swarm\c_asw_client_corpse.cpp" />
+    <ClCompile Include="swarm\c_asw_colonist.cpp" />
     <ClCompile Include="swarm\c_asw_computer_area.cpp" />
     <ClCompile Include="swarm\c_asw_concommands.cpp" />
     <ClCompile Include="swarm\c_asw_debrief_stats.cpp" />

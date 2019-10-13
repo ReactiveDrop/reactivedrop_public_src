@@ -13,6 +13,7 @@ class CASW_Alien;
 class CASW_Colonist : public CAI_PlayerAlly, public IASW_Server_Usable_Entity
 {
 	DECLARE_CLASS( CASW_Colonist, CAI_PlayerAlly );
+	DECLARE_SERVERCLASS();
 public:
 	CASW_Colonist();
 	virtual ~CASW_Colonist();

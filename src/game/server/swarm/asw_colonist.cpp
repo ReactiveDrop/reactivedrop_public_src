@@ -53,6 +53,9 @@ BEGIN_ENT_SCRIPTDESC( CASW_Colonist, CBaseCombatCharacter, "Colonist" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the colonist." )
 END_SCRIPTDESC()
 
+IMPLEMENT_SERVERCLASS_ST( CASW_Colonist, DT_ASW_Colonist )
+END_SEND_TABLE()
+
 extern ConVar asw_debug_marine_damage;
 
 void CASW_Colonist::InputGiveWeapon( inputdata_t &inputdata )
