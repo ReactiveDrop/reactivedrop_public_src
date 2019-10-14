@@ -4155,14 +4155,14 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	if ( rd_clearhouse_on_mission_complete.GetBool() )
 		ClearHouse();
 
-	// freeze all the npcs
-	CAI_BaseNPC *npc = NULL;
-	while ( ( npc = gEntList.NextEntByClass( npc ) ) != NULL )
+	// freeze all the npcs, because Freeze(-1) doesn't work at all
+	// and Freeze(9999) makes NPCs look frozen we disable think function
+	CAI_BaseNPC *npc = gEntList.NextEntByClass( (CAI_BaseNPC *) NULL );
+	while ( npc )
 	{
-		// BenLubar(deathmatch-improvements): reduce network traffic by setting
-		// SCHED_WAIT_FOR_SCRIPT instead of SCHED_NPC_FREEZE
-		npc->SetState( NPC_STATE_IDLE );
-		npc->SetSchedule( SCHED_WAIT_FOR_SCRIPT );
+		npc->SetThink( NULL );
+		npc->StopLoopingSounds(); // helps against buzzers' noize, parasites still do idle sounds, but those are played on client
+		npc = gEntList.NextEntByClass( npc );
 	}
 	// disable all the spawners
 	CBaseEntity *ent = NULL;
