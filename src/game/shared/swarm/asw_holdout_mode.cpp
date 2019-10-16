@@ -535,6 +535,11 @@ void CASW_Holdout_Mode::ChangeHoldoutState( ASW_Holdout_State_t nNewState )
 				}
 			}
 			break;
+		case HOLDOUT_STATE_COMPLETE:
+			{
+				ASWGameRules()->MissionComplete( true );
+			}
+			break;
 	}
 }
 
