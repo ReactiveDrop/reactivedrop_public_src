@@ -725,6 +725,15 @@ CASW_Marine* UTIL_ASW_MarineCanSee(CASW_Marine_Resource* pMarineResource, const 
 	if (pMarineResource->GetHealthPercent() <=0 || !pMarineResource->IsAlive())	// if we're dead, take the corpse position
 	{
 		vecMarinePos = pMarineResource->m_vecDeathPosition;
+		// reactivedrop: this makes sure that dead marine is not considered as the one
+		// who sees aliens, thus preventing them from going into sleep state.
+		// This fixes the bug: When marine dies to a horde and other marines are far
+		// enough for horde to see them, the horde gets stuck in non-sleeping state
+		// and thus not decreasing the ammount of non-sleeping aliens. This leads to
+		// no hordes and wanderers being spawned at all and can be exploited on hard
+		// challenges and maps like Survival Desert. 
+		if ( gpGlobals->curtime > pMarineResource->m_fDeathTime + 7.0f )	// After 6 seconds of marine's death player is switched to spectating alive marines, so after 7 seconds it is safe to make aliens that killed this marine enter the sleep state
+			return NULL;
 	}
 	else
 #endif
