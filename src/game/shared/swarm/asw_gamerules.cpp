@@ -170,6 +170,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kick players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
+	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -5168,6 +5169,14 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			return false;
 		}
 	}
+
+#ifndef CLIENT_DLL	// this isn't necessary on client
+	// reactivedrop: sentries don't collide with aliens
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_SENTRY && !rd_sentry_block_aliens.GetBool() )
+	{
+		return false;
+	}
+#endif
 
 	// sentry projectiles only collide with doors, walls and shieldbugs
 	if ( collisionGroup1 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE )
