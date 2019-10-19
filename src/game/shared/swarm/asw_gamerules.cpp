@@ -7046,7 +7046,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 			}
 
 			char buffer[256];
-			Q_snprintf(buffer, sizeof(buffer), "kickid %d\n", pOtherPlayer->GetUserID());
+			Q_snprintf(buffer, sizeof(buffer), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID());
 			Msg("sending command: %s\n", buffer);
 			engine->ServerCommand(buffer);			
 
