@@ -92,6 +92,7 @@
 	#include "asw_achievements.h"
 	#include "asw_director.h"
 	#include "team.h"
+	#include "asw_pickup_equipment.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -4928,10 +4929,10 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
 							if ( iFragsForMedkit && nFrags % iFragsForMedkit == 0 )														//DRAVEN ~FRAGD0~
 							{
-								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName( "asw_weapon_medkit" );
-								UTIL_SetOrigin( pMedkit, vecDest );
+								CASW_Pickup_Weapon_Medkit *pMedkit = (CASW_Pickup_Weapon_Medkit *) CreateEntityByName( "asw_pickup_medkit" );
+								pMedkit->m_iBulletsInGun = 1;
+								UTIL_SetOrigin( pMedkit, pAlien->GetAbsOrigin() + Vector( 0, 0, 10) ); // raise it slightly up, so it doesn't spawn inside ground
 								DispatchSpawn( pMedkit );
-								//pMedkit->Spawn();
 							}
 
 							if ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
