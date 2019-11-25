@@ -362,6 +362,14 @@
 		"entindex"		"long"		// entindex of the marine
 	}
 	
+	"marine_healed"
+	{
+		"medic_entindex"	"long"		// entindex of the marine medic
+		"patient_entindex"	"long"		// entindex of the marine patient 
+		"amount_healed"		"short"		// amount of meds given
+		"weapon_class"		"string"	// classname of the healing device
+	}
+
 	"colonist_spawn"
 	{
 		"entindex"		"long"		// entindex of the colonist

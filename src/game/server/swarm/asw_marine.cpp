@@ -3658,6 +3658,17 @@ void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Mari
 		if (GetMarineResource())
 			GetMarineResource()->m_iHealCount++;
 
+		// Fire event
+		IGameEvent * event = gameeventmanager->CreateEvent("marine_healed");
+		if (event)
+		{
+			event->SetInt("medic_entindex", (pMedic ? pMedic->entindex() : -1));
+			event->SetInt("patient_entindex", entindex());
+			event->SetInt("amount_healed", iHealAmount);
+			event->SetString("weapon_class", (pHealingWeapon ? pHealingWeapon->GetClassname() : ""));
+			gameeventmanager->FireEvent(event);
+		}
+
 		// Fire heal event for stat tracking
 		CASW_GameStats.Event_MarineHealed( this , iHealAmount, pHealingWeapon );
 	}
