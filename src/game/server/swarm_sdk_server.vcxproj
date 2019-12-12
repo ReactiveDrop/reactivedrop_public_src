@@ -598,8 +598,6 @@ exit 1
     <ClCompile Include="..\shared\weapon_parse.cpp" />
     <ClCompile Include="..\shared\weapon_proficiency.cpp" />
     <ClCompile Include="ai_activity.cpp" />
-    <ClCompile Include="ai_addon.cpp" />
-    <ClCompile Include="ai_agent.cpp" />
     <ClCompile Include="ai_baseactor.cpp" />
     <ClCompile Include="ai_basehumanoid.cpp" />
     <ClCompile Include="ai_basenpc.cpp" />
@@ -1582,8 +1580,6 @@ exit 1
     <ClInclude Include="..\shared\vscript_shared.h" />
     <ClInclude Include="..\shared\weapon_parse.h" />
     <ClInclude Include="..\shared\weapon_proficiency.h" />
-    <ClInclude Include="ai_addon.h" />
-    <ClInclude Include="ai_agent.h" />
     <ClInclude Include="ai_baseactor.h" />
     <ClInclude Include="ai_basehumanoid.h" />
     <ClInclude Include="ai_basenpc.h" />

@@ -327,8 +327,6 @@ public:
  	virtual string_t		GetModelName( void ) const;
 	const char				*ScriptGetModelName( void ) const;
 
-	virtual string_t		GetAIAddOn( void ) const;
-
 public:
 	// virtual methods for derived classes to override
 	virtual bool			TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
@@ -1241,8 +1239,6 @@ public:
 
 	model_t					*GetModel( void );
 
-	void					SetAIAddOn( string_t name );
-
 	// These methods return a *world-aligned* box relative to the absorigin of the entity.
 	// This is used for collision purposes and is *not* guaranteed
 	// to surround the entire entity's visual representation
@@ -1669,7 +1665,6 @@ protected:
 	float			m_flGroundChangeTime; // Time that the ground entity changed
 	
 	string_t		m_ModelName;
-	string_t		m_AIAddOn;
 
 	// Velocity of the thing we're standing on (world space)
 	CNetworkVarForDerived( Vector, m_vecBaseVelocity );
@@ -2618,20 +2613,6 @@ inline int CBaseEntity::GetModelIndex( void ) const
 	return m_nModelIndex;
 }
 
-
-//-----------------------------------------------------------------------------
-// AddOn related methods
-//-----------------------------------------------------------------------------
-
-inline void CBaseEntity::SetAIAddOn( string_t addonName )
-{
-	m_AIAddOn = addonName;
-}
-
-inline string_t CBaseEntity::GetAIAddOn( void ) const
-{
-	return m_AIAddOn;
-}
 
 //-----------------------------------------------------------------------------
 // Methods relating to bounds

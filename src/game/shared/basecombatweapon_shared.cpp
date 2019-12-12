@@ -169,11 +169,6 @@ void CBaseCombatWeapon::Spawn( void )
 	SetModel( GetWorldModel() );
 
 #if !defined( CLIENT_DLL )
-	if ( GetWpnData().szAIAddOn[ 0 ] != '\0' )
-	{
-		SetAIAddOn( AllocPooledString( GetWpnData().szAIAddOn ) );
-	}
-
 	if( IsX360() )
 	{
 		AddEffects( EF_ITEM_BLINK );

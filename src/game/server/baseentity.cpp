@@ -2291,8 +2291,6 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_FIELD( m_flGroundChangeTime, FIELD_TIME ),
 	DEFINE_GLOBAL_KEYFIELD( m_ModelName, FIELD_MODELNAME, "model" ),
 
-	DEFINE_KEYFIELD( m_AIAddOn, FIELD_STRING, "addon" ),
-	
 	DEFINE_KEYFIELD( m_vecBaseVelocity, FIELD_VECTOR, "basevelocity" ),
 	DEFINE_FIELD( m_vecAbsVelocity, FIELD_VECTOR ),
 	DEFINE_KEYFIELD( m_vecAngVelocity, FIELD_VECTOR, "avelocity" ),

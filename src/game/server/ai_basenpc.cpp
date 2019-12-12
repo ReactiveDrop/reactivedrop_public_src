@@ -88,7 +88,6 @@
 #include "death_pose.h"
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
-#include "ai_addon.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -10909,7 +10908,6 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"UnholsterWeapon", InputUnholsterWeapon ),
 	DEFINE_INPUTFUNC( FIELD_STRING,	"ForceInteractionWithNPC", InputForceInteractionWithNPC ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "UpdateEnemyMemory", InputUpdateEnemyMemory ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "CreateAddon", InputCreateAddon ),
 
 	// Function pointers
 	DEFINE_USEFUNC( NPCUse ),
@@ -11861,29 +11859,6 @@ void CAI_BaseNPC::InputUpdateEnemyMemory( inputdata_t &inputdata )
 	if( pEnemy )
 	{
 		UpdateEnemyMemory( pEnemy, pEnemy->GetAbsOrigin(), this );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// create an addon and attach to npc
-//-----------------------------------------------------------------------------
-void CAI_BaseNPC::InputCreateAddon( inputdata_t &inputdata )
-{
-	Vector vecSpawnOrigin = GetLocalOrigin();
-
-	const char *pszAddonName = inputdata.value.String();
-
-	// Spawn the addon
-	CBaseEntity *pItem = (CBaseEntity *)CreateEntityByName( pszAddonName );
-
-	if ( pItem )
-	{
-		pItem->SetAbsOrigin( vecSpawnOrigin );
-
-		DispatchSpawn( pItem );
-
-		// install the addon
-		assert_cast< CAI_AddOn *>( pItem )->Install( this );
 	}
 }
 

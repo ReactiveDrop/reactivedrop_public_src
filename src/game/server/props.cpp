@@ -2662,29 +2662,6 @@ void CPhysicsProp::Spawn( )
 		SetFadeDistance( -1, 0 );
 		DisableAutoFade();
 	}
-	
-	// Set the AI AddOn from the QC key values
-	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
-	{
-		KeyValues *pkvPropData = modelKeyValues->FindKey( "ai_addon" );
-		if ( pkvPropData )
-		{
-			SetAIAddOn( AllocPooledString( pkvPropData->GetString() ) );
-			modelKeyValues->deleteThis();
-			return;
-		}
-		else
-		{
-			if ( GetAIAddOn().ToCStr()[ 0 ] == '\0' )
-			{
-				// No behavior, so set the default that this thing can be thrown
-				SetAIAddOn( MAKE_STRING( "ai_addon_thrownprojectile" ) );
-			}
-		}
-	}
-
-	modelKeyValues->deleteThis();
 
 	// Do prop_physics_multiplayer stuff here
 	// if no physicsmode was defined by .QC or propdata.txt, 

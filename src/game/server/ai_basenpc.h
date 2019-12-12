@@ -1892,7 +1892,6 @@ public:
 	void InputForgetEntity( inputdata_t &inputdata );
 	void InputIgnoreDangerSounds( inputdata_t &inputdata );
 	void InputUpdateEnemyMemory( inputdata_t &inputdata );
-	void InputCreateAddon( inputdata_t &inputdata );
 
 	//---------------------------------
 	
@@ -2527,7 +2526,7 @@ typedef CHandle<CAI_BaseNPC> AIHANDLE;
 		{ \
 			if ( CNpc::gm_SchedLoadStatus.fValid ) \
 			{ \
-				CNpc::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( pszClassName, schedulesToLoad[i], &AccessClassScheduleIdSpaceDirect(), GetSchedulingSymbols() ); \
+				CNpc::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( pszClassName, schedulesToLoad[i], &AccessClassScheduleIdSpaceDirect() ); \
 			} \
 			else \
 				break; \
@@ -2594,7 +2593,7 @@ inline bool ValidateConditionLimits( const char *pszNewCondition )
 		{ \
 			if ( CNpc::gm_SchedLoadStatus.fValid ) \
 			{ \
-				CNpc::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( pszClassName, schedulesToLoad[i], &AccessClassScheduleIdSpaceDirect(), GetSchedulingSymbols() ); \
+				CNpc::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( pszClassName, schedulesToLoad[i], &AccessClassScheduleIdSpaceDirect() ); \
 			} \
 			else \
 				break; \
