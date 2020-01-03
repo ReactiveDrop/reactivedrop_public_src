@@ -189,6 +189,8 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 		}
 
 		event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+		event->SetInt( "entindex", pAmmoDrop->entindex() );
+		event->SetInt( "marine", ( pMarine ? pMarine->entindex() : 0 ) );
 
 		gameeventmanager->FireEvent( event );
 	}

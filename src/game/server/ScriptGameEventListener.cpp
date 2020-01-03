@@ -520,6 +520,12 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "weapon_offhand_activate" );
 	ListenForGameEvent( "laser_mine_active" );
 	ListenForGameEvent( "cluster_grenade_create" );
+	ListenForGameEvent( "tesla_trap_placed" );
+	ListenForGameEvent( "fire_mine_placed" );
+	ListenForGameEvent( "laser_mine_placed" );
+	ListenForGameEvent( "gas_grenade_placed" );
+	ListenForGameEvent( "flare_placed" );
+	ListenForGameEvent( "rocket_fired" );
 
 	return true;
 }
