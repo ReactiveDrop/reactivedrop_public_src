@@ -86,6 +86,9 @@
 #include "asw_util_shared.h"
 #include "nb_leaderboard_panel_points.h"
 #include "vadvancedsettings.h"
+#include "baseviewport.h"
+#include "asw_hud_chat.h"
+#include "vguisystemmoduleloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -844,6 +847,11 @@ void CBaseModPanel::CloseAllWindows( int ePolicyFlags )
 		// Close the window
 		pFrame->Close();
 		m_Frames[i] = NULL;
+	}
+
+	if (IsPC())
+	{
+		g_VModuleLoader.ClosePlatformModuleWindows();
 	}
 
 	if ( UI_IsDebug() )
