@@ -22,6 +22,7 @@
 CASW_Steamstats g_ASW_Steamstats;
 
 ConVar asw_stats_leaderboard_debug( "asw_stats_leaderboard_debug", "0", FCVAR_NONE );
+ConVar rd_leaderboard_enabled_client( "rd_leaderboard_enabled_client", "1", FCVAR_ARCHIVE, "If 0 player leaderboard scores will not be set or updated on mission complete. Client only." );
 
 namespace 
 {
@@ -1052,7 +1053,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	}
 
 	extern ConVar rd_leaderboard_enabled;
-	if ( !rd_leaderboard_enabled.GetBool() )
+	if ( !rd_leaderboard_enabled.GetBool() || !rd_leaderboard_enabled_client.GetBool() )
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{
