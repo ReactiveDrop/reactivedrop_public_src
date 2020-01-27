@@ -119,6 +119,7 @@ END_SEND_TABLE()
 extern ConVar asw_leadership_radius;
 extern ConVar asw_debug_marine_damage;
 extern ConVar asw_debug_medals;
+ConVar rd_damage_buff_scale( "rd_damage_buff_scale", "2.0", FCVAR_CHEAT, "Damage amplifier's damage factor. 2.0 by default" );
 
 CASW_Marine_Resource::CASW_Marine_Resource()
 {
@@ -361,7 +362,7 @@ float CASW_Marine_Resource::OnFired_GetDamageScale()
 	CASW_Marine *pMarine = GetMarineEntity();
 	if ( pMarine && pMarine->GetDamageBuffEndTime() > gpGlobals->curtime )
 	{
-		flDamageScale *= 2.0f;
+		flDamageScale *= rd_damage_buff_scale.GetFloat();// 2.0f;
 	}
 
 	//m_iLeadershipCount++;
