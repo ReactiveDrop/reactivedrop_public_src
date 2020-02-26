@@ -270,7 +270,7 @@ END_DATADESC()
 #endif /* not client */
 
 ConVar asw_healgrenade_refire_time( "asw_healgrenade_refire_time", "1.0f", FCVAR_REPLICATED | FCVAR_CHEAT, "Time between starting a new healgrenade throw" );
-
+ConVar rd_infinite_healgrenade( "rd_infinite_healgrenade", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Set to 1 to enable infinite heal beacons" );
 
 void CASW_Weapon_HealGrenade::Precache()
 {
@@ -372,8 +372,11 @@ void CASW_Weapon_HealGrenade::PrimaryAttack( void )
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MEDKIT);
 #endif
 
-	// decrement ammo
-	m_iClip1 -= 1;
+	if ( !rd_infinite_healgrenade.GetBool() )
+	{
+		// decrement ammo
+		m_iClip1 -= 1;
+	}
 
 #ifndef CLIENT_DLL
 	// destroy if empty
