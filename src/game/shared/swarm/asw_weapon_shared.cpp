@@ -32,6 +32,7 @@
 #include "asw_marine_skills.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #include "asw_weapon_fire_extinguisher_shared.h"
+#include "asw_weapon_healgrenade_shared.h"
 #include "asw_weapon_heal_gun_shared.h"
 #include "asw_weapon_medrifle_shared.h"
 #include "asw_gamerules.h"
@@ -507,7 +508,7 @@ void CASW_Weapon::ItemPostFrame( void )
 	{
 		CBaseCombatWeapon *pWeapon = pOwner->GetActiveWeapon();
 		
-		if ( !dynamic_cast< CASW_Weapon_Heal_Gun* >( pWeapon ) && !dynamic_cast< CASW_Weapon_FireExtinguisher* >( pWeapon ) )
+		if ( !dynamic_cast< CASW_Weapon_Heal_Gun* >( pWeapon ) && !dynamic_cast< CASW_Weapon_FireExtinguisher* >( pWeapon ) && !dynamic_cast< CASW_Weapon_HealGrenade* >( pWeapon ) )
 		{
 			pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
 			int iPrimaryAmmoType = pWeapon->GetPrimaryAmmoType();
