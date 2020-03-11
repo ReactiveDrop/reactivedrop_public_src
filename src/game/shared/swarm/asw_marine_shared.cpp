@@ -80,6 +80,14 @@ ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_C
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
+ConVar rd_explosive_shotgun_pellets( "rd_explosive_shotgun_pellets", "0", FCVAR_CHEAT );
+ConVar rd_explosive_vindicator_pellets( "rd_explosive_vindicator_pellets", "0", FCVAR_CHEAT );
+ConVar rd_explosive_minigun_bullets( "rd_explosive_minigun_bullets", "0", FCVAR_CHEAT );
+ConVar rd_explosive_autogun_bullets( "rd_explosive_autogun_bullets", "0", FCVAR_CHEAT );
+ConVar rd_explosive_railgun_bullets( "rd_explosive_railgun_bullets", "0", FCVAR_CHEAT);
+ConVar rd_explosive_bullets( "rd_explosive_bullets", "0", FCVAR_CHEAT);
+ConVar rd_explosive_bullets_dmg( "rd_explosive_bullets_dmg", "50", FCVAR_CHEAT);
+ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_CHEAT);
 #endif
 
 static const float ASW_MARINE_MELEE_HULL_TRACE_Z = 32.0f;
@@ -544,6 +552,9 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 
 		DispatchParticleEffect( "explosion_air_small", vecExplosionPos, vec3_angle );
 
+		#ifndef CLIENT_DLL
+		DevMsg("CASW_Marine::DoDamagePowerupEffects()\n");
+		#endif
 		RadiusDamage( CTakeDamageInfo( this, this, iExplosionDamage, DMG_BLAST ), vecExplosionPos, flExplosionRadius, CLASS_NONE, NULL );
 
 		te->SetSuppressHost( pHelpHelpImBeingSupressed );
@@ -1023,6 +1034,22 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 	}
 
 #ifdef GAME_DLL
+	if ( rd_explosive_bullets.GetBool() )
+	{
+		CBaseEntity *pHelpHelpImBeingSupressed = (CBaseEntity*)te->GetSuppressHost();
+		te->SetSuppressHost(NULL);
+
+		CPASFilter filter(tr.endpos);
+		CBaseEntity::EmitSound(filter, 0, "ASWRocket.Explosion", &tr.endpos);
+		DispatchParticleEffect("explosion_air_small", tr.endpos, vec3_angle);
+
+		CTakeDamageInfo info2(this, this, rd_explosive_bullets_dmg.GetFloat(), DMG_BLAST);
+		info2.SetWeapon(info.m_pAttacker);
+		ASWGameRules()->RadiusDamage(info2, tr.endpos, rd_explosive_bullets_radius.GetFloat(), CLASS_NONE, NULL);
+	}
+#endif
+
+#ifdef GAME_DLL
 	ApplyMultiDamage();
 #endif
 }
@@ -1225,6 +1252,27 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			int soundEntChannel = ( info.m_nFlags&FIRE_BULLETS_TEMPORARY_DANGER_SOUND ) ? SOUNDENT_CHANNEL_BULLET_IMPACT : SOUNDENT_CHANNEL_UNSPECIFIED;
 
 			CSoundEnt::InsertSound( SOUND_BULLET_IMPACT, tr.endpos, 200, 0.5, this, soundEntChannel );
+
+			if ( GetActiveASWWeapon() && ( 
+				( rd_explosive_shotgun_pellets.GetBool()	&& GetActiveASWWeapon()->Classify() == CLASS_ASW_SHOTGUN ) ||
+				( rd_explosive_vindicator_pellets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_ASSAULT_SHOTGUN ) ||
+				( rd_explosive_minigun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_MINIGUN ) || 
+				( rd_explosive_autogun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_AUTOGUN ) ||
+				( rd_explosive_railgun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_RAILGUN )
+										)
+			   )
+			{
+				CBaseEntity *pHelpHelpImBeingSupressed = (CBaseEntity*)te->GetSuppressHost();
+				te->SetSuppressHost(NULL);
+
+				CPASFilter filter(tr.endpos);
+				CBaseEntity::EmitSound(filter, 0, "ASWRocket.Explosion", &tr.endpos);
+				DispatchParticleEffect("explosion_air_small", tr.endpos, vec3_angle);
+
+				CTakeDamageInfo info2(this, this, rd_explosive_bullets_dmg.GetFloat(), DMG_BLAST);
+				info2.SetWeapon(info.m_pAttacker);
+				ASWGameRules()->RadiusDamage(info2, tr.endpos, rd_explosive_bullets_radius.GetFloat(), CLASS_NONE, NULL);
+			}
 #endif
 
 			// See if the bullet ended up underwater + started out of the water
