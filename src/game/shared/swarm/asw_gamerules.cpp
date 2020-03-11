@@ -7095,6 +7095,11 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	if (iVoteType <= ASW_VOTE_SAVED_CAMPAIGN || iVoteType > ASW_VOTE_CHANGE_MISSION)
 		return;
 
+	if ( !Q_stricmp( szVoteName, "lobby" ) )
+	{
+		return;
+	}
+
 	// Check this is a valid vote, i.e.:
 	//   if it's a map change, check that map exists
 	//   if it's a campaign change, check that campaign exists
