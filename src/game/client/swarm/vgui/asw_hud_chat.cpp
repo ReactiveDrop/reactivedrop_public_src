@@ -26,8 +26,13 @@ DECLARE_HUD_MESSAGE( CHudChat, TextMsg );
 
 //Color g_ASWColorGrey( 66, 142, 192, 255 );
 Color g_ASWColorGrey( 255, 255, 0, 255 );
-Color g_ASWColorWhite( 255, 255, 255, 255 );
+Color g_ASWColorWhite( 0, 255, 0, 255 );
 extern ConVar asw_hud_alpha;
+
+ConVar cl_chatcolor_r( "cl_chatcolor_r", "255", FCVAR_ARCHIVE, "Red component of chat messages color", true, 0.f, true, 255.f );
+ConVar cl_chatcolor_g( "cl_chatcolor_g", "255", FCVAR_ARCHIVE, "Green component of chat messages color", true, 0.f, true, 255.f );
+ConVar cl_chatcolor_b( "cl_chatcolor_b", "255", FCVAR_ARCHIVE, "Blue component of chat messages color", true, 0.f, true, 255.f );
+
 
 //=====================
 //CHudChat
@@ -371,10 +376,10 @@ Color CHudChat::GetClientColor( int clientIndex )
 	}
 	else if( g_PR )
 	{
-		return g_ASWColorWhite;
+		return Color( cl_chatcolor_r.GetInt(), cl_chatcolor_g.GetInt(), cl_chatcolor_b.GetInt() );
 	}
 
-	return g_ASWColorWhite;
+	return Color( cl_chatcolor_r.GetInt(), cl_chatcolor_g.GetInt(), cl_chatcolor_b.GetInt() );;
 }
 
 void CHudChat::OnTick()
