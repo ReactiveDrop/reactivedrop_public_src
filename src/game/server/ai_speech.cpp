@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:
 //
@@ -1332,7 +1332,7 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 
 //-----------------------------------------------------------------------------
 
-CON_COMMAND( npc_speakall, "Force the npc to try and speak all their responses" )
+CON_COMMAND_F( npc_speakall, "Force the npc to try and speak all their responses", FCVAR_CHEAT )
 {
 	CBaseEntity *pEntity;
 

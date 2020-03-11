@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
+//====== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -334,7 +334,7 @@ void CC_DebugHistory_AddLine( const CCommand &args )
 	const char *pszLine = args[ 2 ];
 	AddDebugHistoryLine( iCategory, pszLine );
 }
-static ConCommand dbghist_addline( "dbghist_addline", CC_DebugHistory_AddLine, "Add a line to the debug history. Format: <category id> <line>", FCVAR_NONE );
+static ConCommand dbghist_addline( "dbghist_addline", CC_DebugHistory_AddLine, "Add a line to the debug history. Format: <category id> <line>", FCVAR_CHEAT );
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -362,5 +362,5 @@ static ConCommand dbghist_dump("dbghist_dump", CC_DebugHistory_Dump,
 							   "     2: Scene Print\n"
 							   "     3: Alyx Blind\n"
 							   "     4: Log of damage done to player",
-							   FCVAR_NONE );
+							   FCVAR_CHEAT );
 

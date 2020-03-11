@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -1877,7 +1877,7 @@ private:
 
 
 
-CON_COMMAND(report_entities, "Lists all entities")
+CON_COMMAND_F(report_entities, "Lists all entities", FCVAR_CHEAT)
 {
 	CSortedEntityList list;
 	CBaseEntity *pEntity = gEntList.FirstEnt();
@@ -1890,7 +1890,7 @@ CON_COMMAND(report_entities, "Lists all entities")
 }
 
 
-CON_COMMAND(report_touchlinks, "Lists all touchlinks")
+CON_COMMAND_F(report_touchlinks, "Lists all touchlinks", FCVAR_CHEAT)
 {
 	CSortedEntityList list;
 	CBaseEntity *pEntity = gEntList.FirstEnt();
@@ -1919,7 +1919,7 @@ CON_COMMAND(report_touchlinks, "Lists all touchlinks")
 	list.ReportEntityList();
 }
 
-CON_COMMAND(report_simthinklist, "Lists all simulating/thinking entities")
+CON_COMMAND_F(report_simthinklist, "Lists all simulating/thinking entities", FCVAR_CHEAT)
 {
 	CBaseEntity *pTmp[NUM_ENT_ENTRIES];
 	int count = SimThink_ListCopy( pTmp, ARRAYSIZE(pTmp) );

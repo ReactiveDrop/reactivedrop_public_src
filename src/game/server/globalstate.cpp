@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -225,7 +225,7 @@ int GlobalEntity_GetNumGlobals( void )
 	return gGlobalState.GetNumGlobals();
 }
 
-CON_COMMAND(dump_globals, "Dump all global entities/states")
+CON_COMMAND_F(dump_globals, "Dump all global entities/states", FCVAR_CHEAT)
 {
 	gGlobalState.DumpGlobals();
 }

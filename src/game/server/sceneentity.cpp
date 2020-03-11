@@ -5885,7 +5885,7 @@ static void ListRecentNPCSpeech( void )
 
 static ConCommand ListRecentNPCSpeechCmd( "listRecentNPCSpeech", ListRecentNPCSpeech, "Displays a list of the last 5 lines of speech from NPCs.", FCVAR_DONTRECORD|FCVAR_GAMEDLL );
 
-CON_COMMAND( scene_flush, "Flush all .vcds from the cache and reload from disk." )
+CON_COMMAND_F( scene_flush, "Flush all .vcds from the cache and reload from disk.", FCVAR_CHEAT )
 {
 	Msg( "Reloading\n" );
 	scenefilecache->Reload();

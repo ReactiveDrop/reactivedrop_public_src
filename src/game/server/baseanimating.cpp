@@ -1608,7 +1608,7 @@ void CBaseAnimating::InitStepHeightAdjust( void )
 // Purpose: Interpolates client IK floor position and drops entity down so that the feet will reach
 //-----------------------------------------------------------------------------
 
-ConVar npc_height_adjust( "npc_height_adjust", "1", FCVAR_ARCHIVE, "Enable test mode for ik height adjustment" );
+ConVar npc_height_adjust( "npc_height_adjust", "1", FCVAR_CHEAT, "Enable test mode for ik height adjustment" );
 
 void CBaseAnimating::UpdateStepOrigin()
 {
