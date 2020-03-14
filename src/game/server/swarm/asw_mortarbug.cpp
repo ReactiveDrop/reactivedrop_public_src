@@ -48,6 +48,7 @@ ConVar asw_mortarbug_face_target("asw_mortarbug_face_target", "1", FCVAR_CHEAT, 
 ConVar rd_mortarbug_health( "rd_mortarbug_health", "350", FCVAR_CHEAT, "Health of the mortarbug" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
+extern ConVar asw_debug_alien_damage;
 
 extern ConVar sv_gravity;
 extern ConVar asw_mortarbug_shell_gravity;	// TODO: Replace with proper spit projectile's gravity
@@ -80,8 +81,10 @@ void CASW_Mortarbug::Spawn( void )
 	SetHullType(HULL_WIDE_SHORT);
 	UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 
-	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_mortarbug_health.GetInt()) + m_iHealthBonus;
+	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_mortarbug_health.GetInt() ) + m_iHealthBonus;
 	m_iMaxHealth = m_iHealth;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting mortar bug's initial health to %d\n", m_iHealth );
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );
 
