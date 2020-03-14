@@ -91,6 +91,14 @@ void CASW_Mortarbug::Spawn( void )
 	m_takedamage = DAMAGE_NO;	// alien is invulnerable until she finds her first enemy
 }
 
+void CASW_Mortarbug::SetHealthByDifficultyLevel()
+{
+	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_mortarbug_health.GetInt() ) + m_iHealthBonus );
+	SetMaxHealth( GetHealth() );
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Adjusting mortar bug's health to %d\n", GetHealth() );
+}
+
 void CASW_Mortarbug::Precache( void )
 {
 	PrecacheScriptSound( "ASW_MortarBug.Idle" );
