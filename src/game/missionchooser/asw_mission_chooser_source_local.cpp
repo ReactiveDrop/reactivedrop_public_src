@@ -1164,16 +1164,16 @@ bool CASW_Mission_Chooser_Source_Local::MapNameLess::Less( MapListName const& sr
 
 static const char *s_szCampaignNamesFirst[] =
 {
-	"deathmatch_campaign.txt",
 	"jacob.txt",
-	"rd-area9800.txt",
-	"rd_lanasescape_campaign.txt",
 	"rd-operationcleansweep.txt",
-	"rd_paranoia.txt",
-	"rd_research7.txt",
 	"rd-tarnorcampaign1.txt",
+	"rd_paranoia.txt",
+	"rd-area9800.txt",
 	"tilarus5.txt",
-	"rd_bonus_missions.txt"
+	"rd_research7.txt",
+	"rd_lanasescape_campaign.txt",
+	"rd_bonus_missions.txt",
+	"deathmatch_campaign.txt",
 };
 
 bool CASW_Mission_Chooser_Source_Local::CampaignNameLess::Less( MapListName const& src1, MapListName const& src2, void *pCtx )
