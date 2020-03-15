@@ -125,6 +125,10 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	}
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
+
+	m_bLobbyValidityChecked = false;
+
+
 }
 
 CNB_Main_Panel::~CNB_Main_Panel()
@@ -201,6 +205,15 @@ void CNB_Main_Panel::OnThink()
 
 	if ( !Briefing() )
 		return;
+
+	if ( !m_bLobbyValidityChecked )
+	{
+		m_bLobbyValidityChecked = true;
+		if ( gpGlobals->maxClients > 1 && !UTIL_RD_GetCurrentLobbyID().IsValid() )
+		{
+			engine->ServerCmd( "cl_lobby_invalid_request" );
+		}
+	}
 
 	m_pFriendsButton->SetVisible( ! ( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
 	m_pChatButton->SetVisible( gpGlobals->maxClients > 1 );
