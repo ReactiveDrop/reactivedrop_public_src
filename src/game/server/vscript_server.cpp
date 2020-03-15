@@ -694,6 +694,12 @@ static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
 {
+	if ( V_strstr( pszFileName, "..") )
+	{
+		Log_Warning( LOG_VScript, "StringToFile() file name cannot contain '..'\n" );
+		return;
+	}
+
 	char szFullFileName[256];
 	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
 
@@ -717,6 +723,12 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 
 static const char *Script_FileToString( const char *pszFileName )
 {
+	if ( V_strstr( pszFileName, "..") )
+	{
+		Log_Warning( LOG_VScript, "FileToString() file name cannot contain '..'\n" );
+		return NULL;
+	}
+
 	char szFullFileName[256];
 	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
 
