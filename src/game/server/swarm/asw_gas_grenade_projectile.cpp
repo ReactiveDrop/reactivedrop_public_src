@@ -25,7 +25,7 @@ ConVar asw_gas_grenade_duration("asw_gas_grenade_duration", "30.0", FCVAR_CHEAT,
 ConVar asw_gas_grenade_fuse("asw_gas_grenade_fuse", "1", FCVAR_CHEAT, "Fuse time on gas grenades");
 ConVar asw_gas_grenade_damage("asw_gas_grenade_damage", "20.0", FCVAR_CHEAT, "Damage the gas grenade inflicts");
 ConVar asw_gas_grenade_damage_interval("asw_gas_grenade_damage_interval", "0.3", FCVAR_CHEAT, "Interval of the gas grenade damage");
-ConVar asw_gas_grenade_cloud_width("asw_gas_grenade_cloud_width", "100.0", FCVAR_CHEAT, "Width of the gas grenade cload");
+ConVar asw_gas_grenade_cloud_width("asw_gas_grenade_cloud_width", "100.0", FCVAR_CHEAT, "Width of the gas grenade cloud");
 
 LINK_ENTITY_TO_CLASS( asw_gas_grenade_projectile, CASW_Gas_Grenade_Projectile );
 
