@@ -63,10 +63,10 @@ float CASW_Weapon_Devastator::GetWeaponDamage()
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_devastator_dmg_base;
+	if ( rd_devastator_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_devastator_dmg;
-		flDamage = rd_pvp_devastator_dmg.GetFloat();
+		flDamage = rd_devastator_dmg_base.GetFloat();
 	}
 
 	if (GetMarine())

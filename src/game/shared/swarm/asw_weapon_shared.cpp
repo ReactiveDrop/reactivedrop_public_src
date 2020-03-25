@@ -1311,8 +1311,8 @@ float CASW_Weapon::GetMovementScale()
 
 float CASW_Weapon::GetWeaponPvpDamageBase()
 {
-	extern ConVar rd_pvp_rifle_dmg;
-	return rd_pvp_rifle_dmg.GetFloat();
+	extern ConVar rd_rifle_dmg_base;
+	return rd_rifle_dmg_base.GetFloat();
 }
 
 int CASW_Weapon::GetWeaponSkillId()

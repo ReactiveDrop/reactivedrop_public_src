@@ -84,15 +84,15 @@ float CASW_Weapon_PRifle::GetWeaponDamage()
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if (ASWDeathmatchMode())
+	extern ConVar rd_prifle_dmg_base;
+	if ( rd_prifle_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_prifle_dmg;
-		flDamage = rd_pvp_prifle_dmg.GetFloat();
+		flDamage = rd_prifle_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG);
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG );
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );

@@ -63,6 +63,8 @@ END_DATADESC()
 
 #endif /* not client */
 
+ConVar rd_shotgun_fire_rate( "rd_shotgun_fire_rate", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Fire rate of shotgun", true, 0, false, 0 );
+
 CASW_Weapon_Shotgun::CASW_Weapon_Shotgun()
 {
 	m_fMinRange1	= 0;
@@ -311,10 +313,10 @@ float CASW_Weapon_Shotgun::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_shotgun_dmg_base;
+	if ( rd_shotgun_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_shotgun_dmg;
-		flDamage = rd_pvp_shotgun_dmg.GetFloat();
+		flDamage = rd_shotgun_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )
@@ -388,6 +390,10 @@ float CASW_Weapon_Shotgun::GetFireRate()
 {
 	//float flRate = 1.0f;
 	float flRate = GetWeaponInfo()->m_flFireRate;
+
+	if ( rd_shotgun_fire_rate.GetFloat() > 0 )
+		flRate = rd_shotgun_fire_rate.GetFloat();
+
 
 	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
 

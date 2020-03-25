@@ -102,6 +102,19 @@ extern ConVar asw_skill;
 extern ConVar asw_marine_ff_absorption;
 extern ConVar asw_skill_melee_dmg_base;
 
+extern ConVar rd_shotgun_dmg_base;
+extern ConVar rd_rifle_dmg_base;
+extern ConVar rd_prifle_dmg_base;
+extern ConVar rd_autogun_dmg_base;
+extern ConVar rd_pistol_dmg_base;
+extern ConVar rd_pdw_dmg_base;
+extern ConVar rd_flamer_dmg_base;
+extern ConVar rd_minigun_dmg_base;
+extern ConVar rd_grenade_launcher_dmg_base;
+extern ConVar rd_deagle_dmg_base;
+extern ConVar rd_devastator_dmg_base;
+extern ConVar rd_medrifle_dmg_base;
+
 ConVar rd_killingspree_time_limit( "rd_killingspree_time_limit", "3",  FCVAR_REPLICATED, "Time in seconds. If player doesn't kill anybody during this time his killing spree is ended");
 ConVar rd_quake_sounds( "rd_quake_sounds", "2",  FCVAR_REPLICATED, "Enable or disable quake sounds like doublekill, monsterkill");
 
@@ -170,6 +183,20 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	
 	SaveSetConvar( rd_show_arrow_to_marine, 0 );
 	SaveSetConvar( rd_show_others_laser_pointer, 0 );
+
+	SaveSetConvar( rd_shotgun_dmg_base, 25 );
+	SaveSetConvar( rd_rifle_dmg_base, 5 );
+	SaveSetConvar( rd_prifle_dmg_base, 5 );
+	SaveSetConvar( rd_autogun_dmg_base, 8 );	// was 7
+	SaveSetConvar( rd_pistol_dmg_base, 10 );	// was 14
+	SaveSetConvar( rd_pdw_dmg_base, 5 );		// was 7
+	SaveSetConvar( rd_flamer_dmg_base, 25 );	// was 2
+	SaveSetConvar( rd_minigun_dmg_base, 9 );	// was 7
+	SaveSetConvar( rd_grenade_launcher_dmg_base, 40 );	// was 80
+	SaveSetConvar( rd_deagle_dmg_base, 22 );	// was 104
+	SaveSetConvar( rd_devastator_dmg_base, 15 );
+	SaveSetConvar( rd_medrifle_dmg_base, 5 );
+
 
 	spawn_point = NULL;
 	ResetFragsLeftSaid();

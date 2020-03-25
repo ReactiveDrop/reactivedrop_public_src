@@ -553,11 +553,10 @@ float CASW_Weapon_Railgun::GetWeaponDamage()
 	//float flDamage = 35.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-
-	if (ASWDeathmatchMode())
+	extern ConVar rd_railgun_dmg_base;
+	if ( rd_railgun_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_railgun_dmg;
-		flDamage = rd_pvp_railgun_dmg.GetFloat();
+		flDamage = rd_railgun_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )

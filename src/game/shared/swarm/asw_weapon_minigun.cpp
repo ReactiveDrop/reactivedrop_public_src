@@ -377,10 +377,10 @@ float CASW_Weapon_Minigun::GetWeaponDamage()
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_minigun_dmg_base;
+	if ( rd_minigun_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_minigun_dmg;
-		flDamage = rd_pvp_minigun_dmg.GetFloat();
+		flDamage = rd_minigun_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )

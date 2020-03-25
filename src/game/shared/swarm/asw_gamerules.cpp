@@ -608,25 +608,25 @@ ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "
 ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
 
 // reactivedrop: adding these weapon damage overrides for PvP 
-ConVar	rd_pvp_shotgun_dmg("rd_pvp_shotgun_dmg",	"0", FCVAR_REPLICATED);
-ConVar	rd_pvp_rifle_dmg("rd_pvp_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_prifle_dmg("rd_pvp_prifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_autogun_dmg("rd_pvp_autogun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_vindicator_dmg("rd_pvp_vindicator_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_pistol_dmg("rd_pvp_pistol_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_railgun_dmg("rd_pvp_railgun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_pdw_dmg("rd_pvp_pdw_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_flamer_dmg("rd_pvp_flamer_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_minigun_dmg("rd_pvp_minigun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_sniper_dmg("rd_pvp_sniper_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_chainsaw_dmg("rd_pvp_chainsaw_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_grenade_launcher_dmg("rd_pvp_grenade_launcher_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_mininglaser_dmg("rd_pvp_mininglaser_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_deagle_dmg("rd_pvp_deagle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_devastator_dmg("rd_pvp_devastator_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_combat_rifle_dmg("rd_pvp_combat_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_heavy_rifle_dmg("rd_pvp_heavy_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_medrifle_dmg("rd_pvp_medrifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_shotgun_dmg_base("rd_shotgun_dmg_base",	"0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
+ConVar	rd_rifle_dmg_base("rd_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of rifle", true, 0, false, 0);
+ConVar	rd_prifle_dmg_base("rd_prifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of prototype rifle", true, 0, false, 0);
+ConVar	rd_autogun_dmg_base("rd_autogun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
+ConVar	rd_vindicator_dmg_base("rd_vindicator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of vindicator", true, 0, false, 0);
+ConVar	rd_pistol_dmg_base("rd_pistol_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of twin pistols", true, 0, false, 0);
+ConVar	rd_railgun_dmg_base("rd_railgun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of railgun", true, 0, false, 0);
+ConVar	rd_pdw_dmg_base("rd_pdw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of PDW", true, 0, false, 0);
+ConVar	rd_flamer_dmg_base("rd_flamer_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of flamer", true, 0, false, 0);
+ConVar	rd_minigun_dmg_base("rd_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of minigun", true, 0, false, 0);
+ConVar	rd_sniper_dmg_base("rd_sniper_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of sniper rifle", true, 0, false, 0);
+ConVar	rd_chainsaw_dmg_base("rd_chainsaw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of chainsaw", true, 0, false, 0);
+ConVar	rd_grenade_launcher_dmg_base("rd_grenade_launcher_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of grenade launcher", true, 0, false, 0);
+ConVar	rd_mininglaser_dmg_base("rd_mininglaser_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of mining laser", true, 0, false, 0);
+ConVar	rd_deagle_dmg_base("rd_deagle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of deagle", true, 0, false, 0);
+ConVar	rd_devastator_dmg_base("rd_devastator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of devastator", true, 0, false, 0);
+ConVar	rd_combat_rifle_dmg_base("rd_combat_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of combat rifle", true, 0, false, 0);
+ConVar	rd_heavy_rifle_dmg_base("rd_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of heavy rifle", true, 0, false, 0);
+ConVar	rd_medrifle_dmg_base("rd_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of medical rifle", true, 0, false, 0);
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
 ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a kick vote");
