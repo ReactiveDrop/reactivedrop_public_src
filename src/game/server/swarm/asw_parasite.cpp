@@ -117,6 +117,8 @@ void CASW_Parasite::Spawn( void )
 	{
 		m_bDefanged = true;
 		m_iHealth	= ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_parasite_defanged_health.GetInt()) + m_iHealthBonus;
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting defanged parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 1 );
 		m_fSuicideTime = gpGlobals->curtime + 60;
 	}
@@ -124,6 +126,8 @@ void CASW_Parasite::Spawn( void )
 	{
 		m_bDefanged = false;
 		m_iHealth	= ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_parasite_health.GetInt()) + m_iHealthBonus;
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 0 );
 		m_fSuicideTime = 0;
 	}

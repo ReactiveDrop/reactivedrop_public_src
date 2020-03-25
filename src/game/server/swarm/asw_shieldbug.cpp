@@ -74,6 +74,7 @@ ConVar asw_shieldbug_knockdown_lift("asw_shieldbug_knockdown_lift", "300", FCVAR
 ConVar rd_shieldbug_health( "rd_shieldbug_health", "1000", FCVAR_CHEAT, "Health of the shieldbug" );
 
 extern ConVar sv_gravity;
+extern ConVar asw_debug_alien_damage;
 extern ConVar asw_debug_marine_chatter;
 extern ConVar rd_deagle_bigalien_dmg_scale;
 
@@ -935,6 +936,8 @@ void CASW_Shieldbug::SetHealthByDifficultyLevel()
 {
 	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_shieldbug_health.GetInt() ) + m_nExtraHeath + m_iHealthBonus );
 	SetMaxHealth( GetHealth() );
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting shieldbug's initial health to %d\n", GetHealth() );
 }
 
 void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )

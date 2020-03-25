@@ -102,6 +102,7 @@ ConVar asw_queen_force_parasite_spawn("asw_queen_force_parasite_spawn", "0", FCV
 ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spit");
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
+extern ConVar asw_debug_alien_damage;
 
 #define ASW_QUEEN_CLAW_MINS Vector(-asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat() * 2.0f)
 #define ASW_QUEEN_CLAW_MAXS Vector(asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat() * 2.0f)
@@ -1445,6 +1446,8 @@ void CASW_Queen::SetHealthByDifficultyLevel()
 	}
 	SetHealth(health + m_iHealthBonus);
 	SetMaxHealth(health + m_iHealthBonus);
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting queen's initial health to %d\n", GetHealth() );
 }
 
 int	CASW_Queen::DrawDebugTextOverlays()
