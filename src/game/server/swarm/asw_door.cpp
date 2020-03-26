@@ -1229,6 +1229,12 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 				}
 			}
 		}
+
+		// reactivedrop: add protection agains too high damage in one blow
+		if (GetHealth() > 1 && damage > m_iHealth)
+		{
+			damage = m_iHealth - 1;
+		}
 				
 		newInfo.SetDamage(damage);
 
