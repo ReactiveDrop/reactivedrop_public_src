@@ -42,6 +42,7 @@ ConVar asw_harvester_spawn_interval( "asw_harvester_spawn_interval", "1.0", FCVA
 ConVar rd_harvester_health( "rd_harvester_health", "200", FCVAR_CHEAT, "Health of the harvester" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
+extern ConVar asw_debug_alien_damage;
 
 // Anim Events
 int AE_HARVESTER_SPAWN_CRITTER;
@@ -77,6 +78,8 @@ void CASW_Harvester::Spawn( void )
 
 	m_iHealth = ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_harvester_health.GetInt()) + m_iHealthBonus;
 	m_iMaxHealth = m_iHealth;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting harvester's initial health to %d\n", m_iHealth );
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 );
 
