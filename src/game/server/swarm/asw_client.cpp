@@ -36,7 +36,7 @@ extern bool			g_fGameOver;
 // this cvar can be used for automatically restart servers when they are empty
 // because even empty server, when being not restarted for several hours
 // starts to have performance issues like warping drones and stutters on adrenaline usage
-ConVar rd_server_shutdown_after_num_secs( "rd_server_shutdown_after_num_secs", "-1", FCVAR_NONE, "Server will shutdown after being online for this number of seconds." );
+ConVar rd_server_shutdown_after_num_secs( "rd_server_shutdown_after_num_secs", "3600", FCVAR_NONE, "Server will shutdown after being online for this number of seconds." );
 ConVar rd_server_shutdown_wait_for_players_num_secs( "rd_server_shutdown_wait_for_players_num_secs", "90", FCVAR_DEVELOPMENTONLY, "Number of seconds to wait for players to load the map before considering server empty" );
 
 /*
