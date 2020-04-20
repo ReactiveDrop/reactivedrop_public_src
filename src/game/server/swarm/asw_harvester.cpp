@@ -101,6 +101,14 @@ void CASW_Harvester::Precache( void )
 	BaseClass::Precache();
 }
 
+void CASW_Harvester::SetHealthByDifficultyLevel()
+{
+	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_harvester_health.GetInt() ) + m_iHealthBonus );
+	SetMaxHealth( GetHealth() );
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Adjusting harvester's health to %d\n", GetHealth() );
+}
+
 float CASW_Harvester::GetIdealSpeed() const
 {
 	return asw_harvester_speedboost.GetFloat() * BaseClass::GetIdealSpeed() * m_flPlaybackRate;
