@@ -193,7 +193,7 @@ void Cloud::OnFlyoutMenuCancelled()
 Panel* Cloud::NavigateBack()
 {
 	CGameUIConVarRef cl_cloud_settings( "cl_cloud_settings" );
-	cl_cloud_settings.SetValue( ( ( m_bCloudEnabled ) ? ( STEAMREMOTESTORAGE_CLOUD_CONFIG | STEAMREMOTESTORAGE_CLOUD_SPRAY ) : ( 0 ) ) );
+	cl_cloud_settings.SetValue( ( ( m_bCloudEnabled ) ? ( STEAMREMOTESTORAGE_CLOUD_ALL ) : ( 0 ) ) );
 
 	return BaseClass::NavigateBack();
 }
