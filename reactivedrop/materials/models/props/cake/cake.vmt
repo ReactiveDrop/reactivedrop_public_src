@@ -1,0 +1,23 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/props/cake/cake"
+	"$surfaceprop"	"metal"
+	"$bumpmap"	"models/props/cake/cake_n"
+
+	//phong properties
+	"$phong"	"1"
+	"$phongboost"	"5"
+	"$phongexponenttexture"	"models/props/cake/cake_exp"
+	"$phongfresnelranges"	"[1 1.5 2]"
+
+	"LightmappedGeneric_HDR_DX9"
+	{
+		"$envmap"	"env_cubemap"
+	}
+
+	"LightmappedGeneric_DX9"
+	{
+		"$envmap"	"env_cubemap"
+	}
+	
+}

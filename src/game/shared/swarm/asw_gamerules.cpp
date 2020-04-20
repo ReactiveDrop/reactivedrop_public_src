@@ -93,6 +93,7 @@
 	#include "asw_director.h"
 	#include "team.h"
 	#include "asw_pickup_equipment.h"
+	#include "Sprite.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -7963,9 +7964,249 @@ void CheatsChangeCallback( IConVar *pConVar, const char *pOldString, float flOld
 }
 #endif
 
+#ifdef GAME_DLL
+static void CreateCake( const char *mapname )
+{
+	Vector origin(0, 0, 0);
+	if ( FStrEq( mapname, "asi-jac1-landingbay_01" ) )
+	{
+		origin = Vector( -8444, -468, 852 );
+	}
+	else if ( FStrEq( mapname, "asi-jac1-landingbay_02" ) )
+	{
+		origin = Vector( -5087, 4764, 816 );
+	}
+	else if ( FStrEq( mapname, "asi-jac1-landingbay_pract" ) )
+	{
+		origin = Vector( -4706, 2265, 753 );
+	}
+	else if ( FStrEq( mapname, "asi-jac2-deima" ) )
+	{
+		origin = Vector( 853, 5452, -52 );
+	}
+	else if ( FStrEq( mapname, "asi-jac3-rydberg" ) )
+	{
+		origin = Vector( -2786, -1282, 660 );
+	}
+	else if ( FStrEq( mapname, "asi-jac4-residential" ) )
+	{
+		origin = Vector( -1404, -3520, -8 );
+	}
+	else if ( FStrEq( mapname, "asi-jac6-sewerjunction" ) )
+	{
+		origin = Vector( 208, 1416, -548 );
+	}
+	else if ( FStrEq( mapname, "asi-jac7-timorstation" ) )
+	{
+		origin = Vector( -151, -5440, -97 );
+	}
+	else if ( FStrEq( mapname, "dm_deima" ) )
+	{
+		origin = Vector( -528, 1884, 12 );
+	}
+	else if ( FStrEq( mapname, "dm_desert" ) )
+	{
+		origin = Vector( 548, 4159, 76 );
+	}
+	else if ( FStrEq( mapname, "dm_residential" ) )
+	{
+		origin = Vector( -2036, -7628, -28 );
+	}
+	else if ( FStrEq( mapname, "dm_testlab" ) )
+	{
+		origin = Vector( -3746, -1314, -52 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800lz" ) )
+	{
+		origin = Vector( -1829, 2136, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800pp1" ) )
+	{
+		origin = Vector( -2428, -988, -188 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800pp2" ) )
+	{
+		origin = Vector( -1129, 233, 184 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800wl" ) )
+	{
+		origin = Vector( 2006, 280, -556 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission1" ) )
+	{
+		origin = Vector( 178, 3740, 370 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission2" ) )
+	{
+		origin = Vector( -7997, -10414, -51 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission3" ) )
+	{
+		origin = Vector( 8614, 2973, -847 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission4" ) )
+	{
+		origin = Vector( -4976, 2217, 753 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission5" ) )
+	{
+		origin = Vector( 951, -2120, 304 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission6" ) )
+	{
+		origin = Vector( -3346, -357, -327 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission7" ) )
+	{
+		origin = Vector( 236, 1785, 14 );
+	}
+	else if ( FStrEq( mapname, "rd-lan1_bridge" ) )
+	{
+		origin = Vector( 344, -4035, 28 );
+	}
+	else if ( FStrEq( mapname, "rd-lan2_sewer" ) )
+	{
+		origin = Vector( -4258, -2022, -18 );
+	}
+	else if ( FStrEq( mapname, "rd-lan3_maintenance" ) )
+	{
+		origin = Vector( -4758, 478, -51 );
+	}
+	else if ( FStrEq( mapname, "rd-lan4_vent" ) )
+	{
+		origin = Vector( -1699, -726, -73 );
+	}
+	else if ( FStrEq( mapname, "rd-lan5_complex" ) )
+	{
+		origin = Vector( -560, -4214, -228 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs1storagefacility" ) )
+	{
+		origin = Vector( 985, 472, -356 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs2landingbay7" ) )
+	{
+		origin = Vector( -928, -1592, 316 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs3uscmedusa" ) )
+	{
+		origin = Vector( -610, -2179, 60 );
+	}
+	else if ( FStrEq( mapname, "rd-par1unexpected_encounter" ) )
+	{
+		origin = Vector( 1101, 4036, 163 );
+	}
+	else if ( FStrEq( mapname, "rd-par2hostile_places" ) )
+	{
+		origin = Vector( 1372, -1135, 204 );
+	}
+	else if ( FStrEq( mapname, "rd-par3close_contact" ) )
+	{
+		origin = Vector( -2706, 4050, 533 );
+	}
+	else if ( FStrEq( mapname, "rd-par4high_tension" ) )
+	{
+		origin = Vector( 1886, -1437, -338 );
+	}
+	else if ( FStrEq( mapname, "rd-par5crucial_point" ) )
+	{
+		origin = Vector( -7471, -3522, -145 );
+	}
+	else if ( FStrEq( mapname, "rd-res1forestentrance" ) )
+	{
+		origin = Vector( -1187, 2342, 104 );
+	}
+	else if ( FStrEq( mapname, "rd-res2research7" ) )
+	{
+		origin = Vector( 944, 1498, 76 );
+	}
+	else if ( FStrEq( mapname, "rd-res3miningcamp" ) )
+	{
+		origin = Vector( -3246, 1018, 14 );
+	}
+	else if ( FStrEq( mapname, "rd-res4mines" ) )
+	{
+		origin = Vector( -10252, 1372, -2244 );
+	}
+	else if ( FStrEq( mapname, "rd-tft1desertoutpost" ) )
+	{
+		origin = Vector( -1976, 2090, -119 );
+	}
+	else if ( FStrEq( mapname, "rd-tft2abandonedmaintenance" ) )
+	{
+		origin = Vector( -1628, -184, -884 );
+	}
+	else if ( FStrEq( mapname, "rd-tft3spaceport" ) )
+	{
+		origin = Vector( -1028, -1090, 1084 );
+	}
+	else if ( FStrEq( mapname, "rd-til1midnightport" ) )
+	{
+		origin = Vector( -4777, 3085, 76 );
+	}
+	else if ( FStrEq( mapname, "rd-til2roadtodawn" ) )
+	{
+		origin = Vector( 29, 1849, 108 );
+	}
+	else if ( FStrEq( mapname, "rd-til3arcticinfiltration" ) )
+	{
+		origin = Vector( -1156, 4177, 437 );
+	}
+	else if ( FStrEq( mapname, "rd-til4area9800" ) )
+	{
+		origin = Vector( 1161, -257, -492 );
+	}
+	else if ( FStrEq( mapname, "rd-til5coldcatwalks" ) )
+	{
+		origin = Vector( -1789, -4679, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-til6yanaurusmine" ) )
+	{
+		origin = Vector( 5295, 8550, -396 );
+	}
+	else if ( FStrEq( mapname, "rd-til7factory" ) )
+	{
+		origin = Vector( -752, 1472, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-til8comcenter" ) )
+	{
+		origin = Vector( 1907, 5053, -238 );
+	}
+	else if ( FStrEq( mapname, "rd-til9syntekhospital" ) )
+	{
+		origin = Vector( -2753, 1659, 4604 );
+	}
+
+	if ( origin.IsZeroFast() )
+		return;
+
+	// shift bottom, because hammer coords were incorrect
+	origin += Vector( 0, 0, -12 );
+
+	CBaseEntity *pCake = CreateEntityByName( "prop_dynamic" );
+	pCake->SetModelName( AllocPooledString( "models/props/cake/cake.mdl" ) );
+	pCake->Precache();
+	pCake->SetAbsOrigin( origin );
+	pCake->Spawn();
+	// UTIL_DropToFloor( pCake, MASK_SOLID );
+	pCake->SetMoveType( MOVETYPE_NONE );
+
+	CSprite *pCakeSprite = static_cast<CSprite*>( CreateEntityByName( "env_sprite" ) );
+	pCakeSprite->SetModelName( AllocPooledString( "materials/sprites/light_glow03.vmt") );
+	pCakeSprite->Precache();
+	pCakeSprite->SetGlowProxySize( 2.0f );
+	pCakeSprite->SetScale( 0.15f );
+	pCakeSprite->SetColor( 220, 205, 120 );
+	pCakeSprite->SetRenderAlpha( 190.0f );
+	pCakeSprite->SetRenderMode( ( RenderMode_t )9 );	// World Space Glow
+	pCakeSprite->m_flSpriteFramerate = 10.0f;
+	pCakeSprite->SetAbsOrigin( origin + Vector( 0, 0, 24 ) );
+	pCakeSprite->Spawn();
+}
+#endif
+
 void CAlienSwarm::LevelInitPostEntity()
 {
-	
 	// check if we're the intro/outro map
 	char mapName[255];
 #ifdef CLIENT_DLL
@@ -8106,6 +8347,15 @@ void CAlienSwarm::LevelInitPostEntity()
 			s_bInstalledCheatsChangeCallback = true;
 		}
 	}
+
+#ifdef GAME_DLL
+	tm curtime; 
+	Plat_GetLocalTime( &curtime );
+	if ( (curtime.tm_mday >= 20 && curtime.tm_mday < 27) && curtime.tm_mon == 3 )
+	{
+		CreateCake( mapName );
+	}
+#endif
 
 	if ( IsLobbyMap() )
 	{
