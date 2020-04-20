@@ -23,6 +23,7 @@ CASW_Steamstats g_ASW_Steamstats;
 
 ConVar asw_stats_leaderboard_debug( "asw_stats_leaderboard_debug", "0", FCVAR_NONE );
 ConVar rd_leaderboard_enabled_client( "rd_leaderboard_enabled_client", "1", FCVAR_ARCHIVE, "If 0 player leaderboard scores will not be set or updated on mission complete. Client only." );
+bool IsLBWhitelisted(const char *name);
 
 namespace 
 {
@@ -1173,11 +1174,25 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		DevMsg( 2, "\n" );
 	}
 
-	SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeTimeMilliSeconds );
-	m_LeaderboardFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardFindResultCallback );
+	if ( IsLBWhitelisted( szLeaderboardName ) )
+	{
+		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeTimeMilliSeconds );
+		m_LeaderboardFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardFindResultCallback );
+	}
+	else
+	{
+		DevWarning( "Not sending leaderboard entry: Not whitelisted %s\n", szLeaderboardName );
+	}
 
-	hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeTimeMilliSeconds );
-	m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
+	if ( IsLBWhitelisted( szDifficultyLeaderboardName ) )
+	{
+		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeTimeMilliSeconds );
+		m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
+	}
+	else
+	{
+		DevWarning( "Not sending leaderboard entry: Not whitelisted %s\n", szDifficultyLeaderboardName );
+	}
 }
 
 void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure )
@@ -1319,4 +1334,177 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 	{
 		steamapicontext->SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
 	}
+}
+
+static const char *LB_whitelist[] =
+{
+	"RD_SpeedRun_0/",
+	"RD_Hard_SpeedRun_0/",
+	"RD_Insane_SpeedRun_0/",
+	"RD_imba_SpeedRun_0/",
+
+	"RD_SpeedRun_0_asbi/",
+	"RD_Hard_SpeedRun_0_asbi/",
+	"RD_Insane_SpeedRun_0_asbi/",
+	"RD_imba_SpeedRun_0_asbi/",
+
+	"RD_SpeedRun_0_difficulty_tier1/",
+	"RD_Easy_SpeedRun_0_difficulty_tier1/",
+	"RD_Normal_SpeedRun_0_difficulty_tier1/",
+	"RD_Hard_SpeedRun_0_difficulty_tier1/",
+	"RD_Insane_SpeedRun_0_difficulty_tier1/",
+	"RD_imba_SpeedRun_0_difficulty_tier1/",
+
+	"RD_SpeedRun_0_difficulty_tier2/",
+	"RD_Easy_SpeedRun_0_difficulty_tier2/",
+	"RD_Normal_SpeedRun_0_difficulty_tier2/",
+	"RD_Hard_SpeedRun_0_difficulty_tier2/",
+	"RD_Insane_SpeedRun_0_difficulty_tier2/",
+	"RD_imba_SpeedRun_0_difficulty_tier2/",
+
+	"RD_SpeedRun_0_energy_weapons/",
+	"RD_Hard_SpeedRun_0_energy_weapons/",
+	"RD_Insane_SpeedRun_0_energy_weapons/",
+	"RD_imba_SpeedRun_0_energy_weapons/",
+
+	"RD_SpeedRun_0_level_one/",
+	"RD_Hard_SpeedRun_0_level_one/",
+	"RD_Insane_SpeedRun_0_level_one/",
+	"RD_imba_SpeedRun_0_level_one/",
+
+	"RD_SpeedRun_0_one_hit/",
+	"RD_Hard_SpeedRun_0_one_hit/",
+	"RD_Insane_SpeedRun_0_one_hit/",
+	"RD_imba_SpeedRun_0_one_hit/",
+
+	"RD_SpeedRun_0_riflemod_classic/",
+	"RD_Hard_SpeedRun_0_riflemod_classic/",
+	"RD_Insane_SpeedRun_0_riflemod_classic/",
+	"RD_imba_SpeedRun_0_riflemod_classic/",
+
+	"RD_SpeedRun_1366599495_asbipro/",
+	"RD_Hard_SpeedRun_1366599495_asbipro/",
+	"RD_Insane_SpeedRun_1366599495_asbipro/",
+	"RD_imba_SpeedRun_1366599495_asbipro/",
+
+	"RD_SpeedRun_1374886583_asb2/",
+	"RD_Hard_SpeedRun_1374886583_asb2/",
+	"RD_Insane_SpeedRun_1374886583_asb2/",
+	"RD_imba_SpeedRun_1374886583_asb2/",
+
+	"RD_SpeedRun_1374886583_asb2_carnage/",
+	"RD_Hard_SpeedRun_1374886583_asb2_carnage/",
+	"RD_Insane_SpeedRun_1374886583_asb2_carnage/",
+	"RD_imba_SpeedRun_1374886583_asb2_carnage/",
+
+	"RD_SpeedRun_1568035792_asbisolo/",
+	"RD_Hard_SpeedRun_1568035792_asbisolo/",
+	"RD_Insane_SpeedRun_1568035792_asbisolo/",
+	"RD_imba_SpeedRun_1568035792_asbisolo/",
+
+	"RD_SpeedRun_1358596669_asbi_classic/",
+	"RD_Hard_SpeedRun_1358596669_asbi_classic/",
+	"RD_Insane_SpeedRun_1358596669_asbi_classic/",
+	"RD_imba_SpeedRun_1358596669_asbi_classic/",
+
+	"RD_SpeedRun_1098363725_vanasbi/",
+	"RD_Hard_SpeedRun_1098363725_vanasbi/",
+	"RD_Insane_SpeedRun_1098363725_vanasbi/",
+	"RD_imba_SpeedRun_1098363725_vanasbi/",
+
+	"RD_SpeedRun_1447743649_onehitasbi/",
+	"RD_Hard_SpeedRun_1447743649_onehitasbi/",
+	"RD_Insane_SpeedRun_1447743649_onehitasbi/",
+	"RD_imba_SpeedRun_1447743649_onehitasbi/",
+
+	"RD_SpeedRun_1125436820_single_player/",
+	"RD_Hard_SpeedRun_1125436820_single_player/",
+	"RD_Insane_SpeedRun_1125436820_single_player/",
+	"RD_imba_SpeedRun_1125436820_single_player/",
+
+	"RD_SpeedRun_1429436524_single_player_asbi/",
+	"RD_Hard_SpeedRun_1429436524_single_player_asbi/",
+	"RD_Insane_SpeedRun_1429436524_single_player_asbi/",
+	"RD_imba_SpeedRun_1429436524_single_player_asbi/",
+
+	"RD_SpeedRun_1274862258_minefield/",
+	"RD_Hard_SpeedRun_1274862258_minefield/",
+	"RD_Insane_SpeedRun_1274862258_minefield/",
+	"RD_imba_SpeedRun_1274862258_minefield/",
+
+	"RD_SpeedRun_1274862258_minefield_light/",
+	"RD_Hard_SpeedRun_1274862258_minefield_light/",
+	"RD_Insane_SpeedRun_1274862258_minefield_light/",
+	"RD_imba_SpeedRun_1274862258_minefield_light/",
+
+	"RD_SpeedRun_1274862258_minefield_asbi/",
+	"RD_Hard_SpeedRun_1274862258_minefield_asbi/",
+	"RD_Insane_SpeedRun_1274862258_minefield_asbi/",
+	"RD_imba_SpeedRun_1274862258_minefield_asbi/",
+
+	"RD_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_Hard_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_Insane_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_imba_SpeedRun_1274862258_minefieldnotech_asbi/",
+
+	"RD_SpeedRun_1274862258_minefieldnotech/",
+	"RD_Hard_SpeedRun_1274862258_minefieldnotech/",
+	"RD_Insane_SpeedRun_1274862258_minefieldnotech/",
+	"RD_imba_SpeedRun_1274862258_minefieldnotech/",
+
+	"RD_SpeedRun_1873361988_strafejumpsair/",
+	"RD_Hard_SpeedRun_1873361988_strafejumpsair/",
+	"RD_Insane_SpeedRun_1873361988_strafejumpsair/",
+	"RD_imba_SpeedRun_1873361988_strafejumpsair/",
+
+	"RD_SpeedRun_1873361988_strafejumps/",
+	"RD_Hard_SpeedRun_1873361988_strafejumps/",
+	"RD_Insane_SpeedRun_1873361988_strafejumps/",
+	"RD_imba_SpeedRun_1873361988_strafejumps/",
+
+	"RD_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_Hard_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_Insane_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_imba_SpeedRun_1873361988_asbi_strafe_air/",
+
+	"RD_SpeedRun_1873361988_asbi_strafe/",
+	"RD_Hard_SpeedRun_1873361988_asbi_strafe/",
+	"RD_Insane_SpeedRun_1873361988_asbi_strafe/",
+	"RD_imba_SpeedRun_1873361988_asbi_strafe/",
+
+	"RD_SpeedRun_1167497265_asbit1/",
+	"RD_Hard_SpeedRun_1167497265_asbit1/",
+	"RD_Insane_SpeedRun_1167497265_asbit1/",
+	"RD_imba_SpeedRun_1167497265_asbit1/",
+
+	"RD_SpeedRun_1167497265_asbit1x2/",
+	"RD_Hard_SpeedRun_1167497265_asbit1x2/",
+	"RD_Insane_SpeedRun_1167497265_asbit1x2/",
+	"RD_imba_SpeedRun_1167497265_asbit1x2/",
+
+	"RD_SpeedRun_935767408_asbicarnagex2/",
+	"RD_Hard_SpeedRun_935767408_asbicarnagex2/",
+	"RD_Insane_SpeedRun_935767408_asbicarnagex2/",
+	"RD_imba_SpeedRun_935767408_asbicarnagex2/"
+};
+
+static bool StartsWith( const char *str, const char *pre )
+{
+	return Q_strncmp( pre, str, Q_strlen( pre ) ) == 0;
+}
+
+bool IsLBWhitelisted( const char *name )
+{
+	bool r = false;
+
+	for ( size_t i = 0; i < ARRAYSIZE( LB_whitelist ); ++i )
+	{
+		if ( StartsWith( name, LB_whitelist[ i ] ) )
+		{
+			r = true;
+			break;
+		}
+	}
+
+	return r;
 }
