@@ -540,10 +540,11 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
+	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
 	char szLeaderboardName[k_cchLeaderboardNameMax];
-	if ( rd_leaderboard_by_difficulty.GetBool() )
+	if ( rd_leaderboard_by_difficulty.GetBool() && iSkillLevel > 2 )
 	{
-		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt(), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), iSkillLevel, pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	}
 	else
 	{
