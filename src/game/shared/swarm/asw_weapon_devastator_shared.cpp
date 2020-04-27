@@ -46,6 +46,22 @@ CASW_Weapon_Devastator::~CASW_Weapon_Devastator()
 
 }
 
+void CASW_Weapon_Devastator::SecondaryAttack()
+{
+	CASW_Player *pPlayer = GetCommander();
+	if ( !pPlayer )
+		return;
+
+	CASW_Marine *pMarine = GetMarine();
+	if ( !pMarine )
+		return;
+
+	// dry fire
+	SendWeaponAnim( ACT_VM_DRYFIRE );
+	BaseClass::WeaponSound( EMPTY );
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+}
+
 void CASW_Weapon_Devastator::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
