@@ -1223,7 +1223,7 @@ bool CReactiveDropWorkshop::IsAutoTag( const char *szTag )
 static const char *s_BlacklistedAddonFileNames[] =
 {
 	"maps/soundcache/_master.cache",
-	"particles/particles_manifest.txt",
+	//"particles/particles_manifest.txt",
 	"resource/CustomCampaignCredits.txt",
 	"resource/campaigns/ExampleCampaign.txt",
 	"resource/alien_selection.txt",
