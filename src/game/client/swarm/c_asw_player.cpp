@@ -179,6 +179,8 @@ ConVar asw_auto_reload("asw_auto_reload", "1", FCVAR_ARCHIVE, "Whether your mari
 ConVar asw_turret_fog_start("asw_turret_fog_start", "900", 0, "Fog start distance for turret view");
 ConVar asw_turret_fog_end("asw_turret_fog_end", "1200", 0, "Fog end distance for turret view");
 
+ConVar rd_force_spectate_marine( "rd_force_spectate_marine", "-1", FCVAR_DONTRECORD, "spectate this marine resource index if it exists", true, -1, true, ASW_MAX_MARINE_RESOURCES );
+
 extern ConVar asw_allow_detach;
 extern ConVar asw_stim_cam_time;
 extern ConVar asw_rts_controls;
@@ -952,6 +954,15 @@ C_ASW_Marine* C_ASW_Player::GetMarine() const
 
 C_ASW_Marine* C_ASW_Player::GetSpectatingMarine() const
 {
+	// BenLubar: allow rd_force_spectate_marine to override the current marine if the player is spectating or watching a demo.
+	if ( rd_force_spectate_marine.GetInt() != -1 && ASWGameResource() && ( engine->IsPlayingDemo() || m_hSpectatingMarine.Get() ) )
+	{
+		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( rd_force_spectate_marine.GetInt() );
+		if ( pMR && pMR->GetMarineEntity() )
+		{
+			return pMR->GetMarineEntity();
+		}
+	}
 	return m_hSpectatingMarine.Get();
 }
 
