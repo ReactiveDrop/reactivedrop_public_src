@@ -27,6 +27,7 @@
 // This file contains various debugging and cheat concommands
 
 ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_NONE, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
+ConVar rd_allow_flashlight("rd_allow_flashlight", "0", FCVAR_CHEAT, "If set to 0 players cannot use asw_flashlight command");
 
 void cc_CreatePredictionError_f()
 {
@@ -551,6 +552,34 @@ CON_COMMAND_F( rotatecameraexact, "Rotates marine camera to exact yaw angle", FC
 		pPlayer->m_flMovementAxisYaw = atof( args[1] );
 	}
 }
+
+// flashlight: now marine can toggle flashlight
+void asw_flashlightf()
+{
+	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && !rd_allow_flashlight.GetBool())
+	{
+		ClientPrint(pPlayer, HUD_PRINTTALK, "#rd_flashlight_not_allowed");
+		return;
+	}
+
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		CASW_Marine* pMarine = pPlayer->GetMarine();
+		if (pMarine->IsEffectActive(EF_DIMLIGHT))
+		{
+			pMarine->EmitSound("ASWFlashlight.FlashlightToggle");
+			pMarine->RemoveEffects(EF_DIMLIGHT);
+		}
+		else
+		{
+			pMarine->AddEffects(EF_DIMLIGHT);
+			pMarine->EmitSound("ASWFlashlight.FlashlightToggle");
+		}
+	}
+}
+ConCommand asw_flashlight("asw_flashlight", asw_flashlightf, "Flashlight toggle for marine", 0);
 
 // riflemod: allow leaving marine to go afk and leave a bot for you 
 void asw_afkf()
