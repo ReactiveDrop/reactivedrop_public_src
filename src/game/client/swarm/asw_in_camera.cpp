@@ -16,7 +16,7 @@ static bool s_bDontSendDesiredYaw = false;
 static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue );
 
 // Marine Camera ConVars.
-ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT, "Marine Camera: pitch." );
+extern ConVar asw_cam_marine_pitch;
 ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT ); // asw setting
 ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
 ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value", SetDesiredCameraYaw );

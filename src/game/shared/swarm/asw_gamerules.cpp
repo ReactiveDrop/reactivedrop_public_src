@@ -394,6 +394,7 @@ ConVar rd_paint_scanner_blips("rd_paint_scanner_blips", "1", FCVAR_CHEAT | FCVAR
 ConVar rd_deathmatch_loadout_allowed("rd_deathmatch_loadout_allowed", "0", FCVAR_REPLICATED, "If set to 1 players can choose weapons they spawn with");
 ConVar rd_respawn_time( "rd_respawn_time", "0.2",  FCVAR_REPLICATED, "Number of seconds after you can respawn in Deathmatch", true, 0.2f, false, 1000.0f);
 ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "1 enable ground shooting, 0 disabled" );
+ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
