@@ -133,11 +133,8 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	g_pDeathmatchMode = this;
 
 	// apply deathmatch rules
-#ifdef CLIENT_DLL
+#ifdef GAME_DLL
 	SaveSetConvar( asw_cam_marine_dist, 600 );
-
-#else // #ifdef GAME_DLL
-
 	SaveSetConvar( asw_blink_charge_time, 5 );	// 5 seconds to reload blink 
 	SaveSetConvar( asw_marine_names, 0 );
 	SaveSetConvar( asw_marine_death_cam_slowdown, 1 );
