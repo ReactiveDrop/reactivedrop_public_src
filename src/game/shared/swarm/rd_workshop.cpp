@@ -41,6 +41,8 @@ ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVA
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "0", FCVAR_NONE, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 #endif
 
+ConVar rd_workshop_debug( "rd_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
+
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
 static void ClearCaches();
@@ -976,7 +978,8 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	uint32 iState = pWorkshop->GetItemState( id );
 	if ( ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
-		Msg( "Addon %llu is installed and does not need an update.\n", id );
+		if ( rd_workshop_debug.GetBool() )
+			Msg( "Addon %llu is installed and does not need an update.\n", id );
 		LoadAddon( id, false );
 		return;
 	}
@@ -1026,7 +1029,8 @@ static void RealLoadAddon( PublishedFileId_t id )
 	char vpkname[MAX_PATH];
 	Q_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
 
-	Msg( "Loading addon %llu\n", id );
+	if ( rd_workshop_debug.GetBool() )
+		Msg( "Loading addon %llu\n", id );
 
 	bool bDontClearCache = false;
 
