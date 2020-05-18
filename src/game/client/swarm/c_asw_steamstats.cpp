@@ -1089,6 +1089,9 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		return;
 	}
 
+	if ( !bUnofficial )	// if official
+		nWorkshopFileID = k_PublishedFileIdInvalid;	// #iss67 game considers workshop overview files as separate maps for leaderboards
+
 	extern ConVar rd_challenge;
 	char szChallengeFileName[MAX_PATH];
 	Q_snprintf( szChallengeFileName, sizeof( szChallengeFileName ), "resource/challenges/%s.txt", rd_challenge.GetString() );
