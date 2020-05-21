@@ -37,11 +37,11 @@
 
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
+ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "0", FCVAR_NONE, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
+ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
-
-ConVar rd_workshop_debug( "rd_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
@@ -978,7 +978,11 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	uint32 iState = pWorkshop->GetItemState( id );
 	if ( ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
-		if ( rd_workshop_debug.GetBool() )
+#ifdef CLIENT_DLL
+		if ( cl_workshop_debug.GetBool() )
+#else 
+		if ( sv_workshop_debug.GetBool() )
+#endif
 			Msg( "Addon %llu is installed and does not need an update.\n", id );
 		LoadAddon( id, false );
 		return;
@@ -1029,7 +1033,11 @@ static void RealLoadAddon( PublishedFileId_t id )
 	char vpkname[MAX_PATH];
 	Q_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
 
-	if ( rd_workshop_debug.GetBool() )
+#ifdef CLIENT_DLL
+	if ( cl_workshop_debug.GetBool() )
+#else 
+	if ( sv_workshop_debug.GetBool() )
+#endif
 		Msg( "Loading addon %llu\n", id );
 
 	bool bDontClearCache = false;
