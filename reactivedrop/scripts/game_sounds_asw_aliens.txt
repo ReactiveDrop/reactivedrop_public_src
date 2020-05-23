@@ -1260,3 +1260,118 @@
 	}
 }
 
+"ASW_Queen.Pain"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.7, 1"
+	"pitch"			"75,80,85"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\queen\pain.wav"
+	}
+}
+
+"ASW_Queen.Death"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_150dB"
+	"volume"		"0.8, 1"
+	"pitch"			"100"
+    "rndwave"
+	{
+		"wave"		"aliens\voc\queen\death.wav"
+    }
+}
+
+"ASW_Queen.Painbig"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_130dB"
+	"volume"		"0.9, 1"
+	"pitch"			"95,100,105"
+	"rndwave"
+	{
+        "wave"		"aliens\voc\queen\painbig.wav"
+	}
+}
+
+"ASW_Queen.SlashShort"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.6, 1"
+	"pitch"			"85,90,95"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\queen\slashshort.wav"
+	}
+}
+
+"ASW_Queen.Slash"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.9, 1"
+	"pitch"			"90,95,100"
+	"rndwave"
+	{
+	"wave"			"aliens\voc\queen\slash.wav"
+	}
+}
+
+"ASW_Queen.AttackWave"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_150dB"
+	"volume"		"0.8, 0.9"
+	"pitch"			"95,100"
+	"rndwave"
+	{
+	"wave"			"aliens\voc\queen\attackwave.wav"
+	}
+}
+
+"ASW_Queen.Spit"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_100dB"
+	"volume"		"0.8, 1"
+	"pitch"			"100"
+	"wave"			"aliens\voc\queen\spit.wav"
+}
+
+"ASW_Queen.TentacleAttackStart"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_90dB"
+	"volume"		"0.5, 0.8"
+	"pitch"			"95,100,105"
+	"wave"			"aliens\voc\queen\tentacleattackstart.wav"
+}
+
+"Shaman.pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.750, 1.000"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+	"wave"			"aliens\voc\shaman\pain.wav"
+	}
+}
+
+"Shaman.die"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.750, 1.000"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+	"wave"			"aliens\voc\shaman\die.wav"
+	}
+}
