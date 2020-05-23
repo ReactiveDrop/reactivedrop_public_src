@@ -125,6 +125,15 @@
         "wave"              "weapons\3D\minigun\minigunloop.wav"
 }
 
+"ASW_Weapon_Minigun.MinigunStop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.70"
+	"pitch"			"120, 125"
+	"wave"			"weapons\3d\minigun\minigunstop.wav"
+}
+
 "ASW_Weapon_PDW.multiShot"
 {
 	"channel"		"CHAN_WEAPON"

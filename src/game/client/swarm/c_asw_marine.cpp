@@ -1900,7 +1900,7 @@ void C_ASW_Marine::StopMinigunLoop()
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 		controller.SoundDestroy( m_pMinigunLoopSound );
 		m_pMinigunLoopSound = NULL;
-		//EmitSound("ASW_Weapon_Flamer.FlameStop");
+		EmitSound( "ASW_Weapon_Minigun.MinigunStop" );
 	}
 }
 
