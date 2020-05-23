@@ -171,7 +171,7 @@
 {
 	"channel"		"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_95dB"
-	"volume"		"0.35"
+	"volume"		"0.43"
 	"pitch"			"95,105"
 	"wave"			"^weapons\3D\deagle\deagle.wav"
 }
