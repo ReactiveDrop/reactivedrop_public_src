@@ -2077,3 +2077,53 @@ void MarineStrafePush()
 }
 
 static ConCommand rda_strafepush("rda_strafepush", MarineStrafePush, "Strafe push current marine", 0);
+
+void HideBackPackModels()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{ 
+		if ( pGameResource->GetMarineResource(i) )
+		{
+			CASW_Marine* pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			if ( pMarine )
+			{
+				pMarine->RemoveBackPackModel();
+			}
+		}
+	}
+}
+ConCommand rda_hide_backpack("rda_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rda_marine_backpack 0", FCVAR_CHEAT);
+
+void DrawBackPackModels()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		if ( pGameResource->GetMarineResource(i) )
+		{
+			CASW_Marine* pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			if ( pMarine && !pMarine->GetBackPackModel() )
+			{
+				if ( pMarine->GetASWWeapon(0) && pMarine->GetASWWeapon(1) )
+				{
+					if ( pMarine->GetActiveASWWeapon() == pMarine->GetASWWeapon(0) )
+					{
+						pMarine->CreateBackPackModel( pMarine->GetASWWeapon(1) );
+					}
+					else
+					{
+						pMarine->CreateBackPackModel( pMarine->GetASWWeapon(0) );
+					}
+				}
+			}
+		}
+	}
+}
+ConCommand rda_draw_backpack("rda_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rda_marine_backpack 1", FCVAR_CHEAT);
