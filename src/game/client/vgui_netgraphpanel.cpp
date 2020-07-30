@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -832,7 +832,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 	}
 
 	// Draw legend
-	if ( graphvalue >= 3 )
+	if ( graphvalue >= 3 && graphvalue < 5 )
 	{
 		int textTall = g_pMatSystemSurface->GetFontTall( m_hFontSmall );
 
@@ -1194,7 +1194,7 @@ void CNetGraphPanel::Paint()
 
 	GraphGetXY( &vrect, w, &x, &y );
 
-	if ( graphtype > 1 )
+	if ( graphtype > 1 && graphtype < 5 )
 	{
 		PaintLineArt( x, y, w, graphtype, maxmsgbytes );
 
