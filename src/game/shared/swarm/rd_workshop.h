@@ -84,7 +84,8 @@ public:
 			nPlaytimeSessions = other.nPlaytimeSessions;
 			nComments = other.nComments;
 #ifdef CLIENT_DLL
-			pPreviewImage = other.pPreviewImage;
+			if (other.pPreviewImage.IsValid())
+				pPreviewImage = other.pPreviewImage;
 #endif
 			for ( int i = 0; i < other.kvTags.GetNumStrings(); i++ )
 			{
