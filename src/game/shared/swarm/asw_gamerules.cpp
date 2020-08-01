@@ -173,6 +173,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
+	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -2593,7 +2594,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		gameeventmanager->FireEvent( event );
 	}
 
-	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
+	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f && !rd_auto_fast_restart.GetBool() )
 	{
 		// They've been playing a bit... go to the mission fail screen instead!
 		ASWGameRules()->MissionComplete( false );
@@ -7465,8 +7466,8 @@ void CAlienSwarm::SetForceReady(int iForceReadyType)
 		return;
 	}
 
-	m_fForceReadyTime = gpGlobals->curtime + 5.9f;
-	m_iForceReadyCount = 5;
+	m_fForceReadyTime = rd_auto_fast_restart.GetBool() ? gpGlobals->curtime + 1.9f : gpGlobals->curtime + 5.9f;
+	m_iForceReadyCount = rd_auto_fast_restart.GetBool() ? 1 : 5;
 
 	// check to see if it should end immediately
 	CheckForceReady();
@@ -7580,7 +7581,7 @@ void CAlienSwarm::FinishForceReady()
 			{
 				SetForceReady(ASW_FR_NONE);
 
-				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME )
+				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME && !rd_auto_fast_restart.GetBool() )
 				{
 					MissionComplete( false );		
 				}
