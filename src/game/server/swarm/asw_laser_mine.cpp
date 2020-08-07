@@ -30,6 +30,8 @@ ConVar rd_laser_mine_targets_everything("rd_laser_mine_targets_everything", "0",
 ConVar rd_laser_mine_dmg( "rd_laser_mine_dmg", "100", FCVAR_CHEAT, "Damage of laser mines" );
 ConVar rd_laser_mine_dmg_radius("rd_laser_mine_dmg_radius", "256", FCVAR_CHEAT, "Damage radius of laser mines");
 
+ConVar rda_laser_mine_ownerless_alien_friendly("rda_laser_mine_ownerless_alien_friendly", "0", FCVAR_CHEAT, "Mines unrelated to marines (VScript created) are alien friendly");
+
 LINK_ENTITY_TO_CLASS( asw_laser_mine, CASW_Laser_Mine );
 
 BEGIN_DATADESC( CASW_Laser_Mine )
@@ -338,7 +340,20 @@ bool CASW_Laser_Mine::ValidMineTarget(CBaseEntity *pOther)
 		if ( m_bFriendly.Get() && ( pOther->Classify() == CLASS_ASW_MARINE || pOther->Classify() == CLASS_ASW_COLONIST ) ) // friendly mines don't trigger on marines or colonists
 			return false;
 
-		return true;
+		if ( rda_laser_mine_ownerless_alien_friendly.GetBool() )
+		{
+			if (GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE) //mine placed by marine, ignoring alien friendly stuff
+				return true;
+			else //supposed to be Vscript placed mine.
+			{
+				if ( pOther->Classify() == CLASS_ASW_MARINE || pOther->Classify() == CLASS_ASW_COLONIST ) //if we are there with marine or colonist then our mine is not m_bFriendly, so hit a target
+					return true;
+
+				return false;
+			}
+		}
+
+ 		return true;
 	}
 
 	return false;
