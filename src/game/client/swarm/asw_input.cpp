@@ -1314,6 +1314,22 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 
 		int radAdjust = rd_controller_radius_adjust.GetInt();
 		int nScreenMin = MIN( ScreenWidth(), ScreenHeight() );
+		int radAdjustLimit = nScreenMin / 4;
+		if ( radAdjust < 0 )
+		{
+			int radAdjustPositive = -radAdjust;
+			if ( radAdjustPositive > radAdjustLimit )
+			{
+				radAdjust = -radAdjustLimit;
+			}
+		}
+		else
+		{
+			if ( radAdjust > radAdjustLimit )
+			{
+				radAdjust = radAdjustLimit;
+			}
+		}
 		*mx = x + ( ( nScreenMin * flForwardFraction + radAdjust ) * cos( DEG2RAD( joy_yaw ) ) );
 		*my = y + ( ( nScreenMin * flForwardFraction + radAdjust ) * sin( DEG2RAD( joy_yaw ) ) );
 	}
