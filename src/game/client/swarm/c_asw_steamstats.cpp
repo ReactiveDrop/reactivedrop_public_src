@@ -1488,7 +1488,19 @@ static const char *LB_whitelist[] =
 	"RD_SpeedRun_935767408_asbicarnagex2/",
 	"RD_Hard_SpeedRun_935767408_asbicarnagex2/",
 	"RD_Insane_SpeedRun_935767408_asbicarnagex2/",
-	"RD_imba_SpeedRun_935767408_asbicarnagex2/"
+	"RD_imba_SpeedRun_935767408_asbicarnagex2/",
+
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng/",
+	"RD_imba_SpeedRun_2082369328_asbi_weapons_balancing_rng/",
+
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng_c2/",
+	"RD_imba_SpeedRun_2082369328_asbi_weapons_balancing_rng_c2/",
+
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng2/",
+	"RD_imba_SpeedRun_2082369328_asbi_weapons_balancing_rng2/",
+
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng2_c2/",
+	"RD_imba_SpeedRun_2082369328_asbi_weapons_balancing_rng2_c2/"
 };
 
 static bool StartsWith( const char *str, const char *pre )
