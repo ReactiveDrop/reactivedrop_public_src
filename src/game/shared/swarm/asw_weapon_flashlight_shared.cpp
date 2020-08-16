@@ -62,10 +62,7 @@ CASW_Weapon_Flashlight::~CASW_Weapon_Flashlight()
 
 void CASW_Weapon_Flashlight::MarineDropped(CASW_Marine* pMarine)
 {
-	if ( !rd_allow_flashlight.GetBool() )
-	{
-		pMarine->FlashlightTurnOff();
-	}
+	pMarine->FlashlightTurnOff();
 
 	BaseClass::MarineDropped(pMarine);
 }
