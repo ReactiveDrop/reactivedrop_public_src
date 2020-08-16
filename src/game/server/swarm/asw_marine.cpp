@@ -100,6 +100,7 @@ ConVar rd_pvp_marine_take_damage_from_bots("rd_pvp_marine_take_damage_from_bots"
 ConVar rd_bot_strong( "rd_bot_strong", "1", FCVAR_CHEAT, "If 1, bots take only 25% of damage in a co-op game" );
 ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_grenade", "1", FCVAR_CHEAT, "Players take damage from bots' grenade launchers" );
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
+static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
@@ -1385,7 +1386,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 						Msg("  but all ignored, since it's FF meleee dmg\n");
 					return 0;
 				}
-			}			
+			}
+
+			if ( newInfo.GetWeapon()->Classify() == CLASS_ASW_GAS_GRENADE )
+			{
+				newInfo.SetDamage( rd_gas_grenade_ff_dmg.GetInt() );
+			}
 
 			// drop the damage down by our absorption buffer
 			bool bFlamerDot = !!(newInfo.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) );
