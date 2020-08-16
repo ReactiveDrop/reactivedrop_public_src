@@ -6749,9 +6749,9 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 	{
 		int iFov = atoi(pszFov);
 		if ( m_bIsIntro )
-			iFov = clamp( iFov, 20, 90 );
+			iFov = clamp( iFov, 20, 75 );
 		else
-			iFov = clamp( iFov, 20, 90 );
+			iFov = clamp( iFov, 20, 75 );
 		pPlayer->SetDefaultFOV( iFov );
 	}
 }
