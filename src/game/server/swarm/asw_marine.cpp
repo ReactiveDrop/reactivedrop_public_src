@@ -1388,7 +1388,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				}
 			}
 
-			if ( newInfo.GetWeapon()->Classify() == CLASS_ASW_GAS_GRENADE )
+			if ( newInfo.GetWeapon() && newInfo.GetWeapon()->Classify() == CLASS_ASW_GAS_GRENADE )
 			{
 				newInfo.SetDamage( rd_gas_grenade_ff_dmg.GetInt() );
 			}
