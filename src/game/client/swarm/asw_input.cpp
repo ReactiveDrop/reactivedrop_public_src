@@ -1300,8 +1300,8 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 		//SmoothControllerYaw( C_ASW_Player::GetLocalASWPlayer(), joy_yaw );
 		if ( asw_DebugAutoAim.GetBool() )
 		{
-			Msg( "joy yaw %f len %f p %f y %f last %f ", joy_yaw, length, m_fJoypadPitch, m_fJoypadYaw, last_joy_yaw );	
-			Msg( "cos %f sin %f\n", cos(DEG2RAD(joy_yaw)), sin(DEG2RAD(joy_yaw)) );
+			DevMsg( "joy yaw %f len %f p %f y %f last %f ", joy_yaw, length, m_fJoypadPitch, m_fJoypadYaw, last_joy_yaw );	
+			DevMsg( "cos %f sin %f\n", cos(DEG2RAD(joy_yaw)), sin(DEG2RAD(joy_yaw)) );
 		}
 		// float dist_fraction = 1.0f;	// always put crosshair a fixed distance from the marine
 		//float dist_fraction = length;
