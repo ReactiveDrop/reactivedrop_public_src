@@ -543,9 +543,9 @@ int GetWeaponLevelRequirement( const char *szWeaponClass )
 }
 
 #ifdef CLIENT_DLL
-#ifdef _DEBUG
-ConVar asw_unlock_all_weapons( "asw_unlock_all_weapons", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "If enabled, all weapons will be available in the briefing" );
-#endif
+//#ifdef _DEBUG
+ConVar asw_unlock_all_weapons( "asw_unlock_all_weapons", "0", FCVAR_CHEAT /*| FCVAR_DEVELOPMENTONLY*/, "If enabled, all weapons will be available in the briefing" );
+//#endif
 
 int CASW_Player::GetWeaponLevelRequirement( const char *szWeaponClass )
 {
@@ -554,10 +554,10 @@ int CASW_Player::GetWeaponLevelRequirement( const char *szWeaponClass )
 
 bool CASW_Player::IsWeaponUnlocked( const char *szWeaponClass )
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if ( asw_unlock_all_weapons.GetBool() )
 		return true;
-#endif
+//#endif
 
 	if ( C_ASW_Equip_Req::ForceWeaponUnlocked( szWeaponClass ) )
 		return true;
