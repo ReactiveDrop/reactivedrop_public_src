@@ -74,6 +74,8 @@ ConVar asw_hear_pos_debug("asw_hear_pos_debug", "0", FCVAR_NONE, "Shows audio he
 ConVar asw_hear_height("asw_hear_height", "0", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
 ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio position is locked in place.  Use asw_set_hear_pos to set the fixed position to the current audio location." );
 
+ConVar asw_tree_sway_enabled("asw_tree_sway_enabled", "0", FCVAR_NONE, "If set, trees sway in the wind.", true, 0, true, 1);
+
 Vector g_asw_vec_fixed_cam(-276.03076, -530.74951, -196.65625);
 QAngle g_asw_ang_fixed_cam(42.610226, 90.289375, 0);
 extern ConVar asw_vehicle_cam_height;
@@ -878,10 +880,23 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 		{
 			pPlayer->OnMissionRestart();
 		}
+
 	}
 	else if ( Q_strcmp( "game_newmap", eventname ) == 0 )
 	{
 		engine->ClientCmd("exec newmapsettings\n");
+
+		if (asw_tree_sway_enabled.GetBool())
+		{
+			int WindDir = random->RandomInt(8, 24);
+			bool Swap = random->RandomInt(0, 1);
+			if (!Swap)
+				engine->ClientCmd(VarArgs("cl_tree_sway_dir %d %d", WindDir, -WindDir));
+			else
+				engine->ClientCmd(VarArgs("cl_tree_sway_dir %d %d", -WindDir, WindDir));
+		}
+		else
+			engine->ClientCmd("cl_tree_sway_dir 0 0");
 
 		// BenLubar: Support configloader config files from that one HUD mod: https://steamcommunity.com/app/630/discussions/0/522728268792383118/
 		engine->ClientCmd_Unrestricted( VarArgs( "execifexists configloader/maps/%s\n", engine->GetLevelNameShort() ) );
