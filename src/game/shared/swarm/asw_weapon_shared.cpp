@@ -26,6 +26,7 @@
 	#include "asw_gamestats.h"
 	#include "ammodef.h"
 	#include "asw_achievements.h"
+	#include "asw_fx_shared.h"
 #endif
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
@@ -47,6 +48,11 @@
 ConVar asw_weapon_max_shooting_distance( "asw_weapon_max_shooting_distance", "1500", FCVAR_REPLICATED, "Maximum distance of the hitscan weapons." );
 ConVar asw_weapon_force_scale("asw_weapon_force_scale", "1.0f", FCVAR_REPLICATED, "Force of weapon shots");
 ConVar asw_fast_reload_enabled( "asw_fast_reload_enabled", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Use fast reload mechanic?" );
+#ifdef GAME_DLL
+ConVar rd_fast_reload_explode_chance( "rd_fast_reload_explode_chance", "0.0f", FCVAR_CHEAT, "0-1 chance for marine to explode on failed fast reload" );
+ConVar rd_fast_reload_explode_damage( "rd_fast_reload_explode_damage", "50.0f", FCVAR_CHEAT, "Damage of the fast reload fail explosion" );
+ConVar rd_fast_reload_explode_radius( "rd_fast_reload_explode_radius", "50.0f", FCVAR_CHEAT, "Radius of the fast reload fail explosion" );
+#endif
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
@@ -258,6 +264,21 @@ void CASW_Weapon::ItemBusyFrame( void )
 
 #ifdef GAME_DLL
 				pMarine->m_nFastReloadsInARow = 0;
+
+				if (rd_fast_reload_explode_chance.GetFloat() > 0)
+				{
+					float flStartFraction = random->RandomFloat( 0.0f, 1.0f );
+					if ( rd_fast_reload_explode_chance.GetFloat() > flStartFraction )
+					{
+						UTIL_ASW_GrenadeExplosion( GetAbsOrigin(), rd_fast_reload_explode_radius.GetFloat() );
+						EmitSound( "ASWGrenade.Explode" );
+
+						// damage to nearby things
+						CTakeDamageInfo info( this, pMarine, rd_fast_reload_explode_damage.GetFloat(), DMG_BLAST );
+						info.SetWeapon( this );
+						ASWGameRules()->RadiusDamage( info, GetAbsOrigin(), rd_fast_reload_explode_radius.GetFloat(), CLASS_NONE, NULL );
+					}
+				}
 #endif
 
 				DispatchParticleEffect( "reload_fail", PATTACH_POINT_FOLLOW, this, "muzzle" );
