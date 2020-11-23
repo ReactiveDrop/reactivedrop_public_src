@@ -1073,6 +1073,7 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 #else
 
+extern bool g_bAIDisabledByUser;
 extern ConVar asw_springcol;
 ConVar asw_blip_speech_chance("asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity");
 ConVar asw_instant_restart("asw_instant_restart", "0", 0, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
@@ -1219,6 +1220,17 @@ CAlienSwarm::CAlienSwarm()
 
 	m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/overviews/%s.txt", STRING( gpGlobals->mapname ) ) );
 	EnableChallenge( rd_challenge.GetString() );
+
+	ConVarRef sv_cheats( "sv_cheats" );
+	if ( !sv_cheats.GetBool() )
+	{
+		if ( CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI )
+		{
+			CAI_BaseNPC::m_nDebugBits &= ~bits_debugDisableAI;
+			DevMsg( "AI Enabled.\n" );
+			g_bAIDisabledByUser = false;
+		}
+	}
 }
 
 CAlienSwarm::~CAlienSwarm()
