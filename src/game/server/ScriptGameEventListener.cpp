@@ -507,6 +507,7 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "damage_amplifier_placed" );
 	ListenForGameEvent( "weapon_fire" );
 	ListenForGameEvent( "weapon_offhand_activate" );
+	ListenForGameEvent( "laser_mine_active" );
 
 	return true;
 }

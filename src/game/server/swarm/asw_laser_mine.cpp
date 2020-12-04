@@ -340,6 +340,9 @@ bool CASW_Laser_Mine::ValidMineTarget(CBaseEntity *pOther)
 		if ( m_bFriendly.Get() && ( pOther->Classify() == CLASS_ASW_MARINE || pOther->Classify() == CLASS_ASW_COLONIST ) ) // friendly mines don't trigger on marines or colonists
 			return false;
 
+		if ( pOther->GetRenderMode() == kRenderNone )
+			return false;
+
 		if ( rda_laser_mine_ownerless_alien_friendly.GetBool() )
 		{
 			if (GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE) //mine placed by marine, ignoring alien friendly stuff
