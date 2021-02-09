@@ -2178,6 +2178,19 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 			return;
 		pOldMarine->UninhabitedBy( this );
 	}
+	else
+	{
+		// old marine is dead and deleted, uninhabit marine resource
+		int max_marines = ASWGameResource()->GetMaxMarineResources();
+		for ( int i = 0; i < max_marines; i++ )
+		{
+			CASW_Marine_Resource* pRes = ASWGameResource()->GetMarineResource( i );
+			if ( pRes && pRes->GetCommander() == this && pRes->IsInhabited() )
+			{
+				pRes->SetInhabited( false );
+			}
+		}
+	}
 
 	if ( asw_rts_controls.GetBool() )
 	{
