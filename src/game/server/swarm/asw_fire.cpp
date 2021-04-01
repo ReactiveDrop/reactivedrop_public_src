@@ -1587,7 +1587,14 @@ void CEnvFireSource::Think()
 
 	for ( int i = 0; i < fireCount; i++ )
 	{
-		pFires[i]->AddHeat( m_damage * FIRESOURCE_THINK_TIME );
+		if (m_damage < 0)
+		{
+			pFires[i]->Extinguish(-m_damage * FIRESOURCE_THINK_TIME);
+		}
+		else
+		{
+			pFires[i]->AddHeat(m_damage * FIRESOURCE_THINK_TIME);
+		}
 	}
 }
 
