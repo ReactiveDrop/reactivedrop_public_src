@@ -68,12 +68,12 @@ CASW_Melee_System* ASWMeleeSystem()
 	return g_pMeleeSystem;
 }
 
-ConVar asw_melee_debug( "asw_melee_debug", "0", FCVAR_REPLICATED, "Debugs the melee system. Set to 2 for position updates" );
-ConVar asw_melee_require_contact( "asw_melee_require_contact", "0", FCVAR_REPLICATED, "Melee requires contact to transition to the next combo" );
-ConVar asw_melee_lock( "asw_melee_lock", "0", FCVAR_REPLICATED, "Marine is moved to the nearest enemy when melee attacking" );
+ConVar asw_melee_debug( "asw_melee_debug", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Debugs the melee system. Set to 2 for position updates" );
+ConVar asw_melee_require_contact( "asw_melee_require_contact", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Melee requires contact to transition to the next combo" );
+ConVar asw_melee_lock( "asw_melee_lock", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Marine is moved to the nearest enemy when melee attacking" );
 ConVar asw_melee_require_key_release( "asw_melee_require_key_release", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Melee requires key release between attacks" );
 ConVar asw_melee_base_damage( "asw_melee_base_damage", "12.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The melee damage that marines do at level 1 (scales up with level)" );
-ConVar asw_marine_rolls( "asw_marine_rolls", "1", FCVAR_REPLICATED, "If set, marine will do rolls when jump is pressed" );
+ConVar asw_marine_rolls( "asw_marine_rolls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "If set, marine will do rolls when jump is pressed" );
 #ifdef CLIENT_DLL
 ConVar asw_melee_lock_distance( "asw_melee_lock_distance", "35", FCVAR_CHEAT, "Dist marine slides to when locked onto a melee target" );
 ConVar asw_melee_lock_slide_speed( "asw_melee_lock_slide_speed", "200", FCVAR_CHEAT, "Speed at which marine slides into place when target locked in melee" );
