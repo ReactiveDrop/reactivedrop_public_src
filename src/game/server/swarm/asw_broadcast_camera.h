@@ -14,12 +14,14 @@ public:
 	void Spawn( void );
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	void Enable( void );
+	void EnableForPlayerIndex(int playerindex);
 	void Disable( void );
 	void FollowTarget( void );
 	void Move(void);
 
 	// asw
 	void UpdateAllPlayers();
+	void UpdatePlayerByID(int playerindex);
 	void RestoreAllPlayerViews();
 
 	// Always transmit to clients so they know where to move the view to
@@ -29,6 +31,7 @@ public:
 
 	// Input handlers
 	void InputEnable( inputdata_t &inputdata );
+	void InputEnableForPlayerIndex( inputdata_t &inputdata );
 	void InputDisable( inputdata_t &inputdata );
 
 private:

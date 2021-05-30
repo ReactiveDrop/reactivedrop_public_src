@@ -41,6 +41,7 @@ BEGIN_DATADESC( CASW_Broadcast_Camera )
 
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "EnableForPlayerIndex", InputEnableForPlayerIndex ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
 	// Function Pointers
@@ -121,6 +122,17 @@ void CASW_Broadcast_Camera::InputEnable( inputdata_t &inputdata )
 	Enable();
 }
 
+void CASW_Broadcast_Camera::InputEnableForPlayerIndex(inputdata_t &inputdata)
+{
+	if ( inputdata.value.FieldType() == FIELD_INTEGER )
+	{
+		EnableForPlayerIndex( inputdata.value.Int() );
+	}
+	else
+	{
+		Warning( "Invalid parameter passed into asw_broadcast_camera.EnableForPlayerIndex. Only integers are accepted.\n" );
+	}
+}
 
 //------------------------------------------------------------------------------
 // Purpose: Input handler to turn off this trigger.
@@ -273,6 +285,83 @@ void CASW_Broadcast_Camera::Enable( void )
 	DispatchUpdateTransmitState();
 }
 
+// to be used in very specific circumstances
+void CASW_Broadcast_Camera::EnableForPlayerIndex( int playerindex )
+{
+	m_state = USE_ON;
+
+	m_flReturnTime = gpGlobals->curtime + m_flWait;
+	m_flSpeed = m_initialSpeed;
+	m_targetSpeed = m_initialSpeed;
+
+	if (HasSpawnFlags(SF_CAMERA_PLAYER_SNAP_TO))
+	{
+		m_bSnapToGoal = true;
+	}
+
+	m_hTarget = GetNextTarget();
+
+	if (m_hTarget)
+	{
+		m_iAttachmentIndex = 0;
+		if (m_iszTargetAttachment != NULL_STRING)
+		{
+			if (!m_hTarget->GetBaseAnimating())
+			{
+				Warning("%s tried to target an attachment (%s) on target %s, which has no model.\n", GetClassname(), STRING(m_iszTargetAttachment), STRING(m_hTarget->GetEntityName()));
+			}
+			else
+			{
+				m_iAttachmentIndex = m_hTarget->GetBaseAnimating()->LookupAttachment(STRING(m_iszTargetAttachment));
+				if (!m_iAttachmentIndex)
+				{
+					Warning("%s could not find attachment %s on target %s.\n", GetClassname(), STRING(m_iszTargetAttachment), STRING(m_hTarget->GetEntityName()));
+				}
+			}
+		}
+	}
+
+	if (m_sPath != NULL_STRING)
+	{
+		m_pPath = gEntList.FindEntityByName(NULL, m_sPath, NULL); //, m_hPlayer );
+	}
+	else
+	{
+		m_pPath = NULL;
+	}
+
+	m_flStopTime = gpGlobals->curtime;
+	if (m_pPath)
+	{
+		if (m_pPath->m_flSpeed != 0)
+			m_targetSpeed = m_pPath->m_flSpeed;
+
+		m_flStopTime += m_pPath->GetDelay();
+		m_vecMoveDir = m_pPath->GetLocalOrigin() - GetLocalOrigin();
+		m_moveDistance = VectorNormalize(m_vecMoveDir);
+		m_flStopTime = gpGlobals->curtime + m_pPath->GetDelay();
+	}
+	else
+	{
+		m_moveDistance = 0;
+	}
+
+	SetAbsVelocity(vec3_origin); 
+
+	UpdatePlayerByID( playerindex );
+
+	if (m_hTarget)
+	{
+		// follow the player down
+		SetThink(&CASW_Broadcast_Camera::FollowTarget);
+		SetNextThink(gpGlobals->curtime);
+	}
+
+	m_vecLastPos = GetAbsOrigin();
+	Move();
+
+	DispatchUpdateTransmitState();
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -488,6 +577,21 @@ void CASW_Broadcast_Camera::UpdateAllPlayers()
 	}
 }
 
+// note: does not set camera to first person mode
+void CASW_Broadcast_Camera::UpdatePlayerByID( int playerindex )
+{
+	//asw_controls.SetValue(0);
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerindex );
+
+	if (pPlayer)
+	{
+		if (HasSpawnFlags(SF_CAMERA_DISABLE_HUD))
+			pPlayer->m_Local.m_iHideHUD |= HIDEHUD_ALL;
+		if (HasSpawnFlags(SF_CAMERA_PLAYER_TAKECONTROL))
+			pPlayer->EnableControl(false);
+		pPlayer->SetViewEntity(this);
+	}
+}
 // puts player views back to normal
 void CASW_Broadcast_Camera::RestoreAllPlayerViews()
 {
