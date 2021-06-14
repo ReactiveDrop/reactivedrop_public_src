@@ -16,6 +16,7 @@ public:
 	virtual void Precache();
 	virtual void CheckNearbyDrones();
 	virtual void SetFuseLength(float fSeconds);
+	void VGrenadeTouch(CBaseEntity* pOther);
 	static CASW_Grenade_Cluster *Cluster_Grenade_Create( float flDamage, float fRadius, int iClusters, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon );	
 	virtual float GetEarliestAOEDetonationTime();
 	virtual void SetClusters(int iClusters, bool bMaster = false);
@@ -24,6 +25,10 @@ public:
 	float m_fDetonateTime;
 	float m_fEarliestAOEDetonationTime;
 	Class_T m_CreatorWeaponClass;
+
+	void SetAdvancedRicochet(bool bRicochet) { m_bAdvancedRicochet = bRicochet; }		// if set, grenade will ricochet with increaced velocity if no world contact explosion specified.
+	bool m_bAdvancedRicochet;
+	int m_iMaxRicochets;
 
 	// Classification
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_GRENADE_CLUSER; }

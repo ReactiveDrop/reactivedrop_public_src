@@ -36,7 +36,6 @@ public:
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void BurntAlien(CBaseEntity *pAlien);
 	void SetExplodeOnWorldContact( bool bExplode ) { m_bExplodeOnWorldContact = bExplode; }		// if set, grenade will explode on the first thing it touches
-	void SetAdvancedRicochet( bool bRicochet ) { m_bAdvancedRicochet = bRicochet; }		// if set, grenade will ricochet with increaced velocity if no world contact explosion specified.
 
 	int m_iClusters;
 	bool m_bMaster;
@@ -46,9 +45,6 @@ public:
 
 	bool m_bKicked;
 	bool m_bExplodeOnWorldContact;
-
-	bool m_bAdvancedRicochet;
-	int m_iMaxRicochets;
 
 	CHandle<CSprite>		m_pMainGlow;
 	CHandle<CSpriteTrail>	m_pGlowTrail;

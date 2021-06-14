@@ -22,12 +22,17 @@ extern ConVar asw_grenade_vindicator_radius;
 extern ConVar asw_vindicator_grenade_friction;
 extern ConVar asw_vindicator_grenade_gravity;
 extern ConVar asw_vindicator_grenade_elasticity;
+extern ConVar rd_grenade_collision_fix;
+
 ConVar asw_cluster_grenade_min_detonation_time("asw_cluster_grenade_min_detonation_time", "0.9f", FCVAR_CHEAT, "Min. time before cluster grenade can detonate");
 ConVar asw_cluster_grenade_fuse("asw_cluster_grenade_fuse", "2.0f", FCVAR_CHEAT, "Fuse length of cluster grenade");
 ConVar asw_cluster_grenade_radius_check_interval("asw_cluster_grenade_radius_check_interval", "0.5f", FCVAR_CHEAT, "How often the cluster grenade checks for nearby drones to explode against");
 ConVar asw_cluster_grenade_radius_check_scale("asw_cluster_grenade_radius_check_scale", "0.6f", FCVAR_CHEAT, "What fraction of the grenade's damage radius is used for the early detonation check");
 ConVar asw_cluster_grenade_child_fuse_min("asw_cluster_grenade_child_fuse_min", "0.5", FCVAR_CHEAT, "Cluster grenade child cluster's minimum fuse length");
 ConVar asw_cluster_grenade_child_fuse_max("asw_cluster_grenade_child_fuse_max", "1.0", FCVAR_CHEAT, "Cluster grenade child cluster's maximum fuse length");
+
+ConVar rda_grenade_post_ricochet_velocity_multiplier("rda_grenade_post_ricochet_velocity_multiplier", "2", FCVAR_CHEAT, "Set to change GL grenade post ricochet velocity. Try values within [1..4] range");	//Orange. Advanced grenade behaviour.
+ConVar rda_grenade_max_ricochets("rda_grenade_max_ricochets", "1", FCVAR_CHEAT, "Set to change how many times GL grenade can bouncy, 0 = unlim till timer");	//Orange. Advanced grenade behaviour.
 
 LINK_ENTITY_TO_CLASS( asw_grenade_cluster, CASW_Grenade_Cluster );
 
@@ -38,6 +43,8 @@ BEGIN_DATADESC( CASW_Grenade_Cluster )
 	DEFINE_THINKFUNC( Detonate ),
 	DEFINE_FIELD( m_fDetonateTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fEarliestAOEDetonationTime, FIELD_TIME ),
+	DEFINE_FIELD( m_bAdvancedRicochet, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_iMaxRicochets, FIELD_INTEGER ),
 END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
@@ -62,7 +69,7 @@ void CASW_Grenade_Cluster::Spawn( void )
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
 
-	SetTouch( &CASW_Grenade_Vindicator::VGrenadeTouch );
+	SetTouch( &CASW_Grenade_Cluster::VGrenadeTouch );
 
 	CreateEffects();
 	m_hFirer = NULL;
@@ -79,6 +86,8 @@ void CASW_Grenade_Cluster::Spawn( void )
 
 	//EmitSound( "ASWGrenade.Alarm" );
 	SetFuseLength(asw_cluster_grenade_fuse.GetFloat());	
+
+	m_iMaxRicochets = 0;
 
 	if (m_fDetonateTime <= gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat())
 	{
@@ -295,4 +304,71 @@ float CASW_Grenade_Cluster::GetEarliestTouchDetonationTime()
 {
 	extern ConVar rd_grenade_launcher_arm_time;
 	return gpGlobals->curtime + rd_grenade_launcher_arm_time.GetFloat();
+}
+
+void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
+{
+	if ( !pOther || pOther == GetOwnerEntity() )
+		return;
+
+	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
+		return;
+
+	// reactivedrop: added ASW_COLLISION_GROUP_PASSABLE because 
+	// grenades from Grenade Launcher detonate on fire mines while
+	// all other grenades pass it
+	if ( pOther->GetCollisionGroup() == ASW_COLLISION_GROUP_PASSABLE )
+		return;
+
+	if ( rd_grenade_collision_fix.GetBool() && pOther->GetCollisionGroup() == COLLISION_GROUP_WEAPON )	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
+		return;
+
+	// make sure we don't die on things we shouldn't
+	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
+		return;
+
+	if ( pOther->m_takedamage == DAMAGE_NO )
+	{
+		if ( GetAbsVelocity().Length2D() > 60 )
+		{
+			EmitSound("Grenade.ImpactHard");
+		}
+	}
+
+	if ( m_bExplodeOnWorldContact )
+	{
+		Detonate();
+	}
+
+	//Orange. Ricochet stuff
+	if ( m_bAdvancedRicochet )
+	{
+		float multip = clamp( rda_grenade_post_ricochet_velocity_multiplier.GetFloat(), 1, 4 );
+		if ( rda_grenade_max_ricochets.GetInt() > 0 )
+		{
+			if ( rda_grenade_max_ricochets.GetInt() >= ++m_iMaxRicochets )
+			{
+				SetAbsVelocity( multip * GetAbsVelocity() );
+			}
+			else
+			{
+				Detonate();
+				return;
+			}
+		}
+		else
+		{
+			SetAbsVelocity( multip * GetAbsVelocity() );
+		}
+	}
+
+	// can't detonate yet?
+	if ( gpGlobals->curtime < m_fEarliestTouchDetonationTime )
+		return;
+
+	if ( pOther->m_takedamage != DAMAGE_NO )
+	{
+		if ( pOther->IsNPC() && pOther->Classify() != CLASS_ASW_MARINE )
+			Detonate();
+	}
 }
