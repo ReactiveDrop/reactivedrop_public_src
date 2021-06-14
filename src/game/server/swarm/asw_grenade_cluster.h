@@ -29,7 +29,7 @@ public:
 	void SetAdvancedRicochet(bool bRicochet) { m_bAdvancedRicochet = bRicochet; }		// if set, grenade will ricochet with increaced velocity if no world contact explosion specified.
 	bool m_bAdvancedRicochet;
 	int m_iMaxRicochets;
-
+	Vector m_vecInitPos;
 	// Classification
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_GRENADE_CLUSER; }
 };

@@ -2393,6 +2393,22 @@ bool CASW_Drone_Advanced::ShouldClearOrdersOnMovementComplete()
 	return BaseClass::ShouldClearOrdersOnMovementComplete();
 }
 
+static const char* s_pCollisionRestoreThink = "CollisionRestoreThink";
+
+//used to avoid grenade - backside drone collision bug
+void CASW_Drone_Advanced::CollisionSaveAndRestore( float delay )
+{
+	m_nAlienCollisionGroup = GetCollisionGroup();
+	SetContextThink( &CASW_Drone_Advanced::CollisionRestoreThink, gpGlobals->curtime + delay, s_pCollisionRestoreThink );
+}
+
+//used to avoid grenade - backside drone collision bug
+void CASW_Drone_Advanced::CollisionRestoreThink()
+{
+	SetCollisionGroup( m_nAlienCollisionGroup );
+	SetContextThink( NULL, gpGlobals->curtime, s_pCollisionRestoreThink );
+}
+
 AI_BEGIN_CUSTOM_NPC( asw_drone_advanced, CASW_Drone_Advanced )
 	DECLARE_CONDITION( COND_DRONE_BLOCKED_BY_DOOR )
 	DECLARE_CONDITION( COND_DRONE_DOOR_OPENED )

@@ -11,6 +11,8 @@
 #include "te_effect_dispatch.h"
 #include "asw_achievements.h"
 #include "asw_player.h"
+#include "asw_weapon_grenade_launcher.h"
+#include "asw_drone_advanced.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,6 +25,10 @@ extern ConVar asw_vindicator_grenade_friction;
 extern ConVar asw_vindicator_grenade_gravity;
 extern ConVar asw_vindicator_grenade_elasticity;
 extern ConVar rd_grenade_collision_fix;
+
+extern ConVar asw_grenade_launcher_gravity;
+extern ConVar rd_grenade_launcher_explode_on_contact;
+extern ConVar rda_grenade_launcher_grenade_ricochet;
 
 ConVar asw_cluster_grenade_min_detonation_time("asw_cluster_grenade_min_detonation_time", "0.9f", FCVAR_CHEAT, "Min. time before cluster grenade can detonate");
 ConVar asw_cluster_grenade_fuse("asw_cluster_grenade_fuse", "2.0f", FCVAR_CHEAT, "Fuse length of cluster grenade");
@@ -161,6 +167,7 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 	CASW_Grenade_Cluster *pGrenade = (CASW_Grenade_Cluster *)CreateEntityByName( "asw_grenade_cluster" );
 	pGrenade->SetAbsAngles( angles );
 	UTIL_SetOrigin( pGrenade, position );
+	pGrenade->m_vecInitPos = position;
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_DmgRadius = fRadius;
@@ -326,6 +333,61 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 	// make sure we don't die on things we shouldn't
 	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
+
+	//fix for situation when drone attacks through marine from behind and touches grenade launcher's grenade firing opposite direction
+	if ( pOther->IsNPC() && pOther->Classify() == CLASS_ASW_DRONE )
+	{
+		if ( m_hCreatorWeapon.Get() && m_hCreatorWeapon.Get()->Classify() == CLASS_ASW_GRENADE_LAUNCHER ) //filter out grenades not related to grenade laucher
+		{
+			CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(m_hFirer.Get());
+			if (pMarine)
+			{
+				Vector vecDist = pOther->GetAbsOrigin() - pMarine->GetAbsOrigin();
+				if (vecDist.LengthSqr() <= 3200) //some small enough delta squared. may have to increase for drone long ranged attack //around 41^2 in test when drone stays close
+				{
+					Vector vecNadeDir = UTIL_YawToVector(GetAbsAngles().y); //direction of nade, normalized
+					vecDist.z = 0;
+					vecDist.NormalizeInPlace();
+					float dotpr = DotProduct(vecDist, vecNadeDir); //cos of angle between our vectors, -1 gives us drone right opposite direction
+					if (dotpr < -0.5) //120 degree or more, so back-sided and back drones but not front
+					{
+						CASW_Drone_Advanced* pDrone = dynamic_cast<CASW_Drone_Advanced*>(pOther);
+						if (pDrone)
+						{
+							if ((m_vecInitPos - GetAbsOrigin()).LengthSqr() < 36)//check if we dont fire through marine head, some small delta squared //nade through head gives us around 60^2
+							{
+								pDrone->CollisionSaveAndRestore(0.2f); // calls think func //TODO: calculate time based on grenade speed through drone model?
+								pDrone->SetCollisionGroup(ASW_COLLISION_GROUP_PASSABLE); //make this drone notsolid to grenade
+
+								//for some reason we unable to change current grenade behaviour, so we create new instead with same data
+								//copy from void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
+								CASW_Grenade_Cluster* pGrenade = CASW_Grenade_Cluster::Cluster_Grenade_Create(
+									m_flDamage,
+									m_DmgRadius,
+									m_iClusters,
+									GetAbsOrigin(), GetAbsAngles(), GetAbsVelocity(), AngularImpulse(0, 0, 0), m_hFirer.Get(), m_hCreatorWeapon.Get());
+
+								UTIL_Remove(this);
+
+								if (pGrenade)
+								{
+									pGrenade->SetGravity(asw_grenade_launcher_gravity.GetFloat());
+
+									if (rda_grenade_launcher_grenade_ricochet.GetBool())
+										pGrenade->SetAdvancedRicochet(true);
+									else
+										pGrenade->SetExplodeOnWorldContact(rd_grenade_launcher_explode_on_contact.GetBool());
+
+									//pMarine->OnWeaponFired(this, 1); Do not fire stats since replacement
+								}
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
