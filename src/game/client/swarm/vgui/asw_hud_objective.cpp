@@ -26,6 +26,8 @@
 extern ConVar asw_draw_hud;
 extern ConVar asw_hud_alpha;
 
+ConVar rda_print_objective_completion_time("rda_print_objective_completion_time", "0", FCVAR_ARCHIVE, "Print objective completion time to the console");
+
 using namespace vgui;
 
 #define LETTER_INTERVAL 0.05f
@@ -81,6 +83,9 @@ CASWHudObjective::CASWHudObjective( const char *pElementName ) :
 	m_fLastVisibleTime = 0;
 	m_flShowObjectivesTime = 0;
 	m_bLastSpectating = false;
+
+	m_fPrevObjectiveTime = 0;
+	m_bPrObjTimeAltColorDrawing = false;
 
 	m_pHeaderGlowLabel = new vgui::Label(this, "HeaderLabelGlow", "#asw_objectives");
 	m_pObjectiveGlowLabel = new vgui::Label(this, "ObjectiveGlowLabel", "");
@@ -301,7 +306,36 @@ void CASWHudObjective::UpdateObjectiveList()
 				//Msg("Objective %d is now complete!\n", iCurrent);
 				m_bObjectiveComplete[iCurrent] = pObjective->IsObjectiveComplete();
 				if (pObjective->IsObjectiveComplete())
+				{
+					if (ASWGameRules())
+					{
+						Color col;
+						if (m_bPrObjTimeAltColorDrawing)
+							col = Color(0, 200, 200, 255);
+						else
+							col = Color(0, 255, 0, 255);
+
+						int iMissionTimeMS = (gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime) * 1000;
+						int iMinutes = iMissionTimeMS / 1000 / 60;
+						int iSeconds = (iMissionTimeMS / 1000) % 60;
+						int iMilliseconds = iMissionTimeMS % 1000;
+
+						int iDeltaTimeMS = (gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime - m_fPrevObjectiveTime) * 1000;
+						int iDeltaMin = iDeltaTimeMS / 1000 / 60;
+						int iDeltaSec = (iDeltaTimeMS / 1000) % 60;
+						int iDeltaMs = iDeltaTimeMS % 1000;
+
+						char szInfo[128];
+						Q_snprintf(szInfo, ARRAYSIZE(szInfo), "Objective complete! Time: %d:%02d.%03d Delta with previous objective: %d:%02d.%03d\n", iMinutes, iSeconds, iMilliseconds, iDeltaMin, iDeltaSec, iDeltaMs);
+						if ( rda_print_objective_completion_time.GetBool() )
+						{
+							ConColorMsg(col, "%s", szInfo);
+						}
+						m_fPrevObjectiveTime = gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime;
+					}
+
 					m_pTickBox[iCurrent]->SetImage("swarm/HUD/TickBoxTicked");
+				}
 				else
 					m_pTickBox[iCurrent]->SetImage("swarm/HUD/TickBoxEmpty");
 				if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)//  && !ASWGameRules()->IsTutorialMap()
@@ -497,6 +531,8 @@ void CASWHudObjective::LevelShutdown()
 	m_bPlayMissionCompleteSequence = false;
 	m_pObjectiveGlowLabel->SetAlpha(0);
 	m_flShowObjectivesTime = 0;
+	m_fPrevObjectiveTime = 0;
+	m_bPrObjTimeAltColorDrawing = !m_bPrObjTimeAltColorDrawing;
 }
 
 void CASWHudObjective::ShowObjectives( float fDuration )

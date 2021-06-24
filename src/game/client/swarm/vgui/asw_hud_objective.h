@@ -74,6 +74,9 @@ protected:
 	float m_fLastVisibleTime;
 	float m_flShowObjectivesTime;
 	bool m_bLastSpectating;
+	
+	float m_fPrevObjectiveTime;
+	bool m_bPrObjTimeAltColorDrawing;
 
 	CPanelAnimationVarAliasType( int, m_nBlackBarTexture, "BlackBarTexture", "vgui/swarm/HUD/ASWHUDBlackBar", "textureid" );
 };
