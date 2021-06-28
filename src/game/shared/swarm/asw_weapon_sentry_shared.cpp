@@ -328,6 +328,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			if ( pEnt1 )
 			{
 				pEnt1->SetDuration( 10000 );
+				pEnt1->AddEffects( EF_NODRAW );
 			}
 		}
 
@@ -338,6 +339,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			if ( pEnt2 )
 			{
 				pEnt2->SetDuration( 10000 );
+				pEnt2->AddEffects( EF_NODRAW );
 			}
 		}
 
@@ -350,6 +352,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			if ( pEnt3 )
 			{
 				pEnt3->SetDuration( 10000 );
+				pEnt3->AddEffects( EF_NODRAW );
 			}
 		}
 
@@ -362,6 +365,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			if ( pEnt4 )
 			{
 				pEnt4->SetDuration( 10000 );
+				pEnt4->AddEffects( EF_NODRAW );
 			}
 		}
 
