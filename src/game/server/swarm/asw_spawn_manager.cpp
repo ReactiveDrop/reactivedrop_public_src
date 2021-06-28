@@ -46,6 +46,7 @@ ConVar rd_horde_retry_on_fail( "rd_horde_retry_on_fail", "1", FCVAR_CHEAT, "When
 ConVar rd_horde_ignore_north_door( "rd_horde_ignore_north_door", "0", FCVAR_CHEAT, "If 1 hordes can spawn behind sealed and locked doors to the north from marines. Excluding indestructible doors." );
 ConVar rd_director_spawner_range( "rd_director_spawner_range", "600", FCVAR_CHEAT, "Radius around expected spawn point that the director can look for spawners");
 ConVar rd_director_spawner_bias( "rd_director_spawner_bias", "0.9", FCVAR_CHEAT, "0 (search from the node) to 1 (search from the nearest marine)", true, 0, true, 1);
+ConVar rd_horde_from_exit( "rd_horde_from_exit", "1", FCVAR_CHEAT, "If 0 hordes and wanderers cannot spawn in map exit zone. 1 by default" );
 
 CASW_Spawn_Manager::CASW_Spawn_Manager()
 {
@@ -533,17 +534,20 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 			continue;
 
 		// check node isn't in an exit trigger
-		bool bInsideEscapeArea = false;
-		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
+		if ( !rd_horde_from_exit.GetBool() )
 		{
-			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+			bool bInsideEscapeArea = false;
+			for ( int d = 0; d < m_EscapeTriggers.Count(); d++ )
 			{
-				bInsideEscapeArea = true;
-				break;
+				if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
+				{
+					bInsideEscapeArea = true;
+					break;
+				}
 			}
+			if ( bInsideEscapeArea )
+				continue;
 		}
-		if ( bInsideEscapeArea )
-			continue;
 
 		if ( vecPos.y >= vecSouthMarine.y )
 		{
