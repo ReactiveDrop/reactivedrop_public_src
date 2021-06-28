@@ -652,7 +652,7 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 #else
 	);
 #endif
-ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 env_slomo will be deleted from map on round start(if present)" );
+ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
 
 #define ADD_STAT( field, amount ) \
