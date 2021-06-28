@@ -12620,6 +12620,17 @@ int CAI_BaseNPC::WalkMove( const Vector& vecPosition, unsigned int mask )
 	VectorCopy( GetAbsOrigin(), oldorg );
 	VectorAdd( oldorg, move, neworg );
 
+	UTIL_TraceEntity( this, oldorg, neworg, mask, &trace );
+	if ( trace.allsolid || trace.startsolid )
+	{
+		return false;
+	}
+
+	if (trace.fraction != 1.0f)
+	{
+		VectorAdd( oldorg, move * trace.fraction, neworg );
+	}
+
 	// push down from a step height above the wished position
 	float flStepSize = sv_stepsize.GetFloat();
 	neworg[2] += flStepSize;
