@@ -133,11 +133,16 @@ float CASW_Shaman::MaxYawSpeed( void )
 // Output:	
 //-----------------------------------------------------------------------------
 void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
-{	
-	// sounds for pain and death are defined in the npc_tier_tables excel sheet
-	// they are called from the asw_alien base class (m_fNextPainSound is handled there)
-	BaseClass::PainSound(info);
-	m_fNextPainSound = gpGlobals->curtime + RandomFloat( 0.75f, 1.25f );
+{
+	// reactivedrop: apparently npc_tier_tables don't work, changed to EmitSound()
+	//	// sounds for pain and death are defined in the npc_tier_tables excel sheet
+	//	// they are called from the asw_alien base class (m_fNextPainSound is handled there)
+	//	BaseClass::PainSound(info);
+	if ( gpGlobals->curtime > m_fNextPainSound )
+	{
+		EmitSound( "Shaman.Pain" );
+		m_fNextPainSound = gpGlobals->curtime + RandomFloat( 0.75f, 1.25f );
+	}
 }
 
 
@@ -148,9 +153,11 @@ void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CASW_Shaman::DeathSound( const CTakeDamageInfo &info )
 {
-	// sounds for pain and death are defined in the npc_tier_tables excel sheet
-	// they are called from the asw_alien base class
-	BaseClass::DeathSound(info);
+	// reactivedrop: apparently npc_tier_tables don't work, changed to EmitSound()
+	//	// sounds for pain and death are defined in the npc_tier_tables excel sheet
+	//	// they are called from the asw_alien base class
+	//	BaseClass::DeathSound(info);
+	EmitSound( "Shaman.Die" );
 }
 
 
