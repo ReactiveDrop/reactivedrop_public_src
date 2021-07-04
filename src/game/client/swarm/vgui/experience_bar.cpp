@@ -17,6 +17,7 @@
 #include <tier0/memdbgon.h>
 
 ConVar asw_xp_screen_debug( "asw_xp_screen_debug", "0", FCVAR_CHEAT, "If enabled, XP screen will show dummy player slots" );
+ConVar rd_console_debug_xp( "rd_console_debug_xp", "1", FCVAR_ARCHIVE, "Show client-sided xp award messages in console" );
 
 ExperienceBar::ExperienceBar(vgui::Panel *parent, const char *name) :
 	vgui::EditablePanel( parent, name )
@@ -116,7 +117,10 @@ void ExperienceBar::OnTick()
 			if ( nXP != m_nOldPlayerXP )
 			{
 				m_pExperienceBar->Init( nXP, nXP, 1.0, true, false );
-				Msg( "Experience bar in briefing set xp to %d\n", nXP );
+				if ( rd_console_debug_xp.GetInt() > 0 )
+				{
+					Msg( "Experience bar in briefing set xp to %d\n", nXP );
+				}
 				m_nOldPlayerXP = nXP;
 
 				m_iPlayerLevel = m_hPlayer->GetLevel();
@@ -201,7 +205,10 @@ void ExperienceBar::InitFor( C_ASW_Player *pPlayer )
 		UpdateLevelLabel();	
 
 		m_pExperienceBar->Init( pPlayer->GetExperience(), pPlayer->GetExperience(), 1.0f, true, false );
-		Msg( "init xp bar to %d / %d.  pPlayer->GetLevel() = %d\n", pPlayer->GetExperience(), pPlayer->GetExperience(), pPlayer->GetLevel() );
+		if ( rd_console_debug_xp.GetInt() > 0 )
+		{
+			Msg( "init xp bar to %d / %d.  pPlayer->GetLevel() = %d\n", pPlayer->GetExperience(), pPlayer->GetExperience(), pPlayer->GetLevel() );
+		}
 	}
 	else
 	{
@@ -218,8 +225,11 @@ void ExperienceBar::InitFor( C_ASW_Player *pPlayer )
 			flRate = (float) iEarnedXP;
 		}
 		m_pExperienceBar->Init( pPlayer->GetExperienceBeforeDebrief(), nGoalXP, flRate, true, false );
-		Msg( "init xp bar to %d / %d.  pPlayer->GetLevelBeforeDebrief() = %d\n", pPlayer->GetExperienceBeforeDebrief(), nGoalXP, pPlayer->GetLevelBeforeDebrief() );
 		
+		if ( rd_console_debug_xp.GetInt() > 0 )
+		{
+			Msg( "init xp bar to %d / %d.  pPlayer->GetLevelBeforeDebrief() = %d\n", pPlayer->GetExperienceBeforeDebrief(), nGoalXP, pPlayer->GetLevelBeforeDebrief() );
+		}
 		m_pExperienceBar->SetStartCountingTime( gpGlobals->curtime + 11.0f );
 	}
 }
