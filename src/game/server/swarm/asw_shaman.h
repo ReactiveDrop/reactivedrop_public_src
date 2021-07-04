@@ -57,6 +57,7 @@ private:
 	CAI_ASW_FearBehavior			m_FearBehavior;
 	CAI_ASW_ScuttleBehavior			m_ScuttleBehavior;
 	CAI_ASW_IdleBehavior			m_IdleBehavior;
+	float							m_flHealTime;
 
 protected:
 	DEFINE_CUSTOM_AI;
