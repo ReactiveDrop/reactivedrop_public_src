@@ -532,6 +532,7 @@ public:
 	int GetWeaponPositionForPickup(const char* szWeaponClass);	// returns which slot in the m_hWeapons array this pickup should go in
 	bool TakeWeaponPickup(CASW_Weapon* pWeapon);
 	bool TakeWeaponPickup(CASW_Pickup_Weapon* pPickup);				// takes a weapon	
+	bool RefillHealGun(CBaseEntity* pWeaponPickup);
 	bool DropWeapon(int iWeaponIndex, bool bNoSwap = false);		// drops the weapon on the ground as a weapon pickup
 	bool RemoveWeapon(int iWeaponIndex, bool bNoSwap = false);		// removes the weapon from marine without dropping it to the ground
 	bool DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget=NULL, const Vector *pVelocity=NULL);
