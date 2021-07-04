@@ -41,6 +41,10 @@ private:
 	#endif
 
 		Type_String_t,
+		Type_Bool,
+		Type_EHandle,
+		Type_ClassPtr,
+		Type_Std_String,
 		Type_InvalidOrMax
 	};
 
@@ -67,6 +71,18 @@ private:
 
 	// Searches a ServerClass's SendTable and datamap and returns pertinent prop info
 	inline PropInfo_t GetEntityPropInfo( CBaseEntity *pBaseEntity, const char *pstrProperty, int element );
+
+	// Gets the value of a SendProp and stores it in a table
+	inline void StoreSendPropValue( SendProp *pSendProp, CBaseEntity *pBaseEntity, int iOffset, int iElement, HSCRIPT hTable );
+
+	// Gets the value of a DataMap prop and stores it in a table
+	inline void StoreDataPropValue( typedescription_t *pTypeDesc, CBaseEntity *pBaseEntity, int iOffset, int iElement, HSCRIPT hTable );
+
+	// Iterates through the SendTable and stores prop names in a table
+	inline void CollectNestedSendProps( SendTable *pSendTable, CBaseEntity *pBaseEntity, int iOffset, HSCRIPT hTable );
+
+	// Iterates through the DataMap and stores prop names in a table
+	inline void CollectNestedDataMaps( datamap_t *pMap, CBaseEntity *pBaseEntity, int iOffset, HSCRIPT hTable );
 
 
 private:
@@ -146,9 +162,27 @@ public:
 
 	// Returns true if the netprop exists for the provided entity
 	bool HasProp( HSCRIPT hEnt, const char *pstrProperty );
-	
+
 	// Gets a string of the type of netprop value for the provided entity
 	const char *GetPropType( HSCRIPT hEnt, const char *pstrProperty );
+
+	// Gets a boolean netprop value for the provided entity
+	bool GetPropBool( HSCRIPT hEnt, const char *pstrProperty );
+
+	// Gets a boolean netprop array value for the provided entity
+	bool GetPropBoolArray( HSCRIPT hEnt, const char *pstrProperty, int element );
+
+	// Sets a boolean netprop value for the provided entity
+	void SetPropBool( HSCRIPT hEnt, const char *pstrProperty, bool value );
+
+	// Sets a boolean netprop array value for the provided entity
+	void SetPropBoolArray( HSCRIPT hEnt, const char *pstrProperty, bool value, int element );
+
+	// Fills in a passed table with all SendProps or DataMaps for the provided entity
+	void GetTable( HSCRIPT hEnt, int iPropType, HSCRIPT hTable );
+
+	// Fills in a passed table with property info for the provided entity
+	bool GetPropInfo( HSCRIPT hEnt, const char *pstrProperty, int element, HSCRIPT hTable );
 };
 
 
