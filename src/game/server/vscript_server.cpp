@@ -697,6 +697,30 @@ static float ScriptTraceLine( const Vector &vecStart, const Vector &vecEnd, HSCR
 	}
 }
 
+static void ScriptTraceLineTable( HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+	
+	// UTIL_TraceLine( vecAbsStart, vecAbsEnd, MASK_BLOCKLOS, pLooker, COLLISION_GROUP_NONE, ptr );
+	trace_t tr;
+	ScriptVariant_t start, end, mask, ignore;
+	g_pScriptVM->GetValue( hTable, "start", &start );
+	g_pScriptVM->GetValue( hTable, "end", &end );
+	g_pScriptVM->GetValue( hTable, "mask", &mask );
+	g_pScriptVM->GetValue( hTable, "ignore", &ignore );
+	const Vector &vecStart = Vector( start.m_pVector->x, start.m_pVector->y, start.m_pVector->z );
+	const Vector &vecEnd = Vector( end.m_pVector->x, end.m_pVector->y, end.m_pVector->z );
+	UTIL_TraceLine( vecStart, vecEnd, mask.m_int, ToEnt(ignore.m_hScript), COLLISION_GROUP_NONE, &tr );
+
+	g_pScriptVM->SetValue( hTable, "pos", tr.endpos );
+	g_pScriptVM->SetValue( hTable, "fraction", tr.fraction );
+	g_pScriptVM->SetValue( hTable, "hit", tr.DidHit() );
+	g_pScriptVM->SetValue( hTable, "enthit", ToHScript(tr.m_pEnt) );
+	g_pScriptVM->SetValue( hTable, "startsolid", tr.startsolid );
+	
+}
+
 HSCRIPT Script_PlayerInstanceFromIndex( int playerIndex )
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerIndex );
@@ -958,6 +982,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, SendToServerConsole, "Send a string to the server console as a command" );
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptTraceLine, "TraceLine", "given 2 points & ent to ignore, return fraction along line that hits world or models" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptTraceLineTable, "TraceLineTable", "Uses a configuration table to do a raytrace, puts return information into the table for return usage." );
 
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, FrameTime, "Get the time spent on the server in the last frame" );
