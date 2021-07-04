@@ -367,6 +367,56 @@ public:
 
 		return false;
 	}
+
+	void AddOutput( HSCRIPT hEntity, const char *szOutputName, const char *szTarget, const char *szTargetInput, const char *szParameter, float flDelay, int iTimesToFire )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+		{
+			DevMsg ("Error: Entity is NULL in EntityOutputs.AddOutput\n" );
+			return;
+		}
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+		{
+			DevMsg ("Error: Cannot find named output \"%s\" in EntityOutputs.AddOutput\n", szOutputName );
+			return;
+		}
+
+		CEventAction *pAction = new CEventAction( NULL );
+		pAction->m_iTarget = AllocPooledString( szTarget );
+		pAction->m_iTargetInput = AllocPooledString( szTargetInput );
+		pAction->m_iParameter = AllocPooledString( szParameter );
+		pAction->m_flDelay = flDelay;
+		pAction->m_nTimesToFire = iTimesToFire;
+		pOutput->AddEventAction( pAction );
+	}
+
+	void RemoveOutput( HSCRIPT hEntity, const char *szOutputName, const char *szTarget, const char *szTargetInput, const char *szParameter )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+		{
+			DevMsg ("Error: Entity is NULL in EntityOutputs.RemoveOutput\n" );
+			return;
+		}
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+		{
+			DevMsg ("Error: Cannot find named output \"%s\" in EntityOutputs.RemoveOutput\n", szOutputName );
+			return;
+		}
+
+		if ( V_strcmp( szTarget, "" ) == 0 )
+			pOutput->DeleteAllElements();
+		else
+		{
+			CEventAction *pAction = pOutput->GetFirstAction();
+			pOutput->ScriptRemoveEventAction( pAction, szTarget, szTargetInput, szParameter );
+		}
+	}
 } g_ScriptEntityOutputs;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIPT_SINGLETON "Used to get entity output data" )
@@ -374,6 +424,8 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIP
 	DEFINE_SCRIPTFUNC( GetOutputTable, "Arguments: ( entity, outputName, table, arrayElement ) - returns a table of output information" )
 	DEFINE_SCRIPTFUNC( HasOutput, "Arguments: ( entity, outputName ) - returns true if the output exists" )
 	DEFINE_SCRIPTFUNC( HasAction, "Arguments: ( entity, outputName ) - returns true if an action exists for the output" )
+	DEFINE_SCRIPTFUNC( AddOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter, delay, timesToFire ) - add a new output to the entity" )
+	DEFINE_SCRIPTFUNC( RemoveOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter ) - remove an output from the entity" )
 END_SCRIPTDESC();
 
 
