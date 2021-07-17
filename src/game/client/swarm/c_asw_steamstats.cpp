@@ -1383,6 +1383,17 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 	}
 }
 
+void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_Points_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount )
+{
+	entries.SetCount( nCount );
+
+	for (int i = 0; i < nCount; i++)
+	{
+		steamapicontext->SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
+	}
+}
+
+
 static const char *LB_whitelist[] =
 {
 	"RD_SpeedRun_0/",

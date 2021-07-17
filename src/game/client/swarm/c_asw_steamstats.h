@@ -94,12 +94,23 @@ struct LeaderboardScoreDetails_v2_t
 	uint8 m_iModeFlags;
 	uint32 m_iGameVersion;
 };
+struct LeaderboardScoreDetails_Points_t
+{
+	int16 m_iVersion;
+	char m_CountryCode[2];
+	int32 m_iAlienKills;
+	int32 m_iPlayerKills;
+	int32 m_iGamesWon;
+	int32 m_iGamesLost;	
+};
 #pragma pack(pop)
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) % sizeof( int32 ) == 0 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
 ASSERT_INVARIANT( ASW_NUM_MARINE_PROFILES - 1 == 7 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) % sizeof( int32 ) == 0 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_Points_t ) % sizeof( int32 ) == 0 );								// jh: what is this i dont know, but i copypaste and hope it work!
+ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_Points_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
 
 struct RD_LeaderboardEntry_t
 {
@@ -111,6 +122,13 @@ struct RD_LeaderboardEntry_t
 		LeaderboardScoreDetails_v2_t v2;
 	} details;
 };
+
+struct RD_LeaderboardEntry_Points_t
+{
+	LeaderboardEntry_t entry;
+	LeaderboardScoreDetails_Points_t details;
+};
+
 
 class CASW_Steamstats
 {
@@ -130,6 +148,7 @@ public:
 	void DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
 
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
+	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_Points_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
 
 private:
 	int32 m_iTotalKills;
