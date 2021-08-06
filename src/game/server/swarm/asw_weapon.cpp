@@ -333,6 +333,11 @@ void CASW_Weapon::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		return;
 
 	pMarine->TakeWeaponPickup(this);
+	if ( pMarine->IsInhabited() && pMarine->GetCommander() )
+	{
+		pMarine->GetCommander()->m_hUseKeyDownEnt = NULL;
+		pMarine->GetCommander()->m_flUseKeyDownTime = 0.0f;
+	}
 }
 
 //-----------------------------------------------------------------------------
