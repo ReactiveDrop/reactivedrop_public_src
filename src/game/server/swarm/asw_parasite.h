@@ -41,6 +41,7 @@ public:
 	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual void JumpAttack( bool bRandomJump, const Vector &vecPos = vec3_origin, bool bThrown = false );
 	void ScriptJumpAttack() { JumpAttack( true ); }		// BenLubar(key-values-director)
+	void ScriptJumpUp(); 
 	void Leap( const Vector &vecVel );
 	int RangeAttack1Conditions( float flDot, float flDist );
 	virtual float InnateRange1MinRange( void );

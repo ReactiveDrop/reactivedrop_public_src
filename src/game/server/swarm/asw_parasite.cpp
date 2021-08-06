@@ -87,6 +87,7 @@ END_DATADESC()
 // BenLubar(key-values-director)
 BEGIN_ENT_SCRIPTDESC( CASW_Parasite, CASW_Alien, "Alien Swarm parasite" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpAttack, "JumpAttack", "jump and attack something" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpUp, "JumpUp", "Jump up, like defanged parasites jump from dead harvester" )
 END_SCRIPTDESC()
 
 enum
@@ -1194,6 +1195,11 @@ int CASW_Parasite::SelectSchedule()
 	}
 
 	return BaseClass::SelectSchedule();
+}
+
+void CASW_Parasite::ScriptJumpUp()
+{
+	SetJumpFromEgg( true, RandomFloat( 30.0f, 70.0f ) );
 }
 
 void CASW_Parasite::SetJumpFromEgg(bool b, float flJumpDistance)
