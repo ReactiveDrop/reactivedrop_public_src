@@ -2857,6 +2857,14 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		return;
 	}
 
+#ifndef OUTRO_MAP
+	//Orange. OUTRO_MAP is not fully implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
+	if (CampaignMissionsLeft() <= 1) //at this point number not yet decreased
+	{
+		return;
+	}
+#endif
+
 	SetForceReady(ASW_FR_NONE);
 
 	// give each marine some skill points for finishing the mission	
@@ -2962,10 +2970,11 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 	}
 
 	pSave->SaveGameToFile();
-	
+
+#ifdef OUTRO_MAP
 	// if the marines have completed all the missions in the campaign, then launch to the outro instead
 	if (CampaignMissionsLeft()<=0)
-	{		
+	{	
 		SetGameState(ASW_GS_OUTRO);
 		// send user message telling clients to increment their 'campaigns completed' stat and to head to the outro map in x seconds
 
@@ -2992,6 +3001,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		m_fLaunchOutroMapTime = gpGlobals->curtime + 1.0f;
 	}
 	else	
+#endif
 	{
 		// make sure all players are marked as not ready
 		if (ASWGameResource())
