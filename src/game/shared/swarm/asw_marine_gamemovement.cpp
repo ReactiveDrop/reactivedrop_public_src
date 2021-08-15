@@ -63,9 +63,9 @@ extern IFileSystem *filesystem;
 	static ConVar marine_dispcoll_drawplane( "marine_dispcoll_drawplane", "0" );
 #endif
 
-static ConVar asw_marine_gravity( "asw_marine_gravity","800", FCVAR_REPLICATED, "Marine gravity." );
-static ConVar asw_marine_friction( "asw_marine_friction","10", FCVAR_NOTIFY | FCVAR_REPLICATED, "Marine movement friction." );
-static ConVar asw_sv_maxspeed( "asw_sv_maxspeed", "500", FCVAR_NOTIFY | FCVAR_REPLICATED);
+static ConVar asw_marine_gravity( "asw_marine_gravity","800", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine gravity." );
+static ConVar asw_marine_friction( "asw_marine_friction","10", FCVAR_CHEAT | FCVAR_NOTIFY | FCVAR_REPLICATED, "Marine movement friction." );
+static ConVar asw_sv_maxspeed( "asw_sv_maxspeed", "500", FCVAR_CHEAT | FCVAR_NOTIFY | FCVAR_REPLICATED);
 static ConVar asw_debug_steps("asw_debug_steps", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on moving up/down steps");
 static ConVar asw_debug_air_move("asw_debug_air_move", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on air moving");
 static ConVar rd_marine_jump_height( "rd_marine_jump_height", "70.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Sets marine jump height." );
