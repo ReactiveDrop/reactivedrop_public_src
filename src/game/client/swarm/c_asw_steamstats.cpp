@@ -213,7 +213,8 @@ bool IsDamagingWeapon( const char* szWeaponName, bool bIsExtraEquip )
 			!Q_strcmp( szWeaponName, "asw_weapon_mines" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_grenades" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_smart_bomb" ) ||
-			!Q_strcmp( szWeaponName, "asw_weapon_tesla_trap" ) )
+			!Q_strcmp( szWeaponName, "asw_weapon_tesla_trap" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_gas_grenades" ))
 			return true;
 		else
 			return false;
