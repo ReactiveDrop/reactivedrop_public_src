@@ -224,6 +224,8 @@ ConVar *sv_maxreplay = NULL;
 static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
 
+ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCVAR_NONE, "To Allow drawing debug overlays in release builds");
+
 #if !defined(NO_STEAM)
 //-----------------------------------------------------------------------------
 // Purpose: singleton accessor
@@ -1393,7 +1395,8 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 	*/
 
 //#ifdef _DEBUG  - allow this in release for now
-	DrawAllDebugOverlays();
+	if ( sv_draw_debug_overlays_release.GetBool() )
+		DrawAllDebugOverlays();
 //#endif
 	
 	IGameSystem::PreClientUpdateAllSystems();
