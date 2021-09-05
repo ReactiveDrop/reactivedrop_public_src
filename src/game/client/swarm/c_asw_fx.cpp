@@ -50,6 +50,8 @@ ConVar asw_pierce_spark_scale("asw_pierce_spark_scale", "0.9", 0, "Scale applied
 ConVar asw_tracer_style("asw_tracer_style", "1", FCVAR_ARCHIVE, "Specify tracer style. 0=none 1=normal 2=grey line");
 ConVar asw_use_particle_tracers( "asw_use_particle_tracers", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Use particle tracers instead of the old school HL2 ones" );
 
+static ConVar asw_create_generic_emitters_for_drone_gibs("asw_create_generic_emitters_for_drone_gibs", "1", FCVAR_NONE, "Create generic emitters for drone gibs");
+
 extern ConVar asw_muzzle_flash_new_type;
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASW )
@@ -476,33 +478,36 @@ public:
 
 		// attach an emitter ot it
 
-		C_ASW_Emitter *pEmitter = new C_ASW_Emitter;
-		if (pEmitter)
+		if ( asw_create_generic_emitters_for_drone_gibs.GetBool() )
 		{
-			if (pEmitter->InitializeAsClientEntity( NULL, false ))
+			C_ASW_Emitter* pEmitter = new C_ASW_Emitter;
+			if (pEmitter)
 			{
-				// randomly pick a jet, a drip or a burst
-				float f = random->RandomFloat();
-				if (f < 0.33f)
-					Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "dronebloodjet");
-				else if (f < 0.66f)
-					Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "dronebloodburst");
-				else
-					Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "droneblooddroplets");
-				pEmitter->m_fScale = 1.0f;
-				pEmitter->m_bEmit = true;
-				pEmitter->SetAbsOrigin(vecOrigin);
-				pEmitter->CreateEmitter();
-				pEmitter->SetAbsOrigin(vecOrigin + Vector(0,0,30));
-				pEmitter->SetAbsAngles(pGib->GetAbsAngles());
+				if (pEmitter->InitializeAsClientEntity(NULL, false))
+				{
+					// randomly pick a jet, a drip or a burst
+					float f = random->RandomFloat();
+					if (f < 0.33f)
+						Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "dronebloodjet");
+					else if (f < 0.66f)
+						Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "dronebloodburst");
+					else
+						Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "droneblooddroplets");
+					pEmitter->m_fScale = 1.0f;
+					pEmitter->m_bEmit = true;
+					pEmitter->SetAbsOrigin(vecOrigin);
+					pEmitter->CreateEmitter();
+					pEmitter->SetAbsOrigin(vecOrigin + Vector(0, 0, 30));
+					pEmitter->SetAbsAngles(pGib->GetAbsAngles());
 
-				// randomly pick an attach point
-				pEmitter->ClientAttach(pGib, "bleed");
-				pEmitter->SetDieTime(gpGlobals->curtime + asw_gib_bleed_time.GetFloat());	// stop emitting once the ragdoll gibs
-			}
-			else
-			{
-				UTIL_Remove( pEmitter );
+					// randomly pick an attach point
+					pEmitter->ClientAttach(pGib, "bleed");
+					pEmitter->SetDieTime(gpGlobals->curtime + asw_gib_bleed_time.GetFloat());	// stop emitting once the ragdoll gibs
+				}
+				else
+				{
+					UTIL_Remove(pEmitter);
+				}
 			}
 		}
 

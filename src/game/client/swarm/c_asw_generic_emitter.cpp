@@ -14,7 +14,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_mesh_emitter_draw("asw_mesh_emitter_draw", "1", FCVAR_CHEAT, "Draw meshes from mesh emitters");
+//ConVar asw_mesh_emitter_draw("asw_mesh_emitter_draw", "1", FCVAR_CHEAT, "Draw meshes from mesh emitters");
 ConVar asw_emitter_min_collision_speed("asw_emitter_min_collision_speed", "50", FCVAR_CHEAT, "Minimum speed to make a sound");
 ConVar asw_emitter_max_collision_speed("asw_emitter_max_collision_speed", "80", FCVAR_CHEAT, "Maximum speed that makes a full volume");
 
