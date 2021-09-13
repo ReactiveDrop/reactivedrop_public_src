@@ -3059,9 +3059,11 @@ void CBaseCombatCharacter::VScriptGiveAmmo( int iCount, int iAmmoIndex )
 
 
 ConVar	phys_stressbodyweights( "phys_stressbodyweights", "5.0" );
+ConVar	phys_applystressdamage( "phys_applystressdamage", "1.0", FCVAR_CHEAT, "Toggle stress damage on and off.", true, 0.0f, true, 1.0f );
 void CBaseCombatCharacter::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
-	ApplyStressDamage( pPhysics, false );
+	if ( phys_applystressdamage.GetBool() ) //Orange. Add this for testing. With high chance we can safelly disable it.
+		ApplyStressDamage( pPhysics, false );
 	BaseClass::VPhysicsUpdate( pPhysics );
 }
 
