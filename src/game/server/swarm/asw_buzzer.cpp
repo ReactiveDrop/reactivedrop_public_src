@@ -79,6 +79,9 @@
 
 #define	ASW_BUZZER_CHARGE_MIN_DIST	200
 
+#define ASW_BUZZER_SLEEP_CHECK_INTERVAL 1.0f
+#define ASW_BUZZER_PVS_CHECK_RANGE 384.0f
+
 ConVar	sk_asw_buzzer_health( "sk_asw_buzzer_health","30", FCVAR_CHEAT, "Health of the buzzer");
 ConVar	sk_asw_buzzer_melee_dmg( "sk_asw_buzzer_melee_dmg","15", FCVAR_CHEAT, "Damage caused by buzzer");
 ConVar	sk_asw_buzzer_melee_interval( "sk_asw_buzzer_melee_interval", "1.5", FCVAR_CHEAT, "Min time between causing damage to marines");
@@ -94,6 +97,12 @@ extern ConVar asw_stun_grenade_time;
 
 extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor, float flDamage);
 extern float	GetFloorZ(const Vector &origin);
+
+extern ConVar ai_efficiency_override;
+extern ConVar ai_frametime_limit;
+extern ConVar ai_use_think_optimizations;
+extern ConVar ai_use_efficiency;
+extern ConVar asw_draw_awake_ai;
 
 envelopePoint_t envBuzzerMoanIgnited[] =
 {
@@ -3292,6 +3301,167 @@ void CASW_Buzzer::ElectroStun( float flStunTime )
 void CASW_Buzzer::ScriptElectroStun( float flStunTime )
 {
 	ElectroStun( flStunTime );
+}
+
+// checks if a marine can see us
+// caches the results and won't recheck unless the specified interval has passed since the last check
+bool CASW_Buzzer::MarineCanSee(int padding, float interval)
+{
+	if (gpGlobals->curtime >= m_fLastMarineCanSeeTime + interval)
+	{
+		bool bCorpseCanSee = false;
+		m_bLastMarineCanSee = (UTIL_ASW_AnyMarineCanSee(GetAbsOrigin(), padding, bCorpseCanSee) != NULL) || bCorpseCanSee;
+		m_fLastMarineCanSeeTime = gpGlobals->curtime;
+	}
+	return m_bLastMarineCanSee;
+}
+
+// wake the buzzer up when a marine gets nearby
+void CASW_Buzzer::UpdateSleepState(bool bInPVS)
+{
+	if (GetSleepState() > AISS_AWAKE)		// buzzer is asleep, check for marines getting near to wake us up
+	{
+		// wake up if we have a script to run
+		if (m_hCine != NULL && GetSleepState() > AISS_AWAKE)
+		{
+			Wake();
+			VPhysicsGetObject()->Wake();
+		}
+
+		bInPVS = MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 0.1f);
+		if (bInPVS)
+			SetCondition(COND_IN_PVS);
+		else
+			ClearCondition(COND_IN_PVS);
+
+		if (GetSleepState() > AISS_AWAKE && GetSleepState() != AISS_WAITING_FOR_INPUT)
+		{
+			if (bInPVS)
+			{
+				if (asw_draw_awake_ai.GetBool())
+					NDebugOverlay::EntityText(entindex(), 1, "WAKING", 60, 255, 255, 0, 255);
+				Wake();
+				VPhysicsGetObject()->Wake();
+			}
+		}
+	}
+	else	// buzzer is awake, check for going back to ZZZ again :)
+	{
+		bool bHasOrders = (m_AlienOrders != AOT_None);
+
+		// Don't let an NPC sleep if they're running a script!
+		if (!ShouldAlwaysThink() && !bHasOrders && !IsInAScript() && m_NPCState != NPC_STATE_SCRIPT)
+		{
+			if (m_fLastSleepCheckTime < gpGlobals->curtime + ASW_BUZZER_SLEEP_CHECK_INTERVAL)
+			{
+				//if (!GetEnemy() && !MarineNearby(1024.0f) )
+				if (!GetEnemy() && !MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 2.0f))
+				{
+					SetSleepState(AISS_WAITING_FOR_PVS);
+
+					if (asw_draw_awake_ai.GetBool())
+						NDebugOverlay::EntityText(entindex(), 1, "SLEEPING", 600, 255, 255, 0, 255);
+
+					Sleep();
+					VPhysicsGetObject()->Sleep();
+					if (m_bVisibleWhenAsleep)
+						RemoveEffects(EF_NODRAW);
+				}
+				m_fLastSleepCheckTime = gpGlobals->curtime;
+			}
+		}
+	}
+	if (GetSleepState() == AISS_AWAKE)
+	{
+		if (!m_bRegisteredAsAwake)
+		{
+			//ASWSpawnManager()->OnAlienWokeUp(this);
+			m_bRegisteredAsAwake = true;
+		}
+	}
+	else
+	{
+		if (m_bRegisteredAsAwake)
+		{
+			//ASWSpawnManager()->OnAlienSleeping(this);
+			m_bRegisteredAsAwake = false;
+		}
+	}
+}
+
+void CASW_Buzzer::UpdateEfficiency(bool bInPVS)
+{
+	// Sleeping NPCs always dormant
+	if (GetSleepState() != AISS_AWAKE)
+	{
+		SetEfficiency(AIE_DORMANT);
+		return;
+	}
+
+	m_bInChoreo = (GetState() == NPC_STATE_SCRIPT || IsCurSchedule(SCHED_SCENE_GENERIC, false));
+
+#ifndef _RETAIL
+	if (!(ai_use_think_optimizations.GetBool() && ai_use_efficiency.GetBool()))
+	{
+		SetEfficiency(AIE_NORMAL);
+		SetMoveEfficiency(AIME_NORMAL);
+		return;
+	}
+#endif		
+
+	bool bInVisibilityPVS = (UTIL_FindClientInVisibilityPVS(edict()) != NULL);
+
+	//if ( bInPVS && MarineNearby(1024) ) 
+	if (bInPVS && MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 1.0f))
+	{
+		SetMoveEfficiency(AIME_NORMAL);
+	}
+	else
+	{
+		SetMoveEfficiency(AIME_EFFICIENT);
+	}
+
+	//---------------------------------
+
+	if (!IsRetail() && ai_efficiency_override.GetInt() > AIE_NORMAL && ai_efficiency_override.GetInt() <= AIE_DORMANT)
+	{
+		SetEfficiency((AI_Efficiency_t)ai_efficiency_override.GetInt());
+		return;
+	}
+
+	// Some conditions will always force normal
+	if (gpGlobals->curtime - GetLastAttackTime() < .15)
+	{
+		SetEfficiency(AIE_NORMAL);
+		return;
+	}
+
+	bool bFramerateOk = (gpGlobals->frametime < ai_frametime_limit.GetFloat());
+
+	if (IsForceGatherConditionsSet() ||
+		gpGlobals->curtime - GetLastAttackTime() < .2 ||
+		gpGlobals->curtime - m_flLastDamageTime < .2 ||
+		(GetState() < NPC_STATE_IDLE || GetState() > NPC_STATE_SCRIPT) ||
+		((bInPVS || bInVisibilityPVS) &&
+			((GetTask() && !TaskIsRunning()) ||
+				GetTaskInterrupt() > 0 ||
+				m_bInChoreo)))
+	{
+		SetEfficiency((bFramerateOk) ? AIE_NORMAL : AIE_EFFICIENT);
+		return;
+	}
+
+	SetEfficiency((bFramerateOk) ? AIE_EFFICIENT : AIE_VERY_EFFICIENT);
+}
+
+void CASW_Buzzer::UpdateOnRemove()
+{
+	if (m_bRegisteredAsAwake)
+	{
+		m_bRegisteredAsAwake = false;
+		//ASWSpawnManager()->OnAlienSleeping(this);
+	}
+	BaseClass::UpdateOnRemove();
 }
 
 //-----------------------------------------------------------------------------
