@@ -53,6 +53,7 @@ END_NETWORK_TABLE()
 #ifdef GAME_DLL
 ConVar asw_goo_volume("asw_goo_volume", "1.0f", FCVAR_CHEAT, "Volume of the alien goo looping sound");
 extern ConVar rd_biomass_ignite_from_explosions;
+ConVar rd_biomass_damage_from_explosions( "rd_biomass_damage_from_explosions", "0", FCVAR_CHEAT, "If 1, biomass will take damage from explosions" );
 LINK_ENTITY_TO_CLASS( asw_alien_goo, CASW_Alien_Goo );
 PRECACHE_WEAPON_REGISTER(asw_alien_goo);
 #endif
@@ -264,9 +265,10 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	// end of riflemod code 
 
 	// goo is only damaged by fire!
-	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) )
+	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) && 
+		 !( rd_biomass_damage_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST ) )
 		return 0;
-
+	
 	// notify the marine that he's hurting this, so his accuracy doesn't drop
 	if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
 	{
