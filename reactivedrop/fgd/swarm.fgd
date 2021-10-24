@@ -5975,6 +5975,8 @@
 		1 : "Yes"
 	]
 	
+	input Extinguish(void) : "Extinguish the biomass."
+	
 	output OnIgnite(void) : "Fired when the goo catches fire"
 	output OnGooDestroyed(void) : "Fired when the goo is destroyed"
 ]

@@ -78,6 +78,7 @@ BEGIN_DATADESC( CASW_Alien_Goo )
 	DEFINE_FUNCTION( GooTouch ),
 	DEFINE_FUNCTION( GooAcidTouch ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"Extinguish", InputExtinguish ),
 	DEFINE_OUTPUT( m_OnGooDestroyed,		"OnGooDestroyed" ),
 END_DATADESC()
 float CASW_Alien_Goo::s_fNextSpottedChatterTime = 0;
@@ -340,6 +341,16 @@ void CASW_Alien_Goo::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 	// set up a delay to burn our linked entities
 	SetThink( &CASW_Alien_Goo::BurningLinkThink );	
 	SetNextThink( gpGlobals->curtime + 2.0f );
+}
+
+void CASW_Alien_Goo::InputExtinguish( inputdata_t &inputdata )
+{
+	if ( !IsOnFire() )
+	{
+		return;
+	}
+
+	Extinguish();
 }
 
 void CASW_Alien_Goo::Extinguish()
