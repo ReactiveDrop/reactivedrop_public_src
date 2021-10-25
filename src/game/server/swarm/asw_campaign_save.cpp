@@ -1044,19 +1044,7 @@ void CASW_Campaign_Save::PlayerDisconnected(CASW_Player *pPlayer)
 	// check for ending the vote
 	if (pGameResource->AreAllOtherPlayersReady(pPlayer->entindex()))
 	{
-		if ( gpGlobals->maxClients > 1 )
-		{
-			if (!m_fVoteEndTime != 0)
-			{	
-				m_fVoteEndTime = gpGlobals->curtime + 4.0f;
-			}
-			SetThink( &CASW_Campaign_Save::VoteEndThink );
-			SetNextThink( m_fVoteEndTime );
-		}
-		else
-		{
-			VoteEnded();
-		}
+		VoteEnded();
 	}
 }
 
