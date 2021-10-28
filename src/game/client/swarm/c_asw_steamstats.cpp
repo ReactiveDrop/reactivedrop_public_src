@@ -284,6 +284,10 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_HEALAMP_GUN;
 	else if( FStrEq( szClassName, "asw_weapon_50calmg") )
 		return (Class_T)CLASS_ASW_50CALMG;
+	else if ( FStrEq( szClassName, "asw_weapon_heavy_rifle" ) )
+		return (Class_T) CLASS_ASW_HEAVY_RIFLE;
+	else if ( FStrEq( szClassName, "asw_weapon_medrifle" ) )
+		return (Class_T) CLASS_ASW_MEDRIFLE;
 
 	else if( FStrEq( szClassName, "asw_weapon_laser_mines") )
 		return (Class_T)CLASS_ASW_LASER_MINES;
