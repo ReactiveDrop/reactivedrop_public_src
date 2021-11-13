@@ -184,6 +184,7 @@ void CASW_AOEGrenade_Projectile::Spawn( void )
 
 	SetThink( &CASW_AOEGrenade_Projectile::AOEGrenadeThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
+	m_flLastDoAOE = gpGlobals->curtime;
 }
 
 void CASW_AOEGrenade_Projectile::Precache( void )
