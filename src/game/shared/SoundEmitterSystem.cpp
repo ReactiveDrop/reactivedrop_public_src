@@ -1206,7 +1206,7 @@ void SoundSystemPreloadSounds( void )
 
 #if !defined( CLIENT_DLL )
 
-CON_COMMAND( sv_soundemitter_flush, "Flushes the sounds.txt system (server only)" )
+CON_COMMAND_F( sv_soundemitter_flush, "Flushes the sounds.txt system (server only)", FCVAR_CHEAT )
 {
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
@@ -1223,7 +1223,7 @@ CON_COMMAND( sv_soundemitter_flush, "Flushes the sounds.txt system (server only)
 	// TODO:  when we go to a handle system, we'll need to invalidate handles somehow
 }
 
-CON_COMMAND( sv_soundemitter_filecheck, "Report missing wave files for sounds and game_sounds files." )
+CON_COMMAND_F( sv_soundemitter_filecheck, "Report missing wave files for sounds and game_sounds files.", FCVAR_CHEAT )
 {
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
@@ -1232,7 +1232,7 @@ CON_COMMAND( sv_soundemitter_filecheck, "Report missing wave files for sounds an
 	DevMsg( "---------------------------\nTotal missing files %i\n", missing );
 }
 
-CON_COMMAND( sv_findsoundname, "Find sound names which reference the specified wave files." )
+CON_COMMAND_F( sv_findsoundname, "Find sound names which reference the specified wave files.", FCVAR_CHEAT )
 {	
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;

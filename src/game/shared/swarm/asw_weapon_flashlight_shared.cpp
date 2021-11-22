@@ -17,6 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_allow_flashlight;
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Flashlight, DT_ASW_Weapon_Flashlight )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Flashlight, DT_ASW_Weapon_Flashlight )

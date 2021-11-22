@@ -540,10 +540,11 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 		Q_snwprintf( m_wszLeaderboardTitle, sizeof( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
+	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
 	char szLeaderboardName[k_cchLeaderboardNameMax];
-	if ( rd_leaderboard_by_difficulty.GetBool() )
+	if ( rd_leaderboard_by_difficulty.GetBool() && iSkillLevel > 2 )
 	{
-		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt(), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), iSkillLevel, pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	}
 	else
 	{
@@ -656,7 +657,7 @@ void LoadingProgress::SetupPoster( void )
 {
 	int i;
 	
-	bool bNamesVisible = false;
+	//bool bNamesVisible = false;
 	vgui::ImagePanel *pPoster = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "Poster" ) );
 	if ( pPoster )
 	{ 
@@ -690,20 +691,26 @@ void LoadingProgress::SetupPoster( void )
 
 			if ( m_bFullscreenPoster && bIsWidescreen && filesystem->FileExists( szMapLoadingImageVmtWide ) )
 			{
-				pszPosterImage = szMapLoadingImageWide;
+				pPoster->SetImage( szMapLoadingImageWide );
 			}
 			else if ( filesystem->FileExists( szMapLoadingImageVmt ) )
 			{
-				pszPosterImage = szMapLoadingImage;
+				pPoster->SetImage( szMapLoadingImage );
+			}
+			else
+			{
+				pPoster->SetImage( pszPosterImage );
 			}
 		}
-
-		// if the image was cached this will just hook it up, otherwise it will load it
-		pPoster->SetImage( pszPosterImage );
-		if ( pPoster->GetImage() )
+		else
 		{
-			bNamesVisible = true;
+			// if the image was cached this will just hook it up, otherwise it will load it
+			pPoster->SetImage( pszPosterImage) ;
 		}
+		//if ( pPoster->GetImage() )
+		//{
+		//	bNamesVisible = true;
+		//}
 	}
 
 	if ( m_pChapterInfo && m_pChapterInfo->GetString( "image", NULL ) )

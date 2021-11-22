@@ -89,6 +89,9 @@ END_DATADESC()
 
 CUtlVector<CASW_TeslaTrap*> g_aTeslaTraps;
 
+ConVar rd_tesla_trap_dmg( "rd_tesla_trap_dmg", "5", FCVAR_CHEAT );
+ConVar rd_tesla_trap_ammo( "rd_tesla_trap_ammo", "30", FCVAR_CHEAT );
+
 CASW_TeslaTrap::CASW_TeslaTrap()
 {
 	m_pWarnSound = NULL;
@@ -166,8 +169,8 @@ void CASW_TeslaTrap::Spawn()
 
 
 	m_flRadius = 200.0f;
-	m_flDamage = 5.0f;
-	m_iAmmo = 30;
+	m_flDamage = rd_tesla_trap_dmg.GetFloat();
+	m_iAmmo = rd_tesla_trap_ammo.GetFloat();
 	m_iMaxAmmo = 30;
 	m_flChargeInterval = 0.3f;
 	m_bAssembled = false;	

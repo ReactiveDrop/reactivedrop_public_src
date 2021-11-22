@@ -26,6 +26,8 @@ public:
 	float GetIdealAccel( ) const;
 	float MaxYawSpeed( void );
 
+	virtual void SetHealthByDifficultyLevel();
+
 	Class_T		Classify( void ) { return CLASS_VORTIGAUNT; }		// TODO: Different class from harvesters?
 	virtual bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
 	virtual int SelectSchedule();

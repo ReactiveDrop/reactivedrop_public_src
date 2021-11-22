@@ -180,7 +180,7 @@ void CAI_ASW_ChaseEnemyBehavior::OnStartTaskLurchStrafe()
 	GetOuter()->GetMoveProbe()->MoveLimit( NAV_GROUND, vecStart, vecEndRight, MASK_NPCSOLID, NULL, &moveTraceRight );
 	GetOuter()->GetMoveProbe()->MoveLimit( NAV_GROUND, vecStart, vecEndLeft, MASK_NPCSOLID, NULL, &moveTraceLeft );
 
-	bool bCanMoveRight = !IsMoveBlocked( moveTraceLeft.fStatus );
+	bool bCanMoveRight = !IsMoveBlocked( moveTraceRight.fStatus );
 	bool bCanMoveLeft =	!IsMoveBlocked( moveTraceLeft.fStatus );
 
 	// Nowhere to lurch to!

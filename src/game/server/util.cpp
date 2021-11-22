@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Utility code.
 //
@@ -110,7 +110,7 @@ static ConCommand dumpentityfactories( "dumpentityfactories", DumpEntityFactorie
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-CON_COMMAND( dump_entity_sizes, "Print sizeof(entclass)" )
+CON_COMMAND_F( dump_entity_sizes, "Print sizeof(entclass)", FCVAR_CHEAT )
 {
 	((CEntityFactoryDictionary*)EntityFactoryDictionary())->ReportEntitySizes();
 }

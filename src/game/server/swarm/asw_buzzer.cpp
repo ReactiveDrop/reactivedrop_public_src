@@ -3269,6 +3269,8 @@ void CASW_Buzzer::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 void CASW_Buzzer::SetHealthByDifficultyLevel()
 {	
 	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(sk_asw_buzzer_health.GetFloat()) + m_iHealthBonus);
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting buzzer's initial health to %d\n", GetHealth() );
 }
 
 void CASW_Buzzer::ElectroStun( float flStunTime )

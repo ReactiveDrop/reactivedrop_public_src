@@ -617,10 +617,10 @@ float CASW_Weapon_Mining_Laser::GetWeaponDamage()
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_mininglaser_dmg_base;
+	if ( rd_mininglaser_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_mininglaser_dmg;
-		flDamage = rd_pvp_mininglaser_dmg.GetFloat();
+		flDamage = rd_mininglaser_dmg_base.GetFloat();
 	}
 
 	if (GetMarine())

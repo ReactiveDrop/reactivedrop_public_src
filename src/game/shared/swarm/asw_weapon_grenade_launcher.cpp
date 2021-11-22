@@ -99,6 +99,10 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * 28.0f;
 
 	float fGrenadeDamage = GetWeaponDamage();
+
+	extern ConVar rd_grenade_launcher_dmg_base;
+	if ( rd_grenade_launcher_dmg_base.GetFloat() > 0 )
+		fGrenadeDamage = rd_grenade_launcher_dmg_base.GetFloat();
 	
 	const float &fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
 	int iClusters = rd_grenade_launcher_num_clusters.GetInt(); //MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS);
@@ -144,8 +148,8 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 
 float CASW_Weapon_Grenade_Launcher::GetWeaponPvpDamageBase()
 {
-	extern ConVar rd_pvp_grenade_launcher_dmg;
-	return rd_pvp_grenade_launcher_dmg.GetFloat();
+	extern ConVar rd_grenade_launcher_dmg_base;
+	return rd_grenade_launcher_dmg_base.GetFloat();
 }
 
 int CASW_Weapon_Grenade_Launcher::GetWeaponSkillId()

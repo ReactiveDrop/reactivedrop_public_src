@@ -1001,6 +1001,20 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
+			else if ( FStrEq( pcmd, "cl_lobby_invalid_request" ) )			// check if server is dedicated, if yes, then disconnect this client
+			{
+				ConVarRef sv_allow_lobby_connect_only_ref("sv_allow_lobby_connect_only");
+				ConVarRef sv_lan_ref( "sv_lan" );
+				if ( sv_allow_lobby_connect_only_ref.IsValid() && sv_lan_ref.IsValid() )
+				{
+					if ( sv_allow_lobby_connect_only_ref.GetBool() && !sv_lan_ref.GetBool() && engine->IsDedicatedServer() )
+					{
+						ClientPrint( this, HUD_PRINTTALK, "Disconnecting, lost connection to Steam" );
+						engine->ClientCommand( edict(), "disconnect" );
+					}
+				}
+				return true;	
+			}
 
 			break;
 		}
@@ -2163,6 +2177,19 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 		if ( pNewMarine == pOldMarine )
 			return;
 		pOldMarine->UninhabitedBy( this );
+	}
+	else
+	{
+		// old marine is dead and deleted, uninhabit marine resource
+		int max_marines = ASWGameResource()->GetMaxMarineResources();
+		for ( int i = 0; i < max_marines; i++ )
+		{
+			CASW_Marine_Resource* pRes = ASWGameResource()->GetMarineResource( i );
+			if ( pRes && pRes->GetCommander() == this && pRes->IsInhabited() )
+			{
+				pRes->SetInhabited( false );
+			}
+		}
 	}
 
 	if ( asw_rts_controls.GetBool() )

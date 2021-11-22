@@ -350,7 +350,7 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 {
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
-		if ( m_bIsInUse && HasDownloadObjective() && GetHackProgress() < 1.0f )
+		if ( m_bIsInUse && GetHackProgress() < 1.0f )
 		{
 			float flOldHackProgress = m_fHackProgress;
 			float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
@@ -559,14 +559,17 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 	// check haven't already downloaded them
 	if (m_bDownloadedDocs)
 		return;
-	// flag objective as complete
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, m_DownloadObjectiveName.Get());
-	if (pEntity)
+	if ( HasDownloadObjective() )
 	{
-		CASW_Objective_Triggered* pObj = dynamic_cast<CASW_Objective_Triggered*>(pEntity);
-		if (pObj)
+		// flag objective as complete
+		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, m_DownloadObjectiveName.Get());
+		if (pEntity)
 		{
-			pObj->SetComplete(true);
+			CASW_Objective_Triggered* pObj = dynamic_cast<CASW_Objective_Triggered*>(pEntity);
+			if (pObj)
+			{
+				pObj->SetComplete(true);
+			}
 		}
 	}
 

@@ -69,7 +69,7 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 	}
 
 	char szLeaderboardName[k_cchLeaderboardNameMax];
-	if ( rd_leaderboard_by_difficulty.GetBool() )
+	if ( rd_leaderboard_by_difficulty.GetBool() && ASWGameRules()->GetSkillLevel() > 2 )
 	{
 		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules()->GetSkillLevel(), szMap, nMapID, szChallenge, nChallengeID );
 	}

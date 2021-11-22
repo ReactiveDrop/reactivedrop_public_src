@@ -12620,6 +12620,17 @@ int CAI_BaseNPC::WalkMove( const Vector& vecPosition, unsigned int mask )
 	VectorCopy( GetAbsOrigin(), oldorg );
 	VectorAdd( oldorg, move, neworg );
 
+	// reactivedrop: added an aditional check
+	// this prevents drones from warping through marines when they perform
+	// a melee attack
+	UTIL_TraceEntity( this, oldorg, neworg, mask, &trace );
+	if ( trace.allsolid || trace.startsolid || trace.fraction != 1.0f)
+	{
+		UTIL_TraceEntity( this, oldorg + Vector(0, 0, sv_stepsize.GetFloat()), neworg + Vector(0, 0, sv_stepsize.GetFloat()), mask, &trace );
+		if ( trace.allsolid || trace.startsolid || trace.fraction != 1.0f )
+			return false;
+	}
+
 	// push down from a step height above the wished position
 	float flStepSize = sv_stepsize.GetFloat();
 	neworg[2] += flStepSize;

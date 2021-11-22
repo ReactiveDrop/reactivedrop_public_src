@@ -51,7 +51,7 @@ public:
 	// aim target interface, allows autoaiming onto marines 
 	IMPLEMENT_AUTO_LIST_GET();
 	virtual float GetRadius() { return 23; }
-	virtual bool IsAimTarget() { return ASWDeathmatchMode() ? true : false; }
+	virtual bool IsAimTarget();
 	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming) { return WorldSpaceCenter(); }
 	virtual const Vector& GetAimTargetRadiusPos(const Vector &vecFiringSrc) { return WorldSpaceCenter(); }
 

@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
+//====== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -400,7 +400,7 @@ private:
 static CServerBenchmark g_ServerBenchmark;
 IServerBenchmark *g_pServerBenchmark = &g_ServerBenchmark;
 
-CON_COMMAND( sv_benchmark_force_start, "Force start the benchmark. This is only for debugging. It's better to set sv_benchmark to 1 and restart the level." )
+CON_COMMAND_F( sv_benchmark_force_start, "Force start the benchmark. This is only for debugging. It's better to set sv_benchmark to 1 and restart the level.", FCVAR_CHEAT )
 {
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;

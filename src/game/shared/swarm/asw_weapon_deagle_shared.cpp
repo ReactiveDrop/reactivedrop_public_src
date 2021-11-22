@@ -102,10 +102,10 @@ float CASW_Weapon_DEagle::GetWeaponDamage()
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_deagle_dmg_base;
+	if ( rd_deagle_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_deagle_dmg;
-		flDamage = rd_pvp_deagle_dmg.GetFloat();
+		flDamage = rd_deagle_dmg_base.GetFloat();
 	}
 
 	if (GetMarine())

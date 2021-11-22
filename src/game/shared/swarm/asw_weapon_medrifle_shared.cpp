@@ -121,10 +121,10 @@ float CASW_Weapon_MedRifle::GetWeaponDamage()
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_medrifle_dmg_base;
+	if ( rd_medrifle_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_medrifle_dmg;
-		flDamage = rd_pvp_medrifle_dmg.GetFloat();
+		flDamage = rd_medrifle_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )

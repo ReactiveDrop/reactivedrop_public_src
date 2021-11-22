@@ -32,6 +32,7 @@
 #include "matchmaking/imatchframework.h"
 #endif
 #include "asw_deathmatch_mode.h"
+#include "asw_medal_store.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -939,7 +940,44 @@ void reset_steam_stats_f()
 }
 ConCommand reset_steam_stats( "reset_steam_stats", reset_steam_stats_f, "Resets steam stats (experience, etc.)", FCVAR_DEVELOPMENTONLY );
 
+void rd_reset_level_and_promotion_f()
+{
+	Msg( "Resetting your level and promotion...\n" );
 
+	Assert( steamapicontext->SteamUserStats() );
+	if ( !steamapicontext->SteamUserStats() )
+	{
+		Msg( "Error. Cannot access SteamUserStats()\n" );
+		return;
+	}
+
+	int32 m_iExperience = 0, m_iPromotion = 0;
+
+	steamapicontext->SteamUserStats()->SetStat( "experience", m_iExperience );
+	steamapicontext->SteamUserStats()->SetStat( "promotion", m_iPromotion );
+	steamapicontext->SteamUserStats()->SetStat( "level", 1 );
+	steamapicontext->SteamUserStats()->SetStat( "level.xprequired", 0 );
+	steamapicontext->SteamUserStats()->StoreStats();
+
+	C_ASW_Medal_Store *pStore = GetMedalStore();
+
+	if ( pStore )
+	{
+		pStore->ClearNewWeapons();
+		pStore->SetExperience( m_iExperience );
+		pStore->SetPromotion( m_iPromotion );
+		pStore->SaveMedalStore();
+	}
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer )
+	{
+		pPlayer->RequestExperience();
+	}
+
+	Msg( "All done, your level and promotion have been reset!\n" );
+}
+ConCommand rd_reset_level_and_promotion( "rd_reset_level_and_promotion", rd_reset_level_and_promotion_f, "Resets promotion (rank, level etc.)", FCVAR_DEVELOPMENTONLY );
 
 void asw_show_xp_f()
 {

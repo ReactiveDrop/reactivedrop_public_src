@@ -87,6 +87,7 @@ END_DATADESC()
 // BenLubar(key-values-director)
 BEGIN_ENT_SCRIPTDESC( CASW_Parasite, CASW_Alien, "Alien Swarm parasite" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpAttack, "JumpAttack", "jump and attack something" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpUp, "JumpUp", "Jump up, like defanged parasites jump from dead harvester" )
 END_SCRIPTDESC()
 
 enum
@@ -117,6 +118,8 @@ void CASW_Parasite::Spawn( void )
 	{
 		m_bDefanged = true;
 		m_iHealth	= ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_parasite_defanged_health.GetInt()) + m_iHealthBonus;
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting defanged parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 1 );
 		m_fSuicideTime = gpGlobals->curtime + 60;
 	}
@@ -124,6 +127,8 @@ void CASW_Parasite::Spawn( void )
 	{
 		m_bDefanged = false;
 		m_iHealth	= ASWGameRules()->ModifyAlienHealthBySkillLevel(rd_parasite_health.GetInt()) + m_iHealthBonus;
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 0 );
 		m_fSuicideTime = 0;
 	}
@@ -1190,6 +1195,11 @@ int CASW_Parasite::SelectSchedule()
 	}
 
 	return BaseClass::SelectSchedule();
+}
+
+void CASW_Parasite::ScriptJumpUp()
+{
+	SetJumpFromEgg( true, RandomFloat( 30.0f, 70.0f ) );
 }
 
 void CASW_Parasite::SetJumpFromEgg(bool b, float flJumpDistance)

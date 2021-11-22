@@ -46,6 +46,22 @@ CASW_Weapon_Devastator::~CASW_Weapon_Devastator()
 
 }
 
+void CASW_Weapon_Devastator::SecondaryAttack()
+{
+	CASW_Player *pPlayer = GetCommander();
+	if ( !pPlayer )
+		return;
+
+	CASW_Marine *pMarine = GetMarine();
+	if ( !pMarine )
+		return;
+
+	// dry fire
+	SendWeaponAnim( ACT_VM_DRYFIRE );
+	BaseClass::WeaponSound( EMPTY );
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+}
+
 void CASW_Weapon_Devastator::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
@@ -63,10 +79,10 @@ float CASW_Weapon_Devastator::GetWeaponDamage()
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_devastator_dmg_base;
+	if ( rd_devastator_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_devastator_dmg;
-		flDamage = rd_pvp_devastator_dmg.GetFloat();
+		flDamage = rd_devastator_dmg_base.GetFloat();
 	}
 
 	if (GetMarine())

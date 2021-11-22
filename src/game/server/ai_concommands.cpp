@@ -438,7 +438,7 @@ void CC_NPC_Focus( const CCommand &args )
 }
 static ConCommand npc_focus("npc_focus", CC_NPC_Focus, "Displays red line to NPC's enemy (if has one) and blue line to NPC's target entity (if has one)\n\tArguments:   	{npc_name} / {npc class_name} / no argument picks what player is looking at", FCVAR_CHEAT);
 
-ConVar npc_create_equipment("npc_create_equipment", "");
+ConVar npc_create_equipment("npc_create_equipment", "", FCVAR_CHEAT);
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
@@ -723,7 +723,7 @@ void CC_NPC_Set_Freeze( const CCommand &args )
 static ConCommand npc_set_freeze("npc_set_freeze", CC_NPC_Set_Freeze, "Selected NPC(s) will freeze in place (or unfreeze). If there are no selected NPCs, uses the NPC under the crosshair.\n\tArguments:	-none-", FCVAR_CHEAT);
 
 
-CON_COMMAND( npc_freeze_unselected, "Freeze all NPCs not selected" )
+CON_COMMAND_F( npc_freeze_unselected, "Freeze all NPCs not selected", FCVAR_CHEAT )
 {
 	CAI_BaseNPC *pNPC = gEntList.NextEntByClass( (CAI_BaseNPC *)NULL );
 
@@ -737,7 +737,7 @@ CON_COMMAND( npc_freeze_unselected, "Freeze all NPCs not selected" )
 	}
 }
 
-CON_COMMAND( npc_set_freeze_unselected, "Freeze all NPCs not selected" )
+CON_COMMAND_F( npc_set_freeze_unselected, "Freeze all NPCs not selected", FCVAR_CHEAT )
 {
 	CAI_BaseNPC *pNPC = gEntList.NextEntByClass( (CAI_BaseNPC *)NULL );
 
@@ -759,7 +759,7 @@ CON_COMMAND( npc_set_freeze_unselected, "Freeze all NPCs not selected" )
 }
 
 //------------------------------------------------------------------------------
-CON_COMMAND(npc_thinknow, "Trigger NPC to think")
+CON_COMMAND_F(npc_thinknow, "Trigger NPC to think", FCVAR_CHEAT)
 {
 	CBaseEntity *pEntity = UTIL_GetCommandClient() ? UTIL_GetCommandClient()->FindPickerEntity() : NULL;
 	if ( pEntity )
@@ -807,7 +807,7 @@ void CC_NPC_Teleport( void )
 
 static ConCommand npc_teleport("npc_teleport", CC_NPC_Teleport, "Selected NPC will teleport to the location that the player is looking (shown with a purple box)\n\tArguments:	-none-", FCVAR_CHEAT);
 
-static ConVar npc_go_do_run( "npc_go_do_run", "1", 0, "Set whether should run on NPC go" );
+static ConVar npc_go_do_run("npc_go_do_run", "1", FCVAR_CHEAT, "Set whether should run on NPC go");
 
 void CC_NPC_Go( void )
 {
@@ -961,7 +961,7 @@ static ConCommand npc_steering_all("npc_steering_all", CC_NPC_ViewSteeringRegula
 
 //------------------------------------------------------------------------------
 
-CON_COMMAND( npc_heal, "Heals the target back to full health" )
+CON_COMMAND_F( npc_heal, "Heals the target back to full health", FCVAR_CHEAT )
 {
 	CBaseEntity *pEntity = UTIL_GetCommandClient() ? UTIL_GetCommandClient()->FindPickerEntity() : NULL;
 	if ( pEntity )
@@ -974,7 +974,7 @@ CON_COMMAND( npc_heal, "Heals the target back to full health" )
 	}
 }
 
-CON_COMMAND( npc_ammo_deplete, "Subtracts half of the target's ammo" )
+CON_COMMAND_F( npc_ammo_deplete, "Subtracts half of the target's ammo", FCVAR_CHEAT )
 {
 	CBaseEntity *pEntity = UTIL_GetCommandClient() ? UTIL_GetCommandClient()->FindPickerEntity() : NULL;
 	if ( pEntity )
@@ -1001,7 +1001,7 @@ CON_COMMAND( ai_clear_bad_links, "Clears bits set on nav links indicating link i
 	}
 }
 
-CON_COMMAND( ai_test_los, "Test AI LOS from the player's POV" )
+CON_COMMAND_F( ai_test_los, "Test AI LOS from the player's POV", FCVAR_CHEAT )
 {
 	trace_t tr;
 	// Use the custom LOS trace filter

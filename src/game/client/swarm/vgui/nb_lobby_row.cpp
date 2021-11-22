@@ -471,7 +471,7 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
 			char statsWeb[128];
-			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://reactive-drop-stats.appspot.com/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://reactive-drop-stats.lubar.me/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif

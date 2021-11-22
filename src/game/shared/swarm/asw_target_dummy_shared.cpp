@@ -97,9 +97,11 @@ void CASW_Target_Dummy::Precache()
 
 int CASW_Target_Dummy::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	m_flDamageTaken += info.GetDamage();
-	m_flLastHit = info.GetDamage();
-
+	if (m_flStartDamageTime > 0 && gpGlobals->curtime - m_flStartDamageTime > 0)
+	{
+		m_flDamageTaken += info.GetDamage();
+		m_flLastHit = info.GetDamage();
+	}
 	if ( m_flStartDamageTime < 0 )
 	{
 		m_flStartDamageTime = gpGlobals->curtime;
@@ -138,3 +140,4 @@ void CASW_Target_Dummy::PaintHealthBar( CASWHud3DMarineNames *pSurface )
 	pSurface->PaintGenericText( GetRenderOrigin() + Vector( -20, -10, 0), pText,	  Color( 140, 240, 240, 255 ), 1.0f, Vector2D( 0, -4 )  );
 }
 #endif // not client
+

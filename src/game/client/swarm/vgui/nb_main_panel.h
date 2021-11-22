@@ -82,6 +82,7 @@ public:
 	static void QueueSpendSkillPoints( int nProfileIndex );
 	static void RemoveFromSpendQueue( int nProfileIndex );
 	static CUtlVector<int> s_QueuedSpendSkillPoints;	// queue of marine profile indices to spend points on
+	bool m_bLobbyValidityChecked;
 };
 
 #endif // _INCLUDED_NB_MAIN_PANEL_H

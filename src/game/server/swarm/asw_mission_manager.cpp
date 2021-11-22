@@ -20,6 +20,7 @@ BEGIN_DATADESC( CASW_Mission_Manager )
 	
 END_DATADESC()
 
+extern ConVar rd_auto_fast_restart;
 ConVar asw_last_marine_dead_delay( "asw_last_marine_dead_delay", "0.6f", FCVAR_CHEAT, "How long to wait after the last marine has died before failing the mission" );
 
 CASW_Mission_Manager::CASW_Mission_Manager()
@@ -111,6 +112,10 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 	{
 		MissionSuccess();
 		return true;
+	}
+	else if (bFailed && rd_auto_fast_restart.GetBool())
+	{
+		ASWGameRules()->SetForceReady( ASW_FR_INGAME_RESTART );
 	}
 	else if (bFailed)
 	{

@@ -33,6 +33,12 @@ void Host_Say( edict_t *pEdict, bool teamonly );
 
 extern bool			g_fGameOver;
 
+// this cvar can be used for automatically restart servers when they are empty
+// because even empty server, when being not restarted for several hours
+// starts to have performance issues like warping drones and stutters on adrenaline usage
+ConVar rd_server_shutdown_after_num_secs( "rd_server_shutdown_after_num_secs", "3600", FCVAR_NONE, "Server will shutdown after being online for this number of seconds." );
+ConVar rd_server_shutdown_wait_for_players_num_secs( "rd_server_shutdown_wait_for_players_num_secs", "90", FCVAR_DEVELOPMENTONLY, "Number of seconds to wait for players to load the map before considering server empty" );
+
 /*
 ===========
 ClientPutInServer
@@ -82,10 +88,55 @@ Returns the descriptive name of this .dll.  E.g., Half-Life, or Team Fortress 2
 */
 const char *GetGameDescription()
 {
+	//DevMsg( "Current time = %f\n", Plat_FloatTime() );
+	if ( rd_server_shutdown_after_num_secs.GetInt() > 0 && 
+		 engine && engine->IsDedicatedServer() &&
+		 Plat_FloatTime() > rd_server_shutdown_after_num_secs.GetInt() )
+	{
+		int iPlayers = 0;
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+
+			if ( pOtherPlayer && pOtherPlayer->IsConnected() )
+			{
+				iPlayers++;
+			}
+		}
+		//DevMsg( "Num players = %i :", iPlayers );
+
+		static float fFirstTimePlayersAreZero = 0;
+		const float PLAYER_CHECK_TIMEOUT = rd_server_shutdown_wait_for_players_num_secs.GetFloat();
+
+		if ( iPlayers <= 0 )
+		{
+			if ( fFirstTimePlayersAreZero == 0)
+			{
+				//DevMsg( "Not restarting, starting the coundown\n", fFirstTimePlayersAreZero + PLAYER_CHECK_TIMEOUT - Plat_FloatTime() );
+				fFirstTimePlayersAreZero = Plat_FloatTime();
+			}
+			else if ( fFirstTimePlayersAreZero + PLAYER_CHECK_TIMEOUT < Plat_FloatTime() )
+			{
+				exit( 0 ); // reactivedrop: Isn't the best solution but works. Issuing "quit" doesn't work here. 
+			}
+			else
+			{
+				//DevMsg( "Not restarting, waiting %f\n", fFirstTimePlayersAreZero + PLAYER_CHECK_TIMEOUT - Plat_FloatTime() );
+			}
+		}
+		else 
+		{
+			fFirstTimePlayersAreZero = 0;
+			//DevMsg( "\n" );
+		}
+	}
+
 	if ( g_pGameRules ) // this function may be called before the world has spawned, and the game rules initialized
 		return g_pGameRules->GetGameDescription();
 	else
+	{
 		return "Alien Swarm: Reactive Drop";
+	}
 }
 
 //-----------------------------------------------------------------------------

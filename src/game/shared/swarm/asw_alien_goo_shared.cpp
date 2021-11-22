@@ -53,6 +53,7 @@ END_NETWORK_TABLE()
 #ifdef GAME_DLL
 ConVar asw_goo_volume("asw_goo_volume", "1.0f", FCVAR_CHEAT, "Volume of the alien goo looping sound");
 extern ConVar rd_biomass_ignite_from_explosions;
+ConVar rd_biomass_damage_from_explosions( "rd_biomass_damage_from_explosions", "0", FCVAR_CHEAT, "If 1, biomass will take damage from explosions" );
 LINK_ENTITY_TO_CLASS( asw_alien_goo, CASW_Alien_Goo );
 PRECACHE_WEAPON_REGISTER(asw_alien_goo);
 #endif
@@ -78,6 +79,7 @@ BEGIN_DATADESC( CASW_Alien_Goo )
 	DEFINE_FUNCTION( GooTouch ),
 	DEFINE_FUNCTION( GooAcidTouch ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"Extinguish", InputExtinguish ),
 	DEFINE_OUTPUT( m_OnGooDestroyed,		"OnGooDestroyed" ),
 END_DATADESC()
 float CASW_Alien_Goo::s_fNextSpottedChatterTime = 0;
@@ -263,9 +265,10 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	// end of riflemod code 
 
 	// goo is only damaged by fire!
-	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) )
+	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) && 
+		 !( rd_biomass_damage_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST ) )
 		return 0;
-
+	
 	// notify the marine that he's hurting this, so his accuracy doesn't drop
 	if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
 	{
@@ -340,6 +343,16 @@ void CASW_Alien_Goo::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 	// set up a delay to burn our linked entities
 	SetThink( &CASW_Alien_Goo::BurningLinkThink );	
 	SetNextThink( gpGlobals->curtime + 2.0f );
+}
+
+void CASW_Alien_Goo::InputExtinguish( inputdata_t &inputdata )
+{
+	if ( !IsOnFire() )
+	{
+		return;
+	}
+
+	Extinguish();
 }
 
 void CASW_Alien_Goo::Extinguish()

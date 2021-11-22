@@ -32,7 +32,10 @@ int AE_SHAMAN_SPRAY_START;
 int AE_SHAMAN_SPRAY_END;
 
 ConVar asw_shaman_health( "asw_shaman_health", "59.8", FCVAR_CHEAT );
+ConVar rd_shaman_healing_speed( "rd_shaman_healing_speed", "0", FCVAR_CHEAT, "Number of health shaman gives per second. 0 means heal ~40% of maxhealth in 1 second" );
 extern ConVar asw_debug_alien_damage;
+
+#define RD_SHAMAN_HEAL_INTERVAL 1.0f
 
 //-----------------------------------------------------------------------------
 // Purpose:	
@@ -45,6 +48,7 @@ CASW_Shaman::CASW_Shaman()
 	// reactivedrop: this is a must or burrowed aliens spawned from spawner 
 	// have incorrect collision group and block other aliens
 	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+	m_flHealTime = 0.0f;
 }
 
 
@@ -133,11 +137,16 @@ float CASW_Shaman::MaxYawSpeed( void )
 // Output:	
 //-----------------------------------------------------------------------------
 void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
-{	
-	// sounds for pain and death are defined in the npc_tier_tables excel sheet
-	// they are called from the asw_alien base class (m_fNextPainSound is handled there)
-	BaseClass::PainSound(info);
-	m_fNextPainSound = gpGlobals->curtime + RandomFloat( 0.75f, 1.25f );
+{
+	// reactivedrop: apparently npc_tier_tables don't work, changed to EmitSound()
+	//	// sounds for pain and death are defined in the npc_tier_tables excel sheet
+	//	// they are called from the asw_alien base class (m_fNextPainSound is handled there)
+	//	BaseClass::PainSound(info);
+	if ( gpGlobals->curtime > m_fNextPainSound )
+	{
+		EmitSound( "Shaman.Pain" );
+		m_fNextPainSound = gpGlobals->curtime + RandomFloat( 0.75f, 1.25f );
+	}
 }
 
 
@@ -148,9 +157,11 @@ void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CASW_Shaman::DeathSound( const CTakeDamageInfo &info )
 {
-	// sounds for pain and death are defined in the npc_tier_tables excel sheet
-	// they are called from the asw_alien base class
-	BaseClass::DeathSound(info);
+	// reactivedrop: apparently npc_tier_tables don't work, changed to EmitSound()
+	//	// sounds for pain and death are defined in the npc_tier_tables excel sheet
+	//	// they are called from the asw_alien base class
+	//	BaseClass::DeathSound(info);
+	EmitSound( "Shaman.Die" );
 }
 
 
@@ -240,7 +251,22 @@ void CASW_Shaman::NPCThink( void )
 		pHealTarget = m_HealOtherBehavior.GetCurrentHealTarget();
 		if ( pHealTarget )
 		{
-			pHealTarget->TakeHealth( m_HealOtherBehavior.m_flHealAmount * pHealTarget->GetMaxHealth(), DMG_GENERIC );
+			if ( rd_shaman_healing_speed.GetInt() > 0 )
+			{
+				if ( m_flHealTime < gpGlobals->curtime )
+				{
+					pHealTarget->TakeHealth( rd_shaman_healing_speed.GetInt(), DMG_GENERIC );
+
+					while ( m_flHealTime + RD_SHAMAN_HEAL_INTERVAL < gpGlobals->curtime )
+						m_flHealTime += RD_SHAMAN_HEAL_INTERVAL;
+
+					m_flHealTime = m_flHealTime + RD_SHAMAN_HEAL_INTERVAL;
+				}
+			}
+			else
+			{
+				pHealTarget->TakeHealth( m_HealOtherBehavior.m_flHealAmount * pHealTarget->GetMaxHealth(), DMG_GENERIC );
+			}
 		}
 	}
 	SetCurrentHealingTarget( pHealTarget );

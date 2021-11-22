@@ -83,6 +83,9 @@ public:
 	CEventAction *GetFirstAction() { return m_ActionList; }
 
 	const CEventAction *GetActionForTarget( string_t iSearchTarget ) const;
+
+	// VScript
+	void ScriptRemoveEventAction( CEventAction *pEventAction, const char *szTarget, const char *szTargetInput, const char *szParameter );
 protected:
 	variant_t m_Value;
 	CEventAction *m_ActionList;

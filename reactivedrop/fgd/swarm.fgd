@@ -5975,6 +5975,8 @@
 		1 : "Yes"
 	]
 	
+	input Extinguish(void) : "Extinguish the biomass."
+	
 	output OnIgnite(void) : "Fired when the goo catches fire"
 	output OnGooDestroyed(void) : "Fired when the goo is destroyed"
 ]
@@ -6418,6 +6420,7 @@
 
 	// Inputs
 	input Enable(void) : "Enable the point_viewcontrol, and start controlling the player's view."
+	input EnableForPlayerIndex(integer) : "Enable the asw_broadcast_camera for specified player index. Note: does not change the view to first person."
 	input Disable(void) : "Disable the point_viewcontrol, and stop controlling the player's view."
 
 	// Outputs

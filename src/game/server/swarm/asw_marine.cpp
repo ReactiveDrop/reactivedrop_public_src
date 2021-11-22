@@ -98,8 +98,10 @@ ConVar rd_chatter_about_marine_death( "rd_chatter_about_marine_death", "1",  FCV
 ConVar rd_marine_ignite_immediately( "rd_marine_ignite_immediately", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 marines will will be ignited by flamer from single puff");
 ConVar rd_pvp_marine_take_damage_from_bots("rd_pvp_marine_take_damage_from_bots", "1", FCVAR_CHEAT, "If 0 players will not take damage from bots in PvP");
 ConVar rd_bot_strong( "rd_bot_strong", "1", FCVAR_CHEAT, "If 1, bots take only 25% of damage in a co-op game" );
+ConVar rd_medgun_medkit_refill_amount( "rd_medgun_medkit_refill_amount", "0", FCVAR_CHEAT, "Amount of ammo given to refill a healgun from a medkit" );
 ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_grenade", "1", FCVAR_CHEAT, "Players take damage from bots' grenade launchers" );
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
+static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
@@ -1385,7 +1387,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 						Msg("  but all ignored, since it's FF meleee dmg\n");
 					return 0;
 				}
-			}			
+			}
+
+			if ( newInfo.GetWeapon() && newInfo.GetWeapon()->Classify() == CLASS_ASW_GAS_GRENADE )
+			{
+				newInfo.SetDamage( rd_gas_grenade_ff_dmg.GetInt() );
+			}
 
 			// drop the damage down by our absorption buffer
 			bool bFlamerDot = !!(newInfo.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) );
@@ -2821,6 +2828,12 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 
 	CASW_GameStats.Event_MarineTookPickup( this, pWeapon, pOldWeapon );
 
+	if ( rd_medgun_medkit_refill_amount.GetInt() > 0 && !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_medkit" ) )
+	{
+		if ( RefillHealGun( pWeapon ) )
+			return true;
+	}
+
 	bool bReplace = ( pOldWeapon != NULL );
 
 	// if we're swapping with a current weapon, drop it
@@ -2899,6 +2912,12 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 	}
 
 	CASW_GameStats.Event_MarineTookPickup( this, pPickup, pWeapon );
+	
+	if ( rd_medgun_medkit_refill_amount.GetInt() > 0 && !Q_strcmp( pPickup->GetWeaponClass(), "asw_weapon_medkit" ) )
+	{
+		if ( RefillHealGun( pPickup ) )
+			return true;
+	}
 
 	// if we're swapping with a current weapon, drop it
 	bool bReplace = ( pWeapon != NULL );
@@ -2965,6 +2984,45 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 	}
 
 	return false;		// todo: clear the pickup denial error
+}
+
+bool CASW_Marine::RefillHealGun(CBaseEntity *pWeaponPickup)
+{
+	for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
+	{
+		CASW_Weapon *pHealGun = GetASWWeapon( iWeapon );
+		if ( pHealGun && ( pHealGun->Classify() == CLASS_ASW_HEAL_GUN || pHealGun->Classify() == CLASS_ASW_HEALAMP_GUN ) )
+		{
+			if ( pHealGun->m_iClip1 < pHealGun->GetMaxClip1() )
+			{
+				EmitSound( "BaseCombatCharacter.AmmoPickup" );
+				int ammo = pHealGun->m_iClip1 + rd_medgun_medkit_refill_amount.GetInt();
+				pHealGun->m_iClip1 = ( ammo <= pHealGun->GetMaxClip1() ) ? ammo : pHealGun->GetMaxClip1();
+				GetMarineSpeech()->Chatter( CHATTER_USE );
+
+				IGameEvent * event = gameeventmanager->CreateEvent( "ammo_pickup" );
+				if ( event )
+				{
+					CASW_Player *pPlayer = GetCommander();
+					event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+					event->SetInt( "entindex", entindex() );
+
+					gameeventmanager->FireEvent( event );
+				}
+
+				if ( pWeaponPickup )
+					pWeaponPickup->Remove();
+
+				GetMarineResource()->UpdateWeaponIndices();
+
+				CheckAndRequestAmmo();
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 bool CASW_Marine::DropWeapon(int iWeaponIndex, bool bNoSwap)

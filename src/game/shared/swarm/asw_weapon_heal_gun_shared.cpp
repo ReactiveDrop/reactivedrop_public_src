@@ -44,6 +44,7 @@ static const float SQRT3 = 1.732050807569; // for computing max extents inside a
 
 extern ConVar asw_laser_sight;
 extern ConVar asw_marine_special_heal_chatter_chance;
+extern ConVar rd_medgun_medkit_refill_amount;
 ConVar rd_medgun_infinite_ammo( "rd_medgun_infinite_ammo", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If 1 the medgun have infinite ammo" );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Heal_Gun, DT_ASW_Weapon_Heal_Gun );
@@ -557,12 +558,22 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 
 		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 
-		if ( DestroyIfEmpty( true ) )
+		if ( rd_medgun_medkit_refill_amount.GetInt() > 0 )
+		{
+			if ( !pMarine->IsInhabited() )
+			{
+				if ( pMarine->GetActiveWeapon() == this )
+				{
+					pMarine->SwitchToNextBestWeapon( NULL );
+				}
+			}
+		}
+		else if ( DestroyIfEmpty( true ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if ( pMR )
 			{
-				char szName[ 256 ];
+				char szName[256];
 				pMR->GetDisplayName( szName, sizeof( szName ) );
 				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
 			}

@@ -37,7 +37,7 @@ using namespace vgui;
 #include "c_asw_scanner_noise.h"
 #include "SoftLine.h"
 #include "c_asw_objective.h"
-
+#include "asw_input.h"
 #include "ConVar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -245,8 +245,11 @@ void CASWMap::PaintMarineBlips()
 							}
 						}
 					}
+					float fFacingYaw = pMarine->ASWEyeAngles().y;
+					float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
+					fFacingYaw += (90 - fCameraYaw);
 					PaintWorldBlip( pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0,192,0,255) );
-					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y, Color(0,192,0,255 - 127.0f * pMarine->GetBlipStrength()));		
+					PaintWorldFacingArc(pMarine->GetAbsOrigin(), fFacingYaw, Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
 				}
 			}
 		}
@@ -671,13 +674,34 @@ void CASWHudMinimap::PaintMapSection()
 
 				surface()->DrawSetColor(Color(255,255,255,255));
 				surface()->DrawSetTexture(m_nMapTextureID);
-				
+
+				// find the offset from the clipped corners to the centre of the panel
+				Vector vecCornerTL(map_left - m_MapCentreInPanel.x, map_top - m_MapCentreInPanel.y, 0.0f);
+				Vector vecCornerTR(map_right - m_MapCentreInPanel.x, map_top - m_MapCentreInPanel.y, 0.0f);
+				Vector vecCornerBR(map_right - m_MapCentreInPanel.x, map_bottom - m_MapCentreInPanel.y, 0.0f);
+				Vector vecCornerBL(map_left - m_MapCentreInPanel.x, map_bottom - m_MapCentreInPanel.y, 0.0f);
+
+				// rotate the offset vectors about the centre of the panel by the camera yaw
+				float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
+				float angCam = fCameraYaw - 90.0;
+				Vector vecCornerTL_rotated, vecCornerTR_rotated, vecCornerBL_rotated, vecCornerBR_rotated;
+				VectorYawRotate(vecCornerTL, angCam, vecCornerTL_rotated);
+				VectorYawRotate(vecCornerTR, angCam, vecCornerTR_rotated);
+				VectorYawRotate(vecCornerBR, angCam, vecCornerBR_rotated);
+				VectorYawRotate(vecCornerBL, angCam, vecCornerBL_rotated);
+
+				// add the rotated offsets to find the corner points of the minimap
+				Vector2D top_left_rotated = m_MapCentreInPanel + vecCornerTL_rotated.AsVector2D();
+				Vector2D top_right_rotated = m_MapCentreInPanel + vecCornerTR_rotated.AsVector2D();
+				Vector2D bottom_right_rotated = m_MapCentreInPanel + vecCornerBR_rotated.AsVector2D();
+				Vector2D bottom_left_rotated = m_MapCentreInPanel + vecCornerBL_rotated.AsVector2D();
+
 				Vertex_t points[4] = 
 				{ 
-				Vertex_t( Vector2D(map_left, map_top),					Vector2D(Source1X/1024.0f,Source1Y/1024.0f) ), 
-				Vertex_t( Vector2D(map_right, map_top),					Vector2D(Source2X/1024.0f,Source1Y/1024.0f) ), 
-				Vertex_t( Vector2D(map_right, map_bottom),				Vector2D(Source2X/1024.0f,Source2Y/1024.0f) ), 
-				Vertex_t( Vector2D(map_left, map_bottom),				Vector2D(Source1X/1024.0f,Source2Y/1024.0f) ) 
+					Vertex_t(top_left_rotated, Vector2D(Source1X / 1024.0f, Source1Y / 1024.0f)),
+					Vertex_t(top_right_rotated, Vector2D(Source2X / 1024.0f, Source1Y / 1024.0f)),
+					Vertex_t(bottom_right_rotated, Vector2D(Source2X / 1024.0f, Source2Y / 1024.0f)),
+					Vertex_t(bottom_left_rotated, Vector2D(Source1X / 1024.0f, Source2Y / 1024.0f))
 				}; 
 				surface()->DrawTexturedPolygon( 4, points );
 			}
@@ -1272,6 +1296,14 @@ void CASWHudMinimap::PaintRect( int nX, int nY, int nWidth, int nHeight, Color c
 	rectCorner1 = MapTextureToPanel( rectCorner1 );
 	rectCorner2 = MapTextureToPanel( rectCorner2 );
 
+	// after rotation we need to sort the corners to 
+	// ensure first is top-left and second bottom-right
+	// as assumed by the code doing rectangle clipping and drawing 
+	Vector2D tmp1 = rectCorner1;
+	Vector2D tmp2 = rectCorner2;
+	rectCorner1 = rectCorner1.Min(tmp2);
+	rectCorner2 = rectCorner2.Max(tmp1);
+
 	if ( rectCorner1.x > m_MapCornerInPanel.x + m_iMapSize || rectCorner1.y > m_MapCornerInPanel.y + m_iMapSize || 
 		 rectCorner2.x < m_MapCornerInPanel.x || rectCorner2.y < m_MapCornerInPanel.y )
 	{
@@ -1540,6 +1572,15 @@ void CASWHudMinimap::SendMapLine(int x, int y, bool bInitial)
 			int diff_x = x - m_MapCentreInPanel.x;
 			int diff_y = m_MapCentreInPanel.y - y;
 
+			// rotate the offset vector around the centre of the panel by the camera rotation
+			float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
+			float angCam = fCameraYaw - 90;
+			Vector vecOffset(diff_x, diff_y, 0);
+			Vector vecOffsetRotated;
+			VectorYawRotate(vecOffset, angCam, vecOffsetRotated);
+			diff_x = vecOffsetRotated.x;
+			diff_y = vecOffsetRotated.y;
+
 			// find the world position we clicked on
 			Vector vecMapLinePos;
 			// world difference should be: ( diff_x / panel size ) * map range
@@ -1612,6 +1653,13 @@ Vector2D CASWHudMinimap::MapTextureToPanel( const Vector2D &texturepos )
 	// multiply that out by the pixel halfwidth of this panel:
 	offset *= (GetMapSize() * 0.5f);
 
+	// rotate the offset vector around the centre of the panel by the camera rotation
+	float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
+	float angCam = fCameraYaw - 90;
+	Vector vecOffset(offset.x, offset.y, 0);
+	Vector vecOffsetRotated;
+	VectorYawRotate(vecOffset, angCam, vecOffsetRotated);
+	offset = vecOffsetRotated.AsVector2D();
 	offset += m_pMinimap->m_MapCentreInPanel;
 
 	return offset;

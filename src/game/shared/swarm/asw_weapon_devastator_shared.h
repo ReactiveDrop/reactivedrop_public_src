@@ -19,7 +19,7 @@ public:
 	virtual ~CASW_Weapon_Devastator();
 	virtual void Precache();
 
-	virtual void SecondaryAttack() {}	// don't inherit secondary attack
+	virtual void SecondaryAttack();
 	virtual void FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed );	// shotgun specific, used to add piercing only for Devastator
 
 	virtual float GetWeaponDamage();

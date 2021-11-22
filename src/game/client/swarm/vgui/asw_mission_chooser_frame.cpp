@@ -308,6 +308,9 @@ void CC_ASW_Launch_Vote_Chooser( const CCommand &args )
 	if ( iChooserType < -1 || iChooserType > 2 )
 		return;
 
+	if ( iChooserType == 1 )
+		return;
+
 	// if third param is specified, we assume it's the 'notrans' one
 	bool bAvoidTranslucency =(args.ArgC() >= 3);
 

@@ -367,6 +367,56 @@ public:
 
 		return false;
 	}
+
+	void AddOutput( HSCRIPT hEntity, const char *szOutputName, const char *szTarget, const char *szTargetInput, const char *szParameter, float flDelay, int iTimesToFire )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+		{
+			DevMsg ("Error: Entity is NULL in EntityOutputs.AddOutput\n" );
+			return;
+		}
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+		{
+			DevMsg ("Error: Cannot find named output \"%s\" in EntityOutputs.AddOutput\n", szOutputName );
+			return;
+		}
+
+		CEventAction *pAction = new CEventAction( NULL );
+		pAction->m_iTarget = AllocPooledString( szTarget );
+		pAction->m_iTargetInput = AllocPooledString( szTargetInput );
+		pAction->m_iParameter = AllocPooledString( szParameter );
+		pAction->m_flDelay = flDelay;
+		pAction->m_nTimesToFire = iTimesToFire;
+		pOutput->AddEventAction( pAction );
+	}
+
+	void RemoveOutput( HSCRIPT hEntity, const char *szOutputName, const char *szTarget, const char *szTargetInput, const char *szParameter )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hEntity);
+		if ( !pBaseEntity )
+		{
+			DevMsg ("Error: Entity is NULL in EntityOutputs.RemoveOutput\n" );
+			return;
+		}
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+		{
+			DevMsg ("Error: Cannot find named output \"%s\" in EntityOutputs.RemoveOutput\n", szOutputName );
+			return;
+		}
+
+		if ( V_strcmp( szTarget, "" ) == 0 )
+			pOutput->DeleteAllElements();
+		else
+		{
+			CEventAction *pAction = pOutput->GetFirstAction();
+			pOutput->ScriptRemoveEventAction( pAction, szTarget, szTargetInput, szParameter );
+		}
+	}
 } g_ScriptEntityOutputs;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIPT_SINGLETON "Used to get entity output data" )
@@ -374,6 +424,8 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIP
 	DEFINE_SCRIPTFUNC( GetOutputTable, "Arguments: ( entity, outputName, table, arrayElement ) - returns a table of output information" )
 	DEFINE_SCRIPTFUNC( HasOutput, "Arguments: ( entity, outputName ) - returns true if the output exists" )
 	DEFINE_SCRIPTFUNC( HasAction, "Arguments: ( entity, outputName ) - returns true if an action exists for the output" )
+	DEFINE_SCRIPTFUNC( AddOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter, delay, timesToFire ) - add a new output to the entity" )
+	DEFINE_SCRIPTFUNC( RemoveOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter ) - remove an output from the entity" )
 END_SCRIPTDESC();
 
 
@@ -449,6 +501,12 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CNetPropManager, "CNetPropManager", SCRIPT_SINGLETO
 	DEFINE_SCRIPTFUNC( GetPropArraySize, "Arguments: ( entity, propertyName )" )
 	DEFINE_SCRIPTFUNC( HasProp, "Arguments: ( entity, propertyName )" )
 	DEFINE_SCRIPTFUNC( GetPropType, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropBool, "Arguments: ( entity, propertyName )" )
+	DEFINE_SCRIPTFUNC( GetPropBoolArray, "Arguments: ( entity, propertyName, arrayElement )" )
+	DEFINE_SCRIPTFUNC( SetPropBool, "Arguments: ( entity, propertyName, value )" )
+	DEFINE_SCRIPTFUNC( SetPropBoolArray, "Arguments: ( entity, propertyName, value, arrayElement )" )
+	DEFINE_SCRIPTFUNC( GetPropInfo, "Arguments: ( entity, propertyName, arrayElement, table ) - Fills in a passed table with property info for the provided entity" )
+	DEFINE_SCRIPTFUNC( GetTable, "Arguments: ( entity, iPropType, table ) - Fills in a passed table with all props of a specified type for the provided entity (set iPropType to 0 for SendTable or 1 for DataMap)" )
 END_SCRIPTDESC()
 
 
@@ -639,6 +697,30 @@ static float ScriptTraceLine( const Vector &vecStart, const Vector &vecEnd, HSCR
 	}
 }
 
+static void ScriptTraceLineTable( HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+	
+	// UTIL_TraceLine( vecAbsStart, vecAbsEnd, MASK_BLOCKLOS, pLooker, COLLISION_GROUP_NONE, ptr );
+	trace_t tr;
+	ScriptVariant_t start, end, mask, ignore;
+	g_pScriptVM->GetValue( hTable, "start", &start );
+	g_pScriptVM->GetValue( hTable, "end", &end );
+	g_pScriptVM->GetValue( hTable, "mask", &mask );
+	g_pScriptVM->GetValue( hTable, "ignore", &ignore );
+	const Vector &vecStart = Vector( start.m_pVector->x, start.m_pVector->y, start.m_pVector->z );
+	const Vector &vecEnd = Vector( end.m_pVector->x, end.m_pVector->y, end.m_pVector->z );
+	UTIL_TraceLine( vecStart, vecEnd, mask.m_int, ToEnt(ignore.m_hScript), COLLISION_GROUP_NONE, &tr );
+
+	g_pScriptVM->SetValue( hTable, "pos", tr.endpos );
+	g_pScriptVM->SetValue( hTable, "fraction", tr.fraction );
+	g_pScriptVM->SetValue( hTable, "hit", tr.DidHit() );
+	g_pScriptVM->SetValue( hTable, "enthit", ToHScript(tr.m_pEnt) );
+	g_pScriptVM->SetValue( hTable, "startsolid", tr.startsolid );
+	
+}
+
 HSCRIPT Script_PlayerInstanceFromIndex( int playerIndex )
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerIndex );
@@ -694,6 +776,12 @@ static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
 {
+	if ( V_strstr( pszFileName, "..") )
+	{
+		Log_Warning( LOG_VScript, "StringToFile() file name cannot contain '..'\n" );
+		return;
+	}
+
 	char szFullFileName[256];
 	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
 
@@ -717,6 +805,12 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 
 static const char *Script_FileToString( const char *pszFileName )
 {
+	if ( V_strstr( pszFileName, "..") )
+	{
+		Log_Warning( LOG_VScript, "FileToString() file name cannot contain '..'\n" );
+		return NULL;
+	}
+
 	char szFullFileName[256];
 	Q_snprintf( szFullFileName, sizeof(szFullFileName), "save/vscripts/%s", pszFileName );
 
@@ -888,6 +982,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, SendToServerConsole, "Send a string to the server console as a command" );
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptTraceLine, "TraceLine", "given 2 points & ent to ignore, return fraction along line that hits world or models" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptTraceLineTable, "TraceLineTable", "Uses a configuration table to do a raytrace, puts return information into the table for return usage." );
 
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, FrameTime, "Get the time spent on the server in the last frame" );

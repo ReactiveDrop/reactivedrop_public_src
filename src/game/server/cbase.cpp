@@ -397,6 +397,52 @@ void CBaseEntityOutput::RemoveEventAction( CEventAction *pEventAction )
 	}
 }
 
+void CBaseEntityOutput::ScriptRemoveEventAction( CEventAction *pEventAction, const char *szTarget, const char *szTargetInput, const char *szParameter )
+{
+	CEventAction *ev = m_ActionList;
+	CEventAction *prev = NULL;
+	bool bTargetOnly = false;
+	if ( V_strcmp( szTargetInput, "" ) == 0 )
+		bTargetOnly = true;
+	
+	while (ev != NULL)
+	{
+		bool bRemove = false;
+
+		if ( bTargetOnly )
+		{
+			if ( ev->m_iTarget == AllocPooledString( szTarget ) )
+				bRemove = true;
+		}
+		else
+		{
+			if ( ev->m_iTarget == AllocPooledString( szTarget ) && ev->m_iTargetInput == AllocPooledString( szTargetInput ) && ev->m_iParameter == AllocPooledString( szParameter ) )
+				bRemove = true;
+		}
+
+		if (!bRemove)
+		{
+			prev = ev;
+			ev = ev->m_pNext;
+		}
+		else
+		{
+			if (prev != NULL)
+			{
+				prev->m_pNext = ev->m_pNext;
+			}
+			else
+			{
+				m_ActionList = ev->m_pNext;
+			}
+
+			CEventAction *next = ev->m_pNext;
+			delete ev;
+			ev = next;
+		}
+	}
+}
+
 
 // save data description for the event queue
 BEGIN_SIMPLE_DATADESC( CBaseEntityOutput )

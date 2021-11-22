@@ -188,3 +188,23 @@ float CASW_Weapon_Rifle::GetFireRate()
 
 	return flRate;
 }
+
+float CASW_Weapon_Rifle::GetWeaponDamage()
+{
+	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+
+	extern ConVar rd_rifle_dmg_base;
+	if ( rd_rifle_dmg_base.GetFloat() > 0 )
+	{
+		flDamage = rd_rifle_dmg_base.GetFloat();
+	}
+
+	if ( GetMarine() )
+	{
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_Skill(GetWeaponSkillId()), GetWeaponSubSkillId());
+	}
+
+	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
+
+	return flDamage;
+}

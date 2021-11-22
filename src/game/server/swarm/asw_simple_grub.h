@@ -48,6 +48,8 @@ public:
 	bool ShouldGib( const CTakeDamageInfo &info );
 	bool CorpseGib( const CTakeDamageInfo &info );
 	void Event_Killed( const CTakeDamageInfo &info );
+
+	virtual void SetHealthByDifficultyLevel();
 };
 
 

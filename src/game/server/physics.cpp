@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: Interface layer for ipion IVP physics.
 //
@@ -1266,12 +1266,12 @@ static void CallbackReport( CBaseEntity *pEntity )
 	Msg( "%s - %s\n", pEntity->GetClassname(), pName );
 }
 
-CON_COMMAND(physics_highlight_active, "Turns on the absbox for all active physics objects")
+CON_COMMAND_F(physics_highlight_active, "Turns on the absbox for all active physics objects", FCVAR_CHEAT)
 {
 	IterateActivePhysicsEntities( CallbackHighlight );
 }
 
-CON_COMMAND(physics_report_active, "Lists all active physics objects")
+CON_COMMAND_F(physics_report_active, "Lists all active physics objects", FCVAR_CHEAT)
 {
 	IterateActivePhysicsEntities( CallbackReport );
 }
@@ -1527,12 +1527,12 @@ CON_COMMAND(physics_debug_entity, "Dumps debug info for an entity")
 	PhysicsCommand( args, OutputVPhysicsDebugInfo );
 }
 
-CON_COMMAND(physics_select, "Dumps debug info for an entity")
+CON_COMMAND_F(physics_select, "Dumps debug info for an entity", FCVAR_CHEAT)
 {
 	PhysicsCommand( args, MarkVPhysicsDebug );
 }
 
-CON_COMMAND( physics_budget, "Times the cost of each active object" )
+CON_COMMAND_F( physics_budget, "Times the cost of each active object", FCVAR_CHEAT )
 {
 	int activeCount = physenv->GetActiveObjectCount();
 

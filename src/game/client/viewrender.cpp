@@ -3984,6 +3984,7 @@ static void DrawClippedDepthBox( IClientRenderable *pEnt, float *pClipPlane )
 
 		default:
 			Assert( false );
+			Warning( "pStartPoint and pTriangleFanPoints[0] are not properly initialized\n" );
 			break;
 		};
 

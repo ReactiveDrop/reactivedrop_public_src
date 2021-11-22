@@ -198,10 +198,10 @@ float CASW_Weapon_Assault_Shotgun::GetWeaponDamage()
 	//float flDamage = 7.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if (ASWDeathmatchMode())
+	extern ConVar rd_vindicator_dmg_base;
+	if ( rd_vindicator_dmg_base.GetFloat() )
 	{
-		extern ConVar rd_pvp_vindicator_dmg;
-		flDamage = rd_pvp_vindicator_dmg.GetFloat();
+		flDamage = rd_vindicator_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )

@@ -460,15 +460,15 @@ float CASW_Weapon_Flamer::GetWeaponDamage()
 	//float flDamage = 35.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if ( ASWDeathmatchMode() )
+	extern ConVar rd_flamer_dmg_base;
+	if ( rd_flamer_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_flamer_dmg;
-		flDamage = rd_pvp_flamer_dmg.GetFloat();
+		flDamage = rd_flamer_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG);
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG );
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );

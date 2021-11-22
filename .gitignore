@@ -45,3 +45,4 @@ src/game/server/Debug_swarm/
 src/game/server/Release_swarm/
 src/ipch
 src/reactivedrop_vs13.opensdf
+src/.vs

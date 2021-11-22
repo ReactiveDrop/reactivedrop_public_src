@@ -19,6 +19,8 @@ BEGIN_DATADESC( CASW_Simple_Grub )
 END_DATADESC()
 
 extern ConVar asw_debug_simple_alien;
+extern ConVar asw_debug_alien_damage;
+ConVar rd_grub_health( "rd_grub_health", "1", FCVAR_CHEAT );
 
 //IMPLEMENT_SERVERCLASS_ST(CASW_Simple_Grub, DT_ASW_Simple_Drone)
 	
@@ -49,7 +51,7 @@ void CASW_Simple_Grub::Spawn(void)
 
 	SetTouch( &CASW_Simple_Grub::GrubTouch );
 
-	m_iHealth	= 1;
+	m_iHealth	= rd_grub_health.GetInt();
 	SetBlocksLOS(false);
 }
 
@@ -335,4 +337,12 @@ void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 		pMarine->GetMarineResource()->m_iGrubKills++;
 	}
 	BaseClass::Event_Killed(info);
+}
+
+void CASW_Simple_Grub::SetHealthByDifficultyLevel()
+{
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting shaman's initial health to %d\n", rd_grub_health.GetInt() );
+	SetHealth( rd_grub_health.GetInt() );
+	SetMaxHealth( rd_grub_health.GetInt() );
 }

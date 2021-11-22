@@ -75,26 +75,6 @@ void CGameTimescale::SetCurrentTimescale( float flTimescale )
 
 #ifndef CLIENT_DLL
 	engine->SetTimescale( m_flCurrentTimescale );
-	// reactivedrop: #iss-adrenaline-lag
-	// 'Adrenaline lag' issue happens when users either use adrenaline or slow
-	// motion happens during mission. Clients get the reduced update rate(usually
-	// 21 updates per second) and sometimes packet loss, which is so huge it
-	// makes client's game freeze for several seconds. 
-
-	// A workaround for this issue is to change host_timescale cvar to the exactly
-	// same value as engine->SetTimescale() call is set to.
-	// This way there is no decrease in update rate and there is no loss during
-	// slow motion. 
-	// host_timescale only works as expected when sv_cheats 1, it can slow down
-	// and speed up game time. Changing host_timescale when sv_cheats 0 results
-	// in update rate change, without game time change
-	// 
-	ConVarRef host_timescale( "host_timescale" ); 
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( host_timescale.IsValid() && sv_cheats.IsValid() && !sv_cheats.GetBool() )
-	{
-		host_timescale.SetValue( m_flCurrentTimescale );
-	}
 
 	// Pass the change info to the client so it can do prediction
 	CReliableBroadcastRecipientFilter filter;
@@ -186,23 +166,7 @@ void CGameTimescale::UpdateTimescale( void )
 
 	if ( m_flCurrentTimescale != engine->GetTimescale() )
 	{
-#ifdef CLIENT_DLL
-		// BenLubar(demo-timescale): set the demo timescale to the inverse of the timescale we want so it's not applied twice
-		if ( engine->IsPlayingDemo() )
-		{
-			engine->ClientCmd_Unrestricted( UTIL_VarArgs( "demo_timescale %f\n", 1.0f / m_flCurrentTimescale ) );
-		}
-#endif
 		engine->SetTimescale( m_flCurrentTimescale );
-#ifndef CLIENT_DLL
-		// reactivedrop: #iss-adrenaline-lag
-		ConVarRef host_timescale( "host_timescale" );
-		ConVarRef sv_cheats( "sv_cheats" );
-		if ( host_timescale.IsValid() && sv_cheats.IsValid() && !sv_cheats.GetBool() )
-		{
-			host_timescale.SetValue( m_flCurrentTimescale );
-		}
-#endif
 	}
 }
 
@@ -218,16 +182,6 @@ void CGameTimescale::ResetTimescale( void )
 	m_flStartBlendRealtime = 0.0f;
 
 	engine->SetTimescale( 1.0f );
-
-#ifndef CLIENT_DLL
-	// reactivedrop: #iss-adrenaline-lag
-	ConVarRef host_timescale( "host_timescale" );
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( host_timescale.IsValid() && sv_cheats.IsValid() && !sv_cheats.GetBool() )
-	{
-		host_timescale.SetValue( 1.0f );
-	}
-#endif 
 }
 
 

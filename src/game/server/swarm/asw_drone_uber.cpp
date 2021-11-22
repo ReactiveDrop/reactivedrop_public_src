@@ -68,6 +68,9 @@ void CASW_Drone_Uber::SetHealthByDifficultyLevel()
 		SetHitboxSet(0);
 	//else
 		//SetHitboxSet(2);
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting uber's initial health to %d\n", GetHealth() );
 }
 
 float CASW_Drone_Uber::GetIdealSpeed() const

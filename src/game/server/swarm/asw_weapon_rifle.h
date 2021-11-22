@@ -26,6 +26,8 @@ public:
 
 	float	GetFireRate( void );
 
+	virtual float GetWeaponDamage();
+
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	
 	void	DoImpactEffect( trace_t &tr, int nDamageType );

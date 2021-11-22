@@ -4,6 +4,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+#ifdef REACTIVEDROP_TRACKFIRSTPLAYED	// this is obsolete
+
 class CReactiveDrop_TrackFirstPlayed : public CAutoGameSystem
 {
 public:
@@ -68,3 +70,5 @@ public:
 };
 
 CReactiveDrop_TrackFirstPlayed g_ReactiveDrop_TrackFirstPlayed;
+
+#endif 

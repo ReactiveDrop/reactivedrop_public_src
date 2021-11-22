@@ -338,10 +338,10 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 
 				ClearMultiDamage();
 				float fDamage;
-				if (ASWDeathmatchMode())
+				extern ConVar rd_chainsaw_dmg_base;
+				if ( rd_chainsaw_dmg_base.GetFloat() > 0)
 				{
-					extern ConVar rd_pvp_chainsaw_dmg;
-					fDamage = 0.5 * rd_pvp_chainsaw_dmg.GetFloat() + +MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
+					fDamage = 0.5 * rd_chainsaw_dmg_base.GetFloat() + MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
 				}
 				else
 				{
@@ -403,7 +403,10 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 				*/
 			}
 
-			m_flDmgTime = gpGlobals->curtime + ASW_CHAINSAW_DISCHARGE_INTERVAL;
+			while ( m_flDmgTime + ASW_CHAINSAW_DISCHARGE_INTERVAL < gpGlobals->curtime )
+				m_flDmgTime += ASW_CHAINSAW_DISCHARGE_INTERVAL;
+
+			m_flDmgTime = m_flDmgTime + ASW_CHAINSAW_DISCHARGE_INTERVAL;
 			if ( m_flShakeTime < gpGlobals->curtime )
 			{
 				CASW_Player *pPlayer = pMarine->GetCommander();

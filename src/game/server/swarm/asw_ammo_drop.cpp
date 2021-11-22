@@ -16,6 +16,7 @@
 #include "asw_weapon_ammo_bag_shared.h"
 #include "particle_parse.h"
 #include "asw_achievements.h"
+#include "asw_weapon_medrifle_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -139,9 +140,12 @@ void CASW_Ammo_Drop::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		// riflemod: picking ammo adds secondary ammo as well 
 		if ( rd_refill_secondary.GetBool() )
 		{
-			pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
-			if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2())
-				pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+			if ( !dynamic_cast<CASW_Weapon_MedRifle*>( pWeapon ) )
+			{
+				pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
+				if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2() )
+					pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+			}
 		}
 
 		m_iAmmoUnitsRemaining -= iAmmoCost;

@@ -184,10 +184,10 @@ float CASW_Weapon_Autogun::GetWeaponDamage()
 {
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if (ASWDeathmatchMode())
+	extern ConVar rd_autogun_dmg_base;
+	if ( rd_autogun_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_autogun_dmg;
-		flDamage = rd_pvp_autogun_dmg.GetFloat();
+		flDamage = rd_autogun_dmg_base.GetFloat();
 	}
 
 	if ( GetMarine() )

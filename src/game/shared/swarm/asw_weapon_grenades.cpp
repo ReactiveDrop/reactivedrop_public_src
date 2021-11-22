@@ -162,6 +162,12 @@ float CASW_Weapon_Grenades::GetBoomDamage( CASW_Marine *pMarine )
 		if ( pWeaponInfo )
 			flBaseDamage = pWeaponInfo->m_flBaseDamage;
 	}
+
+	extern ConVar rd_grenades_dmg_base;
+	if ( rd_grenades_dmg_base.GetFloat() )
+	{
+		flBaseDamage = rd_grenades_dmg_base.GetFloat();
+	}
 	
 	return flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
 }

@@ -71,6 +71,7 @@ public:
 	void GooAcidTouch(CBaseEntity* pOther);
 	void SpawnGrubs();
 	void InputBurst( inputdata_t &inputdata );
+	void InputExtinguish( inputdata_t &inputdata );
 	bool m_bSpawnedGrubs;
 	bool m_bHasGrubs;						// true if this is an asw_grub_sac
 	bool m_bHasAmbientSound, m_bPlayingAmbientSound, m_bPlayingGooScream;

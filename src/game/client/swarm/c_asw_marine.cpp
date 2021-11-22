@@ -84,6 +84,7 @@ ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
+extern ConVar rd_aim_marines;
 extern float g_fMarinePoisonDuration;
 
 #define FLASHLIGHT_DISTANCE		1000
@@ -1899,7 +1900,7 @@ void C_ASW_Marine::StopMinigunLoop()
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 		controller.SoundDestroy( m_pMinigunLoopSound );
 		m_pMinigunLoopSound = NULL;
-		//EmitSound("ASW_Weapon_Flamer.FlameStop");
+		EmitSound( "ASW_Weapon_Minigun.MinigunStop" );
 	}
 }
 
@@ -2680,5 +2681,17 @@ void C_ASW_Marine::StopElectifiedArmorEffects(bool bLocalPlayer)
 	{
 		m_pElectrifiedArmorEmitter->StopEmission(false, false, true);
 		m_pElectrifiedArmorEmitter = NULL;
+	}
+}
+
+bool C_ASW_Marine::IsAimTarget()
+{ 
+	if ( ASWDeathmatchMode() || rd_aim_marines.GetBool() )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

@@ -93,6 +93,7 @@
 	#include "asw_director.h"
 	#include "team.h"
 	#include "asw_pickup_equipment.h"
+	#include "Sprite.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -172,6 +173,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
+	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -393,6 +395,8 @@ ConVar rd_paint_scanner_blips("rd_paint_scanner_blips", "1", FCVAR_CHEAT | FCVAR
 ConVar rd_deathmatch_loadout_allowed("rd_deathmatch_loadout_allowed", "0", FCVAR_REPLICATED, "If set to 1 players can choose weapons they spawn with");
 ConVar rd_respawn_time( "rd_respawn_time", "0.2",  FCVAR_REPLICATED, "Number of seconds after you can respawn in Deathmatch", true, 0.2f, false, 1000.0f);
 ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "1 enable ground shooting, 0 disabled" );
+ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
+ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
@@ -470,6 +474,7 @@ ConVar rd_alien_num_max_scale( "rd_alien_num_max_scale", "2", FCVAR_REPLICATED |
 // this cvar is used by client only, but, to support it in challenges we need to make it replicated and set it from server
 ConVar rd_ray_trace_distance( "rd_ray_trace_distance", "3000", FCVAR_REPLICATED | FCVAR_CHEAT, "Increase this parameter for huge maps for grenade launcher to properly aim to far away distances" );
 ConVar rd_leaderboard_enabled( "rd_leaderboard_enabled", "1", FCVAR_REPLICATED, "If 0 player leaderboard scores will not be updated on mission complete. Use this for modded servers." );
+ConVar rd_aim_marines( "rd_aim_marines", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 marines can aim at marines that are on different Z level" );
 
 // ASW Weapons
 // Rifle
@@ -608,25 +613,26 @@ ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "
 ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
 
 // reactivedrop: adding these weapon damage overrides for PvP 
-ConVar	rd_pvp_shotgun_dmg("rd_pvp_shotgun_dmg",	"0", FCVAR_REPLICATED);
-ConVar	rd_pvp_rifle_dmg("rd_pvp_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_prifle_dmg("rd_pvp_prifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_autogun_dmg("rd_pvp_autogun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_vindicator_dmg("rd_pvp_vindicator_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_pistol_dmg("rd_pvp_pistol_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_railgun_dmg("rd_pvp_railgun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_pdw_dmg("rd_pvp_pdw_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_flamer_dmg("rd_pvp_flamer_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_minigun_dmg("rd_pvp_minigun_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_sniper_dmg("rd_pvp_sniper_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_chainsaw_dmg("rd_pvp_chainsaw_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_grenade_launcher_dmg("rd_pvp_grenade_launcher_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_mininglaser_dmg("rd_pvp_mininglaser_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_deagle_dmg("rd_pvp_deagle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_devastator_dmg("rd_pvp_devastator_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_combat_rifle_dmg("rd_pvp_combat_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_heavy_rifle_dmg("rd_pvp_heavy_rifle_dmg", "0", FCVAR_REPLICATED);
-ConVar	rd_pvp_medrifle_dmg("rd_pvp_medrifle_dmg", "0", FCVAR_REPLICATED);
+ConVar	rd_shotgun_dmg_base("rd_shotgun_dmg_base",	"0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
+ConVar	rd_rifle_dmg_base("rd_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of rifle", true, 0, false, 0);
+ConVar	rd_prifle_dmg_base("rd_prifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of prototype rifle", true, 0, false, 0);
+ConVar	rd_autogun_dmg_base("rd_autogun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
+ConVar	rd_vindicator_dmg_base("rd_vindicator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of vindicator", true, 0, false, 0);
+ConVar	rd_pistol_dmg_base("rd_pistol_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of twin pistols", true, 0, false, 0);
+ConVar	rd_railgun_dmg_base("rd_railgun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of railgun", true, 0, false, 0);
+ConVar	rd_pdw_dmg_base("rd_pdw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of PDW", true, 0, false, 0);
+ConVar	rd_flamer_dmg_base("rd_flamer_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of flamer", true, 0, false, 0);
+ConVar	rd_minigun_dmg_base("rd_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of minigun", true, 0, false, 0);
+ConVar	rd_sniper_dmg_base("rd_sniper_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of sniper rifle", true, 0, false, 0);
+ConVar	rd_chainsaw_dmg_base("rd_chainsaw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of chainsaw", true, 0, false, 0);
+ConVar	rd_grenade_launcher_dmg_base("rd_grenade_launcher_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of grenade launcher", true, 0, false, 0);
+ConVar	rd_mininglaser_dmg_base("rd_mininglaser_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of mining laser", true, 0, false, 0);
+ConVar	rd_deagle_dmg_base("rd_deagle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of deagle", true, 0, false, 0);
+ConVar	rd_devastator_dmg_base("rd_devastator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of devastator", true, 0, false, 0);
+ConVar	rd_combat_rifle_dmg_base("rd_combat_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of combat rifle", true, 0, false, 0);
+ConVar	rd_heavy_rifle_dmg_base("rd_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of heavy rifle", true, 0, false, 0);
+ConVar	rd_medrifle_dmg_base("rd_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of medical rifle", true, 0, false, 0);
+ConVar	rd_grenades_dmg_base( "rd_grenades_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of hand grenades", true, 0, false, 0);
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
 ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a kick vote");
@@ -646,7 +652,7 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 #else
 	);
 #endif
-ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 env_slomo will be deleted from map on round start(if present)" );
+ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
 
 #define ADD_STAT( field, amount ) \
@@ -1067,6 +1073,7 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 #else
 
+extern bool g_bAIDisabledByUser;
 extern ConVar asw_springcol;
 ConVar asw_blip_speech_chance("asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity");
 ConVar asw_instant_restart("asw_instant_restart", "0", 0, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
@@ -1213,6 +1220,17 @@ CAlienSwarm::CAlienSwarm()
 
 	m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/overviews/%s.txt", STRING( gpGlobals->mapname ) ) );
 	EnableChallenge( rd_challenge.GetString() );
+
+	ConVarRef sv_cheats( "sv_cheats" );
+	if ( !sv_cheats.GetBool() )
+	{
+		if ( CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI )
+		{
+			CAI_BaseNPC::m_nDebugBits &= ~bits_debugDisableAI;
+			DevMsg( "AI Enabled.\n" );
+			g_bAIDisabledByUser = false;
+		}
+	}
 }
 
 CAlienSwarm::~CAlienSwarm()
@@ -2588,7 +2606,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		gameeventmanager->FireEvent( event );
 	}
 
-	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
+	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f && !rd_auto_fast_restart.GetBool() )
 	{
 		// They've been playing a bit... go to the mission fail screen instead!
 		ASWGameRules()->MissionComplete( false );
@@ -6743,9 +6761,9 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 	{
 		int iFov = atoi(pszFov);
 		if ( m_bIsIntro )
-			iFov = clamp( iFov, 20, 90 );
+			iFov = clamp( iFov, 20, 75 );
 		else
-			iFov = clamp( iFov, 20, 90 );
+			iFov = clamp( iFov, 20, 75 );
 		pPlayer->SetDefaultFOV( iFov );
 	}
 }
@@ -7092,8 +7110,13 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 		return;
 	}
 
-	if (iVoteType < ASW_VOTE_SAVED_CAMPAIGN || iVoteType > ASW_VOTE_CHANGE_MISSION)
+	if (iVoteType <= ASW_VOTE_SAVED_CAMPAIGN || iVoteType > ASW_VOTE_CHANGE_MISSION)
 		return;
+
+	if ( !Q_stricmp( szVoteName, "lobby" ) )
+	{
+		return;
+	}
 
 	// Check this is a valid vote, i.e.:
 	//   if it's a map change, check that map exists
@@ -7455,8 +7478,8 @@ void CAlienSwarm::SetForceReady(int iForceReadyType)
 		return;
 	}
 
-	m_fForceReadyTime = gpGlobals->curtime + 5.9f;
-	m_iForceReadyCount = 5;
+	m_fForceReadyTime = rd_auto_fast_restart.GetBool() ? gpGlobals->curtime + 1.9f : gpGlobals->curtime + 5.9f;
+	m_iForceReadyCount = rd_auto_fast_restart.GetBool() ? 1 : 5;
 
 	// check to see if it should end immediately
 	CheckForceReady();
@@ -7570,7 +7593,7 @@ void CAlienSwarm::FinishForceReady()
 			{
 				SetForceReady(ASW_FR_NONE);
 
-				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME )
+				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME && !rd_auto_fast_restart.GetBool() )
 				{
 					MissionComplete( false );		
 				}
@@ -7957,9 +7980,249 @@ void CheatsChangeCallback( IConVar *pConVar, const char *pOldString, float flOld
 }
 #endif
 
+#ifdef GAME_DLL
+static void CreateCake( const char *mapname )
+{
+	Vector origin(0, 0, 0);
+	if ( FStrEq( mapname, "asi-jac1-landingbay_01" ) )
+	{
+		origin = Vector( -8444, -468, 852 );
+	}
+	else if ( FStrEq( mapname, "asi-jac1-landingbay_02" ) )
+	{
+		origin = Vector( -5087, 4764, 816 );
+	}
+	else if ( FStrEq( mapname, "asi-jac1-landingbay_pract" ) )
+	{
+		origin = Vector( -4706, 2265, 753 );
+	}
+	else if ( FStrEq( mapname, "asi-jac2-deima" ) )
+	{
+		origin = Vector( 853, 5452, -52 );
+	}
+	else if ( FStrEq( mapname, "asi-jac3-rydberg" ) )
+	{
+		origin = Vector( -2786, -1282, 660 );
+	}
+	else if ( FStrEq( mapname, "asi-jac4-residential" ) )
+	{
+		origin = Vector( -1404, -3520, -8 );
+	}
+	else if ( FStrEq( mapname, "asi-jac6-sewerjunction" ) )
+	{
+		origin = Vector( 208, 1416, -548 );
+	}
+	else if ( FStrEq( mapname, "asi-jac7-timorstation" ) )
+	{
+		origin = Vector( -151, -5440, -97 );
+	}
+	else if ( FStrEq( mapname, "dm_deima" ) )
+	{
+		origin = Vector( -528, 1884, 12 );
+	}
+	else if ( FStrEq( mapname, "dm_desert" ) )
+	{
+		origin = Vector( 548, 4159, 76 );
+	}
+	else if ( FStrEq( mapname, "dm_residential" ) )
+	{
+		origin = Vector( -2036, -7628, -28 );
+	}
+	else if ( FStrEq( mapname, "dm_testlab" ) )
+	{
+		origin = Vector( -3746, -1314, -52 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800lz" ) )
+	{
+		origin = Vector( -1829, 2136, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800pp1" ) )
+	{
+		origin = Vector( -2428, -988, -188 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800pp2" ) )
+	{
+		origin = Vector( -1129, 233, 184 );
+	}
+	else if ( FStrEq( mapname, "rd-area9800wl" ) )
+	{
+		origin = Vector( 2006, 280, -556 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission1" ) )
+	{
+		origin = Vector( 178, 3740, 370 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission2" ) )
+	{
+		origin = Vector( -7997, -10414, -51 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission3" ) )
+	{
+		origin = Vector( 8614, 2973, -847 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission4" ) )
+	{
+		origin = Vector( -4976, 2217, 753 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission5" ) )
+	{
+		origin = Vector( 951, -2120, 304 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission6" ) )
+	{
+		origin = Vector( -3346, -357, -327 );
+	}
+	else if ( FStrEq( mapname, "rd-bonus_mission7" ) )
+	{
+		origin = Vector( 236, 1785, 14 );
+	}
+	else if ( FStrEq( mapname, "rd-lan1_bridge" ) )
+	{
+		origin = Vector( 344, -4035, 28 );
+	}
+	else if ( FStrEq( mapname, "rd-lan2_sewer" ) )
+	{
+		origin = Vector( -4258, -2022, -18 );
+	}
+	else if ( FStrEq( mapname, "rd-lan3_maintenance" ) )
+	{
+		origin = Vector( -4758, 478, -51 );
+	}
+	else if ( FStrEq( mapname, "rd-lan4_vent" ) )
+	{
+		origin = Vector( -1699, -726, -73 );
+	}
+	else if ( FStrEq( mapname, "rd-lan5_complex" ) )
+	{
+		origin = Vector( -560, -4214, -228 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs1storagefacility" ) )
+	{
+		origin = Vector( 985, 472, -356 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs2landingbay7" ) )
+	{
+		origin = Vector( -928, -1592, 316 );
+	}
+	else if ( FStrEq( mapname, "rd-ocs3uscmedusa" ) )
+	{
+		origin = Vector( -610, -2179, 60 );
+	}
+	else if ( FStrEq( mapname, "rd-par1unexpected_encounter" ) )
+	{
+		origin = Vector( 1101, 4036, 163 );
+	}
+	else if ( FStrEq( mapname, "rd-par2hostile_places" ) )
+	{
+		origin = Vector( 1372, -1135, 204 );
+	}
+	else if ( FStrEq( mapname, "rd-par3close_contact" ) )
+	{
+		origin = Vector( -2706, 4050, 533 );
+	}
+	else if ( FStrEq( mapname, "rd-par4high_tension" ) )
+	{
+		origin = Vector( 1886, -1437, -338 );
+	}
+	else if ( FStrEq( mapname, "rd-par5crucial_point" ) )
+	{
+		origin = Vector( -7471, -3522, -145 );
+	}
+	else if ( FStrEq( mapname, "rd-res1forestentrance" ) )
+	{
+		origin = Vector( -1187, 2342, 104 );
+	}
+	else if ( FStrEq( mapname, "rd-res2research7" ) )
+	{
+		origin = Vector( 944, 1498, 76 );
+	}
+	else if ( FStrEq( mapname, "rd-res3miningcamp" ) )
+	{
+		origin = Vector( -3246, 1018, 14 );
+	}
+	else if ( FStrEq( mapname, "rd-res4mines" ) )
+	{
+		origin = Vector( -10252, 1372, -2244 );
+	}
+	else if ( FStrEq( mapname, "rd-tft1desertoutpost" ) )
+	{
+		origin = Vector( -1976, 2090, -119 );
+	}
+	else if ( FStrEq( mapname, "rd-tft2abandonedmaintenance" ) )
+	{
+		origin = Vector( -1628, -184, -884 );
+	}
+	else if ( FStrEq( mapname, "rd-tft3spaceport" ) )
+	{
+		origin = Vector( -1028, -1090, 1084 );
+	}
+	else if ( FStrEq( mapname, "rd-til1midnightport" ) )
+	{
+		origin = Vector( -4777, 3085, 76 );
+	}
+	else if ( FStrEq( mapname, "rd-til2roadtodawn" ) )
+	{
+		origin = Vector( 29, 1849, 108 );
+	}
+	else if ( FStrEq( mapname, "rd-til3arcticinfiltration" ) )
+	{
+		origin = Vector( -1156, 4177, 437 );
+	}
+	else if ( FStrEq( mapname, "rd-til4area9800" ) )
+	{
+		origin = Vector( 1161, -257, -492 );
+	}
+	else if ( FStrEq( mapname, "rd-til5coldcatwalks" ) )
+	{
+		origin = Vector( -1789, -4679, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-til6yanaurusmine" ) )
+	{
+		origin = Vector( 5295, 8550, -396 );
+	}
+	else if ( FStrEq( mapname, "rd-til7factory" ) )
+	{
+		origin = Vector( -752, 1472, 12 );
+	}
+	else if ( FStrEq( mapname, "rd-til8comcenter" ) )
+	{
+		origin = Vector( 1907, 5053, -238 );
+	}
+	else if ( FStrEq( mapname, "rd-til9syntekhospital" ) )
+	{
+		origin = Vector( -2753, 1659, 4604 );
+	}
+
+	if ( origin.IsZeroFast() )
+		return;
+
+	// shift bottom, because hammer coords were incorrect
+	origin += Vector( 0, 0, -12 );
+
+	CBaseEntity *pCake = CreateEntityByName( "prop_dynamic" );
+	pCake->SetModelName( AllocPooledString( "models/props/cake/cake.mdl" ) );
+	pCake->Precache();
+	pCake->SetAbsOrigin( origin );
+	pCake->Spawn();
+	// UTIL_DropToFloor( pCake, MASK_SOLID );
+	pCake->SetMoveType( MOVETYPE_NONE );
+
+	CSprite *pCakeSprite = static_cast<CSprite*>( CreateEntityByName( "env_sprite" ) );
+	pCakeSprite->SetModelName( AllocPooledString( "materials/sprites/light_glow03.vmt") );
+	pCakeSprite->Precache();
+	pCakeSprite->SetGlowProxySize( 2.0f );
+	pCakeSprite->SetScale( 0.15f );
+	pCakeSprite->SetColor( 220, 205, 120 );
+	pCakeSprite->SetRenderAlpha( 190.0f );
+	pCakeSprite->SetRenderMode( ( RenderMode_t )9 );	// World Space Glow
+	pCakeSprite->m_flSpriteFramerate = 10.0f;
+	pCakeSprite->SetAbsOrigin( origin + Vector( 0, 0, 24 ) );
+	pCakeSprite->Spawn();
+}
+#endif
+
 void CAlienSwarm::LevelInitPostEntity()
 {
-	
 	// check if we're the intro/outro map
 	char mapName[255];
 #ifdef CLIENT_DLL
@@ -8100,6 +8363,15 @@ void CAlienSwarm::LevelInitPostEntity()
 			s_bInstalledCheatsChangeCallback = true;
 		}
 	}
+
+#ifdef GAME_DLL
+	tm curtime; 
+	Plat_GetLocalTime( &curtime );
+	if ( (curtime.tm_mday >= 20 && curtime.tm_mday < 27) && curtime.tm_mon == 3 )
+	{
+		CreateCake( mapName );
+	}
+#endif
 
 	if ( IsLobbyMap() )
 	{

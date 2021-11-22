@@ -99,10 +99,10 @@ float CASW_Weapon_CombatRifle::GetWeaponDamage()
 	//float flDamage = 18.0f;
 	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
-	if (ASWDeathmatchMode())
+	extern ConVar rd_combat_rifle_dmg_base;
+	if ( rd_combat_rifle_dmg_base.GetFloat() > 0 )
 	{
-		extern ConVar rd_pvp_combat_rifle_dmg;
-		flDamage = rd_pvp_combat_rifle_dmg.GetFloat();
+		flDamage = rd_combat_rifle_dmg_base.GetFloat();
 	}
 
 	if (GetMarine())
