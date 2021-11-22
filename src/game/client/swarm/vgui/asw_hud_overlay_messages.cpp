@@ -40,6 +40,8 @@ extern ConVar asw_draw_hud;
 extern ConVar asw_hud_alpha;
 //extern ConVar asw_simple_hacking;
 
+ConVar asw_paint_ammo_bar("asw_paint_ammo_bar", "1", FCVAR_NONE, "Set to 0 to do not paint bars under ammo drops");
+
 #define ASW_SPECTATING_BAR_HEIGHT 0.06f
 
 // shows various messages overlayed on the screen (e.g. INFESTED, POISONED, etc.)
@@ -168,7 +170,8 @@ void CASWHudOverlayMessages::Paint()
 	int yPos = YRES( 80 );
 	PaintStimStatus( yPos );
 	//PaintHackingProgress( yPos );
-	PaintAmmoDrops();
+	if (asw_paint_ammo_bar.GetBool())
+		PaintAmmoDrops();
 }
 
 void CASWHudOverlayMessages::PaintAmmoDrops()
