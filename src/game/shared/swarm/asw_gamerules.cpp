@@ -3489,6 +3489,23 @@ void CAlienSwarm::Think()
 	}
 }
 
+
+
+inline unsigned int ThreadShutdown(void* pParam)
+{
+	ThreadSleep(gpGlobals->interval_per_tick * 2);
+
+	// send quit and execute command within the same frame
+	engine->ServerCommand("quit\n");
+	engine->ServerExecute();
+
+	return 0;
+}
+
+void CAlienSwarm::Shutdown() {
+	CreateSimpleThread(ThreadShutdown, engine);
+}
+
 void CAlienSwarm::OnServerHibernating()
 {
 	int iPlayers = 0;
@@ -3551,7 +3568,7 @@ void CAlienSwarm::OnServerHibernating()
 		// quit server
 		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
 		{
-			exit( 0 ); // reactivedrop: Isn't the best solution but works. Issuing "quit" doesn't work here. 
+			Shutdown();
 		}
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",

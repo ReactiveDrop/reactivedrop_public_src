@@ -117,7 +117,7 @@ const char *GetGameDescription()
 			}
 			else if ( fFirstTimePlayersAreZero + PLAYER_CHECK_TIMEOUT < Plat_FloatTime() )
 			{
-				exit( 0 ); // reactivedrop: Isn't the best solution but works. Issuing "quit" doesn't work here. 
+				if (g_pGameRules) g_pGameRules->Shutdown();
 			}
 			else
 			{

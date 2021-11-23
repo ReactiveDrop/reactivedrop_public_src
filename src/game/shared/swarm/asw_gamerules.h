@@ -114,6 +114,7 @@ public:
 	const char *m_szGameDescription;
 	virtual const char *GetGameDescription( void ) { return m_szGameDescription; }
 	virtual void			OnServerHibernating();
+	virtual void			Shutdown();
 	
 	// briefing roster functions
 	virtual bool			RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot=-1 );
