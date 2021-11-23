@@ -65,7 +65,7 @@ void CASW_Weapon_Devastator::SecondaryAttack()
 void CASW_Weapon_Devastator::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
-	PrecacheModel( "swarm/sprites/greylaser1.vmt ");
+	PrecacheModel( "swarm/sprites/greylaser1.vmt");
 	PrecacheScriptSound( "ASW_Weapon.Empty" );
 	PrecacheScriptSound( "ASW_Weapon.Reload3" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.SingleFP" );
