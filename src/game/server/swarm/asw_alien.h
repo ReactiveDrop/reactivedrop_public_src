@@ -348,6 +348,8 @@ protected:
 	CUtlVector<CASW_AlienVolley>	m_volleys;
 	CUtlVector<CASW_AlienShot>		m_shots;
 	DEFINE_CUSTOM_AI;
+
+	bool m_bShouldRestoreDefaultMoveTypeAfterMoveClone;
 };
 
 // activities

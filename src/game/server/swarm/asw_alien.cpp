@@ -230,6 +230,8 @@ CASW_Alien::CASW_Alien( void ) :
 	meleeAttack2.Init( 0.0f, 64.0f, 0.7f, false );
 	rangeAttack1.Init( 64.0f, 786.0f, 0.5f, false );
 	rangeAttack2.Init( 64.0f, 512.0f, 0.5f, false );
+
+	m_bShouldRestoreDefaultMoveTypeAfterMoveClone = false;
 }
 
 CASW_Alien::~CASW_Alien()
@@ -3126,6 +3128,9 @@ void CASW_Alien::SetMoveClone( CBaseEntity *pEnt )
 		matrix3x4_t temp;
 		MatrixInvert( otherToWorld, temp );
 		ConcatTransforms( temp, entityToWorld, m_moveCloneOffset );
+
+		SetMoveType( MOVETYPE_NONE );
+		m_bShouldRestoreDefaultMoveTypeAfterMoveClone = true;
 	}
 }
 
@@ -3138,6 +3143,11 @@ bool CASW_Alien::OverrideMove( float flInterval )
 		ConcatTransforms( otherToWorld, m_moveCloneOffset, temp );
 		SetLocalTransform( temp );
 		return true;
+	}
+	else if (m_bShouldRestoreDefaultMoveTypeAfterMoveClone) //we had a move clone but now no more
+	{
+		SetMoveType( MOVETYPE_STEP );
+		m_bShouldRestoreDefaultMoveTypeAfterMoveClone = false;
 	}
 	return false;
 }
