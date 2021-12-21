@@ -174,6 +174,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
+	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -1098,6 +1099,17 @@ const char * GenerateNewSaveGameName()
 CAlienSwarm::CAlienSwarm()
 {
 	Msg("CAlienSwarm created\n");
+
+#ifndef CLIENT_DLL
+	// fixes a memory leak on dedicated server where model vertex data
+	// is not freed on map transition and remains locked, leading to increased
+	// memory usage and cache trashing over time
+	if (engine->IsDedicatedServer() && rd_adjust_mod_dont_load_vertices.GetBool())
+	{
+		ConVarRef mod_dont_load_vertices("mod_dont_load_vertices");
+		mod_dont_load_vertices.SetValue(1);
+	}
+#endif
 
 	m_szGameDescription = "Alien Swarm: Reactive Drop";
 
