@@ -3288,6 +3288,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 }
 
 ConVar rm_welcome_message( "rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message_delay ( "rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
@@ -3305,22 +3306,25 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 	
 	if ( pAswPlayer->HasFullyJoined() ) 
 	{
-#if 0 // disabled welcoming for now 
 		if ( !pAswPlayer->m_bWelcomed ) 
 		{
-			if (gpGlobals->curtime >= m_fBriefingStartedTime + 10) 
+			if (gpGlobals->curtime >= m_fBriefingStartedTime + rm_welcome_message_delay.GetInt()) 
 			{
 				pAswPlayer->m_bWelcomed = true;
 
-				char buffer[512];
-				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
-				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+				if (Q_strlen(rm_welcome_message.GetString()) > 0) 
+				{
+					char buffer[512];
+					Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
+					ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+				}
 
+#if 0 // disabled welcoming for now 
 				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+#endif
 			}
 		}
-#endif
 	}
 }
 
