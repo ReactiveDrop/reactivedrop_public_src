@@ -20,13 +20,16 @@
 #include "usermessages.h"
 #include "c_asw_player.h"
 
+#include "hud_basechat.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_draw_hud;
 extern ConVar asw_hud_alpha;
 
-ConVar rda_print_objective_completion_time("rda_print_objective_completion_time", "0", FCVAR_ARCHIVE, "Print objective completion time to the console");
+ConVar rda_print_console_objective_completion_time("rda_print_console_objective_completion_time", "0", FCVAR_ARCHIVE, "Print objective completion time to the console");
+ConVar rda_print_chat_objective_completion_time("rda_print_chat_objective_completion_time", "0", FCVAR_ARCHIVE, "Print objective completion time to the chat");
 
 using namespace vgui;
 
@@ -327,10 +330,19 @@ void CASWHudObjective::UpdateObjectiveList()
 
 						char szInfo[128];
 						Q_snprintf(szInfo, ARRAYSIZE(szInfo), "Objective complete! Time: %d:%02d.%03d Delta with previous objective: %d:%02d.%03d\n", iMinutes, iSeconds, iMilliseconds, iDeltaMin, iDeltaSec, iDeltaMs);
-						if ( rda_print_objective_completion_time.GetBool() )
+						if (rda_print_console_objective_completion_time.GetBool() )
 						{
 							ConColorMsg(col, "%s", szInfo);
 						}
+						if (rda_print_chat_objective_completion_time.GetBool())
+						{
+							CBaseHudChat* hudChat = CBaseHudChat::GetHudChat();
+							if (hudChat)
+							{
+								hudChat->ChatPrintf(0, CHAT_FILTER_NONE, "%s", szInfo);
+							}
+						}
+
 						m_fPrevObjectiveTime = gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime;
 					}
 
