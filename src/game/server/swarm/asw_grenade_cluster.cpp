@@ -54,9 +54,21 @@ BEGIN_DATADESC( CASW_Grenade_Cluster )
 	DEFINE_FIELD( m_fEarliestAOEDetonationTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bAdvancedRicochet, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_iMaxRicochets, FIELD_INTEGER ),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "EnableWithReset", InputEnableWithReset),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBack", InputReflectBack),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectRandomly", InputReflectRandomly),
 END_DATADESC()
 
-extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
+BEGIN_ENT_SCRIPTDESC(CASW_Grenade_Cluster, CBaseCombatCharacter, "Cluster grenade")
+	DEFINE_SCRIPTFUNC(Disable, "Disable the grenade")
+	DEFINE_SCRIPTFUNC(Enable, "Enable the grenade, different time setting like explosion time correctly adjusted after disable state")
+	DEFINE_SCRIPTFUNC(EnableWithReset, "Enable the grenade, different time setting like explosion time reset like grenade is newly created")
+	DEFINE_SCRIPTFUNC(ReflectBack, "Reflect grenade nearby from fire position")
+	DEFINE_SCRIPTFUNC(ReflectRandomly, "Reflect grenade to random porition")
+END_SCRIPTDESC();
 
 void CASW_Grenade_Cluster::Spawn( void )
 {
@@ -111,6 +123,8 @@ void CASW_Grenade_Cluster::Spawn( void )
 	m_CreatorWeaponClass = (Class_T)CLASS_ASW_UNKNOWN;
 
 	m_bTeslaAmped = false;
+
+	m_bDisabled = false;
 }
 
 void CASW_Grenade_Cluster::Precache()
@@ -505,4 +519,117 @@ int	CASW_Grenade_Cluster::OnTakeDamage(const CTakeDamageInfo& info)
 	}
 
 	return BaseClass::OnTakeDamage(info);
+}
+
+void CASW_Grenade_Cluster::Disable()
+{
+	if (m_bDisabled)
+		return;
+	m_bDisabled = true;
+
+	SetMoveType( MOVETYPE_NONE );
+	m_takedamage = DAMAGE_NO;
+	SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER);
+	SetThink(NULL);
+	SetTouch(NULL);
+
+	m_fSavedDisableTime = gpGlobals->curtime;
+}
+
+void CASW_Grenade_Cluster::Enable()
+{
+	if (!m_bDisabled)
+		return;
+
+	SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+	m_takedamage = DAMAGE_YES;
+	SetCollisionGroup(ASW_COLLISION_GROUP_GRENADES);
+
+	SetTouch(&CASW_Grenade_Cluster::VGrenadeTouch);
+
+	//shift our times by our disable delay
+	m_fDetonateTime += gpGlobals->curtime - m_fSavedDisableTime;
+	m_fEarliestAOEDetonationTime += gpGlobals->curtime - m_fSavedDisableTime;
+	m_fEarliestTouchDetonationTime += gpGlobals->curtime - m_fSavedDisableTime;
+
+	if (m_fDetonateTime <= gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat())
+	{
+		SetThink(&CASW_Grenade_Cluster::Detonate);
+		SetNextThink(m_fDetonateTime);
+	}
+	else
+	{
+		SetThink(&CASW_Grenade_Cluster::CheckNearbyDrones);
+		SetNextThink(gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat());
+	}
+}
+
+void CASW_Grenade_Cluster::EnableWithReset()
+{
+	if (!m_bDisabled)
+		return;
+
+	SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+	m_takedamage = DAMAGE_YES;
+	SetCollisionGroup(ASW_COLLISION_GROUP_GRENADES);
+
+	SetTouch(&CASW_Grenade_Cluster::VGrenadeTouch);
+
+	//reset times like if grenade is newly created
+	SetFuseLength(asw_cluster_grenade_fuse.GetFloat());
+	m_fEarliestAOEDetonationTime = GetEarliestAOEDetonationTime();
+	m_fEarliestTouchDetonationTime = GetEarliestTouchDetonationTime();
+
+	if (m_fDetonateTime <= gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat())
+	{
+		SetThink(&CASW_Grenade_Cluster::Detonate);
+		SetNextThink(m_fDetonateTime);
+	}
+	else
+	{
+		SetThink(&CASW_Grenade_Cluster::CheckNearbyDrones);
+		SetNextThink(gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat());
+	}
+}
+
+void CASW_Grenade_Cluster::ReflectBack()
+{
+	Vector vec = GetAbsVelocity();
+	SetAbsVelocity(Vector(-vec.x, -vec.y, vec.z));
+}
+
+void CASW_Grenade_Cluster::ReflectRandomly()
+{
+	Vector vec = GetAbsVelocity();
+	float len = vec.Length2D();
+	//construct random vector with same 2d length
+	float rad = RandomFloat(0, 2 * M_PI);
+	float sin, cos;
+	FastSinCos(rad, &sin, &cos);
+	SetAbsVelocity(Vector(cos * len, sin * len, vec.z));
+}
+
+void CASW_Grenade_Cluster::InputDisable(inputdata_t& inputdata)
+{
+	Disable();
+}
+
+void CASW_Grenade_Cluster::InputEnable(inputdata_t& inputdata)
+{
+	Enable();
+}
+
+void CASW_Grenade_Cluster::InputEnableWithReset(inputdata_t& inputdata)
+{
+	EnableWithReset();
+}
+
+void CASW_Grenade_Cluster::InputReflectBack(inputdata_t& inputdata)
+{
+	ReflectBack();
+}
+
+void CASW_Grenade_Cluster::InputReflectRandomly(inputdata_t& inputdata)
+{
+	ReflectRandomly();
 }
