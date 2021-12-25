@@ -37,12 +37,17 @@ public:
 	virtual void Enable();
 	virtual void EnableWithReset();
 	virtual void ReflectBack();
+	virtual void ReflectBackSimple();
 	virtual void ReflectRandomly();
 	virtual void InputDisable(inputdata_t& inputdata);
 	virtual void InputEnable(inputdata_t& inputdata);
 	virtual void InputEnableWithReset(inputdata_t& inputdata);
 	virtual void InputReflectBack(inputdata_t& inputdata);
+	virtual void InputReflectBackSimple(inputdata_t& inputdata);
 	virtual void InputReflectRandomly(inputdata_t& inputdata);
+	virtual bool IsReflectorNearby();
+	void ReflectBackThink();
+
 	float m_fSavedDisableTime;
 	bool m_bDisabled;
 	int m_iMaxRicochets;

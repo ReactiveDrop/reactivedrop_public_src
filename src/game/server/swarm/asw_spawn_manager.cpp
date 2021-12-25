@@ -1031,6 +1031,7 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 		pAlien->m_bTeslable = pNPC->m_bTeslable;
 		pAlien->m_bFreezable = pNPC->m_bFreezable;
 		pAlien->m_bFlinchable = pNPC->m_bFlinches;
+		pAlien->m_bGrenadeReflector = pNPC->m_bGrenadeReflector;
 		pAlien->m_iHealthBonus = pNPC->m_iHealthBonus;
 		pAlien->m_fSizeScale = pNPC->m_flSizeScale;
 		pAlien->m_fSpeedScale = pNPC->m_flSpeedScale;
@@ -1043,6 +1044,7 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 		pBuzzer->m_bTeslable = pNPC->m_bTeslable;
 		pBuzzer->m_bFreezable = pNPC->m_bFreezable;
 		pBuzzer->m_bFlinchable = pNPC->m_bFlinches;
+		pBuzzer->m_bGrenadeReflector = pNPC->m_bGrenadeReflector;
 		pBuzzer->m_iHealthBonus = pNPC->m_iHealthBonus;
 		pBuzzer->m_fSizeScale = pNPC->m_flSizeScale;
 		pBuzzer->m_fSpeedScale = pNPC->m_flSpeedScale;

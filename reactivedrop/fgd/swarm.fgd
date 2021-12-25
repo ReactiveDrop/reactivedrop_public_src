@@ -4834,6 +4834,12 @@
 		1 : "Yes"
 	]
 
+	reflectorsp(choices) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
 	healthbonussp(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
 
 	sizescalesp(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
@@ -5078,6 +5084,12 @@
 	]
 	
   flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+  reflector(choices) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off. " =
 	[
 		0 : "No"
 		1 : "Yes"

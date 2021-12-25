@@ -13,6 +13,7 @@
 #include "asw_player.h"
 #include "asw_weapon_grenade_launcher.h"
 #include "asw_drone_advanced.h"
+#include "asw_buzzer.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -42,6 +43,8 @@ ConVar rda_grenade_max_ricochets("rda_grenade_max_ricochets", "1", FCVAR_CHEAT, 
 ConVar rda_grenade_allow_electro_amped("rda_grenade_allow_electro_amped", "0", FCVAR_CHEAT, "Make grenades benefit from tesla additions");
 ConVar rda_grenade_electrostun_duration("rda_grenade_electrostun_duration", "0.5", FCVAR_CHEAT, "Electrostun duration time of amped grenades. Valid range 0.0 - 5.0 s");
 ConVar rda_grenade_electrostun_range_multiplier("rda_grenade_electrostun_range_multiplier", "1", FCVAR_CHEAT, "Electrostun range of amped grenades. Valid range 0.2 - 1.5 of current damage range");
+ConVar rda_grenade_reflector_radius("rda_grenade_reflector_radius", "72", FCVAR_CHEAT, "If grenade hit something while reflector alien is this nearby grenade will be reflected");
+ConVar rda_grenade_search_reflectors("rda_grenade_search_reflectors", "0", FCVAR_CHEAT, "Set to 1 to allow grenades to be reflected from reflector aliens");
 
 LINK_ENTITY_TO_CLASS( asw_grenade_cluster, CASW_Grenade_Cluster );
 
@@ -59,6 +62,7 @@ BEGIN_DATADESC( CASW_Grenade_Cluster )
 	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
 	DEFINE_INPUTFUNC(FIELD_VOID, "EnableWithReset", InputEnableWithReset),
 	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBack", InputReflectBack),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBackSimple", InputReflectBack),
 	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectRandomly", InputReflectRandomly),
 END_DATADESC()
 
@@ -66,7 +70,8 @@ BEGIN_ENT_SCRIPTDESC(CASW_Grenade_Cluster, CBaseCombatCharacter, "Cluster grenad
 	DEFINE_SCRIPTFUNC(Disable, "Disable the grenade")
 	DEFINE_SCRIPTFUNC(Enable, "Enable the grenade, different time setting like explosion time correctly adjusted after disable state")
 	DEFINE_SCRIPTFUNC(EnableWithReset, "Enable the grenade, different time setting like explosion time reset like grenade is newly created")
-	DEFINE_SCRIPTFUNC(ReflectBack, "Reflect grenade nearby from fire position")
+	DEFINE_SCRIPTFUNC(ReflectBack, "Reflect grenade preciselly to firer marine position if marine is alive, ReflectBackSimple used otherwise")
+	DEFINE_SCRIPTFUNC(ReflectBackSimple, "Reflect grenade near to initial fire position")
 	DEFINE_SCRIPTFUNC(ReflectRandomly, "Reflect grenade to random porition")
 END_SCRIPTDESC();
 
@@ -183,6 +188,46 @@ void CASW_Grenade_Cluster::CheckNearbyDrones()
 		SetThink( &CASW_Grenade_Cluster::CheckNearbyDrones );
 		SetNextThink( gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat() );
 	}
+}
+
+static const char* s_pReflectContext = "ReflectContext";
+void CASW_Grenade_Cluster::ReflectBackThink()
+{
+	ReflectBack();
+	SetContextThink(NULL, gpGlobals->curtime, s_pReflectContext);
+}
+
+bool CASW_Grenade_Cluster::IsReflectorNearby()
+{
+	float flRadius = rda_grenade_reflector_radius.GetFloat();
+	flRadius = clamp(flRadius, 1, 500);
+	Vector vecSrc = GetAbsOrigin();
+	CBaseEntity* pEntity = NULL;
+	for (CEntitySphereQuery sphere(vecSrc, flRadius); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+	{
+		if (!pEntity->IsAlien())
+			continue;
+		//Note: since this called from inside touch function, we have to delay our reflect a little bit
+		if (pEntity->Classify() == CLASS_ASW_BUZZER)
+		{
+			CASW_Buzzer* pBuzzer = static_cast<CASW_Buzzer*>(pEntity);
+			if (pBuzzer->m_bGrenadeReflector && pBuzzer->GetHealth() > 0)
+			{
+				SetContextThink(&CASW_Grenade_Cluster::ReflectBack, gpGlobals->curtime + 0.01f, s_pReflectContext);
+				return true;
+			}
+		}
+		else
+		{
+			CASW_Alien* pAlien = static_cast<CASW_Alien*>(pEntity);
+			if (pAlien->m_bGrenadeReflector && pAlien->GetHealth() > 0)
+			{
+				SetContextThink(&CASW_Grenade_Cluster::ReflectBack, gpGlobals->curtime + 0.01f, s_pReflectContext);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDamage, float fRadius, int iClusters, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon )
@@ -410,6 +455,9 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
 
+	if ( rda_grenade_search_reflectors.GetBool() && IsReflectorNearby() )
+		return;
+
 	//fix for situation when drone attacks through marine from behind and touches grenade launcher's grenade firing opposite direction
 	if ( pOther->IsNPC() && pOther->Classify() == CLASS_ASW_DRONE )
 	{
@@ -594,6 +642,22 @@ void CASW_Grenade_Cluster::EnableWithReset()
 
 void CASW_Grenade_Cluster::ReflectBack()
 {
+	CBaseEntity* pFirer = m_hFirer.Get();
+	if (pFirer && pFirer->Classify() == CLASS_ASW_MARINE)
+	{
+		//NDebugOverlay::Box(GetAbsOrigin(), Vector(2, 2, 2), Vector(-2, -2, -2), 0, 0, 0, 255, 6);
+		//NDebugOverlay::Box(pFirer->GetAbsOrigin(), Vector(2, 2, 2), Vector(-2, -2, -2), 255, 255, 255, 255, 6);
+		Vector newVel = UTIL_LaunchVector(GetAbsOrigin(), pFirer->GetAbsOrigin(), GetGravity()) * 28.0f;
+		SetAbsVelocity(newVel);
+	}
+	else
+	{
+		ReflectBackSimple();
+	}
+}
+
+void CASW_Grenade_Cluster::ReflectBackSimple()
+{
 	Vector vec = GetAbsVelocity();
 	SetAbsVelocity(Vector(-vec.x, -vec.y, vec.z));
 }
@@ -627,6 +691,11 @@ void CASW_Grenade_Cluster::InputEnableWithReset(inputdata_t& inputdata)
 void CASW_Grenade_Cluster::InputReflectBack(inputdata_t& inputdata)
 {
 	ReflectBack();
+}
+
+void CASW_Grenade_Cluster::InputReflectBackSimple(inputdata_t& inputdata)
+{
+	ReflectBackSimple();
 }
 
 void CASW_Grenade_Cluster::InputReflectRandomly(inputdata_t& inputdata)

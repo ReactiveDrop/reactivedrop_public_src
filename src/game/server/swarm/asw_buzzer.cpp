@@ -215,6 +215,7 @@ BEGIN_DATADESC( CASW_Buzzer )
     DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
     DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
     DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ),
+	DEFINE_KEYFIELD( m_bGrenadeReflector, FIELD_BOOLEAN, "reflector" ),
 	DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
     DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
     DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
@@ -266,6 +267,7 @@ CASW_Buzzer::CASW_Buzzer()
 	m_bTeslable = true;
 	m_bFreezable = true;
 	m_bFlinchable = true;
+	m_bGrenadeReflector = false;
 	m_iHealthBonus = 0;
 	m_fSizeScale = 1.0f;
 	m_fSpeedScale = 1.0f;

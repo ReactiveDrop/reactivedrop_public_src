@@ -132,6 +132,7 @@ public:
 	bool m_bFreezable;
 	bool m_bTeslable;
 	bool m_bFlinches;
+	bool m_bGrenadeReflector;
 	string_t m_iszVScript;
 	float m_flSpawnChance;
 	CASW_Spawn_Requirement m_Requirement;

@@ -36,6 +36,7 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bTeslableSp, FIELD_BOOLEAN, "teslablesp" ),
 	DEFINE_KEYFIELD( m_bFreezableSp, FIELD_BOOLEAN, "freezablesp" ),
 	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ),
+	DEFINE_KEYFIELD( m_bGrenadeReflectorSp, FIELD_BOOLEAN, "reflectorsp"),
 	DEFINE_KEYFIELD( m_iHealthBonusSp, FIELD_INTEGER, "healthbonussp"),
 	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ),
 	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ),
@@ -68,6 +69,7 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_bTeslableSp = true;
 	m_bFreezableSp = true;
 	m_bFlinchableSp = true;
+	m_bGrenadeReflectorSp = false;
 	m_iHealthBonusSp = 0;
 	m_fSizeScaleSp = 1.0f;
 	m_fSpeedScaleSp = 1.0f;
@@ -310,6 +312,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 			pAlien->m_bTeslable = pDirectorNPC->m_bTeslable;
 			pAlien->m_bFreezable = pDirectorNPC->m_bFreezable;
 			pAlien->m_bFlinchable = pDirectorNPC->m_bFlinches;
+			pAlien->m_bGrenadeReflector = pDirectorNPC->m_bGrenadeReflector;
 			pAlien->m_iHealthBonus = pDirectorNPC->m_iHealthBonus;
 			pAlien->m_fSizeScale = pDirectorNPC->m_flSizeScale;
 			pAlien->m_fSpeedScale = pDirectorNPC->m_flSpeedScale;
@@ -320,6 +323,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 			pAlien->m_bTeslable = m_bTeslableSp;
 			pAlien->m_bFreezable = m_bFreezableSp;
 			pAlien->m_bFlinchable = m_bFlinchableSp;
+			pAlien->m_bGrenadeReflector = m_bGrenadeReflectorSp;
 			pAlien->m_iHealthBonus = m_iHealthBonusSp;
 			pAlien->m_fSizeScale = m_fSizeScaleSp;
 			pAlien->m_fSpeedScale = m_fSpeedScaleSp;
@@ -333,6 +337,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		pBuzzer->m_bTeslable = m_bTeslableSp;
 		pBuzzer->m_bFreezable = m_bFreezableSp;
 		pBuzzer->m_bFlinchable = m_bFlinchableSp;
+		pBuzzer->m_bGrenadeReflector = m_bGrenadeReflectorSp;
 		pBuzzer->m_iHealthBonus = m_iHealthBonusSp;
 		pBuzzer->m_fSizeScale = m_fSizeScaleSp;
 		pBuzzer->m_fSpeedScale = m_fSpeedScaleSp;

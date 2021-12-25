@@ -165,6 +165,7 @@ public:
 	bool m_bTeslable;
 	bool m_bFreezable;
 	bool m_bFlinchable;
+	bool m_bGrenadeReflector;
 	int  m_iHealthBonus;
 	float m_fSizeScale;
 	float m_fSpeedScale;
