@@ -174,6 +174,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
+	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -1098,6 +1099,17 @@ const char * GenerateNewSaveGameName()
 CAlienSwarm::CAlienSwarm()
 {
 	Msg("CAlienSwarm created\n");
+
+#ifndef CLIENT_DLL
+	// fixes a memory leak on dedicated server where model vertex data
+	// is not freed on map transition and remains locked, leading to increased
+	// memory usage and cache trashing over time
+	if (engine->IsDedicatedServer() && rd_adjust_mod_dont_load_vertices.GetBool())
+	{
+		ConVarRef mod_dont_load_vertices("mod_dont_load_vertices");
+		mod_dont_load_vertices.SetValue(1);
+	}
+#endif
 
 	m_szGameDescription = "Alien Swarm: Reactive Drop";
 
@@ -3288,6 +3300,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 }
 
 ConVar rm_welcome_message( "rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message_delay ( "rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
@@ -3305,22 +3318,25 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 	
 	if ( pAswPlayer->HasFullyJoined() ) 
 	{
-#if 0 // disabled welcoming for now 
 		if ( !pAswPlayer->m_bWelcomed ) 
 		{
-			if (gpGlobals->curtime >= m_fBriefingStartedTime + 10) 
+			if (gpGlobals->curtime >= m_fBriefingStartedTime + rm_welcome_message_delay.GetInt()) 
 			{
 				pAswPlayer->m_bWelcomed = true;
 
-				char buffer[512];
-				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
-				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+				if (Q_strlen(rm_welcome_message.GetString()) > 0) 
+				{
+					char buffer[512];
+					Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
+					ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+				}
 
+#if 0 // disabled welcoming for now 
 				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+#endif
 			}
 		}
-#endif
 	}
 }
 
@@ -3489,6 +3505,23 @@ void CAlienSwarm::Think()
 	}
 }
 
+
+
+inline unsigned int ThreadShutdown(void* pParam)
+{
+	ThreadSleep(gpGlobals->interval_per_tick * 2);
+
+	// send quit and execute command within the same frame
+	engine->ServerCommand("quit\n");
+	engine->ServerExecute();
+
+	return 0;
+}
+
+void CAlienSwarm::Shutdown() {
+	CreateSimpleThread(ThreadShutdown, engine);
+}
+
 void CAlienSwarm::OnServerHibernating()
 {
 	int iPlayers = 0;
@@ -3551,7 +3584,7 @@ void CAlienSwarm::OnServerHibernating()
 		// quit server
 		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
 		{
-			exit( 0 ); // reactivedrop: Isn't the best solution but works. Issuing "quit" doesn't work here. 
+			Shutdown();
 		}
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",
