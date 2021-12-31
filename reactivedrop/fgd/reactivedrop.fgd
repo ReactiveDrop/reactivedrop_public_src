@@ -222,3 +222,23 @@
 	input BarBorderColor(color255) : ""
 	input BarFlashColor(color255) : ""
 ]
+
+@SolidClass base(Targetname, Parentname, Origin, Trigger, EnableDisable) = trigger_asw_marine_melee :
+	"A trigger volume that activates when a marine performs a melee attack "
+[
+	spawnflags(flags) = 
+	[
+		//1: "Clients" : 0
+		2: "Marines and Aliens" : 1
+		4: "Pushables": 0
+		8: "Physics Objects" : 0
+		16: "Only marines" : 0
+		//32: "Only clients in vehicles" : 0
+		64: "Everything" : 0
+		//512: "Only clients *not* in vehicles" : 0
+	]
+
+	AngleTolerance(float) : "Angle Tolerance" : "30.0" : "The number of degrees from exactly facing the origin that the trigger will allow. Set to 360 to ignore origin location."
+
+	output OnTrigger(void) : "Fired when a marine melee attacks towards the origin of this trigger while standing in it."
+]

@@ -22,6 +22,7 @@
 	#include "asw_achievements.h"
 	#include "asw_missile_round_shared.h"
 	#include "asw_marine_resource.h"
+	#include "asw_trigger_marine_melee.h"
 #endif
 #include "asw_gamerules.h"
 #include "in_buttons.h"
@@ -846,6 +847,17 @@ void CASW_Melee_System::StartMeleeAttack( CASW_Melee_Attack *pAttack, CASW_Marin
 #ifdef CLIENT_DLL
 	pMarine->m_hMeleeLockTarget = NULL;
 	FindMeleeLockTarget( pMarine );
+#endif
+
+#ifdef GAME_DLL
+	FOR_EACH_VEC( pMarine->m_hTouchingMeleeTriggers, i )
+	{
+		CASW_Trigger_Marine_Melee *pTrigger = assert_cast<CASW_Trigger_Marine_Melee *>( pMarine->m_hTouchingMeleeTriggers[i].Get() );
+		if ( pTrigger )
+		{
+			pTrigger->OnMeleeAttack( pAttack, pMarine, pMoveData );
+		}
+	}
 #endif
 }
 
