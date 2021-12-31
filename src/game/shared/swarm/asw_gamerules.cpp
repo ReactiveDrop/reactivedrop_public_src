@@ -114,6 +114,9 @@
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 
+#ifndef CLIENT_DLL
+#include "highres_timer.cpp"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1532,6 +1535,14 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
 {	
+#ifndef CLIENT_DLL
+	// request a high resolution timer from the os
+	if (engine->IsDedicatedServer())
+	{
+		winmm_timer_acquire_once();
+	}
+#endif
+
 	GetVoiceGameMgr()->ClientConnected( pEntity );
 
 	CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(CBaseEntity::Instance( pEntity ));

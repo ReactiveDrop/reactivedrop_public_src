@@ -772,6 +772,7 @@ exit 1
     <ClCompile Include="grenadethrown.cpp" />
     <ClCompile Include="guntarget.cpp" />
     <ClCompile Include="hierarchy.cpp" />
+    <ClCompile Include="highres_timer.cpp" />
     <ClCompile Include="hl2\ai_behavior_actbusy.cpp" />
     <ClCompile Include="hl2\ai_spotlight.cpp" />
     <ClCompile Include="hl2\antlion_dust.cpp" />
@@ -1715,6 +1716,7 @@ exit 1
     <ClInclude Include="global_event_log.h" />
     <ClInclude Include="grenadethrown.h" />
     <ClInclude Include="hierarchy.h" />
+    <ClInclude Include="highres_timer.h" />
     <ClInclude Include="hl2\ai_behavior_actbusy.h" />
     <ClInclude Include="hl2\ai_interactions.h" />
     <ClInclude Include="hl2\ai_spotlight.h" />
