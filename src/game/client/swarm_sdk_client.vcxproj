@@ -1043,6 +1043,7 @@ exit 1
     <ClCompile Include="swarm\c_env_sprite_asw_fade.cpp" />
     <ClCompile Include="swarm\c_func_asw_fade.cpp" />
     <ClCompile Include="swarm\c_prop_asw_fade.cpp" />
+    <ClCompile Include="swarm\c_rd_boss_bar.cpp" />
     <ClCompile Include="swarm\gameui\backgroundmenubutton.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1665,6 +1666,7 @@ exit 1
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
+    <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
     <ClCompile Include="swarm\rd_track_first_played.cpp" />
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
@@ -2316,6 +2318,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_trap.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_welder_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
@@ -2650,6 +2653,7 @@ exit 1
     <ClInclude Include="swarm\c_env_sprite_asw_fade.h" />
     <ClInclude Include="swarm\c_func_asw_fade.h" />
     <ClInclude Include="swarm\c_prop_asw_fade.h" />
+    <ClInclude Include="swarm\c_rd_boss_bar.h" />
     <ClInclude Include="swarm\gameui\backgroundmenubutton.h" />
     <ClInclude Include="swarm\gameui\basepaenl.h" />
     <ClInclude Include="swarm\gameui\basesavegamedialog.h" />
@@ -2760,6 +2764,7 @@ exit 1
     <ClInclude Include="swarm\iasw_client_vehicle.h" />
     <ClInclude Include="swarm\iasw_fade_list.h" />
     <ClInclude Include="swarm\ibriefing.h" />
+    <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />
     <ClInclude Include="swarm\vgui\asw_build_map_frame.h" />

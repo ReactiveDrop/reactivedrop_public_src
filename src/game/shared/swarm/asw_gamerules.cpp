@@ -94,6 +94,7 @@
 	#include "team.h"
 	#include "asw_pickup_equipment.h"
 	#include "Sprite.h"
+	#include "highres_timer.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -113,7 +114,6 @@
 #include "rd_challenges_shared.h"
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
-
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -175,6 +175,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
 	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
+	ConVar rd_high_resolution_timer_ms ( "rd_dedicated_high_resolution_timer_ms", "1", FCVAR_NONE, "Acquire a high resolution timer with specified resolution." );
 
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
@@ -1532,6 +1533,14 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
 {	
+#ifndef CLIENT_DLL
+	// request a high resolution timer from the os
+	if ( engine->IsDedicatedServer() && rd_high_resolution_timer_ms.GetInt() > 0 )
+	{
+		winmm_timer_acquire_once( rd_high_resolution_timer_ms.GetInt() );
+	}
+#endif
+
 	GetVoiceGameMgr()->ClientConnected( pEntity );
 
 	CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(CBaseEntity::Instance( pEntity ));

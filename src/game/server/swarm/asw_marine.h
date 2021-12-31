@@ -242,6 +242,7 @@ public:
 	float m_flBaseMeleeDamage;
 	bool m_bPlayedMeleeHitSound;
 	bool HasPowerFist();
+	CUtlVector<EHANDLE> m_hTouchingMeleeTriggers;
 
 	CNetworkVar( bool, m_bNoAirControl );
 

@@ -187,3 +187,58 @@
 	input Enable(void) : "Show the health bar."
 	input SetScale(float) : "Set the sprite's scale (0 - 8.0)."
 ]
+
+@PointClass base(Targetname) iconsprite("editor/flat.vmt") = rd_boss_bar :
+	"Displays the progress of an event. (eg. the health of a boss)"
+[
+	BarMode(choices) : "Display Mode" : 0 : "How to display this bar on the player's screen." =
+	[
+		0 : "Fill To Right"
+		1 : "Fill To Left"
+		2 : "Numeric Value"
+	]
+	BarValue(float) : "Starting Value" : 100 : ""
+	BarMax(float) : "Max Value" : 100 : ""
+	BarID(string) : "Bar Group Identifier" : "" : "If two rd_boss_bar have different identifiers, they represent different bars that can appear on screen at the same time. This can be any text."
+	BarTitle(string) : "Bar Title" : "" : "The title to display on the bar. Only the rd_boss_bar with the lowest Column and Row in a group will display its title."
+	BarColumn(integer) : "Column" : 1 : ""
+	BarRow(integer) : "Row" : 1 : ""
+	BarScale(float) : "Height Scale" : "1.0" : ""
+	BarFGColor(color255) : "Filled Color" : "93 149 193 255" : ""
+	BarBGColor(color255) : "Empty Color" : "9 32 54 255" : ""
+	BarBorderColor(color255) : "Border Color" : "29 76 111 255" : ""
+	BarFlashColor(color255) : "Flash Color" : "255 255 255 255" : "The color for the end of the bar when it differs from its previous value."
+	BarFlashSustain(float) : "Flash Sustain Time" : "0.75" : "The number of seconds before the bar starts animating after it has changed."
+	BarFlashInterpolate(float) : "Flash Interpolate Time" : "0.25" : "The number of seconds from the bar starting animating to finishing animating when it changes."
+
+	// Inputs
+	input Enable(void) : "Show the bar."
+	input Disable(void) : "Hide the bar."
+	input BarValue(float) : "Set the value of the bar."
+	input BarMax(float) : "Change the maximum value of the bar."
+	input BarScale(float) : "Change the height of the bar."
+	input BarFGColor(color255) : ""
+	input BarBGColor(color255) : ""
+	input BarBorderColor(color255) : ""
+	input BarFlashColor(color255) : ""
+]
+
+@SolidClass base(Targetname, Parentname, Origin, Trigger, EnableDisable) = trigger_asw_marine_melee :
+	"A trigger volume that activates when a marine performs a melee attack "
+[
+	spawnflags(flags) = 
+	[
+		//1: "Clients" : 0
+		2: "Marines and Aliens" : 1
+		4: "Pushables": 0
+		8: "Physics Objects" : 0
+		16: "Only marines" : 0
+		//32: "Only clients in vehicles" : 0
+		64: "Everything" : 0
+		//512: "Only clients *not* in vehicles" : 0
+	]
+
+	AngleTolerance(float) : "Angle Tolerance" : "30.0" : "The number of degrees from exactly facing the origin that the trigger will allow. Set to 360 to ignore origin location."
+
+	output OnTrigger(void) : "Fired when a marine melee attacks towards the origin of this trigger while standing in it."
+]
