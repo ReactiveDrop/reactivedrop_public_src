@@ -171,6 +171,7 @@ void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarin
 		if ( m_fFastFinishTime.Get() > 0 && gpGlobals->curtime > m_fFastFinishTime.Get() )
 		{
 			pButton->EmitSound( "ASWComputer.TimeOut" );
+			pButton->m_OnFastHackFailed.FireOutput( pMarine, pButton );
 			m_bPlayedTimeOutSound = true;
 		}
 	}

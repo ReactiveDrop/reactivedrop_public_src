@@ -83,6 +83,7 @@ public:
 	CNetworkVar( int, m_iActiveCam );
 
 	// outputs
+	COutputEvent m_OnFastHackFailed;
 	COutputEvent m_OnComputerHackStarted;	
 	COutputEvent m_OnComputerHackHalfway;
 	COutputEvent m_OnComputerHackCompleted;

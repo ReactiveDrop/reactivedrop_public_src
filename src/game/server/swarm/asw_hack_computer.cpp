@@ -75,20 +75,6 @@ bool CASW_Hack_Computer::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHac
 		if (m_fMoveInterval > 2.0f)
 			m_fMoveInterval= 2.0f;
 
-		// adjust counts by marine skill
-		///  removed this - goes wrong if a different marine access the computer first and generates the hack entity
-		/*
-		bool bEasyHack = (m_iNumTumblers < ASW_MIN_TUMBLERS_FAST_HACK);
-		int iColumnReduction = MarineSkills()->GetSkillBasedValueByMarine(pHackingMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_TUMBLER_COUNT_REDUCTION);
-		int iRowReduction = MarineSkills()->GetSkillBasedValueByMarine(pHackingMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_ENTRIES_PER_TUMBLER_REDUCTION);
-		m_iNumTumblers -= iColumnReduction;
-		if (!bEasyHack && m_iNumTumblers <= ASW_MIN_TUMBLERS_FAST_HACK)
-			m_iNumTumblers = ASW_MIN_TUMBLERS_FAST_HACK;
-		m_iEntriesPerTumbler -= iRowReduction;
-		if (m_iEntriesPerTumbler <= 5)
-			m_iEntriesPerTumbler = 5;
-			*/
-
 		if ( m_iEntriesPerTumbler % 2 > 0 )
 		{
 			m_iEntriesPerTumbler++;
@@ -135,7 +121,6 @@ bool CASW_Hack_Computer::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHac
 		m_hHackTarget = pHackTarget;
 
 		SetDefaultHackOption();
-		Msg("initted computer with show option %d\n", m_iShowOption);
 	}
 	else
 	{
@@ -145,7 +130,6 @@ bool CASW_Hack_Computer::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHac
 		m_hHackTarget = pHackTarget;
 
 		SetDefaultHackOption();
-		Msg("reusing computer with show option %d\n", m_iShowOption);
 	}
 
 	return BaseClass::InitHack(pHackingPlayer, pHackingMarine, pHackTarget);
@@ -191,16 +175,15 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 	else if (i == ASW_HACK_OPTION_OVERRIDE)	// can't do an override if the computer isn't locked
 		return;
 
-	Msg("[S] CASW_Hack_Computer::SelectHackOption %d\n", i);
 	m_iShowOption = i;
-	Msg("  Type is %d\n", GetOptionTypeForEntry(i));
 
 	// make sure the computer area knows if we're viewing mail or not
 	bool bViewingMail = (iOptionType == ASW_COMPUTER_OPTION_TYPE_MAIL);
 	CASW_Computer_Area *pArea = GetComputerArea();
-	if (pArea)
+	if ( pArea )
+	{
 		pArea->m_bViewingMail = bViewingMail;
-	Msg("Viewing mail %d\n", bViewingMail);
+	}
 
 	// make sure the downloading sound isn't playing if we're not doing downloading
 	if (iOptionType != ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS)
@@ -210,16 +193,14 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 
 	if (iOptionType == ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS)
 	{
-		Msg("This option is downloading critical data\n");		
 		// note: being on this option causes the computer area's MarineUsing function to count up to downloading the files
 	}
 	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_TURRET_1)
 	{
-		Msg("This option is a turret 1\n");
 		CASW_Computer_Area *pArea = GetComputerArea();
 		if (!pArea || !pArea->m_hTurret1.Get())
 		{
-			Msg("Area is null or no turret handle\n");
+			Warning("Area is null or no turret handle\n");
 			return;
 		}
 		
@@ -228,7 +209,6 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 		{
 			pTurret->StartedUsingTurret(GetHackingMarine());
 			GetHackingMarine()->m_hRemoteTurret = pTurret;
-			Msg("Set turret 1\n");
 			return;
 		}
 	}
@@ -247,17 +227,17 @@ int CASW_Hack_Computer::GetMailOption()
 	CASW_Computer_Area *pArea = GetComputerArea();
 	if (!pArea)
 	{
-		Msg("no area, so mail option returning -1\n");
 		return -1;
 	}
+
 	int m = pArea->GetNumMenuOptions();
-	for (int i=0;i<m;i++)
+	for ( int i = 0; i < m; i++ )
 	{
-		Msg("mail option %d/%d is type %d\n", i+1, m, GetOptionTypeForEntry(i));
-		if (GetOptionTypeForEntry(i+1) == ASW_COMPUTER_OPTION_TYPE_MAIL)
-			return i+1;
+		if ( GetOptionTypeForEntry( i + 1 ) == ASW_COMPUTER_OPTION_TYPE_MAIL )
+		{
+			return i + 1;
+		}
 	}
-	Msg("didn't find any options set to ASW_COMPUTER_OPTION_TYPE_MAIL so mail option returning -1\n");
 	return -1;
 }
 
@@ -266,7 +246,6 @@ void CASW_Hack_Computer::SetDefaultHackOption()
 	if (IsPDA())
 	{
 		int iMailOption = GetMailOption();
-		Msg("mail option is %d\n", iMailOption);
 		if (iMailOption != -1)
 			m_iShowOption = iMailOption;
 		else
@@ -278,25 +257,14 @@ void CASW_Hack_Computer::SetDefaultHackOption()
 
 void CASW_Hack_Computer::MarineStoppedUsing(CASW_Marine* pMarine)
 {
-	Msg("CASW_Hack_Computer::marine stopped using hack!\n");
-	/*
-	if (IsPDA())
-	{
-		int iMailOption = GetMailOption();
-		Msg("MarineStoppedUsing mail option is %d\n", iMailOption);
-		if (iMailOption != -1)
-			m_iShowOption = iMailOption;
-		else
-			m_iShowOption = 0;
-	}
-	else*/
-		m_iShowOption = 0;	// put us back on the main menu
-	Msg("MarineStoppedUsing set showoption to %d\n", m_iShowOption);
+	m_iShowOption = 0;	// put us back on the main menu
+
 	if (pMarine->m_hRemoteTurret)
 	{
 		pMarine->m_hRemoteTurret->StopUsingTurret();
 		pMarine->m_hRemoteTurret = NULL;
 	}
+
 	BaseClass::MarineStoppedUsing(pMarine);
 }
 

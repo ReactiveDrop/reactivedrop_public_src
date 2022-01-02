@@ -77,6 +77,7 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_FIELD(m_fLastButtonUseTime, FIELD_TIME),
 	DEFINE_SOUNDPATCH( m_pDownloadingSound ),
 	DEFINE_SOUNDPATCH( m_pComputerInUseSound ),
+	DEFINE_OUTPUT( m_OnFastHackFailed, "OnFastHackFailed" ),
 	DEFINE_OUTPUT( m_OnComputerHackStarted, "OnComputerHackStarted" ),
 	DEFINE_OUTPUT( m_OnComputerHackHalfway, "OnComputerHackHalfway" ),	
 	DEFINE_OUTPUT( m_OnComputerHackCompleted, "OnComputerHackCompleted" ),

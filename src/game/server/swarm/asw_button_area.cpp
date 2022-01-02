@@ -46,6 +46,7 @@ BEGIN_DATADESC( CASW_Button_Area )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"PowerOff",	InputPowerOff ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"ResetHack",	InputResetHack ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Unlock",	InputUnlock ),
+	DEFINE_OUTPUT( m_OnFastHackFailed, "OnFastHackFailed" ),
 	DEFINE_OUTPUT( m_OnButtonHackStarted, "OnButtonHackStarted" ),
 	DEFINE_OUTPUT( m_OnButtonHackAt25Percent, "OnButtonHackAt25Percent" ),
 	DEFINE_OUTPUT( m_OnButtonHackAt50Percent, "OnButtonHackAt50Percent" ),
@@ -130,6 +131,7 @@ void CASW_Button_Area::Precache()
 {
 	PrecacheScriptSound("ASWComputer.HackComplete");
 	PrecacheScriptSound("ASWComputer.AccessDenied");
+	PrecacheScriptSound("ASWComputer.TimeOut");
 	PrecacheScriptSound("ASWButtonPanel.TileLit");
 }
 

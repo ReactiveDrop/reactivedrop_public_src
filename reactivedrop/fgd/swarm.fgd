@@ -5717,6 +5717,7 @@
 	]
 	nopowermessage(string) : "No Power Message" : "" : "Message to show on the use icon when this panel has no power."
 
+	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."
 	output OnButtonHackStarted(void) : "Fired whenever a marine starts hacking this panel."
 	output OnButtonHackAt25Percent(void) : "Fired whenever the hack gets over halfway through"
 	output OnButtonHackAt50Percent(void) : "Fired whenever the hack gets over halfway through"
@@ -5733,8 +5734,8 @@
 @SolidClass base(trigger_asw_use_area) = trigger_asw_computer_area :
 	"A trigger volume in which marines can use a computer."
 [
-    Locked(choices) : "Locked" : "1" : "Locked computer terminals will require a Technical Engineer to pass the hacking minigame before allowing access to the main menu." =
-    [
+	Locked(choices) : "Locked" : "1" : "Locked computer terminals will require a Technical Engineer to pass the hacking minigame before allowing access to the main menu." =
+	[
 		0 : "Unlocked"
 		1 : "Locked"		
 	]
@@ -5755,7 +5756,8 @@
 	PDAName(string) : "PDA Name" : "" : "If this computer area represents a PDA, then put the name of the PDA owner here."
 	
 	DownloadTime(float) : "Download Time" : "10.0" : "How many seconds it takes to download the critical files from this computer.  NOTE: This number may be adjusted ingame by the marine's hack skill."
-	
+
+	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."
 	output OnComputerHackStarted(void) : "Fired whenever a marine starts hacking this computer."
 	output OnComputerHackHalfway(void) : "Fired when a marine successfully finishes hacking this pcomputer."
 	output OnComputerHackCompleted(void) : "Fired when a marine successfully finishes hacking this pcomputer."

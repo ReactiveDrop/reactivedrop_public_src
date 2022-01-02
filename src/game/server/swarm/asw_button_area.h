@@ -48,6 +48,7 @@ public:
 	
 	EHANDLE m_hDoorHack;
 
+	COutputEvent m_OnFastHackFailed;
 	COutputEvent m_OnButtonHackStarted;
 	COutputEvent m_OnButtonHackAt25Percent;
 	COutputEvent m_OnButtonHackAt50Percent;
