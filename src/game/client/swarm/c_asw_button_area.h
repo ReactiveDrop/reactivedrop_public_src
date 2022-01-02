@@ -42,6 +42,7 @@ public:
 	float GetHackProgress() { return m_fHackProgress; }
 	CNetworkVar(bool, m_bIsInUse);
 	CNetworkVar(float, m_fHackProgress);
+	CNetworkVar(float, m_flHoldTime);
 	
 	virtual const char* GetNoPowerMessage() { return m_NoPowerMessage; }
 	char		m_NoPowerMessage[255];	

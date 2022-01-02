@@ -22,6 +22,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Button_Area, DT_ASW_Button_Area, CASW_Button_Are
 	RecvPropBool(RECVINFO(m_bWaitingForInput)),
 	RecvPropString( RECVINFO( m_NoPowerMessage ) ),
 	RecvPropBool		(RECVINFO(m_bNeedsTech)),
+	RecvPropFloat		(RECVINFO(m_flHoldTime)),
 END_RECV_TABLE()
 
 bool C_ASW_Button_Area::s_bLoadedLockedIconTexture = false;
@@ -165,6 +166,22 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 		TryLocalize( GetUseIconText(), action.wszText, sizeof( action.wszText ) );
 		action.UseTarget = this;
 		action.fProgress = -1;
+
+		if ( m_flHoldTime > 0 )
+		{
+			C_ASW_Player *pPlayer = pUser->GetCommander();
+			if ( pPlayer && pUser->IsInhabited() && pPlayer->m_flUseKeyDownTime != 0.0f && (gpGlobals->curtime - pPlayer->m_flUseKeyDownTime) > 0.2f )
+			{
+				action.fProgress = ( ( gpGlobals->curtime - pPlayer->m_flUseKeyDownTime ) - 0.2f ) / ( m_flHoldTime - 0.2f );
+				action.fProgress = clamp<float>( action.fProgress, 0.0f, 1.0f );
+				action.bNoFadeIfSameUseTarget = true;
+				action.bShowUseKey = false;
+			}
+			else
+			{
+				action.bShowHoldButtonUseKey = true;
+			}
+		}
 	}
 	return true;
 }

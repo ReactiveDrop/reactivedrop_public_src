@@ -5716,6 +5716,7 @@
 		1 : "No Power"
 	]
 	nopowermessage(string) : "No Power Message" : "" : "Message to show on the use icon when this panel has no power."
+	HoldTime(float) : "Button Hold Time" : "-1" : "Amount of time button must be held down to activate it. If this value is not positive, the button does not need to be held."
 
 	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."
 	output OnButtonHackStarted(void) : "Fired whenever a marine starts hacking this panel."

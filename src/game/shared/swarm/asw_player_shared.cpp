@@ -1050,6 +1050,10 @@ void CASW_Player::PlayerUse()
 				if ( pUsableMarine && pUsableMarine->m_bKnockedOut )
 					flUseHoldTime = rd_revive_duration.GetFloat();
 
+				CASW_Button_Area *pButtonArea = dynamic_cast<CASW_Button_Area *>( pEnt );
+				if ( pButtonArea && pButtonArea->m_flHoldTime > 0 )
+					flUseHoldTime = pButtonArea->m_flHoldTime;
+
 				if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= flUseHoldTime )
 				{
 					pActivateEnt = m_hUseKeyDownEnt.Get();
