@@ -1595,6 +1595,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		GetASWWeapon(1)->OnMarineDamage(newInfo);
 	if (GetASWWeapon(2))
 		GetASWWeapon(2)->OnMarineDamage(newInfo);
+	if (GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT))
+		GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT)->OnMarineDamage(newInfo);
 
 	if ( ASWDirector() )
 		ASWDirector()->MarineTookDamage( this, newInfo, bFriendlyFire );
@@ -2813,7 +2815,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 		return false;
 
 	// find the index this weapon is meant to go in
-	int index = GetWeaponPositionForPickup(pWeapon->GetClassname());
+	int index = GetWeaponPositionForPickup( pWeapon->GetClassname(), pWeapon->m_bIsTemporaryPickup );
 	// is there already a weapon in this slot?
 	CASW_Weapon* pOldWeapon = GetASWWeapon(index);
 
@@ -2872,7 +2874,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 		GiveAmmo(pWeapon->GetPrimaryAmmoCount(), pWeapon->GetPrimaryAmmoType());
 
 	//maybe switch to this weapon, if current is none
-	if (GetActiveWeapon()==NULL)
+	if ( GetActiveWeapon() == NULL || pWeapon->m_bIsTemporaryPickup )
 	{
 		Weapon_Switch( pWeapon );
 	}
@@ -2891,7 +2893,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 {
 	// find the index this weapon is meant to go in
-	int index = GetWeaponPositionForPickup(pPickup->GetWeaponClass());
+	int index = GetWeaponPositionForPickup( pPickup->GetWeaponClass(), pPickup->m_bIsTemporaryPickup );
 	// is there already a weapon in this slot?
 	CASW_Weapon* pWeapon = GetASWWeapon( index );
 
@@ -2946,7 +2948,7 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 		pPickup->InitWeapon(this, pWeapon);
 
 		//maybe switch to this weapon, if current is none
-		if ( GetActiveWeapon() == NULL )
+		if ( GetActiveWeapon() == NULL || pPickup->m_bIsTemporaryPickup )
 		{
 			Weapon_Switch( pWeapon );
 		}
@@ -3272,7 +3274,7 @@ void CASW_Marine::ScriptGiveWeapon( const char *pszName, int slot )
 		return;
 	}
 
-	int weaponIndex = GetWeaponPositionForPickup(pWeapon->GetClassname());
+	int weaponIndex = GetWeaponPositionForPickup( pWeapon->GetClassname(), pWeapon->m_bIsTemporaryPickup );
 	if (( slot < 0 ) || ( weaponIndex == 2 && slot != 2 ) || ( weaponIndex < 2 && slot >= 2 ))
 		slot = weaponIndex;
 

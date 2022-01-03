@@ -189,13 +189,13 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 				}
 				else
 				{
-					int nSlot = pMarine->GetWeaponPositionForPickup( pWeapon->GetClassname() );
+					int nSlot = pMarine->GetWeaponPositionForPickup( pWeapon->GetClassname(), pWeapon->m_bIsTemporaryPickup );
 					bWillSwap = ( pMarine->GetASWWeapon( nSlot ) != NULL );
 				}
 			}
 			else
 			{
-				int nSlot = pMarine->GetWeaponPositionForPickup( pPickup->GetWeaponClass() );
+				int nSlot = pMarine->GetWeaponPositionForPickup( pPickup->GetWeaponClass(), pPickup->m_bIsTemporaryPickup );
 				bWillSwap = ( pMarine->GetASWWeapon( nSlot ) != NULL );
 			}
 

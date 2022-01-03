@@ -44,7 +44,7 @@ bool CASW_Pickup_Weapon::AllowedToPickup(CASW_Marine *pMarine)
 		return false;
 
 	// check if we're swapping for an existing item
-	int index = pMarine->GetWeaponPositionForPickup(GetWeaponClass());	
+	int index = pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup );
 	CASW_Weapon* pWeapon = pMarine->GetASWWeapon(index);
 	const char* szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
 	

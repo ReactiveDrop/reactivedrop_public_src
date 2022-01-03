@@ -98,7 +98,7 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		return false;
 
 	// check we're actually carrying this weapon in one of our 3 marine slots
-	if (GetASWWeapon(0)!= pWeapon && GetASWWeapon(1) != pWeapon && GetASWWeapon(2) != pWeapon)
+	if (GetASWWeapon(0)!= pWeapon && GetASWWeapon(1) != pWeapon && GetASWWeapon(2) != pWeapon && GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != pWeapon)
 		return false;
 
 	if (BaseClass::Weapon_Switch( pWeapon, viewmodelindex ))
@@ -143,6 +143,12 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 
 #ifndef CLIENT_DLL
 		CheckAndRequestAmmo();
+
+		CASW_Weapon *pTempWeapon = GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+		if ( pTempWeapon && pWeapon != pTempWeapon )
+		{
+			DropWeapon( ASW_TEMPORARY_WEAPON_SLOT, true );
+		}
 #endif
 
 		return true;
@@ -1988,13 +1994,19 @@ void CASW_Marine::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_
 }
 
 // returns which slot in the m_hWeapons array this pickup should go in
-int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass )
+int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary )
 {	
 	if (!szWeaponClass || !ASWEquipmentList())
 	{
 		Assert(0);
 		return 0;
 	}
+
+	if ( bIsTemporary )
+	{
+		return ASW_TEMPORARY_WEAPON_SLOT;
+	}
+
 	// if it's an extra type item, return the 3rd slot as that's the only place it'll fit
 	CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor(szWeaponClass);
 	if (pWeaponData && pWeaponData->m_bExtra)

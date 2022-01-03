@@ -15,14 +15,21 @@
 IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon, DT_ASW_Pickup_Weapon)	
 	SendPropInt		(SENDINFO(m_iBulletsInGun), 16 ),
 	SendPropInt		(SENDINFO(m_iClips), 10 ),
-	SendPropInt		(SENDINFO(m_iSecondary), 10 ),	
+	SendPropInt		(SENDINFO(m_iSecondary), 10 ),
+	SendPropBool		(SENDINFO(m_bIsTemporaryPickup) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Pickup_Weapon )
 	DEFINE_KEYFIELD( m_iBulletsInGun, FIELD_INTEGER, "BulletsInGun"),
 	DEFINE_KEYFIELD( m_iClips, FIELD_INTEGER, "Clips"),
 	DEFINE_KEYFIELD( m_iSecondary, FIELD_INTEGER, "SecondaryBullets"),
+	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup"),
 END_DATADESC()
+
+CASW_Pickup_Weapon::CASW_Pickup_Weapon()
+{
+	m_bIsTemporaryPickup = false;
+}
 
 //---------------------------------------------------------
 // Callback for the visibility monitor.
@@ -71,6 +78,7 @@ void CASW_Pickup_Weapon::InitFrom(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
 	m_iBulletsInGun = pWeapon->Clip1();	
 	m_iClips = bullets_on_player / pWeapon->GetMaxClip1();
 	m_iSecondary = pWeapon->Clip2();
+	m_bIsTemporaryPickup = pWeapon->m_bIsTemporaryPickup;
 
 	if (pMarine->GetNumberOfWeaponsUsingAmmo(iAmmoIndex) > 1)
 	{
@@ -93,10 +101,12 @@ void CASW_Pickup_Weapon::InitWeapon(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
 	pWeapon->SetClip2( GetSecondary() );
 
 	// equip the weapon
-	pMarine->Weapon_Equip_In_Index( pWeapon, pMarine->GetWeaponPositionForPickup(GetWeaponClass()) );
+	pMarine->Weapon_Equip_In_Index( pWeapon, pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup ) );
 	// set the number of clips
 	if (pWeapon->GetPrimaryAmmoType()!=-1)
 		pMarine->GiveAmmo(GetNumClips() * pWeapon->GetMaxClip1(), pWeapon->GetPrimaryAmmoType());
+
+	pWeapon->m_bIsTemporaryPickup = m_bIsTemporaryPickup;
 }
 
 // player has used this item

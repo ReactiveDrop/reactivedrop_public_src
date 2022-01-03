@@ -204,6 +204,8 @@ protected:
 	CPanelAnimationVarAliasType( int, m_nPrimaryWeapon_y, "PrimaryWeapon_y", "0", "proportional_ypos" );
 	CPanelAnimationVarAliasType( int, m_nSecondaryWeapon_x, "SecondaryWeapon_x", "0", "proportional_xpos" );
 	CPanelAnimationVarAliasType( int, m_nSecondaryWeapon_y, "SecondaryWeapon_y", "0", "proportional_ypos" );
+	CPanelAnimationVarAliasType( int, m_nTertiaryWeapon_x, "TertiaryWeapon_x", "0", "proportional_xpos" );
+	CPanelAnimationVarAliasType( int, m_nTertiaryWeapon_y, "TertiaryWeapon_y", "0", "proportional_ypos" );
 	CPanelAnimationVarAliasType( int, m_nExtraItem_x, "ExtraItem_x", "0", "proportional_xpos" );
 	CPanelAnimationVarAliasType( int, m_nExtraItem_y, "ExtraItem_y", "0", "proportional_ypos" );
 	CPanelAnimationVarAliasType( int, m_nWeapon_w, "Weapon_w", "0", "proportional_int" );
