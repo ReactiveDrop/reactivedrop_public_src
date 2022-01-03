@@ -6593,6 +6593,8 @@
 	input StartFinale(void) : "Enables wanderers, hordes and sends director into crazy spawning mode."
 	input StartHoldout(void) : "Enables wanderers, hordes and sends director into crazy spawning mode."
 	input StopHoldout(void) : "Reverts to pre-holdout state of wanderers and hordes."
-	
+	input ResetMarineIntensity(void) : "Sets the intensity value for all marines to 0, allowing the director to spawn aliens again sooner."
+	input SpawnHordeSoon(void) : "Tries to spawn a horde within the next few seconds. Hordes must be enabled for this to have any effect."
+
 	output OnEscapeRoomStart(void) : "Fired when marine enters the escape room with all objectives (except for escape) complete.  NOTE: If you rely on this output, you must ship the .layout file along with your map."
 ]

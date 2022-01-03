@@ -24,6 +24,8 @@ BEGIN_DATADESC( CASW_Director_Control )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartFinale",	InputStartFinale ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartHoldout",	InputStartHoldout ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StopHoldout",	InputStopHoldout ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"ResetMarineIntensity",	InputResetMarineIntensity ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"SpawnHordeSoon",	InputSpawnHordeSoon ),
 	DEFINE_OUTPUT( m_OnEscapeRoomStart, "OnEscapeRoomStart"),
 END_DATADESC()
 
@@ -115,4 +117,20 @@ void CASW_Director_Control::InputStopHoldout( inputdata_t &inputdata )
 		return;
 
 	ASWDirector()->StopHoldout();
+}
+
+void CASW_Director_Control::InputResetMarineIntensity( inputdata_t &inputdata )
+{
+	if ( !ASWDirector() )
+		return;
+
+	ASWDirector()->ResetMarineIntensity();
+}
+
+void CASW_Director_Control::InputSpawnHordeSoon( inputdata_t &inputdata )
+{
+	if ( !ASWDirector() )
+		return;
+
+	ASWDirector()->SpawnHordeSoon();
 }

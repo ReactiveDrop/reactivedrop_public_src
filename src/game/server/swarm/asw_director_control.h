@@ -36,6 +36,8 @@ private:
 	void InputStartFinale( inputdata_t &inputdata );
 	void InputStartHoldout( inputdata_t &inputdata );
 	void InputStopHoldout( inputdata_t &inputdata );
+	void InputResetMarineIntensity( inputdata_t &inputdata );
+	void InputSpawnHordeSoon( inputdata_t &inputdata );
 
 	COutputEvent m_OnEscapeRoomStart;
 };
