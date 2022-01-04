@@ -48,10 +48,10 @@ inline void TraceHull_SkipPhysics( const Vector &vecAbsStart, const Vector &vecA
 					 const Vector &hullMax,	unsigned int mask, const CBaseEntity *ignore, 
 					 int collisionGroup, trace_t *ptr, float minMass );
 
-ConVar	g_debug_antlionguard( "g_debug_antlionguard", "0" );
-ConVar	sk_antlionguard_dmg_charge( "sk_antlionguard_dmg_charge", "23" );
-ConVar	sk_antlionguard_dmg_shove( "sk_antlionguard_dmg_shove", "23" );
-ConVar	rd_antlionguard_incavern("rd_antlionguard_incavern", "1", 0, "If 1 antlionguard behavior changes, more agile for tight places");
+ConVar	g_debug_antlionguard( "g_debug_antlionguard", "0", FCVAR_CHEAT );
+ConVar	sk_antlionguard_dmg_charge( "sk_antlionguard_dmg_charge", "23", FCVAR_CHEAT ); // was 20 in HL2
+ConVar	sk_antlionguard_dmg_shove( "sk_antlionguard_dmg_shove", "23", FCVAR_CHEAT ); // was 10 in HL2
+ConVar	rd_antlionguard_incavern("rd_antlionguard_incavern", "1", FCVAR_CHEAT, "If 1 antlionguard behavior changes, more agile for tight places");
 ConVar  rd_episodic("rd_episodic", "1", FCVAR_CHEAT, "Internal cvar for overriding hl2_episodic in specific places");
 #define hl2_episodic rd_episodic
 
@@ -102,7 +102,7 @@ ConVar	g_antlionguard_hemorrhage( "g_antlionguard_hemorrhage", "1", FCVAR_NONE, 
 #define	ANTLIONGUARD_CHARGE_MIN			256
 #define	ANTLIONGUARD_CHARGE_MAX			2048
 
-ConVar	sk_antlionguard_health( "sk_antlionguard_health", "1000" );
+ConVar	sk_antlionguard_health( "sk_antlionguard_health", "1000", FCVAR_CHEAT ); // was 500 in HL2
 
 int	g_interactionAntlionGuardFoundPhysicsObject = 0;	// We're moving to a physics object to shove it, don't all choose the same object
 int	g_interactionAntlionGuardShovedPhysicsObject = 0;	// We've punted an object, it is now clear to be chosen by others

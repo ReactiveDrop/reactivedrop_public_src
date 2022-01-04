@@ -177,11 +177,11 @@ extern ConVar ai_vehicle_avoidance;
 #endif
 
 // NPC damage adjusters
-ConVar	sk_npc_head( "sk_npc_head","2" );
-ConVar	sk_npc_chest( "sk_npc_chest","1" );
-ConVar	sk_npc_stomach( "sk_npc_stomach","1" );
-ConVar	sk_npc_arm( "sk_npc_arm","1" );
-ConVar	sk_npc_leg( "sk_npc_leg","1" );
+ConVar	sk_npc_head( "sk_npc_head", "3", FCVAR_CHEAT );
+ConVar	sk_npc_chest( "sk_npc_chest", "1", FCVAR_CHEAT );
+ConVar	sk_npc_stomach( "sk_npc_stomach", "1", FCVAR_CHEAT );
+ConVar	sk_npc_arm( "sk_npc_arm", "1", FCVAR_CHEAT );
+ConVar	sk_npc_leg( "sk_npc_leg", "1", FCVAR_CHEAT );
 ConVar	showhitlocation( "showhitlocation", "0" );
 
 // Squad debugging

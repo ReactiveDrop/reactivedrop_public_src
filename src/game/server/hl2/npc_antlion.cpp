@@ -45,13 +45,13 @@
 #include "tier0/memdbgon.h"
 
 //Debug visualization
-ConVar	g_debug_antlion( "g_debug_antlion", "0" );
+ConVar	g_debug_antlion( "g_debug_antlion", "0", FCVAR_CHEAT );
 
 // base antlion stuff
-ConVar	sk_antlion_health( "sk_antlion_health", "24" );
-ConVar	sk_antlion_swipe_damage( "sk_antlion_swipe_damage", "10" );
-ConVar	sk_antlion_jump_damage( "sk_antlion_jump_damage", "15" );
-ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10" );
+ConVar	sk_antlion_health( "sk_antlion_health", "24", FCVAR_CHEAT ); // was 30 in HL2
+ConVar	sk_antlion_swipe_damage( "sk_antlion_swipe_damage", "10", FCVAR_CHEAT ); // was 5 in HL2
+ConVar	sk_antlion_jump_damage( "sk_antlion_jump_damage", "15", FCVAR_CHEAT ); // was 5 in HL2
+ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10", FCVAR_CHEAT );
 
 
 #ifdef HL2_EPISODIC
@@ -60,12 +60,12 @@ ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10" );
 #define ANTLION_WORKERS_BURST() (true)
 #define ANTLION_WORKER_BURST_IS_POISONOUS() (true)
 
-ConVar  sk_antlion_worker_burst_damage( "sk_antlion_worker_burst_damage", "50", FCVAR_NONE, "How much damage is inflicted by an antlion worker's death explosion." );
-ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "24", FCVAR_NONE, "Hitpoints of an antlion worker. If 0, will use base antlion hitpoints."   );
-ConVar  sk_antlion_worker_spit_speed( "sk_antlion_worker_spit_speed", "50", FCVAR_NONE, "Speed at which an antlion spit grenade travels." );
+ConVar  sk_antlion_worker_burst_damage( "sk_antlion_worker_burst_damage", "50", FCVAR_CHEAT, "How much damage is inflicted by an antlion worker's death explosion." );
+ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "60", FCVAR_CHEAT, "Hitpoints of an antlion worker. If 0, will use base antlion hitpoints."   );
+ConVar  sk_antlion_worker_spit_speed( "sk_antlion_worker_spit_speed", "600", FCVAR_CHEAT, "Speed at which an antlion spit grenade travels." );
 
 // This must agree with the AntlionWorkerBurstRadius() function!
-ConVar  sk_antlion_worker_burst_radius( "sk_antlion_worker_burst_radius", "160", FCVAR_NONE, "Effect radius of an antlion worker's death explosion."  );
+ConVar  sk_antlion_worker_burst_radius( "sk_antlion_worker_burst_radius", "160", FCVAR_CHEAT, "Effect radius of an antlion worker's death explosion."  );
 
 #endif
 

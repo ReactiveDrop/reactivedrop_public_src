@@ -22,7 +22,7 @@ extern ConVar rr_debugresponses;
 
 //-----------------------------------------------------------------------------
 
-ConVar sk_ally_regen_time( "sk_ally_regen_time", "0.3003", FCVAR_NONE, "Time taken for an ally to regenerate a point of health." );
+ConVar sk_ally_regen_time( "sk_ally_regen_time", "0.3003", FCVAR_CHEAT, "Time taken for an ally to regenerate a point of health." );
 ConVar sv_npc_talker_maxdist( "sv_npc_talker_maxdist", "1024", 0, "NPCs over this distance from the player won't attempt to speak." );
 ConVar ai_no_talk_delay( "ai_no_talk_delay", "0" );
 

@@ -166,11 +166,11 @@ extern void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity );
 //#define MAX_SAFE_FALL_UNITS			( PLAYER_MAX_SAFE_FALL_DIST * 12 )
 
 // player damage adjusters
-ConVar	sk_player_head( "sk_player_head","2" );
-ConVar	sk_player_chest( "sk_player_chest","1" );
-ConVar	sk_player_stomach( "sk_player_stomach","1" );
-ConVar	sk_player_arm( "sk_player_arm","1" );
-ConVar	sk_player_leg( "sk_player_leg","1" );
+ConVar	sk_player_head( "sk_player_head", "3", FCVAR_CHEAT );
+ConVar	sk_player_chest( "sk_player_chest", "1", FCVAR_CHEAT );
+ConVar	sk_player_stomach( "sk_player_stomach", "1", FCVAR_CHEAT );
+ConVar	sk_player_arm( "sk_player_arm", "1", FCVAR_CHEAT );
+ConVar	sk_player_leg( "sk_player_leg", "1", FCVAR_CHEAT );
 
 ConVar  player_debug_print_damage( "player_debug_print_damage", "0", FCVAR_CHEAT, "When true, print amount and type of all damage received by player to console." );
 

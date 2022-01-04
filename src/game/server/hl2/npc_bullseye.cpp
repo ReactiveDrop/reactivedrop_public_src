@@ -81,7 +81,7 @@ int FindBullseyesInCone( CBaseEntity **pList, int listMax, const Vector &coneOri
 }
 
 
-ConVar	sk_bullseye_health( "sk_bullseye_health","0");
+ConVar	sk_bullseye_health( "sk_bullseye_health", "35", FCVAR_CHEAT );
 
 BEGIN_DATADESC( CNPC_Bullseye )
 

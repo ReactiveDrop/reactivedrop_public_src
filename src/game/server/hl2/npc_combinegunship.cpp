@@ -66,12 +66,12 @@ int g_iGunshipEffectIndex = -1;
 #define SF_GUNSHIP_NO_GROUND_ATTACK		( 1 << 12 )	
 #define SF_GUNSHIP_USE_CHOPPER_MODEL	( 1 << 13 )
 
-ConVar sk_gunship_burst_size("sk_gunship_burst_size", "15" );
-ConVar sk_gunship_burst_min("sk_gunship_burst_min", "800" );
-ConVar sk_gunship_burst_dist("sk_gunship_burst_dist", "768" );
+ConVar sk_gunship_burst_size( "sk_gunship_burst_size", "15", FCVAR_CHEAT );
+ConVar sk_gunship_burst_min( "sk_gunship_burst_min", "800", FCVAR_CHEAT );
+ConVar sk_gunship_burst_dist( "sk_gunship_burst_dist", "768", FCVAR_CHEAT );
 
 // Number of times the gunship must be struck by explosive damage
-ConVar	sk_gunship_health_increments( "sk_gunship_health_increments", "0" );
+ConVar	sk_gunship_health_increments( "sk_gunship_health_increments", "5", FCVAR_CHEAT );
 
 /*
 

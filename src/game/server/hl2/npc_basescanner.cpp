@@ -57,7 +57,7 @@ BEGIN_DATADESC( CNPC_BaseScanner )
 	DEFINE_THINKFUNC( DiveBombSoundThink ),
 END_DATADESC()
 
-ConVar	sk_scanner_dmg_dive( "sk_scanner_dmg_dive","0");
+ConVar	sk_scanner_dmg_dive( "sk_scanner_dmg_dive", "25", FCVAR_CHEAT );
 
 //-----------------------------------------------------------------------------
 // Think contexts
