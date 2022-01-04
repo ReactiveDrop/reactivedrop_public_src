@@ -48,6 +48,7 @@ public:
 	
 	EHANDLE m_hDoorHack;
 
+	COutputEvent m_OnFastHackFailed;
 	COutputEvent m_OnButtonHackStarted;
 	COutputEvent m_OnButtonHackAt25Percent;
 	COutputEvent m_OnButtonHackAt50Percent;
@@ -75,6 +76,7 @@ public:
 
 	CNetworkVar(bool, m_bIsInUse);
 	CNetworkVar(float, m_fHackProgress);
+	CNetworkVar(float, m_flHoldTime);
 	bool m_bChangePanelSkin;
 	bool m_bWasLocked;
 	bool m_bUseAfterHack;

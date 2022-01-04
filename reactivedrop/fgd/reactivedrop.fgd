@@ -242,3 +242,15 @@
 
 	output OnTrigger(void) : "Fired when a marine melee attacks towards the origin of this trigger while standing in it."
 ]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_class.vmt") = asw_filter_marine_class :
+	"A filter that selects marines of a specified class."
+[
+	MarineClass(choices) : "Marine Class" : 0 : "The class of marine to match in this filter." =
+	[
+		0 : "Officer"
+		1 : "Special Weapons"
+		2 : "Medic"
+		3 : "Tech"
+	]
+]

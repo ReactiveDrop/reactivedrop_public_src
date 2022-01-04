@@ -933,21 +933,28 @@ void CServerGameDLL::DLLShutdown( void )
 //-----------------------------------------------------------------------------
 float CServerGameDLL::GetTickInterval( void ) const
 {
-	float tickinterval = DEFAULT_TICK_INTERVAL;
-
-
-
-
 	// override if tick rate specified in command line
 	if ( CommandLine()->CheckParm( "-tickrate" ) )
 	{
-		float tickrate = CommandLine()->ParmValue( "-tickrate", 0 );
-		if ( tickrate > 10 )
-			tickinterval = 1.0f / tickrate;
+		const float defaultTickrate = 1000 / DEFAULT_TICK_INTERVAL;
+		const float tickrate = CommandLine()->ParmValue( "-tickrate", defaultTickrate );
+		const float tickInterval = 1.0f / tickrate;
+
+		if ( tickInterval >= MINIMUM_TICK_INTERVAL && tickInterval <= MAXIMUM_TICK_INTERVAL )
+		{
+			return tickInterval;
+		}
+		else
+		{
+			ConMsg( "requested tickrate [%d] is not in valid range [%d - %d]\n",
+				tickrate,
+				round( 1.0f / MINIMUM_TICK_INTERVAL ),
+				round( 1.0f / MAXIMUM_TICK_INTERVAL )
+			);
+		}
 	}
 
-
-	return tickinterval;
+	return DEFAULT_TICK_INTERVAL;
 }
 
 // This is called when a new game is started. (restart, map)

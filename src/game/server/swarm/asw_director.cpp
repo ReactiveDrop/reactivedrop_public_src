@@ -481,29 +481,37 @@ bool CASW_Director::CanSpawnAlien( CASW_Spawner *pSpawner )
 
 void CASW_Director::OnMarineStartedHack( CASW_Marine *pMarine, CBaseEntity *pComputer )
 {
+	ResetMarineIntensity();
+	SpawnHordeSoon();
+}
+
+void CASW_Director::ResetMarineIntensity()
+{
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( !pGameResource )
+	{
 		return;
-
-	//Msg( " Marine started hack!\n" );
-
-	// reset intensity so we can have a big fight without relaxing immediately
-	for ( int i=0;i<pGameResource->GetMaxMarineResources();i++ )
+	}
+	
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
 		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
 		if ( !pMR )
+		{
 			continue;
+		}
 
 		pMR->GetIntensity()->Reset();
 	}
+}
 
+void CASW_Director::SpawnHordeSoon()
+{
 	float flQuickStart = RandomFloat( 2.0f, 5.0f );
 	if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
 	{
-		m_HordeTimer.Start( flQuickStart );
+		m_HordeTimer.Start(flQuickStart);
 	}
-
-	// TODO: Instead have some kind of 'is in a big fight' state?
 }
 
 void CASW_Director::StartFinale()
@@ -513,11 +521,7 @@ void CASW_Director::StartFinale()
 	m_bWanderersEnabled = true;
 	DevMsg("Starting finale\n");
 
-	float flQuickStart = RandomFloat( 2.0f, 5.0f );
-	if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
-	{
-		m_HordeTimer.Start( flQuickStart );
-	}
+	SpawnHordeSoon();
 }
 
 // reactivedrop: for now it is simply a copy of Finale but with an option to stop it
@@ -532,11 +536,8 @@ void CASW_Director::StartHoldout()
 		m_bHordesEnabled = true;
 		m_bWanderersEnabled = true;
 		DevMsg( "Starting holdout\n" );
-		float flQuickStart = RandomFloat( 2.0f, 5.0f );
-		if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
-		{
-			m_HordeTimer.Start( flQuickStart );
-		}
+
+		SpawnHordeSoon();
 	}
 }
 

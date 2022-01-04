@@ -45,8 +45,13 @@ void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine
 	{
 		if (m_fFastFinishTime.Get() > 0 && gpGlobals->curtime > m_fFastFinishTime.Get())
 		{
-			if (GetComputerArea())
-				GetComputerArea()->EmitSound("ASWComputer.TimeOut");
+			CASW_Computer_Area *pArea = GetComputerArea();
+			if ( pArea )
+			{
+				pArea->EmitSound( "ASWComputer.TimeOut" );
+				pArea->m_OnFastHackFailed.FireOutput( pMarine, pArea );
+			}
+
 			m_bPlayedTimeOutSound = true;
 		}
 	}

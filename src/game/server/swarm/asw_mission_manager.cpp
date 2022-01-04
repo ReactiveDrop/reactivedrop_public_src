@@ -67,97 +67,101 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 
 	// notify all objectives about this event
 	if ( !ASWGameResource() )
+	{
 		return false;
+	}
 
 	int iIncomplete = 0;
-	int iNumObjectives = 0;
 	bool bEscapeIncomplete = false;
-	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
+	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
 		CASW_Objective* pObjective = ASWGameResource()->GetObjective(i);
-		if (pObjective)
+		if ( pObjective && !pObjective->IsObjectiveOptional() )
 		{
 			bAtLeastOneObjective = true;
-			iNumObjectives++;
-			if (!pObjective->IsObjectiveComplete() && !pObjective->IsObjectiveOptional())
+
+			if ( !pObjective->IsObjectiveComplete() )
 			{
 				bSuccess = false;
 				iIncomplete++;
-				if (iIncomplete == 1 && !m_bDoneLeavingChatter)
+				if ( !m_bDoneLeavingChatter && dynamic_cast<CASW_Objective_Escape *>( pObjective ) )
 				{
-					CASW_Objective_Escape *pEscape = dynamic_cast<CASW_Objective_Escape*>(pObjective);
-					if (pEscape)
-						bEscapeIncomplete = true;
+					bEscapeIncomplete = true;
 				}
 			}
-			if (pObjective->IsObjectiveFailed())
+			if ( pObjective->IsObjectiveFailed() )
 			{
-				bFailed = true;					
+				bFailed = true;
 			}
 		}
 	}
 
 	m_bAllMarinesDead = AllMarinesDead();
-
 	if ( m_bAllMarinesDead && ( gpGlobals->curtime > m_flLastMarineDeathTime + asw_last_marine_dead_delay.GetFloat() || GameTimescale()->GetCurrentTimescale() < 1.0f ) )
 	{
 		bFailed = true;
 	}
 	
 	m_bAllMarinesKnockedOut = AllMarinesKnockedOut();
-	if (m_bAllMarinesKnockedOut)
+	if ( m_bAllMarinesKnockedOut )
+	{
 		bFailed = true;
+	}
 
-	if (bSuccess && bAtLeastOneObjective)
+	if ( bSuccess && bAtLeastOneObjective )
 	{
 		MissionSuccess();
 		return true;
 	}
-	else if (bFailed && rd_auto_fast_restart.GetBool())
+	else if ( bFailed && rd_auto_fast_restart.GetBool() )
 	{
 		ASWGameRules()->SetForceReady( ASW_FR_INGAME_RESTART );
 	}
-	else if (bFailed)
+	else if ( bFailed )
 	{
 		MissionFail();
 		return true;
 	}
-	else
+	else if ( bEscapeIncomplete && iIncomplete == 1 )
 	{
-		if (bEscapeIncomplete && iIncomplete)
+		// make a marine do the 'time to leave' speech
+		if ( ASWGameResource() )
 		{
-			// make a marine do the 'time to leave' speech
-			if ( ASWGameResource() )
+			CASW_Game_Resource *pGameResource = ASWGameResource();
+
+			// count how many live marines we have
+			int iNearby = 0;
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 			{
-				CASW_Game_Resource *pGameResource = ASWGameResource();
-				// count how many live marines we have
-				int iNearby = 0;						
-				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+				CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+				if ( pMarine && pMarine->GetHealth() > 0 )
 				{
-					CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-					CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
-					if (pMarine && pMarine->GetHealth() > 0)
-								iNearby++;
+					iNearby++;
 				}
-				int iChatter = random->RandomInt(0, iNearby-1);
-				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-				{
-					CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-					CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
-					if (pMarine && pMarine->GetHealth() > 0)
-					{
-						if (iChatter <= 0)
-						{
-							pMarine->GetMarineSpeech()->QueueChatter(CHATTER_TIME_TO_LEAVE, gpGlobals->curtime + 3.0f, gpGlobals->curtime + 6.0f);
-							break;
-						}
-						iChatter--;
-					}
-				}						
 			}
-			m_bDoneLeavingChatter = true;
+
+			int iChatter = random->RandomInt( 0, iNearby - 1 );
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+				CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+				if ( pMarine && pMarine->GetHealth() > 0 )
+				{
+					if ( iChatter <= 0 )
+					{
+						pMarine->GetMarineSpeech()->QueueChatter( CHATTER_TIME_TO_LEAVE, gpGlobals->curtime + 3.0f, gpGlobals->curtime + 6.0f );
+						break;
+					}
+
+					iChatter--;
+				}
+			}
 		}
+
+		m_bDoneLeavingChatter = true;
 	}
+
 	return false;
 }
 

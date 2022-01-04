@@ -42,10 +42,13 @@ BEGIN_DATADESC( CASW_Button_Area )
 	DEFINE_KEYFIELD( m_iWireRows, FIELD_INTEGER, "wirerows"),
 	DEFINE_KEYFIELD( m_iNumWires, FIELD_INTEGER, "numwires"),
 
+	DEFINE_KEYFIELD( m_flHoldTime, FIELD_FLOAT, "HoldTime" ),
+
 	DEFINE_INPUTFUNC( FIELD_VOID,	"PowerOn",	InputPowerOn ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"PowerOff",	InputPowerOff ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"ResetHack",	InputResetHack ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Unlock",	InputUnlock ),
+	DEFINE_OUTPUT( m_OnFastHackFailed, "OnFastHackFailed" ),
 	DEFINE_OUTPUT( m_OnButtonHackStarted, "OnButtonHackStarted" ),
 	DEFINE_OUTPUT( m_OnButtonHackAt25Percent, "OnButtonHackAt25Percent" ),
 	DEFINE_OUTPUT( m_OnButtonHackAt50Percent, "OnButtonHackAt50Percent" ),
@@ -64,6 +67,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),	
 	SendPropString		(SENDINFO( m_NoPowerMessage ) ),
 	SendPropBool		(SENDINFO(m_bNeedsTech)),
+	SendPropFloat		(SENDINFO(m_flHoldTime)),
 END_SEND_TABLE()
 
 ConVar asw_ai_button_hacking_scale( "asw_ai_button_hacking_scale", "0.3", FCVAR_CHEAT, "Button panel hacking speed scale for AI marines" );
@@ -82,6 +86,8 @@ CASW_Button_Area::CASW_Button_Area()
 	m_bNeedsTech = true;
 
 	m_iHackLevel = 6;
+
+	m_flHoldTime = -1;
 }
 
 CASW_Button_Area::~CASW_Button_Area()
@@ -130,29 +136,29 @@ void CASW_Button_Area::Precache()
 {
 	PrecacheScriptSound("ASWComputer.HackComplete");
 	PrecacheScriptSound("ASWComputer.AccessDenied");
+	PrecacheScriptSound("ASWComputer.TimeOut");
 	PrecacheScriptSound("ASWButtonPanel.TileLit");
 }
 
 void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 {
-	if ( nHoldType == ASW_USE_HOLD_START )
-		return;
-
-	// player has used this item
-	//Msg("Player has activated a button area\n");
 	if ( !HasPower() || !ASWGameResource() )
 	{
-		// todo: launch a window on the client saying there's no power, or whatever message is desired
-		//Msg("We don't have the power cap'n\n");
 		return;
 	}
+
 	if ( m_bIsLocked )
 	{
+		if ( nHoldType == ASW_USE_HOLD_START )
+		{
+			return;
+		}
+
 		if ( pMarine->GetMarineProfile()->CanHack() || !m_bNeedsTech )
 		{
-			// can hack, get the player to launch his hacking window				
+			// can hack, get the player to launch his hacking window
 			if ( !m_bIsInUse )
-			{				
+			{
 				if ( pMarine->StartUsing(this) )
 				{
 					if ( GetHackProgress() <= 0 && pMarine->GetMarineResource() )
@@ -164,9 +170,9 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 					m_OnButtonHackStarted.FireOutput( pMarine, this );
 					if ( !asw_simple_hacking.GetBool() && pMarine->IsInhabited() )
 					{
-						if ( !GetCurrentHack() )	// if we haven't created a hack object for this computer yet, then create one	
+						if ( !GetCurrentHack() ) // if we haven't created a hack object for this computer yet, then create one
 						{
-							m_hDoorHack = (CASW_Hack_Wire_Tile*) CreateEntityByName( "asw_hack_wire_tile" );
+							m_hDoorHack = CreateEntityByName( "asw_hack_wire_tile" );
 						}
 
 						if ( GetCurrentHack() )
@@ -191,50 +197,74 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				{
 					pMarine->StopUsing();
 				}
-				//Msg("Panel already in use");
 			}
-			//Msg("Unlocked button\n");
-			// test hack puzzle so far
-			/*
-			m_hDoorHack = (CASW_Hack_Door*) CreateEntityByName( "asw_hack_door" );
-			if (GetCurrentHack())
-			{
-				//for (int i=0;i<10;i++)
-				//{
-					GetCurrentHack()->InitHack(pPlayer, pMarine, this);
-					GetCurrentHack()->BuildPuzzle(7);
-					GetCurrentHack()->ShowPuzzleStatus();
-				//}
-			}
-			*/
-			
-			
 		}
 		else
 		{
-			// can't hack (play some access denied sound)
-			//Msg("Access denied\n");
-			EmitSound("ASWComputer.AccessDenied");
+			EmitSound( "ASWComputer.AccessDenied" );
 
 			// check for a nearby AI tech marine
 			float flMarineDistance;
 			CASW_Marine *pTech = UTIL_ASW_NearestMarine( WorldSpaceCenter(), flMarineDistance, MARINE_CLASS_TECH, true );
 			if ( pTech && flMarineDistance < asw_tech_order_hack_range.GetFloat() )
 			{
-				//Msg( "Told tech to hack panel\n" );
 				pTech->OrderHackArea( this );
 			}
+
 			return;
+		}
+	}
+	else if ( m_flHoldTime > 0 )
+	{
+		if ( nHoldType == ASW_USE_RELEASE_QUICK )
+		{
+			if ( pMarine )
+			{
+				pMarine->StopUsing();
+			}
+
+			return;
+		}
+
+		if ( nHoldType == ASW_USE_HOLD_START && pMarine )
+		{
+			if ( !pMarine->m_hUsingEntity )
+			{
+				pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
+			}
+
+			pMarine->StartUsing( this );
+		}
+
+		if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
+		{
+			if ( pMarine )
+			{
+				pMarine->StopUsing();
+
+				CASW_Player *pPlayer = pMarine->GetCommander();
+				if ( pPlayer && pMarine->IsInhabited() )
+				{
+					pPlayer->m_hUseKeyDownEnt = NULL;
+					pPlayer->m_flUseKeyDownTime = 0;
+				}
+			}
+
+			ActivateUnlockedButton( pMarine );
 		}
 	}
 	else
 	{
+		if ( nHoldType == ASW_USE_HOLD_START )
+			return;
+
 		if ( pMarine )
 		{
 			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
 		}
+
 		ActivateUnlockedButton( pMarine );
-	}	
+	}
 }
 
 void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
@@ -379,7 +409,7 @@ void CASW_Button_Area::InputUnlock( inputdata_t &inputdata )
 		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(inputdata.pActivator);
 
 		// if set to use on unlock, then do so
-		if (m_bUseAfterHack && pMarine)
+		if ( m_bUseAfterHack && pMarine && m_flHoldTime <= 0 )
 		{
 			ActivateUnlockedButton(pMarine);
 		}
@@ -503,7 +533,7 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 		}
 
 		// if set to use on unlock, then do so
-		if ( m_bUseAfterHack && pMarine )
+		if ( m_bUseAfterHack && pMarine && m_flHoldTime <= 0 )
 		{
 			ActivateUnlockedButton(pMarine);
 		}

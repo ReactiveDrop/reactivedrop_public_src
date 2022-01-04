@@ -78,6 +78,9 @@ public:
 
 	bool CanSpawnAlien( CASW_Spawner *pSpawner );			// if director is controlling alien spawns, then mapper set spawners ask permission before spawning	
 
+	void ResetMarineIntensity();
+	void SpawnHordeSoon();
+
 	void StartFinale();
 	void StartHoldout();
 	void StopHoldout();

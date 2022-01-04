@@ -45,7 +45,7 @@
 #include "vphysics/constraints.h"
 #include "tier0/miniprofiler.h"
 #include "tier1.h"
-
+#include "gameinterface.h"
 
 
 void PrecachePhysicsSounds( void );
@@ -57,6 +57,7 @@ ConVar phys_speeds( "phys_speeds", "0" );
 
 // defined in phys_constraint
 extern IPhysicsConstraintEvent *g_pConstraintEvents;
+extern CServerGameDLL g_ServerGameDLL;
 //DLL_IMPORT CLinkedMiniProfiler *g_pPhysicsMiniProfilers;
 //CLinkedMiniProfiler g_mp_ServerPhysicsSimulate("ServerPhysicsSimulate",&g_pPhysicsMiniProfilers);
 
@@ -234,7 +235,7 @@ void CPhysicsHook::LevelInitPreEntity()
 
 	physenv->SetObjectEventHandler( &g_Collisions );
 	
-	physenv->SetSimulationTimestep( DEFAULT_TICK_INTERVAL ); // 15 ms per tick
+	physenv->SetSimulationTimestep( g_ServerGameDLL.GetTickInterval() );
 	// HL Game gravity, not real-world gravity
 	physenv->SetGravity( Vector( 0, 0, -sv_gravity.GetFloat() ) );
 	g_PhysAverageSimTime = 0;
@@ -1575,7 +1576,7 @@ CON_COMMAND_F( physics_budget, "Times the cost of each active object", FCVAR_CHE
 		float full = Plat_FloatTime();
 		{
 			//CMiniProfilerGuard mpg3(&g_mp_ServerPhysicsSimulate);
-			physenv->Simulate( DEFAULT_TICK_INTERVAL );
+			physenv->Simulate( g_ServerGameDLL.GetTickInterval() );
 		}
 		full = Plat_FloatTime() - full;
 		float lastTime = full;
@@ -1595,7 +1596,7 @@ CON_COMMAND_F( physics_budget, "Times the cost of each active object", FCVAR_CHE
 			float start = Plat_FloatTime();
 			{
 				//CMiniProfilerGuard mpg3(&g_mp_ServerPhysicsSimulate);
-				physenv->Simulate( DEFAULT_TICK_INTERVAL );
+				physenv->Simulate( g_ServerGameDLL.GetTickInterval() );
 			}
 			float end = Plat_FloatTime();
 

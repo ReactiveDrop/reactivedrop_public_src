@@ -322,7 +322,14 @@
 		"wide"	"f0"
 		"tall"	"480"
 	}
-	
+
+	RD_Hud_Boss_Bars
+	{
+		"fieldName" "RD_Hud_Boss_Bars"
+		"visible" "1"
+		"enabled" "1"
+	}
+
 	ASW_Hud_Master
 	{
 		"fieldName" "ASW_Hud_Master"
