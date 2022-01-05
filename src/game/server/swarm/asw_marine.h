@@ -530,7 +530,7 @@ public:
 	virtual bool Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex=0 ) ;
 	virtual bool Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon );
 	CASW_Weapon* GetASWWeapon(int index) const;	
-	int GetWeaponPositionForPickup(const char* szWeaponClass);	// returns which slot in the m_hWeapons array this pickup should go in
+	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in
 	bool TakeWeaponPickup(CASW_Weapon* pWeapon);
 	bool TakeWeaponPickup(CASW_Pickup_Weapon* pPickup);				// takes a weapon	
 	bool RefillHealGun(CBaseEntity* pWeaponPickup);

@@ -137,7 +137,8 @@ enum
 #define ASW_SCANNER_MAX_BLIPS 32
 
 #define ASW_MAX_EQUIP_SLOTS	3
-#define ASW_MAX_MARINE_WEAPONS ASW_MAX_EQUIP_SLOTS // an ASW marine shouldn't have more than this many weapons in its m_hWeapons
+#define ASW_TEMPORARY_WEAPON_SLOT (ASW_MAX_EQUIP_SLOTS + 0)
+#define ASW_MAX_MARINE_WEAPONS (ASW_MAX_EQUIP_SLOTS + 1) // an ASW marine shouldn't have more than this many weapons in its m_hWeapons
 
 // asw light indices
 enum

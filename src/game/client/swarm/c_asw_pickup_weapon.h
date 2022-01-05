@@ -22,6 +22,7 @@ public:
 	CNetworkVar(int, m_iBulletsInGun);
 	CNetworkVar(int, m_iClips);
 	CNetworkVar(int, m_iSecondary);
+	CNetworkVar(bool, m_bIsTemporaryPickup);
 
 	int m_nUseIconTextureID;
 	bool m_bWideIcon;

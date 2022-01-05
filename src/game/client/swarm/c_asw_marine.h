@@ -119,7 +119,7 @@ public:
 	C_ASW_Weapon* GetActiveASWWeapon(void) const;
 	C_ASW_Weapon* GetASWWeapon(int index) const;
 	virtual Vector			Weapon_ShootPosition();
-	int GetWeaponPositionForPickup(const char* szWeaponClass);	// returns which slot in the m_hWeapons array this pickup should go in	
+	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in	
 	int GetWeaponIndex( CBaseCombatWeapon *pWeapon ) const;		// returns weapon's position in our myweapons array
 	Vector GetOffhandThrowSource( const Vector *vecStandingPos = NULL );
 	virtual bool IsFiring();

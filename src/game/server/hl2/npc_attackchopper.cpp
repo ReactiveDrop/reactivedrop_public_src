@@ -125,37 +125,37 @@ static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 #define CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2_SQ	(CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2 * CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2)
 
 // CVars
-ConVar	sk_helicopter_health( "sk_helicopter_health","5600");
-ConVar	sk_helicopter_firingcone( "sk_helicopter_firingcone","20.0", 0, "The angle in degrees of the cone in which the shots will be fired" );
-ConVar	sk_helicopter_burstcount( "sk_helicopter_burstcount","12", 0, "How many shot bursts to fire after charging up. The bigger the number, the longer the firing is" );
-ConVar	sk_helicopter_roundsperburst( "sk_helicopter_roundsperburst","5", 0, "How many shots to fire in a single burst" );
+ConVar	sk_helicopter_health( "sk_helicopter_health", "5600", FCVAR_CHEAT );
+ConVar	sk_helicopter_firingcone( "sk_helicopter_firingcone", "20.0", FCVAR_CHEAT, "The angle in degrees of the cone in which the shots will be fired" );
+ConVar	sk_helicopter_burstcount( "sk_helicopter_burstcount", "12", FCVAR_CHEAT, "How many shot bursts to fire after charging up. The bigger the number, the longer the firing is" );
+ConVar	sk_helicopter_roundsperburst( "sk_helicopter_roundsperburst", "5", FCVAR_CHEAT, "How many shots to fire in a single burst" );
 
-ConVar	sk_helicopter_grenadedamage( "sk_helicopter_grenadedamage","25.0", 0, "The amount of damage the helicopter grenade deals." );
-ConVar	sk_helicopter_grenaderadius( "sk_helicopter_grenaderadius","275.0", 0, "The damage radius of the helicopter grenade." );
-ConVar	sk_helicopter_grenadeforce( "sk_helicopter_grenadeforce","55000.0", 0, "The physics force that the helicopter grenade exerts." );
-ConVar	sk_helicopter_grenade_puntscale( "sk_helicopter_grenade_puntscale","1.5", 0, "When physpunting a chopper's grenade, scale its velocity by this much." );
+ConVar	sk_helicopter_grenadedamage( "sk_helicopter_grenadedamage", "30", FCVAR_CHEAT, "The amount of damage the helicopter grenade deals." );
+ConVar	sk_helicopter_grenaderadius( "sk_helicopter_grenaderadius", "275", FCVAR_CHEAT, "The damage radius of the helicopter grenade." );
+ConVar	sk_helicopter_grenadeforce( "sk_helicopter_grenadeforce", "55000", FCVAR_CHEAT, "The physics force that the helicopter grenade exerts." );
+ConVar	sk_helicopter_grenade_puntscale( "sk_helicopter_grenade_puntscale", "1.5", FCVAR_CHEAT, "When physpunting a chopper's grenade, scale its velocity by this much." );
 
 // Number of bomb hits it takes to kill a chopper on each skill level.
-ConVar sk_helicopter_num_bombs1("sk_helicopter_num_bombs1", "3");
-ConVar sk_helicopter_num_bombs2("sk_helicopter_num_bombs2", "5");
-ConVar sk_helicopter_num_bombs3("sk_helicopter_num_bombs3", "5");
+ConVar sk_helicopter_num_bombs1( "sk_helicopter_num_bombs1", "3", FCVAR_CHEAT );
+ConVar sk_helicopter_num_bombs2( "sk_helicopter_num_bombs2", "5", FCVAR_CHEAT );
+ConVar sk_helicopter_num_bombs3( "sk_helicopter_num_bombs3", "5", FCVAR_CHEAT );
 
-ConVar	sk_npc_dmg_helicopter_to_plr( "sk_npc_dmg_helicopter_to_plr","3", 0, "Damage helicopter shots deal to the player" );
-ConVar	sk_npc_dmg_helicopter( "sk_npc_dmg_helicopter","6", 0, "Damage helicopter shots deal to everything but the player" );
+ConVar	sk_npc_dmg_helicopter_to_plr( "sk_npc_dmg_helicopter_to_plr","3", FCVAR_CHEAT, "Damage helicopter shots deal to the player" );
+ConVar	sk_npc_dmg_helicopter( "sk_npc_dmg_helicopter","6", FCVAR_CHEAT, "Damage helicopter shots deal to everything but the player" );
 
-ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed","450.0", 0, "How fast does the zapper drone move?" );
+ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed","450.0", FCVAR_CHEAT, "How fast does the zapper drone move?" );
 
-ConVar	g_helicopter_chargetime( "g_helicopter_chargetime","2.0", 0, "How much time we have to wait (on average) between the time we start hearing the charging sound + the chopper fires" );
-ConVar	g_helicopter_bullrush_distance("g_helicopter_bullrush_distance", "5000");
-ConVar	g_helicopter_bullrush_bomb_enemy_distance("g_helicopter_bullrush_bomb_enemy_distance", "0");
-ConVar	g_helicopter_bullrush_bomb_time("g_helicopter_bullrush_bomb_time", "10");
-ConVar	g_helicopter_idletime( "g_helicopter_idletime","3.0", 0, "How much time we have to wait (on average) after we fire before we can charge up again" );
-ConVar	g_helicopter_maxfiringdist( "g_helicopter_maxfiringdist","2500.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_bomb_speed( "g_helicopter_bullrush_bomb_speed","850.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_shoot_height( "g_helicopter_bullrush_shoot_height","650.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_mega_bomb_health( "g_helicopter_bullrush_mega_bomb_health","0.25", 0, "Fraction of the health of the chopper before it mega-bombs" );
+ConVar	g_helicopter_chargetime( "g_helicopter_chargetime","2.0", FCVAR_CHEAT, "How much time we have to wait (on average) between the time we start hearing the charging sound + the chopper fires" );
+ConVar	g_helicopter_bullrush_distance( "g_helicopter_bullrush_distance", "5000", FCVAR_CHEAT );
+ConVar	g_helicopter_bullrush_bomb_enemy_distance( "g_helicopter_bullrush_bomb_enemy_distance", "0", FCVAR_CHEAT );
+ConVar	g_helicopter_bullrush_bomb_time( "g_helicopter_bullrush_bomb_time", "10", FCVAR_CHEAT );
+ConVar	g_helicopter_idletime( "g_helicopter_idletime","3.0", FCVAR_CHEAT, "How much time we have to wait (on average) after we fire before we can charge up again" );
+ConVar	g_helicopter_maxfiringdist( "g_helicopter_maxfiringdist","2500.0", FCVAR_CHEAT, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_bomb_speed( "g_helicopter_bullrush_bomb_speed","850.0", FCVAR_CHEAT, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_shoot_height( "g_helicopter_bullrush_shoot_height","650.0", FCVAR_CHEAT, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_mega_bomb_health( "g_helicopter_bullrush_mega_bomb_health","0.25", FCVAR_CHEAT, "Fraction of the health of the chopper before it mega-bombs" );
 
-ConVar	g_helicopter_bomb_danger_radius( "g_helicopter_bomb_danger_radius", "120" );
+ConVar	g_helicopter_bomb_danger_radius( "g_helicopter_bomb_danger_radius", "120", FCVAR_CHEAT );
 
 Activity ACT_HELICOPTER_DROP_BOMB;
 Activity ACT_HELICOPTER_CRASHING;

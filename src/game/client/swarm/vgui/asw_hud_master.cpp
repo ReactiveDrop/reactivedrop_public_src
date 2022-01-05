@@ -1184,7 +1184,7 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 	if ( !m_pLocalMarine )
 		return;
 
-	for ( int i = ASW_INVENTORY_SLOT_PRIMARY; i <= ASW_INVENTORY_SLOT_EXTRA; i++ )
+	for ( int i = ASW_INVENTORY_SLOT_PRIMARY; i <= ASW_TEMPORARY_WEAPON_SLOT; i++ )
 	{
 		CASW_Weapon *pWeapon = m_pLocalMarine->GetASWWeapon( i );
 		if ( pWeapon )
@@ -1223,6 +1223,12 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 					y = m_nExtraItem_y + m_nMarinePortrait_y;
 					w = m_nExtraItem_w;
 					t = m_nExtraItem_t;
+					break;
+				}
+				case ASW_TEMPORARY_WEAPON_SLOT:
+				{
+					x += m_nTertiaryWeapon_x;
+					y += m_nTertiaryWeapon_y;
 					break;
 				}
 			}

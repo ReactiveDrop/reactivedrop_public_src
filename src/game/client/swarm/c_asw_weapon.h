@@ -175,6 +175,7 @@ public:
 	// Functions for weapons on the ground
 	virtual bool AllowedToPickup(C_ASW_Marine *pMarine);
 	bool m_bSwappingWeapon;
+	bool m_bIsTemporaryPickup;
 
 	// check if this weapon wants to perform a sync kill
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent ) { return false; }

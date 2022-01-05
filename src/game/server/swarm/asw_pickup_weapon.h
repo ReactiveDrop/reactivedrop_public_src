@@ -16,6 +16,8 @@ public:
 
 	static bool VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlayer );
 
+	CASW_Pickup_Weapon();
+
 	virtual void Spawn( void );
 	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
 	virtual void InitFrom(CASW_Marine* pMarine,CASW_Weapon* pWeapon);  // sets the pickup up with the contents of the specified marine+weapon
@@ -30,6 +32,7 @@ public:
 	CNetworkVar(int, m_iBulletsInGun);
 	CNetworkVar(int, m_iClips);
 	CNetworkVar(int, m_iSecondary);
+	CNetworkVar(bool, m_bIsTemporaryPickup);
 };
 
 class CASW_Pickup_Weapon_Rifle : public CASW_Pickup_Weapon

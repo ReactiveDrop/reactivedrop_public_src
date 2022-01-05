@@ -5346,7 +5346,12 @@
 
 @BaseClass color(0 0 200) base(Item) = ASWPickup
 [
-	FreezePickup(choices) : "Stay in air on startup" : "No" : "If set, this pickup won't fall to the ground when the map starts." =
+	FreezePickup(choices) : "Stay in air on startup" : 0 : "If set, this pickup won't fall to the ground when the map starts." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	IsTemporaryPickup(choices) : "Temporary Pickup" : 0 : "If set, this pickup will not force a weapon to be dropped if there is no available slot and will be dropped if switched away from." =
 	[
 		0 : "No"
 		1 : "Yes"

@@ -24,6 +24,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon, DT_ASW_Pickup_Weapon, CASW_Pickup
 	RecvPropInt		(RECVINFO(m_iBulletsInGun)),
 	RecvPropInt		(RECVINFO(m_iClips)),
 	RecvPropInt		(RECVINFO(m_iSecondary)),
+	RecvPropBool		(RECVINFO(m_bIsTemporaryPickup)),
 END_RECV_TABLE()
 
 C_ASW_Pickup_Weapon::C_ASW_Pickup_Weapon()
@@ -81,7 +82,7 @@ bool C_ASW_Pickup_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 	{
 		if ( action.bShowUseKey )
 		{
-			action.iInventorySlot = pUser->GetWeaponPositionForPickup(GetWeaponClass());
+			action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup );
 		}
 // 		if ( action.UseIconRed == 255 && action.UseIconGreen == 255 && action.UseIconBlue == 255 )
 // 		{

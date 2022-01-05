@@ -3518,7 +3518,9 @@ void CAlienSwarm::Think()
 
 inline unsigned int ThreadShutdown(void* pParam)
 {
-	ThreadSleep(gpGlobals->interval_per_tick * 2);
+	const float delay = gpGlobals->interval_per_tick * 1000;
+	DevMsg("Shutdown delayed: %f ms\n", delay);
+	ThreadSleep(delay);
 
 	// send quit and execute command within the same frame
 	engine->ServerCommand("quit\n");

@@ -139,6 +139,8 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nNextThinkTick );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_flTimeWeaponIdle );
 
+	CNetworkVar(bool, m_bIsTemporaryPickup);
+
 	// effects
 	virtual const char* GetUTracerType();
 

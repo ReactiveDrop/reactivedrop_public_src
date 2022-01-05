@@ -50,6 +50,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Weapon, DT_ASW_Weapon)
 	SendPropBool(SENDINFO(m_bPoweredUp)),
 	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip1 ), 8 ),
 	SendPropInt( SENDINFO(m_iPrimaryAmmoType ), 8 ),
+	SendPropBool(SENDINFO(m_bIsTemporaryPickup)),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -62,6 +63,7 @@ BEGIN_DATADESC( CASW_Weapon )
 	DEFINE_FIELD( m_fReloadStart, FIELD_TIME ),
 	DEFINE_FIELD( m_fFastReloadStart, FIELD_TIME ),
 	DEFINE_FIELD( m_fFastReloadEnd, FIELD_TIME ),
+	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup" ),
 END_DATADESC()
 
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
@@ -87,6 +89,7 @@ CASW_Weapon::CASW_Weapon()
 	m_bFastReloadFailure = false;
 
 	m_bPoweredUp = false;
+	m_bIsTemporaryPickup = false;
 }
 
 

@@ -345,6 +345,8 @@
 		"PrimaryWeapon_y" "r160"
 		"SecondaryWeapon_x" "18"
 		"SecondaryWeapon_y" "r130"
+		"TertiaryWeapon_x" "18"
+		"TertiaryWeapon_y" "r190"
 		
 		"Weapon_w" "80"
 		"Weapon_t" "40"

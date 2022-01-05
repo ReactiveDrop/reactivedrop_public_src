@@ -55,6 +55,7 @@ BEGIN_NETWORK_TABLE( CASW_Weapon, DT_ASW_Weapon )
 	RecvPropBool		( RECVINFO( m_bPoweredUp ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip1 )),
 	RecvPropInt( RECVINFO(m_iPrimaryAmmoType )),
+	RecvPropBool		( RECVINFO( m_bIsTemporaryPickup ) ),
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Weapon )
@@ -133,6 +134,7 @@ m_GlowObject( this, Vector( 0.0f, 0.4f, 0.75f ), 1.0f, false, true )
 	m_fMuzzleFlashTime = 0.0f;
 
 	m_bPoweredUp = false;
+	m_bIsTemporaryPickup = false;
 }
 
 
@@ -606,7 +608,7 @@ bool C_ASW_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	action.iUseIconTexture = GetUseIconTextureID();
 	action.UseTarget = this;
 	action.fProgress = -1;
-	action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetClassname() );
+	action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
 	action.bWideIcon = ( action.iInventorySlot != ASW_INVENTORY_SLOT_EXTRA );
 
 	// build the appropriate take string
