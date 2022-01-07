@@ -60,7 +60,6 @@ public:
 	virtual void			ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValues );
 };
 
-
 class CServerGameDLL : public IServerGameDLL
 {
 public:
@@ -145,8 +144,6 @@ public:
 
 	// Called after the steam API has been activated post-level startup
 	virtual void			GameServerSteamAPIActivated( void );
-
-	unsigned int			GetDataMapOffsetForEdict( edict_t *pEdict, const char* property );
 
 protected:
 	KeyValues*				FindLaunchOptionByValue( KeyValues *pLaunchOptions, char const *szLaunchOption );
