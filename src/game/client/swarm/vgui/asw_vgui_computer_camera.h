@@ -19,7 +19,7 @@ class CASW_VGUI_Computer_Camera : public vgui::Panel, public CASW_VGUI_Ingame_Pa
 {
 	DECLARE_CLASS_SIMPLE( CASW_VGUI_Computer_Camera, vgui::Panel );
 
-	CASW_VGUI_Computer_Camera( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackDoor );
+	CASW_VGUI_Computer_Camera( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackComputer, const char *pszSecurityCamLabel );
 	virtual ~CASW_VGUI_Computer_Camera();
 	
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
@@ -42,6 +42,7 @@ class CASW_VGUI_Computer_Camera : public vgui::Panel, public CASW_VGUI_Ingame_Pa
 
 	float m_fLastThinkTime;
 	bool m_bSetAlpha;
+	const char *m_pszSecurityCamLabel;
 };
 
 #endif /* _INCLUDED_ASW_VGUI_COMPUTER_CAMERA_H */

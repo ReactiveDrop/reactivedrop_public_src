@@ -9,13 +9,14 @@
 #include "asw_marine_speech.h"
 #include "asw_game_resource.h"
 #include "asw_marine_resource.h"
-#include "point_camera.h"
+#include "asw_point_camera.h"
 #include "soundenvelope.h"
 #include "asw_director.h"
 #include "asw_util_shared.h"
 #include "asw_gamerules.h"
 #include "asw_achievements.h"
 #include "cvisibilitymonitor.h"
+#include "asw_remote_turret_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,8 +33,12 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_KEYFIELD(m_bIsLocked, FIELD_BOOLEAN, "locked" ),
 	DEFINE_KEYFIELD(m_bUseAfterHack, FIELD_BOOLEAN, "useafterhack" ),
 
-	DEFINE_KEYFIELD( m_SecurityCam1Name, FIELD_STRING, "SecurityCam1Name" ),	
-	DEFINE_KEYFIELD( m_Turret1Name, FIELD_STRING, "Turret1Name" ),	
+	DEFINE_KEYFIELD( m_SecurityCam1Name, FIELD_STRING, "SecurityCam1Name" ),
+	DEFINE_KEYFIELD( m_SecurityCam2Name, FIELD_STRING, "SecurityCam2Name" ),
+	DEFINE_KEYFIELD( m_SecurityCam3Name, FIELD_STRING, "SecurityCam3Name" ),
+	DEFINE_KEYFIELD( m_Turret1Name, FIELD_STRING, "Turret1Name" ),
+	DEFINE_KEYFIELD( m_Turret2Name, FIELD_STRING, "Turret2Name" ),
+	DEFINE_KEYFIELD( m_Turret3Name, FIELD_STRING, "Turret3Name" ),
 	DEFINE_KEYFIELD( m_MailFile, FIELD_STRING, "MailFile" ),
 	DEFINE_KEYFIELD( m_NewsFile, FIELD_STRING, "NewsFile" ),
 	DEFINE_KEYFIELD( m_StocksSeed, FIELD_STRING, "StocksSeed" ),
@@ -42,8 +47,12 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_KEYFIELD( m_PDAName, FIELD_STRING, "PDAName" ),
 	DEFINE_KEYFIELD( m_DownloadObjectiveName, FIELD_STRING, "DownloadObjectiveName" ),
 
-	DEFINE_KEYFIELD( m_bSecurityCam1Locked, FIELD_BOOLEAN, "SecurityCam1Locked" ),	
-	DEFINE_KEYFIELD( m_bTurret1Locked, FIELD_BOOLEAN, "Turret1Locked" ),	
+	DEFINE_KEYFIELD( m_bSecurityCam1Locked, FIELD_BOOLEAN, "SecurityCam1Locked" ),
+	DEFINE_KEYFIELD( m_bSecurityCam2Locked, FIELD_BOOLEAN, "SecurityCam2Locked" ),
+	DEFINE_KEYFIELD( m_bSecurityCam3Locked, FIELD_BOOLEAN, "SecurityCam3Locked" ),
+	DEFINE_KEYFIELD( m_bTurret1Locked, FIELD_BOOLEAN, "Turret1Locked" ),
+	DEFINE_KEYFIELD( m_bTurret2Locked, FIELD_BOOLEAN, "Turret2Locked" ),
+	DEFINE_KEYFIELD( m_bTurret3Locked, FIELD_BOOLEAN, "Turret3Locked" ),
 	DEFINE_KEYFIELD( m_bMailFileLocked, FIELD_BOOLEAN, "MailFileLocked" ),
 	DEFINE_KEYFIELD( m_bNewsFileLocked, FIELD_BOOLEAN, "NewsFileLocked" ),
 	DEFINE_KEYFIELD( m_bStocksFileLocked, FIELD_BOOLEAN, "StocksFileLocked" ),
@@ -61,8 +70,12 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_FIELD( m_hComputerHack, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bIsInUse, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fDownloadProgress, FIELD_FLOAT ),
-	DEFINE_FIELD( m_hSecurityCam1, FIELD_EHANDLE ),	
-	DEFINE_FIELD( m_hTurret1, FIELD_EHANDLE ),	
+	DEFINE_FIELD( m_hSecurityCam1, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hSecurityCam2, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hSecurityCam3, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hTurret1, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hTurret2, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hTurret3, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_SecurityCamLabel1, FIELD_STRING ),
 	DEFINE_FIELD( m_SecurityCamLabel2, FIELD_STRING ),
 	DEFINE_FIELD( m_SecurityCamLabel3, FIELD_STRING ),
@@ -97,8 +110,12 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropBool		(SENDINFO(m_bIsInUse)),
 	SendPropFloat		(SENDINFO(m_fDownloadProgress)),
 
-	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),	
-	SendPropEHandle( SENDINFO( m_hTurret1 ) ),	
+	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),
+	SendPropEHandle( SENDINFO( m_hSecurityCam2 ) ),
+	SendPropEHandle( SENDINFO( m_hSecurityCam3 ) ),
+	SendPropEHandle( SENDINFO( m_hTurret1 ) ),
+	SendPropEHandle( SENDINFO( m_hTurret2 ) ),
+	SendPropEHandle( SENDINFO( m_hTurret3 ) ),
 
 	SendPropString( SENDINFO( m_SecurityCamLabel1 ) ),
 	SendPropString( SENDINFO( m_SecurityCamLabel2 ) ),
@@ -117,8 +134,12 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropString( SENDINFO( m_DownloadObjectiveName ) ),
 	SendPropBool		(SENDINFO(m_bDownloadedDocs)),
 
-	SendPropBool		(SENDINFO(m_bSecurityCam1Locked)),	
-	SendPropBool		(SENDINFO(m_bTurret1Locked)),	
+	SendPropBool		(SENDINFO(m_bSecurityCam1Locked)),
+	SendPropBool		(SENDINFO(m_bSecurityCam2Locked)),
+	SendPropBool		(SENDINFO(m_bSecurityCam3Locked)),
+	SendPropBool		(SENDINFO(m_bTurret1Locked)),
+	SendPropBool		(SENDINFO(m_bTurret2Locked)),
+	SendPropBool		(SENDINFO(m_bTurret3Locked)),
 	SendPropBool		(SENDINFO(m_bMailFileLocked)),
 	SendPropBool		(SENDINFO(m_bNewsFileLocked)),
 	SendPropBool		(SENDINFO(m_bStocksFileLocked)),
@@ -136,7 +157,7 @@ CASW_Computer_Area::CASW_Computer_Area()
 	m_fDownloadProgress = 0;
 	m_bDownloadedDocs = false;
 	m_bDoSecureShout = true;
-	m_iActiveCam = 1; // asw temp: should be 0 and get set when the player uses a particular camera
+	m_iActiveCam = 0;
 	m_fNextSecureShoutCheck = 0;
 	m_flStopUsingTime = 0.0f;
 
@@ -181,20 +202,47 @@ void CASW_Computer_Area::Precache()
 
 void CASW_Computer_Area::FindTurretsAndCams()
 {
-	CBaseEntity* pTarget;
-	// find securit cam and turrent entities
-	if (m_SecurityCam1Name != NULL_STRING)
+#define FIND_CAMERA( name, type, handle ) \
+	if ( name != NULL_STRING ) \
+	{ \
+		CBaseEntity *pTarget =  gEntList.FindEntityByName( NULL, name ); \
+		type *pTypedTarget = dynamic_cast<type *>( pTarget ); \
+		if ( pTypedTarget ) \
+		{ \
+			handle = pTypedTarget; \
+		} \
+		else if ( pTarget ) \
+		{ \
+			Warning( "%s: %s is not of expected type %s\n", GetDebugName(), (#handle) + 3, #type ); \
+		} \
+	}
+
+	// find security cam and turret entities
+	FIND_CAMERA( m_SecurityCam1Name, CASW_PointCamera, m_hSecurityCam1 );
+	FIND_CAMERA( m_SecurityCam2Name, CASW_PointCamera, m_hSecurityCam2 );
+	FIND_CAMERA( m_SecurityCam3Name, CASW_PointCamera, m_hSecurityCam3 );
+	FIND_CAMERA( m_Turret1Name, CASW_Remote_Turret, m_hTurret1 );
+	FIND_CAMERA( m_Turret2Name, CASW_Remote_Turret, m_hTurret2 );
+	FIND_CAMERA( m_Turret3Name, CASW_Remote_Turret, m_hTurret3 );
+
+#undef FIND_CAMERA
+
+	// notify security cameras that they are security cameras
+	if ( m_hSecurityCam1 )
 	{
-		pTarget = gEntList.FindEntityByName( NULL, m_SecurityCam1Name );
-		if( pTarget )
-			m_hSecurityCam1 = pTarget;
-	}	
-	if (m_Turret1Name != NULL_STRING)
+		m_hSecurityCam1->m_bSecurityCam = true;
+		m_hSecurityCam1->DispatchUpdateTransmitState();
+	}
+	if ( m_hSecurityCam2 )
 	{
-		pTarget = gEntList.FindEntityByName( NULL, m_Turret1Name );
-		if( pTarget )
-			m_hTurret1 = pTarget;
-	}	
+		m_hSecurityCam2->m_bSecurityCam = true;
+		m_hSecurityCam2->DispatchUpdateTransmitState();
+	}
+	if ( m_hSecurityCam3 )
+	{
+		m_hSecurityCam3->m_bSecurityCam = true;
+		m_hSecurityCam3->DispatchUpdateTransmitState();
+	}
 }
 
 void CASW_Computer_Area::Override( CASW_Marine *pMarine )
@@ -226,13 +274,12 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 			Override( pMarine );
 			return;
 		}
-		// check for stopping use of a computer
-		//if (m_bIsInUse && UseIconType == USE_ICON_LOG_OFF && pMarine->m_hUsingEntity.Get() == this)
 		
 		pMarine->StopUsing();
+
 		return;
 	}
-			
+
 	// player has used this item
 	if ( !m_bIsLocked || pMarine->GetMarineProfile()->CanHack() )
 	{
@@ -263,18 +310,11 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 						m_hComputerHack = (CASW_Hack_Computer*) CreateEntityByName( "asw_hack_computer" );
 					if (GetCurrentHack())
 					{
-						//for (int i=0;i<10;i++)
-						//{
-							GetCurrentHack()->InitHack( pMarine->GetCommander(), pMarine, this );
-						//}
+						GetCurrentHack()->InitHack( pMarine->GetCommander(), pMarine, this );
 					}
 				}
 			}
 		}
-		else
-		{
-			Msg("Panel already in use");
-		}		
 	}
 	else
 	{
@@ -298,24 +338,8 @@ bool CASW_Computer_Area::ShouldShowComputer()
 	{
 		return true;
 	}
-	if ( m_hSecurityCam1.Get() )
-	{
-		return true;
-	}
-	if ( m_hTurret1.Get() )
-	{
-		return true;
-	}
-	if ( m_MailFile.Get()[0] != NULL )
-	{
-		return true;
-	}
-	if ( m_PDAName.Get()[0] != NULL )
-	{
-		return true;
-	}
 
-	return false;
+	return GetNumMenuOptions() > 0;
 }
 
 void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
@@ -474,10 +498,11 @@ void CASW_Computer_Area::MarineStoppedUsing(CASW_Marine* pMarine)
 		m_pComputerInUseSound = NULL;
 	}
 	StopDownloadingSound();
-	CPointCamera* pCam = dynamic_cast<CPointCamera*>(m_hSecurityCam1.Get());
-	if (pCam)
+	CASW_PointCamera *pCam = GetActiveCam();
+	if ( pCam )
 	{
-		pCam->SetActive(false);
+		pCam->SetActive( false );
+		m_iActiveCam = 0;
 	}
 }
 
@@ -546,7 +571,17 @@ bool CASW_Computer_Area::KeyValue( const char *szKeyName, const char *szValue )
 	{
 		Q_strncpy( m_SecurityCamLabel1.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
+	if ( FStrEq( szKeyName, "SecurityCam2Label" ) )
+	{
+		Q_strncpy( m_SecurityCamLabel2.GetForModify(), szValue, 255 );
+		return true;
+	}
+	if ( FStrEq( szKeyName, "SecurityCam3Label" ) )
+	{
+		Q_strncpy( m_SecurityCamLabel3.GetForModify(), szValue, 255 );
+		return true;
+	}
 	if ( FStrEq( szKeyName, "DownloadObjectiveName" ) )
 	{
 		Q_strncpy( m_DownloadObjectiveName.GetForModify(), szValue, 255 );
@@ -851,9 +886,13 @@ int CASW_Computer_Area::GetNumMenuOptions()
 	if (m_WeatherSeed.Get()[0] != 0) n++;
 	if (m_PlantFile.Get()[0] != 0) n++;
 
-	if (m_hSecurityCam1.Get() != NULL) n++;	
-	if (m_hTurret1.Get() != NULL) n++;	
-	
+	if (m_hSecurityCam1.Get() != NULL) n++;
+	if (m_hSecurityCam2.Get() != NULL) n++;
+	if (m_hSecurityCam3.Get() != NULL) n++;
+	if (m_hTurret1.Get() != NULL) n++;
+	if (m_hTurret2.Get() != NULL) n++;
+	if (m_hTurret3.Get() != NULL) n++;
+
 	if (n > 6)	// clamp it to 6 options, since that's all our UI supports
 		n = 6;
 
@@ -863,4 +902,19 @@ int CASW_Computer_Area::GetNumMenuOptions()
 bool CASW_Computer_Area::HasDownloadObjective()
 {
 	return ( m_DownloadObjectiveName.Get()[0] != 0 );
+}
+
+CASW_PointCamera *CASW_Computer_Area::GetActiveCam()
+{
+	switch (m_iActiveCam)
+	{
+	case 1:
+		return m_hSecurityCam1;
+	case 2:
+		return m_hSecurityCam2;
+	case 3:
+		return m_hSecurityCam3;
+	default:
+		return NULL;
+	}
 }

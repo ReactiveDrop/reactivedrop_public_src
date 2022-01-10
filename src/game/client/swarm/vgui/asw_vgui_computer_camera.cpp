@@ -16,7 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CASW_VGUI_Computer_Camera::CASW_VGUI_Computer_Camera( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackComputer ) 
+CASW_VGUI_Computer_Camera::CASW_VGUI_Computer_Camera( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackComputer, const char *pszSecurityCamLabel ) 
 :	vgui::Panel( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
 	m_pHackComputer( pHackComputer )
@@ -47,6 +47,7 @@ CASW_VGUI_Computer_Camera::CASW_VGUI_Computer_Camera( vgui::Panel *pParent, cons
 	m_pCameraImage = new vgui::ImagePanel(this, "CameraImage");
 	m_pCameraLabel = new vgui::Label(this, "CameraLabel", "");
 	m_bSetAlpha = false;
+	m_pszSecurityCamLabel = pszSecurityCamLabel;
 }
 
 CASW_VGUI_Computer_Camera::~CASW_VGUI_Computer_Camera()
@@ -137,13 +138,8 @@ void CASW_VGUI_Computer_Camera::ApplySchemeSettings(vgui::IScheme *pScheme)
 	
 	if (m_pHackComputer)
 	{
-		
-		C_ASW_Computer_Area *pArea = m_pHackComputer->GetComputerArea();
-		if (pArea)
-		{	
-			m_pCameraLabel->SetText(pArea->m_SecurityCamLabel1);
-			m_pTitleLabel->SetText(pArea->m_SecurityCamLabel1);
-		}
+		m_pCameraLabel->SetText(m_pszSecurityCamLabel);
+		m_pTitleLabel->SetText(m_pszSecurityCamLabel);
 	}
 
 	// fade them in

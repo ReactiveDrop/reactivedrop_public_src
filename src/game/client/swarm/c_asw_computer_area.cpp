@@ -16,22 +16,16 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Computer_Area, DT_ASW_Computer_Area, CASW_Comput
 	RecvPropInt			(RECVINFO(m_iHackLevel)),
 	RecvPropFloat		(RECVINFO(m_fDownloadTime)),
 	RecvPropBool		(RECVINFO(m_bIsLocked)),
-	RecvPropBool(RECVINFO(m_bIsInUse)),
-	RecvPropBool(RECVINFO(m_bWaitingForInput)),
-	RecvPropFloat(RECVINFO(m_fHackProgress)),	
-
-	RecvPropInt		(RECVINFO(m_bIsLocked)),
-	RecvPropFloat		(RECVINFO(m_fHackProgress)),
+	RecvPropBool		(RECVINFO(m_bWaitingForInput)),
+	RecvPropBool		(RECVINFO(m_bIsInUse)),
+	RecvPropFloat		(RECVINFO(m_fDownloadProgress)),
 
 	RecvPropEHandle( RECVINFO( m_hSecurityCam1 ) ),
+	RecvPropEHandle( RECVINFO( m_hSecurityCam2 ) ),
+	RecvPropEHandle( RECVINFO( m_hSecurityCam3 ) ),
 	RecvPropEHandle( RECVINFO( m_hTurret1 ) ),
-
-	RecvPropString( RECVINFO( m_MailFile ) ),
-	RecvPropString( RECVINFO( m_NewsFile ) ),
-	RecvPropString( RECVINFO( m_StocksSeed ) ),
-	RecvPropString( RECVINFO( m_WeatherSeed ) ),
-	RecvPropString( RECVINFO( m_PlantFile ) ),
-	RecvPropString( RECVINFO( m_PDAName ) ),
+	RecvPropEHandle( RECVINFO( m_hTurret2 ) ),
+	RecvPropEHandle( RECVINFO( m_hTurret3 ) ),
 
 	RecvPropString( RECVINFO( m_SecurityCamLabel1 ) ),
 	RecvPropString( RECVINFO( m_SecurityCamLabel2 ) ),
@@ -40,11 +34,22 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Computer_Area, DT_ASW_Computer_Area, CASW_Comput
 	RecvPropString( RECVINFO( m_TurretLabel2 ) ),
 	RecvPropString( RECVINFO( m_TurretLabel3 ) ),
 
+	RecvPropString( RECVINFO( m_MailFile ) ),
+	RecvPropString( RECVINFO( m_NewsFile ) ),
+	RecvPropString( RECVINFO( m_StocksSeed ) ),
+	RecvPropString( RECVINFO( m_WeatherSeed ) ),
+	RecvPropString( RECVINFO( m_PlantFile ) ),
+	RecvPropString( RECVINFO( m_PDAName ) ),
+
 	RecvPropString( RECVINFO( m_DownloadObjectiveName ) ),
 	RecvPropBool( RECVINFO(m_bDownloadedDocs) ),
 
-	RecvPropBool		(RECVINFO(m_bSecurityCam1Locked)),	
-	RecvPropBool		(RECVINFO(m_bTurret1Locked)),	
+	RecvPropBool		(RECVINFO(m_bSecurityCam1Locked)),
+	RecvPropBool		(RECVINFO(m_bSecurityCam2Locked)),
+	RecvPropBool		(RECVINFO(m_bSecurityCam3Locked)),
+	RecvPropBool		(RECVINFO(m_bTurret1Locked)),
+	RecvPropBool		(RECVINFO(m_bTurret2Locked)),
+	RecvPropBool		(RECVINFO(m_bTurret3Locked)),
 	RecvPropBool		(RECVINFO(m_bMailFileLocked)),
 	RecvPropBool		(RECVINFO(m_bNewsFileLocked)),
 	RecvPropBool		(RECVINFO(m_bStocksFileLocked)),
@@ -158,15 +163,19 @@ int C_ASW_Computer_Area::GetNumMenuOptions()
 {
 	int n=0;
 
-	if (m_DownloadObjectiveName.Get()[0] != 0 && GetHackProgress() < 1.0f) n++;
+	if (m_DownloadObjectiveName.Get()[0] != 0 && GetDownloadProgress() < 1.0f) n++;
 	if (m_MailFile.Get()[0] != 0) n++;
 	if (m_NewsFile.Get()[0] != 0) n++;
 	if (m_StocksSeed.Get()[0] != 0) n++;
 	if (m_WeatherSeed.Get()[0] != 0) n++;
 	if (m_PlantFile.Get()[0] != 0) n++;
 
-	if (m_hSecurityCam1.Get() != NULL) n++;	
+	if (m_hSecurityCam1.Get() != NULL) n++;
+	if (m_hSecurityCam2.Get() != NULL) n++;
+	if (m_hSecurityCam3.Get() != NULL) n++;
 	if (m_hTurret1.Get() != NULL) n++;
+	if (m_hTurret2.Get() != NULL) n++;
+	if (m_hTurret3.Get() != NULL) n++;
 	
 	if (n > 6)	// clamp it to 6 options, since that's all our UI supports
 		n = 6;
@@ -272,4 +281,19 @@ void C_ASW_Computer_Area::PlayPositiveSound(C_ASW_Player *pHackingPlayer)
 void C_ASW_Computer_Area::PlayNegativeSound(C_ASW_Player *pHackingPlayer)
 {
 	// none atm
+}
+
+C_ASW_PointCamera *C_ASW_Computer_Area::GetActiveCam()
+{
+	switch (m_iActiveCam)
+	{
+	case 1:
+		return m_hSecurityCam1;
+	case 2:
+		return m_hSecurityCam2;
+	case 3:
+		return m_hSecurityCam3;
+	default:
+		return NULL;
+	}
 }

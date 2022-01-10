@@ -7,6 +7,8 @@
 class CASW_Player;
 class CASW_Hack_Computer;
 class CASW_Marine;
+class CASW_PointCamera;
+class CASW_Remote_Turret;
 
 class CASW_Computer_Area : public CASW_Use_Area
 {
@@ -39,16 +41,18 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	CNetworkVar( int,  m_iHackLevel );	
+	CNetworkVar( int,  m_iHackLevel );
 	CNetworkVar( float, m_fDownloadTime );
-	CNetworkVar( bool,  m_bIsLocked );	
+	CNetworkVar( bool,  m_bIsLocked );
 	CNetworkVar( bool, m_bWaitingForInput );
 	EHANDLE m_hComputerHack;
 
 	string_t		m_SecurityCam1Name;
 	string_t		m_SecurityCam2Name;
 	string_t		m_SecurityCam3Name;
-	string_t		m_Turret1Name;	
+	string_t		m_Turret1Name;
+	string_t		m_Turret2Name;
+	string_t		m_Turret3Name;
 
 	CNetworkString( m_MailFile, 255 );
 	CNetworkString( m_NewsFile, 255 );
@@ -70,21 +74,27 @@ public:
 	CNetworkVar( bool, m_bSecurityCam1Locked );
 	CNetworkVar( bool, m_bSecurityCam2Locked );
 	CNetworkVar( bool, m_bSecurityCam3Locked );
-	CNetworkVar( bool, m_bTurret1Locked );	
+	CNetworkVar( bool, m_bTurret1Locked );
+	CNetworkVar( bool, m_bTurret2Locked );
+	CNetworkVar( bool, m_bTurret3Locked );
 	CNetworkVar( bool, m_bMailFileLocked );
 	CNetworkVar( bool, m_bNewsFileLocked );
 	CNetworkVar( bool, m_bStocksFileLocked );
 	CNetworkVar( bool, m_bWeatherFileLocked );
 	CNetworkVar( bool, m_bPlantFileLocked );
-	
-	CNetworkHandle( CBaseEntity, m_hSecurityCam1 );	
-	CNetworkHandle( CBaseEntity, m_hTurret1 );	
+
+	CNetworkHandle( CASW_PointCamera, m_hSecurityCam1 );
+	CNetworkHandle( CASW_PointCamera, m_hSecurityCam2 );
+	CNetworkHandle( CASW_PointCamera, m_hSecurityCam3 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret1 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret2 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret3 );
 
 	CNetworkVar( int, m_iActiveCam );
 
 	// outputs
 	COutputEvent m_OnFastHackFailed;
-	COutputEvent m_OnComputerHackStarted;	
+	COutputEvent m_OnComputerHackStarted;
 	COutputEvent m_OnComputerHackHalfway;
 	COutputEvent m_OnComputerHackCompleted;
 	COutputEvent m_OnComputerActivated;
@@ -133,6 +143,7 @@ public:
 
 	virtual void UpdateWaitingForInput();
 	virtual void UpdatePanelSkin();
+	CASW_PointCamera *GetActiveCam();
 
 private:
 	bool ShouldShowComputer();

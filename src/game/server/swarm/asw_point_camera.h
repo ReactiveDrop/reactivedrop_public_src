@@ -26,5 +26,7 @@ public:
 	CASW_PointCamera();
 
 	CNetworkVar( bool, m_bSecurityCam );
+
+	virtual int UpdateTransmitState();
 };
 #endif // ASW_POINT_CAMERA_H

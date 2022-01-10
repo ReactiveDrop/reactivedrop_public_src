@@ -2,6 +2,8 @@
 #define _DEFINED_C_ASW_COMPUTER_AREA_H
 
 #include "c_asw_use_area.h"
+#include "c_asw_point_camera.h"
+#include "asw_remote_turret_shared.h"
 
 class C_ASW_Door;
 class C_ASW_Player;
@@ -58,15 +60,23 @@ public:
 	CNetworkVar( bool, m_bDownloadedDocs );
 
 	CNetworkVar( bool, m_bSecurityCam1Locked );
+	CNetworkVar( bool, m_bSecurityCam2Locked );
+	CNetworkVar( bool, m_bSecurityCam3Locked );
 	CNetworkVar( bool, m_bTurret1Locked );
+	CNetworkVar( bool, m_bTurret2Locked );
+	CNetworkVar( bool, m_bTurret3Locked );
 	CNetworkVar( bool, m_bMailFileLocked );
 	CNetworkVar( bool, m_bNewsFileLocked );
 	CNetworkVar( bool, m_bStocksFileLocked );
 	CNetworkVar( bool, m_bWeatherFileLocked );
 	CNetworkVar( bool, m_bPlantFileLocked );
-	
-	CNetworkHandle( CBaseEntity, m_hSecurityCam1 );
-	CNetworkHandle( CBaseEntity, m_hTurret1 );
+
+	CNetworkHandle( C_ASW_PointCamera, m_hSecurityCam1 );
+	CNetworkHandle( C_ASW_PointCamera, m_hSecurityCam2 );
+	CNetworkHandle( C_ASW_PointCamera, m_hSecurityCam3 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret1 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret2 );
+	CNetworkHandle( CASW_Remote_Turret, m_hTurret3 );
 
 	// traditional Swarm hacking
 	float GetDownloadProgress() { return m_fDownloadProgress; }
@@ -82,6 +92,7 @@ public:
 	void PlayPositiveSound(C_ASW_Player *pPlayer);
 	void PlayNegativeSound(C_ASW_Player *pPlayer);
 	float m_fLastPositiveSoundTime;
+	C_ASW_PointCamera *GetActiveCam();
 
 protected:
 	bool m_bIsLocked;

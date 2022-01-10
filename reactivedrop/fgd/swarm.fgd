@@ -5745,27 +5745,31 @@
 @SolidClass base(trigger_asw_use_area) = trigger_asw_computer_area :
 	"A trigger volume in which marines can use a computer."
 [
+	panelpropname(target_destination) : "Computer prop name" : "" : "Name of the prop_dynamic used for this computer panel's representation in the world.  Skin # of this prop_dynamic will be set to reflect the locked/unlocked status of this computer."
 	Locked(choices) : "Locked" : "1" : "Locked computer terminals will require a Technical Engineer to pass the hacking minigame before allowing access to the main menu." =
 	[
 		0 : "Unlocked"
 		1 : "Locked"		
 	]
-	panelpropname(target_destination) : "Computer prop name" : "" : "Name of the prop_dynamic used for this computer panel's representation in the world.  Skin # of this prop_dynamic will be set to reflect the locked/unlocked status of this computer."
+	HackDifficulty(integer) : "Num Tumblers" : 5 : "How many columns are in the hack puzzle for this computer (from 3 to 8)."	
+	EntriesPerTumbler(integer) : "Entries per tumbler" : 5 : "How many numbers are in each column of the hack puzzle (from 5 to 9)."	
+	TumblerMoveInterval(float) : "Move interval" : "0.5" : "How long each column pauses for before shifting to a new number (from 0.3 to 2.0 seconds)."
 	SecurityCam1Name(target_destination) : "SecurityCam1 Name" : "" : "Name of the 1st security cam available from this computer."
-	SecurityCam1Label(string) : "SecurityCam1 Label" : "" : "Text label shown over this camera view ingame."	
+	SecurityCam1Label(string) : "SecurityCam1 Label" : "" : "Text label shown over this camera view ingame."
+	SecurityCam2Name(target_destination) : "SecurityCam2 Name" : "" : "Name of the 2nd security cam available from this computer."
+	SecurityCam2Label(string) : "SecurityCam2 Label" : "" : "Text label shown over this camera view ingame."
+	SecurityCam3Name(target_destination) : "SecurityCam3 Name" : "" : "Name of the 3rd security cam available from this computer."
+	SecurityCam3Label(string) : "SecurityCam3 Label" : "" : "Text label shown over this camera view ingame."
 	Turret1Name(target_destination) : "Turret1 Name" : "" : "Name of the 1st turret available from this computer."
-	//Turret1Label(string) : "Turret1 Label" : "" : "Text label shown over this turret view ingame."
+	Turret2Name(target_destination) : "Turret2 Name" : "" : "Name of the 2nd turret available from this computer."
+	Turret3Name(target_destination) : "Turret3 Name" : "" : "Name of the 3rd turret available from this computer."
+	PDAName(string) : "PDA Name" : "" : "If this computer area represents a PDA, then put the name of the PDA owner here."
 	MailFile(string) : "Mail File" : "" : "Name of the text resource file containing email to show at this computer."
 	NewsFile(string) : "News File" : "" : "Name of the text resource file containing news to show at this computer."
 	StocksSeed(string) : "Stocks Seed" : "" : "Number used to seed the stocks data shown at this computer.  Computers with the same Stock Seed will show the same stock values."
 	WeatherSeed(string) : "Weather Seed" : "" : "Number used to seed the weather data shown at this computer.  Computers with the same Weather Seed will show the same weather values."
 	PlantFile(string) : "Plant Status" : "" : "Put in any text here to make the computer show the reactor status (special option for use only in Rydberg).  Leave blank to not have this option in the computer."
-	DownloadObjectiveName(string) : "Download Objective Name" : "" : "Name of the objective to trigger as complete when a marine downloads the documents from this computer."		
-	HackDifficulty(integer) : "Num Tumblers" : 5 : "How many columns are in the hack puzzle for this computer (from 3 to 8)."	
-	EntriesPerTumbler(integer) : "Entries per tumbler" : 5 : "How many numbers are in each column of the hack puzzle (from 5 to 9)."	
-	TumblerMoveInterval(float) : "Move interval" : "0.5" : "How long each column pauses for before shifting to a new number (from 0.3 to 2.0 seconds)."
-	PDAName(string) : "PDA Name" : "" : "If this computer area represents a PDA, then put the name of the PDA owner here."
-	
+	DownloadObjectiveName(target_destination) : "Download Objective Name" : "" : "Name of the objective to trigger as complete when a marine downloads the documents from this computer."
 	DownloadTime(float) : "Download Time" : "10.0" : "How many seconds it takes to download the critical files from this computer.  NOTE: This number may be adjusted ingame by the marine's hack skill."
 
 	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."

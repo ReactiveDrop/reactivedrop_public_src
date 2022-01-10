@@ -791,16 +791,13 @@ CASW_Marine* UTIL_ASW_MarineCanSee(CASW_Marine_Resource* pMarineResource, const 
 		CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pMarine->m_hUsingEntity.Get());
 		if (pComputer)
 		{
-			if (pComputer->m_iActiveCam == 1 && pComputer->m_hSecurityCam1.Get())
+			CPointCamera *pCam = pComputer->GetActiveCam();
+			if (pCam)
 			{
-				CPointCamera* pCam = dynamic_cast<CPointCamera*>(pComputer->m_hSecurityCam1.Get());
-				if (pCam)
-				{
-					Vector vecCamFacing;
-					AngleVectors(pCam->GetAbsAngles(), &vecCamFacing);
-					bNearby = (vecCamFacing.Dot(pos - pCam->GetAbsOrigin()) > 0) &&		// check facing
-						(pCam->GetAbsOrigin().DistTo(pos) <= 1024);	// assume fog distance of 1024 when in first person
-				}
+				Vector vecCamFacing;
+				AngleVectors(pCam->GetAbsAngles(), &vecCamFacing);
+				bNearby = (vecCamFacing.Dot(pos - pCam->GetAbsOrigin()) > 0) &&		// check facing
+					(pCam->GetAbsOrigin().DistTo(pos) <= 1024);	// assume fog distance of 1024 when in first person
 			}
 		}
 	}

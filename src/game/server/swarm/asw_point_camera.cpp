@@ -27,3 +27,16 @@ END_DATADESC()
 IMPLEMENT_SERVERCLASS_ST( CASW_PointCamera, DT_ASW_PointCamera )
 	SendPropBool( SENDINFO( m_bSecurityCam ) ),	
 END_SEND_TABLE()
+
+
+int CASW_PointCamera::UpdateTransmitState()
+{
+	if ( m_bSecurityCam )
+	{
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
+	else
+	{
+		return BaseClass::UpdateTransmitState();
+	}
+}
