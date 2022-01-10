@@ -80,7 +80,7 @@ MapLine::MapLine()
 	bSetBlipCentre = false;
 	blipcentre.Init(0,0);
 	linkblipcentre.Init(0,0);
-	bLink = false;	
+	bLink = false;
 }
 
 class CASWHudMinimap;
@@ -125,13 +125,13 @@ CASWHudMinimapFramePanel::CASWHudMinimapFramePanel(Panel *parent, const char *pa
 {
 }
 
-void MsgFunc_ASWMapLine(bf_read &msg) 
+void MsgFunc_ASWMapLine(bf_read &msg)
 {
 	if ( !rd_hud_minimap_drawing.GetBool() )
 		return;
 
 	int linetype = msg.ReadByte();
-	int player_index = msg.ReadByte();	
+	int player_index = msg.ReadByte();
 	int world_x	= msg.ReadLong();
 	int world_y	= msg.ReadLong();
 
@@ -257,7 +257,7 @@ void CASWMap::PaintMarineBlips()
 }
 
 void CASWMap::PaintExtraBlips()
-{			
+{
 	for ( int i= 0; i < m_MapBlips.Count(); i++ )
 	{
 		PaintWorldBlip( m_MapBlips[ i ].vWorldPos, sinf( gpGlobals->curtime * 8.0f ) * 0.25 + 0.25f, m_MapBlips[ i ].rgbaColor, m_MapBlips[ i ].nTextureType );
@@ -277,8 +277,8 @@ void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color 
 
 	Vector2D vMapCornerInPanel = GetMapCornerInPanel();
 
-	// don't draw out of bounds	
-	if ( blip_centre.x < vMapCornerInPanel.x || blip_centre.x > vMapCornerInPanel.x + GetMapSize() || 
+	// don't draw out of bounds
+	if ( blip_centre.x < vMapCornerInPanel.x || blip_centre.x > vMapCornerInPanel.x + GetMapSize() ||
 		 blip_centre.y < vMapCornerInPanel.y || blip_centre.y > vMapCornerInPanel.y + GetMapSize() )
 		return;
 
@@ -311,18 +311,18 @@ void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color 
 	float Dest2X = Dest1X + iBlipSize;
 	float Dest2Y = Dest1Y + iBlipSize;
 
-	Vertex_t points[4] = 
-	{ 
-		Vertex_t( Vector2D(Dest1X, Dest1Y), Vector2D(0,0) ), 
-		Vertex_t( Vector2D(Dest2X, Dest1Y), Vector2D(1,0) ), 
-		Vertex_t( Vector2D(Dest2X, Dest2Y), Vector2D(1,1) ), 
-		Vertex_t( Vector2D(Dest1X, Dest2Y), Vector2D(0,1) ) 
-	}; 
+	Vertex_t points[4] =
+	{
+		Vertex_t( Vector2D(Dest1X, Dest1Y), Vector2D(0,0) ),
+		Vertex_t( Vector2D(Dest2X, Dest1Y), Vector2D(1,0) ),
+		Vertex_t( Vector2D(Dest2X, Dest2Y), Vector2D(1,1) ),
+		Vertex_t( Vector2D(Dest1X, Dest2Y), Vector2D(0,1) )
+	};
 	surface()->DrawTexturedPolygon( 4, points );
 }
 
 void CASWMap::PaintWorldFacingArc(const Vector &worldpos, float fFacingYaw, Color FacingColor)
-{	
+{
 	if ( GetFacingArcTexture() == -1)
 		return;
 
@@ -332,7 +332,7 @@ void CASWMap::PaintWorldFacingArc(const Vector &worldpos, float fFacingYaw, Colo
 	Vector2D vMapCornerInPanel = GetMapCornerInPanel();
 
 	// don't draw out of bounds
-	if ( blip_centre.x < vMapCornerInPanel.x || blip_centre.y < vMapCornerInPanel.y || 
+	if ( blip_centre.x < vMapCornerInPanel.x || blip_centre.y < vMapCornerInPanel.y ||
 		 blip_centre.x > vMapCornerInPanel.x + GetMapSize() || blip_centre.y > vMapCornerInPanel.y + GetMapSize() )
 		return;
 
@@ -357,13 +357,13 @@ void CASWMap::PaintWorldFacingArc(const Vector &worldpos, float fFacingYaw, Colo
 	surface()->DrawSetColor(FacingColor);
 	surface()->DrawSetTexture( GetFacingArcTexture() );
 	//surface()->DrawTexturedRect(Dest1X,Dest1Y,Dest2X,Dest2Y);
-	Vertex_t points[4] = 
-	{ 
-		Vertex_t( Vector2D(blip_centre.x + vecCornerTL_rotated.x, blip_centre.y + vecCornerTL_rotated.y), Vector2D(0,0) ), 
-		Vertex_t( Vector2D(blip_centre.x + vecCornerTR_rotated.x, blip_centre.y + vecCornerTR_rotated.y), Vector2D(1,0) ), 
-		Vertex_t( Vector2D(blip_centre.x + vecCornerBR_rotated.x, blip_centre.y + vecCornerBR_rotated.y), Vector2D(1,1) ), 
-		Vertex_t( Vector2D(blip_centre.x + vecCornerBL_rotated.x, blip_centre.y + vecCornerBL_rotated.y), Vector2D(0,1) ) 
-	}; 
+	Vertex_t points[4] =
+	{
+		Vertex_t( Vector2D(blip_centre.x + vecCornerTL_rotated.x, blip_centre.y + vecCornerTL_rotated.y), Vector2D(0,0) ),
+		Vertex_t( Vector2D(blip_centre.x + vecCornerTR_rotated.x, blip_centre.y + vecCornerTR_rotated.y), Vector2D(1,0) ),
+		Vertex_t( Vector2D(blip_centre.x + vecCornerBR_rotated.x, blip_centre.y + vecCornerBR_rotated.y), Vector2D(1,1) ),
+		Vertex_t( Vector2D(blip_centre.x + vecCornerBL_rotated.x, blip_centre.y + vecCornerBL_rotated.y), Vector2D(0,1) )
+	};
 	surface()->DrawTexturedPolygon( 4, points );
 }
 
@@ -396,7 +396,7 @@ CASWHudMinimap::CASWHudMinimap( const char *pElementName ) : CASW_HudElement( pE
 
 	m_pLinePanel = new CASWHudMinimapLinePanel(this, "CASWHudMinimapLinePanel", this);
 	//m_pFramePanel = new CASWHudMinimapFramePanel(this, "CASWHudMinimapFramePanel");
-	
+
 	m_nWhiteTexture = vgui::surface()->CreateNewTextureID();
 	vgui::surface()->DrawSetTextureFile( m_nWhiteTexture, "vgui/white" , true, false);
 
@@ -437,7 +437,7 @@ CASWHudMinimap::~CASWHudMinimap()
 void CASWHudMinimap::PerformLayout()
 {
 	BaseClass::PerformLayout();
-	
+
 	int wide, tall, x, y;
 	GetBounds(x, y, wide, tall);
 	int ox, oy;
@@ -447,7 +447,7 @@ void CASWHudMinimap::PerformLayout()
 	m_iMapSize = wide * 0.7f;
 	m_MapCornerInPanel.x = int(wide - m_iMapSize) + ox;
 	m_MapCornerInPanel.y = int(tall - m_iMapSize) + oy;
-	int black_border = m_iMapSize * 0.0455f;		
+	int black_border = m_iMapSize * 0.0455f;
 	if (m_pBackdrop)
 	{
 		m_pBackdrop->SetBounds(x + m_MapCornerInPanel.x - black_border, y + m_MapCornerInPanel.y - black_border,
@@ -462,12 +462,16 @@ void CASWHudMinimap::PerformLayout()
 
 void CASWHudMinimap::Init()
 {
-	gameeventmanager->AddListener(this, "game_newmap", false );	
+	gameeventmanager->AddListener(this, "game_newmap", false );
 	gameeventmanager->AddListener(this, "server_spawn", false);
 
 	m_pMinimap = this;
 
-	m_nMapTextureID = -1;
+	for ( int i = 0; i < ASW_MAX_MAP_VERTICAL_SECTIONS; i++ )
+	{
+		m_nMapTextureID[i] = -1;
+		m_flMapMinZ[i] = HUGE_VAL;
+	}
 	m_bHasOverview = false;
 	m_MapKeyValues = NULL;
 	m_bDrawingMapLines = false;
@@ -506,12 +510,12 @@ void CASWHudMinimap::OnThink()
 	if (m_pScanLinePanel)
 	{
 		m_pScanLinePanel->SetAlpha(asw_scanner_scanline_alpha.GetInt());
-		m_pScanLinePanel->m_bDouble = asw_scanner_scanline_double.GetBool();			
+		m_pScanLinePanel->m_bDouble = asw_scanner_scanline_double.GetBool();
 	}
 	if (m_pInterlacePanel)
 	{
 		m_pInterlacePanel->SetAlpha(asw_scanner_interlace_alpha.GetInt());
-	}	
+	}
 
 	// remove any map lines that have faded out
 	for (int i=0;i<m_MapLines.Count();i++)
@@ -529,7 +533,7 @@ void CASWHudMinimap::OnThink()
 			{
 				int ox, oy;
 				GetScaledOffset(ox, oy);
-				SendMapLine(m_iMouseX + ox,m_iMouseY + oy,false);				
+				SendMapLine(m_iMouseX + ox,m_iMouseY + oy,false);
 			}
 			else
 			{
@@ -538,7 +542,7 @@ void CASWHudMinimap::OnThink()
 		}
 		C_ASW_Marine *marine = local->GetViewMarine();
 		if (marine)
-		{			
+		{
 			if (m_pNoisePanel)
 			{
 				float fScannerNoise = g_pScannerNoise ? g_pScannerNoise->GetScannerNoiseAt(marine->GetAbsOrigin()) : 0;
@@ -548,7 +552,7 @@ void CASWHudMinimap::OnThink()
 		else
 		{
 			m_pNoisePanel->SetAlpha(0);
-		}		
+		}
 	}
 }
 
@@ -559,13 +563,13 @@ void CASWHudMinimap::ApplySchemeSettings(IScheme *pScheme)
 
 	m_pInterlacePanel->SetImage("swarm/Computer/ComputerCameraBlack");
 	m_pInterlacePanel->SetShouldScaleImage(true);
-	
+
 	m_pNoisePanel->SetImage("swarm/Computer/TVNoise");
 	m_pNoisePanel->SetShouldScaleImage(true);
 }
 
 void CASWHudMinimapFramePanel::Paint()
-{	
+{
 	VPROF_BUDGET( "CASWHudMinimapFramePanel::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
 	if (ASWGameRules())
 	{
@@ -584,7 +588,7 @@ void CASWHudMinimapFramePanel::Paint()
 	m_pMap->GetScaledOffset(ox, oy);
 	SetPos(ox,oy);
 	SetSize(wide, tall);
-	
+
 	//if ( m_pMap->m_nFrameTexture == -1 )
 		//return;
 
@@ -621,18 +625,27 @@ void CASWHudMinimap::PaintMapSection()
 
 	m_pLinePanel->SetBounds(m_MapCornerInPanel.x, m_MapCornerInPanel.y,
 							m_MapCornerInPanel.x + m_iMapSize, m_MapCornerInPanel.y + m_iMapSize);
-		
+
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
 		C_ASW_Marine *marine = local->GetViewMarine();
 		if (marine)
 		{
+			float z = marine->GetAbsOrigin().z;
 			m_MapCentre = WorldToMapTexture(marine->GetAbsOrigin());
 			//Msg("Centering minimap at %f,%f\n", m_MapCentre.x, m_MapCentre.y);
 
-			if ( m_nMapTextureID == -1 )
+			int iMapTextureIndex = 0;
+			while ( iMapTextureIndex + 1 < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMapTextureIndex + 1] <= z )
+			{
+				iMapTextureIndex++;
+			}
+
+			if ( iMapTextureIndex >= ASW_MAX_MAP_VERTICAL_SECTIONS || m_nMapTextureID[iMapTextureIndex] == -1 )
+			{
 				return;
+			}
 
 			// source should be a fixed number of world units around the centre
 			float source_size = asw_map_range.GetFloat() * ASW_SCREENSHOT_SCALE / m_fMapScale;
@@ -665,7 +678,7 @@ void CASWHudMinimap::PaintMapSection()
 				{
 					map_bottom -= ((Source2Y - 1023) / source_size) * (m_iMapSize * 0.5f);
 				}
-					
+
 				// clamp uvs
 				Source1X = MAX(0, Source1X);
 				Source1Y = MAX(0, Source1Y);
@@ -673,7 +686,7 @@ void CASWHudMinimap::PaintMapSection()
 				Source2Y = MIN(1024, Source2Y);
 
 				surface()->DrawSetColor(Color(255,255,255,255));
-				surface()->DrawSetTexture(m_nMapTextureID);
+				surface()->DrawSetTexture(m_nMapTextureID[iMapTextureIndex]);
 
 				// find the offset from the clipped corners to the centre of the panel
 				Vector vecCornerTL(map_left - m_MapCentreInPanel.x, map_top - m_MapCentreInPanel.y, 0.0f);
@@ -696,38 +709,39 @@ void CASWHudMinimap::PaintMapSection()
 				Vector2D bottom_right_rotated = m_MapCentreInPanel + vecCornerBR_rotated.AsVector2D();
 				Vector2D bottom_left_rotated = m_MapCentreInPanel + vecCornerBL_rotated.AsVector2D();
 
-				Vertex_t points[4] = 
-				{ 
+				Vertex_t points[4] =
+				{
 					Vertex_t(top_left_rotated, Vector2D(Source1X / 1024.0f, Source1Y / 1024.0f)),
 					Vertex_t(top_right_rotated, Vector2D(Source2X / 1024.0f, Source1Y / 1024.0f)),
 					Vertex_t(bottom_right_rotated, Vector2D(Source2X / 1024.0f, Source2Y / 1024.0f)),
 					Vertex_t(bottom_left_rotated, Vector2D(Source1X / 1024.0f, Source2Y / 1024.0f))
-				}; 
+				};
 				surface()->DrawTexturedPolygon( 4, points );
 			}
 			else
 			{
+				Assert( iMapTextureIndex == 0 );
 				// no overview, we're just drawing our scanner texture
 				surface()->DrawSetColor(Color(255,255,255,255));
-				surface()->DrawSetTexture(m_nMapTextureID);
-				
-				Vertex_t points[4] = 
-				{ 
-				Vertex_t( Vector2D(map_left, map_top),					Vector2D(0,0) ), 
-				Vertex_t( Vector2D(map_right, map_top),					Vector2D(1,0) ), 
-				Vertex_t( Vector2D(map_right, map_bottom),				Vector2D(1,1) ), 
-				Vertex_t( Vector2D(map_left, map_bottom),				Vector2D(0,1) ) 
-				}; 
+				surface()->DrawSetTexture(m_nMapTextureID[iMapTextureIndex]);
+
+				Vertex_t points[4] =
+				{
+					Vertex_t( Vector2D(map_left, map_top),					Vector2D(0,0) ),
+					Vertex_t( Vector2D(map_right, map_top),					Vector2D(1,0) ),
+					Vertex_t( Vector2D(map_right, map_bottom),				Vector2D(1,1) ),
+					Vertex_t( Vector2D(map_left, map_bottom),				Vector2D(0,1) )
+				};
 				surface()->DrawTexturedPolygon( 4, points );
 			}
-		}		
+		}
 	}
 }
 
 void CASWHudMinimap::Paint()
 {
 	VPROF_BUDGET( "CASWHudMinimap::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
-	
+
 	BaseClass::Paint();
 	PaintMapSection();
 
@@ -877,7 +891,7 @@ void CASWHudMinimap::PaintScannerBlips()
 
 			PaintWorldBlip( vecWorldPos, f,
 							( pScanner->m_BlipType[i] == 1 ) ? blue : ( asw_scanner_classic.GetBool() ? white : red ),
-							MapBlipTexture_t( pScanner->m_BlipType[ i ] ) );		// draw the blip in blue triangle if it's a computer/button panel	
+							MapBlipTexture_t( pScanner->m_BlipType[ i ] ) );		// draw the blip in blue triangle if it's a computer/button panel
 		}
 	}
 }
@@ -913,7 +927,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 		{
 			bool bCheckRing = (pMR->m_fScannerTime <= 1.0f);
 
-			pMR->m_fScannerTime += gpGlobals->frametime * 2.2f;						
+			pMR->m_fScannerTime += gpGlobals->frametime * 2.2f;
 			if (bCheckRing)
 			{
 				float fScannerRangeWorldUnits =	MarineSkills()->GetSkillBasedValueByMarineResource(pMR, ASW_MARINE_SKILL_SCANNER); // asw_scanner_range.GetFloat()
@@ -953,7 +967,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 								if (max_ring_dist <= 0)
 									ep.m_nPitch = 1.0f * 100.0f;
 								else
-								{									
+								{
 									float fPitchScale = (asw_scanner_pitch_base.GetFloat() - asw_scanner_pitch_change.GetFloat() * (sqrt(dist)/max_ring_dist));
 									ep.m_nPitch = fPitchScale * 100.0f;
 								}
@@ -998,13 +1012,13 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 					float ring_center_x = 0;
 					float ring_center_y = 0;
 					TextureToLinePanel(m_pMap, marine_pos, ring_center_x, ring_center_y);
-					Vertex_t points[4] = 
-					{ 
-					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y - scanner_range), Vector2D(0,0) ), 
-					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y - scanner_range), Vector2D(1,0) ), 
-					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y + scanner_range), Vector2D(1,1) ), 
-					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y + scanner_range), Vector2D(0,1) ) 
-					}; 
+					Vertex_t points[4] =
+					{
+					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y - scanner_range), Vector2D(0,0) ),
+					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y - scanner_range), Vector2D(1,0) ),
+					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y + scanner_range), Vector2D(1,1) ),
+					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y + scanner_range), Vector2D(0,1) )
+					};
 					surface()->DrawTexturedPolygon( 4, points );
 				}
 			}
@@ -1032,7 +1046,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 						ep.m_flVolume = asw_scanner_idle_volume.GetFloat();
 						ep.m_nFlags |= SND_CHANGE_VOL;
 						ep.m_SoundLevel = SNDLVL_NORM;
-						// adjust volume by distance to tech marine					
+						// adjust volume by distance to tech marine
 						if (pPlayer->GetViewMarine())
 						{
 							float dist_to_tech = pPlayer->GetViewMarine()->GetAbsOrigin().DistTo(pMR->GetMarineEntity()->GetAbsOrigin());
@@ -1045,7 +1059,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 							if (asw_debug_scanner_sound.GetBool())
 								Msg("emitting scanner idle sound with volume %f\n", ep.m_flVolume);
 							C_BaseEntity::StopSound( -1, ep.m_pSoundName );
-							C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, ep );					
+							C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, ep );
 						}
 					}
 				}
@@ -1068,7 +1082,7 @@ void CASWHudMinimapLinePanel::Paint()
 		return;
 	// paint a black outline over the lines
 	for (int i=0;i<m_pMap->m_MapLines.Count();i++)
-	{		
+	{
 		float x,y;
 		if (!m_pMap->m_MapLines[i].bSetBlipCentre)
 		{
@@ -1094,10 +1108,10 @@ void CASWHudMinimapLinePanel::Paint()
 						bFound = true;
 						break;
 					}
-				}				
+				}
 			}
 			if (bFound)
-			{				
+			{
 				float x2,y2;
 				if (!m_pMap->m_MapLines[i].bSetLinkBlipCentre)
 				{
@@ -1114,7 +1128,7 @@ void CASWHudMinimapLinePanel::Paint()
 				int alpha = 255;
 				if (t < MAP_LINE_SOLID_TIME)
 				{
-					
+
 				}
 				else if (t < MAP_LINE_SOLID_TIME + MAP_LINE_FADE_TIME)
 				{
@@ -1128,7 +1142,7 @@ void CASWHudMinimapLinePanel::Paint()
 				surface()->DrawSetTexture(m_pMap->m_nWhiteTexture);
 				vgui::Vertex_t start, end;
 
-				// draw black outline around the line to give it some softness	
+				// draw black outline around the line to give it some softness
 				surface()->DrawSetColor(Color(0,0,0, alpha));
 
 				start.Init(Vector2D(x - 1.50f,y - 1.50f), Vector2D(0,0));
@@ -1150,9 +1164,9 @@ void CASWHudMinimapLinePanel::Paint()
 		}
 	}
 
-	// paint map line dots	
+	// paint map line dots
 	for (int i=0;i<m_pMap->m_MapLines.Count();i++)
-	{		
+	{
 		//m_pMap->PaintWorldBlip(vecBlipPos, 0.5f, Color(0,255,0,255));
 		float x,y;
 		if (!m_pMap->m_MapLines[i].bSetBlipCentre)
@@ -1179,11 +1193,11 @@ void CASWHudMinimapLinePanel::Paint()
 						bFound = true;
 						break;
 					}
-				}				
+				}
 			}
 			if (bFound)
 			{
-				
+
 				float x2,y2;
 				if (!m_pMap->m_MapLines[i].bSetLinkBlipCentre)
 				{
@@ -1213,7 +1227,7 @@ void CASWHudMinimapLinePanel::Paint()
 				}
 
 				surface()->DrawSetTexture(m_pMap->m_nWhiteTexture);
-				vgui::Vertex_t start, end;				
+				vgui::Vertex_t start, end;
 
 				// draw main line
 				surface()->DrawSetColor(Color(GetColorPerIndex(m_pMap->m_MapLines[i].player_index)));
@@ -1247,7 +1261,7 @@ void CASWHudMinimapLinePanel::Paint()
 	// paint the frame over the top
 	//int wide, tall;
 	//m_pMap->GetSize(wide,tall);
-	
+
 	//if ( m_pMap->m_nFrameTexture == -1 )
 		//return;
 
@@ -1296,15 +1310,15 @@ void CASWHudMinimap::PaintRect( int nX, int nY, int nWidth, int nHeight, Color c
 	rectCorner1 = MapTextureToPanel( rectCorner1 );
 	rectCorner2 = MapTextureToPanel( rectCorner2 );
 
-	// after rotation we need to sort the corners to 
+	// after rotation we need to sort the corners to
 	// ensure first is top-left and second bottom-right
-	// as assumed by the code doing rectangle clipping and drawing 
+	// as assumed by the code doing rectangle clipping and drawing
 	Vector2D tmp1 = rectCorner1;
 	Vector2D tmp2 = rectCorner2;
 	rectCorner1 = rectCorner1.Min(tmp2);
 	rectCorner2 = rectCorner2.Max(tmp1);
 
-	if ( rectCorner1.x > m_MapCornerInPanel.x + m_iMapSize || rectCorner1.y > m_MapCornerInPanel.y + m_iMapSize || 
+	if ( rectCorner1.x > m_MapCornerInPanel.x + m_iMapSize || rectCorner1.y > m_MapCornerInPanel.y + m_iMapSize ||
 		 rectCorner2.x < m_MapCornerInPanel.x || rectCorner2.y < m_MapCornerInPanel.y )
 	{
 		// Out of bounds
@@ -1342,13 +1356,13 @@ void CASWHudMinimap::PaintRect( int nX, int nY, int nWidth, int nHeight, Color c
 		surface()->DrawSetColor( color );
 		surface()->DrawSetTexture(m_nFacingArcTexture);
 		//surface()->DrawTexturedRect(Dest1X,Dest1Y,Dest2X,Dest2Y);
-		Vertex_t points[4] = 
-		{ 
-			Vertex_t( Vector2D(vArrowCenter.x + vecCornerTL_rotated.x, vArrowCenter.y + vecCornerTL_rotated.y), Vector2D(0,0) ), 
-			Vertex_t( Vector2D(vArrowCenter.x + vecCornerTR_rotated.x, vArrowCenter.y + vecCornerTR_rotated.y), Vector2D(1,0) ), 
-			Vertex_t( Vector2D(vArrowCenter.x + vecCornerBR_rotated.x, vArrowCenter.y + vecCornerBR_rotated.y), Vector2D(1,1) ), 
-			Vertex_t( Vector2D(vArrowCenter.x + vecCornerBL_rotated.x, vArrowCenter.y + vecCornerBL_rotated.y), Vector2D(0,1) ) 
-		}; 
+		Vertex_t points[4] =
+		{
+			Vertex_t( Vector2D(vArrowCenter.x + vecCornerTL_rotated.x, vArrowCenter.y + vecCornerTL_rotated.y), Vector2D(0,0) ),
+			Vertex_t( Vector2D(vArrowCenter.x + vecCornerTR_rotated.x, vArrowCenter.y + vecCornerTR_rotated.y), Vector2D(1,0) ),
+			Vertex_t( Vector2D(vArrowCenter.x + vecCornerBR_rotated.x, vArrowCenter.y + vecCornerBR_rotated.y), Vector2D(1,1) ),
+			Vertex_t( Vector2D(vArrowCenter.x + vecCornerBL_rotated.x, vArrowCenter.y + vecCornerBL_rotated.y), Vector2D(0,1) )
+		};
 		surface()->DrawTexturedPolygon( 4, points );
 	}
 	else
@@ -1397,7 +1411,7 @@ float CASWHudMinimap::WorldDistanceToPixelDistance(float fWorldDistance)
 	result /= source_size;
 	// multiply that out by the pixel halfwidth of this panel:
 	result *= (m_iMapSize * 0.5f);
-	
+
 	return result;
 }
 
@@ -1417,9 +1431,24 @@ void CASWHudMinimap::SetMap(const char * levelname)
 
 	m_MapKeyValues = new KeyValues( levelname );
 
+	for ( int i = 0; i < ASW_MAX_MAP_VERTICAL_SECTIONS; i++ )
+	{
+		if ( surface()->IsTextureIDValid( m_nMapTextureID[i] ) )
+		{
+			// free old texture
+			surface()->DestroyTextureID( m_nMapTextureID[i] );
+		}
+
+		m_nMapTextureID[i] = -1;
+		m_flMapMinZ[i] = HUGE_VAL;
+	}
+
 	char tempfile[MAX_PATH];
 	Q_snprintf( tempfile, sizeof( tempfile ), "resource/overviews/%s.txt", levelname );
-	
+
+	m_nMapTextureID[0] = surface()->CreateNewTextureID();
+	m_flMapMinZ[0] = -HUGE_VAL;
+
 	if ( !m_MapKeyValues->LoadFromFile( filesystem, tempfile, "GAME" ) )
 	{
 		// try to load it directly from the maps folder
@@ -1427,8 +1456,8 @@ void CASWHudMinimap::SetMap(const char * levelname)
 		if ( !m_MapKeyValues->LoadFromFile( filesystem, tempfile, "GAME" ) )
 		{
 			//DevMsg( 1, "CASWHudMinimap::SetMap: couldn't load overview file for map %s.\n", levelname );
-			m_nMapTextureID = surface()->CreateNewTextureID();
-			surface()->DrawSetTextureFile( m_nMapTextureID, "vgui/swarm/hud/scanner", true, false);
+			surface()->DrawSetTextureFile( m_nMapTextureID[0], "vgui/swarm/hud/scanner", true, false);
+			m_nMapTextureID;
 			// put in some default numbers so the scanner works
 			m_MapOrigin.x	= 0;
 			m_MapOrigin.y	= 0;
@@ -1437,14 +1466,9 @@ void CASWHudMinimap::SetMap(const char * levelname)
 			m_bHasOverview = false;
 			return;
 		}
-	}	
+	}
 
-	// TODO release old texture ?
-
-	m_nMapTextureID = surface()->CreateNewTextureID();
-
-	//if we have not uploaded yet, lets go ahead and do so	
-	surface()->DrawSetTextureFile( m_nMapTextureID, m_MapKeyValues->GetString("material"), true, false);
+	surface()->DrawSetTextureFile( m_nMapTextureID[0], m_MapKeyValues->GetString("material"), true, false);
 
 	m_MapOrigin.x	= m_MapKeyValues->GetInt("pos_x");
 	m_MapOrigin.y	= m_MapKeyValues->GetInt("pos_y");
@@ -1452,6 +1476,67 @@ void CASWHudMinimap::SetMap(const char * levelname)
 	Q_snprintf(m_szMissionTitle, sizeof(m_szMissionTitle),m_MapKeyValues->GetString("missiontitle"));
 	m_bHasOverview = true;
 
+	KeyValues *pVerticalSections = m_MapKeyValues->FindKey( "verticalsections" );
+	if ( pVerticalSections )
+	{
+		FOR_EACH_TRUE_SUBKEY( pVerticalSections, pSection )
+		{
+			float flMin = pSection->GetFloat( "AltitudeMin", MIN_COORD_FLOAT );
+			float flMax = pSection->GetFloat( "AltitudeMax", MAX_COORD_FLOAT );
+			const char *pszMaterialName = pSection->GetName();
+
+			// find the first location in the texture list that is above our minimum altitude
+			int iMinIndex = 0;
+			while ( iMinIndex < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMinIndex] < flMin )
+			{
+				iMinIndex++;
+			}
+
+			if ( iMinIndex >= ASW_MAX_MAP_VERTICAL_SECTIONS )
+			{
+				DevWarning( "Ran out of space for verticalsections in map overview\n" );
+				break;
+			}
+
+			// find the first blank space in the texture list
+			int iBlankIndex = iMinIndex;
+			while ( iBlankIndex < ASW_MAX_MAP_VERTICAL_SECTIONS && m_nMapTextureID[iBlankIndex] != -1 )
+			{
+				iBlankIndex++;
+			}
+
+			if ( iBlankIndex >= ASW_MAX_MAP_VERTICAL_SECTIONS )
+			{
+				DevWarning( "Ran out of space for verticalsections in map overview\n" );
+				break;
+			}
+
+			if ( iMinIndex > 0 && iBlankIndex != iMinIndex && iBlankIndex + 1 < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMinIndex + 1] > flMax )
+			{
+				// The next section is past the end of the one we're adding, so we need to extend the previous section after us.
+				for ( int i = iBlankIndex + 1; i > iMinIndex; i-- )
+				{
+					m_flMapMinZ[i] = m_flMapMinZ[i - 2];
+					m_nMapTextureID[i] = m_nMapTextureID[i - 2];
+				}
+
+				m_flMapMinZ[iMinIndex + 1] = flMax;
+			}
+			else
+			{
+				// We're either exactly meeting or cut off by the next section.
+				for ( int i = iBlankIndex; i > iMinIndex; i-- )
+				{
+					m_flMapMinZ[i] = m_flMapMinZ[i - 1];
+					m_nMapTextureID[i] = m_nMapTextureID[i - 1];
+				}
+			}
+
+			m_nMapTextureID[iMinIndex] = surface()->CreateNewTextureID();
+			surface()->DrawSetTextureFile( m_nMapTextureID[iMinIndex], pszMaterialName, true, false );
+			m_flMapMinZ[iMinIndex] = flMin;
+		}
+	}
 }
 
 void CASWHudMinimap::FireGameEvent( IGameEvent * event )
@@ -1502,7 +1587,7 @@ bool CASWHudMinimap::IsWithinMapBounds(int x, int y)
 {
 	//int wide, tall;
 	int posx, posy;
-	if (m_nMapTextureID == -1)
+	if ( m_nMapTextureID[0] == -1 )
 		return false;
 	GetPos(posx,posy);
 	//int ox, oy;
@@ -1517,7 +1602,7 @@ bool CASWHudMinimap::IsWithinMapBounds(int x, int y)
 	return (x >= m_MapCornerInPanel.x
 		&& y >= m_MapCornerInPanel.y
 		&& x <= (m_MapCornerInPanel.x + m_iMapSize)
-		&& y <= (m_MapCornerInPanel.y + m_iMapSize));	
+		&& y <= (m_MapCornerInPanel.y + m_iMapSize));
 }
 
 void CASWHudMinimap::ClipToMapBounds(int &x, int &y)
@@ -1529,7 +1614,7 @@ void CASWHudMinimap::ClipToMapBounds(int &x, int &y)
 	GetScaledOffset(ox, oy);
 	posx += ox;
 	posy += oy;
-	GetSize(wide,tall);	
+	GetSize(wide,tall);
 	wide *= asw_hud_scale.GetFloat();
 	tall *= asw_hud_scale.GetFloat();
 	if (x > m_MapCornerInPanel.x + posx + wide)
@@ -1539,7 +1624,7 @@ void CASWHudMinimap::ClipToMapBounds(int &x, int &y)
 	if (y > m_MapCornerInPanel.y + posy + tall)
 		y = m_MapCornerInPanel.y + posy + tall;
 	if (y < m_MapCornerInPanel.y + posy)
-		y = m_MapCornerInPanel.y + posy;	
+		y = m_MapCornerInPanel.y + posy;
 }
 
 // drawing a map line at point x and y on the hud element
@@ -1567,7 +1652,7 @@ void CASWHudMinimap::SendMapLine(int x, int y, bool bInitial)
 			y -= posy;
 
 			Vector vecMapCentre = marine->GetAbsOrigin();
-						
+
 			// pixel difference between where we clicked and the centre of the panel
 			int diff_x = x - m_MapCentreInPanel.x;
 			int diff_y = m_MapCentreInPanel.y - y;
@@ -1587,13 +1672,13 @@ void CASWHudMinimap::SendMapLine(int x, int y, bool bInitial)
 			vecMapLinePos.x = vecMapCentre.x + (diff_x / (m_iMapSize*0.5f)) * asw_map_range.GetFloat();
 			vecMapLinePos.y = vecMapCentre.y + (diff_y / (m_iMapSize*0.5f)) * asw_map_range.GetFloat();
 			//vecMapLinePos.x = vecMapCentre.x + (diff_x * m_fMapScale / ASW_SCREENSHOT_SCALE);
-			//vecMapLinePos.y = vecMapCentre.y + (diff_y * m_fMapScale / ASW_SCREENSHOT_SCALE);			
+			//vecMapLinePos.y = vecMapCentre.y + (diff_y * m_fMapScale / ASW_SCREENSHOT_SCALE);
 			vecMapLinePos.z = marine->GetAbsOrigin().z;
 			//Msg("vecMapCentre = %f %f\n", vecMapCentre.x, vecMapCentre.y);
 			//Msg("VecMapLinePos = %f %f %f\n", vecMapLinePos.x, vecMapLinePos.y, vecMapLinePos.z);
 
 			//FX_MicroExplosion(vecMapLinePos, Vector(0,0,1));
-			
+
 			// notify the server of this!
 			char buffer[64];
 			int linetype = bInitial ? 0 : 1;
@@ -1674,7 +1759,7 @@ int CASWHudMinimap::GetArcSize( void )
 //void CASWHudMinimapLinePanel::TextureToLinePanel(CASWHudMinimap* pMap, const Vector &worldpos, int &x, int &y)
 // converts a 0->1024 map texture coord to the x/y in the panel coord
 void CASWHudMinimapLinePanel::TextureToLinePanel(CASWHudMinimap* pMap, const Vector2D &blip_centre, float &x, float &y)
-{	
+{
 	if (!pMap)
 		return;
 	Vector2D result = pMap->MapTextureToPanel(blip_centre);
@@ -1684,7 +1769,7 @@ void CASWHudMinimapLinePanel::TextureToLinePanel(CASWHudMinimap* pMap, const Vec
 	pMap->GetScaledOffset(ox, oy);
 	//wx += ox;
 	//wy += oy;
-	
+
 	x = result.x - wx;
 	y = result.y - wy;
 	//int w, t;
@@ -1709,7 +1794,7 @@ void CASWHudMinimap::CheckBlipSpeech(int iMarine)
 {
 	// check if it's been a while since we had any movement
 	if (gpGlobals->curtime - m_fLastBlipSpeechTime > ASW_BLIP_SPEECH_INTERVAL)
-	{		
+	{
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		pPlayer->SendBlipSpeech(iMarine);
 	}
@@ -1730,7 +1815,7 @@ void CASWHudMinimapLinePanel::PaintFollowLine(C_BaseEntity *pMarine, C_BaseEntit
 	TextureToLinePanel(m_pMap, endTexturePos, end2D.x, end2D.y);
 	//Vector2D start2D = m_pMap->MapTextureToPanel(startTexturePos);
 	//Vector2D end2D = m_pMap->MapTextureToPanel(endTexturePos);
-	
+
 	float x, y, x2,y2;
 	x = start2D.x;
 	y = start2D.y;
@@ -1738,7 +1823,7 @@ void CASWHudMinimapLinePanel::PaintFollowLine(C_BaseEntity *pMarine, C_BaseEntit
 	y2 = end2D.y;
 	float alpha = 255;
 
-	// draw black outline around the line to give it some softness	
+	// draw black outline around the line to give it some softness
 	surface()->DrawSetColor(Color(0,0,0, alpha));
 
 	start.Init(Vector2D(x - 1.50f,y - 1.50f), Vector2D(0,0));
@@ -1763,8 +1848,8 @@ void CASWHudMinimapLinePanel::PaintFollowLine(C_BaseEntity *pMarine, C_BaseEntit
 	start.Init(Vector2D(x,y), Vector2D(0,0));
 	end.Init(Vector2D(x2,y2), Vector2D(1,1));
 	SoftLine::DrawPolygonLine(start, end);
-	
-	// draw translucent ones around it to give it some softness	
+
+	// draw translucent ones around it to give it some softness
 	surface()->DrawSetColor(Color(255,0,0, 0.5f * alpha));
 
 	start.Init(Vector2D(x - 0.50f,y - 0.50f), Vector2D(0,0));
@@ -1807,15 +1892,15 @@ void CASWHudMinimap_Border::PaintBackground()
 	if ( !asw_scanner_background.GetBool() )
 		return;
 	//BaseClass::PaintBackground();
-	
+
 	vgui::surface()->DrawSetColor(Color(255,255,255,asw_hud_alpha.GetInt()));
 	vgui::surface()->DrawSetTexture(m_nBlackBarTexture);
-	vgui::Vertex_t points[4] = 
-	{ 
-	vgui::Vertex_t( Vector2D(0, 0),										Vector2D(0,0) ), 
-	vgui::Vertex_t( Vector2D(GetWide(), 0),									Vector2D(1,0) ), 
+	vgui::Vertex_t points[4] =
+	{
+	vgui::Vertex_t( Vector2D(0, 0),										Vector2D(0,0) ),
+	vgui::Vertex_t( Vector2D(GetWide(), 0),									Vector2D(1,0) ),
 	vgui::Vertex_t( Vector2D(GetWide(), GetTall()),		Vector2D(1,1) ),
 	vgui::Vertex_t( Vector2D(0, GetTall()),		Vector2D(0,1) )
 	};
-	vgui::surface()->DrawTexturedPolygon( 4, points );	
+	vgui::surface()->DrawTexturedPolygon( 4, points );
 }

@@ -30,6 +30,8 @@ class CASWHudMinimap;
 #define DRAWING_LINE_G 255
 #define DRAWING_LINE_B 0
 
+#define ASW_MAX_MAP_VERTICAL_SECTIONS 64
+
 // a point for the lines drawn by players on the minimap
 class MapLine
 {
@@ -189,8 +191,9 @@ public:
 	CASWHudMinimap_Border *m_pBackdrop;
 
 	Vector	m_MapOrigin;	// read from KeyValues files
-	float	m_fMapScale;	// origin and sacle used when screenshot was made
-	int m_nMapTextureID;
+	float	m_fMapScale;	// origin and scale used when screenshot was made
+	float m_flMapMinZ[ASW_MAX_MAP_VERTICAL_SECTIONS];
+	int m_nMapTextureID[ASW_MAX_MAP_VERTICAL_SECTIONS];
 	int m_nWhiteTexture;
 	float m_iMapSize;
 	Vector2D  m_MapCentre;			// point on the map texture where the minimap is centred
