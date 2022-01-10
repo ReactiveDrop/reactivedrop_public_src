@@ -535,7 +535,7 @@ int CASW_Marine::SelectHackingSchedule()
 			else if ( pArea->Classify() == CLASS_ASW_COMPUTER_AREA )
 			{
 				CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area* >( pArea );
-				if ( pComputer->IsLocked() || ( pComputer->HasDownloadObjective() && pComputer->GetHackProgress() < 1.0f ) )
+				if ( pComputer->IsLocked() || ( pComputer->HasDownloadObjective() && pComputer->GetDownloadProgress() < 1.0f ) )
 				{
 					float flDist = GetAbsOrigin().DistTo( pArea->WorldSpaceCenter() );
 					if ( flDist < flClosestDist && flDist < AUTO_HACK_DIST )
@@ -623,7 +623,7 @@ void CASW_Marine::OrderHackArea( CASW_Use_Area *pArea )
 	else if ( pArea->Classify() == CLASS_ASW_COMPUTER_AREA )
 	{
 		CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area* >( pArea );
-		if ( pComputer->IsLocked() || ( pComputer->HasDownloadObjective() && pComputer->GetHackProgress() < 1.0f ) )
+		if ( pComputer->IsLocked() || ( pComputer->HasDownloadObjective() && pComputer->GetDownloadProgress() < 1.0f ) )
 		{
 			float flDist = GetAbsOrigin().DistTo( pArea->WorldSpaceCenter() );
 			if ( flDist < AUTO_HACK_DIST )

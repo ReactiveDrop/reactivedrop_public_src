@@ -69,9 +69,9 @@ public:
 	CNetworkHandle( CBaseEntity, m_hTurret1 );
 
 	// traditional Swarm hacking
-	float GetHackProgress() { return m_fHackProgress; }
+	float GetDownloadProgress() { return m_fDownloadProgress; }
 	CNetworkVar(bool, m_bIsInUse);
-	CNetworkVar(float, m_fHackProgress);
+	CNetworkVar(float, m_fDownloadProgress);
 
 	bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }
 	int m_iActiveCam;
@@ -89,7 +89,7 @@ protected:
 	bool m_bOldWaitingForInput;
 	int m_iHackLevel;
 	float m_fDownloadTime;
-	C_ASW_Computer_Area( const C_ASW_Computer_Area & ); // not defined, not accessible		
+	C_ASW_Computer_Area( const C_ASW_Computer_Area & ) = delete; // not defined, not accessible
 
 	// icons used to interact with computers
 	static bool s_bLoadedLockedIconTexture;

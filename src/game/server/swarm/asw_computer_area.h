@@ -107,10 +107,10 @@ public:
 	virtual bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }
 
 	virtual int GetNumMenuOptions();
-	float GetHackProgress() { return m_fHackProgress; }
+	float GetDownloadProgress() { return m_fDownloadProgress; }
 	
 	CNetworkVar(bool, m_bIsInUse);
-	CNetworkVar(float, m_fHackProgress);
+	CNetworkVar(float, m_fDownloadProgress);
 	bool m_bWasLocked;
 	bool m_bUseAfterHack;	
 	float m_fAutoOverrideTime;

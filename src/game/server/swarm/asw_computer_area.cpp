@@ -60,7 +60,7 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_FIELD( m_iActiveCam, FIELD_INTEGER ),
 	DEFINE_FIELD( m_hComputerHack, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bIsInUse, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fHackProgress, FIELD_FLOAT ),
+	DEFINE_FIELD( m_fDownloadProgress, FIELD_FLOAT ),
 	DEFINE_FIELD( m_hSecurityCam1, FIELD_EHANDLE ),	
 	DEFINE_FIELD( m_hTurret1, FIELD_EHANDLE ),	
 	DEFINE_FIELD( m_SecurityCamLabel1, FIELD_STRING ),
@@ -95,7 +95,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropBool		(SENDINFO(m_bIsLocked)),
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),
 	SendPropBool		(SENDINFO(m_bIsInUse)),
-	SendPropFloat		(SENDINFO(m_fHackProgress)),
+	SendPropFloat		(SENDINFO(m_fDownloadProgress)),
 
 	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),	
 	SendPropEHandle( SENDINFO( m_hTurret1 ) ),	
@@ -133,7 +133,7 @@ CASW_Computer_Area::CASW_Computer_Area()
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
 	m_bIsInUse = false;
-	m_fHackProgress = 0;
+	m_fDownloadProgress = 0;
 	m_bDownloadedDocs = false;
 	m_bDoSecureShout = true;
 	m_iActiveCam = 1; // asw temp: should be 0 and get set when the player uses a particular camera
@@ -246,7 +246,7 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				}
 				else
 				{
-					if ( GetHackProgress() <= 0 && pMarine->GetMarineResource() )
+					if ( GetDownloadProgress() <= 0 && pMarine->GetMarineResource() )
 					{
 						pMarine->GetMarineResource()->m_iDamageTakenDuringHack = 0;
 					}
@@ -351,31 +351,31 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 {
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
-		if ( m_bIsInUse && GetHackProgress() < 1.0f )
+		if ( m_bIsInUse && GetDownloadProgress() < 1.0f )
 		{
-			float flOldHackProgress = m_fHackProgress;
+			float flOldHackProgress = m_fDownloadProgress;
 			float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
 			// boost fTime by the marine's hack skill
 			fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
 			fTime *= asw_ai_computer_hacking_scale.GetFloat();
-			m_fHackProgress += fTime;
+			m_fDownloadProgress += fTime;
 
-			if ( GetHackProgress() > 0.0f && flOldHackProgress == 0.0f )
+			if ( GetDownloadProgress() > 0.0f && flOldHackProgress == 0.0f )
 			{
 				m_OnComputerHackStarted.FireOutput( pMarine, this );
 			}
-			if ( GetHackProgress() >= 0.3f && flOldHackProgress < 0.3f )		// fire at first 3rd for AI marines, since we have the extra download step after hacking is complete
+			if ( GetDownloadProgress() >= 0.3f && flOldHackProgress < 0.3f )		// fire at first 3rd for AI marines, since we have the extra download step after hacking is complete
 			{
 				m_OnComputerHackHalfway.FireOutput( pMarine, this );
 			}
-			if ( GetHackProgress() >= 0.6f && flOldHackProgress < 0.6f )
+			if ( GetDownloadProgress() >= 0.6f && flOldHackProgress < 0.6f )
 			{
 				m_OnComputerHackCompleted.FireOutput( pMarine, this );
 			}
 			
-			if ( m_fHackProgress >= 1.0f )
+			if ( m_fDownloadProgress >= 1.0f )
 			{
-				m_fHackProgress = 1.0f;
+				m_fDownloadProgress = 1.0f;
 				
 				pMarine->StopUsing();
 
@@ -396,14 +396,14 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 
 				OnComputerDataDownloaded( pMarine );
 
-				StopDownloadingSound();				
+				StopDownloadingSound();
 				EmitSound("ASWComputer.MenuButton");
 			}
 		}
 	}
 	else if (GetCurrentHack())
 	{
-		if (GetCurrentHack()->IsDownloadingFiles() && m_fHackProgress < 1.0f)
+		if (GetCurrentHack()->IsDownloadingFiles() && m_fDownloadProgress < 1.0f)
 		{
 			float fTime = (deltatime * (1.0f/((float)m_fDownloadTime)));
 			// boost fTime by the marine's hack skill
@@ -412,16 +412,16 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 				fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
 			else
 				fTime *= 0.5f;
-			m_fHackProgress += fTime;
-			if (m_fHackProgress >= 1.0f)
+			m_fDownloadProgress += fTime;
+			if (m_fDownloadProgress >= 1.0f)
 			{
-				m_fHackProgress = 1.0f;
-								
+				m_fDownloadProgress = 1.0f;
+
 				// finish downloading the files
 				OnComputerDataDownloaded( pMarine );
 
-				StopDownloadingSound();				
-				EmitSound("ASWComputer.MenuButton");				
+				StopDownloadingSound();
+				EmitSound("ASWComputer.MenuButton");
 			}
 			else
 			{
@@ -844,7 +844,7 @@ int CASW_Computer_Area::GetNumMenuOptions()
 {
 	int n=0;
 
-	if (m_DownloadObjectiveName.Get()[0] != 0 && GetHackProgress() < 1.0f) n++;
+	if (m_DownloadObjectiveName.Get()[0] != 0 && GetDownloadProgress() < 1.0f) n++;
 	if (m_MailFile.Get()[0] != 0) n++;
 	if (m_NewsFile.Get()[0] != 0) n++;
 	if (m_StocksSeed.Get()[0] != 0) n++;

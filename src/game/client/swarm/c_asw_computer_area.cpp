@@ -195,7 +195,7 @@ bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 			if (IsLocked())
 				action.fProgress = GetTumblerProgress(pUser);
 			else
-				action.fProgress = GetHackProgress();
+				action.fProgress = GetDownloadProgress();
 		}
 		else
 		{
@@ -205,7 +205,7 @@ bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 			if (IsLocked())
 				action.fProgress = GetTumblerProgress(pUser);
 			else
-				action.fProgress = GetHackProgress();
+				action.fProgress = GetDownloadProgress();
 		}
 	}
 	else
@@ -217,14 +217,14 @@ bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 				action.iUseIconTexture = GetHackIconTextureID();
 				TryLocalize( "#asw_hack_comp", action.wszText, sizeof( action.wszText ) );
 				action.UseTarget = this;
-				action.fProgress = GetHackProgress();
+				action.fProgress = GetDownloadProgress();
 			}
 			else
 			{
 				action.iUseIconTexture = GetLockedIconTextureID();
 				TryLocalize( "#asw_requires_tech", action.wszText, sizeof( action.wszText ) );
 				action.UseTarget = this;
-				action.fProgress = GetHackProgress();
+				action.fProgress = GetDownloadProgress();
 			}		
 		}	
 		else
@@ -240,7 +240,7 @@ bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 				TryLocalize( GetUseIconText(), action.wszText, sizeof( action.wszText ) );
 			}
 			action.UseTarget = this;
-			action.fProgress = -1;			
+			action.fProgress = -1;
 		}
 	}
 	return true;

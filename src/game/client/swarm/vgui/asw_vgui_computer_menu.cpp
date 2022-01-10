@@ -602,7 +602,7 @@ void CASW_VGUI_Computer_Menu::LaunchHackOption(int iOption)
 
 	// otherwise check which icon we pressed
 	int icon = 1;
-	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetHackProgress() < 1.0f )
+	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetDownloadProgress() < 1.0f )
 	{
 		if (iOption == icon)
 		{

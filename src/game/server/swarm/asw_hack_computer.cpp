@@ -275,7 +275,7 @@ int CASW_Hack_Computer::GetOptionTypeForEntry(int iOption)
 		return ASW_COMPUTER_OPTION_TYPE_NONE;
 
 	int icon = 1;	
-	if (pArea->m_DownloadObjectiveName.Get()[0] != NULL && pArea->GetHackProgress() < 1.0f)
+	if (pArea->m_DownloadObjectiveName.Get()[0] != NULL && pArea->GetDownloadProgress() < 1.0f)
 	{
 		if (iOption == icon)
 		{
