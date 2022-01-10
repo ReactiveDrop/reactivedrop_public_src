@@ -22,6 +22,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Door, DT_ASW_Door, CASW_Door )
 	RecvPropBool		(RECVINFO(m_bBashable)),
 	RecvPropBool		(RECVINFO(m_bShootable)),
 	RecvPropBool		(RECVINFO(m_bCanCloseToWeld)),
+	RecvPropBool		(RECVINFO(m_bCanPlayerWeld)),
 	RecvPropBool		(RECVINFO(m_bRecommendedSeal)),
 	RecvPropBool		(RECVINFO(m_bWasWeldedByMarine)),
 	RecvPropFloat		(RECVINFO(m_fLastMomentFlipDamage)),

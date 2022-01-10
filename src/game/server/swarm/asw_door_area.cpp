@@ -45,7 +45,7 @@ void CASW_Door_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
 	BaseClass::ActivateMultiTrigger(pActivator);
 	
 	CASW_Door* pDoor = GetASWDoor();
-	if (!pDoor)
+	if ( !pDoor || !m_bUseAreaEnabled )
 		return;
 
 	// check for shouting out about a sealed door

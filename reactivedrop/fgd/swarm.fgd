@@ -5537,8 +5537,8 @@
 @PointClass base(Targetname, Parentname, Angles, Global, Studiomodel) studioprop() = asw_door : 
 	"An entity used to place a Swarm sliding door in the world."
 [
-	slavename(target_destination) : "Slave Name" : "" : "If this is a double door, put the name of the second half of the door here.  They will become linked."
-	model(studio) : "World Model" : "models/swarm/doors/swarm_singleDoor.mdl"
+	slavename(target_destination) : "Linked Door Name" : "" : "If this is a double door, put the name of the second half of the door here.  They will become linked."
+	model(studio) : "World Model" : "models/props/doors/heavy_doors/doorleft.mdl"
 	rendercolor(color255) : "Color (R G B)" : "255 255 255"
 	spawnpos(choices) : "Spawn Position" : 0 =
 	[
@@ -5552,7 +5552,7 @@
 		"0 90 0" : "Left"
 		"0 -90 0" : "Right"		
 	] 
-	distance(float) : "Slide Distance" : 130 : "The distance that the door should slide when opened."
+	distance(float) : "Slide Distance" : 124 : "The distance that the door should slide when opened."
 	speed(integer) : "Speed" : 140 : "The speed at which the door moves."
 	soundopenoverride(sound) : "Fully Open Sound" : : "Sound played when the door has finished opening."
 	soundcloseoverride(sound) : "Fully Closed Sound" : "ASW_Door.Door2StopClose" : "Sound played when the door has finished closing."
@@ -5609,6 +5609,11 @@
 		4 : "Very damaged (Flipped)"
 	]
 	CanCloseToWeld(choices) : "Can Close To Weld" : 1 : "Whether the welding tool can make this door close to start welding when it's open." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	CanPlayerWeld(choices) : "Can Player Weld" : 1 : "Whether the player can weld or cut this door using a welding tool." =
 	[
 		0 : "No"
 		1 : "Yes"
