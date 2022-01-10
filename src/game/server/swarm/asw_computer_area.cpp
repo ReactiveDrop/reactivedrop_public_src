@@ -773,12 +773,15 @@ void CASW_Computer_Area::PlayNegativeSound(CASW_Player *pHackingPlayer)
 bool CASW_Computer_Area::WaitingForInputVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
 	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area* >( pVisibleEntity );
-	return pComputerArea->m_bWaitingForInput;
+	return pComputerArea->m_bWaitingForInput && pComputerArea->m_bUseAreaEnabled;
 }
 
 bool CASW_Computer_Area::WaitingForInputVismonCallback( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
 	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area* >( pVisibleEntity );
+	if ( !pComputerArea->m_bUseAreaEnabled )
+		return false;
+
 	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_active" );
 	if ( event )
 	{

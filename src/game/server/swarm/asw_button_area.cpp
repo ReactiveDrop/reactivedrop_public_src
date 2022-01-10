@@ -560,12 +560,15 @@ bool CASW_Button_Area::KeyValue( const char *szKeyName, const char *szValue )
 bool CASW_Button_Area::WaitingForInputVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
 	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area* >( pVisibleEntity );
-	return pButtonArea->m_bWaitingForInput;
+	return pButtonArea->m_bWaitingForInput && pButtonArea->m_bUseAreaEnabled;
 }
 
 bool CASW_Button_Area::WaitingForInputVismonCallback( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
 	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area* >( pVisibleEntity );
+	if ( !pButtonArea->m_bUseAreaEnabled )
+		return false;
+
 	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_active" );
 	if ( event )
 	{
