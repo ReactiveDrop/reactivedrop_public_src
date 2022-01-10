@@ -571,7 +571,7 @@ void CASW_VGUI_Computer_Menu::SetHackOption(int iOption)
 	}
 	else
 	{
-		if (m_iPreviousHackOption == ASW_HACK_OPTION_OVERRIDE)	// finished a hack?
+		if ( m_hCurrentPage.Get() )
 		{
 			m_iAutodownload = iOption;
 			DoFadeCurrentPage();
