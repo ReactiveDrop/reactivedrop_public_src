@@ -220,7 +220,7 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 		CASW_Remote_Turret *pTurret = pArea->m_hTurret1.Get();
 		if (pTurret && GetHackingMarine())
 		{
-			pTurret->StartedUsingTurret(GetHackingMarine());
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
 			GetHackingMarine()->m_hRemoteTurret = pTurret;
 			return;
 		}
@@ -236,7 +236,7 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 		CASW_Remote_Turret *pTurret = pArea->m_hTurret2.Get();
 		if (pTurret && GetHackingMarine())
 		{
-			pTurret->StartedUsingTurret(GetHackingMarine());
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
 			GetHackingMarine()->m_hRemoteTurret = pTurret;
 			return;
 		}
@@ -252,7 +252,7 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 		CASW_Remote_Turret *pTurret = pArea->m_hTurret3.Get();
 		if (pTurret && GetHackingMarine())
 		{
-			pTurret->StartedUsingTurret(GetHackingMarine());
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
 			GetHackingMarine()->m_hRemoteTurret = pTurret;
 			return;
 		}

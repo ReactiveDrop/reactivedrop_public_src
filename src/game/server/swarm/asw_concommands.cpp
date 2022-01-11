@@ -808,10 +808,10 @@ void asw_test_turret_f()
 		CBaseEntity* pEntity = NULL;
 		while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_remote_turret" )) != NULL)
 		{
-			CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pEntity);			
+			CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pEntity);
 			if (pTurret)
 			{
-				pTurret->StartedUsingTurret(pMarine);
+				pTurret->StartedUsingTurret( pMarine, NULL );
 				pMarine->m_hRemoteTurret = pTurret;
 				Msg("Set turret\n");
 				return;

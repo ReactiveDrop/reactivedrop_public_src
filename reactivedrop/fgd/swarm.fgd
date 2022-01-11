@@ -6114,8 +6114,11 @@
 	UpsideDown(choices) : "Ceiling Turret" : 1 : "If set, this turret will be oriented upside down, as if attached to the ceiling." =
 	[
 		0 : "No"
-		1 : "Yes"		
+		1 : "Yes"
 	]
+
+	output OnStartedUsing(void) : "Fired when a marine starts using the remote turret. activator=marine, caller=computer area"
+	output OnStoppedUsing(void) : "Fired when a marine logs out of the remote turret. activator=marine, caller=computer area"
 ]
 
 @PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun

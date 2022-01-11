@@ -48,10 +48,13 @@ public:
 	int UpdateTransmitState();
 	int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	void StopUsingTurret();
-	void StartedUsingTurret( CASW_Marine *pUser );
+	void StartedUsingTurret( CASW_Marine *pUser, CBaseEntity *pComputerArea );
 	QAngle AutoaimDeflection( Vector &vecSrc, const QAngle &eyeAngles, autoaim_params_t &params );
 	float GetAutoaimScore( const Vector &eyePosition, const Vector &viewDir, const Vector &vecTarget, CBaseEntity *pTarget, float fScale );
-		
+
+	COutputEvent m_OnStartedUsing;
+	COutputEvent m_OnStoppedUsing;
+
 	CNetworkQAngle( m_angEyeAngles );	
 #else	
 	virtual void ClientThink();
@@ -79,6 +82,7 @@ public:
 #else
 	CASW_Marine *GetUser();
 	CNetworkHandle(CASW_Marine, m_hUser);
+	EHANDLE m_hComputerArea;
 #endif
 	float m_fNextFireTime;
 	int m_iAmmoType;
