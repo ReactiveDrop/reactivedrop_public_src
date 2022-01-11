@@ -123,6 +123,13 @@
 #include "IGameUIFuncs.h"
 #endif
 
+#ifndef CLIENT_DLL
+#include "serverhelper.h"
+
+CServerHelper g_ServerHelper;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerHelper, IServerHelper, INTERFACEVERSION_SERVERGAMEDLL, g_ServerHelper);
+#endif
+
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
 
@@ -1648,40 +1655,6 @@ int	CServerGameDLL::CreateEntityTransitionList( CSaveRestoreData *s, int a)
 void CServerGameDLL::PreSave( CSaveRestoreData *s )
 {
 	g_pGameSaveRestoreBlockSet->PreSave( s );
-}
-
-
-// helper class to find the offset of a datamap for a specific edict
-inline unsigned int FindPropertyOffsetInDataMap( datamap_t* pMap, const char* property )
-{
-	while (pMap)
-	{
-		for (unsigned int i = 0; i < pMap->dataNumFields; i++)
-		{
-			const typedescription_t info = pMap->dataDesc[i];
-			if ( !info.fieldName ) continue;
-
-			// DevMsg( "+ Fieldname: %s\n", info.fieldName );
-			if ( Q_strcmp( property, info.fieldName ) == 0 ) return info.fieldOffset;
-			if ( info.td ) 
-			{
-				const unsigned int offset = FindPropertyOffsetInDataMap( info.td, property );
-				if ( offset > 0 ) return offset;
-			}
-		}
-
-		pMap = pMap->baseMap;
-	}
-	return 0;
-}
-
-unsigned int CServerGameDLL::GetDataMapOffsetForEdict( edict_t* pEdict, const char* property )
-{
-	IServerUnknown* pUnknown = ( IServerUnknown* )pEdict->GetUnknown();
-	if ( !pUnknown ) return 0;
-
-	CBaseEntity* pEntity = pUnknown->GetBaseEntity();
-	return FindPropertyOffsetInDataMap(pEntity->GetDataDescMap(), property);
 }
 
 #include "client_textmessage.h"

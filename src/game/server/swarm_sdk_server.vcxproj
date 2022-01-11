@@ -753,6 +753,7 @@ exit 1
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
     <ClCompile Include="GameStats_BasicStatsFunctions.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -1706,6 +1707,7 @@ exit 1
     <ClInclude Include="func_breakablesurf.h" />
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="serverhelper.h" />
     <ClInclude Include="gameinterface.h" />
     <ClInclude Include="gameweaponmanager.h" />
     <ClInclude Include="generic_classmap.h" />
