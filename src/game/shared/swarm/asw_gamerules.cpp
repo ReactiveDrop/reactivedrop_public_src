@@ -608,11 +608,11 @@ ConVar	sk_plr_dmg_asw_medrifle			( "sk_plr_dmg_asw_medrifle", "0", FCVAR_REPLICA
 ConVar	sk_npc_dmg_asw_medrifle			( "sk_npc_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
 ConVar	sk_max_asw_medrifle				( "sk_max_asw_medrifle", "0", FCVAR_REPLICATED );
 
-ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 
 // reactivedrop: adding these weapon damage overrides for PvP 
 ConVar	rd_shotgun_dmg_base("rd_shotgun_dmg_base",	"0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
@@ -654,7 +654,9 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 #else
 	);
 #endif
+#ifdef GAME_DLL
 ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
+#endif
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
 
 #define ADD_STAT( field, amount ) \
