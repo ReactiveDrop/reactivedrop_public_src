@@ -222,8 +222,8 @@ void CASW_Spawn_Manager::FindEscapeTriggers()
 
 void CASW_Spawn_Manager::Update()
 {
-	if ( m_iHordeToSpawn > 0 || m_pHordeWandererDefinition.Count() > 0 )
-	{		
+	if ( GetHordeToSpawn() > 0 )
+	{
 		if ( m_vecHordePosition != vec3_origin && ( !m_batchInterval.HasStarted() || m_batchInterval.IsElapsed() ) )
 		{
 			int iToSpawn = MIN( m_iHordeToSpawn, asw_max_alien_batch.GetInt() );
@@ -345,7 +345,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 			continue;
 
 		float flDistance = 0;
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(UTIL_ASW_NearestMarine( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), flDistance ));
+		CASW_Marine *pMarine = UTIL_ASW_NearestMarine( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), flDistance );
 		if ( !pMarine )
 			return false;
 
@@ -445,7 +445,7 @@ bool CASW_Spawn_Manager::AddHorde( int iHordeSize, CASW_Spawn_Definition *pSpawn
 	{
 		if ( !FindHordePosition() )
 		{
-			Msg("Error: Failed to find horde position\n");
+			Warning("Error: Failed to find horde position\n");
 			return false;
 		}
 		else

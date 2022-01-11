@@ -116,6 +116,8 @@ private:
 	bool m_bHoldout;				// reactivedrop: similar to finale but can be stopped
 	bool m_bWanderersWereEnabled;	// reactivedrop: whether wanderers were enabled before holdout started
 	bool m_bHordesWereEnabled;		// reactivedrop: whether hordes were enabled before holdout started
+
+	friend class CASW_Director_VScript;
 };
 
 CASW_Director* ASWDirector();
