@@ -1221,6 +1221,7 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 		DevMsg( "Sending leaderboard entry to leaderboard ID: %llu\n", pResult->m_hSteamLeaderboard );
 	}
 
+	ACTIVE_SPLITSCREEN_PLAYER_GUARD( 0 );
 	MissionCompleteFrame *pMissionCompleteFrame = GetClientModeASW() ? assert_cast<MissionCompleteFrame *>( GetClientModeASW()->m_hMissionCompleteFrame.Get() ) : NULL;
 	MissionCompletePanel *pMissionCompletePanel = pMissionCompleteFrame ? pMissionCompleteFrame->m_pMissionCompletePanel : NULL;
 	if ( pMissionCompletePanel )
@@ -1267,6 +1268,7 @@ void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded
 		return;
 	}
 
+	ACTIVE_SPLITSCREEN_PLAYER_GUARD( 0 );
 	MissionCompleteFrame *pMissionCompleteFrame = GetClientModeASW() ? assert_cast<MissionCompleteFrame *>( GetClientModeASW()->m_hMissionCompleteFrame.Get() ) : NULL;
 	MissionCompletePanel *pMissionCompletePanel = pMissionCompleteFrame ? pMissionCompleteFrame->m_pMissionCompletePanel : NULL;
 	if ( pMissionCompletePanel && pResult->m_bScoreChanged )

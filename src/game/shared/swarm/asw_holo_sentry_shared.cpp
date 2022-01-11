@@ -141,6 +141,8 @@ void CASW_Holo_Sentry::CreateSentryBuildDisplay()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
 	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( 0 );
+
 		bHasSentry = ( pPlayer->Weapon_OwnsThisType( "asw_weapon_sentry" ) != NULL );
 
 		if ( !bHasSentry )
