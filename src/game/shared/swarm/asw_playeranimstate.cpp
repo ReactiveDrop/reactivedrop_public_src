@@ -1180,9 +1180,17 @@ void CASWPlayerAnimState::GetOuterAbsVelocity( Vector& vel ) const
 	// for inhabited, predicted marines, just grab their actual velocity rather than
 	//  relying on (the seemingly broken?) estimateabsvelocity
 	if ( pMarine != NULL && pMarine->IsInhabited() && C_BasePlayer::IsLocalPlayer( pMarine->GetCommander() ) )
+	{
 		vel = pMarine->GetAbsVelocity();
+	}
 	else
+	{
 		GetOuter()->EstimateAbsVelocity( vel );
+		if ( pMarine )
+		{
+			vel -= pMarine->m_vecGroundVelocity;
+		}
+	}
 #else
 	vel = GetOuter()->GetAbsVelocity();
 #endif

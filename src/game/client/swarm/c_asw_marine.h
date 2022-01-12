@@ -177,6 +177,7 @@ public:
 	int m_nOldButtons;
 	CNetworkVar(bool, m_bPreventMovement);
 	CNetworkVar( bool, m_bWalking );
+	CNetworkVector( m_vecGroundVelocity );
 
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;

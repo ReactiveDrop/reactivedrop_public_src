@@ -174,7 +174,7 @@ protected:
 
 	Activity GetCurrentMainSequenceActivity() const;
 
-	void				GetOuterAbsVelocity( Vector& vel ) const;
+	virtual void		GetOuterAbsVelocity( Vector& vel ) const;
 	float				GetOuterXYSpeed() const;
 
 	// How long has it been since we cleared the animation state?
