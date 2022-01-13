@@ -7111,7 +7111,8 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 				DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
 				bPlayerCrashed = true;
 			}
-			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
+			bool bIsListenHost = !engine->IsDedicatedServer() && UTIL_GetListenServerHost() == pOtherPlayer;
+			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed && !bIsListenHost )
 			{
 				// don't roll the kick command into this, it will fail on a lan, where kickid will go through
 				engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
