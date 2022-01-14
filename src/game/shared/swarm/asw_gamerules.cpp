@@ -8334,6 +8334,19 @@ void CAlienSwarm::LevelInitPostEntity()
 		return;
 	}
 
+	if ( !gEntList.FindEntityByClassname( NULL, "env_tonemap_controller" ) )
+	{
+		DevWarning( "No env_tonemap_controller found in level. Creating one and setting bloom scale to a safe value.\n" );
+		CBaseEntity *pTonemap = CreateEntityByName( "env_tonemap_controller" );
+		if ( pTonemap )
+		{
+			DispatchSpawn( pTonemap );
+			variant_t scale;
+			scale.SetFloat( 0.25f );
+			pTonemap->AcceptInput( "SetBloomScale", pTonemap, pTonemap, scale, 0 );
+		}
+	}
+
 	// find the objective entities
 	ASWGameResource()->FindObjectives();
 
