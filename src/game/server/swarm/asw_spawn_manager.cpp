@@ -134,6 +134,7 @@ void CASW_Spawn_Manager::LevelInitPostEntity()
 
 	m_northCandidateNodes.Purge();
 	m_southCandidateNodes.Purge();
+	m_bWarnedAboutMissingNodes = false;
 
 	FindEscapeTriggers();
 }
@@ -216,7 +217,10 @@ void CASW_Spawn_Manager::FindEscapeTriggers()
 			
 		}
 	}
-	Msg("Spawn manager found %d escape triggers\n", m_EscapeTriggers.Count() );
+	if ( asw_director_debug.GetBool() )
+	{
+		Msg( "Spawn manager found %d escape triggers\n", m_EscapeTriggers.Count() );
+	}
 }
 
 
@@ -268,7 +272,7 @@ void CASW_Spawn_Manager::Update()
 		}
 		else if ( m_vecHordePosition == vec3_origin )
 		{
-			Msg( "Warning: Had horde to spawn but no position, clearing.\n" );
+			Warning( "Warning: Had horde to spawn but no position, clearing.\n" );
 			m_iHordeToSpawn = 0;
 			m_pHordeDefinition = NULL;
 			m_pHordeWandererDefinition.Purge();
@@ -445,7 +449,11 @@ bool CASW_Spawn_Manager::AddHorde( int iHordeSize, CASW_Spawn_Definition *pSpawn
 	{
 		if ( !FindHordePosition() )
 		{
-			Warning("Error: Failed to find horde position\n");
+			if ( !m_bWarnedAboutMissingNodes )
+			{
+				Warning( "Error: Failed to find horde position\n" );
+			}
+
 			return false;
 		}
 		else
@@ -481,7 +489,11 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 	if ( !GetNetwork() || !GetNetwork()->NumNodes() )
 	{
 		m_vecHordePosition = vec3_origin;
-		Msg("Error: Can't spawn hordes as this map has no node network\n");
+		if ( !m_bWarnedAboutMissingNodes )
+		{
+			m_bWarnedAboutMissingNodes = true;
+			Warning( "Error: Can't spawn hordes as this map has no node network\n" );
+		}
 		return;
 	}
 
