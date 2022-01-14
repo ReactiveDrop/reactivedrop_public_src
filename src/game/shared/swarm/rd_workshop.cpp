@@ -222,6 +222,11 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 		return;
 	}
 
+	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
+		return;
+	}
+
 	for ( int i = 1; i < args.ArgC(); i++ )
 	{
 		PublishedFileId_t id = strtoull( args.Arg( i ), NULL, 10 );
