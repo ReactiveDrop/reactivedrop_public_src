@@ -46,6 +46,7 @@
 ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" : "0", FCVAR_DEVELOPMENTONLY, "When set user can create public lobbies instead of matching" );
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
 extern ConVar mm_max_players;
+extern ConVar rd_last_game_access;
 
 using namespace vgui;
 using namespace BaseModUI;
@@ -448,6 +449,8 @@ void GameSettings::SelectNetworkAccess( char const *szNetworkType, char const *s
 	KeyValues::AutoDelete autodelete( pSettings );
 	pSettings->SetString( "update/system/network", szNetworkType );
 	pSettings->SetString( "update/system/access", szAccessType );
+
+	rd_last_game_access.SetValue( szAccessType );
 
 	UpdateSessionSettings( pSettings );
 

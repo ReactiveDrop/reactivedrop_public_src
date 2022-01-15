@@ -65,6 +65,7 @@ static ConVar ui_play_online_browser( "ui_play_online_browser",
 ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "1", FCVAR_NONE, "If set, offline practice option on the main menu will show all maps." );
 ConVar rd_never_show_steamgroup_join( "rd_never_show_steamgroup_join", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "If 0 display a dialog that shows a link to Reactive Drop Gamers Steam group" );
 extern ConVar mm_max_players;
+ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
@@ -862,6 +863,10 @@ void MainMenu::OnCommand( const char *command )
 		{
 			pSettings->SetString( "system/network", "lan" );
 			pSettings->SetString( "system/access", "public" );
+		}
+		else
+		{
+			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
 		}
 
 		if ( StringHasPrefix( szGameMode, "team" ) )
