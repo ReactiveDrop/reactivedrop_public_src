@@ -13,6 +13,7 @@
 #include "TileSource/Room.h"
 #include "TileSource/MapLayout.h"
 #include "PlacedRoomTemplatePanel.h"
+#include "vstdlib/random.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -213,7 +214,7 @@ void CMapLayoutPanel::AddRoom( const CRoomTemplate *pTemplate, int iTileX, int i
 	if ( !g_pTileGenDialog )
 		return;
 
-	CRoom *pRoom = new CRoom( GetMapLayout(), g_pTileGenDialog->m_pCursorTemplate, iTileX, iTileY );
+	CRoom *pRoom = new CRoom( GetMapLayout(), g_pTileGenDialog->m_pCursorTemplate, iTileX, iTileY, RandomInt( 0, INT_MAX ) );
 	CreateRoomUIPanel( pRoom );
 }
 

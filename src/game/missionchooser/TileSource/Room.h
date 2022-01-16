@@ -22,7 +22,7 @@ class CRoom : public IASW_Room_Details
 {
 public:
 	CRoom();
-	CRoom( CMapLayout *pMapLayout, const CRoomTemplate* pRoomTemplate, int TileX, int TileY );
+	CRoom( CMapLayout *pMapLayout, const CRoomTemplate* pRoomTemplate, int TileX, int TileY, int nInstanceSeed );
 	virtual ~CRoom();
 	
 	// tile position we're in
@@ -36,6 +36,9 @@ public:
 
 	// A number indicating the placement order index of this room in the map layout, or -1 if not applicable.
 	int m_nPlacementIndex;
+
+	// A random seed for this room's rd_tilegen_instace entities.
+	int m_nInstanceSeed;
 
 	// todo: lighting scale
 	// todo: spawner scaling, etc., etc.

@@ -254,3 +254,44 @@
 		3 : "Tech"
 	]
 ]
+
+@PointClass base(Angles) = rd_tilegen_instance : "Used for TileGen instancing. Replaced with a random func_instance, but only if the map is compiled using TileGen."
+[
+	targetname(target_source) : "Fix Up Name" : : "The name that all entities will be fixed up with based upon the fix up style."
+	fixup_style(Choices) : "Entity Name Fix Up" : 0 : "Fixup style for instanced entity names.  Uses the 'Fix Up Name' field." =
+	[
+		0 : "Prefix"
+		1 : "Postfix"
+		2 : "None"
+	]
+
+	glob1(string) : "Filename Pattern 1" : "lights_*.vmf" : ""
+	weight1(float) : "Weight 1" : "1" : ""
+	glob2(string) : "Filename Pattern 2" : "" : ""
+	weight2(float) : "Weight 2" : "0" : ""
+	glob3(string) : "Filename Pattern 3" : "" : ""
+	weight3(float) : "Weight 3" : "0" : ""
+	glob4(string) : "Filename Pattern 4" : "" : ""
+	weight4(float) : "Weight 4" : "0" : ""
+	glob5(string) : "Filename Pattern 5" : "" : ""
+	weight5(float) : "Weight 5" : "0" : ""
+	glob6(string) : "Filename Pattern 6" : "" : ""
+	weight6(float) : "Weight 6" : "0" : ""
+	glob7(string) : "Filename Pattern 7" : "" : ""
+	weight7(float) : "Weight 7" : "0" : ""
+	glob8(string) : "Filename Pattern 8" : "" : ""
+	weight8(float) : "Weight 8" : "0" : ""
+	glob9(string) : "Filename Pattern 9" : "" : ""
+	weight9(float) : "Weight 9" : "0" : ""
+
+	replace01(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace02(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace03(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace04(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace05(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace06(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace07(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace08(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace09(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+	replace10(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
+]

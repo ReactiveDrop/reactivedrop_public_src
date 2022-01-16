@@ -44,7 +44,8 @@ public:
 	bool ProcessSide( KeyValues *pSideKey );
 	bool ProcessSideKey( KeyValues *pKey );
 	bool ProcessGenericRecursive( KeyValues *pParentKey );
-	bool ProcessEntity( KeyValues *pSideKey );
+	bool ProcessEntity( KeyValues *pEntityKeys );
+	bool ProcessInstance( KeyValues *pEntityKeys );
 	bool ProcessEntityKey( KeyValues *pEntityKey );
 	bool ProcessConnections( KeyValues *pSideKey );
 	bool ProcessConnectionsKey( KeyValues *pEntityKey );
