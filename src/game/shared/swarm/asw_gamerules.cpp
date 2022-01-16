@@ -7033,6 +7033,50 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	if (!pPlayer)
 		return;
 
+		// if we're leader & this is listen server, then allow us to kick immediately
+	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() && !engine->IsDedicatedServer() )
+	{
+		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+		if (pOtherPlayer && pOtherPlayer != pPlayer)
+		{
+			// kick this player
+			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+			if (pOtherPlayer)
+			{
+				ClearLeaderKickVotes(pOtherPlayer, false, true);
+
+				ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
+				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName());
+
+				bool bPlayerCrashed = false;
+				INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
+				if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
+				{
+					// don't ban the player
+					DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
+					bPlayerCrashed = true;
+				}
+				if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
+				{
+					// don't roll the kick command into this, it will fail on a lan, where kickid will go through
+					engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
+				}
+
+				char buffer[256];
+				Q_snprintf(buffer, sizeof(buffer), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID());
+				Msg("sending command: %s\n", buffer);
+				engine->ServerCommand(buffer);			
+
+				//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
+				//{
+					//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
+				//}	
+			}
+
+			return;
+		}
+	}
+
 	int iOldPlayer = pPlayer->m_iKickVoteIndex;
 	pPlayer->m_iKickVoteIndex = iPlayerIndex;
 
