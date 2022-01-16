@@ -920,8 +920,8 @@ bool CASW_Marine::CanHeal() const
 {
 	for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 	{
-		CASW_Weapon *pWeapon = GetASWWeapon( iWeapon );
-		if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && pWeapon->HasAmmo() )
+		IASW_Medical_Weapon *pWeapon = dynamic_cast<IASW_Medical_Weapon *>( GetASWWeapon( iWeapon ) );
+		if ( pWeapon && pWeapon->HasMedicalAmmo() )
 		{
 			return true;
 		}
@@ -940,7 +940,7 @@ int CASW_Marine::SelectHealSchedule()
 
 	CASW_Marine *pBestMarine = NULL;
 
-	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( CASW_Weapon_Heal_Gun::GetWeaponRange() * 0.5f ) : FLT_MAX;
+	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) : FLT_MAX;
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); ++i )
 	{
@@ -2026,13 +2026,13 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 
 	case TASK_ASW_SWAP_TO_HEAL_GUN:
 		{
-			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if ( !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) )
+			if ( !dynamic_cast<IASW_Medical_Weapon *>( GetActiveASWWeapon() ) )
 			{
 				for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 				{
 					CASW_Weapon *pWeapon = GetASWWeapon( iWeapon );
-					if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && pWeapon->HasAmmo() )
+					IASW_Medical_Weapon *pMedicalWeapon = dynamic_cast<IASW_Medical_Weapon *>( pWeapon );
+					if ( pMedicalWeapon && pMedicalWeapon->HasMedicalAmmo() )
 					{
 						Weapon_Switch( pWeapon );
 						break;
@@ -2046,20 +2046,17 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 
 	case TASK_ASW_HEAL_MARINE:
 		{
-			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if ( !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) || !pWeapon->HasAmmo() )
+			IASW_Medical_Weapon *pWeapon = dynamic_cast<IASW_Medical_Weapon *>( GetActiveASWWeapon() );
+			if ( !pWeapon || !pWeapon->HasMedicalAmmo() )
 			{
 				TaskComplete();
 			}
 			else
 			{
-				CASW_Weapon_Heal_Gun *pHealgun = static_cast<CASW_Weapon_Heal_Gun*>( pWeapon );
-
-				// if the gun to longer has a target...
-				if ( !pHealgun || !m_hHealTarget || 
-					m_hHealTarget->GetHealth() <= 0 || 
-					m_hHealTarget->GetHealth() >= m_hHealTarget->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD && !m_hHealTarget->IsOnFire() ||
-					m_hHealTarget->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) >= Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.5 ) )
+				// if the gun no longer has a target...
+				if ( !m_hHealTarget || m_hHealTarget->GetHealth() <= 0 ||
+					( m_hHealTarget->GetHealth() >= m_hHealTarget->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD && !m_hHealTarget->IsOnFire() ) ||
+					m_hHealTarget->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) >= Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) )
 				{
 					TaskComplete();
 				}
@@ -2078,7 +2075,7 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 					}
 
 					if ( !bHealFailed )
-						pHealgun->HealAttach( m_hHealTarget );
+						pWeapon->HealAttach( m_hHealTarget );
 				}
 			}
 		}
@@ -2502,7 +2499,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 		{
 			if( m_hHealTarget )
 			{
-				AI_NavGoal_t goal( m_hHealTarget->GetAbsOrigin(), ACT_RUN, ( IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) ? ASW_MARINE_USE_RADIUS : CASW_Weapon_Heal_Gun::GetWeaponRange() ) * 0.5f );
+				AI_NavGoal_t goal( m_hHealTarget->GetAbsOrigin(), ACT_RUN, ( IsCurSchedule( SCHED_ASW_REVIVE_MARINE ) ? ASW_MARINE_USE_RADIUS : IASW_Medical_Weapon::GetWeaponRange() ) * 0.5f );
 				GetNavigator()->SetGoal( goal );
 			}
 			TaskComplete();
@@ -2516,7 +2513,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 			{
 				UpdateFacing();
 				bool bTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->curtime - GetTimeTaskStarted() );
-				bool bArrived = ( ( GetNavigator()->GetGoalPos() - GetAbsOrigin() ).LengthSqr() < Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.5f ) );
+				bool bArrived = ( ( GetNavigator()->GetGoalPos() - GetAbsOrigin() ).LengthSqr() < Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) );
 				bool bArrivedRevive = ( ( GetNavigator()->GetGoalPos() - GetAbsOrigin() ).LengthSqr() < Square( ASW_MARINE_USE_RADIUS*0.5f ) );
 				if ( bTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE || ( !m_hHealTarget->m_bKnockedOut && bArrived ) || ( m_hHealTarget->m_bKnockedOut && bArrivedRevive ) )
 				{
@@ -2541,7 +2538,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 
 					// see if target marine has moved far enough that we need to adjust path
 					const Vector &vecCurrentPos = m_hHealTarget->GetAbsOrigin();
-					if ( ( GetNavigator()->GetGoalPos() - vecCurrentPos ).LengthSqr() > Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.5f ) )
+					if ( ( GetNavigator()->GetGoalPos() - vecCurrentPos ).LengthSqr() > Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) )
 					{
 						if ( GetNavigator()->GetNavType() != NAV_JUMP )
 						{
@@ -2570,19 +2567,17 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 
 	case TASK_ASW_HEAL_MARINE:
 		{
-			CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			if ( !m_hHealTarget || !pWeapon || ( pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_HEALAMP_GUN ) || !pWeapon->HasAmmo() )
+			IASW_Medical_Weapon *pWeapon = dynamic_cast<IASW_Medical_Weapon *>( GetActiveASWWeapon() );
+			if ( !m_hHealTarget || !pWeapon || !pWeapon->HasMedicalAmmo() )
 			{
 				TaskComplete();
 			}
 			else
 			{
-				CASW_Weapon_Heal_Gun *pHealgun = static_cast<CASW_Weapon_Heal_Gun*>( pWeapon );
-
 				bool bHealSucceeded = true;
 
 				// if the gun to longer has a target...
-				if ( m_hHealTarget->GetHealth() <= 0 || 
+				if ( m_hHealTarget->GetHealth() <= 0 ||
 					m_hHealTarget->GetHealth() >= m_hHealTarget->GetMaxHealth() * MARINE_STOP_HEAL_THRESHOLD )
 				{
 					TaskComplete();
@@ -2590,7 +2585,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 				}
 				else
 				{
-					if ( m_hHealTarget->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) >= Square( CASW_Weapon_Heal_Gun::GetWeaponRange()*0.75 ) )
+					if ( m_hHealTarget->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) >= Square( IASW_Medical_Weapon::GetWeaponRange() * 0.75f ) )
 					{
 						TaskComplete();
 					}
@@ -2608,14 +2603,14 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 					}
 				}
 
-				if ( !pHealgun || !pHealgun->HasHealAttachTarget() )
+				if ( !pWeapon || !pWeapon->HasHealAttachTarget() )
 				{
 					bHealSucceeded = false;
 					TaskComplete();
 				}
 
 				if ( bHealSucceeded )
-					pHealgun->PrimaryAttack();
+					pWeapon->HealAttack();
 			}		
 		}
 		break;
@@ -2642,7 +2637,7 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 		return;
 
 	// reactivedrop: don't switch weapons while healing 
-	if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
+	if ( dynamic_cast<IASW_Medical_Weapon *>( pWeapon ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
 		return;
 
 	// see if any of our other inventory items are valid weapons
@@ -3053,7 +3048,7 @@ bool CASW_Marine::CheckAutoWeaponSwitch()
 		return true;
 
 	// reactivedrop: don't switch weapons while healing 
-	if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_HEAL_GUN || pWeapon->Classify() == CLASS_ASW_HEALAMP_GUN ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
+	if ( dynamic_cast<IASW_Medical_Weapon *>( pWeapon ) && IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )
 		return false;
 
 	// marine doesn't auto switch weapons the first two times he's hurt
