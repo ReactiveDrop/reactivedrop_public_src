@@ -232,7 +232,7 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 	{
 		pKey->RecursiveSaveToFile( buf, 0 );			
 	}
-	if ( !g_pFullFileSystem->WriteFile( filename, "GAME", buf ) )
+	if ( !g_pFullFileSystem->WriteFile( filename, "MOD", buf ) )
 	{
 		Msg( "Failed to SaveToFile %s\n", filename );
 		return false;

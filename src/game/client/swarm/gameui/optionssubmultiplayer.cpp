@@ -857,7 +857,7 @@ void COptionsSubMultiplayer::OnFileSelected(const char *fullpath)
 		Q_strncat(finalPath,"vtf", sizeof(finalPath), COPY_ALL_CHARACTERS);
 
 		// make sure the directory exists before we try to copy the file.
-		g_pFullFileSystem->CreateDirHierarchy("materials/VGUI/logos/", "GAME");
+		g_pFullFileSystem->CreateDirHierarchy("materials/VGUI/logos/", "MOD");
 
 		// write out the spray VMT file.
 		errcode = WriteSprayVMT(finalPath);
@@ -2250,7 +2250,7 @@ void COptionsSubMultiplayer::RemapLogo()
 	char fullLogoName[512];
 
 	// make sure there is a version with the proper shader
-	g_pFullFileSystem->CreateDirHierarchy( "materials/VGUI/logos/UI", "GAME" );
+	g_pFullFileSystem->CreateDirHierarchy( "materials/VGUI/logos/UI", "MOD" );
 	Q_snprintf( fullLogoName, sizeof( fullLogoName ), "materials/VGUI/logos/UI/%s.vmt", logoname );
 	if ( !g_pFullFileSystem->FileExists( fullLogoName ) )
 	{

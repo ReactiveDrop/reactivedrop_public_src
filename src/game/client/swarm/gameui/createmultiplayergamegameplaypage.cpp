@@ -144,8 +144,8 @@ void CCreateMultiplayerGameGameplayPage::OnApplyChanges()
 		m_pDescription->WriteToConfig();
 
 		// save out in the settings file
-		g_pFullFileSystem->CreateDirHierarchy( OPTIONS_DIR, "GAME" );
-		fp = g_pFullFileSystem->Open( OPTIONS_FILE, "wb", "GAME" );
+		g_pFullFileSystem->CreateDirHierarchy( OPTIONS_DIR, "MOD" );
+		fp = g_pFullFileSystem->Open( OPTIONS_FILE, "wb", "MOD" );
 		if ( fp )
 		{
 			m_pDescription->WriteToScriptFile( fp );

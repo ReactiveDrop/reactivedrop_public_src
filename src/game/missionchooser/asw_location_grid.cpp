@@ -92,7 +92,7 @@ bool CASW_Location_Grid::SaveLocationGrid()
 		pKey->RecursiveSaveToFile( buf, 0 );
 		pKey->deleteThis();
 	}
-	if ( !g_pFullFileSystem->WriteFile( filename, "GAME", buf ) )
+	if ( !g_pFullFileSystem->WriteFile( filename, "MOD", buf ) )
 	{
 		Warning( "Failed to SaveLocationGrid %s\n", filename );
 		return false;

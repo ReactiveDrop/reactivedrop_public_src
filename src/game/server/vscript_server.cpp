@@ -795,12 +795,12 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 	}
 
 	if ( bHasFolders )
-		g_pFullFileSystem->CreateDirHierarchy( CFmtStr( "save/vscripts/%s", szFolders ), "GAME" );
+		g_pFullFileSystem->CreateDirHierarchy( CFmtStr( "save/vscripts/%s", szFolders ), "MOD" );
 	else
-		g_pFullFileSystem->CreateDirHierarchy( "save/vscripts", "GAME" );
+		g_pFullFileSystem->CreateDirHierarchy( "save/vscripts", "MOD" );
 	CUtlBuffer buf;
 	buf.PutString( pszString );
-	g_pFullFileSystem->WriteFile( szFullFileName, "GAME", buf );
+	g_pFullFileSystem->WriteFile( szFullFileName, "MOD", buf );
 }
 
 static const char *Script_FileToString( const char *pszFileName )
