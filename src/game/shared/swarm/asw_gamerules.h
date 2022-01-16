@@ -112,7 +112,7 @@ public:
 	virtual void			Think( void );
 	// reactivedrop: m_szGameDescription holds the name of current game mode 
 	const char *m_szGameDescription;
-	virtual const char *GetGameDescription( void ) { return m_szGameDescription; }
+	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	virtual void			Shutdown();
 	
