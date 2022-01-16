@@ -497,7 +497,7 @@ void InGameMainMenu::OnThink()
 		}
 	}
 
-	bool bCanGoIdle = ( !Q_stricmp( "campaign", szGameMode ) || !Q_stricmp( "single_mission", szGameMode ) ) && gpGlobals->maxClients > 1;
+	bool bCanGoIdle = ( !Q_stricmp( "campaign", szGameMode ) || !Q_stricmp( "single_mission", szGameMode ) ) && gpGlobals->maxClients > 1 && ConVarRef("rd_allow_afk").GetBool();
 
 	// TODO: determine if player can go idle
 #if 0
