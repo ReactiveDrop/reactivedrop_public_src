@@ -21,6 +21,7 @@
 #include "asw_deathmatch_mode.h"
 #include "asw_hud_minimap.h"
 #include "stats_report.h"
+#include "rd_weapon_generic_object_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1416,71 +1417,79 @@ void CASW_Hud_Master::PaintText()
 		surface()->DrawSetTextFont( m_hDefaultSmallFont );
 		surface()->DrawSetTextColor( 255, 255, 255, 255 );
 		surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_weapon_name_x,
-										 m_nMarinePortrait_y + m_nMarinePortrait_weapon_name_y );
-		surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( pInfo->szPrintName ) );
+									 m_nMarinePortrait_y + m_nMarinePortrait_weapon_name_y );
 
-		// > 5 clips
-		static wchar_t wszBullets[ 6 ];
-		if ( pInfo->m_iShowClipsOnHUD && m_nLocalMarineClips > 5 )
+		C_RD_Weapon_Generic_Object *pGenericObject = dynamic_cast<C_RD_Weapon_Generic_Object *>( m_pLocalMarineActiveWeapon );
+		if ( pGenericObject )
 		{
-			_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_nLocalMarineClips );
-			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
-				m_nMarinePortrait_y + m_nMarinePortrait_clips_y );
-			surface()->DrawUnicodeString( wszBullets );
+			surface()->DrawUnicodeString( pGenericObject->m_wszCarriedName );
 		}
-
-		// low ammo
-		if ( ( int( gpGlobals->curtime*4 ) % 2 ) == 0 )
+		else
 		{
-			bool bReloading = ( m_pLocalMarineActiveWeapon && m_pLocalMarineActiveWeapon->IsReloading() );
-			if ( !bReloading )
+			surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( pInfo->szPrintName ) );
+
+			// > 5 clips
+			static wchar_t wszBullets[ 6 ];
+			if ( pInfo->m_iShowClipsOnHUD && m_nLocalMarineClips > 5 )
 			{
-				if ( m_pLocalMarineResource->GetAmmoPercent() <= 0 )
+				_snwprintf( wszBullets, sizeof( wszBullets ), L"x%d", m_nLocalMarineClips );
+				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
+					m_nMarinePortrait_y + m_nMarinePortrait_clips_y );
+				surface()->DrawUnicodeString( wszBullets );
+			}
+
+			// low ammo
+			if ( ( int( gpGlobals->curtime*4 ) % 2 ) == 0 )
+			{
+				bool bReloading = ( m_pLocalMarineActiveWeapon && m_pLocalMarineActiveWeapon->IsReloading() );
+				if ( !bReloading )
 				{
-					surface()->DrawSetTextColor( 200, 25, 25, 255 );
-					surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
-						m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
-					surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#asw_no_ammo" ) );
-				}
-				else if ( m_pLocalMarineResource->IsLowAmmo() )
-				{
-					surface()->DrawSetTextColor( 200, 25, 25, 255 );
-					surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
-						m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
-					surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#asw_low_ammo" ) );
+					if ( m_pLocalMarineResource->GetAmmoPercent() <= 0 )
+					{
+						surface()->DrawSetTextColor( 200, 25, 25, 255 );
+						surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
+							m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
+						surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#asw_no_ammo" ) );
+					}
+					else if ( m_pLocalMarineResource->IsLowAmmo() )
+					{
+						surface()->DrawSetTextColor( 200, 25, 25, 255 );
+						surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_low_ammo_x,
+							m_nMarinePortrait_y + m_nMarinePortrait_low_ammo_y );
+						surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( "#asw_low_ammo" ) );
+					}
 				}
 			}
-		}
 
-		// Bullet count also blinks the low ammo color if set above
-		surface()->DrawSetTextFont( m_hDefaultLargeFont );
+			// Bullet count also blinks the low ammo color if set above
+			surface()->DrawSetTextFont( m_hDefaultLargeFont );
 
-		if ( pInfo->m_iShowBulletsOnHUD )
-		{
-			_snwprintf( wszBullets, sizeof( wszBullets ), L"%03d", m_nLocalMarineBullets );
-			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_bullets_x,
-				m_nMarinePortrait_y + m_nMarinePortrait_bullets_y );
-			surface()->DrawUnicodeString( wszBullets );
-		}
+			if ( pInfo->m_iShowBulletsOnHUD )
+			{
+				_snwprintf( wszBullets, sizeof( wszBullets ), L"%03d", m_nLocalMarineBullets );
+				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_bullets_x,
+					m_nMarinePortrait_y + m_nMarinePortrait_bullets_y );
+				surface()->DrawUnicodeString( wszBullets );
+			}
 
-		// Back to white
-		surface()->DrawSetTextColor( 255, 255, 255, 255 );
+			// Back to white
+			surface()->DrawSetTextColor( 255, 255, 255, 255 );
 
-		if ( pInfo->m_iShowGrenadesOnHUD )
-		{
-			_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineGrenades );
-			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
-				m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
-			surface()->DrawUnicodeString( wszBullets );
+			if ( pInfo->m_iShowGrenadesOnHUD )
+			{
+				_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineGrenades );
+				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
+					m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
+				surface()->DrawUnicodeString( wszBullets );
+			}
+			else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
+			{
+				_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineSecondaryBullets );
+				surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
+					m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
+				surface()->DrawUnicodeString( wszBullets );
+			}
 		}
-		else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
-		{
-			_snwprintf( wszBullets, sizeof( wszBullets ), L"%d", m_nLocalMarineSecondaryBullets );
-			surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_grenades_x,
-				m_nMarinePortrait_y + m_nMarinePortrait_grenades_y );
-			surface()->DrawUnicodeString( wszBullets );
-		}
-		
 	}
 
 	CASW_Weapon *pExtraItem = m_pLocalMarine ? m_pLocalMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA ) : NULL;

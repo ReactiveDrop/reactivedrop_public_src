@@ -295,3 +295,21 @@
 	replace09(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
 	replace10(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
 ]
+
+@PointClass base(ASWPickup, Studiomodel, RenderFields) studioprop() = rd_weapon_generic_object : "Carryable Object"
+[
+	CarriedName(string) : "Object Name" : "" : "The name of this object for the UI."
+	MoveSpeedMultiplier(float) : "Movement Speed Multiplier" : "1.0" : "How fast marines should move while carrying this item."
+	LargeObject(choices) : "Carry Animation" : 1 : "Which set of carry animations to use." =
+	[
+		0 : "Small Object"
+		1 : "Large Object"
+	]
+	UseBoneMerge(choices) : "Carry Mode" : 0 : "How to place the object while it is being carried." =
+	[
+		0 : "Offset + Angle"
+		1 : "Bone Merge"
+	]
+	CarriedAngle(angles) : "Carried Angle" : "0 0 0" : ""
+	CarriedOffset(vector) : "Carried Offset" : "0 0 0" : ""
+]
