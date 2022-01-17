@@ -1431,11 +1431,16 @@ void CASWHudMinimap::SetMap(const char * levelname)
 
 	m_MapKeyValues = new KeyValues( levelname );
 
+	CUtlVector<int> seenTextureIDs;
+	seenTextureIDs.AddToTail( -1 );
+
 	for ( int i = 0; i < ASW_MAX_MAP_VERTICAL_SECTIONS; i++ )
 	{
-		if ( surface()->IsTextureIDValid( m_nMapTextureID[i] ) )
+		// We may be using texture IDs multiple times if a range was intersected.
+		// Only free each texture ID once to avoid weird double-free problems.
+		if ( seenTextureIDs.Find( m_nMapTextureID[i] ) == -1 )
 		{
-			// free old texture
+			seenTextureIDs.AddToTail( m_nMapTextureID[i] );
 			surface()->DestroyTextureID( m_nMapTextureID[i] );
 		}
 
@@ -1511,7 +1516,18 @@ void CASWHudMinimap::SetMap(const char * levelname)
 				break;
 			}
 
-			if ( iMinIndex > 0 && iBlankIndex != iMinIndex && iBlankIndex + 1 < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMinIndex + 1] > flMax )
+			if ( m_flMapMinZ[iMinIndex] == flMin )
+			{
+				// The next section is where we want to start. Generally this means it's a split section.
+				for ( int i = iBlankIndex; i > iMinIndex; i-- )
+				{
+					m_flMapMinZ[i] = m_flMapMinZ[i - 1];
+					m_nMapTextureID[i] = m_nMapTextureID[i - 1];
+				}
+
+				m_flMapMinZ[iMinIndex + 1] = MIN( iMinIndex + 2 < ASW_MAX_MAP_VERTICAL_SECTIONS ? m_flMapMinZ[iMinIndex + 2] : HUGE_VAL, flMax );
+			}
+			else if ( iMinIndex > 0 && iBlankIndex != iMinIndex && iBlankIndex + 1 < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMinIndex + 1] > flMax )
 			{
 				// The next section is past the end of the one we're adding, so we need to extend the previous section after us.
 				for ( int i = iBlankIndex + 1; i > iMinIndex; i-- )
