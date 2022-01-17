@@ -79,7 +79,7 @@ public:
 	bool GetAlienBounds( const char *szAlienClass, Vector &vecMins, Vector &vecMaxs );
 	bool GetAlienBounds( string_t iszAlienClass, Vector &vecMins, Vector &vecMaxs );
 
-	int GetHordeToSpawn() { return m_iHordeToSpawn; }
+	int GetHordeToSpawn() { return m_iHordeToSpawn + m_pHordeWandererDefinition.Count(); }
 
 	void OnAlienWokeUp( CASW_Alien *pAlien );
 	void OnAlienSleeping( CASW_Alien *pAlien );
@@ -115,6 +115,8 @@ private:
 	int m_nAwakeAliens;
 	int m_nAwakeDrones;
 
+	bool m_bWarnedAboutMissingNodes;
+
 	// maintaining a list of possible nodes to spawn aliens from
 	CUtlVector<int> m_northCandidateNodes;
 	CUtlVector<int> m_southCandidateNodes;
@@ -122,6 +124,8 @@ private:
 
 	typedef CHandle<CTriggerMultiple> TriggerMultiple_t;
 	CUtlVector<TriggerMultiple_t> m_EscapeTriggers;
+
+	friend class CASW_Director_VScript;
 };
 
 extern const int g_nDroneClassEntry;

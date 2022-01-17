@@ -3013,32 +3013,31 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 			CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pMarine->m_hUsingEntity.Get());
 			if (pComputer)
 			{
-				if (pComputer->m_iActiveCam == 1 && pComputer->m_hSecurityCam1.Get())
+				CASW_PointCamera *pComputerCam = pComputer->GetActiveCam();
+
+				// check if any mapper set cameras are active, we shouldn't be on if they are
+				if ( pComputer->m_hSecurityCam1 && ( !bMapperCam || pComputer->m_hSecurityCam1 != pMapperCamera ) && pComputer->m_hSecurityCam1.Get() != pComputerCam )
+				{
+					pComputer->m_hSecurityCam1->SetActive( false );
+				}
+
+				if ( pComputer->m_hSecurityCam2 && ( !bMapperCam || pComputer->m_hSecurityCam2 != pMapperCamera ) && pComputer->m_hSecurityCam2.Get() != pComputerCam )
+				{
+					pComputer->m_hSecurityCam2->SetActive( false );
+				}
+
+				if ( pComputer->m_hSecurityCam3 && ( !bMapperCam || pComputer->m_hSecurityCam3 != pMapperCamera ) && pComputer->m_hSecurityCam3.Get() != pComputerCam )
+				{
+					pComputer->m_hSecurityCam3->SetActive( false );
+				}
+
+				if ( pComputerCam && ( !bMapperCam || pComputerCam != pMapperCamera ) )
 				{
 					// if we're here, a computer camera is active
-
-					// check if any mapper set cameras are active, we shouldn't be on if they are
-					CPointCamera *pCam = dynamic_cast<CPointCamera*>( pComputer->m_hSecurityCam1.Get() );
-					Assert( pCam );
-
-					if ( bMapperCam )
-					{
-						pCam->SetActive(false);
-					}
-					else
-					{
-						engine->AddOriginToPVS( pCam->GetAbsOrigin() );
-						pCam->SetActive(true);
-						CASW_PointCamera *pASWCam = dynamic_cast<CASW_PointCamera*>(pCam);
-						if ( pASWCam )
-						{
-							pASWCam->m_bSecurityCam = true;
-						}
-					}
+					engine->AddOriginToPVS( pComputerCam->GetAbsOrigin() );
+					pComputerCam->SetActive( true );
 				}
 			}
-			// todo: check which is the cam being used and only activate that one
-			//  turn off activation when we stop using?
 		}
 		if (pMarine->IsControllingTurret())
 		{

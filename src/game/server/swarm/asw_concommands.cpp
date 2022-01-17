@@ -26,8 +26,8 @@
 
 // This file contains various debugging and cheat concommands
 
-ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_NONE, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
 ConVar rd_allow_flashlight("rd_allow_flashlight", "0", FCVAR_CHEAT, "If set to 0 players cannot use asw_flashlight command");
+extern ConVar rd_allow_afk;
 
 void cc_CreatePredictionError_f()
 {
@@ -808,10 +808,10 @@ void asw_test_turret_f()
 		CBaseEntity* pEntity = NULL;
 		while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_remote_turret" )) != NULL)
 		{
-			CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pEntity);			
+			CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pEntity);
 			if (pTurret)
 			{
-				pTurret->StartedUsingTurret(pMarine);
+				pTurret->StartedUsingTurret( pMarine, NULL );
 				pMarine->m_hRemoteTurret = pTurret;
 				Msg("Set turret\n");
 				return;

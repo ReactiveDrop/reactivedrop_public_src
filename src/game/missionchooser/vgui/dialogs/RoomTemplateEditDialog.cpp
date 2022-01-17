@@ -278,28 +278,6 @@ void CRoomTemplateEditDialog::OnCommand( const char *command )
 			pRoomTemplateKeyValues->deleteThis();
 		}
 	}
-	else if (Q_stricmp( command, "EditLights" ) == 0 )
-	{
-		OnClose();
-		CMapLayout *pMapLayout = new CMapLayout;
-		new CRoom( pMapLayout, m_pRoomTemplate, MAP_LAYOUT_TILES_WIDE / 2, MAP_LAYOUT_TILES_WIDE / 2 );
-		pMapLayout->SaveMapLayout( "maps/output.layout" );
-		char buffer[256];
-		Q_snprintf(buffer, _countof(buffer), "asw_random_weapons 0; asw_money 0; asw_build_map %s edit %s", "output.layout", GetVMFFilename() );
-		engine->ClientCmd_Unrestricted( buffer );
-		delete pMapLayout;
-	}
-	else if (Q_stricmp( command, "GenerateNav" ) == 0 )
-	{
-		OnClose();
-		CMapLayout *pMapLayout = new CMapLayout;
-		new CRoom( pMapLayout, m_pRoomTemplate, MAP_LAYOUT_TILES_WIDE / 2, MAP_LAYOUT_TILES_WIDE / 2 );
-		pMapLayout->SaveMapLayout( "maps/output.layout" );
-		char buffer[256];
-		Q_snprintf(buffer, _countof(buffer), "asw_random_weapons 0; asw_money 0; asw_director_spawn_npcs 0; asw_spawner_spawn_npcs 0; asw_build_map %s; asw_generate_nav 1", "output.layout", GetVMFFilename() );
-		engine->ClientCmd_Unrestricted( buffer );
-		delete pMapLayout;
-	}
 	else if (Q_stricmp( command, "ClearAllExits" ) == 0 )
 	{
 		if (!m_pRoomTemplate)

@@ -7,10 +7,13 @@
 #include "TileSource/MapLayout.h"
 #include "TileGenDialog.h"
 
+#include <string>
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-ConVar tilegen_use_instancing( "tilegen_use_instancing", "0", FCVAR_REPLICATED );
+// we can't use instances for rooms if we want rd_tilegen_instance to work.
+ConVar tilegen_use_instancing( "tilegen_use_instancing", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // TODO: Read room templates into keyvalues and output them after the whole room template has been loaded
 //       This way we can modify state based on the complete picture of that room, rather than just making changes on a key by key basis
@@ -229,7 +232,7 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 	{
 		pKey->RecursiveSaveToFile( buf, 0 );			
 	}
-	if ( !g_pFullFileSystem->WriteFile( filename, "GAME", buf ) )
+	if ( !g_pFullFileSystem->WriteFile( filename, "MOD", buf ) )
 	{
 		Msg( "Failed to SaveToFile %s\n", filename );
 		return false;
@@ -322,6 +325,11 @@ bool VMFExporter::AddRoomTemplateEntities( const CRoomTemplate *pRoomTemplate )
 			{
 				Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy entity from room %s\n", pRoomTemplate->GetFullName());
 				return false;
+			}
+			if ( !Q_stricmp( pKeys->GetString("classname"), "func_instance" ) && !Q_stricmp(pKeys ->GetString( "file" ), "" ) )
+			{
+				// skip instances with no filename (for rd_tilegen_instance)
+				continue;
 			}
 			m_pExportKeys->AddSubKey( pKeys->MakeCopy() );
 		}
@@ -538,7 +546,15 @@ bool VMFExporter::ProcessSideKey( KeyValues *pKey )
 }
 
 bool VMFExporter::ProcessEntity( KeyValues *pEntityKeys )
-{		
+{
+	if ( !Q_stricmp( pEntityKeys->GetString( "classname" ), "rd_tilegen_instance" ) )
+	{
+		if ( !ProcessInstance( pEntityKeys ) )
+		{
+			return false;
+		}
+	}
+
 	for ( KeyValues *pKeys = pEntityKeys->GetFirstSubKey(); pKeys; )
 	{
 		if ( pKeys->GetFirstSubKey() )
@@ -571,6 +587,106 @@ bool VMFExporter::ProcessEntity( KeyValues *pEntityKeys )
 	}
 
 	return true;
+}
+
+bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
+{
+	pEntityKeys->SetString( "classname", "func_instance" );
+
+	struct InstanceChoice
+	{
+		std::string m_iszPath;
+		float m_flWeight;
+	};
+
+	CUtlVector<InstanceChoice> choices;
+	float flTotalWeight = 0;
+
+	for ( int i = 1; i <= 9; i++ )
+	{
+		char szKey[16];
+		Q_snprintf( szKey, sizeof(szKey), "weight%d", i );
+		float flWeight = pEntityKeys->GetFloat( szKey );
+
+		KeyValues *pRemoveKey = pEntityKeys->FindKey( szKey );
+		if ( pRemoveKey )
+		{
+			pEntityKeys->RemoveSubKey( pRemoveKey );
+			pRemoveKey->deleteThis();
+		}
+
+		Q_snprintf( szKey, sizeof(szKey), "glob%d", i );
+		if ( flWeight > 0 )
+		{
+			std::string iszGlob;
+			if ( *pEntityKeys->GetString(szKey) != '\0' )
+			{
+				iszGlob = "tilegen/instance/";
+				iszGlob += m_pRoom->m_pRoomTemplate->m_pLevelTheme->m_szName;
+				iszGlob += '/';
+				iszGlob += pEntityKeys->GetString(szKey);
+			}
+			if (iszGlob.find('*') != std::string::npos)
+			{
+				int nCount = 0;
+				FileFindHandle_t ffh;
+				for (const char *pszFilename = g_pFullFileSystem->FindFirstEx(iszGlob.c_str(), "GAME", &ffh); pszFilename; pszFilename = g_pFullFileSystem->FindNext(ffh))
+				{
+					choices.AddToTail(InstanceChoice{ iszGlob.substr(0, iszGlob.rfind('/') + 1) + std::string(pszFilename), flWeight });
+					nCount++;
+				}
+				g_pFullFileSystem->FindClose(ffh);
+
+				if (!nCount)
+				{
+					Warning("[TileGen] no results for instance glob '%s'\n", iszGlob.c_str());
+					return false;
+				}
+
+				// If we have, for example, lights_*.vmf at weight 1 with 4 matches and poster_of_gaben.vmf at weight 2 with
+				// 1 match (obviously, there is only one gaben), we want to have the poster be twice as common as the lights,
+				// not half as common.
+				for (int i = 1; i <= nCount; i++)
+				{
+					choices[choices.Count() - i].m_flWeight /= (float) nCount;
+				}
+			}
+			else
+			{
+				choices.AddToTail(InstanceChoice{ iszGlob, flWeight });
+			}
+			flTotalWeight += flWeight;
+		}
+
+		pRemoveKey = pEntityKeys->FindKey(szKey);
+		if (pRemoveKey)
+		{
+			pEntityKeys->RemoveSubKey(pRemoveKey);
+			pRemoveKey->deleteThis();
+		}
+	}
+
+	float flChoice = fmodf( ( flTotalWeight * ( (float) m_pRoom->m_nInstanceSeed / (float) INT_MAX ) ) + m_iEntityCount, flTotalWeight );
+	for ( int i = 0; i < choices.Count(); i++ )
+	{
+		flChoice -= choices[i].m_flWeight;
+		if (flChoice < 0)
+		{
+			if (choices[i].m_iszPath.empty())
+			{
+				pEntityKeys->SetString("file", "");
+			}
+			else
+			{
+				pEntityKeys->SetString("file", ( "../" + choices[i].m_iszPath ).c_str());
+			}
+			choices.Purge();
+			return true;
+		}
+	}
+	Warning( "[TileGen] no choices in rd_tilegen_instance\n" );
+	Assert( 0 );
+	return false;
 }
 
 bool VMFExporter::ProcessEntityKey( KeyValues *pKey )

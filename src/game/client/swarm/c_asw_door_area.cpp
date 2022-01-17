@@ -27,7 +27,7 @@ C_ASW_Door* C_ASW_Door_Area::GetASWDoor()
 bool C_ASW_Door_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 {
 	C_ASW_Door* pDoor = GetASWDoor();
-	if ( !pDoor || !pUser )
+	if ( !pDoor || !pUser || !pDoor->m_bCanPlayerWeld )
 		return false;
 
 	bool bHasWelder = pUser->Weapon_OwnsThisType( "asw_weapon_welder" ) != NULL;

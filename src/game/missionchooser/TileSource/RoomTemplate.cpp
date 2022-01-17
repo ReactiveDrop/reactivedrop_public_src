@@ -116,7 +116,7 @@ bool CRoomTemplate::SaveRoomTemplate()
 
 	char szThemeDirName[MAX_PATH];
 	Q_snprintf(szThemeDirName, sizeof(szThemeDirName), "tilegen/roomtemplates/%s", m_pLevelTheme->m_szName);
-	g_pFullFileSystem->CreateDirHierarchy( szThemeDirName, "GAME" );
+	g_pFullFileSystem->CreateDirHierarchy( szThemeDirName, "MOD" );
 
 	char szFullFileName[MAX_PATH];	
 	Q_snprintf( szFullFileName, sizeof(szFullFileName), "tilegen/roomtemplates/%s/%s.roomtemplate", m_pLevelTheme->m_szName, m_FullName );

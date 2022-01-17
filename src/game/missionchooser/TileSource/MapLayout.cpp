@@ -223,7 +223,7 @@ bool CMapLayout::SaveMapLayout( const char *filename )
 		pKey->RecursiveSaveToFile( buf, 0 );			
 	}
 	pLayoutKeys->deleteThis();
-	if ( !g_pFullFileSystem->WriteFile( filename, "GAME", buf ) )
+	if ( !g_pFullFileSystem->WriteFile( filename, "MOD", buf ) )
 	{
 		Log_Warning( LOG_TilegenLayoutSystem, "Failed to SaveToFile %s\n", filename );
 		return false;

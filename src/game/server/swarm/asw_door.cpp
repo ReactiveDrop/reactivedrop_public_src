@@ -65,6 +65,7 @@ BEGIN_DATADESC(CASW_Door)
 	DEFINE_KEYFIELD(m_bShowsOnScanner, FIELD_BOOLEAN, "showsonscanner" ),
 	DEFINE_KEYFIELD(m_bAutoOpen, FIELD_BOOLEAN, "autoopen" ),	
 	DEFINE_KEYFIELD(m_bCanCloseToWeld, FIELD_BOOLEAN, "CanCloseToWeld" ),
+	DEFINE_KEYFIELD(m_bCanPlayerWeld, FIELD_BOOLEAN, "CanPlayerWeld" ),
 	DEFINE_KEYFIELD(m_bDoCutShout, FIELD_BOOLEAN, "DoCutShout" ),
 	DEFINE_KEYFIELD(m_bDoBreachedShout, FIELD_BOOLEAN, "DoBreachedShout" ),
 	DEFINE_KEYFIELD(m_bDoAutoShootChatter, FIELD_BOOLEAN, "DoAutoShootChatter" ),
@@ -119,6 +120,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Door, DT_ASW_Door)
 	SendPropBool		(SENDINFO(m_bBashable)),
 	SendPropBool		(SENDINFO(m_bShootable)),
 	SendPropBool		(SENDINFO(m_bCanCloseToWeld)),
+	SendPropBool		(SENDINFO(m_bCanPlayerWeld)),
 	SendPropBool		(SENDINFO(m_bRecommendedSeal)),
 	SendPropBool		(SENDINFO(m_bWasWeldedByMarine)),
 	SendPropFloat		(SENDINFO(m_fLastMomentFlipDamage)),
@@ -162,6 +164,11 @@ namespace
 	}
 }
 
+CASW_Door::CASW_Door()
+{
+	// compat for maps built before this key was added to hammer
+	m_bCanPlayerWeld = true;
+}
 
 CASW_Door::~CASW_Door( void )
 {

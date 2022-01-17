@@ -44,12 +44,12 @@ CASW_VGUI_Computer_Menu::CASW_VGUI_Computer_Menu( vgui::Panel *pParent, const ch
 		msg->SetString("command", buffer);
 		m_pMenuLabel[i]->SetCommand(msg);
 
-		KeyValues *cmsg = new KeyValues("Command");			
+		KeyValues *cmsg = new KeyValues("Command");
 		cmsg->SetString( "command", "Cancel" );
 		m_pMenuLabel[i]->SetCancelCommand( cmsg );
 
 		m_pMenuIcon[i] = new vgui::ImagePanel(this, "ComputerMenuIcon");
-		m_pMenuIconShadow[i] = new vgui::ImagePanel(this, "ComputerMenuIconShadow");		
+		m_pMenuIconShadow[i] = new vgui::ImagePanel(this, "ComputerMenuIconShadow");
 	}
 
 	m_iOptions = 0;
@@ -103,7 +103,7 @@ void CASW_VGUI_Computer_Menu::PerformLayout()
 	int ix, iy;
 	m_pInsufficientRightsLabel->GetTextImage()->GetContentSize(ix, iy);
 	m_pInsufficientRightsLabel->SetSize(ix, iy);	
-	m_pInsufficientRightsLabel->SetPos(w * 0.5f - ix * 0.455f, h * 0.56f);		
+	m_pInsufficientRightsLabel->SetPos(w * 0.5f - ix * 0.455f, h * 0.56f);
 
 	LayoutMenuOptions();
 }
@@ -216,12 +216,20 @@ void CASW_VGUI_Computer_Menu::SetIcons()
 	Msg("menu setting icons. num options=%d\n", pArea->GetNumMenuOptions());
 
 	int icon = 0;
-	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetHackProgress() < 1.0f)
+	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetDownloadProgress() < 1.0f)
 		SetIcon(icon++, "#asw_SynTekDocs", "swarm/Computer/IconFiles");
 	if (pArea->m_hSecurityCam1.Get())
-		SetIcon(icon++, "#asw_SynTekSecurityCam1", "swarm/Computer/IconCamera");	
+		SetIcon(icon++, "#asw_SynTekSecurityCam1", "swarm/Computer/IconCamera");
+	if (pArea->m_hSecurityCam2.Get())
+		SetIcon(icon++, "#asw_SynTekSecurityCam2", "swarm/Computer/IconCamera");
+	if (pArea->m_hSecurityCam3.Get())
+		SetIcon(icon++, "#asw_SynTekSecurityCam3", "swarm/Computer/IconCamera");
 	if (pArea->m_hTurret1.Get())
 		SetIcon(icon++, "#asw_SynTekTurret1", "swarm/Computer/IconTurret");
+	if (pArea->m_hTurret2.Get())
+		SetIcon(icon++, "#asw_SynTekTurret2", "swarm/Computer/IconTurret");
+	if (pArea->m_hTurret3.Get())
+		SetIcon(icon++, "#asw_SynTekTurret3", "swarm/Computer/IconTurret");
 	if (pArea->m_MailFile.Get()[0] != 0)
 		SetIcon(icon++, "#asw_SynTekMail", "swarm/Computer/IconMail");
 	if (pArea->m_NewsFile.Get()[0] != 0)
@@ -354,16 +362,16 @@ void CASW_VGUI_Computer_Menu::ApplySchemeSettings(vgui::IScheme *pScheme)
 	vgui::HFont XLargeFont = pScheme->GetFont( "DefaultExtraLarge", IsProportional() );
 
 	m_pAccessDeniedLabel->SetFont(XLargeFont);
-	m_pAccessDeniedLabel->SetFgColor(Color(255,0,0,255));	
-	m_pInsufficientRightsLabel->SetFont(DefaultFont);	
-	m_pInsufficientRightsLabel->SetFgColor(Color(255,255,255,255));		
+	m_pAccessDeniedLabel->SetFgColor(Color(255,0,0,255));
+	m_pInsufficientRightsLabel->SetFont(DefaultFont);
+	m_pInsufficientRightsLabel->SetFgColor(Color(255,255,255,255));
 
 	//if (!m_bSetAlpha)
 	//{
 		m_pBlackBar[0]->SetAlpha(0);
 		m_pBlackBar[1]->SetAlpha(0);
 		m_pAccessDeniedLabel->SetAlpha(0);
-		m_pInsufficientRightsLabel->SetAlpha(0);		
+		m_pInsufficientRightsLabel->SetAlpha(0);
 	//}
 	if (!m_bSetAlpha)
 	{
@@ -563,7 +571,7 @@ void CASW_VGUI_Computer_Menu::SetHackOption(int iOption)
 	}
 	else
 	{
-		if (m_iPreviousHackOption == ASW_HACK_OPTION_OVERRIDE)	// finished a hack?
+		if ( m_hCurrentPage.Get() )
 		{
 			m_iAutodownload = iOption;
 			DoFadeCurrentPage();
@@ -602,7 +610,7 @@ void CASW_VGUI_Computer_Menu::LaunchHackOption(int iOption)
 
 	// otherwise check which icon we pressed
 	int icon = 1;
-	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetHackProgress() < 1.0f )
+	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetDownloadProgress() < 1.0f )
 	{
 		if (iOption == icon)
 		{
@@ -619,15 +627,39 @@ void CASW_VGUI_Computer_Menu::LaunchHackOption(int iOption)
 	{
 		if (iOption == icon)
 		{
-			// activate this one
-			CASW_VGUI_Computer_Camera* pCam = new CASW_VGUI_Computer_Camera(this, "ComputerCamera", m_pHackComputer);
+			// server will activate the correct camera
+			CASW_VGUI_Computer_Camera* pCam = new CASW_VGUI_Computer_Camera(this, "ComputerCamera", m_pHackComputer, pArea->m_SecurityCamLabel1);
 			pCam->ASWInit();
 			pCam->SetPos(0,0);
-			m_hCurrentPage = pCam;			
+			m_hCurrentPage = pCam;
 			return;
 		}
 		icon++;
-	}	
+	}
+	if (pArea->m_hSecurityCam2.Get())
+	{
+		if (iOption == icon)
+		{
+			CASW_VGUI_Computer_Camera* pCam = new CASW_VGUI_Computer_Camera(this, "ComputerCamera", m_pHackComputer, pArea->m_SecurityCamLabel2);
+			pCam->ASWInit();
+			pCam->SetPos(0,0);
+			m_hCurrentPage = pCam;
+			return;
+		}
+		icon++;
+	}
+	if (pArea->m_hSecurityCam3.Get())
+	{
+		if (iOption == icon)
+		{
+			CASW_VGUI_Computer_Camera* pCam = new CASW_VGUI_Computer_Camera(this, "ComputerCamera", m_pHackComputer, pArea->m_SecurityCamLabel3);
+			pCam->ASWInit();
+			pCam->SetPos(0,0);
+			m_hCurrentPage = pCam;
+			return;
+		}
+		icon++;
+	}
 	if (pArea->m_hTurret1.Get())
 	{
 		if (iOption == icon)
@@ -636,6 +668,26 @@ void CASW_VGUI_Computer_Menu::LaunchHackOption(int iOption)
 			// activate this one
 			// TODO: this should effectively close the computer (the server will make us remote control a turret)
 			//Msg("Turret section of computers not hooked up yet serverside\n");
+			CLocalPlayerFilter filter;
+			C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.RemoteTurret" );
+			return;
+		}
+		icon++;
+	}
+	if (pArea->m_hTurret2.Get())
+	{
+		if (iOption == icon)
+		{
+			CLocalPlayerFilter filter;
+			C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.RemoteTurret" );
+			return;
+		}
+		icon++;
+	}
+	if (pArea->m_hTurret3.Get())
+	{
+		if (iOption == icon)
+		{
 			CLocalPlayerFilter filter;
 			C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.RemoteTurret" );
 			return;

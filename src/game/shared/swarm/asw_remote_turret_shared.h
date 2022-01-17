@@ -11,6 +11,12 @@ class CUserCmd;
 class IMoveHelper;
 class CMoveData;
 
+#ifdef CLIENT_DLL
+class C_ASW_Marine;
+#else
+class CASW_Marine;
+#endif
+
 // a turret in the world that can be remote controlled by a player (from a computer).
 
 class CASW_Remote_Turret : public CBaseAnimating
@@ -42,10 +48,13 @@ public:
 	int UpdateTransmitState();
 	int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	void StopUsingTurret();
-	void StartedUsingTurret( CASW_Marine *pUser );
+	void StartedUsingTurret( CASW_Marine *pUser, CBaseEntity *pComputerArea );
 	QAngle AutoaimDeflection( Vector &vecSrc, const QAngle &eyeAngles, autoaim_params_t &params );
 	float GetAutoaimScore( const Vector &eyePosition, const Vector &viewDir, const Vector &vecTarget, CBaseEntity *pTarget, float fScale );
-		
+
+	COutputEvent m_OnStartedUsing;
+	COutputEvent m_OnStoppedUsing;
+
 	CNetworkQAngle( m_angEyeAngles );	
 #else	
 	virtual void ClientThink();
@@ -67,8 +76,14 @@ public:
 	void ASWRemoteTurretTracer( const Vector &vecEnd );
 #endif
 	CNetworkVar(bool, m_bUpsideDown);
+#ifdef CLIENT_DLL
+	C_ASW_Marine *GetUser();
+	CNetworkHandle(C_ASW_Marine, m_hUser);
+#else
 	CASW_Marine *GetUser();
 	CNetworkHandle(CASW_Marine, m_hUser);
+	EHANDLE m_hComputerArea;
+#endif
 	float m_fNextFireTime;
 	int m_iAmmoType;
 	virtual const Vector& GetBulletSpread( void )

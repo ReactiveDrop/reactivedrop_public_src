@@ -663,10 +663,10 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 		{
 			CBaseEntity* pEnt = pPlayer->GetUseEntity( i );
 			CASW_Door_Area* pDoorArea = dynamic_cast< CASW_Door_Area* >( pEnt );
-			if ( pDoorArea )
+			if ( pDoorArea && pDoorArea->m_bUseAreaEnabled )
 			{
 				CASW_Door* pDoor = pDoorArea->GetASWDoor();
-				if ( pDoor && pDoor->GetHealth() > 0 )
+				if ( pDoor && pDoor->GetHealth() > 0 && pDoor->m_bCanPlayerWeld )
 				{
 					return pDoor;
 				}
@@ -682,11 +682,11 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 		for ( int i = 0; i < IASW_Use_Area_List::AutoList().Count(); i++ )
 		{
 			CASW_Use_Area *pArea = static_cast< CASW_Use_Area* >( IASW_Use_Area_List::AutoList()[ i ] );
-			if ( pArea->Classify() == CLASS_ASW_DOOR_AREA )
+			if ( pArea->Classify() == CLASS_ASW_DOOR_AREA && pArea->m_bUseAreaEnabled )
 			{
 				CASW_Door_Area *pDoorArea = assert_cast<CASW_Door_Area*>( pArea );
 				CASW_Door* pDoor = pDoorArea->GetASWDoor();
-				if ( !pDoor || pDoor->GetHealth() <= 0 )
+				if ( !pDoor || pDoor->GetHealth() <= 0 || !pDoor->m_bCanPlayerWeld )
 				{
 					continue;
 				}

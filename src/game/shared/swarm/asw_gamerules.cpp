@@ -169,7 +169,8 @@ extern ConVar old_radius_damage;
 	ConVar rd_reassign_marines("rd_reassign_marines", "1", FCVAR_NONE, "For dev, if 1 ReassignMarines function will be called");
 	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
-	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kick players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
+	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kicks players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
+	ConVar rd_auto_kick_low_level_player_if_brutal_or_challenge( "rd_auto_kick_low_level_player_if_brutal_or_challenge", "1", FCVAR_NONE, "Server auto kicks players below level 30 if difficulty is higher than Hard or a challenge is active" );
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
@@ -399,6 +400,7 @@ ConVar rd_respawn_time( "rd_respawn_time", "0.2",  FCVAR_REPLICATED, "Number of 
 ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "1 enable ground shooting, 0 disabled" );
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
+ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
@@ -608,11 +610,11 @@ ConVar	sk_plr_dmg_asw_medrifle			( "sk_plr_dmg_asw_medrifle", "0", FCVAR_REPLICA
 ConVar	sk_npc_dmg_asw_medrifle			( "sk_npc_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
 ConVar	sk_max_asw_medrifle				( "sk_max_asw_medrifle", "0", FCVAR_REPLICATED );
 
-ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
-ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
+ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 
 // reactivedrop: adding these weapon damage overrides for PvP 
 ConVar	rd_shotgun_dmg_base("rd_shotgun_dmg_base",	"0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
@@ -654,7 +656,9 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 #else
 	);
 #endif
+#ifdef GAME_DLL
 ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
+#endif
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
 
 #define ADD_STAT( field, amount ) \
@@ -1095,6 +1099,11 @@ const char * GenerateNewSaveGameName()
 	}
 
 	return NULL;
+}
+
+const char* CAlienSwarm::GetGameDescription( void )
+{ 
+	return m_szGameDescription; 
 }
 
 CAlienSwarm::CAlienSwarm()
@@ -7024,6 +7033,50 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	if (!pPlayer)
 		return;
 
+		// if we're leader & this is listen server, then allow us to kick immediately
+	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() && !engine->IsDedicatedServer() )
+	{
+		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+		if (pOtherPlayer && pOtherPlayer != pPlayer)
+		{
+			// kick this player
+			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+			if (pOtherPlayer)
+			{
+				ClearLeaderKickVotes(pOtherPlayer, false, true);
+
+				ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
+				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName());
+
+				bool bPlayerCrashed = false;
+				INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
+				if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
+				{
+					// don't ban the player
+					DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
+					bPlayerCrashed = true;
+				}
+				if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
+				{
+					// don't roll the kick command into this, it will fail on a lan, where kickid will go through
+					engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
+				}
+
+				char buffer[256];
+				Q_snprintf(buffer, sizeof(buffer), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID());
+				Msg("sending command: %s\n", buffer);
+				engine->ServerCommand(buffer);			
+
+				//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
+				//{
+					//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
+				//}	
+			}
+
+			return;
+		}
+	}
+
 	int iOldPlayer = pPlayer->m_iKickVoteIndex;
 	pPlayer->m_iKickVoteIndex = iPlayerIndex;
 
@@ -7111,7 +7164,8 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 				DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
 				bPlayerCrashed = true;
 			}
-			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
+			bool bIsListenHost = !engine->IsDedicatedServer() && UTIL_GetListenServerHost() == pOtherPlayer;
+			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed && !bIsListenHost )
 			{
 				// don't roll the kick command into this, it will fail on a lan, where kickid will go through
 				engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
@@ -7737,7 +7791,10 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		}
 	}
 
-	if ( rd_auto_kick_low_level_player.GetBool() && engine->IsDedicatedServer() && pPlayer )
+	bool bNeedToKick = rd_auto_kick_low_level_player.GetBool();
+	bNeedToKick = bNeedToKick || (rd_auto_kick_low_level_player_if_brutal_or_challenge.GetBool() && ( GetSkillLevel() > 3 || V_strcmp( rd_challenge.GetString(), "0" ) ));
+
+	if ( bNeedToKick && engine->IsDedicatedServer() && pPlayer )
 	{
 		if ( !pPlayer->GetPromotion() )
 		{
@@ -8329,6 +8386,19 @@ void CAlienSwarm::LevelInitPostEntity()
 	{
 		Msg("ASW: Error! Failed to create ASWGameResource\n");
 		return;
+	}
+
+	if ( !gEntList.FindEntityByClassname( NULL, "env_tonemap_controller" ) )
+	{
+		DevWarning( "No env_tonemap_controller found in level. Creating one and setting bloom scale to a safe value.\n" );
+		CBaseEntity *pTonemap = CreateEntityByName( "env_tonemap_controller" );
+		if ( pTonemap )
+		{
+			DispatchSpawn( pTonemap );
+			variant_t scale;
+			scale.SetFloat( 0.25f );
+			pTonemap->AcceptInput( "SetBloomScale", pTonemap, pTonemap, scale, 0 );
+		}
 	}
 
 	// find the objective entities

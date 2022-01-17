@@ -64,6 +64,8 @@ extern ConVar asw_weapon_max_shooting_distance;
 BEGIN_DATADESC( CASW_Remote_Turret )
 	DEFINE_KEYFIELD(m_bUpsideDown, FIELD_BOOLEAN, "UpsideDown"),
 	DEFINE_KEYFIELD( m_angViewLimit, FIELD_VECTOR, "viewlimits" ),
+	DEFINE_OUTPUT( m_OnStartedUsing, "OnStartedUsing" ),
+	DEFINE_OUTPUT( m_OnStoppedUsing, "OnStoppedUsing" ),
 END_DATADESC()
 
 #else
@@ -601,14 +603,18 @@ int CASW_Remote_Turret::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 
 void CASW_Remote_Turret::StopUsingTurret()
 {
+	m_OnStoppedUsing.FireOutput( m_hUser, m_hComputerArea );
 	m_hUser = NULL;
-	UpdateTransmitState();
+	m_hComputerArea = NULL;
+	DispatchUpdateTransmitState();
 }
 
-void CASW_Remote_Turret::StartedUsingTurret(CASW_Marine *pUser)
+void CASW_Remote_Turret::StartedUsingTurret( CASW_Marine *pUser, CBaseEntity *pComputerArea )
 {
+	m_OnStartedUsing.FireOutput( pUser, pComputerArea );
 	m_hUser = pUser;
-	UpdateTransmitState();
+	m_hComputerArea = pComputerArea;
+	DispatchUpdateTransmitState();
 }
 #else
 	// client

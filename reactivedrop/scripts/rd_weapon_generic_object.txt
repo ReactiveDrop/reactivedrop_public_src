@@ -1,0 +1,35 @@
+WeaponData
+{
+	"printname" ""
+	"viewmodel" "models/error.mdl"
+	"playermodel" "models/error.mdl"
+	"anim_prefix" "ar2"
+	"bucket" "0"
+	"bucket_position" "0"
+
+	"clip_size" "1"
+	"default_clip" "1"
+
+	"clip2_size" "-1"
+	"default_clip2" "-1"
+
+	"primary_ammo" "None"
+	"secondary_ammo" "None"
+
+	"weight" "50"
+	"item_flags" "0"
+	
+	// asw properties
+	"reload_time" "1.0"
+	"base_damage" "0"
+	"fire_rate" "1.0"
+	"equipicon" "swarm/EquipIcons/Locked"
+	"ExtraItem" "0"
+
+	"ShowBulletsOnHUD" "0"
+	"ShowClipsOnHUD" "0"
+	"ShowGrenadesOnHUD" "0"
+	"ShowClipsDoubled" "0"
+
+	"HUDIconOffsetX" "-10"
+}

@@ -60,6 +60,7 @@ static CUtlVector<PublishedFileId_t> s_DelayedUnloadAddons;
 #else
 static CUtlVector<PublishedFileId_t> s_ServerWorkshopAddons;
 static bool s_bAnyServerUpdates = false;
+static ThreadHandle_t t_serverWorkshopUpdate;
 #endif
 static CUtlVector<PublishedFileId_t> s_DisabledAddons;
 
@@ -174,51 +175,96 @@ static void SaveDisabledAddons()
 }
 
 #ifdef GAME_DLL
-static bool DedicatedServerWorkshopSetup()
+inline void DedicatedServerWorkshopUpdate()
 {
-	if ( !steamgameserverapicontext->SteamUGC() && steamgameserverapicontext->Init() )
+	if ( !s_bStartingUp )
 	{
-		DevMsg( "Initialized Steam game server API context.\n" );
+		s_bAnyServerUpdates = false;
+		s_bStartingUp = true;
+		engine->ServerCommand( "exec workshop.cfg\n" );
+		engine->ServerExecute();
+		s_bStartingUp = false;
+		if ( s_bAnyServerUpdates )
+		{
+			ClearCaches();
+		}
+	}
+}
+
+unsigned int DedicatedServerWorkshopSetup( void* pParam )
+{
+	const ConVarRef mm_heartbeat_timeout( "mm_heartbeat_timeout" );
+	unsigned int wait = 30;
+	bool hasConnection = false;
+
+	if ( mm_heartbeat_timeout.IsValid() )
+	{
+		wait = mm_heartbeat_timeout.GetInt();
 	}
 
-	if ( !steamgameserverapicontext->SteamGameServer() || !steamgameserverapicontext->SteamGameServer()->BLoggedOn() )
+	while ( wait > 0 && !hasConnection )
 	{
-		return false;
+		ThreadSleep( 1000 );
+
+		DevMsg( "[workshop] wait %ds for steam connection]\n", wait );
+
+		// if steamugc is not there, create it
+		if ( !steamgameserverapicontext->SteamUGC() ) 
+		{
+			steamgameserverapicontext->Init();
+			DevMsg( "[workshop] initialized steam game server api context\n" );
+		}
+
+		// check if gameserver api is up
+		if ( steamgameserverapicontext->SteamGameServer() )
+		{
+			// check if vac is up (and we are connected)
+			DevMsg( "[workshop] waiting for connection..\n" );
+			if ( steamgameserverapicontext->SteamGameServer()->BLoggedOn() && steamgameserverapicontext->SteamGameServer()->BSecure() ) 
+			{
+				DevMsg( "[workshop] steam connection is up and running.\n" );
+				hasConnection = true;
+			}
+		}
+
+		wait--;
 	}
 
 	if ( !steamgameserverapicontext->SteamUGC() )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
-		return true;
+		return 1;
 	}
 
+	// XXX: we don't need this, removing this also fixes an assert dump.
+	/*
 	char szDir[MAX_PATH];
 	UTIL_GetModDir( szDir, sizeof( szDir ) );
 	char szWorkshopDir[MAX_PATH];
 	V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
 	steamgameserverapicontext->SteamUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+	*/
 
-	s_bAnyServerUpdates = false;
-	s_bStartingUp = true;
-	engine->ServerCommand( "exec workshop.cfg\n" );
-	engine->ServerExecute();
-	s_bStartingUp = false;
-	if ( s_bAnyServerUpdates )
-	{
-		ClearCaches();
-	}
+	// trigger update once
+	DedicatedServerWorkshopUpdate();
 
-	return true;
+	return 0;
 }
+
 
 #endif
 
+#ifdef GAME_DLL
 CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a workshop addon by ID" )
 {
-#ifdef GAME_DLL
 	if ( !engine->IsDedicatedServer() )
 	{
 		Warning( "rd_enable_workshop_item can only be used on dedicated servers.\n" );
+		return;
+	}
+
+	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
 	}
 
@@ -238,10 +284,8 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 
 		UpdateAndLoadAddon( id, false, true );
 	}
-#else
-	Msg( "rd_enable_workshop_item can only be used on dedicated servers.\n" );
-#endif
 }
+#endif
 
 
 CReactiveDropWorkshop::WorkshopItem_t CReactiveDropWorkshop::TryQueryAddon( PublishedFileId_t nPublishedFileID )
@@ -384,10 +428,15 @@ void CReactiveDropWorkshop::OnMissionStart()
 
 void CReactiveDropWorkshop::LevelInitPostEntity()
 {
+	// make sure the api reconnects on servers
+#ifndef CLIENT_DLL
+	steamgameserverapicontext->Init();
+#endif
+
 #ifdef GAME_DLL
 	if ( rd_workshop_update_every_round.GetBool() )
 	{
-		m_bWorkshopSetupCompleted = false;
+		DedicatedServerWorkshopUpdate();
 	}
 #endif
 }
@@ -430,7 +479,11 @@ void CReactiveDropWorkshop::SetupThink()
 
 	if ( !m_bWorkshopSetupCompleted )
 	{
-		m_bWorkshopSetupCompleted = DedicatedServerWorkshopSetup();
+		m_bWorkshopSetupCompleted = true;
+		if ( !t_serverWorkshopUpdate ) 
+		{
+			t_serverWorkshopUpdate = CreateSimpleThread( DedicatedServerWorkshopSetup, engine );
+		}
 		s_flNextDownloadStatusMessage = 0;
 	}
 

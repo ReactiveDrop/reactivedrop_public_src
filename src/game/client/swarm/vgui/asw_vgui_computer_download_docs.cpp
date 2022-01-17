@@ -255,7 +255,7 @@ void CASW_VGUI_Computer_Download_Docs::OnThink()
 	float fFraction = 0.0f;
 	if (m_pHackComputer && m_pHackComputer->GetComputerArea())
 	{
-		fFraction = m_pHackComputer->GetComputerArea()->GetHackProgress();
+		fFraction = m_pHackComputer->GetComputerArea()->GetDownloadProgress();
 
 		m_pBackButton->SetVisible( fFraction >= 1.0f || m_pHackComputer->GetComputerArea()->GetNumMenuOptions() > 1 );
 	}

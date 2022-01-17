@@ -21,7 +21,7 @@
 	ASW_HG_NUM_FIRE_STATES
 };*/
 
-class CASW_Weapon_MedRifle : public CASW_Weapon_Rifle
+class CASW_Weapon_MedRifle : public CASW_Weapon_Rifle, public IASW_Medical_Weapon
 {
 public:
 	DECLARE_CLASS( CASW_Weapon_MedRifle, CASW_Weapon_Rifle );
@@ -35,6 +35,8 @@ public:
 	virtual bool Reload( void );
 	virtual float GetWeaponDamage();
 	virtual void SecondaryAttack();
+	virtual void HealAttack() { SecondaryAttack(); }
+	virtual bool HasMedicalAmmo() { return HasSecondaryAmmo(); }
 	virtual void WeaponIdle( void );
 	virtual const Vector& GetBulletSpread( void );
 	virtual void ItemPostFrame();
@@ -49,7 +51,8 @@ public:
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
 
-		virtual const char* GetPickupClass() { return "asw_pickup_medrifle"; }		
+		virtual const char* GetPickupClass() { return "asw_pickup_medrifle"; }
+		virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	#else
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 		virtual void ClientThink( void );
@@ -64,7 +67,6 @@ public:
 
 	bool	HealAttach( CBaseEntity *pEntity );
 	bool	HasHealAttachTarget( void )	{ return (m_hHealEntity.Get()) ? true : false; }
-	static float		GetWeaponRange( void ) { return 240; }
 
 protected:
 	void	HealDetach();

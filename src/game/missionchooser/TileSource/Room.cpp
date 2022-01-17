@@ -22,18 +22,20 @@ CRoom::CRoom()
 	m_iNumChildren = 0;
 	m_nPlacementIndex = -1;
 	m_bHasAlienEncounter = false;
+	m_nInstanceSeed = -1;
 
 	m_pPlacedRoomPanel = NULL;
 	m_pMapLayout = NULL;
 }
 
-CRoom::CRoom( CMapLayout *pMapLayout, const CRoomTemplate* pRoomTemplate, int TileX, int TileY )
+CRoom::CRoom( CMapLayout *pMapLayout, const CRoomTemplate* pRoomTemplate, int TileX, int TileY, int nInstanceSeed )
 {
 	m_pRoomTemplate = pRoomTemplate;
 	m_iPosX = TileX;
 	m_iPosY = TileY;
 	m_iNumChildren = 0;
 	m_bHasAlienEncounter = false;
+	m_nInstanceSeed = nInstanceSeed;
 	
 	// Add ourself to the list of placed rooms.
 	// This also sets m_nPlacementIndex.
@@ -66,6 +68,7 @@ KeyValues *CRoom::GetKeyValuesCopy()
 	KeyValues *pKeys = new KeyValues( "room" );
 	pKeys->SetInt( "posx", m_iPosX );
 	pKeys->SetInt( "posy", m_iPosY );
+	pKeys->SetInt( "instance_seed", m_nInstanceSeed );
 	pKeys->SetString( "theme", m_pRoomTemplate->m_pLevelTheme->m_szName );
 	pKeys->SetString( "template", m_pRoomTemplate->GetFullName() );
 
@@ -85,6 +88,8 @@ bool CRoom::SaveRoomToFile(CChunkFile *pFile)
 	if (pFile->WriteKeyValueInt("posx", m_iPosX) != ChunkFile_Ok)
 		return false;
 	if (pFile->WriteKeyValueInt("posy", m_iPosY) != ChunkFile_Ok)
+		return false;
+	if (pFile->WriteKeyValueInt("instance_seed", m_nInstanceSeed) != ChunkFile_Ok)
 		return false;
 
 	// theme and template name
@@ -112,6 +117,7 @@ bool CRoom::LoadRoomFromKeyValues( KeyValues *pRoomKeys, CMapLayout *pMapLayout 
 	Q_snprintf( szLoadingTemplate, sizeof(szLoadingTemplate), "%s", pRoomKeys->GetString( "template" ) );		
 	pNewRoom->m_iPosX = pRoomKeys->GetInt( "posx" );
 	pNewRoom->m_iPosY = pRoomKeys->GetInt( "posy" );
+	pNewRoom->m_nInstanceSeed = pRoomKeys->GetInt( "instance_seed" );
 
 	// find pointer to the room template
 	// first find the theme with matching name

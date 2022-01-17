@@ -43,6 +43,7 @@ public:
 	bool m_bBashable;
 	bool m_bShootable;
 	bool m_bCanCloseToWeld;
+	bool m_bCanPlayerWeld;
 	bool m_bRecommendedSeal;
 	bool m_bWasWeldedByMarine;
 	float m_fLastMomentFlipDamage;
@@ -54,7 +55,7 @@ public:
 	static C_ASW_Door* GetDoorNear(Vector vecSrc);
 
 protected:
-	C_ASW_Door( const C_ASW_Door & ); // not defined, not accessible	
+	C_ASW_Door( const C_ASW_Door & ) = delete; // not defined, not accessible	
 
 	char m_szSealedIconTexture[96];
 

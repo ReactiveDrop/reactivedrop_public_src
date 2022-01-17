@@ -32,6 +32,7 @@ class CASW_Door : public CBasePropDoor
 	DECLARE_CLASS( CASW_Door, CBasePropDoor );	
 public:
 
+	CASW_Door();
 	virtual ~CASW_Door();
 
 	DECLARE_DATADESC();
@@ -185,6 +186,7 @@ private:
 	CNetworkVar( bool,  m_bBashable );
 	CNetworkVar( bool,  m_bShootable );
 	CNetworkVar( bool,  m_bCanCloseToWeld );
+	CNetworkVar( bool,  m_bCanPlayerWeld );
 	CNetworkVar( bool,  m_bRecommendedSeal );
 	CNetworkVar( bool,  m_bWasWeldedByMarine );
 	
@@ -202,6 +204,8 @@ private:
 	COutputEvent m_OnDestroyed;
 
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iHealth );
+
+	friend class CASW_Weapon_Welder;
 };
 
 inline const Vector &CASW_Door::GetClosedPosition()

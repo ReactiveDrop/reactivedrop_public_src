@@ -163,20 +163,13 @@ public:
 
 	void ResetIntensityForAllMarines()
 	{
-		Assert( ASWGameResource() );
-		if ( !ASWGameResource() )
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
 		{
 			return;
 		}
 
-		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
-		{
-			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
-			if ( pMR && pMR->GetIntensity() )
-			{
-				pMR->GetIntensity()->Reset();
-			}
-		}
+		ASWDirector()->ResetMarineIntensity();
 	}
 
 	void StartFinale()
@@ -211,6 +204,71 @@ public:
 
 		ASWDirector()->StopHoldout();
 	}
+
+	void SpawnHordeSoon()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return;
+		}
+
+		ASWDirector()->SpawnHordeSoon();
+	}
+
+	float GetTimeToNextHorde()
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return -1;
+		}
+
+		return ASWDirector()->m_HordeTimer.GetRemainingTime();
+	}
+
+	void SetTimeToNextHorde( float flNumSeconds )
+	{
+		Assert( ASWDirector() );
+		if ( !ASWDirector() )
+		{
+			return;
+		}
+
+		ASWDirector()->m_HordeTimer.Start( flNumSeconds );
+	}
+
+	ScriptVariant_t FindHordePosition( bool bNorth )
+	{
+		Vector position;
+		QAngle discard;
+
+		CASW_Spawn_Manager *pSpawnManager = ASWSpawnManager();
+		Assert( pSpawnManager );
+		if ( !pSpawnManager )
+		{
+			return SCRIPT_VARIANT_NULL;
+		}
+
+		pSpawnManager->UpdateCandidateNodes();
+		if ( pSpawnManager->FindHordePos( bNorth, bNorth ? pSpawnManager->m_northCandidateNodes : pSpawnManager->m_southCandidateNodes, position, discard ) )
+		{
+			return position;
+		}
+
+		return SCRIPT_VARIANT_NULL;
+	}
+
+	int IsSpawningHorde()
+	{
+		Assert( ASWSpawnManager() );
+		if ( !ASWSpawnManager() )
+		{
+			return 0;
+		}
+
+		return ASWSpawnManager()->GetHordeToSpawn();
+	}
 } g_ASWDirectorVScript;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETON "The AI director" )
@@ -227,8 +285,13 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETO
 	DEFINE_SCRIPTFUNC( ResetIntensity, "Reset the intensity value for a marine to zero" )
 	DEFINE_SCRIPTFUNC( ResetIntensityForAllMarines, "Reset the intensity value for all marines to zero" )
 	DEFINE_SCRIPTFUNC( StartFinale, "Spawn a horde every few seconds for the rest of the level" )
-	DEFINE_SCRIPTFUNC( StartHoldout, "Starts spawning a horde every few seconds until stopped" )
-	DEFINE_SCRIPTFUNC( StopHoldout, "Stops spawning hordes" )
+	DEFINE_SCRIPTFUNC( StartHoldout, "Start spawning a horde every few seconds until stopped" )
+	DEFINE_SCRIPTFUNC( StopHoldout, "Stop spawning hordes" )
+	DEFINE_SCRIPTFUNC( SpawnHordeSoon, "Queue a horde to spawn soon (the same logic as when a hack starts)" )
+	DEFINE_SCRIPTFUNC( GetTimeToNextHorde, "Get the current number of seconds until the director will try to spawn a horde" )
+	DEFINE_SCRIPTFUNC( SetTimeToNextHorde, "Force the horde countdown timer to be set to this number of seconds" )
+	DEFINE_SCRIPTFUNC( FindHordePosition, "Get a random position where a horde can spawn (returns null on fail)" )
+	DEFINE_SCRIPTFUNC( IsSpawningHorde, "Get the number of aliens remaining to spawn in the current horde" )
 END_SCRIPTDESC();
 
 // Implemented based on the description from https://developer.valvesoftware.com/wiki/List_of_L4D2_Script_Functions#Convars

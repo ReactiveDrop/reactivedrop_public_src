@@ -82,6 +82,7 @@ ConVar rd_team_color_alpha( "rd_team_color_alpha", "255 240 150", FCVAR_HIDDEN )
 ConVar rd_team_color_beta( "rd_team_color_beta", "20 100 255", FCVAR_HIDDEN );
 ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
+ConVar rd_prediction_strategy( "rd_prediction_strategy", "0", FCVAR_ARCHIVE, "testing prediction error resolution strategy", true, 0, true, 1 );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -111,6 +112,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat		( RECVINFO( m_vecVelocity[0] ), 0, RecvProxy_Marine_LocalVelocityX ),
 	RecvPropFloat		( RECVINFO( m_vecVelocity[1] ), 0, RecvProxy_Marine_LocalVelocityY ),
 	RecvPropFloat		( RECVINFO( m_vecVelocity[2] ), 0, RecvProxy_Marine_LocalVelocityZ ),
+	RecvPropVector		( RECVINFO( m_vecGroundVelocity ) ),
 
 	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[0], m_angRotation[0] ) ),
 	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[1], m_angRotation[1] ) ),
@@ -201,6 +203,7 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_nResetEventsParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_hGroundEntity, FIELD_EHANDLE, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD_TOL( m_vecGroundVelocity, FIELD_VECTOR, FTYPEDESC_INSENDTABLE, 0.05 ),
 	DEFINE_PRED_FIELD_TOL( m_fStopMarineTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),	
 	DEFINE_PRED_FIELD_TOL( m_fNextMeleeTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),	
 	DEFINE_PRED_FIELD_TOL( m_flNextAttack, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),		
@@ -703,8 +706,11 @@ void C_ASW_Marine::NotePredictionError( const Vector &vDelta )
 
 	// remember when last error happened
 	m_flPredictionErrorTime = gpGlobals->curtime;
- 
-	ResetLatched(); 
+
+	if ( rd_prediction_strategy.GetInt() == 0 )
+	{
+		ResetLatched();
+	}
 }
 
 void C_ASW_Marine::GetPredictionErrorSmoothingVector( Vector &vOffset )

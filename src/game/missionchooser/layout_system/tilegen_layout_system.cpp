@@ -307,7 +307,7 @@ bool CLayoutSystem::TryPlaceRoom( const CRoomCandidate *pRoomCandidate )
 	if ( m_pMapLayout->TemplateFits( pRoomTemplate, nX, nY, false ) )
 	{
 		// This has the side-effect of attaching itself to the layout; no need to keep track of it.
-		CRoom *pRoom = new CRoom( m_pMapLayout, pRoomTemplate, nX, nY );
+		CRoom *pRoom = new CRoom( m_pMapLayout, pRoomTemplate, nX, nY, RandomInt( 0, INT_MAX ) );
 
 		// Remove exits covered up by the room
 		for ( int i = m_OpenExits.Count() - 1; i >= 0; -- i )

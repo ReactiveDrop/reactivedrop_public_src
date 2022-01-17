@@ -22,7 +22,21 @@ enum ASW_Weapon_HealGunFireState_t {
 	ASW_HG_NUM_FIRE_STATES
 };
 
-class CASW_Weapon_Heal_Gun : public CASW_Weapon
+abstract_class IASW_Medical_Weapon
+{
+public:
+	// for now, every medical weapon has the same range
+	static float GetWeaponRange(void) { return 240; }
+
+	virtual bool HasMedicalAmmo() = 0;
+	virtual bool HasHealAttachTarget() = 0;
+	virtual void HealSelf() = 0;
+	virtual bool HealAttach( CBaseEntity *pEntity ) = 0;
+	virtual void HealDetach() = 0;
+	virtual void HealAttack() = 0;
+};
+
+class CASW_Weapon_Heal_Gun : public CASW_Weapon, public IASW_Medical_Weapon
 {
 public:
 	DECLARE_CLASS( CASW_Weapon_Heal_Gun, CASW_Weapon );
@@ -35,6 +49,8 @@ public:
 
 	virtual void	PrimaryAttack( void );
 	virtual void	SecondaryAttack();
+	virtual void	HealAttack() { PrimaryAttack(); }
+	virtual bool	HasMedicalAmmo() { return HasPrimaryAmmo(); }
 	virtual bool	SecondaryAttackUsesPrimaryAmmo() { return true; }
 	virtual bool	Reload( void );
 	virtual bool	HasAmmo();
@@ -49,7 +65,6 @@ public:
 	virtual bool		Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 	virtual void		Drop( const Vector &vecVelocity );
 	virtual bool		ShouldMarineMoveSlow();
-	static float		GetWeaponRange( void ) { return 240; }
 	virtual bool		IsOffensiveWeapon() { return false; }
 	virtual Class_T		Classify( void ) { return (Class_T)CLASS_ASW_HEAL_GUN; }
 

@@ -582,6 +582,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_workshop.cpp" />
     <ClCompile Include="..\shared\takedamageinfo.cpp" />
     <ClCompile Include="..\shared\teamplay_gamerules.cpp" />
@@ -1561,6 +1562,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
+    <ClInclude Include="..\shared\swarm\rd_weapon_generic_object_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
     <ClInclude Include="..\shared\takedamageinfo.h" />
     <ClInclude Include="..\shared\teamplay_gamerules.h" />

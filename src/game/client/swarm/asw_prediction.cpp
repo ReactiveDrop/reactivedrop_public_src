@@ -25,6 +25,7 @@ extern IGameMovement *g_pGameMovement;
 
 extern ConVar asw_allow_detach;
 extern ConVar cl_showerror;
+extern ConVar rd_prediction_strategy;
 typedescription_t *FindFieldByName( const char *fieldname, datamap_t *dmap );
 
 class CASW_Prediction : public CPrediction
@@ -119,6 +120,13 @@ void CASW_Prediction::CheckMarineError( int nSlot, int commands_acknowledged )
 	// Compare what the server returned with what we had predicted it to be
 	VectorSubtract ( predicted_origin, origin, delta );
 
+	if ( rd_prediction_strategy.GetInt() == 1 )
+	{
+		Vector smoothing_delta;
+		pMarine->GetPredictionErrorSmoothingVector( smoothing_delta );
+		delta -= smoothing_delta;
+	}
+
 	len = VectorLength( delta );
 	if (len > MAX_PREDICTION_ERROR )
 	{	
@@ -127,10 +135,13 @@ void CASW_Prediction::CheckMarineError( int nSlot, int commands_acknowledged )
 	}
 	else
 	{
-		if ( len > MIN_PREDICTION_EPSILON )
+		if ( rd_prediction_strategy.GetInt() == 1 || len > MIN_PREDICTION_EPSILON )
 		{
 			pMarine->NotePredictionError( delta );
+		}
 
+		if ( len > MIN_PREDICTION_EPSILON )
+		{
 			if ( cl_showerror.GetInt() >= 1 )
 			{
 				con_nprint_t np;

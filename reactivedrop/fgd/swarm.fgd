@@ -5537,8 +5537,8 @@
 @PointClass base(Targetname, Parentname, Angles, Global, Studiomodel) studioprop() = asw_door : 
 	"An entity used to place a Swarm sliding door in the world."
 [
-	slavename(target_destination) : "Slave Name" : "" : "If this is a double door, put the name of the second half of the door here.  They will become linked."
-	model(studio) : "World Model" : "models/swarm/doors/swarm_singleDoor.mdl"
+	slavename(target_destination) : "Linked Door Name" : "" : "If this is a double door, put the name of the second half of the door here.  They will become linked."
+	model(studio) : "World Model" : "models/props/doors/heavy_doors/doorleft.mdl"
 	rendercolor(color255) : "Color (R G B)" : "255 255 255"
 	spawnpos(choices) : "Spawn Position" : 0 =
 	[
@@ -5552,7 +5552,7 @@
 		"0 90 0" : "Left"
 		"0 -90 0" : "Right"		
 	] 
-	distance(float) : "Slide Distance" : 130 : "The distance that the door should slide when opened."
+	distance(float) : "Slide Distance" : 124 : "The distance that the door should slide when opened."
 	speed(integer) : "Speed" : 140 : "The speed at which the door moves."
 	soundopenoverride(sound) : "Fully Open Sound" : : "Sound played when the door has finished opening."
 	soundcloseoverride(sound) : "Fully Closed Sound" : "ASW_Door.Door2StopClose" : "Sound played when the door has finished closing."
@@ -5609,6 +5609,11 @@
 		4 : "Very damaged (Flipped)"
 	]
 	CanCloseToWeld(choices) : "Can Close To Weld" : 1 : "Whether the welding tool can make this door close to start welding when it's open." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	CanPlayerWeld(choices) : "Can Player Weld" : 1 : "Whether the player can weld or cut this door using a welding tool." =
 	[
 		0 : "No"
 		1 : "Yes"
@@ -5740,27 +5745,31 @@
 @SolidClass base(trigger_asw_use_area) = trigger_asw_computer_area :
 	"A trigger volume in which marines can use a computer."
 [
+	panelpropname(target_destination) : "Computer prop name" : "" : "Name of the prop_dynamic used for this computer panel's representation in the world.  Skin # of this prop_dynamic will be set to reflect the locked/unlocked status of this computer."
 	Locked(choices) : "Locked" : "1" : "Locked computer terminals will require a Technical Engineer to pass the hacking minigame before allowing access to the main menu." =
 	[
 		0 : "Unlocked"
 		1 : "Locked"		
 	]
-	panelpropname(target_destination) : "Computer prop name" : "" : "Name of the prop_dynamic used for this computer panel's representation in the world.  Skin # of this prop_dynamic will be set to reflect the locked/unlocked status of this computer."
+	HackDifficulty(integer) : "Num Tumblers" : 5 : "How many columns are in the hack puzzle for this computer (from 3 to 8)."	
+	EntriesPerTumbler(integer) : "Entries per tumbler" : 5 : "How many numbers are in each column of the hack puzzle (from 5 to 9)."	
+	TumblerMoveInterval(float) : "Move interval" : "0.5" : "How long each column pauses for before shifting to a new number (from 0.3 to 2.0 seconds)."
 	SecurityCam1Name(target_destination) : "SecurityCam1 Name" : "" : "Name of the 1st security cam available from this computer."
-	SecurityCam1Label(string) : "SecurityCam1 Label" : "" : "Text label shown over this camera view ingame."	
+	SecurityCam1Label(string) : "SecurityCam1 Label" : "" : "Text label shown over this camera view ingame."
+	SecurityCam2Name(target_destination) : "SecurityCam2 Name" : "" : "Name of the 2nd security cam available from this computer."
+	SecurityCam2Label(string) : "SecurityCam2 Label" : "" : "Text label shown over this camera view ingame."
+	SecurityCam3Name(target_destination) : "SecurityCam3 Name" : "" : "Name of the 3rd security cam available from this computer."
+	SecurityCam3Label(string) : "SecurityCam3 Label" : "" : "Text label shown over this camera view ingame."
 	Turret1Name(target_destination) : "Turret1 Name" : "" : "Name of the 1st turret available from this computer."
-	//Turret1Label(string) : "Turret1 Label" : "" : "Text label shown over this turret view ingame."
+	Turret2Name(target_destination) : "Turret2 Name" : "" : "Name of the 2nd turret available from this computer."
+	Turret3Name(target_destination) : "Turret3 Name" : "" : "Name of the 3rd turret available from this computer."
+	PDAName(string) : "PDA Name" : "" : "If this computer area represents a PDA, then put the name of the PDA owner here."
 	MailFile(string) : "Mail File" : "" : "Name of the text resource file containing email to show at this computer."
 	NewsFile(string) : "News File" : "" : "Name of the text resource file containing news to show at this computer."
 	StocksSeed(string) : "Stocks Seed" : "" : "Number used to seed the stocks data shown at this computer.  Computers with the same Stock Seed will show the same stock values."
 	WeatherSeed(string) : "Weather Seed" : "" : "Number used to seed the weather data shown at this computer.  Computers with the same Weather Seed will show the same weather values."
 	PlantFile(string) : "Plant Status" : "" : "Put in any text here to make the computer show the reactor status (special option for use only in Rydberg).  Leave blank to not have this option in the computer."
-	DownloadObjectiveName(string) : "Download Objective Name" : "" : "Name of the objective to trigger as complete when a marine downloads the documents from this computer."		
-	HackDifficulty(integer) : "Num Tumblers" : 5 : "How many columns are in the hack puzzle for this computer (from 3 to 8)."	
-	EntriesPerTumbler(integer) : "Entries per tumbler" : 5 : "How many numbers are in each column of the hack puzzle (from 5 to 9)."	
-	TumblerMoveInterval(float) : "Move interval" : "0.5" : "How long each column pauses for before shifting to a new number (from 0.3 to 2.0 seconds)."
-	PDAName(string) : "PDA Name" : "" : "If this computer area represents a PDA, then put the name of the PDA owner here."
-	
+	DownloadObjectiveName(target_destination) : "Download Objective Name" : "" : "Name of the objective to trigger as complete when a marine downloads the documents from this computer."
 	DownloadTime(float) : "Download Time" : "10.0" : "How many seconds it takes to download the critical files from this computer.  NOTE: This number may be adjusted ingame by the marine's hack skill."
 
 	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."
@@ -6105,8 +6114,11 @@
 	UpsideDown(choices) : "Ceiling Turret" : 1 : "If set, this turret will be oriented upside down, as if attached to the ceiling." =
 	[
 		0 : "No"
-		1 : "Yes"		
+		1 : "Yes"
 	]
+
+	output OnStartedUsing(void) : "Fired when a marine starts using the remote turret. activator=marine, caller=computer area"
+	output OnStoppedUsing(void) : "Fired when a marine logs out of the remote turret. activator=marine, caller=computer area"
 ]
 
 @PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun

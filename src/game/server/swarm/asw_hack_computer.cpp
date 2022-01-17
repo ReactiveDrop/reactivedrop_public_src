@@ -5,6 +5,7 @@
 #include "asw_marine.h"
 #include "asw_hack_computer.h"
 #include "asw_remote_turret_shared.h"
+#include "asw_point_camera.h"
 #include "asw_computer_area.h"
 #include "asw_gamerules.h"
 
@@ -195,19 +196,63 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 	{
 		// note: being on this option causes the computer area's MarineUsing function to count up to downloading the files
 	}
+	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_1)
+	{
+		// camera activation happens in CASW_Player::SetupVisibility
+		pArea->m_iActiveCam = 1;
+	}
+	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_2)
+	{
+		pArea->m_iActiveCam = 2;
+	}
+	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_3)
+	{
+		pArea->m_iActiveCam = 3;
+	}
 	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_TURRET_1)
 	{
-		CASW_Computer_Area *pArea = GetComputerArea();
 		if (!pArea || !pArea->m_hTurret1.Get())
 		{
 			Warning("Area is null or no turret handle\n");
 			return;
 		}
-		
-		CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pArea->m_hTurret1.Get());			
+
+		CASW_Remote_Turret *pTurret = pArea->m_hTurret1.Get();
 		if (pTurret && GetHackingMarine())
 		{
-			pTurret->StartedUsingTurret(GetHackingMarine());
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
+			GetHackingMarine()->m_hRemoteTurret = pTurret;
+			return;
+		}
+	}
+	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_TURRET_2)
+	{
+		if (!pArea || !pArea->m_hTurret2.Get())
+		{
+			Warning("Area is null or no turret handle\n");
+			return;
+		}
+
+		CASW_Remote_Turret *pTurret = pArea->m_hTurret2.Get();
+		if (pTurret && GetHackingMarine())
+		{
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
+			GetHackingMarine()->m_hRemoteTurret = pTurret;
+			return;
+		}
+	}
+	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_TURRET_3)
+	{
+		if (!pArea || !pArea->m_hTurret3.Get())
+		{
+			Warning("Area is null or no turret handle\n");
+			return;
+		}
+
+		CASW_Remote_Turret *pTurret = pArea->m_hTurret3.Get();
+		if (pTurret && GetHackingMarine())
+		{
+			pTurret->StartedUsingTurret( GetHackingMarine(), pArea );
 			GetHackingMarine()->m_hRemoteTurret = pTurret;
 			return;
 		}
@@ -275,7 +320,7 @@ int CASW_Hack_Computer::GetOptionTypeForEntry(int iOption)
 		return ASW_COMPUTER_OPTION_TYPE_NONE;
 
 	int icon = 1;	
-	if (pArea->m_DownloadObjectiveName.Get()[0] != NULL && pArea->GetHackProgress() < 1.0f)
+	if (pArea->m_DownloadObjectiveName.Get()[0] != NULL && pArea->GetDownloadProgress() < 1.0f)
 	{
 		if (iOption == icon)
 		{
@@ -291,11 +336,43 @@ int CASW_Hack_Computer::GetOptionTypeForEntry(int iOption)
 		}
 		icon++;
 	}
+	if (pArea->m_hSecurityCam2.Get())
+	{
+		if (iOption == icon)
+		{
+			return ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_2;
+		}
+		icon++;
+	}
+	if (pArea->m_hSecurityCam3.Get())
+	{
+		if (iOption == icon)
+		{
+			return ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_3;
+		}
+		icon++;
+	}
 	if (pArea->m_hTurret1.Get())
 	{
 		if (iOption == icon)
-		{			
+		{
 			return ASW_COMPUTER_OPTION_TYPE_TURRET_1;
+		}
+		icon++;
+	}
+	if (pArea->m_hTurret2.Get())
+	{
+		if (iOption == icon)
+		{
+			return ASW_COMPUTER_OPTION_TYPE_TURRET_2;
+		}
+		icon++;
+	}
+	if (pArea->m_hTurret3.Get())
+	{
+		if (iOption == icon)
+		{
+			return ASW_COMPUTER_OPTION_TYPE_TURRET_3;
 		}
 		icon++;
 	}
