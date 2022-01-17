@@ -17,7 +17,7 @@
 
 #define SENTRY_TOP_MODEL "models/sentry_gun/grenade_top.mdl"
 
-
+ConVar asw_sentry_top_cannon_dmg_override( "asw_sentry_top_cannon_dmg_override", "0", FCVAR_CHEAT, "Overrides cannon sentry base damage. 0 means no override is done", true, 0.0f, true, 99999.0f );
 extern ConVar asw_sentry_friendly_target;
 
 
@@ -60,13 +60,16 @@ void CASW_Sentry_Top_Cannon::Fire()
 	Vector launchVector = diff * 1000.0f;
 
 	CASW_Marine * RESTRICT pMarineDeployer = GetSentryBase() ? GetSentryBase()->m_hDeployer.Get() : NULL;
-	
 
 	float fGrenadeDamage;
 	float fGrenadeRadius;
 
 	float fBaseGrenadeDamage = 40.0f;
-	if ( ASWEquipmentList() )
+	if ( asw_sentry_top_cannon_dmg_override.GetFloat() > 0 )
+	{
+		fBaseGrenadeDamage = asw_sentry_top_cannon_dmg_override.GetFloat();
+	}
+	else if ( ASWEquipmentList() )
 	{
 		CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( "asw_weapon_sentry_cannon" );
 		if ( pWeaponInfo )
