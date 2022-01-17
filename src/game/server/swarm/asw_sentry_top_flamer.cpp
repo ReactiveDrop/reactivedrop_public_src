@@ -29,6 +29,7 @@ END_SEND_TABLE()
 BEGIN_DATADESC( CASW_Sentry_Top_Flamer )
 END_DATADESC()
 
+ConVar asw_sentry_top_flamer_dmg_override( "asw_sentry_top_flamer_dmg_override", "0", FCVAR_CHEAT, "Overrides sentry flamer's damage. 0 means no override is done", true, 0.0f, true, 99999.0f );
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar asw_weapon_force_scale;
 extern ConVar asw_difficulty_alien_health_step;
@@ -54,6 +55,9 @@ CASW_Sentry_Top_Flamer::CASW_Sentry_Top_Flamer(  int projectileVelocity  ) : m_b
 /// @TODO attrib hooks
 int CASW_Sentry_Top_Flamer::GetSentryDamage()
 {
+	if ( asw_sentry_top_flamer_dmg_override.GetFloat() > 0 )
+		return asw_sentry_top_flamer_dmg_override.GetFloat();
+
 	float flDamage = 4.0f;
 	if ( ASWGameRules() )
 	{
