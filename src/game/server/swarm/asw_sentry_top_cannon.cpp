@@ -17,7 +17,8 @@
 
 #define SENTRY_TOP_MODEL "models/sentry_gun/grenade_top.mdl"
 
-ConVar asw_sentry_top_cannon_dmg_override( "asw_sentry_top_cannon_dmg_override", "0", FCVAR_CHEAT, "Overrides cannon sentry base damage. 0 means no override is done", true, 0.0f, true, 99999.0f );
+ConVar asw_sentry_top_cannon_dmg_override( "asw_sentry_top_cannon_dmg_override", "0", FCVAR_CHEAT, "Overrides sentry cannon base damage. 0 means no override is done", true, 0.0f, true, 99999.0f );
+ConVar asw_sentry_top_cannon_fire_rate( "asw_sentry_top_cannon_fire_rate", "1.75", FCVAR_CHEAT, "Time in seconds between each shot of sentry cannon", true, 0.001f, true, 999.0f );
 extern ConVar asw_sentry_friendly_target;
 
 
@@ -38,11 +39,10 @@ void CASW_Sentry_Top_Cannon::SetTopModel()
 	SetModel(SENTRY_TOP_MODEL);
 }
 
-#define ASW_SENTRY_CANNON_FIRE_RATE 1.75f		// time in seconds between each shot
 CASW_Sentry_Top_Cannon::CASW_Sentry_Top_Cannon() 
 {
 	m_flShootRange = 1000;
-	m_flFireRate = ASW_SENTRY_CANNON_FIRE_RATE;
+	m_flFireRate = asw_sentry_top_cannon_fire_rate.GetFloat();
 }
 
 /// @TODO: lead target
