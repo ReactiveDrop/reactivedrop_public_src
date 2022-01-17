@@ -310,6 +310,6 @@
 		0 : "Offset + Angle"
 		1 : "Bone Merge"
 	]
-	CarriedAngle(angles) : "Carried Angle" : "0 0 0" : ""
+	CarriedAngle(angle) : "Carried Angle" : "0 0 0" : ""
 	CarriedOffset(vector) : "Carried Offset" : "0 0 0" : ""
 ]
