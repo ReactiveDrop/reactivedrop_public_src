@@ -35,10 +35,12 @@
 bool g_bUseCustomAutoExposureMin = false;
 bool g_bUseCustomAutoExposureMax = false;
 bool g_bUseCustomBloomScale = false;
+bool g_bUseCustomManualTonemapRate = false;
 float g_flCustomAutoExposureMin = 0;
 float g_flCustomAutoExposureMax = 0;
 float g_flCustomBloomScale = 0.0f;
 float g_flCustomBloomScaleMinimum = 0.0f;
+float g_flCustomManualTonemapRate = 0.0f;
 
 extern void GetTonemapSettingsFromEnvTonemapController( void );
 
@@ -537,6 +539,20 @@ static float GetCurrentBloomScale( void )
 	return flCurrentBloomScale;
 }
 
+static float GetManualTonemapRate()
+{
+	float flManualTonemapRate = 1.0f;
+	if ( g_bUseCustomManualTonemapRate )
+	{
+		flManualTonemapRate = g_flCustomManualTonemapRate;
+	}
+	else
+	{
+		flManualTonemapRate = mat_hdr_manual_tonemap_rate.GetFloat();
+	}
+	return flManualTonemapRate;
+}
+
 static void GetExposureRange( float *pflAutoExposureMin, float *pflAutoExposureMax )
 {
 	// Get min
@@ -714,8 +730,8 @@ void CTonemapSystem::DisplayHistogram()
 
 		engine->Con_NPrintf( 27 + ( nViewportY / 10 ), "AvgLum @ %4.2f%%  mat_tonemap_min_avglum = %4.2f%%  Using %d pixels  Override(%s): %4.2f", 
 			MAX( 0.0f, FindLocationOfPercentBrightPixels( 50.0f ) ) * 100.0f, mat_tonemap_min_avglum.GetFloat(), nTotalValidPixels, m_bOverrideTonemapScaleEnabled ? "On" : "Off", m_flOverrideTonemapScale );
-		engine->Con_NPrintf( 29 + ( nViewportY / 10 ), "BloomScale = %4.2f  mat_hdr_manual_tonemap_rate = %4.2f  mat_accelerate_adjust_exposure_down = %4.2f", 
-			GetCurrentBloomScale(), mat_hdr_manual_tonemap_rate.GetFloat(), mat_accelerate_adjust_exposure_down.GetFloat() );
+		engine->Con_NPrintf( 29 + ( nViewportY / 10 ), "BloomScale = %4.2f  ManualTonemapRate = %4.2f  mat_accelerate_adjust_exposure_down = %4.2f", 
+			GetCurrentBloomScale(), GetManualTonemapRate(), mat_accelerate_adjust_exposure_down.GetFloat());
 	}
 
 	int xpStart = nViewportX + nViewportWidth - nTotalGraphPixelsWide - 10;
@@ -1002,7 +1018,7 @@ void CTonemapSystem::SetTonemapScale( IMatRenderContext *pRenderContext, float f
 	// Smoothly lerp to the target over time //
 	//=======================================//
 	float flElapsedTime = MAX( gpGlobals->frametime, 0.0f ); // Clamp to positive
-	float flRate = mat_hdr_manual_tonemap_rate.GetFloat();
+	float flRate = GetManualTonemapRate();
 
 	if ( mat_tonemap_algorithm.GetInt() == 1 )
 	{
