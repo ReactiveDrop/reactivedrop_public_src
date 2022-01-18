@@ -38,6 +38,8 @@ class CAI_DynamicLink;
 class CAI_Link
 {
 public:
+	DECLARE_ENT_SCRIPTDESC();
+
 	short	m_iSrcID;							// the node that 'owns' this link
 	short	m_iDestID;							// the node on the other end of the link. 
 	
@@ -51,10 +53,27 @@ public:
 	int		m_nDangerCount;						// How many dangerous things are near this link?
 
 	CAI_DynamicLink *m_pDynamicLink;
+
+	// VSCRIPT
+	HSCRIPT GetScriptInstance();
+	HSCRIPT	m_hScriptInstance;
+
+	int 	ScriptGetSrcNodeID() const				{ return m_iSrcID; }
+	int 	ScriptGetDestNodeID() const			{ return m_iDestID; }
+	int 	ScriptGetAcceptedMoveTypes( int hullType ) const				{ return m_iAcceptedMoveTypes[ hullType ]; }
+	int 	ScriptGetLinkInfo() const				{ return m_LinkInfo; }
+	float 	ScriptGetTimeStaleExpires() const				{ return m_timeStaleExpires; }
+	int 	ScriptGetDangerCount() const				{ return m_nDangerCount; }
+	void 	ScriptSetLinkInfo( int iInfo )				{ m_LinkInfo = iInfo; }
+	void 	ScriptSetTimeStaleExpires( float duration )				{ m_timeStaleExpires = gpGlobals->curtime + duration; }
+	void 	ScriptSetDangerCount( int iCount )				{ m_nDangerCount = iCount; }
+	void 	ScriptSetAcceptedMoveTypes( int hullType, int moveType );
+	HSCRIPT ScriptGetDynamicLink();
 	
 private:
 	friend class CAI_Network;
 	CAI_Link(void);
+	~CAI_Link(void);
 };
 
 
@@ -67,6 +86,17 @@ inline int	CAI_Link::DestNodeID(int srcID)
 {
 	// hardware op for ( srcID==m_iSrcID ? m_iDestID : m_iSrcID )
 	return ieqsel( srcID, m_iSrcID, m_iDestID, m_iSrcID ); 
+}
+
+inline HSCRIPT ToHScript( CAI_Link *pLink )
+{
+	return ( pLink ) ? pLink->GetScriptInstance() : NULL;
+}
+
+template <> ScriptClassDesc_t *GetScriptDesc<CAI_Link>( CAI_Link * );
+inline CAI_Link *ToAILink( HSCRIPT hScript )
+{
+	return ( hScript ) ? (CAI_Link *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Link) ) : NULL;
 }
 
 

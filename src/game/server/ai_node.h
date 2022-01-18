@@ -113,7 +113,9 @@ class CAI_Node
 {
 public:
 
+	DECLARE_ENT_SCRIPTDESC();
 	CAI_Node( int id, const Vector &origin, float yaw );
+	~CAI_Node();
 	
 	CAI_Hint*		GetHint()					{ return m_pHint; }
 	void			SetHint( CAI_Hint *pHint )	{ m_pHint = pHint; }
@@ -167,10 +169,35 @@ public:
 	float			m_flNextUseTime;		// When can I be used again?
 	CAI_Hint*		m_pHint;				// hint attached to this node
 	int				m_iFirstShuffledLink;				// first link to check
+
+	// VSCRIPT
+	HSCRIPT GetScriptInstance();
+	HSCRIPT	m_hScriptInstance;
+
+	int		ScriptGetType() const			{ return (int)GetType(); }
+	void	ScriptSetType( int type )		{ SetType( (NodeType_e)type ); }
+	HSCRIPT	ScriptGetLink( int destNodeId );
+	HSCRIPT	ScriptGetLinkByIndex( int i );
+	int		ScriptGetInfo() const			{ return m_eNodeInfo; }
+	void	ScriptSetInfo( int info )		{ m_eNodeInfo = info; }
+	void	ScriptAddLink( HSCRIPT newLink );
+	void	ScriptRemoveLink( HSCRIPT hLink );
+	void	ScriptDrawNode( int r, int g, int b, float flDrawDuration );
 };
 
 
 extern float	GetFloorZ(const Vector &origin);
 extern float	GetFloorDistance(const Vector &origin);
+
+inline HSCRIPT ToHScript( CAI_Node *pNode )
+{
+	return ( pNode ) ? pNode->GetScriptInstance() : NULL;
+}
+
+template <> ScriptClassDesc_t *GetScriptDesc<CAI_Node>( CAI_Node * );
+inline CAI_Node *ToAINode( HSCRIPT hScript )
+{
+	return ( hScript ) ? (CAI_Node *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Node) ) : NULL;
+}
 
 #endif // AI_NODE_H

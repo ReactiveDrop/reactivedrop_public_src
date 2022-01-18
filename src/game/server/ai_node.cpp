@@ -28,6 +28,30 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+BEGIN_ENT_SCRIPTDESC_ROOT( CAI_Node, "AI Node class" )
+	DEFINE_SCRIPT_INSTANCE_HELPER( &g_AINodeScriptInstanceHelper )
+	DEFINE_SCRIPTFUNC( GetId, "Get node ID." )
+	DEFINE_SCRIPTFUNC( GetOrigin, "Get node origin." )
+	DEFINE_SCRIPTFUNC( GetPosition, "Hull specific position for a node." )
+	DEFINE_SCRIPTFUNC( GetYaw, "Get node Yaw." )
+	DEFINE_SCRIPTFUNC( GetZone, "Get node zone." )
+	DEFINE_SCRIPTFUNC( SetZone, "Set node zone." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetType, "GetType", "Get node type." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetType, "SetType", "Set node type." )
+	DEFINE_SCRIPTFUNC( IsLocked, "Returns true if node is locked." )
+	DEFINE_SCRIPTFUNC( Lock, "Locks the node for x seconds." )
+	DEFINE_SCRIPTFUNC( Unlock, "Unlocks the node." )
+	DEFINE_SCRIPTFUNC( NumLinks, "Number of links for node." )
+	DEFINE_SCRIPTFUNC( ClearLinks, "Clears all links from node." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLink, "GetLink", "Get link to dest node ID." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLinkByIndex, "GetLinkByIndex", "Get link by index." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetInfo, "GetInfo", "Get node info." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetInfo, "SetInfo", "Set node info." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptAddLink, "AddLink", "Adds a link to this node." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveLink, "RemoveLink", "Removes a link from this node." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDrawNode, "DebugDrawNode", "Draw node as a box of the given color for x seconds." )
+END_SCRIPTDESC();
+
 //-----------------------------------------------------------------------------
 
 CAI_Link *CAI_Node::GetLink( int destNodeId )
@@ -43,6 +67,23 @@ CAI_Link *CAI_Node::GetLink( int destNodeId )
 	}
 
 	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+HSCRIPT CAI_Node::ScriptGetLink( int destNodeId )
+{
+	CAI_Link *pLink = GetLink( destNodeId );
+	return ToHScript( pLink );
+}
+
+//-----------------------------------------------------------------------------
+HSCRIPT CAI_Node::ScriptGetLinkByIndex( int i )
+{
+	if ( i < 0 || i >= NumLinks() )
+		return NULL;
+
+	CAI_Link *pLink = GetLinkByIndex( i );
+	return ToHScript( pLink );
 }
 
 //-----------------------------------------------------------------------------
@@ -72,6 +113,41 @@ void CAI_Node::AddLink(CAI_Link *newLink)
 #endif
 
 	m_Links.AddToTail( newLink );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: VScript: Add a link to this node
+// Input  :
+// Output :
+//-----------------------------------------------------------------------------
+void CAI_Node::ScriptAddLink( HSCRIPT newLink )
+{
+	CAI_Link *pLink = ToAILink( newLink );
+	if ( !pLink )
+		return;
+
+	AddLink( pLink );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: VScript: Removes a link from this node
+// Input  :
+// Output :
+//-----------------------------------------------------------------------------
+void CAI_Node::ScriptRemoveLink( HSCRIPT hLink )
+{
+	CAI_Link *pLink = ToAILink( hLink );
+	if ( !pLink )
+		return;
+
+	for ( int link = 0; link < NumLinks(); link++ )
+	{
+		if ( m_Links[link] == pLink )
+		{
+			m_Links.Remove( link );
+			break;
+		}
+	}
 }
 
 
@@ -271,4 +347,39 @@ CAI_Node::CAI_Node( int id, const Vector &origin, float yaw  )
 	m_flNextUseTime			= 0;
 
 	m_zone = AI_NODE_ZONE_UNKNOWN;
+
+	m_hScriptInstance = NULL;
 };
+
+//-----------------------------------------------------------------------------
+// Purpose: Destructor
+// Input  :
+// Output :
+//-----------------------------------------------------------------------------
+CAI_Node::~CAI_Node()
+{
+	if ( m_hScriptInstance )
+	{
+		g_pScriptVM->RemoveInstance( m_hScriptInstance );
+		m_hScriptInstance = NULL;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+HSCRIPT CAI_Node::GetScriptInstance()
+{
+	if ( !m_hScriptInstance )
+	{
+		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
+	}
+	return m_hScriptInstance;
+}
+
+//-----------------------------------------------------------------------------
+void CAI_Node::ScriptDrawNode( int r, int g, int b, float flDrawDuration )
+{
+	Vector nodePos = GetPosition( HULL_HUMAN );
+	NDebugOverlay::Box( nodePos, Vector(-5, -5, -5), Vector(5, 5, 5), r, g, b, 0, flDrawDuration );
+}

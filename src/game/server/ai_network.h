@@ -133,6 +133,8 @@ public:
 	int			NearestNodeToPoint( CAI_BaseNPC* pNPC, const Vector &vecOrigin, bool bCheckVisiblity = true ) { return NearestNodeToPoint( pNPC, vecOrigin, bCheckVisiblity, NULL ); }
 	int			NearestNodeToPoint(const Vector &vPosition, bool bCheckVisiblity = true );
 
+	int		ScriptNearestNodesInBox( HSCRIPT hNPC, const Vector &vPosition, int iMaxNodes, HSCRIPT hTable );
+
 
 	/** @brief Callback lets you customize FindNodeDistanceAwayFromStart to accept or reject specific nodes based on other criteria
 	To use, inherit from this and override Validate(). It's like a closure.
