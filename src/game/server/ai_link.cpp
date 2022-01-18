@@ -83,10 +83,27 @@ HSCRIPT CAI_Link::GetScriptInstance()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+int CAI_Link::ScriptGetAcceptedMoveTypes( int hullType ) const
+{
+	if ( hullType < 0 || hullType > ( NUM_HULLS - 1 ) )
+	{
+		DevMsg ("Error: Invalid hullType %i in CAI_Link::GetAcceptedMoveTypes. Valid types are 0-%i\n", hullType, (NUM_HULLS - 1) );
+		return -1;
+	}
+
+	return m_iAcceptedMoveTypes[hullType];
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void CAI_Link::ScriptSetAcceptedMoveTypes( int hullType, int moveType )
 {
 	if ( hullType < 0 || hullType > ( NUM_HULLS - 1 ) )
+	{
+		DevMsg ("Error: Invalid hullType %i in CAI_Link::SetAcceptedMoveTypes. Valid types are 0-%i\n", hullType, (NUM_HULLS - 1) );
 		return;
+	}
 
 	m_iAcceptedMoveTypes[hullType] = moveType;
 }

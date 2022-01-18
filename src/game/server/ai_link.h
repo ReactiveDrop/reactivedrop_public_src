@@ -60,7 +60,7 @@ public:
 
 	int 	ScriptGetSrcNodeID() const				{ return m_iSrcID; }
 	int 	ScriptGetDestNodeID() const			{ return m_iDestID; }
-	int 	ScriptGetAcceptedMoveTypes( int hullType ) const				{ return m_iAcceptedMoveTypes[ hullType ]; }
+	int 	ScriptGetAcceptedMoveTypes( int hullType ) const;
 	int 	ScriptGetLinkInfo() const				{ return m_LinkInfo; }
 	float 	ScriptGetTimeStaleExpires() const				{ return m_timeStaleExpires; }
 	int 	ScriptGetDangerCount() const				{ return m_nDangerCount; }
