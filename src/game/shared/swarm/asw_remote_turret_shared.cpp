@@ -57,6 +57,7 @@ PRECACHE_WEAPON_REGISTER(asw_remote_turret);
 
 ConVar asw_turret_fire_rate("asw_turret_fire_rate", "0.1f", FCVAR_CHEAT | FCVAR_REPLICATED, "Firing rate of remote controlled turrets");
 ConVar asw_turret_turn_rate("asw_turret_turn_rate", "50.0f", FCVAR_CHEAT | FCVAR_REPLICATED, "Turning rate of remote controlled turrets");
+ConVar asw_turret_dmg_override("asw_turret_dmg_override", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Overrides remote turret's damage. 0 means no override is done");
 extern ConVar asw_weapon_max_shooting_distance;
 
 #ifndef CLIENT_DLL
@@ -650,6 +651,9 @@ void CASW_Remote_Turret::StartedUsingTurret( CASW_Marine *pUser, CBaseEntity *pC
 
 int CASW_Remote_Turret::GetSentryDamage()
 {
+	if ( asw_turret_dmg_override.GetFloat() > 0 )
+		return asw_turret_dmg_override.GetFloat(); 
+
 	if (!ASWGameRules())
 		return 10;
 
