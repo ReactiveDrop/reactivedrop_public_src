@@ -473,6 +473,22 @@ HSCRIPT Script_StartFire( const Vector position, float duration, int flags )
 	return ToHScript( pFire );
 }
 
+const Vector &Script_GetHullMins( int hull )
+{
+	if ( hull < 0 || hull > ( NUM_HULLS - 1 ) )
+		return Vector( 0, 0, 0 );
+
+	return NAI_Hull::Mins( hull );
+}
+
+const Vector &Script_GetHullMaxs( int hull )
+{
+	if ( hull < 0 || hull > ( NUM_HULLS - 1 ) )
+		return Vector( 0, 0, 0 );
+
+	return NAI_Hull::Maxs( hull );
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
@@ -490,4 +506,6 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStartStim, "StartStim", "Activates a stim pack for desired duration" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStopStim, "StopStim", "Stops any active stim pack" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_StartFire, "StartFire", "Starts a fire (position, duration, flags)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMins, "GetHullMins", "Returns a Vector for the hull mins (hullType)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMaxs, "GetHullMaxs", "Returns a Vector for the hull maxs (hullType)" );
 }
