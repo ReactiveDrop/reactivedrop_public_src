@@ -121,6 +121,7 @@
 extern ConVar old_radius_damage;
 
 #define ASW_LAUNCHING_STEP 0.25f			// time between each stage of launching
+#define ASW_DEFAULT_COMMANDER_FACE "briefing/face_pilot"
 
 #ifndef CLIENT_DLL
 	extern ConVar asw_debug_alien_damage;
@@ -698,6 +699,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropFloat(RECVINFO(m_fPreventStimMusicTime)),
 		RecvPropBool(RECVINFO(m_bForceStylinCam)),
 		RecvPropBool(RECVINFO(m_bShowCommanderFace)),
+		RecvPropEHandle(RECVINFO(m_hCurrentStylinCam)),
 		RecvPropFloat(RECVINFO(m_fMarineDeathTime)),
 		RecvPropVector(RECVINFO(m_vMarineDeathPos)),
 		RecvPropInt(RECVINFO(m_nMarineForDeathCam)),
@@ -729,6 +731,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropFloat(SENDINFO(m_fPreventStimMusicTime), 0, SPROP_NOSCALE),
 		SendPropBool(SENDINFO(m_bForceStylinCam)),
 		SendPropBool(SENDINFO(m_bShowCommanderFace)),
+		SendPropEHandle(SENDINFO(m_hCurrentStylinCam)),
 		SendPropFloat(SENDINFO(m_fMarineDeathTime), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vMarineDeathPos)),
 		SendPropInt(SENDINFO(m_nMarineForDeathCam), 8),
@@ -802,20 +805,53 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 	END_SEND_TABLE()
 #endif
 
-
-#ifndef CLIENT_DLL
 class CStylinCamProxy : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CStylinCamProxy, CBaseEntity );
+
+	CStylinCamProxy();
+
+	virtual void Precache();
+
+#ifdef CLIENT_DLL
+	DECLARE_CLIENTCLASS();
+#else
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
+
+	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
+	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 
 	void InputShowStylinCam( inputdata_t &inputdata );
 	void InputHideStylinCam( inputdata_t &inputdata );
 	void InputShowCommanderFace( inputdata_t &inputdata );
 	void InputHideCommanderFace( inputdata_t &inputdata );
+#endif
+
+	CNetworkString( m_szCommanderFace, 255 );
 };
 
+CStylinCamProxy::CStylinCamProxy()
+{
+	V_strcpy( m_szCommanderFace.GetForModify(), ASW_DEFAULT_COMMANDER_FACE );
+}
+
+void CStylinCamProxy::Precache()
+{
+	BaseClass::Precache();
+
+	char szMaterialName[255];
+	V_strcpy( szMaterialName, "vgui/" );
+	V_strncat( szMaterialName, m_szCommanderFace.Get(), 255 );
+	PrecacheMaterial( szMaterialName );
+}
+
+#ifdef CLIENT_DLL
+IMPLEMENT_CLIENTCLASS_DT( CStylinCamProxy, DT_ASW_StylinCamProxy, CStylinCamProxy )
+	RecvPropString( RECVINFO( m_szCommanderFace ) ),
+END_RECV_TABLE()
+#else
 LINK_ENTITY_TO_CLASS( asw_stylincam, CStylinCamProxy );
 
 BEGIN_DATADESC( CStylinCamProxy )
@@ -824,6 +860,32 @@ BEGIN_DATADESC( CStylinCamProxy )
 	DEFINE_INPUTFUNC( FIELD_VOID, "ShowCommanderFace", InputShowCommanderFace ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "HideCommanderFace", InputHideCommanderFace ),
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS_ST( CStylinCamProxy, DT_ASW_StylinCamProxy )
+	SendPropString( SENDINFO( m_szCommanderFace ) ),
+END_SEND_TABLE()
+
+int CStylinCamProxy::ShouldTransmit( const CCheckTransmitInfo *pInfo )
+{
+	return FL_EDICT_ALWAYS;
+}
+
+bool CStylinCamProxy::KeyValue( const char* szKeyName, const char* szValue )
+{
+	if ( FStrEq( szKeyName, "CommanderFace" ) )
+	{
+		if ( !*szValue )
+		{
+			szValue = ASW_DEFAULT_COMMANDER_FACE;
+		}
+
+		V_strncpy( m_szCommanderFace.GetForModify(), szValue, 255 );
+
+		return true;
+	}
+
+	return BaseClass::KeyValue( szKeyName, szValue );
+}
 
 void CStylinCamProxy::InputShowStylinCam( inputdata_t &inputdata )
 {
@@ -846,6 +908,7 @@ void CStylinCamProxy::InputShowCommanderFace( inputdata_t &inputdata )
 	if ( !ASWGameRules() )
 		return;
 
+	ASWGameRules()->m_hCurrentStylinCam = this;
 	ASWGameRules()->m_bShowCommanderFace = true;
 }
 
@@ -857,6 +920,17 @@ void CStylinCamProxy::InputHideCommanderFace( inputdata_t &inputdata )
 	ASWGameRules()->m_bShowCommanderFace = false;
 }
 #endif
+
+const char *CAlienSwarm::GetCommanderFace()
+{
+	CStylinCamProxy *pStylinCam = assert_cast<CStylinCamProxy *>( m_hCurrentStylinCam.Get() );
+	if ( !pStylinCam )
+	{
+		return ASW_DEFAULT_COMMANDER_FACE;
+	}
+
+	return pStylinCam->m_szCommanderFace.Get();
+}
 
 
 // shared ammo definition
