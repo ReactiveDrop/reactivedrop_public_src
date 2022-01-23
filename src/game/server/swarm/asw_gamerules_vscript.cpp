@@ -253,7 +253,7 @@ public:
 		pSpawnManager->UpdateCandidateNodes();
 		if ( pSpawnManager->FindHordePos( bNorth, bNorth ? pSpawnManager->m_northCandidateNodes : pSpawnManager->m_southCandidateNodes, position, discard ) )
 		{
-			return position;
+			return ScriptVariant_t( position, true );
 		}
 
 		return SCRIPT_VARIANT_NULL;
