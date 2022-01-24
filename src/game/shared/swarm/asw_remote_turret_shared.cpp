@@ -36,7 +36,7 @@ BEGIN_NETWORK_TABLE( CASW_Remote_Turret, DT_ASW_Remote_Turret )
 #ifdef CLIENT_DLL
 	RecvPropEHandle( RECVINFO( m_hUser ) ),
 	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),	
+	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
 	RecvPropBool( RECVINFO( m_bUpsideDown ) ),
 	RecvPropQAngles	(RECVINFO(m_angDefault)),
 	RecvPropQAngles	(RECVINFO(m_angViewLimit)),
@@ -87,7 +87,7 @@ CASW_Remote_Turret::CASW_Remote_Turret()
 	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
 #else
 	m_hUser = NULL;
-#endif	
+#endif
 }
 
 
@@ -102,7 +102,7 @@ void CASW_Remote_Turret::Spawn()
 {
 	BaseClass::Spawn();
 	Precache();
-	SetModel(ASW_REMOTE_TURRET_MODEL);	
+	SetModel(ASW_REMOTE_TURRET_MODEL);
 	SetMoveType( MOVETYPE_NONE );
 	SetSolid(SOLID_BBOX);
 	SetCollisionGroup( COLLISION_GROUP_NONE );
@@ -110,7 +110,7 @@ void CASW_Remote_Turret::Spawn()
 	m_iHealth = 100;
 	m_iMaxHealth = m_iHealth;
 
-	m_angDefault = GetAbsAngles();
+	m_angDefault = GetLocalAngles();
 	if ( m_angViewLimit.GetX() <= 0 )
 		m_angViewLimit.SetX( 60 );
 	if ( m_angViewLimit.GetY() <= 0 )
@@ -142,9 +142,9 @@ bool g_bLastControllingTurret = false;
 void CASW_Remote_Turret::SmoothTurretAngle(QAngle &ang)
 {
 	float dt = MIN( 0.2, gpGlobals->frametime );
-	
+
 	ang[YAW] = ASW_ClampYaw( asw_turret_turn_rate.GetFloat(), m_angEyeAngles[YAW], ang[YAW], dt );
-	ang[PITCH] = ASW_ClampYaw( asw_turret_turn_rate.GetFloat()*0.8f, m_angEyeAngles[PITCH], ang[PITCH], dt );	
+	ang[PITCH] = ASW_ClampYaw( asw_turret_turn_rate.GetFloat()*0.8f, m_angEyeAngles[PITCH], ang[PITCH], dt );
 
 	m_angEyeAngles = ang;//GetMarine()->EyeAngles()[YAW];
 }
@@ -153,7 +153,7 @@ void CASW_Remote_Turret::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove
 {
 	QAngle angTemp = RealEyeAngles();
 	m_angEyeAngles = angTemp;
-	SetLocalAngles(m_angEyeAngles);
+	SetAbsAngles(m_angEyeAngles);
 
 	// check for firing
 	bool bAttack1, bAttack2, bReload;
@@ -195,13 +195,13 @@ float CASW_Remote_Turret::GetMuzzleFlashScale( void )
 void CASW_Remote_Turret::ProcessMuzzleFlashEvent()
 {
 	// attach muzzle flash particle system effect
-	int iAttachment = GetMuzzleAttachment();		
-	
+	int iAttachment = GetMuzzleAttachment();
+
 	if ( iAttachment > 0 )
-	{		
+	{
 //#ifndef _DEBUG
 		float flScale = GetMuzzleFlashScale();
-		FX_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );	
+		FX_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
 //#endif
 	}
 	BaseClass::ProcessMuzzleFlashEvent();
@@ -216,7 +216,7 @@ void CASW_Remote_Turret::OnRestore()
 void CASW_Remote_Turret::OnDataChanged( DataUpdateType_t updateType )
 {
 	SoundInit();
-	
+
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink(gpGlobals->curtime);
@@ -235,13 +235,13 @@ void CASW_Remote_Turret::SoundInit()
 {
 	// play an engine start sound!!
 	CPASAttenuationFilter filter( this );
-	
+
 	m_pLoopingSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), "ASW_Sentry.Turn" );
-	CSoundEnvelopeController::GetController().Play( m_pLoopingSound, 0.0, 100 );	
+	CSoundEnvelopeController::GetController().Play( m_pLoopingSound, 0.0, 100 );
 }
 
 void CASW_Remote_Turret::SoundShutdown()
-{	
+{
 	if ( m_pLoopingSound )
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pLoopingSound );
@@ -303,25 +303,25 @@ const QAngle& CASW_Remote_Turret::RealEyeAngles()
 	{
 		return pMarine->GetCommander()->EyeAngles();
 	}
-	return m_angEyeAngles;	
+	return m_angEyeAngles;
 }
 
 const QAngle& CASW_Remote_Turret::EyeAngles()
 {
-	return m_angEyeAngles;	
+	return m_angEyeAngles;
 }
 #endif 
 
 Vector CASW_Remote_Turret::GetTurretCamPosition()
 {
-	int iAttachment = LookupAttachment( "camera" );		
+	int iAttachment = LookupAttachment( "camera" );
 	if ( iAttachment > 0 )
-	{		
+	{
 		Vector camOrigin;
 		QAngle camAngles;
 
 		if ( GetAttachment( iAttachment, camOrigin, camAngles ) )
-		{			
+		{
 			return camOrigin;
 		}
 	}
@@ -343,14 +343,14 @@ Vector CASW_Remote_Turret::GetTurretMuzzlePosition()
 
 	// using the attachment returns different results on the client/server, for some reason
 	/*
-	int iAttachment = LookupAttachment( "muzzle" );		
+	int iAttachment = LookupAttachment( "muzzle" );
 	if ( iAttachment > 0 )
-	{		
+	{
 		Vector camOrigin;
 		QAngle camAngles;
 
 		if ( GetAttachment( iAttachment, camOrigin, camAngles ) )
-		{			
+		{
 			return camOrigin;
 		}
 	}
@@ -386,11 +386,11 @@ void CASW_Remote_Turret::FireTurret(CBasePlayer *pPlayer)
 	autoaim_params_t params;
 	params.m_fScale = 2.0f;
 	params.m_fMaxDist = asw_weapon_max_shooting_distance.GetFloat();
-	
-	QAngle angFacing = EyeAngles() + AutoaimDeflection(vecShootOrigin, EyeAngles(), params);			
-		
+
+	QAngle angFacing = EyeAngles() + AutoaimDeflection(vecShootOrigin, EyeAngles(), params);
+
 #endif
-	AngleVectors(angFacing, &vecShootDir);	
+	AngleVectors(angFacing, &vecShootDir);
 
 	//Msg("%s: Firing bullets from %s ", IsServer() ? "S" : "C", VecToString(vecShootOrigin));
 	//Msg(" at angle %s\n", VecToString(angFacing));
@@ -442,7 +442,7 @@ QAngle CASW_Remote_Turret::AutoaimDeflection( Vector &vecSrc, const QAngle &eyeA
 
 	//Reset this data
 	params.m_bOnTargetNatural	= false;
-	
+
 	CBaseEntity *pIgnore = NULL;
 	CTraceFilterSkipTwoEntities traceFilter( this, pIgnore, COLLISION_GROUP_NONE );
 
@@ -497,15 +497,15 @@ QAngle CASW_Remote_Turret::AutoaimDeflection( Vector &vecSrc, const QAngle &eyeA
 				continue;
 
 			// don't autoaim at marines
-			if( pEntity->Classify() == CLASS_ASW_MARINE )			
-				continue;			
+			if( pEntity->Classify() == CLASS_ASW_MARINE )
+				continue;
 
 			// Don't autoaim at the noisy bodytarget, this makes the autoaim crosshair wobble.
 			//center = pEntity->BodyTarget( vecSrc, false );
 			center = pEntity->WorldSpaceCenter();
 
 			dir = (center - vecSrc);
-			
+
 			float dist = dir.Length2D();
 			VectorNormalize( dir );
 
@@ -544,7 +544,7 @@ QAngle CASW_Remote_Turret::AutoaimDeflection( Vector &vecSrc, const QAngle &eyeA
 			QAngle bestang;
 
 			VectorAngles( bestdir, bestang );
-			
+
 			bestang -= eyeAngles;
 
 			// Autoaim detected a target for us. Aim automatically at its bodytarget.
@@ -579,7 +579,7 @@ float CASW_Remote_Turret::GetAutoaimScore( const Vector &eyePosition, const Vect
 		Assert( score >= 0.0f && score <= 1.0f );
 		return score;
 	}
-	
+
 	// 0 means no score- doesn't qualify for autoaim.
 	return 0.0f;
 }
@@ -622,19 +622,25 @@ void CASW_Remote_Turret::StartedUsingTurret( CASW_Marine *pUser, CBaseEntity *pC
 	// clamp view angles
 	void CASW_Remote_Turret::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 	{
-		QAngle angMax = m_angDefault.Get() + m_angViewLimit.Get();
-		QAngle angMin = m_angDefault.Get() - m_angViewLimit.Get();
-		
+		QAngle angDefault = m_angDefault;
+		if ( GetMoveParent() )
+		{
+			angDefault += GetMoveParent()->GetAbsAngles();
+		}
+
+		QAngle angMax = angDefault + m_angViewLimit;
+		QAngle angMin = angDefault - m_angViewLimit;
+
 		// limit all 3 axes of rotation
 		if (asw_turret_debug_limits.GetBool()) Msg("Limiting turret:");
 		for (int i=0;i<3;i++)
 		{
-			float fDiff = UTIL_AngleDiff(pCmd->viewangles[i], m_angDefault.Get()[i]);
-			float fMinDiff = UTIL_AngleDiff(angMin[i], m_angDefault.Get()[i]);
-			float fMaxDiff = UTIL_AngleDiff(angMax[i], m_angDefault.Get()[i]);
+			float fDiff = UTIL_AngleDiff(pCmd->viewangles[i], angDefault[i]);
+			float fMinDiff = UTIL_AngleDiff(angMin[i], angDefault[i]);
+			float fMaxDiff = UTIL_AngleDiff(angMax[i], angDefault[i]);
 			if (asw_turret_debug_limits.GetBool())
 				Msg("%d: fdiff=%f mindiff=%f maxdiff=%f min=%f max=%f ang=%f def=%f", i, fDiff, fMinDiff, fMaxDiff,
-				  angMin[i], angMax[i], pCmd->viewangles[i], m_angDefault.Get()[i]);
+				  angMin[i], angMax[i], pCmd->viewangles[i], angDefault[i]);
 
 			if (fMinDiff <= -180 || fMinDiff >= 180)	// if 360 rotation is allowed, skip any clamping for this axis
 				continue;
@@ -687,7 +693,7 @@ void CASW_Remote_Turret::MakeTracer( const Vector &vecTracerSrc, const trace_t &
 #ifdef CLIENT_DLL
 void __MsgFunc_ASWRemoteTurretTracer( bf_read &msg )
 {
-	int iSentry = msg.ReadShort();		
+	int iSentry = msg.ReadShort();
 	CASW_Remote_Turret *pSentry = dynamic_cast<CASW_Remote_Turret*>( ClientEntityList().GetEnt( iSentry ) );
 
 	Vector vecEnd;
