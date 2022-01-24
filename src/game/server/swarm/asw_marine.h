@@ -542,9 +542,10 @@ public:
 	bool DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget=NULL, const Vector *pVelocity=NULL);
 	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ );	// HL version	
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
-	CASW_Weapon* GetActiveASWWeapon( void ) const;	
+	CASW_Weapon* GetActiveASWWeapon( void ) const;
 	virtual Vector Weapon_ShootPosition();					// source point for firing weapons	
 	virtual bool IsFiring();
+	int m_nIndexActWeapBeforeTempPickup;
 
 	void ScriptGiveAmmo( int iCount, int iAmmoIndex );
 	void ScriptGiveWeapon( const char *pszName, int slot );

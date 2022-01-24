@@ -629,6 +629,8 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	m_BackPackWeaponBaseEntity = NULL;
 	m_bAirStrafeUsed = false;
+
+	m_nIndexActWeapBeforeTempPickup = 0;
 }
 
 
@@ -2881,6 +2883,22 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 	if (!bAllowed)
 		return false;
 
+	if (pWeapon->m_bIsTemporaryPickup)
+	{
+		CASW_Weapon* pActive = GetActiveASWWeapon();
+		if (pActive && !pActive->m_bIsTemporaryPickup) //not swapping a temp weapon into temp
+		{
+			CASW_Weapon* pWeapon0 = GetASWWeapon(0);
+			CASW_Weapon* pWeapon1 = GetASWWeapon(1);
+			if (pWeapon0 == pActive)
+				m_nIndexActWeapBeforeTempPickup = 0;
+			else if (pWeapon1 == pActive)
+				m_nIndexActWeapBeforeTempPickup = 1;
+			else
+				Warning("Possibly wrong index in TakeWeaponPickup");
+		}
+	}
+
 	CASW_GameStats.Event_MarineTookPickup( this, pWeapon, pOldWeapon );
 
 	if ( rd_medgun_medkit_refill_amount.GetInt() > 0 && !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_medkit" ) )
@@ -3310,6 +3328,20 @@ bool CASW_Marine::DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *p
 	pWeapon->MarineDropped( this );
 	Weapon_Detach( pWeapon );
 
+	//unify drop\swap behaviour calls within temporary weapons, override bNoSwap behavior
+	if ( pWeapon->m_bIsTemporaryPickup )
+	{
+		CBaseCombatWeapon* pUseMe = GetWeapon(m_nIndexActWeapBeforeTempPickup);
+		if (pUseMe)
+		{
+			Weapon_Switch(pUseMe); //same index as we had active before temp pickups happen. weapon by this index may have changed with scripts for example, but we still try go there.
+			bNoSwap = true;
+		}
+		else
+		{
+			bNoSwap = false; // go usual way if above failed
+		}
+	}
 	// switch to the next weapon, if any
 	if ( !bNoSwap )
 	{
