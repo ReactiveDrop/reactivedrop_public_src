@@ -399,17 +399,17 @@ void CASW_Weapon_MedRifle::GetButtons(bool& bAttack1, bool& bAttack2, bool& bRel
 	CASW_Marine *pMarine = GetMarine();
 
 	// make AI fire this weapon whenever they have a heal target
-	if (pMarine && !pMarine->IsInhabited())
+	if ( pMarine && !pMarine->IsInhabited() && m_hHealEntity->Get() != NULL )
 	{
 		bAttack1 = false;
-		bAttack2 = ( m_hHealEntity->Get() != NULL );
+		bAttack2 = true;
 		bReload = false;
 		bOldReload = false;
 
 		return;
 	}
 
-	BaseClass::GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1);
+	BaseClass::GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 }
 #endif
 
