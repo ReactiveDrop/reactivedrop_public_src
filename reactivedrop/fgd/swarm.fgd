@@ -6110,7 +6110,7 @@
 	output OnKnockedBack(void) : "Fired whenever the trigger is activated."
 ]
 
-@PointClass base(Targetname, Angles, Studiomodel, Origin) studioprop("models/swarm/SentryGun/remoteturret.mdl") = asw_remote_turret
+@PointClass base(Targetname, Parentname, Angles, Studiomodel) studioprop("models/swarm/SentryGun/remoteturret.mdl") = asw_remote_turret
 [
 	viewlimits(angle) : "Turn range (Pitch Yaw Roll)" : "20 40 0" : "How many degrees this turret can turn either side of its initial facing."
 	UpsideDown(choices) : "Ceiling Turret" : 1 : "If set, this turret will be oriented upside down, as if attached to the ceiling." =
@@ -6123,7 +6123,7 @@
 	output OnStoppedUsing(void) : "Fired when a marine logs out of the remote turret. activator=marine, caller=computer area"
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun
+@PointClass base(Targetname, Parentname, Angles, Studiomodel) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun
 [
 	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
 ]
