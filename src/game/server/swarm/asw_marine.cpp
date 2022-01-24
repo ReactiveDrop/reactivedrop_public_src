@@ -683,15 +683,26 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 
 			if (rda_marine_backpack.GetBool())
 			{
-				if ( GetASWWeapon(0) && GetASWWeapon(1) )
+				CASW_Weapon* pWeapon0 = GetASWWeapon(0);
+				CASW_Weapon* pWeapon1 = GetASWWeapon(1);
+				if ( pWeapon0 && pWeapon1 ) 
 				{
-					if ( GetActiveASWWeapon() == GetASWWeapon(0) )
+					CASW_Weapon* pActive = GetActiveASWWeapon();
+					if ( pActive == pWeapon0 )
 					{
-						CreateBackPackModel( GetASWWeapon(1) );
+						CreateBackPackModel(pWeapon1);
+					}
+					else if (pActive == pWeapon1)
+					{
+						CreateBackPackModel(pWeapon0);
 					}
 					else
 					{
-						CreateBackPackModel( GetASWWeapon(0) );
+						//temp weapon is active, use saved data for moment when we picked it up
+						if ( m_nIndexActWeapBeforeTempPickup == 0 )
+							CreateBackPackModel(pWeapon1);
+						else
+							CreateBackPackModel(pWeapon0);
 					}
 				}
 			}
@@ -3128,7 +3139,7 @@ bool CASW_Marine::DropWeapon(int iWeaponIndex, bool bNoSwap)
 
 	RemoveWeaponPowerup( pWeapon );
 
-	if (rda_marine_backpack.GetBool() && iWeaponIndex != 2 && !bNoSwap)
+	if (rda_marine_backpack.GetBool() && iWeaponIndex != 2 && iWeaponIndex != ASW_TEMPORARY_WEAPON_SLOT && !bNoSwap)
 	{
 		RemoveBackPackModel();
 	}

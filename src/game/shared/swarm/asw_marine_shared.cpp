@@ -145,24 +145,32 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 #ifdef GAME_DLL
 			if ( rda_marine_backpack.GetBool() && !m_bKnockedOut ) // do not allow backpack switch when incapacitated with reviving enabled
 			{
+				CASW_Weapon* pTempWeapon = GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT);
+
 				//this related to first keyboard weapon switch and first weapon pickup that changes some gun (not a pickup into empty slot)
 				if ( !pLast && pWeaponPri && pWeaponSec )
 				{
-					RemoveBackPackModel();
-					if ( pWeaponPri == GetActiveASWWeapon() )
-						CreateBackPackModel( pWeaponSec );
-					else
-						CreateBackPackModel( pWeaponPri );
+					if ( !pTempWeapon ) //do not do anything with backpack if we grabbed temp weapon, also temp weapon supposed to be active so check can be like pTempWeapon != pActive
+					{
+						RemoveBackPackModel();
+						CASW_Weapon* pActive = GetActiveASWWeapon();
+						if ( pWeaponPri == pActive )
+							CreateBackPackModel( pWeaponSec );
+						else if ( pWeaponSec == pActive )
+							CreateBackPackModel( pWeaponPri );
+					}
 				}
 
 				if ( pLast )
 				{
-					CASW_Weapon *pPrevWeapon = assert_cast<CASW_Weapon *>( pLast );
-					//check if our weapon is another marine's weapon
-					if ( pWeaponPri == pPrevWeapon || pWeaponSec == pPrevWeapon )
+					CASW_Weapon *pPrevWeapon = assert_cast<CASW_Weapon *>(pLast);
+					if ( !pTempWeapon )//do not do anything with backpack if we grabbed temp weapon
 					{
-						RemoveBackPackModel();
-						CreateBackPackModel( pPrevWeapon );
+						if ( pWeaponPri == pPrevWeapon || pWeaponSec == pPrevWeapon )
+						{
+							RemoveBackPackModel();
+							CreateBackPackModel( pPrevWeapon );
+						}
 					}
 				}
 			}

@@ -269,11 +269,12 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 	if ( bCheckSecondaryAmmo && ( m_iClip2 || ( UsesClipsForAmmo2() &&  pMarine->GetAmmoCount(m_iSecondaryAmmoType) > 0 ) ) )
 		return false;
 
+#ifndef CLIENT_DLL
 	// riflemod: commented weapon destruction on empty
 	if ( rm_destroy_empty_weapon.GetBool() && !m_iClip1 && ( !UsesClipsForAmmo1() || pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) )
 	{
-#ifndef CLIENT_DLL
-		if ( rda_marine_backpack.GetBool() && pMarine->GetASWWeapon(2) != this )
+
+		if ( rda_marine_backpack.GetBool() && pMarine->GetASWWeapon(2) != this && pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != this )
 			pMarine->RemoveBackPackModel();
 
 		pMarine->Weapon_Detach(this);
@@ -281,8 +282,9 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 			pMarine->SwitchToNextBestWeapon(NULL);
 		Kill();
 		return true;
-#endif
+
 	}
+#endif
 	return false;
 }
 
