@@ -95,6 +95,7 @@ ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400"
 ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16", FCVAR_CHEAT, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
 ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT, "Teleport stuck bots directly to a marine instead of to the nearest node" );
 ConVar rd_marine_heal_range_max( "rd_marine_heal_range_max", "262144", FCVAR_CHEAT, "Square of the maximum distance the AI medic will run to heal(512x512 by default)", true, 4.f, true, FLT_MAX );
+ConVar rd_bot_melee( "rd_bot_melee", "0", FCVAR_NONE, "should bots melee if they are out of ammo" );
 
 extern ConVar ai_lead_time;
 
@@ -321,7 +322,7 @@ int CASW_Marine::SelectSchedule()
 	// we prevent melee schedule if out of ammo because 
 	// AI marines run away and die there swarmed by aliens 
 	// on high difficulties 
-	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) )
+	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || ( rd_bot_melee.GetBool() && HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
