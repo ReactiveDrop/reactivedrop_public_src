@@ -316,30 +316,28 @@ Vector CASW_Sentry_Top::GetEnemyVelocity( CBaseEntity *pEnemy )
 	}
 }
 
-CAI_BaseNPC * CASW_Sentry_Top::SelectOptimalEnemy()
+CAI_BaseNPC *CASW_Sentry_Top::SelectOptimalEnemy()
 {
 	// search through all npcs, any that are in LOS and have health
 	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
 
 	for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
 	{
-		if (ppAIs[i]->GetHealth() > 0 && CanSee(ppAIs[i]))
+		if ( ppAIs[i]->GetHealth() > 0 && CanSee( ppAIs[i] ) && IsValidEnemy( ppAIs[i] ) )
 		{
-			// don't shoot marines
-			if ( !asw_sentry_friendly_target.GetBool() && (ppAIs[i]->Classify() == CLASS_ASW_MARINE || ppAIs[i]->Classify() == CLASS_ASW_COLONIST) )
-				continue;
-
-			if ( ppAIs[i]->Classify() == CLASS_SCANNER )
-				continue;
-
-			if ( !IsValidEnemy( ppAIs[i] ) )
-				continue;
+			if ( !asw_sentry_friendly_target.GetBool() )
+			{
+				Relationship_t *pRelationship = FindEntityRelationship( ppAIs[i] );
+				if ( !pRelationship || pRelationship->disposition != D_HATE )
+				{
+					continue;
+				}
+			}
 
 			return ppAIs[i];
-			break;
-
 		}
 	}
+
 	// todo: should evaluate valid targets and pick the best one?
 	//   (didn't do this for ASv1 and it was fine...)
 
