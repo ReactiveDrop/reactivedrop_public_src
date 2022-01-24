@@ -97,10 +97,16 @@ void CASW_Sentry_Top::Spawn( void )
 
 	BaseClass::Spawn();
 
-	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );	
+	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
+	ChangeFaction( FACTION_MARINES );
 
 	m_fDeployYaw = GetAbsAngles().y;
 	m_fCurrentYaw = GetAbsAngles().y;
+
+	if ( GetMoveParent() )
+	{
+		m_fDeployYaw -= GetMoveParent()->GetAbsAngles().y;
+	}
 
 	SetThink( &CASW_Sentry_Top::AnimThink );
 	SetNextThink( gpGlobals->curtime + 0.01f );
@@ -172,11 +178,34 @@ void CASW_Sentry_Top::SetSentryBase(CASW_Sentry_Base* pSentryBase)
 	SetLocalOrigin(vec3_origin);
 }
 
+float CASW_Sentry_Top::GetDeployYaw()
+{
+	float fDeployYaw = m_fDeployYaw;
+	if ( GetMoveParent() )
+	{
+		fDeployYaw += GetMoveParent()->GetAbsAngles().y;
+	}
+
+	float fCurrentYaw = GetAbsAngles().y;
+
+	return fCurrentYaw + anglemod( fDeployYaw - fCurrentYaw );
+}
+
+void CASW_Sentry_Top::SetDeployYaw( float yaw )
+{
+	if ( GetMoveParent() )
+	{
+		yaw -= GetMoveParent()->GetAbsAngles().y;
+	}
+
+	m_fDeployYaw = anglemod( yaw );
+}
+
 void CASW_Sentry_Top::UpdateGoal()
 {
 	if (!m_hEnemy.IsValid() || !m_hEnemy.Get())
 	{
-		m_fGoalYaw = m_fDeployYaw;
+		m_fGoalYaw = GetDeployYaw();
 	}
 	else
 	{
@@ -395,7 +424,7 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 		}
 	}
 	// check if the angle is within X degrees of our deploy radius
-	float fYawDiff = fabs(UTIL_AngleDiff(CASW_Sentry_Top::GetYawTo(pEnt), m_fDeployYaw));
+	float fYawDiff = fabs( UTIL_AngleDiff( CASW_Sentry_Top::GetYawTo( pEnt ), GetDeployYaw() ) );
 	if (fYawDiff > 360.0f)
 		fYawDiff -= 360.0f;
 
@@ -425,10 +454,10 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 float CASW_Sentry_Top::GetYawTo(CBaseEntity* pEnt)
 {
 	if (!pEnt)
-		return m_fDeployYaw;
+		return GetDeployYaw();
 	Vector diff = pEnt->WorldSpaceCenter() - GetAbsOrigin();
 	if (diff.x == 0 && diff.y == 0 && diff.z == 0)
-		return m_fDeployYaw;
+		return GetDeployYaw();
 
 	return UTIL_VecToYaw(diff);
 }

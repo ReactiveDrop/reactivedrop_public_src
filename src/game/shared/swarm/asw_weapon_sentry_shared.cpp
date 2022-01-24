@@ -21,6 +21,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar rd_sentry_is_attacked_by_aliens( "rd_sentry_is_attacked_by_aliens", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 0 aliens will not try to damage sentries." );
+ConVar rd_debug_sentry_placement( "rd_debug_sentry_placement", "0", FCVAR_CHEAT | FCVAR_REPLICATED);
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sentry, DT_ASW_Weapon_Sentry )
 
@@ -231,17 +232,16 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 		COLLISION_GROUP_NONE,
 		&tr );
 
-#ifdef GAME_DLL
-	CFuncMoveLinear *pElevator = NULL;
-#endif
+	if ( rd_debug_sentry_placement.GetBool() )
+		debugoverlay->AddBoxOverlay( tr.endpos, vecSentryMins, vecSentryMaxs, vec3_angle, 255, 255, tr.DidHitNonWorldEntity() ? 255 : 0, 32, 0.2f );
 
-	// so we don't put the sentry on something that might move/disappear
+	CBaseEntity *pElevator = NULL;
+
+	// Allow placing the sentry on moving objects, as long as they're not physics-based or alive.
 	if ( tr.DidHitNonWorldEntity() )
 	{
-#ifdef GAME_DLL		// todo: allow clients to predict spawning on top of elevator too?
-		pElevator = dynamic_cast<CFuncMoveLinear*>(tr.m_pEnt);
-		if ( !pElevator )
-#endif
+		pElevator = tr.m_pEnt;
+		if ( !pElevator || ( pElevator->GetMoveType() != MOVETYPE_NONE && pElevator->GetMoveType() != MOVETYPE_PUSH ) )
 			return false;
 	}
 
@@ -252,26 +252,51 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 
 	// check the feet have ground to stand on
 	trace_t trace;
-	Vector vecTest = vecSpawnPos + Vector(0,9,5);
 	Vector vecTestMins = Vector(-3, -3, -3);
 	Vector vecTestMaxs = Vector(3, 3, 3);
+
+	Vector vecTest;
+	VectorTransform( Vector( -46, -25, 0 ), matrix, vecTest );
+	vecTest += vecSpawnPos;
+
 	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
-	if (trace.fraction == 1.0)
+
+	if ( rd_debug_sentry_placement.GetBool() )
+		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
+
+	if ( trace.fraction == 1.0 || ( trace.DidHitNonWorldEntity() ? trace.m_pEnt : NULL ) != pElevator )
 		return false;
 
-	vecTest = vecSpawnPos + Vector(0,-9,6);
+	VectorTransform( Vector( -46, 25, 0 ), matrix, vecTest );
+	vecTest += vecSpawnPos;
+
 	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
-	if (trace.fraction == 1.0)
+
+	if ( rd_debug_sentry_placement.GetBool() )
+		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
+
+	if ( trace.fraction == 1.0 || ( trace.DidHitNonWorldEntity() ? trace.m_pEnt : NULL ) != pElevator )
 		return false;
 
-	vecTest = vecSpawnPos + Vector(9,0,6);
+	VectorTransform( Vector( 21, -19, 0 ), matrix, vecTest );
+	vecTest += vecSpawnPos;
+
 	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
-	if (trace.fraction == 1.0)
+
+	if ( rd_debug_sentry_placement.GetBool() )
+		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
+
+	if ( trace.fraction == 1.0 || ( trace.DidHitNonWorldEntity() ? trace.m_pEnt : NULL ) != pElevator )
 		return false;
 
-	vecTest = vecSpawnPos + Vector(-9,0,6);
+	VectorTransform( Vector( 21, 19, 0 ), matrix, vecTest );
+	vecTest += vecSpawnPos;
+
 	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
-	if (trace.fraction == 1.0)
+
+	if ( rd_debug_sentry_placement.GetBool() )
+		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
+	if ( trace.fraction == 1.0 || ( trace.DidHitNonWorldEntity() ? trace.m_pEnt : NULL ) != pElevator )
 		return false;
 
 #ifdef GAME_DLL
@@ -329,6 +354,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt1->SetDuration( 10000 );
 				pEnt1->AddEffects( EF_NODRAW );
+				pEnt1->SetParent( pBase );
 			}
 		}
 
@@ -340,6 +366,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt2->SetDuration( 10000 );
 				pEnt2->AddEffects( EF_NODRAW );
+				pEnt2->SetParent( pBase );
 			}
 		}
 
@@ -353,6 +380,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt3->SetDuration( 10000 );
 				pEnt3->AddEffects( EF_NODRAW );
+				pEnt3->SetParent( pBase );
 			}
 		}
 
@@ -366,6 +394,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt4->SetDuration( 10000 );
 				pEnt4->AddEffects( EF_NODRAW );
+				pEnt4->SetParent( pBase );
 			}
 		}
 
