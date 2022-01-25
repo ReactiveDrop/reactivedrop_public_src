@@ -476,7 +476,7 @@ HSCRIPT Script_StartFire( const Vector position, float duration, int flags )
 const Vector &Script_GetHullMins( int hull )
 {
 	if ( hull < 0 || hull > ( NUM_HULLS - 1 ) )
-		return Vector( 0, 0, 0 );
+		return vec3_origin;
 
 	return NAI_Hull::Mins( hull );
 }
@@ -484,7 +484,7 @@ const Vector &Script_GetHullMins( int hull )
 const Vector &Script_GetHullMaxs( int hull )
 {
 	if ( hull < 0 || hull > ( NUM_HULLS - 1 ) )
-		return Vector( 0, 0, 0 );
+		return vec3_origin;
 
 	return NAI_Hull::Maxs( hull );
 }
