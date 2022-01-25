@@ -43,6 +43,7 @@ class CASW_VGUI_Stylin_Cam : public CASW_HudElement, public vgui::Panel
 	vgui::ImagePanel *m_pCommanderImage;
 	vgui::ImagePanel *m_pCommanderFlash;
 	bool m_bFadingOutCommanderFace, m_bFadingInCommanderFace;
+	CHandle<CBaseEntity> m_hLastStylinCam;
 
 	bool m_bCommanderFace;
 };

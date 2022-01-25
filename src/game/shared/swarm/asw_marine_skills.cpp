@@ -136,7 +136,7 @@ ConVar asw_skill_accuracy_pdw_dmg_step("asw_skill_accuracy_pdw_dmg_step", "1.0",
 ConVar asw_skill_muzzle_flash_base("asw_skill_muzzle_flash_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_muzzle_flash_step("asw_skill_muzzle_flash_step", "0.2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_sniper_rifle_dmg_base("asw_skill_accuracy_sniper_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_sniper_rifle_dmg_step("asw_skill_accuracy_sniper_rifle_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_sniper_rifle_dmg_step("asw_skill_accuracy_sniper_rifle_dmg_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_tesla_cannon_dmg_base("asw_skill_accuracy_tesla_cannon_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_tesla_cannon_dmg_step("asw_skill_accuracy_tesla_cannon_dmg_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_heavy_rifle_dmg_base( "asw_skill_accuracy_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );

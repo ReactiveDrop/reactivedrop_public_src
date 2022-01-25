@@ -385,6 +385,77 @@ int	CAI_Network::NearestNodeToPoint(const Vector &vPosition, bool bCheckVisibili
 {
 	return NearestNodeToPoint( NULL, vPosition, bCheckVisibility );
 }
+
+
+//-----------------------------------------------------------------------------
+// Purpose: VScript: Build a list of nearby x nodes sorted by distance
+//			and fills passed table. Returns number of found nodes.
+//-----------------------------------------------------------------------------
+
+int CAI_Network::ScriptNearestNodesInBox( HSCRIPT hNPC, const Vector &vecOrigin, int iMaxNodes, HSCRIPT hTable )
+{
+	AI_PROFILE_SCOPE( CAI_Network_NearestNodeToNPCAtPoint );
+	
+	// --------------------------------
+	//  Check if network has no nodes
+	// --------------------------------
+	if (m_iNumNodes == 0)
+		return NO_NODE;
+
+	if ( !iMaxNodes || iMaxNodes > m_iNumNodes )
+		iMaxNodes = MAX_NEAR_NODES;
+
+	CBaseEntity *pBaseEntity = ToEnt(hNPC);
+	CAI_BaseNPC *pNPC = NULL;
+
+	if ( pBaseEntity )
+		pNPC = dynamic_cast<CAI_BaseNPC*>(pBaseEntity);
+
+	// ---------------------------------------------------------------
+	// First get nodes distances and eliminate those that are beyond 
+	// the maximum allowed distance for local movements
+	// ---------------------------------------------------------------
+	CNodeFilter filter( pNPC, vecOrigin );
+
+#ifdef AI_PERF_MON
+		m_nPerfStatNN++;
+#endif
+
+	AI_NearNode_t *pBuffer = (AI_NearNode_t *)stackalloc( sizeof(AI_NearNode_t) * iMaxNodes );
+	CNodeList list( pBuffer, iMaxNodes );
+
+	// OPTIMIZE: If not flying, this box should be smaller in Z (2 * height?)
+	Vector ext(MAX_NODE_LINK_DIST, MAX_NODE_LINK_DIST, MAX_NODE_LINK_DIST);
+	// If the NPC can fly, check further
+	if ( pNPC && ( pNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY ) )
+	{
+		ext.Init( MAX_AIR_NODE_LINK_DIST, MAX_AIR_NODE_LINK_DIST, MAX_AIR_NODE_LINK_DIST );
+	}
+
+	ListNodesInBox( list, iMaxNodes, vecOrigin - ext, vecOrigin + ext, &filter );
+
+	// --------------------------------------------------------------
+	//  Now find a reachable node searching the close nodes first
+	// --------------------------------------------------------------
+	//int smallestVisibleID = NO_NODE;
+
+	int i = 0;
+	for( ;list.Count(); list.RemoveAtHead() )
+	{
+		int smallest = list.ElementAtHead().nodeIndex;
+
+		// Check that this node is usable by the current hull size
+		if ( pNPC && !pNPC->GetNavigator()->CanFitAtNode(smallest))
+			continue;
+
+		CAI_Node *pNode = g_pBigAINet->GetNode( smallest );
+		g_pScriptVM->SetValue( hTable, CFmtStr( "node%i", i ), ToHScript( pNode ) );
+		i++;
+	}
+
+	return i;
+}
+
 	
 //-----------------------------------------------------------------------------
 // Purpose: Check nearest node cache for checkPos and return cached nearest

@@ -124,10 +124,10 @@
 #endif
 
 #ifndef CLIENT_DLL
+// expose server helper interface
 #include "serverhelper.h"
-
-CServerHelper g_ServerHelper;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerHelper, IServerHelper, INTERFACEVERSION_SERVERGAMEDLL, g_ServerHelper);
+static CServerHelper g_ServerHelper;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CServerHelper, IServerHelper, INTERFACEVERSION_SERVERHELPERDLL, g_ServerHelper );
 #endif
 
 extern IToolFrameworkServer *g_pToolFrameworkServer;

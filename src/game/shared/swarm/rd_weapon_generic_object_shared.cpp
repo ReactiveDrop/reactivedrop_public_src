@@ -56,7 +56,7 @@ CRD_Weapon_Generic_Object::CRD_Weapon_Generic_Object()
 	m_bUseBoneMerge = false;
 	m_angCarriedAngle.Init();
 	m_vecCarriedOffset.Init();
-	m_szWorldModel.GetForModify()[0] = '\0';
+	Q_strncpy( m_szWorldModel.GetForModify(), "models/error.mdl", 256 );
 	m_szCarriedName.GetForModify()[0] = '\0';
 #ifdef CLIENT_DLL
 	m_wszCarriedName[0] = '\0';

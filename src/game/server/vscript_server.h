@@ -29,6 +29,22 @@ class CBaseEntityScriptInstanceHelper : public IScriptInstanceHelper
 
 extern CBaseEntityScriptInstanceHelper g_BaseEntityScriptInstanceHelper;
 
+
+class CAINodeScriptInstanceHelper : public IScriptInstanceHelper
+{
+	bool ToString( void *p, char *pBuf, int bufSize );
+};
+
+extern CAINodeScriptInstanceHelper g_AINodeScriptInstanceHelper;
+
+
+class CAILinkScriptInstanceHelper : public IScriptInstanceHelper
+{
+	bool ToString( void *p, char *pBuf, int bufSize );
+};
+
+extern CAILinkScriptInstanceHelper g_AILinkScriptInstanceHelper;
+
 // Only allow scripts to create entities during map initialization
 bool IsEntityCreationAllowedInScripts( void );
 

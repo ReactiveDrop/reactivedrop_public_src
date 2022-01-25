@@ -118,6 +118,7 @@ void CASW_VGUI_Stylin_Cam::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pCommanderImage->SetImage( "briefing/face_pilot" );
 	m_pCommanderFlash->SetAlpha( 255 );
 	m_pCommanderFlash->SetImage( "white" );
+	m_hLastStylinCam = NULL;
 
 	m_bFadingInCommanderFace = false;
 	m_bFadingOutCommanderFace = false;
@@ -166,7 +167,14 @@ void CASW_VGUI_Stylin_Cam::OnThink()
 {
 	if ( !ASWGameRules() )
 		return;
-	
+
+	CBaseEntity *pStylinCam = ASWGameRules()->m_hCurrentStylinCam;
+	if ( m_hLastStylinCam != pStylinCam )
+	{
+		m_pCommanderImage->SetImage( ASWGameRules()->GetCommanderFace() );
+		m_hLastStylinCam = pStylinCam;
+	}
+
 	// should fade the camera view in and out depending on if we're in slomo or not
 	if (m_bFadingOutCameraImage)
 	{
@@ -193,7 +201,7 @@ void CASW_VGUI_Stylin_Cam::OnThink()
 			m_bFadingOutCameraImage = false;
 			vgui::GetAnimationController()->RunAnimationCommand(m_pCameraImage, "Alpha", 255, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
 			vgui::GetAnimationController()->RunAnimationCommand(m_pCameraImage, "wide", GetStylinCamSize(), 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			vgui::GetAnimationController()->RunAnimationCommand(m_pCameraImage, "tall", GetStylinCamSize(), 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);				
+			vgui::GetAnimationController()->RunAnimationCommand(m_pCameraImage, "tall", GetStylinCamSize(), 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
 		}
 		else if ( !bShow && m_pCameraImage->GetAlpha() != 0 )
 		{

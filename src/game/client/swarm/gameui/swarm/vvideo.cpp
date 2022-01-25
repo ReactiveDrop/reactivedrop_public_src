@@ -758,11 +758,6 @@ void Video::OnThink()
 		m_drpLockMouse = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpLockMouse" ) );
 		needsActivate = true;
 	}
-	
-	if ( m_drpLockMouse )
-	{
-		m_drpLockMouse->SetVisible( m_bWindowed );
-	}
 
 	if ( !m_drpDepthBlur )
 	{
