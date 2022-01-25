@@ -4011,9 +4011,16 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_MARINES, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
 
-	/*
 	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
 
+	for ( int i = 0; i < iNumClasses; i++ )
+	{
+		// compat: make bullseye everyone's enemy by default
+		// it would previously read uninitialized memory
+		CBaseCombatCharacter::SetDefaultRelationship( (Class_T)i, CLASS_BULLSEYE, D_HATE, 0 );
+	}
+
+	/*
 	// --------------------------------------------------------------
 	// First initialize table so we can report missing relationships
 	// --------------------------------------------------------------

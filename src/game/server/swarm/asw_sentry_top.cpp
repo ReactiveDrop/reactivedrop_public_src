@@ -10,7 +10,6 @@
 #include "asw_fail_advice.h"
 #include "asw_target_dummy_shared.h"
 #include "asw_drone_advanced.h"
-#include "asw_parasite.h"
 #include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -58,7 +57,7 @@ BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
 END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Top, CBaseAnimating, "sentry top" )
+BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Top, CBaseCombatCharacter, "sentry top" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptPreventFiringUntil, "PreventFiringUntil", "" )
 END_SCRIPTDESC()
 
@@ -275,6 +274,9 @@ void CASW_Sentry_Top::FindEnemy()
 		CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC *>(m_hEnemy.Get());
 		if ( pNPC && !IsValidEnemy(pNPC) )
 			bFindNewEnemy = true;
+		Disposition_t rel = IRelationType( m_hEnemy );
+		if ( !asw_sentry_friendly_target.GetBool() && rel != D_HATE && rel != D_FEAR )
+			bFindNewEnemy = true;
 	}
 
 	if (bFindNewEnemy)
@@ -327,9 +329,10 @@ CAI_BaseNPC *CASW_Sentry_Top::SelectOptimalEnemy()
 		{
 			if ( !asw_sentry_friendly_target.GetBool() )
 			{
-				Relationship_t *pRelationship = FindEntityRelationship( ppAIs[i] );
-				if ( !pRelationship || pRelationship->disposition != D_HATE )
+				Disposition_t rel = IRelationType( ppAIs[i] );
+				if ( rel != D_HATE && rel != D_FEAR )
 				{
+					Assert( rel == D_LIKE || rel == D_NEUTRAL );
 					continue;
 				}
 			}
@@ -476,14 +479,8 @@ bool CASW_Sentry_Top::IsValidEnemy( CAI_BaseNPC *pNPC )
 	if ( !pNPC )
 		return false;
 
-	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
-	{
-		CASW_Parasite *pParasite = static_cast< CASW_Parasite* >( pNPC );
-		if ( pParasite->m_bInfesting )
-		{
-			return false;
-		}
-	}
+	if ( pNPC->GetFlags() & FL_NOTARGET )
+		return false;
 
 	return true;
 }
