@@ -82,18 +82,19 @@ int AE_MARINE_UNFREEZE;
 int ACT_MARINE_GETTING_UP;
 int ACT_MARINE_LAYING_ON_FLOOR;
 
-ConVar asw_marine_aim_error_max("asw_marine_aim_error_max", "20.0f", FCVAR_CHEAT, "Maximum firing error angle for AI marines with base accuracy skill\n");
-ConVar asw_marine_aim_error_min("asw_marine_aim_error_min", "5.0f", FCVAR_CHEAT, "Minimum firing error angle for AI marines with base accuracy skill\n");
+ConVar asw_marine_aim_error_max( "asw_marine_aim_error_max", "20.0f", FCVAR_CHEAT, "Maximum firing error angle for AI marines with base accuracy skill\n" );
+ConVar asw_marine_aim_error_min( "asw_marine_aim_error_min", "5.0f", FCVAR_CHEAT, "Minimum firing error angle for AI marines with base accuracy skill\n" );
 // todo: have this value vary based on marine skill/level/distance
-ConVar asw_marine_aim_error_decay_multiplier("asw_marine_aim_error_decay_multiplier", "0.9f", FCVAR_CHEAT, "Value multiplied per turn to reduce aim error over time\n");
+ConVar asw_marine_aim_error_decay_multiplier( "asw_marine_aim_error_decay_multiplier", "0.9f", FCVAR_CHEAT, "Value multiplied per turn to reduce aim error over time\n" );
 ConVar asw_blind_follow( "asw_blind_follow", "0", FCVAR_NONE, "Set to 1 to give marines short sight range while following (old school alien swarm style)" );
 ConVar asw_debug_marine_aim( "asw_debug_marine_aim", "0", FCVAR_CHEAT, "Shows debug info on marine aiming" );
 ConVar asw_debug_throw( "asw_debug_throw", "0", FCVAR_CHEAT, "Show node debug info on throw visibility checks" );
 ConVar asw_debug_order_weld( "asw_debug_order_weld", "0", FCVAR_DEVELOPMENTONLY, "Debug lines for ordering marines to offhand weld a door" );
-ConVar rd_stuck_bot_teleport( "rd_stuck_bot_teleport", "1", FCVAR_NONE, "Teleport stuck bots" );
-ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400", FCVAR_CHEAT | FCVAR_NONE, "Teleport stuck bots to a node within this range of the squad leader. -1 for unlimited." );
-ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16",FCVAR_CHEAT |  FCVAR_NONE, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
-ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT | FCVAR_NONE, "Teleport stuck bots directly to a marine instead of to the nearest node" );
+ConVar rd_stuck_bot_teleport( "rd_stuck_bot_teleport", "1", FCVAR_CHEAT, "Teleport stuck bots" );
+ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400", FCVAR_CHEAT, "Teleport stuck bots to a node within this range of the squad leader. -1 for unlimited." );
+ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16", FCVAR_CHEAT, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
+ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT, "Teleport stuck bots directly to a marine instead of to the nearest node" );
+ConVar rd_marine_heal_range_max( "rd_marine_heal_range_max", "262144", FCVAR_CHEAT, "Square of the maximum distance the AI medic will run to heal(512x512 by default)", true, 4.f, true, FLT_MAX );
 
 extern ConVar ai_lead_time;
 
@@ -940,7 +941,7 @@ int CASW_Marine::SelectHealSchedule()
 
 	CASW_Marine *pBestMarine = NULL;
 
-	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) : FLT_MAX;
+	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) : rd_marine_heal_range_max.GetFloat();
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); ++i )
 	{

@@ -375,6 +375,7 @@ public:
 	CBaseEntity* GetStimSource() { return m_hStartStimPlayer.Get(); }
 	bool	ShouldForceStylinCam() { return m_bForceStylinCam; }
 	bool	ShouldShowCommanderFace() { return m_bShowCommanderFace; }
+	const char *GetCommanderFace();
 	float	GetRestartingMissionTime() { return m_flRestartingMissionTime; }
 	CNetworkVar(EHANDLE, m_hStartStimPlayer);
 	CNetworkVar(float, m_flStimEndTime);		// time at which stims will end
@@ -382,6 +383,7 @@ public:
 	CNetworkVar(float, m_fPreventStimMusicTime);	// while under this time, clients won't play stim music
 	CNetworkVar(bool, m_bForceStylinCam);
 	CNetworkVar(bool, m_bShowCommanderFace);
+	CNetworkHandle(CBaseEntity, m_hCurrentStylinCam);
 	CNetworkVar(float, m_flRestartingMissionTime);
 
 	// marine death cams

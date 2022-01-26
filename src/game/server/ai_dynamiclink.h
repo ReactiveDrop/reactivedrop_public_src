@@ -32,6 +32,7 @@ class CAI_Link;
 class CAI_DynamicLink : public CServerOnlyEntity
 {
 	DECLARE_CLASS( CAI_DynamicLink, CServerOnlyEntity );
+	DECLARE_ENT_SCRIPTDESC();
 public:
 	static void					InitDynamicLinks(void);
 	static void					ResetDynamicLinks(void);
@@ -66,6 +67,12 @@ public:
 	CAI_Link *					FindLink();
 
 	int							ObjectCaps();
+
+	HSCRIPT						ScriptFindLink();
+	void						ScriptTurnOn();
+	void						ScriptTurnOff();
+	HSCRIPT						ScriptGetSrcNode();
+	HSCRIPT						ScriptGetDestNode();
 
 	// ----------------
 	//	Inputs

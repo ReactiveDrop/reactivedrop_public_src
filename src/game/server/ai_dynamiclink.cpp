@@ -196,6 +196,15 @@ DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
 
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC( CAI_DynamicLink, CBaseEntity, "Dynamic Link" )
+	DEFINE_SCRIPTFUNC( IsLinkValid, "Returns true if the dynamic link has a corresponding node link." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptTurnOn, "TurnOn", "Enables node link connections." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptTurnOff, "TurnOff", "Disables node link connections." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptFindLink, "FindLink", "Returns the node link or null if not found." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSrcNode, "GetSrcNode", "Returns the node that 'owns' this link." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDestNode, "GetDestNode", "Returns the node on the other end of the link." )
+END_SCRIPTDESC()
+
 //-----------------------------------------------------------------------------
 // Init static variables
 //-----------------------------------------------------------------------------
@@ -600,6 +609,57 @@ CAI_DynamicLink::~CAI_DynamicLink(void) {
 			pDynamicLink = pDynamicLink->m_pNextDynamicLink;
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+HSCRIPT CAI_DynamicLink::ScriptFindLink()
+{
+	return ToHScript( FindLink() );
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CAI_DynamicLink::ScriptTurnOn()
+{
+	if (m_nLinkState == LINK_OFF)
+	{
+		m_nLinkState = LINK_ON;
+		CAI_DynamicLink::SetLinkState();
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CAI_DynamicLink::ScriptTurnOff()
+{
+	if (m_nLinkState == LINK_ON)
+	{
+		m_nLinkState = LINK_OFF;
+		CAI_DynamicLink::SetLinkState();
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+HSCRIPT CAI_DynamicLink::ScriptGetSrcNode()
+{
+	CAI_Node *pSrcNode = g_pBigAINet->GetNode( m_nSrcID, false );
+	if ( !pSrcNode )
+		return NULL;
+
+	return ToHScript( pSrcNode );
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+HSCRIPT CAI_DynamicLink::ScriptGetDestNode()
+{
+	CAI_Node *pDestNode = g_pBigAINet->GetNode( m_nDestID, false );
+	if ( !pDestNode )
+		return NULL;
+
+	return ToHScript( pDestNode );
 }
 
 LINK_ENTITY_TO_CLASS(info_radial_link_controller, CAI_RadialLinkController);

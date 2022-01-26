@@ -19,6 +19,8 @@
 #include "ai_speech.h"
 #include "ai_network.h"
 #include "ai_node.h"
+#include "ai_link.h"
+#include "ai_basenpc.h"
 #include "inetchannelinfo.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
@@ -463,6 +465,54 @@ public:
 
 		return pNode->GetType();
 	}
+
+	HSCRIPT GetNodeByID( int node_id )
+	{
+		CAI_Node *pNode = g_pBigAINet->GetNode( node_id );
+		if ( !pNode )
+			return NULL;
+
+		return ToHScript( pNode );
+	}
+
+	HSCRIPT GetNearestNodeToPoint( HSCRIPT hNPC, const Vector &vPosition )
+	{
+		CBaseEntity *pBaseEntity = ToEnt(hNPC);
+		CAI_BaseNPC *pNPC = NULL;
+		if ( pBaseEntity )
+			pNPC = dynamic_cast<CAI_BaseNPC*>(pBaseEntity);
+
+		int node = g_pBigAINet->NearestNodeToPoint( pNPC, vPosition, false );
+		if ( node == NO_NODE )
+			return NULL;
+
+		return ToHScript( g_pBigAINet->GetNode( node ) );
+	}
+
+	int GetAllNearestNodes( HSCRIPT hNPC, const Vector &vPosition, int iMaxNodes, HSCRIPT hTable )
+	{
+		return g_pBigAINet->ScriptNearestNodesInBox( hNPC, vPosition, iMaxNodes, hTable );
+	}
+
+	void GetAllNodes( HSCRIPT hTable )
+	{
+		int nNodes = g_pBigAINet->NumNodes();
+		CAI_Node **ppNodes = g_pBigAINet->AccessNodes();
+		for ( int i = 0; i < nNodes; i++ )
+		{
+			CAI_Node *pNode = ppNodes[i];
+			g_pScriptVM->SetValue( hTable, CFmtStr( "node%i", i ), ToHScript( pNode ) );
+		}
+	}
+
+	HSCRIPT CreateLink( int srcID, int destID )
+	{
+		CAI_Link *pLink = g_pBigAINet->CreateLink( srcID, destID );
+		if ( !pLink )
+			return NULL;
+
+		return ToHScript( pLink );
+	}
 } g_ScriptInfoNodes;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptInfoNodes, "CScriptInfoNodes", SCRIPT_SINGLETON "Used to get info_node data" )
@@ -470,6 +520,11 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptInfoNodes, "CScriptInfoNodes", SCRIPT_SINGLE
 	DEFINE_SCRIPTFUNC( GetNodeOrigin, "Arguments: ( id ) - returns the origin of the node" )
 	DEFINE_SCRIPTFUNC( GetNodePosition, "Arguments: ( id, hull ) - returns the hull specific origin of the node" )
 	DEFINE_SCRIPTFUNC( GetNodeType, "Arguments: ( id ) - returns the type of node" )
+	DEFINE_SCRIPTFUNC( GetNodeByID, "Arguments: ( id ) - returns the node by ID" )
+	DEFINE_SCRIPTFUNC( GetNearestNodeToPoint, "Arguments: ( npc, origin ) - returns the node nearest to origin with optional npc parameter" )
+	DEFINE_SCRIPTFUNC( GetAllNearestNodes, "Arguments: ( npc, origin, maxNodes, table ) - fills a passed in table of x nearest nodes to origin with optional npc parameter" )
+	DEFINE_SCRIPTFUNC( GetAllNodes, "Arguments: ( table ) - fills a passed in table of all nodes" )
+	DEFINE_SCRIPTFUNC( CreateLink, "Arguments: ( srcID, destID ) - creates a new link from srcID to destID and returns the link" )
 END_SCRIPTDESC();
 
 
@@ -1056,6 +1111,19 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "HULL_TINY_FLUID", 10 );
 				g_pScriptVM->SetValue( "HULL_MEDIUMBIG", 11 );
 
+				// AI_ZoneIds_t enums for CAI_Node::GetZone and CAI_Node::SetZone
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNKNOWN", 0 );
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_SOLO", 1 );
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNIVERSAL", 3 );
+				g_pScriptVM->SetValue( "AI_NODE_FIRST_ZONE", 4 );
+
+				// Link_Info_t enums for CAI_Link::ScriptGetLinkInfo and CAI_Link::ScriptSetLinkInfo
+				g_pScriptVM->SetValue( "bits_LINK_STALE_SUGGESTED", 0x01 );
+				g_pScriptVM->SetValue( "bits_LINK_OFF", 0x02 );
+				g_pScriptVM->SetValue( "bits_LINK_PRECISE_MOVEMENT", 0x04 );
+				g_pScriptVM->SetValue( "bits_PREFER_AVOID", 0x08 );
+				g_pScriptVM->SetValue( "bits_LINK_ASW_BASHABLE", 0x10 );
+
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
 					g_pScriptVM->Run( g_Script_vscript_server );
@@ -1446,5 +1514,25 @@ void *CBaseEntityScriptInstanceHelper::BindOnRead( HSCRIPT hInstance, void *pOld
 
 
 CBaseEntityScriptInstanceHelper g_BaseEntityScriptInstanceHelper;
+
+
+bool CAINodeScriptInstanceHelper::ToString( void *p, char *pBuf, int bufSize )	
+{
+	CAI_Node *pNode = (CAI_Node *)p;
+	V_snprintf( pBuf, bufSize, "([%d] Node)", pNode->GetId() );
+	return true; 
+}
+
+CAINodeScriptInstanceHelper g_AINodeScriptInstanceHelper;
+
+
+bool CAILinkScriptInstanceHelper::ToString( void *p, char *pBuf, int bufSize )	
+{
+	CAI_Link *pLink = (CAI_Link *)p;
+	V_snprintf( pBuf, bufSize, "([%d, %d] Link)", pLink->m_iSrcID, pLink->m_iDestID );
+	return true; 
+}
+
+CAILinkScriptInstanceHelper g_AILinkScriptInstanceHelper;
 
 

@@ -15,6 +15,9 @@
 
 #define SENTRY_TOP_MODEL "models/sentry_gun/machinegun_top.mdl"
 
+ConVar asw_sentry_top_machinegun_dmg_override( "asw_sentry_top_machinegun_dmg_override", "0", FCVAR_CHEAT, "Overrides sentry machinegun's damage. 0 means no override is done", true, 0.0f, true, 99999.0f );
+ConVar asw_sentry_top_machinegun_fire_rate( "asw_sentry_top_machinegun_fire_rate", "0.08", FCVAR_CHEAT, "Time in seconds between each shot of sentry machinegun", true, 0.001f, true, 999.0f );
+
 LINK_ENTITY_TO_CLASS( asw_sentry_top_machinegun, CASW_Sentry_Top_Machinegun );
 PRECACHE_REGISTER( asw_sentry_top_machinegun );
 
@@ -27,8 +30,6 @@ BEGIN_DATADESC( CASW_Sentry_Top_Machinegun )
 END_DATADESC()
 
 
-
-#define ASW_SENTRY_FIRE_RATE 0.08f		// time in seconds between each shot
 #define ASW_SENTRY_OVERFIRE 0.45f		// keep firing for this long after killing someone, because it's more badass
 
 
@@ -84,7 +85,10 @@ void CASW_Sentry_Top_Machinegun::Fire()
 		GetRange(), m_iAmmoType);
 		info.m_pAttacker = this;
 		info.m_pAdditionalIgnoreEnt = GetSentryBase();	
-		info.m_flDamage = GetSentryDamage();
+		if ( asw_sentry_top_machinegun_dmg_override.GetFloat() > 0 )
+			info.m_flDamage = asw_sentry_top_machinegun_dmg_override.GetFloat();
+		else
+			info.m_flDamage = GetSentryDamage();
 		info.m_iTracerFreq = 1;
 		FireBullets(info);
 		// because we may emit more than one bullet per server tick, space the play time
@@ -102,7 +106,7 @@ void CASW_Sentry_Top_Machinegun::Fire()
 		DispatchParticleEffect( "muzzle_sentrygun", PATTACH_POINT_FOLLOW, this, "muzzle", false, -1, &filter );
 
 		// advance by consistent interval (may cause more than one bullet to be fired per frame)
-		m_fNextFireTime += ASW_SENTRY_FIRE_RATE;
+		m_fNextFireTime += asw_sentry_top_machinegun_fire_rate.GetFloat();
 
 		// use ammo
 		if ( pBase )
