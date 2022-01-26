@@ -94,6 +94,7 @@ ConVar rd_stuck_bot_teleport( "rd_stuck_bot_teleport", "1", FCVAR_CHEAT, "Telepo
 ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400", FCVAR_CHEAT, "Teleport stuck bots to a node within this range of the squad leader. -1 for unlimited." );
 ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16", FCVAR_CHEAT, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
 ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT, "Teleport stuck bots directly to a marine instead of to the nearest node" );
+ConVar rd_marine_heal_range_max( "rd_marine_heal_range_max", "262144", FCVAR_CHEAT, "Square of the maximum distance the AI medic will run to heal(512x512 by default)", true, 4.f, true, FLT_MAX );
 
 extern ConVar ai_lead_time;
 
@@ -940,7 +941,7 @@ int CASW_Marine::SelectHealSchedule()
 
 	CASW_Marine *pBestMarine = NULL;
 
-	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) : FLT_MAX;
+	float flMaxRangeSquare = GetASWOrders() == ASW_ORDER_HOLD_POSITION ? Square( IASW_Medical_Weapon::GetWeaponRange() * 0.5f ) : rd_marine_heal_range_max.GetFloat();
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); ++i )
 	{
