@@ -255,7 +255,7 @@ bool CReactiveDropWorkshopPreviewImage::TryParseJPEG( const CUtlBuffer & buf )
 
 	jpeg_destroy_decompress( &jpegInfo );
 
-	InitFromRGBA( rgba, image_width, image_height );
+	InitFromRGBA( rgba, jpegInfo.output_width, jpegInfo.output_height );
 	delete[] rgba;
 
 	return true;
