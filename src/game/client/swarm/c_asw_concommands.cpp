@@ -254,11 +254,11 @@ void ASW_ActivateSecondary_f()
 void ASW_ActivateExtra_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
+	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
 	
 	int index = 2;
 
-	if (pPlayer && pMarine)
+	if ( pMarine )
 	{
 		if (pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT))
 		{
