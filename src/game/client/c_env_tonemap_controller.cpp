@@ -13,10 +13,12 @@
 extern bool g_bUseCustomAutoExposureMin;
 extern bool g_bUseCustomAutoExposureMax;
 extern bool g_bUseCustomBloomScale;
+extern bool g_bUseCustomManualTonemapRate;
 extern float g_flCustomAutoExposureMin;
 extern float g_flCustomAutoExposureMax;
 extern float g_flCustomBloomScale;
 extern float g_flCustomBloomScaleMinimum;
+extern float g_flCustomManualTonemapRate;
 
 EHANDLE g_hTonemapControllerInUse = NULL;
 
@@ -35,12 +37,14 @@ private:
 	bool m_bUseCustomAutoExposureMin;
 	bool m_bUseCustomAutoExposureMax;
 	bool m_bUseCustomBloomScale;
+	bool m_bUseCustomManualTonemapRate;
 	float m_flCustomAutoExposureMin;
 	float m_flCustomAutoExposureMax;
 	float m_flCustomBloomScale;
 	float m_flCustomBloomScaleMinimum;
 	float m_flBloomExponent;
 	float m_flBloomSaturation;
+	float m_flCustomManualTonemapRate;
 private:
 	C_EnvTonemapController( const C_EnvTonemapController & );
 
@@ -51,12 +55,14 @@ IMPLEMENT_CLIENTCLASS_DT( C_EnvTonemapController, DT_EnvTonemapController, CEnvT
 	RecvPropInt( RECVINFO(m_bUseCustomAutoExposureMin) ),
 	RecvPropInt( RECVINFO(m_bUseCustomAutoExposureMax) ),
 	RecvPropInt( RECVINFO(m_bUseCustomBloomScale) ),
+	RecvPropInt( RECVINFO(m_bUseCustomManualTonemapRate) ),
 	RecvPropFloat( RECVINFO(m_flCustomAutoExposureMin) ),
 	RecvPropFloat( RECVINFO(m_flCustomAutoExposureMax) ),
 	RecvPropFloat( RECVINFO(m_flCustomBloomScale) ),
 	RecvPropFloat( RECVINFO(m_flCustomBloomScaleMinimum) ),
 	RecvPropFloat( RECVINFO(m_flBloomExponent) ),
 	RecvPropFloat( RECVINFO(m_flBloomSaturation) ),
+	RecvPropFloat( RECVINFO(m_flCustomManualTonemapRate) ),
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
@@ -67,12 +73,14 @@ C_EnvTonemapController::C_EnvTonemapController( void )
 	m_bUseCustomAutoExposureMin = false;
 	m_bUseCustomAutoExposureMax = false;
 	m_bUseCustomBloomScale = false;
+	m_bUseCustomManualTonemapRate = false;
 	m_flCustomAutoExposureMin = 0;
 	m_flCustomAutoExposureMax = 0;
 	m_flCustomBloomScale = 0.0f;
 	m_flCustomBloomScaleMinimum = 0.0f;
 	m_flBloomExponent = 2.5f;
 	m_flBloomSaturation = 1.0f;
+	m_flCustomManualTonemapRate = 1.0f;
 }
 
 
@@ -88,14 +96,18 @@ void GetTonemapSettingsFromEnvTonemapController( void )
 			g_bUseCustomAutoExposureMin = tonemapController->m_bUseCustomAutoExposureMin;
 			g_bUseCustomAutoExposureMax = tonemapController->m_bUseCustomAutoExposureMax;
 			g_bUseCustomBloomScale = tonemapController->m_bUseCustomBloomScale;
+			g_bUseCustomManualTonemapRate = tonemapController->m_bUseCustomManualTonemapRate;
 			g_flCustomAutoExposureMin = tonemapController->m_flCustomAutoExposureMin;
 			g_flCustomAutoExposureMax = tonemapController->m_flCustomAutoExposureMax;
 			g_flCustomBloomScale = tonemapController->m_flCustomBloomScale;
 			g_flCustomBloomScaleMinimum = tonemapController->m_flCustomBloomScaleMinimum;
+			g_flCustomManualTonemapRate = tonemapController->m_flCustomManualTonemapRate;
 			return;
 		}
 	}
 
+	g_bUseCustomAutoExposureMin = false;
 	g_bUseCustomAutoExposureMax = false;
 	g_bUseCustomBloomScale = false;
+	g_bUseCustomManualTonemapRate = false;
 }

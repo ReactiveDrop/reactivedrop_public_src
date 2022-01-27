@@ -185,10 +185,21 @@ asw_pickup_sentry_cannon : "Cannon Sentry Gun Case"
 
 // Heal Gun //
 @PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
-
 asw_weapon_heal_gun : "Heal Gun"
 [
-	BulletsInGun(integer) : "Bullets In Gun" : 90
+	BulletsInGun(integer) : "Bullets In Gun" : 100
+]
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
+asw_weapon_healamp_gun : "HealAmp Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 100
+]
+@PointClass base(ASWPickup) studio("models/weapons/MedRifle/medrifle.mdl")= 
+asw_weapon_medrifle : "Medical SMG"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 72
+	Clips(integer) : "Clips" : 7
+	SecondaryBullets(integer) : "Secondary Bullets" : 50
 ]
 // PDW //
 @PointClass base(ASWPickup) studio("models/weapons/pdw/pdw.mdl")= asw_pickup_pdw : 

@@ -303,6 +303,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_T75;
 	else if( FStrEq( szClassName, "asw_weapon_tesla_trap") )
 		return (Class_T)CLASS_ASW_TESLA_TRAP;
+	else if( FStrEq( szClassName, "asw_weapon_gas_grenades") )
+		return (Class_T)CLASS_ASW_GAS_GRENADES;
 
 	else if( FStrEq( szClassName, "asw_rifle_grenade") )
 		return (Class_T)CLASS_ASW_RIFLE_GRENADE;

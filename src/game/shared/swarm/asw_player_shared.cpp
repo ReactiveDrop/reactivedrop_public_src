@@ -323,7 +323,15 @@ void CASW_Player::ItemPostFrame()
 	}
 
 	// check if offhand weapon needs postframe
-	CASW_Weapon *pExtra = GetMarine() ? GetMarine()->GetASWWeapon(2) : NULL;
+	CASW_Weapon *pExtra = NULL;
+	if (GetMarine())
+	{
+		if (!(pExtra = GetMarine()->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT)))
+		{
+			pExtra = GetMarine()->GetASWWeapon(2);
+		}
+	}
+	
 	if (pExtra && pExtra != pWeapon && pExtra->WantsOffhandPostFrame() )
 	{
 		pExtra->ItemPostFrame();

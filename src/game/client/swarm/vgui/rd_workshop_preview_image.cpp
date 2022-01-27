@@ -163,18 +163,24 @@ bool CReactiveDropWorkshopPreviewImage::TryParseJPEG( const CUtlBuffer & buf )
 	int image_height;
 	int image_width;
 
-	jpeg_create_decompress( &jpegInfo );
-
-	RdJpegSource_t jsrc( buf );
-	jpegInfo.src = &jsrc.m_Base;
+	bool bInitialized = false;
 
 	if ( setjmp( jerr.m_ErrorContext ) )
 	{
 		DevWarning( "Parsing image as JPEG failed: an error should be shown above this message\n" );
 		// Get here if there is any error
-		jpeg_destroy_decompress( &jpegInfo );
+		if ( bInitialized )
+		{
+			jpeg_destroy_decompress( &jpegInfo );
+		}
 		return false;
 	}
+
+	jpeg_create_decompress( &jpegInfo );
+	bInitialized = true;
+
+	RdJpegSource_t jsrc( buf );
+	jpegInfo.src = &jsrc.m_Base;
 
 	if ( jpeg_read_header( &jpegInfo, 1 ) != JPEG_HEADER_OK )
 	{
@@ -182,6 +188,28 @@ bool CReactiveDropWorkshopPreviewImage::TryParseJPEG( const CUtlBuffer & buf )
 		jpeg_destroy_decompress( &jpegInfo );
 		return false;
 	}
+
+	jpegInfo.scale_num = 1;
+
+	if ( jpegInfo.image_width >= 2048 || jpegInfo.image_height >= 2048 )
+	{
+		jpegInfo.scale_denom = 8;
+	}
+	else if ( jpegInfo.image_width >= 1024 || jpegInfo.image_height >= 1024 )
+	{
+		jpegInfo.scale_denom = 4;
+	}
+	else if ( jpegInfo.image_width >= 512 || jpegInfo.image_height >= 512 )
+	{
+		jpegInfo.scale_denom = 2;
+	}
+	else
+	{
+		jpegInfo.scale_denom = 1;
+	}
+
+	jpeg_calc_output_dimensions( &jpegInfo );
+
 	if ( jpeg_start_decompress( &jpegInfo ) != 1 )
 	{
 		DevWarning( "Parsing image as JPEG failed: jpeg_start_decompress failed\n" );

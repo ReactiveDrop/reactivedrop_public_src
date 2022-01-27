@@ -2650,7 +2650,7 @@ void CBaseCombatCharacter::AllocateDefaultRelationships( )
 		for (int i=0; i<iNumClasses; ++i)
 		{
 			// Be default all relationships are neutral of priority zero
-			m_DefaultRelationship[i] = new Relationship_t[iNumClasses];
+			m_DefaultRelationship[i] = new Relationship_t[iNumClasses]();
 		}
 	}
 }
@@ -2669,7 +2669,7 @@ void CBaseCombatCharacter::AllocateDefaultFactionRelationships( )
 		for (int i=0; i<nNumFactions; ++i)
 		{
 			// Be default all relationships are neutral of priority zero
-			m_FactionRelationship[i] = new Relationship_t[nNumFactions];
+			m_FactionRelationship[i] = new Relationship_t[nNumFactions]();
 		}
 	}
 }

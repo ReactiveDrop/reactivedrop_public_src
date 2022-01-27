@@ -254,10 +254,17 @@ void ASW_ActivateSecondary_f()
 void ASW_ActivateExtra_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+	
+	int index = 2;
 
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pMarine )
 	{
-		pPlayer->ActivateInventoryItem(2);
+		if (pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT))
+		{
+			index = ASW_TEMPORARY_WEAPON_SLOT;
+		}
+		pPlayer->ActivateInventoryItem(index);
 	}
 }
 ConCommand ASW_ActivatePrimary( "ASW_ActivatePrimary", ASW_ActivatePrimary_f, "Activates the item in your primary inventory slot", 0 );

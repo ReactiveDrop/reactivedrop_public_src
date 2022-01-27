@@ -29,17 +29,17 @@
 	]
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/flame_top.mdl") = asw_sentry_top_flamer
+@PointClass base(Targetname, Parentname, Angles, Studiomodel) studioprop("models/sentry_gun/flame_top.mdl") = asw_sentry_top_flamer
 [
 	TurretRange(float) : "Turret Range" : "375" : "Maximum distance that it will pick targets."
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/freeze_top.mdl") = asw_sentry_top_icer
+@PointClass base(Targetname, Parentname, Angles, Studiomodel) studioprop("models/sentry_gun/freeze_top.mdl") = asw_sentry_top_icer
 [
 	TurretRange(float) : "Turret Range" : "300" : "Maximum distance that it will pick targets."
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/grenade_top.mdl") = asw_sentry_top_cannon
+@PointClass base(Targetname, Parentname, Angles, Studiomodel) studioprop("models/sentry_gun/grenade_top.mdl") = asw_sentry_top_cannon
 [
 	TurretRange(float) : "Turret Range" : "1000" : "Maximum distance that it will pick targets."
 	FireRate(float) : "Fire Rate" : "1.75" : "Time in seconds between each shot"

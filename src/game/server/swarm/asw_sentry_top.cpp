@@ -10,7 +10,6 @@
 #include "asw_fail_advice.h"
 #include "asw_target_dummy_shared.h"
 #include "asw_drone_advanced.h"
-#include "asw_parasite.h"
 #include "asw_deathmatch_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -58,7 +57,7 @@ BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
 END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Top, CBaseAnimating, "sentry top" )
+BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Top, CBaseCombatCharacter, "sentry top" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptPreventFiringUntil, "PreventFiringUntil", "" )
 END_SCRIPTDESC()
 
@@ -97,10 +96,16 @@ void CASW_Sentry_Top::Spawn( void )
 
 	BaseClass::Spawn();
 
-	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );	
+	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
+	ChangeFaction( FACTION_MARINES );
 
 	m_fDeployYaw = GetAbsAngles().y;
 	m_fCurrentYaw = GetAbsAngles().y;
+
+	if ( GetMoveParent() )
+	{
+		m_fDeployYaw -= GetMoveParent()->GetAbsAngles().y;
+	}
 
 	SetThink( &CASW_Sentry_Top::AnimThink );
 	SetNextThink( gpGlobals->curtime + 0.01f );
@@ -172,11 +177,34 @@ void CASW_Sentry_Top::SetSentryBase(CASW_Sentry_Base* pSentryBase)
 	SetLocalOrigin(vec3_origin);
 }
 
+float CASW_Sentry_Top::GetDeployYaw()
+{
+	float fDeployYaw = m_fDeployYaw;
+	if ( GetMoveParent() )
+	{
+		fDeployYaw += GetMoveParent()->GetAbsAngles().y;
+	}
+
+	float fCurrentYaw = GetAbsAngles().y;
+
+	return fCurrentYaw + anglemod( fDeployYaw - fCurrentYaw );
+}
+
+void CASW_Sentry_Top::SetDeployYaw( float yaw )
+{
+	if ( GetMoveParent() )
+	{
+		yaw -= GetMoveParent()->GetAbsAngles().y;
+	}
+
+	m_fDeployYaw = anglemod( yaw );
+}
+
 void CASW_Sentry_Top::UpdateGoal()
 {
 	if (!m_hEnemy.IsValid() || !m_hEnemy.Get())
 	{
-		m_fGoalYaw = m_fDeployYaw;
+		m_fGoalYaw = GetDeployYaw();
 	}
 	else
 	{
@@ -246,6 +274,9 @@ void CASW_Sentry_Top::FindEnemy()
 		CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC *>(m_hEnemy.Get());
 		if ( pNPC && !IsValidEnemy(pNPC) )
 			bFindNewEnemy = true;
+		Disposition_t rel = IRelationType( m_hEnemy );
+		if ( !asw_sentry_friendly_target.GetBool() && rel != D_HATE && rel != D_FEAR )
+			bFindNewEnemy = true;
 	}
 
 	if (bFindNewEnemy)
@@ -287,30 +318,29 @@ Vector CASW_Sentry_Top::GetEnemyVelocity( CBaseEntity *pEnemy )
 	}
 }
 
-CAI_BaseNPC * CASW_Sentry_Top::SelectOptimalEnemy()
+CAI_BaseNPC *CASW_Sentry_Top::SelectOptimalEnemy()
 {
 	// search through all npcs, any that are in LOS and have health
 	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
 
 	for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
 	{
-		if (ppAIs[i]->GetHealth() > 0 && CanSee(ppAIs[i]))
+		if ( ppAIs[i]->GetHealth() > 0 && CanSee( ppAIs[i] ) && IsValidEnemy( ppAIs[i] ) )
 		{
-			// don't shoot marines
-			if ( !asw_sentry_friendly_target.GetBool() && (ppAIs[i]->Classify() == CLASS_ASW_MARINE || ppAIs[i]->Classify() == CLASS_ASW_COLONIST) )
-				continue;
-
-			if ( ppAIs[i]->Classify() == CLASS_SCANNER )
-				continue;
-
-			if ( !IsValidEnemy( ppAIs[i] ) )
-				continue;
+			if ( !asw_sentry_friendly_target.GetBool() )
+			{
+				Disposition_t rel = IRelationType( ppAIs[i] );
+				if ( rel != D_HATE && rel != D_FEAR )
+				{
+					Assert( rel == D_LIKE || rel == D_NEUTRAL );
+					continue;
+				}
+			}
 
 			return ppAIs[i];
-			break;
-
 		}
 	}
+
 	// todo: should evaluate valid targets and pick the best one?
 	//   (didn't do this for ASv1 and it was fine...)
 
@@ -395,7 +425,7 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 		}
 	}
 	// check if the angle is within X degrees of our deploy radius
-	float fYawDiff = fabs(UTIL_AngleDiff(CASW_Sentry_Top::GetYawTo(pEnt), m_fDeployYaw));
+	float fYawDiff = fabs( UTIL_AngleDiff( CASW_Sentry_Top::GetYawTo( pEnt ), GetDeployYaw() ) );
 	if (fYawDiff > 360.0f)
 		fYawDiff -= 360.0f;
 
@@ -425,10 +455,10 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 float CASW_Sentry_Top::GetYawTo(CBaseEntity* pEnt)
 {
 	if (!pEnt)
-		return m_fDeployYaw;
+		return GetDeployYaw();
 	Vector diff = pEnt->WorldSpaceCenter() - GetAbsOrigin();
 	if (diff.x == 0 && diff.y == 0 && diff.z == 0)
-		return m_fDeployYaw;
+		return GetDeployYaw();
 
 	return UTIL_VecToYaw(diff);
 }
@@ -449,14 +479,8 @@ bool CASW_Sentry_Top::IsValidEnemy( CAI_BaseNPC *pNPC )
 	if ( !pNPC )
 		return false;
 
-	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
-	{
-		CASW_Parasite *pParasite = static_cast< CASW_Parasite* >( pNPC );
-		if ( pParasite->m_bInfesting )
-		{
-			return false;
-		}
-	}
+	if ( pNPC->GetFlags() & FL_NOTARGET )
+		return false;
 
 	return true;
 }

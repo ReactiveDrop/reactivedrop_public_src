@@ -1,0 +1,7 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "props/carpetfloor008a"
+	$decal 1
+	$decalscale 0.175
+//	$vertexalpha 1
+}

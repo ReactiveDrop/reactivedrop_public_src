@@ -1539,45 +1539,45 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			}
 			else // if ( newInfo.GetAttacker() )
 			{
-				if ( !m_bHasBeenMobAttacked )
+				if ( m_fLastMobDamageTime > 0.0f && m_fLastMobDamageTime + 1.5f < gpGlobals->curtime )
 				{
-					if ( m_fLastMobDamageTime > 0.0f && m_fLastMobDamageTime + 1.5f < gpGlobals->curtime )
-					{
-						// It's been a while, reset
-						m_pRecentAttackers[ 0 ] = newInfo.GetAttacker()->entindex();
+					// It's been a while, reset
+					m_pRecentAttackers[ 0 ] = newInfo.GetAttacker()->entindex();
 
-						for ( int nAttackers = 1; nAttackers < ASW_MOB_VICTIM_SIZE; ++nAttackers )
+					for ( int nAttackers = 1; nAttackers < ASW_MOB_VICTIM_SIZE; ++nAttackers )
+					{
+						m_pRecentAttackers[ nAttackers ] = 0;
+					}
+				}
+				else
+				{
+					int nAttackers;
+					for ( nAttackers = 0; nAttackers < ASW_MOB_VICTIM_SIZE; ++nAttackers )
+					{
+						if ( m_pRecentAttackers[ nAttackers ] == newInfo.GetAttacker()->entindex() )
 						{
-							m_pRecentAttackers[ nAttackers ] = 0;
+							break;
+						}
+
+						if ( m_pRecentAttackers[ nAttackers ] == 0 )
+						{
+							m_pRecentAttackers[ nAttackers ] = newInfo.GetAttacker()->entindex();
+							break;
 						}
 					}
-					else
+
+					if ( nAttackers >= ASW_MOB_VICTIM_SIZE )
 					{
-						int nAttackers;
-						for ( nAttackers = 0; nAttackers < ASW_MOB_VICTIM_SIZE; ++nAttackers )
-						{
-							if ( m_pRecentAttackers[ nAttackers ] == newInfo.GetAttacker()->entindex() )
-							{
-								break;
-							}
-
-							if ( m_pRecentAttackers[ nAttackers ] == 0 )
-							{
-								m_pRecentAttackers[ nAttackers ] = newInfo.GetAttacker()->entindex();
-								break;
-							}
-						}
-
-						if ( nAttackers >= ASW_MOB_VICTIM_SIZE )
+						if ( !m_bHasBeenMobAttacked )
 						{
 							ASWFailAdvice()->OnMarineMobAttacked();
 							m_bHasBeenMobAttacked = true;
-							m_fLastMobDamageTime = 0.0f;
 						}
+						SetCondition( COND_MOBBED_BY_ENEMIES );
 					}
-
-					m_fLastMobDamageTime = gpGlobals->curtime;
 				}
+
+				m_fLastMobDamageTime = gpGlobals->curtime;
 			}
 		}
 	}
