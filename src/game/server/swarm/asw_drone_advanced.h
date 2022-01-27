@@ -123,7 +123,7 @@ public:
 
 	static float s_fNextTooCloseChatterTime;
 
-	CNetworkVar( EHANDLE, m_hAimTarget );
+	CNetworkHandle( CBaseEntity, m_hAimTarget );
 
 	enum
 	{
