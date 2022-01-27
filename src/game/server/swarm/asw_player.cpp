@@ -1193,7 +1193,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					Warning("Player sent a bad cl_offhand command\n");
 					return false;
 				}
-				int slot = clamp(atoi(args[1]), 0, 2);
+				int slot = clamp(atoi(args[1]), 0, 3);
 				CASW_Marine* pMarine = GetMarine();
 				if (pMarine && pMarine->GetHealth()>0 && !(pMarine->GetFlags() & FL_FROZEN))
 				{
