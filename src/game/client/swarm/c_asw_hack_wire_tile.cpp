@@ -21,8 +21,9 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Hack_Wire_Tile, DT_ASW_Hack_Wire_Tile, CASW_Hack_
 	RecvPropInt		(RECVINFO(m_iNumColumns) ),	
 	RecvPropInt		(RECVINFO(m_iNumRows) ),	
 	RecvPropInt		(RECVINFO(m_iNumWires) ),
-	RecvPropFloat		( RECVINFO( m_fFastFinishTime ) ),
+	RecvPropFloat	(RECVINFO( m_fFastFinishTime ) ),
 	RecvPropFloat	(RECVINFO(m_fFinishedHackTime) ),
+	RecvPropArray3	(RECVINFO_ARRAY(m_fWireChargeProgress), RecvPropFloat( RECVINFO(m_fWireChargeProgress[0])) ),
 
 	RecvPropArray3		( RECVINFO_ARRAY(m_iWire1TileLit), RecvPropBool( RECVINFO(m_iWire1TileLit[0])) ),
 	RecvPropArray3		( RECVINFO_ARRAY(m_iWire2TileLit), RecvPropBool( RECVINFO(m_iWire2TileLit[0])) ),

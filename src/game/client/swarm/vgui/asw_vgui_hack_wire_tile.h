@@ -38,9 +38,9 @@ class CASW_VGUI_Hack_Wire_Tile : public vgui::Panel, public CASW_VGUI_Ingame_Pan
 	bool CursorOverTile( int x, int y, int &iWire, int &tilex, int &tiley );
 	virtual bool MouseClick(int x, int y, bool bRightClick, bool bDown);
 	virtual void OnCommand(const char *command);
-	void TileClicked(int iWire, int tilex, int tiley);
-
+	void TileClicked(int iWire, int tilex, int tiley, bool bOpposite);
 	bool IsCursorOverWireTile( int x, int y );
+	void InitializeChargePositions( int iWire );
 	
 	// note: tiles themselves are draw in Paint (since they need to rotate, etc.)
 
@@ -92,6 +92,7 @@ public:
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 	CASW_VGUI_Hack_Wire_Tile* m_pHackWireTile;
 	int m_iWire, m_x, m_y;
+	float m_flChargePosition;
 	CPanelAnimationVarAliasType( int, m_nWhiteTexture, "White", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nLockedTexture, "Locked", "vgui/swarm/Computer/TVNoise", "textureid" );	
 };

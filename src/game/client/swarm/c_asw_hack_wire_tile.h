@@ -34,6 +34,8 @@ public:
 	CNetworkVar(int, m_iNumRows);
 	CNetworkVar(int, m_iNumWires);
 
+	CNetworkArray( float, m_fWireChargeProgress, 4 );
+
 	CNetworkArray( int,  m_iWire1TileType, ASW_TILE_ARRAY_SIZE );
 	CNetworkArray( int,  m_iWire1TilePosition, ASW_TILE_ARRAY_SIZE );
 	CNetworkArray( bool, m_iWire1TileLit, ASW_TILE_ARRAY_SIZE );	
