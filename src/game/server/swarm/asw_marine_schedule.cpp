@@ -303,7 +303,7 @@ int CASW_Marine::RangeAttack1Conditions ( float flDot, float flDist )
 // ========== ASW Schedule Stuff =========
 int CASW_Marine::SelectSchedule()
 {
-	if ( GetForcedActionRequest() || GetCurrentMeleeAttack() )
+	if ( rd_bot_melee.GetBool() && ( GetForcedActionRequest() || GetCurrentMeleeAttack() ) )
 	{
 		return SCHED_ASW_MELEE_SYSTEM;
 	}
@@ -332,7 +332,7 @@ int CASW_Marine::SelectSchedule()
 	// we prevent melee schedule if out of ammo because 
 	// AI marines run away and die there swarmed by aliens 
 	// on high difficulties 
-	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || ( rd_bot_melee.GetBool() && HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) ) )
+	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || ( rd_bot_melee.GetBool() && ( HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) || HasCondition( COND_MOBBED_BY_ENEMIES ) ) ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )

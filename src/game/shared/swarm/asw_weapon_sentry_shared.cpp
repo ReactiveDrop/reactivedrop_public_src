@@ -259,7 +259,7 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	VectorTransform( Vector( -46, -25, 0 ), matrix, vecTest );
 	vecTest += vecSpawnPos;
 
-	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceHull( vecTest + Vector( 0, 0, 8 ), vecTest - Vector( 0, 0, 20 ), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
 
 	if ( rd_debug_sentry_placement.GetBool() )
 		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
@@ -270,7 +270,7 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	VectorTransform( Vector( -46, 25, 0 ), matrix, vecTest );
 	vecTest += vecSpawnPos;
 
-	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceHull( vecTest + Vector( 0, 0, 8 ), vecTest - Vector( 0, 0, 20 ), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
 
 	if ( rd_debug_sentry_placement.GetBool() )
 		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
@@ -281,7 +281,7 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	VectorTransform( Vector( 21, -19, 0 ), matrix, vecTest );
 	vecTest += vecSpawnPos;
 
-	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceHull( vecTest + Vector( 0, 0, 8 ), vecTest - Vector( 0, 0, 20 ), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
 
 	if ( rd_debug_sentry_placement.GetBool() )
 		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
@@ -292,10 +292,11 @@ bool CASW_Weapon_Sentry::FindValidSentrySpot()
 	VectorTransform( Vector( 21, 19, 0 ), matrix, vecTest );
 	vecTest += vecSpawnPos;
 
-	UTIL_TraceHull( vecTest, vecTest - Vector(0,0,20), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceHull( vecTest + Vector( 0, 0, 8 ), vecTest - Vector( 0, 0, 20 ), vecTestMins, vecTestMaxs, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &trace );
 
 	if ( rd_debug_sentry_placement.GetBool() )
 		debugoverlay->AddBoxOverlay( vecTest, vecTestMins, vecTestMaxs, vec3_angle, 255, trace.fraction == 1.0 ? 0 : 255, 0, 255, 0.2f );
+
 	if ( trace.fraction == 1.0 || ( trace.DidHitNonWorldEntity() ? trace.m_pEnt : NULL ) != pElevator )
 		return false;
 
@@ -354,7 +355,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt1->SetDuration( 10000 );
 				pEnt1->AddEffects( EF_NODRAW );
-				pEnt1->SetParent( pBase );
 			}
 		}
 
@@ -366,7 +366,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt2->SetDuration( 10000 );
 				pEnt2->AddEffects( EF_NODRAW );
-				pEnt2->SetParent( pBase );
 			}
 		}
 
@@ -380,7 +379,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt3->SetDuration( 10000 );
 				pEnt3->AddEffects( EF_NODRAW );
-				pEnt3->SetParent( pBase );
 			}
 		}
 
@@ -394,7 +392,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 			{
 				pEnt4->SetDuration( 10000 );
 				pEnt4->AddEffects( EF_NODRAW );
-				pEnt4->SetParent( pBase );
 			}
 		}
 
