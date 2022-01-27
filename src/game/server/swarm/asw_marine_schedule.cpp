@@ -70,6 +70,10 @@
 #include "asw_prop_physics.h"
 #include "asw_weapon_heal_gun_shared.h"
 #include "asw_deathmatch_mode.h"
+#include "asw_melee_system.h"
+#include "asw_movedata.h"
+#include "asw_marine_gamemovement.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -98,6 +102,7 @@ ConVar rd_marine_heal_range_max( "rd_marine_heal_range_max", "262144", FCVAR_CHE
 ConVar rd_bot_melee( "rd_bot_melee", "0", FCVAR_NONE, "should bots melee if they are out of ammo" );
 
 extern ConVar ai_lead_time;
+extern CMoveData *g_pMoveData;
 
 #define ASW_MARINE_GOO_SCAN_TIME 0.5f
 
@@ -297,7 +302,12 @@ int CASW_Marine::RangeAttack1Conditions ( float flDot, float flDist )
 
 // ========== ASW Schedule Stuff =========
 int CASW_Marine::SelectSchedule()
-{	
+{
+	if ( GetForcedActionRequest() || GetCurrentMeleeAttack() )
+	{
+		return SCHED_ASW_MELEE_SYSTEM;
+	}
+
 	if ( (HasCondition(COND_ENEMY_DEAD) || HasCondition(COND_ENEMY_OCCLUDED) || HasCondition(COND_WEAPON_SIGHT_OCCLUDED))
 		&& m_fOverkillShootTime > gpGlobals->curtime)
 	{
@@ -823,6 +833,15 @@ void CASW_Marine::GatherConditions()
 	ClearCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP );
 	ClearCondition( COND_PROP_DESTROYED );
 	ClearCondition( COND_COMPLETELY_OUT_OF_AMMO );
+
+	if ( m_fLastMobDamageTime > 0.0f && m_fLastMobDamageTime <= gpGlobals->curtime - 1.5f && m_pRecentAttackers[ASW_MOB_VICTIM_SIZE - 1] != 0 )
+	{
+		SetCondition( COND_MOBBED_BY_ENEMIES );
+	}
+	else
+	{
+		ClearCondition( COND_MOBBED_BY_ENEMIES );
+	}
 
 	if( !GetCurSchedule() )
 		return;
@@ -1735,7 +1754,7 @@ int CASW_Marine::SelectFollowSchedule()
 		return SCHED_ASW_HOLD_POSITION;
 	}
 
-	if (NeedToFollowMove())
+	if ( NeedToFollowMove() && ( !rd_bot_melee.GetBool() || !HasCondition( COND_MOBBED_BY_ENEMIES ) ) )
 	{
 		return SCHED_ASW_FOLLOW_MOVE;
 	}
@@ -1749,12 +1768,17 @@ int CASW_Marine::SelectFollowSchedule()
 			return SCHED_RANGE_ATTACK1;
 	}	
 
-	if( IsOutOfAmmo() && GetEnemy() )
+	if ( ( IsOutOfAmmo() || ( rd_bot_melee.GetBool() && HasCondition( COND_WEAPON_BLOCKED_BY_FRIEND ) ) ) && GetEnemy() )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
 			return iMeleeSchedule;
 		return SCHED_ASW_FOLLOW_MOVE; // reactivedrop: make bots follow leader when out of ammo
+	}
+
+	if ( NeedToFollowMove() )
+	{
+		return SCHED_ASW_FOLLOW_MOVE;
 	}
 
 	// check if we're too near another marine
@@ -2091,6 +2115,15 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 				m_hHealTarget = NULL;
 			}
 			TaskComplete();
+		}
+		break;
+
+	case TASK_ASW_MELEE_SYSTEM:
+		{
+			if ( pTask->flTaskData && !m_iForcedActionRequest )
+			{
+				m_iForcedActionRequest = -1;
+			}
 		}
 		break;
 
@@ -2614,6 +2647,47 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 				if ( bHealSucceeded )
 					pWeapon->HealAttack();
 			}		
+		}
+		break;
+
+	case TASK_ASW_MELEE_SYSTEM:
+		{
+			if ( !GetForcedActionRequest() && !GetCurrentMeleeAttack() )
+			{
+				TaskComplete();
+				return;
+			}
+
+			if ( GetForcedActionRequest() == -1 )
+			{
+				ClearForcedActionRequest();
+			}
+
+			MoveType_t oldMoveType = GetMoveType();
+			SetMoveType( MOVETYPE_WALK );
+			CASW_MoveData *pMove = static_cast<CASW_MoveData *>( g_pMoveData );
+			pMove->m_bFirstRunOfFunctions = true;
+			Vector vecPrevOrigin = GetAbsOrigin();
+			pMove->SetAbsOrigin( vecPrevOrigin );
+			pMove->m_vecVelocity = GetAbsVelocity();
+			pMove->m_vecAngles = GetAbsAngles();
+			pMove->m_iForcedAction = GetForcedActionRequest();
+			pMove->m_nButtons = MELEE_BUTTON;
+			pMove->m_nOldButtons = 0;
+			pMove->m_flForwardMove = 1;
+			pMove->m_flSideMove = 0;
+			pMove->m_flClientMaxSpeed = MaxSpeed();
+			MoveHelper()->SetHost( this );
+			ASWGameMovement()->ProcessMovement( GetCommander(), this, pMove );
+			MoveHelper()->SetHost( NULL );
+			SetAbsOrigin( pMove->GetAbsOrigin() );
+			SetAbsAngles( pMove->m_vecAngles );
+			PhysicsTouchTriggers( &vecPrevOrigin );
+			Assert( !GetForcedActionRequest() );
+			SetMoveType( oldMoveType );
+
+			// combo if we have a nearby enemy.
+			m_bMeleeKeyReleased = rd_bot_melee.GetBool() && GetEnemy() && GetEnemy()->IsAlive() && GetEnemyLKP().DistToSqr( GetAbsOrigin() ) <= Square( 40 );
 		}
 		break;
 
@@ -3383,6 +3457,7 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 	DECLARE_TASK( TASK_ASW_SWAP_TO_HEAL_GUN )
 	DECLARE_TASK( TASK_ASW_HEAL_MARINE )
 	DECLARE_TASK( TASK_ASW_REVIVE_MARINE )
+	DECLARE_TASK( TASK_ASW_MELEE_SYSTEM )
 
 	DECLARE_ANIMEVENT( AE_MARINE_KICK )
 	DECLARE_ANIMEVENT( AE_MARINE_UNFREEZE )
@@ -3701,13 +3776,13 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"		TASK_WAIT_FOR_MOVEMENT	0"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		1"
+		"		TASK_ASW_MELEE_SYSTEM		1"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		2"
+		"		TASK_ASW_MELEE_SYSTEM		2"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		3"
+		"		TASK_ASW_MELEE_SYSTEM		3"
 		""
 		"	Interrupts"
 		//"		COND_NEW_ENEMY"
@@ -3730,13 +3805,13 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"		TASK_WAIT_FOR_MOVEMENT	0"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		1"
+		"		TASK_ASW_MELEE_SYSTEM		1"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		2"
+		"		TASK_ASW_MELEE_SYSTEM		2"
 		"		TASK_FACE_ENEMY			0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_MELEE_ATTACK1		3"
+		"		TASK_ASW_MELEE_SYSTEM		3"
 		""
 		"	Interrupts"
 		"		COND_NEW_ENEMY"
@@ -3744,6 +3819,14 @@ AI_BEGIN_CUSTOM_NPC( asw_marine, CASW_Marine )
 		"		COND_LIGHT_DAMAGE"
 		"		COND_HEAVY_DAMAGE"
 		"		COND_ENEMY_OCCLUDED"
+		);
+
+	DEFINE_SCHEDULE
+		(
+		SCHED_ASW_MELEE_SYSTEM,
+
+		"	Tasks"
+		"		TASK_ASW_MELEE_SYSTEM		0"
 		);
 
 AI_END_CUSTOM_NPC()
