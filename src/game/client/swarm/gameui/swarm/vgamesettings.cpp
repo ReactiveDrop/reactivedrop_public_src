@@ -281,6 +281,13 @@ void GameSettings::Activate()
 		m_ActiveControl->NavigateFrom();
 	}
 
+	// select the Campaign option so controller players can move on this menu
+	vgui::Panel *firstOption = FindChildByName( "DrpSelectMission", true );
+	if ( firstOption )
+	{
+		firstOption->NavigateTo();
+	}
+
 	/*
 	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnStartGame" ) );
 	if( button )
