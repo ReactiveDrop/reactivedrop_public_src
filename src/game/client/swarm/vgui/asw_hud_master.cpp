@@ -372,7 +372,7 @@ void CASW_Hud_Master::OnThink()
 			m_SquadMateInfo[ nPosition ].bPositionActive = true;
 			m_SquadMateInfo[ nPosition ].MarineClass = pProfile->GetMarineClass();
 			m_SquadMateInfo[ nPosition ].nClassIcon = GetClassIcon( pMR );
-			m_SquadMateInfo[ nPosition ].flHealthFraction = pMR->GetHealthPercent();
+			m_SquadMateInfo[ nPosition ].flHealthFraction = ( pMarine && pMarine->m_bKnockedOut ) ? 0 : pMR->GetHealthPercent();
 			m_SquadMateInfo[ nPosition ].flInfestation = pMR->GetInfestedPercent();
 			m_SquadMateInfo[ nPosition ].bInhabited = pMR->IsInhabited();
 
@@ -1726,7 +1726,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 			surface()->DrawUnicodeString( wszQuantity );
 		}
 
-		if ( ASWGameResource()->IsOfflineGame() || m_SquadMateInfo[ nPosition ].pExtraItemInfo->m_bShowMultiplayerHotkey )
+		if ( ( !m_SquadMateInfo[ nPosition ].bInhabited && m_SquadMateInfo[ nPosition ].pExtraItemInfo->m_bOffhandActivate ) || m_SquadMateInfo[ nPosition ].pExtraItemInfo->m_bShowMultiplayerHotkey )
 		{
 			// show hotkey for this marine's extra item
 			char szBinding[ 128 ];
