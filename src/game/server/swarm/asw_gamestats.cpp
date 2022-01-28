@@ -82,6 +82,12 @@ static Class_T GetWeaponClassFromDamageInfo( const CTakeDamageInfo & info, CBase
 			return (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
 		}
 	}
+	else if ( weaponClass == CLASS_ASW_GAS_GRENADE )
+	{
+		// the box of grenades gets credit for the grenade's hard work
+		// this says a lot about our society
+		return (Class_T)CLASS_ASW_GAS_GRENADES;
+	}
 	return weaponClass;
 }
 
