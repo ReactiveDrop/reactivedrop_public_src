@@ -157,7 +157,7 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 
 			pMR->m_iAliensBurned++;
 		}
-		else if ( pBuzzer )
+		else if ( pBuzzer && pBuzzer->m_bFlammable )
 		{
 			if ( asw_stats_verbose.GetBool() )
 			{
