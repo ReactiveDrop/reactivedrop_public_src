@@ -44,6 +44,7 @@ int CASW_VGUI_Hack_Wire_Tile::s_nTileRightBright = -1;
 bool CASW_VGUI_Hack_Wire_Tile::s_bLoadedTextures = false;
 
 ConVar rd_wire_tile_charge( "rd_wire_tile_charge", "1", FCVAR_NONE );
+ConVar rd_wire_tile_alternate( "rd_wire_tile_alternate", "1", FCVAR_ARCHIVE, "1 = right click rotates counter-clockwise, 2 = right click rotates clockwise", true, 0, true, 2 );
 
 CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Wire_Tile* pHack ) 
 :	vgui::Panel( pParent, pElementName ),
@@ -574,7 +575,12 @@ bool CASW_VGUI_Hack_Wire_Tile::MouseClick(int x, int y, bool bRightClick, bool b
 	int iWire, tilex, tiley;
 	if ( CursorOverTile( x, y, iWire, tilex, tiley ) )
 	{
-		TileClicked(iWire, tilex, tiley, bRightClick);
+		if ( rd_wire_tile_alternate.GetInt() == 2 )
+			TileClicked( iWire, tilex, tiley, !bRightClick );
+		else if (rd_wire_tile_alternate.GetInt() == 1 )
+			TileClicked( iWire, tilex, tiley, bRightClick );
+		else
+			TileClicked( iWire, tilex, tiley, false );
 	}
 
 	return true;	// always swallow clicks in our window
