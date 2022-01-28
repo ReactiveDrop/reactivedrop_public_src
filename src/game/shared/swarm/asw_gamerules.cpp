@@ -4416,6 +4416,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			m_hDebriefStats->m_iElectricArmorReduction.Set(i,pMR->m_iElectricArmorReduction);
 			m_hDebriefStats->m_iHealAmpGunHeals.Set(i,pMR->m_iHealAmpGunHeals);
 			m_hDebriefStats->m_iHealAmpGunAmps.Set(i,pMR->m_iHealAmpGunAmps);
+			m_hDebriefStats->m_iMedRifleHeals.Set(i,pMR->m_iMedRifleHeals);
 
 			// Set starting equips for the marine
 			m_hDebriefStats->m_iStartingEquip0.Set(i, pMR->m_iInitialWeaponsInSlots[0]);

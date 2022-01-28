@@ -52,6 +52,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iElectricArmorReduction) ), m_iElectricArmorReduction ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealAmpGunHeals) ), m_iHealAmpGunHeals ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealAmpGunAmps) ), m_iHealAmpGunAmps ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iMedRifleHeals) ), m_iMedRifleHeals ),
 
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iWeaponClassAndKills0) ), m_iWeaponClassAndKills0 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iDamageAndFF0) ), m_iDamageAndFF0 ),

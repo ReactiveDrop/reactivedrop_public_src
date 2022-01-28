@@ -166,6 +166,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iElectricArmorReduction = 0;
 	m_iHealAmpGunHeals = 0;
 	m_iHealAmpGunAmps = 0;
+	m_iMedRifleHeals = 0;
 
 	m_TimelineFriendlyFire.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 	m_TimelineKillsTotal.SetCompressionType( TIMELINE_COMPRESSION_SUM );
