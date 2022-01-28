@@ -58,16 +58,18 @@ class CASW_VGUI_Hack_Wire_Tile : public vgui::Panel, public CASW_VGUI_Ingame_Pan
 	vgui::ImagePanel* m_pOpenLight[4];
 
 	static void PrecacheHackingTextures();
-	//static int s_nBackDropTexture;
 	static int s_nTileHoriz;
 	static int s_nTileLeft;
 	static int s_nTileRight;
-	static int s_nLeftConnect;
-	static int s_nRightConnect;
+	static int s_nTileHorizBright;
+	static int s_nTileLeftBright;
+	static int s_nTileRightBright;
 	static bool s_bLoadedTextures;
 
 	vgui::ImagePanel *m_pLeftConnect[4];
 	vgui::ImagePanel *m_pRightConnect[4];
+	vgui::ImagePanel *m_pLeftConnectBright[4];
+	vgui::ImagePanel *m_pRightConnectBright[4];
 	vgui::ImagePanel *m_pFastMarker;
 	vgui::Label* m_pAccessLoggedLabel;
 	CASW_Wire_Tile* m_pTile[4][ASW_MAX_TILE_COLUMNS][ASW_MAX_TILE_ROWS];

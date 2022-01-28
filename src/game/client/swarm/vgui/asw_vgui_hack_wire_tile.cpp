@@ -38,14 +38,10 @@
 int CASW_VGUI_Hack_Wire_Tile::s_nTileHoriz = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileLeft = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileRight = -1;
-int CASW_VGUI_Hack_Wire_Tile::s_nLeftConnect = -1;
-int CASW_VGUI_Hack_Wire_Tile::s_nRightConnect = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileHorizBright = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileLeftBright = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileRightBright = -1;
 bool CASW_VGUI_Hack_Wire_Tile::s_bLoadedTextures = false;
-
-const static Color wire_oldunlit( 64, 64, 64, 255 );
-const static Color wire_unlit( 22, 56, 60, 255 );
-const static Color wire_lit( 88, 224, 240, 255 );
-const static Color wire_bright( 255, 255, 255, 255 );
 
 ConVar rd_wire_tile_charge( "rd_wire_tile_charge", "1", FCVAR_NONE );
 
@@ -62,15 +58,19 @@ CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const 
 
 	for (int i=0;i<4;i++)
 	{
-		m_pLeftConnect[i] = new vgui::ImagePanel(this, "LeftConnect");		
-		//m_pLeftConnect[i]->SetImage("swarm/Computer/IconWeather");
+		m_pLeftConnect[i] = new vgui::ImagePanel(this, "LeftConnect");
 		m_pLeftConnect[i]->SetImage("swarm/Hacking/LeftConnect");
 		m_pLeftConnect[i]->SetShouldScaleImage(true);
 		m_pRightConnect[i] = new vgui::ImagePanel(this, "RightConnect");
-		//m_pRightConnect[i]->SetImage("swarm/Computer/IconStocks");
 		m_pRightConnect[i]->SetImage("swarm/Hacking/RightConnect");
-		m_pRightConnect[i]->SetShouldScaleImage(true);		
-		
+		m_pRightConnect[i]->SetShouldScaleImage(true);
+		m_pLeftConnectBright[i] = new vgui::ImagePanel( this, "LeftConnect" );
+		m_pLeftConnectBright[i]->SetImage( "swarm/Hacking/LeftConnectBright" );
+		m_pLeftConnectBright[i]->SetShouldScaleImage( true );
+		m_pRightConnectBright[i] = new vgui::ImagePanel( this, "RightConnect" );
+		m_pRightConnectBright[i]->SetImage( "swarm/Hacking/RightConnectBright" );
+		m_pRightConnectBright[i]->SetShouldScaleImage( true );
+
 		m_pOpenLight[i] = new vgui::ImagePanel(this, "OpenLight");
 		m_pOpenLight[i]->SetImage("swarm/Hacking/SwarmDoorHackOpen");
 		m_pOpenLight[i]->SetShouldScaleImage(true);
@@ -83,9 +83,9 @@ CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const 
 			}
 		}
 	}
-	m_pWireLabel = new vgui::Label(this, "WireLabel", "#asw_wire_1_label");	
-	m_pCompleteLabel = new vgui::Label(this, "CompleteLabel", "#asw_access_granted");	
-	m_pCompleteLabel->SetVisible(false);	
+	m_pWireLabel = new vgui::Label(this, "WireLabel", "#asw_wire_1_label");
+	m_pCompleteLabel = new vgui::Label(this, "CompleteLabel", "#asw_access_granted");
+	m_pCompleteLabel->SetVisible(false);
 	m_pFastMarker = new vgui::ImagePanel(this, "FastMarker");
 	m_pFastMarker->SetImage("swarm/Hacking/FastMarker");
 	m_pFastMarker->SetShouldScaleImage(true);
@@ -169,10 +169,6 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 		else
 		{
 			//Msg("connect %d okay\n", i);
-			if (!m_pLeftConnect[i]->IsVisible())
-				m_pLeftConnect[i]->SetVisible(true);
-			if (!m_pRightConnect[i]->IsVisible())
-				m_pRightConnect[i]->SetVisible(true);
 			if (!m_pOpenLight[i]->IsVisible())
 				m_pOpenLight[i]->SetVisible(true);
 			
@@ -187,62 +183,61 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 			m_pLeftConnect[i]->SetBounds(left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
 			m_pRightConnect[i]->SetBounds(right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
 
-			if ( rd_wire_tile_charge.GetBool() )
+			if ( !m_hHack->IsWireLit( i + 1 ) )
 			{
-				if ( m_hHack->m_fWireChargeProgress[i] >= 1 )
-				{
-					// wire is connected and actuator is fully charged
-					m_pLeftConnect[i]->SetDrawColor( wire_bright );
-					m_pRightConnect[i]->SetDrawColor( wire_bright );
+				// wire is disconnected
+				m_pLeftConnect[i]->SetDrawColor( Color( 64, 64, 64, 255 ) );
+				m_pRightConnect[i]->SetDrawColor( Color( 64, 64, 64, 255 ) );
+				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
 
-					if ( m_pOpenLight[i]->GetDrawColor()[0] != 255 )
-					{
-						// play sound
-						CLocalPlayerFilter filter;
-						C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWButtonPanel.WireActive" );
-					}
+				if ( !m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( true );
+				if ( m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( false );
+				if ( !m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( true );
+				if ( m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( false );
+			}
+			else if ( m_hHack->m_fWireChargeProgress[i] < 1 && rd_wire_tile_charge.GetBool() )
+			{
+				// wire is connected and actuator is charging
+				m_pLeftConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pRightConnect[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
 
-					m_pOpenLight[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
-				}
-				else if ( m_hHack->IsWireLit( i + 1 ) )
-				{
-					// wire is connected and actuator is charging
-					m_pLeftConnect[i]->SetDrawColor( wire_bright );
-					m_pRightConnect[i]->SetDrawColor( wire_lit );
-					m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
-				}
-				else
-				{
-					// wire is disconnected
-					m_pLeftConnect[i]->SetDrawColor( wire_lit );
-					m_pRightConnect[i]->SetDrawColor( wire_unlit );
-					m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
-				}
+				if ( m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( false );
+				if ( !m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( true );
+				if ( !m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( true );
+				if ( m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( false );
 			}
 			else
 			{
-				// use old behavior
-				if ( m_hHack->IsWireLit( i + 1 ) )
-				{
-					// wire is connected and actuator is fully charged
-					m_pLeftConnect[i]->SetDrawColor( wire_bright );
-					m_pRightConnect[i]->SetDrawColor( wire_bright );
+				// wire is connected and actuator is fully charged
+				m_pLeftConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pRightConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
 
-					if ( m_pOpenLight[i]->GetDrawColor()[0] != 255 )
-					{
-						// play sound
-						CLocalPlayerFilter filter;
-						C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWButtonPanel.WireActive" );
-					}
-
-					m_pOpenLight[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
-				}
-				else
+				if ( m_pOpenLight[i]->GetDrawColor()[0] != 255 )
 				{
-					m_pLeftConnect[i]->SetDrawColor( wire_bright );
-					m_pRightConnect[i]->SetDrawColor( wire_oldunlit );
-					m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+					// play sound
+					CLocalPlayerFilter filter;
+					C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWButtonPanel.WireActive" );
 				}
+
+				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+
+				if ( m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( false );
+				if ( !m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( true );
+				if ( m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( false );
+				if ( !m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( true );
 			}
 		}
 	}
@@ -452,34 +447,7 @@ void CASW_VGUI_Hack_Wire_Tile::Paint()
 				DrawTile(w, x, y);
 			}
 		}
-		/*
-		// draw end pieces	
-		int left_connect_x = ASW_WIRE_LEFT - ASW_TILE_SIZE * 2;
-		int left_connect_y = (w-1) * ASW_SPACE_PER_WIRE + ASW_HEADER_SIZE;
-		vgui::surface()->DrawSetColor(Color(255,255,255,255));
-		vgui::surface()->DrawSetTexture(s_nLeftConnect);
-		//vgui::surface()->DrawTexturedRect(left_connect_x,left_connect_y,
-				//left_connect_x + (ASW_TILE_SIZE * 2), left_connect_y + (ASW_TILE_SIZE * 2));
-		vgui::Vertex_t points[4] = 
-		{ 
-		vgui::Vertex_t( Vector2D(left_connect_x, left_connect_y), Vector2D(0,0) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x + ASW_TILE_SIZE, left_connect_y), Vector2D(1,0) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x + ASW_TILE_SIZE, left_connect_y + ASW_TILE_SIZE), Vector2D(1,1) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x, left_connect_y + ASW_TILE_SIZE), Vector2D(0,1) ) 
-		}; 	
-		vgui::surface()->DrawTexturedPolygon( 4, points );
-
-		int right_connect_x = left_connect_x + ASW_TILE_SIZE * m_hHack->m_iNumColumns;
-		if (!m_hHack->GetTileLit(w, m_hHack->m_iNumColumns-1, m_hHack->m_iNumRows-1)
-			|| !m_hHack->EndTileConnected(w))
-			vgui::surface()->DrawSetColor(Color(64,64,64,255));
-		vgui::surface()->DrawSetTexture(s_nRightConnect);
-		vgui::surface()->DrawTexturedRect(right_connect_x,left_connect_y,
-				right_connect_x + (ASW_TILE_SIZE * 2), left_connect_y + (ASW_TILE_SIZE * 2));
-		*/
 	}
-
-	
 }
 
 void CASW_VGUI_Hack_Wire_Tile::DrawTile(int iWire, int x, int y)
@@ -539,18 +507,18 @@ void CASW_VGUI_Hack_Wire_Tile::PaintBackground()
 
 void CASW_VGUI_Hack_Wire_Tile::PrecacheHackingTextures()
 {
-//	s_nBackDropTexture = vgui::surface()->CreateNewTextureID();
 	s_nTileHoriz = vgui::surface()->CreateNewTextureID();
 	s_nTileLeft = vgui::surface()->CreateNewTextureID();
 	s_nTileRight = vgui::surface()->CreateNewTextureID();
-	//s_nLeftConnect = vgui::surface()->CreateNewTextureID();
-	//s_nRightConnect = vgui::surface()->CreateNewTextureID();
-	//vgui::surface()->DrawSetTextureFile( s_nBackDropTexture, "vgui/swarm/Hacking/SwarmDoorHackBackdrop", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileHoriz, "vgui/swarm/Hacking/TileHoriz", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileLeft, "vgui/swarm/Hacking/TileLeft", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileRight, "vgui/swarm/Hacking/TileRight", true, false);
-	//vgui::surface()->DrawSetTextureFile( s_nLeftConnect, "vgui/swarm/Hacking/LeftConnect", true, false);
-	//vgui::surface()->DrawSetTextureFile( s_nRightConnect, "vgui/swarm/Hacking/RightConnect", true, false);
+	s_nTileHorizBright = vgui::surface()->CreateNewTextureID();
+	s_nTileLeftBright = vgui::surface()->CreateNewTextureID();
+	s_nTileRightBright = vgui::surface()->CreateNewTextureID();
+	vgui::surface()->DrawSetTextureFile( s_nTileHoriz, "vgui/swarm/Hacking/TileHoriz", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileLeft, "vgui/swarm/Hacking/TileLeft", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileRight, "vgui/swarm/Hacking/TileRight", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileHorizBright, "vgui/swarm/Hacking/TileHorizBright", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileLeftBright, "vgui/swarm/Hacking/TileLeftBright", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileRightBright, "vgui/swarm/Hacking/TileRightBright", true, false );
 	s_bLoadedTextures = true;
 }
 
@@ -908,50 +876,35 @@ void CASW_Wire_Tile::Paint()
 		}
 	}
 
+	bool bUseBrightTexture = false;
+
 	// draw the actual tile
 	if ( m_pHackWireTile->m_hHack->GetTileLit( m_iWire, m_x, m_y ) )
 	{
-		if ( !rd_wire_tile_charge.GetBool() )
-		{
-			vgui::surface()->DrawSetColor( wire_bright );
-		}
-		else if ( m_pHackWireTile->m_hHack->IsWireLit( m_iWire ) )
+		if ( m_pHackWireTile->m_hHack->IsWireLit( m_iWire ) )
 		{
 			if ( m_flChargePosition < 0 )
 			{
 				m_pHackWireTile->InitializeChargePositions( m_iWire );
 			}
 
-			if ( m_pHackWireTile->m_hHack->m_fWireChargeProgress[m_iWire - 1] >= m_flChargePosition )
-			{
-				vgui::surface()->DrawSetColor( wire_bright );
-			}
-			else
-			{
-				vgui::surface()->DrawSetColor( wire_lit );
-			}
+			bUseBrightTexture = rd_wire_tile_charge.GetBool() && m_pHackWireTile->m_hHack->m_fWireChargeProgress[m_iWire - 1] >= m_flChargePosition;
 		}
-		else
-		{
-			vgui::surface()->DrawSetColor( wire_lit );
-		}
-	}
-	else if ( !rd_wire_tile_charge.GetBool() )
-	{
-		vgui::surface()->DrawSetColor( wire_oldunlit );
+
+		vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
 	}
 	else
 	{
-		vgui::surface()->DrawSetColor( wire_unlit );
+		vgui::surface()->DrawSetColor( Color( 64, 64, 64, 255 ) );
 	}
 	
 	// get the texture for this type of tile
 	if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_HORIZ)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileHoriz);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileHorizBright : m_pHackWireTile->s_nTileHoriz );
 	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_LEFT)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileLeft);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileLeftBright : m_pHackWireTile->s_nTileLeft );
 	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_RIGHT)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileRight);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileRightBright : m_pHackWireTile->s_nTileRight );
 	else
 		return;
 
