@@ -7,10 +7,10 @@ class CASW_Marine;
 class CASW_Sentry_Base;
 class ITraceFilter;
 
-class CASW_Sentry_Top : public CBaseAnimating
+class CASW_Sentry_Top : public CBaseCombatCharacter
 {
 public:
-	DECLARE_CLASS( CASW_Sentry_Top, CBaseAnimating );
+	DECLARE_CLASS( CASW_Sentry_Top, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_ENT_SCRIPTDESC();
@@ -24,7 +24,8 @@ public:
 	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	int UpdateTransmitState();
 	void SetSentryBase(CASW_Sentry_Base* pSentryBase);
-	void SetDeployYaw(float yaw) { m_fDeployYaw = anglemod(yaw); }
+	void SetDeployYaw( float yaw );
+	float GetDeployYaw();
 	void SetCurrentYaw(float yaw) { m_fCurrentYaw = anglemod(yaw); }
 	virtual int GetSentryDamage();
 	virtual void SetTopModel();
@@ -52,8 +53,8 @@ public:
 	float m_fNextFireTime;
 	float m_fGoalYaw, m_fCurrentYaw;
 
-	CNetworkVar(float, m_fDeployYaw); 	
-	CNetworkVar(bool, m_bLowAmmo); 	
+	CNetworkVar(float, m_fDeployYaw);
+	CNetworkVar(bool, m_bLowAmmo);
 
 	int m_iEnemySkip;	
 	EHANDLE m_hEnemy;	

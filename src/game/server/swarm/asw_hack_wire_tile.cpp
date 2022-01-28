@@ -18,6 +18,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Hack_Wire_Tile, DT_ASW_Hack_Wire_Tile)
 	SendPropInt		(SENDINFO(m_iNumWires) ),	
 	SendPropFloat	(SENDINFO(m_fFastFinishTime), 0, SPROP_NOSCALE ),
 	SendPropFloat	(SENDINFO(m_fFinishedHackTime), 0, SPROP_NOSCALE ),
+	SendPropArray3	( SENDINFO_ARRAY3(m_fWireChargeProgress), SendPropFloat( SENDINFO_ARRAY(m_fWireChargeProgress) ) ),
 
 	SendPropArray3	( SENDINFO_ARRAY3(m_iWire1TileLit), SendPropBool( SENDINFO_ARRAY(m_iWire1TileLit) ) ),
 	SendPropArray3	( SENDINFO_ARRAY3(m_iWire2TileLit), SendPropBool( SENDINFO_ARRAY(m_iWire2TileLit) ) ),
@@ -93,16 +94,13 @@ bool CASW_Hack_Wire_Tile::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHa
 		if (m_iNumWires <= 0 || m_iNumWires > 4)
 			m_iNumWires = 3;
 
-		//m_iNumColumns = 8;
-		//m_iNumRows = 1;
-		//m_iNumWires = 4;
-
 		BuildWirePuzzle();
 
 		for ( int i = 0; i < ASW_NUM_WIRES; i++ )
 		{
 			UpdateLitTiles( i + 1 );
 			m_bWasWireLit[ i ] = IsWireLit( i + 1 );
+			m_fWireChargeProgress.GetForModify( i ) = 0;
 		}
 		m_bSetupPuzzle = true;
 	}
@@ -126,9 +124,8 @@ void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarin
 	// boost fTime by the marine's hack skill
 	//flBaseIncrease *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
 
-	float f = pButton->GetHackProgress();
-
 #ifdef INCREASE_HACKING_SPEED_PER_WIRE
+	float f = pButton->GetHackProgress();
 	// total time increase is based on how many wires are lit
 	float flTimeIncrease = 0;
 	for ( int i=0;i<=ASW_NUM_WIRES;i++ )
@@ -141,15 +138,19 @@ void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarin
 		iNumWires = 1;
 	flTimeIncrease *= ( 1.0f / iNumWires );
 
-	pButton->SetHackProgress(f + flTimeIncrease, pMarine);
+	pButton->SetHackProgress( f + flTimeIncrease, pMarine );
 #else
-	int iWiresLit = 0;
+	float totalHackProgress = 0;
 	for ( int i = 0; i < ASW_NUM_WIRES; i++ )
 	{
 		if ( IsWireLit( i + 1 ) )
 		{
-			iWiresLit++;
 			m_bWasWireLit[ i ] = true;
+
+			float move = ( 1 - m_fWireChargeProgress[i] ) * asw_hacking_fraction.GetFloat() * fDeltaTime;
+			move = MAX( move, flBaseIncrease * m_iNumWires );
+			m_fWireChargeProgress.GetForModify( i ) = MIN( m_fWireChargeProgress[i] + move, 1 );
+			totalHackProgress += m_fWireChargeProgress[i] / m_iNumWires;
 		}
 		else
 		{
@@ -157,16 +158,11 @@ void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarin
 		}
 	}
 
-	float flGoal = (float) iWiresLit / (float) m_iNumWires.Get();
-	float move = ( flGoal - f ) * asw_hacking_fraction.GetFloat() * fDeltaTime;
-	move = MAX( move, flBaseIncrease );
-	f = MIN( f + move, flGoal );
-
-	pButton->SetHackProgress( f, pMarine);
+	pButton->SetHackProgress( totalHackProgress, pMarine);
 #endif
 		
 	// play a sound if the player has done the hack too slowly?
-	if ( !m_bPlayedTimeOutSound && f < 1.0f )
+	if ( !m_bPlayedTimeOutSound && totalHackProgress < 1.0f )
 	{
 		if ( m_fFastFinishTime.Get() > 0 && gpGlobals->curtime > m_fFastFinishTime.Get() )
 		{
@@ -506,6 +502,12 @@ void CASW_Hack_Wire_Tile::SelectHackOption(int i)
 	if (i < 0)
 		return;
 	int iTiles = m_iNumColumns * m_iNumRows;
+	bool bOpposite = false;
+	if ( i >= iTiles * 4 )
+	{
+		bOpposite = true;
+		i -= iTiles * 4;
+	}
 	int iWire = -1;
 	if (i < iTiles)
 		iWire = 1;
@@ -519,9 +521,18 @@ void CASW_Hack_Wire_Tile::SelectHackOption(int i)
 	{
 		i -= (iWire-1)*iTiles;
 		int iRot = GetTileRotation(iWire, i);
-		iRot++;
-		if (iRot >= 4)
-			iRot = 0;
+		if ( bOpposite )
+		{
+			iRot--;
+			if ( iRot < 0 )
+				iRot = 3;
+		}
+		else
+		{
+			iRot++;
+			if ( iRot >= 4 )
+				iRot = 0;
+		}
 		SetTileRotation(iWire, i, iRot);
 
 		UpdateLitTiles(1);

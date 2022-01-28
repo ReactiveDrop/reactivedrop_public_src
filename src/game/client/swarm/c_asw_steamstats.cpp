@@ -303,6 +303,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_T75;
 	else if( FStrEq( szClassName, "asw_weapon_tesla_trap") )
 		return (Class_T)CLASS_ASW_TESLA_TRAP;
+	else if( FStrEq( szClassName, "asw_weapon_gas_grenades") )
+		return (Class_T)CLASS_ASW_GAS_GRENADES;
 
 	else if( FStrEq( szClassName, "asw_rifle_grenade") )
 		return (Class_T)CLASS_ASW_RIFLE_GRENADE;
@@ -369,6 +371,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "electric_armor_reduction", m_iElectricArmorReduction );
 	FETCH_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	FETCH_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
+	FETCH_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
 	FETCH_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	// Fetch starting equip information
@@ -550,6 +553,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iElectricArmorReduction += GetDebriefStats()->GetElectricArmorReduction( iMarineIndex );
 	m_iHealAmpGunHeals += GetDebriefStats()->GetHealampgunHeals( iMarineIndex );
 	m_iHealAmpGunAmps += GetDebriefStats()->GetHealampgunAmps( iMarineIndex );
+	m_iMedRifleHeals += GetDebriefStats()->GetMedRifleHeals( iMarineIndex );
 	m_iTotalPlayTime += (int)GetDebriefStats()->m_fTimeTaken;
 
 	// Get starting equips
@@ -608,6 +612,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "electric_armor_reduction", m_iElectricArmorReduction );
 	SEND_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	SEND_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
+	SEND_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
 	SEND_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	SEND_STEAM_STATS( CFmtStr( "equips.%s.primary", pPrimary->m_EquipClass), m_PrimaryEquipCounts[iPrimaryIndex] );

@@ -768,7 +768,7 @@ void CASW_Melee_System::StartMeleeAttack( CASW_Melee_Attack *pAttack, CASW_Marin
 	//CASW_Melee_Attack *pPrevAttack = GetMeleeAttackByID( pMarine->m_iMeleeAttackID );
 
 	pMarine->m_iMeleeAttackID = pAttack->m_nAttackID;
-	if ( pMoveData && pMoveData->m_bFirstRunOfFunctions )
+	if ( !pMoveData || pMoveData->m_bFirstRunOfFunctions )
 	{
 		pMarine->DoAnimationEvent( (PlayerAnimEvent_t) ( PLAYERANIMEVENT_MELEE + pAttack->m_nAttackID - 1 ) );
 	}
@@ -816,7 +816,7 @@ void CASW_Melee_System::StartMeleeAttack( CASW_Melee_Attack *pAttack, CASW_Marin
 				{
 					if ( pEvent[i].cycle == 0 )		// if the animation event is on the first frame, then trigger it now
 					{
-						if ( pMoveData->m_bFirstRunOfFunctions ||
+						if ( ( !pMoveData || pMoveData->m_bFirstRunOfFunctions ) ||
 							nEvent == AE_START_DETECTING_COMBO ||
 							nEvent == AE_STOP_DETECTING_COMBO ||
 							nEvent == AE_COMBO_TRANSITION ||

@@ -38,9 +38,13 @@
 int CASW_VGUI_Hack_Wire_Tile::s_nTileHoriz = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileLeft = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileRight = -1;
-int CASW_VGUI_Hack_Wire_Tile::s_nLeftConnect = -1;
-int CASW_VGUI_Hack_Wire_Tile::s_nRightConnect = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileHorizBright = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileLeftBright = -1;
+int CASW_VGUI_Hack_Wire_Tile::s_nTileRightBright = -1;
 bool CASW_VGUI_Hack_Wire_Tile::s_bLoadedTextures = false;
+
+ConVar rd_wire_tile_charge( "rd_wire_tile_charge", "1", FCVAR_NONE );
+ConVar rd_wire_tile_alternate( "rd_wire_tile_alternate", "1", FCVAR_ARCHIVE, "1 = right click rotates counter-clockwise, 2 = right click rotates clockwise", true, 0, true, 2 );
 
 CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Wire_Tile* pHack ) 
 :	vgui::Panel( pParent, pElementName ),
@@ -55,15 +59,19 @@ CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const 
 
 	for (int i=0;i<4;i++)
 	{
-		m_pLeftConnect[i] = new vgui::ImagePanel(this, "LeftConnect");		
-		//m_pLeftConnect[i]->SetImage("swarm/Computer/IconWeather");
+		m_pLeftConnect[i] = new vgui::ImagePanel(this, "LeftConnect");
 		m_pLeftConnect[i]->SetImage("swarm/Hacking/LeftConnect");
 		m_pLeftConnect[i]->SetShouldScaleImage(true);
 		m_pRightConnect[i] = new vgui::ImagePanel(this, "RightConnect");
-		//m_pRightConnect[i]->SetImage("swarm/Computer/IconStocks");
 		m_pRightConnect[i]->SetImage("swarm/Hacking/RightConnect");
-		m_pRightConnect[i]->SetShouldScaleImage(true);		
-		
+		m_pRightConnect[i]->SetShouldScaleImage(true);
+		m_pLeftConnectBright[i] = new vgui::ImagePanel( this, "LeftConnect" );
+		m_pLeftConnectBright[i]->SetImage( "swarm/Hacking/LeftConnectBright" );
+		m_pLeftConnectBright[i]->SetShouldScaleImage( true );
+		m_pRightConnectBright[i] = new vgui::ImagePanel( this, "RightConnect" );
+		m_pRightConnectBright[i]->SetImage( "swarm/Hacking/RightConnectBright" );
+		m_pRightConnectBright[i]->SetShouldScaleImage( true );
+
 		m_pOpenLight[i] = new vgui::ImagePanel(this, "OpenLight");
 		m_pOpenLight[i]->SetImage("swarm/Hacking/SwarmDoorHackOpen");
 		m_pOpenLight[i]->SetShouldScaleImage(true);
@@ -76,9 +84,9 @@ CASW_VGUI_Hack_Wire_Tile::CASW_VGUI_Hack_Wire_Tile( vgui::Panel *pParent, const 
 			}
 		}
 	}
-	m_pWireLabel = new vgui::Label(this, "WireLabel", "#asw_wire_1_label");	
-	m_pCompleteLabel = new vgui::Label(this, "CompleteLabel", "#asw_access_granted");	
-	m_pCompleteLabel->SetVisible(false);	
+	m_pWireLabel = new vgui::Label(this, "WireLabel", "#asw_wire_1_label");
+	m_pCompleteLabel = new vgui::Label(this, "CompleteLabel", "#asw_access_granted");
+	m_pCompleteLabel->SetVisible(false);
 	m_pFastMarker = new vgui::ImagePanel(this, "FastMarker");
 	m_pFastMarker->SetImage("swarm/Hacking/FastMarker");
 	m_pFastMarker->SetShouldScaleImage(true);
@@ -155,17 +163,15 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 			)
 		{
 			//Msg("connect %d more than numwires(%d) -1\n", i, m_hHack->m_iNumWires);
-			m_pLeftConnect[i]->SetVisible(false);
-			m_pRightConnect[i]->SetVisible(false);
-			m_pOpenLight[i]->SetVisible(false);
+			m_pLeftConnect[i]->SetVisible( false );
+			m_pRightConnect[i]->SetVisible( false );
+			m_pLeftConnectBright[i]->SetVisible( false );
+			m_pRightConnectBright[i]->SetVisible( false );
+			m_pOpenLight[i]->SetVisible( false );
 		}
 		else
 		{
 			//Msg("connect %d okay\n", i);
-			if (!m_pLeftConnect[i]->IsVisible())
-				m_pLeftConnect[i]->SetVisible(true);
-			if (!m_pRightConnect[i]->IsVisible())
-				m_pRightConnect[i]->SetVisible(true);
 			if (!m_pOpenLight[i]->IsVisible())
 				m_pOpenLight[i]->SetVisible(true);
 			
@@ -177,37 +183,77 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 				left_connect_y += ASW_TILE_SIZE;
 			if (m_hHack->m_iNumRows == 3)
 				right_connect_y += ASW_TILE_SIZE;
-			m_pLeftConnect[i]->SetBounds(left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
-			m_pRightConnect[i]->SetBounds(right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
-			m_pLeftConnect[i]->SetDrawColor(Color(255,255,255,255));
-			if (!m_hHack->GetTileLit(i+1, m_hHack->m_iNumColumns-1, m_hHack->m_iNumRows-1)
-				|| !m_hHack->EndTileConnected(i+1))
-				m_pRightConnect[i]->SetDrawColor(Color(64,64,64,255));
-			else
-				m_pRightConnect[i]->SetDrawColor(Color(255,255,255,255));							
+			m_pLeftConnect[i]->SetBounds( left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pRightConnect[i]->SetBounds( right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pLeftConnectBright[i]->SetBounds( left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pRightConnectBright[i]->SetBounds( right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
 
-			if (m_hHack->IsWireLit(i+1))
+			if ( !m_hHack->IsWireLit( i + 1 ) )
 			{
-				if (m_pOpenLight[i]->GetDrawColor()[0] != 255)
+				// wire is disconnected
+				m_pLeftConnect[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pRightConnect[i]->SetDrawColor( Color( 64, 64, 64, 255 ) );
+				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+
+				if ( !m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( true );
+				if ( m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( false );
+				if ( !m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( true );
+				if ( m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( false );
+			}
+			else if ( m_hHack->m_fWireChargeProgress[i] < 1 && rd_wire_tile_charge.GetBool() )
+			{
+				// wire is connected and actuator is charging
+				m_pLeftConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pRightConnect[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+
+				if ( m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( false );
+				if ( !m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( true );
+				if ( !m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( true );
+				if ( m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( false );
+			}
+			else
+			{
+				// wire is connected and actuator is fully charged
+				m_pLeftConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+				m_pRightConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+
+				if ( m_pOpenLight[i]->GetDrawColor()[0] != 255 )
 				{
 					// play sound
 					CLocalPlayerFilter filter;
 					C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWButtonPanel.WireActive" );
 				}
-				m_pOpenLight[i]->SetDrawColor(Color(255,255,255,255));
+
+				m_pOpenLight[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
+
+				if ( m_pLeftConnect[i]->IsVisible() )
+					m_pLeftConnect[i]->SetVisible( false );
+				if ( !m_pLeftConnectBright[i]->IsVisible() )
+					m_pLeftConnectBright[i]->SetVisible( true );
+				if ( m_pRightConnect[i]->IsVisible() )
+					m_pRightConnect[i]->SetVisible( false );
+				if ( !m_pRightConnectBright[i]->IsVisible() )
+					m_pRightConnectBright[i]->SetVisible( true );
 			}
-			else
-				m_pOpenLight[i]->SetDrawColor(Color(32,32,32,255));
 		}
 	}
-	m_pProgressBarBackdrop->SetVisible(true);			
+	m_pProgressBarBackdrop->SetVisible(true);
 	m_pProgressBar->SetVisible(true);
 
 	float fFraction = 1.0f;
 
 	if (m_hHack.Get())
 	{
-		fFraction = m_hHack->GetWireCharge();		
+		fFraction = m_hHack->GetWireCharge();
 	}
 	else
 		Msg("vgui wire hack panel with no hack object\n");
@@ -343,9 +389,11 @@ void CASW_VGUI_Hack_Wire_Tile::PerformLayout()
 		m_iSpacePerWire = ASW_TILE_SIZE * 3;
 		if (m_hHack->m_iNumRows == 1 || m_hHack->m_iNumRows == 3)
 			m_iSpacePerWire = ASW_TILE_SIZE * 4;
+#ifdef SHRINK_WHEN_ALL_WIRES_LIT
 		if (m_hHack->AllWiresLit())
 			t = ASW_TILE_SIZE * 3;
 		else
+#endif
 			t = m_iSpacePerWire * m_hHack->m_iNumWires + ASW_TILE_SIZE * 3;		
 	}
 	SetSize(w, t);
@@ -404,34 +452,7 @@ void CASW_VGUI_Hack_Wire_Tile::Paint()
 				DrawTile(w, x, y);
 			}
 		}
-		/*
-		// draw end pieces	
-		int left_connect_x = ASW_WIRE_LEFT - ASW_TILE_SIZE * 2;
-		int left_connect_y = (w-1) * ASW_SPACE_PER_WIRE + ASW_HEADER_SIZE;
-		vgui::surface()->DrawSetColor(Color(255,255,255,255));
-		vgui::surface()->DrawSetTexture(s_nLeftConnect);
-		//vgui::surface()->DrawTexturedRect(left_connect_x,left_connect_y,
-				//left_connect_x + (ASW_TILE_SIZE * 2), left_connect_y + (ASW_TILE_SIZE * 2));
-		vgui::Vertex_t points[4] = 
-		{ 
-		vgui::Vertex_t( Vector2D(left_connect_x, left_connect_y), Vector2D(0,0) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x + ASW_TILE_SIZE, left_connect_y), Vector2D(1,0) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x + ASW_TILE_SIZE, left_connect_y + ASW_TILE_SIZE), Vector2D(1,1) ), 
-		vgui::Vertex_t( Vector2D(left_connect_x, left_connect_y + ASW_TILE_SIZE), Vector2D(0,1) ) 
-		}; 	
-		vgui::surface()->DrawTexturedPolygon( 4, points );
-
-		int right_connect_x = left_connect_x + ASW_TILE_SIZE * m_hHack->m_iNumColumns;
-		if (!m_hHack->GetTileLit(w, m_hHack->m_iNumColumns-1, m_hHack->m_iNumRows-1)
-			|| !m_hHack->EndTileConnected(w))
-			vgui::surface()->DrawSetColor(Color(64,64,64,255));
-		vgui::surface()->DrawSetTexture(s_nRightConnect);
-		vgui::surface()->DrawTexturedRect(right_connect_x,left_connect_y,
-				right_connect_x + (ASW_TILE_SIZE * 2), left_connect_y + (ASW_TILE_SIZE * 2));
-		*/
 	}
-
-	
 }
 
 void CASW_VGUI_Hack_Wire_Tile::DrawTile(int iWire, int x, int y)
@@ -491,18 +512,18 @@ void CASW_VGUI_Hack_Wire_Tile::PaintBackground()
 
 void CASW_VGUI_Hack_Wire_Tile::PrecacheHackingTextures()
 {
-//	s_nBackDropTexture = vgui::surface()->CreateNewTextureID();
 	s_nTileHoriz = vgui::surface()->CreateNewTextureID();
 	s_nTileLeft = vgui::surface()->CreateNewTextureID();
 	s_nTileRight = vgui::surface()->CreateNewTextureID();
-	//s_nLeftConnect = vgui::surface()->CreateNewTextureID();
-	//s_nRightConnect = vgui::surface()->CreateNewTextureID();
-	//vgui::surface()->DrawSetTextureFile( s_nBackDropTexture, "vgui/swarm/Hacking/SwarmDoorHackBackdrop", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileHoriz, "vgui/swarm/Hacking/TileHoriz", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileLeft, "vgui/swarm/Hacking/TileLeft", true, false);
-	vgui::surface()->DrawSetTextureFile( s_nTileRight, "vgui/swarm/Hacking/TileRight", true, false);
-	//vgui::surface()->DrawSetTextureFile( s_nLeftConnect, "vgui/swarm/Hacking/LeftConnect", true, false);
-	//vgui::surface()->DrawSetTextureFile( s_nRightConnect, "vgui/swarm/Hacking/RightConnect", true, false);
+	s_nTileHorizBright = vgui::surface()->CreateNewTextureID();
+	s_nTileLeftBright = vgui::surface()->CreateNewTextureID();
+	s_nTileRightBright = vgui::surface()->CreateNewTextureID();
+	vgui::surface()->DrawSetTextureFile( s_nTileHoriz, "vgui/swarm/Hacking/TileHoriz", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileLeft, "vgui/swarm/Hacking/TileLeft", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileRight, "vgui/swarm/Hacking/TileRight", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileHorizBright, "vgui/swarm/Hacking/TileHorizBright", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileLeftBright, "vgui/swarm/Hacking/TileLeftBright", true, false );
+	vgui::surface()->DrawSetTextureFile( s_nTileRightBright, "vgui/swarm/Hacking/TileRightBright", true, false );
 	s_bLoadedTextures = true;
 }
 
@@ -558,13 +579,18 @@ bool CASW_VGUI_Hack_Wire_Tile::MouseClick(int x, int y, bool bRightClick, bool b
 	int iWire, tilex, tiley;
 	if ( CursorOverTile( x, y, iWire, tilex, tiley ) )
 	{
-		TileClicked(iWire, tilex, tiley);
+		if ( rd_wire_tile_alternate.GetInt() == 2 )
+			TileClicked( iWire, tilex, tiley, !bRightClick );
+		else if (rd_wire_tile_alternate.GetInt() == 1 )
+			TileClicked( iWire, tilex, tiley, bRightClick );
+		else
+			TileClicked( iWire, tilex, tiley, false );
 	}
 
 	return true;	// always swallow clicks in our window
 }
 
-void CASW_VGUI_Hack_Wire_Tile::TileClicked(int iWire, int tilex, int tiley)
+void CASW_VGUI_Hack_Wire_Tile::TileClicked(int iWire, int tilex, int tiley, bool bOpposite)
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (!pPlayer || !m_hHack.Get())
@@ -581,15 +607,28 @@ void CASW_VGUI_Hack_Wire_Tile::TileClicked(int iWire, int tilex, int tiley)
 	if (tilex >=0 && tilex < m_hHack->m_iNumColumns && tiley >= 0 && tiley < m_hHack->m_iNumRows)
 	{
 		int iOption = tiley * m_hHack->m_iNumColumns + tilex + (m_hHack->m_iNumColumns * m_hHack->m_iNumRows * (iWire -1));
+		if ( bOpposite )
+		{
+			iOption += m_hHack->m_iNumColumns * m_hHack->m_iNumRows * 4;
+		}
 		pPlayer->SelectHackOption(iOption);
 		//Msg("pPlayer->SelectHackOption %d\n", iOption);
 		
 		// predict change
 		int iTile = tiley * m_hHack->m_iNumColumns + tilex;
 		int iRot = m_hHack->GetTileRotation(iWire, iTile);
-		iRot++;
-		if (iRot >= 4)
-			iRot = 0;
+		if ( bOpposite )
+		{
+			iRot--;
+			if ( iRot < 0 )
+				iRot = 3;
+		}
+		else
+		{
+			iRot++;
+			if ( iRot >= 4 )
+				iRot = 0;
+		}
 		//bool bWasLit = (m_hHack->GetTileLit(iWire, iTile));
 		m_hHack->SetTileRotation(iWire, iTile, iRot);
 		//bool bLit = (m_hHack->GetTileLit(iWire, iTile));
@@ -659,7 +698,7 @@ void CASW_VGUI_Hack_Wire_Tile::OnCommand(const char *command)
 		int wire, x, y;
 		if ( sscanf( command+4, "%d %d %d",&wire, &x, &y ) == 3 )
 		{
-			TileClicked(wire, x, y);
+			TileClicked(wire, x, y, false);
 		}
 	}	
 	else if (!Q_strcmp(command, "Cancel"))
@@ -670,11 +709,100 @@ void CASW_VGUI_Hack_Wire_Tile::OnCommand(const char *command)
 	}
 }
 
+void CASW_VGUI_Hack_Wire_Tile::InitializeChargePositions( int iWire )
+{
+	extern bool g_TileConnections[3][4];
+
+	struct TilePos_t
+	{
+		int x, y;
+		TilePos_t( int x, int y ) : x(x), y(y) {}
+	};
+
+	CUtlVector<TilePos_t> vecTiles;
+
+	int prevSide = 3; // top left tile is connected from its left side
+	int x = 0, y = 0;
+	vecTiles.AddToTail( TilePos_t( x, y ) );
+
+	while ( x != m_hHack->m_iNumColumns - 1 || y != m_hHack->m_iNumRows - 1 )
+	{
+		int iTileType = m_hHack->GetTileType( iWire, x, y );
+		int iTileRotation = m_hHack->GetTileRotation( iWire, x, y );
+
+		int connection1 = -1;
+		int connection2 = -1;
+
+		for ( int i = 0; i < 4; i++ )
+		{
+			if ( g_TileConnections[iTileType][i] )
+			{
+				Assert( connection2 == -1 );
+
+				if ( connection1 == -1 )
+				{
+					connection1 = i;
+				}
+				else
+				{
+					connection2 = i;
+				}
+			}
+		}
+
+		Assert( connection1 != -1 && connection2 != -1 );
+		Assert( connection1 != connection2 );
+
+		connection1 += iTileRotation;
+		connection2 += iTileRotation;
+		if ( connection1 >= 4 )
+			connection1 -= 4;
+		if ( connection2 >= 4 )
+			connection2 -= 4;
+
+		Assert( prevSide == connection1 || prevSide == connection2 );
+
+		prevSide = prevSide == connection1 ? connection2 : connection1;
+		prevSide += 2;
+		if ( prevSide >= 4 )
+			prevSide -= 4;
+
+		switch ( prevSide )
+		{
+		case 0:
+			y++;
+			break;
+		case 1:
+			x--;
+			break;
+		case 2:
+			y--;
+			break;
+		case 3:
+			x++;
+			break;
+		default:
+			Assert( !"out of range value for prevSide" );
+			return;
+		}
+
+		vecTiles.AddToTail( TilePos_t( x, y ) );
+	}
+
+	float flOffset = 1.0f / ( 1.0f + vecTiles.Count() );
+	FOR_EACH_VEC( vecTiles, i )
+	{
+		m_pTile[iWire - 1][vecTiles[i].x][vecTiles[i].y]->m_flChargePosition = i * flOffset;
+	}
+}
+
+
 CASW_Wire_Tile::CASW_Wire_Tile(vgui::Panel *pParent, const char *name, CASW_VGUI_Hack_Wire_Tile* pHackWireTile) :
 	ImageButton(pParent, name, " ")
 {
 	m_pHackWireTile = pHackWireTile;
 	m_iWire = -1;
+	m_flChargePosition = -1;
 }
 
 void CASW_Wire_Tile::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -758,19 +886,35 @@ void CASW_Wire_Tile::Paint()
 		}
 	}
 
+	bool bUseBrightTexture = false;
+
 	// draw the actual tile
-	if (m_pHackWireTile->m_hHack->GetTileLit(m_iWire, m_x, m_y))
-		vgui::surface()->DrawSetColor(Color(255, 255, 255, 255));
+	if ( m_pHackWireTile->m_hHack->GetTileLit( m_iWire, m_x, m_y ) )
+	{
+		if ( m_pHackWireTile->m_hHack->IsWireLit( m_iWire ) )
+		{
+			if ( m_flChargePosition < 0 )
+			{
+				m_pHackWireTile->InitializeChargePositions( m_iWire );
+			}
+
+			bUseBrightTexture = rd_wire_tile_charge.GetBool() && m_pHackWireTile->m_hHack->m_fWireChargeProgress[m_iWire - 1] >= m_flChargePosition;
+		}
+
+		vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
+	}
 	else
-		vgui::surface()->DrawSetColor(Color(64, 64, 64, 255));
+	{
+		vgui::surface()->DrawSetColor( Color( 64, 64, 64, 255 ) );
+	}
 	
 	// get the texture for this type of tile
 	if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_HORIZ)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileHoriz);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileHorizBright : m_pHackWireTile->s_nTileHoriz );
 	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_LEFT)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileLeft);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileLeftBright : m_pHackWireTile->s_nTileLeft );
 	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_RIGHT)
-		vgui::surface()->DrawSetTexture(m_pHackWireTile->s_nTileRight);
+		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileRightBright : m_pHackWireTile->s_nTileRight );
 	else
 		return;
 

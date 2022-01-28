@@ -3,10 +3,10 @@
 
 class C_ASW_Sentry_Base;
 
-class C_ASW_Sentry_Top : public C_BaseAnimating
+class C_ASW_Sentry_Top : public C_BaseCombatCharacter
 {
 public:
-	DECLARE_CLASS( C_ASW_Sentry_Top, C_BaseAnimating );
+	DECLARE_CLASS( C_ASW_Sentry_Top, C_BaseCombatCharacter );
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
@@ -42,6 +42,7 @@ private:
 	CNetworkVar(float, m_fDeployYaw);
 	CNetworkVar(bool, m_bLowAmmo); 	
 	float m_fPrevDeployYaw;
+	float GetDeployYaw();
 
 	bool m_bSpawnedDisplayEffects;
 	CUtlReference<CNewParticleEffect> m_hRadiusDisplay;

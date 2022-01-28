@@ -57,6 +57,7 @@ public:
 	int	GetElectricArmorReduction( int iMarineIndex ) { return m_iElectricArmorReduction[iMarineIndex]; }
 	int	GetHealampgunHeals( int iMarineIndex ) { return m_iHealAmpGunHeals[iMarineIndex]; }
 	int	GetHealampgunAmps( int iMarineIndex ) { return m_iHealAmpGunAmps[iMarineIndex]; }
+	int	GetMedRifleHeals( int iMarineIndex ) { return m_iMedRifleHeals[iMarineIndex]; }
 
 	int GetHighestKills();
 	float GetHighestAccuracy();
@@ -119,6 +120,7 @@ public:
 	CNetworkArray( int,		m_iElectricArmorReduction,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealAmpGunHeals,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iMedRifleHeals,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

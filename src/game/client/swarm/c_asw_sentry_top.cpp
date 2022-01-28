@@ -60,7 +60,7 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink(gpGlobals->curtime);
-		m_fPrevDeployYaw = m_fDeployYaw;
+		m_fPrevDeployYaw = GetDeployYaw();
 	}
 
 	if ( m_bLowAmmo && !m_hWarningLight )
@@ -246,7 +246,6 @@ void C_ASW_Sentry_Top::Scan()
 	{
 		// this sets up the outter, "heavier" lines that make up the edges and the middle
 		m_hRadiusDisplay = ParticleProp()->Create( "sentry_radius_display_beam", PATTACH_CUSTOMORIGIN );
-		m_hRadiusDisplay->SetControlPoint( 0, vecEye );
 
 		// Draw the outer extents
 		scanAngle = pBase->GetAbsAngles();
@@ -272,17 +271,20 @@ void C_ASW_Sentry_Top::Scan()
 
 	if ( m_hRadiusDisplay )
 	{
+		m_hRadiusDisplay->SetControlPoint( 0, vecEye );
+
 		// now move the sweeping beams
 		QAngle baseAngle = pBase->GetAbsAngles();
 		baseAngle.y = m_fPrevDeployYaw;
-		if ( m_fDeployYaw != m_fPrevDeployYaw )
+		float fDeployYaw = GetDeployYaw();
+		if ( fDeployYaw != m_fPrevDeployYaw )
 		{
-			//baseAngle.y = Approach( m_fDeployYaw, m_fPrevDeployYaw, 20.0f );
+			//baseAngle.y = Approach( fDeployYaw, m_fPrevDeployYaw, 20.0f );
 			//m_fPrevDeployYaw = baseAngle.y;
 
-			float flDeltatime = 1.0f;
-			float flDir = m_fDeployYaw > m_fPrevDeployYaw ? 1 : -1 ;
-			float flDist = fabs(m_fDeployYaw - m_fPrevDeployYaw);
+			float flDeltatime = 0.05f;
+			float flDir = fDeployYaw > m_fPrevDeployYaw ? 1 : -1 ;
+			float flDist = fabs(fDeployYaw - m_fPrevDeployYaw);
 
 			if (flDist > 180)
 			{
@@ -291,11 +293,11 @@ void C_ASW_Sentry_Top::Scan()
 			}
 
 			// set our turn rate depending on if we have an enemy or not
-			float fTurnRate = 10.0f;//ASW_SENTRY_TURNRATE * 0.5f;
+			float fTurnRate = 150 * 0.5f; // 150 = ASW_SENTRY_TURNRATE
 
 			if (fabs(flDist) < flDeltatime * fTurnRate)
 			{
-				m_fPrevDeployYaw = m_fDeployYaw;
+				m_fPrevDeployYaw = fDeployYaw;
 			}
 			else
 			{
@@ -352,4 +354,16 @@ void C_ASW_Sentry_Top::AdjustRadiusBeamEdges( const Vector &vecStart, const Vect
 	m_hRadiusDisplay->SetControlPoint( iControlPoint, tr.endpos );
 }
 
+float C_ASW_Sentry_Top::GetDeployYaw()
+{
+	float fDeployYaw = m_fDeployYaw;
+	if ( GetMoveParent() )
+	{
+		fDeployYaw += GetMoveParent()->GetAbsAngles().y;
+	}
+
+	float fCurrentYaw = GetAbsAngles().y;
+
+	return fCurrentYaw + anglemod( fDeployYaw - fCurrentYaw );
+}
 

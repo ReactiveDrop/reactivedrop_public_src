@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+ "$basetexture" "vgui/swarm/Overviews/biocorp3-biogenlabs"
+ $vertexcolor 1
+ $vertexalpha 1
+ $no_fullbright 1
+ $ignorez 1
+} 

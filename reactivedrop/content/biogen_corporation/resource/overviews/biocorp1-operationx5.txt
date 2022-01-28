@@ -1,0 +1,16 @@
+GAME
+{
+	"pos_x"				"-7825"
+	"pos_y"				"9084"
+	"scale"				"10.0"
+	"material" 			"vgui/swarm/Overviews/biocorp1-operationx5"
+	"briefingmaterial" 	"vgui/swarm/Overviews/biocorp1-operationx5Briefing"
+	"missiontitle"		"Operation x5"
+	"description"		"Extract the important data"
+	"image"				"swarm/MissionPics/UnknownMissionPic"
+	
+	"builtin" 			"1"
+	"version"			"1.4"
+	"author"			"uradzimiru"
+	"website"			""
+}
