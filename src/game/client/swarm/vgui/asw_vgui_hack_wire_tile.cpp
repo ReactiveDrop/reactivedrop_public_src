@@ -163,9 +163,11 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 			)
 		{
 			//Msg("connect %d more than numwires(%d) -1\n", i, m_hHack->m_iNumWires);
-			m_pLeftConnect[i]->SetVisible(false);
-			m_pRightConnect[i]->SetVisible(false);
-			m_pOpenLight[i]->SetVisible(false);
+			m_pLeftConnect[i]->SetVisible( false );
+			m_pRightConnect[i]->SetVisible( false );
+			m_pLeftConnectBright[i]->SetVisible( false );
+			m_pRightConnectBright[i]->SetVisible( false );
+			m_pOpenLight[i]->SetVisible( false );
 		}
 		else
 		{
@@ -181,13 +183,15 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 				left_connect_y += ASW_TILE_SIZE;
 			if (m_hHack->m_iNumRows == 3)
 				right_connect_y += ASW_TILE_SIZE;
-			m_pLeftConnect[i]->SetBounds(left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
-			m_pRightConnect[i]->SetBounds(right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2);
+			m_pLeftConnect[i]->SetBounds( left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pRightConnect[i]->SetBounds( right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pLeftConnectBright[i]->SetBounds( left_connect_x, left_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
+			m_pRightConnectBright[i]->SetBounds( right_connect_x, right_connect_y, ASW_TILE_SIZE * 2, ASW_TILE_SIZE * 2 );
 
 			if ( !m_hHack->IsWireLit( i + 1 ) )
 			{
 				// wire is disconnected
-				m_pLeftConnect[i]->SetDrawColor( Color( 64, 64, 64, 255 ) );
+				m_pLeftConnect[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
 				m_pRightConnect[i]->SetDrawColor( Color( 64, 64, 64, 255 ) );
 				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
 
@@ -204,7 +208,7 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 			{
 				// wire is connected and actuator is charging
 				m_pLeftConnectBright[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
-				m_pRightConnect[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+				m_pRightConnect[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
 				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
 
 				if ( m_pLeftConnect[i]->IsVisible() )
@@ -229,7 +233,7 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 					C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWButtonPanel.WireActive" );
 				}
 
-				m_pOpenLight[i]->SetDrawColor( Color( 32, 32, 32, 255 ) );
+				m_pOpenLight[i]->SetDrawColor( Color( 255, 255, 255, 255 ) );
 
 				if ( m_pLeftConnect[i]->IsVisible() )
 					m_pLeftConnect[i]->SetVisible( false );
