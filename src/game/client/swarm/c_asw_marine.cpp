@@ -82,7 +82,7 @@ ConVar rd_team_color_alpha( "rd_team_color_alpha", "255 240 150", FCVAR_HIDDEN )
 ConVar rd_team_color_beta( "rd_team_color_beta", "20 100 255", FCVAR_HIDDEN );
 ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
-ConVar rd_prediction_strategy( "rd_prediction_strategy", "0", FCVAR_ARCHIVE, "testing prediction error resolution strategy", true, 0, true, 1 );
+ConVar rd_prediction_strategy( "rd_prediction_strategy", "1", FCVAR_ARCHIVE, "use a prediction error resolution strategy that handles moving platforms better", true, 0, true, 1 );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
