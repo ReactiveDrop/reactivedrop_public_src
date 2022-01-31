@@ -316,7 +316,7 @@ inline float ASW_ComputeShakeAmplitude( const Vector &center, const Vector &shak
 //			bAirShake - completely ignored
 //-----------------------------------------------------------------------------
 const float ASW_MAX_SHAKE_AMPLITUDE = 16.0f;
-void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake )
+void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake, CASW_Marine *pOnlyMarine )
 {
 	int			i;
 	float		localAmplitude;
@@ -325,26 +325,31 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 	{
 		amplitude = ASW_MAX_SHAKE_AMPLITUDE;
 	}
+
 	for ( i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-
-		//
-		// Only start shakes for players that are on the ground unless doing an air shake.
-		//
 		if ( !pPlayer )
 		{
 			continue;
 		}
 
 		// find the player's marine
-		CASW_Player *pASWPlayer = dynamic_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
+		CASW_Player *pASWPlayer = dynamic_cast<CASW_Player *>( pPlayer );
+		CASW_Marine *pMarine = pASWPlayer ? pASWPlayer->GetViewMarine() : NULL;
+		if ( !pMarine )
 			continue;
 
-		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
+		// Only start shakes for players that are on the ground unless doing an air shake.
+		if ( !bAirShake && !pMarine->m_bOnGround )
+			continue;
+
+		if ( pOnlyMarine && pMarine != pOnlyMarine )
+			continue;
+
+		Vector vecMarinePos = pMarine->WorldSpaceCenter();
+		if ( pMarine->IsControllingTurret() && pMarine->GetRemoteTurret() )
+			vecMarinePos = pMarine->GetRemoteTurret()->GetAbsOrigin();
 
 		localAmplitude = ASW_ComputeShakeAmplitude( center, vecMarinePos, amplitude, radius );
 
@@ -353,7 +358,7 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		if (localAmplitude < 0)
 			continue;
 
-		ASW_TransmitShakeEvent( (CBasePlayer *)pPlayer, localAmplitude, frequency, duration, eCommand );
+		ASW_TransmitShakeEvent( pASWPlayer, localAmplitude, frequency, duration, eCommand );
 	}
 }
 
