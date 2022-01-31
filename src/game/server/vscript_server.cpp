@@ -419,6 +419,47 @@ public:
 			pOutput->ScriptRemoveEventAction( pAction, szTarget, szTargetInput, szParameter );
 		}
 	}
+
+	ScriptVariant_t GetValue( HSCRIPT hEntity, const char *szOutputName )
+	{
+		CBaseEntity *pBaseEntity = ToEnt( hEntity );
+		if ( !pBaseEntity )
+		{
+			DevMsg( "Error: Entity is NULL in EntityOutputs.GetValue\n" );
+			return SCRIPT_VARIANT_NULL;
+		}
+
+		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
+		if ( !pOutput )
+		{
+			DevMsg( "Error: Cannot find named output \"%s\" in EntityOutputs.GetValue\n", szOutputName );
+			return SCRIPT_VARIANT_NULL;
+		}
+
+		switch ( pOutput->ValueFieldType() )
+		{
+		default:
+			// COutputVariant is only used by one output (logic_case's OnDefault) so to avoid complicating this function, only the specific types supported by other typedefs are handled.
+			return SCRIPT_VARIANT_NULL;
+		case FIELD_INTEGER:
+			return static_cast<COutputInt *>( pOutput )->Get();
+		case FIELD_FLOAT:
+			return static_cast<COutputFloat *>( pOutput )->Get();
+		case FIELD_STRING:
+			return ScriptVariant_t( STRING( static_cast<COutputString *>( pOutput )->Get() ), true );
+		case FIELD_EHANDLE:
+			return ToHScript( static_cast<COutputEHANDLE *>( pOutput )->Get() );
+		case FIELD_VECTOR:
+		case FIELD_POSITION_VECTOR:
+		{
+			Vector vec;
+			static_cast<COutputVector *>( pOutput )->Get( vec );
+			return ScriptVariant_t( vec, true );
+		}
+		case FIELD_COLOR32:
+			return int( *static_cast<COutputColor32 *>( pOutput )->Get().asInt() );
+		}
+	}
 } g_ScriptEntityOutputs;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIPT_SINGLETON "Used to get entity output data" )
@@ -428,6 +469,7 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptEntityOutputs, "CScriptEntityOutputs", SCRIP
 	DEFINE_SCRIPTFUNC( HasAction, "Arguments: ( entity, outputName ) - returns true if an action exists for the output" )
 	DEFINE_SCRIPTFUNC( AddOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter, delay, timesToFire ) - add a new output to the entity" )
 	DEFINE_SCRIPTFUNC( RemoveOutput, "Arguments: ( entity, outputName, targetName, inputName, parameter ) - remove an output from the entity" )
+	DEFINE_SCRIPTFUNC( GetValue, "Arguments: ( entity, outputName ) - returns the value of the output if it has one" )
 END_SCRIPTDESC();
 
 
