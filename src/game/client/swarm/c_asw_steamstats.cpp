@@ -1175,6 +1175,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
 	m_LeaderboardScoreDetails.m_iDifficulty = ASWGameRules()->GetSkillLevel();
 	m_LeaderboardScoreDetails.m_iModeFlags = ( ASWGameRules()->IsOnslaught() ? 1 : 0 ) | ( ASWGameRules()->IsHardcoreFF() ? 2 : 0 );
+	m_LeaderboardScoreDetails.m_iGameVersion = engine->GetEngineBuildNumber();
 	if ( asw_stats_leaderboard_debug.GetBool() )
 	{
 		DevMsg( "Leaderboard score: %d\n", m_iLeaderboardScore );

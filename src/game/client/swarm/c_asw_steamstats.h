@@ -92,6 +92,7 @@ struct LeaderboardScoreDetails_v2_t
 	char m_CountryCode[2];
 	uint8 m_iDifficulty;
 	uint8 m_iModeFlags;
+	uint32 m_iGameVersion;
 };
 #pragma pack(pop)
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) % sizeof( int32 ) == 0 );
