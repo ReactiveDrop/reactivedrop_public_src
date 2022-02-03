@@ -565,6 +565,7 @@ public:
 	virtual void FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus=0 );
 	CBaseCombatWeapon* GetLastWeaponSwitchedTo();
 	EHANDLE m_hLastWeaponSwitchedTo;
+	bool m_bLastWeaponBeforeTempWasSecondary;
 	float m_fStartedFiringTime;
 	virtual void AimGun();
 	float m_fLastShotAlienTime;

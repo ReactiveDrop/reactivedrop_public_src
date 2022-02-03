@@ -33,6 +33,7 @@
 #endif
 #include "asw_deathmatch_mode.h"
 #include "asw_medal_store.h"
+#include "asw_weapon_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -204,8 +205,7 @@ void ASW_MessageLog_f(void)
 }
 static ConCommand ASW_MessageLog("ASW_MessageLog", ASW_MessageLog_f, "Shows a log of info messages you've read so far in this mission", 0);
 
-
-void asw_weapon_switch_f()
+void asw_weapon_switch_f( int direction )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
@@ -217,19 +217,51 @@ void asw_weapon_switch_f()
 
 	C_BaseCombatWeapon *pCurrent = pMarine->GetActiveWeapon();
 	C_BaseCombatWeapon *pPrimary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
+	C_BaseCombatWeapon *pSecondary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+	C_BaseCombatWeapon *pTertiary = pMarine->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+	if ( pCurrent == pTertiary && direction == 1 && pPrimary )
+	{
+		::input->MakeWeaponSelection( pPrimary );
+		return;
+	}
+
+	if ( pCurrent == pTertiary && direction == -1 && pSecondary )
+	{
+		::input->MakeWeaponSelection( pSecondary );
+		return;
+	}
+
+	if ( pCurrent == pTertiary && direction == 0 && pPrimary && pSecondary )
+	{
+		::input->MakeWeaponSelection( pMarine->m_bLastWeaponBeforeTempWasSecondary ? pSecondary : pPrimary );
+		return;
+	}
+
 	if ( pCurrent != pPrimary && pPrimary )
 	{
 		::input->MakeWeaponSelection( pPrimary );
+		return;
 	}
-	C_BaseCombatWeapon *pSecondary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+
 	if ( pCurrent != pSecondary && pSecondary )
 	{
 		::input->MakeWeaponSelection( pSecondary );
+		return;
 	}
 }
-ConCommand ASW_InvLast( "ASW_InvLast", asw_weapon_switch_f, "Switches between primary and secondary weapons", 0 );
-ConCommand ASW_InvNext( "ASW_InvNext", asw_weapon_switch_f, "Makes your marine select the next weapon", 0 );
-ConCommand ASW_InvPrev( "ASW_InvPrev", asw_weapon_switch_f, "Makes your marine select the previous weapon", 0 );
+
+CON_COMMAND( ASW_InvLast, "Switches between primary and secondary weapons" )
+{
+	asw_weapon_switch_f( 0 );
+}
+CON_COMMAND( ASW_InvNext, "Makes your marine select the next weapon" )
+{
+	asw_weapon_switch_f( 1 );
+}
+CON_COMMAND( ASW_InvPrev, "Makes your marine select the previous weapon" )
+{
+	asw_weapon_switch_f( -1 );
+}
 
 // Binds for activating primary/secondary/extra items
 
@@ -237,18 +269,27 @@ void ASW_ActivatePrimary_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetMarine() )
 	{
-		pPlayer->ActivateInventoryItem(0);
+		pPlayer->ActivateInventoryItem( ASW_INVENTORY_SLOT_PRIMARY );
 	}
 }
 void ASW_ActivateSecondary_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetMarine() )
 	{
-		pPlayer->ActivateInventoryItem(1);
+		pPlayer->ActivateInventoryItem( ASW_INVENTORY_SLOT_SECONDARY );
+	}
+}
+void ASW_ActivateTertiary_f()
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+
+	if ( pPlayer && pPlayer->GetMarine() )
+	{
+		pPlayer->ActivateInventoryItem( ASW_TEMPORARY_WEAPON_SLOT );
 	}
 }
 void ASW_ActivateExtra_f()
@@ -256,19 +297,22 @@ void ASW_ActivateExtra_f()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
 	
-	int index = 2;
+	int index = ASW_INVENTORY_SLOT_EXTRA;
 
 	if ( pMarine )
 	{
-		if (pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT))
+		C_ASW_Weapon *pTempExtra = pMarine->GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+		if ( pTempExtra && pTempExtra->GetWeaponInfo() && pTempExtra->GetWeaponInfo()->m_bExtra )
 		{
 			index = ASW_TEMPORARY_WEAPON_SLOT;
 		}
-		pPlayer->ActivateInventoryItem(index);
+
+		pPlayer->ActivateInventoryItem( index );
 	}
 }
 ConCommand ASW_ActivatePrimary( "ASW_ActivatePrimary", ASW_ActivatePrimary_f, "Activates the item in your primary inventory slot", 0 );
 ConCommand ASW_ActivateSecondary( "ASW_ActivateSecondary", ASW_ActivateSecondary_f, "Activates the item in your secondary inventory slot", 0 );
+ConCommand ASW_ActivateTertiary( "ASW_ActivateTertiary", ASW_ActivateTertiary_f, "Activates the item in your tertiary (temporary) inventory slot", 0 );
 ConCommand ASW_ActivateExtra( "ASW_ActivateExtra", ASW_ActivateExtra_f, "Activates the item in your extra inventory slot", 0 );
 
 C_ASW_PropJeep_Clientside* g_pJeep = NULL;

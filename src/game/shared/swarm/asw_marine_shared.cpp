@@ -101,6 +101,11 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 	if (GetASWWeapon(0)!= pWeapon && GetASWWeapon(1) != pWeapon && GetASWWeapon(2) != pWeapon && GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != pWeapon)
 		return false;
 
+	if ( pWeapon == GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT ) )
+	{
+		m_bLastWeaponBeforeTempWasSecondary = GetActiveASWWeapon() == GetASWWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+	}
+
 	if (BaseClass::Weapon_Switch( pWeapon, viewmodelindex ))
 	{
 		#define ASW_WEAPON_SWITCH_TIME 0.5f
