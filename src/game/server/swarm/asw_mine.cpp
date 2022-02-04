@@ -49,8 +49,11 @@ void CASW_Mine::Spawn( void )
 {
 	Precache( );
 	SetModel( ASW_MINE_MODEL );
+	SetSize( -Vector(1, 1, 1), Vector(1, 1, 1) );
 	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_SOLID || FSOLID_TRIGGER);
+	AddSolidFlags( FSOLID_TRIGGER );
+	//Orange. Best existing collision group to save old mine behavior and disable collision while in air.
+	SetCollisionGroup( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage	= DAMAGE_NO;
 	m_bPrimed = false;
