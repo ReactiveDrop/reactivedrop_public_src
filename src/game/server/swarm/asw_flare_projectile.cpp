@@ -188,7 +188,7 @@ void CASW_Flare_Projectile::Spawn( void )
 
 unsigned int CASW_Flare_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_Flare_Projectile::FlareThink( void )
