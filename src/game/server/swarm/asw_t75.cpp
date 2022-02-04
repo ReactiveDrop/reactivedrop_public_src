@@ -61,7 +61,7 @@ void CASW_T75::Spawn( void )
 	Precache();
 	SetModel( ASW_T75_MODEL );
 	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_SOLID || FSOLID_TRIGGER);
+	AddSolidFlags( FSOLID_TRIGGER );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage	= DAMAGE_NO;
 
