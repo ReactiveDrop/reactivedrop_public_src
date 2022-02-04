@@ -1300,6 +1300,7 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				if (m_fLastMomentFlipDamage < 0)		// count up a small amount of damage so it doesn't fall immediately after changing facing
 				{
+					m_iHealth = 1;
 					m_fLastMomentFlipDamage += newInfo.GetDamage();
 				}
 				else
