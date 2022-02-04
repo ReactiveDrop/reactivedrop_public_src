@@ -5256,7 +5256,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			return true;
 	}
 
-	// the pellets that the flamer shoots.  Doesn not collide with small aliens or marines, DOES collide with doors and shieldbugs
+	// the pellets that the extinguisher shoots. Unlike flamer pellets collides with aliens and marines
 	if (collisionGroup1 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS)
 	{
 		if (collisionGroup0 == COLLISION_GROUP_DEBRIS ||
