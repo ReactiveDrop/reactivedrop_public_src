@@ -504,6 +504,7 @@ C_ASW_Marine::~C_ASW_Marine()
 	StopFireExtinguisherLoop();	//Msg("StopFireExtinguisherLoop \n");
 	m_bOnFire = false;
 	UpdateFireEmitters();
+	g_fMarinePoisonDuration = 0;
 	if (m_hOrderArrow.Get())
 		m_hOrderArrow->Release();
 
