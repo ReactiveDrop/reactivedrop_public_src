@@ -92,6 +92,13 @@ void CRD_Weapon_Generic_Object::Spawn()
 
 	m_iOriginalName = m_iName;
 }
+
+void CRD_Weapon_Generic_Object::MarineDropped( CASW_Marine *pMarine )
+{
+	BaseClass::MarineDropped( pMarine );
+
+	SetName( m_iOriginalName );
+}
 #endif
 
 void CRD_Weapon_Generic_Object::Precache()

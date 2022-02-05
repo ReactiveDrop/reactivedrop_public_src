@@ -24,6 +24,7 @@ public:
 	DECLARE_DATADESC();
 	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 	virtual void Spawn();
+	virtual void MarineDropped( CASW_Marine *pMarine );
 
 	CNetworkVar( string_t, m_iOriginalName );
 #endif
