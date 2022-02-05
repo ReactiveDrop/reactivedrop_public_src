@@ -131,7 +131,7 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	action.UseIconBlue = 255;
 	action.bShowUseKey = true;
 	action.iInventorySlot = -1;
-	if (!HasPower())
+	if ( !HasPower() || !CheckHeldObject( pUser ) )
 	{
 		action.iUseIconTexture = GetNoPowerIconTextureID();
 		TryLocalize( GetNoPowerText(), action.wszText, sizeof( action.wszText ) );

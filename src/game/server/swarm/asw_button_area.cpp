@@ -43,6 +43,7 @@ BEGIN_DATADESC( CASW_Button_Area )
 	DEFINE_KEYFIELD( m_iNumWires, FIELD_INTEGER, "numwires"),
 
 	DEFINE_KEYFIELD( m_flHoldTime, FIELD_FLOAT, "HoldTime" ),
+	DEFINE_KEYFIELD( m_bDestroyHeldObject, FIELD_BOOLEAN, "DestroyHeldObject" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"PowerOn",	InputPowerOn ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"PowerOff",	InputPowerOff ),
@@ -88,6 +89,7 @@ CASW_Button_Area::CASW_Button_Area()
 	m_iHackLevel = 6;
 
 	m_flHoldTime = -1;
+	m_bDestroyHeldObject = false;
 }
 
 CASW_Button_Area::~CASW_Button_Area()
@@ -142,7 +144,7 @@ void CASW_Button_Area::Precache()
 
 void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 {
-	if ( !HasPower() || !ASWGameResource() )
+	if ( !HasPower() || !ASWGameResource() || !CheckHeldObject( pMarine ) )
 	{
 		return;
 	}
@@ -277,6 +279,24 @@ void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
 
 	if( !RequirementsMet( pMarine ) )
 		return;
+
+	if ( m_iHeldObjectName.Get() != NULL_STRING && *STRING( m_iHeldObjectName.Get() ) )
+	{
+		// We require a held object. If it's not there anymore, bail.
+		if ( !CheckHeldObject( pMarine ) )
+		{
+			return;
+		}
+
+		// No more bailing after this point.
+
+		if ( m_bDestroyHeldObject )
+		{
+			CBaseCombatWeapon *pWeapon = pMarine->GetActiveWeapon();
+			pMarine->Weapon_Drop( pWeapon, NULL, NULL );
+			UTIL_Remove( pWeapon );
+		}
+	}
 
 	if ( m_bIsDoorButton )
 	{

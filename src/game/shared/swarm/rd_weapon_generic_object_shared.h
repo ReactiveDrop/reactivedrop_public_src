@@ -23,6 +23,9 @@ public:
 #ifdef GAME_DLL
 	DECLARE_DATADESC();
 	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual void Spawn();
+
+	CNetworkVar( string_t, m_iOriginalName );
 #endif
 
 	virtual Class_T Classify() { return (Class_T)CLASS_RD_WEAPON_GENERIC_OBJECT; }
@@ -47,6 +50,7 @@ public:
 
 #ifdef CLIENT_DLL
 	wchar_t m_wszCarriedName[256];
+	char m_iOriginalName[MAX_PATH];
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
 	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser );
 #endif

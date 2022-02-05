@@ -20,6 +20,7 @@ BEGIN_NETWORK_TABLE( CRD_Weapon_Generic_Object, DT_RD_Weapon_Generic_Object )
 	RecvPropVector( RECVINFO( m_vecCarriedOffset ) ),
 	RecvPropString( RECVINFO( m_szWorldModel ) ),
 	RecvPropString( RECVINFO( m_szCarriedName ) ),
+	RecvPropString( RECVINFO( m_iOriginalName ) ),
 #else
 	SendPropFloat( SENDINFO( m_flMoveSpeedMultiplier ) ),
 	SendPropBool( SENDINFO( m_bLargeObject ) ),
@@ -28,6 +29,7 @@ BEGIN_NETWORK_TABLE( CRD_Weapon_Generic_Object, DT_RD_Weapon_Generic_Object )
 	SendPropVector( SENDINFO( m_vecCarriedOffset ) ),
 	SendPropString( SENDINFO( m_szWorldModel ) ),
 	SendPropString( SENDINFO( m_szCarriedName ) ),
+	SendPropStringT( SENDINFO( m_iOriginalName ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -82,6 +84,13 @@ bool CRD_Weapon_Generic_Object::KeyValue( const char *szKeyName, const char *szV
 	}
 	
 	return BaseClass::KeyValue( szKeyName, szValue );
+}
+
+void CRD_Weapon_Generic_Object::Spawn()
+{
+	BaseClass::Spawn();
+
+	m_iOriginalName = m_iName;
 }
 #endif
 

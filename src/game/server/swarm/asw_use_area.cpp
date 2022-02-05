@@ -3,6 +3,7 @@
 #include "asw_use_area.h"
 #include "asw_player.h"
 #include "asw_marine.h"
+#include "rd_weapon_generic_object_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -18,6 +19,7 @@ BEGIN_DATADESC( CASW_Use_Area )
 	DEFINE_KEYFIELD( m_nPlayersRequired, FIELD_INTEGER, "playersrequired" ),
 	DEFINE_KEYFIELD(m_szPanelPropName, FIELD_STRING, "panelpropname" ),
 	DEFINE_FIELD(m_hPanelProp, FIELD_EHANDLE),
+	DEFINE_KEYFIELD( m_iHeldObjectName, FIELD_STRING, "HeldObjectName" ),
 
 	DEFINE_OUTPUT( m_OnRequirementFailed, "OnRequirementFailed" ),
 END_DATADESC()
@@ -27,6 +29,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Use_Area, DT_ASW_Use_Area )
 	SendPropEHandle( SENDINFO(m_hUseTarget) ),
 	SendPropBool( SENDINFO(m_bUseAreaEnabled) ),
 	SendPropEHandle		(SENDINFO( m_hPanelProp ) ),
+	SendPropStringT( SENDINFO( m_iHeldObjectName ) ),
 END_SEND_TABLE()
 
 IMPLEMENT_AUTO_LIST( IASW_Use_Area_List );
@@ -35,6 +38,7 @@ CASW_Use_Area::CASW_Use_Area()
 {
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 	m_bUseAreaEnabled = true;
+	m_iHeldObjectName = NULL_STRING;
 }
 
 //-----------------------------------------------------------------------------
@@ -151,4 +155,26 @@ void CASW_Use_Area::InputDisable( inputdata_t &inputdata )
 void CASW_Use_Area::InputToggle( inputdata_t &inputdata )
 {	
 	m_bUseAreaEnabled = !(m_bUseAreaEnabled.Get());
+}
+
+bool CASW_Use_Area::CheckHeldObject( CASW_Marine *pMarine )
+{
+	if ( !pMarine )
+	{
+		return false;
+	}
+
+	if ( m_iHeldObjectName.Get() == NULL_STRING || !*STRING( m_iHeldObjectName.Get() ) )
+	{
+		// no object required
+		return true;
+	}
+
+	CRD_Weapon_Generic_Object *pObject = dynamic_cast<CRD_Weapon_Generic_Object *>( pMarine->GetActiveASWWeapon() );
+	if ( !pObject )
+	{
+		return false;
+	}
+
+	return FStrEq( STRING( m_iHeldObjectName.Get() ), STRING( pObject->m_iOriginalName.Get() ) );
 }
