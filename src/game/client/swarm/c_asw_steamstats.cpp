@@ -1047,6 +1047,29 @@ bool CASW_Steamstats::IsOfficialCampaign()
 	return ::IsOfficialCampaign();
 }
 
+static uint32 GetGameVersion()
+{
+	static uint32 s_iGameVersion = 0;
+	if ( s_iGameVersion == 0 )
+	{
+		CUtlVectorAutoPurge<char *> productVersionParts;
+		V_SplitString( engine->GetProductVersionString(), ".", productVersionParts );
+
+		Assert( productVersionParts.Count() == 4 );
+		while ( productVersionParts.Count() < 4 )
+		{
+			productVersionParts.AddToTail( new char[2]{ '0', '\0' } );
+		}
+
+		s_iGameVersion = strtoul( productVersionParts[0], NULL, 10 ) << 24;
+		s_iGameVersion |= strtoul( productVersionParts[1], NULL, 10 ) << 16;
+		s_iGameVersion |= strtoul( productVersionParts[2], NULL, 10 ) << 8;
+		s_iGameVersion |= strtoul( productVersionParts[3], NULL, 10 );
+	}
+
+	return s_iGameVersion;
+}
+
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
 	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() )
@@ -1175,7 +1198,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
 	m_LeaderboardScoreDetails.m_iDifficulty = ASWGameRules()->GetSkillLevel();
 	m_LeaderboardScoreDetails.m_iModeFlags = ( ASWGameRules()->IsOnslaught() ? 1 : 0 ) | ( ASWGameRules()->IsHardcoreFF() ? 2 : 0 );
-	m_LeaderboardScoreDetails.m_iGameVersion = engine->GetEngineBuildNumber();
+	m_LeaderboardScoreDetails.m_iGameVersion = GetGameVersion();
 	if ( asw_stats_leaderboard_debug.GetBool() )
 	{
 		DevMsg( "Leaderboard score: %d\n", m_iLeaderboardScore );
