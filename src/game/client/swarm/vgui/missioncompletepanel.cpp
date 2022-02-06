@@ -187,11 +187,11 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 MissionCompletePanel::~MissionCompletePanel()
 {
-	if (g_hBriefingTooltip.Get())
+	BriefingTooltip *pTooltip = g_hBriefingTooltip;
+	if ( pTooltip )
 	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip->SetVisible(false);
-		g_hBriefingTooltip = NULL;
+		pTooltip->SetVisible( false );
+		pTooltip->MarkForDeletion();
 	}
 }
 
