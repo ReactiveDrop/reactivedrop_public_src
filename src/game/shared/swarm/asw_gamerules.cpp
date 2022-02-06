@@ -5740,17 +5740,6 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		fMarineFalloff *= 0.5f;
 	}
 
-	int bInWater = (UTIL_PointContents ( vecSrc, MASK_WATER ) & MASK_WATER) ? true : false;
-
-	if( bInWater )
-	{
-		// Only muffle the explosion if deeper than 2 feet in water.
-		if( !(UTIL_PointContents(vecSrc + Vector(0, 0, 24),MASK_WATER) & MASK_WATER) )
-		{
-			bInWater = false;
-		}
-	}
-	
 	vecSrc.z += 1;// in case grenade is lying on the ground
 
 	float flHalfRadiusSqr = Square( flRadius / 2.0f );
@@ -5773,13 +5762,6 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		{// houndeyes don't hurt other houndeyes with their attack
 			continue;
 		}
-
-		// blast's don't tavel into or out of water
-		if (bInWater && pEntity->GetWaterLevel() == 0)
-			continue;
-
-		if (!bInWater && pEntity->GetWaterLevel() == 3)
-			continue;
 
 		// check if this is a marine and if so, he may be outside the explosion radius				
 		if (pEntity->Classify() == CLASS_ASW_MARINE)
