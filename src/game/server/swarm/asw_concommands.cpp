@@ -449,12 +449,14 @@ void ASW_DropTest_f()
 			return;
 		if (pPlayer->GetFlags() & FL_FROZEN)
 			return;
-		int c = pMarine->WeaponCount();
+		int c = ASW_MAX_MARINE_WEAPONS;
 		int current = -1;
 		//int target = 0;
+
+		CBaseCombatWeapon* pWeapon = NULL;
 		for (int i=0;i<c;i++)
 		{
-			CBaseCombatWeapon *pWeapon = pMarine->GetWeapon(i);
+			pWeapon = pMarine->GetWeapon(i);
 			if (pWeapon == pMarine->GetActiveWeapon())
 			{
 				current = i;
@@ -470,6 +472,7 @@ void ASW_DropTest_f()
 		if ( event )
 		{
 			event->SetInt( "userid", pPlayer->GetUserID() );
+			event->SetInt( "entindex", pWeapon ? pWeapon->entindex() : 0 );
 
 			gameeventmanager->FireEvent( event );
 		}
@@ -492,12 +495,14 @@ void ASW_DropExtraf()
         if (pPlayer->GetFlags() & FL_FROZEN)
             return;
 
+		CBaseCombatWeapon* pWeapon = pMarine->GetWeapon(2);
         pMarine->DropWeapon(2, true);
 
         IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
         if ( event )
         {
             event->SetInt( "userid", pPlayer->GetUserID() );
+			event->SetInt( "entindex", pWeapon ? pWeapon->entindex() : 0 );
 
             gameeventmanager->FireEvent( event );
         }

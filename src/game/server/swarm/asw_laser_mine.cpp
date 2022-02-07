@@ -211,6 +211,14 @@ void CASW_Laser_Mine::SpawnFlipThink()
 			EmitSound("ASW_Mine.Lay");
 
 			m_bMineActive = true;
+
+			IGameEvent* event = gameeventmanager->CreateEvent("laser_mine_active");
+			if (event)
+			{
+				event->SetInt( "entindex", this->entindex() );
+				event->SetInt( "marine", ( GetOwnerEntity() ? GetOwnerEntity()->entindex() : 0 ) );
+				gameeventmanager->FireEvent( event );
+			}
 			return;
 		}
 	}

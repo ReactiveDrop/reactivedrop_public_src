@@ -163,6 +163,15 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 	if( pCreatorWeapon )
 		pGrenade->m_CreatorWeaponClass = pCreatorWeapon->Classify();
 
+	IGameEvent* event = gameeventmanager->CreateEvent("cluster_grenade_create");
+	if (event)
+	{
+		event->SetInt("entindex", pGrenade->entindex());
+		event->SetInt("marine", pOwner ? pOwner->entindex() : 0);
+		event->SetInt("weapon", pCreatorWeapon ? pCreatorWeapon->entindex() : 0);
+		gameeventmanager->FireEvent(event);
+	}
+
 	// hack attack!  for some reason, grenades refuse to be affect by damage forces until they're actually dead
 	//  so we kill it immediately.
 	pGrenade->TakeDamage(CTakeDamageInfo(pGrenade, pGrenade, Vector(0, 0, 1), position, 10, DMG_SLASH));
