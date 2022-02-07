@@ -362,8 +362,8 @@ void CExperienceReport::Init()
 		if ( !g_PR->IsConnected( i ) )
 			continue;
 
-		C_ASW_Player *pOtherPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( i ) );
-		if ( pOtherPlayer == pPlayer )
+		C_ASW_Player *pOtherPlayer = assert_cast<C_ASW_Player*>( UTIL_PlayerByIndex( i ) );
+		if ( !pOtherPlayer || pOtherPlayer == pPlayer )
 			continue;
 
 		pOtherPlayer->AwardExperience();
