@@ -901,17 +901,17 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 		///C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
 		int iAchievement = event->GetInt( "achievement" );
 
+		if ( !hudChat || !pPlayer )
+			return;
+
 		if ( pPlayer == C_ASW_Player::GetLocalASWPlayer() )
 		{
 			m_aAchievementsEarned.AddToTail( iAchievement );
 		}
 		else
 		{
-			pPlayer->m_aNonLocalPlayerAchievementsEarned.AddToTail();
+			pPlayer->m_aNonLocalPlayerAchievementsEarned.AddToTail( iAchievement );
 		}
-
-		if ( !hudChat || !pPlayer )
-			return;
 
 		if ( !IsInCommentaryMode() )
 		{
