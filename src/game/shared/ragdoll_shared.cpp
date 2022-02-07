@@ -993,11 +993,14 @@ void CRagdollLRURetirement::Update( float frametime ) // Non-episodic version
 
 		//Msg(" Removing ragdoll %s due to forced retire time of %f (now = %f)\n", pRagdoll->GetModelName(), m_LRU[i].GetForcedRetireTime(), gpGlobals->curtime );
 
+		if ( pRagdoll )
+		{
 #ifdef CLIENT_DLL
-		pRagdoll->SUB_Remove();
+			pRagdoll->SUB_Remove();
 #else
-		pRagdoll->SUB_StartFadeOut( 0 );
+			pRagdoll->SUB_StartFadeOut( 0 );
 #endif
+		}
 		m_LRU.Remove(i);
 	}
 
