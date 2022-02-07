@@ -618,7 +618,7 @@ void CParticleProperty::UpdateControlPoint( ParticleEffectList_t *pEffect, int i
 				{
 					bWarned = true;
 					DevWarning( "Attempted to attach particle effect %s to an unknown attachment on entity %s\n",
-						pEffect->pParticleEffect->m_pDef->GetName(), pAnimating->GetClassname() );
+						pEffect->pParticleEffect->m_pDef->GetName(), pPoint->hEntity->GetClassname() );
 				}
 			}
 			if ( !bValid )
