@@ -505,7 +505,7 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 }
 
 ConVar g_ragdoll_fadespeed( "g_ragdoll_fadespeed", "600" );
-ConVar g_ragdoll_lvfadespeed( "g_ragdoll_lvfadespeed", "100" );
+ConVar g_ragdoll_lvfadespeed( "g_ragdoll_lvfadespeed", "0" );
 
 void C_ClientRagdoll::OnPVSStatusChanged( bool bInPVS )
 {
@@ -647,7 +647,10 @@ void C_ClientRagdoll::Release( void )
 	}
 	ClientEntityList().RemoveEntity( GetClientHandle() );
 
-	partition->Remove( PARTITION_CLIENT_SOLID_EDICTS | PARTITION_CLIENT_RESPONSIVE_EDICTS | PARTITION_CLIENT_NON_STATIC_EDICTS, CollisionProp()->GetPartitionHandle() );
+	if ( CollisionProp()->GetPartitionHandle() != PARTITION_INVALID_HANDLE )
+	{
+		partition->Remove( PARTITION_CLIENT_SOLID_EDICTS | PARTITION_CLIENT_RESPONSIVE_EDICTS | PARTITION_CLIENT_NON_STATIC_EDICTS, CollisionProp()->GetPartitionHandle() );
+	}
 	RemoveFromLeafSystem();
 
 	BaseClass::Release();

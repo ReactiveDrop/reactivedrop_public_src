@@ -416,16 +416,20 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 			pRagdoll->pszGibParticleEffect = GetRagdollGibParticleEffectName();
 		}
 
+		int noNetEnts = ClientEntityList().NumberOfEntities(true) - ClientEntityList().NumberOfEntities(false); //client ents with nonnetworkable - without nonnetworkable
+
 		if ( m_bOnFire.Get() )
 		{
-			pRagdoll->AddFlag( FL_ONFIRE );
-
-			CNewParticleEffect	*pBurningEffect = pRagdoll->ParticleProp()->Create( "ent_on_fire", PATTACH_ABSORIGIN_FOLLOW );
-			if (pBurningEffect)
+			if (noNetEnts <= 64) //Mad Orange. This fixes crash due to too many particles with grenade explosion. Tested threshold value is 91, but lets limit it with 64
 			{
-				Vector vecOffest1 = (pRagdoll->WorldSpaceCenter() - pRagdoll->GetAbsOrigin()) + Vector( 0, 0, 16 );
-				pPlayer->ParticleProp()->AddControlPoint( pBurningEffect, 1, pRagdoll, PATTACH_ABSORIGIN_FOLLOW, NULL, vecOffest1 );
-			}			
+				pRagdoll->AddFlag(FL_ONFIRE);
+				CNewParticleEffect	*pBurningEffect = pRagdoll->ParticleProp()->Create("ent_on_fire", PATTACH_ABSORIGIN_FOLLOW);
+				if (pBurningEffect)
+				{
+					Vector vecOffest1 = (pRagdoll->WorldSpaceCenter() - pRagdoll->GetAbsOrigin()) + Vector(0, 0, 16);
+					pPlayer->ParticleProp()->AddControlPoint(pBurningEffect, 1, pRagdoll, PATTACH_ABSORIGIN_FOLLOW, NULL, vecOffest1);
+				}
+			}
 		}
 		else
 		{
@@ -446,38 +450,41 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 				Vector vecForward, vecRight, vecUp;
 				AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
 
-				const char *pchEffectName = NULL;
-
-				switch ( m_nDeathStyle )
+				if (noNetEnts <= 64) //Mad Orange. This fixes crash due to too many particles with grenade explosion. Tested threshold value is 91, but lets limit it with 64
 				{
-				case kDIE_TUMBLEGIB:
-				case kDIE_RAGDOLLFADE:
-					pchEffectName = GetSmallDeathParticleEffectName();
-					break;
+					const char *pchEffectName = NULL;
 
-				case kDIE_INSTAGIB:
-				case kDIE_BREAKABLE:
-					pchEffectName = GetBigDeathParticleEffectName();
-					break;
+					switch (m_nDeathStyle)
+					{
+					case kDIE_TUMBLEGIB:
+					case kDIE_RAGDOLLFADE:
+						pchEffectName = GetSmallDeathParticleEffectName();
+						break;
 
-				default:
-					pchEffectName = GetDeathParticleEffectName();
-					break;
-				}
+					case kDIE_INSTAGIB:
+					case kDIE_BREAKABLE:
+						pchEffectName = GetBigDeathParticleEffectName();
+						break;
 
-				CUtlReference< CNewParticleEffect > pEffect;
-				pEffect = pPlayer->ParticleProp()->Create( pchEffectName, PATTACH_ABSORIGIN_FOLLOW );
+					default:
+						pchEffectName = GetDeathParticleEffectName();
+						break;
+					}
 
-				if ( pEffect )
-				{
-					pPlayer->ParticleProp()->AddControlPoint( pEffect, 1, pRagdoll, PATTACH_CUSTOMORIGIN );
-					pEffect->SetControlPoint( 1, WorldSpaceCenter() );//origin - pMarine->GetAbsOrigin()
-					pEffect->SetControlPointOrientation( 1, vecForward, vecRight, vecUp );
-					pEffect->SetControlPointEntity( 0, pRagdoll );
-				}
-				else
-				{
-					Warning( "Could not create effect for alien death: %s", pchEffectName );
+					CUtlReference< CNewParticleEffect > pEffect;
+					pEffect = pPlayer->ParticleProp()->Create(pchEffectName, PATTACH_ABSORIGIN_FOLLOW);
+
+					if (pEffect)
+					{
+						pPlayer->ParticleProp()->AddControlPoint(pEffect, 1, pRagdoll, PATTACH_CUSTOMORIGIN);
+						pEffect->SetControlPoint(1, WorldSpaceCenter());//origin - pMarine->GetAbsOrigin()
+						pEffect->SetControlPointOrientation(1, vecForward, vecRight, vecUp);
+						pEffect->SetControlPointEntity(0, pRagdoll);
+					}
+					else
+					{
+						Warning("Could not create effect for alien death: %s", pchEffectName);
+					}
 				}
 			}
 

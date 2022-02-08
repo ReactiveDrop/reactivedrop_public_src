@@ -222,6 +222,9 @@ static cache_ragdoll_t *ParseRagdollIntoCache( CStudioHdr *pStudioHdr, vcollide_
 	int solidCount = 0;
 	cache_ragdoll_t cache;
 	V_memset( &cache, 0, sizeof(cache) );
+
+	ragdollcollisionrules_t rules;
+
 	while ( !pParse->Finished() )
 	{
 		const char *pBlock = pParse->GetCurrentBlockName();
@@ -263,7 +266,7 @@ static cache_ragdoll_t *ParseRagdollIntoCache( CStudioHdr *pStudioHdr, vcollide_
 		}
 		else if ( !strcmpi( pBlock, "collisionrules" ) )
 		{
-			ragdollcollisionrules_t rules;
+			//ragdollcollisionrules_t rules; //this way rule defined only in this scope
 			IPhysicsCollisionSet *pSet = physics->FindOrCreateCollisionSet( modelIndex, pCollide->solidCount );
 			rules.Defaults(physics, pSet);
 			pParse->ParseCollisionRules( &rules, NULL );
@@ -291,8 +294,14 @@ static void RagdollCreateObjects( IPhysicsEnvironment *pPhysEnv, ragdoll_t &ragd
 	ragdoll.allowStretch = params.allowStretch;
 	memset( ragdoll.list, 0, sizeof(ragdoll.list) );
 	memset( &ragdoll.animfriction, 0, sizeof(ragdoll.animfriction) );
+
+	if (!params.pCollide)
+	{
+		Assert(false);
+		return;
+	}
 	
-	if ( !params.pCollide || params.pCollide->solidCount > RAGDOLL_MAX_ELEMENTS )
+	if (params.pCollide->solidCount > RAGDOLL_MAX_ELEMENTS )
 	{
 		Warning( "Ragdoll solid count %d exceeds maximum limit of %d - Ragdoll not created", params.pCollide->solidCount, RAGDOLL_MAX_ELEMENTS );
 		Assert( false );
@@ -758,6 +767,10 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 		return false;
 	*/
 
+	// Bail if we have a null ragdoll pointer.
+	if (!pRagdoll->m_pRagdoll)
+		return true;
+
 	Vector vMins, vMaxs;
 		
 	Vector origin = pRagdoll->m_pRagdoll->GetRagdollOrigin();
@@ -1044,23 +1057,29 @@ void CRagdollLRURetirement::Update( float frametime ) // Non-episodic version
 	//////////////////////////////
 	// not episodic -- this is the original mechanism
 
-	for ( i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = next )
+	for (i = m_LRU.Head(); i < m_LRU.InvalidIndex(); i = next)
 	{
-		if ( m_LRU.Count() <=  iMaxRagdollCount )
+		if (m_LRU.Count() <= iMaxRagdollCount)
 			break;
 
 		next = m_LRU.Next(i);
 
-		CBaseAnimating *pRagdoll = m_LRU[i].Get();
+		CBaseAnimating* pRagdoll = m_LRU[i].Get();
 
 		//Just ignore it until we're done burning/dissolving.
-		if ( pRagdoll && pRagdoll->GetEffectEntity() )
+		if (pRagdoll && pRagdoll->GetEffectEntity())
 			continue;
 
 #ifdef CLIENT_DLL
-		pRagdoll->SUB_Remove();
+		if (pRagdoll)
+		{
+			pRagdoll->SUB_Remove();
+		}
 #else
-		pRagdoll->SUB_StartFadeOut( 0 );
+		if (pRagdoll)
+		{
+			pRagdoll->SUB_StartFadeOut(0);
+		}
 #endif
 		m_LRU.Remove(i);
 	}
@@ -1133,42 +1152,44 @@ C_EntityDissolve *DissolveEffect( C_BaseAnimating *pTarget, float flTime )
 {
 	C_EntityDissolve *pDissolve = new C_EntityDissolve;
 
+	if ( !pDissolve )
+		return NULL;
+
 	if ( pDissolve->InitializeAsClientEntity( "sprites/blueglow1.vmt", false ) == false )
 	{
 		UTIL_Remove( pDissolve );
 		return NULL;
 	}
 
-	if ( pDissolve != NULL )
-	{
-		pTarget->AddFlag( FL_DISSOLVING );
-		pDissolve->SetParent( pTarget );
-		pDissolve->OnDataChanged( DATA_UPDATE_CREATED );
-		pDissolve->SetAbsOrigin( pTarget->GetAbsOrigin() );
+	pTarget->AddFlag( FL_DISSOLVING );
+	pDissolve->SetParent( pTarget );
+	pDissolve->OnDataChanged( DATA_UPDATE_CREATED );
+	pDissolve->SetAbsOrigin( pTarget->GetAbsOrigin() );
 
-		pDissolve->m_flStartTime = flTime;
-		pDissolve->m_flFadeOutStart = DEFAULT_FADE_START;
-		pDissolve->m_flFadeOutModelStart = DEFAULT_MODEL_FADE_START;
-		pDissolve->m_flFadeOutModelLength = DEFAULT_MODEL_FADE_LENGTH;
-		pDissolve->m_flFadeInLength = DEFAULT_FADEIN_LENGTH;
-		
-		pDissolve->m_nDissolveType = 0;
-		pDissolve->m_flNextSparkTime = 0.0f;
-		pDissolve->m_flFadeOutLength = 0.0f;
-		pDissolve->m_flFadeInStart = 0.0f;
+	pDissolve->m_flStartTime = flTime;
+	pDissolve->m_flFadeOutStart = DEFAULT_FADE_START;
+	pDissolve->m_flFadeOutModelStart = DEFAULT_MODEL_FADE_START;
+	pDissolve->m_flFadeOutModelLength = DEFAULT_MODEL_FADE_LENGTH;
+	pDissolve->m_flFadeInLength = DEFAULT_FADEIN_LENGTH;
 
-		// Let this entity know it needs to delete itself when it's done
-		pDissolve->SetServerLinkState( false );
-		pTarget->SetEffectEntity( pDissolve );
-	}
+	pDissolve->m_nDissolveType = 0;
+	pDissolve->m_flNextSparkTime = 0.0f;
+	pDissolve->m_flFadeOutLength = 0.0f;
+	pDissolve->m_flFadeInStart = 0.0f;
+
+	// Let this entity know it needs to delete itself when it's done
+	pDissolve->SetServerLinkState( false );
+	pTarget->SetEffectEntity( pDissolve );
 
 	return pDissolve;
-
 }
 
 C_EntityFlame *FireEffect( C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, float *flScaleEnd, float *flTimeStart, float *flTimeEnd )
 {
 	C_EntityFlame *pFire = new C_EntityFlame;
+
+	if ( !pFire )
+		return NULL;
 
 	if ( pFire->InitializeAsClientEntity( NULL, false ) == false )
 	{
@@ -1176,37 +1197,34 @@ C_EntityFlame *FireEffect( C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, 
 		return NULL;
 	}
 
-	if ( pFire != NULL )
-	{
-		pFire->RemoveFromLeafSystem();
+	pFire->RemoveFromLeafSystem();
 		
-		pTarget->AddFlag( FL_ONFIRE );
-		pFire->SetParent( pTarget );
-		pFire->m_hEntAttached = (C_BaseEntity *) pTarget;
+	pTarget->AddFlag( FL_ONFIRE );
+	pFire->SetParent( pTarget );
+	pFire->m_hEntAttached = (C_BaseEntity *) pTarget;
 
-		pFire->OnDataChanged( DATA_UPDATE_CREATED );
-		pFire->SetAbsOrigin( pTarget->GetAbsOrigin() );
+	pFire->OnDataChanged( DATA_UPDATE_CREATED );
+	pFire->SetAbsOrigin( pTarget->GetAbsOrigin() );
 
 #ifdef HL2_EPISODIC
-		if ( pServerFire )
+	if ( pServerFire )
+	{
+		if ( pServerFire->IsEffectActive(EF_DIMLIGHT) )
 		{
-			if ( pServerFire->IsEffectActive(EF_DIMLIGHT) )
-			{
-				pFire->AddEffects( EF_DIMLIGHT );
-			}
-			if ( pServerFire->IsEffectActive(EF_BRIGHTLIGHT) )
-			{
-				pFire->AddEffects( EF_BRIGHTLIGHT );
-			}
+			pFire->AddEffects( EF_DIMLIGHT );
 		}
+		if ( pServerFire->IsEffectActive(EF_BRIGHTLIGHT) )
+		{
+			pFire->AddEffects( EF_BRIGHTLIGHT );
+		}
+	}
 #endif
 
-		//Play a sound
-		CPASAttenuationFilter filter( pTarget );
-		pTarget->EmitSound( filter, pTarget->GetSoundSourceIndex(), "General.BurningFlesh" );
+	//Play a sound
+	CPASAttenuationFilter filter( pTarget );
+	pTarget->EmitSound( filter, pTarget->GetSoundSourceIndex(), "General.BurningFlesh" );
 
-		pFire->SetNextClientThink( gpGlobals->curtime + 7.0f );
-	}
+	pFire->SetNextClientThink( gpGlobals->curtime + 7.0f );
 
 	return pFire;
 }
@@ -1218,10 +1236,10 @@ void C_BaseAnimating::IgniteRagdoll( C_BaseAnimating *pSource )
 	if ( pChild )
 	{
 		C_EntityFlame *pFireChild = dynamic_cast<C_EntityFlame *>( pChild );
-		C_ClientRagdoll *pRagdoll = dynamic_cast< C_ClientRagdoll * > ( this );
 
-		if ( pFireChild )
+		if ( pFireChild && IsClientRagdoll() )
 		{
+			C_ClientRagdoll* pRagdoll = assert_cast<C_ClientRagdoll*> ( this );
 			pRagdoll->SetEffectEntity ( FireEffect( pRagdoll, pFireChild, NULL, NULL, NULL ) );
 		}
 	}
@@ -1239,10 +1257,9 @@ void C_BaseAnimating::TransferDissolveFrom( C_BaseAnimating *pSource )
 
 		if ( pDissolveChild )
 		{
-			C_ClientRagdoll *pRagdoll = dynamic_cast< C_ClientRagdoll * > ( this );
-
-			if ( pRagdoll )
+			if ( IsClientRagdoll() )
 			{
+				C_ClientRagdoll* pRagdoll = assert_cast<C_ClientRagdoll*> ( this );
 				pRagdoll->m_flEffectTime = pDissolveChild->m_flStartTime;
 
 				C_EntityDissolve *pDissolve = DissolveEffect( pRagdoll, pRagdoll->m_flEffectTime );
