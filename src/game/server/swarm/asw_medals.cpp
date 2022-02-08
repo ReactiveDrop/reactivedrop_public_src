@@ -198,9 +198,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	if ( !pMR || !pGameResource )
 		return;
 
-	if ( pGameResource->IsOfflineGame() )
-		return;
-
 	if ( !pMR->IsInhabited() )
 		return;
 
