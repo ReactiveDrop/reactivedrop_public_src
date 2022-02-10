@@ -128,7 +128,7 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 
 unsigned int CASW_Gas_Grenade_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
