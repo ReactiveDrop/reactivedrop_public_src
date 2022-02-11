@@ -144,6 +144,14 @@ void CNB_Lobby_Row::UpdateDetails()
 
 	if ( m_nLobbySlot == -1 || !Briefing()->IsLobbySlotOccupied( m_nLobbySlot ) )
 	{
+		m_pXPBar->SetVisible( false );
+		m_pLevelLabel->SetVisible( false );
+		m_pPromotionIcon->SetVisible( false );
+		m_pNameDropdown->SetVisible( false );
+		m_pAvatarImage->SetVisible( false );
+		m_pClassLabel->SetVisible( false );
+		m_pClassImage->SetVisible( false );
+
 		if ( Briefing()->IsOfflineGame() )
 		{
 			// in singleplayer, empty slots show the empty portrait button
@@ -166,14 +174,10 @@ void CNB_Lobby_Row::UpdateDetails()
 			}
 			m_pPortraitButton->SetVisible( true );
 		}
-		m_pXPBar->SetVisible( false );
-		m_pLevelLabel->SetVisible( false );
-		m_pPromotionIcon->SetVisible( false );
-		m_pNameDropdown->SetVisible( false );
-		m_pAvatarImage->SetVisible( false );
-		m_pClassLabel->SetVisible( false );
-		m_pClassImage->SetVisible( false );
-		return;
+		else
+		{
+			return;
+		}
 	}
 
 	color32 invisible;
