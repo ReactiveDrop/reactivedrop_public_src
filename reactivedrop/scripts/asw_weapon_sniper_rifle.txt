@@ -1,0 +1,53 @@
+// Alien Swarm Sniper Rifle
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_sniper_rifle"
+	"viewmodel"			"models/weapons/marksmanrifle/marksmanrifle.mdl"
+	"playermodel"			"models/weapons/marksmanrifle/marksmanrifle.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"12"
+	"default_clip"			"12"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_SNIPER"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"reload_time"			"2.0"
+	"base_damage"			"65"
+	"fire_rate"				"1.2"
+	"equipicon"			"swarm/EquipIcons/EquipSniperRifle"
+	"equiplongname"			"#asw_weaponl_sniper_rifle"
+	"equipdescription1"		"#asw_wdesc_sniper_rifle"
+	"altfiretext"			"#asw_weapon_sniper_rifle_altfire"
+	"attributestext"		"#asw_weapon_sniper_rifle_attributes"
+	
+	// flinching
+	"FlinchChance"              "0.20"
+	"StoppingPowerFlinchBonus"  "0.10"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"				// weapon switch
+
+		"single_shot"		"ASW_Weapon_Sniper_Rifle.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_Sniper_Rifle.Single"		// sound for other marines
+	}
+}
