@@ -138,7 +138,36 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 
 	// player has used this item	
 	if ( ASW_GiveAmmo( pMarine, 98, "ASW_R", this ) )
-	{			
+	{
+		//add rifle grenade too. active rifle gets max priority
+		bool bFilledActive = false;
+		CBaseCombatWeapon* pActive = pMarine->GetActiveWeapon();
+		if ( pActive && ( pActive->Classify() == CLASS_ASW_RIFLE || pActive->Classify() == CLASS_ASW_PRIFLE) )
+		{
+			if ( pActive->Clip2() < pActive->GetMaxClip2() )
+			{
+				pActive->m_iClip2++;
+				bFilledActive = true;
+			}
+		}
+
+		if (!bFilledActive)
+		{
+			CBaseCombatWeapon* pWeapon;
+			for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
+			{
+				pWeapon = pMarine->GetWeapon(i);
+				if ( pWeapon == pActive )
+					continue;
+				if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_RIFLE || pWeapon->Classify() == CLASS_ASW_PRIFLE ) )
+				{
+					if (pWeapon->Clip2() < pWeapon->GetMaxClip2())
+					{
+						pWeapon->m_iClip2++;
+					}
+				}
+			}
+		}
 		UTIL_Remove( this );	
 	}
 }
@@ -250,7 +279,41 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHold
 		return;
 
 	if (ASW_GiveAmmo( pMarine, 14, "ASW_ASG", this ))
-	{			
+	{	
+		//This does not seem to work before we fill a full clip with it(more than one clip on a gun) or force reload
+		//so with 14 for vindi primary as above we do it
+		//pMarine->GiveAmmo(1, GetAmmoDef()->Index("ASW_ASG_G"), true);
+		//use clip manipulation instead
+		
+		//active vindicator gets max priority
+		bool bFilledActive = false;
+		CBaseCombatWeapon* pActive = pMarine->GetActiveWeapon();
+		if ( pActive && pActive->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
+		{
+			if ( pActive->Clip2() < pActive->GetMaxClip2() )
+			{
+				pActive->m_iClip2++;
+				bFilledActive = true;
+			}
+		}
+
+		if (!bFilledActive)
+		{
+			CBaseCombatWeapon* pWeapon;
+			for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
+			{
+				pWeapon = pMarine->GetWeapon(i);
+				if ( pWeapon == pActive )
+					continue;
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
+				{
+					if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
+					{
+						pWeapon->m_iClip2++;
+					}
+				}
+			}
+		}
 		UTIL_Remove(this);	
 	}
 }
