@@ -103,7 +103,7 @@ ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_gre
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
-ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE, "Attach unactive weapon model to marine's back");
+ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE | FCVAR_REPLICATED, "Attach unactive weapon model to marine's back");
 ConVar rda_marine_backpack_alt_position("rda_marine_backpack_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
 
 ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");
@@ -1924,6 +1924,7 @@ void CASW_Marine::ApplyPassiveArmorEffects( CTakeDamageInfo &dmgInfo ) RESTRICT
 	}
 	if ( pArmor )
 	{
+		pArmor->LayerRemoveOnDamage();
 		int iDamageBefore = dmgInfo.GetDamage();
 		dmgInfo.ScaleDamage( pArmor->GetDamageScaleFactor() );
 		int iDamageReduction = iDamageBefore - dmgInfo.GetDamage();
@@ -2221,7 +2222,8 @@ void CASW_Marine::ASWThinkEffects()
 	UpdateCombatStatus();
 
 	// general timer for healing/infestation
-	if ( (m_bSlowHeal || IsInfested()) && GetHealth() > 0 )
+	int health = GetHealth();
+	if ( (m_bSlowHeal || IsInfested()) && health > 0 )
 	{
 		while (gpGlobals->curtime >= m_fNextSlowHealTick)
 		{
@@ -2230,34 +2232,43 @@ void CASW_Marine::ASWThinkEffects()
 				m_fNextSlowHealTick = gpGlobals->curtime;
 			}
 			m_fNextSlowHealTick += ( ASW_MARINE_HEALTICK_RATE * ( 1.0f / m_flHealRateScale ) );
-			// check slow heal isn't over out cap
-			if (m_bSlowHeal)
-			{
-					//m_iSlowHealAmount = GetMaxHealth() - GetHealth();
-				if ( GetHealth() >= GetMaxHealth() && !IsInfested() )		// clear all slow healing once we're at max health
-				{
-					ASWFailAdvice()->OnMarineOverhealed( m_iSlowHealAmount );
-					m_iSlowHealAmount = 0;								//    (and not infested - infestation means we'll be constantly dropping health, so we can keep the heal around)
-				}
-				int amount = MIN(4, m_iSlowHealAmount);
 
-				if (GetHealth() + amount > GetMaxHealth())
-					amount = GetMaxHealth() - GetHealth();
+			if ( m_bSlowHeal )
+			{
+				int amount;
+				if ( m_bOverHealAllowed ) //only comes from medkit
+				{
+					amount = MIN(4, m_iSlowHealAmount);
+				}
+				else
+				{
+					// check slow heal isn't over out cap
+					if ( health >= GetMaxHealth() && !IsInfested() )	// clear all slow healing once we're at max health
+					{
+						ASWFailAdvice()->OnMarineOverhealed(m_iSlowHealAmount);
+						m_iSlowHealAmount = 0;							// (and not infested - infestation means we'll be constantly dropping health, so we can keep the heal around)
+					}
+					amount = MIN(4, m_iSlowHealAmount);
+
+					if ( health + amount > GetMaxHealth() )
+						amount = GetMaxHealth() - health;
+				}
 
 				if (asw_debug_marine_damage.GetBool())
 					Msg("SH %f: marine applied slow heal of %d\n", gpGlobals->curtime, amount);
 				// change the health
-				SetHealth(GetHealth() + amount);
+				SetHealth(health + amount);
 
-				if ( GetMarineResource() )
-				{
-					GetMarineResource()->m_TimelineHealth.RecordValue( GetHealth() );
-				}
+				CASW_Marine_Resource* pMR = GetMarineResource();
+				if (pMR)
+					pMR->m_TimelineHealth.RecordValue(health);
 
 				m_iSlowHealAmount -= amount;
 				if (m_iSlowHealAmount <= 0)
 				{
 					m_bSlowHeal = false;
+					if (m_bOverHealAllowed)
+						AllowOverHeal(false);
 				}
 			}
 

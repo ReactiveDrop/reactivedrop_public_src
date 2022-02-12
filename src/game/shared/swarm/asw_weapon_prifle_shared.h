@@ -24,6 +24,7 @@ public:
 
 	virtual const float GetAutoAimAmount() { return 0.26f; }
 	virtual const float GetAutoAimRadiusScale() { return 1.5f; }
+	virtual float GetFireRate();
 	virtual float GetWeaponDamage();
 	virtual void SecondaryAttack();
 

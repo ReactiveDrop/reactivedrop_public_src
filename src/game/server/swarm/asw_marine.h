@@ -610,6 +610,8 @@ public:
 	CNetworkVar(int, m_iSlowHealAmount);
 	float m_flHealRateScale;
 	float m_fNextSlowHealTick;
+	bool m_bOverHealAllowed;
+	void AllowOverHeal(bool state) { m_bOverHealAllowed = state; }
 	void MeleeBleed(CTakeDamageInfo* info);
 	void BecomeInfested(CASW_Alien* pAlien);
 	void CureInfestation(CASW_Marine *pHealer, float fCureFraction);

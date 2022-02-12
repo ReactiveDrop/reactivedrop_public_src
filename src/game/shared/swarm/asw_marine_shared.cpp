@@ -112,34 +112,20 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		m_bLastWeaponBeforeTempWasSecondary = GetActiveASWWeapon() == pWeaponSec;
 	}
 
+	//Orange. BaseClass::Weapon_Switch() overrides m_flNextPrimaryAttack of the pWeapon later in CBaseCombatWeapon::DefaultDeploy()
+	//So we have to calc delay before it and restore with ApplyWeaponSwitchTime(). 
+	//This way we respect switch time and used gun firerate (unlike it taken before from gun in another slot)
+	#define ASW_WEAPON_SWITCH_TIME 0.5f
+	float fSwitchDelay = ASW_WEAPON_SWITCH_TIME;
+	if ( pWeapon->m_flNextPrimaryAttack > gpGlobals->curtime )
+	{
+		fSwitchDelay = MIN( pWeapon->GetFireRate(), pWeapon->m_flNextPrimaryAttack.Get() - gpGlobals->curtime );
+		fSwitchDelay = MAX( ASW_WEAPON_SWITCH_TIME, fSwitchDelay );
+	}
+
 	if ( BaseClass::Weapon_Switch( pWeapon, viewmodelindex ) )
 	{
-#define ASW_WEAPON_SWITCH_TIME 0.5f
-		float fSwitchDelay = ASW_WEAPON_SWITCH_TIME;
-
-		// reactivedrop: 
-		// To prevent players using scripts that automatically switch weapons
-		// to increase fire rate. E.g. vindicator fire rate is 0.65 s, weapon 
-		// switch time is 0.5 s, players can equip dual vindicators and 
-		// shoot with 0.5 s rate by switching from one vindicator to another. 
-		// To prevent this we need to increase the weapon switch delay to 0.65 
-		// But only if the player switched right after firing(most likely
-		// using a script). 
-		// We also need to skip the situations when a reload occurs in current
-		// weapon and player switches to the next one. E.g. the switch delay 
-		// should not be higher then GetFireRate() and shouldn't be lower then 
-		// 0.5 switch delay 
 		CBaseCombatWeapon *pLast = GetLastWeaponSwitchedTo();
-		if ( pLast )
-		{
-			if ( pLast->m_flNextPrimaryAttack > gpGlobals->curtime )
-			{
-				fSwitchDelay = MIN( pLast->GetFireRate(),
-					pLast->m_flNextPrimaryAttack - gpGlobals->curtime );
-				fSwitchDelay = MAX( ASW_WEAPON_SWITCH_TIME, fSwitchDelay );
-			}
-		}
-
 		if ( pWeapon != pLast && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
 		{
 #ifdef GAME_DLL

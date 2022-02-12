@@ -871,7 +871,7 @@ int CASWHudCrosshair::GetCurrentCrosshair( int x, int y )
 	return m_nCrosshairTexture;
 }
 
-ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "100" );
+ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "52", FCVAR_CHEAT );
 
 void CASWHudCrosshair::DrawSniperScope( int x, int y )
 {

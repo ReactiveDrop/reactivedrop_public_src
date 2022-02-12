@@ -41,6 +41,7 @@
 #include "asw_shareddefs.h"
 #include "asw_weapon_welder_shared.h"
 #include "asw_weapon_deagle_shared.h"
+#include "asw_weapon_sniper_rifle.h"
 #include "coordsize.h"
 #include "asw_trace_filter_door_crush.h"
 #include "asw_player.h"
@@ -1201,8 +1202,19 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 			{
 				CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
-				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_DEAGLE )
-					damage *= 0.4f; // deagle isn't a door killer gun
+				if (pWeapon)
+				{
+					if ( pWeapon->Classify() == CLASS_ASW_DEAGLE )
+					{
+						damage *= 0.4f; // deagle isn't a door killer gun
+					}
+					else if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
+					{
+						CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>(pWeapon);
+						if ( pSniper->IsZoomed() ) //zoomed sniper bonus damage does not affect doors
+							damage -= pSniper->GetZoomedDamageBonus();
+					}
+				}
 			}
 		}
 

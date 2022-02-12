@@ -7,6 +7,7 @@
 	#include "asw_marine.h"
 	#include "asw_player.h"
 	#include "cvisibilitymonitor.h"
+	#include "asw_weapon_sniper_rifle.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -108,6 +109,27 @@ int CASW_Prop_Laserable::OnTakeDamage(const CTakeDamageInfo &info)
 	else if (!(newInfo.GetDamageType() & DMG_ENERGYBEAM))
 	{
 		newInfo.ScaleDamage(0.5f);
+	}
+	else if (info.GetDamageType() & DMG_BULLET)
+	{
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if (pWeapon)
+			{
+				if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
+				{
+					CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>(pWeapon);
+					if ( pSniper->IsZoomed() ) //zoomed sniper bonus damage does not affect laserables
+					{
+						float damage = info.GetDamage();
+						damage -= pSniper->GetZoomedDamageBonus();
+						newInfo.SetDamage(damage);
+					}
+				}
+			}
+		}
 	}
 
 	if ( gpGlobals->curtime > m_fNextLaseredEventTime && ( newInfo.GetDamageType() & DMG_ENERGYBEAM ) != 0 )
