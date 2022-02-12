@@ -103,7 +103,7 @@ ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_gre
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
-ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE, "Attach unactive weapon model to marine's back");
+ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_NONE | FCVAR_REPLICATED, "Attach unactive weapon model to marine's back");
 ConVar rda_marine_backpack_alt_position("rda_marine_backpack_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
 
 ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");

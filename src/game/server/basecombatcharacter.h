@@ -336,7 +336,6 @@ public:
 
 	// VPHYSICS
 	virtual void			VPhysicsShadowCollision( int index, gamevcollisionevent_t *pEvent );
-	virtual void			VPhysicsUpdate( IPhysicsObject *pPhysics );
 	float					CalculatePhysicsStressDamage( vphysics_objectstress_t *pStressOut, IPhysicsObject *pPhysics );
 	void					ApplyStressDamage( IPhysicsObject *pPhysics, bool bRequireLargeObject );
 

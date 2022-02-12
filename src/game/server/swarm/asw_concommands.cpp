@@ -2096,7 +2096,7 @@ void HideBackPackModels()
 		}
 	}
 }
-ConCommand rda_hide_backpack("rda_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rda_marine_backpack 0", FCVAR_CHEAT);
+ConCommand rda_hide_backpack("rda_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rda_marine_backpack 0", FCVAR_NONE);
 
 void DrawBackPackModels()
 {
@@ -2126,4 +2126,4 @@ void DrawBackPackModels()
 		}
 	}
 }
-ConCommand rda_draw_backpack("rda_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rda_marine_backpack 1", FCVAR_CHEAT);
+ConCommand rda_draw_backpack("rda_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rda_marine_backpack 1", FCVAR_NONE);
