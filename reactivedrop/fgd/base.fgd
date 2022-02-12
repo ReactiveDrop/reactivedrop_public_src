@@ -2596,6 +2596,8 @@
 
 	LowPriority(boolean) : "Low Priority (can be replaced)" : 0
 
+	ApplyEntity(target_destination) : "Apply Entity" : : "An optional entity to apply the decal to.  If this is empty, the decal will locate the entity by tracing."
+
 	// Inputs
 	input Activate(void) : "Force the decal to apply itself to the world."
 ]
