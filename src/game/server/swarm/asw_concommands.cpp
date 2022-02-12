@@ -26,6 +26,7 @@
 
 // This file contains various debugging and cheat concommands
 
+ConVar rd_restart_mission_countdown("rd_restart_mission_countdown", "1", FCVAR_NONE, "If set to 0 there will be no 5 seconds countdown timer if leader chooses to restart mission");
 ConVar rd_allow_flashlight("rd_allow_flashlight", "0", FCVAR_CHEAT, "If set to 0 players cannot use asw_flashlight command");
 extern ConVar rd_allow_afk;
 
@@ -1825,7 +1826,7 @@ void asw_restart_mission_f()
 		return;
 	if (ASWGameRules())
 	{
-		if ( gpGlobals->maxClients > 1)
+		if ( gpGlobals->maxClients > 1 && rd_restart_mission_countdown.GetBool() )
 		{
 			ASWGameRules()->RestartMissionCountdown( pPlayer );
 		}
