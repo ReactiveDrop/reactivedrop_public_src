@@ -1924,6 +1924,7 @@ void CASW_Marine::ApplyPassiveArmorEffects( CTakeDamageInfo &dmgInfo ) RESTRICT
 	}
 	if ( pArmor )
 	{
+		pArmor->LayerRemoveOnDamage();
 		int iDamageBefore = dmgInfo.GetDamage();
 		dmgInfo.ScaleDamage( pArmor->GetDamageScaleFactor() );
 		int iDamageReduction = iDamageBefore - dmgInfo.GetDamage();
