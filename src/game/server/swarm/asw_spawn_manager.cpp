@@ -288,7 +288,15 @@ void CASW_Spawn_Manager::Update()
 	if ( m_pAliensToSpawn.Count() > 0 )
 	{
 		CASW_Spawn_Definition *pSpawn = m_pAliensToSpawn[0];
-		SpawnAlientAtRandomNode( pSpawn );
+		//DevMsg("Spawning at %f\n", gpGlobals->curtime);
+		if (!SpawnAlientAtRandomNode( pSpawn ))
+		{
+			char szSpawn[256];
+			Q_snprintf( szSpawn, sizeof( szSpawn ), "NPC { AlienClass %s }", "asw_drone" );
+			CASW_Spawn_Definition spawn( KeyValues::AutoDeleteInline( KeyValues::FromString( "WANDERER", szSpawn ) ) );
+
+			SpawnAlientAtRandomNode( &spawn );
+		}
 		m_pAliensToSpawn.Remove( 0 );
 	}
 }
