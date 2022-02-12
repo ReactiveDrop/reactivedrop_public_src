@@ -637,7 +637,7 @@ void CDefaultResponseSystem::DestroyCustomResponseSystems()
 static CDefaultResponseSystem defaultresponsesytem;
 IResponseSystem *g_pResponseSystem = &defaultresponsesytem;
 
-CON_COMMAND_F( rr_reloadresponsesystems, "Reload all response system scripts.", FCVAR_CHEAT )
+CON_COMMAND_F_SHARED( rr_reloadresponsesystems, "Reload all response system scripts.", FCVAR_CHEAT )
 {
 #ifdef GAME_DLL
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
