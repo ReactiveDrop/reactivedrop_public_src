@@ -2221,7 +2221,8 @@ void CASW_Marine::ASWThinkEffects()
 	UpdateCombatStatus();
 
 	// general timer for healing/infestation
-	if ( (m_bSlowHeal || IsInfested()) && GetHealth() > 0 )
+	int health = GetHealth();
+	if ( (m_bSlowHeal || IsInfested()) && health > 0 )
 	{
 		while (gpGlobals->curtime >= m_fNextSlowHealTick)
 		{
@@ -2230,34 +2231,43 @@ void CASW_Marine::ASWThinkEffects()
 				m_fNextSlowHealTick = gpGlobals->curtime;
 			}
 			m_fNextSlowHealTick += ( ASW_MARINE_HEALTICK_RATE * ( 1.0f / m_flHealRateScale ) );
-			// check slow heal isn't over out cap
-			if (m_bSlowHeal)
-			{
-					//m_iSlowHealAmount = GetMaxHealth() - GetHealth();
-				if ( GetHealth() >= GetMaxHealth() && !IsInfested() )		// clear all slow healing once we're at max health
-				{
-					ASWFailAdvice()->OnMarineOverhealed( m_iSlowHealAmount );
-					m_iSlowHealAmount = 0;								//    (and not infested - infestation means we'll be constantly dropping health, so we can keep the heal around)
-				}
-				int amount = MIN(4, m_iSlowHealAmount);
 
-				if (GetHealth() + amount > GetMaxHealth())
-					amount = GetMaxHealth() - GetHealth();
+			if ( m_bSlowHeal )
+			{
+				int amount;
+				if ( m_bOverHealAllowed ) //only comes from medkit
+				{
+					amount = MIN(4, m_iSlowHealAmount);
+				}
+				else
+				{
+					// check slow heal isn't over out cap
+					if ( health >= GetMaxHealth() && !IsInfested() )	// clear all slow healing once we're at max health
+					{
+						ASWFailAdvice()->OnMarineOverhealed(m_iSlowHealAmount);
+						m_iSlowHealAmount = 0;							// (and not infested - infestation means we'll be constantly dropping health, so we can keep the heal around)
+					}
+					amount = MIN(4, m_iSlowHealAmount);
+
+					if ( health + amount > GetMaxHealth() )
+						amount = GetMaxHealth() - health;
+				}
 
 				if (asw_debug_marine_damage.GetBool())
 					Msg("SH %f: marine applied slow heal of %d\n", gpGlobals->curtime, amount);
 				// change the health
-				SetHealth(GetHealth() + amount);
+				SetHealth(health + amount);
 
-				if ( GetMarineResource() )
-				{
-					GetMarineResource()->m_TimelineHealth.RecordValue( GetHealth() );
-				}
+				CASW_Marine_Resource* pMR = GetMarineResource();
+				if (pMR)
+					pMR->m_TimelineHealth.RecordValue(health);
 
 				m_iSlowHealAmount -= amount;
 				if (m_iSlowHealAmount <= 0)
 				{
 					m_bSlowHeal = false;
+					if (m_bOverHealAllowed)
+						AllowOverHeal(false);
 				}
 			}
 
