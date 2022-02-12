@@ -426,7 +426,7 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 			pRagdoll->pszGibParticleEffect = GetRagdollGibParticleEffectName();
 		}
 
-		int noNetEnts = ClientEntityList().NumberOfEntities(true) - ClientEntityList().NumberOfEntities(false); //client ents with nonnetworkable - without nonnetworkable
+		//int noNetEnts = ClientEntityList().NumberOfEntities(true) - ClientEntityList().NumberOfEntities(false); //client ents with nonnetworkable - without nonnetworkable
 
 		if ( m_bOnFire.Get() )
 		{
