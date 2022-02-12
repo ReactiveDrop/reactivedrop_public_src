@@ -24,7 +24,7 @@ WeaponData
 		
 	// asw properties
 	"reload_time"			"2.0"
-	"base_damage"			"5"
+	"base_damage"			"7"
 	"fire_rate"				"0.07"
 	"equipicon"			"swarm/EquipIcons/EquipPRifle"
 	"equiplongname"			"#asw_weaponl_prifle"
