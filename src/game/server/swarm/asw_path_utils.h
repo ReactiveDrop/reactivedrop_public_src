@@ -12,6 +12,7 @@ class CASW_Path_Utils
 {
 public:
 	AI_Waypoint_t *BuildRoute( const Vector &vStart, const Vector &vEnd, CBaseEntity *pTarget, float goalTolerance, Navigation_t curNavType = NAV_NONE, int nBuildFlags = 0 );
+	AI_Waypoint_t *BuildRouteForHull( const Vector &vStart, const Vector &vEnd, CBaseEntity *pTarget, float goalTolerance, int nHull, Navigation_t curNavType = NAV_NONE, int nBuildFlags = 0 );
 	void DeleteRoute( AI_Waypoint_t *pWaypointList );
 	AI_Waypoint_t *GetLastRoute() { return m_pLastRoute; }
 	void DebugDrawRoute( const Vector &vecStartPos, AI_Waypoint_t *pWaypoint );

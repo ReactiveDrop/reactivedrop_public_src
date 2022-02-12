@@ -73,6 +73,7 @@ public:
 	bool SpawnAlienAt( CASW_Spawn_Definition *pSpawn, const Vector & vecPos, const QAngle & angle, bool bAllowSpawner = false );
 
 	bool ValidSpawnPoint( const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround = true, float flMarineNearDistance = 0 );
+	bool ValidHordeShiftedSpawnPoint( const Vector &vecOrigPos, const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround = true );
 	bool LineBlockedByGeometry( const Vector &vecSrc, const Vector &vecEnd );
 	CASW_Spawner *FindAvailableSpawner( CASW_Spawn_NPC *pNPC, const Vector & vecPos );
 	

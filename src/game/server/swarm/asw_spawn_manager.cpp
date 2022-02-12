@@ -77,10 +77,10 @@ ASW_Alien_Class_Entry g_Aliens[]=
 	ASW_Alien_Class_Entry( "asw_harvester", HULL_HUMAN ),
 	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY ),
 	ASW_Alien_Class_Entry( "asw_queen", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_boomer", HULL_HUMAN ),
+	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE ),
 	ASW_Alien_Class_Entry( "asw_ranger", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "asw_shaman", HULL_LARGE ),
+	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT ),
+	ASW_Alien_Class_Entry( "asw_shaman", HULL_MEDIUM ),
 	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
 	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
 	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE ),
@@ -288,8 +288,8 @@ void CASW_Spawn_Manager::Update()
 	if ( m_pAliensToSpawn.Count() > 0 )
 	{
 		CASW_Spawn_Definition *pSpawn = m_pAliensToSpawn[0];
-		if ( SpawnAlientAtRandomNode( pSpawn ) )
-			m_pAliensToSpawn.Remove( 0 );
+		SpawnAlientAtRandomNode( pSpawn );
+		m_pAliensToSpawn.Remove( 0 );
 	}
 }
 
@@ -313,6 +313,9 @@ void CASW_Spawn_Manager::AddHordeWanderer( CASW_Spawn_Definition *pSpawn )
 
 bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn )
 {
+	if ( pSpawn->m_NPCs.Count() < 1 )
+		return false;
+
 	UpdateCandidateNodes();
 
 	// decide if the alien is going to come from behind or in front
@@ -349,12 +352,13 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 			continue;
 
 		float flDistance = 0;
-		CASW_Marine *pMarine = UTIL_ASW_NearestMarine( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), flDistance );
+		const int WANDERER_HULL = pSpawn->m_NPCs[0]->m_pAlienClass->m_nHullType;
+		CASW_Marine *pMarine = UTIL_ASW_NearestMarine( pNode->GetPosition( WANDERER_HULL ), flDistance );
 		if ( !pMarine )
 			return false;
 
 		// check if there's a route from this node to the marine(s)
-		AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRoute( pNode->GetPosition( CANDIDATE_ALIEN_HULL ), pMarine->GetAbsOrigin(), NULL, 100 );
+		AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRouteForHull( pNode->GetPosition( WANDERER_HULL ), pMarine->GetAbsOrigin(), NULL, 100, WANDERER_HULL );
 		if ( !pRoute )
 		{
 			if ( asw_director_debug.GetBool() )
@@ -391,10 +395,26 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 			}
 			bTried = true;
 
+			// additional route check 
+			const int CURRENT_WANDERER_HULL = pNPC->m_pAlienClass->m_nHullType;
+			if ( WANDERER_HULL != CURRENT_WANDERER_HULL )
+			{
+				AI_Waypoint_t *pRoute2 = ASWPathUtils()->BuildRouteForHull( pNode->GetPosition( CURRENT_WANDERER_HULL ), pMarine->GetAbsOrigin(), NULL, 100, CURRENT_WANDERER_HULL );
+				if ( !pRoute2 )
+				{
+					if ( asw_director_debug.GetBool() )
+					{
+						NDebugOverlay::Cross3D( pNode->GetOrigin(), 10.0f, 255, 128, 0, true, 20.0f );
+					}
+					continue;
+				}
+				DeleteRoute( pRoute2 );
+			}
+
 			const Vector & vecMins = NAI_Hull::Mins( pNPC->m_pAlienClass->m_nHullType );
 			const Vector & vecMaxs = NAI_Hull::Maxs( pNPC->m_pAlienClass->m_nHullType );
 
-			Vector vecSpawnPos = pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ) + Vector( 0, 0, 32 );
+			Vector vecSpawnPos = pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ) + Vector( 0, 0, 23 );
 			if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
 			{
 				if ( SpawnAlienAt( pNPC, vecSpawnPos, vec3_angle, true ) )
@@ -825,7 +845,8 @@ int CASW_Spawn_Manager::SpawnAlienBatch( Alien szAlienClass, int iNumAliens, con
 			vecNewPos = vecPosition;
 			vecNewPos.x += x * flAlienWidth;
 			vecNewPos.y -= i * flAlienDepth;
-			if ( !LineBlockedByGeometry( vecPosition, vecNewPos) && ValidSpawnPoint( vecNewPos, vecMins, vecMaxs, bCheckGround, flMarinesBeyondDist ) )
+
+			if ( ValidHordeShiftedSpawnPoint( vecPosition, vecNewPos, vecMins, vecMaxs, true ) )
 			{
 				if ( SpawnAlienAt( szAlienClass, vecNewPos, angle ) )
 					iSpawned++;
@@ -838,7 +859,7 @@ int CASW_Spawn_Manager::SpawnAlienBatch( Alien szAlienClass, int iNumAliens, con
 			vecNewPos = vecPosition;
 			vecNewPos.x += x * flAlienWidth;
 			vecNewPos.y += i * flAlienDepth;
-			if ( !LineBlockedByGeometry( vecPosition, vecNewPos) && ValidSpawnPoint( vecNewPos, vecMins, vecMaxs, bCheckGround, flMarinesBeyondDist ) )
+			if ( ValidHordeShiftedSpawnPoint( vecPosition, vecNewPos, vecMins, vecMaxs, true ) )
 			{
 				if ( SpawnAlienAt( szAlienClass, vecNewPos, angle ) )
 					iSpawned++;
@@ -851,7 +872,7 @@ int CASW_Spawn_Manager::SpawnAlienBatch( Alien szAlienClass, int iNumAliens, con
 			vecNewPos = vecPosition;
 			vecNewPos.x -= i * flAlienWidth;
 			vecNewPos.y += y * flAlienDepth;
-			if ( !LineBlockedByGeometry( vecPosition, vecNewPos) && ValidSpawnPoint( vecNewPos, vecMins, vecMaxs, bCheckGround, flMarinesBeyondDist ) )
+			if ( ValidHordeShiftedSpawnPoint( vecPosition, vecNewPos, vecMins, vecMaxs, true ) )
 			{
 				if ( SpawnAlienAt( szAlienClass, vecNewPos, angle ) )
 					iSpawned++;
@@ -864,7 +885,7 @@ int CASW_Spawn_Manager::SpawnAlienBatch( Alien szAlienClass, int iNumAliens, con
 			vecNewPos = vecPosition;
 			vecNewPos.x += i * flAlienWidth;
 			vecNewPos.y += y * flAlienDepth;
-			if ( !LineBlockedByGeometry( vecPosition, vecNewPos) && ValidSpawnPoint( vecNewPos, vecMins, vecMaxs, bCheckGround, flMarinesBeyondDist ) )
+			if ( ValidHordeShiftedSpawnPoint( vecPosition, vecNewPos, vecMins, vecMaxs, true ) )
 			{
 				if ( SpawnAlienAt( szAlienClass, vecNewPos, angle ) )
 					iSpawned++;
@@ -1112,6 +1133,9 @@ bool CASW_Spawn_Manager::ValidSpawnPoint( const Vector &vecPosition, const Vecto
 	if( tr.fraction != 1.0 )
 		return false;
 
+	if ( tr.startsolid )
+		return false;
+
 	// check there's ground underneath this point
 	if ( bCheckGround )
 	{
@@ -1144,6 +1168,44 @@ bool CASW_Spawn_Manager::ValidSpawnPoint( const Vector &vecPosition, const Vecto
 				}
 			}
 		}
+	}
+
+	return true;
+}
+
+bool CASW_Spawn_Manager::ValidHordeShiftedSpawnPoint( const Vector &vecOrigPos, const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround )
+{
+	// check if we can fit there
+	trace_t tr;
+	UTIL_TraceHull( vecOrigPos,
+		vecPosition,
+		vecMins,
+		vecMaxs,
+		MASK_NPCSOLID,
+		NULL,
+		COLLISION_GROUP_NONE,
+		&tr );
+
+	if( tr.fraction != 1.0 )
+		return false;
+
+	if ( tr.startsolid )
+		return false;
+
+	// check there's ground underneath this point
+	if ( bCheckGround )
+	{
+		UTIL_TraceHull( vecPosition + Vector( 0, 0, 1 ),
+			vecPosition - Vector( 0, 0, 64 ),
+			vecMins,
+			vecMaxs,
+			MASK_NPCSOLID,
+			NULL,
+			COLLISION_GROUP_NONE,
+			&tr );
+
+		if( tr.fraction == 1.0 )
+			return false;
 	}
 
 	return true;

@@ -83,6 +83,24 @@ AI_Waypoint_t *CASW_Path_Utils::BuildRoute( const Vector &vStart, const Vector &
 	return m_pLastRoute;
 }
 
+AI_Waypoint_t *CASW_Path_Utils::BuildRouteForHull( const Vector &vStart, const Vector &vEnd, 
+										  CBaseEntity *pTarget, float goalTolerance, int nHull, Navigation_t curNavType, int nBuildFlags )
+{
+	if ( !GetPathfinderNPC() )
+		return NULL;
+
+	CASW_Path_Utils_NPC &npc = *GetPathfinderNPC();
+	npc.SetHullType( (Hull_t)nHull );
+	UTIL_SetSize(&npc, NAI_Hull::Mins(nHull), NAI_Hull::Maxs(nHull));
+
+	m_pLastRoute = GetPathfinderNPC()->GetPathfinder()->BuildRoute( vStart, vEnd, pTarget, goalTolerance, curNavType, nBuildFlags );
+
+	npc.SetHullType( HULL_MEDIUMBIG );
+	UTIL_SetSize(&npc, NAI_Hull::Mins(HULL_MEDIUMBIG), NAI_Hull::Maxs(HULL_MEDIUMBIG));
+
+	return m_pLastRoute;
+}
+
 Vector g_vecPathStart = vec3_origin;
 
 void CASW_Path_Utils::DeleteRoute( AI_Waypoint_t *pWaypointList )
