@@ -25,7 +25,7 @@ WeaponData
 	// asw properties
 	"reload_time"			"2.0"
 	"base_damage"			"65"
-	"fire_rate"				"1.2"
+	"fire_rate"				"0.72"
 	"equipicon"			"swarm/EquipIcons/EquipSniperRifle"
 	"equiplongname"			"#asw_weaponl_sniper_rifle"
 	"equipdescription1"		"#asw_wdesc_sniper_rifle"
