@@ -3652,6 +3652,11 @@ void CAlienSwarm::OnServerHibernating()
 		{
 			Shutdown();
 		}
+		// reset difficulty and challenge
+		asw_skill.SetValue( 2 );
+		SetSkillLevel( asw_skill.GetInt() );
+		EnableChallenge( "0" );
+
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",
 			szMissionName,
