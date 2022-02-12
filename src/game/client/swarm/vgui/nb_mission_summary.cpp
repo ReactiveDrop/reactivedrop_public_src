@@ -156,6 +156,13 @@ void CNB_Mission_Summary::OnThink()
 			{
 				V_snwprintf( wszObjectivesBuffer, ARRAYSIZE( wszObjectivesBuffer ), L"- %s", pObjective->GetObjectiveTitle() );
 			}
+			else if ( nObjectives == 6 )
+			{
+				// only show the first few objectives in this list so it doesn't push past the bottom of the screen
+				V_snwprintf( wszBuffer, ARRAYSIZE( wszBuffer ), L"%s\n- ...", wszObjectivesBuffer );
+				V_snwprintf( wszObjectivesBuffer, ARRAYSIZE( wszObjectivesBuffer ), L"%s", wszBuffer );
+				break;
+			}
 			else
 			{
 				V_snwprintf( wszBuffer, ARRAYSIZE( wszBuffer ), L"%s\n- %s", wszObjectivesBuffer, pObjective->GetObjectiveTitle() );

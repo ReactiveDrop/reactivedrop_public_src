@@ -52,7 +52,7 @@ void ListObjectives(void)
 	if ( !pGameResource )
 		return;
 
-	for (int i=0;i<12;i++)
+	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
 	{
 		if ( pGameResource->GetObjective(i) == NULL )
 			Msg("Objective %d = empty\n", i);
