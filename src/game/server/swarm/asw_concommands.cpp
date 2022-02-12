@@ -2022,6 +2022,24 @@ void asw_gimme_health_f(void)
 
 static ConCommand asw_gimme_health("asw_gimme_health", asw_gimme_health_f, "Refills all marine health", FCVAR_CHEAT);
 
+void asw_gimme_33_f(void)
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	{
+		if (pGameResource->GetMarineResource(i) != NULL && pGameResource->GetMarineResource(i)->GetMarineEntity())
+		{
+			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			pMarine->SetHealth(33);
+		}
+	}
+}
+
+static ConCommand asw_gimme_33hp( "asw_gimme_33hp", asw_gimme_33_f, "Sets marine hp to 33", FCVAR_CHEAT );
+
 
 void SpawnBuzzerAboveMe( const CCommand &args )
 {
