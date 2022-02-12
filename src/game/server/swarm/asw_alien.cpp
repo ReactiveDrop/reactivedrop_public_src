@@ -3197,6 +3197,7 @@ void CASW_Alien::Unburrow( void )
 	m_takedamage	= DAMAGE_YES;
 
 	RemoveEffects( EF_NODRAW );
+	RemoveEffects( EF_NOSHADOW );
 	RemoveFlag( FL_NOTARGET );
 
 	SetIdealActivity( m_UnburrowActivity );
