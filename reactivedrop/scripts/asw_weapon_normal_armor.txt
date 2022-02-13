@@ -34,6 +34,7 @@ WeaponData
 	"ShowLocalPlayerHotkey"	"0"
 	"OffhandOrderType"		"ASW_OFFHAND_USE_IMMEDIATELY"
 	
+	"ShowBatteryCharge"		"1"
 	
 	// flinching
 	"FlinchChance"              "0"

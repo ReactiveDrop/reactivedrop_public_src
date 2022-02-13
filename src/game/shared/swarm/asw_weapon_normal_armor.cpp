@@ -24,7 +24,9 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Normal_Armor, DT_ASW_Weapon_Normal_Ar
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Normal_Armor, DT_ASW_Weapon_Normal_Armor )
 #ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_iLayersMissing ) ),
 #else
+	SendPropInt( SENDINFO( m_iLayersMissing ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -34,13 +36,17 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_normal_armor, CASW_Weapon_Normal_Armor );
 PRECACHE_WEAPON_REGISTER( asw_weapon_normal_armor );
 
+ConVar rd_marine_passive_armor_layers_enabled( "rd_marine_passive_armor_layers_enabled", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "heavy armor can restore protection level" );
+ConVar rd_marine_passive_armor_layers_amount( "rd_marine_passive_armor_layers_amount", "5", FCVAR_CHEAT | FCVAR_REPLICATED, "heavy armor has this many exta layers of nanites" );
+
 #ifndef CLIENT_DLL
 
+#define LAYER_RESTORE_CONTEXT "LayerRestoreContext"
+
 ConVar asw_marine_passive_armor_scale( "asw_marine_passive_armor_scale", "0.85", FCVAR_CHEAT, "heavy armor will scale damage taken by this much" );
-ConVar rd_marine_passive_armor_layers_amount("rd_marine_passive_armor_layers_amount", "10", FCVAR_CHEAT, "heavy armor has this many exta layers of nanites");
-ConVar rd_marine_passive_armor_layers_enabled("rd_marine_passive_armor_layers_enabled", "1", FCVAR_CHEAT, "heavy armor can restore protection level");
-ConVar rd_marine_passive_armor_layer_protection_value("rd_marine_passive_armor_layer_protection_value", "2", FCVAR_CHEAT, "how much damage one layer of heavy armor adsorbs in percentage of total damage");
-ConVar rd_marine_passive_armor_layer_update_interval("rd_marine_passive_armor_layer_update_interval", "2", FCVAR_CHEAT, "how much time takes one layer of heavy armor to restore");
+ConVar rd_marine_passive_armor_layer_protection_value( "rd_marine_passive_armor_layer_protection_value", "0.04", FCVAR_CHEAT, "proportion of damage one layer of heavy armor absorbs" );
+ConVar rd_marine_passive_armor_layer_update_interval( "rd_marine_passive_armor_layer_update_interval", "2", FCVAR_CHEAT, "how much time it takes each subsequent layer of heavy armor to restore" );
+ConVar rd_marine_passive_armor_layer_update_interval_initial( "rd_marine_passive_armor_layer_update_interval_initial", "4", FCVAR_CHEAT, "how much time it takes one layer of heavy armor to restore after damage" );
 
 //---------------------------------------------------------
 // Save/Restore (really?)
@@ -54,8 +60,6 @@ END_DATADESC()
 CASW_Weapon_Normal_Armor::CASW_Weapon_Normal_Armor()
 {
 #ifndef CLIENT_DLL
-	m_flDamageScaleFactor = asw_marine_passive_armor_scale.GetFloat();
-	m_iLayers = rd_marine_passive_armor_layers_amount.GetInt();
 	m_iLayersMissing = 0;
 #endif
 }
@@ -74,50 +78,45 @@ void CASW_Weapon_Normal_Armor::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 void CASW_Weapon_Normal_Armor::LayerRestoreThink()
 {
-	if (m_iLayersMissing > 0)
+	if ( m_iLayersMissing > 0 )
 	{
 		m_iLayersMissing--;
-		SetNextThink(gpGlobals->curtime + rd_marine_passive_armor_layer_update_interval.GetFloat());
-		//Msg("Armor layer has been restored\n");
+		SetNextThink( gpGlobals->curtime + rd_marine_passive_armor_layer_update_interval.GetFloat(), LAYER_RESTORE_CONTEXT );
 	}
 }
 
 float CASW_Weapon_Normal_Armor::GetDamageScaleFactor()
 {
+	float flScaleFactor = asw_marine_passive_armor_scale.GetFloat();
+
 	if ( rd_marine_passive_armor_layers_enabled.GetBool() )
 	{
-		m_flDamageScaleFactor = asw_marine_passive_armor_scale.GetFloat() - (m_iLayers - m_iLayersMissing) * (rd_marine_passive_armor_layer_protection_value.GetFloat() / 100.0f);
+		flScaleFactor -= ( rd_marine_passive_armor_layers_amount.GetFloat() - m_iLayersMissing ) * rd_marine_passive_armor_layer_protection_value.GetFloat();
+	}
 
-		if (m_flDamageScaleFactor < 0)
-			m_flDamageScaleFactor = 0;
-	}
-	else
-	{
-		m_flDamageScaleFactor = asw_marine_passive_armor_scale.GetFloat();
-	}
-	return m_flDamageScaleFactor;
+	return MAX( flScaleFactor, 0 );
 }
 
 void CASW_Weapon_Normal_Armor::LayerRemoveOnDamage()
 {
-	if (rd_marine_passive_armor_layers_enabled.GetBool())
+	if ( rd_marine_passive_armor_layers_enabled.GetBool() )
 	{
-		if (m_iLayersMissing < m_iLayers)
+		if ( m_iLayersMissing < rd_marine_passive_armor_layers_amount.GetInt() )
 		{
 			m_iLayersMissing++;
-			//Msg("Armor layer has been removed\n");
 		}
 
-		SetThink(NULL);
-		SetThink(&CASW_Weapon_Normal_Armor::LayerRestoreThink);
-		SetNextThink(gpGlobals->curtime + rd_marine_passive_armor_layer_update_interval.GetFloat());
+		SetContextThink( &CASW_Weapon_Normal_Armor::LayerRestoreThink, gpGlobals->curtime + rd_marine_passive_armor_layer_update_interval_initial.GetFloat(), LAYER_RESTORE_CONTEXT );
 	}
 }
-#endif
-
-/*
-void CASW_Weapon_Normal_Armor::Precache()
+#else
+float CASW_Weapon_Normal_Armor::GetBatteryCharge()
 {
-	BaseClass::Precache();
+	if ( !rd_marine_passive_armor_layers_enabled.GetBool() )
+	{
+		return -1.0f;
+	}
+
+	return 1.0f - m_iLayersMissing / rd_marine_passive_armor_layers_amount.GetFloat();
 }
-*/
+#endif
