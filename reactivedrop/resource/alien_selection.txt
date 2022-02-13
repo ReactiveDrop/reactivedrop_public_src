@@ -114,8 +114,14 @@
 	"MinPacks"	"1"
 	"MaxPacks"	"1"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
 		"NPC" {
 			"AlienClass"	"asw_drone"
 		}
@@ -203,8 +209,14 @@
 	"MinPacks"	"1"
 	"MaxPacks"	"2"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
 		"NPC" {
 			"AlienClass"	"asw_drone"
 		}
@@ -313,8 +325,14 @@
 	"MinPacks"	"2"
 	"MaxPacks"	"3"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
 		"NPC" {
 			"AlienClass"	"asw_drone"
 		}
