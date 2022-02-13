@@ -5377,13 +5377,27 @@
 	percent_remaining(integer) : "Percent Remaining" : 100 : "Percent of ammo remaining in box"
 ]
 
-@PointClass base(ASWPickup) studio("models/swarm/ammo/ammoassaultrifle.mdl")= asw_ammo_rifle : "Box of Rifle ammo" []
+@PointClass base(ASWPickup) studio("models/swarm/ammo/ammoassaultrifle.mdl")= asw_ammo_rifle : "Box of Rifle ammo"
+[
+	AddSecondary(choices) : "Add secondary item" : 1 : "If set this pickup adds grenade or shotgun charge depends on a rifle type" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
 
 @PointClass base(ASWPickup) studio("models/swarm/ammo/ammoautogun.mdl")= asw_ammo_autogun : "Box of Autogun ammo" []
 
 @PointClass base(ASWPickup) studio("models/swarm/Ammo/ammoshotgun.mdl")= asw_ammo_shotgun : "Box of Shotgun ammo" []
 
-@PointClass base(ASWPickup) studio("models/swarm/Ammo/ammovindicator.mdl")= asw_ammo_vindicator : "Box of Vindicator ammo" []
+@PointClass base(ASWPickup) studio("models/swarm/Ammo/ammovindicator.mdl")= asw_ammo_vindicator : "Box of Vindicator ammo"
+[
+	AddSecondary(choices) : "Add secondary item" : 1 : "If set this pickup adds vindicator grenade" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
 
 @PointClass base(ASWPickup) studio("models/swarm/Ammo/ammoflamer.mdl")= asw_ammo_flamer : "Box of Flamer ammo" []
 
