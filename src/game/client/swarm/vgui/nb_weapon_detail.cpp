@@ -205,6 +205,12 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			float flRate = pWeaponData->m_flFireRate;
 			wchar_t wzFireValue[32];
 
+			if ( FStrEq( "asw_weapon_prifle", pWeaponData->szClassName ) )
+			{
+				flRate -= MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE );
+				flRate = MAX(0.005, flRate); //0.07 is default
+			}
+
 			float flCurrent = 0.0f;
 			if ( flRate <= 0 )
 			{
