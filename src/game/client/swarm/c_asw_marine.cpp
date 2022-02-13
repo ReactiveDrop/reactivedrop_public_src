@@ -82,7 +82,7 @@ ConVar rd_team_color_alpha( "rd_team_color_alpha", "255 240 150", FCVAR_HIDDEN )
 ConVar rd_team_color_beta( "rd_team_color_beta", "20 100 255", FCVAR_HIDDEN );
 ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
-ConVar rd_prediction_strategy( "rd_prediction_strategy", "0", FCVAR_ARCHIVE, "testing prediction error resolution strategy", true, 0, true, 1 );
+ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FCVAR_ARCHIVE, "use a prediction error resolution strategy that handles moving platforms better", true, 0, true, 1 );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -504,6 +504,7 @@ C_ASW_Marine::~C_ASW_Marine()
 	StopFireExtinguisherLoop();	//Msg("StopFireExtinguisherLoop \n");
 	m_bOnFire = false;
 	UpdateFireEmitters();
+	g_fMarinePoisonDuration = 0;
 	if (m_hOrderArrow.Get())
 		m_hOrderArrow->Release();
 
@@ -707,7 +708,7 @@ void C_ASW_Marine::NotePredictionError( const Vector &vDelta )
 	// remember when last error happened
 	m_flPredictionErrorTime = gpGlobals->curtime;
 
-	if ( rd_prediction_strategy.GetInt() == 0 )
+	if ( rd_use_new_prediction_strategy.GetInt() == 0 )
 	{
 		ResetLatched();
 	}
@@ -1198,7 +1199,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		m_bLastNoDraw = bNoDraw;
 
 		// give weapons a chance to update visibility as I'm hidden/shown
-		for ( int i = 0; i < WeaponCount(); i++ )
+		for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 		{
 			C_BaseCombatWeapon	*pWeapon = GetWeapon( i );
 			if ( pWeapon )
@@ -2464,14 +2465,8 @@ void C_ASW_Marine::UpdateOnRemove()
 // helper for movement code which will disable movement in controller mode if you're interacting and need those directionals
 bool C_ASW_Marine::IsUsingComputerOrButtonPanel()
 {
-	return m_hUsingEntity.Get() && (
-									dynamic_cast<C_ASW_Button_Area*>(m_hUsingEntity.Get()) ||
-										(
-											dynamic_cast<C_ASW_Computer_Area*>(m_hUsingEntity.Get()) &&
-											!IsControllingTurret()
-										)
-		
-									);
+	CBaseEntity* pUsing = m_hUsingEntity.Get();
+	return pUsing && ( pUsing->Classify() == CLASS_ASW_BUTTON_PANEL || ( pUsing->Classify() == CLASS_ASW_COMPUTER_AREA && !IsControllingTurret() ) );
 }
 
 void C_ASW_Marine::CreateShoulderCone()

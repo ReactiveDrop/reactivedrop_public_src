@@ -527,7 +527,7 @@ void ReactiveDropWorkshop::OnFileSelected( const char *fullpath, const char *fil
 			return;
 		}
 		wchar_t wszFileSize[64];
-		V_snwprintf( wszFileSize, sizeof( wszFileSize ), L"%.2f", filesystem->Size( fullpath ) / 1024.0f / 1024.0f );
+		V_snwprintf( wszFileSize, ARRAYSIZE( wszFileSize ), L"%.2f", filesystem->Size( fullpath ) / 1024.0f / 1024.0f );
 		wchar_t wszEditContent[256];
 		g_pVGuiLocalize->ConstructString( wszEditContent, sizeof( wszEditContent ), g_pVGuiLocalize->FindSafe( "#rd_workshop_choose_vpk_size" ), 1, wszFileSize );
 		m_pBtnEditContent->SetText( wszEditContent );

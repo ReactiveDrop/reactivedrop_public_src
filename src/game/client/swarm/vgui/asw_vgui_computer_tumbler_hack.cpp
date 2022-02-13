@@ -507,7 +507,6 @@ void CASW_VGUI_Computer_Tumbler_Hack::UpdateTumblerButtonTextures()
 
 void CASW_VGUI_Computer_Tumbler_Hack::OnCommand(char const* command)
 {
-	//Msg("BriefingOptionsPanel row got command: %s\n", command);
 	if ( StringHasPrefix( command, "Reverse" ) )
 	{
 		int iControl = atoi( command + Q_strlen( "Reverse" ) );
@@ -530,7 +529,6 @@ bool CASW_VGUI_Computer_Tumbler_Hack::MouseClick(int x, int y, bool bRightClick,
 
 void CASW_VGUI_Computer_Tumbler_Hack::ClickedTumblerControl(int i)
 {
-	Msg("Clicked on %d\n", i);
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer)
 	{            
@@ -621,8 +619,6 @@ void CASW_TumblerPanel::OnThink()
 						//if (pComputer->m_iTumblerPosition[m_iTumblerIndex] != m_LastYCoord && m_iTumblerIndex == 0)
 						if (pComputer->GetTumblerPosition(m_iTumblerIndex) != m_LastYCoord && m_iTumblerIndex == 0)
 						{
-							//Msg("New tumbler position = %d, last was = %d\n",
-								//pComputer->m_iTumblerPosition[m_iTumblerIndex], m_LastYCoord);
 							//m_LastYCoord = pComputer->m_iTumblerPosition[m_iTumblerIndex];
 							m_LastYCoord = pComputer->GetTumblerPosition(m_iTumblerIndex);
 							CLocalPlayerFilter filter;
@@ -765,7 +761,7 @@ void CASW_TumblerPanel::PerformLayout()
 	SetSize(column_width, column_width * m_Numbers.Count());	
 
 	char buffer[64];
-	for (int i=0;i<<m_Numbers.Count();i++)
+	for (int i=0;i<m_Numbers.Count();i++)
 	{
 		Q_snprintf(buffer, sizeof(buffer), "%d", i);
 		m_Numbers[i]->SetText(buffer);

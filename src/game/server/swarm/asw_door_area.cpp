@@ -30,8 +30,8 @@ CASW_Door_Area::CASW_Door_Area()
 
 bool CASW_Door_Area::HasWelder(CASW_Marine *pMarine)
 {
-	CASW_Weapon_Welder *pWelder = dynamic_cast<CASW_Weapon_Welder*>(pMarine->GetASWWeapon(2));
-	if (pWelder)
+	CASW_Weapon* pWeapon2 = pMarine->GetASWWeapon(2);
+	if ( pWeapon2 && pWeapon2->Classify() == CLASS_ASW_WELDER )
 		return true;
 
 	return false;
@@ -115,5 +115,8 @@ void CASW_Door_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
 
 CASW_Door* CASW_Door_Area::GetASWDoor()
 {
-	return dynamic_cast<CASW_Door*>(m_hUseTarget.Get());
+	CBaseEntity* pUse = m_hUseTarget.Get();
+	if ( pUse && pUse->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<CASW_Door*>(pUse);
+	return NULL;
 }

@@ -207,49 +207,64 @@ void CASWMap::ClearBlips( void )
 	m_MapBlips.RemoveAll();
 }
 
+static float GetPlayerYaw()
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (pPlayer)
+	{
+		if (pPlayer->GetSpectatingMarine() && pPlayer->GetSpectatingMarine()->IsInhabited())
+		{
+			pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
+			return pPlayer ? pPlayer->m_flMovementAxisYaw : 90;
+		}
+		return pPlayer->m_flMovementAxisYaw;
+	}
+	return 90;
+}
+
 void CASWMap::PaintMarineBlips()
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( pGameResource )
+	if (pGameResource)
 	{
 		// paint the blips
-		for ( int i= 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++)
 		{
 			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-			if ( pMR )
+			if (pMR)
 			{
 				C_ASW_Marine *pMarine = pMR->GetMarineEntity();
-				if ( pMarine && pMarine->GetHealth() > 0 )
+				if (pMarine && pMarine->GetHealth() > 0)
 				{
-					// if 2 we paint our blip for all modes and team mates' blips for TDM
 					if (rd_paint_marine_blips.GetInt() == 2)
 					{
 						C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
-						if (pLocal && ASWDeathmatchMode())
+						if (pLocal)
 						{
-							C_ASW_Marine *pLocalMarine = pLocal->GetViewMarine();
-
-							switch (ASWDeathmatchMode()->GetGameMode())
+							if (rd_paint_marine_blips.GetInt() == 2 && ASWDeathmatchMode()) // if 2 we paint our blip for all modes and team mates' blips for TDM
 							{
-							case GAMEMODE_DEATHMATCH:
-							case GAMEMODE_INSTAGIB:
-							case GAMEMODE_GUNGAME:
-							default:
-								if (pLocalMarine != pMarine)
-									continue;	// don't render any marine except ours
-								break;
-							case GAMEMODE_TEAMDEATHMATCH:
-								if (pLocalMarine  && pLocalMarine ->GetTeamNumber() != pMarine->GetTeamNumber())
-									continue;	// don't render blip for enemy team marines
-								break;
+								C_ASW_Marine *pLocalMarine = pLocal->GetViewMarine();
+
+								switch (ASWDeathmatchMode()->GetGameMode())
+								{
+								case GAMEMODE_DEATHMATCH:
+								case GAMEMODE_INSTAGIB:
+								case GAMEMODE_GUNGAME:
+								default:
+									if (pLocalMarine != pMarine)
+										continue;	// don't render any marine except ours
+									break;
+								case GAMEMODE_TEAMDEATHMATCH:
+									if (pLocalMarine  && pLocalMarine->GetTeamNumber() != pMarine->GetTeamNumber())
+										continue;	// don't render blip for enemy team marines
+									break;
+								}
 							}
 						}
 					}
-					float fFacingYaw = pMarine->ASWEyeAngles().y;
-					float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
-					fFacingYaw += (90 - fCameraYaw);
-					PaintWorldBlip( pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0,192,0,255) );
-					PaintWorldFacingArc(pMarine->GetAbsOrigin(), fFacingYaw, Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
+
+					PaintWorldBlip(pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0, 192, 0, 255));
+					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y + 90 - GetPlayerYaw(), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
 				}
 			}
 		}
@@ -264,7 +279,7 @@ void CASWMap::PaintExtraBlips()
 	}
 }
 
-void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color BlipColor, MapBlipTexture_t nBlipTexture /*= MAP_BLIP_TEXTURE_NORMAL*/ )
+void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color BlipColor, MapBlipTexture_t nBlipTexture /*= MAP_BLIP_TEXTURE_NORMAL*/)
 {
 	int nStrengthIndex = clamp<int>( fBlipStrength * 7, 0, 7 );
 
@@ -313,16 +328,16 @@ void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color 
 
 	Vertex_t points[4] =
 	{
-		Vertex_t( Vector2D(Dest1X, Dest1Y), Vector2D(0,0) ),
-		Vertex_t( Vector2D(Dest2X, Dest1Y), Vector2D(1,0) ),
-		Vertex_t( Vector2D(Dest2X, Dest2Y), Vector2D(1,1) ),
-		Vertex_t( Vector2D(Dest1X, Dest2Y), Vector2D(0,1) )
+		Vertex_t(Vector2D(Dest1X, Dest1Y), Vector2D(0, 0)),
+		Vertex_t(Vector2D(Dest2X, Dest1Y), Vector2D(1, 0)),
+		Vertex_t(Vector2D(Dest2X, Dest2Y), Vector2D(1, 1)),
+		Vertex_t(Vector2D(Dest1X, Dest2Y), Vector2D(0, 1))
 	};
-	surface()->DrawTexturedPolygon( 4, points );
+	surface()->DrawTexturedPolygon(4, points);
 }
 
 void CASWMap::PaintWorldFacingArc(const Vector &worldpos, float fFacingYaw, Color FacingColor)
-{
+{	
 	if ( GetFacingArcTexture() == -1)
 		return;
 
@@ -611,7 +626,7 @@ void CASWHudMinimap::GetScaledOffset(int &ox, int &oy)
 void CASWHudMinimap::PaintMapSection()
 {
 	int wide, tall;
-	GetSize(wide,tall);
+	GetSize(wide, tall);
 	wide *= asw_hud_scale.GetFloat();
 	tall *= asw_hud_scale.GetFloat();
 
@@ -624,10 +639,10 @@ void CASWHudMinimap::PaintMapSection()
 	m_MapCentreInPanel.y = m_MapCornerInPanel.y + m_iMapSize * 0.5f;
 
 	m_pLinePanel->SetBounds(m_MapCornerInPanel.x, m_MapCornerInPanel.y,
-							m_MapCornerInPanel.x + m_iMapSize, m_MapCornerInPanel.y + m_iMapSize);
+		m_MapCornerInPanel.x + m_iMapSize, m_MapCornerInPanel.y + m_iMapSize);
 
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
-	if ( local )
+	if (local)
 	{
 		C_ASW_Marine *marine = local->GetViewMarine();
 		if (marine)
@@ -657,26 +672,50 @@ void CASWHudMinimap::PaintMapSection()
 
 			if (m_bHasOverview)	// draw a section of the minimap
 			{
+				Vector2D center(map_left + (m_iMapSize * 0.5f), map_top + (m_iMapSize * 0.5f));
+
+				float yawRad = DEG2RAD( GetPlayerYaw() - 90.0f );
+				Vector2D axis[2];
+				axis[0].x = cos(yawRad);
+				axis[0].y = sin(yawRad);
+				axis[1].x = -axis[0].y;
+				axis[1].y = axis[0].x;
+
+				//Mad Orange. Rotate screenspace
+				Vertex_t points[4];
+				Vector2DMA(center, -0.5f * m_iMapSize, axis[0], points[0].m_Position);
+				Vector2DMA(points[0].m_Position, -0.5f * m_iMapSize, axis[1], points[0].m_Position);
+
+				Vector2DMA(points[0].m_Position, m_iMapSize, axis[0], points[1].m_Position);
+				Vector2DMA(points[1].m_Position, m_iMapSize, axis[1], points[2].m_Position);
+				Vector2DMA(points[0].m_Position, m_iMapSize, axis[1], points[3].m_Position);
+
 				float Source1X = m_MapCentre.x - source_size;
 				float Source1Y = m_MapCentre.y - source_size;
 				float Source2X = m_MapCentre.x + source_size;
 				float Source2Y = m_MapCentre.y + source_size;
-				// if we're off an edge of the map texture, pull in our draw coords so we don't get stretching
+
+				//Mad Orange. If we're off an edge of the map texture, pull in our draw coords by vector direction so we don't get stretching
 				if (Source1X < 0)
 				{
-					map_left -= (Source1X / source_size) * (m_iMapSize * 0.5f);
+					points[0].m_Position -= axis[0] * (Source1X / source_size) * (m_iMapSize * 0.5f);
+					points[3].m_Position -= axis[0] * (Source1X / source_size) * (m_iMapSize * 0.5f);
 				}
 				if (Source2X > 1023)
 				{
-					map_right -= ((Source2X - 1023) / source_size) * (m_iMapSize * 0.5f);
+					points[1].m_Position -= axis[0] * ((Source2X - 1023) / source_size) * (m_iMapSize * 0.5f);
+					points[2].m_Position -= axis[0] * ((Source2X - 1023) / source_size) * (m_iMapSize * 0.5f);
 				}
 				if (Source1Y < 0)
 				{
-					map_top -= (Source1Y / source_size) * (m_iMapSize * 0.5f);
+					points[0].m_Position -= axis[1] * (Source1Y / source_size) * (m_iMapSize * 0.5f);
+					points[1].m_Position -= axis[1] * (Source1Y / source_size) * (m_iMapSize * 0.5f);
+
 				}
 				if (Source2Y > 1023)
 				{
-					map_bottom -= ((Source2Y - 1023) / source_size) * (m_iMapSize * 0.5f);
+					points[2].m_Position -= axis[1] * ((Source2Y - 1023) / source_size) * (m_iMapSize * 0.5f);
+					points[3].m_Position -= axis[1] * ((Source2Y - 1023) / source_size) * (m_iMapSize * 0.5f);
 				}
 
 				// clamp uvs
@@ -685,58 +724,36 @@ void CASWHudMinimap::PaintMapSection()
 				Source2X = MIN(1024, Source2X);
 				Source2Y = MIN(1024, Source2Y);
 
-				surface()->DrawSetColor(Color(255,255,255,255));
+				points[0].m_TexCoord.Init(Source1X / 1024.0f, Source1Y / 1024.0f);
+				points[1].m_TexCoord.Init(Source2X / 1024.0f, Source1Y / 1024.0f);
+				points[2].m_TexCoord.Init(Source2X / 1024.0f, Source2Y / 1024.0f);
+				points[3].m_TexCoord.Init(Source1X / 1024.0f, Source2Y / 1024.0f);
+
+				surface()->DrawSetColor(Color(255, 255, 255, 255));
 				surface()->DrawSetTexture(m_nMapTextureID[iMapTextureIndex]);
 
-				// find the offset from the clipped corners to the centre of the panel
-				Vector vecCornerTL(map_left - m_MapCentreInPanel.x, map_top - m_MapCentreInPanel.y, 0.0f);
-				Vector vecCornerTR(map_right - m_MapCentreInPanel.x, map_top - m_MapCentreInPanel.y, 0.0f);
-				Vector vecCornerBR(map_right - m_MapCentreInPanel.x, map_bottom - m_MapCentreInPanel.y, 0.0f);
-				Vector vecCornerBL(map_left - m_MapCentreInPanel.x, map_bottom - m_MapCentreInPanel.y, 0.0f);
-
-				// rotate the offset vectors about the centre of the panel by the camera yaw
-				float fCameraYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90);
-				float angCam = fCameraYaw - 90.0;
-				Vector vecCornerTL_rotated, vecCornerTR_rotated, vecCornerBL_rotated, vecCornerBR_rotated;
-				VectorYawRotate(vecCornerTL, angCam, vecCornerTL_rotated);
-				VectorYawRotate(vecCornerTR, angCam, vecCornerTR_rotated);
-				VectorYawRotate(vecCornerBR, angCam, vecCornerBR_rotated);
-				VectorYawRotate(vecCornerBL, angCam, vecCornerBL_rotated);
-
-				// add the rotated offsets to find the corner points of the minimap
-				Vector2D top_left_rotated = m_MapCentreInPanel + vecCornerTL_rotated.AsVector2D();
-				Vector2D top_right_rotated = m_MapCentreInPanel + vecCornerTR_rotated.AsVector2D();
-				Vector2D bottom_right_rotated = m_MapCentreInPanel + vecCornerBR_rotated.AsVector2D();
-				Vector2D bottom_left_rotated = m_MapCentreInPanel + vecCornerBL_rotated.AsVector2D();
-
-				Vertex_t points[4] =
-				{
-					Vertex_t(top_left_rotated, Vector2D(Source1X / 1024.0f, Source1Y / 1024.0f)),
-					Vertex_t(top_right_rotated, Vector2D(Source2X / 1024.0f, Source1Y / 1024.0f)),
-					Vertex_t(bottom_right_rotated, Vector2D(Source2X / 1024.0f, Source2Y / 1024.0f)),
-					Vertex_t(bottom_left_rotated, Vector2D(Source1X / 1024.0f, Source2Y / 1024.0f))
-				};
-				surface()->DrawTexturedPolygon( 4, points );
+				surface()->DrawTexturedPolygon(4, points);
 			}
 			else
 			{
 				Assert( iMapTextureIndex == 0 );
 				// no overview, we're just drawing our scanner texture
-				surface()->DrawSetColor(Color(255,255,255,255));
+				surface()->DrawSetColor(Color(255, 255, 255, 255));
 				surface()->DrawSetTexture(m_nMapTextureID[iMapTextureIndex]);
 
 				Vertex_t points[4] =
 				{
-					Vertex_t( Vector2D(map_left, map_top),					Vector2D(0,0) ),
-					Vertex_t( Vector2D(map_right, map_top),					Vector2D(1,0) ),
-					Vertex_t( Vector2D(map_right, map_bottom),				Vector2D(1,1) ),
-					Vertex_t( Vector2D(map_left, map_bottom),				Vector2D(0,1) )
+					Vertex_t(Vector2D(map_left, map_top),     Vector2D(0, 0)),
+					Vertex_t(Vector2D(map_right, map_top),    Vector2D(1, 0)),
+					Vertex_t(Vector2D(map_right, map_bottom), Vector2D(1, 1)),
+					Vertex_t(Vector2D(map_left, map_bottom),  Vector2D(0, 1))
 				};
-				surface()->DrawTexturedPolygon( 4, points );
+				surface()->DrawTexturedPolygon(4, points);
 			}
 		}
 	}
 }
+
 
 void CASWHudMinimap::Paint()
 {
@@ -867,32 +884,38 @@ void CASWHudMinimap::PaintScannerBlips()
 	// draw blips blindly from server for now
 	pScanner->CopyServerBlips();
 	pScanner->FadeBlips();
-	Color red(250,110,110,255);
-	Color blue(66,142,192,255);
-	Color white(255,255,255,255);
-	for (int i=0;i<ASW_SCANNER_MAX_BLIPS;i++)	//todo: draw overflow blips
-	{
-		if (pScanner->m_ClientBlipIndex[i] != 0)
-		{
-			Vector vecWorldPos(0,0,0);
-			C_BaseEntity* pClientEnt = C_BaseEntity::Instance(pScanner->m_ClientBlipIndex[i]);
-			if (pClientEnt)
-			{
-				vecWorldPos.x = pClientEnt->GetAbsOrigin().x;
-				vecWorldPos.y = pClientEnt->GetAbsOrigin().y;
-			}
-			else
-			{
-				vecWorldPos.x = pScanner->m_fClientBlipX[i];
-				vecWorldPos.y = pScanner->m_fClientBlipY[i];
-			}
-			//float f = abs(0.5f - pScanner->m_fBlipStrength[i]) * 2.0f;	// fade in/out
-			float f = 1.0f - pScanner->m_fBlipStrength[i];	// just fade out
+	Color red(250, 110, 110, 255);
+	Color blue(66, 142, 192, 255);
+	Color white(255, 255, 255, 255);
 
-			PaintWorldBlip( vecWorldPos, f,
-							( pScanner->m_BlipType[i] == 1 ) ? blue : ( asw_scanner_classic.GetBool() ? white : red ),
-							MapBlipTexture_t( pScanner->m_BlipType[ i ] ) );		// draw the blip in blue triangle if it's a computer/button panel
+	CASW_Player *pPlayer = CASW_Player::GetLocalASWPlayer();
+	if (pPlayer)
+	{
+		for (int i = 0; i<ASW_SCANNER_MAX_BLIPS; i++)	//todo: draw overflow blips
+		{
+			if (pScanner->m_ClientBlipIndex[i] != 0)
+			{
+				Vector vecWorldPos(0, 0, 0);
+				C_BaseEntity* pClientEnt = C_BaseEntity::Instance(pScanner->m_ClientBlipIndex[i]);
+				if (pClientEnt)
+				{
+					vecWorldPos.x = pClientEnt->GetAbsOrigin().x;
+					vecWorldPos.y = pClientEnt->GetAbsOrigin().y;
+				}
+				else
+				{
+					vecWorldPos.x = pScanner->m_fClientBlipX[i];
+					vecWorldPos.y = pScanner->m_fClientBlipY[i];
+				}
+				//float f = abs(0.5f - pScanner->m_fBlipStrength[i]) * 2.0f;	// fade in/out
+				float f = 1.0f - pScanner->m_fBlipStrength[i];	// just fade out
+
+				PaintWorldBlip(vecWorldPos, f,
+					(pScanner->m_BlipType[i] == 1) ? blue : (asw_scanner_classic.GetBool() ? white : red),
+					MapBlipTexture_t(pScanner->m_BlipType[i]));		// draw the blip in blue triangle if it's a computer/button panel	
+			}
 		}
+
 	}
 }
 
@@ -1078,7 +1101,7 @@ void CASWHudMinimapLinePanel::Paint()
 	//CASWHudMinimap *m_pMap = dynamic_cast<CASWHudMinimap*>(GetParent());
 	if (!m_pMap)
 		return;
-	if (!ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME)
+	if (!ASWGameRules() || ASWGameRules()->GetGameState() < ASW_GS_INGAME)
 		return;
 	// paint a black outline over the lines
 	for (int i=0;i<m_pMap->m_MapLines.Count();i++)
@@ -1328,7 +1351,11 @@ void CASWHudMinimap::PaintRect( int nX, int nY, int nWidth, int nHeight, Color c
 		Vector2D vDirection = vArrowCenter - vPanelCenter;
 		Vector2DNormalize( vDirection );
 
-		float fFacingYaw = RAD2DEG( atanf( vDirection.y / vDirection.x ) ) - ( vDirection.x < 0.0f ? 0.0f : 180.0f );
+		float fFacingYaw;
+		if (vDirection.x == 0.0f)
+			fFacingYaw = 90.0f;
+		else
+			fFacingYaw = RAD2DEG( atanf( vDirection.y / vDirection.x ) ) - ( vDirection.x < 0.0f ? 0.0f : 180.0f );
 
 		int iFacingSize = GetWide() * 0.05f * asw_hud_scale.GetFloat();
 
@@ -1826,6 +1853,7 @@ void CASWHudMinimapLinePanel::PaintFollowLine(C_BaseEntity *pMarine, C_BaseEntit
 
 	Vector2D startTexturePos = m_pMap->WorldToMapTexture(pMarine->GetAbsOrigin());
 	Vector2D endTexturePos = m_pMap->WorldToMapTexture(pTarget->GetAbsOrigin());
+
 	Vector2D start2D, end2D;
 	TextureToLinePanel(m_pMap, startTexturePos, start2D.x, start2D.y);
 	TextureToLinePanel(m_pMap, endTexturePos, end2D.x, end2D.y);

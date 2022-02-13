@@ -60,20 +60,21 @@ void CASW_Alien::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir,
 #endif		
 	}
 
+	CBaseEntity* pAttacker = info.GetAttacker();
 	if( !info.GetInflictor() )
 	{
-		subInfo.SetInflictor( info.GetAttacker() );
+		subInfo.SetInflictor( pAttacker );
 	}
 
 
 	AddMultiDamage( subInfo, this );
 #ifdef GAME_DLL
 #else
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( subInfo.GetAttacker() );
 	CASW_Player *pPlayerAttacker = NULL;
 
-	if ( pMarine )
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pAttacker );
 		pPlayerAttacker = pMarine->GetCommander();
 	}
 

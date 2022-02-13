@@ -31,7 +31,7 @@
 
 #define ASW_EGG_HATCH_DELAY 3.0f
 #define ASW_EGG_ALWAYS_BURST_DISTANCE 120.0f
-#define ASW_EGG_BURST_DISTANCE_EASY 250.0f
+//#define ASW_EGG_BURST_DISTANCE_EASY 250.0f
 #define ASW_EGG_BURST_DISTANCE 450.0f
 #define ASW_EGG_RESET_DELAY 20.0f
 
@@ -133,24 +133,36 @@ void CASW_Egg::Spawn( void )
 	AddFlag( FL_AIMTARGET );
 
 	// create our parasite to sit inside and await a hapless marine
-	QAngle angParasiteFacing = GetAbsAngles();
+	QAngle angParasiteFacing = QAngle(0, 0, 0);// GetAbsAngles(); //Mad Orange. We do not want parasite to have weird angle after DoJumpFromEgg() if egg is rotated not only around z axis
 	if (!m_bFixedJumpDirection)
 	{
 		angParasiteFacing.y = random->RandomInt(0,360);
 	}
 	
+	//Mad Orange. Correct parasite position with complex egg rotations
+	Vector vecSpawnPos;
+	if (GetAbsAngles().x != 0 || GetAbsAngles().z != 0)
+	{
+		float shft = 54 * GetModelScale(); //parasite shift over GetAbsOrigin() due to animation. LookupSequence("Egg_Idle") in CASW_Parasite;
+		Vector vecUp;
+		GetVectors(NULL, NULL, &vecUp);
+		vecSpawnPos = Vector(GetAbsOrigin().x + vecUp.x*shft, GetAbsOrigin().y + vecUp.y*shft, GetAbsOrigin().z + shft*(vecUp.z - 1));
+	}
+	else
+		vecSpawnPos = GetAbsOrigin();
 
-	m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", GetAbsOrigin(), angParasiteFacing, this));
+	m_hParasite = assert_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", vecSpawnPos, angParasiteFacing, this));
 	if (GetParasite())
 	{
 		//Msg("Telling parasite to idle in egg\n");
 		GetParasite()->IdleInEgg(true);
 		//GetParasite()->AddSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
-		GetParasite()->Spawn();		
+		GetParasite()->Spawn();
+		GetParasite()->SetModelScale(GetModelScale());
 		GetParasite()->SetSleepState(AISS_WAITING_FOR_INPUT);
 		GetParasite()->SetEgg(this);
 
-		GetParasite()->SetParent( this );
+		//GetParasite()->SetParent( this );
 	}
 
 	m_takedamage = DAMAGE_YES;
@@ -271,11 +283,11 @@ void CASW_Egg::AnimThink( void )
 			else
 				s_fNextSpottedChatterTime = gpGlobals->curtime + 1.0f;		
 		}
-		float flOpenDist = ASW_EGG_BURST_DISTANCE;
-		if ( ASWGameRules() && ASWGameRules()->GetSkillLevel() == 1 )
-		{
-			flOpenDist = ASW_EGG_BURST_DISTANCE_EASY;
-		}
+		//float flOpenDist = ASW_EGG_BURST_DISTANCE;
+		//if ( ASWGameRules() && ASWGameRules()->GetSkillLevel() == 1 )
+		//{
+		//	flOpenDist = ASW_EGG_BURST_DISTANCE_EASY;
+		//}
 		if ( pMarine  )
 		{
 			//Msg( "Egg %d check.  Distance = %f\n", entindex(), marine_distance );
@@ -343,24 +355,37 @@ void CASW_Egg::ResetEgg()
 	if ( m_bHatched )
 	{
 		// spawn a new parasite
-		QAngle angParasiteFacing = GetAbsAngles();
+		QAngle angParasiteFacing = QAngle(0, 0, 0); //GetAbsAngles();
 		if (!m_bFixedJumpDirection)
 		{
 			angParasiteFacing.y = random->RandomInt(0,360);
 		}
 	
-		m_hParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", GetAbsOrigin(), angParasiteFacing, this));
+		//Mad Orange. Correct parasite position with complex egg rotations
+		Vector vecSpawnPos;
+		if (GetAbsAngles().x != 0 || GetAbsAngles().z != 0)
+		{
+			float shft = 54 * GetModelScale(); //parasite shift over GetAbsOrigin() due to animation. LookupSequence("Egg_Idle") in CASW_Parasite;
+			Vector vecUp;
+			GetVectors(NULL, NULL, &vecUp);
+			vecSpawnPos = Vector(GetAbsOrigin().x + vecUp.x*shft, GetAbsOrigin().y + vecUp.y*shft, GetAbsOrigin().z + shft*(vecUp.z - 1));
+		}
+		else
+			vecSpawnPos = GetAbsOrigin();
+
+		m_hParasite = assert_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", vecSpawnPos, angParasiteFacing, this));
 		if (GetParasite())
 		{
 			//Msg("Telling parasite to idle in egg\n");
 		
 			GetParasite()->IdleInEgg(true);
 			//GetParasite()->AddSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
-			GetParasite()->Spawn();		
+			GetParasite()->Spawn();
+			GetParasite()->SetModelScale(GetModelScale());
 			GetParasite()->SetSleepState(AISS_WAITING_FOR_INPUT);
 			GetParasite()->SetEgg(this);
 			
-			GetParasite()->SetParent( this );
+			//GetParasite()->SetParent( this );
 		}
 	}
 
@@ -506,9 +531,12 @@ int CASW_Egg::OnTakeDamage( const CTakeDamageInfo &info )
 
 	if (result > 0)
 	{
-		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-		if (pMarine)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
 			pMarine->HurtAlien(this, info);
+		}
 
 		// Notify gamestats of the damage
 		CASW_GameStats.Event_AlienTookDamage(this, info);
@@ -516,7 +544,7 @@ int CASW_Egg::OnTakeDamage( const CTakeDamageInfo &info )
 		if (info.GetDamageType() & DMG_BURN ||
 			info.GetDamageType() & DMG_BLAST)
 		{
-			ASW_Ignite(30.0f, 0, info.GetAttacker(), info.GetWeapon() );
+			ASW_Ignite(30.0f, 0, pAttacker, info.GetWeapon() );
 		}
 	}
 	return result;
@@ -540,10 +568,11 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 		SpawnEffects(EGG_FLAG_DIE);
 	}
 
+	CBaseEntity* pAttacker = info.GetAttacker();
 	// kill the parasite inside
 	if (GetParasite() && !m_bHatched)
 	{
-		CTakeDamageInfo killsite(info.GetInflictor(), info.GetAttacker(), info.GetDamageForce(), info.GetDamagePosition(), 150,
+		CTakeDamageInfo killsite(info.GetInflictor(), pAttacker, info.GetDamageForce(), info.GetDamagePosition(), 150,
 			info.GetDamageType());
 		killsite.SetWeapon( info.GetWeapon() );
 		GetParasite()->TakeDamage(killsite);
@@ -552,10 +581,13 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 	if (ASWGameRules() && ASWGameRules()->GetMissionManager())
 		ASWGameRules()->GetMissionManager()->EggKilled(this);
 
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-	if (pMarine && pMarine->GetMarineResource())
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		pMarine->GetMarineResource()->m_iEggKills++;
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		if (pMarine->GetMarineResource())
+		{
+			pMarine->GetMarineResource()->m_iEggKills++;
+		}
 	}
 	if ( ASWGameResource() )
 	{
@@ -564,7 +596,7 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 		{
 			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 			{
-				CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+				CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() )
 					continue;
 
@@ -621,7 +653,10 @@ void CASW_Egg::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool 
 
 CASW_Parasite* CASW_Egg::GetParasite()
 {
-	return dynamic_cast<CASW_Parasite*>(m_hParasite.Get());
+	CBaseEntity* pPara = m_hParasite.Get();
+	if ( pPara && pPara->Classify() == CLASS_ASW_PARASITE )
+		return assert_cast<CASW_Parasite*>(pPara);
+	return NULL;
 }
 
 void CASW_Egg::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )

@@ -33,7 +33,7 @@ public:
 	virtual void ClientThink( void );
 
 protected:
-	C_ParticleSystem::~C_ParticleSystem( void );
+	~C_ParticleSystem( void );
 
 	int			m_iEffectIndex;
 	int			m_nStopType;
@@ -410,7 +410,8 @@ void ParticleEffectStopCallback( const CEffectData &data )
 			}
 			else
 			{
-				pEnt->ParticleProp()->StopEmission();
+				//pEnt->ParticleProp()->StopEmission();
+				pEnt->ParticleProp()->StopEmission( NULL, true, true, false, true );
 			}
 		}
 	}

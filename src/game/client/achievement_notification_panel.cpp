@@ -129,8 +129,8 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 			wchar_t szText[512]=L"";
 			wchar_t szNumFound[16]=L"";
 			wchar_t szNumTotal[16]=L"";
-			_snwprintf( szNumFound, ARRAYSIZE( szNumFound ), L"%i", iCur );
-			_snwprintf( szNumTotal, ARRAYSIZE( szNumTotal ), L"%i", iMax );
+			V_snwprintf( szNumFound, ARRAYSIZE( szNumFound ), L"%i", iCur );
+			V_snwprintf( szNumTotal, ARRAYSIZE( szNumTotal ), L"%i", iMax );
 
 			const wchar_t *pchFmt = g_pVGuiLocalize->Find( "#GameUI_Achievement_Progress_Fmt" );
 			if ( !pchFmt || !pchFmt[0] )

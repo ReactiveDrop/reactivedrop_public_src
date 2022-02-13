@@ -196,18 +196,20 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 
 const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint() const
 {
-	int numSlots = mpGameDetails->GetInt( "members/numSlots", 0 );
-	int numPlayers = mpGameDetails->GetInt( "members/numPlayers", 0 );
+	if (mpGameDetails) //can be null for real in void FoundGameListItem::SetGameIndex( const Info& fi )
+	{
+		int numSlots = mpGameDetails->GetInt("members/numSlots", 0);
+		int numPlayers = mpGameDetails->GetInt("members/numPlayers", 0);
 
-	if ( !numSlots )
-		return ""; //#L4D360UI_Lobby_NotInJoinableGame";
+		if (!numSlots)
+			return ""; //#L4D360UI_Lobby_NotInJoinableGame";
 
-	if ( numPlayers >= numSlots )
-		return "#L4D360UI_WaitScreen_GameFull";
+		if (numPlayers >= numSlots)
+			return "#L4D360UI_WaitScreen_GameFull";
 
-	if ( !Q_stricmp( "private", mpGameDetails->GetString( "system/access", "" ) ) )
-		return "#L4D360UI_WaitScreen_GamePrivate";
-
+		if (!Q_stricmp("private", mpGameDetails->GetString("system/access", "")))
+			return "#L4D360UI_WaitScreen_GamePrivate";
+	}
 	return "";
 }
 
@@ -376,7 +378,10 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	else if ( char const *szOtherTitle = fi.IsOtherTitle() )
 	{
 		DevMsg( "Adding an unjoinable game to the list:\n" );
-		KeyValuesDumpAsDevMsg( fi.mpGameDetails );
+		if ( fi.mpGameDetails )
+		{
+			KeyValuesDumpAsDevMsg(fi.mpGameDetails);
+		}
 
 		if( m_pLblNotJoinable )
 		{
@@ -395,42 +400,45 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	}
 	else if ( fi.IsJoinable() || fi.IsDownloadable() )
 	{
-		int numSlots = fi.mpGameDetails->GetInt( "members/numSlots", 0 );
-		int numPlayers = fi.mpGameDetails->GetInt( "members/numPlayers", 0 );
+		if (fi.mpGameDetails)
+		{
+			int numSlots = fi.mpGameDetails->GetInt("members/numSlots", 0);
+			int numPlayers = fi.mpGameDetails->GetInt("members/numPlayers", 0);
 
-		SetGamePlayerCount( numPlayers , numSlots );
+			SetGamePlayerCount(numPlayers, numSlots);
 
-		char const *szMode = fi.mpGameDetails->GetString( "game/mode", "campaign" );
-		
-		if ( !Q_stricmp( "finale", fi.mpGameDetails->GetString( "game/state", "" ) ) )
-		{
-			// Display it as in finale, hide the playercount, but it's still joinable if they really want to.
-			SetGameDifficulty( "#L4D360UI_WaitScreen_GameInFinale" );
-			SetGamePlayerCount( 0, 0 );
-		}
-		else if( !GameModeHasDifficulty( szMode ) )
-		{
-			SetGameDifficulty( CFmtStr( "#L4D360UI_Mode_%s", szMode ) );
-		}
-		else
-		{
-			char const *szDiff = fi.mpGameDetails->GetString( "game/difficulty", "normal" );
-			char chDiffBuffer[64];
-			Q_snprintf( chDiffBuffer, sizeof( chDiffBuffer ), "#L4D360UI_Difficulty_%s_%s", szDiff, szMode );
-			SetGameDifficulty( chDiffBuffer );
-		}
-		SetGameChallenge( fi.mpGameDetails->GetString( "game/challengeinfo/displaytitle" ) );
+			char const *szMode = fi.mpGameDetails->GetString("game/mode", "campaign");
 
-		char const *szDiff = fi.mpGameDetails->GetString( "game/swarmstate", "ingame" );
-		DevMsg( "Adding a server to the list:\n" );
-		KeyValuesDumpAsDevMsg( fi.mpGameDetails );
-		if ( !Q_stricmp( szDiff, "ingame" ) )
-		{
-			SetSwarmState( "#L4D360UI_ingame" );
-		}
-		else
-		{
-			SetSwarmState( "#L4D360UI_briefing" );
+			if (!Q_stricmp("finale", fi.mpGameDetails->GetString("game/state", "")))
+			{
+				// Display it as in finale, hide the playercount, but it's still joinable if they really want to.
+				SetGameDifficulty("#L4D360UI_WaitScreen_GameInFinale");
+				SetGamePlayerCount(0, 0);
+			}
+			else if (!GameModeHasDifficulty(szMode))
+			{
+				SetGameDifficulty(CFmtStr("#L4D360UI_Mode_%s", szMode));
+			}
+			else
+			{
+				char const *szDiff = fi.mpGameDetails->GetString("game/difficulty", "normal");
+				char chDiffBuffer[64];
+				Q_snprintf(chDiffBuffer, sizeof(chDiffBuffer), "#L4D360UI_Difficulty_%s_%s", szDiff, szMode);
+				SetGameDifficulty(chDiffBuffer);
+			}
+			SetGameChallenge(fi.mpGameDetails->GetString("game/challengeinfo/displaytitle"));
+
+			char const *szDiff = fi.mpGameDetails->GetString("game/swarmstate", "ingame");
+			DevMsg("Adding a server to the list:\n");
+			KeyValuesDumpAsDevMsg(fi.mpGameDetails);
+			if (!Q_stricmp(szDiff, "ingame"))
+			{
+				SetSwarmState("#L4D360UI_ingame");
+			}
+			else
+			{
+				SetSwarmState("#L4D360UI_briefing");
+			}
 		}
 	}
 	else
@@ -1806,10 +1814,10 @@ void FoundGames::AddServersToList()
 		fi.mIsJoinable = false;
 
 		fi.mPing = fi.GP_HIGH;
-		if ( !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
+		if ( pGameDetails && !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
 			fi.mPing = fi.GP_SYSTEMLINK;
 
-		fi.miPing = pGameDetails->GetInt( "system/ping", 0 );
+		fi.miPing = pGameDetails ? pGameDetails->GetInt( "system/ping", 0 ) : 0;
 
 		fi.mpGameDetails = pGameDetails;
 		fi.mFriendXUID = item->GetXUID();
@@ -1826,7 +1834,7 @@ void FoundGames::AddServersToList()
 		//
 		// Check if this is actually a non-joinable game
 		//
-		int numSlots = fi.mpGameDetails->GetInt( "members/numSlots", 0 );
+		int numSlots = fi.mpGameDetails ? fi.mpGameDetails->GetInt( "members/numSlots", 0 ) : 0;
 		if ( fi.IsDLC() || fi.IsOtherTitle() )
 		{
 			fi.mIsJoinable = false;

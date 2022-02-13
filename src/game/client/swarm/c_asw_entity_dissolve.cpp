@@ -37,7 +37,7 @@ END_RECV_TABLE()
 C_ASW_Entity_Dissolve::C_ASW_Entity_Dissolve( void )
 {
 	m_bLinkedToServerEnt = true;
-	m_pController = false;
+	m_pController = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ void C_ASW_Entity_Dissolve::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 	else
 	{
 		theMins = GetAbsOrigin();
-		theMaxs = theMaxs;
+		theMaxs = theMins;
 	}
 }
 
@@ -533,10 +533,9 @@ void C_ASW_Entity_Dissolve::ClientThink( void )
 		{
 			Release();
 
-			C_ClientRagdoll *pRagdoll = dynamic_cast <C_ClientRagdoll *> ( pAnimating );
-
-			if ( pRagdoll )
+			if ( pAnimating->IsClientRagdoll() )
 			{
+				C_ClientRagdoll* pRagdoll = assert_cast <C_ClientRagdoll*> (pAnimating);
 				pRagdoll->ReleaseRagdoll();
 			}
 		}

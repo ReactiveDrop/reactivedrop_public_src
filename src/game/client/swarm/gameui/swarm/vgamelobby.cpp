@@ -321,7 +321,7 @@ void CPlayerItem::SetPlayerInfo( KeyValues *pPlayer )
 	// Apply player information
 	//
 
-	XUID xuid = m_pInfo->GetUint64( "xuid", 0ull );
+	XUID xuid = m_pInfo ? m_pInfo->GetUint64( "xuid", 0ull ) : 0;
 
 	if ( m_pImgPlayerPortrait )
 	{
@@ -365,7 +365,7 @@ void CPlayerItem::SetPlayerInfo( KeyValues *pPlayer )
 		m_pBtnPlayerGamerTag->SetEnabled( m_pInfo != NULL );
 		m_pBtnPlayerGamerTag->SetVisible( m_pInfo != NULL );
 
-		char const *szName = m_pInfo->GetString( "name", "" );
+		char const *szName = m_pInfo ? m_pInfo->GetString( "name", "" ) : "Unknown";
 		szName = CUIGameData::Get()->GetPlayerName( xuid, szName );
 		m_pBtnPlayerGamerTag->SetText( szName );
 	}
@@ -1211,7 +1211,7 @@ void GameLobby::PaintBackground()
 		// There's no minor status yet, show some active content there
 		if ( StringHasPrefix( szGameMode, "team" ) )
 		{
-			int nSearchTime = pStats->GetInt( "search_team_time", 0 );
+			int nSearchTime = pStats ? pStats->GetInt( "search_team_time", 0 ) : 0;
 			if ( nSearchTime > 0 && nSearchTime < ui_lobby_stat_team_search_max.GetInt() )
 			{
 				const int numBufferBytes = 2 * MAX_PATH;

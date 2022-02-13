@@ -81,6 +81,8 @@ CNewParticleEffect *CNewParticleEffect::CreateOrAggregate( CBaseEntity *pOwner, 
 																	 Vector const &vecAggregatePosition, const char *pDebugName,
 																	 int nSplitScreenSlot )
 {
+	if (!pDef) { return NULL; }
+
 	CNewParticleEffect *pAggregateTarget = NULL;
 	// see if we should aggregate
 	bool bCanAggregate = ( pOwner == NULL ) && ( pDef->m_flAggregateRadius > 0.0 ) && ( cl_aggregate_particles.GetInt() != 0 );

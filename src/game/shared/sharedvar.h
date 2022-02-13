@@ -100,17 +100,25 @@ static void SharedVar_MakeEmpty( Type *pValue, int iCount = 1 )
 
 // EHANDLE Save/Restore specializations
 template<>
-TEMPLATE_STATIC void SharedVar_Save<EHANDLE>( ISave *pSave, EHANDLE *pValue, int iCount )
+#if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
+void SharedVar_Save<EHANDLE>( ISave *pSave, EHANDLE *pValue, int iCount )
+#else
+TEMPLATE_STATIC void SharedVar_Save<EHANDLE>(ISave* pSave, EHANDLE* pValue, int iCount)
+#endif
 {
-	pSave->WriteInt( &iCount );
-	pSave->WriteEHandle( pValue, iCount );
+	pSave->WriteInt(&iCount);
+	pSave->WriteEHandle(pValue, iCount);
 }
 
 template<>
-TEMPLATE_STATIC void SharedVar_Restore<EHANDLE>( IRestore *pRestore, EHANDLE *pValue )
+#if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
+void SharedVar_Restore<EHANDLE>( IRestore *pRestore, EHANDLE *pValue )
+#else
+TEMPLATE_STATIC void SharedVar_Restore<EHANDLE>(IRestore* pRestore, EHANDLE* pValue)
+#endif
 {
 	int iCount = pRestore->ReadInt();
-	pRestore->ReadEHandle( pValue, iCount );
+	pRestore->ReadEHandle(pValue, iCount);
 }
 
 // UtlVector Save/Restore specializations
@@ -172,8 +180,11 @@ public:
 
 	~CSharedVarBase( void )
 	{
-		m_pSharedMemory->Release();
-		m_pSharedMemory = NULL;
+		if ( m_pSharedMemory )
+		{
+			m_pSharedMemory->Release();
+			m_pSharedMemory = NULL;
+		}
 		m_pValue = NULL;
 	}
 
@@ -470,7 +481,7 @@ public:
 			SetX( ix );
 			SetY( iy );
 			SetZ( iz );
-			SetZ( iw );
+			SetW( iw );
 		}
 
 		const Type& operator=( const Type &val ) 
@@ -561,8 +572,11 @@ public:
 
 	~CSharedVarBase( void )
 	{
-		m_pSharedMemory->Release();
-		m_pSharedMemory = NULL;
+		if ( m_pSharedMemory )
+		{
+			m_pSharedMemory->Release();
+			m_pSharedMemory = NULL;
+		}
 		m_pValue = NULL;
 	}
 
@@ -587,8 +601,11 @@ public:
 
 	~CSharedVarBase( void )
 	{
-		m_pSharedMemory->Release();
-		m_pSharedMemory = NULL;
+		if ( m_pSharedMemory )
+		{
+			m_pSharedMemory->Release();
+			m_pSharedMemory = NULL;
+		}
 		m_pValue = NULL;
 	}
 
@@ -905,8 +922,11 @@ public:
 
 	~CSharedVarBase( void )
 	{
-		m_pSharedMemory->Release();
-		m_pSharedMemory = NULL;
+		if ( m_pSharedMemory )
+		{
+			m_pSharedMemory->Release();
+			m_pSharedMemory = NULL;
+		}
 		m_pValue = NULL;
 	}
 

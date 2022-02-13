@@ -15,7 +15,6 @@ BEGIN_DATADESC( CASW_Spawn_Group )
 	DEFINE_KEYFIELD( m_iszSpawnerNames[5], FIELD_STRING, "SpawnerName05"),
 	DEFINE_KEYFIELD( m_iszSpawnerNames[6], FIELD_STRING, "SpawnerName06"),
 	DEFINE_KEYFIELD( m_iszSpawnerNames[7], FIELD_STRING, "SpawnerName07"),
-	DEFINE_KEYFIELD( m_iszSpawnerNames[8], FIELD_STRING, "SpawnerName08"),
 END_DATADESC()
 
 CASW_Spawn_Group::CASW_Spawn_Group()

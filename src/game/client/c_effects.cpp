@@ -962,7 +962,7 @@ void CClient_Precipitation::CreateAshParticle( void )
 			pParticle->m_uchColor[2] = color;
 
 			pParticle->m_uchStartSize	= 1;
-			pParticle->m_uchEndSize		= 1.5;
+			pParticle->m_uchEndSize		= 1;
 
 			pParticle->m_uchStartAlpha	= 255;
 
@@ -2045,7 +2045,7 @@ private:
 
 	bool							m_bRayParticles;
 
-	typedef struct SnowFall_t
+	struct SnowFall_t
 	{
 		PMaterialHandle			m_hMaterial;
 		CClient_Precipitation	*m_pEntity;
@@ -2394,15 +2394,18 @@ void CSnowFallManager::CreateSnowFallParticles( float flCurrentTime, float flRad
 	if ( m_nActiveSnowCount > 0 )
 	{
 		C_BaseEntity *pEntity = m_aSnow[ m_aActiveSnow[0] ].m_pEntity;
-		int density = pEntity->GetRenderAlpha();
-		density = clamp( density, 0, 100 );
-		if ( pEntity && density > 0 )
+		if (pEntity)
 		{
-			m_tSnowFallParticleTimer.ResetRate( SnowfallRate * density * 0.01f );
-		}
-		else
-		{
-			m_tSnowFallParticleTimer.ResetRate( SnowfallRate );
+			int density = pEntity->GetRenderAlpha();
+			density = clamp(density, 0, 100);
+			if (density > 0)
+			{
+				m_tSnowFallParticleTimer.ResetRate(SnowfallRate * density * 0.01f);
+			}
+			else
+			{
+				m_tSnowFallParticleTimer.ResetRate(SnowfallRate);
+			}
 		}
 	}
 	else
@@ -2636,7 +2639,13 @@ bool SnowFallManagerCreate( CClient_Precipitation *pSnowEntity )
 			}
 			s_pSnowFallMgr[ i ]->SetSplitScreenPlayerSlot( i );
 			s_pSnowFallMgr[ i ]->CreateEmitter();
-			s_pSnowFallMgr[ i ]->InitializeAsClientEntity( NULL, false );
+			if ( !s_pSnowFallMgr[ i ]->InitializeAsClientEntity( NULL, false) )
+			{
+				Msg("Error, couldn't Initialize Snow AsClientEntity\n");
+				UTIL_Remove(s_pSnowFallMgr[i]);
+				s_pSnowFallMgr[i] = NULL;
+				continue;
+			}
 			g_pClientLeafSystem->EnableRendering( s_pSnowFallMgr[ i ]->RenderHandle(), false );
 		}
 

@@ -1022,7 +1022,7 @@ void C_WaterExplosionEffect::CreateCore( void )
 	
 	float radius = 50.0f;
 
-	unsigned int flags;
+	unsigned int flags = 0;
 
 	// Base vertical shaft
 	FXLineData_t lineData;

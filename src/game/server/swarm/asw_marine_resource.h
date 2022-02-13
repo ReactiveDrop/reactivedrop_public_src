@@ -196,6 +196,7 @@ public:
 	int m_iElectricArmorReduction;
 	int m_iHealAmpGunHeals;
 	int m_iHealAmpGunAmps;
+	int m_iMedRifleHeals;
 
 private:
 	CASW_Intensity* m_pIntensity;

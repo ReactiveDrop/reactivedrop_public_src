@@ -300,23 +300,29 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 			m_bPlayingEmoteGesture = false;
 			bool bShortReloadAnim = false;
 
-#ifdef CLIENT_DLL
-			C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-#else
-			CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
-#endif			
 			float fReloadTime = 2.2f;
-			CASW_Weapon* pActiveWeapon = pMarine->GetActiveASWWeapon();
-			if (pActiveWeapon && pActiveWeapon->GetWeaponInfo())
-			{
-				fReloadTime = pActiveWeapon->GetWeaponInfo()->flReloadTime;
 
-				if (pActiveWeapon->ASW_SelectWeaponActivity(ACT_RELOAD) == ACT_RELOAD_PISTOL)
-					bShortReloadAnim = true;
-			}
-			if (pMarine)
+			CBaseAnimatingOverlay* pOuter = GetOuter();
+			if ( pOuter->Classify() == CLASS_ASW_MARINE )
+			{
+				CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pOuter);
+
+				CASW_Weapon* pActiveWeapon = pMarine->GetActiveASWWeapon();
+				if (pActiveWeapon)
+				{
+					const CASW_WeaponInfo* pWpnInfo = pActiveWeapon->GetWeaponInfo();
+					if (pWpnInfo)
+					{
+						fReloadTime = pWpnInfo->flReloadTime;
+
+						if (pActiveWeapon->ASW_SelectWeaponActivity(ACT_RELOAD) == ACT_RELOAD_PISTOL)
+							bShortReloadAnim = true;
+					}
+				}
+
 				fReloadTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_RELOADING);
-						
+			}
+
 			// calc playback rate needed to play the whole anim in this time
 			// normal weapon reload anim is 48fps and 105 frames = 2.1875 seconds
 			// normal weapon reload time in script is 2.2 seconds
@@ -327,7 +333,7 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 			else
 				m_fReloadPlaybackRate = 105.6f / (fReloadTime * 48.0f);
 
-			m_bReloading = true;			
+			m_bReloading = true;
 			m_flReloadCycle = 0;
 		}
 	}
@@ -343,11 +349,11 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 
 bool CASWPlayerAnimState::DoAnimationEventForMiscLayer( PlayerAnimEvent_t event )
 {
-#ifdef CLIENT_DLL
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-#else
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
-#endif		
+	CASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pOuter);
+
 	bool bHasMeleeAttack = ( pMarine && pMarine->GetCurrentMeleeAttack() );
 
 	if ( event >= PLAYERANIMEVENT_MELEE && event <= PLAYERANIMEVENT_MELEE_LAST )
@@ -511,13 +517,8 @@ bool CASWPlayerAnimState::DoAnimationEventForMiscLayer( PlayerAnimEvent_t event 
 			m_bMiscNoOverride = true;
 			m_bPlayingEmoteGesture = false;
 			m_fMiscPlaybackRate = 1.0f;
-#ifdef CLIENT_DLL
-			C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-#else
-			CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
-#endif		
-			if (pMarine)
-				m_fMiscPlaybackRate *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_SPEED);
+
+			m_fMiscPlaybackRate *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_SPEED);
 		}
 		return true;
 	}
@@ -585,11 +586,12 @@ int CASWPlayerAnimState::CalcReloadLayerSequence()
 #ifdef ASW_TRANSLATE_ACTIVITIES_BY_WEAPON
 
 	Activity idealActivity = ACT_RELOAD;
-#ifdef CLIENT_DLL
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-#else
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
-#endif
+
+	CASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pOuter);
+
 	bool bHasWeapon = (pMarine && pMarine->GetActiveASWWeapon());
 	// allow our weapon to decide on the reload sequence
 	if (bHasWeapon)
@@ -615,7 +617,13 @@ int CASWPlayerAnimState::CalcReloadFailLayerSequence()
 
 void CASWPlayerAnimState::MiscCycleRewind( float flCycle )
 {
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
+	CASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+	{
+		pMarine = assert_cast<CASW_Marine*>(pOuter);
+	}
+
 	CASW_Weapon *pWeapon = pMarine ? pMarine->GetActiveASWWeapon() : NULL;
 
 	Assert( pMarine );
@@ -624,7 +632,8 @@ void CASWPlayerAnimState::MiscCycleRewind( float flCycle )
 	float flMiscCycleRewind = flCycle;
 	UpdateLayerSequenceGeneric( RELOADSEQUENCE_LAYER, bMiscEnabled, flMiscCycleRewind, m_iMiscSequence, false, m_flMiscBlendIn, m_flMiscBlendOut, m_bMiscOnlyWhenStill, m_fMiscPlaybackRate, false );
 	m_bMiscCycleRewound = true;
-	pMarine->InvalidateBoneCache();
+	if ( pMarine )
+		pMarine->InvalidateBoneCache();
 
 	if ( pWeapon )
 	{
@@ -780,7 +789,10 @@ void CASWPlayerAnimState::ComputeWeaponSwitchSequence()
 void CASWPlayerAnimState::ComputeMiscSequence()
 {
 	// Run melee anims on the server so we can get bone positions for damage traces, etc
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
+	CASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pOuter);
 	
 // 	bool bFiring = pMarine && pMarine->GetActiveASWWeapon() && pMarine->GetActiveASWWeapon()->IsFiring() && !pMarine->GetActiveASWWeapon()->ASWIsMeleeWeapon();
 // 	if (m_bPlayingMisc && bFiring)
@@ -965,14 +977,13 @@ bool CASWPlayerAnimState::HandleJumping()
 
 bool CASWPlayerAnimState::IsCarryingSuitcase()
 {
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-	if (pMarine)
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
 	{
-		C_ASW_Weapon_Ammo_Bag *pAmmoBag = dynamic_cast<C_ASW_Weapon_Ammo_Bag*>(pMarine->GetActiveASWWeapon());
-		if (pAmmoBag)
-		{
+		C_ASW_Marine* pMarine = assert_cast<CASW_Marine*>(pOuter);
+		CASW_Weapon* pWeapon = pMarine->GetActiveASWWeapon();
+		if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
 			return true;
-		}
 	}
 	return false;
 }
@@ -992,21 +1003,25 @@ void CASWPlayerAnimState::AddActivityModifier( const char *szName )
 void CASWPlayerAnimState::UpdateActivityModifiers()
 {
 	m_ActivityModifiers.Purge();
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( GetOuter() );
-	if ( !pMarine )
-		return;	
-
-	// TODO: If the activity modifier isn't found in the activity modifiers table, then add it to the table?  Otherwise debug output of activity modifiers will be missing entries that don't exist in the mdl
-	CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
-	if ( pWeapon )
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
 	{
-		if ( pWeapon->IsFiring() )
-		{
-			AddActivityModifier( "Firing" );
-		}
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pOuter);
 
-		AddActivityModifier( pWeapon->GetWeaponInfo()->szAnimationPrefix );
-	}	
+		// TODO: If the activity modifier isn't found in the activity modifiers table, then add it to the table?  Otherwise debug output of activity modifiers will be missing entries that don't exist in the mdl
+		CASW_Weapon* pWeapon = pMarine->GetActiveASWWeapon();
+		if (pWeapon)
+		{
+			if (pWeapon->IsFiring())
+			{
+				AddActivityModifier("Firing");
+			}
+
+			const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+			if (pWpnInfo)
+				AddActivityModifier(pWpnInfo->szAnimationPrefix);
+		}
+	}
 }
 bool CASWPlayerAnimState::ShouldResetMainSequence( int iCurrentSequence, int iNewSequence )
 {
@@ -1017,7 +1032,11 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 {
 	UpdateActivityModifiers();
 
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
+	CASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pOuter);
+
 	if ( !pMarine )
 		return ACT_IDLE;
 
@@ -1057,7 +1076,7 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 			else
 			{
 				// TODO: Move CROUCHIDLE to activity modifiers, if we want to keep this AI behavior
-				if (pMarine && pMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION && !pMarine->IsInhabited())
+				if (pMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION && !pMarine->IsInhabited())
 				{
 #ifdef CLIENT_DLL
 					if (asw_prevent_ai_crouch.GetBool() && ASWGameResource())
@@ -1176,7 +1195,10 @@ void CASWPlayerAnimState::ClearAnimationLayers()
 void CASWPlayerAnimState::GetOuterAbsVelocity( Vector& vel ) const
 {
 #if defined( CLIENT_DLL )
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
+	C_ASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<C_ASW_Marine*>(pOuter);
 	// for inhabited, predicted marines, just grab their actual velocity rather than
 	//  relying on (the seemingly broken?) estimateabsvelocity
 	if ( pMarine != NULL && pMarine->IsInhabited() && C_BasePlayer::IsLocalPlayer( pMarine->GetCommander() ) )
@@ -1282,8 +1304,11 @@ void CASWPlayerAnimState::ComputePoseParam_BodyYaw()
 
 float CASWPlayerAnimState::SetOuterBodyYaw( float flValue )
 {
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());	
-	int body_yaw = GetOuter()->LookupPoseParameter( "aim_yaw" );
+	C_ASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<C_ASW_Marine*>(pOuter);
+	int body_yaw = pOuter->LookupPoseParameter( "aim_yaw" );
 	if ( body_yaw < 0 )
 	{
 		return 0;
@@ -1340,11 +1365,11 @@ Activity CASWPlayerAnimState::TranslateActivity(Activity actDesired)
 
 #ifdef ASW_TRANSLATE_ACTIVITIES_BY_WEAPON
 
-#ifdef CLIENT_DLL
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOuter());
-#else
-	CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(GetOuter());
-#endif
+	C_ASW_Marine* pMarine = NULL;
+	CBaseAnimatingOverlay* pOuter = GetOuter();
+	if ( pOuter->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<C_ASW_Marine*>(pOuter);
+
 	if ( pMarine && pMarine->GetActiveASWWeapon() )
 	{
 		// allow the weapon to decide which type of animation to play

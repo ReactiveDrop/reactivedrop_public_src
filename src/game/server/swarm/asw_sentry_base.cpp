@@ -309,6 +309,25 @@ void CASW_Sentry_Base::MarineStartedUsing(CASW_Marine* pMarine)
 {
 	EmitSound( "ASW_Sentry.SetupLoop" );
 
+	if ( GetModelPtr() && GetModelPtr()->numskinfamilies() >= kGUNTYPE_MAX + 2 ) // modeller guy says 2 first textures are a must
+	{
+		switch ( GetGunType() )
+		{
+			case kAUTOGUN:
+				this->m_nSkin = 2;
+				break;
+			case kCANNON:
+				this->m_nSkin = 5;
+				break;
+			case kFLAME:
+				this->m_nSkin = 4;
+				break;
+			case kICE:
+				this->m_nSkin = 3;
+				break;
+		}
+	}
+
 	if ( !m_bIsInUse && m_fAssembleProgress < 1.0f )
 	{
 		IGameEvent * event = gameeventmanager->CreateEvent( "sentry_start_building" );

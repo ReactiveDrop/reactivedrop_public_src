@@ -326,7 +326,6 @@ public:
 	void ReportNeedTwoPlayers();
 
 	bool m_bCheckAllPlayersLeft;
-	float m_fEmptyServerTime;	
 
 	// stepped launching
 	virtual void UpdateLaunching();
@@ -445,6 +444,8 @@ public:
 	CNetworkVar(unsigned char, m_iGameState);
 
 	bool ShouldAllowCameraRotation( void );
+	
+	bool ShouldAllowMarineStrafePush(void);
 
 #ifdef CLIENT_DLL
 

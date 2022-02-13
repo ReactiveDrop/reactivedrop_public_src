@@ -187,7 +187,10 @@ void CASW_VGUI_Door_Tooltip::SetDoor(C_ASW_Door *pDoor)
 
 C_ASW_Door* CASW_VGUI_Door_Tooltip::GetDoor()
 {
-	return dynamic_cast<C_ASW_Door*>(m_hDoor.Get());
+	CBaseEntity* pDoor = m_hDoor.Get();
+	if ( pDoor && pDoor->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<C_ASW_Door*>(pDoor);
+	return NULL;
 }
 
 void CASW_VGUI_Door_Tooltip::DrawHorizontalBar(int x, int y, int width, int height, float fFraction, int r, int g, int b, int a)

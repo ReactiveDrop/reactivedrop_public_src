@@ -75,7 +75,10 @@ void CNB_Select_Campaign_Entry::OnThink()
 			if (m_szCampaignName[0] == '\0')
 			{
 				m_pName->SetText( "" );
-				m_pImage->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white );
+				if (m_pImage)
+				{
+					m_pImage->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white);
+				}
 				return;
 			}
 
@@ -122,7 +125,10 @@ void CNB_Select_Campaign_Entry::OnThink()
 	else
 	{
 		m_pName->SetText( "" );
-		m_pImage->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white );
+		if (m_pImage)
+		{
+			m_pImage->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white);
+		}
 	}
 }
 

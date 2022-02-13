@@ -123,8 +123,6 @@ void C_ASW_Hack_Computer::ClientThink()
 			{
 				if (m_fStartedHackTime == 0 && m_iShowOption == ASW_HACK_OPTION_OVERRIDE)
 					m_fStartedHackTime = gpGlobals->curtime;
-				Msg("C_ASW_Hack_Computer calling sethackoption as m_iShowOption = %d and m_iOldShowOption = %d\n", 
-					m_iShowOption, m_iOldShowOption);
 				if (m_hComputerFrame.Get())
 					m_hComputerFrame->SetHackOption(m_iShowOption);
 				m_iOldShowOption = m_iShowOption;

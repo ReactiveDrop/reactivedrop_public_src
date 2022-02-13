@@ -99,6 +99,7 @@
 	"player_dropped_weapon"
 	{
 		"userid"		"short"		// user ID on server
+		"entindex"		"long"		// entindex of the dropped weapon
 	}
 	
 	"marine_selected"
@@ -397,6 +398,19 @@
 	"weapon_offhand_activate"
 	{
 		"userid"			"short"		// user ID on server
+		"marine"			"long"		// entindex of the marine
+		"weapon"			"long"		// entindex of the weapon
+	}
+	
+	"laser_mine_active"
+	{
+		"entindex"			"long"		// entindex of the laser mine
+		"marine"			"long"		// entindex of the marine
+	}
+
+	"cluster_grenade_create"
+	{
+		"entindex"			"long"		// entindex of the cluster grenade
 		"marine"			"long"		// entindex of the marine
 		"weapon"			"long"		// entindex of the weapon
 	}

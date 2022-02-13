@@ -128,7 +128,7 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 
 unsigned int CASW_Gas_Grenade_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
@@ -419,6 +419,11 @@ void CASW_Gas_Grenade_Projectile::DrawDebugGeometryOverlays()
 
 void CASW_Gas_Grenade_Projectile::StopLoopingSounds()
 {
+	if ( m_pRadSound )
+	{
+		CSoundEnvelopeController::GetController().SoundDestroy( m_pRadSound );
+		m_pRadSound = NULL;
+	}
 	BaseClass::StopLoopingSounds();
 }
 

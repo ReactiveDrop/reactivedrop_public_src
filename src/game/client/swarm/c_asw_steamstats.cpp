@@ -371,6 +371,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "electric_armor_reduction", m_iElectricArmorReduction );
 	FETCH_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	FETCH_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
+	FETCH_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
 	FETCH_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	// Fetch starting equip information
@@ -552,6 +553,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iElectricArmorReduction += GetDebriefStats()->GetElectricArmorReduction( iMarineIndex );
 	m_iHealAmpGunHeals += GetDebriefStats()->GetHealampgunHeals( iMarineIndex );
 	m_iHealAmpGunAmps += GetDebriefStats()->GetHealampgunAmps( iMarineIndex );
+	m_iMedRifleHeals += GetDebriefStats()->GetMedRifleHeals( iMarineIndex );
 	m_iTotalPlayTime += (int)GetDebriefStats()->m_fTimeTaken;
 
 	// Get starting equips
@@ -610,6 +612,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "electric_armor_reduction", m_iElectricArmorReduction );
 	SEND_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	SEND_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
+	SEND_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
 	SEND_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	SEND_STEAM_STATS( CFmtStr( "equips.%s.primary", pPrimary->m_EquipClass), m_PrimaryEquipCounts[iPrimaryIndex] );
@@ -753,7 +756,15 @@ float CASW_Steamstats::GetFavoriteMarineClassPercent( void )
 		if( !pProfile )
 			continue;
 
-		int iProfileClass = pProfile->GetMarineClass();
+		int iProfileClass;
+		if (pProfile->GetMarineClass() != MARINE_CLASS_UNDEFINED)
+		{
+			iProfileClass = pProfile->GetMarineClass();
+		}
+		else
+		{
+			iProfileClass = MARINE_CLASS_NCO;
+		}
 		iClassCounts[iProfileClass] += m_MarineSelectionCounts[i];
 		fTotal += m_MarineSelectionCounts[i];
 		if( iClassCounts[iFav] < iClassCounts[iProfileClass] )
@@ -1044,6 +1055,29 @@ bool CASW_Steamstats::IsOfficialCampaign()
 	return ::IsOfficialCampaign();
 }
 
+static uint32 GetGameVersion()
+{
+	static uint32 s_iGameVersion = 0;
+	if ( s_iGameVersion == 0 )
+	{
+		CUtlVectorAutoPurge<char *> productVersionParts;
+		V_SplitString( engine->GetProductVersionString(), ".", productVersionParts );
+
+		Assert( productVersionParts.Count() == 4 );
+		while ( productVersionParts.Count() < 4 )
+		{
+			productVersionParts.AddToTail( new char[2]{ '0', '\0' } );
+		}
+
+		s_iGameVersion = strtoul( productVersionParts[0], NULL, 10 ) << 24;
+		s_iGameVersion |= strtoul( productVersionParts[1], NULL, 10 ) << 16;
+		s_iGameVersion |= strtoul( productVersionParts[2], NULL, 10 ) << 8;
+		s_iGameVersion |= strtoul( productVersionParts[3], NULL, 10 );
+	}
+
+	return s_iGameVersion;
+}
+
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
 	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() )
@@ -1172,6 +1206,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
 	m_LeaderboardScoreDetails.m_iDifficulty = ASWGameRules()->GetSkillLevel();
 	m_LeaderboardScoreDetails.m_iModeFlags = ( ASWGameRules()->IsOnslaught() ? 1 : 0 ) | ( ASWGameRules()->IsHardcoreFF() ? 2 : 0 );
+	m_LeaderboardScoreDetails.m_iGameVersion = GetGameVersion();
 	if ( asw_stats_leaderboard_debug.GetBool() )
 	{
 		DevMsg( "Leaderboard score: %d\n", m_iLeaderboardScore );
@@ -1517,8 +1552,26 @@ static const char *LB_whitelist[] =
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng3_c2/",
 	"RD_imba_SpeedRun_2082369328_asbi_weapons_balancing_rng3_c2/",
 
+	"RD_SpeedRun_2178770089_turbo/",
+	"RD_imba_SpeedRun_2178770089_turbo/",
+
 	"RD_SpeedRun_2178770089_turboasbi/",
-	"RD_imba_SpeedRun_2178770089_turboasbi/"
+	"RD_imba_SpeedRun_2178770089_turboasbi/",
+
+	"RD_SpeedRun_2178770089_turbosingleplayer/",
+	"RD_imba_SpeedRun_2178770089_turbosingleplayer/",
+
+	"RD_SpeedRun_2178770089_turboasbisingleplayer/",
+	"RD_imba_SpeedRun_2178770089_turboasbisingleplayer/",
+
+	"RD_SpeedRun_2178770089_turbo_asbi_wb_rng2/",
+	"RD_imba_SpeedRun_2178770089_turbo_asbi_wb_rng2/",
+
+	"RD_SpeedRun_2178770089_turbo_asbi_wb_rng2_c2/",
+	"RD_imba_SpeedRun_2178770089_turbo_asbi_wb_rng2_c2/",
+
+	"RD_SpeedRun_2381921032_asbi2077/",
+	"RD_imba_SpeedRun_2381921032_asbi2077/",
 };
 
 static bool StartsWith( const char *str, const char *pre )

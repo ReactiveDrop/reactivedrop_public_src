@@ -57,30 +57,28 @@ void CASW_Barrel_Explosive::Precache()
 
 int CASW_Barrel_Explosive::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	int saveFlags = m_takedamage;
-
 	// don't be destroyed by buzzers
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_BUZZER )
-	{
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_BUZZER )
 		return 0;
-	}
 
 	// prevent barrel exploding when knocked around
 	if ( info.GetDamageType() & DMG_CRUSH )
 		return 0;
 	
 	CASW_Marine* pMarine = NULL;
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		m_hAttacker = info.GetAttacker();
+		m_hAttacker = pAttacker;
 
-		pMarine = assert_cast< CASW_Marine* >( info.GetAttacker() );
+		pMarine = assert_cast< CASW_Marine* >(pAttacker);
 		// prevent AI marines blowing up barrels as it makes the player ANGRY ANGRY
 		// BenLubar(deathmatch-improvements): ...except in deathmatch
-		if ( pMarine && !pMarine->IsInhabited() && !ASWDeathmatchMode() )
+		if ( !pMarine->IsInhabited() && !ASWDeathmatchMode() )
 			return 0;
 	}
 
+	int saveFlags = m_takedamage;
 	// don't burst open if melee'd
 	if ( info.GetDamageType() & ( DMG_CLUB | DMG_SLASH ) )
 	{

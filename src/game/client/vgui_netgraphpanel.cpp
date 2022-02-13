@@ -53,9 +53,9 @@ static ConVar	net_graphproportionalfont( "net_graphproportionalfont", "1", FCVAR
 
 #define NUM_LATENCY_SAMPLES 8
 
-#define GRAPH_RED	(0.9 * 255)
-#define GRAPH_GREEN (0.9 * 255)
-#define GRAPH_BLUE	(0.7 * 255)
+#define GRAPH_RED	(int)(0.9 * 255)
+#define GRAPH_GREEN (int)(0.9 * 255)
+#define GRAPH_BLUE	(int)(0.7 * 255)
 
 #define LERP_HEIGHT 24
 
@@ -215,7 +215,7 @@ CNetGraphPanel::CNetGraphPanel( VPANEL parent )
 	SetSize( w, h );
 	SetPos( 0, 0 );
 	SetVisible( false );
-	SetCursor( null );
+	SetCursor( 0 );
 
 	m_hFont = 0;
 	m_hFontProportional = 0;
@@ -301,6 +301,9 @@ void NetgraphFontChangeCallback( IConVar *var, const char *pOldValue, float flOl
 
 void CNetGraphPanel::OnFontChanged()
 {
+	if ( !m_hFontProportional )
+		return;
+
 	// Estimate the width of our panel.
 	char str[512];
 	wchar_t ustr[512];
@@ -484,6 +487,10 @@ void CNetGraphPanel::DrawTimes( vrect_t vrect, cmdinfo_t *cmdinfo, int x, int w,
 	{
 		i = ( m_OutgoingSequence - a ) & ( TIMINGS - 1 );
 		h = MIN( ( cmdinfo[i].cmd_lerp / 3.0 ) * LERP_HEIGHT, LERP_HEIGHT );
+		if ( h < 0 )
+		{
+			h = LERP_HEIGHT;
+		}
 
 		rcFill.x		= x + w -a - 1;
 		rcFill.width	= 1;
@@ -640,7 +647,7 @@ void CNetGraphPanel::GetFrameData( 	INetChannelInfo *netchannel, int *biggest_me
 		*biggest_message = 1000;
 	}
 
-	if ( msg_count >= 1 )
+	if ( msg_count > 1 )
 	{
 		*avg_message /= msg_count;
 

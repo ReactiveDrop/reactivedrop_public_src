@@ -106,6 +106,8 @@ ConVar ent_show_contexts( "ent_show_contexts", "0", 0, "Show entity contexts in 
 
 ConVar sv_script_think_interval("sv_script_think_interval", "0.1");
 
+extern ConVar sv_skip_velocities_warnings;
+
 // This table encodes edict data.
 void SendProxy_AnimTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
 {
@@ -696,6 +698,7 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 	m_iParentAttachment = 0;
 	CollisionProp()->Init( this );
 	NetworkProp()->Init( this );
+	m_bForcePurgeFixedupStrings = false;
 
 	m_fadeMinDist = 0;
 	m_fadeMaxDist = 0;
@@ -799,6 +802,7 @@ CBaseEntity::~CBaseEntity( )
 		g_bDisableEhandleAccess = false;
 		CBaseEntity::PhysicsRemoveTouchedList( this );
 		CBaseEntity::PhysicsRemoveGroundList( this );
+		SetGroundEntity( NULL ); // remove us from the ground entity if we are on it
 		DestroyAllDataObjects();
 		g_bDisableEhandleAccess = true;
 
@@ -1219,7 +1223,7 @@ void CBaseEntity::DrawVPhysicsObjectCenterAndContactPoints(IPhysicsObject *obj)
 			else
 			{
 				mins = WorldAlignMins();
-				maxs = WorldAlignMins();
+				maxs = WorldAlignMaxs();
 			}
 			NDebugOverlay::BoxAngles( pos, mins, maxs, angles, 255, 255, 0, 16, 0 );
 		}
@@ -1377,7 +1381,7 @@ int CBaseEntity::DrawDebugTextOverlays(void)
 			EntityText( offset, tempstr, 0 );
 			offset++;
 
-			Q_snprintf( tempstr, sizeof(tempstr), "cell: (%d, %d, %d)\n", m_cellX, m_cellY, m_cellZ );
+			Q_snprintf( tempstr, sizeof(tempstr), "cell: (%d, %d, %d)\n", m_cellX.Get(), m_cellY.Get(), m_cellZ.Get() );
 			EntityText( offset, tempstr, 0 );
 			offset++;
 
@@ -1561,6 +1565,7 @@ void CBaseEntity::SetParent( CBaseEntity *pParentEntity, int iAttachment )
 
 		// Transform step data from parent to worldspace
 		TransformStepData_ParentToWorld( pOldParent );
+		UpdatePhysicsShadowToCurrentPosition( 0 );
 		return;
 	}
 
@@ -1628,6 +1633,10 @@ void CBaseEntity::SetParent( CBaseEntity *pParentEntity, int iAttachment )
 			}
 			VPhysicsDestroyObject();
 			VPhysicsInitShadow(false, false);
+		}
+		else
+		{
+			UpdatePhysicsShadowToCurrentPosition( 0 );
 		}
 	}
 	CollisionRulesChanged();
@@ -1794,14 +1803,14 @@ int CBaseEntity::TakeHealth( float flHealth, int bitsDamageType )
 
 int CBaseEntity::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	Vector			vecTemp;
-
 	if ( !edict() || !m_takedamage )
 		return 0;
 
-	if ( info.GetInflictor() )
+	Vector	vecTemp;
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor )
 	{
-		vecTemp = info.GetInflictor()->WorldSpaceCenter() - ( WorldSpaceCenter() );
+		vecTemp = pInflictor->WorldSpaceCenter() - ( WorldSpaceCenter() );
 	}
 	else
 	{
@@ -1825,8 +1834,7 @@ int CBaseEntity::OnTakeDamage( const CTakeDamageInfo &info )
 		}
 		else
 		{
-			if ( info.GetInflictor() && (GetMoveType() == MOVETYPE_WALK || GetMoveType() == MOVETYPE_STEP) && 
-				!info.GetAttacker()->IsSolidFlagSet(FSOLID_TRIGGER) )
+			if ( pInflictor && (GetMoveType() == MOVETYPE_WALK || GetMoveType() == MOVETYPE_STEP) && !info.GetAttacker()->IsSolidFlagSet(FSOLID_TRIGGER) )
 			{
 				Vector vecDir, vecInflictorCentroid;
 				vecDir = WorldSpaceCenter( );
@@ -2291,8 +2299,6 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_FIELD( m_flGroundChangeTime, FIELD_TIME ),
 	DEFINE_GLOBAL_KEYFIELD( m_ModelName, FIELD_MODELNAME, "model" ),
 
-	DEFINE_KEYFIELD( m_AIAddOn, FIELD_STRING, "addon" ),
-	
 	DEFINE_KEYFIELD( m_vecBaseVelocity, FIELD_VECTOR, "basevelocity" ),
 	DEFINE_FIELD( m_vecAbsVelocity, FIELD_VECTOR ),
 	DEFINE_KEYFIELD( m_vecAngVelocity, FIELD_VECTOR, "avelocity" ),
@@ -2414,6 +2420,7 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	// DEFINE_FIELD( m_fDataObjectTypes, FIELD_INTEGER ),
 
 	DEFINE_KEYFIELD( m_bLagCompensate, FIELD_BOOLEAN, "LagCompensate" ),
+	DEFINE_FIELD( m_bForcePurgeFixedupStrings, FIELD_BOOLEAN ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities" )
@@ -2493,6 +2500,11 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFirstMoveChild,  "FirstMoveChild", "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptNextMovePeer, "NextMovePeer", "" )
 
+	// Mad Orange
+	DEFINE_SCRIPTFUNC_NAMED(ScriptSetParent, "SetParent", "Set the entity's parent")
+	DEFINE_SCRIPTFUNC_NAMED(ScriptClearParent, "ClearParent", "Clear the entity's parent")
+	//
+
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromString, "__KeyValueFromString", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromFloat, "__KeyValueFromFloat", SCRIPT_HIDE )
 	DEFINE_SCRIPTFUNC_NAMED( KeyValueFromInt, "__KeyValueFromInt", SCRIPT_HIDE )
@@ -2558,9 +2570,9 @@ void CBaseEntity::UpdateOnRemove( void )
 	if ( edict() )
 	{
 		AddFlag( FL_KILLME );
+		/* <<TODO>>
 		if ( GetFlags() & FL_GRAPHED )
 		{
-			/*	<<TODO>>
 			// this entity was a LinkEnt in the world node graph, so we must remove it from
 			// the graph since we are removing it from the world.
 			for ( int i = 0 ; i < WorldGraph.m_cLinks ; i++ )
@@ -2571,8 +2583,9 @@ void CBaseEntity::UpdateOnRemove( void )
 					WorldGraph.m_pLinkPool [ i ].m_pLinkEnt = NULL;
 				}
 			}
-			*/
+			
 		}
+		*/
 	}
 
 	if ( m_iGlobalname != NULL_STRING )
@@ -2581,6 +2594,20 @@ void CBaseEntity::UpdateOnRemove( void )
 		// it assumes your changing levels or the game will end
 		// causing the whole list to be flushed
 		GlobalEntity_SetState( m_iGlobalname, GLOBAL_DEAD );
+	}
+
+	// Remove the fixed up name from this entity
+	// we need to do this now since we will set the name to nothing later
+	if ( m_bForcePurgeFixedupStrings )
+	{
+		if ( m_iName.Get() != NULL_STRING )
+		{
+			RemovePooledString( STRING( m_iName.Get() ) );
+		}
+		if (m_iszScriptId != NULL_STRING)
+		{
+			RemovePooledString( STRING( m_iszScriptId ) );
+		}
 	}
 
 	VPhysicsDestroyObject();
@@ -3383,13 +3410,15 @@ bool CBaseEntity::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **p
 		if ( tr.m_pEnt == pEntity )
 			return true;
 
+#ifndef SWARM_DLL
 		// Got line of sight on the vehicle the player is driving!
-		if ( pEntity && pEntity->IsPlayer() )
+		if ( pEntity->IsPlayer() )
 		{
 			CBasePlayer *pPlayer = assert_cast<CBasePlayer*>( pEntity );
 			if ( tr.m_pEnt == pPlayer->GetVehicleEntity() )
 				return true;
 		}
+#endif
 
 		if (ppBlocker)
 		{
@@ -4433,24 +4462,26 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 				{
 					// found a match
 
-					char szBuffer[256];
-					// mapper debug message
-					if (pCaller != NULL)
+					if ( developer.GetBool() )
 					{
-						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input %s: %s.%s(%s)\n", gpGlobals->curtime, STRING(pCaller->m_iName.Get()), GetDebugName(), szInputName, Value.String() );
-					}
-					else
-					{
-						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input <NULL>: %s.%s(%s)\n", gpGlobals->curtime, GetDebugName(), szInputName, Value.String() );
-					}
-					DevMsg( 2, szBuffer );
-					ADD_DEBUG_HISTORY( HISTORY_ENTITY_IO, szBuffer );
+						char szBuffer[256];
+						// mapper debug message
+						if (pCaller != NULL)
+						{
+							Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input %s: %s.%s(%s)\n", gpGlobals->curtime, STRING(pCaller->m_iName.Get()), GetDebugName(), szInputName, Value.String() );
+						}
+						else
+						{
+							Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input <NULL>: %s.%s(%s)\n", gpGlobals->curtime, GetDebugName(), szInputName, Value.String() );
+						}
+						DevMsg(2, "%s", szBuffer);
+						ADD_DEBUG_HISTORY(HISTORY_ENTITY_IO, szBuffer);
 
-					if (m_debugOverlays & OVERLAY_MESSAGE_BIT)
-					{
-						DrawInputOverlay(szInputName,pCaller,Value);
+						if (m_debugOverlays & OVERLAY_MESSAGE_BIT)
+						{
+							DrawInputOverlay(szInputName, pCaller, Value);
+						}
 					}
-
 					// convert the value if necessary
 					if ( Value.FieldType() != dmap->dataDesc[i].fieldType )
 					{
@@ -4971,6 +5002,9 @@ static void TeleportEntity( CBaseEntity *pSourceEntity, TeleportListEntry_t &ent
 	int nSolidFlags = pTeleport->GetSolidFlags();
 	pTeleport->AddSolidFlags( FSOLID_NOT_SOLID );
 
+	IPhysicsObject *pPhys = pTeleport->VPhysicsGetObject();
+	bool rotatePhysics = false;
+
 	// I'm teleporting myself
 	if ( pSourceEntity == pTeleport )
 	{
@@ -4986,7 +5020,10 @@ static void TeleportEntity( CBaseEntity *pSourceEntity, TeleportListEntry_t &ent
 
 		if ( newVelocity )
 		{
-			pTeleport->SetAbsVelocity( *newVelocity );
+			if ( !pPhys || pTeleport->GetMoveType() != MOVETYPE_VPHYSICS)
+			{
+				pTeleport->SetAbsVelocity(*newVelocity);
+			}
 			pTeleport->SetBaseVelocity( vec3_origin );
 		}
 
@@ -5001,8 +5038,6 @@ static void TeleportEntity( CBaseEntity *pSourceEntity, TeleportListEntry_t &ent
 		// My parent is teleporting, just update my position & physics
 		pTeleport->CalcAbsolutePosition();
 	}
-	IPhysicsObject *pPhys = pTeleport->VPhysicsGetObject();
-	bool rotatePhysics = false;
 
 	// handle physics objects / shadows
 	if ( pPhys )
@@ -5108,6 +5143,12 @@ CStudioHdr *ModelSoundsCache_LoadModel( const char *filename )
 			if ( studioHdr->IsValid() )
 			{
 				return studioHdr;
+			}
+			else
+			{
+				Warning("SoundsCache_LoadModel returned NULL!\n");
+				delete studioHdr;
+				return NULL;
 			}
 		}
 	}
@@ -5405,7 +5446,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 							char token[256];
 							const char *pOptions = pEvent->pszOptions();
 							nexttoken( token, pOptions, ' ', sizeof(token) );
-							if ( token ) 
+							if ( token[0] ) 
 							{
 								PrecacheParticleSystem( token );
 							}
@@ -6375,6 +6416,7 @@ void CBaseEntity::SetCheckUntouch( bool check )
 	else
 	{
 		RemoveEFlags( EFL_CHECK_UNTOUCH );
+		EntityTouch_Remove( this );
 	}
 }
 
@@ -6710,9 +6752,14 @@ void CBaseEntity::SetAbsAngularVelocity( const QAngle &vecAbsAngVelocity )
 //-----------------------------------------------------------------------------
 void CBaseEntity::SetLocalOrigin( const Vector& origin )
 {
-	if ( !origin.IsValid() )
+	// Safety check against NaN's or really huge numbers
+	if ( !IsEntityPositionReasonable( origin ) )
 	{
-		AssertMsg( 0, "Bad origin set" );
+		if ( CheckEmitReasonablePhysicsSpew() )
+		{
+			Warning( "Bad SetLocalOrigin(%f,%f,%f) on %s\n", origin.x, origin.y, origin.z, GetDebugName() );
+		}
+		Assert( false );
 		return;
 	}
 
@@ -6746,6 +6793,17 @@ void CBaseEntity::SetLocalAngles( const QAngle& angles )
 	//        handling things like +/-180 degrees properly. This should be revisited.
 	//QAngle angleNormalize( AngleNormalize( angles.x ), AngleNormalize( angles.y ), AngleNormalize( angles.z ) );
 
+	// Safety check against NaN's or really huge numbers
+	if ( !IsEntityQAngleReasonable( angles ) )
+	{
+		if ( CheckEmitReasonablePhysicsSpew() )
+		{
+			Warning( "Bad SetLocalAngles(%f,%f,%f) on %s\n", angles.x, angles.y, angles.z, GetDebugName() );
+		}
+		Assert( false );
+		return;
+	}
+
 	if (m_angRotation != angles)
 	{
 		InvalidatePhysicsRecursive( ANGLES_CHANGED );
@@ -6754,8 +6812,28 @@ void CBaseEntity::SetLocalAngles( const QAngle& angles )
 	}
 }
 
-void CBaseEntity::SetLocalVelocity( const Vector &vecVelocity )
+void CBaseEntity::SetLocalVelocity( const Vector &inVecVelocity )
 {
+	Vector vecVelocity = inVecVelocity;
+
+	// Safety check against NaN's or really huge numbers, which can explode physics
+	switch ( CheckEntityVelocity( vecVelocity ) )
+	{
+	case -1:
+		if ( !sv_skip_velocities_warnings.GetBool() )
+			Warning( "Discarding SetLocalVelocity(%f,%f,%f) on %s\n", vecVelocity.x, vecVelocity.y, vecVelocity.z, GetDebugName() );
+		Assert( false );
+		return;
+	case 0:
+		if ( CheckEmitReasonablePhysicsSpew() )
+		{
+			Warning( "Clamping SetLocalVelocity(%f,%f,%f) on %s\n", vecVelocity.x, vecVelocity.y, vecVelocity.z, GetDebugName() );
+		}
+		break;
+	default:
+		break;
+	}
+
 	if (m_vecVelocity != vecVelocity)
 	{
 		InvalidatePhysicsRecursive( VELOCITY_CHANGED );
@@ -6765,6 +6843,17 @@ void CBaseEntity::SetLocalVelocity( const Vector &vecVelocity )
 
 void CBaseEntity::SetLocalAngularVelocity( const QAngle &vecAngVelocity )
 {
+	// Safety check against NaN's or really huge numbers
+	if ( !IsEntityQAngleVelReasonable( vecAngVelocity ) )
+	{
+		if ( CheckEmitReasonablePhysicsSpew() )
+		{
+			Warning( "Bad SetLocalAngularVelocity(%f,%f,%f) on %s\n", vecAngVelocity.x, vecAngVelocity.y, vecAngVelocity.z, GetDebugName() );
+		}
+		Assert( false );
+		return;
+	}
+
 	if (m_vecAngVelocity != vecAngVelocity)
 	{
 //		InvalidatePhysicsRecursive( EFL_DIRTY_ABSANGVELOCITY );
@@ -6823,6 +6912,15 @@ void CBaseEntity::UpdateCell()
 	m_cellX = CellFromCoord( cellwidth, m_vecOrigin.GetX() );
 	m_cellY = CellFromCoord( cellwidth, m_vecOrigin.GetY() );
 	m_cellZ	= CellFromCoord( cellwidth, m_vecOrigin.GetZ() );
+
+
+    // PRB TODO : HACK fix for hostage warping.
+    // Somehow the above code does not flag the network vars as modified, but below does... 
+    // Needs revisiting, but at this stage it fixes our bug
+
+    m_cellX.GetForModify();
+    m_cellY.GetForModify();
+    m_cellZ.GetForModify();
 }
 
 //-----------------------------------------------------------------------------
@@ -8203,6 +8301,7 @@ HSCRIPT CBaseEntity::GetScriptInstance()
 			char *szName = (char *)stackalloc( 1024 );
 			g_pScriptVM->GenerateUniqueKey( ( m_iName.Get() != NULL_STRING ) ? STRING(GetEntityName()) : GetClassname(), szName, 1024 );
 			m_iszScriptId = AllocPooledString( szName );
+			MarkNeedsNamePurge();
 		}
 
 		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
@@ -8260,7 +8359,8 @@ void CBaseEntity::RunVScripts()
 		return;
 	}
 
-	ValidateScriptScope();
+	if ( !ValidateScriptScope() )
+		return;
 
 	// All functions we want to have call chained instead of overwritten
 	// by other scripts in this entities list.
@@ -8286,6 +8386,7 @@ void CBaseEntity::RunVScripts()
 			//TODO: For perf, this should be precompiled and the %s should be passed as a parameter
 			HSCRIPT hCreateChainScript = g_pScriptVM->CompileScript( CFmtStr( "%sCallChain <- CSimpleCallChainer(\"%s\", self.GetScriptScope(), true)", sCallChainFunctions[j], sCallChainFunctions[j] ) );
 			g_pScriptVM->Run( hCreateChainScript, (HSCRIPT)m_ScriptScope ); 
+			g_pScriptVM->ReleaseScript( hCreateChainScript );
 		}
 	}
 
@@ -8313,6 +8414,7 @@ void CBaseEntity::RunVScripts()
 				//TODO: For perf, this should be precompiled and the %s should be passed as a parameter.
 				HSCRIPT hRunPostScriptExecute = g_pScriptVM->CompileScript( CFmtStr( "%sCallChain.PostScriptExecute()", sCallChainFunctions[j] ) );
 				g_pScriptVM->Run( hRunPostScriptExecute, (HSCRIPT)m_ScriptScope ); 
+				g_pScriptVM->ReleaseScript( hRunPostScriptExecute );
 			}
 		}
 	}

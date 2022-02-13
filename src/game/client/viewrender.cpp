@@ -1262,6 +1262,8 @@ void CViewRender::PerformScreenOverlay( int x, int y, int w, int h )
 
 void CViewRender::DrawUnderwaterOverlay( void )
 {
+	return;//Do not check for underwater overlay
+
 	IMaterial *pOverlayMat = m_UnderWaterOverlayMaterial;
 
 	if ( pOverlayMat )
@@ -1582,8 +1584,8 @@ static void GetFogColorTransition( fogparams_t *pFogParams, float *pColorPrimary
 	{
 		float flPercent = 1.0f - (( pFogParams->lerptime - gpGlobals->curtime ) / pFogParams->duration );
 
-		float flPrimaryColorLerp[3] = { pFogParams->colorPrimaryLerpTo.GetR(), pFogParams->colorPrimaryLerpTo.GetG(), pFogParams->colorPrimaryLerpTo.GetB() };
-		float flSecondaryColorLerp[3] = { pFogParams->colorSecondaryLerpTo.GetR(), pFogParams->colorSecondaryLerpTo.GetG(), pFogParams->colorSecondaryLerpTo.GetB() };
+		float flPrimaryColorLerp[3] = { (float)pFogParams->colorPrimaryLerpTo.GetR(), (float)pFogParams->colorPrimaryLerpTo.GetG(), (float)pFogParams->colorPrimaryLerpTo.GetB() };
+		float flSecondaryColorLerp[3] = { (float)pFogParams->colorSecondaryLerpTo.GetR(), (float)pFogParams->colorSecondaryLerpTo.GetG(), (float)pFogParams->colorSecondaryLerpTo.GetB() };
 
 		CheckAndTransitionColor( flPercent, pColorPrimary, flPrimaryColorLerp );
 		CheckAndTransitionColor( flPercent, pColorSecondary, flSecondaryColorLerp );
@@ -1619,8 +1621,8 @@ static void GetFogColor( fogparams_t *pFogParams, float *pColor, bool ignoreOver
 
 	if( (pColor[0] == -1.0f) && (pColor[1] == -1.0f) && (pColor[2] == -1.0f) ) //if not overriding fog, or if we get non-overridden fog color values
 	{
-		float flPrimaryColor[3] = { pFogParams->colorPrimary.GetR(), pFogParams->colorPrimary.GetG(), pFogParams->colorPrimary.GetB() };
-		float flSecondaryColor[3] = { pFogParams->colorSecondary.GetR(), pFogParams->colorSecondary.GetG(), pFogParams->colorSecondary.GetB() };
+		float flPrimaryColor[3] = { (float)pFogParams->colorPrimary.GetR(), (float)pFogParams->colorPrimary.GetG(), (float)pFogParams->colorPrimary.GetB() };
+		float flSecondaryColor[3] = { (float)pFogParams->colorSecondary.GetR(), (float)pFogParams->colorSecondary.GetG(), (float)pFogParams->colorSecondary.GetB() };
 
 		GetFogColorTransition( pFogParams, flPrimaryColor, flSecondaryColor );
 
@@ -3960,7 +3962,7 @@ static void DrawClippedDepthBox( IClientRenderable *pEnt, float *pClipPlane )
 		if( j == 3 ) //not enough lines to even form a triangle
 			continue;
 
-		float *pStartPoint;
+		float *pStartPoint = NULL;
 		float *pTriangleFanPoints[4]; //at most, one of our fans will have 5 points total, with the first point being stored separately as pStartPoint
 		int iTriangleFanPointCount = 1; //the switch below creates the first for sure
 		
@@ -4110,10 +4112,10 @@ static inline void DrawRenderable( IClientRenderable *pEnt, int flags, const Ren
 			DrawClippedDepthBox( pEnt, pRenderClipPlane );
 		Assert( view->GetCurrentlyDrawingEntity() == NULL );
 		view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown()->GetBaseEntity() );
-		bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
-		if( !bBlockNormalDraw )
+		//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
+		//if( !bBlockNormalDraw )
 			pEnt->DrawModel( flags, instance );
-		BlurTest( pEnt, flags, false, instance );
+		//BlurTest( pEnt, flags, false, instance );
 		view->SetCurrentlyDrawingEntity( NULL );
 
 		if( !materials->UsingFastClipping() )	
@@ -4123,10 +4125,10 @@ static inline void DrawRenderable( IClientRenderable *pEnt, int flags, const Ren
 	{
 		Assert( view->GetCurrentlyDrawingEntity() == NULL );
 		view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown()->GetBaseEntity() );
-		bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
-		if( !bBlockNormalDraw )
+		//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
+		//if( !bBlockNormalDraw )
 			pEnt->DrawModel( flags, instance );
-		BlurTest( pEnt, flags, false, instance );
+		//BlurTest( pEnt, flags, false, instance );
 		view->SetCurrentlyDrawingEntity( NULL );
 	}
 }
@@ -4197,7 +4199,7 @@ static void DrawOpaqueRenderables_DrawStaticProps( int nCount, CClientRenderable
 	{
 		CClientRenderablesList::CEntry *itEntity = ppEntities[i];
 		if ( itEntity->m_pRenderable )
-			NULL;
+			/**/;
 		else
 			continue;
 
@@ -4741,7 +4743,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 				DetailObjectSystem()->RenderTranslucentDetailObjects( m_pRenderablesList->m_DetailFade, CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 
 				// Draw translucent renderables in the leaf interspersed with detail props
-				for( ;pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf && iCurTranslucentEntity >= 0; --iCurTranslucentEntity )
+				for( ;iCurTranslucentEntity >= 0 && pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf; --iCurTranslucentEntity )
 				{
 					IClientRenderable *pRenderable = pEntities[iCurTranslucentEntity].m_pRenderable;
 
@@ -4790,7 +4792,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 				// Therefore no fixup on nDetailLeafCount is required as in the above section
 				DetailObjectSystem()->RenderTranslucentDetailObjects( m_pRenderablesList->m_DetailFade, CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 
-				for( ;pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf && iCurTranslucentEntity >= 0; --iCurTranslucentEntity )
+				for( ;iCurTranslucentEntity >= 0 && pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf; --iCurTranslucentEntity )
 				{
 					IClientRenderable *pRenderable = pEntities[iCurTranslucentEntity].m_pRenderable;
 

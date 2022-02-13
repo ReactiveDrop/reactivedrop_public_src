@@ -133,6 +133,7 @@ extern ConVar old_radius_damage;
 	extern ConVar asw_medal_barrel_kills;
 	extern ConVar rd_killingspree_time_limit;
 	extern ConVar rd_quake_sounds;
+	extern ConVar rda_marine_backpack;
 	ConVar asw_objective_slowdown_time( "asw_objective_slowdown_time", "1.8", FCVAR_CHEAT, "Length of time that the slowdown effect lasts." );
 	ConVar asw_marine_explosion_protection("asw_marine_explosion_protection", "0.5", FCVAR_CHEAT, "Reduction of explosion radius against marines");
 	ConVar asw_door_explosion_boost("asw_door_explosion_boost", "2.0", FCVAR_CHEAT, "Sets damage scale for grenades vs doors");
@@ -178,7 +179,9 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
 	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 	ConVar rd_high_resolution_timer_ms ( "rd_dedicated_high_resolution_timer_ms", "1", FCVAR_NONE, "Acquire a high resolution timer with specified resolution." );
+	ConVar rda_auto_mission_failed_instant_restart("rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "If mission is failed server does not show mission failed screen but restarts mission");
 
+	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
 	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
 		// don't allow changing challenge convars from their desired values
@@ -1302,7 +1305,6 @@ CAlienSwarm::CAlienSwarm()
 	m_bIsTutorial = false;
 
 	m_bCheckAllPlayersLeft = false;
-	m_fEmptyServerTime = false;
 
 	m_pMapBuilder = NULL;
 
@@ -1626,7 +1628,7 @@ bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const 
 
 	GetVoiceGameMgr()->ClientConnected( pEntity );
 
-	CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(CBaseEntity::Instance( pEntity ));
+	CASW_Player *pPlayer = ToASW_Player(CBaseEntity::Instance( pEntity ));
 	//Msg("ClientConnected, entindex is %d\n", pPlayer ? pPlayer->entindex() : -1);
 
 	if (ASWGameResource())
@@ -1655,7 +1657,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 	//Msg("CAlienSwarm::ClientDisconnected %d\n", pClient);
 	if ( pClient )
 	{
-		CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(CBaseEntity::Instance( pClient ) );
+		CASW_Player *pPlayer = ToASW_Player(CBaseEntity::Instance( pClient ) );
 		if ( pPlayer )
 		{
 			if ( ASWGameResource() )
@@ -1691,7 +1693,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 						continue; 
 
 					// found a connected player?
-					CASW_Player *pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i + 1));
+					CASW_Player *pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i + 1));
 					// if they're not connected, skip them
 					if (!pOtherPlayer || !pOtherPlayer->IsConnected())
 						continue;
@@ -2014,7 +2016,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 	// or a player who has at least one marine assigned
 	for ( int k = 1; k <= gpGlobals->maxClients; ++k )
 	{
-		CASW_Player *pTmpPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( k ) );
+		CASW_Player *pTmpPlayer = ToASW_Player( UTIL_PlayerByIndex( k ) );
 		if ( pTmpPlayer == pPlayer || !pTmpPlayer || !pTmpPlayer->IsConnected() || !pTmpPlayer->GetMarine() )
 			continue;
 
@@ -2040,7 +2042,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 	{
 		for ( int k = 1; k <= gpGlobals->maxClients; ++k )
 		{
-			pNewCommander = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( k ) );
+			pNewCommander = ToASW_Player( UTIL_PlayerByIndex( k ) );
 			if ( pNewCommander )
 				break;
 		}
@@ -2106,7 +2108,7 @@ void CAlienSwarm::EnforceFairMarineRules()
 		return;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected() )
 		{
@@ -2237,9 +2239,6 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 //  flag it so we can trigger the start in our next think
 void CAlienSwarm::RequestStartMission(CASW_Player *pPlayer)
 {
-	if (!ASWGameResource())
-		return;
-
 	// check we actually have some marines selected before starting
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if (!pGameResource)
@@ -2557,7 +2556,7 @@ void CAlienSwarm::UpdateLaunching()
 		// any players with no marines should be set to spectating one
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 			
 			if ( pOtherPlayer && pOtherPlayer->IsConnected() && ASWGameResource())
 			{
@@ -2585,7 +2584,7 @@ void CAlienSwarm::UpdateLaunching()
 		// loop through all clients, count number of players on each team
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+			CASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 			if ( pPlayer )
 			{
@@ -2854,6 +2853,14 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		return;
 	}
 
+#ifndef OUTRO_MAP
+	//Orange. OUTRO_MAP is not fully implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
+	if (CampaignMissionsLeft() <= 1) //at this point number not yet decreased
+	{
+		return;
+	}
+#endif
+
 	SetForceReady(ASW_FR_NONE);
 
 	// give each marine some skill points for finishing the mission	
@@ -2959,10 +2966,11 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 	}
 
 	pSave->SaveGameToFile();
-	
+
+#ifdef OUTRO_MAP
 	// if the marines have completed all the missions in the campaign, then launch to the outro instead
 	if (CampaignMissionsLeft()<=0)
-	{		
+	{	
 		SetGameState(ASW_GS_OUTRO);
 		// send user message telling clients to increment their 'campaigns completed' stat and to head to the outro map in x seconds
 
@@ -2989,6 +2997,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		m_fLaunchOutroMapTime = gpGlobals->curtime + 1.0f;
 	}
 	else	
+#endif
 	{
 		// make sure all players are marked as not ready
 		if (ASWGameResource())
@@ -3031,7 +3040,7 @@ bool CAlienSwarm::RequestCampaignLaunchMission(int iTargetMission)
 	// don't allow the launch if we're not at this location
 	if (GetCampaignSave()->m_iCurrentPosition != iTargetMission)
 	{
-		Msg("RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition);
+		Msg("RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition.Get());
 		return false;
 	}
 
@@ -3391,45 +3400,8 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
-ConVar rm_welcome_message( "rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game" );
-ConVar rm_welcome_message_delay ( "rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
-
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
-	// riflemod: added welcome message to the player. This function was empty 
-	if (!pPlayer)
-		return;
-
-	if (!pPlayer->IsConnected())
-		return;
-	
-	CASW_Player *pAswPlayer = ToASW_Player(pPlayer);
-	if (!pAswPlayer)
-		return;
-	
-	
-	if ( pAswPlayer->HasFullyJoined() ) 
-	{
-		if ( !pAswPlayer->m_bWelcomed ) 
-		{
-			if (gpGlobals->curtime >= m_fBriefingStartedTime + rm_welcome_message_delay.GetInt()) 
-			{
-				pAswPlayer->m_bWelcomed = true;
-
-				if (Q_strlen(rm_welcome_message.GetString()) > 0) 
-				{
-					char buffer[512];
-					Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
-					ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
-				}
-
-#if 0 // disabled welcoming for now 
-				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
-				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
-#endif
-			}
-		}
-	}
 }
 
 // --------------------------------------------------------------------------------------------------- //
@@ -3574,7 +3546,7 @@ void CAlienSwarm::Think()
 				CBasePlayer *pListenServer = engine->IsDedicatedServer() ? NULL : UTIL_GetListenServerHost();
 				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
-					CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+					CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 					if ( pOtherPlayer && pOtherPlayer->IsConnected()
 								&& pOtherPlayer != pListenServer					// listen server doesn't generate the map clientside
 								&& pOtherPlayer->m_fMapGenerationProgress.Get() < 1.0f )
@@ -3621,7 +3593,7 @@ void CAlienSwarm::OnServerHibernating()
 	int iPlayers = 0;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+		CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected() )
 		{
@@ -3680,6 +3652,11 @@ void CAlienSwarm::OnServerHibernating()
 		{
 			Shutdown();
 		}
+		// reset difficulty and challenge
+		asw_skill.SetValue( 2 );
+		SetSkillLevel( asw_skill.GetInt() );
+		EnableChallenge( "0" );
+
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",
 			szMissionName,
@@ -3965,6 +3942,13 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	{
 		pWeapon->SetWeaponVisible(false);
 	}
+
+	if (rda_marine_backpack.GetBool() && iSlot == 1)
+	{
+		//pMarine->RemoveBackPackModel();
+		pMarine->CreateBackPackModel(pWeapon);
+	}
+
 }
 
 // find all pickups in the level and increment charges
@@ -4217,6 +4201,22 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
 		return;
 
+	//Mad Orange. Faster restart.
+	if (!bSuccess && rda_auto_mission_failed_instant_restart.GetBool())
+	{
+		StopStim();
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+			if (pOtherPlayer)
+			{
+				pOtherPlayer->AwardExperience();
+			}
+		}
+		RestartMission(NULL, true, true);
+		return;
+	}
+
 	StopStim();
 
 	// setting these variables will make the player's go into their debrief screens
@@ -4310,8 +4310,10 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		ClearHouse();
 
 	// freeze all the npcs, because Freeze(-1) doesn't work at all
-	// and Freeze(9999) makes NPCs look frozen we disable think function
+	// and Freeze(9999) makes NPCs look frozen we disable think function	
+	const bool bAllDead = ASWGameRules()->GetMissionManager()->AllMarinesDead();
 	CAI_BaseNPC *npc = gEntList.NextEntByClass( (CAI_BaseNPC *) NULL );
+	if ( !bAllDead )
 	while ( npc )
 	{
 		npc->SetThink( NULL );
@@ -4327,7 +4329,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		ent->SetThink( NULL );
 	}
 	// make marine invulnerable
-	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	for ( int i = 0; pGameResource && i < pGameResource->GetMaxMarineResources(); i++ )
 	{
 		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 		if ( pMR )
@@ -4416,6 +4418,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			m_hDebriefStats->m_iElectricArmorReduction.Set(i,pMR->m_iElectricArmorReduction);
 			m_hDebriefStats->m_iHealAmpGunHeals.Set(i,pMR->m_iHealAmpGunHeals);
 			m_hDebriefStats->m_iHealAmpGunAmps.Set(i,pMR->m_iHealAmpGunAmps);
+			m_hDebriefStats->m_iMedRifleHeals.Set(i,pMR->m_iMedRifleHeals);
 
 			// Set starting equips for the marine
 			m_hDebriefStats->m_iStartingEquip0.Set(i, pMR->m_iInitialWeaponsInSlots[0]);
@@ -4589,7 +4592,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( i ) );
+			CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 			if ( pOtherPlayer )
 			{
 				pOtherPlayer->AwardExperience();
@@ -4782,9 +4785,17 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		ASWHoldoutMode()->OnAlienKilled( pAlien, info );
 	}
 
-	CASW_Shieldbug *pSB = dynamic_cast<CASW_Shieldbug*>(pAlien);
+	CASW_Shieldbug* pSB = NULL;
+	if ( pAlien && pAlien->Classify() == CLASS_ASW_SHIELDBUG )
+	{
+		pSB = assert_cast<CASW_Shieldbug*>(pAlien);
+	}
 
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pAttacker);
+
 	if ( pMarine )
 	{
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
@@ -4819,7 +4830,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 							pGameResource->m_bAwardedDamageAmpAchievement = true;
 							for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 							{
-								CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+								CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 								if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() )
 									continue;
 
@@ -4881,7 +4892,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 
 			if ( pAlien->Classify() == CLASS_ASW_PARASITE )
 			{
-				CASW_Parasite *pPara = dynamic_cast<CASW_Parasite*>(pAlien);
+				CASW_Parasite *pPara = assert_cast<CASW_Parasite*>(pAlien);
 				if (!pPara->m_bDefanged)
 				{
 					pMR->m_iParasitesKilled++;
@@ -4987,7 +4998,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	CASW_Sentry_Top *pSentry = NULL;
 	if ( !pMarine )
 	{
-		pSentry = dynamic_cast< CASW_Sentry_Top* >( info.GetAttacker() );
+		pSentry = dynamic_cast< CASW_Sentry_Top* >(pAttacker);
 	}
 	
 	if ( pSentry )
@@ -5006,12 +5017,14 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	CFire *pFire = NULL;
 	if ( !pMarine )
 	{
-		pFire = dynamic_cast< CFire* >( info.GetAttacker() );
+		pFire = dynamic_cast< CFire* >(pAttacker);
 	}
 
 	if ( pFire )
 	{
-		pMarine = dynamic_cast< CASW_Marine* >( pFire->GetOwner() );
+		CBaseEntity* pOwner = pFire->GetOwner();
+		if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+			pMarine = assert_cast< CASW_Marine* >(pOwner);
 	}
 
 	// send a game event for achievements to use
@@ -5054,8 +5067,11 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		else
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			pMR->m_iBotFrags += 1;
-			nFrags = pMR->m_iBotFrags;
+			if (pMR)
+			{
+				pMR->m_iBotFrags += 1;
+				nFrags = pMR->m_iBotFrags;
+			}
 		}
 
 		// reactivedrop: if enabled we spawn medkits every rd_spawn_medkits.GetInt() frags
@@ -5255,7 +5271,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 			return true;
 	}
 
-	// the pellets that the flamer shoots.  Doesn not collide with small aliens or marines, DOES collide with doors and shieldbugs
+	// the pellets that the extinguisher shoots. Unlike flamer pellets collides with aliens and marines
 	if (collisionGroup1 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS)
 	{
 		if (collisionGroup0 == COLLISION_GROUP_DEBRIS ||
@@ -5739,17 +5755,6 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		fMarineFalloff *= 0.5f;
 	}
 
-	int bInWater = (UTIL_PointContents ( vecSrc, MASK_WATER ) & MASK_WATER) ? true : false;
-
-	if( bInWater )
-	{
-		// Only muffle the explosion if deeper than 2 feet in water.
-		if( !(UTIL_PointContents(vecSrc + Vector(0, 0, 24),MASK_WATER) & MASK_WATER) )
-		{
-			bInWater = false;
-		}
-	}
-	
 	vecSrc.z += 1;// in case grenade is lying on the ground
 
 	float flHalfRadiusSqr = Square( flRadius / 2.0f );
@@ -5772,13 +5777,6 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		{// houndeyes don't hurt other houndeyes with their attack
 			continue;
 		}
-
-		// blast's don't tavel into or out of water
-		if (bInWater && pEntity->GetWaterLevel() == 0)
-			continue;
-
-		if (!bInWater && pEntity->GetWaterLevel() == 3)
-			continue;
 
 		// check if this is a marine and if so, he may be outside the explosion radius				
 		if (pEntity->Classify() == CLASS_ASW_MARINE)
@@ -5931,9 +5929,9 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 			}
 
 			// check if this damage is coming from an incendiary grenade that might need to collect stats
-			CASW_Grenade_Vindicator *pGrenade = dynamic_cast<CASW_Grenade_Vindicator*>(adjustedInfo.GetInflictor());
-			if (pGrenade)
+			if ( adjustedInfo.GetInflictor() && adjustedInfo.GetInflictor()->Classify() == CLASS_ASW_GRENADE_VINDICATOR )
 			{
+				CASW_Grenade_Vindicator* pGrenade = assert_cast<CASW_Grenade_Vindicator*>(adjustedInfo.GetInflictor());
 				pGrenade->BurntAlien(pEntity);
 			}
 		}
@@ -6025,8 +6023,7 @@ void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &
 			continue;
 		}
 
-		CASW_Alien *pAlien = dynamic_cast< CASW_Alien* >( pEntity );
-		if ( !pAlien )
+		if ( !pEntity->IsAlienClassType() )
 			continue;
 
 		// Check that the explosion can 'see' this entity.
@@ -6095,6 +6092,7 @@ void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &
 			}
 		}
 
+		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
 		Vector vecToTarget = pAlien->WorldSpaceCenter() - pInflictor->WorldSpaceCenter();
 		vecToTarget.z = 0;
 		VectorNormalize( vecToTarget );
@@ -6218,8 +6216,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 			continue;
 		}
 
-		CASW_Alien *pAlien = dynamic_cast< CASW_Alien* >( pEntity );
-		if ( !pAlien )
+		if ( !pEntity->IsAlienClassType() )
 			continue;
 
 		// Check that the explosion can 'see' this entity.
@@ -6288,6 +6285,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 			}
 		}
 #ifdef GAME_DLL
+		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
 		CBaseAnimating *pAnim = pAlien;
 		if ( pAnim->IsOnFire() )
 		{
@@ -6983,13 +6981,13 @@ void CAlienSwarm::ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader, 
 		return;
 
 	int iSlotIndex = pPlayer->entindex();		// keep index 1 based for comparing the player set indices
-	if (iSlotIndex < 0 || iSlotIndex >= ASW_MAX_READY_PLAYERS)
+	if (iSlotIndex <= 0 || iSlotIndex > ASW_MAX_READY_PLAYERS) //valid range before making zero based is [1..ASW_MAX_READY_PLAYERS]
 		return;
 
 	// unflag any players voting for him
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected())
 		{
@@ -7014,7 +7012,7 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 	// if we're leader, then allow us to give leadership over to someone immediately
 	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader())
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
 		if (pOtherPlayer && pOtherPlayer != pPlayer)
 		{
 			ASWGameResource()->SetLeader(pOtherPlayer);
@@ -7035,7 +7033,7 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 		int iOldPlayerVotes = 0;
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 			if ( pOtherPlayer && pOtherPlayer->IsConnected())
 			{
@@ -7045,7 +7043,7 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 		}
 
 		// updates the target player's game resource entry with the number of leader votes against him
-		if (iOldPlayer >= 0 && iOldPlayer < ASW_MAX_READY_PLAYERS && ASWGameResource())
+		if (iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource())
 		{
 			ASWGameResource()->m_iLeaderVotes.Set(iOldPlayer-1, iOldPlayerVotes);
 		}
@@ -7054,12 +7052,15 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 	if (iPlayerIndex == -1)
 		return;
 
+	if (iPlayerIndex == 0)
+		return;
+
 	// check if this player has enough votes now
 	int iVotes = 0;
 	int iPlayers = 0;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 		
 		if ( pOtherPlayer && pOtherPlayer->IsConnected())
 		{
@@ -7085,8 +7086,8 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 	{
 		Msg("leader voting %d in (votes %d/%d\n", iPlayerIndex, iVotes, iVotesNeeded);
 		// make this player leader!
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
-		if (pOtherPlayer)
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
+		if (pOtherPlayer && ASWGameResource())
 		{
 			ASWGameResource()->SetLeader(pOtherPlayer);
 			CASW_Game_Resource::s_bLeaderGivenDifficultySuggestion = false;
@@ -7099,7 +7100,7 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 		pPlayer->m_iKLVotesStarted++;
 		if (pPlayer->m_iKLVotesStarted < 3 || (gpGlobals->curtime - pPlayer->m_fLastKLVoteTime) > 10.0f)
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
 			if (pOtherPlayer)
 			{
 				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_leader_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName());
@@ -7168,7 +7169,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 		int iOldPlayerVotes = 0;
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 			if ( pOtherPlayer && pOtherPlayer->IsConnected())
 			{
@@ -7187,6 +7188,8 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	if (iPlayerIndex == -1)
 		return;
 
+	if (iPlayerIndex == 0)
+		return;
 
 	// check if this player has enough votes now to be kicked
 	int iVotes = 0;
@@ -7195,7 +7198,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	//  have voted for the same player to be kicked as the one that started this function
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected())
 		{
@@ -7207,7 +7210,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	}
 
 	// updates the target player's game resource entry with the number of kick votes against him
-	if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
+	if (iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource())
 	{
 		ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, iVotes);
 	}	
@@ -7228,7 +7231,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	if (iPlayerIndex > 0 && iVotes >= iVotesNeeded)
 	{
 		// kick this player
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
 		if (pOtherPlayer)
 		{
 			ClearLeaderKickVotes(pOtherPlayer, false, true);
@@ -7268,7 +7271,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 		pPlayer->m_iKLVotesStarted++;
 		if (pPlayer->m_iKLVotesStarted < 3 || (gpGlobals->curtime - pPlayer->m_fLastKLVoteTime) > 10.0f)
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
+			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
 			if (pOtherPlayer)
 			{
 				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_kick_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName());
@@ -7358,7 +7361,7 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	// clear out current votes for all players
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 		if (pOtherPlayer)
 			pOtherPlayer->m_iMapVoted = 0;
 	}
@@ -7697,6 +7700,13 @@ void CAlienSwarm::CheckForceReady()
 		}
 	}
 
+	//Mad Orange. Faster restart.
+	if (rda_auto_mission_failed_instant_restart.GetBool() && m_iForceReadyType == ASW_FR_INGAME_RESTART)
+	{
+		FinishForceReady();
+		return;
+	}
+
 	int iSecondsLeft = m_fForceReadyTime - gpGlobals->curtime;
 	if (iSecondsLeft < m_iForceReadyCount)
 	{
@@ -7792,7 +7802,8 @@ void CAlienSwarm::FinishForceReady()
 					pGameResource->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
 				}				
 				SetGameState(ASW_GS_CAMPAIGNMAP);
-				GetCampaignSave()->SelectDefaultNextCampaignMission();
+				if ( GetCampaignSave() )
+					GetCampaignSave()->SelectDefaultNextCampaignMission();
 			}
 			break;
 
@@ -8521,7 +8532,7 @@ void CAlienSwarm::LevelInitPostEntity()
 	// make sure we're on easy mode for the tutorial
 	if ( IsTutorialMap() )
 	{
-		asw_skill.SetValue( 0 );
+		asw_skill.SetValue( 1 );
 		m_iSkillLevel = asw_skill.GetInt();
 		OnSkillLevelChanged( m_iSkillLevel );
 	}
@@ -8544,8 +8555,9 @@ void CAlienSwarm::LevelInitPostEntity()
 	SetInitialGameMode();
 
 	// create the burning system
-	CASW_Burning *pFire = dynamic_cast<CASW_Burning*>( CreateEntityByName( "asw_burning" ) );	
-	pFire->Spawn();
+	CASW_Burning *pFire = dynamic_cast<CASW_Burning*>( CreateEntityByName( "asw_burning" ) );
+	if (pFire)
+		pFire->Spawn();
 
 	ConVar *var = (ConVar *)cvar->FindVar( "sv_cheats" );
 	if ( var )
@@ -9179,5 +9191,18 @@ void CAlienSwarm::CheckLeaderboardReady()
 	UserMessageBegin( filter, "RDLeaderboardReady" );
 	// no content, just a notification
 	MessageEnd();
+}
+#endif
+
+#ifdef GAME_DLL
+bool CAlienSwarm::ShouldAllowMarineStrafePush(void)
+{
+	if (!rda_marine_allow_strafe.GetBool())
+		return false;
+
+	if (ASWGameRules()->GetGameState() != ASW_GS_INGAME)
+		return false;
+
+	return true;
 }
 #endif

@@ -720,33 +720,37 @@ void CASW_Holdout_Mode::LoadWaves()
 	Q_snprintf( tempfile, sizeof( tempfile ), "resource/holdout/%s.txt", m_netHoldoutFilename.Get() );
 
 	KeyValues *pKV = new KeyValues( "HoldoutWaves" );
-	if ( !pKV->LoadFromFile( g_pFullFileSystem, tempfile, "GAME" ) )
+	if (pKV)
 	{
-		Warning( "Failed to load holdout resource file: '%s'  Attempting to load default.\n", tempfile );
-
-		Q_snprintf( tempfile, sizeof( tempfile ), "resource/holdout/%s.txt", "HoldoutWaves_Default" );
-		if ( !pKV->LoadFromFile( g_pFullFileSystem, tempfile, "GAME" ) )
+		if (!pKV->LoadFromFile(g_pFullFileSystem, tempfile, "GAME"))
 		{
-			Warning( "WARNING: Failed to load default holdout resource file.  'resource/holdout/HoldoutWaves_Default.txt' is missing!\n" );
-			return;
+			Warning("Failed to load holdout resource file: '%s'  Attempting to load default.\n", tempfile);
+
+			Q_snprintf(tempfile, sizeof(tempfile), "resource/holdout/%s.txt", "HoldoutWaves_Default");
+			if (!pKV->LoadFromFile(g_pFullFileSystem, tempfile, "GAME"))
+			{
+				Warning("WARNING: Failed to load default holdout resource file.  'resource/holdout/HoldoutWaves_Default.txt' is missing!\n");
+				pKV->deleteThis();
+				return;
+			}
 		}
-	}
 
 
-	KeyValues *pKeys = pKV;
-	while ( pKeys )
-	{		
-		if ( asw_holdout_debug.GetBool() )
+		KeyValues *pKeys = pKV;
+		while (pKeys)
 		{
-			Msg( "  Loading a wave\n" );
-		}
-		CASW_Holdout_Wave* pWave = new CASW_Holdout_Wave;
-		pWave->LoadFromKeyValues( m_Waves.Count(), pKeys );
-		m_Waves.AddToTail( pWave );
+			if (asw_holdout_debug.GetBool())
+			{
+				Msg("  Loading a wave\n");
+			}
+			CASW_Holdout_Wave* pWave = new CASW_Holdout_Wave;
+			pWave->LoadFromKeyValues(m_Waves.Count(), pKeys);
+			m_Waves.AddToTail(pWave);
 
-		pKeys = pKeys->GetNextKey();
+			pKeys = pKeys->GetNextKey();
+		}
+		pKV->deleteThis();
 	}
-	pKV->deleteThis();
 }
 
 float CASW_Holdout_Mode::GetWaveProgress()

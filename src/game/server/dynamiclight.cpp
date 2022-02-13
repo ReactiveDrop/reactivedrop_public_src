@@ -169,7 +169,7 @@ void CDynamicLight::Spawn( void )
 		SetNextThink( gpGlobals->curtime + 0.1 );
 	}
 	
-	int clampedExponent = clamp( m_Exponent, MIN_DL_EXPONENT_VALUE, MAX_DL_EXPONENT_VALUE );
+	int clampedExponent = clamp( m_Exponent.Get(), MIN_DL_EXPONENT_VALUE, MAX_DL_EXPONENT_VALUE );
 	if ( m_Exponent != clampedExponent )
 	{
 		Warning( "light_dynamic at [%d %d %d] has invalid exponent value (%d must be between %d and %d).\n",

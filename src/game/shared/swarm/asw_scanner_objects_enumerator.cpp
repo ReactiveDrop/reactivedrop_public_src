@@ -32,27 +32,45 @@ namespace
 {
 	bool ValidScannerObject(CBaseEntity *pEnt)
 	{
-		// dron't show grubs, they're too small
-		CASW_Grub *pGrub = dynamic_cast<CASW_Grub*>(pEnt);
-		if (pGrub)
-			return false;
-		CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pEnt);
-		if (pAlien)
+		//Orange. Do not bother checking this. Our current existing asw_grub is CASW_Simple_Grub and quite rare thing to be checked from 1st position.
+		//// dron't show grubs, they're too small
+		//CASW_Grub *pGrub = dynamic_cast<CASW_Grub*>(pEnt);
+		//if (pGrub)
+		//	return false;
+		if ( pEnt->IsAlienClassType() )
+		{
+			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEnt);
 			return pAlien->GetHealth() > 0;
-		CASW_Door *pDoor = dynamic_cast<CASW_Door*>(pEnt);
-		if (pDoor && pDoor->IsMoving())
-			return true;
-		CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer*>(pEnt);
-		if (pBuzzer)
-			return pBuzzer->GetHealth() > 0;
-		
-		CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pEnt);
-		if (pComputer)
-			return true;
-		CASW_Button_Area *pButton = dynamic_cast<CASW_Button_Area*>(pEnt);
-		if (pButton)
-			return true;
-		return false;
+		}
+
+		//assume pEnt != NULL since called only from EnumElement() with corresponding check above inside it
+		switch ( (int) pEnt->Classify() )
+		{
+		case CLASS_ASW_DOOR:
+			{
+				CASW_Door* pDoor = assert_cast<CASW_Door*>(pEnt);
+				if (pDoor->IsMoving())
+					return true;
+				return false;
+			}
+		case CLASS_ASW_BUZZER:
+			{
+				CASW_Buzzer* pBuzzer = assert_cast<CASW_Buzzer*>(pEnt);
+				return pBuzzer->GetHealth() > 0;
+			}
+		case CLASS_ASW_COMPUTER_AREA:
+			{
+				return true;
+			}
+		case CLASS_ASW_BUTTON_PANEL:
+			{
+				return true;
+			}
+		default:
+			{
+				return false;
+			}
+		}
 	}
 }
 

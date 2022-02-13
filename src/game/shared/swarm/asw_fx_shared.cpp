@@ -90,8 +90,8 @@ void UTIL_ASW_BloodDrips( const Vector &origin, const Vector &direction, int col
 	if ( color == DONT_BLEED || amount == 0 )
 		return;
 
-	if ( g_Language.GetInt() == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
-		color = 0;
+//	if ( g_Language.GetInt() == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
+//		color = 0;
 
 	if ( amount > 255 )
 		amount = 255;
@@ -124,9 +124,6 @@ void UTIL_ASW_MarineTakeDamage( const Vector &origin, const Vector &direction, i
 
 	if ( color == DONT_BLEED || amount == 0 )
 		return;
-
-	if ( g_Language.GetInt() == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
-		color = 0;
 
 	if ( amount > 255 )
 		amount = 255;

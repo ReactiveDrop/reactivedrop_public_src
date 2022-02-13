@@ -26,6 +26,7 @@
 
 // This file contains various debugging and cheat concommands
 
+ConVar rd_restart_mission_countdown("rd_restart_mission_countdown", "1", FCVAR_NONE, "If set to 0 there will be no 5 seconds countdown timer if leader chooses to restart mission");
 ConVar rd_allow_flashlight("rd_allow_flashlight", "0", FCVAR_CHEAT, "If set to 0 players cannot use asw_flashlight command");
 extern ConVar rd_allow_afk;
 
@@ -449,12 +450,14 @@ void ASW_DropTest_f()
 			return;
 		if (pPlayer->GetFlags() & FL_FROZEN)
 			return;
-		int c = pMarine->WeaponCount();
+		int c = ASW_MAX_MARINE_WEAPONS;
 		int current = -1;
 		//int target = 0;
+
+		CBaseCombatWeapon* pWeapon = NULL;
 		for (int i=0;i<c;i++)
 		{
-			CBaseCombatWeapon *pWeapon = pMarine->GetWeapon(i);
+			pWeapon = pMarine->GetWeapon(i);
 			if (pWeapon == pMarine->GetActiveWeapon())
 			{
 				current = i;
@@ -470,6 +473,7 @@ void ASW_DropTest_f()
 		if ( event )
 		{
 			event->SetInt( "userid", pPlayer->GetUserID() );
+			event->SetInt( "entindex", pWeapon ? pWeapon->entindex() : 0 );
 
 			gameeventmanager->FireEvent( event );
 		}
@@ -492,12 +496,14 @@ void ASW_DropExtraf()
         if (pPlayer->GetFlags() & FL_FROZEN)
             return;
 
+		CBaseCombatWeapon* pWeapon = pMarine->GetWeapon(2);
         pMarine->DropWeapon(2, true);
 
         IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
         if ( event )
         {
             event->SetInt( "userid", pPlayer->GetUserID() );
+			event->SetInt( "entindex", pWeapon ? pWeapon->entindex() : 0 );
 
             gameeventmanager->FireEvent( event );
         }
@@ -895,7 +901,7 @@ void asw_ai_report_specific(const char* szClass)
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
 	{
-		CAI_BaseNPC* pAI = dynamic_cast<CAI_BaseNPC*>(pEntity);			
+		CAI_BaseNPC* pAI = pEntity->MyNPCPointer();			
 		if (pAI)
 		{
 			if (pAI->GetEfficiency() == AIE_NORMAL)
@@ -944,7 +950,7 @@ void asw_drone_cycle_f()
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_drone" )) != NULL)
 	{
-		CAI_BaseNPC* pAI = dynamic_cast<CAI_BaseNPC*>(pEntity);			
+		CAI_BaseNPC* pAI = pEntity->MyNPCPointer();			
 		if (pAI)
 		{
 			Msg("[%d:%s] Cycle=%f", pAI->entindex(),
@@ -1091,7 +1097,7 @@ void asw_marine_server_anim_f()
 				{
 					int iSeq = pLayer->m_nSequence;
 					Msg("Layer %d sequence %d (%s) A:%s W:%f C:%f\n", i, iSeq, pMarine->GetSequenceName(iSeq),
-						pMarine->GetSequenceActivityName(iSeq), pLayer->m_flWeight, pLayer->m_flCycle);
+						pMarine->GetSequenceActivityName(iSeq), pLayer->m_flWeight.Get(), pLayer->m_flCycle.Get());
 				}
 			}
 		}
@@ -1120,7 +1126,7 @@ void listmarineresources_server_f(void)
 		else
 		{
 			Msg("MarineResource %d = present, profileindex %d, commander %d commander index %d\n",
-				i, pGameResource->GetMarineResource(i)->m_MarineProfileIndex,
+				i, pGameResource->GetMarineResource(i)->m_MarineProfileIndex.Get(),
 				pGameResource->GetMarineResource(i)->GetCommander(),
 				pGameResource->GetMarineResource(i)->m_iCommanderIndex.Get());
 		}
@@ -1335,14 +1341,14 @@ void asw_set_drone_skin_f(const CCommand &args)
 	int iSkin = atoi(args[1]);
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_drone_advanced" )) != NULL)
 	{
-		CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pEntity);
+		CBaseAnimating *pAnim = pEntity->GetBaseAnimating();
 		if (pAnim)
 			pAnim->m_nSkin = iSkin;
 	}
 	pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_simple_drone" )) != NULL)
 	{
-		CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pEntity);
+		CBaseAnimating *pAnim = pEntity->GetBaseAnimating();
 		if (pAnim)
 			pAnim->m_nSkin = iSkin;
 	}
@@ -1820,7 +1826,7 @@ void asw_restart_mission_f()
 		return;
 	if (ASWGameRules())
 	{
-		if ( gpGlobals->maxClients > 1)
+		if ( gpGlobals->maxClients > 1 && rd_restart_mission_countdown.GetBool() )
 		{
 			ASWGameRules()->RestartMissionCountdown( pPlayer );
 		}
@@ -1968,7 +1974,7 @@ void cc_asw_inventory()
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 	if ( pPlayer->GetMarine() )
 	{
-		for (int i=0;i<pPlayer->GetMarine()->WeaponCount();i++)
+		for (int i=0;i<ASW_MAX_MARINE_WEAPONS;i++)
 		{
 			CBaseEntity *pWeapon = pPlayer->GetMarine()->GetWeapon(i);
 			if ( pWeapon )
@@ -2016,6 +2022,24 @@ void asw_gimme_health_f(void)
 
 static ConCommand asw_gimme_health("asw_gimme_health", asw_gimme_health_f, "Refills all marine health", FCVAR_CHEAT);
 
+void asw_gimme_33_f(void)
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	{
+		if (pGameResource->GetMarineResource(i) != NULL && pGameResource->GetMarineResource(i)->GetMarineEntity())
+		{
+			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			pMarine->SetHealth(33);
+		}
+	}
+}
+
+static ConCommand asw_gimme_33hp( "asw_gimme_33hp", asw_gimme_33_f, "Sets marine hp to 33", FCVAR_CHEAT );
+
 
 void SpawnBuzzerAboveMe( const CCommand &args )
 {
@@ -2054,3 +2078,71 @@ void SpawnBuzzerAboveMe( const CCommand &args )
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
 static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Spawn a buzzer above marine.\n\tFormat: asw_spawn_buzzer <z height above marine>", FCVAR_CHEAT);
+
+void MarineStrafePush()
+{
+	if (!ASWGameRules() || !ASWGameRules()->ShouldAllowMarineStrafePush())
+		return;
+
+	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	if (!pPlayer)
+		return;
+
+	CASW_Marine *pMarine = pPlayer->GetMarine();
+	if (!pMarine)
+		return;
+
+	pMarine->StrafePush();
+}
+
+static ConCommand rda_strafepush("rda_strafepush", MarineStrafePush, "Strafe push current marine", 0);
+
+void HideBackPackModels()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{ 
+		if ( pGameResource->GetMarineResource(i) )
+		{
+			CASW_Marine* pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			if ( pMarine )
+			{
+				pMarine->RemoveBackPackModel();
+			}
+		}
+	}
+}
+ConCommand rda_hide_backpack("rda_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rda_marine_backpack 0", FCVAR_NONE);
+
+void DrawBackPackModels()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		if ( pGameResource->GetMarineResource(i) )
+		{
+			CASW_Marine* pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			if ( pMarine && !pMarine->GetBackPackModel() )
+			{
+				if ( pMarine->GetASWWeapon(0) && pMarine->GetASWWeapon(1) )
+				{
+					if ( pMarine->GetActiveASWWeapon() == pMarine->GetASWWeapon(0) )
+					{
+						pMarine->CreateBackPackModel( pMarine->GetASWWeapon(1) );
+					}
+					else
+					{
+						pMarine->CreateBackPackModel( pMarine->GetASWWeapon(0) );
+					}
+				}
+			}
+		}
+	}
+}
+ConCommand rda_draw_backpack("rda_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rda_marine_backpack 1", FCVAR_NONE);

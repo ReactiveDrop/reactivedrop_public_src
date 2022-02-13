@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:
 //
@@ -123,15 +123,20 @@ void CAI_Senses::Listen( void )
 		while ( iSound != SOUNDLIST_EMPTY )
 		{
 			CSound *pCurrentSound = CSoundEnt::SoundPointerForIndex( iSound );
-
-			if ( pCurrentSound	&& (iSoundMask & pCurrentSound->SoundType()) && CanHearSound( pCurrentSound ) )
+			if (pCurrentSound)
 			{
-	 			// the npc cares about this sound, and it's close enough to hear.
-				pCurrentSound->m_iNextAudible = m_iAudibleList;
-				m_iAudibleList = iSound;
-			}
 
-			iSound = pCurrentSound->NextSound();
+				if ( (iSoundMask & pCurrentSound->SoundType()) && CanHearSound( pCurrentSound ) )
+				{
+					// the npc cares about this sound, and it's close enough to hear.
+					pCurrentSound->m_iNextAudible = m_iAudibleList;
+					m_iAudibleList = iSound;
+				}
+
+				iSound = pCurrentSound->NextSound();
+			}
+			else
+				break;
 		}
 	}
 	
@@ -177,7 +182,7 @@ bool CAI_Senses::CanSeeEntity( CBaseEntity *pSightEnt )
 
 bool CAI_Senses::DidSeeEntity( CBaseEntity *pSightEnt ) const
 {
-	AISightIter_t iter;
+	AISightIter_t iter = (AISightIter_t)(-1);
 	CBaseEntity *pTestEnt;
 
 	pTestEnt = GetFirstSeenEntity( &iter );

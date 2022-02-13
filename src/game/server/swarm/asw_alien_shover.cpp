@@ -323,6 +323,7 @@ void CASW_Alien_Shover::Shove( void )
 		EmitSound( "ASW_Drone.Shove" );
 
 		// If the player, throw him around
+#if PLAYER_CHECKS
 		if ( pHurt->IsPlayer() )
 		{
 			//Punch the view
@@ -340,6 +341,7 @@ void CASW_Alien_Shover::Shove( void )
 			pHurt->ApplyAbsVelocityImpulse( forward * 400 + up * 150 );
 		}	
 		else
+#endif
 		{
 			CBaseCombatCharacter *pVictim = ToBaseCombatCharacter( pHurt );
 			
@@ -368,6 +370,8 @@ void CASW_Alien_Shover::HandleAnimEvent( animevent_t *pEvent )
 
 		//Setup the throw velocity
 		IPhysicsObject *physObj = m_hPhysicsTarget->VPhysicsGetObject();
+		if (!physObj)
+			return;
 
 		Vector	targetDir = ( GetEnemy()->GetAbsOrigin() - m_hPhysicsTarget->WorldSpaceCenter() );
 		float	targetDist = VectorNormalize( targetDir );

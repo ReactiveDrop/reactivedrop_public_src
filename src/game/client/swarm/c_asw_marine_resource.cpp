@@ -102,7 +102,7 @@ C_ASW_Marine* C_ASW_Marine_Resource::GetMarineEntity()
 
 C_ASW_Player* C_ASW_Marine_Resource::GetCommander()
 {
-	return dynamic_cast<C_ASW_Player*>(m_Commander.Get());
+	return m_Commander.Get();
 }
 
 void C_ASW_Marine_Resource::GetDisplayName( char *pchDisplayName, int nMaxBytes )
@@ -179,6 +179,21 @@ float C_ASW_Marine_Resource::GetHealthPercent()
 	float health = marine->GetHealth();
 
 	return clamp(health / max_health, 0.0f, 1.0f);
+}
+
+float C_ASW_Marine_Resource::GetOverHealthPercent()
+{
+	C_ASW_Marine *marine = GetMarineEntity();
+	if (!marine)
+		return 0;
+
+	float max_health = marine->GetMaxHealth();
+	if (max_health <= 0)
+		return 0;
+
+	float health = marine->GetHealth();
+
+	return clamp(health / max_health, 0.0f, health / max_health);
 }
 
 float C_ASW_Marine_Resource::GetInfestedPercent()

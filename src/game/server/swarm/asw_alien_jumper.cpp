@@ -194,17 +194,13 @@ bool CASW_Alien_Jumper::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, flo
 	if ( pBlocker && pBlocker->Classify() == CLASS_ASW_DRONE )
 	{
 		// HACKHACK
-		CASW_Alien_Jumper *pJumper = dynamic_cast< CASW_Alien_Jumper * > ( pBlocker );
-
-		if ( pJumper )
+		CASW_Alien_Jumper *pJumper = assert_cast< CASW_Alien_Jumper * > ( pBlocker );
+		if ( pJumper->AllowedToBePushed() == true && GetEnemy() == NULL )
 		{
-			if ( pJumper->AllowedToBePushed() == true && GetEnemy() == NULL )
-			{
-				//NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 255, 0, 0, 2 );
-				pJumper->GetMotor()->SetIdealYawToTarget( WorldSpaceCenter() );
-				pJumper->SetSchedule( SCHED_MOVE_AWAY );
-				pJumper->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
-			}
+			//NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 255, 0, 0, 2 );
+			pJumper->GetMotor()->SetIdealYawToTarget( WorldSpaceCenter() );
+			pJumper->SetSchedule( SCHED_MOVE_AWAY );
+			pJumper->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
 		}
 	}
 
@@ -318,18 +314,14 @@ bool CASW_Alien_Jumper::IsJumpLegal( const Vector &startPos, const Vector &apex,
 			if ( pBlocker && pBlocker->Classify() == CLASS_ASW_DRONE )
 			{
 				// HACKHACK	- push other jumpers out of the way
-				CASW_Alien_Jumper *pJumper = dynamic_cast< CASW_Alien_Jumper * > ( pBlocker );
-
-				if ( pJumper )
+				CASW_Alien_Jumper *pJumper = assert_cast< CASW_Alien_Jumper * > ( pBlocker );
+				if ( pJumper->AllowedToBePushed() == true )
 				{
-					if ( pJumper->AllowedToBePushed() == true )
-					{
-					//	NDebugOverlay::Line( GetAbsOrigin(), endPos, 255, 0, 0, 0, 2 );
-					//	NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 0, 255, 0, 2 );
-						pJumper->GetMotor()->SetIdealYawToTarget( endPos );
-						pJumper->SetSchedule( SCHED_MOVE_AWAY );
-						pJumper->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
-					}
+				//	NDebugOverlay::Line( GetAbsOrigin(), endPos, 255, 0, 0, 0, 2 );
+				//	NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 0, 255, 0, 2 );
+					pJumper->GetMotor()->SetIdealYawToTarget( endPos );
+					pJumper->SetSchedule( SCHED_MOVE_AWAY );
+					pJumper->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
 				}
 			}
 		}

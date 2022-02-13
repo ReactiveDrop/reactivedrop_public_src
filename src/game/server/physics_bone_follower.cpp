@@ -482,4 +482,5 @@ void CreateBoneFollowersFromRagdoll( CBaseAnimating *pEntity, CBoneFollowerManag
 			pParse->SkipBlock();
 		}
 	}
+	physcollision->VPhysicsKeyParserDestroy( pParse );
 }

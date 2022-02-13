@@ -39,6 +39,7 @@ ConVar asw_directional_shadows("asw_directional_shadows", "1", 0, "Whether alien
 ConVar asw_alien_shadows("asw_alien_shadows", "0", 0, "If set to one, aliens will always have shadows (WARNING: Big fps cost when lots of aliens are active)");
 ConVar asw_alien_footstep_interval( "asw_alien_footstep_interval", "0.25", 0, "Minimum interval between alien footstep sounds. Used to keep them from piling up and preventing others from playing." );
 ConVar asw_breakable_aliens( "asw_breakable_aliens", "1", 0, "If set, aliens can break into ragdoll gibs" );
+ConVar rd_max_drone_death_particles( "rd_max_drone_death_particles", "25", FCVAR_ARCHIVE, "Maximum number of drone blood particle being created per 1 frame" );
 extern ConVar asw_override_footstep_volume;
 extern ConVar asw_alien_debug_death_style;
 
@@ -361,6 +362,15 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 	{
 		m_vecForce = GetCustomDeathForce();
 	}
+
+	static int aliensParticlesThisFrame = 0;
+	static float fCurFrameTime = 0;
+	if ( fCurFrameTime != gpGlobals->curtime )
+	{
+		aliensParticlesThisFrame = 0;
+		fCurFrameTime = gpGlobals->curtime;
+	}
+
 	//Msg("[C] C_ASW_Alien::BecomeRagdollOnClient on fire? %d / %d", ( GetFlags() & FL_ONFIRE ), m_bOnFire.Get());
 	C_BaseAnimating* pEnt = BaseClass::BecomeRagdollOnClient();
 	C_ASW_ClientRagdoll* pRagdoll = dynamic_cast<C_ASW_ClientRagdoll*>(pEnt);
@@ -416,16 +426,22 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 			pRagdoll->pszGibParticleEffect = GetRagdollGibParticleEffectName();
 		}
 
+		//int noNetEnts = ClientEntityList().NumberOfEntities(true) - ClientEntityList().NumberOfEntities(false); //client ents with nonnetworkable - without nonnetworkable
+
 		if ( m_bOnFire.Get() )
 		{
-			pRagdoll->AddFlag( FL_ONFIRE );
-
-			CNewParticleEffect	*pBurningEffect = pRagdoll->ParticleProp()->Create( "ent_on_fire", PATTACH_ABSORIGIN_FOLLOW );
-			if (pBurningEffect)
+			aliensParticlesThisFrame += 1;
+			if ( aliensParticlesThisFrame < rd_max_drone_death_particles.GetInt() )
 			{
-				Vector vecOffest1 = (pRagdoll->WorldSpaceCenter() - pRagdoll->GetAbsOrigin()) + Vector( 0, 0, 16 );
-				pPlayer->ParticleProp()->AddControlPoint( pBurningEffect, 1, pRagdoll, PATTACH_ABSORIGIN_FOLLOW, NULL, vecOffest1 );
-			}			
+				pRagdoll->AddFlag( FL_ONFIRE );
+
+				CNewParticleEffect *pBurningEffect = pRagdoll->ParticleProp()->Create( "ent_on_fire", PATTACH_ABSORIGIN_FOLLOW );
+				if ( pBurningEffect )
+				{
+					Vector vecOffest1 = ( pRagdoll->WorldSpaceCenter() - pRagdoll->GetAbsOrigin() ) + Vector( 0, 0, 16 );
+					pPlayer->ParticleProp()->AddControlPoint( pBurningEffect, 1, pRagdoll, PATTACH_ABSORIGIN_FOLLOW, NULL, vecOffest1 );
+				}
+			}
 		}
 		else
 		{
@@ -465,19 +481,24 @@ C_BaseAnimating * C_ASW_Alien::BecomeRagdollOnClient( void )
 					break;
 				}
 
-				CUtlReference< CNewParticleEffect > pEffect;
-				pEffect = pPlayer->ParticleProp()->Create( pchEffectName, PATTACH_ABSORIGIN_FOLLOW );
+				aliensParticlesThisFrame += 1;
 
-				if ( pEffect )
+				if ( aliensParticlesThisFrame < rd_max_drone_death_particles.GetInt() )
 				{
-					pPlayer->ParticleProp()->AddControlPoint( pEffect, 1, pRagdoll, PATTACH_CUSTOMORIGIN );
-					pEffect->SetControlPoint( 1, WorldSpaceCenter() );//origin - pMarine->GetAbsOrigin()
-					pEffect->SetControlPointOrientation( 1, vecForward, vecRight, vecUp );
-					pEffect->SetControlPointEntity( 0, pRagdoll );
-				}
-				else
-				{
-					Warning( "Could not create effect for alien death: %s", pchEffectName );
+					CUtlReference< CNewParticleEffect > pEffect;
+					pEffect = pPlayer->ParticleProp()->Create( pchEffectName, PATTACH_ABSORIGIN_FOLLOW );
+
+					if ( pEffect )
+					{
+						pPlayer->ParticleProp()->AddControlPoint( pEffect, 1, pRagdoll, PATTACH_CUSTOMORIGIN );
+						pEffect->SetControlPoint( 1, WorldSpaceCenter() );//origin - pMarine->GetAbsOrigin()
+						pEffect->SetControlPointOrientation( 1, vecForward, vecRight, vecUp );
+						pEffect->SetControlPointEntity( 0, pRagdoll );
+					}
+					else
+					{
+						Warning( "Could not create effect for alien death: %s", pchEffectName );
+					}
 				}
 			}
 

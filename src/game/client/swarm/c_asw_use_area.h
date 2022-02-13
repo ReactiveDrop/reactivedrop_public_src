@@ -31,6 +31,9 @@ public:
 
 	CNetworkHandle( C_BaseEntity, m_hPanelProp );
 
+	char m_iHeldObjectName[MAX_PATH];
+	bool CheckHeldObject( C_ASW_Marine *pMarine );
+
 protected:
 	C_ASW_Use_Area( const C_ASW_Use_Area & ); // not defined, not accessible		
 };

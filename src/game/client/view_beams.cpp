@@ -1787,7 +1787,7 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 
 	distToLine = ( CurrentViewOrigin() - out ).Length();
 
-	float scaleColor[4];
+	float scaleColor[3];
 	float dotScale = 1.0f;
 	
 	// Use beam width
@@ -1802,7 +1802,6 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 	scaleColor[0] = color[0] * dotScale;
 	scaleColor[1] = color[1] * dotScale;
 	scaleColor[2] = color[2] * dotScale;
-	scaleColor[3] = color[3] * dotScale;
 
 	if( pbeam->flags & FBEAM_HALOBEAM )
 	{

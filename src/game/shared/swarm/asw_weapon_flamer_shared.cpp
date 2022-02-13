@@ -285,14 +285,21 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 			// decrement ammo
 			m_iClip1 -= 1;
 #ifdef GAME_DLL
-			CASW_Marine *pMarine = GetMarine();
-			if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 			{
 				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 				if (!pAmmoBag)
-					pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-				if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+				{
+					pWeapon = pMarine->GetASWWeapon(1);
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				}
+				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 					pMarine->OnWeaponOutOfAmmo(true);
 			}
 #endif
@@ -336,9 +343,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 		return;
 	}
 
-	CASW_Player *pPlayer = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
-
 	if (pMarine)		// firing from a marine
 	{
 		// MUST call sound before removing a round from the clip of a CMachineGun
@@ -356,6 +361,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 #ifndef CLIENT_DLL
 		Vector	vecSrc		= pMarine->Weapon_ShootPosition( );
 		Vector vecAiming = vec3_origin;
+		CASW_Player *pPlayer = GetCommander();
 		if ( pPlayer && pMarine->IsInhabited() )
 		{
 			vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -406,6 +412,8 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 			// decrement ammo
 			m_iClip1 -= 1;
 
+			//Mad Orange. Suit is unused in ASW
+			/*
 			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 			{
 				// HEV suit - indicate out of ammo condition
@@ -414,6 +422,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 
 				m_bIsSecondaryFiring = false;
 			}
+			*/
 		}
 	}
 	if (!rd_flamer_infinite_extinguisher.GetBool() || m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot

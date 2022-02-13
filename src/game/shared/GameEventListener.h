@@ -50,7 +50,9 @@ public:
 		// remove me from list
 		if ( m_bRegisteredForEvents )
 		{
-			gameeventmanager->RemoveListener( this );
+			if ( gameeventmanager )
+				gameeventmanager->RemoveListener( this );
+
 			m_bRegisteredForEvents = false;
 		}
 	}

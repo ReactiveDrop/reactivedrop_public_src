@@ -280,11 +280,11 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 				const char *szContainingCampaign = ASWGameRules()->GetCurrentVoteCampaignName();
 				if ( !szContainingCampaign || !szContainingCampaign[0] )
 				{
-					V_snwprintf( wbuffer, sizeof( wbuffer ), L"%s", wmapname );
+					V_snwprintf( wbuffer, ARRAYSIZE( wbuffer ), L"%s", wmapname );
 				}
 				else
 				{
-					V_snwprintf( wbuffer, sizeof( wbuffer ), L"%s", wmapname );
+					V_snwprintf( wbuffer, ARRAYSIZE( wbuffer ), L"%s", wmapname );
 				}
 			}
 			else

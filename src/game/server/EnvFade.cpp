@@ -100,7 +100,7 @@ void CEnvFade::InputFade( inputdata_t &inputdata )
 	if ( m_spawnflags & SF_FADE_ONLYONE )
 	{
 #ifdef INFESTED_DLL
-		if ( inputdata.pActivator->Classify() == CLASS_ASW_MARINE )
+		if ( inputdata.pActivator && inputdata.pActivator->Classify() == CLASS_ASW_MARINE )
 		{
 			CASW_Marine *pMarine = static_cast<CASW_Marine*>( inputdata.pActivator );
 			CASW_Player *pPlayer = pMarine->GetCommander();
@@ -110,7 +110,7 @@ void CEnvFade::InputFade( inputdata_t &inputdata )
 			}
 		}
 #else
-		if ( inputdata.pActivator->IsNetClient() )
+		if ( inputdata.pActivator && inputdata.pActivator->IsNetClient() )
 		{
 			UTIL_ScreenFade( inputdata.pActivator, m_clrRender, Duration(), HoldTime(), fadeFlags );
 		}

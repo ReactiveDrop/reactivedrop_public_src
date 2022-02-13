@@ -91,7 +91,7 @@ static ConVar rope_smooth_maxalphawidth( "rope_smooth_maxalphawidth", "1.75" );
 static ConVar rope_smooth_maxalpha( "rope_smooth_maxalpha", "0.5", 0, "Alpha for rope antialiasing effect" );
 
 static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT ); // get it from the engine
-static ConVar r_drawropes( "r_drawropes", "1", FCVAR_CHEAT );
+static ConVar r_drawropes( "r_drawropes", "1", FCVAR_NONE );
 static ConVar r_ropetranslucent( "r_ropetranslucent", "1");
 
 static ConVar rope_wind_dist( "rope_wind_dist", "1000", 0, "Don't use CPU applying small wind gusts to ropes when they're past this distance." );
@@ -893,7 +893,12 @@ C_RopeKeyframe* C_RopeKeyframe::Create(
 {
 	C_RopeKeyframe *pRope = new C_RopeKeyframe;
 
-	pRope->InitializeAsClientEntity( NULL, false );
+	if (!pRope->InitializeAsClientEntity(NULL, false))
+	{
+		Msg("Error, couldn't Initialize Rope AsClientEntity\n");
+		UTIL_Remove(pRope);
+		return NULL;
+	}
 	
 	if ( pStartEnt )
 	{

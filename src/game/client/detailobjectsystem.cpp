@@ -1522,7 +1522,7 @@ void CDetailObjectSystem::LevelInitPreEntity()
 		PrecacheMaterial( DETAIL_SPRITE_MATERIAL );
 		IMaterial *pMat = m_DetailSpriteMaterial;
 		// adjust for non-square textures (cropped)
-		float flRatio = pMat->GetMappingWidth() / pMat->GetMappingHeight();
+		float flRatio = (float)(pMat->GetMappingWidth()) / pMat->GetMappingHeight();
 		if ( flRatio > 1.0 )
 		{
 			for( int i = 0; i<m_DetailSpriteDict.Count(); i++ )
@@ -2000,8 +2000,8 @@ Vector CDetailObjectSystem::GetSpriteMiddleBottomPosition( DetailObjectLump_t co
 
 void CDetailObjectSystem::UnserializeFastSprite( FastSpriteX4_t *pSpritex4, int nSubField, DetailObjectLump_t const &lump, bool bFlipped, Vector const &posOffset )
 {
-	Vector pos = lump.m_Origin + posOffset;
-	pos = GetSpriteMiddleBottomPosition( lump ) + posOffset;
+	//Vector pos = lump.m_Origin + posOffset;
+	Vector pos = GetSpriteMiddleBottomPosition( lump ) + posOffset;
 
 	pSpritex4->m_Pos.X( nSubField ) = pos.x;
 	pSpritex4->m_Pos.Y( nSubField ) = pos.y;
@@ -2309,6 +2309,11 @@ void CDetailObjectSystem::RenderFastSprites( const DistanceFadeInfo_t &info, con
 	if ( ShouldDrawInWireFrameMode() || r_DrawDetailProps.GetInt() == 2 )
 	{
 		pMaterial = m_DetailWireframeMaterial;
+	}
+
+	if (pMaterial == NULL)
+	{
+		return;
 	}
 
 	CMeshBuilder meshBuilder;

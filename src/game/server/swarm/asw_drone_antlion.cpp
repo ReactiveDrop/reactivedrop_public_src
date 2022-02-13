@@ -199,7 +199,7 @@ void CASW_Drone_Antlion::NPCThink()
 	CASW_Player *pPlayer;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex( i ));
+		pPlayer = ToASW_Player(UTIL_PlayerByIndex( i ));
 		if (pPlayer)
 			pPlayer->MoveMarineToPredictedPosition();
 	}
@@ -208,7 +208,7 @@ void CASW_Drone_Antlion::NPCThink()
 
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex( i ));
+		pPlayer = ToASW_Player(UTIL_PlayerByIndex( i ));
 		if (pPlayer)
 			pPlayer->RestoreMarinePosition();
 	}

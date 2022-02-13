@@ -163,7 +163,10 @@ void GenericWaitScreen::RunFrame()
 
 void GenericWaitScreen::SetDataSettings( KeyValues *pSettings )
 {
-	m_pAsyncOperationAbortable = ( IMatchAsyncOperation * ) pSettings->GetPtr( "options/asyncoperation", NULL );
+	if (pSettings)
+		m_pAsyncOperationAbortable = ( IMatchAsyncOperation * ) pSettings->GetPtr( "options/asyncoperation", NULL );
+	else
+		m_pAsyncOperationAbortable = NULL;
 }
 
 void GenericWaitScreen::OnKeyCodePressed(vgui::KeyCode code)

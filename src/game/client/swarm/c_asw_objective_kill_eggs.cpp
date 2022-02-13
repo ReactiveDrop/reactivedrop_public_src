@@ -55,7 +55,7 @@ const wchar_t* C_ASW_Objective_Kill_Eggs::GetObjectiveTitle()
 		wchar_t wnumber_buffer[24];
 		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer, sizeof( wnumber_buffer ));
 
-		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", m_iTargetKills);
+		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", m_iTargetKills.Get());
 		wchar_t wnumber_buffer2[24];
 		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer2, sizeof( wnumber_buffer ));
 		

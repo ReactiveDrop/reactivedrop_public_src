@@ -95,9 +95,6 @@ void CASW_Weapon_T75::PrimaryAttack( void )
 		return;
 
 	CASW_Marine *pMarine = GetMarine();
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-#endif
 
 	// weapon is lost when all charges are gone
 	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )

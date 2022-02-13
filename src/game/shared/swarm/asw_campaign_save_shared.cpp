@@ -13,7 +13,7 @@
 
 bool CASW_Campaign_Save::IsMissionLinkedToACompleteMission(int i, CASW_Campaign_Info* pCampaignInfo)
 {
-	if (!pCampaignInfo && !ASWGameRules())
+	if (!pCampaignInfo || !ASWGameRules())
 		return false;
 
 	CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaignInfo->GetMission(i);

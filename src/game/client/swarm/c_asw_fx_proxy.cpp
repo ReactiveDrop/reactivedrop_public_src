@@ -142,14 +142,15 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 	float	flFrozen	= 0;
 
 	//C_ASW_ClientRagdoll
-	C_ASW_Alien *pAlien = dynamic_cast<C_ASW_Alien*>( pEnt );
-	if ( pAlien )
+	if ( pEnt->IsAlienClassType() )
 	{
-		bShockBig	= pAlien->m_bElectroStunned;
-		bOnFire		= pAlien->m_bOnFire;
-		flFrozen	= pAlien->GetMoveType() == MOVETYPE_NONE ? 0.0f : pAlien->GetFrozenAmount();
+		C_ASW_Alien* pAlien = assert_cast<C_ASW_Alien*>( pEnt );
+
+		bShockBig = pAlien->m_bElectroStunned;
+		bOnFire = pAlien->m_bOnFire;
+		flFrozen = pAlien->GetMoveType() == MOVETYPE_NONE ? 0.0f : pAlien->GetFrozenAmount();
 		//Msg( " alien %d shock = %d fire = %d frozen = %f\n", pAlien->entindex(), bShockBig, bOnFire, flFrozen );
-		UpdateEffects( bShockBig, bOnFire, flFrozen );
+		UpdateEffects(bShockBig, bOnFire, flFrozen);
 		return;
 	}
 
@@ -163,22 +164,24 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 		return;
 	}
 
-	C_ASW_Egg *pEgg = dynamic_cast<C_ASW_Egg*>( pEnt );
-	if ( pEgg )
+	if ( pEnt->Classify() == CLASS_ASW_EGG )
 	{
-		bOnFire		= pEgg->m_bOnFire;
-		flFrozen	= pEgg->GetFrozenAmount();
-		UpdateEffects( false, bOnFire, flFrozen );
+		C_ASW_Egg* pEgg = assert_cast<C_ASW_Egg*>(pEnt);
+
+		bOnFire = pEgg->m_bOnFire;
+		flFrozen = pEgg->GetFrozenAmount();
+		UpdateEffects(false, bOnFire, flFrozen);
 		return;
 	}
 
-	C_ASW_Buzzer *pBuzzer = dynamic_cast<C_ASW_Buzzer*>( pEnt );
-	if ( pBuzzer )
+	if ( pEnt->Classify() == CLASS_ASW_BUZZER )
 	{
-		bShockBig	= pBuzzer->m_bElectroStunned;
-		bOnFire		= pBuzzer->m_bOnFire;
-		flFrozen	= pBuzzer->GetMoveType() == MOVETYPE_NONE ? 0.0f : pBuzzer->GetFrozenAmount();
-		UpdateEffects( bShockBig, bOnFire, flFrozen );
+		C_ASW_Buzzer* pBuzzer = assert_cast<C_ASW_Buzzer*>(pEnt);
+
+		bShockBig = pBuzzer->m_bElectroStunned;
+		bOnFire = pBuzzer->m_bOnFire;
+		flFrozen = pBuzzer->GetMoveType() == MOVETYPE_NONE ? 0.0f : pBuzzer->GetFrozenAmount();
+		UpdateEffects(bShockBig, bOnFire, flFrozen);
 		return;
 	}
 
@@ -187,7 +190,7 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 	{
 		bShockBig	= pRagDoll->m_bElectroShock;
 		bOnFire		= !!(pRagDoll->GetFlags() & FL_ONFIRE);
-		UpdateEffects( bShockBig, bOnFire, false );
+		UpdateEffects( bShockBig, bOnFire, 0.0f );
 		return;
 	}
 

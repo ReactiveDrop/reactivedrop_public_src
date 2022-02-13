@@ -254,6 +254,7 @@ void CEnvShake::ApplyShake( ShakeCommand_t command )
 			break;
 		case SHAKE_AMPLITUDE:
 			m_currentAmp = Amplitude();
+			// fallthrough
 		case SHAKE_FREQUENCY:
 			m_pShakeController->WakeObjects();
 			break;

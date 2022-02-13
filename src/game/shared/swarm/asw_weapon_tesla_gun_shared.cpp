@@ -139,8 +139,9 @@ void CASW_Weapon_Tesla_Gun::PrimaryAttack( void )
 		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5;
 		return;
 	}
-
-	Vector vecSrc = pMarine->Weapon_ShootPosition( );
+#ifndef CLIENT_DLL
+	Vector vecSrc = pMarine->Weapon_ShootPosition();
+#endif
 	Vector vecAiming = vec3_origin;
 
 	if ( pPlayer && pMarine->IsInhabited() )
@@ -283,10 +284,12 @@ float CASW_Weapon_Tesla_Gun::GetWeaponDamage()
 void CASW_Weapon_Tesla_Gun::ShockEntity()
 {
 	CASW_Marine *pMarine = GetMarine();
-	EHANDLE hShockEntity = m_hShockEntity.Get();
-	Assert( hShockEntity && hShockEntity->m_takedamage != DAMAGE_NO && pMarine );
+	//EHANDLE hShockEntity = m_hShockEntity.Get();
+	CBaseEntity* pShockBaseEntity = m_hShockEntity.Get().Get();
 
-	Vector vecDir = hShockEntity->GetAbsOrigin() - pMarine->GetAbsOrigin();
+	Assert( pShockBaseEntity && pShockBaseEntity->m_takedamage != DAMAGE_NO && pMarine );
+
+	Vector vecDir = pShockBaseEntity->GetAbsOrigin() - pMarine->GetAbsOrigin();
 
 	ClearMultiDamage();
 	float flBaseDamage = GetWeaponDamage() * g_pGameRules->GetDamageMultiplier();
@@ -295,30 +298,29 @@ void CASW_Weapon_Tesla_Gun::ShockEntity()
 	CalculateMeleeDamageForce( &info, vecDir, m_AttackTrace.endpos );
 
 #ifdef GAME_DLL
-	DoArcingShock( flBaseDamage, hShockEntity.Get() );
+	DoArcingShock( flBaseDamage, pShockBaseEntity );
 #endif
 
 	// Whatever damage didn't get used for electricity arcing gets applied to a single target			
 	info.SetDamage( info.GetDamage() + flBaseDamage );
-	hShockEntity->DispatchTraceAttack( info, vecDir, &m_AttackTrace );
+	pShockBaseEntity->DispatchTraceAttack( info, vecDir, &m_AttackTrace );
 	ApplyMultiDamage();
 
 	//Msg( "%f - Shocking target for %f\n", gpGlobals->curtime, info.GetDamage() + flBaseDamage );
 
 #ifdef GAME_DLL
-	CASW_Alien *pTargetAlien = dynamic_cast<CASW_Alien*>( hShockEntity.Get() );
-
-	if ( pTargetAlien )
+	if ( pShockBaseEntity->IsAlienClassType() )
 	{
-		pTargetAlien->ForceFlinch( pMarine->GetAbsOrigin() );		
+		CASW_Alien* pTargetAlien = assert_cast<CASW_Alien*>(pShockBaseEntity);
+		pTargetAlien->ForceFlinch( pMarine->GetAbsOrigin() );
 	}
 #endif
 
 	// decrement ammo
 	m_iClip1 = MAX( 0, m_iClip1 - 1 );
 
-	CPASFilter filter( hShockEntity->GetAbsOrigin() );
-	CBaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "ASW_Tesla_Laser.Damage", &hShockEntity->GetAbsOrigin() );
+	CPASFilter filter( pShockBaseEntity->GetAbsOrigin() );
+	CBaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "ASW_Tesla_Laser.Damage", &pShockBaseEntity->GetAbsOrigin() );
 }
 
 #ifdef GAME_DLL
@@ -385,9 +387,11 @@ void CASW_Weapon_Tesla_Gun::DoArcingShock( float flBaseDamage, CBaseEntity *pLas
 				shockDmgInfo.SetWeapon( this );							
 
 				shockTR.m_pEnt->DispatchTraceAttack( shockDmgInfo, vecDir, &shockTR );
-				CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( shockTR.m_pEnt );
-				if ( pAlien )
-					pAlien->ForceFlinch( pLastShocked->WorldSpaceCenter() );	
+				if ( shockTR.m_pEnt->IsAlienClassType() )
+				{
+					CASW_Alien* pAlien = assert_cast<CASW_Alien*>(shockTR.m_pEnt);
+					pAlien->ForceFlinch(pLastShocked->WorldSpaceCenter());
+				}
 
 				// spawn a shock effect
 				CRecipientFilter filter;
@@ -455,11 +459,11 @@ void CASW_Weapon_Tesla_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir
 		return;
 
 	CBaseEntity *pEntity = tr.m_pEnt;
-	CASW_Marine *pTargetMarine = NULL;
-	if ( pEntity )
-	{
-		pTargetMarine = CASW_Marine::AsMarine( pEntity );
-	}
+	//CASW_Marine *pTargetMarine = NULL;
+	//if ( pEntity )
+	//{
+	//	pTargetMarine = CASW_Marine::AsMarine( pEntity );
+	//}
 
 	Vector vecUp, vecRight;
 	QAngle angDir;
@@ -480,13 +484,21 @@ void CASW_Weapon_Tesla_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir
 
 
 #ifdef GAME_DLL
-	if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+	if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 	{
 		// check he doesn't have ammo in an ammo bay
-		CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+		CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+		CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+		if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+			pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 		if (!pAmmoBag)
-			pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-		if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+		{
+			pWeapon = pMarine->GetASWWeapon(1);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+		}
+		if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 			pMarine->OnWeaponOutOfAmmo(true);
 	}
 #endif
@@ -678,15 +690,22 @@ void CASW_Weapon_Tesla_Gun::UpdateEffects()
 				float flHeight = hTarget->BoundingRadius();
 				Vector vOffset( 0.0f, 0.0f, flHeight * 0.25 );
 
-				C_ASW_Alien *pAlien = dynamic_cast<C_ASW_Alien*>(hTarget.Get());
 				// TODO: get some standardization in the attachment naming
-				if ( pAlien && pAlien->LookupAttachment( "eyes" ) )
+				if ( hTarget.Get()->IsAlienClassType() )
 				{
-					ParticleProp()->AddControlPoint( m_pDischargeEffect, 1, pAlien, PATTACH_POINT_FOLLOW, "eyes" );
+					C_ASW_Alien* pAlien = assert_cast<C_ASW_Alien*>(hTarget.Get());
+					if ( pAlien->LookupAttachment("eyes") )
+					{
+						ParticleProp()->AddControlPoint(m_pDischargeEffect, 1, pAlien, PATTACH_POINT_FOLLOW, "eyes");
+					}
+					else
+					{
+						ParticleProp()->AddControlPoint(m_pDischargeEffect, 1, hTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset);
+					}
 				}
 				else
 				{
-					ParticleProp()->AddControlPoint( m_pDischargeEffect, 1, hTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset );
+					ParticleProp()->AddControlPoint(m_pDischargeEffect, 1, hTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset);
 				}
 			}
 

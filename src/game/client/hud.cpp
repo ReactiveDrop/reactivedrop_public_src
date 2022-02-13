@@ -372,17 +372,20 @@ void CHud::Init( void )
 			{
 				CHudElement *element = GetHudList()[i];
 				vgui::Panel *pPanel = GetHudPanelList()[i];
-				KeyValues *key = kv->FindKey( pPanel->GetName(), false );
-				if ( !key )
+				if ( pPanel )
 				{
-					Msg( "Hud element '%s' doesn't have an entry '%s' in scripts/HudLayout.res\n", element->GetName(), pPanel->GetName() );
-				}
+					KeyValues *key = kv->FindKey( pPanel->GetName(), false );
+					if ( !key )
+					{
+						Msg( "Hud element '%s' doesn't have an entry '%s' in scripts/HudLayout.res\n", element->GetName(), pPanel->GetName() );
+					}
 
-				// Note:  When a panel is parented to the module root, it's "parent" is returned as NULL.
-				if ( !element->IsParentedToClientDLLRootPanel() && 
-					 !pPanel->GetParent() )
-				{
-					DevMsg( "Hud element '%s'/'%s' doesn't have a parent\n", element->GetName(), pPanel->GetName() );
+					// Note:  When a panel is parented to the module root, it's "parent" is returned as NULL.
+					if ( !element->IsParentedToClientDLLRootPanel() && 
+						 !pPanel->GetParent() )
+					{
+						DevMsg( "Hud element '%s'/'%s' doesn't have a parent\n", element->GetName(), pPanel->GetName() );
+					}
 				}
 			}
 		}

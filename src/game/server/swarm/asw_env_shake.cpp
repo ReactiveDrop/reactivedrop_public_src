@@ -14,6 +14,7 @@
 #include "physics_saverestore.h"
 #include "rope.h"
 #include "asw_util_shared.h"
+#include "asw_marine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -81,11 +82,12 @@ public:
 	// Input handlers
 	void InputStartShake( inputdata_t &inputdata );
 	void InputStopShake( inputdata_t &inputdata );
+	void InputStartShakeForMarine( inputdata_t &inputdata );
 	void InputAmplitude( inputdata_t &inputdata );
 	void InputFrequency( inputdata_t &inputdata );
 
 	// Causes the camera/physics shakes to happen:
-	void ApplyShake( ShakeCommand_t command ); 
+	void ApplyShake( ShakeCommand_t command, CASW_Marine *pOnlyMarine = NULL ); 
 	void Think( void );
 };
 
@@ -106,6 +108,7 @@ BEGIN_DATADESC( CASWEnvShake )
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "StartShake", InputStartShake ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopShake", InputStopShake ),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "StartShakeForMarine", InputStartShakeForMarine ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "Amplitude", InputAmplitude ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "Frequency", InputFrequency ),
 
@@ -168,12 +171,12 @@ void CASWEnvShake::OnRestore( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CASWEnvShake::ApplyShake( ShakeCommand_t command )
+void CASWEnvShake::ApplyShake( ShakeCommand_t command, CASW_Marine *pOnlyMarine )
 {
 	if ( !HasSpawnFlags( SF_ASW_SHAKE_NO_VIEW ) )
 	{
 		bool air = (GetSpawnFlags() & SF_ASW_SHAKE_INAIR) ? true : false;
-		UTIL_ASW_ScreenShake( GetAbsOrigin(), Amplitude(), Frequency(), Duration(), Radius(), command, air );
+		UTIL_ASW_ScreenShake( GetAbsOrigin(), Amplitude(), Frequency(), Duration(), Radius(), command, air, pOnlyMarine );
 	}
 		
 	if ( GetSpawnFlags() & SF_ASW_SHAKE_ROPES )
@@ -233,6 +236,7 @@ void CASWEnvShake::ApplyShake( ShakeCommand_t command )
 			break;
 		case SHAKE_AMPLITUDE:
 			m_currentAmp = Amplitude();
+			// fallthrough
 		case SHAKE_FREQUENCY:
 			m_pShakeController->WakeObjects();
 			break;
@@ -255,6 +259,21 @@ void CASWEnvShake::InputStartShake( inputdata_t &inputdata )
 void CASWEnvShake::InputStopShake( inputdata_t &inputdata )
 {
 	ApplyShake( SHAKE_STOP );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Input handler that starts the screen shake for a specific marine.
+//-----------------------------------------------------------------------------
+void CASWEnvShake::InputStartShakeForMarine( inputdata_t &inputdata )
+{
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( inputdata.value.Entity() );
+	if ( !pMarine )
+	{
+		DevWarning( "%s: StartShakeForMarine missing marine\n", GetDebugName() );
+		return;
+	}
+
+	ApplyShake( SHAKE_START, pMarine );
 }
 
 

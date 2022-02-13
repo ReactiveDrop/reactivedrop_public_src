@@ -267,7 +267,8 @@ inline bool CUtlNTree<T,I>::IsValidIndex( I i ) const
 template <class T, class I>
 inline bool CUtlNTree<T,I>::IsInTree( I i ) const
 {
-	return (i < m_MaxElementIndex) && (i >= 0) && (InternalNode(i).m_PrevSibling != i);
+	bool bIndexPositive = ( 0 > (I)(-1) ) ? (i >= 0) : true;
+	return (i < m_MaxElementIndex) && bIndexPositive && (InternalNode(i).m_PrevSibling != i);
 }
 
 

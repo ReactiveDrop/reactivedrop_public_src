@@ -28,6 +28,11 @@ CFXLine::CFXLine( const char *name, const FXLineData_t &data )
 	m_FXData = data;
 	
 	m_FXData.m_flLifeTime = 0.0f;
+
+	if (m_FXData.m_pMaterial != NULL)
+	{
+		m_FXData.m_pMaterial->IncrementReferenceCount();
+	}
 }
 
 CFXLine::~CFXLine( void )

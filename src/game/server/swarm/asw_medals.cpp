@@ -169,7 +169,7 @@ void CASW_Medals::AwardMedals()
 	// award player medals to each player
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pPlayer && pPlayer->IsConnected() )
 		{
@@ -196,9 +196,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 
 	if ( !pMR || !pGameResource )
-		return;
-
-	if ( pGameResource->IsOfflineGame() )
 		return;
 
 	if ( !pMR->IsInhabited() )

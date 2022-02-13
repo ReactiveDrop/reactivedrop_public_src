@@ -103,10 +103,11 @@ failsafe:
 		// do we need to dispatch this concept?
 		CDeferredResponse &response = m_Queue[idx];
 		QueueType_t::IndexLocalType_t previdx = idx; // advance the index immediately because we may be deleting the "current" element
-		idx = m_Queue.Next(idx); // is now the next index
+		
 
 		if ( response.IsQuashed() )
 		{
+			idx = m_Queue.Next(idx); // is now the next index
 			// we can delete this entry now
 			m_Queue.Remove(previdx);
 		}
@@ -122,8 +123,13 @@ failsafe:
 				goto failsafe; // ick
 			}
 
+			idx = m_Queue.Next(idx); // is now the next index
 			// we can delete this entry now
 			m_Queue.Remove(previdx);
+		}
+		else
+		{
+			idx = m_Queue.Next(idx); // is now the next index
 		}
 	}
 }

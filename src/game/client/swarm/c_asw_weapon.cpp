@@ -253,18 +253,20 @@ void C_ASW_Weapon::CreateBayonet()
 
 bool C_ASW_Weapon::ShouldPredict( void )
 {
-	C_BasePlayer *pOwner = NULL;
-	C_ASW_Marine *pMarine = NULL;
+	C_BasePlayer* pOwner = NULL;
+	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
 
-	pMarine = dynamic_cast<C_ASW_Marine*>(GetOwner());
-	if (pMarine)
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
+	
 		if (pMarine->m_Commander && pMarine->IsInhabited())
 			pOwner = pMarine->GetCommander();
 	}
-
-	if (!pMarine)
-		pOwner = ToBasePlayer( GetOwner() );
+	else
+	{
+		pOwner = ToBasePlayer( pCombatCharOwner );
+	}
 
 	if ( C_BasePlayer::IsLocalPlayer( pOwner ) )
 		return true;
@@ -274,10 +276,14 @@ bool C_ASW_Weapon::ShouldPredict( void )
 
 C_BasePlayer *C_ASW_Weapon::GetPredictionOwner( void )
 {
-	C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>( GetOwner() );
-	if ( pMarine && pMarine->IsInhabited() )
+	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
-		return pMarine->GetCommander();
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
+		if (pMarine->IsInhabited())
+		{
+			return pMarine->GetCommander();
+		}
 	}
 	return NULL;
 }
@@ -328,18 +334,23 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 	m_fLastMuzzleFlashTime = gpGlobals->curtime;	// store when we last fired, used for some clientside animation stuff
 	// if this weapon is a flamethrower type weapon, then tell our marine's flame emitter
 	//  to work for a while instead of muzzle flashing
+	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
 	if (ShouldMarineFlame())
 	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOwner());
-		if (pMarine)
+		if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+		{
+			C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
 			pMarine->m_fFlameTime = gpGlobals->curtime + GetFireRate() + 0.02f;
+		}
 		return;
 	}
 	else if (ShouldMarineFireExtinguish())
 	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOwner());
-		if (pMarine)
+		if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+		{
+			C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
 			pMarine->m_fFireExtinguisherTime = gpGlobals->curtime + GetFireRate() + 0.02f;
+		}
 		return;
 	}
 	// attach muzzle flash particle system effect
@@ -428,10 +439,11 @@ void C_ASW_Weapon::ClientThink()
 bool C_ASW_Weapon::ShouldDraw()
 {
 	// If it's a player, then only show active weapons
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>(GetOwner());
-	if (pMarine)
+	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
-		if ( pMarine->IsEffectActive( EF_NODRAW ) )
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
+		if (pMarine->IsEffectActive(EF_NODRAW))
 		{
 			return false;
 		}
@@ -449,14 +461,22 @@ bool C_ASW_Weapon::ShouldDraw()
 //-----------------------------------------------------------------------------
 bool C_ASW_Weapon::IsCarriedByLocalPlayer( void )
 {
-	if ( !GetOwner() )
+	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
+
+	if ( !pCombatCharOwner )
 		return false;
 
-	C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>( GetOwner() );
-	if ( !pMarine || !pMarine->GetCommander() || !pMarine->IsInhabited() )
-		return false;
+	if ( pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+	{
+		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
 
-	return ( C_BasePlayer::IsLocalPlayer( pMarine->GetCommander() ) );
+		if (!pMarine->GetCommander() || !pMarine->IsInhabited())
+			return false;
+
+		return ( C_BasePlayer::IsLocalPlayer(pMarine->GetCommander()) );
+	}
+	else
+		return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -688,7 +708,8 @@ bool C_ASW_Weapon::ShouldAlignWeaponToLaserPointer()
 		return false;
 	}
 
-	if ( !m_pLaserPointerEffect || !GetWeaponInfo() || !GetWeaponInfo()->m_bOrientToLaser )
+	const CASW_WeaponInfo* pWpnInfo = GetWeaponInfo();
+	if ( !m_pLaserPointerEffect || !pWpnInfo || !pWpnInfo->m_bOrientToLaser )
 		return false;
 
 

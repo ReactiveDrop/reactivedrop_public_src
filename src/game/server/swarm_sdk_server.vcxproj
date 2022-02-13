@@ -115,6 +115,7 @@ if ERRORLEVEL 1 exit 1
       <TargetMachine>MachineX86</TargetMachine>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -207,6 +208,7 @@ if ERRORLEVEL 1 exit 1
       <TargetMachine>MachineX86</TargetMachine>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -596,8 +598,6 @@ exit 1
     <ClCompile Include="..\shared\weapon_parse.cpp" />
     <ClCompile Include="..\shared\weapon_proficiency.cpp" />
     <ClCompile Include="ai_activity.cpp" />
-    <ClCompile Include="ai_addon.cpp" />
-    <ClCompile Include="ai_agent.cpp" />
     <ClCompile Include="ai_baseactor.cpp" />
     <ClCompile Include="ai_basehumanoid.cpp" />
     <ClCompile Include="ai_basenpc.cpp" />
@@ -1116,6 +1116,7 @@ exit 1
     <ClCompile Include="swarm\rd_director_triggers.cpp" />
     <ClCompile Include="swarm\rd_boss_bar.cpp" />
     <ClCompile Include="swarm\asw_trigger_marine_melee.cpp" />
+    <ClCompile Include="swarm\rd_func_jumpjet.cpp" />
     <ClCompile Include="tanktrain.cpp" />
     <ClCompile Include="te.cpp" />
     <ClCompile Include="team.cpp" />
@@ -1186,7 +1187,6 @@ exit 1
     <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\hl2orange.spa.h" />
     <ClInclude Include="..\..\public\appframework\IAppSystem.h" />
     <ClInclude Include="..\..\public\basehandle.h" />
     <ClInclude Include="..\..\public\basetypes.h" />
@@ -1403,7 +1403,6 @@ exit 1
     <ClInclude Include="..\shared\groundlink.h" />
     <ClInclude Include="..\shared\hintmessage.h" />
     <ClInclude Include="..\shared\hintsystem.h" />
-    <ClInclude Include="..\shared\hl2\hl2_vehicle_radar.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
     <ClInclude Include="..\shared\IEffects.h" />
     <ClInclude Include="..\shared\igamemovement.h" />
@@ -1579,8 +1578,6 @@ exit 1
     <ClInclude Include="..\shared\vscript_shared.h" />
     <ClInclude Include="..\shared\weapon_parse.h" />
     <ClInclude Include="..\shared\weapon_proficiency.h" />
-    <ClInclude Include="ai_addon.h" />
-    <ClInclude Include="ai_agent.h" />
     <ClInclude Include="ai_baseactor.h" />
     <ClInclude Include="ai_basehumanoid.h" />
     <ClInclude Include="ai_basenpc.h" />
@@ -1998,6 +1995,7 @@ exit 1
     <ClInclude Include="swarm\rd_director_triggers.h" />
     <ClInclude Include="swarm\rd_boss_bar.h" />
     <ClInclude Include="swarm\asw_trigger_marine_melee.h" />
+    <ClInclude Include="swarm\rd_func_jumpjet.h" />
     <ClInclude Include="te.h" />
     <ClInclude Include="team.h" />
     <ClInclude Include="TemplateEntities.h" />

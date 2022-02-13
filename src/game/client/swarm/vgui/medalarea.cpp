@@ -262,7 +262,7 @@ MedalAreaPlayer::MedalAreaPlayer(vgui::Panel *parent, const char *name, int iMed
 
 const char * MedalAreaPlayer::GetMedalString()
 {
-	if (m_iProfileIndex >= 0 && m_iProfileIndex <=ASW_MAX_READY_PLAYERS && ASWGameResource())
+	if (m_iProfileIndex >= 0 && m_iProfileIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
 	{		
 		return ASWGameResource()->m_iszPlayerMedals[m_iProfileIndex];
 	}	

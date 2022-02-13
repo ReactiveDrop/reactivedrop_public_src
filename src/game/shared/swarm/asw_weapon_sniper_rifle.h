@@ -31,10 +31,13 @@ public:
 	void ItemPostFrame();
 	Activity	GetPrimaryAttackActivity( void ) { return ACT_VM_PRIMARYATTACK; }
 	virtual bool ShouldMarineMoveSlow();
+	virtual float GetMovementScale();
+	virtual float GetFireRate();
 	virtual bool IsZoomed() { return m_bZoomed.Get(); }
 
 	void	PrimaryAttack();
 	virtual float GetWeaponDamage();
+	virtual float GetZoomedDamageBonus();
 	virtual int AmmoClickPoint() { return 2; }
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SNIPER_RIFLE; }
@@ -64,10 +67,10 @@ public:
 
 		virtual void OnDataChanged( DataUpdateType_t updateType );
 		virtual void ClientThink();
-		virtual void UpdateDynamicLight();
+		//virtual void UpdateDynamicLight();
 		virtual void OnMuzzleFlashed();
 
-		dlight_t* m_pSniperDynamicLight;
+		//dlight_t* m_pSniperDynamicLight;
 		float m_flEjectBrassTime;
 		int m_nEjectBrassCount;
 	#endif

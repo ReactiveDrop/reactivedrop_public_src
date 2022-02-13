@@ -271,7 +271,7 @@ void CASW_Sentry_Top::FindEnemy()
 		if (CanSee(m_hEnemy))
 			bFindNewEnemy = false;
 		// reject if enemy is somehow invalid now
-		CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC *>(m_hEnemy.Get());
+		CAI_BaseNPC *pNPC = m_hEnemy.Get()->MyNPCPointer();
 		if ( pNPC && !IsValidEnemy(pNPC) )
 			bFindNewEnemy = true;
 		Disposition_t rel = IRelationType( m_hEnemy );
@@ -305,17 +305,20 @@ Vector CASW_Sentry_Top::GetEnemyVelocity( CBaseEntity *pEnemy )
 
 	// hacky quick hacky and dirty hack hack hack to deal with GetVelocity() returning
 	// ideal rather than actual velocity for drones
-	CASW_Drone_Advanced *pDrone = dynamic_cast<CASW_Drone_Advanced*>(pEnemy);
-	if ( pDrone )
+	if ( pEnemy )
 	{
-		return pDrone->GetMotor()->GetCurVel();
+		if ( pEnemy->Classify() == CLASS_ASW_DRONE )
+		{
+			return assert_cast<CASW_Drone_Advanced*>(pEnemy)->GetMotor()->GetCurVel();
+		}
+		else
+		{
+			Vector vel;
+			pEnemy->GetVelocity(&vel);
+			return vel;
+		}
 	}
-	else
-	{
-		Vector vel;
-		pEnemy->GetVelocity(&vel);
-		return vel;
-	}
+	return vec3_origin;
 }
 
 CAI_BaseNPC *CASW_Sentry_Top::SelectOptimalEnemy()
@@ -356,10 +359,10 @@ void CASW_Sentry_Top::PlayTurnSound()
 	}
 }
 
-ITraceFilter *CASW_Sentry_Top::GetVisibilityTraceFilter()
-{
-	return new CTraceFilterSimple( GetSentryBase() , COLLISION_GROUP_NONE );
-}
+//ITraceFilter *CASW_Sentry_Top::GetVisibilityTraceFilter()
+//{
+//	return new CTraceFilterSimple( GetSentryBase() , COLLISION_GROUP_NONE );
+//}
 
 void CASW_Sentry_Top::Fire( void )
 {
@@ -436,12 +439,23 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 	}
 	// do a trace from our shoot position to the enemy
 	trace_t		tr;
+	
+	if( Classify() == CLASS_ASW_SENTRY_FLAMER )
 	{
-		ITraceFilter *pFilter = GetVisibilityTraceFilter();
-		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS,	// MASK_SHOT
-			pFilter, &tr);
-		delete pFilter;
+		CTraceFilterSkipClassname traceFilter( GetSentryBase(), "asw_flamer_projectile", COLLISION_GROUP_NONE );
+		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS, &traceFilter, &tr );
 	}
+	else if ( Classify() == CLASS_ASW_SENTRY_FREEZE )
+	{
+		CTraceFilterSkipClassname traceFilter( GetSentryBase(), "asw_extinguisher_projectile", COLLISION_GROUP_NONE );
+		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS, &traceFilter, &tr );
+	}
+	else //if ( Classify() == CLASS_ASW_SENTRY_GUN || Classify() == CLASS_ASW_SENTRY_CANNON )
+	{
+		CTraceFilterSimple traceFilter( GetSentryBase(), COLLISION_GROUP_NONE );
+		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS, &traceFilter, &tr );
+	}
+	
 	m_iCanSeeError = 2;
 	bool bClear = tr.fraction == 1.0;
 	if (!bClear)

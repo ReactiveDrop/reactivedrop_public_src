@@ -29,7 +29,7 @@ public:
 	virtual void	UpdateOnRemove( void );
 	virtual void	PelletTouch( CBaseEntity *pOther );
 
-	static CASW_Bouncing_Pellet *CASW_Bouncing_Pellet::CreatePellet( const Vector &vecOrigin, const Vector &vecForward, CBaseEntity *pMarine, float flDamage );
+	static CASW_Bouncing_Pellet* CreatePellet( const Vector &vecOrigin, const Vector &vecForward, CBaseEntity *pMarine, float flDamage );
 
 #ifdef CLIENT_DLL
 	virtual void	OnDataChanged( DataUpdateType_t updateType );

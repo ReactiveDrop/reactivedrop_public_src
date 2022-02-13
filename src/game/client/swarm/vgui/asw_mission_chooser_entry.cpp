@@ -99,7 +99,7 @@ void CASW_Mission_Chooser_Entry::OnThink()
 					flPercent = (float)nBytesDownloaded / (float)nBytesTotal * 100;
 				}
 				wchar_t wszPercent[10];
-				Q_snwprintf( wszPercent, sizeof( wszPercent ), L"%0.2f", flPercent );
+				Q_snwprintf( wszPercent, ARRAYSIZE( wszPercent ), L"%0.2f", flPercent );
 				wchar_t wszDownloading[256];
 				g_pVGuiLocalize->ConstructString( wszDownloading, sizeof( wszDownloading ), g_pVGuiLocalize->FindSafe( "#rd_workshop_downloading" ), 1, wszPercent );
 				m_pDescriptionLabel->SetText( wszDownloading );

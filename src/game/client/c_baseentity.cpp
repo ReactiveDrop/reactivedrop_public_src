@@ -2740,6 +2740,11 @@ void C_BaseEntity::SetParent( C_BaseEntity *pParentEntity, int iParentAttachment
 		LinkChild( pParentEntity, this );
 	}
 
+	if (!IsServerEntity())
+	{
+		m_hNetworkMoveParent = pParentEntity;
+	}
+
 	m_iParentAttachment = iParentAttachment;
 	
 	m_vecAbsOrigin.Init( FLT_MAX, FLT_MAX, FLT_MAX );
@@ -3801,7 +3806,7 @@ void *C_BaseEntity::operator new( size_t stAllocateBlock )
 {
 	Assert( stAllocateBlock != 0 );	
 	MEM_ALLOC_CREDIT();
-	void *pMem = malloc( stAllocateBlock );
+	void *pMem = MemAlloc_AllocAligned( stAllocateBlock, 16 );
 	memset( pMem, 0, stAllocateBlock );
 	return pMem;												
 }
@@ -3810,7 +3815,7 @@ void *C_BaseEntity::operator new[]( size_t stAllocateBlock )
 {
 	Assert( stAllocateBlock != 0 );				
 	MEM_ALLOC_CREDIT();
-	void *pMem = malloc( stAllocateBlock );
+	void *pMem = MemAlloc_AllocAligned( stAllocateBlock, 16 );
 	memset( pMem, 0, stAllocateBlock );
 	return pMem;												
 }
@@ -3818,7 +3823,7 @@ void *C_BaseEntity::operator new[]( size_t stAllocateBlock )
 void *C_BaseEntity::operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
 {
 	Assert( stAllocateBlock != 0 );	
-	void *pMem = MemAlloc_Alloc( stAllocateBlock, pFileName, nLine );
+	void *pMem = MemAlloc_AllocAlignedFileLine( stAllocateBlock, 16, pFileName, nLine );
 	memset( pMem, 0, stAllocateBlock );
 	return pMem;												
 }
@@ -3826,7 +3831,7 @@ void *C_BaseEntity::operator new( size_t stAllocateBlock, int nBlockUse, const c
 void *C_BaseEntity::operator new[]( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
 {
 	Assert( stAllocateBlock != 0 );				
-	void *pMem = MemAlloc_Alloc( stAllocateBlock, pFileName, nLine );
+	void *pMem = MemAlloc_AllocAlignedFileLine( stAllocateBlock, 16, pFileName, nLine );
 	memset( pMem, 0, stAllocateBlock );
 	return pMem;												
 }
@@ -3840,12 +3845,12 @@ void C_BaseEntity::operator delete( void *pMem )
 {
 #ifdef _DEBUG
 	// set the memory to a known value
-	int size = g_pMemAlloc->GetSize( pMem );
+	int size = MemAlloc_GetSizeAligned( pMem );
 	Q_memset( pMem, 0xdd, size );
 #endif
 
 	// get the engine to free the memory
-	g_pMemAlloc->Free( pMem );
+	MemAlloc_FreeAligned( pMem );
 }
 
 #include "tier0/memdbgon.h"
@@ -4431,7 +4436,7 @@ void C_BaseEntity::CalcAbsolutePosition( )
 	//
 	// So here, we keep our absorigin invalidated. It means we're returning an origin that is a frame old to CalculateIKLocks,
 	// but we'll still render with the right origin.
-	if ( m_iParentAttachment != 0 && (m_pMoveParent->GetFlags() & EFL_SETTING_UP_BONES) )
+	if ( m_iParentAttachment != 0 && (m_pMoveParent->GetEFlags() & EFL_SETTING_UP_BONES) )
 	{
 		m_iEFlags |= EFL_DIRTY_ABSTRANSFORM;
 	}
@@ -4801,7 +4806,11 @@ C_BaseEntity *C_BaseEntity::Instance( int iEnt )
 
 #ifdef WIN32
 #pragma warning( push )
+#if (defined( _MSC_VER ) && _MSC_VER >= 1900)
+#include <typeinfo>
+#else
 #include <typeinfo.h>
+#endif
 #pragma warning( pop )
 #endif
 

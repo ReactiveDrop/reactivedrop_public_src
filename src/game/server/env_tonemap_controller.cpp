@@ -208,8 +208,8 @@ void CEnvTonemapController::InputSetBloomScaleRange( inputdata_t &inputdata )
 		Warning("%s (%s) received SetBloomScaleRange input without 2 arguments. Syntax: <max bloom> <min bloom>\n", GetClassname(), GetDebugName() );
 		return;
 	}
-	m_flCustomBloomScale=bloom_max;
-	m_flCustomBloomScale=bloom_min;
+	m_flCustomBloomScale = bloom_max;
+	m_flCustomBloomScaleMinimum = bloom_min;
 }
 
 //-----------------------------------------------------------------------------

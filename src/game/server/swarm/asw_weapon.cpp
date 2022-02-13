@@ -2,7 +2,6 @@
 #include "asw_weapon.h"
 #include "asw_marine.h"
 #include "asw_player.h"
-#include "in_buttons.h"
 #include "asw_marine_skills.h"
 #include "asw_marine_profile.h"
 #include "asw_weapon_parse.h"
@@ -68,6 +67,7 @@ END_DATADESC()
 
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
 extern ConVar asw_debug_alien_damage;
+extern ConVar rda_marine_backpack;
 
 CASW_Weapon::CASW_Weapon()
 {
@@ -150,18 +150,25 @@ END_SEND_TABLE()
 
 bool CASW_Weapon::ShouldAlienFlinch(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 {
-	if (!GetWeaponInfo())
+	const CASW_WeaponInfo* pWpnInfo = GetWeaponInfo();
+	if (!pWpnInfo)
 		return false;
-	float fFlinchChance = GetWeaponInfo()->m_fFlinchChance;
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwner());
+	float fFlinchChance = pWpnInfo->m_fFlinchChance;
 	if (asw_debug_alien_damage.GetBool())
 		Msg("BaseFlinch chance %f ", fFlinchChance);
-	if (pMarine && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
+
+	CBaseCombatCharacter* pOwner = GetOwner();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
 	{
-		// this is a special weapons marine, so we need to add our flinch bonus onto it
-		fFlinchChance += GetWeaponInfo()->m_fStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_STOPPING_POWER);
-		if (asw_debug_alien_damage.GetBool())
-			Msg("Boosted by specialweaps to %f ", fFlinchChance);
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pOwner );
+		CASW_Marine_Profile* pMarineProfile = pMarine->GetMarineProfile();
+		if ( pMarineProfile && pMarineProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
+		{
+			// this is a special weapons marine, so we need to add our flinch bonus onto it
+			fFlinchChance += pWpnInfo->m_fStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_STOPPING_POWER);
+			if (asw_debug_alien_damage.GetBool())
+				Msg("Boosted by specialweaps to %f ", fFlinchChance);
+		}
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( fFlinchChance, mod_stopping );
@@ -190,7 +197,7 @@ class CASWWeaponLOSFilter : public CTraceFilterSkipTwoEntities
 {
 	DECLARE_CLASS( CASWWeaponLOSFilter, CTraceFilterSkipTwoEntities );
 public:
-	CASWWeaponLOSFilter::CASWWeaponLOSFilter( IHandleEntity *pHandleEntity, IHandleEntity *pHandleEntity2, int collisionGroup ) :
+	CASWWeaponLOSFilter( IHandleEntity *pHandleEntity, IHandleEntity *pHandleEntity2, int collisionGroup ) :
 		CTraceFilterSkipTwoEntities( pHandleEntity, pHandleEntity2, collisionGroup )
 	{
 	}
@@ -262,20 +269,22 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 	if ( bCheckSecondaryAmmo && ( m_iClip2 || ( UsesClipsForAmmo2() &&  pMarine->GetAmmoCount(m_iSecondaryAmmoType) > 0 ) ) )
 		return false;
 
+#ifndef CLIENT_DLL
 	// riflemod: commented weapon destruction on empty
 	if ( rm_destroy_empty_weapon.GetBool() && !m_iClip1 && ( !UsesClipsForAmmo1() || pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) )
 	{
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
+
+		if ( rda_marine_backpack.GetBool() && pMarine->GetASWWeapon(2) != this && pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != this )
+			pMarine->RemoveBackPackModel();
+
+		pMarine->Weapon_Detach(this);
+		if (bActive)
+			pMarine->SwitchToNextBestWeapon(NULL);
 		Kill();
 		return true;
-#endif
+
 	}
+#endif
 	return false;
 }
 
@@ -356,8 +365,12 @@ bool CASW_Weapon::IsCarriedByLocalPlayer()
 {
 	if ( gpGlobals->maxClients <= 1 && !engine->IsDedicatedServer() )
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( GetOwner() );
-		return ( pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == UTIL_GetListenServerHost() );
+		CBaseCombatCharacter* pOwner = GetOwner();
+		if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pOwner );
+			return ( pMarine->IsInhabited() && pMarine->GetCommander() == UTIL_GetListenServerHost() );
+		}
 	}
 
 	return false;

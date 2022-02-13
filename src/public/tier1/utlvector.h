@@ -1019,7 +1019,7 @@ void CUtlVector<T, A>::FastRemove( int elem )
 	if (m_Size > 0)
 	{
 		if ( elem != m_Size -1 )
-			memcpy( &Element(elem), &Element(m_Size-1), sizeof(T) );
+			memcpy( reinterpret_cast<void*>(&Element(elem)), reinterpret_cast<void*>(&Element(m_Size - 1)), sizeof(T) );
 		--m_Size;
 	}
 }

@@ -123,7 +123,7 @@ static CASW_WeaponInfo gNullWeaponInfo;
 //-----------------------------------------------------------------------------
 FileWeaponInfo_t *GetFileWeaponInfoFromHandle( WEAPON_FILE_INFO_HANDLE handle )
 {
-	if ( handle >= m_WeaponInfoDatabase.Count() )
+	if ( handle < 0 || handle >= m_WeaponInfoDatabase.Count() )
 	{
 		return &gNullWeaponInfo;
 	}
@@ -321,7 +321,6 @@ FileWeaponInfo_t::FileWeaponInfo_t()
 	iFlags = 0;
 	szAmmo1[0] = 0;
 	szAmmo2[0] = 0;
-	szAIAddOn[0] = 0;
 	memset( aShootSounds, 0, sizeof( aShootSounds ) );
 	iAmmoType = 0;
 	iAmmo2Type = 0;
@@ -436,13 +435,6 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	else
 		Q_strncpy( szAmmo2, pAmmo, sizeof( szAmmo2 )  );
 	iAmmo2Type = GetAmmoDef()->Index( szAmmo2 );
-
-	// AI AddOn
-	const char *pAIAddOn = pKeyValuesData->GetString( "ai_addon", "ai_addon_basecombatweapon" );
-	if ( strcmp("None", pAIAddOn) == 0)
-		Q_strncpy( szAIAddOn, "", sizeof( szAIAddOn ) );
-	else
-		Q_strncpy( szAIAddOn, pAIAddOn, sizeof( szAIAddOn )  );
 
 	// Now read the weapon sounds
 	memset( aShootSounds, 0, sizeof( aShootSounds ) );

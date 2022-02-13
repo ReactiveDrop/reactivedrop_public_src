@@ -543,7 +543,7 @@ void CASW_Weapon_Chainsaw::EndAttack( void )
 		StartAttackOffSound();
 
 #ifdef CLIENT_DLL
-		DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "eject1" );
+		//DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "eject1" ); // Orange. This particle provides assert, disable it.
 #endif
 	}
 

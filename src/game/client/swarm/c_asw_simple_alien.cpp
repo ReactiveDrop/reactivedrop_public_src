@@ -280,9 +280,11 @@ void C_ASW_Simple_Alien::DoAlienFootstep(Vector &vecOrigin, float fvol)
 C_BaseAnimating * C_ASW_Simple_Alien::BecomeRagdollOnClient( void )
 {
 	C_BaseAnimating* pEnt = BaseClass::BecomeRagdollOnClient();
-	C_ClientRagdoll* pRagdoll = dynamic_cast<C_ClientRagdoll*>(pEnt);
-	if (pRagdoll)
+	C_ClientRagdoll* pRagdoll = NULL;
+	if ( pEnt->IsClientRagdoll() )
 	{
+		pRagdoll = assert_cast<C_ClientRagdoll*>(pEnt);
+
 		// make this ragdoll gib after a short time
 		// ASWTODO - get ragdolls exploding
 		//pRagdoll->m_fASWGibTime = gpGlobals->curtime + random->RandomFloat(asw_drone_gib_time_min.GetFloat(), asw_drone_gib_time_max.GetFloat());

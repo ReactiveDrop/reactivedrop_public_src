@@ -69,7 +69,7 @@ CParticleProperty::~CParticleProperty()
 {
 	// We're being removed. Call StopEmission() on any particle system
 	// that has an unlimited number of particles to emit.
-	StopEmission( NULL, false, true, false, true );
+	StopEmission( NULL, false, true );
 }
 
 //-----------------------------------------------------------------------------
@@ -193,7 +193,7 @@ CNewParticleEffect *CParticleProperty::Create( const char *pszParticleName, Part
 	CParticleSystemDefinition *pDef = g_pParticleSystemMgr->FindParticleSystem( pszParticleName );
 	if ( !pDef )
 	{
-		AssertMsg( 0, "Attempting to create unknown particle system" );
+//		AssertMsg( 0, "Attempting to create unknown particle system" );
 		Warning( "Attempting to create unknown particle system '%s' \n", pszParticleName );
 		return NULL;
 	}
@@ -206,18 +206,26 @@ CNewParticleEffect *CParticleProperty::Create( const char *pszParticleName, Part
 //-----------------------------------------------------------------------------
 void CParticleProperty::AddControlPoint( CNewParticleEffect *pEffect, int iPoint, C_BaseEntity *pEntity, ParticleAttachment_t iAttachType, const char *pszAttachmentName, Vector vecOriginOffset, matrix3x4_t *matOffset )
 {
-	int iAttachment = -1;
-	if ( pszAttachmentName )
+	Assert( pEffect );
+	if ( pEffect )
 	{
-		iAttachment = GetParticleAttachment( pEntity, pszAttachmentName, pEffect->GetEffectName() );
-	}
-
-	for ( int i = 0; i < m_ParticleEffects.Count(); i++ )
-	{
-		if ( m_ParticleEffects[i].pParticleEffect == pEffect )
+		int iAttachment = -1;
+		if ( pszAttachmentName )
 		{
-			AddControlPoint( i, iPoint, pEntity, iAttachType, iAttachment, vecOriginOffset, matOffset );
+			iAttachment = GetParticleAttachment( pEntity, pszAttachmentName, pEffect->GetEffectName() );
 		}
+
+		for ( int i = 0; i < m_ParticleEffects.Count(); i++ )
+		{
+			if ( m_ParticleEffects[i].pParticleEffect == pEffect )
+			{
+				AddControlPoint( i, iPoint, pEntity, iAttachType, iAttachment, vecOriginOffset, matOffset );
+			}
+		}
+	}
+	else
+	{
+		DevWarning( "Attempted to add control point to NULL particle effect!\n" );
 	}
 }
 
@@ -230,8 +238,23 @@ void CParticleProperty::AddControlPoint( int iEffectIndex, int iPoint, C_BaseEnt
 	ParticleEffectList_t *pEffect = &m_ParticleEffects[iEffectIndex];
 	Assert( pEffect->pControlPoints.Count() < MAX_PARTICLE_CONTROL_POINTS );
 
-	int iIndex = pEffect->pControlPoints.AddToTail();
-	ParticleControlPoint_t *pNewPoint = &pEffect->pControlPoints[iIndex];
+	// If the control point is already used, override it
+	ParticleControlPoint_t *pNewPoint = NULL;
+	int iIndex = iPoint;
+	FOR_EACH_VEC( pEffect->pControlPoints, i )
+	{
+		if ( pEffect->pControlPoints[i].iControlPoint == iPoint )
+		{
+			pNewPoint = &pEffect->pControlPoints[i];
+		}
+	}
+
+	if ( !pNewPoint )
+	{
+		iIndex = pEffect->pControlPoints.AddToTail();
+		pNewPoint = &pEffect->pControlPoints[iIndex];
+	}
+	
 	pNewPoint->iControlPoint = iPoint;
 	pNewPoint->hEntity = pEntity;
 	pNewPoint->iAttachType = iAttachType;
@@ -468,7 +491,15 @@ void CParticleProperty::OwnerSetDormantTo( bool bDormant )
 	for ( int i = 0; i < nCount; i++ )
 	{
 		//m_ParticleEffects[i].pParticleEffect->SetShouldSimulate( !bDormant );
-		m_ParticleEffects[i].pParticleEffect->SetDormant( bDormant );
+		//do not go dormant if particle going to die
+		if ( m_ParticleEffects[i].pParticleEffect->m_bEmissionStopped && bDormant )
+			continue;
+
+		//do not do anything with same state
+		if ( m_ParticleEffects[i].pParticleEffect->m_bDormant == bDormant )
+			continue;
+
+		m_ParticleEffects[i].pParticleEffect->SetDormant(bDormant);
 	}
 }
 #endif
@@ -618,12 +649,19 @@ void CParticleProperty::UpdateControlPoint( ParticleEffectList_t *pEffect, int i
 				{
 					bWarned = true;
 					DevWarning( "Attempted to attach particle effect %s to an unknown attachment on entity %s\n",
-						pEffect->pParticleEffect->m_pDef->GetName(), pAnimating->GetClassname() );
+						pEffect->pParticleEffect->m_pDef->GetName(), pPoint->hEntity->GetClassname() );
 				}
+
+				//TODO. Orange. Investigate what is better way to stop particle. One under this line or sdk2013 way.
+				// FIXME: what's the fallback? is it ok to kill the effect if we don't know where to attach it?
+				//pEffect->pParticleEffect->StopEmission();
 			}
 			if ( !bValid )
 			{
 				AssertOnce( 0 );
+				//In source sdk2013 such kind of particles are stopped after a little more check, lets do it there too. Add in the original comment. 
+				//Remove the effect cause this warning means something is orphaned
+				StopParticlesNamed(pEffect->pParticleEffect->GetEffectName());
 				return;
 			}
 		}

@@ -48,8 +48,13 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_NORMAL_ARMOR; }
 
 #ifndef CLIENT_DLL
-	/// armor should scale damage taken by owning marine by this much (eg, 0.8 is a 20% reduction)
-	inline float GetDamageScaleFactor() { return asw_marine_passive_armor_scale.GetFloat(); }
+	virtual float GetDamageScaleFactor();
+	virtual void LayerRemoveOnDamage();
+	virtual void LayerRestoreThink();
+	float m_iLayers;
+	float m_iLayersMissing;
+protected:
+	float m_flDamageScaleFactor;
 #endif
 };
 

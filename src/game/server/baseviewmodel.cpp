@@ -89,7 +89,10 @@ int CBaseViewModel::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 		// The new logic is to loop through the splitscreen parasites (as well as the host player) 
 		//  and see if any of them are observing the viewmodel owner, and if so, FL_EDICT_ALWAYS the vm for them, too.
 
-		CUtlVector< CBasePlayer * > checkList;
+		//CUtlVector< CBasePlayer * > checkList;
+		// This container was the source of most of the allocation cost in CS:GO so using a CUtlVectorFixed to avoid
+		// allocations is important.
+		CUtlVectorFixedGrowable< CBasePlayer *, MAX_SPLITSCREEN_CLIENTS > checkList;
 		checkList.AddToTail( pPlayer );
 		CUtlVector< CHandle< CBasePlayer > > &vecParasites = pPlayer->GetSplitScreenPlayers();
 		for ( int i = 0; i < vecParasites.Count(); ++i )

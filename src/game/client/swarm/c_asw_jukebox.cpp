@@ -85,18 +85,22 @@ void CASWJukeboxPlaylist::AddMusicToPlaylist( const char *szFilename, const char
 void CASWJukeboxPlaylist::LoadPlaylistKV()
 {
 	KeyValues *pKV = new KeyValues( "playlist" );
-	if( pKV->LoadFromFile( filesystem, sz_PlaylistFilename ) )
+	if (pKV)
 	{
-		// If the load succeeded, create the playlist
-		for( KeyValues *sub = pKV->GetFirstSubKey(); sub != NULL; sub = sub->GetNextTrueSubKey() )
+		if (pKV->LoadFromFile(filesystem, sz_PlaylistFilename))
 		{
-			const char *szTrackName = sub->GetString("TrackName");
-			const char *szHexName = sub->GetString("HexName");
-			const char *szAlbum = sub->GetString("Album");
-			const char *szArtist = sub->GetString("Artist");
-			const char *szGenre = sub->GetString("Genre");
-			AddMusicToPlaylist( szTrackName, szHexName, szAlbum, szArtist, szGenre );
+			// If the load succeeded, create the playlist
+			for (KeyValues *sub = pKV->GetFirstSubKey(); sub != NULL; sub = sub->GetNextTrueSubKey())
+			{
+				const char *szTrackName = sub->GetString("TrackName");
+				const char *szHexName = sub->GetString("HexName");
+				const char *szAlbum = sub->GetString("Album");
+				const char *szArtist = sub->GetString("Artist");
+				const char *szGenre = sub->GetString("Genre");
+				AddMusicToPlaylist(szTrackName, szHexName, szAlbum, szArtist, szGenre);
+			}
 		}
+		pKV->deleteThis();
 	}
 }
 

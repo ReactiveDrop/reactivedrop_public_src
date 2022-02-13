@@ -1369,7 +1369,7 @@ void CAchievementMgr::OnKillEvent( CBaseEntity *pVictim, CBaseEntity *pAttacker,
 				bAttackerIsPlayer = true;
 			}
 
-			CBaseCombatCharacter *pBCC = dynamic_cast<CBaseCombatCharacter *>( pVictim );
+			CBaseCombatCharacter *pBCC = pVictim->MyCombatCharacterPointer();
 			if ( pBCC && ( D_HT == pBCC->IRelationType( pLocalPlayer ) ) )
 			{
 				bVictimIsPlayerEnemy = true;

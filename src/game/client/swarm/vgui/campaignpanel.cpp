@@ -382,7 +382,7 @@ void CampaignPanel::OnThink()
 
 				m_pBackDrop->SetImage(STRING(pCampaign->m_CampaignTextureName));
 
-				if (!ASWGameRules() || !ASWGameRules()->IsIntroMap())
+				if (!ASWGameRules()->IsIntroMap())
 				{
 					vgui::GetAnimationController()->RunAnimationCommand(m_pBackDrop, "alpha", 128, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
 				}
@@ -419,41 +419,44 @@ void CampaignPanel::OnThink()
 				else
 					m_pTimeLeftLabel->SetText("");
 			}
-			CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(pSave->m_iCurrentPosition);
-			if (pMission)
+			if (GetCampaignInfo())
 			{
-				int iMapX, iMapY, iMapW, iMapT;
-				GetMapBounds(iMapX, iMapY, iMapW, iMapT);
-				
-				float dot_w = iMapW * 0.1f;
-				float pos_x = (pMission->m_iLocationX / 1024.0f) * iMapW;
-				float pos_y = (pMission->m_iLocationY / 1024.0f) * iMapT;
-				pos_x -= (dot_w * 0.5f);	// make sure the dots are centered
-				pos_y -= (dot_w * 0.5f);
-
-				// if we're animating, check our destination is the same, if not, unflag animating so a new animation dest gets set in
-				if (m_bCurrentAnimating)
+				CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(pSave->m_iCurrentPosition);
+				if (pMission)
 				{
-					if (m_CurrentAnimatingToX != int(pos_x)
-						|| m_CurrentAnimatingToY != int(pos_y))
+					int iMapX, iMapY, iMapW, iMapT;
+					GetMapBounds(iMapX, iMapY, iMapW, iMapT);
+
+					float dot_w = iMapW * 0.1f;
+					float pos_x = (pMission->m_iLocationX / 1024.0f) * iMapW;
+					float pos_y = (pMission->m_iLocationY / 1024.0f) * iMapT;
+					pos_x -= (dot_w * 0.5f);	// make sure the dots are centered
+					pos_y -= (dot_w * 0.5f);
+
+					// if we're animating, check our destination is the same, if not, unflag animating so a new animation dest gets set in
+					if (m_bCurrentAnimating)
 					{
-						m_bCurrentAnimating = false;
+						if (m_CurrentAnimatingToX != int(pos_x)
+							|| m_CurrentAnimatingToY != int(pos_y))
+						{
+							m_bCurrentAnimating = false;
+						}
 					}
-				}
-				
-				if (!m_bCurrentAnimating)
-				{
-					m_CurrentAnimatingToX = int(pos_x);		// x/y our current location on the map as specified by the save
-					m_CurrentAnimatingToY = int(pos_y);
 
-					if (m_CurrentAnimatingToX != x || m_CurrentAnimatingToY != y)	// if red arrows and current save loc don't match up, it's time to do some animating
+					if (!m_bCurrentAnimating)
 					{
-						m_bCurrentAnimating = true;						
-						vgui::GetAnimationController()->RunAnimationCommand(m_pCurrentLocationImage, "xpos", m_CurrentAnimatingToX, 0, 0.8f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-						vgui::GetAnimationController()->RunAnimationCommand(m_pCurrentLocationImage, "ypos", m_CurrentAnimatingToY, 0, 0.8f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+						m_CurrentAnimatingToX = int(pos_x);		// x/y our current location on the map as specified by the save
+						m_CurrentAnimatingToY = int(pos_y);
 
-						CLocalPlayerFilter filter;
-						C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.AreaBrackets", 0, 0 );
+						if (m_CurrentAnimatingToX != x || m_CurrentAnimatingToY != y)	// if red arrows and current save loc don't match up, it's time to do some animating
+						{
+							m_bCurrentAnimating = true;
+							vgui::GetAnimationController()->RunAnimationCommand(m_pCurrentLocationImage, "xpos", m_CurrentAnimatingToX, 0, 0.8f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+							vgui::GetAnimationController()->RunAnimationCommand(m_pCurrentLocationImage, "ypos", m_CurrentAnimatingToY, 0, 0.8f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+
+							CLocalPlayerFilter filter;
+							C_BaseEntity::EmitSound(filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.AreaBrackets", 0, 0);
+						}
 					}
 				}
 			}
@@ -1068,7 +1071,7 @@ void CampaignPanel::LocationClicked(int iMission)
 		return;
 
 	// don't allow vote for this mission if this mission was already completed
-	if (pSave->m_MissionComplete[iMission] != 0 || iMission <= 0)
+	if (iMission <= 0 || pSave->m_MissionComplete[iMission] != 0)
 		return;
 
 	// make sure the mission they want to vote for is reachable

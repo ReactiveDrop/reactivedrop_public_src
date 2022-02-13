@@ -4,7 +4,6 @@
 #pragma once
 #endif
 
-#include "asw_shareddefs.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "steam/steam_api.h"
 

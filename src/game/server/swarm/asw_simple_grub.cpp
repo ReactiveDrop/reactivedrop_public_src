@@ -331,10 +331,14 @@ bool CASW_Simple_Grub::TryMove(const Vector &vecSrc, Vector &vecTarget, float de
 
 void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 {
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-	if (pMarine && pMarine->GetMarineResource())
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		pMarine->GetMarineResource()->m_iGrubKills++;
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		if (pMarine->GetMarineResource())
+		{
+			pMarine->GetMarineResource()->m_iGrubKills++;
+		}
 	}
 	BaseClass::Event_Killed(info);
 }

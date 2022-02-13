@@ -16,7 +16,7 @@ class CParticleAttractor : public CSimpleEmitter
 {
 public:
 
-	CParticleAttractor( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
+	explicit CParticleAttractor( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
 
 	//Create
 	static CParticleAttractor *Create( const Vector &center, const char *pDebugName = "attractor" );

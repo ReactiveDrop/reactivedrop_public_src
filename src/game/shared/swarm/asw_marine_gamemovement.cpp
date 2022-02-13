@@ -69,6 +69,8 @@ static ConVar asw_sv_maxspeed( "asw_sv_maxspeed", "500", FCVAR_CHEAT | FCVAR_NOT
 static ConVar asw_debug_steps("asw_debug_steps", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on moving up/down steps");
 static ConVar asw_debug_air_move("asw_debug_air_move", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on air moving");
 static ConVar rd_marine_jump_height( "rd_marine_jump_height", "70.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Sets marine jump height." );
+ConVar sv_autobunnyhopping( "sv_autobunnyhopping", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Marines automatically re-jump while holding jump button" );
+ConVar sv_enablebunnyhopping( "sv_enablebunnyhopping", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Allow marine speed to exceed maximum running speed" );
 extern ConVar asw_controls;
 
 // tickcount currently isn't set during prediction, although gpGlobals->curtime and
@@ -877,28 +879,32 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 
 	CASW_Marine *pMarineEntity = CASW_Marine::AsMarine( pMarine );
 
-	static float old_z_pos = 0;
+	//static float old_z_pos = 0;
 
 #ifdef CLIENT_DLL
 	//Msg("  [C] Process move jump=%d oldjump=%d\n", pMove->m_nButtons & IN_JUMP, pMove->m_nOldButtons & IN_JUMP);
 	//Msg("c zpos = %f\tzchange = %f\n", pMarine->GetAbsOrigin().z, pMarine->GetAbsOrigin().z - old_z_pos);
-#else/
+#else
 	//Msg("[S] Process move jump=%d oldjump=%d\n", pMove->m_nButtons & IN_JUMP, pMove->m_nOldButtons & IN_JUMP);
 	//Msg("s zpos = %f\tzchange = %f\n", pMarine->GetAbsOrigin().z, pMarine->GetAbsOrigin().z - old_z_pos);
 #endif
-	old_z_pos = pMarine->GetAbsOrigin().z;
+	//old_z_pos = pMarine->GetAbsOrigin().z;
 #ifdef GAME_DLL	// hurt the marine if he's trying to walk on top of an alien and it's not friendly
-	if ( pMarineEntity && pMarine->GetGroundEntity() && pMarine->GetGroundEntity()->IsNPC() )
+	if ( pMarineEntity  )
 	{
-		CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pMarine->GetGroundEntity());
-		if (pAlien && gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage)
+		CBaseEntity* pGround = pMarine->GetGroundEntity();
+		if ( pGround && pGround->IsAlienClassType() )
 		{
-			CTakeDamageInfo info( pAlien, pAlien, 15, DMG_SLASH );
-			Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
-			diff.NormalizeInPlace();
-			CalculateMeleeDamageForce( &info, diff, pMarine->GetAbsOrigin() - diff * 30 );
-			pMarine->TakeDamage( info );
-			pMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + 0.4f;
+			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
+			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && (pAlien->Classify() != CLASS_ASW_DRONE || pAlien->GetTask()->iTask != TASK_UNBURROW) )
+			{
+				CTakeDamageInfo info(pAlien, pAlien, 15, DMG_SLASH);
+				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
+				diff.NormalizeInPlace();
+				CalculateMeleeDamageForce(&info, diff, pMarine->GetAbsOrigin() - diff * 30);
+				pMarine->TakeDamage(info);
+				pMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + 0.4f;
+			}
 		}
 	}
 #endif
@@ -1269,7 +1275,7 @@ void CASW_MarineGameMovement::StepMove( Vector &vecDestination, trace_t &trace )
 	TryPlayerMove( &vecEndPos, &trace );
 	
 	// Down results.
-	Vector vecDownPos, vecDownVel;
+	//Vector vecDownPos, vecDownVel;
 	Vector vecNormalMovePos, vecNormalMoveVel;
 	VectorCopy( mv->GetAbsOrigin(), vecNormalMovePos );
 	VectorCopy( mv->m_vecVelocity, vecNormalMoveVel );
@@ -1558,7 +1564,7 @@ void CASW_MarineGameMovement::AirMove( void )
 		wishspeed = mv->m_flMaxSpeed;
 	}
 	
-	if ( mv->m_bNoAirControl == false )	
+	if ( mv->m_bNoAirControl == false || sv_enablebunnyhopping.GetBool() )
 	{
 		// TODO:
 		// reactivedrop: trigger_catapult might want to disable this
@@ -2605,7 +2611,7 @@ void CASW_MarineGameMovement::DoJumpJet()
 
 	// fixme: set the animation on the marine
 	//MoveHelper()->PlayerSetAnimation( PLAYER_JUMP );
-	CASW_Player* pASWPlayer = dynamic_cast<CASW_Player*>(player);
+	CASW_Player* pASWPlayer = ToASW_Player(player);
 	if (pASWPlayer && pASWPlayer->GetMarine())
 	{
 		pASWPlayer->GetMarine()->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
@@ -2713,7 +2719,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	//if ( player->m_Local.m_bSlowMovement )
 		//return false;
 
-	if ( mv->m_nOldButtons & IN_JUMP )
+	if ( mv->m_nOldButtons & IN_JUMP && !sv_autobunnyhopping.GetBool() )
 		return false;		// don't pogo stick
 
 	if (marine->GetFlags() & FL_FROZEN)	// no jumping when frozen
@@ -2739,7 +2745,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	
 	// fixme: set the animation on the marine
 	//MoveHelper()->PlayerSetAnimation( PLAYER_JUMP );
-	CASW_Player* pASWPlayer = dynamic_cast<CASW_Player*>(player);
+	CASW_Player* pASWPlayer = ToASW_Player(player);
 	if (pASWPlayer && pASWPlayer->GetMarine())
 	{
 		pASWPlayer->GetMarine()->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
@@ -2767,7 +2773,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	}
 	else*/
 	{
-		flMul = sqrt(2 * asw_marine_gravity.GetFloat() * rd_marine_jump_height.GetFloat() );
+		flMul = sqrt( 2 * asw_marine_gravity.GetFloat() * rd_marine_jump_height.GetFloat() );
 	}
 
 	// Acclerate upward
@@ -2790,8 +2796,11 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	}
 
 	// reduce the marine's x/y velocity some
-	mv->m_vecVelocity[0] *= ASW_JUMP_LATERAL_SCALE;
-	mv->m_vecVelocity[1] *= ASW_JUMP_LATERAL_SCALE;	
+	if ( !sv_enablebunnyhopping.GetBool() )
+	{
+		mv->m_vecVelocity[0] *= ASW_JUMP_LATERAL_SCALE;
+		mv->m_vecVelocity[1] *= ASW_JUMP_LATERAL_SCALE;
+	}
 
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 	// asw: no forward boost
@@ -3648,7 +3657,7 @@ int CASW_MarineGameMovement::CheckStuck( void )
 		bool isServer = player->IsServer();
 		engine->Con_NPrintf( isServer, "%s stuck on object %i/%s", 
 			isServer ? "server" : "client",
-			hitent , MoveHelper()->GetName(hitent) );
+			hitent.GetEntryIndex(), MoveHelper()->GetName(hitent));
 	}
 #endif
 
@@ -3660,7 +3669,7 @@ int CASW_MarineGameMovement::CheckStuck( void )
 		{
 			marine->m_flFirstStuckTime = gpGlobals->curtime;
 		}
-		if ( gpGlobals->curtime - marine->m_flFirstStuckTime > 1.0f )
+		if ( gpGlobals->curtime - marine->m_flFirstStuckTime > 0.1f )
 		{
 			bool bTeleportMarine = true;
 			edict_t* pEdict = gEntList.GetEdict( hitent );
@@ -3673,6 +3682,7 @@ int CASW_MarineGameMovement::CheckStuck( void )
 					if ( szModelName && !CanMarineGetStuckOnProp( szModelName ) )
 					{
 						bTeleportMarine = false;		// marine is stuck in a breakable crate, don't teleport him
+						pEntity->SetCollisionGroup(ASW_COLLISION_GROUP_GRENADES);
 					}
 				}
 			}

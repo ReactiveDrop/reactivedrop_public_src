@@ -381,6 +381,11 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 		pEntity->SetAbsOrigin( vecNewOrigin );
 		pEntity->SetAbsAngles( vecNewAngles );
 
+		if ( AllowNameFixup() )
+		{
+			pEntity->MarkNeedsNamePurge();
+		}
+
 		if ( ScriptPreInstanceSpawn( &m_ScriptScope, pEntity, Templates_FindByIndex( iTemplateIndex ) ) )
 		{
 			pSpawnList[i].m_pEntity = pEntity;
@@ -454,7 +459,7 @@ void CPointTemplate::InputForceSpawn( inputdata_t &inputdata )
 void ScriptInstallPreSpawnHook()
 {
 #ifdef IS_WINDOWS_PC
-	if ( !g_pScriptVM->ValueExists( "__ExecutePreSpawn " ) )
+	if ( g_pScriptVM && !g_pScriptVM->ValueExists("__ExecutePreSpawn "))
 	{
 		g_pScriptVM->Run( g_Script_spawn_helper );
 	}
@@ -471,7 +476,9 @@ void ScriptInstallPreSpawnHook()
 bool ScriptPreInstanceSpawn( CScriptScope *pScriptScope, CBaseEntity *pChild, string_t iszKeyValueData )
 {
 	if ( !pScriptScope->IsInitialized() )
+	{
 		return true;
+	}
 
 	ScriptVariant_t result;
 	if ( pScriptScope->Call( "__ExecutePreSpawn", &result, ToHScript( pChild ) ) != SCRIPT_DONE )
@@ -495,24 +502,24 @@ void ScriptPostSpawn( CScriptScope *pScriptScope, CBaseEntity **ppEntities, int 
 		return;
 
 	ScriptVariant_t varEntityMakerResultTable;
-	if ( !g_pScriptVM->GetValue( *pScriptScope, "__EntityMakerResult", &varEntityMakerResultTable ) )
-		return;
-
-	if ( varEntityMakerResultTable.m_type != FIELD_HSCRIPT )
-		return;
-
-	HSCRIPT hEntityMakerResultTable = varEntityMakerResultTable.m_hScript;
-	char szEntName[256];
-	for ( int i = 0; i < nEntities; i++ )
+	if ( g_pScriptVM->GetValue( *pScriptScope, "__EntityMakerResult", &varEntityMakerResultTable ) )
 	{
-		V_strncpy( szEntName, ppEntities[i]->GetEntityNameAsCStr(), ARRAYSIZE(szEntName) );
-		char *pAmpersand = V_strrchr( szEntName, '&' );
-		if ( pAmpersand )
-			*pAmpersand = 0;
-		g_pScriptVM->SetValue( hEntityMakerResultTable, szEntName, ToHScript( ppEntities[i] ) );
+		if ( varEntityMakerResultTable.m_type == FIELD_HSCRIPT )
+		{
+			HSCRIPT hEntityMakerResultTable = varEntityMakerResultTable.m_hScript;
+			char szEntName[256];
+			for ( int i = 0; i < nEntities; i++ )
+			{
+				V_strncpy( szEntName, ppEntities[i]->GetEntityNameAsCStr(), ARRAYSIZE(szEntName) );
+				char *pAmpersand = V_strrchr( szEntName, '&' );
+				if ( pAmpersand )
+					*pAmpersand = 0;
+				g_pScriptVM->SetValue( hEntityMakerResultTable, szEntName, ToHScript( ppEntities[i] ) );
+			}
+			pScriptScope->Call( hPostSpawnFunc, NULL, hEntityMakerResultTable );
+			pScriptScope->Call( "__FinishSpawn" );
+		}
+		g_pScriptVM->ReleaseValue( varEntityMakerResultTable );
 	}
-	pScriptScope->Call( hPostSpawnFunc, NULL, hEntityMakerResultTable );
-	pScriptScope->Call( "__FinishSpawn" );
-	g_pScriptVM->ReleaseValue( varEntityMakerResultTable );
 	g_pScriptVM->ReleaseFunction( hPostSpawnFunc );
 }

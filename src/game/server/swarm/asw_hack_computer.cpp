@@ -47,11 +47,16 @@ CASW_Hack_Computer::CASW_Hack_Computer()
 
 bool CASW_Hack_Computer::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHackingMarine, CBaseEntity* pHackTarget)
 {
-	CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pHackTarget);
-	if (!pHackingPlayer || !pHackingMarine || !pComputer || !pHackingMarine->GetMarineResource())
-	{
+	if ( !pHackTarget )
 		return false;
-	}
+
+	if ( pHackTarget->Classify() != CLASS_ASW_COMPUTER_AREA )
+		return false;
+
+	if ( !pHackingPlayer || !pHackingMarine || !pHackingMarine->GetMarineResource() )
+		return false;
+
+	CASW_Computer_Area* pComputer = assert_cast<CASW_Computer_Area*>(pHackTarget);
 
 	if (!m_bSetupComputer)
 	{
@@ -138,13 +143,14 @@ bool CASW_Hack_Computer::InitHack(CASW_Player* pHackingPlayer, CASW_Marine* pHac
 
 void CASW_Hack_Computer::SelectHackOption(int i)
 {
-	if (!GetComputerArea())
+	CASW_Computer_Area* pArea = GetComputerArea();
+	if (!pArea)
 		return;
 
 	int iOptionType = GetOptionTypeForEntry(i);
 
 	// check we're allowed to do this
-	if (GetComputerArea()->m_bIsLocked)
+	if (pArea->m_bIsLocked)
 	{
 		if (i != ASW_HACK_OPTION_OVERRIDE)	// in a locked computer, the only valid hack menu option is the override puzzle
 			return;
@@ -180,11 +186,8 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 
 	// make sure the computer area knows if we're viewing mail or not
 	bool bViewingMail = (iOptionType == ASW_COMPUTER_OPTION_TYPE_MAIL);
-	CASW_Computer_Area *pArea = GetComputerArea();
-	if ( pArea )
-	{
-		pArea->m_bViewingMail = bViewingMail;
-	}
+	
+	pArea->m_bViewingMail = bViewingMail;
 
 	// make sure the downloading sound isn't playing if we're not doing downloading
 	if (iOptionType != ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS)
@@ -303,7 +306,6 @@ void CASW_Hack_Computer::SetDefaultHackOption()
 void CASW_Hack_Computer::MarineStoppedUsing(CASW_Marine* pMarine)
 {
 	m_iShowOption = 0;	// put us back on the main menu
-
 	if (pMarine->m_hRemoteTurret)
 	{
 		pMarine->m_hRemoteTurret->StopUsingTurret();

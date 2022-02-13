@@ -51,7 +51,7 @@ void Holdout_Wave_End_Panel::Init( int nWave, float flDuration )
 	else
 	{
 		wchar_t wzValue[5];
-		_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", m_nWave + 1 );
+		V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", m_nWave + 1 );
 
 		wchar_t wbuffer[ 256 ];		
 		g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),

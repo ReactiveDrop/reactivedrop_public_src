@@ -172,11 +172,11 @@ void CASWHudPortraits::OnThink()
 			// clear out future slots
 			for (int i=iNumMyMarines;i<ASW_MAX_MARINE_RESOURCES;i++)
 			{
-				m_hMyMarine[i] == NULL;
+				m_hMyMarine[i] = NULL;
 			}
 			for (int i=iNumOtherMarines;i<ASW_MAX_MARINE_RESOURCES;i++)
 			{
-				m_hOtherMarine[i] == NULL;
+				m_hOtherMarine[i] = NULL;
 			}
 		}	
 	}	

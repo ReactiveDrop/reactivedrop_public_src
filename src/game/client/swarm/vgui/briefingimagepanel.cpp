@@ -93,7 +93,7 @@ void BriefingImagePanel::OnThink()
 		return;
 
 	if (ASWGameRules()->GetGameState() >= ASW_GS_LAUNCHING
-		 && gpGlobals->curtime - pPlayer->GetLastRestartTime() > 5.0f)	// don't close the briefing frame within X seconds of reset, to give the server time to update our gamerules state
+		 && gpGlobals->curtime - pPlayer->GetLastRestartTime() > 2.0f)	// don't close the briefing frame within X seconds of reset, to give the server time to update our gamerules state
 	{
 		// don't close briefing in deathmatch 
 		if ( !ASWDeathmatchMode() )

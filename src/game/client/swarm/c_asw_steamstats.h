@@ -92,6 +92,7 @@ struct LeaderboardScoreDetails_v2_t
 	char m_CountryCode[2];
 	uint8 m_iDifficulty;
 	uint8 m_iModeFlags;
+	uint32 m_iGameVersion;
 };
 #pragma pack(pop)
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) % sizeof( int32 ) == 0 );
@@ -168,6 +169,7 @@ private:
 	int32	m_iElectricArmorReduction;
 	int32	m_iHealAmpGunHeals;
 	int32	m_iHealAmpGunAmps;
+	int32	m_iMedRifleHeals;
 	int32	m_iTotalPlayTime;
 	
 	typedef CUtlVector<int32> StatList_Int_t;

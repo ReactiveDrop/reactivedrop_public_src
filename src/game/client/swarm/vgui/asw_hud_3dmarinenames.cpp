@@ -872,7 +872,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 				}
 			}
 			// draw the reload bar
-			if ( bLocal && pWeapon && pWeapon->IsReloading() && asw_fast_reload_enabled.GetBool() && asw_fast_reload_under_marine.GetBool() )
+			if ( bLocal && pWeapon->IsReloading() && asw_fast_reload_enabled.GetBool() && asw_fast_reload_under_marine.GetBool() )
 			{
 				PaintReloadBar( pWeapon, nBoxCenterX, nCursorY );
 				nCursorY += nHealthBarHeight + nLineSpacing;
@@ -998,7 +998,11 @@ float CASWHud3DMarineNames::GetTalkingIconSize()
 
 bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, float yPos, bool bOnScreen )
 {
-	if ( !pMarine || !pMarine->GetMarineResource() )
+	if ( !pMarine )
+		return false;
+
+	C_ASW_Marine_Resource* pMR = pMarine->GetMarineResource();
+	if (!pMR)
 		return false;
 
 	// check if the med satchel is out and if we are highlighting another marine
@@ -1047,8 +1051,10 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	// draw health bar
 	int bar_y = yPos;	
 	int bar_y2 = bar_y + bar_height;
-	float fHealth = pMarine->GetMarineResource()->GetHealthPercent();
-	if (pMarine->GetMarineResource()->m_bHealthHalved)		// if he was wounded from the last mission, halve the size of his health bar
+	float fOverHealth = pMR->GetOverHealthPercent();
+	float fHealth = fOverHealth > 1.0f ? 1.0 : fOverHealth;
+
+	if ( pMR->m_bHealthHalved )		// if he was wounded from the last mission, halve the size of his health bar
 	{
 		fHealth *= 0.5f;
 	}
@@ -1059,8 +1065,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	//	float flDevourCurrentTime = gpGlobals->curtime - pMarine->GetDevourStartTime();
 	//	fHealth = 1.0f - clamp( flDevourCurrentTime / flDevourTotalTime, 0.0f, 1.0f );
 	//}
-
-	int health_pixels = (portrait_size * fHealth);
+	
+	bool bUseOverHealth = false;
+	int health_pixels = 0;
+	if (fOverHealth > fHealth)
+	{
+		health_pixels = (portrait_size * (fOverHealth - (int)fOverHealth));
+		bUseOverHealth = true;
+	}
+	else
+	{
+		health_pixels = (portrait_size * fHealth);
+	}
 
 	if (fHealth > 0 && health_pixels <= 0)
 		health_pixels = 1;
@@ -1071,7 +1087,7 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	vgui::surface()->DrawFilledRect( portrait_x - 1, bar_y - 1, portrait_x + portrait_size + 1, bar_y2 + 1 );
 
 	// if he's wounded, draw a grey part
-	if ( pMarine->GetMarineResource()->m_bHealthHalved )
+	if ( pMR->m_bHealthHalved )
 	{
 		vgui::surface()->DrawSetTexture(m_nWhiteTexture);
 		vgui::surface()->DrawSetColor(Color(128,128,128,255));
@@ -1080,12 +1096,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 
 	// colored part
 	Color rgbaBarBrightColor = Color(0,150,150,255);
-	Color rgbaBarDarkColor = Color(0,75,75,255);
+	Color rgbaBarDarkColor = Color(0, 75, 75, 255);
 
 	if ( fHealth < 0.5f )
 	{
 		rgbaBarBrightColor = Color(200,50,0,255);
 		rgbaBarDarkColor = Color(100,25,0,255);
+	}
+	else if (bUseOverHealth)
+	{
+		if (fOverHealth > 2)
+			rgbaBarBrightColor = Color(255, 128, 0, 255);
+		rgbaBarDarkColor = Color(0, 128, 255, 255);
 	}
 
 	if ( pMarine->m_bKnockedOut || pMarine->IsInfested()  )
@@ -1118,18 +1140,18 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	vgui::surface()->DrawTexturedPolygon( 4, hRemainingPoints );
 
 	// draw hurt over the top
-	if ( m_nWhiteTexture != -1 && pMarine->GetMarineResource()->GetHurtPulse() > 0 )
+	if ( m_nWhiteTexture != -1 && pMR->GetHurtPulse() > 0 )
 	{
-		rgbaBarBrightColor[3] *= pMarine->GetMarineResource()->GetHurtPulse();
+		rgbaBarBrightColor[3] *= pMR->GetHurtPulse();
 		vgui::surface()->DrawSetColor( rgbaBarBrightColor );
 		vgui::surface()->DrawSetTexture( m_nWhiteTexture );
 		vgui::surface()->DrawTexturedPolygon( 4, hPoints );
 	}
 
 	// draw a green bit at the end of the health bar if he's infested
-	if (pMarine->GetMarineResource()->IsInfested())
+	if ( pMR->IsInfested() )
 	{
-		float fInfestPercent = pMarine->GetMarineResource()->GetInfestedPercent();
+		float fInfestPercent = pMR->GetInfestedPercent();
 		if ( fInfestPercent > fHealth )
 		{
 			fInfestPercent = fHealth;
@@ -1146,9 +1168,9 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 	{
 		wchar_t wszMarineHealth[ 12 ];
 		if ( rd_health_counter_under_marine_show_max_health.GetBool() )
-			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d/%d", pMarine->GetHealth(), pMarine->GetMaxHealth() );
+			V_snwprintf( wszMarineHealth, ARRAYSIZE( wszMarineHealth ), L"%d/%d", pMarine->GetHealth(), pMarine->GetMaxHealth() );
 		else
-			V_snwprintf( wszMarineHealth, sizeof( wszMarineHealth ), L"%d", pMarine->GetHealth() );
+			V_snwprintf( wszMarineHealth, ARRAYSIZE( wszMarineHealth ), L"%d", pMarine->GetHealth() );
 
 		int nHealthCounterLength = Q_wcslen( wszMarineHealth );
 		int nHealthCounterWidth = 0, nHealthCounterHeight = 0;
@@ -1175,20 +1197,27 @@ bool CASWHud3DMarineNames::PaintHealthBar( C_ASW_Marine *pMarine, float xPos, fl
 // find if our marine is using something
 float CASWHud3DMarineNames::GetUsingFraction( C_ASW_Marine *pMarine )
 {
-	if ( !pMarine || !pMarine->GetMarineResource() )
+	if ( !pMarine )
+		return 0;
+	
+	CASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
+
+	if ( !pPMR )
 		return 0;
 
-	if (!pMarine->m_hUsingEntity.Get())
+	CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
+
+	if ( !pUsing )
 	{
-		if (pMarine->GetMarineResource()->m_hWeldingDoor.Get())
+		if ( pPMR->m_hWeldingDoor.Get() )
 		{
-			if (pMarine->GetMarineResource()->IsFiring())
-				return pMarine->GetMarineResource()->m_hWeldingDoor->GetSealAmount();
+			if ( pPMR->IsFiring() )
+				return pPMR->m_hWeldingDoor->GetSealAmount();
 		}
 		return 0;
 	}
 
-	IASW_Client_Usable_Entity* pUsable = dynamic_cast<IASW_Client_Usable_Entity*>(pMarine->m_hUsingEntity.Get());
+	IASW_Client_Usable_Entity* pUsable = dynamic_cast<IASW_Client_Usable_Entity*>(pUsing);
 	if (!pUsable)
 		return 0;
 
@@ -1419,13 +1448,23 @@ bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercen
 	};
 	vgui::surface()->DrawTexturedPolygon(4, barpoints);
 
-	if ( rd_ammo_counter_under_marine.GetBool() && !FStrEq( "asw_weapon_chainsaw", pWeapon->GetClassname() ) )
+	if ( rd_ammo_counter_under_marine.GetBool() )
 	{
 		wchar_t wszMarineAmmo[ 12 ];
 		if ( rd_ammo_counter_under_marine_show_max_ammo.GetBool() )
-			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
+		{
+			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E/\u221E" ); //infinity symbol
+			else
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
+		}
 		else
-			V_snwprintf( wszMarineAmmo, sizeof( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
+		{
+			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E");
+			else
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
+		}
 
 		int nAmmoCounterLength = Q_wcslen( wszMarineAmmo );
 		int nAmmoCounterWidth = 0, nAmmoCounterHeight = 0;
@@ -1477,10 +1516,23 @@ void CASWHud3DMarineNames::UpdateHealthTooltip()
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer)
 	{
-		if (pPlayer->GetViewMarine() && dynamic_cast<C_ASW_Weapon_Medical_Satchel*>(pPlayer->GetViewMarine()->GetActiveASWWeapon()))
-		{			
-			C_ASW_Marine* pHealMarine = dynamic_cast<C_ASW_Marine*>( ASWInput()->GetHighlightEntity() );
-			SetHealthMarine(pHealMarine);
+		C_ASW_Marine* pViewMarine = pPlayer->GetViewMarine();
+		if ( pViewMarine )
+		{
+			C_ASW_Weapon* pActiveWeapon = pViewMarine->GetActiveASWWeapon();
+			if ( pActiveWeapon && pActiveWeapon->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
+			{
+				C_BaseEntity* pHighlighted = ASWInput()->GetHighlightEntity();
+				if ( pHighlighted && pHighlighted->Classify() == CLASS_ASW_MARINE )
+				{
+					C_ASW_Marine* pHealMarine = assert_cast<C_ASW_Marine*>(pHighlighted);
+					SetHealthMarine(pHealMarine);
+				}
+			}
+			else
+			{
+				SetHealthMarine(NULL);
+			}
 		}
 		else
 		{

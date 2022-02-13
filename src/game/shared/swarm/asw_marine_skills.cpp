@@ -41,6 +41,7 @@ ConVar asw_skill_hacking_speed_base("asw_skill_hacking_speed_base", "2.0", FCVAR
 ConVar asw_skill_scanner_base("asw_skill_scanner_base", "600", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_welding_base("asw_skill_engineering_welding_base", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_sentry_base("asw_skill_engineering_sentry_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_firerate_base("asw_skill_engineering_firerate_base", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_base("asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_base("asw_skill_grenades_dmg_base", "80", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -87,6 +88,7 @@ ConVar asw_skill_hacking_speed_step("asw_skill_hacking_speed_step", "0.1", FCVAR
 ConVar asw_skill_scanner_step("asw_skill_scanner_step", "150", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_welding_step("asw_skill_engineering_welding_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_sentry_step("asw_skill_engineering_sentry_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_firerate_step("asw_skill_engineering_firerate_step", "0.01", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_step("asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step("asw_skill_grenades_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -267,10 +269,12 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SKILL_ENGINEERING:
 			if ( iSkillPoints <= 0 )
 				return 0.0f;
-			if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_WELDING)			
+			if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_WELDING)
 				return asw_skill_engineering_welding_base.GetFloat() + asw_skill_engineering_welding_step.GetFloat() * iSkillPoints;
-			else
+			else if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY)
 				return asw_skill_engineering_sentry_base.GetFloat() + asw_skill_engineering_sentry_step.GetFloat() * iSkillPoints;
+			else //if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE)
+				return asw_skill_engineering_firerate_base.GetFloat() + asw_skill_engineering_firerate_step.GetFloat() * iSkillPoints;
 			break;
 		case ASW_MARINE_SKILL_ACCURACY:
 			switch (iSubSkill)

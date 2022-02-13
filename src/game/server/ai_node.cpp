@@ -307,7 +307,11 @@ Vector CAI_Node::GetPosition(int hull) const
 			origin = m_vOrigin - (shift * offsetDir);
 		}
 
-		return Vector( origin.x, origin.y, origin.z + m_flVOffset[hull] );
+		//Mad Orange. Hack! When Drone goes out of top climb node it gets stuck in a brush. We need to move actual climb node position higher to avoid collision, but not too high to lose a link with some other ground node. So 21 is a kind of a magic number there.
+		if (hull == HULL_MEDIUMBIG)
+			return Vector(origin.x, origin.y, origin.z + m_flVOffset[hull] + 21);
+		else
+			return Vector(origin.x, origin.y, origin.z + m_flVOffset[hull]);
 	}
 	else if (m_eNodeType == NODE_GROUND)
 	{

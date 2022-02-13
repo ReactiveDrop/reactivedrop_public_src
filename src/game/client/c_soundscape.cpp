@@ -1056,7 +1056,7 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 		}
 		else
 		{
-			if ( positionIndex > 31 || !(slot.m_params.localBits & (1<<positionIndex) ) )
+			if ( positionIndex > NUM_AUDIO_LOCAL_SOUNDS - 1 || !(slot.m_params.localBits & (1<<positionIndex) ) )
 			{
 				// suppress sounds if the position isn't available
 				//DevMsg( 1, "Bad position %d\n", positionIndex );

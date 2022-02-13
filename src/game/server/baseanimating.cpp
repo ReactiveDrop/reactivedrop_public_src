@@ -1843,7 +1843,7 @@ ConVar ai_setupbones_debug( "ai_setupbones_debug", "0", 0, "Shows that bones tha
 
 
 
-inline bool CBaseAnimating::CanSkipAnimation( void )
+bool CBaseAnimating::CanSkipAnimation( void )
 {
 	if ( !sv_pvsskipanimation.GetBool() )
 		return false;

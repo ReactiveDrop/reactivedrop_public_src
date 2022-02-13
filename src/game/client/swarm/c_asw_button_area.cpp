@@ -45,7 +45,10 @@ C_ASW_Button_Area::C_ASW_Button_Area()
 
 C_ASW_Door* C_ASW_Button_Area::GetDoor()
 {
-	return dynamic_cast<C_ASW_Door*>(GetUseTargetHandle().Get());
+	CBaseEntity* pUseTargetH = GetUseTargetHandle().Get();
+	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<C_ASW_Door*>(pUseTargetH);
+	return NULL;
 }
 
 // use icon textures
@@ -131,7 +134,7 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	action.UseIconBlue = 255;
 	action.bShowUseKey = true;
 	action.iInventorySlot = -1;
-	if (!HasPower())
+	if ( !HasPower() || !CheckHeldObject( pUser ) )
 	{
 		action.iUseIconTexture = GetNoPowerIconTextureID();
 		TryLocalize( GetNoPowerText(), action.wszText, sizeof( action.wszText ) );

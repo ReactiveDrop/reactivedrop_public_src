@@ -340,6 +340,23 @@ void UTIL_Tracer( const Vector &vecStart, const Vector &vecEnd, int iEntIndex, i
 	}
 }
 
+// Tried to include this in the actual trace function, but ran into
+// linker issues.  Just dropped it here instead.  Michael Dorgan
+
+static bool HasValidDirection(trace_t *pTrace)
+{
+	if(pTrace->fraction <= 0.0001f)
+	{
+		// Ok, there is a very, very strong chance our vectors are out of wack
+		// Add a direct check against the actual start and end points to be sure.
+		if( VectorsAreEqual( pTrace->startpos, pTrace->endpos, 0.0001f ) )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 
 //------------------------------------------------------------------------------
 // Purpose : Creates both an decal and any associated impact effects (such
@@ -355,7 +372,12 @@ void UTIL_ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName
 	if ( !pEntity || (pTrace->surface.flags & SURF_SKY) )
 		return;
 
-	if (pTrace->fraction == 1.0)
+	if (pTrace->fraction >= 1.0f)
+		return;
+
+	// Very, very, very close range shots cause all sorts of issues with normal and correct
+	// decal orientation.  Just skip them to prevent heartache.
+	if ( !HasValidDirection(pTrace) )
 		return;
 
 	// don't decal nodraw surfaces

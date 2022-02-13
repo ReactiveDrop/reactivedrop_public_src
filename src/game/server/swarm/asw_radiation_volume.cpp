@@ -37,7 +37,7 @@ void CASW_Radiation_Volume::Spawn( void )
 	float boxWidth = m_flBoxWidth;
 	UTIL_SetSize(this, Vector(-boxWidth,-boxWidth,0),Vector(boxWidth,boxWidth,boxWidth * 2));
 	SetCollisionGroup(ASW_COLLISION_GROUP_PASSABLE);	
-	AddSolidFlags(FSOLID_TRIGGER);
+	AddSolidFlags(FSOLID_TRIGGER | FSOLID_NOT_SOLID);
 	SetTouch( &CASW_Radiation_Volume::RadTouch );
 
 	SetThink( &CASW_Radiation_Volume::RadThink );

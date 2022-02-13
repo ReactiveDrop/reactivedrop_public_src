@@ -63,14 +63,14 @@ public:
 	COutputEvent		m_OnNavFailBlocked;
 
 
-	void CASW_Colonist::ScriptIgnite( float flFlameLifetime );
-	void CASW_Colonist::ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
+	void ScriptIgnite( float flFlameLifetime );
+	void ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
 
 	int selectedBy;
 	bool isSelectedBy(CASW_Marine* marine);
 	static void ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &targetPos, const Vector &traceDir);
 	void Extinguish();
-	const Vector CASW_Colonist::GetFollowPos();
+	const Vector GetFollowPos();
 
 	bool isFemale;
 	int m_Gender;
@@ -78,9 +78,9 @@ public:
 	void ScriptGiveWeapon( const char *pszName );
 	bool ScriptDropWeapon();
 	bool ScriptRemoveWeapon();
-	void CASW_Colonist::InputGiveWeapon( inputdata_t &inputdata );
-	void CASW_Colonist::OnRangeAttack1();
-	Vector CASW_Colonist::Weapon_ShootPosition();
+	void InputGiveWeapon( inputdata_t &inputdata );
+	void OnRangeAttack1();
+	Vector Weapon_ShootPosition();
 
 
 	// IASW_Server_Usable_Entity implementation

@@ -37,6 +37,9 @@ ConVar cl_fastradial( "cl_fastradial", "1", FCVAR_DEVELOPMENTONLY, "If 1, releas
 ConVar RadialMenuDebug( "cl_rosetta_debug", "0" );
 ConVar cl_rosetta_line_inner_radius( "cl_rosetta_line_inner_radius", "25" );
 ConVar cl_rosetta_line_outer_radius( "cl_rosetta_line_outer_radius", "45" );
+
+ConVar rda_faster_radialmenu("rda_faster_radialmenu", "1", FCVAR_ARCHIVE, "Radial menu disappears faster and does not delay weapon's fire");
+
 void FlushClientMenus( void );
 
 //--------------------------------------------------------------------------------------------------------
@@ -105,7 +108,7 @@ public:
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	void CRadialButton::UpdateHotspots( KeyValues *data )
+	void UpdateHotspots( KeyValues *data )
 	{
 		BaseClass::UpdateHotspots( data );
 
@@ -141,7 +144,7 @@ public:
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	void CRadialButton::PerformLayout( void )
+	void PerformLayout( void )
 	{
 		int wide, tall;
 		GetSize( wide, tall );
@@ -712,7 +715,7 @@ void CRadialMenu::ShowPanel( bool show )
 //--------------------------------------------------------------------------------------------------------
 void CRadialMenu::Paint( void )
 {
-	const float fadeDuration = 0.5f;
+	const float fadeDuration = rda_faster_radialmenu.GetBool() ? 0.3f : 0.5f;
 	if ( m_fading )
 	{
 		float fadeTimeRemaining = m_fadeStart + fadeDuration - gpGlobals->curtime;
@@ -770,6 +773,9 @@ void CRadialMenu::OnCommand( const char *command )
 		Msg( "%f: Clicked on button with command '%s'\n", gpGlobals->curtime, command );
 	}
 
+	if (m_fading)
+		return;
+
 	if ( !Q_strcmp(command, "done") )
 	{
 		C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
@@ -778,6 +784,17 @@ void CRadialMenu::OnCommand( const char *command )
 			localPlayer->EmitSound("MouseMenu.abort");
 		}
 		StartFade();
+
+		if (rda_faster_radialmenu.GetBool())
+		{
+			for (int i = 0; i < NUM_BUTTON_DIRS; ++i)
+			{
+				if (!m_buttons[i])
+					continue;
+
+				m_buttons[i]->SetFakeArmed(false);
+			}
+		}
 	}
 	else
 	{
@@ -785,6 +802,18 @@ void CRadialMenu::OnCommand( const char *command )
 		{
 			StartFade();
 			SendCommand( command );
+
+			//Mad Orange. if m_fakeArmed is false we have an instant return in virtual bool MouseClick() func, and this way it doesn't delay weapons shooting
+			if (rda_faster_radialmenu.GetBool())
+			{
+				for (int i = 0; i < NUM_BUTTON_DIRS; ++i)
+				{
+					if (!m_buttons[i])
+						continue;
+
+					m_buttons[i]->SetFakeArmed(false);
+				}
+			}
 		}
 	}
 
@@ -1113,8 +1142,14 @@ void CRadialMenu::ChooseArmedButton( void )
 			if ( !m_buttons[i] )
 				continue;
 
-			if ( m_buttons[i] == button )
+			if (m_buttons[i] == button)
+			{
+				if (rda_faster_radialmenu.GetBool())
+				{
+					m_buttons[i]->SetFakeArmed(false);
+				}
 				continue;
+			}
 
 			m_buttons[i]->SetFakeArmed( false );
 			m_buttons[i]->SetChosen( false );

@@ -694,16 +694,18 @@ void CASW_Remote_Turret::MakeTracer( const Vector &vecTracerSrc, const trace_t &
 void __MsgFunc_ASWRemoteTurretTracer( bf_read &msg )
 {
 	int iSentry = msg.ReadShort();
-	CASW_Remote_Turret *pSentry = dynamic_cast<CASW_Remote_Turret*>( ClientEntityList().GetEnt( iSentry ) );
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iSentry);
 
-	Vector vecEnd;
-	vecEnd.x = msg.ReadFloat();
-	vecEnd.y = msg.ReadFloat();
-	vecEnd.z = msg.ReadFloat();
-
-	if ( pSentry )
+	if (pEnt && pEnt->Classify() == CLASS_ASW_REMOTE_TURRET )
 	{
-		pSentry->ASWRemoteTurretTracer( vecEnd );
+		CASW_Remote_Turret* pSentry = assert_cast<CASW_Remote_Turret*>(pEnt);
+
+		Vector vecEnd;
+		vecEnd.x = msg.ReadFloat();
+		vecEnd.y = msg.ReadFloat();
+		vecEnd.z = msg.ReadFloat();
+
+		pSentry->ASWRemoteTurretTracer(vecEnd);
 	}
 }
 USER_MESSAGE_REGISTER( ASWRemoteTurretTracer );

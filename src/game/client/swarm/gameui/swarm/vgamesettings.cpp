@@ -93,7 +93,10 @@ void GameSettings::SetDataSettings( KeyValues *pSettings )
 {
 	IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
 	KeyValues *pMatchSettings = pIMatchSession ? pIMatchSession->GetSessionSettings() : NULL;
-	KeyValuesDumpAsDevMsg( pMatchSettings );
+	if (pMatchSettings)
+	{
+		KeyValuesDumpAsDevMsg(pMatchSettings);
+	}
 
 	if ( pMatchSettings && ( !pSettings || pSettings == pMatchSettings ) )
 	{
@@ -279,6 +282,13 @@ void GameSettings::Activate()
 	if ( m_ActiveControl )
 	{
 		m_ActiveControl->NavigateFrom();
+	}
+
+	// select the Campaign option so controller players can move on this menu
+	vgui::Panel *firstOption = FindChildByName( "DrpSelectMission", true );
+	if ( firstOption )
+	{
+		firstOption->NavigateTo();
 	}
 
 	/*

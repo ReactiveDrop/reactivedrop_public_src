@@ -14,7 +14,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_mesh_emitter_draw("asw_mesh_emitter_draw", "1", FCVAR_CHEAT, "Draw meshes from mesh emitters");
+//ConVar asw_mesh_emitter_draw("asw_mesh_emitter_draw", "1", FCVAR_CHEAT, "Draw meshes from mesh emitters");
 ConVar asw_emitter_min_collision_speed("asw_emitter_min_collision_speed", "50", FCVAR_CHEAT, "Minimum speed to make a sound");
 ConVar asw_emitter_max_collision_speed("asw_emitter_max_collision_speed", "80", FCVAR_CHEAT, "Maximum speed that makes a full volume");
 
@@ -998,11 +998,17 @@ void CASWGenericEmitter::UseTemplate(const char* templatename, bool bReset, bool
 	{
 		Msg("UseTemplate uncache force\n");
 		kv = new KeyValues("UncachedParticleEmitter");
-		if ( !kv->LoadFromFile(filesystem, buf, "GAME") )
+		if (kv)
 		{
-			DevMsg( 1, "C_ASW_Emitter::UseTemplate: couldn't load file: %s\n", buf );
-			return;
+			if (!kv->LoadFromFile(filesystem, buf, "GAME"))
+			{
+				kv->deleteThis();
+				DevMsg(1, "C_ASW_Emitter::UseTemplate: couldn't load file: %s\n", buf);
+				return;
+			}
 		}
+		else
+			return;
 	}
 
 	// couldn't find the template
@@ -1098,6 +1104,9 @@ void CASWGenericEmitter::UseTemplate(const char* templatename, bool bReset, bool
 
 	if (bReset)
 		ResetEmitter();
+
+	if (!bLoadFromCache)
+		kv->deleteThis();
 }
 
 void CASWGenericEmitter::SetMeshEmitter(C_ASW_Mesh_Emitter *pMeshEmitter)
@@ -1196,6 +1205,7 @@ void CASWGenericEmitter::SaveTemplateAs(const char* templatename)
 
 	// save the template
 	kv->SaveToFile( filesystem, filename );	
+	kv->deleteThis();
 }
 
 KeyValues* CASWGenericEmitterCache::FindTemplate(const char* szTemplateName)
@@ -1214,25 +1224,30 @@ KeyValues* CASWGenericEmitterCache::FindTemplate(const char* szTemplateName)
 	}
 
 	// otherwise, load it;
-	KeyValues* kv = new KeyValues( "ParticleEmitters" );
-	char buf[MAX_PATH];
-	Q_snprintf(buf, sizeof(buf), "resource/particletemplates/%s.ptm", szTemplateName);
-	if (!kv->LoadFromFile( filesystem, buf, "GAME" ))
+	KeyValues* kv = new KeyValues("ParticleEmitters");
+	if (kv)
 	{
-		Warning("Failed to load particle emitter: %s\n", szTemplateName);
-		return NULL;
+		char buf[MAX_PATH];
+		Q_snprintf(buf, sizeof(buf), "resource/particletemplates/%s.ptm", szTemplateName);
+		if (!kv->LoadFromFile(filesystem, buf, "GAME"))
+		{
+			kv->deleteThis();
+			Warning("Failed to load particle emitter: %s\n", szTemplateName);
+			return NULL;
+		}
+		// add it to the cache
+		m_Templates.AddToTail(kv);
+
+		int length = Q_strlen(szTemplateName) + 1;
+		char *pNewString = new char[length];
+		Q_memcpy(pNewString, szTemplateName, length);
+		m_TemplateNames.AddToTail(pNewString);
+
+		//Msg("  cache miss (now have %d templates loaded)\n", m_Templates.Count());
+
+		return kv;
 	}
-	// add it to the cache
-	m_Templates.AddToTail(kv);
-
-	int length = Q_strlen(szTemplateName)+1;
-	char *pNewString = new char[length];
-	Q_memcpy( pNewString, szTemplateName, length );
-	m_TemplateNames.AddToTail(pNewString);	
-
-	//Msg("  cache miss (now have %d templates loaded)\n", m_Templates.Count());
-
-	return kv;
+	return NULL;
 }
 
 CASWGenericEmitterCache::~CASWGenericEmitterCache()

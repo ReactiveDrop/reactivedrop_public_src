@@ -15,6 +15,7 @@
 #include "asw_weapon_healamp_gun_shared.h"
 #include "asw_weapon_healgrenade_shared.h"
 #include "asw_weapon_medkit_shared.h"
+#include "asw_weapon_medrifle_shared.h"
 #include "asw_game_resource.h"
 #include "asw_sentry_top.h"
 #include "asw_sentry_base.h"
@@ -81,6 +82,12 @@ static Class_T GetWeaponClassFromDamageInfo( const CTakeDamageInfo & info, CBase
 			return (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
 		}
 	}
+	else if ( weaponClass == CLASS_ASW_GAS_GRENADE )
+	{
+		// the box of grenades gets credit for the grenade's hard work
+		// this says a lot about our society
+		return (Class_T)CLASS_ASW_GAS_GRENADES;
+	}
 	return weaponClass;
 }
 
@@ -111,7 +118,9 @@ void CASWGameStats::Event_MarineTookDamage( CASW_Marine *pMarine, const CTakeDam
 	WEAPON_INIT;
 
 	int nHits = 1;
-	if ( dynamic_cast<CASW_Burning *>( info.GetInflictor() ) )
+	
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
 	{
 		nHits = 0;
 	}
@@ -139,31 +148,45 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 	WEAPON_INIT;
 
 	int nHits = 1;
-	if ( dynamic_cast<CASW_Burning *>( info.GetInflictor() ) )
+	CBaseEntity* pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
 	{
 		nHits = 0;
 	}
 	else if ( info.GetDamageType() & DMG_BURN )
 	{
-		CASW_Alien *pBaseAlien = dynamic_cast<CASW_Alien *>( pAlien );
-		CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer *>( pAlien );
-		if ( pBaseAlien && pBaseAlien->m_bFlammable )
+		if ( pAlien )
 		{
-			if ( asw_stats_verbose.GetBool() )
-			{
-				DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
-			}
+			CASW_Alien* pBaseAlien = NULL;
+			CASW_Buzzer* pBuzzer = NULL;
 
-			pMR->m_iAliensBurned++;
-		}
-		else if ( pBuzzer )
-		{
-			if ( asw_stats_verbose.GetBool() )
+			if ( pAlien->IsAlienClassType() )
 			{
-				DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
-			}
+				pBaseAlien = assert_cast<CASW_Alien*>(pAlien);
 
-			pMR->m_iAliensBurned++;
+				if ( pBaseAlien->m_bFlammable )
+				{
+					if ( asw_stats_verbose.GetBool() )
+					{
+						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
+					}
+
+					pMR->m_iAliensBurned++;
+				}
+			}
+			else if ( pAlien->Classify() == CLASS_ASW_BUZZER )
+			{
+				pBuzzer = assert_cast<CASW_Buzzer*>(pAlien);
+				if ( pBuzzer->m_bFlammable )
+				{
+					if ( asw_stats_verbose.GetBool() )
+					{
+						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
+					}
+
+					pMR->m_iAliensBurned++;
+				}
+			}
 		}
 	}
 
@@ -270,6 +293,21 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 			return;
 		}
 		ADD_STAT( m_iHealAmpGunHeals, amount );
+	}
+	else if ( pHealingWeapon->Classify() == CLASS_ASW_MEDRIFLE )
+	{
+		CASW_Weapon_MedRifle *pHealGun = assert_cast< CASW_Weapon_MedRifle *>( pHealingWeapon );
+		CASW_Marine *pMedic = pHealGun->GetMarine();
+		if ( !pMedic )
+		{
+			return;
+		}
+		CASW_Marine_Resource *pMR = pMedic->GetMarineResource();
+		if ( !pMR )
+		{
+			return;
+		}
+		ADD_STAT( m_iMedRifleHeals, amount );
 	}
 	else if ( pHealingWeapon->Classify() == CLASS_ASW_MEDKIT )
 	{

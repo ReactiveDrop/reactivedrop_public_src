@@ -22,7 +22,7 @@ public:
 
 	virtual void PerformLayout();
 	virtual void OnThink();
-	virtual void CASW_Mission_Chooser_List::ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 	void UpdateDetails();
 	virtual void OnCommand(const char* command);
 	void OnEntryClicked(CASW_Mission_Chooser_Entry *pClicked);

@@ -27,7 +27,7 @@ C_ASW_Shieldbug::~C_ASW_Shieldbug()
 
 Vector C_ASW_Shieldbug::GetCustomDeathForce()
 {
-	Vector deathForce;
+	Vector deathForce = vec3_origin;
 	deathForce.z = asw_shieldbug_death_force.GetInt();
 	return deathForce;
 }

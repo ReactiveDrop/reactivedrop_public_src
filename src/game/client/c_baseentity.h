@@ -1089,7 +1089,9 @@ public:
 	virtual bool					IsBaseCombatCharacter( void ) { return false; };
 	virtual C_BaseCombatCharacter	*MyCombatCharacterPointer( void ) { return NULL; }
 	virtual bool					IsNPC( void ) { return false; }
-	C_AI_BaseNPC					*MyNPCPointer( void ); 
+	C_AI_BaseNPC					*MyNPCPointer( void );
+
+	virtual bool					IsAlienClassType( void ) const { return false; }
 
 	virtual bool					IsSprite( void ) const { return false; }
 	virtual bool					IsProp( void ) const { return false; }
@@ -2032,15 +2034,15 @@ inline void C_BaseEntity::SetCollisionBounds( const Vector& mins, const Vector &
 //-----------------------------------------------------------------------------
 inline const Vector& C_BaseEntity::WorldAlignMins( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMins();
 }
 
 inline const Vector& C_BaseEntity::WorldAlignMaxs( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMaxs();
 }
 

@@ -354,7 +354,11 @@ void CAI_ASW_FlickBehavior::TryFlicking( CBaseEntity *pEntity )
 		return;
 	}
 
-	CASW_Alien	*pOwner = dynamic_cast< CASW_Alien * >( GetOuter() );
+	CASW_Alien* pOwner = NULL;
+	CAI_BaseNPC* pBaseNPC = GetOuter();
+	if ( pBaseNPC && pBaseNPC->IsAlienClassType() )
+		pOwner = assert_cast< CASW_Alien * >(pBaseNPC);
+
 	float flMinDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( m_flMinDamage );
 	float flMaxDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( m_flMaxDamage );
 
@@ -375,7 +379,7 @@ void CAI_ASW_FlickBehavior::TryFlicking( CBaseEntity *pEntity )
 	vDelta *= m_flPropelDistance / ( flTime * 2.0f );
 	vDelta.z = sv_gravity.GetFloat() * flTime;
 
-	CASW_Player	*pPlayer = dynamic_cast< CASW_Player * >( pEntity );
+	CASW_Player	*pPlayer = ToASW_Player( pEntity );
 	if ( pPlayer )
 	{
 		CASW_Marine	*pBaseMarine = pPlayer->GetMarine();

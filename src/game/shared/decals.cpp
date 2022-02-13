@@ -254,7 +254,7 @@ void CDecalEmitterSystem::LoadDecalsFromScript( char const *filename )
 				{
 					const char *value = sub->GetName();
 					int gameMaterial;
-					if ( !isdigit( value[0]) )
+					if ( !V_isdigit( value[0]) )
 					{
 						gameMaterial = toupper( value[0] );
 					}

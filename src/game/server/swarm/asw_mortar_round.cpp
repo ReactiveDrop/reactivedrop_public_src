@@ -213,7 +213,7 @@ void CASW_Mortar_Round::CheckNearbyTargets( )
 		CBaseEntity *pEntity = NULL;
 		for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 		{
-			if ( !pEntity || !pEntity->IsPlayer() )
+			if ( !pEntity->IsPlayer() )
 				continue;
 
 			// give them a 2 second warning before detonation

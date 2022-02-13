@@ -36,6 +36,7 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bTeslableSp, FIELD_BOOLEAN, "teslablesp" ),
 	DEFINE_KEYFIELD( m_bFreezableSp, FIELD_BOOLEAN, "freezablesp" ),
 	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ),
+	DEFINE_KEYFIELD( m_bGrenadeReflectorSp, FIELD_BOOLEAN, "reflectorsp"),
 	DEFINE_KEYFIELD( m_iHealthBonusSp, FIELD_INTEGER, "healthbonussp"),
 	DEFINE_KEYFIELD( m_fSizeScaleSp, FIELD_FLOAT, "sizescalesp" ),
 	DEFINE_KEYFIELD( m_fSpeedScaleSp, FIELD_FLOAT, "speedscalesp" ),
@@ -68,6 +69,7 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_bTeslableSp = true;
 	m_bFreezableSp = true;
 	m_bFlinchableSp = true;
+	m_bGrenadeReflectorSp = false;
 	m_iHealthBonusSp = 0;
 	m_fSizeScaleSp = 1.0f;
 	m_fSpeedScaleSp = 1.0f;
@@ -121,7 +123,7 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				if ( distance < m_flNearDistance )
 				{
 					if ( asw_debug_spawners.GetBool() )
-						Msg("asw_spawner(%s): Alien can't spawn because a marine (%d) is %f away\n", GetEntityName(), i, distance);
+						Msg("asw_spawner(%s): Alien can't spawn because a marine (%d) is %f away\n", GetEntityNameAsCStr(), i, distance);
 					return false;
 				}
 			}
@@ -173,12 +175,12 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 							}
 						}
 						if (asw_debug_spawners.GetBool())
-							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point: %s\n", GetEntityName(), tr.m_pEnt->GetClassname());
+							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point: %s\n", GetEntityNameAsCStr(), tr.m_pEnt->GetClassname());
 					}
 					else
 					{
 						if (asw_debug_spawners.GetBool())
-							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point.\n", GetEntityName());
+							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point.\n", GetEntityNameAsCStr());
 					}
 						
 					return false;
@@ -208,7 +210,7 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 		if( tr.fraction != 1.0 )
 		{
 			if ( asw_debug_spawners.GetBool() )
-				Msg("asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityName());
+				Msg("asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityNameAsCStr());
 			// TODO: If we were trying to spawn an uber, change to spawning a regular instead
 			return false;
 		}
@@ -300,41 +302,45 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		return NULL;
 	}
 
-	CASW_Alien *pAlien = dynamic_cast<CASW_Alien *>( pEntity );
-	if ( pAlien )
+	if ( pEntity->IsAlienClassType() )
 	{
-		if ( pDirectorNPC )
+		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
+
+		if (pDirectorNPC)
 		{
-			pAlien->m_bFlammable	= pDirectorNPC->m_bFlammable;
-			pAlien->m_bTeslable		= pDirectorNPC->m_bTeslable;
-			pAlien->m_bFreezable	= pDirectorNPC->m_bFreezable;
-			pAlien->m_bFlinchable	= pDirectorNPC->m_bFlinches;
-			pAlien->m_iHealthBonus	= pDirectorNPC->m_iHealthBonus;
-			pAlien->m_fSizeScale	= pDirectorNPC->m_flSizeScale;
-			pAlien->m_fSpeedScale	= pDirectorNPC->m_flSpeedScale;
+			pAlien->m_bFlammable = pDirectorNPC->m_bFlammable;
+			pAlien->m_bTeslable = pDirectorNPC->m_bTeslable;
+			pAlien->m_bFreezable = pDirectorNPC->m_bFreezable;
+			pAlien->m_bFlinchable = pDirectorNPC->m_bFlinches;
+			pAlien->m_bGrenadeReflector = pDirectorNPC->m_bGrenadeReflector;
+			pAlien->m_iHealthBonus = pDirectorNPC->m_iHealthBonus;
+			pAlien->m_fSizeScale = pDirectorNPC->m_flSizeScale;
+			pAlien->m_fSpeedScale = pDirectorNPC->m_flSpeedScale;
 		}
 		else
 		{
-			pAlien->m_bFlammable	= m_bFlammableSp;
-			pAlien->m_bTeslable		= m_bTeslableSp;
-			pAlien->m_bFreezable	= m_bFreezableSp;
-			pAlien->m_bFlinchable	= m_bFlinchableSp;
-			pAlien->m_iHealthBonus	= m_iHealthBonusSp;
-			pAlien->m_fSizeScale	= m_fSizeScaleSp;
-			pAlien->m_fSpeedScale	= m_fSpeedScaleSp;
+			pAlien->m_bFlammable = m_bFlammableSp;
+			pAlien->m_bTeslable = m_bTeslableSp;
+			pAlien->m_bFreezable = m_bFreezableSp;
+			pAlien->m_bFlinchable = m_bFlinchableSp;
+			pAlien->m_bGrenadeReflector = m_bGrenadeReflectorSp;
+			pAlien->m_iHealthBonus = m_iHealthBonusSp;
+			pAlien->m_fSizeScale = m_fSizeScaleSp;
+			pAlien->m_fSpeedScale = m_fSpeedScaleSp;
 		}
 	}
 
-	CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer*>(pEntity);
-	if (pBuzzer)
+	if ( pEntity->Classify() == CLASS_ASW_BUZZER )
 	{
-		pBuzzer->m_bFlammable	= m_bFlammableSp;
-		pBuzzer->m_bTeslable	= m_bTeslableSp;
-		pBuzzer->m_bFreezable	= m_bFreezableSp;
-		pBuzzer->m_bFlinchable	= m_bFlinchableSp;
+		CASW_Buzzer* pBuzzer = assert_cast<CASW_Buzzer*>(pEntity);
+		pBuzzer->m_bFlammable = m_bFlammableSp;
+		pBuzzer->m_bTeslable = m_bTeslableSp;
+		pBuzzer->m_bFreezable = m_bFreezableSp;
+		pBuzzer->m_bFlinchable = m_bFlinchableSp;
+		pBuzzer->m_bGrenadeReflector = m_bGrenadeReflectorSp;
 		pBuzzer->m_iHealthBonus = m_iHealthBonusSp;
-		pBuzzer->m_fSizeScale	= m_fSizeScaleSp;
-		pBuzzer->m_fSpeedScale	= m_fSpeedScaleSp;
+		pBuzzer->m_fSizeScale = m_fSizeScaleSp;
+		pBuzzer->m_fSpeedScale = m_fSpeedScaleSp;
 	}
 
 	CAI_BaseNPC	*pNPC = pEntity->MyNPCPointer();

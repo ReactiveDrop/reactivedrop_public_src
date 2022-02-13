@@ -109,7 +109,7 @@ void CASW_Weapon_Railgun::Precache()
 }
 
 #define	MAX_GLASS_PENETRATION_DEPTH	16.0f
-extern short	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
+//extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
 void CASW_Weapon_Railgun::PrimaryAttack()
 {
 	// If my clip is empty (and I use clips) start reload
@@ -205,14 +205,21 @@ void CASW_Weapon_Railgun::PrimaryAttack()
 		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 		m_iClip1 -= info.m_iShots;
 #ifdef GAME_DLL
-			CASW_Marine *pMarine = GetMarine();
-			if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 			{
 				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 				if (!pAmmoBag)
-					pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-				if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+				{
+					pWeapon = pMarine->GetASWWeapon(1);
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				}
+				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 					pMarine->OnWeaponOutOfAmmo(true);
 			}
 #endif
@@ -351,19 +358,22 @@ void CASW_Weapon_Railgun::PrimaryAttack()
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine && pMarine->GetMarineResource())
+	if ( pMarine->GetMarineResource() )
 	{
 		pMarine->GetMarineResource()->UsedWeapon(this, info.m_iShots);
 		pMarine->OnWeaponFired( this, info.m_iShots );
 	}
 #endif
 
+	//Mad Orange. Suit is unused in ASW
+	/*
 	if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
 		if (pPlayer)
 			pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 	}
+	*/
 	m_fSlowTime = gpGlobals->curtime + 0.1f;
 }
 
@@ -693,7 +703,7 @@ void CASW_Weapon_Railgun::SecondaryAttack()
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	BaseClass::WeaponSound( SPECIAL1 );
 
-	Vector vecSrc = pMarine->Weapon_ShootPosition();
+	//Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector	vecThrow;
 	// Don't autoaim on grenade tosses
 	vecThrow = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187

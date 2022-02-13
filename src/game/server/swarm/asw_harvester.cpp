@@ -430,7 +430,10 @@ CAI_BaseNPC* CASW_Harvester::SpawnAlien()
 		return NULL;
 
 	CBaseEntity	*pEntity = CreateEntityByName( "asw_parasite_defanged" );
-	CAI_BaseNPC	*pNPC = dynamic_cast<CAI_BaseNPC*>(pEntity);
+
+	CAI_BaseNPC* pNPC = NULL;
+	if ( pEntity )
+		pNPC = pEntity->MyNPCPointer();
 
 	if ( !pNPC )
 	{
@@ -461,13 +464,12 @@ CAI_BaseNPC* CASW_Harvester::SpawnAlien()
 	pNPC->SetOwnerEntity( this );
 	pNPC->Activate();
 
-	CASW_Parasite *pParasite = dynamic_cast<CASW_Parasite*>(pNPC);
-	if (pParasite)
+	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
 	{
+		CASW_Parasite* pParasite = assert_cast<CASW_Parasite*>(pNPC);
 		m_iCrittersAlive++;
 		pParasite->SetMother(this);
 	}
-
 	return pNPC;
 }
 
@@ -592,13 +594,16 @@ bool CASW_Harvester::IsHeavyDamage( const CTakeDamageInfo &info )
 	// explosions always cause a flinch
 	if (( info.GetDamageType() & DMG_BLAST ) != 0 )
 		return true;
-	
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());	
-	if (pMarine && pMarine->GetActiveASWWeapon())
-	{		
-		return pMarine->GetActiveASWWeapon()->ShouldAlienFlinch(this, info);
-	}
 
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+	{
+		CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+		if ( pWeapon )
+		{
+			return pWeapon->ShouldAlienFlinch(this, info);
+		}
+	}
 	return false;
 }
 
@@ -661,9 +666,7 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 		if ( bBlocked )
 			continue;	// couldn't find room for parasites
 
-		CASW_Parasite *pParasite = dynamic_cast< CASW_Parasite* >( CreateNoSpawn("asw_parasite_defanged",
-			vecSpawnPos, angParasiteFacing[i], this));
-
+		CASW_Parasite *pParasite = assert_cast< CASW_Parasite* >( CreateNoSpawn("asw_parasite_defanged", vecSpawnPos, angParasiteFacing[i], this) );
 		if ( pParasite )
 		{
 			DispatchSpawn( pParasite );
@@ -694,28 +697,29 @@ int CASW_Harvester::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_BUCKSHOT)
 	{
 		// hack to reduce vindicator damage (not reducing normal shotty as much as it's not too strong)
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
-				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if ( pVindicator )
+				if ( pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
 			}
-		}		
+		}
 	}
 	if (info.GetDamageType() & DMG_BULLET)
 	{
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if ( pMarine && pMarine->GetActiveASWWeapon() )
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
 				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
-				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				switch ( (int)pWeapon->Classify() )
 				{
 				case CLASS_ASW_DEAGLE:
 					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;

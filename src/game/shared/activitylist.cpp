@@ -1356,57 +1356,61 @@ void UTIL_LoadActivityRemapFile( const char *filename, const char *section, CUtl
 
 	KeyValues *pkvFile = new KeyValues( section );
 
-	if ( pkvFile->LoadFromFile( filesystem, filename, NULL ) )
+	if (pkvFile)
 	{
-		KeyValues *pTestKey = pkvFile->GetFirstSubKey();
-
-		CActivityRemapCache actRemap;
-
-		while ( pTestKey )
+		if (pkvFile->LoadFromFile(filesystem, filename, NULL))
 		{
-			Activity ActBase = (Activity)ActivityList_IndexForName( pTestKey->GetName() );
+			KeyValues *pTestKey = pkvFile->GetFirstSubKey();
 
-			if ( ActBase != ACT_INVALID )
+			CActivityRemapCache actRemap;
+
+			while (pTestKey)
 			{
-				KeyValues *pRemapKey = pTestKey->GetFirstSubKey();
+				Activity ActBase = (Activity)ActivityList_IndexForName(pTestKey->GetName());
 
-				CActivityRemap actMap;
-				actMap.activity = ActBase;
-
-				while ( pRemapKey )
+				if (ActBase != ACT_INVALID)
 				{
-					const char *pKeyName = pRemapKey->GetName();
-					const char *pKeyValue = pRemapKey->GetString();
+					KeyValues *pRemapKey = pTestKey->GetFirstSubKey();
 
-					if ( !stricmp( pKeyName, "remapactivity" ) )
+					CActivityRemap actMap;
+					actMap.activity = ActBase;
+
+					while (pRemapKey)
 					{
-						Activity Act = (Activity)ActivityList_IndexForName( pKeyValue );
+						const char *pKeyName = pRemapKey->GetName();
+						const char *pKeyValue = pRemapKey->GetString();
 
-						if ( Act == ACT_INVALID )
+						if (!stricmp(pKeyName, "remapactivity"))
 						{
-							actMap.mappedActivity = ActivityList_RegisterPrivateActivity( pKeyValue );
+							Activity Act = (Activity)ActivityList_IndexForName(pKeyValue);
+
+							if (Act == ACT_INVALID)
+							{
+								actMap.mappedActivity = ActivityList_RegisterPrivateActivity(pKeyValue);
+							}
+							else
+							{
+								actMap.mappedActivity = Act;
+							}
 						}
-						else
+						else if (!stricmp(pKeyName, "extra"))
 						{
-							actMap.mappedActivity = Act;
+							actMap.SetExtraKeyValueBlock(pRemapKey->MakeCopy());
 						}
-					}
-					else if ( !stricmp( pKeyName, "extra" ) )
-					{
-						actMap.SetExtraKeyValueBlock( pRemapKey->MakeCopy() );
+
+						pRemapKey = pRemapKey->GetNextKey();
 					}
 
-					pRemapKey = pRemapKey->GetNextKey();
+					entries.AddToTail(actMap);
 				}
 
-				entries.AddToTail( actMap );
+				pTestKey = pTestKey->GetNextKey();
 			}
 
-			pTestKey = pTestKey->GetNextKey();
+			actRemap.m_cachedActivityRemaps.AddVectorToTail(entries);
+			m_ActivityRemapDatabase.Insert(filename, actRemap);
 		}
-
-		actRemap.m_cachedActivityRemaps.AddVectorToTail( entries );
-		m_ActivityRemapDatabase.Insert( filename, actRemap );
+		pkvFile->deleteThis();
 	}
 }
 

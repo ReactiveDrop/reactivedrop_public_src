@@ -753,9 +753,9 @@ CMultiplayRules::CMultiplayRules()
 			{
 				killer_weapon_name += 7;
 			}
-			else if ( strncmp( killer_weapon_name, "NPC_", 8 ) == 0 )
+			else if ( strncmp( killer_weapon_name, "NPC_", 4 ) == 0 )
 			{
-				killer_weapon_name += 8;
+				killer_weapon_name += 4;
 			}
 			else if ( strncmp( killer_weapon_name, "func_", 5 ) == 0 )
 			{

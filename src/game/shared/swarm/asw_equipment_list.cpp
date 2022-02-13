@@ -55,7 +55,7 @@ CASW_EquipmentList::CASW_EquipmentList()
 
 #ifdef CLIENT_DLL
 	m_bLoadedTextures = false;
-#endif CLIENT_DLL
+#endif
 }
 
 void CASW_EquipmentList::LoadEquipmentList()

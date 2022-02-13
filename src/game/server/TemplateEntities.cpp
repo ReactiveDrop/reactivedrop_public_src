@@ -404,6 +404,7 @@ char *Templates_GetEntityIOFixedMapData( int iIndex )
 		c++;
 	} while (*c);
 
+	delete[] sOurFixup;
 	return g_Templates[iIndex]->pszFixedMapData;
 }
 

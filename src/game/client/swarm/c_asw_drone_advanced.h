@@ -23,7 +23,7 @@ public:
 	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming);
 	virtual void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM]);
 
-	CNetworkVar( EHANDLE, m_hAimTarget );
+	CNetworkHandle( CBaseEntity, m_hAimTarget );
 
 
 private:

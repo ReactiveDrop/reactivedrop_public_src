@@ -568,9 +568,16 @@ void CSoundEnt::Initialize ( void )
 
 	// In SP, we should only use the first 64 slots so save/load works right.
 	// In MP, have one for each player and 32 extras.
+
+	//Mad Orange. I guess gpGlobals->maxClients was designed for one per player, while in asw each bot marine actually adds into sounds too.
+	//This is not important due to following notes but good to mention. 
+	//So gpGlobals->maxClients seems to return not 32(surprise enough catch by Softcopy) but i guess comes from -maxplayers from srcds lauch parameters, so [4-12] range usually
+	//Also save/load doesnt seems to be used in multiplayer, but even if so we can safelly raise limit as it is in singleplayer.
 	int nTotalSoundsInPool = MAX_WORLD_SOUNDS_SP;
-	if ( gpGlobals->maxClients > 1 )
-		nTotalSoundsInPool = MIN( ( int ) MAX_WORLD_SOUNDS_MP, gpGlobals->maxClients + 32 );
+	if (gpGlobals->maxClients > 1)
+	{
+		//nTotalSoundsInPool = MIN((int)MAX_WORLD_SOUNDS_MP, gpGlobals->maxClients + 32);
+	}
 
 	if ( gpGlobals->maxClients+16 > nTotalSoundsInPool )
 	{
@@ -731,24 +738,28 @@ CSound*	CSoundEnt::GetLoudestSoundOfType( int iType, const Vector &vecEarPositio
 	while ( iThisSound != SOUNDLIST_EMPTY )
 	{
 		pSound = SoundPointerForIndex( iThisSound );
-
-		if ( pSound && pSound->m_iType == iType && pSound->ValidateOwner() )
+		if (pSound)
 		{
-			flDist = ( pSound->GetSoundOrigin() - vecEarPosition ).Length();
-
-			//FIXME: This doesn't match what's in Listen()
-			//flDist = UTIL_DistApprox( pSound->GetSoundOrigin(), vecEarPosition );
-
-			if ( flDist <= pSound->m_iVolume && flDist < flBestDist )
+			if ( pSound->m_iType == iType && pSound->ValidateOwner() )
 			{
-				pLoudestSound = pSound;
+				flDist = (pSound->GetSoundOrigin() - vecEarPosition).Length();
 
-				iBestSound = iThisSound;
-				flBestDist = flDist;
+				//FIXME: This doesn't match what's in Listen()
+				//flDist = UTIL_DistApprox( pSound->GetSoundOrigin(), vecEarPosition );
+
+				if (flDist <= pSound->m_iVolume && flDist < flBestDist)
+				{
+					pLoudestSound = pSound;
+
+					iBestSound = iThisSound;
+					flBestDist = flDist;
+				}
 			}
-		}
 
-		iThisSound = pSound->m_iNext;
+			iThisSound = pSound->m_iNext;
+		}
+		else
+			break;
 	}
 
 	return pLoudestSound;

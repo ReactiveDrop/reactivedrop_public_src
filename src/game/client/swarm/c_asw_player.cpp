@@ -212,7 +212,7 @@ public:
 	virtual void PostDataUpdate( DataUpdateType_t updateType )
 	{
 		// Create the effect.
-		C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( m_hPlayer.Get() );
+		C_ASW_Player* pPlayer = ToASW_Player(m_hPlayer.Get());
 		if ( pPlayer && !pPlayer->IsDormant() )
 		{
 			pPlayer->DoAnimationEvent( (PlayerAnimEvent_t)m_iEvent.Get() );
@@ -244,11 +244,14 @@ public:
 		if ( !engine->IsPlayingDemo() && C_BasePlayer::IsLocalPlayer( m_hExcludePlayer.Get() ) )
 			return;
 		// play anim event
-		C_ASW_Marine *pMarine = dynamic_cast< C_ASW_Marine* >( m_hMarine.Get() );
-		if ( pMarine && !pMarine->IsDormant() )
+		C_ASW_Marine* pMarine = m_hMarine.Get();
+		if ( pMarine )
 		{
-			pMarine->DoAnimationEvent( (PlayerAnimEvent_t)m_iEvent.Get() );
-		}	
+			if (!pMarine->IsDormant())
+			{
+				pMarine->DoAnimationEvent((PlayerAnimEvent_t)m_iEvent.Get());
+			}
+		}
 	}
 
 public:
@@ -510,7 +513,6 @@ void C_ASW_Player::SelectTumbler(int iTumblerImpulse)
 {
 	char buffer[64];
 	Q_snprintf(buffer, sizeof(buffer), "impulse %d", iTumblerImpulse);
-	Msg("Sending %s\n", buffer);
 	engine->ClientCmd(buffer);
 }
 
@@ -803,7 +805,8 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 		return;
 
 	// if it's an offhand activate, tell the server we want to activate it
-	if (pWeapon->GetWeaponInfo() && pWeapon->GetWeaponInfo()->m_bOffhandActivate)
+	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+	if (pWpnInfo && pWpnInfo->m_bOffhandActivate)
 	{
 		char buffer[64];
 		Q_snprintf(buffer, sizeof(buffer), "cl_offhand %d", slot);
@@ -2332,6 +2335,7 @@ void C_ASW_Player::CreateStimCamera()
 		if (!m_pStimCam->InitializeAsClientEntity( NULL, false ))
 		{
 			UTIL_Remove( m_pStimCam );
+			m_pStimCam = NULL;
 			return;
 		}
 		m_pStimCam->ApplyStimCamSettings();

@@ -1038,7 +1038,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 			}
 			else
 			{
-				_snwprintf ( wszTeam, sizeof( wszTeam ) / sizeof( wchar_t ), L"%d", team );
+				V_snwprintf ( wszTeam, sizeof( wszTeam ) / sizeof( wchar_t ), L"%d", team );
 			}
 
 			if ( !IsInCommentaryMode() )

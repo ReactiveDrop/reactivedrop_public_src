@@ -86,13 +86,13 @@ struct fogplayerparams_t
 	{
 		m_hCtrl.Set( NULL );
 		m_flTransitionTime = -1.0f;
-		m_OldColor.r = m_OldColor.g = m_OldColor.g = m_OldColor.a = 0.0f;
+		m_OldColor.r = m_OldColor.g = m_OldColor.b = m_OldColor.a = 0.0f;
 		m_flOldStart = 0.0f;
 		m_flOldEnd = 0.0f;
 		m_flOldMaxDensity = 1.0f;
 		m_flOldHDRColorScale = 1.0f;
 		m_flOldFarZ = 0;
-		m_NewColor.r = m_NewColor.g = m_NewColor.g = m_NewColor.a = 0.0f;
+		m_NewColor.r = m_NewColor.g = m_NewColor.b = m_NewColor.a = 0.0f;
 		m_flNewStart = 0.0f;
 		m_flNewEnd = 0.0f;
 		m_flNewMaxDensity = 1.0f;

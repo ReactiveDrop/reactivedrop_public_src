@@ -78,6 +78,18 @@ void CASW_Weapon_PRifle::Precache()
 	BaseClass::Precache();
 }
 
+float CASW_Weapon_PRifle::GetFireRate()
+{
+	float flRate = GetWeaponInfo()->m_flFireRate;
+
+	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
+
+	flRate -= MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE);
+	flRate = MAX(0.005, flRate); //0.07 is default
+	//Msg("protorifle firerate is %f\n", flRate);
+
+	return flRate;
+}
 
 float CASW_Weapon_PRifle::GetWeaponDamage()
 {
@@ -135,7 +147,6 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	BaseClass::WeaponSound( SPECIAL1 );
 
-	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector	vecThrow;
 	// Don't autoaim on grenade tosses
 	vecThrow = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -151,6 +162,8 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	{
 		Msg("Grenade damage = %f radius = %f\n", fGrenadeDamage, fGrenadeRadius);
 	}
+
+	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	CASW_Grenade_PRifle::PRifle_Grenade_Create( 
 		fGrenadeDamage,
 		fGrenadeRadius,

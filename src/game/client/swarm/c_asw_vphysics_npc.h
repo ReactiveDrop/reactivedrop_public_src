@@ -1,7 +1,7 @@
 #ifndef _INCLUDED_C_ASW_VPHYSICS_NPC_H
 #define _INCLUDED_C_ASW_VPHYSICS_NPC_H
 #include "c_ai_basenpc.h"
-#ifdef WIN_32
+#ifdef _WIN32
 #pragma once
 #endif
 

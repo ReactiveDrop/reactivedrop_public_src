@@ -133,7 +133,7 @@ bool CBeamSpotlight::KeyValue( const char *szKeyName, const char *szValue )
 		{
 			Warning( "Map Bug:  %s has SpotLightWidth %f > %f, clamping value\n",
 					 STRING( GetEntityName()), m_flSpotlightGoalWidth.m_Value, (float)MAX_BEAM_WIDTH );
-			m_flSpotlightGoalWidth = MIN( MAX_BEAM_WIDTH, m_flSpotlightGoalWidth );
+			m_flSpotlightGoalWidth = MIN( MAX_BEAM_WIDTH, m_flSpotlightGoalWidth.Get() );
 		}
 		return true;
 	}

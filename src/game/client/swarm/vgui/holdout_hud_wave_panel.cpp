@@ -52,7 +52,7 @@ void Holdout_Hud_Wave_Panel::OnThink()
 	if ( !ASWHoldoutMode() )
 		return;
 	wchar_t wzValue[15];
-	_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", ASWHoldoutMode()->GetCurrentWave() + 1 );
+	V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", ASWHoldoutMode()->GetCurrentWave() + 1 );
 
 	wchar_t wbuffer[ 256 ];		
 	g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
@@ -60,7 +60,7 @@ void Holdout_Hud_Wave_Panel::OnThink()
 		wzValue);
 	m_pWaveNumberLabel->SetText( wbuffer );
 
-	_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", ASWHoldoutMode()->GetCurrentScore() );
+	V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", ASWHoldoutMode()->GetCurrentScore() );
 	g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
 		g_pVGuiLocalize->Find("#asw_holdout_hud_score"), 1,
 		wzValue);
@@ -80,7 +80,7 @@ void Holdout_Hud_Wave_Panel::OnThink()
 		m_pCountdownLabel->SetVisible( true );
 
 		wchar_t wzValue[15];
-		_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", (int) flTimeLeft );
+		V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", (int) flTimeLeft );
 
 		m_pCountdownTimeLabel->SetText( wzValue );
 	}

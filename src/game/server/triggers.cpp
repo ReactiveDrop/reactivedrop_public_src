@@ -2477,7 +2477,7 @@ void CTriggerTeleport::Touch( CBaseEntity *pOther )
 	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, NULL, pOther, pOther );
 	if (!pentTarget)
 	{
-	   Warning("Teleport trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName(), m_target );
+	   Warning( "Teleport trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName().ToCStr(), m_target.ToCStr() );
 	   return;
 	}
 	
@@ -2621,7 +2621,7 @@ void CTriggerCatapult::Touch( CBaseEntity *pOther )
 	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, NULL, pOther, pOther );
 	if (!pentTarget)
 	{
-	   Warning("Catapult trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName(), m_target );
+	   Warning( "Catapult trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName().ToCStr(), m_target.ToCStr() );
 	   return;
 	}
 	

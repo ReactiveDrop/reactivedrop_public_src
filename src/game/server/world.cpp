@@ -751,6 +751,7 @@ void CWorld::Precache( void )
 	if (g_pGameRules)
 	{
 		delete g_pGameRules;
+		g_pGameRules = NULL; //InstallGameRules() in code below calls delete also, so in case we go there for some reason we should avoid double delete call for a non null pointer.
 	}
 
 	InstallGameRules();

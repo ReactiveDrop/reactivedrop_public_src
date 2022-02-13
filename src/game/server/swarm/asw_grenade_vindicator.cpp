@@ -45,6 +45,8 @@ BEGIN_DATADESC( CASW_Grenade_Vindicator )
 	DEFINE_FIELD( m_fEarliestTouchDetonationTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bKicked, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bExplodeOnWorldContact, FIELD_BOOLEAN ),
+
+	DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
 END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
@@ -164,7 +166,9 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
 		if (GetAbsVelocity().Length2D() > 60)
+		{
 			EmitSound("Grenade.ImpactHard");
+		}
 	}
 
 	// can't detonate yet?
@@ -247,21 +251,31 @@ void CASW_Grenade_Vindicator::Detonate()
 	}
 
 	int iPreExplosionKills = 0;
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(m_hFirer.Get());
-	if (pMarine && pMarine->GetMarineResource())
-		iPreExplosionKills = pMarine->GetMarineResource()->m_iAliensKilled;
 
-	CTakeDamageInfo info( this, m_hFirer.Get(), m_flDamage, DMG_BURN );
+	CASW_Marine* pMarine = NULL;
+	CASW_Marine_Resource* pPMR = NULL;
+	CBaseEntity* pFirer = m_hFirer.Get();
+
+	if ( pFirer && pFirer->Classify() == CLASS_ASW_MARINE)
+	{ 
+		pMarine = assert_cast<CASW_Marine*>( pFirer );
+		pPMR = pMarine->GetMarineResource();
+	}
+
+	if (pMarine && pPMR)
+		iPreExplosionKills = pPMR->m_iAliensKilled;
+
+	CTakeDamageInfo info( this, pFirer, m_flDamage, DMG_BURN );
 	info.SetWeapon( m_hCreatorWeapon );
 	RadiusDamage ( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 	//RadiusDamage ( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
-	if (pMarine && pMarine->GetMarineResource())
+	if (pMarine && pPMR)
 	{
-		int iKilledByExplosion = pMarine->GetMarineResource()->m_iAliensKilled - iPreExplosionKills;
-		if (iKilledByExplosion > pMarine->GetMarineResource()->m_iSingleGrenadeKills)
+		int iKilledByExplosion = pPMR->m_iAliensKilled - iPreExplosionKills;
+		if (iKilledByExplosion > pPMR->m_iSingleGrenadeKills)
 		{
-			pMarine->GetMarineResource()->m_iSingleGrenadeKills = iKilledByExplosion;
+			pPMR->m_iSingleGrenadeKills = iKilledByExplosion;
 			if ( iKilledByExplosion > asw_medal_explosive_kills.GetInt() && pMarine->GetCommander() && pMarine->IsInhabited() )
 			{
 				pMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_GRENADE_MULTI_KILL );
@@ -271,7 +285,7 @@ void CASW_Grenade_Vindicator::Detonate()
 			//pMarine->GetMarineResource()->m_iKickedGrenadeKills += iKilledByExplosion;
 
 		// count as a shot fired
-		pMarine->GetMarineResource()->UsedWeapon(NULL, 1);
+		pPMR->UsedWeapon(NULL, 1);
 	}
 
 	while (m_iClusters > 0)
@@ -285,7 +299,7 @@ void CASW_Grenade_Vindicator::Detonate()
 		CASW_Grenade_Vindicator *pGrenade = CASW_Grenade_Vindicator::Vindicator_Grenade_Create( 
 			m_flDamage,
 			m_DmgRadius,
-			GetAbsOrigin(), ang, newVel, AngularImpulse(0,0,0), m_hFirer.Get(), m_hCreatorWeapon );
+			GetAbsOrigin(), ang, newVel, AngularImpulse(0,0,0), pFirer, m_hCreatorWeapon );
 		if (pGrenade)
 		{
 			pGrenade->m_takedamage = DAMAGE_YES;
@@ -367,6 +381,17 @@ void CASW_Grenade_Vindicator::CreateEffects()
 
 int	CASW_Grenade_Vindicator::OnTakeDamage_Dying( const CTakeDamageInfo &info )
 {	
+	return BaseClass::OnTakeDamage_Dying(info);
+}
+
+int	CASW_Grenade_Vindicator::OnTakeDamage( const CTakeDamageInfo &info )
+{
+	// don't allow grenades to be damaged by other grenade explosions
+	if (info.GetDamageType() & DMG_BLAST)
+	{
+		return 0;
+	}
+
 	// let NPCS kick us around
 	if (info.GetAttacker() && info.GetAttacker()->IsNPC())
 	{
@@ -377,25 +402,11 @@ int	CASW_Grenade_Vindicator::OnTakeDamage_Dying( const CTakeDamageInfo &info )
 		{
 			m_bKicked = true;
 		}
+
+		//Mad Orange. Fire OnDamaged Output
+		m_OnDamaged.FireOutput(info.GetAttacker(), this);
 	}
 
-	// don't allow grenades to be damage by other grenade explosions
-	if (info.GetDamageType() & DMG_BLAST)
-	{
-		return 0;
-	}
-	
-	return BaseClass::OnTakeDamage_Dying(info);
-}
-
-int	CASW_Grenade_Vindicator::OnTakeDamage( const CTakeDamageInfo &info )
-{	
-	// don't allow grenades to be damage by other grenade explosions
-	if (info.GetDamageType() & DMG_BLAST)
-	{
-		return 0;
-	}
-	
 	return BaseClass::OnTakeDamage(info);
 }
 
@@ -413,11 +424,15 @@ void CASW_Grenade_Vindicator::BurntAlien(CBaseEntity *pAlien)
 		if (pAlien->Classify() == CLASS_ASW_MARINE)
 			return;
 
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(m_hFirer.Get());		
-		if (pMarine && pMarine->GetMarineResource())
-		{	
-			//Msg("kicked grenade is burning %s %d\n", pAlien->GetClassname(), pAlien->entindex());
-			pMarine->GetMarineResource()->m_iKickedGrenadeKills++;
+		CBaseEntity* pFirer = m_hFirer.Get();
+		if ( pFirer && pFirer->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pFirer );
+			if ( pMarine->GetMarineResource() )
+			{
+				//Msg("kicked grenade is burning %s %d\n", pAlien->GetClassname(), pAlien->entindex());
+				pMarine->GetMarineResource()->m_iKickedGrenadeKills++;
+			}
 		}
 	}
 }

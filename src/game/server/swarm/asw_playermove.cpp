@@ -69,7 +69,7 @@ void CASW_PlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelpe
 	BaseClass::SetupMove( player, ucmd, pHelper, move );
 
 	// this forces horizontal movement
-	CASW_Player *pASWPlayer = dynamic_cast<CASW_Player*>(player);
+	CASW_Player *pASWPlayer = ToASW_Player(player);
 	if (pASWPlayer && pASWPlayer->GetMarine() && !asw_allow_detach.GetBool())
 	{
 			move->m_vecAngles.x = 0;
@@ -142,7 +142,7 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	// Do weapon selection
 	if ( ucmd->weaponselect != 0 )
 	{
-		CBaseCombatWeapon *weapon = dynamic_cast< CBaseCombatWeapon * >( CBaseEntity::Instance( ucmd->weaponselect ) );
+		CBaseCombatWeapon *weapon = ToBaseCombatWeapon(CBaseEntity::Instance( ucmd->weaponselect ));
 		if (weapon)
 			pASWPlayer->ASWSelectWeapon(weapon, 0); // ucmd->weaponsubtype);  // infested - subtype var used for sending marine profile index instead
 	}
@@ -170,7 +170,7 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	player->UpdateButtonState( ucmd->buttons );
 	VPROF_SCOPE_END();
 
-	CheckMovingGround( player, TICK_INTERVAL );
+	//CheckMovingGround( player, TICK_INTERVAL ); Mad Orange. This is unused and only wastes resources
 
 	g_pMoveData->m_vecOldAngles = player->pl.v_angle;
 

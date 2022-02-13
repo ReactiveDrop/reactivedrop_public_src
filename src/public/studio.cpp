@@ -980,7 +980,10 @@ int	CStudioHdr::GetNumPoseParameters( void ) const
 {
 	if (m_pVModel == NULL)
 	{
-		return m_pStudioHdr->numlocalposeparameters;
+		if ( m_pStudioHdr )
+			return m_pStudioHdr->numlocalposeparameters;
+		else
+			return 0;
 	}
 
 	Assert( m_pVModel );
@@ -1972,6 +1975,12 @@ void CStudioHdr::CActivityToSequenceMapping::Initialize( const CStudioHdr * __re
 			(tupleList + element.startingIdx + tupleOffset)->seqnum = i; // store sequence number
 			(tupleList + element.startingIdx + tupleOffset)->weight = iabs(seqdesc.actweight);
 
+			// We can't have weights of 0
+			// Assert( (tupleList + element.startingIdx + tupleOffset)->weight > 0 );
+			if ( (tupleList + element.startingIdx + tupleOffset)->weight == 0 )
+			{
+				(tupleList + element.startingIdx + tupleOffset)->weight = 1;
+			}
 			seqsPerAct[seqdesc.activity] += 1;
 		}
 	}
@@ -1993,7 +2002,7 @@ void CStudioHdr::CActivityToSequenceMapping::Reinitialize( CStudioHdr *pstudiohd
 {
 	if (m_pSequenceTuples)
 	{
-		delete m_pSequenceTuples;
+		delete[] m_pSequenceTuples;
 		m_pSequenceTuples = NULL;
 	}
 	m_ActToSeqHash.RemoveAll();

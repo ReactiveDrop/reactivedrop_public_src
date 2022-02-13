@@ -50,6 +50,8 @@ CASW_Sentry_Top_Flamer::CASW_Sentry_Top_Flamer(  int projectileVelocity  ) : m_b
 
 	// increase turn rate until I get better leading code in (so it can actually hit something)
 	m_fTurnRate *= 3.0f;
+
+	m_flFireHysteresisTime = gpGlobals->curtime;
 }
 
 /// @TODO attrib hooks
@@ -110,10 +112,10 @@ void CASW_Sentry_Top_Flamer::CheckFiring()
 }
 
 
-ITraceFilter *CASW_Sentry_Top_Flamer::GetVisibilityTraceFilter()
-{
-	return new CTraceFilterSkipClassname( GetSentryBase(), "asw_flamer_projectile", COLLISION_GROUP_NONE );
-}
+//ITraceFilter *CASW_Sentry_Top_Flamer::GetVisibilityTraceFilter()
+//{
+//	return new CTraceFilterSkipClassname( GetSentryBase(), "asw_flamer_projectile", COLLISION_GROUP_NONE );
+//}
 
 float CASW_Sentry_Top_Flamer::GetYawTo(CBaseEntity* pEnt)
 {

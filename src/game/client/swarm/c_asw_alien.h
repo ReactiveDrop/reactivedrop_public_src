@@ -22,6 +22,8 @@ public:
 		
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
 
+	virtual bool IsAlienClassType( void ) const { return true; }
+
 	// death;
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	virtual void Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const Vector &vecDir, trace_t *ptr );

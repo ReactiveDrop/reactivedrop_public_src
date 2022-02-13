@@ -313,3 +313,7 @@
 	CarriedAngle(angle) : "Carried Angle" : "0 0 0" : ""
 	CarriedOffset(vector) : "Carried Offset" : "0 0 0" : ""
 ]
+
+@SolidClass base( Targetname, EnableDisable ) = rd_func_jumpjet : "An entity to control free jumping/blinking area."
+[
+]

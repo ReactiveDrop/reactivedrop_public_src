@@ -166,6 +166,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iElectricArmorReduction = 0;
 	m_iHealAmpGunHeals = 0;
 	m_iHealAmpGunAmps = 0;
+	m_iMedRifleHeals = 0;
 
 	m_TimelineFriendlyFire.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 	m_TimelineKillsTotal.SetCompressionType( TIMELINE_COMPRESSION_SUM );
@@ -467,17 +468,18 @@ void CASW_Marine_Resource::UsedWeapon(CASW_Weapon *pWeapon, int iShots)
 	if (!pWeapon || m_iOnlyWeaponEquipIndex == -2)
 		return;
 
+	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
 	// not used a weapon yet?
 	if (m_iOnlyWeaponEquipIndex == -1)
 	{
 		m_iOnlyWeaponEquipIndex = pWeapon->GetEquipmentListIndex();
-		if (pWeapon->GetWeaponInfo())
-			m_bOnlyWeaponExtra = pWeapon->GetWeaponInfo()->m_bExtra;
+		if (pWpnInfo)
+			m_bOnlyWeaponExtra = pWpnInfo->m_bExtra;
 		return;
 	}
 
 	// used a different type of weapon?
-	if (pWeapon->GetWeaponInfo() && pWeapon->GetWeaponInfo()->m_bExtra != m_bOnlyWeaponExtra)
+	if (pWpnInfo && pWpnInfo->m_bExtra != m_bOnlyWeaponExtra)
 	{
 		m_iOnlyWeaponEquipIndex = -2;
 		return;
@@ -512,7 +514,7 @@ void CASW_Marine_Resource::DebugMedalStats()
 	}
 	Msg(" Player shots missed: %d (player acc = %f)\n", m_iPlayerShotsMissed, accuracy);	
 	Msg(" Damage taken: %f\n", m_fDamageTaken);
-	Msg(" Alien kills: %d\n", m_iAliensKilled);
+	Msg(" Alien kills: %d\n", m_iAliensKilled.Get());
 	Msg(" FF damage dealt: %f\n", m_fFriendlyFireDamageDealt);
 	Msg(" FF damage taken: %f\n", GetMarineEntity() ? GetMarineEntity()->m_fFriendlyFireDamage : -1);
 	Msg(" Single explosion kills: %d\n", m_iSingleGrenadeKills);
@@ -521,7 +523,7 @@ void CASW_Marine_Resource::DebugMedalStats()
 	Msg(" Parasites killed: %d\n", m_iParasitesKilled);
 	Msg(" Lifesaver kills: %d\n", m_iSavedLife);
 	Msg(" Been hurt: %d\n", m_bHurt);
-	Msg(" Been wounded: %d\n", m_bTakenWoundDamage);
+	Msg(" Been wounded: %d\n", m_bTakenWoundDamage.Get());
 	Msg(" Mad Firing: %d\n", m_iMadFiring);
 	Msg(" Mad Firing Autogun: %d\n", m_iMadFiringAutogun);
 	//Msg(" Last Stand Kills: %d\n", m_iLastStandKills);
@@ -567,7 +569,7 @@ void CASW_Marine_Resource::DebugMedalStatsOnScreen()
 	engine->Con_NPrintf( i++, "Player Shots fired: (%d)", m_iPlayerShotsFired);
 	engine->Con_NPrintf( i++, "Player Shots missed: %d (accuracy = %f)", m_iPlayerShotsMissed, player_acc);	
 	engine->Con_NPrintf( i++, "Damage taken: %f\n", m_fDamageTaken);
-	engine->Con_NPrintf( i++, "Alien kills: %d\n", m_iAliensKilled);
+	engine->Con_NPrintf( i++, "Alien kills: %d\n", m_iAliensKilled.Get());
 	engine->Con_NPrintf( i++, "FF damage dealt: %f\n", m_fFriendlyFireDamageDealt);
 	engine->Con_NPrintf( i++, "FF damage taken: %f\n", GetMarineEntity() ? GetMarineEntity()->m_fFriendlyFireDamage : -1);
 	engine->Con_NPrintf( i++, "Single explosion kills: %d\n", m_iSingleGrenadeKills);

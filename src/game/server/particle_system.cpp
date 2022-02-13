@@ -146,7 +146,7 @@ CParticleSystem::CParticleSystem( void ) : m_bNoSave( false )
 void CParticleSystem::Precache( void )
 {
 	const char *pParticleSystemName = STRING( m_iszEffectName );
-	if ( pParticleSystemName == NULL || pParticleSystemName[0] == 0 )
+	if ( pParticleSystemName == NULL || pParticleSystemName[0] == '\0' )
 	{
 		Warning( "info_particle_system (%s) has no particle system name specified!\n", GetEntityName().ToCStr() );
 	}

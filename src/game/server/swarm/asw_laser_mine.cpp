@@ -30,6 +30,8 @@ ConVar rd_laser_mine_targets_everything("rd_laser_mine_targets_everything", "0",
 ConVar rd_laser_mine_dmg( "rd_laser_mine_dmg", "100", FCVAR_CHEAT, "Damage of laser mines" );
 ConVar rd_laser_mine_dmg_radius("rd_laser_mine_dmg_radius", "256", FCVAR_CHEAT, "Damage radius of laser mines");
 
+ConVar rda_laser_mine_ownerless_alien_friendly("rda_laser_mine_ownerless_alien_friendly", "0", FCVAR_CHEAT, "Mines unrelated to marines (VScript created) are alien friendly");
+
 LINK_ENTITY_TO_CLASS( asw_laser_mine, CASW_Laser_Mine );
 
 BEGIN_DATADESC( CASW_Laser_Mine )
@@ -211,6 +213,14 @@ void CASW_Laser_Mine::SpawnFlipThink()
 			EmitSound("ASW_Mine.Lay");
 
 			m_bMineActive = true;
+
+			IGameEvent* event = gameeventmanager->CreateEvent("laser_mine_active");
+			if (event)
+			{
+				event->SetInt( "entindex", this->entindex() );
+				event->SetInt( "marine", ( GetOwnerEntity() ? GetOwnerEntity()->entindex() : 0 ) );
+				gameeventmanager->FireEvent( event );
+			}
 			return;
 		}
 	}
@@ -286,10 +296,17 @@ CASW_Laser_Mine* CASW_Laser_Mine::ASW_Laser_Mine_Create( const Vector &position,
 
 	Vector vecSrc = Vector( 0, 0, 0 );
 	if ( pOwner )
-		vecSrc = pOwner->WorldSpaceCenter();
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( pOwner );
-	if ( pMarine )
-		vecSrc = pMarine->GetOffhandThrowSource();
+	{
+		if ( pOwner->Classify() == CLASS_ASW_MARINE )
+		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pOwner);
+			vecSrc = pMarine->GetOffhandThrowSource();
+		}
+		else
+		{
+			vecSrc = pOwner->WorldSpaceCenter();
+		}
+	}
 	pMine->SetAbsAngles( -angMine );
 	pMine->Spawn();
 	pMine->SetOwnerEntity( pOwner );
@@ -330,7 +347,23 @@ bool CASW_Laser_Mine::ValidMineTarget(CBaseEntity *pOther)
 		if ( m_bFriendly.Get() && ( pOther->Classify() == CLASS_ASW_MARINE || pOther->Classify() == CLASS_ASW_COLONIST ) ) // friendly mines don't trigger on marines or colonists
 			return false;
 
-		return true;
+		if ( pOther->GetRenderMode() == kRenderNone )
+			return false;
+
+		if ( rda_laser_mine_ownerless_alien_friendly.GetBool() )
+		{
+			if (GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE) //mine placed by marine, ignoring alien friendly stuff
+				return true;
+			else //supposed to be Vscript placed mine.
+			{
+				if ( pOther->Classify() == CLASS_ASW_MARINE || pOther->Classify() == CLASS_ASW_COLONIST ) //if we are there with marine or colonist then our mine is not m_bFriendly, so hit a target
+					return true;
+
+				return false;
+			}
+		}
+
+ 		return true;
 	}
 
 	return false;

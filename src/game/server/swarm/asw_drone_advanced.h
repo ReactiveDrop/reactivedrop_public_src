@@ -123,7 +123,7 @@ public:
 
 	static float s_fNextTooCloseChatterTime;
 
-	CNetworkVar( EHANDLE, m_hAimTarget );
+	CNetworkHandle( CBaseEntity, m_hAimTarget );
 
 	enum
 	{
@@ -134,6 +134,9 @@ public:
 		COND_DRONE_LOST_LOS,	// drone had soft line of sight last think, but has lost it this think
 		NEXT_CONDITION,
 	};
+
+	void CollisionSaveAndRestore( float delay );
+	void CollisionRestoreThink();
 
 private:
 	CHandle< CASW_Door > m_hBlockingDoor;

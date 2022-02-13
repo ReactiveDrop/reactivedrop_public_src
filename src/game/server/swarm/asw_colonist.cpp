@@ -531,9 +531,7 @@ bool  CASW_Colonist::Event_Gibbed( const CTakeDamageInfo &info )
 				Msg("Found an unblocked pos for this entity, trying to spawn it there %f, %f, %f\n", vecSpawnPos[i].x, 
 					vecSpawnPos[i].y, vecSpawnPos[i].z);
 
-			CASW_Parasite* pParasite = dynamic_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite",
-				vecSpawnPos[i], angParasiteFacing[i], this));
-
+			CASW_Parasite* pParasite = assert_cast<CASW_Parasite*>(CreateNoSpawn("asw_parasite", vecSpawnPos[i], angParasiteFacing[i], this));
 			if (pParasite)
 			{
 				pParasite->Spawn();

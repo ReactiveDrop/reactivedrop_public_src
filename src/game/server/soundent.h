@@ -21,7 +21,8 @@ enum
 	MAX_WORLD_SOUNDS_SP	= 64,	// Maximum number of sounds handled by the world at one time in single player.
 	// This is also the number of entries saved in a savegame file (for b/w compatibility).
 
-	MAX_WORLD_SOUNDS_MP	= 128	// The sound array size is set this large but we'll only use gpGlobals->maxPlayers+32 entries in mp.
+	MAX_WORLD_SOUNDS_MP	= 128	// The sound array size is set this large but we'll only use gpGlobals->maxPlayers+32 entries in mp. 
+	//Mad Orange. gpGlobals->maxPlayers+32 is under MAX_WORLD_SOUNDS_SP = 64 in ASW, so use MAX_WORLD_SOUNDS_SP instead
 };
 
 enum

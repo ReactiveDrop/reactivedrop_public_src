@@ -269,7 +269,7 @@ bool Studio_SolveIK( int iThigh, int iKnee, int iFoot, Vector &targetFoot, Vecto
 
 
 
-class CIKContext 
+class CIKContext
 {
 public:
 	CIKContext( );
@@ -293,6 +293,26 @@ public:
 	void SolveLock( const mstudioiklock_t *plock, int i, Vector pos[], Quaternion q[], matrix3x4a_t boneToWorld[], CBoneBitList &boneComputed );
 
 	CUtlVectorFixed< CIKTarget, 12 >	m_target;
+
+	void* operator new (size_t nSize)
+	{
+		return MemAlloc_AllocAligned(nSize, 16);
+	}
+
+	void* operator new(size_t nSize, int /*nBlockUse*/, const char* pFileName, int nLine)
+	{
+		return MemAlloc_AllocAlignedFileLine(nSize, 16, pFileName, nLine);
+	}
+
+	void operator delete (void* p)
+	{
+		MemAlloc_FreeAligned(p);
+	}
+
+	void operator delete (void* p, int /*nBlockUse*/, const char* pFileName, int nLine)
+	{
+		MemAlloc_FreeAligned(p, pFileName, nLine);
+	}
 
 private:
 

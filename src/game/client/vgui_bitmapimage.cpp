@@ -38,10 +38,23 @@ BitmapImage::BitmapImage( vgui::VPANEL parent, const char *filename )
 	SetViewport( false, 0.0f, 0.0f, 0.0f, 0.0f );
 }
 
+BitmapImage::~BitmapImage( void )
+{
+	// Try not to leave crap lying around
+	if ( vgui::surface() && ( m_nTextureId != -1 ) )
+	{
+		vgui::surface()->DestroyTextureID( m_nTextureId );
+		m_nTextureId = -1;
+	}
+}
+
 bool BitmapImage::Init( vgui::VPANEL pParent, const char *pFileName )
 {
 	UsePanelRenderSize( pParent );
-	m_nTextureId = vgui::surface()->CreateNewTextureID();
+	if ( m_nTextureId == -1 )
+	{
+		m_nTextureId = vgui::surface()->CreateNewTextureID();
+	}
 	vgui::surface()->DrawSetTextureFile( m_nTextureId, pFileName , true, true);
 	GetSize( m_Size[0], m_Size[1] );
 	return true;

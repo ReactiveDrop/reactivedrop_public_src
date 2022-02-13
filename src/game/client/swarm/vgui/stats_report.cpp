@@ -188,15 +188,15 @@ void StatsReport::OnThink()
 				{
 					if ( !pMR->IsInhabited() || ASWGameResource()->IsPlayerReady( pPlayer ) )
 					{
-						m_pReadyCheckImages[ i ]->SetImage( "swarm/HUD/TickBoxTicked" );
+						m_pReadyCheckImages[ nMarine ]->SetImage( "swarm/HUD/TickBoxTicked" );
 					}
 					else if ( pPlayer == ASWGameResource()->GetLeader() )
 					{
-						m_pReadyCheckImages[ i ]->SetImage( "swarm/PlayerList/LeaderIcon" );
+						m_pReadyCheckImages[ nMarine ]->SetImage( "swarm/PlayerList/LeaderIcon" );
 					}
 					else
 					{
-						m_pReadyCheckImages[ i ]->SetImage( "swarm/HUD/TickBoxEmpty" );
+						m_pReadyCheckImages[ nMarine ]->SetImage( "swarm/HUD/TickBoxEmpty" );
 					}
 				}
 			}

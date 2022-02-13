@@ -363,6 +363,7 @@ public:
 extern INotify *g_pNotify;
 
 void EntityTouch_Add( CBaseEntity *pEntity );
+void EntityTouch_Remove( CBaseEntity *pEntity );
 int AimTarget_ListCount();
 int AimTarget_ListCopy( CBaseEntity *pList[], int listMax );
 CBaseEntity *AimTarget_ListElement( int iIndex );

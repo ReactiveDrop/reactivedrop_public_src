@@ -88,7 +88,7 @@ private:
 
 			if ( m_bAddShortCut )
 			{
-				_snwprintf( newText, sizeof( newText )/ sizeof( wchar_t ), L"&%i %s", m_iIndex, localizeText);
+				V_snwprintf( newText, sizeof( newText )/ sizeof( wchar_t ), L"&%i %s", m_iIndex, localizeText);
 			}
 			else
 			{

@@ -37,14 +37,17 @@ bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int con
 	
 	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
 
+	if ( !pEntity )
+		return false;
+
 	// don't collide with other projectiles
-	if ( dynamic_cast<CASW_Flamer_Projectile*>( pEntity ) != NULL )
+	if ( pEntity->Classify() == CLASS_ASW_FLAMER_PROJECTILE )
 		return false;
 
 	if ( dynamic_cast<CASW_Extinguisher_Projectile*>( pEntity ) != NULL )
 		return false;
 
-	if ( pEntity && pEntity->Classify() == CLASS_ASW_MARINE )
+	if ( pEntity->Classify() == CLASS_ASW_MARINE )
 	{
 		if ( m_bSkipMarines )
 			return false;
@@ -57,7 +60,7 @@ bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int con
 			return false;
 	}
 
-	if ( m_bSkipAliens && pEntity && IsAlienClass( pEntity->Classify() ) )
+	if ( m_bSkipAliens && IsAlienClass( pEntity->Classify() ) )
 		return false;
 
 	return BaseClass::ShouldHitEntity( pHandleEntity, contentsMask );

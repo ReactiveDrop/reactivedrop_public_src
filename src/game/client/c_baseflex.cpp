@@ -561,7 +561,7 @@ private:
 		{
 			CFlexSceneFile *file = m_FileList[ 0 ];
 			m_FileList.Remove( 0 );
-			delete[] file->buffer;
+			free(file->buffer);//delete[] file->buffer;
 			delete file;
 		}
 	}

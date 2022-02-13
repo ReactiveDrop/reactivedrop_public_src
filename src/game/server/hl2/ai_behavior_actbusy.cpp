@@ -679,7 +679,7 @@ bool CAI_ActBusyBehavior::ShouldIgnoreSound( CSound *pSound )
 			return true;
 		}
 
-		if ( pBusyAnim && ( pBusyAnim->iBusyInterruptType == BA_INT_AMBUSH ) || ( pBusyAnim->iBusyInterruptType == BA_INT_COMBAT ) )
+		if ( pBusyAnim && ( ( pBusyAnim->iBusyInterruptType == BA_INT_AMBUSH ) || ( pBusyAnim->iBusyInterruptType == BA_INT_COMBAT ) ) )
 		{
 			/*
 			// Robin: First version ignored sounds in front of the NPC.
@@ -1948,30 +1948,33 @@ void CAI_ActBusyBehavior::StartTask( const Task_t *pTask )
 
 				// Set the arrival sequence for the actbusy to be the busy sequence, if we don't have an entry animation
 				busyanim_t *pBusyAnim = g_ActBusyAnimDataSystem.GetBusyAnim( m_iCurrentBusyAnim );
-				if ( pBusyAnim && pBusyAnim->iszSequences[BA_ENTRY] == NULL_STRING && pBusyAnim->iActivities[BA_ENTRY] == ACT_INVALID )
+				if ( pBusyAnim )
 				{
-					// Try and play the sequence first
-					if ( pBusyAnim->iszSequences[BA_BUSY] != NULL_STRING )
+					if ( pBusyAnim->iszSequences[BA_ENTRY] == NULL_STRING && pBusyAnim->iActivities[BA_ENTRY] == ACT_INVALID )
 					{
-						GetNavigator()->SetArrivalSequence( GetOuter()->LookupSequence( STRING(pBusyAnim->iszSequences[BA_BUSY]) ) );
+						// Try and play the sequence first
+						if ( pBusyAnim->iszSequences[BA_BUSY] != NULL_STRING )
+						{
+							GetNavigator()->SetArrivalSequence( GetOuter()->LookupSequence( STRING(pBusyAnim->iszSequences[BA_BUSY]) ) );
+						}
+						else if ( pBusyAnim->iActivities[BA_BUSY] != ACT_INVALID )
+						{
+							// Try and play the activity second
+							GetNavigator()->SetArrivalActivity( pBusyAnim->iActivities[BA_BUSY] );
+						}
 					}
-					else if ( pBusyAnim->iActivities[BA_BUSY] != ACT_INVALID )
+					else
 					{
-						// Try and play the activity second
-						GetNavigator()->SetArrivalActivity( pBusyAnim->iActivities[BA_BUSY] );
-					}
-				}
-				else
-				{
-					// Robin: Set the arrival sequence / activity to be the entry animation.
-					if ( pBusyAnim->iszSequences[BA_ENTRY] != NULL_STRING )
-					{
-						GetNavigator()->SetArrivalSequence( GetOuter()->LookupSequence( STRING(pBusyAnim->iszSequences[BA_ENTRY]) ) );
-					}
-					else if ( pBusyAnim->iActivities[BA_ENTRY] != ACT_INVALID )
-					{
-						// Try and play the activity second
-						GetNavigator()->SetArrivalActivity( pBusyAnim->iActivities[BA_ENTRY] );
+						// Robin: Set the arrival sequence / activity to be the entry animation.
+						if ( pBusyAnim->iszSequences[BA_ENTRY] != NULL_STRING )
+						{
+							GetNavigator()->SetArrivalSequence( GetOuter()->LookupSequence( STRING(pBusyAnim->iszSequences[BA_ENTRY]) ) );
+						}
+						else if ( pBusyAnim->iActivities[BA_ENTRY] != ACT_INVALID )
+						{
+							// Try and play the activity second
+							GetNavigator()->SetArrivalActivity( pBusyAnim->iActivities[BA_ENTRY] );
+						}
 					}
 				}
 			}

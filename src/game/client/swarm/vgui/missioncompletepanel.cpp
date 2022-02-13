@@ -38,9 +38,6 @@
 
 using namespace vgui;
 
-#ifdef _DEBUG
-extern ConVar asw_unlock_all_weapons;
-#endif
 ConVar asw_success_sound_delay( "asw_success_sound_delay", "0.0", FCVAR_CHEAT, "Delay before playing mission success music" );
 ConVar asw_fail_sound_delay( "asw_fail_sound_delay", "0.0", FCVAR_CHEAT, "Delay before playing mission fail music" );
 ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "1", FCVAR_NONE, "Show stats screen in singleplayer" );
@@ -55,6 +52,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pFailAdvice = new vgui::Label( this, "FailAdvice", "" );
 	m_pFailAdvice->SetMouseInputEnabled( false );
 	m_pIconForwardArrow = new vgui::ImagePanel( this, "IconForwardArrow" );
+	m_pIconForwardArrow->SetMouseInputEnabled( false );
 
 	m_PropertySheet = NULL;
 	m_bSetAlpha = false;
@@ -187,11 +185,11 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 MissionCompletePanel::~MissionCompletePanel()
 {
-	if (g_hBriefingTooltip.Get())
+	BriefingTooltip *pTooltip = g_hBriefingTooltip;
+	if ( pTooltip )
 	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip->SetVisible(false);
-		g_hBriefingTooltip = NULL;
+		pTooltip->SetVisible( false );
+		pTooltip->MarkForDeletion();
 	}
 }
 

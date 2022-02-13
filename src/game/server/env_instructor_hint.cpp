@@ -116,9 +116,9 @@ void CEnvInstructorHint::InputShowHint( inputdata_t &inputdata )
 		bool bFilterByActivator = m_bLocalPlayerOnly;
 
 #ifdef INFESTED_DLL
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( inputdata.pActivator );
-		if ( pMarine )
+		if ( inputdata.pActivator && inputdata.pActivator->Classify() == CLASS_ASW_MARINE )
 		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(inputdata.pActivator);
 			pActivator = pMarine->GetCommander();
 		}
 #else

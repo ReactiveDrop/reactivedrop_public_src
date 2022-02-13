@@ -924,7 +924,7 @@ public:
 			nJobs = nThreads;
 		}
 
-		if ( nJobs > 0 )
+		if ( nJobs > 1 )
 		{
 			CJob **jobs = (CJob **)stackalloc( nJobs * sizeof(CJob **) );
 			int i = nJobs;

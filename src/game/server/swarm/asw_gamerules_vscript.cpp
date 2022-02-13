@@ -489,6 +489,59 @@ const Vector &Script_GetHullMaxs( int hull )
 	return NAI_Hull::Maxs( hull );
 }
 
+HSCRIPT Script_FindNearestNPC( const Vector& vecOrigin, bool bCheckZ, float flRadius )
+{
+	float flNearest = FLT_MAX;
+	CAI_BaseNPC* pNearestNPC = NULL;
+
+	if ( flRadius > 23171 ) //ceil( sqrt(16384^2 + 16384^2) ) max reasonable radius due to hammer.
+		flRadius = -1;
+
+	CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
+	int nAIs = g_AI_Manager.NumAIs();
+
+	for (int i = 0; i < nAIs; i++)
+	{
+		CAI_BaseNPC* pNPC = ppAIs[i];
+
+		if ( pNPC->IsAlive() )
+		{
+			// Ignore hidden objects
+			if ( pNPC->IsEffectActive( EF_NODRAW ) )
+				continue;
+
+			//Ignore invisible objects
+			if ( pNPC->GetRenderMode() == kRenderNone )
+				continue;
+
+			// Don't bother with NPC's that are below me.
+			if ( bCheckZ && ( pNPC->EyePosition().z + 4.0f ) < vecOrigin.z )
+				continue;
+
+			// Disregard things that want to be disregarded
+			if ( pNPC->Classify() == CLASS_NONE )
+				continue;
+
+			// Disregard bullseyes
+			if ( pNPC->Classify() == CLASS_BULLSEYE )
+				continue;
+
+			// Ignore marines
+			if ( pNPC->Classify() == CLASS_ASW_MARINE || pNPC->Classify() == CLASS_ASW_COLONIST )
+				continue;
+
+			float flDist = ( vecOrigin - pNPC->GetAbsOrigin() ).LengthSqr();
+
+			if ( flDist < flNearest && ( flRadius < 0 || ( flRadius > 0 && flDist <= flRadius * flRadius ) ) )
+			{
+				flNearest = flDist;
+				pNearestNPC = pNPC;
+			}
+		}
+	}
+	return ToHScript( pNearestNPC );
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
@@ -508,4 +561,5 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_StartFire, "StartFire", "Starts a fire (position, duration, flags)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMins, "GetHullMins", "Returns a Vector for the hull mins (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMaxs, "GetHullMaxs", "Returns a Vector for the hull maxs (hullType)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_FindNearestNPC, "FindNearestNPC", "Find nearest NPC to position (position, ZcoordCheck, radius)" );
 }

@@ -450,7 +450,11 @@ void CLayoutSystem::BeginGeneration( CMapLayout *pMapLayout )
 
 	// Reset random generator
 	int nSeed;
+#if defined( _MSC_VER ) && ( _MSC_VER <= 1800 )
 	m_Random = CUniformRandomStream();
+#else
+	CUniformRandomStream m_Random = CUniformRandomStream();
+#endif
 	if ( m_nRandomSeed != 0 )
 	{
 		nSeed = m_nRandomSeed;

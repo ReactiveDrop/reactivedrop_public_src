@@ -64,12 +64,21 @@ IMPLEMENT_SERVERCLASS_ST(CRagdollProp, DT_Ragdoll)
 	SendPropInt(SENDINFO(m_nOverlaySequence), 11),
 END_SEND_TABLE()
 
+#if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
+#define PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS __pragma(warning(push)) __pragma(warning(disable:4838))
+#define PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS __pragma(warning(pop))
+#else
+#define PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
+#define PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
+#endif 
+
 #define DEFINE_RAGDOLL_ELEMENT( i ) \
 	DEFINE_FIELD( m_ragdoll.list[i].originParentSpace, FIELD_VECTOR ), \
 	DEFINE_PHYSPTR( m_ragdoll.list[i].pObject ), \
 	DEFINE_PHYSPTR( m_ragdoll.list[i].pConstraint ), \
 	DEFINE_FIELD( m_ragdoll.list[i].parentIndex, FIELD_INTEGER )
 
+PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
 BEGIN_DATADESC(CRagdollProp)
 //					m_ragdoll (custom handling)
 	DEFINE_AUTO_ARRAY	( m_ragdoll.boneIndex,	FIELD_INTEGER	),
@@ -150,7 +159,7 @@ BEGIN_DATADESC(CRagdollProp)
 	DEFINE_RAGDOLL_ELEMENT( 31 ),
 
 END_DATADESC()
-
+PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
 //-----------------------------------------------------------------------------
 // Disable auto fading under dx7 or when level fades are specified
 //-----------------------------------------------------------------------------
@@ -511,7 +520,7 @@ void CRagdollProp::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 				damage *= 10;
 			}
 
-			CBaseEntity *pHitEntity = pEvent->pEntities[!index];
+			pHitEntity = pEvent->pEntities[!index];
 			if ( !pHitEntity )
 			{
 				// hit world
@@ -528,7 +537,8 @@ void CRagdollProp::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 			}
 
 			// FIXME: this doesn't pass in who is responsible if some other entity "caused" this collision
-			PhysCallbackDamage( this, CTakeDamageInfo( pHitEntity, pHitEntity, damageForce, damagePos, damage, damageType ), *pEvent, index );
+			if (pHitEntity)
+				PhysCallbackDamage( this, CTakeDamageInfo( pHitEntity, pHitEntity, damageForce, damagePos, damage, damageType ), *pEvent, index );
 		}
 	}
 

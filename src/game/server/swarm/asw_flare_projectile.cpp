@@ -188,7 +188,7 @@ void CASW_Flare_Projectile::Spawn( void )
 
 unsigned int CASW_Flare_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_Flare_Projectile::FlareThink( void )
@@ -302,7 +302,7 @@ void CASW_Flare_Projectile::FlareTouch( CBaseEntity *pOther )
 
 		if ( rd_biomass_ignite_from_flares.GetBool() && pOther->Classify() == CLASS_ASW_ALIEN_GOO )
 		{
-			CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>( pOther );
+			CBaseAnimating *pAnim = pOther->GetBaseAnimating();
 			if ( pAnim )
 			{
 				pAnim->Ignite( 30.0f );
