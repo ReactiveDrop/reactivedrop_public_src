@@ -26,6 +26,7 @@
 
 // This file contains various debugging and cheat concommands
 
+ConVar rd_restart_mission_countdown("rd_restart_mission_countdown", "1", FCVAR_NONE, "If set to 0 there will be no 5 seconds countdown timer if leader chooses to restart mission");
 ConVar rd_allow_flashlight("rd_allow_flashlight", "0", FCVAR_CHEAT, "If set to 0 players cannot use asw_flashlight command");
 extern ConVar rd_allow_afk;
 
@@ -1825,7 +1826,7 @@ void asw_restart_mission_f()
 		return;
 	if (ASWGameRules())
 	{
-		if ( gpGlobals->maxClients > 1)
+		if ( gpGlobals->maxClients > 1 && rd_restart_mission_countdown.GetBool() )
 		{
 			ASWGameRules()->RestartMissionCountdown( pPlayer );
 		}
@@ -2020,6 +2021,24 @@ void asw_gimme_health_f(void)
 }
 
 static ConCommand asw_gimme_health("asw_gimme_health", asw_gimme_health_f, "Refills all marine health", FCVAR_CHEAT);
+
+void asw_gimme_33_f(void)
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
+
+	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	{
+		if (pGameResource->GetMarineResource(i) != NULL && pGameResource->GetMarineResource(i)->GetMarineEntity())
+		{
+			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			pMarine->SetHealth(33);
+		}
+	}
+}
+
+static ConCommand asw_gimme_33hp( "asw_gimme_33hp", asw_gimme_33_f, "Sets marine hp to 33", FCVAR_CHEAT );
 
 
 void SpawnBuzzerAboveMe( const CCommand &args )

@@ -1477,7 +1477,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (newInfo.GetDamageType() != DMG_CRUSH && newInfo.GetDamageType() != DMG_FALL
 				&& newInfo.GetDamageType() != DMG_INFEST && GetHealth() > 1)
 		{
-			if (newInfo.GetDamage() > GetHealth())
+			if (newInfo.GetDamage() >= GetHealth())
 				bKillProtection = true;
 		}
 	}

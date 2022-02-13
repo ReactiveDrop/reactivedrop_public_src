@@ -3652,6 +3652,11 @@ void CAlienSwarm::OnServerHibernating()
 		{
 			Shutdown();
 		}
+		// reset difficulty and challenge
+		asw_skill.SetValue( 2 );
+		SetSkillLevel( asw_skill.GetInt() );
+		EnableChallenge( "0" );
+
 		engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
 			"changelevel",
 			szMissionName,
@@ -4305,8 +4310,10 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		ClearHouse();
 
 	// freeze all the npcs, because Freeze(-1) doesn't work at all
-	// and Freeze(9999) makes NPCs look frozen we disable think function
+	// and Freeze(9999) makes NPCs look frozen we disable think function	
+	const bool bAllDead = ASWGameRules()->GetMissionManager()->AllMarinesDead();
 	CAI_BaseNPC *npc = gEntList.NextEntByClass( (CAI_BaseNPC *) NULL );
+	if ( !bAllDead )
 	while ( npc )
 	{
 		npc->SetThink( NULL );

@@ -289,8 +289,8 @@ void CNB_Mission_Panel::OnThink()
 
 	// reactivedrop: hide difficulty drop down for deathmatch
 	// and show game mode selection instead
-	m_drpDifficulty->SetVisible( !ASWDeathmatchMode() );
-	m_drpGameMode->SetVisible( ASWDeathmatchMode() );
+	m_drpDifficulty->SetVisible( ASWDeathmatchMode() == NULL );
+	m_drpGameMode->SetVisible( ASWDeathmatchMode() != NULL );
 
 	if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetGameState() != ASW_GS_INGAME )
 	{

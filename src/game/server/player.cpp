@@ -74,7 +74,7 @@
 #include "sendprop_priorities.h"
 #include "logic_playerproxy.h"
 #include "fogvolume.h"
-
+#include "util.h"
 
 
 #ifdef HL2_DLL
@@ -3599,6 +3599,7 @@ bool CBasePlayer::HasQueuedUsercmds( void ) const
 	return GetCommandContextCount() > 0;
 }
 
+ConVar sv_max_usercmd_future_ticks( "sv_max_usercmd_future_ticks", "8", 0, "Prevents clients from running usercmds too far in the future. Prevents speed hacks." );
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *ucmd - 
@@ -3606,6 +3607,16 @@ bool CBasePlayer::HasQueuedUsercmds( void ) const
 //-----------------------------------------------------------------------------
 void CBasePlayer::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 {
+	// don't run commands in the future
+	if ( !IsEngineThreaded() && ( ucmd->tick_count > ( gpGlobals->tickcount + sv_max_usercmd_future_ticks.GetInt() ) ) )
+	{
+		//Msg( "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
+		//char text[256];
+		//Q_snprintf( text, sizeof( text ), "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
+		//UTIL_ClientPrintAll( 5, text );
+		return;
+	}
+
 	m_touchedPhysObject = false;
 
 	if ( pl.fixangle == FIXANGLE_NONE)

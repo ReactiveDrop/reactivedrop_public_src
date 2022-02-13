@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "asw_shareddefs.h"
 #include <vgui/VGUI.h>
 #include <vgui_controls/Panel.h>
 #include <vgui/IImage.h>
@@ -37,12 +38,14 @@ public:
 	void SetMapPanel(ObjectiveMap* pMap) { m_pMapPanel = pMap; }
 	void SetIcons(ObjectiveIcons* pIcons) { m_pObjectiveIcons = pIcons; }
 
-	ObjectiveTitlePanel* m_pTitlePanel[12];
+	ObjectiveTitlePanel* m_pTitlePanel[ASW_MAX_OBJECTIVES];
 	ObjectiveTitlePanel* m_pSelectedTitle;
 	ObjectiveDetailsPanel* m_pDetailsPanel;
 	ObjectiveMap* m_pMapPanel;
 	ObjectiveIcons* m_pObjectiveIcons;
 	int m_iNumTitlePanels;
+	int m_iLastSelectedPanel;
+	float m_fLastPanelOffset;
 };
 
 #endif // _INCLUDED_OBJECTIVE_LISTBOX_H
