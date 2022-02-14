@@ -36,6 +36,8 @@ public:
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
 	
+	virtual void ItemPostFrame();
+	
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone;
@@ -52,6 +54,8 @@ public:
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return true; }
+	
+	void 	Preview();
 
 	float	m_flSoonestPrimaryAttack;
 
