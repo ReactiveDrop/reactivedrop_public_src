@@ -3386,6 +3386,12 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 
 	case TASK_FACE_ENEMY:
 		{
+			if ( IsMovementFrozen() )
+			{
+				TaskFail( FAIL_FROZEN );
+				break;
+			}
+
 			// If the yaw is locked, this function will not act correctly
 			Assert( GetMotor()->IsYawLocked() == false );
 
