@@ -177,6 +177,7 @@ void CASW_Weapon_Grenade_Launcher::ItemPostFrame( void )
 
 void CASW_Weapon_Grenade_Launcher::Preview()
 {
+#ifdef CLIENT_DLL
 	if ( !rd_grenade_launcher_grenade_preview.GetBool() )
 		return;
 
@@ -192,4 +193,5 @@ void CASW_Weapon_Grenade_Launcher::Preview()
 		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecThrowVelocity, asw_grenade_launcher_gravity.GetFloat(), -Vector(4, 4, 4), Vector(4, 4, 4), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine, true );
 		debugoverlay->AddBoxOverlay( vecEndPos, Vector(-1, -1, -1), Vector(1, 1, 1), QAngle(0, 0, 0), 255, 0, 0, 127, 0.1f );
 	}
+#endif
 }
