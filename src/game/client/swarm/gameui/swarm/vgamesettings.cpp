@@ -223,8 +223,21 @@ void GameSettings::Activate()
 		m_drpDifficulty->SetCurrentSelection( CFmtStr( "#L4D360UI_Difficulty_%s",
 			m_pSettings->GetString( "game/difficulty", "normal" ) ) );
 
-		if ( FlyoutMenu* flyout = m_drpDifficulty->GetCurrentFlyout() )
+		if ( FlyoutMenu *flyout = m_drpDifficulty->GetCurrentFlyout() )
+		{
 			flyout->CloseMenu( NULL );
+
+			if ( !UTIL_ASW_CommanderLevelAtLeast( NULL, 30 ) )
+			{
+				// beginner commanders can't create a lobby with insane or brutal difficulty but can change an existing one to those skill levels.
+				vgui::Panel *pInsane = flyout->FindChildByName( "BtnImpossible", true );
+				if ( pInsane )
+					pInsane->SetEnabled( false );
+				vgui::Panel *pBrutal = flyout->FindChildByName( "BtnImba", true );
+				if ( pBrutal )
+					pBrutal->SetEnabled( false );
+			}
+		}
 	}
 
 	if ( m_drpFriendlyFire )
