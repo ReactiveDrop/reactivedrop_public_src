@@ -88,7 +88,7 @@ ConVar asw_skill_hacking_speed_step("asw_skill_hacking_speed_step", "0.1", FCVAR
 ConVar asw_skill_scanner_step("asw_skill_scanner_step", "150", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_welding_step("asw_skill_engineering_welding_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_sentry_step("asw_skill_engineering_sentry_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_firerate_step("asw_skill_engineering_firerate_step", "0.01", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_firerate_step("asw_skill_engineering_firerate_step", "0.005", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_step("asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step("asw_skill_grenades_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );

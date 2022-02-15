@@ -22,7 +22,7 @@
 
 #define MEDKIT_HEAL_AMOUNT 50
 
-ConVar rd_medkit_overheal("rd_medkit_overheal", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "If marine health is at max level medkit is used for additional small health boost");
+ConVar rd_medkit_overheal("rd_medkit_overheal", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If marine health is at max level medkit is used for additional small health boost");
 ConVar rd_medkit_overheal_divider("rd_medkit_overheal_divider", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Divider for medkit overhealth amount from base healing value. Bigger divider lesser health it adds");
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Medkit, DT_ASW_Weapon_Medkit )
