@@ -22,7 +22,7 @@
 
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
-#include "asw_medal_store.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -624,18 +624,8 @@ void FoundPublicGames::Activate()
 	if ( Panel *pLabelX = FindChildByName( "LblPressX" ) )
 		pLabelX->SetVisible( CanCreateGame() );
 
-	bool bPlayerIsNew = false;
-	if ( GetMedalStore() )
-	{
-		if ( !GetMedalStore()->GetPromotion() )
-		{
-			int nXp = GetMedalStore()->GetExperience();
-			// players below level 30 are considered new
-			if ( nXp < 51750 )
-				bPlayerIsNew = true;
-		}
-	}
-	bool bShowHardcoreDifficulties = !bPlayerIsNew;	// used to hide Insane, Brutal and any challenges
+	// players below level 30 are considered new
+	bool bShowHardcoreDifficulties = UTIL_ASW_CommanderLevelAtLeast( NULL, 30 ); // used to hide Insane, Brutal and any challenges
 
 	if ( m_drpDifficulty )
 	{

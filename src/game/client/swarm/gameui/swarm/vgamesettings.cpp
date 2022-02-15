@@ -38,7 +38,7 @@
 #include "rd_challenges_shared.h"
 #include "rd_challenge_selection.h"
 
-#include "asw_medal_store.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -193,18 +193,8 @@ void GameSettings::Activate()
 
 	//bool showGameAccess = !Q_stricmp( "create", m_pSettings->GetString( "options/action", "" ) ) &&
 							//!IsEditingExistingLobby();
-	bool bPlayerIsNew = false;
-	if ( GetMedalStore() )
-	{
-		if ( !GetMedalStore()->GetPromotion() )
-		{
-			int nXp = GetMedalStore()->GetExperience();
-			// players below level 30 are considered new
-			if ( nXp < 51750 )
-				bPlayerIsNew = true;
-		}
-	}
-	bool bShowNumSlots = !bPlayerIsNew;
+	// players below level 30 are considered new
+	bool bShowNumSlots = UTIL_ASW_CommanderLevelAtLeast( NULL, 30 );
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );

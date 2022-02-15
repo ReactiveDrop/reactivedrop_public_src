@@ -50,6 +50,7 @@
 	#include "engine/IVDebugOverlay.h"
 	#include "c_user_message_register.h"
 	#include "prediction.h"
+	#include "asw_medal_store.h"
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Game_Resource C_ASW_Game_Resource
 	#define CASW_Marine_Resource C_ASW_Marine_Resource
@@ -65,6 +66,9 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+ConVar rd_override_commander_promotion( "rd_override_commander_promotion", "-1", FCVAR_REPLICATED );
+ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_REPLICATED );
 
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
@@ -1424,4 +1428,47 @@ Vector UTIL_Check_Throw( const Vector &vecSrc, const Vector &vecThrowVelocity, f
 	}
 
 	return vecPos;
+}
+
+bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion )
+{
+	int iActualPromotion, iExperience;
+
+	if ( !pPlayer )
+	{
+#ifdef CLIENT_DLL
+		C_ASW_Medal_Store *pMedals = GetMedalStore();
+		if ( pMedals )
+		{
+			iActualPromotion = pMedals->GetPromotion();
+			iExperience = pMedals->GetExperience();
+		}
+		else
+#endif
+		{
+			return false;
+		}
+	}
+	else
+	{
+		iActualPromotion = pPlayer->GetPromotion();
+		iExperience = pPlayer->GetExperience();
+	}
+
+	int iActualLevel = LevelFromXP( iExperience, iActualPromotion );
+	if ( rd_override_commander_promotion.GetInt() >= 0 )
+	{
+		iActualPromotion = rd_override_commander_promotion.GetInt();
+	}
+	if ( rd_override_commander_level.GetInt() >= 0 )
+	{
+		iActualLevel = rd_override_commander_level.GetInt();
+	}
+
+	if ( iPromotion != iActualPromotion )
+	{
+		return iPromotion < iActualPromotion;
+	}
+
+	return iLevel <= iActualLevel;
 }

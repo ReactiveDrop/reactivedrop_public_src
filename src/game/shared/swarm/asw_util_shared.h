@@ -109,4 +109,11 @@ public:
 
 bool ASW_IsSecurityCam(CPointCamera *pCameraEnt);
 
+#ifdef CLIENT_DLL
+class C_ASW_Player;
+bool UTIL_ASW_CommanderLevelAtLeast( C_ASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
+#else
+bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
+#endif
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H
