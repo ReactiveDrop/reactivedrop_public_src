@@ -2285,6 +2285,8 @@ void CASW_Alien::SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseE
 	m_vecAlienOrderSpot = vecOrderSpot;	// unused currently
 	m_AlienOrderObject = pOrderObject;
 
+	Wake(); // Make sure we at least consider following the orders.
+
 	if (Orders == AOT_None)
 	{
 		ClearAlienOrders();
