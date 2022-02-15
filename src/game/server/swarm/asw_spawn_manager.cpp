@@ -425,7 +425,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 			Vector vecSpawnPos = pNode->GetPosition( pNPC->m_pAlienClass->m_nHullType ) + Vector( 0, 0, 23 );
 			if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
 			{
-				if ( SpawnAlienAt( pNPC, vecSpawnPos, vec3_angle, true ) )
+				if ( SpawnAlienAt( pNPC, vecSpawnPos, QAngle( 0, 0, RandomFloat( 0.0f, 360.0f ) ), true) )
 				{
 					if ( asw_director_debug.GetBool() )
 					{
