@@ -27,7 +27,7 @@ WeaponData
 				
 	// asw properties
 	////// *** These numbers are just for show in the loadout page - they aren't used by the weapon	
-	"base_damage"			"40"
+	"base_damage"			"60"
 	"fire_rate"				"1.75"
 	"display_clip_size"		"25"
 	"display_reload_time"	"0"
