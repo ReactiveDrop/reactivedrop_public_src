@@ -3879,12 +3879,19 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES);
 		}
 	}
-	if ( !stricmp(szWeaponClass, "asw_weapon_heal_gun") ||
-		 !stricmp(szWeaponClass, "asw_weapon_healamp_gun"))
+	if ( !stricmp(szWeaponClass, "asw_weapon_heal_gun") )
 	{
 		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
 		{
 			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES);
+		}
+	}
+	if (!stricmp(szWeaponClass, "asw_weapon_healamp_gun"))
+	{
+		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
+		{
+			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALAMP_GUN_CHARGES );
+			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES );
 		}
 	}
 	if ( !stricmp(szWeaponClass, "asw_weapon_flares") ||

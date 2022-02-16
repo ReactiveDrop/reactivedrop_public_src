@@ -10,11 +10,11 @@ WeaponData
 	"bucket"			"0"
 	"bucket_position"		"1"
 
-	"clip_size"			"100"
-	"default_clip"			"100"
+	"clip_size"			"50"
+	"default_clip"			"50"
 
-	"clip2_size"			"5"
-	"default_clip2"			"2"
+	"clip2_size"			"100"
+	"default_clip2"			"100"
 
 	"primary_ammo"			"ASW_MEDSAT"
 	"secondary_ammo"		"ASW_MEDSELF"
@@ -39,6 +39,7 @@ WeaponData
 	
 	// which ammo elements this weapon should display on the hud
 	"ShowBulletsOnHUD"      "2"
+	"ShowSecondaryBulletsOnHUD" "1"
 	"ShowClipsOnHUD"      "0"
 	"ShowGrenadesOnHUD"      "0"
 
