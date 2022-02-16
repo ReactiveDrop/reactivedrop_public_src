@@ -79,7 +79,7 @@ public:
 
 	virtual void DrawDebugGeometryOverlays();	// visualise the autoaim radius
 
-private:
+protected:
 	EHANDLE m_hTouchTrigger;
 	// Entities currently being touched by this trigger
 	CUtlVector< EHANDLE >	m_hTouchingEntities;
