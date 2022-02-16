@@ -1247,18 +1247,12 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			}
 		}
 
-		// reactivedrop: add protection agains too high damage in one blow
-		if (GetHealth() > 1 && damage > m_iHealth)
-		{
-			damage = m_iHealth - 1;
-		}
-				
 		newInfo.SetDamage(damage);
 
 		CheckForDoorShootChatter(newInfo);
 		
 		// do the damage
-		m_iHealth -= damage;				
+		m_iHealth -= damage;
 
 		//Msg("Door health now %d (%d) seq %d frame %f DoorOpen=%d DoorOpening=%d DoorClosed=%d DoorClosing=%d\n",
 			//m_iHealth, (int) m_DentAmount, GetSequence(), GetCycle(),
