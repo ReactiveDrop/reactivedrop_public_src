@@ -74,7 +74,7 @@ CASW_HealGrenade_Projectile::CASW_HealGrenade_Projectile()
 {
 	SetModelName( MAKE_STRING( HEALGREN_MODEL ) );
 
-	m_flHealPerSecond = 3.0f;
+	m_flHealPerSecond = 4.0f;
 	m_flHealAmountLeft = 0.0f;
 	m_nSkin = 2;
 }
