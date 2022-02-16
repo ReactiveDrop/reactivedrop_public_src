@@ -20,7 +20,7 @@ class CASW_Laser_Mine : public CBaseCombatCharacter, public IEntityListener
 public:
 	void				Spawn( void );
 	void				Precache( void );
-	unsigned int		PhysicsSolidMaskForEntity() const { return MASK_NPCSOLID; }
+	unsigned int		PhysicsSolidMaskForEntity() const { return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP); }
 	static CASW_Laser_Mine* ASW_Laser_Mine_Create( const Vector &position, const QAngle &angles, const QAngle &angLaserAim, CBaseEntity *pOwner, CBaseEntity *pMoveParent, bool bFriendly, CBaseEntity *pCreatorWeapon );
 	void				LaserThink( void );
 
