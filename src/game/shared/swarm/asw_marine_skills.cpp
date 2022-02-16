@@ -31,7 +31,7 @@ ConVar asw_skill_healing_charges_base("asw_skill_healing_charges_base", "4", FCV
 ConVar asw_skill_self_healing_charges_base("asw_skill_self_healing_charges_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_medkit_hps_base("asw_skill_healing_medkit_hps_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_base("asw_skill_healing_hps_base", "25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_base("asw_skill_healing_grenade_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_grenade_base("asw_skill_healing_grenade_base", "120", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_charges_base("asw_skill_healing_gun_charges_base", "40", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_base("asw_skill_healing_gun_base", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_xenowounds_base("asw_skill_xenowounds_base", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -77,7 +77,7 @@ ConVar asw_skill_piercing_step("asw_skill_piercing_step", "0.20", FCVAR_REPLICAT
 ConVar asw_skill_healing_charges_step("asw_skill_healing_charges_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_self_healing_charges_step("asw_skill_self_healing_charges_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_step("asw_skill_healing_hps_step", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_step("asw_skill_healing_grenade_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_grenade_step("asw_skill_healing_grenade_step", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_charges_step("asw_skill_healing_gun_charges_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_step("asw_skill_healing_gun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_medkit_hps_step("asw_skill_healing_medkit_hps_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
