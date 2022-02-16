@@ -19,7 +19,7 @@ class CASW_T75 : public CBaseCombatCharacter, public IASW_Server_Usable_Entity
 public:
 	void				Spawn( void );
 	void				Precache( void );
-	unsigned int		PhysicsSolidMaskForEntity() const { return MASK_NPCSOLID; }
+	unsigned int		PhysicsSolidMaskForEntity() const { return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP); }
 	static CASW_T75* ASW_T75_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon = NULL );	
 	void				TouchT75( CBaseEntity *pOther );
 	Class_T				Classify( void ) { return (Class_T) CLASS_ASW_T75_PROJECTILE; }
