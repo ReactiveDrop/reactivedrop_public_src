@@ -888,17 +888,18 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 	{
 		engine->ClientCmd("exec newmapsettings\n");
 
-		if (asw_tree_sway_enabled.GetBool())
+		if ( asw_tree_sway_enabled.GetBool() )
 		{
-			int WindDir = random->RandomInt(8, 24);
-			bool Swap = random->RandomInt(0, 1);
-			if (!Swap)
-				engine->ClientCmd(VarArgs("cl_tree_sway_dir %d %d", WindDir, -WindDir));
+			int iWindDir = random->RandomInt( 8, 24 );
+			if ( !random->RandomInt( 0, 1 ) )
+				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", iWindDir, -iWindDir ) );
 			else
-				engine->ClientCmd(VarArgs("cl_tree_sway_dir %d %d", -WindDir, WindDir));
+				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", -iWindDir, iWindDir ) );
 		}
 		else
-			engine->ClientCmd("cl_tree_sway_dir 0 0");
+		{
+			engine->ClientCmd( "cl_tree_sway_dir 0 0" );
+		}
 
 		// BenLubar: Support configloader config files from that one HUD mod: https://steamcommunity.com/app/630/discussions/0/522728268792383118/
 		engine->ClientCmd_Unrestricted( VarArgs( "execifexists configloader/maps/%s\n", engine->GetLevelNameShort() ) );

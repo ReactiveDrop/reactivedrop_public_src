@@ -554,8 +554,8 @@ void CASW_Player::PostThink()
 		m_fLastControlledMarineTime = gpGlobals->curtime;
 	}
 
-	m_bLastAttackButton = (m_nButtons & IN_ATTACK);
-	m_bLastAttack2Button= (m_nButtons & IN_ALT1);
+	m_bLastAttackButton = (m_nButtons & IN_ATTACK) != 0;
+	m_bLastAttack2Button= (m_nButtons & IN_ALT1) != 0;
 
 	RagdollBlendTest();
 

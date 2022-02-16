@@ -668,7 +668,7 @@ bool CTraceFilterAliensEggsGoo::ShouldHitEntity( IHandleEntity *pServerEntity, i
 #ifndef CLIENT_DLL
 		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
 		if ( pEntity->Classify() == CLASS_ASW_MARINE )		// we dont hit marines in coop
-			return ASWDeathmatchMode();						// but hit them for deathmatch
+			return ASWDeathmatchMode() != NULL;				// but hit them for deathmatch
 
 		if ( IsAlienClass( pEntity->Classify() ) )
 			return true;

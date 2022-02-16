@@ -217,11 +217,9 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 			{
 				m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v1.m_iSquadSize - 1 ) );
 			}
-			// TODO: uint64 m_iTimestamp;
-			wchar_t wszCountry[3];
+			wchar_t wszCountry[3] = { 0 };
 			wszCountry[0] = entry.details.v1.m_CountryCode[0];
 			wszCountry[1] = entry.details.v1.m_CountryCode[1];
-			wszCountry[2] = 0;
 			m_lblCountry->SetText( wszCountry );
 			switch ( entry.details.v1.m_iDifficulty )
 			{
@@ -241,8 +239,8 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
 				break;
 			}
-			m_lblOnslaught->SetVisible( entry.details.v1.m_iModeFlags & 1 );
-			m_lblHardcoreFF->SetVisible( entry.details.v1.m_iModeFlags & 2 );
+			m_lblOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
+			m_lblHardcoreFF->SetVisible( ( entry.details.v1.m_iModeFlags & 2 ) != 0 );
 		}
 		break;
 
@@ -277,11 +275,9 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 			{
 				m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v2.m_iSquadSize - 1 ) );
 			}
-			// TODO: uint64 m_iTimestamp;
-			wchar_t wszCountry[3];
+			wchar_t wszCountry[3] = { 0 };
 			wszCountry[0] = entry.details.v2.m_CountryCode[0];
 			wszCountry[1] = entry.details.v2.m_CountryCode[1];
-			wszCountry[2] = 0;
 			m_lblCountry->SetText( wszCountry );
 			switch ( entry.details.v2.m_iDifficulty )
 			{
@@ -301,8 +297,8 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
 				break;
 			}
-			m_lblOnslaught->SetVisible( entry.details.v2.m_iModeFlags & 1 );
-			m_lblHardcoreFF->SetVisible( entry.details.v2.m_iModeFlags & 2 );
+			m_lblOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
+			m_lblHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
 		}
 		break;
 	}
