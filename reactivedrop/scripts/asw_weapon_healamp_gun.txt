@@ -1,0 +1,62 @@
+// Reactive Drop Heal + Amplifier Gun
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_healampgun"
+	"viewmodel"			"Models/weapons/healgun/healgun.mdl"
+	"playermodel"			"Models/weapons/healgun/healgun.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"1"
+
+	"clip_size"			"100"
+	"default_clip"			"100"
+
+	"clip2_size"			"5"
+	"default_clip2"			"2"
+
+	"primary_ammo"			"ASW_MEDSAT"
+	"secondary_ammo"		"ASW_MEDSELF"
+
+	"weight"				"5"
+	"item_flags"			"0"
+				
+	// asw properties
+	"reload_time"			"2.2"
+	"fire_rate"				"0.33"
+	"equipicon"				"swarm/EquipIcons/EquipHealGun"
+	"equiplongname"			"#asw_weaponl_healampgun"
+	"RequiresFirstAid"		"1"
+	"ShowCharges"			"1"
+	"equipdescription1"		"#asw_wdesc_healampgun"
+	"attributestext"		"#asw_weapon_healampgun_attributes"
+	"Unique"			"1"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "2"
+	"ShowClipsOnHUD"      "0"
+	"ShowGrenadesOnHUD"      "0"
+
+	"ShowMultiplayerHotkey"	"1"
+	"SquadEmote"	"0"
+	"HUDPlayerActivate"	"1"
+	
+	"HUDIconOffsetX" "-10"
+	"HUDNumberOffsetX" "56"
+	"HUDNumberOffsetY" "10"
+
+// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"	//switch weapon
+
+		"single_shot"		"ASW_Medkit.Use"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Medkit.Use"		// sound for other marines
+	}
+}
