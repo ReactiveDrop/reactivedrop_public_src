@@ -1334,8 +1334,7 @@ void CASW_Drone_Advanced::Event_Killed( const CTakeDamageInfo &info )
 			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_P"))
 			newInfo.ScaleDamageForce(22.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_PDW")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG_G"))
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG"))
 			newInfo.ScaleDamageForce(30.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_ASG"))
 			newInfo.ScaleDamageForce(35.0f);
