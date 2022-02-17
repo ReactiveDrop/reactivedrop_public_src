@@ -228,20 +228,25 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 
 #endif
 
-    if ( false == rd_medgun_infinite_ammo.GetBool() )
-    {
-	    // decrement ammo
+	if ( !rd_medgun_infinite_ammo.GetBool() )
+	{
+		// decrement ammo
 		if ( m_bIsBuffing )
 			m_iClip2--;
 		else
 			m_iClip1--;
-    }
+
+#ifdef GAME_DLL
+		DestroyIfEmpty( true, true );
+#endif
+	}
+
 
 	// emit heal sound
 	StartHealSound();
 
 #ifdef GAME_DLL
-	if ( m_bIsBuffing )
+	if ( !m_bIsBuffing )
 	{
 		bool bHealingSelf = ( pMarine == pTarget );
 		bool bInfested = pTarget->IsInfested();
@@ -265,16 +270,12 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 			ASWFailAdvice()->OnMedSatchelEmpty();
 
 			pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
-
-			if ( DestroyIfEmpty( true ) )
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR )
 			{
-				CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-				if ( pMR )
-				{
-					char szName[256];
-					pMR->GetDisplayName( szName, sizeof( szName ) );
-					UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
-				}
+				char szName[256];
+				pMR->GetDisplayName( szName, sizeof( szName ) );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
 			}
 
 			bSkipChatter = true;
