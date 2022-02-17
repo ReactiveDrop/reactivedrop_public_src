@@ -763,7 +763,7 @@ public:
 	int GetForcedActionRequest() { return m_iForcedActionRequest.Get(); }
 	void ClearForcedActionRequest() { m_iForcedActionRequest = 0; }
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)
-	void RequestForcedAction( int iForcedAction ) { m_iForcedActionRequest = iForcedAction; }
+	void RequestForcedAction( int iForcedAction );
 	CNetworkVar( int, m_iForcedActionRequest );
 
 	void SetNextStumbleTime( float flStumbleTime ) { m_flNextStumbleTime = flStumbleTime; }

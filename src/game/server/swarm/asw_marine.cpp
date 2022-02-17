@@ -5434,13 +5434,13 @@ void CASW_Marine::Stumble( CBaseEntity *pSource, const Vector &vecStumbleDir, bo
 	float yawDelta = AngleNormalize( GetAbsAngles()[YAW] - staggerAngles[YAW] );
 
 	if ( yawDelta <= 45 && yawDelta >= -45 )
-		m_iForcedActionRequest = bShort ? FORCED_ACTION_STUMBLE_SHORT_FORWARD : FORCED_ACTION_STUMBLE_FORWARD;
+		RequestForcedAction( bShort ? FORCED_ACTION_STUMBLE_SHORT_FORWARD : FORCED_ACTION_STUMBLE_FORWARD );
 	else if ( yawDelta > 45 && yawDelta < 135 )
-		m_iForcedActionRequest = bShort ? FORCED_ACTION_STUMBLE_SHORT_RIGHT : FORCED_ACTION_STUMBLE_RIGHT;
+		RequestForcedAction( bShort ? FORCED_ACTION_STUMBLE_SHORT_RIGHT : FORCED_ACTION_STUMBLE_RIGHT );
 	else if ( yawDelta < -45 && yawDelta > -135 )
-		m_iForcedActionRequest = bShort ? FORCED_ACTION_STUMBLE_SHORT_LEFT : FORCED_ACTION_STUMBLE_LEFT;
+		RequestForcedAction( bShort ? FORCED_ACTION_STUMBLE_SHORT_LEFT : FORCED_ACTION_STUMBLE_LEFT );
 	else
-		m_iForcedActionRequest = bShort ? FORCED_ACTION_STUMBLE_SHORT_BACKWARD : FORCED_ACTION_STUMBLE_BACKWARD;
+		RequestForcedAction( bShort ? FORCED_ACTION_STUMBLE_SHORT_BACKWARD : FORCED_ACTION_STUMBLE_BACKWARD );
 
 	SetNextStumbleTime( gpGlobals->curtime + asw_stumble_interval.GetFloat() );
 }
@@ -5464,9 +5464,9 @@ void CASW_Marine::Knockdown( CBaseEntity *pSource, const Vector &vecImpulse, boo
 	//Msg( "yawDelta = %f marine angles = %f staggerangles = %f\n", yawDelta, GetAbsAngles()[YAW], staggerAngles[YAW] );
 
 	if ( yawDelta <= 90 && yawDelta >= -90 )
-		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_FORWARD;
+		RequestForcedAction( FORCED_ACTION_KNOCKDOWN_FORWARD );
 	else
-		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_BACKWARD;
+		RequestForcedAction( FORCED_ACTION_KNOCKDOWN_BACKWARD );
 
 	ApplyAbsVelocityImpulse( vecImpulse );
 	
@@ -5487,15 +5487,25 @@ void CASW_Marine::ScriptKnockdown( const Vector &vecImpulse )
 	float yawDelta = AngleNormalize( GetAbsAngles()[YAW] - staggerAngles[YAW] );
 
 	if ( yawDelta <= 90 && yawDelta >= -90 )
-		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_FORWARD;
+		RequestForcedAction( FORCED_ACTION_KNOCKDOWN_FORWARD );
 	else
-		m_iForcedActionRequest = FORCED_ACTION_KNOCKDOWN_BACKWARD;
+		RequestForcedAction( FORCED_ACTION_KNOCKDOWN_BACKWARD );
 
 	ApplyAbsVelocityImpulse( vecImpulse );
 	
 	m_flKnockdownYaw = UTIL_VecToYaw( vecKnockdownDir );
 
 	SetNextStumbleTime( gpGlobals->curtime + asw_knockdown_interval.GetFloat() );
+}
+
+void CASW_Marine::RequestForcedAction( int iForcedAction )
+{
+	m_iForcedActionRequest = iForcedAction;
+
+	if ( !IsInhabited() )
+	{
+		TaskFail( "forced action" );
+	}
 }
 
 void CASW_Marine::ModifyOrAppendCriteria( AI_CriteriaSet& set )
