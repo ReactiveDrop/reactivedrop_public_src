@@ -107,6 +107,12 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 		return;
 	}
 
+	if ( m_flNextPrimaryAttack > gpGlobals->curtime )
+	{
+		// Don't update shot timers if we're not able to shoot.
+		return;
+	}
+
 	CASW_Player *pPlayer = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
 
@@ -135,129 +141,74 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 		}
 #endif
 
-		//	if (asw_pistol_hitscan.GetBool())
-		if (true)
+		FireBulletsInfo_t info;
+		info.m_vecSrc = pMarine->Weapon_ShootPosition( );
+		if ( pPlayer && pMarine->IsInhabited() )
 		{
-			FireBulletsInfo_t info;
-			info.m_vecSrc = pMarine->Weapon_ShootPosition( );
-			if ( pPlayer && pMarine->IsInhabited() )
-			{
-				info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
-			}
-			else
-			{
-#ifdef CLIENT_DLL
-				Msg("Error, clientside firing of a weapon that's being controlled by an AI marine\n");
-#else
-				info.m_vecDirShooting = pMarine->GetActualShootTrajectory( info.m_vecSrc );
-#endif
-			}
-			
-			info.m_iShots = 1;			
-
-			// Make sure we don't fire more than the amount in the clip
-			if ( UsesClipsForAmmo1() )
-			{
-				info.m_iShots = MIN( info.m_iShots, m_iClip1 );
-				m_iClip1 -= info.m_iShots;
-#ifdef GAME_DLL
-				if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
-				{
-					// check he doesn't have ammo in an ammo bay
-					CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-
-					if (!pAmmoBag)
-					{
-						pWeapon = pMarine->GetASWWeapon(1);
-						if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-							pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-					}
-					if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-						pMarine->OnWeaponOutOfAmmo(true);
-				}
-#endif
-			}
-			else
-			{
-				info.m_iShots = MIN( info.m_iShots, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-				pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );
-			}
-
-			info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
-			info.m_iAmmoType = m_iPrimaryAmmoType;
-			info.m_iTracerFreq = 1;
-			info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
-		
-			info.m_vecSpread = GetBulletSpread();
-			info.m_flDamage = GetWeaponDamage();
-#ifndef CLIENT_DLL
-			if (asw_debug_marine_damage.GetBool())
-				Msg("Weapon dmg = %f\n", info.m_flDamage);
-			info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
-#endif
-
-			FireBullets(pMarine, &info);
-
-			//FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType );
-			//info.m_pAttacker = pMarine;
-
-			// Fire the bullets, and force the first shot to be perfectly accuracy
-			//pMarine->FireBullets( info );
+			info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
 		}
-		else	// projectile pistol
+		else
 		{
-		
-#ifndef CLIENT_DLL
-			Vector vecSrc = pMarine->Weapon_ShootPosition( );
-			Vector vecAiming = vec3_origin;
-			if ( pPlayer && pMarine->IsInhabited() )
-			{
-				vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
-			}
-			else
-			{
-				vecAiming = pMarine->GetActualShootTrajectory( vecSrc );
-			}
+#ifdef CLIENT_DLL
+			Msg("Error, clientside firing of a weapon that's being controlled by an AI marine\n");
+#else
+			info.m_vecDirShooting = pMarine->GetActualShootTrajectory( info.m_vecSrc );
+#endif
+		}
 
-			CShotManipulator Manipulator( vecAiming );
-			AngularImpulse rotSpeed(0,0,720);
-					
-			Vector newVel = Manipulator.ApplySpread(GetBulletSpread());
-			if ( pMarine->GetWaterLevel() == 3 )
-				newVel *= PELLET_WATER_VELOCITY;
-			else
-				newVel *= PELLET_AIR_VELOCITY;
-			newVel *= (1.0 + (0.1 * random->RandomFloat(-1,1)));
-			CASW_Shotgun_Pellet::Shotgun_Pellet_Create( vecSrc, QAngle(0,0,0),
-					newVel, rotSpeed, pMarine, GetWeaponDamage() );
+		info.m_iShots = 1;
 
-			// decrement ammo
-			m_iClip1 -= 1;
+		// Make sure we don't fire more than the amount in the clip
+		if ( UsesClipsForAmmo1() )
+		{
+			info.m_iShots = MIN( info.m_iShots, m_iClip1 );
+			m_iClip1 -= info.m_iShots;
+#ifdef GAME_DLL
 			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 			{
 				// check he doesn't have ammo in an ammo bay
 				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-				if (pMarine->GetASWWeapon(0) && pMarine->GetASWWeapon(0)->Classify() == CLASS_ASW_AMMO_BAG)
-				{
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
-				}
+				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
 
 				if (!pAmmoBag)
 				{
-					if (pMarine->GetASWWeapon(1) && pMarine->GetASWWeapon(1)->Classify() == CLASS_ASW_AMMO_BAG)
-					{
-						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-					}
+					pWeapon = pMarine->GetASWWeapon(1);
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
 				}
-
-				if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 					pMarine->OnWeaponOutOfAmmo(true);
 			}
 #endif
 		}
+		else
+		{
+			info.m_iShots = MIN( info.m_iShots, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
+			pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );
+		}
+
+		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
+		info.m_iAmmoType = m_iPrimaryAmmoType;
+		info.m_iTracerFreq = 1;
+		info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
+		
+		info.m_vecSpread = GetBulletSpread();
+		info.m_flDamage = GetWeaponDamage();
+#ifndef CLIENT_DLL
+		if (asw_debug_marine_damage.GetBool())
+			Msg("Weapon dmg = %f\n", info.m_flDamage);
+		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+#endif
+
+		FireBullets(pMarine, &info);
+
+		//FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType );
+		//info.m_pAttacker = pMarine;
+
+		// Fire the bullets, and force the first shot to be perfectly accuracy
+		//pMarine->FireBullets( info );
 
 		// increment shooting stats
 #ifndef CLIENT_DLL
@@ -266,7 +217,7 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 			pMarine->GetMarineResource()->UsedWeapon(this, 1);
 			pMarine->OnWeaponFired( this, 1 );
 		}
-#endif		
+#endif
 	}
 	
 	if (m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
