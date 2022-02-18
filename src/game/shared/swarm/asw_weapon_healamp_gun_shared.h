@@ -23,6 +23,7 @@ public:
 	virtual void	SecondaryAttack();
 
 	virtual Class_T		Classify( void ) { return (Class_T)CLASS_ASW_HEALAMP_GUN; }
+	virtual bool		SecondaryAttackUsesPrimaryAmmo() { return false; }
 
 	#ifdef CLIENT_DLL
 	virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
