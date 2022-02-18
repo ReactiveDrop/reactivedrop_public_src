@@ -545,7 +545,6 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_scanner_objects_enumerator.cpp" />
     <ClCompile Include="..\shared\swarm\asw_shareddefs.cpp" />
     <ClCompile Include="..\shared\swarm\asw_shieldbug_shared.cpp" />
-    <ClCompile Include="..\shared\swarm\asw_shotgun_pellet_predicted_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_target_dummy_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_trace_filter.cpp" />
     <ClCompile Include="..\shared\swarm\asw_trace_filter_melee.cpp" />
@@ -2260,7 +2259,6 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_remote_turret_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_scanner_objects_enumerator.h" />
     <ClInclude Include="..\shared\swarm\asw_shareddefs.h" />
-    <ClInclude Include="..\shared\swarm\asw_shotgun_pellet_predicted_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_target_dummy_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_trace_filter.h" />
     <ClInclude Include="..\shared\swarm\asw_trace_filter_melee.h" />

@@ -15,7 +15,6 @@
 #include "basegrenade_shared.h"
 #include "asw_shareddefs.h"
 
-class CASW_Shotgun_Pellet;
 class CASW_Marine;
 
 class CASW_Weapon_Shotgun : public CASW_Weapon
@@ -67,8 +66,6 @@ public:
 
 		virtual bool IsRapidFire() { return false; }
 		virtual float GetMadFiringBias() { return 1.0f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
-
-		virtual CASW_Shotgun_Pellet*  CreatePellet(Vector vecSrc, Vector newVel, CASW_Marine *pMarine);
 	#else
 		void OnMuzzleFlashed();
 		bool ShouldUseFastReloadAnim();
