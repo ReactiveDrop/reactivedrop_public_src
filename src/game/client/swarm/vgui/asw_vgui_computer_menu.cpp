@@ -213,8 +213,6 @@ void CASW_VGUI_Computer_Menu::SetIcons()
 	if (!pArea)
 		return;
 
-	Msg("menu setting icons. num options=%d\n", pArea->GetNumMenuOptions());
-
 	int icon = 0;
 	if (pArea->m_DownloadObjectiveName.Get()[0] != 0 && pArea->GetDownloadProgress() < 1.0f)
 		SetIcon(icon++, "#asw_SynTekDocs", "swarm/Computer/IconFiles");
@@ -247,7 +245,6 @@ void CASW_VGUI_Computer_Menu::SetIcon(int icon, const char *szLabel, const char 
 	if (icon < 0 || icon >= ASW_COMPUTER_MAX_MENU_ITEMS)
 		return;
 
-	Msg(" Set icon %d to %s\n", icon, szLabel);
 	m_pMenuLabel[icon]->SetText(szLabel);
 	m_pMenuIcon[icon]->SetImage(szIcon); // temp use icon until we know how to import
 	char buffer[256];
@@ -510,7 +507,6 @@ void CASW_VGUI_Computer_Menu::ClickedMenuOption(int i)
 	if (!pPlayer)
 		return;
 	pPlayer->SelectHackOption(i+1);
-	Msg("pPlayer->SelectHackOption %d\n", i+1);
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.MenuButton" );
 }
@@ -551,7 +547,6 @@ void CASW_VGUI_Computer_Menu::HideMenu(bool bHideHeader)
 // activates the menu option we clicked on
 void CASW_VGUI_Computer_Menu::SetHackOption(int iOption)
 {
-	Msg("CASW_VGUI_Computer_Menu::SetHackOption %d\n", iOption);
 	if (!m_pHackComputer)
 		return;	
 
@@ -585,7 +580,6 @@ void CASW_VGUI_Computer_Menu::SetHackOption(int iOption)
 
 void CASW_VGUI_Computer_Menu::LaunchHackOption(int iOption)
 {
-	Msg("CASW_VGUI_Computer_Menu::LaunchHackOption %d\n", iOption);
 	if (!m_pHackComputer)
 		return;	
 

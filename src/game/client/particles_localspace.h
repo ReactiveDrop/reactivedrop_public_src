@@ -32,7 +32,7 @@ public:
 
 protected:
 
-	CLocalSpaceEmitter( const char *pDebugName );
+	explicit CLocalSpaceEmitter( const char *pDebugName );
 
 	ClientEntityHandle_t m_hEntity;
 	int	m_nAttachment;

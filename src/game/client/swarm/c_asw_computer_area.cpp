@@ -80,7 +80,10 @@ C_ASW_Computer_Area::C_ASW_Computer_Area()
 
 C_ASW_Door* C_ASW_Computer_Area::GetDoor()
 {
-	return dynamic_cast<C_ASW_Door*>(GetUseTargetHandle().Get());
+	C_BaseEntity* pUseTargetH = GetUseTargetHandle().Get();
+	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<C_ASW_Door*>(pUseTargetH);
+	return NULL;
 }
 
 // use icon textures

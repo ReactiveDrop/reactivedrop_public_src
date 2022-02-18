@@ -8,7 +8,11 @@
 
 #include "cbase.h"
 #ifdef _WIN32
+#if (defined( _MSC_VER ) && _MSC_VER >= 1900)
+#include <typeinfo>
+#else
 #include "typeinfo.h"
+#endif
 // BUGBUG: typeinfo stomps some of the warning settings (in yvals.h)
 #pragma warning(disable:4244)
 #elif POSIX
@@ -233,7 +237,8 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 
 	RelinkPusherList(pPusherHandles);
 	info.m_bPusherIsGround = false;
-	if ( pBlocker->GetGroundEntity() && pBlocker->GetGroundEntity()->GetRootMoveParent() == m_rgPusher[0].m_pEntity )
+	CBaseEntity* pGround = pBlocker->GetGroundEntity();
+	if ( pGround && pGround->GetRootMoveParent() == m_rgPusher[0].m_pEntity )
 	{
 		info.m_bPusherIsGround = true;
 	}
@@ -318,10 +323,9 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 	{
 		// If a player is blocking us, try nudging him around to fix accumulated errors
 		Vector org = pBlocker->GetAbsOrigin();
-		CBaseEntity *ground = pBlocker->GetGroundEntity();
-		if ( ground && !ground->IsWorld() )
+		if ( pGround && !pGround->IsWorld() )
 		{
-			Vector toCenter = ground->GetAbsOrigin() - org;
+			Vector toCenter = pGround->GetAbsOrigin() - org;
 			toCenter.z = 0;
 			if ( !toCenter.IsZero() )
 			{
@@ -1833,8 +1837,11 @@ void CBaseEntity::PhysicsStep()
 		else
 		{
 			float maxAngular;
-			VPhysicsGetObject()->GetShadowController()->GetMaxSpeed( NULL, &maxAngular );
-			VPhysicsGetObject()->GetShadowController()->MaxSpeed( pUpdate->savedShadowControllerMaxSpeed, maxAngular );
+			if ( VPhysicsGetObject() )
+			{
+				VPhysicsGetObject()->GetShadowController()->GetMaxSpeed(NULL, &maxAngular);
+				VPhysicsGetObject()->GetShadowController()->MaxSpeed(pUpdate->savedShadowControllerMaxSpeed, maxAngular);
+			}
 			DestroyDataObject(VPHYSICSUPDATEAI);
 		}
 	}

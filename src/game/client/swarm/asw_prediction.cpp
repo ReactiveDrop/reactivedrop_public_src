@@ -25,7 +25,7 @@ extern IGameMovement *g_pGameMovement;
 
 extern ConVar asw_allow_detach;
 extern ConVar cl_showerror;
-extern ConVar rd_prediction_strategy;
+extern ConVar rd_use_new_prediction_strategy;
 typedescription_t *FindFieldByName( const char *fieldname, datamap_t *dmap );
 
 class CASW_Prediction : public CPrediction
@@ -120,7 +120,7 @@ void CASW_Prediction::CheckMarineError( int nSlot, int commands_acknowledged )
 	// Compare what the server returned with what we had predicted it to be
 	VectorSubtract ( predicted_origin, origin, delta );
 
-	if ( rd_prediction_strategy.GetInt() == 1 )
+	if ( rd_use_new_prediction_strategy.GetInt() == 1 )
 	{
 		Vector smoothing_delta;
 		pMarine->GetPredictionErrorSmoothingVector( smoothing_delta );
@@ -135,7 +135,7 @@ void CASW_Prediction::CheckMarineError( int nSlot, int commands_acknowledged )
 	}
 	else
 	{
-		if ( rd_prediction_strategy.GetInt() == 1 || len > MIN_PREDICTION_EPSILON )
+		if ( rd_use_new_prediction_strategy.GetInt() == 1 || len > MIN_PREDICTION_EPSILON )
 		{
 			pMarine->NotePredictionError( delta );
 		}
@@ -233,7 +233,7 @@ void CASW_Prediction::RunCommand( C_BasePlayer *player, CUserCmd *ucmd, IMoveHel
 	// Do weapon selection
 	if ( ucmd->weaponselect != 0 )
 	{
-		C_BaseCombatWeapon *weapon = dynamic_cast< C_BaseCombatWeapon * >( CBaseEntity::Instance( ucmd->weaponselect ) );
+		C_BaseCombatWeapon *weapon = ToBaseCombatWeapon(CBaseEntity::Instance( ucmd->weaponselect )) ;
 		if (weapon)
 		{
 			pASWPlayer->ASWSelectWeapon(weapon, 0); //ucmd->weaponsubtype);		// asw - subtype var used for sending marine profile index instead

@@ -19,7 +19,6 @@
 #include "asw_weapon.h"
 #include "npcevent.h"
 #include "shot_manipulator.h"
-#include "asw_shotgun_pellet.h"
 #include "asw_marine_speech.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #endif
@@ -35,6 +34,7 @@ extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar sk_plr_dmg_asw_sg; 
 extern ConVar asw_weapon_force_scale;
 
+ConVar rd_sniper_rifle_dmg_zoomed_bonus("rd_sniper_rifle_dmg_zoomed_bonus", "186", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage value added to sniper rifle in zoom mode");
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sniper_Rifle, DT_ASW_Weapon_Sniper_Rifle )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Sniper_Rifle, DT_ASW_Weapon_Sniper_Rifle )
@@ -82,10 +82,12 @@ CASW_Weapon_Sniper_Rifle::CASW_Weapon_Sniper_Rifle()
 	m_fMaxRange2	= 1024;
 
 	m_fSlowTime = 0;
-
+/*
 #ifdef CLIENT_DLL
 	m_pSniperDynamicLight = NULL;
 #endif
+*/
+
 }
 
 
@@ -157,14 +159,21 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 		m_iClip1 -= info.m_iShots;
 #ifdef GAME_DLL
-		CASW_Marine *pMarine = GetMarine();
-		if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 			if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-			if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+			{
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			}
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 				pMarine->OnWeaponOutOfAmmo(true);
 		}
 #endif
@@ -189,6 +198,10 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 #endif
 
 	int iPenetration = 1;
+	if ( IsZoomed() )
+	{
+		iPenetration = 2;
+	}
 	if ( pMarine->GetDamageBuffEndTime() > gpGlobals->curtime )		// sniper rifle penetrates more targets when marine is in a damage amp
 	{
 		iPenetration = 3;
@@ -197,7 +210,7 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine && pMarine->GetMarineResource())
+	if (pMarine->GetMarineResource())
 	{
 		pMarine->GetMarineResource()->UsedWeapon(this, 1);
 		pMarine->OnWeaponFired( this, 1 );
@@ -225,6 +238,23 @@ bool CASW_Weapon_Sniper_Rifle::ShouldMarineMoveSlow()
 {
 	return (gpGlobals->curtime < m_fSlowTime) || IsZoomed();
 }
+
+float CASW_Weapon_Sniper_Rifle::GetMovementScale()
+{
+	return ShouldMarineMoveSlow() ? 0.55f : 1.0f;
+}
+
+float CASW_Weapon_Sniper_Rifle::GetFireRate()
+{
+	float flRate = GetWeaponInfo()->m_flFireRate;
+	if (IsZoomed())
+		flRate *= 1.9;
+
+	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
+
+	return flRate;
+}
+
 
 void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
 {
@@ -276,11 +306,25 @@ float CASW_Weapon_Sniper_Rifle::GetWeaponDamage()
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG);
 	}
 
+	if ( IsZoomed() )
+	{
+		flDamage += GetZoomedDamageBonus();
+	}
+
 	return flDamage;
 }
 
-#ifdef CLIENT_DLL
+inline float CASW_Weapon_Sniper_Rifle::GetZoomedDamageBonus()
+{
+	float bonus = rd_sniper_rifle_dmg_zoomed_bonus.GetFloat();
+	if ( bonus > 0 )
+		return bonus;
+	else
+		return 0;
+}
 
+#ifdef CLIENT_DLL
+/*
 ConVar asw_sniper_dlight_radius("asw_sniper_dlight_radius", "100", FCVAR_CHEAT, "Radius of the light around the cursor.");
 ConVar asw_sniper_dlight_r("asw_sniper_dlight_r", "250", FCVAR_CHEAT, "Red component of flashlight colour");
 ConVar asw_sniper_dlight_g("asw_sniper_dlight_g", "250", FCVAR_CHEAT, "Green component of flashlight colour");
@@ -330,7 +374,7 @@ void CASW_Weapon_Sniper_Rifle::UpdateDynamicLight()
 		m_pSniperDynamicLight->die = gpGlobals->curtime + 30.0f;
 	}
 }
-
+*/
 void CASW_Weapon_Sniper_Rifle::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
@@ -345,7 +389,7 @@ void CASW_Weapon_Sniper_Rifle::ClientThink()
 {
 	BaseClass::ClientThink();
 
-	UpdateDynamicLight();
+	//UpdateDynamicLight();
 
 	if ( m_nEjectBrassCount > 0 && gpGlobals->curtime >= m_flEjectBrassTime )
 	{

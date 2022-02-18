@@ -281,7 +281,7 @@ void C_ASW_Scanner_Noise::ListScannerNoises()
 void __MsgFunc_ASWScannerNoiseEnt( bf_read &msg )
 {
 	int iNoisyEnt = msg.ReadShort();		
-	C_BaseEntity *pEnt = dynamic_cast<C_BaseEntity*>(ClientEntityList().GetEnt(iNoisyEnt));		// turn iMarine ent index into the marine
+	C_BaseEntity *pEnt = ClientEntityList().GetEnt(iNoisyEnt);		// turn iMarine ent index into the marine
 	if (!pEnt)
 		return;
 	

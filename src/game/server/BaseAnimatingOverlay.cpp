@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -301,7 +301,7 @@ void CBaseAnimatingOverlay::StudioFrameAdvance ()
 				{
 					// give it at least one frame advance cycle to propagate 0.0 to client
 					pLayer->m_flWeight -= pLayer->m_flKillRate * flAdvance;
-					pLayer->m_flWeight = clamp( 	pLayer->m_flWeight, 0.0, 1.0 );
+					pLayer->m_flWeight = clamp( 	pLayer->m_flWeight.Get(), 0.0, 1.0 );
 				}
 				else
 				{
@@ -392,7 +392,7 @@ void CAnimationLayer::DispatchAnimEvents( CBaseAnimating *eventHandler, CBaseAni
 		return;
 	}
 
-	if ( m_nSequence >= pstudiohdr->GetNumSeq() )
+	if ( m_nSequence < 0 || m_nSequence >= pstudiohdr->GetNumSeq() )
 		return;
 	
 	// don't fire if here are no events

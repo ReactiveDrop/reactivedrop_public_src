@@ -678,6 +678,11 @@ inline int UtlMemory_CalcNewAllocationCount( int nAllocationCount, int nGrowSize
 		{
 			// Compute an allocation which is at least as big as a cache line...
 			nAllocationCount = (31 + nBytesItem) / nBytesItem;
+			// If the requested amount is larger then compute an allocation which
+			// is exactly the right size. Otherwise we can end up with wasted memory
+			// when CUtlVector::EnsureCount(n) is called.
+			if ( nAllocationCount < nNewSize )
+				nAllocationCount = nNewSize;
 		}
 
 		while (nAllocationCount < nNewSize)

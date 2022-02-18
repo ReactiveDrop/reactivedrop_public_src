@@ -99,7 +99,7 @@ bool CampaignMapLocation::ValidMissionChoice()
 		return false;
 
 	// don't allow vote for this mission if this mission was already completed
-	if (pSave->m_MissionComplete[m_iMission] != 0 || m_iMission <= 0)
+	if (m_iMission <= 0 || pSave->m_MissionComplete[m_iMission] != 0)
 		return false;
 
 	// make sure the mission they want to vote for is reachable

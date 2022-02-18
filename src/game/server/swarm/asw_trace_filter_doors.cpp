@@ -33,8 +33,6 @@ bool CASW_Trace_Filter_Doors::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 		return false;
 
 	CASW_Door *pDoor = assert_cast<CASW_Door*>( pEntity );
-	if ( !pDoor )
-		return false;
 
 	if ( m_bRequireLockedOrSealed )
 	{
@@ -79,9 +77,8 @@ CASW_Door* UTIL_ASW_DoorBlockingRoute( AI_Waypoint_t *pRoute, bool bRequireLocke
 		{
 			// reactivedrop: added check for door
 			// if not door continue checking route
-			CASW_Door *pDoor = dynamic_cast<CASW_Door*>(tr.m_pEnt);
-			if (pDoor)
-				return pDoor;
+			if ( tr.m_pEnt && tr.m_pEnt->Classify() == CLASS_ASW_DOOR )
+				return assert_cast<CASW_Door*>(tr.m_pEnt);
 		}
 
 		pLastPoint = pRoute;

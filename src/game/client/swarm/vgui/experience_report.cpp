@@ -271,7 +271,7 @@ void CExperienceReport::OnThink()
 
 	int nEarnedXP = (int) flTotalXP;
 	wchar_t number_buffer[ 16 ];
-	V_snwprintf( number_buffer, sizeof( number_buffer ), L"+%d", nEarnedXP );
+	V_snwprintf( number_buffer, ARRAYSIZE( number_buffer ), L"+%d", nEarnedXP );
 	m_pEarnedXPNumber->SetText( number_buffer );
 
 	// See if we're still animating
@@ -362,8 +362,8 @@ void CExperienceReport::Init()
 		if ( !g_PR->IsConnected( i ) )
 			continue;
 
-		C_ASW_Player *pOtherPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( i ) );
-		if ( pOtherPlayer == pPlayer )
+		C_ASW_Player *pOtherPlayer = assert_cast<C_ASW_Player*>( UTIL_PlayerByIndex( i ) );
+		if ( !pOtherPlayer || pOtherPlayer == pPlayer )
 			continue;
 
 		pOtherPlayer->AwardExperience();

@@ -236,7 +236,9 @@ void CASW_Director::MarineTookDamage( CASW_Marine *pMarine, const CTakeDamageInf
 	if ( bFriendlyFire )
 		return;
 
-	float flDamageRatio = info.GetDamage() / pMarine->GetHealth();
+	float flDamageRatio = 1.0f;
+	if (pMarine->GetHealth() != 0)
+		 flDamageRatio = info.GetDamage() / pMarine->GetHealth();
 
 	CASW_Intensity::IntensityType stress = CASW_Intensity::MILD;
 	if ( flDamageRatio < 0.2f )

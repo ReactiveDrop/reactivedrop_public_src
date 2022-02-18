@@ -79,7 +79,7 @@ public:
 
 	bool LoadAllSchedules(void);
 
-	bool LoadSchedulesFromBuffer( const char *prefix, char *pfile, CAI_ClassScheduleIdSpace *pIdSpace, CAI_GlobalScheduleNamespace *pGlobalNamespace );
+	bool LoadSchedulesFromBuffer( const char *prefix, char *pfile, CAI_ClassScheduleIdSpace *pIdSpace );
 
 private:
 	friend class CAI_SystemHook;
@@ -106,7 +106,6 @@ private:
 };
 
 extern CAI_SchedulesManager g_AI_SchedulesManager;
-extern CAI_SchedulesManager g_AI_AgentSchedulesManager;
 
 class CAI_Schedule
 {
@@ -181,7 +180,7 @@ private:
 		extern const char * g_psz##name; \
 		if ( classname::gm_SchedLoadStatus.fValid ) \
 		{ \
-		classname::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( #classname,(char *)g_psz##name,&classname::gm_ClassScheduleIdSpace, classname::GetSchedulingSymbols() ); \
+			classname::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( #classname,(char *)g_psz##name,&classname::gm_ClassScheduleIdSpace ); \
 		} \
 	} while (false)
 
@@ -191,7 +190,7 @@ private:
 	do \
 	{ \
 		extern const char * g_psz##name; \
-		if (!g_AI_SchedulesManager.LoadSchedulesFromBuffer( #classname,(char *)g_psz##name,&classname::gm_ClassScheduleIdSpace, classname::GetSchedulingSymbols() )) \
+		if (!g_AI_SchedulesManager.LoadSchedulesFromBuffer( #classname,(char *)g_psz##name,&classname::gm_ClassScheduleIdSpace )) \
 			return false; \
 	} while (false)
 

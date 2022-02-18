@@ -97,9 +97,6 @@ void CASW_Weapon_Tesla_Trap::PrimaryAttack( void )
 		return;
 
 	CASW_Marine *pMarine = GetMarine();
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-#endif
 
 	// mine weapon is lost when all mines are gone
 	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )

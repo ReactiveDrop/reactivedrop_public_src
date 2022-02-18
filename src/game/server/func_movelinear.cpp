@@ -357,7 +357,13 @@ void CFuncMoveLinear::Blocked( CBaseEntity *pOther )
 	// Hurt the blocker 
 	if ( m_flBlockDamage )
 	{
-		pOther->TakeDamage( CTakeDamageInfo( this, this, m_flBlockDamage, DMG_CRUSH ) );
+		if ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY )
+		{
+			if ( FClassnameIs( pOther, "gib" ) )
+				UTIL_Remove( pOther );
+		}
+		else
+			pOther->TakeDamage( CTakeDamageInfo( this, this, m_flBlockDamage, DMG_CRUSH ) );
 	}
 }
 

@@ -323,7 +323,7 @@ void CPositionInterpolator_Rope::GetDetails( char **outName, int *outMinKeyReq, 
 {
 	*outName = "Rope";
 	*outMinKeyReq = 0;
-	*outMinKeyReq = 1;
+	*outMaxKeyReq = 1;
 }
 
 void CPositionInterpolator_Rope::SetKeyPosition( int keyNum, Vector const &vPos )

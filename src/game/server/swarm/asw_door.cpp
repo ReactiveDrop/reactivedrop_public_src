@@ -41,6 +41,7 @@
 #include "asw_shareddefs.h"
 #include "asw_weapon_welder_shared.h"
 #include "asw_weapon_deagle_shared.h"
+#include "asw_weapon_sniper_rifle.h"
 #include "coordsize.h"
 #include "asw_trace_filter_door_crush.h"
 #include "asw_player.h"
@@ -454,13 +455,14 @@ bool CASW_Door::DoorCanClose( bool bAutoClose )
 		CASW_Door *pLinkedDoor = NULL;
 
 		// Check all links as well
+		CBasePropDoor* pBasePD;
 		for ( int i = 0; i < numDoors; i++ )
 		{
-			pLinkedDoor = dynamic_cast<CASW_Door *>((CBasePropDoor *)m_hDoorList[i]);
-
-			if ( pLinkedDoor != NULL )
+			pBasePD = m_hDoorList[i].Get();
+			if ( pBasePD && pBasePD->Classify() == CLASS_ASW_DOOR )
 			{
-				if ( !pLinkedDoor->CheckDoorClear() )
+				pLinkedDoor = assert_cast<CASW_Door*>(pBasePD);
+				if (!pLinkedDoor->CheckDoorClear())
 					return false;
 			}
 		}
@@ -818,7 +820,7 @@ void CASW_Door::GetNPCOpenData(CAI_BaseNPC *pNPC, opendata_t &opendata)
 	opendata.vecStandPos = GetAbsOrigin() - (vecRight * 24);
 	opendata.vecStandPos.z -= 54;
 
-	Vector vecNPCOrigin = pNPC->GetAbsOrigin();
+	//Vector vecNPCOrigin = pNPC->GetAbsOrigin();
 
 	if (pNPC->GetAbsOrigin().Dot(vecForward) > GetAbsOrigin().Dot(vecForward))
 	{
@@ -931,14 +933,20 @@ bool CASW_Door::IsDoorLocked()
 	bool bDented = ( m_DentAmount > ASWDD_PARTIAL );
 	if ( !bDented && HasSlaves() )
 	{
-		int	numDoors = m_hDoorList.Count();		
+		int	numDoors = m_hDoorList.Count();
+		CASW_Door* pSlave = NULL;
+		CBasePropDoor* pBasePD;
 		for ( int i = 0; i < numDoors; i++ )
 		{
-			CASW_Door *pSlave = dynamic_cast<CASW_Door*>( m_hDoorList[ i ].Get() );
-			if ( pSlave && pSlave->m_DentAmount > ASWDD_PARTIAL )
+			pBasePD = m_hDoorList[i].Get();
+			if ( pBasePD && pBasePD->Classify() == CLASS_ASW_DOOR )
 			{
-				bDented = true;
-				break;
+				pSlave = assert_cast<CASW_Door*>(pBasePD);
+				if ( pSlave->m_DentAmount > ASWDD_PARTIAL )
+				{
+					bDented = true;
+					break;
+				}
 			}
 		}
 	}
@@ -1123,16 +1131,14 @@ bool CASW_Door::KeyValue( const char *szKeyName, const char *szValue )
 
 int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	Vector			vecTemp;
-
 	if ( !edict() || !m_takedamage )
 		return 0;
 
-	if ( (m_takedamage != DAMAGE_EVENTS_ONLY) && info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( (m_takedamage != DAMAGE_EVENTS_ONLY) && pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine* pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-		if (pMarine)
-			pMarine->HurtJunkItem(this, info);
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
+		pMarine->HurtJunkItem(this, info);
 	}
 
 	if (info.GetDamageType() == DMG_SLASH || info.GetDamageType() == DMG_CLUB)			// if an alien claw attack, then check if it's bashable
@@ -1152,11 +1158,10 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 		return 0;
 
 	// stop buzzers from knocking down the door in 1 swoop (their physics??)
-	if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_BUZZER)
-	{
+	if (pAttacker && pAttacker->Classify() == CLASS_ASW_BUZZER)
 		return 0;
-	}
 
+	Vector vecTemp;
 	if ( info.GetInflictor() )
 	{
 		vecTemp = info.GetInflictor()->WorldSpaceCenter() - ( WorldSpaceCenter() );
@@ -1194,22 +1199,28 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 
 		if (info.GetDamageType() & DMG_BULLET)
 		{
-			if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+			if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 			{
-				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-				if (pMarine)
+				CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+				if (pWeapon)
 				{
-					CASW_Weapon_DEagle *pDeagle = dynamic_cast<CASW_Weapon_DEagle*>(pMarine->GetActiveASWWeapon());
-			
-					if (pDeagle)
+					if ( pWeapon->Classify() == CLASS_ASW_DEAGLE )
+					{
 						damage *= 0.4f; // deagle isn't a door killer gun
+					}
+					else if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
+					{
+						CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>(pWeapon);
+						if ( pSniper->IsZoomed() ) //zoomed sniper bonus damage does not affect doors
+							damage -= pSniper->GetZoomedDamageBonus();
+					}
 				}
 			}
 		}
 
-		if (info.GetAttacker())
+		if (pAttacker)
 		{
-			if (info.GetAttacker()->Classify() == CLASS_ASW_DRONE)	// scale alien damage
+			if (pAttacker->Classify() == CLASS_ASW_DRONE)	// scale alien damage
 			{
 				// Undo difficulty damage adjust
 				float fDiff = ASWGameRules()->GetMissionDifficulty() - 5;
@@ -1218,8 +1229,7 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 
 				damage *= asw_door_drone_damage_scale.GetFloat();
 			}
-			else if (info.GetAttacker()->Classify() == CLASS_ASW_MARINE
-					&& info.GetDamageType() & DMG_CLUB)	// make doors immune to kick damage
+			else if ( pAttacker->Classify() == CLASS_ASW_MARINE && info.GetDamageType() & DMG_CLUB )	// make doors immune to kick damage
 			{
 				damage *= 0;
 			}			
@@ -1237,18 +1247,12 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			}
 		}
 
-		// reactivedrop: add protection agains too high damage in one blow
-		if (GetHealth() > 1 && damage > m_iHealth)
-		{
-			damage = m_iHealth - 1;
-		}
-				
 		newInfo.SetDamage(damage);
 
 		CheckForDoorShootChatter(newInfo);
 		
 		// do the damage
-		m_iHealth -= damage;				
+		m_iHealth -= damage;
 
 		//Msg("Door health now %d (%d) seq %d frame %f DoorOpen=%d DoorOpening=%d DoorClosed=%d DoorClosing=%d\n",
 			//m_iHealth, (int) m_DentAmount, GetSequence(), GetCycle(),
@@ -1300,6 +1304,7 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				if (m_fLastMomentFlipDamage < 0)		// count up a small amount of damage so it doesn't fall immediately after changing facing
 				{
+					m_iHealth = 1;
 					m_fLastMomentFlipDamage += newInfo.GetDamage();
 				}
 				else
@@ -1450,13 +1455,14 @@ void CASW_Door::Event_Killed( const CTakeDamageInfo &info )
 {
 	m_OnDestroyed.FireOutput(info.GetInflictor(), this);
 
+	CBaseEntity* pAttacker = info.GetAttacker();
 	IGameEvent * event = gameeventmanager->CreateEvent( "door_destroyed" );
 	if ( event )
 	{
 		CBasePlayer *pPlayer = NULL;
-		CASW_Marine *pMarine = dynamic_cast< CASW_Marine* >( info.GetAttacker() );
-		if ( pMarine )
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
 			pPlayer = pMarine->GetCommander();
 		}
 
@@ -1465,14 +1471,14 @@ void CASW_Door::Event_Killed( const CTakeDamageInfo &info )
 		gameeventmanager->FireEvent( event );
 	}
 
-	if( info.GetAttacker() )
+	if( pAttacker)
 	{
-		info.GetAttacker()->Event_KilledOther(this, info);
+		pAttacker->Event_KilledOther(this, info);
 	}
 
 	// check if marines should shout about this door being bashed down
 	// check there's another marine nearby
-	if (m_bDoBreachedShout && info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_DRONE
+	if (m_bDoBreachedShout && pAttacker && pAttacker->Classify() == CLASS_ASW_DRONE
 			&& ASWGameResource())
 	{
 		CASW_Game_Resource *pGameResource = ASWGameResource();
@@ -1793,8 +1799,8 @@ void CASW_Door::DoAutoDoorShootChatter(CASW_Marine *pMarine)
 			if (asw_debug_marine_chatter.GetBool())
 				Msg("Skipping door shout, only 1 marine nearby\n");		
 
-			CASW_Weapon_Welder *pWelder = dynamic_cast<CASW_Weapon_Welder*>(pMarine->GetASWWeapon(2));
-			if (pWelder && pMarine->GetMarineSpeech()->Chatter(CHATTER_CUTTING_DOOR))
+			CASW_Weapon* pWeapon2 = pMarine->GetASWWeapon(2);
+			if ( pWeapon2 && pWeapon2->Classify() == CLASS_ASW_WELDER && pMarine->GetMarineSpeech()->Chatter(CHATTER_CUTTING_DOOR) )
 			{
 				m_bDoCutShout = false;
 				m_bDoneDoorShout = true;
@@ -1831,9 +1837,7 @@ void CASW_Door::CheckForDoorShootChatter( const CTakeDamageInfo &info )
 			Msg("m_fMarineShootCounter = %f\n", m_fMarineShootCounter);
 		if (m_fMarineShootCounter > 100)		// roughly 1 second of rifle firing on normal
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (!pMarine)
-				return;
+			CASW_Marine *pMarine = assert_cast<CASW_Marine*>(info.GetAttacker());
 
 			// check there's another marine nearby
 			if ( ASWGameResource() )

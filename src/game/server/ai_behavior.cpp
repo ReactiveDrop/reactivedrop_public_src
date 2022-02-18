@@ -693,7 +693,7 @@ const Task_t *CAI_BehaviorBase::GetCurTask( int channel )
 	if ( !m_ScheduleChannels.IsValidIndex( channel ) )
 	{
 		AssertMsg( 0, "Bad schedule channel" );
-		return false;
+		return NULL;
 	}
 
 	AIChannelScheduleState_t *pScheduleState = &m_ScheduleChannels[channel];

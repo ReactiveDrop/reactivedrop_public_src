@@ -168,7 +168,7 @@ void CASW_Entity_Dissolve::InputDissolve( inputdata_t &inputdata )
 	while ((pTarget = gEntList.FindEntityGeneric(pTarget, STRING(strTarget), this, inputdata.pActivator)) != NULL)
 	{
 		// Combat characters know how to catch themselves on fire.
-		CBaseAnimating *pBaseAnim = dynamic_cast<CBaseAnimating*>(pTarget);
+		CBaseAnimating *pBaseAnim = pTarget->GetBaseAnimating();
 		if (pBaseAnim)
 		{
 			pBaseAnim->Dissolve( NULL, gpGlobals->curtime, false );
@@ -320,7 +320,7 @@ void CASW_Entity_Dissolve::DissolveThink( void )
 		return;
 	}
 
-	if ( pTarget && pTarget->GetFlags() & FL_TRANSRAGDOLL )
+	if ( pTarget->GetFlags() & FL_TRANSRAGDOLL )
 	{
 		SetRenderAlpha( 0 );
 	}

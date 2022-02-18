@@ -46,7 +46,7 @@ bool CASW_BaseAI_Senses::WaitingUntilSeen( CBaseEntity *pSightEnt )
 		// asw, wake up if marines see us (not players)
 		if ( pSightEnt && pSightEnt->Classify() == CLASS_ASW_MARINE )
 		{
-			CBaseCombatCharacter *pBCC = dynamic_cast<CBaseCombatCharacter*>( pSightEnt );
+			CBaseCombatCharacter *pBCC = pSightEnt->MyCombatCharacterPointer();
 			Vector zero =  Vector(0,0,0);
 			// don't link this client in the list if the npc is wait till seen and the player isn't facing the npc
 			if (// && pPlayer->FVisible( GetOuter() ) 

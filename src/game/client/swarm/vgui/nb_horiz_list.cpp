@@ -103,7 +103,8 @@ void CNB_Horiz_List::PerformLayout()
 
 	if ( m_Entries.Count() > 0 )
 	{
-		curx = m_Entries[0]->GetTall() / 2 + padding;
+		//Mad Orange. Lets make list a little more compact
+		//curx = m_Entries[0]->GetTall() / 2 + padding;
 	}
 
 	for ( int i = 0; i < m_Entries.Count(); i++ )
@@ -123,7 +124,7 @@ void CNB_Horiz_List::PerformLayout()
 
 	if ( m_Entries.Count() > 0 )
 	{
-		curx += m_Entries[0]->GetTall() / 2;
+		//curx += m_Entries[0]->GetTall() / 2;
 	}
 
 	m_pChildContainer->SetSize( curx - padding, maxh );		// stretch container to fit all children

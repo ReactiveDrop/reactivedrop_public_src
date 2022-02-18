@@ -1,4 +1,4 @@
-\//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -44,14 +44,15 @@ void CASWStatueProp::Spawn( void )
 	SetHealth( 1 );
 
 	//AddFlag( FL_AIMTARGET );
-	if ( m_hInitBaseAnimating.Get() )
+	CBaseAnimating* pInitAnim = m_hInitBaseAnimating.Get();
+	if ( pInitAnim )
 	{
-		CASW_Alien *pAlien = dynamic_cast< CASW_Alien* >( m_hInitBaseAnimating.Get() );
-		if ( pAlien )
+		if ( pInitAnim->IsAlienClassType() )
 		{
+			CASW_Alien* pAlien = assert_cast<CASW_Alien*>( pInitAnim );
 			m_pszSourceClass = pAlien->GetClassname();
 		}
-		SetModelScale( m_hInitBaseAnimating->GetModelScale() );
+		SetModelScale( pInitAnim->GetModelScale() );
 	}
 
 	m_flFrozen = 1.0f;

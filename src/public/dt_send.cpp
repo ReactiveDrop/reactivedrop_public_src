@@ -315,7 +315,7 @@ float AssignRangeMultiplier( int nBits, double range )
 		int i;
 		for ( i=0; i < ARRAYSIZE( multipliers ); i++ )
 		{
-			float fHighLowMul = (float)( iHighValue / range ) * multipliers[i];
+			fHighLowMul = (float)( iHighValue / range ) * multipliers[i];
 			if ( (unsigned long)(fHighLowMul * range) > iHighValue ||
 				(fHighLowMul * range) > (double)iHighValue )
 			{

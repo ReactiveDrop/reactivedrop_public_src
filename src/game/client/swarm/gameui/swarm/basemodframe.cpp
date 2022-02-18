@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2008, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -795,7 +795,7 @@ bool CBaseModFrame::CheckAndDisplayErrorIfNotLoggedIn()
 	if ( !IsPC() )
 		return false;
 
-#ifndef _X360
+#ifndef NO_STEAM
 #ifndef SWDS
 	// if we have Steam interfaces and user is logged on, everything is OK
 	if ( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamMatchmaking() )

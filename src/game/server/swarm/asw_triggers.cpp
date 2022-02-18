@@ -653,16 +653,19 @@ void CASW_Marines_Past_Area::InputMarineInFront( inputdata_t &inputdata )
 	}
 	else
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>( inputdata.pActivator );
-		if ( pMarine && m_MarinesPast.Find( pMarine ) == m_MarinesPast.InvalidIndex() )
+		if ( inputdata.pActivator && inputdata.pActivator->Classify() == CLASS_ASW_MARINE ) //inputdata is a simple struct, no speedup if save pointer for activator
 		{
-			m_MarinesPast.AddToTail( pMarine );
-			bAddedMarine = true;
-
-			if ( ( m_iNumMarines != -1 && m_MarinesPast.Count() >= m_iNumMarines ) || 
-				 ( m_iNumMarines == -1 && nMarineCount > 0 && m_MarinesPast.Count() >= nMarineCount ) )
+			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(inputdata.pActivator);
+			if ( m_MarinesPast.Find(pMarine) == m_MarinesPast.InvalidIndex() )
 			{
-				m_OutputMarinesPast.FireOutput( pMarine, this );
+				m_MarinesPast.AddToTail(pMarine);
+				bAddedMarine = true;
+
+				if ( ( m_iNumMarines != -1 && m_MarinesPast.Count() >= m_iNumMarines ) ||
+					( m_iNumMarines == -1 && nMarineCount > 0 && m_MarinesPast.Count() >= nMarineCount ) )
+				{
+					m_OutputMarinesPast.FireOutput(pMarine, this);
+				}
 			}
 		}
 	}
@@ -864,7 +867,7 @@ void CASW_Marine_JumpJet_Trigger::ActivateMultiTrigger( CBaseEntity *pOther )
 	pEntDest = gEntList.FindEntityByName( pEntDest, szDestEnt, NULL, pOther, pOther );
 	if ( !pEntDest )
 	{
-		Warning( "Jump Jet trigger '%s' cannot find destination named '%s'!\n", this->GetEntityName(), szDestEnt );
+		Warning( "Jump Jet trigger '%s' cannot find destination named '%s'!\n", this->GetEntityNameAsCStr(), szDestEnt.ToCStr() );
 		return;
 	}
 	

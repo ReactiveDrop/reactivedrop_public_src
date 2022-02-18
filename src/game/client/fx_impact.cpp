@@ -338,7 +338,7 @@ static void PerformNewCustomEffects( const Vector &vecOrigin, trace_t &tr, const
 	VectorMultiply( shotDir, -1.0f, vecShotBackward );
 		
 	Vector vecImpactPoint = ( tr.fraction != 1.0f ) ? tr.endpos : vecOrigin;
-	AssertMsg( VectorsAreEqual( vecOrigin, tr.endpos, 1e-1 ), "Impact decal drawn too far from the surface impacted." );
+	//AssertMsg( VectorsAreEqual( vecOrigin, tr.endpos, 1e-1 ), "Impact decal drawn too far from the surface impacted." );
 
 #ifdef INFESTED_DLL	// Randomly spawn a persistent jet of steam
 	if ( iMaterial == CHAR_TEX_STEAM_PIPE )
@@ -382,6 +382,9 @@ void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin
 	VPROF( "PlayImpactSound" );
 	surfacedata_t *pdata;
 	Vector vecOrigin;
+
+	if ( pEntity->IsDormant() )
+		return;
 
 	// If the client-side trace hit a different entity than the server, or
 	// the server didn't specify a surfaceprop, then use the client-side trace 

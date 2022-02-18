@@ -148,7 +148,7 @@ void AchievementListItem::SetGamerScore(int score)
 	wchar_t buffer[10];
 	wchar_t num[5];
 
-	V_snwprintf( num, sizeof(num), L"%d", m_GamerScore );
+	V_snwprintf( num, ARRAYSIZE(num), L"%d", m_GamerScore );
 	g_pVGuiLocalize->ConstructString( buffer, sizeof( buffer ), g_pVGuiLocalize->FindSafe( "#L4D360UI_Gamerscore_Progress" ), 1, num );
 
 	m_LblGamerscore->SetText( buffer );
@@ -441,7 +441,7 @@ class BaseModUI::AchievementGenericPanelList : public GenericPanelList
 	DECLARE_CLASS_SIMPLE( AchievementGenericPanelList, GenericPanelList );
 
 public:
-	AchievementGenericPanelList::AchievementGenericPanelList( vgui::Panel *parent, const char *panelName, ITEM_SELECTION_MODE selectionMode, int iControllingSlot ) :
+	AchievementGenericPanelList( vgui::Panel *parent, const char *panelName, ITEM_SELECTION_MODE selectionMode, int iControllingSlot ) :
 	    BaseClass( parent, panelName, selectionMode ),
 		m_iControllingUserSlot( iControllingSlot )
 	{

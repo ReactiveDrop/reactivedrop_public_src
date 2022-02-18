@@ -38,7 +38,7 @@
 #include "rd_challenges_shared.h"
 #include "rd_challenge_selection.h"
 
-#include "asw_medal_store.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -93,7 +93,10 @@ void GameSettings::SetDataSettings( KeyValues *pSettings )
 {
 	IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
 	KeyValues *pMatchSettings = pIMatchSession ? pIMatchSession->GetSessionSettings() : NULL;
-	KeyValuesDumpAsDevMsg( pMatchSettings );
+	if (pMatchSettings)
+	{
+		KeyValuesDumpAsDevMsg(pMatchSettings);
+	}
 
 	if ( pMatchSettings && ( !pSettings || pSettings == pMatchSettings ) )
 	{
@@ -190,18 +193,8 @@ void GameSettings::Activate()
 
 	//bool showGameAccess = !Q_stricmp( "create", m_pSettings->GetString( "options/action", "" ) ) &&
 							//!IsEditingExistingLobby();
-	bool bPlayerIsNew = false;
-	if ( GetMedalStore() )
-	{
-		if ( !GetMedalStore()->GetPromotion() )
-		{
-			int nXp = GetMedalStore()->GetExperience();
-			// players below level 30 are considered new
-			if ( nXp < 51750 )
-				bPlayerIsNew = true;
-		}
-	}
-	bool bShowNumSlots = !bPlayerIsNew;
+	// players below level 30 are considered new
+	bool bShowNumSlots = UTIL_ASW_CommanderLevelAtLeast( NULL, 30 );
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );
@@ -230,8 +223,21 @@ void GameSettings::Activate()
 		m_drpDifficulty->SetCurrentSelection( CFmtStr( "#L4D360UI_Difficulty_%s",
 			m_pSettings->GetString( "game/difficulty", "normal" ) ) );
 
-		if ( FlyoutMenu* flyout = m_drpDifficulty->GetCurrentFlyout() )
+		if ( FlyoutMenu *flyout = m_drpDifficulty->GetCurrentFlyout() )
+		{
 			flyout->CloseMenu( NULL );
+
+			if ( !UTIL_ASW_CommanderLevelAtLeast( NULL, 30 ) )
+			{
+				// beginner commanders can't create a lobby with insane or brutal difficulty but can change an existing one to those skill levels.
+				vgui::Panel *pInsane = flyout->FindChildByName( "BtnImpossible", true );
+				if ( pInsane )
+					pInsane->SetEnabled( false );
+				vgui::Panel *pBrutal = flyout->FindChildByName( "BtnImba", true );
+				if ( pBrutal )
+					pBrutal->SetEnabled( false );
+			}
+		}
 	}
 
 	if ( m_drpFriendlyFire )
@@ -279,6 +285,13 @@ void GameSettings::Activate()
 	if ( m_ActiveControl )
 	{
 		m_ActiveControl->NavigateFrom();
+	}
+
+	// select the Campaign option so controller players can move on this menu
+	vgui::Panel *firstOption = FindChildByName( "DrpSelectMission", true );
+	if ( firstOption )
+	{
+		firstOption->NavigateTo();
 	}
 
 	/*

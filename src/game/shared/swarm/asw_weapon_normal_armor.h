@@ -14,10 +14,6 @@
 #include "asw_shareddefs.h"
 #include "basegrenade_shared.h"
 
-#ifndef CLIENT_DLL
-extern ConVar asw_marine_passive_armor_scale;
-#endif
-
 class CASW_Weapon_Normal_Armor : public CASW_Weapon
 {
 public:
@@ -39,7 +35,7 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-		virtual const char* GetPickupClass() { return "asw_pickup_normal_armor"; }		
+		virtual const char* GetPickupClass() { return "asw_pickup_normal_armor"; }
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return false; }
@@ -48,9 +44,13 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_NORMAL_ARMOR; }
 
 #ifndef CLIENT_DLL
-	/// armor should scale damage taken by owning marine by this much (eg, 0.8 is a 20% reduction)
-	inline float GetDamageScaleFactor() { return asw_marine_passive_armor_scale.GetFloat(); }
+	virtual float GetDamageScaleFactor();
+	virtual void LayerRemoveOnDamage();
+	virtual void LayerRestoreThink();
+#else
+	virtual float GetBatteryCharge();
 #endif
+	CNetworkVar( int, m_iLayersMissing );
 };
 
 

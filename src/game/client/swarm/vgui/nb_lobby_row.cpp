@@ -144,6 +144,14 @@ void CNB_Lobby_Row::UpdateDetails()
 
 	if ( m_nLobbySlot == -1 || !Briefing()->IsLobbySlotOccupied( m_nLobbySlot ) )
 	{
+		m_pXPBar->SetVisible( false );
+		m_pLevelLabel->SetVisible( false );
+		m_pPromotionIcon->SetVisible( false );
+		m_pNameDropdown->SetVisible( false );
+		m_pAvatarImage->SetVisible( false );
+		m_pClassLabel->SetVisible( false );
+		m_pClassImage->SetVisible( false );
+
 		if ( Briefing()->IsOfflineGame() )
 		{
 			// in singleplayer, empty slots show the empty portrait button
@@ -166,14 +174,10 @@ void CNB_Lobby_Row::UpdateDetails()
 			}
 			m_pPortraitButton->SetVisible( true );
 		}
-		m_pXPBar->SetVisible( false );
-		m_pLevelLabel->SetVisible( false );
-		m_pPromotionIcon->SetVisible( false );
-		m_pNameDropdown->SetVisible( false );
-		m_pAvatarImage->SetVisible( false );
-		m_pClassLabel->SetVisible( false );
-		m_pClassImage->SetVisible( false );
-		return;
+		else
+		{
+			return;
+		}
 	}
 
 	color32 invisible;
@@ -253,7 +257,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pXPBar->Init( nXP, nXP, 1.0, true, false );
 	
 		wchar_t szLevelNum[16]=L"";
-		_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel );
+		V_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel );
 
 		wchar_t wzLevelLabel[64];
 		g_pVGuiLocalize->ConstructString( wzLevelLabel, sizeof( wzLevelLabel ), g_pVGuiLocalize->Find( "#nb_commander_level" ), 1, szLevelNum );
@@ -471,7 +475,7 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
 			char statsWeb[128];
-			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://reactive-drop-stats.lubar.me/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif

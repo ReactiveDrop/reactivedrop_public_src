@@ -20,9 +20,11 @@
 ObjectiveListBox::ObjectiveListBox(Panel *parent, const char *name) : Panel(parent, name)
 {	
 	m_iNumTitlePanels = 0;
+	m_iLastSelectedPanel = 0;
 	m_pSelectedTitle = NULL;
 	m_pDetailsPanel = NULL;
 	m_pObjectiveIcons = NULL;
+	m_fLastPanelOffset = ScreenHeight() * 0.014f;
 }
 	
 ObjectiveListBox::~ObjectiveListBox()
@@ -45,9 +47,17 @@ void ObjectiveListBox::OnThink()
 		return;
 
 	float panel_y = ScreenHeight() * 0.014f;
+
+	if ( m_iNumTitlePanels > 6 && m_iLastSelectedPanel > 2 && m_pTitlePanel[0] && m_pTitlePanel[1] )
+	{
+		panel_y -= ( MIN( m_pTitlePanel[0]->GetTall(), m_pTitlePanel[1]->GetTall() ) + ScreenHeight() * 0.005f ) * MIN( m_iLastSelectedPanel - 2, m_iNumTitlePanels - 6 );
+	}
+
+	panel_y = m_fLastPanelOffset = Lerp( 0.1f, m_fLastPanelOffset, panel_y );
+
 	int m_iNumRealTitlePanels = 0;
 	int iCurrent = 0;
-	for (int i=0;i<12;i++)
+	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
 	{
 		C_ASW_Objective* pObjective = pGameResource->GetObjective(i);
 		if (pObjective && !pObjective->IsObjectiveHidden())
@@ -68,6 +78,8 @@ void ObjectiveListBox::OnThink()
 			m_pTitlePanel[iCurrent]->SetObjective(pObjective);
 			// position the panel
 			m_pTitlePanel[iCurrent]->SetPos( YRES( 3 ), panel_y);
+			if ( m_pTitlePanel[iCurrent]->m_bObjectiveSelected )
+				m_iLastSelectedPanel = iCurrent;
 			panel_y += m_pTitlePanel[iCurrent]->GetTall() + ScreenHeight() * 0.005f;
 			iCurrent++;
 		}

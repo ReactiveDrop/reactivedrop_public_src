@@ -56,7 +56,7 @@ void ClientPutInServer( edict_t *pEdict, const char *playername )
 
 void ClientActive( edict_t *pEdict, bool bLoadGame )
 {
-	CASW_Player *pPlayer = dynamic_cast< CASW_Player* >( CBaseEntity::Instance( pEdict ) );
+	CASW_Player *pPlayer = ToASW_Player( CBaseEntity::Instance( pEdict ) );
 	Assert( pPlayer );
 
 	if ( !pPlayer )
@@ -96,7 +96,7 @@ const char *GetGameDescription()
 		int iPlayers = 0;
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+			CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
 			if ( pOtherPlayer && pOtherPlayer->IsConnected() )
 			{

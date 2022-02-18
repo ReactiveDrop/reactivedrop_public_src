@@ -1482,7 +1482,7 @@ void CAI_BlendedMotor::BuildVelocityScript( const AILocalMoveGoal_t &move )
 		if (m_scriptMove[i].flMaxVelocity == 0 && m_scriptMove[i+1].flMaxVelocity == 0)
 		{
 			// force a minimum velocity 
-			Assert( 0 );
+			//Assert( 0 );
 			m_scriptMove[i+1].flMaxVelocity = 1.0;
 		}
 

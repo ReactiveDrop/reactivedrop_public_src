@@ -226,11 +226,8 @@ void C_ASW_Sentry_Top::Scan()
 	}
 	else if ( !m_bLowAmmo && m_hWarningLight )
 	{
-		if ( m_hWarningLight )
-		{
-			m_hWarningLight->StopEmission(false, false , true);
-			m_hWarningLight = NULL;
-		}
+		m_hWarningLight->StopEmission(false, false, true);
+		m_hWarningLight = NULL;
 	}
 
 	//if( gpGlobals->curtime >= m_flTimeNextScanPing )

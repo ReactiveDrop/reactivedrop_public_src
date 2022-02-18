@@ -562,6 +562,16 @@ bool CASW_Drone_Advanced::MoveExecute_Alive(float flInterval)
 	bool bFailedToMove = false;
 	if (GetTask() && (GetTask()->iTask == TASK_MELEE_ATTACK1))		// do a non plane sliding movement for attacking
 	{
+		//Mad Orange. Limit RequestedMovement vector length if too high drone velocity to avoid warping through.
+		//Msg("Requested movement vector len %f\n", vecRequestedMovement.Length());
+		float flPreWarpDist = 512;
+		if (vecRequestedMovement.Length() > flPreWarpDist)
+		{
+			Vector vecPreWarp = vecRequestedMovement;
+			VectorNormalize(vecPreWarp);
+			vecRequestedMovement = vecPreWarp * flPreWarpDist;
+		}
+
 		if ( WalkMove( vecRequestedMovement * flInterval, MASK_NPCSOLID ) == false )
 		{
 			//Attempt a half-step
@@ -977,9 +987,10 @@ void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &vie
 
 bool CASW_Drone_Advanced::CorpseGib( const CTakeDamageInfo &info )
 {
-	CEffectData	data;
-
 	m_LagCompensation.UndoLaggedPosition();
+
+	/*
+	CEffectData	data;
 	
 	data.m_vOrigin = WorldSpaceCenter();
 	data.m_vNormal = data.m_vOrigin - info.GetDamagePosition();
@@ -989,7 +1000,7 @@ bool CASW_Drone_Advanced::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = clamp( data.m_flScale, 1, 3 );
 	data.m_nColor = m_nSkin;
 	data.m_fFlags = IsOnFire() ? ASW_GIBFLAG_ON_FIRE : 0;
-
+	*/
 	//DispatchEffect( "DroneGib", data );
 
 	//CSoundEnt::InsertSound( SOUND_PHYSICS_DANGER, GetAbsOrigin(), 256, 0.5f, this );	
@@ -1323,8 +1334,7 @@ void CASW_Drone_Advanced::Event_Killed( const CTakeDamageInfo &info )
 			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_P"))
 			newInfo.ScaleDamageForce(22.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_PDW")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG_G"))
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG"))
 			newInfo.ScaleDamageForce(30.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_ASG"))
 			newInfo.ScaleDamageForce(35.0f);
@@ -1599,12 +1609,16 @@ void CASW_Drone_Advanced::StartTask( const Task_t *pTask )
 			// check for making a marine shout out in fear
 			if (!m_bDoneAlienCloseChatter && gpGlobals->curtime > s_fNextTooCloseChatterTime)
 			{
-				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetEnemy());
-				if (pMarine && !pMarine->m_bKnockedOut)
+				CBaseEntity* pEnemy = GetEnemy();
+				if ( pEnemy && pEnemy->Classify() == CLASS_ASW_MARINE )
 				{
-					pMarine->GetMarineSpeech()->Chatter(CHATTER_ALIEN_TOO_CLOSE);
-					m_bDoneAlienCloseChatter = true;
-					s_fNextTooCloseChatterTime = gpGlobals->curtime + random->RandomInt(10, 30);
+					CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pEnemy);
+					if (!pMarine->m_bKnockedOut)
+					{
+						pMarine->GetMarineSpeech()->Chatter(CHATTER_ALIEN_TOO_CLOSE);
+						m_bDoneAlienCloseChatter = true;
+						s_fNextTooCloseChatterTime = gpGlobals->curtime + random->RandomInt(10, 30);
+					}
 				}
 			}
 			BaseClass::StartTask( pTask );
@@ -1733,6 +1747,7 @@ void CASW_Drone_Advanced::StartTask( const Task_t *pTask )
 			else
 			{
 				TaskFail(FAIL_NO_ROUTE);
+				return;
 			}
 
 			AI_NavGoal_t goal( vecCirclePos );
@@ -1839,12 +1854,22 @@ bool CASW_Drone_Advanced::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal,
 	{
 		//Msg("Drone blocked by %s\n", pMoveGoal->directTrace.pObstruction->GetClassname());		
 		// check if we collide with a door or door padding
-		CASW_Door *pDoor = dynamic_cast<CASW_Door *>( pMoveGoal->directTrace.pObstruction );
+		CASW_Door* pDoor = NULL;
+		if ( pMoveGoal->directTrace.pObstruction->Classify() == CLASS_ASW_DOOR )
+		{
+			pDoor = assert_cast<CASW_Door*>(pMoveGoal->directTrace.pObstruction);
+		}
 		if (!pDoor)
 		{
 			CASW_Door_Padding *pPadding = dynamic_cast<CASW_Door_Padding *>( pMoveGoal->directTrace.pObstruction );
 			if (pPadding)
-				pDoor = dynamic_cast<CASW_Door *>( pPadding->GetParent() );
+			{
+				CBaseEntity* pParent = pPadding->GetParent();
+				if (pParent && pParent->Classify() == CLASS_ASW_DOOR)
+				{
+					pDoor = assert_cast<CASW_Door*>(pParent);
+				}
+			}
 		}
 		if ( pDoor && OnObstructingASWDoor( pMoveGoal, pDoor, distClear, pResult ) )
 		{
@@ -1853,13 +1878,16 @@ bool CASW_Drone_Advanced::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal,
 		}
 		else
 		{
-			CASW_Drone_Advanced *pDrone = dynamic_cast<CASW_Drone_Advanced *>( pMoveGoal->directTrace.pObstruction );
-			if (pDrone && pDrone->m_hBlockingDoor.Get() != NULL)
+			if (pMoveGoal->directTrace.pObstruction->Classify() == CLASS_ASW_DRONE)
 			{
-				if (OnObstructingASWDoor( pMoveGoal, pDrone->m_hBlockingDoor.Get(), distClear, pResult ) )
+				CASW_Drone_Advanced* pDrone = assert_cast<CASW_Drone_Advanced*>(pMoveGoal->directTrace.pObstruction);
+				if (pDrone->m_hBlockingDoor.Get() != NULL)
 				{
-					//NDebugOverlay::HorzArrow(WorldSpaceCenter(), pMoveGoal->directTrace.pObstruction->WorldSpaceCenter(), 5, 255,255,0,255,true, 1.0f);
-					return true;
+					if (OnObstructingASWDoor(pMoveGoal, pDrone->m_hBlockingDoor.Get(), distClear, pResult))
+					{
+						//NDebugOverlay::HorzArrow(WorldSpaceCenter(), pMoveGoal->directTrace.pObstruction->WorldSpaceCenter(), 5, 255,255,0,255,true, 1.0f);
+						return true;
+					}
 				}
 			}
 		}
@@ -2109,7 +2137,11 @@ bool CASW_Drone_Advanced::IsHeavyDamage( const CTakeDamageInfo &info )
 	//{
 		//Msg("Drone attacked by %s\n", info.GetAttacker()->GetClassname());
 	//}
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>(pAttacker);
+
 	if (pMarine)
 	{
 		if (asw_debug_alien_damage.GetBool())
@@ -2381,6 +2413,22 @@ bool CASW_Drone_Advanced::ShouldClearOrdersOnMovementComplete()
 	}
 
 	return BaseClass::ShouldClearOrdersOnMovementComplete();
+}
+
+static const char* s_pCollisionRestoreThink = "CollisionRestoreThink";
+
+//used to avoid grenade - backside drone collision bug
+void CASW_Drone_Advanced::CollisionSaveAndRestore( float delay )
+{
+	m_nAlienCollisionGroup = GetCollisionGroup();
+	SetContextThink( &CASW_Drone_Advanced::CollisionRestoreThink, gpGlobals->curtime + delay, s_pCollisionRestoreThink );
+}
+
+//used to avoid grenade - backside drone collision bug
+void CASW_Drone_Advanced::CollisionRestoreThink()
+{
+	SetCollisionGroup( m_nAlienCollisionGroup );
+	SetContextThink( NULL, gpGlobals->curtime, s_pCollisionRestoreThink );
 }
 
 AI_BEGIN_CUSTOM_NPC( asw_drone_advanced, CASW_Drone_Advanced )

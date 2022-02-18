@@ -103,21 +103,52 @@
 	"Map"	"*"
 	"MinSkill"	"1"
 	"MaxSkill"	"2"
-	"MinHordeSize"	"9"
-	"MaxHordeSize"	"14"
+	"MinHordeSize"	"8"
+	"MaxHordeSize"	"12"
 	"MinWanderers"	"1"
 	"MaxWanderers"	"1"
-	"MinHordeWanderers"	"0"
-	"MaxHordeWanderers"	"0"
+	"MinHordeWanderers"	"1"
+	"MaxHordeWanderers"	"2"
 	"MinPrespawn"	"1"
 	"MaxPrespawn"	"1"
 	"MinPacks"	"1"
 	"MaxPacks"	"1"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
 		"NPC" {
 			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+			"SpawnChance"	"0.5"
 		}
 	}
 	"PRESPAWN" {
@@ -167,21 +198,73 @@
 	"Map"	"*"
 	"MinSkill"	"3"
 	"MaxSkill"	"3"
-	"MinHordeSize"	"9"
-	"MaxHordeSize"	"14"
+	"MinHordeSize"	"8"
+	"MaxHordeSize"	"12"
 	"MinWanderers"	"1"
 	"MaxWanderers"	"1"
-	"MinHordeWanderers"	"0"
-	"MaxHordeWanderers"	"0"
+	"MinHordeWanderers"	"1"
+	"MaxHordeWanderers"	"2"
 	"MinPrespawn"	"1"
 	"MaxPrespawn"	"1"
 	"MinPacks"	"1"
 	"MaxPacks"	"2"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
 		"NPC" {
 			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+			"SpawnChance"	"0.5"
+		}
+	}
+	"HORDE_WANDERER" {
+		"SelectionWeight"	"0.25"
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
 		}
 	}
 	"PRESPAWN" {
@@ -231,21 +314,76 @@
 	"Map"	"*"
 	"MinSkill"	"4"
 	"MaxSkill"	"5"
-	"MinHordeSize"	"9"
-	"MaxHordeSize"	"14"
+	"MinHordeSize"	"8"
+	"MaxHordeSize"	"12"
 	"MinWanderers"	"1"
 	"MaxWanderers"	"1"
-	"MinHordeWanderers"	"0"
-	"MaxHordeWanderers"	"0"
+	"MinHordeWanderers"	"1"
+	"MaxHordeWanderers"	"2"
 	"MinPrespawn"	"1"
 	"MaxPrespawn"	"1"
 	"MinPacks"	"2"
 	"MaxPacks"	"3"
 
-	"HORDE+WANDERER" {
+	"HORDE" {
 		"SelectionWeight"	"1"
 		"NPC" {
 			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"HORDE_WANDERER+WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+			"SpawnChance"	"0.5"
+		}
+	}
+	"HORDE_WANDERER" {
+		"SelectionWeight"	"0.5"
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite_defanged"
 		}
 	}
 	"PRESPAWN" {

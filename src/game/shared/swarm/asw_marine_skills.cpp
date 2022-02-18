@@ -31,16 +31,19 @@ ConVar asw_skill_healing_charges_base("asw_skill_healing_charges_base", "4", FCV
 ConVar asw_skill_self_healing_charges_base("asw_skill_self_healing_charges_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_medkit_hps_base("asw_skill_healing_medkit_hps_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_base("asw_skill_healing_hps_base", "25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_base("asw_skill_healing_grenade_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_grenade_base("asw_skill_healing_grenade_base", "120", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_charges_base("asw_skill_healing_gun_charges_base", "40", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_base("asw_skill_healing_gun_base", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_amp_gun_charges_base("asw_skill_healing_amp_gun_charges_base", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_xenowounds_base("asw_skill_xenowounds_base", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_drugs_base("asw_skill_drugs_base", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_drugs_healamp_base("asw_skill_drugs_healamp_base", "90", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_hacking_speed_base("asw_skill_hacking_speed_base", "2.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_scanner_base("asw_skill_scanner_base", "600", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_welding_base("asw_skill_engineering_welding_base", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_sentry_base("asw_skill_engineering_sentry_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_firerate_base("asw_skill_engineering_firerate_base", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_base("asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_base("asw_skill_grenades_dmg_base", "80", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -76,17 +79,20 @@ ConVar asw_skill_piercing_step("asw_skill_piercing_step", "0.20", FCVAR_REPLICAT
 ConVar asw_skill_healing_charges_step("asw_skill_healing_charges_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_self_healing_charges_step("asw_skill_self_healing_charges_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_step("asw_skill_healing_hps_step", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_step("asw_skill_healing_grenade_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_grenade_step("asw_skill_healing_grenade_step", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_charges_step("asw_skill_healing_gun_charges_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_step("asw_skill_healing_gun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_amp_gun_charges_step("asw_skill_healing_amp_gun_charges_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_medkit_hps_step("asw_skill_healing_medkit_hps_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_xenowounds_step("asw_skill_xenowounds_step", "-25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_drugs_step("asw_skill_drugs_step", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_drugs_healamp_step("asw_skill_drugs_healamp_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_hacking_speed_step("asw_skill_hacking_speed_step", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_scanner_step("asw_skill_scanner_step", "150", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_welding_step("asw_skill_engineering_welding_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_sentry_step("asw_skill_engineering_sentry_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_firerate_step("asw_skill_engineering_firerate_step", "0.005", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_step("asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step("asw_skill_grenades_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -234,6 +240,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 				case ASW_MARINE_SUBSKILL_HEAL_GRENADE_HEAL_AMOUNT: return asw_skill_healing_grenade_base.GetFloat() + asw_skill_healing_grenade_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES: return asw_skill_healing_gun_charges_base.GetFloat() + asw_skill_healing_gun_charges_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT: return asw_skill_healing_gun_base.GetFloat() + asw_skill_healing_gun_step.GetFloat() * iSkillPoints; break;
+				case ASW_MARINE_SUBSKILL_HEALAMP_GUN_CHARGES: return asw_skill_healing_amp_gun_charges_base.GetFloat() + asw_skill_healing_amp_gun_charges_step.GetFloat() * iSkillPoints; break;
 				default: return asw_skill_healing_medkit_hps_base.GetFloat() + asw_skill_healing_medkit_hps_step.GetFloat() * iSkillPoints; break;
 			}
 			break;
@@ -241,7 +248,14 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_xenowounds_base.GetFloat() + asw_skill_xenowounds_step.GetFloat() * iSkillPoints;
 			break;
 		case ASW_MARINE_SKILL_DRUGS:
-			return asw_skill_drugs_base.GetFloat() + asw_skill_drugs_step.GetFloat() * iSkillPoints;
+			switch ( iSubSkill )
+			{
+			default:
+			case ASW_MARINE_SUBSKILL_STIM_DURATION:
+				return asw_skill_drugs_base.GetFloat() + asw_skill_drugs_step.GetFloat() * iSkillPoints;
+			case ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES:
+				return asw_skill_drugs_healamp_base.GetFloat() + asw_skill_drugs_healamp_step.GetFloat() * iSkillPoints;
+			}
 			break;
 		case ASW_MARINE_SKILL_HACKING:
 			if (iSubSkill == ASW_MARINE_SUBSKILL_HACKING_TUMBLER_COUNT_REDUCTION)
@@ -267,10 +281,12 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SKILL_ENGINEERING:
 			if ( iSkillPoints <= 0 )
 				return 0.0f;
-			if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_WELDING)			
+			if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_WELDING)
 				return asw_skill_engineering_welding_base.GetFloat() + asw_skill_engineering_welding_step.GetFloat() * iSkillPoints;
-			else
+			else if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY)
 				return asw_skill_engineering_sentry_base.GetFloat() + asw_skill_engineering_sentry_step.GetFloat() * iSkillPoints;
+			else //if (iSubSkill == ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE)
+				return asw_skill_engineering_firerate_base.GetFloat() + asw_skill_engineering_firerate_step.GetFloat() * iSkillPoints;
 			break;
 		case ASW_MARINE_SKILL_ACCURACY:
 			switch (iSubSkill)

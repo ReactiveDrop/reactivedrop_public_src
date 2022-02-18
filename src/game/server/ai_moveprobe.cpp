@@ -815,6 +815,7 @@ void CAI_MoveProbe::GroundMoveLimit( const Vector &vecStart, const Vector &vecEn
 	// Let's try to avoid invalid routes
 	TestGroundMove( vecActualStart, vecDesiredEnd, collisionMask, pctToCheckStandPositions, testGroundMoveFlags, pTrace );
 
+#if VEHICLE_CHECKS
 	// Check to see if the target is in a vehicle and the vehicle is blocking our way
 	bool bVehicleMatchesObstruction = false;
 
@@ -828,8 +829,12 @@ void CAI_MoveProbe::GroundMoveLimit( const Vector &vecStart, const Vector &vecEn
 				bVehicleMatchesObstruction = true;
 		}
 	}
-
-	if ( (pTarget && (pTarget == pTrace->pObstruction)) || bVehicleMatchesObstruction )
+#endif
+	if ( (pTarget && (pTarget == pTrace->pObstruction)) 
+#if VEHICLE_CHECKS
+		|| bVehicleMatchesObstruction 
+#endif
+		)
 	{
 		// Collided with target entity, return there was no collision!!
 		// but leave the end trace position

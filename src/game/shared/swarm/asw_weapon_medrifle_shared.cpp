@@ -154,8 +154,9 @@ void CASW_Weapon_MedRifle::SecondaryAttack()
 		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5;
 		return;
 	}
-
-	Vector vecSrc = pMarine->Weapon_ShootPosition( );
+#ifndef CLIENT_DLL
+	Vector vecSrc = pMarine->Weapon_ShootPosition();
+#endif
 	Vector vecAiming = vec3_origin;
 
 	if ( pPlayer && pMarine->IsInhabited() )
@@ -208,7 +209,7 @@ void CASW_Weapon_MedRifle::SecondaryAttack()
 			// Search for nearby entities to heal
 			if ( !hHealEntity )
 			{
-				if ( pPlayer->GetHighlightEntity() && pPlayer->GetHighlightEntity()->Classify() == CLASS_ASW_MARINE )
+				if ( pPlayer && pPlayer->GetHighlightEntity() && pPlayer->GetHighlightEntity()->Classify() == CLASS_ASW_MARINE )
 				{
 					CASW_Marine* pTargetMarine = static_cast< CASW_Marine* >( pPlayer->GetHighlightEntity() );
 					if ( pTargetMarine )
@@ -717,11 +718,11 @@ void CASW_Weapon_MedRifle::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 	if( pMarine->IsInhabited() )
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		CASW_Marine *pTargetMarine = NULL;
-		if ( pEntity )
-		{
-			pTargetMarine = CASW_Marine::AsMarine( pEntity );
-		}
+		//CASW_Marine *pTargetMarine = NULL;
+		//if ( pEntity )
+		//{
+		//	pTargetMarine = CASW_Marine::AsMarine( pEntity );
+		//}
 
 		Vector vecUp, vecRight;
 		QAngle angDir;

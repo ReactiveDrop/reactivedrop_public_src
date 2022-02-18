@@ -22,6 +22,9 @@
 
 #define MEDKIT_HEAL_AMOUNT 50
 
+ConVar rd_medkit_overheal("rd_medkit_overheal", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If marine health is at max level medkit is used for additional small health boost");
+ConVar rd_medkit_overheal_divider("rd_medkit_overheal_divider", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Divider for medkit overhealth amount from base healing value. Bigger divider lesser health it adds");
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Medkit, DT_ASW_Weapon_Medkit )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Medkit, DT_ASW_Weapon_Medkit )
@@ -80,20 +83,28 @@ void CASW_Weapon_Medkit::SelfHeal()
 
 	if (pMarine)		// firing from a marine
 	{
-		if (pMarine->GetHealth() >= pMarine->GetMaxHealth())		// already on full health
+		if (pMarine->GetHealth() > pMarine->GetMaxHealth())		// already more than full health
 			return;
 
-		if (pMarine->GetHealth() <= 0)		// aleady dead!
+		if (pMarine->GetHealth() <= 0)							// aleady dead!
 			return;
 
-		if (pMarine->m_bSlowHeal)			// already healing
+		if (pMarine->m_bSlowHeal)								// already healing
 			return;
 
-		if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+		if (pMarine->GetFlags() & FL_FROZEN)					// don't allow this if the marine is frozen
 			return;
 
 		if (m_iClip1 <= 0)
 			return;
+
+		bool bShouldUseOverHealth = false;
+		if (pMarine->GetHealth() == pMarine->GetMaxHealth())	// exactly on full health
+		{ 
+			bShouldUseOverHealth = rd_medkit_overheal.GetBool();
+			if (!bShouldUseOverHealth)
+				return;
+		}
 
 		// MUST call sound before removing a round from the clip of a CMachineGun
 		WeaponSound(SINGLE);
@@ -106,9 +117,19 @@ void CASW_Weapon_Medkit::SelfHeal()
 #ifndef CLIENT_DLL
 		bool bMedic = (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid());
 		// put a slow heal onto the marine, play a particle effect
-		if (!pMarine->m_bSlowHeal && pMarine->GetHealth() < pMarine->GetMaxHealth())
+		if ( !pMarine->m_bSlowHeal )
 		{
-			pMarine->AddSlowHeal( GetHealAmount(), 1, pMarine, this );
+			if ( bShouldUseOverHealth )
+			{
+				float divider = rd_medkit_overheal_divider.GetFloat();
+				divider = clamp(divider, 1, 100);
+				pMarine->AllowOverHeal(true);
+				pMarine->AddSlowHeal( (int)( GetHealAmount() / divider ), 1, pMarine, this );
+			}
+			else
+			{
+				pMarine->AddSlowHeal( GetHealAmount(), 1, pMarine, this );
+			}
 
 			// Fire event
 			IGameEvent * event = gameeventmanager->CreateEvent( "player_heal" );

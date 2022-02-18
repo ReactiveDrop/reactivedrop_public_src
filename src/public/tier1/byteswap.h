@@ -240,7 +240,7 @@ private:
 			Assert( "Invalid size in CByteswap::LowLevelByteSwap" && 0 );
 		}
 #else
-		for( int i = 0; i < sizeof(T); i++ )
+		for( unsigned int i = 0; i < sizeof(T); i++ )
 		{
 			((unsigned char* )&temp)[i] = ((unsigned char*)input)[sizeof(T)-(i+1)]; 
 		}

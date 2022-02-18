@@ -799,7 +799,7 @@ void FX_Sparks( const Vector &pos, int nMagnitude, int nTrailLength, const Vecto
 
 	if ( pSparkMaterial )
 	{
-		hMaterial = pSparkEmitter->GetPMaterial( pSparkMaterial );
+		hMaterial = pSparkEmitter2->GetPMaterial( pSparkMaterial );
 	}
 	else
 	{

@@ -124,7 +124,7 @@ void CASWHudCrosshair::ApplySchemeSettings( IScheme *scheme )
 	m_pTurretTextTopLeftGlow->SetFgColor(scheme->GetColor("LightBlue", Color(128,128,128,255)));
 	m_pTurretTextTopLeftGlow->SetPaintBackgroundEnabled( false );
 	m_pTurretTextTopRightGlow->SetFont( scheme->GetFont( "DefaultBlur", true ) );
-	m_pTurretTextTopLeftGlow->SetFgColor(scheme->GetColor("LightBlue", Color(128,128,128,255)));
+	m_pTurretTextTopRightGlow->SetFgColor(scheme->GetColor("LightBlue", Color(128, 128, 128, 255)));
 	m_pTurretTextTopRightGlow->SetPaintBackgroundEnabled( false );
 }
 
@@ -421,7 +421,7 @@ void CASWHudCrosshair::PaintReloadProgressBar( void )
 	GetCurrentPos( x, y );
 	int nCrosshair = GetCurrentCrosshair( x, y );
 
-	if ( pWeapon && pWeapon->IsReloading() )
+	if ( pWeapon->IsReloading() )
 	{	
 		m_bIsReloading = true;
 
@@ -871,7 +871,7 @@ int CASWHudCrosshair::GetCurrentCrosshair( int x, int y )
 	return m_nCrosshairTexture;
 }
 
-ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "100" );
+ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "52", FCVAR_CHEAT );
 
 void CASWHudCrosshair::DrawSniperScope( int x, int y )
 {

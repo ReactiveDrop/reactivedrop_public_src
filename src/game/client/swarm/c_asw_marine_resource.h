@@ -68,6 +68,7 @@ public:
 
 	// info accessors used by the HUD portrait bars  ('percent' is a bad term here, they return a number from 0 to 1, as a fraction of the total health/ammo/whatever)	
 	float GetHealthPercent();
+	float GetOverHealthPercent();
 	float GetAmmoPercent();
 	float GetClipsPercent();
 	bool IsLowAmmo() { return (GetAmmoPercent() <= 0.2f); }

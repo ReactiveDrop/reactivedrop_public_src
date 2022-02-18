@@ -21,6 +21,8 @@
 extern ConVar rd_weapons_regular_class_unrestricted;
 extern ConVar rd_weapons_extra_class_unrestricted;
 
+ConVar rda_better_weapon_chooser("rda_better_weapon_chooser", "0", FCVAR_ARCHIVE, "Set to 1 to make weapon chooser to show more items");
+
 CNB_Select_Weapon_Entry::CNB_Select_Weapon_Entry( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
@@ -64,9 +66,16 @@ void CNB_Select_Weapon_Entry::PerformLayout()
 
 	if ( m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA )
 	{
-		SetSize( YRES( 60 ), YRES( 113 ) );
-		m_pWeaponImage->SetSize( YRES( 50 ), YRES( 50 ) );
-
+		if (rda_better_weapon_chooser.GetBool())
+		{
+			SetSize( YRES( 30 ), YRES( 80 ) );
+			m_pWeaponImage->SetSize( YRES( 25 ), YRES( 25 ) );
+		}
+		else
+		{
+			SetSize( YRES( 60 ), YRES( 113 ) );
+			m_pWeaponImage->SetSize( YRES( 50 ), YRES( 50 ) );
+		}
 		int x, y, w, t;
 		m_pWeaponImage->GetBounds( x, y, w, t );
 		m_pLockedImage->SetBounds( x, y, w, t );
@@ -77,8 +86,16 @@ void CNB_Select_Weapon_Entry::PerformLayout()
 	}
 	else
 	{
-		SetSize( YRES( 118 ), YRES( 113 ) );
-		m_pWeaponImage->SetSize( YRES( 100 ), YRES( 50 ) );
+		if (rda_better_weapon_chooser.GetBool())
+		{
+			SetSize( YRES( 52 ), YRES( 80 ) );
+			m_pWeaponImage->SetSize( YRES( 50 ), YRES( 25 ) );
+		}
+		else
+		{
+			SetSize( YRES( 118 ), YRES( 113 ) );
+			m_pWeaponImage->SetSize( YRES( 100 ), YRES( 50 ) );
+		}
 		int x, y, w, t;
 		m_pWeaponImage->GetBounds( x, y, w, t );
 		m_pLockedImage->SetBounds( x, y, w, t );
@@ -166,7 +183,10 @@ void CNB_Select_Weapon_Entry::OnThink()
 		m_pClassImage->SetImage( "swarm/ClassIcons/TechClassIcon" );
 		m_pClassLabel->SetText( "#asw_requires_tech" );
 		m_pClassImage->SetVisible( true );
-		m_pClassLabel->SetVisible( true );
+		if (rda_better_weapon_chooser.GetBool())
+			m_pClassLabel->SetVisible( false );
+		else
+			m_pClassLabel->SetVisible( true );
 		if ( pProfile->GetMarineClass() != MARINE_CLASS_TECH )
 			m_bCanEquip = false;
 	}
@@ -175,7 +195,10 @@ void CNB_Select_Weapon_Entry::OnThink()
 		m_pClassImage->SetImage( "swarm/ClassIcons/MedicClassIcon" );
 		m_pClassLabel->SetText( "#asw_requires_medic" );
 		m_pClassImage->SetVisible( true );
-		m_pClassLabel->SetVisible( true );
+		if (rda_better_weapon_chooser.GetBool())
+			m_pClassLabel->SetVisible( false );
+		else
+			m_pClassLabel->SetVisible( true );
 		if ( pProfile->GetMarineClass() != MARINE_CLASS_MEDIC )
 			m_bCanEquip = false;
 	}
@@ -184,7 +207,10 @@ void CNB_Select_Weapon_Entry::OnThink()
 		m_pClassImage->SetImage( "swarm/ClassIcons/SpecialWeaponsClassIcon" );
 		m_pClassLabel->SetText( "#asw_requires_sw" );
 		m_pClassImage->SetVisible( true );
-		m_pClassLabel->SetVisible( true );
+		if (rda_better_weapon_chooser.GetBool())
+			m_pClassLabel->SetVisible( false );
+		else
+			m_pClassLabel->SetVisible( true );
 		if ( pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
 			m_bCanEquip = false;
 	}
@@ -193,7 +219,10 @@ void CNB_Select_Weapon_Entry::OnThink()
 		m_pClassImage->SetImage( "swarm/ClassIcons/NCOClassIcon" );
 		m_pClassLabel->SetText( "#asw_requires_nco" );
 		m_pClassImage->SetVisible( true );
-		m_pClassLabel->SetVisible( true );
+		if (rda_better_weapon_chooser.GetBool())
+			m_pClassLabel->SetVisible( false );
+		else
+			m_pClassLabel->SetVisible( true );
 		if ( pProfile->GetMarineClass() != MARINE_CLASS_NCO )
 			m_bCanEquip = false;
 	}

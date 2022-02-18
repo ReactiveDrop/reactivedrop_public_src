@@ -262,7 +262,7 @@ CTraceFilterSimple( NULL, collisionGroup )
 bool CASW_Trace_Filter_Skip_Aliens::ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
 {
 	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
-	if ( pEntity && dynamic_cast<CASW_Alien*>( pEntity ) != NULL )
+	if ( pEntity && pEntity->IsAlienClassType() )
 		return false;
 
 	return CTraceFilterSimple::ShouldHitEntity( pHandleEntity, contentsMask );

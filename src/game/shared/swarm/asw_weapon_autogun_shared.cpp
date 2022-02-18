@@ -267,7 +267,7 @@ void CASW_Weapon_Autogun::CreateGunSmoke()
 
 void CASW_Weapon_Autogun::UpdateOnRemove()
 {
-	if ( m_hGunSmoke.IsValid() )
+	if ( m_hGunSmoke.IsValid() && m_hGunSmoke.Get() )
 	{
 		UTIL_Remove( m_hGunSmoke.Get() );
 	}

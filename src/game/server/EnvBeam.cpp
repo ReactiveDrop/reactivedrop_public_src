@@ -406,26 +406,13 @@ void CEnvBeam::Strike( void )
 	CBaseEntity *pStart = RandomTargetname( STRING(m_iszStartEntity) );
 	CBaseEntity *pEnd = RandomTargetname( STRING(m_iszEndEntity) );
 
-	// if the end entity is missing, we use the Hammer-specified vector offset instead.
-	bool bEndPointFromEntity = pEnd != NULL;
-
-	if ( pStart == NULL || ( !bEndPointFromEntity && !HasEndPointHandle() ) )
+	if ( pStart == NULL || pEnd == NULL )
 		return;
 
-	Vector vEndPointLocation;
-	if ( bEndPointFromEntity )
-	{
-		 vEndPointLocation = pEnd->GetAbsOrigin() ;
-	}
-	else
-	{
-		EntityToWorldSpace( m_vEndPointRelative, &vEndPointLocation );
-	}
-
-	m_speed = clamp( m_speed, 0, MAX_BEAM_SCROLLSPEED );
+	m_speed = clamp( m_speed, 0, (int) MAX_BEAM_SCROLLSPEED );
 	
 	bool pointStart = IsStaticPointEntity( pStart );
-	bool pointEnd = !bEndPointFromEntity || IsStaticPointEntity( pEnd );
+	bool pointEnd = IsStaticPointEntity( pEnd );
 
 	if ( pointStart || pointEnd )
 	{
@@ -439,7 +426,7 @@ void CEnvBeam::Strike( void )
 			pointStart ? 0 : pStart->entindex(),
 			pointStart ? &pStart->GetAbsOrigin() : NULL,
 			pointEnd ? 0 : pEnd->entindex(),
-			pointEnd ? &vEndPointLocation : NULL,
+			pointEnd ? &pEnd->GetAbsOrigin() : NULL,
 			m_spriteTexture,
 			0,	// No halo
 			m_frameStart,
@@ -507,7 +494,7 @@ void CEnvBeam::Strike( void )
 }
 
 
-class CTraceFilterPlayersNPCs : public ITraceFilter
+class CTraceFilterNPCs : public ITraceFilter
 {
 public:
 	bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
@@ -515,7 +502,7 @@ public:
 		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
 		if ( pEntity )
 		{
-			if ( pEntity->IsPlayer() || pEntity->MyNPCPointer() )
+			if ( pEntity->MyNPCPointer() )
 				return true;
 		}
 
@@ -527,7 +514,7 @@ public:
 	}
 };
 
-class CTraceFilterPlayersNPCsPhysicsProps : public ITraceFilter
+class CTraceFilterNPCsPhysicsProps : public ITraceFilter
 {
 public:
 	bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
@@ -535,7 +522,7 @@ public:
 		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
 		if ( pEntity )
 		{
-			if ( pEntity->IsPlayer() || pEntity->MyNPCPointer() || pEntity->m_iClassname == g_iszPhysicsPropClassname )
+			if ( pEntity->MyNPCPointer() || pEntity->m_iClassname == g_iszPhysicsPropClassname )
 				return true;
 		}
 
@@ -613,12 +600,12 @@ void CEnvBeam::UpdateThink( void )
 
 		if( m_TouchType == touch_player_or_npc_or_physicsprop )
 		{
-			CTraceFilterPlayersNPCsPhysicsProps traceFilter;
+			CTraceFilterNPCsPhysicsProps traceFilter;
 			enginetrace->TraceRay( ray, MASK_SHOT, &traceFilter, &tr );
 		}
 		else
 		{
-			CTraceFilterPlayersNPCs traceFilter;
+			CTraceFilterNPCs traceFilter;
 			enginetrace->TraceRay( ray, MASK_SHOT, &traceFilter, &tr );
 		}
 

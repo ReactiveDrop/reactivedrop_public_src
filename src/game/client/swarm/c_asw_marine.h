@@ -1,6 +1,6 @@
 #ifndef _INCLUDED_C_ASW_MARINE_H
 #define _INCLUDED_C_ASW_MARINE_H
-#ifdef WIN_32
+#ifdef _WIN32
 #pragma once
 #endif
 
@@ -114,6 +114,7 @@ public:
 	virtual void FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus=0 );
 	CBaseCombatWeapon* GetLastWeaponSwitchedTo();
 	EHANDLE m_hLastWeaponSwitchedTo;
+	bool m_bLastWeaponBeforeTempWasSecondary;
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
 	virtual void ProcessMuzzleFlashEvent();
 	C_ASW_Weapon* GetActiveASWWeapon(void) const;

@@ -62,7 +62,7 @@ bool CASW_Objective_Escape::OtherObjectivesComplete()
 		return false;
 	
 	CASW_Game_Resource* pGameResource = ASWGameResource();
-	for (int i=0;i<12;i++)
+	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
 	{
 		CASW_Objective* pObjective = pGameResource->GetObjective(i);
 		// if another objective isn't optional and isn't complete, then we're not ready to escape

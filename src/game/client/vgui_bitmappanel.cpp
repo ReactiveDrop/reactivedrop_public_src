@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage(0)
+CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage( NULL )
 {
 	SetPaintBackgroundEnabled( false );
 	m_szMouseOverText[ 0 ] = 0;
@@ -30,7 +30,7 @@ CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage(0)
 }
 
 CBitmapPanel::CBitmapPanel( vgui::Panel *pParent, const char *pName ) : 
-	BaseClass( pParent, pName ), m_pImage(0)
+	BaseClass( pParent, pName ), m_pImage( NULL )
 {
 	SetPaintBackgroundEnabled( false );
 	m_szMouseOverText[ 0 ] = 0;
@@ -177,6 +177,10 @@ const char *CBitmapPanel::GetMouseOverText( void )
 //-----------------------------------------------------------------------------
 void CBitmapPanel::SetImage( BitmapImage *pImage )
 {
+	if ( m_pImage && m_bOwnsImage )
+	{
+		delete m_pImage;
+	}
 	m_pImage = pImage;
 	m_bOwnsImage = (pImage == NULL);
 

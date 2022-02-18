@@ -56,6 +56,9 @@ public:
 	virtual CBaseEntity* GetProp() { return m_hPanelProp; }
 	// link to the prop representing us
 	CNetworkHandle( CBaseEntity, m_hPanelProp );
+
+	CNetworkVar( string_t, m_iHeldObjectName );
+	bool CheckHeldObject( CASW_Marine *pMarine );
 };
 
 #endif /* _DEFINED_ASW_USE_AREA_H */

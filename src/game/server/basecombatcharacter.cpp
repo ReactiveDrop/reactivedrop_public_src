@@ -2271,11 +2271,12 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	float flDamage = info.GetDamage();
+	CBaseEntity* pInflictor = info.GetInflictor();
 #ifdef RD_VSCRIPT_INTERCEPT_ENTITY_DAMAGE
 	if ( m_ScriptScope.IsInitialized() && m_ScriptScope.ValueExists( "OnTakeDamage_Alive" ) )
 	{
 		ScriptVariant_t newDamage;
-		ScriptStatus_t nStatus = m_ScriptScope.Call( "OnTakeDamage_Alive", &newDamage, ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+		ScriptStatus_t nStatus = m_ScriptScope.Call( "OnTakeDamage_Alive", &newDamage, ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
 		if ( nStatus != SCRIPT_DONE )
 		{
 			DevWarning( "%s OnTakeDamage_Alive VScript function did not finish!\n", GetDebugName() );
@@ -2288,7 +2289,7 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any" ) )
 	{
 		ScriptVariant_t newDamage;
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
 		if ( nStatus != SCRIPT_DONE )
 		{
 			DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
@@ -2307,7 +2308,7 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any", hModeScript ) )
 			{
 				ScriptVariant_t newDamage;
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( info.GetInflictor() ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
 				if ( nStatus != SCRIPT_DONE )
 				{
 					DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
@@ -2325,9 +2326,9 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// grab the vector of the incoming attack. ( pretend that the inflictor is a little lower than it really is, so the body will tend to fly upward a bit).
 	Vector vecDir = vec3_origin;
-	if (info.GetInflictor())
+	if ( pInflictor )
 	{
-		vecDir = info.GetInflictor()->WorldSpaceCenter() - Vector ( 0, 0, 10 ) - WorldSpaceCenter();
+		vecDir = pInflictor->WorldSpaceCenter() - Vector ( 0, 0, 10 ) - WorldSpaceCenter();
 		VectorNormalize(vecDir);
 	}
 	g_vecAttackDir = vecDir;
@@ -2752,7 +2753,7 @@ Relationship_t *CBaseCombatCharacter::FindEntityRelationship( CBaseEntity *pTarg
 		}
 	}
 	
-	CBaseCombatCharacter *pBaseCombatCharacter = dynamic_cast<CBaseCombatCharacter *>( pTarget );
+	CBaseCombatCharacter *pBaseCombatCharacter = pTarget->MyCombatCharacterPointer();
 	if (pBaseCombatCharacter)
 	{
 		int nFaction = pBaseCombatCharacter->GetFaction();
@@ -3059,12 +3060,6 @@ void CBaseCombatCharacter::VScriptGiveAmmo( int iCount, int iAmmoIndex )
 
 
 ConVar	phys_stressbodyweights( "phys_stressbodyweights", "5.0" );
-void CBaseCombatCharacter::VPhysicsUpdate( IPhysicsObject *pPhysics )
-{
-	ApplyStressDamage( pPhysics, false );
-	BaseClass::VPhysicsUpdate( pPhysics );
-}
-
 float CBaseCombatCharacter::CalculatePhysicsStressDamage( vphysics_objectstress_t *pStressOut, IPhysicsObject *pPhysics )
 {
 	// stress damage hack.

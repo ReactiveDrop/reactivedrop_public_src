@@ -865,6 +865,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 	m_bFreezable = pKV->GetBool( "Freezable", true );
 	m_bTeslable = pKV->GetBool( "Teslable", true );
 	m_bFlinches = pKV->GetBool( "Flinches", true );
+	m_bGrenadeReflector = pKV->GetBool("Reflector", false);
 
 	if ( pKV->GetString( "VScript", NULL ) == NULL )
 	{

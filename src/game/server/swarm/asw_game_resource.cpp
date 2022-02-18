@@ -290,7 +290,7 @@ void CASW_Game_Resource::RemoveAMarine()
 
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected() )
 		{
@@ -404,8 +404,7 @@ CASW_Marine_Resource* CASW_Game_Resource::GetMarineResource(int i)
 
 CASW_Scanner_Info* CASW_Game_Resource::GetScannerInfo()
 {
-	CASW_Scanner_Info* pScanner = dynamic_cast<CASW_Scanner_Info*>(m_hScannerInfo.Get());
-	return pScanner;
+	return m_hScannerInfo.Get();
 }
 
 void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
@@ -441,7 +440,7 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 	m_Leader = pPlayer;
 	m_iLeaderIndex = pPlayer->entindex();
 	
-	if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState()==ASW_GS_DEBRIEF)
+	if ( ASWGameRules() && (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF) )
 	{
 		// unready leader
 		int iPlayerIndex = m_iLeaderIndex - 1;
@@ -456,8 +455,7 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 
 CASW_Campaign_Save* CASW_Game_Resource::GetCampaignSave()
 {
-	CASW_Campaign_Save* pSave = dynamic_cast<CASW_Campaign_Save*>(m_hCampaignSave.Get());
-	return pSave;
+	return m_hCampaignSave.Get();
 }
 
 CASW_Campaign_Save* CASW_Game_Resource::CreateCampaignSave()
@@ -518,7 +516,7 @@ void CASW_Game_Resource::UpdateMarineSkills( CASW_Campaign_Save *pCampaign )
 
 bool CASW_Game_Resource::SetMarineSkill( int nProfileIndex, int nSkillSlot, int nValue )
 {
-	if ( nProfileIndex < 0 || nProfileIndex > ASW_NUM_MARINE_PROFILES )
+	if ( nProfileIndex < 0 || nProfileIndex >= ASW_NUM_MARINE_PROFILES )
 		return false;
 	if ( nValue < 0 || nValue > 5 )
 		return false;
@@ -539,7 +537,7 @@ bool CASW_Game_Resource::SetMarineSkill( int nProfileIndex, int nSkillSlot, int 
 
 CASW_Player* CASW_Game_Resource::GetLeader()
 {
-	return dynamic_cast<CASW_Player*>(m_Leader.Get());
+	return m_Leader.Get();
 }
 
 CASW_Marine* CASW_Game_Resource::FindMarineByVoiceType( ASW_Voice_Type voice )

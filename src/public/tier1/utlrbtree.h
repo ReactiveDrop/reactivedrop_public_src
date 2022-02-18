@@ -1133,7 +1133,12 @@ void CUtlRBTree<T, I, L, M>::RemoveAll()
 	}
 
 	// Clear everything else out
-	m_Root = InvalidIndex(); 
+	m_Root = InvalidIndex();
+	// Technically, this iterator could become invalid. It will not, because it's 
+	// always the same iterator. If we don't clear this here, the state of this
+	// container will be invalid after we start inserting elements again.
+	m_LastAlloc = m_Elements.InvalidIterator();
+	m_FirstFree = InvalidIndex();
 	m_NumElements = 0;
 
 	Assert( IsValid() );
@@ -1147,9 +1152,7 @@ template < class T, class I, typename L, class M >
 void CUtlRBTree<T, I, L, M>::Purge()
 {
 	RemoveAll();
-	m_FirstFree = InvalidIndex();
 	m_Elements.Purge();
-	m_LastAlloc = m_Elements.InvalidIterator();
 }
 
 
@@ -1169,7 +1172,10 @@ I CUtlRBTree<T, I, L, M>::FirstInorder() const
 template < class T, class I, typename L, class M >
 I CUtlRBTree<T, I, L, M>::NextInorder( I i ) const
 {
+	// Don't go into an infinite loop if it's a bad index
 	Assert(IsValidIndex(i));
+	if ( !IsValidIndex(i) )
+		return InvalidIndex();
 
 	if (RightChild(i) != InvalidIndex())
 	{
@@ -1192,7 +1198,10 @@ I CUtlRBTree<T, I, L, M>::NextInorder( I i ) const
 template < class T, class I, typename L, class M >
 I CUtlRBTree<T, I, L, M>::PrevInorder( I i ) const
 {
+	// Don't go into an infinite loop if it's a bad index
 	Assert(IsValidIndex(i));
+	if ( !IsValidIndex(i) )
+		return InvalidIndex();
 
 	if (LeftChild(i) != InvalidIndex())
 	{

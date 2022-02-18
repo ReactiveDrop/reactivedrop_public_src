@@ -4,6 +4,7 @@
 #include "asw_marine.h"
 #include "asw_shareddefs.h"
 #include "asw_marine_skills.h"
+#include "world.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -63,6 +64,18 @@ bool CASW_BuffGrenade_Projectile::ShouldTouchEntity( CBaseEntity *pEntity )
 	return false;
 }
 
+void CASW_BuffGrenade_Projectile::OnBurnout()
+{
+	FOR_EACH_VEC( m_hBuffedMarines, i )
+	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( m_hBuffedMarines[i] );
+		if ( pMarine )
+		{
+			pMarine->RemoveDamageBuff();
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Add the buff to this marine
 //-----------------------------------------------------------------------------
@@ -107,6 +120,38 @@ bool CASW_BuffGrenade_Projectile::StopAOE( CBaseEntity *pEntity )
 	return bFound;
 }
 
+void CASW_BuffGrenade_Projectile::AttachToMarine( CASW_Marine *pMarine )
+{
+	SetAbsVelocity( vec3_origin );
+	AOEGrenadeTouch( GetWorldEntity() );
+
+	CBaseEntity *pTouchTrigger = m_hTouchTrigger;
+	Assert( pTouchTrigger );
+	if ( !pTouchTrigger )
+		return;
+
+	int iAttachment = pMarine->LookupAttachment( "manhack" );
+	SetParent( pMarine, iAttachment );
+	pTouchTrigger->SetParent( pMarine, iAttachment );
+	SetLocalOrigin( vec3_origin );
+	pTouchTrigger->SetLocalOrigin( vec3_origin );
+	SetRenderMode( kRenderNone );
+
+	m_vecLastOrigin = GetAbsOrigin();
+	SetContextThink( &CASW_BuffGrenade_Projectile::LoseTimeForMoving, gpGlobals->curtime + 1.0f, "BuffGrenadeMoved" );
+}
+
+void CASW_BuffGrenade_Projectile::LoseTimeForMoving()
+{
+	Vector vecOrigin = GetAbsOrigin();
+	if ( !VectorsAreEqual( m_vecLastOrigin, vecOrigin, 2.0f ) )
+	{
+		SetDuration( MAX( GetDuration() - 1.0f, 0 ) );
+		m_vecLastOrigin = vecOrigin;
+	}
+
+	SetNextThink( gpGlobals->curtime + 1.0f, "BuffGrenadeMoved" );
+}
 
 CASW_BuffGrenade_Projectile* CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity,
 																				   const AngularImpulse &angVelocity, CBaseEntity *pOwner,

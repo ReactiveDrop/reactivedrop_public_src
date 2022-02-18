@@ -300,8 +300,7 @@ void CASW_Ranger::Event_Killed( const CTakeDamageInfo &info )
 			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_P"))
 			newInfo.ScaleDamageForce(22.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_PDW")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG")
-			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG_G"))
+			|| info.GetAmmoType() == GetAmmoDef()->Index("ASW_SG"))
 			newInfo.ScaleDamageForce(30.0f);
 		else if (info.GetAmmoType() == GetAmmoDef()->Index("ASW_ASG"))
 			newInfo.ScaleDamageForce(35.0f);
@@ -332,10 +331,11 @@ void CASW_Ranger::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CASW_Ranger::CorpseGib( const CTakeDamageInfo &info )
 {
+	m_LagCompensation.UndoLaggedPosition();
+
+	/*
 	CEffectData	data;
 
-	m_LagCompensation.UndoLaggedPosition();
-	
 	data.m_vOrigin = WorldSpaceCenter();
 	data.m_vNormal = data.m_vOrigin - info.GetDamagePosition();
 	VectorNormalize( data.m_vNormal );
@@ -344,6 +344,7 @@ bool CASW_Ranger::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = clamp( data.m_flScale, 1, 3 );
 	data.m_nColor = m_nSkin;
 	data.m_fFlags = IsOnFire() ? ASW_GIBFLAG_ON_FIRE : 0;
+	*/
 
 	//DispatchEffect( "DroneGib", data );
 

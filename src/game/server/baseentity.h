@@ -327,8 +327,6 @@ public:
  	virtual string_t		GetModelName( void ) const;
 	const char				*ScriptGetModelName( void ) const;
 
-	virtual string_t		GetAIAddOn( void ) const;
-
 public:
 	// virtual methods for derived classes to override
 	virtual bool			TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
@@ -538,6 +536,8 @@ public:
 	bool		ClassMatches( string_t nameStr );
 	bool		NameMatchesExact( string_t nameStr );
 	bool		ClassMatchesExact( string_t nameStr );
+
+	void		MarkNeedsNamePurge();
 
 	template <typename T>
 	bool		Downcast( string_t iszClass, T **ppResult );
@@ -908,7 +908,8 @@ public:
 	virtual bool	IsBaseTrain( void ) const { return false; }
 	bool			IsBSPModel() const;
 	bool			IsInWorld( void ) const;
-	virtual bool	IsAlien(void) const { return false; }
+	virtual bool	IsAlien( void ) const { return false; } //Orange. This function sucks since used for vscript and returns also buzzers. We cant change in within DEFINE_SCRIPTFUNC_NAMED without breaking class tables compatibility
+	virtual bool	IsAlienClassType( void ) const { return false; }
 
 	virtual bool	IsBaseCombatWeapon( void ) const { return false; }
 	virtual CBaseCombatWeapon *MyCombatWeaponPointer( void ) { return NULL; }
@@ -1240,8 +1241,6 @@ public:
 	void					SetModelName( string_t name );
 
 	model_t					*GetModel( void );
-
-	void					SetAIAddOn( string_t name );
 
 	// These methods return a *world-aligned* box relative to the absorigin of the entity.
 	// This is used for collision purposes and is *not* guaranteed
@@ -1669,7 +1668,6 @@ protected:
 	float			m_flGroundChangeTime; // Time that the ground entity changed
 	
 	string_t		m_ModelName;
-	string_t		m_AIAddOn;
 
 	// Velocity of the thing we're standing on (world space)
 	CNetworkVarForDerived( Vector, m_vecBaseVelocity );
@@ -1803,6 +1801,8 @@ private:
 
 	bool m_bNetworkQuantizeOriginAndAngles;
 	bool m_bLagCompensate; // Special flag for certain l4d2 props to use
+
+	bool m_bForcePurgeFixedupStrings; // For template entites so we don't leak strings.
 	
 public:
 	// Accessors for above
@@ -1860,6 +1860,11 @@ public:
 	// BenLubar
 	void ScriptSetLocalAngles( float fPitch, float fYaw, float fRoll ) { QAngle angles( fPitch, fYaw, fRoll ); SetLocalAngles( angles ); }
 	const Vector &ScriptGetLocalAngles() { static Vector vec; QAngle qa = GetLocalAngles(); vec.x = qa.x; vec.y = qa.y; vec.z = qa.z; return vec; }
+	//
+
+	//Mad Orange
+	void ScriptSetParent(HSCRIPT hEntity) { SetParent(ToEnt(hEntity)); }
+	void ScriptClearParent( void ) { SetParent(NULL); }
 	//
 
 	void ScriptSetSize( const Vector &mins, const Vector &maxs ) { UTIL_SetSize( this, mins, maxs ); }
@@ -2061,6 +2066,11 @@ inline bool CBaseEntity::NameMatches( string_t nameStr )
 	if ( IDENT_STRINGS(m_iName, nameStr) )
 		return true;
 	return NameMatchesComplex( STRING(nameStr) );
+}
+
+inline void CBaseEntity::MarkNeedsNamePurge()
+{
+	m_bForcePurgeFixedupStrings = true;
 }
 
 inline bool CBaseEntity::NameMatchesExact( string_t nameStr )
@@ -2615,33 +2625,19 @@ inline int CBaseEntity::GetModelIndex( void ) const
 
 
 //-----------------------------------------------------------------------------
-// AddOn related methods
-//-----------------------------------------------------------------------------
-
-inline void CBaseEntity::SetAIAddOn( string_t addonName )
-{
-	m_AIAddOn = addonName;
-}
-
-inline string_t CBaseEntity::GetAIAddOn( void ) const
-{
-	return m_AIAddOn;
-}
-
-//-----------------------------------------------------------------------------
 // Methods relating to bounds
 //-----------------------------------------------------------------------------
 inline const Vector& CBaseEntity::WorldAlignMins( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMins();
 }
 
 inline const Vector& CBaseEntity::WorldAlignMaxs( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	AssertOnce( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	AssertOnce( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMaxs();
 }
 

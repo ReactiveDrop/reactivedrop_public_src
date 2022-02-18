@@ -88,6 +88,7 @@ bool CReactiveDropWorkshop::Init()
 
 		KeyValues::AutoDelete pKV( "WorkshopAddons" );
 		ConVarRef cl_cloud_settings( "cl_cloud_settings" );
+		bool bLoaded = false;
 		if ( cl_cloud_settings.GetInt() != -1 && ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && steamapicontext->SteamRemoteStorage() && steamapicontext->SteamRemoteStorage()->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
 		{
 			CUtlBuffer buf;
@@ -95,25 +96,29 @@ bool CReactiveDropWorkshop::Init()
 			steamapicontext->SteamRemoteStorage()->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
 			filesystem->WriteFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf );
 			buf.SetBufferType( true, true );
-			pKV->LoadFromBuffer( WORKSHOP_DISABLED_ADDONS_FILENAME, buf );
+			bLoaded = pKV->LoadFromBuffer( WORKSHOP_DISABLED_ADDONS_FILENAME, buf );
 		}
 		else
 		{
-			pKV->LoadFromFile( filesystem, WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD" );
+			bLoaded = pKV->LoadFromFile( filesystem, WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD" );
 		}
-		FOR_EACH_VALUE( pKV, pValue )
+
+		if ( bLoaded )
 		{
-			if ( pValue->GetBool() )
+			FOR_EACH_VALUE( pKV, pValue )
 			{
-				char *szEnd = NULL;
-				PublishedFileId_t id = strtoull( pValue->GetName(), &szEnd, 10 );
-				if ( !id || ( szEnd && *szEnd ) )
+				if ( pValue->GetBool() )
 				{
-					continue;
-				}
-				if ( !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) && m_EnabledAddonsForQuery.IsValidIndex( m_EnabledAddonsForQuery.Find( id ) ) && m_EnabledAddonsForQuery.Find( id ) >= iStart )
-				{
-					s_DisabledAddons.AddToTail( id );
+					char* szEnd = NULL;
+					PublishedFileId_t id = strtoull( pValue->GetName(), &szEnd, 10 );
+					if ( !id || ( szEnd && *szEnd ) )
+					{
+						continue;
+					}
+					if ( !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) && m_EnabledAddonsForQuery.IsValidIndex( m_EnabledAddonsForQuery.Find( id ) ) && m_EnabledAddonsForQuery.Find(id) >= iStart )
+					{
+						s_DisabledAddons.AddToTail( id );
+					}
 				}
 			}
 		}

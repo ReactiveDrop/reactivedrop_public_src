@@ -152,8 +152,8 @@ float CPlayerVoiceListener::ScriptGetPlayerSpeechDuration( int nPlayerIndex )
 void CPlayerVoiceListener::InitData( void )
 {
 	// Clear our tracking data
-	memset( m_flLastPlayerSpeechTime, 0.0f, ARRAYSIZE(m_flLastPlayerSpeechTime) );
-	memset( m_flPlayerSpeechDuration, 0.0f, ARRAYSIZE(m_flPlayerSpeechDuration) );
+	memset( m_flLastPlayerSpeechTime, 0.0f, ARRAYSIZE(m_flLastPlayerSpeechTime) * sizeof(float) );
+	memset( m_flPlayerSpeechDuration, 0.0f, ARRAYSIZE(m_flPlayerSpeechDuration) * sizeof(float) );
 }
 
 //---------------------------------------------------------------------------

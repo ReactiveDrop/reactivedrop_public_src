@@ -108,6 +108,7 @@ CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 {
 #ifdef CLIENT_DLL
 	m_flLastMuzzleFlashTime = 0;
+	m_bShouldUpdateActivityClient = false;
 #endif
 }
 
@@ -220,14 +221,21 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 		}
 
 #ifdef GAME_DLL
-		CASW_Marine *pMarine = GetMarine();
-		if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			
 			if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-			if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+			{
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			}
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 				pMarine->OnWeaponOutOfAmmo(true);
 		}
 #endif
@@ -248,7 +256,9 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 #ifndef CLIENT_DLL
 	if (asw_debug_marine_damage.GetBool())
 		Msg("Weapon dmg = %f\n", info.m_flDamage);
-	info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+	CASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
+	if (pPMR)
+		info.m_flDamage *= pPMR->OnFired_GetDamageScale();
 	if (asw_DebugAutoAim.GetBool())
 	{
 		NDebugOverlay::Line(info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0);
@@ -261,9 +271,9 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine && pMarine->GetMarineResource())
+	if (pPMR)
 	{
-		pMarine->GetMarineResource()->UsedWeapon(this, info.m_iShots);
+		pPMR->UsedWeapon(this, info.m_iShots);
 		pMarine->OnWeaponFired( this, info.m_iShots );
 	}
 #endif
@@ -444,13 +454,30 @@ ConVar asw_minigun_pitch_max( "asw_minigun_pitch_max", "150", FCVAR_CHEAT | FCVA
 
 void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 {
+	/*
 	if (GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
 	{
 		SetActivity(ACT_VM_PRIMARYATTACK, 0);
 	}
 	m_flPlaybackRate = GetSpinRate();
+	*/
+	//Mad Orange. Simple barrel spin rotation multiplayer fix. As for complex m_flPlaybackRate change does not seem to work without "updating" sequence\activity.
+	//So need to investigate what many sequence related functions do and make this "update" in a right way.
+	if (GetSpinRate() > 0.1 && GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
+	{
+		m_flPlaybackRate = 1;
+		SetActivity(ACT_VM_PRIMARYATTACK, 0);
+		m_bShouldUpdateActivityClient = true;
+	}
 
-	if ( GetSpinRate() > 0.0f )
+	if (GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient)
+	{
+		SetActivity(ACT_VM_IDLE, 0);
+		m_flPlaybackRate = 0;
+		m_bShouldUpdateActivityClient = false;
+	}
+
+	if ( GetSpinRate() > 0.01f ) //seems always > 0 due to computations, lets increase it a little.
 	{
 		if( !m_pBarrelSpinSound )
 		{
@@ -458,7 +485,7 @@ void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 			m_pBarrelSpinSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), "ASW_Minigun.Spin" );
 			CSoundEnvelopeController::GetController().Play( m_pBarrelSpinSound, 0.0, 100 );
 		}
-		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pBarrelSpinSound, MIN( 1.0f, m_flPlaybackRate * 3.0f ), 0.0f );
+		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pBarrelSpinSound, MIN( 1.0f, GetSpinRate() * 3.0f ), 0.0f );
 		CSoundEnvelopeController::GetController().SoundChangePitch( m_pBarrelSpinSound, asw_minigun_pitch_min.GetFloat() + ( GetSpinRate() * ( asw_minigun_pitch_max.GetFloat() - asw_minigun_pitch_min.GetFloat() ) ), 0.0f );
 	}
 	else
@@ -514,15 +541,18 @@ void CASW_Weapon_Minigun::SetDormant( bool bDormant )
 {
 	if ( bDormant )
 	{
-		CSoundEnvelopeController::GetController().SoundDestroy( m_pBarrelSpinSound );
-		m_pBarrelSpinSound = NULL;
+		if ( m_pBarrelSpinSound )
+		{
+			CSoundEnvelopeController::GetController().SoundDestroy(m_pBarrelSpinSound);
+			m_pBarrelSpinSound = NULL;
+		}
 	}
 	BaseClass::SetDormant( bDormant );
 }
 
 void CASW_Weapon_Minigun::UpdateOnRemove()
 {
-	if ( m_hGunSmoke.IsValid() )
+	if ( m_hGunSmoke.IsValid() && m_hGunSmoke.Get())
 	{
 		UTIL_Remove( m_hGunSmoke.Get() );
 	}

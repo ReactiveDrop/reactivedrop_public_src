@@ -93,16 +93,15 @@ void CASW_Weapon::Spawn()
 CASW_Player* CASW_Weapon::GetCommander()
 {
 	CASW_Player *pOwner = NULL;
-	CASW_Marine *pMarine = NULL;
-
-	pMarine = dynamic_cast<CASW_Marine*>( GetOwner() );
-	if ( pMarine )
+	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pCombatCharOwner);
 		pOwner = pMarine->GetCommander();
 	}
 	else
 	{
-		pOwner = ToASW_Player( dynamic_cast<CBasePlayer*>( GetOwner() ) );
+		pOwner = ToASW_Player( ToBasePlayer( pCombatCharOwner ) );
 	}
 
 	return pOwner;
@@ -110,7 +109,10 @@ CASW_Player* CASW_Weapon::GetCommander()
 
 CASW_Marine* CASW_Weapon::GetMarine()
 {
-	return dynamic_cast<CASW_Marine*>(GetOwner());
+	CBaseEntity* pOwner = GetOwner();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+		return assert_cast<CASW_Marine*>(pOwner);
+	return NULL;
 }
 
 #if PREDICTION_ERROR_CHECK_LEVEL > 0
@@ -320,7 +322,7 @@ void CASW_Weapon::ItemPostFrame( void )
 	if (!pOwner)
 		return;
 
-	bool bThisActive = ( pOwner && pOwner->GetActiveWeapon() == this );
+	bool bThisActive = ( pOwner->GetActiveWeapon() == this );
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
@@ -455,7 +457,7 @@ void CASW_Weapon::ItemPostFrame( void )
 				//			first shot.  Right now that's too much of an architecture change -- jdw
 				
 				// If the firing button was just pressed, reset the firing time
-				if ( pOwner && bAttack1 )
+				if ( bAttack1 )
 				{
 	#ifdef CLIENT_DLL
 					//Msg("[Client] setting nextprimaryattack to now %f\n", gpGlobals->curtime);
@@ -571,16 +573,14 @@ void CASW_Weapon::SecondaryAttack( void )
 //-----------------------------------------------------------------------------
 bool CASW_Weapon::ReloadOrSwitchWeapons( void )
 {
-	CASW_Player *pPlayer = NULL;
-	CASW_Marine *pMarine = NULL;
 	bool bAutoReload = true;
-
-	pMarine = dynamic_cast<CASW_Marine*>(GetOwner());
-	if (pMarine)
+	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
+		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pCombatCharOwner);
 		if (pMarine->GetCommander() && pMarine->IsInhabited())
 		{
-			pPlayer = pMarine->GetCommander();
+			CASW_Player* pPlayer = pMarine->GetCommander();
 			bAutoReload = pPlayer->ShouldAutoReload();
 		}
 	}
@@ -710,14 +710,21 @@ void CASW_Weapon::PrimaryAttack( void )
 		m_iClip1 -= info.m_iShots;
 
 #ifdef GAME_DLL
-		CASW_Marine *pMarine = GetMarine();
-		if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 			if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-			if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+			{
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			}
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 				pMarine->OnWeaponOutOfAmmo(true);
 		}
 #endif
@@ -749,7 +756,7 @@ void CASW_Weapon::PrimaryAttack( void )
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine && pMarine->GetMarineResource())
+	if (pMarine->GetMarineResource())
 	{
 		pMarine->GetMarineResource()->UsedWeapon(this, info.m_iShots);
 		pMarine->OnWeaponFired( this, info.m_iShots );
@@ -864,10 +871,16 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 		else
 		{
 			// check if we have an ammo bag we can take a clip from instead
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>( pMarine->GetASWWeapon( 0 ) );
-			if ( !pAmmoBag )
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
+			if (!pAmmoBag)
 			{
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>( pMarine->GetASWWeapon( 1 ) );
+				pWeapon = pMarine->GetASWWeapon(1);
+				if (pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG)
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
 			}
 
 			if ( pAmmoBag && pAmmoBag->CanGiveAmmoToWeapon( this ) )
@@ -917,10 +930,17 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 			int nClipSize = GetMaxClip1();
 
 			int nClips = pMarine->GetAmmoCount( m_iPrimaryAmmoType ) / nClipSize;
-			CASW_Weapon_Ammo_Bag *pAmmoBag = dynamic_cast< CASW_Weapon_Ammo_Bag* >( pMarine->GetASWWeapon( 0 ) );
-			if ( !pAmmoBag )
+
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
+			if (!pAmmoBag)
 			{
-				pAmmoBag = dynamic_cast< CASW_Weapon_Ammo_Bag* >( pMarine->GetASWWeapon( 1 ) );
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
 			}
 			if ( pAmmoBag && this != pAmmoBag )
 			{
@@ -986,8 +1006,11 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 
 void CASW_Weapon::SendReloadEvents()
 {
-	CASW_Marine *marine = dynamic_cast<CASW_Marine*>(GetOwner());
-	if (!marine)
+	CASW_Marine* marine = NULL;
+	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+		marine = assert_cast<CASW_Marine*>(pCombatCharOwner);
+	else
 		return;
 	
 #ifdef CLIENT_DLL
@@ -1004,8 +1027,11 @@ void CASW_Weapon::SendReloadEvents()
 // function unused (done by CASW_Marine::Weapon_Switch instead?)
 void CASW_Weapon::SendWeaponSwitchEvents()
 {
-	CASW_Marine *marine = dynamic_cast<CASW_Marine*>(GetOwner());
-	if (!marine)
+	CASW_Marine* marine = NULL;
+	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
+	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+		marine = assert_cast<CASW_Marine*>(pCombatCharOwner);
+	else
 		return;
 
 	// Make the player play his reload animation. (and send to clients)
@@ -1038,7 +1064,7 @@ void CASW_Weapon::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool
 
 	if (!pMarine)
 	{
-		CBasePlayer *pOwner = dynamic_cast<CBasePlayer*>(GetOwner());
+		CBasePlayer *pOwner = ToBasePlayer(GetOwner());
 		if (pOwner)
 		{
 			bAttack1 = !!(pOwner->m_nButtons & IN_ATTACK);

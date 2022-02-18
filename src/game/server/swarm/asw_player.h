@@ -178,7 +178,9 @@ public:
 	void ChangeName(const char *pszNewName);
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
 	CNetworkVar(bool, m_bSentJoinedMessage);	// has this player told everyone that he's fully joined yet
-		
+
+	void WelcomeMessageThink();
+
 	// voting
 	int m_iKLVotesStarted;	// how many kick or leader votes this player has started, if he starts too many, flood control will be applied to the announcements
 	float m_fLastKLVoteTime;	// last time we started a kick or leader vote
@@ -286,7 +288,7 @@ extern void TE_MarineAnimEventJustCommander( CASW_Marine *pMarine, PlayerAnimEve
 
 void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknowledge = true );
 
-inline CASW_Player *ToASW_Player( CBaseEntity *pEntity )
+inline CASW_Player* ToASW_Player( CBaseEntity *pEntity )
 {
 	if ( !pEntity || !pEntity->IsPlayer() )
 		return NULL;
@@ -295,6 +297,17 @@ inline CASW_Player *ToASW_Player( CBaseEntity *pEntity )
 	Assert( dynamic_cast<CASW_Player*>( pEntity ) != 0 );
 #endif
 	return static_cast< CASW_Player* >( pEntity );
+}
+
+inline CASW_Player* ToASW_Player( CBasePlayer* pPlayer )
+{
+	if ( !pPlayer )
+		return NULL;
+
+#ifdef _DEBUG
+	Assert(dynamic_cast<CASW_Player*>(pPlayer) != 0);
+#endif
+	return static_cast<CASW_Player*>( pPlayer );
 }
 
 

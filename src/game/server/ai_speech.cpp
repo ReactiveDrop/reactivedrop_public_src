@@ -1222,7 +1222,7 @@ bool CAI_Expresser::IsValidResponse( ResponseType_t type, const char *pszValue )
 CAI_TimedSemaphore *CAI_Expresser::GetMySpeechSemaphore( CBaseEntity *pNpc ) 
 {
 	if ( !pNpc->MyNPCPointer() )
-		return false;
+		return NULL;
 
 	return (pNpc->MyNPCPointer()->IsPlayerAlly() ? &g_AIFriendliesTalkSemaphore : &g_AIFoesTalkSemaphore );
 }

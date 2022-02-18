@@ -39,8 +39,9 @@ public:
 	bool			FValidateHintType(CAI_Hint *pHint);
 
 	virtual int		TranslateSchedule( int scheduleType );
+#ifdef HL2_DLL
 	Disposition_t	IRelationType(CBaseEntity *pTarget);
-
+#endif
 	void			NPCThink( void );
 
 	void			GatherConditions( void );

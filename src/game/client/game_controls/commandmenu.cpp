@@ -35,13 +35,20 @@ bool CommandMenu::LoadFromFile( const char * fileName)	// load menu from KeyValu
 {
 	KeyValues * kv = new KeyValues(fileName);
 
-	if  ( !kv->LoadFromFile( g_pFullFileSystem, fileName, "GAME" ) )
-		return false;
+	if (kv)
+	{
+		if (!kv->LoadFromFile(g_pFullFileSystem, fileName, "GAME"))
+		{
+			kv->deleteThis();
+			return false;
+		}
 
-	bool ret = LoadFromKeyValues( kv );
+		bool ret = LoadFromKeyValues(kv);
 
-	kv->deleteThis();
-	return ret;
+		kv->deleteThis();
+		return ret;
+	}
+	return false;
 }
 
 CommandMenu::~CommandMenu()

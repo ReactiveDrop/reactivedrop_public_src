@@ -23,6 +23,11 @@
 #define THREAD_PRIORITY_HIGHEST 2
 #endif
 
+#ifdef COMPILER_MSVC
+// For _ReadWriteBarrier()
+#include <intrin.h>
+#endif
+
 #ifdef OSX
 // Add some missing defines
 #define PTHREAD_MUTEX_TIMED_NP         PTHREAD_MUTEX_NORMAL
@@ -146,10 +151,12 @@ PLATFORM_INTERFACE void ThreadSetAffinity( ThreadHandle_t hThread, int nAffinity
 #define NOINLINE __attribute__ ((noinline))
 #endif
 
-#ifndef _X360
-#define ThreadMemoryBarrier() ((void)0)
-#else
+#ifdef COMPILER_MSVC
+#define ThreadMemoryBarrier() _ReadWriteBarrier()
+#elif defined( _X360 )
 #define ThreadMemoryBarrier() __lwsync()
+#else
+#define ThreadMemoryBarrier() ((void)0)
 #endif
 
 #if defined( _LINUX ) || defined( _OSX )

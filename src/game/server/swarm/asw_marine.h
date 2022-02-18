@@ -542,9 +542,10 @@ public:
 	bool DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget=NULL, const Vector *pVelocity=NULL);
 	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ );	// HL version	
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
-	CASW_Weapon* GetActiveASWWeapon( void ) const;	
+	CASW_Weapon* GetActiveASWWeapon( void ) const;
 	virtual Vector Weapon_ShootPosition();					// source point for firing weapons	
 	virtual bool IsFiring();
+	int m_nIndexActWeapBeforeTempPickup;
 
 	void ScriptGiveAmmo( int iCount, int iAmmoIndex );
 	void ScriptGiveWeapon( const char *pszName, int slot );
@@ -565,6 +566,7 @@ public:
 	virtual void FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus=0 );
 	CBaseCombatWeapon* GetLastWeaponSwitchedTo();
 	EHANDLE m_hLastWeaponSwitchedTo;
+	bool m_bLastWeaponBeforeTempWasSecondary;
 	float m_fStartedFiringTime;
 	virtual void AimGun();
 	float m_fLastShotAlienTime;
@@ -608,6 +610,8 @@ public:
 	CNetworkVar(int, m_iSlowHealAmount);
 	float m_flHealRateScale;
 	float m_fNextSlowHealTick;
+	bool m_bOverHealAllowed;
+	void AllowOverHeal(bool state) { m_bOverHealAllowed = state; }
 	void MeleeBleed(CTakeDamageInfo* info);
 	void BecomeInfested(CASW_Alien* pAlien);
 	void CureInfestation(CASW_Marine *pHealer, float fCureFraction);
@@ -759,14 +763,21 @@ public:
 	int GetForcedActionRequest() { return m_iForcedActionRequest.Get(); }
 	void ClearForcedActionRequest() { m_iForcedActionRequest = 0; }
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)
-	void RequestForcedAction( int iForcedAction ) { m_iForcedActionRequest = iForcedAction; }
+	void RequestForcedAction( int iForcedAction );
 	CNetworkVar( int, m_iForcedActionRequest );
 
 	void SetNextStumbleTime( float flStumbleTime ) { m_flNextStumbleTime = flStumbleTime; }
 	float m_flNextStumbleTime;
+
+	void StrafePush(void);
+	void CreateBackPackModel(CASW_Weapon *pWeapon);
+	void RemoveBackPackModel();
+	CBaseEntity* GetBackPackModel();
 private:
 	float m_flNextBreadcrumbTime;
+	EHANDLE m_BackPackWeaponBaseEntity;
 
+	bool m_bAirStrafeUsed;
 };
 
 

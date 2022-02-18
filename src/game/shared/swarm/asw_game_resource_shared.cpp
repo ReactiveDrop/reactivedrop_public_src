@@ -31,7 +31,7 @@ extern ConVar asw_debug_clientside_avoidance;
 
 int CASW_Game_Resource::GetSlotForSkill( int nProfileIndex, ASW_Skill nSkillIndex )
 {
-	if (nProfileIndex < 0 || nProfileIndex > ASW_NUM_MARINE_PROFILES)
+	if (nProfileIndex < 0 || nProfileIndex >= ASW_NUM_MARINE_PROFILES)
 		return -1;
 
 	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( nProfileIndex );
@@ -48,7 +48,7 @@ int CASW_Game_Resource::GetSlotForSkill( int nProfileIndex, ASW_Skill nSkillInde
 
 int CASW_Game_Resource::GetMarineSkill( int nProfileIndex, int nSkillSlot )
 {
-	if (nProfileIndex < 0 || nProfileIndex > ASW_NUM_MARINE_PROFILES)
+	if (nProfileIndex < 0 || nProfileIndex >= ASW_NUM_MARINE_PROFILES)
 		return -1;
 
 	switch ( nSkillSlot )

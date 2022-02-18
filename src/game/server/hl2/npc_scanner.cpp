@@ -308,7 +308,7 @@ void CNPC_CScanner::Spawn(void)
 	//AddSolidFlags( FSOLID_NOT_SOLID );	
 	m_takedamage = DAMAGE_NO;
 	DevMsg("SleepState=%i\n", GetSleepState());
-	GetAbsOrigin();
+	//GetAbsOrigin();
 
 	// reactivedrop: make scanner not collide with players and grenade launcher's grenades
 	SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
@@ -1316,6 +1316,7 @@ void CNPC_CScanner::PrescheduleThink(void)
 	}
 }
 
+#ifdef HL2_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Overridden because if the player is a criminal, we hate them.
 // Input  : pTarget - Entity with which to determine relationship.
@@ -1332,6 +1333,7 @@ Disposition_t CNPC_CScanner::IRelationType(CBaseEntity *pTarget)
 
 	return BaseClass::IRelationType( pTarget );
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2014,7 +2016,7 @@ void CNPC_CScanner::BlindFlashTarget( CBaseEntity *pTarget )
 
 		if ( tr.startsolid == false && tr.fraction == 1.0)
 		{
-			color32 white = { 255, 255, 255, SCANNER_FLASH_MAX_VALUE * dotPr };
+			color32 white = { 255, 255, 255, ( byte )(SCANNER_FLASH_MAX_VALUE * dotPr) };
 
 			if ( ( g_pMaterialSystemHardwareConfig != NULL ) && ( g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE ) )
 			{

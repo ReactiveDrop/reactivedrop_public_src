@@ -126,7 +126,7 @@ void CNB_Mission_Summary::OnThink()
 	if ( CAlienSwarm::IsOnslaught() )
 	{
 		wchar_t wszText[ 128 ];
-		V_snwprintf( wszText, sizeof( wszText ), L"%s %s", pDifficulty, g_pVGuiLocalize->FindSafe( "#nb_onslaught_title" ) );
+		V_snwprintf( wszText, ARRAYSIZE( wszText ), L"%s %s", pDifficulty, g_pVGuiLocalize->FindSafe( "#nb_onslaught_title" ) );
 		m_pDifficultyLabel->SetText( wszText );
 	}
 	else
@@ -154,12 +154,19 @@ void CNB_Mission_Summary::OnThink()
 		{
 			if ( nObjectives == 0 )
 			{
-				V_snwprintf( wszObjectivesBuffer, sizeof( wszObjectivesBuffer ), L"- %s", pObjective->GetObjectiveTitle() );
+				V_snwprintf( wszObjectivesBuffer, ARRAYSIZE( wszObjectivesBuffer ), L"- %s", pObjective->GetObjectiveTitle() );
+			}
+			else if ( nObjectives == 6 )
+			{
+				// only show the first few objectives in this list so it doesn't push past the bottom of the screen
+				V_snwprintf( wszBuffer, ARRAYSIZE( wszBuffer ), L"%s\n- ...", wszObjectivesBuffer );
+				V_snwprintf( wszObjectivesBuffer, ARRAYSIZE( wszObjectivesBuffer ), L"%s", wszBuffer );
+				break;
 			}
 			else
 			{
-				V_snwprintf( wszBuffer, sizeof( wszBuffer ), L"%s\n- %s", wszObjectivesBuffer, pObjective->GetObjectiveTitle() );
-				V_snwprintf( wszObjectivesBuffer , sizeof( wszObjectivesBuffer ), L"%s", wszBuffer );
+				V_snwprintf( wszBuffer, ARRAYSIZE( wszBuffer ), L"%s\n- %s", wszObjectivesBuffer, pObjective->GetObjectiveTitle() );
+				V_snwprintf( wszObjectivesBuffer , ARRAYSIZE( wszObjectivesBuffer ), L"%s", wszBuffer );
 			}
 			nObjectives++;
 		}

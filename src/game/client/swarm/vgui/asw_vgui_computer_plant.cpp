@@ -469,7 +469,7 @@ bool CASW_VGUI_Computer_Plant::GetReactorOnline()
 		return false;
 	
 	C_ASW_Game_Resource* pGameResource = ASWGameResource();
-	for (int i=0;i<12;i++)
+	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
 	{
 		C_ASW_Objective* pObjective = pGameResource->GetObjective(i);
 		

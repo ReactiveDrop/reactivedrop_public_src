@@ -160,7 +160,7 @@ void CASW_AOEGrenade_Projectile::Spawn( void )
 	SetModel( GetModelName().ToCStr() );
 	UTIL_SetSize( this, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) );
 	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_SOLID );
+	//AddSolidFlags( FSOLID_NOT_SOLID ); //this makes touch function to skip moving tracktrain
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 
@@ -214,7 +214,7 @@ const Vector& CASW_AOEGrenade_Projectile::GetEffectOrigin()
 
 unsigned int CASW_AOEGrenade_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
@@ -238,8 +238,12 @@ void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
 
 	// Slow down
 	Vector vecNewVelocity = GetAbsVelocity();
+	//Msg("Velocity on touch %f %f %f\n", vecNewVelocity.x, vecNewVelocity.y, vecNewVelocity.z);
 	vecNewVelocity.x *= 0.8f;
 	vecNewVelocity.y *= 0.8f;
+	vecNewVelocity.z *= 0.5f;
+	//Msg("Velocity slowed down %f %f %f\n", vecNewVelocity.x, vecNewVelocity.y, vecNewVelocity.z);
+	
 	SetAbsVelocity( vecNewVelocity );
 
 	//Stopped?
@@ -248,6 +252,7 @@ void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
 		LayFlat();
 		SetAbsVelocity( vec3_origin );
 		SetMoveType( MOVETYPE_NONE );
+		AddSolidFlags( FSOLID_NOT_SOLID );;
 		//RemoveSolidFlags( FSOLID_NOT_SOLID );
 		//AddSolidFlags( FSOLID_TRIGGER );
 		//SetTouch( &CASW_Flare_Projectile::FlareBurnTouch );
@@ -255,6 +260,12 @@ void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
 		int radius = GetEffectRadius();
 		UTIL_SetSize( m_hTouchTrigger.Get(), Vector(-radius,-radius,-radius), Vector(radius,radius,radius) );
 		m_hTouchTrigger->SetSolid( SOLID_BBOX );
+
+		if (pOther->Classify() == CLASS_FUNC_MOVELINEAR || pOther->Classify() == CLASS_FUNC_TRACKTRAIN)
+		{
+			SetParent(pOther);
+			m_hTouchTrigger->SetParent(pOther);
+		}
 
 		// call StartTouch() on all marines in radius
 		CASW_Game_Resource *pGameResource = ASWGameResource();

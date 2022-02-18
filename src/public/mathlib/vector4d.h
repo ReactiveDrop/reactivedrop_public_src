@@ -14,7 +14,6 @@
 #endif
 
 #include <math.h>
-#include <stdlib.h>		// for rand(). we really need a library!
 #include <float.h>
 #if !defined( _X360 )
 #include <xmmintrin.h>	// for sse
@@ -23,6 +22,7 @@
 #include "tier0/dbg.h"
 #include "mathlib/math_pfns.h"
 #include "mathlib/vector.h"
+#include "vstdlib/random.h"
 
 // forward declarations
 class Vector;
@@ -260,10 +260,10 @@ inline void Vector4D::Init( const Vector& src, vec_t iw )
 
 inline void Vector4D::Random( vec_t minVal, vec_t maxVal )
 {
-	x = minVal + ((vec_t)rand() / RAND_MAX) * (maxVal - minVal);
-	y = minVal + ((vec_t)rand() / RAND_MAX) * (maxVal - minVal);
-	z = minVal + ((vec_t)rand() / RAND_MAX) * (maxVal - minVal);
-	w = minVal + ((vec_t)rand() / RAND_MAX) * (maxVal - minVal);
+	x = RandomFloat( minVal , maxVal );
+	y = RandomFloat( minVal , maxVal );
+	z = RandomFloat( minVal , maxVal );
+	w = RandomFloat( minVal , maxVal );
 }
 
 inline void Vector4DClear( Vector4D& a )

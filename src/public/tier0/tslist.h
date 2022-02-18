@@ -26,7 +26,7 @@
 #include "tier0/dbg.h"
 #include "tier0/threadtools.h"
 
-#include "tier0/memdbgon.h"
+#include "tier0/memdbgoff.h"
 
 //-----------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ struct TSLIST_NODE_ALIGN TSLNodeBase_t
 	TSLNodeBase_t *Next; // name to match Windows
 };
 
-union TSLHead_t
+union TSLIST_HEAD_ALIGN TSLHead_t
 {
 	struct Value_t
 	{
@@ -77,6 +77,36 @@ union TSLHead_t
 
 class TSLIST_HEAD_ALIGN CTSListBase
 {
+public:
+
+	// override new/delete so we can guarantee 8-byte aligned allocs
+	static void * operator new( size_t size )
+	{
+		CTSListBase *pNode = (CTSListBase *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, __FILE__, __LINE__);
+		return pNode;
+	}
+
+	static void * operator new( size_t size, int nBlockUse, const char *pFileName, int nLine )
+	{
+		CTSListBase *pNode = (CTSListBase *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, pFileName, nLine);
+		return pNode;
+	}
+
+	static void operator delete( void *p)
+	{
+		MemAlloc_FreeAligned( p );
+	}
+
+	static void operator delete( void *p, int nBlockUse, const char *pFileName, int nLine )
+	{
+		MemAlloc_FreeAligned( p );
+	}
+
+private:
+	// These ain't gonna work
+	static void * operator new[] ( size_t size );
+	static void operator delete [] ( void *p);
+	
 public:
 	CTSListBase()
 	{
@@ -300,9 +330,31 @@ public:
 	struct TSLIST_NODE_ALIGN Node_t : public TSLNodeBase_t
 	{
 		Node_t() {}
-		Node_t( const T &init ) : elem( init ) {}
-
+		Node_t(const T &init) : elem(init) {}
 		T elem;
+
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void * operator new(size_t size)
+		{
+			Node_t *pNode = (Node_t *)MemAlloc_AllocAlignedFileLine(size, TSLIST_NODE_ALIGNMENT, __FILE__, __LINE__);
+			return pNode;
+		}
+
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void * operator new(size_t size, int nBlockUse, const char *pFileName, int nLine)
+		{
+			Node_t *pNode = (Node_t *)MemAlloc_AllocAlignedFileLine(size, TSLIST_NODE_ALIGNMENT, pFileName, nLine);
+			return pNode;
+		}
+
+		static void operator delete(void *p)
+		{
+			MemAlloc_FreeAligned(p);
+		}
+		static void operator delete(void *p, int nBlockUse, const char *pFileName, int nLine)
+		{
+			MemAlloc_FreeAligned(p);
+		}
 
 	};
 
@@ -372,6 +424,29 @@ public:
 		Node_t( const T &init ) : elem( init ) {}
 
 		T elem;
+
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void* operator new(size_t size)
+		{
+			Node_t* pNode = (Node_t*)MemAlloc_AllocAlignedFileLine(size, TSLIST_NODE_ALIGNMENT, __FILE__, __LINE__);
+			return pNode;
+		}
+
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void* operator new(size_t size, int nBlockUse, const char* pFileName, int nLine)
+		{
+			Node_t* pNode = (Node_t*)MemAlloc_AllocAlignedFileLine(size, TSLIST_NODE_ALIGNMENT, pFileName, nLine);
+			return pNode;
+		}
+
+		static void operator delete(void* p)
+		{
+			MemAlloc_FreeAligned(p);
+		}
+		static void operator delete(void* p, int nBlockUse, const char* pFileName, int nLine)
+		{
+			MemAlloc_FreeAligned(p);
+		}
 	};
 
 	~CTSListWithFreeList()
@@ -473,10 +548,70 @@ template <typename T, bool bTestOptimizer = false>
 class TSLIST_HEAD_ALIGN CTSQueue
 {
 public:
+
+	// override new/delete so we can guarantee 8-byte aligned allocs
+	static void * operator new(size_t size)
+	{
+		CTSQueue *pNode = (CTSQueue *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, __FILE__, __LINE__);
+		return pNode;
+	}
+
+	// override new/delete so we can guarantee 8-byte aligned allocs
+	static void * operator new(size_t size, int nBlockUse, const char *pFileName, int nLine)
+	{
+		CTSQueue *pNode = (CTSQueue *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, pFileName, nLine);
+		return pNode;
+	}
+
+	static void operator delete(void *p)
+	{
+		MemAlloc_FreeAligned(p);
+	}
+
+	static void operator delete(void *p, int nBlockUse, const char *pFileName, int nLine)
+	{
+		MemAlloc_FreeAligned(p);
+	}
+
+private:
+	// These ain't gonna work
+	static void * operator new[](size_t size) throw()
+	{
+		return NULL;
+	}
+
+	static void operator delete [](void *p)
+	{
+	}
+
+public:
 	struct TSLIST_NODE_ALIGN Node_t
 	{
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void * operator new(size_t size)
+		{
+			Node_t *pNode = (Node_t *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, __FILE__, __LINE__);
+			return pNode;
+		}
+
+		static void * operator new(size_t size, int nBlockUse, const char *pFileName, int nLine)
+		{
+			Node_t *pNode = (Node_t *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, pFileName, nLine);
+			return pNode;
+		}
+
+		static void operator delete(void *p)
+		{
+			MemAlloc_FreeAligned(p);
+		}
+
+		static void operator delete(void *p, int nBlockUse, const char *pFileName, int nLine)
+		{
+			MemAlloc_FreeAligned(p);
+		}
+
 		Node_t() {}
-		Node_t( const T &init ) : elem( init ) {}
+		Node_t(const T &init) : elem(init) {}
 
 		Node_t *pNext;
 		T elem;
@@ -484,6 +619,18 @@ public:
 
 	union TSLIST_HEAD_ALIGN NodeLink_t
 	{
+		// override new/delete so we can guarantee 8-byte aligned allocs
+		static void * operator new(size_t size)
+		{
+			NodeLink_t *pNode = (NodeLink_t *)MemAlloc_AllocAlignedFileLine(size, TSLIST_HEAD_ALIGNMENT, __FILE__, __LINE__);
+			return pNode;
+		}
+
+		static void operator delete(void *p)
+		{
+			MemAlloc_FreeAligned(p);
+		}
+
 		struct Value_t
 		{
 			Node_t *pNode;
@@ -613,6 +760,8 @@ public:
 #ifdef _X360
 		__lwsync(); // write-release barrier
 #endif
+		ThreadMemoryBarrier();
+
 		InterlockedCompareExchangeNodeLink( &m_Tail, newTail, oldTail );
 	}
 
@@ -632,7 +781,8 @@ public:
 
 		for (;;)
 		{
-			oldTail = m_Tail;
+			oldTail.value.sequence = m_Tail.value.sequence;
+			oldTail.value.pNode = m_Tail.value.pNode;
 			if ( InterlockedCompareExchangeNode( &(oldTail.value.pNode->pNext), pNode, End() ) == End() )
 			{
 				break;
@@ -669,9 +819,8 @@ public:
 		for (;;)
 		{
 			head.value.sequence = *pHeadSequence; // must grab sequence first, which allows condition below to ensure pNext is valid
-#ifdef _X360
-			__lwsync(); // 360 needs a barrier to prevent reordering of these assignments
-#endif
+
+			ThreadMemoryBarrier(); // need a barrier to prevent reordering of these assignments
 			head.value.pNode	= *pHeadNode;
 			tailSequence		= pTail->value.sequence;
          	pNext				= head.value.pNode->pNext;
@@ -705,9 +854,8 @@ public:
 					newHead.value.sequence = head.value.sequence + 1;
 					if ( InterlockedCompareExchangeNodeLink( pHead, newHead, head ) )
 					{
-#ifdef _X360
-						__lwsync(); // read-acquire barrier 
-#endif
+						ThreadMemoryBarrier();
+
 						if ( bTestOptimizer )
 						{
 							head.value.pNode->pNext = TSQUEUE_BAD_NODE_LINK;

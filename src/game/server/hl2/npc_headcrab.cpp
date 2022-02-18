@@ -2182,7 +2182,7 @@ void CBaseHeadcrab::ClearBurrowPoint( const Vector &origin )
 	//Iterate on all entities in the vicinity.
 	for ( CEntitySphereQuery sphere( origin, 128 ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
-		if ( pEntity->m_takedamage != DAMAGE_NO && pEntity->Classify() != CLASS_PLAYER && pEntity->VPhysicsGetObject() )
+		if ( pEntity->m_takedamage != DAMAGE_NO && pEntity->Classify() != CLASS_PLAYER && pEntity->Classify() != CLASS_ASW_MARINE && pEntity->VPhysicsGetObject() )
 		{
 			vecSpot	 = pEntity->BodyTarget( origin );
 			vecForce = ( vecSpot - origin ) + Vector( 0, 0, 16 );

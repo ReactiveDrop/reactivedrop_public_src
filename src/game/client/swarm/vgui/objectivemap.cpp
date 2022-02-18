@@ -273,7 +273,7 @@ void ObjectiveMap::SetMap(const char * levelname)
 	Q_strcpy(mapname, m_MapKeyValues->GetString("briefingmaterial"));
 	k = 0; slash_pos = 4;
 	len = Q_strlen(mapname);
-	for (int i = slash_pos+1;i<len && k<MAX_PATH;i++)
+	for (int i = slash_pos+1;i<len && k<63;i++)
 	{
 		justmap[k] = mapname[i];
 		k++;

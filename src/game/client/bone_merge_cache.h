@@ -23,6 +23,7 @@ class CBoneMergeCache
 public:
 
 	CBoneMergeCache();
+	virtual ~CBoneMergeCache() {};
 	
 	void Init( C_BaseAnimating *pOwner );
 

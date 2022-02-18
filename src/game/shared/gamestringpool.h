@@ -20,7 +20,9 @@ class IGameSystem;
 // String allocation
 //-----------------------------------------------------------------------------
 string_t AllocPooledString( const char *pszValue );
+#define AllocPooledStringConstant( pszValue ) AllocPooledString( pszValue )
 string_t FindPooledString( const char *pszValue );
+void RemovePooledString( const char *pszValue );
 
 #define AssertIsValidString( s )	AssertMsg( s == NULL_STRING || s == FindPooledString( STRING(s) ), "Invalid string " #s );
 		 
@@ -59,9 +61,22 @@ public:
 		m_pszString = ( !bCopy ) ? pszString : strdup( pszString );
 	}
 
+	// This is only for temp variables!
+	// If the global string pool changes this has no way to realloc the string!
+	void SetFastNoCopy( string_t iszString )
+	{
+		m_iszString = iszString;
+		m_iSerial = gm_iSerialNumber;
+	}
+
+	bool IsSerialNumberOutOfDate( void ) const
+	{
+		return m_iSerial != gm_iSerialNumber;
+	}
+
 	string_t Get() const
 	{
-		if ( m_iszString == NULL_STRING || m_iSerial != gm_iSerialNumber )
+		if ( m_iszString == NULL_STRING || IsSerialNumberOutOfDate() )
 		{
 			if ( !m_pszString )
 				return NULL_STRING;

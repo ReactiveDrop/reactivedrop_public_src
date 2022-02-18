@@ -49,6 +49,8 @@ BEGIN_DATADESC( CASW_Weapon_Buff_Grenade )
 	DEFINE_FIELD( m_flSoonestPrimaryAttack, FIELD_TIME ),
 END_DATADESC()
 
+ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT, "if set, special weapons deploy amp grenades to themselves, not to the floor" );
+
 #endif /* not client */
 
 CASW_Weapon_Buff_Grenade::CASW_Weapon_Buff_Grenade()
@@ -97,9 +99,6 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 		return;
 
 	CASW_Marine *pMarine = GetMarine();
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-#endif
 
 	// mine weapon is lost when all mines are gone
 	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
@@ -152,6 +151,13 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 	float flRadius = 120.0f;
 	float flDuration = 30.0f;
 	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create(vecSrc, ang, newVel, rotSpeed, pMarine, flRadius, flDuration);
+
+	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
+	if ( pProfile && pProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS && rd_buff_grenade_attach_sw.GetBool() )
+	{
+		pBuff->AttachToMarine( pMarine );
+	}
+
 
 	pMarine->OnWeaponFired( this, 1 );
 

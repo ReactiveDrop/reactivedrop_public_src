@@ -737,7 +737,7 @@ void CASW_Mission_Chooser_Source_Local::AddToSavedCampaignList(const char *szSav
 	if (iNumMultiplayer > asw_max_saves.GetInt())
 	{
 		// find the oldest one
-		ASW_Mission_Chooser_Saved_Campaign* pChosen = false;
+		ASW_Mission_Chooser_Saved_Campaign* pChosen = NULL;
 		int iChosen = -1;
 		for (int i=m_SavedCampaignList.Count()-1; i>=0; i--)
 		{

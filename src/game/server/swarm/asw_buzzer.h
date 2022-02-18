@@ -165,6 +165,7 @@ public:
 	bool m_bTeslable;
 	bool m_bFreezable;
 	bool m_bFlinchable;
+	bool m_bGrenadeReflector;
 	int  m_iHealthBonus;
 	float m_fSizeScale;
 	float m_fSpeedScale;
@@ -202,6 +203,16 @@ public:
 	virtual void NPCThink();
 	CASW_Lag_Compensation m_LagCompensation;
 
+	//stuff related to sleep state
+	bool MarineCanSee(int padding, float interval);// can a marine see us? //copy from asw_alien
+	float m_fLastMarineCanSeeTime;
+	bool m_bLastMarineCanSee;
+	bool m_bRegisteredAsAwake;
+	float m_fLastSleepCheckTime;
+	bool m_bVisibleWhenAsleep;
+	virtual void UpdateSleepState(bool bInPVS);
+	void UpdateEfficiency(bool bInPVS);
+	virtual void UpdateOnRemove();
 private:
 
 	bool IsInEffectiveTargetZone( CBaseEntity *pTarget );
@@ -252,7 +263,7 @@ private:
 	float			m_flWaterSuspendTime;
 	int				m_nLastSpinSound;
 
-	float			m_flLastDamageTime;
+	float			m_flLastMarineDamageTime;
 
 	// physics influence
 	CHandle<CBasePlayer>	m_hPhysicsAttacker;

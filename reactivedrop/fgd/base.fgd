@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
+//====== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: General game definition file (.fgd) 
 //
@@ -2595,6 +2595,8 @@
 	texture(decal)
 
 	LowPriority(boolean) : "Low Priority (can be replaced)" : 0
+
+	ApplyEntity(target_destination) : "Apply Entity" : : "An optional entity to apply the decal to.  If this is empty, the decal will locate the entity by tracing."
 
 	// Inputs
 	input Activate(void) : "Force the decal to apply itself to the world."
@@ -5516,8 +5518,6 @@
 	
 	puntsound(sound) : "Sound to make when punted"
 
-	addon(string) : "AI AddOn" : "" : "If specified this object will use this addon behavior when installed in a composite AI"
-
 	// Inputs
 	input Wake(void) : "Wake up this physics object, if it is sleeping."
 	input Sleep(void) : "Put this physics object to sleep. It will wake if given the Wake input, or if force is applied to it. Note that physics objects go to sleep automatically after coming to rest for a while, so you don't really need to use this."
@@ -5752,6 +5752,16 @@
 	]
 	minSpeed(float) : "Minimum speed (snowfall only)" : 25
 	maxSpeed(float) : "Maximum speed (snowfall only)" : 35
+]
+
+@SolidClass base(Targetname, Parentname) = func_precipitation_blocker :
+	"A brush entity that prevents rain and snow inside its volume."
+[
+]
+
+@SolidClass = func_detail_blocker :
+	"A brush entity that prevents detail sprites from being placed inside its volume."
+[
 ]
 
 @SolidClass base(func_wall) = func_wall_toggle : 
@@ -6335,26 +6345,6 @@
 	]
 
 	input SetIdleModifier(float) : "Allows designers to change the idle modifier at runtime"
-]
-
-@BaseClass base(Targetname) = ai_addon
-[
-	target(target_destination) : "Host NPC"
-	input	Install(target_destination) : "Install this AddOn to the specified NPC"
-	input	Remove(target_destination): "Remove this AddOn from the NPC it is attached to"
-]
-
-@PointClass base(Targetname,EnableDisable) = ai_addon_builder
-[
-	NPCName(string) : "NPC name" : "" : "Name to give built NPCs"
-	AddOnName(string) : "Add on name" : "" : "Name to give built addons"
-	NpcPoints(integer) : "NPC Points" : 10 : "Points available to spend for NPCs"
-	AddonPoints(integer) : "Addon Points" : 10 : "Points available to spend for addons"
-	input Execute(void) : ""
-	output OnCreateNpc(void) : "Fires when an NPC is created."
-	output OnFailedToCreateNpc(void) : "Fires when an NPC fails to be created."
-	output OnCreateAddon(void) : "Fires when an Addon is created."
-	output OnFailedToCreateAddon(void) : "Fires when an Addon fails to be created."
 ]
 
 //-------------------------------------------------------------------------

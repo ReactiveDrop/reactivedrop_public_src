@@ -49,8 +49,11 @@ void CASW_Mine::Spawn( void )
 {
 	Precache( );
 	SetModel( ASW_MINE_MODEL );
+	SetSize( -Vector(1, 1, 1), Vector(1, 1, 1) );
 	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_SOLID || FSOLID_TRIGGER);
+	AddSolidFlags( FSOLID_TRIGGER );
+	//Orange. Best existing collision group to save old mine behavior and disable collision while in air.
+	SetCollisionGroup( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage	= DAMAGE_NO;
 	m_bPrimed = false;
@@ -66,7 +69,7 @@ void CASW_Mine::Spawn( void )
 
 unsigned int CASW_Mine::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_NPCSOLID;
+	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
 void CASW_Mine::MineThink( void )
@@ -99,7 +102,11 @@ void CASW_Mine::Explode()
 		pFirewall->SetOwnerEntity(GetOwnerEntity());
 		pFirewall->SetAbsOrigin( GetAbsOrigin() );			
 
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+		CASW_Marine* pMarine = NULL;
+		if ( GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE )
+		{
+			pMarine = assert_cast<CASW_Marine*>(GetOwnerEntity());
+		}
 		if (!pMarine)
 		{
 			pFirewall->SetSideFire( 3 + m_iExtraFires , 3+ m_iExtraFires );
@@ -208,17 +215,15 @@ ConVar rd_firemine_target_marine( "rd_firemine_target_marine", "0", FCVAR_CHEAT 
 bool CASW_Mine::ValidMineTarget(CBaseEntity *pOther)
 {
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( pOther );
-	if (pMarine && rd_firemine_target_marine.GetBool())
+	if ( pMarine && rd_firemine_target_marine.GetBool() )
 		return true;
 	else if (pMarine)
 		return false;
 
-	if (pOther && pOther->Classify() == CLASS_ASW_COLONIST) {
+	if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST ) 
 		return false;
-	}
 
-	CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pOther);
-	if (pNPC)
+	if ( pOther && pOther->IsNPC() )
 		return true;
 
 	return false;

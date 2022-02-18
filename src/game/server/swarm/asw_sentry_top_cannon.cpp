@@ -64,7 +64,7 @@ void CASW_Sentry_Top_Cannon::Fire()
 	float fGrenadeDamage;
 	float fGrenadeRadius;
 
-	float fBaseGrenadeDamage = 40.0f;
+	float fBaseGrenadeDamage = 60.0f;
 	if ( asw_sentry_top_cannon_dmg_override.GetFloat() > 0 )
 	{
 		fBaseGrenadeDamage = asw_sentry_top_cannon_dmg_override.GetFloat();

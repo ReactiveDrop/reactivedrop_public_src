@@ -105,9 +105,6 @@ void CASW_Weapon_Stim::InjectStim()
 	{
 		//make the proper weapon sound
 		WeaponSound(SINGLE);
-#ifndef CLIENT_DLL
-		bool bThisActive = (pMarine->GetActiveASWWeapon() == this);
-#endif
 		// sets the animation on the weapon model iteself
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 
@@ -116,7 +113,7 @@ void CASW_Weapon_Stim::InjectStim()
 #ifndef CLIENT_DLL
 
 		// make it cause the slow time
-		float fDuration = MarineSkills()->GetBestSkillValue( ASW_MARINE_SKILL_DRUGS );
+		float fDuration = MarineSkills()->GetBestSkillValue( ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_STIM_DURATION );
 		if (fDuration < 0)
 			fDuration = asw_stim_duration.GetFloat();
 

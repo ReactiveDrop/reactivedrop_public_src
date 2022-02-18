@@ -176,6 +176,11 @@ void CASW_Barrel_Radioactive::InputBurst( inputdata_t &inputdata )
 
 void CASW_Barrel_Radioactive::StopLoopingSounds()
 {
+	if (m_pRadSound)
+	{
+		CSoundEnvelopeController::GetController().SoundDestroy(m_pRadSound);
+		m_pRadSound = NULL;
+	}
 	BaseClass::StopLoopingSounds();
 }
 

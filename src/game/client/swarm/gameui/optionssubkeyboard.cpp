@@ -654,7 +654,7 @@ void COptionsSubKeyboard::FillInDefaultBindings( void )
 
 			char szBinding[256];
 			data = UTIL_Parse( data, szBinding, sizeof(szBinding) );
-			if ( szKeyName[ 0 ] == '\0' )  
+			if ( szBinding[ 0 ] == '\0' )  
 				break; // Error
 
 			// Skip it if it's a bind for the other slit

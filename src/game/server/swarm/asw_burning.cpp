@@ -62,14 +62,15 @@ void CASW_Burning::Precache()
 void CASW_Burning::FireThink()
 {
 	int c = m_Burning.Count();
+	CBaseEntity* pEnt;
 	for (int i=c-1;i>=0;i--)	// go backwards in case we remove one
 	{
-		CBaseEntity *pEnt = m_Burning[i]->m_hEntity.Get();
+		pEnt = m_Burning[i]->m_hEntity.Get();
 		if (m_Burning[i]->m_fDieTime <= gpGlobals->curtime || !pEnt)
 		{
 			delete m_Burning[i];
 			m_Burning.Remove(i);
-			CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pEnt);
+			CBaseAnimating *pAnim = pEnt ? pEnt->GetBaseAnimating() : NULL;
 			if (pAnim)
 			{
 				//OnEntityExtinguished(pEnt);

@@ -296,7 +296,7 @@ CAI_BaseNPC *CAI_Squad::SquadMemberInRange( const Vector &vecLocation, float flD
 		if (m_SquadMembers[i] != NULL && (vecLocation - m_SquadMembers[i]->GetAbsOrigin() ).Length2D() <= flDist)
 			return m_SquadMembers[i];
 	}
-	return false;
+	return NULL;
 }
 
 //-------------------------------------

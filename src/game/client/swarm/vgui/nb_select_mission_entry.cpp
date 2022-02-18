@@ -77,7 +77,10 @@ void CNB_Select_Mission_Entry::OnThink()
 			if (m_szMissionName[0] == '\0')
 			{
 				m_pName->SetText( "" );
-				m_pImage->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white );
+				if (m_pImage)
+				{
+					m_pImage->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white);
+				}
 				return;
 			}
 
@@ -141,43 +144,50 @@ void CNB_Select_Mission_Entry::OnThink()
 					m_pImage->SetVisible(true);
 				}
 			}
+			pMissionKeys->deleteThis();
 		}
 	}
 	else
 	{
 		m_pName->SetText( "" );
-		m_pImage->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white );
+		if (m_pImage)
+		{
+			m_pImage->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/MissionPics/UnknownMissionPic", white);
+		}
 	}
 
-	float flTargetZoom = m_pImage->IsCursorOver() ? 1.0f : 0;
-	if ( flTargetZoom == 1.0f && m_flZoom == 0.0f )
+	if (m_pImage)
 	{
-		vgui::surface()->PlaySound( "UI/menu_focus.wav" );
-	}
-	m_flZoom = Approach( flTargetZoom, m_flZoom, gpGlobals->frametime * 10.0f );
+		float flTargetZoom = m_pImage->IsCursorOver() ? 1.0f : 0;
+		if (flTargetZoom == 1.0f && m_flZoom == 0.0f)
+		{
+			vgui::surface()->PlaySound("UI/menu_focus.wav");
+		}
+		m_flZoom = Approach(flTargetZoom, m_flZoom, gpGlobals->frametime * 10.0f);
 
-	float flZoom = 1.0f; // m_flZoom;
-	float flZoomDistX = YRES( 10 );
-	float flZoomDistY = YRES( 7 );
-	int x = flZoomDistX - flZoomDistX * flZoom;
-	int y = YRES( 34 ) + flZoomDistY - flZoomDistY * flZoom;
-	int w = YRES( 133 ) - ( flZoomDistX * 2 ) + ( flZoomDistX * 2 * flZoom );
-	int h = YRES( 100 ) - ( flZoomDistY * 2 ) + ( flZoomDistY * 2 * flZoom );
-	// 		"xpos"		"0"
-	// 		"ypos"		"34"
-	// 		"wide"		"133"
-	// 		"tall"		"100"
+		float flZoom = 1.0f; // m_flZoom;
+		float flZoomDistX = YRES(10);
+		float flZoomDistY = YRES(7);
+		int x = flZoomDistX - flZoomDistX * flZoom;
+		int y = YRES(34) + flZoomDistY - flZoomDistY * flZoom;
+		int w = YRES(133) - (flZoomDistX * 2) + (flZoomDistX * 2 * flZoom);
+		int h = YRES(100) - (flZoomDistY * 2) + (flZoomDistY * 2 * flZoom);
+		// 		"xpos"		"0"
+		// 		"ypos"		"34"
+		// 		"wide"		"133"
+		// 		"tall"		"100"
 
-	if ( flTargetZoom == 1.0f )
-	{
-		m_pName->SetFgColor( Color( 255, 255, 255, 255 ) );
-	}
-	else
-	{
-		m_pName->SetFgColor( Color( 83, 148, 192, 255 ) );
-	}
+		if (flTargetZoom == 1.0f)
+		{
+			m_pName->SetFgColor(Color(255, 255, 255, 255));
+		}
+		else
+		{
+			m_pName->SetFgColor(Color(83, 148, 192, 255));
+		}
 
-	m_pImage->SetBounds( x, y, w, h );
+		m_pImage->SetBounds(x, y, w, h);
+	}
 }
 
 void CNB_Select_Mission_Entry::OnCommand( const char *command )

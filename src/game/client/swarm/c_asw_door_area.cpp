@@ -21,7 +21,10 @@ C_ASW_Door_Area::C_ASW_Door_Area()
 
 C_ASW_Door* C_ASW_Door_Area::GetASWDoor()
 {
-	return dynamic_cast<C_ASW_Door*>(GetUseTargetHandle().Get());
+	C_BaseEntity* pUseTargetH = GetUseTargetHandle().Get();
+	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
+		return assert_cast<C_ASW_Door*>(pUseTargetH);
+	return NULL;
 }
 
 bool C_ASW_Door_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)

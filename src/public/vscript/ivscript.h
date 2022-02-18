@@ -189,7 +189,8 @@ DECLARE_DEDUCE_FIELDTYPE( FIELD_VARIANT,	ScriptVariant_t );
 template <typename T>
 inline const char * ScriptFieldTypeName() 
 {
-	T::using_unknown_script_type(); 
+	T::using_unknown_script_type();
+	return NULL;
 }
 
 #define DECLARE_NAMED_FIELDTYPE( fieldType, strName ) template <> inline const char * ScriptFieldTypeName<fieldType>() { return strName; }
@@ -408,7 +409,7 @@ struct ScriptVariant_t
 		{
 		case FIELD_VOID:		*pDest = 0; return false;
 		case FIELD_INTEGER:		*pDest = m_int; return true;
-		case FIELD_FLOAT:		*pDest = m_float; return true;
+		case FIELD_FLOAT:		*pDest = ( int )m_float; return true;
 		case FIELD_BOOLEAN:		*pDest = m_bool; return true;
 		default:
 			DevWarning( "No conversion from %s to int now\n", ScriptFieldTypeName( m_type ) );
@@ -521,7 +522,7 @@ private:
 #define BEGIN_SCRIPTDESC( className, baseClass, description )								BEGIN_SCRIPTDESC_NAMED( className, baseClass, #className, description )
 #define BEGIN_SCRIPTDESC_ROOT( className, description )										BEGIN_SCRIPTDESC_ROOT_NAMED( className, #className, description )
 
-#ifdef MSVC
+#if defined( _MSC_VER ) && ( _MSC_VER <= 1800 )
 	#define DEFINE_SCRIPTDESC_FUNCTION( className, baseClass ) \
 		ScriptClassDesc_t * GetScriptDesc( className * )
 #else

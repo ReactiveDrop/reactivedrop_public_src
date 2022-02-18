@@ -222,7 +222,7 @@ void CNB_Main_Panel::OnThink()
 	m_pChangeMissionButton->SetVisible( gpGlobals->maxClients == 1 );
 
 	bool isOffline = ASWGameResource() && ASWGameResource()->IsOfflineGame();
-	bool hasMarineSelected = Briefing()->GetMarineProfile(m_pLobbyRow0->m_nLobbySlot);
+	bool hasMarineSelected = Briefing()->GetMarineProfile(m_pLobbyRow0->m_nLobbySlot) != NULL;
 	m_pAddBotButton->SetVisible( !isOffline && hasMarineSelected );
 	m_pDeselectMarinesButton->SetVisible( hasMarineSelected );
 

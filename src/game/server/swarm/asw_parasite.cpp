@@ -135,7 +135,13 @@ void CASW_Parasite::Spawn( void )
 
 	m_iMaxHealth = m_iHealth;
 
-	SetMoveType( MOVETYPE_STEP );
+	//Mad Orange. Parasite is npc that has ground check. So it teleports to ground or falls. Parenting during such a thing may teleport parasite in unpredicatable way.
+	//So we remove corresponding parenting in asw_egg.cpp, add there(MOVETYPE_FLY) and restore original(MOVETYPE_STEP) in CASW_Parasite::DoJumpFromEgg()
+	if (m_bDoEggIdle)
+		SetMoveType(MOVETYPE_FLY);
+	else
+		SetMoveType(MOVETYPE_STEP);
+
 	SetHullType(HULL_TINY);
 	SetCollisionGroup( ASW_COLLISION_GROUP_PARASITE );
 	SetViewOffset( Vector(6, 0, 11) ) ;		// Position of the eyes relative to NPC's origin.
@@ -331,18 +337,20 @@ int CASW_Parasite::RangeAttack1Conditions( float flDot, float flDist )
 	CBaseEntity *pEnemy = GetEnemy();
 	if( pEnemy )
 	{
-		bool bEnemyIsBullseye = ( dynamic_cast<CNPC_Bullseye *>(pEnemy) != NULL );
+		bool bEnemyIsBullseye = false;
+		if ( pEnemy->Classify() == CLASS_BULLSEYE )
+			bEnemyIsBullseye = true;
 
 		trace_t tr;
 		AI_TraceLine( EyePosition(), pEnemy->EyePosition(), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 
-		if ( tr.m_pEnt != GetEnemy() )
+		if ( tr.m_pEnt != pEnemy )
 		{
 			if ( !bEnemyIsBullseye || tr.m_pEnt != NULL )
 				return COND_NONE;
 		}
 
-		if( GetEnemy()->EyePosition().z - 36.0f > GetAbsOrigin().z )
+		if( pEnemy->EyePosition().z - 36.0f > GetAbsOrigin().z )
 		{
 			// Only run this test if trying to jump at a player who is higher up than me, else this 
 			// code will always prevent a headcrab from jumping down at an enemy, and sometimes prevent it
@@ -350,14 +358,14 @@ int CASW_Parasite::RangeAttack1Conditions( float flDot, float flDist )
 			Vector vStartHullTrace = GetAbsOrigin();
 			vStartHullTrace.z += 1.0;
 
-			Vector vEndHullTrace = GetEnemy()->EyePosition() - GetAbsOrigin();
+			Vector vEndHullTrace = pEnemy->EyePosition() - GetAbsOrigin();
 			vEndHullTrace.NormalizeInPlace();
 			vEndHullTrace *= 8.0;
 			vEndHullTrace += GetAbsOrigin();
 
 			AI_TraceHull( vStartHullTrace, vEndHullTrace,GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, GetCollisionGroup(), &tr );
 
-			if ( tr.m_pEnt != NULL && tr.m_pEnt != GetEnemy() )
+			if ( tr.m_pEnt != NULL && tr.m_pEnt != pEnemy )
 			{
 				return COND_TOO_CLOSE_TO_ATTACK;
 			}
@@ -699,20 +707,19 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 void CASW_Parasite::StartInfestation()
 {
 	if ( !IsAlive() )
-	{
 		return;
-	}
 
-	CASW_Marine* pMarine = CASW_Marine::AsMarine( m_hPrepareToInfest.Get() );
+	CBaseEntity* pInfectEnt = m_hPrepareToInfest.Get();
+	CASW_Marine* pMarine = CASW_Marine::AsMarine( pInfectEnt );
 	if ( pMarine )
 	{
 		InfestMarine( pMarine );
 	}
 	else
 	{
-		CASW_Colonist *pColonist = dynamic_cast<CASW_Colonist*>( m_hPrepareToInfest.Get() );
-		if ( pColonist )
+		if ( pInfectEnt && pInfectEnt->Classify() == CLASS_ASW_COLONIST )
 		{
+			CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>( pInfectEnt );
 			InfestColonist( pColonist );
 		}
 	}
@@ -729,8 +736,21 @@ void CASW_Parasite::InfestThink( void )
 
 	DispatchAnimEvents( this );
 
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetParent());
-	CASW_Colonist *pColonist = dynamic_cast<CASW_Colonist*>(GetParent());
+	CASW_Marine* pMarine = NULL;
+	CASW_Colonist* pColonist = NULL;
+	CBaseEntity* pParent = GetParent();
+	if ( pParent )
+	{
+		if ( pParent->Classify() == CLASS_ASW_MARINE )
+		{
+			pMarine = assert_cast<CASW_Marine*>( pParent );
+		}
+		else if ( pParent->Classify() == CLASS_ASW_COLONIST )
+		{
+			pColonist = assert_cast<CASW_Colonist*>( pParent );
+		}
+	}
+
 	bool bDoneInfesting = false;
 
 	if ( !pColonist ) 
@@ -906,8 +926,11 @@ void CASW_Parasite::SetEgg(CASW_Egg* pEgg)
 }
 
 CASW_Egg* CASW_Parasite::GetEgg()
-{	
-	return dynamic_cast<CASW_Egg*>(m_hEgg.Get());
+{
+	CBaseEntity* pEgg = m_hEgg.Get();
+	if ( pEgg && pEgg->Classify() == CLASS_ASW_EGG )
+		return assert_cast<CASW_Egg*>( pEgg );
+	return NULL;
 }	
 
 //-----------------------------------------------------------------------------
@@ -1211,7 +1234,8 @@ void CASW_Parasite::SetJumpFromEgg(bool b, float flJumpDistance)
 void CASW_Parasite::DoJumpFromEgg()
 {
 	SetContextThink( NULL, gpGlobals->curtime, s_pParasiteAnimThink );
-	SetParent( NULL );
+	SetMoveType(MOVETYPE_STEP);
+	//SetParent( NULL );
 	SetAbsOrigin( GetAbsOrigin() + Vector( 0, 0, 30 ) );	// TODO: position parasite at where his 'idle in egg' animation has him.  This has to be some distance off the ground, else the jump will immediately end.
 	Vector dir = vec3_origin;
 	AngleVectors( GetAbsAngles(), &dir );
@@ -1220,7 +1244,7 @@ void CASW_Parasite::DoJumpFromEgg()
 
 	SetActivity( ACT_RANGE_ATTACK1 );
 	StudioFrameAdvanceManual( 0.0 );
-	SetParent( NULL );
+	//SetParent( NULL );
 	RemoveFlag( FL_FLY );
 	AddEffects( EF_NOINTERP );
 	m_bDoEggIdle = false;
@@ -1265,7 +1289,10 @@ void CASW_Parasite::SetMother(CASW_Alien* spawner)
 
 CASW_Alien* CASW_Parasite::GetMother()
 {
-	return dynamic_cast<CASW_Alien*>(m_hMother.Get());
+	CBaseEntity* pMother = m_hMother.Get();
+	if ( pMother && pMother->IsAlienClassType() )
+		return assert_cast<CASW_Alien*>(pMother);
+	return NULL;
 }
 
 int CASW_Parasite::OnTakeDamage_Alive( const CTakeDamageInfo &info )

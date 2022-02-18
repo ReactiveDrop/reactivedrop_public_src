@@ -74,7 +74,7 @@ CASW_HealGrenade_Projectile::CASW_HealGrenade_Projectile()
 {
 	SetModelName( MAKE_STRING( HEALGREN_MODEL ) );
 
-	m_flHealPerSecond = 3.0f;
+	m_flHealPerSecond = 4.0f;
 	m_flHealAmountLeft = 0.0f;
 	m_nSkin = 2;
 }
@@ -124,7 +124,10 @@ void CASW_HealGrenade_Projectile::DoAOE( CBaseEntity *pEntity )
 	if ( !pTargetMarine )
 		return;
 
-	CASW_Marine *pMarine = dynamic_cast< CASW_Marine* >( GetOwnerEntity() ); // Carful! This might be null
+	CASW_Marine* pMarine = NULL; // Carful! This might be null
+	CBaseEntity* pOwner = GetOwnerEntity();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast< CASW_Marine* >(pOwner);
 
 	float flBaseHealAmount = m_flHealPerSecond * ( gpGlobals->curtime - m_flLastDoAOE );
 
@@ -318,9 +321,6 @@ void CASW_Weapon_HealGrenade::PrimaryAttack( void )
 		return;
 
 	CASW_Marine *pMarine = GetMarine();
-#ifndef CLIENT_DLL
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-#endif
 
 	if ( !pMarine )
 		return;

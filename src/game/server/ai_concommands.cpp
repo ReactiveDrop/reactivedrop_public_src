@@ -14,7 +14,6 @@
 #include "ai_networkmanager.h"
 #include "ndebugoverlay.h"
 #include "datacache/imdlcache.h"
-#include "ai_addon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -448,7 +447,6 @@ void CC_NPC_Create( const CCommand &args )
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );
-	Vector vecAddonSpawn; // coordinates of the NPC, which is the position to spawn the addon
 
 	// Try to create entity
 	CAI_BaseNPC *baseNPC = dynamic_cast< CAI_BaseNPC * >( CreateEntityByName(args[1]) );
@@ -490,8 +488,6 @@ void CC_NPC_Create( const CCommand &args )
 			Vector	vUpBit = baseNPC->GetAbsOrigin();
 			vUpBit.z += 1;
 
-			vecAddonSpawn = vUpBit; // save the spawn position of the NPC in case we need it for addon spawning
-
 			AI_TraceHull( baseNPC->GetAbsOrigin(), vUpBit, baseNPC->GetHullMins(), baseNPC->GetHullMaxs(), 
 				baseNPC->GetAITraceMask(), baseNPC, COLLISION_GROUP_NONE, &tr );
 			if ( tr.startsolid || (tr.fraction < 1.0) )
@@ -503,27 +499,6 @@ void CC_NPC_Create( const CCommand &args )
 		}
 
 		baseNPC->Activate();
-
-		// since the NPC was successfully spawned lets see if we need to attach an addon
-		if ( args.ArgC() >= 4 )
-		{
-			CBaseEntity *pItem = (CBaseEntity *)CreateEntityByName( args[3] );
-			if ( pItem )
-			{
-				pItem->SetAbsOrigin( vecAddonSpawn );
-
-				//  name the addon if the user specified a fourth parameter
-				if ( args.ArgC() >= 5 )
-				{
-					pItem->KeyValue( "targetname", args[4] );
-				};
-
-				pItem->Spawn();
-
-				// install the addon
-				assert_cast< CAI_AddOn *>( pItem )->Install( baseNPC );
-			}
-		}
 	}
 
 

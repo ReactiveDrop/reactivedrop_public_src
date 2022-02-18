@@ -65,7 +65,7 @@ char* ASW_AllocString( const char *szString );
 float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires, int iHackLevel, float fSpeedScale);
 
 #ifdef GAME_DLL
-	void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake=false );
+	void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake = false, CASW_Marine *pOnlyMarine = NULL );
 	void UTIL_ASW_ScreenPunch( const Vector &center, const Vector &direction, float amplitude, float frequency, float duration, float radius );
 	void UTIL_ASW_ScreenPunch( const Vector &center, float radius, const ScreenShake_t &shake );
 	void UTIL_ASW_PoisonBlur(CBaseEntity *pEntity, float duration);
@@ -108,5 +108,12 @@ public:
 };
 
 bool ASW_IsSecurityCam(CPointCamera *pCameraEnt);
+
+#ifdef CLIENT_DLL
+class C_ASW_Player;
+bool UTIL_ASW_CommanderLevelAtLeast( C_ASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
+#else
+bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
+#endif
 
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

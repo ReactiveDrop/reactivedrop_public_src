@@ -563,7 +563,7 @@ void CASWInput::Init_Camera( void )
 		m_PerUser[ i ].m_fCameraInThirdPerson = true;
 		m_PerUser[ i ].m_CameraIsOrthographic = false;
 		// TODO: make this part of the per user data
-		m_fCurrentCameraPitch = false;
+		m_fCurrentCameraPitch = 0.0f;
 		m_flCurrentCameraDist = asw_cam_marine_dist.GetFloat();
 		m_vecCameraVelocity.Init();
 

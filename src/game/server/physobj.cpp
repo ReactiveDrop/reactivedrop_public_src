@@ -520,6 +520,17 @@ bool CPhysBox::CreateVPhysics()
 	}
 
 	vcollide_t *pVCollide = modelinfo->GetVCollide( GetModelIndex() );
+
+	if (!pVCollide)
+	{
+		SetSolid(SOLID_NONE);
+		ClearSolidFlags();
+		SetMoveType(MOVETYPE_NONE);
+		Warning("ERROR!: Can't create collision for func_physbox %s. Does the entity have invalid dimensions?\n", GetDebugName());
+		//UTIL_Remove(this);
+		return false;
+	}
+
 	PhysGetMassCenterOverride( this, pVCollide, tmpSolid );
 	PhysSolidOverride( tmpSolid, m_iszOverrideScript );
 	if ( tmpSolid.params.rotdamping < 1.0f && ShouldDampRotation(pVCollide->solids[0]) )
@@ -947,7 +958,7 @@ void CPhysExplosion::Explode( CBaseEntity *pActivator, CBaseEntity *pCaller )
 	while ((pEntity = FindEntity( pEntity, pActivator, pCaller )) != NULL)
 	{
 		// UNDONE: Ask the object if it should get force if it's not MOVETYPE_VPHYSICS?
-		if ( pEntity->m_takedamage != DAMAGE_NO && (pEntity->GetMoveType() == MOVETYPE_VPHYSICS || (pEntity->VPhysicsGetObject() /*&& !pEntity->IsPlayer()*/)) )
+		if ( pEntity->m_takedamage != DAMAGE_NO && (pEntity->GetMoveType() == MOVETYPE_VPHYSICS || (pEntity->VPhysicsGetObject() && !pEntity->IsPlayer())) )
 		{
 			vecOrigin = GetAbsOrigin();
 			
@@ -999,7 +1010,7 @@ void CPhysExplosion::Explode( CBaseEntity *pActivator, CBaseEntity *pCaller )
 
 				CTakeDamageInfo info( this, this, adjustedDamage, DMG_BLAST );
 				CalculateExplosiveDamageForce( &info, (vecSpot - vecOrigin), vecOrigin );
-	
+#ifndef SWARM_DLL
 				if ( HasSpawnFlags( SF_PHYSEXPLOSION_PUSH_PLAYER ) )
 				{
 					if ( pEntity->IsPlayer() )
@@ -1044,7 +1055,7 @@ void CPhysExplosion::Explode( CBaseEntity *pActivator, CBaseEntity *pCaller )
 						continue;
 					}
 				}
-	
+#endif	
 				if ( HasSpawnFlags( SF_PHYSEXPLOSION_NODAMAGE ) )
 				{
 					pEntity->VPhysicsTakeDamage( info );
@@ -1188,42 +1199,44 @@ void CPhysImpact::InputImpact( inputdata_t &inputdata )
 			trace.plane.normal = -dir;
 		}
 		CBaseEntity	*pEnt = trace.m_pEnt;
-	
-		IPhysicsObject *pPhysics = pEnt->VPhysicsGetObject();
-		//If the entity is valid, hit it
-		if ( ( pEnt != NULL  ) && ( pPhysics != NULL ) )
+		if (pEnt != NULL)
 		{
-			CTakeDamageInfo info;
-			info.SetAttacker( this);
-			info.SetInflictor( this );
-			info.SetDamage( 0 );
-			info.SetDamageForce( vec3_origin );
-			info.SetDamageType( DMG_GENERIC );
-
-			pEnt->DispatchTraceAttack( info, dir, &trace );
-			ApplyMultiDamage();
-
-			//Damage falls off unless specified or the ray's length is infinite
-			float	damage = HasSpawnFlags( bitsPHYSIMPACT_NOFALLOFF | bitsPHYSIMPACT_INFINITE_LENGTH ) ? 
-								m_damage : (m_damage * (1.0f-trace.fraction));
-			
-			if ( HasSpawnFlags( bitsPHYSIMPACT_IGNORE_MASS ) )
+			IPhysicsObject *pPhysics = pEnt->VPhysicsGetObject();
+			//If the entity is valid, hit it
+			if (pPhysics != NULL)
 			{
-				damage *= pPhysics->GetMass();
+				CTakeDamageInfo info;
+				info.SetAttacker(this);
+				info.SetInflictor(this);
+				info.SetDamage(0);
+				info.SetDamageForce(vec3_origin);
+				info.SetDamageType(DMG_GENERIC);
+
+				pEnt->DispatchTraceAttack(info, dir, &trace);
+				ApplyMultiDamage();
+
+				//Damage falls off unless specified or the ray's length is infinite
+				float	damage = HasSpawnFlags(bitsPHYSIMPACT_NOFALLOFF | bitsPHYSIMPACT_INFINITE_LENGTH) ?
+				m_damage : (m_damage * (1.0f - trace.fraction));
+
+				if (HasSpawnFlags(bitsPHYSIMPACT_IGNORE_MASS))
+				{
+					damage *= pPhysics->GetMass();
+				}
+
+				if (debug_physimpact.GetBool())
+				{
+					NDebugOverlay::Line(trace.endpos, trace.endpos + trace.plane.normal * -128, 255, 0, 0, false, 30);
+				}
+
+				// Legacy entities applied the force along the impact normal, which yielded unpredictable results.
+				if (!HasSpawnFlags(bitsPHYSIMPACT_IGNORE_NORMAL))
+				{
+					dir = -trace.plane.normal;
+				}
+
+				pPhysics->ApplyForceOffset(damage * dir * phys_pushscale.GetFloat(), trace.endpos);
 			}
-
-			if( debug_physimpact.GetBool() )
-			{
-				NDebugOverlay::Line( trace.endpos, trace.endpos + trace.plane.normal * -128, 255, 0, 0, false, 30 );
-			}
-
-			// Legacy entities applied the force along the impact normal, which yielded unpredictable results.
-			if ( !HasSpawnFlags( bitsPHYSIMPACT_IGNORE_NORMAL ) )
-			{
-				dir = -trace.plane.normal;
-			}				
-
-			pPhysics->ApplyForceOffset( damage * dir * phys_pushscale.GetFloat(), trace.endpos );
 		}
 	}
 }

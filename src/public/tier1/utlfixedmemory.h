@@ -105,7 +105,7 @@ public:
 		return false;
 	}
 	bool IsValidIterator( const Iterator_t &it ) const	{ return it.m_pBlockHeader && it.m_nIndex >= 0 && it.m_nIndex < it.m_pBlockHeader->m_nBlockSize; }
-	Iterator_t InvalidIterator() const					{ return Iterator_t( NULL, -1 ); }
+	Iterator_t InvalidIterator() const					{ return Iterator_t( NULL, INVALID_INDEX); }
 
 	// element access
 	T& operator[]( int i );

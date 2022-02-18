@@ -104,12 +104,6 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 	//g_bOfflineGame = pKV->GetString( "map/offline", NULL ) != NULL;
 	g_bOfflineGame = !Q_stricmp( pKV->GetString( "system/network", "LIVE" ), "offline" );
 
-	KeyValues *pKeyValuesForChallenge = NULL;
-	if ( g_bOfflineGame && g_pMatchFramework && g_pMatchFramework->GetMatchSession() && g_pMatchFramework->GetMatchSession()->GetSessionSettings() )
-	{
-		pKeyValuesForChallenge = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
-	}
-
 	//Msg( "GameInterface reservation payload:\n" );
 	//KeyValuesDumpAsDevMsg( pKV );
 
@@ -182,11 +176,21 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		mp_gamemode.SetValue( szGameMode );
 	}
 
-	extern ConVar rd_challenge;
-	char const *szChallenge = pKeyValuesForChallenge->GetString( "game/challenge", "" );
-	if ( szChallenge && *szChallenge )
+	KeyValues *pKeyValuesForChallenge = NULL;
+	if (g_bOfflineGame && g_pMatchFramework && g_pMatchFramework->GetMatchSession() && g_pMatchFramework->GetMatchSession()->GetSessionSettings())
 	{
-		rd_challenge.SetValue( szChallenge );
+		pKeyValuesForChallenge = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
+	}
+
+	extern ConVar rd_challenge;
+
+	if (pKeyValuesForChallenge)
+	{
+		char const *szChallenge = pKeyValuesForChallenge->GetString("game/challenge", "");
+		if ( szChallenge && *szChallenge )
+		{
+			rd_challenge.SetValue(szChallenge);
+		}
 	}
 	else if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
 	{

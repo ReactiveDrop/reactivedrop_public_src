@@ -71,7 +71,7 @@ public:
 	int			m_iShowClipsOnHUD;
 	int			m_iShowGrenadesOnHUD;
 	int			m_iShowSecondaryBulletsOnHUD;
-	float		m_bOrientToLaser;		// if true, this weapon will orient itself along the laser sight
+	bool		m_bOrientToLaser;		// if true, this weapon will orient itself along the laser sight
 	bool		m_bShowClipsInWeaponDetail;
 	bool		m_bShowClipsDoubled;
 

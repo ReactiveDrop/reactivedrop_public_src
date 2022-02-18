@@ -57,12 +57,15 @@ int CASW_Hack::UpdateTransmitState()
 
 CASW_Player* CASW_Hack::GetHackingPlayer()
 {
-	return dynamic_cast<CASW_Player*>(m_hHackingPlayer.Get());
+	return ToASW_Player(m_hHackingPlayer.Get());
 }
 	
 CASW_Marine* CASW_Hack::GetHackingMarine()
 {
-	return dynamic_cast<CASW_Marine*>(m_hHackingMarine.Get());
+	CBaseEntity* pHacking = m_hHackingMarine.Get();
+	if ( pHacking && pHacking->Classify() == CLASS_ASW_MARINE )
+		return assert_cast<CASW_Marine*>(pHacking);
+	return NULL;
 }
 
 

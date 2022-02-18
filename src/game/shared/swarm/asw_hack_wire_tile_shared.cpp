@@ -245,7 +245,7 @@ bool CASW_Hack_Wire_Tile::TilesConnected(int iWire, int x1, int y1, int x2, int 
 	if (asw_debug_tile_connections.GetBool())
 	{
 		if (iWire == 1) Msg(" tile1 type %d rot %d connections %d, %d, %d, %d\n", iTileType1, iTileRotation1, connect1[0], connect1[1], connect1[2], connect1[3]);
-		if (iWire == 1) Msg(" tile2 type %d rot %d connections %d, %d, %d, %d\n", iTileType2, iTileRotation2, connect2[0], connect2[1], connect2[2], connect2[3]);
+		if (iWire == 2) Msg(" tile2 type %d rot %d connections %d, %d, %d, %d\n", iTileType2, iTileRotation2, connect2[0], connect2[1], connect2[2], connect2[3]);
 	}
 
 	// check the appropriate connections based on our relative offset
@@ -270,11 +270,13 @@ bool CASW_Hack_Wire_Tile::TilesConnected(int iWire, int x1, int y1, int x2, int 
 
 float CASW_Hack_Wire_Tile::GetWireCharge()
 {
-	CASW_Button_Area *pButton = dynamic_cast<CASW_Button_Area*>(GetHackTarget());
-	if (!pButton)
-		return 0;
-
-	return pButton->GetHackProgress();
+	CBaseEntity* pTarget = m_hHackTarget.Get();
+	if ( pTarget && pTarget->Classify() == CLASS_ASW_BUTTON_PANEL )
+	{
+		CASW_Button_Area* pButton = assert_cast<CASW_Button_Area*>(pTarget);
+		return pButton->GetHackProgress();
+	}
+	return 0;
 }
 
 void CASW_Hack_Wire_Tile::SetTileRotation(int iWire, int x, int y, int iRotation)

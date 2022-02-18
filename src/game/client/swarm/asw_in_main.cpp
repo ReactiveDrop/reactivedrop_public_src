@@ -532,10 +532,12 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 
 	// store the currently selected marine in the weapon subtype
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine* pMarine = pPlayer->GetMarine();
-	if ( ASWGameResource() && pPlayer && pMarine && pPlayer->GetMarine()->GetMarineResource() )
+	C_ASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+	if ( ASWGameResource() && pMarine )
 	{
-		cmd->weaponsubtype = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
+		C_ASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
+		if (pPMR)
+			cmd->weaponsubtype = ASWGameResource()->GetMarineResourceIndex(pPMR);
 
 		// get light at the current marine
 		//Vector pos = pPlayer->GetMarine()->GetAbsOrigin() + Vector(0, 0, 40);
@@ -547,7 +549,6 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		cmd->weaponsubtype = 0;
 		//cmd->light_level = 255;
 	}
-
 	// Set button and flag bits
 	cmd->buttons = GetButtonBits( true );
 

@@ -23,6 +23,7 @@ LINK_ENTITY_TO_CLASS( asw_spawner, CASW_Spawner );
 extern ConVar asw_debug_spawners;
 extern ConVar asw_drone_health;
 ConVar asw_spawning_enabled( "asw_spawning_enabled", "1", FCVAR_CHEAT, "If set to 0, asw_spawners won't spawn aliens" );
+ConVar rd_spawning_start_at_randomized_intervals( "rd_spawning_start_at_randomized_intervals", "0", FCVAR_CHEAT, "If set to 1, asw_spawners that start spawning aliens have a small random delay each before starting to spawn" );
 
 BEGIN_DATADESC( CASW_Spawner )
 	DEFINE_KEYFIELD( m_nMaxLiveAliens,			FIELD_INTEGER,	"MaxLiveAliens" ),
@@ -213,7 +214,16 @@ void CASW_Spawner::SetSpawnerState(SpawnerState_t newState)
 	if (m_SpawnerState == SST_Spawning)
 	{
 		SetThink ( &CASW_Spawner::SpawnerThink );
-		SetNextThink( gpGlobals->curtime );
+		if ( rd_spawning_start_at_randomized_intervals.GetInt() )
+		{
+			// calculate jitter
+			const float fInterval = random->RandomFloat( 0.0f, 1.0f );
+			SetNextThink( gpGlobals->curtime + fInterval );
+		}
+		else
+		{
+			SetNextThink( gpGlobals->curtime );
+		}
 	}
 	else if (m_SpawnerState == SST_Finished)
 	{

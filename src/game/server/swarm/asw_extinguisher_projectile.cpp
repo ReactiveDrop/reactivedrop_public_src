@@ -102,7 +102,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 		}
 		else
 		{		
-			CBaseAnimating* pAnim = dynamic_cast<CBaseAnimating*>(pOther);
+			CBaseAnimating* pAnim = pOther->GetBaseAnimating();
 			if (pAnim && pAnim->IsOnFire())
 			{						
 				CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( pAnim->GetEffectEntity() );
@@ -128,7 +128,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 		//if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
 			 //return;
 
-		CAI_BaseNPC * RESTRICT pNPC = dynamic_cast<CAI_BaseNPC*>( pOther );
+		CAI_BaseNPC * RESTRICT pNPC = pOther->MyNPCPointer();
 		if ( pNPC )
 		{
 			// Freeze faster the more frozen the object is

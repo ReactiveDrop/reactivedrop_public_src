@@ -95,7 +95,7 @@ void CASW_Firewall_Piece::Spawn( void )
 		nFlags |= SF_FIRE_NO_SOUND;
 	}
 
-	FireSystem_StartFire(tr.endpos, 64, 4, m_fFireDuration, nFlags, GetOwnerEntity(), FIRE_WALL_MINE, GetAbsAngles().y, m_hCreatorWeapon );
+	FireSystem_StartFire(tr.endpos + Vector(0, 0, 1), 64, 4, m_fFireDuration, nFlags, GetOwnerEntity(), FIRE_WALL_MINE, GetAbsAngles().y, m_hCreatorWeapon );
 }
 
 void CASW_Firewall_Piece::Precache()

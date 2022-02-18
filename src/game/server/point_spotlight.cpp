@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -359,7 +359,7 @@ void CPointSpotlight::SpotlightCreate(void)
 	m_hSpotlight->SetHaloScale(60);
 	m_hSpotlight->SetEndWidth(m_flSpotlightGoalWidth);
 	m_hSpotlight->SetBeamFlags( (FBEAM_SHADEOUT|FBEAM_NOTILE) );
-	m_hSpotlight->SetBrightness( 64 );
+	m_hSpotlight->SetBrightness( m_clrRender->a );
 	m_hSpotlight->SetNoise( 0 );
 
 	if ( m_bEfficientSpotlight )

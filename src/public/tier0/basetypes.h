@@ -287,17 +287,12 @@ inline bool IsFinite( const vec_t &f )
 	return ((FloatBits(f) & 0x7F800000) != 0x7F800000);
 #endif
 }
-
+/*
 inline uint32 FloatAbsBits( vec_t f )
 {
 	return FloatBits(f) & 0x7FFFFFFF;
 }
-
-inline float FloatMakeNegative( vec_t f )
-{
-	return BitsToFloat( FloatBits(f) | 0x80000000 );
-}
-
+*/
 #if defined( WIN32 )
 
 //#include <math.h>
@@ -307,6 +302,7 @@ extern "C"
 {
 #endif
 	double __cdecl fabs(double);
+	float __cdecl fabsf( _In_ float );
 #ifdef __cplusplus
 }
 #endif
@@ -317,18 +313,18 @@ extern "C"
 // NOTE:  Is there a perf issue with double<->float conversion?
 inline float FloatMakePositive( vec_t f )
 {
-	return (float)fabs( f );
+	return fabsf( f );
 }
 #else
 inline float FloatMakePositive( vec_t f )
 {
-	return BitsToFloat( FloatBits(f) & 0x7FFFFFFF );
+	return fabsf(f); // was since 2002: BitsToFloat( FloatBits(f) & 0x7FFFFFFF ); fixed in 2010
 }
 #endif
 
 inline float FloatNegate( vec_t f )
 {
-	return BitsToFloat( FloatBits(f) ^ 0x80000000 );
+	return -f; //BitsToFloat( FloatBits(f) ^ 0x80000000 );
 }
 
 
@@ -338,6 +334,12 @@ inline float FloatNegate( vec_t f )
 #define VEC_T_NAN FLOAT32_NAN
 
 #endif
+
+inline float FloatMakeNegative( vec_t f )
+{
+	return -fabsf( f );// was since 2002: BitsToFloat( FloatBits(f) | 0x80000000 ); fixed in 2010
+}
+
 
 // FIXME: why are these here?  Hardly anyone actually needs them.
 struct color24

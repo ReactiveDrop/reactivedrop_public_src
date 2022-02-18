@@ -4,6 +4,7 @@
 
 #include "asw_aoegrenade_projectile.h"
 
+class CASW_Marine;
 class CASW_Skill_Details;
 
 class CASW_BuffGrenade_Projectile : public CASW_AOEGrenade_Projectile
@@ -27,10 +28,16 @@ public:
 
 	virtual bool ShouldTouchEntity( CBaseEntity *pEntity );
 
+	virtual void OnBurnout( void );
+
 	virtual void StartAOE( CBaseEntity *pEntity );
 	virtual bool StopAOE( CBaseEntity *pEntity );
 
+	void LoseTimeForMoving();
+
 	int GetBuffedMarineCount() { return m_hBuffedMarines.Count(); }
+
+	void AttachToMarine( CASW_Marine *pMarine );
 
 protected:
 	// if this buff grenade was deployed by a marine, these describe the skill used
@@ -38,6 +45,8 @@ protected:
 	int m_iSkillPoints;
 
 	CUtlVector<EHANDLE> m_hBuffedMarines;
+
+	Vector m_vecLastOrigin;
 };
 
 #endif // _DEFINED_ASW_BUFFGREN_PROJECTILE_H

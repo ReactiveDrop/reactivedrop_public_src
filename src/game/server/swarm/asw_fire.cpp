@@ -1784,30 +1784,36 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 	{
 		if (m_flFuel > 0 || (m_spawnflags & SF_FIRE_INFINITE))
 		{
-			CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(pOther);
+			CBaseAnimating *pAnim = pOther->GetBaseAnimating();
 			if ( !pAnim || ( m_nFireType != FIRE_WALL_MINE && pAnim->IsOnFire() ) )	// already on fire
 			{
 				//Msg("but it's already on fire\n");
 				return;
 			}
 
+			CBaseEntity* pOwner = m_hOwner.Get();
+
 			CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
 			if ( pMarine )
 			{
-				CASW_Marine *pFireStarterMarine = dynamic_cast< CASW_Marine* >( m_hOwner.Get() );
-				if ( m_nFireType == FIRE_WALL_MINE && !pMarine->IsOnFire() && pFireStarterMarine && pFireStarterMarine->GetMarineResource() && pFireStarterMarine->IRelationType( pMarine ) != D_LI )
+				if (pOwner && pOwner->Classify() == CLASS_ASW_MARINE)
 				{
-					pFireStarterMarine->GetMarineResource()->IncrementWeaponStats( (Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0 );
+					CASW_Marine* pFireStarterMarine = assert_cast< CASW_Marine* >( pOwner );
+					if (m_nFireType == FIRE_WALL_MINE && !pMarine->IsOnFire() && pFireStarterMarine->GetMarineResource() && pFireStarterMarine->IRelationType(pMarine) != D_LI)
+					{
+						pFireStarterMarine->GetMarineResource()->IncrementWeaponStats((Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0);
+					}
 				}
+
 				// Burn for 1/3rd the time decided by difficulty
-				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
+				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
 				//Msg("OUCH OUCH BURNING MARINE\n");
 			}
 
-			CASW_Colonist *pColonist =dynamic_cast<CASW_Colonist*>(pOther);
-			if ( pColonist )
+			if ( pOther->Classify() == CLASS_ASW_COLONIST )
 			{
-				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
+				CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>(pOther);
+				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, pOwner ? pOwner : this, m_hCreatorWeapon );
 			}
 
 			IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC* >(pOther);
@@ -1820,14 +1826,17 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 					//Msg("  our owner is null\n");				
 				if ( pSpawnable->GetNPC() && !pSpawnable->GetNPC()->IsOnFire() && m_nFireType == FIRE_WALL_MINE )
 				{
-					CASW_Marine *pFireStarterMarine = dynamic_cast< CASW_Marine* >( m_hOwner.Get() );
-					if ( pFireStarterMarine && pFireStarterMarine->GetMarineResource() )
+					if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
 					{
-						pFireStarterMarine->GetMarineResource()->m_iMineKills++;
-						pFireStarterMarine->GetMarineResource()->IncrementWeaponStats( (Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0 );
+						CASW_Marine* pFireStarterMarine = assert_cast<CASW_Marine*>( pOwner );
+						if (pFireStarterMarine->GetMarineResource())
+						{
+							pFireStarterMarine->GetMarineResource()->m_iMineKills++;
+							pFireStarterMarine->GetMarineResource()->IncrementWeaponStats((Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0);
+						}
 					}
 				}
-				pSpawnable->ASW_Ignite( 10.0f, 0, m_hOwner.Get() ? m_hOwner.Get() : this, m_hCreatorWeapon );
+				pSpawnable->ASW_Ignite( 10.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
 
 				if ( m_nFireType == FIRE_WALL_MINE && pSpawnable->GetNPC() )
 				{
@@ -1838,7 +1847,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 						ASWGameRules()->ModifyAlienHealthBySkillLevel( flDamage );
 					}
 
-					CTakeDamageInfo info( m_hOwner.Get() ? m_hOwner.Get() : this, this, flDamage, damageFlags );
+					CTakeDamageInfo info( pOwner ? pOwner : this, this, flDamage, damageFlags );
 					info.SetWeapon( m_hCreatorWeapon );
 					pSpawnable->GetNPC()->TakeDamage( info );
 				}
@@ -1850,11 +1859,15 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 				Extinguish( 3 );
 				if (!m_bFirefighterCounted && m_flHeatLevel <= 0)
 				{
-					CASW_Marine *pExtMarine = dynamic_cast< CASW_Marine* >(pExt->GetFirer());
-					if ( pExtMarine && pExtMarine->GetMarineResource() )
+					CBaseEntity* pFirer = pExt->GetFirer();
+					if ( pFirer && pFirer->Classify() == CLASS_ASW_MARINE )
 					{
-						pExtMarine->GetMarineResource()->m_iFiresPutOut++;
-						m_bFirefighterCounted++;
+						CASW_Marine* pExtMarine = assert_cast<CASW_Marine*>( pFirer );
+						if (pExtMarine->GetMarineResource())
+						{
+							pExtMarine->GetMarineResource()->m_iFiresPutOut++;
+							m_bFirefighterCounted = true;
+						}
 					}
 				}					
 				pExt->TouchedEnvFire();
@@ -1863,8 +1876,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 	}
 	else
 	{
-		CASW_Flamer_Projectile* pFlame = dynamic_cast<CASW_Flamer_Projectile*>(pOther);
-		if (pFlame)
+		if ( pOther->Classify() == CLASS_ASW_FLAMER_PROJECTILE )
 		{
 			// ignite!
 			StartFire();
@@ -1887,7 +1899,7 @@ int CFire::DrawDebugTextOverlays( void )
 		char tempstr[512];
 
 		// print flame size
-		Q_snprintf(tempstr,sizeof(tempstr),"    size: %f", m_flFireSize);
+		Q_snprintf(tempstr,sizeof(tempstr),"    size: %f", m_flFireSize.Get());
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
 	}

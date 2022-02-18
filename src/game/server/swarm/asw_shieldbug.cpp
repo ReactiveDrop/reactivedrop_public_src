@@ -750,6 +750,7 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	CTakeDamageInfo newInfo(info);
 	float damage = info.GetDamage();
+	CBaseEntity* pAttacker = info.GetAttacker();
 
 	// reduce damage from shotguns and mining laser
 	if (info.GetDamageType() & DMG_ENERGYBEAM)
@@ -759,13 +760,12 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if (info.GetDamageType() & DMG_BUCKSHOT)
 	{
 		// hack to reduce vindicator damage (not reducing normal shotty as much as it's not too strong)
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if (pMarine)
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
-				CASW_Weapon_Assault_Shotgun *pVindicator = dynamic_cast<CASW_Weapon_Assault_Shotgun*>(pMarine->GetActiveASWWeapon());
-				if ( pVindicator )
+				if ( (int)pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 					damage *= 0.45f;
 				else
 					damage *= 0.6f;
@@ -775,13 +775,13 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	if (info.GetDamageType() & DMG_BULLET)
 	{
-		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(info.GetAttacker());
-			if ( pMarine && pMarine->GetActiveASWWeapon() )
+			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
+			if ( pWeapon )
 			{
 				extern ConVar rd_heavy_rifle_bigalien_dmg_scale;
-				switch ( ( int ) pMarine->GetActiveASWWeapon()->Classify() )
+				switch ( (int)pWeapon->Classify() )
 				{
 				case CLASS_ASW_DEAGLE:
 					damage *= rd_deagle_bigalien_dmg_scale.GetFloat(); break;
@@ -806,9 +806,9 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	Vector damageNormal;
 	Vector vecDamagePos = newInfo.GetDamagePosition();
-	if ( newInfo.GetAttacker() && vecDamagePos != vec3_origin )
+	if ( pAttacker && vecDamagePos != vec3_origin )
 	{
-		vecDamagePos = newInfo.GetAttacker()->GetAbsOrigin();	// use the attacker's position when determining block, to stop marines shooting through gaps and hurting the bug from any angle
+		vecDamagePos = pAttacker->GetAbsOrigin();	// use the attacker's position when determining block, to stop marines shooting through gaps and hurting the bug from any angle
 	}
 
 	bool bDirectional = ( vecDamagePos != vec3_origin );

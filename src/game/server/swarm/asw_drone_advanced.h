@@ -135,6 +135,9 @@ public:
 		NEXT_CONDITION,
 	};
 
+	void CollisionSaveAndRestore( float delay );
+	void CollisionRestoreThink();
+
 private:
 	CHandle< CASW_Door > m_hBlockingDoor;
 	float				 m_flDoorBashYaw;

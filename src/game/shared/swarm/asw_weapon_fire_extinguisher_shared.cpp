@@ -174,12 +174,15 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 			// check for putting outselves out
 			if (pMarine->IsOnFire())
 			{
+				//Orange. This is no longer used with marine
+				/*
 				CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( pMarine->GetEffectEntity() );
 				if ( pFireChild )
 				{
 					pMarine->SetEffectEntity( NULL );
 					UTIL_Remove( pFireChild );
 				}
+				*/
 				pMarine->Extinguish();
 				// spawn a cloud effect on this marine
 				CEffectData	data;
@@ -196,12 +199,15 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 			// decrement ammo
 			m_iClip1 -= 1;
 
+			//Mad Orange. Suit is unused in ASW
+			/*
 			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 			{
 				// HEV suit - indicate out of ammo condition
 				if (pPlayer)
 					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 			}
+			*/
 		}
 	}
 	else if (pPlayer)		// firing from a player

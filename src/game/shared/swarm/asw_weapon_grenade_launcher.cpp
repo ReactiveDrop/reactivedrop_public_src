@@ -70,10 +70,12 @@ CASW_Weapon_Grenade_Launcher::~CASW_Weapon_Grenade_Launcher()
 
 #ifdef GAME_DLL
 ConVar asw_grenade_launcher_speed( "asw_grenade_launcher_speed", "2.4f", FCVAR_CHEAT, "Scale speed of grenade launcher grenades" );
-ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4f", FCVAR_CHEAT, "Gravity of grenade launcher grenades" );
 ConVar rd_grenade_launcher_explode_on_contact( "rd_grenade_launcher_explode_on_contact", "1", FCVAR_CHEAT, "If set to 0 grenade will not explode on contact with rigid world" );
 ConVar rd_grenade_launcher_num_clusters( "rd_grenade_launcher_num_clusters", "0", FCVAR_CHEAT, "Number of clusters to spawn on grenade explosion", true, 0, true, 15 );
+ConVar rda_grenade_launcher_grenade_ricochet("rda_grenade_launcher_grenade_ricochet", "0", FCVAR_CHEAT, "If set to 1 GL grenades ricochet after world collision");
 #endif
+ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4f", FCVAR_CHEAT, "Gravity of grenade launcher grenades" );
+ConVar rd_grenade_launcher_grenade_preview( "rd_grenade_launcher_grenade_preview", "0", FCVAR_CHEAT, "Draw a predictive arc for a grenade launcher" );
 
 void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 {
@@ -123,7 +125,11 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	if ( pGrenade )
 	{
 		pGrenade->SetGravity( asw_grenade_launcher_gravity.GetFloat() );
-		pGrenade->SetExplodeOnWorldContact( rd_grenade_launcher_explode_on_contact.GetBool() );
+
+		if ( rda_grenade_launcher_grenade_ricochet.GetBool() )
+			pGrenade->SetAdvancedRicochet(true);
+		else
+			pGrenade->SetExplodeOnWorldContact( rd_grenade_launcher_explode_on_contact.GetBool() );
 
 		pMarine->OnWeaponFired( this, 1 );
 	}
@@ -160,4 +166,32 @@ int CASW_Weapon_Grenade_Launcher::GetWeaponSkillId()
 int CASW_Weapon_Grenade_Launcher::GetWeaponSubSkillId()
 {
 	return ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG;
+}
+
+void CASW_Weapon_Grenade_Launcher::ItemPostFrame( void )
+{
+	BaseClass::ItemPostFrame();
+
+	Preview();
+}
+
+void CASW_Weapon_Grenade_Launcher::Preview()
+{
+#ifdef CLIENT_DLL
+	if ( !rd_grenade_launcher_grenade_preview.GetBool() )
+		return;
+
+	CASW_Marine *pMarine = GetMarine();
+	CASW_Marine *pLocalMarine = CASW_Marine::GetLocalMarine();
+
+	if ( pMarine && pMarine == pLocalMarine && pMarine->IsInhabited() )
+	{
+		CASW_Player *pPlayer = pMarine->GetCommander();
+		Vector vecSrc = pMarine->Weapon_ShootPosition();
+		Vector vecDest = pPlayer->GetCrosshairTracePos();
+		Vector vecThrowVelocity = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * 28.0f;
+		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecThrowVelocity, asw_grenade_launcher_gravity.GetFloat(), -Vector(4, 4, 4), Vector(4, 4, 4), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine, true );
+		debugoverlay->AddBoxOverlay( vecEndPos, Vector(-1, -1, -1), Vector(1, 1, 1), QAngle(0, 0, 0), 255, 0, 0, 127, 0.1f );
+	}
+#endif
 }

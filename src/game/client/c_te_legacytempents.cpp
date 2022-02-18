@@ -863,7 +863,7 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 
 		pTemp->x = origin[0];
 		pTemp->y = origin[1];
-		SinCos( random->RandomInt( -M_PI, M_PI ), &sine, &cosine );
+		SinCos( random->RandomFloat( -M_PI, M_PI ), &sine, &cosine );
 		
 		float zspeed = random->RandomInt(80,140);
 		pTemp->SetVelocity( Vector(speed * cosine, speed * sine, zspeed) );
@@ -917,7 +917,7 @@ void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWat
 
 		pTemp->x = origin[0];
 		pTemp->y = origin[1];
-		angle = random->RandomInt( -M_PI, M_PI );
+		angle = random->RandomFloat( -M_PI, M_PI );
 
 		float zspeed = random->RandomInt(80,140);
 		pTemp->SetVelocity( Vector(speed * cos(angle), speed * sin(angle), zspeed) );

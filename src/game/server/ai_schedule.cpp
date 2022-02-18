@@ -10,7 +10,6 @@
 #include "cbase.h"
 #include "convar.h"
 #include "ai_basenpc.h"
-#include "ai_agent.h"
 #include "tier1/strtools.h"
 #include "ai_activity.h"
 #include "ai_schedule.h"
@@ -27,7 +26,6 @@
 // Init static variables
 //-----------------------------------------------------------------------------
 CAI_SchedulesManager g_AI_SchedulesManager;
-CAI_SchedulesManager g_AI_AgentSchedulesManager;
 
 //-----------------------------------------------------------------------------
 // Purpose:	Delete all the string registries
@@ -36,7 +34,6 @@ CAI_SchedulesManager g_AI_AgentSchedulesManager;
 //-----------------------------------------------------------------------------
 void CAI_SchedulesManager::DestroyStringRegistries(void)
 {
-	CAI_Agent::GetSchedulingSymbols()->Clear();
 	CAI_BaseNPC::GetSchedulingSymbols()->Clear();
 	CAI_BaseNPC::gm_SquadSlotNamespace.Clear();
 
@@ -51,7 +48,6 @@ void CAI_SchedulesManager::DestroyStringRegistries(void)
 
 void CAI_SchedulesManager::CreateStringRegistries( void )
 {
-	CAI_Agent::GetSchedulingSymbols()->Clear();
 	CAI_BaseNPC::GetSchedulingSymbols()->Clear();
 	CAI_BaseNPC::gm_SquadSlotNamespace.Clear();
 
@@ -74,14 +70,6 @@ void CAI_BaseNPC::InitSchedulingTables()
 	CAI_BaseNPC::InitDefaultSquadSlotSR();
 }
 
-void CAI_Agent::InitSchedulingTables()
-{
-	CAI_Agent::gm_ClassScheduleIdSpace.Init( "CAI_Agent", CAI_Agent::GetSchedulingSymbols() );
-	CAI_Agent::InitDefaultScheduleSR();
-	CAI_Agent::InitDefaultConditionSR();
-	CAI_Agent::InitDefaultTaskSR();
-}
-
 bool CAI_SchedulesManager::LoadAllSchedules(void)
 {
 	// If I haven't loaded schedules yet
@@ -89,15 +77,9 @@ bool CAI_SchedulesManager::LoadAllSchedules(void)
 	{
 		// Init defaults
 		CAI_BaseNPC::InitSchedulingTables();
-		CAI_Agent::InitSchedulingTables();
 		if (!CAI_BaseNPC::LoadDefaultSchedules())
 		{
 			CAI_BaseNPC::m_nDebugBits |= bits_debugDisableAI;
-			DevMsg("ERROR:  Mistake in default schedule definitions, AI Disabled.\n");
-		}
-
-		if (!CAI_Agent::LoadDefaultSchedules())
-		{
 			DevMsg("ERROR:  Mistake in default schedule definitions, AI Disabled.\n");
 		}
 	}
@@ -201,7 +183,7 @@ int CAI_SchedulesManager::GetGoalID( const char *token )
 //			false - if data load fails
 //-----------------------------------------------------------------------------
 
-bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pStartFile, CAI_ClassScheduleIdSpace *pIdSpace, CAI_GlobalScheduleNamespace *pGlobalNamespace )
+bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pStartFile, CAI_ClassScheduleIdSpace *pIdSpace )
 {
 	char token[1024];
 	char save_token[1024];
@@ -222,7 +204,7 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 			return false;
 		}
 
-		int scheduleID = pGlobalNamespace->ScheduleSymbolToId(token);
+		int scheduleID = CAI_BaseNPC::GetScheduleID(token);
 		if (scheduleID == -1)
 		{
 			DevMsg( "ERROR: LoadSchd (%s): Unknown schedule type (%s)\n", prefix, token);
@@ -250,10 +232,10 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 		int	   taskNum = 0;
 
 		pfile = engine->ParseFile(pfile, token, sizeof( token ) );
-		while ((token[0]!=0) && (stricmp("Interrupts",token)))
+		while ((token[0] != '\0') && (stricmp("Interrupts", token)))
 		{
 			// Convert generic ID to sub-class specific enum
-			int taskID = pGlobalNamespace->TaskSymbolToId( token );
+			int taskID = CAI_BaseNPC::GetTaskID(token);
 			tempTask[taskNum].iTask = (pIdSpace) ? pIdSpace->TaskGlobalToLocal(taskID) : AI_RemapFromGlobal( taskID );
 			
 			// If not a valid condition, send a warning message
@@ -305,7 +287,7 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 				pfile = engine->ParseFile(pfile, token, sizeof( token ) );
 
 				// Convert generic ID to sub-class specific enum
-				int taskID = pGlobalNamespace->TaskSymbolToId( token );
+				int taskID = CAI_BaseNPC::GetTaskID(token);
 				tempTask[taskNum].flTaskData = (pIdSpace) ? pIdSpace->TaskGlobalToLocal(taskID) : AI_RemapFromGlobal( taskID );
 
 				if (tempTask[taskNum].flTaskData == -1)
@@ -330,7 +312,7 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 				pfile = engine->ParseFile(pfile, token, sizeof( token ) );
 
 				// Convert generic ID to sub-class specific enum
-				int schedID = pGlobalNamespace->ScheduleSymbolToId(token);
+				int schedID = CAI_BaseNPC::GetScheduleID(token);
 				tempTask[taskNum].flTaskData = (pIdSpace) ? pIdSpace->ScheduleGlobalToLocal(schedID) : AI_RemapFromGlobal( schedID );
 
 				if (tempTask[taskNum].flTaskData == -1)
@@ -488,10 +470,10 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 		// Now read in the interrupts
 		// ==========================
 		pfile = engine->ParseFile(pfile, token, sizeof( token ) );
-		while ((token[0]!=0) && (stricmp("Schedule",token)))
+		while ((token[0] != '\0') && (stricmp("Schedule", token)))
 		{
 			// Convert generic ID to sub-class specific enum
-			int condID = pGlobalNamespace->ConditionSymbolToId(token);
+			int condID = CAI_BaseNPC::GetConditionID(token);
 
 			// If not a valid condition, send a warning message
 			if (condID == -1)

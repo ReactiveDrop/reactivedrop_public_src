@@ -90,6 +90,8 @@ CASW_Bouncing_Pellet *CASW_Bouncing_Pellet::CreatePellet( const Vector &vecOrigi
 {
 	CASW_Bouncing_Pellet *pProjectile = dynamic_cast<CASW_Bouncing_Pellet*>(CreateEntityByName("asw_bouncing_pellet"));
 		//(CASW_Bouncing_Pellet*)CREATE_PREDICTED_ENTITY( "asw_shotgun_pellet_predicted" );
+	if ( !pProjectile )
+		return NULL;
 #ifdef CLIENT_DLL
 	if (!pProjectile->InitializeAsClientEntity( PELLET_MODEL, false ))
 	{
@@ -97,22 +99,18 @@ CASW_Bouncing_Pellet *CASW_Bouncing_Pellet::CreatePellet( const Vector &vecOrigi
 		pProjectile->Release();
 		return NULL;
 	}
-	if (pProjectile)
-		pProjectile->m_bClientPellet = true;
+	pProjectile->m_bClientPellet = true;
 #endif
 
-	if ( pProjectile )
-	{
-		UTIL_SetOrigin( pProjectile, vecOrigin );
-		pProjectile->SetOwnerEntity( pMarine );
-		pProjectile->Spawn();
-		pProjectile->SetAbsVelocity( vecForward );
-		pProjectile->m_flDamage = flDamage;
+	UTIL_SetOrigin( pProjectile, vecOrigin );
+	pProjectile->SetOwnerEntity( pMarine );
+	pProjectile->Spawn();
+	pProjectile->SetAbsVelocity( vecForward );
+	pProjectile->m_flDamage = flDamage;
 
-		QAngle angles;
-		VectorAngles( vecForward, angles );
-		pProjectile->SetLocalAngles( angles );
-	}
+	QAngle angles;
+	VectorAngles( vecForward, angles );
+	pProjectile->SetLocalAngles( angles );
 
 	return pProjectile;
 }

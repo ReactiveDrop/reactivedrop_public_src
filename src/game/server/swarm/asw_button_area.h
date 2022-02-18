@@ -84,6 +84,7 @@ public:
 	int m_iAliensKilledBeforeHack;
 
 	float m_fLastButtonUseTime;
+	bool m_bDestroyHeldObject;
 };
 
 #endif /* _DEFINED_ASW_BUTTON_AREA_H */

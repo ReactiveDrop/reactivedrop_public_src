@@ -5381,7 +5381,7 @@ void CClientShadowMgr::DrawRenderToTextureShadowLOD( int nSlot, unsigned short c
 	{
 		shadowmgr->SetShadowMaterial( shadow.m_ShadowHandle, m_SimpleShadow, m_SimpleShadow, (void*)CLIENTSHADOW_INVALID_HANDLE );
 		shadowmgr->SetShadowTexCoord( shadow.m_ShadowHandle, 0, 0, 1, 1 );
-		ClearExtraClipPlanes( shadow.m_ShadowHandle );
+		ClearExtraClipPlanes( clientShadowHandle ); // this was ClearExtraClipPlanes( shadow.m_ShadowHandle ), fix is from Joe Demers
 		shadow.m_Flags |= SHADOW_FLAGS_USING_LOD_SHADOW;
 	}
 }

@@ -218,7 +218,7 @@ void CSprite::Spawn( void )
 	if ( scale < 0 || scale > MAX_SPRITE_SCALE )
 	{
 #if !defined( CLIENT_DLL ) 
-		DevMsg( "LEVEL DESIGN ERROR: Sprite %s with bad scale %f [0..%f]\n", GetDebugName(), m_flSpriteScale, MAX_SPRITE_SCALE );
+		DevMsg( "LEVEL DESIGN ERROR: Sprite %s with bad scale %f [0..%f]\n", GetDebugName(), m_flSpriteScale.Get(), MAX_SPRITE_SCALE );
 #endif
 		scale = clamp( m_flSpriteScale, 0, MAX_SPRITE_SCALE );
 	}

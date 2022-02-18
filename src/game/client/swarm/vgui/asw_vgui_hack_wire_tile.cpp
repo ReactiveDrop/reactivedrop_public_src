@@ -34,6 +34,8 @@
 
 #define ASW_WIRE_LEFT (ASW_TILE_SIZE * 2.5f)
 
+ConVar rda_faster_wire_hack_close("rda_faster_wire_hack_close", "1", FCVAR_ARCHIVE, "Wire hack closes faster");
+
 //int CASW_VGUI_Hack_Wire_Tile::s_nBackDropTexture = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileHoriz = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileLeft = -1;
@@ -309,8 +311,20 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 		if (pUsing && pMarine && pMarine->m_hUsingEntity.Get() == pUsing)
 		{
 			// if he is, fade us out
-			SetAlpha(254);
-			vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 0.3f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			if ( !rda_faster_wire_hack_close.GetBool() )
+			{
+				SetAlpha(254);
+				vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 0.3f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			}
+			else
+			{
+				SetAlpha(0);
+				C_ASW_Player* pPlayer = pMarine->GetCommander();
+				if (pPlayer)
+				{
+					pPlayer->StopUsing();
+				}
+			}
 		}
 		else if (GetParent())
 		{	

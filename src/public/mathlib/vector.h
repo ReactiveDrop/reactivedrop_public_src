@@ -19,9 +19,6 @@
 // For vec_t, put this somewhere else?
 #include "tier0/basetypes.h"
 
-// For rand(). We really need a library!
-#include <stdlib.h>
-
 #ifndef _X360
 // For MMX intrinsics
 #include <xmmintrin.h>
@@ -37,6 +34,7 @@
 #include "mathlib/vector2d.h"
 #include "mathlib/math_pfns.h"
 #include "tier0/memalloc.h"
+#include "vstdlib/random.h"
 
 // Uncomment this to add extra Asserts to check for NANs, uninitialized vecs, etc.
 //#define VECTOR_PARANOIA	1
@@ -659,9 +657,9 @@ inline void Vector::Init( vec_t ix, vec_t iy, vec_t iz )
 
 inline void Vector::Random( vec_t minVal, vec_t maxVal )
 {
-	x = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	y = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	z = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
+	x = RandomFloat( minVal, maxVal );
+	y = RandomFloat( minVal, maxVal );
+	z = RandomFloat( minVal, maxVal );
 	CHECK_VALID(*this);
 }
 
@@ -2116,9 +2114,9 @@ inline void QAngle::Init( vec_t ix, vec_t iy, vec_t iz )
 
 inline void QAngle::Random( vec_t minVal, vec_t maxVal )
 {
-	x = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	y = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
-	z = minVal + ((float)rand() / RAND_MAX) * (maxVal - minVal);
+	x = RandomFloat( minVal, maxVal );
+	y = RandomFloat( minVal, maxVal );
+	z = RandomFloat( minVal, maxVal );
 	CHECK_VALID(*this);
 }
 

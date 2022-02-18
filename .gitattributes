@@ -8,6 +8,7 @@
 *.h text
 *.nut text
 *.py text
+*.fgd text
 # *.txt text # Warning! Do not enable this or it corrupts our unicode TXT files, e.g. resource/ReactiveDrop_english.txt
 *.vmf text
 

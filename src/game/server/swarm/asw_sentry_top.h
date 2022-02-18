@@ -42,7 +42,7 @@ public:
 	virtual void OnLowAmmo( void );
 	virtual void OnOutOfAmmo( void );
 	bool CanSee(CBaseEntity* pEnt);
-	virtual ITraceFilter *GetVisibilityTraceFilter(); // new's up and returns a pointer to a trace filter. you must delete this trace filter after use.
+	//virtual ITraceFilter *GetVisibilityTraceFilter(); // new's up and returns a pointer to a trace filter. you must delete this trace filter after use. //Do not use this due to missing virtual destructor by design
 	virtual float GetYawTo(CBaseEntity* pEnt);
 	float GetPitchTo(CBaseEntity* pEnt);
 	Vector GetFiringPosition();

@@ -16,11 +16,9 @@
 #include "asw_weapon.h"
 #include "npcevent.h"
 #include "shot_manipulator.h"
-#include "asw_shotgun_pellet.h"
 #include "asw_marine_speech.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #endif
-#include "asw_shotgun_pellet_predicted_shared.h"
 #include "asw_marine_skills.h"
 #include "asw_marine_profile.h"
 #include "ai_debug_shared.h"
@@ -64,6 +62,7 @@ END_DATADESC()
 #endif /* not client */
 
 ConVar rd_shotgun_fire_rate( "rd_shotgun_fire_rate", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Fire rate of shotgun", true, 0, false, 0 );
+ConVar rd_shotgun_secondary_delay( "rd_shotgun_secondary_delay", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 CASW_Weapon_Shotgun::CASW_Weapon_Shotgun()
 {
@@ -125,7 +124,7 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
-		if (pPlayer && pMarine->IsInhabited())
+		if ( pPlayer && pMarine->IsInhabited() && !m_bShotDelayed )
 		{
 			CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
 		}
@@ -152,67 +151,33 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 #endif
 		}
 
-		if (true)		// hitscan pellets
-		{
-
 #ifndef CLIENT_DLL
-			if (asw_DebugAutoAim.GetBool())
-			{
-				NDebugOverlay::Line(vecSrc, vecSrc + vecAiming * asw_weapon_max_shooting_distance.GetFloat(), 64, 0, 64, false, 120.0);
-			}
-#endif
-			int iPellets = GetNumPellets();
-			for (int i=0;i<iPellets;i++)
-			{
-				FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iPrimaryAmmoType );
-				info.m_pAttacker = pMarine;
-				info.m_iTracerFreq = 1;
-				info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
-				info.m_flDamage = GetWeaponDamage();
-				info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
-	#ifndef CLIENT_DLL
-				if (asw_debug_marine_damage.GetBool())
-					Msg("Weapon dmg = %f\n", info.m_flDamage);
-				info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
-	#endif
-				// shotgun bullets have a base 50% chance of piercing
-				//float fPiercingChance = 0.5f;
-				//if (pMarine->GetMarineResource() && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-					//fPiercingChance += MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_PIERCING);
-				
-				//pMarine->FirePenetratingBullets(info, 5, fPiercingChance);
-
-				//pMarine->FirePenetratingBullets(info, 5, 1.0f, i, false );
-				FireShotgunPellet( pMarine, info, i );
-			}
+		if (asw_DebugAutoAim.GetBool())
+		{
+			NDebugOverlay::Line(vecSrc, vecSrc + vecAiming * asw_weapon_max_shooting_distance.GetFloat(), 64, 0, 64, false, 120.0);
 		}
-		else	// projectile pellets
-		{
-#ifndef CLIENT_DLL
-			CShotManipulator Manipulator( vecAiming );
-					
-			int iPellets = GetNumPellets();
-			for (int i=0;i<iPellets;i++)
-			{
-				// create a pellet at some random spread direction
-				//CASW_Shotgun_Pellet *pPellet = 			
-				Vector newVel = Manipulator.ApplySpread(GetBulletSpread());
-				//Vector newVel = ApplySpread( vecAiming, GetBulletSpread() );
-				if ( pMarine->GetWaterLevel() == 3 )
-					newVel *= PELLET_WATER_VELOCITY;
-				else
-					newVel *= PELLET_AIR_VELOCITY;
-				newVel *= (1.0 + (0.1 * random->RandomFloat(-1,1)));
-				CreatePellet(vecSrc, newVel, pMarine);
-				
-				//CASW_Shotgun_Pellet_Predicted::CreatePellet(vecSrc, newVel, pPlayer, pMarine);
-			}
 #endif
+		int iPellets = GetNumPellets();
+		for (int i=0;i<iPellets;i++)
+		{
+			FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iPrimaryAmmoType );
+			info.m_pAttacker = pMarine;
+			info.m_iTracerFreq = 1;
+			info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
+			info.m_flDamage = GetWeaponDamage();
+			info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
+#ifndef CLIENT_DLL
+			if (asw_debug_marine_damage.GetBool())
+				Msg("Weapon dmg = %f\n", info.m_flDamage);
+			info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+#endif
+
+			FireShotgunPellet( pMarine, info, i );
 		}
 
 		// increment shooting stats
 #ifndef CLIENT_DLL
-		if (pMarine && pMarine->GetMarineResource())
+		if ( pMarine->GetMarineResource() )
 		{
 			pMarine->GetMarineResource()->UsedWeapon(this, 1);
 			pMarine->OnWeaponFired( this, GetNumPellets() );
@@ -222,14 +187,21 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 		// decrement ammo
 		m_iClip1 -= 1;
 #ifdef GAME_DLL
-		CASW_Marine *pMarine = GetMarine();
-		if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
 			if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-			if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
+			{
+				pWeapon = pMarine->GetASWWeapon(1);
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+			}
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
 				pMarine->OnWeaponOutOfAmmo(true);
 		}
 #endif
@@ -240,6 +212,27 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
 	m_fSlowTime = gpGlobals->curtime + 0.1f;
+}
+
+void CASW_Weapon_Shotgun::SecondaryAttack()
+{
+	if ( m_flNextPrimaryAttack <= gpGlobals->curtime )
+	{
+		PrimaryAttack();
+
+		if ( m_iClip1 > 0 )
+		{
+			m_bShotDelayed = true;
+			m_flDelayedFire = gpGlobals->curtime + rd_shotgun_secondary_delay.GetFloat();
+		}
+	}
+}
+
+void CASW_Weapon_Shotgun::DelayedAttack()
+{
+	PrimaryAttack();
+
+	m_bShotDelayed = false;
 }
 
 void CASW_Weapon_Shotgun::FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed )
@@ -255,10 +248,6 @@ void CASW_Weapon_Shotgun::Precache()
 	PrecacheScriptSound("ASW_Shotgun.ReloadA");
 	PrecacheScriptSound("ASW_Shotgun.ReloadB");
 	PrecacheScriptSound("ASW_Shotgun.ReloadC");
-
-#ifndef CLIENT_DLL
-	UTIL_PrecacheOther("asw_shotgun_pellet");
-#endif
 
 	BaseClass::Precache();
 }
@@ -286,23 +275,6 @@ bool CASW_Weapon_Shotgun::ShouldMarineMoveSlow()
 		}
 	}
 #endif
-
-#ifndef CLIENT_DLL
-	CASW_Shotgun_Pellet*  CASW_Weapon_Shotgun::CreatePellet(Vector vecSrc, Vector newVel, CASW_Marine *pMarine)
-	{
-		if (!pMarine)
-			return NULL;
-		AngularImpulse rotSpeed(0,0,720);
-		float flDamage = GetWeaponDamage();
-		if (asw_debug_marine_damage.GetBool())
-			Msg("Weapon dmg = %f\n", flDamage);
-		flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
-		Msg("Creating shotgun pellet\n");
-		return CASW_Shotgun_Pellet::Shotgun_Pellet_Create( vecSrc, QAngle(0,0,0),
-				newVel, rotSpeed, pMarine, flDamage);
-	}
-#endif
-
 
 bool CASW_Weapon_Shotgun::SupportsBayonet()
 {

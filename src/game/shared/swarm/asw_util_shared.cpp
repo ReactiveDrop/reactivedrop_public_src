@@ -50,6 +50,7 @@
 	#include "engine/IVDebugOverlay.h"
 	#include "c_user_message_register.h"
 	#include "prediction.h"
+	#include "asw_medal_store.h"
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Game_Resource C_ASW_Game_Resource
 	#define CASW_Marine_Resource C_ASW_Marine_Resource
@@ -65,6 +66,9 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+ConVar rd_override_commander_promotion( "rd_override_commander_promotion", "-1", FCVAR_REPLICATED );
+ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_REPLICATED );
 
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
@@ -316,7 +320,7 @@ inline float ASW_ComputeShakeAmplitude( const Vector &center, const Vector &shak
 //			bAirShake - completely ignored
 //-----------------------------------------------------------------------------
 const float ASW_MAX_SHAKE_AMPLITUDE = 16.0f;
-void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake )
+void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake, CASW_Marine *pOnlyMarine )
 {
 	int			i;
 	float		localAmplitude;
@@ -325,26 +329,31 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 	{
 		amplitude = ASW_MAX_SHAKE_AMPLITUDE;
 	}
+
 	for ( i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-
-		//
-		// Only start shakes for players that are on the ground unless doing an air shake.
-		//
 		if ( !pPlayer )
 		{
 			continue;
 		}
 
 		// find the player's marine
-		CASW_Player *pASWPlayer = dynamic_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
+		CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
+		CASW_Marine *pMarine = pASWPlayer ? pASWPlayer->GetViewMarine() : NULL;
+		if ( !pMarine )
 			continue;
 
-		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
+		// Only start shakes for players that are on the ground unless doing an air shake.
+		if ( !bAirShake && !pMarine->m_bOnGround )
+			continue;
+
+		if ( pOnlyMarine && pMarine != pOnlyMarine )
+			continue;
+
+		Vector vecMarinePos = pMarine->WorldSpaceCenter();
+		if ( pMarine->IsControllingTurret() && pMarine->GetRemoteTurret() )
+			vecMarinePos = pMarine->GetRemoteTurret()->GetAbsOrigin();
 
 		localAmplitude = ASW_ComputeShakeAmplitude( center, vecMarinePos, amplitude, radius );
 
@@ -353,7 +362,7 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		if (localAmplitude < 0)
 			continue;
 
-		ASW_TransmitShakeEvent( (CBasePlayer *)pPlayer, localAmplitude, frequency, duration, eCommand );
+		ASW_TransmitShakeEvent( pASWPlayer, localAmplitude, frequency, duration, eCommand );
 	}
 }
 
@@ -659,7 +668,7 @@ bool CTraceFilterAliensEggsGoo::ShouldHitEntity( IHandleEntity *pServerEntity, i
 #ifndef CLIENT_DLL
 		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
 		if ( pEntity->Classify() == CLASS_ASW_MARINE )		// we dont hit marines in coop
-			return ASWDeathmatchMode();						// but hit them for deathmatch
+			return ASWDeathmatchMode() != NULL;				// but hit them for deathmatch
 
 		if ( IsAlienClass( pEntity->Classify() ) )
 			return true;
@@ -786,11 +795,12 @@ CASW_Marine* UTIL_ASW_MarineCanSee(CASW_Marine_Resource* pMarineResource, const 
 		bNearby = (pMarine->GetRemoteTurret()->GetAbsOrigin().DistTo(pos) <= 1024);	// assume fog distance of 1024 when in first person
 	}
 	// check if he's looking through a security cam
-	if (!bNearby && pMarine && pMarine->m_hUsingEntity.Get())
+	if (!bNearby && pMarine)
 	{
-		CASW_Computer_Area *pComputer = dynamic_cast<CASW_Computer_Area*>(pMarine->m_hUsingEntity.Get());
-		if (pComputer)
+		CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
+		if ( pUsing && pUsing->Classify() == CLASS_ASW_COMPUTER_AREA )
 		{
+			CASW_Computer_Area* pComputer = assert_cast<CASW_Computer_Area*>(pUsing);
 			CPointCamera *pCam = pComputer->GetActiveCam();
 			if (pCam)
 			{
@@ -936,7 +946,7 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 			// if we're in here, then wires 1, 2 and 3 will be charging
 			float charge_before_assembling_wire_4 = charge_before_assembling_wire_3
 												+ speed_per_wire * time_to_assemble_wire * 3;	// wire 3's contribution
-			if (charge_before_assembling_wire_3 >= iHackLevel || iNumWires < 4)
+			if (charge_before_assembling_wire_4 >= iHackLevel || iNumWires < 4)
 			{
 				// if we're here, it means we would have finished the hack before wire 4 was assembled
 				float first_wire_time = time_to_assemble_wire + time_to_assemble_wire;
@@ -1062,7 +1072,7 @@ void TryLocalize(const char *token, wchar_t *unicode, int unicodeBufferSizeInByt
 		wchar_t *pLocalized = g_pVGuiLocalize->Find( token );
 		if ( pLocalized )
 		{
-			_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
+			V_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
 			return;
 		}
 	}
@@ -1105,18 +1115,19 @@ void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 	}
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
-		C_ASW_Marine* pMarine = dynamic_cast<C_ASW_Marine*>( info.GetAttacker() );
-		if ( !pMarine )
-			return;
+		if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+		{
+			C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(info.GetAttacker());
 
-		C_ASW_Player *pAttackingPlayer = pMarine->GetCommander();
-		if ( !pAttackingPlayer )
-			return;
+			C_ASW_Player* pAttackingPlayer = pMarine->GetCommander();
+			if (!pAttackingPlayer)
+				return;
 
-		if ( pAttackingPlayer != C_BasePlayer::GetLocalPlayer() )
-			return;
+			if (pAttackingPlayer != C_BasePlayer::GetLocalPlayer())
+				return;
 
-		UTIL_ASW_ParticleDamageNumber( info.GetAttacker(), info.GetDamagePosition(), int(info.GetDamage()), info.GetDamageCustom(), 1.0f, false );
+			UTIL_ASW_ParticleDamageNumber(info.GetAttacker(), info.GetDamagePosition(), int(info.GetDamage()), info.GetDamageCustom(), 1.0f, false);
+		}
 	}
 }
 
@@ -1417,4 +1428,47 @@ Vector UTIL_Check_Throw( const Vector &vecSrc, const Vector &vecThrowVelocity, f
 	}
 
 	return vecPos;
+}
+
+bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion )
+{
+	int iActualPromotion, iExperience;
+
+	if ( !pPlayer )
+	{
+#ifdef CLIENT_DLL
+		C_ASW_Medal_Store *pMedals = GetMedalStore();
+		if ( pMedals )
+		{
+			iActualPromotion = pMedals->GetPromotion();
+			iExperience = pMedals->GetExperience();
+		}
+		else
+#endif
+		{
+			return false;
+		}
+	}
+	else
+	{
+		iActualPromotion = pPlayer->GetPromotion();
+		iExperience = pPlayer->GetExperience();
+	}
+
+	int iActualLevel = LevelFromXP( iExperience, iActualPromotion );
+	if ( rd_override_commander_promotion.GetInt() >= 0 )
+	{
+		iActualPromotion = rd_override_commander_promotion.GetInt();
+	}
+	if ( rd_override_commander_level.GetInt() >= 0 )
+	{
+		iActualLevel = rd_override_commander_level.GetInt();
+	}
+
+	if ( iPromotion != iActualPromotion )
+	{
+		return iPromotion < iActualPromotion;
+	}
+
+	return iLevel <= iActualLevel;
 }

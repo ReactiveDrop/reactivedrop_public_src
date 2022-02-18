@@ -610,7 +610,7 @@ void CASW_Drone_Movement::ProcessMovement( CAI_BaseNPC *pNPC, CMoveData *pMove, 
 	mv->m_outWishVel.Init();
 	mv->m_outJumpVel.Init();
 
-	Vector start = pMove->GetAbsOrigin();
+	//Vector start = pMove->GetAbsOrigin();
 
 	CategorizePosition();
 	StartGravity();	

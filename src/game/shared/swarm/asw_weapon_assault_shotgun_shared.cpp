@@ -14,7 +14,6 @@
 #include "asw_weapon.h"
 #include "npcevent.h"
 #include "shot_manipulator.h"
-#include "asw_shotgun_pellet.h"
 #include "asw_grenade_vindicator.h"
 #include "asw_marine_speech.h"
 #include "asw_fail_advice.h"

@@ -103,6 +103,7 @@ public:
     bool m_bTeslable; 
     bool m_bFreezable; 
     bool m_bFlinchable; 
+	bool m_bGrenadeReflector;
     int  m_iHealthBonus; 
     float m_fSizeScale; 
     float m_fSpeedScale; 
@@ -115,7 +116,8 @@ public:
 	
 	void ForceFlinch( const Vector &vecSrc );
 
-	virtual bool IsAlien(void) const { return true; }
+	virtual bool IsAlien(void) const { return true; } //Orange. For vscript together with buzzers, cant change for compatibility reasons, sad
+	virtual bool IsAlienClassType(void) const { return true; }
 
 	// schedule/task stuff
 	virtual void StartTask(const Task_t *pTask);
@@ -346,6 +348,8 @@ protected:
 	CUtlVector<CASW_AlienVolley>	m_volleys;
 	CUtlVector<CASW_AlienShot>		m_shots;
 	DEFINE_CUSTOM_AI;
+
+	bool m_bShouldRestoreDefaultMoveTypeAfterMoveClone;
 };
 
 // activities

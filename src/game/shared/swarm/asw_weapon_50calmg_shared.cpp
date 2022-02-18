@@ -25,7 +25,6 @@
 #include "asw_weapon.h"
 #include "npcevent.h"
 #include "shot_manipulator.h"
-#include "asw_shotgun_pellet.h"
 #include "asw_marine_speech.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #endif

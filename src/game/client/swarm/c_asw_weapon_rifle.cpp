@@ -62,7 +62,7 @@ void C_ASW_Weapon_Rifle::SecondaryAttack( void )
 	
 	BaseClass::WeaponSound( SPECIAL1 );
 
-	Vector vecSrc = pMarine->Weapon_ShootPosition();
+	//Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector	vecThrow;	
 	vecThrow = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
 	VectorScale( vecThrow, 1000.0f, vecThrow );

@@ -2344,13 +2344,13 @@ inline void CParticleCollection::SwapPosAndPrevPos( void )
 
 FORCEINLINE CParticleControlPoint &CParticleCollection::ControlPoint( int nIdx ) const
 {
-	Assert( nIdx < m_nNumControlPointsAllocated );
-	return m_pCPInfo[MIN( nIdx, m_nNumControlPointsAllocated -1 )].m_ControlPoint;
+	Assert( nIdx >= 0 && nIdx < m_nNumControlPointsAllocated );
+	return m_pCPInfo[ MAX(0, MIN( nIdx, m_nNumControlPointsAllocated - 1 )) ].m_ControlPoint;
 }
 
 FORCEINLINE CModelHitBoxesInfo &CParticleCollection::ControlPointHitBox( int nIdx ) const
 {
-	return m_pCPInfo[MIN( nIdx, m_nNumControlPointsAllocated -1 )].m_CPHitBox;
+	return m_pCPInfo[ MAX(0, MIN( nIdx, m_nNumControlPointsAllocated - 1 )) ].m_CPHitBox;
 }
 
 inline void CParticleCollection::LoanKillListTo( CParticleCollection *pBorrower ) const
@@ -2786,7 +2786,7 @@ FORCEINLINE void CParticleCollection::KillParticle( int nPidx, unsigned int nKil
 
 	COMPILE_TIME_ASSERT( ( sizeof( KillListItem_t ) == 4 ) && ( MAX_PARTICLES_IN_A_SYSTEM < ( 1 << KILL_LIST_INDEX_BITS ) ) );
 	Assert( !( nPidx & ~KILL_LIST_INDEX_MASK ) && !( nKillFlags & ~KILL_LIST_FLAGS_MASK ) );
-	KillListItem_t killItem = { nPidx, nKillFlags };
+	KillListItem_t killItem = { (unsigned int)nPidx, nKillFlags };
 
 	Assert( m_nNumParticlesToKill < MAX_PARTICLES_IN_A_SYSTEM );
 	m_pParticleKillList[ m_nNumParticlesToKill++ ] = killItem;

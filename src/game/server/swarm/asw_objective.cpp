@@ -103,7 +103,7 @@ void CASW_Objective::SetComplete(bool bComplete)
 			{
 				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
-					CASW_Player* pPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(i));
+					CASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
 					if ( pPlayer )
 					{

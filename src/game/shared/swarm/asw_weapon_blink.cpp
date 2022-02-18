@@ -21,6 +21,7 @@
 #include "ai_navigator.h"
 #include "ai_pathfinder.h"
 #include "asw_gamerules.h"
+#include "rd_func_jumpjet.h"
 #endif
 #include "asw_marine_gamemovement.h"
 #include "asw_melee_system.h"
@@ -152,6 +153,17 @@ bool CASW_Weapon_Blink::SetBlinkDestination()
 	}
 
 	Vector vecDest = tr.endpos;
+
+	//If our point is inside any jumpjet volume simply jump
+	FOR_EACH_VEC( IJumpJetVolumes::AutoList(), i )
+	{
+		CRD_Func_JumpJet *pVolume = assert_cast<CRD_Func_JumpJet *>( IJumpJetVolumes::AutoList()[i] );
+		if ( pVolume->IsPointInBounds( vecDest ) )
+		{
+			m_vecAbilityDestination = vecDest;
+			return true;
+		}
+	}
 
 	// now see if we can build an AI path from the marine to this spot
 	if ( !pMarine->GetPathfinder() && !bJumpNoMatterWhat )

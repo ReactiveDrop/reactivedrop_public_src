@@ -135,8 +135,8 @@ bool CASW_Weapon_HealAmp_Gun::TargetCanBeHealed( CBaseEntity* pTarget )
 	if ( pTarget->Classify() != CLASS_ASW_MARINE )
 		return false;
 
-	CASW_Marine *pMarine = static_cast<CASW_Marine*>( pTarget );
-	if ( !pMarine )
+	CASW_Marine *pMarine = assert_cast<CASW_Marine *>( pTarget );
+	if ( !pMarine || pMarine->m_bKnockedOut )
 		return false;
 
 	if ( m_bIsBuffing )
@@ -177,16 +177,19 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 	if ( !pTarget )
 		return;
 
-	if ( m_iClip1 <= 0 )
-		return;
-
 #ifdef GAME_DLL
 	if ( m_bIsBuffing )
 	{
+		if ( m_iClip2 <= 0 )
+			return;
+
 		pTarget->AddDamageBuff( NULL, 1, (Class_T) CLASS_ASW_HEALAMP_GUN, pMarine );	// buff target for 1 second
 	}
 	else
 	{
+		if ( m_iClip1 <= 0 )
+			return;
+
 		// apply heal
 		int iHealAmount = MIN( GetHealAmount(), pTarget->GetMaxHealth() - ( pTarget->GetHealth() + pTarget->m_iSlowHealAmount ) );
 
@@ -225,114 +228,121 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 
 #endif
 
-    if ( false == rd_medgun_infinite_ammo.GetBool() )
-    {
-	    // decrement ammo
-	    m_iClip1 -= 1;
-    }
+	if ( !rd_medgun_infinite_ammo.GetBool() )
+	{
+		// decrement ammo
+		if ( m_bIsBuffing )
+			m_iClip2--;
+		else
+			m_iClip1--;
+
+#ifdef GAME_DLL
+		DestroyIfEmpty( true, true );
+#endif
+	}
+
 
 	// emit heal sound
 	StartHealSound();
 
 #ifdef GAME_DLL
-	bool bHealingSelf = (pMarine == pTarget);
-	bool bInfested = pTarget->IsInfested();
-
-	if ( bInfested )
+	if ( !m_bIsBuffing )
 	{
-		float fCurePercent = GetInfestationCureAmount();
+		bool bHealingSelf = ( pMarine == pTarget );
+		bool bInfested = pTarget->IsInfested();
 
-		// cure infestation
-		if ( fCurePercent > 0.0f )
+		if ( bInfested )
 		{
-			// Cure infestation on a per bullet basis (the full clip does cure relative to 9 heal grenades)
-			pTarget->CureInfestation( pMarine, 1.0f - ( ( 1.0f - fCurePercent ) / ( GetMaxClip1() / 9.0f ) ) );
+			float fCurePercent = GetInfestationCureAmount();
+
+			// cure infestation
+			if ( fCurePercent > 0.0f )
+			{
+				// Cure infestation on a per bullet basis (the full clip does cure relative to 9 heal grenades)
+				pTarget->CureInfestation( pMarine, 1.0f - ( ( 1.0f - fCurePercent ) / ( GetMaxClip1() / 9.0f ) ) );
+			}
 		}
-	}
 
-	bool bSkipChatter = bInfested;
-	if ( m_iClip1 <= 0 )
-	{
-		// Out of ammo
-		ASWFailAdvice()->OnMedSatchelEmpty();
-
-		pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
-
-		if ( DestroyIfEmpty( true ) )
+		bool bSkipChatter = bInfested;
+		if ( m_iClip1 <= 0 )
 		{
+			// Out of ammo
+			ASWFailAdvice()->OnMedSatchelEmpty();
+
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_NONE );
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if ( pMR )
 			{
-				char szName[ 256 ];
+				char szName[256];
 				pMR->GetDisplayName( szName, sizeof( szName ) );
 				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_out_of_meds", szName );
 			}
-		}
 
-		bSkipChatter = true;
-	}
-	else if ( m_iClip1 == 10 )
-	{
-		if ( pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_LOW ) )
+			bSkipChatter = true;
+		}
+		else if ( m_iClip1 == 10 )
+		{
+			if ( pMarine->GetMarineSpeech()->Chatter( CHATTER_MEDS_LOW ) )
+			{
+				bSkipChatter = true;
+			}
+		}
+		else if ( ( m_flLastHealTime + 4.0f ) > gpGlobals->curtime )
 		{
 			bSkipChatter = true;
 		}
-	}
-	else if ( (m_flLastHealTime + 4.0f) > gpGlobals->curtime )
-	{
-		bSkipChatter = true;
-	}
-	else if ( bHealingSelf )
-	{
-		bSkipChatter = true;
-	}
-
-	if ( !bSkipChatter )
-	{
-		// try and do a special chatter?
-		bool bSkipChatter = false;
-		if ( pMarine->GetMarineSpeech()->AllowCalmConversations(CONV_HEALING_CRASH) )
+		else if ( bHealingSelf )
 		{
-			if ( !pTarget->m_bDoneWoundedRebuke && pTarget->GetMarineResource() && pTarget->GetMarineResource()->m_bTakenWoundDamage )
+			bSkipChatter = true;
+		}
+
+		if ( !bSkipChatter )
+		{
+			// try and do a special chatter?
+			bool bSkipChatter = false;
+			if ( pMarine->GetMarineSpeech()->AllowCalmConversations( CONV_HEALING_CRASH ) )
 			{
-				// marine has been wounded and this is our first heal after the fact - good chance of the medic saying something
-				if ( random->RandomFloat() < asw_marine_special_heal_chatter_chance.GetFloat() * 3 )
+				if ( !pTarget->m_bDoneWoundedRebuke && pTarget->GetMarineResource() && pTarget->GetMarineResource()->m_bTakenWoundDamage )
 				{
-					if ( CASW_MarineSpeech::StartConversation(CONV_SERIOUS_INJURY, pMarine, pTarget) )
+					// marine has been wounded and this is our first heal after the fact - good chance of the medic saying something
+					if ( random->RandomFloat() < asw_marine_special_heal_chatter_chance.GetFloat() * 3 )
 					{
-						bSkipChatter = true;
-						pTarget->m_bDoneWoundedRebuke = true;
+						if ( CASW_MarineSpeech::StartConversation( CONV_SERIOUS_INJURY, pMarine, pTarget ) )
+						{
+							bSkipChatter = true;
+							pTarget->m_bDoneWoundedRebuke = true;
+						}
 					}
 				}
-			}
 
-			// if we didn't complaint about a serious injury, check for doing a different kind of conv
-			float fRand = random->RandomFloat();
-			if ( !bSkipChatter && fRand < asw_marine_special_heal_chatter_chance.GetFloat() )
-			{
-				if ( pTarget->GetMarineProfile() && pTarget->GetMarineProfile()->m_VoiceType == ASW_VOICE_CRASH
-					&& pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_BASTILLE )	// bastille healing crash
+				// if we didn't complaint about a serious injury, check for doing a different kind of conv
+				float fRand = random->RandomFloat();
+				if ( !bSkipChatter && fRand < asw_marine_special_heal_chatter_chance.GetFloat() )
 				{
-					if ( random->RandomFloat() < 0.5f )
+					if ( pTarget->GetMarineProfile() && pTarget->GetMarineProfile()->m_VoiceType == ASW_VOICE_CRASH
+						&& pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_BASTILLE )	// bastille healing crash
 					{
-						if ( CASW_MarineSpeech::StartConversation(CONV_HEALING_CRASH, pMarine, pTarget) )
-							bSkipChatter = true;						
+						if ( random->RandomFloat() < 0.5f )
+						{
+							if ( CASW_MarineSpeech::StartConversation( CONV_HEALING_CRASH, pMarine, pTarget ) )
+								bSkipChatter = true;
+						}
+						else
+						{
+							if ( CASW_MarineSpeech::StartConversation( CONV_MEDIC_COMPLAIN, pMarine, pTarget ) )
+								bSkipChatter = true;
+						}
 					}
 					else
 					{
-						if ( CASW_MarineSpeech::StartConversation(CONV_MEDIC_COMPLAIN, pMarine, pTarget) )
+						if ( CASW_MarineSpeech::StartConversation( CONV_MEDIC_COMPLAIN, pMarine, pTarget ) )
 							bSkipChatter = true;
 					}
 				}
-				else
-				{
-					if ( CASW_MarineSpeech::StartConversation(CONV_MEDIC_COMPLAIN, pMarine, pTarget) )
-						bSkipChatter = true;
-				}
 			}
+			if ( !bSkipChatter )
+				pMarine->GetMarineSpeech()->Chatter( CHATTER_HEALING );
 		}
-		if ( !bSkipChatter )
-			pMarine->GetMarineSpeech()->Chatter( CHATTER_HEALING );
 	}
 #endif
 }

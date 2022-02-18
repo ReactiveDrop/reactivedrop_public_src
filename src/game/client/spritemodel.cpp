@@ -293,6 +293,7 @@ bool CEngineSprite::Init( const char *pName )
 		if ( !kv->LoadFromFile( g_pFullFileSystem, pMaterialPath, "GAME" ) )
 		{
 			Warning( "Unable to load sprite material %s!\n", pMaterialPath );
+			kv->deleteThis();
 			return false;
 		}
 

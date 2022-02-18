@@ -327,11 +327,17 @@ void CASW_Rifle_Grenade::Detonate()
 	EmitSound( "ASWGrenade.Explode" );
 
 	int iPreExplosionKills = 0;
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pOwner = GetOwnerEntity();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE)
+	{
+		pMarine = assert_cast<CASW_Marine*>(pOwner);
+	}
 	if (pMarine && pMarine->GetMarineResource())
 		iPreExplosionKills = pMarine->GetMarineResource()->m_iAliensKilled;
 
-	CTakeDamageInfo info( this, GetOwnerEntity(), m_flDamage, DMG_BLAST );
+	CTakeDamageInfo info( this, pOwner, m_flDamage, DMG_BLAST );
 	info.SetWeapon( m_hCreatorWeapon );
 
 	ASWGameRules()->RadiusDamage ( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );

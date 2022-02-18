@@ -302,7 +302,7 @@ bool CBaseCombatWeapon::WeaponLOSCondition( const Vector &ownerPos, const Vector
 	}
 
 	CBaseEntity	*pHitEnt = tr.m_pEnt;
-
+#if PLAYER_VEHICLE_CHECKS
 	CBasePlayer *pEnemyPlayer = ToBasePlayer( npcOwner->GetEnemy() );
 
 	// is player in a vehicle? if so, verify vehicle is target and return if so (so npc shoots at vehicle)
@@ -315,6 +315,7 @@ bool CBaseCombatWeapon::WeaponLOSCondition( const Vector &ownerPos, const Vector
 		if ( pHitEnt == pVehicle || pHitEnt->GetOwnerEntity() == pVehicle )
 			return true;
 	}
+#endif
 
 	// Hitting our enemy is a success case
 	if ( pHitEnt == npcOwner->GetEnemy() )
@@ -329,12 +330,14 @@ bool CBaseCombatWeapon::WeaponLOSCondition( const Vector &ownerPos, const Vector
 
 	// If a vehicle is blocking the view, grab its driver and use that as the combat character
 	CBaseCombatCharacter *pBCC;
+#if PLAYER_VEHICLE_CHECKS
 	IServerVehicle *pVehicle = pHitEnt->GetServerVehicle();
 	if ( pVehicle )
 	{
 		pBCC = pVehicle->GetPassenger( );
 	}
 	else
+#endif
 	{
 		pBCC = ToBaseCombatCharacter( pHitEnt );
 	}

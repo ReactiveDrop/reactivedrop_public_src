@@ -309,6 +309,25 @@ void CASW_Sentry_Base::MarineStartedUsing(CASW_Marine* pMarine)
 {
 	EmitSound( "ASW_Sentry.SetupLoop" );
 
+	if ( GetModelPtr() && GetModelPtr()->numskinfamilies() >= kGUNTYPE_MAX + 2 ) // modeller guy says 2 first textures are a must
+	{
+		switch ( GetGunType() )
+		{
+			case kAUTOGUN:
+				this->m_nSkin = 2;
+				break;
+			case kCANNON:
+				this->m_nSkin = 5;
+				break;
+			case kFLAME:
+				this->m_nSkin = 4;
+				break;
+			case kICE:
+				this->m_nSkin = 3;
+				break;
+		}
+	}
+
 	if ( !m_bIsInUse && m_fAssembleProgress < 1.0f )
 	{
 		IGameEvent * event = gameeventmanager->CreateEvent( "sentry_start_building" );
@@ -529,7 +548,7 @@ int CASW_Sentry_Base::ScriptGetMaxAmmo()
 const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[CASW_Sentry_Base::kGUNTYPE_MAX] =
 {
 	SentryGunTypeInfo_t("asw_sentry_top_machinegun", "asw_weapon_sentry", 450), // kAUTOGUN
-	SentryGunTypeInfo_t("asw_sentry_top_cannon", "asw_weapon_sentry_cannon",	  25), // kCANNON
-	SentryGunTypeInfo_t("asw_sentry_top_flamer", "asw_weapon_sentry_flamer",  800), // kFLAME (ammo is stored as milliseconds of fire)
+	SentryGunTypeInfo_t("asw_sentry_top_cannon", "asw_weapon_sentry_cannon",	  40), // kCANNON
+	SentryGunTypeInfo_t("asw_sentry_top_flamer", "asw_weapon_sentry_flamer",  1200), // kFLAME
 	SentryGunTypeInfo_t("asw_sentry_top_icer", "asw_weapon_sentry_freeze",    800), // kICE
 };

@@ -1142,7 +1142,7 @@ void CAI_AssaultBehavior::InitializeBehavior()
 	m_bHitRallyPoint = false;
 	m_bHitAssaultPoint = false;
 
-	m_hAssaultPoint = false;
+	m_hAssaultPoint = 0;
 
 	m_bDiverting = false;
 	m_flLastSawAnEnemyAt = 0;

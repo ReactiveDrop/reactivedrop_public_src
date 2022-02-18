@@ -155,6 +155,9 @@ void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine
 #ifndef CLIENT_DLL
 void CASW_Hack_Computer::OnHackUnlocked( CASW_Marine *pMarine )
 {
+	if ( !GetComputerArea() )
+		return;
+
 	GetComputerArea()->UnlockFromHack( pMarine );	// unlock it
 
 	// if the computer has a download option, go straight into that
@@ -244,8 +247,10 @@ void CASW_Hack_Computer::ReverseTumbler(int i, CASW_Marine *pMarine)
 
 CASW_Computer_Area* CASW_Hack_Computer::GetComputerArea()
 {
-	CASW_Computer_Area* pComp = dynamic_cast<CASW_Computer_Area*>(m_hHackTarget.Get());
-	return pComp;
+	CBaseEntity* pTarget = m_hHackTarget.Get();
+	if ( pTarget && pTarget->Classify() == CLASS_ASW_COMPUTER_AREA )
+		return assert_cast<CASW_Computer_Area*>(pTarget);
+	return NULL;
 }
 
 // checks if a particular column in the hack puzzle is in the 'correct' place

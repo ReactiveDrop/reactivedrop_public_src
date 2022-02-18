@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======//
+//====== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. =======//
 //
 // Purpose: 
 //
@@ -14,7 +14,7 @@
 #pragma once
 #endif
 
-#include "unitlib/unitlib.h" // just here for tests - remove before checking in!!!
+//#include "unitlib/unitlib.h" // just here for tests - remove before checking in!!!
 
 #include "tier1/utlmemory.h"
 #include "tier1/byteswap.h"
@@ -109,7 +109,15 @@ typedef unsigned short ushort;
 
 template < class A >
 static const char *GetFmtStr( int nRadix = 10, bool bPrint = true ) { Assert( 0 ); return ""; }
-
+#if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
+template <> const char *GetFmtStr< short >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%hd"; }
+template <> const char *GetFmtStr< ushort >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%hu"; }
+template <> const char *GetFmtStr< int >		( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%d"; }
+template <> const char *GetFmtStr< uint >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 || nRadix == 16 ); return nRadix == 16 ? "%x" : "%u"; }
+template <> const char *GetFmtStr< int64 >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%I64d"; }
+template <> const char *GetFmtStr< float >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%f"; }
+template <> const char *GetFmtStr< double >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return bPrint ? "%.15lf" : "%lf"; } // force Printf to print DBL_DIG=15 digits of precision for doubles - defaults to FLT_DIG=6
+#else
 template <> static const char *GetFmtStr< short >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%hd"; }
 template <> static const char *GetFmtStr< ushort >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%hu"; }
 template <> static const char *GetFmtStr< int >		( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%d"; }
@@ -117,8 +125,7 @@ template <> static const char *GetFmtStr< uint >	( int nRadix, bool bPrint ) { A
 template <> static const char *GetFmtStr< int64 >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%I64d"; }
 template <> static const char *GetFmtStr< float >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return "%f"; }
 template <> static const char *GetFmtStr< double >	( int nRadix, bool bPrint ) { Assert( nRadix == 10 ); return bPrint ? "%.15lf" : "%lf"; } // force Printf to print DBL_DIG=15 digits of precision for doubles - defaults to FLT_DIG=6
-
-
+#endif
 //-----------------------------------------------------------------------------
 // Command parsing..
 //-----------------------------------------------------------------------------
@@ -629,7 +636,7 @@ inline void CUtlBuffer::GetObject( T *dest )
 	}
 	else
 	{
-		Q_memset( &dest, 0, sizeof(T) );
+		Q_memset( dest, 0, sizeof(T) );
 	}
 }
 

@@ -32,9 +32,16 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
+	CASW_Ammo_Rifle()
+	{
+		m_bAddSecondary = true;
+	}
+
 	virtual void Spawn( void );
 	virtual void Precache( void );
 	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+
+	bool m_bAddSecondary;
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_RIFLE; }
@@ -77,9 +84,16 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
+	CASW_Ammo_Assault_Shotgun()
+	{
+		m_bAddSecondary = true;
+	}
+
 	virtual void Spawn( void );
 	virtual void Precache( void );
 	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+
+	bool m_bAddSecondary;
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_ASSAULT_SHOTGUN; }

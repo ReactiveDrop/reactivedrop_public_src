@@ -107,7 +107,7 @@ static void GetAllParticleManifests( CUtlVector<CUtlString> & files, const char 
 			}
 			else
 			{
-				Warning( "Cannot parse particle manifest file '%s' from VPK '%s'\n", pszParticlesManifestFile, vpkNames[i] );
+				Warning( "Cannot parse particle manifest file '%s' from VPK '%s'\n", pszParticlesManifestFile, vpkNames[i].Get() );
 			}
 		}
 	}

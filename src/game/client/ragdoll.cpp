@@ -36,12 +36,21 @@ CRagdoll::CRagdoll()
 	m_lastUpdate = -FLT_MAX;
 }
 
+#if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
+#define PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS __pragma(warning(push)) __pragma(warning(disable:4838))
+#define PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS __pragma(warning(pop))
+#else
+#define PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
+#define PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
+#endif 
+
 #define DEFINE_RAGDOLL_ELEMENT( i ) \
 	DEFINE_FIELD( m_ragdoll.list[i].originParentSpace, FIELD_VECTOR ), \
 	DEFINE_PHYSPTR( m_ragdoll.list[i].pObject ), \
 	DEFINE_PHYSPTR( m_ragdoll.list[i].pConstraint ), \
 	DEFINE_FIELD( m_ragdoll.list[i].parentIndex, FIELD_INTEGER )
 
+PRAGMA_DISABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
 BEGIN_SIMPLE_DATADESC( CRagdoll )
 
 	DEFINE_AUTO_ARRAY( m_ragdoll.boneIndex,	FIELD_INTEGER ),
@@ -83,6 +92,7 @@ BEGIN_SIMPLE_DATADESC( CRagdoll )
 	DEFINE_RAGDOLL_ELEMENT( 31 ),
 
 END_DATADESC()
+PRAGMA_ENABLE_RAGDOLL_ELEMENT_NARROWING_WARNINGS
 
 IPhysicsObject *CRagdoll::GetElement( int elementNum )
 { 
@@ -100,7 +110,7 @@ void CRagdoll::BuildRagdollBounds( C_BaseEntity *ent )
 	m_maxs.Init(radius,radius,radius);
 }
 
-static ConVar cl_ragdoll_self_collision( "cl_ragdoll_self_collision", "1", FCVAR_DEVELOPMENTONLY );
+static ConVar cl_ragdoll_self_collision( "cl_ragdoll_self_collision", "0", FCVAR_DEVELOPMENTONLY );
 extern ConVar cl_ragdoll_collide;
 
 void CRagdoll::Init( 
@@ -229,7 +239,7 @@ void CRagdoll::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	m_mins -= origin;
 	m_maxs -= origin;
 	m_allAsleep = RagdollIsAsleep( m_ragdoll );
-
+	
 	if ( !m_allAsleep )
 	{
 		if ( m_ragdoll.pGroup->IsInErrorState() )

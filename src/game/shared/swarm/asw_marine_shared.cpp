@@ -88,64 +88,90 @@ ConVar rd_explosive_railgun_bullets( "rd_explosive_railgun_bullets", "0", FCVAR_
 ConVar rd_explosive_bullets( "rd_explosive_bullets", "0", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_dmg( "rd_explosive_bullets_dmg", "50", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_CHEAT);
+extern ConVar rda_marine_backpack;
 #endif
 
 static const float ASW_MARINE_MELEE_HULL_TRACE_Z = 32.0f;
 
-bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex /*=0*/ ) 
+bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex /*=0*/ )
 {
 	if ( GetHealth() <= 0 )
 		return false;
 
 	// check we're actually carrying this weapon in one of our 3 marine slots
-	if (GetASWWeapon(0)!= pWeapon && GetASWWeapon(1) != pWeapon && GetASWWeapon(2) != pWeapon && GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != pWeapon)
+	CASW_Weapon *pWeaponPri = GetASWWeapon( 0 );
+	CASW_Weapon *pWeaponSec = GetASWWeapon( 1 );
+	CASW_Weapon *pWeaponExt = GetASWWeapon( 2 );
+	CASW_Weapon *pWeaponTmp = GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+
+	if ( pWeaponPri != pWeapon && pWeaponSec != pWeapon && pWeaponExt != pWeapon && pWeaponTmp != pWeapon )
 		return false;
 
-	if (BaseClass::Weapon_Switch( pWeapon, viewmodelindex ))
+	if ( pWeapon == pWeaponTmp )
 	{
-		#define ASW_WEAPON_SWITCH_TIME 0.5f
-		float fSwitchDelay = ASW_WEAPON_SWITCH_TIME;
-		
-		// reactivedrop: 
-		// To prevent players using scripts that automatically switch weapons
-		// to increase fire rate. E.g. vindicator fire rate is 0.65 s, weapon 
-		// switch time is 0.5 s, players can equip dual vindicators and 
-		// shoot with 0.5 s rate by switching from one vindicator to another. 
-		// To prevent this we need to increase the weapon switch delay to 0.65 
-		// But only if the player switched right after firing(most likely
-		// using a script). 
-		// We also need to skip the situations when a reload occurs in current
-		// weapon and player switches to the next one. E.g. the switch delay 
-		// should not be higher then GetFireRate() and shouldn't be lower then 
-		// 0.5 switch delay 
-		if ( GetLastWeaponSwitchedTo() )
-		{
-			CBaseCombatWeapon *pPrevWeapon = GetLastWeaponSwitchedTo();
-			if (pPrevWeapon->m_flNextPrimaryAttack > gpGlobals->curtime)
-			{
-				fSwitchDelay = MIN(pPrevWeapon->GetFireRate(), 
-								   pPrevWeapon->m_flNextPrimaryAttack - gpGlobals->curtime);
-				fSwitchDelay = MAX( ASW_WEAPON_SWITCH_TIME, fSwitchDelay );
-			}
-		}
+		m_bLastWeaponBeforeTempWasSecondary = GetActiveASWWeapon() == pWeaponSec;
+	}
 
-		if (pWeapon != GetLastWeaponSwitchedTo() && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
+	//Orange. BaseClass::Weapon_Switch() overrides m_flNextPrimaryAttack of the pWeapon later in CBaseCombatWeapon::DefaultDeploy()
+	//So we have to calc delay before it and restore with ApplyWeaponSwitchTime(). 
+	//This way we respect switch time and used gun firerate (unlike it taken before from gun in another slot)
+	#define ASW_WEAPON_SWITCH_TIME 0.5f
+	float fSwitchDelay = ASW_WEAPON_SWITCH_TIME;
+	if ( pWeapon->m_flNextPrimaryAttack > gpGlobals->curtime )
+	{
+		fSwitchDelay = MIN( pWeapon->GetFireRate(), pWeapon->m_flNextPrimaryAttack.Get() - gpGlobals->curtime );
+		fSwitchDelay = MAX( ASW_WEAPON_SWITCH_TIME, fSwitchDelay );
+	}
+
+	if ( BaseClass::Weapon_Switch( pWeapon, viewmodelindex ) )
+	{
+		CBaseCombatWeapon *pLast = GetLastWeaponSwitchedTo();
+		if ( pWeapon != pLast && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
 		{
+#ifdef GAME_DLL
+			if ( rda_marine_backpack.GetBool() && !m_bKnockedOut ) // do not allow backpack switch when incapacitated with reviving enabled
+			{
+				CASW_Weapon* pTempWeapon = GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT);
+
+				//this related to first keyboard weapon switch and first weapon pickup that changes some gun (not a pickup into empty slot)
+				if ( !pLast && pWeaponPri && pWeaponSec )
+				{
+					if ( !pTempWeapon ) //do not do anything with backpack if we grabbed temp weapon, also temp weapon supposed to be active so check can be like pTempWeapon != pActive
+					{
+						RemoveBackPackModel();
+						CASW_Weapon* pActive = GetActiveASWWeapon();
+						if ( pWeaponPri == pActive )
+							CreateBackPackModel( pWeaponSec );
+						else if ( pWeaponSec == pActive )
+							CreateBackPackModel( pWeaponPri );
+					}
+				}
+
+				if ( pLast )
+				{
+					CASW_Weapon *pPrevWeapon = assert_cast<CASW_Weapon *>(pLast);
+					if ( !pTempWeapon )//do not do anything with backpack if we grabbed temp weapon
+					{
+						if ( pWeaponPri == pPrevWeapon || pWeaponSec == pPrevWeapon )
+						{
+							RemoveBackPackModel();
+							CreateBackPackModel( pPrevWeapon );
+						}
+					}
+				}
+			}
+#endif
 			m_hLastWeaponSwitchedTo = pWeapon;
 			DoAnimationEvent( PLAYERANIMEVENT_WEAPON_SWITCH );
 		}
-
-		CASW_Weapon* pASWWeapon = dynamic_cast<CASW_Weapon*>(pWeapon);
-		if (pASWWeapon)
-		{
-			pASWWeapon->ApplyWeaponSwitchTime(fSwitchDelay);
-		}
+		CASW_Weapon *pASWWeapon = assert_cast<CASW_Weapon *>( pWeapon );
+		if ( pASWWeapon )
+			pASWWeapon->ApplyWeaponSwitchTime( fSwitchDelay );
 
 #ifndef CLIENT_DLL
 		CheckAndRequestAmmo();
 
-		CASW_Weapon *pTempWeapon = GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
-		if ( pTempWeapon && pWeapon != pTempWeapon )
+		if ( pWeaponTmp && pWeapon != pWeaponTmp )
 		{
 			DropWeapon( ASW_TEMPORARY_WEAPON_SLOT, true );
 		}
@@ -153,7 +179,7 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -167,7 +193,8 @@ bool CASW_Marine::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 		return false;
 
 	// disallow selection of offhand item
-	if ( pASWWeapon->GetWeaponInfo() && pASWWeapon->GetWeaponInfo()->m_bExtra )
+	const CASW_WeaponInfo* pWpnInfo = pASWWeapon->GetWeaponInfo();
+	if ( pWpnInfo && pWpnInfo->m_bExtra )
 		return false;
 
 	if ( !pWeapon->CanDeploy() )
@@ -405,7 +432,7 @@ float CASW_Marine::MaxSpeed()
 int CASW_Marine::GetWeaponAmmoCount( int iAmmoIndex )
 {
 	// find how much is in guns we're carrying
-	int iWeapons = WeaponCount();
+	int iWeapons = ASW_MAX_MARINE_WEAPONS;
 	int iWeaponAmmo = 0;
 	for (int i=0;i<iWeapons;i++)
 	{
@@ -479,7 +506,7 @@ const char *CASW_Marine::GetPlayerName() const
 
 CASW_Player* CASW_Marine::GetCommander() const
 {
-	return dynamic_cast<CASW_Player*>(m_Commander.Get());
+	return m_Commander.Get();
 }
 
 bool CASW_Marine::IsInhabited()
@@ -594,10 +621,13 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 
 	if ( m_iDamageAttributeEffects & BULLET_ATT_FREEZE )
 	{
-		CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC*>( pTarget );
-		if ( pNPC )
+		if (pTarget)
 		{
-			pNPC->Freeze( 100.0f, this );
+			CAI_BaseNPC* pNPC = pTarget->MyNPCPointer();
+			if (pNPC)
+			{
+				pNPC->Freeze(100.0f, this);
+			}
 		}
 	}
 
@@ -655,9 +685,11 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 		CBaseEntity *pLastShocked = pTarget;
 		pLastShocked->EmitSound( "Electricity.Zap" );
 
-		CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( pTarget );
-		if ( pAlien )
-			pAlien->ForceFlinch( vecShockSrc );
+		if ( pTarget->IsAlienClassType() )
+		{
+			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pTarget);
+			pAlien->ForceFlinch(vecShockSrc);
+		}
 
 		for ( int k = 0; k < iMaxArcs; k++ )
 		{
@@ -698,9 +730,12 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 					shockDmgInfo.SetAmmoType( info.GetAmmoType() );								
 
 					shockTR.m_pEnt->DispatchTraceAttack( shockDmgInfo, vecDir, &shockTR );
-					CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>( shockTR.m_pEnt );
-					if ( pAlien )
-						pAlien->ForceFlinch( shockTR.endpos );
+
+					if ( shockTR.m_pEnt->IsAlienClassType() )
+					{
+						CASW_Alien *pAlien = assert_cast<CASW_Alien*>(shockTR.m_pEnt);
+						pAlien->ForceFlinch(shockTR.endpos);
+					}
 
 					// spawn a shock effect
 					// spawn a shock effect
@@ -1052,6 +1087,8 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 		CTakeDamageInfo info2(this, this, rd_explosive_bullets_dmg.GetFloat(), DMG_BLAST);
 		info2.SetWeapon(info.m_pAttacker);
 		ASWGameRules()->RadiusDamage(info2, tr.endpos, rd_explosive_bullets_radius.GetFloat(), CLASS_NONE, NULL);
+
+		te->SetSuppressHost(pHelpHelpImBeingSupressed);
 	}
 #endif
 
@@ -1259,13 +1296,13 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 
 			CSoundEnt::InsertSound( SOUND_BULLET_IMPACT, tr.endpos, 200, 0.5, this, soundEntChannel );
 
-			if ( GetActiveASWWeapon() && ( 
-				( rd_explosive_shotgun_pellets.GetBool()	&& GetActiveASWWeapon()->Classify() == CLASS_ASW_SHOTGUN ) ||
-				( rd_explosive_vindicator_pellets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_ASSAULT_SHOTGUN ) ||
-				( rd_explosive_minigun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_MINIGUN ) || 
-				( rd_explosive_autogun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_AUTOGUN ) ||
-				( rd_explosive_railgun_bullets.GetBool() && GetActiveASWWeapon()->Classify() == CLASS_ASW_RAILGUN )
-										)
+			CASW_Weapon* pActiveWeapon = GetActiveASWWeapon();
+			if ( pActiveWeapon && 
+				( ( rd_explosive_shotgun_pellets.GetBool()	&& pActiveWeapon->Classify() == CLASS_ASW_SHOTGUN )			||
+				( rd_explosive_vindicator_pellets.GetBool() && pActiveWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN ) ||
+				( rd_explosive_minigun_bullets.GetBool()	&& pActiveWeapon->Classify() == CLASS_ASW_MINIGUN )			||
+				( rd_explosive_autogun_bullets.GetBool()	&& pActiveWeapon->Classify() == CLASS_ASW_AUTOGUN )			||
+				( rd_explosive_railgun_bullets.GetBool()	&& pActiveWeapon->Classify() == CLASS_ASW_RAILGUN ) )
 			   )
 			{
 				CBaseEntity *pHelpHelpImBeingSupressed = (CBaseEntity*)te->GetSuppressHost();
@@ -1278,6 +1315,8 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 				CTakeDamageInfo info2(this, this, rd_explosive_bullets_dmg.GetFloat(), DMG_BLAST);
 				info2.SetWeapon(info.m_pAttacker);
 				ASWGameRules()->RadiusDamage(info2, tr.endpos, rd_explosive_bullets_radius.GetFloat(), CLASS_NONE, NULL);
+
+				te->SetSuppressHost(pHelpHelpImBeingSupressed);
 			}
 #endif
 
@@ -1386,15 +1425,12 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 		bool bPierce = ( tr.m_pEnt != NULL ) && ( fDiceRoll < fPenetrateChance) && !bHitGlass && !tr.DidHitWorld();
 		if (bPierce)
 		{
-			CAI_BaseNPC *pNPC = dynamic_cast<CAI_BaseNPC*>(tr.m_pEnt);
+			CAI_BaseNPC *pNPC = tr.m_pEnt->MyNPCPointer();
 			CASW_Simple_Alien *pAlien = dynamic_cast<CASW_Simple_Alien*>(tr.m_pEnt);
 			if (pNPC || pAlien)
 			{
-#ifdef GAME_DLL
+
 				if ( tr.m_pEnt->Classify() == CLASS_ASW_SHIELDBUG )		// don't let bullets pass through shieldbugs
-#else
-				if ( dynamic_cast<C_ASW_Shieldbug*>( tr.m_pEnt ) )
-#endif
 				{
 					bPierce = false;
 				}
@@ -1913,7 +1949,10 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 
 CBaseCombatWeapon* CASW_Marine::GetLastWeaponSwitchedTo()
 {
-	return dynamic_cast<CBaseCombatWeapon*>(m_hLastWeaponSwitchedTo.Get());
+	CBaseEntity* pSwitched = m_hLastWeaponSwitchedTo.Get();
+	if ( pSwitched )
+		return pSwitched->MyCombatWeaponPointer();
+	return NULL;
 }
 
 bool CASW_Marine::TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr )
@@ -2013,7 +2052,7 @@ int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass, bool bIs
 		return 2;
 
 	// if item is unique, then check if we're already carrying one
-	if (pWeaponData->m_bUnique)
+	if (pWeaponData && pWeaponData->m_bUnique)
 	{
 		CBaseCombatWeapon *pWeapon = GetWeapon(0);
 		if (pWeapon && !Q_strcmp(szWeaponClass, pWeapon->GetClassname()))
@@ -2099,16 +2138,16 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dm
 	{
 		if ( pAttack->m_flKnockbackForce > 0.0f )
 		{
-			CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pHitEntity);
-			float flFlatForce = pAttack->m_flKnockbackForce;
-			float flUpForce = flFlatForce * asw_melee_knockback_up_force.GetFloat();
-			
-			// knockback aliens on broad strokes
-			if ( pAlien )
+			if ( pHitEntity->IsAlienClassType() )
 			{
+				CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pHitEntity);
+				float flFlatForce = pAttack->m_flKnockbackForce;
+				float flUpForce = flFlatForce * asw_melee_knockback_up_force.GetFloat();
+
+				// knockback aliens on broad strokes
 				Vector vecToTarget = pAlien->WorldSpaceCenter() - WorldSpaceCenter();
 				vecToTarget.z = 0;
-				VectorNormalize( vecToTarget );
+				VectorNormalize(vecToTarget);
 
 				// undone: knock aliens to the side to better clear a path for the marine
 				//Vector vecDirUp( 0, 0, 1 );
@@ -2116,7 +2155,7 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dm
 				//Vector vecSide;
 				//CrossProduct( vecToTarget, vecDirUp, vecSide );
 
-				pAlien->Knockback( vecToTarget * flFlatForce + Vector( 0, 0, 1 ) * flUpForce );
+				pAlien->Knockback(vecToTarget * flFlatForce + Vector(0, 0, 1) * flUpForce);
 				//pAlien->ForceFlinch( vecAttackDir );
 			}
 		}
@@ -2189,16 +2228,13 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dm
 void CASW_Marine::PlayMeleeImpactEffects( CBaseEntity *pEntity, trace_t *tr )
 {
 	if ( !pEntity )
-	{
 		return;
-	}
 
 	UTIL_ImpactTrace( tr, DMG_CLUB );
 
-	CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pEntity);
-
-	if ( pAlien )
+	if ( pEntity->IsAlienClassType() )
 	{
+		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
 #ifdef GAME_DLL
 		// play a melee hit sound
 		CPASAttenuationFilter otherfilter;
@@ -2237,7 +2273,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 			// Read in yaw start
 			p = nexttoken( token, p, ' ', sizeof(token) );
 
-			if( token )
+			if( token[0] )
 			{
 				flYawStart = atof( token );
 			}
@@ -2245,7 +2281,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 			// Read in yaw end
 			p = nexttoken( token, p, ' ', sizeof(token) );
 
-			if( token )
+			if( token[0] )
 			{
 				flYawEnd = atof( token );
 			}
@@ -2310,7 +2346,7 @@ void CASW_Marine::HandlePredictedAnimEvent( int event, const char* options )
 		char token[256];
 		const char *p = options;
 		p = nexttoken(token, p, ' ', sizeof(token));
-		if ( token ) 
+		if ( token[0] ) 
 		{
 			if ( !Q_stricmp( token, "JumpJet" ) && ASWGameMovement() )
 			{				
@@ -2341,7 +2377,7 @@ bool CASW_Marine::IsHacking( void )
 // returns weapon's position in our myweapons array
 int CASW_Marine::GetWeaponIndex( CBaseCombatWeapon *pWeapon ) const
 {
-	for ( int i = 0; i < WeaponCount() ; i++ )
+	for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 	{
 		if ( GetWeapon( i ) == pWeapon )
 			return i;
@@ -2719,7 +2755,8 @@ void CASW_Marine::Bleed( const CTakeDamageInfo &info, const Vector &vecPos, cons
 	filter.AddAllPlayers();
 
 	// if we've been shot by another marine...
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE )
+	CBaseEntity* pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
 		if ( asw_marine_ff.GetInt() == 0 )
 			return;
@@ -2739,9 +2776,10 @@ void CASW_Marine::Bleed( const CTakeDamageInfo &info, const Vector &vecPos, cons
 	else
 	{
 		Vector vecInflictorPos = vecDamagePos;
-		if ( info.GetInflictor() )
+		CBaseEntity* pInflictor = info.GetInflictor();
+		if ( pInflictor )
 		{
-			vecInflictorPos = info.GetInflictor()->GetAbsOrigin();
+			vecInflictorPos = pInflictor->GetAbsOrigin();
 		}
 
 		UserMessageBegin( filter, "ASWMarineHitByMelee" );

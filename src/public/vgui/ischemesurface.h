@@ -71,7 +71,7 @@ public:
 	virtual IMaterial *GetMaterial( int textureId )
 	{ 
 		Assert(0);
-		return false; 
+		return NULL;
 	}
 
 

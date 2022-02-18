@@ -1639,38 +1639,6 @@ void CBaseHudChat::Send( void )
 	g_pVGuiLocalize->ConvertUnicodeToANSI( szTextbuf, ansi, sizeof( ansi ) );
 	int len = Q_strlen(ansi);
 
-	// Remove this code before shipping
-	if (!V_strnicmp(ansi, "bug!", 4) || !V_strnicmp(ansi, "bug:", 4))
-	{
-		char szTempStr[1024];
-		char szCommand[1024];
-
-		// Copy the string since we are going to hack it up in ParseTokens
-		V_strncpy(szTempStr, ansi+4, sizeof(szTempStr));
-
-		// Auto submit if there is text after the keyword
-		// otherwise throw up the bug reporter ui
-		CUtlLinkedList<const char *> *tokens = ParseTokens(szTempStr);
-
-		if ( V_strlen(szTempStr))
-		{
-			V_snprintf(szCommand, sizeof(szCommand), "bug -auto -title \"%s\"", szTempStr);
-		}
-		else 
-		{
-			V_strncpy(szCommand, "bug", sizeof(szCommand));
-		}
-
-		FOR_EACH_LL((*tokens), i)
-		{
-			V_snprintf(szCommand, sizeof(szCommand), "%s \"%s\"", szCommand, tokens->Element(i));
-		}
-		free(tokens);
-
-		//Msg("BUG: %s\n", szCommand);
-		engine->ClientCmd_Unrestricted(szCommand);
-	}
-
 	// remove the \n
 	if ( len > 0 &&
 		ansi[ len - 1 ] == '\n' )

@@ -534,7 +534,7 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 
 		// Ok, the server needs to be updated.
 		char numStr[512];
-		Q_snprintf(numStr,sizeof(numStr), " %x", banMask);
+		Q_snprintf(numStr,sizeof(numStr), " %lx", banMask);
 		Q_strncat(str, numStr, sizeof(str), COPY_ALL_CHARACTERS);
 	}
 

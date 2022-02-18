@@ -124,9 +124,9 @@ void CASW_Info_Message::InputShowMessage( inputdata_t &inputdata )
 	}
 
 	// check if a marine called this
-	if ( inputdata.pActivator)
+	if ( inputdata.pActivator && inputdata.pActivator->Classify() == CLASS_ASW_MARINE )
 	{
-		pMarine = dynamic_cast<CASW_Marine*>(inputdata.pActivator);
+		pMarine = assert_cast<CASW_Marine*>(inputdata.pActivator);
 	}
 	// if so, find his commander
 	if (pMarine && !pPlayer)
@@ -136,7 +136,7 @@ void CASW_Info_Message::InputShowMessage( inputdata_t &inputdata )
 
 	if (pPlayer)
 	{
-		pASWPlayer = dynamic_cast<CASW_Player*>(pPlayer);
+		pASWPlayer = ToASW_Player(pPlayer);
 		if (pASWPlayer)
 			pASWPlayer->ShowInfoMessage(this);
 	}

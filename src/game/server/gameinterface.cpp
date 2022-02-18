@@ -224,6 +224,8 @@ ConVar *sv_maxreplay = NULL;
 static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
 
+ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCVAR_NONE, "To Allow drawing debug overlays in release builds");
+
 #if !defined(NO_STEAM)
 //-----------------------------------------------------------------------------
 // Purpose: singleton accessor
@@ -1393,7 +1395,8 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 	*/
 
 //#ifdef _DEBUG  - allow this in release for now
-	DrawAllDebugOverlays();
+	if ( sv_draw_debug_overlays_release.GetBool() )
+		DrawAllDebugOverlays();
 //#endif
 	
 	IGameSystem::PreClientUpdateAllSystems();
@@ -1433,6 +1436,7 @@ void CServerGameDLL::Think( bool finalTick )
 {
 	WorkshopSetupThink();
 
+	/*
 	if ( m_fAutoSaveDangerousTime != 0.0f && m_fAutoSaveDangerousTime < gpGlobals->curtime )
 	{
 		// The safety timer for a dangerous auto save has expired
@@ -1452,6 +1456,7 @@ void CServerGameDLL::Think( bool finalTick )
 		m_fAutoSaveDangerousTime = 0.0f;
 		m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
 	}
+	*/
 }
 
 void CServerGameDLL::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_t *pPlayerEntity, EQueryCvarValueStatus eStatus, const char *pCvarName, const char *pCvarValue )
@@ -1857,7 +1862,7 @@ void CServerGameDLL::InvalidateMdlCache()
 	CBaseAnimating *pAnimating;
 	for ( CBaseEntity *pEntity = gEntList.FirstEnt(); pEntity != NULL; pEntity = gEntList.NextEnt(pEntity) )
 	{
-		pAnimating = dynamic_cast<CBaseAnimating *>(pEntity);
+		pAnimating = pEntity->GetBaseAnimating();
 		if ( pAnimating )
 		{
 			pAnimating->InvalidateMdlCache();
@@ -2687,6 +2692,8 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameClients, IServerGameClients, INTERF
 //-----------------------------------------------------------------------------
 bool CServerGameClients::ClientConnect( edict_t *pEdict, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
 {	
+	if (!g_pGameRules)
+		return false;
 	return g_pGameRules->ClientConnected( pEdict, pszName, pszAddress, reject, maxrejectlen );
 }
 
@@ -3229,15 +3236,15 @@ void CServerGameClients::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pK
 	if ( !pKeyValues )
 		return;
 
-	char const *szCommand = pKeyValues->GetName();
+	//char const *szCommand = pKeyValues->GetName();
 
-	if ( FStrEq( szCommand, "avatarinfo" ) )
-	{
-		// Player is communicating team and avatar setting
-		//TheDirector->PlayerAvatarSet( pEntity, pKeyValues );
-	}
-
-	g_pGameRules->ClientCommandKeyValues( pEntity, pKeyValues );
+	//if ( FStrEq( szCommand, "avatarinfo" ) )
+	//{
+	//	// Player is communicating team and avatar setting
+	//	//TheDirector->PlayerAvatarSet( pEntity, pKeyValues );
+	//}
+	if (g_pGameRules)
+		g_pGameRules->ClientCommandKeyValues(pEntity, pKeyValues);
 }
 
 //-----------------------------------------------------------------------------

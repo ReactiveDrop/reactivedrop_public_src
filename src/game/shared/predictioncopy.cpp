@@ -10,7 +10,15 @@
 #if !defined( NO_ENTITY_PREDICTION )
 
 #include "IGameSystem.h"
+#ifdef WIN32
+#if (defined( _MSC_VER ) && _MSC_VER >= 1900)
+#include <typeinfo>
+#else
 #include <typeinfo.h>
+#endif
+#else
+#include <typeinfo>
+#endif
 #include "cdll_int.h"
 #include <memory.h>
 #include <stdarg.h>
@@ -60,7 +68,7 @@ static const char *g_FieldTypes[ FIELD_TYPECOUNT ] =
 	"FIELD_VMATRIX",			
 	"FIELD_VMATRIX_WORLDSPACE",
 	"FIELD_MATRIX3X4_WORLDSPACE",
-	"FIELD_INTERVAL"		// FIELD_INTERVAL
+	"FIELD_INTERVAL",		// FIELD_INTERVAL
 	"FIELD_MODELINDEX"		// FIELD_MODELINDEX
 };
 

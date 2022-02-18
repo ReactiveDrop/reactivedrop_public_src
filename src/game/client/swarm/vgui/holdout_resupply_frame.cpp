@@ -82,7 +82,7 @@ void Holdout_Resupply_Frame::OnThink()
 	flTimeLeft = MAX( 0, flTimeLeft );
 
 	wchar_t wzValue[15];
-	_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", (int) flTimeLeft );
+	V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", (int) flTimeLeft );
 
 	m_pCountdownTimeLabel->SetText( wzValue );
 }

@@ -18,7 +18,7 @@ C_ASW_Mesh_Emitter::C_ASW_Mesh_Emitter()
 	DisableCachedRenderBounds( true );
 
 	m_fScale = 1.0f;
-	m_fDieTime = false;
+	m_fDieTime = 0.0f;
 
 	m_hClientAttach = NULL;
 	m_szAttach[0] = 0;

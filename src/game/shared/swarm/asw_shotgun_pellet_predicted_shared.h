@@ -34,7 +34,7 @@ public:
 
 	void	ApplyRadiusEMPEffect( CBaseEntity *pOwner, const Vector& vecCenter );
 	
-	static CASW_Shotgun_Pellet_Predicted *CASW_Shotgun_Pellet_Predicted::CreatePellet( const Vector &vecOrigin, const Vector &vecForward, CBasePlayer *pCommander, CBaseEntity *pMarine );
+	static CASW_Shotgun_Pellet_Predicted* CreatePellet( const Vector &vecOrigin, const Vector &vecForward, CBasePlayer *pCommander, CBaseEntity *pMarine );
 
 	// A derived class should return true here so that weapon sounds, etc, can
 	//  apply the proper filter

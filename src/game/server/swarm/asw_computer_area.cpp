@@ -510,7 +510,6 @@ void CASW_Computer_Area::StartDownloadingSound()
 {
 	if( !m_pDownloadingSound )
 	{
-		Msg("Starting downloading sound\n");
 		// Don't set this up until the code calls for it.
 		const char *pszSound = "ASWComputer.Downloading"; //GetMoanSound( m_iMoanSound );
 
@@ -616,7 +615,7 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 		{
 			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 			{
-				CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( i ) );
+				CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() || pPlayer->GetMarine() == pMarine )
 					continue;
 
@@ -857,10 +856,13 @@ void CASW_Computer_Area::UpdateWaitingForInput()
 // updates the panel prop (if any) with a skin to reflect the button's state
 void CASW_Computer_Area::UpdatePanelSkin()
 {
-	if (!m_hPanelProp.Get())
+	CBaseEntity* pPanel = m_hPanelProp.Get();
+	
+	if ( !pPanel )
 		return;
 
-	CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating*>(m_hPanelProp.Get());
+	CBaseAnimating *pAnim = pPanel->GetBaseAnimating();
+	CBaseEntity *pFindAnim = NULL;
 	while (pAnim)
 	{
 		if (m_bIsLocked)
@@ -869,7 +871,10 @@ void CASW_Computer_Area::UpdatePanelSkin()
 			pAnim->m_nSkin = 1;	// unlocked skin	
 
 		if (m_bMultiplePanelProps)
-			pAnim = dynamic_cast<CBaseAnimating*>(gEntList.FindEntityByName( pAnim, m_szPanelPropName ));
+		{
+			pFindAnim = gEntList.FindEntityByName(pAnim, m_szPanelPropName);
+			pAnim = pFindAnim ? pFindAnim->GetBaseAnimating() : NULL;
+		}
 		else
 			pAnim = NULL;
 	}

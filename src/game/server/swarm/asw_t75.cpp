@@ -61,7 +61,7 @@ void CASW_T75::Spawn( void )
 	Precache();
 	SetModel( ASW_T75_MODEL );
 	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_SOLID || FSOLID_TRIGGER);
+	AddSolidFlags( FSOLID_TRIGGER );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage	= DAMAGE_NO;
 
@@ -133,11 +133,16 @@ void CASW_T75::Explode()
 	UTIL_ASW_GrenadeExplosion( GetAbsOrigin(), m_flDamageRadius );
 
 	int iPreExplosionKills = 0;
-	CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetOwnerEntity());
+
+	CASW_Marine* pMarine = NULL;
+	CBaseEntity* pOwner = GetOwnerEntity();
+	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
+		pMarine = assert_cast<CASW_Marine*>( pOwner );
+
 	if (pMarine && pMarine->GetMarineResource())
 		iPreExplosionKills = pMarine->GetMarineResource()->m_iAliensKilled;
 
-	ASWGameRules()->RadiusDamage ( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, NULL );
+	ASWGameRules()->RadiusDamage ( CTakeDamageInfo( this, pOwner, m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_flDamageRadius, CLASS_NONE, NULL );
 
 	if (pMarine && pMarine->GetMarineResource())
 	{
