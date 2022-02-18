@@ -23,7 +23,6 @@
 #include "props.h"
 #include "antlion_dust.h"
 #include "decals.h"
-#include "prop_combine_ball.h"
 #include "eventqueue.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

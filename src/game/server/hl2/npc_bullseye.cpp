@@ -231,23 +231,6 @@ void CNPC_Bullseye::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed( info );
 
-	if( GetParent() )
-	{
-		if( GetParent()->ClassMatches("prop_combine_ball") )
-		{
-			// If this bullseye is parented to a combine ball, explode the combine ball
-			// and remove this bullseye.
-			variant_t emptyVariant;
-			GetParent()->AcceptInput( "explode", this, this, emptyVariant, 0 );
-
-			// Unhook.
-			SetParent(NULL);
-
-			UTIL_Remove(this);
-			return;
-		}
-	}
-
 	SetMoveType( MOVETYPE_NONE );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	UTIL_SetSize(this, vec3_origin, vec3_origin );

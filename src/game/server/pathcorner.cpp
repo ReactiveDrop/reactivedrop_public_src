@@ -35,15 +35,6 @@ private:
 
 LINK_ENTITY_TO_CLASS( path_corner, CPathCorner );
 
-
-class CPathCornerCrash : public CPathCorner
-{
-	DECLARE_CLASS( CPathCornerCrash, CPathCorner );
-};
-
-LINK_ENTITY_TO_CLASS( path_corner_crash, CPathCornerCrash );
-
-
 BEGIN_DATADESC( CPathCorner )
 
 	DEFINE_KEYFIELD( m_flWait, FIELD_FLOAT, "wait" ),
