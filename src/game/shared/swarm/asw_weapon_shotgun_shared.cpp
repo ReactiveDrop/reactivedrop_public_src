@@ -62,6 +62,7 @@ END_DATADESC()
 #endif /* not client */
 
 ConVar rd_shotgun_fire_rate( "rd_shotgun_fire_rate", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Fire rate of shotgun", true, 0, false, 0 );
+ConVar rd_shotgun_secondary_delay( "rd_shotgun_secondary_delay", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 CASW_Weapon_Shotgun::CASW_Weapon_Shotgun()
 {
@@ -123,7 +124,7 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
-		if (pPlayer && pMarine->IsInhabited())
+		if ( pPlayer && pMarine->IsInhabited() && !m_bShotDelayed )
 		{
 			CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
 		}
@@ -211,6 +212,27 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
 	m_fSlowTime = gpGlobals->curtime + 0.1f;
+}
+
+void CASW_Weapon_Shotgun::SecondaryAttack()
+{
+	if ( m_flNextPrimaryAttack <= gpGlobals->curtime )
+	{
+		PrimaryAttack();
+
+		if ( m_iClip1 > 0 )
+		{
+			m_bShotDelayed = true;
+			m_flDelayedFire = gpGlobals->curtime + rd_shotgun_secondary_delay.GetFloat();
+		}
+	}
+}
+
+void CASW_Weapon_Shotgun::DelayedAttack()
+{
+	PrimaryAttack();
+
+	m_bShotDelayed = false;
 }
 
 void CASW_Weapon_Shotgun::FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed )
