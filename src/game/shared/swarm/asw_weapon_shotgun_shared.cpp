@@ -124,9 +124,16 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
-		if ( pPlayer && pMarine->IsInhabited() && !m_bShotDelayed )
+		if ( pPlayer && pMarine->IsInhabited() )
 		{
-			CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
+			if (!m_bShotDelayed)
+			{
+				CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
+			}
+			else
+			{
+				CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetLastUserCommand() );
+			}
 		}
 #endif
 
