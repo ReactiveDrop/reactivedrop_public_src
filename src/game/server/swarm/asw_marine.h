@@ -191,6 +191,7 @@ public:
 	bool TeleportStuckMarine();
 	bool TeleportToFreeNode( CASW_Marine *pTarget = NULL, float fNearestDist = -1 );
 	CNetworkVar( bool, m_bWalking );
+	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
 
 	CASW_Lag_Compensation m_LagCompensation;

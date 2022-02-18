@@ -272,7 +272,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropVector  ( SENDINFO( m_vecJumpJetEnd)), 
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
-	
+	SendPropBool	( SENDINFO( m_bForceWalking ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------

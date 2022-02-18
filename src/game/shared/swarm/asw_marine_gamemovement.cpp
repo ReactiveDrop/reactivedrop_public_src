@@ -731,10 +731,10 @@ void CASW_MarineGameMovement::CheckParameters( void )
 	}
 
 	// slow marine down if walk key is held down
-	if ( mv->m_nButtons & IN_WALK )
+	if ( mv->m_nButtons & IN_WALK || marine->m_bForceWalking.Get() )
 	{
 		//Msg("Walking, forward=%f side=%f\n", mv->m_flForwardMove, mv->m_flSideMove);
-		
+
 		float fSpeed = ( mv->m_flForwardMove * mv->m_flForwardMove ) +
 			  ( mv->m_flSideMove * mv->m_flSideMove );
 

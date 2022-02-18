@@ -300,7 +300,7 @@ void CASW_Weapon_Minigun::UpdateSpinRate()
 
 	CASW_Marine *pMarine = GetMarine();
 	bool bMeleeing = pMarine && ( pMarine->GetCurrentMeleeAttack() != NULL );
-	bool bWalking = pMarine && pMarine->m_bWalking.Get();
+	bool bWalking = pMarine && pMarine->m_bWalking.Get() || pMarine->m_bForceWalking.Get();
 
 	bool bSpinUp = !m_bInReload && !bMeleeing && ( bAttack1 || bAttack2 || bWalking );
 	if ( bSpinUp )

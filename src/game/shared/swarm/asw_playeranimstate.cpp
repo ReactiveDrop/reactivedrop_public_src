@@ -1110,7 +1110,7 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 					idealActivity = ACT_CROUCHIDLE;
 #endif
 				}
-				else if ( pMarine->m_bWalking.Get() || ( !pMarine->IsInhabited() && pMarine->m_bAICrouch.Get() ) )
+				else if ( pMarine->m_bWalking.Get() || pMarine->m_bForceWalking.Get() || ( !pMarine->IsInhabited() && pMarine->m_bAICrouch.Get() ) )
 				{
 					idealActivity = ACT_CROUCHIDLE;
 				}

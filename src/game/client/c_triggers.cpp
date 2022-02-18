@@ -10,6 +10,10 @@
 #include "c_func_brush.h"
 #include "collisionutils.h"
 
+#ifdef INFESTED_DLL
+#include "c_asw_marine.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -161,7 +165,20 @@ void C_TriggerPlayerMovement::UpdatePartitionListEntry()
 }
 
 void C_TriggerPlayerMovement::StartTouch( C_BaseEntity *pOther )
-{	
+{
+#ifdef INFESTED_DLL
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pOther );
+	if ( pMarine )
+	{
+		if ( HasSpawnFlags( SF_TRIGGER_AUTO_DUCK ) )
+		{
+			pMarine->m_bForceWalking = true;
+		}
+
+		return;
+	}
+#endif
+
 	C_BasePlayer *pPlayer = ToBasePlayer( pOther );
 
 	if ( !pPlayer )
@@ -181,6 +198,19 @@ void C_TriggerPlayerMovement::StartTouch( C_BaseEntity *pOther )
 
 void C_TriggerPlayerMovement::EndTouch( C_BaseEntity *pOther )
 {
+#ifdef INFESTED_DLL
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pOther );
+	if ( pMarine )
+	{
+		if ( HasSpawnFlags( SF_TRIGGER_AUTO_DUCK ) )
+		{
+			pMarine->m_bForceWalking = false;
+		}
+
+		return;
+	}
+#endif
+
 	C_BasePlayer *pPlayer = ToBasePlayer( pOther );
 	if ( !pPlayer )
 		return;
