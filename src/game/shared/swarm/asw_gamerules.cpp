@@ -5982,6 +5982,14 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 	}
 }
 
+bool CAlienSwarm::ShouldUseRobustRadiusDamage( CBaseEntity *pEntity )
+{
+	if ( !pEntity )
+		return false;
+
+	return pEntity->Classify() == CLASS_ASW_ALIEN_GOO;
+}
+
 ConVar asw_stumble_knockback( "asw_stumble_knockback", "300", FCVAR_CHEAT, "Velocity given to aliens that get knocked back" );
 ConVar asw_stumble_lift( "asw_stumble_lift", "300", FCVAR_CHEAT, "Upwards velocity given to aliens that get knocked back" );
 
