@@ -176,16 +176,20 @@ void CASWHudOverlayMessages::Paint()
 
 void CASWHudOverlayMessages::PaintAmmoDrops()
 {
+	Vector vecOffset( 0, -20, 0 );
+	if ( ASWInput() )
+	{
+		VectorRotate( Vector( -20, 0, 0 ), QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), vecOffset );
+	}
+
 	int nDrops = g_AmmoDrops.Count();
 	for ( int i = 0; i < nDrops; i++ )
 	{
 		C_ASW_Ammo_Drop *pDrop = g_AmmoDrops[i];
 		if ( !pDrop )
-			return;
+			continue;
 
-		Vector vecWorldPos;
-		VectorRotate( Vector( -20, 0, 0 ), QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), vecWorldPos );
-		vecWorldPos += pDrop->GetRenderOrigin();
+		Vector vecWorldPos = pDrop->GetRenderOrigin() + vecOffset;
 
 		const int nMaxX = ScreenWidth() - 150;
 		const int nMaxY = ScreenHeight() - 100;

@@ -179,6 +179,11 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
 	}
 
+	if ( pPlayer && pPlayer->GetASWControls() != 1 )
+	{
+		return pPlayer->EyeAngles().y;
+	}
+
 	if ( pPlayer && asw_cam_marine_yaw.GetFloat() != pPlayer->m_flMovementAxisYaw )
 	{
 		s_bDontSendDesiredYaw = true;
