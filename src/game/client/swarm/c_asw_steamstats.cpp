@@ -1080,7 +1080,7 @@ static uint32 GetGameVersion()
 
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
-	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() )
+	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
 	{
 		return;
 	}
