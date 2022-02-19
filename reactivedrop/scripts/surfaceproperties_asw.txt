@@ -79,3 +79,14 @@
 	
 	"gamematerial"	"11"
 }
+
+"ice_slippery"
+{
+	"base" "ice"
+	"friction" "0.1"
+}
+"snow_slippery"
+{
+	"base" "snow"
+	"friction" "0.35"
+}
