@@ -41,6 +41,7 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 
 CNB_Leaderboard_Panel_Points::~CNB_Leaderboard_Panel_Points()
 {
+	GameUI().AllowEngineHideGameUI();
 }
 
 void CNB_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *pScheme )
