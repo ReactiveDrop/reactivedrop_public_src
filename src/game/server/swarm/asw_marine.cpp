@@ -5504,7 +5504,9 @@ void CASW_Marine::RequestForcedAction( int iForcedAction )
 
 	if ( !IsInhabited() )
 	{
+		// jump directly into the melee system; forget what we were doing
 		TaskFail( "forced action" );
+		SetSchedule( SCHED_ASW_MELEE_SYSTEM );
 	}
 }
 
