@@ -42,7 +42,7 @@ asw_weapon_laser_mines : "Trip Mines"
 	skin(integer) : "Skin Number" : 8
 ]
 // Blink Pack //
-@PointClass base(Weapon) studioprop("models/items/itembox/itemboxsmall.mdl")= 
+@PointClass base(ASWPickup) studioprop("models/items/itembox/itemboxsmall.mdl")= 
 
 asw_weapon_blink : "Blink Pack"
 [

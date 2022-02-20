@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2005, Valve Corporation, All rights reserved. =======
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Infested game definition file (.fgd) 
 //
@@ -3021,12 +3021,12 @@
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
 
-@PointClass base(Weapon) studio("models/items/itembox/itemboxsmall.mdl")= asw_weapon_blink : "Blink Pack"
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= asw_weapon_blink : "Blink Pack"
 [
 	
 ]
 
-@PointClass base(Weapon) studio("models/items/itembox/itemboxsmall.mdl")= asw_weapon_jump_jet : "Jump Jets"
+@PointClass base(ASWPickup) studio("models/items/itembox/itemboxsmall.mdl")= asw_weapon_jump_jet : "Jump Jets"
 [
 	
 ]
