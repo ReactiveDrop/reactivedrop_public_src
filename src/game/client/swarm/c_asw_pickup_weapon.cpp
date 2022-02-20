@@ -208,6 +208,28 @@ C_ASW_Pickup_Weapon_Chainsaw::C_ASW_Pickup_Weapon_Chainsaw()
 }
 
 //---------
+// Heavy Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Heavy_Rifle, DT_ASW_Pickup_Weapon_Heavy_Rifle, CASW_Pickup_Weapon_Heavy_Rifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Heavy_Rifle::C_ASW_Pickup_Weapon_Heavy_Rifle()
+{
+}
+
+//---------
+// Med Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_MedRifle, DT_ASW_Pickup_Weapon_MedRifle, CASW_Pickup_Weapon_MedRifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_MedRifle::C_ASW_Pickup_Weapon_MedRifle()
+{
+}
+
+//---------
 // Fire Extinguisher
 //---------
 

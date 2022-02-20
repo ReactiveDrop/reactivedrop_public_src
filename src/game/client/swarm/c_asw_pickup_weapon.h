@@ -132,6 +132,26 @@ public:
 	C_ASW_Pickup_Weapon_Chainsaw();
 };
 
+class C_ASW_Pickup_Weapon_Heavy_Rifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Heavy_Rifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_heavy_rifle"; }
+	C_ASW_Pickup_Weapon_Heavy_Rifle();
+};
+
+class C_ASW_Pickup_Weapon_MedRifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_MedRifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_medrifle"; }
+	C_ASW_Pickup_Weapon_MedRifle();
+};
+
 class C_ASW_Pickup_Weapon_FireExtinguisher : public C_ASW_Pickup_Weapon
 {
 public:

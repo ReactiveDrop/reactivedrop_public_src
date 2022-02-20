@@ -370,6 +370,54 @@ void CASW_Pickup_Weapon_Chainsaw::Precache( void )
 LINK_ENTITY_TO_CLASS(asw_pickup_chainsaw, CASW_Pickup_Weapon_Chainsaw);
 
 //---------------------
+// Heavy Rifle
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Heavy_Rifle, DT_ASW_Pickup_Weapon_Heavy_Rifle)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Heavy_Rifle)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Heavy_Rifle::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/HeavyRifle/heavyrifle.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Heavy_Rifle::Precache(void)
+{
+	PrecacheModel("models/weapons/HeavyRifle/heavyrifle.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_heavy_rifle, CASW_Pickup_Weapon_Heavy_Rifle);
+
+//---------------------
+// Medrifle
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_MedRifle, DT_ASW_Pickup_Weapon_MedRifle)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_MedRifle)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_MedRifle::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/medrifle/medrifle.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_MedRifle::Precache(void)
+{
+	PrecacheModel("models/weapons/medrifle/medrifle.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_medrifle, CASW_Pickup_Weapon_MedRifle);
+
+//---------------------
 // Fire Extinguisher
 //---------------------
 
