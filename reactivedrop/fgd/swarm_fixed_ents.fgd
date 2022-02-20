@@ -246,15 +246,6 @@ asw_pickup_tesla_gun : "Tesla Gun"
 	Clips(integer) : "Clips" : 13
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Tesla Gun //
-@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
-
-asw_weapon_tesla_gun : "Tesla Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 20
-	Clips(integer) : "Clips" : 13
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
 // Railgun //
 @PointClass base(ASWPickup) studio("models/weapons/railgun/railgun.mdl")= 
 
@@ -268,13 +259,6 @@ asw_pickup_railgun : "Railgun"
 @PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
 
 asw_pickup_heal_gun : "Heal Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 100
-]
-// Heal Gun //
-@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
-
-asw_weapon_heal_gun : "Heal Gun"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 100
 ]
@@ -314,32 +298,10 @@ asw_pickup_sniper_rifle : "Sniper Rifle"
 	Clips(integer) : "Clips" : 5
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Sniper //
-@PointClass base(ASWPickup) studio
-
-("models/weapons/marksmanrifle/marksmanrifle.mdl")= asw_weapon_sniper_rifle : 
-
-"Marksman Rifle"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 12
-	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
 // Grenade Launcher Pickup //
 @PointClass base(ASWPickup) studio("models/weapons/grenadelauncher/grenadelauncher.mdl")= 
 
 asw_pickup_grenade_launcher : "Grenade Launcher"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 6
-	Clips(integer) : "Clips" : 3
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
-// Grenade Launcher //
-@PointClass base(ASWPickup) studio
-
-("models/weapons/grenadelauncher/grenadelauncher.mdl")= asw_weapon_grenade_launcher 
-
-: "Grenade Launcher"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 6
 	Clips(integer) : "Clips" : 3
@@ -379,13 +341,6 @@ asw_pickup_healamp_gun : "HealAmp Gun"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 50
 	SecondaryBullets(integer) : "Secondary Bullets" : 100
-]
-// HealAmp Gun //
-@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
-
-asw_weapon_healamp_gun : "HealAmp Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 100
 ]
 // Heavy rifle //
 @PointClass base(ASWPickup) studio("models/weapons/heavyrifle/heavyrifle.mdl")= 
