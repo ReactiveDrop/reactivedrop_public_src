@@ -190,7 +190,7 @@ asw_pickup_rifle : "Assault Rifle"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 98
 	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
 ]
 // Prototype Rifle //
 @PointClass base(ASWPickup) studio("models/weapons/prototype/prototyperifle.mdl")= 
@@ -199,7 +199,7 @@ asw_pickup_prifle : "Prototype Rifle"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 98
 	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
 ]
 // Autogun //
 @PointClass base(ASWPickup) studio("models/weapons/autogun/autogun.mdl")= 
@@ -217,7 +217,7 @@ asw_pickup_vindicator : "vindicator"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 14
 	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
 ]
 // Pistol //
 @PointClass base(ASWPickup) studio("models/weapons/pistol/pistol.mdl")= 
