@@ -159,11 +159,10 @@
 	input AllowFade(integer) : "Enable or disable fading (0 or 1)"
 ]
 
-@PointClass base(ASWPickup) studio
+// 50cal Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/50calmg/50calmg.mdl")= 
 
-("models/weapons/50calmg/50calmg.mdl")= asw_weapon_50calmg 
-
-: "50cal Machine Gun"
+asw_pickup_50calmg : "50cal Machine Gun"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 200
 ]

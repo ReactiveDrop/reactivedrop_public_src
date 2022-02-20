@@ -203,3 +203,14 @@ END_RECV_TABLE()
 C_ASW_Pickup_Weapon_Welder::C_ASW_Pickup_Weapon_Welder()
 {
 }
+
+//---------
+// Grenades
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Grenades, DT_ASW_Pickup_Weapon_Grenades, CASW_Pickup_Weapon_Grenades )
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Grenades::C_ASW_Pickup_Weapon_Grenades()
+{
+}

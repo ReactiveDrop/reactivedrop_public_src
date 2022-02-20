@@ -565,3 +565,28 @@ void CASW_Pickup_Weapon_Welder::Precache( void )
 
 LINK_ENTITY_TO_CLASS(asw_pickup_welder, CASW_Pickup_Weapon_Welder);
 PRECACHE_REGISTER(asw_pickup_welder);
+
+//---------------------
+// Cluster Grenades
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Grenades, DT_ASW_Pickup_Weapon_Grenades)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Grenades)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Grenades::Spawn(void)
+{
+	Precache();
+	SetModel("models/swarm/grenades/grenadebox.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Grenades::Precache(void)
+{
+	PrecacheModel("models/swarm/grenades/grenadebox.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_grenades, CASW_Pickup_Weapon_Grenades);
+PRECACHE_REGISTER(asw_pickup_grenades);

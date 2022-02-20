@@ -721,7 +721,6 @@ exit 1
     <ClCompile Include="env_texturetoggle.cpp" />
     <ClCompile Include="env_tonemap_controller.cpp" />
     <ClCompile Include="env_zoom.cpp" />
-    <ClCompile Include="episodic\prop_scalable.cpp" />
     <ClCompile Include="EventLog.cpp" />
     <ClCompile Include="event_tempentity_tester.cpp" />
     <ClCompile Include="explode.cpp" />
@@ -778,7 +777,6 @@ exit 1
     <ClCompile Include="hl2\ai_spotlight.cpp" />
     <ClCompile Include="hl2\antlion_dust.cpp" />
     <ClCompile Include="hl2\ar2_explosion.cpp" />
-    <ClCompile Include="hl2\cbasehelicopter.cpp" />
     <ClCompile Include="hl2\cbasespriteprojectile.cpp" />
     <ClCompile Include="hl2\env_speaker.cpp" />
     <ClCompile Include="hl2\Func_Monitor.cpp" />
@@ -788,12 +786,9 @@ exit 1
     <ClCompile Include="hl2\monster_dummy.cpp" />
     <ClCompile Include="hl2\npc_antlion.cpp" />
     <ClCompile Include="hl2\npc_antlionguard.cpp" />
-    <ClCompile Include="hl2\npc_attackchopper.cpp" />
     <ClCompile Include="hl2\npc_basescanner.cpp" />
     <ClCompile Include="hl2\npc_BaseZombie.cpp" />
     <ClCompile Include="hl2\npc_bullseye.cpp" />
-    <ClCompile Include="hl2\npc_combinegunship.cpp" />
-    <ClCompile Include="hl2\npc_enemyfinder.cpp" />
     <ClCompile Include="hl2\npc_fastzombie.cpp" />
     <ClCompile Include="hl2\npc_headcrab.cpp" />
     <ClCompile Include="hl2\npc_PoisonZombie.cpp" />
@@ -1720,13 +1715,11 @@ exit 1
     <ClInclude Include="hl2\ai_spotlight.h" />
     <ClInclude Include="hl2\antlion_dust.h" />
     <ClInclude Include="hl2\ar2_explosion.h" />
-    <ClInclude Include="hl2\cbasehelicopter.h" />
     <ClInclude Include="hl2\cbasespriteprojectile.h" />
     <ClInclude Include="hl2\energy_wave.h" />
     <ClInclude Include="hl2\env_speaker.h" />
     <ClInclude Include="hl2\grenade_spit.h" />
     <ClInclude Include="hl2\npc_antlion.h" />
-    <ClInclude Include="hl2\npc_attackchopper.h" />
     <ClInclude Include="hl2\npc_basescanner.h" />
     <ClInclude Include="hl2\npc_BaseZombie.h" />
     <ClInclude Include="hl2\npc_bullseye.h" />

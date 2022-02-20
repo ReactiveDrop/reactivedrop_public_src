@@ -71,18 +71,6 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_autogun"; }
 };
 
-class CASW_Pickup_Weapon_Shotgun : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Shotgun, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_shotgun"; }
-};
-
 class CASW_Pickup_Weapon_Assault_Shotgun : public CASW_Pickup_Weapon
 {
 public:
@@ -93,66 +81,6 @@ public:
 	virtual void Precache( void );
 	virtual void Spawn( void );
 	virtual const char* GetWeaponClass() { return "asw_weapon_vindicator"; }
-};
-
-class CASW_Pickup_Weapon_Flamer : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Flamer, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_flamer"; }
-};
-
-class CASW_Pickup_Weapon_Railgun : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Railgun, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_railgun"; }
-};
-
-class CASW_Pickup_Weapon_Ricochet : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Ricochet, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_ricochet"; }
-};
-
-class CASW_Pickup_Weapon_Flechette : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_flechette"; }
-};
-
-class CASW_Pickup_Weapon_FireExtinguisher : public CASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_FireExtinguisher, CASW_Pickup_Weapon );
-	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();
-
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_fire_extinguisher"; }
 };
 
 class CASW_Pickup_Weapon_Pistol : public CASW_Pickup_Weapon
@@ -167,28 +95,52 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_pistol"; }
 };
 
-class CASW_Pickup_Weapon_Mining_Laser : public CASW_Pickup_Weapon
+class CASW_Pickup_Weapon_Shotgun : public CASW_Pickup_Weapon
 {
 public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Mining_Laser, CASW_Pickup_Weapon );
+	DECLARE_CLASS( CASW_Pickup_Weapon_Shotgun, CASW_Pickup_Weapon );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 	virtual void Precache( void );
 	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_mining_laser"; }
+	virtual const char* GetWeaponClass() { return "asw_weapon_shotgun"; }
 };
 
-class CASW_Pickup_Weapon_Chainsaw : public CASW_Pickup_Weapon
+class CASW_Pickup_Weapon_Tesla_Gun : public CASW_Pickup_Weapon
 {
 public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Chainsaw, CASW_Pickup_Weapon );
+	DECLARE_CLASS(CASW_Pickup_Weapon_Tesla_Gun, CASW_Pickup_Weapon);
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_tesla_gun"; }
+};
+
+class CASW_Pickup_Weapon_Railgun : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Railgun, CASW_Pickup_Weapon );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 	virtual void Precache( void );
 	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_chainsaw"; }
+	virtual const char* GetWeaponClass() { return "asw_weapon_railgun"; }
+};
+
+class CASW_Pickup_Weapon_Heal_Gun : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Heal_Gun, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_heal_gun"; }
 };
 
 class CASW_Pickup_Weapon_PDW : public CASW_Pickup_Weapon
@@ -203,16 +155,112 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_pdw"; }
 };
 
-class CASW_Pickup_Weapon_Grenades : public CASW_Pickup_Weapon
+class CASW_Pickup_Weapon_Flamer : public CASW_Pickup_Weapon
 {
 public:
-	DECLARE_CLASS( CASW_Pickup_Weapon_Grenades, CASW_Pickup_Weapon );
+	DECLARE_CLASS( CASW_Pickup_Weapon_Flamer, CASW_Pickup_Weapon );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 	virtual void Precache( void );
 	virtual void Spawn( void );
-	virtual const char* GetWeaponClass() { return "asw_weapon_grenades"; }
+	virtual const char* GetWeaponClass() { return "asw_weapon_flamer"; }
+};
+
+class CASW_Pickup_Weapon_Minigun: public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS(CASW_Pickup_Weapon_Minigun, CASW_Pickup_Weapon);
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_minigun"; }
+};
+
+class CASW_Pickup_Weapon_Sniper_Rifle : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS(CASW_Pickup_Weapon_Sniper_Rifle, CASW_Pickup_Weapon);
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_sniper_rifle"; }
+};
+
+class CASW_Pickup_Weapon_Chainsaw : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Chainsaw, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_chainsaw"; }
+};
+
+class CASW_Pickup_Weapon_Grenade_Launcher : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Grenade_Launcher, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_grenade_launcher"; }
+};
+
+class CASW_Pickup_Weapon_DEagle : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_DEagle, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_deagle"; }
+};
+
+class CASW_Pickup_Weapon_Devastator : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Devastator, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_devastator"; }
+};
+
+class CASW_Pickup_Weapon_CombatRifle : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_CombatRifle, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_combat_rifle"; }
+};
+
+class CASW_Pickup_Weapon_HealAmp_Gun : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_HealAmp_Gun, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_healamp_gun"; }
 };
 
 class CASW_Pickup_Weapon_Heavy_Rifle : public CASW_Pickup_Weapon
@@ -239,5 +287,64 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_medrifle"; }
 };
 
+class CASW_Pickup_Weapon_FireExtinguisher : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_FireExtinguisher, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_fire_extinguisher"; }
+};
+
+class CASW_Pickup_Weapon_Mining_Laser : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Mining_Laser, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_mining_laser"; }
+};
+
+class CASW_Pickup_Weapon_50CalMG : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_50CalMG, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_50calmg"; }
+};
+
+class CASW_Pickup_Weapon_Ricochet : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Ricochet, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual const char* GetWeaponClass() { return "asw_weapon_ricochet"; }
+};
+
+class CASW_Pickup_Weapon_Flechette : public CASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( CASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Precache( void );
+	virtual void Spawn( void );
+	virtual const char* GetWeaponClass() { return "asw_weapon_flechette"; }
+};
 
 #endif /* _DEFINED_ASW_PICKUP_WEAPON_H */

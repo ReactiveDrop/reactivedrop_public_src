@@ -528,11 +528,6 @@ void CNPC_BaseScanner::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 			// It can take physics damage from things thrown by the player.
 			TakeDamageFromPhysicsImpact( index, pEvent );
 		}
-		else if ( FClassnameIs( pHitEntity, "prop_combine_ball" ) )
-		{
-			// It also can take physics damage from a combine ball.
-			TakeDamageFromPhysicsImpact( index, pEvent );
-		}
 	}
 }
 

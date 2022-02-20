@@ -62,6 +62,26 @@ public:
 	C_ASW_Pickup_Weapon_Autogun();
 };
 
+class C_ASW_Pickup_Weapon_Assault_Shotgun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Assault_Shotgun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_vindicator"; }
+	C_ASW_Pickup_Weapon_Assault_Shotgun();
+};
+
+class C_ASW_Pickup_Weapon_Pistol : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Pistol, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_pistol"; }
+	C_ASW_Pickup_Weapon_Pistol();
+};
+
 class C_ASW_Pickup_Weapon_Shotgun : public C_ASW_Pickup_Weapon
 {
 public:
@@ -72,14 +92,44 @@ public:
 	C_ASW_Pickup_Weapon_Shotgun();
 };
 
-class C_ASW_Pickup_Weapon_Assault_Shotgun : public C_ASW_Pickup_Weapon
+class C_ASW_Pickup_Weapon_Tesla_Gun : public C_ASW_Pickup_Weapon
 {
 public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Assault_Shotgun, C_ASW_Pickup_Weapon );
+	DECLARE_CLASS(C_ASW_Pickup_Weapon_Tesla_Gun, C_ASW_Pickup_Weapon);
 	DECLARE_CLIENTCLASS();
 
-	virtual const char* GetWeaponClass() { return "asw_weapon_vindicator"; }
-	C_ASW_Pickup_Weapon_Assault_Shotgun();
+	virtual const char* GetWeaponClass() { return "asw_weapon_tesla_gun"; }
+	C_ASW_Pickup_Weapon_Tesla_Gun();
+};
+
+class C_ASW_Pickup_Weapon_Railgun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Railgun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_railgun"; }
+	C_ASW_Pickup_Weapon_Railgun();
+};
+
+class C_ASW_Pickup_Weapon_Heal_Gun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Heal_Gun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_heal_gun"; }
+	C_ASW_Pickup_Weapon_Heal_Gun();
+};
+
+class C_ASW_Pickup_Weapon_PDW : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_PDW, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_pdw"; }
+	C_ASW_Pickup_Weapon_PDW();
 };
 
 class C_ASW_Pickup_Weapon_Flamer : public C_ASW_Pickup_Weapon
@@ -92,14 +142,134 @@ public:
 	C_ASW_Pickup_Weapon_Flamer();
 };
 
-class C_ASW_Pickup_Weapon_Railgun : public C_ASW_Pickup_Weapon
+class C_ASW_Pickup_Weapon_Minigun : public C_ASW_Pickup_Weapon
 {
 public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Railgun, C_ASW_Pickup_Weapon );
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Minigun, C_ASW_Pickup_Weapon );
 	DECLARE_CLIENTCLASS();
 
-	virtual const char* GetWeaponClass() { return "asw_weapon_railgun"; }
-	C_ASW_Pickup_Weapon_Railgun();
+	virtual const char* GetWeaponClass() { return "asw_weapon_minigun"; }
+	C_ASW_Pickup_Weapon_Minigun();
+};
+
+class C_ASW_Pickup_Weapon_Sniper_Rifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Sniper_Rifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_sniper_rifle"; }
+	C_ASW_Pickup_Weapon_Sniper_Rifle();
+};
+
+class C_ASW_Pickup_Weapon_Chainsaw : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Chainsaw, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_chainsaw"; }
+	C_ASW_Pickup_Weapon_Chainsaw();
+};
+
+class C_ASW_Pickup_Weapon_Grenade_Launcher : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS(C_ASW_Pickup_Weapon_Grenade_Launcher, C_ASW_Pickup_Weapon);
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_grenade_launcher"; }
+	C_ASW_Pickup_Weapon_Grenade_Launcher();
+};
+
+class C_ASW_Pickup_Weapon_DEagle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_DEagle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_deagle"; }
+	C_ASW_Pickup_Weapon_DEagle();
+};
+
+class C_ASW_Pickup_Weapon_Devastator : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Devastator, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_devastator"; }
+	C_ASW_Pickup_Weapon_Devastator();
+};
+
+class C_ASW_Pickup_Weapon_CombatRifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_CombatRifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_combat_rifle"; }
+	C_ASW_Pickup_Weapon_CombatRifle();
+};
+
+class C_ASW_Pickup_Weapon_HealAmp_Gun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_HealAmp_Gun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_healamp_gun"; }
+	C_ASW_Pickup_Weapon_HealAmp_Gun();
+};
+
+class C_ASW_Pickup_Weapon_Heavy_Rifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Heavy_Rifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_heavy_rifle"; }
+	C_ASW_Pickup_Weapon_Heavy_Rifle();
+};
+
+class C_ASW_Pickup_Weapon_MedRifle : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_MedRifle, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_medrifle"; }
+	C_ASW_Pickup_Weapon_MedRifle();
+};
+
+class C_ASW_Pickup_Weapon_FireExtinguisher : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_FireExtinguisher, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_fire_extinguisher"; }
+	C_ASW_Pickup_Weapon_FireExtinguisher();
+};
+
+class C_ASW_Pickup_Weapon_Mining_Laser : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Mining_Laser, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_mining_laser"; }
+	C_ASW_Pickup_Weapon_Mining_Laser();
+};
+
+class C_ASW_Pickup_Weapon_50CalMG : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_50CalMG, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_50calmg"; }
+	C_ASW_Pickup_Weapon_50CalMG();
 };
 
 class C_ASW_Pickup_Weapon_Ricochet : public C_ASW_Pickup_Weapon
@@ -121,66 +291,5 @@ public:
 	virtual const char* GetWeaponClass() { return "asw_weapon_flechette"; }
 	C_ASW_Pickup_Weapon_Flechette();
 };
-
-class C_ASW_Pickup_Weapon_FireExtinguisher : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_FireExtinguisher, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_fire_extinguisher"; }
-	C_ASW_Pickup_Weapon_FireExtinguisher();
-};
-
-class C_ASW_Pickup_Weapon_Pistol : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Pistol, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_pistol"; }
-	C_ASW_Pickup_Weapon_Pistol();
-};
-
-class C_ASW_Pickup_Weapon_Mining_Laser : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Mining_Laser, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_mining_laser"; }
-	C_ASW_Pickup_Weapon_Mining_Laser();
-};
-
-class C_ASW_Pickup_Weapon_Chainsaw : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Chainsaw, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_chainsaw"; }
-	C_ASW_Pickup_Weapon_Chainsaw();
-};
-
-class C_ASW_Pickup_Weapon_PDW : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_PDW, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_pdw"; }
-	C_ASW_Pickup_Weapon_PDW();
-};
-
-class C_ASW_Pickup_Weapon_Grenades : public C_ASW_Pickup_Weapon
-{
-public:
-	DECLARE_CLASS( C_ASW_Pickup_Weapon_Grenades, C_ASW_Pickup_Weapon );
-	DECLARE_CLIENTCLASS();
-
-	virtual const char* GetWeaponClass() { return "asw_weapon_grenades"; }
-	C_ASW_Pickup_Weapon_Grenades();
-};
-
 
 #endif /* _DEFINED_C_ASW_PICKUP_WEAPON_H */

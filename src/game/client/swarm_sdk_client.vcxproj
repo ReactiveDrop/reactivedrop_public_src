@@ -789,7 +789,6 @@ exit 1
     <ClCompile Include="c_tracer.cpp" />
     <ClCompile Include="c_triggers.cpp" />
     <ClCompile Include="c_user_message_register.cpp" />
-    <ClCompile Include="c_vehicle_choreo_generic.cpp" />
     <ClCompile Include="c_vehicle_jeep.cpp" />
     <ClCompile Include="c_vguiscreen.cpp" />
     <ClCompile Include="C_WaterLODControl.cpp" />
@@ -799,7 +798,6 @@ exit 1
     <ClCompile Include="EffectsClient.cpp" />
     <ClCompile Include="entityoriginmaterialproxy.cpp" />
     <ClCompile Include="entity_client_tools.cpp" />
-    <ClCompile Include="episodic\c_prop_scalable.cpp" />
     <ClCompile Include="flashlighteffect.cpp" />
     <ClCompile Include="foundryhelpers_client.cpp" />
     <ClCompile Include="functionproxy.cpp" />
@@ -837,10 +835,8 @@ exit 1
     <ClCompile Include="history_resource.cpp" />
     <ClCompile Include="hl2\c_antlion_dust.cpp" />
     <ClCompile Include="hl2\c_ar2_explosion.cpp" />
-    <ClCompile Include="hl2\c_basehelicopter.cpp" />
     <ClCompile Include="hl2\C_Func_Monitor.cpp" />
     <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
-    <ClCompile Include="hl2\c_npc_combinegunship.cpp" />
     <ClCompile Include="hl2\c_rotorwash.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
     <ClCompile Include="hltvcamera.cpp" />
@@ -2466,7 +2462,6 @@ exit 1
     <ClInclude Include="glow_outline_effect.h" />
     <ClInclude Include="glow_overlay.h" />
     <ClInclude Include="history_resource.h" />
-    <ClInclude Include="hl2\c_basehelicopter.h" />
     <ClInclude Include="hltvcamera.h" />
     <ClInclude Include="hud.h" />
     <ClInclude Include="hudelement.h" />

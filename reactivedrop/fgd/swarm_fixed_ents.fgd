@@ -181,44 +181,8 @@ asw_pickup_sentry_cannon : "Cannon Sentry Gun Case"
 	skin(integer) : "Skin Number" : 5
 ]
 
-//WEAPON//zwzwz
+//WEAPON//
 
-// Heal Gun //
-@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
-asw_weapon_heal_gun : "Heal Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 100
-]
-@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
-asw_weapon_healamp_gun : "HealAmp Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 100
-]
-@PointClass base(ASWPickup) studio("models/weapons/MedRifle/medrifle.mdl")= 
-asw_weapon_medrifle : "Medical SMG"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 72
-	Clips(integer) : "Clips" : 7
-	SecondaryBullets(integer) : "Secondary Bullets" : 50
-]
-// PDW //
-@PointClass base(ASWPickup) studio("models/weapons/pdw/pdw.mdl")= asw_pickup_pdw : 
-
-"PDW"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 80
-	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
-// Pistol //
-@PointClass base(ASWPickup) studio("models/weapons/pistol/pistol.mdl")= 
-
-asw_pickup_pistol : "Pistol"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 16
-	Clips(integer) : "Clips" : 10
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
 // Assault Rifle //
 @PointClass base(ASWPickup) studio("models/weapons/assaultrifle/assaultrifle.mdl")= 
 
@@ -226,7 +190,7 @@ asw_pickup_rifle : "Assault Rifle"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 98
 	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
 ]
 // Prototype Rifle //
 @PointClass base(ASWPickup) studio("models/weapons/prototype/prototyperifle.mdl")= 
@@ -235,43 +199,7 @@ asw_pickup_prifle : "Prototype Rifle"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 98
 	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
-]
-// Shotgun //
-@PointClass base(ASWPickup) studio("models/weapons/shotgun/shotgun.mdl")= 
-
-asw_pickup_shotgun : "Shotgun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 3
-	Clips(integer) : "Clips" : 8
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
-// Vindicator //
-@PointClass base(ASWPickup) studio("models/weapons/vindicator/vindicator.mdl")= 
-
-asw_pickup_vindicator : "vindicator"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 14
-	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 4
-]
-// Tesla Gun //
-@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
-
-asw_weapon_tesla_gun : "Tesla Gun"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 20
-	Clips(integer) : "Clips" : 13
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
-]
-// Mining Laser //
-@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
-
-asw_pickup_mining_laser : "Mining laser"
-[
-	BulletsInGun(integer) : "Bullets In Gun" : 50
-	Clips(integer) : "Clips" : 5
-	SecondaryBullets(integer) : "Secondary Bullets" : 0
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
 ]
 // Autogun //
 @PointClass base(ASWPickup) studio("models/weapons/autogun/autogun.mdl")= 
@@ -282,22 +210,40 @@ asw_pickup_autogun : "Autogun"
 	Clips(integer) : "Clips" : 1
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Minigun //
-@PointClass base(ASWPickup) studio("models/weapons/minigun/minigun.mdl")= 
+// Vindicator //
+@PointClass base(ASWPickup) studio("models/weapons/vindicator/vindicator.mdl")= 
 
-asw_pickup_minigun : "Minigun"
+asw_pickup_vindicator : "vindicator"
 [
-	BulletsInGun(integer) : "Bullets In Gun" : 250
-	Clips(integer) : "Clips" : 1
+	BulletsInGun(integer) : "Bullets In Gun" : 14
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
+]
+// Pistol //
+@PointClass base(ASWPickup) studio("models/weapons/pistol/pistol.mdl")= 
+
+asw_pickup_pistol : "Pistol"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 16
+	Clips(integer) : "Clips" : 10
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Flamethrower //
-@PointClass base(ASWPickup) studio("models/weapons/flamethrower/flamethrower.mdl")= 
+// Shotgun //
+@PointClass base(ASWPickup) studio("models/weapons/shotgun/shotgun.mdl")= 
 
-asw_pickup_flamer : "Flamethrower"
+asw_pickup_shotgun : "Shotgun"
 [
-	BulletsInGun(integer) : "Bullets In Gun" : 60
-	Clips(integer) : "Clips" : 5
+	BulletsInGun(integer) : "Bullets In Gun" : 3
+	Clips(integer) : "Clips" : 8
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Tesla Gun Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
+
+asw_pickup_tesla_gun : "Tesla Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 20
+	Clips(integer) : "Clips" : 13
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
 // Railgun //
@@ -309,25 +255,126 @@ asw_pickup_railgun : "Railgun"
 	Clips(integer) : "Clips" : 72
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Marksman Rifle //
-@PointClass base(ASWPickup) studio
+// Heal Gun Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
 
-("models/weapons/marksmanrifle/marksmanrifle.mdl")= asw_weapon_sniper_rifle : 
+asw_pickup_heal_gun : "Heal Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 100
+]
+// PDW //
+@PointClass base(ASWPickup) studio("models/weapons/pdw/pdw.mdl")= asw_pickup_pdw : 
 
-"Marksman Rifle"
+"PDW"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 80
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Flamethrower //
+@PointClass base(ASWPickup) studio("models/weapons/flamethrower/flamethrower.mdl")= 
+
+asw_pickup_flamer : "Flamethrower"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 60
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Minigun //
+@PointClass base(ASWPickup) studio("models/weapons/minigun/minigun.mdl")= 
+
+asw_pickup_minigun : "Minigun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 250
+	Clips(integer) : "Clips" : 1
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Sniper Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/marksmanrifle/marksmanrifle.mdl")= 
+
+asw_pickup_sniper_rifle : "Sniper Rifle"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 12
 	Clips(integer) : "Clips" : 5
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
-// Grenade Launcher //
-@PointClass base(ASWPickup) studio
+// Grenade Launcher Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/grenadelauncher/grenadelauncher.mdl")= 
 
-("models/weapons/grenadelauncher/grenadelauncher.mdl")= asw_weapon_grenade_launcher 
-
-: "Grenade Launcher"
+asw_pickup_grenade_launcher : "Grenade Launcher"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 6
 	Clips(integer) : "Clips" : 3
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Desert Eagle //
+@PointClass base(ASWPickup) studio("models/weapons/deagle/deagle.mdl")= 
+
+asw_pickup_deagle : "Desert Eagle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 7
+	Clips(integer) : "Clips" : 9
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Devastator //
+@PointClass base(ASWPickup) studio("models/weapons/devastator/devastator.mdl")= 
+
+asw_pickup_devastator : "Devastator"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 70
+	Clips(integer) : "Clips" : 1
+	SecondaryBullets(integer) : "Secondary Bullets" : 0
+]
+// Combat Rifle //
+@PointClass base(ASWPickup) studio("models/weapons/combatrifle/combatrifle.mdl")= 
+
+asw_pickup_combat_rifle : "Combat Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 90
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 8
+]
+// HealAmp Gun Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
+
+asw_pickup_healamp_gun : "HealAmp Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 50
+	SecondaryBullets(integer) : "Secondary Bullets" : 100
+]
+// Heavy rifle //
+@PointClass base(ASWPickup) studio("models/weapons/heavyrifle/heavyrifle.mdl")= 
+
+asw_pickup_heavy_rifle : "Heavy Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 98
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
+]
+// MedRifle Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/medrifle/medrifle.mdl")= 
+
+asw_pickup_medrifle : "Medical SMG"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 72
+	Clips(integer) : "Clips" : 7
+	SecondaryBullets(integer) : "Secondary Bullets" : 50
+]
+// MedRifle //
+@PointClass base(ASWPickup) studio("models/weapons/MedRifle/medrifle.mdl")= 
+
+asw_weapon_medrifle : "Medical SMG"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 72
+	Clips(integer) : "Clips" : 7
+	SecondaryBullets(integer) : "Secondary Bullets" : 50
+]
+// Mining Laser //
+@PointClass base(ASWPickup) studio("models/weapons/mininglaser/mininglaser.mdl")= 
+
+asw_pickup_mining_laser : "Mining laser"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 50
+	Clips(integer) : "Clips" : 5
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]

@@ -28,7 +28,6 @@
 #include "antlion_dust.h"
 #include "npc_antlion.h"
 #include "decals.h"
-#include "prop_combine_ball.h"
 #include "eventqueue.h"
 #include "te_effect_dispatch.h"
 #include "Sprite.h"
