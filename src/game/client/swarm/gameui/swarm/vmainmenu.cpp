@@ -291,6 +291,9 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "TrainingPlay" ) )
 	{
+		// Ensure that tutorial messages will be displayed.
+		engine->ClientCmd_Unrestricted( "gameinstructor_enable 1; gameinstructor_reset_counts" );
+
 		KeyValues *pSettings = KeyValues::FromString(
 			"settings",
 			" system { "
@@ -301,18 +304,18 @@ void MainMenu::OnCommand( const char *command )
 			" campaign jacob "
 			" mission asi-jac1-landingbay_pract "
 			" } "
-			);
-			KeyValues::AutoDelete autodelete( pSettings );
+		);
+		KeyValues::AutoDelete autodelete( pSettings );
 
-			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
+		pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
 
-			g_pMatchFramework->CreateSession( pSettings );
+		g_pMatchFramework->CreateSession( pSettings );
 
-			// Automatically start the credits session, no configuration required
-			if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
-			{
-				pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
-			}
+		// Automatically start the tutorial mission, no configuration required
+		if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
+		{
+			pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
+		}
 	}
 	else if ( !Q_strcmp( command, "SoloPlay" ) )
 	{

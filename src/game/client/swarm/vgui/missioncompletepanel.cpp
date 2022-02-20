@@ -395,7 +395,7 @@ void MissionCompletePanel::UpdateVisibleButtons()
 
 	if ( !m_bViewedStatsPage )
 	{
-		if ( ( m_pExperienceReport->m_bDoneAnimating || gpGlobals->curtime > m_flForceVisibleButtonsTime )
+		if ( ( ASWGameRules()->IsTutorialMap() || m_pExperienceReport->m_bDoneAnimating || gpGlobals->curtime > m_flForceVisibleButtonsTime )
 			&& m_iStage >= MCP_STAGE_STATS )
 		{
 			m_pNextButton->SetVisible( true );
@@ -404,7 +404,7 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		{
 			m_pNextButton->SetVisible( false );
 		}
-		
+
 		m_pRestartButton->SetVisible( false );
 		m_pReadyButton->SetVisible( false );
 		m_pReadyCheckImage->SetVisible( false );

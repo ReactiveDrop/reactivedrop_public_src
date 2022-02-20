@@ -60,6 +60,8 @@ public:
 
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );
+#else
+	void InputSetTutorialStage( inputdata_t & inputdata );
 #endif
 };
 
