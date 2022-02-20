@@ -194,4 +194,14 @@ public:
 	C_ASW_Pickup_Weapon_Welder();
 };
 
+class C_ASW_Pickup_Weapon_Grenades : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS(C_ASW_Pickup_Weapon_Grenades, C_ASW_Pickup_Weapon);
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_grenades"; }
+	C_ASW_Pickup_Weapon_Grenades();
+};
+
 #endif /* _DEFINED_C_ASW_PICKUP_EQUIPMENT_H */
