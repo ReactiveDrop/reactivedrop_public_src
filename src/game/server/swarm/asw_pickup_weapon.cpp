@@ -322,6 +322,30 @@ void CASW_Pickup_Weapon_Railgun::Precache( void )
 LINK_ENTITY_TO_CLASS(asw_pickup_railgun, CASW_Pickup_Weapon_Railgun);
 
 //---------------------
+// Healgun
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Heal_Gun, DT_ASW_Pickup_Weapon_Heal_Gun)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Heal_Gun)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Heal_Gun::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/healgun/healgun.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Heal_Gun::Precache(void)
+{
+	PrecacheModel("models/weapons/healgun/healgun.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_heal_gun, CASW_Pickup_Weapon_Heal_Gun);
+
+//---------------------
 // PDW
 //---------------------
 
@@ -539,6 +563,30 @@ void CASW_Pickup_Weapon_CombatRifle::Precache(void)
 LINK_ENTITY_TO_CLASS(asw_pickup_combat_rifle, CASW_Pickup_Weapon_CombatRifle);
 
 //---------------------
+// HealAmp Gun
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_HealAmp_Gun, DT_ASW_Pickup_Weapon_HealAmp_Gun)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_HealAmp_Gun)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_HealAmp_Gun::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/healgun/healgun.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_HealAmp_Gun::Precache(void)
+{
+	PrecacheModel("models/weapons/healgun/healgun.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_healamp_gun, CASW_Pickup_Weapon_HealAmp_Gun);
+
+//---------------------
 // Heavy Rifle
 //---------------------
 
@@ -633,6 +681,31 @@ void CASW_Pickup_Weapon_Mining_Laser::Precache( void )
 }
 
 LINK_ENTITY_TO_CLASS(asw_pickup_mining_laser, CASW_Pickup_Weapon_Mining_Laser);
+
+//---------------------
+// 50CalMg
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_50CalMG, DT_ASW_Pickup_Weapon_50CalMG)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_50CalMG)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_50CalMG::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/50calmg/50calmg.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_50CalMG::Precache(void)
+{
+	PrecacheModel("models/weapons/50calmg/50calmg.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_50calmg, CASW_Pickup_Weapon_50CalMG);
+
 
 //---------------------
 // Ricochet

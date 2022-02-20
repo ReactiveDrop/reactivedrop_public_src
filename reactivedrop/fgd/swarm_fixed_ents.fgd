@@ -264,6 +264,13 @@ asw_pickup_railgun : "Railgun"
 	Clips(integer) : "Clips" : 72
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
+// Heal Gun Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
+
+asw_pickup_heal_gun : "Heal Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 100
+]
 // Heal Gun //
 @PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
 
@@ -365,7 +372,15 @@ asw_pickup_combat_rifle : "Combat Rifle"
 	Clips(integer) : "Clips" : 5
 	SecondaryBullets(integer) : "Secondary Bullets" : 8
 ]
-// Heal Gun Amp //
+// HealAmp Gun Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
+
+asw_pickup_healamp_gun : "HealAmp Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 50
+	SecondaryBullets(integer) : "Secondary Bullets" : 100
+]
+// HealAmp Gun //
 @PointClass base(ASWPickup) studio("models/weapons/healgun/healgun.mdl")= 
 
 asw_weapon_healamp_gun : "HealAmp Gun"

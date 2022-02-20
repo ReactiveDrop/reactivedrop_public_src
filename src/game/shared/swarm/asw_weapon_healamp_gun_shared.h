@@ -24,10 +24,12 @@ public:
 
 	virtual Class_T		Classify( void ) { return (Class_T)CLASS_ASW_HEALAMP_GUN; }
 
-	#ifdef CLIENT_DLL
+#ifdef CLIENT_DLL
 	virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	virtual void UpdateEffects();
-	#endif
+#else
+	virtual const char* GetPickupClass() { return "asw_pickup_healamp_gun"; }
+#endif
 
 protected:
 	void	SetFiringState( ASW_Weapon_HealGunFireState_t state );

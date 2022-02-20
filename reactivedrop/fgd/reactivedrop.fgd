@@ -167,6 +167,13 @@
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 200
 ]
+// 50cal Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/50calmg/50calmg.mdl")= 
+
+asw_pickup_50calmg : "50cal Machine Gun"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 200
+]
 
 @SolidClass base(Targetname, EnableDisable) = func_rd_no_director_aliens : "A volume that prevents the director from spawning aliens on nodes within its bounds."
 [

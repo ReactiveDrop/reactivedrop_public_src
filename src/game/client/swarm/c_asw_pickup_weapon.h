@@ -112,6 +112,16 @@ public:
 	C_ASW_Pickup_Weapon_Railgun();
 };
 
+class C_ASW_Pickup_Weapon_Heal_Gun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_Heal_Gun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_heal_gun"; }
+	C_ASW_Pickup_Weapon_Heal_Gun();
+};
+
 class C_ASW_Pickup_Weapon_PDW : public C_ASW_Pickup_Weapon
 {
 public:
@@ -202,6 +212,16 @@ public:
 	C_ASW_Pickup_Weapon_CombatRifle();
 };
 
+class C_ASW_Pickup_Weapon_HealAmp_Gun : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_HealAmp_Gun, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_healamp_gun"; }
+	C_ASW_Pickup_Weapon_HealAmp_Gun();
+};
+
 class C_ASW_Pickup_Weapon_Heavy_Rifle : public C_ASW_Pickup_Weapon
 {
 public:
@@ -240,6 +260,16 @@ public:
 
 	virtual const char* GetWeaponClass() { return "asw_weapon_mining_laser"; }
 	C_ASW_Pickup_Weapon_Mining_Laser();
+};
+
+class C_ASW_Pickup_Weapon_50CalMG : public C_ASW_Pickup_Weapon
+{
+public:
+	DECLARE_CLASS( C_ASW_Pickup_Weapon_50CalMG, C_ASW_Pickup_Weapon );
+	DECLARE_CLIENTCLASS();
+
+	virtual const char* GetWeaponClass() { return "asw_weapon_50calmg"; }
+	C_ASW_Pickup_Weapon_50CalMG();
 };
 
 class C_ASW_Pickup_Weapon_Ricochet : public C_ASW_Pickup_Weapon

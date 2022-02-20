@@ -186,6 +186,17 @@ C_ASW_Pickup_Weapon_Railgun::C_ASW_Pickup_Weapon_Railgun()
 }
 
 //---------
+// Healgun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Heal_Gun, DT_ASW_Pickup_Weapon_Heal_Gun, CASW_Pickup_Weapon_Heal_Gun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Heal_Gun::C_ASW_Pickup_Weapon_Heal_Gun()
+{
+}
+
+//---------
 // PDW
 //---------
 
@@ -285,6 +296,17 @@ C_ASW_Pickup_Weapon_CombatRifle::C_ASW_Pickup_Weapon_CombatRifle()
 }
 
 //---------
+// HealAmp Gun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_HealAmp_Gun, DT_ASW_Pickup_Weapon_HealAmp_Gun, CASW_Pickup_Weapon_HealAmp_Gun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_HealAmp_Gun::C_ASW_Pickup_Weapon_HealAmp_Gun()
+{
+}
+
+//---------
 // Heavy Rifle
 //---------
 
@@ -325,6 +347,17 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Mining_Laser, DT_ASW_Pickup_Weapon
 END_RECV_TABLE()
 
 C_ASW_Pickup_Weapon_Mining_Laser::C_ASW_Pickup_Weapon_Mining_Laser()
+{
+}
+
+//---------
+// 50CalMg
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_50CalMG, DT_ASW_Pickup_Weapon_50CalMG, CASW_Pickup_Weapon_50CalMG)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_50CalMG::C_ASW_Pickup_Weapon_50CalMG()
 {
 }
 
