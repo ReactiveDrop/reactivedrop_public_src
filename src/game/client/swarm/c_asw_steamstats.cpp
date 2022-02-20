@@ -83,6 +83,7 @@ namespace
 		"rd_lanasescape_campaign",
 		"rd_reduction_campaign",
 		"rd_paranoia",
+		"rd_nh_campaigns",
 		"rd_bonus_missions",
 	};
 	const char *g_OfficialMaps[] =
@@ -139,6 +140,9 @@ namespace
 		"rd-par3close_contact",
 		"rd-par4high_tension",
 		"rd-par5crucial_point",
+		"rd-nh01_logisticsarea",
+		"rd-nh02_platformxvii",
+		"rd-nh03_groundworklabs",
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
 		"rd-bonus_mission3",

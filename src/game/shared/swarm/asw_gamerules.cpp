@@ -8417,6 +8417,18 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -2753, 1659, 4604 );
 	}
+	else if ( FStrEq( mapname, "rd-nh01_logisticsarea" ) )
+	{
+		origin = Vector( 922, 1444, 192 );
+	}
+	else if ( FStrEq( mapname, "rd-nh02_platformxvii" ) )
+	{
+		origin = Vector( 560, -1536, 205 );
+	}
+	else if ( FStrEq( mapname, "rd-nh03_groundworklabs" ) )
+	{
+		origin = Vector( -5622, 6546, -1106 );
+	}
 
 	if ( origin.IsZeroFast() )
 		return;
