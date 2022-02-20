@@ -164,6 +164,17 @@ C_ASW_Pickup_Weapon_Shotgun::C_ASW_Pickup_Weapon_Shotgun()
 }
 
 //---------
+// Tesla Gun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Tesla_Gun, DT_ASW_Pickup_Weapon_Tesla_Gun, CASW_Pickup_Weapon_Tesla_Gun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Tesla_Gun::C_ASW_Pickup_Weapon_Tesla_Gun()
+{
+}
+
+//---------
 // Railgun
 //---------
 
@@ -197,6 +208,28 @@ C_ASW_Pickup_Weapon_Flamer::C_ASW_Pickup_Weapon_Flamer()
 }
 
 //---------
+// Minigun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Minigun, DT_ASW_Pickup_Weapon_Minigun, CASW_Pickup_Weapon_Minigun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Minigun::C_ASW_Pickup_Weapon_Minigun()
+{
+}
+
+//---------
+// Sniper
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Sniper_Rifle, DT_ASW_Pickup_Weapon_Sniper_Rifle, CASW_Pickup_Weapon_Sniper_Rifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Sniper_Rifle::C_ASW_Pickup_Weapon_Sniper_Rifle()
+{
+}
+
+//---------
 // Chainsaw
 //---------
 
@@ -204,6 +237,50 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Chainsaw, DT_ASW_Pickup_Weapon_Chai
 END_RECV_TABLE()
 
 C_ASW_Pickup_Weapon_Chainsaw::C_ASW_Pickup_Weapon_Chainsaw()
+{
+}
+
+//---------
+// Grenade Launcher
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Grenade_Launcher, DT_ASW_Pickup_Weapon_Grenade_Launcher, CASW_Pickup_Weapon_Grenade_Launcher)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Grenade_Launcher::C_ASW_Pickup_Weapon_Grenade_Launcher()
+{
+}
+
+//---------
+// Desert Eagle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_DEagle, DT_ASW_Pickup_Weapon_DEagle, CASW_Pickup_Weapon_DEagle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_DEagle::C_ASW_Pickup_Weapon_DEagle()
+{
+}
+
+//---------
+// Devastator
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Devastator, DT_ASW_Pickup_Weapon_Devastator, CASW_Pickup_Weapon_Devastator)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Devastator::C_ASW_Pickup_Weapon_Devastator()
+{
+}
+
+//---------
+// Combat Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_CombatRifle, DT_ASW_Pickup_Weapon_CombatRifle, CASW_Pickup_Weapon_CombatRifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_CombatRifle::C_ASW_Pickup_Weapon_CombatRifle()
 {
 }
 

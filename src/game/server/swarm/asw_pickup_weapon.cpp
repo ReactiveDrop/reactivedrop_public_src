@@ -273,6 +273,31 @@ void CASW_Pickup_Weapon_Shotgun::Precache( void )
 LINK_ENTITY_TO_CLASS(asw_pickup_shotgun, CASW_Pickup_Weapon_Shotgun);
 
 //---------------------
+// Tesla Gun
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Tesla_Gun, DT_ASW_Pickup_Weapon_Tesla_Gun)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Tesla_Gun)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Tesla_Gun::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/mininglaser/mininglaser.mdl");
+	m_nSkin = 1;
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Tesla_Gun::Precache(void)
+{
+	PrecacheModel("models/weapons/mininglaser/mininglaser.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_tesla_gun, CASW_Pickup_Weapon_Tesla_Gun);
+
+//---------------------
 // Railgun
 //---------------------
 
@@ -346,6 +371,54 @@ void CASW_Pickup_Weapon_Flamer::Precache( void )
 LINK_ENTITY_TO_CLASS(asw_pickup_flamer, CASW_Pickup_Weapon_Flamer);
 
 //---------------------
+// Minigun
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Minigun, DT_ASW_Pickup_Weapon_Minigun)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Minigun)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Minigun::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/minigun/minigun.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Minigun::Precache(void)
+{
+	PrecacheModel("models/weapons/minigun/minigun.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_minigun, CASW_Pickup_Weapon_Minigun);
+
+//---------------------
+// Sniper
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Sniper_Rifle, DT_ASW_Pickup_Weapon_Sniper_Rifle)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Sniper_Rifle)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Sniper_Rifle::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/marksmanrifle/marksmanrifle.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Sniper_Rifle::Precache(void)
+{
+	PrecacheModel("models/weapons/marksmanrifle/marksmanrifle.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_sniper_rifle, CASW_Pickup_Weapon_Sniper_Rifle);
+
+//---------------------
 // Chainsaw
 //---------------------
 
@@ -368,6 +441,102 @@ void CASW_Pickup_Weapon_Chainsaw::Precache( void )
 }
 
 LINK_ENTITY_TO_CLASS(asw_pickup_chainsaw, CASW_Pickup_Weapon_Chainsaw);
+
+//---------------------
+// Grenade Launcher
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Grenade_Launcher, DT_ASW_Pickup_Weapon_Grenade_Launcher)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Grenade_Launcher)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Grenade_Launcher::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/grenadelauncher/grenadelauncher.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Grenade_Launcher::Precache(void)
+{
+	PrecacheModel("models/weapons/grenadelauncher/grenadelauncher.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_grenade_launcher, CASW_Pickup_Weapon_Grenade_Launcher);
+
+//---------------------
+// Desert Eagle
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_DEagle, DT_ASW_Pickup_Weapon_DEagle)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_DEagle)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_DEagle::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/deagle/deagle.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_DEagle::Precache(void)
+{
+	PrecacheModel("models/weapons/deagle/deagle.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_deagle, CASW_Pickup_Weapon_DEagle);
+
+//---------------------
+// Devastator
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_Devastator, DT_ASW_Pickup_Weapon_Devastator)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_Devastator)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_Devastator::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/devastator/devastator.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_Devastator::Precache(void)
+{
+	PrecacheModel("models/weapons/devastator/devastator.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_devastator, CASW_Pickup_Weapon_Devastator);
+
+//---------------------
+// Combat Rifle
+//---------------------
+
+IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon_CombatRifle, DT_ASW_Pickup_Weapon_CombatRifle)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CASW_Pickup_Weapon_CombatRifle)
+END_DATADESC()
+
+void CASW_Pickup_Weapon_CombatRifle::Spawn(void)
+{
+	Precache();
+	SetModel("models/weapons/combatrifle/combatrifle.mdl");
+	BaseClass::Spawn();
+}
+
+void CASW_Pickup_Weapon_CombatRifle::Precache(void)
+{
+	PrecacheModel("models/weapons/combatrifle/combatrifle.mdl");
+}
+
+LINK_ENTITY_TO_CLASS(asw_pickup_combat_rifle, CASW_Pickup_Weapon_CombatRifle);
 
 //---------------------
 // Heavy Rifle
