@@ -318,6 +318,24 @@ asw_weapon_healamp_gun : "HealAmp Gun"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 100
 ]
+// Heavy rifle //
+@PointClass base(ASWPickup) studio("models/weapons/heavyrifle/heavyrifle.mdl")= 
+
+asw_pickup_heavy_rifle : "Heavy Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 98
+	Clips(integer) : "Clips" : 5
+	SecondaryBullets(integer) : "Secondary Bullets" : 5
+]
+// MedRifle Pickup //
+@PointClass base(ASWPickup) studio("models/weapons/medrifle/medrifle.mdl")= 
+
+asw_pickup_medrifle : "Heavy Rifle"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 72
+	Clips(integer) : "Clips" : 7
+	SecondaryBullets(integer) : "Secondary Bullets" : 50
+]
 // MedRifle //
 @PointClass base(ASWPickup) studio("models/weapons/MedRifle/medrifle.mdl")= 
 
