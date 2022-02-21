@@ -1085,6 +1085,17 @@ class CAchievement_Campaign_No_Deaths_NH : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_NH, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_NH, "RD_CAMPAIGN_NO_DEATHS_NH", 5, 1010 );
 
+class CAchievement_Campaign_No_Deaths_BIO : public CASW_Achievement
+{
+	void Init()
+	{
+		SetFlags( ACH_SAVE_GLOBAL );
+		SetGoal( 1 );
+	}
+	// server fires an event for this achievement, no other code within achievement necessary
+};
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_BIO, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO, "RD_CAMPAIGN_NO_DEATHS_BIO", 5, 1011 );
+
 class CAchievement_Rifle_Kills : public CASW_Achievement
 {
 	void Init() 
