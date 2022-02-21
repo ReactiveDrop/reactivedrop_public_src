@@ -418,9 +418,9 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-nh01_logisticsarea",
 	"rd-nh02_platformxvii",
 	"rd-nh03_groundworklabs",
-	"rd-biocorp1-operationx5",
-	"rd-biocorp2-invisiblethreat",
-	"rd-biocorp3-biogenlabs",
+	"rd-bio1operationx5",
+	"rd-bio2invisiblethreat",
+	"rd-bio3biogenlabs",
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -528,9 +528,9 @@ static const char *g_szAchievementMapNamesNH[] =
 
 static const char *g_szAchievementMapNamesBIO[] =
 {
-	"rd-biocorp1-operationx5",
-	"rd-biocorp2-invisiblethreat",
-	"rd-biocorp3-biogenlabs",
+	"rd-bio1operationx5",
+	"rd-bio2invisiblethreat",
+	"rd-bio3biogenlabs",
 };
 
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(150, ASW_, _CAMPAIGN, Jacob);

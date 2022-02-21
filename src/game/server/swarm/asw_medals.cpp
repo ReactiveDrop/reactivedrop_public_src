@@ -789,15 +789,15 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_NH_GROUNDWORK_LABS );
 			}
-			else if ( !Q_stricmp( mapName, "rd-biocorp1-operationx5" ) )
+			else if ( !Q_stricmp( mapName, "rd-bio1operationx5" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_OPERATION_X5 );
 			}
-			else if ( !Q_stricmp( mapName, "rd-biocorp2-invisiblethreat" ) )
+			else if ( !Q_stricmp( mapName, "rd-bio2invisiblethreat" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_INVISIBLE_THREAT );
 			}
-			else if ( !Q_stricmp( mapName, "rd-biocorp3-biogenlabs" ) )
+			else if ( !Q_stricmp( mapName, "rd-bio3biogenlabs" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_BIOGEN_LABS );
 			}

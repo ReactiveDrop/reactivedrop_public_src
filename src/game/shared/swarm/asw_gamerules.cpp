@@ -8429,15 +8429,15 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -5622, 6546, -1106 );
 	}
-	else if ( FStrEq( mapname, "rd-biocorp1-operationx5" ) )
+	else if ( FStrEq( mapname, "rd-bio1operationx5" ) )
 	{
 		origin = Vector( -3052, 1708, -72 );
 	}
-	else if ( FStrEq( mapname, "rd-biocorp2-invisiblethreat" ) )
+	else if ( FStrEq( mapname, "rd-bio2invisiblethreat" ) )
 	{
 		origin = Vector( 1080, 1528, 172 );
 	}
-	else if ( FStrEq( mapname, "rd-biocorp3-biogenlabs" ) )
+	else if ( FStrEq( mapname, "rd-bio3biogenlabs" ) )
 	{
 		origin = Vector( 312, 2186, 156 );
 	}
