@@ -1166,6 +1166,7 @@ static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob.txt",
 	"rd_nh_campaigns.txt",
+	"rd_biogen_corporation.txt",
 	"rd-operationcleansweep.txt",
 	"rd-tarnorcampaign1.txt",
 	"rd_paranoia.txt",

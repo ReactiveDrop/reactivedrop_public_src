@@ -8429,11 +8429,23 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -5622, 6546, -1106 );
 	}
+	else if ( FStrEq( mapname, "rd-biocorp1-operationx5" ) )
+	{
+		origin = Vector( -3052, 1708, -72 );
+	}
+	else if ( FStrEq( mapname, "rd-biocorp2-invisiblethreat" ) )
+	{
+		origin = Vector( 1080, 1528, 172 );
+	}
+	else if ( FStrEq( mapname, "rd-biocorp3-biogenlabs" ) )
+	{
+		origin = Vector( 312, 2186, 156 );
+	}
 
 	if ( origin.IsZeroFast() )
 		return;
 
-	// shift bottom, because hammer coords were incorrect
+	// coordinates above are center; we need bottom
 	origin += Vector( 0, 0, -12 );
 
 	CBaseEntity *pCake = CreateEntityByName( "prop_dynamic" );

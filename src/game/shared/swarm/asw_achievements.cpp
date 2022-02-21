@@ -418,6 +418,9 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-nh01_logisticsarea",
 	"rd-nh02_platformxvii",
 	"rd-nh03_groundworklabs",
+	"rd-biocorp1-operationx5",
+	"rd-biocorp2-invisiblethreat",
+	"rd-biocorp3-biogenlabs",
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -523,6 +526,13 @@ static const char *g_szAchievementMapNamesNH[] =
 	"rd-nh03_groundworklabs",
 };
 
+static const char *g_szAchievementMapNamesBIO[] =
+{
+	"rd-biocorp1-operationx5",
+	"rd-biocorp2-invisiblethreat",
+	"rd-biocorp3-biogenlabs",
+};
+
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(150, ASW_, _CAMPAIGN, Jacob);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(155, RD_, _CAMPAIGN_OCS, OCS);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(160, RD_, _CAMPAIGN_RES, RES);
@@ -534,6 +544,7 @@ DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(185, RD_, _CAMPAIGN_LAN, Lana);
 //DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(190, RD_, _CAMPAIGN_REDUCTION, Reduction);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(195, RD_, _CAMPAIGN_PAR, PAR);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(200, RD_, _CAMPAIGN_NH, NH);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(205, RD_, _CAMPAIGN_BIO, BIO);
 
 class CAchievement_Kill_Grind_1 : public CASW_Achievement
 {
@@ -722,6 +733,10 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CRUCIAL_POINT, 1278 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_LOGISTICS_AREA, 1279 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_PLATFORM_XVII, 1280 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_GROUNDWORK_LABS, 1281 );
+
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_OPERATION_X5, 1282 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_INVISIBLE_THREAT, 1283 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_BIOGEN_LABS, 1284 );
 
 class CAchievement_Group_Heal : public CASW_Achievement
 {

@@ -296,6 +296,10 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_NH );
 			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_biogen_corporation" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO );
+			}
 		}
 	}
 
@@ -784,6 +788,18 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( mapName, "rd-nh03_groundworklabs" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_NH_GROUNDWORK_LABS );
+			}
+			else if ( !Q_stricmp( mapName, "rd-biocorp1-operationx5" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_OPERATION_X5 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-biocorp2-invisiblethreat" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_INVISIBLE_THREAT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-biocorp3-biogenlabs" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_BIOGEN_LABS );
 			}
 		}
 

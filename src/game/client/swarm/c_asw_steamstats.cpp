@@ -84,6 +84,7 @@ namespace
 		"rd_reduction_campaign",
 		"rd_paranoia",
 		"rd_nh_campaigns",
+		"rd_biogen_corporation",
 		"rd_bonus_missions",
 	};
 	const char *g_OfficialMaps[] =
@@ -143,6 +144,9 @@ namespace
 		"rd-nh01_logisticsarea",
 		"rd-nh02_platformxvii",
 		"rd-nh03_groundworklabs",
+		"rd-biocorp1-operationx5",
+		"rd-biocorp2-invisiblethreat",
+		"rd-biocorp3-biogenlabs",
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
 		"rd-bonus_mission3",
