@@ -90,3 +90,8 @@
 	"base" "snow"
 	"friction" "0.35"
 }
+"slipperyice"
+{
+	"base" "ice"
+	"friction" "0.03"
+}
