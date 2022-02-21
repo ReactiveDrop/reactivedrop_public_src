@@ -1,0 +1,1626 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4941"
+	"mapversion" "66"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "32"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "66"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+	solid
+	{
+		"id" "2"
+		side
+		{
+			"id" "1"
+			"plane" "(-64 0 0) (-64 512 0) (0 512 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "2"
+			"plane" "(-64 512 -512) (-64 0 -512) (0 0 -512)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3"
+			"plane" "(-64 0 -512) (-64 512 -512) (-64 512 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "4"
+			"plane" "(0 512 -512) (0 0 -512) (0 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "5"
+			"plane" "(-64 512 -512) (0 512 -512) (0 512 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "6"
+			"plane" "(0 0 -512) (-64 0 -512) (-64 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "5"
+		side
+		{
+			"id" "18"
+			"plane" "(512 0 0) (512 512 0) (576 512 0)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[1 0 0 256] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "17"
+			"plane" "(512 512 -512) (512 0 -512) (576 0 -512)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[1 0 0 256] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "16"
+			"plane" "(512 0 -512) (512 512 -512) (512 512 0)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "15"
+			"plane" "(576 512 -512) (576 0 -512) (576 0 0)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "14"
+			"plane" "(512 512 -512) (576 512 -512) (576 512 0)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[1 0 0 256] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13"
+			"plane" "(576 0 -512) (512 0 -512) (512 0 0)"
+			"material" "DEV/DEV_MEASUREWALL01C"
+			"uaxis" "[1 0 0 256] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "24"
+		side
+		{
+			"id" "30"
+			"plane" "(0 512 0) (0 576 0) (512 576 0)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "29"
+			"plane" "(0 576 -512) (0 512 -512) (512 512 -512)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "28"
+			"plane" "(0 512 -512) (0 576 -512) (0 576 0)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "27"
+			"plane" "(512 576 -512) (512 512 -512) (512 512 0)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "26"
+			"plane" "(0 576 -512) (512 576 -512) (512 576 0)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "25"
+			"plane" "(512 512 -512) (0 512 -512) (0 512 0)"
+			"material" "DEV/DEV_MEASUREGENERIC01B"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "29"
+		side
+		{
+			"id" "42"
+			"plane" "(0 -64 0) (0 0 0) (512 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "41"
+			"plane" "(0 0 -512) (0 -64 -512) (512 -64 -512)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "40"
+			"plane" "(0 -64 -512) (0 0 -512) (0 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "39"
+			"plane" "(512 0 -512) (512 -64 -512) (512 -64 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "38"
+			"plane" "(0 0 -512) (512 0 -512) (512 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "37"
+			"plane" "(512 -64 -512) (0 -64 -512) (0 -64 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "48"
+		side
+		{
+			"id" "54"
+			"plane" "(0 0 64) (0 512 64) (512 512 64)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "53"
+			"plane" "(0 512 0) (0 0 0) (512 0 0)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "52"
+			"plane" "(0 0 0) (0 512 0) (0 512 64)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 -256] 0.25"
+			"vaxis" "[0 0 -1 -256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "51"
+			"plane" "(512 512 0) (512 0 0) (512 0 64)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[0 1 0 -256] 0.25"
+			"vaxis" "[0 0 -1 -256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "50"
+			"plane" "(0 512 0) (512 512 0) (512 512 64)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 -256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "49"
+			"plane" "(512 0 0) (0 0 0) (0 0 64)"
+			"material" "BRICK/BRICKFLOOR001A"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 -256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "51"
+		side
+		{
+			"id" "66"
+			"plane" "(0 0 -512) (0 512 -512) (512 512 -512)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "65"
+			"plane" "(0 512 -576) (0 0 -576) (512 0 -576)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 256] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "64"
+			"plane" "(0 0 -576) (0 512 -576) (0 512 -512)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[0 1 0 -256] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "63"
+			"plane" "(512 512 -576) (512 0 -576) (512 0 -512)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[0 1 0 -256] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "62"
+			"plane" "(0 512 -576) (512 512 -576) (512 512 -512)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "61"
+			"plane" "(512 0 -576) (0 0 -576) (0 0 -512)"
+			"material" "DEV/GRAYGRID"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 153 158"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+}
+entity
+{
+	"id" "78"
+	"classname" "point_camera"
+	"angles" "5 72 0"
+	"fogColor" "0 0 0"
+	"fogEnd" "4096"
+	"fogMaxDensity" "1"
+	"fogStart" "2048"
+	"FOV" "90"
+	"spawnflags" "0"
+	"targetname" "commander_camera"
+	"origin" "382 340 -446"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3500]"
+	}
+}
+entity
+{
+	"id" "411"
+	"classname" "npc_furniture"
+	"angles" "0 270 0"
+	"model" "models/aliens/drone/drone.mdl"
+	"physdamagescale" "1.0"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"skin" "0"
+	"spawnflags" "516"
+	"targetname" "commander"
+	"origin" "256 320 -503"
+	editor
+	{
+		"color" "0 200 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "192"
+	"classname" "prop_static"
+	"angles" "0 357.5 -1.99998"
+	"disableshadows" "0"
+	"fademaxdist" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"maxdxlevel" "0"
+	"mindxlevel" "0"
+	"model" "models/swarmprops/BarrelsAndCrates/swarm_supplyboxtop.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "458 399.1 -506.86"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[14000 12000]"
+	}
+}
+entity
+{
+	"id" "196"
+	"classname" "prop_static"
+	"angles" "0 287 0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/swarmprops/miscdeco/greenflare.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"skin" "0"
+	"solid" "0"
+	"origin" "456 408 -496.141"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "200"
+	"classname" "light"
+	"_distance" "150.000000"
+	"_fifty_percent_distance" "134.999996"
+	"_light" "0 183 0 64"
+	"_lightHDR" "-1 -1 -1 1"
+	"_lightscaleHDR" "1"
+	"_quadratic_attn" "1"
+	"_zero_percent_distance" "150.000000"
+	"spawnflags" "1"
+	"style" "0"
+	"origin" "456.109 408 -470"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[8500 -12768]"
+	}
+}
+entity
+{
+	"id" "206"
+	"classname" "prop_static"
+	"angles" "0 183 -89.5"
+	"disableshadows" "1"
+	"fademaxdist" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"maxdxlevel" "0"
+	"mindxlevel" "0"
+	"model" "models/swarmprops/BarrelsAndCrates/swarm_supplybox.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "451.402 504 -478.86"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[14000 11500]"
+	}
+}
+entity
+{
+	"id" "246"
+	"classname" "light_spot"
+	"_cone" "40"
+	"_constant_attn" "1"
+	"_exponent" "5"
+	"_inner_cone" "35"
+	"_light" "254 216 146 400"
+	"_lightHDR" "-1 -1 -1 1"
+	"_lightscaleHDR" "1"
+	"_linear_attn" "0"
+	"_quadratic_attn" "1"
+	"angles" "-35 65 0"
+	"pitch" "-35"
+	"origin" "352 224 -352"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -1268]"
+	}
+}
+entity
+{
+	"id" "298"
+	"classname" "logic_relay"
+	"targetname" "commander_start_camera"
+	connections
+	{
+		"OnTrigger" "commander_stylin_camShowCommanderFace0-1"
+	}
+	"origin" "352 320 -416"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "314"
+	"classname" "logic_relay"
+	"targetname" "commander_stop_camera"
+	connections
+	{
+		"OnTrigger" "commander_stylin_camHideCommanderFace0-1"
+	}
+	"origin" "288 320 -416"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "338"
+	"classname" "asw_stylincam"
+	"targetname" "commander_stylin_cam"
+	"origin" "288 256 -416"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "380"
+	"classname" "logic_relay"
+	"targetname" "commander_test"
+	connections
+	{
+		"OnTrigger" "commander_choreo_m1_ob1Start0-1"
+	}
+	"origin" "288 384 -447.355"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "405"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m1_ob1.vcd"
+	"targetname" "commander_choreo_m1_ob1"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "448 256 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "793"
+	"classname" "func_detail"
+	"maxdxlevel" "0"
+	"mindxlevel" "0"
+	solid
+	{
+		"id" "785"
+		side
+		{
+			"id" "90"
+			"plane" "(312.808 480 -425.373) (374.627 480 -408.808) (374.627 416 -408.808)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0.965926 0 0.258819 -0.219849] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "89"
+			"plane" "(329.373 416 -487.192) (391.192 416 -470.627) (391.192 480 -470.627)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0.965926 0 0.258819 -0.219849] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "88"
+			"plane" "(312.808 480 -425.373) (312.808 416 -425.373) (329.373 416 -487.192)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0.258819 0 -0.965926 16.6436] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "87"
+			"plane" "(391.192 480 -470.627) (391.192 416 -470.627) (374.627 416 -408.808)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0.258819 0 -0.965926 16.6436] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "86"
+			"plane" "(374.627 480 -408.808) (312.808 480 -425.373) (329.373 480 -487.192)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0.965926 0 0.258819 -0.219849] 0.25"
+			"vaxis" "[0.258819 0 -0.965926 16.6436] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "85"
+			"plane" "(391.192 416 -470.627) (329.373 416 -487.192) (312.808 416 -425.373)"
+			"material" "DEV/DEV_HAZZARDSTRIPE01A"
+			"uaxis" "[0.965926 0 0.258819 -0.219849] 0.25"
+			"vaxis" "[0.258819 0 -0.965926 16.6436] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "810"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m1_ob2.vcd"
+	"targetname" "commander_choreo_m1_ob2"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "448 224 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "812"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m1_ob6.vcd"
+	"targetname" "commander_choreo_m1_ob3"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "448 192 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "850"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob1.vcd"
+	"targetname" "commander_choreo_m2_start"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 256 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "894"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob7.vcd"
+	"targetname" "commander_choreo_m2_onback"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 96 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "854"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob2.vcd"
+	"targetname" "commander_choreo_m2_pipeline"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 224 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "856"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob4.vcd"
+	"targetname" "commander_choreo_m2_powerout"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 192 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "858"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob5.vcd"
+	"targetname" "commander_choreo_m2_stayinlight"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 160 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "860"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob6.vcd"
+	"targetname" "commander_choreo_m2_getaccross"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 128 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "930"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob1.vcd"
+	"targetname" "commander_choreo_tut_ob1"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 480 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "969"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob2.vcd"
+	"targetname" "commander_choreo_tut_ob2"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 448 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "975"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob3.vcd"
+	"targetname" "commander_choreo_tut_ob3"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 416 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "981"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob4.vcd"
+	"targetname" "commander_choreo_tut_ob4"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 384 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "983"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob5.vcd"
+	"targetname" "commander_choreo_tut_ob5"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 352 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "985"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob6.vcd"
+	"targetname" "commander_choreo_tut_ob6"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 320 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "987"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob7.vcd"
+	"targetname" "commander_choreo_tut_ob7"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 288 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "989"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob8.vcd"
+	"targetname" "commander_choreo_tut_ob8"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 256 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "991"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob9.vcd"
+	"targetname" "commander_choreo_tut_ob9"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 224 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "993"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob10.vcd"
+	"targetname" "commander_choreo_tut_ob10"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 192 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "995"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob11.vcd"
+	"targetname" "commander_choreo_tut_ob11"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 160 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "997"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob12.vcd"
+	"targetname" "commander_choreo_tut_ob12"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 128 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "999"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob13.vcd"
+	"targetname" "commander_choreo_tut_ob13"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 96 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1001"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob14.vcd"
+	"targetname" "commander_choreo_tut_ob14"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 64 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1003"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob15.vcd"
+	"targetname" "commander_choreo_tut_ob15"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "32 32 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1281"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob12a.vcd"
+	"targetname" "commander_choreo_tut_ob12a"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "64 128 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1283"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob12b.vcd"
+	"targetname" "commander_choreo_tut_ob12b"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "96 128 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1297"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_tut_ob7a.vcd"
+	"targetname" "commander_choreo_tut_ob7a"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "64 288 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1349"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m3_ob1.vcd"
+	"targetname" "commander_choreo_m3_ob1"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "384 256 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1351"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m3_ob2.vcd"
+	"targetname" "commander_choreo_m3_ob2"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "384 224 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1353"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m3_ob3.vcd"
+	"targetname" "commander_choreo_m3_ob3"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "384 192 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1439"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m5_ob2.vcd"
+	"targetname" "commander_choreo_m5_ob1"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "288 256 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1441"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m5_ob3.vcd"
+	"targetname" "commander_choreo_m5_ob2"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "288 224 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1443"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m5_ob4.vcd"
+	"targetname" "commander_choreo_m5_ob3"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "288 192 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1499"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m5_ob5.vcd"
+	"targetname" "commander_choreo_m5_ob4"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "288 160 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1562"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m2_ob8.vcd"
+	"targetname" "commander_choreo_m2_reactor"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "416 64 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1628"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m1_ob7.vcd"
+	"targetname" "commander_choreo_m1_ob7"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "448 160 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1640"
+	"classname" "logic_choreographed_scene"
+	"busyactor" "1"
+	"SceneFile" "scenes/swarmscenes/co_m1_ob8.vcd"
+	"targetname" "commander_choreo_m1_ob8"
+	connections
+	{
+		"OnStart" "commander_start_cameraTrigger0-1"
+		"OnCompletion" "commander_stop_cameraTrigger1-1"
+		"OnCanceled" "commander_stop_cameraTrigger0-1"
+	}
+	"origin" "448 128 -503"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

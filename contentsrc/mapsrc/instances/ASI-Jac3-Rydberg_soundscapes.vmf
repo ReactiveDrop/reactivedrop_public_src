@@ -1,0 +1,293 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4913"
+	"mapversion" "9"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "8"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "9"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "12"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior.big.1"
+	"targetname" "ent.open.area"
+	"origin" "-1248.95 -2292.4 615"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "23"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "rydberg.interior.big.1"
+	"targetname" "interior"
+	"origin" "449.188 406.115 601"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "34"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "landing.exterior"
+	"targetname" "exterior"
+	"origin" "441.188 1638.11 617"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "45"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "landing.exterior"
+	"targetname" "exterior"
+	"origin" "545.188 422.115 601"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "56"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "interior.generators"
+	"targetname" "generator.ent"
+	"origin" "-2778.36 -5598.73 661"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "67"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior02"
+	"targetname" "generator.exit"
+	"origin" "-2006.42 -4001.5 673"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "78"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior02"
+	"targetname" "interior2.ent"
+	"origin" "-83.0406 -2590.85 617"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "89"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior02"
+	"targetname" "interior2.ent"
+	"origin" "-1253.18 -2448.4 653"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "100"
+	"classname" "env_soundscape"
+	"radius" "145"
+	"soundscape" "rydberg.interior.big.1"
+	"targetname" "platform"
+	"origin" "46.4813 -2451.76 637"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "111"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "reactor.int"
+	"targetname" "reactor.ent"
+	"origin" "-1406.56 1508.56 784"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "122"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior.big.1"
+	"targetname" "reactor.exit"
+	"origin" "-1421.36 1392 785"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "133"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "interior.generators"
+	"targetname" "rydberg.interior02"
+	"origin" "-2006.42 -4109.5 673"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "144"
+	"classname" "env_soundscape"
+	"radius" "450"
+	"soundscape" "rydberg.interior01"
+	"targetname" "spawn"
+	"origin" "-2787.98 -6225.48 688"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "351"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landing.exterior"
+	"targetname" "outside.entrance"
+	"origin" "785 -17.0643 625.484"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "362"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "rydberg.interior.big.1"
+	"targetname" "entryfromoutside"
+	"origin" "857 -17.0643 625.484"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "1436"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "rydberg.interior.elevators"
+	"targetname" "end"
+	"origin" "425.188 1710.11 617"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

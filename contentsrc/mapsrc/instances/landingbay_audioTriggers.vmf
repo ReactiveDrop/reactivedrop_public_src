@@ -1,0 +1,202 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4936"
+	"mapversion" "7"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "7"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "11"
+	"classname" "ambient_generic"
+	"health" "10"
+	"message" "doors.handle_pushbar_open2"
+	"pitch" "100"
+	"pitchstart" "100"
+	"radius" "2000"
+	"spawnflags" "49"
+	"targetname" "FirstEncounterSound1"
+	"origin" "-6895 -4557 1150"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[14000 -5768]"
+	}
+}
+entity
+{
+	"id" "14"
+	"classname" "ambient_generic"
+	"health" "10"
+	"message" "DoorHandles.Unlocked2"
+	"pitch" "100"
+	"pitchstart" "100"
+	"radius" "2000"
+	"spawnflags" "49"
+	"targetname" "FirstEncounterSound2"
+	"origin" "-6936 -4553 1150"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[14000 -6268]"
+	}
+}
+entity
+{
+	"id" "17"
+	"classname" "ambient_generic"
+	"cspinup" "0"
+	"health" "10"
+	"lfomodpitch" "0"
+	"lfomodvol" "0"
+	"lforate" "0"
+	"lfotype" "0"
+	"message" "ASW_T75.Explode"
+	"pitch" "100"
+	"pitchstart" "100"
+	"preset" "0"
+	"radius" "1250"
+	"spawnflags" "48"
+	"spindown" "0"
+	"spinup" "0"
+	"targetname" "WallBreakSound"
+	"volstart" "0"
+	"origin" "-8110 -1396 1126"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-12268 -8768]"
+	}
+}
+entity
+{
+	"id" "20"
+	"classname" "asw_ambient_generic"
+	"cspinup" "0"
+	"fadeinsecs" "0"
+	"fadeoutsecs" "0"
+	"health" "10"
+	"lfomodpitch" "0"
+	"lfomodvol" "0"
+	"lforate" "0"
+	"lfotype" "0"
+	"message" "swarm.swarmambient.swarmswitch1"
+	"pitch" "100"
+	"pitchstart" "100"
+	"preset" "0"
+	"PreventStimMusicDuration" "0"
+	"radius" "2500"
+	"spawnflags" "48"
+	"spindown" "0"
+	"spinup" "0"
+	"targetname" "BlackBoxLightSound"
+	"volstart" "0"
+	"origin" "-6040 867 1116"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -15268]"
+	}
+}
+entity
+{
+	"id" "26"
+	"classname" "asw_ambient_generic"
+	"cspinup" "0"
+	"fadeinsecs" "0"
+	"fadeoutsecs" "0"
+	"health" "10"
+	"lfomodpitch" "0"
+	"lfomodvol" "0"
+	"lforate" "0"
+	"lfotype" "0"
+	"message" "landingBay.fireBall"
+	"pitch" "100"
+	"pitchstart" "100"
+	"preset" "0"
+	"PreventStimMusicDuration" "0"
+	"radius" "2500"
+	"spawnflags" "49"
+	"spindown" "0"
+	"spinup" "0"
+	"targetname" "ElevatoFireExplosion1Sound"
+	"volstart" "0"
+	"origin" "-5343 2895 314"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "29"
+	"classname" "asw_ambient_generic"
+	"cspinup" "0"
+	"fadeinsecs" "0"
+	"fadeoutsecs" "0"
+	"health" "10"
+	"lfomodpitch" "0"
+	"lfomodvol" "0"
+	"lforate" "0"
+	"lfotype" "0"
+	"message" "landingBay.whoosh"
+	"pitch" "100"
+	"pitchstart" "100"
+	"preset" "0"
+	"PreventStimMusicDuration" "0"
+	"radius" "2500"
+	"spawnflags" "48"
+	"spindown" "0"
+	"spinup" "0"
+	"targetname" "ElevatorShaftFireSound"
+	"volstart" "0"
+	"origin" "-5203.3 2483 1173"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

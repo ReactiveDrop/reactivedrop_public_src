@@ -1,0 +1,513 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4950"
+	"mapversion" "20"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "20"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "727"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landingbay.interiorB"
+	"StartDisabled" "0"
+	"targetname" "ent_01"
+	"origin" "-6563.54 -6947.08 1009"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "738"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "ent_01"
+	"origin" "-6563.54 -7035.08 1025"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "749"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "ent_02"
+	"origin" "-7569.98 203.948 877"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "760"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "interior2.SmallA"
+	"StartDisabled" "0"
+	"targetname" "ent_02"
+	"origin" "-6003.82 848.25 907.377"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "771"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landingbay.interior1"
+	"StartDisabled" "0"
+	"targetname" "ent_02"
+	"origin" "-7693.98 203.948 877"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "782"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "exit_02"
+	"origin" "-6127.82 848.25 907.377"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "793"
+	"classname" "env_soundscape"
+	"radius" "160"
+	"soundscape" "interior2.pits"
+	"StartDisabled" "0"
+	"targetname" "final.exterior"
+	"origin" "-4358 7059.85 866.458"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "804"
+	"classname" "env_soundscape"
+	"radius" "160"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "final.exterior"
+	"origin" "-4416 7059.85 866.458"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "815"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landingbay.interior1"
+	"StartDisabled" "0"
+	"targetname" "generator.ent"
+	"origin" "-7859.5 -1240.07 889"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "826"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "interior.generator.big"
+	"StartDisabled" "0"
+	"targetname" "generator.ent"
+	"origin" "-7168.56 -2244.94 961"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "837"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "interior.generator.big"
+	"StartDisabled" "0"
+	"targetname" "generator.ent"
+	"origin" "-7859.5 -1322.07 889"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "848"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "interior.generator.big"
+	"StartDisabled" "0"
+	"targetname" "generator.ent"
+	"origin" "-7168.56 -2744.94 961"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "859"
+	"classname" "env_soundscape"
+	"radius" "88"
+	"soundscape" "interior2.Ambiguous"
+	"StartDisabled" "0"
+	"targetname" "generator.exit"
+	"origin" "-7084.56 -2236.94 961"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "870"
+	"classname" "env_soundscape"
+	"radius" "88"
+	"soundscape" "interior2.Ambiguous"
+	"StartDisabled" "0"
+	"targetname" "generator.exit"
+	"origin" "-7084.56 -2736.94 961"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "881"
+	"classname" "env_soundscape"
+	"radius" "100"
+	"soundscape" "interior2.Ambiguous"
+	"StartDisabled" "0"
+	"targetname" "outdoors01"
+	"origin" "-7970.86 -4098.24 848"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "892"
+	"classname" "env_soundscape"
+	"radius" "100"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "outdoors01"
+	"origin" "-7970.86 -4210.24 848"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "903"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "outdoors01"
+	"origin" "-7658.86 -4498.24 912"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "914"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landingbay.interiorB"
+	"StartDisabled" "0"
+	"targetname" "outdoors01"
+	"origin" "-7554.86 -4498.24 912"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "925"
+	"classname" "env_soundscape"
+	"radius" "500"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "spawn"
+	"origin" "-4918.79 -8937.74 980.751"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "936"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "landingbay.interiorB"
+	"StartDisabled" "0"
+	"targetname" "transition"
+	"origin" "-6827.34 -4811.54 905"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "947"
+	"classname" "env_soundscape"
+	"radius" "128"
+	"soundscape" "interior2.Ambiguous"
+	"StartDisabled" "0"
+	"targetname" "transition"
+	"origin" "-6827.34 -4747.54 905"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "958"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "landingbay.Interior3"
+	"StartDisabled" "0"
+	"targetname" "transition2"
+	"origin" "-5447.6 4255.25 879"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "969"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "interior2.smallA"
+	"StartDisabled" "0"
+	"targetname" "transition2"
+	"origin" "-5447.6 4141.25 883"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "980"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "landingbay.interior3"
+	"StartDisabled" "0"
+	"targetname" "transition2enter"
+	"origin" "-5438.43 6374 866.581"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "991"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "transition2exit"
+	"origin" "-5438.43 6468 862.581"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "3805"
+	"classname" "env_soundscape"
+	"radius" "200"
+	"soundscape" "interior2.pits"
+	"StartDisabled" "0"
+	"targetname" "final.exterior"
+	"origin" "-3188 7059.85 842.458"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "3816"
+	"classname" "env_soundscape"
+	"radius" "200"
+	"soundscape" "exterior1.IcyDisquiet"
+	"StartDisabled" "0"
+	"targetname" "final.exterior"
+	"origin" "-3022 7059.85 826.458"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "4109"
+	"classname" "env_soundscape"
+	"radius" "500"
+	"soundscape" "landingbay.interior2"
+	"StartDisabled" "0"
+	"targetname" "spawn"
+	"origin" "-6543.6 -1256 884.421"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

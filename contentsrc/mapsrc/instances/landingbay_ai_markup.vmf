@@ -1,0 +1,10485 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4848"
+	"mapversion" "22"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "2"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "22"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "6127"
+	"classname" "info_node_marine_hint"
+	"angles" "0 195 0"
+	"nodeid" "316"
+	"spawnflags" "0"
+	"origin" "-5232 -8936 943.734"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6130"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "145"
+	"spawnflags" "0"
+	"origin" "-7322.05 -5236.81 955"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3500]"
+	}
+}
+entity
+{
+	"id" "6133"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "635"
+	"spawnflags" "0"
+	"origin" "-6768.06 -4943.71 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5500]"
+	}
+}
+entity
+{
+	"id" "6136"
+	"classname" "info_node_marine_hint"
+	"angles" "0 141 0"
+	"nodeid" "213"
+	"spawnflags" "0"
+	"origin" "-6724.01 -4702.92 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7500]"
+	}
+}
+entity
+{
+	"id" "6139"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "649"
+	"spawnflags" "0"
+	"origin" "-6734.41 -4522.02 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 9500]"
+	}
+}
+entity
+{
+	"id" "6142"
+	"classname" "info_node_marine_hint"
+	"angles" "0 176 0"
+	"nodeid" "250"
+	"spawnflags" "0"
+	"origin" "-7358.9 -4553.86 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 11500]"
+	}
+}
+entity
+{
+	"id" "6145"
+	"classname" "info_node_marine_hint"
+	"angles" "0 104 0"
+	"nodeid" "157"
+	"spawnflags" "0"
+	"origin" "-6647.07 -4096.59 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 13500]"
+	}
+}
+entity
+{
+	"id" "6148"
+	"classname" "info_node_marine_hint"
+	"angles" "0 158 0"
+	"nodeid" "234"
+	"spawnflags" "0"
+	"origin" "-6631.83 -3803.59 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 15500]"
+	}
+}
+entity
+{
+	"id" "6151"
+	"classname" "info_node_marine_hint"
+	"angles" "0 172 0"
+	"nodeid" "249"
+	"spawnflags" "0"
+	"origin" "-7736 -4552 874"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -15268]"
+	}
+}
+entity
+{
+	"id" "6154"
+	"classname" "info_node_marine_hint"
+	"angles" "0 132 0"
+	"nodeid" "204"
+	"spawnflags" "0"
+	"origin" "-7848.18 -4247.66 795"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13268]"
+	}
+}
+entity
+{
+	"id" "6157"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "1"
+	"spawnflags" "0"
+	"origin" "-8024 -3512 867"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11268]"
+	}
+}
+entity
+{
+	"id" "6160"
+	"classname" "info_node_marine_hint"
+	"angles" "0 155 0"
+	"nodeid" "232"
+	"spawnflags" "0"
+	"origin" "-7125.27 -4403.15 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -9268]"
+	}
+}
+entity
+{
+	"id" "6163"
+	"classname" "info_node_marine_hint"
+	"angles" "0 81 0"
+	"nodeid" "454"
+	"spawnflags" "0"
+	"origin" "-7442.73 -4202.68 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -7268]"
+	}
+}
+entity
+{
+	"id" "6166"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "648"
+	"spawnflags" "0"
+	"origin" "-7461.91 -3918.22 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -5268]"
+	}
+}
+entity
+{
+	"id" "6169"
+	"classname" "info_node_marine_hint"
+	"angles" "0 50 0"
+	"nodeid" "413"
+	"spawnflags" "0"
+	"origin" "-7520 -3456 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3268]"
+	}
+}
+entity
+{
+	"id" "6172"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "5"
+	"spawnflags" "0"
+	"origin" "-7096 -3336 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1268]"
+	}
+}
+entity
+{
+	"id" "6175"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "172"
+	"spawnflags" "0"
+	"origin" "-6644.83 -3265.85 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 1000]"
+	}
+}
+entity
+{
+	"id" "6178"
+	"classname" "info_node_marine_hint"
+	"angles" "0 109 0"
+	"nodeid" "177"
+	"spawnflags" "0"
+	"origin" "-6641.58 -2922.56 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 3000]"
+	}
+}
+entity
+{
+	"id" "6181"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "160"
+	"spawnflags" "0"
+	"origin" "-6661.12 -2659.93 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 5000]"
+	}
+}
+entity
+{
+	"id" "6184"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "2"
+	"spawnflags" "0"
+	"origin" "-6264 -5560 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6187"
+	"classname" "info_node_marine_hint"
+	"angles" "0 20 0"
+	"nodeid" "318"
+	"spawnflags" "0"
+	"origin" "-6322.53 -5054.01 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3000]"
+	}
+}
+entity
+{
+	"id" "6190"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "446"
+	"spawnflags" "0"
+	"origin" "-6536 -5832 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "6193"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "629"
+	"spawnflags" "0"
+	"origin" "-6945.84 -5582.35 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "6196"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "4"
+	"spawnflags" "0"
+	"origin" "-6946.03 -5230.78 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4500]"
+	}
+}
+entity
+{
+	"id" "6199"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "351"
+	"spawnflags" "0"
+	"origin" "-6064 -5136 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6500]"
+	}
+}
+entity
+{
+	"id" "6202"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "3"
+	"spawnflags" "0"
+	"origin" "-6761.48 -4810.64 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 8500]"
+	}
+}
+entity
+{
+	"id" "6205"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "6"
+	"spawnflags" "0"
+	"origin" "-7072.29 -4450.99 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 10500]"
+	}
+}
+entity
+{
+	"id" "6208"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "139"
+	"spawnflags" "0"
+	"origin" "-6472.48 -4511.19 880"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 12500]"
+	}
+}
+entity
+{
+	"id" "6211"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "14"
+	"spawnflags" "0"
+	"origin" "-6838.42 -3977.11 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14500]"
+	}
+}
+entity
+{
+	"id" "6217"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "12"
+	"spawnflags" "0"
+	"origin" "-7137.24 -3563.69 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14268]"
+	}
+}
+entity
+{
+	"id" "6220"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "7"
+	"spawnflags" "0"
+	"origin" "-6767.05 -3380.45 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12268]"
+	}
+}
+entity
+{
+	"id" "6223"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "11"
+	"spawnflags" "0"
+	"origin" "-7012.45 -2810.68 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10268]"
+	}
+}
+entity
+{
+	"id" "6226"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "10"
+	"spawnflags" "0"
+	"origin" "-6820.47 -2494.97 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -8268]"
+	}
+}
+entity
+{
+	"id" "6229"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "9"
+	"spawnflags" "0"
+	"origin" "-6774.95 -2284.91 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -6268]"
+	}
+}
+entity
+{
+	"id" "6232"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "8"
+	"spawnflags" "0"
+	"origin" "-6998.08 -2301.3 899"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -4268]"
+	}
+}
+entity
+{
+	"id" "6235"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "296"
+	"spawnflags" "0"
+	"origin" "-7312 -2320 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "6238"
+	"classname" "info_node_marine_hint"
+	"angles" "0 183 0"
+	"nodeid" "304"
+	"spawnflags" "0"
+	"origin" "-7312 -1856 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 0]"
+	}
+}
+entity
+{
+	"id" "6241"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "630"
+	"spawnflags" "0"
+	"origin" "-7154.07 -1574.16 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 2000]"
+	}
+}
+entity
+{
+	"id" "6244"
+	"classname" "info_node_marine_hint"
+	"angles" "0 189 0"
+	"nodeid" "308"
+	"spawnflags" "0"
+	"origin" "-7347.35 -1478.77 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 4000]"
+	}
+}
+entity
+{
+	"id" "6247"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "303"
+	"spawnflags" "0"
+	"origin" "-7582.15 -1856.57 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6000]"
+	}
+}
+entity
+{
+	"id" "6250"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "266"
+	"spawnflags" "0"
+	"origin" "-7857.29 -1855.26 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 8000]"
+	}
+}
+entity
+{
+	"id" "6253"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "508"
+	"spawnflags" "0"
+	"origin" "-8038.99 -1856.83 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 10000]"
+	}
+}
+entity
+{
+	"id" "6256"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "485"
+	"spawnflags" "0"
+	"origin" "-8144.03 -1691.95 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 12000]"
+	}
+}
+entity
+{
+	"id" "6259"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "493"
+	"spawnflags" "0"
+	"origin" "-8142.94 -1405.92 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 14000]"
+	}
+}
+entity
+{
+	"id" "6262"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "471"
+	"spawnflags" "0"
+	"origin" "-7757.92 -1342.24 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 16000]"
+	}
+}
+entity
+{
+	"id" "6265"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "634"
+	"spawnflags" "0"
+	"origin" "-7908 -1096 835.99"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -14768]"
+	}
+}
+entity
+{
+	"id" "6268"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "480"
+	"spawnflags" "0"
+	"origin" "-7772.08 -975.761 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -12768]"
+	}
+}
+entity
+{
+	"id" "6271"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "473"
+	"spawnflags" "0"
+	"origin" "-7902.17 -755.225 835.965"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -10768]"
+	}
+}
+entity
+{
+	"id" "6274"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "465"
+	"spawnflags" "0"
+	"origin" "-7916.68 -625.836 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6277"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "474"
+	"spawnflags" "0"
+	"origin" "-7776.16 -788.215 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11268]"
+	}
+}
+entity
+{
+	"id" "6280"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "478"
+	"spawnflags" "0"
+	"origin" "-7880.03 -1005.46 835.984"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -13268]"
+	}
+}
+entity
+{
+	"id" "6283"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "13"
+	"spawnflags" "0"
+	"origin" "-7918.72 -1170.22 835.995"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -15268]"
+	}
+}
+entity
+{
+	"id" "6286"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "469"
+	"spawnflags" "0"
+	"origin" "-7773.37 -1474.82 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 15500]"
+	}
+}
+entity
+{
+	"id" "6289"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "496"
+	"spawnflags" "0"
+	"origin" "-8171.23 -1550.79 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 13500]"
+	}
+}
+entity
+{
+	"id" "6292"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "498"
+	"spawnflags" "0"
+	"origin" "-8038.29 -1739.57 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 11500]"
+	}
+}
+entity
+{
+	"id" "6295"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "503"
+	"spawnflags" "0"
+	"origin" "-8151.91 -1995.11 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9500]"
+	}
+}
+entity
+{
+	"id" "6298"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "275"
+	"spawnflags" "0"
+	"origin" "-7771.63 -1992.9 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 7500]"
+	}
+}
+entity
+{
+	"id" "6301"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "302"
+	"spawnflags" "0"
+	"origin" "-7515.44 -1993.16 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 5500]"
+	}
+}
+entity
+{
+	"id" "6304"
+	"classname" "info_node_marine_hint"
+	"angles" "0 189 0"
+	"nodeid" "306"
+	"spawnflags" "0"
+	"origin" "-7322.56 -1368.52 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 3500]"
+	}
+}
+entity
+{
+	"id" "6307"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "631"
+	"spawnflags" "0"
+	"origin" "-7158.95 -1712.44 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 1500]"
+	}
+}
+entity
+{
+	"id" "6310"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "647"
+	"spawnflags" "0"
+	"origin" "-7254.65 -1989.76 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -768]"
+	}
+}
+entity
+{
+	"id" "6313"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "137"
+	"spawnflags" "0"
+	"origin" "-7155.92 -2305.73 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2768]"
+	}
+}
+entity
+{
+	"id" "6316"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "15"
+	"spawnflags" "0"
+	"origin" "-6936.38 -2174.96 891"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -4768]"
+	}
+}
+entity
+{
+	"id" "6319"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "136"
+	"spawnflags" "0"
+	"origin" "-6664 -2208.36 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -6768]"
+	}
+}
+entity
+{
+	"id" "6322"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "29"
+	"spawnflags" "0"
+	"origin" "-6640.28 -2519.37 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -8768]"
+	}
+}
+entity
+{
+	"id" "6325"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "28"
+	"spawnflags" "0"
+	"origin" "-6746.28 -2739.32 858.809"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6328"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "16"
+	"spawnflags" "0"
+	"origin" "-7205.87 -3325.64 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12768]"
+	}
+}
+entity
+{
+	"id" "6331"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "23"
+	"spawnflags" "0"
+	"origin" "-7460.8 -3838.08 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14768]"
+	}
+}
+entity
+{
+	"id" "6334"
+	"classname" "info_node_marine_hint"
+	"angles" "0 210 0"
+	"nodeid" "319"
+	"spawnflags" "0"
+	"origin" "-6890.48 -3630.06 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 16000]"
+	}
+}
+entity
+{
+	"id" "6337"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "22"
+	"spawnflags" "0"
+	"origin" "-6737.74 -4041.22 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14000]"
+	}
+}
+entity
+{
+	"id" "6340"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "18"
+	"spawnflags" "0"
+	"origin" "-7219.26 -4295.6 955"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 12000]"
+	}
+}
+entity
+{
+	"id" "6343"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "20"
+	"spawnflags" "0"
+	"origin" "-7167.83 -4586.48 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 10000]"
+	}
+}
+entity
+{
+	"id" "6346"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "19"
+	"spawnflags" "0"
+	"origin" "-6187.85 -5081.88 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 8000]"
+	}
+}
+entity
+{
+	"id" "6349"
+	"classname" "info_node_marine_hint"
+	"angles" "0 285 0"
+	"nodeid" "358"
+	"spawnflags" "0"
+	"origin" "-6288 -4944 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "6352"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "230"
+	"spawnflags" "0"
+	"origin" "-6769 -5314.22 1034.27"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4000]"
+	}
+}
+entity
+{
+	"id" "6355"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "632"
+	"spawnflags" "0"
+	"origin" "-6798.46 -5621.85 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "6358"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "170"
+	"spawnflags" "0"
+	"origin" "-6352 -5832 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "6361"
+	"classname" "info_node_marine_hint"
+	"angles" "0 110 0"
+	"nodeid" "179"
+	"spawnflags" "0"
+	"origin" "-6501.62 -5173.38 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "6364"
+	"classname" "info_node_marine_hint"
+	"angles" "0 37 0"
+	"nodeid" "396"
+	"spawnflags" "0"
+	"origin" "-6537.4 -5495.13 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "6367"
+	"classname" "info_node_marine_hint"
+	"angles" "0 151 0"
+	"nodeid" "231"
+	"spawnflags" "0"
+	"origin" "-6823.51 -2820.12 858.696"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 4500]"
+	}
+}
+entity
+{
+	"id" "6370"
+	"classname" "info_node_marine_hint"
+	"angles" "0 109 0"
+	"nodeid" "176"
+	"spawnflags" "0"
+	"origin" "-6765.29 -3091.52 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 2500]"
+	}
+}
+entity
+{
+	"id" "6373"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "636"
+	"spawnflags" "0"
+	"origin" "-6666.54 -3370.43 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 500]"
+	}
+}
+entity
+{
+	"id" "6376"
+	"classname" "info_node_marine_hint"
+	"angles" "0 330 0"
+	"nodeid" "381"
+	"spawnflags" "0"
+	"origin" "-7351.73 -3268.85 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1768]"
+	}
+}
+entity
+{
+	"id" "6379"
+	"classname" "info_node_marine_hint"
+	"angles" "0 80 0"
+	"nodeid" "449"
+	"spawnflags" "0"
+	"origin" "-7344 -3648 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3768]"
+	}
+}
+entity
+{
+	"id" "6382"
+	"classname" "info_node_marine_hint"
+	"angles" "0 96 0"
+	"nodeid" "653"
+	"spawnflags" "0"
+	"origin" "-7238.65 -3878.12 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -5768]"
+	}
+}
+entity
+{
+	"id" "6385"
+	"classname" "info_node_marine_hint"
+	"angles" "0 76 0"
+	"nodeid" "447"
+	"spawnflags" "0"
+	"origin" "-7454.8 -4147.13 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -7768]"
+	}
+}
+entity
+{
+	"id" "6388"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "628"
+	"spawnflags" "0"
+	"origin" "-7282.4 -4406.95 955"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -9768]"
+	}
+}
+entity
+{
+	"id" "6391"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "463"
+	"spawnflags" "0"
+	"origin" "-8032 -3848 796"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11768]"
+	}
+}
+entity
+{
+	"id" "6394"
+	"classname" "info_node_marine_hint"
+	"angles" "0 81 0"
+	"nodeid" "452"
+	"spawnflags" "0"
+	"origin" "-8067.06 -4319.45 802.897"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13768]"
+	}
+}
+entity
+{
+	"id" "6397"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "289"
+	"spawnflags" "0"
+	"origin" "-7731.75 -4360.61 875.997"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -15768]"
+	}
+}
+entity
+{
+	"id" "6400"
+	"classname" "info_node_marine_hint"
+	"angles" "0 116 0"
+	"nodeid" "186"
+	"spawnflags" "0"
+	"origin" "-6646.88 -3922.59 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 15000]"
+	}
+}
+entity
+{
+	"id" "6403"
+	"classname" "info_node_marine_hint"
+	"angles" "0 55 0"
+	"nodeid" "417"
+	"spawnflags" "0"
+	"origin" "-6824.97 -4318.04 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 13000]"
+	}
+}
+entity
+{
+	"id" "6406"
+	"classname" "info_node_marine_hint"
+	"angles" "0 144 0"
+	"nodeid" "214"
+	"spawnflags" "0"
+	"origin" "-7236.62 -4669.24 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 11000]"
+	}
+}
+entity
+{
+	"id" "6409"
+	"classname" "info_node_marine_hint"
+	"angles" "0 107 0"
+	"nodeid" "173"
+	"spawnflags" "0"
+	"origin" "-6635.68 -4522.26 880"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 9000]"
+	}
+}
+entity
+{
+	"id" "6412"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "269"
+	"spawnflags" "0"
+	"origin" "-6952.21 -4667.56 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7000]"
+	}
+}
+entity
+{
+	"id" "6415"
+	"classname" "info_node_marine_hint"
+	"angles" "0 46 0"
+	"nodeid" "409"
+	"spawnflags" "0"
+	"origin" "-6991.15 -4967.9 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "6418"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "131"
+	"spawnflags" "0"
+	"origin" "-7181.26 -5308.8 955"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3000]"
+	}
+}
+entity
+{
+	"id" "6421"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "504"
+	"spawnflags" "0"
+	"origin" "-6852.52 -5201.36 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "6424"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "272"
+	"spawnflags" "0"
+	"origin" "-6520 1048 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6427"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "135"
+	"spawnflags" "0"
+	"origin" "-7008 960 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6430"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "132"
+	"spawnflags" "0"
+	"origin" "-6720 832 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6433"
+	"classname" "info_node_marine_hint"
+	"angles" "0 285 0"
+	"nodeid" "357"
+	"spawnflags" "0"
+	"origin" "-6328 1080 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6436"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "633"
+	"spawnflags" "0"
+	"origin" "-5288 704 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6439"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "627"
+	"spawnflags" "0"
+	"origin" "-5120 1400 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6442"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "133"
+	"spawnflags" "0"
+	"origin" "-5272 2440 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6445"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "509"
+	"spawnflags" "0"
+	"origin" "-5224 2656 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6448"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "510"
+	"spawnflags" "0"
+	"origin" "-5192 3040 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6451"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "626"
+	"spawnflags" "0"
+	"origin" "-5056 3552 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6454"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "277"
+	"spawnflags" "0"
+	"origin" "-5304 4128 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6457"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "134"
+	"spawnflags" "0"
+	"origin" "-5584 4128 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6460"
+	"classname" "info_node_marine_hint"
+	"angles" "0 55 0"
+	"nodeid" "415"
+	"spawnflags" "0"
+	"origin" "-5632 4768 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6463"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "200"
+	"spawnflags" "0"
+	"origin" "-5232 5488 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6466"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "196"
+	"spawnflags" "0"
+	"origin" "-5224 6048 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6469"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "511"
+	"spawnflags" "0"
+	"origin" "-5556 5768 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6472"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "246"
+	"spawnflags" "0"
+	"origin" "-5144 5328 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6475"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "512"
+	"spawnflags" "0"
+	"origin" "-5256 4744 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6478"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "425"
+	"spawnflags" "0"
+	"origin" "-5656 4464 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6481"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "513"
+	"spawnflags" "0"
+	"origin" "-5456 3904 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6484"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "514"
+	"spawnflags" "0"
+	"origin" "-5192 3840 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6487"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "625"
+	"spawnflags" "0"
+	"origin" "-5192 3312 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6490"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "515"
+	"spawnflags" "0"
+	"origin" "-5192 2864 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6493"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "408"
+	"spawnflags" "0"
+	"origin" "-5272 2144 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6496"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "516"
+	"spawnflags" "0"
+	"origin" "-5288 1552 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6499"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "517"
+	"spawnflags" "0"
+	"origin" "-5112 616 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6502"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "138"
+	"spawnflags" "0"
+	"origin" "-5044 1200 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6505"
+	"classname" "info_node_marine_hint"
+	"angles" "0 19 0"
+	"nodeid" "310"
+	"spawnflags" "0"
+	"origin" "-6552 240 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6508"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "624"
+	"spawnflags" "0"
+	"origin" "-7016 544 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6511"
+	"classname" "info_node_marine_hint"
+	"angles" "0 252 0"
+	"nodeid" "323"
+	"spawnflags" "0"
+	"origin" "-6304 776 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6514"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "268"
+	"spawnflags" "0"
+	"origin" "-7062.27 251.07 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6517"
+	"classname" "info_node_marine_hint"
+	"angles" "0 351 0"
+	"nodeid" "393"
+	"spawnflags" "0"
+	"origin" "-3420 6996 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6520"
+	"classname" "info_node_marine_hint"
+	"angles" "0 261 0"
+	"nodeid" "327"
+	"spawnflags" "0"
+	"origin" "-3448 7238 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6523"
+	"classname" "info_node_marine_hint"
+	"angles" "0 126 0"
+	"nodeid" "202"
+	"spawnflags" "0"
+	"origin" "-3256 6880 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6526"
+	"classname" "info_node_marine_hint"
+	"angles" "0 276 0"
+	"nodeid" "353"
+	"spawnflags" "0"
+	"origin" "-3628 7240 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6529"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "623"
+	"spawnflags" "0"
+	"origin" "-3648 6880 794"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6532"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "365"
+	"spawnflags" "0"
+	"origin" "-4800 7024 802.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6535"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "17"
+	"spawnflags" "0"
+	"origin" "-4944 6656 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6538"
+	"classname" "info_node_marine_hint"
+	"angles" "0 315 0"
+	"nodeid" "373"
+	"spawnflags" "0"
+	"origin" "-5120 6720 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6541"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "144"
+	"spawnflags" "0"
+	"origin" "-1880 7008 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6544"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "140"
+	"spawnflags" "0"
+	"origin" "-1568 7000 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6547"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "141"
+	"spawnflags" "0"
+	"origin" "-1728 6832 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6550"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "622"
+	"spawnflags" "0"
+	"origin" "-1984 6808 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6553"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "350"
+	"spawnflags" "0"
+	"origin" "-2152 7056 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6556"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "360"
+	"spawnflags" "0"
+	"origin" "-2336 6584 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6559"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "329"
+	"spawnflags" "0"
+	"origin" "-2488 7024 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6565"
+	"classname" "info_node_marine_hint"
+	"angles" "0 300 0"
+	"nodeid" "369"
+	"spawnflags" "0"
+	"origin" "-2632 7168 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6568"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "142"
+	"spawnflags" "0"
+	"origin" "-2952 7184 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6571"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "518"
+	"spawnflags" "0"
+	"origin" "-4080 6888 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6574"
+	"classname" "info_node_marine_hint"
+	"angles" "0 315 0"
+	"nodeid" "371"
+	"spawnflags" "0"
+	"origin" "-4344 7200 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6577"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "621"
+	"spawnflags" "0"
+	"origin" "-4248 6824 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6580"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "143"
+	"spawnflags" "0"
+	"origin" "-3864 7176 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6583"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "399"
+	"spawnflags" "0"
+	"origin" "-5520 6376 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6589"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "189"
+	"spawnflags" "0"
+	"origin" "-5256 5680 810.963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6592"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "436"
+	"spawnflags" "0"
+	"origin" "-6680 -7456 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6595"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "424"
+	"spawnflags" "0"
+	"origin" "-6452 -7272 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6598"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "274"
+	"spawnflags" "0"
+	"origin" "-6344 -7024 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6601"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "519"
+	"spawnflags" "0"
+	"origin" "-6376 -7256 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6604"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "520"
+	"spawnflags" "0"
+	"origin" "-6368 -7936 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6607"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "521"
+	"spawnflags" "0"
+	"origin" "-6248 -8152 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6610"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "620"
+	"spawnflags" "0"
+	"origin" "-6248 -8480 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6613"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "210"
+	"spawnflags" "0"
+	"origin" "-6336 -8784 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6616"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "205"
+	"spawnflags" "0"
+	"origin" "-6016 -9056 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6619"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "225"
+	"spawnflags" "0"
+	"origin" "-5544 -9064 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6622"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "244"
+	"spawnflags" "0"
+	"origin" "-5216 -9064 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6625"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "273"
+	"spawnflags" "0"
+	"origin" "-4992 -9040 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6628"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "522"
+	"spawnflags" "0"
+	"origin" "-4992 -8720 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6631"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "619"
+	"spawnflags" "0"
+	"origin" "-4944 -8672 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6634"
+	"classname" "info_node_marine_hint"
+	"angles" "0 300 0"
+	"nodeid" "367"
+	"spawnflags" "0"
+	"origin" "-4808 -8512 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6637"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "342"
+	"spawnflags" "0"
+	"origin" "-4600 -8512 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6640"
+	"classname" "info_node_marine_hint"
+	"angles" "0 193 0"
+	"nodeid" "312"
+	"spawnflags" "0"
+	"origin" "-6720 -5936 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6643"
+	"classname" "info_node_marine_hint"
+	"angles" "0 88 0"
+	"nodeid" "484"
+	"spawnflags" "0"
+	"origin" "-6896 -6072 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6646"
+	"classname" "info_node_marine_hint"
+	"angles" "0 82 0"
+	"nodeid" "455"
+	"spawnflags" "0"
+	"origin" "-6584 -6232 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6649"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "523"
+	"spawnflags" "0"
+	"origin" "-6704 -6388 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6652"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "524"
+	"spawnflags" "0"
+	"origin" "-6700 -6716 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6655"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "618"
+	"spawnflags" "0"
+	"origin" "-6696 -6920 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6658"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "21"
+	"spawnflags" "0"
+	"origin" "-8476 -656 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "6661"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "406"
+	"spawnflags" "0"
+	"origin" "-8228 -728 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "6664"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "391"
+	"spawnflags" "0"
+	"origin" "-5104 -8592 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6667"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "229"
+	"spawnflags" "0"
+	"origin" "-5344 -9056 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6670"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "228"
+	"spawnflags" "0"
+	"origin" "-5768 -9064 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6673"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "206"
+	"spawnflags" "0"
+	"origin" "-6168 -8928 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6676"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "525"
+	"spawnflags" "0"
+	"origin" "-6368 -8712 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6679"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "526"
+	"spawnflags" "0"
+	"origin" "-6368 -8416 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6682"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "527"
+	"spawnflags" "0"
+	"origin" "-6368 -7704 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6685"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "617"
+	"spawnflags" "0"
+	"origin" "-6368 -7496 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6688"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "208"
+	"spawnflags" "0"
+	"origin" "-6216 -7408 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6691"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "528"
+	"spawnflags" "0"
+	"origin" "-6608 -7152 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6694"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "529"
+	"spawnflags" "0"
+	"origin" "-6600 -7464 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6697"
+	"classname" "info_node_marine_hint"
+	"angles" "0 70.5 0"
+	"nodeid" "427"
+	"spawnflags" "0"
+	"origin" "-6656 -7080 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6700"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "241"
+	"spawnflags" "0"
+	"origin" "-6304 -7128 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6703"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "530"
+	"spawnflags" "0"
+	"origin" "-6700 -6508 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6706"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "616"
+	"spawnflags" "0"
+	"origin" "-6512 -6512 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6709"
+	"classname" "info_node_marine_hint"
+	"angles" "0 103 0"
+	"nodeid" "156"
+	"spawnflags" "0"
+	"origin" "-6440 -6168 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6712"
+	"classname" "info_node_marine_hint"
+	"angles" "0 358 0"
+	"nodeid" "394"
+	"spawnflags" "0"
+	"origin" "-6560 -5936 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6715"
+	"classname" "info_node_marine_hint"
+	"angles" "0 88 0"
+	"nodeid" "483"
+	"spawnflags" "0"
+	"origin" "-6480 -6104 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6718"
+	"classname" "info_node_marine_hint"
+	"angles" "0 88 0"
+	"nodeid" "482"
+	"spawnflags" "0"
+	"origin" "-6744 -6072 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6724"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "27"
+	"spawnflags" "0"
+	"origin" "-6160 -5488 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6727"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "24"
+	"spawnflags" "0"
+	"origin" "-5968 -5488 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6730"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "615"
+	"spawnflags" "0"
+	"origin" "-5920 -5608 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6733"
+	"classname" "info_node_marine_hint"
+	"angles" "0 138 0"
+	"nodeid" "211"
+	"spawnflags" "0"
+	"origin" "-6328 -5432 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "6736"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "341"
+	"spawnflags" "0"
+	"origin" "-6072 -4944 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "6739"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "614"
+	"spawnflags" "0"
+	"origin" "-6880 -5528 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "6751"
+	"classname" "info_node_marine_hint"
+	"angles" "0 162 0"
+	"nodeid" "236"
+	"spawnflags" "0"
+	"origin" "-7872 -4192 795"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13268]"
+	}
+}
+entity
+{
+	"id" "6757"
+	"classname" "info_node_marine_hint"
+	"angles" "0 115 0"
+	"nodeid" "185"
+	"spawnflags" "0"
+	"origin" "-7880 -3808 796"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11768]"
+	}
+}
+entity
+{
+	"id" "6760"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "25"
+	"spawnflags" "0"
+	"origin" "-7904 -3608 867"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11268]"
+	}
+}
+entity
+{
+	"id" "6763"
+	"classname" "info_node_marine_hint"
+	"angles" "0 328 0"
+	"nodeid" "378"
+	"spawnflags" "0"
+	"origin" "-7664 -3520 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10268]"
+	}
+}
+entity
+{
+	"id" "6769"
+	"classname" "info_node_marine_hint"
+	"angles" "0 50 0"
+	"nodeid" "412"
+	"spawnflags" "0"
+	"origin" "-7488 -3536 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3268]"
+	}
+}
+entity
+{
+	"id" "6772"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "467"
+	"spawnflags" "0"
+	"origin" "-7232 -3704 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -4768]"
+	}
+}
+entity
+{
+	"id" "6775"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "420"
+	"spawnflags" "0"
+	"origin" "-7072 -3424 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14268]"
+	}
+}
+entity
+{
+	"id" "6778"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "227"
+	"spawnflags" "0"
+	"origin" "-6992 -3616 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 16000]"
+	}
+}
+entity
+{
+	"id" "6784"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "613"
+	"spawnflags" "0"
+	"origin" "-6880 -4200 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14000]"
+	}
+}
+entity
+{
+	"id" "6787"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "26"
+	"spawnflags" "0"
+	"origin" "-7200 -3264 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12768]"
+	}
+}
+entity
+{
+	"id" "6793"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "298"
+	"spawnflags" "0"
+	"origin" "-7328 -1992 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 4500]"
+	}
+}
+entity
+{
+	"id" "6796"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "270"
+	"spawnflags" "0"
+	"origin" "-7432 -2456 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6799"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "271"
+	"spawnflags" "0"
+	"origin" "-7544 -2464 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6802"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "292"
+	"spawnflags" "0"
+	"origin" "-7768 -2464 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6805"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "295"
+	"spawnflags" "0"
+	"origin" "-7960 -2456 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6808"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "293"
+	"spawnflags" "0"
+	"origin" "-7672 -2392 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6811"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "531"
+	"spawnflags" "0"
+	"origin" "-7704 -2048 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6814"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "608"
+	"spawnflags" "0"
+	"origin" "-7592 -2272 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6817"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "612"
+	"spawnflags" "0"
+	"origin" "-7588 -2152 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6820"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "263"
+	"spawnflags" "0"
+	"origin" "-7624 -1920 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 7500]"
+	}
+}
+entity
+{
+	"id" "6826"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "499"
+	"spawnflags" "0"
+	"origin" "-8040 -2196 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6832"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "500"
+	"spawnflags" "0"
+	"origin" "-8160 -2324 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9500]"
+	}
+}
+entity
+{
+	"id" "6835"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "502"
+	"spawnflags" "0"
+	"origin" "-8160 -2596 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6838"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "501"
+	"spawnflags" "0"
+	"origin" "-8040 -2716 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6841"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "262"
+	"spawnflags" "0"
+	"origin" "-7980 -2796 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6844"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "256"
+	"spawnflags" "0"
+	"origin" "-7848 -2912 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6847"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "258"
+	"spawnflags" "0"
+	"origin" "-7744 -2912 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6850"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "257"
+	"spawnflags" "0"
+	"origin" "-7548 -2908 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6853"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "255"
+	"spawnflags" "0"
+	"origin" "-7428 -2908 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6862"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "609"
+	"spawnflags" "0"
+	"origin" "-7596 -2640 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6865"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "611"
+	"spawnflags" "0"
+	"origin" "-7592 -2520 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6868"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "610"
+	"spawnflags" "0"
+	"origin" "-7596 -2740 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "6871"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "644"
+	"spawnflags" "0"
+	"origin" "-7254.93 -2741.85 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -768]"
+	}
+}
+entity
+{
+	"id" "6874"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "645"
+	"spawnflags" "0"
+	"origin" "-7152 -2778.16 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1268]"
+	}
+}
+entity
+{
+	"id" "6877"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "646"
+	"spawnflags" "0"
+	"origin" "-7258.93 -2504 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -768]"
+	}
+}
+entity
+{
+	"id" "6883"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "505"
+	"spawnflags" "0"
+	"origin" "-8116 -2920 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6889"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "267"
+	"spawnflags" "0"
+	"origin" "-7240 -2376 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "6892"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "507"
+	"spawnflags" "0"
+	"origin" "-8112 -1924 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6895"
+	"classname" "info_node_marine_hint"
+	"angles" "0 100 0"
+	"nodeid" "150"
+	"spawnflags" "0"
+	"origin" "-7784 -512 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6898"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "458"
+	"spawnflags" "0"
+	"origin" "-7992 -380 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6901"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "460"
+	"spawnflags" "0"
+	"origin" "-7992 -192 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6904"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "459"
+	"spawnflags" "0"
+	"origin" "-7996 -24 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6907"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "130"
+	"spawnflags" "0"
+	"origin" "-8000 140 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6916"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "30"
+	"spawnflags" "0"
+	"origin" "-8000 340 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6922"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "349"
+	"spawnflags" "0"
+	"origin" "-7704 448 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6925"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "438"
+	"spawnflags" "0"
+	"origin" "-7676 152 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6928"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "129"
+	"spawnflags" "0"
+	"origin" "-7568 304 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6931"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "128"
+	"spawnflags" "0"
+	"origin" "-7444 112 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6934"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "348"
+	"spawnflags" "0"
+	"origin" "-7440 504 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6937"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "343"
+	"spawnflags" "0"
+	"origin" "-7568 368 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6940"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "346"
+	"spawnflags" "0"
+	"origin" "-7588 644 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6943"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "344"
+	"spawnflags" "0"
+	"origin" "-7592 840 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6946"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "345"
+	"spawnflags" "0"
+	"origin" "-7596 972 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6955"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "31"
+	"spawnflags" "0"
+	"origin" "-7296 116 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6958"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "127"
+	"spawnflags" "0"
+	"origin" "-7360 184 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6961"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "32"
+	"spawnflags" "0"
+	"origin" "-7144 188 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6964"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "439"
+	"spawnflags" "0"
+	"origin" "-7000 300 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6967"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "224"
+	"spawnflags" "0"
+	"origin" "-6676 116 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6970"
+	"classname" "info_node_marine_hint"
+	"angles" "0 19 0"
+	"nodeid" "309"
+	"spawnflags" "0"
+	"origin" "-6724 244 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6973"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "437"
+	"spawnflags" "0"
+	"origin" "-6296 244 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6976"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "162"
+	"spawnflags" "0"
+	"origin" "-6184 420 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6979"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "161"
+	"spawnflags" "0"
+	"origin" "-6088 672 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "6982"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "265"
+	"spawnflags" "0"
+	"origin" "-6564 840 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6985"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "264"
+	"spawnflags" "0"
+	"origin" "-6464 956 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6988"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "33"
+	"spawnflags" "0"
+	"origin" "-6928 1040 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6991"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "440"
+	"spawnflags" "0"
+	"origin" "-7008 772 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "6994"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "442"
+	"spawnflags" "0"
+	"origin" "-6872 524 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7000"
+	"classname" "info_node_marine_hint"
+	"angles" "0 255 0"
+	"nodeid" "325"
+	"spawnflags" "0"
+	"origin" "-6404 1136 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7003"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "441"
+	"spawnflags" "0"
+	"origin" "-6456 392 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7006"
+	"classname" "info_node_marine_hint"
+	"angles" "0 64 0"
+	"nodeid" "426"
+	"spawnflags" "0"
+	"origin" "-6500 312 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7009"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "165"
+	"spawnflags" "0"
+	"origin" "-6308 620 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7012"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "126"
+	"spawnflags" "0"
+	"origin" "-5396 780 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7015"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "125"
+	"spawnflags" "0"
+	"origin" "-5564 916 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7018"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "124"
+	"spawnflags" "0"
+	"origin" "-5724 908 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7021"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "123"
+	"spawnflags" "0"
+	"origin" "-5884 916 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7024"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "34"
+	"spawnflags" "0"
+	"origin" "-5988 920 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7033"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "164"
+	"spawnflags" "0"
+	"origin" "-5184 884 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7036"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "163"
+	"spawnflags" "0"
+	"origin" "-5112 1024 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7039"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "122"
+	"spawnflags" "0"
+	"origin" "-4888 1056 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7042"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "38"
+	"spawnflags" "0"
+	"origin" "-4748 1064 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7045"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "37"
+	"spawnflags" "0"
+	"origin" "-4612 1056 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7048"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "35"
+	"spawnflags" "0"
+	"origin" "-4476 1060 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7057"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "532"
+	"spawnflags" "0"
+	"origin" "-5120 1260 846"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7060"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "533"
+	"spawnflags" "0"
+	"origin" "-5196 1696 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7063"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "534"
+	"spawnflags" "0"
+	"origin" "-5280 1880 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7066"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "607"
+	"spawnflags" "0"
+	"origin" "-5184 2080 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7069"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "36"
+	"spawnflags" "0"
+	"origin" "-5420 2448 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7072"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "405"
+	"spawnflags" "0"
+	"origin" "-5284 2256 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7075"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "535"
+	"spawnflags" "0"
+	"origin" "-5180 2512 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7078"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "536"
+	"spawnflags" "0"
+	"origin" "-5128 3100 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7081"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "537"
+	"spawnflags" "0"
+	"origin" "-5124 3436 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7084"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "538"
+	"spawnflags" "0"
+	"origin" "-5116 3816 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7087"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "240"
+	"spawnflags" "0"
+	"origin" "-5244 3968 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7090"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "539"
+	"spawnflags" "0"
+	"origin" "-5644 3912 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7093"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "606"
+	"spawnflags" "0"
+	"origin" "-5452 4132 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7096"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "540"
+	"spawnflags" "0"
+	"origin" "-5456 4704 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7099"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "541"
+	"spawnflags" "0"
+	"origin" "-5468 4900 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7102"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "542"
+	"spawnflags" "0"
+	"origin" "-5280 4604 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7108"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "239"
+	"spawnflags" "0"
+	"origin" "-5240 5308 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7114"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "194"
+	"spawnflags" "0"
+	"origin" "-5328 5808 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7117"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "605"
+	"spawnflags" "0"
+	"origin" "-5172 5852 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7120"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "192"
+	"spawnflags" "0"
+	"origin" "-5292 6136 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7123"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "435"
+	"spawnflags" "0"
+	"origin" "-5560 6156 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7126"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "404"
+	"spawnflags" "0"
+	"origin" "-5524 6484 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7129"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "398"
+	"spawnflags" "0"
+	"origin" "-5608 6556 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7132"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "602"
+	"spawnflags" "0"
+	"origin" "-4668 6640 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7135"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "604"
+	"spawnflags" "0"
+	"origin" "-4556 6724 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7138"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "221"
+	"spawnflags" "0"
+	"origin" "-4656 6948 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7141"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "383"
+	"spawnflags" "0"
+	"origin" "-4852 7228 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7144"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "389"
+	"spawnflags" "0"
+	"origin" "-4748 7336 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7147"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "390"
+	"spawnflags" "0"
+	"origin" "-4512 7316 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7150"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "121"
+	"spawnflags" "0"
+	"origin" "-4452 7072 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7156"
+	"classname" "info_node_marine_hint"
+	"angles" "0 171 0"
+	"nodeid" "247"
+	"spawnflags" "0"
+	"origin" "-3248 7076 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7159"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "364"
+	"spawnflags" "0"
+	"origin" "-3808 7028 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7162"
+	"classname" "info_node_marine_hint"
+	"angles" "0 261 0"
+	"nodeid" "326"
+	"spawnflags" "0"
+	"origin" "-3352 7220 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7165"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "603"
+	"spawnflags" "0"
+	"origin" "-3372 7128 794"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7168"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "120"
+	"spawnflags" "0"
+	"origin" "-3156 7128 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7171"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "39"
+	"spawnflags" "0"
+	"origin" "-3172 7044 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7174"
+	"classname" "info_node_marine_hint"
+	"angles" "0 330 0"
+	"nodeid" "380"
+	"spawnflags" "0"
+	"origin" "-2732 6856 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7177"
+	"classname" "info_node_marine_hint"
+	"angles" "0 330 0"
+	"nodeid" "379"
+	"spawnflags" "0"
+	"origin" "-2568 6928 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7180"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "382"
+	"spawnflags" "0"
+	"origin" "-2496 6660 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7183"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "216"
+	"spawnflags" "0"
+	"origin" "-2148 6928 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7186"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "217"
+	"spawnflags" "0"
+	"origin" "-2072 6812 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7189"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "40"
+	"spawnflags" "0"
+	"origin" "-2604 6808 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7192"
+	"classname" "info_node_marine_hint"
+	"angles" "0 300 0"
+	"nodeid" "366"
+	"spawnflags" "0"
+	"origin" "-2828 7180 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7195"
+	"classname" "info_node_marine_hint"
+	"angles" "0 300 0"
+	"nodeid" "368"
+	"spawnflags" "0"
+	"origin" "-2696 7092 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7198"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "119"
+	"spawnflags" "0"
+	"origin" "-2728 6736 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7204"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "222"
+	"spawnflags" "0"
+	"origin" "-2072 6668 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7207"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "388"
+	"spawnflags" "0"
+	"origin" "-2324 6712 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7210"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "158"
+	"spawnflags" "0"
+	"origin" "-2184 6756 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7213"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "44"
+	"spawnflags" "0"
+	"origin" "-2836 7076 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7216"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "43"
+	"spawnflags" "0"
+	"origin" "-2784 6908 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7219"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "42"
+	"spawnflags" "0"
+	"origin" "-3024 7048 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7222"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "41"
+	"spawnflags" "0"
+	"origin" "-3152 6932 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7225"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "601"
+	"spawnflags" "0"
+	"origin" "-3676 7056 794"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7234"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "403"
+	"spawnflags" "0"
+	"origin" "-4172 6892 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7240"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "387"
+	"spawnflags" "0"
+	"origin" "-4676 7120 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7243"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "384"
+	"spawnflags" "0"
+	"origin" "-4448 7168 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7246"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "386"
+	"spawnflags" "0"
+	"origin" "-4668 7300 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7249"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "220"
+	"spawnflags" "0"
+	"origin" "-4872 7036 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7252"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "218"
+	"spawnflags" "0"
+	"origin" "-4788 6840 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7255"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "600"
+	"spawnflags" "0"
+	"origin" "-4796 6732 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7258"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "402"
+	"spawnflags" "0"
+	"origin" "-5100 6560 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7261"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "400"
+	"spawnflags" "0"
+	"origin" "-5288 6556 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7264"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "363"
+	"spawnflags" "0"
+	"origin" "-5600 6352 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7267"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "190"
+	"spawnflags" "0"
+	"origin" "-5396 6156 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7270"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "362"
+	"spawnflags" "0"
+	"origin" "-5644 6184 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7273"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "599"
+	"spawnflags" "0"
+	"origin" "-5688 5868 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7276"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "191"
+	"spawnflags" "0"
+	"origin" "-5412 5592 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7279"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "242"
+	"spawnflags" "0"
+	"origin" "-5164 5456 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7282"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "433"
+	"spawnflags" "0"
+	"origin" "-5488 5340 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7285"
+	"classname" "info_node_marine_hint"
+	"angles" "0 345 0"
+	"nodeid" "385"
+	"spawnflags" "0"
+	"origin" "-5584 5000 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7291"
+	"classname" "info_node_marine_hint"
+	"angles" "0 55 0"
+	"nodeid" "416"
+	"spawnflags" "0"
+	"origin" "-5632 4668 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7294"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "543"
+	"spawnflags" "0"
+	"origin" "-5456 4456 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7300"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "193"
+	"spawnflags" "0"
+	"origin" "-5312 3928 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7303"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "243"
+	"spawnflags" "0"
+	"origin" "-5024 4008 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7306"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "544"
+	"spawnflags" "0"
+	"origin" "-5124 3584 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7309"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "545"
+	"spawnflags" "0"
+	"origin" "-5120 3244 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7312"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "598"
+	"spawnflags" "0"
+	"origin" "-5132 2940 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7318"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "118"
+	"spawnflags" "0"
+	"origin" "-5424 2344 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7321"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "546"
+	"spawnflags" "0"
+	"origin" "-5120 2220 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7324"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "547"
+	"spawnflags" "0"
+	"origin" "-5116 1996 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7327"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "594"
+	"spawnflags" "0"
+	"origin" "-5284 1736 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7330"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "595"
+	"spawnflags" "0"
+	"origin" "-5120 1540 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7333"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "597"
+	"spawnflags" "0"
+	"origin" "-5292 1292 846"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7339"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "45"
+	"spawnflags" "0"
+	"origin" "-4472 1204 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7342"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "117"
+	"spawnflags" "0"
+	"origin" "-4608 1200 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7345"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "116"
+	"spawnflags" "0"
+	"origin" "-4744 1208 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7348"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "115"
+	"spawnflags" "0"
+	"origin" "-4884 1200 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7351"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "596"
+	"spawnflags" "0"
+	"origin" "-5296 960 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7354"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "159"
+	"spawnflags" "0"
+	"origin" "-5112 780 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7357"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "114"
+	"spawnflags" "0"
+	"origin" "-5332 856 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7360"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "113"
+	"spawnflags" "0"
+	"origin" "-5628 844 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7363"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "46"
+	"spawnflags" "0"
+	"origin" "-5936 860 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7366"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "112"
+	"spawnflags" "0"
+	"origin" "-5992 796 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7369"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "111"
+	"spawnflags" "0"
+	"origin" "-5888 792 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7372"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "110"
+	"spawnflags" "0"
+	"origin" "-5728 792 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7375"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "47"
+	"spawnflags" "0"
+	"origin" "-5568 792 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7378"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "169"
+	"spawnflags" "0"
+	"origin" "-6316 504 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7381"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "168"
+	"spawnflags" "0"
+	"origin" "-6096 588 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7384"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "430"
+	"spawnflags" "0"
+	"origin" "-6496 452 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7387"
+	"classname" "info_node_marine_hint"
+	"angles" "0 282 0"
+	"nodeid" "355"
+	"spawnflags" "0"
+	"origin" "-6484 660 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7393"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "432"
+	"spawnflags" "0"
+	"origin" "-7004 400 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7399"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "109"
+	"spawnflags" "0"
+	"origin" "-6844 920 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7402"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "48"
+	"spawnflags" "0"
+	"origin" "-6812 832 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7405"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "276"
+	"spawnflags" "0"
+	"origin" "-6616 936 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7408"
+	"classname" "info_node_marine_hint"
+	"angles" "0 255 0"
+	"nodeid" "324"
+	"spawnflags" "0"
+	"origin" "-6464 1088 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7411"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "166"
+	"spawnflags" "0"
+	"origin" "-6120 500 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7414"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "443"
+	"spawnflags" "0"
+	"origin" "-6332 396 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7417"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "445"
+	"spawnflags" "0"
+	"origin" "-6424 188 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7420"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "219"
+	"spawnflags" "0"
+	"origin" "-6548 136 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7423"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "444"
+	"spawnflags" "0"
+	"origin" "-6872 304 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7426"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "167"
+	"spawnflags" "0"
+	"origin" "-6832 112 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7429"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "61"
+	"spawnflags" "0"
+	"origin" "-7148 116 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7432"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "55"
+	"spawnflags" "0"
+	"origin" "-7240 260 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7435"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "49"
+	"spawnflags" "0"
+	"origin" "-7408 256 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7438"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "340"
+	"spawnflags" "0"
+	"origin" "-7472 748 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7444"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "331"
+	"spawnflags" "0"
+	"origin" "-7444 972 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7447"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "339"
+	"spawnflags" "0"
+	"origin" "-7440 840 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7450"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "333"
+	"spawnflags" "0"
+	"origin" "-7436 644 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7453"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "338"
+	"spawnflags" "0"
+	"origin" "-7592 504 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7456"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "337"
+	"spawnflags" "0"
+	"origin" "-7448 308 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7459"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "54"
+	"spawnflags" "0"
+	"origin" "-7584 116 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7462"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "53"
+	"spawnflags" "0"
+	"origin" "-7780 380 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7465"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "336"
+	"spawnflags" "0"
+	"origin" "-7704 340 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7471"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "50"
+	"spawnflags" "0"
+	"origin" "-7910 428 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7474"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "52"
+	"spawnflags" "0"
+	"origin" "-7904 212 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7477"
+	"classname" "info_node_marine_hint"
+	"angles" "0 100 0"
+	"nodeid" "146"
+	"spawnflags" "0"
+	"origin" "-7884 -116 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7483"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "51"
+	"spawnflags" "0"
+	"origin" "-7788 168 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7486"
+	"classname" "info_node_marine_hint"
+	"angles" "0 100 0"
+	"nodeid" "147"
+	"spawnflags" "0"
+	"origin" "-7784 4 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7489"
+	"classname" "info_node_marine_hint"
+	"angles" "0 100 0"
+	"nodeid" "149"
+	"spawnflags" "0"
+	"origin" "-7780 -164 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7492"
+	"classname" "info_node_marine_hint"
+	"angles" "0 100 0"
+	"nodeid" "148"
+	"spawnflags" "0"
+	"origin" "-7780 -352 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7495"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "457"
+	"spawnflags" "0"
+	"origin" "-7996 -540 835.998"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9268]"
+	}
+}
+entity
+{
+	"id" "7498"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "506"
+	"spawnflags" "0"
+	"origin" "-8148 -2228 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7507"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "299"
+	"spawnflags" "0"
+	"origin" "-7148 -2468 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -768]"
+	}
+}
+entity
+{
+	"id" "7510"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "637"
+	"spawnflags" "0"
+	"origin" "-7256 -2612 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1768]"
+	}
+}
+entity
+{
+	"id" "7513"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "642"
+	"spawnflags" "0"
+	"origin" "-7158.57 -2894.92 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3268]"
+	}
+}
+entity
+{
+	"id" "7516"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "643"
+	"spawnflags" "0"
+	"origin" "-7262.82 -2904 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1768]"
+	}
+}
+entity
+{
+	"id" "7519"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "486"
+	"spawnflags" "0"
+	"origin" "-8160 -2712 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7522"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "548"
+	"spawnflags" "0"
+	"origin" "-7712 -2740 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7525"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "592"
+	"spawnflags" "0"
+	"origin" "-7712 -2520 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7528"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "593"
+	"spawnflags" "0"
+	"origin" "-7712 -2640 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7531"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "253"
+	"spawnflags" "0"
+	"origin" "-7300 -2788 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7534"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "252"
+	"spawnflags" "0"
+	"origin" "-7428 -2792 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7537"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "251"
+	"spawnflags" "0"
+	"origin" "-7548 -2792 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7540"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "259"
+	"spawnflags" "0"
+	"origin" "-7744 -2796 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7543"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "261"
+	"spawnflags" "0"
+	"origin" "-7848 -2796 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7546"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "260"
+	"spawnflags" "0"
+	"origin" "-7980 -2912 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7549"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "487"
+	"spawnflags" "0"
+	"origin" "-8156 -2844 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7552"
+	"classname" "info_node_marine_hint"
+	"angles" "0 29 0"
+	"nodeid" "359"
+	"spawnflags" "0"
+	"origin" "-8156 -2460 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7558"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "492"
+	"spawnflags" "0"
+	"origin" "-8040 -2400 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "7561"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "488"
+	"spawnflags" "0"
+	"origin" "-8160 -2120 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9500]"
+	}
+}
+entity
+{
+	"id" "7564"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "491"
+	"spawnflags" "0"
+	"origin" "-8032 -1420 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 13000]"
+	}
+}
+entity
+{
+	"id" "7570"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "549"
+	"spawnflags" "0"
+	"origin" "-7708 -2152 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7573"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "589"
+	"spawnflags" "0"
+	"origin" "-7708 -2272 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7576"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "591"
+	"spawnflags" "0"
+	"origin" "-7584 -2048 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 6500]"
+	}
+}
+entity
+{
+	"id" "7585"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "282"
+	"spawnflags" "0"
+	"origin" "-7963.19 -2315.78 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "7588"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "278"
+	"spawnflags" "0"
+	"origin" "-7771.19 -2323.78 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "7591"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "281"
+	"spawnflags" "0"
+	"origin" "-7547.19 -2323.78 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "7594"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "279"
+	"spawnflags" "0"
+	"origin" "-7435.19 -2315.78 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "7597"
+	"classname" "info_node_marine_hint"
+	"angles" "0 78 0"
+	"nodeid" "448"
+	"spawnflags" "0"
+	"origin" "-7264 -1832 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 0]"
+	}
+}
+entity
+{
+	"id" "7600"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "280"
+	"spawnflags" "0"
+	"origin" "-7308.81 -2460.22 906"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "7603"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "590"
+	"spawnflags" "0"
+	"origin" "-6632 -4184 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14000]"
+	}
+}
+entity
+{
+	"id" "7606"
+	"classname" "info_node_marine_hint"
+	"angles" "0 114 0"
+	"nodeid" "184"
+	"spawnflags" "0"
+	"origin" "-7032 -3704 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 16000]"
+	}
+}
+entity
+{
+	"id" "7609"
+	"classname" "info_node_marine_hint"
+	"angles" "0 114 0"
+	"nodeid" "183"
+	"spawnflags" "0"
+	"origin" "-6872 -3744 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 16000]"
+	}
+}
+entity
+{
+	"id" "7612"
+	"classname" "info_node_marine_hint"
+	"angles" "0 315 0"
+	"nodeid" "372"
+	"spawnflags" "0"
+	"origin" "-7064 -3560 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14268]"
+	}
+}
+entity
+{
+	"id" "7618"
+	"classname" "info_node_marine_hint"
+	"angles" "0 20 0"
+	"nodeid" "317"
+	"spawnflags" "0"
+	"origin" "-7336 -3712 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3768]"
+	}
+}
+entity
+{
+	"id" "7621"
+	"classname" "info_node_marine_hint"
+	"angles" "0 73 0"
+	"nodeid" "429"
+	"spawnflags" "0"
+	"origin" "-7608 -3712 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10268]"
+	}
+}
+entity
+{
+	"id" "7624"
+	"classname" "info_node_marine_hint"
+	"angles" "0 268 0"
+	"nodeid" "328"
+	"spawnflags" "0"
+	"origin" "-7600 -3544 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10268]"
+	}
+}
+entity
+{
+	"id" "7627"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "58"
+	"spawnflags" "0"
+	"origin" "-7880 -3520 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "7630"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "56"
+	"spawnflags" "0"
+	"origin" "-8024 -3600 867"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11268]"
+	}
+}
+entity
+{
+	"id" "7633"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "464"
+	"spawnflags" "0"
+	"origin" "-8024 -3784 796"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11768]"
+	}
+}
+entity
+{
+	"id" "7636"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "479"
+	"spawnflags" "0"
+	"origin" "-7952 -4200 795"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13268]"
+	}
+}
+entity
+{
+	"id" "7639"
+	"classname" "info_node_marine_hint"
+	"angles" "0 81 0"
+	"nodeid" "453"
+	"spawnflags" "0"
+	"origin" "-8072 -4192 802.897"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13768]"
+	}
+}
+entity
+{
+	"id" "7642"
+	"classname" "info_node_marine_hint"
+	"angles" "0 81 0"
+	"nodeid" "451"
+	"spawnflags" "0"
+	"origin" "-8064 -4424 814.436"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14268]"
+	}
+}
+entity
+{
+	"id" "7645"
+	"classname" "info_node_marine_hint"
+	"angles" "0 172 0"
+	"nodeid" "248"
+	"spawnflags" "0"
+	"origin" "-7792 -4552 874"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -15268]"
+	}
+}
+entity
+{
+	"id" "7651"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "335"
+	"spawnflags" "0"
+	"origin" "-6176 -4944 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "7654"
+	"classname" "info_node_marine_hint"
+	"angles" "0 28.5 0"
+	"nodeid" "354"
+	"spawnflags" "0"
+	"origin" "-6256 -5280 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7000]"
+	}
+}
+entity
+{
+	"id" "7657"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "550"
+	"spawnflags" "0"
+	"origin" "-5864 -5568 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "7660"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "551"
+	"spawnflags" "0"
+	"origin" "-6000 -5608 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "7663"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "57"
+	"spawnflags" "0"
+	"origin" "-6088 -5568 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "7666"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "588"
+	"spawnflags" "0"
+	"origin" "-6440 -5712 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "7669"
+	"classname" "info_node_marine_hint"
+	"angles" "0 88 0"
+	"nodeid" "481"
+	"spawnflags" "0"
+	"origin" "-6856 -6000 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7672"
+	"classname" "info_node_marine_hint"
+	"angles" "0 148 0"
+	"nodeid" "215"
+	"spawnflags" "0"
+	"origin" "-6640 -6096 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7675"
+	"classname" "info_node_marine_hint"
+	"angles" "0 103 0"
+	"nodeid" "154"
+	"spawnflags" "0"
+	"origin" "-6384 -6064 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7678"
+	"classname" "info_node_marine_hint"
+	"angles" "0 73 0"
+	"nodeid" "428"
+	"spawnflags" "0"
+	"origin" "-6536 -6168 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7681"
+	"classname" "info_node_marine_hint"
+	"angles" "0 103 0"
+	"nodeid" "153"
+	"spawnflags" "0"
+	"origin" "-6392 -6264 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7684"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "552"
+	"spawnflags" "0"
+	"origin" "-6512 -6616 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7690"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "283"
+	"spawnflags" "0"
+	"origin" "-6456 -7016 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7696"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "587"
+	"spawnflags" "0"
+	"origin" "-6552 -7264 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7699"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "245"
+	"spawnflags" "0"
+	"origin" "-6208 -7248 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7702"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "553"
+	"spawnflags" "0"
+	"origin" "-6248 -7568 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7705"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "554"
+	"spawnflags" "0"
+	"origin" "-6248 -7776 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7708"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "586"
+	"spawnflags" "0"
+	"origin" "-6248 -8320 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7714"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "237"
+	"spawnflags" "0"
+	"origin" "-6080 -8800 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7717"
+	"classname" "info_node_marine_hint"
+	"angles" "0 150 0"
+	"nodeid" "226"
+	"spawnflags" "0"
+	"origin" "-5936 -9064 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7720"
+	"classname" "info_node_marine_hint"
+	"angles" "0 195 0"
+	"nodeid" "315"
+	"spawnflags" "0"
+	"origin" "-5656 -8936 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7729"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "59"
+	"spawnflags" "0"
+	"origin" "-8356 -712 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "7732"
+	"classname" "info_node_marine_hint"
+	"angles" "0 225 0"
+	"nodeid" "322"
+	"spawnflags" "0"
+	"origin" "-8244 -528 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "7735"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "555"
+	"spawnflags" "0"
+	"origin" "-6512 -6824 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7738"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "556"
+	"spawnflags" "0"
+	"origin" "-6520 -6416 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7741"
+	"classname" "info_node_marine_hint"
+	"angles" "0 103 0"
+	"nodeid" "155"
+	"spawnflags" "0"
+	"origin" "-6472 -6340 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7747"
+	"classname" "info_node_marine_hint"
+	"angles" "0 58 0"
+	"nodeid" "419"
+	"spawnflags" "0"
+	"origin" "-6948 -5960 1034"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7753"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "557"
+	"spawnflags" "0"
+	"origin" "-4680 -8672 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7756"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "60"
+	"spawnflags" "0"
+	"origin" "-4992 -8512 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7759"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "585"
+	"spawnflags" "0"
+	"origin" "-5168 -8720 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7762"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "291"
+	"spawnflags" "0"
+	"origin" "-4992 -8816 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7765"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "195"
+	"spawnflags" "0"
+	"origin" "-5152 -9104 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7768"
+	"classname" "info_node_marine_hint"
+	"angles" "0 195 0"
+	"nodeid" "314"
+	"spawnflags" "0"
+	"origin" "-5456 -8936 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7771"
+	"classname" "info_node_marine_hint"
+	"angles" "0 195 0"
+	"nodeid" "313"
+	"spawnflags" "0"
+	"origin" "-5832 -8936 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7774"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "209"
+	"spawnflags" "0"
+	"origin" "-5936 -8904 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7777"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "581"
+	"spawnflags" "0"
+	"origin" "-6368 -8576 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7780"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "582"
+	"spawnflags" "0"
+	"origin" "-6368 -8272 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7783"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "583"
+	"spawnflags" "0"
+	"origin" "-6372 -8112 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7786"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "584"
+	"spawnflags" "0"
+	"origin" "-6248 -8008 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7789"
+	"classname" "info_node_marine_hint"
+	"angles" "0 165 0"
+	"nodeid" "238"
+	"spawnflags" "0"
+	"origin" "-6208 -7120 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7792"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "198"
+	"spawnflags" "0"
+	"origin" "-6436 -7444 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7795"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "401"
+	"spawnflags" "0"
+	"origin" "-6676 -7284 1035"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7798"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "434"
+	"spawnflags" "0"
+	"origin" "-5640 5672 810.963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7801"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "199"
+	"spawnflags" "0"
+	"origin" "-5352 6368 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7807"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "108"
+	"spawnflags" "0"
+	"origin" "-3872 6944 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7813"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "62"
+	"spawnflags" "0"
+	"origin" "-4440 6952 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7816"
+	"classname" "info_node_marine_hint"
+	"angles" "0 30 0"
+	"nodeid" "361"
+	"spawnflags" "0"
+	"origin" "-4352 6888 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7819"
+	"classname" "info_node_marine_hint"
+	"angles" "0 285 0"
+	"nodeid" "356"
+	"spawnflags" "0"
+	"origin" "-4082.73 7183.74 810"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7822"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "107"
+	"spawnflags" "0"
+	"origin" "-2960 6904 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7825"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "106"
+	"spawnflags" "0"
+	"origin" "-2640 6688 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7828"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "334"
+	"spawnflags" "0"
+	"origin" "-2488 6856 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7831"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "63"
+	"spawnflags" "0"
+	"origin" "-2424 6760 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7834"
+	"classname" "info_node_marine_hint"
+	"angles" "0 105 0"
+	"nodeid" "171"
+	"spawnflags" "0"
+	"origin" "-2160 6608 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7837"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "332"
+	"spawnflags" "0"
+	"origin" "-1984 7032 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7840"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "105"
+	"spawnflags" "0"
+	"origin" "-1880 6824 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7843"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "67"
+	"spawnflags" "0"
+	"origin" "-1552 6824 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7846"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "64"
+	"spawnflags" "0"
+	"origin" "-1744 7008 818"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7849"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "330"
+	"spawnflags" "0"
+	"origin" "-5184 6656 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7852"
+	"classname" "info_node_marine_hint"
+	"angles" "0 225 0"
+	"nodeid" "321"
+	"spawnflags" "0"
+	"origin" "-4992 6720 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7861"
+	"classname" "info_node_marine_hint"
+	"angles" "0 126 0"
+	"nodeid" "201"
+	"spawnflags" "0"
+	"origin" "-3550 6976 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7864"
+	"classname" "info_node_marine_hint"
+	"angles" "0 216 0"
+	"nodeid" "320"
+	"spawnflags" "0"
+	"origin" "-3254 7228 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7867"
+	"classname" "info_node_marine_hint"
+	"angles" "0 51 0"
+	"nodeid" "414"
+	"spawnflags" "0"
+	"origin" "-3406 6876 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7870"
+	"classname" "info_node_marine_hint"
+	"angles" "0 306 0"
+	"nodeid" "370"
+	"spawnflags" "0"
+	"origin" "-3806 7234 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7873"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "558"
+	"spawnflags" "0"
+	"origin" "-3484 7052 802"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7876"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "559"
+	"spawnflags" "0"
+	"origin" "-6992 112 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7879"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "560"
+	"spawnflags" "0"
+	"origin" "-6864 784 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7882"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "65"
+	"spawnflags" "0"
+	"origin" "-6736 1040 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7885"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "561"
+	"spawnflags" "0"
+	"origin" "-6496 576 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7888"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "562"
+	"spawnflags" "0"
+	"origin" "-5288 1112 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7891"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "563"
+	"spawnflags" "0"
+	"origin" "-5288 472 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7894"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "580"
+	"spawnflags" "0"
+	"origin" "-5288 2000 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7897"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "564"
+	"spawnflags" "0"
+	"origin" "-5120 2640 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7900"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "565"
+	"spawnflags" "0"
+	"origin" "-5056 3024 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7903"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "579"
+	"spawnflags" "0"
+	"origin" "-5192 3568 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7906"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "294"
+	"spawnflags" "0"
+	"origin" "-5056 4160 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7909"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "66"
+	"spawnflags" "0"
+	"origin" "-5848 4136 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7912"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "421"
+	"spawnflags" "0"
+	"origin" "-5656 4960 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7915"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "422"
+	"spawnflags" "0"
+	"origin" "-5656 5480 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7918"
+	"classname" "info_node_marine_hint"
+	"angles" "0 60 0"
+	"nodeid" "423"
+	"spawnflags" "0"
+	"origin" "-5648 6040 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7924"
+	"classname" "info_node_marine_hint"
+	"angles" "0 75 0"
+	"nodeid" "431"
+	"spawnflags" "0"
+	"origin" "-5664 5336 809.5"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7927"
+	"classname" "info_node_marine_hint"
+	"angles" "0 131.5 0"
+	"nodeid" "203"
+	"spawnflags" "0"
+	"origin" "-5024 4984 880"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7930"
+	"classname" "info_node_marine_hint"
+	"angles" "0 120 0"
+	"nodeid" "197"
+	"spawnflags" "0"
+	"origin" "-5232 4472 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7933"
+	"classname" "info_node_marine_hint"
+	"angles" "0 47.5 0"
+	"nodeid" "410"
+	"spawnflags" "0"
+	"origin" "-5848 3912 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7936"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "566"
+	"spawnflags" "0"
+	"origin" "-5048 3848 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7939"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "567"
+	"spawnflags" "0"
+	"origin" "-5056 3296 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7942"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "568"
+	"spawnflags" "0"
+	"origin" "-5072 2848 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7945"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "578"
+	"spawnflags" "0"
+	"origin" "-5128 2368 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7948"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "577"
+	"spawnflags" "0"
+	"origin" "-5116 1824 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7951"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "104"
+	"spawnflags" "0"
+	"origin" "-5392 920 834"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7954"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "103"
+	"spawnflags" "0"
+	"origin" "-5048 1056 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7957"
+	"classname" "info_node_marine_hint"
+	"angles" "0 109 0"
+	"nodeid" "174"
+	"spawnflags" "0"
+	"origin" "-6144 312 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7963"
+	"classname" "info_node_marine_hint"
+	"angles" "0 323.5 0"
+	"nodeid" "374"
+	"spawnflags" "0"
+	"origin" "-6296 944 843"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7966"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "68"
+	"spawnflags" "0"
+	"origin" "-6816 248 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7969"
+	"classname" "info_node_marine_hint"
+	"angles" "0 49 0"
+	"nodeid" "411"
+	"spawnflags" "0"
+	"origin" "-7183.46 -5193.31 955"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "7972"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "69"
+	"spawnflags" "0"
+	"origin" "-7252.43 -4934.34 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4000]"
+	}
+}
+entity
+{
+	"id" "7975"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "569"
+	"spawnflags" "0"
+	"origin" "-6875.05 -4943.37 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "7978"
+	"classname" "info_node_marine_hint"
+	"angles" "0 161 0"
+	"nodeid" "235"
+	"spawnflags" "0"
+	"origin" "-7111.17 -4691.61 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 8000]"
+	}
+}
+entity
+{
+	"id" "7981"
+	"classname" "info_node_marine_hint"
+	"angles" "0 139 0"
+	"nodeid" "212"
+	"spawnflags" "0"
+	"origin" "-6908.5 -4538.58 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 10000]"
+	}
+}
+entity
+{
+	"id" "7984"
+	"classname" "info_node_marine_hint"
+	"angles" "0 186 0"
+	"nodeid" "305"
+	"spawnflags" "0"
+	"origin" "-7426.36 -4405.26 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 12000]"
+	}
+}
+entity
+{
+	"id" "7987"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "576"
+	"spawnflags" "0"
+	"origin" "-6912 -4096 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14000]"
+	}
+}
+entity
+{
+	"id" "7990"
+	"classname" "info_node_marine_hint"
+	"angles" "0 114 0"
+	"nodeid" "182"
+	"spawnflags" "0"
+	"origin" "-6968 -3848 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 16000]"
+	}
+}
+entity
+{
+	"id" "7993"
+	"classname" "info_node_marine_hint"
+	"angles" "0 112 0"
+	"nodeid" "181"
+	"spawnflags" "0"
+	"origin" "-7855.3 -4353.55 831.364"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14768]"
+	}
+}
+entity
+{
+	"id" "7996"
+	"classname" "info_node_marine_hint"
+	"angles" "0 117 0"
+	"nodeid" "187"
+	"spawnflags" "0"
+	"origin" "-7888 -4016 795"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12768]"
+	}
+}
+entity
+{
+	"id" "7999"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "70"
+	"spawnflags" "0"
+	"origin" "-7752 -3600 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10768]"
+	}
+}
+entity
+{
+	"id" "8002"
+	"classname" "info_node_marine_hint"
+	"angles" "0 271 0"
+	"nodeid" "352"
+	"spawnflags" "0"
+	"origin" "-6918.52 -4341.32 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -8768]"
+	}
+}
+entity
+{
+	"id" "8005"
+	"classname" "info_node_marine_hint"
+	"angles" "0 112 0"
+	"nodeid" "180"
+	"spawnflags" "0"
+	"origin" "-7276.55 -4082.97 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -6768]"
+	}
+}
+entity
+{
+	"id" "8008"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "468"
+	"spawnflags" "0"
+	"origin" "-7248 -3776 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -4768]"
+	}
+}
+entity
+{
+	"id" "8011"
+	"classname" "info_node_marine_hint"
+	"angles" "0 41 0"
+	"nodeid" "397"
+	"spawnflags" "0"
+	"origin" "-7356 -3390.29 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2768]"
+	}
+}
+entity
+{
+	"id" "8014"
+	"classname" "info_node_marine_hint"
+	"angles" "0 325 0"
+	"nodeid" "375"
+	"spawnflags" "0"
+	"origin" "-6958.71 -3257.34 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -768]"
+	}
+}
+entity
+{
+	"id" "8017"
+	"classname" "info_node_marine_hint"
+	"angles" "0 58 0"
+	"nodeid" "418"
+	"spawnflags" "0"
+	"origin" "-6794.19 -3251.39 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 1500]"
+	}
+}
+entity
+{
+	"id" "8020"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "574"
+	"spawnflags" "0"
+	"origin" "-6809.77 -2936.02 852"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 3500]"
+	}
+}
+entity
+{
+	"id" "8023"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "570"
+	"spawnflags" "0"
+	"origin" "-6807.29 -2618.41 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 5500]"
+	}
+}
+entity
+{
+	"id" "8026"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "102"
+	"spawnflags" "0"
+	"origin" "-6426.77 -5566.02 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "8029"
+	"classname" "info_node_marine_hint"
+	"angles" "0 95 0"
+	"nodeid" "652"
+	"spawnflags" "0"
+	"origin" "-6344.15 -5677.57 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3500]"
+	}
+}
+entity
+{
+	"id" "8032"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "101"
+	"spawnflags" "0"
+	"origin" "-6804.91 -5768.86 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "8035"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "575"
+	"spawnflags" "0"
+	"origin" "-6785.82 -5489.25 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3000]"
+	}
+}
+entity
+{
+	"id" "8038"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "100"
+	"spawnflags" "0"
+	"origin" "-7189.99 -5031.62 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "8041"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "71"
+	"spawnflags" "0"
+	"origin" "-6256 -5200 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7000]"
+	}
+}
+entity
+{
+	"id" "8044"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "99"
+	"spawnflags" "0"
+	"origin" "-6879.63 -4811.78 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 9000]"
+	}
+}
+entity
+{
+	"id" "8047"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "98"
+	"spawnflags" "0"
+	"origin" "-7263.16 -4556.65 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 11000]"
+	}
+}
+entity
+{
+	"id" "8050"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "97"
+	"spawnflags" "0"
+	"origin" "-6450.44 -4374.92 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 13000]"
+	}
+}
+entity
+{
+	"id" "8053"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "96"
+	"spawnflags" "0"
+	"origin" "-6718.49 -3866.82 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 15000]"
+	}
+}
+entity
+{
+	"id" "8056"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "95"
+	"spawnflags" "0"
+	"origin" "-7357.89 -3911.96 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -15768]"
+	}
+}
+entity
+{
+	"id" "8059"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "94"
+	"spawnflags" "0"
+	"origin" "-7385.12 -3523.69 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13768]"
+	}
+}
+entity
+{
+	"id" "8062"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "93"
+	"spawnflags" "0"
+	"origin" "-6644.59 -3005.38 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11768]"
+	}
+}
+entity
+{
+	"id" "8065"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "72"
+	"spawnflags" "0"
+	"origin" "-7017.62 -2672.94 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -9768]"
+	}
+}
+entity
+{
+	"id" "8068"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "92"
+	"spawnflags" "0"
+	"origin" "-6642.65 -2434.07 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -7768]"
+	}
+}
+entity
+{
+	"id" "8071"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "91"
+	"spawnflags" "0"
+	"origin" "-6840.21 -2174.59 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -5768]"
+	}
+}
+entity
+{
+	"id" "8074"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "73"
+	"spawnflags" "0"
+	"origin" "-7059.17 -2175.34 899"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3768]"
+	}
+}
+entity
+{
+	"id" "8077"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "638"
+	"spawnflags" "0"
+	"origin" "-7262.54 -2151.91 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1768]"
+	}
+}
+entity
+{
+	"id" "8080"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "639"
+	"spawnflags" "0"
+	"origin" "-7166.4 -1887.87 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 500]"
+	}
+}
+entity
+{
+	"id" "8083"
+	"classname" "info_node_marine_hint"
+	"angles" "0 189 0"
+	"nodeid" "307"
+	"spawnflags" "0"
+	"origin" "-7261.07 -1522.97 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 2500]"
+	}
+}
+entity
+{
+	"id" "8086"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "301"
+	"spawnflags" "0"
+	"origin" "-7395.85 -1989.16 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 4500]"
+	}
+}
+entity
+{
+	"id" "8092"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "284"
+	"spawnflags" "0"
+	"origin" "-7931.02 -1992.24 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 8500]"
+	}
+}
+entity
+{
+	"id" "8095"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "285"
+	"spawnflags" "0"
+	"origin" "-7953.2 -1912.58 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 10500]"
+	}
+}
+entity
+{
+	"id" "8098"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "497"
+	"spawnflags" "0"
+	"origin" "-8036.76 -1566.03 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 12500]"
+	}
+}
+entity
+{
+	"id" "8101"
+	"classname" "info_node_marine_hint"
+	"angles" "0 328 0"
+	"nodeid" "377"
+	"spawnflags" "0"
+	"origin" "-8071.73 -1334.96 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 14500]"
+	}
+}
+entity
+{
+	"id" "8104"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "470"
+	"spawnflags" "0"
+	"origin" "-7851.4 -1385.21 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -16268]"
+	}
+}
+entity
+{
+	"id" "8107"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "90"
+	"spawnflags" "0"
+	"origin" "-7740.35 -1098.6 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -14268]"
+	}
+}
+entity
+{
+	"id" "8110"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "475"
+	"spawnflags" "0"
+	"origin" "-7880.37 -891.549 835.975"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -12268]"
+	}
+}
+entity
+{
+	"id" "8113"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "89"
+	"spawnflags" "0"
+	"origin" "-7705.16 -690.515 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -10268]"
+	}
+}
+entity
+{
+	"id" "8116"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "74"
+	"spawnflags" "0"
+	"origin" "-7785.96 -602.197 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "8119"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "477"
+	"spawnflags" "0"
+	"origin" "-7643.03 -814.232 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "8122"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "476"
+	"spawnflags" "0"
+	"origin" "-7685.88 -994.997 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -13768]"
+	}
+}
+entity
+{
+	"id" "8125"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "75"
+	"spawnflags" "0"
+	"origin" "-7790.21 -1196.54 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -15768]"
+	}
+}
+entity
+{
+	"id" "8128"
+	"classname" "info_node_marine_hint"
+	"angles" "0 86 0"
+	"nodeid" "466"
+	"spawnflags" "0"
+	"origin" "-7904.42 -1510.13 835"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 15000]"
+	}
+}
+entity
+{
+	"id" "8134"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "495"
+	"spawnflags" "0"
+	"origin" "-8152.89 -1833.72 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 11000]"
+	}
+}
+entity
+{
+	"id" "8137"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "494"
+	"spawnflags" "0"
+	"origin" "-8040 -2032 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "8140"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "290"
+	"spawnflags" "0"
+	"origin" "-7757.46 -1862.81 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 7000]"
+	}
+}
+entity
+{
+	"id" "8143"
+	"classname" "info_node_marine_hint"
+	"angles" "0 182 0"
+	"nodeid" "300"
+	"spawnflags" "0"
+	"origin" "-7456.12 -1852.96 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 5000]"
+	}
+}
+entity
+{
+	"id" "8146"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "572"
+	"spawnflags" "0"
+	"origin" "-7158.16 -1400.9 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 3000]"
+	}
+}
+entity
+{
+	"id" "8149"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "571"
+	"spawnflags" "0"
+	"origin" "-7255.32 -1738.36 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 1000]"
+	}
+}
+entity
+{
+	"id" "8152"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "640"
+	"spawnflags" "0"
+	"origin" "-7151.72 -2026.07 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -1268]"
+	}
+}
+entity
+{
+	"id" "8155"
+	"classname" "info_node_marine_hint"
+	"angles" "0 92 0"
+	"nodeid" "641"
+	"spawnflags" "0"
+	"origin" "-7158.29 -2142.83 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -3268]"
+	}
+}
+entity
+{
+	"id" "8158"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "88"
+	"spawnflags" "0"
+	"origin" "-6896.9 -2294.38 883"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -5268]"
+	}
+}
+entity
+{
+	"id" "8161"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "87"
+	"spawnflags" "0"
+	"origin" "-6793.9 -2402.89 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -7268]"
+	}
+}
+entity
+{
+	"id" "8164"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "86"
+	"spawnflags" "0"
+	"origin" "-6885.86 -2773.05 887.426"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -9268]"
+	}
+}
+entity
+{
+	"id" "8167"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "76"
+	"spawnflags" "0"
+	"origin" "-6832.97 -3022.72 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11268]"
+	}
+}
+entity
+{
+	"id" "8170"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "85"
+	"spawnflags" "0"
+	"origin" "-7493.27 -3322.21 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -13268]"
+	}
+}
+entity
+{
+	"id" "8176"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "84"
+	"spawnflags" "0"
+	"origin" "-6737.33 -3729.96 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 15500]"
+	}
+}
+entity
+{
+	"id" "8179"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "83"
+	"spawnflags" "0"
+	"origin" "-6662.18 -4427.62 879"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 13500]"
+	}
+}
+entity
+{
+	"id" "8182"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "82"
+	"spawnflags" "0"
+	"origin" "-7357.13 -4450.96 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 11500]"
+	}
+}
+entity
+{
+	"id" "8185"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "80"
+	"spawnflags" "0"
+	"origin" "-6851.67 -4704.66 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 9500]"
+	}
+}
+entity
+{
+	"id" "8188"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "79"
+	"spawnflags" "0"
+	"origin" "-6104 -5280 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7500]"
+	}
+}
+entity
+{
+	"id" "8191"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "77"
+	"spawnflags" "0"
+	"origin" "-7083.39 -4942.49 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5500]"
+	}
+}
+entity
+{
+	"id" "8194"
+	"classname" "info_node_marine_hint"
+	"angles" "0 90 0"
+	"nodeid" "573"
+	"spawnflags" "0"
+	"origin" "-6936.3 -5483.24 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 3500]"
+	}
+}
+entity
+{
+	"id" "8197"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "78"
+	"spawnflags" "0"
+	"origin" "-6940.87 -5778.16 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "8200"
+	"classname" "info_node_marine_hint"
+	"angles" "0 87 0"
+	"nodeid" "472"
+	"spawnflags" "0"
+	"origin" "-6543.44 -5685.54 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4000]"
+	}
+}
+entity
+{
+	"id" "8203"
+	"classname" "info_node_marine_hint"
+	"angles" "0 110 0"
+	"nodeid" "178"
+	"spawnflags" "0"
+	"origin" "-6351.21 -5190.05 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "8206"
+	"classname" "info_node_marine_hint"
+	"angles" "0 93 0"
+	"nodeid" "651"
+	"spawnflags" "0"
+	"origin" "-6408 -5472 947"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "8209"
+	"classname" "info_node_marine_hint"
+	"angles" "0 102 0"
+	"nodeid" "152"
+	"spawnflags" "0"
+	"origin" "-6632.27 -2787.8 858.976"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 4000]"
+	}
+}
+entity
+{
+	"id" "8212"
+	"classname" "info_node_marine_hint"
+	"angles" "0 109 0"
+	"nodeid" "175"
+	"spawnflags" "0"
+	"origin" "-6639.69 -3087.56 851"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 2000]"
+	}
+}
+entity
+{
+	"id" "8215"
+	"classname" "info_node_marine_hint"
+	"angles" "0 35 0"
+	"nodeid" "392"
+	"spawnflags" "0"
+	"origin" "-6883.69 -3379.54 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 0]"
+	}
+}
+entity
+{
+	"id" "8218"
+	"classname" "info_node_marine_hint"
+	"angles" "0 36 0"
+	"nodeid" "395"
+	"spawnflags" "0"
+	"origin" "-7243.77 -3503.35 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -2268]"
+	}
+}
+entity
+{
+	"id" "8221"
+	"classname" "info_node_marine_hint"
+	"angles" "0 93 0"
+	"nodeid" "650"
+	"spawnflags" "0"
+	"origin" "-7112 -3704 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -4268]"
+	}
+}
+entity
+{
+	"id" "8224"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "462"
+	"spawnflags" "0"
+	"origin" "-7445.79 -4030.84 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -6268]"
+	}
+}
+entity
+{
+	"id" "8227"
+	"classname" "info_node_marine_hint"
+	"angles" "0 101 0"
+	"nodeid" "151"
+	"spawnflags" "0"
+	"origin" "-7226.91 -4170.83 963"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -8268]"
+	}
+}
+entity
+{
+	"id" "8230"
+	"classname" "info_node_marine_hint"
+	"angles" "0 328 0"
+	"nodeid" "376"
+	"spawnflags" "0"
+	"origin" "-7752 -3520 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -10268]"
+	}
+}
+entity
+{
+	"id" "8233"
+	"classname" "info_node_marine_hint"
+	"angles" "0 83 0"
+	"nodeid" "456"
+	"spawnflags" "0"
+	"origin" "-8031.15 -4029.01 795"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12268]"
+	}
+}
+entity
+{
+	"id" "8236"
+	"classname" "info_node_marine_hint"
+	"angles" "0 81 0"
+	"nodeid" "450"
+	"spawnflags" "0"
+	"origin" "-8066.04 -4541.03 814.436"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -14268]"
+	}
+}
+entity
+{
+	"id" "8239"
+	"classname" "info_node_marine_hint"
+	"angles" "0 181 0"
+	"nodeid" "297"
+	"spawnflags" "0"
+	"origin" "-6768 -3624 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -16268]"
+	}
+}
+entity
+{
+	"id" "8242"
+	"classname" "info_node_marine_hint"
+	"angles" "0 85 0"
+	"nodeid" "461"
+	"spawnflags" "0"
+	"origin" "-6979.41 -3934.51 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 14500]"
+	}
+}
+entity
+{
+	"id" "8245"
+	"classname" "info_node_marine_hint"
+	"angles" "0 192 0"
+	"nodeid" "311"
+	"spawnflags" "0"
+	"origin" "-6584 -4296 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 12500]"
+	}
+}
+entity
+{
+	"id" "8248"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "288"
+	"spawnflags" "0"
+	"origin" "-7232 -4464 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 10500]"
+	}
+}
+entity
+{
+	"id" "8251"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "287"
+	"spawnflags" "0"
+	"origin" "-7041.58 -4545.21 876"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 8500]"
+	}
+}
+entity
+{
+	"id" "8254"
+	"classname" "info_node_marine_hint"
+	"angles" "0 180 0"
+	"nodeid" "286"
+	"spawnflags" "0"
+	"origin" "-6440 -4936 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6500]"
+	}
+}
+entity
+{
+	"id" "8257"
+	"classname" "info_node_marine_hint"
+	"angles" "0 157 0"
+	"nodeid" "233"
+	"spawnflags" "0"
+	"origin" "-6624 -4952 875"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4500]"
+	}
+}
+entity
+{
+	"id" "8260"
+	"classname" "info_node_marine_hint"
+	"angles" "0 118 0"
+	"nodeid" "188"
+	"spawnflags" "0"
+	"origin" "-6920.35 -5340.23 1027"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "8263"
+	"classname" "info_node_marine_hint"
+	"angles" "0 270 0"
+	"nodeid" "347"
+	"spawnflags" "0"
+	"origin" "-5176 -8896 943.734"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "8266"
+	"classname" "info_node_marine_hint"
+	"angles" "0 135 0"
+	"nodeid" "207"
+	"spawnflags" "0"
+	"origin" "-6216 -8672 954"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7153"
+	"classname" "info_node_marine_hint"
+	"angles" "0 0 0"
+	"nodeid" "81"
+	"spawnflags" "0"
+	"origin" "-4196 7060 810.961"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "7501"
+	"classname" "info_node_marine_hint"
+	"angles" "0 179 0"
+	"nodeid" "254"
+	"spawnflags" "0"
+	"origin" "-7668 -2836 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "6829"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "489"
+	"spawnflags" "0"
+	"origin" "-8036 -2264 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "9755"
+	"classname" "info_node_marine_hint"
+	"angles" "0 89 0"
+	"nodeid" "490"
+	"spawnflags" "0"
+	"origin" "-8040 -2600 907"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 9000]"
+	}
+}
+entity
+{
+	"id" "9758"
+	"classname" "info_node_marine_hint"
+	"angles" "0 15 0"
+	"nodeid" "223"
+	"spawnflags" "0"
+	"origin" "-8192 -648 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+entity
+{
+	"id" "9764"
+	"classname" "info_node_marine_hint"
+	"angles" "0 45 0"
+	"nodeid" "407"
+	"spawnflags" "0"
+	"origin" "-8040 -648 842"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -9768]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

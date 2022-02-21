@@ -1,0 +1,255 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "5032"
+	"mapversion" "4"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "32"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "4"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "11"
+	"classname" "asw_spawner"
+	"AlienOrders" "3"
+	"angles" "0 0 0"
+	"ClearCheck" "1"
+	"flammablesp" "1"
+	"flinchablesp" "1"
+	"freezablesp" "1"
+	"LongRange" "1"
+	"MaxLiveAliens" "2"
+	"NearDistance" "740"
+	"NumAliens" "3"
+	"sizescalesp" "1.0"
+	"SpawnerState" "1"
+	"SpawnInterval" "2"
+	"SpawnIntervalJitter" "25"
+	"speedscalesp" "1.5"
+	"targetname" "suprise_spawn"
+	"teslablesp" "1"
+	"origin" "0 -32 0"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "13"
+	"classname" "asw_spawner"
+	"AlienOrders" "3"
+	"angles" "0 0 0"
+	"ClearCheck" "1"
+	"flammablesp" "1"
+	"flinchablesp" "1"
+	"freezablesp" "1"
+	"LongRange" "1"
+	"MaxLiveAliens" "2"
+	"NearDistance" "740"
+	"NumAliens" "3"
+	"sizescalesp" "1.0"
+	"SpawnerState" "1"
+	"SpawnInterval" "2"
+	"SpawnIntervalJitter" "25"
+	"speedscalesp" "1.5"
+	"targetname" "suprise_spawn"
+	"teslablesp" "1"
+	"origin" "32 -32 0"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "15"
+	"classname" "asw_spawner"
+	"AlienOrders" "3"
+	"angles" "0 0 0"
+	"ClearCheck" "1"
+	"flammablesp" "1"
+	"flinchablesp" "1"
+	"freezablesp" "1"
+	"LongRange" "1"
+	"MaxLiveAliens" "2"
+	"NearDistance" "740"
+	"NumAliens" "3"
+	"sizescalesp" "1.0"
+	"SpawnerState" "1"
+	"SpawnInterval" "2"
+	"SpawnIntervalJitter" "25"
+	"speedscalesp" "1.5"
+	"targetname" "suprise_spawn"
+	"teslablesp" "1"
+	"origin" "32 0 0"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "17"
+	"classname" "asw_spawner"
+	"AlienOrders" "3"
+	"angles" "0 0 0"
+	"ClearCheck" "1"
+	"flammablesp" "1"
+	"flinchablesp" "1"
+	"freezablesp" "1"
+	"LongRange" "1"
+	"MaxLiveAliens" "2"
+	"NearDistance" "740"
+	"NumAliens" "3"
+	"sizescalesp" "1.0"
+	"SpawnerState" "1"
+	"SpawnInterval" "2"
+	"SpawnIntervalJitter" "25"
+	"speedscalesp" "1.5"
+	"targetname" "suprise_spawn"
+	"teslablesp" "1"
+	"origin" "0 0 0"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "72"
+	"classname" "trigger_asw_chance"
+	"origin" "0 0 16"
+	"spawnflags" "16"
+	"StartDisabled" "0"
+	"targetname" "suprise_spawn_trigger"
+	"TriggerChance" "0.6"
+	"wait" "-1"
+	connections
+	{
+		"OnStartTouch" "suprise_spawnStartSpawning0-1"
+	}
+	solid
+	{
+		"id" "2"
+		side
+		{
+			"id" "1"
+			"plane" "(-256 256 32) (256 256 32) (256 -256 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "2"
+			"plane" "(-256 -256 0) (256 -256 0) (256 256 0)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3"
+			"plane" "(-256 256 32) (-256 -256 32) (-256 -256 0)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "4"
+			"plane" "(256 256 0) (256 -256 0) (256 -256 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "5"
+			"plane" "(256 256 32) (-256 256 32) (-256 256 0)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "6"
+			"plane" "(256 -256 0) (-256 -256 0) (-256 -256 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

@@ -1,0 +1,2181 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4816"
+	"mapversion" "3"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "2"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "3"
+	"classname" "worldspawn"
+	"skyname" "blacksky"
+	"maxpropscreenwidth" "-1"
+	"detailvbsp" "detail.vbsp"
+	"detailmaterial" "detail/detailsprites"
+}
+entity
+{
+	"id" "2"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "167 -67 68"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "6"
+	"classname" "func_detail"
+	solid
+	{
+		"id" "7"
+		side
+		{
+			"id" "1"
+			"plane" "(3 -3 84) (3 -3 82) (427 -3 82)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[-1 0 0 256.458] 1"
+			"vaxis" "[0 0 -1 28] 1"
+			"rotation" "0"
+			"lightmapscale" "256"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "2"
+			"plane" "(3 -131 84) (3 -131 82) (3 -3 82)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 32.1699] 0.25"
+			"vaxis" "[0 0 -1 48] 0.25"
+			"rotation" "0"
+			"lightmapscale" "64"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3"
+			"plane" "(427 -131 84) (427 -131 82) (3 -131 82)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[1 0 0 -33.832] 0.25"
+			"vaxis" "[0 0 -1 48] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "4"
+			"plane" "(427 -3 84) (427 -3 82) (427 -131 82)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 1 0 -96.1699] 0.25"
+			"vaxis" "[0 0 -1 48] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "5"
+			"plane" "(3 -131 84) (3 -3 84) (427 -3 84)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 192.17] 0.25"
+			"vaxis" "[-1 0 0 449.832] 0.25"
+			"rotation" "0"
+			"lightmapscale" "4"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "6"
+			"plane" "(427 -3 82) (3 -3 82) (3 -131 82)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 96.0425] 1"
+			"vaxis" "[1 0 0 -120.458] 1"
+			"rotation" "0"
+			"lightmapscale" "128"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-15768 10000]"
+	}
+}
+entity
+{
+	"id" "8"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -131 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "12"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "295 -67 68"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "16"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "231 -67 68"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "36"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 0"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "40"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "107 -131 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "44"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "107 -3 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "48"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "211 -131 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "52"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "211 -3 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "56"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "323 -131 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "60"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "323 -3 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "64"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -131 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "68"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -3 0.25"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "72"
+	"classname" "func_detail"
+	solid
+	{
+		"id" "73"
+		side
+		{
+			"id" "36"
+			"plane" "(3 -3 175.75) (3 -3 173.75) (103 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[-1 0 0 256.458] 1"
+			"vaxis" "[0 0 -1 119.75] 1"
+			"rotation" "0"
+			"lightmapscale" "256"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "35"
+			"plane" "(3 -131 175.75) (3 -131 173.75) (3 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 32.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "64"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "34"
+			"plane" "(103 -131 175.75) (103 -131 173.75) (3 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[1 0 0 -33.832] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33"
+			"plane" "(103 -3 175.75) (103 -3 173.75) (103 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 1 0 -96.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "32"
+			"plane" "(3 -131 175.75) (3 -3 175.75) (103 -3 175.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 192.17] 0.25"
+			"vaxis" "[-1 0 0 449.832] 0.25"
+			"rotation" "0"
+			"lightmapscale" "4"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "31"
+			"plane" "(103 -3 173.75) (3 -3 173.75) (3 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 96.0425] 1"
+			"vaxis" "[1 0 0 -120.458] 1"
+			"rotation" "0"
+			"lightmapscale" "128"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-15768 10000]"
+	}
+}
+entity
+{
+	"id" "74"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "78"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -131 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "82"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "107 -131 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "86"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "211 -131 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "90"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "323 -131 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "94"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -131 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "98"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "107 -3 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "102"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "211 -3 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "106"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "323 -3 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "110"
+	"classname" "prop_static"
+	"angles" "90 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -3 127.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "114"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "118"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "67 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "122"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "131 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "126"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "195 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "130"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "259 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "134"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "363 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "138"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "299 -131 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "142"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "363 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "146"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "299 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "150"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "259 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "154"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "195 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "158"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "131 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "162"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "67 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "166"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "140 140 140"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 127.626"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "170"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "363 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "174"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "299 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "178"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "259 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "182"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "195 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "186"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "131 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "190"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "67 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "194"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "198"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "363 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "202"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "299 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "206"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "259 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "210"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "195 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "214"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "131 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "218"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "67 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "222"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/thinbeam64.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 162 162"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -131 215.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "226"
+	"classname" "func_detail"
+	solid
+	{
+		"id" "227"
+		side
+		{
+			"id" "42"
+			"plane" "(111 -3 175.75) (111 -3 173.75) (207 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[-1 0 0 360.458] 1"
+			"vaxis" "[0 0 -1 119.75] 1"
+			"rotation" "0"
+			"lightmapscale" "256"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "41"
+			"plane" "(111 -131 175.75) (111 -131 173.75) (111 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 32.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "64"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "40"
+			"plane" "(207 -131 175.75) (207 -131 173.75) (111 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[1 0 0 -449.832] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "39"
+			"plane" "(207 -3 175.75) (207 -3 173.75) (207 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 1 0 -96.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "38"
+			"plane" "(111 -131 175.75) (111 -3 175.75) (207 -3 175.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 192.17] 0.25"
+			"vaxis" "[-1 0 0 353.832] 0.25"
+			"rotation" "0"
+			"lightmapscale" "4"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "37"
+			"plane" "(207 -3 173.75) (111 -3 173.75) (111 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 96.0425] 1"
+			"vaxis" "[1 0 0 -224.458] 1"
+			"rotation" "0"
+			"lightmapscale" "128"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-15768 10000]"
+	}
+}
+entity
+{
+	"id" "228"
+	"classname" "func_detail"
+	solid
+	{
+		"id" "229"
+		side
+		{
+			"id" "48"
+			"plane" "(215 -3 175.75) (215 -3 173.75) (319 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[-1 0 0 472.458] 1"
+			"vaxis" "[0 0 -1 119.75] 1"
+			"rotation" "0"
+			"lightmapscale" "256"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "47"
+			"plane" "(215 -131 175.75) (215 -131 173.75) (215 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 32.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "64"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "46"
+			"plane" "(319 -131 175.75) (319 -131 173.75) (215 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[1 0 0 -385.832] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "45"
+			"plane" "(319 -3 175.75) (319 -3 173.75) (319 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 1 0 -96.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "44"
+			"plane" "(215 -131 175.75) (215 -3 175.75) (319 -3 175.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 192.17] 0.25"
+			"vaxis" "[-1 0 0 289.832] 0.25"
+			"rotation" "0"
+			"lightmapscale" "4"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "43"
+			"plane" "(319 -3 173.75) (215 -3 173.75) (215 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 96.0425] 1"
+			"vaxis" "[1 0 0 -336.458] 1"
+			"rotation" "0"
+			"lightmapscale" "128"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-15768 10000]"
+	}
+}
+entity
+{
+	"id" "230"
+	"classname" "func_detail"
+	solid
+	{
+		"id" "231"
+		side
+		{
+			"id" "54"
+			"plane" "(327 -3 175.75) (327 -3 173.75) (423 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[-1 0 0 64.458] 1"
+			"vaxis" "[0 0 -1 119.75] 1"
+			"rotation" "0"
+			"lightmapscale" "256"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "53"
+			"plane" "(327 -131 175.75) (327 -131 173.75) (327 -3 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 32.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "64"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "52"
+			"plane" "(423 -131 175.75) (423 -131 173.75) (327 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[1 0 0 -289.832] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "51"
+			"plane" "(423 -3 175.75) (423 -3 173.75) (423 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 1 0 -96.1699] 0.25"
+			"vaxis" "[0 0 -1 415] 0.25"
+			"rotation" "0"
+			"lightmapscale" "8"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "50"
+			"plane" "(327 -131 175.75) (327 -3 175.75) (423 -3 175.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 192.17] 0.25"
+			"vaxis" "[-1 0 0 193.832] 0.25"
+			"rotation" "0"
+			"lightmapscale" "4"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "49"
+			"plane" "(423 -3 173.75) (327 -3 173.75) (327 -131 173.75)"
+			"material" "METAL/METALFLOOR011A"
+			"uaxis" "[0 -1 0 96.0425] 1"
+			"vaxis" "[1 0 0 -440.458] 1"
+			"rotation" "0"
+			"lightmapscale" "128"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 180 0"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "0 180 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-15768 10000]"
+	}
+}
+entity
+{
+	"id" "232"
+	"classname" "prop_static"
+	"angles" "0 90 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "236"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1 -131 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "240"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "127 -131 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "244"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "255 -131 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "248"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "303 -131 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "252"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1 -3 175.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "256"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "127 -3 175.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "260"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "255 -3 175.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "264"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "303 -3 175.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "268"
+	"classname" "prop_static"
+	"angles" "0 90 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "3 -3 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "272"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1 -131 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "276"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "127 -131 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "280"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "255 -131 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "284"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "303 -131 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "288"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1 -3 83.5"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "292"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "127 -3 83.5"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "296"
+	"classname" "prop_static"
+	"angles" "0 180 -180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "255 -3 83.5"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "300"
+	"classname" "prop_static"
+	"angles" "0 180 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "303 -3 83.5"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "304"
+	"classname" "prop_static"
+	"angles" "0 90 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -3 176"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "308"
+	"classname" "prop_static"
+	"angles" "0 90 180"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/scaffoldingsystem01/beam128.mdl"
+	"renderamt" "255"
+	"rendercolor" "105 105 105"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "427 -3 83.75"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}
