@@ -2276,8 +2276,24 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	MinSkillLevel(integer) : "Min Skill Level" : 0 : "The minimum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
-	MaxSkillLevel(integer) : "Max Skill Level" : 0 : "The maximum skill level for this spawner to function.  Skill levels are: 1=easy 2=normal 3=hard 4=insane 5=brutal"
+	MinSkillLevel(choices) : "Min Skill Level" : 0 : "The minimum skill level for this spawner to function." =
+	[
+		0 : "N/A"
+		1 : "Easy"
+		2 : "Normal"
+		3 : "Hard"
+		4 : "Insane"
+		5 : "Brutal"
+	]
+	MaxSkillLevel(choices) : "Max Skill Level" : 0 : "The maximum skill level for this spawner to function." =
+	[
+		0 : "N/A"
+		1 : "Easy"
+		2 : "Normal"
+		3 : "Hard"
+		4 : "Insane"
+		5 : "Brutal"
+	]
 
 	flammablesp(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
 	[
@@ -2377,7 +2393,10 @@
 	[
 		0 : "No"
 		1 : "Yes"
+		2 : "After Spawning Once"
 	]
+
+	DirectorLockTime(float) : "Director lock time" : 4 : "How long after the director spawns an alien here before the director can spawn aliens from this spawner again."
 
 	SpawnerState(choices) : "Spawner State" : 0 : "Spawner's initial state" =
 	[
@@ -2488,7 +2507,7 @@
 		2 : "Move To Ignoring Marines"
 		3 : "Move To Nearest Marine"
 	]
-	AlienOrderTargetName(string) : "Alien Orders Target Name": : "Name of the target object for our orders (used by move to and move to ignoring marines orders)."
+	AlienOrderTargetName(target_destination) : "Alien Orders Target Name": : "Name of the target object for our orders (used by move to and move to ignoring marines orders)."
 
 	input SendOrders(void) : "Gives the orders."	
 ]
@@ -3998,7 +4017,7 @@
 [
 ]
 
-@PointClass base(Node, Angles) studio("models/editor/ground_node.mdl") color(8 64 232) = info_node_marine_hint :
+@PointClass base(Node, Angles) studio("models/editor/ground_node_hint.mdl") color(8 64 232) = info_node_marine_hint :
 	"Follow hint node for marines.  It is also a navigation node for ground moving NPCs. Navigation nodes are baked into the nodegraph so that NPCs can move " +
 	"to them. Ground nodes fall to the ground when they spawn."
 [

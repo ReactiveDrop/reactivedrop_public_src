@@ -77,12 +77,12 @@ protected:
 
 	SpawnerState_t m_SpawnerState;
 
-	// BenLubar(director-spawner-improvements)
-	bool m_bAllowDirectorSpawns;
+	// 0 = no, 1 = yes, 2 = only after at least one alien has been spawned normally
+	int m_iAllowDirectorSpawns;
+	float m_flDirectorLockTime;
 	COutputEvent m_OnDirectorSpawned;
 	float m_flLastDirectorSpawn;
 	friend class CASW_Spawn_Manager;
-	//
 };
 
 // scales up alien amounts (but makes them weaker)
