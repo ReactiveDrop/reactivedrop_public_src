@@ -47,7 +47,7 @@ GAME
 		"LocationX"		"330"
 		"LocationY"		"780"
 		"DifficultyModifier" 	"-2"
-		"Links"			"biocorp1-operationx5" 
+		"Links"			"rd-bio1operationx5" 
 		"LocationDescription"  	"Home Base"
 		"ShortBriefing"  	"Dropship Bloodhound will enter atmosphere at these co-ordinates and proceed to primary objective."
 	}
@@ -56,11 +56,11 @@ GAME
 	"MISSION"
 	{
 		"MissionName"		"Operation x5."		// name used on the map screen, etc.
-		"MapName"		"biocorp1-operationx5"		// name of the map file
+		"MapName"		"rd-bio1operationx5"		// name of the map file
 		"LocationX"		"100"				// location of the dot on the map
 		"LocationY"		"100"				// (from 0 to 1023, on the above texture)
 		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
-		"Links"			"start_area biocorp2-invisiblethreat"	// map names of neighbours
+		"Links"			"start_area rd-bio2invisiblethreat"	// map names of neighbours
 		"LocationDescription" 	"."
 		"ShortBriefing"  	"Data extraction."
 		"AlwaysVisible"		"1"
@@ -69,11 +69,11 @@ GAME
 	"MISSION"
 	{
 		"MissionName"		"Invisible threat."		// name used on the map screen, etc.
-		"MapName"		"biocorp2-invisiblethreat"		// name of the map file
+		"MapName"		"rd-bio2invisiblethreat"		// name of the map file
 		"LocationX"		"200"				// location of the dot on the map
 		"LocationY"		"200"				// (from 0 to 1023, on the above texture)
 		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
-		"Links"			"biocorp1-operationx5 biocorp3-biogenlabs"	// map names of neighbours
+		"Links"			"rd-bio1operationx5 rd-bio3biogenlabs"	// map names of neighbours
 		"LocationDescription" 	"Underneath the New Earth colony"
 		"ShortBriefing"  	"Your elevator suddenly stopped. Find another one."
 		"AlwaysVisible"		"1"
@@ -82,11 +82,11 @@ GAME
 	"MISSION"
 	{
 		"MissionName"		"Biogen labs."		// name used on the map screen, etc.
-		"MapName"		"biocorp3-biogenlabs"		// name of the map file
+		"MapName"		"rd-bio3biogenlabs"		// name of the map file
 		"LocationX"		"300"				// location of the dot on the map
 		"LocationY"		"300"				// (from 0 to 1023, on the above texture)
 		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
-		"Links"			"biocorp2-invisiblethreat"	// map names of neighbours
+		"Links"			"rd-bio2invisiblethreat"	// map names of neighbours
 		"LocationDescription" 	"Inside Biogen labs"
 		"ShortBriefing"  	"Stop the swarm reproduction"
 		"AlwaysVisible"		"1"
