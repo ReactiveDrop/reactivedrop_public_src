@@ -27,7 +27,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Top, DT_ASW_Sentry_Top)
 	SendPropBool( SENDINFO( m_bLowAmmo ) ),	
 END_SEND_TABLE()
 
-ConVar asw_sentry_friendly_target("asw_sentry_friendly_target", "0", FCVAR_REPLICATED, "Whether the sentry targets friendlies or not");
+ConVar asw_sentry_friendly_target("asw_sentry_friendly_target", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Whether the sentry targets friendlies or not");
 extern ConVar asw_sentry_friendly_fire_scale;
 
 

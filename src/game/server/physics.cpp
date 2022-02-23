@@ -83,7 +83,7 @@ void TimescaleChanged( IConVar *var, const char *pOldString, float flOldValue )
 	}
 }
 
-ConVar phys_timescale( "phys_timescale", "1", 0, "Scale time for physics", TimescaleChanged );
+ConVar phys_timescale( "phys_timescale", "1", FCVAR_CHEAT, "Scale time for physics", TimescaleChanged );
 
 #if _DEBUG
 ConVar phys_dontprintint( "phys_dontprintint", "1", FCVAR_NONE, "Don't print inter-penetration warnings." );
