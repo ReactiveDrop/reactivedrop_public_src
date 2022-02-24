@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "375"
+	"mapversion" "376"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "375"
+	"mapversion" "376"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.2.2 from helipadv40.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -152851,24 +152851,36 @@ entity
 entity
 {
 	"id" "362534"
-	"classname" "prop_static"
+	"classname" "prop_dynamic"
 	"angles" "0 88 0"
-	"disableselfshadowing" "0"
-	"disableshadows" "0"
-	"disablevertexlighting" "0"
+	"DisableBoneFollowers" "0"
+	"disablereceiveshadows" "0"
+	"disableshadows" "1"
+	"ExplodeDamage" "0"
+	"ExplodeRadius" "0"
 	"fademaxdist" "0"
 	"fademindist" "-1"
 	"fadescale" "1"
-	"ignorenormals" "0"
+	"HoldAnimation" "0"
+	"MaxAnimTime" "10"
+	"MinAnimTime" "5"
 	"model" "models/deadbodies/human/deadbody_railing.mdl"
+	"PerformanceMode" "0"
+	"pressuredelay" "0"
+	"RandomAnimation" "0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "0"
+	"SetBodyGroup" "0"
 	"skin" "0"
 	"solid" "6"
+	"spawnflags" "0"
+	"StartDisabled" "0"
 	"origin" "-2570 2329 16"
 	editor
 	{
-		"color" "255 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[12000 -7768]"
@@ -155422,8 +155434,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5136.74 2172.54 358.678]"
-		"look" "[-5121.44 2349.12 150.5]"
+		"position" "[-2479.7 2202.18 97.653]"
+		"look" "[-2631.05 2377.7 -47.3939]"
 	}
 	camera
 	{
