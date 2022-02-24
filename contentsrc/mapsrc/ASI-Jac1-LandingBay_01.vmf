@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3794"
+	"mapversion" "3800"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -80,7 +80,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3794"
+	"mapversion" "3800"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -107651,7 +107651,7 @@ entity
 {
 	"id" "2037759"
 	"classname" "prop_physics"
-	"angles" "0.327332 250.5 0"
+	"angles" "40 0 40"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"inertiascale" "1.0"
@@ -107660,9 +107660,9 @@ entity
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
 	"skin" "0"
-	"spawnflags" "33024"
+	"spawnflags" "33025"
 	"targetname" "BasketBall"
-	"origin" "-6775.38 -6314.62 1045.78"
+	"origin" "-6752 -6314.62 1022"
 	editor
 	{
 		"color" "220 30 220"
@@ -124067,9 +124067,9 @@ entity
 		{
 			"id" "80696"
 			"plane" "(-6800 -7496 -2000) (-6800 -7496 1152) (-6800 -7472 1152)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 32] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
+			"material" "CONCRETE/CONCRETEWALL080A"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 192] 0.25"
 			"rotation" "0"
 			"lightmapscale" "8"
 			"smoothing_groups" "0"
@@ -178443,8 +178443,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-6492.94 564.9 1954.6]"
-		"look" "[-6637.84 577.349 1729.37]"
+		"position" "[-4971.76 -9146.96 1208.44]"
+		"look" "[-4938.56 -8880.94 1211.6]"
 	}
 }
 cordons
