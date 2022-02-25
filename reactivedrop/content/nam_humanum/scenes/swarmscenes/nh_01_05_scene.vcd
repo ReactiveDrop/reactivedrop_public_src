@@ -1,0 +1,50 @@
+// Choreo version 1
+actor "Prof. Duval"
+{
+  channel "Voice"
+  {
+    event speak "Duval.01_05"
+    {
+      time 0.160000 2.908367
+      param "Duval.01_05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_on"
+    {
+      time 0.011905 0.560454
+      param "Radio.radio_on"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+actor "???"
+{
+  channel "Voice"
+  {
+    event speak "Vesta.01_05"
+    {
+      time 2.696232 9.469656
+      param "Vesta.01_05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "112"
+  "SceneRampTool" "100"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

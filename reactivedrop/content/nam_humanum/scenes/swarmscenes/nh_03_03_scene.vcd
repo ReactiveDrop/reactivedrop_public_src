@@ -1,0 +1,98 @@
+// Choreo version 1
+actor "Prof. Duval"
+{
+  channel "Voice"
+  {
+    event speak "Radio.radio_on"
+    {
+      time 0.011388 0.559937
+      param "Radio.radio_on"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_transition"
+    {
+      time 13.306519 13.399829
+      param "Radio.radio_transition"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Duval.03_03"
+    {
+      time 0.236945 4.461140
+      param "Duval.03_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Duval.03_03_1"
+    {
+      time 9.218427 13.305206
+      param "Duval.03_03_1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_transition"
+    {
+      time 9.101191 9.194501
+      param "Radio.radio_transition"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+actor "Cmdr. Richard"
+{
+  channel "Voice"
+  {
+    event speak "Radio.radio_off"
+    {
+      time 14.710855 15.259403
+      param "Radio.radio_off"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_transition"
+    {
+      time 4.433175 4.526486
+      param "Radio.radio_transition"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Richard.03_03"
+    {
+      time 4.535714 9.053492
+      param "Richard.03_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Richard.03_03_1"
+    {
+      time 13.430951 14.667799
+      param "Richard.03_03_1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "96"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 30
+snap off
+ignorePhonemes off

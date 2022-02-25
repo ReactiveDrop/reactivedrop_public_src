@@ -1,0 +1,421 @@
+// Prof. Duval
+
+"Duval.01_02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_02_duval.wav"
+}
+
+"Duval.01_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_03_duval.wav"
+}
+
+"Duval.01_03_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_03_duval_1.wav"
+}
+
+"Duval.01_04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_04_duval.wav"
+}
+
+"Duval.01_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_05_duval.wav"
+}
+
+"Duval.01_06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_06_duval.wav"
+}
+
+"Duval.02_02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_02_duval.wav"
+}
+
+"Duval.02_02_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_02_duval_1.wav"
+}
+
+"Duval.02_04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_04_duval.wav"
+}
+
+"Duval.02_04_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_04_duval_1.wav"
+}
+
+"Duval.02_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_05_duval.wav"
+}
+
+"Duval.03_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_01_duval.wav"
+}
+
+"Duval.03_01_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_01_duval_1.wav"
+}
+
+"Duval.03_02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_02_duval.wav"
+}
+
+"Duval.03_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_03_duval.wav"
+}
+
+"Duval.03_03_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_03_duval_1.wav"
+}
+
+"Duval.03_04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_04_duval.wav"
+}
+
+"Duval.03_06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_06_duval.wav"
+}
+
+"Duval.03_08"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_08_duval.wav"
+}
+
+"Duval.03_08_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_08_duval_1.wav"
+}
+
+"Duval.03_09"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_09_duval.wav"
+}
+
+"Duval.03_10"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_10_duval.wav"
+}
+
+
+// Cmdr. Richard
+
+"Richard.01_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_01_richard.wav"
+}
+
+"Richard.01_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_03_richard.wav"
+}
+
+"Richard.01_06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_06_richard.wav"
+}
+
+"Richard.02_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_01_richard.wav"
+}
+
+"Richard.02_02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_02_richard.wav"
+}
+
+"Richard.02_02_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_02_richard_1.wav"
+}
+
+"Richard.02_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_03_richard.wav"
+}
+
+"Richard.02_04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_04_richard.wav"
+}
+
+"Richard.02_04_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_04_richard_1.wav"
+}
+
+"Richard.02_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_05_richard.wav"
+}
+
+"Richard.02_06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_06_richard.wav"
+}
+
+"Richard.03_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_01_richard.wav"
+}
+
+"Richard.03_02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_02_richard.wav"
+}
+
+"Richard.03_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_03_richard.wav"
+}
+
+"Richard.03_03_1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_03_richard_1.wav"
+}
+
+"Richard.03_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_05_richard.wav"
+}
+
+"Richard.03_07"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_07_richard.wav"
+}
+
+"Richard.03_08"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_08_richard.wav"
+}
+
+
+//Shuttle pilot
+
+"Pilot.01_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_01_pilot.wav"
+}
+
+"Pilot.02_01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_01_pilot.wav"
+}
+
+"Pilot.03_11"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_11_pilot.wav"
+}
+
+"Pilot.03_12"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_12_pilot.wav"
+}
+
+
+// Vesta
+
+"Vesta.01_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_03_vesta.wav"
+}
+
+"Vesta.01_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_01_05_vesta.wav"
+}
+
+"Vesta.02_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_02_05_vesta.wav"
+}
+
+"Vesta.03_11"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_03_11_vesta.wav"
+}
+
+
+// SFX
+
+"Radio.radio_on"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_sfx_radio_on.wav"
+}
+
+"Radio.radio_off"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_sfx_radio_off.wav"
+}
+
+"Radio.radio_transition"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"			"*#vo\nh_odysseycommand\nh_sfx_radio_transition.wav"
+}

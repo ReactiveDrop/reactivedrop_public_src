@@ -1,0 +1,25 @@
+GAME
+{
+	// radar map position and scale (see the Valve wiki for more information: http://developer.valvesoftware.com/wiki/Main_Page)
+	"pos_x"		"-4200"
+	"pos_y"		"5774"
+	"scale"		"8"
+
+	// material used for the radar map (in the bottom left corner)
+	"material" 		"vgui/swarm/overviews/nhmap01_masterbeta01Overview"  			// example: "vgui/swarm/Overviews/landingbay02Overview"
+
+	// material used for the briefing map (shown before the mission starts)
+	"briefingmaterial" 	"vgui/swarm/overviews/nhmap01_masterbeta01Overview"		// example: "vgui/swarm/Overviews/landingbay02briefingOverview"
+
+	// Title of the mission
+	"missiontitle"		"Logistics Area"
+	// Description text shown for the mission
+	"description"		"Logistics sector"
+	
+	// Mission image that shows when selecting this mission
+	"image"			"swarm/missionpics/rd_mission_01"  			//must be under "vgui" - dont include vgui in the path
+
+	"version"		"1.2"
+	"author"		"Guillaume Houard & Thomas Lesteven"
+	"website"		"https://www.ghouard.com"
+}

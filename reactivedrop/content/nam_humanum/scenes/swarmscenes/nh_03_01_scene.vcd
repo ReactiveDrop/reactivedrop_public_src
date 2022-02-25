@@ -1,0 +1,82 @@
+// Choreo version 1
+actor "Prof. Duval"
+{
+  channel "Voice"
+  {
+    event speak "Radio.radio_on"
+    {
+      time 0.029683 0.578232
+      param "Radio.radio_on"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_off"
+    {
+      time 43.451538 44.000088
+      param "Radio.radio_off"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_transition"
+    {
+      time 28.861990 28.955301
+      param "Radio.radio_transition"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Duval.03_01"
+    {
+      time 0.191538 24.446413
+      param "Duval.03_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Duval.03_01_1"
+    {
+      time 28.941883 43.681496
+      param "Duval.03_01_1"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+actor "Cmdr. Richard"
+{
+  channel "Voice"
+  {
+    event speak "Radio.radio_transition"
+    {
+      time 24.791742 24.885054
+      param "Radio.radio_transition"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Richard.03_01"
+    {
+      time 24.854218 28.819275
+      param "Richard.03_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "CChoreoView" "12"
+}
+fps 30
+snap off
+ignorePhonemes off

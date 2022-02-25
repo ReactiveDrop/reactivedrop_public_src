@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+ "$basetexture" "vgui/swarm/Overviews/nhmap03_masterbetaOverview"
+ "$ignorez" 1
+ "$vertexcolor" 1
+} 
