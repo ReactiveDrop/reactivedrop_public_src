@@ -8,7 +8,8 @@ void winmm_timer_acquire_once( float ms )
 {
 	static ULONG newRes = NULL;
 
-	if ( !newRes ) {
+	if ( !newRes ) 
+	{
 		ULONG requestRes = ms * 1000;
 		ULONG currentRes;
 
