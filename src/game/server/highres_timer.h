@@ -1,3 +1,3 @@
 #pragma once
 
-void winmm_timer_acquire_once ( unsigned int ms );
+void winmm_timer_acquire_once ( float ms );

@@ -1,20 +1,19 @@
 #include "cbase.h"
 #include <windows.h>
 
-#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ntdll.lib")
+extern "C" NTSYSAPI NTSTATUS NTAPI NtSetTimerResolution( ULONG DesiredResolution, BOOLEAN SetResolution, PULONG CurrentResolution );
 
-void winmm_timer_acquire_once( unsigned int ms )
+void winmm_timer_acquire_once( float ms )
 {
-	static UINT wTimerRes = 0;
-	static TIMECAPS tc;
+	static ULONG newRes = NULL;
 
-	// already acquired
-	if ( wTimerRes )
-		return;
+	if ( !newRes ) 
+	{
+		ULONG requestRes = ms * 1000;
+		ULONG currentRes;
 
-	// getcaps might fail, but it's ok to continue if it does
-	timeGetDevCaps( &tc, sizeof( TIMECAPS ) );
-
-	wTimerRes = min( max( tc.wPeriodMin, ms ), tc.wPeriodMax );
-	timeBeginPeriod( wTimerRes );
+		newRes = NtSetTimerResolution( round(ms * 1000), TRUE, &currentRes );
+		DevMsg( "timer resolution changed from %d to %d ns\n", currentRes, newRes );
+	}
 }
