@@ -1184,9 +1184,11 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	GameRules()->UpdateGameplayStatsFromSteam();
 
 	// overrides fps_max if set
-	if ( rd_override_fps_max.GetInt() > -1 ) {
+	if ( rd_override_fps_max.GetInt() > -1 ) 
+	{
 		ConVarRef fps_max("fps_max");
-		if ( fps_max.IsValid() ) {
+		if ( fps_max.IsValid() ) 
+		{
 			fps_max.SetValue( rd_override_fps_max.GetInt() );
 		}
 	}
