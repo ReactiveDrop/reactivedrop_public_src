@@ -225,6 +225,8 @@ static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
 
 ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCVAR_NONE, "To Allow drawing debug overlays in release builds");
+ConVar rd_override_fps_max("rd_override_fps_max", "-1", FCVAR_NONE, "overrides fps_max, this option sticks across map changes without touching newmapsettings", true, -1, true, 1000);
+
 
 #if !defined(NO_STEAM)
 //-----------------------------------------------------------------------------
@@ -1181,6 +1183,13 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	// ask for the latest game rules
 	GameRules()->UpdateGameplayStatsFromSteam();
 
+	// overrides fps_max if set
+	if ( rd_override_fps_max.GetInt() > -1 ) {
+		ConVarRef fps_max("fps_max");
+		if ( fps_max.IsValid() ) {
+			fps_max.SetValue( rd_override_fps_max.GetInt() );
+		}
+	}
 	return true;
 }
 
