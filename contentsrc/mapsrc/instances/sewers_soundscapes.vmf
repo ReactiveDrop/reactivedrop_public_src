@@ -1,0 +1,229 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4925"
+	"mapversion" "2"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "2"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "2"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "Sewers.conduit"
+	"targetname" "conduit.ent"
+	"origin" "2975 -6456 -416"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "13"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "Sewers.open"
+	"targetname" "conduit.exit"
+	"origin" "2115.31 -3311.31 -550"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "24"
+	"classname" "env_soundscape"
+	"radius" "250"
+	"soundscape" "Sewers.conduit"
+	"targetname" "conduit01.ent"
+	"origin" "2108.25 -3552.03 -538"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "35"
+	"classname" "env_soundscape"
+	"radius" "200"
+	"soundscape" "outside.spawn"
+	"targetname" "end.outside"
+	"origin" "-1921.45 3200.46 -431.408"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "46"
+	"classname" "env_soundscape"
+	"radius" "220"
+	"soundscape" "Sewers.platforms"
+	"targetname" "inside.ent.end"
+	"origin" "-1925.45 2988.46 -431.408"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2500]"
+	}
+}
+entity
+{
+	"id" "57"
+	"classname" "env_soundscape"
+	"radius" "140"
+	"soundscape" "Sewers.platforms"
+	"targetname" "plat.ent"
+	"origin" "1616.11 157.833 -463"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "68"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "Sewers.platforms"
+	"targetname" "plat.ent"
+	"origin" "-289.59 495.259 -471"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "79"
+	"classname" "env_soundscape"
+	"radius" "140"
+	"soundscape" "Sewers.open2"
+	"targetname" "plat.exit"
+	"origin" "1616.11 65.8326 -463"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "90"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "Sewers.open2"
+	"targetname" "plat.exit"
+	"origin" "-289.59 407.259 -471"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1500]"
+	}
+}
+entity
+{
+	"id" "101"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "Sewers.conduit"
+	"targetname" "spawn"
+	"origin" "2415 -6869 -491"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "112"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "Sewers.open2"
+	"targetname" "transition advance into 3"
+	"origin" "-111.895 -2263.53 -575"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "123"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "Sewers.open"
+	"targetname" "transition node"
+	"origin" "-347.895 -2263.53 -575"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

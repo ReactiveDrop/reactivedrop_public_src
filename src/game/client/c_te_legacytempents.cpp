@@ -62,7 +62,7 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheEffectMuzzleFlash )
 PRECACHE_REGISTER_END()
 
 
-ConVar func_break_max_pieces( "func_break_max_pieces", "15", FCVAR_ARCHIVE | FCVAR_REPLICATED );
+ConVar func_break_max_pieces( "func_break_max_pieces", "15", FCVAR_REPLICATED );
 
 ConVar cl_fasttempentcollision( "cl_fasttempentcollision", "5" );
 

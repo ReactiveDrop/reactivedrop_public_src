@@ -1,0 +1,149 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4866"
+	"mapversion" "37"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "2"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "37"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+	solid
+	{
+		"id" "2808"
+		side
+		{
+			"id" "48"
+			"plane" "(88 -20 52) (-8 -20 52) (-8 20 52)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[0 -1 0 31.977] 0.25"
+			"vaxis" "[-1 0 0 32.0071] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "47"
+			"plane" "(-8 -20 0) (88 -20 0) (88 20 0)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[0 -1 0 31.977] 0.25"
+			"vaxis" "[-1 0 0 32.0071] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "46"
+			"plane" "(-8 20 0) (88 20 0) (88 20 52)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[1 0 0 -32.0071] 0.25"
+			"vaxis" "[0 0 -1 32] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "45"
+			"plane" "(88 -20 0) (-8 -20 0) (-8 -20 52)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[1 0 0 -32.0071] 0.25"
+			"vaxis" "[0 0 -1 32] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "44"
+			"plane" "(88 20 0) (88 -20 0) (88 -20 52)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[0 -1 0 31.977] 0.25"
+			"vaxis" "[0 0 -1 32] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "43"
+			"plane" "(-8 -20 0) (-8 20 0) (-8 20 52)"
+			"material" "TOOLS/TOOLSSKIP"
+			"uaxis" "[0 -1 0 31.977] 0.25"
+			"vaxis" "[0 0 -1 32] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 155 184"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+}
+entity
+{
+	"id" "2809"
+	"classname" "asw_holdout_spawner"
+	"AlienOrders" "3"
+	"angles" "0 0 0"
+	"ClearCheck" "0"
+	"NearDistance" "740"
+	"SpawnIfMarinesAreNear" "1"
+	"StartBurrowed" "1"
+	"targetname" "$spawer_name"
+	"UnburrowActivity" "ACT_CLIMB_OFF_RAIL_52"
+	"UnburrowIdleActivity" "ACT_CLIMB_OFF_RAIL_IDLE"
+	"origin" "68 7.62939e-006 0"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[-16268 0]"
+	}
+}
+entity
+{
+	"id" "2357"
+	"classname" "func_instance_parms"
+	"parm1" "$spawer_name string"
+	"origin" "0 3.8147e-006 48"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

@@ -1,0 +1,26 @@
+GAME
+{
+	// radar map position and scale (see the Valve Wiki for more information: http://developer.valvesoftware.com/wiki/Main_Page)
+	"pos_x"      "-5600"
+	"pos_y"      "5162"
+	"scale"      "10.0"
+
+	"material" 		"vgui/swarm/Overviews/biocorp3-biogenlabs"
+
+	// material used for the briefing map (shown before the mission starts)
+	"briefingmaterial"    "vgui/swarm/Overviews/biocorp3-biogenlabsBriefing"
+
+
+	// Title of the mission
+	"missiontitle"      "Biogen Labs."
+	// Description text shown for the mission
+	"description"      "Stop the swarm reproduction"
+
+	// Mission image that shows when selecting this mission
+	"image"         "swarm/MissionPics/UnknownMissionPic"           //must be under "vgui" - dont include vgui in the path
+
+	"builtin" 		"1"
+	"version"       "0.9"
+	"author"        "Uradzimiru"
+	"website"        ""
+}

@@ -131,17 +131,6 @@ C_ASW_Pickup_Weapon_Autogun::C_ASW_Pickup_Weapon_Autogun()
 }
 
 //---------
-// Shotgun
-//---------
-
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Shotgun, DT_ASW_Pickup_Weapon_Shotgun, CASW_Pickup_Weapon_Shotgun )
-END_RECV_TABLE()
-
-C_ASW_Pickup_Weapon_Shotgun::C_ASW_Pickup_Weapon_Shotgun()
-{
-}
-
-//---------
 // Assault Shotgun
 //---------
 
@@ -153,13 +142,35 @@ C_ASW_Pickup_Weapon_Assault_Shotgun::C_ASW_Pickup_Weapon_Assault_Shotgun()
 }
 
 //---------
-// Flamer
+// Pistol
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Flamer, DT_ASW_Pickup_Weapon_Flamer, CASW_Pickup_Weapon_Flamer )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Pistol, DT_ASW_Pickup_Weapon_Pistol, CASW_Pickup_Weapon_Pistol)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_Flamer::C_ASW_Pickup_Weapon_Flamer()
+C_ASW_Pickup_Weapon_Pistol::C_ASW_Pickup_Weapon_Pistol()
+{
+}
+
+//---------
+// Shotgun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Shotgun, DT_ASW_Pickup_Weapon_Shotgun, CASW_Pickup_Weapon_Shotgun )
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Shotgun::C_ASW_Pickup_Weapon_Shotgun()
+{
+}
+
+//---------
+// Tesla Gun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Tesla_Gun, DT_ASW_Pickup_Weapon_Tesla_Gun, CASW_Pickup_Weapon_Tesla_Gun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Tesla_Gun::C_ASW_Pickup_Weapon_Tesla_Gun()
 {
 }
 
@@ -175,27 +186,147 @@ C_ASW_Pickup_Weapon_Railgun::C_ASW_Pickup_Weapon_Railgun()
 }
 
 //---------
-// Ricochet
+// Healgun
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Ricochet, DT_ASW_Pickup_Weapon_Ricochet, CASW_Pickup_Weapon_Ricochet )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Heal_Gun, DT_ASW_Pickup_Weapon_Heal_Gun, CASW_Pickup_Weapon_Heal_Gun)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_Ricochet::C_ASW_Pickup_Weapon_Ricochet()
+C_ASW_Pickup_Weapon_Heal_Gun::C_ASW_Pickup_Weapon_Heal_Gun()
 {
 }
 
 //---------
-// Flechette
+// PDW
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Flechette, DT_ASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon_Flechette )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_PDW, DT_ASW_Pickup_Weapon_PDW, CASW_Pickup_Weapon_PDW)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_Flechette::C_ASW_Pickup_Weapon_Flechette()
+C_ASW_Pickup_Weapon_PDW::C_ASW_Pickup_Weapon_PDW()
 {
 }
 
+//---------
+// Flamer
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Flamer, DT_ASW_Pickup_Weapon_Flamer, CASW_Pickup_Weapon_Flamer)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Flamer::C_ASW_Pickup_Weapon_Flamer()
+{
+}
+
+//---------
+// Minigun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Minigun, DT_ASW_Pickup_Weapon_Minigun, CASW_Pickup_Weapon_Minigun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Minigun::C_ASW_Pickup_Weapon_Minigun()
+{
+}
+
+//---------
+// Sniper
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Sniper_Rifle, DT_ASW_Pickup_Weapon_Sniper_Rifle, CASW_Pickup_Weapon_Sniper_Rifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Sniper_Rifle::C_ASW_Pickup_Weapon_Sniper_Rifle()
+{
+}
+
+//---------
+// Chainsaw
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Chainsaw, DT_ASW_Pickup_Weapon_Chainsaw, CASW_Pickup_Weapon_Chainsaw)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Chainsaw::C_ASW_Pickup_Weapon_Chainsaw()
+{
+}
+
+//---------
+// Grenade Launcher
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Grenade_Launcher, DT_ASW_Pickup_Weapon_Grenade_Launcher, CASW_Pickup_Weapon_Grenade_Launcher)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Grenade_Launcher::C_ASW_Pickup_Weapon_Grenade_Launcher()
+{
+}
+
+//---------
+// Desert Eagle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_DEagle, DT_ASW_Pickup_Weapon_DEagle, CASW_Pickup_Weapon_DEagle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_DEagle::C_ASW_Pickup_Weapon_DEagle()
+{
+}
+
+//---------
+// Devastator
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Devastator, DT_ASW_Pickup_Weapon_Devastator, CASW_Pickup_Weapon_Devastator)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Devastator::C_ASW_Pickup_Weapon_Devastator()
+{
+}
+
+//---------
+// Combat Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_CombatRifle, DT_ASW_Pickup_Weapon_CombatRifle, CASW_Pickup_Weapon_CombatRifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_CombatRifle::C_ASW_Pickup_Weapon_CombatRifle()
+{
+}
+
+//---------
+// HealAmp Gun
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_HealAmp_Gun, DT_ASW_Pickup_Weapon_HealAmp_Gun, CASW_Pickup_Weapon_HealAmp_Gun)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_HealAmp_Gun::C_ASW_Pickup_Weapon_HealAmp_Gun()
+{
+}
+
+//---------
+// Heavy Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Heavy_Rifle, DT_ASW_Pickup_Weapon_Heavy_Rifle, CASW_Pickup_Weapon_Heavy_Rifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_Heavy_Rifle::C_ASW_Pickup_Weapon_Heavy_Rifle()
+{
+}
+
+//---------
+// Med Rifle
+//---------
+
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_MedRifle, DT_ASW_Pickup_Weapon_MedRifle, CASW_Pickup_Weapon_MedRifle)
+END_RECV_TABLE()
+
+C_ASW_Pickup_Weapon_MedRifle::C_ASW_Pickup_Weapon_MedRifle()
+{
+}
 
 //---------
 // Fire Extinguisher
@@ -209,18 +340,6 @@ C_ASW_Pickup_Weapon_FireExtinguisher::C_ASW_Pickup_Weapon_FireExtinguisher()
 }
 
 //---------
-// Pistol
-//---------
-
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Pistol, DT_ASW_Pickup_Weapon_Pistol, CASW_Pickup_Weapon_Pistol )
-END_RECV_TABLE()
-
-C_ASW_Pickup_Weapon_Pistol::C_ASW_Pickup_Weapon_Pistol()
-{
-}
-
-
-//---------
 // Mining Laser
 //---------
 
@@ -231,36 +350,35 @@ C_ASW_Pickup_Weapon_Mining_Laser::C_ASW_Pickup_Weapon_Mining_Laser()
 {
 }
 
-
 //---------
-// Chainsaw
+// 50CalMg
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Chainsaw, DT_ASW_Pickup_Weapon_Chainsaw, CASW_Pickup_Weapon_Chainsaw )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_50CalMG, DT_ASW_Pickup_Weapon_50CalMG, CASW_Pickup_Weapon_50CalMG)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_Chainsaw::C_ASW_Pickup_Weapon_Chainsaw()
+C_ASW_Pickup_Weapon_50CalMG::C_ASW_Pickup_Weapon_50CalMG()
 {
 }
 
 //---------
-// PDW
+// Ricochet
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_PDW, DT_ASW_Pickup_Weapon_PDW, CASW_Pickup_Weapon_PDW )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Ricochet, DT_ASW_Pickup_Weapon_Ricochet, CASW_Pickup_Weapon_Ricochet)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_PDW::C_ASW_Pickup_Weapon_PDW()
+C_ASW_Pickup_Weapon_Ricochet::C_ASW_Pickup_Weapon_Ricochet()
 {
 }
 
 //---------
-// Grenades
+// Flechette
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Grenades, DT_ASW_Pickup_Weapon_Grenades, CASW_Pickup_Weapon_Grenades )
+IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Flechette, DT_ASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon_Flechette)
 END_RECV_TABLE()
 
-C_ASW_Pickup_Weapon_Grenades::C_ASW_Pickup_Weapon_Grenades()
+C_ASW_Pickup_Weapon_Flechette::C_ASW_Pickup_Weapon_Flechette()
 {
 }

@@ -1,0 +1,757 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4855"
+	"mapversion" "13"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "32"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "13"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "7"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 3040 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "10"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 3296 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "13"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256tjunc.vmf"
+	"origin" "736 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "16"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 3808 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "19"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 4064 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "22"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "25"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "480 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "28"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "224 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "31"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "-32 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "34"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256angle.vmf"
+	"origin" "736 4320 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "37"
+	"classname" "func_instance"
+	"angles" "-0 180 0"
+	"file" "instances/catwalk_prefab_256x256angle.vmf"
+	"origin" "736 4576 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "40"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "480 4576 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "43"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "480 5088 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "46"
+	"classname" "func_instance"
+	"angles" "-0 180 0"
+	"file" "instances/catwalk_prefab_256x256tjunc.vmf"
+	"origin" "736 5088 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "49"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 5088 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "52"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "992 5088 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "65"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "864 3104 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "68"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "864 3456 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "71"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "576 3680 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "74"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "224 3680 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "77"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "-128 3680 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "90"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "608 5184 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "93"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "608 4832 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "135"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "864 4416 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "138"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "864 4064 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "147"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "1920 4960 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "150"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "2400 4960 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "180"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "1120 4960 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "291"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "-288 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "294"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "-544 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "297"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "-640 3680 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "300"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "-768 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "303"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "-1024 3552 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "306"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "-1120 3680 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "312"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "1760 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "315"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "1504 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "318"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "2016 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "321"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "1664 5472 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "324"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "2144 5472 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "372"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "992 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "375"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "736 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "378"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "1248 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "381"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "896 5472 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "384"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "1376 5472 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "402"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/catwalk_prefab_256x256angle.vmf"
+	"origin" "736 5344 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "521"
+	"classname" "func_instance"
+	"angles" "-0 -90 0"
+	"file" "instances/catwalk_prefab_256x256a.vmf"
+	"origin" "2272 5600 512"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "530"
+	"classname" "func_instance"
+	"angles" "-0 0 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "2400 4640 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "533"
+	"classname" "func_instance"
+	"angles" "-0 -1.70755e-006 0"
+	"file" "instances/bridge_support.vmf"
+	"origin" "1952 4640 -256"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

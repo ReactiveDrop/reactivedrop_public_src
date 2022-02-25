@@ -1,0 +1,132 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4837"
+	"mapversion" "29"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "8"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "29"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "2"
+	"classname" "scripted_sequence"
+	"angles" "0 270 0"
+	"m_bDisableNPCCollisions" "1"
+	"m_bIgnoreGravity" "1"
+	"m_fMoveTo" "4"
+	"m_iszEntity" "child"
+	"m_iszIdle" "burrow_idle"
+	"m_iszPlay" "climb_off_rail_76"
+	"spawnflags" "4196"
+	"targetname" "ss_rail_76_climb"
+	"origin" "16 16 -1.90735e-006"
+	editor
+	{
+		"color" "255 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "5"
+	"classname" "scripted_sequence"
+	"angles" "0 270 0"
+	"m_bDisableNPCCollisions" "1"
+	"m_bIgnoreGravity" "1"
+	"m_fMoveTo" "4"
+	"m_iszEntity" "child"
+	"m_iszIdle" "burrow_idle"
+	"m_iszPlay" "burrow_idle"
+	"m_iszPostIdle" "burrow_idle"
+	"spawnflags" "100"
+	"targetname" "ss_rail_76"
+	connections
+	{
+		"OnEndSequence" "ss_rail_76_climbBeginSequence0-1"
+	}
+	"origin" "16 16 -89"
+	editor
+	{
+		"color" "255 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "8"
+	"classname" "npc_maker"
+	"additionalequipment" "0"
+	"angles" "0 0 0"
+	"HullCheckMode" "1"
+	"MaxLiveChildren" "$max_alive"
+	"MaxNPCCount" "$num_aliens"
+	"NPCTargetname" "$child"
+	"NPCType" "asw_drone"
+	"spawnflags" "0"
+	"SpawnFrequency" "$respawn_rate"
+	"StartDisabled" "1"
+	"targetname" "$spawnname"
+	connections
+	{
+		"OnSpawnNPC" "ss_rail_76BeginSequence0-1"
+	}
+	"origin" "16 8 -57"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "218"
+	"classname" "func_instance_parms"
+	"parm1" "$max_alive string"
+	"parm2" "$num_aliens string"
+	"parm3" "$respawn_rate string"
+	"parm4" "$spawnname string"
+	"parm5" "$child string"
+	"origin" "16 16 80"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

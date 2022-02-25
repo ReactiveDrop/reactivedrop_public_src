@@ -13,6 +13,7 @@
 #include "asw_equipment_list.h"
 #include "world.h"
 #include "asw_achievements.h"
+#include "asw_objective.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -291,6 +292,14 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR );
 			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_nh_campaigns" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_NH );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_biogen_corporation" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO );
+			}
 		}
 	}
 
@@ -536,6 +545,16 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	
 	if ( ASWGameRules()->GetMissionSuccess() )
 	{
+		if ( !Q_stricmp( STRING(gpGlobals->mapname), "rd-nh03_groundworklabs") )
+		{
+			CASW_Objective *pOptional = assert_cast<CASW_Objective *>( gEntList.FindEntityByName( NULL, "Objectif_8" ) );
+			Assert( pOptional && pOptional->IsObjectiveOptional() );
+			if ( pOptional && pOptional->IsObjectiveComplete() )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_NH_BONUS_OBJECTIVE );
+			}
+		}
+
 		int iCompleteSeconds = gpGlobals->curtime - m_fStartMissionTime;
 
 		bool bHaveSpeedrunTime = false;
@@ -757,6 +776,30 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( mapName, "rd-par5crucial_point" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_CRUCIAL_POINT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-nh01_logisticsarea" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_NH_LOGISTICS_AREA );
+			}
+			else if ( !Q_stricmp( mapName, "rd-nh02_platformxvii" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_NH_PLATFORM_XVII );
+			}
+			else if ( !Q_stricmp( mapName, "rd-nh03_groundworklabs" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_NH_GROUNDWORK_LABS );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bio1operationx5" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_OPERATION_X5 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bio2invisiblethreat" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_INVISIBLE_THREAT );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bio3biogenlabs" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_BIOGEN_LABS );
 			}
 		}
 

@@ -1,0 +1,245 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4925"
+	"mapversion" "6"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "6"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "1"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "TS.LavaAmb.01"
+	"targetname" "lava01.ent"
+	"origin" "280.134 -8442.78 -37.6336"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "12"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "TS.LavaAmb.01"
+	"targetname" "lava01.ent"
+	"origin" "-1073.4 -5565.26 -42.9906"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "23"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "TS.mineambience.02"
+	"targetname" "lava01.exit"
+	"origin" "-1457.4 -5553.26 -46.9906"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "34"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "TS.LavaAmb.02"
+	"targetname" "lava02.ent"
+	"origin" "-2538.53 -4190.22 -63.7874"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "45"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "TS.mineambience.02"
+	"targetname" "lava02.exit"
+	"origin" "-2442.53 -4446.22 -31.7874"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "56"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "TS.LavaAmb.01"
+	"targetname" "lave.ent"
+	"origin" "-754.717 -6542.1 -120.667"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "67"
+	"classname" "env_soundscape"
+	"radius" "350"
+	"soundscape" "TS.mineambience.02"
+	"targetname" "mine02.ent"
+	"origin" "-1553.29 -6496.76 -93.7636"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "78"
+	"classname" "env_soundscape"
+	"radius" "1000"
+	"soundscape" "TS.mineambience.01"
+	"targetname" "spawn"
+	"origin" "2100 -9105 111"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "89"
+	"classname" "env_soundscape"
+	"radius" "300"
+	"soundscape" "TS.mineambience.01"
+	"targetname" "spawn.exit"
+	"origin" "468.134 -8646.78 -41.6336"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "191"
+	"classname" "env_soundscape"
+	"radius" "190"
+	"soundscape" "TS.mineambience.03"
+	"targetname" "conveyor_ent"
+	"origin" "-1743.72 2396.56 -62"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "202"
+	"classname" "env_soundscape"
+	"radius" "220"
+	"soundscape" "TS.LavaAmb.02"
+	"targetname" "conveyor_exit"
+	"origin" "-1779.72 2168.56 -62"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "213"
+	"classname" "env_soundscape"
+	"radius" "170"
+	"soundscape" "TS.escape"
+	"targetname" "escape_ent"
+	"origin" "-1352.23 -4006.05 -47"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "224"
+	"classname" "env_soundscape"
+	"radius" "150"
+	"soundscape" "TS.LavaAmb.02"
+	"targetname" "escape_exit"
+	"origin" "-1604.23 -3798.05 -47"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

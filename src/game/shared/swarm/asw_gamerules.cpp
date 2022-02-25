@@ -748,6 +748,9 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_iSpeedrunTime, FIELD_INTEGER, "speedruntime" ),
 	DEFINE_KEYFIELD( m_iJumpJetType,  FIELD_INTEGER, "jumpjettype" ),
 	DEFINE_KEYFIELD( m_bAllowCameraRotation, FIELD_BOOLEAN, "allowcamerarotation" ),
+#ifdef GAME_DLL
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
+#endif
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( asw_gamerules, CAlienSwarmProxy );
@@ -806,6 +809,23 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules ),
 		SendPropBool( SENDINFO( m_bAllowCameraRotation ) ),
 	END_SEND_TABLE()
+
+void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
+{
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( !pGameRules || !pGameRules->IsTutorialMap() )
+	{
+		DevWarning( "Cannot SetTutorialStage on non-tutorial map.\n" );
+		return;
+	}
+
+	CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( 0 );
+
+	asw_tutorial_save_stage.SetValue( inputdata.value.Int() );
+	pGameRules->SetGameState( ASW_GS_BRIEFING );
+	pGameRules->m_iMarinesSpawned = 0;
+	pGameRules->StartTutorial( pMR->GetCommander() );
+}
 #endif
 
 class CStylinCamProxy : public CBaseEntity
@@ -1394,86 +1414,87 @@ void CAlienSwarm::Precache( void )
 }
 
 // spawns the marines needed for the tutorial and starts the mission
-void CAlienSwarm::StartTutorial(CASW_Player *pPlayer)
+void CAlienSwarm::StartTutorial( CASW_Player *pPlayer )
 {
-	if (!ASWGameResource() || !pPlayer)
+	if ( !ASWGameResource() || !pPlayer )
 		return;
 
-	// select Sarge and assign him to the player
-	RosterSelect(pPlayer, 6);
-	CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(0);
-	if ( pMR )
-	{
-		pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_rifle" ) );
+	// disable onslaught and set skill level to normal
+	asw_horde_override.SetValue( false );
+	asw_wanderer_override.SetValue( false );
+	asw_skill.SetValue( 2 );
 
-		for ( int iWpnSlot = 1; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+	RosterDeselectAll( pPlayer );
+
+	CASW_Marine_Resource *pMR;
+	if ( CASW_TutorialStartPoint::GetTutorialSaveStage() == 0 )
+	{
+		RosterSelect( pPlayer, 0 ); // sarge
+
+		pMR = ASWGameResource()->GetMarineResource( 0 );
+		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( iWpnSlot, -1 );
+			pMR->m_iWeaponsInSlots.Set( 0, -1 );
+			pMR->m_iWeaponsInSlots.Set( 1, -1 );
+			pMR->m_iWeaponsInSlots.Set( 2, -1 );
 		}
 	}
-
-	int nTutorialSaveStage = CASW_TutorialStartPoint::GetTutorialSaveStage();
-
-	// select crash as the first marine you meet
-	if ( nTutorialSaveStage >= 1 )		// if the player has already discovered Crash on a previous tutorial attempt, give him crash again, since they'll spawn further up the map
+	else if ( CASW_TutorialStartPoint::GetTutorialSaveStage() == 1 )
 	{
-		// make sure Sarge has a flamer if he restarts the tutorial past the point where you get a flamer
-		pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_flamer" ) );
+		RosterSelect( pPlayer, 6 ); // bastille
 
-		// make sure Sarge has a welder if he restarts the tutorial past the point where you get a welder
-		pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_welder" ) );
-
-		if ( ASWGameResource()->GetObjective(0) )
+		pMR = ASWGameResource()->GetMarineResource( 0 );
+		if ( pMR )
 		{
-			ASWGameResource()->GetObjective(0)->SetComplete(true);
-		}
-
-		RosterSelect(pPlayer, 0);
-	}
-	else
-	{
-		RosterSelect(NULL, 0);
-	}
-
-	pMR = ASWGameResource()->GetMarineResource(1);
-	if (pMR)
-	{
-		pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_vindicator" ) );
-		pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_sentry" ) );
-
-		for ( int iWpnSlot = 2; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-		{
-			pMR->m_iWeaponsInSlots.Set( iWpnSlot, -1 );
+			pMR->m_iWeaponsInSlots.Set( 0, -1 );
+			pMR->m_iWeaponsInSlots.Set( 1, -1 );
+			pMR->m_iWeaponsInSlots.Set( 2, -1 );
 		}
 	}
-
-	// select bastille as your third marine
-	if ( nTutorialSaveStage >= 2 )		// if the player has already discovered Bastille on a previous tutorial attempt, give him crash again, since they'll spawn further up the map
+	else if ( CASW_TutorialStartPoint::GetTutorialSaveStage() == 2 )
 	{
-		RosterSelect(pPlayer, 5);
-		if ( ASWGameResource()->GetObjective(1) )
+		RosterSelect( pPlayer, 3 ); // crash
+
+		pMR = ASWGameResource()->GetMarineResource( 0 );
+		if ( pMR )
 		{
-			ASWGameResource()->GetObjective(1)->SetComplete(true);
+			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_prifle" ) );
+			pMR->m_iWeaponsInSlots.Set( 1, -1 );
+			pMR->m_iWeaponsInSlots.Set( 2, -1 );
 		}
 	}
 	else
 	{
-		RosterSelect(NULL, 5);
-	}
+		RosterSelect( pPlayer, 3 ); // crash
+		RosterSelect( pPlayer, 0 ); // sarge
+		RosterSelect( pPlayer, 6 ); // bastille
 
-	pMR = ASWGameResource()->GetMarineResource(2);
-	if (pMR)
-	{
-		pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_pdw" ) );
-		pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_heal_grenade" ) );
-
-		for ( int iWpnSlot = 2; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+		pMR = ASWGameResource()->GetMarineResource( 0 );
+		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( iWpnSlot, -1 );
+			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_prifle" ) );
+			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_ammo_satchel" ) );
+			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_welder" ) );
+		}
+
+		pMR = ASWGameResource()->GetMarineResource( 1 );
+		if ( pMR )
+		{
+			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_vindicator" ) );
+			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_sentry" ) );
+			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_medkit" ) );
+		}
+
+		pMR = ASWGameResource()->GetMarineResource( 2 );
+		if ( pMR )
+		{
+			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_flamer" ) );
+			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_heal_grenade" ) );
+			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_flares" ) );
 		}
 	}
-		
-	StartMission();	// spawns marines and causes game state to go into ASW_GS_INGAME	
+
+	StartMission();	// spawns marines and causes game state to go into ASW_GS_INGAME
 }
 
 void CAlienSwarm::ReserveMarines()
@@ -1804,7 +1825,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 	}
 
 	// one marine each?
-	if ((!rd_player_bots_allowed.GetBool() || ASWGameResource()->m_bOneMarineEach) && ASWGameResource()->GetNumMarines(pPlayer) > 0)
+	if (!IsTutorialMap() && (!rd_player_bots_allowed.GetBool() || ASWGameResource()->m_bOneMarineEach) && ASWGameResource()->GetNumMarines(pPlayer) > 0)
 	{
 		if ( nPreferredSlot == -1 )
 		{
@@ -1995,7 +2016,7 @@ void CAlienSwarm::RosterDeselectAll( CASW_Player *pPlayer )
 			{
 				//Msg("Roster deselecting %d\n", pMR->GetProfileIndex());
 				ASWGameResource()->SetRosterSelected(pMR->GetProfileIndex(), 0);
-				if ( ASWDeathmatchMode() && pMR->GetMarineEntity())
+				if ( ( ASWDeathmatchMode() || IsTutorialMap() ) && pMR->GetMarineEntity() )
 				{
 					UTIL_Remove(pMR->GetMarineEntity());
 				}
@@ -3869,7 +3890,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	// set the amount of bullets in the gun
 	//Msg("Giving starting waepon to marine: %s ",szWeaponClass);
 	int iPrimaryAmmo = pWeapon->GetDefaultClip1();	
-	int iSecondaryAmmo = IsTutorialMap() ? 0 : pWeapon->GetDefaultClip2();  // no grenades in the tutorial
+	int iSecondaryAmmo = pWeapon->GetDefaultClip2();
 	// adjust here for medical satchel charges if the marine has the skill for it
 	if ( !stricmp(szWeaponClass, "asw_weapon_medical_satchel") || !stricmp(szWeaponClass, "asw_weapon_heal_grenade") )
 	{
@@ -5980,6 +6001,14 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		// Now hit all triggers along the way that respond to damage... 
 		pEntity->TraceAttackToTriggers( adjustedInfo, vecSrc, tr.endpos, dir );
 	}
+}
+
+bool CAlienSwarm::ShouldUseRobustRadiusDamage( CBaseEntity *pEntity )
+{
+	if ( !pEntity )
+		return false;
+
+	return pEntity->Classify() == CLASS_ASW_ALIEN_GOO;
 }
 
 ConVar asw_stumble_knockback( "asw_stumble_knockback", "300", FCVAR_CHEAT, "Velocity given to aliens that get knocked back" );
@@ -8388,11 +8417,35 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -2753, 1659, 4604 );
 	}
+	else if ( FStrEq( mapname, "rd-nh01_logisticsarea" ) )
+	{
+		origin = Vector( 922, 1444, 192 );
+	}
+	else if ( FStrEq( mapname, "rd-nh02_platformxvii" ) )
+	{
+		origin = Vector( 560, -1536, 205 );
+	}
+	else if ( FStrEq( mapname, "rd-nh03_groundworklabs" ) )
+	{
+		origin = Vector( -5622, 6546, -1106 );
+	}
+	else if ( FStrEq( mapname, "rd-bio1operationx5" ) )
+	{
+		origin = Vector( -3052, 1708, -72 );
+	}
+	else if ( FStrEq( mapname, "rd-bio2invisiblethreat" ) )
+	{
+		origin = Vector( 1080, 1528, 172 );
+	}
+	else if ( FStrEq( mapname, "rd-bio3biogenlabs" ) )
+	{
+		origin = Vector( 312, 2186, 156 );
+	}
 
 	if ( origin.IsZeroFast() )
 		return;
 
-	// shift bottom, because hammer coords were incorrect
+	// coordinates above are center; we need bottom
 	origin += Vector( 0, 0, -12 );
 
 	CBaseEntity *pCake = CreateEntityByName( "prop_dynamic" );
@@ -8978,7 +9031,7 @@ LINK_ENTITY_TO_CLASS( asw_challenge_thinker, CASW_Challenge_Thinker );
 
 void CAlienSwarm::ApplyChallenge()
 {
-	if ( ASWDeathmatchMode() )
+	if ( ASWDeathmatchMode() || IsTutorialMap() )
 	{
 		EnableChallenge( "0" );
 	}

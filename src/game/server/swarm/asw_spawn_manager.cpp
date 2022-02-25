@@ -770,11 +770,11 @@ CASW_Spawner *CASW_Spawn_Manager::FindAvailableSpawner( CASW_Spawn_NPC *pNPC, co
 		{
 			continue;
 		}
-		if ( !pSpawner->IsEnabled() || !pSpawner->m_bAllowDirectorSpawns || pSpawner->m_AlienClassName != pNPC->m_pAlienClass->m_iszAlienClass )
+		if ( !pSpawner->IsEnabled() || pSpawner->m_iAllowDirectorSpawns != 1 || pSpawner->m_AlienClassName != pNPC->m_pAlienClass->m_iszAlienClass )
 		{
 			continue;
 		}
-		if ( pSpawner->m_flLastDirectorSpawn + pSpawner->m_flSpawnInterval > gpGlobals->curtime )
+		if ( pSpawner->m_flLastDirectorSpawn + pSpawner->m_flDirectorLockTime > gpGlobals->curtime )
 		{
 			continue;
 		}

@@ -1,0 +1,215 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "4872"
+	"mapversion" "15"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "4"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "15"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "1"
+	"classname" "env_soundscape"
+	"radius" "200"
+	"soundscape" "outside.spawn"
+	"targetname" "bridge.cross"
+	"origin" "913.917 3009.47 -64"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "12"
+	"classname" "env_soundscape"
+	"radius" "200"
+	"soundscape" "outside.bridge"
+	"targetname" "bridge.crossover"
+	"origin" "913.917 3201.47 -64"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "213"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "outside.bridge"
+	"StartDisabled" "0"
+	"targetname" "building.exit1"
+	"origin" "10404 8087.5 -160"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "1064"
+	"classname" "env_soundscape"
+	"radius" "600"
+	"soundscape" "outside.spawn"
+	"targetname" "spawn"
+	"origin" "-1142.89 -1840.74 65"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "225"
+	"classname" "env_soundscape"
+	"radius" "100"
+	"soundscape" "interior.small"
+	"StartDisabled" "0"
+	"targetname" "building.ent2"
+	"origin" "10460 8184.5 -160"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "4951"
+	"classname" "env_soundscape"
+	"radius" "100"
+	"soundscape" "outside.spawn"
+	"targetname" "building.exit"
+	"origin" "-439.643 1591.32 41"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "5853"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "interior.small"
+	"targetname" "building.ent"
+	"origin" "-439.643 1671.32 41"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "6314"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "interior.small"
+	"targetname" "building2.ent"
+	"origin" "1175 2000.09 4.05744"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6325"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "outside.spawn"
+	"targetname" "building2.exit"
+	"origin" "1135 1968.09 4.05744"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6336"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "outside.spawn"
+	"targetname" "building2.exit"
+	"origin" "974.997 2544.09 4.05744"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "6347"
+	"classname" "env_soundscape"
+	"radius" "90"
+	"soundscape" "interior.small"
+	"targetname" "building2.ent"
+	"origin" "1039 2544.09 4.05744"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

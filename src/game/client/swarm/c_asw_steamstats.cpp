@@ -83,6 +83,8 @@ namespace
 		"rd_lanasescape_campaign",
 		"rd_reduction_campaign",
 		"rd_paranoia",
+		"rd_nh_campaigns",
+		"rd_biogen_corporation",
 		"rd_bonus_missions",
 	};
 	const char *g_OfficialMaps[] =
@@ -139,6 +141,12 @@ namespace
 		"rd-par3close_contact",
 		"rd-par4high_tension",
 		"rd-par5crucial_point",
+		"rd-nh01_logisticsarea",
+		"rd-nh02_platformxvii",
+		"rd-nh03_groundworklabs",
+		"rd-bio1operationx5",
+		"rd-bio2invisiblethreat",
+		"rd-bio3biogenlabs",
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
 		"rd-bonus_mission3",
@@ -1080,7 +1088,7 @@ static uint32 GetGameVersion()
 
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
-	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() )
+	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
 	{
 		return;
 	}

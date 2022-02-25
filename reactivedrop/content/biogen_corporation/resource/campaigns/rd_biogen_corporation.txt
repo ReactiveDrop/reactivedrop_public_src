@@ -1,0 +1,95 @@
+GAME
+{
+	// identifier for this campaign
+	"CampaignName" "BioGen Corporation"
+	
+	// description shown on the main menu when choosing which campaign to play
+	"CampaignDescription" "Stop the swarm infestation on the New Earth."
+	
+	// texture used on the main menu when choosing which campaign to play
+	"ChooseCampaignTexture" "swarm/campaign/jacob_galacticmap"
+	
+	// texture used on the campaign screen for the map
+	"CampaignTextureName" "swarm/campaign/jacob_galacticmap"
+	
+	// these textures are overlaid on top of the campaign map in order
+	"CampaignTextureLayer1" "swarm/Campaign/CampaignMap_EmptyLayer"			//"CampaignTextureLayer1" "swarm/Campaign/JacobCampaignMap_Haze"
+	"CampaignTextureLayer2" "swarm/Campaign/CampaignMap_EmptyLayer"			//"CampaignTextureLayer2" "swarm/Campaign/JacobCampaignMap_SnowNear"
+	"CampaignTextureLayer3" "swarm/Campaign/CampaignMap_EmptyLayer"			//"CampaignTextureLayer3" "swarm/Campaign/JacobCampaignMap_SnowFar"
+	
+	// custom campaign credits file
+	"CustomCreditsFile" 	"resource/biogen_corporation_credits"
+
+	// position of this campaign in the galactic map (coords go from 0 to 1023)
+	"GalaxyX"   "660"
+	"GalaxyY"   "262"
+	
+	// searchlights (optional, max of 4)
+	// angle: 0 is right, 90 is up, 180 is left, 270 is down
+	//"Searchlight1X" "217"
+	//"Searchlight1Y" "860"
+	//"Searchlight1Angle" "80"
+	//"Searchlight2X" "263"
+	//"Searchlight2Y" "751"
+	//"Searchlight2Angle" "100"
+	//"Searchlight3X" "92"
+	//"Searchlight3Y" "446"
+	//"Searchlight3Angle" "90"
+	//"Searchlight4X" "580"
+	//"Searchlight4Y" "266"
+	//"Searchlight4Angle" "90"
+	
+	// first mission entry is a dummy for the starting point
+	"MISSION"
+	{
+		"MissionName"		"Entry Port"
+		"MapName"		"start_area"
+		"LocationX"		"330"
+		"LocationY"		"780"
+		"DifficultyModifier" 	"-2"
+		"Links"			"rd-bio1operationx5" 
+		"LocationDescription"  	"Home Base"
+		"ShortBriefing"  	"Dropship Bloodhound will enter atmosphere at these co-ordinates and proceed to primary objective."
+	}
+	
+	// each mission listed
+	"MISSION"
+	{
+		"MissionName"		"Operation x5."		// name used on the map screen, etc.
+		"MapName"		"rd-bio1operationx5"		// name of the map file
+		"LocationX"		"100"				// location of the dot on the map
+		"LocationY"		"100"				// (from 0 to 1023, on the above texture)
+		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
+		"Links"			"start_area rd-bio2invisiblethreat"	// map names of neighbours
+		"LocationDescription" 	"."
+		"ShortBriefing"  	"Data extraction."
+		"AlwaysVisible"		"1"
+		"NeedsMoreThanOneMarine" "0"				// If set to 1, two players need to be connected to play (no solo play)
+	}
+	"MISSION"
+	{
+		"MissionName"		"Invisible threat."		// name used on the map screen, etc.
+		"MapName"		"rd-bio2invisiblethreat"		// name of the map file
+		"LocationX"		"200"				// location of the dot on the map
+		"LocationY"		"200"				// (from 0 to 1023, on the above texture)
+		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
+		"Links"			"rd-bio1operationx5 rd-bio3biogenlabs"	// map names of neighbours
+		"LocationDescription" 	"Underneath the New Earth colony"
+		"ShortBriefing"  	"Your elevator suddenly stopped. Find another one."
+		"AlwaysVisible"		"1"
+		"NeedsMoreThanOneMarine" "0"				// If set to 1, two players need to be connected to play (no solo play)
+	}
+	"MISSION"
+	{
+		"MissionName"		"Biogen labs."		// name used on the map screen, etc.
+		"MapName"		"rd-bio3biogenlabs"		// name of the map file
+		"LocationX"		"300"				// location of the dot on the map
+		"LocationY"		"300"				// (from 0 to 1023, on the above texture)
+		"ThreatString" 		"1"    				// Threat level string to help players decide where to go next
+		"Links"			"rd-bio2invisiblethreat"	// map names of neighbours
+		"LocationDescription" 	"Inside Biogen labs"
+		"ShortBriefing"  	"Stop the swarm reproduction"
+		"AlwaysVisible"		"1"
+		"NeedsMoreThanOneMarine" "0"				// If set to 1, two players need to be connected to play (no solo play)
+	}
+}

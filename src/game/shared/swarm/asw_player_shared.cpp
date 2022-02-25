@@ -988,7 +988,7 @@ Vector CASW_Player::EarPosition( void )
 	{
 		return BaseClass::EarPosition();
 	}
-	CASW_Marine* pMarine = m_hMarine.Get();
+	CASW_Marine* pMarine = GetViewMarine();
 	if (pMarine)
 		return pMarine->EarPosition();
 

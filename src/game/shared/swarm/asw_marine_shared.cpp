@@ -408,6 +408,12 @@ float CASW_Marine::MaxSpeed()
 		speedscale *= clamp<float>( q, 1.000f, 1.750f );
 	}
 
+	// bots don't use the input code, so we scale their movement speed here.
+	if ( !IsInhabited() && ( m_bWalking || m_bForceWalking ) )
+	{
+		return 180.0f;
+	}
+
 	// here's where we account for increased speed via powerup
 	if ( m_iPowerupType == POWERUP_TYPE_INCREASED_SPEED )
 		speedscale *= 1.75;

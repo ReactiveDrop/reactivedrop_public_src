@@ -33,7 +33,8 @@ BEGIN_DATADESC( CASW_Spawner )
 	DEFINE_KEYFIELD( m_flSpawnIntervalJitter,	FIELD_FLOAT,	"SpawnIntervalJitter" ),
 	DEFINE_KEYFIELD( m_AlienClassNum,			FIELD_INTEGER,	"AlienClass" ),
 	DEFINE_KEYFIELD( m_SpawnerState,			FIELD_INTEGER,	"SpawnerState" ),
-	DEFINE_INPUT(    m_bAllowDirectorSpawns,    FIELD_BOOLEAN,  "AllowDirectorSpawns" ),
+	DEFINE_KEYFIELD( m_flDirectorLockTime,		FIELD_FLOAT,	"DirectorLockTime" ),
+	DEFINE_INPUT(    m_iAllowDirectorSpawns,	FIELD_INTEGER,	"AllowDirectorSpawns" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SpawnOneAlien",	InputSpawnAlien ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartSpawning",	InputStartSpawning ),
@@ -53,7 +54,8 @@ END_DATADESC()
 CASW_Spawner::CASW_Spawner()
 {
 	m_hAlienOrderTarget = NULL;
-	m_bAllowDirectorSpawns = false;
+	m_iAllowDirectorSpawns = 0;
+	m_flDirectorLockTime = 4;
 	m_flLastDirectorSpawn = -FLT_MAX;
 }
 
@@ -79,7 +81,7 @@ void CASW_Spawner::Spawn()
 	BaseClass::Spawn();
 	
 	m_flSpawnIntervalJitter /= 100.0f;
-	m_flSpawnIntervalJitter = clamp<float>(m_flSpawnIntervalJitter, 0, 100);
+	m_flSpawnIntervalJitter = clamp<float>( m_flSpawnIntervalJitter, 0, 1 );
 
 	SetSolid( SOLID_NONE );
 	m_nCurrentLiveAliens = 0;
@@ -115,6 +117,11 @@ IASW_Spawnable_NPC* CASW_Spawner::SpawnAlien( const char *szAlienClassName, cons
 	else if ( pSpawnable )
 	{
 		m_nCurrentLiveAliens++;
+
+		if ( m_iAllowDirectorSpawns == 2 )
+		{
+			m_iAllowDirectorSpawns = 1;
+		}
 
 		if (!m_bInfiniteAliens)
 		{

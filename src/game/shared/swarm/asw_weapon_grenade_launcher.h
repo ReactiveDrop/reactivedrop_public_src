@@ -48,6 +48,7 @@ public:
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
 
+		virtual const char* GetPickupClass() { return "asw_pickup_grenade_launcher"; }
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	#else
 	

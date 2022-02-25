@@ -66,6 +66,7 @@ ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "1", FC
 ConVar rd_never_show_steamgroup_join( "rd_never_show_steamgroup_join", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "If 0 display a dialog that shows a link to Reactive Drop Gamers Steam group" );
 extern ConVar mm_max_players;
 ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
+ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
@@ -291,6 +292,9 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "TrainingPlay" ) )
 	{
+		// Ensure that tutorial messages will be displayed.
+		engine->ClientCmd_Unrestricted( "gameinstructor_enable 1; gameinstructor_reset_counts" );
+
 		KeyValues *pSettings = KeyValues::FromString(
 			"settings",
 			" system { "
@@ -301,18 +305,18 @@ void MainMenu::OnCommand( const char *command )
 			" campaign jacob "
 			" mission asi-jac1-landingbay_pract "
 			" } "
-			);
-			KeyValues::AutoDelete autodelete( pSettings );
+		);
+		KeyValues::AutoDelete autodelete( pSettings );
 
-			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
+		pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
 
-			g_pMatchFramework->CreateSession( pSettings );
+		g_pMatchFramework->CreateSession( pSettings );
 
-			// Automatically start the credits session, no configuration required
-			if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
-			{
-				pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
-			}
+		// Automatically start the tutorial mission, no configuration required
+		if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
+		{
+			pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
+		}
 	}
 	else if ( !Q_strcmp( command, "SoloPlay" ) )
 	{
@@ -1093,6 +1097,13 @@ void MainMenu::OnThink()
 //=============================================================================
 void MainMenu::OnOpen()
 {
+	if ( rd_revert_convars.GetBool() )
+	{
+		g_pCVar->RevertFlaggedConVars( FCVAR_REPLICATED );
+	}
+
+	g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
+
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{
 		// if we were launched with "+connect_lobby <lobbyid>" on the command line, join that lobby immediately

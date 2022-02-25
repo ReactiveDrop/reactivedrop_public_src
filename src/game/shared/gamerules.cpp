@@ -34,7 +34,7 @@
 
 
 ConVar g_Language( "g_Language", "0", FCVAR_REPLICATED );
-ConVar sk_autoaim_mode( "sk_autoaim_mode", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED );
+ConVar sk_autoaim_mode( "sk_autoaim_mode", "1", FCVAR_REPLICATED );
 
 static CViewVectors g_DefaultViewVectors(
 	Vector( 0, 0, 64 ),			//VEC_VIEW (m_vView)

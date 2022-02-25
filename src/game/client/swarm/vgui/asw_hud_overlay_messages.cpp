@@ -1,4 +1,3 @@
-
 #include "cbase.h"
 #include "hud.h"
 #include "hud_macros.h"
@@ -32,6 +31,7 @@ using namespace vgui;
 #include "c_asw_ammo_drop.h"
 #include "nb_vote_panel.h"
 #include "asw_hud_master.h"
+#include "asw_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -176,25 +176,30 @@ void CASWHudOverlayMessages::Paint()
 
 void CASWHudOverlayMessages::PaintAmmoDrops()
 {
+	Vector vecOffset( 0, -20, 0 );
+	if ( ASWInput() )
+	{
+		VectorRotate( Vector( -20, 0, 0 ), QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), vecOffset );
+	}
+
 	int nDrops = g_AmmoDrops.Count();
 	for ( int i = 0; i < nDrops; i++ )
 	{
 		C_ASW_Ammo_Drop *pDrop = g_AmmoDrops[i];
 		if ( !pDrop )
-			return;
-
-		Vector screenPos;
-		Vector vecWorldPos = pDrop->GetAbsOrigin();
-		vecWorldPos.x += ( pDrop->WorldAlignMaxs().x + pDrop->WorldAlignMins().x ) * 0.5f;
-		//vecWorldPos.y += pDrop->WorldAlignMins().y;
-		vecWorldPos.y -= 10.0f;
-		vecWorldPos.z += pDrop->WorldAlignMins().z;
-		vecWorldPos = ( vecWorldPos - pDrop->GetAbsOrigin() ) + pDrop->GetRenderOrigin();
-		//debugoverlay->AddLineOverlay( pDrop->GetRenderOrigin(), vecWorldPos, 255, 255, 0, true, 0.01f );
+			continue;
+		
+		C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
+		if ( pLocal )
+			if ( pDrop->GetAbsOrigin().DistTo( pLocal->EyePosition() ) > 1024 )
+				continue;
+		
+		Vector vecWorldPos = pDrop->GetRenderOrigin() + vecOffset;
 
 		const int nMaxX = ScreenWidth() - 150;
 		const int nMaxY = ScreenHeight() - 100;
-		debugoverlay->ScreenPosition( vecWorldPos - Vector(0,10,0), screenPos );
+		Vector screenPos;
+		debugoverlay->ScreenPosition( vecWorldPos, screenPos );
 		if ( ( screenPos.x  >= 0 ) && ( screenPos.x <= nMaxX ) &&
 			( screenPos.y  >= 0 ) && ( screenPos.y <= nMaxY ) )
 		{

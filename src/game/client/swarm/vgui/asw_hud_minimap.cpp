@@ -207,21 +207,6 @@ void CASWMap::ClearBlips( void )
 	m_MapBlips.RemoveAll();
 }
 
-static float GetPlayerYaw()
-{
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
-	{
-		if (pPlayer->GetSpectatingMarine() && pPlayer->GetSpectatingMarine()->IsInhabited())
-		{
-			pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
-			return pPlayer ? pPlayer->m_flMovementAxisYaw : 90;
-		}
-		return pPlayer->m_flMovementAxisYaw;
-	}
-	return 90;
-}
-
 void CASWMap::PaintMarineBlips()
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
@@ -264,7 +249,7 @@ void CASWMap::PaintMarineBlips()
 					}
 
 					PaintWorldBlip(pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0, 192, 0, 255));
-					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y + 90 - GetPlayerYaw(), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
+					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y + 90 - ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
 				}
 			}
 		}
@@ -674,7 +659,7 @@ void CASWHudMinimap::PaintMapSection()
 			{
 				Vector2D center(map_left + (m_iMapSize * 0.5f), map_top + (m_iMapSize * 0.5f));
 
-				float yawRad = DEG2RAD( GetPlayerYaw() - 90.0f );
+				float yawRad = DEG2RAD( ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ) - 90.0f );
 				Vector2D axis[2];
 				axis[0].x = cos(yawRad);
 				axis[0].y = sin(yawRad);
