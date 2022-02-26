@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "1339"
+	"mapversion" "1340"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "1339"
+	"mapversion" "1340"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -109381,6 +109381,13 @@ entity
 	"busyactor" "0"
 	"SceneFile" "scenes/swarmscenes/nh_01_06_scene.vcd"
 	"targetname" "Scene 01_06"
+	connections
+	{
+		"OnStart" "portrait_duvalShowCommanderFace0-1"
+		"OnStart" "portrait_duvalHideCommanderFace6.5-1"
+		"OnStart" "portrait_richardShowCommanderFace6.75-1"
+		"OnCompletion" "portrait_richardHideCommanderFace0-1"
+	}
 	"origin" "-1328 -744 -312"
 	editor
 	{
@@ -120857,8 +120864,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2272.51 3014.83 265.643]"
-		"look" "[2158.3 3099.04 272.583]"
+		"position" "[-1349.84 -767.429 -228.702]"
+		"look" "[-1346.17 -723.681 -363.818]"
 	}
 }
 cordons
