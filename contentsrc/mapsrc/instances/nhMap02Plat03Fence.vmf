@@ -1,0 +1,2413 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "7397"
+	"mapversion" "1"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "1"
+	"classname" "worldspawn"
+	"skyname" "blacksky"
+	"maxpropscreenwidth" "-1"
+	"detailvbsp" "detail.vbsp"
+	"detailmaterial" "detail/detailsprites"
+}
+entity
+{
+	"id" "2"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1235.5 -975.8 2.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "6"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1231.5 -1007.8 2.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "10"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1231.5 -1071.8 2.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "14"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1231.5 -1135.8 2.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "18"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1231.5 -1199.8 2.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "22"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1204.5 -1219.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "26"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1236.5 -1223.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "30"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1140.5 -1219.95 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "34"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1172.5 -1223.95 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "38"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1076.5 -1219.95 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "42"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-1012.5 -1219.95 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "46"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-948.5 -1219.95 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "50"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-884.5 -1219.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "54"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-916.5 -1223.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "58"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-820.5 -1219.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "62"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-756.5 -1219.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "66"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-692.5 -1219.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "70"
+	"classname" "prop_static"
+	"angles" "0 308.5 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-643.5 -1202.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "74"
+	"classname" "prop_static"
+	"angles" "0 308.5 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-593.5 -1163.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "78"
+	"classname" "prop_static"
+	"angles" "0 307.5 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01c.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-664.5 -1222.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "82"
+	"classname" "prop_static"
+	"angles" "0 308.5 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-543.959 -1124.52 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "86"
+	"classname" "prop_static"
+	"angles" "0 307.5 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-563.5 -1144.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "90"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -1078.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "94"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -1110.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "98"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -1014.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "102"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -950.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "106"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -886.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "110"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -822.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "114"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -854.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "118"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -758.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "122"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -694.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "126"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -630.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "130"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-521.5 -566.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "134"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -598.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "138"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-637.5 -546.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "142"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-477.5 -542.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "146"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-413.5 -542.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "150"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-349.5 -542.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "154"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-381.5 -546.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "158"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-285.5 -542.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "162"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-221.5 -542.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "166"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-157.5 -542.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "170"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-157.5 -238.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "174"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-125.25 -236.45 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "178"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-221.5 -238.8 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "182"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-285.5 -238.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "186"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-413.5 -238.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "190"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-381.25 -236.55 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "194"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-477.5 -238.9 0.257019"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "198"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-513.5 -238.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "202"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -206.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "206"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -142.8 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "210"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -78.7998 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "214"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 -14.7998 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "218"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 49.2002 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "222"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-513.5 17.2002 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "226"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 113.2 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "230"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 177.2 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "234"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 241.2 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "238"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 305.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "242"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-513.5 273.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "246"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 369.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "250"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 433.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "254"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 497.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "258"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 561.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "262"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-513.5 529.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "266"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 625.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "270"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 689.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "274"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 753.45 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "278"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-513.5 785.7 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "282"
+	"classname" "prop_static"
+	"angles" "0 0 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-517.5 817.7 1.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "286"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "738.5 537.2 -23.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "290"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "770.5 541.2 -23.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "294"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "834.5 541.2 -23.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "298"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "898.5 541.2 -23.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "302"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "962.5 541.2 -23.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "306"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "994.5 528.2 -20.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "310"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "989.5 464.2 -20.743"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "314"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "994.5 461.2 10.257"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "318"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "995.5 41.2002 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "322"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "996.5 3.2002 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "326"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "996.5 -124.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "330"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "996.5 -60.7998 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "334"
+	"classname" "prop_static"
+	"angles" "0 180 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "996.5 -188.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "338"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "994.5 -222.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "342"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "962.5 -226.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "346"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "898.5 -226.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "350"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "930.5 -222.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "354"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "834.5 -226.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "358"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "770.5 -226.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "362"
+	"classname" "prop_static"
+	"angles" "0 90 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "706.5 -226.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "366"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "706.5 -526.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "370"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01d.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "674.5 -530.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "374"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "770.5 -526.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "378"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "834.5 -526.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "382"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "898.5 -526.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "386"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/railings/ind/straight_cap_64.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 104 120"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "962.5 -526.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "390"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "930.5 -530.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "394"
+	"classname" "prop_static"
+	"angles" "0 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/wall_trim/walltrim01b.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "994.5 -530.8 8.25702"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

@@ -1,0 +1,58 @@
+// Choreo version 1
+actor "Shuttle pilot"
+{
+  channel "Voice"
+  {
+    event speak "Pilot.02_01"
+    {
+      time 0.026667 6.150908
+      param "Pilot.02_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+actor "Cmdr. Richard"
+{
+  channel "Voice"
+  {
+    event speak "Radio.radio_on"
+    {
+      time 6.483334 7.031882
+      param "Radio.radio_on"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Radio.radio_off"
+    {
+      time 17.083332 17.631882
+      param "Radio.radio_off"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Richard.02_01"
+    {
+      time 6.800000 17.204060
+      param "Richard.02_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "40"
+  "RampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

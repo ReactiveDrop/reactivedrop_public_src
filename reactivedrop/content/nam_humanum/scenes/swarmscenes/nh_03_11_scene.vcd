@@ -1,0 +1,42 @@
+// Choreo version 1
+actor "???"
+{
+  channel "Voice"
+  {
+    event speak "Vesta.03_11"
+    {
+      time 0.012043 6.651998
+      param "Vesta.03_11"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+actor "Shuttle pilot"
+{
+  channel "Voice"
+  {
+    event speak "Pilot.03_11"
+    {
+      time 6.703325 10.974255
+      param "Pilot.03_11"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "ExpressionTool" "100"
+  "RampTool" "100"
+  "CChoreoView" "124"
+}
+fps 60
+snap off
+ignorePhonemes off
