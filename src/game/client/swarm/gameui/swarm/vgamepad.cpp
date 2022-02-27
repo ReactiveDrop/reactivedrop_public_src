@@ -88,6 +88,8 @@ void Gamepad::Activate()
 			m_drpGamepadEnable->SetCurrentSelection( "GamepadEnabled" );
 		}
 
+		m_drpGamepadEnable->RequestFocus();
+
 		FlyoutMenu *pFlyout = m_drpGamepadEnable->GetCurrentFlyout();
 		if ( pFlyout )
 		{
