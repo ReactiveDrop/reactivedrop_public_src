@@ -1,0 +1,52 @@
+"RadialMenu"
+{
+	//--------------------------------------------------------------
+	"Default"
+	{
+		"Center"
+		{
+			"command"	"cl_chatter -1"
+			"text"		"#asw_speech_zing"
+		}
+		"North"
+		{
+			"command"	"asw_OrderMarinesFollow"
+			"text"		"#asw_speech_go"
+		}
+		"NorthEast"
+		{
+			"command"	"cl_emote 7"
+			"text"		"#asw_speech_ready"
+		}	
+		"East"
+		{
+			"command"	"cl_chatter 15"
+			"text"		"#asw_speech_thanks"
+		}	
+		"SouthEast"
+		{
+			"command"	"cl_chatter 39"
+			"text"		"#asw_speech_rseal"
+		}	
+		"South"
+		{
+			"command"	"asw_OrderMarinesHold"
+			"text"		"#asw_speech_hold"
+		}
+		"SouthWest"
+		{
+			"command"	"cl_emote 0"
+			"text"		"#asw_speech_medic"
+		}
+		"West"
+		{
+			"command"	"cl_emote 5"
+			"text"		"#asw_speech_careful"
+		}
+		"NorthWest"
+		{
+			"command"	"cl_emote 2"
+			"text"		"#asw_speech_smile"
+		}	
+	}
+}

@@ -342,6 +342,10 @@ protected:
 
 	InputContextHandle_t m_hInputContext;
 	CThreadFastMutex m_IKContactPointMutex;
+
+	int m_iLastMouseX;
+	int m_iLastMouseY;
+	int m_iLastMouseFrame;
 };
 
 extern kbutton_t in_strafe;
