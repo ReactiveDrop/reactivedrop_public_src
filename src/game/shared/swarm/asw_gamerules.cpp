@@ -6924,14 +6924,15 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 		}
 	}
 
+	ConVarRef asw_controls( "asw_controls" );
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
-		if ( m_bIsIntro )
+		if ( asw_controls.GetBool() )
 			iFov = clamp( iFov, 20, 75 );
 		else
-			iFov = clamp( iFov, 20, 75 );
+			iFov = clamp( iFov, 20, 120 );
 		pPlayer->SetDefaultFOV( iFov );
 	}
 }
