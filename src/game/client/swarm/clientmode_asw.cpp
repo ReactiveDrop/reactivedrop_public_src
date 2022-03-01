@@ -86,7 +86,7 @@ Vector g_asw_vec_fixed_hear_pos = vec3_origin;
 Vector g_asw_vec_last_hear_pos = vec3_origin;
 
 ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
-ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 75.0 );
+ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 120.0 );
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 

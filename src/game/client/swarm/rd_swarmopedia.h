@@ -52,6 +52,7 @@ namespace BaseModUI
 		virtual void PerformLayout();
 		virtual void OnOpen();
 		virtual void OnCommand( const char *command );
+		virtual void OnKeyCodePressed( vgui::KeyCode code );
 
 		struct Alien_t
 		{

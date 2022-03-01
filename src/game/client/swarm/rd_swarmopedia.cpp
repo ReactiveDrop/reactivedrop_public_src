@@ -548,6 +548,36 @@ void Swarmopedia::OnCommand( const char *command )
 	}
 }
 
+void Swarmopedia::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_UP:
+	case KEY_XSTICK1_UP:
+		if ( m_iSelectedAlien != 0 )
+			SetSelectedAlien( m_iSelectedAlien - 1 );
+		break;
+	case KEY_XBUTTON_DOWN:
+	case KEY_XSTICK1_DOWN:
+		if ( m_iSelectedAlien + 1 < m_Aliens.Count() )
+			SetSelectedAlien( m_iSelectedAlien + 1 );
+		break;
+	case KEY_XBUTTON_X:
+		OnCommand( "NextModel" );
+		break;
+	case KEY_XSTICK2_UP:
+	case KEY_XSTICK2_DOWN:
+		m_pGplParagraphs->OnKeyCodePressed( keycode );
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
 Swarmopedia::Alien_t::Alien_t( Swarmopedia *pSwarmopedia, KeyValues *pKV ) : m_szID( pKV->GetString( "ID" ) )
 {
 	Merge( pSwarmopedia, pKV );

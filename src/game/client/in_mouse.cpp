@@ -708,6 +708,9 @@ void CInput::GetFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL*/,
 //-----------------------------------------------------------------------------
 void CInput::SetFullscreenMousePos( int mx, int my )
 {
+	m_iLastMouseX = mx;
+	m_iLastMouseY = my;
+	m_iLastMouseFrame = gpGlobals->framecount;
 	SetMousePos( mx, my );
 }
 

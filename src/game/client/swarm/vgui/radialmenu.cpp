@@ -996,7 +996,7 @@ void CRadialMenu::OnThink( void )
 	int oldX = m_cursorX;
 	int oldY = m_cursorY;
 
-	ASWInput()->GetFullscreenMousePos( &m_cursorX, &m_cursorY );
+	ASWInput()->GetSimulatedFullscreenMousePos( &m_cursorX, &m_cursorY );
 	ScreenToLocal( m_cursorX, m_cursorY );
 
 	int nSlot = vgui::ipanel()->GetMessageContextId( GetVPanel() );

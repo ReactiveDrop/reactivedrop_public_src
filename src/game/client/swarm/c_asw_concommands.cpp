@@ -21,6 +21,7 @@
 #include "MedalCollectionPanel.h"
 #include "PlayerListPanel.h"
 #include "PlayerListContainer.h"
+#include "vgui\nb_main_panel.h"
 #include "vgui\nb_mission_panel.h"
 #include "vgui\nb_select_marine_panel.h"
 #include "vgui\briefingframe.h"
@@ -643,8 +644,22 @@ void ShowInGameBriefing()
 		return;
 	}
 
-	if (g_hBriefingFrame.Get() || GetClientModeASW()->m_hCampaignFrame.Get() || GetClientModeASW()->m_hMissionCompleteFrame.Get())
+	if ( GetClientModeASW()->m_hCampaignFrame.Get() || GetClientModeASW()->m_hMissionCompleteFrame.Get() )
 	{
+		return;
+	}
+
+	BriefingFrame *pBriefingFrame = assert_cast<BriefingFrame *>( g_hBriefingFrame.Get() );
+	if ( pBriefingFrame )
+	{
+		if ( pBriefingFrame->m_pMainPanel->m_hSubScreen )
+		{
+			pBriefingFrame->m_pMainPanel->m_hSubScreen->MarkForDeletion();
+		}
+		else
+		{
+			pBriefingFrame->m_pMainPanel->ShowMissionDetails();
+		}
 		return;
 	}
 

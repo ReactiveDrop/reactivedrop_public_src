@@ -347,6 +347,10 @@ CInput::CInput( void )
 		m_PerUser[ i ].m_pCameraThirdData = NULL;
 		m_PerUser[ i ].m_pVerifiedCommands = NULL;
 	}
+
+	m_iLastMouseX = 0;
+	m_iLastMouseY = 0;
+	m_iLastMouseFrame = 0;
 }
 
 //-----------------------------------------------------------------------------

@@ -1235,6 +1235,14 @@ void SmoothControllerYaw(CASW_Player *pPlayer, float &yaw)
 // Returns the mouse cursor location.  If in controller mode we simulate a cursor position based on the analogue stick.
 void CASWInput::GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL*/, int *unclampedy /*=NULL*/ )
 {
+	if ( m_iLastMouseFrame == gpGlobals->framecount )
+	{
+		// The mouse position was forced during this frame or the previous; remember it rather than recalculating.
+		*mx = m_iLastMouseX;
+		*my = m_iLastMouseY;
+		return;
+	}
+
 	// BenLubar(spectator-mouse)
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	C_ASW_Player *pViewPlayer = pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->IsInhabited() ? pPlayer->GetViewMarine()->GetCommander() : NULL;
@@ -1258,6 +1266,7 @@ float MoveToward( float cur, float goal, float lag );
 
 ConVar asw_controller_lag( "asw_controller_lag", "40.0", FCVAR_NONE );
 ConVar rd_controller_radius_adjust( "rd_controller_radius_adjust", "0", FCVAR_NONE, "Number of pixels to add to crosshair distance from marine, when using controller. Can be negative" );
+ConVar rd_controller_analog_radius( "rd_controller_analog_radius", "1", FCVAR_ARCHIVE );
 
 void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, float fControllerPitch, float fControllerYaw, float flForwardFraction )
 {
@@ -1295,6 +1304,11 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 		//float dist_fraction = length;
 		//if (dist_fraction < 0.9f)
 		//dist_fraction = 0.9f;
+		if ( rd_controller_analog_radius.GetBool() )
+		{
+			flForwardFraction *= clamp( length, 0.3f, 1 );
+		}
+
 		int radAdjust = rd_controller_radius_adjust.GetInt();
 		int nScreenMin = MIN( ScreenWidth(), ScreenHeight() );
 		*mx = x + ( ( nScreenMin * flForwardFraction + radAdjust ) * cos( DEG2RAD( joy_yaw ) ) );
