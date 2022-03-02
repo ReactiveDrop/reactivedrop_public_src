@@ -107,6 +107,7 @@ extern ConVar sk_healthkit;
 #include "utlbuffer.h"
 #include "GameStats.h"
 #include "physics_prop_statue.h"
+#include "gameinterface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -141,11 +142,13 @@ ConVar	ai_default_efficient( "ai_default_efficient", ( IsX360() ) ? "1" : "0" );
 ConVar	ai_efficiency_override( "ai_efficiency_override", "0" );
 ConVar	ai_debug_efficiency( "ai_debug_efficiency", "0" );
 ConVar	ai_debug_dyninteractions( "ai_debug_dyninteractions", "0", FCVAR_NONE, "Debug the NPC dynamic interaction system." );
-ConVar	ai_frametime_limit( "ai_frametime_limit", "0.050", FCVAR_CHEAT, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
+ConVar	ai_frametime_limit( "ai_frametime_limit", "3.0", FCVAR_CHEAT, "When exceed this number of frames, switch to more efficient ai" );
 
 ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "1" );
 
 ConVar	ai_test_moveprobe_ignoresmall( "ai_test_moveprobe_ignoresmall", "0" );
+
+extern CServerGameDLL g_ServerGameDLL;
 
 #ifdef HL2_EPISODIC
 extern ConVar ai_vehicle_avoidance;
@@ -3300,7 +3303,7 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 		return;
 	}
 
-	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() );
+	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() * g_ServerGameDLL.GetTickInterval() );
 
 	if ( m_bForceConditionsGather || 
 		 gpGlobals->curtime - GetLastAttackTime() < .2 ||
