@@ -141,7 +141,7 @@ ConVar	ai_default_efficient( "ai_default_efficient", ( IsX360() ) ? "1" : "0" );
 ConVar	ai_efficiency_override( "ai_efficiency_override", "0" );
 ConVar	ai_debug_efficiency( "ai_debug_efficiency", "0" );
 ConVar	ai_debug_dyninteractions( "ai_debug_dyninteractions", "0", FCVAR_NONE, "Debug the NPC dynamic interaction system." );
-ConVar	ai_frametime_limit( "ai_frametime_limit", "50", FCVAR_NONE, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
+ConVar	ai_frametime_limit( "ai_frametime_limit", "0.050", FCVAR_CHEAT, "frametime limit for min efficiency AIE_NORMAL (in sec's)." );
 
 ConVar	ai_use_think_optimizations( "ai_use_think_optimizations", "1" );
 
