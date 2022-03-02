@@ -38,7 +38,6 @@
 extern ConVar asw_debug_alien_damage;
 extern ConVar ai_show_hull_attacks;
 extern ConVar ai_efficiency_override;
-extern ConVar ai_frametime_limit;
 extern ConVar ai_use_think_optimizations;
 extern ConVar ai_use_efficiency;
 extern ConVar showhitlocation;
@@ -2579,7 +2578,7 @@ void CASW_Alien::UpdateEfficiency( bool bInPVS )
 		return;
 	}
 
-	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() * g_ServerGameDLL.GetTickInterval() );
+	bool bFramerateOk = g_ServerGameDLL.IsFramerateOk();
 
 	if ( IsForceGatherConditionsSet() || 
 		 gpGlobals->curtime - GetLastAttackTime() < .2 ||

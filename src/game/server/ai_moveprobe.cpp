@@ -16,6 +16,7 @@
 #include "ai_routedist.h"
 #include "props.h"
 #include "vphysics/object_hash.h"
+#include "gameinterface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,6 +38,8 @@ ConVar ai_old_check_stand_position( "ai_old_check_stand_position", "0" );
 #else
 #define UseOldCheckStandPosition() (false)
 #endif
+
+extern CServerGameDLL g_ServerGameDLL;
 
 //-----------------------------------------------------------------------------
 
@@ -667,11 +670,15 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 		Assert( !m_pTraceListData || m_pTraceListData->IsEmpty() );
 		SetupCheckStepTraceListData( checkStepArgs );
 		
+		bool bSaveCpu = false;
+
 		for ( i = 0; i < 16; i++ )
 		{
+			if ( i > 4 && !g_ServerGameDLL.IsFramerateOk() ) bSaveCpu = true;
+
 			CheckStep( checkStepArgs, &checkStepResult );
 
-			if ( !bTryNavIgnore || !checkStepResult.pBlocker || !checkStepResult.fStartSolid )
+			if ( !bTryNavIgnore || !checkStepResult.pBlocker || !checkStepResult.fStartSolid || bSaveCpu )
 				break;
 
 			if ( checkStepResult.pBlocker->GetMoveType() != MOVETYPE_VPHYSICS && !checkStepResult.pBlocker->IsNPC() )

@@ -223,9 +223,11 @@ ConVar *sv_maxreplay = NULL;
 
 static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
+static float fTickInterval = NULL;
 
 ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCVAR_NONE, "To Allow drawing debug overlays in release builds");
 ConVar rd_override_fps_max("rd_override_fps_max", "-1", FCVAR_NONE, "overrides fps_max, this option sticks across map changes without touching newmapsettings", true, -1, true, 1000);
+ConVar sv_frametime_limit("ai_frametime_limit", "3.0", FCVAR_CHEAT, "When exceed this number of frames, switch to more efficient ai");
 
 
 #if !defined(NO_STEAM)
@@ -944,28 +946,39 @@ void CServerGameDLL::DLLShutdown( void )
 //-----------------------------------------------------------------------------
 float CServerGameDLL::GetTickInterval( void ) const
 {
-	// override if tick rate specified in command line
-	if ( CommandLine()->CheckParm( "-tickrate" ) )
+	if ( !fTickInterval)
 	{
-		const float defaultTickrate = 1000 / DEFAULT_TICK_INTERVAL;
-		const float tickrate = CommandLine()->ParmValue( "-tickrate", defaultTickrate );
-		const float tickInterval = 1.0f / tickrate;
+		fTickInterval = DEFAULT_TICK_INTERVAL;
 
-		if ( tickInterval >= MINIMUM_TICK_INTERVAL && tickInterval <= MAXIMUM_TICK_INTERVAL )
+		// override if tick rate specified in command line
+		if (CommandLine()->CheckParm("-tickrate"))
 		{
-			return tickInterval;
+			const float defaultTickrate = 1000 / DEFAULT_TICK_INTERVAL;
+			const float tickrate = CommandLine()->ParmValue("-tickrate", defaultTickrate);
+			const float tickInterval = 1.0f / tickrate;
+
+			if (tickInterval >= MINIMUM_TICK_INTERVAL && tickInterval <= MAXIMUM_TICK_INTERVAL)
+			{
+				fTickInterval = tickInterval;
+			}
+			else
+			{
+				ConMsg("requested tickrate [%d] is not in valid range [%d - %d]\n",
+					tickrate,
+					round(1.0f / MINIMUM_TICK_INTERVAL),
+					round(1.0f / MAXIMUM_TICK_INTERVAL)
+				);
+			}
 		}
-		else
-		{
-			ConMsg( "requested tickrate [%d] is not in valid range [%d - %d]\n",
-				tickrate,
-				round( 1.0f / MINIMUM_TICK_INTERVAL ),
-				round( 1.0f / MAXIMUM_TICK_INTERVAL )
-			);
-		}
+
 	}
 
-	return DEFAULT_TICK_INTERVAL;
+	return fTickInterval;
+}
+
+bool CServerGameDLL::IsFramerateOk( )
+{
+	return gpGlobals->frametime < sv_frametime_limit.GetFloat() * GetTickInterval();
 }
 
 // This is called when a new game is started. (restart, map)
