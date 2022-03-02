@@ -100,7 +100,6 @@ extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor
 extern float	GetFloorZ(const Vector &origin);
 
 extern ConVar ai_efficiency_override;
-extern ConVar ai_frametime_limit;
 extern ConVar ai_use_think_optimizations;
 extern ConVar ai_use_efficiency;
 extern ConVar asw_draw_awake_ai;
