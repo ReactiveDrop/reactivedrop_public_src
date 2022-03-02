@@ -672,11 +672,12 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 		
 		for ( i = 0; i < 16; i++ )
 		{
-			if ( i > 4 && !g_ServerGameDLL.IsFramerateOk() ) break;
-
 			CheckStep( checkStepArgs, &checkStepResult );
 
-			if ( !bTryNavIgnore || !checkStepResult.pBlocker || !checkStepResult.fStartSolid || bSaveCpu )
+			if (i > 4 && !g_ServerGameDLL.IsFramerateOk()) 
+				break;
+
+			if ( !bTryNavIgnore || !checkStepResult.pBlocker || !checkStepResult.fStartSolid )
 				break;
 
 			if ( checkStepResult.pBlocker->GetMoveType() != MOVETYPE_VPHYSICS && !checkStepResult.pBlocker->IsNPC() )
