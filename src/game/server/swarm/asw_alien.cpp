@@ -2579,7 +2579,7 @@ void CASW_Alien::UpdateEfficiency( bool bInPVS )
 		return;
 	}
 
-	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() * g_ServerGameDLL.GetTickInterval());
+	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() * g_ServerGameDLL.GetTickInterval() );
 
 	if ( IsForceGatherConditionsSet() || 
 		 gpGlobals->curtime - GetLastAttackTime() < .2 ||
