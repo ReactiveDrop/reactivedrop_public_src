@@ -670,11 +670,9 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 		Assert( !m_pTraceListData || m_pTraceListData->IsEmpty() );
 		SetupCheckStepTraceListData( checkStepArgs );
 		
-		bool bSaveCpu = false;
-
 		for ( i = 0; i < 16; i++ )
 		{
-			if ( i > 4 && !g_ServerGameDLL.IsFramerateOk() ) bSaveCpu = true;
+			if ( i > 4 && !g_ServerGameDLL.IsFramerateOk() ) break;
 
 			CheckStep( checkStepArgs, &checkStepResult );
 

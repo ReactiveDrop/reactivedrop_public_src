@@ -3447,7 +3447,7 @@ void CASW_Buzzer::UpdateEfficiency(bool bInPVS)
 		return;
 	}
 
-	bool bFramerateOk =g_ServerGameDLL.IsFramerateOk();
+	bool bFramerateOk = g_ServerGameDLL.IsFramerateOk();
 
 	if (IsForceGatherConditionsSet() ||
 		gpGlobals->curtime - GetLastAttackTime() < .2 ||
