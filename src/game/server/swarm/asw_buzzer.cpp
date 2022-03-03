@@ -44,6 +44,7 @@
 #include "asw_weapon.h"
 #include "asw_game_resource.h"
 #include "asw_spawn_manager.h"
+#include "gameinterface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -99,10 +100,10 @@ extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor
 extern float	GetFloorZ(const Vector &origin);
 
 extern ConVar ai_efficiency_override;
-extern ConVar ai_frametime_limit;
 extern ConVar ai_use_think_optimizations;
 extern ConVar ai_use_efficiency;
 extern ConVar asw_draw_awake_ai;
+extern CServerGameDLL g_ServerGameDLL;
 
 envelopePoint_t envBuzzerMoanIgnited[] =
 {
@@ -3446,7 +3447,7 @@ void CASW_Buzzer::UpdateEfficiency(bool bInPVS)
 		return;
 	}
 
-	bool bFramerateOk = (gpGlobals->frametime < ai_frametime_limit.GetFloat());
+	bool bFramerateOk = g_ServerGameDLL.IsFramerateOk();
 
 	if (IsForceGatherConditionsSet() ||
 		gpGlobals->curtime - GetLastAttackTime() < .2 ||

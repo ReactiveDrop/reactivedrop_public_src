@@ -16,6 +16,7 @@
 #include "ai_routedist.h"
 #include "props.h"
 #include "vphysics/object_hash.h"
+#include "gameinterface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,6 +38,8 @@ ConVar ai_old_check_stand_position( "ai_old_check_stand_position", "0" );
 #else
 #define UseOldCheckStandPosition() (false)
 #endif
+
+extern CServerGameDLL g_ServerGameDLL;
 
 //-----------------------------------------------------------------------------
 
@@ -670,6 +673,9 @@ bool CAI_MoveProbe::TestGroundMove( const Vector &vecActualStart, const Vector &
 		for ( i = 0; i < 16; i++ )
 		{
 			CheckStep( checkStepArgs, &checkStepResult );
+
+			if (i > 4 && !g_ServerGameDLL.IsFramerateOk()) 
+				break;
 
 			if ( !bTryNavIgnore || !checkStepResult.pBlocker || !checkStepResult.fStartSolid )
 				break;
