@@ -138,7 +138,6 @@ CRoomTemplateEditDialog::CRoomTemplateEditDialog( Panel *parent, const char *nam
 		m_pSpawnWeightSlider->SetValue( m_pRoomTemplate->GetSpawnWeight() );
 		m_pTilesXSlider->SetValue( m_pRoomTemplate->GetTilesX() );
 		m_pTilesYSlider->SetValue( m_pRoomTemplate->GetTilesY() );
-		char buffer[12];
 		Q_snprintf( buffer, _countof( buffer ), "%d", m_pRoomTemplate->GetSpawnWeight() );
 		m_pSpawnWeightValue->SetText( buffer );
 		Q_snprintf( buffer, _countof( buffer ), "%d", m_pRoomTemplate->GetTilesX() );

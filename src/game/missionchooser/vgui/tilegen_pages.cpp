@@ -116,9 +116,9 @@ void CTilegenKVEditorPage::OnCheckOutFromP4( KeyValues *pKV )
 	{
 		if ( p4->OpenFileForEdit( pPath ) )
 		{
-			KeyValues *pKV = GetKeyValues();
+			KeyValues *pKV2 = GetKeyValues();
 
-			if ( !pKV->SaveToFile( g_pFullFileSystem, m_szFilename, "GAME" ) )
+			if ( !pKV2->SaveToFile( g_pFullFileSystem, m_szFilename, "GAME" ) )
 			{
 				VGUIMessageBox( this, "Save Error!", "Checked out '%s' from Perforce, but failed to save file.", pPath );
 			}
