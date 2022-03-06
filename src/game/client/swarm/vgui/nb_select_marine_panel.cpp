@@ -17,7 +17,7 @@
 #include "asw_gamerules.h"
 #include "c_asw_campaign_save.h"
 #include "c_asw_game_resource.h"
-
+#include "controller_focus.h"
 #include "playerlistcontainer.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -139,17 +139,29 @@ void CNB_Select_Marine_Panel::PerformLayout()
 void CNB_Select_Marine_Panel::OnThink()
 {
 	BaseClass::OnThink();
-	
-	for ( int i = 0; i < m_Entries.Count(); i++ )
+
+	if ( GetControllerFocus()->IsControllerMode() )
 	{
-		if ( m_Entries[i]->IsCursorOver() )
+		vgui::Panel *pControllerFocus = GetControllerFocus()->GetFocusPanel();
+		CNB_Select_Marine_Entry *pFocus = pControllerFocus ? dynamic_cast< CNB_Select_Marine_Entry * >( pControllerFocus->GetParent() ) : NULL;
+		if ( pFocus )
 		{
-			vgui::Panel *pPanel = m_Entries[i];
-			CNB_Select_Marine_Entry *pCursorOver = dynamic_cast<CNB_Select_Marine_Entry*>( pPanel );
-			if ( pCursorOver && pCursorOver->m_pPortraitImage->IsCursorOver() )
+			SetHighlight( pFocus->m_nProfileIndex );
+		}
+	}
+	else
+	{
+		for ( int i = 0; i < m_Entries.Count(); i++ )
+		{
+			if ( m_Entries[i]->IsCursorOver() )
 			{
-				SetHighlight( i );
-				break;
+				vgui::Panel *pPanel = m_Entries[i];
+				CNB_Select_Marine_Entry *pCursorOver = dynamic_cast< CNB_Select_Marine_Entry * >( pPanel );
+				if ( pCursorOver && pCursorOver->m_pPortraitImage->IsCursorOver() )
+				{
+					SetHighlight( i );
+					break;
+				}
 			}
 		}
 	}

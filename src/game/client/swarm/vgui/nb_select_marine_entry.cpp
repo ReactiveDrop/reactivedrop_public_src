@@ -8,6 +8,7 @@
 #include "nb_select_marine_panel.h"
 #include "vgui_bitmapbutton.h"
 #include "nb_main_panel.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,11 +33,13 @@ CNB_Select_Marine_Entry::CNB_Select_Marine_Entry( vgui::Panel *parent, const cha
 
 	m_szLastImageName[0] = 0;
 	m_bSpendingSkillPointsMode = false;
+
+	GetControllerFocus()->AddToFocusList( m_pPortraitImage );
 }
 
 CNB_Select_Marine_Entry::~CNB_Select_Marine_Entry()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_pPortraitImage );
 }
 
 void CNB_Select_Marine_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
