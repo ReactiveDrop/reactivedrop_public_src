@@ -87,7 +87,7 @@ void ObjectiveTitlePanel::SetObjective(C_ASW_Objective* pObjective)
 	if (pCur != pObjective && pObjective)
 	{
 		if (GetControllerFocus())
-			GetControllerFocus()->AddToFocusList(this, true);
+			GetControllerFocus()->AddToFocusList(this, true, true);
 	}
 	m_hObjective = pObjective;		
 	UpdateElements();

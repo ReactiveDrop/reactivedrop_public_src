@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "nb_button.h"
 #include "vgui/ISurface.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -14,15 +15,18 @@ CNB_Button::CNB_Button(Panel *parent, const char *panelName, const char *text, P
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
 	// == MANAGED_MEMBER_CREATION_END ==
+
+	GetControllerFocus()->AddToFocusList( this );
 }
 CNB_Button::CNB_Button(Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget, const char *pCmd)
 : BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
 {
+	GetControllerFocus()->AddToFocusList( this );
 }
 
 CNB_Button::~CNB_Button()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( this );
 }
 
 void CNB_Button::ApplySchemeSettings( vgui::IScheme *pScheme )

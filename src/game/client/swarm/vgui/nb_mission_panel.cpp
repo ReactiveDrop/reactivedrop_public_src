@@ -27,14 +27,14 @@
 #include "gameui/swarm/vflyoutmenu.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/swarm/rd_challenge_selection.h"
+#include "controller_focus.h"
+
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
 
 using namespace vgui;
 
 #define MAP_SIZE 0.66666f
-
-
-// memdbgon must be the last include file in a .cpp file!!!
-#include "tier0/memdbgon.h"
 
 CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -77,11 +77,25 @@ CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : 
 	m_iLastHardcoreFF = -1;
 	m_iLastOnslaught = -1;
 	m_bIgnoreSelections = false;
+
+	// back button was auto-added, but we need it to be marked as modal
+	GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
+	GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
+
+	GetControllerFocus()->AddToFocusList( m_drpDifficulty, false, true );
+	GetControllerFocus()->AddToFocusList( m_drpGameMode, false, true );
+	GetControllerFocus()->AddToFocusList( m_drpFriendlyFire, false, true );
+	GetControllerFocus()->AddToFocusList( m_drpOnslaught, false, true );
+	GetControllerFocus()->AddToFocusList( m_drpChallenge, false, true );
 }
 
 CNB_Mission_Panel::~CNB_Mission_Panel()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_drpDifficulty );
+	GetControllerFocus()->RemoveFromFocusList( m_drpGameMode );
+	GetControllerFocus()->RemoveFromFocusList( m_drpFriendlyFire );
+	GetControllerFocus()->RemoveFromFocusList( m_drpOnslaught );
+	GetControllerFocus()->RemoveFromFocusList( m_drpChallenge );
 }
 
 void CNB_Mission_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )

@@ -34,7 +34,7 @@ CNB_Select_Marine_Entry::CNB_Select_Marine_Entry( vgui::Panel *parent, const cha
 	m_szLastImageName[0] = 0;
 	m_bSpendingSkillPointsMode = false;
 
-	GetControllerFocus()->AddToFocusList( m_pPortraitImage );
+	GetControllerFocus()->AddToFocusList( m_pPortraitImage, false, true );
 }
 
 CNB_Select_Marine_Entry::~CNB_Select_Marine_Entry()
