@@ -68,6 +68,7 @@ public:
 	virtual void			DLLShutdown( void );
 	// Get the simulation interval (must be compiled with identical values into both client and game .dll for MOD!!!)
 	virtual float			GetTickInterval( void ) const;
+	virtual bool			IsFramerateOk();
 	virtual bool			GameInit( void );
 	virtual void			GameShutdown( void );
 	virtual bool			LevelInit( const char *pMapName, char const *pMapEntities, char const *pOldLevel, char const *pLandmarkName, bool loadGame, bool background );
