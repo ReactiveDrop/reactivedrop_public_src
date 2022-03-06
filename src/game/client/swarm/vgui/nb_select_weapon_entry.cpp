@@ -14,6 +14,7 @@
 #include "asw_gamerules.h"
 #include "c_asw_game_resource.h"
 #include "c_asw_marine_resource.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -44,11 +45,13 @@ CNB_Select_Weapon_Entry::CNB_Select_Weapon_Entry( vgui::Panel *parent, const cha
 	m_nInventorySlot = -1;
 	m_nEquipIndex = -1;
 	m_bCanEquip = true;
+
+	GetControllerFocus()->AddToFocusList( m_pWeaponImage );
 }
 
 CNB_Select_Weapon_Entry::~CNB_Select_Weapon_Entry()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_pWeaponImage );
 }
 
 void CNB_Select_Weapon_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )

@@ -5,6 +5,7 @@
 #include "vgui_bitmapbutton.h"
 #include "nb_select_weapon_entry.h"
 #include "asw_input.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -171,7 +172,7 @@ void CNB_Horiz_List::OnThink()
 {
 	BaseClass::OnThink();
 
-	if ( MouseOverScrollbar() )
+	if ( !GetControllerFocus()->IsControllerMode() && MouseOverScrollbar() )
 	{
 		// No slidy auto scroll while using the scrollbar
 		m_fScrollVelocity = 0.0f;
@@ -180,8 +181,27 @@ void CNB_Horiz_List::OnThink()
 	else
 	{
 		int nMouseX, nMouseY;
-		ASWInput()->GetFullscreenMousePos( &nMouseX, &nMouseY );
-		ScreenToLocal( nMouseX, nMouseY );
+		if ( GetControllerFocus()->IsControllerMode() )
+		{
+			nMouseX = 0;
+			nMouseY = -1;
+
+			vgui::Panel *pFocus = GetControllerFocus()->GetFocusPanel();
+			if ( pFocus )
+			{
+				pFocus->GetSize( nMouseX, nMouseY );
+				nMouseX /= 2;
+				nMouseY /= 2;
+				pFocus->LocalToScreen( nMouseX, nMouseY );
+				ScreenToLocal( nMouseX, nMouseY );
+				nMouseX = clamp( nMouseX, 1, GetWide() - 1 );
+			}
+		}
+		else
+		{
+			ASWInput()->GetFullscreenMousePos( &nMouseX, &nMouseY );
+			ScreenToLocal( nMouseX, nMouseY );
+		}
 
 		float fVelocityMax = 1200.0f;
 
@@ -190,7 +210,7 @@ void CNB_Horiz_List::OnThink()
 
 		if ( nMouseX > 0 && nMouseX < GetWide() && nMouseY > 0 && nMouseY < GetTall() )
 		{
-			const float fDeadZoneSize = 0.55f;
+			const float fDeadZoneSize = GetControllerFocus()->IsControllerMode() ? 0.05f : 0.55f;
 			float fMouseXInterp = static_cast<float>( nMouseX ) / GetWide();
 
 			if ( fMouseXInterp > 0.5f + fDeadZoneSize * 0.5f )
@@ -244,7 +264,22 @@ void CNB_Horiz_List::OnThink()
 		}
 	}
 
-	if ( m_bHighlightOnMouseOver )
+	if ( GetControllerFocus()->IsControllerMode() )
+	{
+		vgui::Panel *pPanel = GetControllerFocus()->GetFocusPanel();
+		if ( pPanel )
+		{
+			for ( int i = 0; i < m_Entries.Count(); i++ )
+			{
+				if ( pPanel == m_Entries[i] || pPanel->GetParent() == m_Entries[i] )
+				{
+					SetHighlight( i );
+					break;
+				}
+			}
+		}
+	}
+	else if ( m_bHighlightOnMouseOver )
 	{
 		for ( int i = 0; i < m_Entries.Count(); i++ )
 		{
