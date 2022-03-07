@@ -5,9 +5,12 @@
 #include <vgui/ISystem.h>
 #include <vgui/ISurface.h>
 #include <vgui/IInput.h>
+#include <vgui/IInputInternal.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern vgui::IInputInternal *g_InputInternal;
 
 CControllerFocus::CControllerFocus()
 {
@@ -124,6 +127,10 @@ void CControllerFocus::SetFocusPanel(vgui::Panel* pPanel, bool bClickOnFocus)
 			// JOYPAD REMOVED - this is a way for a panel to have a custom outline size.  If we need this, create an interface that our custom panels can implement
 			//pPanel->GetJoypadCursorBounds(x, y, w, t);
 			pPanel->GetBounds(x, y, w, t);
+
+			int screenX = w / 2, screenY = t / 2;
+			pPanel->LocalToScreen( screenX, screenY );
+			g_InputInternal->InternalCursorMoved( screenX, screenY );
 			
 			m_hOutline->MoveToFront();
 			m_hOutline->SizeTo(x, y, w, t);

@@ -35,6 +35,7 @@
 #include "asw_deathmatch_mode.h"
 #include "rd_lobby_utils.h"
 #include "nb_leaderboard_panel.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -128,12 +129,20 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 
 	m_bLobbyValidityChecked = false;
 
-
+	GetControllerFocus()->AddToFocusList( m_pChatButton );
+	GetControllerFocus()->AddToFocusList( m_pVoteButton );
+	GetControllerFocus()->AddToFocusList( m_pLeaderboardButton );
+	GetControllerFocus()->AddToFocusList( m_pAddBotButton );
+	GetControllerFocus()->AddToFocusList( m_pDeselectMarinesButton );
 }
 
 CNB_Main_Panel::~CNB_Main_Panel()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_pChatButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pVoteButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pLeaderboardButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pAddBotButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pDeselectMarinesButton );
 }
 
 void CNB_Main_Panel::ProcessSkillSpendQueue()

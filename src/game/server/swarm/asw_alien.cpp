@@ -30,6 +30,7 @@
 #include "asw_tesla_trap.h"
 #include "sendprop_priorities.h"
 #include "asw_spawn_manager.h"
+#include "gameinterface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,7 +38,6 @@
 extern ConVar asw_debug_alien_damage;
 extern ConVar ai_show_hull_attacks;
 extern ConVar ai_efficiency_override;
-extern ConVar ai_frametime_limit;
 extern ConVar ai_use_think_optimizations;
 extern ConVar ai_use_efficiency;
 extern ConVar showhitlocation;
@@ -45,6 +45,8 @@ extern ConVar asw_stun_grenade_time;
 extern ConVar asw_drone_zig_zagging;
 extern ConVar asw_draw_awake_ai;
 extern ConVar asw_alien_debug_death_style;
+extern CServerGameDLL g_ServerGameDLL;
+
 // asw - how much extra damage to do to burning aliens
 ConVar asw_fire_alien_damage_scale("asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_easy("asw_alien_speed_scale_easy", "0.7", FCVAR_CHEAT );
@@ -2576,7 +2578,7 @@ void CASW_Alien::UpdateEfficiency( bool bInPVS )
 		return;
 	}
 
-	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() );
+	bool bFramerateOk = g_ServerGameDLL.IsFramerateOk();
 
 	if ( IsForceGatherConditionsSet() || 
 		 gpGlobals->curtime - GetLastAttackTime() < .2 ||

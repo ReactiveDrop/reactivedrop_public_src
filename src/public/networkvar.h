@@ -785,9 +785,9 @@ private:
 		int Count() const { return count; } \
 		type m_Value[count]; \
 	protected: \
-		inline void NetworkStateChanged( int index ) \
+		inline void NetworkStateChanged( int i ) \
 		{ \
-			CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->stateChangedFn( &m_Value[index] ); \
+			CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->stateChangedFn( &m_Value[i] ); \
 		} \
 	}; \
 	NetworkVar_##name name;

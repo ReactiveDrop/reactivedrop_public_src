@@ -646,9 +646,9 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 				// If we have, for example, lights_*.vmf at weight 1 with 4 matches and poster_of_gaben.vmf at weight 2 with
 				// 1 match (obviously, there is only one gaben), we want to have the poster be twice as common as the lights,
 				// not half as common.
-				for (int i = 1; i <= nCount; i++)
+				for (int j = 1; j <= nCount; j++)
 				{
-					choices[choices.Count() - i].m_flWeight /= (float) nCount;
+					choices[choices.Count() - j].m_flWeight /= (float) nCount;
 				}
 			}
 			else

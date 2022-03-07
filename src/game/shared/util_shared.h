@@ -309,11 +309,11 @@ inline void UTIL_TraceLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, 
 		{
 			ReportExpensiveTrace( false );
 			BeginDetectTraceSpike();
-			Ray_t ray;
-			ray.Init( vecAbsStart, vecAbsEnd );
-			CTraceFilterSimple traceFilter( ignore, collisionGroup );
+			Ray_t ray2;
+			ray2.Init( vecAbsStart, vecAbsEnd );
+			CTraceFilterSimple traceFilter2( ignore, collisionGroup );
 
-			enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
+			enginetrace->TraceRay( ray2, mask, &traceFilter2, ptr );
 			EndDetectTraceSpike();
 			if ( DidTraceSpike() )
 			{
@@ -340,10 +340,10 @@ inline void UTIL_TraceLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, 
 		if ( DidTraceSpike() ) // Opimizer will remove this block
 		{
 			BeginDetectTraceSpike();
-			Ray_t ray;
-			ray.Init( vecAbsStart, vecAbsEnd );
+			Ray_t ray2;
+			ray2.Init( vecAbsStart, vecAbsEnd );
 
-			enginetrace->TraceRay( ray, mask, pFilter, ptr );
+			enginetrace->TraceRay( ray2, mask, pFilter, ptr );
 			EndDetectTraceSpike();
 
 			if ( DidTraceSpike() )
@@ -373,11 +373,11 @@ inline void UTIL_TraceHull( const Vector &vecAbsStart, const Vector &vecAbsEnd, 
 		if ( DidTraceSpike() ) // Opimizer will remove this block
 		{
 			BeginDetectTraceSpike();
-			Ray_t ray;
-			ray.Init( vecAbsStart, vecAbsEnd, hullMin, hullMax );
-			CTraceFilterSimple traceFilter( ignore, collisionGroup );
+			Ray_t ray2;
+			ray2.Init( vecAbsStart, vecAbsEnd, hullMin, hullMax );
+			CTraceFilterSimple traceFilter2( ignore, collisionGroup );
 
-			enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
+			enginetrace->TraceRay( ray2, mask, &traceFilter2, ptr );
 			EndDetectTraceSpike();
 
 			if ( DidTraceSpike() )
@@ -405,10 +405,10 @@ inline void UTIL_TraceHull( const Vector &vecAbsStart, const Vector &vecAbsEnd, 
 		if ( DidTraceSpike() ) // Opimizer will remove this block
 		{
 			BeginDetectTraceSpike();
-			Ray_t ray;
-			ray.Init( vecAbsStart, vecAbsEnd, hullMin, hullMax );
+			Ray_t ray2;
+			ray2.Init( vecAbsStart, vecAbsEnd, hullMin, hullMax );
 
-			enginetrace->TraceRay( ray, mask, pFilter, ptr );
+			enginetrace->TraceRay( ray2, mask, pFilter, ptr );
 
 			EndDetectTraceSpike();
 			if( DidTraceSpike() )
