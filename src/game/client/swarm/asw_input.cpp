@@ -1268,8 +1268,9 @@ void CASWInput::GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclamped
 float MoveToward( float cur, float goal, float lag );
 
 ConVar asw_controller_lag( "asw_controller_lag", "40.0", FCVAR_NONE );
-ConVar rd_controller_radius_adjust( "rd_controller_radius_adjust", "0", FCVAR_NONE, "Number of pixels to add to crosshair distance from marine, when using controller. Can be negative" );
+ConVar rd_controller_radius_adjust( "rd_controller_radius_adjust", "0", FCVAR_ARCHIVE, "Number of pixels to add to crosshair distance from marine, when using controller. Can be negative" );
 ConVar rd_controller_analog_radius( "rd_controller_analog_radius", "1", FCVAR_ARCHIVE );
+ConVar rd_controller_analog_radius_min( "rd_controller_analog_radius_min", "0.5", FCVAR_ARCHIVE );
 
 void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, float fControllerPitch, float fControllerYaw, float flForwardFraction )
 {
@@ -1309,7 +1310,7 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 		//dist_fraction = 0.9f;
 		if ( rd_controller_analog_radius.GetBool() )
 		{
-			flForwardFraction *= clamp( length, 0.3f, 1 );
+			flForwardFraction *= clamp( length, rd_controller_analog_radius_min.GetFloat(), 1.0 );
 		}
 
 		int radAdjust = rd_controller_radius_adjust.GetInt();
