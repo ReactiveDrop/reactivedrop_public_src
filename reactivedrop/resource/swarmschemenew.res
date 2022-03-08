@@ -1310,6 +1310,10 @@ Scheme
 			}
 		}
 	}
+	BitmapFontFiles
+	{
+		"Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+	}
 	CustomFontFiles
 	{
 		"1"		"resource/NeoSans.vfont"
