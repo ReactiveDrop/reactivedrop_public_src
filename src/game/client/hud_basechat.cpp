@@ -1252,7 +1252,9 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 	extern ConVar asw_draw_hud;
 	if (!asw_draw_hud.GetBool())
 		return;
-
+	
+	MoveToFront();
+	
 	m_nMessageMode = iMessageModeType;
 	cl_chat_active.SetValue( m_nMessageMode );
 
