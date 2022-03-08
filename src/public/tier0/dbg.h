@@ -96,9 +96,9 @@ PLATFORM_INTERFACE bool DoNewAssertDialog( const tchar *pFile, int line, const t
 	do {																\
 		if (!(_exp)) 													\
 		{ 																\
-			LoggingResponse_t ret = Log_Assert( "%s (%d) : %s\n", __TFILE__, __LINE__, _msg );	\
+			LoggingResponse_t _assert_ret = Log_Assert( "%s (%d) : %s\n", __TFILE__, __LINE__, _msg );	\
 			_executeExp; 												\
-			if ( ret == LR_DEBUGGER )									\
+			if ( _assert_ret == LR_DEBUGGER )									\
 			{															\
 				if ( !ShouldUseNewAssertDialog() || DoNewAssertDialog( __TFILE__, __LINE__, _msg ) ) \
 					DebuggerBreak();									\

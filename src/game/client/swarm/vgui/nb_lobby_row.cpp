@@ -87,11 +87,19 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
+
+	GetControllerFocus()->AddToFocusList( m_pPortraitButton );
+	GetControllerFocus()->AddToFocusList( m_pWeaponButton0 );
+	GetControllerFocus()->AddToFocusList( m_pWeaponButton1 );
+	GetControllerFocus()->AddToFocusList( m_pWeaponButton2 );
 }
 
 CNB_Lobby_Row::~CNB_Lobby_Row()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_pPortraitButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
+	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
+	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
 }
 
 void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )

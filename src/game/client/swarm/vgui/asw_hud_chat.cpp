@@ -27,6 +27,7 @@ DECLARE_HUD_MESSAGE( CHudChat, TextMsg );
 //Color g_ASWColorGrey( 66, 142, 192, 255 );
 Color g_ASWColorGrey( 255, 255, 0, 255 );
 Color g_ASWColorWhite( 0, 255, 0, 255 );
+extern ConVar rd_chatwipe;
 extern ConVar asw_hud_alpha;
 
 ConVar cl_chatcolor_r( "cl_chatcolor_r", "255", FCVAR_ARCHIVE, "Red component of chat messages color", true, 0.f, true, 255.f );
@@ -390,7 +391,7 @@ void CHudChat::OnTick()
 		return;
 
 	if ( ASWGameRules() && 
-		( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF || ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP ) )
+		( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF || ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP ) && rd_chatwipe.GetBool() )
 	{
 		//m_flHistoryFadeTime = gpGlobals->curtime;
 		GetChatHistory()->SetVerticalScrollbar( false );
