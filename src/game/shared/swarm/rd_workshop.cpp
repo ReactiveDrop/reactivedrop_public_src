@@ -40,6 +40,7 @@ ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVA
 ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "0", FCVAR_NONE, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
+ConVar rd_workshop_use_reactivedrop_folder("rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1);
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
 
@@ -201,7 +202,11 @@ static bool DedicatedServerWorkshopSetup()
 	UTIL_GetModDir( szDir, sizeof( szDir ) );
 	char szWorkshopDir[MAX_PATH];
 	V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
-	steamgameserverapicontext->SteamUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+
+	if ( rd_workshop_use_reactivedrop_folder.GetBool() )
+	{
+		steamgameserverapicontext->SteamUGC()->BInitWorkshopForGameServer(563560, szWorkshopDir);
+	}
 
 	s_bAnyServerUpdates = false;
 	s_bStartingUp = true;
