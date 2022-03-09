@@ -198,13 +198,13 @@ static bool DedicatedServerWorkshopSetup()
 		return true;
 	}
 
-	char szDir[MAX_PATH];
-	UTIL_GetModDir( szDir, sizeof( szDir ) );
-	char szWorkshopDir[MAX_PATH];
-	V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
-
 	if ( rd_workshop_use_reactivedrop_folder.GetBool() )
 	{
+		char szDir[MAX_PATH];
+		UTIL_GetModDir( szDir, sizeof( szDir ) );
+		char szWorkshopDir[MAX_PATH];
+		V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
+
 		steamgameserverapicontext->SteamUGC()->BInitWorkshopForGameServer(563560, szWorkshopDir);
 	}
 
