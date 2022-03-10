@@ -358,6 +358,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	switch ( colorNum )
 	{
 	case COLOR_PLAYERNAME:
+	{
 		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
 		CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
 
@@ -372,7 +373,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 		}
 		c = GetClientColor( clientIndex );
 		break;
-
+	}
 	case COLOR_LOCATION:
 		c = g_ASWColorGrey;
 		break;
