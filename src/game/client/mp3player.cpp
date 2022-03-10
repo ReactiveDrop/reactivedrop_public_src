@@ -32,6 +32,7 @@
 #include "checksum_crc.h"
 
 #include "engine/IEngineSound.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -720,7 +721,7 @@ CMP3Player::CMP3Player( VPANEL parent, char const *panelName ) :
 	g_pPlayer = this;
 
 	// Get strings...
-	g_pVGuiLocalize->AddFile( "resource/mp3player_%language%.txt" );
+	UTIL_RD_AddLocalizeFile( "resource/mp3player_%language%.txt" );
 	SetParent( parent );
 
 	SetMoveable( true );

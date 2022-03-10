@@ -27,6 +27,7 @@
 #include "time.h"
 #include "filesystem.h"
 #include "vgui_int.h"
+#include "asw_util_shared.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -713,7 +714,7 @@ CBaseHudChat::CBaseHudChat( const char *pElementName )
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx( NULL, "resource/ChatScheme.res", "ChatScheme" );
 	SetScheme(scheme);
 
-	g_pVGuiLocalize->AddFile( "resource/chat_%language%.txt" );
+	UTIL_RD_AddLocalizeFile( "resource/chat_%language%.txt" );
 
 	m_nMessageMode = MM_NONE;
 	cl_chat_active.SetValue( m_nMessageMode );

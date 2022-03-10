@@ -82,6 +82,7 @@
 #include "smartptr.h"
 #include "nb_header_footer.h"
 #include "rd_swarmopedia.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -92,7 +93,6 @@ using namespace vgui;
 //setup in GameUI_Interface.cpp
 extern class IMatchSystem *matchsystem;
 extern const char *COM_GetModDirectory( void );
-extern IGameConsole *IGameConsole();
 
 //=============================================================================
 CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
@@ -168,7 +168,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	Assert(m_CFactoryBasePanel == 0);
 	m_CFactoryBasePanel = this;
 
-	g_pVGuiLocalize->AddFile( "Resource/basemodui_%language%.txt");
+	UTIL_RD_AddLocalizeFile( "Resource/basemodui_%language%.txt");
 
 	m_LevelLoading = false;
 	
