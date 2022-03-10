@@ -367,12 +367,10 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 			if ( nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
 			{
 				c = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
+				break;
 			}
 		}
-		else
-		{
-			c = GetClientColor( clientIndex );
-		}
+		c = GetClientColor( clientIndex );
 		break;
 
 	case COLOR_LOCATION:
