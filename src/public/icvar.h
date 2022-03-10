@@ -174,7 +174,10 @@ inline ICvar::Iterator::Iterator(ICvar *icvar)
 
 inline ICvar::Iterator::~Iterator( void )
 {
+#pragma warning(push)
+#pragma warning(disable: 5205)
 	delete m_pIter;
+#pragma warning(pop)
 }
 
 inline void ICvar::Iterator::SetFirst( void )
