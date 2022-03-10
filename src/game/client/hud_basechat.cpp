@@ -334,7 +334,9 @@ void CBaseHudChatLine::PerformFadeout( void )
 	int lr = m_clrText[0];
 	int lg = m_clrText[1];
 	int lb = m_clrText[2];
-	
+
+	wchar_t wbuf[4096];
+
 	if ( curtime >= m_flStartTime && curtime < m_flStartTime + CHATLINE_FLASH_TIME )
 	{
 		float frac1 = ( curtime - m_flStartTime ) / CHATLINE_FLASH_TIME;
@@ -359,7 +361,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 		int alpha = 63 + 192 * (1.0f - frac1 );
 		alpha = clamp( alpha, 0, 255 );
 
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
@@ -374,7 +375,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 		int alpha = frac * 255;
 		alpha = clamp( alpha, 0, 255 );
 
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
@@ -384,7 +384,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 	}
 	else
 	{
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
