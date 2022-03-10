@@ -1489,13 +1489,15 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 			pszLanguageReplacement = steamapicontext->SteamApps()->GetCurrentGameLanguage();
 		}
 
-		V_strncpy( szPath, fileName, fileName - pszLanguageToken );
-		V_strcat( szPath, pszLanguageReplacement, sizeof( szPath ) );
-		V_strcat( szPath, pszLanguageToken + 10, sizeof( szPath ) );
-
-		fileName = szPath;
+		strncpy_s( szPath, fileName, pszLanguageToken - fileName );
+		strcat_s( szPath, pszLanguageReplacement );
+		strcat_s( szPath, pszLanguageToken + 10 );
+	}
+	else
+	{
+		strcpy_s( szPath, fileName );
 	}
 
-	return g_pVGuiLocalize->AddFile( fileName, pPathID, bIncludeFallbackSearchPaths );
+	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
 }
 #endif
