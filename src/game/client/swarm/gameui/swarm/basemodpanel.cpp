@@ -83,6 +83,7 @@
 #include "nb_header_footer.h"
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
+#include "nb_leaderboard_panel_points.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -542,7 +543,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_SWARMOPEDIA:
-			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );
+			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );			
+			break;
+		case WT_IAFRANKS:
+			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
 			break;
 
 		default:
