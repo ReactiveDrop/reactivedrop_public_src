@@ -135,6 +135,9 @@ mkdir "..\..\..\reactivedrop\bin\."
 :ValveStart
 copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
 if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
+if ERRORLEVEL 1 goto BuildEventFailed
 goto BuildEventOK
 :BuildEventFailed
 echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
@@ -225,6 +228,9 @@ if ERRORLEVEL 1 exit 1
 mkdir "..\..\..\reactivedrop\bin\."
 :ValveStart
 copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
+if ERRORLEVEL 1 goto BuildEventFailed
+if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
+copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
 if ERRORLEVEL 1 goto BuildEventFailed
 goto BuildEventOK
 :BuildEventFailed
