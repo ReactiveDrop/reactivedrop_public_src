@@ -36,6 +36,11 @@ FoundGroupGamesIAFRanks::FoundGroupGamesIAFRanks( Panel *parent, const char *pan
 
 FoundGroupGamesIAFRanks::~FoundGroupGamesIAFRanks()
 {
+	FOR_EACH_VEC( m_KeyValuesCleanup, i )
+	{
+		m_KeyValuesCleanup[i]->deleteThis();
+	}
+
 	if ( m_hServerListRequest )
 	{
 		steamapicontext->SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
@@ -83,6 +88,10 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		return;
 	}
 
+	FOR_EACH_VEC( m_KeyValuesCleanup, i )
+	{
+		m_KeyValuesCleanup[i]->deleteThis();
+	}
 	m_KeyValuesCleanup.Purge();
 
 	int nServerCount = steamapicontext->SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
@@ -115,7 +124,7 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		info.mPing = FoundGameListItem::Info::GP_HIGH;
 		info.mpGameDetails = new KeyValues( "FoundGame" );
 		// TODO: what does matchmaking.dll put in here?
-		m_KeyValuesCleanup[m_KeyValuesCleanup.AddToTail()].Assign( info.mpGameDetails );
+		m_KeyValuesCleanup.AddToTail( info.mpGameDetails );
 		info.mFriendXUID = pServer->m_steamID.ConvertToUint64();
 		info.miPing = pServer->m_nPing;
 		info.mpfnJoinGame = &JoinIAFRanksServerGame;
