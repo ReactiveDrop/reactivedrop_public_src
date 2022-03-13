@@ -83,7 +83,6 @@ public:
 	void OverrideEntry( const RD_LeaderboardEntry_Points_t & entry );
 	void SetScrollable( bool bScrollable );
 
-private:
 	void DoOverrideEntry();
 
 	vgui::Label *m_lblTitle;

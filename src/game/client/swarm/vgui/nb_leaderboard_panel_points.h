@@ -21,9 +21,11 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void OnCommand( const char *command );
+	virtual void OnKeyCodePressed( vgui::KeyCode code );
 
 	CNB_Header_Footer *m_pHeaderFooter;
-	CNB_Button	*m_pBackButton;
+	CNB_Button *m_pBackButton;
+	CNB_Button *m_pServerList;
 	vgui::Panel *m_pLeaderboardBackground;
 	CReactiveDrop_VGUI_Leaderboard_Panel_Points *m_pLeaderboard;
 	vgui::Label *m_pErrorLabel;

@@ -138,9 +138,6 @@ mkdir "..\..\..\reactivedrop\bin\."
 :ValveStart
 copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
 if ERRORLEVEL 1 goto BuildEventFailed
-if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
-copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
-if ERRORLEVEL 1 goto BuildEventFailed
 goto BuildEventOK
 :BuildEventFailed
 echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
@@ -232,9 +229,6 @@ if ERRORLEVEL 1 exit 1
 mkdir "..\..\..\reactivedrop\bin\."
 :ValveStart
 copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
-if ERRORLEVEL 1 goto BuildEventFailed
-if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
-copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
 if ERRORLEVEL 1 goto BuildEventFailed
 goto BuildEventOK
 :BuildEventFailed
@@ -1436,6 +1430,7 @@ exit 1
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfoundgroupgames_iafranks.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vfoundpublicgames.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -2718,6 +2713,7 @@ exit 1
     <ClInclude Include="swarm\gameui\swarm\vfooterpanel.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundgames.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundgroupgames.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfoundgroupgames_iafranks.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundpublicgames.h" />
     <ClInclude Include="swarm\gameui\swarm\vgamelobby.h" />
     <ClInclude Include="swarm\gameui\swarm\vgamelobbychat.h" />

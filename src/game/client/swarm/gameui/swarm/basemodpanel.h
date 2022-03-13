@@ -77,6 +77,7 @@ namespace BaseModUI
 		WT_GAMEPAD,
 		WT_SWARMOPEDIA,
 		WT_IAFRANKS,
+		WT_IAFRANKSSERVERS,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 

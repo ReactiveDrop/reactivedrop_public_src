@@ -24,6 +24,21 @@
 		"fgcolor_override"	"113 142 181 255"
 		"zpos"				"3"
 	}
+	"ServerList"
+	{
+		"fieldName"			"ServerList"
+		"xpos"				"c10"
+		"ypos"				"r23"
+		"wide"				"117"
+		"tall"				"27"
+		"ControlName"		"CNB_Button"
+		"labelText"			"#asw_menu_find_server"
+		"textAlignment"		"center"
+		"font"				"DefaultMedium"
+		"fgcolor_override"	"113 142 181 255"
+		"zpos"				"3"
+		"visible"			"0"
+	}
 	"LeaderboardBackground"
 	{
 		"fieldName"			"LeaderboardBackground"
