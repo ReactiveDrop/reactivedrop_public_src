@@ -40,6 +40,7 @@
 #include "VFoundGames.h"
 #include "VFoundGroupGames.h"
 #include "vfoundpublicgames.h"
+#include "VFoundGroupGames_IAFRanks.h"
 #include "VGameLobby.h"
 #include "VGameOptions.h"
 #include "VGameSettings.h"
@@ -82,6 +83,8 @@
 #include "smartptr.h"
 #include "nb_header_footer.h"
 #include "rd_swarmopedia.h"
+#include "asw_util_shared.h"
+#include "nb_leaderboard_panel_points.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -92,7 +95,6 @@ using namespace vgui;
 //setup in GameUI_Interface.cpp
 extern class IMatchSystem *matchsystem;
 extern const char *COM_GetModDirectory( void );
-extern IGameConsole *IGameConsole();
 
 //=============================================================================
 CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
@@ -168,7 +170,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	Assert(m_CFactoryBasePanel == 0);
 	m_CFactoryBasePanel = this;
 
-	g_pVGuiLocalize->AddFile( "Resource/basemodui_%language%.txt");
+	UTIL_RD_AddLocalizeFile( "Resource/basemodui_%language%.txt");
 
 	m_LevelLoading = false;
 	
@@ -542,7 +544,14 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_SWARMOPEDIA:
-			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );
+			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );			
+			break;
+
+		case WT_IAFRANKS:
+			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
+			break;
+		case WT_IAFRANKSSERVERS:
+			m_Frames[wt] = new FoundGroupGamesIAFRanks( this, "FoundGames" );
 			break;
 
 		default:

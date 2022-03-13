@@ -25,7 +25,7 @@ CKV_Editor::CKV_Editor( Panel *parent, const char *name ) : BaseClass( parent, n
 {	
 	//if ( !g_bAddedKVEditorLocalization )
 	//{
-		//g_pVGuiLocalize->AddFile( "resource/kv_editor_english.txt" );
+		//UTIL_RD_AddLocalizeFile( "resource/kv_editor_english.txt" );
 		//g_bAddedKVEditorLocalization = true;
 	//}
 

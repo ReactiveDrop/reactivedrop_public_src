@@ -1472,3 +1472,32 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 
 	return iLevel <= iActualLevel;
 }
+
+#ifndef GAME_DLL
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths )
+{
+	char szPath[MAX_PATH];
+	if ( const char *pszLanguageToken = V_strstr( fileName, "%language%" ) )
+	{
+		// localize.dll by default reads Steam's language setting from the Windows registry.
+		// This is not ideal as it means the user's game language setting is ignored.
+		// Replace the language name here so we have control over what it is.
+
+		const char *pszLanguageReplacement = "%language%";
+		if ( steamapicontext && steamapicontext->SteamApps() )
+		{
+			pszLanguageReplacement = steamapicontext->SteamApps()->GetCurrentGameLanguage();
+		}
+
+		strncpy_s( szPath, fileName, pszLanguageToken - fileName );
+		strcat_s( szPath, pszLanguageReplacement );
+		strcat_s( szPath, pszLanguageToken + 10 );
+	}
+	else
+	{
+		strcpy_s( szPath, fileName );
+	}
+
+	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
+}
+#endif

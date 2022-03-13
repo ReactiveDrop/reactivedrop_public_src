@@ -25,6 +25,7 @@
 #include "tier3/tier3.h"
 #ifdef INFESTED_DLL
 	#include "asw_input.h"
+	#include "asw_util_shared.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -852,7 +853,7 @@ CHudCloseCaption::CHudCloseCaption( const char *pElementName )
 
 	if ( !IsX360() )
 	{
-		g_pVGuiLocalize->AddFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
 	}
 
 	HOOK_HUD_MESSAGE( CHudCloseCaption, CloseCaption );
@@ -2830,7 +2831,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 	// Re-adding the file, even if it's "english" will overwrite the tokens as needed
 	if ( !IsX360() )
 	{
-		g_pVGuiLocalize->AddFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
 	}
 
 	char uilanguage[ 64 ];
@@ -2845,7 +2846,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 		{
 			if ( g_pFullFileSystem->FileExists( fn ) )
 			{
-				g_pVGuiLocalize->AddFile( fn, "GAME", true );
+				UTIL_RD_AddLocalizeFile( fn, "GAME", true );
 			}
 			else
 			{
