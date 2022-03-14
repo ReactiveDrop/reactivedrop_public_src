@@ -358,24 +358,37 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	switch ( colorNum )
 	{
 	case COLOR_PLAYERNAME:
-	{
-		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
-		CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
-
-		if ( rd_chat_colorful_player_names.GetBool() && pMarine )
 		{
-			int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
-			if ( nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
+			CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
+			CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+
+			if ( rd_chat_colorful_player_names.GetBool() && pMarine )
 			{
-				c = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
-				break;
+				int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
+				if ( nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
+				{
+					c = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
+					break;
+				}
+			}
+			c = GetClientColor( clientIndex );
+		}
+		break;
+	case COLOR_LOCATION:
+		c = g_ColorDarkGreen;
+		break;
+	case COLOR_ACHIEVEMENT:
+		{
+			vgui::IScheme *pSourceScheme = vgui::scheme()->GetIScheme( vgui::scheme()->GetScheme( "SourceScheme" ) ); 
+			if ( pSourceScheme )
+			{
+				c = pSourceScheme->GetColor( "LightBlue", GetBgColor() );
+			}
+			else
+			{
+				c = GetClientColor( clientIndex );
 			}
 		}
-		c = GetClientColor( clientIndex );
-		break;
-	}
-	case COLOR_LOCATION:
-		c = g_ASWColorGrey;
 		break;
 
 	default:
