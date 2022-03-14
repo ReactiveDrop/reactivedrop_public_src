@@ -839,6 +839,10 @@ void MainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_SWARMOPEDIA, this, true );
 	}
+	else if ( !Q_strcmp( command, "IafRanks" ) )
+	{
+		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKS, this, true );
+	}
 	else if( !Q_strcmp( command, "CreateGame" ) )
 	{
 		KeyValues *pSettings = KeyValues::FromString(

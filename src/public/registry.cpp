@@ -70,7 +70,10 @@ void ReleaseInstancedRegistry( IRegistry *reg )
 	}
 
 	reg->Shutdown();
+#pragma warning(push)
+#pragma warning(disable: 5205)
 	delete reg;
+#pragma warning(pop)
 }
 
 // Expose to launcher

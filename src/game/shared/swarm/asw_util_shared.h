@@ -116,4 +116,8 @@ bool UTIL_ASW_CommanderLevelAtLeast( C_ASW_Player *pPlayer, int iLevel, int iPro
 bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
 #endif
 
+#ifndef GAME_DLL
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false );
+#endif
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

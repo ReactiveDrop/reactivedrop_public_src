@@ -96,6 +96,7 @@ if ERRORLEVEL 1 exit 1
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
+      <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -188,6 +189,7 @@ if ERRORLEVEL 1 exit 1
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
+      <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1434,6 +1436,7 @@ exit 1
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vfoundgroupgames_iafranks.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vfoundpublicgames.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1775,6 +1778,7 @@ exit 1
     <ClCompile Include="swarm\vgui\nb_horiz_list.cpp" />
     <ClCompile Include="swarm\vgui\nb_island.cpp" />
     <ClCompile Include="swarm\vgui\nb_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\nb_leaderboard_panel_points.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_row.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_row_small.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_tooltip.cpp" />
@@ -2715,6 +2719,7 @@ exit 1
     <ClInclude Include="swarm\gameui\swarm\vfooterpanel.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundgames.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundgroupgames.h" />
+    <ClInclude Include="swarm\gameui\swarm\vfoundgroupgames_iafranks.h" />
     <ClInclude Include="swarm\gameui\swarm\vfoundpublicgames.h" />
     <ClInclude Include="swarm\gameui\swarm\vgamelobby.h" />
     <ClInclude Include="swarm\gameui\swarm\vgamelobbychat.h" />
@@ -2859,6 +2864,7 @@ exit 1
     <ClInclude Include="swarm\vgui\nb_horiz_list.h" />
     <ClInclude Include="swarm\vgui\nb_island.h" />
     <ClInclude Include="swarm\vgui\nb_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\nb_leaderboard_panel_points.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_row.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_row_small.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_tooltip.h" />

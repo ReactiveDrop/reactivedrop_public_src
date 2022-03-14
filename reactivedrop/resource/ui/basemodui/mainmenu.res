@@ -163,11 +163,33 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnOptions"
-		"navDown"				"BtnQuit"
+		"navDown"				"BtnIafRanks"
 		"labelText"				"#asw_swarmopedia"
 		"tooltiptext"			""
 		"style"					"AlienSwarmMenuButtonSmall"
 		"command"				"Swarmopedia"	
+		"ActivationType"		"1"
+	}
+	
+	"BtnIafElite"
+	{
+		"ControlName"			"BaseModHybridButton"
+		"fieldName"				"BtnIafRanks"
+		"xpos"					"100"
+		"ypos"					"300"
+		"wide"					"180"
+		"tall"					"13"
+		"autoResize"			"1"
+		"pinCorner"				"0"
+		"visible"				"1"
+		"enabled"				"1"
+		"tabPosition"			"0"
+		"navUp"					"BtnSwarmopedia"
+		"navDown"				"BtnQuit"
+		"labelText"				"#asw_iafranks"
+		"tooltiptext"			""
+		"style"					"AlienSwarmMenuButtonSmall"
+		"command"				"IafRanks"	
 		"ActivationType"		"1"
 	}
 
@@ -177,7 +199,7 @@
 		"fieldName"				"BtnQuit"
 		"xpos"					"100"
 		"ypos"					"325"   [$X360]
-		"ypos"					"315"	[$WIN32]
+		"ypos"					"330"	[$WIN32]
 		"wide"					"180"
 		"tall"					"13"
 		"autoResize"			"1"
@@ -186,7 +208,7 @@
 		"visible"				"1"		[$WIN32]
 		"enabled"				"1"
 		"tabPosition"			"0"
-		"navUp"					"BtnSwarmopedia"
+		"navUp"					"BtnIafRanks"
 		"navDown"				"BtnMultiplayer"
 		"style"					"AlienSwarmMenuButtonSmall"
 		"ActivationType"		"1"

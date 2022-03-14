@@ -20,6 +20,7 @@ public:
 	void SetEntries( const CUtlVector<RD_LeaderboardEntry_t> & entries );
 	void OverrideEntry( const RD_LeaderboardEntry_t & entry );
 	void SetScrollable( bool bScrollable );
+	void SetDisplayAsTime( bool b ) { m_bDisplayAsTime = b; }
 
 private:
 	void DoOverrideEntry();
@@ -28,6 +29,7 @@ private:
 	BaseModUI::GenericPanelList *m_gplLeaderboard;
 	bool m_bOverrideEntry;
 	RD_LeaderboardEntry_t m_OverrideEntry;
+	bool m_bDisplayAsTime;	// if true the scores will be displayed as time, otherwise a numerical value will be displayed
 };
 
 class CReactiveDrop_VGUI_Leaderboard_Entry : public vgui::EditablePanel
@@ -41,6 +43,8 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *scheme );
 
 	void SetEntry( const RD_LeaderboardEntry_t & entry );
+	void SetEntry( const RD_LeaderboardEntry_Points_t & entry );
+	void SetDisplayAsTime( bool b ) { m_bDisplayAsTime = b; }
 
 	int32 m_nRank;
 	int32 m_nScore;
@@ -60,4 +64,58 @@ private:
 	vgui::Label *m_lblDifficulty;
 	vgui::Label *m_lblOnslaught;
 	vgui::Label *m_lblHardcoreFF;
+	bool m_bDisplayAsTime;	// if true the scores will be displayed as time, otherwise a numerical value will be displayed
+};
+
+class CReactiveDrop_VGUI_Leaderboard_Panel_Points : public vgui::EditablePanel
+{
+public:
+	DECLARE_CLASS_SIMPLE( CReactiveDrop_VGUI_Leaderboard_Panel_Points, vgui::EditablePanel );
+
+	CReactiveDrop_VGUI_Leaderboard_Panel_Points( vgui::Panel *parent, const char *panelName );
+	virtual ~CReactiveDrop_VGUI_Leaderboard_Panel_Points();
+
+	virtual void ApplySchemeSettings( vgui::IScheme *scheme );
+
+	void SetTitle( const char *szTitle );
+	void SetTitle( const wchar_t *wszTitle );
+	void SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries );
+	void OverrideEntry( const RD_LeaderboardEntry_Points_t & entry );
+	void SetScrollable( bool bScrollable );
+
+	void DoOverrideEntry();
+
+	vgui::Label *m_lblTitle;
+	BaseModUI::GenericPanelList *m_gplLeaderboard;
+	bool m_bOverrideEntry;
+	RD_LeaderboardEntry_Points_t m_OverrideEntry;
+};
+
+class CReactiveDrop_VGUI_Leaderboard_Entry_Points : public vgui::EditablePanel
+{
+public:
+	DECLARE_CLASS_SIMPLE( CReactiveDrop_VGUI_Leaderboard_Entry_Points, vgui::EditablePanel );
+
+	CReactiveDrop_VGUI_Leaderboard_Entry_Points( vgui::Panel *parent, const char *panelName );
+	virtual ~CReactiveDrop_VGUI_Leaderboard_Entry_Points();
+
+	virtual void ApplySchemeSettings( vgui::IScheme *scheme );
+
+	void SetEntry( const RD_LeaderboardEntry_Points_t & entry );
+
+	int32 m_nRank;
+	int32 m_nScore;
+	CSteamID m_SteamID;
+
+private:
+	vgui::Label *m_lblRank;
+	CAvatarImagePanel *m_imgAvatar;
+	vgui::Label *m_lblName;
+	vgui::Label *m_lblScore_Points;
+	vgui::Label *m_lblScore_AlienKills;
+	vgui::Label *m_lblScore_PlayerKills;
+	vgui::Label *m_lblScore_GamesWon;
+	vgui::Label *m_lblScore_GamesLost;
+	vgui::Label *m_lblScore_GamesTotal;
+	vgui::Label *m_lblCountry;
 };

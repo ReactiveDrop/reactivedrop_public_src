@@ -5,6 +5,8 @@
 // $NoKeywords: $
 //===========================================================================//
 
+#include "cbase.h"
+
 #if !defined( _X360 )
 #include <windows.h>
 #endif
@@ -64,6 +66,7 @@
 
 #include "swarm/basemodpanel.h"
 #include "swarm/basemodui.h"
+#include "asw_util_shared.h"
 typedef BaseModUI::CBaseModPanel UI_BASEMOD_PANEL_CLASS;
 inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
 inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return * new UI_BASEMOD_PANEL_CLASS(); }
@@ -187,13 +190,13 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	vgui::VGui_InitMatSysInterfacesList( "GameUI", &factory, 1 );
 
 	// load localization file
-	g_pVGuiLocalize->AddFile( "Resource/gameui_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "Resource/gameui_%language%.txt", "GAME", true );
 
 	// load mod info
 	ModInfo().LoadCurrentGameInfo();
 
 	// load localization file for kb_act.lst
-	g_pVGuiLocalize->AddFile( "Resource/valve_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "Resource/valve_%language%.txt", "GAME", true );
 
 	bool bFailed = false;
 	enginevguifuncs = (IEngineVGui *)factory( VENGINE_VGUI_VERSION, NULL );
@@ -395,8 +398,8 @@ void CGameUI::Start()
 	}
 
 	// localization
-	g_pVGuiLocalize->AddFile( "Resource/platform_%language%.txt");
-	g_pVGuiLocalize->AddFile( "Resource/vgui_%language%.txt");
+	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt");
+	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt");
 
 	Sys_SetLastError( SYS_NO_ERROR );
 

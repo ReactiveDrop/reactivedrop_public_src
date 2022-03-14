@@ -64,7 +64,7 @@ void CASWMissionChooserNPCs::InitFixedSpawns( CLayoutSystem *pLayoutSystem, CMap
 			// add spawn defs
 			// TODO: more spawns in bigger rooms? or rooms with higher weights?
 			int iSpawnsPerEncounter = pLayoutSystem->GetRandomInt( CurrentSpawnSet()->GetMinSpawnsPerEncounter(), CurrentSpawnSet()->GetMaxSpawnsPerEncounter() );
-			for ( int i = 0; i < iSpawnsPerEncounter; i++ )
+			for ( int j = 0; j < iSpawnsPerEncounter; j++ )
 			{
 				CASW_Spawn_Definition* pSpawnDef = CurrentSpawnSet()->GetSpawnDef( ASW_NPC_SPAWN_TYPE_FIXED );
 				if ( !pSpawnDef )

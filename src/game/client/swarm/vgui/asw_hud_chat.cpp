@@ -17,6 +17,10 @@
 #include "nb_main_panel.h"
 #include "IClientMode.h"
 #include "vgui_controls/ScrollBar.h"
+#include "stats_report.h"
+#include "c_asw_player.h"
+#include "c_asw_marine.h"
+#include "c_asw_game_resource.h"
 
 DECLARE_HUDELEMENT_FLAGS( CHudChat, HUDELEMENT_SS_FULLSCREEN_ONLY );
 
@@ -33,6 +37,7 @@ extern ConVar asw_hud_alpha;
 ConVar cl_chatcolor_r( "cl_chatcolor_r", "255", FCVAR_ARCHIVE, "Red component of chat messages color", true, 0.f, true, 255.f );
 ConVar cl_chatcolor_g( "cl_chatcolor_g", "255", FCVAR_ARCHIVE, "Green component of chat messages color", true, 0.f, true, 255.f );
 ConVar cl_chatcolor_b( "cl_chatcolor_b", "255", FCVAR_ARCHIVE, "Blue component of chat messages color", true, 0.f, true, 255.f );
+ConVar rd_chat_colorful_player_names( "rd_chat_colorful_player_names", "0", FCVAR_ARCHIVE, "If set 1, the player name in the chat box will become colorful" );
 
 
 //=====================
@@ -353,9 +358,22 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	switch ( colorNum )
 	{
 	case COLOR_PLAYERNAME:
+	{
+		CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
+		CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+
+		if ( rd_chat_colorful_player_names.GetBool() && pMarine )
+		{
+			int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
+			if ( nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
+			{
+				c = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
+				break;
+			}
+		}
 		c = GetClientColor( clientIndex );
 		break;
-
+	}
 	case COLOR_LOCATION:
 		c = g_ASWColorGrey;
 		break;

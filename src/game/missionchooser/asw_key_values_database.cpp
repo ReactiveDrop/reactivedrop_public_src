@@ -17,6 +17,7 @@ void CASW_KeyValuesDatabase::LoadFiles( const char *pFolderName )
 {
 	if ( !m_bLoadedLocalization )
 	{
+		// TODO: if this is ever used, hook it up to UTIL_RD_AddLocalizeFile
 		g_pVGuiLocalize->AddFile( "tilegen/missions_%language%.txt" );
 		m_bLoadedLocalization = true;
 	}

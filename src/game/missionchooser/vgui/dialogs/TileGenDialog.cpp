@@ -112,6 +112,7 @@ CTileGenDialog::CTileGenDialog( Panel *parent, const char *name ) : BaseClass( p
 
 	if ( !g_bAddedTileGenLocalization )
 	{
+		// TODO: if this is ever localized, hook it up to UTIL_RD_AddLocalizeFile
 		g_pVGuiLocalize->AddFile( "tilegen/tilegen_english.txt" );
 		g_bAddedTileGenLocalization = true;
 	}

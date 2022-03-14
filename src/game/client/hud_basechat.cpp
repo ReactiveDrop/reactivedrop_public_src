@@ -27,6 +27,7 @@
 #include "time.h"
 #include "filesystem.h"
 #include "vgui_int.h"
+#include "asw_util_shared.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -333,7 +334,9 @@ void CBaseHudChatLine::PerformFadeout( void )
 	int lr = m_clrText[0];
 	int lg = m_clrText[1];
 	int lb = m_clrText[2];
-	
+
+	wchar_t wbuf[4096];
+
 	if ( curtime >= m_flStartTime && curtime < m_flStartTime + CHATLINE_FLASH_TIME )
 	{
 		float frac1 = ( curtime - m_flStartTime ) / CHATLINE_FLASH_TIME;
@@ -358,7 +361,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 		int alpha = 63 + 192 * (1.0f - frac1 );
 		alpha = clamp( alpha, 0, 255 );
 
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
@@ -373,7 +375,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 		int alpha = frac * 255;
 		alpha = clamp( alpha, 0, 255 );
 
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
@@ -383,7 +384,6 @@ void CBaseHudChatLine::PerformFadeout( void )
 	}
 	else
 	{
-		wchar_t wbuf[4096];
 		GetText(0, wbuf, sizeof(wbuf));
 
 		SetText( "" );
@@ -713,7 +713,7 @@ CBaseHudChat::CBaseHudChat( const char *pElementName )
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx( NULL, "resource/ChatScheme.res", "ChatScheme" );
 	SetScheme(scheme);
 
-	g_pVGuiLocalize->AddFile( "resource/chat_%language%.txt" );
+	UTIL_RD_AddLocalizeFile( "resource/chat_%language%.txt" );
 
 	m_nMessageMode = MM_NONE;
 	cl_chat_active.SetValue( m_nMessageMode );
@@ -1519,7 +1519,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 		}
 	}
 
-	if ( !m_textRanges.Count() && m_iNameLength > 0 && m_text[0] == COLOR_USEOLDCOLORS )
+	if ( !m_textRanges.Count() && m_iNameLength > 0 && ( m_text[0] == COLOR_USEOLDCOLORS || ConVarRef( "rd_chat_colorful_player_names" ).GetBool() ) )
 	{
 		TextRange range;
 		range.start = 0;
