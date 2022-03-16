@@ -7982,7 +7982,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		ConVarRef cvar( m_SavedConvars_Challenge.String( i ) );
 		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
 
-		if ( cvar.IsValid() && Q_strcmp( cvar.GetString(), pszDesiredValue ) )
+		if ( cvar.IsValid() )
 		{
 			cvar.SetValue( pszDesiredValue );
 		}
