@@ -207,7 +207,7 @@ void CASWMap::ClearBlips( void )
 	m_MapBlips.RemoveAll();
 }
 
-void CASWMap::PaintMarineBlips()
+void CASWMap::PaintMarineBlips( bool bRotate )
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
 	if (pGameResource)
@@ -249,7 +249,7 @@ void CASWMap::PaintMarineBlips()
 					}
 
 					PaintWorldBlip(pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), Color(0, 192, 0, 255));
-					PaintWorldFacingArc(pMarine->GetAbsOrigin(), pMarine->ASWEyeAngles().y + 90 - ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
+					PaintWorldFacingArc(pMarine->GetAbsOrigin(), !bRotate ? pMarine->ASWEyeAngles().y : pMarine->ASWEyeAngles().y + 90 - ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ), Color(0, 192, 0, 255 - 127.0f * pMarine->GetBlipStrength()));
 				}
 			}
 		}
@@ -850,7 +850,7 @@ void CASWHudMinimap::PaintObjectiveMarkers()
 void CASWHudMinimap::PaintBlips()
 {
 	if ( rd_paint_marine_blips.GetInt() > 0 )
-		PaintMarineBlips();
+		PaintMarineBlips( true );
 
 	if ( rd_paint_scanner_blips.GetBool() )
 		PaintScannerBlips();

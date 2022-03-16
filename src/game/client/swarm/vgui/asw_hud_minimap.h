@@ -109,7 +109,7 @@ public:
 	void ClearBlips( void );
 
 protected:
-	void PaintMarineBlips();
+	void PaintMarineBlips( bool bRotate = false );
 	void PaintExtraBlips();
 	void PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color BlipColor, MapBlipTexture_t nBlipTexture = MAP_BLIP_TEXTURE_NORMAL);
 	void PaintWorldFacingArc(const Vector &worldpos, float fFacingYaw, Color FacingColor);
