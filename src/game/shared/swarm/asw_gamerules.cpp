@@ -7977,15 +7977,14 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	}
 	
 	// players who enter midway do not replicate cvar
-	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
+	ConVarRef asw_controls( "asw_controls" );
+	if ( asw_controls.IsValid() && !asw_controls.GetBool() )
 	{
-		ConVarRef cvar( m_SavedConvars_Challenge.String( i ) );
-		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
-
-		if ( cvar.IsValid() && cvar.IsFlagSet( FCVAR_REPLICATED ) )
-		{
-			cvar.SetValue( pszDesiredValue );
-		}
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "SavedConvar" );
+		WRITE_STRING( asw_controls.GetName() );
+		WRITE_STRING( asw_controls.GetString() );
+		MessageEnd();
 	}
 }
 
