@@ -157,7 +157,6 @@ public:
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FIRE; }
-protected:
 
 	void	Spread( void );
 	void	SpawnEffect( fireType_e type, float scale );
@@ -199,6 +198,7 @@ protected:
 	float m_fLightRadiusScale;
 	int m_iLightBrightness;
 	bool m_bNoFuelingOnceLit;
+	bool m_bPlacedByMarine;
 #endif
 
 	COutputEvent	m_OnIgnited;
