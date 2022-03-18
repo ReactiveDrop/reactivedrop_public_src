@@ -174,7 +174,6 @@ extern ConVar old_radius_damage;
 	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kicks players below level 34 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
 	ConVar rd_auto_kick_low_level_player_if_brutal_or_challenge( "rd_auto_kick_low_level_player_if_brutal_or_challenge", "0", FCVAR_CHEAT, "Server auto kicks players below level 34 if difficulty is brutal or a challenge is active" );
 	ConVar rd_auto_kick_low_level_player_if_brutal_or_asbi( "rd_auto_kick_low_level_player_if_brutal_or_asbi", "1", FCVAR_NONE, "Server auto kicks players below level 34 if difficulty is brutal or official asbi is active" );
-	ConVar rd_auto_kick_low_level_player_if_brutal_or_asbi_challenges("rd_auto_kick_low_level_player_if_brutal_or_asbi_challenges", "1", FCVAR_NONE, "Server auto kicks players below level 34 if difficulty is brutal or if any asbi challenge is active");
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
