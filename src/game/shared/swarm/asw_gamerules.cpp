@@ -7933,7 +7933,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	// if brutal or asbi
 	if ( (GetSkillLevel() >= iBrutal || V_strcmp(rd_challenge.GetString(), "asbi") == 0 ) && rd_auto_kick_low_level_player_if_brutal_or_asbi.GetBool() ) bDifficultyRestricted = true;
 
-	if (bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
+	if ( bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
 	{
 		// players below level 34 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 34 ) )
