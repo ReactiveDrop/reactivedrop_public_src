@@ -17,7 +17,7 @@ GAME
 	"description"		"Logistics sector"
 	
 	// Mission image that shows when selecting this mission
-	"image"			"swarm/missionpics/rd_mission_01"  			//must be under "vgui" - dont include vgui in the path
+	"image"			"swarm/missionpics/nh_mission_01"  			//must be under "vgui" - dont include vgui in the path
 
 	"version"		"1.2"
 	"author"		"Guillaume Houard & Thomas Lesteven"

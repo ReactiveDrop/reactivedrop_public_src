@@ -7975,6 +7975,17 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	{
 		ASWDeathmatchMode()->OnPlayerFullyJoined( pPlayer );
 	}
+	
+	// players who enter midway do not replicate cvar
+	ConVarRef asw_controls( "asw_controls" );
+	if ( asw_controls.IsValid() && !asw_controls.GetBool() )
+	{
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "SavedConvar" );
+		WRITE_STRING( asw_controls.GetName() );
+		WRITE_STRING( asw_controls.GetString() );
+		MessageEnd();
+	}
 }
 
 void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info, const char *pszSourceClass )

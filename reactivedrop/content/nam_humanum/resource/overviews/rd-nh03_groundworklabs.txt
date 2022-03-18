@@ -17,7 +17,7 @@ GAME
 	"description"		"Research laboratories"
 	
 	// Mission image that shows when selecting this mission
-	"image"			"swarm/MissionPics/rd_mission_03"  			//must be under "vgui" - dont include vgui in the path
+	"image"			"swarm/MissionPics/nh_mission_03"  			//must be under "vgui" - dont include vgui in the path
 
 	"version"		"1.2"
 	"author"		"Guillaume Houard & Thomas Lesteven"
