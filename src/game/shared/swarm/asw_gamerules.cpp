@@ -7935,7 +7935,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 
 	if (bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
 	{
-		// players below level 30 are considered new
+		// players below level 34 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 34 ) )
 		{
 			engine->ServerCommand( CFmtStr( "kickid %s 'This lobby is restricted to players of level 34 or above'\n", pPlayer->GetASWNetworkID() ) );
