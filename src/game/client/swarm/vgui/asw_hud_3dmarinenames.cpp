@@ -497,6 +497,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 
 	wchar_t wszMarineName[ MAX_PLAYER_NAME_LENGTH ];
 	pMR->GetDisplayName( wszMarineName, sizeof( wszMarineName ) );
+	wszMarineName[MAX_PLAYER_NAME_LENGTH - 1] = L'\0'; //Temporary safety.
 
 	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
 	if ( !pProfile )
