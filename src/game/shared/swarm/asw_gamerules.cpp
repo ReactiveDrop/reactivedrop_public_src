@@ -172,7 +172,8 @@ extern ConVar old_radius_damage;
 	ConVar rd_ready_mark_override("rd_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 	ConVar rd_server_shutdown_when_empty( "rd_server_shutdown_when_empty", "0", FCVAR_NONE, "Server will shutdown after last player left." );
 	ConVar rd_auto_kick_low_level_player( "rd_auto_kick_low_level_player", "0", FCVAR_CHEAT, "Server auto kicks players below level 30 from challenges which have this cvar set to 1. This cvar is meant for players who use dedicated server browser to join games, since Public Games window already restricts filters to max Hard difficulty and challenge being disabled" );
-	ConVar rd_auto_kick_low_level_player_if_brutal_or_challenge( "rd_auto_kick_low_level_player_if_brutal_or_challenge", "1", FCVAR_NONE, "Server auto kicks players below level 30 if difficulty is higher than Hard or a challenge is active" );
+	ConVar rd_auto_kick_low_level_player_if_brutal_or_challenge( "rd_auto_kick_low_level_player_if_brutal_or_challenge", "0", FCVAR_CHEAT, "Server auto kicks players below level 30 if difficulty is brutal or a challenge is active" );
+	ConVar rd_auto_kick_low_level_player_if_brutal_or_asbi( "rd_auto_kick_low_level_player_if_brutal_or_asbi", "1", FCVAR_NONE, "Server auto kicks players below level 30 if difficulty is brutal or official asbi is active" );
 	ConVar rd_auto_kick_high_ping_player( "rd_auto_kick_high_ping_player", "0", FCVAR_CHEAT, "Server auto kick players with pings higher than this cvar." );
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
@@ -7920,10 +7921,19 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		}
 	}
 
-	bool bNeedToKick = rd_auto_kick_low_level_player.GetBool();
-	bNeedToKick = bNeedToKick || (rd_auto_kick_low_level_player_if_brutal_or_challenge.GetBool() && ( GetSkillLevel() > 3 || V_strcmp( rd_challenge.GetString(), "0" ) ));
+	bool bDifficultyRestricted = false;
+	const unsigned int iBrutal = 5;
+	
+	// if brutal and low level
+	if ( GetSkillLevel() >= iBrutal && rd_auto_kick_low_level_player.GetBool() ) bDifficultyRestricted = true;
 
-	if ( bNeedToKick && engine->IsDedicatedServer() && pPlayer )
+	// if brutal or challenge
+	if ( (GetSkillLevel() >= iBrutal || V_strcmp(rd_challenge.GetString(), "0") != 0 ) && rd_auto_kick_low_level_player_if_brutal_or_challenge.GetBool() ) bDifficultyRestricted = true;
+
+	// if brutal or asbi/asb2
+	if ( (GetSkillLevel() >= iBrutal || V_strstr(rd_challenge.GetString(), "asbi") != NULL || V_strstr(rd_challenge.GetString(), "asb2") != NULL ) && rd_auto_kick_low_level_player_if_brutal_or_asbi.GetBool() ) bDifficultyRestricted = true;
+
+	if ( bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
 	{
 		// players below level 30 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 30 ) )
