@@ -9203,7 +9203,8 @@ int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEqui
 	{
 		for ( int i = 0; i < CASW_Equip_Req::ASW_MAX_EQUIP_REQ_CLASSES; i++ )
 		{
-			if ( !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) )
+			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot(iEquipSlot, iWeaponIndex);
+			if ( pItem && !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( pItem->m_EquipClass ) ) )
 			{
 				return iWeaponIndex;
 			}

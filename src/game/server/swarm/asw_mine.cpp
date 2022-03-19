@@ -38,6 +38,7 @@ CASW_Mine::CASW_Mine()
 {
 	m_flDurationScale = 1.0f;
 	m_iExtraFires = 0;
+	m_bPlacedByMarine = false;
 }
 
 CASW_Mine::~CASW_Mine( void )
@@ -146,6 +147,7 @@ CASW_Mine* CASW_Mine::ASW_Mine_Create( const Vector &position, const QAngle &ang
 	UTIL_SetOrigin( pMine, position );
 	pMine->SetAbsVelocity( velocity );
 	pMine->m_hCreatorWeapon.Set( pCreatorWeapon );
+	pMine->m_bPlacedByMarine = pOwner && pOwner->Classify() == CLASS_ASW_MARINE;
 
 	return pMine;
 }

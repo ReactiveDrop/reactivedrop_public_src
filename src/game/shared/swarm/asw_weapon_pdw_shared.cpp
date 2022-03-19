@@ -219,7 +219,7 @@ void CASW_Weapon_PDW::PrimaryAttack()
 		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
 		info.m_iAmmoType = m_iPrimaryAmmoType;
 		info.m_iTracerFreq = 1;   // asw tracer test everytime
-		info.m_vecSpread = pMarine->GetActiveWeapon()->GetBulletSpread();
+		info.m_vecSpread = GetBulletSpread();
 		info.m_flDamage = GetWeaponDamage();
 		info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 #ifndef CLIENT_DLL
