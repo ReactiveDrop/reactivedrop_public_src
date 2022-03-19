@@ -264,6 +264,36 @@ CON_COMMAND( ASW_InvPrev, "Makes your marine select the previous weapon" )
 	asw_weapon_switch_f( -1 );
 }
 
+void asw_slot_select_f( int slot )
+{
+	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer )
+		return;
+
+	C_ASW_Marine* pMarine = pPlayer->GetMarine();
+	if ( !pMarine )
+		return;
+
+	C_BaseCombatWeapon* pCurrent = pMarine->GetActiveWeapon();
+	C_BaseCombatWeapon* pPrimary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
+	C_BaseCombatWeapon* pSecondary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+	//C_BaseCombatWeapon* pTertiary = pMarine->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+
+	if ( slot == ASW_INVENTORY_SLOT_PRIMARY && pPrimary && pCurrent != pPrimary )
+		::input->MakeWeaponSelection( pPrimary );
+	else if ( slot == ASW_INVENTORY_SLOT_SECONDARY && pSecondary && pCurrent != pSecondary )
+		::input->MakeWeaponSelection( pSecondary );
+}
+
+CON_COMMAND( ASW_SelectPrimary, "Select primary weapon" )
+{
+	asw_slot_select_f( ASW_INVENTORY_SLOT_PRIMARY );
+}
+CON_COMMAND( ASW_SelectSecondary, "Select secondary weapon" )
+{
+	asw_slot_select_f( ASW_INVENTORY_SLOT_SECONDARY );
+}
+
 // Binds for activating primary/secondary/extra items
 
 void ASW_ActivatePrimary_f()

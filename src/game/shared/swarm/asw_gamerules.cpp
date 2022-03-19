@@ -7975,6 +7975,17 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	{
 		ASWDeathmatchMode()->OnPlayerFullyJoined( pPlayer );
 	}
+	
+	// players who enter midway do not replicate cvar
+	ConVarRef asw_controls( "asw_controls" );
+	if ( asw_controls.IsValid() && !asw_controls.GetBool() )
+	{
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "SavedConvar" );
+		WRITE_STRING( asw_controls.GetName() );
+		WRITE_STRING( asw_controls.GetString() );
+		MessageEnd();
+	}
 }
 
 void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info, const char *pszSourceClass )
@@ -9182,7 +9193,8 @@ int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEqui
 	{
 		for ( int i = 0; i < CASW_Equip_Req::ASW_MAX_EQUIP_REQ_CLASSES; i++ )
 		{
-			if ( !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) )
+			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot(iEquipSlot, iWeaponIndex);
+			if ( pItem && !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( pItem->m_EquipClass ) ) )
 			{
 				return iWeaponIndex;
 			}
