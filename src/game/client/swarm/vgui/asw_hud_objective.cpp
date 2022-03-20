@@ -19,6 +19,7 @@
 #include <vgui/IVgui.h>
 #include "usermessages.h"
 #include "c_asw_player.h"
+#include <vgui/ILocalize.h>
 
 #include "hud_basechat.h"
 
