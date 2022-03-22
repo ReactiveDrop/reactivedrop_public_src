@@ -251,7 +251,7 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 	info.m_iTracerFreq = 1;  // asw tracer test everytime
 	info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 
-	info.m_vecSpread = pMarine->GetActiveWeapon()->GetBulletSpread();
+	info.m_vecSpread = GetBulletSpread();
 	info.m_flDamage = GetWeaponDamage();
 #ifndef CLIENT_DLL
 	if (asw_debug_marine_damage.GetBool())

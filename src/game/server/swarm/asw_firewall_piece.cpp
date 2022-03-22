@@ -37,6 +37,7 @@ CASW_Firewall_Piece::CASW_Firewall_Piece()
 	m_iRightFire = 0;
 	m_fFireDuration = 30.0f;
 	m_hCreatorWeapon = NULL;
+	m_bPlacedByMarine = false;
 }
 
 
@@ -95,7 +96,11 @@ void CASW_Firewall_Piece::Spawn( void )
 		nFlags |= SF_FIRE_NO_SOUND;
 	}
 
-	FireSystem_StartFire(tr.endpos + Vector(0, 0, 1), 64, 4, m_fFireDuration, nFlags, GetOwnerEntity(), FIRE_WALL_MINE, GetAbsAngles().y, m_hCreatorWeapon );
+	CFire *pFire = FireSystem_StartFire(tr.endpos + Vector(0, 0, 1), 64, 4, m_fFireDuration, nFlags, GetOwnerEntity(), FIRE_WALL_MINE, GetAbsAngles().y, m_hCreatorWeapon );
+	if ( pFire )
+	{
+		pFire->m_bPlacedByMarine = m_bPlacedByMarine;
+	}
 }
 
 void CASW_Firewall_Piece::Precache()
@@ -191,6 +196,7 @@ CASW_Firewall_Piece* CASW_Firewall_Piece::CreateAnotherPiece(bool bRight)
 		pFirewall->SetAbsOrigin( dest - Vector(0,0,20) );
 		pFirewall->SetDuration(m_fFireDuration);
 		pFirewall->m_hCreatorWeapon = m_hCreatorWeapon;
+		pFirewall->m_bPlacedByMarine = m_bPlacedByMarine;
 		pFirewall->Spawn();		
 		pFirewall->SetAbsVelocity( vec3_origin );
 	}

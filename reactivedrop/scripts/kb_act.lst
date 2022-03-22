@@ -27,6 +27,8 @@
 "blank"			"=========================="
 "ASW_InvPrev"			"#asw_switch_primary_secondary"
 "ASW_InvNext"			"#asw_switch_primary_secondary"
+"ASW_SelectPrimary"		"#nb_select_weapon_one" // we could definitely use
+"ASW_SelectSecondary"	"#nb_select_weapon_two" // better labels for these
 "+secondary"			"#Valve_Secondary_Attack"
 "asw_flashlight"        "#rd_flashlight_toggle"
 "blank"			"=========================="

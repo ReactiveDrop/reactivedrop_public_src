@@ -24,6 +24,7 @@ public:
 	virtual void StopLoopingSounds();
 	
 	bool m_bPrimed;
+	bool m_bPlacedByMarine;
 	float m_fForcePrimeTime;
 	// when set, this mine will shortly explode
 	CNetworkVar( bool, m_bMineTriggered );

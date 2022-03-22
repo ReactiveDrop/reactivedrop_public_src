@@ -19,6 +19,7 @@
 #include <vgui/IVgui.h>
 #include "usermessages.h"
 #include "c_asw_player.h"
+#include <vgui/ILocalize.h>
 
 #include "hud_basechat.h"
 
@@ -328,8 +329,11 @@ void CASWHudObjective::UpdateObjectiveList()
 						int iDeltaSec = (iDeltaTimeMS / 1000) % 60;
 						int iDeltaMs = iDeltaTimeMS % 1000;
 
-						char szInfo[128];
-						Q_snprintf(szInfo, ARRAYSIZE(szInfo), "Objective complete! Time: %d:%02d.%03d Delta with previous objective: %d:%02d.%03d\n", iMinutes, iSeconds, iMilliseconds, iDeltaMin, iDeltaSec, iDeltaMs);
+						char szInfo[192];
+						char szObjective[64];
+						g_pVGuiLocalize->ConvertUnicodeToANSI(pObjective->GetObjectiveTitle(), szObjective, sizeof(szObjective));
+						Q_snprintf(szInfo, ARRAYSIZE(szInfo), "%cObjective %c%s %ccomplete! \nTime: %c%d:%02d.%03d %cDelta with previous objective: %c%d:%02d.%03d\n", 
+							'\x04', '\x05', szObjective, '\x04', '\x01', iMinutes, iSeconds, iMilliseconds, '\x04', '\x01', iDeltaMin, iDeltaSec, iDeltaMs);
 						if (rda_print_console_objective_completion_time.GetBool() )
 						{
 							ConColorMsg(col, "%s", szInfo);
