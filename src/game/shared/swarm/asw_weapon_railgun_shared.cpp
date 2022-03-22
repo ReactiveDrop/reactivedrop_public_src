@@ -240,7 +240,7 @@ void CASW_Weapon_Railgun::PrimaryAttack()
 	info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
 #endif
 
-	info.m_vecSpread = pMarine->GetActiveWeapon()->GetBulletSpread();
+	info.m_vecSpread = GetBulletSpread();
 	info.m_flDamageForceScale = asw_railgun_force_scale.GetFloat();
 
 	//float max_dist = asw_weapon_max_shooting_distance.GetFloat();

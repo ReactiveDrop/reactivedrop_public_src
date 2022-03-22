@@ -65,7 +65,7 @@ C_PlayerResource::C_PlayerResource()
 {
 	for ( int i=0; i<ARRAYSIZE(m_szName); ++i )
 	{
-		m_szName[i] = AllocPooledString( "unconnected" );
+		m_szName[i] = AllocPooledString( PLAYER_UNCONNECTED_NAME );
 	}
 	memset( m_iPing, 0, sizeof( m_iPing ) );
 //	memset( m_iPacketloss, 0, sizeof( m_iPacketloss ) );

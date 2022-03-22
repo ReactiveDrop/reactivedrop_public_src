@@ -27,6 +27,7 @@ public:
 	float m_fSpawnTime;
 	float m_fFireDuration;
 	EHANDLE m_hCreatorWeapon;
+	bool m_bPlacedByMarine;
 };
 
 

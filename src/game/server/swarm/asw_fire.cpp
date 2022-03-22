@@ -574,6 +574,7 @@ CFire::CFire( void )
 	m_fLightRadiusScale = 1.0f;
 	m_bNoFuelingOnceLit = false;
 	m_bFirefighterCounted = false;
+	m_bPlacedByMarine = false;
 #endif
 }
 
