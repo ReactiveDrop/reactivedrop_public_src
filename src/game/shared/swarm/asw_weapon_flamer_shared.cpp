@@ -186,12 +186,12 @@ void CASW_Weapon_Flamer::ClearIsFiring()
 
 void CASW_Weapon_Flamer::ItemPostFrame( void )
 {
-	BaseClass::ItemPostFrame();
-
 	CASW_Marine* pOwner = GetMarine();
 
 	if (!pOwner)
 		return;
+
+	BaseClass::ItemPostFrame();
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
@@ -199,6 +199,13 @@ void CASW_Weapon_Flamer::ItemPostFrame( void )
 	if ( !bAttack2 )
 	{
 		m_bIsSecondaryFiring = false;
+	}
+	else
+	{
+		if ( m_iClip1 == 0 )
+		{
+			m_bIsSecondaryFiring = false;
+		}
 	}
 }
 
@@ -306,12 +313,14 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 		}
 		m_bBulletMod = !m_bBulletMod;
 
+		/*
 		if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 		{
 			// HEV suit - indicate out of ammo condition
 			if (pPlayer)
 				pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
 		}
+		*/
 	}
 	
 	if (m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
