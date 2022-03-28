@@ -10,6 +10,8 @@
 #include "c_physicsprop.h"
 #include "c_physbox.h"
 #include "c_props.h"
+#include "c_asw_player.h"
+#include "c_asw_marine.h"
 
 #define CPhysBox C_PhysBox
 #define CPhysicsProp C_PhysicsProp

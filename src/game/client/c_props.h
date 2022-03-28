@@ -12,6 +12,7 @@
 
 #include "c_breakableprop.h"
 #include "props_shared.h"
+#include "glow_outline_effect.h"
 
 #define CDynamicProp C_DynamicProp
 
