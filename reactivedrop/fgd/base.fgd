@@ -5479,7 +5479,7 @@
 
 @PointClass base(prop_dynamic_base) studioprop() = prop_dynamic_glow :
 	"A prop that can be placed in hierarchy and can play animations. It can also be configured to break when it takes enough damage.\n"+
-	"base in prop_dynamic, which adds the ability to make itself glow."
+	"Works exactly like a prop_dynamic, but it can optionally have a custom glow around it."
 [
 	glowdist(float) : "Glow Dist" : "0" : "Game World Distance."
 	glowenabled(boolean) : "Glow Enable" : 1 : ""
