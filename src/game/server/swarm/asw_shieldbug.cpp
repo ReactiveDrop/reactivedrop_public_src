@@ -231,6 +231,10 @@ float CASW_Shieldbug::MaxYawSpeed( void )
 	if ( m_bElectroStunned.Get() )
 		return 5.0f;
 
+	// Stays still when frozen
+	if ( m_flFrozenTime >= gpGlobals->curtime )
+		return 0.1f;
+
 	switch( eActivity )
 	{
 	case ACT_TURN_LEFT:
