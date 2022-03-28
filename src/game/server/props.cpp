@@ -1885,7 +1885,8 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 #ifndef INFESTED_DLL
 LINK_ENTITY_TO_CLASS( dynamic_prop, CDynamicProp );
 LINK_ENTITY_TO_CLASS( prop_dynamic, CDynamicProp );	
-LINK_ENTITY_TO_CLASS( prop_dynamic_override, CDynamicProp );	
+LINK_ENTITY_TO_CLASS( prop_dynamic_override, CDynamicProp );
+LINK_ENTITY_TO_CLASS( prop_dynamic_glow, CDynamicProp );
 #endif
 
 BEGIN_DATADESC( CDynamicProp )
