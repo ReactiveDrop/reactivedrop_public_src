@@ -1885,7 +1885,8 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 #ifndef INFESTED_DLL
 LINK_ENTITY_TO_CLASS( dynamic_prop, CDynamicProp );
 LINK_ENTITY_TO_CLASS( prop_dynamic, CDynamicProp );	
-LINK_ENTITY_TO_CLASS( prop_dynamic_override, CDynamicProp );	
+LINK_ENTITY_TO_CLASS( prop_dynamic_override, CDynamicProp );
+LINK_ENTITY_TO_CLASS( prop_dynamic_glow, CDynamicProp );
 #endif
 
 BEGIN_DATADESC( CDynamicProp )
@@ -1905,6 +1906,10 @@ BEGIN_DATADESC( CDynamicProp )
 	DEFINE_KEYFIELD( m_bDisableBoneFollowers, FIELD_BOOLEAN, "DisableBoneFollowers" ),
 	DEFINE_KEYFIELD( m_bHoldAnimation, FIELD_BOOLEAN, "HoldAnimation" ),
 	
+	DEFINE_KEYFIELD( m_flGlowMaxDist, FIELD_FLOAT, "glowdist" ),
+	DEFINE_KEYFIELD( m_bShouldGlow, FIELD_BOOLEAN, "glowenabled" ),
+	DEFINE_KEYFIELD( m_clrGlow, FIELD_COLOR32, "glowcolor" ),
+	
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_STRING,	"SetAnimation",	InputSetAnimation ),
 	DEFINE_INPUTFUNC( FIELD_STRING,	"SetAnimationNoReset",	InputSetAnimationNoReset ),
@@ -1916,6 +1921,13 @@ BEGIN_DATADESC( CDynamicProp )
 	DEFINE_INPUTFUNC( FIELD_VOID,		"EnableCollision",	InputEnableCollision ),
 	DEFINE_INPUTFUNC( FIELD_VOID,		"DisableCollision",	InputDisableCollision ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT,		"SetPlaybackRate",	InputSetPlaybackRate ),
+	
+	DEFINE_INPUTFUNC( FIELD_VOID,	"SetGlowEnabled",		InputSetGlowEnabled ),
+	DEFINE_INPUTFUNC( FIELD_VOID,	"SetGlowDisabled",		InputSetGlowDisabled ),
+	DEFINE_INPUTFUNC( FIELD_COLOR32,	"SetGlowColor",		InputSetGlowColor ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "GlowColorRedValue",		InputGlowColorRedValue ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "GlowColorGreenValue",	InputGlowColorGreenValue ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "GlowColorBlueValue",	InputGlowColorBlueValue ),
 
 	// Outputs
 	DEFINE_OUTPUT( m_pOutputAnimBegun, "OnAnimationBegun" ),
@@ -1930,6 +1942,9 @@ END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST(CDynamicProp, DT_DynamicProp)
 	SendPropBool( SENDINFO( m_bUseHitboxesForRenderBox ) ),
+	SendPropFloat( SENDINFO( m_flGlowMaxDist ) ),
+	SendPropBool(	SENDINFO( m_bShouldGlow ) ),
+	SendPropInt(	SENDINFO( m_clrGlow ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),
 END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
@@ -1943,6 +1958,8 @@ CDynamicProp::CDynamicProp()
 		UseClientSideAnimation();
 	}
 	m_iGoalSequence = -1;
+	m_bShouldGlow = false;
+	m_clrGlow.Init( 255, 255, 255, 0 );
 }
 
 
@@ -2339,6 +2356,18 @@ void CDynamicProp::PropSetAnim( const char *szAnim )
 	}
 }
 
+inline void CDynamicProp::SetGlowColor( int r, int g, int b )		
+{ 
+	m_clrGlow.SetR( r );
+	m_clrGlow.SetG( g );
+	m_clrGlow.SetB( b );
+}
+
+inline const color24 CDynamicProp::GetGlowColor() const
+{
+	color24 c = { m_clrGlow->r, m_clrGlow->g, m_clrGlow->b }; 
+	return c;
+}
 
 //------------------------------------------------------------------------------
 // Purpose:
@@ -2435,6 +2464,43 @@ void CDynamicProp::InputDisableCollision( inputdata_t &inputdata )
 void CDynamicProp::InputEnableCollision( inputdata_t &inputdata )
 {
 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CDynamicProp::InputSetGlowEnabled( inputdata_t &inputdata )
+{
+	m_bShouldGlow = true;
+}
+
+void CDynamicProp::InputSetGlowDisabled( inputdata_t &inputdata )
+{
+	m_bShouldGlow = false;
+}
+
+void CDynamicProp::InputSetGlowColor(inputdata_t &inputdata)
+{
+	color32 color = inputdata.value.Color32();
+	SetGlowColor( color.r, color.g, color.b );
+}
+
+void CDynamicProp::InputGlowColorRedValue( inputdata_t &inputdata )
+{
+	int nNewColor = clamp( inputdata.value.Float(), 0, 255 );
+	SetGlowColor( nNewColor, m_clrGlow->g, m_clrGlow->b );
+}
+
+void CDynamicProp::InputGlowColorGreenValue( inputdata_t &inputdata )
+{
+	int nNewColor = clamp( inputdata.value.Float(), 0, 255 );
+	SetGlowColor( m_clrGlow->r, nNewColor, m_clrGlow->b );
+}
+
+void CDynamicProp::InputGlowColorBlueValue( inputdata_t &inputdata )
+{
+	int nNewColor = clamp( inputdata.value.Float(), 0, 255 );
+	SetGlowColor( m_clrGlow->r, m_clrGlow->g, nNewColor );
 }
 
 //-----------------------------------------------------------------------------
