@@ -2734,14 +2734,6 @@ void CPhysicsProp::Spawn( )
 		CalculateBlockLOS();
 	}
 
-	//Episode 1 change:
-	//Hi, since we're trying to ship this game we'll just go ahead and make all these doors not fade out instead of changing all the levels.
-	if ( Q_strcmp( STRING( GetModelName() ), "models/props_c17/door01_left.mdl" ) == 0 )
-	{
-		SetFadeDistance( -1, 0 );
-		DisableAutoFade();
-	}
-
 	// Do prop_physics_multiplayer stuff here
 	// if no physicsmode was defined by .QC or propdata.txt, 
 	// use auto detect based on size & mass

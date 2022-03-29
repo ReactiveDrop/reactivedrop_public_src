@@ -881,7 +881,7 @@ bool CAchievementMgr::CheckAchievementsEnabled( )
 
 	if ( IsPC() && !LoggedIntoSteam() )
 	{
-		Msg( "Achievements disabled: Steam not running.\n" );
+		//Msg( "Achievements disabled: Steam not running.\n" );
 		return false;
 	}
 
