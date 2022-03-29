@@ -30,6 +30,7 @@ LINK_ENTITY_TO_CLASS( env_sprite, CSprite );
 LINK_ENTITY_TO_CLASS( env_sprite_oriented, CSpriteOriented );
 #if !defined( CLIENT_DLL )
 LINK_ENTITY_TO_CLASS( env_glow, CSprite ); // For backwards compatibility, remove when no longer needed.
+LINK_ENTITY_TO_CLASS( env_sprite_clientside, CSprite );
 #endif
 
 #if !defined( CLIENT_DLL )
@@ -160,13 +161,30 @@ BEGIN_NETWORK_TABLE( CSprite, DT_Sprite )
 END_NETWORK_TABLE()
 
 
+
+#ifdef CLIENT_DLL
+extern CUtlVector< CSprite * > g_ClientsideSprites;
+#endif
+
 CSprite::CSprite()
 {
+#ifdef CLIENT_DLL
+	m_bClientOnly = false;
+#endif
 	m_flGlowProxySize = 2.0f;
 	m_flHDRColorScale = 1.0f;
-
-
 }
+
+CSprite::~CSprite()
+{
+#ifdef CLIENT_DLL
+	if ( m_bClientOnly )
+	{
+		g_ClientsideSprites.FindAndFastRemove( this );
+	}
+#endif
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -220,7 +238,7 @@ void CSprite::Spawn( void )
 #if !defined( CLIENT_DLL ) 
 		DevMsg( "LEVEL DESIGN ERROR: Sprite %s with bad scale %f [0..%f]\n", GetDebugName(), m_flSpriteScale.Get(), MAX_SPRITE_SCALE );
 #endif
-		scale = clamp( m_flSpriteScale, 0, MAX_SPRITE_SCALE );
+		scale = clamp( m_flSpriteScale.Get(), 0, MAX_SPRITE_SCALE );
 	}
 
 	//Set our state
@@ -232,6 +250,14 @@ void CSprite::Spawn( void )
 	m_nStartBrightness = m_nDestBrightness = m_nBrightness;
 #endif
 
+#ifndef CLIENT_DLL
+	// Server has no use for client-only entities.
+	// Seems like a waste to create the entity, only to UTIL_Remove it on Spawn, but this pattern works safely...
+	if ( FClassnameIs( this, "env_sprite_clientside" ) )
+	{
+		UTIL_Remove( this );
+	}
+#endif
 }
 
 

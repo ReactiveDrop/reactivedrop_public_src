@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -20,6 +20,8 @@
 #include "tier1/KeyValues.h"
 #include "toolframework/itoolframework.h"
 #include "toolframework_client.h"
+#include "mapentities_shared.h"
+#include "gamestringpool.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -498,4 +500,181 @@ void CSprite::GetToolRecordingState( KeyValues *msg )
 	state.m_Color.SetColor( c.r, c.g, c.b, GetRenderBrightness() );
 
 	msg->SetPtr( "sprite", &state );
+}
+
+CUtlVector< CSprite * > g_ClientsideSprites;
+
+// ===================== For clientside spawning of sprites =====================
+void CSprite::RecreateAllClientside()
+{
+	DestroyAllClientside();	
+	ParseAllClientsideEntities( engine->GetMapEntitiesString() );
+}
+
+void CSprite::DestroyAllClientside()
+{
+	// This only gets called during LevelInitPostEntity and LevelShutdown so we're going to use 
+	// Release() instead of Remove() or UTIL_Remove
+	while ( g_ClientsideSprites.Count() > 0 )
+	{
+		CSprite *p = g_ClientsideSprites[0];
+
+		// This will call into CSprite::~CSprite in sprite.cpp, which will FindAndRemove this sprite from the array
+		p->Release();
+	}
+}
+
+bool CSprite::InitializeClientside()
+{	
+	if ( InitializeAsClientEntity( STRING( GetModelName() ), false ) == false )
+	{
+		return false;
+	}
+
+	m_bClientOnly = true;
+	g_ClientsideSprites.AddToTail( this );
+	
+	Spawn();
+
+	const model_t *mod = GetModel();
+	if ( mod )
+	{
+		Vector mins, maxs;
+		modelinfo->GetModelBounds( mod, mins, maxs );
+		SetCollisionBounds( mins, maxs );		
+	}
+
+	SetBlocksLOS( false ); // this should be a small object
+	SetNextClientThink( CLIENT_THINK_NEVER );
+
+	return true;
+}
+
+
+const char *CSprite::ParseClientsideEntity( const char *pEntData )
+{
+	CEntityMapData entData( (char*)pEntData );
+	char className[MAPKEY_MAXLENGTH];
+
+	MDLCACHE_CRITICAL_SECTION();
+
+	if ( !entData.ExtractValue( "classname", className ) )
+	{
+		Error( "classname missing from entity!\n" );
+	}
+
+	if ( !Q_strcmp( className, "env_sprite_clientside" ))
+	{
+		// always force clientside entities placed in maps
+		CSprite *pEntity = new CSprite(); 
+
+		if ( pEntity )
+		{	
+			// Set up keyvalues.
+			pEntity->ParseMapData(&entData);
+
+			if ( !pEntity->InitializeClientside() )
+				pEntity->Release();
+
+			return entData.CurrentBufferPosition();
+		}
+	}
+
+
+	// Just skip past all the keys.
+	char keyName[MAPKEY_MAXLENGTH];
+	char value[MAPKEY_MAXLENGTH];
+	if ( entData.GetFirstKey(keyName, value) )
+	{
+		do 
+		{
+		} 
+		while ( entData.GetNextKey(keyName, value) );
+	}
+
+	//
+	// Return the current parser position in the data block
+	//
+	return entData.CurrentBufferPosition();
+}
+
+bool CSprite::KeyValue( const char *szKeyName, const char *szValue ) 
+{
+	if ( FStrEq( szKeyName, "scale" ) )
+	{
+		m_flSpriteScale = atof(szValue);		
+	}
+	else if ( FStrEq( szKeyName, "framerate" ) )
+	{
+		m_flSpriteFramerate = atof(szValue);		
+	}
+	else if ( FStrEq( szKeyName, "GlowProxySize" ) )
+	{
+		m_flGlowProxySize = atof(szValue);		
+	}
+	else if ( FStrEq( szKeyName, "frame" ) )
+	{
+		m_flFrame = atof(szValue);		
+	}
+	else if ( FStrEq( szKeyName, "HDRColorScale" ) )
+	{
+		m_flHDRColorScale = atof(szValue);		
+	}
+	else if ( FStrEq( szKeyName, "rendermode" ) )
+	{
+		SetRenderMode( (RenderMode_t) atoi( szValue ) );
+	}
+	else if ( FStrEq( szKeyName, "model" ) )
+	{
+		SetModelName( AllocPooledString( szValue ) );
+	}
+	else
+	{
+		return BaseClass::KeyValue( szKeyName, szValue );
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Only called on BSP load. Parses and spawns all the entities in the BSP.
+// Input  : pMapData - Pointer to the entity data block to parse.
+//-----------------------------------------------------------------------------
+void CSprite::ParseAllClientsideEntities(const char *pMapData)
+{
+	int nEntities = 0;
+
+	char szTokenBuffer[MAPKEY_MAXLENGTH];
+
+	//
+	//  Loop through all entities in the map data, creating each.
+	//
+	for ( ; true; pMapData = MapEntity_SkipToNextEntity( pMapData, szTokenBuffer ) )
+	{
+		//
+		// Parse the opening brace.
+		//
+		char token[MAPKEY_MAXLENGTH];
+		pMapData = MapEntity_ParseToken( pMapData, token );
+
+		//
+		// Check to see if we've finished or not.
+		//
+		if ( !pMapData )
+			break;
+
+		if ( token[0] != '{' )
+		{
+			Error( "CSprite::ParseAllEntities: found %s when expecting {", token);
+			continue;
+		}
+
+		//
+		// Parse the entity and add it to the spawn list.
+		//
+
+		pMapData = ParseClientsideEntity( pMapData );
+
+		nEntities++;
+	}
 }
