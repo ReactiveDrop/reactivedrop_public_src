@@ -22,7 +22,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
+/*
 #ifndef CLIENT_DLL
 	// This allows us to test regenerative health systems on the fly
 	void RegenerationForceOnChangeCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
@@ -37,6 +37,7 @@
 
 	ConVar sv_regeneration_force_on( "sv_regeneration_force_on", "0", FCVAR_CHEAT, "Cheat to test regenerative health systems", RegenerationForceOnChangeCallback );
 #endif
+*/
 
 
 //=========================================================

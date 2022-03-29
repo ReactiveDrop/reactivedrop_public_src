@@ -11,6 +11,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef DAMAGE_MODIFIERS_USED
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -82,4 +83,4 @@ bool CDamageModifier::IsDamageDoneToMe() const
 {
 	return m_bDoneToMe;
 }
-
+#endif

@@ -7968,6 +7968,10 @@ void CBasePlayer::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 //-----------------------------------------------------------------------------
 void CBasePlayer::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
+#ifdef INFESTED_DLL
+	return;
+#endif
+
 	float savedImpact = m_impactEnergyScale;
 	
 	// HACKHACK: Reduce player's stress by 1/8th
@@ -7981,6 +7985,10 @@ void CBasePlayer::VPhysicsUpdate( IPhysicsObject *pPhysics )
 //-----------------------------------------------------------------------------
 void CBasePlayer::VPhysicsShadowUpdate( IPhysicsObject *pPhysics )
 {
+#ifdef INFESTED_DLL
+	return;
+#endif
+
 	if ( sv_turbophysics.GetBool() )
 		return;
 
@@ -8197,6 +8205,10 @@ void CBasePlayer::InitVCollision( const Vector &vecAbsOrigin, const Vector &vecA
 {
 	// Cleanup any old vphysics stuff.
 	VPhysicsDestroyObject();
+
+#ifdef INFESTED_DLL
+	return;
+#endif
 
 	// in turbo physics players dont have a physics shadow
 	if ( sv_turbophysics.GetBool() )
