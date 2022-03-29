@@ -230,7 +230,8 @@ public:
 	static CSprite *SpriteCreatePredictable( const char *module, int line, const char *pSpriteName, const Vector &origin, bool animate );
 
 #if defined( CLIENT_DLL )
-	virtual float	GetRenderScale( void );
+	float	GetRenderScale( void );
+	float	GetMaxRenderScale( void );
 	virtual int		GetRenderBrightness( void );
 
 	virtual int		DrawModel( int flags, const RenderableInstance_t &instance );

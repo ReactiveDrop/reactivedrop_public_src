@@ -666,12 +666,26 @@ float CSprite::GetRenderScale( void )
 	return ( m_flStartScale + ( ( m_flDestScale - m_flStartScale  ) * timeDelta ) );
 }
 
+float CSprite::GetMaxRenderScale( void )
+{
+	//See if we're done scaling
+	if ( m_flScaleTime == 0 )
+		return m_flSpriteScale;
+
+	// return the max scale over the interval
+	return MAX(m_flStartScale, m_flDestScale);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get the rendered extents of the sprite
 //-----------------------------------------------------------------------------
 void CSprite::GetRenderBounds( Vector &vecMins, Vector &vecMaxs )
 {
-	float flScale = GetRenderScale() * 0.5f;
+	// NOTE: Don't call GetRenderScale here because the bounds will get cached
+	// if we don't blow away that cache every time the interpolant (curtime) changes
+	// then it will be wrong as long as this is animating.
+	// instead while animating just use the 
+	float flScale = GetMaxRenderScale() * 0.5f;
 
 	// If our scale is normalized we need to convert that to actual world units
 	if ( m_bWorldSpaceScale == false )
@@ -757,6 +771,8 @@ void CSprite::ClientThink( void )
 		bDisableThink = false;
 	}
 
+	// changed bounds
+	InvalidatePhysicsRecursive(BOUNDS_CHANGED);
 	if ( bDisableThink )
 	{
 		SetNextClientThink(CLIENT_THINK_NEVER);
