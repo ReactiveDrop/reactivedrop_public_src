@@ -3771,7 +3771,7 @@
     core(float) : "Core distortion radius" : "100" : "Radius of the core scanner distortion effect.  Within this core, distortion will be at full."
 ]
 
-@PointClass base(Targetname, Parentname, RenderFields,DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_clientside : 
+@PointClass base(RenderFields, DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_clientside : 
 	"An entity that controls the drawing of a sprite in the world, created clientside so cannot be parented to moving things and will use up no network bandwidth or CPU." 
 [
 	framerate(string) : "Framerate" : "10.0" : "Rate at which the sprite should animate, if at all."

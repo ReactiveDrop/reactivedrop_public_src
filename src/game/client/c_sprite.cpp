@@ -628,6 +628,10 @@ bool CSprite::KeyValue( const char *szKeyName, const char *szValue )
 	{
 		SetModelName( AllocPooledString( szValue ) );
 	}
+	else if ( ( FStrEq( szKeyName, "targetname" ) || FStrEq( szKeyName, "parentname" ) ) && *szValue )
+	{
+		Warning( "LEVEL DESIGN ERROR: env_sprite_clientside has %s '%s' - use env_sprite instead.\n", szKeyName, szValue );
+	}
 	else
 	{
 		return BaseClass::KeyValue( szKeyName, szValue );
