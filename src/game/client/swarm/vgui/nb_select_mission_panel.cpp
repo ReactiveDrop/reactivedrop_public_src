@@ -24,7 +24,6 @@ CNB_Select_Mission_Panel::CNB_Select_Mission_Panel( vgui::Panel *parent, const c
 	
 	m_pHeaderFooter->SetTitle( "" );
 	m_pHeaderFooter->SetHeaderEnabled( false );
-	m_pHeaderFooter->SetFooterEnabled( false );
 	m_szCampaignFilter[0] = 0;
 	m_nLastCount = -1;
 }
@@ -197,8 +196,11 @@ void CNB_Select_Mission_Panel::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "AcceptButton" ) )
 	{
-
-		GetParent()->OnCommand( command );
+		CNB_Select_Mission_Entry *pEntry = dynamic_cast<CNB_Select_Mission_Entry *>( m_pHorizList->GetHighlightedEntry() );
+		if ( pEntry )
+		{
+			pEntry->OnCommand( "MissionClicked" );
+		}
 		return;
 	}
 	BaseClass::OnCommand( command );
