@@ -78,12 +78,14 @@ void C_BaseCombatWeapon::OnRestore()
 {
 	BaseClass::OnRestore();
 
+#ifndef INFESTED_DLL
 	// if the player is holding this weapon, 
 	// mark it as just restored so it won't show as a new pickup
 	if ( C_BasePlayer::IsLocalPlayer( GetOwner() ) )
 	{
 		m_bJustRestored = true;
 	}
+#endif
 }
 
 int C_BaseCombatWeapon::GetWorldModelIndex( void )
@@ -99,6 +101,7 @@ void C_BaseCombatWeapon::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
+#ifndef INFESTED_DLL
 	// If it's being carried by the *local* player, on the first update,
 	// find the registered weapon for this ID
 
@@ -128,12 +131,12 @@ void C_BaseCombatWeapon::OnDataChanged( DataUpdateType_t updateType )
 			}
 		}
 	}
-	
+
+	m_bJustRestored = false;
+#endif
 	UpdateVisibility();
 
 	m_iOldState = m_iState;
-
-	m_bJustRestored = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -366,6 +369,10 @@ bool C_BaseCombatWeapon::ShouldDraw( void )
 	if ( IsEffectActive( EF_NODRAW ) )
 		return false;
 
+#ifdef INFESTED_DLL
+	//skip the rest
+	return true;
+#endif
 	C_BaseCombatCharacter *pOwner = GetOwner();
 
 	// weapon has no owner, always draw it
@@ -402,6 +409,7 @@ bool C_BaseCombatWeapon::ShouldDraw( void )
 	return true;
 }
 
+#ifndef INFESTED_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Return true if a weapon-pickup icon should be displayed when this weapon is received
 //-----------------------------------------------------------------------------
@@ -415,7 +423,7 @@ bool C_BaseCombatWeapon::ShouldDrawPickup( void )
 
 	return true;
 }
-		   
+#endif		   
 
 //----------------------------------------------------------------------------
 // Hooks into the fast path render system

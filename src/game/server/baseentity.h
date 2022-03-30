@@ -1617,10 +1617,11 @@ protected:
 	CNetworkVar( string_t, m_iName ); // name used to identify this entity
 
 
-
+#ifdef DAMAGE_MODIFIERS_USED
 	// Damage modifiers
 	friend class CDamageModifier;
 	CUtlLinkedList<CDamageModifier*,int>	m_DamageModifiers;
+#endif
 
 	EHANDLE m_pParent;  // for movement hierarchy
 	byte	m_nTransmitStateOwnedCounter;

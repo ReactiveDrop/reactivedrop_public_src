@@ -12,6 +12,7 @@
 
 #include "c_breakableprop.h"
 #include "props_shared.h"
+#include "glow_outline_effect.h"
 
 #define CDynamicProp C_DynamicProp
 
@@ -27,11 +28,17 @@ public:
 	// constructor, destructor
 	C_DynamicProp( void );
 	~C_DynamicProp( void );
+	
+	virtual void	ClientThink( void );
+	virtual void OnDataChanged( DataUpdateType_t type );
 
 	void GetRenderBounds( Vector& theMins, Vector& theMaxs );
 	unsigned int ComputeClientSideAnimationFlags();
 	bool TestBoneFollowers( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	bool TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
+	
+	void UpdateGlow( void );
+	CGlowObject m_GlowObject;
 
 private:
 	C_DynamicProp( const C_DynamicProp & );
@@ -40,6 +47,10 @@ private:
 	int		m_iCachedFrameCount;
 	Vector	m_vecCachedRenderMins;
 	Vector	m_vecCachedRenderMaxs;
+	
+	float		m_flGlowMaxDist;
+	bool		m_bShouldGlow;
+	color32		m_clrGlow;
 };
 
 //-----------------------------------------------------------------------------

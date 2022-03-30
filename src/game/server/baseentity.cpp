@@ -1966,6 +1966,7 @@ void CBaseEntity::ScriptTakeDamageParams( HSCRIPT hInflictor, HSCRIPT hAttacker,
 float CBaseEntity::GetAttackDamageScale( CBaseEntity *pVictim )
 {
 	float flScale = 1;
+#ifdef DAMAGE_MODIFIERS_USED
 	FOR_EACH_LL( m_DamageModifiers, i )
 	{
 		if ( !m_DamageModifiers[i]->IsDamageDoneToMe() )
@@ -1973,6 +1974,7 @@ float CBaseEntity::GetAttackDamageScale( CBaseEntity *pVictim )
 			flScale *= m_DamageModifiers[i]->GetModifier();
 		}
 	}
+#endif
 	return flScale;
 }
 
@@ -1982,6 +1984,7 @@ float CBaseEntity::GetAttackDamageScale( CBaseEntity *pVictim )
 float CBaseEntity::GetReceivedDamageScale( CBaseEntity *pAttacker )
 {
 	float flScale = 1;
+#ifdef DAMAGE_MODIFIERS_USED
 	FOR_EACH_LL( m_DamageModifiers, i )
 	{
 		if ( m_DamageModifiers[i]->IsDamageDoneToMe() )
@@ -1989,6 +1992,7 @@ float CBaseEntity::GetReceivedDamageScale( CBaseEntity *pAttacker )
 			flScale *= m_DamageModifiers[i]->GetModifier();
 		}
 	}
+#endif
 	return flScale;
 }
 
