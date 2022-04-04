@@ -62,6 +62,12 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 #else
 	void InputSetTutorialStage( inputdata_t & inputdata );
+	void OnMissionStart();
+
+	COutputInt m_OnDifficulty;
+	COutputInt m_OnOnslaught;
+	COutputInt m_OnFriendlyFire;
+	COutputString m_OnChallenge;
 #endif
 };
 

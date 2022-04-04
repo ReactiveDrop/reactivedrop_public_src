@@ -30,6 +30,5 @@ namespace BaseModUI
 
 		HServerListRequest m_hServerListRequest;
 		bool m_bRefreshFinished;
-		CUtlVector<KeyValues *> m_KeyValuesCleanup;
 	};
 }

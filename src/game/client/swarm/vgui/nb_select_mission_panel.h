@@ -9,7 +9,6 @@
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class CNB_Header_Footer;
-vgui::Label;
 class CNB_Horiz_List;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class CNB_Button;

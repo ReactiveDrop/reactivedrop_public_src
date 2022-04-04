@@ -71,4 +71,10 @@
 	///"RegularOther"		"asw_weapon_ricochet"
 	///"Extra"			"asw_weapon_hacktool"
 	//"Extra"			"asw_weapon_bait"						// 9					// 8				// 7				// 10
+	
+	"ExtraOther"			"asw_weapon_bait"
+	"RegularOther"			"asw_weapon_flechette"
+	"RegularOther"			"asw_weapon_ricochet"
+	"RegularOther"			"asw_weapon_ammo_bag"
+	"RegularOther"			"asw_weapon_medical_satchel"
 }

@@ -297,6 +297,9 @@ public:
 
 	// IPositionWatcher
 	virtual void NotifyPositionChanged( CBaseEntity *pEntity );
+	
+	inline void SetGlowColor( int r, int g, int b );
+	inline const color24 GetGlowColor() const;
 
 	// Input handlers
 	void InputSetAnimation( inputdata_t &inputdata );
@@ -307,6 +310,12 @@ public:
 	void InputDisableCollision( inputdata_t &inputdata );
 	void InputEnableCollision( inputdata_t &inputdata );
 	void InputSetPlaybackRate( inputdata_t &inputdata );
+	void InputSetGlowEnabled( inputdata_t &inputdata );
+	void InputSetGlowDisabled( inputdata_t &inputdata );
+	void InputSetGlowColor( inputdata_t &inputdata );
+	void InputGlowColorRedValue( inputdata_t &inputdata );
+	void InputGlowColorGreenValue( inputdata_t &inputdata );
+	void InputGlowColorBlueValue( inputdata_t &inputdata );
 
 	void UpdateBoneFollowers( void );
 
@@ -331,6 +340,10 @@ public:
 	bool				m_bUpdateAttachedChildren;	// For props with children on attachment points, update their child touches as we animate
 
 	CNetworkVar( bool, m_bUseHitboxesForRenderBox );
+	
+	CNetworkVar( float, m_flGlowMaxDist );
+	CNetworkVar( bool, m_bShouldGlow );
+	CNetworkColor32( m_clrGlow );
 
 protected:
 	void FinishSetSequence( int nSequence );

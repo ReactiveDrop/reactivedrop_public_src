@@ -89,7 +89,7 @@ void CASW_BuffGrenade_Projectile::StartAOE( CBaseEntity *pEntity )
 		return;
 	}
 
-	pMarine->AddDamageBuff( this, m_flTimeBurnOut - gpGlobals->curtime, (Class_T) CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
+	pMarine->AddDamageBuff( this, MIN( m_flTimeBurnOut - gpGlobals->curtime, GetDoAOEDelayTime() ), (Class_T) CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
 	//NDebugOverlay::Box( pMarine->GetAbsOrigin(), Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), 0, 0, 255, 200, 0.5 );
 
 	EHANDLE hMarine = pMarine;
@@ -97,6 +97,19 @@ void CASW_BuffGrenade_Projectile::StartAOE( CBaseEntity *pEntity )
 	{
 		m_hBuffedMarines.AddToTail( hMarine );
 	}
+}
+
+void CASW_BuffGrenade_Projectile::DoAOE( CBaseEntity *pEntity )
+{
+	BaseClass::DoAOE( pEntity );
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pEntity );
+	if ( !pMarine )
+	{
+		return;
+	}
+
+	pMarine->AddDamageBuff( this, MIN( m_flTimeBurnOut - gpGlobals->curtime, GetDoAOEDelayTime() ), ( Class_T )CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
 }
 
 //-----------------------------------------------------------------------------

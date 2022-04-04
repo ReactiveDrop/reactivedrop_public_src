@@ -10,6 +10,8 @@
 #include "c_physicsprop.h"
 #include "c_physbox.h"
 #include "c_props.h"
+#include "c_asw_player.h"
+#include "c_asw_marine.h"
 
 #define CPhysBox C_PhysBox
 #define CPhysicsProp C_PhysicsProp
@@ -21,10 +23,14 @@
 IMPLEMENT_NETWORKCLASS_ALIASED( DynamicProp, DT_DynamicProp )
 
 BEGIN_NETWORK_TABLE( CDynamicProp, DT_DynamicProp )
-	RecvPropBool(RECVINFO(m_bUseHitboxesForRenderBox)),
+	RecvPropBool( RECVINFO(m_bUseHitboxesForRenderBox) ),
+	RecvPropFloat( RECVINFO(m_flGlowMaxDist) ),
+	RecvPropBool( RECVINFO(m_bShouldGlow) ),
+	RecvPropInt( RECVINFO(m_clrGlow), 0, RecvProxy_Int32ToColor32 ),
 END_NETWORK_TABLE()
 
-C_DynamicProp::C_DynamicProp( void )
+C_DynamicProp::C_DynamicProp( void ) : 
+m_GlowObject( this, Vector( 1.0f, 1.0f, 1.0f ), 0.0f, false, false )
 {
 	m_iCachedFrameCount = -1;
 }
@@ -66,6 +72,13 @@ bool C_DynamicProp::TestCollision( const Ray_t &ray, unsigned int fContentsMask,
 		}
 	}
 	return BaseClass::TestCollision( ray, fContentsMask, tr );
+}
+
+void C_DynamicProp::ClientThink( void )
+{
+	BaseClass::ClientThink();
+
+	UpdateGlow();
 }
 
 //-----------------------------------------------------------------------------
@@ -114,6 +127,49 @@ unsigned int C_DynamicProp::ComputeClientSideAnimationFlags()
 
 	// no sequence or no cycle rate, don't do any per-frame calcs
 	return 0;
+}
+
+void C_DynamicProp::UpdateGlow( void )
+{
+	if ( m_bShouldGlow == false )
+	{
+		if ( m_GlowObject.IsRendering() )
+		{
+			m_GlowObject.SetRenderFlags( false, false );
+			m_GlowObject.SetAlpha( 0.0f );
+		}
+		return;
+	}
+
+	Vector glowColor;
+	glowColor.x = ( m_clrGlow.r/255.0f );
+	glowColor.y = ( m_clrGlow.g/255.0f );
+	glowColor.z = ( m_clrGlow.b/255.0f );
+
+	float flAlpha = 0.9f;
+
+	// fade the alpha based on distace
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && m_bShouldGlow )
+	{
+		float flDistanceToMarine = 0.0f;
+		flDistanceToMarine = ( pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter() ).Length();
+		flAlpha = clamp( 1.0 - ( flDistanceToMarine / m_flGlowMaxDist ), 0.0, 0.9 );
+	}
+
+	// Start glowing
+	m_GlowObject.SetRenderFlags( m_bShouldGlow, false );
+	m_GlowObject.SetColor( glowColor );
+	m_GlowObject.SetAlpha( m_bShouldGlow ? flAlpha : 0.0f );
+
+	SetNextClientThink( gpGlobals->curtime + 0.1f );
+}
+
+void C_DynamicProp::OnDataChanged( DataUpdateType_t type )
+{
+	BaseClass::OnDataChanged( type );
+
+	UpdateGlow();
 }
 
 // ------------------------------------------------------------------------------------------ //
