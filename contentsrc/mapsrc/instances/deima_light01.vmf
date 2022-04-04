@@ -1,8 +1,8 @@
 versioninfo
 {
 	"editorversion" "400"
-	"editorbuild" "4865"
-	"mapversion" "3"
+	"editorbuild" "7397"
+	"mapversion" "4"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "3"
+	"mapversion" "4"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -52,7 +52,7 @@ entity
 entity
 {
 	"id" "6"
-	"classname" "env_sprite"
+	"classname" "env_sprite_clientside"
 	"disablereceiveshadows" "0"
 	"framerate" "10.000000"
 	"GlowProxySize" "8"
@@ -66,7 +66,6 @@ entity
 	"rendermode" "9"
 	"scale" "2"
 	"spawnflags" "1"
-	"targetname" "Lamppost_Flare"
 	"origin" "0 0 120"
 	editor
 	{
