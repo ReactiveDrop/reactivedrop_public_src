@@ -751,6 +751,10 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_bAllowCameraRotation, FIELD_BOOLEAN, "allowcamerarotation" ),
 #ifdef GAME_DLL
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
+	DEFINE_OUTPUT( m_OnDifficulty, "OnDifficulty" ),
+	DEFINE_OUTPUT( m_OnOnslaught, "OnOnslaught" ),
+	DEFINE_OUTPUT( m_OnFriendlyFire, "OnFriendlyFire" ),
+	DEFINE_OUTPUT( m_OnChallenge, "OnChallenge" ),
 #endif
 END_DATADESC()
 
@@ -826,6 +830,14 @@ void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 	pGameRules->SetGameState( ASW_GS_BRIEFING );
 	pGameRules->m_iMarinesSpawned = 0;
 	pGameRules->StartTutorial( pMR->GetCommander() );
+}
+
+void CAlienSwarmProxy::OnMissionStart()
+{
+	m_OnDifficulty.Set( ASWGameRules()->GetSkillLevel(), this, this );
+	m_OnOnslaught.Set( ASWGameRules()->IsOnslaught() ? 1 : 0, this, this );
+	m_OnFriendlyFire.Set( ASWGameRules()->IsHardcoreFF() ? 1 : 0, this, this );
+	m_OnChallenge.Set( AllocPooledString( rd_challenge.GetString() ), this, this );
 }
 #endif
 
@@ -2558,6 +2570,11 @@ void CAlienSwarm::StartMission()
 			}
 			g_pScriptVM->ReleaseValue( hModeScript );
 		}
+	}
+
+	if ( g_pSwarmProxy )
+	{
+		g_pSwarmProxy->OnMissionStart();
 	}
 }
 

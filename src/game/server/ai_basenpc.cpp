@@ -6899,8 +6899,8 @@ bool CAI_BaseNPC::IsNavHullValid() const
 {
 	Assert( GetSolid() != SOLID_BSP );
 
-	Vector hullMin = GetHullMins();
-	Vector hullMax = GetHullMaxs();
+	const Vector hullMin = GetHullMins();
+	const Vector hullMax = GetHullMaxs();
 	Vector vecMins, vecMaxs;
 	if ( GetSolid() == SOLID_BBOX )
 	{

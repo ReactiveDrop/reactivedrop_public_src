@@ -14,17 +14,10 @@
 	#include "c_te_effect_dispatch.h"
 #else
 	#include "te_effect_dispatch.h"
-	#include "Sprite.h"
 #endif
-
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-#ifdef GAME_DLL
-// link clientside sprite to CSprite - can remove this if we fixup all the maps to not have _clientside ones (do when we're sure we don't need clientside sprites)
-LINK_ENTITY_TO_CLASS( env_sprite_clientside, CSprite );
-#endif
 
 void UTIL_ASW_EggGibs( const Vector &pos, int iFlags, int iEntIndex )
 {

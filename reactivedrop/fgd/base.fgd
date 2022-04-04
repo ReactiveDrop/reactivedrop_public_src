@@ -5477,6 +5477,23 @@
 	health(integer) : "Health" : 0 : "Number of points of damage to take before breaking.  0 means don't break."	
 ]
 
+@PointClass base(prop_dynamic_base) studioprop() = prop_dynamic_glow :
+	"A prop that can be placed in hierarchy and can play animations. It can also be configured to break when it takes enough damage.\n"+
+	"Works exactly like a prop_dynamic, but it can optionally have a custom glow around it."
+[
+	glowdist(float) : "Glow Dist" : "0" : "Game World Distance."
+	glowenabled(boolean) : "Glow Enable" : 1 : ""
+	glowcolor(color255) : "Glow Color (R G B)" : "255 255 255"
+	
+	// Inputs
+	input SetGlowEnabled(void) : "Starts the glow."
+	input SetGlowDisabled(void) : "Stops the glow."
+	input SetGlowColor(color255) : "Change the glow's color. Format: <Red 0-255> <Green 0-255> <Blue 0-255>"
+	input GlowColorRedValue(float) : "Sets the glow red color channel's value (0 - 255)."
+	input GlowColorGreenValue(float) : "Sets the glow green color channel's value (0 - 255)."
+	input GlowColorBlueValue(float) : "Sets the glow blue color channel's value (0 - 255)."
+]
+
 @BaseClass base(Targetname, Global, Angles, Studiomodel, BreakableProp, DXLevelChoice, BaseFadeProp) = BasePropPhysics
 [ 
 	spawnflags(flags) = 

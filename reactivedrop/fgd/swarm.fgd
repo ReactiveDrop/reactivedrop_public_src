@@ -2154,6 +2154,12 @@
 		0 : "Deny rotation"
 		1 : "Allow rotation"
 	]
+	
+	input SetTutorialStage(integer) : "reset the tutorial to a different spawn; only works on the tutorial level"
+	output OnDifficuty(integer) : "On mission start, 1=Easy, 2=Normal, 3=Hard, 4=Insane, 5=Brutal"
+	output OnOnslaught(integer) : "On mission start, 0=Normal, 1=Onslaught"
+	output OnFriendlyFire(integer) : "On mission start, 0=Normal, 1=Hardcore"
+	output OnChallenge(string) : "On mission start, the challenge filename or 0 for no challenge."
 ]
 
 @PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_stylincam : "Inputs for stylin cam."
@@ -3765,7 +3771,7 @@
     core(float) : "Core distortion radius" : "100" : "Radius of the core scanner distortion effect.  Within this core, distortion will be at full."
 ]
 
-@PointClass base(Targetname, Parentname, RenderFields,DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_clientside : 
+@PointClass base(RenderFields, DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_clientside : 
 	"An entity that controls the drawing of a sprite in the world, created clientside so cannot be parented to moving things and will use up no network bandwidth or CPU." 
 [
 	framerate(string) : "Framerate" : "10.0" : "Rate at which the sprite should animate, if at all."
