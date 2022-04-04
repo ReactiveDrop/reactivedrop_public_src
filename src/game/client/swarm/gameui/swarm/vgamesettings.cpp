@@ -230,9 +230,6 @@ void GameSettings::Activate()
 			if ( !UTIL_ASW_CommanderLevelAtLeast( NULL, 30 ) )
 			{
 				// beginner commanders can't create a lobby with insane or brutal difficulty but can change an existing one to those skill levels.
-				vgui::Panel *pInsane = flyout->FindChildByName( "BtnImpossible", true );
-				if ( pInsane )
-					pInsane->SetEnabled( false );
 				vgui::Panel *pBrutal = flyout->FindChildByName( "BtnImba", true );
 				if ( pBrutal )
 					pBrutal->SetEnabled( false );
@@ -426,14 +423,18 @@ void GameSettings::OnKeyCodePressed(KeyCode code)
 {
 	int iUserSlot = GetJoystickForCode( code );
 	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( iUserSlot );
-	
+
 	switch( GetBaseButtonCode( code ) )
 	{
 	case KEY_XBUTTON_B:
 		{
 			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_BACK );
 
-			if ( IsEditingExistingLobby() )
+			if ( m_hSubScreen.Get() )
+			{
+				m_hSubScreen->MarkForDeletion();
+			}
+			else if ( IsEditingExistingLobby() )
 			{
 				NavigateBack();
 			}
@@ -446,6 +447,15 @@ void GameSettings::OnKeyCodePressed(KeyCode code)
 				}
 				m_pSettings = NULL;
 				CBaseModPanel::GetSingleton().OpenFrontScreen();
+			}
+			break;
+		}
+
+	case KEY_XBUTTON_X:
+		{
+			if ( !m_hSubScreen.Get() )
+			{
+				OnCommand( "StartGame" );
 			}
 			break;
 		}
@@ -648,7 +658,6 @@ void GameSettings::OnCommand(const char *command)
 			if( !CUIGameData::Get()->SignedInToLive() )
 				SelectNetworkAccess( "lan", "public" );
 
-			char const *szNetwork = m_pSettings->GetString( "system/network", "offline" );
 			char const *szAccess = m_pSettings->GetString( "system/access", "public" );
 
 			if ( !Q_stricmp( "LIVE", szNetwork ) &&
@@ -1292,6 +1301,7 @@ void GameSettings::ShowChallengeSelect()
 		ReactiveDropChallengeSelection *pPanel = new ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection" );
 		pPanel->SetSelectedChallenge( m_pSettings->GetString( "game/challenge", "0" ) );
 		pPanel->MoveToFront();
+		pPanel->m_gplChallenges->RequestFocus();
 
 		m_hSubScreen = pPanel;
 	}	

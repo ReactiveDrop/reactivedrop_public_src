@@ -418,7 +418,7 @@ bool CBaseCombatCharacter::IsAbleToSee( const CBaseEntity *pEntity, FieldOfViewC
 
 	// Test this every time; it's cheap.
 	Vector vecEyePosition = EyePosition();
-	Vector vecTargetPosition = pEntity->WorldSpaceCenter();
+	const Vector vecTargetPosition = pEntity->WorldSpaceCenter();
 
 #ifdef GAME_DLL
 	Vector vecEyeToTarget;

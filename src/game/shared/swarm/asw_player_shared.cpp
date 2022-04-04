@@ -1069,8 +1069,11 @@ void CASW_Player::PlayerUse()
 
 				if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= flUseHoldTime )
 				{
-					pActivateEnt = m_hUseKeyDownEnt.Get();
-					nHoldType = ASW_USE_HOLD_RELEASE_FULL;
+					if ( pEnt == m_hUseKeyDownEnt.Get() )
+					{
+						pActivateEnt = m_hUseKeyDownEnt.Get();
+						nHoldType = ASW_USE_HOLD_RELEASE_FULL;
+					}
 				}
 				else if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= 0.2f )
 				{
@@ -1172,6 +1175,12 @@ void CASW_Player::PlayerUse()
 	}
 
 	if ( m_afButtonReleased & IN_USE )
+	{
+		m_hUseKeyDownEnt = NULL;
+		m_flUseKeyDownTime = 0.0f;
+	}
+	
+	if ( m_hUseKeyDownEnt.Get() && GetNumUseEntities() < 1 )
 	{
 		m_hUseKeyDownEnt = NULL;
 		m_flUseKeyDownTime = 0.0f;

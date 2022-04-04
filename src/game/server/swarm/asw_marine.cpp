@@ -4925,7 +4925,7 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 	// if this is an env_fire trying to burn us, ignore the grace period that the AllowedToIgnite function does
 	// we want env_fires to always ignite the marine immediately so they can be used as dangerous blockers in levels
 	CFire *pFire = dynamic_cast<CFire*>(pAttacker);
-	if ( AllowedToIgnite() || pFire || rd_marine_ignite_immediately.GetBool() )
+	if ( AllowedToIgnite() || ( pFire && !pFire->m_bPlacedByMarine ) || rd_marine_ignite_immediately.GetBool() )
 	{
 		if( IsOnFire() )
 			return;

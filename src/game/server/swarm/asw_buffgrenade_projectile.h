@@ -31,6 +31,7 @@ public:
 	virtual void OnBurnout( void );
 
 	virtual void StartAOE( CBaseEntity *pEntity );
+	virtual void DoAOE( CBaseEntity *pEntity );
 	virtual bool StopAOE( CBaseEntity *pEntity );
 
 	void LoseTimeForMoving();

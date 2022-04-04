@@ -452,7 +452,9 @@ public:
 	// Returns the aiment render origin + angles
 	virtual int				DrawModel( int flags, const RenderableInstance_t &instance );
 	virtual bool			ShouldDraw( void );
+#ifndef INFESTED_DLL
 	virtual bool			ShouldDrawPickup( void );
+#endif
 	virtual void			HandleInput( void ) { return; };
 	virtual void			OverrideMouseInput( float *x, float *y ) { return; };
 	virtual int				KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding ) { return 1; }
@@ -596,7 +598,9 @@ private:
 	COutputEvent			m_OnCacheInteraction;	// For awarding lambda cache achievements in HL2 on 360. See .FGD file for details 
 
 #else // Client .dll only
+#ifndef INFESTED_DLL
 	bool					m_bJustRestored;
+#endif
 
 	// Allow weapons resource to access m_hWeaponFileInfo directly
 	friend class			WeaponsResource;

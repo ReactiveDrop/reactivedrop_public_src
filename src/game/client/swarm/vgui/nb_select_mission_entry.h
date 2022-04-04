@@ -31,8 +31,6 @@ public:
 
 	int m_nMissionIndex;
 	char m_szMissionName[256];
-
-	float m_flZoom;
 };
 
 #endif // _INCLUDED_NB_SELECT_MISSION_ENTRY_H
