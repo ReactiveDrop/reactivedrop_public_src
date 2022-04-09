@@ -77,6 +77,8 @@ CASW_Weapon_Pistol::CASW_Weapon_Pistol()
 
 	// reactivedrop: this member var wasn't initialized
 	m_currentPistol = ASW_WEAPON_PISTOL_LEFT;
+
+	m_flSoonestPrimaryAttack = gpGlobals->curtime;
 }
 
 

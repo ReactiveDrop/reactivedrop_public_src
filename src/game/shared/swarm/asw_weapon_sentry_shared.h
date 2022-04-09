@@ -57,7 +57,9 @@ public:
 	virtual bool IsOffensiveWeapon() { return false; }
 
 protected:
+#ifndef CLIENT_DLL
 	int m_iSentryMunitionType;
+#endif
 	Vector m_vecValidSentrySpot;
 	QAngle m_angValidSentryFacing;
 	EHANDLE m_hValidSentryParent;
