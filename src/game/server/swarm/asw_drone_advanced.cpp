@@ -81,6 +81,8 @@ ConVar asw_new_drone("asw_new_drone", "1", FCVAR_CHEAT, "Set to 1 to use the new
 ConVar rd_drone_uber_knockdown( "rd_drone_uber_knockdown", "0", FCVAR_CHEAT, "Set to 1 to make uber drones knock down marines like shieldbugs do" );
 ConVar rd_drone_uber_knockdown_force( "rd_drone_uber_knockdown_force", "10", FCVAR_CHEAT, "Magnitude of knockdown force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
 ConVar rd_drone_uber_knockdown_lift( "rd_drone_uber_knockdown_lift", "10", FCVAR_CHEAT, "Upwards force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
+ConVar rd_pistols_uber_drone_additional_damage_health_percent("rd_pistols_uber_drone_additional_damage_health_percent", "12", FCVAR_CHEAT, "Special pistol bullets provide additional damage over heavy drones");
+ConVar rd_pistols_drone_dualshot_health_bound("rd_pistols_drone_dualshot_health_bound", "105", FCVAR_CHEAT, "Drones below this health guaranteed to die in two (or one) pistol shots");
 extern ConVar asw_debug_alien_damage;
 extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_alien_stunned_speed;
@@ -238,6 +240,8 @@ void CASW_Drone_Advanced::Spawn( void )
 	m_iDoorPos = 0;
 	m_bUsingSmallDoorBashHull = false;
 	SetPoseParameter( "idle_move", 0 );
+
+	m_bShouldDieOnPistolShot = false;
 }
 
 void CASW_Drone_Advanced::Precache( void )
@@ -746,6 +750,37 @@ bool CASW_Drone_Advanced::CanBePushedAway()
 
 	return BaseClass::CanBePushedAway();
 }
+
+int CASW_Drone_Advanced::OnTakeDamage_Alive( const CTakeDamageInfo& info )
+{
+	CBaseEntity* pWeapon = info.GetWeapon();
+	if ( pWeapon && pWeapon->Classify() == CLASS_ASW_PISTOL && m_iHealthBonus == 0 )
+	{
+		CTakeDamageInfo newInfo(info);
+		float damage = info.GetDamage();
+		if ( !ClassMatches("asw_drone_uber") )
+		{
+			if ( m_bShouldDieOnPistolShot )
+			{
+				damage = GetHealth();
+			}
+			else if ( GetHealth() <= rd_pistols_drone_dualshot_health_bound.GetInt() && GetHealth() > damage)
+			{
+				damage = GetHealth() / 2 + 1;
+				m_bShouldDieOnPistolShot = true;
+			}
+		}
+		else
+		{
+			damage += (int) ( GetHealth() * ( rd_pistols_uber_drone_additional_damage_health_percent.GetFloat() / 100 ) ); //less health - less bonus damage
+		}
+		newInfo.SetDamage(damage);
+		return BaseClass::OnTakeDamage_Alive(newInfo);
+	}
+
+	return BaseClass::OnTakeDamage_Alive(info);
+}
+
 
 // gib the drone if he's not already gibbed and below a certain amount of health (i.e. marines shot a burning body)
 int CASW_Drone_Advanced::OnTakeDamage_Dead( const CTakeDamageInfo &info )

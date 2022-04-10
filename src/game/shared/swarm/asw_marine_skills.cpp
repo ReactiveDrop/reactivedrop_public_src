@@ -134,7 +134,7 @@ ConVar asw_skill_accuracy_railgun_dmg_step("asw_skill_accuracy_railgun_dmg_step"
 ConVar asw_skill_accuracy_flamer_dmg_base("asw_skill_accuracy_flamer_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_flamer_dmg_step("asw_skill_accuracy_flamer_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_pistol_dmg_base("asw_skill_accuracy_pistol_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_pistol_dmg_step("asw_skill_accuracy_pistol_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_pistol_dmg_step("asw_skill_accuracy_pistol_dmg_step", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_deagle_dmg_base( "asw_skill_accuracy_deagle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_deagle_dmg_step( "asw_skill_accuracy_deagle_dmg_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_pdw_dmg_base("asw_skill_accuracy_pdw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
