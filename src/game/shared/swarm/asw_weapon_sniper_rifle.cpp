@@ -87,6 +87,10 @@ CASW_Weapon_Sniper_Rifle::CASW_Weapon_Sniper_Rifle()
 	m_pSniperDynamicLight = NULL;
 #endif
 */
+#ifdef CLIENT_DLL
+	m_flEjectBrassTime = 0.0f;
+	m_nEjectBrassCount = 0;
+#endif
 
 }
 
