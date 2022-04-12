@@ -2595,7 +2595,7 @@ enum eRip_Type
 // rip the marine into pieces
 void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 {
-	if (!rd_marine_explodes_into_gibs.GetInt())
+	if (!rd_marine_explodes_into_gibs.GetBool())
 		return;
 	short death_type = msg.ReadShort();
 
@@ -2617,7 +2617,7 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 	//VectorNormalize( dir );
 	//dir *= 360.0f;
 
-	const char* gibNames[] = {
+	static const char* gibNames[] = {
 		"models/swarm/marine/gibs/marine_gib_head.mdl",
 		"models/swarm/marine/gibs/marine_gib_chest.mdl",
 		"models/swarm/marine/gibs/marine_gib_rightarm.mdl",
@@ -2627,7 +2627,7 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 		"models/swarm/marine/gibs/marine_gib_leftleg.mdl"
 	};
 
-	const Vector velocity_bodypart[7] = {
+	static const Vector velocity_bodypart[7] = {
 		Vector(0, 0, 400),
 		Vector(0, 0, 400),
 		Vector(0, 1500, 400),
@@ -2639,7 +2639,7 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 
 	for (int i = 0; i < 7; ++i)
 	{
-		C_Gib* pGib = new C_Gib;
+		C_Gib* pGib = NULL;
 
 		switch (death_type)
 		{
@@ -2650,6 +2650,10 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 			pGib = C_Gib::CreateClientsideGib(gibNames[i], origin, velocity_explosion, RandomAngularImpulse(-500.0f, 500.0f), flLifetime);
 			break;
 		}
+
+		if ( !pGib )
+			continue;
+
 		pGib->SetSkin(skin_number);
 
 		// vq: blood decals
