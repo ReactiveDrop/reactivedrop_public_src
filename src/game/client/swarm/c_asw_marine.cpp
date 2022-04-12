@@ -2593,11 +2593,12 @@ enum eRip_Type
 };
 
 // rip the marine into pieces
-void __MsgFunc_ASWRipRagdoll(bf_read& msg)
+void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 {
-	if (!rd_marine_explodes_into_gibs.GetBool())
+	if ( !rd_marine_explodes_into_gibs.GetBool() )
 		return;
-	short death_type = msg.ReadShort();
+
+	eRip_Type death_type = eRip_Type( msg.ReadShort() );
 
 	Vector origin;
 	origin.x = msg.ReadFloat();
@@ -2609,15 +2610,12 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 	vecForce.y = msg.ReadFloat();
 	vecForce.z = msg.ReadFloat();
 
-	int skin_number = static_cast<int> (msg.ReadShort());
+	int skin_number = msg.ReadShort();
 	const float flLifetime = 10.0f;
 	const Vector velocity_explosion = vecForce / 35.0f;
 
-	//Vector dir = vecForce;
-	//VectorNormalize( dir );
-	//dir *= 360.0f;
-
-	static const char* gibNames[] = {
+	static const char *gibNames[7] =
+	{
 		"models/swarm/marine/gibs/marine_gib_head.mdl",
 		"models/swarm/marine/gibs/marine_gib_chest.mdl",
 		"models/swarm/marine/gibs/marine_gib_rightarm.mdl",
@@ -2627,64 +2625,63 @@ void __MsgFunc_ASWRipRagdoll(bf_read& msg)
 		"models/swarm/marine/gibs/marine_gib_leftleg.mdl"
 	};
 
-	static const Vector velocity_bodypart[7] = {
-		Vector(0, 0, 400),
-		Vector(0, 0, 400),
-		Vector(0, 1500, 400),
-		Vector(0, -1500, 400),
-		Vector(0, 0, 400),
-		Vector(0, 1500, 400),
-		Vector(0, -1500, 400)
+	static const Vector velocity_bodypart[7] =
+	{
+		Vector( 0, 0, 400 ),
+		Vector( 0, 0, 400 ),
+		Vector( 0, 1500, 400 ),
+		Vector( 0, -1500, 400 ),
+		Vector( 0, 0, 400 ),
+		Vector( 0, 1500, 400 ),
+		Vector( 0, -1500, 400 )
 	};
 
-	for (int i = 0; i < 7; ++i)
+	for ( int i = 0; i < 7; ++i )
 	{
-		C_Gib* pGib = NULL;
+		C_Gib *pGib = NULL;
 
-		switch (death_type)
+		switch ( death_type )
 		{
 		case RIP_PARASITE:
-			pGib = C_Gib::CreateClientsideGib(gibNames[i], origin, velocity_bodypart[i], RandomAngularImpulse(-500.0f, 500.0f), flLifetime);
+			pGib = C_Gib::CreateClientsideGib( gibNames[i], origin, velocity_bodypart[i], RandomAngularImpulse( -500.0f, 500.0f ), flLifetime );
 			break;
 		case RIP_EXPLOSION:
-			pGib = C_Gib::CreateClientsideGib(gibNames[i], origin, velocity_explosion, RandomAngularImpulse(-500.0f, 500.0f), flLifetime);
+			pGib = C_Gib::CreateClientsideGib( gibNames[i], origin, velocity_explosion, RandomAngularImpulse( -500.0f, 500.0f ), flLifetime );
 			break;
 		}
 
 		if ( !pGib )
 			continue;
 
-		pGib->SetSkin(skin_number);
+		pGib->SetSkin( skin_number );
 
 		// vq: blood decals
-		trace_t	ptr;
-		ptr.endpos = origin;
-		ptr.endpos[2] += 8.0f;
-		Vector vecDir(0, 0, -1.0f);
-		trace_t Bloodtr;
-		Vector vecTraceDir;
-		int k;
+		Vector traceStart = origin;
+		traceStart.z += 8.0f;
 
-		for (k = 0; k < 4; k++)
+		Vector vecDir( 0, 0, -1.0f );
+
+		for ( int k = 0; k < 4; k++ )
 		{
-			vecTraceDir = vecDir;
+			Vector vecTraceDir = vecDir;
 
-			vecTraceDir.x += random->RandomFloat(-0.8f, 0.8f);
-			vecTraceDir.y += random->RandomFloat(-0.8f, 0.8f);
-			vecTraceDir.z += random->RandomFloat(-0.8f, 0.8f);
+			vecTraceDir.x += random->RandomFloat( -0.8f, 0.8f );
+			vecTraceDir.y += random->RandomFloat( -0.8f, 0.8f );
+			vecTraceDir.z += random->RandomFloat( -0.8f, 0.8f );
 
-			UTIL_TraceLine(ptr.endpos, ptr.endpos + vecTraceDir * 172, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &Bloodtr);
+			trace_t tr;
+			UTIL_TraceLine( traceStart, traceStart + vecTraceDir * 172, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
 
-			if (Bloodtr.fraction != 1.0)
+			if ( tr.fraction != 1.0 )
 			{
-				UTIL_BloodDecalTrace(&Bloodtr, BLOOD_COLOR_RED);
+				UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
 			}
 		}
 	}
 
-	UTIL_ASW_BloodDrips(origin, Vector(0, 0, 0), 0, 10);
+	UTIL_ASW_BloodDrips( origin, vec3_origin, BLOOD_COLOR_RED, 10 );
 }
-USER_MESSAGE_REGISTER(ASWRipRagdoll);
+USER_MESSAGE_REGISTER( ASWRipRagdoll );
 
 C_ASW_Marine* C_ASW_Marine::GetLocalMarine()
 {
