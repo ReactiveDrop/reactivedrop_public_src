@@ -86,7 +86,6 @@
 #include "asw_triggers.h"
 #include "triggers.h"
 #include "EnvLaser.h"
-#include "gib.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -3928,17 +3927,10 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 	filter.AddAllPlayers();
 
 	UserMessageBegin(filter, "ASWRipRagdoll");
-	WRITE_SHORT(death_type);
-
-	WRITE_FLOAT(origin.x);
-	WRITE_FLOAT(origin.y);
-	WRITE_FLOAT(origin.z);
-
-	WRITE_FLOAT(force.x);
-	WRITE_FLOAT(force.y);
-	WRITE_FLOAT(force.z);
-
-	WRITE_SHORT(skin_number);
+		WRITE_BYTE(death_type);
+		WRITE_VEC3COORD( origin );
+		WRITE_VEC3COORD( force );
+		WRITE_BYTE( pProfile->m_ProfileIndex );
 	MessageEnd();
 
 	AddEffects( EF_NODRAW ); // make the model invisible.
