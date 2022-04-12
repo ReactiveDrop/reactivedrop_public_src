@@ -12,6 +12,8 @@
 #include "asw_fx_shared.h"
 #include "eventlist.h"
 #include "decals.h"
+#include "c_user_message_register.h"
+#include "c_gib.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "flashlighteffect.h"
 #include "c_asw_door_area.h"
@@ -83,6 +85,7 @@ ConVar rd_team_color_beta( "rd_team_color_beta", "20 100 255", FCVAR_HIDDEN );
 ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
 ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FCVAR_ARCHIVE, "use a prediction error resolution strategy that handles moving platforms better", true, 0, true, 1 );
+ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -2582,6 +2585,102 @@ C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
 	}
 	return pRagdoll;
 }
+
+enum eRip_Type
+{
+	RIP_PARASITE = 0,
+	RIP_EXPLOSION
+};
+
+// rip the marine into pieces
+void __MsgFunc_ASWRipRagdoll(bf_read& msg)
+{
+	if (!rd_marine_explodes_into_gibs.GetInt())
+		return;
+	short death_type = msg.ReadShort();
+
+	Vector origin;
+	origin.x = msg.ReadFloat();
+	origin.y = msg.ReadFloat();
+	origin.z = msg.ReadFloat();
+
+	Vector vecForce;
+	vecForce.x = msg.ReadFloat();
+	vecForce.y = msg.ReadFloat();
+	vecForce.z = msg.ReadFloat();
+
+	int skin_number = static_cast<int> (msg.ReadShort());
+	const float flLifetime = 10.0f;
+	const Vector velocity_explosion = vecForce / 35.0f;
+
+	//Vector dir = vecForce;
+	//VectorNormalize( dir );
+	//dir *= 360.0f;
+
+	const char* gibNames[] = {
+		"models/swarm/marine/gibs/marine_gib_head.mdl",
+		"models/swarm/marine/gibs/marine_gib_chest.mdl",
+		"models/swarm/marine/gibs/marine_gib_rightarm.mdl",
+		"models/swarm/marine/gibs/marine_gib_leftarm.mdl",
+		"models/swarm/marine/gibs/marine_gib_pelvis.mdl",
+		"models/swarm/marine/gibs/marine_gib_rightleg.mdl",
+		"models/swarm/marine/gibs/marine_gib_leftleg.mdl"
+	};
+
+	const Vector velocity_bodypart[7] = {
+		Vector(0, 0, 400),
+		Vector(0, 0, 400),
+		Vector(0, 1500, 400),
+		Vector(0, -1500, 400),
+		Vector(0, 0, 400),
+		Vector(0, 1500, 400),
+		Vector(0, -1500, 400)
+	};
+
+	for (int i = 0; i < 7; ++i)
+	{
+		C_Gib* pGib = new C_Gib;
+
+		switch (death_type)
+		{
+		case RIP_PARASITE:
+			pGib = C_Gib::CreateClientsideGib(gibNames[i], origin, velocity_bodypart[i], RandomAngularImpulse(-500.0f, 500.0f), flLifetime);
+			break;
+		case RIP_EXPLOSION:
+			pGib = C_Gib::CreateClientsideGib(gibNames[i], origin, velocity_explosion, RandomAngularImpulse(-500.0f, 500.0f), flLifetime);
+			break;
+		}
+		pGib->SetSkin(skin_number);
+
+		// vq: blood decals
+		trace_t	ptr;
+		ptr.endpos = origin;
+		ptr.endpos[2] += 8.0f;
+		Vector vecDir(0, 0, -1.0f);
+		trace_t Bloodtr;
+		Vector vecTraceDir;
+		int k;
+
+		for (k = 0; k < 4; k++)
+		{
+			vecTraceDir = vecDir;
+
+			vecTraceDir.x += random->RandomFloat(-0.8f, 0.8f);
+			vecTraceDir.y += random->RandomFloat(-0.8f, 0.8f);
+			vecTraceDir.z += random->RandomFloat(-0.8f, 0.8f);
+
+			UTIL_TraceLine(ptr.endpos, ptr.endpos + vecTraceDir * 172, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &Bloodtr);
+
+			if (Bloodtr.fraction != 1.0)
+			{
+				UTIL_BloodDecalTrace(&Bloodtr, BLOOD_COLOR_RED);
+			}
+		}
+	}
+
+	UTIL_ASW_BloodDrips(origin, Vector(0, 0, 0), 0, 10);
+}
+USER_MESSAGE_REGISTER(ASWRipRagdoll);
 
 C_ASW_Marine* C_ASW_Marine::GetLocalMarine()
 {
