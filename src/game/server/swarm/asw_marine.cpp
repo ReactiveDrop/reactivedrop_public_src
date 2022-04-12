@@ -86,6 +86,7 @@
 #include "asw_triggers.h"
 #include "triggers.h"
 #include "EnvLaser.h"
+#include "gib.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -456,6 +457,12 @@ extern ConVar rd_revive_health;
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
+
+enum eRip_Type
+{
+	RIP_PARASITE = 0,
+	RIP_EXPLOSION
+};
 
 void CASW_Marine::DoAnimationEvent( PlayerAnimEvent_t event )
 {
@@ -872,7 +879,16 @@ void CASW_Marine::Precache()
 	
 	PrecacheSpeech();
 	PrecacheModel("models/swarm/shouldercone/shouldercone.mdl");
-	PrecacheModel("models/swarm/shouldercone/lasersight.mdl");	
+	PrecacheModel("models/swarm/shouldercone/lasersight.mdl");
+
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_chest.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_head.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftarm.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightarm.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftleg.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightleg.mdl");
+	PrecacheModel("models/swarm/marine/gibs/marine_gib_pelvis.mdl");
+
 	PrecacheModel( "cable/cable.vmt" );
 	PrecacheScriptSound( "ASW.MarineMeleeAttack" );
 	PrecacheScriptSound( "ASW.MarineMeleeAttackFP" );
@@ -3784,7 +3800,7 @@ void CASW_Marine::ScriptCureInfestation()
 // if we died from infestation, then gib
 bool CASW_Marine::ShouldGib( const CTakeDamageInfo &info )
 {
-	if (info.GetDamageType() & DMG_INFEST)
+	if (info.GetDamageType() & DMG_INFEST || info.GetDamageType() & DMG_BLAST)
 		return true;
 
 	return BaseClass::ShouldGib(info);
@@ -3805,9 +3821,13 @@ bool CASW_Marine::CorpseGib( const CTakeDamageInfo &info )
 	return true;
 }
 
-// if we gibbed from infestation damage, spawn some parasites
+// called when marine dies from parasites or from an explosion
 bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 {
+	Vector force = Vector(0, 0, 0);
+	Vector origin = GetAbsOrigin();
+	short death_type = RIP_PARASITE;
+
 	if ( info.GetDamageType() & DMG_INFEST )
 	{
 		if ( asw_debug_marine_damage.GetBool() )
@@ -3895,6 +3915,31 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 			}
 		}
 	}
+	else if (info.GetDamageType() & DMG_BLAST)
+	{
+		death_type = RIP_EXPLOSION;
+		force = CalcDeathForceVector(info);
+	}
+
+	CASW_Marine_Profile* pProfile = GetMarineProfile();
+	short skin_number = pProfile->GetSkinNum();
+
+	CRecipientFilter filter;
+	filter.AddAllPlayers();
+
+	UserMessageBegin(filter, "ASWRipRagdoll");
+	WRITE_SHORT(death_type);
+
+	WRITE_FLOAT(origin.x);
+	WRITE_FLOAT(origin.y);
+	WRITE_FLOAT(origin.z);
+
+	WRITE_FLOAT(force.x);
+	WRITE_FLOAT(force.y);
+	WRITE_FLOAT(force.z);
+
+	WRITE_SHORT(skin_number);
+	MessageEnd();
 
 	AddEffects( EF_NODRAW ); // make the model invisible.
 	SetSolid( SOLID_NONE );
