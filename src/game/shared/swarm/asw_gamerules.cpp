@@ -6706,7 +6706,7 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
 	{				
-		if ( GetCampaignInfo() && GetCampaignSave() && !GetCampaignSave()->UsingFixedSkillPoints() )
+		if ( GetCampaignInfo() && GetCampaignSave() )
 		{
 			int iCurrentLoc = GetCampaignSave()->m_iCurrentPosition;
 			CASW_Campaign_Info::CASW_Campaign_Mission_t* mission = GetCampaignInfo()->GetMission(iCurrentLoc);
