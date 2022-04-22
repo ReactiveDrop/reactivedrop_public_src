@@ -926,7 +926,7 @@ static void ClearCaches()
 	// prevent snd_restart to be called during game launch be call it when loading\unloading add-ons
 	static bool bRestartSoundEngine = false;
 	if ( bRestartSoundEngine )
-		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
+		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; rd_loc_reload; snd_updateaudiocache; snd_restart" );
 	bRestartSoundEngine = true;
 	//
 #endif

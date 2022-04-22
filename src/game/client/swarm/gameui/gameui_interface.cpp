@@ -1066,3 +1066,8 @@ void CGameUI::OnDemoTimeout()
 }
 #endif
 
+CON_COMMAND_F( rd_loc_reload, "reload localization files", FCVAR_HIDDEN )
+{
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true );
+}

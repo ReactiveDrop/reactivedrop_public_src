@@ -63,6 +63,8 @@
 #endif
 #include "shake.h"
 #include "asw_util_shared.h"
+#include "tier2/fileutils.h"
+#include "vpklib/packedstore.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -73,6 +75,7 @@ ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_R
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
 #else
+ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_NONE, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
 extern int g_asw_iGUIWindowsOpen;
 #endif
 
@@ -1473,7 +1476,115 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 	return iLevel <= iActualLevel;
 }
 
+static void LoadKeyValues( KeyValues *pKV, const char *fileName, const char *szPath, CUtlBuffer & buf, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData )
+{
+	CUtlBuffer *pBuf = &buf;
+	CUtlBuffer buf2( 0, 0, CUtlBuffer::TEXT_BUFFER );
+
+	buf.EnsureCapacity( buf.TellPut() + 2 );
+	*(char *)buf.PeekPut( 0 ) = 0;
+	*(char *)buf.PeekPut( 1 ) = 0;
+
+	const wchar_t *pwszBuf = (const wchar_t *)buf.Base();
+	if ( buf.TellPut() >= sizeof( wchar_t ) && *pwszBuf == 0xFEFF )
+	{
+		// File starts with a byte order mark. Convert it from UTF-16LE to UTF-8.
+
+		// We don't have a function in this version of the Source Engine to tell us how
+		// many bytes of UTF8 data there are in a UTF16 string, so just assume the worst.
+		buf2.EnsureCapacity( buf.TellPut() * 2 );
+
+		char *pszBuf = (char *)buf2.Base();
+
+		// This function is supposed to return the number of bytes written, but it doesn't.
+		V_UnicodeToUTF8( pwszBuf + 1, pszBuf, buf2.Size() );
+		buf2.SeekPut( CUtlBuffer::SEEK_HEAD, V_strlen( pszBuf ) );
+
+		pBuf = &buf2;
+	}
+
+	CUtlString fullFileName = CUtlString::PathJoin( szPath, fileName );
+
+	pKV->Clear();
+	if ( pKV->LoadFromBuffer( fullFileName.Get(), *pBuf, g_pFullFileSystem ) )
+	{
+		callback( szPath, pKV, pUserData );
+	}
+}
+
+void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData )
+{
+	KeyValues::AutoDelete pKV( pKVName );
+	pKV->UsesEscapeSequences( true );
+
+	{
+		CUtlVector<CUtlString> paths;
+		GetSearchPath( paths, pPathID );
+
+		FOR_EACH_VEC( paths, i )
+		{
+			CUtlString path = CUtlString::PathJoin( paths[i].Get(), fileName );
+
+			CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
+			if ( !g_pFullFileSystem->ReadFile( path.Get(), NULL, buf ) )
+			{
+				continue;
+			}
+
+			LoadKeyValues( pKV, fileName, paths[i].Get(), buf, callback, pUserData );
+		}
+	}
+
+	{
+		CUtlVector<CUtlString> vpks;
+		g_pFullFileSystem->GetVPKFileNames( vpks );
+
+		FOR_EACH_VEC( vpks, i )
+		{
+			CPackedStore vpk( vpks[i].Get(), g_pFullFileSystem );
+
+			if ( CPackedStoreFileHandle hFile = vpk.OpenFile( fileName ) )
+			{
+				CUtlBuffer buf( 0, hFile.m_nFileSize + 2, CUtlBuffer::TEXT_BUFFER );
+				hFile.Read( buf.Base(), buf.Size() );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hFile.m_nFileSize );
+
+				LoadKeyValues( pKV, fileName, vpks[i].Get(), buf, callback, pUserData );
+			}
+		}
+	}
+}
+
 #ifndef GAME_DLL
+static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
+{
+	bool *bAny = static_cast<bool *>( pUserData );
+
+	KeyValues *pTokens = pKV->FindKey( "Tokens" );
+	if ( !pTokens )
+	{
+		return;
+	}
+
+	FOR_EACH_VALUE( pTokens, pValue )
+	{
+		const char *pszKey = pValue->GetName();
+		if ( StringHasPrefix( pszKey, "[english]" ) )
+		{
+			continue;
+		}
+
+		if ( *pszKey == '#' )
+		{
+			pszKey++;
+		}
+
+		g_pVGuiLocalize->AddString( pszKey, const_cast<wchar_t *>( pValue->GetWString() ), NULL );
+
+		*bAny = true;
+	}
+}
+
 bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths )
 {
 	char szPath[MAX_PATH];
@@ -1496,6 +1607,15 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 	else
 	{
 		strcpy_s( szPath, fileName );
+	}
+
+	if ( rd_load_all_localization_files.GetBool() )
+	{
+		bool bAny = false;
+
+		UTIL_RD_LoadAllKeyValues( szPath, pPathID, "lang", &AddLocalizeFileCallback, &bAny );
+
+		return bAny;
 	}
 
 	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
