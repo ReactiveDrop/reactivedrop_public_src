@@ -52,6 +52,7 @@ public:
 	{
 		PrimaryAttack();
 	}
+	virtual bool SecondaryAttackEqualsPrimary() { return true; }
 
 	virtual float GetWeaponDamage();
 	virtual const float GetAutoAimAmount() { return 0.26f; }
