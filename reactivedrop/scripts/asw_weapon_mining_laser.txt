@@ -24,7 +24,7 @@ WeaponData
 
 	// asw properties
 	"reload_time"			"2.2"
-	"base_damage"			"50"
+	"base_damage"			"52"
 	"fire_rate"				"0.5"
 	"equipicon"			"swarm/EquipIcons/EquipMiningLaser"
 	"equiplongname"			"#asw_weaponl_mining_laser"

@@ -112,22 +112,24 @@ int CASW_Prop_Laserable::OnTakeDamage(const CTakeDamageInfo &info)
 	}
 	else if (info.GetDamageType() & DMG_BULLET)
 	{
-		CBaseEntity* pAttacker = info.GetAttacker();
-		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		CBaseEntity* pWeapon = info.GetWeapon();
+		if ( pWeapon )
 		{
-			CASW_Weapon* pWeapon = assert_cast<CASW_Marine*>(pAttacker)->GetActiveASWWeapon();
-			if (pWeapon)
+			if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
 			{
-				if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
+				CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>(pWeapon);
+				if ( pSniper->IsZoomed() ) //zoomed sniper bonus damage does not affect laserables
 				{
-					CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>(pWeapon);
-					if ( pSniper->IsZoomed() ) //zoomed sniper bonus damage does not affect laserables
-					{
-						float damage = info.GetDamage();
-						damage -= pSniper->GetZoomedDamageBonus();
-						newInfo.SetDamage(damage);
-					}
+					float damage = info.GetDamage();
+					damage -= pSniper->GetZoomedDamageBonus();
+					newInfo.SetDamage(damage);
 				}
+			}
+			else if ( pWeapon->Classify() == CLASS_ASW_MINING_LASER )
+			{
+				float damage = info.GetDamage();
+				damage -= 2;
+				newInfo.SetDamage(damage);
 			}
 		}
 	}
