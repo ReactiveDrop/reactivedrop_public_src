@@ -318,11 +318,7 @@ void CNPC_Antlion::Spawn( void )
 
 	m_NPCState	= NPC_STATE_NONE;
 
-#if HL2_EPISODIC
-	m_iHealth = ( IsWorker() ) ? sk_antlion_worker_health.GetFloat() : sk_antlion_health.GetFloat();
-#else
-	m_iHealth	= sk_antlion_health.GetFloat();
-#endif // _DEBUG
+	SetHealthByDifficultyLevel();
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -390,9 +386,9 @@ void CNPC_Antlion::SetHealthByDifficultyLevel()
 	iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( iHealth ) );
 	extern ConVar asw_debug_alien_damage;
 	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting antlion's initial health to %d\n", iHealth );
-	SetHealth( iHealth );
-	SetMaxHealth( iHealth );
+		Msg( "Setting antlion's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 //-----------------------------------------------------------------------------
