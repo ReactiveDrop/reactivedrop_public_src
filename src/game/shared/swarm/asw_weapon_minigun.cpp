@@ -25,6 +25,7 @@
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
 #include "asw_deathmatch_mode_light.h"
+#include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -33,6 +34,8 @@
 ConVar asw_minigun_spin_rate_threshold( "asw_minigun_spin_rate_threshold", "0.75f", FCVAR_CHEAT | FCVAR_REPLICATED, "Minimum barrel spin rate before minigun will fire" );
 ConVar asw_minigun_spin_up_rate( "asw_minigun_spin_up_rate", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Spin up speed of minigun" );
 ConVar asw_minigun_spin_down_rate( "asw_minigun_spin_down_rate", "0.4", FCVAR_CHEAT | FCVAR_REPLICATED, "Spin down speed of minigun" );
+ConVar rd_minigun_additional_piercing_chance("rd_minigun_additional_piercing_chance", "0.2", FCVAR_CHEAT | FCVAR_REPLICATED, "Additional piercing chance after rd_minigun_additional_piercing_delay of continuous shooting");
+ConVar rd_minigun_additional_piercing_delay("rd_minigun_additional_piercing_delay", "3.0", FCVAR_CHEAT | FCVAR_REPLICATED, "After this time piercing chance increased");
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar asw_weapon_force_scale;
 extern ConVar asw_DebugAutoAim;
@@ -111,6 +114,7 @@ CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 	m_flLastMuzzleFlashTime = 0;
 	m_bShouldUpdateActivityClient = false;
 #endif
+	m_flTimeFireStarted = 0;
 }
 
 bool CASW_Weapon_Minigun::Holster( CBaseCombatWeapon *pSwitchingTo )
@@ -268,7 +272,11 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 
 	// fire extra shots per ammo from the minigun, so we get a nice solid spray of bullets
 	//info.m_iShots = 2;
-	pMarine->FireBullets( info );
+
+	if ( !m_flTimeFireStarted )
+		m_flTimeFireStarted = gpGlobals->curtime;
+
+	FireBullets(pMarine, info);
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
@@ -278,6 +286,37 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 		pMarine->OnWeaponFired( this, info.m_iShots );
 	}
 #endif
+}
+
+void CASW_Weapon_Minigun::FireBullets( CASW_Marine* pMarine, const FireBulletsInfo_t& info )
+{
+	float fPiercingChance = 0;
+	CASW_Marine_Profile* pProfile = pMarine->GetMarineProfile();
+	if ( pProfile && pProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
+		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_PIERCING );
+
+	if ( gpGlobals->curtime - m_flTimeFireStarted > rd_minigun_additional_piercing_delay.GetFloat() )
+	{
+		float addChance = rd_minigun_additional_piercing_chance.GetFloat();
+		addChance = MAX(0, addChance);
+		fPiercingChance += addChance;
+	}
+
+	if ( fPiercingChance > 0 )
+	{
+		pMarine->FirePenetratingBullets( info, 1, fPiercingChance, 0 );
+	}
+	else
+	{
+		pMarine->FireRegularBullets( info );
+	}
+}
+
+void CASW_Weapon_Minigun::OnStoppedFiring()
+{
+	BaseClass::OnStoppedFiring();
+
+	m_flTimeFireStarted = 0.0f;
 }
 
 void CASW_Weapon_Minigun::ItemPostFrame( void )
