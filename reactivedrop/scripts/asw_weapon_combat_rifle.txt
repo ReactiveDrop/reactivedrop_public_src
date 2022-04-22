@@ -24,7 +24,7 @@ WeaponData
 			
 	// asw properties
 	"reload_time"			"2.0"
-	"base_damage"			"5"
+	"base_damage"			"6"
 	"fire_rate"				"0.07"
 	//"num_pellets"			"7"
 	"equipicon"				"swarm/EquipIcons/equipcombatrifle"
