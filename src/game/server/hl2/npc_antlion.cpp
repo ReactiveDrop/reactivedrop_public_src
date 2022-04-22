@@ -61,7 +61,7 @@ ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10", FCVAR_CHEA
 #define ANTLION_WORKER_BURST_IS_POISONOUS() (true)
 
 ConVar  sk_antlion_worker_burst_damage( "sk_antlion_worker_burst_damage", "50", FCVAR_CHEAT, "How much damage is inflicted by an antlion worker's death explosion." );
-ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "60", FCVAR_CHEAT, "Hitpoints of an antlion worker. If 0, will use base antlion hitpoints."   );
+ConVar	sk_antlion_worker_health( "sk_antlion_worker_health", "24", FCVAR_CHEAT, "Hitpoints of an antlion worker." );
 ConVar  sk_antlion_worker_spit_speed( "sk_antlion_worker_spit_speed", "600", FCVAR_CHEAT, "Speed at which an antlion spit grenade travels." );
 
 // This must agree with the AntlionWorkerBurstRadius() function!
@@ -386,7 +386,8 @@ void CNPC_Antlion::Spawn( void )
 
 void CNPC_Antlion::SetHealthByDifficultyLevel()
 {
-	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_antlion_health.GetInt() ) );
+	int iHealth = ( IsWorker() ) ? sk_antlion_worker_health.GetFloat() : sk_antlion_health.GetFloat();
+	iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( iHealth ) );
 	extern ConVar asw_debug_alien_damage;
 	if ( asw_debug_alien_damage.GetBool() )
 		Msg( "Setting antlion's initial health to %d\n", iHealth );
