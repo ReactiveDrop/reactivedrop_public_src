@@ -24,7 +24,7 @@ WeaponData
 
 	// asw properties
 	"reload_time"			"2.0"
-	"base_damage"			"7"
+	"base_damage"			"8"
 	"fire_rate"				"0.04"
 	"equipicon"			"swarm/EquipIcons/EquipMiniGun"
 	"equiplongname"			"#asw_weaponl_minigun"
