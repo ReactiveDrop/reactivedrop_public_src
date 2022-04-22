@@ -31,7 +31,7 @@ END_DATADESC()
 int AE_SHAMAN_SPRAY_START;
 int AE_SHAMAN_SPRAY_END;
 
-ConVar asw_shaman_health( "asw_shaman_health", "59.8", FCVAR_CHEAT );
+ConVar asw_shaman_health( "asw_shaman_health", "59", FCVAR_CHEAT );
 ConVar rd_shaman_healing_speed( "rd_shaman_healing_speed", "0", FCVAR_CHEAT, "Number of health shaman gives per second. 0 means heal ~40% of maxhealth in 1 second" );
 extern ConVar asw_debug_alien_damage;
 
