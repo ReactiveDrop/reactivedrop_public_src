@@ -32,6 +32,7 @@ public:
 
 	virtual void PrimaryAttack( void );
 	virtual void SecondaryAttack() { PrimaryAttack(); }
+	virtual bool SecondaryAttackEqualsPrimary() { return true; }
 	virtual bool SecondaryAttackUsesPrimaryAmmo() { return true; }
     virtual void    Precache( void );
 
