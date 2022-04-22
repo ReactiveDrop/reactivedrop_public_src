@@ -619,8 +619,18 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		return;
 	}
 
-	// Loop through and clear achievements if earned before 2019.01.01, to account for previously removed achievement IDs 1517_4 through 1517_11.
-	const char *pAchievementNames[3] = { "RD_GAS_GRENADE_KILLS", "RD_HEAVY_RIFLE_KILLS", "RD_MEDICAL_SMG_KILLS" };
+	// Loop through and clear achievements if earned before 2019.01.01, to account for previously removed achievement IDs 1517/4 through 1517/11.
+	const char *pAchievementNames[] =
+	{
+		"RD_GAS_GRENADE_KILLS", // 1517/4
+		"RD_HEAVY_RIFLE_KILLS", // 1517/5
+		"RD_MEDICAL_SMG_KILLS", // 1517/6
+		"RD_EASY_CAMPAIGN_NH", // 1517/7
+		"RD_NORMAL_CAMPAIGN_NH", // 1517/8
+		"RD_HARD_CAMPAIGN_NH", // 1517/9
+		"RD_INSANE_CAMPAIGN_NH", // 1517/10
+		"RD_IMBA_CAMPAIGN_NH", // 1517/11
+	};
 	for ( int i = 0; i < ARRAYSIZE( pAchievementNames ); i++ )
 	{
 		bool achievementEarned;

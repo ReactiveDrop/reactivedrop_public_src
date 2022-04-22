@@ -893,6 +893,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc ) : m_Requirement( np
 	m_bFreezable = npc.m_bFreezable;
 	m_bTeslable = npc.m_bTeslable;
 	m_bFlinches = npc.m_bFlinches;
+	m_bGrenadeReflector = npc.m_bGrenadeReflector;
 	m_iszVScript = npc.m_iszVScript;
 	m_flSpawnChance = npc.m_flSpawnChance;
 }

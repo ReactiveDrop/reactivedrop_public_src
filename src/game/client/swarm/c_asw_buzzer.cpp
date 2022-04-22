@@ -35,6 +35,8 @@ C_ASW_Buzzer::C_ASW_Buzzer()
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );
+
+	m_pEngineSound1 = NULL;
 }
 
 C_ASW_Buzzer::~C_ASW_Buzzer()

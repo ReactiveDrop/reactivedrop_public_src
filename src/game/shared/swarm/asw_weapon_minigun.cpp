@@ -107,6 +107,7 @@ void CASW_Weapon_Minigun::SecondaryAttack( void )
 CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 {
 #ifdef CLIENT_DLL
+	m_pBarrelSpinSound = NULL;
 	m_flLastMuzzleFlashTime = 0;
 	m_bShouldUpdateActivityClient = false;
 #endif

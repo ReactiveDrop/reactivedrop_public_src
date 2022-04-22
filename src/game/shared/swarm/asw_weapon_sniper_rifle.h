@@ -78,7 +78,6 @@ public:
 protected:
 	CNetworkVar( float, m_fSlowTime );	// marine moves slow until this moment
 	CNetworkVar( bool, m_bZoomed );
-	float	m_flSoonestPrimaryAttack;
 };
 
 

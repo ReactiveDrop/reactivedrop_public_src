@@ -896,7 +896,7 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 		if ( pGround && pGround->IsAlienClassType() )
 		{
 			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
-			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && (pAlien->Classify() != CLASS_ASW_DRONE || pAlien->GetTask()->iTask != TASK_UNBURROW) )
+			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != TASK_UNBURROW ) ) )
 			{
 				CTakeDamageInfo info(pAlien, pAlien, 15, DMG_SLASH);
 				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();

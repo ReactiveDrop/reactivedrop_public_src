@@ -62,6 +62,7 @@ CASW_Gas_Grenade_Projectile::CASW_Gas_Grenade_Projectile()
 	m_flNextDamage	= gpGlobals->curtime;
 	m_lifeState		= LIFE_ALIVE;
 	m_iHealth		= 100;
+	//m_pRadSound	= NULL;
 }
 
 CASW_Gas_Grenade_Projectile::~CASW_Gas_Grenade_Projectile( void )
