@@ -1,0 +1,51 @@
+// Alien Swarm Mining Laser
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_mining_laser"
+	"viewmodel"			"models/weapons/mininglaser/mininglaser.mdl"
+	"playermodel"			"models/weapons/mininglaser/mininglaser.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"50"
+	"default_clip"			"50"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_ML"
+	"secondary_ammo"		"None"
+
+	"weight"			"15"
+	"item_flags"			"0"
+
+	// asw properties
+	"reload_time"			"2.2"
+	"base_damage"			"50"
+	"fire_rate"				"0.5"
+	"equipicon"			"swarm/EquipIcons/EquipMiningLaser"
+	"equiplongname"			"#asw_weaponl_mining_laser"
+	"equipdescription1"		"#asw_wdesc_mlaser"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"reload"		"ASW_MiningLaser.ReloadA"		
+		
+		"special3"		"ASW_Weapon.Reload3"
+
+		"reload_npc"		"ASW_MiningLaser.ReloadA"
+	}
+}
