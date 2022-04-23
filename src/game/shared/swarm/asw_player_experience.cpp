@@ -641,6 +641,53 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 			steamapicontext->SteamUserStats()->ClearAchievement( pAchievementNames[i] );
 	}
 
+	// These achievements had inconsistent state at some point.
+	const char *pAchievementsInconsistent[] =
+	{
+		"RD_EASY_CAMPAIGN_NH",
+		"RD_NORMAL_CAMPAIGN_NH",
+		"RD_HARD_CAMPAIGN_NH",
+		"RD_INSANE_CAMPAIGN_NH",
+		"RD_IMBA_CAMPAIGN_NH",
+	};
+	for ( int i = 0; i < ARRAYSIZE( pAchievementsInconsistent ); i++ )
+	{
+		char szComp[k_cchStatNameMax];
+		char szStat[k_cchStatNameMax];
+
+		V_snprintf( szComp, sizeof( szComp ), "%s_COMP", pAchievementsInconsistent[i] );
+		V_snprintf( szStat, sizeof( szStat ), "%s_STAT", pAchievementsInconsistent[i] );
+
+		int32_t nComp;
+		int32_t nStat;
+
+		if ( !steamapicontext->SteamUserStats()->GetStat( szComp, &nComp ) )
+		{
+			continue;
+		}
+
+		if ( !steamapicontext->SteamUserStats()->GetStat( szStat, &nStat ) )
+		{
+			continue;
+		}
+
+		int32_t nPop = 0;
+		for ( int32_t j = nComp; j > 0; j >>= 1 )
+		{
+			if ( j & 1 )
+			{
+				nPop++;
+			}
+		}
+
+		if ( nPop != nStat )
+		{
+			Warning( "Resetting progress for achievement %s: progress counter is inconsistent\n", pAchievementsInconsistent[i] );
+			steamapicontext->SteamUserStats()->SetStat( szComp, 0 );
+			steamapicontext->SteamUserStats()->SetStat( szStat, 0 );
+		}
+	}
+
 	CSteamID steamID;
 	if ( IsLocalPlayer() )
 	{
