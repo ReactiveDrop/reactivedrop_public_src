@@ -1525,13 +1525,21 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 		{
 			CUtlString path = CUtlString::PathJoin( paths[i].Get(), fileName );
 
-			CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-			if ( !g_pFullFileSystem->ReadFile( path.Get(), NULL, buf ) )
-			{
-				continue;
-			}
+			// g_pFullFileSystem->ReadFile doesn't move the PUT pointer to the right place,
+			// so we're implementing our own.
 
-			LoadKeyValues( pKV, fileName, paths[i].Get(), buf, callback, pUserData );
+			if ( FileHandle_t hFile = g_pFullFileSystem->Open( path.Get(), "rb", NULL ) )
+			{
+				unsigned int nBytes = g_pFullFileSystem->Size( hFile );
+
+				CUtlBuffer buf( 0, nBytes, CUtlBuffer::TEXT_BUFFER );
+				g_pFullFileSystem->Read( buf.Base(), nBytes, hFile );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, nBytes );
+
+				g_pFullFileSystem->Close( hFile );
+
+				LoadKeyValues( pKV, fileName, paths[i].Get(), buf, callback, pUserData );
+			}
 		}
 	}
 

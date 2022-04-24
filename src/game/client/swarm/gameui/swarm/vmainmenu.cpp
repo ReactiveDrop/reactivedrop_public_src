@@ -1188,7 +1188,7 @@ void MainMenu::Activate()
 	static bool bRunOnce = true;
 	if ( bRunOnce )
 	{
-		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; rd_loc_reload; snd_updateaudiocache; snd_restart" );
+		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
 		engine->ClientCmd( "execifexists loadouts" );	// added support for loadout editor, by element109
 	}
 	bRunOnce = false;

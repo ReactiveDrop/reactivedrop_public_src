@@ -401,6 +401,9 @@ void CGameUI::Start()
 	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt");
 	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt");
 
+	// (slightly) delayed localization setup
+	engine->ClientCmd_Unrestricted( "rd_loc_reload" );
+
 	Sys_SetLastError( SYS_NO_ERROR );
 
 	if ( IsPC() )
