@@ -915,7 +915,7 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 	{
 		//!!HACK HACK: Adrian - slow down all player movement by this factor.
 		//!!Blame Yahn for this one.
-		gpGlobals->frametime *= clamp( pPlayer->GetLaggedMovementValue(), 0.0f, 1.0f );
+		gpGlobals->frametime *= pPlayer->GetLaggedMovementValue();
 	}
 
 	//if (pMove->m_vecVelocity.x > 150)
