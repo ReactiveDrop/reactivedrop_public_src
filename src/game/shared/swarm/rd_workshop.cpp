@@ -17,6 +17,7 @@
 #include "gameui/swarm/vaddons.h"
 #include "gameui/swarm/rd_workshop_frame.h"
 #include <vgui/ISystem.h>
+#include <vgui/ILocalize.h>
 
 #ifdef IS_WINDOWS_PC
 #undef INVALID_HANDLE_VALUE
@@ -506,15 +507,45 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 		CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaign->GetMissionByMapName( MapName() );
 		if ( pMission )
 		{
+			char szCampaignName[256];
+			if ( const wchar_t *pwszCampaignName = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+			{
+				V_UnicodeToUTF8( pwszCampaignName, szCampaignName, sizeof( szCampaignName ) );
+			}
+			else
+			{
+				V_strncpy( szCampaignName, STRING( pCampaign->m_CampaignName ), sizeof( szCampaignName ) );
+			}
+
+			char szMissionName[256];
+			if ( const wchar_t *pwszMissionName = g_pVGuiLocalize->Find( STRING( pMission->m_MissionName ) ) )
+			{
+				V_UnicodeToUTF8( pwszMissionName, szMissionName, sizeof( szMissionName ) );
+			}
+			else
+			{
+				V_strncpy( szMissionName, STRING( pMission->m_MissionName ), sizeof( szMissionName ) );
+			}
+
 			char szName[512];
-			Q_snprintf( szName, sizeof( szName ), "%s: %s", STRING( pCampaign->m_CampaignName ), STRING( pMission->m_MissionName ) );
+			Q_snprintf( szName, sizeof( szName ), "%s: %s", szCampaignName, szMissionName );
 
 			extern ConVar rd_challenge;
 			if ( Q_strcmp( rd_challenge.GetString(), "0" ) )
 			{
+				const char *pszChallengeName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
 				char szChallengeName[256];
-				Q_snprintf( szChallengeName, sizeof( szChallengeName ), " (%s)", ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
-				Q_strncat( szName, szChallengeName, sizeof( szName ) );
+				if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( pszChallengeName ) )
+				{
+					V_UnicodeToUTF8( pwszChallengeName, szChallengeName, sizeof( szChallengeName ) );
+				}
+				else
+				{
+					V_strncpy( szChallengeName, pszChallengeName, sizeof( szChallengeName ) );
+				}
+				V_strncat( szName, " (", sizeof( szName ) );
+				V_strncat( szName, szChallengeName, sizeof( szName ) );
+				V_strncat( szName, ")", sizeof( szName ) );
 			}
 
 			steamapicontext->SteamScreenshots()->SetLocation( pReady->m_hLocal, szName );
