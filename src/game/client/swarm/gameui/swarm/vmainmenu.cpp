@@ -1108,6 +1108,8 @@ void MainMenu::OnOpen()
 
 	g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
 
+	engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{
 		// if we were launched with "+connect_lobby <lobbyid>" on the command line, join that lobby immediately
