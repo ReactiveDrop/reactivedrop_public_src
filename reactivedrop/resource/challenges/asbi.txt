@@ -1,5 +1,5 @@
 "CHALLENGE" {
-	"name"	"ASBI"
+	"name"	"#rd_challenge_name_asbi"
 	"description"	"#rd_challenge_desc_asbi"
 
 	"convars" {
