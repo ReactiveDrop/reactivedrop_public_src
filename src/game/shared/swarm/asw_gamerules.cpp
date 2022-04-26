@@ -9007,6 +9007,10 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		m_szGameDescription = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+		if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( m_szGameDescription ) )
+		{
+			g_pVGuiLocalize->ConvertUnicodeToANSI( pwszChallengeName, const_cast< char* >( m_szGameDescription ), sizeof( m_szGameDescription ) );
+		}
 	}
 	else
 		m_szGameDescription = "Alien Swarm: Reactive Drop";
