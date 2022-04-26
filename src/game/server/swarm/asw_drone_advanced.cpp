@@ -751,12 +751,11 @@ bool CASW_Drone_Advanced::CanBePushedAway()
 	return BaseClass::CanBePushedAway();
 }
 
-int CASW_Drone_Advanced::OnTakeDamage_Alive( const CTakeDamageInfo& info )
+int CASW_Drone_Advanced::OnTakeDamage_Alive( const CTakeDamageInfo& info )  
 {
 	CBaseEntity* pWeapon = info.GetWeapon();
 	if ( pWeapon && pWeapon->Classify() == CLASS_ASW_PISTOL && m_iHealthBonus == 0 )
 	{
-		CTakeDamageInfo newInfo(info);
 		float damage = info.GetDamage();
 		if ( !ClassMatches("asw_drone_uber") )
 		{
@@ -766,14 +765,15 @@ int CASW_Drone_Advanced::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 			}
 			else if ( GetHealth() <= rd_pistols_drone_dualshot_health_bound.GetInt() && GetHealth() > damage)
 			{
-				damage = GetHealth() / 2 + 1;
 				m_bShouldDieOnPistolShot = true;
+				return BaseClass::OnTakeDamage_Alive(info);
 			}
 		}
 		else
 		{
 			damage += (int) ( GetHealth() * ( rd_pistols_uber_drone_additional_damage_health_percent.GetFloat() / 100 ) ); //less health - less bonus damage
 		}
+		CTakeDamageInfo newInfo(info);
 		newInfo.SetDamage(damage);
 		return BaseClass::OnTakeDamage_Alive(newInfo);
 	}
