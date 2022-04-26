@@ -34,7 +34,7 @@ WeaponData
 	"RequiresTech"			"1"
 	
 	// flinching
-	"FlinchChance"              "0.20"
+	"FlinchChance"              "0.28"
 	"StoppingPowerFlinchBonus"  "0.10"
 	
 	// which ammo elements this weapon should display on the hud
