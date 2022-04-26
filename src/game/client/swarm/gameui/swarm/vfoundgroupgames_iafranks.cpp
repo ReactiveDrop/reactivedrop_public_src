@@ -21,6 +21,7 @@ static const uint32 s_ParticipatingServers[] =
 	IPv4(82, 64, 91, 191),
 	IPv4(176, 67, 13, 11),
 	IPv4(124, 223, 114, 166),
+	IPv4(39, 108, 238, 101),
 };
 #undef IPv4
 
