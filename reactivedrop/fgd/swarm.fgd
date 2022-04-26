@@ -2625,6 +2625,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2654,6 +2684,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2680,6 +2740,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2691,6 +2781,112 @@
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 	
 	output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
+]
+
+@NPCClass base(BaseNPC) studio("models/aliens/parasite/parasite.mdl") sphere() = asw_parasite_defanged :
+	"A small, red and white insectoid that attacks by leaping towards a marine and exploding to shower its target in a corrosive substance."
+[
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	[
+		0 : "None"
+		1 : "Waiting for threat"
+		2 : "Waiting for PVS"
+		3 : "Waiting for input"
+	]
+	visiblewhenasleep(choices) : "Visible when asleep" : 0 : "If true, this alien will still get drawn even when asleep (useful for aliens you see far below you)." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
+	spawnflags(Flags) =
+	[
+		131072 : "Use Ground Checks" : 0
+	]
+		
+	//input FightToPosition(string) : "Fight to position"
+	//input EnableJump(void) : "Allow non-navigational jumping"
+	//input DisableJump(void) : "Disallow non-navigational jumping"
+	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
+	
+	output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
+]
+
+@NPCClass base(BaseNPC) studio("models/aliens/shaman/shaman.mdl") sphere() = asw_shaman :
+	"The Shaman uses a healing beam, like a medic. It will follow other aliens around and switch targets based on whichever has taken the most damage."
+[
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	[
+		0 : "None"
+		1 : "Waiting for threat"
+		2 : "Waiting for PVS"
+		3 : "Waiting for input"
+	]
+	visiblewhenasleep(choices) : "Visible when asleep" : 0 : "If true, this alien will still get drawn even when asleep (useful for aliens you see far below you)." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 ]
 
 @NPCClass base(BaseNPC) studio("models/aliens/shieldbug/shieldbug.mdl") sphere() = asw_shieldbug :
@@ -2708,6 +2904,36 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	//healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 	
 	extrahealth(integer) : "Extra Health" : 0 : "Additional health added to the normal starting amount."
 	
@@ -2737,6 +2963,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2762,6 +3018,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2786,6 +3072,36 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 	
 	spawnflags(Flags) =
 	[
@@ -2818,6 +3134,36 @@
 		1 : "Yes"
 	]
 	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2842,6 +3188,36 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 	
 	spawnflags(Flags) =
 	[
@@ -3499,7 +3875,37 @@
 		262144 : "Use Air Nodes" : 0
 		1048576 : "No Danger Sounds" : 0
 	]
-
+	
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+  
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+  
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+  
+	speedscale(float) : "Fly speed scale" : "1.0" : "The factor used to scale alien fly speed. Don't use 0"
+	
 	input DisableSwarm(void) : "Disable the buzzer swarm behavior."
 	//input Unpack(void) : "Causes the buzzer to stop being packed up."
 ]

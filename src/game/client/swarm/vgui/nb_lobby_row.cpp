@@ -482,8 +482,10 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 				Msg( "Local player SteamID = %I64u\n", steamapicontext->SteamUser()->GetSteamID().ConvertToUint64() );
 				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
-			char statsWeb[128];
-			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?utm_source=briefing", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+			char statsWeb[256];
+			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
+				Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64(),
+				steamapicontext->SteamApps()->GetCurrentGameLanguage() );
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif
