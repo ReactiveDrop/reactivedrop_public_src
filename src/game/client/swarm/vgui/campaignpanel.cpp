@@ -367,7 +367,14 @@ void CampaignPanel::OnThink()
 				m_bSetTitle = true;
 
 				wchar_t campaignbuffer[128];
-				g_pVGuiLocalize->ConvertANSIToUnicode(STRING( pCampaign->m_CampaignName ), campaignbuffer, sizeof( campaignbuffer ));
+				if ( const wchar_t *pwszCampaignName = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+				{
+					V_wcsncpy( campaignbuffer, pwszCampaignName, sizeof( campaignbuffer ) );
+				}
+				else
+				{
+					g_pVGuiLocalize->ConvertANSIToUnicode( STRING( pCampaign->m_CampaignName ), campaignbuffer, sizeof( campaignbuffer ) );
+				}
 
 				wchar_t wbuffer[256];		
 				g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
