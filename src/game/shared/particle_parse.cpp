@@ -9,8 +9,7 @@
 #include <KeyValues.h>
 #include "particle_parse.h"
 #include "particles/particles.h"
-#include "tier2/fileutils.h"		// BenLubar #iss-particles-manifest 
-#include "vpklib/packedstore.h"		// BenLubar #iss-particles-manifest 
+#include "asw_util_shared.h"
 
 #ifdef GAME_DLL
 #include "te_effect_dispatch.h"
@@ -58,8 +57,10 @@ int GetAttachTypeFromString( const char *pszString )
 }
 
 // BenLubar #iss-particles-manifest 
-static void AddParticleFilesToList( CUtlVector<CUtlString> & files, KeyValues *pKV, const char *pszPath, const char *pszManifestName )
+static void AddParticleFilesToList( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
+	CUtlVector<CUtlString> &files = *static_cast<CUtlVector<CUtlString> *>( pUserData );
+
 	FOR_EACH_VALUE( pKV, pFile )
 	{
 		if ( !Q_stricmp( pFile->GetName(), "file" ) )
@@ -68,7 +69,7 @@ static void AddParticleFilesToList( CUtlVector<CUtlString> & files, KeyValues *p
 		}
 		else
 		{
-			Warning( "Invalid particle file type '%s' in '%s' from '%s'.\n", pFile->GetName(), pszManifestName, pszPath );
+			Warning( "Invalid particle file type '%s' in '%s' from '%s'.\n", pFile->GetName(), PARTICLES_MANIFEST_FILE, pszPath );
 		}
 	}
 }
@@ -77,40 +78,7 @@ static void AddParticleFilesToList( CUtlVector<CUtlString> & files, KeyValues *p
 // mounted game path and for each VPK file
 static void GetAllParticleManifests( CUtlVector<CUtlString> & files, const char *pszParticlesManifestFile )
 {
-	CUtlVector<CUtlString> path;
-	GetSearchPath( path, "GAME" );
-	FOR_EACH_VEC( path, i )
-	{
-		KeyValues::AutoDelete pKV( pszParticlesManifestFile );
-		if ( pKV->LoadFromFile( filesystem, path[i] + "/" + pszParticlesManifestFile ) )
-		{
-			AddParticleFilesToList( files, pKV, path[i], pszParticlesManifestFile );
-		}
-	}
-
-	CUtlVector<CUtlString> vpkNames;
-	filesystem->GetVPKFileNames( vpkNames );
-	FOR_EACH_VEC( vpkNames, i )
-	{
-		CPackedStore vpk( vpkNames[i], filesystem );
-		CPackedStoreFileHandle hFile = vpk.OpenFile( pszParticlesManifestFile );
-		if ( hFile )
-		{
-			CUtlBuffer buf( 0, hFile.m_nFileSize, CUtlBuffer::TEXT_BUFFER );
-			hFile.Read( buf.Base(), buf.Size() );
-			buf.SeekPut( CUtlBuffer::SEEK_HEAD, hFile.m_nFileSize );
-
-			KeyValues::AutoDelete pKV( pszParticlesManifestFile );
-			if ( pKV->LoadFromBuffer( pszParticlesManifestFile, buf ) )
-			{
-				AddParticleFilesToList( files, pKV, vpkNames[i], pszParticlesManifestFile );
-			}
-			else
-			{
-				Warning( "Cannot parse particle manifest file '%s' from VPK '%s'\n", pszParticlesManifestFile, vpkNames[i].Get() );
-			}
-		}
-	}
+	UTIL_RD_LoadAllKeyValues( pszParticlesManifestFile, "GAME", pszParticlesManifestFile, &AddParticleFilesToList, &files );
 }
 
 //-----------------------------------------------------------------------------

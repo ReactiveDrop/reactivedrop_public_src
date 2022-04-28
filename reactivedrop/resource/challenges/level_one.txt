@@ -1,6 +1,6 @@
 "CHALLENGE" {
-	"name"	"Level One"
-	"description"	"Only the weapons available to level 1 commanders may be used."
+	"name"	"#rd_challenge_name_level_one"
+	"description"	"#rd_challenge_desc_level_one"
 
 	"convars" {
 		"rd_weapons_regular_allowed"	"0 1 2 3 4 5 6 7"

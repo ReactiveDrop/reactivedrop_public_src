@@ -116,6 +116,9 @@ bool UTIL_ASW_CommanderLevelAtLeast( C_ASW_Player *pPlayer, int iLevel, int iPro
 bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
 #endif
 
+typedef void (*UTIL_RD_LoadAllKeyValuesCallback)( const char *pszPath, KeyValues *pKV, void *pUserData );
+void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData );
+
 #ifndef GAME_DLL
 bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false );
 #endif

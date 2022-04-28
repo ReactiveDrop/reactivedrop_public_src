@@ -1,5 +1,5 @@
 "CHALLENGE" {
-	"name"	"Difficulty Tier 2"
+	"name"	"#rd_challenge_name_difficulty_tier2"
 	"description"	"#rd_challenge_desc_difficulty_tier2"
 
 	"convars" {

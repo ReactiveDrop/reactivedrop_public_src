@@ -37,6 +37,7 @@ public:
 	{
 		PrimaryAttack();
 	}
+	virtual bool SecondaryAttackEqualsPrimary() { return true; }
 
 	void	WeaponIdle( void );
 	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );

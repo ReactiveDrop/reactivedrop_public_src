@@ -1603,6 +1603,12 @@ static const char *LB_whitelist[] =
 	
 	"RD_SpeedRun_2461568606_asbi_elite_c2/",
 	"RD_imba_SpeedRun_2461568606_asbi_elite_c2/",
+	
+	"RD_SpeedRun_1940930023_asbi_carnage2_classic/",
+	"RD_imba_SpeedRun_1940930023_asbi_carnage2_classic/",
+	
+	"RD_SpeedRun_2647127742_asbi_ultimate/",
+	"RD_imba_SpeedRun_2647127742_asbi_ultimate/",
 };
 
 static bool StartsWith( const char *str, const char *pre )

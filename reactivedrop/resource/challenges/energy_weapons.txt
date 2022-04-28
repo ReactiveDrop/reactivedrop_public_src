@@ -1,6 +1,6 @@
 "CHALLENGE" {
-	"name"	"Energy Weapons"
-	"description"	"Ammo recharges when not shooting, but reloading and ammo pickups are disabled."
+	"name"	"#rd_challenge_name_energy_weapons"
+	"description"	"#rd_challenge_desc_energy_weapons"
 
 	"convars" {
 		"rd_weapons_regular_allowed"	"7"

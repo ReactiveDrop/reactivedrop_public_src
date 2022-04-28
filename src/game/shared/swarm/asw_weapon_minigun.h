@@ -5,6 +5,7 @@
 #ifdef CLIENT_DLL
 	#define CASW_Weapon_Minigun C_ASW_Weapon_Minigun
 	#define CASW_Weapon_Rifle C_ASW_Weapon_Rifle
+	#define CASW_Marine C_ASW_Marine
 	#include "c_asw_weapon_rifle.h"
 
 class C_ASW_Gun_Smoke_Emitter;
@@ -26,7 +27,8 @@ public:
 	void Precache();
 
 	virtual void PrimaryAttack();
-	//float	GetFireRate( void ) { return 0.07f; }	
+	//float	GetFireRate( void ) { return 0.07f; }
+	virtual void FireBullets( CASW_Marine* pMarine, const FireBulletsInfo_t& info );
 
 	virtual const float GetAutoAimAmount() { return 0.0f; }
 	virtual const float GetAutoAimRadiusScale() { return 1.0f; }
@@ -76,6 +78,8 @@ public:
 	virtual float GetMovementScale();
 	virtual bool ShouldMarineMoveSlow();
 	virtual bool SupportsBayonet() { return false; }
+	virtual void OnStoppedFiring();
+	float m_flTimeFireStarted;
 
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 

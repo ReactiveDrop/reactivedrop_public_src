@@ -1,7 +1,5 @@
 #include "cbase.h"
 #include "rd_swarmopedia.h"
-#include "filesystem.h"
-#include "vpklib/packedstore.h"
 #include "animation.h"
 #include "gameui_interface.h"
 #include "gameui/swarm/vfooterpanel.h"
@@ -9,12 +7,12 @@
 #include "nb_button.h"
 #include "nb_header_footer.h"
 #include "vgui/ILocalize.h"
-#include "tier2/fileutils.h"
 #include <vgui_controls/Button.h>
 #include <vgui_controls/TextImage.h>
 #include <missionchooser/iasw_mission_chooser.h>
 #include <missionchooser/iasw_mission_chooser_source.h>
 #include "rd_challenges_shared.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -147,54 +145,20 @@ void Swarmopedia::Clear()
 	m_Aliens.PurgeAndDeleteElements();
 }
 
+static void LoadAliensCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
+{
+	DevMsg( "Loading aliens for Swarmopedia from filesystem: %s\n", pszPath );
+
+	static_cast< Swarmopedia * >( pUserData )->LoadAliens( pKV );
+}
+
 void Swarmopedia::LoadAllAliens()
 {
 	// Unlike most files, the Swarmopedia is constructed from *all* paths, not just the last one.
 
 	Clear();
 
-	KeyValues::AutoDelete pKV( "Swarmopedia" );
-
-	CUtlVector<CUtlString> paths;
-	GetSearchPath( paths, "GAME" );
-
-	FOR_EACH_VEC( paths, i )
-	{
-		CUtlString path = CUtlString::PathJoin( paths[i].Get(), SWARMOPEDIA_PATH );
-
-		pKV->Clear();
-		if ( pKV->LoadFromFile( filesystem, path.Get() ) )
-		{
-			DevMsg( "Loading aliens for Swarmopedia from filesystem: %s\n", path.Get() );
-			LoadAliens( pKV );
-		}
-	}
-
-	CUtlVector<CUtlString> vpks;
-	filesystem->GetVPKFileNames( vpks );
-
-	FOR_EACH_VEC( vpks, i )
-	{
-		CPackedStore vpk( vpks[i].Get(), filesystem );
-
-		if ( CPackedStoreFileHandle hFile = vpk.OpenFile( SWARMOPEDIA_PATH ) )
-		{
-			CUtlBuffer buf( 0, hFile.m_nFileSize, CUtlBuffer::TEXT_BUFFER );
-			hFile.Read( buf.Base(), buf.Size() );
-			buf.SeekPut( CUtlBuffer::SEEK_HEAD, hFile.m_nFileSize );
-
-			DevMsg( "Loading aliens for Swarmopedia from VPK: %s\n", vpks[i].Get() );
-			pKV->Clear();
-			if ( pKV->LoadFromBuffer( SWARMOPEDIA_PATH, buf ) )
-			{
-				LoadAliens( pKV );
-			}
-			else
-			{
-				DevWarning( "Failed to read swarmopedia!\n" );
-			}
-		}
-	}
+	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &LoadAliensCallback, this );
 
 	FOR_EACH_VEC( m_Aliens, i )
 	{

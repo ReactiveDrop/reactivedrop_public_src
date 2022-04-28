@@ -304,8 +304,8 @@ void DropDownMenu::OnKeyCodePressed( vgui::KeyCode code )
 
 	switch( basecode )
 	{
-	case KEY_XSTICK1_RIGHT:
-	case KEY_XSTICK2_RIGHT:
+	//case KEY_XSTICK1_RIGHT:
+	//case KEY_XSTICK2_RIGHT:
 	case KEY_XBUTTON_RIGHT:
 	case KEY_XBUTTON_RIGHT_SHOULDER:
 	case KEY_RIGHT:
@@ -319,8 +319,8 @@ void DropDownMenu::OnKeyCodePressed( vgui::KeyCode code )
 			break;
 		}
 
-	case KEY_XSTICK1_LEFT:
-	case KEY_XSTICK2_LEFT:
+	//case KEY_XSTICK1_LEFT:
+	//case KEY_XSTICK2_LEFT:
 	case KEY_XBUTTON_LEFT:
 	case KEY_XBUTTON_LEFT_SHOULDER:
 	case KEY_LEFT:

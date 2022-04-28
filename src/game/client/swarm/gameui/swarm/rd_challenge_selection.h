@@ -54,11 +54,9 @@ namespace BaseModUI
 
 		bool SetSelectedChallenge( const char *szName );
 
-	protected:
 		virtual void OnCommand( const char *command );
 		virtual void OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel );
 
-	private:
 		void UpdateFooter();
 		void PopulateChallenges();
 		void SetDetailsForChallenge( ReactiveDropChallengeSelectionListItem *pChallenge );

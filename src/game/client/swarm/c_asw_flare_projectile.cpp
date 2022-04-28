@@ -61,6 +61,8 @@ C_ASW_Flare_Projectile::C_ASW_Flare_Projectile()
 		g_pHeadFlare = this;
 		m_pNextFlare = NULL;
 	}
+
+	m_pBurnSound = NULL;
 }
 
 C_ASW_Flare_Projectile::~C_ASW_Flare_Projectile( void )
@@ -120,9 +122,9 @@ void C_ASW_Flare_Projectile::OnDataChanged( DataUpdateType_t updateType )
 {
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
+		SoundInit();
 		SetNextClientThink(gpGlobals->curtime);
 		//SetSortOrigin( GetAbsOrigin() );
-		SoundInit();
 	}
 
 	BaseClass::OnDataChanged( updateType );

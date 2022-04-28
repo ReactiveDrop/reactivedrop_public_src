@@ -401,6 +401,9 @@ void CGameUI::Start()
 	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt");
 	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt");
 
+	// (slightly) delayed localization setup
+	engine->ClientCmd_Unrestricted( "rd_loc_reload" );
+
 	Sys_SetLastError( SYS_NO_ERROR );
 
 	if ( IsPC() )
@@ -1066,3 +1069,13 @@ void CGameUI::OnDemoTimeout()
 }
 #endif
 
+CON_COMMAND_F( rd_loc_reload, "reload localization files", FCVAR_HIDDEN )
+{
+	// load english first just in case an addon is not localized
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true );
+
+	// load actual localization files
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true );
+}

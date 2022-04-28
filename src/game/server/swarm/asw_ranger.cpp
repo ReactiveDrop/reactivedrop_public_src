@@ -28,7 +28,7 @@ BEGIN_DATADESC( CASW_Ranger )
 DEFINE_EMBEDDEDBYREF( m_pExpresser ),
 END_DATADESC()
 
-ConVar asw_ranger_health( "asw_ranger_health", "101.5", FCVAR_CHEAT );
+ConVar asw_ranger_health( "asw_ranger_health", "101", FCVAR_CHEAT );
 ConVar sk_asw_ranger_volley_damage_direct( "sk_asw_ranger_volley_damage_direct", "12", FCVAR_CHEAT );
 ConVar sk_asw_ranger_volley_damage_splash( "sk_asw_ranger_volley_damage_splash", "0", FCVAR_CHEAT );
 extern ConVar asw_debug_alien_damage;

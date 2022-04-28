@@ -1,6 +1,6 @@
 "CHALLENGE" {
-	"name"	"One Hit"
-	"description"	"Aliens kill marines in one hit. Forced hardcore friendly fire"
+	"name"	"#rd_challenge_name_one_hit"
+	"description"	"#rd_challenge_desc_one_hit"
 
 	"convars" {
 		"rd_ready_mark_override"	"1"

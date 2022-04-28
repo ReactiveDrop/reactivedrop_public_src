@@ -156,7 +156,7 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	
 #ifndef CLIENT_DLL
 	//Create the grenade
-	float fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_DMG);
+	float fGrenadeDamage = 1;// MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_DMG); //we overwrite damage in CASW_Grenade_PRifle::Detonate()
 	float fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
 	if (asw_debug_marine_damage.GetBool())
 	{

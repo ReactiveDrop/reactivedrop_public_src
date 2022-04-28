@@ -87,8 +87,7 @@ void CNB_Select_Campaign_Panel::OnThink()
 		}
 	}
 
-	// reactivedrop: using SwarmDirector's 2 solution to remove the popping of
-	// campaign list 
+	// reactivedrop: using SwarmDirector 2's solution to remove the popping of campaign list
 	m_pHorizList->ChangeScrollValue(1);
 	m_pHorizList->ChangeScrollValue(-1);
 }
@@ -103,8 +102,11 @@ void CNB_Select_Campaign_Panel::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "AcceptButton" ) )
 	{
-
-		GetParent()->OnCommand( command );
+		CNB_Select_Campaign_Entry *pEntry = dynamic_cast<CNB_Select_Campaign_Entry *>( m_pHorizList->GetHighlightedEntry() );
+		if ( pEntry )
+		{
+			pEntry->OnCommand( "CampaignClicked" );
+		}
 		return;
 	}
 	BaseClass::OnCommand( command );

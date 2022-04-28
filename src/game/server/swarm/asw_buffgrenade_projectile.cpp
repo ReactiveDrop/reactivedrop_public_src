@@ -159,7 +159,7 @@ void CASW_BuffGrenade_Projectile::LoseTimeForMoving()
 	Vector vecOrigin = GetAbsOrigin();
 	if ( !VectorsAreEqual( m_vecLastOrigin, vecOrigin, 2.0f ) )
 	{
-		SetDuration( MAX( GetDuration() - 1.0f, 0 ) );
+		SetDuration( MAX( GetDuration() - 1.125f, 0 ) );
 		m_vecLastOrigin = vecOrigin;
 	}
 

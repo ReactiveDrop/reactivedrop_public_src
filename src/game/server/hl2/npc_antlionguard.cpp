@@ -101,7 +101,7 @@ ConVar	g_antlionguard_hemorrhage( "g_antlionguard_hemorrhage", "1", FCVAR_NONE, 
 #define	ANTLIONGUARD_CHARGE_MIN			256
 #define	ANTLIONGUARD_CHARGE_MAX			2048
 
-ConVar	sk_antlionguard_health( "sk_antlionguard_health", "1000", FCVAR_CHEAT ); // was 500 in HL2
+ConVar	sk_antlionguard_health( "sk_antlionguard_health", "500", FCVAR_CHEAT ); // was 500 in HL2
 
 int	g_interactionAntlionGuardFoundPhysicsObject = 0;	// We're moving to a physics object to shove it, don't all choose the same object
 int	g_interactionAntlionGuardShovedPhysicsObject = 0;	// We've punted an object, it is now clear to be chosen by others
@@ -263,6 +263,7 @@ public:
 	
 	virtual void	Precache( void );
 	virtual void	Spawn( void );
+	virtual void	SetHealthByDifficultyLevel( void );
 	virtual void	Activate( void );
 	virtual void	HandleAnimEvent( animevent_t *pEvent );
 	virtual void	UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
@@ -944,6 +945,16 @@ void CNPC_AntlionGuard::Spawn( void )
 	Vector absMax = Vector(100,100,128);
 
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
+}
+
+void CNPC_AntlionGuard::SetHealthByDifficultyLevel()
+{
+	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_antlionguard_health.GetInt() ) );
+	extern ConVar asw_debug_alien_damage;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting antlion guard's initial health to %d\n", iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
 }
 
 //-----------------------------------------------------------------------------

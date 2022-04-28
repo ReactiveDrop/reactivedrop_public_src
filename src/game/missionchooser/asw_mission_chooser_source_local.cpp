@@ -1165,13 +1165,13 @@ bool CASW_Mission_Chooser_Source_Local::MapNameLess::Less( MapListName const& sr
 static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob.txt",
-	"rd_nh_campaigns.txt",
-	"rd_biogen_corporation.txt",
 	"rd-operationcleansweep.txt",
+	"rd_nh_campaigns.txt",
 	"rd-tarnorcampaign1.txt",
 	"rd_paranoia.txt",
 	"rd-area9800.txt",
 	"tilarus5.txt",
+	"rd_biogen_corporation.txt",
 	"rd_research7.txt",
 	"rd_lanasescape_campaign.txt",
 	"rd_bonus_missions.txt",

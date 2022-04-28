@@ -261,8 +261,13 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	{
 		Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", ASWGameRules()->GetCurrentVoteDescription());
 
-		wchar_t wmapname[64];
-		g_pVGuiLocalize->ConvertANSIToUnicode(m_szMapName, wmapname, sizeof( wmapname ));
+		wchar_t wmapnamebuf[64];
+		const wchar_t *wmapname = g_pVGuiLocalize->Find( m_szMapName );
+		if ( !wmapname )
+		{
+			g_pVGuiLocalize->ConvertANSIToUnicode( m_szMapName, wmapnamebuf, sizeof( wmapnamebuf ) );
+			wmapname = wmapnamebuf;
+		}
 
 		wchar_t wbuffer[96];						
 		if (ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION)

@@ -54,6 +54,8 @@ public:
 	virtual bool ShouldGib( const CTakeDamageInfo &info );
 	virtual bool CanBreak() { return true; };
 	virtual bool HasDeadBodyGroup() { return true; };
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	bool m_bShouldDieOnPistolShot;
 	virtual int OnTakeDamage_Dead( const CTakeDamageInfo &info );
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 	virtual bool IsMeleeAttacking();

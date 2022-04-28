@@ -14,6 +14,10 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"PaintBackgroundType"	"0"
+		"navUp"					"BtnMultiplayer"
+		"navDown"				"BtnMultiplayer"
+		"navLeft"				"PnlQuickJoin"
+		"navRight"				"PnlQuickJoinGroups"
 	}
 	
 	"BtnMultiplayer"
@@ -171,7 +175,7 @@
 		"ActivationType"		"1"
 	}
 	
-	"BtnIafElite"
+	"BtnIafRanks"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnIafRanks"
@@ -269,8 +273,6 @@
 		"xpos"					"80"	[$WIN32]
 		"ypos"					"r120"	[$X360]
 		"ypos"					"r75"	[$WIN32]
-		"navUp"					"BtnQuit"
-		"navDown"				"BtnSingleplayer"
 	}
 	
 	"PnlQuickJoinGroups"	[$WIN32]
@@ -283,8 +285,6 @@
 		"tall"					"300"
 		"xpos"					"c0"
 		"ypos"					"r75"
-		"navUp"					""
-		"navDown"				""
 	}
 
 	"WorkshopDownloadProgress"

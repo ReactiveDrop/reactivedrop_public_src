@@ -896,7 +896,7 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 		if ( pGround && pGround->IsAlienClassType() )
 		{
 			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
-			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && (pAlien->Classify() != CLASS_ASW_DRONE || pAlien->GetTask()->iTask != TASK_UNBURROW) )
+			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != TASK_UNBURROW ) ) )
 			{
 				CTakeDamageInfo info(pAlien, pAlien, 15, DMG_SLASH);
 				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
@@ -911,9 +911,12 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 
 	float flStoreFrametime = gpGlobals->frametime;
 
-	//!!HACK HACK: Adrian - slow down all player movement by this factor.
-	//!!Blame Yahn for this one.
-	gpGlobals->frametime *= pPlayer->GetLaggedMovementValue();
+	if ( pPlayer )
+	{
+		//!!HACK HACK: Adrian - slow down all player movement by this factor.
+		//!!Blame Yahn for this one.
+		gpGlobals->frametime *= pPlayer->GetLaggedMovementValue();
+	}
 
 	//if (pMove->m_vecVelocity.x > 150)
 	//{
