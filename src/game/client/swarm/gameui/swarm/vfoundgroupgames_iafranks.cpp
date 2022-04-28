@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "VFoundGroupGames_IAFRanks.h"
 #include "EngineInterface.h"
+#include "filesystem.h"
 
 #include "fmtstr.h"
 
@@ -11,18 +12,6 @@ using namespace vgui;
 using namespace BaseModUI;
 
 extern ConVar ui_foundgames_spinner_time;
-
-#define IPv4(a, b, c, d) ((uint32(a)<<24) | (uint32(b)<<16) | (uint32(c)<<8) | uint32(d))
-static const uint32 s_ParticipatingServers[] =
-{
-	IPv4(32, 97, 131, 159),
-	IPv4(85, 214, 164, 101),
-	IPv4(109, 255, 126, 44),
-	IPv4(82, 64, 91, 191),
-	IPv4(176, 67, 13, 11),
-	IPv4(124, 223, 114, 166),
-};
-#undef IPv4
 
 static void JoinIAFRanksServerGame( const FoundGameListItem::Info & fi )
 {
@@ -84,23 +73,24 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		return;
 	}
 
+	static CUtlVector<uint32_t> s_ParticipatingServers;
+	if ( s_ParticipatingServers.Count() == 0 )
+	{
+		CUtlBuffer buf;
+		if ( g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", buf ) )
+		{
+			s_ParticipatingServers.EnsureCount( buf.Size() / 4 );
+			V_memcpy( s_ParticipatingServers.Base(), buf.Base(), s_ParticipatingServers.Count() * 4 );
+		}
+	}
+
 	int nServerCount = steamapicontext->SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
 	for ( int i = 0; i < nServerCount; i++ )
 	{
 		gameserveritem_t *pServer = steamapicontext->SteamMatchmakingServers()->GetServerDetails( m_hServerListRequest, i );
 		uint32 iServerAddr = pServer->m_NetAdr.GetIP();
 
-		bool bFound = false;
-		for ( int j = 0; j < NELEMS( s_ParticipatingServers ); j++ )
-		{
-			if ( iServerAddr == s_ParticipatingServers[j] )
-			{
-				bFound = true;
-				break;
-			}
-		}
-
-		if ( !bFound )
+		if ( s_ParticipatingServers.Find( iServerAddr ) == -1 )
 		{
 			continue;
 		}

@@ -367,7 +367,14 @@ void CampaignPanel::OnThink()
 				m_bSetTitle = true;
 
 				wchar_t campaignbuffer[128];
-				g_pVGuiLocalize->ConvertANSIToUnicode(STRING( pCampaign->m_CampaignName ), campaignbuffer, sizeof( campaignbuffer ));
+				if ( const wchar_t *pwszCampaignName = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+				{
+					V_wcsncpy( campaignbuffer, pwszCampaignName, sizeof( campaignbuffer ) );
+				}
+				else
+				{
+					g_pVGuiLocalize->ConvertANSIToUnicode( STRING( pCampaign->m_CampaignName ), campaignbuffer, sizeof( campaignbuffer ) );
+				}
 
 				wchar_t wbuffer[256];		
 				g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
@@ -512,10 +519,8 @@ void CampaignPanel::OnThink()
 				else
 					m_pMouseOverGlowLabel->SetVisible(false);
 				m_pMouseOverLabel->SetVisible(true);
-				char buffer[128];
-				Q_snprintf(buffer,sizeof(buffer), " %s ", pMission->m_LocationDescription);
-				m_pMouseOverLabel->SetText(buffer);	
-				m_pMouseOverGlowLabel->SetText(buffer);
+				m_pMouseOverLabel->SetText( pMission->m_LocationDescription );
+				m_pMouseOverGlowLabel->SetText( pMission->m_LocationDescription );
 				m_pMouseOverLabel->InvalidateLayout(true);
 				m_pMouseOverLabel->GetTextImage()->ResizeImageToContent();
 				m_pMouseOverLabel->SizeToContents();
