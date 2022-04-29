@@ -8314,7 +8314,7 @@ static void CreateCake( const char *mapname )
 	}
 	else if ( FStrEq( mapname, "rd-bonus_mission1" ) )
 	{
-		origin = Vector( 178, 3740, 370 );
+		origin = Vector( 506, -166, 6 );
 	}
 	else if ( FStrEq( mapname, "rd-bonus_mission2" ) )
 	{
