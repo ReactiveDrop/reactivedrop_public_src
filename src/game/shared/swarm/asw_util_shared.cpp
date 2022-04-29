@@ -43,7 +43,6 @@
 	#include "asw_input.h"
 	#include "c_asw_point_camera.h"
 	#include "baseparticleentity.h"
-	#include "vgui/ILocalize.h"
 	#include "asw_hud_floating_number.h"
 	#include "takedamageinfo.h"
 	#include "clientmode_asw.h"
@@ -65,6 +64,7 @@
 #include "asw_util_shared.h"
 #include "tier2/fileutils.h"
 #include "vpklib/packedstore.h"
+#include "vgui/ILocalize.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1563,7 +1563,6 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 	}
 }
 
-#ifndef GAME_DLL
 static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
 	bool *bAny = static_cast<bool *>( pUserData );
@@ -1617,7 +1616,9 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		strcpy_s( szPath, fileName );
 	}
 
+#ifdef CLIENT_DLL
 	if ( rd_load_all_localization_files.GetBool() )
+#endif
 	{
 		bool bAny = false;
 
@@ -1628,4 +1629,3 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 
 	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
 }
-#endif
