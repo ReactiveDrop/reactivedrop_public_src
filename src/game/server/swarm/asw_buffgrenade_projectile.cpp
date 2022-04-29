@@ -109,7 +109,7 @@ void CASW_BuffGrenade_Projectile::DoAOE( CBaseEntity *pEntity )
 		return;
 	}
 
-	pMarine->AddDamageBuff( this, MIN( m_flTimeBurnOut - gpGlobals->curtime, GetDoAOEDelayTime() ), ( Class_T )CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
+	pMarine->AddDamageBuff( this, MIN( m_flTimeBurnOut - gpGlobals->curtime, GetDoAOEDelayTime() * 1.1f ), ( Class_T )CLASS_ASW_BUFF_GRENADE, CASW_Marine::AsMarine( GetOwnerEntity() ) );
 }
 
 //-----------------------------------------------------------------------------
