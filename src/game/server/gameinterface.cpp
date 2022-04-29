@@ -72,7 +72,6 @@
 #include "engine/iserverplugin.h"
 #include "env_debughistory.h"
 #include "util_shared.h"
-#include "asw_util_shared.h"
 #include "player_voice_listener.h"
 
 #ifdef _WIN32
@@ -1103,8 +1102,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 
 	if ( engine->IsDedicatedServer() )
 	{
-		UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true );
-		UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true );
+		engine->ServerCommand( "rd_loc_reload_server" );
 	}
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
