@@ -1,0 +1,441 @@
+"AdvancedSettings"
+{
+	SECTION
+	{
+		title "#RD_AdvancedSettings_HUD"
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_CrosshairStyle"
+			cvar "asw_crosshair_use_perspective"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HUD_CrosshairStyle_Cross"
+				"1" "#RD_AdvancedSettings_HUD_CrosshairStyle_Crescent"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_LaserSight"
+			cvar "asw_laser_sight"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_VoiceIcon"
+			cvar "asw_voice_side_icon"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HUD_VoiceIcon_Marine"
+				"1" "#RD_AdvancedSettings_HUD_VoiceIcon_Side"
+			}
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_NameUnderMarine"
+			cvar "asw_player_names"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HUD_NameUnderMarine_Marine"
+				"1" "#RD_AdvancedSettings_HUD_NameUnderMarine_Player"
+				"2" "#RD_AdvancedSettings_HUD_NameUnderMarine_Both"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_ChatWipe"
+			cvar "rd_chatwipe"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_ColorNamesInChat"
+			cvar "rd_chat_colorful_player_names"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_MarineLabelsDist"
+			cvar "asw_marine_labels_cursor_maxdist"
+			options
+			{
+				"30" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Direct"
+				"70" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Default"
+				"100" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Further"
+				"2000" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Always"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_ClassIcon"
+			cvar "asw_world_healthbar_class_icon"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_TeamColors"
+			cvar "rd_deathmatch_team_colors"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HUD_TeamColors_None"
+				"1" "#RD_AdvancedSettings_HUD_TeamColors_AllyEnemy"
+				"2" "#RD_AdvancedSettings_HUD_TeamColors_Team1Team2"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_DeathmatchScoreboard"
+			cvar "rd_draw_avatars_with_frags"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_MapDrawing"
+			cvar "asw_minimap_clicks"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HUD_MapDrawing_BriefingOnly"
+				"1" "#RD_AdvancedSettings_HUD_MapDrawing_AllowMinimap"
+			}
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_SpeedRunning"
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_ObjectiveTimeChat"
+			cvar "rda_print_chat_objective_completion_time"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_LeaderboardUpload"
+			cvar "rd_leaderboard_enabled_client"
+			options
+			{
+				"0" "#RD_AdvancedSettings_SpeedRunning_LeaderboardUpload_Disabled"
+				"1" "#RD_AdvancedSettings_SpeedRunning_LeaderboardUpload_Enabled"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_LeaderboardLoading"
+			cvar "rd_show_leaderboard_loading"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_LeaderboardDebrief"
+			cvar "rd_show_leaderboard_debrief"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_Timer"
+			cvar "rd_draw_timer"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_SpeedRunning_TimerColor"
+			cvar "rd_draw_timer_color"
+			hide_unless "rd_draw_timer"
+			options
+			{
+				"255 255 255 255" "#RD_AdvancedSettings_Color_White"
+				"255 64 64 255" "#RD_AdvancedSettings_Color_Red"
+				"255 192 64 255" "#RD_AdvancedSettings_Color_Orange"
+				"96 255 64 255" "#RD_AdvancedSettings_Color_Green"
+				"64 192 255 255" "#RD_AdvancedSettings_Color_Blue"
+				"128 64 255 255" "#RD_AdvancedSettings_Color_Purple"
+				"255 64 192 255" "#RD_AdvancedSettings_Color_Pink"
+			}
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_Health"
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Health_MedicUnderMarine"
+			cvar "asw_medic_under_marine"
+			options
+			{
+				"0" "#RD_AdvancedSettings_WarnAt_None"
+				"0.1" "#RD_AdvancedSettings_WarnAt_10"
+				"0.3" "#RD_AdvancedSettings_WarnAt_30"
+				"0.5" "#RD_AdvancedSettings_WarnAt_50"
+				"0.75" "#RD_AdvancedSettings_WarnAt_75"
+				"0.9" "#RD_AdvancedSettings_WarnAt_90"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_MedicUnderMarineOffscreen"
+			cvar "asw_medic_under_marine_offscreen"
+			hide_unless "asw_medic_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Health_MedicUnderMarineFlash"
+			cvar "asw_medic_under_marine_frequency"
+			options
+			{
+				"1" "#RD_AdvancedSettings_Frequency_1s"
+				"2" "#RD_AdvancedSettings_Frequency_2s"
+				"5" "#RD_AdvancedSettings_Frequency_5s"
+				"10" "#RD_AdvancedSettings_Frequency_10s"
+				"20" "#RD_AdvancedSettings_Frequency_20s"
+				"30" "#RD_AdvancedSettings_Frequency_30s"
+				"60" "#RD_AdvancedSettings_Frequency_60s"
+				"90" "#RD_AdvancedSettings_Frequency_90s"
+			}
+			hide_unless "asw_medic_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Health_MedicUnderMarineEmote"
+			cvar "asw_medic_under_marine_recall_time"
+			options
+			{
+				"1" "#RD_AdvancedSettings_Duration_1s"
+				"2" "#RD_AdvancedSettings_Duration_2s"
+				"5" "#RD_AdvancedSettings_Duration_5s"
+				"10" "#RD_AdvancedSettings_Duration_10s"
+				"20" "#RD_AdvancedSettings_Duration_20s"
+				"30" "#RD_AdvancedSettings_Duration_30s"
+				"60" "#RD_AdvancedSettings_Duration_60s"
+			}
+			hide_unless "asw_medic_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_HealthCounter"
+			cvar "rd_health_counter_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Health_HealthCounterAlignment"
+			cvar "rd_health_counter_under_marine_alignment"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HAlignment_Left"
+				"1" "#RD_AdvancedSettings_HAlignment_Center"
+				"2" "#RD_AdvancedSettings_HAlignment_Right"
+			}
+			hide_unless "rd_health_counter_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_HealthCounterShowMax"
+			cvar "rd_health_counter_under_marine_show_max_health"
+			hide_unless "rd_health_counter_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_HealthCounterHUD"
+			cvar "rd_draw_marine_health_counter"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_LowHealthVisual"
+			cvar "rd_health_effect"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Health_LowHealthAudio"
+			cvar "rd_hearbeat"
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_Ammo"
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_FastReloadUnderMarine"
+			cvar "asw_fast_reload_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineWScale"
+			cvar "rd_fast_reload_under_marine_scale"
+			options
+			{
+				"0.5" "#RD_AdvancedSettings_Size_VerySmall"
+				"1" "#RD_AdvancedSettings_Size_Small"
+				"2" "#RD_AdvancedSettings_Size_Medium"
+				"3" "#RD_AdvancedSettings_Size_Large"
+				"4" "#RD_AdvancedSettings_Size_VeryLarge"
+				"5" "#RD_AdvancedSettings_Size_Huge"
+				"12" "#RD_AdvancedSettings_Size_Ludicrous"
+			}
+			hide_unless "asw_fast_reload_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineHScale"
+			cvar "rd_fast_reload_under_marine_height_scale"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineHScale_SameAsW"
+				"0.5" "#RD_AdvancedSettings_Size_VerySmall"
+				"1" "#RD_AdvancedSettings_Size_Small"
+				"2" "#RD_AdvancedSettings_Size_Medium"
+				"3" "#RD_AdvancedSettings_Size_Large"
+				"4" "#RD_AdvancedSettings_Size_VeryLarge"
+				"5" "#RD_AdvancedSettings_Size_Huge"
+				"12" "#RD_AdvancedSettings_Size_Ludicrous"
+			}
+			hide_unless "asw_fast_reload_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_AutoReload"
+			cvar "asw_auto_reload"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_MagazineUnderMarine"
+			cvar "asw_magazine_under_marine"
+			options
+			{
+				"0" "#RD_AdvancedSettings_WarnAt_None"
+				"0.1" "#RD_AdvancedSettings_WarnAt_10"
+				"0.3" "#RD_AdvancedSettings_WarnAt_30"
+				"0.5" "#RD_AdvancedSettings_WarnAt_50"
+				"0.75" "#RD_AdvancedSettings_WarnAt_75"
+				"0.9" "#RD_AdvancedSettings_WarnAt_90"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_MagazineUnderMarineOffscreen"
+			cvar "asw_magazine_under_marine_offscreen"
+			hide_unless "asw_magazine_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_MagazineUnderMarineFlash"
+			cvar "asw_magazine_under_marine_frequency"
+			options
+			{
+				"1" "#RD_AdvancedSettings_Frequency_1s"
+				"2" "#RD_AdvancedSettings_Frequency_2s"
+				"5" "#RD_AdvancedSettings_Frequency_5s"
+				"10" "#RD_AdvancedSettings_Frequency_10s"
+				"20" "#RD_AdvancedSettings_Frequency_20s"
+				"30" "#RD_AdvancedSettings_Frequency_30s"
+				"60" "#RD_AdvancedSettings_Frequency_60s"
+				"90" "#RD_AdvancedSettings_Frequency_90s"
+			}
+			hide_unless "asw_magazine_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_MagazineUnderMarineEmote"
+			cvar "asw_magazine_under_marine_recall_time"
+			options
+			{
+				"1" "#RD_AdvancedSettings_Duration_1s"
+				"2" "#RD_AdvancedSettings_Duration_2s"
+				"5" "#RD_AdvancedSettings_Duration_5s"
+				"10" "#RD_AdvancedSettings_Duration_10s"
+				"20" "#RD_AdvancedSettings_Duration_20s"
+				"30" "#RD_AdvancedSettings_Duration_30s"
+				"60" "#RD_AdvancedSettings_Duration_60s"
+			}
+			hide_unless "asw_magazine_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_AmmoBar"
+			cvar "rd_ammo_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_AmmoCounter"
+			cvar "rd_ammo_counter_under_marine"
+			hide_unless "rd_ammo_under_marine"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Ammo_AmmoCounterAlignment"
+			cvar "rd_ammo_counter_under_marine_alignment"
+			options
+			{
+				"0" "#RD_AdvancedSettings_HAlignment_Left"
+				"1" "#RD_AdvancedSettings_HAlignment_Center"
+				"2" "#RD_AdvancedSettings_HAlignment_Right"
+			}
+			hide_unless "rd_ammo_under_marine"
+			hide_unless "rd_ammo_counter_under_marine"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Ammo_AmmoCounterShowMax"
+			cvar "rd_ammo_counter_under_marine_show_max_ammo"
+			hide_unless "rd_ammo_under_marine"
+			hide_unless "rd_ammo_counter_under_marine"
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_VisualEffects"
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_WeatherEffects"
+			cvar "rd_func_precipitation_enable"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_DynamicLighting"
+			cvar "rd_env_projectedtexture_enabled"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_OtherEffects"
+			cvar "rd_info_particle_system_enabled"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_Beacons"
+			cvar "rd_simple_beacons"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_MarineGibs"
+			cvar "rd_marine_explodes_into_gibs"
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_Misc"
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_MissionIconLoading"
+			cvar "rd_show_mission_icon_loading"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_MissionLoadingScreen"
+			cvar "rd_loading_image_per_map"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_LoadWorkshopPreviews"
+			cvar "rd_download_workshop_previews"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Misc_WireHackClick"
+			cvar "rd_wire_tile_alternate"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Misc_WireHackClick_BothSame"
+				"1" "#RD_AdvancedSettings_Misc_WireHackClick_RightRev"
+				"2" "#RD_AdvancedSettings_Misc_WireHackClick_LeftRev"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_StreamlinedWeaponChooser"
+			cvar "rda_better_weapon_chooser"
+		}
+	}
+}
