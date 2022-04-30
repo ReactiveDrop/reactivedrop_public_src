@@ -63,7 +63,7 @@ public:
 	void PaintAmmoDrops();
 	bool PaintDeathMessage();
 	//virtual void PaintHackingProgress( int &yPos );
-	virtual void DrawMessage(int row, char* buffer, int r, int g, int b);
+	virtual void DrawMessage(int row, const char *szToken, int r, int g, int b);
 	virtual void ApplySchemeSettings(IScheme *pScheme);
 	virtual void PerformLayout();
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
@@ -276,14 +276,13 @@ void CASWHudOverlayMessages::PaintOverlays()
 	C_ASW_Marine *marine = local->GetViewMarine();
 	if ( !marine || !marine->GetMarineResource())
 		return;
-	
-	bool bReloading = marine->GetActiveASWWeapon() && marine->GetActiveASWWeapon()->IsReloading();
-	bool bInfested = marine->IsInfested();
-	bool bPoisoned = 0; //marine->m_fPoison > 0;		// message disabled, was confusing players
-	bool bLowAmmo = marine->GetMarineResource()->IsLowAmmo();
-	bool bFFGuard = marine->m_fFFGuardTime > gpGlobals->curtime;
 
-	char buffer[64];
+	const bool bReloading = marine->GetActiveASWWeapon() && marine->GetActiveASWWeapon()->IsReloading();
+	const bool bInfested = marine->IsInfested();
+	const bool bPoisoned = marine->m_fPoison > 0;
+	const bool bLowAmmo = marine->GetMarineResource()->IsLowAmmo();
+	const bool bFFGuard = marine->m_fFFGuardTime > gpGlobals->curtime;
+
 	int row = 0;
 
 	if (!bReloading && !bInfested && !bPoisoned && !bLowAmmo && !bFFGuard)
@@ -295,55 +294,63 @@ void CASWHudOverlayMessages::PaintOverlays()
 	{		
 		if (bInfested)
 		{
-			Q_snprintf(buffer, sizeof(buffer), "- INFESTED -");
-			DrawMessage(row, buffer, 0, 255, 0);
+			DrawMessage(row, "#asw_alert_infested", 0, 255, 0);
 			row++;
 		}
-		if (bPoisoned)
+		if (false && bPoisoned)
 		{
-			Q_snprintf(buffer, sizeof(buffer),  "- POISONED -");
-			DrawMessage(row, buffer, 0, 255, 0);
+			DrawMessage(row, "#asw_alert_poisoned", 0, 255, 0);
 			row++;
 		}
 		if (bReloading)
 		{
-			Q_snprintf(buffer, sizeof(buffer), "- RELOADING -");
-			DrawMessage(row, buffer, 255, 0, 0);
+			DrawMessage(row, "#asw_alert_reloading", 255, 0, 0);
 			row++;
 		}
 		if (bFFGuard)
 		{
-			Q_snprintf(buffer, sizeof(buffer), "- FRIENDLY FIRE GUARD -");
-			DrawMessage(row, buffer, 255, 0, 0);
+			DrawMessage(row, "#asw_alert_ffguard", 255, 0, 0);
 			row++;
 		}
-		//else if (bLowAmmo)
-		//{
-			//Q_snprintf(buffer, sizeof(buffer), "- LOW AMMO -");
-			//DrawMessage(row, buffer, 255, 255, 255);
-			//row++;
-		//}
+		else if (false && bLowAmmo)
+		{
+			DrawMessage(row, "#asw_low_ammo", 255, 255, 255);
+			row++;
+		}
 	}	
 }
 
-void CASWHudOverlayMessages::DrawMessage(int row, char* buffer, int r, int g, int b)
+void CASWHudOverlayMessages::DrawMessage(int row, const char *szToken, int r, int g, int b)
 {
+	const wchar_t *pwszMessage = g_pVGuiLocalize->Find( szToken );
+	wchar_t wszMessageMissing[64];
+	if ( !pwszMessage )
+	{
+		V_UTF8ToUnicode( szToken, wszMessageMissing, sizeof( wszMessageMissing ) );
+		pwszMessage = wszMessageMissing;
+	}
+
+	int len = V_wcslen( pwszMessage );
+
 	float xPos = ScreenWidth() * 0.5f;
 	float yPos = ScreenHeight() * 0.2f;
 
-	int wide = g_pMatSystemSurface->DrawTextLen(m_hOverlayFont, &buffer[0]);
-	int tall = vgui::surface()->GetFontTall(m_hOverlayFont);
-		
+	int wide, tall;
+	g_pMatSystemSurface->GetTextSize( m_hOverlayFont, pwszMessage, wide, tall );
+
 	// centre it on the x
 	xPos -= (0.5f * wide);
 	// count down rows
 	yPos += tall * 1.5f * row;
 	// drop shadow
-	g_pMatSystemSurface->DrawColoredText(m_hOverlayFont, xPos+1, yPos+1, 0, 0, 
-		0, 200, &buffer[0]);
+	g_pMatSystemSurface->DrawSetTextColor( 0, 0, 0, 200 );
+	g_pMatSystemSurface->DrawSetTextPos( xPos + 1, yPos + 1 );
+	g_pMatSystemSurface->DrawSetTextFont( m_hOverlayFont );
+	g_pMatSystemSurface->DrawPrintText( pwszMessage, len );
 	// actual text
-	g_pMatSystemSurface->DrawColoredText(m_hOverlayFont, xPos, yPos, r, g, 
-		b, 200, &buffer[0]);
+	g_pMatSystemSurface->DrawSetTextColor( r, g, b, 200 );
+	g_pMatSystemSurface->DrawSetTextPos( xPos, yPos );
+	g_pMatSystemSurface->DrawPrintText( pwszMessage, len );
 }
 
 bool CASWHudOverlayMessages::PaintGenericBar( int iTextureID, float xPos, float yPos, int width, int height, float flProgress, Color BgColor )

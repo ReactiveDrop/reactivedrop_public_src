@@ -144,6 +144,10 @@ void CASWHudObjective::ApplySchemeSettings( IScheme *scheme )
 	m_pObjectiveGlowLabel->SetFont( m_hGlowFont );	
 	m_pObjectiveGlowLabel->SetFgColor(Color(35,214,250,255));
 
+	// BenLubar: not sure why this wasn't being translated in the constructor for me but was for everyone else I asked
+	m_pHeaderGlowLabel->SetText( "#asw_objectives" );
+	m_pHeaderLabel->SetText( "#asw_objectives" );
+
 	m_pCompleteLabel->SetPaintBackgroundEnabled(false);
 	m_pCompleteLabel->SetFgColor(Color(255,255,255,255));
 	m_pCompleteLabel->SetFont( m_font );
@@ -197,20 +201,28 @@ void CASWHudObjective::Paint( void )
 		m_iLastNumLetters = m_iNumLetters;
 		if (m_iNumLetters > 0)
 		{
-			int k = MIN(m_iNumLetters, 20);
-			char buffer[64];
-			Q_strncpy(buffer, "Objective complete! ", k);
-			if (m_iNumLetters <= 20)
+			wchar_t buffer[128];
+			if ( const wchar_t *pwszObjectiveComplete = g_pVGuiLocalize->Find( "#asw_objective_complete" ) )
+			{
+				V_wcsncpy( buffer, pwszObjectiveComplete, sizeof( buffer ) );
+			}
+			else
+			{
+				V_wcsncpy( buffer, L"#asw_objective_complete", sizeof( buffer ) );
+			}
+			int len = V_wcslen( buffer );
+			int k = MIN( m_iNumLetters, len );
+			if ( m_iNumLetters <= len )
 			{
 				buffer[k] = '_';
-				buffer[k+1] = '\0';
+				buffer[k + 1] = '\0';
 			}
 			else
 			{
 				buffer[k] = '\0';
 			}
-			m_pCompleteLabel->SetText(buffer);
-			m_pCompleteLabelBD->SetText(buffer);
+			m_pCompleteLabel->SetText( buffer );
+			m_pCompleteLabelBD->SetText( buffer );
 
 			// make sure we're positioned on the right objective
 			int ox, oy, ow, ot;//, cx, cy;
@@ -224,8 +236,8 @@ void CASWHudObjective::Paint( void )
 		}
 		else
 		{
-			m_pCompleteLabel->SetText(" ");
-			m_pCompleteLabelBD->SetText(" ");
+			m_pCompleteLabel->SetText( L" " );
+			m_pCompleteLabelBD->SetText( L" " );
 		}
 	}
 
