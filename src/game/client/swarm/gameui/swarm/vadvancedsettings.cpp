@@ -98,7 +98,13 @@ void AdvancedSettings::PerformLayout()
 			{
 				FOR_EACH_VEC( pSettingDef->m_HideUnless, k )
 				{
-					if ( pSettingDef->m_HideUnless[k]->IsValid() && !pSettingDef->m_HideUnless[k]->GetBool() )
+					if ( !pSettingDef->m_HideUnless[k]->IsValid() )
+					{
+						continue;
+					}
+
+					const char *szHideUnless = pSettingDef->m_HideUnless[k]->GetString();
+					if ( !V_strcmp( szHideUnless, "" ) || !V_strcmp( szHideUnless, "0" ) )
 					{
 						bHidden = true;
 						break;
