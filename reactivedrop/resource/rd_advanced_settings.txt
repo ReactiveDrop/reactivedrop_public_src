@@ -37,6 +37,7 @@
 				"0" "#RD_AdvancedSettings_HUD_NameUnderMarine_Marine"
 				"1" "#RD_AdvancedSettings_HUD_NameUnderMarine_Player"
 				"2" "#RD_AdvancedSettings_HUD_NameUnderMarine_Both"
+				"3" "#RD_AdvancedSettings_HUD_NameUnderMarine_BothColor"
 			}
 		}
 		TOGGLE
