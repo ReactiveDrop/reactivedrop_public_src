@@ -392,10 +392,15 @@
 			title "#RD_AdvancedSettings_VisualEffects_OtherEffects"
 			cvar "rd_info_particle_system_enabled"
 		}
-		TOGGLE
+		SELECT
 		{
 			title "#RD_AdvancedSettings_VisualEffects_Beacons"
 			cvar "rd_simple_beacons"
+			options
+			{
+				"1" "#RD_AdvancedSettings_Toggle_Off"
+				"0" "#RD_AdvancedSettings_Toggle_On"
+			}
 		}
 		TOGGLE
 		{
