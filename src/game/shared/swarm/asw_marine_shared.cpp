@@ -52,6 +52,7 @@
 #include "particle_parse.h"
 #include "asw_trace_filter_shot.h"
 #include "asw_deathmatch_mode_light.h"
+#include "asw_weapon_sniper_rifle.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -89,6 +90,10 @@ ConVar rd_explosive_bullets( "rd_explosive_bullets", "0", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_dmg( "rd_explosive_bullets_dmg", "50", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_CHEAT);
 extern ConVar rda_marine_backpack;
+#endif
+
+#ifdef CLIENT_DLL
+extern ConVar rd_sniper_scope_weapon_switch;
 #endif
 
 static const float ASW_MARINE_MELEE_HULL_TRACE_Z = 32.0f;
@@ -166,7 +171,37 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		}
 		CASW_Weapon *pASWWeapon = assert_cast<CASW_Weapon *>( pWeapon );
 		if ( pASWWeapon )
+		{
 			pASWWeapon->ApplyWeaponSwitchTime( fSwitchDelay );
+
+			if ( pASWWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
+			{
+				CASW_Weapon_Sniper_Rifle* pSniper = assert_cast<CASW_Weapon_Sniper_Rifle*>( pWeapon );
+				if ( pSniper->IsZoomed() && this->IsInhabited() )
+				{
+#ifdef CLIENT_DLL
+					if ( !rd_sniper_scope_weapon_switch.GetBool() )
+					{
+						pSniper->m_bZoomed.Set( false );
+					}
+#else
+					CASW_Player* pASWPlayer = GetCommander();
+					if ( pASWPlayer )
+					{
+						const char* pszZoomSwitch = engine->GetClientConVarValue( pASWPlayer->entindex(), "rd_sniper_scope_weapon_switch" );
+						if ( pszZoomSwitch )
+						{
+							int value = atoi( pszZoomSwitch );
+							if ( value == 0 )
+							{
+								pSniper->m_bZoomed.Set( false );
+							}
+						}
+					}
+#endif
+				}
+			}
+		}
 
 #ifndef CLIENT_DLL
 		CheckAndRequestAmmo();

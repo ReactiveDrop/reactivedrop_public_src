@@ -76,9 +76,9 @@ public:
 		int m_nEjectBrassCount;
 	#endif
 
+	CNetworkVar( bool, m_bZoomed );
 protected:
 	CNetworkVar( float, m_fSlowTime );	// marine moves slow until this moment
-	CNetworkVar( bool, m_bZoomed );
 };
 
 
