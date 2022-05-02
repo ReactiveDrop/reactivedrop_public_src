@@ -259,11 +259,20 @@ float CASW_Weapon_Sniper_Rifle::GetFireRate()
 	return flRate;
 }
 
-
-void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
+void CASW_Weapon_Sniper_Rifle::ItemPostFrame()
 {
 	BaseClass::ItemPostFrame();
+	UpdateZoomState();
+}
 
+void CASW_Weapon_Sniper_Rifle::ItemBusyFrame()
+{
+	BaseClass::ItemBusyFrame();
+	UpdateZoomState();
+}
+
+void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
+{
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine )
 		return;
@@ -272,6 +281,7 @@ void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
 	if ( !pMarine->IsInhabited() && IsZoomed() )
 	{
 		m_bZoomed = false;
+		return;
 	}
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
