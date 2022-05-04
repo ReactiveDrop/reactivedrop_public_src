@@ -6942,12 +6942,11 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 		}
 	}
 
-	ConVarRef asw_controls( "asw_controls" );
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
-		if ( asw_controls.GetBool() )
+		if ( pASWPlayer->GetASWControls() == 1 )
 			iFov = clamp( iFov, 20, 75 );
 		else
 			iFov = clamp( iFov, 20, 120 );
@@ -8001,17 +8000,6 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	if ( ASWDeathmatchMode() )
 	{
 		ASWDeathmatchMode()->OnPlayerFullyJoined( pPlayer );
-	}
-	
-	// players who enter midway do not replicate cvar
-	ConVarRef asw_controls( "asw_controls" );
-	if ( asw_controls.IsValid() && !asw_controls.GetBool() )
-	{
-		CReliableBroadcastRecipientFilter filter;
-		UserMessageBegin( filter, "SavedConvar" );
-		WRITE_STRING( asw_controls.GetName() );
-		WRITE_STRING( asw_controls.GetString() );
-		MessageEnd();
 	}
 }
 
