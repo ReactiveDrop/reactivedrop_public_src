@@ -10,11 +10,10 @@
 #include "cdll_int.h"
 #include "vgui/isurface.h"
 #include "iasw_client_aim_target.h"
+#include "iclientmode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-extern ConVar asw_controls;		// asw: whether to use swarm mouse controls or not
 
 //-----------------------------------------------------------------------------
 // Purpose: make sure cursor isn't reset to 0 by the accumulation
@@ -41,13 +40,13 @@ void CASWInput::ResetMouse( void )
 {
 	int x, y;
 	HACK_GETLOCALPLAYER_GUARD( "Mouse behavior is tied to a specific player's status - splitscreen player would depend on which player (if any) is using mouse control" );
-	if (MarineControllingTurret() || !asw_controls.GetBool())
+	if ( C_ASW_Player::GetLocalASWPlayer()->GetASWControls() == 1 ? MarineControllingTurret() : IsGameplayCrosshair() )
 	{
-		GetWindowCenter( x,  y );
+		GetWindowCenter( x, y );
 		SetMousePos( x, y );
 	}
 	else
-	{		
+	{
 		GetMousePos( x, y );	// asw instead of GetWindowCenter, so mouse doesn't move
 		SetMousePos( x, y );
 	}
@@ -77,14 +76,39 @@ void CASWInput::AccumulateMouse( int nSlot )
 //-----------------------------------------------------------------------------
 void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float mouse_x, float mouse_y )
 {
-	int current_posx, current_posy;	
+	int current_posx, current_posy;
 	GetMousePos(current_posx, current_posy);
-
 
 	if ( ASWInput()->ControllerModeActive() )
 		return;
-		
-	if ( asw_controls.GetBool() && !MarineControllingTurret() )
+
+	if ( MarineControllingTurret() )
+	{
+		// accelerate up the mouse intertia
+		static float mouse_x_accumulated = 0;
+		static float mouse_y_accumulated = 0;
+
+		// decay it
+		mouse_x_accumulated *= 0.95f;
+		mouse_y_accumulated *= 0.95f;
+
+		mouse_x_accumulated += mouse_x * 0.04f;
+		mouse_y_accumulated += mouse_y * 0.04f;
+
+		// clamp it
+		mouse_x_accumulated = clamp( mouse_x_accumulated, -500.0f, 500.0f );
+		mouse_y_accumulated = clamp( mouse_y_accumulated, -500.0f, 500.0f );
+
+		// move with our inertia style
+		mouse_x = mouse_x_accumulated;
+		mouse_y = mouse_y_accumulated;
+
+		CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
+
+		// force the mouse to the center, so there's room to move
+		ResetMouse();
+	}
+	else if ( C_ASW_Player::GetLocalASWPlayer( nSlot )->GetASWControls() == 1 || !IsGameplayCrosshair() )
 	{
 		TurnTowardMouse( viewangles, cmd );
 
@@ -96,27 +120,6 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 	}
 	else
 	{
-		if ( MarineControllingTurret() )
-		{					
-			// accelerate up the mouse intertia
-			static float mouse_x_accumulated = 0;
-			static float mouse_y_accumulated = 0;
-
-			// decay it
-			mouse_x_accumulated *= 0.95f;
-			mouse_y_accumulated *= 0.95f;
-
-			mouse_x_accumulated += mouse_x * 0.04f;
-			mouse_y_accumulated += mouse_y * 0.04f;
-
-			// clamp it
-			mouse_x_accumulated = clamp(mouse_x_accumulated, -500.0f,500.0f);
-			mouse_y_accumulated = clamp(mouse_y_accumulated, -500.0f,500.0f);
-
-			// move with our inertia style
-			mouse_x = mouse_x_accumulated;
-			mouse_y = mouse_y_accumulated;
-		}
 		CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
 
 		// force the mouse to the center, so there's room to move
