@@ -72,6 +72,7 @@ public:
 	vgui::HFont m_LargeFont;
 	CNB_Vote_Panel *m_pVotePanel;
 	bool m_bSuccess;
+	bool m_bLastMission;
 	int m_iStage;
 	float m_fNextStageTime;
 	bool m_bViewedStatsPage;

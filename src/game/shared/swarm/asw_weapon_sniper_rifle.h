@@ -26,9 +26,10 @@ public:
 	virtual ~CASW_Weapon_Sniper_Rifle();
 	void Precache();
 
-	//virtual float	GetFireRate( void ) { return 1.2f; }
-	
-	void ItemPostFrame();
+	virtual void ItemPostFrame();
+	virtual void ItemBusyFrame();
+	virtual void UpdateZoomState();
+
 	Activity	GetPrimaryAttackActivity( void ) { return ACT_VM_PRIMARYATTACK; }
 	virtual bool ShouldMarineMoveSlow();
 	virtual float GetMovementScale();
@@ -75,9 +76,9 @@ public:
 		int m_nEjectBrassCount;
 	#endif
 
+	CNetworkVar( bool, m_bZoomed );
 protected:
 	CNetworkVar( float, m_fSlowTime );	// marine moves slow until this moment
-	CNetworkVar( bool, m_bZoomed );
 };
 
 

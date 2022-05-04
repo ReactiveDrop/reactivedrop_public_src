@@ -58,7 +58,7 @@ extern ConVar asw_world_usingbars;
 extern ConVar rd_show_arrow_to_marine;
 //
 
-ConVar asw_voice_side_icon("asw_voice_side_icon", "0", FCVAR_CHEAT, "Set to 1 to use the voice indicators on the side of the screen instead of the ones next to the 3d player names");
+ConVar asw_voice_side_icon("asw_voice_side_icon", "0", FCVAR_ARCHIVE, "Set to 1 to use the voice indicators on the side of the screen instead of the ones next to the 3d player names");
 ConVar asw_player_names("asw_player_names", "1", FCVAR_ARCHIVE, "Whether to show player names under marines or not.  Set to 2 to show both player and marine name. Set to 3 for colorful names.");
 ConVar asw_marine_edge_names("asw_marine_edge_names", "1", FCVAR_NONE, "Prevent marine names from going off the edge of the screen");
 ConVar asw_marine_labels_cursor_maxdist( "asw_marine_labels_cursor_maxdist", "70", FCVAR_ARCHIVE, "Only marines within this distance of the cursor will get their health bar drawn" );

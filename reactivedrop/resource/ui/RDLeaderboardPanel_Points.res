@@ -19,7 +19,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Score"
+		"labelText"		"#rd_iaf_rank_score"
 		"ControlName"	"Label"
 	}
 	
@@ -31,7 +31,7 @@
 		"wide"			"45"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Eliminations"
+		"labelText"		"#rd_iaf_rank_kills"
 		"ControlName"	"Label"
 	}
 	
@@ -43,7 +43,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Team Kills"
+		"labelText"		"#rd_iaf_rank_teamkills"
 		"ControlName"	"Label"
 	}
 	
@@ -55,7 +55,7 @@
 		"wide"			"45"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Mis. Success"
+		"labelText"		"#rd_iaf_rank_missionsuccess"
 		"ControlName"	"Label"
 	}
 	
@@ -67,7 +67,7 @@
 		"wide"			"45"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Mis. Fail"
+		"labelText"		"#rd_iaf_rank_missionfails"
 		"ControlName"	"Label"
 	}
 	
@@ -79,7 +79,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
-		"labelText"		"Mis. Total"
+		"labelText"		"#rd_iaf_rank_missiontotal"
 		"ControlName"	"Label"
 	}
 

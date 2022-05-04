@@ -43,7 +43,6 @@
 	#include "asw_input.h"
 	#include "c_asw_point_camera.h"
 	#include "baseparticleentity.h"
-	#include "vgui/ILocalize.h"
 	#include "asw_hud_floating_number.h"
 	#include "takedamageinfo.h"
 	#include "clientmode_asw.h"
@@ -65,6 +64,7 @@
 #include "asw_util_shared.h"
 #include "tier2/fileutils.h"
 #include "vpklib/packedstore.h"
+#include "vgui/ILocalize.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1563,7 +1563,6 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 	}
 }
 
-#ifndef GAME_DLL
 static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
 	bool *bAny = static_cast<bool *>( pUserData );
@@ -1593,6 +1592,10 @@ static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *
 	}
 }
 
+#ifdef GAME_DLL
+ConVar rd_dedicated_server_language( "rd_dedicated_server_language", "english", FCVAR_NONE, "translation language to load on dedicated server" );
+#endif
+
 bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths )
 {
 	char szPath[MAX_PATH];
@@ -1607,6 +1610,12 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		{
 			pszLanguageReplacement = steamapicontext->SteamApps()->GetCurrentGameLanguage();
 		}
+#ifdef GAME_DLL
+		else if ( engine->IsDedicatedServer() )
+		{
+			pszLanguageReplacement = rd_dedicated_server_language.GetString();
+		}
+#endif
 
 		strncpy_s( szPath, fileName, pszLanguageToken - fileName );
 		strcat_s( szPath, pszLanguageReplacement );
@@ -1617,7 +1626,9 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		strcpy_s( szPath, fileName );
 	}
 
+#ifdef CLIENT_DLL
 	if ( rd_load_all_localization_files.GetBool() )
+#endif
 	{
 		bool bAny = false;
 
@@ -1628,4 +1639,27 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 
 	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
 }
+
+#ifdef CLIENT_DLL
+CON_COMMAND_F( rd_loc_reload, "reload localization files", FCVAR_HIDDEN )
+#else
+CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated server)", FCVAR_HIDDEN )
 #endif
+{
+#ifndef CLIENT_DLL
+	if ( !engine->IsDedicatedServer() || !UTIL_IsCommandIssuedByServerAdmin() )
+	{
+		return;
+	}
+#endif
+
+	// load english first just in case an addon is not localized
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true );
+
+	// load actual localization files
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true );
+
+	DevMsg( 2, "Reloaded localization files.\n" );
+}

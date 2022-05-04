@@ -98,6 +98,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pMainElements = new vgui::Panel( this, "MainElements" );
 
 	m_bSuccess = bSuccess;
+	m_bLastMission = ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1;
 	
 	vgui::Panel *pParent = m_pMainElements;
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
@@ -257,7 +258,7 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	m_iStage = MCP_STAGE_FAILSUCCESS;
 	if ( m_bSuccess )
 	{
-		if ( ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
+		if ( m_bLastMission )
 		{
 			m_fNextStageTime = gpGlobals->curtime + 6.0f;
 		}
@@ -418,9 +419,9 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		{
 			m_pReadyButton->SetVisible( false );
 			m_pReadyCheckImage->SetVisible( false );
-			if ( ASWGameRules()->GetMissionSuccess() )
+			if ( m_bSuccess )
 			{
-				if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
+				if ( m_bLastMission )
 				{
 					if ( !m_bCreditsSeen )
 					{
@@ -447,7 +448,7 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		}
 		else
 		{
-			if ( ASWGameRules()->GetMissionSuccess() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
+			if ( m_bSuccess && m_bLastMission )
 			{
 				if ( !m_bCreditsSeen )
 				{
@@ -561,7 +562,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 	}
 	else if ( !Q_stricmp( command, "Continue" ) )
 	{
-		if ( ASWGameRules()->GetMissionSuccess() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
+		if ( m_bSuccess && m_bLastMission )
 		{
 			if ( !m_bCreditsSeen )
 			{

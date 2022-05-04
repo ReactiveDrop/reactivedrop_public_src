@@ -265,6 +265,11 @@ void InGameMainMenu::OnCommand( const char *command )
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_MULTIPLAYER, this, true );
 	}
+	else if ( !Q_strcmp( command, "AdvancedSettings" ) )
+	{
+		m_ActiveControl->NavigateFrom();
+		CBaseModPanel::GetSingleton().OpenWindow( WT_ADVANCEDSETTINGS, this, true );
+	}
 	else if (!Q_strcmp(command, "CloudSettings"))
 	{
 		// standalone cloud settings dialog, PC only

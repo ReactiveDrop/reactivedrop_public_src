@@ -44,7 +44,7 @@ void CNB_Campaign_Mission_Details::OnThink()
 		m_pMissionName->SetVisible( true );
 		m_pMissionDescription->SetVisible( true );
 
-		m_pMissionName->SetText( STRING( m_pCurrentMission->m_LocationDescription ) );
+		m_pMissionName->SetText( STRING( m_pCurrentMission->m_MissionName ) );
 		m_pMissionDescription->SetText( STRING( m_pCurrentMission->m_Briefing ) );
 	}
 	else

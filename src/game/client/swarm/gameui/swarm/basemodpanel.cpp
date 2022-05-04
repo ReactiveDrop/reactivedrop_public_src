@@ -85,6 +85,7 @@
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include "nb_leaderboard_panel_points.h"
+#include "vadvancedsettings.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -552,6 +553,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 		case WT_IAFRANKSSERVERS:
 			m_Frames[wt] = new FoundGroupGamesIAFRanks( this, "FoundGames" );
+			break;
+
+		case WT_ADVANCEDSETTINGS:
+			m_Frames[wt] = new AdvancedSettings( this, "AdvancedSettings" );
 			break;
 
 		default:

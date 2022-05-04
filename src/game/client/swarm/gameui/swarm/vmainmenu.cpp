@@ -784,6 +784,14 @@ void MainMenu::OnCommand( const char *command )
 			CBaseModPanel::GetSingleton().OpenWindow(WT_MULTIPLAYER, this, true );
 		}
 	}
+	else if ( !Q_strcmp( command, "AdvancedSettings" ) )
+	{
+		if ( m_ActiveControl )
+		{
+			m_ActiveControl->NavigateFrom();
+		}
+		CBaseModPanel::GetSingleton().OpenWindow( WT_ADVANCEDSETTINGS, this, true );
+	}
 	else if (!Q_strcmp(command, "CloudSettings"))
 	{
 		// standalone cloud settings dialog, PC only
