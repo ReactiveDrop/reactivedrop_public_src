@@ -791,7 +791,21 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 	Q_snprintf( sz, sizeof( sz ), "%3.1f/s", m_AvgPacketIn );
 	textWidth = g_pMatSystemSurface->DrawTextLen( font, "%s", sz );
 
-	g_pMatSystemSurface->DrawColoredText( font, x + w - textWidth - 1, y, GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE, 255, sz );
+	int avgpacketincolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
+	if ( m_AvgPacketIn < ( 0.5 * fTickRate ) )
+	{
+		avgpacketincolor[ 0 ] = 255;
+		avgpacketincolor[ 1 ] = 125;
+		avgpacketincolor[ 2 ] = 31;
+	}
+	else if ( m_AvgPacketIn < ( 0.9 * fTickRate ) )
+	{
+		avgpacketincolor[ 0 ] = 255;
+		avgpacketincolor[ 1 ] = 255;
+		avgpacketincolor[ 2 ] = 31;
+	}
+
+	g_pMatSystemSurface->DrawColoredText( font, x + w - textWidth - 1, y, avgpacketincolor[ 0 ], avgpacketincolor[ 1 ], avgpacketincolor[ 2 ], 255, sz );
 
 	y += textTall;
 
