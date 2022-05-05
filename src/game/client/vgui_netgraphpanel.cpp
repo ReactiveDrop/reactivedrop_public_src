@@ -710,6 +710,11 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 		return;
 
 	static int lastout;
+	
+	float fTickInterval = gpGlobals->interval_per_tick;
+	float fTickRate = ( fTickInterval > 0 ) ? ( 1.0f / fTickInterval ) : 0.0f;
+	if ( fTickRate <= 0.000001f )
+		fTickRate = 0.000001f;
 
 	char sz[ 256 ];
 	int out;
@@ -815,7 +820,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 		if ( graphvalue > 3 )
 		{
-			Q_snprintf( sz, sizeof( sz ), "sv  : %5.1f   var: %4.2f msec", m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
+			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv :%5.1f  var: %4.2f msec", (int)fTickRate, m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
 
 			int servercolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
 
