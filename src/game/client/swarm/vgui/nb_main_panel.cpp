@@ -50,6 +50,7 @@
 extern ConVar mp_gamemode;
 extern ConVar mm_max_players;
 extern ConVar rd_player_bots_allowed;
+ConVar rd_draw_briefing_ui( "rd_draw_briefing_ui", "1", FCVAR_CHEAT );
 
 using BaseModUI::GenericPanelList;
 
@@ -326,6 +327,14 @@ void CNB_Main_Panel::OnThink()
 void CNB_Main_Panel::OnTick()
 {
 	BaseClass::OnTick();
+
+	if ( !rd_draw_briefing_ui.GetBool() )
+	{
+		SetVisible( false );
+		return;
+	}
+
+	SetVisible( true );
 
 	char mapName[255];
 	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );

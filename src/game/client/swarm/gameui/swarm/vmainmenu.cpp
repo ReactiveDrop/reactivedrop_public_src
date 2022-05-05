@@ -1109,14 +1109,18 @@ void MainMenu::OnThink()
 //=============================================================================
 void MainMenu::OnOpen()
 {
-	if ( rd_revert_convars.GetBool() )
+	ConVarRef sv_cheats( "sv_cheats" );
+	if ( !sv_cheats.GetBool() )
 	{
-		g_pCVar->RevertFlaggedConVars( FCVAR_REPLICATED );
+		if ( rd_revert_convars.GetBool() )
+		{
+			g_pCVar->RevertFlaggedConVars( FCVAR_REPLICATED );
+		}
+
+		g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
+
+		engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
 	}
-
-	g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
-
-	engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
 
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{
