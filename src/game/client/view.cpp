@@ -53,6 +53,7 @@
 #endif
 #endif
 #ifdef INFESTED_DLL
+#include "c_asw_player.h"
 #include "c_asw_marine.h"
 #endif
 
@@ -677,6 +678,18 @@ void CViewRender::SetUpView()
 		// FIXME: What happens when there's no player?
 		if (pPlayer)
 		{
+#ifdef INFESTED_DLL
+			C_ASW_Player *pASWPlayer = assert_cast<C_ASW_Player *>( pPlayer );
+			if ( pASWPlayer->GetSpectatingMarine() && pASWPlayer->GetSpectatingMarine()->IsInhabited() )
+			{
+				C_ASW_Player *pOtherPlayer = pASWPlayer->GetSpectatingMarine()->GetCommander();
+				if ( pOtherPlayer && pOtherPlayer->GetASWControls() != 1 )
+				{
+					pPlayer = pOtherPlayer;
+				}
+			}
+#endif
+
 			pPlayer->CalcView( view.origin, view.angles, view.zNear, view.zFar, view.fov );
 
 			// If we are looking through another entities eyes, then override the angles/origin for GetView()

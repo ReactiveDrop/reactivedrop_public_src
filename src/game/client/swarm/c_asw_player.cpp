@@ -1443,6 +1443,8 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			// tell other players that we're fully connected
 			engine->ClientCmd( "cl_fullyjoined\n" );
 
+			ASWInput()->UpdateASWControls();
+
 			GetClientModeASW()->ClearCurrentColorCorrection();
 
 			// This shows a panel where player can select a marine. 

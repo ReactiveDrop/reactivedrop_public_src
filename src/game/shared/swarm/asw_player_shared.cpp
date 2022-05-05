@@ -101,13 +101,11 @@ static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOld
 #ifdef CLIENT_DLL
 	if ( engine && engine->IsInGame() )
 	{
-		if ( asw_controls.GetInt() == 1 )
+		FOR_EACH_VALID_SPLITSCREEN_PLAYER( i )
 		{
-			ASWInput()->CAM_ToThirdPerson();
-		}
-		else
-		{
-			ASWInput()->CAM_ToFirstPerson();
+			ACTIVE_SPLITSCREEN_PLAYER_GUARD( i );
+
+			ASWInput()->UpdateASWControls();
 		}
 	}
 #endif

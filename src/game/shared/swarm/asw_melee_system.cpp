@@ -545,19 +545,21 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	
 	StartMeleeAttack( GetMeleeAttackByID( CASW_Melee_System::s_nRollAttackID ), pMarine, pMoveData );
 	QAngle angRollDir = vec3_angle;
+	CASW_Player *pPlayer = pMarine->GetCommander();
 	if ( pMoveData->m_flSideMove == 0.0f && pMoveData->m_flForwardMove == 0.0f )
 	{
 		pMarine->m_flMeleeYaw = pMarine->ASWEyeAngles()[ YAW ];
+		pMarine->m_bFaceMeleeYaw = true;
 	}
 	else
 	{
-		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + pMoveData->m_vecMovementAxis[YAW];	// assumes 45 degree cam!
+		float flMoveAxis = pPlayer && pMarine->IsInhabited() && pPlayer->GetASWControls() != 1 ? pMarine->ASWEyeAngles()[YAW] : pMoveData->m_vecMovementAxis[YAW];
+		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + flMoveAxis;	// assumes 45 degree cam!
+		pMarine->m_bFaceMeleeYaw = !pPlayer || !pMarine->IsInhabited() || pPlayer->GetASWControls() == 1;
 	}
-	pMarine->m_bFaceMeleeYaw = true;
 
 	// see if we just dodged any ranger shots
 #ifdef GAME_DLL
-	CASW_Player *pPlayer = pMarine->GetCommander();
 	if ( pPlayer && pMarine->IsInhabited() )
 	{
 		const float flNearby = 150.0f;

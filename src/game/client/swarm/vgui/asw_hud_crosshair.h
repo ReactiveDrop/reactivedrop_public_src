@@ -29,6 +29,7 @@ public:
 	void				DrawDirectionalCrosshair( int x, int y, int iSize );
 	void				GetCurrentPos( int &x, int &y );
 	int					GetCurrentCrosshair( int x, int y );
+	bool				IsGameplayCrosshair();
 	void				SetShowGiveAmmo (bool b, int iAmmoType ) { m_bShowGiveAmmo = b; m_iShowGiveAmmoType = iAmmoType; }
 	void				SetShowGiveHealth(bool b) { m_bShowGiveHealth = b; }
 	virtual bool		ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
@@ -98,5 +99,6 @@ private:
 // Enable/disable crosshair rendering.
 extern ConVar crosshair;
 
+bool IsGameplayCrosshair();
 
 #endif // _INCLUDED_ASW_HUD_CROSSHAIR_H
