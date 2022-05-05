@@ -710,6 +710,11 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 		return;
 
 	static int lastout;
+	
+	float fTickInterval = gpGlobals->interval_per_tick;
+	float fTickRate = ( fTickInterval > 0 ) ? ( 1.0f / fTickInterval ) : 0.0f;
+	if ( fTickRate <= 0.000001f )
+		fTickRate = 0.000001f;
 
 	char sz[ 256 ];
 	int out;
@@ -786,7 +791,21 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 	Q_snprintf( sz, sizeof( sz ), "%3.1f/s", m_AvgPacketIn );
 	textWidth = g_pMatSystemSurface->DrawTextLen( font, "%s", sz );
 
-	g_pMatSystemSurface->DrawColoredText( font, x + w - textWidth - 1, y, GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE, 255, sz );
+	int avgpacketincolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
+	if ( m_AvgPacketIn < ( 0.5 * fTickRate ) )
+	{
+		avgpacketincolor[ 0 ] = 255;
+		avgpacketincolor[ 1 ] = 125;
+		avgpacketincolor[ 2 ] = 31;
+	}
+	else if ( m_AvgPacketIn < ( 0.9 * fTickRate ) )
+	{
+		avgpacketincolor[ 0 ] = 255;
+		avgpacketincolor[ 1 ] = 255;
+		avgpacketincolor[ 2 ] = 31;
+	}
+
+	g_pMatSystemSurface->DrawColoredText( font, x + w - textWidth - 1, y, avgpacketincolor[ 0 ], avgpacketincolor[ 1 ], avgpacketincolor[ 2 ], 255, sz );
 
 	y += textTall;
 
@@ -815,7 +834,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 		if ( graphvalue > 3 )
 		{
-			Q_snprintf( sz, sizeof( sz ), "sv  : %5.1f   var: %4.2f msec", m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
+			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv :%5.1f  var: %4.2f msec", (int)fTickRate, m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
 
 			int servercolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
 
