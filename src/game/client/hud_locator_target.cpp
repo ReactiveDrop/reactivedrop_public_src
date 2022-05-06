@@ -583,6 +583,8 @@ const char *CLocatorTarget::UseBindingImage( char *pchIconTextureName, size_t bu
 		   Q_strcmp( pchBinding, "START" ) == 0 || 
 		   Q_strcmp( pchBinding, "STICK1" ) == 0 || 
 		   Q_strcmp( pchBinding, "STICK2" ) == 0 || 
+		   Q_strcmp( pchBinding, "S1_UP" ) == 0 || 
+		   Q_strcmp( pchBinding, "S2_UP" ) == 0 || 
 		   Q_strcmp( pchBinding, "UP" ) == 0 || 
 		   Q_strcmp( pchBinding, "DOWN" ) == 0 || 
 		   Q_strcmp( pchBinding, "LEFT" ) == 0 || 
