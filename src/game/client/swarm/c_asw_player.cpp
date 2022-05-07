@@ -106,7 +106,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar asw_controls;
 extern ConVar asw_marine_collision;
 ConVar g_DrawPlayer("asw_drawplayermesh", "0", FCVAR_ARCHIVE, "Draw the player entity or not");
 ConVar asw_clientside_avoidance("asw_clientside_avoidance", "1", FCVAR_CHEAT);
@@ -1862,7 +1861,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 	QAngle vAngles = pCmd->viewangles;
 	vAngles.x = 0;
 
-	if ( asw_controls.GetInt() == 1 )
+	if ( GetASWControls() == 1 )
 		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
@@ -2165,9 +2164,9 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 	vAngles.x = 0;
 
-	if (asw_controls.GetBool())
+	if ( GetASWControls() == 1 )
 	{
-		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle( 0, m_flMovementAxisYaw, 0 ), &currentdir, &rightdir, NULL );
 	}
 	else
 	{

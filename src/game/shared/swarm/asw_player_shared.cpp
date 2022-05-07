@@ -1232,10 +1232,5 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 // BenLubar: for code ported from Swarm Director 2, include this method just in case Reactive Drop ever has per-player asw_controls support.
 int CASW_Player::GetASWControls()
 {
-#ifdef CLIENT_DLL
-	// HACK: hard-code first person mode to asw_controls 0.
-	if ( !::input->CAM_IsThirdPerson( 0 ) )
-		return 0;
-#endif
 	return asw_controls.GetInt();
 }

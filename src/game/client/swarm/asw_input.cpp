@@ -32,7 +32,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar asw_controls;
 extern ConVar rd_ray_trace_distance;
 ConVar asw_marine_linear_turn_rate("asw_marine_linear_turn_rate", "1000", FCVAR_CHEAT, "Linear turning rate of the marine (used as minimum when fractional turning is employed)");
 ConVar asw_marine_fraction_turn_scale("asw_marine_fraction_turn_scale", "0", FCVAR_CHEAT, "Scale for the fractional marine turning (large turns)");
@@ -56,7 +55,6 @@ ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", 0, "Disabl
 
 extern kbutton_t in_attack;
 extern int g_asw_iPlayerListOpen;
-extern ConVar asw_controls;
 extern ConVar asw_DebugAutoAim;
 extern ConVar in_forceuser;
 extern ConVar asw_item_hotbar_hud;

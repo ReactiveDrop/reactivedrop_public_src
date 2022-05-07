@@ -292,8 +292,6 @@ extern ConVar old_radius_damage;
 			}
 		}
 	}
-#else
-	extern ConVar asw_controls;
 #endif
 
 static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )

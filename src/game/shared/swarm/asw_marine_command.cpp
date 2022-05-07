@@ -31,7 +31,6 @@
 extern IGameMovement *g_pGameMovement;
 extern CMoveData *g_pMoveData;	// This is a global because it is subclassed by each game.
 extern ConVar sv_noclipduringpause;
-extern ConVar asw_controls;
 
 // PlayerMove Interface
 static CMarineMove g_MarineMove;
