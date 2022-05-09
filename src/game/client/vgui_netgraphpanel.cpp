@@ -834,7 +834,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 		if ( graphvalue > 3 )
 		{
-			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv :%5.1f  var: %4.2f msec", (int)fTickRate, m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
+			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv :%5.1f  var: %4.2f msec", (int)round(fTickRate), m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
 
 			int servercolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
 
