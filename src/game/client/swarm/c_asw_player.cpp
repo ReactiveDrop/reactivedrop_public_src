@@ -789,43 +789,33 @@ bool C_ASW_Player::ShouldDraw()			// we don't draw the player at all (only the n
 }
 
 // inventory
-void C_ASW_Player::ActivateInventoryItem(int slot)
+void C_ASW_Player::ActivateInventoryItem( int slot )
 {
-	C_ASW_Marine* pMarine = GetMarine();
-	if (!pMarine || pMarine->GetHealth()<=0)
+	C_ASW_Marine *pMarine = GetMarine();
+	if ( !pMarine || pMarine->GetHealth() <= 0 )
 		return;
 
-	if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+	if ( pMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 		return;
 
 	// check we have an item in that slot
-	C_ASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-	C_ASW_Weapon* pActive = pMarine->GetActiveASWWeapon();
+	C_ASW_Weapon *pWeapon = pMarine->GetASWWeapon( slot );
+	C_ASW_Weapon *pActive = pMarine->GetActiveASWWeapon();
 	if ( !pWeapon )
 		return;
 
-	// activate only if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
-	if ( slot == 2 || ( pWeapon == pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime ) )
-	{
-		char buffer[64];
-		Q_snprintf(buffer, sizeof(buffer), "cl_offhand %d", slot);
-		engine->ClientCmd(buffer);
-
-		// and predict it?
-		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
-			pWeapon->OffhandActivate();
-
+	// don't activate primary or secondary weapons while cooling down from a primary or secondary weapon attack
+	if ( slot != ASW_INVENTORY_SLOT_EXTRA && pActive && pActive->m_flNextPrimaryAttack > gpGlobals->curtime )
 		return;
-	}
 
-	if ( pWeapon != pActive )
-	{
-		::input->MakeWeaponSelection( pWeapon );
-	}
+	char buffer[64];
+	Q_snprintf( buffer, sizeof( buffer ), "cl_offhand %d", slot );
+	engine->ClientCmd( buffer );
+
+	// and predict it?
+	if ( prediction->InPrediction() && pWeapon->IsPredicted() )
+		pWeapon->OffhandActivate();
 }
-
-
-
 
 void C_ASW_Player::LaunchMissionCompleteFrame(bool bSuccess)
 {

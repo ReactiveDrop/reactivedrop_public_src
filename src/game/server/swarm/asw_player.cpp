@@ -1213,31 +1213,46 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					Warning("Player sent a bad cl_offhand command\n");
 					return false;
 				}
-				int slot = clamp(atoi(args[1]), 0, 3);
-				CASW_Marine* pMarine = GetMarine();
-				if (pMarine && pMarine->GetHealth()>0 && !(pMarine->GetFlags() & FL_FROZEN))
+				int slot = clamp( atoi( args[1] ), 0, 3 );
+				CASW_Marine *pMarine = GetMarine();
+				if ( pMarine && pMarine->GetHealth() > 0 && !( pMarine->GetFlags() & FL_FROZEN ) )
 				{
 					// check we have an item in that slot
-					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-					CASW_Weapon* pActive = pMarine->GetActiveASWWeapon();
-					if ( !pWeapon )
+					CASW_Weapon *pWeapon = pMarine->GetASWWeapon( slot );
+					CASW_Weapon *pActive = pMarine->GetActiveASWWeapon();
+					if ( !pWeapon || pWeapon->m_bSwitchingWeapons || pWeapon->m_flNextPrimaryAttack > gpGlobals->curtime )
 						return false;
 
-					// activate only if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
-					if ( slot == 2 || ( pWeapon == pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+					if ( pActive == pWeapon || slot == ASW_INVENTORY_SLOT_EXTRA )
 					{
+						// activate now if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
 						pWeapon->OffhandActivate();
+					}
+					else if ( pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime )
+					{
+						// simulate the timing for swapping weapons, using the offhand activation, and then swapping back
+						pActive->m_bSwitchingWeapons = true;
+						pActive->m_flNextPrimaryAttack = MAX( pActive->m_flNextPrimaryAttack, gpGlobals->curtime ) + 1.0f;
+						pWeapon->SetThink( &CASW_Weapon::ThinkOffhandActivate );
+						pWeapon->SetNextThink( pActive->m_flNextPrimaryAttack - 0.5f );
 
-						// Fire event when a player uses an offhand item
-						IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
-						if ( event )
-						{
-							event->SetInt( "userid", GetUserID() );
-							event->SetInt( "marine", pMarine->entindex() );
-							event->SetInt( "weapon", pWeapon->entindex() );
+						// do something with our hands so it doesn't look like we're idle
+						pMarine->DoAnimationEventToAll( PLAYERANIMEVENT_WEAPON_SWITCH );
+					}
+					else
+					{
+						return false;
+					}
 
-							gameeventmanager->FireEvent( event );
-						}
+					// Fire event when a player uses an offhand item
+					IGameEvent *event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+					if ( event )
+					{
+						event->SetInt( "userid", GetUserID() );
+						event->SetInt( "marine", pMarine->entindex() );
+						event->SetInt( "weapon", pWeapon->entindex() );
+
+						gameeventmanager->FireEvent( event );
 					}
 				}
 				return true;
