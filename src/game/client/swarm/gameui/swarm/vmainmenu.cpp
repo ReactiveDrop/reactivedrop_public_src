@@ -784,6 +784,14 @@ void MainMenu::OnCommand( const char *command )
 			CBaseModPanel::GetSingleton().OpenWindow(WT_MULTIPLAYER, this, true );
 		}
 	}
+	else if ( !Q_strcmp( command, "AdvancedSettings" ) )
+	{
+		if ( m_ActiveControl )
+		{
+			m_ActiveControl->NavigateFrom();
+		}
+		CBaseModPanel::GetSingleton().OpenWindow( WT_ADVANCEDSETTINGS, this, true );
+	}
 	else if (!Q_strcmp(command, "CloudSettings"))
 	{
 		// standalone cloud settings dialog, PC only
@@ -1101,12 +1109,18 @@ void MainMenu::OnThink()
 //=============================================================================
 void MainMenu::OnOpen()
 {
-	if ( rd_revert_convars.GetBool() )
+	ConVarRef sv_cheats( "sv_cheats" );
+	if ( !sv_cheats.GetBool() )
 	{
-		g_pCVar->RevertFlaggedConVars( FCVAR_REPLICATED );
-	}
+		if ( rd_revert_convars.GetBool() )
+		{
+			g_pCVar->RevertFlaggedConVars( FCVAR_REPLICATED );
+		}
 
-	g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
+		g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
+
+		engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+	}
 
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{

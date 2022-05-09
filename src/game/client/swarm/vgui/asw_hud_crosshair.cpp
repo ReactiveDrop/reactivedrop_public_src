@@ -810,7 +810,10 @@ void CASWHudCrosshair::GetCurrentPos( int &x, int &y )
 		if ( bControllingTurret )
 		{
 			PaintTurretTextures();
-			return;	// don't draw the normal cross hair in addition
+		}
+		else if ( !IsGameplayCrosshair() )
+		{
+			ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
 		}
 	}
 }
@@ -869,6 +872,39 @@ int CASWHudCrosshair::GetCurrentCrosshair( int x, int y )
 	}
 
 	return m_nCrosshairTexture;
+}
+
+bool CASWHudCrosshair::IsGameplayCrosshair()
+{
+	int w, h;
+	GetHudSize( w, h );
+	
+	if ( GetCurrentCrosshair( w / 2, h / 2 ) != m_nCrosshairTexture )
+	{
+		return false;
+	}
+
+	if ( GetClientMode()->GetPanelFromViewport( "ComputerContainer" ) )
+	{
+		return false;
+	}
+	if ( GetClientMode()->GetPanelFromViewport( "WireTileContainer" ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool IsGameplayCrosshair()
+{
+	CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
+	if ( !pCrosshair )
+	{
+		return true;
+	}
+
+	return pCrosshair->IsGameplayCrosshair();
 }
 
 ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "52", FCVAR_CHEAT );

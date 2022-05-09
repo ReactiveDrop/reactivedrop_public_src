@@ -7,6 +7,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+extern ConVar rd_draw_briefing_ui;
+
 FadeInPanel::FadeInPanel(vgui::Panel *parent, const char *name) : vgui::Panel(parent, name)
 {	
 	//Msg("%f: FadeInPanel::FadeInPanel\n", gpGlobals->curtime);
@@ -43,6 +45,12 @@ void FadeInPanel::AllowFastRemove()
 
 void FadeInPanel::OnThink()
 {
+	if ( !rd_draw_briefing_ui.GetBool() )
+	{
+		SetAlpha( 0 );
+		return;
+	}
+
 	// fade out if we're ingame for more than a second
 	if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
 	{

@@ -95,10 +95,10 @@ void CPointDevShotCamera::DevShotThink_Setup( void )
 
 	// Hide stuff
 	engine->ClientCommand( pPlayer->edict(), "developer 0" );
-	engine->ClientCommand( pPlayer->edict(), "cl_drawhud 0" );
 	engine->ClientCommand( pPlayer->edict(), "sv_cheats 1" );
-	engine->ClientCommand( pPlayer->edict(), "god" );
-	engine->ClientCommand( pPlayer->edict(), "notarget" );
+	engine->ClientCommand( pPlayer->edict(), "asw_draw_hud 0" );
+	engine->ClientCommand( pPlayer->edict(), "rd_draw_briefing_ui 0" );
+	engine->ClientCommand( pPlayer->edict(), "asw_god 1" );
 
 	pPlayer->AddSolidFlags( FSOLID_NOT_SOLID );
 	pPlayer->EnableControl(FALSE);

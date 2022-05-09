@@ -577,6 +577,21 @@ void CASWInput::Init_Camera( void )
 	}
 }
 
+void CASWInput::UpdateASWControls()
+{
+	ASSERT_LOCAL_PLAYER_RESOLVABLE();
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer->GetASWControls() == 1 )
+	{
+		CAM_ToThirdPerson();
+	}
+	else
+	{
+		CAM_ToFirstPerson();
+	}
+}
+
 // asw - sets us up for moving the camera around in demos
 void ASWDemoCamera_f()
 {

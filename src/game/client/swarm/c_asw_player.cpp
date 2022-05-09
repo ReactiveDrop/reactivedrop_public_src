@@ -106,7 +106,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar asw_controls;
 extern ConVar asw_marine_collision;
 ConVar g_DrawPlayer("asw_drawplayermesh", "0", FCVAR_ARCHIVE, "Draw the player entity or not");
 ConVar asw_clientside_avoidance("asw_clientside_avoidance", "1", FCVAR_CHEAT);
@@ -801,12 +800,12 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 
 	// check we have an item in that slot
 	C_ASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-	if (!pWeapon)
+	C_ASW_Weapon* pActive = pMarine->GetActiveASWWeapon();
+	if ( !pWeapon )
 		return;
 
-	// if it's an offhand activate, tell the server we want to activate it
-	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
-	if (pWpnInfo && pWpnInfo->m_bOffhandActivate)
+	// activate only if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
+	if ( slot == 2 || ( pWeapon == pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		char buffer[64];
 		Q_snprintf(buffer, sizeof(buffer), "cl_offhand %d", slot);
@@ -815,13 +814,16 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 		// and predict it?
 		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
 			pWeapon->OffhandActivate();
+
 		return;
 	}
 
-	// otherwise, make it our selected weapon
-	if (pWeapon != pMarine->GetActiveWeapon())
+	if ( pWeapon != pActive )
+	{
 		::input->MakeWeaponSelection( pWeapon );
+	}
 }
+
 
 
 
@@ -1443,6 +1445,8 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			// tell other players that we're fully connected
 			engine->ClientCmd( "cl_fullyjoined\n" );
 
+			ASWInput()->UpdateASWControls();
+
 			GetClientModeASW()->ClearCurrentColorCorrection();
 
 			// This shows a panel where player can select a marine. 
@@ -1857,7 +1861,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 	QAngle vAngles = pCmd->viewangles;
 	vAngles.x = 0;
 
-	if ( asw_controls.GetInt() == 1 )
+	if ( GetASWControls() == 1 )
 		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
@@ -2160,9 +2164,9 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 	vAngles.x = 0;
 
-	if (asw_controls.GetBool())
+	if ( GetASWControls() == 1 )
 	{
-		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle( 0, m_flMovementAxisYaw, 0 ), &currentdir, &rightdir, NULL );
 	}
 	else
 	{

@@ -485,12 +485,33 @@ void CASW_Weapon::ItemPostFrame( void )
 		}
 	}
 
-	if (!bAttack1)	// clear our firing var if we don't have the attack button held down (not totally accurate since firing could continue for some time after pulling the trigger, but it's good enough for our purposes)
+	if ( !bAttack1 )	// clear our firing var if we don't have the attack button held down (not totally accurate since firing could continue for some time after pulling the trigger, but it's good enough for our purposes)
 	{
-		m_bIsFiring = false;		// NOTE: Only want to clear primary fire IsFiring bool here (i.e. don't call ClearIsFiring as that'll clear secondary fire too, in subclasses that have it)
-		if ( bOldAttack1 )
+		if ( SecondaryAttackEqualsPrimary() )
 		{
-			OnStoppedFiring();
+			if ( !bAttack2 )
+			{
+				/* doesnt really important now
+				bool bOldAttack2 = false;
+				if ( pOwner->IsInhabited() && pOwner->GetCommander() )
+				{
+					bOldAttack2 = !!( pOwner->m_nOldButtons & IN_ATTACK2 );
+				}
+				*/
+				m_bIsFiring = false;
+				if ( bOldAttack1 /* || bOldAttack2 */)
+				{
+					OnStoppedFiring();
+				}
+			}
+		}
+		else
+		{
+			m_bIsFiring = false;		// NOTE: Only want to clear primary fire IsFiring bool here (i.e. don't call ClearIsFiring as that'll clear secondary fire too, in subclasses that have it)
+			if ( bOldAttack1 )
+			{
+				OnStoppedFiring();
+			}
 		}
 	}
 

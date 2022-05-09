@@ -35,6 +35,9 @@ extern ConVar sk_plr_dmg_asw_sg;
 extern ConVar asw_weapon_force_scale;
 
 ConVar rd_sniper_rifle_dmg_zoomed_bonus("rd_sniper_rifle_dmg_zoomed_bonus", "186", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage value added to sniper rifle in zoom mode");
+#ifdef CLIENT_DLL
+ConVar rd_sniper_scope_weapon_switch("rd_sniper_scope_weapon_switch", "0", FCVAR_ARCHIVE | FCVAR_USERINFO);
+#endif
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sniper_Rifle, DT_ASW_Weapon_Sniper_Rifle )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Sniper_Rifle, DT_ASW_Weapon_Sniper_Rifle )
@@ -87,6 +90,10 @@ CASW_Weapon_Sniper_Rifle::CASW_Weapon_Sniper_Rifle()
 	m_pSniperDynamicLight = NULL;
 #endif
 */
+#ifdef CLIENT_DLL
+	m_flEjectBrassTime = 0.0f;
+	m_nEjectBrassCount = 0;
+#endif
 
 }
 
@@ -255,11 +262,20 @@ float CASW_Weapon_Sniper_Rifle::GetFireRate()
 	return flRate;
 }
 
-
-void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
+void CASW_Weapon_Sniper_Rifle::ItemPostFrame()
 {
 	BaseClass::ItemPostFrame();
+	UpdateZoomState();
+}
 
+void CASW_Weapon_Sniper_Rifle::ItemBusyFrame()
+{
+	BaseClass::ItemBusyFrame();
+	UpdateZoomState();
+}
+
+void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
+{
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine )
 		return;
@@ -268,6 +284,7 @@ void CASW_Weapon_Sniper_Rifle::ItemPostFrame( void )
 	if ( !pMarine->IsInhabited() && IsZoomed() )
 	{
 		m_bZoomed = false;
+		return;
 	}
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;

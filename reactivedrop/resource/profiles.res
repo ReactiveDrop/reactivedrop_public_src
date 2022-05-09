@@ -29,7 +29,7 @@
 	
 	// static skills
 	"SkillPointsSlot0"		"5"
-	"SkillPointsSlot1"		"2"
+	"SkillPointsSlot1"		"3"
 	"SkillPointsSlot2"		"2"
 	"SkillPointsSlot3"		"4"
 	"SkillPointsSlot4"		"3"

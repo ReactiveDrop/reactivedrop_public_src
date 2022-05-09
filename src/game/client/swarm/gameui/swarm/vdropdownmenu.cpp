@@ -244,6 +244,11 @@ void DropDownMenu::SetFlyoutItemEnabled( const char* selection, bool state )
 
 void DropDownMenu::SetFlyout( const char* flyoutName )
 {
+	if ( !m_pButton )
+	{
+		m_pButton = dynamic_cast< BaseModHybridButton * >( FindChildByName( "BtnDropButton" ) );
+	}
+
 	if ( m_pButton )
 	{
 		m_pButton->SetCommand( flyoutName );

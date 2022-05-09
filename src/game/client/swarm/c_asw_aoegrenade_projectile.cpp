@@ -95,6 +95,8 @@ C_ASW_AOEGrenade_Projectile::C_ASW_AOEGrenade_Projectile()
 	m_flTimeCreated = -1;
 
 	m_fUpdateAttachFXTime = 0;
+
+	m_pLoopedSound = NULL;
 }
 
 C_ASW_AOEGrenade_Projectile::~C_ASW_AOEGrenade_Projectile( void )

@@ -20,6 +20,7 @@
 #include <KeyValues.h>
 
 #include "asw_circularprogressbar.h"
+#include "asw_hud_crosshair.h"
 
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
@@ -156,8 +157,15 @@ void ASWCircularProgressBar::PaintBackground()
 
 	if ( m_bIsOnCursor )
 	{
-		int ux, uy;
-		ASWInput()->GetSimulatedFullscreenMousePos(&x, &y, &ux, &uy);
+		if ( ASWInput()->CAM_IsThirdPerson() || !IsGameplayCrosshair() )
+		{
+			ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+		}
+		else
+		{
+			x = ScreenWidth() / 2;
+			y = ScreenHeight() / 2;
+		}
 		w = (YRES( asw_crosshair_progress_size.GetInt() ) * 2) * m_flScale;
 		h = w;
 	
@@ -222,8 +230,15 @@ void ASWCircularProgressBar::Paint()
 
 	if ( m_bIsOnCursor )
 	{
-		int ux, uy;
-		ASWInput()->GetSimulatedFullscreenMousePos(&x, &y, &ux, &uy);
+		if ( ASWInput()->CAM_IsThirdPerson() || !IsGameplayCrosshair() )
+		{
+			ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+		}
+		else
+		{
+			x = ScreenWidth() / 2;
+			y = ScreenHeight() / 2;
+		}
 		w = YRES( asw_crosshair_progress_size.GetInt() ) * m_flScale;
 		h = w;
 	}

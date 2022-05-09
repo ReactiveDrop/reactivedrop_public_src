@@ -141,6 +141,8 @@ public:
 	// Camera shift
 	void SetCameraFixed( bool bFixed ) { m_bCameraFixed = bFixed; }
 
+	void UpdateASWControls();
+
 private:
 	float		m_fCurrentCameraPitch;
 	float		m_flCurrentCameraDist;

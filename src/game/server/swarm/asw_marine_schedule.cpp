@@ -2059,7 +2059,8 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 
 	case TASK_ASW_SWAP_TO_HEAL_GUN:
 		{
-			if ( !dynamic_cast<IASW_Medical_Weapon *>( GetActiveASWWeapon() ) )
+			IASW_Medical_Weapon *pCurMedGun = dynamic_cast<IASW_Medical_Weapon *>( GetActiveASWWeapon() );
+			if ( !pCurMedGun || !pCurMedGun->HasMedicalAmmo() )
 			{
 				for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 				{

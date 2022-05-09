@@ -68,7 +68,7 @@ public:
 
 	// ammo warnings
 	void PaintAmmoWarnings();
-	void DrawAmmoWarningMessage(int row, char* buffer, int r, int g, int b);
+	void DrawAmmoWarningMessage(int row, const char *szToken, int r, int g, int b);
 
 	CASW_VGUI_Ammo_List *m_pAmmoList;
 	CASW_VGUI_Marine_Ammo_Report *m_pReportList;
@@ -806,8 +806,7 @@ void CASWHudAmmo::PaintAmmoWarnings()
 	float f=(gpGlobals->curtime - int(gpGlobals->curtime) );
 	if (f < 0) f = -f;
 	if (f<=0.25 || (f>0.5 && f<=0.75))
-	{		
-		char buffer[32];
+	{
 		int row = 0;
 
 		if (!bHasWeapon || m_bActiveAmmobag)
@@ -818,39 +817,48 @@ void CASWHudAmmo::PaintAmmoWarnings()
 		}
 		else if (bNoAmmo && !bReloading)
 		{
-			Q_snprintf(buffer, sizeof(buffer), "- NO AMMO -");
-			DrawAmmoWarningMessage(row, buffer, 255, 0, 0);
+			DrawAmmoWarningMessage(row, "#asw_no_ammo", 255, 0, 0);
 			row++;
 		}
 		else if (bLowAmmo && !bReloading)
 		{
-			Q_snprintf(buffer, sizeof(buffer), "- LOW AMMO -");
-			DrawAmmoWarningMessage(row, buffer, 255, 0, 0);
+			DrawAmmoWarningMessage(row, "#asw_low_ammo", 255, 0, 0);
 			row++;
 		}
 	}
 }
 
-void CASWHudAmmo::DrawAmmoWarningMessage(int row, char* buffer, int r, int g, int b)
+void CASWHudAmmo::DrawAmmoWarningMessage( int row, const char *szToken, int r, int g, int b )
 {
+	const wchar_t *pwszMessage = g_pVGuiLocalize->Find( szToken );
+	wchar_t wszMessageMissing[64];
+	if ( !pwszMessage )
+	{
+		V_UTF8ToUnicode( szToken, wszMessageMissing, sizeof( wszMessageMissing ) );
+		pwszMessage = wszMessageMissing;
+	}
+
+	int len = V_wcslen( pwszMessage );
+
 	float xPos = this->GetWide() * 0.15f * asw_hud_scale.GetFloat();
 	float yPos = this->GetTall() * 0.3f * asw_hud_scale.GetFloat();
 
-	float fScale = (ScreenHeight() / 768.0f) * asw_hud_scale.GetFloat();
+	float fScale = ( ScreenHeight() / 768.0f ) * asw_hud_scale.GetFloat();
 	// work out our y offset due to asw_hud_scale
-	int y_offset = (130 * (ScreenHeight() / 768.0f)) - (130 * fScale);
+	int y_offset = ( 130 * ( ScreenHeight() / 768.0f ) ) - ( 130 * fScale );
 
 	//int wide = g_pMatSystemSurface->DrawTextLen(m_hAmmoWarningFont, &buffer[0]);
-	int tall = vgui::surface()->GetFontTall(m_hAmmoWarningFont);
-		
-	// centre it on the x
-	//xPos -= (0.5f * wide);
+	int tall = vgui::surface()->GetFontTall( m_hAmmoWarningFont );
+
 	// count down rows
 	yPos += tall * 1.5f * row + y_offset;
 	// drop shadow
-	g_pMatSystemSurface->DrawColoredText(m_hAmmoWarningFont, xPos+1, yPos+1, 0, 0, 
-		0, 200, &buffer[0]);
+	g_pMatSystemSurface->DrawSetTextColor( 0, 0, 0, 200 );
+	g_pMatSystemSurface->DrawSetTextPos( xPos + 1, yPos + 1 );
+	g_pMatSystemSurface->DrawSetTextFont( m_hAmmoWarningFont );
+	g_pMatSystemSurface->DrawPrintText( pwszMessage, len );
 	// actual text
-	g_pMatSystemSurface->DrawColoredText(m_hAmmoWarningFont, xPos, yPos, r, g, 
-		b, 200, &buffer[0]);
+	g_pMatSystemSurface->DrawSetTextColor( r, g, b, 200 );
+	g_pMatSystemSurface->DrawSetTextPos( xPos, yPos );
+	g_pMatSystemSurface->DrawPrintText( pwszMessage, len );
 }

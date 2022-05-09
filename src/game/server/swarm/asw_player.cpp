@@ -1219,23 +1219,24 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				{
 					// check we have an item in that slot
 					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-					if (pWeapon)
+					CASW_Weapon* pActive = pMarine->GetActiveASWWeapon();
+					if ( !pWeapon )
+						return false;
+
+					// activate only if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
+					if ( slot == 2 || ( pWeapon == pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 					{
-						const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
-						if (pWpnInfo && pWpnInfo->m_bOffhandActivate)
+						pWeapon->OffhandActivate();
+
+						// Fire event when a player uses an offhand item
+						IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+						if ( event )
 						{
-							pWeapon->OffhandActivate();
+							event->SetInt( "userid", GetUserID() );
+							event->SetInt( "marine", pMarine->entindex() );
+							event->SetInt( "weapon", pWeapon->entindex() );
 
-							// Fire event when a player uses an offhand item
-							IGameEvent* event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
-							if (event)
-							{
-								event->SetInt( "userid", GetUserID() );
-								event->SetInt( "marine", pMarine->entindex() );
-								event->SetInt( "weapon", pWeapon->entindex() );
-
-								gameeventmanager->FireEvent(event);
-							}
+							gameeventmanager->FireEvent( event );
 						}
 					}
 				}

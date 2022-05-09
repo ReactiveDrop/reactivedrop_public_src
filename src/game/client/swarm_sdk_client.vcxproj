@@ -1346,6 +1346,12 @@ exit 1
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vadvancedsettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="swarm\gameui\swarm\vattractscreen.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -2704,6 +2710,7 @@ exit 1
     <ClInclude Include="swarm\gameui\swarm\vachievements.h" />
     <ClInclude Include="swarm\gameui\swarm\vaddonassociation.h" />
     <ClInclude Include="swarm\gameui\swarm\vaddons.h" />
+    <ClInclude Include="swarm\gameui\swarm\vadvancedsettings.h" />
     <ClInclude Include="swarm\gameui\swarm\vattractscreen.h" />
     <ClInclude Include="swarm\gameui\swarm\vaudio.h" />
     <ClInclude Include="swarm\gameui\swarm\vaudiovideo.h" />

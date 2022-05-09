@@ -596,6 +596,7 @@ void CASW_Buzzer::Event_Killed( const CTakeDamageInfo &info )
 
 void CASW_Buzzer::HitPhysicsObject( CBaseEntity *pOther )
 {
+	Assert( VPhysicsGetObject() );
 	IPhysicsObject *pOtherPhysics = pOther->VPhysicsGetObject();
 	Vector pos, posOther;
 	// Put the force on the line between the buzzer origin and hit object origin
@@ -1350,6 +1351,7 @@ void CASW_Buzzer::ComputeSliceBounceVelocity( CBaseEntity *pHitEntity, trace_t &
 	vecDir[2] = 0.0f;
 	
 	// Knock it away from us
+	Assert( VPhysicsGetObject() );
 	if ( VPhysicsGetObject() != NULL )
 	{
 		VPhysicsGetObject()->ApplyForceOffset( vecDir * 4, GetAbsOrigin() );
@@ -1471,6 +1473,7 @@ void CASW_Buzzer::Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr )
 {
+	Assert( VPhysicsGetObject() );
 	if ( !VPhysicsGetObject() )
 		return;
 
@@ -1568,6 +1571,7 @@ void CASW_Buzzer::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr )
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::CheckCollisions(float flInterval)
 {
+	Assert( VPhysicsGetObject() );
 	if ( !VPhysicsGetObject() )
 		return;
 
@@ -1704,6 +1708,10 @@ void CASW_Buzzer::PlayFlySound(void)
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::MoveExecute_Alive(float flInterval)
 {
+	Assert( VPhysicsGetObject() );
+	if ( !VPhysicsGetObject() )
+		return;
+
 	PhysicsCheckWaterTransition();
 
 	Vector	vCurrentVelocity = GetCurrentVelocity();
@@ -3336,7 +3344,9 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 		if ( m_hCine != NULL )
 		{
 			Wake();
-			VPhysicsGetObject()->Wake();
+			Assert( VPhysicsGetObject() );
+			if ( VPhysicsGetObject() )
+				VPhysicsGetObject()->Wake();
 		}
 
 		bInPVS = MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 0.1f);
@@ -3352,7 +3362,9 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 				if (asw_draw_awake_ai.GetBool())
 					NDebugOverlay::EntityText(entindex(), 1, "WAKING", 60, 255, 255, 0, 255);
 				Wake();
-				VPhysicsGetObject()->Wake();
+				Assert( VPhysicsGetObject() );
+				if ( VPhysicsGetObject() )
+					VPhysicsGetObject()->Wake();
 			}
 		}
 	}
@@ -3374,7 +3386,9 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 						NDebugOverlay::EntityText(entindex(), 1, "SLEEPING", 600, 255, 255, 0, 255);
 
 					Sleep();
-					VPhysicsGetObject()->Sleep();
+					Assert( VPhysicsGetObject() );
+					if ( VPhysicsGetObject() )
+						VPhysicsGetObject()->Sleep();
 					if (m_bVisibleWhenAsleep)
 						RemoveEffects(EF_NODRAW);
 				}

@@ -22,7 +22,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar asw_controls; // asw, whether to use swarm controls or not
 ConVar joy_pan_camera("joy_pan_camera", "0", FCVAR_ARCHIVE);
 ConVar asw_ground_secondary("asw_ground_secondary", "1", FCVAR_NONE, "Set to 1 to make marines aim grenades at the floor instead of firing them straight");
 extern ConVar rd_ground_shooting;

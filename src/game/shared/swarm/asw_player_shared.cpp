@@ -101,13 +101,11 @@ static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOld
 #ifdef CLIENT_DLL
 	if ( engine && engine->IsInGame() )
 	{
-		if ( asw_controls.GetInt() == 1 )
+		FOR_EACH_VALID_SPLITSCREEN_PLAYER( i )
 		{
-			ASWInput()->CAM_ToThirdPerson();
-		}
-		else
-		{
-			ASWInput()->CAM_ToFirstPerson();
+			ACTIVE_SPLITSCREEN_PLAYER_GUARD( i );
+
+			ASWInput()->UpdateASWControls();
 		}
 	}
 #endif
@@ -1234,10 +1232,5 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 // BenLubar: for code ported from Swarm Director 2, include this method just in case Reactive Drop ever has per-player asw_controls support.
 int CASW_Player::GetASWControls()
 {
-#ifdef CLIENT_DLL
-	// HACK: hard-code first person mode to asw_controls 0.
-	if ( !::input->CAM_IsThirdPerson( 0 ) )
-		return 0;
-#endif
 	return asw_controls.GetInt();
 }

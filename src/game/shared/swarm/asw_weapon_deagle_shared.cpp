@@ -155,8 +155,8 @@ float CASW_Weapon_DEagle::GetFireRate( void )
 	return flRate;
 
 #else
-	RandomSeed(gpGlobals->curtime * 10.0f);	
-	float rate = flRate + flRate * random->RandomFloat(0.0f, 6.5f);;
+	RandomSeed(gpGlobals->curtime * 10.0f);
+	float rate = flRate + flRate * random->RandomFloat();
 
 	return rate;
 #endif

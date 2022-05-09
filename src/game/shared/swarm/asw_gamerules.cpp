@@ -292,8 +292,6 @@ extern ConVar old_radius_damage;
 			}
 		}
 	}
-#else
-	extern ConVar asw_controls;
 #endif
 
 static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
@@ -6706,7 +6704,7 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
 	{				
-		if ( GetCampaignInfo() && GetCampaignSave() && !GetCampaignSave()->UsingFixedSkillPoints() )
+		if ( GetCampaignInfo() && GetCampaignSave() )
 		{
 			int iCurrentLoc = GetCampaignSave()->m_iCurrentPosition;
 			CASW_Campaign_Info::CASW_Campaign_Mission_t* mission = GetCampaignInfo()->GetMission(iCurrentLoc);
@@ -6942,12 +6940,11 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 		}
 	}
 
-	ConVarRef asw_controls( "asw_controls" );
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
-		if ( asw_controls.GetBool() )
+		if ( pASWPlayer->GetASWControls() == 1 )
 			iFov = clamp( iFov, 20, 75 );
 		else
 			iFov = clamp( iFov, 20, 120 );
@@ -8002,17 +7999,6 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	{
 		ASWDeathmatchMode()->OnPlayerFullyJoined( pPlayer );
 	}
-	
-	// players who enter midway do not replicate cvar
-	ConVarRef asw_controls( "asw_controls" );
-	if ( asw_controls.IsValid() && !asw_controls.GetBool() )
-	{
-		CReliableBroadcastRecipientFilter filter;
-		UserMessageBegin( filter, "SavedConvar" );
-		WRITE_STRING( asw_controls.GetName() );
-		WRITE_STRING( asw_controls.GetString() );
-		MessageEnd();
-	}
 }
 
 void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info, const char *pszSourceClass )
@@ -8314,7 +8300,7 @@ static void CreateCake( const char *mapname )
 	}
 	else if ( FStrEq( mapname, "rd-bonus_mission1" ) )
 	{
-		origin = Vector( 178, 3740, 370 );
+		origin = Vector( 506, -166, 6 );
 	}
 	else if ( FStrEq( mapname, "rd-bonus_mission2" ) )
 	{
@@ -9007,6 +8993,10 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		m_szGameDescription = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+		if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( m_szGameDescription ) )
+		{
+			g_pVGuiLocalize->ConvertUnicodeToANSI( pwszChallengeName, const_cast< char* >( m_szGameDescription ), sizeof( m_szGameDescription ) );
+		}
 	}
 	else
 		m_szGameDescription = "Alien Swarm: Reactive Drop";

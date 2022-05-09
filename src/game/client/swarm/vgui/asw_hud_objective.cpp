@@ -144,6 +144,10 @@ void CASWHudObjective::ApplySchemeSettings( IScheme *scheme )
 	m_pObjectiveGlowLabel->SetFont( m_hGlowFont );	
 	m_pObjectiveGlowLabel->SetFgColor(Color(35,214,250,255));
 
+	// BenLubar: not sure why this wasn't being translated in the constructor for me but was for everyone else I asked
+	m_pHeaderGlowLabel->SetText( "#asw_objectives" );
+	m_pHeaderLabel->SetText( "#asw_objectives" );
+
 	m_pCompleteLabel->SetPaintBackgroundEnabled(false);
 	m_pCompleteLabel->SetFgColor(Color(255,255,255,255));
 	m_pCompleteLabel->SetFont( m_font );
@@ -197,20 +201,28 @@ void CASWHudObjective::Paint( void )
 		m_iLastNumLetters = m_iNumLetters;
 		if (m_iNumLetters > 0)
 		{
-			int k = MIN(m_iNumLetters, 20);
-			char buffer[64];
-			Q_strncpy(buffer, "Objective complete! ", k);
-			if (m_iNumLetters <= 20)
+			wchar_t buffer[128];
+			if ( const wchar_t *pwszObjectiveComplete = g_pVGuiLocalize->Find( "#asw_objective_complete" ) )
+			{
+				V_wcsncpy( buffer, pwszObjectiveComplete, sizeof( buffer ) );
+			}
+			else
+			{
+				V_wcsncpy( buffer, L"#asw_objective_complete", sizeof( buffer ) );
+			}
+			int len = V_wcslen( buffer );
+			int k = MIN( m_iNumLetters, len );
+			if ( m_iNumLetters <= len )
 			{
 				buffer[k] = '_';
-				buffer[k+1] = '\0';
+				buffer[k + 1] = '\0';
 			}
 			else
 			{
 				buffer[k] = '\0';
 			}
-			m_pCompleteLabel->SetText(buffer);
-			m_pCompleteLabelBD->SetText(buffer);
+			m_pCompleteLabel->SetText( buffer );
+			m_pCompleteLabelBD->SetText( buffer );
 
 			// make sure we're positioned on the right objective
 			int ox, oy, ow, ot;//, cx, cy;
@@ -224,8 +236,8 @@ void CASWHudObjective::Paint( void )
 		}
 		else
 		{
-			m_pCompleteLabel->SetText(" ");
-			m_pCompleteLabelBD->SetText(" ");
+			m_pCompleteLabel->SetText( L" " );
+			m_pCompleteLabelBD->SetText( L" " );
 		}
 	}
 
@@ -323,27 +335,35 @@ void CASWHudObjective::UpdateObjectiveList()
 						int iMinutes = iMissionTimeMS / 1000 / 60;
 						int iSeconds = (iMissionTimeMS / 1000) % 60;
 						int iMilliseconds = iMissionTimeMS % 1000;
+						wchar_t wszTime[64];
+						V_snwprintf( wszTime, ARRAYSIZE( wszTime ), L"%d:%02d.%03d", iMinutes, iSeconds, iMilliseconds );
 
 						int iDeltaTimeMS = (gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime - m_fPrevObjectiveTime) * 1000;
 						int iDeltaMin = iDeltaTimeMS / 1000 / 60;
 						int iDeltaSec = (iDeltaTimeMS / 1000) % 60;
 						int iDeltaMs = iDeltaTimeMS % 1000;
+						wchar_t wszDelta[64];
+						V_snwprintf( wszDelta, ARRAYSIZE( wszDelta ), L"%d:%02d.%03d", iDeltaMin, iDeltaSec, iDeltaMs );
 
-						char szInfo[192];
-						char szObjective[64];
-						g_pVGuiLocalize->ConvertUnicodeToANSI(pObjective->GetObjectiveTitle(), szObjective, sizeof(szObjective));
-						Q_snprintf(szInfo, ARRAYSIZE(szInfo), "%cObjective %c%s %ccomplete! \nTime: %c%d:%02d.%03d %cDelta with previous objective: %c%d:%02d.%03d\n", 
-							'\x04', '\x05', szObjective, '\x04', '\x01', iMinutes, iSeconds, iMilliseconds, '\x04', '\x01', iDeltaMin, iDeltaSec, iDeltaMs);
-						if (rda_print_console_objective_completion_time.GetBool() )
+						wchar_t wszInfo[192];
+						g_pVGuiLocalize->ConstructString( wszInfo, sizeof( wszInfo ),
+							g_pVGuiLocalize->FindSafe( "#rd_objective_chat_message" ), 3,
+							pObjective->GetObjectiveTitle(),
+							wszTime,
+							wszDelta );
+						char szInfo[256];
+						g_pVGuiLocalize->ConvertUnicodeToANSI( wszInfo, szInfo, sizeof( szInfo ) );
+
+						if ( rda_print_console_objective_completion_time.GetBool() || rda_print_chat_objective_completion_time.GetBool() )
 						{
-							ConColorMsg(col, "%s", szInfo);
+							ConColorMsg( col, "%s", szInfo );
 						}
-						if (rda_print_chat_objective_completion_time.GetBool())
+						if ( rda_print_chat_objective_completion_time.GetBool() )
 						{
-							CBaseHudChat* hudChat = CBaseHudChat::GetHudChat();
-							if (hudChat)
+							CBaseHudChat *hudChat = CBaseHudChat::GetHudChat();
+							if ( hudChat )
 							{
-								hudChat->ChatPrintf(0, CHAT_FILTER_NONE, "%s", szInfo);
+								hudChat->ChatPrintf( 0, CHAT_FILTER_NONE, "%s", szInfo );
 							}
 						}
 

@@ -147,7 +147,15 @@ void MissionStatsPanel::SetMissionLabels(vgui::Label *pMissionLabel, vgui::Label
 	extern ConVar rd_challenge;
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
-		g_pVGuiLocalize->ConvertANSIToUnicode( ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ), pChallenge, sizeof( pChallenge ) );
+		const char *pszChallengeName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+		if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( pszChallengeName ) )
+		{
+			V_wcsncpy( pChallenge, pwszChallengeName, sizeof( pChallenge ) );
+		}
+		else
+		{
+			g_pVGuiLocalize->ConvertANSIToUnicode( pszChallengeName, pChallenge, sizeof( pChallenge ) );
+		}
 	}
 
 	wchar_t mission_difficulty[96];

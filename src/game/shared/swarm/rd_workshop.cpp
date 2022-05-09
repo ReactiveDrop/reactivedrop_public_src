@@ -17,6 +17,7 @@
 #include "gameui/swarm/vaddons.h"
 #include "gameui/swarm/rd_workshop_frame.h"
 #include <vgui/ISystem.h>
+#include <vgui/ILocalize.h>
 
 #ifdef IS_WINDOWS_PC
 #undef INVALID_HANDLE_VALUE
@@ -39,7 +40,7 @@
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
 ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #else
-ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "0", FCVAR_NONE, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
+ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
@@ -506,15 +507,45 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 		CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaign->GetMissionByMapName( MapName() );
 		if ( pMission )
 		{
+			char szCampaignName[256];
+			if ( const wchar_t *pwszCampaignName = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+			{
+				V_UnicodeToUTF8( pwszCampaignName, szCampaignName, sizeof( szCampaignName ) );
+			}
+			else
+			{
+				V_strncpy( szCampaignName, STRING( pCampaign->m_CampaignName ), sizeof( szCampaignName ) );
+			}
+
+			char szMissionName[256];
+			if ( const wchar_t *pwszMissionName = g_pVGuiLocalize->Find( STRING( pMission->m_MissionName ) ) )
+			{
+				V_UnicodeToUTF8( pwszMissionName, szMissionName, sizeof( szMissionName ) );
+			}
+			else
+			{
+				V_strncpy( szMissionName, STRING( pMission->m_MissionName ), sizeof( szMissionName ) );
+			}
+
 			char szName[512];
-			Q_snprintf( szName, sizeof( szName ), "%s: %s", STRING( pCampaign->m_CampaignName ), STRING( pMission->m_MissionName ) );
+			Q_snprintf( szName, sizeof( szName ), "%s: %s", szCampaignName, szMissionName );
 
 			extern ConVar rd_challenge;
 			if ( Q_strcmp( rd_challenge.GetString(), "0" ) )
 			{
+				const char *pszChallengeName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
 				char szChallengeName[256];
-				Q_snprintf( szChallengeName, sizeof( szChallengeName ), " (%s)", ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
-				Q_strncat( szName, szChallengeName, sizeof( szName ) );
+				if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( pszChallengeName ) )
+				{
+					V_UnicodeToUTF8( pwszChallengeName, szChallengeName, sizeof( szChallengeName ) );
+				}
+				else
+				{
+					V_strncpy( szChallengeName, pszChallengeName, sizeof( szChallengeName ) );
+				}
+				V_strncat( szName, " (", sizeof( szName ) );
+				V_strncat( szName, szChallengeName, sizeof( szName ) );
+				V_strncat( szName, ")", sizeof( szName ) );
 			}
 
 			steamapicontext->SteamScreenshots()->SetLocation( pReady->m_hLocal, szName );
@@ -926,7 +957,7 @@ static void ClearCaches()
 	// prevent snd_restart to be called during game launch be call it when loading\unloading add-ons
 	static bool bRestartSoundEngine = false;
 	if ( bRestartSoundEngine )
-		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
+		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; rd_loc_reload; snd_updateaudiocache; snd_restart" );
 	bRestartSoundEngine = true;
 	//
 #endif
