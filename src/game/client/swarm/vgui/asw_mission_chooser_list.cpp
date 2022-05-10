@@ -8,7 +8,6 @@
 #include <vgui_controls/CheckButton.h>
 #include "asw_mission_chooser_list.h"
 #include "asw_mission_chooser_entry.h"
-#include "asw_difficulty_chooser.h"
 #include "FileSystem.h"
 #include "ServerOptionsPanel.h"
 #include <vgui_controls/Panel.h>
@@ -397,55 +396,55 @@ void CASW_Mission_Chooser_List::UpdateDetails()
 	}
 }
 
-void CASW_Mission_Chooser_List::OnEntryClicked(CASW_Mission_Chooser_Entry *pClicked)
+void CASW_Mission_Chooser_List::OnEntryClicked( CASW_Mission_Chooser_Entry *pClicked )
 {
 	// find which entry we clicked
 	int iChosen = -1;
-	for (int i=0;i<ASW_SAVES_PER_PAGE;i++)
+	for ( int i = 0; i < ASW_SAVES_PER_PAGE; i++ )
 	{
-		if (m_pEntry[i] == pClicked)
+		if ( m_pEntry[i] == pClicked )
 		{
 			iChosen = i;
 			break;
 		}
 	}
-	if (iChosen == -1)
+	if ( iChosen == -1 )
 		return;
 
-	if (m_HostType == ASW_HOST_TYPE_CALLVOTE)
+	if ( m_HostType == ASW_HOST_TYPE_CALLVOTE )
 	{
 		// issue the appropriate client command to request a vote
 		char buffer[128];
-		if (m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
+		if ( m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN )
 		{
 			ASW_Mission_Chooser_Saved_Campaign *savedcampaigns = m_pMissionSource->GetSavedCampaigns();
 			char stripped[64];
-			V_StripExtension(savedcampaigns[iChosen].m_szSaveName, stripped, sizeof(stripped));
-			Q_snprintf(buffer, sizeof(buffer), "asw_vote_saved_campaign %s", stripped);
-			engine->ClientCmd(buffer);
+			V_StripExtension( savedcampaigns[iChosen].m_szSaveName, stripped, sizeof( stripped ) );
+			Q_snprintf( buffer, sizeof( buffer ), "asw_vote_saved_campaign %s", stripped );
+			engine->ClientCmd( buffer );
 			CloseSelf();
 		}
-		else if (m_ChooserType == ASW_CHOOSER_CAMPAIGN)
+		else if ( m_ChooserType == ASW_CHOOSER_CAMPAIGN )
 		{
 			ChangeToShowingMissionsWithinCampaign( iChosen + m_iPage * ASW_CAMPAIGNS_PER_PAGE );
 		}
-		else if (m_ChooserType == ASW_CHOOSER_SINGLE_MISSION)
+		else if ( m_ChooserType == ASW_CHOOSER_SINGLE_MISSION )
 		{
 			if ( m_nCampaignIndex == -1 )
 			{
-				ASW_Mission_Chooser_Mission* missions = m_pMissionSource->GetMissions();
+				ASW_Mission_Chooser_Mission *missions = m_pMissionSource->GetMissions();
 				char stripped[64];
-				V_StripExtension(missions[iChosen].m_szMissionName, stripped, sizeof(stripped));
-				Q_snprintf(buffer, sizeof(buffer), "asw_vote_mission %s", stripped);
+				V_StripExtension( missions[iChosen].m_szMissionName, stripped, sizeof( stripped ) );
+				Q_snprintf( buffer, sizeof( buffer ), "asw_vote_mission %s", stripped );
 			}
 			else
 			{
-				ASW_Mission_Chooser_Mission* missions = m_pMissionSource->GetMissions();
+				ASW_Mission_Chooser_Mission *missions = m_pMissionSource->GetMissions();
 				char stripped[64];
-				V_StripExtension(missions[iChosen].m_szMissionName, stripped, sizeof(stripped));
-				Q_snprintf(buffer, sizeof(buffer), "asw_vote_campaign %d %s", m_nCampaignIndex, stripped);
+				V_StripExtension( missions[iChosen].m_szMissionName, stripped, sizeof( stripped ) );
+				Q_snprintf( buffer, sizeof( buffer ), "asw_vote_campaign %d %s", m_nCampaignIndex, stripped );
 			}
-			engine->ClientCmd(buffer);
+			engine->ClientCmd( buffer );
 			CloseSelf();
 		}
 	}
@@ -454,33 +453,33 @@ void CASW_Mission_Chooser_List::OnEntryClicked(CASW_Mission_Chooser_Entry *pClic
 		// find the launch name (either the map name, campaign name or save name)
 		char szLaunchName[256];
 		szLaunchName[0] = '\0';
-		if (m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
+		if ( m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN )
 		{
 			ASW_Mission_Chooser_Saved_Campaign *savedcampaigns = m_pMissionSource->GetSavedCampaigns();
-			Q_snprintf(szLaunchName, sizeof(szLaunchName), "%s", savedcampaigns[iChosen].m_szSaveName);
+			Q_snprintf( szLaunchName, sizeof( szLaunchName ), "%s", savedcampaigns[iChosen].m_szSaveName );
 		}
 		else
 		{
-			ASW_Mission_Chooser_Mission* missions = NULL;
-			if (m_ChooserType == ASW_CHOOSER_SINGLE_MISSION)
+			ASW_Mission_Chooser_Mission *missions = NULL;
+			if ( m_ChooserType == ASW_CHOOSER_SINGLE_MISSION )
 				missions = m_pMissionSource->GetMissions();
-			else if (m_ChooserType == ASW_CHOOSER_CAMPAIGN)
+			else if ( m_ChooserType == ASW_CHOOSER_CAMPAIGN )
 				missions = m_pMissionSource->GetCampaigns();
-						
+
 			//Q_snprintf(szLaunchName, sizeof(szLaunchName), "%s", missions[iChosen].m_szMissionName);
-			V_StripExtension( missions[iChosen].m_szMissionName, szLaunchName, sizeof(szLaunchName) );
+			V_StripExtension( missions[iChosen].m_szMissionName, szLaunchName, sizeof( szLaunchName ) );
 		}
-		if (szLaunchName[0] == '\0')
+		if ( szLaunchName[0] == '\0' )
 			return;
 
 		int iPlayers = 1;
-		if (m_HostType != ASW_HOST_TYPE_SINGLEPLAYER)
+		if ( m_HostType != ASW_HOST_TYPE_SINGLEPLAYER )
 		{
 			iPlayers = 6;
-			if (m_pServerOptions)
+			if ( m_pServerOptions )
 				iPlayers = m_pServerOptions->GetMaxPlayers();
 		}
-		
+
 		char szMapCommand[1024];
 
 		// create the command to execute
@@ -489,39 +488,40 @@ void CASW_Mission_Chooser_List::OnEntryClicked(CASW_Mission_Chooser_Entry *pClic
 		char szHostnameCommand[64];
 		char szPasswordCommand[64];
 		char szLANCommand[64];
-		if (m_HostType == ASW_HOST_TYPE_CREATESERVER && m_pServerOptions)
+		if ( m_HostType == ASW_HOST_TYPE_CREATESERVER && m_pServerOptions )
 		{
-			Q_snprintf(szHostnameCommand, sizeof(szHostnameCommand), "hostname \"%s\"\n", m_pServerOptions->GetHostName());
-			Q_snprintf(szPasswordCommand, sizeof(szPasswordCommand), "sv_password \"%s\"\n", m_pServerOptions->GetPassword());
-			Q_snprintf(szLANCommand, sizeof(szLANCommand), "sv_lan %d\nsetmaster enable\n", m_pServerOptions->GetLAN() ? 1 : 0);
+			Q_snprintf( szHostnameCommand, sizeof( szHostnameCommand ), "hostname \"%s\"\n", m_pServerOptions->GetHostName() );
+			Q_snprintf( szPasswordCommand, sizeof( szPasswordCommand ), "sv_password \"%s\"\n", m_pServerOptions->GetPassword() );
+			Q_snprintf( szLANCommand, sizeof( szLANCommand ), "sv_lan %d\nsetmaster enable\n", m_pServerOptions->GetLAN() ? 1 : 0 );
 		}
 		else
 		{
-			Q_snprintf(szHostnameCommand, sizeof(szHostnameCommand), "hostname \"AS:I Server\"\n");
-			Q_snprintf(szPasswordCommand, sizeof(szPasswordCommand), "");
-			Q_snprintf(szLANCommand, sizeof(szLANCommand), "");
+			Q_snprintf( szHostnameCommand, sizeof( szHostnameCommand ), "hostname \"AS:I Server\"\n" );
+			Q_snprintf( szPasswordCommand, sizeof( szPasswordCommand ), "" );
+			Q_snprintf( szLANCommand, sizeof( szLANCommand ), "" );
 		}
 
-		if (m_ChooserType == ASW_CHOOSER_SINGLE_MISSION)
+		if ( m_ChooserType == ASW_CHOOSER_SINGLE_MISSION )
 		{
-			Q_snprintf(szMapCommand, sizeof( szMapCommand ), "%s%s%smaxplayers %d\nprogress_enable\nmap %s\n",				
+			Q_snprintf( szMapCommand, sizeof( szMapCommand ), "disconnect\nwait\nwait\n%s%s%smaxplayers %d\nprogress_enable\nmap %s\n",
 				szHostnameCommand,
 				szPasswordCommand,
 				szLANCommand,
 				iPlayers,
 				szLaunchName
 			);
-			ShowDifficultyChooser(szMapCommand);	// note: this adds disconnect, wait, skill to the start
+			CloseSelf();
+			engine->ClientCmd( szMapCommand );
 		}
-		else if (m_ChooserType == ASW_CHOOSER_CAMPAIGN)
+		else if ( m_ChooserType == ASW_CHOOSER_CAMPAIGN )
 		{
 			const char *pNewSaveName = GenerateNewSaveGameName();
-			if (!pNewSaveName)
+			if ( !pNewSaveName )
 			{
-				Msg("Error! No more room for autogenerated save names, delete some save games!\n");
+				Msg( "Error! No more room for autogenerated save names, delete some save games!\n" );
 				return;
 			}
-			Q_snprintf(szMapCommand, sizeof( szMapCommand ), "%s%s%smaxplayers %d\nprogress_enable\nasw_startcampaign %s %s %s\n",				
+			Q_snprintf( szMapCommand, sizeof( szMapCommand ), "disconnect\nwait\nwait\n%s%s%smaxplayers %d\nprogress_enable\nasw_startcampaign %s %s %s\n",
 				szHostnameCommand,
 				szPasswordCommand,
 				szLANCommand,
@@ -529,12 +529,13 @@ void CASW_Mission_Chooser_List::OnEntryClicked(CASW_Mission_Chooser_Entry *pClic
 				szLaunchName,
 				pNewSaveName,
 				iPlayers == 1 ? "SP" : "MP"
-			);		
-			ShowDifficultyChooser(szMapCommand);	// note: this adds disconnect, wait, skill to the start
+			);
+			CloseSelf();
+			engine->ClientCmd( szMapCommand );
 		}
-		else if (m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
-		{			
-			Q_snprintf(szMapCommand, sizeof( szMapCommand ), "disconnect\nwait\nwait\n%s%s%smaxplayers %d\nprogress_enable\nasw_loadcampaign %s %s\n",
+		else if ( m_ChooserType == ASW_CHOOSER_SAVED_CAMPAIGN )
+		{
+			Q_snprintf( szMapCommand, sizeof( szMapCommand ), "disconnect\nwait\nwait\n%s%s%smaxplayers %d\nprogress_enable\nasw_loadcampaign %s %s\n",
 				szHostnameCommand,
 				szPasswordCommand,
 				szLANCommand,
@@ -543,40 +544,9 @@ void CASW_Mission_Chooser_List::OnEntryClicked(CASW_Mission_Chooser_Entry *pClic
 				iPlayers == 1 ? "SP" : "MP"
 			);
 			CloseSelf();
-			engine->ClientCmd(szMapCommand);
+			engine->ClientCmd( szMapCommand );
 		}
 	}
-}
-
-void CASW_Mission_Chooser_List::ShowDifficultyChooser(const char *szCommand)
-{
-	CASW_Difficulty_Chooser *pFrame = new CASW_Difficulty_Chooser( GetParent(), "DifficultyChooser", szCommand );
-	vgui::VPANEL gameuiPanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-	pFrame->SetParent( gameuiPanel );
-
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
-	pFrame->SetScheme(scheme);
-	
-	
-	pFrame->SetTitle("#asw_select_difficulty", true );
-
-	pFrame->SetTitleBarVisible(true);
-	pFrame->SetMoveable(true);
-	pFrame->SetSizeable(false);
-	pFrame->SetMenuButtonVisible(false);
-	pFrame->SetMaximizeButtonVisible(false);
-	pFrame->SetMinimizeToSysTrayButtonVisible(false);
-	pFrame->SetMinimizeButtonVisible(false);
-	pFrame->SetCloseButtonVisible(true);	
-	
-	pFrame->RequestFocus();
-	pFrame->SetVisible(true);
-	pFrame->SetEnabled(true);
-
-	pFrame->InvalidateLayout(true, true);
-
-	CloseSelf();
-	vgui::input()->SetAppModalSurface(pFrame->GetVPanel());
 }
 
 void CASW_Mission_Chooser_List::CloseSelf()

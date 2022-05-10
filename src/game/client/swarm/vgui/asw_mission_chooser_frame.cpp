@@ -7,7 +7,6 @@
 #include "convar.h"
 #include "asw_mission_chooser_list.h"
 #include "asw_mission_chooser_frame.h"
-#include "asw_difficulty_chooser.h"
 #include "ServerOptionsPanel.h"
 #include <vgui/isurface.h>
 #include <vgui/IInput.h>
@@ -117,14 +116,6 @@ void LaunchMissionChooser(int iHostType, int iChooserType)
 		pFrame->SetVisible(false);
 		pFrame->MarkForDeletion();
 		g_hChooserFrame = NULL;
-	}
-	// close any difficulty panels we have up
-	if (g_hDifficultyFrame != NULL)
-	{
-		CASW_Difficulty_Chooser *pFrame = g_hDifficultyFrame;
-		pFrame->SetVisible(false);
-		pFrame->MarkForDeletion();
-		g_hDifficultyFrame = NULL;
 	}
 
 	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;

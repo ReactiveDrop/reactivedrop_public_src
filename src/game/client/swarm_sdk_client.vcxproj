@@ -1680,7 +1680,6 @@ exit 1
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
     <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />
-    <ClCompile Include="swarm\vgui\asw_difficulty_chooser.cpp" />
     <ClCompile Include="swarm\vgui\asw_hudelement.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_3dmarinenames.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_ammo.cpp" />
@@ -2775,7 +2774,6 @@ exit 1
     <ClInclude Include="swarm\rd_swarmopedia.h" />
     <ClInclude Include="swarm\vgui\asw_build_map_frame.h" />
     <ClInclude Include="swarm\vgui\asw_circularprogressbar.h" />
-    <ClInclude Include="swarm\vgui\asw_difficulty_chooser.h" />
     <ClInclude Include="swarm\vgui\asw_hudelement.h" />
     <ClInclude Include="swarm\vgui\asw_hud_3dmarinenames.h" />
     <ClInclude Include="swarm\vgui\asw_hud_chat.h" />

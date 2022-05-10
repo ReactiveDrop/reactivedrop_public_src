@@ -30,7 +30,6 @@ public:
 	const char * GenerateNewSaveGameName();
 	void CloseSelf();
 	void UpdateNumPages();
-	void ShowDifficultyChooser(const char *szCommand);
 	void ChangeToShowingMissionsWithinCampaign( int nCampaignIndex );
 
 	vgui::Button *m_pCancelButton;
