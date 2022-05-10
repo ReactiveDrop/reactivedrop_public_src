@@ -45,6 +45,21 @@
 			title "#RD_AdvancedSettings_HUD_ChatWipe"
 			cvar "rd_chatwipe"
 		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_ChatColor"
+			cvar "cl_chatcolor"
+			options
+			{
+				"255 255 255 255" "#RD_AdvancedSettings_Color_White"
+				"255 64 64 255" "#RD_AdvancedSettings_Color_Red"
+				"255 192 64 255" "#RD_AdvancedSettings_Color_Orange"
+				"96 255 64 255" "#RD_AdvancedSettings_Color_Green"
+				"64 192 255 255" "#RD_AdvancedSettings_Color_Blue"
+				"128 64 255 255" "#RD_AdvancedSettings_Color_Purple"
+				"255 64 192 255" "#RD_AdvancedSettings_Color_Pink"
+			}
+		}
 		TOGGLE
 		{
 			title "#RD_AdvancedSettings_HUD_ColorNamesInChat"

@@ -34,9 +34,19 @@ Color g_ASWColorWhite( 0, 255, 0, 255 );
 extern ConVar rd_chatwipe;
 extern ConVar asw_hud_alpha;
 
-ConVar cl_chatcolor_r( "cl_chatcolor_r", "255", FCVAR_ARCHIVE, "Red component of chat messages color", true, 0.f, true, 255.f );
-ConVar cl_chatcolor_g( "cl_chatcolor_g", "255", FCVAR_ARCHIVE, "Green component of chat messages color", true, 0.f, true, 255.f );
-ConVar cl_chatcolor_b( "cl_chatcolor_b", "255", FCVAR_ARCHIVE, "Blue component of chat messages color", true, 0.f, true, 255.f );
+ConVar cl_chatcolor( "cl_chatcolor", "255 255 255 255", FCVAR_ARCHIVE, "Default chat message color" );
+#define CHAT_COLOR_STUB(CHANNEL) \
+CON_COMMAND_F( cl_chatcolor_ ## CHANNEL, "", FCVAR_HIDDEN ) \
+{ \
+	int r, g, b, a; \
+	cl_chatcolor.GetColor().GetColor( r, g, b, a ); \
+	CHANNEL = atoi( args.Arg( 1 ) ); \
+	cl_chatcolor.SetValue( Color( r, g, b, a ) ); \
+}
+CHAT_COLOR_STUB( r );
+CHAT_COLOR_STUB( g );
+CHAT_COLOR_STUB( b );
+#undef CHAT_COLOR_STUB
 ConVar rd_chat_colorful_player_names( "rd_chat_colorful_player_names", "0", FCVAR_ARCHIVE, "If set 1, the player name in the chat box will become colorful" );
 
 
@@ -406,12 +416,8 @@ Color CHudChat::GetClientColor( int clientIndex )
 	{
 		return g_ASWColorGrey;
 	}
-	else if( g_PR )
-	{
-		return Color( cl_chatcolor_r.GetInt(), cl_chatcolor_g.GetInt(), cl_chatcolor_b.GetInt() );
-	}
 
-	return Color( cl_chatcolor_r.GetInt(), cl_chatcolor_g.GetInt(), cl_chatcolor_b.GetInt() );;
+	return cl_chatcolor.GetColor();
 }
 
 void CHudChat::OnTick()
