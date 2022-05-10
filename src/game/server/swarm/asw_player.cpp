@@ -607,8 +607,8 @@ void CASW_Player::Spawn()
 	SetModel( ASW_PLAYER_MODEL );
 
 	BaseClass::Spawn();
-	
-	SetMoveType( MOVETYPE_WALK );	
+
+	SetMoveType( MOVETYPE_WALK );
 	m_takedamage = DAMAGE_NO;
 	m_iKickVoteIndex = -1;
 	m_iLeaderVoteIndex = -1;
@@ -617,15 +617,6 @@ void CASW_Player::Spawn()
 	if (ASWGameRules())
 	{
 		ASWGameRules()->SetMaxMarines();
-
-		if (ASWGameRules()->IsOutroMap())
-		{
-			CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-			if (pIntro)
-			{
-				pIntro->PlayerSpawned(this);
-			}
-		}
 	}
 }
 
@@ -1822,29 +1813,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		m_iClientKills = atoi(args[3]);
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_skip_intro") )
-	{
-		if (ASWGameRules())
-		{
-			if (ASWGameRules()->IsIntroMap())
-			{
-				CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-				if (pIntro)
-				{
-					pIntro->LaunchCampaignMap();
-				}
-			}
-			else if (ASWGameRules()->IsOutroMap())
-			{
-				CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-				if (pIntro)
-				{
-					pIntro->CheckReconnect();
-				}
-			}
-		}
-		return true;
-	}	
 	else if ( FStrEq( pcmd, "cl_fullyjoined") )
 	{
 		if (!m_bSentJoinedMessage)

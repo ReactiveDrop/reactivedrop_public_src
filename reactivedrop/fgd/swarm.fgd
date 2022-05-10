@@ -4258,7 +4258,6 @@
 	input LaunchCampaignMap(void) : "Shows the campaign map so the player can choose a mission to play."
 	input ShowCredits(void) : "Fades in ASI logo and credits"
 	input ShowCainMail(void) : "Shows the Lt. Cain mail for the outro"
-	input CheckReconnect(void) : "Call this when the outro has ended to make clients check for reconnecting to the dedicated server they were playing on."
 	output IntroStarted(void) : "Fired when the intro/outro map begins."
 ]
 

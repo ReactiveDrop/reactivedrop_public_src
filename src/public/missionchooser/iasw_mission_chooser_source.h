@@ -62,7 +62,7 @@ public:
 	virtual bool SavedCampaignExists(const char *szSaveName) = 0;
 	virtual bool ASW_Campaign_CreateNewSaveGame(char *szFileName, int iFileNameMaxLen, const char *szCampaignName, bool bMultiplayerGame, const char *szStartingMission) = 0;
 	virtual void NotifySaveDeleted(const char *szSaveName) = 0;
-	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName) = 0;	// returns the intro map for the campaign that this save uses
+	virtual const char *GetCampaignSaveIntroMap( const char *szSaveName ) { return NULL; } // deprecated
 
 	// returns nice version of the filenames (i.e. title from the overview.txt or from the campaign txt)
 	virtual const char* GetPrettyMissionName(const char *szMapName) = 0;

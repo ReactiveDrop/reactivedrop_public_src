@@ -842,21 +842,6 @@ void C_ASW_Player::LaunchBriefingFrame(void)
 		::input->CAM_ToFirstPerson();
 		return;
 	}
-	else if (ASWGameRules())
-	{				
-		if (ASWGameRules()->IsIntroMap())			
-		{		
-			::input->CAM_ToFirstPerson();
-			new CASW_VGUI_Skip_Intro(GetClientMode()->GetViewport(), "SkipIntro");
-			return;
-		}
-		else if (ASWGameRules()->IsOutroMap())
-		{			
-			::input->CAM_ToFirstPerson();
-			new CASW_VGUI_Skip_Intro(GetClientMode()->GetViewport(), "SkipIntro");
-			return;
-		}
-	}
 
 	// create the basic frame which holds our briefing panels
 	//Msg("[%d] Assigning briefing frame\n", entindex());

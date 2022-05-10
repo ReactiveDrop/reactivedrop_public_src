@@ -17,9 +17,7 @@ public:
 	void InputLaunchCampaignMap( inputdata_t &inputdata );
 	void InputShowCredits( inputdata_t &inputdata );
 	void InputShowCainMail( inputdata_t &inputdata );
-	void InputCheckReconnect( inputdata_t &inputdata );	
 	void OnIntroStarted();
-	void CheckReconnect();
 	void LaunchCampaignMap();
 	void PlayerSpawned(CASW_Player *pPlayer);
 	virtual void Spawn();

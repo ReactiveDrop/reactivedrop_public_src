@@ -1285,57 +1285,6 @@ bool CASW_Mission_Chooser_Source_Local::SavedCampaignLess::Less( ASW_Mission_Cho
 	return false;
 }
 
-#define ASW_DEFAULT_INTRO_MAP "intro_jacob"
-const char* CASW_Mission_Chooser_Source_Local::GetCampaignSaveIntroMap(const char *szSaveName)
-{
-	// check the save file exists
-	char stripped[MAX_PATH];
-	V_StripExtension( szSaveName, stripped, MAX_PATH );
-	char tempfile[MAX_PATH];
-	Q_snprintf( tempfile, sizeof( tempfile ), "save/%s.campaignsave", stripped );
-	if (!g_pFullFileSystem->FileExists(tempfile))
-		return ASW_DEFAULT_INTRO_MAP;
-
-	KeyValues *pSaveKeyValues = new KeyValues( szSaveName );
-	const char* pszCampaign = NULL;
-	if (pSaveKeyValues->LoadFromFile(g_pFullFileSystem, tempfile))
-	{		
-		pszCampaign = pSaveKeyValues->GetString("CampaignName");
-	}
-	if (!pszCampaign)
-	{
-		pSaveKeyValues->deleteThis();
-		return ASW_DEFAULT_INTRO_MAP;
-	}
-
-	char ctempfile[MAX_PATH];
-	Q_snprintf( ctempfile, sizeof( ctempfile ), "resource/campaigns/%s.txt", pszCampaign );
-	if (!g_pFullFileSystem->FileExists(ctempfile))	/// check it exists
-	{
-		pSaveKeyValues->deleteThis();
-		return ASW_DEFAULT_INTRO_MAP;
-	}
-
-	// now read in the campaign txt and find the intro map name
-	KeyValues *pCampaignKeyValues = new KeyValues( pszCampaign );
-	if (pCampaignKeyValues->LoadFromFile(g_pFullFileSystem, ctempfile))
-	{
-		static char s_introname[128];
-		Q_strncpy( s_introname, pCampaignKeyValues->GetString("IntroMap"), 128 );
-		// check we actually got a valid intro map name string
-		if ( Q_strlen(s_introname) > 5 && !Q_strnicmp( s_introname, "intro", 5 ) )
-		{
-			pSaveKeyValues->deleteThis();
-			pCampaignKeyValues->deleteThis();
-			return s_introname;
-		}
-	}
-
-	pSaveKeyValues->deleteThis();
-	pCampaignKeyValues->deleteThis();
-	return ASW_DEFAULT_INTRO_MAP;
-}
-
 void CASW_Mission_Chooser_Source_Local::ClearCache()
 {
 	m_MissionDetails.PurgeAndDeleteElements();

@@ -385,85 +385,6 @@ static void __MsgFunc_ASWCampaignCompleted( bf_read &msg )
 			GetMedalStore()->OnIncreaseCounts(0,1,0, (gpGlobals->maxClients <= 1));
 #endif
 	}
-
-#ifdef OUTRO_MAP
-	// check for changing to the outro map
-	//int iDedicated =
-						msg.ReadByte();	
-	int iHostIndex = msg.ReadByte();	
-
-	Msg("[C] __MsgFunc_ASWCampaignCompleted. playerindex=%d hostindex =%d offline=%d\n",
-		pPlayer ? pPlayer->entindex() : -1, iHostIndex, (gpGlobals->maxClients <= 1));
-	if (pPlayer && pPlayer->entindex() == iHostIndex)
-	{
-		// don't launch the outro map clientside if we're a server
-		Msg("[C] We're the host, so not doing client map outro\n");
-	}
-	else
-	{
-		// if we're a client, flag us for a reconnect once the outro is done
-		ConVar *var = (ConVar *)cvar->FindVar( "asw_reconnect_after_outro" );
-		if (var)
-		{
-			engine->ClientCmd("asw_save_server");	/// save the server we're on, so we can reconnect to it later
-			var->SetValue(1);
-		}		
-		Msg("[C] Doing client map outro\n");
-		// find the outro map name
-		CASW_Campaign_Info *pCampaign = ASWGameRules() ? ASWGameRules()->GetCampaignInfo() : NULL;
-		Msg("[C] Campaign debug info:\n");
-		if (pCampaign)
-			pCampaign->DebugInfo();
-		const char *pszOutro = "outro_jacob";	 // the default
-		if (pCampaign)
-		{
-			const char *pszCustomOutro = STRING(pCampaign->m_OutroMap);
-			if (pszCustomOutro && ( !Q_strnicmp( pszCustomOutro, "outro", 5 ) ))
-			{
-				pszOutro = pszCustomOutro;
-				Msg("[C] Using custom outro: %s\n", pszCustomOutro);
-			}
-			else
-			{
-				Msg("[C] No valid custom outro defined in campaign info, using default\n");
-			}
-		}
-		else
-		{
-			Msg("[C] Using default outro as we can't find the campaign info\n");
-		}
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "disconnect\nwait\nwait\nmaxplayers 1\nmap %s", pszOutro);
-		Msg("[C] Sending client outro command: %s\n", buffer);
-		engine->ClientCmd(buffer);
-	}
-#endif
-}
-
-// we get this message after watching the outro
-static void __MsgFunc_ASWReconnectAfterOutro( bf_read &msg )
-{	
-	if (ASWGameRules() && ASWGameRules()->IsOutroMap())
-	{
-		// clear the reconnect flag
-		ConVar *var = (ConVar *)cvar->FindVar( "asw_reconnect_after_outro" );
-		Msg("Client checking for reconnect\n");
-		if (var && var->GetInt() != 0)
-		{
-			var->SetValue(0);
-
-			Msg("  sending asw_retry_saved_server cmd\n");
-			// reconnect to the previous server
-			engine->ClientCmd("asw_retry_saved_server");
-		}
-		else		// if we're not reconnecting to a server after watching the outro, go back to the main menu
-		{
-			if (gpGlobals->maxClients <= 1)
-			{
-				engine->ClientCmd("disconnect\nwait\nwait\nmap_background RdSelectionScreen");
-			}
-		}
-	}
 }
 
 // we get this message when the players have lost their only tech marine and are unable to complete the mission
@@ -504,7 +425,6 @@ void ClientModeASW::Init()
 	gameeventmanager->AddListener( this, "game_newmap", false );
 	HOOK_MESSAGE( ASWBlur );
 	HOOK_MESSAGE( ASWCampaignCompleted );
-	HOOK_MESSAGE( ASWReconnectAfterOutro );
 	HOOK_MESSAGE( ASWTechFailure );
 }
 

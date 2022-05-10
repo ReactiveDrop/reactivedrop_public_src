@@ -63,7 +63,6 @@ public:
 	virtual void OnSaveUpdated(const char *szSaveName) { }
 	virtual int GetNumMissionsCompleted(const char *szSaveName) { return -1; }
 	virtual void NotifySaveDeleted(const char *szSaveName) { } 
-	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName) { return NULL; }
 	virtual void ClearCache() { }
 
 	CHandle<C_ASW_Voting_Missions> m_hVotingMission;	// client entity holding networked map/campaign names from the server

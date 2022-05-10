@@ -321,8 +321,6 @@ void PlayerListPanel::OnThink()
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bShowRestart = pPlayer && ASWGameResource() && (ASWGameResource()->GetLeaderEntIndex() == pPlayer->entindex());
-	if ( ASWGameRules() && ASWGameRules()->IsIntroMap() )
-		bShowRestart = false;
 	//Msg("bLeader = %d leaderentindex=%d player entindex=%d\n", bLeader, ASWGameResource()->GetLeaderEntIndex(), pPlayer->entindex());
 	m_pRestartMissionButton->SetVisible(bShowRestart);
 	m_pLeaderButtonsBackground->SetVisible(bShowRestart);	

@@ -59,7 +59,6 @@ public:
 	virtual ASW_Mission_Chooser_Saved_Campaign* GetSavedCampaign( int nIndex, bool bMultiplayer, const char *szFilterID );
 	virtual void RefreshSavedCampaigns();
 	virtual void ResetCurrentPage() { }
-	virtual const char* GetCampaignSaveIntroMap(const char* szSaveName);	// returns the intro map for the campaign that this save uses
 	virtual void ClearCache();
 
 	virtual KeyValues *GetMissionDetails( const char *szMissionName );
