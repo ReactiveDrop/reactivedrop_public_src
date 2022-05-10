@@ -22,6 +22,8 @@
 "ASW_DropExtra"         "#rd_str_drop_extra"
 "+use"					"#asw_use"
 "cl_select_loadout" "#rd_str_selectloadout"
+"ASW_ActivatePrimary"   "#rd_bind_ActivatePrimary"
+"ASW_ActivateSecondary" "#rd_bind_ActivateSecondary"
 "blank"			"=========================="
 "blank"			"#ASW_Alternates"
 "blank"			"=========================="
