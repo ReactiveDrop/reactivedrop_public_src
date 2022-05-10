@@ -212,6 +212,7 @@ private:
 	CUtlStringList m_aszIncludedMissions;
 	CUtlStringList m_aszIncludedChallenges;
 	CUtlStringList m_aszIncludedDeathmatch;
+	CUtlStringList m_aszIncludedBonus;
 	CUtlStringMap<CUtlString> m_IncludedCampaignNames;
 	CUtlStringMap<CUtlStringList> m_IncludedCampaignMissions;
 	CUtlStringMap<CUtlString> m_IncludedMissionNames;
