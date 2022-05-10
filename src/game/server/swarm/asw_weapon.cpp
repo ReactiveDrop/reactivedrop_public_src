@@ -375,11 +375,3 @@ bool CASW_Weapon::IsCarriedByLocalPlayer()
 
 	return false;
 }
-
-void CASW_Weapon::ThinkOffhandActivate()
-{
-	if ( !IsBeingCarried() )
-		return;
-
-	OffhandActivate();
-}

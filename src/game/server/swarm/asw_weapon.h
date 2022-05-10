@@ -74,8 +74,7 @@ public:
 	virtual bool ShouldFlareAutoaim() { return false; }
 	virtual int GetEquipmentListIndex() { return m_iEquipmentListIndex; }
 	const CASW_WeaponInfo* GetWeaponInfo() const;
-	virtual bool OffhandActivate() { return false; }
-	void ThinkOffhandActivate();
+	virtual bool OffhandActivate() { return false; };
 	virtual bool WantsOffhandPostFrame() { return m_bShotDelayed; }
 	virtual bool SendWeaponAnim( int iActivity );
 	virtual int WeaponRangeAttack1Condition( float flDot, float flDist );
