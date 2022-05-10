@@ -1261,6 +1261,7 @@ static const char *s_AutoTags[] =
 	"Campaign",
 	"Challenge",
 	"Deathmatch",
+	"Bonus",
 	"Other",
 };
 
@@ -1276,10 +1277,12 @@ bool CReactiveDropWorkshop::IsAutoTag( const char *szTag )
 	return false;
 }
 
+// These files are frequently added by 
 static const char *s_BlacklistedAddonFileNames[] =
 {
 	"maps/soundcache/_master.cache",
-	//"particles/particles_manifest.txt",
+	"materials/vgui/ExampleCustomLogo/example_custom_logo.vmt",
+	"materials/vgui/ExampleCustomLogo/example_custom_logo.vtf",
 	"resource/CustomCampaignCredits.txt",
 	"resource/campaigns/ExampleCampaign.txt",
 	"resource/alien_selection.txt",
@@ -1298,6 +1301,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 	m_aszIncludedMissions.PurgeAndDeleteElements();
 	m_aszIncludedChallenges.PurgeAndDeleteElements();
 	m_aszIncludedDeathmatch.PurgeAndDeleteElements();
+	m_aszIncludedBonus.PurgeAndDeleteElements();
 	m_IncludedCampaignNames.Purge();
 	m_IncludedCampaignMissions.Purge();
 	m_IncludedMissionNames.Purge();
@@ -1400,6 +1404,36 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				buf.SetBufferType( true, true );
 				pKV->LoadFromBuffer( szFileNameVerify, buf );
 				m_IncludedMissionNames[szFileName] = pKV->GetString( "missiontitle", "Invalid Mission" );
+
+				FOR_EACH_VALUE( pKV, pValue )
+				{
+					if ( V_stricmp( pValue->GetName(), "tag" ) )
+						continue;
+
+					if ( V_stricmp( pValue->GetString(), "bonus" ) )
+						continue;
+
+					bHaveAutoTag = true;
+					m_aszTags.CopyAndAddToTail( "Bonus" );
+					m_aszIncludedBonus.CopyAndAddToTail( szFileName );
+
+					break;
+				}
+
+				FOR_EACH_VALUE( pKV, pValue )
+				{
+					if ( V_stricmp( pValue->GetName(), "tag" ) )
+						continue;
+
+					if ( V_stricmp( pValue->GetString(), "deathmatch" ) )
+						continue;
+
+					bHaveAutoTag = true;
+					m_aszTags.CopyAndAddToTail( "Deathmatch" );
+					m_aszIncludedDeathmatch.CopyAndAddToTail( szFileName );
+
+					break;
+				}
 			}
 		}
 		if ( StringHasPrefix( filenames[i], "resource/challenges/" ) )
@@ -1422,20 +1456,6 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				buf.SetBufferType( true, true );
 				pKV->LoadFromBuffer( szFileNameVerify, buf );
 				m_IncludedChallengeNames[szFileName] = pKV->GetString( "name", "Invalid Challenge" );
-			}
-		}
-		if ( StringHasPrefix( filenames[i], "maps/dm_" ) )
-		{
-			char szFileName[MAX_PATH];
-			Q_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
-			char szFileNameVerify[MAX_PATH];
-			Q_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "maps/%s.bsp", szFileName );
-
-			if ( FStrEq( filenames[i], szFileNameVerify ) )
-			{
-				bHaveAutoTag = true;
-				m_aszTags.CopyAndAddToTail( "Deathmatch" );
-				m_aszIncludedDeathmatch.CopyAndAddToTail( szFileName );
 			}
 		}
 	}
@@ -1556,6 +1576,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "missions" );
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "challenges" );
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "deathmatch" );
+	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "bonus" );
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "campaign_mission" );
 	steamapicontext->SteamUGC()->RemoveItemKeyValueTags( hUpdate, "mission_name" );
@@ -1590,6 +1611,14 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 		if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, "deathmatch", m_aszIncludedDeathmatch[i] ) )
 		{
 			Warning( "Adding deathmatch %s failed!\n", m_aszIncludedDeathmatch[i] );
+		}
+	}
+
+	FOR_EACH_VEC( m_aszIncludedBonus, i )
+	{
+		if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, "bonus", m_aszIncludedBonus[i] ) )
+		{
+			Warning( "Adding bonus %s failed!\n", m_aszIncludedBonus[i] );
 		}
 	}
 
