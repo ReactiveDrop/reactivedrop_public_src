@@ -13,21 +13,24 @@
 class CASW_Mission_Chooser_Entry;
 class ServerOptionsPanel;
 
+enum class ASW_CHOOSER_TYPE;
+enum class ASW_HOST_TYPE;
+
 class CASW_Mission_Chooser_List : public vgui::PropertyPage
 {
 	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_List, vgui::Panel );
 public:
-	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, int iChooserType, int iHostType,  IASW_Mission_Chooser_Source *pMissionSource );
+	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType, IASW_Mission_Chooser_Source *pMissionSource );
 	virtual ~CASW_Mission_Chooser_List();
 
 	virtual void PerformLayout();
 	virtual void OnThink();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	void UpdateDetails();
-	virtual void OnCommand(const char* command);
-	void OnEntryClicked(CASW_Mission_Chooser_Entry *pClicked);
+	virtual void OnCommand( const char *command );
+	void OnEntryClicked( CASW_Mission_Chooser_Entry *pClicked );
 	void OnSaveDeleted();
-	const char * GenerateNewSaveGameName();
+	const char *GenerateNewSaveGameName();
 	void CloseSelf();
 	void UpdateNumPages();
 	void ChangeToShowingMissionsWithinCampaign( int nCampaignIndex );
@@ -38,10 +41,10 @@ public:
 	vgui::Label *m_pPageLabel;
 	vgui::Label *m_pTitleLabel;
 	vgui::CheckButton *m_pShowAllCheck;
-	CASW_Mission_Chooser_Entry* m_pEntry[ASW_SAVES_PER_PAGE]; // this array needs to be large enough for either ASW_SAVES_PER_SCREEN (for when showing save games), or ASW_MISSIONS_PER_SCREEN (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
+	CASW_Mission_Chooser_Entry *m_pEntry[ASW_SAVES_PER_PAGE]; // this array needs to be large enough for either ASW_SAVES_PER_SCREEN (for when showing save games), or ASW_MISSIONS_PER_SCREEN (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
 
-	int m_ChooserType;
-	int m_HostType;	
+	ASW_CHOOSER_TYPE m_ChooserType;
+	ASW_HOST_TYPE m_HostType;
 	int m_iPage;
 	int m_iNumSlots;
 	int m_iMaxPages;
@@ -51,22 +54,6 @@ public:
 	ServerOptionsPanel *m_pServerOptions;
 
 	MESSAGE_FUNC( OnButtonChecked, "CheckButtonChecked" );
-};
-
-// chooser types - what we're going to launch
-enum
-{	
-	ASW_CHOOSER_CAMPAIGN,
-	ASW_CHOOSER_SAVED_CAMPAIGN,
-	ASW_CHOOSER_SINGLE_MISSION,
-};
-
-// host types - how we're going to launch it
-enum
-{
-	ASW_HOST_TYPE_SINGLEPLAYER,
-	ASW_HOST_TYPE_CREATESERVER,
-	ASW_HOST_TYPE_CALLVOTE,
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_LIST_H

@@ -110,6 +110,7 @@ CASW_Voting_Missions::CASW_Voting_Missions()
 	{
 		m_iszMissionNames.Set(i, NULL_STRING);
 	}
+	m_iRequiredTags = 0;
 }
 
 // only transmit to the player we're preparing a map list for
@@ -143,6 +144,11 @@ void CASW_Voting_Missions::ScanThink()
 
 	// let the source think, in case it needs to be scanning folders
 	pMissionSource->Think();
+
+	if ( m_iRequiredTags & 1 )
+		pMissionSource->AddRequiredTag( "bonus" );
+	if ( m_iRequiredTags & 2 )
+		pMissionSource->AddRequiredTag( "deathmatch" );
 
 	// player is looking at the list of missions
 	if (m_iListType == 1)
@@ -231,7 +237,7 @@ void CASW_Voting_Missions::ScanThink()
 	SetNextThink(gpGlobals->curtime + 0.1f);
 }
 
-void CASW_Voting_Missions::SetListType(CASW_Player *pPlayer, int iListType, int nOffset, int iNumSlots, int iCampaignIndex)
+void CASW_Voting_Missions::SetListType(CASW_Player *pPlayer, int iListType, int nOffset, int iNumSlots, int iCampaignIndex, int iRequiredTags)
 {
 	Msg("CASW_Voting_Missions::SetListType %d\n", iListType);
 	m_hPlayer = pPlayer;
@@ -239,6 +245,7 @@ void CASW_Voting_Missions::SetListType(CASW_Player *pPlayer, int iListType, int 
 	m_nOffset = nOffset;
 	m_iNumSlots = iNumSlots;
 	m_nCampaignIndex = iCampaignIndex;
+	m_iRequiredTags = iRequiredTags;
 	SetThink( &CASW_Voting_Missions::ScanThink );
 	SetNextThink(gpGlobals->curtime + 0.1f);
 }

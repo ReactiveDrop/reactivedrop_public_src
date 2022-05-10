@@ -542,7 +542,7 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "ChangeMissionButton" ) )
 	{
-		engine->ClientCmd( "asw_vote_chooser 0" );
+		engine->ClientCmd( "asw_mission_chooser callvote" );
 	}
 	else if ( !Q_stricmp( command, "MissionDetailsButton" ) )
 	{

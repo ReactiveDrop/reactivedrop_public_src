@@ -21,7 +21,7 @@ public:
 	CASW_Voting_Missions();
 
 	virtual void Spawn();
-	void SetListType(CASW_Player *pPlayer, int iListType, int nOffset, int iNumSlots, int iCampaignIndex=-1);
+	void SetListType( CASW_Player *pPlayer, int iListType, int nOffset, int iNumSlots, int iCampaignIndex = -1, int iRequiredTags = 0 );
 	void ScanThink();
 	int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 
@@ -31,6 +31,7 @@ public:
 	int m_nOffset;
 	int m_iNumSlots;
 	CNetworkVar(int, m_nCampaignIndex);
+	int m_iRequiredTags; // bitfield; 1 = bonus, 2 = deathmatch
 
 	CNetworkVar(int, m_iNumMissions);
 	CNetworkVar(int, m_iNumOverviewMissions);

@@ -1699,59 +1699,63 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		ASWGameRules()->SetKickVote(this, iTargetPlayer);
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vmaplist") )
+	else if ( FStrEq( pcmd, "cl_vmaplist" ) )
 	{
-		if ( args.ArgC() < 2 )
+		if ( args.ArgC() != 3 )
 		{
-			Warning("Player sent a bad cl_vmaplist command\n");
+			Warning( "Player sent a bad cl_vmaplist command\n" );
 			return false;
 		}
-		int nMissionOffset = atoi(args[1]);
-		if (nMissionOffset < 0)
+		int nMissionOffset = atoi( args[1] );
+		if ( nMissionOffset < 0 )
 			nMissionOffset = 0;
-		VoteMissionList(nMissionOffset, ASW_MISSIONS_PER_PAGE);
+		// player wants to see a list of missions they can vote for
+		GetVotingMissions()->SetListType( this, 1, nMissionOffset, ASW_MISSIONS_PER_PAGE, -1, atoi( args[2] ) ); // 1 = missions
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vcampmaplist") )
+	else if ( FStrEq( pcmd, "cl_vcampmaplist" ) )
 	{
-		if ( args.ArgC() < 3 )
+		if ( args.ArgC() != 4 )
 		{
-			Warning("Player sent a bad cl_vcampmaplist command\n");
+			Warning( "Player sent a bad cl_vcampmaplist command\n" );
 			return false;
 		}
-		int nCampaignIndex = atoi(args[1]);
-		if (nCampaignIndex < 0)
+		int nCampaignIndex = atoi( args[1] );
+		if ( nCampaignIndex < 0 )
 			nCampaignIndex = 0;
-		int nMissionOffset = atoi(args[2]);
-		if (nMissionOffset < 0)
+		int nMissionOffset = atoi( args[2] );
+		if ( nMissionOffset < 0 )
 			nMissionOffset = 0;
-		VoteCampaignMissionList(nCampaignIndex, nMissionOffset, ASW_MISSIONS_PER_PAGE);
+		// player wants to see a list of missions within a specific campaign
+		GetVotingMissions()->SetListType( this, 1, nMissionOffset, ASW_MISSIONS_PER_PAGE, nCampaignIndex, atoi( args[3] ) ); // 1 = missions
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vcamplist") )
+	else if ( FStrEq( pcmd, "cl_vcamplist" ) )
 	{
-		if ( args.ArgC() < 2 )
+		if ( args.ArgC() != 3 )
 		{
-			Warning("Player sent a bad cl_vcamplist command\n");
+			Warning( "Player sent a bad cl_vcamplist command\n" );
 			return false;
 		}
-		int nCampaignOffset = atoi(args[1]);
-		if (nCampaignOffset < 0)
+		int nCampaignOffset = atoi( args[1] );
+		if ( nCampaignOffset < 0 )
 			nCampaignOffset = 0;
-		VoteCampaignList(nCampaignOffset, ASW_CAMPAIGNS_PER_PAGE);
+		// player wants to see a list of new campaigns they can vote for
+		GetVotingMissions()->SetListType( this, 2, nCampaignOffset, ASW_CAMPAIGNS_PER_PAGE, -1, atoi( args[2] ) ); // 2 = campaigns
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vsaveslist") )
+	else if ( FStrEq( pcmd, "cl_vsaveslist" ) )
 	{
-		if ( args.ArgC() < 2 )
+		if ( args.ArgC() != 3 )
 		{
-			Warning("Player sent a bad cl_vsaveslist command\n");
+			Warning( "Player sent a bad cl_vsaveslist command\n" );
 			return false;
 		}
-		int nSaveOffset = atoi(args[1]);
-		if (nSaveOffset < 0)
+		int nSaveOffset = atoi( args[1] );
+		if ( nSaveOffset < 0 )
 			nSaveOffset = 0;
-		VoteSavedCampaignList(nSaveOffset, ASW_SAVES_PER_PAGE);
+		// player wants to see a list of saved campaign games they can vote for
+		GetVotingMissions()->SetListType( this, 3, nSaveOffset, ASW_SAVES_PER_PAGE, -1, atoi( args[2] ) ); // 3 = saved campaigns
 		return true;
 	}
 	else if ( FStrEq( pcmd, "asw_vote_saved_campaign") )
@@ -3095,56 +3099,23 @@ void CASW_Player::RagdollBlendTest()
 	m_pBlendRagdoll->SetBlendWeight(abs(fRealBlend) * asw_blend_test_scale.GetFloat());
 }
 
-void CASW_Player::VoteMissionList(int nMissionOffset, int iNumSlots)
+CASW_Voting_Missions *CASW_Player::GetVotingMissions()
 {
-	if (!m_hVotingMissions.Get())
+	CASW_Voting_Missions *pVoting = m_hVotingMissions;
+	if ( !pVoting )
 	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 1, nMissionOffset, iNumSlots);		// 1 = missions	
-}
+		pVoting = ( CASW_Voting_Missions * )CreateEntityByName( "asw_voting_missions" );
+		if ( !pVoting )
+		{
+			AssertMsg( false, "failed to create asw_voting_missions" );
+			return NULL;
+		}
 
-void CASW_Player::VoteCampaignMissionList(int nCampaignIndex, int nMissionOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
+		pVoting->Spawn();
 		m_hVotingMissions = pVoting;
 	}
-	m_hVotingMissions->SetListType( this, 1, nMissionOffset, iNumSlots, nCampaignIndex );		// 1 = missions	
-}
 
-void CASW_Player::VoteCampaignList(int nCampaignOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 2, nCampaignOffset, iNumSlots);		// 2 = campaigns	
-}
-
-void CASW_Player::VoteSavedCampaignList(int nSaveOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 3, nSaveOffset, iNumSlots);		// 3 = saved campaigns		
+	return pVoting;
 }
 
 const char* CASW_Player::GetASWNetworkID()

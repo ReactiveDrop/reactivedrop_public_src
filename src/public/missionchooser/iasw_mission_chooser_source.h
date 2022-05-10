@@ -78,6 +78,9 @@ public:
 	// New virtual functions have to be last or IMatchFramework crashes!
 	virtual void ClearCache() = 0;
 	virtual PublishedFileId_t GetCampaignWorkshopID( int nIndex ) = 0;
+
+	// adds a required tag for the next call to a Find* method
+	virtual void AddRequiredTag( const char *szTag ) = 0;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_SOURCE_H

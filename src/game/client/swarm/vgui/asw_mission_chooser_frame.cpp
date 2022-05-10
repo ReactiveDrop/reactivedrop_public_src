@@ -19,76 +19,165 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+const char *g_ASW_ChooserTypeName[] =
+{
+	"campaign",
+	"saved_campaign",
+	"single_mission",
+	"bonus_mission",
+	"deathmatch",
+};
+
+const char *g_ASW_HostTypeName[] =
+{
+	"singleplayer",
+	"createserver",
+	"callvote",
+};
+
 CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, const char *pElementName,
-															int iHostType, int iChooserType,
-															IASW_Mission_Chooser_Source *pMissionSource) :
-	Frame(pParent, pElementName)
+	ASW_HOST_TYPE iHostType, IASW_Mission_Chooser_Source *pMissionSource ) :
+	Frame( pParent, pElementName )
 {
 	SetProportional( false );
 	m_pMissionSource = pMissionSource;
 
 	// create a propertysheet
-	m_pSheet = new vgui::PropertySheet(this, "MissionChooserSheet");	
+	m_pSheet = new vgui::PropertySheet( this, "MissionChooserSheet" );
 	m_pSheet->SetProportional( false );
-	m_pSheet->SetVisible(true);
-		
-	// create our 3 lists and put them in as pages in the property sheet
-	m_pChooserList = new CASW_Mission_Chooser_List(m_pSheet, "CampaignList", iChooserType, iHostType, pMissionSource);
-	//m_pCampaignList = new CASW_Mission_Chooser_List(m_pSheet, "CampaignList", ASW_CHOOSER_CAMPAIGN, iHostType);
-	//m_pSavedCampaignList = new CASW_Mission_Chooser_List(m_pSheet, "SavedCampaignList", ASW_CHOOSER_SAVED_CAMPAIGN, iHostType);
-	//m_pSingleMissionList = new CASW_Mission_Chooser_List(m_pSheet, "MissionList", ASW_CHOOSER_SINGLE_MISSION, iHostType);
+	m_pSheet->SetVisible( true );
 
-	if (iChooserType == ASW_CHOOSER_CAMPAIGN)
-		m_pSheet->AddPage(m_pChooserList, "#asw_start_campaign");
-	else if (iChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
-		m_pSheet->AddPage(m_pChooserList, "#asw_load_campaign");
-	else if (iChooserType == ASW_CHOOSER_SINGLE_MISSION)
-		m_pSheet->AddPage(m_pChooserList, "#asw_single_mission");
+	extern ConVar sv_gametypes;
 
-	if (iHostType == ASW_HOST_TYPE_CREATESERVER)
+	CUtlStringList AllowedGameTypes;
+	V_SplitString( sv_gametypes.GetString(), ",", AllowedGameTypes );
+
+	// create our lists and put them in as pages in the property sheet
+	FOR_EACH_VEC( AllowedGameTypes, i )
 	{
-		m_pOptionsPanel = new ServerOptionsPanel(this, "OptionsPanel");	
-		m_pSheet->AddPage(m_pOptionsPanel, "#asw_server_options");
-		m_pChooserList->m_pServerOptions = m_pOptionsPanel;
+		if ( !V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[int( ASW_CHOOSER_TYPE::CAMPAIGN )] ) )
+		{
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "CampaignList", ASW_CHOOSER_TYPE::CAMPAIGN, iHostType, pMissionSource );
+			m_pSheet->AddPage( pChooserList, "#asw_start_campaign" );
+			m_ChooserLists.AddToTail( pChooserList );
+		}
+		else if ( !V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[int( ASW_CHOOSER_TYPE::SAVED_CAMPAIGN )] ) )
+		{
+			// refresh these each time we bring up the panel, since new saves get created during play
+			pMissionSource->RefreshSavedCampaigns();
+
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "SavedCampaignList", ASW_CHOOSER_TYPE::SAVED_CAMPAIGN, iHostType, pMissionSource );
+			m_pSheet->AddPage( pChooserList, "#asw_load_campaign" );
+			m_ChooserLists.AddToTail( pChooserList );
+		}
+		else if ( !V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[int( ASW_CHOOSER_TYPE::SINGLE_MISSION )] ) )
+		{
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "MissionList", ASW_CHOOSER_TYPE::SINGLE_MISSION, iHostType, pMissionSource );
+			m_pSheet->AddPage( pChooserList, "#asw_single_mission" );
+			m_ChooserLists.AddToTail( pChooserList );
+		}
+		else if ( !V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[int( ASW_CHOOSER_TYPE::BONUS_MISSION )] ) )
+		{
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "BonusMissionList", ASW_CHOOSER_TYPE::BONUS_MISSION, iHostType, pMissionSource );
+			m_pSheet->AddPage( pChooserList, "#rd_campaign_name_rd_bonus_missions" );
+			m_ChooserLists.AddToTail( pChooserList );
+		}
+		else if ( !V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[int( ASW_CHOOSER_TYPE::DEATHMATCH )] ) )
+		{
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "DeathmatchList", ASW_CHOOSER_TYPE::DEATHMATCH, iHostType, pMissionSource );
+			m_pSheet->AddPage( pChooserList, "#rd_campaign_name_deathmatch_campaign" );
+			m_ChooserLists.AddToTail( pChooserList );
+		}
+		else
+		{
+			AssertMsg1( false, "unhandled game type from sv_gametypes: %s", AllowedGameTypes[i] );
+		}
 	}
-	else	// no need for server options if they're just playing singleplayer
+
+	if ( iHostType == ASW_HOST_TYPE::CREATESERVER )
 	{
+		m_pOptionsPanel = new ServerOptionsPanel( this, "OptionsPanel" );
+		m_pSheet->AddPage( m_pOptionsPanel, "#asw_server_options" );
+		FOR_EACH_VEC( m_ChooserLists, i )
+		{
+			m_ChooserLists[i]->m_pServerOptions = m_pOptionsPanel;
+		}
+	}
+	else
+	{
+		// no need for server options if they're just playing singleplayer
 		m_pOptionsPanel = NULL;
 	}
 
-	Msg("CASW_Mission_Chooser_Frame\n");
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx( 0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme" );
+	SetScheme( scheme );
+
+	switch ( iHostType )
+	{
+	case ASW_HOST_TYPE::SINGLEPLAYER:
+		SetTitle( "#asw_menu_singleplayer", true );
+		break;
+	case ASW_HOST_TYPE::CREATESERVER:
+		SetTitle( "#asw_menu_create_server", true );
+		break;
+	case ASW_HOST_TYPE::CALLVOTE:
+		SetTitle( "#asw_vote_server", true );
+		break;
+	default:
+		AssertMsg( false, "unexpected missionchooser host type" );
+		break;
+	}
+
+	SetTitleBarVisible( true );
+	SetMoveable( false );
+	SetSizeable( false );
+	SetMenuButtonVisible( false );
+	SetMaximizeButtonVisible( false );
+	SetMinimizeToSysTrayButtonVisible( false );
+	SetMinimizeButtonVisible( false );
+	SetCloseButtonVisible( true );
+
+	RequestFocus();
+	SetVisible( true );
+	SetEnabled( true );
+
+	InvalidateLayout( true, true );
+
+	Msg( "CASW_Mission_Chooser_Frame\n" );
 }
 
 CASW_Mission_Chooser_Frame::~CASW_Mission_Chooser_Frame()
 {
-	Msg("~CASW_Mission_Chooser_Frame\n");
+	Msg( "~CASW_Mission_Chooser_Frame\n" );
 }
 
 void CASW_Mission_Chooser_Frame::PerformLayout()
 {
-	SetPos(100,10);
+	SetPos( 100, 10 );
 	int sw, sh;
 	vgui::surface()->GetScreenSize( sw, sh );
-	SetSize(sw - 200, sh - 20);
+	SetSize( sw - 200, sh - 20 );
 
-	BaseClass::PerformLayout();	
+	BaseClass::PerformLayout();
 
 	int x, y, wide, tall;
-	GetClientArea(x, y, wide, tall);
-	m_pSheet->SetBounds(x, y, wide, tall);
+	GetClientArea( x, y, wide, tall );
+	m_pSheet->SetBounds( x, y, wide, tall );
 
-	m_pSheet->SetVisible(true);
-	m_pSheet->InvalidateLayout(true);
+	m_pSheet->SetVisible( true );
+	m_pSheet->InvalidateLayout( true );
 	//m_pSheet->SetTabWidth(GetWide()/3.0f);
 
 	float top_edge = 30;
-	m_pChooserList->SetPos(0, top_edge);
+	FOR_EACH_VEC( m_ChooserLists, i )
+	{
+		m_ChooserLists[i]->SetPos( 0, top_edge );
+		m_ChooserLists[i]->SetSize( wide, GetTall() - ( 60 ) );
+		m_ChooserLists[i]->InvalidateLayout( true );
+	}
 
-	m_pChooserList->SetSize(wide, GetTall() - (60));
-	m_pChooserList->InvalidateLayout(true);
-
-	if (m_pOptionsPanel)
-		m_pOptionsPanel->SetBounds(x, top_edge, wide - x * 2, GetTall() - top_edge);
+	if ( m_pOptionsPanel )
+		m_pOptionsPanel->SetBounds( x, top_edge, wide - x * 2, GetTall() - top_edge );
 }
 
 void CASW_Mission_Chooser_Frame::OnThink()
@@ -99,153 +188,76 @@ void CASW_Mission_Chooser_Frame::OnThink()
 void CASW_Mission_Chooser_Frame::OnClose()
 {
 	BaseClass::OnClose();
-	SetVisible(false);	// have to do this, as the fading transparency causes sorting issues in the briefing
+	SetVisible( false );	// have to do this, as the fading transparency causes sorting issues in the briefing
 }
 
-void CASW_Mission_Chooser_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CASW_Mission_Chooser_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
-void LaunchMissionChooser(int iHostType, int iChooserType)
+static void LaunchMissionChooser( ASW_HOST_TYPE iHostType )
 {
-	if (g_hChooserFrame!=NULL)
+	CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
+	if ( pFrame )
 	{
-		CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
-		pFrame->SetVisible(false);
+		pFrame->SetVisible( false );
 		pFrame->MarkForDeletion();
 		g_hChooserFrame = NULL;
 	}
+
+	if ( iHostType == ASW_HOST_TYPE::NUM_TYPES )
+		return;
 
 	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-	if (!pSource)
+	if ( iHostType == ASW_HOST_TYPE::CALLVOTE )
+		pSource = GetVotingMissionSource();
+
+	if ( !pSource )
 		return;
 
-	if (iChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
+	pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType, pSource );
+
+	if ( engine->IsConnected() )
 	{
-		// refresh these each time we bring up the panel, since new saves get created during play
-		pSource->RefreshSavedCampaigns();
+		pFrame->SetParent( GetClientMode()->GetViewport() );
 	}
-
-	Msg("LaunchMissionChooser\n");
-	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType, iChooserType, pSource );
-	vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-	pFrame->SetParent( rootpanel );
-
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
-	pFrame->SetScheme(scheme);
-
-	if (iHostType == ASW_HOST_TYPE_SINGLEPLAYER)
-		pFrame->SetTitle("#asw_menu_singleplayer", true );
-	else if (iHostType == ASW_HOST_TYPE_CREATESERVER)
-		pFrame->SetTitle("#asw_menu_create_server", true );
 	else
 	{
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "Host type: %d chooser: %d", iHostType, iChooserType);
-		pFrame->SetTitle(buffer, true );
+		vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
+		pFrame->SetParent( rootpanel );
 	}
-
-	pFrame->SetTitleBarVisible(true);
-	pFrame->SetMoveable(false);
-	pFrame->SetSizeable(false);
-	pFrame->SetMenuButtonVisible(false);
-	pFrame->SetMaximizeButtonVisible(false);
-	pFrame->SetMinimizeToSysTrayButtonVisible(false);
-	pFrame->SetMinimizeButtonVisible(false);
-	pFrame->SetCloseButtonVisible(true);	
-
-	pFrame->RequestFocus();
-	pFrame->SetVisible(true);
-	pFrame->SetEnabled(true);
-
-	pFrame->InvalidateLayout(true, true);
-
-	///g_hChooserFrame = pFrame;
-}
-
-void LaunchMissionVotePanel(int iChooserType)
-{
-	// close any chooser frame already open	
-	if (g_hChooserFrame!=NULL)
-	{
-		CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
-		pFrame->SetVisible(false);
-		pFrame->MarkForDeletion();
-		g_hChooserFrame = NULL;
-	}
-
-	if (iChooserType == -1)
-		return;
-
-	IASW_Mission_Chooser_Source *pSource = GetVotingMissionSource();
-	if (!pSource)
-		return;
-
-	pSource->ResetCurrentPage();
-
-	// since we're voting, this must be multiplayer, so make sure the server hosts the game
-	int iHostType = ASW_HOST_TYPE_CALLVOTE;
-	//CBaseViewport
-	Msg("LaunchMissionVotePanel\n");
-	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( GetClientMode()->GetViewport(), "MissionChooserFrame", iHostType, iChooserType, pSource );
-
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
-	pFrame->SetScheme(scheme);
-
-	pFrame->SetTitle("#asw_vote_server", true);
-
-	pFrame->SetTitleBarVisible(true);
-	pFrame->SetMoveable(false);
-	pFrame->SetSizeable(false);
-	pFrame->SetMenuButtonVisible(false);
-	pFrame->SetMaximizeButtonVisible(false);
-	pFrame->SetMinimizeToSysTrayButtonVisible(false);
-	pFrame->SetMinimizeButtonVisible(false);
-	pFrame->SetCloseButtonVisible(true);	
-
-	pFrame->RequestFocus();
-	pFrame->SetVisible(true);
-	pFrame->SetEnabled(true);
 
 	g_hChooserFrame = pFrame;
 }
 
-void CC_ASW_Main_Menu_Option( const CCommand &args )
+CON_COMMAND( asw_mission_chooser, "asw_mission_chooser [host type] - open mission chooser" )
 {
-	if ( args.ArgC() < 3 )
+	if ( args.ArgC() != 2 )
 	{
-		Msg("Usage: asw_main_menu_option [host type] [chooser type]");
+		ConMsg( "Usage: asw_mission_chooser [host type]\n" );
 		return;
 	}
-	int iHostType = atoi(args[1]);
-	if (iHostType < 0 || iHostType > 2 )
-		return;
 
-	int iChooserType = atoi(args[2]);
-	if (iChooserType < 0 || iChooserType > 2 )
-		return;
-
-	LaunchMissionChooser(iHostType, iChooserType);
-}
-static ConCommand asw_main_menu_option("asw_main_menu_option", CC_ASW_Main_Menu_Option, 0 );
-
-
-void CC_ASW_Launch_Vote_Chooser( const CCommand &args )
-{
-	if ( args.ArgC() < 2 )
+	if ( !V_stricmp( args.Arg( 1 ), "exit" ) )
 	{
-		Msg("Usage: asw_vote_chooser [chooser type]");
+		LaunchMissionChooser( ASW_HOST_TYPE::NUM_TYPES );
 		return;
 	}
-	int iChooserType = atoi(args[1]);
-	if ( iChooserType < -1 || iChooserType > 2 )
-		return;
 
-	if ( iChooserType == 1 )
-		return;
+	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
+	{
+		if ( !V_stricmp( args.Arg( 1 ), g_ASW_HostTypeName[i] ) )
+		{
+			LaunchMissionChooser( ASW_HOST_TYPE( i ) );
+			return;
+		}
+	}
 
-	LaunchMissionVotePanel(iChooserType);
+	ConMsg( "Invalid host type. Host types are:\n" );
+	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
+	{
+		ConMsg( "  %s\n", g_ASW_HostTypeName[i] );
+	}
 }
-static ConCommand asw_vote_chooser("asw_vote_chooser", CC_ASW_Launch_Vote_Chooser, 0 );

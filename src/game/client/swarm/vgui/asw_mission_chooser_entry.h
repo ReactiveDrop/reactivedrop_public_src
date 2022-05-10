@@ -11,36 +11,40 @@ namespace vgui
 	class Button;
 };
 
+enum class ASW_CHOOSER_TYPE;
+enum class ASW_HOST_TYPE;
+
 class CASW_Mission_Chooser_Entry : public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Entry, vgui::Panel );
 public:
-	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, int iChooserType, int iHostType );
+	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType );
 	virtual ~CASW_Mission_Chooser_Entry();
 
 	virtual void OnThink();
-	virtual void OnCommand(const char* command);
+	virtual void OnCommand( const char *command );
 
 	vgui::ImagePanel *m_pImagePanel;
 	vgui::Label *m_pNameLabel;
 	vgui::Label *m_pDescriptionLabel;
 
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	void OnMouseReleased(vgui::MouseCode code);
-	void SetDetails(const char *szMapName, int nChooserType = -1);
-	void SetSavedCampaignDetails(ASW_Mission_Chooser_Saved_Campaign *pSaved);
-	void SetWorkshopID(PublishedFileId_t nFileID);
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	void OnMouseReleased( vgui::MouseCode code );
+	void SetDetails( const char *szMapName, ASW_CHOOSER_TYPE nChooserType );
+	void SetDetails( const char *szMapName );
+	void SetSavedCampaignDetails( ASW_Mission_Chooser_Saved_Campaign *pSaved );
+	void SetWorkshopID( PublishedFileId_t nFileID );
 	void SetVoteDisabled( bool bDisabled );
 
-	int m_ChooserType;
-	int m_HostType;
+	ASW_CHOOSER_TYPE m_ChooserType;
+	ASW_HOST_TYPE m_HostType;
 	int m_iLabelHeight;
 	char m_szMapName[256];
-	
+
 	vgui::Button *m_pDeleteButton;
 
-	KeyValues * m_MapKeyValues; // keyvalues describing overview parameters
+	KeyValues *m_MapKeyValues; // keyvalues describing overview parameters
 	bool m_bMouseOver;
 	bool m_bMouseReleased;
 	bool m_bVoteDisabled;

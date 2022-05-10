@@ -41,6 +41,8 @@ public:
 	virtual int	 GetNumSavedCampaigns(bool bMultiplayer, const char *szFilterID);
 	virtual void RefreshSavedCampaigns();
 
+	virtual void AddRequiredTag( const char *szTag );
+
 	KeyValues *GetMissionDetails( const char *szMissionName ) { return NULL; }
 	KeyValues *GetCampaignDetails( const char *szCampaignName ) { return NULL; }
 
@@ -74,6 +76,7 @@ public:
 	int m_nSaveOffset;
 	int m_iNumSavedSlots;
 	int m_nCampaignIndex;
+	int m_iRequiredTags;
 	virtual void ResetCurrentPage();	// resets vars that track which page we're on
 };
 

@@ -31,6 +31,7 @@ C_ASW_Voting_Mission_Chooser_Source::C_ASW_Voting_Mission_Chooser_Source()
 		m_nCampaignWorkshopID[i] = k_PublishedFileIdInvalid;
 		m_campaigns[i].m_szMissionName[0] = '\0';
 	}
+	m_iRequiredTags = 0;
 }
 
 void C_ASW_Voting_Mission_Chooser_Source::SetVotingMission(C_ASW_Voting_Missions* voting)
@@ -62,7 +63,7 @@ void C_ASW_Voting_Mission_Chooser_Source::RefreshSavedCampaigns()
 
 void C_ASW_Voting_Mission_Chooser_Source::FindMissionsInCampaign( int iCampaignIndex, int nMissionOffset, int iNumSlots )
 {
-	if (nMissionOffset != m_nMissionOffset || iNumSlots != m_iNumMissionSlots || iCampaignIndex != m_nCampaignIndex )
+	if ( nMissionOffset != m_nMissionOffset || iNumSlots != m_iNumMissionSlots || iCampaignIndex != m_nCampaignIndex )
 	{
 		m_nMissionOffset = nMissionOffset;
 		m_iNumMissionSlots = iNumSlots;
@@ -70,14 +71,15 @@ void C_ASW_Voting_Mission_Chooser_Source::FindMissionsInCampaign( int iCampaignI
 		m_nCampaignIndex = iCampaignIndex;
 		// tell the server our new page/slots/overview settings, so he can update the networked strings appropriately
 		char buffer[64];
-		Q_snprintf(buffer,sizeof(buffer), "cl_vcampmaplist %d %d", iCampaignIndex, nMissionOffset);
-		engine->ClientCmd(buffer);
+		Q_snprintf( buffer, sizeof( buffer ), "cl_vcampmaplist %d %d %d", iCampaignIndex, nMissionOffset, m_iRequiredTags );
+		engine->ClientCmd( buffer );
 	}
+	m_iRequiredTags = 0;
 }
 
-void C_ASW_Voting_Mission_Chooser_Source::FindMissions(int nMissionOffset, int iNumSlots, bool bRequireOverview)
+void C_ASW_Voting_Mission_Chooser_Source::FindMissions( int nMissionOffset, int iNumSlots, bool bRequireOverview )
 {
-	if (nMissionOffset != m_nMissionOffset || iNumSlots != m_iNumMissionSlots || bRequireOverview != m_bRequireOverview || m_nCampaignIndex != -1 )
+	if ( nMissionOffset != m_nMissionOffset || iNumSlots != m_iNumMissionSlots || bRequireOverview != m_bRequireOverview || m_nCampaignIndex != -1 )
 	{
 		m_nMissionOffset = nMissionOffset;
 		m_iNumMissionSlots = iNumSlots;
@@ -85,35 +87,50 @@ void C_ASW_Voting_Mission_Chooser_Source::FindMissions(int nMissionOffset, int i
 		m_nCampaignIndex = -1;
 		// tell the server our new page/slots/overview settings, so he can update the networked strings appropriately
 		char buffer[64];
-		Q_snprintf(buffer,sizeof(buffer), "cl_vmaplist %d", nMissionOffset);
-		engine->ClientCmd(buffer);
+		Q_snprintf( buffer, sizeof( buffer ), "cl_vmaplist %d %d", nMissionOffset, m_iRequiredTags );
+		engine->ClientCmd( buffer );
 	}
+	m_iRequiredTags = 0;
 }
 
-void C_ASW_Voting_Mission_Chooser_Source::FindCampaigns(int nCampaignOffset, int iNumSlots)
+void C_ASW_Voting_Mission_Chooser_Source::FindCampaigns( int nCampaignOffset, int iNumSlots )
 {
-	if (nCampaignOffset != m_nCampaignOffset || iNumSlots != m_iNumCampaignSlots)
+	if ( nCampaignOffset != m_nCampaignOffset || iNumSlots != m_iNumCampaignSlots )
 	{
 		m_nCampaignOffset = nCampaignOffset;
 		m_iNumCampaignSlots = iNumSlots;
 		// tell the server our new page/slots settings, so he can update the networked strings appropriately
 		char buffer[64];
-		Q_snprintf(buffer,sizeof(buffer), "cl_vcamplist %d", nCampaignOffset);
-		engine->ClientCmd(buffer);
+		V_snprintf( buffer, sizeof( buffer ), "cl_vcamplist %d %d", nCampaignOffset, m_iRequiredTags );
+		engine->ClientCmd( buffer );
 	}
+	m_iRequiredTags = 0;
 }
 
-void C_ASW_Voting_Mission_Chooser_Source::FindSavedCampaigns(int nSaveOffset, int iNumSlots, bool bMultiplayer, const char *szFilterID)
+void C_ASW_Voting_Mission_Chooser_Source::FindSavedCampaigns( int nSaveOffset, int iNumSlots, bool bMultiplayer, const char *szFilterID )
 {
 	// note: can ignore bmultiplayer and filterID, server will assume these parameters when querying its local mission source for us
-	if (nSaveOffset != m_nSaveOffset || iNumSlots != m_iNumSavedSlots)
+	if ( nSaveOffset != m_nSaveOffset || iNumSlots != m_iNumSavedSlots )
 	{
 		m_nSaveOffset = nSaveOffset;
 		m_iNumSavedSlots = iNumSlots;
 		// tell the server our new page/slots settings, so he can update the networked strings appropriately
 		char buffer[64];
-		Q_snprintf(buffer,sizeof(buffer), "cl_vsaveslist %d", nSaveOffset);
-		engine->ClientCmd(buffer);
+		V_snprintf( buffer, sizeof( buffer ), "cl_vsaveslist %d %d", nSaveOffset, m_iRequiredTags );
+		engine->ClientCmd( buffer );
+	}
+	m_iRequiredTags = 0;
+}
+
+void C_ASW_Voting_Mission_Chooser_Source::AddRequiredTag( const char *szTag )
+{
+	if ( V_stricmp( szTag, "bonus" ) )
+	{
+		m_iRequiredTags |= 1;
+	}
+	else if ( V_stricmp( szTag, "deathmatch" ) )
+	{
+		m_iRequiredTags |= 2;
 	}
 }
 

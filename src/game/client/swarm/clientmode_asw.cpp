@@ -897,8 +897,7 @@ void ClientModeASW::ASW_CloseAllWindows()
 	g_hBriefingFrame = NULL;
 
 	// make sure we don't have a mission chooser up
-	//Msg("clientmode asw closing vote windows with asw_vote_chooser cc\n");
-	engine->ClientCmd("asw_vote_chooser -1");
+	engine->ClientCmd( "asw_mission_chooser exit" );
 }
 
 // recursive search for matching window names
