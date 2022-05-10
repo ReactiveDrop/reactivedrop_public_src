@@ -580,7 +580,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 			else
 			{
 				// Vote on a new mission
-				engine->ClientCmd("asw_vote_chooser 0 notrans");
+				engine->ClientCmd("asw_vote_chooser 0");
 			}
 		}
 		else if ( bLeader )

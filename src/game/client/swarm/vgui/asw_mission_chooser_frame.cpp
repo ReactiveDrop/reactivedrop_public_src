@@ -57,8 +57,6 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 		m_pOptionsPanel = NULL;
 	}
 
-	m_bMadeModal = false;
-	m_bAvoidTranslucency = false;
 	Msg("CASW_Mission_Chooser_Frame\n");
 }
 
@@ -97,11 +95,6 @@ void CASW_Mission_Chooser_Frame::PerformLayout()
 void CASW_Mission_Chooser_Frame::OnThink()
 {
 	BaseClass::OnThink();
-	if (!m_bMadeModal)
-	{
-		//vgui::input()->SetAppModalSurface(GetVPanel());
-		m_bMadeModal = true;
-	}
 }
 
 void CASW_Mission_Chooser_Frame::OnClose()
@@ -113,23 +106,6 @@ void CASW_Mission_Chooser_Frame::OnClose()
 void CASW_Mission_Chooser_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
-
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//if (m_bAvoidTranslucency)
-		//m_flTransitionEffectTime = 0;
-	//Msg("CASW_Mission_Chooser_Frame::ApplySchemeSettings m_bAvoidTranslucency=%d m_flTransitionEffectTime=%f\n", m_bAvoidTranslucency, m_flTransitionEffectTime);
-}
-
-void CASW_Mission_Chooser_Frame::RemoveTranslucency()
-{
-	Msg("CASW_Mission_Chooser_Frame::RemoveTranslucency\n");
-	m_bAvoidTranslucency = true;
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//m_flTransitionEffectTime = 0;
-	SetBgColor(Color(65, 74, 96, 255));
-	SetAlpha(255.0f);
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 255.0f, 0.0f, m_flTransitionEffectTime, vgui::AnimationController::INTERPOLATOR_LINEAR);
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
@@ -162,7 +138,6 @@ void LaunchMissionChooser(int iHostType, int iChooserType)
 	}
 
 	Msg("LaunchMissionChooser\n");
-	// ASWTODO - check this works even though parent is null
 	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType, iChooserType, pSource );
 	vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
 	pFrame->SetParent( rootpanel );
@@ -180,7 +155,6 @@ void LaunchMissionChooser(int iHostType, int iChooserType)
 		Q_snprintf(buffer, sizeof(buffer), "Host type: %d chooser: %d", iHostType, iChooserType);
 		pFrame->SetTitle(buffer, true );
 	}
-	//pFrame->LoadControlSettings("Resource/UI/ScoreBoard.res");
 
 	pFrame->SetTitleBarVisible(true);
 	pFrame->SetMoveable(false);
@@ -200,7 +174,7 @@ void LaunchMissionChooser(int iHostType, int iChooserType)
 	///g_hChooserFrame = pFrame;
 }
 
-void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
+void LaunchMissionVotePanel(int iChooserType)
 {
 	// close any chooser frame already open	
 	if (g_hChooserFrame!=NULL)
@@ -214,7 +188,7 @@ void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
 	if (iChooserType == -1)
 		return;
 
-	IASW_Mission_Chooser_Source *pSource = GetVotingMissionSource(); //missionchooser ? missionchooser->LocalMissionSource() : NULL;
+	IASW_Mission_Chooser_Source *pSource = GetVotingMissionSource();
 	if (!pSource)
 		return;
 
@@ -224,7 +198,6 @@ void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
 	int iHostType = ASW_HOST_TYPE_CALLVOTE;
 	//CBaseViewport
 	Msg("LaunchMissionVotePanel\n");
-	// ASWTODO - check this works even though parent is null
 	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( GetClientMode()->GetViewport(), "MissionChooserFrame", iHostType, iChooserType, pSource );
 
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
@@ -232,7 +205,6 @@ void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
 
 	pFrame->SetTitle("#asw_vote_server", true);
 
-	//pFrame->LoadControlSettings("Resource/UI/ScoreBoard.res");	
 	pFrame->SetTitleBarVisible(true);
 	pFrame->SetMoveable(false);
 	pFrame->SetSizeable(false);
@@ -245,34 +217,6 @@ void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
 	pFrame->RequestFocus();
 	pFrame->SetVisible(true);
 	pFrame->SetEnabled(true);
-
-	// make sure it shows up on the client panel
-
-	if (enginevgui)
-	{
-		//vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_CLIENTDLL );
-		//pFrame->SetParent( rootpanel );
-
-		/*
-		// if another frame is up, make sure we have no transparency, since it's bugged and shows the level behind		
-		vgui::Panel* pPanel = pFrame->GetParent();
-		if (pPanel)
-		{
-		int iChildren = pPanel->GetChildCount();
-		for (int i=0;i<iChildren;i++)
-		{
-		vgui::Panel *pChild = dynamic_cast<vgui::Frame*>(pPanel->GetChild(i));
-		if (pChild && pChild != pFrame)
-		{
-		pFrame->RemoveTranslucency();
-		break;
-		}
-		}
-		}*/
-	}	
-
-	if (bAvoidTranslucency)
-		pFrame->RemoveTranslucency();
 
 	g_hChooserFrame = pFrame;
 }
@@ -311,9 +255,6 @@ void CC_ASW_Launch_Vote_Chooser( const CCommand &args )
 	if ( iChooserType == 1 )
 		return;
 
-	// if third param is specified, we assume it's the 'notrans' one
-	bool bAvoidTranslucency =(args.ArgC() >= 3);
-
-	LaunchMissionVotePanel(iChooserType, bAvoidTranslucency);
+	LaunchMissionVotePanel(iChooserType);
 }
 static ConCommand asw_vote_chooser("asw_vote_chooser", CC_ASW_Launch_Vote_Chooser, 0 );

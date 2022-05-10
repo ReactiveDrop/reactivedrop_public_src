@@ -25,15 +25,12 @@ public:
 	virtual void OnThink();
 	virtual void OnClose();
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	virtual void RemoveTranslucency();
-		
+
 	CASW_Mission_Chooser_List *m_pChooserList;
 	ServerOptionsPanel *m_pOptionsPanel;
 	vgui::PropertySheet *m_pSheet;
 
 	IASW_Mission_Chooser_Source* m_pMissionSource;
-	bool m_bMadeModal;
-	bool m_bAvoidTranslucency;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_FRAME_H

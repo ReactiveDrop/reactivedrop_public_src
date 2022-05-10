@@ -530,28 +530,19 @@ void PlayerListPanel::OnCommand( char const *cmd )
 		GetParent()->SetVisible(false);
 		GetParent()->MarkForDeletion();
 		Msg("PlayerListPanel::OnCommand sending asw_vote_chooser cc\n");
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 2");
-		else
-			engine->ClientCmd("asw_vote_chooser 2 notrans");
+		engine->ClientCmd("asw_vote_chooser 2");
 	}
 	else if ( !Q_stricmp( cmd, "NewCampaignVote" ) )
 	{
 		GetParent()->SetVisible(false);
 		GetParent()->MarkForDeletion();
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 0");
-		else
-			engine->ClientCmd("asw_vote_chooser 0 notrans");
+		engine->ClientCmd("asw_vote_chooser 0");
 	}
 	else if ( !Q_stricmp( cmd, "NewSavedVote" ) )
 	{
 		GetParent()->SetVisible(false);
 		GetParent()->MarkForDeletion();
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 1");	
-		else
-			engine->ClientCmd("asw_vote_chooser 1 notrans");
+		engine->ClientCmd("asw_vote_chooser 1");
 	}
 	else if ( !Q_stricmp( cmd, "VoteYes" ) )
 	{
