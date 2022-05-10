@@ -800,12 +800,12 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 
 	// check we have an item in that slot
 	C_ASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-	C_ASW_Weapon* pActive = pMarine->GetActiveASWWeapon();
-	if ( !pWeapon )
+	if (!pWeapon)
 		return;
 
-	// activate only if player is holding the weapon, and the switch animation is done, and weapon is ready for next attack
-	if ( slot == 2 || ( pWeapon == pActive && !pWeapon->m_bSwitchingWeapons && pWeapon->m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	// if it's an offhand activate, tell the server we want to activate it
+	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+	if (pWpnInfo && pWpnInfo->m_bOffhandActivate)
 	{
 		char buffer[64];
 		Q_snprintf(buffer, sizeof(buffer), "cl_offhand %d", slot);
@@ -814,16 +814,13 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 		// and predict it?
 		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
 			pWeapon->OffhandActivate();
-
 		return;
 	}
 
-	if ( pWeapon != pActive )
-	{
+	// otherwise, make it our selected weapon
+	if (pWeapon != pMarine->GetActiveWeapon())
 		::input->MakeWeaponSelection( pWeapon );
-	}
 }
-
 
 
 
