@@ -407,9 +407,19 @@ ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
-ConVar asw_marine_death_cam_slowdown("asw_marine_death_cam_slowdown", "1", FCVAR_REPLICATED | FCVAR_DEMO, "Slow down time when a marine dies");
 #ifdef CLIENT_DLL
 ConVar asw_marine_death_cam("asw_marine_death_cam", "1", FCVAR_ARCHIVE | FCVAR_DEMO, "Use death cam");
+#else
+static void UpdateGameRulesDeathCamSlowdown( IConVar *var, const char *pOldValue, float flOldValue );
+ConVar asw_marine_death_cam_slowdown( "asw_marine_death_cam_slowdown", "1", FCVAR_ARCHIVE, "Slow down time when a marine dies", &UpdateGameRulesDeathCamSlowdown );
+static void UpdateGameRulesDeathCamSlowdown( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	CAlienSwarm *pASW = ASWGameRules();
+	if ( pASW )
+	{
+		pASW->m_bDeathCamSlowdown = asw_marine_death_cam_slowdown.GetBool();
+	}
+}
 #endif
 ConVar asw_marine_death_cam_time_interp("asw_marine_death_cam_time_interp", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to blend into the death cam");
 ConVar asw_marine_death_cam_time_interp_out("asw_marine_death_cam_time_interp_out", "0.75", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to blend out of the death cam");
@@ -652,7 +662,18 @@ ConVar asw_client_build_maps("asw_client_build_maps", "0", FCVAR_REPLICATED, "Wh
 ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won");
 ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines");
 ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns");
-ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_REPLICATED, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1 );
+#ifdef GAME_DLL
+static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue );
+ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_ARCHIVE, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1, &OverrideAllowRotateCamera );
+static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	CAlienSwarm *pASW = ASWGameRules();
+	if ( pASW )
+	{
+		pASW->m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
+	}
+}
+#endif
 ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 will prevent players from adding bots"
 #ifdef GAME_DLL
 	, DeselectMarineBots );
@@ -707,6 +728,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_nMarineForDeathCam)),
 		RecvPropFloat(RECVINFO(m_fMissionStartedTime)),
 		RecvPropInt(RECVINFO(m_iMissionWorkshopID)),
+		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
+		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -739,6 +762,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_nMarineForDeathCam), 8),
 		SendPropFloat(SENDINFO(m_fMissionStartedTime)),
 		SendPropInt(SENDINFO(m_iMissionWorkshopID), 64, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
+		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1097,7 +1122,7 @@ CAlienSwarm::~CAlienSwarm()
 
 float CAlienSwarm::GetMarineDeathCamInterp( bool bIgnoreCvar )
 {
-	if ( !asw_marine_death_cam_slowdown.GetBool() || ( !asw_marine_death_cam.GetBool() && !bIgnoreCvar && !ASWDeathmatchMode() ) || m_nMarineForDeathCam == -1 || m_fMarineDeathTime <= 0.0f )
+	if ( !m_bDeathCamSlowdown || ( !asw_marine_death_cam.GetBool() && !bIgnoreCvar && !ASWDeathmatchMode() ) || m_nMarineForDeathCam == -1 || m_fMarineDeathTime <= 0.0f )
 		return 0.0f;
 
 	bool bNewStep = false;
@@ -1349,6 +1374,9 @@ CAlienSwarm::CAlienSwarm()
 
 	m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/overviews/%s.txt", STRING( gpGlobals->mapname ) ) );
 	EnableChallenge( rd_challenge.GetString() );
+
+	m_bDeathCamSlowdown = asw_marine_death_cam_slowdown.GetBool();
+	m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
 
 	ConVarRef sv_cheats( "sv_cheats" );
 	if ( !sv_cheats.GetBool() )
@@ -3393,7 +3421,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 		return;
 	}
 
-	if ( asw_marine_death_cam_slowdown.GetBool() )
+	if ( m_bDeathCamSlowdown )
 	{
 		if ( gpGlobals->curtime >= m_fMarineDeathTime && gpGlobals->curtime <= m_fMarineDeathTime + asw_time_scale_delay.GetFloat() + asw_marine_death_cam_time.GetFloat() )
 		{
@@ -3415,7 +3443,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 			m_fMarineDeathTime = 0.0f;
 		}
 	}
-	else if ( !asw_marine_death_cam_slowdown.GetBool() && m_bMarineInvuln )
+	else if ( !m_bDeathCamSlowdown && m_bMarineInvuln )
 	{
 		MarineInvuln( false );
 		m_nMarineForDeathCam = -1;
@@ -3805,6 +3833,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 
 	if (!spawn_spot) {
 		Msg( "Failed to find spawn spot" );
+		return;
 	}
 	if ( !SpawnMarineAt( pMR, spawn_spot->GetAbsOrigin(), spawn_spot->GetAbsAngles(), true ) )
 	{
@@ -9237,11 +9266,12 @@ bool CAlienSwarm::ShouldAllowCameraRotation( void )
 	if ( ASWGameRules()->GetGameState() != ASW_GS_INGAME )
 		return false;
 
-	if ( rd_override_allow_rotate_camera.GetInt() != -1 )
-	{
-		return rd_override_allow_rotate_camera.GetBool();
-	}
+	if ( m_iOverrideAllowRotateCamera != -1 )
+		return m_iOverrideAllowRotateCamera != 0;
+
 	Assert( g_pSwarmProxy );
+	if ( !g_pSwarmProxy )
+		return false;
 
 	return g_pSwarmProxy->m_bAllowCameraRotation;
 }

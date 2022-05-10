@@ -398,6 +398,7 @@ public:
 	CNetworkVar( float, m_fMarineDeathTime );
 	CNetworkVar( Vector, m_vMarineDeathPos );
 	CNetworkVar( int, m_nMarineForDeathCam );
+	CNetworkVar( bool, m_bDeathCamSlowdown );
 #ifdef CLIENT_DLL
 	int m_nOldMarineForDeathCam;
 	int m_nMarineDeathCamStep;
@@ -453,6 +454,7 @@ public:
 	CNetworkVar(unsigned char, m_iGameState);
 
 	bool ShouldAllowCameraRotation( void );
+	CNetworkVar( int, m_iOverrideAllowRotateCamera );
 	
 	bool ShouldAllowMarineStrafePush(void);
 

@@ -59,7 +59,7 @@
 				"30" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Direct"
 				"70" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Default"
 				"100" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Further"
-				"2000" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Always"
+				"99999" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Always"
 			}
 		}
 		TOGGLE
@@ -442,6 +442,36 @@
 		{
 			title "#RD_AdvancedSettings_Misc_StreamlinedWeaponChooser"
 			cvar "rda_better_weapon_chooser"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Misc_Interpolation"
+			cvar "cl_interp"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Misc_Interpolation_Lowest"
+				"0.025" "#RD_AdvancedSettings_Misc_Interpolation_25ms"
+				"0.05" "#RD_AdvancedSettings_Misc_Interpolation_50ms"
+				"0.1" "#RD_AdvancedSettings_Misc_Interpolation_100ms"
+				"0.25" "#RD_AdvancedSettings_Misc_Interpolation_250ms"
+				"0.5" "#RD_AdvancedSettings_Misc_Interpolation_500ms"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_DeathCamSlowdown"
+			cvar "asw_marine_death_cam_slowdown"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Misc_CameraRotation"
+			cvar "rd_override_allow_rotate_camera"
+			options
+			{
+				"-1" "#RD_AdvancedSettings_Misc_CameraRotation_MapperDefined"
+				"0" "#RD_AdvancedSettings_Misc_CameraRotation_Never"
+				"1" "#RD_AdvancedSettings_Misc_CameraRotation_Always"
+			}
 		}
 	}
 }
