@@ -24,7 +24,6 @@ namespace vgui
 class C_ASW_Marine;
 class IASW_Client_Vehicle;
 class C_ASW_PointCamera;
-class C_ASW_Voting_Missions;
 class C_ASW_Marine_Resource;
 class C_EnvAmbientLight;
 class CASW_Map_Builder;
@@ -268,7 +267,6 @@ private:
 	float m_fNextThinkPushAway;
 	bool m_bGuidingMarine;	// are we overriding the player's movement direction to guide him around an NPC?
 	Vector m_vecGuiding;
-	CNetworkHandle(C_ASW_Voting_Missions, m_hVotingMissions);		
 	float	m_flStepSoundTime;
 
 	void UpdateLocalMarineGlow();

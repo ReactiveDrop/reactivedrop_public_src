@@ -1101,7 +1101,6 @@ exit 1
     <ClCompile Include="swarm\asw_trigger_fall.cpp" />
     <ClCompile Include="swarm\asw_tutorial_spawning.cpp" />
     <ClCompile Include="swarm\asw_use_area.cpp" />
-    <ClCompile Include="swarm\asw_voting_missions.cpp" />
     <ClCompile Include="swarm\asw_vphysics_npc.cpp" />
     <ClCompile Include="swarm\asw_wc_edit.cpp" />
     <ClCompile Include="swarm\asw_weapon.cpp" />
@@ -1974,7 +1973,6 @@ exit 1
     <ClInclude Include="swarm\asw_triggers.h" />
     <ClInclude Include="swarm\asw_tutorial_spawning.h" />
     <ClInclude Include="swarm\asw_use_area.h" />
-    <ClInclude Include="swarm\asw_voting_missions.h" />
     <ClInclude Include="swarm\asw_vphysics_npc.h" />
     <ClInclude Include="swarm\asw_wc_edit.h" />
     <ClInclude Include="swarm\asw_weapon.h" />

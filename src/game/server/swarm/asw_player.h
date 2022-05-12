@@ -17,7 +17,6 @@
 
 class CASW_Marine;
 class CRagdollProp;
-class CASW_Voting_Missions;
 
 //=============================================================================
 // >> Swarm player
@@ -186,8 +185,6 @@ public:
 	float m_fLastKLVoteTime;	// last time we started a kick or leader vote
 	CNetworkVar(int, m_iLeaderVoteIndex);	// entindex of the player we want to be leader
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
-	CASW_Voting_Missions *GetVotingMissions();
-	CNetworkHandle(CASW_Voting_Missions, m_hVotingMissions);	// handle to voting missions entity that will network down the list of missions/campaigns/saves
 	const char* GetASWNetworkID();
 	CNetworkVar( int, m_iMapVoted );	// 0 = didn't vote, 1 = "no" vote, 2 = "yes" vote
 

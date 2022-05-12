@@ -14,7 +14,6 @@
 #include "ienginevgui.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "clientmode_asw.h"
-#include "c_asw_voting_mission_chooser_source.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -212,7 +211,7 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType )
 
 	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 	if ( iHostType == ASW_HOST_TYPE::CALLVOTE )
-		pSource = GetVotingMissionSource();
+		pSource = NULL; // GetVotingMissionSource();
 
 	if ( !pSource )
 		return;

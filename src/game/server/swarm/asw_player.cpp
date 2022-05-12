@@ -39,7 +39,6 @@
 #include "Sprite.h"
 #include "physics_prop_ragdoll.h"
 #include "asw_util_shared.h"
-#include "asw_voting_missions.h"
 #include "asw_campaign_save.h"
 #include "gib.h"
 #include "asw_intro_control.h"
@@ -215,7 +214,6 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
     SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
 	SendPropEHandle( SENDINFO( m_hOrderingMarine ) ),
 	SendPropEHandle( SENDINFO ( m_pCurrentInfoMessage ) ),
-	SendPropEHandle( SENDINFO ( m_hVotingMissions ) ),
 	
 	SendPropInt(SENDINFO(m_iLeaderVoteIndex) ),
 	SendPropInt(SENDINFO(m_iKickVoteIndex) ),
@@ -254,7 +252,6 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_angEyeAngles, FIELD_VECTOR ),
 	DEFINE_FIELD( m_iLeaderVoteIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iKickVoteIndex, FIELD_INTEGER ),	
-	DEFINE_FIELD( m_hVotingMissions, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iKLVotesStarted, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fLastKLVoteTime, FIELD_TIME ),
 	DEFINE_FIELD( m_hOrderingMarine, FIELD_EHANDLE ),
@@ -1699,67 +1696,10 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		ASWGameRules()->SetKickVote(this, iTargetPlayer);
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vmaplist" ) )
-	{
-		if ( args.ArgC() != 3 )
-		{
-			Warning( "Player sent a bad cl_vmaplist command\n" );
-			return false;
-		}
-		int nMissionOffset = atoi( args[1] );
-		if ( nMissionOffset < 0 )
-			nMissionOffset = 0;
-		// player wants to see a list of missions they can vote for
-		GetVotingMissions()->SetListType( this, 1, nMissionOffset, ASW_MISSIONS_PER_PAGE, -1, atoi( args[2] ) ); // 1 = missions
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vcampmaplist" ) )
-	{
-		if ( args.ArgC() != 4 )
-		{
-			Warning( "Player sent a bad cl_vcampmaplist command\n" );
-			return false;
-		}
-		int nCampaignIndex = atoi( args[1] );
-		if ( nCampaignIndex < 0 )
-			nCampaignIndex = 0;
-		int nMissionOffset = atoi( args[2] );
-		if ( nMissionOffset < 0 )
-			nMissionOffset = 0;
-		// player wants to see a list of missions within a specific campaign
-		GetVotingMissions()->SetListType( this, 1, nMissionOffset, ASW_MISSIONS_PER_PAGE, nCampaignIndex, atoi( args[3] ) ); // 1 = missions
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vcamplist" ) )
-	{
-		if ( args.ArgC() != 3 )
-		{
-			Warning( "Player sent a bad cl_vcamplist command\n" );
-			return false;
-		}
-		int nCampaignOffset = atoi( args[1] );
-		if ( nCampaignOffset < 0 )
-			nCampaignOffset = 0;
-		// player wants to see a list of new campaigns they can vote for
-		GetVotingMissions()->SetListType( this, 2, nCampaignOffset, ASW_CAMPAIGNS_PER_PAGE, -1, atoi( args[2] ) ); // 2 = campaigns
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vsaveslist" ) )
-	{
-		if ( args.ArgC() != 3 )
-		{
-			Warning( "Player sent a bad cl_vsaveslist command\n" );
-			return false;
-		}
-		int nSaveOffset = atoi( args[1] );
-		if ( nSaveOffset < 0 )
-			nSaveOffset = 0;
-		// player wants to see a list of saved campaign games they can vote for
-		GetVotingMissions()->SetListType( this, 3, nSaveOffset, ASW_SAVES_PER_PAGE, -1, atoi( args[2] ) ); // 3 = saved campaigns
-		return true;
-	}
 	else if ( FStrEq( pcmd, "asw_vote_saved_campaign") )
 	{
+		return 0;
+#if 0
 		if ( args.ArgC() < 2 )
 		{
 			Warning("Player sent a bad asw_vote_saved_campaign command\n");
@@ -1769,6 +1709,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if (ASWGameRules())
 			ASWGameRules()->StartVote(this, ASW_VOTE_SAVED_CAMPAIGN, args[1]);
 		return true;
+#endif
 	}
 	else if ( FStrEq( pcmd, "asw_vote_campaign") )
 	{
@@ -3097,25 +3038,6 @@ void CASW_Player::RagdollBlendTest()
 	if (fRealBlend > 1.0f)
 		fRealBlend = 2.0f - fRealBlend;
 	m_pBlendRagdoll->SetBlendWeight(abs(fRealBlend) * asw_blend_test_scale.GetFloat());
-}
-
-CASW_Voting_Missions *CASW_Player::GetVotingMissions()
-{
-	CASW_Voting_Missions *pVoting = m_hVotingMissions;
-	if ( !pVoting )
-	{
-		pVoting = ( CASW_Voting_Missions * )CreateEntityByName( "asw_voting_missions" );
-		if ( !pVoting )
-		{
-			AssertMsg( false, "failed to create asw_voting_missions" );
-			return NULL;
-		}
-
-		pVoting->Spawn();
-		m_hVotingMissions = pVoting;
-	}
-
-	return pVoting;
 }
 
 const char* CASW_Player::GetASWNetworkID()
