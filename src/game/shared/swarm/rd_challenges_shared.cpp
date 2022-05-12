@@ -108,6 +108,7 @@ public:
 			Q_FileBase( pszChallenge, szChallengeName, sizeof( szChallengeName ) );
 			m_LocalChallenges.AddString( szChallengeName );
 		}
+		filesystem->FindClose( hFind );
 
 		m_bInit = true;
 	}
