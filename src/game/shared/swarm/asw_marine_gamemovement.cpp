@@ -2622,7 +2622,8 @@ void CASW_MarineGameMovement::DoJumpJet()
 	SetGroundEntity( NULL );
 
 	Vector vecSrc = mv->GetAbsOrigin();
-	marine->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
+	if ( player )
+		player->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
 
 	marine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
 
@@ -2749,7 +2750,8 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
     SetGroundEntity( NULL );
 
 	Vector vecSrc = mv->GetAbsOrigin();
-	marine->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
+	if ( player )
+		player->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
 	
 	marine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
 
