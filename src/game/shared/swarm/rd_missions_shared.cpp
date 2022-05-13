@@ -445,7 +445,7 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 
 	if ( index < 0 || index >= CountCampaigns() )
 	{
-		Assert( index == INVALID_STRING_INDEX );
+		Assert( index == -1 );
 		return NULL;
 	}
 
@@ -464,7 +464,7 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 	pCampaign->CampaignDescription = AllocMissionsPooledString( pKV->GetString( "CampaignDescription" ) );
 	pCampaign->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", "scripts/asw_credits" ) );
 
-	pCampaign->ChooseCampaignTexture = AllocMissionsPooledString( pKV->GetString( "CampaignTextureName" ) );
+	pCampaign->ChooseCampaignTexture = AllocMissionsPooledString( pKV->GetString( "ChooseCampaignTexture" ) );
 	pCampaign->CampaignTextureName = AllocMissionsPooledString( pKV->GetString( "CampaignTextureName" ) );
 	pCampaign->CampaignTextureLayer[0] = AllocMissionsPooledString( pKV->GetString( "CampaignTextureLayer1" ) );
 	pCampaign->CampaignTextureLayer[1] = AllocMissionsPooledString( pKV->GetString( "CampaignTextureLayer2" ) );
@@ -550,7 +550,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 	if ( index < 0 || index >= CountMissions() )
 	{
-		Assert( index == INVALID_STRING_INDEX );
+		Assert( index == -1 );
 		return NULL;
 	}
 
@@ -609,15 +609,21 @@ int ReactiveDropMissions::GetCampaignIndex( const char *name )
 	if ( !engine->IsInGame() )
 	{
 		s_ClientMissions.ReadMissionList();
-		return s_ClientMissions.m_LocalCampaigns.Find( name );
+		CUtlSymbol sym = s_ClientMissions.m_LocalCampaigns.Find( name );
+		if ( sym.IsValid() )
+			return sym;
+		return -1;
 	}
 #endif
 
 	Assert( g_StringTableReactiveDropCampaigns );
 	if ( !g_StringTableReactiveDropCampaigns )
-		return INVALID_STRING_INDEX;
+		return -1;
 
-	return g_StringTableReactiveDropCampaigns->FindStringIndex( name );
+	int index = g_StringTableReactiveDropCampaigns->FindStringIndex( name );
+	if ( index != INVALID_STRING_INDEX )
+		return index;
+	return -1;
 }
 
 int ReactiveDropMissions::GetMissionIndex( const char *name )
@@ -626,15 +632,21 @@ int ReactiveDropMissions::GetMissionIndex( const char *name )
 	if ( !engine->IsInGame() )
 	{
 		s_ClientMissions.ReadMissionList();
-		return s_ClientMissions.m_LocalMissions.Find( name );
+		CUtlSymbol sym = s_ClientMissions.m_LocalMissions.Find( name );
+		if ( sym.IsValid() )
+			return sym;
+		return -1;
 	}
 #endif
 
 	Assert( g_StringTableReactiveDropMissions );
 	if ( !g_StringTableReactiveDropMissions )
-		return INVALID_STRING_INDEX;
+		return -1;
 
-	return g_StringTableReactiveDropMissions->FindStringIndex( name );
+	int index = g_StringTableReactiveDropMissions->FindStringIndex( name );
+	if ( index != INVALID_STRING_INDEX )
+		return index;
+	return -1;
 }
 
 bool RD_Campaign_t::HasTag( const char *tag ) const

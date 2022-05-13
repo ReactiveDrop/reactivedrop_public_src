@@ -4,52 +4,41 @@
 #pragma once
 #endif
 
-#include "missionchooser/iasw_mission_chooser_source.h"
-
-namespace vgui
-{
-	class Button;
-};
+#include <vgui/VGUI.h>
+#include <vgui_controls/EditablePanel.h>
 
 enum class ASW_CHOOSER_TYPE;
 enum class ASW_HOST_TYPE;
 
-class CASW_Mission_Chooser_Entry : public vgui::Panel
+struct RD_Campaign_t;
+struct RD_Mission_t;
+
+namespace vgui
 {
-	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Entry, vgui::Panel );
+	class ImagePanel;
+	class Label;
+}
+
+class CASW_Mission_Chooser_Entry : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Entry, vgui::EditablePanel );
 public:
-	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType );
+	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType, const RD_Campaign_t *pCampaign, const RD_Mission_t *pMission );
 	virtual ~CASW_Mission_Chooser_Entry();
 
-	virtual void OnThink();
-	virtual void OnCommand( const char *command );
-
-	vgui::ImagePanel *m_pImagePanel;
-	vgui::Label *m_pNameLabel;
-	vgui::Label *m_pDescriptionLabel;
-
-	virtual void PerformLayout();
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	void OnMouseReleased( vgui::MouseCode code );
-	void SetDetails( const char *szMapName, ASW_CHOOSER_TYPE nChooserType );
-	void SetDetails( const char *szMapName );
-	void SetSavedCampaignDetails( ASW_Mission_Chooser_Saved_Campaign *pSaved );
-	void SetWorkshopID( PublishedFileId_t nFileID );
-	void SetVoteDisabled( bool bDisabled );
+	virtual void NavigateTo();
+	virtual void OnSetFocus();
+	virtual void OnKillFocus();
 
 	ASW_CHOOSER_TYPE m_ChooserType;
 	ASW_HOST_TYPE m_HostType;
-	int m_iLabelHeight;
-	char m_szMapName[256];
+	const RD_Campaign_t *m_pCampaign;
+	const RD_Mission_t *m_pMission;
 
-	vgui::Button *m_pDeleteButton;
-
-	KeyValues *m_MapKeyValues; // keyvalues describing overview parameters
-	bool m_bMouseOver;
-	bool m_bMouseReleased;
-	bool m_bVoteDisabled;
-	bool m_bWaitingForWorkshop;
-	PublishedFileId_t m_nFileID;
+	vgui::Panel *m_pHighlight;
+	vgui::ImagePanel *m_pImage;
+	vgui::Label *m_pTitle;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_ENTRY_H

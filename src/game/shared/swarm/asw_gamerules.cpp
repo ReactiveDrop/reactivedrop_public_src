@@ -433,7 +433,7 @@ ConVar asw_stim_time_scale("asw_stim_time_scale", "0.35", FCVAR_REPLICATED | FCV
 ConVar asw_time_scale_delay("asw_time_scale_delay", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT, "Delay before timescale changes to give a chance for the client to comply and predict.");
 ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "1", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
 ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode for matchmaking.dll." );
-ConVar sv_gametypes( "sv_gametypes", "campaign,deathmatch,bonus_mission", FCVAR_REPLICATED, "Game modes that can be selected on this server." );
+ConVar sv_gametypes( "sv_gametypes", "campaign,bonus_mission,deathmatch", FCVAR_REPLICATED, "Game modes that can be selected on this server." );
 // this cvar is tricky if we want to have lobbies with different number of slots(e.g. 4 or 8)
 // when client creates a lobby it sets the number of slots for lobby
 // when client searches for lobbies and this cvar is set to 3 then all 4+ player lobbies will be unjoinable, the join button will be greyed out
