@@ -1,8 +1,8 @@
 versioninfo
 {
 	"editorversion" "400"
-	"editorbuild" "5032"
-	"mapversion" "95"
+	"editorbuild" "7397"
+	"mapversion" "97"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "95"
+	"mapversion" "97"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -5799,6 +5799,7 @@ entity
 	"id" "3831"
 	"classname" "prop_static"
 	"angles" "0 0 0"
+	"disableshadows" "1"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"model" "models/props/snow/icefield03.mdl"
@@ -5820,6 +5821,7 @@ entity
 	"id" "3839"
 	"classname" "prop_static"
 	"angles" "0 60 0"
+	"disableshadows" "1"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"model" "models/props/snow/icefield03.mdl"
@@ -5841,6 +5843,7 @@ entity
 	"id" "3855"
 	"classname" "prop_static"
 	"angles" "0 0 0"
+	"disableshadows" "1"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"model" "models/props/snow/icefield02.mdl"
