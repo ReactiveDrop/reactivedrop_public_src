@@ -1,0 +1,20 @@
+"VertexLitGeneric"
+{
+	"$alphatest" 1
+	"$basetexture" "models/props_foliage/tree_pine_01_branches"
+//	"$bumpmap" "models/props_foliage/tree_pine_01_branches_normal"
+	"$treesway" 1
+	"$treeswaystartheight" 0
+	"$treeswayspeed" 1
+	$treeswayspeedlerpstart 20
+	$treeswayspeedlerpend 35
+	$treeswaystrength 2
+	$treeswayscrumblespeed 0.3
+	$treeswayscrumblestrength 0.3
+	$treeswayscrumblefrequency 0.3
+	$treeswayspeedhighwindmultipler 0.2
+	$treeswayfalloffexp 1.5
+	$treeswaystatic 1
+	"$model" 1
+	"$nocull" 1
+}
