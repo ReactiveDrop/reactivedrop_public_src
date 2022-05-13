@@ -171,6 +171,10 @@ void CNB_Mission_Panel::OnThink()
 	if (ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave())
 	{
 		int iRetries = ASWGameRules()->GetCampaignSave()->GetRetries();
+		
+		if (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING)	// #8 Number of retries in UI shows a number that is bigger by 1
+			iRetries -= 1;	// since retries counter is incremented on mission start it is safer to -1 it here in UI
+
 		if (iRetries > 0)
 		{
 			m_pRetriesLabel->SetVisible(true);
