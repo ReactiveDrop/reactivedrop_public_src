@@ -166,6 +166,8 @@ void StatsReport::OnThink()
 	m_pObjectiveMap->ClearBlips();
 
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources() && nMarine < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
@@ -186,11 +188,11 @@ void StatsReport::OnThink()
 				C_ASW_Player *pPlayer = pMR->GetCommander();
 				if ( pPlayer )
 				{
-					if ( !pMR->IsInhabited() || ASWGameResource()->IsPlayerReady( pPlayer ) )
+					if ( !pMR->IsInhabited() || pGameResource->IsPlayerReady( pPlayer ) )
 					{
 						m_pReadyCheckImages[ nMarine ]->SetImage( "swarm/HUD/TickBoxTicked" );
 					}
-					else if ( pPlayer == ASWGameResource()->GetLeader() )
+					else if ( pPlayer == pGameResource->GetLeader() )
 					{
 						m_pReadyCheckImages[ nMarine ]->SetImage( "swarm/PlayerList/LeaderIcon" );
 					}
@@ -243,6 +245,8 @@ void StatsReport::SetStatCategory( int nCategory )
 	int nMarine = 0;
 
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources() && nMarine < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
@@ -320,6 +324,8 @@ void StatsReport::SetPlayerNames( void )
 	int nMarine = 0;
 
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return;
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources() && nMarine < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
