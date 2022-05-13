@@ -19,20 +19,19 @@ namespace vgui
 	class Label;
 }
 
+class CASW_Mission_Chooser_List;
+
 class CASW_Mission_Chooser_Entry : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Entry, vgui::EditablePanel );
 public:
-	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType, const RD_Campaign_t *pCampaign, const RD_Mission_t *pMission );
+	CASW_Mission_Chooser_Entry( vgui::Panel *pParent, const char *pElementName, CASW_Mission_Chooser_List *pList, const RD_Campaign_t *pCampaign, const RD_Mission_t *pMission );
 	virtual ~CASW_Mission_Chooser_Entry();
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void NavigateTo();
-	virtual void OnSetFocus();
-	virtual void OnKillFocus();
 
-	ASW_CHOOSER_TYPE m_ChooserType;
-	ASW_HOST_TYPE m_HostType;
+	vgui::EditablePanel *m_pFocusHolder;
+	CASW_Mission_Chooser_List *m_pList;
 	const RD_Campaign_t *m_pCampaign;
 	const RD_Mission_t *m_pMission;
 

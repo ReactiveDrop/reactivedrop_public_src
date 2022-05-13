@@ -95,8 +95,8 @@ struct RD_Mission_t
 	int32_t PosY{};
 	float Scale{ 1.0f };
 
-	string_t Material{ NULL_STRING }; // vgui texture
-	string_t BriefingMaterial{ NULL_STRING }; // vgui texture
+	string_t Material{ NULL_STRING }; // texture
+	string_t BriefingMaterial{ NULL_STRING }; // texture
 	CUtlVector<RD_Mission_MinimapSlice_t> VerticalSections{};
 
 	string_t MissionTitle{ NULL_STRING }; // could be localized

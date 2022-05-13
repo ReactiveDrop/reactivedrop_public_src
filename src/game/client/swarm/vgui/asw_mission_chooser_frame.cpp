@@ -3,9 +3,12 @@
 #include "ienginevgui.h"
 #include "asw_mission_chooser_frame.h"
 #include "asw_mission_chooser_list.h"
+#include "asw_mission_chooser_entry.h"
+#include "asw_mission_chooser_details.h"
 #include "nb_header_footer.h"
 #include "gameui/swarm/basemodui.h"
-#include "vgui_controls/PropertySheet.h"
+#include <vgui_controls/PropertySheet.h>
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -46,6 +49,8 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 	HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 	SetScheme( scheme );
 
+	m_HostType = iHostType;
+
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pHeaderFooter->SetGradientBarPos( 40, 410 );
 
@@ -81,11 +86,12 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 				continue;
 			}
 
-			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "MissionChooserList", ASW_CHOOSER_TYPE( j ), iHostType );
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "MissionChooserList", ASW_CHOOSER_TYPE( j ), this );
 			m_pSheet->AddPage( pChooserList, s_ChooserTabName[j] );
-			m_ChooserLists.AddToTail( pChooserList );
 		}
 	}
+
+	m_pDetails = new CASW_Mission_Chooser_Details( this, "MissionChooserDetails" );
 }
 
 CASW_Mission_Chooser_Frame::~CASW_Mission_Chooser_Frame()
@@ -105,6 +111,19 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 	}
 }
 
+void CASW_Mission_Chooser_Frame::OnKeyCodeTyped( vgui::KeyCode keycode )
+{
+	switch ( keycode )
+	{
+	case KEY_ESCAPE:
+		OnCommand( "BackButton" );
+		break;
+	default:
+		BaseClass::OnKeyCodeTyped( keycode );
+		break;
+	}
+}
+
 void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
 {
 	int lastUser = GetJoystickForCode( keycode );
@@ -114,7 +133,6 @@ void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
 
 	switch ( code )
 	{
-	case KEY_ESCAPE:
 	case KEY_XBUTTON_B:
 		OnCommand( "BackButton" );
 		break;
@@ -141,6 +159,32 @@ void CASW_Mission_Chooser_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/MissionChooserFrame.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+}
+
+void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry )
+{
+	if ( pEntry->m_pMission )
+	{
+		if ( m_HostType == ASW_HOST_TYPE::CALLVOTE )
+		{
+			if ( pEntry->m_pCampaign )
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_campaign %s %d", pEntry->m_pMission->BaseName, ReactiveDropMissions::GetCampaignIndex( pEntry->m_pCampaign->BaseName ) ) );
+			}
+			else
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_mission %s", pEntry->m_pMission->BaseName ) );
+			}
+
+			MarkForDeletion();
+			return;
+		}
+
+		Assert( !"TODO: create lobby" );
+		return;
+	}
+
+	Assert( !"TODO: campaign view" );
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;

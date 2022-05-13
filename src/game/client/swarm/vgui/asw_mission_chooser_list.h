@@ -10,13 +10,14 @@
 enum class ASW_CHOOSER_TYPE;
 enum class ASW_HOST_TYPE;
 
+class CASW_Mission_Chooser_Frame;
 class CASW_Mission_Chooser_Entry;
 
 class CASW_Mission_Chooser_List : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_List, vgui::EditablePanel );
 public:
-	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType );
+	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, CASW_Mission_Chooser_Frame *pFrame );
 	virtual ~CASW_Mission_Chooser_List();
 
 	virtual void OnThink();
@@ -31,7 +32,7 @@ public:
 	int m_nDataResets;
 	int m_nLastX, m_nLastY;
 	ASW_CHOOSER_TYPE m_ChooserType;
-	ASW_HOST_TYPE m_HostType;
+	CASW_Mission_Chooser_Frame *m_pFrame;
 	CUtlVector<vgui::DHANDLE<CASW_Mission_Chooser_Entry>> m_Entries;
 };
 

@@ -2,19 +2,20 @@
 #include "asw_mission_chooser_frame.h"
 #include "asw_mission_chooser_list.h"
 #include "asw_mission_chooser_entry.h"
+#include "asw_mission_chooser_details.h"
 #include "rd_missions_shared.h"
 #include <vgui/IInput.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CASW_Mission_Chooser_List::CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, ASW_HOST_TYPE iHostType ) : BaseClass( pParent, pElementName )
+CASW_Mission_Chooser_List::CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, CASW_Mission_Chooser_Frame *pFrame ) : BaseClass( pParent, pElementName )
 {
 	m_nDataResets = 0;
 	m_nLastX = -1;
 	m_nLastY = -1;
 	m_ChooserType = iChooserType;
-	m_HostType = iHostType;
+	m_pFrame = pFrame;
 }
 
 CASW_Mission_Chooser_List::~CASW_Mission_Chooser_List()
@@ -24,23 +25,6 @@ CASW_Mission_Chooser_List::~CASW_Mission_Chooser_List()
 void CASW_Mission_Chooser_List::OnThink()
 {
 	BaseClass::OnThink();
-
-	int x, y;
-	vgui::input()->GetCursorPos( x, y );
-	if ( m_Entries.Count() != 0 && ( x != m_nLastX || y != m_nLastY ) )
-	{
-		FOR_EACH_VEC( m_Entries, i )
-		{
-			if ( m_Entries[i]->IsWithin( x, y ) )
-			{
-				NavigateToChild( m_Entries[i] );
-				break;
-			}
-		}
-
-		m_nLastX = x;
-		m_nLastY = y;
-	}
 
 	// make sure data reset count is up to date.
 	ReactiveDropMissions::GetCampaign( -1 );
@@ -110,15 +94,19 @@ void CASW_Mission_Chooser_List::PerformLayout()
 		int left = col == 0 ? -1 : col - 1 + row * perRow;
 		int right = col == perRow - 1 ? -1 : col + 1 + row * perRow;
 
-		m_Entries[i]->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up].Get() : NULL );
-		m_Entries[i]->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down].Get() : NULL );
-		m_Entries[i]->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left].Get() : NULL );
-		m_Entries[i]->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right].Get() : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up]->m_pFocusHolder : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down]->m_pFocusHolder : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left]->m_pFocusHolder : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right]->m_pFocusHolder : NULL );
 	}
 
 	if ( m_Entries.Count() > 0 )
 	{
 		NavigateToChild( m_Entries[0] );
+	}
+	else
+	{
+		m_pFrame->m_pDetails->HighlightEntry( NULL );
 	}
 
 	m_nLastX = -1;
@@ -157,7 +145,7 @@ void CASW_Mission_Chooser_List::BuildCampaignList( const char *szRequiredTag )
 		if ( szRequiredTag && !pCampaign->HasTag( szRequiredTag ) )
 			continue;
 
-		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", m_ChooserType, m_HostType, pCampaign, NULL ) );
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, pCampaign, NULL ) );
 	}
 }
 
@@ -175,6 +163,6 @@ void CASW_Mission_Chooser_List::BuildMissionList( const char *szRequiredTag )
 		if ( szRequiredTag && !pMission->HasTag( szRequiredTag ) )
 			continue;
 
-		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", m_ChooserType, m_HostType, NULL, pMission ) );
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, NULL, pMission ) );
 	}
 }

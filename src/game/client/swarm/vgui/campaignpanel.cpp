@@ -212,6 +212,7 @@ void CampaignPanel::PerformLayout()
 	m_pSurfaceMapLayer[0]->SetBounds(x,y,w,t);
 	m_pSurfaceMapLayer[1]->SetBounds(x,y,w,t);
 	m_pSurfaceMapLayer[2]->SetBounds(x,y,w,t);
+	m_pLights->SetSize( w, t );
 	int bracket_inset = w * 0.012f;
 	m_pMapEdges->SetBounds(x + bracket_inset, y + bracket_inset, w - (bracket_inset*2), t - (bracket_inset * 2));
 
@@ -386,6 +387,7 @@ void CampaignPanel::OnThink()
 				m_pSurfaceMapLayer[0]->SetImage(STRING(pCampaign->m_CampaignTextureLayer1));
 				m_pSurfaceMapLayer[1]->SetImage(STRING(pCampaign->m_CampaignTextureLayer2));
 				m_pSurfaceMapLayer[2]->SetImage(STRING(pCampaign->m_CampaignTextureLayer3));
+				m_pLights->SetCampaign( pCampaign );
 
 				m_pBackDrop->SetImage(STRING(pCampaign->m_CampaignTextureName));
 

@@ -1705,6 +1705,7 @@ exit 1
     <ClCompile Include="swarm\vgui\asw_hud_weapons.cpp" />
     <ClCompile Include="swarm\vgui\asw_loading_panel.cpp" />
     <ClCompile Include="swarm\vgui\asw_logo_panel.cpp" />
+    <ClCompile Include="swarm\vgui\asw_mission_chooser_details.cpp" />
     <ClCompile Include="swarm\vgui\asw_mission_chooser_entry.cpp" />
     <ClCompile Include="swarm\vgui\asw_mission_chooser_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_mission_chooser_list.cpp" />
@@ -2790,6 +2791,7 @@ exit 1
     <ClInclude Include="swarm\vgui\asw_hud_use_icon.h" />
     <ClInclude Include="swarm\vgui\asw_loading_panel.h" />
     <ClInclude Include="swarm\vgui\asw_logo_panel.h" />
+    <ClInclude Include="swarm\vgui\asw_mission_chooser_details.h" />
     <ClInclude Include="swarm\vgui\asw_mission_chooser_entry.h" />
     <ClInclude Include="swarm\vgui\asw_mission_chooser_frame.h" />
     <ClInclude Include="swarm\vgui\asw_mission_chooser_list.h" />

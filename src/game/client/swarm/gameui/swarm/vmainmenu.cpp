@@ -347,6 +347,9 @@ void MainMenu::OnCommand( const char *command )
 		}
 		else
 		{
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
+			return; // TODO
+
 			KeyValues *pSettings = KeyValues::FromString(
 				"Settings",
 				" System { "
@@ -853,6 +856,9 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if( !Q_strcmp( command, "CreateGame" ) )
 	{
+		engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
+		return; // TODO
+
 		KeyValues *pSettings = KeyValues::FromString(
 			"settings",
 			" system { "

@@ -34,6 +34,8 @@ extern const char *const g_ASW_HostTypeName[int( ASW_HOST_TYPE::NUM_TYPES )];
 
 class CNB_Header_Footer;
 class CASW_Mission_Chooser_List;
+class CASW_Mission_Chooser_Entry;
+class CASW_Mission_Chooser_Details;
 namespace vgui
 {
 	class PropertySheet;
@@ -47,12 +49,16 @@ public:
 	virtual ~CASW_Mission_Chooser_Frame();
 
 	virtual void OnCommand( const char *command );
+	virtual void OnKeyCodeTyped( vgui::KeyCode keycode );
 	virtual void OnKeyCodePressed( vgui::KeyCode keycode );
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
+	void ApplyEntry( CASW_Mission_Chooser_Entry *pEntry );
+
+	ASW_HOST_TYPE m_HostType;
 	CNB_Header_Footer *m_pHeaderFooter;
-	CUtlVector<CASW_Mission_Chooser_List *> m_ChooserLists;
 	vgui::PropertySheet *m_pSheet;
+	CASW_Mission_Chooser_Details *m_pDetails;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_FRAME_H
