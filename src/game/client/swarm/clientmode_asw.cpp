@@ -74,7 +74,8 @@ ConVar asw_hear_pos_debug("asw_hear_pos_debug", "0", FCVAR_NONE, "Shows audio he
 ConVar asw_hear_height("asw_hear_height", "0", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
 ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio position is locked in place.  Use asw_set_hear_pos to set the fixed position to the current audio location." );
 
-ConVar asw_tree_sway_enabled("asw_tree_sway_enabled", "0", FCVAR_NONE, "If set, trees sway in the wind.", true, 0, true, 1);
+ConVar rd_tree_sway_enabled("rd_tree_sway_enabled", "1", FCVAR_ARCHIVE, "If set, some trees sway in the wind.", true, 0, true, 1);
+ConVar rd_tree_sway_strength("rd_tree_sway_strength", "8", FCVAR_ARCHIVE, "How strong is the wind. 0-16", true, 0, true, 16);
 
 Vector g_asw_vec_fixed_cam(-276.03076, -530.74951, -196.65625);
 QAngle g_asw_ang_fixed_cam(42.610226, 90.289375, 0);
@@ -888,10 +889,10 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 	{
 		engine->ClientCmd("exec newmapsettings\n");
 
-		if ( asw_tree_sway_enabled.GetBool() )
+		if ( rd_tree_sway_enabled.GetBool() )
 		{
-			int iWindDir = random->RandomInt( 8, 24 );
-			if ( !random->RandomInt( 0, 1 ) )
+			int iWindDir = random->RandomInt( rd_tree_sway_strength.GetInt(), 3 * rd_tree_sway_strength.GetInt() );
+			if ( random->RandomInt( 0, 1 ) )
 				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", iWindDir, -iWindDir ) );
 			else
 				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", -iWindDir, iWindDir ) );
