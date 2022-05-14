@@ -578,7 +578,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 	pMission->Author = AllocMissionsPooledString( pKV->GetString( "author" ) );
 	pMission->Website = AllocMissionsPooledString( pKV->GetString( "website" ) );
-	pMission->Version = pKV->GetInt( "version", -1 );
+	pMission->Version = AllocMissionsPooledString( pKV->GetString( "version" ) );
 	pMission->Builtin = pKV->GetBool( "builtin" );
 
 	if ( KeyValues *pVerticalSections = pKV->FindKey( "verticalsections" ) )
@@ -649,11 +649,85 @@ int ReactiveDropMissions::GetMissionIndex( const char *name )
 	return -1;
 }
 
+const RD_Campaign_t *CampaignHandle::Get()
+{
+	if ( !s_bRebuildUnpackedMissionData && m_nDataResets == ReactiveDropMissions::s_nDataResets )
+		return m_pCampaign;
+
+	m_pCampaign = ReactiveDropMissions::GetCampaign( m_szBaseName );
+	m_nDataResets = ReactiveDropMissions::s_nDataResets;
+
+	return m_pCampaign;
+}
+
+void CampaignHandle::SetCampaign( const char *szBaseName )
+{
+	V_strncpy( m_szBaseName, szBaseName, sizeof( m_szBaseName ) );
+	m_pCampaign = NULL;
+	m_nDataResets = 0;
+}
+
+const RD_Mission_t *MissionHandle::Get()
+{
+	if ( !s_bRebuildUnpackedMissionData && m_nDataResets == ReactiveDropMissions::s_nDataResets )
+		return m_pMission;
+
+	m_pMission = ReactiveDropMissions::GetMission( m_szBaseName );
+	m_nDataResets = ReactiveDropMissions::s_nDataResets;
+
+	return m_pMission;
+}
+
+void MissionHandle::SetMission( const char *szBaseName )
+{
+	V_strncpy( m_szBaseName, szBaseName, sizeof( m_szBaseName ) );
+	m_pMission = NULL;
+	m_nDataResets = 0;
+}
+
 bool RD_Campaign_t::HasTag( const char *tag ) const
 {
 	FOR_EACH_VEC( Tags, i )
 	{
 		if ( !V_stricmp( tag, STRING( Tags[i] ) ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+const RD_Campaign_Mission_t *RD_Campaign_t::GetMission( int iMissionIndex ) const
+{
+	if ( iMissionIndex >= 0 && iMissionIndex < Missions.Count() )
+		return &Missions[iMissionIndex];
+
+	return NULL;
+}
+
+const RD_Campaign_Mission_t *RD_Campaign_t::GetMissionByMapName( const char *szMapName ) const
+{
+	FOR_EACH_VEC( Missions, i )
+	{
+		if ( !V_stricmp( szMapName, Missions[i].MapName ) )
+		{
+			return &Missions[i];
+		}
+	}
+
+	return NULL;
+}
+
+bool RD_Campaign_t::AreMissionsLinked( int from, int to ) const
+{
+	const RD_Campaign_Mission_t *pMission = GetMission( from );
+	if ( !pMission )
+		return false;
+
+	FOR_EACH_VEC( pMission->Links, i )
+	{
+		if ( pMission->Links[i] == to )
 		{
 			return true;
 		}

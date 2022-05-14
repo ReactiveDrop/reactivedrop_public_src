@@ -42,6 +42,46 @@ namespace ReactiveDropMissions
 	static inline const RD_Mission_t *GetMission( const char *name ) { return GetMission( GetMissionIndex( name ) ); }
 }
 
+class CampaignHandle
+{
+public:
+	CampaignHandle() = default;
+	CampaignHandle( const char *szBaseName ) { SetCampaign( szBaseName ); }
+
+	const RD_Campaign_t *Get();
+	void SetCampaign( const char *szBaseName );
+
+	inline operator bool() { return Get() != NULL; }
+	inline bool operator!() { return Get() == NULL; }
+	inline const RD_Campaign_t *operator->() { return Get(); }
+	inline operator const RD_Campaign_t *() { return Get(); }
+
+private:
+	char m_szBaseName[64]{};
+	const RD_Campaign_t *m_pCampaign{};
+	int m_nDataResets{};
+};
+
+class MissionHandle
+{
+public:
+	MissionHandle() = default;
+	MissionHandle( const char *szBaseName ) { SetMission( szBaseName ); }
+
+	const RD_Mission_t *Get();
+	void SetMission( const char *szBaseName );
+
+	inline operator bool() { return Get() != NULL; }
+	inline bool operator!() { return Get() == NULL; }
+	inline const RD_Mission_t *operator->() { return Get(); }
+	inline operator const RD_Mission_t *( ) { return Get(); }
+
+private:
+	char m_szBaseName[64]{};
+	const RD_Mission_t *m_pMission{};
+	int m_nDataResets{};
+};
+
 struct RD_Campaign_t
 {
 	char BaseName[64]{};
@@ -66,6 +106,9 @@ struct RD_Campaign_t
 	CUtlVector<string_t> Tags{};
 
 	bool HasTag( const char *tag ) const;
+	const RD_Campaign_Mission_t *GetMission( int iMissionIndex ) const;
+	const RD_Campaign_Mission_t *GetMissionByMapName( const char *szMapName ) const;
+	bool AreMissionsLinked( int from, int to ) const;
 };
 
 struct RD_Campaign_Mission_t
@@ -105,7 +148,7 @@ struct RD_Mission_t
 
 	string_t Author{ NULL_STRING };
 	string_t Website{ NULL_STRING };
-	int32_t Version{ -1 };
+	string_t Version{ NULL_STRING };
 	bool Builtin{};
 
 	CUtlVector<string_t> Tags{};
