@@ -59,6 +59,7 @@ public:
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::PropertySheet *m_pSheet;
 	CASW_Mission_Chooser_Details *m_pDetails;
+	bool m_bViewingCampaign;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_FRAME_H

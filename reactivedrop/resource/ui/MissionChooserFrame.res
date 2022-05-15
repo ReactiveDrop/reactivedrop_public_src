@@ -7,7 +7,7 @@
 		"ypos"		"0"
 		"wide"		"f0"
 		"tall"		"f0"
-		"ControlName"		"Frame"
+		"ControlName"		"CASW_Mission_Chooser_Frame"
 		"navToRelay"		"TabSheet"
 	}
 
@@ -33,7 +33,17 @@
 		"ypos"		"40"
 		"wide"		"450"
 		"tall"		"410"
-		"ContolName"		"PropertySheet"
+		"ControlName"		"PropertySheet"
 		"transition_time"		"0"
+	}
+
+	"MissionChooserDetails"
+	{
+		"fieldName"		"MissionChooserDetails"
+		"xpos"		"c130"
+		"ypos"		"40"
+		"wide"		"190"
+		"tall"		"410"
+		"ControlName"		"CASW_Mission_Chooser_Details"
 	}
 }

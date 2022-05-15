@@ -13,6 +13,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_last_game_access;
+
 const char *const g_ASW_ChooserTypeName[] =
 {
 	"campaign",
@@ -50,6 +52,7 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 	SetScheme( scheme );
 
 	m_HostType = iHostType;
+	m_bViewingCampaign = false;
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pHeaderFooter->SetGradientBarPos( 40, 410 );
@@ -103,7 +106,14 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 	if ( !V_stricmp( command, "BackButton" ) )
 	{
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
-		MarkForDeletion();
+		if ( m_bViewingCampaign )
+		{
+			Assert( !"TODO: back" );
+		}
+		else
+		{
+			MarkForDeletion();
+		}
 	}
 	else
 	{
@@ -117,6 +127,12 @@ void CASW_Mission_Chooser_Frame::OnKeyCodeTyped( vgui::KeyCode keycode )
 	{
 	case KEY_ESCAPE:
 		OnCommand( "BackButton" );
+		break;
+	case KEY_TAB:
+		if ( !m_bViewingCampaign )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
+		}
 		break;
 	default:
 		BaseClass::OnKeyCodeTyped( keycode );
@@ -137,13 +153,13 @@ void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
 		OnCommand( "BackButton" );
 		break;
 	case KEY_XBUTTON_LEFT_SHOULDER:
-		if ( m_pSheet->GetActivePageNum() > 0 )
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() > 0 )
 		{
 			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() - 1 ) );
 		}
 		break;
 	case KEY_XBUTTON_RIGHT_SHOULDER:
-		if ( m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
 		{
 			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() + 1 ) );
 		}
@@ -180,9 +196,52 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 			return;
 		}
 
-		Assert( !"TODO: create lobby" );
+		KeyValues::AutoDelete pSettings( "Settings" );
+
+		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			pSettings->SetString( "system/network", "offline" );
+		}
+		else
+		{
+			Assert( m_HostType == ASW_HOST_TYPE::CREATESERVER );
+			pSettings->SetString( "system/network", "LIVE" );
+			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
+			pSettings->SetString( "options/action", "create" );
+		}
+
+		if ( pEntry->m_pCampaign )
+		{
+			pSettings->SetString( "game/mode", "campaign" );
+			pSettings->SetString( "game/campaign", pEntry->m_pCampaign->BaseName );
+		}
+		else
+		{
+			pSettings->SetString( "game/mode", "single_mission" );
+		}
+
+		pSettings->SetString( "game/mission", pEntry->m_pMission->BaseName );
+		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
+
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+
+		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			g_pMatchFramework->CreateSession( pSettings );
+		}
+		else
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
+			BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GAMESETTINGS, NULL, true, pSettings );
+		}
+
+		MarkForDeletion();
 		return;
 	}
+
+	Assert( pEntry->m_pCampaign );
+	if ( !pEntry->m_pCampaign )
+		return;
 
 	Assert( !"TODO: campaign view" );
 }

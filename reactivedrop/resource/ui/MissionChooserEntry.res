@@ -7,7 +7,18 @@
 		"ypos"		"0"
 		"wide"		"90"
 		"tall"		"78"
-		"ControlName"		"EditablePanel"
+		"ControlName"		"CASW_Mission_Chooser_Entry"
+	}
+
+	"FocusHolder"
+	{
+		"fieldName"		"FocusHolder"
+		"xpos"		"0"
+		"ypos"		"0"
+		"wide"		"90"
+		"tall"		"78"
+		"zpos"		"999"
+		"ControlName"		"CASW_Mission_Chooser_Entry_FocusHolder"
 	}
 
 	"Background"

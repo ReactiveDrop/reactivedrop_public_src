@@ -114,6 +114,6 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 		return;
 	}
 
-	Assert( !"entry contains neither a campaign nor a mission" );
+	// not a campaign or a mission; remove overview (it's a placeholder)
 	HighlightEntry( NULL );
 }

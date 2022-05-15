@@ -38,6 +38,7 @@ void CASW_Mission_Chooser_List::OnThink()
 	{
 	case ASW_CHOOSER_TYPE::CAMPAIGN:
 		BuildCampaignList( NULL );
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 		break;
 	case ASW_CHOOSER_TYPE::SAVED_CAMPAIGN:
 		Assert( !"Saved campaign mission chooser list not implemented!" );
@@ -47,9 +48,11 @@ void CASW_Mission_Chooser_List::OnThink()
 		break;
 	case ASW_CHOOSER_TYPE::BONUS_MISSION:
 		BuildMissionList( "bonus" );
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 		break;
 	case ASW_CHOOSER_TYPE::DEATHMATCH:
 		BuildMissionList( "deathmatch" );
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 		break;
 	default:
 		Assert( !"Unhandled ASW_CHOOSER_TYPE in CASW_Mission_Chooser_List" );

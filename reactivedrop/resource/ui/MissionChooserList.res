@@ -7,6 +7,6 @@
 		"ypos"		"0"
 		"wide"		"f0"
 		"tall"		"f0"
-		"ControlName"		"EditablePanel"
+		"ControlName"		"CASW_Mission_Chooser_List"
 	}
 }
