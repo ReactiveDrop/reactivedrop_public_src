@@ -33,8 +33,8 @@ public:
 
 	vgui::EditablePanel *m_pFocusHolder;
 	CASW_Mission_Chooser_List *m_pList;
-	const RD_Campaign_t *m_pCampaign;
-	const RD_Mission_t *m_pMission;
+	char m_szCampaign[64];
+	char m_szMission[64];
 	ASW_CHOOSER_TYPE m_WorkshopChooserType;
 
 	vgui::Panel *m_pHighlight;

@@ -70,6 +70,7 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 		m_pMapLayer[1]->SetVisible( false );
 		m_pMapLayer[2]->SetVisible( false );
 		m_pSearchLights->SetVisible( false );
+		m_pLastEntry = NULL;
 
 		return;
 	}
@@ -82,38 +83,57 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 	m_pDescription->SetVisible( true );
 	m_pMapBase->SetVisible( true );
 
-	if ( pEntry->m_pMission )
+	if ( pEntry->m_szMission[0] )
 	{
-		m_pImage->SetImage( STRING( pEntry->m_pMission->Image ) );
-		m_pTitle->SetText( STRING( pEntry->m_pMission->MissionTitle ) );
-		m_pDescription->SetText( STRING( pEntry->m_pMission->Description ) );
-		m_pMapBase->SetImage( CFmtStr( "../%s", STRING( pEntry->m_pMission->BriefingMaterial ) ) );
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( pEntry->m_szMission );
+		Assert( pMission );
+		if ( !pMission )
+		{
+			HighlightEntry( NULL );
+			return;
+		}
+
+		m_pImage->SetImage( STRING( pMission->Image ) );
+		m_pTitle->SetText( STRING( pMission->MissionTitle ) );
+		m_pDescription->SetText( STRING( pMission->Description ) );
+		m_pMapBase->SetImage( CFmtStr( "../%s", STRING( pMission->BriefingMaterial ) ) );
 		m_pMapLayer[0]->SetVisible( false );
 		m_pMapLayer[1]->SetVisible( false );
 		m_pMapLayer[2]->SetVisible( false );
 		m_pSearchLights->SetVisible( false );
+		m_pLastEntry = pEntry;
 
 		return;
 	}
 	
-	if ( pEntry->m_pCampaign )
+	if ( pEntry->m_szCampaign[0] )
 	{
-		m_pImage->SetImage( STRING( pEntry->m_pCampaign->ChooseCampaignTexture ) );
-		m_pTitle->SetText( STRING( pEntry->m_pCampaign->CampaignName ) );
-		m_pDescription->SetText( STRING( pEntry->m_pCampaign->CampaignDescription ) );
-		m_pMapBase->SetImage( STRING( pEntry->m_pCampaign->CampaignTextureName ) );
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( pEntry->m_szCampaign );
+		Assert( pCampaign );
+		if ( !pCampaign )
+		{
+			HighlightEntry( NULL );
+			return;
+		}
+
+		m_pImage->SetImage( STRING( pCampaign->ChooseCampaignTexture ) );
+		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
+		m_pDescription->SetText( STRING( pCampaign->CampaignDescription ) );
+		m_pMapBase->SetImage( STRING( pCampaign->CampaignTextureName ) );
 		m_pMapLayer[0]->SetVisible( true );
 		m_pMapLayer[1]->SetVisible( true );
 		m_pMapLayer[2]->SetVisible( true );
-		m_pMapLayer[0]->SetImage( STRING( pEntry->m_pCampaign->CampaignTextureLayer[0] ) );
-		m_pMapLayer[1]->SetImage( STRING( pEntry->m_pCampaign->CampaignTextureLayer[1] ) );
-		m_pMapLayer[2]->SetImage( STRING( pEntry->m_pCampaign->CampaignTextureLayer[2] ) );
+		m_pMapLayer[0]->SetImage( STRING( pCampaign->CampaignTextureLayer[0] ) );
+		m_pMapLayer[1]->SetImage( STRING( pCampaign->CampaignTextureLayer[1] ) );
+		m_pMapLayer[2]->SetImage( STRING( pCampaign->CampaignTextureLayer[2] ) );
 		m_pSearchLights->SetVisible( true );
-		m_pSearchLights->SetCampaign( pEntry->m_pCampaign );
+		m_pSearchLights->SetCampaign( pCampaign );
+		m_pLastEntry = pEntry;
 
 		return;
 	}
 
 	// not a campaign or a mission; remove overview (it's a placeholder)
 	HighlightEntry( NULL );
+	m_pLastEntry = pEntry;
 }

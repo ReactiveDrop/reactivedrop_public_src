@@ -95,7 +95,7 @@ public:
 		{
 			CASW_Mission_Chooser_Entry *pParent = assert_cast< CASW_Mission_Chooser_Entry * >( GetParent() );
 			m_bMousePressed = false;
-			if ( pParent->m_pMission || pParent->m_pCampaign )
+			if ( pParent->m_szMission[0] || pParent->m_szCampaign[0] )
 			{
 				pParent->m_pList->m_pFrame->ApplyEntry( pParent );
 			}
@@ -120,9 +120,18 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( vgui::Panel *pParent, co
 	SetConsoleStylePanel( true );
 
 	m_pList = pList;
-	m_pCampaign = pCampaign;
-	m_pMission = pMission;
+	m_szCampaign[0] = '\0';
+	m_szMission[0] = '\0';
 	m_WorkshopChooserType = ASW_CHOOSER_TYPE::NUM_TYPES;
+
+	if ( pCampaign )
+	{
+		V_strncpy( m_szCampaign, pCampaign->BaseName, sizeof( m_szCampaign ) );
+	}
+	if ( pMission )
+	{
+		V_strncpy( m_szMission, pMission->BaseName, sizeof( m_szMission ) );
+	}
 
 	m_pFocusHolder = new CASW_Mission_Chooser_Entry_FocusHolder( this, "FocusHolder" );
 	m_pHighlight = new vgui::Panel( this, "Highlight" );
@@ -135,8 +144,8 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( vgui::Panel *pParent, co
 	SetConsoleStylePanel( true );
 
 	m_pList = pList;
-	m_pCampaign = NULL;
-	m_pMission = NULL;
+	m_szCampaign[0] = '\0';
+	m_szMission[0] = '\0';
 	m_WorkshopChooserType = iChooserType;
 
 	m_pFocusHolder = new CASW_Mission_Chooser_Entry_FocusHolder( this, "FocusHolder" );
@@ -163,20 +172,34 @@ void CASW_Mission_Chooser_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
 		return;
 	}
 
-	Assert( m_pCampaign || m_pMission );
+	Assert( m_szCampaign[0] || m_szMission[0] );
+
+	const RD_Campaign_t *pCampaign = NULL;
+	const RD_Mission_t *pMission = NULL;
+
+	if ( m_szCampaign[0] )
+	{
+		pCampaign = ReactiveDropMissions::GetCampaign( m_szCampaign );
+		Assert( pCampaign );
+	}
+	if ( m_szMission[0] )
+	{
+		pMission = ReactiveDropMissions::GetMission( m_szMission );
+		Assert( pMission );
+	}
 
 	bool bIsSubscribed = false;
-	if ( m_pMission )
+	if ( pMission )
 	{
-		m_pImage->SetImage( STRING( m_pMission->Image ) );
-		m_pTitle->SetText( STRING( m_pMission->MissionTitle ) );
-		bIsSubscribed = m_pMission->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( m_pMission->WorkshopID );
+		m_pImage->SetImage( STRING( pMission->Image ) );
+		m_pTitle->SetText( STRING( pMission->MissionTitle ) );
+		bIsSubscribed = pMission->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( pMission->WorkshopID );
 	}
-	else if ( m_pCampaign )
+	else if ( pCampaign )
 	{
-		m_pImage->SetImage( STRING( m_pCampaign->ChooseCampaignTexture ) );
-		m_pTitle->SetText( STRING( m_pCampaign->CampaignName ) );
-		bIsSubscribed = m_pCampaign->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( m_pCampaign->WorkshopID );
+		m_pImage->SetImage( STRING( pCampaign->ChooseCampaignTexture ) );
+		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
+		bIsSubscribed = pCampaign->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( pCampaign->WorkshopID );
 	}
 
 	if ( bIsSubscribed )

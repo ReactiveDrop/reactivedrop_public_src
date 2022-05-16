@@ -35,6 +35,7 @@ public:
 	vgui::ImagePanel *m_pMapBase;
 	vgui::ImagePanel *m_pMapLayer[3];
 	CampaignMapSearchLights *m_pSearchLights;
+	vgui::DHANDLE<CASW_Mission_Chooser_Entry> m_pLastEntry;
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_DETAILS_H

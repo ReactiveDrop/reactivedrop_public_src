@@ -17,7 +17,7 @@ class CASW_Mission_Chooser_List : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_List, vgui::EditablePanel );
 public:
-	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, CASW_Mission_Chooser_Frame *pFrame );
+	CASW_Mission_Chooser_List( vgui::Panel *pParent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType, CASW_Mission_Chooser_Frame *pFrame, const char *szCampaignName = NULL );
 	virtual ~CASW_Mission_Chooser_List();
 
 	virtual void OnThink();
@@ -28,10 +28,12 @@ public:
 	void AddEntry( CASW_Mission_Chooser_Entry *pEntry );
 	void BuildCampaignList( const char *szRequiredTag );
 	void BuildMissionList( const char *szRequiredTag );
+	void BuildCampaignMissionList();
 
 	int m_nDataResets;
 	int m_nLastX, m_nLastY;
 	ASW_CHOOSER_TYPE m_ChooserType;
+	char m_szCampaignName[64];
 	CASW_Mission_Chooser_Frame *m_pFrame;
 	CUtlVector<vgui::DHANDLE<CASW_Mission_Chooser_Entry>> m_Entries;
 };

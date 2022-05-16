@@ -20,7 +20,7 @@
 		"tall"		"27"
 		"ControlName"		"CNB_Button"
 		"Command"		"BackButton"
-		"labelText"		"#L4D360UI_Cancel_Caps"
+		"labelText"		"#L4D360UI_Back_Caps"
 		"textAlignment"		"center"
 		"font"		"DefaultMedium"
 		"zpos"		"3"
@@ -37,6 +37,18 @@
 		"transition_time"		"0"
 	}
 
+	"CampaignMissionList"
+	{
+		"fieldName"		"CampaignMissionList"
+		"xpos"		"c-320"
+		"ypos"		"40"
+		"wide"		"450"
+		"tall"		"410"
+		"ControlName"		"PropertySheet"
+		"visible"		"0"
+		"transition_time"		"0"
+	}
+
 	"MissionChooserDetails"
 	{
 		"fieldName"		"MissionChooserDetails"
@@ -45,5 +57,16 @@
 		"wide"		"190"
 		"tall"		"410"
 		"ControlName"		"CASW_Mission_Chooser_Details"
+	}
+
+	"WorkshopDownloadProgress"
+	{
+		"fieldName"			"WorkshopDownloadProgress"
+		"xpos"				"r150"
+		"ypos"				"r50"
+		"wide"				"145"
+		"tall"				"45"
+		"zpos"				"20"
+		"ControlName"		"CRD_VGUI_Workshop_Download_Progress"
 	}
 }

@@ -75,7 +75,7 @@ void ReactiveDropChallenges::InstallStringTableCallback( const char *tableName )
 static class CReactiveDropChallengesClientSystem : public CAutoGameSystem
 {
 public:
-	CReactiveDropChallengesClientSystem() : CAutoGameSystem( "CReactiveDropChallengesClientSystem" )
+	CReactiveDropChallengesClientSystem() : CAutoGameSystem( "CReactiveDropChallengesClientSystem" ), m_LocalChallenges( 0, 16, true )
 	{
 		Clear();
 	}

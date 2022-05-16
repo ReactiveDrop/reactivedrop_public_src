@@ -198,7 +198,7 @@ void ReactiveDropMissions::InstallStringTableCallback( const char *tableName )
 static class CReactiveDropMissionsClientSystem : public CAutoGameSystem
 {
 public:
-	CReactiveDropMissionsClientSystem() : CAutoGameSystem( "CReactiveDropMissionsClientSystem" )
+	CReactiveDropMissionsClientSystem() : CAutoGameSystem( "CReactiveDropMissionsClientSystem" ), m_LocalCampaigns( 0, 16, true ), m_LocalMissions( 0, 16, true )
 	{
 		Clear();
 	}
@@ -263,6 +263,7 @@ public:
 void ReactiveDropMissions::ClearClientCache()
 {
 	s_ClientMissions.Clear();
+	s_ClientMissions.ReadMissionList();
 }
 
 static bool ReadCampaignDataClient( KeyValues *pKV, int index )

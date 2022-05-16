@@ -5,6 +5,7 @@
 #include "asw_campaign_info.h"
 #include "vpklib/packedstore.h"
 #include "rd_challenges_shared.h"
+#include "rd_missions_shared.h"
 #include "ConfigManager.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
@@ -951,6 +952,7 @@ static void ClearCaches()
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();
+	ReactiveDropMissions::ClearClientCache();
 
 	// #iss-speaker-reset 
 	// calling snd_restart during game launch causes snd_surround_speakers to reset to default

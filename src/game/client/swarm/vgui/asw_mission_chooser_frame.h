@@ -58,6 +58,7 @@ public:
 	ASW_HOST_TYPE m_HostType;
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::PropertySheet *m_pSheet;
+	vgui::PropertySheet *m_pCampaignMissionList;
 	CASW_Mission_Chooser_Details *m_pDetails;
 	bool m_bViewingCampaign;
 };

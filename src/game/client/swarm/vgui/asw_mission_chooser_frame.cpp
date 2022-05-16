@@ -60,10 +60,10 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 	switch ( iHostType )
 	{
 	case ASW_HOST_TYPE::SINGLEPLAYER:
-		m_pHeaderFooter->SetTitle( "#asw_menu_singleplayer" );
+		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
 		break;
 	case ASW_HOST_TYPE::CREATESERVER:
-		m_pHeaderFooter->SetTitle( "#asw_menu_create_server" );
+		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
 		break;
 	case ASW_HOST_TYPE::CALLVOTE:
 		m_pHeaderFooter->SetTitle( "#asw_vote_server" );
@@ -95,6 +95,9 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, co
 	}
 
 	m_pDetails = new CASW_Mission_Chooser_Details( this, "MissionChooserDetails" );
+
+	m_pCampaignMissionList = new vgui::PropertySheet( this, "CampaignMissionList" );
+	m_pCampaignMissionList->SetKBNavigationEnabled( false );
 }
 
 CASW_Mission_Chooser_Frame::~CASW_Mission_Chooser_Frame()
@@ -108,11 +111,44 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
 		if ( m_bViewingCampaign )
 		{
-			Assert( !"TODO: back" );
+			m_pCampaignMissionList->SetVisible( false );
+			m_pSheet->SetVisible( true );
+			m_pSheet->InvalidateLayout();
+			m_bViewingCampaign = false;
 		}
 		else
 		{
 			MarkForDeletion();
+		}
+	}
+	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
+	{
+		CASW_Mission_Chooser_Entry *pEntry = m_pDetails->m_pLastEntry;
+		if ( pEntry && pEntry->m_pFocusHolder )
+		{
+			pEntry->m_pFocusHolder->OnMousePressed( MOUSE_LEFT );
+			pEntry->m_pFocusHolder->OnMouseReleased( MOUSE_LEFT );
+		}
+	}
+	else if ( !V_stricmp( command, "PrevPage" ) )
+	{
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() > 0 )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() - 1 ) );
+		}
+	}
+	else if ( !V_stricmp( command, "NextPage" ) )
+	{
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() + 1 ) );
+		}
+	}
+	else if ( !V_stricmp( command, "CyclePage" ) )
+	{
+		if ( !m_bViewingCampaign )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
 		}
 	}
 	else
@@ -128,11 +164,17 @@ void CASW_Mission_Chooser_Frame::OnKeyCodeTyped( vgui::KeyCode keycode )
 	case KEY_ESCAPE:
 		OnCommand( "BackButton" );
 		break;
+	case KEY_ENTER:
+		OnCommand( "ApplyCurrentEntry" );
+		break;
+	case KEY_PAGEUP:
+		OnCommand( "PrevPage" );
+		break;
+	case KEY_PAGEDOWN:
+		OnCommand( "NextPage" );
+		break;
 	case KEY_TAB:
-		if ( !m_bViewingCampaign )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
-		}
+		OnCommand( "CyclePage" );
 		break;
 	default:
 		BaseClass::OnKeyCodeTyped( keycode );
@@ -149,20 +191,17 @@ void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
 
 	switch ( code )
 	{
+	case KEY_XBUTTON_A:
+		OnCommand( "ApplyCurrentEntry" );
+		break;
 	case KEY_XBUTTON_B:
 		OnCommand( "BackButton" );
 		break;
 	case KEY_XBUTTON_LEFT_SHOULDER:
-		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() > 0 )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() - 1 ) );
-		}
+		OnCommand( "PrevPage" );
 		break;
 	case KEY_XBUTTON_RIGHT_SHOULDER:
-		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() + 1 ) );
-		}
+		OnCommand( "NextPage" );
 		break;
 	default:
 		BaseClass::OnKeyCodePressed( keycode );
@@ -179,17 +218,17 @@ void CASW_Mission_Chooser_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry )
 {
-	if ( pEntry->m_pMission )
+	if ( pEntry->m_szMission[0] )
 	{
 		if ( m_HostType == ASW_HOST_TYPE::CALLVOTE )
 		{
-			if ( pEntry->m_pCampaign )
+			if ( pEntry->m_szCampaign[0] )
 			{
-				engine->ServerCmd( CFmtStr( "asw_vote_campaign %s %d", pEntry->m_pMission->BaseName, ReactiveDropMissions::GetCampaignIndex( pEntry->m_pCampaign->BaseName ) ) );
+				engine->ServerCmd( CFmtStr( "asw_vote_campaign %s %d", pEntry->m_szMission, ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) ) );
 			}
 			else
 			{
-				engine->ServerCmd( CFmtStr( "asw_vote_mission %s", pEntry->m_pMission->BaseName ) );
+				engine->ServerCmd( CFmtStr( "asw_vote_mission %s", pEntry->m_szMission ) );
 			}
 
 			MarkForDeletion();
@@ -210,17 +249,17 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 			pSettings->SetString( "options/action", "create" );
 		}
 
-		if ( pEntry->m_pCampaign )
+		if ( pEntry->m_szCampaign[0] )
 		{
 			pSettings->SetString( "game/mode", "campaign" );
-			pSettings->SetString( "game/campaign", pEntry->m_pCampaign->BaseName );
+			pSettings->SetString( "game/campaign", pEntry->m_szCampaign );
 		}
 		else
 		{
 			pSettings->SetString( "game/mode", "single_mission" );
 		}
 
-		pSettings->SetString( "game/mission", pEntry->m_pMission->BaseName );
+		pSettings->SetString( "game/mission", pEntry->m_szMission );
 		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
 
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
@@ -239,11 +278,20 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 		return;
 	}
 
-	Assert( pEntry->m_pCampaign );
-	if ( !pEntry->m_pCampaign )
+	Assert( pEntry->m_szCampaign[0] );
+	if ( !pEntry->m_szCampaign[0] )
 		return;
 
-	Assert( !"TODO: campaign view" );
+	m_bViewingCampaign = true;
+	m_pSheet->SetVisible( false );
+
+	while ( m_pCampaignMissionList->GetNumPages() )
+	{
+		m_pCampaignMissionList->DeletePage( m_pCampaignMissionList->GetPage( 0 ) );
+	}
+
+	m_pCampaignMissionList->SetVisible( true );
+	m_pCampaignMissionList->AddPage( new CASW_Mission_Chooser_List( m_pCampaignMissionList, "MissionChooserList", pEntry->m_pList->m_ChooserType, this, pEntry->m_szCampaign ), "#nb_select_starting_mission" );
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
