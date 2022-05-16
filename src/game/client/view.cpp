@@ -73,6 +73,7 @@ bool ToolFramework_SetupEngineMicrophone( Vector &origin, QAngle &angles );
 
 
 extern ConVar default_fov;
+extern ConVar asw_allow_detach;
 extern bool g_bRenderingScreenshot;
 
 #if !defined( _X360 )
@@ -681,17 +682,20 @@ void CViewRender::SetUpView()
 			pPlayer->CalcView( view.origin, view.angles, view.zNear, view.zFar, view.fov );
 
 #ifdef INFESTED_DLL
-			C_ASW_Player *pASWPlayer = assert_cast<C_ASW_Player *>( pPlayer );
-			if ( C_ASW_Marine *pSpectating = pASWPlayer->GetSpectatingMarine() )
+			if ( !asw_allow_detach.GetBool() )
 			{
-				C_ASW_Player *pOtherPlayer = pSpectating->GetCommander();
-				if ( pSpectating->IsInhabited() && pOtherPlayer && pOtherPlayer->GetASWControls() != 1 )
+				C_ASW_Player *pASWPlayer = assert_cast< C_ASW_Player * >( pPlayer );
+				if ( C_ASW_Marine *pSpectating = pASWPlayer->GetSpectatingMarine() )
 				{
-					view.angles = pOtherPlayer->EyeAngles();
-				}
-				else if ( pASWPlayer->GetASWControls() != 1 )
-				{
-					view.angles = pSpectating->EyeAngles();
+					C_ASW_Player *pOtherPlayer = pSpectating->GetCommander();
+					if ( pSpectating->IsInhabited() && pOtherPlayer && pOtherPlayer->GetASWControls() != 1 )
+					{
+						view.angles = pOtherPlayer->EyeAngles();
+					}
+					else if ( pASWPlayer->GetASWControls() != 1 )
+					{
+						view.angles = pSpectating->EyeAngles();
+					}
 				}
 			}
 #endif
