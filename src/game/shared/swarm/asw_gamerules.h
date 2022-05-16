@@ -536,16 +536,12 @@ public:
 
 	// special maps
 	bool IsTutorialMap() { return m_bIsTutorial; }
-	bool IsIntroMap() { return m_bIsIntro; }
-	bool IsOutroMap() { return m_bIsOutro; }
 	bool IsLobbyMap() { return m_bIsLobby; }
 	static bool IsHardcoreFF();
 	static bool IsOnslaught();
 
 	bool m_bIsTutorial;
-	bool m_bIsIntro;
-	bool m_bIsOutro;
-	bool m_bIsLobby;		// lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
+	bool m_bIsLobby; // lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
 
 #ifndef CLIENT_DLL
 	void CheckLeaderboardReady();

@@ -7,6 +7,7 @@
 #include "cbase.h"
 #include "gamerules_register.h"
 #include "rd_challenges_shared.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -92,6 +93,7 @@ CGameRulesRegister* CGameRulesRegister::FindByName( const char *pName )
 		}
 
 		ReactiveDropChallenges::InstallStringTableCallback( tableName );
+		ReactiveDropMissions::InstallStringTableCallback( tableName );
 	}
 
 #else
@@ -106,6 +108,7 @@ CGameRulesRegister* CGameRulesRegister::FindByName( const char *pName )
 		g_StringTableGameRules = networkstringtable->CreateStringTable( GAMERULES_STRINGTABLE_NAME, 1 );
 
 		ReactiveDropChallenges::CreateNetworkStringTables();
+		ReactiveDropMissions::CreateNetworkStringTables();
 	}
 
 	void CreateGameRulesObject( const char *pClassName )

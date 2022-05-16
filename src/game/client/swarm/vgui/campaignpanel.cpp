@@ -212,6 +212,7 @@ void CampaignPanel::PerformLayout()
 	m_pSurfaceMapLayer[0]->SetBounds(x,y,w,t);
 	m_pSurfaceMapLayer[1]->SetBounds(x,y,w,t);
 	m_pSurfaceMapLayer[2]->SetBounds(x,y,w,t);
+	m_pLights->SetSize( w, t );
 	int bracket_inset = w * 0.012f;
 	m_pMapEdges->SetBounds(x + bracket_inset, y + bracket_inset, w - (bracket_inset*2), t - (bracket_inset * 2));
 
@@ -386,13 +387,11 @@ void CampaignPanel::OnThink()
 				m_pSurfaceMapLayer[0]->SetImage(STRING(pCampaign->m_CampaignTextureLayer1));
 				m_pSurfaceMapLayer[1]->SetImage(STRING(pCampaign->m_CampaignTextureLayer2));
 				m_pSurfaceMapLayer[2]->SetImage(STRING(pCampaign->m_CampaignTextureLayer3));
+				m_pLights->SetCampaign( pCampaign );
 
 				m_pBackDrop->SetImage(STRING(pCampaign->m_CampaignTextureName));
 
-				if (!ASWGameRules()->IsIntroMap())
-				{
-					vgui::GetAnimationController()->RunAnimationCommand(m_pBackDrop, "alpha", 128, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-				}
+				vgui::GetAnimationController()->RunAnimationCommand(m_pBackDrop, "alpha", 128, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
 			}
 		}
 	}
@@ -603,20 +602,13 @@ void CampaignPanel::ApplySchemeSettings( vgui::IScheme *scheme )
 		m_pSurfaceMapLayer[1]->SetAlpha(0);
 		m_pSurfaceMapLayer[2]->SetAlpha(0);
 		m_pBracket->SetAlpha(0);
-		m_pCurrentLocationImage->SetAlpha(0);	
+		m_pCurrentLocationImage->SetAlpha(0);
 	}
-	SetBgColor(Color(0,0,0,0));	
 
-	if (ASWGameRules() && ASWGameRules()->IsIntroMap())
-	{
-		SetPaintBackgroundEnabled(false);
-	}
-	else
-	{
-		SetPaintBackgroundEnabled(true);
-		SetPaintBackgroundType(0);
-		SetBgColor(Color(0,0,0,255));
-	}
+	SetPaintBackgroundEnabled(true);
+	SetPaintBackgroundType(0);
+	SetBgColor(Color(0,0,0,255));
+
 	m_pMapBorder->SetPaintBackgroundEnabled(true);
 	m_pMapBorder->SetBgColor(Color(0,0,0,128));
 
@@ -804,10 +796,10 @@ void CampaignPanel::SetStage(int i)
 
 				AddSoftLines();
 				
-				for (int i=0;i<GetCampaignInfo()->GetNumMissions();i++)
+				for (int j=0;j<GetCampaignInfo()->GetNumMissions();j++)
 				{
-					CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(i);
-					if (pMission && IsMissionVisible(i))
+					CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(j);
+					if (pMission && IsMissionVisible(j))
 					{
 						float pos_x = (pMission->m_iLocationX / 1024.0f) * iMapW;
 						float pos_y = (pMission->m_iLocationY / 1024.0f) * iMapT;
@@ -815,19 +807,19 @@ void CampaignPanel::SetStage(int i)
 						pos_x -= (dot_w * 0.5f);	// make sure the dots are centered
 						pos_y -= (dot_w * 0.5f);
 
-						if (i == GetCampaignSave()->m_iCurrentPosition)
+						if (j == GetCampaignSave()->m_iCurrentPosition)
 						{
 							m_CurrentAnimatingToX = pos_x;
 							m_CurrentAnimatingToY = pos_y;
 
 							if (GetControllerFocus() && GetControllerFocus()->IsControllerMode())
 							{
-								GetControllerFocus()->SetFocusPanel(m_pLocationPanel[i], false);
+								GetControllerFocus()->SetFocusPanel(m_pLocationPanel[j], false);
 							}
 						}
 
-						m_pLocationPanel[i]->SetVisible(true);
-						vgui::GetAnimationController()->RunAnimationCommand(m_pLocationPanel[i], "alpha", 255, 0, fFadeTime * 3, vgui::AnimationController::INTERPOLATOR_LINEAR);
+						m_pLocationPanel[j]->SetVisible(true);
+						vgui::GetAnimationController()->RunAnimationCommand(m_pLocationPanel[j], "alpha", 255, 0, fFadeTime * 3, vgui::AnimationController::INTERPOLATOR_LINEAR);
 					}
 				}
 				PositionLocationDots();

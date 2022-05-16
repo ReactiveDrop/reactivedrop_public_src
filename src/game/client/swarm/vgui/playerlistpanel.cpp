@@ -321,8 +321,6 @@ void PlayerListPanel::OnThink()
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bShowRestart = pPlayer && ASWGameResource() && (ASWGameResource()->GetLeaderEntIndex() == pPlayer->entindex());
-	if ( ASWGameRules() && ASWGameRules()->IsIntroMap() )
-		bShowRestart = false;
 	//Msg("bLeader = %d leaderentindex=%d player entindex=%d\n", bLeader, ASWGameResource()->GetLeaderEntIndex(), pPlayer->entindex());
 	m_pRestartMissionButton->SetVisible(bShowRestart);
 	m_pLeaderButtonsBackground->SetVisible(bShowRestart);	
@@ -451,11 +449,16 @@ void PlayerListPanel::UpdateVoteButtons()
 	if (Q_strcmp(m_szMapName, ASWGameRules()->GetCurrentVoteDescription()))
 	{
 		Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", ASWGameRules()->GetCurrentVoteDescription());
-		
-		wchar_t wmapname[64];
-		g_pVGuiLocalize->ConvertANSIToUnicode(m_szMapName, wmapname, sizeof( wmapname ));
+	
+		wchar_t wmapnamebuf[64];
+		const wchar_t *wmapname = g_pVGuiLocalize->Find( m_szMapName );
+		if ( !wmapname )
+		{
+			g_pVGuiLocalize->ConvertANSIToUnicode( m_szMapName, wmapnamebuf, sizeof( wmapnamebuf ) );
+			wmapname = wmapnamebuf;
+		}
 
-		wchar_t wbuffer[96];						
+		wchar_t wbuffer[96];
 		if (ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION)
 		{
 			m_bVoteMapInstalled = true;
@@ -525,79 +528,57 @@ void PlayerListPanel::SetShowCurrentVoteElements(bool bVisible)
 
 void PlayerListPanel::OnCommand( char const *cmd )
 {
-	if ( !Q_stricmp( cmd, "NewMissionVote" ) )
+	if ( !V_stricmp( cmd, "NewMissionVote" ) || !V_stricmp( cmd, "NewCampaignVote" ) || !V_stricmp( cmd, "NewSavedVote" ) )
 	{
-		GetParent()->SetVisible(false);
+		GetParent()->SetVisible( false );
 		GetParent()->MarkForDeletion();
-		Msg("PlayerListPanel::OnCommand sending asw_vote_chooser cc\n");
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 2");
-		else
-			engine->ClientCmd("asw_vote_chooser 2 notrans");
+		engine->ClientCmd( "asw_mission_chooser callvote" );
 	}
-	else if ( !Q_stricmp( cmd, "NewCampaignVote" ) )
+	else if ( !V_stricmp( cmd, "VoteYes" ) )
 	{
-		GetParent()->SetVisible(false);
+		GetParent()->SetVisible( false );
 		GetParent()->MarkForDeletion();
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 0");
-		else
-			engine->ClientCmd("asw_vote_chooser 0 notrans");
+		engine->ClientCmd( "vote_yes" );
 	}
-	else if ( !Q_stricmp( cmd, "NewSavedVote" ) )
+	else if ( !V_stricmp( cmd, "VoteNo" ) )
 	{
-		GetParent()->SetVisible(false);
+		GetParent()->SetVisible( false );
 		GetParent()->MarkForDeletion();
-		if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-			engine->ClientCmd("asw_vote_chooser 1");	
-		else
-			engine->ClientCmd("asw_vote_chooser 1 notrans");
+		engine->ClientCmd( "vote_no" );
 	}
-	else if ( !Q_stricmp( cmd, "VoteYes" ) )
+	else if ( !V_stricmp( cmd, "Back" ) )
 	{
-		GetParent()->SetVisible(false);
-		GetParent()->MarkForDeletion();
-		engine->ClientCmd("vote_yes");
-	}
-	else if ( !Q_stricmp( cmd, "VoteNo" ) )
-	{
-		GetParent()->SetVisible(false);
-		GetParent()->MarkForDeletion();
-		engine->ClientCmd("vote_no");
-	}
-	else if ( !Q_stricmp( cmd, "Back" ) )
-	{
-		GetParent()->SetVisible(false);
+		GetParent()->SetVisible( false );
 		GetParent()->MarkForDeletion();
 	}
-	else if ( !Q_stricmp( cmd, "RestartMis" ) )
+	else if ( !V_stricmp( cmd, "RestartMis" ) )
 	{
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (!pPlayer)
+		if ( !pPlayer )
 			return;
 		bool bLeader = pPlayer && ASWGameResource() && ASWGameResource()->GetLeaderEntIndex() == pPlayer->entindex();
-		if (!bLeader)
+		if ( !bLeader )
 			return;
 
-		bool bCanStart = ASWGameRules() && 
-					( (ASWGameRules()->GetGameState() <= ASW_GS_INGAME) 
-				   || (ASWGameResource() && ASWGameResource()->AreAllOtherPlayersReady(pPlayer->entindex()) ) );
+		bool bCanStart = ASWGameRules() &&
+			( ( ASWGameRules()->GetGameState() <= ASW_GS_INGAME )
+				|| ( ASWGameResource() && ASWGameResource()->AreAllOtherPlayersReady( pPlayer->entindex() ) ) );
 
-		if (bCanStart)
+		if ( bCanStart )
 		{
-			GetParent()->SetVisible(false);
-			GetParent()->MarkForDeletion();	
-			engine->ClientCmd("asw_restart_mission");
+			GetParent()->SetVisible( false );
+			GetParent()->MarkForDeletion();
+			engine->ClientCmd( "asw_restart_mission" );
 		}
 		else
 		{
-			if (GetParent() && GetParent()->GetParent())
+			if ( GetParent() && GetParent()->GetParent() )
 			{
-				vgui::Panel *p = new ForceReadyPanel(GetParent()->GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART);
-				p->SetZPos(201);	// make sure it's in front of the player list
+				vgui::Panel *p = new ForceReadyPanel( GetParent()->GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART );
+				p->SetZPos( 201 );	// make sure it's in front of the player list
 			}
 		}
-	}	
+	}
 	else
 	{
 		BaseClass::OnCommand( cmd );

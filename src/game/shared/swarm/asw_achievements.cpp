@@ -7,6 +7,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_player.h"
 #endif
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -334,6 +335,18 @@ class CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName : public CAS
 	virtual void ListenForEvents( void ) \
 	{ \
 		ListenForGameEvent( "mission_success" ); \
+	} \
+\
+	virtual int GetNumComponents() \
+	{ \
+		return NELEMS( g_szAchievementMapNames ## CampaignName ); \
+	} \
+\
+	virtual const char *GetComponentDisplayString( int iComponent ) \
+	{ \
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( g_szAchievementMapNames ## CampaignName[iComponent] ); \
+		Assert( pMission ); \
+		return pMission ? STRING( pMission->MissionTitle ) : NULL; \
 	} \
 \
 	void FireGameEvent_Internal( IGameEvent *event ) \

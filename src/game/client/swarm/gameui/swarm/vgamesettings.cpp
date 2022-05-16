@@ -1241,28 +1241,15 @@ void GameSettings::ShowMissionSelect()
 
 	if ( m_pSettings )
 	{
-		const char *szGameType = m_pSettings->GetString( "game/mode", "campaign" );
-		if ( !Q_stricmp( szGameType, "campaign" ) )
+		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			CNB_Select_Campaign_Panel *pPanel = new CNB_Select_Campaign_Panel( this, "Select_Campaign_Panel" );
-			//pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
 		}
-		else if ( !Q_stricmp( szGameType, "single_mission" ) )
+		else
 		{
-			CNB_Select_Mission_Panel *pPanel = new CNB_Select_Mission_Panel( this, "Select_Mission_Panel" );
-			pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
 		}
-	}	
+	}
 }
 
 void GameSettings::ShowStartingMissionSelect()
@@ -1274,19 +1261,15 @@ void GameSettings::ShowStartingMissionSelect()
 
 	if ( m_pSettings )
 	{
-		const char *szGameType = m_pSettings->GetString( "game/mode", "campaign" );
-		if ( !Q_stricmp( szGameType, "campaign" ) )
+		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			CNB_Select_Mission_Panel *pPanel = new CNB_Select_Mission_Panel( this, "Select_Mission_Panel" );
-			pPanel->SelectMissionsFromCampaign( m_pSettings->GetString( "game/campaign", "jacob" ) );
-			pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
 		}
-	}	
+		else
+		{
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
+		}
+	}
 }
 
 void GameSettings::ShowChallengeSelect()

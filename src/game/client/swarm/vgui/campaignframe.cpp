@@ -64,8 +64,4 @@ void CampaignFrame::ApplySchemeSettings(vgui::IScheme *scheme)
 	BaseClass::ApplySchemeSettings(scheme);
 
 	SetPaintBackgroundEnabled(false);
-	if (ASWGameRules() && ASWGameRules()->IsIntroMap())
-	{
-		SetBgColor(Color(0,0,0,0));
-	}
 }

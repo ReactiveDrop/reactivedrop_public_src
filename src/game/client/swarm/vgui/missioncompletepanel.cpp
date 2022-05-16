@@ -57,8 +57,6 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_PropertySheet = NULL;
 	m_bSetAlpha = false;
 
-	m_bCreditsSeen = false;
-
 	m_bShowQueuedUnlocks = false;
 
 	m_hLeaderboard = 0;
@@ -98,7 +96,8 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pMainElements = new vgui::Panel( this, "MainElements" );
 
 	m_bSuccess = bSuccess;
-	m_bLastMission = ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1;
+	m_bLastMission = ASWGameRules() && ( !ASWGameRules()->IsCampaignGame() || ASWGameRules()->CampaignMissionsLeft() <= 1 );
+	m_bCreditsSeen = !ASWGameRules() || !ASWGameRules()->IsCampaignGame();
 	
 	vgui::Panel *pParent = m_pMainElements;
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
@@ -580,7 +579,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 			else
 			{
 				// Vote on a new mission
-				engine->ClientCmd("asw_vote_chooser 0 notrans");
+				engine->ClientCmd( "asw_mission_chooser callvote" );
 			}
 		}
 		else if ( bLeader )

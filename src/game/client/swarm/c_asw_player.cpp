@@ -80,7 +80,6 @@
 #include "obstacle_pushaway.h"
 #include "asw_shareddefs.h"
 #include "asw_campaign_info.h"
-#include "c_asw_voting_missions.h"
 #include "c_asw_camera_volume.h"
 #include "asw_medal_store.h"
 #include "asw_remote_turret_shared.h"
@@ -279,7 +278,6 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropEHandle( RECVINFO( m_hSpectatingMarine ) ),
 	RecvPropInt		(RECVINFO(m_iHealth)),
 	RecvPropEHandle( RECVINFO ( m_pCurrentInfoMessage ) ),
-	RecvPropEHandle( RECVINFO ( m_hVotingMissions ) ),	
     RecvPropFloat(   RECVINFO ( m_fMarineDeathTime ) ),
 	RecvPropEHandle( RECVINFO ( m_hOrderingMarine ) ),	
 	RecvPropInt(RECVINFO(m_iLeaderVoteIndex) ),
@@ -842,21 +840,6 @@ void C_ASW_Player::LaunchBriefingFrame(void)
 		::input->CAM_ToFirstPerson();
 		return;
 	}
-	else if (ASWGameRules())
-	{				
-		if (ASWGameRules()->IsIntroMap())			
-		{		
-			::input->CAM_ToFirstPerson();
-			new CASW_VGUI_Skip_Intro(GetClientMode()->GetViewport(), "SkipIntro");
-			return;
-		}
-		else if (ASWGameRules()->IsOutroMap())
-		{			
-			::input->CAM_ToFirstPerson();
-			new CASW_VGUI_Skip_Intro(GetClientMode()->GetViewport(), "SkipIntro");
-			return;
-		}
-	}
 
 	// create the basic frame which holds our briefing panels
 	//Msg("[%d] Assigning briefing frame\n", entindex());
@@ -1283,9 +1266,6 @@ void C_ASW_Player::ClientThink()
 			}
 		}
 	}
-	
-	if (m_hVotingMissions.Get())
-		m_hVotingMissions->Update();
 
 	// update snow
 	C_ASW_Snow_Volume::UpdateSnow(this);

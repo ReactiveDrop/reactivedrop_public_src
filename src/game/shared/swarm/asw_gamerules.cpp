@@ -432,7 +432,8 @@ ConVar asw_objective_update_time_scale("asw_objective_update_time_scale", "0.2",
 ConVar asw_stim_time_scale("asw_stim_time_scale", "0.35", FCVAR_REPLICATED | FCVAR_CHEAT, "Time scale during stimpack slomo");
 ConVar asw_time_scale_delay("asw_time_scale_delay", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT, "Delay before timescale changes to give a chance for the client to comply and predict.");
 ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "1", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
-ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode, acceptable values are campaign and single_mission.", false, 0.0f, false, 0.0f );
+ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode for matchmaking.dll." );
+ConVar sv_gametypes( "sv_gametypes", "campaign,bonus_mission,deathmatch", FCVAR_REPLICATED, "Game modes that can be selected on this server." );
 // this cvar is tricky if we want to have lobbies with different number of slots(e.g. 4 or 8)
 // when client creates a lobby it sets the number of slots for lobby
 // when client searches for lobbies and this cvar is set to 3 then all 4+ player lobbies will be unjoinable, the join button will be greyed out
@@ -1356,8 +1357,6 @@ CAlienSwarm::CAlienSwarm()
 	m_iMarinesSpawned = 0;
 	m_pSpawningSpot = NULL;
 
-	m_bIsIntro = false;
-	m_bIsOutro = false;
 	m_bIsTutorial = false;
 
 	m_bCheckAllPlayersLeft = false;
@@ -2918,13 +2917,11 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		return;
 	}
 
-#ifndef OUTRO_MAP
-	//Orange. OUTRO_MAP is not fully implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
+	//Orange. OUTRO_MAP is not implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
 	if (CampaignMissionsLeft() <= 1) //at this point number not yet decreased
 	{
 		return;
 	}
-#endif
 
 	SetForceReady(ASW_FR_NONE);
 
@@ -3032,49 +3029,16 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 
 	pSave->SaveGameToFile();
 
-#ifdef OUTRO_MAP
-	// if the marines have completed all the missions in the campaign, then launch to the outro instead
-	if (CampaignMissionsLeft()<=0)
-	{	
-		SetGameState(ASW_GS_OUTRO);
-		// send user message telling clients to increment their 'campaigns completed' stat and to head to the outro map in x seconds
-
-		// grab some info about the server, so clients know whether to reconnect or not
-		int iDedicated = engine->IsDedicatedServer() ? 1 : 0;
-		int iHostIndex = -1;
-		if (!engine->IsDedicatedServer())
-		{
-			CBasePlayer *pPlayer = UTIL_GetListenServerHost();
-			if (pPlayer)
-				iHostIndex = pPlayer->entindex();
-		}
-
-		Msg("[S] Sending ASWCampaignCompleted dedicated = %d host = %d\n", iDedicated, iHostIndex);
-		CReliableBroadcastRecipientFilter users;
-		users.MakeReliable();
-		UserMessageBegin( users, "ASWCampaignCompleted" );		
-			WRITE_BYTE( iDedicated );
-			WRITE_BYTE( iHostIndex );
-		MessageEnd();		
-
-		// give one second before changing map, so clients have time to do the above
-		Msg("[S] Setting m_fLaunchOutroMapTime\n");
-		m_fLaunchOutroMapTime = gpGlobals->curtime + 1.0f;
-	}
-	else	
-#endif
+	// make sure all players are marked as not ready
+	if (ASWGameResource())
 	{
-		// make sure all players are marked as not ready
-		if (ASWGameResource())
+		for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 		{
-			for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
-			{
-				ASWGameResource()->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
-			}
+			ASWGameResource()->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
 		}
-		SetGameState(ASW_GS_CAMPAIGNMAP);
-		GetCampaignSave()->SelectDefaultNextCampaignMission();
 	}
+	SetGameState(ASW_GS_CAMPAIGNMAP);
+	GetCampaignSave()->SelectDefaultNextCampaignMission();
 }
 
 // moves the marines from one location to another
@@ -3504,7 +3468,7 @@ void CAlienSwarm::Think()
 	case ASW_GS_BRIEFING:	
 		{
 			// let our mission chooser source think while we're relatively idle in the briefing, in case it needs to be scanning for missions
-			if ( missionchooser && missionchooser->LocalMissionSource() && gpGlobals->maxClients > 1 )
+			if ( missionchooser && missionchooser->LocalMissionSource() )
 			{
 				missionchooser->LocalMissionSource()->IdleThink();
 			}
@@ -8534,11 +8498,8 @@ void CAlienSwarm::LevelInitPostEntity()
 	Q_strcpy( mapName, STRING(gpGlobals->mapname) );
 #endif
 
-	m_bIsIntro = ( !Q_strnicmp( mapName, "intro_", 6 ) );
-	m_bIsOutro = ( !Q_strnicmp( mapName, "outro_", 6 ) );
-	m_bIsTutorial = ( !Q_strnicmp( mapName, "tutorial", 8 ) );
-	m_bIsLobby = ( !Q_strnicmp( mapName, "Lobby", 5 ) );
-	
+	m_bIsTutorial = ( !V_strnicmp( mapName, "tutorial", 8 ) );
+	m_bIsLobby = ( !V_stricmp( mapName, "lobby" ) );
 
 	if ( ASWHoldoutMode() )
 	{

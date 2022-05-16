@@ -9,35 +9,29 @@
 // Alien Swarm: Infested Campaign Console Commands
 
 // Resume playing a savegame - launches to the campaign lobby with the specified save data loaded
-void ASW_LaunchSaveGame(const char *szSaveName, bool bMultiplayer, bool bChangeLevel)
+void ASW_LaunchSaveGame( const char *szSaveName, bool bMultiplayer, bool bChangeLevel )
 {
-	IASW_Mission_Chooser_Source* pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-	if (!pSource)
+	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+	if ( !pSource )
 		return;
 
-	int iMissions = pSource->GetNumMissionsCompleted(szSaveName);
-	if (iMissions == -1)	// invalid save
+	int iMissions = pSource->GetNumMissionsCompleted( szSaveName );
+	if ( iMissions == -1 )	// invalid save
 		return;
 
-	// decide on lobby map (if singleplayer and no missions complete, we launch the intro)
-	const char *szLobby = "Lobby";
-
-	if (!bMultiplayer && iMissions == 0)	// if we're in singleplayer and starting the campaign, find the intro
-	{
-		szLobby = pSource->GetCampaignSaveIntroMap(szSaveName);
-	}		
+	const char *szLobby = "lobby";
 
 	// launch the campaign lobby map
 	char buffer[512];
-	if (bChangeLevel)		
-		Q_snprintf(buffer, sizeof(buffer), "changelevel %s campaign %s\n", szLobby, szSaveName);
+	if ( bChangeLevel )
+		V_snprintf( buffer, sizeof( buffer ), "changelevel %s campaign %s\n", szLobby, szSaveName );
 	else
-		Q_snprintf(buffer, sizeof(buffer), "map %s campaign %s\n", szLobby, szSaveName);
+		V_snprintf( buffer, sizeof( buffer ), "map %s campaign %s\n", szLobby, szSaveName );
 
 #ifdef CLIENT_DLL
-	engine->ClientCmd(buffer);
+	engine->ClientCmd( buffer );
 #else
-	engine->ServerCommand(buffer);
+	engine->ServerCommand( buffer );
 #endif
 }
 

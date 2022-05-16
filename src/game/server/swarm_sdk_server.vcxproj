@@ -587,6 +587,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_workshop.cpp" />
     <ClCompile Include="..\shared\takedamageinfo.cpp" />
@@ -1102,7 +1103,6 @@ exit 1
     <ClCompile Include="swarm\asw_trigger_fall.cpp" />
     <ClCompile Include="swarm\asw_tutorial_spawning.cpp" />
     <ClCompile Include="swarm\asw_use_area.cpp" />
-    <ClCompile Include="swarm\asw_voting_missions.cpp" />
     <ClCompile Include="swarm\asw_vphysics_npc.cpp" />
     <ClCompile Include="swarm\asw_wc_edit.cpp" />
     <ClCompile Include="swarm\asw_weapon.cpp" />
@@ -1557,6 +1557,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
+    <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_weapon_generic_object_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
     <ClInclude Include="..\shared\takedamageinfo.h" />
@@ -1974,7 +1975,6 @@ exit 1
     <ClInclude Include="swarm\asw_triggers.h" />
     <ClInclude Include="swarm\asw_tutorial_spawning.h" />
     <ClInclude Include="swarm\asw_use_area.h" />
-    <ClInclude Include="swarm\asw_voting_missions.h" />
     <ClInclude Include="swarm\asw_vphysics_npc.h" />
     <ClInclude Include="swarm\asw_wc_edit.h" />
     <ClInclude Include="swarm\asw_weapon.h" />

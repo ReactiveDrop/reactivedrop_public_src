@@ -75,7 +75,7 @@ void ReactiveDropChallenges::InstallStringTableCallback( const char *tableName )
 static class CReactiveDropChallengesClientSystem : public CAutoGameSystem
 {
 public:
-	CReactiveDropChallengesClientSystem() : CAutoGameSystem( "CReactiveDropChallengesClientSystem" )
+	CReactiveDropChallengesClientSystem() : CAutoGameSystem( "CReactiveDropChallengesClientSystem" ), m_LocalChallenges( 0, 16, true )
 	{
 		Clear();
 	}
@@ -108,6 +108,7 @@ public:
 			Q_FileBase( pszChallenge, szChallengeName, sizeof( szChallengeName ) );
 			m_LocalChallenges.AddString( szChallengeName );
 		}
+		filesystem->FindClose( hFind );
 
 		m_bInit = true;
 	}
