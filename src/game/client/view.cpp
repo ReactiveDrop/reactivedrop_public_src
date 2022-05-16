@@ -678,19 +678,23 @@ void CViewRender::SetUpView()
 		// FIXME: What happens when there's no player?
 		if (pPlayer)
 		{
+			pPlayer->CalcView( view.origin, view.angles, view.zNear, view.zFar, view.fov );
+
 #ifdef INFESTED_DLL
 			C_ASW_Player *pASWPlayer = assert_cast<C_ASW_Player *>( pPlayer );
-			if ( pASWPlayer->GetSpectatingMarine() && pASWPlayer->GetSpectatingMarine()->IsInhabited() )
+			if ( C_ASW_Marine *pSpectating = pASWPlayer->GetSpectatingMarine() )
 			{
-				C_ASW_Player *pOtherPlayer = pASWPlayer->GetSpectatingMarine()->GetCommander();
-				if ( pOtherPlayer && pOtherPlayer->GetASWControls() != 1 )
+				C_ASW_Player *pOtherPlayer = pSpectating->GetCommander();
+				if ( pSpectating->IsInhabited() && pOtherPlayer && pOtherPlayer->GetASWControls() != 1 )
 				{
-					pPlayer = pOtherPlayer;
+					view.angles = pOtherPlayer->EyeAngles();
+				}
+				else if ( pASWPlayer->GetASWControls() != 1 )
+				{
+					view.angles = pSpectating->EyeAngles();
 				}
 			}
 #endif
-
-			pPlayer->CalcView( view.origin, view.angles, view.zNear, view.zFar, view.fov );
 
 			// If we are looking through another entities eyes, then override the angles/origin for GetView()
 			int viewentity = render->GetViewEntity();
