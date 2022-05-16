@@ -62,7 +62,7 @@ public:
 
 	const QAngle& EyeAngles();
 	virtual const QAngle& EyeAnglesWithCursorRoll();
-	const Vector& GetCrosshairTracePos() { return m_vecCrosshairTracePos; }
+	const Vector& GetCrosshairTracePos();
 	void SetCrosshairTracePos( const Vector &vecPos ) { m_vecCrosshairTracePos = vecPos; }
 	virtual void SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize );
 
