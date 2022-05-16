@@ -3121,12 +3121,9 @@ const Vector& CASW_Player::GetCrosshairTracePos()
 			MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 		if ( tr.DidHit() )
 		{
-			return tr.endpos;
+			m_vecCrosshairTracePos = tr.endpos;
 		}
-		return m_vecCrosshairTracePos;
 	}
-	else
-	{
-		return m_vecCrosshairTracePos;
-	}
+
+	return m_vecCrosshairTracePos;
 }
