@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright Â© 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose:		Player for Swarm.  This is an invisible entity that doesn't move, representing the commander.
 //                  The player drives movement of CASW_Marine NPC entities
@@ -3245,4 +3245,27 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 		pCurrentEntity = gEntList.NextEnt( pCurrentEntity );
 	}
 	return pNearestEntity;
+}
+
+const Vector& CASW_Player::GetCrosshairTracePos()
+{
+	if ( GetASWControls() != 1 )
+	{
+		trace_t tr;
+		Vector forward;
+		Vector shootposition = GetMarine()->Weapon_ShootPosition();
+		EyeVectors( &forward );
+		UTIL_TraceLine( shootposition,
+			shootposition + forward * MAX_COORD_RANGE,
+			MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+		if ( tr.DidHit() )
+		{
+			return tr.endpos;
+		}
+		return m_vecCrosshairTracePos;
+	}
+	else
+	{
+		return m_vecCrosshairTracePos;
+	}
 }
