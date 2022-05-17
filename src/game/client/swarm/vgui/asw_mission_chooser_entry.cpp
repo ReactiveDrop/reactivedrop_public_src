@@ -8,6 +8,7 @@
 #include "gameui/swarm/basemodui.h"
 #include <vgui_controls/Label.h>
 #include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/ScrollBar.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -59,6 +60,20 @@ public:
 		CASW_Mission_Chooser_Entry *pParent = assert_cast< CASW_Mission_Chooser_Entry * >( GetParent() );
 		pParent->m_pHighlight->SetVisible( true );
 		pParent->m_pList->m_pFrame->m_pDetails->HighlightEntry( pParent );
+
+		int x, y;
+		pParent->GetPos( x, y );
+		int minScroll = y + GetTall() - pParent->m_pList->m_pScrollBar->GetRangeWindow();
+		int maxScroll = y;
+		int scroll = pParent->m_pList->m_pScrollBar->GetValue();
+		if ( scroll < minScroll )
+		{
+			pParent->m_pList->m_pScrollBar->SetValue( minScroll );
+		}
+		else if ( scroll > maxScroll )
+		{
+			pParent->m_pList->m_pScrollBar->SetValue( maxScroll );
+		}
 	}
 
 	virtual void OnKillFocus()

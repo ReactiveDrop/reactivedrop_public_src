@@ -5,6 +5,7 @@
 #include "asw_mission_chooser_details.h"
 #include "rd_missions_shared.h"
 #include <vgui/IInput.h>
+#include <vgui_controls/ScrollBar.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -17,6 +18,11 @@ CASW_Mission_Chooser_List::CASW_Mission_Chooser_List( vgui::Panel *pParent, cons
 	m_ChooserType = iChooserType;
 	m_szCampaignName[0] = '\0';
 	m_pFrame = pFrame;
+
+	m_pHolder = new vgui::Panel( this, "Holder" );
+	m_pScrollBar = new vgui::ScrollBar( this, "ScrollBar", true );
+
+	m_pScrollBar->AddActionSignalTarget( this );
 
 	if ( szCampaignName )
 	{
@@ -86,6 +92,8 @@ void CASW_Mission_Chooser_List::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/MissionChooserList.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pScrollBar->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
 }
 
 void CASW_Mission_Chooser_List::PerformLayout()
@@ -96,11 +104,25 @@ void CASW_Mission_Chooser_List::PerformLayout()
 		return;
 
 	int totalWide, totalTall, eachWide, eachTall;
-	GetSize( totalWide, totalTall );
+	totalWide = m_pHolder->GetWide();
+	totalTall = GetTall();
 
 	m_Entries[0]->GetSize( eachWide, eachTall );
 
 	int perRow = MAX( totalWide / eachWide, 1 );
+
+	int totalHeight = ( m_Entries.Count() + perRow - 1 ) / perRow * eachTall;
+
+	m_pHolder->SetTall( totalHeight );
+
+	m_pScrollBar->SetTall( GetTall() );
+	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
+	m_pScrollBar->SetRangeWindow( totalTall );
+	m_pScrollBar->SetRange( 0, totalHeight );
+
+	m_pHolder->SetPos( 0, -m_pScrollBar->GetValue() );
+
+	bool bAnyFocus = false;
 
 	FOR_EACH_VEC( m_Entries, i )
 	{
@@ -120,19 +142,40 @@ void CASW_Mission_Chooser_List::PerformLayout()
 		m_Entries[i]->m_pFocusHolder->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down]->m_pFocusHolder : NULL );
 		m_Entries[i]->m_pFocusHolder->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left]->m_pFocusHolder : NULL );
 		m_Entries[i]->m_pFocusHolder->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right]->m_pFocusHolder : NULL );
+
+		if ( m_Entries[i]->m_pFocusHolder->HasFocus() )
+		{
+			bAnyFocus = true;
+		}
 	}
 
-	if ( m_Entries.Count() > 0 )
+	if ( !bAnyFocus )
 	{
-		NavigateToChild( m_Entries[0]->m_pFocusHolder );
-	}
-	else
-	{
-		m_pFrame->m_pDetails->HighlightEntry( NULL );
+		if ( m_Entries.Count() > 0 )
+		{
+			NavigateToChild( m_Entries[0]->m_pFocusHolder );
+		}
+		else
+		{
+			m_pFrame->m_pDetails->HighlightEntry( NULL );
+		}
 	}
 
 	m_nLastX = -1;
 	m_nLastY = -1;
+}
+
+void CASW_Mission_Chooser_List::OnMouseWheeled( int delta )
+{
+	int val = m_pScrollBar->GetValue();
+	val -= ( delta * 3 * 5 );
+	m_pScrollBar->SetValue( val );
+}
+
+void CASW_Mission_Chooser_List::OnSliderMoved( int position )
+{
+	InvalidateLayout();
+	Repaint();
 }
 
 void CASW_Mission_Chooser_List::ClearList()
@@ -148,7 +191,7 @@ void CASW_Mission_Chooser_List::ClearList()
 
 void CASW_Mission_Chooser_List::AddEntry( CASW_Mission_Chooser_Entry *pEntry )
 {
-	pEntry->SetParent( this );
+	pEntry->SetParent( m_pHolder );
 	int i = m_Entries.AddToTail();
 	m_Entries[i].Set( pEntry );
 }

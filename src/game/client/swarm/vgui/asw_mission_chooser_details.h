@@ -30,6 +30,7 @@ public:
 
 	int m_nDataResets;
 	vgui::ImagePanel *m_pImage;
+	vgui::Panel *m_pBackdrop;
 	vgui::Label *m_pTitle;
 	vgui::Label *m_pDescription;
 	vgui::ImagePanel *m_pMapBase;

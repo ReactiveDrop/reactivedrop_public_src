@@ -12,6 +12,10 @@ enum class ASW_HOST_TYPE;
 
 class CASW_Mission_Chooser_Frame;
 class CASW_Mission_Chooser_Entry;
+namespace vgui
+{
+	class ScrollBar;
+}
 
 class CASW_Mission_Chooser_List : public vgui::EditablePanel
 {
@@ -23,6 +27,8 @@ public:
 	virtual void OnThink();
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
+	virtual void OnMouseWheeled( int delta );
+	MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position );
 
 	void ClearList();
 	void AddEntry( CASW_Mission_Chooser_Entry *pEntry );
@@ -35,6 +41,8 @@ public:
 	ASW_CHOOSER_TYPE m_ChooserType;
 	char m_szCampaignName[64];
 	CASW_Mission_Chooser_Frame *m_pFrame;
+	vgui::Panel *m_pHolder;
+	vgui::ScrollBar *m_pScrollBar;
 	CUtlVector<vgui::DHANDLE<CASW_Mission_Chooser_Entry>> m_Entries;
 };
 

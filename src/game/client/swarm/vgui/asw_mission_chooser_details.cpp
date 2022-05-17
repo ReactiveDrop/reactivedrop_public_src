@@ -14,6 +14,7 @@ CASW_Mission_Chooser_Details::CASW_Mission_Chooser_Details( vgui::Panel *pParent
 {
 	m_nDataResets = 0;
 	m_pImage = new vgui::ImagePanel( this, "Image" );
+	m_pBackdrop = new vgui::Panel( this, "Backdrop" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
 	m_pDescription = new vgui::Label( this, "Description", "" );
 	m_pMapBase = new vgui::ImagePanel( this, "MapBase" );
@@ -51,11 +52,21 @@ void CASW_Mission_Chooser_Details::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/MissionChooserDetails.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pBackdrop->SetPaintBackgroundEnabled( true );
+	m_pBackdrop->SetBgColor( Color( 0, 0, 0, 224 ) );
+
 }
 
 void CASW_Mission_Chooser_Details::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
+	int discard, y0, y1, tall;
+	m_pBackdrop->GetPos( discard, y0 );
+	m_pDescription->GetPos( discard, y1 );
+	m_pDescription->GetContentSize( discard, tall );
+	m_pBackdrop->SetTall( tall + m_pTitle->GetTall() / 2 + y1 - y0 );
 }
 
 void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *pEntry )
@@ -63,6 +74,7 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 	if ( !pEntry )
 	{
 		m_pImage->SetVisible( false );
+		m_pBackdrop->SetVisible( false );
 		m_pTitle->SetVisible( false );
 		m_pDescription->SetVisible( false );
 		m_pMapBase->SetVisible( false );
@@ -72,6 +84,8 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 		m_pSearchLights->SetVisible( false );
 		m_pLastEntry = NULL;
 
+		InvalidateLayout();
+
 		return;
 	}
 
@@ -79,6 +93,7 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 	OnThink();
 
 	m_pImage->SetVisible( true );
+	m_pBackdrop->SetVisible( true );
 	m_pTitle->SetVisible( true );
 	m_pDescription->SetVisible( true );
 	m_pMapBase->SetVisible( true );
@@ -102,6 +117,8 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 		m_pMapLayer[2]->SetVisible( false );
 		m_pSearchLights->SetVisible( false );
 		m_pLastEntry = pEntry;
+
+		InvalidateLayout();
 
 		return;
 	}
@@ -129,6 +146,8 @@ void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *p
 		m_pSearchLights->SetVisible( true );
 		m_pSearchLights->SetCampaign( pCampaign );
 		m_pLastEntry = pEntry;
+
+		InvalidateLayout();
 
 		return;
 	}
