@@ -52,64 +52,73 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-bonus_mission7",
 };
 
+#pragma pack(push, 1)
+struct NetworkedMissionMetadata_t
+{
+	PublishedFileId_t WorkshopID;
+	bool TagBonus : 1;
+	bool TagDeathmatch : 1;
+
+	constexpr void Clear()
+	{
+		WorkshopID = k_PublishedFileIdInvalid;
+		TagBonus = false;
+		TagDeathmatch = false;
+	}
+	void SetFromFile( const char *szKVFileName )
+	{
+		Clear();
+
+		WorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName );
+
+		KeyValues::AutoDelete pKV( "GAME" );
+		if ( pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
+		{
+			FOR_EACH_VALUE( pKV, pValue )
+			{
+				if ( V_stricmp( pValue->GetName(), "tag" ) )
+					continue;
+
+				if ( !V_stricmp( pValue->GetString(), "bonus" ) )
+					TagBonus = true;
+				else if ( !V_stricmp( pValue->GetString(), "deathmatch" ) )
+					TagDeathmatch = true;
+			}
+		}
+	}
+};
+#pragma pack(pop)
+
 #ifdef GAME_DLL
 void ReactiveDropMissions::CreateNetworkStringTables()
 {
-	g_StringTableReactiveDropCampaigns = networkstringtable->CreateStringTable( RD_CAMPAIGNS_STRINGTABLE_NAME, RD_MAX_CAMPAIGNS );
+	g_StringTableReactiveDropCampaigns = networkstringtable->CreateStringTable( RD_CAMPAIGNS_STRINGTABLE_NAME, RD_MAX_CAMPAIGNS, sizeof( NetworkedMissionMetadata_t ) );
 	Assert( g_StringTableReactiveDropCampaigns );
 
-	g_StringTableReactiveDropMissions = networkstringtable->CreateStringTable( RD_MISSIONS_STRINGTABLE_NAME, RD_MAX_MISSIONS );
+	g_StringTableReactiveDropMissions = networkstringtable->CreateStringTable( RD_MISSIONS_STRINGTABLE_NAME, RD_MAX_MISSIONS, sizeof( NetworkedMissionMetadata_t ) );
 	Assert( g_StringTableReactiveDropMissions );
 
 	char szKVFileName[MAX_PATH];
-	CUtlBuffer buf;
+	NetworkedMissionMetadata_t metadata;
 
 	for ( int i = 0; i < NELEMS( s_szCampaignNamesFirst ); i++ )
 	{
 		const char *szBaseName = s_szCampaignNamesFirst[i];
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/campaigns/%s.txt", szBaseName );
-		KeyValues::AutoDelete pKV( "GAME" );
-		if ( !pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
-		{
-			Warning( "Could not read campaign keyvalues for %s\n", szBaseName );
-			continue;
-		}
+		metadata.SetFromFile( szKVFileName );
 
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName ) );
-
-		buf.Clear();
-		if ( !pKV->WriteAsBinary( buf ) )
-		{
-			Warning( "Could not write campaign keyvalues for %s\n", szBaseName );
-			continue;
-		}
-
-		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, buf.TellPut(), buf.Base() );
-		DevMsg( 2, "Adding campaign %d to string table: %s, payload size %d (official)\n", index, szBaseName, buf.TellPut() );
+		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
+		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
 	}
 
 	for ( int i = 0; i < NELEMS( s_szMissionNamesFirst ); i++ )
 	{
 		const char *szBaseName = s_szMissionNamesFirst[i];
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/overviews/%s.txt", szBaseName );
-		KeyValues::AutoDelete pKV( "GAME" );
-		if ( !pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
-		{
-			Warning( "Could not read mission keyvalues for %s\n", szBaseName );
-			continue;
-		}
+		metadata.SetFromFile( szKVFileName );
 
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName ) );
-
-		buf.Clear();
-		if ( !pKV->WriteAsBinary( buf ) )
-		{
-			Warning( "Could not write mission keyvalues for %s\n", szBaseName );
-			continue;
-		}
-
-		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, buf.TellPut(), buf.Base() );
-		DevMsg( 2, "Adding mission %d to string table: %s, payload size %d (official)\n", index, szBaseName, buf.TellPut() );
+		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, sizeof( metadata ), &metadata );
+		DevMsg( 2, "Adding mission %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
 	}
 
 	char szBaseName[MAX_PATH];
@@ -118,24 +127,10 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 	{
 		V_FileBase( pszCampaign, szBaseName, sizeof( szBaseName ) );
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/campaigns/%s", pszCampaign );
-		KeyValues::AutoDelete pKV( "GAME" );
-		if ( !pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
-		{
-			Warning( "Could not read campaign keyvalues for %s\n", szBaseName );
-			continue;
-		}
+		metadata.SetFromFile( szKVFileName );
 
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName ) );
-
-		buf.Clear();
-		if ( !pKV->WriteAsBinary( buf ) )
-		{
-			Warning( "Could not write campaign keyvalues for %s\n", szBaseName );
-			continue;
-		}
-
-		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, buf.TellPut(), buf.Base() );
-		DevMsg( 2, "Adding campaign %d to string table: %s, payload size %d\n", index, szBaseName, buf.TellPut() );
+		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
+		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
 	}
 	filesystem->FindClose( hFind );
 
@@ -143,24 +138,10 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 	{
 		V_FileBase( pszMission, szBaseName, sizeof( szBaseName ) );
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/overviews/%s", pszMission );
-		KeyValues::AutoDelete pKV( "GAME" );
-		if ( !pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
-		{
-			Warning( "Could not read mission keyvalues for %s\n", szBaseName );
-			continue;
-		}
+		metadata.SetFromFile( szKVFileName );
 
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName ) );
-
-		buf.Clear();
-		if ( !pKV->WriteAsBinary( buf ) )
-		{
-			Warning( "Could not write mission keyvalues for %s\n", szBaseName );
-			continue;
-		}
-
-		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, buf.TellPut(), buf.Base() );
-		DevMsg( 2, "Adding mission %d to string table: %s, payload size %d\n", index, szBaseName, buf.TellPut() );
+		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, sizeof( metadata ), &metadata );
+		DevMsg( 2, "Adding mission %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
 	}
 	filesystem->FindClose( hFind );
 }
@@ -265,42 +246,6 @@ void ReactiveDropMissions::ClearClientCache()
 	s_ClientMissions.Clear();
 	s_ClientMissions.ReadMissionList();
 }
-
-static bool ReadCampaignDataClient( KeyValues *pKV, int index )
-{
-	Assert( pKV );
-	Assert( !engine->IsInGame() );
-
-	const char *pszCampaignName = s_ClientMissions.m_LocalCampaigns.String( index );
-
-	char szPath[MAX_PATH];
-	V_snprintf( szPath, sizeof( szPath ), "resource/campaigns/%s.txt", pszCampaignName );
-
-	if ( pKV->LoadFromFile( filesystem, szPath, "GAME" ) )
-	{
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath ) );
-		return true;
-	}
-	return false;
-}
-
-static bool ReadMissionDataClient( KeyValues *pKV, int index )
-{
-	Assert( pKV );
-	Assert( !engine->IsInGame() );
-
-	const char *pszMissionName = s_ClientMissions.m_LocalMissions.String( index );
-
-	char szPath[MAX_PATH];
-	V_snprintf( szPath, sizeof( szPath ), "resource/overviews/%s.txt", pszMissionName );
-
-	if ( pKV->LoadFromFile( filesystem, szPath, "GAME" ) )
-	{
-		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath ) );
-		return true;
-	}
-	return false;
-}
 #endif
 
 int ReactiveDropMissions::CountCampaigns()
@@ -385,38 +330,54 @@ const char *ReactiveDropMissions::MissionName( int index )
 
 static bool ReadCampaignData( KeyValues *pKV, int index )
 {
+	Assert( pKV );
+
+	const char *pszCampaignName;
 #ifdef CLIENT_DLL
 	if ( !engine->IsInGame() )
-		return ReadCampaignDataClient( pKV, index );
+	{
+		pszCampaignName = s_ClientMissions.m_LocalCampaigns.String( index );
+	}
+	else
 #endif
+	{
+		Assert( g_StringTableReactiveDropCampaigns );
+		if ( !g_StringTableReactiveDropCampaigns )
+			return false;
 
-	Assert( g_StringTableReactiveDropCampaigns );
-	if ( !g_StringTableReactiveDropCampaigns )
-		return false;
+		pszCampaignName = g_StringTableReactiveDropCampaigns->GetString( index );
+	}
 
-	int length;
-	const void *pData = g_StringTableReactiveDropCampaigns->GetStringUserData( index, &length );
+	char szPath[MAX_PATH];
+	V_snprintf( szPath, sizeof( szPath ), "resource/campaigns/%s.txt", pszCampaignName );
 
-	CUtlBuffer buf( pData, length, CUtlBuffer::READ_ONLY );
-	return pKV->ReadAsBinary( buf );
+	return pKV->LoadFromFile( filesystem, szPath, "GAME" );
 }
 
 static bool ReadMissionData( KeyValues *pKV, int index )
 {
+	Assert( pKV );
+
+	const char *pszMissionName;
 #ifdef CLIENT_DLL
 	if ( !engine->IsInGame() )
-		return ReadMissionDataClient( pKV, index );
+	{
+		pszMissionName = s_ClientMissions.m_LocalMissions.String( index );
+	}
+	else
 #endif
+	{
+		Assert( g_StringTableReactiveDropMissions );
+		if ( !g_StringTableReactiveDropMissions )
+			return false;
 
-	Assert( g_StringTableReactiveDropMissions );
-	if ( !g_StringTableReactiveDropMissions )
-		return false;
+		pszMissionName = g_StringTableReactiveDropMissions->GetString( index );
+	}
 
-	int length;
-	const void *pData = g_StringTableReactiveDropMissions->GetStringUserData( index, &length );
+	char szPath[MAX_PATH];
+	V_snprintf( szPath, sizeof( szPath ), "resource/overviews/%s.txt", pszMissionName );
 
-	CUtlBuffer buf( pData, length, CUtlBuffer::READ_ONLY );
-	return pKV->ReadAsBinary( buf );
+	return pKV->LoadFromFile( filesystem, szPath, "GAME" );
 }
 
 static void ClearUnpackedMissionData()
@@ -439,6 +400,21 @@ static string_t AllocMissionsPooledString( const char *pszValue )
 	return NULL_STRING;
 }
 
+static void UnpackNetworkedTags( CUtlVector<string_t> &tags, INetworkStringTable *pStringTable, int index )
+{
+	Assert( pStringTable );
+	if ( !pStringTable )
+		return;
+
+	int length;
+	const NetworkedMissionMetadata_t *pMetadata = static_cast<const NetworkedMissionMetadata_t *>( pStringTable->GetStringUserData( index, &length ) );
+
+	if ( pMetadata->TagBonus )
+		tags.AddToTail( AllocMissionsPooledString( "bonus" ) );
+	if ( pMetadata->TagDeathmatch )
+		tags.AddToTail( AllocMissionsPooledString( "deathmatch" ) );
+}
+
 const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 {
 	if ( s_bRebuildUnpackedMissionData )
@@ -454,16 +430,29 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 	if ( pCampaign->BaseName[0] )
 		return pCampaign;
 
+	V_strncpy( pCampaign->BaseName, CampaignName( index ), sizeof( pCampaign->BaseName ) );
+	pCampaign->WorkshopID = CampaignWorkshopID( index );
+
 	KeyValues::AutoDelete pKV( "GAME" );
 	if ( !ReadCampaignData( pKV, index ) )
-		return NULL;
+	{
+		pCampaign->CampaignName = AllocMissionsPooledString( pCampaign->BaseName );
+		pCampaign->CampaignDescription = MAKE_STRING( "" );
 
-	V_strncpy( pCampaign->BaseName, CampaignName( index ), sizeof( pCampaign->BaseName ) );
-	pCampaign->WorkshopID = pKV->GetUint64( "workshop", k_PublishedFileIdInvalid );
+		pCampaign->ChooseCampaignTexture = MAKE_STRING( "swarm/missionpics/addonmissionpic" );
+		pCampaign->CampaignTextureName = MAKE_STRING( "../tools/toolsblack" );
+		pCampaign->CampaignTextureLayer[0] = MAKE_STRING( "swarm/campaign/campaignmap_emptylayer" );
+		pCampaign->CampaignTextureLayer[1] = MAKE_STRING( "swarm/campaign/campaignmap_emptylayer" );
+		pCampaign->CampaignTextureLayer[2] = MAKE_STRING( "swarm/campaign/campaignmap_emptylayer" );
+
+		UnpackNetworkedTags( pCampaign->Tags, g_StringTableReactiveDropCampaigns, index );
+
+		return pCampaign;
+	}
 
 	pCampaign->CampaignName = AllocMissionsPooledString( pKV->GetString( "CampaignName" ) );
 	pCampaign->CampaignDescription = AllocMissionsPooledString( pKV->GetString( "CampaignDescription" ) );
-	pCampaign->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", "scripts/asw_credits" ) );
+	pCampaign->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", DEFAULT_CREDITS_FILE ) );
 
 	pCampaign->ChooseCampaignTexture = AllocMissionsPooledString( pKV->GetString( "ChooseCampaignTexture" ) );
 	pCampaign->CampaignTextureName = AllocMissionsPooledString( pKV->GetString( "CampaignTextureName" ) );
@@ -559,12 +548,27 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	if ( pMission->BaseName[0] )
 		return pMission;
 
+	V_strncpy( pMission->BaseName, MissionName( index ), sizeof( pMission->BaseName ) );
+	pMission->WorkshopID = MissionWorkshopID( index );
+
 	KeyValues::AutoDelete pKV( "GAME" );
 	if ( !ReadMissionData( pKV, index ) )
-		return NULL;
+	{
+		pMission->Material = MAKE_STRING( "../tools/toolsblack" );
+		pMission->BriefingMaterial = MAKE_STRING( "../tools/toolsblack" );
 
-	V_strncpy( pMission->BaseName, MissionName( index ), sizeof( pMission->BaseName ) );
-	pMission->WorkshopID = pKV->GetUint64( "workshop", k_PublishedFileIdInvalid );
+		pMission->MissionTitle = AllocMissionsPooledString( pMission->BaseName );
+		pMission->Description = MAKE_STRING( "" );
+		pMission->Image = MAKE_STRING( "swarm/missionpics/addonmissionpic" );
+
+		pMission->Author = MAKE_STRING( "" );
+		pMission->Website = MAKE_STRING( "" );
+		pMission->Version = MAKE_STRING( "" );
+
+		UnpackNetworkedTags( pMission->Tags, g_StringTableReactiveDropMissions, index );
+
+		return pMission;
+	}
 
 	pMission->PosX = pKV->GetInt( "pos_x" );
 	pMission->PosY = pKV->GetInt( "pos_y" );
@@ -576,6 +580,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	pMission->MissionTitle = AllocMissionsPooledString( pKV->GetString( "missiontitle" ) );
 	pMission->Description = AllocMissionsPooledString( pKV->GetString( "description" ) );
 	pMission->Image = AllocMissionsPooledString( pKV->GetString( "image" ) );
+	pMission->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", DEFAULT_CREDITS_FILE ) );
 
 	pMission->Author = AllocMissionsPooledString( pKV->GetString( "author" ) );
 	pMission->Website = AllocMissionsPooledString( pKV->GetString( "website" ) );
@@ -602,6 +607,58 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	}
 
 	return pMission;
+}
+
+PublishedFileId_t ReactiveDropMissions::CampaignWorkshopID( int index )
+{
+	if ( index < 0 || index >= CountCampaigns() )
+	{
+		Assert( index == -1 );
+		return k_PublishedFileIdInvalid;
+	}
+
+#ifdef CLIENT_DLL
+	if ( !engine->IsInGame() )
+	{
+		const char *pszCampaignName = s_ClientMissions.m_LocalCampaigns.String( index );
+
+		char szPath[MAX_PATH];
+		V_snprintf( szPath, sizeof( szPath ), "resource/campaigns/%s.txt", pszCampaignName );
+
+		return g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath );
+	}
+#endif
+
+	Assert( g_StringTableReactiveDropCampaigns );
+
+	int length;
+	return static_cast<const NetworkedMissionMetadata_t *>( g_StringTableReactiveDropCampaigns->GetStringUserData( index, &length ) )->WorkshopID;
+}
+
+PublishedFileId_t ReactiveDropMissions::MissionWorkshopID( int index )
+{
+	if ( index < 0 || index >= CountMissions() )
+	{
+		Assert( index == -1 );
+		return k_PublishedFileIdInvalid;
+	}
+
+#ifdef CLIENT_DLL
+	if ( !engine->IsInGame() )
+	{
+		const char *pszMissionName = s_ClientMissions.m_LocalMissions.String( index );
+
+		char szPath[MAX_PATH];
+		V_snprintf( szPath, sizeof( szPath ), "resource/overviews/%s.txt", pszMissionName );
+
+		return g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath );
+	}
+#endif
+
+	Assert( g_StringTableReactiveDropMissions );
+
+	int length;
+	return static_cast<const NetworkedMissionMetadata_t *>( g_StringTableReactiveDropMissions->GetStringUserData( index, &length ) )->WorkshopID;
 }
 
 int ReactiveDropMissions::GetCampaignIndex( const char *name )

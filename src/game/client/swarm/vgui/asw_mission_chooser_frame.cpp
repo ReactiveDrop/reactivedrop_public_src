@@ -9,6 +9,7 @@
 #include "gameui/swarm/basemodui.h"
 #include <vgui_controls/PropertySheet.h>
 #include "rd_missions_shared.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -220,6 +221,13 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 {
 	if ( pEntry->m_szMission[0] )
 	{
+		PublishedFileId_t iWorkshopID = ReactiveDropMissions::MissionWorkshopID( ReactiveDropMissions::GetMissionIndex( pEntry->m_szMission ) );
+		if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+		{
+			g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+			return;
+		}
+
 		if ( m_HostType == ASW_HOST_TYPE::CALLVOTE )
 		{
 			if ( pEntry->m_szCampaign[0] )
@@ -281,6 +289,13 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 	Assert( pEntry->m_szCampaign[0] );
 	if ( !pEntry->m_szCampaign[0] )
 		return;
+
+	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) );
+	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+	{
+		g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+		return;
+	}
 
 	m_bViewingCampaign = true;
 	m_pSheet->SetVisible( false );

@@ -4,6 +4,8 @@
 #include "steam/steam_api.h"
 #include "string_t.h"
 
+#define DEFAULT_CREDITS_FILE "scripts/asw_credits"
+
 #define RD_MAX_CAMPAIGNS 1024
 #define RD_MAX_MISSIONS 8192
 
@@ -34,6 +36,9 @@ namespace ReactiveDropMissions
 	// Get the decoded data of a campaign or mission. Returns NULL if index is out of range or the file cannot be parsed.
 	const RD_Campaign_t *GetCampaign( int index );
 	const RD_Mission_t *GetMission( int index );
+
+	PublishedFileId_t CampaignWorkshopID( int index );
+	PublishedFileId_t MissionWorkshopID( int index );
 
 	int GetCampaignIndex( const char *name );
 	int GetMissionIndex( const char *name );
@@ -74,7 +79,7 @@ public:
 	inline operator bool() { return Get() != NULL; }
 	inline bool operator!() { return Get() == NULL; }
 	inline const RD_Mission_t *operator->() { return Get(); }
-	inline operator const RD_Mission_t *( ) { return Get(); }
+	inline operator const RD_Mission_t *() { return Get(); }
 
 private:
 	char m_szBaseName[64]{};
@@ -89,7 +94,7 @@ struct RD_Campaign_t
 
 	string_t CampaignName{ NULL_STRING }; // could be localized
 	string_t CampaignDescription{ NULL_STRING }; // could be localized
-	string_t CustomCreditsFile{ MAKE_STRING( "scripts/asw_credits" ) };
+	string_t CustomCreditsFile{ MAKE_STRING( DEFAULT_CREDITS_FILE ) };
 
 	string_t ChooseCampaignTexture{ NULL_STRING }; // vgui texture
 	string_t CampaignTextureName{ NULL_STRING }; // vgui texture
@@ -121,7 +126,7 @@ struct RD_Campaign_Mission_t
 	string_t ThreatString{ NULL_STRING }; // could be localized
 	uint16_t LocationX{}; // 10 bits
 	uint16_t LocationY{}; // 10 bits
-	int32_t DifficultyModifier{};
+	int16_t DifficultyModifier{};
 	bool AlwaysVisible{};
 	bool NeedsMoreThanOneMarine{};
 	CUtlVector<uint8_t> Links{}; // index into campaign Missions vector
@@ -145,6 +150,7 @@ struct RD_Mission_t
 	string_t MissionTitle{ NULL_STRING }; // could be localized
 	string_t Description{ NULL_STRING }; // could be localized
 	string_t Image{ NULL_STRING }; // vgui texture
+	string_t CustomCreditsFile{ MAKE_STRING( DEFAULT_CREDITS_FILE ) };
 
 	string_t Author{ NULL_STRING };
 	string_t Website{ NULL_STRING };

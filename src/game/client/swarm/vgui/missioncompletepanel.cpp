@@ -97,7 +97,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_bSuccess = bSuccess;
 	m_bLastMission = ASWGameRules() && ( !ASWGameRules()->IsCampaignGame() || ASWGameRules()->CampaignMissionsLeft() <= 1 );
-	m_bCreditsSeen = !ASWGameRules() || !ASWGameRules()->IsCampaignGame();
+	m_bCreditsSeen = false;
 	
 	vgui::Panel *pParent = m_pMainElements;
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
