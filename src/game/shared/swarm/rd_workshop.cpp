@@ -46,6 +46,21 @@ ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
 
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+const char *const g_RDWorkshopCampaignTags[] =
+{
+};
+#endif
+
+const char *const g_RDWorkshopMissionTags[] =
+{
+	"bonus", // browsable
+	"deathmatch", // browsable
+	"points", // for stats site to verify
+	"upload_on_failure", // for stats site to verify
+	"endless", // browsable
+};
+
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
 static void ClearCaches();
@@ -1258,12 +1273,13 @@ bool CReactiveDropWorkshop::LoadAddonEarly( PublishedFileId_t nPublishedFileID )
 #endif
 
 #ifdef CLIENT_DLL
-static const char *s_AutoTags[] =
+static const char *const s_AutoTags[] =
 {
 	"Campaign",
 	"Challenge",
 	"Deathmatch",
 	"Bonus",
+	"Endless",
 	"Other",
 };
 
@@ -1302,8 +1318,12 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 	m_aszIncludedCampaigns.PurgeAndDeleteElements();
 	m_aszIncludedMissions.PurgeAndDeleteElements();
 	m_aszIncludedChallenges.PurgeAndDeleteElements();
-	m_aszIncludedDeathmatch.PurgeAndDeleteElements();
-	m_aszIncludedBonus.PurgeAndDeleteElements();
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+	for ( int i = 0; i < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; i++ )
+		m_aszIncludedTaggedCampaigns[i].PurgeAndDeleteElements();
+#endif
+	for ( int i = 0; i < RD_NUM_WORKSHOP_MISSION_TAGS; i++ )
+		m_aszIncludedTaggedMissions[i].PurgeAndDeleteElements();
 	m_IncludedCampaignNames.Purge();
 	m_IncludedCampaignMissions.Purge();
 	m_IncludedMissionNames.Purge();
@@ -1386,6 +1406,34 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 						aszCampaignMissions.CopyAndAddToTail( szMapName );
 					}
 				}
+
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+				for ( int j = 0; j < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; j++ )
+				{
+					FOR_EACH_VALUE( pKV, pValue )
+					{
+						if ( V_stricmp( pValue->GetName(), "tag" ) )
+							continue;
+
+						if ( V_stricmp( pValue->GetString(), g_RDWorkshopCampaignTags[j] ) )
+							continue;
+
+						m_aszIncludedTaggedCampaigns[j].CopyAndAddToTail( szFileName );
+
+						for ( int k = 0; k < NELEMS( s_AutoTags ); k++ )
+						{
+							if ( !V_stricmp( g_RDWorkshopCampaignTags[j], s_AutoTags[k] ) )
+							{
+								bHaveAutoTag = true;
+								m_aszTags.CopyAndAddToTail( s_AutoTags[k] );
+								break;
+							}
+						}
+
+						break;
+					}
+				}
+#endif
 			}
 		}
 		if ( StringHasPrefix( filenames[i], "resource/overviews/" ) )
@@ -1407,34 +1455,30 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				pKV->LoadFromBuffer( szFileNameVerify, buf );
 				m_IncludedMissionNames[szFileName] = pKV->GetString( "missiontitle", "Invalid Mission" );
 
-				FOR_EACH_VALUE( pKV, pValue )
+				for ( int j = 0; j < RD_NUM_WORKSHOP_MISSION_TAGS; j++ )
 				{
-					if ( V_stricmp( pValue->GetName(), "tag" ) )
-						continue;
+					FOR_EACH_VALUE( pKV, pValue )
+					{
+						if ( V_stricmp( pValue->GetName(), "tag" ) )
+							continue;
 
-					if ( V_stricmp( pValue->GetString(), "bonus" ) )
-						continue;
+						if ( V_stricmp( pValue->GetString(), g_RDWorkshopMissionTags[j] ) )
+							continue;
 
-					bHaveAutoTag = true;
-					m_aszTags.CopyAndAddToTail( "Bonus" );
-					m_aszIncludedBonus.CopyAndAddToTail( szFileName );
+						m_aszIncludedTaggedMissions[j].CopyAndAddToTail( szFileName );
 
-					break;
-				}
+						for ( int k = 0; k < NELEMS( s_AutoTags ); k++ )
+						{
+							if ( !V_stricmp( g_RDWorkshopMissionTags[j], s_AutoTags[k] ) )
+							{
+								bHaveAutoTag = true;
+								m_aszTags.CopyAndAddToTail( s_AutoTags[k] );
+								break;
+							}
+						}
 
-				FOR_EACH_VALUE( pKV, pValue )
-				{
-					if ( V_stricmp( pValue->GetName(), "tag" ) )
-						continue;
-
-					if ( V_stricmp( pValue->GetString(), "deathmatch" ) )
-						continue;
-
-					bHaveAutoTag = true;
-					m_aszTags.CopyAndAddToTail( "Deathmatch" );
-					m_aszIncludedDeathmatch.CopyAndAddToTail( szFileName );
-
-					break;
+						break;
+					}
 				}
 			}
 		}
@@ -1608,19 +1652,27 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 		}
 	}
 
-	FOR_EACH_VEC( m_aszIncludedDeathmatch, i )
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+	for ( int i = 0; i < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; i++ )
 	{
-		if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, "deathmatch", m_aszIncludedDeathmatch[i] ) )
+		FOR_EACH_VEC( m_aszIncludedTaggedCampaigns[i], j )
 		{
-			Warning( "Adding deathmatch %s failed!\n", m_aszIncludedDeathmatch[i] );
+			if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] ) )
+			{
+				Warning( "Adding %s %s failed!\n", g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] );
+			}
 		}
 	}
+#endif
 
-	FOR_EACH_VEC( m_aszIncludedBonus, i )
+	for ( int i = 0; i < RD_NUM_WORKSHOP_MISSION_TAGS; i++ )
 	{
-		if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, "bonus", m_aszIncludedBonus[i] ) )
+		FOR_EACH_VEC( m_aszIncludedTaggedMissions[i], j )
 		{
-			Warning( "Adding bonus %s failed!\n", m_aszIncludedBonus[i] );
+			if ( !steamapicontext->SteamUGC()->AddItemKeyValueTag( hUpdate, g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
+			{
+				Warning( "Adding %s %s failed!\n", g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] );
+			}
 		}
 	}
 
@@ -1708,7 +1760,12 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 		m_aszIncludedCampaigns.PurgeAndDeleteElements();
 		m_aszIncludedMissions.PurgeAndDeleteElements();
 		m_aszIncludedChallenges.PurgeAndDeleteElements();
-		m_aszIncludedDeathmatch.PurgeAndDeleteElements();
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+		for ( int i = 0; i < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; i++ )
+			m_aszIncludedTaggedCampaigns[i].PurgeAndDeleteElements();
+#endif
+		for ( int i = 0; i < RD_NUM_WORKSHOP_MISSION_TAGS; i++ )
+			m_aszIncludedTaggedMissions[i].PurgeAndDeleteElements();
 		m_IncludedCampaignNames.Purge();
 		m_IncludedCampaignMissions.Purge();
 		m_IncludedMissionNames.Purge();
@@ -1784,7 +1841,12 @@ void CReactiveDropWorkshop::SubmitItemUpdateResultCallback( SubmitItemUpdateResu
 	m_aszIncludedCampaigns.PurgeAndDeleteElements();
 	m_aszIncludedMissions.PurgeAndDeleteElements();
 	m_aszIncludedChallenges.PurgeAndDeleteElements();
-	m_aszIncludedDeathmatch.PurgeAndDeleteElements();
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+	for ( int i = 0; i < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; i++ )
+		m_aszIncludedTaggedCampaigns[i].PurgeAndDeleteElements();
+#endif
+	for ( int i = 0; i < RD_NUM_WORKSHOP_MISSION_TAGS; i++ )
+		m_aszIncludedTaggedMissions[i].PurgeAndDeleteElements();
 	m_IncludedCampaignNames.Purge();
 	m_IncludedCampaignMissions.Purge();
 	m_IncludedMissionNames.Purge();
@@ -1901,7 +1963,12 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 		m_aszIncludedCampaigns.PurgeAndDeleteElements();
 		m_aszIncludedMissions.PurgeAndDeleteElements();
 		m_aszIncludedChallenges.PurgeAndDeleteElements();
-		m_aszIncludedDeathmatch.PurgeAndDeleteElements();
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+		for ( int i = 0; i < RD_NUM_WORKSHOP_CAMPAIGN_TAGS; i++ )
+			m_aszIncludedTaggedCampaigns[i].PurgeAndDeleteElements();
+#endif
+		for ( int i = 0; i < RD_NUM_WORKSHOP_MISSION_TAGS; i++ )
+			m_aszIncludedTaggedMissions[i].PurgeAndDeleteElements();
 		m_IncludedCampaignNames.Purge();
 		m_IncludedCampaignMissions.Purge();
 		m_IncludedMissionNames.Purge();

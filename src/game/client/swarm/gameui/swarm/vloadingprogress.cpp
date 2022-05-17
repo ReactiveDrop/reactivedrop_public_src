@@ -562,6 +562,8 @@ void LoadingProgress::LeaderboardFind( LeaderboardFindResult_t *pResult, bool bI
 		return;
 	}
 
+	m_pLeaderboardPanel->SetDisplayType( steamapicontext->SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+
 	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownloaded.Set( hCall, this, &LoadingProgress::LeaderboardDownloaded );
 }

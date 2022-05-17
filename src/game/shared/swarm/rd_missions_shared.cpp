@@ -58,12 +58,14 @@ struct NetworkedMissionMetadata_t
 	PublishedFileId_t WorkshopID;
 	bool TagBonus : 1;
 	bool TagDeathmatch : 1;
+	bool TagEndless : 1;
 
 	constexpr void Clear()
 	{
 		WorkshopID = k_PublishedFileIdInvalid;
 		TagBonus = false;
 		TagDeathmatch = false;
+		TagEndless = false;
 	}
 	void SetFromFile( const char *szKVFileName )
 	{
@@ -83,6 +85,8 @@ struct NetworkedMissionMetadata_t
 					TagBonus = true;
 				else if ( !V_stricmp( pValue->GetString(), "deathmatch" ) )
 					TagDeathmatch = true;
+				else if ( !V_stricmp( pValue->GetString(), "endless" ) )
+					TagEndless = true;
 			}
 		}
 	}
@@ -144,6 +148,8 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 		DevMsg( 2, "Adding mission %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
 	}
 	filesystem->FindClose( hFind );
+
+	s_bRebuildUnpackedMissionData = true;
 }
 #else
 static void OnReactiveDropMissionsStringChanged(
@@ -410,15 +416,19 @@ static void UnpackNetworkedTags( CUtlVector<string_t> &tags, INetworkStringTable
 	const NetworkedMissionMetadata_t *pMetadata = static_cast<const NetworkedMissionMetadata_t *>( pStringTable->GetStringUserData( index, &length ) );
 
 	if ( pMetadata->TagBonus )
-		tags.AddToTail( AllocMissionsPooledString( "bonus" ) );
+		tags.AddToTail( MAKE_STRING( "bonus" ) );
 	if ( pMetadata->TagDeathmatch )
-		tags.AddToTail( AllocMissionsPooledString( "deathmatch" ) );
+		tags.AddToTail( MAKE_STRING( "deathmatch" ) );
+	if ( pMetadata->TagEndless )
+		tags.AddToTail( MAKE_STRING( "endless" ) );
 }
 
 const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 {
 	if ( s_bRebuildUnpackedMissionData )
 		ClearUnpackedMissionData();
+
+	Assert( s_UnpackedCampaigns.Count() == CountCampaigns() );
 
 	if ( index < 0 || index >= CountCampaigns() )
 	{
@@ -537,6 +547,8 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 {
 	if ( s_bRebuildUnpackedMissionData )
 		ClearUnpackedMissionData();
+
+	Assert( s_UnpackedMissions.Count() == CountMissions() );
 
 	if ( index < 0 || index >= CountMissions() )
 	{

@@ -123,6 +123,7 @@ public:
 
 	// for the team
 	CNetworkVar( float,		m_fTimeTaken );
+	CNetworkVar( int,		m_iLeaderboardScore );
 	CNetworkVar( int,		m_iTotalKills );
 	CNetworkVar( int,		m_iEggKills );
 	CNetworkVar( int,		m_iParasiteKills );

@@ -17,6 +17,14 @@
 #include "steam/steam_gameserver.h"
 #endif
 
+#define RD_NUM_WORKSHOP_CAMPAIGN_TAGS 0
+#define RD_NUM_WORKSHOP_MISSION_TAGS 5
+
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+extern const char *const g_RDWorkshopCampaignTags[RD_NUM_WORKSHOP_CAMPAIGN_TAGS];
+#endif
+extern const char *const g_RDWorkshopMissionTags[RD_NUM_WORKSHOP_MISSION_TAGS];
+
 namespace BaseModUI
 {
 	class AddonListItem;
@@ -211,8 +219,10 @@ private:
 	CUtlStringList m_aszIncludedCampaigns;
 	CUtlStringList m_aszIncludedMissions;
 	CUtlStringList m_aszIncludedChallenges;
-	CUtlStringList m_aszIncludedDeathmatch;
-	CUtlStringList m_aszIncludedBonus;
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+	CUtlStringList m_aszIncludedTaggedCampaigns[RD_NUM_WORKSHOP_CAMPAIGN_TAGS];
+#endif
+	CUtlStringList m_aszIncludedTaggedMissions[RD_NUM_WORKSHOP_MISSION_TAGS];
 	CUtlStringMap<CUtlString> m_IncludedCampaignNames;
 	CUtlStringMap<CUtlStringList> m_IncludedCampaignMissions;
 	CUtlStringMap<CUtlString> m_IncludedMissionNames;

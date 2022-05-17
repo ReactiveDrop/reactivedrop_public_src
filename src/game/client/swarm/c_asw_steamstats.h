@@ -144,7 +144,7 @@ public:
 	// Send leaderboard entries to Steam
 	void PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial );
 
-	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
+	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0, ELeaderboardSortMethod *pESortMethod = NULL, ELeaderboardDisplayType *pEDisplayType = NULL );
 	void DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
 
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );

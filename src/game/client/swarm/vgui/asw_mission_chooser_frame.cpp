@@ -23,6 +23,7 @@ const char *const g_ASW_ChooserTypeName[] =
 	"single_mission",
 	"bonus_mission",
 	"deathmatch",
+	"endless",
 };
 
 static const char *const s_ChooserTabName[] =
@@ -32,6 +33,7 @@ static const char *const s_ChooserTabName[] =
 	"#asw_single_mission",
 	"#rd_campaign_name_rd_bonus_missions",
 	"#rd_campaign_name_deathmatch_campaign",
+	"#rd_endless_missions",
 };
 
 const char *const g_ASW_HostTypeName[] =

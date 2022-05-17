@@ -678,6 +678,7 @@ void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 void MissionCompletePanel::OnLeaderboardFound( SteamLeaderboard_t id )
 {
 	m_hLeaderboard = id;
+	m_pExperienceReport->m_pLeaderboard->SetDisplayType( steamapicontext->SteamUserStats()->GetLeaderboardDisplayType( id ) );
 
 	if ( m_bLeaderboardReady )
 	{

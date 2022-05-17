@@ -62,12 +62,14 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 #else
 	void InputSetTutorialStage( inputdata_t & inputdata );
+	void InputAddPoints( inputdata_t & inputdata );
 	void OnMissionStart();
 
 	COutputInt m_OnDifficulty;
 	COutputInt m_OnOnslaught;
 	COutputInt m_OnFriendlyFire;
 	COutputString m_OnChallenge;
+	COutputInt m_TotalPoints;
 #endif
 };
 
@@ -484,6 +486,8 @@ public:
 	CNetworkVar(bool, m_bMissionSuccess);
 	CNetworkVar(bool, m_bMissionFailed);
 	CNetworkVar(float, m_fMissionStartedTime);
+	CNetworkVar( int, m_iLeaderboardScore );
+	CNetworkVarEmbedded( CTimeline, m_TimelineLeaderboardScore );
 
 	// fail advice
 	CNetworkVar(int, m_nFailAdvice);

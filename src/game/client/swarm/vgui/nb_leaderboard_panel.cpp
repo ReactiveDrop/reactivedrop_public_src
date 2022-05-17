@@ -117,6 +117,8 @@ void CNB_Leaderboard_Panel::LeaderboardFind( LeaderboardFindResult_t *pResult, b
 		return;
 	}
 
+	m_pLeaderboard->SetDisplayType( steamapicontext->SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+
 	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardDownload );
 }

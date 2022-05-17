@@ -78,6 +78,12 @@ protected:
 	float m_fPrevObjectiveTime;
 	bool m_bPrObjTimeAltColorDrawing;
 
+	vgui::Label *m_pPointsText;
+	int m_iPointsLerp;
+	int m_iPointsCache;
+	float m_fNextPointsLerp;
+	float m_fPointsLerpDeadline;
+
 	CPanelAnimationVarAliasType( int, m_nBlackBarTexture, "BlackBarTexture", "vgui/swarm/HUD/ASWHUDBlackBar", "textureid" );
 };
 

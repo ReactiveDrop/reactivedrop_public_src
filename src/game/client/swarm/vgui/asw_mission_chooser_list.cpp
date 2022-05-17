@@ -57,29 +57,39 @@ void CASW_Mission_Chooser_List::OnThink()
 		return;
 	}
 
+	bool bOnWorkshop = true;
+
 	switch ( m_ChooserType )
 	{
 	case ASW_CHOOSER_TYPE::CAMPAIGN:
 		BuildCampaignList( NULL );
-		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 		break;
 	case ASW_CHOOSER_TYPE::SAVED_CAMPAIGN:
 		Assert( !"Saved campaign mission chooser list not implemented!" );
+		bOnWorkshop = false;
 		break;
 	case ASW_CHOOSER_TYPE::SINGLE_MISSION:
 		BuildMissionList( NULL );
+		bOnWorkshop = false;
 		break;
 	case ASW_CHOOSER_TYPE::BONUS_MISSION:
 		BuildMissionList( "bonus" );
-		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 		break;
 	case ASW_CHOOSER_TYPE::DEATHMATCH:
 		BuildMissionList( "deathmatch" );
-		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
+		break;
+	case ASW_CHOOSER_TYPE::ENDLESS:
+		BuildMissionList( "endless" );
 		break;
 	default:
 		Assert( !"Unhandled ASW_CHOOSER_TYPE in CASW_Mission_Chooser_List" );
+		bOnWorkshop = false;
 		break;
+	}
+
+	if ( bOnWorkshop )
+	{
+		AddEntry( new CASW_Mission_Chooser_Entry( this, "MissionChooserEntry", this, m_ChooserType ) );
 	}
 
 	m_nDataResets = ReactiveDropMissions::s_nDataResets;

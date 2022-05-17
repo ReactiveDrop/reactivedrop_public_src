@@ -20,6 +20,7 @@ static const char *const s_WorkshopChooserTypeName[] =
 	"", // single mission
 	"#rd_workshop_find_new_bonus_mission",
 	"#rd_workshop_find_new_deathmatch",
+	"#rd_workshop_find_new_endless",
 };
 
 static const char *const s_WorkshopChooserTypeTag[] =
@@ -29,6 +30,7 @@ static const char *const s_WorkshopChooserTypeTag[] =
 	"", // single mission
 	"Bonus",
 	"Deathmatch",
+	"Endless",
 };
 
 class CASW_Mission_Chooser_Entry_FocusHolder : public vgui::EditablePanel
