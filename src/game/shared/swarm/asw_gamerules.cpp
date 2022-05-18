@@ -739,6 +739,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
 		RecvPropInt(RECVINFO(m_iLeaderboardScore)),
 		RecvPropDataTable(RECVINFO_DT(m_TimelineLeaderboardScore), 0, &REFERENCE_RECV_TABLE(DT_Timeline)),
+		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -775,6 +776,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
 		SendPropInt(SENDINFO(m_iLeaderboardScore)),
 		SendPropDataTable(SENDINFO_DT(m_TimelineLeaderboardScore), &REFERENCE_SEND_TABLE(DT_Timeline)),
+		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1264,6 +1266,10 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 		UpdateMatchmakingTagsCallback( NULL, NULL, 0 );
 	}
+	if ( UTIL_RD_IsLobbyOwner() )
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "game:rd_lobby_location", m_szApproximatePingLocation );
+	}
 }
 
 #else
@@ -1433,6 +1439,9 @@ CAlienSwarm::CAlienSwarm()
 	m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
 	m_iLeaderboardScore = -1;
 	m_TimelineLeaderboardScore.SetCompressionType( TIMELINE_COMPRESSION_SUM );
+
+	m_szApproximatePingLocation.GetForModify()[0] = '\0';
+	m_bObtainedPingLocation = false;
 
 	ConVarRef sv_cheats( "sv_cheats" );
 	if ( !sv_cheats.GetBool() )
@@ -3513,6 +3522,20 @@ void InitBodyQue()
 
 void CAlienSwarm::Think()
 {
+	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
+	{
+		SteamNetworkPingLocation_t location;
+		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+		if ( flAge >= 0 )
+		{
+			char szLocation[k_cchMaxSteamNetworkingPingLocationString];
+			SteamNetworkingUtils()->ConvertPingLocationToString( location, szLocation, sizeof( szLocation ) );
+			m_bObtainedPingLocation = true;
+			Assert( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) );
+			V_strncpy( m_szApproximatePingLocation.GetForModify(), szLocation, sizeof( m_szApproximatePingLocation ) );
+		}
+	}
+
 	ThinkUpdateTimescale();
 	GetVoiceGameMgr()->Update( gpGlobals->frametime );
 	if ( m_iGameState <= ASW_GS_BRIEFING )

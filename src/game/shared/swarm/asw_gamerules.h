@@ -560,6 +560,11 @@ public:
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
 	CNetworkVar( bool, m_bChallengeActiveThisMission );
 
+	CNetworkString( m_szApproximatePingLocation, MIN( DT_MAX_STRING_BUFFERSIZE, k_cchMaxSteamNetworkingPingLocationString ) );
+#ifdef GAME_DLL
+	bool m_bObtainedPingLocation;
+#endif
+
 private:
 	char m_szPickupDenial[128];
 
