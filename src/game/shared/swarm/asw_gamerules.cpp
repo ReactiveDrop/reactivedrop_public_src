@@ -1268,7 +1268,7 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 	}
 	if ( UTIL_RD_IsLobbyOwner() )
 	{
-		UTIL_RD_UpdateCurrentLobbyData( "game:rd_lobby_location", m_szApproximatePingLocation );
+		UTIL_RD_UpdateCurrentLobbyData( "system:rd_lobby_location", m_szApproximatePingLocation );
 	}
 }
 
