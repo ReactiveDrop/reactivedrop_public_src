@@ -499,7 +499,7 @@ void MainMenu::OnCommand( const char *command )
 		const char *url = "https://steamcommunity.com/app/563560/workshop/";
 		if ( BaseModUI::CUIGameData::Get() )
 		{
-			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url, true );
 		}
 		else if ( vgui::system() )
 		{

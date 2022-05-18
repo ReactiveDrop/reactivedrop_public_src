@@ -447,13 +447,13 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 #endif
 }
 
-void CUIGameData::ExecuteOverlayUrl( char const *szUrl )
+void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
     if ( steamapicontext && steamapicontext->SteamFriends() &&
         steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
     {
-        steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( szUrl );
+        steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
     }
     else
     {

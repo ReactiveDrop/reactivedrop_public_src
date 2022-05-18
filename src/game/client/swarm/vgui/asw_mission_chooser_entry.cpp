@@ -121,7 +121,7 @@ public:
 				BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( CFmtStr(
 					"https://steamcommunity.com/workshop/browse/?appid=563560&requiredtags[]=%s",
 					s_WorkshopChooserTypeTag[int( pParent->m_WorkshopChooserType )]
-				) );
+				), true );
 			}
 			return;
 		}
