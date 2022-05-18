@@ -1676,6 +1676,7 @@ exit 1
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
+    <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
     <ClCompile Include="swarm\rd_jpeglib_helper.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
