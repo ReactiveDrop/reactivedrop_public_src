@@ -47,6 +47,7 @@
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release\.\</OutDir>
@@ -57,6 +58,7 @@
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -76,9 +78,9 @@ if ERRORLEVEL 1 exit 1
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -93,6 +95,8 @@ if ERRORLEVEL 1 exit 1
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -116,6 +120,7 @@ if ERRORLEVEL 1 exit 1
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -211,6 +216,8 @@ if ERRORLEVEL 1 exit 1
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LargeAddressAware>true</LargeAddressAware>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>

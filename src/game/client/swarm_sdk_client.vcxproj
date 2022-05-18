@@ -49,6 +49,7 @@
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetName>client</TargetName>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release_swarm\</OutDir>
@@ -61,6 +62,7 @@
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetName>client</TargetName>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -80,9 +82,9 @@ if ERRORLEVEL 1 exit 1
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -99,6 +101,8 @@ if ERRORLEVEL 1 exit 1
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -122,6 +126,7 @@ if ERRORLEVEL 1 exit 1
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -219,6 +224,8 @@ if ERRORLEVEL 1 exit 1
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LargeAddressAware>true</LargeAddressAware>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
