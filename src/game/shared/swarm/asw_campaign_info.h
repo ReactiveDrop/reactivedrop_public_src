@@ -9,9 +9,6 @@
 
 class KeyValues;
 
-// use rd_missions_shared.h instead
-#pragma deprecated( "CASW_Campaign_Info" )
-
 // this class contains information about the current campaign
 class CASW_Campaign_Info
 {
