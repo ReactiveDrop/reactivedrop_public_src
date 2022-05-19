@@ -27,7 +27,32 @@ Color g_rgbaStatsReportPlayerColors[] =
 	Color( 225, 150, 30, 255 ),
 	Color( 225, 60, 150, 255 ),
 	Color( 120, 80, 250, 255 ),
-	Color( 150, 200, 225, 255 )
+	// TODO: different colors for players 9-32
+	Color( 150, 200, 225, 255 ),
+	Color( 225, 60, 60, 255 ),
+	Color( 200, 200, 60, 255 ),
+	Color( 60, 225, 60, 255 ),
+	Color( 30, 90, 225, 255 ),
+	Color( 225, 150, 30, 255 ),
+	Color( 225, 60, 150, 255 ),
+	Color( 120, 80, 250, 255 ),
+	Color( 150, 200, 225, 255 ),
+	Color( 225, 60, 60, 255 ),
+	Color( 200, 200, 60, 255 ),
+	Color( 60, 225, 60, 255 ),
+	Color( 30, 90, 225, 255 ),
+	Color( 225, 150, 30, 255 ),
+	Color( 225, 60, 150, 255 ),
+	Color( 120, 80, 250, 255 ),
+	Color( 150, 200, 225, 255 ),
+	Color( 225, 60, 60, 255 ),
+	Color( 200, 200, 60, 255 ),
+	Color( 60, 225, 60, 255 ),
+	Color( 30, 90, 225, 255 ),
+	Color( 225, 150, 30, 255 ),
+	Color( 225, 60, 150, 255 ),
+	Color( 120, 80, 250, 255 ),
+	Color( 150, 200, 225, 255 ),
 };
 
 StatsReport::StatsReport( vgui::Panel *parent, const char *name ) : vgui::EditablePanel( parent, name )
@@ -68,7 +93,7 @@ void StatsReport::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	// Copy the font from the first player name panel for the 4 marines added in Reactive Drop.
+	// Copy the font from the first player name panel for the remaining marines added in Reactive Drop.
 	for ( int i = 4; i < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
 		m_pPlayerNames[ i ]->SetFont( m_pPlayerNames[ 0 ]->GetFont() );
@@ -95,6 +120,13 @@ void StatsReport::PerformLayout()
 	// align stat lines in a vertical list one after the other
 	for ( int i = 1; i < ASW_STATS_REPORT_CATEGORIES; i++ )
 	{
+		if ( i == 4 && ( !ASWGameRules() || ASWGameRules()->m_iLeaderboardScore < 0 ) )
+		{
+			m_pCategoryButtons[ i ]->SetVisible( false );
+			continue;
+		}
+
+		m_pCategoryButtons[ i ]->SetVisible( true );
 		m_pCategoryButtons[ i ]->SetPos( nCategoryButtonX, nCategoryButtonY );
 		m_pCategoryButtons[ i ]->SizeToContents();
 		m_pCategoryButtons[ i ]->SetTall( nCategoryButtonH );
@@ -269,6 +301,10 @@ void StatsReport::SetStatCategory( int nCategory )
 
 			case 3:
 				m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->SetTimeline( &pMR->m_TimelineAmmo );
+				break;
+
+			case 4:
+				m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->SetTimeline( nMarine ? NULL : &ASWGameRules()->m_TimelineLeaderboardScore );
 				break;
 			}
 
