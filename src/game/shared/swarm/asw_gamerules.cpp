@@ -497,8 +497,8 @@ ConVar rd_aim_marines( "rd_aim_marines", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "I
 
 ConVar rd_points_delay( "rd_points_delay", "1.5", FCVAR_REPLICATED, "Number of seconds after the score changes before it starts decaying.", true, 0, false, 0 );
 ConVar rd_points_delay_max( "rd_points_delay_max", "5", FCVAR_REPLICATED, "Maximum number of seconds that the score can remain still without decaying.", true, 0, false, 0 );
-ConVar rd_points_decay( "rd_points_decay", "0.69", FCVAR_REPLICATED, "Amount that score change decays by per tick.", true, 0, true, 0.999 );
-ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.1", FCVAR_REPLICATED, "Number of seconds between score decay ticks.", true, 0, false, 0 );
+ConVar rd_points_decay( "rd_points_decay", "0.97", FCVAR_REPLICATED, "Amount that score change decays by per tick.", true, 0, true, 0.999 );
+ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "Number of seconds between score decay ticks.", true, 0, false, 0 );
 
 // ASW Weapons
 // Rifle
