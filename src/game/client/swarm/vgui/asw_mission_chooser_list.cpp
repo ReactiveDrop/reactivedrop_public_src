@@ -127,7 +127,7 @@ void CASW_Mission_Chooser_List::PerformLayout()
 
 	m_pScrollBar->SetTall( GetTall() );
 	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
-	m_pScrollBar->SetRangeWindow( totalTall );
+	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
 	m_pScrollBar->SetRange( 0, totalHeight );
 
 	m_pHolder->SetPos( 0, -m_pScrollBar->GetValue() );
