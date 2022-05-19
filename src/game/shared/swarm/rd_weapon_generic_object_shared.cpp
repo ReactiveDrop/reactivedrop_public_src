@@ -184,7 +184,14 @@ void CRD_Weapon_Generic_Object::PostDataUpdate( DataUpdateType_t updateType )
 {
 	BaseClass::PostDataUpdate( updateType );
 
-	g_pVGuiLocalize->ConvertANSIToUnicode( m_szCarriedName, m_wszCarriedName, sizeof( m_wszCarriedName ) );
+	if ( const wchar_t *pwszCarriedName = g_pVGuiLocalize->Find( m_szCarriedName ) )
+	{
+		V_wcsncpy( m_wszCarriedName, pwszCarriedName, sizeof( m_wszCarriedName ) );
+	}
+	else
+	{
+		g_pVGuiLocalize->ConvertANSIToUnicode( m_szCarriedName, m_wszCarriedName, sizeof( m_wszCarriedName ) );
+	}
 }
 
 bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
