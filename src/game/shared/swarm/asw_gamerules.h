@@ -63,6 +63,7 @@ public:
 #else
 	void InputSetTutorialStage( inputdata_t & inputdata );
 	void InputAddPoints( inputdata_t & inputdata );
+	void InputModifyDifficulty( inputdata_t & inputdata );
 	void OnMissionStart();
 
 	COutputInt m_OnDifficulty;
@@ -70,6 +71,7 @@ public:
 	COutputInt m_OnFriendlyFire;
 	COutputString m_OnChallenge;
 	COutputInt m_TotalPoints;
+	COutputInt m_MissionDifficulty;
 #endif
 };
 

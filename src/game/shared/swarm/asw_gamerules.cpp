@@ -788,11 +788,13 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 #ifdef GAME_DLL
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "ModifyDifficulty", InputModifyDifficulty ),
 	DEFINE_OUTPUT( m_OnDifficulty, "OnDifficulty" ),
 	DEFINE_OUTPUT( m_OnOnslaught, "OnOnslaught" ),
 	DEFINE_OUTPUT( m_OnFriendlyFire, "OnFriendlyFire" ),
 	DEFINE_OUTPUT( m_OnChallenge, "OnChallenge" ),
 	DEFINE_OUTPUT( m_TotalPoints, "TotalPoints" ),
+	DEFINE_OUTPUT( m_MissionDifficulty, "MissionDifficulty" ),
 #endif
 END_DATADESC()
 
@@ -856,6 +858,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 {
 	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
 	if ( !pGameRules || !pGameRules->IsTutorialMap() )
 	{
 		Warning( "Cannot SetTutorialStage on non-tutorial map.\n" );
@@ -873,6 +876,7 @@ void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 {
 	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
 	if ( !pGameRules || pGameRules->m_iLeaderboardScore < 0 )
 	{
 		Warning( "Cannot AddPoints on this map: overview not tagged with 'points' or mission not yet started.\n" );
@@ -902,6 +906,26 @@ void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 	MessageEnd();
 }
 
+void CAlienSwarmProxy::InputModifyDifficulty( inputdata_t & inputdata )
+{
+	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
+	if ( !pGameRules || pGameRules->GetGameState() != ASW_GS_INGAME )
+	{
+		Warning( "Cannot ModifyDifficulty when mission is not active.\n" );
+		return;
+	}
+
+	int iOldDifficulty = pGameRules->m_iMissionDifficulty;
+
+	// limit difficulty to between 2 (classic minimum) and 10 million (going a bit above this makes shieldbug health overflow).
+	int iNewDifficulty = clamp( iOldDifficulty + inputdata.value.Int(), 2, 10000000 );
+
+	DevMsg( "Mapper modified difficulty from %d to %d\n", iOldDifficulty, iNewDifficulty );
+	pGameRules->m_iMissionDifficulty = iNewDifficulty;
+	m_MissionDifficulty.Set( iNewDifficulty, inputdata.pActivator, inputdata.pCaller );
+}
+
 void CAlienSwarmProxy::OnMissionStart()
 {
 	CAlienSwarm *pGameRules = ASWGameRules();
@@ -919,6 +943,7 @@ void CAlienSwarmProxy::OnMissionStart()
 	m_OnOnslaught.Set( pGameRules->IsOnslaught() ? 1 : 0, this, this );
 	m_OnFriendlyFire.Set( pGameRules->IsHardcoreFF() ? 1 : 0, this, this );
 	m_OnChallenge.Set( AllocPooledString( rd_challenge.GetString() ), this, this );
+	m_MissionDifficulty.Set( pGameRules->GetMissionDifficulty(), this, this );
 }
 #endif
 
