@@ -2258,7 +2258,7 @@ void CASW_Buzzer::Spawn(void)
 	if ( event )
 	{
 		event->SetInt( "entindex", entindex() );
-		gameeventmanager->FireEvent( event );
+		gameeventmanager->FireEvent( event, true );
 	}
 }
 

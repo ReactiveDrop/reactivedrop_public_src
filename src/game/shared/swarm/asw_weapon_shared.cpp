@@ -475,7 +475,7 @@ void CASW_Weapon::ItemPostFrame( void )
 						event->SetInt( "marine", pOwner->entindex() );
 						event->SetInt( "weapon", entindex() );
 
-						gameeventmanager->FireEvent( event );
+						gameeventmanager->FireEvent( event, true );
 					}
 	#endif
 					 m_flNextPrimaryAttack = gpGlobals->curtime;
