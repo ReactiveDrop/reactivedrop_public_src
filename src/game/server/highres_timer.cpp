@@ -8,7 +8,7 @@ static float prev = 0.0f;
 
 void highres_timer_set( float ms )
 {
-	if (ms != prev) {
+	if ( ms != prev ) {
 
 		ConMsg( "[timer] requested: %f ms\n", ms );
 
@@ -17,7 +17,7 @@ void highres_timer_set( float ms )
 		bool apply = true;
 
 		// if zero or negative, restore default os timer resolution
-		if (ms > 0.00001f) {
+		if ( ms > 0.00001f ) {
 			desiredRes = round( ms * 1000 * 100 );
 			ConMsg( "[timer] resolution requested: %d\n", desiredRes );
 		}
