@@ -1,6 +1,15 @@
 @include "swarm.fgd"
 @include "swarm_fixed_ents.fgd"
- 
+
+@MaterialExclusion
+[
+	"console"
+	"editor"
+	"particle"
+	"vgui"
+	"voice"
+]
+
 @PointClass base(Targetname) = asw_deathmatch_mode : "If this entity is present Deathmatch game rules will be applied"
 [
 ]
