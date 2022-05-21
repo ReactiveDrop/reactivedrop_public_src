@@ -4,7 +4,6 @@
 @MaterialExclusion
 [
 	"console"
-	"editor"
 	"particle"
 	"vgui"
 	"voice"
