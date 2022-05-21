@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -397,7 +397,7 @@ void CSimpleEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 	while ( pParticle )
 	{
 		//Render
-		Vector	tPos;
+		Vector	tPos = vec3_origin;
 
 		TransformParticle( ParticleMgr()->GetModelView(), pParticle->m_Pos, tPos );
 		float sortKey = (int) tPos.z;
