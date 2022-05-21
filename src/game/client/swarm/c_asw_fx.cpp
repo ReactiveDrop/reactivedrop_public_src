@@ -1051,12 +1051,13 @@ DECLARE_CLIENT_EFFECT( QueenSpitBurst, QueenSpitBurstCallback );
 void FX_EggGibs( const Vector &origin, int flags, int iEntIndex )
 {
 	C_BaseEntity* pEnt = ClientEntityList().GetEnt(iEntIndex);
+	
+	MDLCACHE_CRITICAL_SECTION();
+
+	C_BaseAnimating::PushAllowBoneAccess(true, false, "FX_EggGibs");
 	if ( pEnt && pEnt->Classify() == CLASS_ASW_EGG )
 	{
 		C_ASW_Egg* pEgg = assert_cast<C_ASW_Egg*>(pEnt);
-
-		MDLCACHE_CRITICAL_SECTION();
-		C_BaseAnimating::PushAllowBoneAccess(true, false, "FX_EggGibs");
 
 		if (flags & EGG_FLAG_OPEN)
 		{
@@ -1067,31 +1068,31 @@ void FX_EggGibs( const Vector &origin, int flags, int iEntIndex )
 		{
 			DispatchParticleEffect("egg_hatch", PATTACH_POINT_FOLLOW, pEgg, "attach_death");
 		}
-
-		if (flags & EGG_FLAG_DIE)
-		{
-			DispatchParticleEffect("egg_death", origin, QAngle(0, 0, 0));
-		}
-
-		if (flags & EGG_FLAG_GRUBSACK_DIE)
-		{
-			DispatchParticleEffect("grubsack_death", origin, QAngle(0, 0, 0));
-		}
-
-		CLocalPlayerFilter filter;
-		CSoundParameters params;
-
-		// make a gib sound
-		if (C_BaseEntity::GetParametersForSound("ASW_Drone.GibSplatQuiet", params, NULL))
-		{
-			EmitSound_t ep(params);
-			ep.m_pOrigin = &origin;
-
-			C_BaseEntity::EmitSound(filter, 0, ep);
-		}
-
-		C_BaseAnimating::PopBoneAccess("FX_EggGibs");
 	}
+
+	if (flags & EGG_FLAG_DIE)
+	{
+		DispatchParticleEffect("egg_death", origin, QAngle(0, 0, 0));
+	}
+
+	if (flags & EGG_FLAG_GRUBSACK_DIE)
+	{
+		DispatchParticleEffect("grubsack_death", origin, QAngle(0, 0, 0));
+	}
+
+	CLocalPlayerFilter filter;
+	CSoundParameters params;
+
+	// make a gib sound
+	if (C_BaseEntity::GetParametersForSound("ASW_Drone.GibSplatQuiet", params, NULL))
+	{
+		EmitSound_t ep(params);
+		ep.m_pOrigin = &origin;
+
+		C_BaseEntity::EmitSound(filter, 0, ep);
+	}
+
+	C_BaseAnimating::PopBoneAccess("FX_EggGibs");
 }
 
 
