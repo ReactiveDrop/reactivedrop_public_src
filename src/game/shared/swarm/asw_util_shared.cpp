@@ -1606,9 +1606,9 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		// Replace the language name here so we have control over what it is.
 
 		const char *pszLanguageReplacement = "%language%";
-		if ( steamapicontext && steamapicontext->SteamApps() )
+		if ( SteamApps() )
 		{
-			pszLanguageReplacement = steamapicontext->SteamApps()->GetCurrentGameLanguage();
+			pszLanguageReplacement = SteamApps()->GetCurrentGameLanguage();
 		}
 #ifdef GAME_DLL
 		else if ( engine->IsDedicatedServer() )

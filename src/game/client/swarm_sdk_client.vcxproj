@@ -1687,7 +1687,6 @@ exit 1
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
     <ClCompile Include="swarm\rd_jpeglib_helper.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
-    <ClCompile Include="swarm\rd_track_first_played.cpp" />
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
     <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />

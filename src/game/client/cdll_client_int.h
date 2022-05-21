@@ -54,7 +54,6 @@ class ISceneFileCache;
 class IXboxSystem;	// Xbox 360 only
 class IAvi;
 class IBik;
-class CSteamAPIContext;
 class IReplayHistoryManager;
 class ISoundEmitterSystemBase;
 enum CPULevel_t;
@@ -88,7 +87,6 @@ extern IXboxSystem *xboxsystem;	// Xbox 360 only
 extern IAvi *avi;
 extern IBik *bik;
 extern IUploadGameStats *gamestatsuploader;
-extern CSteamAPIContext *steamapicontext;
 extern ISoundEmitterSystemBase *soundemitterbase;
 
 #ifdef INFESTED_DLL

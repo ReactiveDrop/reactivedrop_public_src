@@ -191,9 +191,6 @@ IGameSystem *SoundEmitterSystem();
 IGameSystem *ToolFrameworkClientSystem();
 IViewRender *GetViewRenderInstance();
 
-static CSteamAPIContext g_SteamAPIContext;
-CSteamAPIContext *steamapicontext = &g_SteamAPIContext;
-
 
 bool g_bEngineIsHLTV = false;
 
@@ -1083,15 +1080,6 @@ int CHLClient::Connect( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGl
 	ConnectTier2Libraries( &appSystemFactory, 1 );
 	ConnectTier3Libraries( &appSystemFactory, 1 );
 
-#ifndef _X360
-	SteamAPI_InitSafe();
-	g_SteamAPIContext.Init();
-
-#ifdef INFESTED_DLL
-	
-#endif
-#endif
-
 	// Initialize the console variables.
 	ConVar_Register( FCVAR_CLIENTDLL );
 
@@ -1325,14 +1313,6 @@ void CHLClient::Shutdown( void )
 	
 	ClearKeyValuesCache();
 
-#ifndef NO_STEAM
-	g_SteamAPIContext.Clear();
-	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
-#ifdef INFESTED_DLL
-	
-#endif
-#endif
-	
 	DisconnectTier3Libraries( );
 	DisconnectTier2Libraries( );
 	ConVar_Unregister();

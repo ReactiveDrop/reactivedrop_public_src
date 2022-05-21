@@ -78,7 +78,7 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
 	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardFind );
 }
 
@@ -117,9 +117,9 @@ void CNB_Leaderboard_Panel::LeaderboardFind( LeaderboardFindResult_t *pResult, b
 		return;
 	}
 
-	m_pLeaderboard->SetDisplayType( steamapicontext->SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+	m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardDownload );
 }
 

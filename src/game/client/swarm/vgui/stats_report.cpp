@@ -403,7 +403,7 @@ void StatsReport::SetPlayerNames( void )
 					{
 						if ( pi.friendsID )
 						{
-							CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+							CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 							steamID = steamIDForPlayer;
 						}
 					}

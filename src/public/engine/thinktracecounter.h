@@ -36,7 +36,7 @@
 				// done as a static var to defer initialization until Steam is ready,
 				// but also to have the fastest check at runtime (rather than calling through
 				// the API each time)
-				static bool bIsPublic = steamapicontext->SteamUtils() != NULL && steamapicontext->SteamUtils()->GetConnectedUniverse() == k_EUniversePublic;
+				static bool bIsPublic = SteamUtils() != NULL && SteamUtils()->GetConnectedUniverse() == k_EUniversePublic;
 				return !bIsPublic;
 			}
 		#else

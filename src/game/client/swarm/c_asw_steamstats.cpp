@@ -30,7 +30,7 @@ namespace
 {
 #define FETCH_STEAM_STATS( apiname, membername ) \
 	{ const char * szApiName = apiname; \
-	if( !steamapicontext->SteamUserStats()->GetUserStat( playerSteamID, szApiName, &membername ) ) \
+	if( !SteamUserStats()->GetUserStat( playerSteamID, szApiName, &membername ) ) \
 	{ \
 		bOK = false; \
 		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName ); \
@@ -38,7 +38,7 @@ namespace
 
 #define SEND_STEAM_STATS( apiname, membername ) \
 	{ const char * szApiName = apiname; \
-	steamapicontext->SteamUserStats()->SetStat( szApiName, membername ); }
+	SteamUserStats()->SetStat( szApiName, membername ); }
 
 	// Define some strings used by the stats API
 	const char* szGamesTotal = ".games.total";
@@ -432,7 +432,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		{
 			int weaponIndex = m_WeaponStats.AddToTail();
 			const char *szClassname = ASWEquipmentList()->GetRegular( i )->m_EquipClass;
-			m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = false;
 			m_WeaponStats[weaponIndex].m_szClassName = const_cast< char * >( szClassname );
@@ -457,7 +457,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		{
 			int weaponIndex = m_WeaponStats.AddToTail();
 			const char *szClassname = ASWEquipmentList()->GetExtra( i )->m_EquipClass;
-			m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = true;
 			m_WeaponStats[weaponIndex].m_szClassName = const_cast< char * >( szClassname );
@@ -471,28 +471,28 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	// Get weapon stats for rifle grenade and vindicator grenade
 	int weaponIndex = m_WeaponStats.AddToTail();
 	char *szClassname = "asw_rifle_grenade";
-	m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
 	weaponIndex = m_WeaponStats.AddToTail();
 	szClassname = "asw_prifle_grenade";
-	m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
 	weaponIndex = m_WeaponStats.AddToTail();
 	szClassname = "asw_vindicator_grenade";
-	m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
 	weaponIndex = m_WeaponStats.AddToTail();
 	szClassname = "asw_combat_rifle_shotgun";
-	m_WeaponStats[weaponIndex].FetchWeaponStats( steamapicontext, playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
@@ -515,18 +515,18 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		m_DifficultyCounts.AddToTail( iTempCount );
 
 		// Fetch all stats for that difficulty
-		bOK &= m_DifficultyStats[i].FetchDifficultyStats( steamapicontext, playerSteamID, i + 1 );
+		bOK &= m_DifficultyStats[i].FetchDifficultyStats( playerSteamID, i + 1 );
 	}
 
 	// Get stats for this mission/difficulty/marine
-	bOK &= m_MissionStats.FetchMissionStats( steamapicontext, playerSteamID );
+	bOK &= m_MissionStats.FetchMissionStats( playerSteamID );
 	
 	return bOK;
 }
 
 void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 {
-	if( !steamapicontext )
+	if( !SteamUserStats() )
 		return;
 
 	// Update stats from the briefing screen
@@ -836,7 +836,7 @@ float CASW_Steamstats::GetFavoriteDifficultyPercent( void )
 	return ( fTotal > 0.0f ) ? ( iFav / fTotal * 100.0f ) : 0.0f;
 }
 
-bool DifficultyStats_t::FetchDifficultyStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, int iDifficulty )
+bool DifficultyStats_t::FetchDifficultyStats( CSteamID playerSteamID, int iDifficulty )
 {
 	if( !ASWGameRules() )
 		return false;
@@ -876,7 +876,7 @@ bool DifficultyStats_t::FetchDifficultyStats( CSteamAPIContext * pSteamContext, 
 
 void DifficultyStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 {
-	if( !steamapicontext )
+	if( !SteamUserStats() )
 		return;
 
 	// Update stats from the briefing screen
@@ -932,7 +932,7 @@ void DifficultyStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 	}
 }
 
-bool MissionStats_t::FetchMissionStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID )
+bool MissionStats_t::FetchMissionStats( CSteamID playerSteamID )
 {
 	if ( !IsOfficialCampaign() )
 		return true;
@@ -1043,7 +1043,7 @@ void MissionStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( CFmtStr( "%s%s.%s", szLevelName, szBestTime, g_szDifficulties[ iDifficulty - 1 ] ), m_iBestSpeedrunTimes[ iDifficulty - 1 ] );
 }
 
-bool WeaponStats_t::FetchWeaponStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, const char *szClassName )
+bool WeaponStats_t::FetchWeaponStats( CSteamID playerSteamID, const char *szClassName )
 {
 	bool bOK = true;
 
@@ -1128,7 +1128,7 @@ static uint32 GetGameVersion()
 
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
-	if ( !steamapicontext || !steamapicontext->SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
+	if ( !SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
 	{
 		return;
 	}
@@ -1250,8 +1250,8 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		m_LeaderboardScoreDetails.m_iSquadSecondaryWeapon[i] = 0;
 		m_LeaderboardScoreDetails.m_iSquadExtraWeapon[i] = 0;
 	}
-	m_LeaderboardScoreDetails.m_iTimestamp = steamapicontext->SteamUtils()->GetServerRealTime();
-	const char *pszCountry = steamapicontext->SteamUtils()->GetIPCountry();
+	m_LeaderboardScoreDetails.m_iTimestamp = SteamUtils()->GetServerRealTime();
+	const char *pszCountry = SteamUtils()->GetIPCountry();
 	m_LeaderboardScoreDetails.m_CountryCode[0] = pszCountry[0];
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
 	m_LeaderboardScoreDetails.m_iDifficulty = ASWGameRules()->GetSkillLevel();
@@ -1271,7 +1271,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 
 	if ( IsLBWhitelisted( szLeaderboardName ) )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, eSortMethod, eDisplayType );
+		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, eSortMethod, eDisplayType );
 		m_LeaderboardFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardFindResultCallback );
 	}
 	else
@@ -1281,7 +1281,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 
 	if ( IsLBWhitelisted( szDifficultyLeaderboardName ) )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
+		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
 		m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
 	}
 	else
@@ -1316,7 +1316,7 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 		pMissionCompletePanel->OnLeaderboardFound( pResult->m_hSteamLeaderboard );
 	}
 
-	SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
+	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 	m_LeaderboardScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardScoreUploadedCallback );
 }
@@ -1337,7 +1337,7 @@ void CASW_Steamstats::LeaderboardDifficultyFindResultCallback( LeaderboardFindRe
 		DevMsg( "Sending leaderboard entry to (difficulty) leaderboard ID: %llu\n", pResult->m_hSteamLeaderboard );
 	}
 
-	SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
+	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 	m_LeaderboardDifficultyScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback );
 }
@@ -1361,7 +1361,7 @@ void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded
 	if ( pMissionCompletePanel && pResult->m_bScoreChanged )
 	{
 		RD_LeaderboardEntry_t entry;
-		entry.entry.m_steamIDUser = steamapicontext->SteamUser()->GetSteamID();
+		entry.entry.m_steamIDUser = SteamUser()->GetSteamID();
 		entry.entry.m_nGlobalRank = pResult->m_nGlobalRankNew;
 		entry.entry.m_nScore = pResult->m_nScore;
 		entry.entry.m_cDetails = sizeof( LeaderboardScoreDetails_v2_t ) / sizeof( int32 );
@@ -1457,7 +1457,7 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 
 	for ( int i = 0; i < nCount; i++ )
 	{
-		steamapicontext->SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
+		SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
 	}
 }
 
@@ -1467,7 +1467,7 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 
 	for (int i = 0; i < nCount; i++)
 	{
-		steamapicontext->SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
+		SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
 	}
 }
 

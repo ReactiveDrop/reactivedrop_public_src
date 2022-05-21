@@ -678,11 +678,11 @@ void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 void MissionCompletePanel::OnLeaderboardFound( SteamLeaderboard_t id )
 {
 	m_hLeaderboard = id;
-	m_pExperienceReport->m_pLeaderboard->SetDisplayType( steamapicontext->SteamUserStats()->GetLeaderboardDisplayType( id ) );
+	m_pExperienceReport->m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( id ) );
 
 	if ( m_bLeaderboardReady )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }
@@ -697,7 +697,7 @@ void MissionCompletePanel::LeaderboardReady()
 	m_bLeaderboardReady = true;
 	if ( m_hLeaderboard != 0 )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }

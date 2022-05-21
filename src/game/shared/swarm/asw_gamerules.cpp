@@ -306,7 +306,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		return;
 	}
 
-	steamapicontext->SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
+	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
 
 	PublishedFileId_t missionAddonID = ASWGameRules()->m_iMissionWorkshopID.Get();

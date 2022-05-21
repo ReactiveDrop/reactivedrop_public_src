@@ -8,7 +8,7 @@
 
 struct DifficultyStats_t
 {
-	bool FetchDifficultyStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, int iDifficulty );
+	bool FetchDifficultyStats( CSteamID playerSteamID, int iDifficulty );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iGamesTotal;
@@ -25,7 +25,7 @@ struct DifficultyStats_t
 
 struct MissionStats_t
 {
-	bool FetchMissionStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID );
+	bool FetchMissionStats( CSteamID playerSteamID );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iGamesTotal;
@@ -46,7 +46,7 @@ struct MissionStats_t
 
 struct WeaponStats_t
 {
-	bool FetchWeaponStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, const char *szClassName );
+	bool FetchWeaponStats( CSteamID playerSteamID, const char *szClassName );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iWeaponIndex;

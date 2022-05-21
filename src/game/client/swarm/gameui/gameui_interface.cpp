@@ -178,11 +178,6 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	engine = (IVEngineClient *)factory( VENGINE_CLIENT_INTERFACE_VERSION, NULL );
 	bik = (IBik*)factory( BIK_INTERFACE_VERSION, NULL );
 
-#ifndef _X360
-	SteamAPI_InitSafe();
-	steamapicontext->Init();
-#endif
-
 	CGameUIConVarRef var( "gameui_xbox" );
 	m_bIsConsoleUI = var.IsValid() && var.GetBool();
 
@@ -523,7 +518,6 @@ void CGameUI::Shutdown()
 		Sys_ReleaseMutex(g_hWaitMutex);
 	}
 
-	steamapicontext->Clear();
 #ifndef _X360
 	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
 #endif

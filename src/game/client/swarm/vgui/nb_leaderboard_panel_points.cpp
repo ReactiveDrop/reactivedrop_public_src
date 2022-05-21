@@ -36,7 +36,7 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 
 	m_pLeaderboard->SetTitle( "#asw_iaf_heroes_title" );
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardFind );
 }
 
@@ -117,7 +117,7 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 		return;
 	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardDownload );
 }
 

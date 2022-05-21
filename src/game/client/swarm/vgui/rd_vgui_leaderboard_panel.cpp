@@ -41,7 +41,7 @@ void CReactiveDrop_VGUI_Leaderboard_Panel::SetTitle( const wchar_t *wszTitle )
 
 void CReactiveDrop_VGUI_Leaderboard_Panel::SetEntries( const CUtlVector<RD_LeaderboardEntry_t> & entries )
 {
-	CSteamID localUserID = steamapicontext->SteamUser()->GetSteamID();
+	CSteamID localUserID = SteamUser()->GetSteamID();
 
 	m_gplLeaderboard->RemoveAllPanelItems();
 
@@ -165,7 +165,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
-	Q_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
 	m_lblName->SetText( wszName );
 
 	if ( m_eDisplayType == k_ELeaderboardDisplayTypeTimeMilliSeconds )
@@ -358,7 +358,7 @@ void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetTitle( const wchar_t *wszTi
 
 void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries )
 {
-	CSteamID localUserID = steamapicontext->SteamUser()->GetSteamID();
+	CSteamID localUserID = SteamUser()->GetSteamID();
 
 	m_gplLeaderboard->RemoveAllPanelItems();
 
@@ -478,7 +478,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry_Points::SetEntry( const RD_Leaderboard
 	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
-	Q_UTF8ToUnicode(steamapicontext->SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
+	Q_UTF8ToUnicode(SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
 	m_lblName->SetText(wszName);
 
 	m_lblScore_Points->SetText( VarArgs( "%d", m_nScore ) );

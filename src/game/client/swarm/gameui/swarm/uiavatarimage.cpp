@@ -38,16 +38,16 @@ bool CGameUiAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 {
 	ClearAvatarSteamID();
 
-	if ( steamapicontext->SteamFriends() && steamapicontext->SteamUtils() )
+	if ( SteamFriends() && SteamUtils() )
 	{
-		int iAvatar = steamapicontext->SteamFriends()->GetMediumFriendAvatar( steamIDUser );
+		int iAvatar = SteamFriends()->GetMediumFriendAvatar( steamIDUser );
 
 		/*
 		// See if it's in our list already
 		*/
 
 		uint32 wide, tall;
-		if ( steamapicontext->SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
+		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
 		{
 			bool bUseSteamImage = true;
 			if ( wide == 0 || tall == 0 )
@@ -62,7 +62,7 @@ bool CGameUiAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 			byte *rgubDest = (byte*)_alloca( cubImage );
 			if ( bUseSteamImage )
 			{
-				steamapicontext->SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
+				SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
 			}
 			else
 			{

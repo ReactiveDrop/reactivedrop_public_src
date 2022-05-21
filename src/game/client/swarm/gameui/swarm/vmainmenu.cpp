@@ -1463,7 +1463,7 @@ void MainMenu::AcceptVersusSoftLockCallback()
 #ifndef _X360
 CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 {
-	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
+	bool isSteam = IsPC() && SteamFriends() && SteamUtils();
 	if ( isSteam )
 	{
 		// show the server browser

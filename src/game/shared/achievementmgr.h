@@ -71,7 +71,7 @@ public:
 	virtual void OnEvent( KeyValues *pEvent );
 
 #ifdef CLIENT_DLL
-	bool LoggedIntoSteam() { return ( steamapicontext->SteamUser() && steamapicontext->SteamUserStats() && steamapicontext->SteamUser()->BLoggedOn() ); }
+	bool LoggedIntoSteam() { return ( SteamUser() && SteamUserStats() && SteamUser()->BLoggedOn() ); }
 #else
 	bool LoggedIntoSteam() { return false; }
 #endif

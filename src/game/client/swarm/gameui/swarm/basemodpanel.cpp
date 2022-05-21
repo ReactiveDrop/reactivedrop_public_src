@@ -136,34 +136,10 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 {
 #if !defined( _X360 ) && !defined( NOSTEAM )
 	// Set Steam overlay position
-	if ( steamapicontext && steamapicontext->SteamUtils() )
+	if ( SteamUtils() )
 	{
-		steamapicontext->SteamUtils()->SetOverlayNotificationPosition( k_EPositionTopRight );
+		SteamUtils()->SetOverlayNotificationPosition( k_EPositionTopRight );
 	}
-
-	// Set special DLC parameters mask
-	static ConVarRef mm_dlcs_mask_extras( "mm_dlcs_mask_extras" );
-	if ( mm_dlcs_mask_extras.IsValid() && steamapicontext && steamapicontext->SteamUtils() )
-	{
-		int iDLCmask = mm_dlcs_mask_extras.GetInt();
-
-		// Low Violence and Germany (or bordering countries) = CS.GUNS
-		char const *cc = steamapicontext->SteamUtils()->GetIPCountry();
-		char const *ccGuns = ":DE:DK:PL:CZ:AT:CH:FR:LU:BE:NL:";
-		if ( engine->IsLowViolence() && Q_stristr( ccGuns, CFmtStr( ":%s:", cc ) ) )
-		{
-			// iDLCmask |= ( 1 << ? );
-		}
-
-		// PreOrder DLC AppId Ownership = BAT
-		if ( steamapicontext->SteamApps()->BIsSubscribedApp( 565 ) )
-		{
-			// iDLCmask |= ( 1 << ? );
-		}
-
-		mm_dlcs_mask_extras.SetValue( iDLCmask );
-	}
-
 #endif
 
 	MakePopup( false );

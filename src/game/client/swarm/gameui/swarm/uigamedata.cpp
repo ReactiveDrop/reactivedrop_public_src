@@ -432,10 +432,9 @@ void CUIGameData::OpenInviteUI( char const *szInviteUiType )
 void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	if ( steamapicontext && steamapicontext->SteamFriends() &&
-		 steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 	{
-		steamapicontext->SteamFriends()->ActivateGameOverlay( szCommand );
+		SteamFriends()->ActivateGameOverlay( szCommand );
 	}
 	else
 	{
@@ -450,10 +449,9 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
-    if ( steamapicontext && steamapicontext->SteamFriends() &&
-        steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
+    if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
     {
-        steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
+        SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
     }
     else
     {
@@ -829,13 +827,12 @@ char const * CUIGameData::GetPlayerName( XUID playerID, char const *szPlayerName
 		return "WWWWWWWWWWWWWWW";
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	if ( steamapicontext && steamapicontext->SteamUtils() &&
-		steamapicontext->SteamFriends() && steamapicontext->SteamUser() )
+	if ( SteamUtils() && SteamFriends() && SteamUser() )
 	{
 		int iIndex = m_mapUserXuidToName.Find( playerID );
 		if ( iIndex == m_mapUserXuidToName.InvalidIndex() )
 		{
-			char const *szName = steamapicontext->SteamFriends()->GetFriendPersonaName( playerID );
+			char const *szName = SteamFriends()->GetFriendPersonaName( playerID );
 			if ( szName && *szName )
 			{
 				iIndex = m_mapUserXuidToName.Insert( playerID, szName );

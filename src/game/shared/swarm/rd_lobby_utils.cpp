@@ -52,8 +52,8 @@ bool UTIL_RD_IsLobbyOwner()
 		return false;
 	}
 
-	CSteamID owner = steamapicontext->SteamMatchmaking()->GetLobbyOwner( lobby );
-	return owner == steamapicontext->SteamUser()->GetSteamID();
+	CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
+	return owner == SteamUser()->GetSteamID();
 }
 
 KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
@@ -68,12 +68,12 @@ KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
 	KeyValues *pGameKey = pKV->FindKey( "game", true );
 	if (pGameKey)
 		pGameKey->Clear();
-	int nCount = steamapicontext->SteamMatchmaking()->GetLobbyDataCount( lobby );
+	int nCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
 	for ( int i = 0; i < nCount; i++ )
 	{
 		char szKey[256];
 		char szValue[1024];
-		if ( steamapicontext->SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+		if ( SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
 		{
 			if ( StringHasPrefix( szKey, "game:" ) )
 			{
@@ -101,7 +101,7 @@ const char *UTIL_RD_GetCurrentLobbyData( const char *pszKey, const char *pszDefa
 		return pszDefaultValue;
 	}
 
-	const char *pszValue = steamapicontext->SteamMatchmaking()->GetLobbyData( lobby, pszKey );
+	const char *pszValue = SteamMatchmaking()->GetLobbyData( lobby, pszKey );
 	if ( *pszValue )
 	{
 		return pszValue;
@@ -118,7 +118,7 @@ void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, const char *pszValue )
 		return;
 	}
 
-	steamapicontext->SteamMatchmaking()->SetLobbyData( lobby, pszKey, pszValue );
+	SteamMatchmaking()->SetLobbyData( lobby, pszKey, pszValue );
 }
 
 void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, int iValue )
@@ -144,7 +144,7 @@ void UTIL_RD_RemoveCurrentLobbyData( const char *pszKey )
 		return;
 	}
 
-	steamapicontext->SteamMatchmaking()->DeleteLobbyData( lobby, pszKey );
+	SteamMatchmaking()->DeleteLobbyData( lobby, pszKey );
 }
 
 static void DebugSpewLobby( CSteamID lobby )
@@ -155,7 +155,7 @@ static void DebugSpewLobby( CSteamID lobby )
 		uint32 serverIP;
 		uint16 serverPort;
 		CSteamID serverID;
-		if ( steamapicontext->SteamMatchmaking()->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
+		if ( SteamMatchmaking()->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
 		{
 			netadr_t serverAddr( serverIP, serverPort );
 			DevMsg( 3, "server: %s (%llu)\n", serverAddr.ToString(), serverID.ConvertToUint64() );
@@ -165,24 +165,24 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "no server!\n" );
 		}
 
-		CSteamID owner = steamapicontext->SteamMatchmaking()->GetLobbyOwner( lobby );
-		DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), steamapicontext->SteamFriends()->GetFriendPersonaName( owner ) );
+		CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
+		DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( owner ) );
 
-		int iMembers = steamapicontext->SteamMatchmaking()->GetNumLobbyMembers( lobby );
+		int iMembers = SteamMatchmaking()->GetNumLobbyMembers( lobby );
 		DevMsg( 3, "members: %d\n", iMembers );
 		for ( int i = 0; i < iMembers; i++ )
 		{
-			CSteamID member = steamapicontext->SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
-			DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), steamapicontext->SteamFriends()->GetFriendPersonaName( member ) );
+			CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
+			DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
 		}
 
-		int iCount = steamapicontext->SteamMatchmaking()->GetLobbyDataCount( lobby );
+		int iCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
 		for ( int i = 0; i < iCount; i++ )
 		{
 			char szKey[k_nMaxLobbyKeyLength];
 			char szValue[1]; // only big enough to hold the null terminator
-			steamapicontext->SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
-			const char *pszValue = steamapicontext->SteamMatchmaking()->GetLobbyData( lobby, szKey );
+			SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
+			const char *pszValue = SteamMatchmaking()->GetLobbyData( lobby, szKey );
 
 			DevMsg( 3, "\"%s\" \"%s\"\n", szKey, pszValue );
 		}
@@ -278,7 +278,7 @@ static const char *LobbyDistanceFilterName( ELobbyDistanceFilter distance )
 
 void CReactiveDropLobbySearch::UpdateSearch()
 {
-	if ( !steamapicontext || !steamapicontext->SteamMatchmaking() )
+	if ( !SteamMatchmaking() )
 	{
 		AssertOnce( !"Missing Steam Matchmaking context" );
 		return;
@@ -294,18 +294,18 @@ void CReactiveDropLobbySearch::UpdateSearch()
 
 	FOR_EACH_VEC( m_StringFilters, i )
 	{
-		steamapicontext->SteamMatchmaking()->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
+		SteamMatchmaking()->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
 		DevMsg( 3, "%s: filter: \"%s\" %s \"%s\"\n", m_pszDebugName, m_StringFilters[i].m_Name.Get(), LobbyComparisonName( m_StringFilters[i].m_Compare ), m_StringFilters[i].m_Value.Get() );
 	}
 	FOR_EACH_VEC( m_NumericalFilters, i )
 	{
-		steamapicontext->SteamMatchmaking()->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
+		SteamMatchmaking()->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
 		DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
 	}
-	steamapicontext->SteamMatchmaking()->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
+	SteamMatchmaking()->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
 	DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
 
-	SteamAPICall_t hAPICall = steamapicontext->SteamMatchmaking()->RequestLobbyList();
+	SteamAPICall_t hAPICall = SteamMatchmaking()->RequestLobbyList();
 	m_LobbyMatchListResult.Set( hAPICall, this, &CReactiveDropLobbySearch::LobbyMatchListResult );
 }
 
@@ -349,7 +349,7 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 	lobbies.EnsureCapacity( pResult->m_nLobbiesMatching );
 	for ( uint32 i = 0; i < pResult->m_nLobbiesMatching; i++ )
 	{
-		lobbies.AddToTail( steamapicontext->SteamMatchmaking()->GetLobbyByIndex( i ) );
+		lobbies.AddToTail( SteamMatchmaking()->GetLobbyByIndex( i ) );
 	}
 
 	DevMsg( 2, "%s: matched %d lobbies:\n", m_pszDebugName, pResult->m_nLobbiesMatching );

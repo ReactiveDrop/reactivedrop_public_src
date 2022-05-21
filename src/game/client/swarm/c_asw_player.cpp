@@ -2938,7 +2938,7 @@ CSteamID C_ASW_Player::GetSteamID()
 	{
 		if ( pi.friendsID )
 		{
-			CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+			CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 			return steamIDForPlayer;
 		}
 	}
