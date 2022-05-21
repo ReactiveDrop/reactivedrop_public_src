@@ -213,7 +213,7 @@ void AddonListItem::ShowWorkshopStatistic()
 			}
 		case 1:
 			{
-				Q_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wszParameter1, sizeof( wszParameter1 ) );
+				Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wszParameter1, sizeof( wszParameter1 ) );
 				pszTranslationKey = "#workshop_stat_author";
 				break;
 			}
@@ -308,11 +308,11 @@ void AddonListItem::Paint( )
 		int nPanelWide, nPanelTall;
 		GetSize( nPanelWide, nPanelTall );
 
-		uint32 nState = steamapicontext->SteamUGC()->GetItemState( m_nPublishedFileId );
+		uint32 nState = SteamUGC()->GetItemState( m_nPublishedFileId );
 		if ( nState & k_EItemStateDownloading )
 		{
 			uint64 nBytesDownloaded, nBytesTotal;
-			if ( steamapicontext->SteamUGC()->GetItemDownloadInfo( m_nPublishedFileId, &nBytesDownloaded, &nBytesTotal ) )
+			if ( SteamUGC()->GetItemDownloadInfo( m_nPublishedFileId, &nBytesDownloaded, &nBytesTotal ) )
 			{
 				surface()->DrawSetColor( Color( 169, 213, 255, 128 ) );
 				surface()->DrawFilledRect( 0, 0, 10 + ( nPanelWide - 10 ) * nBytesDownloaded / nBytesTotal, nPanelTall );
@@ -862,7 +862,7 @@ void Addons::SetDetailsUIForWorkshopItem( PublishedFileId_t id )
 void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopItem_t & item )
 {
 	wchar_t wsAuthorName[k_cwchPersonaNameMax];
-	V_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
+	V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
 
 	wchar_t wsAuthorLabel[130];
 	V_snwprintf( wsAuthorLabel, ARRAYSIZE( wsAuthorLabel ), L"%s%s", g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), wsAuthorName );

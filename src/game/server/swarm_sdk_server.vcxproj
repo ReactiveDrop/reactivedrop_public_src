@@ -47,6 +47,8 @@
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetName>server</TargetName>
+    <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release_swarm\</OutDir>
@@ -57,6 +59,8 @@
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetName>server</TargetName>
+    <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -76,9 +80,9 @@ if ERRORLEVEL 1 exit 1
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -94,6 +98,8 @@ if ERRORLEVEL 1 exit 1
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -117,6 +123,7 @@ if ERRORLEVEL 1 exit 1
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -186,6 +193,7 @@ if ERRORLEVEL 1 exit 1
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -211,6 +219,9 @@ if ERRORLEVEL 1 exit 1
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LargeAddressAware>true</LargeAddressAware>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -585,6 +596,7 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_workshop.cpp" />
     <ClCompile Include="..\shared\takedamageinfo.cpp" />
@@ -1100,7 +1112,6 @@ exit 1
     <ClCompile Include="swarm\asw_trigger_fall.cpp" />
     <ClCompile Include="swarm\asw_tutorial_spawning.cpp" />
     <ClCompile Include="swarm\asw_use_area.cpp" />
-    <ClCompile Include="swarm\asw_voting_missions.cpp" />
     <ClCompile Include="swarm\asw_vphysics_npc.cpp" />
     <ClCompile Include="swarm\asw_wc_edit.cpp" />
     <ClCompile Include="swarm\asw_weapon.cpp" />
@@ -1555,6 +1566,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
+    <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_weapon_generic_object_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
     <ClInclude Include="..\shared\takedamageinfo.h" />
@@ -1972,7 +1984,6 @@ exit 1
     <ClInclude Include="swarm\asw_triggers.h" />
     <ClInclude Include="swarm\asw_tutorial_spawning.h" />
     <ClInclude Include="swarm\asw_use_area.h" />
-    <ClInclude Include="swarm\asw_voting_missions.h" />
     <ClInclude Include="swarm\asw_vphysics_npc.h" />
     <ClInclude Include="swarm\asw_wc_edit.h" />
     <ClInclude Include="swarm\asw_weapon.h" />

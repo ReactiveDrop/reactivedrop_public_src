@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright Â© 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose:		Player for Swarm.  This is an invisible entity that doesn't move, representing the commander.
 //                  The player drives movement of CASW_Marine NPC entities
@@ -39,7 +39,6 @@
 #include "Sprite.h"
 #include "physics_prop_ragdoll.h"
 #include "asw_util_shared.h"
-#include "asw_voting_missions.h"
 #include "asw_campaign_save.h"
 #include "gib.h"
 #include "asw_intro_control.h"
@@ -215,7 +214,6 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
     SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
 	SendPropEHandle( SENDINFO( m_hOrderingMarine ) ),
 	SendPropEHandle( SENDINFO ( m_pCurrentInfoMessage ) ),
-	SendPropEHandle( SENDINFO ( m_hVotingMissions ) ),
 	
 	SendPropInt(SENDINFO(m_iLeaderVoteIndex) ),
 	SendPropInt(SENDINFO(m_iKickVoteIndex) ),
@@ -254,7 +252,6 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_angEyeAngles, FIELD_VECTOR ),
 	DEFINE_FIELD( m_iLeaderVoteIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iKickVoteIndex, FIELD_INTEGER ),	
-	DEFINE_FIELD( m_hVotingMissions, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iKLVotesStarted, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fLastKLVoteTime, FIELD_TIME ),
 	DEFINE_FIELD( m_hOrderingMarine, FIELD_EHANDLE ),
@@ -607,8 +604,8 @@ void CASW_Player::Spawn()
 	SetModel( ASW_PLAYER_MODEL );
 
 	BaseClass::Spawn();
-	
-	SetMoveType( MOVETYPE_WALK );	
+
+	SetMoveType( MOVETYPE_WALK );
 	m_takedamage = DAMAGE_NO;
 	m_iKickVoteIndex = -1;
 	m_iLeaderVoteIndex = -1;
@@ -617,15 +614,6 @@ void CASW_Player::Spawn()
 	if (ASWGameRules())
 	{
 		ASWGameRules()->SetMaxMarines();
-
-		if (ASWGameRules()->IsOutroMap())
-		{
-			CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-			if (pIntro)
-			{
-				pIntro->PlayerSpawned(this);
-			}
-		}
 	}
 }
 
@@ -1708,63 +1696,10 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		ASWGameRules()->SetKickVote(this, iTargetPlayer);
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_vmaplist") )
-	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning("Player sent a bad cl_vmaplist command\n");
-			return false;
-		}
-		int nMissionOffset = atoi(args[1]);
-		if (nMissionOffset < 0)
-			nMissionOffset = 0;
-		VoteMissionList(nMissionOffset, ASW_MISSIONS_PER_PAGE);
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vcampmaplist") )
-	{
-		if ( args.ArgC() < 3 )
-		{
-			Warning("Player sent a bad cl_vcampmaplist command\n");
-			return false;
-		}
-		int nCampaignIndex = atoi(args[1]);
-		if (nCampaignIndex < 0)
-			nCampaignIndex = 0;
-		int nMissionOffset = atoi(args[2]);
-		if (nMissionOffset < 0)
-			nMissionOffset = 0;
-		VoteCampaignMissionList(nCampaignIndex, nMissionOffset, ASW_MISSIONS_PER_PAGE);
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vcamplist") )
-	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning("Player sent a bad cl_vcamplist command\n");
-			return false;
-		}
-		int nCampaignOffset = atoi(args[1]);
-		if (nCampaignOffset < 0)
-			nCampaignOffset = 0;
-		VoteCampaignList(nCampaignOffset, ASW_CAMPAIGNS_PER_PAGE);
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_vsaveslist") )
-	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning("Player sent a bad cl_vsaveslist command\n");
-			return false;
-		}
-		int nSaveOffset = atoi(args[1]);
-		if (nSaveOffset < 0)
-			nSaveOffset = 0;
-		VoteSavedCampaignList(nSaveOffset, ASW_SAVES_PER_PAGE);
-		return true;
-	}
 	else if ( FStrEq( pcmd, "asw_vote_saved_campaign") )
 	{
+		return 0;
+#if 0
 		if ( args.ArgC() < 2 )
 		{
 			Warning("Player sent a bad asw_vote_saved_campaign command\n");
@@ -1774,6 +1709,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if (ASWGameRules())
 			ASWGameRules()->StartVote(this, ASW_VOTE_SAVED_CAMPAIGN, args[1]);
 		return true;
+#endif
 	}
 	else if ( FStrEq( pcmd, "asw_vote_campaign") )
 	{
@@ -1822,29 +1758,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		m_iClientKills = atoi(args[3]);
 		return true;
 	}
-	else if ( FStrEq( pcmd, "cl_skip_intro") )
-	{
-		if (ASWGameRules())
-		{
-			if (ASWGameRules()->IsIntroMap())
-			{
-				CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-				if (pIntro)
-				{
-					pIntro->LaunchCampaignMap();
-				}
-			}
-			else if (ASWGameRules()->IsOutroMap())
-			{
-				CASW_Intro_Control* pIntro = dynamic_cast<CASW_Intro_Control*>(gEntList.FindEntityByClassname( NULL, "asw_intro_control" ));
-				if (pIntro)
-				{
-					pIntro->CheckReconnect();
-				}
-			}
-		}
-		return true;
-	}	
 	else if ( FStrEq( pcmd, "cl_fullyjoined") )
 	{
 		if (!m_bSentJoinedMessage)
@@ -3127,58 +3040,6 @@ void CASW_Player::RagdollBlendTest()
 	m_pBlendRagdoll->SetBlendWeight(abs(fRealBlend) * asw_blend_test_scale.GetFloat());
 }
 
-void CASW_Player::VoteMissionList(int nMissionOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 1, nMissionOffset, iNumSlots);		// 1 = missions	
-}
-
-void CASW_Player::VoteCampaignMissionList(int nCampaignIndex, int nMissionOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType( this, 1, nMissionOffset, iNumSlots, nCampaignIndex );		// 1 = missions	
-}
-
-void CASW_Player::VoteCampaignList(int nCampaignOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 2, nCampaignOffset, iNumSlots);		// 2 = campaigns	
-}
-
-void CASW_Player::VoteSavedCampaignList(int nSaveOffset, int iNumSlots)
-{
-	if (!m_hVotingMissions.Get())
-	{
-		CASW_Voting_Missions *pVoting = (CASW_Voting_Missions*) CreateEntityByName("asw_voting_missions");
-		if (!pVoting)
-			return;		
-		pVoting->Spawn();		
-		m_hVotingMissions = pVoting;
-	}
-	m_hVotingMissions->SetListType(this, 3, nSaveOffset, iNumSlots);		// 3 = saved campaigns		
-}
-
 const char* CASW_Player::GetASWNetworkID()
 {
 	const char *pszNetworkID = GetNetworkIDString();	
@@ -3245,4 +3106,24 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 		pCurrentEntity = gEntList.NextEnt( pCurrentEntity );
 	}
 	return pNearestEntity;
+}
+
+const Vector& CASW_Player::GetCrosshairTracePos()
+{
+	if ( GetASWControls() != 1 )
+	{
+		trace_t tr;
+		Vector forward;
+		Vector shootposition = GetMarine()->Weapon_ShootPosition();
+		EyeVectors( &forward );
+		UTIL_TraceLine( shootposition,
+			shootposition + forward * MAX_COORD_RANGE,
+			MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+		if ( tr.DidHit() )
+		{
+			m_vecCrosshairTracePos = tr.endpos;
+		}
+	}
+
+	return m_vecCrosshairTracePos;
 }

@@ -276,7 +276,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 		{
 			event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
 			event->SetInt( "entindex", entindex() );
-			gameeventmanager->FireEventClientSide( event );
+			gameeventmanager->FireEvent( event );
 		}
 		return 0;
 	}
@@ -331,7 +331,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
 				event->SetInt( "entindex", entindex() );
-				gameeventmanager->FireEventClientSide( event );
+				gameeventmanager->FireEvent( event );
 			}
 		}
 	}

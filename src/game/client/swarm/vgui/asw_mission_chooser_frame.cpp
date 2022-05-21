@@ -1,319 +1,374 @@
 #include "cbase.h"
-#include "vgui/ivgui.h"
-#include <vgui/vgui.h>
-#include <vgui/ischeme.h>
-#include <vgui_controls/Controls.h>
-#include <vgui_controls/PropertySheet.h>
-#include "convar.h"
-#include "asw_mission_chooser_list.h"
-#include "asw_mission_chooser_frame.h"
-#include "asw_difficulty_chooser.h"
-#include "ServerOptionsPanel.h"
-#include <vgui/isurface.h>
-#include <vgui/IInput.h>
-#include "vgui_controls/AnimationController.h"
-#include "ienginevgui.h"
-#include "missionchooser/iasw_mission_chooser.h"
 #include "clientmode_asw.h"
-#include "c_asw_voting_mission_chooser_source.h"
+#include "ienginevgui.h"
+#include "asw_mission_chooser_frame.h"
+#include "asw_mission_chooser_list.h"
+#include "asw_mission_chooser_entry.h"
+#include "asw_mission_chooser_details.h"
+#include "nb_header_footer.h"
+#include "gameui/swarm/basemodui.h"
+#include <vgui_controls/PropertySheet.h>
+#include "rd_missions_shared.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, const char *pElementName,
-															int iHostType, int iChooserType,
-															IASW_Mission_Chooser_Source *pMissionSource) :
-	Frame(pParent, pElementName)
+extern ConVar rd_last_game_access;
+
+const char *const g_ASW_ChooserTypeName[] =
 {
-	SetProportional( false );
-	m_pMissionSource = pMissionSource;
+	"campaign",
+	"saved_campaign",
+	"single_mission",
+	"bonus_mission",
+	"deathmatch",
+	"endless",
+};
 
-	// create a propertysheet
-	m_pSheet = new vgui::PropertySheet(this, "MissionChooserSheet");	
-	m_pSheet->SetProportional( false );
-	m_pSheet->SetVisible(true);
-		
-	// create our 3 lists and put them in as pages in the property sheet
-	m_pChooserList = new CASW_Mission_Chooser_List(m_pSheet, "CampaignList", iChooserType, iHostType, pMissionSource);
-	//m_pCampaignList = new CASW_Mission_Chooser_List(m_pSheet, "CampaignList", ASW_CHOOSER_CAMPAIGN, iHostType);
-	//m_pSavedCampaignList = new CASW_Mission_Chooser_List(m_pSheet, "SavedCampaignList", ASW_CHOOSER_SAVED_CAMPAIGN, iHostType);
-	//m_pSingleMissionList = new CASW_Mission_Chooser_List(m_pSheet, "MissionList", ASW_CHOOSER_SINGLE_MISSION, iHostType);
+static const char *const s_ChooserTabName[] =
+{
+	"#asw_start_campaign",
+	"#asw_load_campaign",
+	"#asw_single_mission",
+	"#rd_campaign_name_rd_bonus_missions",
+	"#rd_campaign_name_deathmatch_campaign",
+	"#rd_endless_missions",
+};
 
-	if (iChooserType == ASW_CHOOSER_CAMPAIGN)
-		m_pSheet->AddPage(m_pChooserList, "#asw_start_campaign");
-	else if (iChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
-		m_pSheet->AddPage(m_pChooserList, "#asw_load_campaign");
-	else if (iChooserType == ASW_CHOOSER_SINGLE_MISSION)
-		m_pSheet->AddPage(m_pChooserList, "#asw_single_mission");
+const char *const g_ASW_HostTypeName[] =
+{
+	"singleplayer",
+	"createserver",
+	"callvote",
+};
 
-	if (iHostType == ASW_HOST_TYPE_CREATESERVER)
+CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, const char *pElementName, ASW_HOST_TYPE iHostType )
+	: BaseClass( pParent, pElementName )
+{
+	SetConsoleStylePanel( true );
+	SetProportional( true );
+	SetSizeable( false );
+	SetCloseButtonVisible( false );
+
+	HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	SetScheme( scheme );
+
+	m_HostType = iHostType;
+	m_bViewingCampaign = false;
+
+	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
+	m_pHeaderFooter->SetGradientBarPos( 40, 410 );
+
+	switch ( iHostType )
 	{
-		m_pOptionsPanel = new ServerOptionsPanel(this, "OptionsPanel");	
-		m_pSheet->AddPage(m_pOptionsPanel, "#asw_server_options");
-		m_pChooserList->m_pServerOptions = m_pOptionsPanel;
-	}
-	else	// no need for server options if they're just playing singleplayer
-	{
-		m_pOptionsPanel = NULL;
+	case ASW_HOST_TYPE::SINGLEPLAYER:
+		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
+		break;
+	case ASW_HOST_TYPE::CREATESERVER:
+		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
+		break;
+	case ASW_HOST_TYPE::CALLVOTE:
+		m_pHeaderFooter->SetTitle( "#asw_vote_server" );
+		break;
+	default:
+		Assert( !"unexpected missionchooser host type" );
+		break;
 	}
 
-	m_bMadeModal = false;
-	m_bAvoidTranslucency = false;
-	Msg("CASW_Mission_Chooser_Frame\n");
+	m_pSheet = new vgui::PropertySheet( this, "TabSheet" );
+	m_pSheet->SetKBNavigationEnabled( false );
+
+	extern ConVar sv_gametypes;
+	CSplitString AllowedGameTypes( sv_gametypes.GetString(), "," );
+
+	// create our lists and put them in as pages in the property sheet
+	FOR_EACH_VEC( AllowedGameTypes, i )
+	{
+		for ( int j = 0; j < NELEMS( g_ASW_ChooserTypeName ); j++ )
+		{
+			if ( V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[j] ) )
+			{
+				continue;
+			}
+
+			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "MissionChooserList", ASW_CHOOSER_TYPE( j ), this );
+			m_pSheet->AddPage( pChooserList, s_ChooserTabName[j] );
+		}
+	}
+
+	m_pDetails = new CASW_Mission_Chooser_Details( this, "MissionChooserDetails" );
+
+	m_pCampaignMissionList = new vgui::PropertySheet( this, "CampaignMissionList" );
+	m_pCampaignMissionList->SetKBNavigationEnabled( false );
 }
 
 CASW_Mission_Chooser_Frame::~CASW_Mission_Chooser_Frame()
 {
-	Msg("~CASW_Mission_Chooser_Frame\n");
 }
 
-void CASW_Mission_Chooser_Frame::PerformLayout()
+void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 {
-	SetPos(100,10);
-	int sw, sh;
-	vgui::surface()->GetScreenSize( sw, sh );
-	SetSize(sw - 200, sh - 20);
-
-	BaseClass::PerformLayout();	
-
-	int x, y, wide, tall;
-	GetClientArea(x, y, wide, tall);
-	m_pSheet->SetBounds(x, y, wide, tall);
-
-	m_pSheet->SetVisible(true);
-	m_pSheet->InvalidateLayout(true);
-	//m_pSheet->SetTabWidth(GetWide()/3.0f);
-
-	float top_edge = 30;
-	m_pChooserList->SetPos(0, top_edge);
-
-	m_pChooserList->SetSize(wide, GetTall() - (60));
-	m_pChooserList->InvalidateLayout(true);
-
-	if (m_pOptionsPanel)
-		m_pOptionsPanel->SetBounds(x, top_edge, wide - x * 2, GetTall() - top_edge);
-}
-
-void CASW_Mission_Chooser_Frame::OnThink()
-{
-	BaseClass::OnThink();
-	if (!m_bMadeModal)
+	if ( !V_stricmp( command, "BackButton" ) )
 	{
-		//vgui::input()->SetAppModalSurface(GetVPanel());
-		m_bMadeModal = true;
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
+		if ( m_bViewingCampaign )
+		{
+			m_pCampaignMissionList->SetVisible( false );
+			m_pSheet->SetVisible( true );
+			m_pSheet->InvalidateLayout();
+			m_bViewingCampaign = false;
+		}
+		else
+		{
+			MarkForDeletion();
+		}
+	}
+	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
+	{
+		CASW_Mission_Chooser_Entry *pEntry = m_pDetails->m_pLastEntry;
+		if ( pEntry && pEntry->m_pFocusHolder )
+		{
+			pEntry->m_pFocusHolder->OnMousePressed( MOUSE_LEFT );
+			pEntry->m_pFocusHolder->OnMouseReleased( MOUSE_LEFT );
+		}
+	}
+	else if ( !V_stricmp( command, "PrevPage" ) )
+	{
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() > 0 )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() - 1 ) );
+		}
+	}
+	else if ( !V_stricmp( command, "NextPage" ) )
+	{
+		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() + 1 ) );
+		}
+	}
+	else if ( !V_stricmp( command, "CyclePage" ) )
+	{
+		if ( !m_bViewingCampaign )
+		{
+			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
+		}
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
 	}
 }
 
-void CASW_Mission_Chooser_Frame::OnClose()
+void CASW_Mission_Chooser_Frame::OnKeyCodeTyped( vgui::KeyCode keycode )
 {
-	BaseClass::OnClose();
-	SetVisible(false);	// have to do this, as the fading transparency causes sorting issues in the briefing
+	switch ( keycode )
+	{
+	case KEY_ESCAPE:
+		OnCommand( "BackButton" );
+		break;
+	case KEY_ENTER:
+		OnCommand( "ApplyCurrentEntry" );
+		break;
+	case KEY_PAGEUP:
+		OnCommand( "PrevPage" );
+		break;
+	case KEY_PAGEDOWN:
+		OnCommand( "NextPage" );
+		break;
+	case KEY_TAB:
+		OnCommand( "CyclePage" );
+		break;
+	default:
+		BaseClass::OnKeyCodeTyped( keycode );
+		break;
+	}
 }
 
-void CASW_Mission_Chooser_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
 
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//if (m_bAvoidTranslucency)
-		//m_flTransitionEffectTime = 0;
-	//Msg("CASW_Mission_Chooser_Frame::ApplySchemeSettings m_bAvoidTranslucency=%d m_flTransitionEffectTime=%f\n", m_bAvoidTranslucency, m_flTransitionEffectTime);
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		OnCommand( "ApplyCurrentEntry" );
+		break;
+	case KEY_XBUTTON_B:
+		OnCommand( "BackButton" );
+		break;
+	case KEY_XBUTTON_LEFT_SHOULDER:
+		OnCommand( "PrevPage" );
+		break;
+	case KEY_XBUTTON_RIGHT_SHOULDER:
+		OnCommand( "NextPage" );
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
 }
 
-void CASW_Mission_Chooser_Frame::RemoveTranslucency()
+void CASW_Mission_Chooser_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	Msg("CASW_Mission_Chooser_Frame::RemoveTranslucency\n");
-	m_bAvoidTranslucency = true;
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//m_flTransitionEffectTime = 0;
-	SetBgColor(Color(65, 74, 96, 255));
-	SetAlpha(255.0f);
-	// ASWTODO - solve translucency problem when showing this panel over a frame
-	//vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 255.0f, 0.0f, m_flTransitionEffectTime, vgui::AnimationController::INTERPOLATOR_LINEAR);
+	LoadControlSettings( "Resource/UI/MissionChooserFrame.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+}
+
+void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry )
+{
+	if ( pEntry->m_szMission[0] )
+	{
+		PublishedFileId_t iWorkshopID = ReactiveDropMissions::MissionWorkshopID( ReactiveDropMissions::GetMissionIndex( pEntry->m_szMission ) );
+		if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+		{
+			g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+			return;
+		}
+
+		if ( m_HostType == ASW_HOST_TYPE::CALLVOTE )
+		{
+			if ( pEntry->m_szCampaign[0] )
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_campaign %s %d", pEntry->m_szMission, ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) ) );
+			}
+			else
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_mission %s", pEntry->m_szMission ) );
+			}
+
+			MarkForDeletion();
+			return;
+		}
+
+		KeyValues::AutoDelete pSettings( "Settings" );
+
+		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			pSettings->SetString( "system/network", "offline" );
+		}
+		else
+		{
+			Assert( m_HostType == ASW_HOST_TYPE::CREATESERVER );
+			pSettings->SetString( "system/network", "LIVE" );
+			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
+			pSettings->SetString( "options/action", "create" );
+		}
+
+		if ( pEntry->m_szCampaign[0] )
+		{
+			pSettings->SetString( "game/mode", "campaign" );
+			pSettings->SetString( "game/campaign", pEntry->m_szCampaign );
+		}
+		else
+		{
+			pSettings->SetString( "game/mode", "single_mission" );
+		}
+
+		pSettings->SetString( "game/mission", pEntry->m_szMission );
+		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
+
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+
+		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			g_pMatchFramework->CreateSession( pSettings );
+		}
+		else
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
+			BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GAMESETTINGS, NULL, true, pSettings );
+		}
+
+		MarkForDeletion();
+		return;
+	}
+
+	Assert( pEntry->m_szCampaign[0] );
+	if ( !pEntry->m_szCampaign[0] )
+		return;
+
+	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) );
+	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+	{
+		g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+		return;
+	}
+
+	m_bViewingCampaign = true;
+	m_pSheet->SetVisible( false );
+
+	while ( m_pCampaignMissionList->GetNumPages() )
+	{
+		m_pCampaignMissionList->DeletePage( m_pCampaignMissionList->GetPage( 0 ) );
+	}
+
+	m_pCampaignMissionList->SetVisible( true );
+	m_pCampaignMissionList->AddPage( new CASW_Mission_Chooser_List( m_pCampaignMissionList, "MissionChooserList", pEntry->m_pList->m_ChooserType, this, pEntry->m_szCampaign ), "#nb_select_starting_mission" );
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
-void LaunchMissionChooser(int iHostType, int iChooserType)
+static void LaunchMissionChooser( ASW_HOST_TYPE iHostType )
 {
-	if (g_hChooserFrame!=NULL)
+	CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
+	if ( pFrame )
 	{
-		CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
-		pFrame->SetVisible(false);
+		pFrame->SetVisible( false );
 		pFrame->MarkForDeletion();
 		g_hChooserFrame = NULL;
 	}
-	// close any difficulty panels we have up
-	if (g_hDifficultyFrame != NULL)
-	{
-		CASW_Difficulty_Chooser *pFrame = g_hDifficultyFrame;
-		pFrame->SetVisible(false);
-		pFrame->MarkForDeletion();
-		g_hDifficultyFrame = NULL;
-	}
 
-	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-	if (!pSource)
+	if ( iHostType == ASW_HOST_TYPE::NUM_TYPES )
 		return;
 
-	if (iChooserType == ASW_CHOOSER_SAVED_CAMPAIGN)
+	pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType );
+
+	if ( engine->IsConnected() )
 	{
-		// refresh these each time we bring up the panel, since new saves get created during play
-		pSource->RefreshSavedCampaigns();
+		pFrame->SetParent( GetClientMode()->GetViewport() );
 	}
-
-	Msg("LaunchMissionChooser\n");
-	// ASWTODO - check this works even though parent is null
-	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType, iChooserType, pSource );
-	vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-	pFrame->SetParent( rootpanel );
-
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
-	pFrame->SetScheme(scheme);
-
-	if (iHostType == ASW_HOST_TYPE_SINGLEPLAYER)
-		pFrame->SetTitle("#asw_menu_singleplayer", true );
-	else if (iHostType == ASW_HOST_TYPE_CREATESERVER)
-		pFrame->SetTitle("#asw_menu_create_server", true );
 	else
 	{
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "Host type: %d chooser: %d", iHostType, iChooserType);
-		pFrame->SetTitle(buffer, true );
-	}
-	//pFrame->LoadControlSettings("Resource/UI/ScoreBoard.res");
-
-	pFrame->SetTitleBarVisible(true);
-	pFrame->SetMoveable(false);
-	pFrame->SetSizeable(false);
-	pFrame->SetMenuButtonVisible(false);
-	pFrame->SetMaximizeButtonVisible(false);
-	pFrame->SetMinimizeToSysTrayButtonVisible(false);
-	pFrame->SetMinimizeButtonVisible(false);
-	pFrame->SetCloseButtonVisible(true);	
-
-	pFrame->RequestFocus();
-	pFrame->SetVisible(true);
-	pFrame->SetEnabled(true);
-
-	pFrame->InvalidateLayout(true, true);
-
-	///g_hChooserFrame = pFrame;
-}
-
-void LaunchMissionVotePanel(int iChooserType, bool bAvoidTranslucency)
-{
-	// close any chooser frame already open	
-	if (g_hChooserFrame!=NULL)
-	{
-		CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
-		pFrame->SetVisible(false);
-		pFrame->MarkForDeletion();
-		g_hChooserFrame = NULL;
+		vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
+		pFrame->SetParent( rootpanel );
 	}
 
-	if (iChooserType == -1)
-		return;
-
-	IASW_Mission_Chooser_Source *pSource = GetVotingMissionSource(); //missionchooser ? missionchooser->LocalMissionSource() : NULL;
-	if (!pSource)
-		return;
-
-	pSource->ResetCurrentPage();
-
-	// since we're voting, this must be multiplayer, so make sure the server hosts the game
-	int iHostType = ASW_HOST_TYPE_CALLVOTE;
-	//CBaseViewport
-	Msg("LaunchMissionVotePanel\n");
-	// ASWTODO - check this works even though parent is null
-	CASW_Mission_Chooser_Frame *pFrame = new CASW_Mission_Chooser_Frame( GetClientMode()->GetViewport(), "MissionChooserFrame", iHostType, iChooserType, pSource );
-
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/SwarmFrameScheme.res", "SwarmFrameScheme");
-	pFrame->SetScheme(scheme);
-
-	pFrame->SetTitle("#asw_vote_server", true);
-
-	//pFrame->LoadControlSettings("Resource/UI/ScoreBoard.res");	
-	pFrame->SetTitleBarVisible(true);
-	pFrame->SetMoveable(false);
-	pFrame->SetSizeable(false);
-	pFrame->SetMenuButtonVisible(false);
-	pFrame->SetMaximizeButtonVisible(false);
-	pFrame->SetMinimizeToSysTrayButtonVisible(false);
-	pFrame->SetMinimizeButtonVisible(false);
-	pFrame->SetCloseButtonVisible(true);	
-
-	pFrame->RequestFocus();
-	pFrame->SetVisible(true);
-	pFrame->SetEnabled(true);
-
-	// make sure it shows up on the client panel
-
-	if (enginevgui)
-	{
-		//vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_CLIENTDLL );
-		//pFrame->SetParent( rootpanel );
-
-		/*
-		// if another frame is up, make sure we have no transparency, since it's bugged and shows the level behind		
-		vgui::Panel* pPanel = pFrame->GetParent();
-		if (pPanel)
-		{
-		int iChildren = pPanel->GetChildCount();
-		for (int i=0;i<iChildren;i++)
-		{
-		vgui::Panel *pChild = dynamic_cast<vgui::Frame*>(pPanel->GetChild(i));
-		if (pChild && pChild != pFrame)
-		{
-		pFrame->RemoveTranslucency();
-		break;
-		}
-		}
-		}*/
-	}	
-
-	if (bAvoidTranslucency)
-		pFrame->RemoveTranslucency();
+	pFrame->InvalidateLayout();
+	pFrame->SetVisible( true );
 
 	g_hChooserFrame = pFrame;
 }
 
-void CC_ASW_Main_Menu_Option( const CCommand &args )
+CON_COMMAND( asw_mission_chooser, "asw_mission_chooser [host type] - open mission chooser" )
 {
-	if ( args.ArgC() < 3 )
+	if ( args.ArgC() != 2 )
 	{
-		Msg("Usage: asw_main_menu_option [host type] [chooser type]");
+		ConMsg( "Usage: asw_mission_chooser [host type]\n" );
 		return;
 	}
-	int iHostType = atoi(args[1]);
-	if (iHostType < 0 || iHostType > 2 )
-		return;
 
-	int iChooserType = atoi(args[2]);
-	if (iChooserType < 0 || iChooserType > 2 )
-		return;
-
-	LaunchMissionChooser(iHostType, iChooserType);
-}
-static ConCommand asw_main_menu_option("asw_main_menu_option", CC_ASW_Main_Menu_Option, 0 );
-
-
-void CC_ASW_Launch_Vote_Chooser( const CCommand &args )
-{
-	if ( args.ArgC() < 2 )
+	if ( !V_stricmp( args.Arg( 1 ), "exit" ) )
 	{
-		Msg("Usage: asw_vote_chooser [chooser type]");
+		LaunchMissionChooser( ASW_HOST_TYPE::NUM_TYPES );
 		return;
 	}
-	int iChooserType = atoi(args[1]);
-	if ( iChooserType < -1 || iChooserType > 2 )
-		return;
 
-	if ( iChooserType == 1 )
-		return;
+	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
+	{
+		if ( !V_stricmp( args.Arg( 1 ), g_ASW_HostTypeName[i] ) )
+		{
+			LaunchMissionChooser( ASW_HOST_TYPE( i ) );
+			return;
+		}
+	}
 
-	// if third param is specified, we assume it's the 'notrans' one
-	bool bAvoidTranslucency =(args.ArgC() >= 3);
-
-	LaunchMissionVotePanel(iChooserType, bAvoidTranslucency);
+	ConMsg( "Invalid host type. Host types are:\n" );
+	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
+	{
+		ConMsg( "  %s\n", g_ASW_HostTypeName[i] );
+	}
 }
-static ConCommand asw_vote_chooser("asw_vote_chooser", CC_ASW_Launch_Vote_Chooser, 0 );

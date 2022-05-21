@@ -219,39 +219,6 @@ public:
 };
 EXPOSE_SINGLE_INTERFACE( CServerGameTags, IServerGameTags, INTERFACEVERSION_SERVERGAMETAGS );
 
-#ifndef NO_STEAM
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-class CSteam3Server : public CSteamGameServerAPIContext
-{
-public:
-	CSteam3Server();
-
-	void Shutdown( void )
-	{
-		Clear();
-		m_bInitialized = false;
-	}
-
-	bool CheckInitialized( void )
-	{
-		if ( !m_bInitialized )
-		{
-			Init();
-			m_bInitialized = true;
-			return true;
-		}
-
-		return false;
-	}
-
-private:
-	bool	m_bInitialized;
-};
-CSteam3Server &Steam3Server();
-#endif
-
 void WorkshopSetupThink();
 
 #endif // GAMEINTERFACE_H

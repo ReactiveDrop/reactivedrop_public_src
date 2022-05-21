@@ -7,6 +7,7 @@
 #include <vgui_controls/Label.h>
 #include "vgui/ISurface.h"
 #include "filesystem.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -33,9 +34,11 @@ CreditsPanel::CreditsPanel(vgui::Panel *parent, const char *name) : vgui::Panel(
 	char szCreditsPath[512];
 	CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
 	if ( pCampaign )
-		Q_snprintf(szCreditsPath,sizeof(szCreditsPath), "%s.txt", STRING(pCampaign->m_CustomCreditsFile));
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pCampaign->m_CustomCreditsFile ) );
+	else if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pMission->CustomCreditsFile ) );
 	else
-		Q_snprintf(szCreditsPath,sizeof(szCreditsPath), "scripts/asw_credits.txt");
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "scripts/asw_credits.txt" );
 		
 
 	pCreditsText = new KeyValues( "Credits" );

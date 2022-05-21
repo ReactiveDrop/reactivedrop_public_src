@@ -571,11 +571,6 @@ void CASWHudMinimap::ApplySchemeSettings(IScheme *pScheme)
 void CASWHudMinimapFramePanel::Paint()
 {
 	VPROF_BUDGET( "CASWHudMinimapFramePanel::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
-	if (ASWGameRules())
-	{
-		if (ASWGameRules()->IsIntroMap() || ASWGameRules()->IsOutroMap())
-			return;
-	}
 	CASWHudMinimap *m_pMap = dynamic_cast<CASWHudMinimap*>(GetParent());
 	if ( !m_pMap || !asw_draw_hud.GetBool() || !rd_draw_minimap.GetBool() )
 		return;
@@ -1906,11 +1901,6 @@ CASWHudMinimap_Border::CASWHudMinimap_Border(vgui::Panel *pParent, const char *p
 
 void CASWHudMinimap_Border::PaintBackground()
 {
-	if (ASWGameRules())
-	{
-		if (ASWGameRules()->IsIntroMap() || ASWGameRules()->IsOutroMap())
-			return;
-	}
 	if (m_pMinimap && !m_pMinimap->ShouldDraw())
 		return;
 

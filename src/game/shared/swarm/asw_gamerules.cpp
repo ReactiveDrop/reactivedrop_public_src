@@ -112,6 +112,7 @@
 #include "missionchooser/iasw_random_missions.h"
 #include "missionchooser/iasw_map_builder.h"
 #include "rd_challenges_shared.h"
+#include "rd_missions_shared.h"
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 
@@ -305,7 +306,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		return;
 	}
 
-	steamapicontext->SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
+	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
 
 	PublishedFileId_t missionAddonID = ASWGameRules()->m_iMissionWorkshopID.Get();
@@ -432,7 +433,8 @@ ConVar asw_objective_update_time_scale("asw_objective_update_time_scale", "0.2",
 ConVar asw_stim_time_scale("asw_stim_time_scale", "0.35", FCVAR_REPLICATED | FCVAR_CHEAT, "Time scale during stimpack slomo");
 ConVar asw_time_scale_delay("asw_time_scale_delay", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT, "Delay before timescale changes to give a chance for the client to comply and predict.");
 ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "1", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
-ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode, acceptable values are campaign and single_mission.", false, 0.0f, false, 0.0f );
+ConVar mp_gamemode( "mp_gamemode", "campaign", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Current game mode for matchmaking.dll." );
+ConVar sv_gametypes( "sv_gametypes", "campaign,bonus_mission,endless,deathmatch", FCVAR_REPLICATED, "Game modes that can be selected on this server." );
 // this cvar is tricky if we want to have lobbies with different number of slots(e.g. 4 or 8)
 // when client creates a lobby it sets the number of slots for lobby
 // when client searches for lobbies and this cvar is set to 3 then all 4+ player lobbies will be unjoinable, the join button will be greyed out
@@ -492,6 +494,11 @@ ConVar rd_alien_num_max_scale( "rd_alien_num_max_scale", "2", FCVAR_REPLICATED |
 ConVar rd_ray_trace_distance( "rd_ray_trace_distance", "3000", FCVAR_REPLICATED | FCVAR_CHEAT, "Increase this parameter for huge maps for grenade launcher to properly aim to far away distances" );
 ConVar rd_leaderboard_enabled( "rd_leaderboard_enabled", "1", FCVAR_REPLICATED, "If 0 player leaderboard scores will not be updated on mission complete. Use this for modded servers." );
 ConVar rd_aim_marines( "rd_aim_marines", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 marines can aim at marines that are on different Z level" );
+
+ConVar rd_points_delay( "rd_points_delay", "1.5", FCVAR_REPLICATED, "Number of seconds after the score changes before it starts decaying.", true, 0, false, 0 );
+ConVar rd_points_delay_max( "rd_points_delay_max", "5", FCVAR_REPLICATED, "Maximum number of seconds that the score can remain still without decaying.", true, 0, false, 0 );
+ConVar rd_points_decay( "rd_points_decay", "0.97", FCVAR_REPLICATED, "Amount that score change decays by per tick.", true, 0, true, 0.999 );
+ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "Number of seconds between score decay ticks.", true, 0, false, 0 );
 
 // ASW Weapons
 // Rifle
@@ -730,6 +737,9 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_iMissionWorkshopID)),
 		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
+		RecvPropInt(RECVINFO(m_iLeaderboardScore)),
+		RecvPropDataTable(RECVINFO_DT(m_TimelineLeaderboardScore), 0, &REFERENCE_RECV_TABLE(DT_Timeline)),
+		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -764,6 +774,9 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_iMissionWorkshopID), 64, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
+		SendPropInt(SENDINFO(m_iLeaderboardScore)),
+		SendPropDataTable(SENDINFO_DT(m_TimelineLeaderboardScore), &REFERENCE_SEND_TABLE(DT_Timeline)),
+		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 	#endif
 END_NETWORK_TABLE()
 
@@ -774,10 +787,14 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_bAllowCameraRotation, FIELD_BOOLEAN, "allowcamerarotation" ),
 #ifdef GAME_DLL
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "ModifyDifficulty", InputModifyDifficulty ),
 	DEFINE_OUTPUT( m_OnDifficulty, "OnDifficulty" ),
 	DEFINE_OUTPUT( m_OnOnslaught, "OnOnslaught" ),
 	DEFINE_OUTPUT( m_OnFriendlyFire, "OnFriendlyFire" ),
 	DEFINE_OUTPUT( m_OnChallenge, "OnChallenge" ),
+	DEFINE_OUTPUT( m_TotalPoints, "TotalPoints" ),
+	DEFINE_OUTPUT( m_MissionDifficulty, "MissionDifficulty" ),
 #endif
 END_DATADESC()
 
@@ -841,9 +858,10 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 {
 	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
 	if ( !pGameRules || !pGameRules->IsTutorialMap() )
 	{
-		DevWarning( "Cannot SetTutorialStage on non-tutorial map.\n" );
+		Warning( "Cannot SetTutorialStage on non-tutorial map.\n" );
 		return;
 	}
 
@@ -855,12 +873,77 @@ void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 	pGameRules->StartTutorial( pMR->GetCommander() );
 }
 
+void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
+{
+	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
+	if ( !pGameRules || pGameRules->m_iLeaderboardScore < 0 )
+	{
+		Warning( "Cannot AddPoints on this map: overview not tagged with 'points' or mission not yet started.\n" );
+		return;
+	}
+
+	if ( inputdata.value.Int() < 0 )
+	{
+		Warning( "Cannot AddPoints with negative value. (%d)\n", inputdata.value.Int() );
+		return;
+	}
+
+	int64_t iTotal = int64_t( pGameRules->m_iLeaderboardScore ) + int64_t( inputdata.value.Int() );
+	if ( iTotal < 0 || iTotal > INT32_MAX )
+	{
+		Warning( "AddPoints would overflow by %d - clamping.\n", int( iTotal - INT32_MAX ) );
+		iTotal = INT32_MAX;
+	}
+
+	pGameRules->m_TimelineLeaderboardScore.RecordValue( iTotal - pGameRules->m_iLeaderboardScore );
+	pGameRules->m_iLeaderboardScore = iTotal;
+	m_TotalPoints.Set( pGameRules->m_iLeaderboardScore, inputdata.pActivator, inputdata.pCaller );
+
+	CBroadcastRecipientFilter filter;
+	UserMessageBegin( filter, "ShowObjectives" );
+	WRITE_FLOAT( 30.0f );
+	MessageEnd();
+}
+
+void CAlienSwarmProxy::InputModifyDifficulty( inputdata_t & inputdata )
+{
+	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
+	if ( !pGameRules || pGameRules->GetGameState() != ASW_GS_INGAME )
+	{
+		Warning( "Cannot ModifyDifficulty when mission is not active.\n" );
+		return;
+	}
+
+	int iOldDifficulty = pGameRules->m_iMissionDifficulty;
+
+	// limit difficulty to between 2 (classic minimum) and 10 million (going a bit above this makes shieldbug health overflow).
+	int iNewDifficulty = clamp( iOldDifficulty + inputdata.value.Int(), 2, 10000000 );
+
+	DevMsg( "Mapper modified difficulty from %d to %d\n", iOldDifficulty, iNewDifficulty );
+	pGameRules->m_iMissionDifficulty = iNewDifficulty;
+	m_MissionDifficulty.Set( iNewDifficulty, inputdata.pActivator, inputdata.pCaller );
+}
+
 void CAlienSwarmProxy::OnMissionStart()
 {
-	m_OnDifficulty.Set( ASWGameRules()->GetSkillLevel(), this, this );
-	m_OnOnslaught.Set( ASWGameRules()->IsOnslaught() ? 1 : 0, this, this );
-	m_OnFriendlyFire.Set( ASWGameRules()->IsHardcoreFF() ? 1 : 0, this, this );
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( STRING( gpGlobals->mapname ) ) )
+	{
+		if ( pMission->HasTag( "points" ) )
+		{
+			pGameRules->m_iLeaderboardScore = 0;
+			m_TotalPoints.Set( 0, this, this );
+			pGameRules->m_TimelineLeaderboardScore.ClearAndStart();
+		}
+	}
+
+	m_OnDifficulty.Set( pGameRules->GetSkillLevel(), this, this );
+	m_OnOnslaught.Set( pGameRules->IsOnslaught() ? 1 : 0, this, this );
+	m_OnFriendlyFire.Set( pGameRules->IsHardcoreFF() ? 1 : 0, this, this );
 	m_OnChallenge.Set( AllocPooledString( rd_challenge.GetString() ), this, this );
+	m_MissionDifficulty.Set( pGameRules->GetMissionDifficulty(), this, this );
 }
 #endif
 
@@ -1208,6 +1291,10 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 		UpdateMatchmakingTagsCallback( NULL, NULL, 0 );
 	}
+	if ( UTIL_RD_IsLobbyOwner() )
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "system:rd_lobby_location", m_szApproximatePingLocation );
+	}
 }
 
 #else
@@ -1356,8 +1443,6 @@ CAlienSwarm::CAlienSwarm()
 	m_iMarinesSpawned = 0;
 	m_pSpawningSpot = NULL;
 
-	m_bIsIntro = false;
-	m_bIsOutro = false;
 	m_bIsTutorial = false;
 
 	m_bCheckAllPlayersLeft = false;
@@ -1377,6 +1462,11 @@ CAlienSwarm::CAlienSwarm()
 
 	m_bDeathCamSlowdown = asw_marine_death_cam_slowdown.GetBool();
 	m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
+	m_iLeaderboardScore = -1;
+	m_TimelineLeaderboardScore.SetCompressionType( TIMELINE_COMPRESSION_SUM );
+
+	m_szApproximatePingLocation.GetForModify()[0] = '\0';
+	m_bObtainedPingLocation = false;
 
 	ConVarRef sv_cheats( "sv_cheats" );
 	if ( !sv_cheats.GetBool() )
@@ -2918,13 +3008,11 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		return;
 	}
 
-#ifndef OUTRO_MAP
-	//Orange. OUTRO_MAP is not fully implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
+	//Orange. OUTRO_MAP is not implemented. This check is to prevent abuse of manual cl_campaignsas when finishing last map in a campaign.
 	if (CampaignMissionsLeft() <= 1) //at this point number not yet decreased
 	{
 		return;
 	}
-#endif
 
 	SetForceReady(ASW_FR_NONE);
 
@@ -3032,49 +3120,16 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 
 	pSave->SaveGameToFile();
 
-#ifdef OUTRO_MAP
-	// if the marines have completed all the missions in the campaign, then launch to the outro instead
-	if (CampaignMissionsLeft()<=0)
-	{	
-		SetGameState(ASW_GS_OUTRO);
-		// send user message telling clients to increment their 'campaigns completed' stat and to head to the outro map in x seconds
-
-		// grab some info about the server, so clients know whether to reconnect or not
-		int iDedicated = engine->IsDedicatedServer() ? 1 : 0;
-		int iHostIndex = -1;
-		if (!engine->IsDedicatedServer())
-		{
-			CBasePlayer *pPlayer = UTIL_GetListenServerHost();
-			if (pPlayer)
-				iHostIndex = pPlayer->entindex();
-		}
-
-		Msg("[S] Sending ASWCampaignCompleted dedicated = %d host = %d\n", iDedicated, iHostIndex);
-		CReliableBroadcastRecipientFilter users;
-		users.MakeReliable();
-		UserMessageBegin( users, "ASWCampaignCompleted" );		
-			WRITE_BYTE( iDedicated );
-			WRITE_BYTE( iHostIndex );
-		MessageEnd();		
-
-		// give one second before changing map, so clients have time to do the above
-		Msg("[S] Setting m_fLaunchOutroMapTime\n");
-		m_fLaunchOutroMapTime = gpGlobals->curtime + 1.0f;
-	}
-	else	
-#endif
+	// make sure all players are marked as not ready
+	if (ASWGameResource())
 	{
-		// make sure all players are marked as not ready
-		if (ASWGameResource())
+		for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 		{
-			for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
-			{
-				ASWGameResource()->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
-			}
+			ASWGameResource()->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
 		}
-		SetGameState(ASW_GS_CAMPAIGNMAP);
-		GetCampaignSave()->SelectDefaultNextCampaignMission();
 	}
+	SetGameState(ASW_GS_CAMPAIGNMAP);
+	GetCampaignSave()->SelectDefaultNextCampaignMission();
 }
 
 // moves the marines from one location to another
@@ -3492,6 +3547,20 @@ void InitBodyQue()
 
 void CAlienSwarm::Think()
 {
+	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
+	{
+		SteamNetworkPingLocation_t location;
+		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+		if ( flAge >= 0 )
+		{
+			char szLocation[k_cchMaxSteamNetworkingPingLocationString];
+			SteamNetworkingUtils()->ConvertPingLocationToString( location, szLocation, sizeof( szLocation ) );
+			m_bObtainedPingLocation = true;
+			Assert( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) );
+			V_strncpy( m_szApproximatePingLocation.GetForModify(), szLocation, sizeof( m_szApproximatePingLocation ) );
+		}
+	}
+
 	ThinkUpdateTimescale();
 	GetVoiceGameMgr()->Update( gpGlobals->frametime );
 	if ( m_iGameState <= ASW_GS_BRIEFING )
@@ -3504,7 +3573,7 @@ void CAlienSwarm::Think()
 	case ASW_GS_BRIEFING:	
 		{
 			// let our mission chooser source think while we're relatively idle in the briefing, in case it needs to be scanning for missions
-			if ( missionchooser && missionchooser->LocalMissionSource() && gpGlobals->maxClients > 1 )
+			if ( missionchooser && missionchooser->LocalMissionSource() )
 			{
 				missionchooser->LocalMissionSource()->IdleThink();
 			}
@@ -4423,6 +4492,8 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		}
 	}
 
+	m_TimelineLeaderboardScore.RecordFinalValue( 0.0f );
+
 	// award medals	
 #ifndef _DEBUG
 	if ( !m_bCheated )
@@ -4582,6 +4653,12 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		// fill in debrief stats team stats/time taken/etc
 		m_hDebriefStats->m_iTotalKills = iTotalKills;
 		m_hDebriefStats->m_fTimeTaken = gpGlobals->curtime - m_fMissionStartedTime;
+		m_hDebriefStats->m_iLeaderboardScore = int( m_hDebriefStats->m_fTimeTaken * 1000 );
+
+		if ( m_iLeaderboardScore > -1 )
+		{
+			m_hDebriefStats->m_iLeaderboardScore = m_iLeaderboardScore;
+		}
 
 		// calc the speedrun time
 		int speedrun_time = 180;	// default of 3 mins
@@ -8534,11 +8611,8 @@ void CAlienSwarm::LevelInitPostEntity()
 	Q_strcpy( mapName, STRING(gpGlobals->mapname) );
 #endif
 
-	m_bIsIntro = ( !Q_strnicmp( mapName, "intro_", 6 ) );
-	m_bIsOutro = ( !Q_strnicmp( mapName, "outro_", 6 ) );
-	m_bIsTutorial = ( !Q_strnicmp( mapName, "tutorial", 8 ) );
-	m_bIsLobby = ( !Q_strnicmp( mapName, "Lobby", 5 ) );
-	
+	m_bIsTutorial = ( !V_strnicmp( mapName, "tutorial", 8 ) );
+	m_bIsLobby = ( !V_stricmp( mapName, "lobby" ) );
 
 	if ( ASWHoldoutMode() )
 	{

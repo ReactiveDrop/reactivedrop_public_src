@@ -542,10 +542,7 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "ChangeMissionButton" ) )
 	{
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
-			engine->ClientCmd( "asw_vote_chooser 0" );
-		else
-			engine->ClientCmd( "asw_vote_chooser 0 notrans" );
+		engine->ClientCmd( "asw_mission_chooser callvote" );
 	}
 	else if ( !Q_stricmp( command, "MissionDetailsButton" ) )
 	{

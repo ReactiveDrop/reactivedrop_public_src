@@ -40,16 +40,17 @@ ConVar asw_marine_turn_firing_fraction("asw_marine_turn_firing_fraction", "0.6",
 ConVar asw_marine_turn_normal_fraction("asw_marine_turn_normal_fraction", "0.9", FCVAR_CHEAT, "Fractional turning value if using asw_marine_fraction_turn_scale");
 ConVar asw_marine_turn_y_pos("asw_marine_turn_y_pos", "0.55", FCVAR_ARCHIVE, "Normalized height position for where the cursor changes the player from looking north to south.");
 
-ConVar joy_autoattack( "joy_autoattack", "0", FCVAR_NONE, "If enabled, marine will fire when you push the right analogue stick" );
-ConVar joy_lock_firing_angle( "joy_lock_firing_angle", "0", FCVAR_NONE, "If enabled, your facing direction will be locked while firing instead of aiming to movement" );
-ConVar joy_autoattack_threshold( "joy_autoattack_threshold", "0.6", FCVAR_NONE, "Threshold for joy_autoattack" );
-ConVar joy_autoattack_angle( "joy_autoattack_angle", "10", FCVAR_NONE, "Facing has to be within this many degrees of aim for the marine to auto fire" );
-ConVar joy_cursor_speed( "joy_cursor_speed", "2.0f", FCVAR_NONE, "Cursor speed of joystick when used in targeting mode" );
-ConVar joy_cursor_scale( "joy_cursor_scale", "1.3f", FCVAR_NONE, "Cursor extent scale of joystick when used in targeting mode" );
-ConVar joy_radius_snap_factor( "joy_radius_snap_factor", "2.0f", FCVAR_NONE, "Rate at which joystick targeting radius tracks the current cursor radius" );
-ConVar joy_aim_to_movement_time( "joy_aim_to_movement_time", "1.0f", FCVAR_NONE, "Time before the player automatically aims in the direction of movement." );
-ConVar joy_tilted_view( "joy_tilted_view", "0", FCVAR_NONE, "Set to 1 when using maps with tilted view to rotate player movement." );
-ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_CHEAT, "Applies horizontal correction towards best aim ent." );
+ConVar joy_autoattack( "joy_autoattack", "0", FCVAR_ARCHIVE, "If enabled, marine will fire when you push the right analogue stick" );
+ConVar joy_lock_firing_angle( "joy_lock_firing_angle", "0", FCVAR_ARCHIVE, "If enabled, your facing direction will be locked while firing instead of aiming to movement" );
+ConVar joy_autoattack_threshold( "joy_autoattack_threshold", "0.6", FCVAR_ARCHIVE, "Threshold for joy_autoattack" );
+ConVar joy_autoattack_angle( "joy_autoattack_angle", "10", FCVAR_ARCHIVE, "Facing has to be within this many degrees of aim for the marine to auto fire" );
+ConVar joy_cursor_speed( "joy_cursor_speed", "2.0f", FCVAR_ARCHIVE, "Cursor speed of joystick when used in targeting mode" );
+ConVar joy_cursor_scale( "joy_cursor_scale", "1.3f", FCVAR_ARCHIVE, "Cursor extent scale of joystick when used in targeting mode" );
+ConVar joy_radius_snap_factor( "joy_radius_snap_factor", "2.0f", FCVAR_ARCHIVE, "Rate at which joystick targeting radius tracks the current cursor radius" );
+ConVar joy_aim_to_movement( "joy_aim_to_movement", "1", FCVAR_ARCHIVE, "Aim in the direction of movement if the aiming stick is not in use" );
+ConVar joy_aim_to_movement_time( "joy_aim_to_movement_time", "1.0f", FCVAR_ARCHIVE, "Time before the player automatically aims in the direction of movement." );
+ConVar joy_tilted_view( "joy_tilted_view", "0", FCVAR_ARCHIVE, "Set to 1 when using maps with tilted view to rotate player movement." );
+ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_ARCHIVE, "Applies horizontal correction towards best aim ent." );
 
 ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", 0, "Disables joystick character movement when UI is active." );
 
@@ -208,7 +209,6 @@ bool MarineControllingTurret()
 	return (pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->IsControllingTurret());
 }
 
-#define PI 3.14159265358979
 #define ASW_MARINE_HULL_MINS Vector(-13, -13, 0)
 #define ASW_MARINE_HULL_MAXS Vector(13, 13, 72)
 
@@ -254,8 +254,8 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 	AngleVectors(CameraAngle, &X, &Y, &Z);
 	float FOVAngle = pPlayer->GetFOV();
 	projected = X 
-				- tanf(FOVAngle*PI/180*0.5) * 2 * Y * (screenx) * ( 0.75f / fRatio )
-		          + tanf(FOVAngle*PI/180*0.5) * 2 * Z * (screeny) * 0.75f;
+				- tanf(FOVAngle*M_PI/180*0.5) * 2 * Y * (screenx) * ( 0.75f / fRatio )
+		          + tanf(FOVAngle*M_PI/180*0.5) * 2 * Z * (screeny) * 0.75f;
 
 	TraceDirection = projected;
 	TraceDirection.NormalizeInPlace();
@@ -398,8 +398,8 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	AngleVectors(cameraAngle, &X, &Y, &Z);
 	float FOVAngle = pPlayer->GetFOV();
 	vWorldSpaceCameraToCursor = X 
-		- tanf(FOVAngle*PI/180*0.5) * 2 * Y * (screenx) * ( 0.75f / fRatio )
-		+ tanf(FOVAngle*PI/180*0.5) * 2 * Z * (screeny) *  0.75f;
+		- tanf(FOVAngle*M_PI/180*0.5) * 2 * Y * (screenx) * ( 0.75f / fRatio )
+		+ tanf(FOVAngle*M_PI/180*0.5) * 2 * Z * (screeny) *  0.75f;
 
 	vWorldSpaceCameraToCursor.NormalizeInPlace();
 	vTraceEnd = vCameraLocation + vWorldSpaceCameraToCursor * ASW_MAX_AIM_TRACE;
@@ -713,8 +713,8 @@ void RoundToPixel(Vector &vecPos)
 	AngleVectors(CameraAngle, &X, &Y, &Z);
 	float FOVAngle = pPlayer->GetFOV();
 	Vector projected = X 
-				- tanf(FOVAngle*PI/180*0.5) * 2 * Y * (vecScreenPos.x) * ( 0.75f / fRatio )
-		          + tanf(FOVAngle*PI/180*0.5) * 2 * Z * (vecScreenPos.y) * 0.75f;
+				- tanf(FOVAngle*M_PI/180*0.5) * 2 * Y * (vecScreenPos.x) * ( 0.75f / fRatio )
+		          + tanf(FOVAngle*M_PI/180*0.5) * 2 * Z * (vecScreenPos.y) * 0.75f;
 
 	projected.NormalizeInPlace();
 	
@@ -1670,7 +1670,7 @@ void CASWInput::JoyStickForwardSideControl( float forward, float side, float &jo
 	}
 
 	// store the aiming axes, so in_mouse can use them to simulate a cursor position
-	if ( m_flTimeSinceLastTurn > joy_aim_to_movement_time.GetFloat() && !m_bCursorPlacement )
+	if ( joy_aim_to_movement.GetBool() && m_flTimeSinceLastTurn > joy_aim_to_movement_time.GetFloat() && !m_bCursorPlacement )
 	{
 		if ( !joy_autoattack.GetBool() && IsAttacking() && joy_lock_firing_angle.GetBool() )	// lock firing angle
 		{
@@ -1755,7 +1755,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 		nRadius /= ( float )nScreenMin;
 		m_flDesiredCursorRadius += ( nRadius - m_flDesiredCursorRadius ) * dt * flRadiusSnapFactor;
 	}
-	else if ( m_flTimeSinceLastTurn <= joy_aim_to_movement_time.GetFloat() )
+	else if ( !joy_aim_to_movement.GetBool() || m_flTimeSinceLastTurn <= joy_aim_to_movement_time.GetFloat() )
 	{
 		// face right analogue stick direction if it's pushed past the firing threshold, or we're not in 'aim to movement' mode
 		m_fJoypadPitch = pitch;	

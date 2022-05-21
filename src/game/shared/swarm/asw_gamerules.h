@@ -62,12 +62,16 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 #else
 	void InputSetTutorialStage( inputdata_t & inputdata );
+	void InputAddPoints( inputdata_t & inputdata );
+	void InputModifyDifficulty( inputdata_t & inputdata );
 	void OnMissionStart();
 
 	COutputInt m_OnDifficulty;
 	COutputInt m_OnOnslaught;
 	COutputInt m_OnFriendlyFire;
 	COutputString m_OnChallenge;
+	COutputInt m_TotalPoints;
+	COutputInt m_MissionDifficulty;
 #endif
 };
 
@@ -484,6 +488,8 @@ public:
 	CNetworkVar(bool, m_bMissionSuccess);
 	CNetworkVar(bool, m_bMissionFailed);
 	CNetworkVar(float, m_fMissionStartedTime);
+	CNetworkVar( int, m_iLeaderboardScore );
+	CNetworkVarEmbedded( CTimeline, m_TimelineLeaderboardScore );
 
 	// fail advice
 	CNetworkVar(int, m_nFailAdvice);
@@ -536,16 +542,12 @@ public:
 
 	// special maps
 	bool IsTutorialMap() { return m_bIsTutorial; }
-	bool IsIntroMap() { return m_bIsIntro; }
-	bool IsOutroMap() { return m_bIsOutro; }
 	bool IsLobbyMap() { return m_bIsLobby; }
 	static bool IsHardcoreFF();
 	static bool IsOnslaught();
 
 	bool m_bIsTutorial;
-	bool m_bIsIntro;
-	bool m_bIsOutro;
-	bool m_bIsLobby;		// lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
+	bool m_bIsLobby; // lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
 
 #ifndef CLIENT_DLL
 	void CheckLeaderboardReady();
@@ -559,6 +561,11 @@ public:
 
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
 	CNetworkVar( bool, m_bChallengeActiveThisMission );
+
+	CNetworkString( m_szApproximatePingLocation, MIN( DT_MAX_STRING_BUFFERSIZE, k_cchMaxSteamNetworkingPingLocationString ) );
+#ifdef GAME_DLL
+	bool m_bObtainedPingLocation;
+#endif
 
 private:
 	char m_szPickupDenial[128];

@@ -36,8 +36,6 @@ class IServerEngineTools;
 class IXboxSystem;
 class IScriptManager;
 class IServerFoundry;
-class CSteamAPIContext;
-class CSteamGameServerAPIContext;
 
 extern IVEngineServer			*engine;
 extern IVoiceServer				*g_pVoiceServer;
@@ -54,8 +52,6 @@ extern IServerEngineTools		*serverenginetools;
 extern IServerFoundry			*serverfoundry;
 extern IXboxSystem				*xboxsystem; // 360 only
 extern IScriptManager			*scriptmanager;
-extern CSteamAPIContext			*steamapicontext; // available on game clients
-extern CSteamGameServerAPIContext *steamgameserverapicontext; //available on game servers
 #ifdef INFESTED_DLL
 class IASW_Mission_Chooser;
 extern IASW_Mission_Chooser *missionchooser;

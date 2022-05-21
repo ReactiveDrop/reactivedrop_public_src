@@ -80,6 +80,23 @@ namespace
 	}
 };
 
+static bool HasTag( KeyValues *pKV, const char *szTag )
+{
+	if ( !pKV )
+		return false;
+
+	FOR_EACH_VALUE( pKV, pValue )
+	{
+		if ( V_stricmp( pValue->GetName(), "tag" ) )
+			continue;
+
+		if ( !V_stricmp( pValue->GetString(), szTag ) )
+			return true;
+	}
+
+	return false;
+}
+
 CASW_Mission_Chooser_Source_Local::CASW_Mission_Chooser_Source_Local()
 {
 	for (int i=0;i<ASW_SAVES_PER_PAGE;i++)	 // this array needs to be large enough for either ASW_SAVES_PER_PAGE (for when showing save games), or ASW_MISSIONS_PER_PAGE (for when showing missions) or ASW_CAMPAIGNS_PER_SCREEN (for when showing campaigns)
@@ -306,11 +323,26 @@ void CASW_Mission_Chooser_Source_Local::FindMissionsInCampaign( int iCampaignInd
 			}
 			else
 			{
-				aMissionKeys.AddToTail( pMission );
+				bool bHasRequiredTags = true;
+				if ( m_NextRequiredTags.Count() > 0 )
+				{
+					KeyValues *pDetails = GetMissionDetails( pMission->GetString( "MapName" ) );
+					FOR_EACH_VEC( m_NextRequiredTags, i )
+					{
+						if ( !HasTag( pDetails, m_NextRequiredTags[i] ) )
+						{
+							bHasRequiredTags = false;
+							break;
+						}
+					}
+				}
+
+				if ( bHasRequiredTags )
+					aMissionKeys.AddToTail( pMission );
 			}
 		}
 	}
-	
+
 	int max_items = aMissionKeys.Count();
 	for ( int stored=0;stored<iNumSlots;stored++ )
 	{
@@ -326,6 +358,8 @@ void CASW_Mission_Chooser_Source_Local::FindMissionsInCampaign( int iCampaignInd
 		}
 		nMissionOffset++;
 	}
+
+	m_NextRequiredTags.PurgeAndDeleteElements();
 }
 
 int CASW_Mission_Chooser_Source_Local::GetNumMissionsInCampaign( int iCampaignIndex )
@@ -365,32 +399,51 @@ void CASW_Mission_Chooser_Source_Local::FindMissions(int nMissionOffset, int iNu
 {
 	if (!m_bBuiltMapList)
 		BuildMapList();
-	
-	int max_items = bRequireOverview ? m_OverviewItems.Count() : m_Items.Count();
-	for (int stored=0;stored<iNumSlots;stored++)
-	{
-		int realoffset = nMissionOffset;
-		if (realoffset >= max_items || realoffset < 0)
-		{
-			// no more missions...
-			Q_snprintf(m_missions[stored].m_szMissionName, sizeof(m_missions[stored].m_szMissionName), "");
-		}
-		else
-		{
-			if (bRequireOverview)
-			{
-				
-				Q_snprintf(m_missions[stored].m_szMissionName, sizeof(m_missions[stored].m_szMissionName), "%s", m_OverviewItems[realoffset].szMapName);
-			}
-			else			
-			{
-				Q_snprintf(m_missions[stored].m_szMissionName, sizeof(m_missions[stored].m_szMissionName), "%s", m_Items[realoffset].szMapName);
-			}
-		}
-		nMissionOffset++;
-	}
-}
 
+	const CUtlSortVector<MapListName, MapNameLess> &items = bRequireOverview || m_NextRequiredTags.Count() > 0 ? m_OverviewItems : m_Items;
+	int skip = nMissionOffset;
+	int stored = 0;
+	FOR_EACH_VEC( items, i )
+	{
+		bool bHasRequiredTags = true;
+		if ( m_NextRequiredTags.Count() > 0 )
+		{
+			KeyValues *pDetails = GetMissionDetails( items[i].szMapName );
+			FOR_EACH_VEC( m_NextRequiredTags, j )
+			{
+				if ( !HasTag( pDetails, m_NextRequiredTags[j] ) )
+				{
+					bHasRequiredTags = false;
+					break;
+				}
+			}
+		}
+
+		if ( !bHasRequiredTags )
+			continue;
+
+		if ( skip > 0 )
+		{
+			skip--;
+			continue;
+		}
+
+		V_snprintf( m_missions[stored].m_szMissionName, sizeof( m_missions[stored].m_szMissionName ), "%s", items[i].szMapName );
+
+		stored++;
+		if ( stored >= iNumSlots )
+			break;
+	}
+
+	while ( stored < iNumSlots )
+	{
+		// no more missions...
+		V_snprintf( m_missions[stored].m_szMissionName, sizeof( m_missions[stored].m_szMissionName ), "" );
+		stored++;
+	}
+
+	m_NextRequiredTags.PurgeAndDeleteElements();
+}
 
 // pass an array of mission names back
 ASW_Mission_Chooser_Mission* CASW_Mission_Chooser_Source_Local::GetMissions()
@@ -443,7 +496,7 @@ void CASW_Mission_Chooser_Source_Local::ClearCampaignList()
 void CASW_Mission_Chooser_Source_Local::AddToCampaignList(const char *szCampaignName)
 {
 	MapListName item;
-	Q_snprintf(item.szMapName, sizeof(item.szMapName), "%s", szCampaignName);		
+	Q_snprintf(item.szMapName, sizeof(item.szMapName), "%s", szCampaignName);
 	m_CampaignList.Insert( item );
 }
 
@@ -467,25 +520,46 @@ void CASW_Mission_Chooser_Source_Local::FindCampaigns(int nCampaignOffset, int i
 {
 	if (!m_bBuiltCampaignList)
 		BuildCampaignList();
-	
-	int max_items = m_CampaignList.Count();	
-	for (int stored=0;stored<iNumSlots;stored++)
-	{
-		int realoffset = nCampaignOffset;
-		if (stored < ASW_CAMPAIGNS_PER_PAGE)
-		{
-			if (realoffset >= max_items || realoffset < 0)
-			{
-				Q_snprintf(m_campaigns[stored].m_szMissionName, sizeof(m_campaigns[stored].m_szMissionName), "");
-			}
-			else
-			{	
-				Q_snprintf(m_campaigns[stored].m_szMissionName, sizeof(m_campaigns[stored].m_szMissionName), "%s", m_CampaignList[realoffset].szMapName);
 
-			}		
-			nCampaignOffset++;
+	int skip = nCampaignOffset;
+	int stored = 0;
+
+	FOR_EACH_VEC( m_CampaignList, i )
+	{
+		bool bHasRequiredTags = true;
+		if ( m_NextRequiredTags.Count() > 0 )
+		{
+			KeyValues *pDetails = GetCampaignDetails( m_CampaignList[i].szMapName );
+			FOR_EACH_VEC( m_NextRequiredTags, j )
+			{
+				if ( !HasTag( pDetails, m_NextRequiredTags[j] ) )
+				{
+					bHasRequiredTags = false;
+					break;
+				}
+			}
 		}
+
+		if ( skip > 0 )
+		{
+			skip--;
+			continue;
+		}
+
+		V_snprintf( m_campaigns[stored].m_szMissionName, sizeof( m_campaigns[stored].m_szMissionName ), "%s", m_CampaignList[i].szMapName );
+		stored++;
+
+		if ( stored >= ASW_CAMPAIGNS_PER_PAGE || stored >= iNumSlots )
+			break;
 	}
+
+	while ( stored < ASW_CAMPAIGNS_PER_PAGE && stored < iNumSlots )
+	{
+		V_snprintf( m_campaigns[stored].m_szMissionName, sizeof( m_campaigns[stored].m_szMissionName ), "" );
+		stored++;
+	}
+
+	m_NextRequiredTags.PurgeAndDeleteElements();
 }
 
 // Passes an array of campaign names back
@@ -517,7 +591,7 @@ ASW_Mission_Chooser_Mission* CASW_Mission_Chooser_Source_Local::GetCampaign( int
 
 PublishedFileId_t CASW_Mission_Chooser_Source_Local::GetCampaignWorkshopID( int nIndex )
 {
-	// TODO
+	Assert( !"GetCampaignWorkshopID called on local mission chooser source" );
 	return k_PublishedFileIdInvalid;
 }
 
@@ -573,6 +647,9 @@ void CASW_Mission_Chooser_Source_Local::FindSavedCampaigns( int nSaveOffset, int
 		Q_snprintf(m_savedcampaigns[i].m_szPlayerNames, sizeof(m_savedcampaigns[i].m_szPlayerNames), "");
 		m_savedcampaigns[i].m_iMissionsComplete = 0;		
 	}
+
+	// saved campaigns don't check tags, but we still need to clear them for the next call
+	m_NextRequiredTags.PurgeAndDeleteElements();
 }
 
 ASW_Mission_Chooser_Saved_Campaign* CASW_Mission_Chooser_Source_Local::GetSavedCampaigns()
@@ -1285,57 +1362,6 @@ bool CASW_Mission_Chooser_Source_Local::SavedCampaignLess::Less( ASW_Mission_Cho
 	return false;
 }
 
-#define ASW_DEFAULT_INTRO_MAP "intro_jacob"
-const char* CASW_Mission_Chooser_Source_Local::GetCampaignSaveIntroMap(const char *szSaveName)
-{
-	// check the save file exists
-	char stripped[MAX_PATH];
-	V_StripExtension( szSaveName, stripped, MAX_PATH );
-	char tempfile[MAX_PATH];
-	Q_snprintf( tempfile, sizeof( tempfile ), "save/%s.campaignsave", stripped );
-	if (!g_pFullFileSystem->FileExists(tempfile))
-		return ASW_DEFAULT_INTRO_MAP;
-
-	KeyValues *pSaveKeyValues = new KeyValues( szSaveName );
-	const char* pszCampaign = NULL;
-	if (pSaveKeyValues->LoadFromFile(g_pFullFileSystem, tempfile))
-	{		
-		pszCampaign = pSaveKeyValues->GetString("CampaignName");
-	}
-	if (!pszCampaign)
-	{
-		pSaveKeyValues->deleteThis();
-		return ASW_DEFAULT_INTRO_MAP;
-	}
-
-	char ctempfile[MAX_PATH];
-	Q_snprintf( ctempfile, sizeof( ctempfile ), "resource/campaigns/%s.txt", pszCampaign );
-	if (!g_pFullFileSystem->FileExists(ctempfile))	/// check it exists
-	{
-		pSaveKeyValues->deleteThis();
-		return ASW_DEFAULT_INTRO_MAP;
-	}
-
-	// now read in the campaign txt and find the intro map name
-	KeyValues *pCampaignKeyValues = new KeyValues( pszCampaign );
-	if (pCampaignKeyValues->LoadFromFile(g_pFullFileSystem, ctempfile))
-	{
-		static char s_introname[128];
-		Q_strncpy( s_introname, pCampaignKeyValues->GetString("IntroMap"), 128 );
-		// check we actually got a valid intro map name string
-		if ( Q_strlen(s_introname) > 5 && !Q_strnicmp( s_introname, "intro", 5 ) )
-		{
-			pSaveKeyValues->deleteThis();
-			pCampaignKeyValues->deleteThis();
-			return s_introname;
-		}
-	}
-
-	pSaveKeyValues->deleteThis();
-	pCampaignKeyValues->deleteThis();
-	return ASW_DEFAULT_INTRO_MAP;
-}
-
 void CASW_Mission_Chooser_Source_Local::ClearCache()
 {
 	m_MissionDetails.PurgeAndDeleteElements();
@@ -1364,6 +1390,11 @@ void CASW_Mission_Chooser_Source_Local::ClearCache()
 	m_bBuildingSavedCampaignList = false;
 	m_bBuiltSavedCampaignList = false;
 	ClearSavedCampaignList();
+}
+
+void CASW_Mission_Chooser_Source_Local::AddRequiredTag( const char *szTag )
+{
+	m_NextRequiredTags.CopyAndAddToTail( szTag );
 }
 
 KeyValues *CASW_Mission_Chooser_Source_Local::GetMissionDetails( const char *szMissionName )

@@ -118,7 +118,7 @@ char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
 
 PublishedFileId_t BaseModUI::FoundGameListItem::Info::GetWorkshopID() const
 {
-	if ( !mbInGame || !mpGameDetails || !steamapicontext->SteamMatchmaking() )
+	if ( !mbInGame || !mpGameDetails || !SteamMatchmaking() )
 	{
 		return k_PublishedFileIdInvalid;
 	}
@@ -126,7 +126,7 @@ PublishedFileId_t BaseModUI::FoundGameListItem::Info::GetWorkshopID() const
 	CSteamID lobby( mpGameDetails->GetUint64( "options/sessionid" ) );
 	if ( lobby.IsValid() && lobby.IsLobby() )
 	{
-		const char *szWorkshopID = steamapicontext->SteamMatchmaking()->GetLobbyData( lobby, "game:missioninfo:workshop" );
+		const char *szWorkshopID = SteamMatchmaking()->GetLobbyData( lobby, "game:missioninfo:workshop" );
 		if ( *szWorkshopID )
 		{
 			return strtoull( szWorkshopID, NULL, 16 );
@@ -1286,7 +1286,7 @@ void FoundGames::OpenPlayerFlyout( BaseModHybridButton *button, uint64 playerId,
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout_SteamGroup" ) );
 	}
-	else if ( steamapicontext->SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
+	else if ( SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout" ) );
 	}
@@ -1788,7 +1788,7 @@ void FoundGames::AddServersToList()
 		// BenLubar(dedicated-server-friends-list): if the friend is not in a lobby but they are on a dedicated server
 		// that we know information for, use the dedicated server's game details instead.
 		FriendGameInfo_t friendGameInfo;
-		if ( !pGameDetails && steamapicontext->SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
+		if ( !pGameDetails && SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
 		{
 			int numServers = srvMgr->GetNumServers();
 			for ( int j = 0; j < numServers; j++ )

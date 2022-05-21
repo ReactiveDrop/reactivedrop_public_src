@@ -177,6 +177,8 @@ enum
 // must follow from last HUD_ entry in shareddefs.h
 #define ASW_HUD_PRINTTALKANDCONSOLE 5
 
+#define ASW_NUM_SEARCH_LIGHTS 4
+
 enum ASW_Orders
 {
 	ASW_ORDER_HOLD_POSITION,

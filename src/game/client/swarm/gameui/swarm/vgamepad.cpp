@@ -44,14 +44,15 @@ BaseClass(parent, panelName)
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetFooterEnabled( true );
 	m_pHeaderFooter->SetGradientBarEnabled( true );
-	m_pHeaderFooter->SetGradientBarPos( 150, 120 );
+	m_pHeaderFooter->SetGradientBarPos( 150, 160 );
 
 	m_drpGamepadEnable = NULL;
 	m_sldGamepadHSensitivity = NULL;
 	m_sldGamepadVSensitivity = NULL;
 	m_drpGamepadYInvert = NULL;
 	m_drpGamepadSwapSticks = NULL;
-
+	m_drpGamepadAimToMovement = NULL;
+	m_drpGamepadAutoAttack = NULL;
 	m_btnDone = NULL;
 }
 
@@ -155,6 +156,55 @@ void Gamepad::Activate()
 		}
 	}
 
+	if ( m_drpGamepadAimToMovement )
+	{
+		CGameUIConVarRef joy_aim_to_movement( "joy_aim_to_movement" );
+		CGameUIConVarRef joy_lock_firing_angle( "joy_lock_firing_angle" );
+
+		if ( joy_aim_to_movement.GetBool() )
+		{
+			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementEnabled" );
+		}
+		else if ( joy_lock_firing_angle.GetBool() )
+		{
+			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementNotShooting" );
+		}
+		else
+		{
+			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementDisabled" );
+		}
+
+		m_drpGamepadAimToMovement->SetEnabled( joystick.GetBool() );
+
+		FlyoutMenu *pFlyout = m_drpGamepadAimToMovement->GetCurrentFlyout();
+		if ( pFlyout )
+		{
+			pFlyout->SetListener( this );
+		}
+	}
+
+	if ( m_drpGamepadAutoAttack )
+	{
+		CGameUIConVarRef joy_autoattack( "joy_autoattack" );
+
+		if ( !joy_autoattack.GetBool() )
+		{
+			m_drpGamepadAutoAttack->SetCurrentSelection( "GamepadAutoAttackDisabled" );
+		}
+		else
+		{
+			m_drpGamepadAutoAttack->SetCurrentSelection( "GamepadAutoAttackEnabled" );
+		}
+
+		m_drpGamepadAutoAttack->SetEnabled( joystick.GetBool() );
+
+		FlyoutMenu *pFlyout = m_drpGamepadAutoAttack->GetCurrentFlyout();
+		if ( pFlyout )
+		{
+			pFlyout->SetListener( this );
+		}
+	}
+
 	UpdateFooter( true );
 }
 
@@ -208,6 +258,18 @@ void Gamepad::OnThink()
 	if( !m_drpGamepadSwapSticks )
 	{
 		m_drpGamepadSwapSticks = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpGamepadSwapSticks" ) );
+		needsActivate = true;
+	}
+
+	if ( !m_drpGamepadAimToMovement )
+	{
+		m_drpGamepadAimToMovement = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpGamepadAimToMovement" ) );
+		needsActivate = true;
+	}
+
+	if ( !m_drpGamepadAutoAttack )
+	{
+		m_drpGamepadAutoAttack = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpGamepadAutoAttack" ) );
 		needsActivate = true;
 	}
 
@@ -273,6 +335,8 @@ void Gamepad::OnCommand(const char *command)
 		SetControlEnabled( "SldGamepadVSensitivity", true );
 		SetControlEnabled( "DrpGamepadYInvert", true );
 		SetControlEnabled( "DrpGamepadSwapSticks", true );
+		SetControlEnabled( "DrpGamepadAimToMovement", true );
+		SetControlEnabled( "DrpGamepadAutoAttack", true );
 	}
 	else if( Q_stricmp( "GamepadDisabled", command ) == 0 )
 	{
@@ -303,6 +367,18 @@ void Gamepad::OnCommand(const char *command)
 			m_drpGamepadSwapSticks->CloseDropDown();
 			m_drpGamepadSwapSticks->SetEnabled( false );
 		}
+
+		if ( m_drpGamepadAimToMovement )
+		{
+			m_drpGamepadAimToMovement->CloseDropDown();
+			m_drpGamepadAimToMovement->SetEnabled( false );
+		}
+
+		if ( m_drpGamepadAutoAttack )
+		{
+			m_drpGamepadAutoAttack->CloseDropDown();
+			m_drpGamepadAutoAttack->SetEnabled( false );
+		}
 	}
 	else if( Q_stricmp( "GamepadYInvertEnabled", command ) == 0 )
 	{
@@ -323,6 +399,37 @@ void Gamepad::OnCommand(const char *command)
 	{
 		CGameUIConVarRef joy_movement_stick("joy_movement_stick");
 		joy_movement_stick.SetValue( false );
+	}
+	else if ( Q_stricmp( "GamepadAimToMovementEnabled", command ) == 0 )
+	{
+		CGameUIConVarRef joy_aim_to_movement( "joy_aim_to_movement" );
+		CGameUIConVarRef joy_lock_firing_angle( "joy_lock_firing_angle" );
+		joy_aim_to_movement.SetValue( true );
+		joy_lock_firing_angle.SetValue( false );
+	}
+	else if ( Q_stricmp( "GamepadAimToMovementNotShooting", command ) == 0 )
+	{
+		CGameUIConVarRef joy_aim_to_movement( "joy_aim_to_movement" );
+		CGameUIConVarRef joy_lock_firing_angle( "joy_lock_firing_angle" );
+		joy_aim_to_movement.SetValue( true );
+		joy_lock_firing_angle.SetValue( true );
+	}
+	else if ( Q_stricmp( "GamepadAimToMovementDisabled", command ) == 0 )
+	{
+		CGameUIConVarRef joy_aim_to_movement( "joy_aim_to_movement" );
+		CGameUIConVarRef joy_lock_firing_angle( "joy_lock_firing_angle" );
+		joy_aim_to_movement.SetValue( false );
+		joy_lock_firing_angle.SetValue( false );
+	}
+	else if ( Q_stricmp( "GamepadAutoAttackDisabled", command ) == 0 )
+	{
+	CGameUIConVarRef joy_autoattack( "joy_autoattack" );
+	joy_autoattack.SetValue( false );
+	}
+	else if ( Q_stricmp( "GamepadAutoAttackEnabled", command ) == 0 )
+	{
+		CGameUIConVarRef joy_autoattack( "joy_autoattack" );
+		joy_autoattack.SetValue( true );
 	}
 	else if( Q_stricmp( "Back", command ) == 0 )
 	{

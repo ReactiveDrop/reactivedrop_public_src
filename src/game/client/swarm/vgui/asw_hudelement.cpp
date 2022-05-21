@@ -27,12 +27,6 @@ bool CASW_HudElement::ShouldDraw( void )
 	if (engine->IsLevelMainMenuBackground())
 		return false;
 
-	if (ASWGameRules())
-	{
-		if (ASWGameRules()->IsIntroMap() || ASWGameRules()->IsOutroMap())
-			return false;
-	}
-
 	C_ASW_Player *pASWPlayer = C_ASW_Player::GetLocalASWPlayer();
 	// hide things due to turret control
 	if ( ( m_iHiddenBits & HIDEHUD_REMOTE_TURRET ) && (pASWPlayer && pASWPlayer->GetViewMarine() && pASWPlayer->GetViewMarine()->IsControllingTurret()) )

@@ -135,18 +135,6 @@ extern IParticleSystemQuery *g_pParticleSystemQuery;
 
 extern ConVar commentary;
 
-// this context is not available on dedicated servers
-// WARNING! always check if interfaces are available before using
-#if !defined(NO_STEAM)
-static CSteamAPIContext s_SteamAPIContext;	
-CSteamAPIContext *steamapicontext = &s_SteamAPIContext;
-
-// this context is not available on a pure client connected to a remote server.
-// WARNING! always check if interfaces are available before using
-static CSteamGameServerAPIContext s_SteamGameServerAPIContext;
-CSteamGameServerAPIContext *steamgameserverapicontext = &s_SteamGameServerAPIContext;
-#endif
-
 
 IUploadGameStats *gamestatsuploader = NULL;
 
@@ -229,25 +217,6 @@ ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCV
 ConVar rd_override_fps_max("rd_override_fps_max", "-1", FCVAR_NONE, "overrides fps_max, this option sticks across map changes without touching newmapsettings", true, -1, true, 1000);
 ConVar sv_frametime_limit("sv_frametime_limit", "3.0", FCVAR_CHEAT, "When exceed this number of frames, switch to more efficient ai");
 
-
-#if !defined(NO_STEAM)
-//-----------------------------------------------------------------------------
-// Purpose: singleton accessor
-//-----------------------------------------------------------------------------
-static CSteam3Server s_Steam3Server;
-CSteam3Server  &Steam3Server()
-{
-	return s_Steam3Server;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Constructor
-//-----------------------------------------------------------------------------
-CSteam3Server::CSteam3Server() 
-{
-	m_bInitialized = false;
-}
-#endif
 
 // String tables
 INetworkStringTable *g_pStringTableParticleEffectNames = NULL;
@@ -659,14 +628,6 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ( cvar == NULL )
 		return false;
 
-#if !defined( SWDS ) && !defined(NO_STEAM)
-	SteamAPI_InitSafe();
-	s_SteamAPIContext.Init();
-#endif
-#if !defined(NO_STEAM)
-	s_SteamGameServerAPIContext.Init();
-#endif
-
 	COM_TimestampedLog( "Factories - Start" );
 
 	// init each (seperated for ease of debugging)
@@ -927,12 +888,6 @@ void CServerGameDLL::DLLShutdown( void )
 		TheNavMesh = NULL;
 	}
 
-#if !defined(NO_STEAM)
-	s_SteamAPIContext.Clear(); // Steam API context shutdown
-	s_SteamGameServerAPIContext.Clear();	
-	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
-#endif
-	
 	DisconnectTier3Libraries();
 	DisconnectTier2Libraries();
 	ConVar_Unregister();
@@ -1285,10 +1240,7 @@ void CServerGameDLL::ServerActivate( edict_t *pEdictList, int edictCount, int cl
 //-----------------------------------------------------------------------------
 void CServerGameDLL::GameServerSteamAPIActivated( void )
 {
-#if !defined( NO_STEAM )
-	steamgameserverapicontext->Init();
-#endif
-	
+	// the Steam API pointers used to be initialized here, but that happens automatically now.
 }
 
 //-----------------------------------------------------------------------------
@@ -1307,7 +1259,7 @@ void CServerGameDLL::GameFrame( bool simulating )
 #ifndef NO_STEAM
 	// All the calls to us from the engine prior to gameframe (like LevelInit & ServerActivate)
 	// are done before the engine has got the Steam API connected, so we have to wait until now to connect ourselves.
-	if ( Steam3Server().CheckInitialized() )
+	if ( SteamGameServerStats() )
 	{
 		GameRules()->UpdateGameplayStatsFromSteam();
 	}
@@ -1495,10 +1447,6 @@ void CServerGameDLL::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_
 // Called when a level is shutdown (including changing levels)
 void CServerGameDLL::LevelShutdown( void )
 {
-#if !defined( NO_STEAM )
-	steamgameserverapicontext->Clear();
-#endif
-
 	MDLCACHE_CRITICAL_SECTION();
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 

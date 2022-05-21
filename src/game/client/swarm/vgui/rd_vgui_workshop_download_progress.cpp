@@ -36,8 +36,8 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 {
 	BaseClass::OnThink();
 
-	AssertOnce( steamapicontext->SteamUGC() );
-	if ( !steamapicontext->SteamUGC() )
+	AssertOnce( SteamUGC() );
+	if ( !SteamUGC() )
 	{
 		return;
 	}
@@ -46,7 +46,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( steamapicontext->SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
+		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
 		{
 			nInQueue++;
 		}
@@ -72,7 +72,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( steamapicontext->SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
+		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
 		{
 			iBestAddonIndex = i;
 			break;
@@ -81,7 +81,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( steamapicontext->SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
+		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
 		{
 			iBestAddonIndex = i;
 			break;
@@ -90,10 +90,10 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( steamapicontext->SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
+		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
 		{
 			uint64 nBytesDownloaded, nBytesTotal;
-			if ( steamapicontext->SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
+			if ( SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
 			{
 				iBestAddonIndex = i;
 				break;
@@ -131,7 +131,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	m_pLblName->SetVisible( true );
 
 	uint64 nBytesDownloaded, nBytesTotal;
-	if ( steamapicontext->SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesTotal > 0 )
+	if ( SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesTotal > 0 )
 	{
 		m_pPrgDownload->SetProgress( float( nBytesDownloaded ) / float( nBytesTotal ) );
 		m_pPrgDownload->SetVisible( true );

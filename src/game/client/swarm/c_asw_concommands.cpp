@@ -1022,11 +1022,11 @@ ConCommand asw_debug_spectator( "asw_debug_spectator", asw_debug_spectator_f, "P
 // TODO: Remove this before ship?
 void reset_steam_stats_f()
 {
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( !SteamUserStats() )
 		return;
 
-	steamapicontext->SteamUserStats()->ResetAllStats( false );
+	SteamUserStats()->ResetAllStats( false );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
@@ -1040,8 +1040,8 @@ void rd_reset_level_and_promotion_f()
 {
 	Msg( "Resetting your level and promotion...\n" );
 
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( !SteamUserStats() )
 	{
 		Msg( "Error. Cannot access SteamUserStats()\n" );
 		return;
@@ -1049,11 +1049,11 @@ void rd_reset_level_and_promotion_f()
 
 	int32 m_iExperience = 0, m_iPromotion = 0;
 
-	steamapicontext->SteamUserStats()->SetStat( "experience", m_iExperience );
-	steamapicontext->SteamUserStats()->SetStat( "promotion", m_iPromotion );
-	steamapicontext->SteamUserStats()->SetStat( "level", 1 );
-	steamapicontext->SteamUserStats()->SetStat( "level.xprequired", 0 );
-	steamapicontext->SteamUserStats()->StoreStats();
+	SteamUserStats()->SetStat( "experience", m_iExperience );
+	SteamUserStats()->SetStat( "promotion", m_iPromotion );
+	SteamUserStats()->SetStat( "level", 1 );
+	SteamUserStats()->SetStat( "level.xprequired", 0 );
+	SteamUserStats()->StoreStats();
 
 	C_ASW_Medal_Store *pStore = GetMedalStore();
 

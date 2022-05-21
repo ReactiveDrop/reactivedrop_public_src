@@ -17,7 +17,6 @@
 
 class CASW_Marine;
 class CRagdollProp;
-class CASW_Voting_Missions;
 
 //=============================================================================
 // >> Swarm player
@@ -62,7 +61,7 @@ public:
 
 	const QAngle& EyeAngles();
 	virtual const QAngle& EyeAnglesWithCursorRoll();
-	const Vector& GetCrosshairTracePos() { return m_vecCrosshairTracePos; }
+	const Vector& GetCrosshairTracePos();
 	void SetCrosshairTracePos( const Vector &vecPos ) { m_vecCrosshairTracePos = vecPos; }
 	virtual void SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize );
 
@@ -186,11 +185,6 @@ public:
 	float m_fLastKLVoteTime;	// last time we started a kick or leader vote
 	CNetworkVar(int, m_iLeaderVoteIndex);	// entindex of the player we want to be leader
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
-	void VoteMissionList(int nMissionOffset, int iNumSlots);	// player wants to see a list of missions he can vote for
-	void VoteCampaignMissionList(int nCampaignIndex, int nMissionOffset, int iNumSlots);		// player wants to see a list of missions within a specific campaign 
-	void VoteCampaignList(int nCampaignOffset, int iNumSlots);	// player wants to see a list of new campaigns he can vote for
-	void VoteSavedCampaignList(int nSaveOffset, int iNumSlots);	// player wants to see a list of saved campaign games he can vote for
-	CNetworkHandle(CASW_Voting_Missions, m_hVotingMissions);	// handle to voting missions entity that will network down the list of missions/campaigns/saves
 	const char* GetASWNetworkID();
 	CNetworkVar( int, m_iMapVoted );	// 0 = didn't vote, 1 = "no" vote, 2 = "yes" vote
 

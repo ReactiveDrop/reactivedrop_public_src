@@ -26,10 +26,10 @@ FoundGroupGamesIAFRanks::FoundGroupGamesIAFRanks( Panel *parent, const char *pan
 
 FoundGroupGamesIAFRanks::~FoundGroupGamesIAFRanks()
 {
-	if ( m_hServerListRequest && steamapicontext->SteamMatchmakingServers() )
+	if ( m_hServerListRequest && SteamMatchmakingServers() )
 	{
-		steamapicontext->SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
-		steamapicontext->SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+		SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
 	}
 }
 
@@ -51,8 +51,8 @@ void FoundGroupGamesIAFRanks::StartSearching( void )
 {
 	if ( m_hServerListRequest )
 	{
-		steamapicontext->SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
-		steamapicontext->SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+		SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
 	}
 
 	MatchMakingKeyValuePair_t filterTag;
@@ -60,7 +60,7 @@ void FoundGroupGamesIAFRanks::StartSearching( void )
 	Q_strncpy( filterTag.m_szValue, "HoIAF", sizeof( filterTag.m_szValue ) );
 	MatchMakingKeyValuePair_t *filters[] = { &filterTag };
 
-	m_hServerListRequest = steamapicontext->SteamMatchmakingServers()->RequestInternetServerList( 563560, filters, NELEMS( filters ), this );
+	m_hServerListRequest = SteamMatchmakingServers()->RequestInternetServerList( 563560, filters, NELEMS( filters ), this );
 	m_bRefreshFinished = false;
 	m_flSearchStartedTime = Plat_FloatTime();
 	m_flSearchEndTime = m_flSearchStartedTime + ui_foundgames_spinner_time.GetFloat();
@@ -84,10 +84,10 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		}
 	}
 
-	int nServerCount = steamapicontext->SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
+	int nServerCount = SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
 	for ( int i = 0; i < nServerCount; i++ )
 	{
-		gameserveritem_t *pServer = steamapicontext->SteamMatchmakingServers()->GetServerDetails( m_hServerListRequest, i );
+		gameserveritem_t *pServer = SteamMatchmakingServers()->GetServerDetails( m_hServerListRequest, i );
 		uint32 iServerAddr = pServer->m_NetAdr.GetIP();
 
 		if ( s_ParticipatingServers.Find( iServerAddr ) == -1 )

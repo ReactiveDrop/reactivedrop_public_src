@@ -308,7 +308,7 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	CReactiveDropWorkshop::WorkshopItem_t item = pChallenge->GetWorkshopItem();
 	if ( item.details.m_nPublishedFileId )
 	{
-		const char *szName = steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
+		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
 		wchar_t wszName[k_cwchPersonaNameMax];
 		Q_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
 

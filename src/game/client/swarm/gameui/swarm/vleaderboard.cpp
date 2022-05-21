@@ -1369,7 +1369,7 @@ bool Leaderboard::SendQuery_StatsFriends( void )
 	if ( hLeaderboard != 0 )
 	{
 		// load the specified leaderboard data. We only display k_nMaxLeaderboardEntries entries at a time
-		SteamAPICall_t hSteamAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		SteamAPICall_t hSteamAPICall = SteamUserStats()->DownloadLeaderboardEntries( hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 
 		if ( hSteamAPICall )
 		{
@@ -1417,7 +1417,7 @@ void Leaderboard::OnLeaderboardDownloadedEntries( LeaderboardScoresDownloaded_t 
 		//LeaderboardExtraStats_t stats;
 		//memset( &stats, 0, sizeof(stats) );
 
-		if ( steamapicontext->SteamUserStats()->GetDownloadedLeaderboardEntry( pLeaderboardScoresDownloaded->m_hSteamLeaderboardEntries, i, &leaderboardEntry, NULL, 0 ) )
+		if ( SteamUserStats()->GetDownloadedLeaderboardEntry( pLeaderboardScoresDownloaded->m_hSteamLeaderboardEntries, i, &leaderboardEntry, NULL, 0 ) )
 		{
 			for ( int j=0;j<leaderboard_duplicate_entries.GetInt();j++ )
 			{
@@ -1641,7 +1641,7 @@ bool Leaderboard::SendQuery_FindLeaderboard()
 	char szLeaderboardName[128];
 	GetLeaderboardName( m_iAsyncQueryMapContext, szLeaderboardName, 128 );
 
-	SteamAPICall_t hSteamAPICall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
+	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	if ( hSteamAPICall != 0 )
 	{
 		m_SteamCallResultCreateLeaderboard.Set( hSteamAPICall, this, &Leaderboard::OnFindLeaderboard );
@@ -1671,7 +1671,7 @@ void Leaderboard::OnFindLeaderboard( LeaderboardFindResult_t *pFindLeaderboardRe
 	}
 
 	// check to see which leaderboard handle we just retrieved
-	const char *pszReturnedName = steamapicontext->SteamUserStats()->GetLeaderboardName( pFindLeaderboardResult->m_hSteamLeaderboard );
+	const char *pszReturnedName = SteamUserStats()->GetLeaderboardName( pFindLeaderboardResult->m_hSteamLeaderboard );
 
 	char szLeaderboardName[128];
 	GetLeaderboardName( m_iAsyncQueryMapContext, szLeaderboardName, 128 );
@@ -2112,7 +2112,7 @@ void Leaderboard::AddLeaderboardEntry( LeaderboardEntry_t *pEntry )
 	}
 
 	data.m_steamIDUser = pEntry->m_steamIDUser;
-	Q_strncpy( data.m_szName, steamapicontext->SteamFriends()->GetFriendPersonaName( data.m_steamIDUser ), MAX_PLAYER_NAME_LENGTH );
+	Q_strncpy( data.m_szName, SteamFriends()->GetFriendPersonaName( data.m_steamIDUser ), MAX_PLAYER_NAME_LENGTH );
 
 	data.m_bLocalPlayer = false;
 
@@ -2298,7 +2298,7 @@ void Leaderboard::OpenPlayerFlyout( BaseModHybridButton *button, uint64 playerId
 
 	FlyoutMenu *flyout = NULL;
 
-	if ( steamapicontext->SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
+	if ( SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout" ) );
 	}

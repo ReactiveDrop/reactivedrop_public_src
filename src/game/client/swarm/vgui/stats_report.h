@@ -22,8 +22,8 @@ class DebriefTextPage;
 class CAvatarImagePanel;
 
 
-#define ASW_STATS_REPORT_MAX_PLAYERS ASW_NUM_MARINE_PROFILES
-#define ASW_STATS_REPORT_CATEGORIES 4
+#define ASW_STATS_REPORT_MAX_PLAYERS ASW_MAX_MARINE_RESOURCES
+#define ASW_STATS_REPORT_CATEGORIES 5
 
 
 // shows stats breakdowns

@@ -670,13 +670,10 @@ void FoundPublicGames::Activate()
 	}
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	if ( steamapicontext )
+	if ( ISteamUserStats *pSteamUserStats = SteamUserStats() )
 	{
-		if ( ISteamUserStats *pSteamUserStats = steamapicontext->SteamUserStats() )
-		{
-			SteamAPICall_t hSteamAPICall = pSteamUserStats->GetNumberOfCurrentPlayers();
-			m_callbackNumberOfCurrentPlayers.Set( hSteamAPICall, this, &FoundPublicGames::Steam_OnNumberOfCurrentPlayers );
-		}
+		SteamAPICall_t hSteamAPICall = pSteamUserStats->GetNumberOfCurrentPlayers();
+		m_callbackNumberOfCurrentPlayers.Set( hSteamAPICall, this, &FoundPublicGames::Steam_OnNumberOfCurrentPlayers );
 	}
 #endif
 }
