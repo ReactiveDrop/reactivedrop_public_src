@@ -86,7 +86,8 @@ ConVar rd_team_color_ally( "rd_team_color_ally", "100 255 100", FCVAR_HIDDEN );
 ConVar rd_team_color_enemy( "rd_team_color_enemy", "255 10 10", FCVAR_HIDDEN );
 ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FCVAR_ARCHIVE, "use a prediction error resolution strategy that handles moving platforms better", true, 0, true, 1 );
 ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
-ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "10.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
+ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
+ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -2650,7 +2651,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 		return;
 	}
 
-	const float flLifetime = rd_marine_gib_lifetime.GetFloat();
+	const float flLifetime = ASWDeathmatchMode() ? rd_marine_gib_lifetime_dm.GetFloat() : rd_marine_gib_lifetime.GetFloat();
 	const Vector velocity_explosion = vecForce / 35.0f;
 
 	static const char *const s_szGibNames[7] =
