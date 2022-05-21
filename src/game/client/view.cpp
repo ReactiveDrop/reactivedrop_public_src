@@ -898,7 +898,7 @@ void CViewRender::SetUpOverView()
 	if ( newCRC != oldCRC )
 	{
 		Msg( "Overview: scale %.2f, pos_x %.0f, pos_y %.0f\n", cl_leveloverview.GetFloat(),
-			GetView().origin.x, GetView().origin.y );
+			GetView().origin.x - cl_leveloverview.GetFloat() * 128, GetView().origin.y );
 		oldCRC = newCRC;
 	}
 
