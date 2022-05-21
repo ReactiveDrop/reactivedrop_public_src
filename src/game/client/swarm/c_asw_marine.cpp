@@ -2596,11 +2596,6 @@ enum eRip_Type
 // rip the marine into pieces
 void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 {
-	if ( !rd_marine_explodes_into_gibs.GetBool() )
-	{
-		return;
-	}
-
 	eRip_Type nDeathType = eRip_Type( msg.ReadByte() );
 
 	Vector origin, vecForce;
@@ -2614,10 +2609,51 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 		return;
 	}
 
+	if ( !rd_marine_explodes_into_gibs.GetBool() )
+	{
+		C_ASW_Game_Resource *pGameResource = ASWGameResource();
+		if ( pGameResource )
+		{
+			C_ASW_Marine *pClosest = NULL;
+			float flClosestDistance = FLT_MAX;
+			for ( int i = 0; i < pGameResource->GetNumMarineResources(); i++ )
+			{
+				C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetProfileIndex() != nMarineProfile )
+					continue;
+
+				C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+				if ( !pMarine )
+					continue;
+
+				float flDistance = pMarine->GetAbsOrigin().DistToSqr( origin );
+				if ( !pClosest || flDistance < flClosestDistance )
+				{
+					pClosest = pMarine;
+					flClosestDistance = flDistance;
+				}
+			}
+
+			if ( pClosest )
+			{
+				C_BaseAnimating *pRagdoll = pClosest->BecomeRagdollOnClient();
+				if ( pRagdoll )
+				{
+					pRagdoll->ApplyAbsVelocityImpulse( vecForce );
+				}
+			}
+		}
+
+		return;
+	}
+
 	const float flLifetime = rd_marine_gib_lifetime.GetFloat();
 	const Vector velocity_explosion = vecForce / 35.0f;
 
-	static const char *s_szGibNames[7] =
+	static const char *const s_szGibNames[7] =
 	{
 		"models/swarm/marine/gibs/marine_gib_head.mdl",
 		"models/swarm/marine/gibs/marine_gib_chest.mdl",

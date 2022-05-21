@@ -882,6 +882,7 @@ void CASW_Marine::Precache()
 
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_chest.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_head.mdl");
+	PrecacheModel("models/swarm/marine/gibs/femalemarine_gib_head.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftarm.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightarm.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftleg.mdl");
