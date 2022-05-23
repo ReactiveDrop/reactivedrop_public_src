@@ -1557,7 +1557,7 @@ bool FoundGames::AddGameFromDetails( const FoundGameListItem::Info &fi )
 		Q_strncpy( fiCopy.Name, "WWWWWWWWWWWWWWW", sizeof( fiCopy.Name ) );
 
 	// fix up ping - friends games do not contain useful ping info
-	if ( fi.mPing != FoundGameListItem::Info::GP_SYSTEMLINK )
+	if ( fi.mPing != FoundGameListItem::Info::GP_SYSTEMLINK && fi.miPing == 0 )
 	{
 		fiCopy.mPing = FoundGameListItem::Info::GP_NONE;
 	}

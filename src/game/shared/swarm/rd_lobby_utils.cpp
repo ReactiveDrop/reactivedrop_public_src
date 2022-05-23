@@ -89,6 +89,7 @@ KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
 		}
 	}
 	pKV->SetUint64( "options/sessionid", lobby.ConvertToUint64() );
+	pKV->SetInt( "system/ping", UTIL_RD_PingLobby( lobby ) );
 	return pKV;
 }
 
@@ -147,11 +148,29 @@ void UTIL_RD_RemoveCurrentLobbyData( const char *pszKey )
 	SteamMatchmaking()->DeleteLobbyData( lobby, pszKey );
 }
 
+int UTIL_RD_PingLobby( CSteamID lobby )
+{
+	SteamNetworkPingLocation_t location;
+	if ( SteamNetworkingUtils() && SteamNetworkingUtils()->ParsePingLocationString( SteamMatchmaking()->GetLobbyData( lobby, "system:rd_lobby_location" ), location ) )
+	{
+		int iPing = SteamNetworkingUtils()->EstimatePingTimeFromLocalHost( location );
+		return MAX( iPing, 0 );
+	}
+
+	return 0;
+}
+
 static void DebugSpewLobby( CSteamID lobby )
 {
 	DevMsg( 2, "LOBBY: %llu\n", lobby.ConvertToUint64() );
 	if ( developer.GetInt() >= 3 )
 	{
+		if ( !lobby.IsValid() )
+		{
+			DevMsg( 3, "Invalid lobby!\n" );
+			return;
+		}
+
 		uint32 serverIP;
 		uint16 serverPort;
 		CSteamID serverID;
@@ -165,15 +184,23 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "no server!\n" );
 		}
 
+		if ( int iPing = UTIL_RD_PingLobby( lobby ) )
+		{
+			DevMsg( 3, "estimated ping: %dms\n", iPing );
+		}
+
 		CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
-		DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( owner ) );
+		DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? SteamFriends()->GetFriendPersonaName( owner ) : "(invalid)" );
 
 		int iMembers = SteamMatchmaking()->GetNumLobbyMembers( lobby );
 		DevMsg( 3, "members: %d\n", iMembers );
-		for ( int i = 0; i < iMembers; i++ )
+		if ( lobby == UTIL_RD_GetCurrentLobbyID() )
 		{
-			CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
-			DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
+			for ( int i = 0; i < iMembers; i++ )
+			{
+				CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
+				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
+			}
 		}
 
 		int iCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
@@ -318,6 +345,10 @@ void CReactiveDropLobbySearch::Clear()
 
 void CReactiveDropLobbySearch::StartSearching( bool bForceNow )
 {
+	if ( SteamNetworkingUtils() )
+	{
+		SteamNetworkingUtils()->InitRelayNetworkAccess();
+	}
 	m_flNextUpdate = Plat_FloatTime() + ( bForceNow ? 0 : LOBBY_SEARCH_INTERVAL );
 	if ( !g_ReactiveDropLobbySearchSystem.m_Instances.IsValidIndex( g_ReactiveDropLobbySearchSystem.m_Instances.Find( this ) ) )
 	{
@@ -383,7 +414,7 @@ CON_COMMAND( rd_lobby_debug_current, "" )
 
 CON_COMMAND( rd_lobby_debug_start_searching, "" )
 {
-	s_DebugLobbySearch.StartSearching();
+	s_DebugLobbySearch.StartSearching( true );
 }
 CON_COMMAND( rd_lobby_debug_stop_searching, "" )
 {

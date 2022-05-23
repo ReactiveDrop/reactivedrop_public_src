@@ -19,6 +19,7 @@ void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, const char *pszValue );
 void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, int iValue );
 void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, uint64 iValue );
 void UTIL_RD_RemoveCurrentLobbyData( const char *pszKey );
+int UTIL_RD_PingLobby( CSteamID lobby );
 
 #ifdef CLIENT_DLL
 class CReactiveDropLobbySearch

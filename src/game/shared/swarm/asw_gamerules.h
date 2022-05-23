@@ -561,7 +561,7 @@ public:
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
 	CNetworkVar( bool, m_bChallengeActiveThisMission );
 
-	CNetworkString( m_szApproximatePingLocation, MIN( DT_MAX_STRING_BUFFERSIZE, k_cchMaxSteamNetworkingPingLocationString ) );
+	CNetworkArray( char, m_szApproximatePingLocation, k_cchMaxSteamNetworkingPingLocationString );
 #ifdef GAME_DLL
 	bool m_bObtainedPingLocation;
 #endif
@@ -571,6 +571,7 @@ private:
 
 #ifndef CLIENT_DLL
 	IASW_Map_Builder *m_pMapBuilder;
+	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
 #endif
 };
 
