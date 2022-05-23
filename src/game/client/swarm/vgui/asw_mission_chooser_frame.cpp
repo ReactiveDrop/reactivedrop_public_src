@@ -273,6 +273,7 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
 
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
 
 		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
 		{
@@ -280,7 +281,6 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 		}
 		else
 		{
-			BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
 			BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GAMESETTINGS, NULL, true, pSettings );
 		}
 
