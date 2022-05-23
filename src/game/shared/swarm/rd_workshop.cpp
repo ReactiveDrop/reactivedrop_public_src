@@ -1628,19 +1628,24 @@ void CReactiveDropWorkshop::RemoveDuplicateTags()
 
 void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 {
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "campaigns" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "missions" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "challenges" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "deathmatch" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "bonus" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "campaign_mission" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "mission_name" );
-	SteamUGC()->RemoveItemKeyValueTags( hUpdate, "challenge_name" );
+	ISteamUGC *pUGC = SteamUGC();
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaigns" );
+	pUGC->RemoveItemKeyValueTags( hUpdate, "missions" );
+	pUGC->RemoveItemKeyValueTags( hUpdate, "challenges" );
+
+	for ( int i = 0; i < NELEMS( g_RDWorkshopMissionTags ); i++ )
+	{
+		pUGC->RemoveItemKeyValueTags( hUpdate, g_RDWorkshopMissionTags[i] );
+	}
+
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_mission" );
+	pUGC->RemoveItemKeyValueTags( hUpdate, "mission_name" );
+	pUGC->RemoveItemKeyValueTags( hUpdate, "challenge_name" );
 
 	FOR_EACH_VEC( m_aszIncludedCampaigns, i )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "campaigns", m_aszIncludedCampaigns[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaigns", m_aszIncludedCampaigns[i] ) )
 		{
 			Warning( "Adding campaign %s failed!\n", m_aszIncludedCampaigns[i] );
 		}
@@ -1648,7 +1653,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	FOR_EACH_VEC( m_aszIncludedMissions, i )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "missions", m_aszIncludedMissions[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "missions", m_aszIncludedMissions[i] ) )
 		{
 			Warning( "Adding mission %s failed!\n", m_aszIncludedMissions[i] );
 		}
@@ -1656,7 +1661,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	FOR_EACH_VEC( m_aszIncludedChallenges, i )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "challenges", m_aszIncludedChallenges[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenges", m_aszIncludedChallenges[i] ) )
 		{
 			Warning( "Adding challenge %s failed!\n", m_aszIncludedChallenges[i] );
 		}
@@ -1667,7 +1672,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	{
 		FOR_EACH_VEC( m_aszIncludedTaggedCampaigns[i], j )
 		{
-			if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] ) )
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] ) )
 			{
 				Warning( "Adding %s %s failed!\n", g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] );
 			}
@@ -1679,7 +1684,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	{
 		FOR_EACH_VEC( m_aszIncludedTaggedMissions[i], j )
 		{
-			if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
 			{
 				Warning( "Adding %s %s failed!\n", g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] );
 			}
@@ -1688,7 +1693,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	for ( int i = 0; i < m_IncludedCampaignNames.GetNumStrings(); i++ )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "campaign_name", CUtlString( m_IncludedCampaignNames.String( i ) ) + "/" + m_IncludedCampaignNames[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_name", CUtlString( m_IncludedCampaignNames.String( i ) ) + "/" + m_IncludedCampaignNames[i] ) )
 		{
 			Warning( "Adding campaign name: %s -> %s failed!\n", m_IncludedCampaignNames.String( i ), m_IncludedCampaignNames[i].Get() );
 		}
@@ -1700,7 +1705,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 		FOR_EACH_VEC( m_IncludedCampaignMissions[i], j )
 		{
 			szCampaignMission.Format( "%s/%d/%s", m_IncludedCampaignMissions.String( i ), j, m_IncludedCampaignMissions[i][j] );
-			if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "campaign_mission",  szCampaignMission ) )
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_mission",  szCampaignMission ) )
 			{
 				Warning( "Adding campaign mission: %s -> %d -> %s failed!\n", m_IncludedCampaignMissions.String( i ), j, m_IncludedCampaignMissions[i][j] );
 			}
@@ -1709,7 +1714,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	for ( int i = 0; i < m_IncludedMissionNames.GetNumStrings(); i++ )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "mission_name", CUtlString( m_IncludedMissionNames.String( i ) ) + "/" + m_IncludedMissionNames[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "mission_name", CUtlString( m_IncludedMissionNames.String( i ) ) + "/" + m_IncludedMissionNames[i] ) )
 		{
 			Warning( "Adding mission name: %s -> %s failed!\n", m_IncludedMissionNames.String( i ), m_IncludedMissionNames[i].Get() );
 		}
@@ -1717,7 +1722,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	
 	for ( int i = 0; i < m_IncludedChallengeNames.GetNumStrings(); i++ )
 	{
-		if ( !SteamUGC()->AddItemKeyValueTag( hUpdate, "challenge_name", CUtlString( m_IncludedChallengeNames.String( i ) ) + "/" + m_IncludedChallengeNames[i] ) )
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenge_name", CUtlString( m_IncludedChallengeNames.String( i ) ) + "/" + m_IncludedChallengeNames[i] ) )
 		{
 			Warning( "Adding challenge name: %s -> %s failed!\n", m_IncludedChallengeNames.String( i ), m_IncludedChallengeNames[i].Get() );
 		}
@@ -1882,7 +1887,7 @@ bool CReactiveDropWorkshop::OpenWorkshopPageForFile( PublishedFileId_t nPublishe
 {
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 	{
-		SteamFriends()->ActivateGameOverlayToWebPage( VarArgs( "https://steamcommunity.com/sharedfiles/filedetails/?id=%llu", nPublishedFileID ) );
+		SteamFriends()->ActivateGameOverlayToWebPage( VarArgs( "https://steamcommunity.com/sharedfiles/filedetails/?id=%llu", nPublishedFileID ), k_EActivateGameOverlayToWebPageMode_Modal );
 		return true;
 	}
 

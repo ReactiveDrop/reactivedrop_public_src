@@ -33,7 +33,7 @@ using namespace vgui;
 // Purpose: 
 //-----------------------------------------------------------------------------
 
-// DECLARE_HUDELEMENT_DEPTH( CAchievementNotificationPanel, 100 );
+DECLARE_HUDELEMENT_DEPTH( CAchievementNotificationPanel, 100 );
 
 //-----------------------------------------------------------------------------
 // Purpose: 
