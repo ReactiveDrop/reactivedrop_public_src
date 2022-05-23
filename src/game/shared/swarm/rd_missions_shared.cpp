@@ -96,14 +96,14 @@ struct NetworkedMissionMetadata_t
 #ifdef GAME_DLL
 void ReactiveDropMissions::CreateNetworkStringTables()
 {
-	g_StringTableReactiveDropCampaigns = networkstringtable->CreateStringTable( RD_CAMPAIGNS_STRINGTABLE_NAME, RD_MAX_CAMPAIGNS, sizeof( NetworkedMissionMetadata_t ) );
+	g_StringTableReactiveDropCampaigns = networkstringtable->CreateStringTable( RD_CAMPAIGNS_STRINGTABLE_NAME, RD_MAX_CAMPAIGNS );
 	Assert( g_StringTableReactiveDropCampaigns );
 
-	g_StringTableReactiveDropMissions = networkstringtable->CreateStringTable( RD_MISSIONS_STRINGTABLE_NAME, RD_MAX_MISSIONS, sizeof( NetworkedMissionMetadata_t ) );
+	g_StringTableReactiveDropMissions = networkstringtable->CreateStringTable( RD_MISSIONS_STRINGTABLE_NAME, RD_MAX_MISSIONS );
 	Assert( g_StringTableReactiveDropMissions );
 
 	char szKVFileName[MAX_PATH];
-	NetworkedMissionMetadata_t metadata;
+	NetworkedMissionMetadata_t metadata{};
 
 	for ( int i = 0; i < NELEMS( s_szCampaignNamesFirst ); i++ )
 	{
@@ -204,6 +204,12 @@ public:
 	virtual void LevelInitPreEntity()
 	{
 		Clear();
+	}
+
+	virtual void LevelShutdownPostEntity()
+	{
+		// we might be leaving the server
+		s_bRebuildUnpackedMissionData = true;
 	}
 
 	void ReadMissionList()
@@ -644,7 +650,11 @@ PublishedFileId_t ReactiveDropMissions::CampaignWorkshopID( int index )
 	Assert( g_StringTableReactiveDropCampaigns );
 
 	int length;
-	return static_cast<const NetworkedMissionMetadata_t *>( g_StringTableReactiveDropCampaigns->GetStringUserData( index, &length ) )->WorkshopID;
+	const void *pRawData = g_StringTableReactiveDropCampaigns->GetStringUserData( index, &length );
+	Assert( length == 9 );
+	const NetworkedMissionMetadata_t *pData = static_cast<const NetworkedMissionMetadata_t *>( pRawData );
+	Assert( pData );
+	return pData->WorkshopID;
 }
 
 PublishedFileId_t ReactiveDropMissions::MissionWorkshopID( int index )
@@ -670,7 +680,11 @@ PublishedFileId_t ReactiveDropMissions::MissionWorkshopID( int index )
 	Assert( g_StringTableReactiveDropMissions );
 
 	int length;
-	return static_cast<const NetworkedMissionMetadata_t *>( g_StringTableReactiveDropMissions->GetStringUserData( index, &length ) )->WorkshopID;
+	const void *pRawData = g_StringTableReactiveDropMissions->GetStringUserData( index, &length );
+	Assert( length == 9 );
+	const NetworkedMissionMetadata_t *pData = static_cast< const NetworkedMissionMetadata_t * >( pRawData );
+	Assert( pData );
+	return pData->WorkshopID;
 }
 
 int ReactiveDropMissions::GetCampaignIndex( const char *name )
