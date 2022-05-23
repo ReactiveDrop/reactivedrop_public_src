@@ -831,7 +831,7 @@ void CASW_Mission_Chooser_Source_Local::AddToSavedCampaignList(const char *szSav
 			char buffer[MAX_PATH];
 			Q_snprintf(buffer, sizeof(buffer), "save/%s", pChosen->m_szSaveName);
 			Msg("Deleting save %s as we have too many\n", buffer);
-			g_pFullFileSystem->RemoveFile( buffer, "GAME" );
+			g_pFullFileSystem->RemoveFile( buffer, "MOD" );
 			m_SavedCampaignList.Remove(iChosen);
 		}
 	}
