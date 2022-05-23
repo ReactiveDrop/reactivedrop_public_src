@@ -1239,15 +1239,17 @@ void GameSettings::ShowMissionSelect()
 		m_hSubScreen->MarkForDeletion();
 	}
 
+	Activate();
+
 	if ( m_pSettings )
 	{
 		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer\n" );
 		}
 		else
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver\n" );
 		}
 	}
 }
@@ -1259,15 +1261,17 @@ void GameSettings::ShowStartingMissionSelect()
 		m_hSubScreen->MarkForDeletion();
 	}
 
+	Activate();
+
 	if ( m_pSettings )
 	{
 		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer\n" );
 		}
 		else
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver\n" );
 		}
 	}
 }

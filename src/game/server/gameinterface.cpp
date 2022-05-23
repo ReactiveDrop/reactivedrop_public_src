@@ -1057,7 +1057,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 
 	if ( engine->IsDedicatedServer() )
 	{
-		engine->ServerCommand( "rd_loc_reload_server" );
+		engine->ServerCommand( "rd_loc_reload_server\n" );
 	}
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
