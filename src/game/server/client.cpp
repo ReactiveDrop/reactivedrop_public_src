@@ -50,12 +50,6 @@ extern bool IsInCommentaryMode( void );
 
 ConVar  *sv_cheats = NULL;
 
-void ClientKill( edict_t *pEdict, const Vector &vecForce, bool bExplode = false )
-{
-	CBasePlayer *pPlayer = static_cast<CBasePlayer*>( GetContainingEntity( pEdict ) );
-	pPlayer->CommitSuicide( vecForce, bExplode );
-}
-
 #define P_MAX_LEN 127 //used in CheckChatText and Host_Say to limit p pointer where pszFormat + pszPrefix + pszLocation + p as main text and few more symbols define the full text string. should be under 256
 //also seems not to be really usefull without client adjustment m_pInput->SetMaximumCharCount( 127 ); in hud_basechat.cpp
 char * CheckChatText( CBasePlayer *pPlayer, char *text )
@@ -312,10 +306,6 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, ClientPrecache )
 	PRECACHE( MODEL, "sprites/blueglow1.vmt" )
 	PRECACHE( MODEL, "sprites/purpleglow1.vmt" )
 	PRECACHE( MODEL, "sprites/purplelaser1.vmt" )
-
-
-	PRECACHE_CONDITIONAL( MODEL, "models/germangibs.mdl", g_Language.GetInt() == LANGUAGE_GERMAN )
-	PRECACHE_CONDITIONAL( MODEL, "models/gibs/hgibs.mdl", g_Language.GetInt() != LANGUAGE_GERMAN )
 
 	PRECACHE( GAMESOUND, "Error" )
 	PRECACHE( GAMESOUND, "Hud.Hint" )
@@ -787,101 +777,6 @@ void CC_DrawCross( const CCommand &args )
 }
 static ConCommand drawcross("drawcross", CC_DrawCross, "Draws a cross at the given location\n\tArguments: x y z", FCVAR_CHEAT);
 
-
-//------------------------------------------------------------------------------
-// helper function for kill and explode
-//------------------------------------------------------------------------------
-void kill_helper( const CCommand &args, bool bVector, bool bExplode )
-{
-	bool bKillOther = args.ArgC() > ( bVector ? 4 : 1 );
-
-	CBasePlayer *pPlayer = NULL;
-
-	if ( bKillOther && sv_cheats->GetBool() )
-	{
-		// Find the matching netname
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-		{
-			pPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
-			if ( pPlayer && Q_strstr( pPlayer->GetPlayerName(), args[1] ) )
-				break;
-			pPlayer = NULL;
-		}
-	}
-	else
-	{
-		pPlayer = UTIL_GetCommandClient();
-	}
-
-	if ( !pPlayer )
-		return;
-
-	if ( bVector )
-	{
-		int i = bKillOther ? 2 : 1;
-		Vector vecForce;
-		vecForce.x = atof( args[i++] );
-		vecForce.y = atof( args[i++] );
-		vecForce.z = atof( args[i++] );
-
-		pPlayer->CommitSuicide( vecForce, bExplode );
-	}
-	else
-	{
-		pPlayer->CommitSuicide( bExplode );
-	}
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND( kill, "Kills the player with generic damage" )
-{
-	kill_helper( args, false, false );
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND( explode, "Kills the player with explosive damage" )
-{
-	kill_helper( args, false, true );
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND( killvector, "Kills a player applying force. Usage: killvector <player> <x value> <y value> <z value>" )
-{
-	kill_helper( args, true, false );
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND( explodevector, "Kills a player applying an explosive force. Usage: explodevector <player> <x value> <y value> <z value>" )
-{
-	kill_helper( args, true, true );
-}
-
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND_F( buddha, "Toggle.  Player takes damage but won't die. (Shows red cross when health is zero)", FCVAR_CHEAT )
-{
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( pPlayer )
-	{
-		if (pPlayer->m_debugOverlays & OVERLAY_BUDDHA_MODE)
-		{
-			pPlayer->m_debugOverlays &= ~OVERLAY_BUDDHA_MODE;
-			Msg("Buddha Mode off...\n");
-		}
-		else
-		{
-			pPlayer->m_debugOverlays |= OVERLAY_BUDDHA_MODE;
-			Msg("Buddha Mode on...\n");
-		}
-	}
-}
-
-
 #define TALK_INTERVAL 0.66 // min time between say commands from a client
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -917,33 +812,6 @@ CON_COMMAND( say_team, "Display player message to team" )
 		}
 	}
 }
-
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-CON_COMMAND( give, "Give item to player.\n\tArguments: <item_name>" )
-{
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( pPlayer 
-		&& (gpGlobals->maxClients == 1 || sv_cheats->GetBool()) 
-		&& args.ArgC() >= 2 )
-	{
-		char item_to_give[ 256 ];
-		Q_strncpy( item_to_give, args[1], sizeof( item_to_give ) );
-		Q_strlower( item_to_give );
-
-		// Dirty hack to avoid suit playing it's pickup sound
-		if ( !Q_stricmp( item_to_give, "item_suit" ) )
-		{
-			pPlayer->EquipSuit( false );
-			return;
-		}
-
-		string_t iszItem = AllocPooledString( item_to_give );	// Make a copy of the classname
-		pPlayer->GiveNamedItem( STRING(iszItem) );
-	}
-}
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1041,71 +909,6 @@ void CC_Player_TestDispatchEffect( const CCommand &args )
 }
 
 static ConCommand test_dispatcheffect("test_dispatcheffect", CC_Player_TestDispatchEffect, "Test a clientside dispatch effect.\n\tUsage: test_dispatcheffect <effect name> <distance away> <flags> <magnitude> <scale>\n\tDefaults are: <distance 1024> <flags 0> <magnitude 0> <scale 0>\n", FCVAR_CHEAT);
-
-#ifdef HL2_DLL
-//-----------------------------------------------------------------------------
-// Purpose: Quickly switch to the physics cannon, or back to previous item
-//-----------------------------------------------------------------------------
-void CC_Player_PhysSwap( void )
-{
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
-	
-	if ( pPlayer )
-	{
-		CBaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
-
-		if ( pWeapon )
-		{
-			// Tell the client to stop selecting weapons
-			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
-
-			const char *strWeaponName = pWeapon->GetName();
-
-			if ( !Q_stricmp( strWeaponName, "weapon_physcannon" ) )
-			{
-				PhysCannonForceDrop( pWeapon, NULL );
-				pPlayer->SelectLastItem();
-			}
-			else
-			{
-				pPlayer->SelectItem( "weapon_physcannon" );
-			}
-		}
-	}
-}
-static ConCommand physswap("phys_swap", CC_Player_PhysSwap, "Automatically swaps the current weapon for the physcannon and back again." );
-#endif
-
-//-----------------------------------------------------------------------------
-// Purpose: Quickly switch to the bug bait, or back to previous item
-//-----------------------------------------------------------------------------
-void CC_Player_BugBaitSwap( void )
-{
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
-	
-	if ( pPlayer )
-	{
-		CBaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
-
-		if ( pWeapon )
-		{
-			// Tell the client to stop selecting weapons
-			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
-
-			const char *strWeaponName = pWeapon->GetName();
-
-			if ( !Q_stricmp( strWeaponName, "weapon_bugbait" ) )
-			{
-				pPlayer->SelectLastItem();
-			}
-			else
-			{
-				pPlayer->SelectItem( "weapon_bugbait" );
-			}
-		}
-	}
-}
-static ConCommand bugswap("bug_swap", CC_Player_BugBaitSwap, "Automatically swaps the current weapon for the bug bait and back again.", FCVAR_CHEAT );
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1221,84 +1024,6 @@ bool FindEmptySpace( CBaseEntity *pEntity, unsigned int mask, const Vector &forw
 //------------------------------------------------------------------------------
 // Noclip
 //------------------------------------------------------------------------------
-ConVar noclip_fixup( "noclip_fixup", "1", FCVAR_CHEAT );
-void EnableNoClip( CBasePlayer *pPlayer )
-{
-	// Disengage from hierarchy
-	pPlayer->SetParent( NULL );
-	pPlayer->SetMoveType( MOVETYPE_NOCLIP );
-	ClientPrint( pPlayer, HUD_PRINTCONSOLE, "noclip ON\n");
-	pPlayer->AddEFlags( EFL_NOCLIP_ACTIVE );
-	pPlayer->NoClipStateChanged();
-
-	UTIL_LogPrintf( "%s entered NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
-}
-
-void DisableNoClip( CBasePlayer *pPlayer )
-{
-	CPlayerState *pl = pPlayer->PlayerData();
-	Assert( pl );
-
-	pPlayer->RemoveEFlags( EFL_NOCLIP_ACTIVE );
-	pPlayer->SetMoveType( MOVETYPE_WALK );
-
-	ClientPrint( pPlayer, HUD_PRINTCONSOLE, "noclip OFF\n");
-	Vector oldorigin = pPlayer->GetAbsOrigin();
-	unsigned int mask = MASK_PLAYERSOLID;
-	if ( noclip_fixup.GetBool() && !TestEntityPosition( pPlayer, mask ) )
-	{
-		Vector forward, right, up;
-
-		AngleVectors ( pl->v_angle, &forward, &right, &up);
-
-		if ( !FindEmptySpace( pPlayer, mask, forward, right, up, &oldorigin ) )
-		{
-			Msg( "Can't find the world\n" );
-		}
-
-		pPlayer->SetAbsOrigin( oldorigin );
-	}
-
-	pPlayer->NoClipStateChanged();
-
-	UTIL_LogPrintf( "%s left NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
-}
-
-CON_COMMAND_F( noclip, "Toggle. Player becomes non-solid and flies.  Optional argument of 0 or 1 to force enable/disable", FCVAR_CHEAT )
-{
-	if ( !sv_cheats->GetBool() )
-		return;
-
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( !pPlayer )
-		return;
-
-	if ( args.ArgC() >= 2 )
-	{
-		bool bEnable = Q_atoi( args.Arg( 1 ) ) ? true : false;
-		if ( bEnable && pPlayer->GetMoveType() != MOVETYPE_NOCLIP )
-		{
-			EnableNoClip( pPlayer );
-		}
-		else if ( !bEnable && pPlayer->GetMoveType() == MOVETYPE_NOCLIP )
-		{
-			DisableNoClip( pPlayer );
-		}
-	}
-	else
-	{
-		// Toggle the noclip state if there aren't any arguments.
-		if ( pPlayer->GetMoveType() != MOVETYPE_NOCLIP )
-		{
-			EnableNoClip( pPlayer );
-		}
-		else
-		{
-			DisableNoClip( pPlayer );
-		}
-	}
-}
-
 void EnableRDNoClip( CASW_Marine *pMarine )
 {
 	// Disengage from hierarchy
@@ -1379,30 +1104,6 @@ CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional
 		}
 	}
 }
-
-//------------------------------------------------------------------------------
-// Sets client to godmode
-//------------------------------------------------------------------------------
-void CC_God_f (void)
-{
-	if ( !sv_cheats->GetBool() )
-		return;
-
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( !pPlayer )
-		return;
-
-	if ( gpGlobals->deathmatch )
-		return;
-
-	pPlayer->ToggleFlag( FL_GODMODE );
-	if (!(pPlayer->GetFlags() & FL_GODMODE ) )
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "godmode OFF\n");
-	else
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "godmode ON\n");
-}
-
-static ConCommand god("god", CC_God_f, "Toggle. Player becomes invulnerable.", FCVAR_CHEAT );
 
 CON_COMMAND_F( ent_setpos, "Move entity to position", FCVAR_CHEAT )
 {
@@ -1646,54 +1347,6 @@ CON_COMMAND_F( setang_exact, "Snap player eyes and orientation to specified pitc
 
 
 }
-
-
-//------------------------------------------------------------------------------
-// Sets client to notarget mode.
-//------------------------------------------------------------------------------
-void CC_Notarget_f (void)
-{
-	if ( !sv_cheats->GetBool() )
-		return;
-
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( !pPlayer )
-		return;
-
-	if ( gpGlobals->deathmatch )
-		return;
-
-	pPlayer->ToggleFlag( FL_NOTARGET );
-	if ( !(pPlayer->GetFlags() & FL_NOTARGET ) )
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "notarget OFF\n");
-	else
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "notarget ON\n");
-}
-
-ConCommand notarget("notarget", CC_Notarget_f, "Toggle. Player becomes hidden to NPCs.", FCVAR_CHEAT);
-
-//------------------------------------------------------------------------------
-// Damage the client the specified amount
-//------------------------------------------------------------------------------
-void CC_HurtMe_f(const CCommand &args)
-{
-	if ( !sv_cheats->GetBool() )
-		return;
-
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
-	if ( !pPlayer )
-		return;
-
-	int iDamage = 10;
-	if ( args.ArgC() >= 2 )
-	{
-		iDamage = atoi( args[ 1 ] );
-	}
-
-	pPlayer->TakeDamage( CTakeDamageInfo( pPlayer, pPlayer, iDamage, DMG_GENERIC ) );
-}
-
-static ConCommand hurtme("hurtme", CC_HurtMe_f, "Hurts the player.\n\tArguments: <health to lose>", FCVAR_CHEAT);
 
 static bool IsInGroundList( CBaseEntity *ent, CBaseEntity *ground )
 {
