@@ -1024,6 +1024,7 @@ bool FindEmptySpace( CBaseEntity *pEntity, unsigned int mask, const Vector &forw
 //------------------------------------------------------------------------------
 // Noclip
 //------------------------------------------------------------------------------
+ConVar noclip_fixup( "noclip_fixup", "1", FCVAR_CHEAT );
 void EnableRDNoClip( CASW_Marine *pMarine )
 {
 	// Disengage from hierarchy
