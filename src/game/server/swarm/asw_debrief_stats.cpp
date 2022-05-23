@@ -86,8 +86,9 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iDamageAndFF7) ), m_iDamageAndFF7 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iShotsFiredAndHit7) ), m_iShotsFiredAndHit7 ),
 
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeaderboardScore) ), m_iLeaderboardScore ),
+
 	SendPropFloat(SENDINFO(m_fTimeTaken)),
-	SendPropInt(SENDINFO(m_iLeaderboardScore)),
 	SendPropInt(SENDINFO(m_iTotalKills)),
 	SendPropInt(SENDINFO(m_iEggKills)),
 	SendPropInt(SENDINFO(m_iParasiteKills)),

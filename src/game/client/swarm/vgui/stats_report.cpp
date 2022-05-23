@@ -14,6 +14,7 @@
 #include "c_playerresource.h"
 #include "vgui_avatarimage.h"
 #include "asw_briefing.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -120,10 +121,14 @@ void StatsReport::PerformLayout()
 	// align stat lines in a vertical list one after the other
 	for ( int i = 1; i < ASW_STATS_REPORT_CATEGORIES; i++ )
 	{
-		if ( i == 4 && ( !ASWGameRules() || ASWGameRules()->m_iLeaderboardScore < 0 ) )
+		if ( i == 4 )
 		{
-			m_pCategoryButtons[ i ]->SetVisible( false );
-			continue;
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() );
+			if ( !pMission || !pMission->HasTag( "points" ) )
+			{
+				m_pCategoryButtons[ i ]->SetVisible( false );
+				continue;
+			}
 		}
 
 		m_pCategoryButtons[ i ]->SetVisible( true );
@@ -304,7 +309,7 @@ void StatsReport::SetStatCategory( int nCategory )
 				break;
 
 			case 4:
-				m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->SetTimeline( nMarine ? NULL : &ASWGameRules()->m_TimelineLeaderboardScore );
+				m_pStatGraphPlayer->m_pStatGraphs[ nMarine ]->SetTimeline( &pMR->m_TimelineScore );
 				break;
 			}
 

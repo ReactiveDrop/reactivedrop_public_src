@@ -121,9 +121,10 @@ public:
 	CNetworkArray( unsigned int,		m_iDamageAndFF7,				ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( unsigned int,		m_iShotsFiredAndHit7,			ASW_MAX_MARINE_RESOURCES );
 
+	CNetworkArray( int, m_iLeaderboardScore, ASW_MAX_MARINE_RESOURCES );
+
 	// for the team
 	CNetworkVar( float,		m_fTimeTaken );
-	CNetworkVar( int,		m_iLeaderboardScore );
 	CNetworkVar( int,		m_iTotalKills );
 	CNetworkVar( int,		m_iEggKills );
 	CNetworkVar( int,		m_iParasiteKills );

@@ -20,6 +20,8 @@
 #include "usermessages.h"
 #include "c_asw_player.h"
 #include <vgui/ILocalize.h>
+#include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 
 #include "hud_basechat.h"
 
@@ -524,17 +526,19 @@ void CASWHudObjective::OnTick()
 
 	UpdateObjectiveList();
 
-	C_AlienSwarm *pGameRules = ASWGameRules();
-	if ( pGameRules )
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pSpectatedMarine = pLocalPlayer ? pLocalPlayer->GetSpectatingMarine() : NULL;
+	if ( C_ASW_Marine_Resource *pMR = pSpectatedMarine ? pSpectatedMarine->GetMarineResource() : NULL )
 	{
 		bool bSetPointsText = false;
-		if ( pGameRules->m_iLeaderboardScore != m_iPointsCache )
+		if ( pMR->m_iScore != m_iPointsCache )
 		{
-			m_pPointsText->SetVisible( pGameRules->m_iLeaderboardScore >= 0 );
+			m_pPointsText->SetVisible( pMR->m_iScore >= 0 );
 			InvalidateLayout();
 
-			m_iPointsLerp += pGameRules->m_iLeaderboardScore - m_iPointsCache;
-			m_iPointsCache = pGameRules->m_iLeaderboardScore;
+			m_iPointsLerp += pMR->m_iScore - m_iPointsCache;
+			m_iPointsCache = pMR->m_iScore;
+			m_iPointsLerp = MIN( m_iPointsLerp, m_iPointsCache );
 
 			if ( !m_fPointsLerpDeadline )
 				m_fPointsLerpDeadline = gpGlobals->curtime + rd_points_delay_max.GetFloat();

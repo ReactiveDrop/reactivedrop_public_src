@@ -64,6 +64,7 @@ public:
 	void InputSetTutorialStage( inputdata_t & inputdata );
 	void InputAddPoints( inputdata_t & inputdata );
 	void InputModifyDifficulty( inputdata_t & inputdata );
+	void InputMarineFinishedMission( inputdata_t & inputdata );
 	void OnMissionStart();
 
 	COutputInt m_OnDifficulty;
@@ -488,8 +489,6 @@ public:
 	CNetworkVar(bool, m_bMissionSuccess);
 	CNetworkVar(bool, m_bMissionFailed);
 	CNetworkVar(float, m_fMissionStartedTime);
-	CNetworkVar( int, m_iLeaderboardScore );
-	CNetworkVarEmbedded( CTimeline, m_TimelineLeaderboardScore );
 
 	// fail advice
 	CNetworkVar(int, m_nFailAdvice);

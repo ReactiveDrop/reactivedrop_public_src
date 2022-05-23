@@ -1206,7 +1206,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		DevMsg( "Preparing leaderboard entry for leaderboards %s and %s\n", szLeaderboardName, szDifficultyLeaderboardName );
 	}
 
-	m_iLeaderboardScore = GetDebriefStats()->m_iLeaderboardScore;
+	m_iLeaderboardScore = GetDebriefStats()->m_iLeaderboardScore[iMR];
 	m_LeaderboardScoreDetails.m_iVersion = 2;
 	m_LeaderboardScoreDetails.m_iMarine = pMR->GetProfileIndex();
 	m_LeaderboardScoreDetails.m_iSquadSize = ASWGameResource()->GetNumMarineResources();

@@ -737,8 +737,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_iMissionWorkshopID)),
 		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
-		RecvPropInt(RECVINFO(m_iLeaderboardScore)),
-		RecvPropDataTable(RECVINFO_DT(m_TimelineLeaderboardScore), 0, &REFERENCE_RECV_TABLE(DT_Timeline)),
 		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
@@ -774,8 +772,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_iMissionWorkshopID), 64, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
-		SendPropInt(SENDINFO(m_iLeaderboardScore)),
-		SendPropDataTable(SENDINFO_DT(m_TimelineLeaderboardScore), &REFERENCE_SEND_TABLE(DT_Timeline)),
 		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 	#endif
 END_NETWORK_TABLE()
@@ -789,6 +785,7 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "ModifyDifficulty", InputModifyDifficulty ),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "MarineFinishedMission", InputMarineFinishedMission ),
 	DEFINE_OUTPUT( m_OnDifficulty, "OnDifficulty" ),
 	DEFINE_OUTPUT( m_OnOnslaught, "OnOnslaught" ),
 	DEFINE_OUTPUT( m_OnFriendlyFire, "OnFriendlyFire" ),
@@ -875,11 +872,11 @@ void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 
 void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 {
-	CAlienSwarm *pGameRules = ASWGameRules();
-	Assert( pGameRules );
-	if ( !pGameRules || pGameRules->m_iLeaderboardScore < 0 )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	Assert( pGameResource );
+	if ( !pGameResource )
 	{
-		Warning( "Cannot AddPoints on this map: overview not tagged with 'points' or mission not yet started.\n" );
+		Warning( "Cannot AddPoints: cannot find game resource\n" );
 		return;
 	}
 
@@ -889,16 +886,34 @@ void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 		return;
 	}
 
-	int64_t iTotal = int64_t( pGameRules->m_iLeaderboardScore ) + int64_t( inputdata.value.Int() );
-	if ( iTotal < 0 || iTotal > INT32_MAX )
+	int iMaxScore = inputdata.value.Int();
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
-		Warning( "AddPoints would overflow by %d - clamping.\n", int( iTotal - INT32_MAX ) );
-		iTotal = INT32_MAX;
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
+			continue;
+
+		if ( pMR->m_iScore < 0 )
+		{
+			Warning( "Cannot AddPoints on this map: overview not tagged with 'points' or mission not yet started.\n" );
+			return;
+		}
+
+		int64_t iTotal = int64_t( pMR->m_iScore ) + int64_t( inputdata.value.Int() );
+		if ( iTotal < 0 || iTotal > INT32_MAX )
+		{
+			Warning( "AddPoints would overflow by %d - clamping.\n", int( iTotal - INT32_MAX ) );
+			iTotal = INT32_MAX;
+		}
+
+		pMR->m_TimelineScore.RecordValue( iTotal - pMR->m_iScore );
+		pMR->m_iScore = iTotal;
+
+		iMaxScore = MAX( iMaxScore, pMR->m_iScore );
 	}
 
-	pGameRules->m_TimelineLeaderboardScore.RecordValue( iTotal - pGameRules->m_iLeaderboardScore );
-	pGameRules->m_iLeaderboardScore = iTotal;
-	m_TotalPoints.Set( pGameRules->m_iLeaderboardScore, inputdata.pActivator, inputdata.pCaller );
+	m_TotalPoints.Set( iMaxScore, inputdata.pActivator, inputdata.pCaller );
 
 	CBroadcastRecipientFilter filter;
 	UserMessageBegin( filter, "ShowObjectives" );
@@ -926,19 +941,52 @@ void CAlienSwarmProxy::InputModifyDifficulty( inputdata_t & inputdata )
 	m_MissionDifficulty.Set( iNewDifficulty, inputdata.pActivator, inputdata.pCaller );
 }
 
+void CAlienSwarmProxy::InputMarineFinishedMission( inputdata_t & inputdata )
+{
+	CBaseEntity *pEnt = inputdata.value.Entity();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt );
+	if ( !pMarine )
+	{
+		Warning( "Cannot MarineFinishedMission on something that is not a marine (%s)\n", pEnt ? pEnt->GetDebugName() : "<<NULL>>" );
+		return;
+	}
+
+	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
+	if ( !pGameRules || pGameRules->GetGameState() != ASW_GS_INGAME )
+	{
+		Warning( "Cannot MarineFinishedMission when mission is not active.\n" );
+		return;
+	}
+
+	CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+	if ( pMR )
+	{
+		pMR->m_flFinishedMissionTime = gpGlobals->curtime - pGameRules->m_fMissionStartedTime;
+	}
+}
+
 void CAlienSwarmProxy::OnMissionStart()
 {
-	CAlienSwarm *pGameRules = ASWGameRules();
+	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( STRING( gpGlobals->mapname ) ) )
 	{
 		if ( pMission->HasTag( "points" ) )
 		{
-			pGameRules->m_iLeaderboardScore = 0;
 			m_TotalPoints.Set( 0, this, this );
-			pGameRules->m_TimelineLeaderboardScore.ClearAndStart();
+
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				pMR->m_iScore = 0;
+			}
 		}
 	}
 
+	CAlienSwarm *pGameRules = ASWGameRules();
 	m_OnDifficulty.Set( pGameRules->GetSkillLevel(), this, this );
 	m_OnOnslaught.Set( pGameRules->IsOnslaught() ? 1 : 0, this, this );
 	m_OnFriendlyFire.Set( pGameRules->IsHardcoreFF() ? 1 : 0, this, this );
@@ -1462,8 +1510,6 @@ CAlienSwarm::CAlienSwarm()
 
 	m_bDeathCamSlowdown = asw_marine_death_cam_slowdown.GetBool();
 	m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
-	m_iLeaderboardScore = -1;
-	m_TimelineLeaderboardScore.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 
 	m_szApproximatePingLocation.GetForModify()[0] = '\0';
 	m_bObtainedPingLocation = false;
@@ -4489,10 +4535,9 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			pMR->m_TimelineHealth.RecordFinalValue( pMarine ? pMarine->GetHealth() : 0.0f );
 			pMR->m_TimelinePosX.RecordFinalValue( pMarine ? pMarine->GetAbsOrigin().x : pMR->m_TimelinePosX.GetValueAtInterp( 1.0f ) );
 			pMR->m_TimelinePosY.RecordFinalValue( pMarine ? pMarine->GetAbsOrigin().y : pMR->m_TimelinePosY.GetValueAtInterp( 1.0f ) );
+			pMR->m_TimelineScore.RecordFinalValue( 0.0f );
 		}
 	}
-
-	m_TimelineLeaderboardScore.RecordFinalValue( 0.0f );
 
 	// award medals	
 #ifndef _DEBUG
@@ -4653,11 +4698,22 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		// fill in debrief stats team stats/time taken/etc
 		m_hDebriefStats->m_iTotalKills = iTotalKills;
 		m_hDebriefStats->m_fTimeTaken = gpGlobals->curtime - m_fMissionStartedTime;
-		m_hDebriefStats->m_iLeaderboardScore = int( m_hDebriefStats->m_fTimeTaken * 1000 );
 
-		if ( m_iLeaderboardScore > -1 )
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
-			m_hDebriefStats->m_iLeaderboardScore = m_iLeaderboardScore;
+			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( pMR && pMR->m_iScore > -1 )
+			{
+				m_hDebriefStats->m_iLeaderboardScore.GetForModify( i ) = pMR->m_iScore;
+			}
+			else if ( pMR && pMR->m_flFinishedMissionTime >= 0 )
+			{
+				m_hDebriefStats->m_iLeaderboardScore.GetForModify( i ) = int( pMR->m_flFinishedMissionTime * 1000 );
+			}
+			else
+			{
+				m_hDebriefStats->m_iLeaderboardScore.GetForModify( i ) = int( m_hDebriefStats->m_fTimeTaken * 1000 );
+			}
 		}
 
 		// calc the speedrun time

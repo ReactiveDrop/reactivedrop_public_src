@@ -86,8 +86,9 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Debrief_Stats, DT_ASW_Debrief_Stats, CASW_Debrief
 	RecvPropArray( RecvPropInt( RECVINFO(m_iDamageAndFF7[0]) ), m_iDamageAndFF7 ),
 	RecvPropArray( RecvPropInt( RECVINFO(m_iShotsFiredAndHit7[0]) ), m_iShotsFiredAndHit7 ),
 
+	RecvPropArray( RecvPropInt( RECVINFO(m_iLeaderboardScore[0]) ), m_iLeaderboardScore ),
+
 	RecvPropFloat(RECVINFO(m_fTimeTaken)),
-	RecvPropInt(RECVINFO(m_iLeaderboardScore)),
 	RecvPropInt(RECVINFO(m_iTotalKills)),
 	RecvPropInt(RECVINFO(m_iEggKills)),
 	RecvPropInt(RECVINFO(m_iParasiteKills)),
