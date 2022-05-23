@@ -234,7 +234,7 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 		{
 			if ( pEntry->m_szCampaign[0] )
 			{
-				engine->ServerCmd( CFmtStr( "asw_vote_campaign %s %d", pEntry->m_szMission, ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) ) );
+				engine->ServerCmd( CFmtStr( "asw_vote_campaign %d %s", ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ), pEntry->m_szMission ) );
 			}
 			else
 			{

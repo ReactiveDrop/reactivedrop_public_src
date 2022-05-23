@@ -7468,10 +7468,15 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 
 	IASW_Mission_Chooser_Source* pMissionSource = missionchooser->LocalMissionSource();
 
-	if (iVoteType == ASW_VOTE_CHANGE_MISSION && !pMissionSource->MissionExists(szVoteName, true))
+	const RD_Mission_t *pMission = NULL;
+	if (iVoteType == ASW_VOTE_CHANGE_MISSION )
 	{
-		ClientPrint(pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_mission_doesnt_exist");
-		return;
+		pMission = ReactiveDropMissions::GetMission( szVoteName );
+		if ( !pMission )
+		{
+			ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_mission_doesnt_exist" );
+			return;
+		}
 	}
 	if (iVoteType == ASW_VOTE_SAVED_CAMPAIGN && !pMissionSource->SavedCampaignExists(szVoteName))
 	{
@@ -7479,13 +7484,13 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 		return;
 	}
 
-	ASW_Mission_Chooser_Mission *pContainingCampaign = NULL;
+	const RD_Campaign_t *pContainingCampaign = NULL;
 	if ( iVoteType == ASW_VOTE_CHANGE_MISSION && nCampaignIndex != -1 )
 	{
-		pContainingCampaign = pMissionSource->GetCampaign( nCampaignIndex );
+		pContainingCampaign = ReactiveDropMissions::GetCampaign( nCampaignIndex );
 		if ( !pContainingCampaign )
 		{
-			ClientPrint(pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_campaign_doesnt_exist");
+			ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_campaign_doesnt_exist" );
 			return;
 		}
 	}
@@ -7496,7 +7501,7 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	// store a pretty description if we can
 	if (iVoteType == ASW_VOTE_CHANGE_MISSION)
 	{		
-		Q_strncpy( m_szCurrentVoteDescription.GetForModify(), pMissionSource->GetPrettyMissionName(szVoteName), 128 );
+		Q_strncpy( m_szCurrentVoteDescription.GetForModify(), STRING( pMission->MissionTitle ), 128 );
 		Q_strncpy( m_szCurrentVoteMapName.GetForModify(), szVoteName, 128 );
 		if ( !pContainingCampaign )
 		{
@@ -7504,7 +7509,7 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 		}
 		else
 		{
-			Q_strncpy( m_szCurrentVoteCampaignName.GetForModify(), pContainingCampaign->m_szMissionName, 128 );
+			Q_strncpy( m_szCurrentVoteCampaignName.GetForModify(), pContainingCampaign->BaseName, 128 );
 		}
 	}
 	else if (iVoteType == ASW_VOTE_SAVED_CAMPAIGN)
