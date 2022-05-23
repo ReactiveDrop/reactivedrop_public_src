@@ -2332,6 +2332,13 @@ bool C_BaseEntity::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, int
 //-----------------------------------------------------------------------------
 void C_BaseEntity::SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights )
 {
+	// BenLubar: clear weights so prop_dynamic instances of models with flex support don't glitch out.
+	int nSizeInBytes = nFlexWeightCount * sizeof( float );
+	memset( pFlexWeights, 0, nSizeInBytes );
+	if ( pFlexDelayedWeights )
+	{
+		memset( pFlexDelayedWeights, 0, nSizeInBytes );
+	}
 }
 
 
