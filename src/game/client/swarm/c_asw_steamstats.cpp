@@ -1627,27 +1627,19 @@ static const char *LB_whitelist[] =
 	"RD_imba_SpeedRun_935767408_asbicarnagex2/",
 
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng/",
-
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng_c2/",
-
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng2/",
-
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng2_c2/",
-
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng3/",
-
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng3_c2/",
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng4/",
+	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng4_c2/",
 
 	"RD_SpeedRun_2178770089_turbo/",
-
 	"RD_SpeedRun_2178770089_turboasbi/",
-
 	"RD_SpeedRun_2178770089_turbosingleplayer/",
-
 	"RD_SpeedRun_2178770089_turboasbisingleplayer/",
-
 	"RD_SpeedRun_2178770089_turbo_asbi_wb_rng2/",
-
 	"RD_SpeedRun_2178770089_turbo_asbi_wb_rng2_c2/",
 
 	"RD_SpeedRun_2381921032_asbi2077/",
