@@ -23,7 +23,7 @@
 #include "game.h"
 #include "player_resource.h"
 #include "engine/IEngineSound.h"
-
+#include "game_timescale_shared.h"
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -51,6 +51,13 @@ void ClientPutInServer( edict_t *pEdict, const char *playername )
 	// Allocate a CBasePlayer for pev, and call spawn
 	CASW_Player *pPlayer = CASW_Player::CreatePlayer( "player", pEdict );
 	pPlayer->SetPlayerName( playername );
+
+	// Send the current (or next) timescale
+	CSingleUserRecipientFilter filter( pPlayer );
+	filter.MakeReliable();
+	UserMessageBegin( filter, "CurrentTimescale" );
+	WRITE_FLOAT( GameTimescale()->GetDesiredTimescale() );
+	MessageEnd();
 }
 
 
