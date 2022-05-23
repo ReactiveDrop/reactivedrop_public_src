@@ -1072,6 +1072,72 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	}
 }
 
+#ifdef GAME_DLL
+class LoadWorkshopCollection_t
+{
+public:
+	LoadWorkshopCollection_t( SteamAPICall_t hCall )
+	{
+		m_QueryCompletedCall.SetGameserverFlag();
+		m_QueryCompletedCall.Set( hCall, this, &LoadWorkshopCollection_t::QueryCompletedCall );
+	}
+
+	CCallResult<LoadWorkshopCollection_t, SteamUGCQueryCompleted_t> m_QueryCompletedCall;
+	void QueryCompletedCall( SteamUGCQueryCompleted_t *pResult, bool bIOFailure )
+	{
+		delete this;
+
+		if ( bIOFailure )
+		{
+			Warning( "Workshop collection query failed. (IO failure)\n" );
+			return;
+		}
+
+		if ( pResult->m_eResult != k_EResultOK )
+		{
+			Warning( "Workshop collection query failed. (eresult %d)\n", pResult->m_eResult );
+			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		if ( !pResult->m_unNumResultsReturned )
+		{
+			Warning( "Workshop collection query failed. (no results)\n" );
+			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		SteamUGCDetails_t details;
+		if ( !SteamGameServerUGC()->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+		{
+			Warning( "Workshop collection query failed. (failed to get result)\n" );
+			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		PublishedFileId_t *children = (PublishedFileId_t *)stackalloc( sizeof( PublishedFileId_t ) * details.m_unNumChildren );
+		if ( !SteamGameServerUGC()->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
+		{
+			Warning( "Workshop collection query failed. (failed to get children)\n" );
+			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
+		{
+			if ( !s_ServerWorkshopAddons.IsValidIndex( s_ServerWorkshopAddons.Find( children[i] ) ) )
+			{
+				s_ServerWorkshopAddons.AddToTail( children[i] );
+			}
+
+			UpdateAndLoadAddon( children[i], false, true );
+		}
+
+		SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+	}
+};
+#endif
+
 static void RealLoadAddon( PublishedFileId_t id )
 {
 	if ( s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) )
@@ -1090,6 +1156,33 @@ static void RealLoadAddon( PublishedFileId_t id )
 	if ( !pWorkshop )
 	{
 		Warning( "Cannot load addon %llu: no access to the Steam Workshop API!\n", id );
+		return;
+	}
+
+	if ( pWorkshop->GetItemState( id ) & k_EItemStateLegacyItem )
+	{
+#ifdef CLIENT_DLL
+		if ( cl_workshop_debug.GetBool() )
+#else
+		if ( sv_workshop_debug.GetBool() )
+#endif
+			Msg( "UGC item %llu is a legacy item; assuming collection.\n", id );
+
+#ifdef GAME_DLL
+		if ( engine->IsDedicatedServer() )
+		{
+			UGCQueryHandle_t hQuery = pWorkshop->CreateQueryUGCDetailsRequest( &id, 1 );
+			pWorkshop->SetReturnOnlyIDs( hQuery, true );
+			pWorkshop->SetReturnChildren( hQuery, true );
+			pWorkshop->SetAllowCachedResponse( hQuery, 300 );
+			new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
+		}
+		else
+#endif
+		{
+			Warning( "Subscribing to collections is only supported on dedicated servers. Let Ben know if you saw this message in-game.\n" );
+		}
+
 		return;
 	}
 
