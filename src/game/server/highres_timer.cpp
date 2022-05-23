@@ -4,16 +4,32 @@
 #pragma comment(lib, "ntdll.lib")
 extern "C" NTSYSAPI NTSTATUS NTAPI NtSetTimerResolution( ULONG DesiredResolution, BOOLEAN SetResolution, PULONG CurrentResolution );
 
-void winmm_timer_acquire_once( float ms )
+static float prev = 0.0f;
+
+void highres_timer_set( float ms )
 {
-	static ULONG newRes = NULL;
+	if ( ms != prev ) {
 
-	if ( !newRes ) 
-	{
-		ULONG requestRes = ms * 1000;
+		ConMsg( "[timer] requested: %f ms\n", ms );
+
 		ULONG currentRes;
+		ULONG desiredRes = 15.0f; // 15 ms os default
+		bool apply = true;
 
-		newRes = NtSetTimerResolution( round(ms * 1000), TRUE, &currentRes );
-		DevMsg( "timer resolution changed from %d to %d ns\n", currentRes, newRes );
+		// if zero or negative, restore default os timer resolution
+		if ( ms > 0.00001f ) {
+			desiredRes = round( ms * 1000 * 100 );
+			ConMsg( "[timer] resolution requested: %d\n", desiredRes );
+		}
+		else
+		{
+			ConMsg( "[timer] restoring default os settings.\n" );
+			apply = false; // ignore desiredRes and reset to os default
+		}
+
+		// specifies the amount of time that should elapse between each timer interrupt, in 100-nanosecond units
+		NtSetTimerResolution( desiredRes, apply, &currentRes );
 	}
+
+	prev = ms;
 }
