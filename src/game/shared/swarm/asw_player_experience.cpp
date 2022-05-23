@@ -450,7 +450,7 @@ void CASW_Player::RequestExperience()
 		m_bPendingSteamStats = true;
 		m_flPendingSteamStatsStart = gpGlobals->curtime;
 	}	
-#else
+#elif defined(USE_XP_FROM_STEAM)
 	Assert( SteamUserStats() );
 	if ( SteamUserStats() )
 	{
