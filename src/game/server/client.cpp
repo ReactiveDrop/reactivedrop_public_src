@@ -1025,6 +1025,48 @@ bool FindEmptySpace( CBaseEntity *pEntity, unsigned int mask, const Vector &forw
 // Noclip
 //------------------------------------------------------------------------------
 ConVar noclip_fixup( "noclip_fixup", "1", FCVAR_CHEAT );
+void EnableNoClip( CBasePlayer *pPlayer )
+{
+	// Disengage from hierarchy
+	pPlayer->SetParent( NULL );
+	pPlayer->SetMoveType( MOVETYPE_NOCLIP );
+	ClientPrint( pPlayer, HUD_PRINTCONSOLE, "noclip ON\n" );
+	pPlayer->AddEFlags( EFL_NOCLIP_ACTIVE );
+	pPlayer->NoClipStateChanged();
+
+	UTIL_LogPrintf( "%s entered NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
+}
+
+void DisableNoClip( CBasePlayer *pPlayer )
+{
+	CPlayerState *pl = pPlayer->PlayerData();
+	Assert( pl );
+
+	pPlayer->RemoveEFlags( EFL_NOCLIP_ACTIVE );
+	pPlayer->SetMoveType( MOVETYPE_WALK );
+
+	ClientPrint( pPlayer, HUD_PRINTCONSOLE, "noclip OFF\n" );
+	Vector oldorigin = pPlayer->GetAbsOrigin();
+	unsigned int mask = MASK_PLAYERSOLID;
+	if ( noclip_fixup.GetBool() && !TestEntityPosition( pPlayer, mask ) )
+	{
+		Vector forward, right, up;
+
+		AngleVectors( pl->v_angle, &forward, &right, &up );
+
+		if ( !FindEmptySpace( pPlayer, mask, forward, right, up, &oldorigin ) )
+		{
+			Msg( "Can't find the world\n" );
+		}
+
+		pPlayer->SetAbsOrigin( oldorigin );
+	}
+
+	pPlayer->NoClipStateChanged();
+
+	UTIL_LogPrintf( "%s left NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
+}
+
 void EnableRDNoClip( CASW_Marine *pMarine )
 {
 	// Disengage from hierarchy
