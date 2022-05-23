@@ -276,7 +276,9 @@ bool IsDamagingWeapon( const char* szWeaponName, bool bIsExtraEquip )
 			!Q_strcmp( szWeaponName, "asw_weapon_heal_gun" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_healamp_gun" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_fire_extinguisher" ) ||
-			!Q_strcmp( szWeaponName, "asw_weapon_t75" ) )
+			!Q_strcmp( szWeaponName, "asw_weapon_t75" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_ammo_bag" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_medical_satchel" ) )
 			return false;
 		else
 			return true;
