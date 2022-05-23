@@ -210,14 +210,19 @@ static bool DedicatedServerWorkshopSetup()
 		return true;
 	}
 
-	if ( rd_workshop_use_reactivedrop_folder.GetBool() )
+	static bool s_bInitWorkshopFolderOnce = false;
+	if ( rd_workshop_use_reactivedrop_folder.GetBool() && !s_bInitWorkshopFolderOnce )
 	{
 		char szDir[MAX_PATH];
 		UTIL_GetModDir( szDir, sizeof( szDir ) );
 		char szWorkshopDir[MAX_PATH];
 		V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
 
-		SteamGameServerUGC()->BInitWorkshopForGameServer(563560, szWorkshopDir);
+		s_bInitWorkshopFolderOnce = SteamGameServerUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+		if ( !s_bInitWorkshopFolderOnce )
+		{
+			Warning( "Workshop init failed! Trying to continue anyway...\n" );
+		}
 	}
 
 	s_bAnyServerUpdates = false;
@@ -391,6 +396,7 @@ void CReactiveDropWorkshop::OnUnsubscribed( RemoteStoragePublishedFileUnsubscrib
 
 void CReactiveDropWorkshop::OnMissionStart()
 {
+#ifdef CLIENT_DLL
 	if ( !SteamUGC() )
 	{
 		return;
@@ -405,6 +411,7 @@ void CReactiveDropWorkshop::OnMissionStart()
 	}
 
 	SteamUGC()->StartPlaytimeTracking( active.Base(), active.Count() );
+#endif
 }
 
 void CReactiveDropWorkshop::LevelInitPostEntity()
@@ -419,6 +426,7 @@ void CReactiveDropWorkshop::LevelInitPostEntity()
 
 void CReactiveDropWorkshop::LevelShutdownPreEntity()
 {
+#ifdef CLIENT_DLL
 	if ( !SteamUGC() )
 	{
 		return;
@@ -426,7 +434,6 @@ void CReactiveDropWorkshop::LevelShutdownPreEntity()
 
 	SteamUGC()->StopPlaytimeTrackingForAllItems();
 
-#ifdef CLIENT_DLL
 	ClearOldPreviewRequests();
 
 	FOR_EACH_VEC( s_DelayedLoadAddons, i )
@@ -489,6 +496,12 @@ void CReactiveDropWorkshop::SetupThink()
 			Msg( "Download pending for workshop item %llu\n", id );
 			bWaitingForAny = true;
 		}
+		else if ( iItemState & k_EItemStateNeedsUpdate )
+		{
+			Msg( "Workshop item %llu needs update\n", id );
+			SteamGameServerUGC()->DownloadItem( id, false );
+			bWaitingForAny = true;
+		}
 	}
 
 	if ( !bWaitingForAny )
@@ -507,60 +520,62 @@ void WorkshopSetupThink()
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 {
-	if ( !engine->IsInGame() )
+	if ( !engine->IsInGame() || !ASWGameRules() )
 	{
 		return;
 	}
 
-	CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
-	if ( pCampaign )
+	char szMission[256]{};
+	const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( MapName() );
+	if ( !pMission )
 	{
-		CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaign->GetMissionByMapName( MapName() );
-		if ( pMission )
+		return;
+	}
+
+	if ( const wchar_t *pwszMission = g_pVGuiLocalize->Find( STRING( pMission->MissionTitle ) ) )
+	{
+		V_UnicodeToUTF8( pwszMission, szMission, sizeof( szMission ) );
+	}
+	else
+	{
+		V_strncpy( szMission, STRING( pMission->MissionTitle ), sizeof( szMission ) );
+	}
+
+	char szCampaign[256]{};
+	if ( CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo() )
+	{
+		if ( const wchar_t *pwszCampaign = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
 		{
-			char szCampaignName[256];
-			if ( const wchar_t *pwszCampaignName = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
-			{
-				V_UnicodeToUTF8( pwszCampaignName, szCampaignName, sizeof( szCampaignName ) );
-			}
-			else
-			{
-				V_strncpy( szCampaignName, STRING( pCampaign->m_CampaignName ), sizeof( szCampaignName ) );
-			}
-
-			char szMissionName[256];
-			if ( const wchar_t *pwszMissionName = g_pVGuiLocalize->Find( STRING( pMission->m_MissionName ) ) )
-			{
-				V_UnicodeToUTF8( pwszMissionName, szMissionName, sizeof( szMissionName ) );
-			}
-			else
-			{
-				V_strncpy( szMissionName, STRING( pMission->m_MissionName ), sizeof( szMissionName ) );
-			}
-
-			char szName[512];
-			Q_snprintf( szName, sizeof( szName ), "%s: %s", szCampaignName, szMissionName );
-
-			extern ConVar rd_challenge;
-			if ( Q_strcmp( rd_challenge.GetString(), "0" ) )
-			{
-				const char *pszChallengeName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
-				char szChallengeName[256];
-				if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( pszChallengeName ) )
-				{
-					V_UnicodeToUTF8( pwszChallengeName, szChallengeName, sizeof( szChallengeName ) );
-				}
-				else
-				{
-					V_strncpy( szChallengeName, pszChallengeName, sizeof( szChallengeName ) );
-				}
-				V_strncat( szName, " (", sizeof( szName ) );
-				V_strncat( szName, szChallengeName, sizeof( szName ) );
-				V_strncat( szName, ")", sizeof( szName ) );
-			}
-
-			SteamScreenshots()->SetLocation( pReady->m_hLocal, szName );
+			V_UnicodeToUTF8( pwszCampaign, szCampaign, sizeof( szCampaign ) );
 		}
+		else
+		{
+			V_strncpy( szCampaign, STRING( pCampaign->m_CampaignName ), sizeof( szCampaign ) );
+		}
+
+		V_strcat( szCampaign, ": ", sizeof( szCampaign ) );
+	}
+
+	char szName[512]{};
+	extern ConVar rd_challenge;
+	if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		V_snprintf( szName, sizeof( szName ), "%s%s", szCampaign, szMission );
+	}
+	else
+	{
+		const char *pszChallenge = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+		char szChallenge[256]{};
+		if ( const wchar_t *pwszChallenge = g_pVGuiLocalize->Find( pszChallenge ) )
+		{
+			V_UnicodeToUTF8( pwszChallenge, szChallenge, sizeof( szChallenge ) );
+		}
+		else
+		{
+			V_strncpy( szChallenge, pszChallenge, sizeof( szChallenge ) );
+		}
+
+		V_snprintf( szName, sizeof( szName ), "%s%s (%s)", szCampaign, szMission, szChallenge );
 	}
 
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && ASWGameResource() )
@@ -915,7 +930,7 @@ static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 	CASW_Campaign_Info *pInfo = ASWGameRules()->GetCampaignInfo();
 	if ( pInfo )
 	{
-		Q_snprintf( tempfile, sizeof(tempfile), "resource/campaigns/%s.txt", pInfo->m_szCampaignFilename );
+		V_snprintf( tempfile, sizeof(tempfile), "resource/campaigns/%s.txt", pInfo->m_szCampaignFilename );
 		MaybeAddAddonByFile( active, tempfile );
 	}
 
@@ -924,7 +939,7 @@ static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 
 	// addon that includes the challenge file
 	extern ConVar rd_challenge;
-	if ( Q_strcmp( rd_challenge.GetString(), "0" ) )
+	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		MaybeAddAddon( active, ReactiveDropChallenges::WorkshopID( rd_challenge.GetString() ) );
 	}
@@ -949,7 +964,7 @@ CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 {
 	for ( int i = 0; i < s_FileNameToAddon.GetNumStrings(); i++ )
 	{
-		Msg( "  %s -> %llu\n", s_FileNameToAddon.String( i ), s_FileNameToAddon[i] );
+		ConMsg( "  %s -> %llu\n", s_FileNameToAddon.String( i ), s_FileNameToAddon[i] );
 	}
 }
 
@@ -1087,7 +1102,7 @@ static void RealLoadAddon( PublishedFileId_t id )
 		return;
 	}
 	char vpkname[MAX_PATH];
-	Q_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
+	V_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
 
 #ifdef CLIENT_DLL
 	if ( cl_workshop_debug.GetBool() )
@@ -1145,7 +1160,7 @@ static void RealLoadAddon( PublishedFileId_t id )
 static void LoadAddon( PublishedFileId_t id, bool bFromDownload )
 {
 #ifdef CLIENT_DLL
-	if ( engine->IsConnected() )
+	if ( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
 		s_DelayedUnloadAddons.FindAndRemove( id );
 		if ( !s_DelayedLoadAddons.IsValidIndex( s_DelayedLoadAddons.Find( id ) ) )
@@ -1366,9 +1381,9 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		if ( StringHasPrefix( filenames[i], "resource/campaigns/" ) )
 		{
 			char szFileName[MAX_PATH];
-			Q_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
+			V_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
 			char szFileNameVerify[MAX_PATH];
-			Q_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/campaigns/%s.txt", szFileName );
+			V_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/campaigns/%s.txt", szFileName );
 
 			if ( FStrEq( filenames[i], szFileNameVerify ) )
 			{
@@ -1434,9 +1449,9 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		if ( StringHasPrefix( filenames[i], "resource/overviews/" ) )
 		{
 			char szFileName[MAX_PATH];
-			Q_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
+			V_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
 			char szFileNameVerify[MAX_PATH];
-			Q_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/overviews/%s.txt", szFileName );
+			V_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/overviews/%s.txt", szFileName );
 
 			if ( FStrEq( filenames[i], szFileNameVerify ) )
 			{
@@ -1480,9 +1495,9 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		if ( StringHasPrefix( filenames[i], "resource/challenges/" ) )
 		{
 			char szFileName[MAX_PATH];
-			Q_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
+			V_FileBase( filenames[i], szFileName, sizeof( szFileName ) );
 			char szFileNameVerify[MAX_PATH];
-			Q_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/challenges/%s.txt", szFileName );
+			V_snprintf( szFileNameVerify, sizeof( szFileNameVerify ), "resource/challenges/%s.txt", szFileName );
 
 			if ( FStrEq( filenames[i], szFileNameVerify ) )
 			{
@@ -1516,7 +1531,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		return false;
 	}
 	char szPath[MAX_PATH];
-	Q_ComposeFileName( szModDir, VarArgs( "steam_ugc_temp_%llu", SteamUser()->GetSteamID().ConvertToUint64() ), szPath, sizeof( szPath ) );
+	V_ComposeFileName( szModDir, VarArgs( "steam_ugc_temp_%llu", SteamUser()->GetSteamID().ConvertToUint64() ), szPath, sizeof( szPath ) );
 	if ( filesystem->FileExists( szPath ) )
 	{
 		filesystem->RemoveFile( CUtlString::PathJoin( szPath, "addon.vpk" ) );
@@ -1540,7 +1555,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		return false;
 	}
 	char szWritePath[MAX_PATH];
-	Q_ComposeFileName( szPath, "addon.vpk", szWritePath, sizeof( szWritePath ) );
+	V_ComposeFileName( szPath, "addon.vpk", szWritePath, sizeof( szWritePath ) );
 	FileHandle_t hWrite = filesystem->Open( szWritePath, "wb" );
 	if ( hWrite == FILESYSTEM_INVALID_HANDLE )
 	{
