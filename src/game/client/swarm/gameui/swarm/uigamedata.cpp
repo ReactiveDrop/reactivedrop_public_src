@@ -53,6 +53,7 @@
 #endif
 
 #include "gameui_util.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -835,7 +836,11 @@ char const * CUIGameData::GetPlayerName( XUID playerID, char const *szPlayerName
 			char const *szName = SteamFriends()->GetFriendPersonaName( playerID );
 			if ( szName && *szName )
 			{
-				iIndex = m_mapUserXuidToName.Insert( playerID, szName );
+				CUtlString szNameFiltered( szName );
+
+				g_RDTextFiltering.FilterTextName( szNameFiltered, playerID );
+
+				iIndex = m_mapUserXuidToName.Insert( playerID, szNameFiltered );
 			}
 		}
 

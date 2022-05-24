@@ -6,6 +6,7 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
 #include "c_asw_steamstats.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -166,6 +167,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 
 	wchar_t wszName[k_cwchPersonaNameMax];
 	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
 	m_lblName->SetText( wszName );
 
 	if ( m_eDisplayType == k_ELeaderboardDisplayTypeTimeMilliSeconds )
@@ -479,6 +481,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry_Points::SetEntry( const RD_Leaderboard
 
 	wchar_t wszName[k_cwchPersonaNameMax];
 	Q_UTF8ToUnicode(SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
+	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
 	m_lblName->SetText(wszName);
 
 	m_lblScore_Points->SetText( VarArgs( "%d", m_nScore ) );

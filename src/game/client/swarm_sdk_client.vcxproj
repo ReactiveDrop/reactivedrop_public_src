@@ -1688,6 +1688,7 @@ exit 1
     <ClCompile Include="swarm\rd_jpeglib_helper.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
+    <ClCompile Include="swarm\rd_text_filtering.cpp" />
     <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />
     <ClCompile Include="swarm\vgui\asw_hudelement.cpp" />
@@ -2782,6 +2783,7 @@ exit 1
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />
+    <ClInclude Include="swarm\rd_text_filtering.h" />
     <ClInclude Include="swarm\vgui\asw_build_map_frame.h" />
     <ClInclude Include="swarm\vgui\asw_circularprogressbar.h" />
     <ClInclude Include="swarm\vgui\asw_hudelement.h" />
