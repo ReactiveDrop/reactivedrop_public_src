@@ -2497,6 +2497,13 @@
 	input Command(string) : "Command to execute."
 ]
 
+@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_broadcastclientcommand : 
+	"An entity that issues commands to each valid client's console, as if it was typed in by that player locally."
+[
+	// Inputs
+	input Command(string) : "Command to execute."
+]
+
 @PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_bonusmaps_accessor : 
 	"An entity that relays bonus maps changes."
 [
