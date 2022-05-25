@@ -98,7 +98,7 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		FoundGameListItem::Info info;
 		info.mInfoType = FoundGameListItem::FGT_SERVER;
 		Q_strncpy( info.Name, pServer->GetName(), sizeof( info.Name ) );
-		info.mIsJoinable = true;
+		info.mIsJoinable = pServer->m_nPlayers < pServer->m_nMaxPlayers;
 		info.mbDLC = false;
 		info.mbInGame = true;
 		info.mPing = FoundGameListItem::Info::GP_HIGH;
@@ -133,11 +133,11 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		info.mpGameDetails->SetInt( "game/dlcrequired", 0 );
 		if ( KeyValues *pMapInfo = g_pMatchExtSwarm->GetMapInfoByBspName( info.mpGameDetails, pServer->m_szMap ) )
 		{
-			info.mpGameDetails->SetInt( "game/missioninfo/version", pMapInfo->GetInt( "version" ) );
-			info.mpGameDetails->SetString( "game/missioninfo/displaytitle", pMapInfo->GetString( "displaytitle" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/version", pMapInfo->GetString( "version" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/displaytitle", pMapInfo->GetString( "missiontitle" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/author", pMapInfo->GetString( "author" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/website", pMapInfo->GetString( "website" ) );
-			info.mpGameDetails->SetBool( "game/missioninfo/builtin", pMapInfo->GetBool( "builtin" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/builtin", pMapInfo->GetString( "builtin" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/image", pMapInfo->GetString( "image" ) );
 		}
 		info.mFriendXUID = pServer->m_steamID.ConvertToUint64();

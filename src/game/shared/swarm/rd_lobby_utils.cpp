@@ -89,7 +89,7 @@ KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
 		}
 	}
 	pKV->SetUint64( "options/sessionid", lobby.ConvertToUint64() );
-	pKV->SetInt( "system/ping", UTIL_RD_PingLobby( lobby ) );
+	pKV->SetInt( "server/ping", UTIL_RD_PingLobby( lobby ) );
 	return pKV;
 }
 
@@ -151,7 +151,8 @@ void UTIL_RD_RemoveCurrentLobbyData( const char *pszKey )
 int UTIL_RD_PingLobby( CSteamID lobby )
 {
 	SteamNetworkPingLocation_t location;
-	if ( SteamNetworkingUtils() && SteamNetworkingUtils()->ParsePingLocationString( SteamMatchmaking()->GetLobbyData( lobby, "system:rd_lobby_location" ), location ) )
+	const char *szLocation = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_lobby_location" );
+	if ( SteamNetworkingUtils() && SteamNetworkingUtils()->ParsePingLocationString( szLocation, location ) )
 	{
 		int iPing = SteamNetworkingUtils()->EstimatePingTimeFromLocalHost( location );
 		return MAX( iPing, 0 );

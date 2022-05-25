@@ -745,7 +745,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_iMissionWorkshopID)),
 		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
-		RecvPropArray(RecvPropInt(RECVINFO(m_szApproximatePingLocation[0])), m_szApproximatePingLocation),
+		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -780,7 +780,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_iMissionWorkshopID), 64, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
-		SendPropArray(SendPropInt(SENDINFO_ARRAY(m_szApproximatePingLocation)), m_szApproximatePingLocation),
+		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1349,7 +1349,7 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 	}
 	if ( UTIL_RD_IsLobbyOwner() )
 	{
-		UTIL_RD_UpdateCurrentLobbyData( "system:rd_lobby_location", m_szApproximatePingLocation.Base() );
+		UTIL_RD_UpdateCurrentLobbyData( "system:rd_lobby_location", m_szApproximatePingLocation );
 	}
 }
 
@@ -1519,7 +1519,7 @@ CAlienSwarm::CAlienSwarm()
 	m_bDeathCamSlowdown = asw_marine_death_cam_slowdown.GetBool();
 	m_iOverrideAllowRotateCamera = rd_override_allow_rotate_camera.GetInt();
 
-	V_memset( &m_szApproximatePingLocation.GetForModify( 0 ), 0, m_szApproximatePingLocation.Count() );
+	V_memset( m_szApproximatePingLocation.GetForModify(), 0, sizeof( m_szApproximatePingLocation ) );
 	m_bObtainedPingLocation = false;
 
 	ConVarRef sv_cheats( "sv_cheats" );
@@ -3611,8 +3611,7 @@ void CAlienSwarm::OnSteamRelayNetworkStatusChanged( SteamRelayNetworkStatus_t *p
 		if ( flAge >= 0 )
 		{
 			DevMsg( 2, "Updated server ping location. New age: %f\n", flAge );
-			SteamNetworkingUtils()->ConvertPingLocationToString( location, &m_szApproximatePingLocation.GetForModify( 0 ), m_szApproximatePingLocation.Count() );
-			m_bObtainedPingLocation = true;
+			SetPingLocation( location );
 		}
 	}
 }
@@ -3625,8 +3624,7 @@ void CAlienSwarm::Think()
 		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
 		if ( flAge >= 0 )
 		{
-			SteamNetworkingUtils()->ConvertPingLocationToString( location, &m_szApproximatePingLocation.GetForModify( 0 ), m_szApproximatePingLocation.Count() );
-			m_bObtainedPingLocation = true;
+			SetPingLocation( location );
 		}
 	}
 
@@ -9478,5 +9476,22 @@ bool CAlienSwarm::ShouldAllowMarineStrafePush(void)
 		return false;
 
 	return true;
+}
+
+void CAlienSwarm::SetPingLocation( const SteamNetworkPingLocation_t & location )
+{
+	char szLocation[k_cchMaxSteamNetworkingPingLocationString];
+	SteamNetworkingUtils()->ConvertPingLocationToString( location, szLocation, sizeof( szLocation ) );
+	m_bObtainedPingLocation = true;
+	Assert( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) );
+	if ( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) )
+	{
+		V_strncpy( m_szApproximatePingLocation.GetForModify(), szLocation, sizeof( m_szApproximatePingLocation ) );
+	}
+	else
+	{
+		*m_szApproximatePingLocation.GetForModify() = '\0';
+		Warning( "Ping location is too long to network! %s\n", szLocation );
+	}
 }
 #endif

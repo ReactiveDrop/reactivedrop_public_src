@@ -38,6 +38,8 @@ static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challeng
 static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "none", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
 ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "official", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
 ConVar ui_public_lobby_filter_status( "ui_public_lobby_filter_status", "", FCVAR_ARCHIVE, "Filter type for game status on the public lobby display" );
+extern ConVar rd_lobby_ping_low;
+extern ConVar rd_lobby_ping_high;
 
 static void FoundPublicGamesLobbiesFunc( const CUtlVector<CSteamID> & lobbies )
 {
@@ -320,7 +322,16 @@ void FoundPublicGames::AddServersToList( void )
 		fi.mbInGame = true;
 
 		fi.miPing = pGameDetails->GetInt( "server/ping", 0 );
-		fi.mPing = fi.GP_HIGH;
+
+		if ( fi.miPing == 0 )
+			fi.mPing = fi.GP_NONE;
+		else if ( fi.miPing < rd_lobby_ping_low.GetInt() )
+			fi.mPing = fi.GP_LOW;
+		else if ( fi.miPing <= rd_lobby_ping_high.GetInt() )
+			fi.mPing = fi.GP_MEDIUM;
+		else
+			fi.mPing = fi.GP_HIGH;
+
 		if ( !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
 			fi.mPing = fi.GP_SYSTEMLINK;
 

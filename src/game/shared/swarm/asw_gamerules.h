@@ -561,9 +561,10 @@ public:
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
 	CNetworkVar( bool, m_bChallengeActiveThisMission );
 
-	CNetworkArray( char, m_szApproximatePingLocation, k_cchMaxSteamNetworkingPingLocationString );
+	CNetworkString( m_szApproximatePingLocation, MIN( k_cchMaxSteamNetworkingPingLocationString, DT_MAX_STRING_BUFFERSIZE ) );
 #ifdef GAME_DLL
 	bool m_bObtainedPingLocation;
+	void SetPingLocation( const SteamNetworkPingLocation_t & location );
 #endif
 
 private:

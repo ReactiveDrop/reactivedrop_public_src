@@ -1060,10 +1060,16 @@ void MainMenu::Activate()
 	static bool bRunOnce = true;
 	if ( bRunOnce )
 	{
+		if ( SteamNetworkingUtils() )
+		{
+			// need to know our ping location to show pings in the lobby browser
+			SteamNetworkingUtils()->InitRelayNetworkAccess();
+		}
+
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
 		engine->ClientCmd( "execifexists loadouts" );	// added support for loadout editor, by element109
+		bRunOnce = false;
 	}
-	bRunOnce = false;
 	//
 }
 

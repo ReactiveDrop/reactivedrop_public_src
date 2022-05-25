@@ -451,20 +451,42 @@ void CASW_Player::RequestExperience()
 		m_flPendingSteamStatsStart = gpGlobals->curtime;
 	}	
 #else
-	Assert( SteamUserStats() );
-	if ( SteamUserStats() )
+	if ( engine->IsDedicatedServer() )
 	{
-		CSteamID steamID;
-		if ( GetSteamID( &steamID ) )
+		Assert( SteamGameServerStats() );
+		if ( SteamGameServerStats() )
 		{
-			SteamAPICall_t hSteamAPICall = SteamUserStats()->RequestUserStats( steamID );
-			if ( hSteamAPICall != 0 )
+			CSteamID steamID;
+			if ( GetSteamID( &steamID ) )
 			{
-				m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				SteamAPICall_t hSteamAPICall = SteamGameServerStats()->RequestUserStats( steamID );
+				if ( hSteamAPICall != 0 )
+				{
+					m_CallbackUserStatsReceived.SetGameserverFlag();
+					m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				}
 			}
+			m_bPendingSteamStats = true;
+			m_flPendingSteamStatsStart = gpGlobals->curtime;
 		}
-		m_bPendingSteamStats = true;
-		m_flPendingSteamStatsStart = gpGlobals->curtime;
+	}
+	else
+	{
+		Assert( SteamUserStats() );
+		if ( SteamUserStats() )
+		{
+			CSteamID steamID;
+			if ( GetSteamID( &steamID ) )
+			{
+				SteamAPICall_t hSteamAPICall = SteamUserStats()->RequestUserStats( steamID );
+				if ( hSteamAPICall != 0 )
+				{
+					m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				}
+			}
+			m_bPendingSteamStats = true;
+			m_flPendingSteamStatsStart = gpGlobals->curtime;
+		}
 	}
 #endif
 
@@ -878,9 +900,20 @@ void CASW_Player::AcceptPromotion()
 
 void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bIOError )
 {
-	Assert( SteamUserStats() );
-	if ( !SteamUserStats() )
-		return;
+#if GAME_DLL
+	if ( engine->IsDedicatedServer() )
+	{
+		Assert( SteamGameServerStats() );
+		if ( !SteamGameServerStats() )
+			return;
+	}
+	else
+#endif
+	{
+		Assert( SteamUserStats() );
+		if ( !SteamUserStats() )
+			return;
+	}
 
 	if ( bIOError )
 	{
@@ -904,15 +937,32 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		return;
 
 #ifdef USE_XP_FROM_STEAM
-	if ( SteamUserStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+#if GAME_DLL
+	if ( engine->IsDedicatedServer() )
 	{
-		m_bPendingSteamStats = false;
+		if ( SteamGameServerStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+		{
+			m_bPendingSteamStats = false;
+		}
+		else
+		{
+			Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		}
+		SteamGameServerStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 	}
 	else
+#endif
 	{
-		Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		if ( SteamUserStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+		{
+			m_bPendingSteamStats = false;
+		}
+		else
+		{
+			Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		}
+		SteamUserStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 	}
-	SteamUserStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 #endif
 }
 #endif	// NO_STEAM
