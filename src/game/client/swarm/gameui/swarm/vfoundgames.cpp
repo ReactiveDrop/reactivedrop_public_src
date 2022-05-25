@@ -49,7 +49,7 @@ ConVar ui_foundgames_spinner_time( "ui_foundgames_spinner_time", "1", FCVAR_DEVE
 ConVar ui_foundgames_update_time( "ui_foundgames_update_time", "1", FCVAR_DEVELOPMENTONLY );
 ConVar ui_foundgames_fake_content( "ui_foundgames_fake_content", "0", FCVAR_DEVELOPMENTONLY );
 ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPMENTONLY );
-ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "90", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
+ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
 ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
 
 void Demo_DisableButton( Button *pButton );
@@ -223,6 +223,7 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	m_pListCtrlr( ( GenericPanelList * ) parent )
 {
 	m_pImgPing = NULL;
+	m_pImgPingSmall = NULL;
 	m_pLblPing = NULL;
 	m_pLblPlayerGamerTag = NULL;
 	m_pLblDifficulty = NULL;
@@ -478,28 +479,28 @@ void FoundGameListItem::SetGamerTag( char const* gamerTag )
 //=============================================================================
 void FoundGameListItem::SetGamePing( Info::GAME_PING ping )
 {
-	if( m_pImgPing )
+	if( m_pImgPingSmall )
 	{
 		switch( ping )
 		{
 		case Info::GP_LOW:
-			m_pImgPing->SetImage( "icon_con_high" );
+			m_pImgPingSmall->SetImage( "icon_con_high" );
 			break;
 
 		case Info::GP_MEDIUM:
-			m_pImgPing->SetImage( "icon_con_medium" );
+			m_pImgPingSmall->SetImage( "icon_con_medium" );
 			break;
 
 		case Info::GP_HIGH:
-			m_pImgPing->SetImage( "icon_con_low" );
+			m_pImgPingSmall->SetImage( "icon_con_low" );
 			break;
 
 		case Info::GP_SYSTEMLINK:
-			m_pImgPing->SetImage( "icon_lan" );
+			m_pImgPingSmall->SetImage( "icon_lan" );
 			break;
 
 		case Info::GP_NONE:
-			m_pImgPing->SetImage( "" );
+			m_pImgPingSmall->SetImage( "" );
 			break;
 		}
 	}
@@ -933,6 +934,9 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	{
 		m_pImgPing->SetVisible( false );
 	}
+
+	// this one is drawn normally
+	m_pImgPingSmall = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgPingSmall" ) );
 
 	m_pLblPing = dynamic_cast< vgui::Label * > ( FindChildByName( "LblPing" ) );
 	if ( m_pLblPing )

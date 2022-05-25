@@ -161,9 +161,9 @@ void Gamepad::Activate()
 		CGameUIConVarRef joy_aim_to_movement( "joy_aim_to_movement" );
 		CGameUIConVarRef joy_lock_firing_angle( "joy_lock_firing_angle" );
 
-		if ( joy_aim_to_movement.GetBool() )
+		if ( !joy_aim_to_movement.GetBool() )
 		{
-			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementEnabled" );
+			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementDisabled" );
 		}
 		else if ( joy_lock_firing_angle.GetBool() )
 		{
@@ -171,7 +171,7 @@ void Gamepad::Activate()
 		}
 		else
 		{
-			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementDisabled" );
+			m_drpGamepadAimToMovement->SetCurrentSelection( "GamepadAimToMovementEnabled" );
 		}
 
 		m_drpGamepadAimToMovement->SetEnabled( joystick.GetBool() );
