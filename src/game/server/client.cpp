@@ -434,10 +434,6 @@ void ClientPrecache( void )
 	engine->ForceExactFile( "scripts/asw_weapon_tesla_trap.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_vindicator.txt" );
 	engine->ForceExactFile( "scripts/asw_weapon_welder.txt" );
-
-	// reactivedrop: if we open clien.dll source, make sure people not start making
-	// easy cheats by recompiling client.dll
-	engine->ForceExactFile( "bin/client.dll" );
 }
 
 CON_COMMAND_F( cast_ray, "Tests collision detection", FCVAR_CHEAT )
