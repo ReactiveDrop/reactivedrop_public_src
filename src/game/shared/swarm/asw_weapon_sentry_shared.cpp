@@ -41,8 +41,13 @@ PRECACHE_WEAPON_REGISTER(asw_weapon_sentry);
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon_Sentry )
-	
+
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Weapon_Sentry, CASW_Weapon, "sentry gun case" )
+	DEFINE_SCRIPTFUNC( GetSentryAmmo, "returns the amount of ammo for the contained sentry" )
+	DEFINE_SCRIPTFUNC( SetSentryAmmo, "changes the amount of ammo for the contained sentry" )
+END_SCRIPTDESC()
 #endif /* not client */
 
 CASW_Weapon_Sentry::CASW_Weapon_Sentry()
