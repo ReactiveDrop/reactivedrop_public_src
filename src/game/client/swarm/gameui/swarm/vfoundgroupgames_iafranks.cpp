@@ -12,6 +12,8 @@ using namespace vgui;
 using namespace BaseModUI;
 
 extern ConVar ui_foundgames_spinner_time;
+extern ConVar rd_lobby_ping_low;
+extern ConVar rd_lobby_ping_high;
 
 static void JoinIAFRanksServerGame( const FoundGameListItem::Info & fi )
 {
@@ -101,7 +103,6 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		info.mIsJoinable = pServer->m_nPlayers < pServer->m_nMaxPlayers;
 		info.mbDLC = false;
 		info.mbInGame = true;
-		info.mPing = FoundGameListItem::Info::GP_HIGH;
 		info.mpGameDetails = new KeyValues( "settings" );
 		info.mpGameDetails->SetString( "system/network", "LIVE" );
 		info.mpGameDetails->SetString( "system/access", "public" );
@@ -142,6 +143,16 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		}
 		info.mFriendXUID = pServer->m_steamID.ConvertToUint64();
 		info.miPing = pServer->m_nPing;
+
+		if ( info.miPing == 0 )
+			info.mPing = info.GP_NONE;
+		else if ( info.miPing < rd_lobby_ping_low.GetInt() )
+			info.mPing = info.GP_LOW;
+		else if ( info.miPing <= rd_lobby_ping_high.GetInt() )
+			info.mPing = info.GP_MEDIUM;
+		else
+			info.mPing = info.GP_HIGH;
+
 		info.mpfnJoinGame = &JoinIAFRanksServerGame;
 		AddGameFromDetails( info );
 	}
