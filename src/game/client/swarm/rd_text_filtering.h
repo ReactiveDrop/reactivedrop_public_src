@@ -1,5 +1,8 @@
 #pragma once
 
+#include "igamesystem.h"
+#include "steam/steamclientpublic.h"
+
 class CUtlString;
 
 class CRD_Text_Filtering : CAutoGameSystem
