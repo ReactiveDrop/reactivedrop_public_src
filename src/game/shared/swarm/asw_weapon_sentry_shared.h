@@ -29,6 +29,8 @@ public:
 	virtual ~CASW_Weapon_Sentry();
 	void Precache();
 	
+	CNetworkVar( int, m_nSentryAmmo );
+	
 	Activity	GetPrimaryAttackActivity( void );
 
 	virtual void	PrimaryAttack();
@@ -66,9 +68,7 @@ protected:
 
 	CNetworkVar(bool, m_bDisplayValid);
 
-#ifndef CLIENT_DLL
-	int m_nSentryAmmo;
-#else
+#ifdef CLIENT_DLL
 	float m_flNextDeployCheckThink;
 	bool m_bDisplayActive;
 	EHANDLE m_hOwningMarine; // need to store this so we can destroy the effect on the marine
