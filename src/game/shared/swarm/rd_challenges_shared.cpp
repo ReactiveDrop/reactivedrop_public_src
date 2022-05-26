@@ -167,9 +167,15 @@ const RD_Challenge_t *ReactiveDropChallenges::GetSummary( const char *pszChallen
 #endif
 
 	Assert( g_StringTableReactiveDropChallenges );
+
+	int index = g_StringTableReactiveDropChallenges->FindStringIndex( pszChallengeName );
+	if ( index == INVALID_STRING_INDEX )
+	{
+		return NULL;
+	}
 	
 	int length;
-	const void *pSummary = g_StringTableReactiveDropChallenges->GetStringUserData( g_StringTableReactiveDropChallenges->FindStringIndex( pszChallengeName ), &length);
+	const void *pSummary = g_StringTableReactiveDropChallenges->GetStringUserData( index, &length);
 
 	return static_cast< const RD_Challenge_t * >( pSummary );
 }
@@ -212,7 +218,7 @@ bool ReactiveDropChallenges::ReadData( KeyValues *pKV, int index )
 	Assert( pKV );
 	if ( index < 0 || index >= Count() )
 	{
-		Assert( index == INVALID_STRING_INDEX );
+		Assert( index == -1 );
 		return false;
 	}
 
@@ -272,7 +278,7 @@ const char *ReactiveDropChallenges::Name( int index )
 
 	if ( index < 0 || index >= Count() )
 	{
-		Assert( index == INVALID_STRING_INDEX );
+		Assert( index == -1 );
 		return NULL;
 	}
 
