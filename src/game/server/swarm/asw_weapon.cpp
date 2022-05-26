@@ -65,6 +65,9 @@ BEGIN_DATADESC( CASW_Weapon )
 	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup" ),
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC( CASW_Weapon, CBaseCombatWeapon, "Alien Swarm weapon" )
+END_SCRIPTDESC()
+
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
 extern ConVar asw_debug_alien_damage;
 extern ConVar rda_marine_backpack;
