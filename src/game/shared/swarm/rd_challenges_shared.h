@@ -6,6 +6,19 @@ class KeyValues;
 
 #define RD_MAX_CHALLENGES 1024
 
+#pragma pack(push, 1)
+struct RD_Challenge_t
+{
+	PublishedFileId_t WorkshopID{ k_PublishedFileIdInvalid };
+	bool ForceOnslaught : 1;
+	bool IsOnslaught : 1;
+	bool ForceHardcore : 1;
+	bool IsHardcore : 1;
+	// Title must be last in this struct
+	char Title[255];
+};
+#pragma pack(pop)
+
 namespace ReactiveDropChallenges
 {
 #ifdef GAME_DLL
@@ -14,6 +27,11 @@ namespace ReactiveDropChallenges
 	void InstallStringTableCallback( const char *tableName );
 	void ClearClientCache();
 #endif
+
+	// Get summary - this is available while connected even if the challenge isn't installed locally.
+	// The data may be shorter than the type would imply, but the string at the end will be null-terminated.
+	const RD_Challenge_t *GetSummary( const char *pszChallengeName );
+	const RD_Challenge_t *GetSummary( int index );
 
 	// Returns true if the data was successfully read into pKV.
 	bool ReadData( KeyValues *pKV, const char *pszChallengeName );

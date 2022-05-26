@@ -129,17 +129,21 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	}
 
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( !ReactiveDropChallenges::ReadData( pKV, szName ) )
+	const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( szName );
+	if ( !pChallenge )
 	{
 		m_lblError->SetText( "#rd_challenge_selection_error" );
 		m_lblError->SetVisible( true );
 		return;
 	}
 
-	m_nWorkshopID = static_cast<PublishedFileId_t>( pKV->GetUint64( "workshop", k_PublishedFileIdInvalid ) );
+	// get local data if available
+	( void )ReactiveDropChallenges::ReadData( pKV, szName );
+
+	m_nWorkshopID = pChallenge->WorkshopID;
 	CReactiveDropWorkshop::WorkshopItem_t item = GetWorkshopItem();
 
-	m_lblName->SetText( pKV->GetString( "name", szName ) );
+	m_lblName->SetText( pKV->GetString( "name", pChallenge->Title ) );
 	m_lblName->SetVisible( true );
 	if ( const char *szIcon = pKV->GetString( "icon", NULL ) )
 	{
@@ -156,8 +160,8 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	{
 		m_imgIcon->SetVisible( false );
 	}
-	m_szChallengeDescription = pKV->GetString( "description", "#rd_challenge_selection_no_description" );
-	m_szChallengeAuthor = pKV->GetString( "author", "" );
+	m_szChallengeDescription = pKV->GetString( "description", item.details.m_rgchDescription[0] ? item.details.m_rgchDescription : "#rd_challenge_selection_no_description" );
+	m_szChallengeAuthor = pKV->GetString( "author", item.details.m_ulSteamIDOwner ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "" );
 
 	if ( m_nWorkshopID == k_PublishedFileIdInvalid )
 	{

@@ -466,20 +466,9 @@ bool CNB_Mission_Panel::ForceHardcoreFF()
 {
 	extern ConVar rd_challenge;
 
-	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( ReactiveDropChallenges::ReadData( pKV, rd_challenge.GetString() ) )
+	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() ) )
 	{
-		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
-		{
-			if ( KeyValues *pFFAbsorption = pConVars->FindKey( "asw_marine_ff_absorption" ) )
-			{
-				return pFFAbsorption->GetInt() != 1 || pConVars->FindKey( "asw_sentry_friendly_fire_scale" );
-			}
-			else if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
-			{
-				return pSentryFFScale->GetFloat() != 0.0f;
-			}
-		}
+		return pChallenge->ForceHardcore;
 	}
 
 	return false;
@@ -489,20 +478,9 @@ bool CNB_Mission_Panel::ForceOnslaught()
 {
 	extern ConVar rd_challenge;
 
-	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( ReactiveDropChallenges::ReadData( pKV, rd_challenge.GetString() ) )
+	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() ) )
 	{
-		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
-		{
-			if ( KeyValues *pHordeOverride = pConVars->FindKey( "asw_horde_override" ) )
-			{
-				return pHordeOverride->GetBool() || pConVars->FindKey( "asw_wanderer_override" );
-			}
-			else if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
-			{
-				return pWandererOverride->GetBool();
-			}
-		}
+		return pChallenge->ForceOnslaught;
 	}
 
 	return false;

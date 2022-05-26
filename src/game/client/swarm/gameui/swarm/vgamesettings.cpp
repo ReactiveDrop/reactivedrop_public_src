@@ -1301,73 +1301,16 @@ void GameSettings::UpdateChallenge( const char *szChallengeName )
 	bool bForceHardcoreFFOn = false;
 	bool bForceHardcoreFFOff = false;
 
-	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( ReactiveDropChallenges::ReadData( pKV, szChallengeName ) )
+	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( szChallengeName ) )
 	{
-		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
-		{
-			if ( KeyValues *pFFAbsorption = pConVars->FindKey( "asw_marine_ff_absorption" ) )
-			{
-				if ( pFFAbsorption->GetInt() == 1 )
-				{
-					if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
-					{
-						if ( pSentryFFScale->GetFloat() == 0.0f )
-						{
-							bForceHardcoreFFOff = true;
-						}
-						else
-						{
-							bForceHardcoreFFOn = true;
-						}
-					}
-				}
-				else
-				{
-					bForceHardcoreFFOn = true;
-				}
-			}
-			else if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
-			{
-				if ( pSentryFFScale->GetFloat() != 0.0f )
-				{
-					bForceHardcoreFFOn = true;
-				}
-			}
-
-			if ( KeyValues *pHordeOverride = pConVars->FindKey( "asw_horde_override" ) )
-			{
-				if ( pHordeOverride->GetBool() )
-				{
-					bForceOnslaughtOn = true;
-				}
-				else
-				{
-					if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
-					{
-						if ( pWandererOverride->GetBool() )
-						{
-							bForceOnslaughtOn = true;
-						}
-						else
-						{
-							bForceOnslaughtOff = true;
-						}
-					}
-				}
-			}
-			else if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
-			{
-				if ( pWandererOverride->GetBool() )
-				{
-					bForceOnslaughtOn = true;
-				}
-			}
-		}
+		bForceOnslaughtOn = pChallenge->ForceOnslaught && pChallenge->IsOnslaught;
+		bForceOnslaughtOff = pChallenge->ForceOnslaught && !pChallenge->IsOnslaught;
+		bForceHardcoreFFOn = pChallenge->ForceHardcore && pChallenge->IsHardcore;
+		bForceHardcoreFFOff = pChallenge->ForceHardcore && !pChallenge->IsHardcore;
 
 		KeyValues::AutoDelete pUpdate( "update" );
-		pUpdate->SetUint64( "update/game/challengeinfo/workshop", pKV->GetUint64( "workshop" ) );
-		pUpdate->SetString( "update/game/challengeinfo/displaytitle", pKV->GetString( "name", szChallengeName ) );
+		pUpdate->SetUint64( "update/game/challengeinfo/workshop", pChallenge->WorkshopID );
+		pUpdate->SetString( "update/game/challengeinfo/displaytitle", pChallenge->Title );
 		UpdateSessionSettings( pUpdate );
 	}
 
