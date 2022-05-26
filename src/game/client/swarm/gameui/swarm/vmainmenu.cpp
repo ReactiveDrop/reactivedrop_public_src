@@ -977,7 +977,10 @@ void MainMenu::OnOpen()
 
 		g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
 
-		engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+		if ( rd_revert_convars.GetBool() )
+		{
+			engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+		}
 	}
 
 	if ( IsPC() && connect_lobby.GetString()[0] )
