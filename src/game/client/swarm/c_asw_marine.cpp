@@ -2617,7 +2617,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 		{
 			C_ASW_Marine *pClosest = NULL;
 			float flClosestDistance = FLT_MAX;
-			for ( int i = 0; i < pGameResource->GetNumMarineResources(); i++ )
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 			{
 				C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 				if ( !pMR )
