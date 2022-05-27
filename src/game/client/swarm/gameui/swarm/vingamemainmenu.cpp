@@ -219,6 +219,10 @@ void InGameMainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow(WT_CONTROLLER, this, true );
 	}
+	else if (!Q_strcmp(command, "Gamepad"))
+	{
+		CBaseModPanel::GetSingleton().OpenWindow(WT_GAMEPAD, this, true );
+	}
 	else if (!Q_strcmp(command, "Storage"))
 	{
 #ifdef _X360
