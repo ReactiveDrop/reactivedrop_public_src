@@ -527,8 +527,8 @@ void CASWHudObjective::OnTick()
 	UpdateObjectiveList();
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pSpectatedMarine = pLocalPlayer ? pLocalPlayer->GetSpectatingMarine() : NULL;
-	if ( C_ASW_Marine_Resource *pMR = pSpectatedMarine ? pSpectatedMarine->GetMarineResource() : NULL )
+	C_ASW_Marine *pViewMarine = pLocalPlayer ? pLocalPlayer->GetViewMarine() : NULL;
+	if ( C_ASW_Marine_Resource *pMR = pViewMarine ? pViewMarine->GetMarineResource() : NULL )
 	{
 		bool bSetPointsText = false;
 		if ( pMR->m_iScore != m_iPointsCache )
