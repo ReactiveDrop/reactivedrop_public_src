@@ -63,11 +63,12 @@ public:
 		NUM_BUTTON_DIRS
 	};
 
+	static const char *ButtonNameFromDir( ButtonDir dir );
+	static ButtonDir DirFromButtonName( const char *name );
+
 protected:
 
 	void SendCommand( const char *commandStr ) const;
-	const char *ButtonNameFromDir( ButtonDir dir );
-	ButtonDir DirFromButtonName( const char * name );
 	CRadialButton *m_buttons[NUM_BUTTON_DIRS];	// same order as vgui::Label::Alignment
 	ButtonDir m_armedButtonDir;
 	void SetArmedButtonDir( ButtonDir dir );
