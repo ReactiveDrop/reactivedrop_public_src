@@ -43,6 +43,8 @@ void CASWInput::ResetMouse( void )
 	if ( MarineControllingTurret() || ( C_ASW_Player::GetLocalASWPlayer()->GetASWControls() != 1 && IsGameplayCrosshair() ) )
 	{
 		GetWindowCenter( x, y );
+		m_flJoypadStartMouseX = x;
+		m_flJoypadStartMouseX = y;
 		SetMousePos( x, y );
 	}
 	else
@@ -167,6 +169,13 @@ void CASWInput::GetFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL
 
 	*mx = current_posx;
 	*my = current_posy;
+}
+
+void CASWInput::SetFullscreenMousePos( int mx, int my )
+{
+	m_flJoypadStartMouseX = mx;
+	m_flJoypadStartMouseY = my;
+	CInput::SetFullscreenMousePos( mx, my );
 }
 
 void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )

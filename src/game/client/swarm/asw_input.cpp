@@ -1570,14 +1570,11 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 				}
 			}
 
-			static float joypad_start_mouse_x = 0;
-			static float joypad_start_mouse_y = 0;
-
 			if (ASWInput()->ControllerModeActive())
 			{				
 				// accumulate mouse movements and if we go over a certain threshold, switch out of controller mode
-				float mouse_x_diff = current_posx - joypad_start_mouse_x;
-				float mouse_y_diff = current_posy - joypad_start_mouse_y;
+				float mouse_x_diff = current_posx - m_flJoypadStartMouseX;
+				float mouse_y_diff = current_posy - m_flJoypadStartMouseY;
 				float total_mouse_move = mouse_x_diff * mouse_x_diff + mouse_y_diff * mouse_y_diff;
 				//Msg("total_mouse_move = %f\n", total_mouse_move);
 				if (total_mouse_move > 1000)
@@ -1589,8 +1586,8 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 			}
 			else
 			{
-				joypad_start_mouse_x = current_posx;
-				joypad_start_mouse_y = current_posy;
+				m_flJoypadStartMouseX = current_posx;
+				m_flJoypadStartMouseY = current_posy;
 			}
 		}
 	}

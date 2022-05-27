@@ -50,6 +50,7 @@ public:
 
 	virtual void		ASW_GetWindowCenter( int&x, int& y )	{ GetWindowCenter(x, y); }
 	virtual	void		GetFullscreenMousePos( int *mx, int *my, int *unclampedx = NULL, int *unclampedy = NULL );
+	virtual	void		SetFullscreenMousePos( int mx, int my );
 	virtual void		GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclampedx = 0, int *unclampedy = 0 );
 	virtual void		GetSimulatedFullscreenMousePosFromController( int *mx, int *my, float fControllerPitch, float fControllerYaw, float flForwardFraction = 0.4f );
 	void				TurnTowardMouse(QAngle& viewangles, CUserCmd *cmd);	// asw	
@@ -65,6 +66,7 @@ public:
 	virtual void		JoyStickApplyMovement( CUserCmd *cmd, float joyForwardMove, float joySideMove );
 
 	int m_LastMouseX, m_LastMouseY;
+	float m_flJoypadStartMouseX, m_flJoypadStartMouseY;
 	EHANDLE m_hLastMarine;
 	bool m_bDontTurnMarine;	// set when changing marines, so we don't turn them until the cursor moves
 	float m_fJoypadPitch;		// up/down on analogue stick
