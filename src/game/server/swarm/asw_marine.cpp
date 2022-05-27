@@ -1428,6 +1428,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (!pOtherMarine->IsInhabited() && 
 			!( newInfo.GetDamageType() & DMG_DIRECT) && 
 			!( rd_marine_take_damage_from_ai_grenade.GetBool() && newInfo.GetDamageType() & DMG_BLAST ) &&	// reactivedrop: don't ignore Grenade Launcher damage from bots. Giving grenade launchers to all bots makes game stupidly easy
+			!( newInfo.GetDamageType() & DMG_RADIATION ) && // gas grenades should deal friendly fire damage even if thrown by a bot
 			(!ASWDeathmatchMode() || !rd_pvp_marine_take_damage_from_bots.GetBool()) )
 		{
 			// don't allow any damage if it's an AI firing:  NOTE: This isn't 100% accurate, since the AI could've fired the shot, then a player switched into the marine while the projectile was in the air
