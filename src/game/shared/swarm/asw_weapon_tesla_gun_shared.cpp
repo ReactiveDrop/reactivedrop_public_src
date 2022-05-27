@@ -234,7 +234,7 @@ void CASW_Weapon_Tesla_Gun::PrimaryAttack( void )
 			Vector vecForward;
 			CASW_Player *pPlayer = pMarine->GetCommander();
 
-			if ( pPlayer )
+			if ( pPlayer && pMarine->IsInhabited() )
 			{
 				AngleVectors( pPlayer->EyeAngles(), &vecForward );
 				if ( DotProduct( vecForward, vecAttach ) < 0.0f )
@@ -771,10 +771,14 @@ bool CASW_Weapon_Tesla_Gun::ShockAttach( CBaseEntity *pEntity )
 #ifdef CLIENT_DLL
 	return false;
 #else
-	if ( !pEntity || (pEntity->m_takedamage == DAMAGE_NO) || 
-		(pEntity->Classify() == CLASS_ASW_MARINE) || (pEntity->Classify() == CLASS_ASW_SENTRY_BASE) ||
-		(pEntity == m_hShockEntity.Get()) || (pEntity->m_iHealth <= 0) ||
-		(pEntity == GetMarine()) || (pEntity->Classify() == CLASS_ASW_COLONIST) ) 
+	if ( !pEntity ||
+		( pEntity->m_takedamage == DAMAGE_NO ) ||
+		( pEntity->Classify() == CLASS_ASW_MARINE && GetMarine() && GetMarine()->IRelationType( pEntity ) != D_HT ) ||
+		( pEntity->Classify() == CLASS_ASW_SENTRY_BASE ) ||
+		( pEntity == m_hShockEntity.Get() ) ||
+		( pEntity->m_iHealth <= 0 ) ||
+		( pEntity == GetMarine() ) ||
+		( pEntity->Classify() == CLASS_ASW_COLONIST ) )
 	{
 		return false;
 	}
