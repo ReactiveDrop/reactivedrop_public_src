@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "668"
+	"mapversion" "669"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "668"
+	"mapversion" "669"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -156784,9 +156784,9 @@ entity
 {
 	"id" "121670"
 	"classname" "env_instructor_hint"
-	"hint_activator_caption" "Wait for others."
 	"hint_allow_nodraw_target" "1"
 	"hint_alphaoption" "0"
+	"hint_caption" "Wait for others."
 	"hint_color" "255 255 255"
 	"hint_forcecaption" "0"
 	"hint_icon_offscreen" "icon_caution"
