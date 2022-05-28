@@ -183,9 +183,14 @@ extern ConVar old_radius_damage;
 	ConVar rd_clearhouse_on_mission_complete( "rd_clearhouse_on_mission_complete", "0", FCVAR_NONE, "If 1 all NPCs will be removed from map on round end" );
 	ConVar rd_sentry_block_aliens( "rd_sentry_block_aliens", "1", FCVAR_CHEAT, "If 0 sentries don't collide with aliens" );
 	ConVar rd_auto_fast_restart( "rd_auto_fast_restart", "0", FCVAR_NONE, "Set to 1 to restart mission on fail automatically" );
+	static void RDAAutoMissionFailedInstantRestartChanged( IConVar *pConVar, const char *szOldValue, float flOldValue )
+	{
+		Warning( "rda_auto_mission_failed_instant_restart is deprecated and may be removed in a future version - use rd_auto_fast_restart instead.\n" );
+		rd_auto_fast_restart.SetValue( ConVarRef( pConVar ).GetString() );
+	}
+	ConVar rda_auto_mission_failed_instant_restart( "rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "", &RDAAutoMissionFailedInstantRestartChanged );
 	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 	ConVar rd_dedicated_high_resolution_timer_ms( "rd_dedicated_high_resolution_timer_ms", "0.01", FCVAR_NONE, "Acquire timer with specified resolution in ms" );
-	ConVar rda_auto_mission_failed_instant_restart("rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "If mission is failed server does not show mission failed screen but restarts mission");
 
 	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
 
@@ -2932,7 +2937,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		gameeventmanager->FireEvent( event );
 	}
 
-	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f && !rd_auto_fast_restart.GetBool() )
+	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
 	{
 		// They've been playing a bit... go to the mission fail screen instead!
 		ASWGameRules()->MissionComplete( false );
@@ -3707,6 +3712,11 @@ void CAlienSwarm::Think()
 			{
 				RemoveAllAliens();
 				RemoveNoisyWeapons();
+
+				if ( GetMissionFailed() && rd_auto_fast_restart.GetBool() )
+				{
+					RestartMission( NULL, true, true );
+				}
 			}
 		}
 		break;
@@ -4443,22 +4453,6 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 {
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
 		return;
-
-	//Mad Orange. Faster restart.
-	if (!bSuccess && rda_auto_mission_failed_instant_restart.GetBool())
-	{
-		StopStim();
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
-			if (pOtherPlayer)
-			{
-				pOtherPlayer->AwardExperience();
-			}
-		}
-		RestartMission(NULL, true, true);
-		return;
-	}
 
 	StopStim();
 
@@ -7974,13 +7968,6 @@ void CAlienSwarm::CheckForceReady()
 		}
 	}
 
-	//Mad Orange. Faster restart.
-	if (rda_auto_mission_failed_instant_restart.GetBool() && m_iForceReadyType == ASW_FR_INGAME_RESTART)
-	{
-		FinishForceReady();
-		return;
-	}
-
 	int iSecondsLeft = m_fForceReadyTime - gpGlobals->curtime;
 	if (iSecondsLeft < m_iForceReadyCount)
 	{
@@ -8056,7 +8043,7 @@ void CAlienSwarm::FinishForceReady()
 			{
 				SetForceReady(ASW_FR_NONE);
 
-				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME && !rd_auto_fast_restart.GetBool() )
+				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME )
 				{
 					MissionComplete( false );		
 				}

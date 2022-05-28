@@ -113,10 +113,6 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 		MissionSuccess();
 		return true;
 	}
-	else if ( bFailed && rd_auto_fast_restart.GetBool() )
-	{
-		ASWGameRules()->SetForceReady( ASW_FR_INGAME_RESTART );
-	}
 	else if ( bFailed )
 	{
 		MissionFail();

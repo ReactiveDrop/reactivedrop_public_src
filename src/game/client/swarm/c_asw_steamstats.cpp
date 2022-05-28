@@ -1141,6 +1141,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		{
 			DevWarning( "Not sending leaderboard entry: Mission failed!\n" );
 		}
+		engine->ServerCmd( "cl_leaderboard_ready\n" );
 		return;
 	}
 
@@ -1151,6 +1152,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		{
 			DevWarning( "Not sending leaderboard entry: rd_leaderboard_enabled is set to 0!\n" );
 		}
+		engine->ServerCmd( "cl_leaderboard_ready\n" );
 		return;
 	}
 
