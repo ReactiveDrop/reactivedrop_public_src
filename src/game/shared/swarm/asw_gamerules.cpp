@@ -97,6 +97,7 @@
 	#include "highres_timer.h"
 	#include "env_tonemap_controller.h"
 	#include "asw_marine_hint.h"
+	#include "eventqueue.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -2977,6 +2978,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 			pEnt = gEntList.NextEnt( pEnt );
 		}
 	}
+
+	// Clear out the event queue
+	g_EventQueue.Clear();
 
 	// causes all marked entity to be actually removed
 	gEntList.CleanupDeleteList();
