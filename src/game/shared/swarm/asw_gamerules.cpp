@@ -2981,6 +2981,8 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	// causes all marked entity to be actually removed
 	gEntList.CleanupDeleteList();
 
+	RevertSavedConvars();
+
 	// clear marine hints
 	MarineHintManager()->LevelInitPreEntity();
 
