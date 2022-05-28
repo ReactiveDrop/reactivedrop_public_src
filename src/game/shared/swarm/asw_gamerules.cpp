@@ -1420,6 +1420,14 @@ CAlienSwarm::CAlienSwarm()
 	m_MapResetFilter.AddKeepEntity( "scene_manager" );
 	m_MapResetFilter.AddKeepEntity( "event_queue_saveload_proxy" );
 	m_MapResetFilter.AddKeepEntity( "ai_network" );
+	m_MapResetFilter.AddKeepEntity( "info_node" );
+	m_MapResetFilter.AddKeepEntity( "info_hint" );
+	m_MapResetFilter.AddKeepEntity( "info_node_hint" );
+	m_MapResetFilter.AddKeepEntity( "info_node_air" );
+	m_MapResetFilter.AddKeepEntity( "info_node_air_hint" );
+	m_MapResetFilter.AddKeepEntity( "info_node_climb" );
+	m_MapResetFilter.AddKeepEntity( "info_marine_hint" );
+	m_MapResetFilter.AddKeepEntity( "info_node_marine_hint" );
 
 	// riflemod: keep health regen entity all the time
 	m_MapResetFilter.AddKeepEntity( "asw_health_regen" );
@@ -2957,9 +2965,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		return;
 	}
 
-	// reset the node count since we'll be loading all these in again
-	CNodeEnt::m_nNodeCount = 0;
-
 	// find the first entity in the entity list
 	CBaseEntity *pEnt = gEntList.FirstEnt();
 
@@ -2990,8 +2995,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 	RevertSavedConvars();
 
-	// clear marine hints
-	MarineHintManager()->LevelInitPreEntity();
+	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
 
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
