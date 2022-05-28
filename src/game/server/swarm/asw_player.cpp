@@ -360,7 +360,7 @@ CASW_Player::CASW_Player()
 	m_bFirstInhabit = false;
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
-	m_flMovementAxisYaw = 90.0;
+	m_flMovementAxisYaw = 90.0f;
     m_fMarineDeathTime = 0.0f;
 	
 	m_Local.m_vecPunchAngle.Set( ROLL, 15 );
@@ -604,6 +604,8 @@ void CASW_Player::Spawn()
 	SetModel( ASW_PLAYER_MODEL );
 
 	BaseClass::Spawn();
+
+	m_flMovementAxisYaw = 90.0f;
 
 	SetMoveType( MOVETYPE_WALK );
 	m_takedamage = DAMAGE_NO;
