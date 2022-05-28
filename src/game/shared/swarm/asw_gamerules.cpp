@@ -95,6 +95,8 @@
 	#include "asw_pickup_equipment.h"
 	#include "Sprite.h"
 	#include "highres_timer.h"
+	#include "env_tonemap_controller.h"
+	#include "asw_marine_hint.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -437,7 +439,6 @@ ConVar asw_marine_death_cam_hold("asw_marine_death_cam_time_hold", "1.75", FCVAR
 ConVar asw_marine_death_cam_time_local_hold("asw_marine_death_cam_time_local_hold", "5.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Time to hold on the dying marine at time ramps back up if they died");
 ConVar asw_marine_death_cam_time_scale("asw_marine_death_cam_time_scale", "0.035", FCVAR_CHEAT | FCVAR_REPLICATED, "Time scale during death cam");
 ConVar asw_campaign_death("asw_campaign_death", "0", FCVAR_REPLICATED, "Whether marines are killed in the roster if a mission is completed with the marine dead");
-ConVar asw_objective_update_time_scale("asw_objective_update_time_scale", "0.2", FCVAR_CHEAT | FCVAR_REPLICATED, "Time scale during objective updates");
 ConVar asw_stim_time_scale("asw_stim_time_scale", "0.35", FCVAR_REPLICATED | FCVAR_CHEAT, "Time scale during stimpack slomo");
 ConVar asw_time_scale_delay("asw_time_scale_delay", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT, "Delay before timescale changes to give a chance for the client to comply and predict.");
 ConVar asw_ignore_need_two_player_requirement("asw_ignore_need_two_player_requirement", "1", FCVAR_REPLICATED, "If set to 1, ignores the mission setting that states two players are needed to start the mission.");
@@ -1384,16 +1385,16 @@ const char* CAlienSwarm::GetGameDescription( void )
 
 CAlienSwarm::CAlienSwarm()
 {
-	Msg("CAlienSwarm created\n");
+	Msg( "CAlienSwarm created\n" );
 
 #ifndef CLIENT_DLL
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
 	// memory usage and cache trashing over time
-	if (engine->IsDedicatedServer() && rd_adjust_mod_dont_load_vertices.GetBool())
+	if ( engine->IsDedicatedServer() && rd_adjust_mod_dont_load_vertices.GetBool() )
 	{
-		ConVarRef mod_dont_load_vertices("mod_dont_load_vertices");
-		mod_dont_load_vertices.SetValue(1);
+		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
+		mod_dont_load_vertices.SetValue( 1 );
 	}
 #endif
 
@@ -1405,7 +1406,27 @@ CAlienSwarm::CAlienSwarm()
 
 	ASWEquipmentList();
 
-	m_fObjectiveSlowDownEndTime = 0.0f;
+	// set which entities should stay around when we restart the mission
+	m_MapResetFilter.AddKeepEntity( "worldspawn" );
+	m_MapResetFilter.AddKeepEntity( "soundent" );
+	m_MapResetFilter.AddKeepEntity( "asw_gamerules" );
+	m_MapResetFilter.AddKeepEntity( "player" );
+	m_MapResetFilter.AddKeepEntity( "asw_player" );
+	m_MapResetFilter.AddKeepEntity( "player_manager" );
+	m_MapResetFilter.AddKeepEntity( "predicted_viewmodel" );
+	m_MapResetFilter.AddKeepEntity( "sdk_team_manager" );
+	m_MapResetFilter.AddKeepEntity( "scene_manager" );
+	m_MapResetFilter.AddKeepEntity( "event_queue_saveload_proxy" );
+	m_MapResetFilter.AddKeepEntity( "ai_network" );
+
+	// riflemod: keep health regen entity all the time
+	m_MapResetFilter.AddKeepEntity( "asw_health_regen" );
+
+	FullReset();
+}
+
+void CAlienSwarm::FullReset()
+{
 	m_bStartedIntro = 0;
 	m_iNumGrubs = 0;	// counts how many grubs have been spawned
 	m_fVoteEndTime = 0.0f;
@@ -1438,23 +1459,6 @@ CAlienSwarm::CAlienSwarm()
 	m_fNextCompliment = random->RandomInt(asw_compliment_chatter_interval_min.GetInt(), asw_compliment_chatter_interval_max.GetInt());
 	m_bSargeAndJaeger = false;
 	m_bWolfeAndWildcat = false;
-	
-	// set which entities should stay around when we restart the mission
-	m_MapResetFilter.AddKeepEntity("worldspawn");
-	m_MapResetFilter.AddKeepEntity("soundent");
-	m_MapResetFilter.AddKeepEntity("asw_gamerules");
-	m_MapResetFilter.AddKeepEntity("player");
-	m_MapResetFilter.AddKeepEntity("asw_player");
-	m_MapResetFilter.AddKeepEntity("player_manager");	
-	m_MapResetFilter.AddKeepEntity("predicted_viewmodel");
-	m_MapResetFilter.AddKeepEntity("sdk_team_manager");
-	m_MapResetFilter.AddKeepEntity("scene_manager");
-	m_MapResetFilter.AddKeepEntity("event_queue_saveload_proxy");
-	m_MapResetFilter.AddKeepEntity("ai_network");
-
-	// riflemod: keep health regen entity all the time 
-	m_MapResetFilter.AddKeepEntity("asw_health_regen");
-	//m_MapResetFilter.AddKeepEntity("asw_item_regen");
 
 	m_iMissionRestartCount = 0;
 	m_bDoneCrashShieldbugConv = false;
@@ -1465,7 +1469,6 @@ CAlienSwarm::CAlienSwarm()
 	m_iSkillLevel = asw_skill.GetInt();
 	OnSkillLevelChanged( m_iSkillLevel );
 
-	//m_pMissionManager = new CASW_Mission_Manager();	
 	m_pMissionManager = (CASW_Mission_Manager*) CreateEntityByName( "asw_mission_manager" );
 	DispatchSpawn( m_pMissionManager );
 
@@ -1477,7 +1480,7 @@ CAlienSwarm::CAlienSwarm()
 	m_szCurrentVoteName[0] = '\0';
 	m_iCurrentVoteYes = 0;
 	m_iCurrentVoteNo = 0;
-	m_iCurrentVoteType = (int) ASW_VOTE_NONE;	
+	m_iCurrentVoteType = (int) ASW_VOTE_NONE;
 
 	m_hDebriefStats = NULL;
 
@@ -2896,26 +2899,26 @@ void CAlienSwarm::RestartMissionCountdown( CASW_Player *pPlayer )
 void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipFail )
 {
 	// don't allow restarting if we're on the campaign map, as this does Bad Things (tm)
-	if (GetGameState() >= ASW_GS_CAMPAIGNMAP)
+	if ( GetGameState() >= ASW_GS_CAMPAIGNMAP )
 		return;
 
 	// if a player is requesting the restart, then check everyone is ready
-	if (pPlayer && GetGameState() > ASW_GS_INGAME)	// allow restart without readiness during the game/briefing
+	if ( pPlayer && GetGameState() > ASW_GS_INGAME )	// allow restart without readiness during the game/briefing
 	{
 		// check other players are ready for the restart
 		if ( !bForce && ASWGameResource() && !ASWGameResource()->AreAllOtherPlayersReady( pPlayer->entindex() ) )
 		{
-			Msg("not all players are ready!\n");
+			Msg( "not all players are ready!\n" );
 			return;
 		}
 	}
 
 	// notify players of our mission restart
-	IGameEvent * event = gameeventmanager->CreateEvent( "asw_mission_restart" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "asw_mission_restart" );
 	if ( event )
 	{
 		m_iMissionRestartCount++;
-		event->SetInt( "restartcount", m_iMissionRestartCount );		
+		event->SetInt( "restartcount", m_iMissionRestartCount );
 		gameeventmanager->FireEvent( event );
 	}
 
@@ -2931,76 +2934,97 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	//if (GetGameState() == ASW_GS_INGAME && ASWGameStats())
 		//ASWGameStats()->AddMapRecord();
 
-	if (IsCampaignGame() && GetCampaignSave())
+	if ( IsCampaignGame() && GetCampaignSave() )
 	{
-		CASW_Campaign_Save* pSave = GetCampaignSave();
-		//pSave->IncreaseRetries();
+		CASW_Campaign_Save *pSave = GetCampaignSave();
 		pSave->SaveGameToFile();
 	}
 
-	SetForceReady(ASW_FR_NONE);
+	SetForceReady( ASW_FR_NONE );
 
-	if (!asw_instant_restart.GetBool())
+	if ( ASWGameResource() )
+		ASWGameResource()->RememberLeaderID();
+
+	if ( !asw_instant_restart.GetBool() )
 	{
-		if (ASWGameResource())
-			ASWGameResource()->RememberLeaderID();
-		//char buffer[64];
-		if (IsCampaignGame())
-			ChangeLevel_Campaign(STRING(gpGlobals->mapname));
+		if ( IsCampaignGame() )
+			ChangeLevel_Campaign( STRING( gpGlobals->mapname ) );
 		else
-			engine->ChangeLevel(STRING(gpGlobals->mapname), NULL);
+			engine->ChangeLevel( STRING( gpGlobals->mapname ), NULL );
+
 		return;
 	}
 
-	CBaseEntity *pEnt;
-	CBaseEntity *pNextEntity;
-
 	// reset the node count since we'll be loading all these in again
 	CNodeEnt::m_nNodeCount = 0;
- 
+
 	// find the first entity in the entity list
-	pEnt = gEntList.FirstEnt();
-	 
+	CBaseEntity *pEnt = gEntList.FirstEnt();
+
 	// as long as we've got a valid pointer, keep looping through the list
-	while (pEnt != NULL)
+	while ( pEnt != NULL )
 	{
-		if (m_MapResetFilter.ShouldCreateEntity(pEnt->GetClassname()))		// resetting this entity
+		if ( m_MapResetFilter.ShouldCreateEntity( pEnt->GetClassname() ) )
 		{
-			pNextEntity = gEntList.NextEnt(pEnt);
-			UTIL_Remove(pEnt);		// mark entity for deletion
+			// resetting this entity
+			CBaseEntity *pNextEntity = gEntList.NextEnt( pEnt );
+			UTIL_Remove( pEnt ); // mark entity for deletion
 			pEnt = pNextEntity;
 		}
-		else	// keeping this entity, so don't destroy it
-		{	
-			pEnt = gEntList.NextEnt(pEnt);
+		else
+		{
+			// keeping this entity, so don't destroy it
+			pEnt = gEntList.NextEnt( pEnt );
 		}
 	}
-		 
+
 	// causes all marked entity to be actually removed
 	gEntList.CleanupDeleteList();
-		 
+
+	// clear marine hints
+	MarineHintManager()->LevelInitPreEntity();
+
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
 	// this in effect causes them to spawn back to their normal position.
-	MapEntity_ParseAllEntities(engine->GetMapEntitiesString(), &m_MapResetFilter, true);
-		
-	// let the players know the mission is restarting
-	UTIL_ClientPrintAll(HUD_PRINTCENTER, "Restarting Mission");
+	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &m_MapResetFilter, true );
 
-	m_pMissionManager = new CASW_Mission_Manager();
-		
-	// respawn players
-	for (int i=1;i<=gpGlobals->maxClients;i++)
-	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		
-		if (pPlayer)
-			pPlayer->Spawn();
-	}
+	// let the players know the mission is restarting
+	//UTIL_ClientPrintAll( HUD_PRINTCENTER, "Restarting Mission" );
+
+	// clear out gamerules
+	FullReset();
 
 	// reset our game state and setup game resource, etc
 	LevelInitPostEntity();
 
-	m_fLastBlipSpeechTime = -200.0f;
+	// re-init some systems
+	TheTonemapSystem()->LevelInitPostEntity();
+	PostProcessSystem()->LevelInitPostEntity();
+	ColorCorrectionSystem()->LevelInitPostEntity();
+	FogSystem()->LevelInitPostEntity();
+	ASWDirector()->LevelInitPostEntity();
+	GameTimescale()->LevelInitPostEntity();
+	g_ASWSquadFormation.LevelInitPostEntity();
+
+	CCommand fullyJoinedArgs;
+	fullyJoinedArgs.Tokenize( "cl_fullyjoined" );
+
+	// respawn players
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+
+		if ( pPlayer )
+		{
+			pPlayer->Spawn();
+
+			if ( pPlayer->m_bSentJoinedMessage )
+			{
+				pPlayer->m_bSentJoinedMessage = false;
+				pPlayer->ClientCommand( fullyJoinedArgs );
+			}
+		}
+	}
 }
 
 // issues a changelevel command with the campaign argument and save name
@@ -3558,12 +3582,6 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 		MarineInvuln( false );
 		m_nMarineForDeathCam = -1;
 		m_fMarineDeathTime = 0.0f;
-	}
-
-	if ( gpGlobals->curtime >= ( m_fObjectiveSlowDownEndTime - asw_objective_slowdown_time.GetFloat() ) && gpGlobals->curtime < m_fObjectiveSlowDownEndTime )
-	{
-		GameTimescale()->SetDesiredTimescale( asw_objective_update_time_scale.GetFloat(), 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
-		return;
 	}
 
 	if ( m_flStimEndTime > gpGlobals->curtime )
@@ -8746,7 +8764,7 @@ void CAlienSwarm::LevelInitPostEntity()
 		return;
 	}
 
-	if ( !gEntList.FindEntityByClassname( NULL, "env_tonemap_controller" ) )
+	if ( !TheTonemapSystem()->GetMasterTonemapController() )
 	{
 		DevWarning( "No env_tonemap_controller found in level. Creating one and setting bloom scale to a safe value.\n" );
 		CBaseEntity *pTonemap = CreateEntityByName( "env_tonemap_controller" );
@@ -8756,6 +8774,8 @@ void CAlienSwarm::LevelInitPostEntity()
 			variant_t scale;
 			scale.SetFloat( 0.25f );
 			pTonemap->AcceptInput( "SetBloomScale", pTonemap, pTonemap, scale, 0 );
+
+			TheTonemapSystem()->LevelInitPostEntity();
 		}
 	}
 

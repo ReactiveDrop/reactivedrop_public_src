@@ -642,7 +642,7 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 CASW_Marine::~CASW_Marine()
 {
-	if (GetMarineResource())
+	if ( m_MarineResource )
 		GetMarineResource()->SetMarineEntity(NULL);
 	m_PlayerAnimState->Release();
 	delete m_MarineSpeech;
@@ -1209,7 +1209,10 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 	{
 		m_MarineResource = pMR;
 
-		PrecacheSpeech();
+		if ( pMR )
+		{
+			PrecacheSpeech();
+		}
 	}
 }
 
@@ -4499,7 +4502,7 @@ void CASW_Marine::PhysicsShove()
 CASW_Marine_Resource* CASW_Marine::GetMarineResource() const
 {
 	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || m_MarineResource );
-	return dynamic_cast<CASW_Marine_Resource*>(m_MarineResource.Get());
+	return assert_cast<CASW_Marine_Resource*>(m_MarineResource.Get());
 }
 
 void CASW_Marine::Suicide()

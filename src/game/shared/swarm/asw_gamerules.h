@@ -120,6 +120,7 @@ public:
 
 	CAlienSwarm();
 	virtual ~CAlienSwarm();
+	void FullReset();
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
@@ -363,8 +364,6 @@ public:
 	void SetInfoHeal( CASW_Info_Heal *pInfoHeal );
 	CASW_Info_Heal *GetInfoHeal();
 	CHandle<CASW_Info_Heal> m_hInfoHeal;
-
-	float m_fObjectiveSlowDownEndTime;
 
 	void EnableChallenge( const char *szChallengeName );
 	void ApplyChallenge();
