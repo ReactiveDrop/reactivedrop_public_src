@@ -3019,7 +3019,8 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	ASWDirector()->LevelInitPostEntity();
 	GameTimescale()->LevelInitPostEntity();
 	g_ASWSquadFormation.LevelInitPostEntity();
-	CAI_DynamicLink::ResetDynamicLinks();
+	CAI_DynamicLink::gm_bInitialized = false;
+	CAI_DynamicLink::InitDynamicLinks();
 
 	CCommand fullyJoinedArgs;
 	fullyJoinedArgs.Tokenize( "cl_fullyjoined" );
