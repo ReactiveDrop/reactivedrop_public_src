@@ -8775,7 +8775,7 @@ void CAlienSwarm::LevelInitPostEntity()
 		return;
 	}
 
-	if ( !TheTonemapSystem()->GetMasterTonemapController() )
+	if ( !gEntList.FindEntityByClassname( NULL, "env_tonemap_controller" ) )
 	{
 		DevWarning( "No env_tonemap_controller found in level. Creating one and setting bloom scale to a safe value.\n" );
 		CBaseEntity *pTonemap = CreateEntityByName( "env_tonemap_controller" );
