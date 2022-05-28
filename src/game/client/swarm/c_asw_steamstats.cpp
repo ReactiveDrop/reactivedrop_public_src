@@ -24,7 +24,6 @@ CASW_Steamstats g_ASW_Steamstats;
 
 ConVar asw_stats_leaderboard_debug( "asw_stats_leaderboard_debug", "0", FCVAR_NONE );
 ConVar rd_leaderboard_enabled_client( "rd_leaderboard_enabled_client", "1", FCVAR_ARCHIVE, "If 0 player leaderboard scores will not be set or updated on mission complete. Client only." );
-bool IsLBWhitelisted(const char *name);
 
 namespace 
 {
@@ -1667,7 +1666,7 @@ static bool StartsWith( const char *str, const char *pre )
 	return Q_strncmp( pre, str, Q_strlen( pre ) ) == 0;
 }
 
-bool IsLBWhitelisted( const char *name )
+bool CASW_Steamstats::IsLBWhitelisted( const char *name )
 {
 	bool r = false;
 

@@ -68,14 +68,19 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 		m_pLeaderboard->SetTitle( wszTitle );
 	}
 
-	char szLeaderboardName[k_cchLeaderboardNameMax];
+	char szLeaderboardName[k_cchLeaderboardNameMax]{};
 	if ( rd_leaderboard_by_difficulty.GetBool() && ASWGameRules()->GetSkillLevel() > 2 )
 	{
 		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules()->GetSkillLevel(), szMap, nMapID, szChallenge, nChallengeID );
 	}
-	else
+	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
+	}
+	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, "0", k_PublishedFileIdInvalid );
+		m_pLeaderboard->SetTitle( UTIL_RD_GetCurrentLobbyData( "game:missioninfo:displaytitle" ) );
 	}
 
 	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );

@@ -541,14 +541,19 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 	}
 
 	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
-	char szLeaderboardName[k_cchLeaderboardNameMax];
+	char szLeaderboardName[k_cchLeaderboardNameMax]{};
 	if ( rd_leaderboard_by_difficulty.GetBool() && iSkillLevel > 2 )
 	{
 		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), iSkillLevel, pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	}
-	else
+	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
+	}
+	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, "0", k_PublishedFileIdInvalid );
+		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
 	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );

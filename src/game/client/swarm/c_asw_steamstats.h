@@ -140,6 +140,7 @@ public:
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	bool IsOfficialCampaign();
+	bool IsLBWhitelisted( const char *name );
 
 	// Send leaderboard entries to Steam
 	void PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial );
