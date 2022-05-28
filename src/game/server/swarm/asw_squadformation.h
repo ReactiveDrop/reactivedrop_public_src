@@ -27,6 +27,7 @@ public:
 		INVALID_SQUADDIE,
 	};
 
+	virtual void LevelInitPreEntity();
 	virtual void LevelInitPostEntity();
 
 	inline CHandle<CASW_Marine> Leader() const { return m_hLeader; }
@@ -124,12 +125,6 @@ protected:
 private:
 	Vector GetLdrAnglMatrix( const Vector &origin, const QAngle &ang, matrix3x4_t *pout );
 
-#pragma region From IGameSystem
-protected:
-	virtual void LevelInitPreEntity();
-#pragma endregion 
-
-private:
 	bool m_bLevelHasFollowHints;
 
 	// thou shalt not copy

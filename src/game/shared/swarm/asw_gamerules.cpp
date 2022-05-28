@@ -98,6 +98,7 @@
 	#include "env_tonemap_controller.h"
 	#include "asw_marine_hint.h"
 	#include "eventqueue.h"
+	#include "ai_dynamiclink.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -2991,6 +2992,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 	// clear marine hints
 	MarineHintManager()->LevelInitPreEntity();
+	g_ASWSquadFormation.LevelInitPreEntity();
 
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
 	// this in effect causes them to spawn back to their normal position.
@@ -3013,6 +3015,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	ASWDirector()->LevelInitPostEntity();
 	GameTimescale()->LevelInitPostEntity();
 	g_ASWSquadFormation.LevelInitPostEntity();
+	CAI_DynamicLink::ResetDynamicLinks();
 
 	CCommand fullyJoinedArgs;
 	fullyJoinedArgs.Tokenize( "cl_fullyjoined" );
