@@ -2286,6 +2286,9 @@ void C_ASW_Player::OnMissionRestart()
 	// remove all decals	
 	engine->ClientCmd( "r_cleardecals\n" );
 
+	// stop solo music
+	StopSound( "asw_song.statsFail" );
+
 	// is this needed?
 	// recreate all client side physics props
 	// check for physenv, because we sometimes crash on changelevel
