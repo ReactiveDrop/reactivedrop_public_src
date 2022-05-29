@@ -380,9 +380,12 @@ void ClientPrecache( void )
 		engine->ForceExactFile( "cfg/cpu_level_360_ss.ekv" );
 	}
 
-	// Game Instructor lessons - don't want people making simple scripted wall hacks
-	engine->ForceExactFile( "scripts/instructor_lessons.txt" );
-	engine->ForceExactFile( "scripts/mod_lessons.txt" );
+	// BenLubar: not particularly worried about wallhacks in a top-down game.
+	// additionally, allowing these files to differ gives us some freedom for
+	// updating game instructor stuff in a hotfix.
+	//// Game Instructor lessons - don't want people making simple scripted wall hacks
+	//engine->ForceExactFile( "scripts/instructor_lessons.txt" );
+	//engine->ForceExactFile( "scripts/mod_lessons.txt" );
 
 	// weapon scripts
 	engine->ForceExactFile( "scripts/asw_weapon_ammo_bag.txt" );
