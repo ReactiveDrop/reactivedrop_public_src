@@ -23,12 +23,16 @@ public:
 
 	float	m_flTimeBurnOut;
 	float	m_flScale;
+	float	m_flTimeCreated;
 	bool	m_bSmoke;
+	bool	m_bStopped;
 	pixelvis_handle_t m_queryHandle;
 
 
 private:
 	C_ASW_Gas_Grenade_Projectile( const C_ASW_Gas_Grenade_Projectile & );
+
+	CUtlReference<CNewParticleEffect> m_pTrailEffect;
 };
 
 #endif // _INCLUDED_C_ASW_GAS_GRENADE_PROJECTILE_H

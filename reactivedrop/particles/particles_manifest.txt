@@ -23,6 +23,7 @@ particles_manifest
 	"file"		"particles/tracer_fx.pcf"
 	"file"		"particles/impact_fx.pcf"
 	"file"		"!particles/asw_weapon_fx.pcf"
+	"file"		"!particles/asw_weapon_fx_ext.pcf"
     "file"		"!particles/sentry_fx.pcf"
 	"file"		"particles/rain_fx.pcf"
 	"file"		"!particles/boomer_fx.pcf"
