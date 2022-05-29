@@ -1762,81 +1762,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	}
 	else if ( FStrEq( pcmd, "cl_fullyjoined") )
 	{
-		if (!m_bSentJoinedMessage)
-		{
-			if (gpGlobals->maxClients > 1)
-			{
-				//char text[256];
-				//Q_snprintf( text,sizeof(text), "%s has joined the game.\n", GetPlayerName() );
-				//UTIL_ClientPrintAll( HUD_PRINTTALK, text );
-				IGameEvent * event = gameeventmanager->CreateEvent( "player_fullyjoined" );
-				if ( event )
-				{
-					event->SetInt("userid", GetUserID() );
-					event->SetString( "name", GetPlayerName() );
-
-					gameeventmanager->FireEvent( event );
-				}
-
-				// if we're meant to be leader then make it so
-				if (ASWGameResource() && !Q_strcmp(GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID()) && ASWGameResource()->GetLeader() != this)
-				{
-					ASWGameResource()->SetLeader(this);
-					UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", GetPlayerName());
-					Msg("Network ID=%s LastLeaderNetworkID=%s\n", GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID());
-				}
-
-				UTIL_RestartAmbientSounds();
-			}
-			m_bSentJoinedMessage = true;
-		}
-		// check for getting back any marines we lost
-		bool bReturnedMarines = false;
-		CASW_Game_Resource *pGameResource = ASWGameResource();
-		if ( pGameResource )
-		{
-			const char *szNetworkID = GetASWNetworkID();
-			for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-			{
-				CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
-				if ( !pMR )
-					continue;
-				CASW_Marine *pMarine = pMR->GetMarineEntity();
-				
-				if ( pMarine && !Q_strcmp( pMarine->m_szInitialCommanderNetworkID, szNetworkID ) )
-				{
-					bool bWasInhabited = pMarine->IsInhabited();
-					CASW_Player *pTempCommander = pMarine->GetCommander();
-					if ( bWasInhabited && pTempCommander )
-					{
-						// if another player is currently controlling one of our old marines, have him switch out
-						//  this will likely be confusing for them!  need some message?
-						pTempCommander->LeaveMarines();
-					}
-					Msg("Fully joined, marine %d previous ID = %s my ID = %s\n", i, pMarine->m_szInitialCommanderNetworkID, szNetworkID );
-					pMarine->SetCommander( this );
-					pMR->SetCommander( this );
-					bReturnedMarines = true;
-					
-					// if another player was controlling one of our marines, make sure he switches to one of his own if he can
-					if ( bWasInhabited && pTempCommander )
-					{
-						pTempCommander->SwitchMarine(0);
-					}
-				}
-			}
-		}
-		if ( bReturnedMarines )
-		{
-			Msg(" Fully joined player switching to marine 0\n");
-			SwitchMarine(0);
-		}
-		ASWGameRules()->OnPlayerFullyJoined( this );
-
-		if ( !m_bWelcomed && rm_welcome_message.GetString()[0] != 0 )
-		{
-			SetContextThink(&CASW_Player::WelcomeMessageThink, gpGlobals->curtime + rm_welcome_message_delay.GetFloat(), s_pWelcomeMessageContext);
-		}
+		OnFullyJoined( true );
 
 		return true;
 	}
@@ -2370,6 +2296,85 @@ void CASW_Player::ChangeName( const char *pszNewName )
 
 	// tell engine to use new name
 	engine->ClientCommand( edict(), "name \"%s\"", trimmedName );
+}
+
+void CASW_Player::OnFullyJoined( bool bSendGameEvent )
+{
+	if ( !m_bSentJoinedMessage )
+	{
+		if ( gpGlobals->maxClients > 1 )
+		{
+			if ( bSendGameEvent )
+			{
+				IGameEvent *event = gameeventmanager->CreateEvent( "player_fullyjoined" );
+				if ( event )
+				{
+					event->SetInt( "userid", GetUserID() );
+					event->SetString( "name", GetPlayerName() );
+
+					gameeventmanager->FireEvent( event );
+				}
+			}
+
+			// if we're meant to be leader then make it so
+			if ( ASWGameResource() && !Q_strcmp( GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() ) && ASWGameResource()->GetLeader() != this )
+			{
+				ASWGameResource()->SetLeader( this );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", GetPlayerName() );
+				Msg( "Network ID=%s LastLeaderNetworkID=%s\n", GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() );
+			}
+
+			UTIL_RestartAmbientSounds();
+		}
+		m_bSentJoinedMessage = true;
+	}
+	// check for getting back any marines we lost
+	bool bReturnedMarines = false;
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( pGameResource )
+	{
+		const char *szNetworkID = GetASWNetworkID();
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+		{
+			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
+				continue;
+			CASW_Marine *pMarine = pMR->GetMarineEntity();
+
+			if ( pMarine && !Q_strcmp( pMarine->m_szInitialCommanderNetworkID, szNetworkID ) )
+			{
+				bool bWasInhabited = pMarine->IsInhabited();
+				CASW_Player *pTempCommander = pMarine->GetCommander();
+				if ( bWasInhabited && pTempCommander )
+				{
+					// if another player is currently controlling one of our old marines, have him switch out
+					//  this will likely be confusing for them!  need some message?
+					pTempCommander->LeaveMarines();
+				}
+				DevMsg( "Fully joined, marine %d previous ID = %s my ID = %s\n", i, pMarine->m_szInitialCommanderNetworkID, szNetworkID );
+				pMarine->SetCommander( this );
+				pMR->SetCommander( this );
+				bReturnedMarines = true;
+
+				// if another player was controlling one of our marines, make sure he switches to one of his own if he can
+				if ( bWasInhabited && pTempCommander )
+				{
+					pTempCommander->SwitchMarine( 0 );
+				}
+			}
+		}
+	}
+	if ( bReturnedMarines )
+	{
+		DevMsg( " Fully joined player switching to marine 0\n" );
+		SwitchMarine( 0 );
+	}
+	ASWGameRules()->OnPlayerFullyJoined( this );
+
+	if ( !m_bWelcomed && rm_welcome_message.GetString()[0] != 0 )
+	{
+		SetContextThink( &CASW_Player::WelcomeMessageThink, gpGlobals->curtime + rm_welcome_message_delay.GetFloat(), s_pWelcomeMessageContext );
+	}
 }
 
 #define ASW_NO_SERVERSIDE_AUTOAIM

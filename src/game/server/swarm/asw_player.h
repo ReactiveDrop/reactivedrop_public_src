@@ -177,6 +177,7 @@ public:
 	void ChangeName(const char *pszNewName);
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
 	CNetworkVar(bool, m_bSentJoinedMessage);	// has this player told everyone that he's fully joined yet
+	void OnFullyJoined( bool bSendGameEvent );
 
 	void WelcomeMessageThink();
 

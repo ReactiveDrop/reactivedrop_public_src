@@ -3027,9 +3027,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	CAI_DynamicLink::gm_bInitialized = false;
 	CAI_DynamicLink::InitDynamicLinks();
 
-	CCommand fullyJoinedArgs;
-	fullyJoinedArgs.Tokenize( "cl_fullyjoined" );
-
 	// respawn players
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
@@ -3042,7 +3039,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 			if ( pPlayer->m_bSentJoinedMessage )
 			{
 				pPlayer->m_bSentJoinedMessage = false;
-				pPlayer->ClientCommand( fullyJoinedArgs );
+				pPlayer->OnFullyJoined( false );
 			}
 		}
 	}
