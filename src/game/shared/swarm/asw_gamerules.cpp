@@ -3034,6 +3034,8 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 		if ( pPlayer )
 		{
+			pPlayer->ResetFragCount();
+			pPlayer->ResetDeathCount();
 			pPlayer->Spawn();
 
 			if ( pPlayer->m_bSentJoinedMessage )
