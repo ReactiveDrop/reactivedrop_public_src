@@ -1431,6 +1431,8 @@ public:
 
 		m_specialMenu->Clear();
 
+		m_specialMenu->SetBool( "AllowSpectator", true );
+
 		int num = 0;
 		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
@@ -1458,14 +1460,14 @@ public:
 			num++;
 			pDirection->SetString( "command", VarArgs( "+selectmarine%d", num ) );
 
-			if ( bIsSpectating )
-			{
-				pDirection->SetString( "text", VarArgs( "#rd_radial_spectate_%s", pProfile->m_PortraitName ) );
-			}
-			else if ( pMR->GetCommander() == pPlayer )
+			if ( pMR->GetCommander() == pPlayer )
 			{
 				// right now, only this case can be hit, but I'd like to make the others accessible in the future
 				pDirection->SetString( "text", VarArgs( "#rd_radial_switch_to_%s", pProfile->m_PortraitName ) );
+			}
+			else if ( bIsSpectating )
+			{
+				pDirection->SetString( "text", VarArgs( "#rd_radial_spectate_%s", pProfile->m_PortraitName ) );
 			}
 			else
 			{
@@ -1703,6 +1705,12 @@ void OpenRadialMenu( const char *menuName )
 		return;
 	}
 
+	if ( !C_ASW_Marine::GetLocalMarine() && !menuKey->GetBool( "AllowSpectator" ) )
+	{
+		pMenu->ShowPanel( false );
+		return;
+	}
+
 	V_snprintf( s_radialMenuName[ nSlot ], sizeof( s_radialMenuName[ nSlot ] ), menuName );
 	pMenu->SetData( menuKey );
 
@@ -1747,7 +1755,7 @@ void openradialmenu( const CCommand &args )
 	if ( s_mouseMenuKeyHeld[ nSlot ] )
 		return;
 
-	if ( !C_ASW_Marine::GetLocalMarine() )
+	if ( !C_ASW_Marine::GetViewMarine() )
 		return;
 
 	s_mouseMenuKeyHeld[ nSlot ] = true;
@@ -1763,9 +1771,6 @@ void closeradialmenu( void )
 	int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 
 	s_mouseMenuKeyHeld[ nSlot ] = false;
-
-	if ( !C_ASW_Marine::GetLocalMarine() )
-		return;
 
 	if ( !cl_fastradial.GetBool() )
 	{
