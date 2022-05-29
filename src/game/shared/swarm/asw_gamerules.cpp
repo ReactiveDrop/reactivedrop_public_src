@@ -3000,6 +3000,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 	RevertSavedConvars();
 
+	// clear out gamerules
+	FullReset();
+
 	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
 
@@ -3009,9 +3012,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 	// let the players know the mission is restarting
 	//UTIL_ClientPrintAll( HUD_PRINTCENTER, "Restarting Mission" );
-
-	// clear out gamerules
-	FullReset();
 
 	// reset our game state and setup game resource, etc
 	LevelInitPostEntity();
