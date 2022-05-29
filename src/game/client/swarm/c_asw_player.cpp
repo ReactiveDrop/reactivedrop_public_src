@@ -2283,8 +2283,6 @@ void C_ASW_Player::OnMissionRestart()
 	GetClientModeASW()->m_bLaunchedBriefing = false;
 	GetClientModeASW()->m_bLaunchedDebrief = false;
 	m_fLastRestartTime = gpGlobals->curtime;
-	// remove all decals	
-	engine->ClientCmd( "r_cleardecals\n" );
 
 	// stop all sounds
 	engine->ClientCmd( "snd_restart\n" );

@@ -90,7 +90,7 @@ Vector g_asw_vec_last_hear_pos = vec3_origin;
 ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 120.0 );
 
-ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses and gibs when performing an instant restart" );
+ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
@@ -807,6 +807,9 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 
 		if ( asw_instant_restart_cleanup.GetBool() )
 		{
+			// remove all decals
+			engine->ClientCmd( "r_cleardecals\n" );
+
 			for ( C_BaseEntity *pEntity = ClientEntityList().FirstBaseEntity(); pEntity; pEntity = ClientEntityList().NextBaseEntity( pEntity ) )
 			{
 				if ( pEntity->index != -1 )
