@@ -473,6 +473,7 @@ public:
 	virtual void CreateStandardEntities( void );	
 	virtual bool IsMultiplayer();	
 	bool IsOfflineGame();
+	bool IsAnniversaryWeek();
 	bool CanFlareAutoaimAt(CASW_Marine* pMarine, CBaseEntity *pEntity);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 #ifdef GAME_DLL

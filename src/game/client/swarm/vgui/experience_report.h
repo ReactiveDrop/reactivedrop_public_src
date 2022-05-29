@@ -49,6 +49,9 @@ public:
 	vgui::Label *m_pXPDifficultyScaleTitle;
 	vgui::Label *m_pXPDifficultyScaleNumber;
 
+	vgui::Label *m_pXPBonusEventScaleTitle;
+	vgui::Label *m_pXPBonusEventScaleNumber;
+
 	vgui::Label *m_pEarnedXPTitle;
 	vgui::Label *m_pEarnedXPNumber;
 

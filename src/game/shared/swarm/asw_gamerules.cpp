@@ -8335,6 +8335,28 @@ bool CAlienSwarm::IsOfflineGame()
 	return ( ASWGameResource() && ASWGameResource()->IsOfflineGame() );
 }
 
+bool CAlienSwarm::IsAnniversaryWeek()
+{
+	ISteamUtils *pUtils = SteamUtils();
+#ifdef GAME_DLL
+	if ( !pUtils )
+		pUtils = SteamGameServerUtils();
+#endif
+
+	if ( !pUtils )
+	{
+		Warning( "Could not get current time from Steam API\n" );
+		return false;
+	}
+
+	// previously, this was in local time; however, we need it to be the same on the client and the server
+	// therefore, we are moving it to GMT and extending the week by 1 day to compensate
+	// the anniversary week now takes place from the 20th to the 27th
+	tm curtime;
+	Plat_gmtime( pUtils->GetServerRealTime(), &curtime );
+	return ( curtime.tm_mday >= 20 && curtime.tm_mday <= 27 ) && curtime.tm_mon == 3;
+}
+
 int CAlienSwarm::CampaignMissionsLeft()
 {
 	if (!IsCampaignGame())
@@ -8694,7 +8716,7 @@ static void CreateCake( const char *mapname )
 	pCakeSprite->SetScale( 0.15f );
 	pCakeSprite->SetColor( 220, 205, 120 );
 	pCakeSprite->SetRenderAlpha( 190.0f );
-	pCakeSprite->SetRenderMode( ( RenderMode_t )9 );	// World Space Glow
+	pCakeSprite->SetRenderMode( kRenderWorldGlow );
 	pCakeSprite->m_flSpriteFramerate = 10.0f;
 	pCakeSprite->SetAbsOrigin( origin + Vector( 0, 0, 24 ) );
 	pCakeSprite->Spawn();
@@ -8857,14 +8879,10 @@ void CAlienSwarm::LevelInitPostEntity()
 		}
 	}
 
-#ifdef GAME_DLL
-	tm curtime; 
-	Plat_GetLocalTime( &curtime );
-	if ( (curtime.tm_mday >= 20 && curtime.tm_mday < 27) && curtime.tm_mon == 3 )
+	if ( IsAnniversaryWeek() )
 	{
 		CreateCake( mapName );
 	}
-#endif
 
 	if ( IsLobbyMap() )
 	{

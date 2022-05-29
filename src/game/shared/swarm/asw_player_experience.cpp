@@ -376,10 +376,13 @@ void CASW_Player::CalculateEarnedXP()
 		m_iEarnedXP[ ASW_XP_TOTAL ] += m_iEarnedXP[ i ];
 	}
 
-	// apply difficulty bonus
+	// apply bonuses
 	if ( ASWGameRules() )
 	{
 		m_iEarnedXP[ ASW_XP_TOTAL ] *= g_flXPDifficultyScale[ ASWGameRules()->GetSkillLevel() - 1 ];
+
+		if ( ASWGameRules()->IsAnniversaryWeek() )
+			m_iEarnedXP[ ASW_XP_TOTAL ] *= 2;
 	}
 
 	if ( asw_show_xp_details.GetBool() )
