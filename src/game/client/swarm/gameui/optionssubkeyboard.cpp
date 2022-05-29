@@ -4,6 +4,7 @@
 //
 //===========================================================================//
 
+#include "cbase.h"
 
 #include "OptionsSubKeyboard.h"
 #include "EngineInterface.h"
@@ -32,6 +33,8 @@
 #include "tier2/tier2.h"
 #include "inputsystem/iinputsystem.h"
 #include "gameui_util.h"
+
+#include "asw_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -432,12 +435,7 @@ void COptionsSubKeyboard::FillInCurrentBindings( void )
 	// Clear any current settings
 	ClearBindItems();
 
-	bool bJoystick = false;
-	CGameUIConVarRef var( "joystick" );
-	if ( var.IsValid() )
-	{
-		bJoystick = var.GetBool();
-	}
+	bool bJoystick = ASWInput()->ControllerModeActive();
 
 	CGameUIConVarRef con_enable( "con_enable" );
 	if ( con_enable.IsValid() )
@@ -851,7 +849,7 @@ public:
 	{
 		BaseClass::Activate();
 
-		input()->SetAppModalSurface(GetVPanel());
+		vgui::input()->SetAppModalSurface(GetVPanel());
 
 		// reset the data
 		CGameUIConVarRef con_enable( "con_enable" );

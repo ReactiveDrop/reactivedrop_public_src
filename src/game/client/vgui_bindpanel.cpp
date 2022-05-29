@@ -3,6 +3,7 @@
 #include <vgui/ilocalize.h>
 #include <vgui/isurface.h>
 #include <vgui/ivgui.h>
+#include "asw_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -72,7 +73,7 @@ void CBindPanel::SetBind( const char *szBind, int iSlot )
 void CBindPanel::UpdateKey()
 {
 	MEM_ALLOC_CREDIT();
-	const char *key = engine->Key_LookupBindingEx( *m_szBind == '+' ? m_szBind + 1 : m_szBind, m_iSlot );
+	const char *key = engine->Key_LookupBindingEx( *m_szBind == '+' ? m_szBind + 1 : m_szBind, m_iSlot, 0, ASWInput()->ControllerModeActive() );
 	if ( key )
 	{
 		Q_snprintf( m_szKey, sizeof( m_szKey ), key );
