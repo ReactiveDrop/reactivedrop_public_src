@@ -2285,7 +2285,7 @@ void C_ASW_Player::OnMissionRestart()
 	m_fLastRestartTime = gpGlobals->curtime;
 
 	// stop all sounds
-	engine->ClientCmd( "snd_restart\n" );
+	enginesound->StopAllSounds( true );
 
 	// is this needed?
 	// recreate all client side physics props
