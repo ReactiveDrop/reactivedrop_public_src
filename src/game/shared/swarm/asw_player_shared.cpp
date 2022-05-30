@@ -986,6 +986,11 @@ Vector CASW_Player::EarPosition( void )
 	{
 		return BaseClass::EarPosition();
 	}
+
+	CBaseEntity *pViewEnt = GetViewEntity();
+	if ( pViewEnt )
+		return pViewEnt->EarPosition();
+
 	CASW_Marine* pMarine = GetViewMarine();
 	if (pMarine)
 		return pMarine->EarPosition();
@@ -1223,6 +1228,9 @@ void CASW_Player::HandleSpeedChanges( void )
 
 CBaseEntity* CASW_Player::GetSoundscapeListener()
 {
+	if ( GetViewEntity() )
+		return GetViewEntity();
+
 	if (GetViewMarine())
 		return GetViewMarine();
 
@@ -1232,5 +1240,9 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 // BenLubar: for code ported from Swarm Director 2, include this method just in case Reactive Drop ever has per-player asw_controls support.
 int CASW_Player::GetASWControls()
 {
+	// if a camera is controlling our vision, we're in first person.
+	if ( GetViewEntity() )
+		return 0;
+
 	return asw_controls.GetInt();
 }

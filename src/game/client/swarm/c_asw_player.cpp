@@ -470,7 +470,14 @@ void C_ASW_Player::PostDataUpdate( DataUpdateType_t updateType )
 	// C_BaseEntity assumes we're networking the entity's angles, so pretend that it
 	// networked the same value we already have.
 	SetNetworkAngles( GetLocalAngles() );
-	
+
+	// in case our view entity has changed
+	if ( IsLocalPlayer() )
+	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
+		ASWInput()->UpdateASWControls();
+	}
+
 	BaseClass::PostDataUpdate( updateType );
 }
 

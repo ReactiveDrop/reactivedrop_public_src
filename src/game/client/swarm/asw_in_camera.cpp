@@ -582,7 +582,7 @@ void CASWInput::UpdateASWControls()
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer->GetASWControls() == 1 )
+	if ( !pPlayer || pPlayer->GetASWControls() == 1 )
 	{
 		CAM_ToThirdPerson();
 	}
