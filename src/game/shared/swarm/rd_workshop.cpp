@@ -852,6 +852,8 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 	{
 		pAddons->Activate();
 	}
+
+	ReactiveDropMissions::ClearClientCache();
 #endif
 }
 
