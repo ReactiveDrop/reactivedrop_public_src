@@ -805,6 +805,9 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 			pPlayer->OnMissionRestart();
 		}
 
+		m_aAchievementsEarned.Purge();
+		m_aAwardedExperience.Purge();
+
 		if ( asw_instant_restart_cleanup.GetBool() )
 		{
 			// remove all decals

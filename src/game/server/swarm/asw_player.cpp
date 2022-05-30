@@ -613,6 +613,8 @@ void CASW_Player::Spawn()
 	m_iLeaderVoteIndex = -1;
 	BecomeNonSolid();
 
+	m_bHasAwardedXP = false;
+
 	if (ASWGameRules())
 	{
 		ASWGameRules()->SetMaxMarines();
@@ -2320,8 +2322,11 @@ void CASW_Player::OnFullyJoined( bool bSendGameEvent )
 			if ( ASWGameResource() && !Q_strcmp( GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() ) && ASWGameResource()->GetLeader() != this )
 			{
 				ASWGameResource()->SetLeader( this );
-				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", GetPlayerName() );
-				Msg( "Network ID=%s LastLeaderNetworkID=%s\n", GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() );
+				if ( bSendGameEvent )
+				{
+					UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", GetPlayerName() );
+				}
+				DevMsg( "Network ID=%s LastLeaderNetworkID=%s\n", GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() );
 			}
 
 			UTIL_RestartAmbientSounds();
