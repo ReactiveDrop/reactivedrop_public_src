@@ -328,33 +328,51 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 		return;
 	}
 
+	ISteamUGC *pUGC = SteamUGC();
+#ifdef GAME_DLL
+	if ( !pUGC )
+		pUGC = SteamGameServerUGC();
+#endif
+	if ( !pUGC )
+	{
+		Warning( "cannot query enabled addon metadata: no ISteamUGC!\n" );
+		return;
+	}
+
 	if ( m_hEnabledAddonsQuery != k_UGCQueryHandleInvalid )
 	{
-		SteamUGC()->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
+		pUGC->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
 	}
-	UGCQueryHandle_t hQuery = SteamUGC()->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
+	UGCQueryHandle_t hQuery = pUGC->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
 	m_hEnabledAddonsQuery = hQuery;
-	SteamUGC()->SetReturnLongDescription( hQuery, true );
-	SteamUGC()->SetReturnKeyValueTags( hQuery, true );
-	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( hQuery );
+	pUGC->SetReturnLongDescription( hQuery, true );
+	pUGC->SetReturnKeyValueTags( hQuery, true );
+	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( hQuery );
 	m_SteamUGCQueryCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamUGCQueryCompletedCallback );
 }
 
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::RequestNextPublishedAddonsPage()
 {
+	ISteamUGC *pUGC = SteamUGC();
+	if ( !pUGC )
+	{
+		Warning( "cannot query published addon metadata: no ISteamUGC!\n" );
+		return;
+	}
+
 	if ( m_hPublishedAddonsQuery != k_UGCQueryHandleInvalid )
 	{
-		SteamUGC()->ReleaseQueryUGCRequest( m_hPublishedAddonsQuery );
+		pUGC->ReleaseQueryUGCRequest( m_hPublishedAddonsQuery );
 	}
 
 	m_iPublishedAddonsPage++;
 	AccountID_t iAccount = SteamUser()->GetSteamID().GetAccountID();
 	AppId_t iApp = SteamUtils()->GetAppID();
-	m_hPublishedAddonsQuery = SteamUGC()->CreateQueryUserUGCRequest( iAccount, k_EUserUGCList_Published, k_EUGCMatchingUGCType_Items_ReadyToUse, k_EUserUGCListSortOrder_CreationOrderAsc, iApp, iApp, m_iPublishedAddonsPage );
-	SteamUGC()->SetReturnLongDescription( m_hPublishedAddonsQuery, true );
-	SteamUGC()->SetReturnKeyValueTags( m_hPublishedAddonsQuery, true );
-	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hPublishedAddonsQuery );
+	m_hPublishedAddonsQuery = pUGC->CreateQueryUserUGCRequest( iAccount, k_EUserUGCList_Published, k_EUGCMatchingUGCType_Items_ReadyToUse, k_EUserUGCListSortOrder_CreationOrderAsc, iApp, iApp, m_iPublishedAddonsPage );
+	pUGC->SetReturnLongDescription( m_hPublishedAddonsQuery, true );
+	pUGC->SetReturnKeyValueTags( m_hPublishedAddonsQuery, true );
+	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( m_hPublishedAddonsQuery );
 	m_SteamPublishedAddonsRequestCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamPublishedAddonsRequestCompleted );
 }
 #endif
