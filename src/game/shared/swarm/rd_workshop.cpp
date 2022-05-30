@@ -80,6 +80,8 @@ static CUtlVector<PublishedFileId_t> s_ServerWorkshopAddons;
 static bool s_bAnyServerUpdates = false;
 #endif
 static CUtlVector<PublishedFileId_t> s_DisabledAddons;
+static CUtlVector<PublishedFileId_t> s_AdminOverrideBonusAddons;
+static CUtlVector<PublishedFileId_t> s_AdminOverrideDeathmatchAddons;
 
 bool CReactiveDropWorkshop::Init()
 {
@@ -273,7 +275,6 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 }
 #endif
 
-
 CReactiveDropWorkshop::WorkshopItem_t CReactiveDropWorkshop::TryQueryAddon( PublishedFileId_t nPublishedFileID )
 {
 	FOR_EACH_VEC( m_EnabledAddons, i )
@@ -322,7 +323,7 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 	ClearOldPreviewRequests();
 #endif
 
-	if ( m_EnabledAddonsForQuery.Count() == 0 )
+	if ( s_bStartingUp || m_EnabledAddonsForQuery.Count() == 0 )
 	{
 		return;
 	}
@@ -464,6 +465,8 @@ void CReactiveDropWorkshop::SetupThink()
 	{
 		m_bWorkshopSetupCompleted = DedicatedServerWorkshopSetup();
 		s_flNextDownloadStatusMessage = 0;
+
+		g_ReactiveDropWorkshop.RestartEnabledAddonsQuery();
 	}
 
 	if ( !m_bWorkshopSetupCompleted || !SteamGameServerUGC() || Plat_FloatTime() < s_flNextDownloadStatusMessage )
@@ -716,8 +719,25 @@ void CReactiveDropWorkshop::DownloadItemResultCallback_Server( DownloadItemResul
 
 void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult, bool bIOFailure, UGCQueryHandle_t & hQuery )
 {
-	if ( bIOFailure || pResult->m_eResult != k_EResultOK )
+	if ( bIOFailure )
 	{
+		Warning( "workshop metadata query failed: io failure\n" );
+		return;
+	}
+	if ( pResult->m_eResult != k_EResultOK )
+	{
+		Warning( "workshop metadata query failed: eresult %d\n", pResult->m_eResult );
+		return;
+	}
+
+	ISteamUGC *pUGC = SteamUGC();
+#ifdef GAME_DLL
+	if ( !pUGC )
+		pUGC = SteamGameServerUGC();
+#endif
+	if ( !pUGC )
+	{
+		Warning( "workshop metadata query finished, but no ISteamUGC!\n" );
 		return;
 	}
 
@@ -725,7 +745,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 
 	for ( uint32 i = 0; i < pResult->m_unNumResultsReturned; i++ )
 	{
-		bool bOK = SteamUGC()->GetQueryUGCResult( hQuery, i, &m_EnabledAddons[nextIndex].details );
+		bool bOK = pUGC->GetQueryUGCResult( hQuery, i, &m_EnabledAddons[nextIndex].details );
 		if ( !bOK )
 		{
 			m_EnabledAddons.Remove( m_EnabledAddons.Count() - 1 );
@@ -742,35 +762,54 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 				index = j;
 				bExists = true;
 				m_EnabledAddons.Remove( m_EnabledAddons.Count() - 1 );
+				break;
 			}
 		}
 		if ( !bExists )
 		{
 			nextIndex++;
 		}
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSubscriptions, &m_EnabledAddons[index].nSubscriptions );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFavorites, &m_EnabledAddons[index].nFavorites );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFollowers, &m_EnabledAddons[index].nFollowers );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueSubscriptions, &m_EnabledAddons[index].nUniqueSubscriptions );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFavorites, &m_EnabledAddons[index].nUniqueFavorites );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFollowers, &m_EnabledAddons[index].nUniqueFollowers );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueWebsiteViews, &m_EnabledAddons[index].nUniqueWebsiteViews );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSecondsPlayed, &m_EnabledAddons[index].nSecondsPlayed );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumPlaytimeSessions, &m_EnabledAddons[index].nPlaytimeSessions );
-		SteamUGC()->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumComments, &m_EnabledAddons[index].nComments );
+		s_AdminOverrideBonusAddons.FindAndFastRemove( m_EnabledAddons[index].details.m_nPublishedFileId );
+		s_AdminOverrideDeathmatchAddons.FindAndFastRemove( m_EnabledAddons[index].details.m_nPublishedFileId );
+		uint32 nTags = pUGC->GetQueryUGCNumTags( hQuery, i );
+		for ( uint32 j = 0; j < nTags; j++ )
+		{
+			char szTag[1024];
+			if ( pUGC->GetQueryUGCTag( hQuery, i, j, szTag, sizeof( szTag ) ) )
+			{
+				if ( FStrEq( szTag, "adminoverride_Bonus" ) )
+				{
+					s_AdminOverrideBonusAddons.AddToTail( m_EnabledAddons[index].details.m_nPublishedFileId );
+				}
+				else if ( FStrEq( szTag, "adminoverride_Deathmatch" ) )
+				{
+					s_AdminOverrideDeathmatchAddons.AddToTail( m_EnabledAddons[index].details.m_nPublishedFileId );
+				}
+			}
+		}
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSubscriptions, &m_EnabledAddons[index].nSubscriptions );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFavorites, &m_EnabledAddons[index].nFavorites );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFollowers, &m_EnabledAddons[index].nFollowers );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueSubscriptions, &m_EnabledAddons[index].nUniqueSubscriptions );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFavorites, &m_EnabledAddons[index].nUniqueFavorites );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFollowers, &m_EnabledAddons[index].nUniqueFollowers );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueWebsiteViews, &m_EnabledAddons[index].nUniqueWebsiteViews );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSecondsPlayed, &m_EnabledAddons[index].nSecondsPlayed );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumPlaytimeSessions, &m_EnabledAddons[index].nPlaytimeSessions );
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumComments, &m_EnabledAddons[index].nComments );
 		m_EnabledAddons[index].kvTags.Purge();
-		uint32 nKeyValueTags = SteamUGC()->GetQueryUGCNumKeyValueTags( hQuery, i );
+		uint32 nKeyValueTags = pUGC->GetQueryUGCNumKeyValueTags( hQuery, i );
 		for ( uint32 j = 0; j < nKeyValueTags; j++ )
 		{
 			char szKey[1024];
 			char szValue[1024];
-			if ( SteamUGC()->GetQueryUGCKeyValueTag( hQuery, i, j, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+			if ( pUGC->GetQueryUGCKeyValueTag( hQuery, i, j, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
 			{
 				m_EnabledAddons[index].kvTags[szKey].CopyAndAddToTail( szValue );
 			}
 		}
-		SteamFriends()->RequestUserInformation( CSteamID( m_EnabledAddons[index].details.m_ulSteamIDOwner ), true );
 #ifdef CLIENT_DLL
+		SteamFriends()->RequestUserInformation( CSteamID( m_EnabledAddons[index].details.m_ulSteamIDOwner ), true );
 		if ( bExists )
 		{
 			FOR_EACH_VEC( m_PreviewRequests, j )
@@ -790,7 +829,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 #endif
 	}
 
-	SteamUGC()->ReleaseQueryUGCRequest( hQuery );
+	pUGC->ReleaseQueryUGCRequest( hQuery );
 	hQuery = k_UGCQueryHandleInvalid;
 
 #ifdef CLIENT_DLL
@@ -1045,6 +1084,9 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 		Warning( "Cannot install addon %llu: no access to the Steam Workshop API!\n", id );
 		return;
 	}
+
+	// make sure we know the metadata (for admin override tags, mostly)
+	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
 	uint32 iState = pWorkshop->GetItemState( id );
 	if ( ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
