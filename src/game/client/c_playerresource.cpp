@@ -9,6 +9,7 @@
 #include "c_team.h"
 #include "gamestringpool.h"
 #include "rd_rich_presence.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -114,6 +115,7 @@ void C_PlayerResource::UpdatePlayerName( int slot )
 	if ( IsConnected( slot ) && 
 		engine->GetPlayerInfo( slot, &sPlayerInfo ) )
 	{
+		g_RDTextFiltering.FilterTextName( sPlayerInfo.name, g_RDTextFiltering.GetClientSteamID( slot ) );
 		pchPlayerName = sPlayerInfo.name;
 	}
 

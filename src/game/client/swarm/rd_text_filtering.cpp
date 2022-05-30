@@ -10,6 +10,8 @@ CRD_Text_Filtering g_RDTextFiltering;
 // Uses settings at https://store.steampowered.com/account/preferences#CommunityContentPreferences
 ConVar rd_text_filtering( "rd_text_filtering", "1", FCVAR_NONE, "Filter text for content using the Steam API." );
 
+ConVar rd_text_filtering_debug_no_steamid( "rd_text_filtering_debug_no_steamid", "0", FCVAR_NONE, "(for testing) Fail all SteamID lookups for text filtering, causing \"friends\" and \"self\" special cases to not fire." );
+
 CRD_Text_Filtering::CRD_Text_Filtering() : CAutoGameSystem( "CRD_Text_Filtering" )
 {
 }
@@ -28,10 +30,24 @@ void CRD_Text_Filtering::PostInit()
 	}
 }
 
+CSteamID CRD_Text_Filtering::GetClientSteamID( int client )
+{
+	player_info_t playerInfo;
+	if ( !engine->GetPlayerInfo( client, &playerInfo ) )
+	{
+		return k_steamIDNil;
+	}
+
+	return CSteamID( playerInfo.friendsID, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+}
+
 static void DoFilterText( ETextFilteringContext eContext, CSteamID sourceSteamID, char *szText, size_t bufSizeInBytes )
 {
 	if ( !rd_text_filtering.GetBool() || !SteamUtils() )
 		return;
+
+	if ( rd_text_filtering_debug_no_steamid.GetBool() )
+		sourceSteamID = k_steamIDNil;
 
 	char *szDest = (char *)stackalloc( bufSizeInBytes );
 	SteamUtils()->FilterText( eContext, sourceSteamID, szText, szDest, bufSizeInBytes );
@@ -44,7 +60,7 @@ static void DoFilterText( ETextFilteringContext eContext, CSteamID sourceSteamID
 		return;
 
 	// handle worst case utf-8
-	size_t utf8BufSize = bufSizeInBytes * 4;
+	size_t utf8BufSize = bufSizeInBytes + ( bufSizeInBytes >> 1 );
 	char *szText = (char *)stackalloc( utf8BufSize );
 
 	V_UnicodeToUTF8( wszText, szText, utf8BufSize );

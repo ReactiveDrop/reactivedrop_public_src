@@ -21,6 +21,7 @@
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "c_asw_game_resource.h"
+#include "rd_text_filtering.h"
 
 DECLARE_HUDELEMENT_FLAGS( CHudChat, HUDELEMENT_SS_FULLSCREEN_ONLY );
 
@@ -113,6 +114,10 @@ void CHudChat::MsgFunc_SayText2( bf_read &msg )
 	ReadLocalizedString( msg, szBuf[3], sizeof( szBuf[3] ), true );
 	ReadLocalizedString( msg, szBuf[4], sizeof( szBuf[4] ), true );
 
+	CSteamID playerSteamID = g_RDTextFiltering.GetClientSteamID( client );
+	g_RDTextFiltering.FilterTextName( szBuf[1], playerSteamID );
+	g_RDTextFiltering.FilterTextChat( szBuf[2], playerSteamID );
+
 	g_pVGuiLocalize->ConstructString( szBuf[5], sizeof( szBuf[5] ), msg_text, 4, szBuf[1], szBuf[2], szBuf[3], szBuf[4] );
 
 	char ansiString[512];
@@ -154,6 +159,10 @@ void CHudChat::MsgFunc_SayText( bf_read &msg )
 
 	int iPlayerID = msg.ReadByte(); // client ID
 	msg.ReadString( szString, sizeof(szString) );
+
+	CSteamID playerSteamID = g_RDTextFiltering.GetClientSteamID( iPlayerID );
+	g_RDTextFiltering.FilterTextChat( szString, playerSteamID );
+
 	//Printf( CHAT_FILTER_NONE, "%s", szString );
 	ChatPrintf( iPlayerID, CHAT_FILTER_PUBLICCHAT, "%s", szString );
 }
@@ -207,6 +216,7 @@ void CHudChat::MsgFunc_TextMsg( bf_read &msg )
 					StripEndNewlineFromString( tmpStr );  // these strings are meant for subsitution into the main strings, so cull the automatic end newlines
 				}
 				g_pVGuiLocalize->ConvertANSIToUnicode( tmpStr, szBuf[i], sizeof(szBuf[i]) );
+				g_RDTextFiltering.FilterTextUnknown( szBuf[i] );
 			}
 		}
 	}

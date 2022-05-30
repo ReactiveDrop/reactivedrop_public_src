@@ -12,6 +12,8 @@ public:
 
 	virtual void PostInit();
 
+	CSteamID GetClientSteamID( int client );
+
 	// Unknown context
 	void FilterTextUnknown( wchar_t *wszText, size_t bufSizeInBytes, CSteamID sourceSteamID = CSteamID() );
 	void FilterTextUnknown( char *szText, size_t bufSizeInBytes, CSteamID sourceSteamID = CSteamID() );
