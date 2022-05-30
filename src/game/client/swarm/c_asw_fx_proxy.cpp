@@ -33,6 +33,7 @@ public:
 	CASW_Model_FX_Proxy( void );
 	virtual				~CASW_Model_FX_Proxy( void );
 	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
+	virtual void OnBind( void * );
 	virtual void OnBind( C_BaseEntity *pEnt );
 	void UpdateEffects( bool bShockBig, bool bOnFire, float flFrozen );
 	void TextureTransform( float flSpeed = 0, float flScale = 6.0f );
@@ -103,6 +104,16 @@ bool CASW_Model_FX_Proxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues )
 	m_pTextureScrollVar = pMaterial->FindVar( "$detailtexturetransform", &bScrollVar );
 
 	return ( bDetail && bScale && bBlendFact && bBlendMode && bScrollVar );
+}
+
+void CASW_Model_FX_Proxy::OnBind( void *pC_BaseEntity )
+{
+	if ( !pC_BaseEntity )
+	{
+		m_pDetailBlendFactor->SetFloatValue( 0.0f );
+	}
+
+	CEntityMaterialProxy::OnBind( pC_BaseEntity );
 }
 
 void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
