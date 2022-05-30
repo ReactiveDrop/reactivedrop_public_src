@@ -80,8 +80,6 @@ static CUtlVector<PublishedFileId_t> s_ServerWorkshopAddons;
 static bool s_bAnyServerUpdates = false;
 #endif
 static CUtlVector<PublishedFileId_t> s_DisabledAddons;
-static CUtlVector<PublishedFileId_t> s_AdminOverrideBonusAddons;
-static CUtlVector<PublishedFileId_t> s_AdminOverrideDeathmatchAddons;
 
 bool CReactiveDropWorkshop::Init()
 {
@@ -744,7 +742,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 	}
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "workshop metadata query failed: eresult %d\n", pResult->m_eResult );
+		Warning( "workshop metadata query failed (the addon may have still installed successfully): eresult %d\n", pResult->m_eResult );
 		return;
 	}
 
@@ -787,8 +785,6 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 		{
 			nextIndex++;
 		}
-		s_AdminOverrideBonusAddons.FindAndFastRemove( m_EnabledAddons[index].details.m_nPublishedFileId );
-		s_AdminOverrideDeathmatchAddons.FindAndFastRemove( m_EnabledAddons[index].details.m_nPublishedFileId );
 		uint32 nTags = pUGC->GetQueryUGCNumTags( hQuery, i );
 		for ( uint32 j = 0; j < nTags; j++ )
 		{
@@ -797,11 +793,11 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 			{
 				if ( FStrEq( szTag, "adminoverride_Bonus" ) )
 				{
-					s_AdminOverrideBonusAddons.AddToTail( m_EnabledAddons[index].details.m_nPublishedFileId );
+					m_EnabledAddons[index].bAdminOverrideBonus = true;
 				}
 				else if ( FStrEq( szTag, "adminoverride_Deathmatch" ) )
 				{
-					s_AdminOverrideDeathmatchAddons.AddToTail( m_EnabledAddons[index].details.m_nPublishedFileId );
+					m_EnabledAddons[index].bAdminOverrideDeathmatch = true;
 				}
 			}
 		}
@@ -1114,7 +1110,17 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 #else 
 		if ( sv_workshop_debug.GetBool() )
 #endif
+		{
 			Msg( "Addon %llu is installed and does not need an update.\n", id );
+
+			uint64 sizeOnDisk;
+			char szFolder[MAX_PATH];
+			uint32 timeStamp;
+			if ( pWorkshop->GetItemInstallInfo( id, &sizeOnDisk, szFolder, sizeof( szFolder ), &timeStamp ) )
+			{
+				Msg( "  size: %llu bytes; timestamp: %u; folder: %s\n", sizeOnDisk, timeStamp, szFolder );
+			}
+		}
 		LoadAddon( id, false );
 		return;
 	}

@@ -76,6 +76,8 @@ public:
 			nSecondsPlayed = 0;
 			nPlaytimeSessions = 0;
 			nComments = 0;
+			bAdminOverrideBonus = false;
+			bAdminOverrideDeathmatch = false;
 		}
 
 		WorkshopItem_t( const WorkshopItem_t & other )
@@ -103,6 +105,8 @@ public:
 					values.CopyAndAddToTail( other.kvTags[i][j] );
 				}
 			}
+			bAdminOverrideBonus = other.bAdminOverrideBonus;
+			bAdminOverrideDeathmatch = other.bAdminOverrideDeathmatch;
 		}
 
 		~WorkshopItem_t()
@@ -129,6 +133,8 @@ public:
 		CUtlReference<CReactiveDropWorkshopPreviewImage> pPreviewImage;
 #endif
 		CUtlStringMap<CUtlStringList> kvTags;
+		bool bAdminOverrideBonus : 1;
+		bool bAdminOverrideDeathmatch : 1;
 	};
 
 	WorkshopItem_t TryQueryAddon( PublishedFileId_t nPublishedFileID );

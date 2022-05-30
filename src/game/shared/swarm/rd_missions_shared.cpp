@@ -73,6 +73,18 @@ struct NetworkedMissionMetadata_t
 
 		WorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName );
 
+		CReactiveDropWorkshop::WorkshopItem_t info = g_ReactiveDropWorkshop.TryQueryAddon( WorkshopID );
+		char szBaseName[MAX_PATH];
+		V_FileBase( szKVFileName, szBaseName, sizeof( szBaseName ) );
+		if ( info.bAdminOverrideDeathmatch && !V_strnicmp( szKVFileName, "dm_", 3 ) )
+		{
+			TagDeathmatch = true;
+		}
+		else if ( info.bAdminOverrideBonus )
+		{
+			TagBonus = true;
+		}
+
 		KeyValues::AutoDelete pKV( "GAME" );
 		if ( pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
 		{
@@ -93,6 +105,25 @@ struct NetworkedMissionMetadata_t
 };
 #pragma pack(pop)
 
+// workshop addons with adminoverride_Bonus or adminoverride_Deathmatch
+// have been manually checked to ensure they have only one-mission campaigns
+// and that the name of the campaign is the same as or substantially similar to
+// the name of the campaign's only mission.
+static bool ShouldIgnoreCampaign( const char *szName )
+{
+	char szPath[MAX_PATH];
+	V_snprintf( szPath, sizeof( szPath ), "resource/campaigns/%s.txt", szName );
+
+	PublishedFileId_t iAddon = g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath );
+	if ( iAddon == k_PublishedFileIdInvalid )
+	{
+		return false;
+	}
+
+	CReactiveDropWorkshop::WorkshopItem_t item = g_ReactiveDropWorkshop.TryQueryAddon( iAddon );
+	return item.bAdminOverrideBonus || item.bAdminOverrideDeathmatch;
+}
+
 #ifdef GAME_DLL
 void ReactiveDropMissions::CreateNetworkStringTables()
 {
@@ -110,6 +141,12 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 		const char *szBaseName = s_szCampaignNamesFirst[i];
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/campaigns/%s.txt", szBaseName );
 		metadata.SetFromFile( szKVFileName );
+
+		if ( ShouldIgnoreCampaign( szBaseName ) )
+		{
+			DevMsg( 2, "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu (official)\n", szBaseName, metadata.WorkshopID );
+			continue;
+		}
 
 		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
 		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
@@ -132,6 +169,12 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 		V_FileBase( pszCampaign, szBaseName, sizeof( szBaseName ) );
 		V_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/campaigns/%s", pszCampaign );
 		metadata.SetFromFile( szKVFileName );
+
+		if ( ShouldIgnoreCampaign( szBaseName ) )
+		{
+			DevMsg( 2, "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu\n", szBaseName, metadata.WorkshopID );
+			continue;
+		}
 
 		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
 		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
@@ -222,6 +265,9 @@ public:
 		for ( int i = 0; i < NELEMS( s_szCampaignNamesFirst ); i++ )
 		{
 			Assert( filesystem->FileExists( CFmtStr( "resource/campaigns/%s.txt", s_szCampaignNamesFirst[i] ), "GAME" ) );
+			if ( ShouldIgnoreCampaign( s_szCampaignNamesFirst[i] ) )
+				continue;
+
 			m_LocalCampaigns.AddString( s_szCampaignNamesFirst[i] );
 		}
 
@@ -236,6 +282,9 @@ public:
 		{
 			char szCampaignName[MAX_PATH];
 			Q_FileBase( pszCampaign, szCampaignName, sizeof( szCampaignName ) );
+			if ( ShouldIgnoreCampaign( szCampaignName ) )
+				continue;
+
 			m_LocalCampaigns.AddString( szCampaignName );
 		}
 		filesystem->FindClose( hFind );
@@ -598,7 +647,32 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	pMission->MissionTitle = AllocMissionsPooledString( pKV->GetString( "missiontitle" ) );
 	pMission->Description = AllocMissionsPooledString( pKV->GetString( "description" ) );
 	pMission->Image = AllocMissionsPooledString( pKV->GetString( "image" ) );
-	pMission->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", DEFAULT_CREDITS_FILE ) );
+
+	CReactiveDropWorkshop::WorkshopItem_t info = g_ReactiveDropWorkshop.TryQueryAddon( pMission->WorkshopID );
+
+	const char *szDefaultCredits = DEFAULT_CREDITS_FILE;
+	KeyValues::AutoDelete pCampaign( (KeyValues *)NULL );
+	if ( info.bAdminOverrideBonus || info.bAdminOverrideDeathmatch )
+	{
+		CUtlStringList & campaignMissions = info.kvTags["campaign_mission"];
+		char szSuffix[MAX_PATH];
+		V_snprintf( szSuffix, sizeof( szSuffix ), "/0/%s", pMission->BaseName );
+		FOR_EACH_VEC( campaignMissions, i )
+		{
+			if ( const char *pCampaignNameEnd = V_stristr( campaignMissions[i], szSuffix ) )
+			{
+				V_strncpy( szSuffix, campaignMissions[i], pCampaignNameEnd - campaignMissions[i] );
+				pCampaign.Assign( new KeyValues( "GAME" ) );
+				if ( pCampaign->LoadFromFile( filesystem, CFmtStr( "resource/campaigns/%s.txt", szSuffix ), "GAME" ) )
+				{
+					szDefaultCredits = pCampaign->GetString( "CustomCreditsFile", szDefaultCredits );
+				}
+				break;
+			}
+		}
+	}
+
+	pMission->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", szDefaultCredits ) );
 
 	pMission->Author = AllocMissionsPooledString( pKV->GetString( "author" ) );
 	pMission->Website = AllocMissionsPooledString( pKV->GetString( "website" ) );
@@ -622,6 +696,15 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 		{
 			pMission->Tags.AddToTail( AllocMissionsPooledString( pValue->GetString() ) );
 		}
+	}
+
+	if ( info.bAdminOverrideDeathmatch && !V_strnicmp( pMission->BaseName, "dm_", 3 ) )
+	{
+		pMission->Tags.AddToTail( MAKE_STRING( "deathmatch" ) );
+	}
+	else if ( info.bAdminOverrideBonus )
+	{
+		pMission->Tags.AddToTail( MAKE_STRING( "bonus" ) );
 	}
 
 	return pMission;

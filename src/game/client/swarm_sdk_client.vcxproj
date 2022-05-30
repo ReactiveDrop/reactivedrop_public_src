@@ -2993,12 +2993,6 @@ exit 1
     <Library Include="..\..\lib\public\vstdlib.lib" />
     <Library Include="..\..\lib\public\vtf.lib" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\server\swarm_sdk_server.vcxproj">
-      <Project>{ee8fad9c-dfaf-414b-a11d-7697e1a28a27}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
