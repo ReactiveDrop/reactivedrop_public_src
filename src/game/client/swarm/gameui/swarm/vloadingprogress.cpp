@@ -106,6 +106,8 @@ LoadingProgress::LoadingProgress(Panel *parent, const char *panelName, LoadingWi
 		m_pTipPanel = new CLoadingTipPanel( this );
 	}
 
+	m_pLoadingText = new vgui::Label( this, "LoadingText", "#L4D360UI_Loading" );
+
 	m_pLeaderboardBackground = new vgui::Panel( this, "LeaderboardBackground" );
 	m_pLeaderboardPanel = new CReactiveDrop_VGUI_Leaderboard_Panel( this, "Leaderboard" );
 	m_pMissionPic = new vgui::ImagePanel( this, "MissionPic" );
@@ -256,6 +258,14 @@ float LoadingProgress::GetProgress()
 	}
 
 	return retVal;
+}
+
+void LoadingProgress::SetStatusText( const char *statusText )
+{
+	if ( statusText )
+	{
+		m_pLoadingText->SetText( statusText );
+	}
 }
 
 void LoadingProgress::PaintBackground()

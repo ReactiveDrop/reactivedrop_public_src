@@ -1702,6 +1702,7 @@ bool CBaseModPanel::UpdateProgressBar( float progress, const char *statusText )
 	{
 		// update progress
 		loadingProgress->SetProgress( progress );
+		loadingProgress->SetStatusText( statusText );
 		s_LastEngineTime = time;
 		return true;
 	}
