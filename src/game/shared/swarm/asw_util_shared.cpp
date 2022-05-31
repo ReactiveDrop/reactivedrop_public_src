@@ -1664,7 +1664,7 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 	DevMsg( 2, "Reloaded localization files.\n" );
 }
 
-constexpr const char *UTIL_RD_EResultToString( EResult eResult )
+const char *UTIL_RD_EResultToString( EResult eResult )
 {
 	switch ( eResult )
 	{
