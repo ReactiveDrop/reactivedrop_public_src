@@ -8349,10 +8349,8 @@ bool CAlienSwarm::IsAnniversaryWeek()
 
 	if ( !pUtils )
 	{
-		DevWarning( 3, "Could not get current time from Steam API\n" );
 		return false;
 	}
-	DevMsg( 3, "Got current time from Steam API\n" );
 
 	// previously, this was in local time; however, we need it to be the same on the client and the server
 	// therefore, we are moving it to GMT and extending the week by 1 day to compensate
