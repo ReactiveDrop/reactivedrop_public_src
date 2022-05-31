@@ -1405,7 +1405,7 @@ CAlienSwarm::CAlienSwarm()
 	}
 #endif
 
-	m_szGameDescription = "Alien Swarm: Reactive Drop";
+	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
 	// create the profile list for the server
 	//  clients do this is in c_asw_player.cpp
@@ -9218,14 +9218,16 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
-		m_szGameDescription = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
+		V_strncpy( m_szGameDescription, ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ), sizeof( m_szGameDescription ) );
 		if ( const wchar_t *pwszChallengeName = g_pVGuiLocalize->Find( m_szGameDescription ) )
 		{
-			g_pVGuiLocalize->ConvertUnicodeToANSI( pwszChallengeName, const_cast< char* >( m_szGameDescription ), sizeof( m_szGameDescription ) );
+			g_pVGuiLocalize->ConvertUnicodeToANSI( pwszChallengeName, m_szGameDescription, sizeof( m_szGameDescription ) );
 		}
 	}
 	else
-		m_szGameDescription = "Alien Swarm: Reactive Drop";
+	{
+		V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
+	}
 }
 
 void CAlienSwarm::ResetChallengeConVars()

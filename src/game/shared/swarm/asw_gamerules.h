@@ -125,7 +125,7 @@ public:
 	virtual void			Precache( void );
 	virtual void			Think( void );
 	// reactivedrop: m_szGameDescription holds the name of current game mode 
-	const char *m_szGameDescription;
+	char m_szGameDescription[k_cbMaxGameServerGameDescription];
 	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	virtual void			Shutdown();
