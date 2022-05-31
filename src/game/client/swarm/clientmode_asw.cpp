@@ -919,6 +919,7 @@ void ClientModeASW::ASW_CloseAllWindows()
 	ASW_CloseAllWindowsFrom(GetViewport());
 
 	g_hBriefingFrame = NULL;
+	m_hMissionCompleteFrame = NULL;
 
 	// make sure we don't have a mission chooser up
 	engine->ClientCmd( "asw_mission_chooser exit" );
