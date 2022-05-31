@@ -4,6 +4,7 @@
 
 #include "util_shared.h"
 #include "asw_shareddefs.h"
+#include "steam/steamclientpublic.h"
 
 #ifdef CLIENT_DLL
 #define CPointCamera C_PointCamera
