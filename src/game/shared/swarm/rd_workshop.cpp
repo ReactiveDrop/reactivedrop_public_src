@@ -1123,7 +1123,11 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
 	uint32 iState = pWorkshop->GetItemState( id );
-	if ( !rd_workshop_unconditional_download_item.GetBool() && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
+	if (
+#ifdef GAME_DLL
+		( !engine->IsDedicatedServer() || !rd_workshop_unconditional_download_item.GetBool() ) &&
+#endif
+		( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
 #ifdef CLIENT_DLL
 		if ( cl_workshop_debug.GetBool() )
