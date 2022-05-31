@@ -43,6 +43,7 @@ ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop d
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
+ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If 1, always call ISteamUGC::DownloadItem, even if the API reports it being up-to-date." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
 
@@ -1122,7 +1123,7 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
 	uint32 iState = pWorkshop->GetItemState( id );
-	if ( ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
+	if ( !rd_workshop_unconditional_download_item.GetBool() && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
 #ifdef CLIENT_DLL
 		if ( cl_workshop_debug.GetBool() )
@@ -1149,7 +1150,7 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	}
 	if ( pWorkshop->DownloadItem( id, bHighPriority ) )
 	{
-		Msg( "Downloading addon %llu as it is %s.\n", id, ( iState & k_EItemStateInstalled ) ? "out of date" : "not installed" );
+		Msg( "Downloading addon %llu as it is %s.\n", id, ( iState & k_EItemStateInstalled ) ? ( iState & k_EItemStateNeedsUpdate ) ? "out of date" : "(reportedly) up-to-date" : "not installed" );
 	}
 	else
 	{
