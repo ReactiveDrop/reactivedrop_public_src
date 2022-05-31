@@ -333,14 +333,18 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 #endif
 	if ( !pUGC )
 	{
-		Warning( "cannot query enabled addon metadata: no ISteamUGC!\n" );
+		DevWarning( "cannot query enabled addon metadata: no ISteamUGC!\n" );
 		return;
 	}
 
 	if ( m_hEnabledAddonsQuery != k_UGCQueryHandleInvalid )
 	{
+		DevMsg( "Clearing previous Workshop metadata request\n" );
 		pUGC->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
 	}
+
+	DevMsg( "Sending Workshop metadata request\n" );
+
 	UGCQueryHandle_t hQuery = pUGC->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
 	m_hEnabledAddonsQuery = hQuery;
 	pUGC->SetReturnLongDescription( hQuery, true );
@@ -493,6 +497,7 @@ void CReactiveDropWorkshop::SetupThink()
 	s_flNextDownloadStatusMessage = Plat_FloatTime() + 1.0f;
 
 	bool bWaitingForAny = false;
+	int nPending = 0;
 	FOR_EACH_VEC( s_ServerWorkshopAddons, i )
 	{
 		PublishedFileId_t id = s_ServerWorkshopAddons[i];
@@ -512,7 +517,7 @@ void CReactiveDropWorkshop::SetupThink()
 		}
 		else if ( iItemState & k_EItemStateDownloadPending )
 		{
-			Msg( "Download pending for workshop item %llu\n", id );
+			nPending++;
 			bWaitingForAny = true;
 		}
 		else if ( iItemState & k_EItemStateNeedsUpdate )
@@ -521,6 +526,11 @@ void CReactiveDropWorkshop::SetupThink()
 			SteamGameServerUGC()->DownloadItem( id, false );
 			bWaitingForAny = true;
 		}
+	}
+
+	if ( nPending )
+	{
+		Msg( "Download pending for %d workshop item(s)\n", nPending );
 	}
 
 	if ( !bWaitingForAny )
@@ -737,12 +747,12 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 {
 	if ( bIOFailure )
 	{
-		Warning( "workshop metadata query failed: io failure\n" );
+		DevWarning( "Workshop metadata query failed: IO Failure\n" );
 		return;
 	}
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "workshop metadata query failed (the addon may have still installed successfully): eresult %d\n", pResult->m_eResult );
+		DevWarning( "Workshop metadata query failed: EResult %d\n", pResult->m_eResult );
 		return;
 	}
 
@@ -753,9 +763,11 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 #endif
 	if ( !pUGC )
 	{
-		Warning( "workshop metadata query finished, but no ISteamUGC!\n" );
+		Warning( "Workshop metadata query finished, but no ISteamUGC!\n" );
 		return;
 	}
+
+	DevMsg( "Got Workshop metadata response\n" );
 
 	int nextIndex = m_EnabledAddons.AddMultipleToTail( pResult->m_unNumResultsReturned );
 
@@ -854,6 +866,11 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 	}
 
 	ReactiveDropMissions::ClearClientCache();
+#else
+	if ( engine->IsDedicatedServer() )
+	{
+		ClearCaches();
+	}
 #endif
 }
 
