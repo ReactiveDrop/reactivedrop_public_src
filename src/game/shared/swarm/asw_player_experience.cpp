@@ -51,6 +51,7 @@
 #include "asw_shareddefs.h"
 #include "asw_weapon_parse.h"
 #include "asw_medals_shared.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -637,9 +638,9 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		//Msg( "CASW_Player: failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
-		//Msg( " m_nGameID = %I64u\n", pUserStatsReceived->m_nGameID );
-		//Msg( " SteamID = %I64u\n", pUserStatsReceived->m_steamIDUser.ConvertToUint64() );
+		DevMsg( 2, "CASW_Player: failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
+		DevMsg( 2, " m_nGameID = %I64u\n", pUserStatsReceived->m_nGameID );
+		DevMsg( 2, " SteamID = %I64u\n", pUserStatsReceived->m_steamIDUser.ConvertToUint64() );
 		m_bPendingSteamStats = false;
 		return;
 	}
@@ -810,7 +811,7 @@ void CASW_Player::Steam_OnUserStatsStored( UserStatsStored_t *pUserStatsStored )
 
 	if ( k_EResultOK != pUserStatsStored->m_eResult )
 	{
-		DevMsg( "CASW_Player: failed to upload stats to Steam, EResult %d\n", pUserStatsStored->m_eResult );
+		DevMsg( "CASW_Player: failed to upload stats to Steam, EResult %d (%s)\n", pUserStatsStored->m_eResult, UTIL_RD_EResultToString( pUserStatsStored->m_eResult ) );
 #ifdef USE_XP_FROM_STEAM
 		SteamUserStats()->GetStat( "experience", &m_iExperience );
 		SteamUserStats()->GetStat( "promotion", &m_iPromotion );
@@ -927,7 +928,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		Warning( "CASW_Player: Server failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
+		DevWarning( "CASW_Player: Server failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
 		m_bPendingSteamStats = false;
 		return;
 	}

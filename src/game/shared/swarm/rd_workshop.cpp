@@ -9,6 +9,7 @@
 #include "ConfigManager.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "asw_util_shared.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_game_resource.h"
@@ -708,7 +709,7 @@ void CReactiveDropWorkshop::DownloadItemResultCallback( DownloadItemResult_t *pR
 
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "Error downloading UGC item %llu: EResult %d\n", pResult->m_nPublishedFileId, pResult->m_eResult );
+		Warning( "Error downloading UGC item %llu: EResult %d (%s)\n", pResult->m_nPublishedFileId, pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -733,7 +734,7 @@ void CReactiveDropWorkshop::DownloadItemResultCallback_Server( DownloadItemResul
 
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "Error downloading UGC item %llu: EResult %d\n", pResult->m_nPublishedFileId, pResult->m_eResult );
+		Warning( "Error downloading UGC item %llu: EResult %d (%s)\n", pResult->m_nPublishedFileId, pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -750,7 +751,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 	}
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		DevWarning( "Workshop metadata query failed: EResult %d\n", pResult->m_eResult );
+		DevWarning( "Workshop metadata query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -918,7 +919,7 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 	}
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "Could not download preview image %llu for workshop item %llu: EResult %d\n", m_nPreviewImage, m_nFileID, pResult->m_eResult );
+		Warning( "Could not download preview image %llu for workshop item %llu: EResult %d (%s)\n", m_nPreviewImage, m_nFileID, pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -1204,13 +1205,13 @@ public:
 
 		if ( bIOFailure )
 		{
-			Warning( "Workshop collection query failed. (IO failure)\n" );
+			Warning( "Workshop collection query failed: IO Failure\n" );
 			return;
 		}
 
 		if ( pResult->m_eResult != k_EResultOK )
 		{
-			Warning( "Workshop collection query failed. (eresult %d)\n", pResult->m_eResult );
+			Warning( "Workshop collection query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
 			return;
 		}
@@ -2005,7 +2006,7 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 			Warning( "You are not currently logged into Steam. Try restarting the Steam client and Reactive Drop.\n" );
 			break;
 		default:
-			Warning( "Steam Workshop CreateItem API call failed! EResult: %d\n", pResult->m_eResult );
+			Warning( "Steam Workshop CreateItem API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 			break;
 		}
 		return;
@@ -2077,7 +2078,7 @@ void CReactiveDropWorkshop::SubmitItemUpdateResultCallback( SubmitItemUpdateResu
 
 	if ( bIOFailure || pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "Steam Workshop SubmitItemUpdate API call failed! EResult: %d\n", pResult->m_eResult );
+		Warning( "Steam Workshop SubmitItemUpdate API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -2197,7 +2198,7 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 		m_IncludedMissionNames.Purge();
 		m_IncludedChallengeNames.Purge();
 
-		Warning( "Steam Workshop query for existing tags failed! EResult: %d\n", pResult->m_eResult );
+		Warning( "Steam Workshop query for existing tags failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		return;
 	}
 
@@ -2416,7 +2417,7 @@ public:
 
 		if ( pResult->m_eResult != k_EResultOK )
 		{
-			Warning( "Failed to apply fix: Submitting update failed for %llu with EResult %d\n", m_nFile, pResult->m_eResult );
+			Warning( "Failed to apply fix: Submitting update failed for %llu with EResult %d (%s)\n", m_nFile, pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 			delete this;
 			return;
 		}
@@ -2440,7 +2441,7 @@ void CFixWorkshopKeyValueNames::Steam_DownloadItemResult( DownloadItemResult_t *
 
 	if ( pResult->m_eResult != k_EResultOK )
 	{
-		Warning( "Failed to apply fix: Downloading addon %llu failed with EResult %d\n", m_nFile, pResult->m_eResult );
+		Warning( "Failed to apply fix: Downloading addon %llu failed with EResult %d (%s)\n", m_nFile, pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
 		delete this;
 		return;
 	}

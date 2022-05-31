@@ -38,6 +38,7 @@
 #endif  // _X360
 #include "matchmaking/imatchframework.h"
 #include "tier0/vprof.h"
+#include "asw_util_shared.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
@@ -1558,7 +1559,7 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-//		DevMsg( "CAchievementMgr: failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
+		DevMsg( "CAchievementMgr: failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
 		return;
 	}
 
@@ -1657,7 +1658,7 @@ void CAchievementMgr::Steam_OnUserStatsStored( UserStatsStored_t *pUserStatsStor
 {
 	if ( k_EResultOK != pUserStatsStored->m_eResult )
 	{
-		DevMsg( "CAchievementMgr: failed to upload stats to Steam, EResult %d\n", pUserStatsStored->m_eResult );
+		DevMsg( "CAchievementMgr: failed to upload stats to Steam, EResult %d (%s)\n", pUserStatsStored->m_eResult, UTIL_RD_EResultToString( pUserStatsStored->m_eResult ) );
 	} 
 
 	else

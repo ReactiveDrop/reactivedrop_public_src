@@ -121,4 +121,6 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 
 bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false );
 
+constexpr const char *UTIL_RD_EResultToString( EResult eResult );
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H
