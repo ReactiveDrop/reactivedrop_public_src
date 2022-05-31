@@ -990,7 +990,7 @@ static void Script_GetPlayerConnectionInfo( HSCRIPT hPlayer, HSCRIPT hTable )
 	g_pScriptVM->SetValue( hTable, "packetloss", packetloss );
 }
 
-static const char *Script_GetClientXUID( HSCRIPT hPlayer )
+static ScriptVariant_t Script_GetClientXUID( HSCRIPT hPlayer )
 {
 	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
 	CBasePlayer *pPlayer = NULL;
@@ -1002,7 +1002,7 @@ static const char *Script_GetClientXUID( HSCRIPT hPlayer )
 		return "";
 
 	uint64 xuid = engine->GetClientXUID( pPlayer->edict() );
-	return CFmtStr( "%I64u", xuid );
+	return ScriptVariant_t( CFmtStr( "%I64u", xuid ), true );
 }
 
 static void Script_FadeClientVolume( HSCRIPT hPlayer, float fadePercent, float fadeOutSeconds, float holdTime, float fadeInSeconds )

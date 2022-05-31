@@ -239,9 +239,6 @@ static bool DedicatedServerWorkshopSetup()
 	return true;
 }
 
-#endif
-
-#ifdef GAME_DLL
 CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a workshop addon by ID" )
 {
 	if ( !engine->IsDedicatedServer() )
@@ -1112,15 +1109,15 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 
 	if ( rd_workshop_unconditional_download_item.GetBool() )
 	{
-		static CUtlMap<PublishedFileId_t, int> s_UnconditionalDownloadCooldown;
+		static CUtlMap<PublishedFileId_t, int> s_UnconditionalDownloadCooldown{ DefLessFunc( PublishedFileId_t ) };
 
 		unsigned short index = s_UnconditionalDownloadCooldown.Find( id );
 		if ( !s_UnconditionalDownloadCooldown.IsValidIndex( index ) )
 		{
-			index = s_UnconditionalDownloadCooldown.Insert( id );
+			index = s_UnconditionalDownloadCooldown.Insert( id, 0 );
 		}
 
-		int & cooldown = s_UnconditionalDownloadCooldown[index];
+		int & cooldown = s_UnconditionalDownloadCooldown.Element( index );
 		if ( cooldown == 0 )
 		{
 			cooldown = rd_workshop_unconditional_download_item.GetInt();
