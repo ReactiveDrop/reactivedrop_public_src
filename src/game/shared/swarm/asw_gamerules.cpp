@@ -2944,6 +2944,8 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		return;
 	}
 
+	StopStim();
+
 	// if we're ingame, then upload for state (we don't do this once the mission is over, as stats are already sent on MissionComplete)
 	// Stats todo:
 	//if (GetGameState() == ASW_GS_INGAME && ASWGameStats())
