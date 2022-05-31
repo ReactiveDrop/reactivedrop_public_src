@@ -43,7 +43,7 @@ ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop d
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
-ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If 1, always call ISteamUGC::DownloadItem, even if the API reports it being up-to-date." );
+ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If nonzero, call ISteamUGC::DownloadItem every [number] map loads, even if the API reports it being up-to-date." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #endif
 
@@ -1102,6 +1102,38 @@ struct LoadedAddonPath_t
 	}
 };
 
+static bool ShouldUnconditionalDownload( PublishedFileId_t id )
+{
+#ifdef GAME_DLL
+	if ( !engine->IsDedicatedServer() )
+	{
+		return false;
+	}
+
+	if ( rd_workshop_unconditional_download_item.GetBool() )
+	{
+		static CUtlMap<PublishedFileId_t, int> s_UnconditionalDownloadCooldown;
+
+		unsigned short index = s_UnconditionalDownloadCooldown.Find( id );
+		if ( !s_UnconditionalDownloadCooldown.IsValidIndex( index ) )
+		{
+			index = s_UnconditionalDownloadCooldown.Insert( id );
+		}
+
+		int & cooldown = s_UnconditionalDownloadCooldown[index];
+		if ( cooldown == 0 )
+		{
+			cooldown = rd_workshop_unconditional_download_item.GetInt();
+			return true;
+		}
+
+		cooldown--;
+	}
+#endif
+
+	return false;
+}
+
 static CUtlVector<LoadedAddonPath_t> s_LoadedAddonPaths;
 
 static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
@@ -1123,11 +1155,7 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
 	uint32 iState = pWorkshop->GetItemState( id );
-	if (
-#ifdef GAME_DLL
-		( !engine->IsDedicatedServer() || !rd_workshop_unconditional_download_item.GetBool() ) &&
-#endif
-		( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
+	if ( !ShouldUnconditionalDownload( id ) && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
 #ifdef CLIENT_DLL
 		if ( cl_workshop_debug.GetBool() )
