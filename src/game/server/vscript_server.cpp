@@ -1389,6 +1389,7 @@ public:
 };
 
 CVScriptGameSystem g_VScriptGameSystem;
+IGameSystemPerFrame *VScriptGameSystem() { return &g_VScriptGameSystem; }
 
 bool IsEntityCreationAllowedInScripts( void )
 {
