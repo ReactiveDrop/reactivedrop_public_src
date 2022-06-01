@@ -548,7 +548,9 @@ void WorkshopSetupThink()
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 {
-	if ( !engine->IsInGame() || !ASWGameRules() )
+	ISteamScreenshots *pScreenshots = SteamScreenshots();
+	Assert( pScreenshots );
+	if ( !engine->IsInGame() || !ASWGameRules() || !pScreenshots )
 	{
 		return;
 	}
@@ -606,6 +608,8 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 		V_snprintf( szName, sizeof( szName ), "%s%s (%s)", szCampaign, szMission, szChallenge );
 	}
 
+	pScreenshots->SetLocation( pReady->m_hLocal, szName );
+
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && ASWGameResource() )
 	{
 		if ( ASWGameRules()->GetMarineDeathCamInterp( true ) != 0 )
@@ -614,7 +618,7 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( ASWGameRules()->m_nMarineForDeathCam );
 			if ( pMR && pMR->IsInhabited() && pMR->GetCommander() )
 			{
-				SteamScreenshots()->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+				pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
 			}
 		}
 
@@ -627,7 +631,7 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 				Vector screenPos;
 				if ( !debugoverlay->ScreenPosition( pMR->GetMarineEntity()->WorldSpaceCenter(), screenPos ) )
 				{
-					SteamScreenshots()->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+					pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
 				}
 			}
 		}
@@ -637,7 +641,7 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 	GetActiveAddons( active );
 	FOR_EACH_VEC( active, i )
 	{
-		SteamScreenshots()->TagPublishedFile( pReady->m_hLocal, active[i] );
+		pScreenshots->TagPublishedFile( pReady->m_hLocal, active[i] );
 	}
 }
 #endif
