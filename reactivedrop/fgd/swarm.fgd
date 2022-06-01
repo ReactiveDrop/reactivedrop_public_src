@@ -4428,12 +4428,12 @@
 	snowDustAmt(float) : "Amount of snow dusting (1-100)" : 50
 ]
 
-@PointClass base(Angles) studio("models/editor/ground_node_hint.mdl") color(8 64 232) = info_marine_hint :
+@PointClass base(Angles) studio("models/editor/marine_hint.mdl") color(8 64 232) = info_marine_hint :
 	"Follow hint node for marines"
 [
 ]
 
-@PointClass base(Node, Angles) studio("models/editor/ground_node_hint.mdl") color(8 64 232) = info_node_marine_hint :
+@PointClass base(Node, Angles) studio("models/editor/node_marine_hint.mdl") color(8 64 232) = info_node_marine_hint :
 	"Follow hint node for marines.  It is also a navigation node for ground moving NPCs. Navigation nodes are baked into the nodegraph so that NPCs can move " +
 	"to them. Ground nodes fall to the ground when they spawn."
 [
