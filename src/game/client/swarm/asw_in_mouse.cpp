@@ -40,7 +40,8 @@ void CASWInput::ResetMouse( void )
 {
 	int x, y;
 	HACK_GETLOCALPLAYER_GUARD( "Mouse behavior is tied to a specific player's status - splitscreen player would depend on which player (if any) is using mouse control" );
-	if ( MarineControllingTurret() || ( C_ASW_Player::GetLocalASWPlayer()->GetASWControls() != 1 && IsGameplayCrosshair() ) )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( MarineControllingTurret() || ( pPlayer && pPlayer->GetASWControls() != 1 && IsGameplayCrosshair() ) )
 	{
 		GetWindowCenter( x, y );
 		m_flJoypadStartMouseX = x;
