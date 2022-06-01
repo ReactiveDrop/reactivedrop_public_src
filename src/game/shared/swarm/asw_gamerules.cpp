@@ -1367,7 +1367,7 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 extern bool g_bAIDisabledByUser;
 extern ConVar asw_springcol;
 ConVar asw_blip_speech_chance("asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity");
-ConVar asw_instant_restart("asw_instant_restart", "1", 0, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
+ConVar asw_instant_restart("asw_instant_restart", "1", FCVAR_ARCHIVE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
 
 const char * GenerateNewSaveGameName()
 {
