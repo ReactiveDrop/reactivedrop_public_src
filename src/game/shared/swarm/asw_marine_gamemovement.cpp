@@ -1139,7 +1139,7 @@ void CASW_MarineGameMovement::WaterMove( void )
 	float speed, newspeed, addspeed, accelspeed;
 	Vector forward, right, up;
 
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
@@ -1707,7 +1707,7 @@ void CASW_MarineGameMovement::WalkMove( void )
 	trace_t pm;
 	Vector forward, right, up;
 
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles  
@@ -2444,7 +2444,7 @@ void CASW_MarineGameMovement::FullObserverMove( void )
 	Vector wishdir, wishend;
 	float wishspeed;
 
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
@@ -2527,7 +2527,7 @@ void CASW_MarineGameMovement::FullNoClipMove( float factor, float maxacceleratio
 	float wishspeed;
 	float maxspeed = asw_sv_maxspeed.GetFloat() * factor;
 
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
@@ -3595,9 +3595,15 @@ void CreateMarineStuckTable( void )
 //-----------------------------------------------------------------------------
 int MarineGetRandomStuckOffsets( CBasePlayer *pPlayer, Vector& offset)
 {
- // Last time we did a full
-	int idx;
-	idx = pPlayer->m_StuckLast;
+	if ( !pPlayer )
+	{
+		int idx = RandomInt( 0, NELEMS( rgv3tMarineStuckTable ) - 1 );
+		VectorCopy( rgv3tMarineStuckTable[idx], offset );
+		return idx;
+	}
+
+	// Last time we did a full
+	int idx = pPlayer->m_StuckLast;
 
 	VectorCopy(rgv3tMarineStuckTable[idx % 54], offset);
 
@@ -3611,7 +3617,8 @@ int MarineGetRandomStuckOffsets( CBasePlayer *pPlayer, Vector& offset)
 //-----------------------------------------------------------------------------
 void MarineResetStuckOffsets( CBasePlayer *pPlayer )
 {
-	pPlayer->m_StuckLast = 0;
+	if ( pPlayer )
+		pPlayer->m_StuckLast = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -4731,7 +4738,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	}
 	
 	// use fixed axis?
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &m_vecForward, &m_vecRight, &m_vecUp ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &m_vecForward, &m_vecRight, &m_vecUp );  // Determine movement angles
@@ -4935,7 +4942,7 @@ void CASW_MarineGameMovement::FullTossMove( void )
 		float wishspeed;
 		int i;
 		
-		if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+		if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 			AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 		else
 			AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
@@ -5038,7 +5045,7 @@ void CASW_MarineGameMovement::IsometricMove( void )
 	float fmove, smove;
 	Vector forward, right, up;
 	
-	if ( assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
+	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == 1 )
 		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
 	else
 		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
