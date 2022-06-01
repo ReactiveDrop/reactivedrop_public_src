@@ -73,7 +73,7 @@ struct NetworkedMissionMetadata_t
 
 		WorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName );
 
-		CReactiveDropWorkshop::WorkshopItem_t info = g_ReactiveDropWorkshop.TryQueryAddon( WorkshopID );
+		const CReactiveDropWorkshop::WorkshopItem_t & info = g_ReactiveDropWorkshop.TryQueryAddon( WorkshopID );
 		char szBaseName[MAX_PATH];
 		V_FileBase( szKVFileName, szBaseName, sizeof( szBaseName ) );
 		if ( info.bAdminOverrideDeathmatch && !V_strnicmp( szKVFileName, "dm_", 3 ) )
@@ -120,7 +120,7 @@ static bool ShouldIgnoreCampaign( const char *szName )
 		return false;
 	}
 
-	CReactiveDropWorkshop::WorkshopItem_t item = g_ReactiveDropWorkshop.TryQueryAddon( iAddon );
+	const CReactiveDropWorkshop::WorkshopItem_t & item = g_ReactiveDropWorkshop.TryQueryAddon( iAddon );
 	return item.bAdminOverrideBonus || item.bAdminOverrideDeathmatch;
 }
 
@@ -648,26 +648,30 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	pMission->Description = AllocMissionsPooledString( pKV->GetString( "description" ) );
 	pMission->Image = AllocMissionsPooledString( pKV->GetString( "image" ) );
 
-	CReactiveDropWorkshop::WorkshopItem_t info = g_ReactiveDropWorkshop.TryQueryAddon( pMission->WorkshopID );
+	const CReactiveDropWorkshop::WorkshopItem_t & info = g_ReactiveDropWorkshop.TryQueryAddon( pMission->WorkshopID );
 
 	const char *szDefaultCredits = DEFAULT_CREDITS_FILE;
 	KeyValues::AutoDelete pCampaign( (KeyValues *)NULL );
 	if ( info.bAdminOverrideBonus || info.bAdminOverrideDeathmatch )
 	{
-		CUtlStringList & campaignMissions = info.kvTags["campaign_mission"];
-		char szSuffix[MAX_PATH];
-		V_snprintf( szSuffix, sizeof( szSuffix ), "/0/%s", pMission->BaseName );
-		FOR_EACH_VEC( campaignMissions, i )
+		UtlSymId_t sym = info.kvTags.Find( "campaign_mission" );
+		if ( sym != info.kvTags.InvalidIndex() )
 		{
-			if ( const char *pCampaignNameEnd = V_stristr( campaignMissions[i], szSuffix ) )
+			const CUtlStringList & campaignMissions = info.kvTags[sym];
+			char szSuffix[MAX_PATH];
+			V_snprintf( szSuffix, sizeof( szSuffix ), "/0/%s", pMission->BaseName );
+			FOR_EACH_VEC( campaignMissions, i )
 			{
-				V_strncpy( szSuffix, campaignMissions[i], pCampaignNameEnd - campaignMissions[i] );
-				pCampaign.Assign( new KeyValues( "GAME" ) );
-				if ( pCampaign->LoadFromFile( filesystem, CFmtStr( "resource/campaigns/%s.txt", szSuffix ), "GAME" ) )
+				if ( const char *pCampaignNameEnd = V_stristr( campaignMissions[i], szSuffix ) )
 				{
-					szDefaultCredits = pCampaign->GetString( "CustomCreditsFile", szDefaultCredits );
+					V_strncpy( szSuffix, campaignMissions[i], pCampaignNameEnd - campaignMissions[i] );
+					pCampaign.Assign( new KeyValues( "GAME" ) );
+					if ( pCampaign->LoadFromFile( filesystem, CFmtStr( "resource/campaigns/%s.txt", szSuffix ), "GAME" ) )
+					{
+						szDefaultCredits = pCampaign->GetString( "CustomCreditsFile", szDefaultCredits );
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}

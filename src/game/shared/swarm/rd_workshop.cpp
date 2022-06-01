@@ -272,8 +272,10 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 }
 #endif
 
-CReactiveDropWorkshop::WorkshopItem_t CReactiveDropWorkshop::TryQueryAddon( PublishedFileId_t nPublishedFileID )
+const CReactiveDropWorkshop::WorkshopItem_t & CReactiveDropWorkshop::TryQueryAddon( PublishedFileId_t nPublishedFileID )
 {
+	const static WorkshopItem_t nilWorkshopItem;
+
 	FOR_EACH_VEC( m_EnabledAddons, i )
 	{
 		if ( m_EnabledAddons[i].details.m_nPublishedFileId == nPublishedFileID )
@@ -286,14 +288,14 @@ CReactiveDropWorkshop::WorkshopItem_t CReactiveDropWorkshop::TryQueryAddon( Publ
 	{
 		if ( m_EnabledAddonsForQuery[i] == nPublishedFileID )
 		{
-			return WorkshopItem_t();
+			return nilWorkshopItem;
 		}
 	}
 
 	m_EnabledAddonsForQuery.AddToTail( nPublishedFileID );
 	RestartEnabledAddonsQuery();
 
-	return WorkshopItem_t();
+	return nilWorkshopItem;
 }
 
 #ifdef CLIENT_DLL

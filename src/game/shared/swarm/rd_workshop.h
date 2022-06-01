@@ -137,7 +137,7 @@ public:
 		bool bAdminOverrideDeathmatch : 1;
 	};
 
-	WorkshopItem_t TryQueryAddon( PublishedFileId_t nPublishedFileID );
+	const WorkshopItem_t & TryQueryAddon( PublishedFileId_t nPublishedFileID );
 #ifdef CLIENT_DLL
 	bool LoadAddonEarly( PublishedFileId_t nPublishedFileID );
 #endif
