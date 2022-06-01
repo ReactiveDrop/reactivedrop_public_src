@@ -31,6 +31,7 @@
 #include "asw_vgui_computer_menu.h"
 #include "vgui/radialmenu.h"
 #include "asw_deathmatch_mode.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -190,12 +191,15 @@ void CASWHudCrosshair::Paint( void )
 	}
 	else if ( nCrosshair != -1 )
 	{
-		const float fCrosshairScale = 1.0f;
-		int w = YRES( 20 ) * fCrosshairScale;
-		int h = YRES( 20 ) * fCrosshairScale;
-		surface()->DrawSetColor( m_clrCrosshair );
-		surface()->DrawSetTexture( nCrosshair );
-		surface()->DrawTexturedRect( x - w, y - h, x + w, y + h );
+		if ( !ASWInput()->ControllerModeActive() || !GetControllerFocus()->GetFocusPanel() )
+		{
+			const float fCrosshairScale = 1.0f;
+			int w = YRES( 20 ) * fCrosshairScale;
+			int h = YRES( 20 ) * fCrosshairScale;
+			surface()->DrawSetColor( m_clrCrosshair );
+			surface()->DrawSetTexture( nCrosshair );
+			surface()->DrawTexturedRect( x - w, y - h, x + w, y + h );
+		}
 	}
 
 	// icons attached to the cursor
