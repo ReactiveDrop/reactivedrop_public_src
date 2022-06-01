@@ -99,6 +99,7 @@
 	#include "asw_marine_hint.h"
 	#include "eventqueue.h"
 	#include "ai_dynamiclink.h"
+	#include "asw_spawn_selection.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -3004,9 +3005,11 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 	// clear out gamerules
 	FullReset();
+	ASWSpawnSelection()->LevelShutdownPostEntity();
 
 	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
+	ASWSpawnSelection()->LevelInitPreEntity();
 
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
 	// this in effect causes them to spawn back to their normal position.
