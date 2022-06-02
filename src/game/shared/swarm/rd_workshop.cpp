@@ -212,18 +212,17 @@ static bool DedicatedServerWorkshopSetup()
 		return true;
 	}
 
-	static bool s_bInitWorkshopFolderOnce = false;
-	if ( rd_workshop_use_reactivedrop_folder.GetBool() && !s_bInitWorkshopFolderOnce )
+	if ( rd_workshop_use_reactivedrop_folder.GetBool() )
 	{
 		char szDir[MAX_PATH];
 		UTIL_GetModDir( szDir, sizeof( szDir ) );
 		char szWorkshopDir[MAX_PATH];
 		V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
 
-		s_bInitWorkshopFolderOnce = SteamGameServerUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
-		if ( !s_bInitWorkshopFolderOnce )
+		bool bInit = SteamGameServerUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+		if ( !bInit )
 		{
-			Warning( "Workshop init failed! Trying to continue anyway...\n" );
+			DevWarning( "Workshop init failed! Trying to continue anyway...\n" );
 		}
 	}
 
