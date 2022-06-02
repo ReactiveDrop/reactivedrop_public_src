@@ -2017,16 +2017,13 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 				DispatchEffect( filter, 0.0f, "ParticleEffect", data );
 				marine->EmitSound( filter, marine->entindex(), "ASW_JumpJet.Impact" );
 #ifdef CLIENT_DLL
-				if ( marine->IsInhabited() )
-				{
-					ScreenShake_t shake;
-					shake.direction = Vector( 0, 0, 1 );
-					shake.amplitude = 40.0f;
-					shake.duration = 0.3f;
-					shake.frequency = 1.0f;
-					shake.command = SHAKE_START;
-					ASW_TransmitShakeEvent( player, shake );
-				}
+				ScreenShake_t shake;
+				shake.direction = Vector( 0, 0, 1 );
+				shake.amplitude = 40.0f;
+				shake.duration = 0.3f;
+				shake.frequency = 1.0f;
+				shake.command = SHAKE_START;
+				ASW_TransmitShakeEvent( marine, shake );
 			}
 #endif
 
@@ -2040,7 +2037,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 				shake.duration = 0.3f;
 				shake.frequency = 1.0f;
 				shake.command = SHAKE_START;
-				ASW_TransmitShakeEvent( player, shake );
+				ASW_TransmitShakeEvent( marine, shake );
 			}
 			/*
 			// scorch the ground

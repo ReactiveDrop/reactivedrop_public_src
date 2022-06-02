@@ -358,10 +358,10 @@ static void __MsgFunc_ASWBlur( bf_read &msg )
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
-		C_ASW_Marine *marine = local->GetMarine();
+		C_ASW_Marine *marine = local->GetViewMarine();
 		if (marine)
 		{
-			marine->SetPoisoned(duration);
+			marine->SetPoisoned( duration );
 		}
 	}
 }

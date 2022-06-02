@@ -1738,111 +1738,108 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			}
 		}
 
-		if ( IsInhabited() )
+		if ( asw_screenflash.GetInt() > 0 )
 		{
-			//Msg("took %f damage\n", info.GetDamage());
-			CASW_Player *player = GetCommander();
-			if (player)
+			color32 flash_col = {128,0,0,192};
+			flash_col.a = asw_screenflash.GetInt();
+			for ( int i = 1; i <= MAX_PLAYERS; i++ )
 			{
-				if ( asw_screenflash.GetInt() > 0 )
+				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+				if ( pPlayer && pPlayer->GetViewMarine() == this )
 				{
-					color32 flash_col = {128,0,0,192};
-					flash_col.a = asw_screenflash.GetInt();
-					UTIL_ScreenFade( player, flash_col, 1.0f, 0.1f, FFADE_IN );				
-				}
-				if ( asw_damage_indicator.GetBool() )
-				{
-					// Tell the player's client that he's been hurt.
-					CSingleUserRecipientFilter user( player );
-					UserMessageBegin( user, "Damage" );
-					WRITE_SHORT( clamp( (int)newInfo.GetDamage(), 0, 32000 ) );
-					WRITE_LONG( newInfo.GetDamageType() );
-					// Tell the client whether they should show it in the indicator
-					if ( !(newInfo.GetDamageType() & (DMG_DROWN | DMG_FALL | DMG_BURN | DMG_INFEST | DMG_RADIATION) ) )
-					{
-						WRITE_BOOL( true );
-						WRITE_VEC3COORD( newInfo.GetDamagePosition() );
-						WRITE_BOOL( bShowFFIcon );
-					}
-					else
-					{
-						WRITE_BOOL( false );
-					}
-					MessageEnd();
-				}
-				if (info.GetDamageType() & DMG_BLURPOISON)
-				{
-					float duration = asw_buzzer_poison_duration.GetFloat();
-					// affect duration by mission difficulty
-					if (ASWGameRules())
-					{
-						duration = duration + (duration * (ASWGameRules()->GetMissionDifficulty() / 10.0f));
-					}
-					if (duration > 0)
-						UTIL_ASW_PoisonBlur( player, duration );
-				}
-				bool bBurnDamage = ( info.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) ) != 0;
-				bool bElectrifiedArmorAbsorbed = ( ( info.GetDamageType() & DMG_SLASH ) && IsElectrifiedArmorActive() );
-
-				// play a meaty hit sound when attacked by aliens or FF
-				if ( ( !bBurnDamage && !bElectrifiedArmorAbsorbed ) ) //|| bFriendlyFire )
-				{
-					//UTIL_ASW_ScreenShake( GetAbsOrigin(), 4.0f, 30.0f, 0.25f, 128.0f, SHAKE_START );
-					if ( !info.GetInflictor() )
-					{
-						ASW_TransmitShakeEvent( player, 2.0f, 40.0f, 0.2f, SHAKE_START );
-					}
-					else
-					{
-						ASW_TransmitShakeEvent( player, 20.0f, 1.0f, 0.3f, SHAKE_START, (info.GetInflictor()->GetAbsOrigin() - GetAbsOrigin()).Normalized() );
-					}
-
-					// this is the sound that's played for the local player only
-					CSingleUserRecipientFilter localfilter( player );
-					localfilter.MakeReliable();
-
-					// this is the sound that's played for all other players, but the local player
-					CPASAttenuationFilter othersfilter( this, "ASW.MarineImpact" );
-					othersfilter.RemoveRecipient( player );				
-
-					// if they take more than 10% damage in one hit or their health is below 20%, play a bigger sound
-					if ( float(iDamageTaken) / float(GetMaxHealth()) > 0.1 || float(m_iHealth) / float(GetMaxHealth()) < 0.25 )
-					{
-						// reactivedrop: for PvP we have not so loud sound
-						// coz it's too annoying when you get damaged
-						if (ASWDeathmatchMode())
-							CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactHeavyFP_Dm" );
-						else
-							CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactHeavyFP" );
-						CBaseEntity::EmitSound( othersfilter, entindex(), "ASW.MarineImpactHeavy" );
-					}
-					else
-					{
-						// reactivedrop: for PvP we have not so loud sound
-						// coz it's too annoying when you get damaged
-						if (ASWDeathmatchMode())
-							CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactFP_Dm" );
-						else
-							CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactFP" );
-						CBaseEntity::EmitSound( othersfilter, entindex(), "ASW.MarineImpact" );
-					}
+					UTIL_ScreenFade( pPlayer, flash_col, 1.0f, 0.1f, FFADE_IN );
 				}
 			}
 		}
-		else
+		if ( asw_damage_indicator.GetBool() )
 		{
-			// AI's being hurt, check he has a weapon (and maybe switch if it's not selected)
-			CheckAutoWeaponSwitch();
+			// Tell the player's client that the marine they're viewing has been hurt.
+			CASW_ViewMarineRecipientFilter user( this );
+			UserMessageBegin( user, "Damage" );
+			WRITE_SHORT( clamp( (int)newInfo.GetDamage(), 0, 32000 ) );
+			WRITE_LONG( newInfo.GetDamageType() );
+			// Tell the client whether they should show it in the indicator
+			if ( !(newInfo.GetDamageType() & (DMG_DROWN | DMG_FALL | DMG_BURN | DMG_INFEST | DMG_RADIATION) ) )
+			{
+				WRITE_BOOL( true );
+				WRITE_VEC3COORD( newInfo.GetDamagePosition() );
+				WRITE_BOOL( bShowFFIcon );
+			}
+			else
+			{
+				WRITE_BOOL( false );
+			}
+			MessageEnd();
+		}
+		if (info.GetDamageType() & DMG_BLURPOISON)
+		{
+			float duration = asw_buzzer_poison_duration.GetFloat();
+			// affect duration by mission difficulty
+			if (ASWGameRules())
+			{
+				duration = duration + (duration * (ASWGameRules()->GetMissionDifficulty() / 10.0f));
+			}
+			if (duration > 0)
+				UTIL_ASW_PoisonBlur( this, duration );
+		}
+		bool bBurnDamage = ( info.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) ) != 0;
+		bool bElectrifiedArmorAbsorbed = ( ( info.GetDamageType() & DMG_SLASH ) && IsElectrifiedArmorActive() );
+
+		// play a meaty hit sound when attacked by aliens or FF
+		if ( ( !bBurnDamage && !bElectrifiedArmorAbsorbed ) ) //|| bFriendlyFire )
+		{
+			//UTIL_ASW_ScreenShake( GetAbsOrigin(), 4.0f, 30.0f, 0.25f, 128.0f, SHAKE_START );
+			if ( !info.GetInflictor() )
+			{
+				ASW_TransmitShakeEvent( this, 2.0f, 40.0f, 0.2f, SHAKE_START );
+			}
+			else
+			{
+				ASW_TransmitShakeEvent( this, 20.0f, 1.0f, 0.3f, SHAKE_START, (info.GetInflictor()->GetAbsOrigin() - GetAbsOrigin()).Normalized() );
+			}
+
+			// this is the sound that's played for the local player only
+			CASW_ViewMarineRecipientFilter localfilter( this );
+			localfilter.MakeReliable();
+
+			// this is the sound that's played for all other players, but the local player
+			CPASAttenuationFilter othersfilter( this, "ASW.MarineImpact" );
+			for ( int i = 1; i <= MAX_PLAYERS; i++ )
+			{
+				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+				if ( pPlayer && pPlayer->GetViewMarine() == this )
+				{
+					othersfilter.RemoveRecipient( pPlayer );
+				}
+			}
 
 			// if they take more than 10% damage in one hit or their health is below 20%, play a bigger sound
 			if ( float(iDamageTaken) / float(GetMaxHealth()) > 0.1 || float(m_iHealth) / float(GetMaxHealth()) < 0.25 )
 			{
-				EmitSound( "ASW.MarineImpactHeavy" );
+				// reactivedrop: for PvP we have not so loud sound
+				// coz it's too annoying when you get damaged
+				if (ASWDeathmatchMode())
+					CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactHeavyFP_Dm" );
+				else
+					CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactHeavyFP" );
+				CBaseEntity::EmitSound( othersfilter, entindex(), "ASW.MarineImpactHeavy" );
 			}
 			else
 			{
-				EmitSound( "ASW.MarineImpact" );
+				// reactivedrop: for PvP we have not so loud sound
+				// coz it's too annoying when you get damaged
+				if (ASWDeathmatchMode())
+					CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactFP_Dm" );
+				else
+					CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineImpactFP" );
+				CBaseEntity::EmitSound( othersfilter, entindex(), "ASW.MarineImpact" );
 			}
+		}
+
+		if ( !IsInhabited() )
+		{
+			// AI's being hurt, check he has a weapon (and maybe switch if it's not selected)
+			CheckAutoWeaponSwitch();
 		}
 	}	
 	
@@ -1887,10 +1884,10 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			{
 				pMR->m_bTakenWoundDamage = true;
 			}
+			if ( asw_debug_marine_damage.GetBool() )
+				Msg( "marine took damage %f (total taken %f, ff taken %f)\n",
+					newInfo.GetDamage(), pMR->m_fDamageTaken, m_fFriendlyFireDamage );
 		}
-		if (asw_debug_marine_damage.GetBool())
-			Msg("marine took damage %f (total taken %f, ff taken %f)\n",
-					newInfo.GetDamage(), pMR->m_fDamageTaken, m_fFriendlyFireDamage);
 
 		// if we take fire damage, catch on fire
 		float fPainInterval = 0.7f;

@@ -208,9 +208,9 @@ bool ASW_LineCircleIntersection(
 
 #ifdef GAME_DLL
 // a local helper to normalize some code below -- gets inlined
-static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
+static void ASW_WriteScreenShakeToMessage( CASW_Marine *pMarine, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
 {
-	CSingleUserRecipientFilter user( pPlayer );
+	CASW_ViewMarineRecipientFilter user( pMarine );
 	user.MakeReliable();
 	if ( direction.IsZeroFast() ) // nondirectional shake
 	{
@@ -237,7 +237,7 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 //-----------------------------------------------------------------------------
 // Transmits the actual shake event
 //-----------------------------------------------------------------------------
- void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
+ void ASW_TransmitShakeEvent( CASW_Marine *pMarine, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
 {
 	if (( localAmplitude > 0 ) || ( eCommand == SHAKE_STOP ))
 	{
@@ -245,7 +245,7 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 			localAmplitude = 0;
 
 #ifdef GAME_DLL
-		ASW_WriteScreenShakeToMessage( pPlayer, eCommand, localAmplitude, frequency, duration, direction );
+		ASW_WriteScreenShakeToMessage( pMarine, eCommand, localAmplitude, frequency, duration, direction );
 #else
 		ScreenShake_t shake;
 
@@ -255,12 +255,12 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 		shake.duration	= duration;
 		shake.direction = direction;
 
-		ASW_TransmitShakeEvent( pPlayer, shake );
+		ASW_TransmitShakeEvent( pMarine, shake );
 #endif
 	}
 }
 
-void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, const ScreenShake_t &shake )
+void ASW_TransmitShakeEvent( CASW_Marine *pMarine, const ScreenShake_t &shake )
 {
 	if ( shake.command == SHAKE_STOP && shake.amplitude != 0 )
 	{
@@ -268,10 +268,10 @@ void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, const ScreenShake_t &shake )
 		AssertMsg1( false, "A ScreenShake_t had a SHAKE_STOP command but a nonzero amplitude %.1f; this is meaningless.\n", shake.amplitude);
 		ScreenShake_t localShake = shake;
 		localShake.amplitude = 0;
-		ASW_TransmitShakeEvent( pPlayer, localShake );
+		ASW_TransmitShakeEvent( pMarine, localShake );
 	}
 #ifdef GAME_DLL
-	ASW_WriteScreenShakeToMessage( pPlayer, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
+	ASW_WriteScreenShakeToMessage( pMarine, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
 #else
 	if ( !( prediction && prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
 	{
@@ -333,19 +333,25 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		amplitude = ASW_MAX_SHAKE_AMPLITUDE;
 	}
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-		if ( !pPlayer )
+		return;
+	}
+
+	for ( i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
 		{
 			continue;
 		}
 
-		// find the player's marine
-		CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
-		CASW_Marine *pMarine = pASWPlayer ? pASWPlayer->GetViewMarine() : NULL;
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
 		if ( !pMarine )
+		{
 			continue;
+		}
 
 		// Only start shakes for players that are on the ground unless doing an air shake.
 		if ( !bAirShake && !pMarine->m_bOnGround )
@@ -365,7 +371,7 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		if (localAmplitude < 0)
 			continue;
 
-		ASW_TransmitShakeEvent( pASWPlayer, localAmplitude, frequency, duration, eCommand );
+		ASW_TransmitShakeEvent( pMarine, localAmplitude, frequency, duration, eCommand );
 	}
 }
 
@@ -398,31 +404,34 @@ void UTIL_ASW_ScreenPunch( const Vector &center, float radius, const ScreenShake
 
 	AssertMsg( CloseEnough(shake.direction.LengthSqr(), 1), "Direction param to ASW_ScreenPunch is abnormal\n" );
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
+		return;
+	}
 
-		//
-		// Only start shakes for players that are on the ground unless doing an air shake.
-		//
-		if ( !pPlayer )
+	for ( i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
 		{
 			continue;
 		}
 
-		// find the player's marine
-		CASW_Player *pASWPlayer = assert_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
+		if ( !pMarine )
+		{
 			continue;
+		}
 
-		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
+		Vector vecMarinePos = pMarine->WorldSpaceCenter();
+		if ( pMarine->IsControllingTurret() && pMarine->GetRemoteTurret() )
+			vecMarinePos = pMarine->GetRemoteTurret()->GetAbsOrigin();
 
 		if ( vecMarinePos.DistToSqr(center) > radiusSqr )
 			continue;
 
-		ASW_TransmitShakeEvent( (CBasePlayer *)pPlayer, shake );
+		ASW_TransmitShakeEvent( pMarine, shake );
 	}
 }
 
@@ -551,12 +560,12 @@ void UTIL_ASW_ValidateSoundName( char *szString, int stringlength, const char *d
 }
 
 #ifdef GAME_DLL
-void UTIL_ASW_PoisonBlur(CBaseEntity *pEntity, float duration)
+void UTIL_ASW_PoisonBlur( CASW_Marine *pMarine, float duration )
 {
-	if ( !pEntity || !pEntity->IsNetClient() )
+	if ( !pMarine )
 		return;
 
-	CSingleUserRecipientFilter user( (CBasePlayer *)pEntity );
+	CASW_ViewMarineRecipientFilter user( pMarine );
 	user.MakeReliable();
 
 	UserMessageBegin( user, "ASWBlur" );		// use the magic #1 for "one client"
@@ -657,6 +666,18 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 		}
 	}
 	return NULL;
+}
+
+CASW_ViewMarineRecipientFilter::CASW_ViewMarineRecipientFilter( CASW_Marine *pMarine )
+{
+	for ( int i = 1; i <= MAX_PLAYERS; i++ )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && pPlayer->GetViewMarine() == pMarine )
+		{
+			AddRecipient( pPlayer );
+		}
+	}
 }
 
 #endif
