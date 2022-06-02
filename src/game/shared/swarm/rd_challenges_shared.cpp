@@ -330,6 +330,7 @@ static const char *s_szOfficialChallenges[] =
 	"level_one",
 	"one_hit",
 	"riflemod_classic",
+	"rd_first_person",
 };
 
 bool ReactiveDropChallenges::IsOfficial( const char *pszChallengeName )
