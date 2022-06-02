@@ -922,7 +922,9 @@ static Vector VecCheckThrowTolerance( CBaseEntity *pEdict, const Vector &vecSpot
 {
 	flSpeed = MAX( 1.0f, flSpeed );
 
-	float flGravity = sv_gravity.GetFloat();
+	// BenLubar: not sure why 800 was ending up throwing the spit way too far. 600 is right on the money.
+	//float flGravity = sv_gravity.GetFloat();
+	float flGravity = sv_gravity.GetFloat() * 0.75f;
 
 	Vector vecGrenadeVel = (vecSpot2 - vecSpot1);
 

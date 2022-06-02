@@ -272,7 +272,7 @@ void CGrenadeSpit::Think( void )
 void CGrenadeSpit::Precache( void )
 {
 	// m_nSquidSpitSprite = PrecacheModel("sprites/greenglow1.vmt");// client side spittle.
-	PrecacheMaterial( "BeerSplash" );
+	PrecacheEffect( "watersplash" );
 
 	PrecacheModel( "models/spitball_large.mdl" );
 	PrecacheModel( "models/spitball_medium.mdl" );
@@ -284,5 +284,4 @@ void CGrenadeSpit::Precache( void )
 	PrecacheParticleSystem( "antlion_spit_player" );
 	PrecacheParticleSystem( "antlion_spit" );
 	PrecacheParticleSystem( "antlion_spit_trail" );
-	PrecacheParticleSystem( "watersplash" );
 }
