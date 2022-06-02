@@ -11,18 +11,17 @@
 #endif
 
 #include "ai_squadslot.h"
-#include "asw_alien.h"
+#include "asw_alien_jumper.h"
 #include "soundent.h"
 
 
 
-abstract_class CBaseHeadcrab : public CASW_Alien
+abstract_class CBaseHeadcrab : public CASW_Alien_Jumper
 {
-	DECLARE_CLASS( CBaseHeadcrab, CASW_Alien );
+	DECLARE_CLASS( CBaseHeadcrab, CASW_Alien_Jumper );
 
 public:
 	void Spawn( void );
-	void Precache( void );
 	void RunTask( const Task_t *pTask );
 	void StartTask( const Task_t *pTask );
 
@@ -38,6 +37,7 @@ public:
 	bool	HasHeadroom();
 	void	LeapTouch ( CBaseEntity *pOther );
 	virtual void TouchDamage( CBaseEntity *pOther );
+	virtual bool ShouldGib( const CTakeDamageInfo &info ) { return false; }
 	bool	CorpseGib( const CTakeDamageInfo &info );
 	void	Touch( CBaseEntity *pOther );
 	Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
@@ -88,6 +88,7 @@ public:
 	}
 
 	virtual void PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot );
+	virtual void SetHealthByDifficultyLevel( void );
 
 	void DropFromCeiling( void );
 
@@ -95,8 +96,6 @@ public:
 	DECLARE_DATADESC();
 
 protected:
-	void HeadcrabInit();
-
 	void Leap( const Vector &vecVel );
 
 	void GrabHintNode( CAI_Hint *pHint );
@@ -162,8 +161,9 @@ class CHeadcrab : public CBaseHeadcrab
 	DECLARE_CLASS( CHeadcrab, CBaseHeadcrab );
 
 public:
+	CHeadcrab();
+
 	void Precache( void );
-	void Spawn( void );
 
 	float	MaxYawSpeed( void );
 	Activity NPC_TranslateActivity( Activity eNewActivity );
@@ -188,8 +188,9 @@ class CFastHeadcrab : public CBaseHeadcrab
 public:
 	DECLARE_CLASS( CFastHeadcrab, CBaseHeadcrab );
 
+	CFastHeadcrab();
+
 	void	Precache( void );
-	void	Spawn( void );
 	bool	QuerySeeEntity(CBaseEntity *pSightEnt, bool bOnlyHateOrFearIfNPC = false);
 
 	float	MaxYawSpeed( void );
@@ -216,7 +217,7 @@ public:
 
 	enum SquadSlot_t
 	{	
-		SQUAD_SLOT_ENGAGE1 = LAST_SHARED_SQUADSLOT,
+		SQUAD_SLOT_ENGAGE1 = LAST_SHARED_SQUADSLOT + 1,
 		SQUAD_SLOT_ENGAGE2,
 		SQUAD_SLOT_ENGAGE3,
 		SQUAD_SLOT_ENGAGE4,
@@ -236,6 +237,8 @@ class CBlackHeadcrab : public CBaseHeadcrab
 	DECLARE_CLASS( CBlackHeadcrab, CBaseHeadcrab );
 
 public:
+	CBlackHeadcrab();
+
 	void Eject( const QAngle &vecAngles, float flVelocityScale, CBaseEntity *pEnemy );
 	void EjectTouch( CBaseEntity *pOther );
 
@@ -276,7 +279,6 @@ public:
 	// CBaseEntity implementation.
 	//
 	virtual void Precache( void );
-	virtual void Spawn( void );
 
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();
