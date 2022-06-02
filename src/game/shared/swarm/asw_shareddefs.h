@@ -69,7 +69,7 @@ enum ASW_Skill_Slot
 
 // Re-use base damage bits
 #define DMG_INFEST					(DMG_AIRBOAT)		// damage from parasite infestation
-#define DMG_BLURPOISON				(DMG_POISON)		// damage from buzzers, blurs the player's view
+#define DMG_BLURPOISON				(DMG_LASTGENERICFLAG << 1)		// damage from buzzers, blurs the player's view
 
 #define DMG_GIB_CORPSE				( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB | DMG_INFEST )
 

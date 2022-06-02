@@ -453,6 +453,8 @@ ConVar asw_movement_direction_tolerance( "asw_movement_direction_tolerance", "30
 ConVar asw_movement_direction_interval( "asw_movement_direction_interval", "0.5", FCVAR_CHEAT );
 extern ConVar rd_allow_revive;
 extern ConVar rd_revive_health;
+ConVar rd_marine_poison_recover_delay( "rd_marine_poison_recover_delay", "2", FCVAR_CHEAT, "time after being poisoned before suit antitoxin begins to act" );
+ConVar rd_marine_poison_recover_tick( "rd_marine_poison_recover_tick", "0.5", FCVAR_CHEAT, "time between hitpoints restored by antitoxin" );
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
@@ -637,6 +639,9 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_bAirStrafeUsed = false;
 
 	m_nIndexActWeapBeforeTempPickup = 0;
+
+	m_iPoisonHeal = 0;
+	m_flNextPoisonHeal = -1;
 }
 
 
@@ -1895,6 +1900,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			ASW_Ignite( 1.0f, 0, pAttacker, info.GetWeapon() );
 		}
 
+		if ( info.GetDamageType() & DMG_POISON )
+		{
+			m_iPoisonHeal += newInfo.GetDamage();
+			m_flNextPoisonHeal = gpGlobals->curtime + rd_marine_poison_recover_delay.GetFloat();
+		}
+
 		// short stumbles on damage
 		if ( !(newInfo.GetDamageType() & (DMG_BURN | DMG_DIRECT | DMG_RADIATION) ) && asw_marine_stumble_on_damage.GetBool() )
 		{
@@ -2369,6 +2380,17 @@ void CASW_Marine::ASWThinkEffects()
 					}
 				}				
 			}
+		}
+	}
+	while ( m_iPoisonHeal > 0 && gpGlobals->curtime >= m_flNextPoisonHeal )
+	{
+		m_iPoisonHeal--;
+		m_flNextPoisonHeal += rd_marine_poison_recover_tick.GetFloat();
+
+		TakeHealth( 1, DMG_GENERIC );
+		if ( m_iHealth >= m_iMaxHealth )
+		{
+			m_iPoisonHeal = 0;
 		}
 	}
 	// check for FFGuard time running out
