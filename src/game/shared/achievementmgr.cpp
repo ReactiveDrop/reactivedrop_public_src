@@ -1559,7 +1559,7 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		DevMsg( "CAchievementMgr: failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
+		//DevMsg( "CAchievementMgr: failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
 		return;
 	}
 
