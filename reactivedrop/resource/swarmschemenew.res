@@ -328,6 +328,15 @@ Scheme
 			"1"
 			{
 				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"yres"		"1 960"
+				"antialias"	"1"
+			}
+			"2"
+			{
+				"name"		"Neo Sans"
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -338,6 +347,16 @@ Scheme
 		"DefaultBlur"
 		{
 			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"yres"		"1 960"
+				"antialias"	"1"
+				"blur"		"2"
+			}
+			"2"
 			{
 				"name"		"Neo Sans"
 				"tall"		"10"
@@ -352,6 +371,16 @@ Scheme
 			"1"
 			{
 				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"yres"		"1 960"
+				"antialias"	"1"
+				"dropshadow"	"2"
+			}
+			"2"
+			{
+				"name"		"Neo Sans"
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -362,6 +391,16 @@ Scheme
 		"DefaultUnderline"
 		{
 			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"yres"		"1 960"
+				"antialias"	"1"
+				"underline"	"1"
+			}
+			"2"
 			{
 				"name"		"Neo Sans"
 				"tall"		"10"
