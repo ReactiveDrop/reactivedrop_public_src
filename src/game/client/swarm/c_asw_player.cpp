@@ -1102,7 +1102,7 @@ void C_ASW_Player::ClientThink()
 		// check for launching the briefing
 		static int last_state=1;
 		if (ASWGameRules()->GetGameState() != last_state)
-			Msg("[%d] Game rules state changed to %d\n", entindex(), ASWGameRules()->GetGameState());
+			DevMsg("[%d] Game rules state changed to %d\n", entindex(), ASWGameRules()->GetGameState());
 		last_state = ASWGameRules()->GetGameState();
 		if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && !g_hBriefingFrame.Get() && !GetClientModeASW()->m_bLaunchedBriefing)
 		{
