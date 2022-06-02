@@ -272,13 +272,17 @@ void CGrenadeSpit::Think( void )
 void CGrenadeSpit::Precache( void )
 {
 	// m_nSquidSpitSprite = PrecacheModel("sprites/greenglow1.vmt");// client side spittle.
+	PrecacheMaterial( "BeerSplash" );
 
-	PrecacheModel( "models/spitball_large.mdl" ); 
-	PrecacheModel("models/spitball_medium.mdl"); 
-	PrecacheModel("models/spitball_small.mdl"); 
+	PrecacheModel( "models/spitball_large.mdl" );
+	PrecacheModel( "models/spitball_medium.mdl" );
+	PrecacheModel( "models/spitball_small.mdl" );
 
 	PrecacheScriptSound( "GrenadeSpit.Hit" );
+	PrecacheScriptSound( "NPC_Antlion.PoisonBall" );
 
 	PrecacheParticleSystem( "antlion_spit_player" );
 	PrecacheParticleSystem( "antlion_spit" );
+	PrecacheParticleSystem( "antlion_spit_trail" );
+	PrecacheParticleSystem( "watersplash" );
 }
