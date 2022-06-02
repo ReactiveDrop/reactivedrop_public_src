@@ -59,6 +59,7 @@ CHudChat::CHudChat( const char *pElementName ) : BaseClass( pElementName )
 {
 	SetProportional( false );
 	m_bBriefingPosition = false;
+	m_bSkipNextReset = false;
 
 	m_pSwarmBackground = new vgui::Panel( this, "SwarmBackground" );
 	m_pSwarmBackgroundInner = new vgui::Panel( this, "SwarmBackgroundInner" );
@@ -71,6 +72,17 @@ void CHudChat::Init( void )
 	HOOK_HUD_MESSAGE( CHudChat, SayText );
 	HOOK_HUD_MESSAGE( CHudChat, SayText2 );
 	HOOK_HUD_MESSAGE( CHudChat, TextMsg );
+}
+
+void CHudChat::Reset( void )
+{
+	if ( m_bSkipNextReset )
+	{
+		m_bSkipNextReset = false;
+		return;
+	}
+
+	BaseClass::Reset();
 }
 
 void CHudChat::ApplySchemeSettings( vgui::IScheme *pScheme )

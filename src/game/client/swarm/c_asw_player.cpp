@@ -184,6 +184,7 @@ extern ConVar asw_stim_cam_time;
 extern ConVar asw_rts_controls;
 extern ConVar asw_hud_alpha;
 extern ConVar asw_building_room_thumbnails;
+extern ConVar rd_chatwipe;
 
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
@@ -934,7 +935,7 @@ void C_ASW_Player::CloseBriefingFrame()
 
 		// clear the currently visible part of the chat
 		CHudChat *pChat = GET_HUDELEMENT( CHudChat );
-		if (pChat && pChat->GetChatHistory())
+		if ( pChat && pChat->GetChatHistory() && rd_chatwipe.GetBool() )
 			pChat->GetChatHistory()->ResetAllFades( false, false, 0 );
 	}
 }

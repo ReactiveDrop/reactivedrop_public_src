@@ -53,6 +53,7 @@
 #include "nb_header_footer.h"
 #include "asw_briefing.h"
 #include "c_gib.h"
+#include "asw_hud_chat.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -798,6 +799,8 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 
 	if ( Q_strcmp( "asw_mission_restart", eventname ) == 0 )
 	{
+		( GET_HUDELEMENT( CHudChat ) )->m_bSkipNextReset = true;
+
 		ASW_CloseAllWindows();
 		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if (pPlayer)

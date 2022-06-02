@@ -16,6 +16,7 @@ public:
 	CHudChat( const char *pElementName );
 
 	virtual void	Init( void );
+	virtual void	Reset( void );
 
 	void			MsgFunc_SayText(bf_read &msg);
 	void			MsgFunc_SayText2( bf_read &msg );
@@ -45,6 +46,7 @@ public:
 
 	void SetBriefingPosition( bool bUseBriefingPosition );
 	bool m_bBriefingPosition;
+	bool m_bSkipNextReset;
 
 	vgui::Panel *m_pSwarmBackground;
 	vgui::Panel *m_pSwarmBackgroundInner;
