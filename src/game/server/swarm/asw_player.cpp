@@ -353,11 +353,7 @@ CASW_Player::CASW_Player()
 	m_bLastAttackButton= false;
 	m_bLastAttack2Button= false;
 	m_fLastAICountTime = 0;
-	m_bAutoReload = true;	
-	m_bRequestedSpectator = false;
-	m_bPrintedWantStartMessage = false;
-	m_bPrintedWantsContinueMessage = false;
-	m_bFirstInhabit = false;
+	m_bAutoReload = true;
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
 	m_flMovementAxisYaw = 90.0f;
@@ -370,13 +366,8 @@ CASW_Player::CASW_Player()
 
 	m_bPendingSteamStats = false;
 	m_flPendingSteamStatsStart = 0.0f;
-	m_bHasAwardedXP = false;
-	m_bSentPromotedMessage = false;
 
-	m_bWelcomed = false; 
-
-	m_nChangingMR = -1;
-	m_nChangingSlot = 0;
+	m_bWelcomed = false;
 
 	if (ASWGameRules())
 	{
@@ -613,7 +604,14 @@ void CASW_Player::Spawn()
 	m_iLeaderVoteIndex = -1;
 	BecomeNonSolid();
 
+	m_bFirstInhabit = false;
+	m_bRequestedSpectator = false;
+	m_bPrintedWantStartMessage = false;
+	m_bPrintedWantsContinueMessage = false;
+	m_nChangingMR = -1;
+	m_nChangingSlot = 0;
 	m_bHasAwardedXP = false;
+	m_bSentPromotedMessage = false;
 
 	if (ASWGameRules())
 	{
