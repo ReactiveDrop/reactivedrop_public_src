@@ -199,13 +199,13 @@ void CRD_Hud_Boss_Bar_Container::OnBarDataChanged()
 
 	float flRowTop = 0;
 	int iCurrentRow = m_BarEntities[iRowStart]->m_iBarRow;
-	int iCurrentColumn = m_BarEntities[iRowStart]->m_iBarColumn;
+	int iCurrentColumn = m_BarEntities[iRowStart]->m_iBarColumn - 1;
 	float flMaxHeightScale = MAX( m_BarEntities[iRowStart]->m_flBarHeightScale, 0 );
-	int iColumnCount = 1;
+	int iColumnCount = 0;
 
 	m_BarLayout[iRowStart].m_iColumnIndex = 0;
 
-	for ( int i = iRowStart + 1; ; i++ )
+	for ( int i = iRowStart; ; i++ )
 	{
 		C_RD_Boss_Bar *pBar = i < m_BarEntities.Count() ? m_BarEntities[i] : NULL;
 		if ( pBar && !pBar->m_bEnabled )
