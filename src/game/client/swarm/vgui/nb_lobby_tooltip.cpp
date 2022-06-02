@@ -209,6 +209,10 @@ void CNB_Lobby_Tooltip::OnTick()
 
 			m_bValidTooltip = true;
 		}
+		else
+		{
+			m_bMarineTooltip = false;
+		}
 	}
 	else
 	{
