@@ -1302,6 +1302,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		}
 	}
 
+	if ( FStrEq( pcmd, "cl_leaderboard_ready" ) )
+	{
+		// ignore if received at any time outside of debriefing
+		return true;
+	}
 
 	if ( FStrEq( pcmd, "cl_selectsinglem" ) )			// selecting a marine from the roster, deselecting our current
 	{
