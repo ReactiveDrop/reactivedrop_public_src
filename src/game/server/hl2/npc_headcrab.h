@@ -11,14 +11,14 @@
 #endif
 
 #include "ai_squadslot.h"
-#include "ai_basenpc.h"
+#include "asw_alien.h"
 #include "soundent.h"
 
 
 
-abstract_class CBaseHeadcrab : public CAI_BaseNPC
+abstract_class CBaseHeadcrab : public CASW_Alien
 {
-	DECLARE_CLASS( CBaseHeadcrab, CAI_BaseNPC );
+	DECLARE_CLASS( CBaseHeadcrab, CASW_Alien );
 
 public:
 	void Spawn( void );
