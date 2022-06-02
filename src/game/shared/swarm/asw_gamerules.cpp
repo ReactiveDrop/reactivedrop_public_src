@@ -8770,6 +8770,7 @@ void CAlienSwarm::LevelInitPostEntity()
 
 	m_bPlayedBlipSpeech = false;
 	m_bQuickStart = false;
+	m_flRestartingMissionTime = 0;
 
 	KeyValues *pLaunchOptions = engine->GetLaunchOptions();
 	if ( pLaunchOptions )
