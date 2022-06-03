@@ -1422,7 +1422,7 @@ const char* MakeHumanReadable(const char *key)
 void ASW_AdjustViewAngleForGroundShooting( QAngle &viewangles )
 {
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer )
+	if ( !pPlayer || pPlayer->GetASWControls() != 1 )
 		return;
 
 	// first check if we're using a weapon that supports ground alt-shooting
