@@ -2912,8 +2912,6 @@ void CAlienSwarm::RestartMissionCountdown( CASW_Player *pPlayer )
 	SetForceReady( ASW_FR_INGAME_RESTART );
 }
 
-IGameSystemPerFrame *VScriptGameSystem();
-
 void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipFail )
 {
 	// don't allow restarting if we're on the campaign map, as this does Bad Things (tm)
@@ -2975,8 +2973,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		return;
 	}
 
-	VScriptGameSystem()->LevelShutdownPreEntity();
-
 	// find the first entity in the entity list
 	CBaseEntity *pEnt = gEntList.FirstEnt();
 
@@ -3010,9 +3006,8 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	// clear out gamerules
 	FullReset();
 	ASWSpawnSelection()->LevelShutdownPostEntity();
-	VScriptGameSystem()->LevelShutdownPostEntity();
 
-	VScriptGameSystem()->LevelInitPreEntity();
+	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
 	ASWSpawnSelection()->LevelInitPreEntity();
 
@@ -3027,7 +3022,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	LevelInitPostEntity();
 
 	// re-init some systems
-	VScriptGameSystem()->LevelInitPostEntity();
 	TheTonemapSystem()->LevelInitPostEntity();
 	PostProcessSystem()->LevelInitPostEntity();
 	ColorCorrectionSystem()->LevelInitPostEntity();
