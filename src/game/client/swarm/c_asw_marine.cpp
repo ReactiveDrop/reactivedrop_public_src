@@ -493,6 +493,9 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_iPowerupType = -1;
 	m_flPowerupExpireTime = -1;
 	m_bPowerupExpires = false;
+
+	m_PrevRenderAlpha = 255;
+	m_bIsHiddenLocal = false;
 }
 
 
@@ -1011,11 +1014,19 @@ void C_ASW_Marine::ClientThink()
 	extern ConVar asw_allow_detach;
 	if ( GetViewMarine() == this && asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
 	{
-		AddEffects( EF_NODRAW );
+		if ( !m_bIsHiddenLocal || GetRenderAlpha() )
+		{
+			m_PrevRenderAlpha = GetRenderAlpha();
+			m_bIsHiddenLocal = true;
+		}
+
+		SetRenderMode( kRenderTransTexture );
+		SetRenderAlpha( 0 );
 	}
-	else
+	else if ( m_bIsHiddenLocal )
 	{
-		RemoveEffects( EF_NODRAW );
+		SetRenderAlpha( m_PrevRenderAlpha );
+		m_bIsHiddenLocal = false;
 	}
 
 	if ( ASWDeathmatchMode() )
@@ -2164,6 +2175,14 @@ void C_ASW_Marine::MouseOverEntity( C_BaseEntity* pEnt, Vector vecCrosshairAimin
 	}
 	// asw temp
 	//ASWInput()->SetHighlightEntity(pEnt);
+}
+
+void C_ASW_Marine::ForceVisibleFirstPerson( bool bForce )
+{
+	if ( !m_bIsHiddenLocal )
+		return;
+
+	SetRenderAlpha( bForce ? m_PrevRenderAlpha : 0 );
 }
 
 void C_ASW_Marine::NotifyShouldTransmit( ShouldTransmitState_t state )

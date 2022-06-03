@@ -13,6 +13,8 @@ class C_ASW_Marine;
 class IASW_Fade_List : public IASW_Fade_List_
 {
 public:
+	static int s_iFadeReflectionDepth;
+
 	IASW_Fade_List();
 
 	byte m_nSavedAlpha;

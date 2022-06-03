@@ -11,8 +11,10 @@
 IMPLEMENT_AUTO_LIST( IASW_Fade_List_ );
 
 ConVar asw_fade_duration( "asw_fade_duration", "0.5", FCVAR_ARCHIVE, "", true, 0.01f, false, 0 );
+extern ConVar asw_hide_local_marine;
+extern ConVar asw_allow_detach;
 
-static int s_iFadeReflectionDepth = 0;
+int IASW_Fade_List::s_iFadeReflectionDepth = 0;
 
 IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 {
@@ -37,6 +39,15 @@ void IASW_Fade_List::DisableFading()
 		pItem->m_nSavedAlpha = pEnt->GetRenderAlpha();
 		pEnt->SetRenderAlpha( pItem->m_nNormalOpacity );
 	}
+
+	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	{
+		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+		if ( pViewMarine )
+		{
+			pViewMarine->ForceVisibleFirstPerson( true );
+		}
+	}
 }
 
 void IASW_Fade_List::EnableFading()
@@ -52,6 +63,15 @@ void IASW_Fade_List::EnableFading()
 		C_BaseEntity *pEnt = pItem->GetEntity();
 
 		pEnt->SetRenderAlpha( pItem->m_nSavedAlpha );
+	}
+
+	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	{
+		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+		if ( pViewMarine )
+		{
+			pViewMarine->ForceVisibleFirstPerson( false );
+		}
 	}
 }
 

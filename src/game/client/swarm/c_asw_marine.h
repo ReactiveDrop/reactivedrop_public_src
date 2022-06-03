@@ -74,6 +74,9 @@ public:
 	Vector m_vecCustomRenderOrigin;
 	virtual const Vector& GetRenderOrigin();
 	virtual void MouseOverEntity(C_BaseEntity* pEnt, Vector vecCrosshairAimingPos);
+	void ForceVisibleFirstPerson( bool bForce );
+	byte m_PrevRenderAlpha;
+	bool m_bIsHiddenLocal;
 		
 	// networking
 	void NotifyShouldTransmit( ShouldTransmitState_t state );	
