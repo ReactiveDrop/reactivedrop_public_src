@@ -947,6 +947,9 @@ const QAngle& CASW_Player::EyeAngles( )
 
 const QAngle& CASW_Player::EyeAnglesWithCursorRoll( )
 {
+	// cursor roll for distance only makes sense in top-down view
+	Assert( GetASWControls() == 1 );
+
 	static QAngle angCursorEyes;
 #ifdef CLIENT_DLL
 	if ( IsLocalPlayer ( this ) )
