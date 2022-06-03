@@ -1717,7 +1717,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	Vector currentdir;
 	Vector rightdir;
-	AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
+	AngleVectors( QAngle( 0, GetASWControls() == 1 ? m_flMovementAxisYaw : pCmd->viewangles.y, 0 ), &currentdir, &rightdir, NULL );
 
 	Vector vDirection = vecSeparationVelocity;
 	VectorNormalize( vDirection );
