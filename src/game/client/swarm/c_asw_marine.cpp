@@ -995,11 +995,11 @@ void C_ASW_Marine::ClientThink()
 		m_vecFacingPoint = vec3_origin;
 	}
 
-	if (IsInhabited() && ShouldPredict())
-	{	
-		g_fMarinePoisonDuration = m_fPoison;		
-		m_fPoison -= gpGlobals->frametime;
+	if ( GetViewMarine() == this )
+	{
+		g_fMarinePoisonDuration = m_fPoison;
 	}
+	m_fPoison = MAX( 0, m_fPoison - gpGlobals->frametime );
 
 	TickEmotes(deltatime);
 	TickRedName(deltatime);
@@ -1011,11 +1011,11 @@ void C_ASW_Marine::ClientThink()
 	extern ConVar asw_allow_detach;
 	if ( GetViewMarine() == this && asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
 	{
-		SetRenderMode( kRenderNone );
+		AddEffects( EF_NODRAW );
 	}
 	else
 	{
-		SetRenderMode( kRenderNormal );
+		RemoveEffects( EF_NODRAW );
 	}
 
 	if ( ASWDeathmatchMode() )
