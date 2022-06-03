@@ -32,6 +32,11 @@ void CRD_Text_Filtering::PostInit()
 
 CSteamID CRD_Text_Filtering::GetClientSteamID( int client )
 {
+	if ( !SteamUtils() )
+	{
+		return k_steamIDNil;
+	}
+
 	player_info_t playerInfo;
 	if ( !engine->GetPlayerInfo( client, &playerInfo ) )
 	{
