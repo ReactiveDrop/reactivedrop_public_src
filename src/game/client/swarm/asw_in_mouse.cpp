@@ -45,7 +45,7 @@ void CASWInput::ResetMouse( void )
 	{
 		GetWindowCenter( x, y );
 		m_flJoypadStartMouseX = x;
-		m_flJoypadStartMouseX = y;
+		m_flJoypadStartMouseY = y;
 		SetMousePos( x, y );
 	}
 	else

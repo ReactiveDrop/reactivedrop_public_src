@@ -625,8 +625,13 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 			engine->Con_NPrintf( nDebugLine++, "CONTROLLER AA" );
 		}
 
+		if ( bWeaponHasRadiusScale || bBestAlienUsingFlareAutoaim )
+		{
+			ASWInput()->SetAutoaimEntity( pBestAlien->GetEntity() );
+		}
+
 		pAutoAimEnt = pBestAlien;
-		return NULL;
+		return pHighlightAlien ? pHighlightAlien->GetEntity() : NULL;
 	}
 
 	if ( asw_DebugAutoAim.GetBool() )
@@ -1760,10 +1765,18 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	}
 
 	// Get view angles from engine
-	QAngle	viewangles;	
+	QAngle	viewangles;
 	engine->GetViewAngles( viewangles );
 
-	TurnTowardController( viewangles );
+	if ( C_ASW_Player::GetLocalASWPlayer() && C_ASW_Player::GetLocalASWPlayer()->GetASWControls() == 1 )
+	{
+		TurnTowardController( viewangles );
+	}
+	else
+	{
+		viewangles[PITCH] += pitch;
+		viewangles[YAW] -= yaw;
+	}
 
 	// Store out the new viewangles.
 	engine->SetViewAngles( viewangles );

@@ -18,6 +18,7 @@
 #include "checksum_md5.h"
 #include "in_buttons.h"
 #include "holdout_resupply_frame.h"
+#include "asw_trace_filter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -598,6 +599,33 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		cmd->crosshairtrace = vec3_origin;
 	}
 	cmd->crosshair_entity = GetHighlightEntity() ? GetHighlightEntity()->entindex() : 0;
+
+	if ( pPlayer && pPlayer->GetASWControls() != 1 && pMarine )
+	{
+		Vector vecFacing;
+		AngleVectors( cmd->viewangles, &vecFacing );
+
+		trace_t tr;
+		CASW_Trace_Filter filter( pMarine, COLLISION_GROUP_NONE );
+		UTIL_TraceLine( pMarine->EyePosition(), pMarine->EyePosition() + vecFacing * ASW_MAX_AIM_TRACE, MASK_VISIBLE_AND_NPCS, &filter, &tr );
+
+		cmd->crosshairtrace = tr.endpos;
+		cmd->crosshair_entity = MAX( tr.GetEntityIndex(), 0 );
+
+		Vector vecAimDelta;
+		VectorSubtract( tr.endpos, pMarine->Weapon_ShootPosition(), vecAimDelta );
+		QAngle angIdealAim;
+		VectorAngles( vecAimDelta, angIdealAim );
+		cmd->aimangleoffset = angIdealAim - cmd->viewangles;
+		cmd->aimangleoffset.z = 0;
+		NormalizeAngles( cmd->aimangleoffset );
+
+		if ( gpGlobals->maxClients == 1 )
+		{
+			// if there's no prediction, just copy the aim angles directly to the player
+			pPlayer->m_angMarineAutoAimFromClient = cmd->aimangleoffset;
+		}
+	}
 
 	cmd->forced_action = pMarine ? pMarine->GetForcedActionRequest() : 0;
 	cmd->sync_kill_ent = 0;

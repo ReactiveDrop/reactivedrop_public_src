@@ -381,6 +381,8 @@ C_ASW_Player::C_ASW_Player() :
 	m_iScreenHeight = 0;
 	m_iMouseX = 0;
 	m_iMouseY = 0;
+
+	m_angMarineAutoAimFromClient = vec3_angle;
 }
 
 
@@ -973,7 +975,10 @@ Vector C_ASW_Player::GetAutoaimVectorForMarine( C_ASW_Marine* marine, float flDe
 {
 	// Never autoaim a predicted weapon (for now)
 	Vector	forward;
-	AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
+	if ( GetMarine() == marine )
+		AngleVectors( EyeAngles() + m_angMarineAutoAimFromClient, &forward );
+	else
+		AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
 	return	forward;
 }
 

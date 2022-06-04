@@ -363,6 +363,7 @@ CASW_Player::CASW_Player()
 	m_Local.m_vecPunchAngle.Set( PITCH, 8 );
 	m_Local.m_vecPunchAngle.Set( YAW, 0 );
 	m_angMarineAutoAim = vec3_angle;
+	m_angMarineAutoAimFromClient = vec3_angle;
 
 	m_bPendingSteamStats = false;
 	m_flPendingSteamStatsStart = 0.0f;
@@ -2392,7 +2393,10 @@ Vector CASW_Player::GetAutoaimVectorForMarine(CASW_Marine* marine, float flDelta
 #ifdef ASW_NO_SERVERSIDE_AUTOAIM
 	// test of no serverside autoaim
 	Vector	forward;
-	AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
+	if ( GetMarine() == marine )
+		AngleVectors( EyeAngles() + m_angMarineAutoAimFromClient, &forward );
+	else
+		AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
 	return	forward;
 #else
 	//if ( ( ShouldAutoaim() == false ) || ( flDelta == 0 ) )	

@@ -127,6 +127,8 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	{
 		MoveHelper()->SetHost( pMarine );
 	}
+
+	m_angMarineAutoAimFromClient = ucmd->aimangleoffset;
 	
 	// process turret movement
 	if ( pMarine && pMarine->IsControllingTurret())
