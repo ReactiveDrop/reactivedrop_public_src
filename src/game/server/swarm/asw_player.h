@@ -114,7 +114,7 @@ public:
 	Vector GetAutoaimVectorForMarine(CASW_Marine* marine, float flDelta, float flNearMissDelta);
 	QAngle MarineAutoaimDeflection( Vector &vecSrc, float flDist, float flDelta, float flNearMissDelta);
 	QAngle m_angMarineAutoAim;
-	QAngle m_angMarineAutoAimFromClient;
+	CNetworkQAngle( m_angMarineAutoAimFromClient );
 
 	void				FlashlightTurnOn( void );
 	void				FlashlightTurnOff( void );

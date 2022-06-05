@@ -236,6 +236,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	//
 
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
+
+	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -268,6 +270,8 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_iMouseX, FIELD_SHORT ),
 	DEFINE_FIELD( m_iMouseY, FIELD_SHORT ),
 	//
+
+	DEFINE_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR ),
 END_DATADESC()
 
 // -------------------------------------------------------------------------------- //
