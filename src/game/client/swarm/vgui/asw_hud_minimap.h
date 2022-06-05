@@ -21,6 +21,8 @@ class CASWHudMinimapLinePanel;
 class CASWHudMinimapFramePanel;
 class ScanLinePanel;
 class CASWHudMinimap;
+class C_ASW_Objective;
+class C_ASW_Marker;
 
 #define MAP_LINE_INTERVAL 0.04f
 #define MAP_LINE_SOLID_TIME 5.0f
@@ -92,7 +94,6 @@ struct MapBlip_t
 	MapBlipTexture_t nTextureType;
 };
 
-
 abstract_class CASWMap
 {
 public:
@@ -136,6 +137,17 @@ protected:
 	CASWHudMinimap *m_pMinimap;
 };
 
+struct MapMarkCandidate
+{
+	MapMarkCandidate() {}
+	MapMarkCandidate( C_ASW_Objective *pLegacy );
+	MapMarkCandidate( C_ASW_Marker *pMarker );
+
+	Vector2D center{};
+	Vector2D size{};
+	float yaw{};
+	float dist{};
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Shows the minimap in the corner of the screen
@@ -161,7 +173,7 @@ public:
 	virtual void PaintBlips();
 	virtual void PaintScannerBlips();
 //	void PaintFollowLine(C_BaseEntity *pMarine, C_BaseEntity *pTarget);
-	void PaintRect( int nX, int nY, int nWidth, int nHeight, Color color );
+	void PaintRect( Vector2D center, Vector2D size, float angle, Color color );
 	virtual void CheckBlipSpeech(int iMarine);
 	virtual void FireGameEvent(IGameEvent * event);
 	void SetMap(const char * levelname);

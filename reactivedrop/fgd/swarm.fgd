@@ -3735,14 +3735,12 @@
 	objectivedescription3(string) : "Objective Description Line 3" : "" : "Third 255 characters of the detail description for this objective"
 	objectivedescription4(string) : "Objective Description Line 4" : "" : "Fourth 255 characters of the detail description for this objective"
 	objectiveimage(string) : "Objective Image" : "" : "Name a VGUI texture to show as a screenshot for this objective."
-	objectivemarkername(string) : "Marker Name" : "" : "Name of the target object that pinpoints this objective's location in the level."
 	objectiveinfoicon1(string) : "Icon 1" : "" : "Icon displayed next to the map on the briefing."
 	objectiveinfoicon2(string) : "Icon 2" : "" : "Icon displayed next to the map on the briefing."
 	objectiveinfoicon3(string) : "Icon 3" : "" : "Icon displayed next to the map on the briefing."
 	objectiveinfoicon4(string) : "Icon 4" : "" : "Icon displayed next to the map on the briefing."
 	objectiveinfoicon5(string) : "Icon 5" : "" : "Icon displayed next to the map on the briefing."
 	objectiveicon(string) : "HUD Icon" : "" : "Icon displayed next to the objective name on the HUD."
-	mapmarkings(string) : "Map Markings" : "" : "Used to mark areas on the map per objective.  Follows this format: BRACKETS [x] [y] [w] [h]"
 	Visible(choices) : "Visible" : 1 : "Whether this objective is visible or hidden" =
 	[
 		0 : "Hidden"
@@ -3754,7 +3752,6 @@
 		1 : "Optional"
 	]
 
-	
 	output OnObjectiveComplete(void) : "Fired when the objective is completed."
 	input SetVisible(bool) : "Hide or show the objective"
 ]
@@ -3809,11 +3806,10 @@
 	NumGoo(integer) : "Num Goo" : 1 : "How many Alien Goo entities have to be destroyed for this objective to be complete."
 ]
 
-
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_triggered.vmt") = asw_objective_triggered : 
 	"Alien Swarm Mission Objective"
 [
-    objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
+	objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
 	input SetComplete(void) : "SetComplete"
 	input SetIncomplete(void) : "SetIncomplete"
 	input SetFailed(void) : "SetFailed"
@@ -3822,24 +3818,24 @@
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_escape.vmt") = asw_objective_escape : 
 	"Alien Swarm Escape Objective"
 [
-    objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
+	objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
 	input MarineInEscapeArea(void) : "MarineInEscapeArea"
 ]
 
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_survive.vmt") = asw_objective_survive : 
 	"Alien Swarm all marines must survive objective"
 [
-    objectivetitle(string) : "Objective Title" : "#asw_all_survive" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."	
+	objectivetitle(string) : "Objective Title" : "#asw_all_survive" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."	
 ]
 
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_countdown.vmt") = asw_objective_countdown : 
 	"Alien Swarm Countdown Objective - counts down to 0 then explodes the level"
 [
-    objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
+	objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
 	CountdownLength(float) : "Countdown Length" : 60 : "How many seconds before the level explodes."
 	input StartCountdown(void) : "Start Countdown"
 	input CancelCountdown(void) : "Cancel Countdown"
-	
+
 	output OnCountdownFailed(void) : "Fired when the countdown timer reaches 0."
 ]
 

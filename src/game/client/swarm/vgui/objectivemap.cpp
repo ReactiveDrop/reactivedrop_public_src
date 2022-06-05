@@ -10,6 +10,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_marine_resource.h"
 #include "c_asw_objective.h"
+#include "c_asw_marker.h"
 #include "vgui_controls/AnimationController.h"
 #include "ObjectiveTitlePanel.h"
 #include "ObjectiveDetailsPanel.h"
@@ -290,49 +291,98 @@ void ObjectiveMap::SetMap(const char * levelname)
 	m_fMapScale		= m_MapKeyValues->GetFloat("scale", 1.0f);
 }
 
-// m_MapMarkings
+void ObjectiveMap::AddMapMark( const MapMarkCandidate & candidate, bool bComplete )
+{
+	if ( m_iNumMapMarks >= ASW_NUM_MAP_MARKS || candidate.size.IsZero() )
+	{
+		return;
+	}
+
+	Vector2D absSinCos;
+	SinCos( DEG2RAD( candidate.yaw ), &absSinCos.y, &absSinCos.x );
+	absSinCos.x = fabsf( absSinCos.x );
+	absSinCos.y = fabsf( absSinCos.y );
+
+	Vector2D rotatedHalfSize
+	{
+		( candidate.size.x * absSinCos.x + candidate.size.y * absSinCos.y ) * 0.5f,
+		( candidate.size.y * absSinCos.x + candidate.size.x * absSinCos.y ) * 0.5f,
+	};
+
+	Vector2D mapSpaceMins, mapSpaceMaxs;
+	Vector2DSubtract( candidate.center, rotatedHalfSize, mapSpaceMins );
+	Vector2DAdd( candidate.center, rotatedHalfSize, mapSpaceMaxs );
+
+	int mx, my, mw, mt;
+	GetDesiredMapBounds( mx, my, mw, mt );
+
+	int markx = mx + ( mapSpaceMins.x / 1024.0f ) * mw;
+	int marky = my + ( mapSpaceMins.y / 1024.0f ) * mt;
+	int markw = ( ( mapSpaceMaxs.x - mapSpaceMins.x ) / 1024.0f ) * mw;
+	int markh = ( ( mapSpaceMaxs.y - mapSpaceMins.y ) / 1024.0f ) * mt;
+
+	const float fDuration = 0.3f;
+
+	int i = m_iNumMapMarks++;
+	m_MapMarkPanels[i]->SetVisible( true );
+	vgui::GetAnimationController()->RunAnimationCommand( m_MapMarkPanels[i], "xpos", markx, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	vgui::GetAnimationController()->RunAnimationCommand( m_MapMarkPanels[i], "ypos", marky, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	vgui::GetAnimationController()->RunAnimationCommand( m_MapMarkPanels[i], "wide", markw, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	vgui::GetAnimationController()->RunAnimationCommand( m_MapMarkPanels[i], "tall", markh, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	vgui::GetAnimationController()->RunAnimationCommand( m_MapMarkPanels[i], "alpha", 255, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	m_MapMarkPanels[i]->m_bComplete = bComplete || m_pObjective->IsObjectiveComplete();
+}
 
 void ObjectiveMap::FindMapMarks()
 {
 	if ( !m_pObjective )
+	{
 		return;
-
-	m_iNumMapMarks = m_pObjective->GetMapMarkingsCount();
-	ObjectiveMapMark *m_pMapMarks = m_pObjective->GetMapMarkings();
+	}
 
 	// hide all markers for now
+	m_iNumMapMarks = 0;
 	for ( int i = 0; i < ASW_NUM_MAP_MARKS; i++ )
 	{
-		m_MapMarkPanels[i]->SetAlpha(0);
-		m_MapMarkPanels[i]->SetVisible(false);
-		m_MapMarkPanels[i]->SetPos(0,0);
-		m_MapMarkPanels[i]->SetSize(GetWide(), GetTall());		
+		m_MapMarkPanels[i]->SetAlpha( 0 );
+		m_MapMarkPanels[i]->SetVisible( false );
+		m_MapMarkPanels[i]->SetPos( 0, 0 );
+		m_MapMarkPanels[i]->SetSize( GetWide(), GetTall() );
 		m_MapMarkPanels[i]->m_bPulsing = false;
 	}
 
-	// make the markers start to animate in
-	float fDuration = 0.3f;
-	for ( int i = 0; i < m_iNumMapMarks; i++ )
+	CASWHudMinimap *pMiniMap = GET_HUDELEMENT( CASWHudMinimap );
+	Assert( pMiniMap );
+	if ( !pMiniMap )
 	{
-		m_MapMarkPanels[i]->SetVisible(true);
+		return;
+	}
 
-		if ( m_MapMarkPanels[i] )
+	bool bAnyMarkers = false;
+
+	// make the markers start to animate in
+	FOR_EACH_VEC( IObjectiveMarkerList::AutoList(), iMarker )
+	{
+		C_ASW_Marker *pMarker = assert_cast< C_ASW_Marker * >( IObjectiveMarkerList::AutoList()[iMarker] );
+		Assert( pMarker );
+		if ( !pMarker || !FStrEq( pMarker->GetObjectiveName(), m_pObjective->GetEntityName() ) )
 		{
-			int mx, my, mw, mt;
-			GetDesiredMapBounds(mx, my, mw, mt);
-
-			int markx = mx + (m_pMapMarks[i].x / 1024.0f) * mw;
-			int marky = my + (m_pMapMarks[i].y / 1024.0f) * mt;
-			int markw = (m_pMapMarks[i].w / 1024.0f) * mw;
-			int markh = (m_pMapMarks[i].h / 1024.0f) * mt;
-			vgui::GetAnimationController()->RunAnimationCommand(m_MapMarkPanels[i], "xpos", markx, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			vgui::GetAnimationController()->RunAnimationCommand(m_MapMarkPanels[i], "ypos", marky, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			vgui::GetAnimationController()->RunAnimationCommand(m_MapMarkPanels[i], "wide", markw, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			vgui::GetAnimationController()->RunAnimationCommand(m_MapMarkPanels[i], "tall", markh, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			vgui::GetAnimationController()->RunAnimationCommand(m_MapMarkPanels[i], "alpha", 255, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-			m_MapMarkPanels[i]->m_bPulsing = false;	// don't pulse yet
-			m_MapMarkPanels[i]->m_bComplete = m_pMapMarks[i].bComplete || m_pObjective->IsObjectiveComplete();
+			continue;
 		}
+
+		bAnyMarkers = true;
+
+		if ( !pMarker->IsEnabled() )
+		{
+			continue;
+		}
+
+		AddMapMark( pMarker, pMarker->IsComplete() );
+	}
+
+	if ( !bAnyMarkers && m_pObjective->m_LegacyMapMarkings != NULL_STRING )
+	{
+		AddMapMark( m_pObjective, false );
 	}
 
 	if ( m_iNumMapMarks > 0 )
