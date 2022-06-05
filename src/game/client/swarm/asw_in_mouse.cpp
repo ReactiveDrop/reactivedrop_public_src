@@ -121,18 +121,22 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 		ResetMouse();
 		SetMousePos( current_posx, current_posy );	// asw - swarm wants it unmoved (have to reset to stop buttons locking)
 	}
-	else if ( !IsGameplayCrosshair() )
-	{
-		// just reset no move
-		ResetMouse();
-		SetMousePos( current_posx, current_posy );
-	}
 	else
 	{
-		CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( nSlot );
+		if ( !IsGameplayCrosshair() )
+		{
+			// just reset no move
+			ResetMouse();
+			SetMousePos( current_posx, current_posy );
+		}
+		else
+		{
+			CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
 
-		// force the mouse to the center, so there's room to move
-		ResetMouse();
+			// force the mouse to the center, so there's room to move
+			ResetMouse();
+		}
 	}
 }
 
