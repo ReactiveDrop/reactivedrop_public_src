@@ -612,18 +612,21 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		cmd->crosshairtrace = tr.endpos;
 		cmd->crosshair_entity = MAX( tr.GetEntityIndex(), 0 );
 
-		Vector vecAimDelta;
-		VectorSubtract( tr.endpos, pMarine->Weapon_ShootPosition(), vecAimDelta );
-		QAngle angIdealAim;
-		VectorAngles( vecAimDelta, angIdealAim );
-		cmd->aimangleoffset = angIdealAim - cmd->viewangles;
-		cmd->aimangleoffset.z = 0;
-		NormalizeAngles( cmd->aimangleoffset );
-
-		if ( gpGlobals->maxClients == 1 )
+		if ( !tr.startsolid )
 		{
-			// if there's no prediction, just copy the aim angles directly to the player
-			pPlayer->m_angMarineAutoAimFromClient = cmd->aimangleoffset;
+			Vector vecAimDelta;
+			VectorSubtract( tr.endpos, pMarine->Weapon_ShootPosition(), vecAimDelta );
+			QAngle angIdealAim;
+			VectorAngles( vecAimDelta, angIdealAim );
+			cmd->aimangleoffset = angIdealAim - cmd->viewangles;
+			cmd->aimangleoffset.z = 0;
+			NormalizeAngles( cmd->aimangleoffset );
+
+			if ( gpGlobals->maxClients == 1 )
+			{
+				// if there's no prediction, just copy the aim angles directly to the player
+				pPlayer->m_angMarineAutoAimFromClient = cmd->aimangleoffset;
+			}
 		}
 	}
 
