@@ -3852,11 +3852,12 @@
 	output OnCountdownFailed(void) : "Fired when the countdown timer reaches 0."
 ]
 
-//@PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_kill_queen.vmt") = asw_objective_kill_queen : 
-//	"Alien Swarm Mission Objective"
-//[
-//	queenname(string) : "Queen name" : "" : "Targetname of asw_queen that has to be killed."
-//]
+@PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_kill_queen.vmt") = asw_objective_kill_queen : 
+	"Alien Swarm Mission Objective"
+[
+	objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
+	queenname(target_destination) : "Queen name" : "" : "Targetname of asw_queen that has to be killed."
+]
 
 @PointClass base(Targetname) iconsprite("editor/asw_debrief_info.vmt") = asw_debrief_info : 
 	"Mission debrief text"
