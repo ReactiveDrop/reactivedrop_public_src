@@ -2877,7 +2877,7 @@ DECLARE_CLIENT_EFFECT( aswstunexplo, ASWStunExplosionCallback );
 
 void ASWExplodeMapCallback( const CEffectData &data )
 {
-	C_ASW_Level_Exploder::CreateClientsideLevelExploder();	
+	C_ASW_Level_Exploder::CreateClientsideLevelExploder( data.m_hEntity );
 }
 
 DECLARE_CLIENT_EFFECT( ASWExplodeMap, ASWExplodeMapCallback );

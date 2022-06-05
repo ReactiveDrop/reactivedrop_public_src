@@ -27,20 +27,20 @@
 #include "tier0/memdbgon.h"
 
 CASW_VGUI_Countdown_Panel::CASW_VGUI_Countdown_Panel( vgui::Panel *pParent, const char *pElementName, C_ASW_Objective_Countdown *pCountdownObjective )
-:	vgui::EditablePanel( pParent, pElementName )
-{	
+	: vgui::EditablePanel( pParent, pElementName )
+{
 	SetProportional( true );
 	m_hCountdownObjective = pCountdownObjective;
 
 	m_pBackgroundPanel = new vgui::Panel( this, "NukeBackground" );
-	m_pWarningGlowLabel = new vgui::Label(this, "WarningGlowLabel", "#asw_nuclear_warning");
-	m_pWarningLabel = new vgui::Label(this, "WarningLabel", "#asw_nuclear_warning");
+	m_pWarningGlowLabel = new vgui::Label( this, "WarningGlowLabel", pCountdownObjective->m_szWarningText );
+	m_pWarningLabel = new vgui::Label( this, "WarningLabel", pCountdownObjective->m_szWarningText );
 
-	m_pDetonationGlowLabel = new vgui::Label(this, "DetonationGlowLabel", "#asw_nuclear_detonationi");
-	m_pDetonationLabel = new vgui::Label(this, "DetonationLabel", "#asw_nuclear_detonationi");
+	m_pDetonationGlowLabel = new vgui::Label( this, "DetonationGlowLabel", pCountdownObjective->m_szCaptionText );
+	m_pDetonationLabel = new vgui::Label( this, "DetonationLabel", pCountdownObjective->m_szCaptionText );
 
-	m_pCountdownGlowLabel = new vgui::Label(this, "CountdownGlowLabel", "");
-	m_pCountdownLabel = new vgui::Label(this, "CountdownLabel", "");
+	m_pCountdownGlowLabel = new vgui::Label( this, "CountdownGlowLabel", L"" );
+	m_pCountdownLabel = new vgui::Label( this, "CountdownLabel", L"" );
 
 	m_iTimeLeft = 0;
 
@@ -109,6 +109,11 @@ void CASW_VGUI_Countdown_Panel::ShowCountdown( bool bShow )
 		m_pDetonationGlowLabel->SetVisible(false);
 		m_pDetonationLabel->SetVisible(false);
 		m_pBackgroundPanel->SetVisible(false);
+
+		if ( !GetAlpha() )
+		{
+			MarkForDeletion();
+		}
 	}
 }
 
@@ -150,7 +155,7 @@ void CASW_VGUI_Countdown_Panel::SlideOut( float flDelay )
 
 void CASW_VGUI_Countdown_Panel::OnThink()
 {
-	if (m_hCountdownObjective.Get() && m_hCountdownObjective.Get()->GetCountdownFinishTime() != 0)
+	if ( m_hCountdownObjective.Get() && m_hCountdownObjective.Get()->GetCountdownFinishTime() != 0 )
 	{
 		if ( !m_pCountdownLabel->IsVisible() )
 		{
@@ -159,59 +164,59 @@ void CASW_VGUI_Countdown_Panel::OnThink()
 			SlideOut( 5.0f );
 		}
 		int iTimeLeft = m_hCountdownObjective.Get()->GetCountdownFinishTime() - gpGlobals->curtime;
-		if (!m_bCheckedInitialTime)
+		if ( !m_bCheckedInitialTime )
 		{
 			// check if the countdown is starting too late to play some of the speech
-			if (iTimeLeft < 60)
+			if ( iTimeLeft < 60 )
 				m_bPlayed60 = true;
-			if (iTimeLeft < 30)
+			if ( iTimeLeft < 30 )
 				m_bPlayed30 = true;
-			if (iTimeLeft < 10)
+			if ( iTimeLeft < 10 )
 				m_bPlayed10 = true;
 			m_bCheckedInitialTime = true;
 		}
-		if (iTimeLeft != m_iTimeLeft)
+		if ( iTimeLeft != m_iTimeLeft )
 		{
 			m_iTimeLeft = iTimeLeft;
-			if (iTimeLeft >= 0)
+			if ( iTimeLeft >= 0 )
 			{
 				char buffer[8];
-				Q_snprintf(buffer, sizeof(buffer), "%d", iTimeLeft);
+				Q_snprintf( buffer, sizeof( buffer ), "%d", iTimeLeft );
 
 				wchar_t wnumber[8];
-				g_pVGuiLocalize->ConvertANSIToUnicode(buffer, wnumber, sizeof( wnumber ));
+				g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
-				wchar_t wbuffer[255];		
-				g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_nuclear_detonation"), 1,
-						wnumber);
+				wchar_t wbuffer[255];
+				g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+					g_pVGuiLocalize->Find( "#asw_nuclear_detonation" ), 1,
+					wnumber );
 
-				m_pCountdownLabel->SetText(wbuffer);
-				m_pCountdownGlowLabel->SetText(wbuffer);
+				m_pCountdownLabel->SetText( wbuffer );
+				m_pCountdownGlowLabel->SetText( wbuffer );
 			}
 			else
 			{
-				m_pCountdownLabel->SetText("");
-				m_pCountdownGlowLabel->SetText("");				
+				m_pCountdownLabel->SetText( "" );
+				m_pCountdownGlowLabel->SetText( "" );
 			}
 
 			// check for playing speech
-			if (iTimeLeft <= 63 && !m_bPlayed60)
+			if ( iTimeLeft <= 63 && !m_bPlayed60 )
 			{
 				CLocalPlayerFilter filter;
-				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWCountdown.Countdown60" );
+				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, m_hCountdownObjective->m_szSound60 );
 				m_bPlayed60 = true;
 			}
-			if (iTimeLeft <= 33 && !m_bPlayed30)
+			if ( iTimeLeft <= 33 && !m_bPlayed30 )
 			{
 				CLocalPlayerFilter filter;
-				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWCountdown.Countdown30" );
+				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, m_hCountdownObjective->m_szSound30 );
 				m_bPlayed30 = true;
 			}
-			if (iTimeLeft <= 13 && !m_bPlayed10)
+			if ( iTimeLeft <= 13 && !m_bPlayed10 )
 			{
 				CLocalPlayerFilter filter;
-				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWCountdown.Countdown10" );
+				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, m_hCountdownObjective->m_szSound10 );
 				m_bPlayed10 = true;
 			}
 		}
