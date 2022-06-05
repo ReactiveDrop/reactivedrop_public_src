@@ -1012,6 +1012,7 @@ exit 1
     <ClCompile Include="swarm\c_asw_objective_kill_eggs.cpp" />
     <ClCompile Include="swarm\c_asw_objective_kill_goo.cpp" />
     <ClCompile Include="swarm\c_asw_objective_kill_queen.cpp" />
+    <ClCompile Include="swarm\c_asw_objective_triggered.cpp" />
     <ClCompile Include="swarm\c_asw_order_arrow.cpp" />
     <ClCompile Include="swarm\c_asw_parasite.cpp" />
     <ClCompile Include="swarm\c_asw_physics_prop_statue.cpp" />
@@ -2626,6 +2627,7 @@ exit 1
     <ClInclude Include="swarm\c_asw_objective_kill_eggs.h" />
     <ClInclude Include="swarm\c_asw_objective_kill_goo.h" />
     <ClInclude Include="swarm\c_asw_objective_kill_queen.h" />
+    <ClInclude Include="swarm\c_asw_objective_triggered.h" />
     <ClInclude Include="swarm\c_asw_order_arrow.h" />
     <ClInclude Include="swarm\c_asw_parasite.h" />
     <ClInclude Include="swarm\c_asw_physics_prop_statue.h" />
