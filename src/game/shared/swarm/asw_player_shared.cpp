@@ -108,6 +108,18 @@ static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOld
 			ASWInput()->UpdateASWControls();
 		}
 	}
+#else
+	if ( CAlienSwarm *pGameRules = ASWGameRules() )
+	{
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+			if ( pPlayer )
+			{
+				pGameRules->ClientSettingsChanged( pPlayer );
+			}
+		}
+	}
 #endif
 }
 

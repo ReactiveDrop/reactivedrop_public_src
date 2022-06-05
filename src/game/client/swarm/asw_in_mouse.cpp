@@ -111,7 +111,7 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 		// force the mouse to the center, so there's room to move
 		ResetMouse();
 	}
-	else if ( C_ASW_Player::GetLocalASWPlayer( nSlot )->GetASWControls() == 1 || !IsGameplayCrosshair() )
+	else if ( C_ASW_Player::GetLocalASWPlayer( nSlot )->GetASWControls() == 1 )
 	{
 		TurnTowardMouse( viewangles, cmd );
 
@@ -120,6 +120,12 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 		// force the mouse to the center, so there's room to move
 		ResetMouse();
 		SetMousePos( current_posx, current_posy );	// asw - swarm wants it unmoved (have to reset to stop buttons locking)
+	}
+	else if ( !IsGameplayCrosshair() )
+	{
+		// just reset no move
+		ResetMouse();
+		SetMousePos( current_posx, current_posy );
 	}
 	else
 	{
