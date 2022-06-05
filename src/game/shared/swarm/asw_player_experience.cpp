@@ -919,18 +919,12 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 			return;
 	}
 
-	// XXX: for now, comment this out
-	//      steam callbacks don't seem to have a bIOError parameter?
-	//      commenting this out fixes some things for now, but this might need further investigation 
-	
-	/*
 	if ( bIOError )
 	{
 		Warning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
 		m_bPendingSteamStats = false;
 		return;
 	}
-	*/
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
