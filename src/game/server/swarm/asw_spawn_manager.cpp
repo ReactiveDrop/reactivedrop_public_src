@@ -64,6 +64,7 @@ CASW_Spawn_Manager::~CASW_Spawn_Manager()
 // ==================================
 
 // NOTE: If you add new entries to this list, update the asw_spawner choices in swarm.fgd.
+//       Alien entity classes are also listed in c_asw_objective_kill_aliens.cpp.
 //       Do not rearrange the order or you will be changing what spawns in all the maps.
 
 ASW_Alien_Class_Entry g_Aliens[]=

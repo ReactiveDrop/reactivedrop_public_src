@@ -75,48 +75,51 @@ void C_ASW_Objective_Kill_Aliens::FindText()
 	m_bFoundText = true;
 }
 
-wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
+static const char *const s_szAlienEntities[] =
 {
-	switch (m_AlienClassNum)
+	"asw_drone",
+	"asw_buzzer",
+	"asw_parasite",
+	"asw_shieldbug",
+	"asw_grub",
+	"asw_drone_jumper",
+	"asw_harvester",
+	"asw_parasite_defanged",
+	"asw_queen",
+	"asw_boomer",
+	"asw_ranger",
+	"asw_mortarbug",
+	"asw_shaman",
+	"asw_drone_uber",
+	"npc_antlionguard_normal",
+	"npc_antlionguard_cavern",
+	"npc_antlion",
+	"npc_antlion_worker",
+	"npc_zombie",
+	"npc_zombie_torso",
+	"npc_poisonzombie",
+	"npc_fastzombie",
+	"npc_fastzombie_torso",
+};
+
+const wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
+{
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( s_szAlienEntities ) )
 	{
-		case 8:	// any drone
-		case 0:
-		case 7:
-		{
-			return g_pVGuiLocalize->Find("#asw_drones");
-		}
-		break;		
-		case 6: return g_pVGuiLocalize->Find("#asw_harvesters"); break;
-		case 5: return g_pVGuiLocalize->Find("#asw_drone_jumpers"); break;
-		case 4: return g_pVGuiLocalize->Find("#asw_grubs"); break;
-		case 3: return g_pVGuiLocalize->Find("#asw_shieldbugs"); break;
-		case 2: return g_pVGuiLocalize->Find("#asw_parasites"); break;
-		case 1: return g_pVGuiLocalize->Find("#asw_buzzers"); break;
-		default: return NULL;
+		return NULL;
 	}
-	return NULL;
+
+	return g_pVGuiLocalize->Find( VarArgs( "#%ss", s_szAlienEntities[m_AlienClassNum] ) );
 }
 
-wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
+const wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
 {
-	switch (m_AlienClassNum)
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( s_szAlienEntities ) )
 	{
-		case 8:	// any drone
-		case 0:
-		case 7:
-		{
-			return g_pVGuiLocalize->Find("#asw_drone");
-		}
-		break;		
-		case 6: return g_pVGuiLocalize->Find("#asw_harvester"); break;
-		case 5: return g_pVGuiLocalize->Find("#asw_drone_jumper"); break;
-		case 4: return g_pVGuiLocalize->Find("#asw_grub"); break;
-		case 3: return g_pVGuiLocalize->Find("#asw_shieldbug"); break;
-		case 2: return g_pVGuiLocalize->Find("#asw_parasite"); break;
-		case 1: return g_pVGuiLocalize->Find("#asw_buzzer"); break;
-		default: return NULL;
+		return NULL;
 	}
-	return NULL;
+
+	return g_pVGuiLocalize->Find( VarArgs( "#%s", s_szAlienEntities[m_AlienClassNum] ) );
 }
 
 float C_ASW_Objective_Kill_Aliens::GetObjectiveProgress()
