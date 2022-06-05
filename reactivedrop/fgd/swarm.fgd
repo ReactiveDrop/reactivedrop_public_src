@@ -3725,6 +3725,7 @@
 	mapheight(integer) : "Map Height" : 256 : "Size of the map marker in world units."
 	
 	input SetComplete(void) : "Mark as complete."
+	input SetIncomplete(void) : "Mark as incomplete."
 ]
 
 @BaseClass = ASWObjective
