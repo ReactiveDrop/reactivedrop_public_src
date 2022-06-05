@@ -249,7 +249,10 @@ ALLOC_CALL void * __cdecl _recalloc ( void * memblock, size_t count, size_t size
 	return pMem;
 }
 
-size_t _msize_base( void *pMem ) noexcept
+size_t _msize_base( void *pMem )
+#ifdef NTDDI_WIN10_MN
+	noexcept
+#endif
 {
 	return g_pMemAlloc->GetSize(pMem);
 }
