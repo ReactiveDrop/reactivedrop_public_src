@@ -888,11 +888,13 @@ bool CASWHudCrosshair::IsGameplayCrosshair()
 		return false;
 	}
 
-	if ( GetClientMode()->GetPanelFromViewport( "ComputerContainer" ) )
+	vgui::Panel *pPanel = GetClientMode()->GetPanelFromViewport( "ComputerContainer" );
+	if ( pPanel && pPanel->IsFullyVisible() )
 	{
 		return false;
 	}
-	if ( GetClientMode()->GetPanelFromViewport( "WireTileContainer" ) )
+	pPanel = GetClientMode()->GetPanelFromViewport( "WireTileContainer" );
+	if ( pPanel && pPanel->IsFullyVisible() )
 	{
 		return false;
 	}
