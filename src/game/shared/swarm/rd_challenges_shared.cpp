@@ -166,7 +166,8 @@ const RD_Challenge_t *ReactiveDropChallenges::GetSummary( const char *pszChallen
 	}
 #endif
 
-	Assert( g_StringTableReactiveDropChallenges );
+	if( !g_StringTableReactiveDropChallenges )
+		return NULL;
 
 	int index = g_StringTableReactiveDropChallenges->FindStringIndex( pszChallengeName );
 	if ( index == INVALID_STRING_INDEX )
