@@ -2587,6 +2587,12 @@ C_ClientRagdoll *C_ASW_Marine::CreateClientRagdoll( bool bRestoring )
 
 C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
 {
+	if ( m_bIsHiddenLocal )
+	{
+		SetRenderAlpha( m_PrevRenderAlpha );
+		m_bIsHiddenLocal = false;
+	}
+
 	C_BaseAnimating *pRagdoll = BaseClass::BecomeRagdollOnClient();
 	if ( pRagdoll )
 	{
