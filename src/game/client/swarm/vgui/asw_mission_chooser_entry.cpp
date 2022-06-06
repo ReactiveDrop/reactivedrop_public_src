@@ -118,6 +118,10 @@ public:
 			}
 			else if ( BaseModUI::CUIGameData::Get() )
 			{
+				if ( SteamUtils() && !SteamUtils()->IsOverlayEnabled() )
+				{
+					engine->ClientCmd( "asw_mission_chooser exit" );
+				}
 				BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( CFmtStr(
 					"https://steamcommunity.com/workshop/browse/?appid=563560&requiredtags[]=%s",
 					s_WorkshopChooserTypeTag[int( pParent->m_WorkshopChooserType )]
