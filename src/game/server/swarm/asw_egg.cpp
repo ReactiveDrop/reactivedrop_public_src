@@ -588,6 +588,15 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 		{
 			pMarine->GetMarineResource()->m_iEggKills++;
 		}
+		CASW_Player *pCommander = pMarine->GetCommander();
+		if ( pCommander && pMarine->IsInhabited() )
+		{
+			CSingleUserRecipientFilter filter( pCommander );
+			filter.MakeReliable();
+			UserMessageBegin( filter, "RDAlienKillStat" );
+				WRITE_SHORT( -1 );
+			MessageEnd();
+		}
 	}
 	if ( ASWGameResource() )
 	{

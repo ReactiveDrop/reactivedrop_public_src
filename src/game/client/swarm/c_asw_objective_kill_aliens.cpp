@@ -2,6 +2,7 @@
 #include "c_asw_objective_kill_aliens.h"
 #include <vgui/ILocalize.h>
 #include <vgui_controls/Panel.h>
+#include "asw_alien_classes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,51 +76,24 @@ void C_ASW_Objective_Kill_Aliens::FindText()
 	m_bFoundText = true;
 }
 
-static const char *const s_szAlienEntities[] =
-{
-	"asw_drone",
-	"asw_buzzer",
-	"asw_parasite",
-	"asw_shieldbug",
-	"asw_grub",
-	"asw_drone_jumper",
-	"asw_harvester",
-	"asw_parasite_defanged",
-	"asw_queen",
-	"asw_boomer",
-	"asw_ranger",
-	"asw_mortarbug",
-	"asw_shaman",
-	"asw_drone_uber",
-	"npc_antlionguard_normal",
-	"npc_antlionguard_cavern",
-	"npc_antlion",
-	"npc_antlion_worker",
-	"npc_zombie",
-	"npc_zombie_torso",
-	"npc_poisonzombie",
-	"npc_fastzombie",
-	"npc_fastzombie_torso",
-};
-
 const wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
 {
-	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( s_szAlienEntities ) )
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
 	{
 		return NULL;
 	}
 
-	return g_pVGuiLocalize->Find( VarArgs( "#%ss", s_szAlienEntities[m_AlienClassNum] ) );
+	return g_pVGuiLocalize->Find( VarArgs( "#%ss", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
 }
 
 const wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
 {
-	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( s_szAlienEntities ) )
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
 	{
 		return NULL;
 	}
 
-	return g_pVGuiLocalize->Find( VarArgs( "#%s", s_szAlienEntities[m_AlienClassNum] ) );
+	return g_pVGuiLocalize->Find( VarArgs( "#%s", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
 }
 
 float C_ASW_Objective_Kill_Aliens::GetObjectiveProgress()

@@ -5057,6 +5057,20 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 
 	if ( pMarine )
 	{
+		CASW_Player *pCommander = pMarine->GetCommander();
+		if ( pCommander && pMarine->IsInhabited() )
+		{
+			int iClassIndex = GetAlienClassIndex( pAlien );
+			if ( iClassIndex >= 0 )
+			{
+				CSingleUserRecipientFilter filter( pCommander );
+				filter.MakeReliable();
+				UserMessageBegin( filter, "RDAlienKillStat" );
+					WRITE_SHORT( iClassIndex );
+				MessageEnd();
+			}
+		}
+
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 		if ( pMR )
 		{
