@@ -1261,5 +1261,12 @@ int CASW_Player::GetASWControls()
 	if ( GetViewEntity() )
 		return 0;
 
+#ifdef CLIENT_DLL
+	// if we're in a death cam, switch to third person temporarily.
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetMarineDeathCamInterp() )
+		return 1;
+#endif
+
 	return asw_controls.GetInt();
 }
