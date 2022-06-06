@@ -10,6 +10,7 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "asw_util_shared.h"
+#include "fmtstr.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_game_resource.h"
@@ -65,7 +66,7 @@ const char *const g_RDWorkshopMissionTags[] =
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
-static void ClearCaches();
+static void ClearCaches( const char *szReason );
 static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active );
 static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
 static void RealLoadAddon( PublishedFileId_t id );
@@ -156,7 +157,7 @@ bool CReactiveDropWorkshop::Init()
 	}
 
 #ifdef CLIENT_DLL
-	ClearCaches();
+	ClearCaches( "initializing" );
 
 	m_iPublishedAddonsPage = 0;
 	RequestNextPublishedAddonsPage();
@@ -233,7 +234,7 @@ static bool DedicatedServerWorkshopSetup()
 	s_bStartingUp = false;
 	if ( s_bAnyServerUpdates )
 	{
-		ClearCaches();
+		ClearCaches( "dedicated server workshop setup found update" );
 	}
 
 	return true;
@@ -873,7 +874,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 #else
 	if ( engine->IsDedicatedServer() )
 	{
-		ClearCaches();
+		ClearCaches( "successfully retrieved workshop metadata" );
 	}
 #endif
 }
@@ -1050,12 +1051,14 @@ CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 	}
 }
 
-static void ClearCaches()
+static void ClearCaches( const char *szReason )
 {
 	if ( s_bStartingUp )
 	{
 		return;
 	}
+
+	DevMsg( "Workshop: clearing cache: %s\n", szReason );
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();
@@ -1364,7 +1367,7 @@ static void RealLoadAddon( PublishedFileId_t id )
 
 	if ( !bDontClearCache )
 	{
-		ClearCaches();
+		ClearCaches( CFmtStr( "loaded addon %lld", id ) );
 	}
 
 #ifdef GAME_DLL
