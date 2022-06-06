@@ -856,11 +856,7 @@ HSCRIPT Script_FindNearestNPC( const Vector& vecOrigin, bool bCheckZ, float flRa
 
 void Script_GamePause( bool bPause )
 {
-	if ( bPause && !engine->IsPaused() )
-	{
-		engine->Pause( bPause, true );
-	}
-	else if ( engine->IsPaused() )
+	if ( bPause != engine->IsPaused() )
 	{
 		engine->Pause( bPause, true );
 	}
