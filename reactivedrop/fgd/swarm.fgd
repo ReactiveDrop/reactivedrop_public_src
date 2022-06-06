@@ -3717,7 +3717,7 @@
 	input EggHatch(string) : "Makes the egg open and the parasite hatch out immediately."
 ]
 
-@PointClass base(Targetname, EnableDisable) iconsprite("editor/asw_objective_dummy.vmt") = asw_marker : 
+@PointClass base(Targetname, Parentname, EnableDisable) iconsprite("editor/asw_objective_dummy.vmt") = asw_marker : 
 	"Alien Swarm Mission Marker"
 [
 	objectivename(target_destination) : "Objective Name" : "" : "Name of the target object this is associated with."
