@@ -515,12 +515,14 @@ void CASW_Player::AwardExperience()
 
 	CalculateEarnedXP();
 
+#ifdef CLIENT_DLL
 	ConVarRef rd_console_debug_xp( "rd_console_debug_xp" );
 
 	if ( rd_console_debug_xp.GetInt() > 0 )
 	{
 		Msg( "%s: AwardExperience: Pre XP is %d\n", IsServerDll() ? "S" : "C", m_iExperience );
 	}
+#endif
 	m_iExperience += m_iEarnedXP[ ASW_XP_TOTAL ];
 	m_iExperience = MIN( m_iExperience, ASW_XP_CAP * g_flPromotionXPScale[ GetPromotion() ] );
 
@@ -550,10 +552,12 @@ void CASW_Player::AwardExperience()
 	m_bHasAwardedXP = true;
 #endif
 
+#ifdef CLIENT_DLL
 	if ( rd_console_debug_xp.GetInt() > 0 )
 	{
 		Msg( "%s: Awarded %d XP for player %s (total is now %d)\n", IsServerDll() ? "S" : "C", m_iEarnedXP[ASW_XP_TOTAL], GetPlayerName(), m_iExperience );
 	}
+#endif
 }
 
 int GetWeaponLevelRequirement( const char *szWeaponClass )

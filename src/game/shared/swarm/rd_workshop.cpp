@@ -1038,9 +1038,15 @@ CON_COMMAND( rd_dump_workshop_mapping_client, "" )
 CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 #endif
 {
+	const char *szPrefix = args.Arg( 1 );
+
 	for ( int i = 0; i < s_FileNameToAddon.GetNumStrings(); i++ )
 	{
-		ConMsg( "  %s -> %llu\n", s_FileNameToAddon.String( i ), s_FileNameToAddon[i] );
+		const char *szName = s_FileNameToAddon.String( i );
+		if ( StringHasPrefix( szName, szPrefix ) )
+		{
+			ConMsg( "  %s -> %llu\n", szName, s_FileNameToAddon[i] );
+		}
 	}
 }
 

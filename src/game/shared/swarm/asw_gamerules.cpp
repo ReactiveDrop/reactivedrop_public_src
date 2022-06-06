@@ -1393,9 +1393,6 @@ const char* CAlienSwarm::GetGameDescription( void )
 
 CAlienSwarm::CAlienSwarm()
 {
-	Msg( "CAlienSwarm created\n" );
-
-#ifndef CLIENT_DLL
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
 	// memory usage and cache trashing over time
@@ -1404,7 +1401,6 @@ CAlienSwarm::CAlienSwarm()
 		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
 		mod_dont_load_vertices.SetValue( 1 );
 	}
-#endif
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
@@ -1556,20 +1552,6 @@ void CAlienSwarm::FullReset()
 CAlienSwarm::~CAlienSwarm()
 {
 	RevertSavedConvars();
-
-	Msg("CAlienSwarm destroyed\n");
-	//if (g_pMarineProfileList)
-	//{
-		//delete g_pMarineProfileList;
-		//g_pMarineProfileList = NULL;
-	//}
-	//if (g_pASWEquipmentList)
-	//{
-		//delete g_pASWEquipmentList;
-		//g_pASWEquipmentList = NULL;
-	//}
-
-	//delete m_pMissionManager;
 }
 
 ConVar asw_reserve_marine_time("asw_reserve_marine_time", "30.0f", 0, "Number of seconds marines are reserved for at briefing start");
@@ -6889,7 +6871,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 
 void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 {
-	Msg("Skill level changed\n");
+	DevMsg( "Skill level changed %d\n", iNewLevel );
 	if ( !ASWDeathmatchMode() && !( GetGameState() == ASW_GS_BRIEFING || GetGameState() == ASW_GS_DEBRIEF ) )
 	{
 		m_bCheated = true;
