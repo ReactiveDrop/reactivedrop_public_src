@@ -1443,7 +1443,7 @@ static void RealUnloadAddon( PublishedFileId_t id )
 		}
 	}
 
-	ClearCaches();
+	ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
 }
 
 static void UnloadAddon( PublishedFileId_t id )
