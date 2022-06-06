@@ -55,6 +55,8 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
 	void ApplyEntry( CASW_Mission_Chooser_Entry *pEntry );
+	void ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName );
+	bool SelectTab( ASW_CHOOSER_TYPE iChooserType );
 
 	ASW_HOST_TYPE m_HostType;
 	CNB_Header_Footer *m_pHeaderFooter;

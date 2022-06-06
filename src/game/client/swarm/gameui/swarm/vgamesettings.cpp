@@ -1267,11 +1267,11 @@ void GameSettings::ShowStartingMissionSelect()
 	{
 		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer\n" );
+			engine->ClientCmd_Unrestricted( VarArgs( "asw_mission_chooser singleplayer campaign %s\n", m_pSettings->GetString( "game/campaign" ) ) );
 		}
 		else
 		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver\n" );
+			engine->ClientCmd_Unrestricted( VarArgs( "asw_mission_chooser createserver campaign %s\n", m_pSettings->GetString( "game/campaign" ) ) );
 		}
 	}
 }
