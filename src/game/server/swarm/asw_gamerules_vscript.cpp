@@ -854,6 +854,18 @@ HSCRIPT Script_FindNearestNPC( const Vector& vecOrigin, bool bCheckZ, float flRa
 	return ToHScript( pNearestNPC );
 }
 
+void Script_GamePause( bool bPause )
+{
+	if ( bPause && !engine->IsPaused() )
+	{
+		engine->Pause( bPause, true );
+	}
+	else if ( engine->IsPaused() )
+	{
+		engine->Pause( bPause, true );
+	}
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	// The VScript API doesn't support arrays, but Squirrel does, and we want to use them. Make some helper functions that we can call later:
@@ -887,4 +899,5 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMins, "GetHullMins", "Returns a Vector for the hull mins (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMaxs, "GetHullMaxs", "Returns a Vector for the hull maxs (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_FindNearestNPC, "FindNearestNPC", "Find nearest NPC to position (position, ZcoordCheck, radius)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GamePause, "GamePause", "Pause or unpause the game" );
 }
