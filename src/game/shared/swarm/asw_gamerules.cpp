@@ -4600,8 +4600,21 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			if ( !pMR )
 				continue;
 		
-			m_hDebriefStats->m_iKills.Set(i, pMR->m_iAliensKilled);
-			iTotalKills += pMR->m_iAliensKilled;
+			int iKills = 0;
+			if ( pMR->IsInhabited() )
+			{
+				CASW_Player* pPlayer = pMR->GetCommander();
+				if (pPlayer)
+					iKills = pPlayer->FragCount();
+				else
+					iKills = pMR->m_iAliensKilled;
+			}
+			else
+				iKills = pMR->m_iBotFrags;
+
+			m_hDebriefStats->m_iKills.Set(i, iKills);
+			iTotalKills += iKills;
+
 			float acc = 0;
 			if (pMR->m_iPlayerShotsFired > 0)
 			{				
@@ -5056,10 +5069,6 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 		if ( pMR )
 		{
-			pMR->m_iAliensKilled++;
-			if ( !ASWDeathmatchMode() )
-				pMR->m_TimelineKillsTotal.RecordValue( 1.0f );
-
 			CASW_Game_Resource *pGameResource = ASWGameResource();
 			if ( pGameResource )
 			{
@@ -5312,6 +5321,13 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	if ( !ASWDeathmatchMode() && pMarine &&
 		pMarine->GetCommander() ) 
 	{
+		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if (pMR)
+		{
+			pMR->m_iAliensKilled++;
+			pMR->m_TimelineKillsTotal.RecordValue(1.0f);
+		}
+
 		CASW_Player *pPlayer = pMarine->GetCommander();
 		int nFrags = 0;
 		if ( pMarine->IsInhabited() && pPlayer )
@@ -5321,7 +5337,6 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		}
 		else
 		{
-			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if (pMR)
 			{
 				pMR->m_iBotFrags += 1;
