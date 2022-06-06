@@ -1703,6 +1703,7 @@ exit 1
     <ClCompile Include="swarm\vgui\asw_hud_health.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_health_cross.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_holdout.cpp" />
+    <ClCompile Include="swarm\vgui\asw_hud_kills.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_marine_portrait.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_master.cpp" />
     <ClCompile Include="swarm\vgui\asw_hud_minimap.cpp" />
