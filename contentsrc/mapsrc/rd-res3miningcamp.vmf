@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "578"
+	"mapversion" "579"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -26,7 +26,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "578"
+	"mapversion" "579"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -67996,7 +67996,7 @@ world
 		side
 		{
 			"id" "13717"
-			"plane" "(-9088 -512 1280) (-5760 -512 1280) (-5760 -2560 1280)"
+			"plane" "(-9088 -2560 1280) (-9088 -356 1280) (-5118 -356 1280)"
 			"material" "TOOLS/TOOLSNODRAW"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
@@ -68007,7 +68007,7 @@ world
 		side
 		{
 			"id" "13718"
-			"plane" "(-9088 -2560 1024) (-5760 -2560 1024) (-5760 -512 1024)"
+			"plane" "(-9088 -356 1024) (-9088 -2560 1024) (-5118 -2560 1024)"
 			"material" "TOOLS/TOOLSNOLIGHT"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
@@ -68018,7 +68018,7 @@ world
 		side
 		{
 			"id" "13719"
-			"plane" "(-9088 -512 1280) (-9088 -2560 1280) (-9088 -2560 1024)"
+			"plane" "(-9088 -2560 1024) (-9088 -356 1024) (-9088 -356 1280)"
 			"material" "TOOLS/TOOLSNODRAW"
 			"uaxis" "[0 1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -68029,7 +68029,7 @@ world
 		side
 		{
 			"id" "13720"
-			"plane" "(-5760 -512 1024) (-5760 -2560 1024) (-5760 -2560 1280)"
+			"plane" "(-5118 -356 1024) (-5118 -2560 1024) (-5118 -2560 1280)"
 			"material" "TOOLS/TOOLSNODRAW"
 			"uaxis" "[0 1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -68040,7 +68040,7 @@ world
 		side
 		{
 			"id" "13721"
-			"plane" "(-5760 -512 1280) (-9088 -512 1280) (-9088 -512 1024)"
+			"plane" "(-9088 -356 1024) (-5118 -356 1024) (-5118 -356 1280)"
 			"material" "TOOLS/TOOLSNODRAW"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -68051,7 +68051,7 @@ world
 		side
 		{
 			"id" "13722"
-			"plane" "(-5760 -2560 1024) (-9088 -2560 1024) (-9088 -2560 1280)"
+			"plane" "(-5118 -2560 1024) (-9088 -2560 1024) (-9088 -2560 1280)"
 			"material" "TOOLS/TOOLSNODRAW"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -94475,7 +94475,7 @@ entity
 	"id" "142706"
 	"classname" "info_overlay"
 	"BasisNormal" "-0 0 1"
-	"BasisOrigin" "-2752 96 -2.30406"
+	"BasisOrigin" "-2752 96 -16"
 	"BasisU" "1 0 0"
 	"BasisV" "0 1 -0"
 	"EndU" "1"
@@ -94643,7 +94643,7 @@ entity
 	"id" "142929"
 	"classname" "info_overlay"
 	"BasisNormal" "0 0 1"
-	"BasisOrigin" "-3054.58 108.367 -0.517563"
+	"BasisOrigin" "-3054.58 108.367 -16"
 	"BasisU" "0.990268 -0.139173 0"
 	"BasisV" "0.139173 0.990268 0"
 	"EndU" "1"
@@ -94671,7 +94671,7 @@ entity
 	"id" "142935"
 	"classname" "info_overlay"
 	"BasisNormal" "-0 0 1"
-	"BasisOrigin" "-2969.8 135.995 -16.0094"
+	"BasisOrigin" "-2969.8 135.995 -16"
 	"BasisU" "1 0 0"
 	"BasisV" "0 1 -0"
 	"EndU" "1"
@@ -94727,7 +94727,7 @@ entity
 	"id" "142947"
 	"classname" "info_overlay"
 	"BasisNormal" "-0 0 1"
-	"BasisOrigin" "-2947.07 89.5578 2.72774"
+	"BasisOrigin" "-2947.07 89.5578 -16"
 	"BasisU" "1 0 0"
 	"BasisV" "0 1 -0"
 	"EndU" "1"
@@ -129270,7 +129270,7 @@ entity
 	{
 		"OnTrigger" "tonemap_globalSetTonemapRate.250-1"
 		"OnTrigger" "tonemap_globalSetAutoExposureMin10.1-1"
-		"OnTrigger" "tonemap_globalSetAutoExposureMax1.50.1-1"
+		"OnTrigger" "tonemap_globalSetAutoExposureMax30.1-1"
 		"OnTrigger" "tonemap_globalSetBloomScale.30.1-1"
 	}
 	"origin" "-6692.72 6763.8 568"
@@ -129422,8 +129422,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3343.17 110.864 318.782]"
-		"look" "[-3334.62 263.398 -276.233]"
+		"position" "[-6591.43 -1880.6 337.685]"
+		"look" "[-6623.6 -1419.51 -66.958]"
 	}
 }
 cordons
