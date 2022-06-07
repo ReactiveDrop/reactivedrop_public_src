@@ -25,7 +25,6 @@
 #include "materialsystem/materialsystem_config.h"
 
 #include "gameui_util.h"
-#include "vguisystemmoduleloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -108,10 +107,6 @@ void InGameMainMenu::OnCommand( const char *command )
 
 	if ( !Q_strcmp( command, "ReturnToGame" ) )
 	{
-		if (IsPC())
-		{
-			g_VModuleLoader.ClosePlatformModuleWindows();
-		}
 		engine->ClientCmd("gameui_hide");
 	}
 	else if ( !Q_strcmp( command, "GoIdle" ) )

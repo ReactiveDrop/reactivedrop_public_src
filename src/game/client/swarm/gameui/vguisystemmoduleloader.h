@@ -65,9 +65,6 @@ public:
 	// unload all active platform modules/dlls from memory
 	void UnloadPlatformModules();
 
-	// close all active platform module windows
-	void ClosePlatformModuleWindows();
-
 	// posts a message to all active modules
 	void PostMessageToAllModules(KeyValues *message);
 

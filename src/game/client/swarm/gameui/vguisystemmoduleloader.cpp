@@ -265,20 +265,6 @@ void CVGuiSystemModuleLoader::UnloadPlatformModules()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Closes platform module windows
-//-----------------------------------------------------------------------------
-void CVGuiSystemModuleLoader::ClosePlatformModuleWindows()
-{
-	if (IsX360())
-	{
-		// not valid for 360
-		return;
-	}
-
-	PostMessageToAllModules(new KeyValues("Close"));
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Called every frame
 //-----------------------------------------------------------------------------
 void CVGuiSystemModuleLoader::RunFrame()
