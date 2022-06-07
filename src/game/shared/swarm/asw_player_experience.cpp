@@ -527,7 +527,7 @@ void CASW_Player::AwardExperience()
 	m_iExperience = MIN( m_iExperience, ASW_XP_CAP * g_flPromotionXPScale[ GetPromotion() ] );
 
 #ifdef CLIENT_DLL
-	if ( IsLocalPlayer() )
+	if ( IsLocalPlayer() && !engine->IsPlayingDemo() )
 	{
 		#if !defined(NO_STEAM)
 		// only upload if Steam is running
@@ -849,6 +849,9 @@ void CASW_Player::AcceptPromotion()
 		return;
 
 	if ( GetPromotion() >= ASW_PROMOTION_CAP )
+		return;
+
+	if ( engine->IsPlayingDemo() )
 		return;
 
 	m_iExperience = 0;

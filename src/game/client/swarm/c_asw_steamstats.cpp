@@ -570,6 +570,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 #ifndef DEBUG 
 		|| ASWGameRules()->m_bCheated 
 #endif
+		|| engine->IsPlayingDemo()
 		)
 		return;
 
