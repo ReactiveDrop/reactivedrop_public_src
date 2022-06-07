@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "537"
+	"mapversion" "578"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,13 +20,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "4"
+	"nGridSpacing" "1"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "537"
+	"mapversion" "578"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -21606,7 +21606,7 @@ world
 					"row0" "8.30945 14.4432 9.11304 15.0114 4.83065"
 					"row1" "1.85351 20.9179 16.829 18.2791 13.9607"
 					"row2" "11.266 10.7806 22.4524 6.97384 19.0373"
-					"row3" "22.0367 22.271 2.97305 17.5554 7.45759"
+					"row3" "22.0367 22.271 17.973 17.5554 7.45759"
 					"row4" "65.5351 87.7431 55.4793 65.4363 79.3063"
 				}
 				offsets
@@ -21638,7 +21638,7 @@ world
 					"row0" "9 9 9 9 9 9 9 9"
 					"row1" "9 9 9 9 9 9 9 9"
 					"row2" "9 9 9 9 9 9 9 9"
-					"row3" "9 0 0 1 1 1 1 0"
+					"row3" "9 0 0 9 9 1 1 0"
 				}
 				allowed_verts
 				{
@@ -68663,6 +68663,165 @@ world
 			"visgroupautoshown" "1"
 		}
 	}
+	solid
+	{
+		"id" "326022"
+		side
+		{
+			"id" "13867"
+			"plane" "(-7952 6912 52) (-7916 6912 52) (-7916 6656 52)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+			dispinfo
+			{
+				"power" "3"
+				"startposition" "[-7952 6656 52]"
+				"flags" "0"
+				"elevation" "0"
+				"subdiv" "0"
+				normals
+				{
+					"row0" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row1" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row2" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row3" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row4" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row5" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row6" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row7" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+					"row8" "0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0 0 -1"
+				}
+				distances
+				{
+					"row0" "0.91 1 4.37331 3.6794 4.68694 4.44136 6.21617 9.0595 8.128"
+					"row1" "3 3.72982 3.21673 4.22208 4.65156 4.76346 5.05838 4.55 5"
+					"row2" "6 5.45802 3.52538 3.74612 4.57751 4.46861 6.36006 9.0955 10"
+					"row3" "7.09233 6.27493 4.14937 4.65702 4.88928 5.56998 6.328 9.0955 10"
+					"row4" "6.31186 5.83746 5.10003 5.97483 4 4.5355 6.328 9.0955 10"
+					"row5" "6.79656 6.14131 4.68752 4.43045 4.64408 4.17674 5.45015 6.36813 7"
+					"row6" "7.0466 6.20738 4.13343 4.03741 4.65524 4.30395 4.42655 6.36671 7"
+					"row7" "6 5.45802 3.8079 4.54859 4.36685 5.46505 5.03711 7.27493 8"
+					"row8" "5 4.54892 3.18258 4.23828 4.21064 4.71577 6.89782 8.45093 8.35941"
+				}
+				offsets
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				offset_normals
+				{
+					"row0" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row1" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row2" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row3" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row4" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row5" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row6" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row7" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+					"row8" "0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1"
+				}
+				alphas
+				{
+					"row0" "0 0 0 0 255 255 255 255 255"
+					"row1" "0 0 255 255 255 255 255 255 255"
+					"row2" "0 0 0 255 255 255 255 255 255"
+					"row3" "0 0 0 255 255 255 255 255 255"
+					"row4" "0 0 0 175 255 175 255 255 255"
+					"row5" "0 255 255 255 255 255 255 255 255"
+					"row6" "0 175 255 255 255 255 255 255 255"
+					"row7" "0 175 0 255 255 255 255 255 255"
+					"row8" "0 0 0 255 255 255 255 255 255"
+				}
+				triangle_tags
+				{
+					"row0" "9 9 1 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row1" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row2" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row3" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row4" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row5" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row6" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+					"row7" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
+				}
+				allowed_verts
+				{
+					"10" "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1"
+				}
+			}
+		}
+		side
+		{
+			"id" "13868"
+			"plane" "(-7952 6656 20) (-7916 6656 20) (-7916 6912 20)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13869"
+			"plane" "(-7952 6912 52) (-7952 6656 52) (-7952 6656 20)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 80] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13870"
+			"plane" "(-7916 6912 20) (-7916 6656 20) (-7916 6656 52)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 80] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13871"
+			"plane" "(-7916 6912 52) (-7952 6912 52) (-7952 6912 20)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 80] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13872"
+			"plane" "(-7916 6656 20) (-7952 6656 20) (-7952 6656 52)"
+			"material" "NATURE/BLENDDIRTGRASS01"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 80] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 182 211"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
 	group
 	{
 		"id" "139107"
@@ -74434,7 +74593,7 @@ entity
 		{
 			"id" "3354"
 			"plane" "(-9344 3680 272) (-9344 2944 272) (-9600 2816 272)"
-			"material" "NATURE/WATER_LOWDIRTY001"
+			"material" "WATER/WATER_SEWER"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
 			"rotation" "0"
@@ -74510,7 +74669,7 @@ entity
 		{
 			"id" "3360"
 			"plane" "(-10112 3552 272) (-9600 3552 272) (-9600 2816 272)"
-			"material" "NATURE/WATER_LOWDIRTY001"
+			"material" "WATER/WATER_SEWER"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
 			"rotation" "0"
@@ -74586,7 +74745,7 @@ entity
 		{
 			"id" "3366"
 			"plane" "(-10112 3552 272) (-10112 2816 272) (-10368 2944 272)"
-			"material" "NATURE/WATER_LOWDIRTY001"
+			"material" "WATER/WATER_SEWER"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
 			"rotation" "0"
@@ -78480,33 +78639,30 @@ entity
 		"logicalpos" "[0 3000]"
 	}
 }
-hidden
+entity
 {
-	entity
+	"id" "23526"
+	"classname" "env_projectedtexture"
+	"angles" "0 154 0"
+	"brightnessscale" "1.0"
+	"colortransitiontime" "0.5"
+	"enableshadows" "1"
+	"farz" "750.0"
+	"lightcolor" "255 255 255 200"
+	"lightfov" "90.0"
+	"lightworld" "1"
+	"nearz" "4.0"
+	"shadowquality" "1"
+	"spawnflags" "1"
+	"texturename" "effects/flashlight001"
+	"origin" "-6608.76 -1805.97 16.7488"
+	editor
 	{
-		"id" "23526"
-		"classname" "env_projectedtexture"
-		"angles" "0 154 0"
-		"brightnessscale" "1.0"
-		"colortransitiontime" "0.5"
-		"enableshadows" "1"
-		"farz" "750.0"
-		"lightcolor" "255 255 255 200"
-		"lightfov" "90.0"
-		"lightworld" "1"
-		"nearz" "4.0"
-		"shadowquality" "1"
-		"spawnflags" "1"
-		"texturename" "effects/flashlight001"
-		"origin" "-6608.76 -1805.97 16.7488"
-		editor
-		{
-			"color" "220 30 220"
-			"visgroupid" "24"
-			"visgroupshown" "0"
-			"visgroupautoshown" "1"
-			"logicalpos" "[0 500]"
-		}
+		"color" "220 30 220"
+		"visgroupid" "24"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
 	}
 }
 entity
@@ -78530,34 +78686,31 @@ entity
 		"logicalpos" "[0 0]"
 	}
 }
-hidden
+entity
 {
-	entity
+	"id" "23556"
+	"classname" "beam_spotlight"
+	"angles" "0 154 0"
+	"disablereceiveshadows" "0"
+	"HDRColorScale" "0.7"
+	"maxdxlevel" "0"
+	"maxspeed" "100"
+	"mindxlevel" "0"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "0"
+	"spawnflags" "1"
+	"spotlightlength" "250"
+	"spotlightwidth" "75"
+	"origin" "-6608.76 -1805.97 17.7488"
+	editor
 	{
-		"id" "23556"
-		"classname" "beam_spotlight"
-		"angles" "0 154 0"
-		"disablereceiveshadows" "0"
-		"HDRColorScale" "0.7"
-		"maxdxlevel" "0"
-		"maxspeed" "100"
-		"mindxlevel" "0"
-		"renderamt" "255"
-		"rendercolor" "255 255 255"
-		"renderfx" "0"
-		"rendermode" "0"
-		"spawnflags" "1"
-		"spotlightlength" "250"
-		"spotlightwidth" "75"
-		"origin" "-6608.76 -1805.97 17.7488"
-		editor
-		{
-			"color" "220 30 220"
-			"visgroupid" "24"
-			"visgroupshown" "0"
-			"visgroupautoshown" "1"
-			"logicalpos" "[0 500]"
-		}
+		"color" "220 30 220"
+		"visgroupid" "24"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
 	}
 }
 entity
@@ -79663,7 +79816,7 @@ entity
 		{
 			"id" "6630"
 			"plane" "(-9088 -1878 -72) (-9088 -1408 -72) (-7600 -1408 -72)"
-			"material" "NATURE/WATER_LOWDIRTY001"
+			"material" "WATER/WATER_SEWER"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
 			"rotation" "0"
@@ -82416,8 +82569,8 @@ entity
 	{
 		"OnMapSpawn" "tonemap_globalSetTonemapRate.250-1"
 		"OnMapSpawn" "tonemap_globalSetAutoExposureMin10-1"
-		"OnMapSpawn" "tonemap_globalSetAutoExposureMax100-1"
-		"OnMapSpawn" "tonemap_globalSetBloomScale.10-1"
+		"OnMapSpawn" "tonemap_globalSetAutoExposureMax30-1"
+		"OnMapSpawn" "tonemap_globalSetBloomScale.30-1"
 	}
 	"origin" "-48 256 144"
 	editor
@@ -85845,12 +85998,18 @@ entity
 	"classname" "asw_harvester"
 	"angles" "0 323.5 0"
 	"eludedist" "1024"
+	"flammable" "1"
+	"flinchable" "1"
+	"freezable" "1"
 	"physdamagescale" "1.0"
 	"radius" "256"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
+	"sizescale" "1.0"
 	"sleepstate" "1"
 	"spawnflags" "516"
+	"speedscale" "1.0"
+	"teslable" "1"
 	"origin" "-10256 4384 -1035.83"
 	editor
 	{
@@ -86491,7 +86650,7 @@ entity
 		{
 			"id" "8352"
 			"plane" "(-7600 -1924 -72) (-7600 -1408 -72) (-5760 -1408 -72)"
-			"material" "NATURE/WATER_LOWDIRTY001"
+			"material" "WATER/WATER_SEWER"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 -1 0 0] 0.25"
 			"rotation" "0"
@@ -87874,8 +88033,9 @@ entity
 	"id" "94179"
 	"classname" "env_projectedtexture"
 	"angles" "19.5 0 0"
-	"brightnessscale" "1.0"
+	"brightnessscale" "1"
 	"colortransitiontime" "0.5"
+	"enableshadows" "0"
 	"farz" "750.0"
 	"lightcolor" "3 130 130 100"
 	"lightfov" "60"
@@ -87883,6 +88043,7 @@ entity
 	"nearz" "4.0"
 	"shadowquality" "1"
 	"spawnflags" "1"
+	"targetname" "proj_cave_exit"
 	"texturename" "effects/flashlight001"
 	"origin" "-8128 6784 167.262"
 	editor
@@ -89480,6 +89641,7 @@ entity
 	"_lightHDR" "-1 -1 -1 1"
 	"_lightscaleHDR" "1"
 	"_quadratic_attn" "1"
+	"spawnflags" "0"
 	"origin" "-3712 4720 416"
 	editor
 	{
@@ -91753,7 +91915,7 @@ entity
 	"rendercolor" "255 255 255"
 	"skin" "0"
 	"solid" "6"
-	"origin" "-1408 7648 -704"
+	"origin" "-1408 7648 -713"
 	editor
 	{
 		"color" "255 255 0"
@@ -93437,7 +93599,7 @@ entity
 	"id" "134052"
 	"classname" "env_physexplosion"
 	"magnitude" "100"
-	"spawnflags" "1"
+	"spawnflags" "0"
 	"targetname" "tntexplosion"
 	"origin" "-1917.38 -155.895 125"
 	editor
@@ -94299,7 +94461,7 @@ entity
 	"uv1" "-128 32 0"
 	"uv2" "128 32 0"
 	"uv3" "128 -32 0"
-	"origin" "-2601.42 71.6299 -2.26805"
+	"origin" "-2601.42 71.6299 -2.26806"
 	editor
 	{
 		"color" "80 150 225"
@@ -94327,7 +94489,7 @@ entity
 	"uv1" "-128 32 0"
 	"uv2" "128 32 0"
 	"uv3" "128 -32 0"
-	"origin" "-2752 96 -2.30406"
+	"origin" "-2752 96 0.647622"
 	editor
 	{
 		"color" "80 150 225"
@@ -94495,7 +94657,7 @@ entity
 	"uv1" "-41.8405 30.1024 0"
 	"uv2" "45.2063 33.4682 0"
 	"uv3" "41.8405 -30.1024 0"
-	"origin" "-3054.58 108.367 -0.517563"
+	"origin" "-3054.58 108.367 -4.16205"
 	editor
 	{
 		"color" "80 150 225"
@@ -94523,7 +94685,7 @@ entity
 	"uv1" "-56 40 0"
 	"uv2" "56 40 0"
 	"uv3" "56 -40 0"
-	"origin" "-2968 136 -3.39297"
+	"origin" "-2969.8 135.995 -3.03005"
 	editor
 	{
 		"color" "80 150 225"
@@ -94575,11 +94737,11 @@ entity
 	"sides" "3534"
 	"StartU" "0"
 	"StartV" "1"
-	"uv0" "-44.924 -38.4421 0"
-	"uv1" "-44.924 38.4421 0"
-	"uv2" "44.924 38.4421 0"
-	"uv3" "44.924 -38.4421 0"
-	"origin" "-2947.07 89.5578 2.72774"
+	"uv0" "-44.9238 -38.4421 0"
+	"uv1" "-44.9238 38.4421 0"
+	"uv2" "44.9242 38.4421 0"
+	"uv3" "44.9242 -38.4421 0"
+	"origin" "-2947.07 89.5578 4.38697"
 	editor
 	{
 		"color" "80 150 225"
@@ -103934,6 +104096,12 @@ entity
 		"OnButtonActivated" "elevatorspriteKill0-1"
 		"OnButtonActivated" "gencounter_visEnable0-1"
 		"OnButtonActivated" "gencounter_visDisable60-1"
+		"OnButtonActivated" "gen_relationshipApplyRelationship0-1"
+		"OnButtonActivated" "gen_relationshipRevertRelationship60-1"
+		"OnButtonActivated" "bullseye_relayDisable60-1"
+		"OnButtonActivated" "gen_bullseyeKill61-1"
+		"OnButtonActivated" "bullseye_relayEnable0-1"
+		"OnButtonActivated" "bullseye_templateForceSpawn0-1"
 	}
 	solid
 	{
@@ -104375,28 +104543,13 @@ entity
 	"classname" "info_node"
 	"angles" "0 0 0"
 	"nodeid" "29"
-	"origin" "-1344 7584 -656"
+	"origin" "-1338 7584 -656"
 	editor
 	{
 		"color" "232 219 8"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 14500]"
-	}
-}
-entity
-{
-	"id" "166564"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "30"
-	"origin" "-1424 7584 -688"
-	editor
-	{
-		"color" "232 219 8"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 15000]"
 	}
 }
 entity
@@ -104417,8 +104570,10 @@ entity
 {
 	"id" "166586"
 	"classname" "info_node"
+	"angles" "0 0 0"
 	"nodeid" "41"
-	"origin" "-1708.8 6093.53 -644.554"
+	"spawnflags" "0"
+	"origin" "-1708 6093.53 -688"
 	editor
 	{
 		"color" "232 219 8"
@@ -104432,6 +104587,7 @@ entity
 	"id" "166588"
 	"classname" "info_node"
 	"nodeid" "42"
+	"spawnflags" "0"
 	"origin" "-1696.3 6257.51 -698.465"
 	editor
 	{
@@ -107973,10 +108129,11 @@ entity
 {
 	"id" "167122"
 	"classname" "asw_spawner"
-	"AlienNameTag" "gendrone1"
-	"AlienOrders" "0"
-	"angles" "0 0 0"
+	"AlienClass" "0"
+	"AlienOrders" "3"
+	"angles" "0 132 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -107999,12 +108156,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "genattackers"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences1BeginSequence1-1"
-	}
-	"origin" "-496 6464 -712"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-608 6380 -712"
 	editor
 	{
 		"color" "0 0 255"
@@ -108017,10 +108171,12 @@ entity
 {
 	"id" "167144"
 	"classname" "asw_spawner"
+	"AlienClass" "5"
 	"AlienNameTag" "gendrone2"
-	"AlienOrders" "0"
-	"angles" "0 0 0"
+	"AlienOrders" "3"
+	"angles" "0 85 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -108037,18 +108193,15 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "42"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "genattackers"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences2BeginSequence1-1"
-	}
-	"origin" "-1280 6208 -710"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1672 6152 -708"
 	editor
 	{
 		"color" "0 0 255"
@@ -108061,10 +108214,12 @@ entity
 {
 	"id" "167242"
 	"classname" "asw_spawner"
+	"AlienClass" "0"
 	"AlienNameTag" "gendrone3"
-	"AlienOrders" "0"
-	"angles" "0 0 0"
+	"AlienOrders" "3"
+	"angles" "0 51 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -108081,93 +108236,21 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "44"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "genattackers"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences3BeginSequence1-1"
-	}
-	"origin" "-1680 6208 -706"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1848 6140 -716"
 	editor
 	{
 		"color" "0 0 255"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[2000 -14268]"
-	}
-}
-entity
-{
-	"id" "167343"
-	"classname" "scripted_sequence"
-	"angles" "0 0 0"
-	"m_fMoveTo" "2"
-	"m_iszEntity" "gendrone3"
-	"m_iszPlay" "ACT_MELEE_STATIONARY_ATTACK1"
-	"spawnflags" "4196"
-	"targetname" "gensequences3"
-	connections
-	{
-		"OnEndSequence" "gencounterAdd10-1"
-	}
-	"origin" "-1222 7156.69 -712"
-	editor
-	{
-		"color" "255 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[2000 -12268]"
-	}
-}
-entity
-{
-	"id" "167379"
-	"classname" "scripted_sequence"
-	"angles" "0 0 0"
-	"m_fMoveTo" "2"
-	"m_iszEntity" "gendrone2"
-	"m_iszPlay" "ACT_MELEE_STATIONARY_ATTACK1"
-	"spawnflags" "4196"
-	"targetname" "gensequences2"
-	connections
-	{
-		"OnEndSequence" "gencounterAdd10-1"
-	}
-	"origin" "-1120 7040 -712"
-	editor
-	{
-		"color" "255 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[2000 -12268]"
-	}
-}
-entity
-{
-	"id" "167385"
-	"classname" "scripted_sequence"
-	"angles" "0 0 0"
-	"m_fMoveTo" "2"
-	"m_iszEntity" "gendrone1"
-	"m_iszPlay" "ACT_MELEE_STATIONARY_ATTACK1"
-	"spawnflags" "4192"
-	"targetname" "gensequences1"
-	connections
-	{
-		"OnEndSequence" "gencounterAdd10-1"
-	}
-	"origin" "-1056 7040 -712"
-	editor
-	{
-		"color" "255 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[2000 -12268]"
 	}
 }
 entity
@@ -108283,8 +108366,9 @@ entity
 {
 	"id" "175990"
 	"classname" "info_node"
+	"angles" "0 0 0"
 	"nodeid" "302"
-	"origin" "-1015.26 7157.83 -559"
+	"origin" "-1016 7144 -552"
 	editor
 	{
 		"color" "232 219 8"
@@ -108297,8 +108381,9 @@ entity
 {
 	"id" "175992"
 	"classname" "info_node"
+	"angles" "0 0 0"
 	"nodeid" "303"
-	"origin" "-1148.24 7153.09 -559"
+	"origin" "-1060 7116 -559"
 	editor
 	{
 		"color" "232 219 8"
@@ -108814,7 +108899,7 @@ entity
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "1250"
-	"spawnflags" "48"
+	"spawnflags" "49"
 	"targetname" "lightningsound"
 	"origin" "-6335.04 6857.76 185"
 	editor
@@ -108834,10 +108919,9 @@ entity
 	"StartDisabled" "0"
 	connections
 	{
-		"OnStartTouch" "lightninglightTurnOn0-1"
-		"OnStartTouch" "lightninglightTurnOff0.5-1"
-		"OnStartTouch" "lightningsoundPlaySound0-1"
+		"OnStartTouch" "lightningsoundPlaySound1-1"
 		"OnStartTouch" "ambush_drone_spawn05StartSpawning0-1"
+		"OnStartTouch" "relay_lightening_1aTrigger0-1"
 	}
 	solid
 	{
@@ -108921,26 +109005,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 500]"
-	}
-}
-entity
-{
-	"id" "184495"
-	"classname" "light"
-	"_light" "255 255 255 200"
-	"_lightHDR" "-1 -1 -1 1"
-	"_lightscaleHDR" "1"
-	"_quadratic_attn" "1"
-	"spawnflags" "1"
-	"style" "0"
-	"targetname" "lightninglight"
-	"origin" "-6544 6800 276.158"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 7000]"
 	}
 }
 entity
@@ -111184,27 +111248,6 @@ entity
 }
 entity
 {
-	"id" "199161"
-	"classname" "asw_client_corpse"
-	"angles" "90 0 0"
-	"disableshadows" "1"
-	"fademindist" "-1"
-	"fadescale" "1"
-	"model" "models/aliens/shieldbug/shieldbug.mdl"
-	"renderamt" "255"
-	"rendercolor" "255 255 255"
-	"skin" "0"
-	"origin" "-3800 4880 228"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 500]"
-	}
-}
-entity
-{
 	"id" "199169"
 	"classname" "info_overlay"
 	"BasisNormal" "0 0 1"
@@ -111263,13 +111306,13 @@ entity
 {
 	"id" "199253"
 	"classname" "asw_client_corpse"
-	"angles" "90 0 0"
+	"angles" "67.5 243.5 -90"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"model" "models/swarm/colonist/male/malecolonist.mdl"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
-	"origin" "-2008.97 4891.87 99.4942"
+	"origin" "-2008.97 4891.87 99.4943"
 	editor
 	{
 		"color" "220 30 220"
@@ -111282,7 +111325,7 @@ entity
 {
 	"id" "199256"
 	"classname" "asw_client_corpse"
-	"angles" "90 100 0"
+	"angles" "61.5 198.5 80"
 	"fademindist" "-1"
 	"fadescale" "1"
 	"model" "models/swarm/colonist/male/malecolonist.mdl"
@@ -111402,13 +111445,19 @@ entity
 	"classname" "asw_harvester"
 	"angles" "0 0 0"
 	"eludedist" "1024"
+	"flammable" "1"
+	"flinchable" "1"
+	"freezable" "1"
 	"ignoreunseenenemies" "1"
 	"physdamagescale" "1.0"
 	"radius" "256"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
+	"sizescale" "1.0"
 	"sleepstate" "1"
 	"spawnflags" "516"
+	"speedscale" "1.0"
+	"teslable" "1"
 	"visiblewhenasleep" "1"
 	"origin" "-3319.59 794.735 4.25152"
 	editor
@@ -111426,6 +111475,7 @@ entity
 	"AlienClass" "7"
 	"angles" "0 0 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -111521,6 +111571,7 @@ entity
 	"AlienClass" "7"
 	"angles" "0 0 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -111883,6 +111934,7 @@ entity
 	"AlienClass" "7"
 	"angles" "0 0 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -112191,11 +112243,17 @@ entity
 	"id" "211642"
 	"classname" "asw_shieldbug"
 	"angles" "0 0 0"
+	"flammable" "1"
+	"flinchable" "1"
+	"freezable" "1"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
+	"sizescale" "1.0"
 	"sleepstate" "1"
 	"spawnflags" "516"
+	"speedscale" "1.0"
+	"teslable" "1"
 	"origin" "-9859.65 4957.09 477.954"
 	editor
 	{
@@ -113694,6 +113752,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -113714,7 +113773,7 @@ entity
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"teslablesp" "1"
-	"origin" "-6176 -1984 -50.5"
+	"origin" "-6176 -1984 -43"
 	editor
 	{
 		"color" "0 0 255"
@@ -113730,6 +113789,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -113766,6 +113826,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -113802,6 +113863,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114468,6 +114530,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114504,6 +114567,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114540,6 +114604,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114576,6 +114641,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114612,6 +114678,7 @@ entity
 	"AlienOrders" "0"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114646,9 +114713,10 @@ entity
 	"id" "233380"
 	"classname" "asw_spawner"
 	"AlienNameTag" "gendrone2"
-	"AlienOrders" "0"
-	"angles" "0 0 0"
+	"AlienOrders" "3"
+	"angles" "0 306 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114667,18 +114735,19 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "45"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "genattackers"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
 	connections
 	{
 		"OnSpawned" "gensequences2BeginSequence1-1"
 	}
-	"origin" "-1344 6208 -708"
+	"origin" "-1532 7800 -704"
 	editor
 	{
 		"color" "0 0 255"
@@ -114691,10 +114760,10 @@ entity
 {
 	"id" "233390"
 	"classname" "asw_spawner"
-	"AlienNameTag" "gendrone3"
-	"AlienOrders" "0"
-	"angles" "0 0 0"
+	"AlienOrders" "3"
+	"angles" "0 94 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114703,7 +114772,7 @@ entity
 	"LongRange" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
-	"MaxSkillLevel" "5"
+	"MaxSkillLevel" "0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "3"
 	"NearDistance" "740"
@@ -114713,18 +114782,15 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "41"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "genattackers"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences3BeginSequence1-1"
-	}
-	"origin" "-1616 6208 -704"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1544 6080 -704"
 	editor
 	{
 		"color" "0 0 255"
@@ -114738,8 +114804,9 @@ entity
 	"id" "237209"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
-	"angles" "0 0 0"
+	"angles" "0 99 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114756,18 +114823,15 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "43"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "liftmob"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences3BeginSequence1-1"
-	}
-	"origin" "-1552 6208 -710"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1788 6204 -710"
 	editor
 	{
 		"color" "0 0 255"
@@ -114781,8 +114845,9 @@ entity
 	"id" "237217"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
-	"angles" "0 0 0"
+	"angles" "0 65 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -114799,18 +114864,15 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "35"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "liftmob"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences3BeginSequence1-1"
-	}
-	"origin" "-1408 6208 -710"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1340 6084 -710"
 	editor
 	{
 		"color" "0 0 255"
@@ -115158,6 +115220,7 @@ entity
 	"AlienClass" "2"
 	"angles" "0 0 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -115210,6 +115273,7 @@ entity
 	"classname" "asw_spawner"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -115275,8 +115339,9 @@ entity
 	"id" "249337"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
-	"angles" "0 0 0"
+	"angles" "0 116 0"
 	"ClearCheck" "0"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -115285,7 +115350,7 @@ entity
 	"LongRange" "1"
 	"MaxLiveAliens" "5"
 	"maxoffset" "0 0 0"
-	"MaxSkillLevel" "5"
+	"MaxSkillLevel" "0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "3"
 	"NearDistance" "740"
@@ -115295,18 +115360,15 @@ entity
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "25"
+	"SpawnIntervalJitter" "40"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"StartBurrowed" "1"
 	"targetname" "genmob"
 	"teslablesp" "1"
-	"UnburrowIdleActivity" "ACT_BURROW_IDLE"
-	connections
-	{
-		"OnSpawned" "gensequences3BeginSequence1-1"
-	}
-	"origin" "-1488 6208 -708"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-1448 6096 -708"
 	editor
 	{
 		"color" "0 0 255"
@@ -116455,7 +116517,7 @@ entity
 	"classname" "info_node"
 	"angles" "0 0 0"
 	"nodeid" "410"
-	"origin" "-1488 7584 -700"
+	"origin" "-1454 7581 -700"
 	editor
 	{
 		"color" "232 219 8"
@@ -116766,44 +116828,12 @@ entity
 }
 entity
 {
-	"id" "281205"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.3"
-	"targetname" "ambush_drone_spawn01"
-	"teslablesp" "1"
-	"origin" "-502 -14 16"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281207"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -116837,6 +116867,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -116870,6 +116901,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -116903,6 +116935,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -116931,44 +116964,12 @@ entity
 }
 entity
 {
-	"id" "281261"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn01"
-	"teslablesp" "1"
-	"origin" "-2716 -640 10"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281263"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117002,6 +117003,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117030,44 +117032,12 @@ entity
 }
 entity
 {
-	"id" "281267"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn01"
-	"teslablesp" "1"
-	"origin" "-3264 165.997 12.8438"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281287"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117101,6 +117071,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117129,44 +117100,12 @@ entity
 }
 entity
 {
-	"id" "281291"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn01"
-	"teslablesp" "1"
-	"origin" "-3968 132 35.8862"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281317"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117200,6 +117139,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117228,44 +117168,12 @@ entity
 }
 entity
 {
-	"id" "281321"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.3"
-	"targetname" "ambush_drone_spawn02"
-	"teslablesp" "1"
-	"origin" "-3214 -802 10"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281346"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117299,6 +117207,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117327,44 +117236,12 @@ entity
 }
 entity
 {
-	"id" "281350"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "3"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn03"
-	"teslablesp" "1"
-	"origin" "-6680 -446 35.8862"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281376"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117398,6 +117275,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117426,44 +117304,12 @@ entity
 }
 entity
 {
-	"id" "281380"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "3"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn03"
-	"teslablesp" "1"
-	"origin" "-6684 -806 -8"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281388"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117497,6 +117343,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117525,77 +117372,12 @@ entity
 }
 entity
 {
-	"id" "281392"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.0"
-	"targetname" "ambush_drone_spawn03"
-	"teslablesp" "1"
-	"origin" "-3680 124 35.8862"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
-	"id" "281406"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "1"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "4"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.3"
-	"targetname" "ambush_drone_spawn03"
-	"teslablesp" "1"
-	"origin" "-3460 126 35.8862"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281408"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -117629,6 +117411,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118536,6 +118319,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118569,6 +118353,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118602,6 +118387,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118635,6 +118421,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118668,6 +118455,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118701,6 +118489,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118734,6 +118523,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118762,44 +118552,12 @@ entity
 }
 entity
 {
-	"id" "281762"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "3"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.2"
-	"targetname" "ambush_drone_spawn05"
-	"teslablesp" "1"
-	"origin" "-6312.27 6110.33 66.3804"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281764"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118833,6 +118591,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118866,6 +118625,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118894,44 +118654,12 @@ entity
 }
 entity
 {
-	"id" "281794"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "3"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.2"
-	"targetname" "ambush_drone_spawn05"
-	"teslablesp" "1"
-	"origin" "-5470.57 6759.7 75.5625"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281796"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -118960,44 +118688,12 @@ entity
 }
 entity
 {
-	"id" "281804"
-	"classname" "asw_spawner"
-	"AlienOrders" "3"
-	"angles" "0 0 0"
-	"ClearCheck" "1"
-	"flammablesp" "1"
-	"flinchablesp" "1"
-	"freezablesp" "1"
-	"LongRange" "1"
-	"MaxLiveAliens" "3"
-	"maxoffset" "0 0 0"
-	"minoffset" "0 0 0"
-	"NearDistance" "740"
-	"NumAliens" "3"
-	"sizescalesp" "1.0"
-	"SpawnerState" "1"
-	"spawnflags" "0"
-	"SpawnInterval" "1"
-	"SpawnIntervalJitter" "50"
-	"speedscalesp" "1.2"
-	"targetname" "ambush_drone_spawn05"
-	"teslablesp" "1"
-	"origin" "-6241.41 5237.01 68.8888"
-	editor
-	{
-		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 1000]"
-	}
-}
-entity
-{
 	"id" "281806"
 	"classname" "asw_spawner"
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -119031,6 +118727,7 @@ entity
 	"AlienOrders" "3"
 	"angles" "0 0 0"
 	"ClearCheck" "1"
+	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
@@ -129333,13 +129030,400 @@ entity
 		"logicalpos" "[2000 -10268]"
 	}
 }
+entity
+{
+	"id" "321274"
+	"classname" "info_node"
+	"angles" "0 0 0"
+	"nodeid" "421"
+	"spawnflags" "0"
+	"origin" "-1884 6056 -696"
+	editor
+	{
+		"color" "232 219 8"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -12268]"
+	}
+}
+entity
+{
+	"id" "321298"
+	"classname" "info_node"
+	"angles" "0 0 0"
+	"nodeid" "422"
+	"spawnflags" "0"
+	"origin" "-1492 6092 -698.465"
+	editor
+	{
+		"color" "232 219 8"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 -11768]"
+	}
+}
+entity
+{
+	"id" "330701"
+	"classname" "npc_bullseye"
+	"angles" "0 0 0"
+	"disableshadows" "1"
+	"health" "10000"
+	"minangle" "360"
+	"physdamagescale" ".75"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"spawnflags" "516"
+	"targetname" "gen_bullseye"
+	connections
+	{
+		"OnDamaged" "bullseye_relayTrigger0-1"
+	}
+	"origin" "-1084 7104 -672"
+	editor
+	{
+		"color" "255 0 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 5000]"
+	}
+}
+entity
+{
+	"id" "330764"
+	"classname" "ai_relationship"
+	"disposition" "1"
+	"spawnflags" "0"
+	"StartActive" "0"
+	"subject" "asw_drone"
+	"target" "gen_bullseye"
+	"targetname" "gen_relationship"
+	"origin" "-1112 7080 -672"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 11500]"
+	}
+}
+entity
+{
+	"id" "335502"
+	"classname" "info_node"
+	"angles" "0 0 0"
+	"nodeid" "423"
+	"origin" "-460 7372 -708"
+	editor
+	{
+		"color" "232 219 8"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "335523"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"StartDisabled" "1"
+	"targetname" "bullseye_relay"
+	connections
+	{
+		"OnTrigger" "gencounterAdd10-1"
+	}
+	"origin" "-1084 7124 -672"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 5000]"
+	}
+}
+entity
+{
+	"id" "335604"
+	"classname" "asw_spawner"
+	"AlienClass" "0"
+	"AlienOrders" "3"
+	"angles" "0 213 0"
+	"ClearCheck" "0"
+	"DirectorLockTime" "4"
+	"flammablesp" "1"
+	"flinchablesp" "1"
+	"freezablesp" "1"
+	"HealthScale" "1"
+	"InfiniteAliens" "1"
+	"LongRange" "1"
+	"MaxLiveAliens" "1"
+	"maxoffset" "0 0 0"
+	"minoffset" "0 0 0"
+	"NearDistance" "740"
+	"NumAliens" "1"
+	"sizescalesp" "1.0"
+	"SpawnerState" "1"
+	"spawnflags" "0"
+	"SpawnIfMarinesAreNear" "1"
+	"SpawnInterval" "4"
+	"SpawnIntervalJitter" "25"
+	"SpeedScale" "1"
+	"speedscalesp" "1.0"
+	"StartBurrowed" "1"
+	"targetname" "genattackers"
+	"teslablesp" "1"
+	"UnburrowActivity" "act_jump_from_offscreen_short"
+	"UnburrowIdleActivity" "act_jump_from_offscreen_short_idle"
+	"origin" "-416 7384 -712"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -14268]"
+	}
+}
+entity
+{
+	"id" "335622"
+	"classname" "point_template"
+	"spawnflags" "2"
+	"targetname" "bullseye_template"
+	"Template01" "gen_bullseye"
+	"origin" "-1071.42 7169.62 -707.859"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345010"
+	"classname" "asw_client_corpse"
+	"angles" "90 0 0"
+	"disableshadows" "1"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/aliens/shieldbug/shieldbug.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"skin" "0"
+	"origin" "-3797 4875 141"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345033"
+	"classname" "sunlight_shadow_control"
+	"angles" "27 0 0"
+	"color" "255 255 255 60"
+	"colortransitiontime" "0.5"
+	"distance" "10000"
+	"enableshadows" "1"
+	"fov" "15"
+	"nearz" "512"
+	"northoffset" "200"
+	"StartDisabled" "1"
+	"targetname" "sun"
+	"texturename" "effects/flashlight001"
+	"origin" "-6719 6716.75 542"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "345105"
+	"classname" "info_node"
+	"angles" "0 0 0"
+	"nodeid" "424"
+	"origin" "-1526 7764 -700"
+	editor
+	{
+		"color" "232 219 8"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 15000]"
+	}
+}
+entity
+{
+	"id" "345237"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"targetname" "relay_lightening_tonemap_reset"
+	connections
+	{
+		"OnTrigger" "tonemap_globalSetTonemapRate.250-1"
+		"OnTrigger" "tonemap_globalSetAutoExposureMin10.1-1"
+		"OnTrigger" "tonemap_globalSetAutoExposureMax1.50.1-1"
+		"OnTrigger" "tonemap_globalSetBloomScale.30.1-1"
+	}
+	"origin" "-6692.72 6763.8 568"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345239"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"targetname" "relay_lightening_tonemap"
+	connections
+	{
+		"OnTrigger" "tonemap_globalSetAutoExposureMax120-1"
+		"OnTrigger" "tonemap_globalSetAutoExposureMin100-1"
+		"OnTrigger" "tonemap_globalSetTonemapRate.250.1-1"
+		"OnTrigger" "tonemap_globalSetBloomScale.60-1"
+	}
+	"origin" "-6692.72 6763.8 552"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345241"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"targetname" "relay_lightening_1a"
+	connections
+	{
+		"OnTrigger" "sunEnable0.1-1"
+		"OnTrigger" "sunDisable0.45-1"
+		"OnTrigger" "sunLightColor255 255 255 70.3-1"
+		"OnTrigger" "sunLightColor255 255 255 30.4-1"
+		"OnTrigger" "relay_lightening_tonemapTrigger0-1"
+		"OnTrigger" "relay_lightening_tonemap_resetTrigger0.5-1"
+		"OnTrigger" "relay_otherlights_offTrigger0-1"
+		"OnTrigger" "relay_otherlights_onTrigger0.5-1"
+	}
+	"origin" "-6692.72 6747.8 552"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345243"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"targetname" "relay_otherlights_off"
+	"origin" "-6692.72 6747.8 536"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345245"
+	"classname" "logic_relay"
+	"spawnflags" "0"
+	"targetname" "relay_otherlights_on"
+	"origin" "-6692.72 6747.8 520"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "345452"
+	"classname" "env_projectedtexture"
+	"angles" "-10.9959 30.4661 -0.501613"
+	"brightnessscale" "1"
+	"cameraspace" "0"
+	"colortransitiontime" "0.5"
+	"enableshadows" "1"
+	"farz" "600"
+	"lightcolor" "140 140 0 200"
+	"lightfov" "90.0"
+	"lightonlytarget" "0"
+	"lightworld" "1"
+	"nearz" "8"
+	"shadowquality" "1"
+	"spawnflags" "1"
+	"targetname" "texture2"
+	"texturename" "effects/flashlight001"
+	"origin" "-3072.64 33 19.5851"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+entity
+{
+	"id" "345455"
+	"classname" "prop_static"
+	"angles" "-10.9959 30.4661 -0.501613"
+	"disableselfshadowing" "0"
+	"disableshadows" "0"
+	"disablevertexlighting" "0"
+	"fademaxdist" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"ignorenormals" "0"
+	"maxdxlevel" "0"
+	"mindxlevel" "0"
+	"model" "models/props_c17/light_decklight01_off.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "0"
+	"origin" "-3071 34.4658 20"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-6075.13 4747.95 367.021]"
-		"look" "[-5791.21 5082.85 -62.654]"
+		"position" "[-3343.17 110.864 318.782]"
+		"look" "[-3334.62 263.398 -276.233]"
 	}
 }
 cordons
