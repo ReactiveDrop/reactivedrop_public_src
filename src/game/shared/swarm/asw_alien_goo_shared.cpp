@@ -52,6 +52,7 @@ END_NETWORK_TABLE()
 
 #ifdef GAME_DLL
 ConVar asw_goo_volume("asw_goo_volume", "1.0f", FCVAR_CHEAT, "Volume of the alien goo looping sound");
+ConVar asw_goo_burning_damage( "asw_goo_burning_damage", "2.0f", FCVAR_CHEAT, "Damage applied per interval while burning" );
 extern ConVar rd_biomass_ignite_from_explosions;
 ConVar rd_biomass_damage_from_explosions( "rd_biomass_damage_from_explosions", "0", FCVAR_CHEAT, "If 1, biomass will take damage from explosions" );
 LINK_ENTITY_TO_CLASS( asw_alien_goo, CASW_Alien_Goo );
@@ -350,7 +351,7 @@ void CASW_Alien_Goo::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 
 	if ( ASWBurning() )
 	{
-		ASWBurning()->BurnEntity(this, NULL, flFlameLifetime, 0.4f, 5.0f * 0.4f);	// 5 dps, applied every 0.4 seconds
+		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, 0.4f, asw_goo_burning_damage.GetFloat() );	// 5 dps, applied every 0.4 seconds
 	}
 
 	m_OnIgnite.FireOutput( this, this );
