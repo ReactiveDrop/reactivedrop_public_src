@@ -1757,8 +1757,7 @@ bool CBaseModPanel::IsOnList(const char* pServerAddress, KeyValues* pList)
 	bool bListed = false;
 	if (pServerAddress && pList)
 	{
-		CUtlVector<char*, CUtlMemory<char*, int>> outStrings1;
-		Q_SplitString(pServerAddress, ":", outStrings1);
+		CSplitString outStrings1(pServerAddress, ":");
 		if (outStrings1.Count() > 1)
 		{
 			const char* serverIP = outStrings1[0];
