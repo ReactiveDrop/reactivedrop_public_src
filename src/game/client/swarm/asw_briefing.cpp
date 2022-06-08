@@ -985,12 +985,13 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
 {
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
-	if ( !pMatchmaking )
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
 	{
 		return 0;
 	}
 
-	const char *sz = pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
 	if ( !sz || !*sz )
 	{
 		return 0;
@@ -1002,12 +1003,13 @@ int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
 const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
 {
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
-	if ( !pMatchmaking )
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
 	{
 		return "";
 	}
 
-	const char *sz = pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
 
 	return sz ? sz : "";
 }
