@@ -89,6 +89,8 @@
 #include "baseviewport.h"
 #include "asw_hud_chat.h"
 #include "vguisystemmoduleloader.h"
+#include "missionchooser/iasw_mission_chooser.h"
+#include "missionchooser/iasw_mission_chooser_source.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -201,6 +203,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_flMovieFadeInTime = 0.0f;
 	m_pBackgroundMaterial = NULL;
 	m_pBackgroundTexture = NULL;
+	m_pServerBlackList = NULL;
 
 	// Subscribe to event notifications
 	g_pMatchFramework->GetEventsSubscription()->Subscribe( this );
@@ -209,6 +212,9 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 //=============================================================================
 CBaseModPanel::~CBaseModPanel()
 {
+	if (m_pServerBlackList)
+		m_pServerBlackList->deleteThis();
+	
 	ReleaseStartupGraphic();
 
 	// Unsubscribe from event notifications
@@ -530,6 +536,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		case WT_IAFRANKS:
 			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
 			break;
+
 		case WT_IAFRANKSSERVERS:
 			m_Frames[wt] = new FoundGroupGamesIAFRanks( this, "FoundGames" );
 			break;
@@ -1560,26 +1567,58 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			if ( !pSession )
 				return;
 
+			//KeyValues *pSysData = pSession->GetSessionSystemData();
+			//if (pSysData) KeyValuesDumpAsDevMsg(pSysData, 1, 0);
+
 			KeyValues *pSettings = pSession->GetSessionSettings();
+			if (!pSettings)
+				return;
+
+			//KeyValuesDumpAsDevMsg(pSettings, 1, 0);
+			bool dedicatedServer = false;
+			if (!Q_strcmp(pSettings->GetString("server/server", "lobby"), "dedicated"))
+				dedicatedServer = true;
 
 			KeyValues *pInfoMission = NULL;
-			// TODO:
 			KeyValues *pInfoChapter = NULL;//GetMapInfoRespectingAnyChapter( pSettings, &pInfoMission );
 
 			bool bValidMission = true;
 
-			// TODO: Check if we have the map installed by querying local mission chooser source
+			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+			if (pSource)
+			{
+				pSource->Think();
+				const char *szCampaignName = pSettings->GetString("game/campaign");
+				const char *szMapName = pSettings->GetString("game/mission");
+				bValidMission = pSource->MissionExists(szMapName, false);
+				if (bValidMission)
+				{
+					Msg("Map %s is installed.\n", szMapName);
+					pInfoMission = pSource->GetMissionDetails(szMapName);
+					pInfoChapter = pSource->GetCampaignDetails(szCampaignName);
+				}
+			}
 
-			if ( bValidMission )
-				return;
+			bool bBlacklisted = false;
+			if (dedicatedServer)
+			{
+				const char* pServerAddress = pSettings->GetString("server/adronline", "0.0.0.0:0");
+				if (LoadBlackListFile(m_pServerBlackList))
+				{
+					bBlacklisted = IsOnList(pServerAddress, m_pServerBlackList);
+					if (bBlacklisted)
+					{
+						Msg("Server is on the blacklist, disconnecting from %s\n", pServerAddress);
+					}
+				}
+			}
 
 			// If we do not have a valid chapter/mission, then we need to quit
-			if ( pInfoChapter && pInfoMission &&
-				( !*pInfoMission->GetName() || pInfoMission->GetInt( "version" ) == pSettings->GetInt( "game/missioninfo/version", -1 ) ) )
+			if (!bBlacklisted && bValidMission && pInfoChapter && pInfoMission &&
+				(!*pInfoMission->GetName() || pInfoMission->GetInt("version") == pSettings->GetInt("game/missioninfo/version", -1)))
 				return;
 
-			if ( pSettings )
-				pSettings = pSettings->MakeCopy();
+			KeyValues *pSettings2 = pSettings->MakeCopy();
 
 			engine->ExecuteClientCmd( "disconnect" );
 			g_pMatchFramework->CloseSession();
@@ -1587,12 +1626,27 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			CloseAllWindows( CLOSE_POLICY_EVEN_MSGS | CLOSE_POLICY_EVEN_LOADING );
 			OpenFrontScreen();
 
-			const char *szCampaignWebsite = pSettings->GetString( "game/missioninfo/website", NULL );
+			if (bBlacklisted)
+			{
+				GenericConfirmation::Data_t data;
+
+				data.pWindowTitle = "#L4D360UI_MsgBx_DisconnectedFromSession";
+				data.pMessageText = "Server is on the blacklist.";
+				data.bOkButtonEnabled = true;
+
+				GenericConfirmation* confirmation =
+					static_cast< GenericConfirmation* >(OpenWindow(WT_GENERICCONFIRMATION, NULL, true));
+
+				confirmation->SetUsageData(data);
+				return;
+			}
+
+			const char *szCampaignWebsite = pSettings2->GetString( "game/missioninfo/website", NULL );
 			if ( szCampaignWebsite && *szCampaignWebsite )
 			{
 				OpenWindow( WT_DOWNLOADCAMPAIGN,
 					GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ),
-					true, pSettings );
+					true, pSettings2 );
 			}
 			else
 			{
@@ -1686,6 +1740,53 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 	{
 		OnLevelLoadingFinished( pEvent );
 	}
+}
+
+bool CBaseModPanel::LoadBlackListFile(KeyValues *&pBlacklist)
+{
+	char serverBlacklistFilename[MAX_PATH];
+
+	Q_snprintf(serverBlacklistFilename, sizeof(serverBlacklistFilename), "cfg/%s", SERVERBLACKLIST_FILENAME);
+	pBlacklist = new KeyValues("ServerBlackList");
+
+	return pBlacklist->LoadFromFile(filesystem, serverBlacklistFilename);
+}
+
+bool CBaseModPanel::IsOnList(const char* pServerAddress, KeyValues* pList)
+{
+	bool bListed = false;
+	if (pServerAddress && pList)
+	{
+		CUtlVector<char*, CUtlMemory<char*, int>> outStrings1;
+		Q_SplitString(pServerAddress, ":", outStrings1);
+		if (outStrings1.Count() > 1)
+		{
+			const char* serverIP = outStrings1[0];
+			int serverPort = Q_atoi(outStrings1[1]);
+
+			for (KeyValues* pServer = pList->GetFirstSubKey(); pServer; pServer = pServer->GetNextTrueSubKey())
+			{
+				const char* ipandPortString = pServer->GetString("addr", "0.0.0.0:0");
+				CUtlVector<char*, CUtlMemory<char*, int>> outStrings;
+				Q_SplitString(ipandPortString, ":", outStrings);
+				if (outStrings.Count() > 1)
+				{
+					const char* ipString = outStrings[0];
+					int port = Q_atoi(outStrings[1]);
+					if (!Q_strcmp(ipString, serverIP) && (port == serverPort))
+					{
+						outStrings.PurgeAndDeleteElements();
+						bListed = true;
+						break;
+					}
+				}
+				outStrings.PurgeAndDeleteElements();
+			}
+		}
+		outStrings1.PurgeAndDeleteElements();
+	}
+
+	return bListed;
 }
 
 //=============================================================================
