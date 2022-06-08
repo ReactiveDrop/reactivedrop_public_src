@@ -1766,8 +1766,7 @@ bool CBaseModPanel::IsOnList(const char* pServerAddress, KeyValues* pList)
 			for (KeyValues* pServer = pList->GetFirstSubKey(); pServer; pServer = pServer->GetNextTrueSubKey())
 			{
 				const char* ipandPortString = pServer->GetString("addr", "0.0.0.0:0");
-				CUtlVector<char*, CUtlMemory<char*, int>> outStrings;
-				Q_SplitString(ipandPortString, ":", outStrings);
+				CSplitString outStrings(ipandPortString, ":");
 				if (outStrings.Count() > 1)
 				{
 					const char* ipString = outStrings[0];
