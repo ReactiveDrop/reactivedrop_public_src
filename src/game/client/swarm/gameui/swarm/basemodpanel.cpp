@@ -1603,7 +1603,14 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			if (dedicatedServer)
 			{
 				const char* pServerAddress = pSettings->GetString("server/adronline", "0.0.0.0:0");
-				if (LoadBlackListFile(m_pServerBlackList))
+				if (!m_pServerBlackList)
+				{
+					if (!LoadBlackListFile(m_pServerBlackList))
+					{
+						Msg("Failed to load the server blacklist.");
+					}
+				}
+				if (m_pServerBlackList)
 				{
 					bBlacklisted = IsOnList(pServerAddress, m_pServerBlackList);
 					if (bBlacklisted)
@@ -1773,15 +1780,12 @@ bool CBaseModPanel::IsOnList(const char* pServerAddress, KeyValues* pList)
 					int port = Q_atoi(outStrings[1]);
 					if (!Q_strcmp(ipString, serverIP) && (port == serverPort))
 					{
-						outStrings.PurgeAndDeleteElements();
 						bListed = true;
 						break;
 					}
 				}
-				outStrings.PurgeAndDeleteElements();
 			}
 		}
-		outStrings1.PurgeAndDeleteElements();
 	}
 
 	return bListed;
