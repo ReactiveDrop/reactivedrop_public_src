@@ -60,8 +60,12 @@ public:
 	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex ) = 0;
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex ) = 0;
 
-
 	virtual void ResetLastChatterTime() = 0;
+
+#if !defined(NO_STEAM)
+	virtual int GetMedalUpdateCount( int nLobbySlot ) = 0;
+	virtual const char *GetEncodedMedalData( int nLobbySlot ) = 0;
+#endif
 };
 
 #define NUM_BRIEFING_LOBBY_SLOTS MAX( ASW_MAX_MARINE_RESOURCES, MAX_PLAYERS + ASW_NUM_MARINE_PROFILES - 1 ) // was 9, was 4

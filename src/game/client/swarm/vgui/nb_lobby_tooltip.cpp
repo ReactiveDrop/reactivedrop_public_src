@@ -107,6 +107,15 @@ void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
 	m_bPromotionTooltip = true;
 }
 
+void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult )
+{
+	m_bMarineTooltip = false;
+	m_nLobbySlot = nLobbySlot;
+	m_bPromotionTooltip = false;
+	int debug = 3;
+	debug = debug;
+}
+
 void CNB_Lobby_Tooltip::OnTick()
 {
 	if ( ASWGameRules() && ASWGameRules()->GetCurrentVoteType() != ASW_VOTE_NONE )
@@ -183,7 +192,7 @@ void CNB_Lobby_Tooltip::OnTick()
 		if ( pProfile )
 		{
 			m_pTitle->SetVisible( true );
-			m_pSkillPanel0->SetVisible( true );		
+			m_pSkillPanel0->SetVisible( true );
 			m_pSkillPanel1->SetVisible( true );
 			m_pSkillPanel2->SetVisible( true );
 			m_pSkillPanel3->SetVisible( true );
@@ -211,6 +220,12 @@ void CNB_Lobby_Tooltip::OnTick()
 		}
 		else
 		{
+			m_pSkillPanel0->SetVisible( false );
+			m_pSkillPanel1->SetVisible( false );
+			m_pSkillPanel2->SetVisible( false );
+			m_pSkillPanel3->SetVisible( false );
+			m_pSkillPanel4->SetVisible( false );
+
 			m_bMarineTooltip = false;
 		}
 	}

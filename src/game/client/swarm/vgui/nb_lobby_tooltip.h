@@ -6,6 +6,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
+#include "steam/steam_api.h"
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::Panel;
@@ -32,6 +33,7 @@ public:
 	void ShowMarineTooltip( int nLobbySlot );
 	void ShowWeaponTooltip( int nLobbySlot, int nInventorySlot );
 	void ShowMarinePromotionTooltip( int nLobbySlot );
+	void ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult );
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;

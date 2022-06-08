@@ -17,6 +17,7 @@
 #include "voice_status.h"
 #include "asw_campaign_info.h"
 #include "asw_deathmatch_mode.h"
+#include "rd_lobby_utils.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -979,4 +980,26 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 		bTalking = pVoiceMgr->IsPlayerSpeaking( index );
 	}
 	return bTalking;
+}
+
+int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	if ( !pMatchmaking )
+	{
+		return 0;
+	}
+
+	return atoi( pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" ) );
+}
+
+const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	if ( !pMatchmaking )
+	{
+		return "";
+	}
+
+	return pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
 }
