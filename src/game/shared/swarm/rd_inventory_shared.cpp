@@ -134,7 +134,8 @@ public:
 		}
 
 		pMatchmaking->SetLobbyMemberData( currentLobby, "rd_equipped_medal", szEncoded );
-		int nUpdateCount = atoi( pMatchmaking->GetLobbyMemberData( currentLobby, pUser->GetSteamID(), "rd_equipped_medal:updates" ) );
+		const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, pUser->GetSteamID(), "rd_equipped_medal:updates" );
+		int nUpdateCount = sz ? atoi( sz ) : 0;
 		pMatchmaking->SetLobbyMemberData( currentLobby, "rd_equipped_medal:updates", VarArgs( "%d", nUpdateCount + 1 ) );
 	}
 

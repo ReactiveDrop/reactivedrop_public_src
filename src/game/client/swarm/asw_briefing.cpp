@@ -990,7 +990,13 @@ int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
 		return 0;
 	}
 
-	return atoi( pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" ) );
+	const char *sz = pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
+	if ( !sz || !*sz )
+	{
+		return 0;
+	}
+
+	return atoi( sz );
 }
 
 const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
@@ -1001,5 +1007,7 @@ const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
 		return "";
 	}
 
-	return pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
+	const char *sz = pMatchmaking->GetLobbyMemberData( UTIL_RD_GetCurrentLobbyID(), GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
+
+	return sz ? sz : "";
 }
