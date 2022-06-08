@@ -1607,7 +1607,7 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 				{
 					if (!LoadBlackListFile(m_pServerBlackList))
 					{
-						Msg("Failed to load the server blacklist.");
+						Msg("Failed to load the server blacklist.\n");
 					}
 				}
 				if (m_pServerBlackList)
