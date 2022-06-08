@@ -1366,8 +1366,9 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 extern bool g_bAIDisabledByUser;
 extern ConVar asw_springcol;
-ConVar asw_blip_speech_chance("asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity");
-ConVar asw_instant_restart("asw_instant_restart", "1", FCVAR_ARCHIVE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
+ConVar asw_blip_speech_chance( "asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity" );
+ConVar asw_instant_restart( "asw_instant_restart", "1", FCVAR_NONE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map)." );
+ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, "Write a lot of developer messages to the console during an instant restart." );
 
 const char * GenerateNewSaveGameName()
 {
@@ -2945,8 +2946,16 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	if ( ASWGameResource() )
 		ASWGameResource()->RememberLeaderID();
 
-	if ( !asw_instant_restart.GetBool() )
+	if ( !asw_instant_restart.GetBool() || gEntList.FindEntityByClassname( NULL, "asw_challenge_thinker" ) )
 	{
+		if ( asw_instant_restart_debug.GetBool() )
+		{
+			if ( !asw_instant_restart.GetBool() )
+				Msg( "Not performing instant restart - disabled by convar.\n" );
+			else
+				Msg( "Not performing instant restart - current challenge uses vscript.\n" );
+		}
+
 		if ( IsCampaignGame() )
 			ChangeLevel_Campaign( STRING( gpGlobals->mapname ) );
 		else
@@ -2954,6 +2963,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 		return;
 	}
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Performing Instant Restart with %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 
 	// find the first entity in the entity list
 	CBaseEntity *pEnt = gEntList.FirstEnt();
@@ -2963,6 +2975,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	{
 		if ( m_MapResetFilter.ShouldCreateEntity( pEnt->GetClassname() ) )
 		{
+			if ( asw_instant_restart_debug.GetBool() )
+				DevMsg( "Destroying entity %d: %s\n", pEnt->entindex(), pEnt->GetClassname() );
+
 			// resetting this entity
 			CBaseEntity *pNextEntity = gEntList.NextEnt( pEnt );
 			UTIL_Remove( pEnt ); // mark entity for deletion
@@ -2970,6 +2985,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		}
 		else
 		{
+			if ( asw_instant_restart_debug.GetBool() )
+				DevMsg( "Keeping entity %d: %s\n", pEnt->entindex(), pEnt->GetClassname() );
+
 			// keeping this entity, so don't destroy it
 			pEnt = gEntList.NextEnt( pEnt );
 		}
@@ -2989,6 +3007,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	FullReset();
 	ASWSpawnSelection()->LevelShutdownPostEntity();
 
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart after cleanup has %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
+
 	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
 	ASWSpawnSelection()->LevelInitPreEntity();
@@ -2996,6 +3017,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
 	// this in effect causes them to spawn back to their normal position.
 	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &m_MapResetFilter, true );
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart after reparse has %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 
 	// let the players know the mission is restarting
 	//UTIL_ClientPrintAll( HUD_PRINTCENTER, "Restarting Mission" );
@@ -3032,6 +3056,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 			}
 		}
 	}
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart completed with %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 }
 
 // issues a changelevel command with the campaign argument and save name
