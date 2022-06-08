@@ -370,6 +370,7 @@ public:
 
 	CUtlStringMap<string_t> m_SavedConvars_Challenge;
 	void ResetChallengeConVars();
+	void CheckChallengeConVars();
 	void ApplyChallengeConVars( KeyValues *pKV );
 
 #endif	// GAME_DLL above

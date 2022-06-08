@@ -3754,6 +3754,8 @@ void CAlienSwarm::Think()
 		break;
 	}
 
+	CheckChallengeConVars();
+
 	if (m_iCurrentVoteType != ASW_VOTE_NONE)
 		UpdateVote();
 
@@ -9245,6 +9247,22 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	}
 }
 
+void CAlienSwarm::CheckChallengeConVars()
+{
+	// make sure none of the variables were changed
+	for (int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++)
+	{
+		ConVarRef cvar(m_SavedConvars_Challenge.String(i));
+		const char *pszDesiredValue = STRING(m_SavedConvars_Challenge[i]);
+
+		if (cvar.IsValid() && Q_strcmp(cvar.GetString(), pszDesiredValue))
+		{
+			Warning("Fixing challenge convar %s\n", cvar.GetName());
+			cvar.SetValue(pszDesiredValue);
+		}
+	}
+}
+
 void CAlienSwarm::ResetChallengeConVars()
 {
 	CUtlStringList names;
@@ -9322,18 +9340,7 @@ void CAlienSwarm::ApplyChallenge()
 		GetCampaignSave()->SaveGameToFile();
 	}
 
-	// make sure none of the variables were changed
-	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
-	{
-		ConVarRef cvar( m_SavedConvars_Challenge.String( i ) );
-		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
-
-		if ( cvar.IsValid() && Q_strcmp( cvar.GetString(), pszDesiredValue ) )
-		{
-			Warning( "Fixing challenge convar %s\n", cvar.GetName() );
-			cvar.SetValue( pszDesiredValue );
-		}
-	}
+	CheckChallengeConVars();
 
 	if ( !filesystem->FileExists( CFmtStr( "scripts/vscripts/challenge_%s.nut", rd_challenge.GetString() ), "GAME" ) )
 	{
