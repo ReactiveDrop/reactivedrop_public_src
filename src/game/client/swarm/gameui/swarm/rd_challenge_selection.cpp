@@ -141,7 +141,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	( void )ReactiveDropChallenges::ReadData( pKV, szName );
 
 	m_nWorkshopID = pChallenge->WorkshopID;
-	CReactiveDropWorkshop::WorkshopItem_t item = GetWorkshopItem();
+	const CReactiveDropWorkshop::WorkshopItem_t & item = GetWorkshopItem();
 
 	m_lblName->SetText( pKV->GetString( "name", pChallenge->Title ) );
 	m_lblName->SetVisible( true );
@@ -153,7 +153,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	}
 	else if ( item.pPreviewImage.IsValid() )
 	{
-		m_imgIcon->SetImage( item.pPreviewImage.GetObject() );
+		m_imgIcon->SetImage( const_cast<CReactiveDropWorkshopPreviewImage *>( item.pPreviewImage.GetObject() ) );
 		m_imgIcon->SetVisible( true );
 	}
 	else
@@ -185,7 +185,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	m_lblSource->SetVisible( true );
 }
 
-CReactiveDropWorkshop::WorkshopItem_t BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
+const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
 {
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
@@ -198,7 +198,9 @@ CReactiveDropWorkshop::WorkshopItem_t BaseModUI::ReactiveDropChallengeSelectionL
 		return enabledAddon;
 	}
 
-	return CReactiveDropWorkshop::WorkshopItem_t();
+	static CReactiveDropWorkshop::WorkshopItem_t emptyWorkshopItem;
+
+	return emptyWorkshopItem;
 }
 
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
@@ -309,7 +311,7 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	m_lblDescription->SetText( pChallenge->m_szChallengeDescription.Get() );
 	m_lblDescription->SetVisible( true );
 
-	CReactiveDropWorkshop::WorkshopItem_t item = pChallenge->GetWorkshopItem();
+	const CReactiveDropWorkshop::WorkshopItem_t &item = pChallenge->GetWorkshopItem();
 	if ( item.details.m_nPublishedFileId )
 	{
 		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );

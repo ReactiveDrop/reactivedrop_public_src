@@ -80,34 +80,7 @@ public:
 			bAdminOverrideDeathmatch = false;
 		}
 
-		WorkshopItem_t( const WorkshopItem_t & other )
-		{
-			details = other.details;
-			nSubscriptions = other.nSubscriptions;
-			nFavorites = other.nFavorites;
-			nFollowers = other.nFollowers;
-			nUniqueSubscriptions = other.nUniqueSubscriptions;
-			nUniqueFavorites = other.nUniqueFavorites;
-			nUniqueFollowers = other.nUniqueFollowers;
-			nUniqueWebsiteViews = other.nUniqueWebsiteViews;
-			nSecondsPlayed = other.nSecondsPlayed;
-			nPlaytimeSessions = other.nPlaytimeSessions;
-			nComments = other.nComments;
-#ifdef CLIENT_DLL
-			if (other.pPreviewImage.IsValid())
-				pPreviewImage = other.pPreviewImage;
-#endif
-			for ( int i = 0; i < other.kvTags.GetNumStrings(); i++ )
-			{
-				CUtlStringList & values = kvTags[other.kvTags.String( i )];
-				FOR_EACH_VEC( other.kvTags[i], j )
-				{
-					values.CopyAndAddToTail( other.kvTags[i][j] );
-				}
-			}
-			bAdminOverrideBonus = other.bAdminOverrideBonus;
-			bAdminOverrideDeathmatch = other.bAdminOverrideDeathmatch;
-		}
+		WorkshopItem_t( const WorkshopItem_t &other ) = delete;
 
 		~WorkshopItem_t()
 		{

@@ -45,7 +45,7 @@ ReactiveDropWorkshopListItem::~ReactiveDropWorkshopListItem()
 {
 }
 
-CReactiveDropWorkshop::WorkshopItem_t ReactiveDropWorkshopListItem::GetDetails()
+const CReactiveDropWorkshop::WorkshopItem_t &ReactiveDropWorkshopListItem::GetDetails()
 {
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
@@ -55,8 +55,10 @@ CReactiveDropWorkshop::WorkshopItem_t ReactiveDropWorkshopListItem::GetDetails()
 		}
 	}
 
+	static CReactiveDropWorkshop::WorkshopItem_t emptyWorkshopItem;
+
 	Assert( !"could not find workshop item" );
-	return CReactiveDropWorkshop::WorkshopItem_t();
+	return emptyWorkshopItem;
 }
 
 CReactiveDropWorkshopPreviewImage *ReactiveDropWorkshopListItem::GetPreviewImage()
@@ -111,7 +113,7 @@ void ReactiveDropWorkshopListItem::OnPanelSelected()
 
 void ReactiveDropWorkshopListItem::UpdateDetails()
 {
-	CReactiveDropWorkshop::WorkshopItem_t item = GetDetails();
+	const CReactiveDropWorkshop::WorkshopItem_t &item = GetDetails();
 
 	if ( !item.details.m_rgchTitle[0] )
 	{
@@ -645,7 +647,7 @@ void ReactiveDropWorkshop::InitWait()
 	m_pBtnOpen->SetVisible( false );
 }
 
-void ReactiveDropWorkshop::InitEdit( CReactiveDropWorkshop::WorkshopItem_t item, CReactiveDropWorkshopPreviewImage *pPreview )
+void ReactiveDropWorkshop::InitEdit( const CReactiveDropWorkshop::WorkshopItem_t &item, CReactiveDropWorkshopPreviewImage *pPreview )
 {
 	m_nEditingWorkshopID = item.details.m_nPublishedFileId;
 
