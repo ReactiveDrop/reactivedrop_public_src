@@ -460,12 +460,17 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL( false );
 
-		size_t nEncodedChars = V_strlen( szEncodedData );
-		byte decodedData[1024]{};
-		V_hextobinary( szEncodedData, nEncodedChars, decodedData, sizeof( decodedData ) );
-
 		pInventory->DestroyResult( hResult );
 		hResult = k_SteamInventoryResultInvalid;
+
+		size_t nEncodedChars = V_strlen( szEncodedData );
+		if ( nEncodedChars == 0 )
+		{
+			return false;
+		}
+
+		byte decodedData[1024]{};
+		V_hextobinary( szEncodedData, nEncodedChars, decodedData, sizeof( decodedData ) );
 
 		if ( !pInventory->DeserializeResult( &hResult, decodedData, nEncodedChars / 2 ) )
 		{
