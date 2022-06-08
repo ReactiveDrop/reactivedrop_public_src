@@ -343,6 +343,8 @@ namespace ReactiveDropInventory
 
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szBuf.Base();
+		FETCH_PROPERTY( "tags" );
+		pItemDef->Tags = szBuf.Base();
 		FETCH_PROPERTY( "display_type" );
 		pItemDef->DisplayType = szBuf.Base();
 		FETCH_PROPERTY( "name" );
@@ -351,6 +353,11 @@ namespace ReactiveDropInventory
 		pItemDef->Description = szBuf.Base();
 
 		char szKey[256];
+		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
+		FETCH_PROPERTY( "briefing_name_english" );
+		FETCH_PROPERTY( szKey );
+		pItemDef->BriefingName = szBuf.Base();
+
 		V_snprintf( szKey, sizeof( szKey ), "before_description_%s", szLang );
 		FETCH_PROPERTY( "before_description_english" );
 		FETCH_PROPERTY( szKey );
@@ -448,7 +455,7 @@ namespace ReactiveDropInventory
 		}
 	}
 
-	bool DecodeItemData( SteamInventoryResult_t &hResult, const char *szEncodedData, const char *szRequiredSlot, CSteamID requiredSteamID, bool bRequireFresh )
+	bool DecodeItemData( SteamInventoryResult_t &hResult, const char *szEncodedData )
 	{
 		GET_INVENTORY_OR_BAIL( false );
 
@@ -465,60 +472,67 @@ namespace ReactiveDropInventory
 			return false;
 		}
 
+		return true;
+	}
+
+	bool ValidateItemData( bool &bValid, SteamInventoryResult_t hResult, const char *szRequiredSlot, CSteamID requiredSteamID, bool bRequireFresh )
+	{
+		GET_INVENTORY_OR_BAIL( false );
+
 		EResult eResultStatus = pInventory->GetResultStatus( hResult );
+		if ( eResultStatus == k_EResultPending )
+		{
+			return false;
+		}
+
 		if ( eResultStatus != k_EResultOK && ( bRequireFresh || eResultStatus != k_EResultExpired ) )
 		{
-			DevWarning( "ISteamInventory::DeserializeResult: EResult %d (%s)\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ) );
-
-			pInventory->DestroyResult( hResult );
-			hResult = k_SteamInventoryResultInvalid;
-
-			return false;
+			DevWarning( "ReactiveDropInventory::ValidateItemData: EResult %d (%s)\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ) );
+			
+			bValid = false;
+			return true;
 		}
 
 		if ( requiredSteamID.IsValid() && !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
 		{
-			DevWarning( "ISteamInventory::DeserializeResult: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
+			DevWarning( "ReactiveDropInventory::ValidateItemData: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
 
-			pInventory->DestroyResult( hResult );
-			hResult = k_SteamInventoryResultInvalid;
-
-			return false;
+			bValid = false;
+			return true;
 		}
 
 		if ( szRequiredSlot )
 		{
 			char szSlot[256]{};
 			uint32_t count = sizeof( szSlot );
-			if ( !pInventory->GetItemDefinitionProperty( GetItemID( hResult, 0 ), "item_slot", szSlot, &count ) || V_strcmp( szSlot, szRequiredSlot ) )
+			if ( !pInventory->GetItemDefinitionProperty( GetItemDetails( hResult, 0 ).m_iDefinition, "item_slot", szSlot, &count ) || V_strcmp( szSlot, szRequiredSlot ) )
 			{
-				DevWarning( "ISteamInventory::DeserializeResult: item fits in slot '%s', not '%s'\n", szSlot, szRequiredSlot );
+				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", szSlot, szRequiredSlot );
 
-				pInventory->DestroyResult( hResult );
-				hResult = k_SteamInventoryResultInvalid;
-
-				return false;
+				bValid = false;
+				return true;
 			}
 		}
 
+		bValid = true;
 		return true;
 	}
 
-	SteamItemDef_t GetItemID( SteamInventoryResult_t hResult, uint32_t index )
+	SteamItemDetails_t GetItemDetails( SteamInventoryResult_t hResult, uint32_t index )
 	{
-		GET_INVENTORY_OR_BAIL( 0 );
+		GET_INVENTORY_OR_BAIL( SteamItemDetails_t{} );
 
 		uint32_t count{};
 		pInventory->GetResultItems( hResult, NULL, &count );
 		if ( index >= count )
 		{
-			return 0;
+			return SteamItemDetails_t{};
 		}
 
 		CUtlMemory<SteamItemDetails_t> details( 0, count );
 		pInventory->GetResultItems( hResult, details.Base(), &count );
 
-		return details[index].m_iDefinition;
+		return details[index];
 	}
 
 #undef GET_INVENTORY_OR_BAIL

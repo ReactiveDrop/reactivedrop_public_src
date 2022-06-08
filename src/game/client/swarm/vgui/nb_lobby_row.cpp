@@ -89,6 +89,7 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_nLastPromotion = 0;
 	m_nMedalUpdates = 0;
 	m_hMedalResult = k_SteamInventoryResultInvalid;
+	m_bWaitingForMedal = false;
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
@@ -240,12 +241,18 @@ void CNB_Lobby_Row::UpdateDetails()
 		if ( m_nMedalUpdates != nMedalUpdates )
 		{
 			m_pMedalIcon->SetVisible( false );
-			if ( ReactiveDropInventory::DecodeItemData( m_hMedalResult, Briefing()->GetEncodedMedalData( m_nLobbySlot ), "medal", steamID ) )
+			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, Briefing()->GetEncodedMedalData( m_nLobbySlot ) );
+			m_nMedalUpdates = nMedalUpdates;
+		}
+		bool bMedalOK = false;
+		if ( m_bWaitingForMedal && ReactiveDropInventory::ValidateItemData( bMedalOK, m_hMedalResult, "medal", steamID ) )
+		{
+			m_bWaitingForMedal = false;
+			if ( bMedalOK )
 			{
-				m_pMedalIcon->SetImage( VarArgs( "briefing/rd_medals/medal_%d", ReactiveDropInventory::GetItemID( m_hMedalResult, 0 ) ) );
+				m_pMedalIcon->SetImage( VarArgs( "briefing/rd_inventory/medal_%d", ReactiveDropInventory::GetItemDetails( m_hMedalResult, 0 ).m_iDefinition ) );
 				m_pMedalIcon->SetVisible( true );
 			}
-			m_nMedalUpdates = nMedalUpdates;
 		}
 	}
 #endif

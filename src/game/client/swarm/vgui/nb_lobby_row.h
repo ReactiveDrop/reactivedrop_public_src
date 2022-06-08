@@ -77,6 +77,7 @@ public:
 	int m_nLastPromotion;
 	int m_nMedalUpdates;
 	SteamInventoryResult_t m_hMedalResult;
+	bool m_bWaitingForMedal;
 
 	int m_nLobbySlot;
 };
