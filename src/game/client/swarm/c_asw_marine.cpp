@@ -68,6 +68,7 @@ ConVar asw_flashlight_dlight_offsetz("asw_flashlight_dlight_offsetz", "40", FCVA
 ConVar asw_flashlight_dlight_r("asw_flashlight_dlight_r", "250", FCVAR_NONE, "Red component of flashlight colour");
 ConVar asw_flashlight_dlight_g("asw_flashlight_dlight_g", "250", FCVAR_NONE, "Green component of flashlight colour");
 ConVar asw_flashlight_dlight_b("asw_flashlight_dlight_b", "250", FCVAR_NONE, "Blue component of flashlight colour");
+ConVar asw_marine_shadows("asw_marine_shadows", "1", FCVAR_NONE, "If set to one, marines will have shadows.", true, 0, true, 1);
 ConVar asw_marine_ambient("asw_marine_ambient", "0.02", FCVAR_CHEAT, "Ambient light of the marine");
 ConVar asw_marine_lightscale("asw_marine_lightscale", "4.0", FCVAR_CHEAT, "Light scale on the marine");
 ConVar asw_flashlight_marine_ambient("asw_flashlight_marine_ambient", "0.1", FCVAR_CHEAT, "Ambient light of the marine with flashlight on");
@@ -814,6 +815,14 @@ bool C_ASW_Marine::GetShadowCastDirection( Vector *pDirection, ShadowType_t shad
 	pDirection->z = m_ShadowDirection.z;	
 
 	return true;
+}
+
+ShadowType_t C_ASW_Marine::ShadowCastType()
+{
+	if ( asw_marine_shadows.GetBool() )
+		return BaseClass::ShadowCastType();
+	else
+		return SHADOWS_NONE;
 }
 
 void C_ASW_Marine::ClientThink()
