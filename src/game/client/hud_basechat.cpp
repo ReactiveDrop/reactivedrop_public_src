@@ -1519,7 +1519,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 		}
 	}
 
-	if ( !m_textRanges.Count() && m_iNameLength > 0 && ( m_text[0] == COLOR_USEOLDCOLORS || ConVarRef( "rd_chat_colorful_player_names" ).GetBool() ) )
+	if ( !m_textRanges.Count() && m_iNameLength > 0 /*&& ( m_text[0] == COLOR_USEOLDCOLORS || ConVarRef( "rd_chat_colorful_player_names" ).GetBool() )*/ )
 	{
 		TextRange range;
 		range.start = 0;
