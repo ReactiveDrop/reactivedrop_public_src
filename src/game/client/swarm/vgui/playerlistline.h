@@ -66,7 +66,7 @@ public:
 	void UpdateCheckBoxes();
 
 	CBitmapButton *m_pMuteButton; 
-	vgui::Label *m_pPlayerLabel;
+	vgui::Button* m_pPlayerLabel;
 	vgui::Label *m_pMarinesLabel;
 	vgui::Label *m_pFragsLabel;
 	vgui::Label *m_pDeathsLabel;
