@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:  ASW version of hud_chat.cpp (exclude hud_chat.cpp from build)
 //
@@ -391,9 +391,15 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	{
 	case COLOR_PLAYERNAME:
 		{
-			CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
+			CASW_Player* pPlayer = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( clientIndex ) );
 			CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
-
+			
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				c = pPlayer->GetTeamNumber() == TEAM_ALPHA ? g_ColorRed : g_ColorBlue;
+				break;
+			}
+			
 			if ( rd_chat_colorful_player_names.GetBool() && pMarine )
 			{
 				int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
@@ -403,7 +409,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 					break;
 				}
 			}
-			c = GetClientColor( clientIndex );
+			c = g_ColorBlue;
 		}
 		break;
 	case COLOR_LOCATION:
