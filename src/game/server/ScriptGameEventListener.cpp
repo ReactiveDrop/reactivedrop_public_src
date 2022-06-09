@@ -70,6 +70,8 @@ void CScriptGameEventListener::FireGameEvent( IGameEvent *event )
 
 void CScriptGameEventListener::SetVScriptEventValues( IGameEvent *event, HSCRIPT table )
 {
+	if ( !g_pScriptVM ) return;
+
 	if ( !event->IsEmpty("restartcount") )
 		g_pScriptVM->SetValue( table, "restartcount", event->GetInt("restartcount") );
 	if ( !event->IsEmpty("userid") )

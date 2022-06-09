@@ -96,7 +96,10 @@ inline HSCRIPT ToHScript( CAI_Link *pLink )
 template <> ScriptClassDesc_t *GetScriptDesc<CAI_Link>( CAI_Link * );
 inline CAI_Link *ToAILink( HSCRIPT hScript )
 {
-	return ( hScript ) ? (CAI_Link *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Link) ) : NULL;
+	if ( g_pScriptVM )
+		return ( hScript ) ? (CAI_Link *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Link) ) : NULL;
+	
+	return NULL;
 }
 
 

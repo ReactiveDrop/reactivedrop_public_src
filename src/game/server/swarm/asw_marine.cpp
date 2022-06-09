@@ -3528,17 +3528,20 @@ bool CASW_Marine::ScriptSwitchWeapon( int iWeaponIndex )
 //-----------------------------------------------------------------------------
 ScriptVariant_t CASW_Marine::Script_GetInvTable()
 {
-	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "CASW_Marine_GetInvTableOverride" ) )
+	if ( g_pScriptVM )
 	{
-		ScriptVariant_t hInvTable;
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &hInvTable, ToHScript( this ) );
-		g_pScriptVM->ReleaseFunction( hFunction );
-		if ( nStatus != SCRIPT_DONE )
+		if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "CASW_Marine_GetInvTableOverride" ) )
 		{
-			DevWarning( "CASW_Marine_GetInvTableOverride VScript function did not finish!\n" );
-			return NULL;
+			ScriptVariant_t hInvTable;
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &hInvTable, ToHScript( this ) );
+			g_pScriptVM->ReleaseFunction( hFunction );
+			if ( nStatus != SCRIPT_DONE )
+			{
+				DevWarning( "CASW_Marine_GetInvTableOverride VScript function did not finish!\n" );
+				return NULL;
+			}
+			return hInvTable;
 		}
-		return hInvTable;
 	}
 	return NULL;
 }
@@ -3547,6 +3550,8 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 {
 	if ( !hTable )
 		return;
+
+	if ( !g_pScriptVM ) return;
 
 	char szInvSlot[256];
 	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)

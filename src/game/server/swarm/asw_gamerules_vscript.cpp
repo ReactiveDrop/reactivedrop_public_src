@@ -29,12 +29,14 @@ static ScriptVariant_t s_newArrayFunc;
 static ScriptVariant_t s_arrayPushFunc;
 static void CreateArray( ScriptVariant_t &array )
 {
+	if ( !g_pScriptVM ) return;
 	Assert( array.m_type == FIELD_VOID );
 	ScriptStatus_t status = g_pScriptVM->Call( s_newArrayFunc, NULL, false, &array );
 	Assert( status == SCRIPT_DONE );
 }
 static void ArrayPush( ScriptVariant_t &array, ScriptVariant_t item )
 {
+	if ( !g_pScriptVM ) return;
 	ScriptStatus_t status = g_pScriptVM->Call( s_arrayPushFunc, NULL, false, &array, array, item );
 	Assert( status == SCRIPT_DONE );
 }
@@ -401,6 +403,8 @@ class CASW_Mission_Chooser_VScript
 {
 	void ChallengeToVScript( ScriptVariant_t &table, const char *szID, KeyValues *pKV )
 	{
+		if ( !g_pScriptVM ) return;
+
 		g_pScriptVM->CreateTable( table );
 
 		g_pScriptVM->SetValue( table, "id", szID );
@@ -434,6 +438,8 @@ class CASW_Mission_Chooser_VScript
 			table = SCRIPT_VARIANT_NULL;
 			return;
 		}
+
+		if ( !g_pScriptVM ) return;
 
 		g_pScriptVM->CreateTable( table );
 
@@ -523,6 +529,8 @@ class CASW_Mission_Chooser_VScript
 			table = SCRIPT_VARIANT_NULL;
 			return;
 		}
+
+		if ( !g_pScriptVM ) return;
 
 		g_pScriptVM->CreateTable( table );
 
@@ -864,6 +872,8 @@ void Script_GamePause( bool bPause )
 
 void CAlienSwarm::RegisterScriptFunctions()
 {
+	if ( !g_pScriptVM ) return;
+
 	// The VScript API doesn't support arrays, but Squirrel does, and we want to use them. Make some helper functions that we can call later:
 	HSCRIPT arrayHelperScript = g_pScriptVM->CompileScript( "function newArray() { return [] }\nfunction arrayPush(a, v) { a.push(v); return a }\n" );
 	HSCRIPT arrayHelperScope = g_pScriptVM->CreateScope( "arrayhelpers" );

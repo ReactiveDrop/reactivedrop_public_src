@@ -60,7 +60,8 @@ bool DoIncludeScript( const char *pszScript, HSCRIPT hScope )
 {
 	if ( !VScriptRunScript( pszScript, hScope, true ) )
 	{
-		g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
+		if ( g_pScriptVM )
+			g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
 		return false;
 	}
 	return true;

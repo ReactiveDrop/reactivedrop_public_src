@@ -493,6 +493,8 @@ bool ScriptPreInstanceSpawn( CScriptScope *pScriptScope, CBaseEntity *pChild, st
 
 void ScriptPostSpawn( CScriptScope *pScriptScope, CBaseEntity **ppEntities, int nEntities )
 {
+	if ( !g_pScriptVM ) return;
+
 	if ( !pScriptScope->IsInitialized() )
 		return;
 

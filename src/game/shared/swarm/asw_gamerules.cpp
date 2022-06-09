@@ -2714,37 +2714,38 @@ void CAlienSwarm::StartMission()
 	}
 
 	AddBonusChargesToPickups();
-
-	HSCRIPT hMissionStartFunc = g_pScriptVM->LookupFunction( "OnMissionStart" );
-	if ( hMissionStartFunc )
+	if( g_pScriptVM )
 	{
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hMissionStartFunc, NULL, false, NULL );
-		if ( nStatus != SCRIPT_DONE )
+		HSCRIPT hMissionStartFunc = g_pScriptVM->LookupFunction( "OnMissionStart" );
+		if ( hMissionStartFunc )
 		{
-			DevWarning( "OnMissionStart VScript function did not finish!\n" );
-		}
-		g_pScriptVM->ReleaseFunction( hMissionStartFunc );
-	}
-
-	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-	{
-		ScriptVariant_t hModeScript;
-		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-		{
-			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnMissionStart", hModeScript ) )
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hMissionStartFunc, NULL, false, NULL );
+			if ( nStatus != SCRIPT_DONE )
 			{
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
-				if ( nStatus != SCRIPT_DONE )
-				{
-					DevWarning( "OnMissionStart VScript function did not finish!\n" );
-				}
-
-				g_pScriptVM->ReleaseFunction( hFunction );
+				DevWarning( "OnMissionStart VScript function did not finish!\n" );
 			}
-			g_pScriptVM->ReleaseValue( hModeScript );
+			g_pScriptVM->ReleaseFunction( hMissionStartFunc );
+		}
+
+		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+		{
+			ScriptVariant_t hModeScript;
+			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+			{
+				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnMissionStart", hModeScript ) )
+				{
+					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+					if ( nStatus != SCRIPT_DONE )
+					{
+						DevWarning( "OnMissionStart VScript function did not finish!\n" );
+					}
+
+					g_pScriptVM->ReleaseFunction( hFunction );
+				}
+				g_pScriptVM->ReleaseValue( hModeScript );
+			}
 		}
 	}
-
 	if ( g_pSwarmProxy )
 	{
 		g_pSwarmProxy->OnMissionStart();
@@ -2833,34 +2834,36 @@ void CAlienSwarm::UpdateLaunching()
 			CASW_Use_Area *pArea = static_cast< CASW_Use_Area* >( IASW_Use_Area_List::AutoList()[ i ] );
 			pArea->UpdateWaitingForInput();
 		}
-
-		HSCRIPT hGameplayStartFunc = g_pScriptVM->LookupFunction( "OnGameplayStart" );
-		if ( hGameplayStartFunc )
+		if( g_pScriptVM )
 		{
-			ScriptStatus_t nStatus = g_pScriptVM->Call( hGameplayStartFunc, NULL, false, NULL );
-			if ( nStatus != SCRIPT_DONE )
+			HSCRIPT hGameplayStartFunc = g_pScriptVM->LookupFunction( "OnGameplayStart" );
+			if ( hGameplayStartFunc )
 			{
-				DevWarning( "OnGameplayStart VScript function did not finish!\n" );
-			}
-			g_pScriptVM->ReleaseFunction( hGameplayStartFunc );
-		}
-
-		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-		{
-			ScriptVariant_t hModeScript;
-			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-			{
-				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnGameplayStart", hModeScript ) )
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hGameplayStartFunc, NULL, false, NULL );
+				if ( nStatus != SCRIPT_DONE )
 				{
-					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
-					if ( nStatus != SCRIPT_DONE )
-					{
-						DevWarning( "OnGameplayStart VScript function did not finish!\n" );
-					}
-
-					g_pScriptVM->ReleaseFunction( hFunction );
+					DevWarning( "OnGameplayStart VScript function did not finish!\n" );
 				}
-				g_pScriptVM->ReleaseValue( hModeScript );
+				g_pScriptVM->ReleaseFunction( hGameplayStartFunc );
+			}
+
+			if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+			{
+				ScriptVariant_t hModeScript;
+				if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+				{
+					if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnGameplayStart", hModeScript ) )
+					{
+						ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+						if ( nStatus != SCRIPT_DONE )
+						{
+							DevWarning( "OnGameplayStart VScript function did not finish!\n" );
+						}
+
+						g_pScriptVM->ReleaseFunction( hFunction );
+					}
+					g_pScriptVM->ReleaseValue( hModeScript );
+				}
 			}
 		}
 	}
@@ -9372,6 +9375,12 @@ void CAlienSwarm::ApplyChallenge()
 	if ( !filesystem->FileExists( CFmtStr( "scripts/vscripts/challenge_%s.nut", rd_challenge.GetString() ), "GAME" ) )
 	{
 		// no script
+		return;
+	}
+
+	if ( !g_pScriptVM )
+	{
+		Error( "No VM to setup challenge script!\n" );
 		return;
 	}
 

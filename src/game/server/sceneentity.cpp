@@ -4943,6 +4943,8 @@ HSCRIPT ScriptCreateSceneEntity( const char* pszScene )
 		return NULL;
 	}
 
+	if ( !g_pScriptVM ) return NULL;
+
 	g_pScriptVM->RegisterClass( GetScriptDescForClass( CSceneEntity ) );
 	CSceneEntity *pScene = (CSceneEntity *)CBaseEntity::CreateNoSpawn( "logic_choreographed_scene", vec3_origin, vec3_angle );
 
