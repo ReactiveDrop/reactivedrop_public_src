@@ -156,6 +156,7 @@ public:
 	void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 	void MarineStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity );
 	void DoWaterRipples();
+	float m_flNextChatter;
 
 	// footprints
 	const char *GetMarineFootprintParticleName( surfacedata_t *psurface );

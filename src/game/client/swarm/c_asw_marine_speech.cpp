@@ -10,6 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar asw_client_chatter_rate("asw_client_chatter_rate", "1.0", FCVAR_NONE, "The time to wait before the next allowed marine chatter.");
+
 bool ShouldPlayChatterDirectly( int iChatterType )
 {
 	return ( iChatterType == CHATTER_PAIN_LARGE ||
@@ -51,7 +53,24 @@ void ASW_SpeechCallback(const CEffectData& data)
 			}
 		}
 
-		pSpeaker->EmitSound(soundname);
+		if (!pSpeaker->IsInhabited())
+			pSpeaker->EmitSound(soundname);
+		else
+		{
+			C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+			if (pPlayer && pSpeaker->GetCommander() == pPlayer)
+			{
+				pSpeaker->EmitSound(soundname);
+			}
+			else
+			{
+				if (gpGlobals->curtime > pSpeaker->m_flNextChatter)
+				{
+					pSpeaker->m_flNextChatter = gpGlobals->curtime + asw_client_chatter_rate.GetFloat();
+					pSpeaker->EmitSound(soundname);
+				}
+			}
+		}
 	}
 }
 
