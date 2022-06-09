@@ -134,7 +134,8 @@ public:
 	// shadow
 	Vector m_ShadowDirection;
 	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;	
-	
+	ShadowType_t ShadowCastType();
+
 	// commander/inhabiting
 	C_ASW_Marine_Resource* GetMarineResource();
 	C_ASW_Player* GetCommander() const;
