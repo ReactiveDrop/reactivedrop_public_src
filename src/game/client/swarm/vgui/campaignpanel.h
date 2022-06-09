@@ -80,6 +80,7 @@ public:
 	vgui::Label *m_pLeaderLabel;
 	CNB_Button *m_pLaunchButton;
 	CNB_Button *m_pFriendsButton;
+	CNB_Button *m_pChangeMissionButton;
 	CNB_Commander_List *m_pCommanderList;
 	CNB_Campaign_Mission_Details *m_pMissionDetails;
 

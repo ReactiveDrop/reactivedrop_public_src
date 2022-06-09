@@ -149,6 +149,8 @@ CampaignPanel::CampaignPanel(Panel *parent, const char *name) : vgui::EditablePa
 	m_pCommanderList = new CNB_Commander_List( this, "CommanderList" );
 	m_pMissionDetails = new CNB_Campaign_Mission_Details( this, "Campaign_Mission_Details" );
 
+	m_pChangeMissionButton = new CNB_Button( this, "ChangeMissionButton", "", this, "ChangeMissionButton" );
+	
 	char buffer[32];
 	for (int i=0;i<ASW_MAX_MISSIONS_PER_CAMPAIGN;i++)
 	{
@@ -320,7 +322,9 @@ void CampaignPanel::OnThink()
 	if ( !Briefing() )
 		return;	
 
-	m_pFriendsButton->SetVisible( ! ( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
+	ISteamFriends *pSteamFriends = SteamFriends();
+	m_pFriendsButton->SetVisible( ( pSteamFriends && pSteamFriends->GetFriendCount( k_EFriendFlagImmediate ) > 0 ) && ! ( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
+	m_pChangeMissionButton->SetVisible( Briefing()->IsLocalPlayerLeader() || gpGlobals->maxClients == 1 );
 	
 	const char *pszLeaderName = Briefing()->GetLeaderName();
 	if ( pszLeaderName )
@@ -1039,6 +1043,13 @@ void CampaignPanel::OnCommand(const char *command)
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "LobbyInvite" );
 		}
 #endif
+	}
+	else if ( !Q_stricmp( command, "ChangeMissionButton" ) )
+	{
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+			engine->ClientCmd( "asw_vote_chooser 0" );
+		else
+			engine->ClientCmd( "asw_vote_chooser 0 notrans" );
 	}
 	else
 	{
