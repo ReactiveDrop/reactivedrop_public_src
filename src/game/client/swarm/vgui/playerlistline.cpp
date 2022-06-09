@@ -34,7 +34,9 @@ PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	m_pMuteButton = new CBitmapButton( this, "MuteButton", " " );
 	m_pMuteButton->AddActionSignalTarget( this );
 	m_pMuteButton->SetCommand( "MuteButton" );
-	m_pPlayerLabel = new vgui::Label(this, "PlayerLabel", " ");
+	m_pPlayerLabel = new vgui::Button( this, "PlayerLabel", " " );
+	m_pPlayerLabel->AddActionSignalTarget( this );
+	m_pPlayerLabel->SetCommand( "PlayerLabel" );
 	m_pMarinesLabel = new vgui::Label(this, "MarinesLabel", " ");
 	m_pFragsLabel= new vgui::Label(this, "FragsLabel", " ");
 	m_pDeathsLabel = new vgui::Label(this, "DeathsLabel", " ");
@@ -89,7 +91,8 @@ void PlayerListLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	vgui::HFont Verdana = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerLabel->SetFont(DefaultFont);
-	m_pPlayerLabel->SetFgColor(Color(255,255,255,255));
+	//m_pPlayerLabel->SetFgColor(Color(255,255,255,255));
+	m_pPlayerLabel->SetPaintBackgroundEnabled(false);
 	m_pMarinesLabel->SetFont(DefaultFont);
 	m_pMarinesLabel->SetFgColor(Color(255,255,255,255));
 	m_pFragsLabel->SetFont(DefaultFont);
@@ -120,6 +123,21 @@ void PlayerListLine::OnCommand( const char *command )
 		{
 			bool bMuted = pVoiceMgr->IsPlayerBlocked( m_iPlayerIndex );
 			pVoiceMgr->SetPlayerBlockedState( m_iPlayerIndex, !bMuted );
+		}
+	}
+	else if ( !Q_stricmp( command, "PlayerLabel" )  )
+	{
+		player_info_t pi;
+		if ( engine->GetPlayerInfo( m_iPlayerIndex, &pi ) )
+		{
+			if ( pi.friendsID )
+			{
+				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				uint64 id = steamIDForPlayer.ConvertToUint64();
+				char steamCmd[64];
+				Q_snprintf( steamCmd, sizeof( steamCmd ), "steamid/%I64u", id );
+				BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+			}
 		}
 	}
 	BaseClass::OnCommand( command );
