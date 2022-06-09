@@ -61,7 +61,7 @@
 //#define MARINE_ORDER_DISTANCE 500
 #define MARINE_ORDER_DISTANCE 32000
 
-
+ConVar asw_client_chatter_enabled("asw_client_chatter_enabled", "1", FCVAR_NONE, "If zero cl_chatter is played only for the player who issued the command"); 
 ConVar asw_blend_test_scale("asw_blend_test_scale", "0.1f", FCVAR_CHEAT);
 ConVar asw_debug_pvs("asw_debug_pvs", "0", FCVAR_CHEAT);
 extern ConVar asw_rts_controls;
@@ -1124,7 +1124,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				CASW_Marine* pMarine = GetMarine();
 				if (pMarine && pMarine->GetMarineSpeech())
 				{
-					pMarine->GetMarineSpeech()->ClientRequestChatter(iChatter, iSubChatter);
+					pMarine->GetMarineSpeech()->ClientRequestChatter(iChatter, iSubChatter, asw_client_chatter_enabled.GetBool() ? NULL : this);
 				}
 				return true;
 			}

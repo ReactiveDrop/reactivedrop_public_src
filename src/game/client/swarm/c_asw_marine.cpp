@@ -429,6 +429,7 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_flLaserSightLength( 0 )
 {
 	m_hShoulderCone = NULL;
+	m_flNextChatter = 0;
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	SetPredictionEligible( true );
 	m_Commander = NULL;
