@@ -99,7 +99,6 @@ CASW_Game_Resource::CASW_Game_Resource()
 {
 	g_pASWGameResource = this;
 	m_iNumEnumeratedMarines = NULL;
-	m_pCampaignInfo = NULL;
 	m_iMaxMarines = ASW_MAX_MARINE_RESOURCES; // reactivedrop: was 4
 	m_bOneMarineEach = false;
 	m_iNumMarinesSelected = 0;

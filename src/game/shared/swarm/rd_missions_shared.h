@@ -51,7 +51,7 @@ class CampaignHandle
 {
 public:
 	CampaignHandle() = default;
-	CampaignHandle( const char *szBaseName ) { SetCampaign( szBaseName ); }
+	explicit CampaignHandle( const char *szBaseName ) { SetCampaign( szBaseName ); }
 
 	const RD_Campaign_t *Get();
 	void SetCampaign( const char *szBaseName );
@@ -71,7 +71,7 @@ class CampaignMissionHandle
 {
 public:
 	CampaignMissionHandle() = default;
-	CampaignMissionHandle( const char *szBaseName, int iMission ) { SetCampaignMission( szBaseName, iMission ); }
+	explicit CampaignMissionHandle( const char *szBaseName, int iMission ) { SetCampaignMission( szBaseName, iMission ); }
 
 	const RD_Campaign_Mission_t *Get();
 	void SetCampaignMission( const char *szBaseName, int iMission );
@@ -90,7 +90,7 @@ class MissionHandle
 {
 public:
 	MissionHandle() = default;
-	MissionHandle( const char *szBaseName ) { SetMission( szBaseName ); }
+	explicit MissionHandle( const char *szBaseName ) { SetMission( szBaseName ); }
 
 	const RD_Mission_t *Get();
 	void SetMission( const char *szBaseName );
