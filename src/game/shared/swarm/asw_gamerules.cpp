@@ -6950,14 +6950,7 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 		m_iMissionDifficulty = 5;
 	}
 
-	if (rd_difficulty_tier.GetInt() == 1)
-	{
-		m_iMissionDifficulty += 12;
-	}
-	else if (rd_difficulty_tier.GetInt() == 2)
-	{
-		m_iMissionDifficulty += 24;
-	}
+	m_iMissionDifficulty += rd_difficulty_tier.GetInt() * 12;
 
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
