@@ -1749,7 +1749,7 @@ void CAlienSwarm::AutoselectMarines(CASW_Player *pPlayer)
 					//Msg("this is a match, attempting autoselect\n");
 					// check marine isn't wounded first
 					bool bWounded = false;
-					if (IsCampaignGame() && GetCampaignSave())
+					if (GetCampaignSave())
 					{
 						if (GetCampaignSave()->IsMarineWounded(i))
 							bWounded = true;
@@ -2370,11 +2370,11 @@ void CAlienSwarm::EnforceMaxMarines()
 
 void CAlienSwarm::ReviveDeadMarines()
 {
-	if (IsCampaignGame() && GetCampaignSave())
+	if (GetCampaignSave())
 	{
 		for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
 		{
-			GetCampaignSave()->ReviveMarine(i);			
+			GetCampaignSave()->ReviveMarine(i);
 		}
 		GetCampaignSave()->SaveGameToFile();
 		if (ASWGameResource())
@@ -2612,15 +2612,14 @@ void CAlienSwarm::StartMission()
 	}
 
 	// increase num retries
-	if (IsCampaignGame() && GetCampaignSave())
+	if ( CASW_Campaign_Save *pSave = GetCampaignSave() )
 	{
-		CASW_Campaign_Save* pSave = GetCampaignSave();
 		pSave->IncreaseRetries();
 		pSave->UpdateLastCommanders();
 		pSave->SaveGameToFile();
-	}	
+	}
 
-	m_Medals.OnStartMission();	
+	m_Medals.OnStartMission();
 
 	if ( ASWDirector() )
 	{
@@ -2937,7 +2936,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	//if (GetGameState() == ASW_GS_INGAME && ASWGameStats())
 		//ASWGameStats()->AddMapRecord();
 
-	if ( IsCampaignGame() && GetCampaignSave() )
+	if ( GetCampaignSave() )
 	{
 		CASW_Campaign_Save *pSave = GetCampaignSave();
 		pSave->SaveGameToFile();
@@ -2958,7 +2957,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 				Msg( "Not performing instant restart - current challenge uses vscript.\n" );
 		}
 
-		if ( IsCampaignGame() )
+		if ( GetCampaignSave() )
 			ChangeLevel_Campaign( STRING( gpGlobals->mapname ) );
 		else
 			engine->ChangeLevel( STRING( gpGlobals->mapname ), NULL );
@@ -3084,7 +3083,7 @@ void CAlienSwarm::ChangeLevel_Campaign(const char *map)
 		return;
 	}
 
-	engine->ChangeLevel( UTIL_VarArgs("%s campaign %s", map, ASWGameResource()->GetCampaignSaveName()) , NULL);
+	engine->ChangeLevel( UTIL_VarArgs( "%s %s %s", map, IsCampaignGame() ? "campaign" : "single_mission", ASWGameResource()->GetCampaignSaveName() ), NULL );
 }
 
 // called when the marines have finished the mission and want to save their progress and pick the next map to play
@@ -4989,7 +4988,7 @@ void CAlienSwarm::BlipSpeech(int iMarine)
 
 void CAlienSwarm::MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info )
 {
-	if ( IsCampaignGame() && GetCampaignSave() )
+	if ( GetCampaignSave() )
 	{
 		GetCampaignSave()->OnMarineKilled();
 	}
@@ -6738,7 +6737,7 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 
 bool CAlienSwarm::CanSpendPoint(CASW_Player *pPlayer, int iProfileIndex, int nSkillSlot)
 {
-	if (!IsCampaignGame() || !ASWGameResource() || !pPlayer)
+	if (!ASWGameResource() || !pPlayer)
 	{
 		//Msg("returning false cos this isn't campaign\n");
 		return false;
@@ -6804,7 +6803,7 @@ bool CAlienSwarm::SpendSkill(int iProfileIndex, int nSkillSlot)
 	if (nSkillSlot < 0 || nSkillSlot >= ASW_SKILL_SLOT_SPARE)		// -1 since the last skill is 'spare' points
 		return false;
 
-	if (!ASWGameResource() || !IsCampaignGame())
+	if (!ASWGameResource())
 		return false;
 
 	CASW_Marine_Profile *pProfile = MarineProfileList()->m_Profiles[iProfileIndex];
@@ -6854,7 +6853,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 	if (!pPlayer)
 		return false;
 
-	if (!ASWGameResource() || !IsCampaignGame())
+	if (!ASWGameResource())
 		return false;
 
 	if (iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
@@ -8834,33 +8833,25 @@ void CAlienSwarm::LevelInitPostEntity()
 	ASWGameResource()->FindObjectives();
 
 	// setup the savegame entity, if we're in a campaign game
-	if (IsCampaignGame())
+	if ( ASWGameResource()->GetCampaignSaveName()[0] )
 	{
-		if (!ASWGameResource()->CreateCampaignSave())
+		if ( !ASWGameResource()->CreateCampaignSave() )
 		{
-			Msg("ERROR: Failed to create campaign save object\n");
+			Msg( "ERROR: Failed to create campaign save object\n" );
 		}
 		else
 		{
-			if (!ASWGameResource()->GetCampaignSave()->LoadGameFromFile(ASWGameResource()->GetCampaignSaveName()))
+			if ( !ASWGameResource()->GetCampaignSave()->LoadGameFromFile( ASWGameResource()->GetCampaignSaveName() ) )
 			{
-				Msg("ERROR: Failed to load campaign save game: %s\n", ASWGameResource()->GetCampaignSaveName());
+				Msg( "ERROR: Failed to load campaign save game: %s\n", ASWGameResource()->GetCampaignSaveName() );
 			}
 			else
 			{
-				m_bChallengeActiveThisCampaign = ASWGameResource()->GetCampaignSave()->m_bChallengeEverActive;
+				m_bChallengeActiveThisCampaign = IsCampaignGame() && ASWGameResource()->GetCampaignSave()->m_bChallengeEverActive;
 
-				// with the save game loaded, now load the campaign info
-				if (!GetCampaignInfo())
-				{
-					Msg("ERROR: Failed to load in the campaign associated with the current save game: %s\n", ASWGameResource()->GetCampaignSaveName());
-				}
-				else
-				{
-					// update our difficulty level with the relevant campaign modifier
-					OnSkillLevelChanged( m_iSkillLevel );
-					ReserveMarines();
-				}
+				// update our difficulty level with the relevant campaign modifier
+				OnSkillLevelChanged( m_iSkillLevel );
+				ReserveMarines();
 			}
 		}
 	}

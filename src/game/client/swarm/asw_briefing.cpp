@@ -925,7 +925,7 @@ bool CASW_Briefing::IsCampaignGame()
 
 bool CASW_Briefing::UsingFixedSkillPoints()
 {
-	if ( !IsCampaignGame() || !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
+	if ( !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
 	{
 		return false;
 	}

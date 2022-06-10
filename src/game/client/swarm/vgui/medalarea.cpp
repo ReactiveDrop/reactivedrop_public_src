@@ -240,7 +240,7 @@ MedalAreaCampaign::MedalAreaCampaign(vgui::Panel *parent, const char *name, int 
 
 const char * MedalAreaCampaign::GetMedalString()
 {
-	if (ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave()
+	if (ASWGameRules() && ASWGameRules()->GetCampaignSave()
 		&& m_iProfileIndex >= 0 && m_iProfileIndex < ASW_NUM_MARINE_PROFILES)
 	{
 		C_ASW_Campaign_Save *pSave = ASWGameRules()->GetCampaignSave();

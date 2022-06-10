@@ -230,7 +230,7 @@ bool IsWorkshopCampaign()
 	{
 		const char *szCampaignName = pCampaign->GetCampaignName();
 
-		if ( g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/campaigns/%s.txt", szCampaignName ) ) == k_PublishedFileIdInvalid )
+		if ( szCampaignName && *szCampaignName && g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/campaigns/%s.txt", szCampaignName ) ) == k_PublishedFileIdInvalid )
 		{
 			return false;
 		}
