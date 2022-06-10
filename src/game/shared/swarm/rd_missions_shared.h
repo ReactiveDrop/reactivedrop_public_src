@@ -67,6 +67,25 @@ private:
 	int m_nDataResets{};
 };
 
+class CampaignMissionHandle
+{
+public:
+	CampaignMissionHandle() = default;
+	CampaignMissionHandle( const char *szBaseName, int iMission ) { SetCampaignMission( szBaseName, iMission ); }
+
+	const RD_Campaign_Mission_t *Get();
+	void SetCampaignMission( const char *szBaseName, int iMission );
+
+	inline operator bool() { return Get() != NULL; }
+	inline bool operator!() { return Get() == NULL; }
+	inline const RD_Campaign_Mission_t *operator->() { return Get(); }
+	inline operator const RD_Campaign_Mission_t *( ) { return Get(); }
+
+private:
+	CampaignHandle m_Campaign{};
+	int m_iMission{};
+};
+
 class MissionHandle
 {
 public:

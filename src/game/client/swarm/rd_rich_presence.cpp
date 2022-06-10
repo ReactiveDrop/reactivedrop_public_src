@@ -6,7 +6,6 @@
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "rd_lobby_utils.h"
-#include "asw_campaign_info.h"
 #include "rd_challenges_shared.h"
 #include "c_playerresource.h"
 #include "asw_briefing.h"

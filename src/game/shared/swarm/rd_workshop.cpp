@@ -2,7 +2,6 @@
 #include "rd_workshop.h"
 #include "filesystem.h"
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
 #include "vpklib/packedstore.h"
 #include "rd_challenges_shared.h"
 #include "rd_missions_shared.h"
@@ -574,15 +573,15 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 	}
 
 	char szCampaign[256]{};
-	if ( CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo() )
+	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
 	{
-		if ( const wchar_t *pwszCampaign = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+		if ( const wchar_t *pwszCampaign = g_pVGuiLocalize->Find( STRING( pCampaign->CampaignName ) ) )
 		{
 			V_UnicodeToUTF8( pwszCampaign, szCampaign, sizeof( szCampaign ) );
 		}
 		else
 		{
-			V_strncpy( szCampaign, STRING( pCampaign->m_CampaignName ), sizeof( szCampaign ) );
+			V_strncpy( szCampaign, STRING( pCampaign->CampaignName ), sizeof( szCampaign ) );
 		}
 
 		V_strcat( szCampaign, ": ", sizeof( szCampaign ) );
@@ -1001,14 +1000,11 @@ static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 		return;
 	}
 
-	char tempfile[MAX_PATH];
-
 	// addon that includes the campaign file
-	CASW_Campaign_Info *pInfo = ASWGameRules()->GetCampaignInfo();
-	if ( pInfo )
+	const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
+	if ( pCampaign )
 	{
-		V_snprintf( tempfile, sizeof(tempfile), "resource/campaigns/%s.txt", pInfo->m_szCampaignFilename );
-		MaybeAddAddonByFile( active, tempfile );
+		MaybeAddAddon( active, pCampaign->WorkshopID );
 	}
 
 	// addon that includes the overview file

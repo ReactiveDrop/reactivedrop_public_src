@@ -48,7 +48,6 @@
 #include "ai_node.h"
 #include "datacache/imdlcache.h"
 #include "asw_spawn_manager.h"
-#include "asw_campaign_info.h"
 #include "sendprop_priorities.h"
 #include "asw_deathmatch_mode.h"
 #include "asw_trace_filter.h"
@@ -1520,7 +1519,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if ( ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() )
 		{
 			int iTargetMission = atoi( args[1] );
-			CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
+			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 			if ( pCampaign && pCampaign->GetMission( iTargetMission ) )
 			{
 				ASWGameResource()->m_iNextCampaignMission = iTargetMission;

@@ -79,7 +79,6 @@
 #include "c_asw_jeep_clientside.h"
 #include "obstacle_pushaway.h"
 #include "asw_shareddefs.h"
-#include "asw_campaign_info.h"
 #include "c_asw_camera_volume.h"
 #include "asw_medal_store.h"
 #include "asw_remote_turret_shared.h"

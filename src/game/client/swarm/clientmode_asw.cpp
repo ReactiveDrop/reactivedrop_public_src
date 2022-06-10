@@ -23,7 +23,6 @@
 #include "asw_remote_turret_shared.h"
 #include "asw_gamerules.h"
 #include "asw_util_shared.h"
-#include "asw_campaign_info.h"
 #include "techmarinefailpanel.h"
 #include "FadeInPanel.h"
 #include <vgui/IInput.h>

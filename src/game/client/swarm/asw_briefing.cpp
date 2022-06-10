@@ -15,7 +15,6 @@
 #define CASW_Equip_Req C_ASW_Equip_Req
 #include "asw_equip_req.h"
 #include "voice_status.h"
-#include "asw_campaign_info.h"
 #include "asw_deathmatch_mode.h"
 #include "rd_lobby_utils.h"
 
@@ -808,14 +807,14 @@ bool CASW_Briefing::CheckMissionRequirements()
 
 		if ( ASWGameResource() && !asw_ignore_need_two_player_requirement.GetBool() )
 		{
-			CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
+			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 
 			char mapname[64];
 			V_FileBase( engine->GetLevelName(), mapname, sizeof( mapname ) );
 
 			if ( pCampaign && pCampaign->GetMissionByMapName( mapname ) )
 			{
-				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->m_bNeedsMoreThanOneMarine;
+				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->NeedsMoreThanOneMarine;
 				if ( bNeedsMoreThanOneMarine )
 				{
 					// how many marines do we have?

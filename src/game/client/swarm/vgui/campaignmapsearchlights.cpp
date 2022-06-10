@@ -2,7 +2,6 @@
 #include "CampaignMapSearchLights.h"
 #include "vgui/isurface.h"
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
 #include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -92,27 +91,5 @@ void CampaignMapSearchLights::SetCampaign( const RD_Campaign_t *pCampaign )
 		m_iSearchLightX[i] = pCampaign->SearchLightX[i];
 		m_iSearchLightY[i] = pCampaign->SearchLightY[i];
 		m_iSearchLightAngle[i] = pCampaign->SearchLightAngle[i];
-	}
-}
-
-void CampaignMapSearchLights::SetCampaign( CASW_Campaign_Info *pInfo )
-{
-	if ( !pInfo )
-	{
-		for ( int i = 0; i < ASW_NUM_SEARCH_LIGHTS; i++ )
-		{
-			m_iSearchLightX[i] = 0;
-			m_iSearchLightY[i] = 0;
-			m_iSearchLightAngle[i] = 0;
-		}
-
-		return;
-	}
-
-	for ( int i = 0; i < ASW_NUM_SEARCH_LIGHTS; i++ )
-	{
-		m_iSearchLightX[i] = pInfo->m_iSearchLightX[i];
-		m_iSearchLightY[i] = pInfo->m_iSearchLightY[i];
-		m_iSearchLightAngle[i] = pInfo->m_iSearchLightAngle[i];
 	}
 }

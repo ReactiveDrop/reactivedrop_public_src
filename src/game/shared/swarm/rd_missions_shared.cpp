@@ -838,6 +838,19 @@ void CampaignHandle::SetCampaign( const char *szBaseName )
 	m_nDataResets = 0;
 }
 
+const RD_Campaign_Mission_t *CampaignMissionHandle::Get()
+{
+	const RD_Campaign_t *pCampaign = m_Campaign.Get();
+
+	return pCampaign ? pCampaign->GetMission( m_iMission ) : NULL;
+}
+
+void CampaignMissionHandle::SetCampaignMission( const char *szBaseName, int iMission )
+{
+	m_Campaign.SetCampaign( szBaseName );
+	m_iMission = iMission;
+}
+
 const RD_Mission_t *MissionHandle::Get()
 {
 	if ( !s_bRebuildUnpackedMissionData && m_nDataResets == ReactiveDropMissions::s_nDataResets )

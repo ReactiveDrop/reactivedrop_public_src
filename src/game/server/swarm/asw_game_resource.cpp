@@ -5,7 +5,6 @@
 #include "asw_scanner_info.h"
 #include "asw_player.h"
 #include "asw_campaign_save.h"
-#include "asw_campaign_info.h"
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "asw_deathmatch_mode.h"

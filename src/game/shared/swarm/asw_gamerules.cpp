@@ -107,7 +107,6 @@
 #include "asw_equipment_list.h"
 #include "asw_marine_profile.h"
 #include "asw_weapon_parse.h"
-#include "asw_campaign_info.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #include "takedamageinfo.h"
 #include "asw_holdout_mode.h"
@@ -3264,36 +3263,36 @@ bool CAlienSwarm::RequestCampaignMove(int iTargetMission)
 }
 
 // moves the marines from one location to another
-bool CAlienSwarm::RequestCampaignLaunchMission(int iTargetMission)
+bool CAlienSwarm::RequestCampaignLaunchMission( int iTargetMission )
 {
 	// only allow campaign moves if the campaign map is up
-	if (m_iGameState != ASW_GS_CAMPAIGNMAP || iTargetMission == 0)	// 0 is the dropzone
+	if ( m_iGameState != ASW_GS_CAMPAIGNMAP || iTargetMission == 0 )	// 0 is the dropzone
 		return false;
 
-	if (!GetCampaignSave() || !GetCampaignInfo())
+	if ( !GetCampaignSave() || !GetCampaignInfo() )
 		return false;
 
 	// don't allow the launch if we're not at this location
-	if (GetCampaignSave()->m_iCurrentPosition != iTargetMission)
+	if ( GetCampaignSave()->m_iCurrentPosition != iTargetMission )
 	{
-		Msg("RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition.Get());
+		Msg( "RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition.Get() );
 		return false;
 	}
 
-	CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(iTargetMission);
-	if (!pMission)
+	const RD_Campaign_Mission_t *pMission = GetCampaignInfo()->GetMission( iTargetMission );
+	if ( !pMission )
 	{
-		Msg("RequestCampaignLaunchMission %d failed as couldn't get this mission from the Campaign Info\n", iTargetMission);
+		Msg( "RequestCampaignLaunchMission %d failed as couldn't get this mission from the Campaign Info\n", iTargetMission );
 		return false;
-	}	
+	}
 
 	// save it!
 	GetCampaignSave()->SaveGameToFile();
 
-	Msg("CAlienSwarm::RequestCampaignLaunchMission changing mission to %s\n", STRING(pMission->m_MapName));
-	if (ASWGameResource())
+	Msg( "CAlienSwarm::RequestCampaignLaunchMission changing mission to %s\n", pMission->MapName );
+	if ( ASWGameResource() )
 		ASWGameResource()->RememberLeaderID();
-	ChangeLevel_Campaign(STRING(pMission->m_MapName));
+	ChangeLevel_Campaign( pMission->MapName );
 	return true;
 }
 
@@ -5962,7 +5961,7 @@ CASW_Campaign_Save* CAlienSwarm::GetCampaignSave()
 	return pGameResource->GetCampaignSave();
 }
 
-CASW_Campaign_Info* CAlienSwarm::GetCampaignInfo()
+const RD_Campaign_t *CAlienSwarm::GetCampaignInfo()
 {
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if (!pGameResource)
@@ -5972,47 +5971,34 @@ CASW_Campaign_Info* CAlienSwarm::GetCampaignInfo()
 		return NULL;
 
 	// if the campaign info has previously been setup, then just return that
-	if (pGameResource->m_pCampaignInfo)
+	if ( pGameResource->m_pCampaignInfo )
 		return pGameResource->m_pCampaignInfo;
 
 	// will only set up the campaign info if the campaign save is here (should've been created in gamerules constructor (and networked down each client))
 	CASW_Campaign_Save *pSave = GetCampaignSave();
-	if (!pSave)
+	if ( !pSave )
 		return NULL;
-	// our savegame is setup, so we can ask it for the name of our campaign and try to load it
-	CASW_Campaign_Info *pCampaignInfo = new CASW_Campaign_Info;
-	if (pCampaignInfo)
-	{
-		if (pCampaignInfo->LoadCampaign(pSave->GetCampaignName()))
-		{
-			// created and loaded okay, notify the asw game resource that some new marine skills are to be networked about
-#ifndef CLIENT_DLL
-			if (ASWGameResource())
-			{
-				ASWGameResource()->UpdateMarineSkills(pSave);
-			}
-			else
-			{
-				Msg("Warning: Failed to find game resource after loading campaign game.  Marine skills will be incorrect.\n");
-			}
-#endif			
-			pGameResource->m_pCampaignInfo = pCampaignInfo;
 
-			return pCampaignInfo;
-		}
-		else
-		{
-			// failed to load the specified campaign			
-			delete pCampaignInfo;
-#ifdef CLIENT_DLL
-			engine->ClientCmd("disconnect\n");
-#else
-			engine->ServerCommand("disconnect\n");
+	// our savegame is setup, so we can ask it for the name of our campaign and try to load it
+	pGameResource->m_pCampaignInfo.SetCampaign( pSave->GetCampaignName() );
+
+#ifndef CLIENT_DLL
+	// created and loaded okay, notify the asw game resource that some new marine skills are to be networked about
+	if ( pGameResource->m_pCampaignInfo )
+		pGameResource->UpdateMarineSkills( pSave );
 #endif
-		}
+
+	if ( !pGameResource->m_pCampaignInfo )
+	{
+		// failed to load the specified campaign
+#ifdef CLIENT_DLL
+		engine->ClientCmd( "disconnect\n" );
+#else
+		engine->ServerCommand( "disconnect\n" );
+#endif
 	}
 
-	return NULL;
+	return pGameResource->m_pCampaignInfo;
 }
 
 
@@ -6954,14 +6940,14 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
-	{				
+	{
 		if ( GetCampaignInfo() && GetCampaignSave() )
 		{
 			int iCurrentLoc = GetCampaignSave()->m_iCurrentPosition;
-			CASW_Campaign_Info::CASW_Campaign_Mission_t* mission = GetCampaignInfo()->GetMission(iCurrentLoc);
-			if (mission)
+			const RD_Campaign_Mission_t *mission = GetCampaignInfo()->GetMission( iCurrentLoc );
+			if ( mission )
 			{
-				m_iMissionDifficulty += mission->m_iDifficultyMod;
+				m_iMissionDifficulty += mission->DifficultyModifier;
 			}
 		}
 	}
@@ -8401,20 +8387,20 @@ bool CAlienSwarm::IsAnniversaryWeek()
 
 int CAlienSwarm::CampaignMissionsLeft()
 {
-	if (!IsCampaignGame())
+	if ( !IsCampaignGame() )
 		return 2;
 
-	CASW_Campaign_Info *pCampaign = GetCampaignInfo();
-	if (!pCampaign)
+	const RD_Campaign_t *pCampaign = GetCampaignInfo();
+	if ( !pCampaign )
 		return 2;
 
 	CASW_Campaign_Save *pSave = GetCampaignSave();
-	if (!pSave)
+	if ( !pSave )
 		return 2;
 
-	int iNumMissions = pCampaign->GetNumMissions() - 1;	// minus one, for the atmospheric entry which isn't a completable mission
-	
-	return (iNumMissions - pSave->m_iNumMissionsComplete);
+	int iNumMissions = pCampaign->Missions.Count() - 1;	// minus one, for the atmospheric entry which isn't a completable mission
+
+	return ( iNumMissions - pSave->m_iNumMissionsComplete );
 }
 
 bool CAlienSwarm::MarineCanPickupAmmo(CASW_Marine *pMarine, CASW_Ammo *pAmmo)

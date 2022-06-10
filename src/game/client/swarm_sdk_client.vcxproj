@@ -519,7 +519,6 @@ exit 1
     <ClCompile Include="..\shared\swarm\asw_ammo_drop_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_bouncing_pellet_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_campaign_commands.cpp" />
-    <ClCompile Include="..\shared\swarm\asw_campaign_info.cpp" />
     <ClCompile Include="..\shared\swarm\asw_campaign_save_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_deathmatch_mode.cpp" />
     <ClCompile Include="..\shared\swarm\asw_env_spark.cpp" />
@@ -2254,7 +2253,6 @@ exit 1
     <ClInclude Include="..\shared\swarm\asw_alien_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_ammo_drop_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_bouncing_pellet_shared.h" />
-    <ClInclude Include="..\shared\swarm\asw_campaign_info.h" />
     <ClInclude Include="..\shared\swarm\asw_deathmatch_mode_light.h" />
     <ClInclude Include="..\shared\swarm\asw_equipment_list.h" />
     <ClInclude Include="..\shared\swarm\asw_equip_req.h" />
