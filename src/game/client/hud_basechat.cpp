@@ -50,6 +50,7 @@ Color g_ColorGreen( 153, 255, 153, 255 );
 Color g_ColorDarkGreen( 64, 255, 64, 255 );
 Color g_ColorYellow( 255, 178.5, 0.0, 255 );
 Color g_ColorGrey( 204, 204, 204, 255 );
+Color g_ColoPurple( 160, 115, 205, 255 );
 
 static const char *gBugPriorityTable[] = {
 	"TODAY", 
