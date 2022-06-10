@@ -428,7 +428,13 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 			}
 		}
 		break;
-
+	case COLOR_MOD_CUSTOM:
+		c = g_ColoPurple;
+		break;
+	case COLOR_MOD_CUSTOM2:
+		c = g_ColorRed;
+		break;
+	
 	default:
 		c = GetClientColor( clientIndex );
 		//c = g_ASWColorWhite;
