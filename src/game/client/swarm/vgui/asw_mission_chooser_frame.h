@@ -37,10 +37,7 @@ class CNB_Header_Footer;
 class CASW_Mission_Chooser_List;
 class CASW_Mission_Chooser_Entry;
 class CASW_Mission_Chooser_Details;
-namespace vgui
-{
-	class PropertySheet;
-};
+class vgui::PropertySheet;
 
 class CASW_Mission_Chooser_Frame : public vgui::Frame
 {

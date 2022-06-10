@@ -1685,6 +1685,10 @@ exit 1
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
+    <ClCompile Include="swarm\rd_collection_details.cpp" />
+    <ClCompile Include="swarm\rd_collection_entry.cpp" />
+    <ClCompile Include="swarm\rd_collection_frame.cpp" />
+    <ClCompile Include="swarm\rd_collection_list.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
     <ClCompile Include="swarm\rd_jpeglib_helper.cpp" />
@@ -2786,6 +2790,10 @@ exit 1
     <ClInclude Include="swarm\iasw_client_vehicle.h" />
     <ClInclude Include="swarm\iasw_fade_list.h" />
     <ClInclude Include="swarm\ibriefing.h" />
+    <ClInclude Include="swarm\rd_collection_details.h" />
+    <ClInclude Include="swarm\rd_collection_entry.h" />
+    <ClInclude Include="swarm\rd_collection_frame.h" />
+    <ClInclude Include="swarm\rd_collection_list.h" />
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />

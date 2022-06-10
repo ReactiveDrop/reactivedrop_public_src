@@ -217,9 +217,6 @@ void CNB_Lobby_Tooltip::OnTick()
 				m_pItemDescription->InsertString( wszBuf );
 			}
 
-			int debug = 3;
-			debug = debug;
-
 			if ( rd_briefing_item_details_delay.GetFloat() < 0 )
 				m_flInventoryDetailsAfter = FLT_MAX;
 			else

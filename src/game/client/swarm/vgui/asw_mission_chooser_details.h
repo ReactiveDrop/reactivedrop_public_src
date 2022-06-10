@@ -9,11 +9,8 @@
 
 class CASW_Mission_Chooser_Entry;
 class CampaignMapSearchLights;
-namespace vgui
-{
-	class ImagePanel;
-	class Label;
-}
+class vgui::ImagePanel;
+class vgui::Label;
 
 class CASW_Mission_Chooser_Details : public vgui::EditablePanel
 {
