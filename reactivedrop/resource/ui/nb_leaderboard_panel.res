@@ -27,7 +27,7 @@
 	"ServerList"
 	{
 		"fieldName"			"ServerList"
-		"xpos"				"c34"
+		"xpos"				"c20"
 		"ypos"				"r23"
 		"wide"				"117"
 		"tall"				"27"
