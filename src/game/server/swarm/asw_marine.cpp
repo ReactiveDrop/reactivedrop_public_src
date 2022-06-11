@@ -2944,10 +2944,10 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 	if (!bAllowed)
 		return false;
 
-	if (pWeapon->m_bIsTemporaryPickup)
+	if ( index == ASW_TEMPORARY_WEAPON_SLOT )
 	{
 		CASW_Weapon* pActive = GetActiveASWWeapon();
-		if (pActive && !pActive->m_bIsTemporaryPickup) //not swapping a temp weapon into temp
+		if (pActive && pActive != pOldWeapon) //not swapping a temp weapon into temp
 		{
 			CASW_Weapon* pWeapon0 = GetASWWeapon(0);
 			CASW_Weapon* pWeapon1 = GetASWWeapon(1);
@@ -3007,7 +3007,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 		GiveAmmo(pWeapon->GetPrimaryAmmoCount(), pWeapon->GetPrimaryAmmoType());
 
 	//maybe switch to this weapon, if current is none
-	if ( GetActiveWeapon() == NULL || pWeapon->m_bIsTemporaryPickup )
+	if ( GetActiveWeapon() == NULL || index == ASW_TEMPORARY_WEAPON_SLOT )
 	{
 		Weapon_Switch( pWeapon );
 	}
@@ -3091,7 +3091,7 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 		pPickup->InitWeapon(this, pWeapon);
 
 		//maybe switch to this weapon, if current is none
-		if ( GetActiveWeapon() == NULL || pPickup->m_bIsTemporaryPickup )
+		if ( GetActiveWeapon() == NULL || index == ASW_TEMPORARY_WEAPON_SLOT )
 		{
 			Weapon_Switch( pWeapon );
 		}
@@ -3212,6 +3212,7 @@ bool CASW_Marine::RemoveWeapon(int iWeaponIndex, bool bNoSwap)
 
 bool CASW_Marine::DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ )
 {
+	bool bWasTemporary = pWeapon == GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
 	RemoveWeaponPowerup( pWeapon );
 	
 	// dropping the weapon entity itself
@@ -3390,7 +3391,7 @@ bool CASW_Marine::DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *p
 	Weapon_Detach( pWeapon );
 
 	//unify drop\swap behaviour calls within temporary weapons, override bNoSwap behavior
-	if ( pWeapon->m_bIsTemporaryPickup )
+	if ( bWasTemporary )
 	{
 		CBaseCombatWeapon* pUseMe = GetWeapon(m_nIndexActWeapBeforeTempPickup);
 		if (pUseMe)
