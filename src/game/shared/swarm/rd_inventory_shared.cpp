@@ -342,18 +342,28 @@ namespace ReactiveDropInventory
 		count = szBuf.Count(); \
 		pInventory->GetItemDefinitionProperty( id, szPropertyName, szBuf.Base(), &count )
 
+		char szKey[256];
+
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szBuf.Base();
 		FETCH_PROPERTY( "tags" );
 		pItemDef->Tags = szBuf.Base();
+
+		V_snprintf( szKey, sizeof( szKey ), "display_type_%s", szLang );
 		FETCH_PROPERTY( "display_type" );
+		FETCH_PROPERTY( szKey );
 		pItemDef->DisplayType = szBuf.Base();
+
+		V_snprintf( szKey, sizeof( szKey ), "name_%s", szLang );
 		FETCH_PROPERTY( "name" );
+		FETCH_PROPERTY( szKey );
 		pItemDef->Name = szBuf.Base();
+		
+		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );
 		FETCH_PROPERTY( "description" );
+		FETCH_PROPERTY( szKey );
 		pItemDef->Description = szBuf.Base();
 
-		char szKey[256];
 		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
 		FETCH_PROPERTY( "briefing_name_english" );
 		FETCH_PROPERTY( szKey );
