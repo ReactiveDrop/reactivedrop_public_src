@@ -5783,7 +5783,7 @@ void CC_Ent_Remove( const CCommand& args )
 	}
 
 	// Found one?
-	if ( pEntity )
+	if ( pEntity && !pEntity->IsWorld() )
 	{
 		Msg( "Removed %s(%s)\n", STRING(pEntity->m_iClassname), pEntity->GetDebugName() );
 		UTIL_Remove( pEntity );
