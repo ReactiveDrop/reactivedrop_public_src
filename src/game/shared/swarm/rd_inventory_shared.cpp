@@ -351,33 +351,45 @@ namespace ReactiveDropInventory
 
 		V_snprintf( szKey, sizeof( szKey ), "display_type_%s", szLang );
 		FETCH_PROPERTY( "display_type" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->DisplayType = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->DisplayType = szBuf.Base();
 
 		V_snprintf( szKey, sizeof( szKey ), "name_%s", szLang );
 		FETCH_PROPERTY( "name" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->Name = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->Name = szBuf.Base();
 		
 		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );
 		FETCH_PROPERTY( "description" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->Description = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->Description = szBuf.Base();
 
 		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
 		FETCH_PROPERTY( "briefing_name_english" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->BriefingName = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->BriefingName = szBuf.Base();
 
 		V_snprintf( szKey, sizeof( szKey ), "before_description_%s", szLang );
 		FETCH_PROPERTY( "before_description_english" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->BeforeDescription = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->BeforeDescription = szBuf.Base();
 
 		V_snprintf( szKey, sizeof( szKey ), "after_description_%s", szLang );
 		FETCH_PROPERTY( "after_description_english" );
-		FETCH_PROPERTY( szKey );
 		pItemDef->AfterDescription = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->AfterDescription = szBuf.Base();
 #undef FETCH_PROPERTY
 
 		s_ItemDefs.Insert( id, pItemDef );
