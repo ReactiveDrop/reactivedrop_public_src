@@ -25,6 +25,7 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
 	m_pServerList = new CNB_Button( this, "ServerList", "", this, "ServerList" );
+	m_pStatsWebsite = new CNB_Button( this, "StatsWebsite", "", this, "StatsWebsite" );
 
 	m_pHeaderFooter->SetTitle( "#nb_leaderboard" );
 
@@ -52,6 +53,7 @@ void CNB_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "resource/ui/nb_leaderboard_panel.res" );
 
 	m_pServerList->SetVisible( true );
+	m_pStatsWebsite->SetVisible( true );
 }
 
 void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
@@ -65,6 +67,17 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 	{
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKSSERVERS, this, true );
+		return;
+	}
+	if ( !V_stricmp( command, "StatsWebsite" ) )
+	{
+		if ( SteamApps() )
+		{
+			char statsWeb[256];
+			V_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/heroes?lang=%s&utm_source=mainmenu",
+				SteamApps()->GetCurrentGameLanguage() );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
+		}
 		return;
 	}
 	BaseClass::OnCommand( command );
@@ -117,7 +130,7 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 		return;
 	}
 
-	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardDownload );
 }
 

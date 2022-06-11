@@ -429,7 +429,6 @@ void CReactiveDrop_VGUI_Leaderboard_Panel_Points::DoOverrideEntry()
 
 void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetScrollable( bool bScrollable )
 {
-	m_gplLeaderboard->ShowScrollProgress( bScrollable );
 	m_gplLeaderboard->SetScrollBarVisible( bScrollable );
 }
 
