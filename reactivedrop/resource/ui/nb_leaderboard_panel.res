@@ -54,6 +54,17 @@
 		"zpos"				"3"
 		"visible"			"0"
 	}
+	"ToggleButton"
+	{
+		"fieldName"		"ToggleButton"
+		"xpos"		"c-142"
+		"ypos"		"r20"
+		"wide"		"16"
+		"tall"		"16"
+		"ControlName"		"CBitmapButton"
+		"zpos"		"3"
+		"scaleImage"		"1"
+	}
 	"LeaderboardBackground"
 	{
 		"fieldName"			"LeaderboardBackground"

@@ -5,6 +5,7 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 #include <vgui_controls/Frame.h>
+#include <vgui_bitmapbutton.h>
 #include "gameui/swarm/basemodframe.h"
 
 class vgui::Label;
@@ -27,10 +28,12 @@ public:
 	CNB_Button *m_pBackButton;
 	CNB_Button *m_pServerList;
 	CNB_Button *m_pStatsWebsite;
+	CBitmapButton* m_pToggleButton;
 	vgui::Panel *m_pLeaderboardBackground;
 	CReactiveDrop_VGUI_Leaderboard_Panel_Points *m_pLeaderboard;
 	vgui::Label *m_pErrorLabel;
 	vgui::Label *m_pNotFoundLabel;
+	int m_iCurrentLeaderboardDisplayMode;
 
 	CCallResult<CNB_Leaderboard_Panel_Points, LeaderboardFindResult_t> m_LeaderboardFind;
 	void LeaderboardFind( LeaderboardFindResult_t *pResult, bool bIOError );
