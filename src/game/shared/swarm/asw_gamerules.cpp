@@ -681,10 +681,11 @@ ConVar asw_vote_map_fraction("asw_vote_map_fraction", "0.6", FCVAR_REPLICATED, "
 ConVar asw_marine_collision("asw_marine_collision", "0", FCVAR_REPLICATED, "Whether marines collide with each other or not, in a multiplayer game");
 ConVar asw_skill( "asw_skill","2", FCVAR_REPLICATED, "Game skill level (1-5).", true, 1, true, 5 );
 ConVar asw_money( "asw_money", "0", FCVAR_REPLICATED, "Can players collect money?" );
-ConVar asw_client_build_maps("asw_client_build_maps", "0", FCVAR_REPLICATED, "Whether clients compile random maps rather than getting sent them");
-ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won");
-ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines");
-ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns");
+ConVar asw_client_build_maps( "asw_client_build_maps", "0", FCVAR_REPLICATED, "Whether clients compile random maps rather than getting sent them" );
+ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won" );
+ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines" );
+ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns" );
+ConVar asw_player_avoidance( "asw_player_avoidance", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Enable/Disable player avoidance." );
 #ifdef GAME_DLL
 static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_ARCHIVE, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1, &UpdateGameRulesOverrideAllowRotateCamera );
