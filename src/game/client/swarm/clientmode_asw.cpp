@@ -91,6 +91,7 @@ ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 120.0 );
 
 ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
+ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
@@ -796,6 +797,14 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 {
 	const char *eventname = event->GetName();
 
+	if ( Q_strcmp( "mission_failed", eventname ) == 0 )
+	{
+		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pPlayer && cl_auto_restart_mission.GetBool() && ASWGameResource()->GetLeader() == pPlayer )
+		{
+			engine->ClientCmd( "asw_restart_mission" );
+		}
+	}
 	if ( Q_strcmp( "asw_mission_restart", eventname ) == 0 )
 	{
 		( GET_HUDELEMENT( CHudChat ) )->m_bSkipNextReset = true;
