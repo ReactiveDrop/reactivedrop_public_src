@@ -4,6 +4,13 @@
 #include "asw_util_shared.h"
 #include "jsmn.h"
 
+#ifdef CLIENT_DLL
+#include <vgui/IImage.h>
+#include <vgui/ISurface.h>
+#include <vgui_controls/Controls.h>
+#include "lodepng.h"
+#endif
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -259,6 +266,149 @@ CON_COMMAND_F( rd_debug_print_inventory, "", FCVAR_HIDDEN )
 {
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
 }
+
+class CSteamItemIcon : public vgui::IImage
+{
+public:
+	CSteamItemIcon( const char *szURL )
+	{
+		m_iTextureID = 0;
+		m_Color.SetColor( 255, 255, 255, 255 );
+		m_nX = 0;
+		m_nY = 0;
+		m_nWide = 512;
+		m_nTall = 512;
+
+		ISteamHTTP *pHTTP = SteamHTTP();
+		Assert( pHTTP );
+		if ( pHTTP )
+		{
+			// The medal images send a Cache-Control header of "public, max-age=315569520" (1 decade).
+			// The Steam API will automatically cache stuff for us, so we don't have to manage cache ourselves.
+			HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szURL );
+			SteamAPICall_t hAPICall;
+			if ( pHTTP->SendHTTPRequest( hRequest, &hAPICall ) )
+			{
+				m_HTTPRequestCompleted.Set( hAPICall, this, &CSteamItemIcon::OnRequestCompleted );
+			}
+			else
+			{
+				Warning( "Sending request for inventory item icon failed!\n" );
+			}
+		}
+		else
+		{
+			Warning( "No ISteamHTTP access - cannot fetch inventory item icon.\n" );
+		}
+	}
+
+	virtual ~CSteamItemIcon()
+	{
+		if ( m_iTextureID )
+		{
+			vgui::surface()->DestroyTextureID( m_iTextureID );
+		}
+	}
+
+	virtual void Paint()
+	{
+		if ( !m_iTextureID )
+		{
+			return;
+		}
+
+		vgui::surface()->DrawSetColor( m_Color );
+		vgui::surface()->DrawSetTexture( m_iTextureID );
+		vgui::surface()->DrawTexturedRect( m_nX, m_nY, m_nX + m_nWide, m_nY + m_nTall );
+	}
+
+	virtual void SetPos( int x, int y )
+	{
+		m_nX = x;
+		m_nY = y;
+	}
+
+	virtual void GetContentSize( int &wide, int &tall )
+	{
+		wide = m_nWide;
+		tall = m_nTall;
+	}
+
+	virtual void GetSize( int &wide, int &tall )
+	{
+		wide = m_nWide;
+		tall = m_nTall;
+	}
+
+	virtual void SetSize( int wide, int tall )
+	{
+		m_nWide = wide;
+		m_nTall = tall;
+	}
+
+	virtual void SetColor( Color col )
+	{
+		m_Color = col;
+	}
+
+	virtual bool Evict() { return false; }
+	virtual int GetNumFrames() { return 1; }
+	virtual void SetFrame( int nFrame ) {}
+	virtual vgui::HTexture GetID() { return m_iTextureID; }
+	virtual void SetRotation( int iRotation ) {}
+
+private:
+	CRC32_t m_URLHash;
+	vgui::HTexture m_iTextureID;
+	Color m_Color;
+	int m_nX, m_nY;
+	unsigned m_nWide, m_nTall;
+
+	void OnRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
+	{
+		if ( bIOFailure || !pParam->m_bRequestSuccessful )
+		{
+			Warning( "Failed to fetch inventory item icon: IO Failure\n" );
+			return;
+		}
+
+		ISteamHTTP *pHTTP = SteamHTTP();
+		Assert( pHTTP );
+		if ( !pHTTP )
+		{
+			Warning( "No access to ISteamHTTP inside callback from HTTP request!\n" );
+			return;
+		}
+
+		if ( pParam->m_eStatusCode != k_EHTTPStatusCode200OK )
+		{
+			Warning( "Status code %d from inventory item icon request - trying to parse anyway.\n", pParam->m_eStatusCode );
+		}
+
+		CUtlMemory<uint8_t> data( 0, pParam->m_unBodySize );
+		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, data.Base(), pParam->m_unBodySize ) )
+		{
+			Warning( "Failed to get inventory item icon from successful request. Programmer error?\n" );
+			return;
+		}
+
+		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+
+		uint8_t *rgba = NULL;
+		unsigned error = lodepng_decode32( &rgba, &m_nWide, &m_nTall, data.Base(), pParam->m_unBodySize );
+		if ( error )
+		{
+			Warning( "Decoding inventory item icon: lodepng error %d: %s", error, lodepng_error_text( error ) );
+		}
+
+		m_iTextureID = vgui::surface()->CreateNewTextureID( true );
+		vgui::surface()->DrawSetTextureRGBA( m_iTextureID, rgba, m_nWide, m_nTall );
+
+		free( rgba );
+	}
+
+	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+};
 #endif
 
 namespace ReactiveDropInventory
@@ -343,6 +493,15 @@ namespace ReactiveDropInventory
 		pInventory->GetItemDefinitionProperty( id, szPropertyName, szBuf.Base(), &count )
 
 		char szKey[256];
+
+#ifdef CLIENT_DLL
+		pItemDef->Icon = NULL;
+		FETCH_PROPERTY( "icon_url" );
+		if ( *szBuf.Base() )
+		{
+			pItemDef->Icon = new CSteamItemIcon( szBuf.Base() );
+		}
+#endif
 
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szBuf.Base();

@@ -108,7 +108,7 @@ void CRD_Collection_Details_Inventory::HighlightEntry( CRD_Collection_Entry *pEn
 	CRD_Collection_List_Inventory *pList = assert_cast< CRD_Collection_List_Inventory * >( pInvEntry->m_pList );
 
 	m_pIcon->SetVisible( true );
-	m_pIcon->SetImage( VarArgs( "briefing/rd_inventory/%s_%d", pList->m_szSlot, pInvEntry->m_Details.m_iDefinition ) );
+	m_pIcon->SetImage( pDef->Icon );
 
 	wchar_t wszBuf[2048];
 

@@ -153,7 +153,7 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	CRD_Collection_List_Inventory *pList = assert_cast< CRD_Collection_List_Inventory * >( m_pList );
 
-	m_pIcon->SetImage( VarArgs( "briefing/rd_inventory/%s_%d", pList->m_szSlot, m_Details.m_iDefinition ) );
+	m_pIcon->SetImage( ReactiveDropInventory::GetItemDef( m_Details.m_iDefinition )->Icon );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pList->m_szSlot ) );
 	m_pEquippedMarker->SetVisible( strtoull( equipID.GetString(), NULL, 10 ) == m_Details.m_itemId );

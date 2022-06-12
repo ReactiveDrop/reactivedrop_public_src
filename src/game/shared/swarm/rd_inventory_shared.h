@@ -2,6 +2,13 @@
 
 #include "steam/steam_api.h"
 
+#ifdef CLIENT_DLL
+namespace vgui
+{
+	class IImage;
+}
+#endif
+
 namespace ReactiveDropInventory
 {
 	struct ItemDef_t
@@ -15,6 +22,9 @@ namespace ReactiveDropInventory
 		CUtlString Description;
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
+#ifdef CLIENT_DLL
+		vgui::IImage *Icon;
+#endif
 	};
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id );
