@@ -426,6 +426,7 @@ void ClientModeASW::Init()
 {
 	BaseClass::Init();
 
+	gameeventmanager->AddListener( this, "mission_failed", false );
 	gameeventmanager->AddListener( this, "asw_mission_restart", false );
 	gameeventmanager->AddListener( this, "game_newmap", false );
 	HOOK_MESSAGE( ASWBlur );
