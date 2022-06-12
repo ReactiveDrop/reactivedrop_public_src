@@ -184,7 +184,7 @@ extern ConVar asw_rts_controls;
 extern ConVar asw_hud_alpha;
 extern ConVar asw_building_room_thumbnails;
 extern ConVar rd_chatwipe;
-extern ConVar rd_marine_avoidance;
+extern ConVar rd_override_marine_avoidance;
 
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
@@ -1535,8 +1535,14 @@ void CalculateBouncePlane( const Vector &vecMarineCenter, const Vector &vecInter
 //-----------------------------------------------------------------------------
 void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 {
+	// overrides asw_player_avoidance if set
+	if ( rd_override_marine_avoidance.GetInt() > -1 ) 
+	{
+		asw_player_avoidance.SetValue( rd_override_marine_avoidance.GetInt() );
+	}
+	
 	// Turn off the player avoidance code.
-	if ( !asw_player_avoidance.GetBool() || !rd_marine_avoidance.GetBool() )
+	if ( !asw_player_avoidance.GetBool() )
 		return;
 
 	// Get the Alien Swarm game resource.
