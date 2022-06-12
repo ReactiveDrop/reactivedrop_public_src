@@ -157,7 +157,6 @@ ConVar asw_particle_count("asw_particle_count", "0", 0, "Shows how many particle
 ConVar asw_dlight_list("asw_dlight_list", "0", 0, "Lists dynamic lights");
 
 ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file used for stim music" );
-ConVar asw_player_avoidance( "asw_player_avoidance", "1", FCVAR_CHEAT, "Enable/Disable player avoidance." );
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
 ConVar asw_player_avoidance_bounce( "asw_player_avoidance_bounce", "1.0", FCVAR_CHEAT, "Marine avoidance bounce." );
 ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", FCVAR_CHEAT, "Marine avoidance hull size." );
@@ -184,7 +183,7 @@ extern ConVar asw_rts_controls;
 extern ConVar asw_hud_alpha;
 extern ConVar asw_building_room_thumbnails;
 extern ConVar rd_chatwipe;
-extern ConVar rd_override_marine_avoidance;
+extern ConVar asw_player_avoidance;
 
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
@@ -1535,12 +1534,6 @@ void CalculateBouncePlane( const Vector &vecMarineCenter, const Vector &vecInter
 //-----------------------------------------------------------------------------
 void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 {
-	// overrides asw_player_avoidance if set
-	if ( rd_override_marine_avoidance.GetInt() > -1 ) 
-	{
-		asw_player_avoidance.SetValue( rd_override_marine_avoidance.GetInt() );
-	}
-	
 	// Turn off the player avoidance code.
 	if ( !asw_player_avoidance.GetBool() )
 		return;
