@@ -297,6 +297,20 @@
 
 		"text_xpos"	"26"
 	}
+
+	ASWHudKills
+	{
+		"fieldName"		"ASWHudKills"
+		"xpos"	"r100"
+		"ypos"	"100"
+		"wide"	"90"
+		"tall"  "200"
+		"visible" "1"
+		"enabled" "1"
+		"BgColor" "0 0 0 255"
+		"PaintBackgroundType"	"2"
+		"BgColor_override" "0 0 0 192"
+	}
 	
 	ASWHudMoney
 	{
