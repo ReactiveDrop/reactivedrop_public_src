@@ -192,6 +192,7 @@ void CNB_Lobby_Tooltip::OnTick()
 			V_UTF8ToUnicode( pDef->BriefingName, wszBuf, sizeof( wszBuf ) );
 			m_pTitle->SetText( wszBuf );
 
+			m_pPromotionIcon->SetImage( "" );
 			m_pPromotionIcon->SetImage( pDef->Icon );
 
 			V_UTF8ToUnicode( pDef->DisplayType, wszBuf, sizeof( wszBuf ) );
