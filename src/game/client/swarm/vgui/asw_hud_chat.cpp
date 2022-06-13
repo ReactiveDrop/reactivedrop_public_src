@@ -545,6 +545,12 @@ void CHudChat::PerformLayout( void )
 		if ( GetChatHistory() )
 		{
 			GetChatHistory()->GetScrollBar()->SetSize( 16, iHistoryHeight );
+			if (GetChatInput())
+			{
+				int w, t;
+				GetChatHistory()->GetSize(w, t);
+				GetChatInput()->SetSize(w, m_iFontHeight);
+			}
 		}
 	//}
 	//else
