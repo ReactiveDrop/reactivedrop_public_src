@@ -73,6 +73,8 @@ void CNB_Lobby_Tooltip::ApplySchemeSettings( vgui::IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 	
 	LoadControlSettings( "resource/ui/nb_lobby_tooltip.res" );
+
+	m_pItemDescription->SetCursor( vgui::dc_arrow );
 }
 
 void CNB_Lobby_Tooltip::PerformLayout()
