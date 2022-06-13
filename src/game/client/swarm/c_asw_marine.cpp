@@ -89,7 +89,7 @@ ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FC
 ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
 ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
-ConVar rd_buzzer_blur( "rd_buzzer_blur", "0", FCVAR_ARCHIVE, "Set to 0 to disable buzzer blur" );	// TODO: Remove this once the buzzer blur issue is fixed. See #76
+ConVar rd_buzzer_blur( "rd_buzzer_blur", "1", FCVAR_NONE, "Set to 0 to disable buzzer blur" );	// TODO: Remove this once the buzzer blur issue is fixed. See #76
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
