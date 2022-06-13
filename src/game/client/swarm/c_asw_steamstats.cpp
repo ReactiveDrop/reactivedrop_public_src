@@ -748,6 +748,17 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 			}
 		}
 	}
+
+	char szBetaBranch[256]{};
+	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
+	{
+		// beta tester medal
+		SteamInventoryResult_t hResult{ k_SteamInventoryResultInvalid };
+		if ( SteamInventory()->AddPromoItem( &hResult, 13 ) )
+		{
+			SteamInventory()->DestroyResult( hResult );
+		}
+	}
 }
 
 int CASW_Steamstats::GetFavoriteEquip( int iSlot )
