@@ -168,7 +168,20 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 		return;
 	}
 
-	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, static_cast< ELeaderboardDataRequest >( m_iCurrentLeaderboardDisplayMode ), 0, 100 );
+	SteamAPICall_t hCall;
+	switch ( ELeaderboardDataRequest( m_iCurrentLeaderboardDisplayMode ) )
+	{
+	case k_ELeaderboardDataRequestFriends:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		break;
+	case k_ELeaderboardDataRequestGlobalAroundUser:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobalAroundUser, -50, 50 );
+		break;
+	default:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+		break;
+	}
+
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardDownload );
 }
 
