@@ -46,7 +46,7 @@ MissionCompleteFrame::MissionCompleteFrame(bool bSuccess, Panel *parent, const c
 		// clear the currently visible part of the chat
 		CHudChat *pChat = GET_HUDELEMENT( CHudChat );
 		if (pChat)
-			pChat->InsertBlankPage();
+			pChat->ClearHistory();
 	}
 
 	if (GetClientModeASW() && GetClientModeASW()->m_bSpectator)

@@ -7,7 +7,6 @@
 
 #include "cbase.h"
 #include "hud_basechat.h"
-
 #include <vgui/IScheme.h>
 #include <vgui/IVGui.h>
 #include "iclientmode.h"
@@ -38,11 +37,14 @@
 
 #define CHAT_WIDTH_PERCENTAGE 0.6f
 
+ConVar cl_showchatmsg( "cl_showchatmsg", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Enable/disable chat messages printing on the screen." );
+
 ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
 ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
 ConVar cl_chat_active( "cl_chat_active", "0" );
 ConVar cl_chatfilters( "cl_chatfilters", "31", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
-ConVar rd_chatwipe( "rd_chatwipe", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping " );
+ConVar rd_chatwipe( "rd_chatwipe", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between missions" );
+ConVar rd_chatwipe_mainmenu( "rd_chatwipe_mainmenu", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between games" );
 
 Color g_ColorBlue( 153, 204, 255, 255 );
 Color g_ColorRed( 255, 63.75, 63.75, 255 );
@@ -300,7 +302,6 @@ CBaseHudChatLine::CBaseHudChatLine( vgui::Panel *parent, const char *panelName )
 	m_text = NULL;
 
 	SetPaintBackgroundEnabled( true );
-	
 	SetVerticalScrollbar( false );
 }
 
@@ -459,10 +460,7 @@ void CBaseHudChatLine::Expire( void )
 CBaseHudChatInputLine::CBaseHudChatInputLine( CBaseHudChat *parent, char const *panelName ) : 
 	vgui::Panel( parent, panelName )
 {
-	SetMouseInputEnabled( false );
-
 	m_pPrompt = new vgui::Label( this, "ChatInputPrompt", L"Enter text:" );
-
 	m_pInput = new CBaseHudChatEntry( this, "ChatInput", parent );	
 	m_pInput->SetMaximumCharCount( 127 );
 }
@@ -483,9 +481,6 @@ void CBaseHudChatInputLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 	m_pPrompt->SetPaintBackgroundEnabled( true );
 	m_pPrompt->SetContentAlignment( vgui::Label::a_west );
 	m_pPrompt->SetTextInset( 2, 0 );
-
-	m_pInput->SetMouseInputEnabled( true );
-
 	SetBgColor( Color( 0, 0, 0, 0) );
 }
 
@@ -690,6 +685,32 @@ void CHudChatHistory::Paint()
 	}
 }
 
+void CHudChatHistory::OnKeyCodeTyped(vgui::KeyCode code)
+{
+	if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
+	{
+		CBaseHudChat* pChat = dynamic_cast<CBaseHudChat*>(GetParent());
+
+		if (code != KEY_ESCAPE)
+		{
+			if (pChat)
+			{
+				pChat->Send();
+			}
+		}
+
+		// End message mode.
+		if (pChat)
+		{
+			pChat->StopMessageMode();
+		}
+	}
+	else
+	{
+		BaseClass::OnKeyCodeTyped(code);
+	}
+}
+
 CBaseHudChat *g_pHudChat = NULL;
 
 CBaseHudChat *CBaseHudChat::GetHudChat( void )
@@ -738,6 +759,7 @@ CBaseHudChat::CBaseHudChat( const char *pElementName )
 	}
 
 	m_pChatHistory = new CHudChatHistory( this, "HudChatHistory" );
+	m_pChatHistory->SetParent( this );
 
 	CreateChatLines();
 	CreateChatInputLine();
@@ -1261,6 +1283,8 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 
 	if ( !IsConsole() )
 	{
+		m_pFilterPanel->SetVisible(false);
+
 		m_pChatInput->ClearEntry();
 		SetChatPrompt( iMessageModeType );
 	
@@ -1269,7 +1293,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 			// TERROR: hack to get ChatFont back
 			GetChatHistory()->SetFont( vgui::scheme()->GetIScheme( GetScheme() )->GetFont( "ChatFont", false ) );
 			GetChatHistory()->SetMouseInputEnabled( true );
-			GetChatHistory()->SetKeyBoardInputEnabled( false );
+			GetChatHistory()->SetKeyBoardInputEnabled( true );
 			GetChatHistory()->SetVerticalScrollbar( true );
 			GetChatHistory()->ResetAllFades( true );
 			GetChatHistory()->SetPaintBorderEnabled( true );
@@ -1277,21 +1301,21 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 		}
 
 		vgui::SETUP_PANEL( this );
+		MoveToFront();
+		RequestFocus();
 		SetKeyBoardInputEnabled( true );
 		SetMouseInputEnabled( true );
 		m_pChatInput->SetVisible( true );
 		vgui::surface()->CalculateMouseVisible();
+		m_pChatInput->SetPaintBorderEnabled( true );		
 		m_pChatInput->RequestFocus();
-		m_pChatInput->SetPaintBorderEnabled( true );
-		m_pChatInput->SetMouseInputEnabled( true );
 
-		// Place the mouse cursor near the text so people notice it.
+#ifndef INFESTED_DLL
+		 Place the mouse cursor near the text so people notice it.
 		int x, y, w, h;
 		GetChatHistory()->GetBounds( x, y, w, h );
-#ifndef INFESTED_DLL
 		vgui::input()->SetCursorPos( x + ( w/2), y + (h/2) );
 #endif
-		m_pFilterPanel->SetVisible( false );
 	}
 
 	m_flHistoryFadeTime = gpGlobals->curtime + CHAT_HISTORY_FADE_TIME;
@@ -1708,6 +1732,17 @@ void CBaseHudChat::LevelShutdown( void )
 //-----------------------------------------------------------------------------
 void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, ... )
 {
+	if ( cl_showchatmsg.GetBool() )
+		m_iFilterFlags = cl_chatfilters.GetInt();
+	else
+		m_iFilterFlags &= ~CHAT_FILTER_PUBLICCHAT;
+
+	if ( iFilter != CHAT_FILTER_NONE )
+	{
+		if ( !( iFilter & GetFilterFlags() ) )
+			return;
+	}
+
 	va_list marker;
 	char msg[4096];
 
@@ -1750,12 +1785,6 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	if ( !line )
 	{
 		return;
-	}
-
-	if ( iFilter != CHAT_FILTER_NONE )
-	{
-		if ( !(iFilter & GetFilterFlags() ) )
-			return;
 	}
 
 	if ( *pmsg < 32 )
