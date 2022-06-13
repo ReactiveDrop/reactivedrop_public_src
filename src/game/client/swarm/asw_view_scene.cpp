@@ -23,13 +23,13 @@
 
 float g_fMarinePoisonDuration = 0;
 bool g_bBlurredLastTime = false;
-ConVar asw_motionblur("asw_motionblur", "0", 0, "Motion Blur");			// motion blur on/off
-ConVar asw_motionblur_addalpha("asw_motionblur_addalpha", "0.3", 0, "Motion Blur Alpha");	// The amount of alpha to use when adding the FB to our custom buffer
-ConVar asw_motionblur_drawalpha("asw_motionblur_drawalpha", "1", 0, "Motion Blur Draw Alpha");		// The amount of alpha to use when adding our custom buffer to the FB
-ConVar asw_motionblur_time("asw_motionblur_time", "0.05", 0, "The amount of time to wait until updating the FB");	// Delay to add between capturing the FB
+ConVar asw_motionblur( "asw_motionblur", "0", FCVAR_NONE, "Motion Blur" );			// motion blur on/off
+ConVar asw_motionblur_addalpha( "asw_motionblur_addalpha", "0.3", FCVAR_NONE, "Motion Blur Alpha" );	// The amount of alpha to use when adding the FB to our custom buffer
+ConVar asw_motionblur_drawalpha( "asw_motionblur_drawalpha", "1", FCVAR_NONE, "Motion Blur Draw Alpha" );		// The amount of alpha to use when adding our custom buffer to the FB
+ConVar asw_motionblur_time( "asw_motionblur_time", "0.05", FCVAR_CHEAT, "The amount of time to wait until updating the FB" );	// Delay to add between capturing the FB
 ConVar asw_motionblur_forceupdate( "asw_motionblur_forceupdate", "1", FCVAR_NONE, "update the motion blur buffer even if it's not being displayed" );
-ConVar asw_night_vision_self_illum_multiplier( "asw_night_vision_self_illum_multiplier", "25", 0, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
-ConVar asw_sniper_scope_self_illum_multiplier( "asw_sniper_scope_self_illum_multiplier", "0.5", 0, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
+ConVar asw_night_vision_self_illum_multiplier( "asw_night_vision_self_illum_multiplier", "25", FCVAR_CHEAT, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
+ConVar asw_sniper_scope_self_illum_multiplier( "asw_sniper_scope_self_illum_multiplier", "0.5", FCVAR_CHEAT, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
 
 // @TODO: move this parameter to an entity property rather than convar
 ConVar mat_dest_alpha_range( "mat_dest_alpha_range", "1000", 0, "Amount to scale depth values before writing into destination alpha ([0,1] range)." );
