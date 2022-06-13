@@ -37,7 +37,7 @@
 
 #define CHAT_WIDTH_PERCENTAGE 0.6f
 
-ConVar cl_showchatmsg("cl_showchatmsg", "1", 0, "Enable/disable chat messages printing on the screen.");
+ConVar cl_showchatmsg( "cl_showchatmsg", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Enable/disable chat messages printing on the screen." );
 
 ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
 ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
@@ -1732,6 +1732,17 @@ void CBaseHudChat::LevelShutdown( void )
 //-----------------------------------------------------------------------------
 void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, ... )
 {
+	if ( cl_showchatmsg.GetBool() )
+		m_iFilterFlags = cl_chatfilters.GetInt();
+	else
+		m_iFilterFlags &= ~CHAT_FILTER_PUBLICCHAT;
+
+	if ( iFilter != CHAT_FILTER_NONE )
+	{
+		if ( !( iFilter & GetFilterFlags() ) )
+			return;
+	}
+
 	va_list marker;
 	char msg[4096];
 
@@ -1774,15 +1785,6 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	if ( !line )
 	{
 		return;
-	}
-
-	if ( !cl_showchatmsg.GetBool() )
-		return;
-
-	if ( iFilter != CHAT_FILTER_NONE )
-	{
-		if ( !(iFilter & GetFilterFlags() ) )
-			return;
 	}
 
 	if ( *pmsg < 32 )
