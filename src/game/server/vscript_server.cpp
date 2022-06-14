@@ -925,10 +925,10 @@ static const char *Script_FileToString( const char *pszFileName )
 	if ( !pszFileName || !Q_strcmp( pszFileName, "" ) )
 	{
 		Log_Warning( LOG_VScript, "FileToString() file name cannot be null or empty\n" );
-		return;
+		return NULL;
 	}
 
-	if ( V_strstr( pszFileName, "..") )
+	if ( V_strstr( pszFileName, ".." ) )
 	{
 		Log_Warning( LOG_VScript, "FileToString() file name cannot contain '..'\n" );
 		return NULL;
