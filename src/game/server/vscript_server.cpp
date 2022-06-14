@@ -887,6 +887,12 @@ static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
 {
+	if ( !pszFileName || !Q_strcmp( pszFileName, "" ) )
+	{
+		Log_Warning( LOG_VScript, "StringToFile() file name cannot be null or empty\n" );
+		return;
+	}
+
 	if ( V_strstr( pszFileName, "..") )
 	{
 		Log_Warning( LOG_VScript, "StringToFile() file name cannot contain '..'\n" );
@@ -916,6 +922,12 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 
 static const char *Script_FileToString( const char *pszFileName )
 {
+	if ( !pszFileName || !Q_strcmp( pszFileName, "" ) )
+	{
+		Log_Warning( LOG_VScript, "FileToString() file name cannot be null or empty\n" );
+		return;
+	}
+
 	if ( V_strstr( pszFileName, "..") )
 	{
 		Log_Warning( LOG_VScript, "FileToString() file name cannot contain '..'\n" );
