@@ -151,9 +151,17 @@ void CASW_Weapon_Tesla_Trap::PrimaryAttack( void )
 		newVel = vec3_origin;
 	}
 	CASW_TeslaTrap* pTrap = CASW_TeslaTrap::Tesla_Trap_Create( vecSrc, ang,	newVel, rotSpeed, pMarine, this );
-	if( pTrap )
+	if (pTrap)
+	{
 		pTrap->m_hMarineDeployer = pMarine;
-
+		IGameEvent * event = gameeventmanager->CreateEvent( "tesla_trap_placed" );
+		if ( event )
+		{
+			event->SetInt( "entindex", pTrap->entindex() );
+			event->SetInt( "marine", pMarine->entindex() );
+			gameeventmanager->FireEvent( event );
+		}
+	}
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
 #endif
 	// decrement ammo

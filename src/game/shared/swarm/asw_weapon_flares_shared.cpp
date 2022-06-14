@@ -162,6 +162,14 @@ void CASW_Weapon_Flares::DelayedAttack()
 
 		pFlare->SetDuration( flDuration );
 		pFlare->SetGravity( GetThrowGravity() );
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "flare_placed" );
+		if ( event )
+		{
+			event->SetInt( "entindex", pFlare->entindex() );
+			event->SetInt( "marine", pMarine->entindex() );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 #endif
 	// decrement ammo

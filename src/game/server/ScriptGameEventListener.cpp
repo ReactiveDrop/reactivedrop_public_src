@@ -362,6 +362,14 @@ void CScriptGameEventListener::SetVScriptEventValues( IGameEvent *event, HSCRIPT
 		g_pScriptVM->SetValue( table, "reviver", event->GetInt("reviver") );
 	if ( !event->IsEmpty("splitscreenplayer") )
 		g_pScriptVM->SetValue( table, "splitscreenplayer", event->GetInt("splitscreenplayer") );
+	if (!event->IsEmpty("medic_entindex"))
+		g_pScriptVM->SetValue(table, "medic_entindex", event->GetInt("medic_entindex"));
+	if (!event->IsEmpty("patient_entindex"))
+		g_pScriptVM->SetValue(table, "patient_entindex", event->GetInt("patient_entindex"));
+	if (!event->IsEmpty("amount_healed"))
+		g_pScriptVM->SetValue(table, "amount_healed", event->GetInt("amount_healed"));
+	if (!event->IsEmpty("weapon_class"))
+		g_pScriptVM->SetValue(table, "weapon_class", event->GetString("weapon_class"));
 }
 
 bool CScriptGameEventListener::Init()
@@ -387,6 +395,7 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "marine_infested" );
 	ListenForGameEvent( "marine_infested_cured" );
 	ListenForGameEvent( "marine_infested_killed" );
+	ListenForGameEvent( "marine_healed" );
 	ListenForGameEvent( "marine_no_ammo" );
 	ListenForGameEvent( "ammo_pickup" );
 	ListenForGameEvent( "item_pickup" );
@@ -511,6 +520,12 @@ bool CScriptGameEventListener::Init()
 	ListenForGameEvent( "weapon_offhand_activate" );
 	ListenForGameEvent( "laser_mine_active" );
 	ListenForGameEvent( "cluster_grenade_create" );
+	ListenForGameEvent( "tesla_trap_placed" );
+	ListenForGameEvent( "fire_mine_placed" );
+	ListenForGameEvent( "laser_mine_placed" );
+	ListenForGameEvent( "gas_grenade_placed" );
+	ListenForGameEvent( "flare_placed" );
+	ListenForGameEvent( "rocket_fired" );
 
 	return true;
 }

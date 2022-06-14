@@ -180,7 +180,14 @@ void CASW_Weapon_Hornet_Barrage::FireRocket()
     }
 
 	Vector vecSrc = GetRocketFiringPosition();
-	CASW_Rocket::Create( fGrenadeDamage, vecSrc, GetRocketAngle(), pMarine, this );
+	CASW_Rocket *pRocket = CASW_Rocket::Create(fGrenadeDamage, vecSrc, GetRocketAngle(), pMarine, this);
+	IGameEvent * event = gameeventmanager->CreateEvent( "rocket_fired" );
+	if ( event )
+	{
+		event->SetInt( "entindex", pRocket->entindex() );
+		event->SetInt( "marine", pMarine->entindex() );
+		gameeventmanager->FireEvent( event );
+	}
 
 	if ( ASWGameRules() )
 	{
