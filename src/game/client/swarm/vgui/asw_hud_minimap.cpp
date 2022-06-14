@@ -91,6 +91,8 @@ ConVar asw_blip_color_marine_special("asw_blip_color_marine_special", "0 0 192",
 ConVar asw_blip_color_marine_medic("asw_blip_color_marine_medic", "192 0 0", FCVAR_NONE, "Blip color of medic marines");
 ConVar asw_blip_color_marine_tech("asw_blip_color_marine_tech", "192 142 0", FCVAR_NONE, "Blip color of tech marines");
 
+ConVar asw_draw_scanner_rings("asw_draw_scanner_rings", "1", FCVAR_NONE);
+
 // was 0.75f..
 #define ASW_SCREENSHOT_SCALE 1.0f
 
@@ -1273,28 +1275,31 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 				}
 				if ( pMR->m_fScannerTime <= 1.0f && ( gpGlobals->curtime < m_pMap->m_fLastBlipHitTime + 3.0f || asw_scanner_classic.GetBool() ) )
 				{
-					// fade the ring out at the ends
-					if (pMR->m_fScannerTime < 0.5f)
-						surface()->DrawSetColor(Color(255,255,255,255));
-					else
+					if ( asw_draw_scanner_rings.GetBool() )
 					{
-						float f = (1.0f - pMR->m_fScannerTime) * 2;
-						surface()->DrawSetColor(Color(255,255,255,255.0f * f));
-					}
-					surface()->DrawSetTexture(m_nScannerRingTexture);
+						// fade the ring out at the ends
+						if (pMR->m_fScannerTime < 0.5f)
+							surface()->DrawSetColor(Color(255,255,255,255));
+						else
+						{
+							float f = (1.0f - pMR->m_fScannerTime) * 2;
+							surface()->DrawSetColor(Color(255,255,255,255.0f * f));
+						}
+						surface()->DrawSetTexture(m_nScannerRingTexture);
 
-					marine_pos = m_pMap->WorldToMapTexture(marine_world_pos);
-					float ring_center_x = 0;
-					float ring_center_y = 0;
-					TextureToLinePanel(m_pMap, marine_pos, ring_center_x, ring_center_y);
-					Vertex_t points[4] =
-					{
-					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y - scanner_range), Vector2D(0,0) ),
-					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y - scanner_range), Vector2D(1,0) ),
-					Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y + scanner_range), Vector2D(1,1) ),
-					Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y + scanner_range), Vector2D(0,1) )
-					};
-					surface()->DrawTexturedPolygon( 4, points );
+						marine_pos = m_pMap->WorldToMapTexture(marine_world_pos);
+						float ring_center_x = 0;
+						float ring_center_y = 0;
+						TextureToLinePanel(m_pMap, marine_pos, ring_center_x, ring_center_y);
+						Vertex_t points[4] =
+						{
+						Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y - scanner_range), Vector2D(0,0) ),
+						Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y - scanner_range), Vector2D(1,0) ),
+						Vertex_t( Vector2D(ring_center_x + scanner_range, ring_center_y + scanner_range), Vector2D(1,1) ),
+						Vertex_t( Vector2D(ring_center_x - scanner_range, ring_center_y + scanner_range), Vector2D(0,1) )
+						};
+						surface()->DrawTexturedPolygon( 4, points );
+					}
 				}
 			}
 			// check for resetting the ring to center again
