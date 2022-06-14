@@ -1276,8 +1276,6 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 	if (!asw_draw_hud.GetBool())
 		return;
 	
-	MoveToFront();
-	
 	m_nMessageMode = iMessageModeType;
 	cl_chat_active.SetValue( m_nMessageMode );
 
@@ -1311,7 +1309,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 		m_pChatInput->RequestFocus();
 
 #ifndef INFESTED_DLL
-		 Place the mouse cursor near the text so people notice it.
+		//Place the mouse cursor near the text so people notice it.
 		int x, y, w, h;
 		GetChatHistory()->GetBounds( x, y, w, h );
 		vgui::input()->SetCursorPos( x + ( w/2), y + (h/2) );
