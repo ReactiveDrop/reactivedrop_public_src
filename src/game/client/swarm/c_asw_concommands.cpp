@@ -1101,6 +1101,8 @@ CON_COMMAND( make_game_public, "Changes access for the current game to public." 
 	pSettings->SetString( "update/system/access", "public" );
 
 	g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pSettings );
+
+	ClientPrint( NULL, 8, "#L4D360UI_Lobby_Access_Changed_Public" );
 }
 
 CON_COMMAND( make_game_friends_only, "Changes access for the current game to friends only." )
@@ -1117,4 +1119,6 @@ CON_COMMAND( make_game_friends_only, "Changes access for the current game to fri
 	pSettings->SetString( "update/system/access", "friends" );
 
 	g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pSettings );
+
+	ClientPrint( NULL, 8, "#L4D360UI_Lobby_Access_Changed_Friends" );
 }

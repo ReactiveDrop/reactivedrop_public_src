@@ -8,6 +8,7 @@
 #include "cbase.h"
 #include <stdarg.h>
 #include "hud.h"
+#include "hud_basechat.h"
 #include "itextmessage.h"
 #include "materialsystem/IMaterial.h"
 #include "materialsystem/ITexture.h"
@@ -549,10 +550,10 @@ bool GetTargetInScreenSpace( C_BaseEntity *pTargetEntity, int& iX, int& iY, Vect
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
-//			msg_dest - 
-//			*msg_name - 
+// Purpose: Prints a message on the HUD, does not send messages to other players
+// Input  : *player - The player that sent the message. 
+//			msg_dest - The chat filter value 
+//			*msg_name - The message and or string format
 //			*param1 - 
 //			*param2 - 
 //			*param3 - 
@@ -560,6 +561,19 @@ bool GetTargetInScreenSpace( C_BaseEntity *pTargetEntity, int& iX, int& iY, Vect
 //-----------------------------------------------------------------------------
 void ClientPrint( C_BasePlayer *player, int msg_dest, const char *msg_name, const char *param1 /*= NULL*/, const char *param2 /*= NULL*/, const char *param3 /*= NULL*/, const char *param4 /*= NULL*/ )
 {
+	CBaseHudChat *hudChat = CBaseHudChat::GetHudChat();
+	if ( hudChat )
+	{
+		wchar_t wszLocalized[2048];
+		g_pVGuiLocalize->ConstructString( wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find( msg_name ), 4, param1, param2, param3, param4 );
+
+		char szLocalized[4096];
+		g_pVGuiLocalize->ConvertUnicodeToANSI( wszLocalized, szLocalized, sizeof( szLocalized ) );
+
+		int index = 0;
+		if ( player ) index = player->entindex();
+		hudChat->ChatPrintf( index, msg_dest, szLocalized );
+	}
 }
 
 
