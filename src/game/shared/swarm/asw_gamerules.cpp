@@ -3926,9 +3926,16 @@ void CAlienSwarm::OnServerHibernating()
 	}
 }
 
+ConVar asw_respawn_marine_enable( "asw_respawn_marine_enable", "0", FCVAR_CHEAT, "Enables respawning marines.", true, 0, true, 1 );
+
 // Respawn a dead marine.
 void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine )  
 {
+	if ( !asw_respawn_marine_enable.GetBool() )
+	{
+		Msg( "Respawning marines is not enabled on this server.\n" );
+	}
+
 	//AssertMsg1( !pMR->IsAlive() && 
 	//((gpGlobals->curtime - pMR->m_fDeathTime) >= asw_marine_resurrection_interval.GetFloat() ),
 	//"Tried to respawn %s before its time!", pMR->GetProfile()->GetShortName() );
@@ -4035,17 +4042,9 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 	}
 }
 
-ConVar asw_respawn_marine_enable( "asw_respawn_marine_enable", "0", FCVAR_CHEAT, "Enables respawning marines.", true, 0, true, 1 );
-
 bool CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos )
 {
 	if ( !pMR || GetGameState() != ASW_GS_INGAME ) return false;
-
-	if ( !asw_respawn_marine_enable.GetBool() )
-	{
-		Msg( "Respawning marines is not enabled on this server.\n" );
-		return false;
-	}
 
 	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector( 0, 0, 1 ), QAngle( 0, 0, 0 ), true ) )
 	{
