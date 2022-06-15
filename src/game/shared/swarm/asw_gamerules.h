@@ -129,7 +129,8 @@ public:
 	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	virtual void			Shutdown();
-	
+	bool m_bShuttingDown;
+
 	// briefing roster functions
 	virtual bool			RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot=-1 );
 	virtual void			RosterDeselect( CASW_Player *pPlayer, int RosterIndex);
