@@ -95,7 +95,6 @@ extern ConVar rd_sentry_take_damage_from_marine;
 extern ConVar rd_show_arrow_to_marine;
 extern ConVar rd_show_others_laser_pointer;
 extern ConVar rd_weapon_on_ground_time;
-extern ConVar rd_pistols_min_delay;
 
 extern ConVar asw_marine_death_protection;
 extern ConVar asw_skill;
@@ -168,7 +167,6 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	SaveSetConvar( rd_rocket_target_marine, 1 );
 	SaveSetConvar( rd_sentry_take_damage_from_marine, 1 );
 	SaveSetConvar( rd_weapon_on_ground_time, 30 );
-	SaveSetConvar( rd_pistols_min_delay, 0.1f );
 
 	SaveSetConvar( rd_chainsaw_slows_down, 0 );
 	SaveSetConvar( rd_jumpjet_knockdown_marines, 0 );
