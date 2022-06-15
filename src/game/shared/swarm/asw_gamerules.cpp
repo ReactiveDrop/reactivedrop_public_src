@@ -4048,6 +4048,24 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 	}
 }
 
+bool CAlienSwarm::ScriptResurrect( CASW_Marine_Resource * RESTRICT pMR, Vector vecSpawnPos )
+{
+	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector(0,0,1), QAngle(0,0,0 ), true ) )
+	{
+		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
+		return false;
+	}
+	else
+	{
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
+		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
+		if ( !pMR->GetCommander()->GetMarine() )
+			pMR->GetCommander()->SwitchMarine(0 );
+	}
+
+	return true;
+}
+
 void CAlienSwarm::MarineInvuln()
 {
 	MarineInvuln( !m_bMarineInvuln );
