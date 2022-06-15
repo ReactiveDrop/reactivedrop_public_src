@@ -4003,20 +4003,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 		return;
 
 	// WISE FWOM YOUW GWAVE!
-	if ( !SpawnMarineAt( pMR, vecChosenSpawnPos + Vector(0,0,1), QAngle(0,0,0 ), true ) )
-	{
-		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
-		return;
-	}
-	else
-	{
-		CASW_Marine *pMarine = pMR->GetMarineEntity();
-		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
-		// switch commander to the marine if he hasn't already got one selected
-		if ( !pMR->GetCommander()->GetMarine() )
-			pMR->GetCommander()->SwitchMarine(0 );
-		pMarine->PerformResurrectionEffect();
-	}
+	ScriptResurrect( pMR, vecChosenSpawnPos );
 }
 
 // Respawn a dead marine. DEPRECATED, UNUSED
@@ -4048,9 +4035,19 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 	}
 }
 
-bool CAlienSwarm::ScriptResurrect( CASW_Marine_Resource * RESTRICT pMR, Vector vecSpawnPos )
+ConVar asw_respawn_marine_enable( "asw_respawn_marine_enable", "0", FCVAR_CHEAT, "Enables respawning marines.", true, 0, true, 1 );
+
+bool CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos )
 {
-	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector(0,0,1), QAngle(0,0,0 ), true ) )
+	if ( !pMR || GetGameState() != ASW_GS_INGAME ) return false;
+
+	if ( !asw_respawn_marine_enable.GetBool() )
+	{
+		Msg( "Respawning marines is not enabled on this server.\n" );
+		return false;
+	}
+
+	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector( 0, 0, 1 ), QAngle( 0, 0, 0 ), true ) )
 	{
 		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
 		return false;
@@ -4060,7 +4057,9 @@ bool CAlienSwarm::ScriptResurrect( CASW_Marine_Resource * RESTRICT pMR, Vector v
 		CASW_Marine *pMarine = pMR->GetMarineEntity();
 		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
 		if ( !pMR->GetCommander()->GetMarine() )
-			pMR->GetCommander()->SwitchMarine(0 );
+			pMR->GetCommander()->SwitchMarine( 0 );
+		
+		pMarine->PerformResurrectionEffect();
 	}
 
 	return true;
