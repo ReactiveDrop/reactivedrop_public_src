@@ -24,6 +24,7 @@ namespace ReactiveDropInventory
 		CUtlString AfterDescription;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon;
+		vgui::IImage *IconSmall;
 #endif
 	};
 

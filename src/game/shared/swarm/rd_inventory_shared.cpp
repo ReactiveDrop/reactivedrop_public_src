@@ -501,6 +501,13 @@ namespace ReactiveDropInventory
 		{
 			pItemDef->Icon = new CSteamItemIcon( szBuf.Base() );
 		}
+
+		pItemDef->IconSmall = pItemDef->Icon;
+		FETCH_PROPERTY( "icon_url_small" );
+		if ( *szBuf.Base() )
+		{
+			pItemDef->IconSmall = new CSteamItemIcon( szBuf.Base() );
+		}
 #endif
 
 		FETCH_PROPERTY( "item_slot" );

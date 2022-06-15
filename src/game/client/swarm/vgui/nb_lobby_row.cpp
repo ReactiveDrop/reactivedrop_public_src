@@ -251,7 +251,7 @@ void CNB_Lobby_Row::UpdateDetails()
 			if ( bMedalOK )
 			{
 				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( ReactiveDropInventory::GetItemDetails( m_hMedalResult, 0 ).m_iDefinition );
-				m_pMedalIcon->SetImage( pDef->Icon );
+				m_pMedalIcon->SetImage( pDef->IconSmall );
 				m_pMedalIcon->SetVisible( true );
 			}
 		}
