@@ -1154,14 +1154,9 @@ void CASWHudMinimap::PaintScannerBlips()
 							break;
 						}
 					}
-					vecWorldPos.x = pClientEnt->GetAbsOrigin().x;
-					vecWorldPos.y = pClientEnt->GetAbsOrigin().y;
 				}
-				else
-				{
-					vecWorldPos.x = pScanner->m_fClientBlipX[i];
-					vecWorldPos.y = pScanner->m_fClientBlipY[i];
-				}
+				vecWorldPos.x = pScanner->m_fClientBlipX[i];
+				vecWorldPos.y = pScanner->m_fClientBlipY[i];
 				//float f = abs(0.5f - pScanner->m_fBlipStrength[i]) * 2.0f;	// fade in/out
 				float f = 1.0f - pScanner->m_fBlipStrength[i];	// just fade out
 
