@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2003, Valve Corporation, All rights reserved. =======
+//====== Copyright ?1996-2003, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Game rules for Alien Swarm
 //
@@ -183,6 +183,8 @@ public:
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine );
 	//resurects on the next spawn point
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR );
+	//resurects on the spawn point
+	bool ScriptResurrect( CASW_Marine_Resource * RESTRICT pMR, Vector vecSpawnPos );
 
 	// cheats
 	bool m_bMarineInvuln;

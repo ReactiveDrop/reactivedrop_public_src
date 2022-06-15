@@ -27,6 +27,7 @@ public:
 	DECLARE_CLASS( CASW_Player, CBaseMultiplayerPlayer );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Player();
 	virtual ~CASW_Player();
@@ -73,6 +74,9 @@ public:
 	bool ShouldAutoReload() { return m_bAutoReload; }
 	bool m_bAutoReload;
 	
+	// Resurrection
+	bool ResurrectMarine( const Vector position );
+
 	// anim state helper
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
 	virtual bool ASWAnim_CanMove();
