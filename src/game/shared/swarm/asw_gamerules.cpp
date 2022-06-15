@@ -3934,6 +3934,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 	if ( !asw_respawn_marine_enable.GetBool() )
 	{
 		Msg( "Respawning marines is not enabled on this server.\n" );
+		return;
 	}
 
 	//AssertMsg1( !pMR->IsAlive() && 
