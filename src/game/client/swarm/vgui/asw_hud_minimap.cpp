@@ -1143,7 +1143,7 @@ void CASWHudMinimap::PaintScannerBlips()
 							blipColor = asw_blip_color_ranger.GetColor();
 							break;
 						default:
-							if ( pClientEnt->WorldAlignMins() == Vector( -30, -30, 0 ) && pClientEnt->WorldAlignMaxs() == Vector( 30, 30, 110 ) ) //hack!!
+							if ( pClientEnt->CollisionProp()->OBBMins() == Vector( -30, -30, 0 ) && pClientEnt->CollisionProp()->OBBMaxs() == Vector( 30, 30, 110 ) ) //hack!!
 							{
 								blipColor = asw_blip_color_antlionguard.GetColor();
 								blipSize = 9;
