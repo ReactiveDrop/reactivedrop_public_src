@@ -184,7 +184,7 @@ public:
 	//resurects on the next spawn point
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR );
 	//resurects on the spawn point
-	bool ScriptResurrect( CASW_Marine_Resource * RESTRICT pMR, Vector vecSpawnPos );
+	CASW_Marine* ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos, bool bEffect = true );
 
 	// cheats
 	bool m_bMarineInvuln;

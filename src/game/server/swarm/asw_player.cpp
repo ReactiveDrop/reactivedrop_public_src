@@ -3154,9 +3154,9 @@ const Vector& CASW_Player::GetCrosshairTracePos()
 	return m_vecCrosshairTracePos;
 }
 
-bool CASW_Player::ResurrectMarine( const Vector position )
+HSCRIPT CASW_Player::ResurrectMarine( const Vector position, bool bEffect )
 {
-	bool bResurrected = false;
+	CASW_Marine* pMarine = NULL;
 	const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
 
 	for ( int i = 0; i < numMarineResources; i++ )
@@ -3166,11 +3166,11 @@ bool CASW_Player::ResurrectMarine( const Vector position )
 		{
 			if ( this == pMR->GetCommander() )
 			{
-				bResurrected = ASWGameRules()->ScriptResurrect( pMR, position );
-				return bResurrected; // don't do two in a frame
+				pMarine = ASWGameRules()->ScriptResurrect( pMR, position, bEffect );
+				return ToHScript( pMarine ); // don't do two in a frame
 			}
 		}
 	}
 
-	return bResurrected;
+	return ToHScript( pMarine );
 }
