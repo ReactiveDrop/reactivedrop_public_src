@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2008, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -439,7 +439,7 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 	}
 	else
 	{
-		DisplayOkOnlyMsgBox( NULL, "#L4D360UI_SteamOverlay_Title", "#L4D360UI_SteamOverlay_Text" );
+		DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
 	}
 #else
 	ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
@@ -456,7 +456,7 @@ void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal )
     }
     else
     {
-        DisplayOkOnlyMsgBox( NULL, "#L4D360UI_SteamOverlay_Title", "#L4D360UI_SteamOverlay_Text" );
+        DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
     }
 #else
     ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
