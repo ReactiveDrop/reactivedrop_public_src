@@ -75,7 +75,7 @@ public:
 	bool m_bAutoReload;
 	
 	// Resurrection
-	bool ResurrectMarine( const Vector position );
+	HSCRIPT ResurrectMarine( const Vector position, bool bEffect = true );
 
 	// anim state helper
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
