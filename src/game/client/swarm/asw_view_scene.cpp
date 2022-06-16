@@ -95,11 +95,14 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 
 	// Get the front buffer material
 	pMatScreen = materials->FindMaterial( "swarm/effects/frontbuffer", TEXTURE_GROUP_OTHER, true );
+	Assert( pMatScreen );
 	// Get our custom render target
 	pMotionBlur = g_pASWRenderTargets->GetASWMotionBlurTexture();
+	Assert( pMotionBlur );
 	// Store the current render target
 	CMatRenderContextPtr pRenderContext( materials );
 	ITexture *pOriginalRenderTarget = pRenderContext->GetRenderTarget();
+	Assert( !pOriginalRenderTarget );
 
 	// Set the camera up so we can draw the overlay
 	int oldX, oldY, oldW, oldH;
@@ -117,9 +120,9 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	float add_alpha = asw_motionblur_addalpha.GetFloat();
 	float blur_time = asw_motionblur_time.GetFloat();
 	float draw_alpha = asw_motionblur_drawalpha.GetFloat();
-	if (g_fMarinePoisonDuration > 0)
-	{		
-		if (g_fMarinePoisonDuration < 1.0f)
+	if ( g_fMarinePoisonDuration > 0 )
+	{
+		if ( g_fMarinePoisonDuration < 1.0f )
 		{
 			draw_alpha = g_fMarinePoisonDuration;
 			add_alpha = 0.3f;
@@ -128,13 +131,13 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 		{
 			draw_alpha = 1.0f;
 			float over_time = g_fMarinePoisonDuration - 1.0f;
-			over_time = -MIN(4.0f, over_time);
+			over_time = -MIN( 4.0f, over_time );
 			// map 0 to -4, to 0.3 to 0.05
-			add_alpha = (over_time + 4) * 0.0625 + 0.05f;
+			add_alpha = ( over_time + 4 ) * 0.0625 + 0.05f;
 		}
 		blur_time = 0.05f;
 	}
-	if (!g_bBlurredLastTime)
+	if ( !g_bBlurredLastTime )
 		add_alpha = 1.0f;	// add the whole buffer if this is the first time we're blurring after a while, so we don't end up with images from ages ago
 
 	if ( fNextDrawTime - gpGlobals->curtime > 1.0f)
@@ -147,8 +150,9 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 		UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height );
 
 		// Set the alpha to whatever our console variable is
-		mv = pMatScreen->FindVar( "$alpha", &found, false );
-		if (found)
+		mv = pMatScreen->FindVar( "$alpha", &found, true );
+		Assert( found );
+		if ( found )
 		{
 			if ( fNextDrawTime == 0 )
 			{
@@ -168,17 +172,20 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	}
 
 	// Set the alpha
-	mv = pMatScreen->FindVar( "$alpha", &found, false );
-	if (found)
+	mv = pMatScreen->FindVar( "$alpha", &found, true );
+	Assert( found );
+	if ( found )
 	{
 		mv->SetFloatValue( draw_alpha );
 	}
 
 	// Set the texture to our buffer
-	mv = pMatScreen->FindVar( "$basetexture", &found, false );
+	mv = pMatScreen->FindVar( "$basetexture", &found, true );
+	Assert( found );
 	if (found)
 	{
 		pOriginalTexture = mv->GetTextureValue();
+		AssertMsg1( pOriginalTexture == GetFullFrameFrameBufferTexture( 0 ), "pOriginalTexture is %s", pOriginalTexture->GetName() );
 		mv->SetTextureValue( pMotionBlur );
 	}
 
@@ -190,7 +197,8 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	}
 
 	// Set our texture back to _rt_FullFrameFB
-	if (found)
+	Assert( found );
+	if ( found )
 	{
 		mv->SetTextureValue( pOriginalTexture );
 	}
