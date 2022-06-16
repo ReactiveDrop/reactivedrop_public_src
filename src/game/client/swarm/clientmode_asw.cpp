@@ -806,6 +806,7 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 			engine->ClientCmd( "asw_restart_mission" );
 		}
 	}
+
 	if ( Q_strcmp( "asw_mission_restart", eventname ) == 0 )
 	{
 		( GET_HUDELEMENT( CHudChat ) )->m_bSkipNextReset = true;

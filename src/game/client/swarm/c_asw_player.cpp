@@ -2315,6 +2315,8 @@ void C_ASW_Player::OnMissionRestart()
 
 	// reset vehicle cam yaw
 	m_fLastVehicleYaw = 0;
+
+	RequestExperience();
 }
 
 void C_ASW_Player::SendBlipSpeech(int iMarine)
