@@ -1,6 +1,6 @@
 # Alien Swarm: Reactive Drop #
 
-[Alien Swarm: Reactive Drop](http://store.steampowered.com/app/563560/) is a standalone modification for Valve's Alien Swarm game. This repository contains the source code for Alien Swarm: Reactive Drop. Using Visual Studio you will be able to build these DLL files: client.dll, missionchooser.dll, server.dll.
+[Alien Swarm: Reactive Drop](https://store.steampowered.com/app/563560/) is a standalone modification for Valve's Alien Swarm game. This repository contains the source code for Alien Swarm: Reactive Drop. Using Visual Studio you will be able to build these DLL files: client.dll, missionchooser.dll, server.dll.
 
 ### What is this repository for? ###
 Having access to the source code you can:
@@ -20,15 +20,14 @@ There are two branches in this repository:
 * Open Git Bash
 * Input commands into Git Bash 
 ```sh
-    git clone https://bitbucket.org/reactivedropteam/reactivedrop_public_src.git
+    git clone https://github.com/ReactiveDrop/reactivedrop_public_src.git
     cd reactivedrop_public_src
-    git checkout reactivedrop_public
 ```
 
 ### How to compile the project ###
 
-* Download and install Visual Studio 2013(https://visualstudio.com/vs/older-downloads/). You will need to register a free account in order to download. Visual Studio 2015 and 2017 might work too if you use the Visual Studio 2013 toolchain. Visual Studio 2005 and up can also be used, but we didn't update the project files for them, thus you will need to add Reactive Drop's new files(.cpp and .h) into solution(reactivedrop.sln)
-* Open reactivedrop_vs13.sln using Visual Studio 2013
+* Download and install Visual Studio 2022 Community (https://visualstudio.microsoft.com/downloads/).
+* Open reactivedrop_vs13.sln using Visual Studio
 * Select configuration Debug or Release
 * Build
 * Resulting DLLs will be placed into reactivedrop\bin
