@@ -1394,6 +1394,8 @@ const char* CAlienSwarm::GetGameDescription( void )
 
 CAlienSwarm::CAlienSwarm()
 {
+	m_bShuttingDown = false;
+
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
 	// memory usage and cache trashing over time
@@ -3672,6 +3674,8 @@ void CAlienSwarm::OnSteamRelayNetworkStatusChanged( SteamRelayNetworkStatus_t *p
 
 void CAlienSwarm::Think()
 {
+	if ( m_bShuttingDown ) return;
+
 	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
 	{
 		SteamNetworkPingLocation_t location;
@@ -3846,7 +3850,9 @@ inline unsigned int ThreadShutdown(void* pParam)
 	return 0;
 }
 
-void CAlienSwarm::Shutdown() {
+void CAlienSwarm::Shutdown() 
+{
+	m_bShuttingDown = true;
 	CreateSimpleThread(ThreadShutdown, engine);
 }
 
