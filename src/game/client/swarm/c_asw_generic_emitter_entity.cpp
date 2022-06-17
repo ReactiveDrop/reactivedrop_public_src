@@ -82,7 +82,7 @@ void C_ASW_Emitter::ClientThink( void )
 			ang = m_hClientAttach->GetAbsAngles();
 		}
 		else
-			m_hClientAttach->GetAttachment( m_hClientAttach->LookupAttachment( m_szAttach ), pos, ang );
+			m_hClientAttach->GetAttachment( m_szAttach, pos, ang );
 		SetAbsOrigin(pos);
 		SetAbsAngles(ang);				
 	}
