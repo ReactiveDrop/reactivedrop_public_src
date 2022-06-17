@@ -140,6 +140,12 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 		MoveHelper()->SetHost( pMarine );
 	}
 
+	// BenLubar(spectator-mouse)
+	m_iScreenWidth = ucmd->screenw;
+	m_iScreenHeight = ucmd->screenh;
+	m_iMouseX = ucmd->mousex;
+	m_iMouseY = ucmd->mousey;
+
 	m_angMarineAutoAimFromClient = ucmd->aimangleoffset;
 	
 	// process turret movement
