@@ -1078,9 +1078,13 @@ void CBaseModPanel::OpenFrontScreen()
 		{
 			if ( rd_chatwipe_mainmenu.GetBool() )
 			{
+				HACK_GETLOCALPLAYER_GUARD( "need to access chat HUD" );
 				// clear the chat history between games
-				CHudChat *pChat = GET_HUDELEMENT(CHudChat);
-				if (pChat) pChat->ClearHistory();
+				CHudChat *pChat = GET_HUDELEMENT( CHudChat );
+				if ( pChat )
+				{
+					pChat->ClearHistory();
+				}
 			}
 
 			CloseAllWindows();
