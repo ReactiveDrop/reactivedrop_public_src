@@ -23,6 +23,7 @@
 
 float g_fMarinePoisonDuration = 0;
 bool g_bBlurredLastTime = false;
+static float fNextDrawTime = 0.0f;
 ConVar asw_motionblur( "asw_motionblur", "0", FCVAR_NONE, "Motion Blur" );			// motion blur on/off
 ConVar asw_motionblur_addalpha( "asw_motionblur_addalpha", "0.3", FCVAR_NONE, "Motion Blur Alpha" );	// The amount of alpha to use when adding the FB to our custom buffer
 ConVar asw_motionblur_drawalpha( "asw_motionblur_drawalpha", "1", FCVAR_NONE, "Motion Blur Draw Alpha" );		// The amount of alpha to use when adding our custom buffer to the FB
@@ -84,8 +85,6 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 		g_bBlurredLastTime = false;
 		return;
 	}
-
-	static float fNextDrawTime = 0.0f;
 
 	bool found;
 	IMaterialVar* mv = NULL;
@@ -212,6 +211,62 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	g_bBlurredLastTime = true;
 }
 
+CON_COMMAND( asw_motionblur_check, "check for anomalies in asw_motionblur" )
+{
+	Msg( "next draw time is in %f sec\n", fNextDrawTime - gpGlobals->curtime );
+
+	IMaterial *pMatScreen = materials->FindMaterial( "swarm/effects/frontbuffer", TEXTURE_GROUP_OTHER, true );
+	if ( !pMatScreen )
+	{
+		Warning( "frontbuffer material missing\n" );
+		return;
+	}
+
+	ITexture *pMotionBlur = g_pASWRenderTargets->GetASWMotionBlurTexture();
+	if ( !pMatScreen )
+	{
+		Warning( "motionblur texture missing\n" );
+		return;
+	}
+
+	CMatRenderContextPtr pRenderContext( materials );
+	ITexture *pOriginalRenderTarget = pRenderContext->GetRenderTarget();
+	if ( pOriginalRenderTarget )
+	{
+		Warning( "unexpectedly have render target texture %s\n", pOriginalRenderTarget->GetName() );
+		return;
+	}
+
+	bool found = false;
+	IMaterialVar *mv = pMatScreen->FindVar( "$alpha", &found, true );
+	if ( !found )
+	{
+		Warning( "could not find $alpha in frontbuffer material\n" );
+		return;
+	}
+
+	mv = pMatScreen->FindVar( "$basetexture", &found, true );
+	if ( !found )
+	{
+		Warning( "could not find $basetexture in frontbuffer material\n" );
+		return;
+	}
+
+	ITexture *pOriginalTexture = mv->GetTextureValue();
+	if ( !pOriginalTexture )
+	{
+		Warning( "missing original texture in frontbuffer material\n" );
+		return;
+	}
+
+	if ( pOriginalTexture != GetFullFrameFrameBufferTexture( 0 ) )
+	{
+		Warning( "original texture in frontbuffer material is %s\n", pOriginalTexture->GetName() );
+		return;
+	}
+
+	Msg( "no motion blur anomalies found. if motion blur is currently broken, this command needs to be expanded.\n" );
+}
 
 inline bool ASW_SetMaterialVarFloat( IMaterial* pMat, const char* pVarName, float flValue )
 {
