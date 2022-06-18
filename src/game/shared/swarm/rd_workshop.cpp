@@ -46,6 +46,7 @@ ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FC
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
 ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If nonzero, call ISteamUGC::DownloadItem every [number] map loads, even if the API reports it being up-to-date." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
+ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NONE, "0 = load workshop.cfg on official dedicated servers, 1 = load official addon list, 2 = load both" );
 #endif
 
 #if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
@@ -228,8 +229,11 @@ static bool DedicatedServerWorkshopSetup()
 
 	s_bAnyServerUpdates = false;
 	s_bStartingUp = true;
-	engine->ServerCommand( "exec workshop.cfg\n" );
-	engine->ServerExecute();
+	if ( rd_workshop_official_addons.GetInt() != 1 )
+	{
+		engine->ServerCommand( "exec workshop.cfg\n" );
+		engine->ServerExecute();
+	}
 	s_bStartingUp = false;
 	if ( s_bAnyServerUpdates )
 	{
