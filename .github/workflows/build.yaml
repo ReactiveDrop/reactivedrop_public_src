@@ -24,7 +24,10 @@ jobs:
       - name: Setup cache
         uses: actions/cache@v3
         with:
-          path: Release
+          path: |
+            src/game/missionchooser/Release_swarm
+            src/game/server/Release_swarm
+            src/game/client/Release_swarm
           key: reactivedrop-build-cache
 
       # setup msbuild
@@ -37,24 +40,20 @@ jobs:
         run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Release
 
       # server.dll
-      - name: Build server.dll
-        working-directory: src/game/server
-        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release
+      # - name: Build server.dll
+      #   working-directory: src/game/server
+      #   run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release
 
       # client.dll
-      - name: Build client.dll
-        working-directory: src/game/client
-        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
+      # - name: Build client.dll
+      #   working-directory: src/game/client
+      #   run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
 
       # store artifacts
-      - name: Store dll and pdb
+      - name: Store build
         uses: actions/upload-artifact@v2
         with:
           name: Release
-          path: |
-            Release/client.dll
-            Release/client.pdb
-            Release/server.dll
-            Release/server.pdb
-            Release/missionchooser.dll
-            Release/missionchooser.pdb
+          path: reactivedrop/bin
+
+
