@@ -28,6 +28,7 @@ jobs:
             src/game/missionchooser/Release
             src/game/server/Release_swarm
             src/game/client/Release_swarm
+            reactivedrop/bin
           key: reactivedrop-build-cache
 
       # setup msbuild
