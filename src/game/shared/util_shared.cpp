@@ -1216,9 +1216,10 @@ void CTimeline::RecordValue( float flValue )
 
 float CTimeline::GetValue( int i ) const
 {
+	Assert( m_nBucketCount <= TIMELINE_ARRAY_SIZE );
 	Assert( i >= 0 && i < m_nBucketCount );
 
-	if ( i < 0 || i >= m_nBucketCount )
+	if ( i < 0 || i >= m_nBucketCount || i >= TIMELINE_ARRAY_SIZE )
 	{
 		return 0.0f;
 	}
