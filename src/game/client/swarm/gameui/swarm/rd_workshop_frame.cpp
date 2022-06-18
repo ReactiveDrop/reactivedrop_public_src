@@ -249,7 +249,7 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		}
 		else
 		{
-			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "Attention!", "Please set rd_workshop_allow_item_creation 1 before doing this action" );
+			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#RDUI_WorkshopModeWarning_Title", "#RDUI_WorkshopModeWarning_Text" );
 			Msg( "Please set rd_workshop_allow_item_creation 1 before doing this action\n" );
 		}
 	}
