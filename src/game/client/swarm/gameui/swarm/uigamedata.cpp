@@ -45,7 +45,7 @@
 #include "VPasswordEntry.h"
 // vgui controls
 #include "vgui/ILocalize.h"
-
+#include "vgui/ISystem.h"
 
 
 #ifndef _X360
@@ -447,20 +447,24 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 #endif
 }
 
-void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal )
+void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal, bool bOpenInBrowserIfOverlayDisabled )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
-    if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
-    {
-        SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
-    }
-    else
-    {
-        DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
-    }
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+	{
+		SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
+	}
+	else if ( bOpenInBrowserIfOverlayDisabled )
+	{
+		vgui::system()->ShellExecute( "open", szUrl );
+	}
+	else
+	{
+		DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
+	}
 #else
-    ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
-    Assert( !"ExecuteOverlayCommand" );
+	ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
+	Assert( !"ExecuteOverlayCommand" );
 #endif
 }
 
