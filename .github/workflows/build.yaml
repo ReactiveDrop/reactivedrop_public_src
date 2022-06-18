@@ -56,3 +56,4 @@ jobs:
           path: |
             Release/server.dll
             Release/server.pdb
+
