@@ -20,17 +20,6 @@ jobs:
       #checkout project
       - uses: actions/checkout@v3
 
-      # add caching to speed up builds
-      - name: Setup cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            src/game/missionchooser/Release
-            src/game/server/Release_swarm
-            src/game/client/Release_swarm
-            reactivedrop/bin
-          key: reactivedrop-build-cache
-
       # setup msbuild
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
@@ -41,18 +30,23 @@ jobs:
         run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Release
 
       # server.dll
-      # - name: Build server.dll
-      #   working-directory: src/game/server
-      #   run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release
+      - name: Build server.dll
+        working-directory: src/game/server
+        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release
 
       # client.dll
-      # - name: Build client.dll
-      #   working-directory: src/game/client
-      #   run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
+      - name: Build client.dll
+        working-directory: src/game/client
+        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
 
       # store artifacts
-      - name: Store build
-        uses: actions/upload-artifact@v2
-        with:
-          name: Release
-          path: reactivedrop/bin
+      #
+      # not sure if these are unlimited on open source projects
+      # need to verify if retention is set to one day or so. Can enable
+      # this after retention is set.
+      #
+      # - name: Store build
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: Release
+      #     path: reactivedrop/bin
