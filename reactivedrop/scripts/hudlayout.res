@@ -3,8 +3,8 @@
 	ASWHudMinimap
 	{
 		"fieldName"		"ASWHudMinimap"
-		"xpos"	"r171"
-		"ypos"	"298"
+		"xpos"	"r160"
+		"ypos"	"r160"
 		"wide"	"160"
 		"tall"  "160"
 		"visible" "1"
@@ -337,6 +337,10 @@
 		"tall"	"480"
 	}
 
+	AchievementNotificationPanel
+	{
+	}
+
 	RD_Hud_Boss_Bars
 	{
 		"fieldName" "RD_Hud_Boss_Bars"
@@ -365,7 +369,7 @@
 		"Weapon_w" "80"
 		"Weapon_t" "40"
 		
-		"MarinePortrait_x" "18"
+		"MarinePortrait_x" "5"
 		"MarinePortrait_y" "r94"
 		
 		// these coords are relative to the top left of the marine portrait
@@ -433,9 +437,9 @@
 		"FastReload_w" "84"
 		"FastReload_t" "11"
 		
-		"SquadMates_x"	"172"		// spacing to the right of the currently active marine
+		"SquadMates_x"	"151"		// spacing to the right of the currently active marine
 		"SquadMates_y"	"r55"
-		"SquadMates_spacing"	"100"
+		"SquadMates_spacing"	"86"
 		
 		// these coords are relative to the top left of the squadmate's panel
 		"SquadMate_name_color" "255 255 255 255"

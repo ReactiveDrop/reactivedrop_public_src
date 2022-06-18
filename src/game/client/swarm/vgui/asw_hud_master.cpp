@@ -667,8 +667,7 @@ void CASW_Hud_Master::Paint( void )
 	{
 		if ( i == 0 )
 		{
-			m_nMarinePortrait_x = cursor_x;
-			cursor_x += m_nSquadMates_x;
+			cursor_x = m_nMarinePortrait_x + m_nSquadMates_x;
 		}
 		else if ( nSquadMate < MAX_SQUADMATE_HUD_POSITIONS )
 		{
