@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            src/game/missionchooser/Release_swarm
+            src/game/missionchooser/Release
             src/game/server/Release_swarm
             src/game/client/Release_swarm
           key: reactivedrop-build-cache
