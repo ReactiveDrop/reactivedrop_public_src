@@ -19,6 +19,8 @@
 extern ConVar rd_dedicated_server_language;
 #endif
 
+static CUtlMap<SteamItemDef_t, ReactiveDropInventory::ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
+
 static class CRD_Inventory_Manager : public CAutoGameSystem
 {
 public:
@@ -65,6 +67,32 @@ public:
 			Warning( "Failed to request automatic item rewards!\n" );
 		}
 #endif
+	}
+
+	virtual void LevelInitPreEntity()
+	{
+		ISteamInventory *pInventory = SteamInventory();
+#ifdef GAME_DLL
+		if ( engine->IsDedicatedServer() )
+		{
+			pInventory = SteamGameServerInventory();
+		}
+#endif
+		if ( !pInventory )
+		{
+			DevWarning( "Cannot access ISteamInventory!\n" );
+			return;
+		}
+
+		if ( m_flDefsUpdateTime < Plat_FloatTime() - 3600.0f )
+		{
+			m_flDefsUpdateTime = Plat_FloatTime();
+
+			if ( !pInventory->LoadItemDefinitions() )
+			{
+				Warning( "Failed to load inventory item definitions!\n" );
+			}
+		}
 	}
 
 #ifdef CLIENT_DLL
@@ -148,6 +176,7 @@ public:
 
 	void HandlePromotionalItemsResult()
 	{
+		// don't do anything with the result for now.
 		SteamInventory()->DestroyResult( m_PromotionalItemsResult );
 		m_PromotionalItemsResult = k_SteamInventoryResultInvalid;
 	}
@@ -244,6 +273,7 @@ public:
 	SteamInventoryResult_t m_EquippedMedalResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
+	float m_flDefsUpdateTime{ 0.0f };
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnLobbyEntered, LobbyEnter_t )
 	{
@@ -253,6 +283,12 @@ public:
 		}
 	}
 #endif
+
+	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryDefinitionUpdate, SteamInventoryDefinitionUpdate_t )
+	{
+		// this leaks memory, but it's a small amount and only happens when an update is manually pushed.
+		s_ItemDefs.RemoveAll();
+	}
 } s_RD_Inventory_Manager;
 
 #ifdef CLIENT_DLL
@@ -458,8 +494,6 @@ namespace ReactiveDropInventory
 
 		return true;
 	}
-
-	static CUtlMap<SteamItemDef_t, ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
 	{
