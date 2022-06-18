@@ -40,13 +40,13 @@ jobs:
         run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
 
       # store artifacts
-      #
-      # not sure if these are unlimited on open source projects
-      # need to verify if retention is set to one day or so. Can enable
-      # this after retention is set.
-      #
-      # - name: Store build
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: Release
-      #     path: reactivedrop/bin
+      # make sure retention is low, this can become hige otherwise
+      - name: Store build
+        uses: actions/upload-artifact@v2
+        with:
+          name: Release
+          path: |
+            reactivedrop/bin/missionchooser.dll
+            reactivedrop/bin/server.dll
+            reactivedrop/bin/client.dll
+
