@@ -24,7 +24,7 @@ jobs:
       # missionchooser.dll
       - name: Build missionchooser.dll
         working-directory: src/game/missionchooser
-        run: MSBuild.exe swarm_dsk_missionchooser.vcxproj -property:Configuration=Release
+        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Release
       - name: Store missionchooser.dll
         uses: actions/upload-artifact@v2
         with:
@@ -36,7 +36,7 @@ jobs:
       # client.dll
       - name: Build client.dll
         working-directory: src/game/client
-        run: MSBuild.exe client.vcxproj -property:Configuration=Release
+        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
       - name: Store client.dll
         uses: actions/upload-artifact@v2
         with:
@@ -48,7 +48,7 @@ jobs:
       # server.dll
       - name: Build server.dll
         working-directory: src/game/server
-        run: MSBuild.exe server.vcxproj -property:Configuration=Release
+        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release
       - name: Store server.dll
         uses: actions/upload-artifact@v2
         with:
