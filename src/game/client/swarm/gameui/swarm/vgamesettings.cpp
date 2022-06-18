@@ -32,6 +32,7 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "nb_header_footer.h"
+#include "nb_button.h"
 
 #include "rd_workshop.h"
 
@@ -289,6 +290,12 @@ void GameSettings::Activate()
 	if ( firstOption )
 	{
 		firstOption->NavigateTo();
+	}
+
+	CNB_Button *button = dynamic_cast< CNB_Button * >( FindChildByName( "BtnStart" ) );
+	if ( button )
+	{
+		button->SetControllerButton( KEY_XBUTTON_X );
 	}
 
 	/*

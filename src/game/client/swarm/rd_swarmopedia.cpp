@@ -121,6 +121,7 @@ Swarmopedia::Swarmopedia( Panel *parent, const char *panelName ) : BaseClass( pa
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pModelCaption = new CNB_Button( this, "ModelCaption", "", this, "NextModel" );
+	m_pModelCaption->SetControllerButton( KEY_XBUTTON_X );
 	m_pLblName = new Label( this, "LblName", "" );
 	m_pLblAbilities = new Label( this, "LblAbilities", "" );
 	m_pGplAliens = new GenericPanelList( this, "GplAliens", GenericPanelList::ISM_ELEVATOR );

@@ -1118,6 +1118,7 @@ void FoundGames::Activate()
 	{
 		pWndCreateGame->SetVisible( CanCreateGame() );
 		pWndCreateGame->SetText( CFmtStr( "#L4D360UI_FoudGames_CreateNew_%s", "campaign" ) );
+		pWndCreateGame->SetControllerButton( KEY_XBUTTON_X );
 	}
 
 	if ( Panel *pLabelX = FindChildByName( "LblPressX" ) )
@@ -2398,6 +2399,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 
 			joinButton->SetVisible( true );
 			joinButton->SetEnabled( bGameJoinable );
+			joinButton->SetControllerButton( KEY_XBUTTON_A );
 			//joinButton->SetHelpText( fi.GetJoinButtonHint(), bGameJoinable );
 
 			SetControlVisible( "IconForwardArrow", bGameJoinable );

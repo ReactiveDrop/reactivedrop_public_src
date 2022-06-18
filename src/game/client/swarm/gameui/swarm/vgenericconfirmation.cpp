@@ -51,7 +51,9 @@ GenericConfirmation::GenericConfirmation( Panel *parent, const char *panelName )
 	m_pPnlLowerGarnish = new vgui::Panel( this, "PnlLowerGarnish" );
 
 	m_pBtnOK = new CNB_Button( this, "BtnOK", "", this, "OK" );
+	m_pBtnOK->SetControllerButton( KEY_XBUTTON_A );
 	m_pBtnCancel = new CNB_Button( this, "BtnCancel", "", this, "cancel" );
+	m_pBtnCancel->SetControllerButton( KEY_XBUTTON_B );
 
 	SetTitle( "", false );
 	SetDeleteSelfOnClose( true );

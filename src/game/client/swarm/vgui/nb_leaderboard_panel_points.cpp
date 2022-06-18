@@ -26,7 +26,9 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
+	m_pBackButton->SetControllerButton( KEY_XBUTTON_B );
 	m_pServerList = new CNB_Button( this, "ServerList", "", this, "ServerList" );
+	m_pServerList->SetControllerButton( KEY_XBUTTON_X );
 	m_pStatsWebsite = new CNB_Button( this, "StatsWebsite", "", this, "StatsWebsite" );
 
 	m_pToggleButton = new CBitmapButton(this, "ToggleButton", "");
