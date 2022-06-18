@@ -40,7 +40,7 @@ jobs:
         run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release
 
       # store artifacts
-      # make sure retention is low, this can become hige otherwise
+      # make sure retention is low, this can become huge otherwise
       - name: Store build
         uses: actions/upload-artifact@v2
         with:
