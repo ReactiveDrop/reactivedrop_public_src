@@ -27,7 +27,7 @@
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar sk_plr_dmg_asw_sg; 
 extern ConVar asw_weapon_force_scale;
-ConVar rd_pistols_min_delay( "rd_pistols_min_delay", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If more than 0 will set the delay between each shot of Twin Pistols in seconds. 0.1 recommended" );
+ConVar rd_pistols_min_delay( "rd_pistols_min_delay", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT, "If more than 0 will set the delay between each shot of Twin Pistols in seconds. 0.1 recommended" );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Pistol, DT_ASW_Weapon_Pistol )
 
@@ -78,7 +78,7 @@ CASW_Weapon_Pistol::CASW_Weapon_Pistol()
 	// reactivedrop: this member var wasn't initialized
 	m_currentPistol = ASW_WEAPON_PISTOL_LEFT;
 
-	m_flSoonestPrimaryAttack = gpGlobals->curtime;
+	m_flSoonestPrimaryAttack = gpGlobals->realtime;
 }
 
 

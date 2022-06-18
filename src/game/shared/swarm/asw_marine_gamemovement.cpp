@@ -3977,6 +3977,9 @@ void CASW_MarineGameMovement::CategorizePosition( void )
 	Vector point;
 	trace_t pm;
 
+	// check if we got a player, otherwise bail out early
+	if (!player) return;
+
 	// Reset this each time we-recategorize, otherwise we have bogus friction when we jump into water and plunge downward really quickly
 	player->m_surfaceFriction = 1.0f;
 	

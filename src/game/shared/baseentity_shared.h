@@ -248,8 +248,10 @@ inline HSCRIPT ToHScript( CBaseEntity *pEnt )
 template <> ScriptClassDesc_t *GetScriptDesc<CBaseEntity>( CBaseEntity * );
 inline CBaseEntity *ToEnt( HSCRIPT hScript )
 {
+	if ( g_pScriptVM )
+		return ( hScript ) ? (CBaseEntity *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CBaseEntity) ) : NULL;
 
-	return ( hScript ) ? (CBaseEntity *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CBaseEntity) ) : NULL;
+	return NULL;
 }
 
 // convenience functions for fishing out the vectors of this object

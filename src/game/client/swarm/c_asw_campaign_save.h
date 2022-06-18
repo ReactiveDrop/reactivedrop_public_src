@@ -7,7 +7,7 @@
 #include "asw_shareddefs.h"
 
 class C_ASW_Player;
-class CASW_Campaign_Info;
+struct RD_Campaign_t;
 
 // This class describes the state of the current campaign game.  This is what gets saved when the players save their game.
 //   When a savegame is loaded in, it is networked to all the clients (so they can bring up the campaign map, etc)
@@ -61,7 +61,7 @@ public:
 	char		m_DateTime[255];
 
 	// helper functions for examining the campaign save state
-	bool IsMissionLinkedToACompleteMission(int i, CASW_Campaign_Info* pCampaignInfo);
+	bool IsMissionLinkedToACompleteMission( int i, const RD_Campaign_t *pCampaignInfo );
 
 	// todo:  any extra data, such as optional objectives complete, fancy stuff unlocked?
 

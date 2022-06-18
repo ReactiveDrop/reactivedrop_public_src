@@ -13,11 +13,8 @@ enum class ASW_HOST_TYPE;
 struct RD_Campaign_t;
 struct RD_Mission_t;
 
-namespace vgui
-{
-	class ImagePanel;
-	class Label;
-}
+class vgui::ImagePanel;
+class vgui::Label;
 
 class CASW_Mission_Chooser_List;
 

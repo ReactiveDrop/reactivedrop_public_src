@@ -68,6 +68,7 @@ ConVar asw_flashlight_dlight_offsetz("asw_flashlight_dlight_offsetz", "40", FCVA
 ConVar asw_flashlight_dlight_r("asw_flashlight_dlight_r", "250", FCVAR_NONE, "Red component of flashlight colour");
 ConVar asw_flashlight_dlight_g("asw_flashlight_dlight_g", "250", FCVAR_NONE, "Green component of flashlight colour");
 ConVar asw_flashlight_dlight_b("asw_flashlight_dlight_b", "250", FCVAR_NONE, "Blue component of flashlight colour");
+ConVar asw_marine_shadows("asw_marine_shadows", "1", FCVAR_NONE, "If set to one, marines will have shadows.", true, 0, true, 1);
 ConVar asw_marine_ambient("asw_marine_ambient", "0.02", FCVAR_CHEAT, "Ambient light of the marine");
 ConVar asw_marine_lightscale("asw_marine_lightscale", "4.0", FCVAR_CHEAT, "Light scale on the marine");
 ConVar asw_flashlight_marine_ambient("asw_flashlight_marine_ambient", "0.1", FCVAR_CHEAT, "Ambient light of the marine with flashlight on");
@@ -88,6 +89,7 @@ ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FC
 ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
 ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
+ConVar rd_buzzer_blur( "rd_buzzer_blur", "1", FCVAR_NONE, "Set to 0 to disable buzzer blur" );	// TODO: Remove this once the buzzer blur issue is fixed. See #76
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -429,6 +431,7 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_flLaserSightLength( 0 )
 {
 	m_hShoulderCone = NULL;
+	m_flNextChatter = 0;
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	SetPredictionEligible( true );
 	m_Commander = NULL;
@@ -813,6 +816,14 @@ bool C_ASW_Marine::GetShadowCastDirection( Vector *pDirection, ShadowType_t shad
 	pDirection->z = m_ShadowDirection.z;	
 
 	return true;
+}
+
+ShadowType_t C_ASW_Marine::ShadowCastType()
+{
+	if ( asw_marine_shadows.GetBool() )
+		return BaseClass::ShadowCastType();
+	else
+		return SHADOWS_NONE;
 }
 
 void C_ASW_Marine::ClientThink()
@@ -2225,7 +2236,8 @@ int C_ASW_Marine::DrawModel( int flags, const RenderableInstance_t &instance )
 
 void C_ASW_Marine::SetPoisoned(float f)
 {
-	m_fPoison = f;
+	if ( rd_buzzer_blur.GetBool() )
+		m_fPoison = f;
 }
 
 // IK the left hand?
@@ -2587,6 +2599,12 @@ C_ClientRagdoll *C_ASW_Marine::CreateClientRagdoll( bool bRestoring )
 
 C_BaseAnimating *C_ASW_Marine::BecomeRagdollOnClient()
 {
+	if ( m_bIsHiddenLocal )
+	{
+		SetRenderAlpha( m_PrevRenderAlpha );
+		m_bIsHiddenLocal = false;
+	}
+
 	C_BaseAnimating *pRagdoll = BaseClass::BecomeRagdollOnClient();
 	if ( pRagdoll )
 	{

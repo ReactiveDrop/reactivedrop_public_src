@@ -39,7 +39,7 @@ void CASW_SquadFormation::LevelInitPostEntity()
 #else
 	m_bLevelHasFollowHints = ( MarineHintManager()->GetHintCount() > 0 );
 
-	Msg("Level has follow hints %d\n", m_bLevelHasFollowHints);
+	DevMsg( "Level has follow hints %d\n", m_bLevelHasFollowHints );
 
 	if ( !m_bLevelHasFollowHints && rd_use_info_nodes.GetBool() )
 	{
@@ -48,7 +48,7 @@ void CASW_SquadFormation::LevelInitPostEntity()
 			MarineHintManager()->AddInfoNode(g_pBigAINet->GetNode(i));
 		}
 		m_bLevelHasFollowHints = (MarineHintManager()->GetHintCount() > 0);
-		Msg("Using nodes if there is no follow hints %d\n", m_bLevelHasFollowHints);
+		DevMsg( "Using nodes if there is no follow hints %d\n", m_bLevelHasFollowHints );
 	}
 #endif
 }

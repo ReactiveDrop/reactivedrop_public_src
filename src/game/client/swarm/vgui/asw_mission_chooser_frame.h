@@ -37,10 +37,7 @@ class CNB_Header_Footer;
 class CASW_Mission_Chooser_List;
 class CASW_Mission_Chooser_Entry;
 class CASW_Mission_Chooser_Details;
-namespace vgui
-{
-	class PropertySheet;
-};
+class vgui::PropertySheet;
 
 class CASW_Mission_Chooser_Frame : public vgui::Frame
 {
@@ -55,6 +52,8 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
 	void ApplyEntry( CASW_Mission_Chooser_Entry *pEntry );
+	void ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName );
+	bool SelectTab( ASW_CHOOSER_TYPE iChooserType );
 
 	ASW_HOST_TYPE m_HostType;
 	CNB_Header_Footer *m_pHeaderFooter;

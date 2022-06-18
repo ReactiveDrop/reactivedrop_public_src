@@ -12,10 +12,7 @@ enum class ASW_HOST_TYPE;
 
 class CASW_Mission_Chooser_Frame;
 class CASW_Mission_Chooser_Entry;
-namespace vgui
-{
-	class ScrollBar;
-}
+class vgui::ScrollBar;
 
 class CASW_Mission_Chooser_List : public vgui::EditablePanel
 {

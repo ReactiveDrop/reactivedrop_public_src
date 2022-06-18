@@ -621,12 +621,6 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 			cmd->aimangleoffset = angIdealAim - cmd->viewangles;
 			cmd->aimangleoffset.z = 0;
 			NormalizeAngles( cmd->aimangleoffset );
-
-			if ( gpGlobals->maxClients == 1 )
-			{
-				// if there's no prediction, just copy the aim angles directly to the player
-				pPlayer->m_angMarineAutoAimFromClient = cmd->aimangleoffset;
-			}
 		}
 	}
 

@@ -134,7 +134,8 @@ public:
 	// shadow
 	Vector m_ShadowDirection;
 	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;	
-	
+	ShadowType_t ShadowCastType();
+
 	// commander/inhabiting
 	C_ASW_Marine_Resource* GetMarineResource();
 	C_ASW_Player* GetCommander() const;
@@ -156,6 +157,7 @@ public:
 	void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 	void MarineStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity );
 	void DoWaterRipples();
+	float m_flNextChatter;
 
 	// footprints
 	const char *GetMarineFootprintParticleName( surfacedata_t *psurface );

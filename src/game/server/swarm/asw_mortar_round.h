@@ -28,6 +28,7 @@ public:
 	virtual void	SetFuseLength( float fSeconds );
 	virtual void	SetClusters(int iClusters, bool bMaster = false);
 	virtual void	CreateEffects();
+	void			InputCreateEffects( inputdata_t &input );
 
 private:
 			void			Touch( CBaseEntity *pOther );

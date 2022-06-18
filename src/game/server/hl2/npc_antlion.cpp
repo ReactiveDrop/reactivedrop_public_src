@@ -4442,10 +4442,10 @@ void CNPC_Antlion::LookupBurrowActivities()
 		m_UnburrowActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
+			DevWarning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowActivity = ( Activity ) ACT_ANTLION_BURROW_OUT;
 		}
@@ -4460,10 +4460,10 @@ void CNPC_Antlion::LookupBurrowActivities()
 		m_UnburrowIdleActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
 		if ( m_UnburrowIdleActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
+			DevWarning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowIdleActivity = ( Activity ) ACT_ANTLION_BURROW_IDLE;
 		}

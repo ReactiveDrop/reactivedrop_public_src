@@ -144,6 +144,8 @@ END_SCRIPTDESC();
 
 HSCRIPT CScriptKeyValues::ScriptFindKey( const char *pszName )
 {
+	if ( !g_pScriptVM ) return NULL;
+
 	KeyValues *pKeyValues = m_pKeyValues->FindKey(pszName);
 	if ( pKeyValues == NULL )
 		return NULL;
@@ -157,6 +159,8 @@ HSCRIPT CScriptKeyValues::ScriptFindKey( const char *pszName )
 
 HSCRIPT CScriptKeyValues::ScriptGetFirstSubKey( void )
 {
+	if ( !g_pScriptVM ) return NULL;
+
 	KeyValues *pKeyValues = m_pKeyValues->GetFirstSubKey();
 	if ( pKeyValues == NULL )
 		return NULL;
@@ -170,6 +174,8 @@ HSCRIPT CScriptKeyValues::ScriptGetFirstSubKey( void )
 
 HSCRIPT CScriptKeyValues::ScriptGetNextKey( void )
 {
+	if ( !g_pScriptVM ) return NULL;
+
 	KeyValues *pKeyValues = m_pKeyValues->GetNextKey();
 	if ( pKeyValues == NULL )
 		return NULL;
@@ -260,6 +266,8 @@ public:
 		if ( !pBaseEntity || !hTable )
 			return;
 
+		if ( !g_pScriptVM ) return;
+
 		AI_CriteriaSet criteria;
 		pBaseEntity->ModifyOrAppendCriteria( criteria );
 
@@ -314,6 +322,8 @@ public:
 		CBaseEntity *pBaseEntity = ToEnt(hEntity);
 		if ( !pBaseEntity || !hOutputTable || element < 0 )
 			return;
+
+		if ( !g_pScriptVM ) return;
 
 		CBaseEntityOutput *pOutput = pBaseEntity->FindNamedOutput( szOutputName );
 		if ( pOutput )
@@ -654,7 +664,8 @@ static const char *GetMapName()
 static const char *DoUniqueString( const char *pszBase )
 {
 	static char szBuf[512];
-	g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE(szBuf) );
+	if ( g_pScriptVM )
+		g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE(szBuf) );
 	return szBuf;
 }
 
@@ -718,7 +729,8 @@ bool DoIncludeScript( const char *pszScript, HSCRIPT hScope )
 {
 	if ( !VScriptRunScript( pszScript, hScope, true ) )
 	{
-		g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
+		if ( g_pScriptVM )
+			g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
 		return false;
 	}
 	return true;
@@ -798,7 +810,9 @@ static void ScriptTraceLineTable( HSCRIPT hTable )
 {
 	if ( !hTable )
 		return;
-	
+
+	if  (!g_pScriptVM ) return;
+
 	// UTIL_TraceLine( vecAbsStart, vecAbsEnd, MASK_BLOCKLOS, pLooker, COLLISION_GROUP_NONE, ptr );
 	trace_t tr;
 	ScriptVariant_t start, end, mask, ignore;
@@ -873,6 +887,12 @@ static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
 {
+	if ( !pszFileName || !Q_strcmp( pszFileName, "" ) )
+	{
+		Log_Warning( LOG_VScript, "StringToFile() file name cannot be null or empty\n" );
+		return;
+	}
+
 	if ( V_strstr( pszFileName, "..") )
 	{
 		Log_Warning( LOG_VScript, "StringToFile() file name cannot contain '..'\n" );
@@ -902,7 +922,13 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 
 static const char *Script_FileToString( const char *pszFileName )
 {
-	if ( V_strstr( pszFileName, "..") )
+	if ( !pszFileName || !Q_strcmp( pszFileName, "" ) )
+	{
+		Log_Warning( LOG_VScript, "FileToString() file name cannot be null or empty\n" );
+		return NULL;
+	}
+
+	if ( V_strstr( pszFileName, ".." ) )
 	{
 		Log_Warning( LOG_VScript, "FileToString() file name cannot contain '..'\n" );
 		return NULL;
@@ -971,6 +997,8 @@ static void Script_GetPlayerConnectionInfo( HSCRIPT hPlayer, HSCRIPT hTable )
 	if ( !pPlayer || !hTable )
 		return;
 
+	if ( !g_pScriptVM ) return;
+
 	INetChannelInfo *nci = engine->GetPlayerNetInfo( pPlayer->entindex() );
 	if ( nci )
 	{
@@ -1021,6 +1049,8 @@ static void Script_LocalTime( HSCRIPT hTable )
 {
 	if ( !hTable )
 		return;
+
+	if ( !g_pScriptVM ) return;
 
 	struct tm timeinfo;
 	Plat_GetLocalTime( &timeinfo );
@@ -1462,6 +1492,9 @@ public:
 		{
 			return;
 		}
+
+		if ( !g_pScriptVM ) return;
+
 		CBaseEntity *pEnt = gEntList.FirstEnt();
 		while ( pEnt )
 		{
@@ -1495,11 +1528,14 @@ public:
 			CBaseEntity *pEnt = m_InstanceMap[i];
 			if ( pEnt->m_hScriptInstance )
 			{
-				ScriptVariant_t variant;
-				if ( g_pScriptVM->GetValue( STRING(pEnt->m_iszScriptId), &variant ) && variant.m_type == FIELD_HSCRIPT )
+				if ( g_pScriptVM )
 				{
-					pEnt->m_ScriptScope.Init( variant.m_hScript, false );
-					pEnt->RunPrecacheScripts();
+					ScriptVariant_t variant;
+					if ( g_pScriptVM->GetValue( STRING(pEnt->m_iszScriptId), &variant ) && variant.m_type == FIELD_HSCRIPT )
+					{
+						pEnt->m_ScriptScope.Init( variant.m_hScript, false );
+						pEnt->RunPrecacheScripts();
+					}
 				}
 			}
 			else

@@ -4,7 +4,6 @@
 #include "vgui_controls/AnimationController.h"
 #include "c_asw_player.h"
 #include "c_asw_game_resource.h"
-#include "asw_campaign_info.h"
 #include "c_asw_campaign_save.h"
 #include "ObjectiveMapMarkPanel.h"
 #include "WrappedLabel.h"

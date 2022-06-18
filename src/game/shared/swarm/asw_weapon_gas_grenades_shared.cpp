@@ -162,6 +162,14 @@ void CASW_Weapon_Gas_Grenades::DelayedAttack()
 
 		pGas_Grenade->SetDuration( flDuration );
 		pGas_Grenade->SetGravity( GetThrowGravity() );
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "gas_grenade_placed" );
+		if ( event )
+		{
+			event->SetInt( "entindex", pGas_Grenade->entindex() );
+			event->SetInt( "marine", pMarine->entindex() );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 #endif
 	// decrement ammo

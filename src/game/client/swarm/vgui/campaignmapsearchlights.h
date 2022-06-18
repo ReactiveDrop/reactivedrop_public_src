@@ -10,7 +10,6 @@
 #include "asw_shareddefs.h"
 
 struct RD_Campaign_t;
-class CASW_Campaign_Info;
 
 // draws oscillating search lights over the campaign map
 class CampaignMapSearchLights : public vgui::Panel
@@ -21,7 +20,6 @@ public:
 	virtual void Paint();
 
 	void SetCampaign( const RD_Campaign_t *pCampaign );
-	void SetCampaign( CASW_Campaign_Info *pInfo );
 
 	int m_iSearchLightX[ASW_NUM_SEARCH_LIGHTS];
 	int m_iSearchLightY[ASW_NUM_SEARCH_LIGHTS];

@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2003, Valve Corporation, All rights reserved. =======
+//====== Copyright ?1996-2003, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Game rules for Alien Swarm
 //
@@ -40,9 +40,9 @@
 #endif
 
 class CASW_Marine_Resource;
-class CASW_Campaign_Info;
 class CASW_Campaign_Save;
 class CASW_Ammo;
+struct RD_Campaign_t;
 
 class CAlienSwarmProxy : public CGameRulesProxy
 {
@@ -129,7 +129,8 @@ public:
 	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	virtual void			Shutdown();
-	
+	bool m_bShuttingDown;
+
 	// briefing roster functions
 	virtual bool			RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot=-1 );
 	virtual void			RosterDeselect( CASW_Player *pPlayer, int RosterIndex);
@@ -183,6 +184,8 @@ public:
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine );
 	//resurects on the next spawn point
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR );
+	//resurects on the spawn point
+	CASW_Marine* ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos, bool bEffect = true );
 
 	// cheats
 	bool m_bMarineInvuln;
@@ -370,6 +373,7 @@ public:
 
 	CUtlStringMap<string_t> m_SavedConvars_Challenge;
 	void ResetChallengeConVars();
+	void CheckChallengeConVars();
 	void ApplyChallengeConVars( KeyValues *pKV );
 
 #endif	// GAME_DLL above
@@ -510,9 +514,9 @@ public:
 
 	// campaign related
 	int IsCampaignGame();	// -1 = unknown, 0 = single mission, 1 = campaign game
-	int CampaignMissionsLeft();	
-	CASW_Campaign_Info* GetCampaignInfo();
-	CASW_Campaign_Save* GetCampaignSave();	
+	int CampaignMissionsLeft();
+	const RD_Campaign_t *GetCampaignInfo();
+	CASW_Campaign_Save *GetCampaignSave();
 
 	// special game modes
 #ifndef CLIENT_DLL

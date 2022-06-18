@@ -2082,13 +2082,15 @@ int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass, bool bIs
 		return 0;
 	}
 
-	if ( bIsTemporary )
+	CASW_WeaponInfo *pWeaponData = ASWEquipmentList()->GetWeaponDataFor( szWeaponClass );
+
+	// use the temporary slot unless we can put it in primary or secondary without dropping anything
+	if ( bIsTemporary && ( pWeaponData->m_bExtra || !V_stricmp( szWeaponClass, "rd_weapon_generic_object" ) || ( GetWeapon(0) && GetWeapon(1) ) ) )
 	{
 		return ASW_TEMPORARY_WEAPON_SLOT;
 	}
 
 	// if it's an extra type item, return the 3rd slot as that's the only place it'll fit
-	CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor(szWeaponClass);
 	if (pWeaponData && pWeaponData->m_bExtra)
 		return 2;
 

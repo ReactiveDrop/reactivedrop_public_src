@@ -5,6 +5,7 @@
 #endif
 
 #include "iasw_spawnable_npc.h"
+#include "asw_alien_classes.h"
 
 class CAI_Network;
 class CTriggerMultiple;
@@ -14,18 +15,6 @@ class CASW_Alien;
 class CASW_Spawn_Definition;
 class CASW_Spawn_NPC;
 class CASW_Spawner;
-
-// The spawn manager can spawn aliens and groups of aliens
-
-class ASW_Alien_Class_Entry
-{
-public:
-	ASW_Alien_Class_Entry( const char *szClass, int nHullType ) { m_pszAlienClass = szClass; m_nHullType = nHullType; }
-
-	const char *m_pszAlienClass;
-	string_t m_iszAlienClass;
-	int m_nHullType;
-};
 
 class CASW_Open_Area
 {
@@ -44,6 +33,7 @@ public:
 	CUtlVector<CAI_Node*> m_aAreaNodes;
 };
 
+// The spawn manager can spawn aliens and groups of aliens
 class CASW_Spawn_Manager
 {
 public:

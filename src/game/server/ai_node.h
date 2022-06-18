@@ -197,7 +197,10 @@ inline HSCRIPT ToHScript( CAI_Node *pNode )
 template <> ScriptClassDesc_t *GetScriptDesc<CAI_Node>( CAI_Node * );
 inline CAI_Node *ToAINode( HSCRIPT hScript )
 {
-	return ( hScript ) ? (CAI_Node *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Node) ) : NULL;
+	if ( g_pScriptVM )
+		return ( hScript ) ? (CAI_Node *)g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass(CAI_Node) ) : NULL;
+
+	return NULL;
 }
 
 #endif // AI_NODE_H

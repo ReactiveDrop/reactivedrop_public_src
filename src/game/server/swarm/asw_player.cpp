@@ -48,7 +48,6 @@
 #include "ai_node.h"
 #include "datacache/imdlcache.h"
 #include "asw_spawn_manager.h"
-#include "asw_campaign_info.h"
 #include "sendprop_priorities.h"
 #include "asw_deathmatch_mode.h"
 #include "asw_trace_filter.h"
@@ -61,7 +60,7 @@
 //#define MARINE_ORDER_DISTANCE 500
 #define MARINE_ORDER_DISTANCE 32000
 
-
+ConVar asw_client_chatter_enabled("asw_client_chatter_enabled", "1", FCVAR_NONE, "If zero cl_chatter is played only for the player who issued the command"); 
 ConVar asw_blend_test_scale("asw_blend_test_scale", "0.1f", FCVAR_CHEAT);
 ConVar asw_debug_pvs("asw_debug_pvs", "0", FCVAR_CHEAT);
 extern ConVar asw_rts_controls;
@@ -236,6 +235,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	//
 
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
+
+	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -268,7 +269,13 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_iMouseX, FIELD_SHORT ),
 	DEFINE_FIELD( m_iMouseY, FIELD_SHORT ),
 	//
+
+	DEFINE_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR ),
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
+	DEFINE_SCRIPTFUNC( ResurrectMarine, "Resurrect the marine" )
+END_SCRIPTDESC()
 
 // -------------------------------------------------------------------------------- //
 
@@ -1120,7 +1127,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				CASW_Marine* pMarine = GetMarine();
 				if (pMarine && pMarine->GetMarineSpeech())
 				{
-					pMarine->GetMarineSpeech()->ClientRequestChatter(iChatter, iSubChatter);
+					pMarine->GetMarineSpeech()->ClientRequestChatter(iChatter, iSubChatter, asw_client_chatter_enabled.GetBool() ? NULL : this);
 				}
 				return true;
 			}
@@ -1516,7 +1523,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if ( ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() )
 		{
 			int iTargetMission = atoi( args[1] );
-			CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
+			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 			if ( pCampaign && pCampaign->GetMission( iTargetMission ) )
 			{
 				ASWGameResource()->m_iNextCampaignMission = iTargetMission;
@@ -3145,4 +3152,25 @@ const Vector& CASW_Player::GetCrosshairTracePos()
 	}
 
 	return m_vecCrosshairTracePos;
+}
+
+HSCRIPT CASW_Player::ResurrectMarine( const Vector position, bool bEffect )
+{
+	CASW_Marine* pMarine = NULL;
+	const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
+
+	for ( int i = 0; i < numMarineResources; i++ )
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR && pMR->GetHealthPercent() <= 0 ) // if marine exists, is dead
+		{
+			if ( this == pMR->GetCommander() )
+			{
+				pMarine = ASWGameRules()->ScriptResurrect( pMR, position, bEffect );
+				return ToHScript( pMarine ); // don't do two in a frame
+			}
+		}
+	}
+
+	return ToHScript( pMarine );
 }

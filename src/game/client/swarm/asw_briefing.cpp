@@ -15,8 +15,8 @@
 #define CASW_Equip_Req C_ASW_Equip_Req
 #include "asw_equip_req.h"
 #include "voice_status.h"
-#include "asw_campaign_info.h"
 #include "asw_deathmatch_mode.h"
+#include "rd_lobby_utils.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -807,14 +807,14 @@ bool CASW_Briefing::CheckMissionRequirements()
 
 		if ( ASWGameResource() && !asw_ignore_need_two_player_requirement.GetBool() )
 		{
-			CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
+			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 
 			char mapname[64];
 			V_FileBase( engine->GetLevelName(), mapname, sizeof( mapname ) );
 
 			if ( pCampaign && pCampaign->GetMissionByMapName( mapname ) )
 			{
-				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->m_bNeedsMoreThanOneMarine;
+				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->NeedsMoreThanOneMarine;
 				if ( bNeedsMoreThanOneMarine )
 				{
 					// how many marines do we have?
@@ -925,7 +925,7 @@ bool CASW_Briefing::IsCampaignGame()
 
 bool CASW_Briefing::UsingFixedSkillPoints()
 {
-	if ( !IsCampaignGame() || !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
+	if ( !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
 	{
 		return false;
 	}
@@ -979,4 +979,36 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 		bTalking = pVoiceMgr->IsPlayerSpeaking( index );
 	}
 	return bTalking;
+}
+
+int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
+	{
+		return 0;
+	}
+
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
+	if ( !sz || !*sz )
+	{
+		return 0;
+	}
+
+	return atoi( sz );
+}
+
+const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
+	{
+		return "";
+	}
+
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
+
+	return sz ? sz : "";
 }

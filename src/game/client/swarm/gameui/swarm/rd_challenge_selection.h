@@ -32,7 +32,7 @@ namespace BaseModUI
 	private:
 		void PopulateChallenge( const char *szName );
 		friend class ReactiveDropChallengeSelection;
-		CReactiveDropWorkshop::WorkshopItem_t GetWorkshopItem();
+		const CReactiveDropWorkshop::WorkshopItem_t &GetWorkshopItem();
 
 		bool m_bCurrentlySelected;
 		vgui::HFont	m_hTextFont;

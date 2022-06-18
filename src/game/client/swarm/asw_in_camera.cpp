@@ -174,13 +174,19 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	// BenLubar: When spectating a player, use their camera yaw.
-	if ( pPlayer && pPlayer->GetSpectatingMarine() && pPlayer->GetSpectatingMarine()->IsInhabited() )
+	C_ASW_Marine *pSpectatingMarine = pPlayer ? pPlayer->GetSpectatingMarine() : NULL;
+	if ( pSpectatingMarine && pSpectatingMarine->IsInhabited() )
 	{
-		pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
+		pPlayer = pSpectatingMarine->GetCommander();
 	}
 
 	if ( pPlayer && pPlayer->GetASWControls() != 1 )
 	{
+		if ( pSpectatingMarine && !pSpectatingMarine->IsInhabited() )
+		{
+			return pSpectatingMarine->EyeAngles().y;
+		}
+
 		return pPlayer->EyeAngles().y;
 	}
 

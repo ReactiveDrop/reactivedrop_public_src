@@ -159,11 +159,6 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 			player->m_nImpulse = ucmd->impulse;
 		}
 	}
-	// BenLubar(spectator-mouse)
-	pASWPlayer->m_iScreenWidth = ucmd->screenw;
-	pASWPlayer->m_iScreenHeight = ucmd->screenh;
-	pASWPlayer->m_iMouseX = ucmd->mousex;
-	pASWPlayer->m_iMouseY = ucmd->mousey;
 
 	// Update player input button states
 	VPROF_SCOPE_BEGIN( "player->UpdateButtonState" );

@@ -107,7 +107,6 @@
 #include "asw_equipment_list.h"
 #include "asw_marine_profile.h"
 #include "asw_weapon_parse.h"
-#include "asw_campaign_info.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #include "takedamageinfo.h"
 #include "asw_holdout_mode.h"
@@ -682,10 +681,11 @@ ConVar asw_vote_map_fraction("asw_vote_map_fraction", "0.6", FCVAR_REPLICATED, "
 ConVar asw_marine_collision("asw_marine_collision", "0", FCVAR_REPLICATED, "Whether marines collide with each other or not, in a multiplayer game");
 ConVar asw_skill( "asw_skill","2", FCVAR_REPLICATED, "Game skill level (1-5).", true, 1, true, 5 );
 ConVar asw_money( "asw_money", "0", FCVAR_REPLICATED, "Can players collect money?" );
-ConVar asw_client_build_maps("asw_client_build_maps", "0", FCVAR_REPLICATED, "Whether clients compile random maps rather than getting sent them");
-ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won");
-ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines");
-ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns");
+ConVar asw_client_build_maps( "asw_client_build_maps", "0", FCVAR_REPLICATED, "Whether clients compile random maps rather than getting sent them" );
+ConVar rd_deathmatch_ending_time( "rd_deathmatch_ending_time", "10.0",  FCVAR_REPLICATED, "Period of time after which the round ends after somebody has won" );
+ConVar rd_jumpjet_knockdown_marines( "rd_jumpjet_knockdown_marines", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 Jump Jet knock down marines" );
+ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "Index of the weapon that is given to marine after he spawns" );
+ConVar asw_player_avoidance( "asw_player_avoidance", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Enable/Disable player avoidance." );
 #ifdef GAME_DLL
 static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_ARCHIVE, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1, &UpdateGameRulesOverrideAllowRotateCamera );
@@ -1366,8 +1366,9 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 extern bool g_bAIDisabledByUser;
 extern ConVar asw_springcol;
-ConVar asw_blip_speech_chance("asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity");
-ConVar asw_instant_restart("asw_instant_restart", "1", FCVAR_ARCHIVE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map).");
+ConVar asw_blip_speech_chance( "asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity" );
+ConVar asw_instant_restart( "asw_instant_restart", "1", FCVAR_NONE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map)." );
+ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, "Write a lot of developer messages to the console during an instant restart." );
 
 const char * GenerateNewSaveGameName()
 {
@@ -1393,9 +1394,8 @@ const char* CAlienSwarm::GetGameDescription( void )
 
 CAlienSwarm::CAlienSwarm()
 {
-	Msg( "CAlienSwarm created\n" );
+	m_bShuttingDown = false;
 
-#ifndef CLIENT_DLL
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
 	// memory usage and cache trashing over time
@@ -1404,7 +1404,6 @@ CAlienSwarm::CAlienSwarm()
 		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
 		mod_dont_load_vertices.SetValue( 1 );
 	}
-#endif
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
@@ -1556,20 +1555,6 @@ void CAlienSwarm::FullReset()
 CAlienSwarm::~CAlienSwarm()
 {
 	RevertSavedConvars();
-
-	Msg("CAlienSwarm destroyed\n");
-	//if (g_pMarineProfileList)
-	//{
-		//delete g_pMarineProfileList;
-		//g_pMarineProfileList = NULL;
-	//}
-	//if (g_pASWEquipmentList)
-	//{
-		//delete g_pASWEquipmentList;
-		//g_pASWEquipmentList = NULL;
-	//}
-
-	//delete m_pMissionManager;
 }
 
 ConVar asw_reserve_marine_time("asw_reserve_marine_time", "30.0f", 0, "Number of seconds marines are reserved for at briefing start");
@@ -1767,7 +1752,7 @@ void CAlienSwarm::AutoselectMarines(CASW_Player *pPlayer)
 					//Msg("this is a match, attempting autoselect\n");
 					// check marine isn't wounded first
 					bool bWounded = false;
-					if (IsCampaignGame() && GetCampaignSave())
+					if (GetCampaignSave())
 					{
 						if (GetCampaignSave()->IsMarineWounded(i))
 							bWounded = true;
@@ -2388,11 +2373,11 @@ void CAlienSwarm::EnforceMaxMarines()
 
 void CAlienSwarm::ReviveDeadMarines()
 {
-	if (IsCampaignGame() && GetCampaignSave())
+	if (GetCampaignSave())
 	{
 		for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
 		{
-			GetCampaignSave()->ReviveMarine(i);			
+			GetCampaignSave()->ReviveMarine(i);
 		}
 		GetCampaignSave()->SaveGameToFile();
 		if (ASWGameResource())
@@ -2630,15 +2615,14 @@ void CAlienSwarm::StartMission()
 	}
 
 	// increase num retries
-	if (IsCampaignGame() && GetCampaignSave())
+	if ( CASW_Campaign_Save *pSave = GetCampaignSave() )
 	{
-		CASW_Campaign_Save* pSave = GetCampaignSave();
 		pSave->IncreaseRetries();
 		pSave->UpdateLastCommanders();
 		pSave->SaveGameToFile();
-	}	
+	}
 
-	m_Medals.OnStartMission();	
+	m_Medals.OnStartMission();
 
 	if ( ASWDirector() )
 	{
@@ -2731,37 +2715,38 @@ void CAlienSwarm::StartMission()
 	}
 
 	AddBonusChargesToPickups();
-
-	HSCRIPT hMissionStartFunc = g_pScriptVM->LookupFunction( "OnMissionStart" );
-	if ( hMissionStartFunc )
+	if( g_pScriptVM )
 	{
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hMissionStartFunc, NULL, false, NULL );
-		if ( nStatus != SCRIPT_DONE )
+		HSCRIPT hMissionStartFunc = g_pScriptVM->LookupFunction( "OnMissionStart" );
+		if ( hMissionStartFunc )
 		{
-			DevWarning( "OnMissionStart VScript function did not finish!\n" );
-		}
-		g_pScriptVM->ReleaseFunction( hMissionStartFunc );
-	}
-
-	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-	{
-		ScriptVariant_t hModeScript;
-		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-		{
-			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnMissionStart", hModeScript ) )
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hMissionStartFunc, NULL, false, NULL );
+			if ( nStatus != SCRIPT_DONE )
 			{
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
-				if ( nStatus != SCRIPT_DONE )
-				{
-					DevWarning( "OnMissionStart VScript function did not finish!\n" );
-				}
-
-				g_pScriptVM->ReleaseFunction( hFunction );
+				DevWarning( "OnMissionStart VScript function did not finish!\n" );
 			}
-			g_pScriptVM->ReleaseValue( hModeScript );
+			g_pScriptVM->ReleaseFunction( hMissionStartFunc );
+		}
+
+		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+		{
+			ScriptVariant_t hModeScript;
+			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+			{
+				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnMissionStart", hModeScript ) )
+				{
+					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+					if ( nStatus != SCRIPT_DONE )
+					{
+						DevWarning( "OnMissionStart VScript function did not finish!\n" );
+					}
+
+					g_pScriptVM->ReleaseFunction( hFunction );
+				}
+				g_pScriptVM->ReleaseValue( hModeScript );
+			}
 		}
 	}
-
 	if ( g_pSwarmProxy )
 	{
 		g_pSwarmProxy->OnMissionStart();
@@ -2850,34 +2835,36 @@ void CAlienSwarm::UpdateLaunching()
 			CASW_Use_Area *pArea = static_cast< CASW_Use_Area* >( IASW_Use_Area_List::AutoList()[ i ] );
 			pArea->UpdateWaitingForInput();
 		}
-
-		HSCRIPT hGameplayStartFunc = g_pScriptVM->LookupFunction( "OnGameplayStart" );
-		if ( hGameplayStartFunc )
+		if( g_pScriptVM )
 		{
-			ScriptStatus_t nStatus = g_pScriptVM->Call( hGameplayStartFunc, NULL, false, NULL );
-			if ( nStatus != SCRIPT_DONE )
+			HSCRIPT hGameplayStartFunc = g_pScriptVM->LookupFunction( "OnGameplayStart" );
+			if ( hGameplayStartFunc )
 			{
-				DevWarning( "OnGameplayStart VScript function did not finish!\n" );
-			}
-			g_pScriptVM->ReleaseFunction( hGameplayStartFunc );
-		}
-
-		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-		{
-			ScriptVariant_t hModeScript;
-			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-			{
-				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnGameplayStart", hModeScript ) )
+				ScriptStatus_t nStatus = g_pScriptVM->Call( hGameplayStartFunc, NULL, false, NULL );
+				if ( nStatus != SCRIPT_DONE )
 				{
-					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
-					if ( nStatus != SCRIPT_DONE )
-					{
-						DevWarning( "OnGameplayStart VScript function did not finish!\n" );
-					}
-
-					g_pScriptVM->ReleaseFunction( hFunction );
+					DevWarning( "OnGameplayStart VScript function did not finish!\n" );
 				}
-				g_pScriptVM->ReleaseValue( hModeScript );
+				g_pScriptVM->ReleaseFunction( hGameplayStartFunc );
+			}
+
+			if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+			{
+				ScriptVariant_t hModeScript;
+				if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+				{
+					if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnGameplayStart", hModeScript ) )
+					{
+						ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL );
+						if ( nStatus != SCRIPT_DONE )
+						{
+							DevWarning( "OnGameplayStart VScript function did not finish!\n" );
+						}
+
+						g_pScriptVM->ReleaseFunction( hFunction );
+					}
+					g_pScriptVM->ReleaseValue( hModeScript );
+				}
 			}
 		}
 	}
@@ -2952,7 +2939,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	//if (GetGameState() == ASW_GS_INGAME && ASWGameStats())
 		//ASWGameStats()->AddMapRecord();
 
-	if ( IsCampaignGame() && GetCampaignSave() )
+	if ( GetCampaignSave() )
 	{
 		CASW_Campaign_Save *pSave = GetCampaignSave();
 		pSave->SaveGameToFile();
@@ -2963,15 +2950,26 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	if ( ASWGameResource() )
 		ASWGameResource()->RememberLeaderID();
 
-	if ( !asw_instant_restart.GetBool() )
+	if ( !asw_instant_restart.GetBool() || gEntList.FindEntityByClassname( NULL, "asw_challenge_thinker" ) )
 	{
-		if ( IsCampaignGame() )
+		if ( asw_instant_restart_debug.GetBool() )
+		{
+			if ( !asw_instant_restart.GetBool() )
+				Msg( "Not performing instant restart - disabled by convar.\n" );
+			else
+				Msg( "Not performing instant restart - current challenge uses vscript.\n" );
+		}
+
+		if ( GetCampaignSave() )
 			ChangeLevel_Campaign( STRING( gpGlobals->mapname ) );
 		else
 			engine->ChangeLevel( STRING( gpGlobals->mapname ), NULL );
 
 		return;
 	}
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Performing Instant Restart with %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 
 	// find the first entity in the entity list
 	CBaseEntity *pEnt = gEntList.FirstEnt();
@@ -2981,6 +2979,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	{
 		if ( m_MapResetFilter.ShouldCreateEntity( pEnt->GetClassname() ) )
 		{
+			if ( asw_instant_restart_debug.GetBool() )
+				DevMsg( "Destroying entity %d: %s\n", pEnt->entindex(), pEnt->GetClassname() );
+
 			// resetting this entity
 			CBaseEntity *pNextEntity = gEntList.NextEnt( pEnt );
 			UTIL_Remove( pEnt ); // mark entity for deletion
@@ -2988,6 +2989,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		}
 		else
 		{
+			if ( asw_instant_restart_debug.GetBool() )
+				DevMsg( "Keeping entity %d: %s\n", pEnt->entindex(), pEnt->GetClassname() );
+
 			// keeping this entity, so don't destroy it
 			pEnt = gEntList.NextEnt( pEnt );
 		}
@@ -3007,6 +3011,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	FullReset();
 	ASWSpawnSelection()->LevelShutdownPostEntity();
 
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart after cleanup has %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
+
 	// clear squad
 	g_ASWSquadFormation.LevelInitPreEntity();
 	ASWSpawnSelection()->LevelInitPreEntity();
@@ -3014,6 +3021,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	// with any unrequired entities removed, we use MapEntity_ParseAllEntities to reparse the map entities
 	// this in effect causes them to spawn back to their normal position.
 	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &m_MapResetFilter, true );
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart after reparse has %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 
 	// let the players know the mission is restarting
 	//UTIL_ClientPrintAll( HUD_PRINTCENTER, "Restarting Mission" );
@@ -3050,6 +3060,9 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 			}
 		}
 	}
+
+	if ( asw_instant_restart_debug.GetBool() )
+		Msg( "Instant Restart completed with %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 }
 
 // issues a changelevel command with the campaign argument and save name
@@ -3073,7 +3086,7 @@ void CAlienSwarm::ChangeLevel_Campaign(const char *map)
 		return;
 	}
 
-	engine->ChangeLevel( UTIL_VarArgs("%s campaign %s", map, ASWGameResource()->GetCampaignSaveName()) , NULL);
+	engine->ChangeLevel( UTIL_VarArgs( "%s %s %s", map, IsCampaignGame() ? "campaign" : "single_mission", ASWGameResource()->GetCampaignSaveName() ), NULL );
 }
 
 // called when the marines have finished the mission and want to save their progress and pick the next map to play
@@ -3252,36 +3265,36 @@ bool CAlienSwarm::RequestCampaignMove(int iTargetMission)
 }
 
 // moves the marines from one location to another
-bool CAlienSwarm::RequestCampaignLaunchMission(int iTargetMission)
+bool CAlienSwarm::RequestCampaignLaunchMission( int iTargetMission )
 {
 	// only allow campaign moves if the campaign map is up
-	if (m_iGameState != ASW_GS_CAMPAIGNMAP || iTargetMission == 0)	// 0 is the dropzone
+	if ( m_iGameState != ASW_GS_CAMPAIGNMAP || iTargetMission == 0 )	// 0 is the dropzone
 		return false;
 
-	if (!GetCampaignSave() || !GetCampaignInfo())
+	if ( !GetCampaignSave() || !GetCampaignInfo() )
 		return false;
 
 	// don't allow the launch if we're not at this location
-	if (GetCampaignSave()->m_iCurrentPosition != iTargetMission)
+	if ( GetCampaignSave()->m_iCurrentPosition != iTargetMission )
 	{
-		Msg("RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition.Get());
+		Msg( "RequestCampaignLaunchMission %d failed as current location is %d\n", iTargetMission, GetCampaignSave()->m_iCurrentPosition.Get() );
 		return false;
 	}
 
-	CASW_Campaign_Info::CASW_Campaign_Mission_t* pMission = GetCampaignInfo()->GetMission(iTargetMission);
-	if (!pMission)
+	const RD_Campaign_Mission_t *pMission = GetCampaignInfo()->GetMission( iTargetMission );
+	if ( !pMission )
 	{
-		Msg("RequestCampaignLaunchMission %d failed as couldn't get this mission from the Campaign Info\n", iTargetMission);
+		Msg( "RequestCampaignLaunchMission %d failed as couldn't get this mission from the Campaign Info\n", iTargetMission );
 		return false;
-	}	
+	}
 
 	// save it!
 	GetCampaignSave()->SaveGameToFile();
 
-	Msg("CAlienSwarm::RequestCampaignLaunchMission changing mission to %s\n", STRING(pMission->m_MapName));
-	if (ASWGameResource())
+	Msg( "CAlienSwarm::RequestCampaignLaunchMission changing mission to %s\n", pMission->MapName );
+	if ( ASWGameResource() )
 		ASWGameResource()->RememberLeaderID();
-	ChangeLevel_Campaign(STRING(pMission->m_MapName));
+	ChangeLevel_Campaign( pMission->MapName );
 	return true;
 }
 
@@ -3661,6 +3674,8 @@ void CAlienSwarm::OnSteamRelayNetworkStatusChanged( SteamRelayNetworkStatus_t *p
 
 void CAlienSwarm::Think()
 {
+	if ( m_bShuttingDown ) return;
+
 	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
 	{
 		SteamNetworkPingLocation_t location;
@@ -3772,6 +3787,8 @@ void CAlienSwarm::Think()
 		break;
 	}
 
+	CheckChallengeConVars();
+
 	if (m_iCurrentVoteType != ASW_VOTE_NONE)
 		UpdateVote();
 
@@ -3833,7 +3850,9 @@ inline unsigned int ThreadShutdown(void* pParam)
 	return 0;
 }
 
-void CAlienSwarm::Shutdown() {
+void CAlienSwarm::Shutdown() 
+{
+	m_bShuttingDown = true;
 	CreateSimpleThread(ThreadShutdown, engine);
 }
 
@@ -3913,9 +3932,17 @@ void CAlienSwarm::OnServerHibernating()
 	}
 }
 
+ConVar asw_respawn_marine_enable( "asw_respawn_marine_enable", "0", FCVAR_CHEAT, "Enables respawning marines.", true, 0, true, 1 );
+
 // Respawn a dead marine.
 void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine )  
 {
+	if ( !asw_respawn_marine_enable.GetBool() )
+	{
+		Msg( "Respawning marines is not enabled on this server.\n" );
+		return;
+	}
+
 	//AssertMsg1( !pMR->IsAlive() && 
 	//((gpGlobals->curtime - pMR->m_fDeathTime) >= asw_marine_resurrection_interval.GetFloat() ),
 	//"Tried to respawn %s before its time!", pMR->GetProfile()->GetShortName() );
@@ -3990,20 +4017,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 		return;
 
 	// WISE FWOM YOUW GWAVE!
-	if ( !SpawnMarineAt( pMR, vecChosenSpawnPos + Vector(0,0,1), QAngle(0,0,0 ), true ) )
-	{
-		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
-		return;
-	}
-	else
-	{
-		CASW_Marine *pMarine = pMR->GetMarineEntity();
-		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
-		// switch commander to the marine if he hasn't already got one selected
-		if ( !pMR->GetCommander()->GetMarine() )
-			pMR->GetCommander()->SwitchMarine(0 );
-		pMarine->PerformResurrectionEffect();
-	}
+	ScriptResurrect( pMR, vecChosenSpawnPos );
 }
 
 // Respawn a dead marine. DEPRECATED, UNUSED
@@ -4033,6 +4047,31 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 			pMR->GetCommander()->SwitchMarine(0 );
 		pMarine->PerformResurrectionEffect();
 	}
+}
+
+CASW_Marine* CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos, bool bEffect )
+{
+	CASW_Marine* pMarine = NULL;
+	
+	if ( !pMR || GetGameState() != ASW_GS_INGAME ) return NULL;
+
+	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector( 0, 0, 1 ), QAngle( 0, 0, 0 ), true ) )
+	{
+		Msg( "Failed to resurrect marine %s\n", pMR->GetProfile()->GetShortName() );
+		return NULL;
+	}
+	else
+	{
+		pMarine = pMR->GetMarineEntity();
+		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
+		if ( !pMR->GetCommander()->GetMarine() )
+			pMR->GetCommander()->SwitchMarine( 0 );
+		
+		if ( bEffect )
+			pMarine->PerformResurrectionEffect();
+	}
+
+	return pMarine;
 }
 
 void CAlienSwarm::MarineInvuln()
@@ -4618,8 +4657,21 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			if ( !pMR )
 				continue;
 		
-			m_hDebriefStats->m_iKills.Set(i, pMR->m_iAliensKilled);
-			iTotalKills += pMR->m_iAliensKilled;
+			int iKills = 0;
+			if ( pMR->IsInhabited() )
+			{
+				CASW_Player* pPlayer = pMR->GetCommander();
+				if (pPlayer)
+					iKills = pPlayer->FragCount();
+				else
+					iKills = pMR->m_iAliensKilled;
+			}
+			else
+				iKills = pMR->m_iBotFrags;
+
+			m_hDebriefStats->m_iKills.Set(i, iKills);
+			iTotalKills += iKills;
+
 			float acc = 0;
 			if (pMR->m_iPlayerShotsFired > 0)
 			{				
@@ -4963,7 +5015,7 @@ void CAlienSwarm::BlipSpeech(int iMarine)
 
 void CAlienSwarm::MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info )
 {
-	if ( IsCampaignGame() && GetCampaignSave() )
+	if ( GetCampaignSave() )
 	{
 		GetCampaignSave()->OnMarineKilled();
 	}
@@ -5057,13 +5109,23 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 
 	if ( pMarine )
 	{
+		CASW_Player *pCommander = pMarine->GetCommander();
+		if ( pCommander && pMarine->IsInhabited() )
+		{
+			int iClassIndex = GetAlienClassIndex( pAlien );
+			if ( iClassIndex >= 0 )
+			{
+				CSingleUserRecipientFilter filter( pCommander );
+				filter.MakeReliable();
+				UserMessageBegin( filter, "RDAlienKillStat" );
+					WRITE_SHORT( iClassIndex );
+				MessageEnd();
+			}
+		}
+
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 		if ( pMR )
 		{
-			pMR->m_iAliensKilled++;
-			if ( !ASWDeathmatchMode() )
-				pMR->m_TimelineKillsTotal.RecordValue( 1.0f );
-
 			CASW_Game_Resource *pGameResource = ASWGameResource();
 			if ( pGameResource )
 			{
@@ -5316,6 +5378,13 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	if ( !ASWDeathmatchMode() && pMarine &&
 		pMarine->GetCommander() ) 
 	{
+		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if (pMR)
+		{
+			pMR->m_iAliensKilled++;
+			pMR->m_TimelineKillsTotal.RecordValue(1.0f);
+		}
+
 		CASW_Player *pPlayer = pMarine->GetCommander();
 		int nFrags = 0;
 		if ( pMarine->IsInhabited() && pPlayer )
@@ -5325,7 +5394,6 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		}
 		else
 		{
-			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if (pMR)
 			{
 				pMR->m_iBotFrags += 1;
@@ -5919,7 +5987,7 @@ CASW_Campaign_Save* CAlienSwarm::GetCampaignSave()
 	return pGameResource->GetCampaignSave();
 }
 
-CASW_Campaign_Info* CAlienSwarm::GetCampaignInfo()
+const RD_Campaign_t *CAlienSwarm::GetCampaignInfo()
 {
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if (!pGameResource)
@@ -5929,47 +5997,34 @@ CASW_Campaign_Info* CAlienSwarm::GetCampaignInfo()
 		return NULL;
 
 	// if the campaign info has previously been setup, then just return that
-	if (pGameResource->m_pCampaignInfo)
+	if ( pGameResource->m_pCampaignInfo )
 		return pGameResource->m_pCampaignInfo;
 
 	// will only set up the campaign info if the campaign save is here (should've been created in gamerules constructor (and networked down each client))
 	CASW_Campaign_Save *pSave = GetCampaignSave();
-	if (!pSave)
+	if ( !pSave )
 		return NULL;
-	// our savegame is setup, so we can ask it for the name of our campaign and try to load it
-	CASW_Campaign_Info *pCampaignInfo = new CASW_Campaign_Info;
-	if (pCampaignInfo)
-	{
-		if (pCampaignInfo->LoadCampaign(pSave->GetCampaignName()))
-		{
-			// created and loaded okay, notify the asw game resource that some new marine skills are to be networked about
-#ifndef CLIENT_DLL
-			if (ASWGameResource())
-			{
-				ASWGameResource()->UpdateMarineSkills(pSave);
-			}
-			else
-			{
-				Msg("Warning: Failed to find game resource after loading campaign game.  Marine skills will be incorrect.\n");
-			}
-#endif			
-			pGameResource->m_pCampaignInfo = pCampaignInfo;
 
-			return pCampaignInfo;
-		}
-		else
-		{
-			// failed to load the specified campaign			
-			delete pCampaignInfo;
-#ifdef CLIENT_DLL
-			engine->ClientCmd("disconnect\n");
-#else
-			engine->ServerCommand("disconnect\n");
+	// our savegame is setup, so we can ask it for the name of our campaign and try to load it
+	pGameResource->m_pCampaignInfo.SetCampaign( pSave->GetCampaignName() );
+
+#ifndef CLIENT_DLL
+	// created and loaded okay, notify the asw game resource that some new marine skills are to be networked about
+	if ( pGameResource->m_pCampaignInfo )
+		pGameResource->UpdateMarineSkills( pSave );
 #endif
-		}
+
+	if ( !pGameResource->m_pCampaignInfo )
+	{
+		// failed to load the specified campaign
+#ifdef CLIENT_DLL
+		engine->ClientCmd( "disconnect\n" );
+#else
+		engine->ServerCommand( "disconnect\n" );
+#endif
 	}
 
-	return NULL;
+	return pGameResource->m_pCampaignInfo;
 }
 
 
@@ -6709,7 +6764,7 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 
 bool CAlienSwarm::CanSpendPoint(CASW_Player *pPlayer, int iProfileIndex, int nSkillSlot)
 {
-	if (!IsCampaignGame() || !ASWGameResource() || !pPlayer)
+	if (!ASWGameResource() || !pPlayer)
 	{
 		//Msg("returning false cos this isn't campaign\n");
 		return false;
@@ -6775,7 +6830,7 @@ bool CAlienSwarm::SpendSkill(int iProfileIndex, int nSkillSlot)
 	if (nSkillSlot < 0 || nSkillSlot >= ASW_SKILL_SLOT_SPARE)		// -1 since the last skill is 'spare' points
 		return false;
 
-	if (!ASWGameResource() || !IsCampaignGame())
+	if (!ASWGameResource())
 		return false;
 
 	CASW_Marine_Profile *pProfile = MarineProfileList()->m_Profiles[iProfileIndex];
@@ -6825,7 +6880,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 	if (!pPlayer)
 		return false;
 
-	if (!ASWGameResource() || !IsCampaignGame())
+	if (!ASWGameResource())
 		return false;
 
 	if (iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
@@ -6875,7 +6930,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 
 void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 {
-	Msg("Skill level changed\n");
+	DevMsg( "Skill level changed %d\n", iNewLevel );
 	if ( !ASWDeathmatchMode() && !( GetGameState() == ASW_GS_BRIEFING || GetGameState() == ASW_GS_DEBRIEF ) )
 	{
 		m_bCheated = true;
@@ -6907,25 +6962,18 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 		m_iMissionDifficulty = 5;
 	}
 
-	if (rd_difficulty_tier.GetInt() == 1)
-	{
-		m_iMissionDifficulty += 12;
-	}
-	else if (rd_difficulty_tier.GetInt() == 2)
-	{
-		m_iMissionDifficulty += 24;
-	}
+	m_iMissionDifficulty += rd_difficulty_tier.GetInt() * 12;
 
 	// modify mission difficulty by campaign modifier
 	if ( IsCampaignGame() )
-	{				
+	{
 		if ( GetCampaignInfo() && GetCampaignSave() )
 		{
 			int iCurrentLoc = GetCampaignSave()->m_iCurrentPosition;
-			CASW_Campaign_Info::CASW_Campaign_Mission_t* mission = GetCampaignInfo()->GetMission(iCurrentLoc);
-			if (mission)
+			const RD_Campaign_Mission_t *mission = GetCampaignInfo()->GetMission( iCurrentLoc );
+			if ( mission )
 			{
-				m_iMissionDifficulty += mission->m_iDifficultyMod;
+				m_iMissionDifficulty += mission->DifficultyModifier;
 			}
 		}
 	}
@@ -8365,20 +8413,20 @@ bool CAlienSwarm::IsAnniversaryWeek()
 
 int CAlienSwarm::CampaignMissionsLeft()
 {
-	if (!IsCampaignGame())
+	if ( !IsCampaignGame() )
 		return 2;
 
-	CASW_Campaign_Info *pCampaign = GetCampaignInfo();
-	if (!pCampaign)
+	const RD_Campaign_t *pCampaign = GetCampaignInfo();
+	if ( !pCampaign )
 		return 2;
 
 	CASW_Campaign_Save *pSave = GetCampaignSave();
-	if (!pSave)
+	if ( !pSave )
 		return 2;
 
-	int iNumMissions = pCampaign->GetNumMissions() - 1;	// minus one, for the atmospheric entry which isn't a completable mission
-	
-	return (iNumMissions - pSave->m_iNumMissionsComplete);
+	int iNumMissions = pCampaign->Missions.Count() - 1;	// minus one, for the atmospheric entry which isn't a completable mission
+
+	return ( iNumMissions - pSave->m_iNumMissionsComplete );
 }
 
 bool CAlienSwarm::MarineCanPickupAmmo(CASW_Marine *pMarine, CASW_Ammo *pAmmo)
@@ -8812,33 +8860,25 @@ void CAlienSwarm::LevelInitPostEntity()
 	ASWGameResource()->FindObjectives();
 
 	// setup the savegame entity, if we're in a campaign game
-	if (IsCampaignGame())
+	if ( ASWGameResource()->GetCampaignSaveName()[0] )
 	{
-		if (!ASWGameResource()->CreateCampaignSave())
+		if ( !ASWGameResource()->CreateCampaignSave() )
 		{
-			Msg("ERROR: Failed to create campaign save object\n");
+			Msg( "ERROR: Failed to create campaign save object\n" );
 		}
 		else
 		{
-			if (!ASWGameResource()->GetCampaignSave()->LoadGameFromFile(ASWGameResource()->GetCampaignSaveName()))
+			if ( !ASWGameResource()->GetCampaignSave()->LoadGameFromFile( ASWGameResource()->GetCampaignSaveName() ) )
 			{
-				Msg("ERROR: Failed to load campaign save game: %s\n", ASWGameResource()->GetCampaignSaveName());
+				Msg( "ERROR: Failed to load campaign save game: %s\n", ASWGameResource()->GetCampaignSaveName() );
 			}
 			else
 			{
-				m_bChallengeActiveThisCampaign = ASWGameResource()->GetCampaignSave()->m_bChallengeEverActive;
+				m_bChallengeActiveThisCampaign = IsCampaignGame() && ASWGameResource()->GetCampaignSave()->m_bChallengeEverActive;
 
-				// with the save game loaded, now load the campaign info
-				if (!GetCampaignInfo())
-				{
-					Msg("ERROR: Failed to load in the campaign associated with the current save game: %s\n", ASWGameResource()->GetCampaignSaveName());
-				}
-				else
-				{
-					// update our difficulty level with the relevant campaign modifier
-					OnSkillLevelChanged( m_iSkillLevel );
-					ReserveMarines();
-				}
+				// update our difficulty level with the relevant campaign modifier
+				OnSkillLevelChanged( m_iSkillLevel );
+				ReserveMarines();
 			}
 		}
 	}
@@ -9234,6 +9274,22 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	}
 }
 
+void CAlienSwarm::CheckChallengeConVars()
+{
+	// make sure none of the variables were changed
+	for (int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++)
+	{
+		ConVarRef cvar(m_SavedConvars_Challenge.String(i));
+		const char *pszDesiredValue = STRING(m_SavedConvars_Challenge[i]);
+
+		if (cvar.IsValid() && Q_strcmp(cvar.GetString(), pszDesiredValue))
+		{
+			Warning("Fixing challenge convar %s\n", cvar.GetName());
+			cvar.SetValue(pszDesiredValue);
+		}
+	}
+}
+
 void CAlienSwarm::ResetChallengeConVars()
 {
 	CUtlStringList names;
@@ -9311,22 +9367,17 @@ void CAlienSwarm::ApplyChallenge()
 		GetCampaignSave()->SaveGameToFile();
 	}
 
-	// make sure none of the variables were changed
-	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
-	{
-		ConVarRef cvar( m_SavedConvars_Challenge.String( i ) );
-		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
-
-		if ( cvar.IsValid() && Q_strcmp( cvar.GetString(), pszDesiredValue ) )
-		{
-			Warning( "Fixing challenge convar %s\n", cvar.GetName() );
-			cvar.SetValue( pszDesiredValue );
-		}
-	}
+	CheckChallengeConVars();
 
 	if ( !filesystem->FileExists( CFmtStr( "scripts/vscripts/challenge_%s.nut", rd_challenge.GetString() ), "GAME" ) )
 	{
 		// no script
+		return;
+	}
+
+	if ( !g_pScriptVM )
+	{
+		Error( "No VM to setup challenge script!\n" );
 		return;
 	}
 

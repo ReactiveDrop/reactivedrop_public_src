@@ -318,7 +318,7 @@ void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 				pPlayer->LoadoutSendStored(this);
 
 				// see if we need to spend skill points
-				if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() 
+				if ( ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() 
 					&& ASWGameResource() && ASWGameResource()->GetMarineSkill( this, ASW_SKILL_SLOT_SPARE ) > 0 )
 				{
 					CNB_Main_Panel::QueueSpendSkillPoints( GetProfileIndex() );

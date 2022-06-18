@@ -59,45 +59,6 @@ CASW_Spawn_Manager::~CASW_Spawn_Manager()
 
 }
 
-// ==================================
-// == Master list of alien classes ==
-// ==================================
-
-// NOTE: If you add new entries to this list, update the asw_spawner choices in swarm.fgd.
-//       Alien entity classes are also listed in c_asw_objective_kill_aliens.cpp.
-//       Do not rearrange the order or you will be changing what spawns in all the maps.
-
-ASW_Alien_Class_Entry g_Aliens[]=
-{
-	ASW_Alien_Class_Entry( "asw_drone", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_buzzer", HULL_TINY_CENTERED ),
-	ASW_Alien_Class_Entry( "asw_parasite", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_grub", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_harvester", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_queen", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "asw_ranger", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_shaman", HULL_MEDIUM ),
-	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlion", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_antlion_worker", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_zombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_zombie_torso", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_poisonzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie_torso", HULL_HUMAN )
-};
-
-// Array indices of drones.  Used by carnage mode.
-const int g_nDroneClassEntry = 0;
-const int g_nDroneJumperClassEntry = 5;
-
 int CASW_Spawn_Manager::GetNumAlienClasses()
 {
 	return NELEMS( g_Aliens );
@@ -113,11 +74,6 @@ void CASW_Spawn_Manager::LevelInitPreEntity()
 {
 	m_nAwakeAliens = 0;
 	m_nAwakeDrones = 0;
-	// init alien classes
-	for ( int i = 0; i < GetNumAlienClasses(); i++ )
-	{
-		GetAlienClass( i )->m_iszAlienClass = AllocPooledString( GetAlienClass( i )->m_pszAlienClass );
-	}
 }
 
 void CASW_Spawn_Manager::LevelInitPostEntity()

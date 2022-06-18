@@ -3502,6 +3502,8 @@ void CTriggerCamera::FollowTarget( )
 
 void CTriggerCamera::StartCameraShot( const char *pszShotType, CBaseEntity *pSceneEntity, CBaseEntity *pActor1, CBaseEntity *pActor2, float duration )
 {
+	if ( !g_pScriptVM ) return;
+
 	// called from SceneEntity in response to a CChoreoEvent::CAMERA sent from a VCD.
 	// talk to vscript, start a camera move
 

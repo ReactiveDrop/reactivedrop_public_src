@@ -32,6 +32,7 @@
 #include "nb_island.h"
 #include "asw_hud_minimap.h"
 #include "c_user_message_register.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -579,7 +580,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 			else
 			{
 				// Vote on a new mission
-				engine->ClientCmd( "asw_mission_chooser callvote" );
+				engine->ClientCmd( VarArgs( "asw_mission_chooser callvote %s\n", ASWDeathmatchMode() ? "deathmatch" : "campaign" ) );
 			}
 		}
 		else if ( bLeader )

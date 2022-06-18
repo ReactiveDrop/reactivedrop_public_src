@@ -368,6 +368,12 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		return NULL;
 	}
 	m_flLastSpawnTime = gpGlobals->curtime;
+
+	if ( !pDirectorNPC )
+	{
+		pSpawnable->SetSpawner( this );
+	}
+
 	if ( m_bStartBurrowed )
 	{
 		pSpawnable->StartBurrowed();
@@ -404,8 +410,6 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		{
 			pEntity->SetName( m_AlienName );
 		}
-
-		pSpawnable->SetSpawner( this );
 
 		RemoveObstructingProps( pEntity );
 

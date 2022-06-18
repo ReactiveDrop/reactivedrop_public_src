@@ -90,27 +90,30 @@ public:
 
 		if ( iLastMember >= 0 )
 		{
-			HSCRIPT hAddScript = g_pScriptVM->CompileScript( szAddCode );
-			if ( hAddScript )
+			if ( g_pScriptVM )
 			{
-				if ( !ValidateScriptScope() )
+				HSCRIPT hAddScript = g_pScriptVM->CompileScript( szAddCode );
+				if ( hAddScript )
 				{
-					g_pScriptVM->ReleaseScript(hAddScript);
-					return;
-				}
-				m_ScriptScope.Run( hAddScript );
-				HSCRIPT hAddFunc = m_ScriptScope.LookupFunction( "__AppendToScriptGroup" );
-				if ( hAddFunc )
-				{
-					for ( int i = 0; i <= iLastMember; i++ )
+					if ( !ValidateScriptScope() )
 					{
-						m_ScriptScope.Call( hAddFunc, NULL, STRING(m_iszGroupMembers[i]) );
+						g_pScriptVM->ReleaseScript(hAddScript);
+						return;
 					}
-					g_pScriptVM->ReleaseFunction( hAddFunc );
-					m_ScriptScope.ClearValue( "__AppendToScriptGroup" );
-				}
+					m_ScriptScope.Run( hAddScript );
+					HSCRIPT hAddFunc = m_ScriptScope.LookupFunction( "__AppendToScriptGroup" );
+					if ( hAddFunc )
+					{
+						for ( int i = 0; i <= iLastMember; i++ )
+						{
+							m_ScriptScope.Call( hAddFunc, NULL, STRING(m_iszGroupMembers[i]) );
+						}
+						g_pScriptVM->ReleaseFunction( hAddFunc );
+						m_ScriptScope.ClearValue( "__AppendToScriptGroup" );
+					}
 
-				g_pScriptVM->ReleaseScript( hAddScript );
+					g_pScriptVM->ReleaseScript( hAddScript );
+				}
 			}
 		}
 		BaseClass::RunVScripts();

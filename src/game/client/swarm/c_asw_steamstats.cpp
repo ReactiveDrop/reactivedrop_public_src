@@ -19,6 +19,8 @@
 #include "missioncompleteframe.h"
 #include "missioncompletepanel.h"
 #include "rd_missions_shared.h"
+#include "c_user_message_register.h"
+#include "asw_alien_classes.h"
 
 CASW_Steamstats g_ASW_Steamstats;
 
@@ -228,7 +230,7 @@ bool IsWorkshopCampaign()
 	{
 		const char *szCampaignName = pCampaign->GetCampaignName();
 
-		if ( g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/campaigns/%s.txt", szCampaignName ) ) == k_PublishedFileIdInvalid )
+		if ( szCampaignName && *szCampaignName && g_ReactiveDropWorkshop.FindAddonProvidingFile( CFmtStr( "resource/campaigns/%s.txt", szCampaignName ) ) == k_PublishedFileIdInvalid )
 		{
 			return false;
 		}
@@ -368,6 +370,38 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 	else
 		return (Class_T)CLASS_ASW_UNKNOWN;
 }
+
+static void __MsgFunc_RDAlienKillStat( bf_read &msg )
+{
+	short iAlienClass = msg.ReadShort();
+	CFmtStr szApiName;
+	if ( iAlienClass == -1 )
+	{
+		szApiName.sprintf( "lifetime_alien_kills.%s", "asw_egg" );
+	}
+	else
+	{
+		Assert( iAlienClass >= 0 && iAlienClass < NELEMS( g_Aliens ) );
+		if ( iAlienClass < 0 || iAlienClass >= NELEMS( g_Aliens ) )
+		{
+			return;
+		}
+
+		szApiName.sprintf( "lifetime_alien_kills.%s", g_Aliens[iAlienClass].m_pszAlienClass );
+	}
+
+	int32_t nCount = 0;
+	if ( SteamUserStats()->GetStat( szApiName, &nCount ) )
+	{
+		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+	}
+	else
+	{
+		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName.Access() );
+	}
+}
+USER_MESSAGE_REGISTER( RDAlienKillStat );
+
 bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 {
 	bool bOK = true;
@@ -536,6 +570,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 #ifndef DEBUG 
 		|| ASWGameRules()->m_bCheated 
 #endif
+		|| engine->IsPlayingDemo()
 		)
 		return;
 
@@ -699,6 +734,31 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 		m_WeaponStats[i].PrepStatsForSend( pPlayer );
 	}
 
+	int32_t iLastPlayedDay = 0;
+	if ( SteamUserStats()->GetStat( "last_played_day", &iLastPlayedDay ) )
+	{
+		int32_t iToday = SteamUtils()->GetServerRealTime() / 86400u;
+		if ( iLastPlayedDay < iToday )
+		{
+			int32_t iTotalDaysPlayed = 0;
+			if ( SteamUserStats()->GetStat( "played_on_days", &iTotalDaysPlayed ) )
+			{
+				SteamUserStats()->SetStat( "last_played_day", iToday );
+				SteamUserStats()->SetStat( "played_on_days", iTotalDaysPlayed + 1 );
+			}
+		}
+	}
+
+	char szBetaBranch[256]{};
+	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
+	{
+		// beta tester medal
+		SteamInventoryResult_t hResult{ k_SteamInventoryResultInvalid };
+		if ( SteamInventory()->AddPromoItem( &hResult, 13 ) )
+		{
+			SteamInventory()->DestroyResult( hResult );
+		}
+	}
 }
 
 int CASW_Steamstats::GetFavoriteEquip( int iSlot )
@@ -1301,7 +1361,7 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{
-			DevWarning( "Not sending leaderboard entry: IO:%d Found:%d\n", bIOFailure, pResult->m_bLeaderboardFound );
+			DevWarning( "Not sending leaderboard entry: IO:%d Found:%d\n", bIOFailure, pResult ? pResult->m_bLeaderboardFound : false );
 		}
 		return;
 	}
@@ -1353,7 +1413,7 @@ void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{
-			DevWarning( "Failed to send leaderboard entry: IO:%d Success:%d\n", bIOFailure, pResult->m_bSuccess );
+			DevWarning( "Failed to send leaderboard entry: IO:%d Success:%d\n", bIOFailure, pResult ? pResult->m_bSuccess : false );
 		}
 		return;
 	}
@@ -1385,7 +1445,7 @@ void CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback( LeaderboardSco
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{
-			DevWarning( "Failed to send leaderboard entry (difficulty): IO:%d Success:%d\n", bIOFailure, pResult->m_bSuccess );
+			DevWarning( "Failed to send leaderboard entry (difficulty): IO:%d Success:%d\n", bIOFailure, pResult ? pResult->m_bSuccess : false );
 		}
 		return;
 	}

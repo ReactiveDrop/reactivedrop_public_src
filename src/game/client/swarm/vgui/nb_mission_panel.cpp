@@ -168,7 +168,7 @@ void CNB_Mission_Panel::OnThink()
 
 		m_pHeaderFooter->SetTitle( wszTitleText );
 	}
-	if (ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave())
+	if (ASWGameRules() && ASWGameRules()->GetCampaignSave())
 	{
 		int iRetries = ASWGameRules()->GetCampaignSave()->GetRetries();
 		
@@ -310,7 +310,7 @@ void CNB_Mission_Panel::OnThink()
 	m_drpDifficulty->SetVisible( ASWDeathmatchMode() == NULL );
 	m_drpGameMode->SetVisible( ASWDeathmatchMode() != NULL );
 
-	if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetGameState() != ASW_GS_INGAME )
+	if ( ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetGameState() != ASW_GS_INGAME )
 	{
 		int iFixedSkillPoints = ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() ? 1 : 0;
 		if ( iFixedSkillPoints != m_iLastFixedSkillPoints )

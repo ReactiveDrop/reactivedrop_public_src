@@ -290,7 +290,10 @@ void CASW_Grenade_Cluster::DoExplosion()
 
 	UTIL_ASW_GrenadeExplosion( GetAbsOrigin(), m_DmgRadius );
 
-	EmitSound( "ASWGrenade.Explode" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASWGrenade.Explode" );
+	}
 
 	// damage to nearby things
 	CTakeDamageInfo info( this, m_hFirer.Get(), m_flDamage, DMG_BLAST );
@@ -514,7 +517,10 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 	{
 		if ( GetAbsVelocity().Length2D() > 60 )
 		{
-			EmitSound("Grenade.ImpactHard");
+			if ( !m_bSilent )
+			{
+				EmitSound( "Grenade.ImpactHard" );
+			}
 		}
 	}
 

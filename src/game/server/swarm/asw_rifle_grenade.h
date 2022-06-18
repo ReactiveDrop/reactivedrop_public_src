@@ -35,7 +35,8 @@ public:
 
 	float	m_flDamage;
 	float	m_DmgRadius;
-	bool	m_inSolid;	
+	bool	m_bSilent;
+	bool	m_inSolid;
 	CHandle<CSprite>		m_pMainGlow;
 	CHandle<CSpriteTrail>	m_pGlowTrail;
 

@@ -6,7 +6,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
-#include "asw_campaign_info.h"
+#include "rd_missions_shared.h"
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::Panel;
@@ -25,8 +25,6 @@ public:
 	virtual void OnThink();
 	virtual void OnCommand( const char *command );
 
-	void SetCurrentMission( CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission ) { m_pCurrentMission = pMission; }
-	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;
 	vgui::Panel	*m_pBackgroundInner;
@@ -37,7 +35,7 @@ public:
 	vgui::Label	*m_pMissionDescription;
 	// == MANAGED_MEMBER_POINTERS_END ==
 
-	CASW_Campaign_Info::CASW_Campaign_Mission_t* m_pCurrentMission;
+	CampaignMissionHandle m_pCurrentMission;
 };
 
 #endif // _INCLUDED_NB_CAMPAIGN_MISSION_DETAILS_H

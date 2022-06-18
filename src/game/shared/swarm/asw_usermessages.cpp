@@ -96,4 +96,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "SavedConvar", -1 );
 	usermessages->Register( "RDPlayerPromoted", 1 );
 	usermessages->Register( "RDLeaderboardReady", 0 );
+	usermessages->Register( "RDAlienKillStat", 2 );
 }

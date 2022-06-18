@@ -2944,10 +2944,10 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 	if (!bAllowed)
 		return false;
 
-	if (pWeapon->m_bIsTemporaryPickup)
+	if ( index == ASW_TEMPORARY_WEAPON_SLOT )
 	{
 		CASW_Weapon* pActive = GetActiveASWWeapon();
-		if (pActive && !pActive->m_bIsTemporaryPickup) //not swapping a temp weapon into temp
+		if (pActive && pActive != pOldWeapon) //not swapping a temp weapon into temp
 		{
 			CASW_Weapon* pWeapon0 = GetASWWeapon(0);
 			CASW_Weapon* pWeapon1 = GetASWWeapon(1);
@@ -3007,7 +3007,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 		GiveAmmo(pWeapon->GetPrimaryAmmoCount(), pWeapon->GetPrimaryAmmoType());
 
 	//maybe switch to this weapon, if current is none
-	if ( GetActiveWeapon() == NULL || pWeapon->m_bIsTemporaryPickup )
+	if ( GetActiveWeapon() == NULL || index == ASW_TEMPORARY_WEAPON_SLOT )
 	{
 		Weapon_Switch( pWeapon );
 	}
@@ -3091,7 +3091,7 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 		pPickup->InitWeapon(this, pWeapon);
 
 		//maybe switch to this weapon, if current is none
-		if ( GetActiveWeapon() == NULL || pPickup->m_bIsTemporaryPickup )
+		if ( GetActiveWeapon() == NULL || index == ASW_TEMPORARY_WEAPON_SLOT )
 		{
 			Weapon_Switch( pWeapon );
 		}
@@ -3212,6 +3212,7 @@ bool CASW_Marine::RemoveWeapon(int iWeaponIndex, bool bNoSwap)
 
 bool CASW_Marine::DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ )
 {
+	bool bWasTemporary = pWeapon == GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
 	RemoveWeaponPowerup( pWeapon );
 	
 	// dropping the weapon entity itself
@@ -3390,7 +3391,7 @@ bool CASW_Marine::DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *p
 	Weapon_Detach( pWeapon );
 
 	//unify drop\swap behaviour calls within temporary weapons, override bNoSwap behavior
-	if ( pWeapon->m_bIsTemporaryPickup )
+	if ( bWasTemporary )
 	{
 		CBaseCombatWeapon* pUseMe = GetWeapon(m_nIndexActWeapBeforeTempPickup);
 		if (pUseMe)
@@ -3528,17 +3529,20 @@ bool CASW_Marine::ScriptSwitchWeapon( int iWeaponIndex )
 //-----------------------------------------------------------------------------
 ScriptVariant_t CASW_Marine::Script_GetInvTable()
 {
-	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "CASW_Marine_GetInvTableOverride" ) )
+	if ( g_pScriptVM )
 	{
-		ScriptVariant_t hInvTable;
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &hInvTable, ToHScript( this ) );
-		g_pScriptVM->ReleaseFunction( hFunction );
-		if ( nStatus != SCRIPT_DONE )
+		if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "CASW_Marine_GetInvTableOverride" ) )
 		{
-			DevWarning( "CASW_Marine_GetInvTableOverride VScript function did not finish!\n" );
-			return NULL;
+			ScriptVariant_t hInvTable;
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &hInvTable, ToHScript( this ) );
+			g_pScriptVM->ReleaseFunction( hFunction );
+			if ( nStatus != SCRIPT_DONE )
+			{
+				DevWarning( "CASW_Marine_GetInvTableOverride VScript function did not finish!\n" );
+				return NULL;
+			}
+			return hInvTable;
 		}
-		return hInvTable;
 	}
 	return NULL;
 }
@@ -3547,6 +3551,8 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 {
 	if ( !hTable )
 		return;
+
+	if ( !g_pScriptVM ) return;
 
 	char szInvSlot[256];
 	for (int i=0; i<ASW_MAX_MARINE_WEAPONS; ++i)
@@ -3651,6 +3657,17 @@ void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Mari
 		// count heal for stats
 		if (GetMarineResource())
 			GetMarineResource()->m_iHealCount++;
+
+		// Fire event
+		IGameEvent * event = gameeventmanager->CreateEvent("marine_healed");
+		if (event)
+		{
+			event->SetInt("medic_entindex", (pMedic ? pMedic->entindex() : -1));
+			event->SetInt("patient_entindex", entindex());
+			event->SetInt("amount_healed", iHealAmount);
+			event->SetString("weapon_class", (pHealingWeapon ? pHealingWeapon->GetClassname() : ""));
+			gameeventmanager->FireEvent(event);
+		}
 
 		// Fire heal event for stat tracking
 		CASW_GameStats.Event_MarineHealed( this , iHealAmount, pHealingWeapon );

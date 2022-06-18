@@ -1,6 +1,5 @@
 #include "cbase.h"
 #include "asw_campaign_save.h"
-#include "asw_campaign_info.h"
 #include "asw_gamerules.h"
 #include "asw_game_resource.h"
 #include "asw_marine_resource.h"
@@ -249,7 +248,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 		if ( ASWGameRules()->GetSkillLevel() < iSkill )	// check they didn't just complete the last mission on a low skill
 			iSkill = ASWGameRules()->GetSkillLevel();
 
-		const char *pszCampaignName = ASWGameRules()->GetCampaignInfo() ? ASWGameRules()->GetCampaignInfo()->m_szCampaignFilename : NULL;
+		const char *pszCampaignName = ASWGameRules()->GetCampaignInfo() ? ASWGameRules()->GetCampaignInfo()->BaseName : NULL;
 		if ( pszCampaignName && iSkill >= 2 && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetCampaignSave()->m_iNumDeaths <= 0 && ASWGameRules()->GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !ASWGameRules()->m_bChallengeActiveThisCampaign )
 		{
 			if ( !Q_stricmp( pszCampaignName, "jacob" ) )

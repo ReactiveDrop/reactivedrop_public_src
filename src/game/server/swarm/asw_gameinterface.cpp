@@ -225,12 +225,12 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		}
 	}
 
-	if ( !Q_stricmp( szMode, "campaign" ) )
+	bool bCampaignGame = !Q_stricmp( szMode, "campaign" );
+	if ( bCampaignGame || !Q_stricmp( szMode, "single_mission" ) )
 	{
-		// TODO: Handle loading a game instead of starting a new one
 		const char *szCampaignName = pKV->GetString( "game/campaign", NULL );
-		if ( !szCampaignName )
-			return;		
+		if ( bCampaignGame && !szCampaignName )
+			return;
 
 		IASW_Mission_Chooser_Source* pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 		if ( !pSource )
@@ -240,9 +240,8 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		szSaveFilename[ 0 ] = 0;
 		const char *szStartingMission = pKV->GetString( "game/mission", NULL );
 
-
 		extern ConVar asw_default_campaign;
-		if ( szStartingMission && !Q_stricmp( szCampaignName, "jacob" ) && !Q_stricmp( pKV->GetString( "game/state" ), "lobby" ) && Q_stricmp( asw_default_campaign.GetString(), "jacob" ) )
+		if ( bCampaignGame && szStartingMission && !Q_stricmp( szCampaignName, "jacob" ) && !Q_stricmp( pKV->GetString( "game/state" ), "lobby" ) && Q_stricmp( asw_default_campaign.GetString(), "jacob" ) )
 		{
 			// BenLubar: waking up a dedicated server has been giving us Jacob's Rest as the campaign but keeping the default campaign's first mission. This is a hack to detect and fix this situation.
 			if ( KeyValues *pJacob = pSource->GetCampaignDetails( "jacob" ) )
@@ -282,6 +281,7 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 			{
 				Warning( "Could not load Jacob's Rest campaign details. Continuing anyway.\n" );
 			}
+
 			if ( KeyValues *pDefault = pSource->GetCampaignDetails( asw_default_campaign.GetString() ) )
 			{
 				bool bSkippedFirst = false;
@@ -333,20 +333,11 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 			mm_max_players.SetValue( gpGlobals->maxClients );
 		}
 
-		engine->ServerCommand( CFmtStr( "%s %s campaign %s reserved\n",
+		engine->ServerCommand( CFmtStr( "%s %s %s %s reserved\n",
 			szMapCommand,
 			szStartingMission ? szStartingMission : "lobby",
+			szMode,
 			szSaveFilename ) );
-	}
-	else if ( !Q_stricmp( szMode, "single_mission" ) )
-	{
-		szBspName = pKV->GetString( "game/mission", NULL );
-		if ( !szBspName )
-			return;
-
-		engine->ServerCommand( CFmtStr( "%s %s reserved\n",
-			szMapCommand,
-			szBspName ) );
 	}
 	else
 	{

@@ -156,7 +156,7 @@ public:
 	bool ASWAnim_CanMove();
 
 	virtual Vector GetAutoaimVectorForMarine( C_ASW_Marine* marine, float flDelta, float flNearMissDelta  );
-	QAngle m_angMarineAutoAimFromClient;
+	CNetworkQAngle( m_angMarineAutoAimFromClient );
 
 	// searches for nearby entities that we can use (pickups, buttons, etc)
 	virtual void PlayerUse();

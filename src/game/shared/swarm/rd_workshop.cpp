@@ -2,7 +2,6 @@
 #include "rd_workshop.h"
 #include "filesystem.h"
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
 #include "vpklib/packedstore.h"
 #include "rd_challenges_shared.h"
 #include "rd_missions_shared.h"
@@ -10,6 +9,7 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "asw_util_shared.h"
+#include "fmtstr.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_game_resource.h"
@@ -65,7 +65,7 @@ const char *const g_RDWorkshopMissionTags[] =
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
-static void ClearCaches();
+static void ClearCaches( const char *szReason );
 static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active );
 static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
 static void RealLoadAddon( PublishedFileId_t id );
@@ -156,7 +156,7 @@ bool CReactiveDropWorkshop::Init()
 	}
 
 #ifdef CLIENT_DLL
-	ClearCaches();
+	ClearCaches( "initializing" );
 
 	m_iPublishedAddonsPage = 0;
 	RequestNextPublishedAddonsPage();
@@ -233,7 +233,7 @@ static bool DedicatedServerWorkshopSetup()
 	s_bStartingUp = false;
 	if ( s_bAnyServerUpdates )
 	{
-		ClearCaches();
+		ClearCaches( "dedicated server workshop setup found update" );
 	}
 
 	return true;
@@ -573,15 +573,15 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 	}
 
 	char szCampaign[256]{};
-	if ( CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo() )
+	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
 	{
-		if ( const wchar_t *pwszCampaign = g_pVGuiLocalize->Find( STRING( pCampaign->m_CampaignName ) ) )
+		if ( const wchar_t *pwszCampaign = g_pVGuiLocalize->Find( STRING( pCampaign->CampaignName ) ) )
 		{
 			V_UnicodeToUTF8( pwszCampaign, szCampaign, sizeof( szCampaign ) );
 		}
 		else
 		{
-			V_strncpy( szCampaign, STRING( pCampaign->m_CampaignName ), sizeof( szCampaign ) );
+			V_strncpy( szCampaign, STRING( pCampaign->CampaignName ), sizeof( szCampaign ) );
 		}
 
 		V_strcat( szCampaign, ": ", sizeof( szCampaign ) );
@@ -873,7 +873,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 #else
 	if ( engine->IsDedicatedServer() )
 	{
-		ClearCaches();
+		ClearCaches( "successfully retrieved workshop metadata" );
 	}
 #endif
 }
@@ -1000,14 +1000,11 @@ static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 		return;
 	}
 
-	char tempfile[MAX_PATH];
-
 	// addon that includes the campaign file
-	CASW_Campaign_Info *pInfo = ASWGameRules()->GetCampaignInfo();
-	if ( pInfo )
+	const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
+	if ( pCampaign )
 	{
-		V_snprintf( tempfile, sizeof(tempfile), "resource/campaigns/%s.txt", pInfo->m_szCampaignFilename );
-		MaybeAddAddonByFile( active, tempfile );
+		MaybeAddAddon( active, pCampaign->WorkshopID );
 	}
 
 	// addon that includes the overview file
@@ -1038,18 +1035,26 @@ CON_COMMAND( rd_dump_workshop_mapping_client, "" )
 CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 #endif
 {
+	const char *szPrefix = args.Arg( 1 );
+
 	for ( int i = 0; i < s_FileNameToAddon.GetNumStrings(); i++ )
 	{
-		ConMsg( "  %s -> %llu\n", s_FileNameToAddon.String( i ), s_FileNameToAddon[i] );
+		const char *szName = s_FileNameToAddon.String( i );
+		if ( StringHasPrefix( szName, szPrefix ) )
+		{
+			ConMsg( "  %s -> %llu\n", szName, s_FileNameToAddon[i] );
+		}
 	}
 }
 
-static void ClearCaches()
+static void ClearCaches( const char *szReason )
 {
 	if ( s_bStartingUp )
 	{
 		return;
 	}
+
+	DevMsg( "Workshop: clearing cache: %s\n", szReason );
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();
@@ -1358,7 +1363,7 @@ static void RealLoadAddon( PublishedFileId_t id )
 
 	if ( !bDontClearCache )
 	{
-		ClearCaches();
+		ClearCaches( CFmtStr( "loaded addon %lld", id ) );
 	}
 
 #ifdef GAME_DLL
@@ -1434,7 +1439,7 @@ static void RealUnloadAddon( PublishedFileId_t id )
 		}
 	}
 
-	ClearCaches();
+	ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
 }
 
 static void UnloadAddon( PublishedFileId_t id )

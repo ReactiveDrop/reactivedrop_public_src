@@ -28,7 +28,7 @@ public:
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CHudElement::ShouldDraw(); }
 	int GetChatInputOffset( void );
 
-	virtual void	OnTick( void );
+	void ClearHistory();
 
 	virtual void	StartMessageMode( int iMessageModeType );
 	virtual void	StopMessageMode( bool bFade = true );

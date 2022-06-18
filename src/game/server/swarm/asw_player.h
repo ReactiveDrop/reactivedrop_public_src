@@ -27,6 +27,7 @@ public:
 	DECLARE_CLASS( CASW_Player, CBaseMultiplayerPlayer );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Player();
 	virtual ~CASW_Player();
@@ -73,6 +74,9 @@ public:
 	bool ShouldAutoReload() { return m_bAutoReload; }
 	bool m_bAutoReload;
 	
+	// Resurrection
+	HSCRIPT ResurrectMarine( const Vector position, bool bEffect = true );
+
 	// anim state helper
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
 	virtual bool ASWAnim_CanMove();
@@ -114,7 +118,7 @@ public:
 	Vector GetAutoaimVectorForMarine(CASW_Marine* marine, float flDelta, float flNearMissDelta);
 	QAngle MarineAutoaimDeflection( Vector &vecSrc, float flDist, float flDelta, float flNearMissDelta);
 	QAngle m_angMarineAutoAim;
-	QAngle m_angMarineAutoAimFromClient;
+	CNetworkQAngle( m_angMarineAutoAimFromClient );
 
 	void				FlashlightTurnOn( void );
 	void				FlashlightTurnOff( void );

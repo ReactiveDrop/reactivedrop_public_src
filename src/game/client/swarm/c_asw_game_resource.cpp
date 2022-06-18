@@ -71,7 +71,6 @@ C_ASW_Game_Resource::C_ASW_Game_Resource()
 	}
 	m_iCampaignGame = -1;
 	m_iNumEnumeratedMarines = NULL;
-	m_pCampaignInfo = NULL;
 }
 
 C_ASW_Game_Resource::~C_ASW_Game_Resource()

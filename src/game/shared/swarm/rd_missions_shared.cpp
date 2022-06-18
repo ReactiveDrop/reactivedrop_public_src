@@ -833,9 +833,24 @@ const RD_Campaign_t *CampaignHandle::Get()
 
 void CampaignHandle::SetCampaign( const char *szBaseName )
 {
+	Assert( szBaseName );
 	V_strncpy( m_szBaseName, szBaseName, sizeof( m_szBaseName ) );
 	m_pCampaign = NULL;
 	m_nDataResets = 0;
+}
+
+const RD_Campaign_Mission_t *CampaignMissionHandle::Get()
+{
+	const RD_Campaign_t *pCampaign = m_Campaign.Get();
+
+	return pCampaign ? pCampaign->GetMission( m_iMission ) : NULL;
+}
+
+void CampaignMissionHandle::SetCampaignMission( const char *szBaseName, int iMission )
+{
+	Assert( szBaseName && iMission >= 0 );
+	m_Campaign.SetCampaign( szBaseName );
+	m_iMission = iMission;
 }
 
 const RD_Mission_t *MissionHandle::Get()
@@ -851,6 +866,7 @@ const RD_Mission_t *MissionHandle::Get()
 
 void MissionHandle::SetMission( const char *szBaseName )
 {
+	Assert( szBaseName );
 	V_strncpy( m_szBaseName, szBaseName, sizeof( m_szBaseName ) );
 	m_pMission = NULL;
 	m_nDataResets = 0;

@@ -2640,7 +2640,8 @@ void CBaseEntity::UpdateOnRemove( void )
 
 	if ( m_hScriptInstance )
 	{
-		g_pScriptVM->RemoveInstance( m_hScriptInstance );
+		if ( g_pScriptVM )
+			g_pScriptVM->RemoveInstance( m_hScriptInstance );
 		m_hScriptInstance = NULL;
 	}
 }
@@ -4506,7 +4507,7 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 					// call the input handler, or if there is none just set the value
 					inputfunc_t pfnInput = dmap->dataDesc[i].inputFunc;
 
-					if ( pfnInput )
+					if ( pfnInput && g_pScriptVM )
 					{ 
 						// Package the data into a struct for passing to the input handler.
 						inputdata_t data;
@@ -5613,8 +5614,8 @@ HSCRIPT CBaseEntity::ScriptGetModelKeyValues( void )
 		m_pScriptModelKeyValues = new CScriptKeyValues( pModelKeyValues );
 
 		// UNDONE: who calls ReleaseInstance on this??? Does name need to be unique???
-
-		hScript = g_pScriptVM->RegisterInstance( m_pScriptModelKeyValues );
+		if ( g_pScriptVM )
+			hScript = g_pScriptVM->RegisterInstance( m_pScriptModelKeyValues );
 		
 		/* 
 		KeyValues *pParticleEffects = pModelKeyValues->FindKey("Particles");
@@ -5666,6 +5667,8 @@ void ConsoleFireTargets( CBasePlayer *pPlayer, const char *name)
 //------------------------------------------------------------------------------
 void DumpScriptScope( CBasePlayer* pPlayer, const char *name)
 {
+	if (!g_pScriptVM) return;
+
 	CBaseEntity *pEntity = NULL;
 	while ( (pEntity = GetNextCommandEntity( pPlayer, name, pEntity )) != NULL )
 	{
@@ -5780,7 +5783,7 @@ void CC_Ent_Remove( const CCommand& args )
 	}
 
 	// Found one?
-	if ( pEntity )
+	if ( pEntity && !pEntity->IsWorld() )
 	{
 		Msg( "Removed %s(%s)\n", STRING(pEntity->m_iClassname), pEntity->GetDebugName() );
 		UTIL_Remove( pEntity );
@@ -8300,16 +8303,19 @@ HSCRIPT CBaseEntity::GetScriptInstance()
 {
 	if ( !m_hScriptInstance )
 	{
-		if ( m_iszScriptId == NULL_STRING )
+		if ( g_pScriptVM )
 		{
-			char *szName = (char *)stackalloc( 1024 );
-			g_pScriptVM->GenerateUniqueKey( ( m_iName.Get() != NULL_STRING ) ? STRING(GetEntityName()) : GetClassname(), szName, 1024 );
-			m_iszScriptId = AllocPooledString( szName );
-			MarkNeedsNamePurge();
-		}
+			if ( m_iszScriptId == NULL_STRING )
+			{
+				char *szName = (char *)stackalloc( 1024 );
+				g_pScriptVM->GenerateUniqueKey( ( m_iName.Get() != NULL_STRING ) ? STRING(GetEntityName()) : GetClassname(), szName, 1024 );
+				m_iszScriptId = AllocPooledString( szName );
+				MarkNeedsNamePurge();
+			}
 
-		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
-		g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, STRING(m_iszScriptId) );
+			m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
+			g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, STRING(m_iszScriptId) );
+		}
 	}
 	return m_hScriptInstance;
 }
@@ -8440,7 +8446,9 @@ void CBaseEntity::RunPrecacheScripts( void )
 	{
 		return;
 	}
-	
+
+	if ( !g_pScriptVM ) return;
+
 	HSCRIPT hScriptPrecache = m_ScriptScope.LookupFunction( "DispatchPrecache" );
 	if ( hScriptPrecache )
 	{
@@ -8456,6 +8464,8 @@ void CBaseEntity::RunOnPostSpawnScripts( void )
 		return;
 	}
 
+	if ( !g_pScriptVM ) return;
+
 	HSCRIPT hFuncConnect = g_pScriptVM->LookupFunction("ConnectOutputs");
 	if ( hFuncConnect )
 	{
@@ -8469,10 +8479,9 @@ void CBaseEntity::RunOnPostSpawnScripts( void )
 		variant_t variant;
 		variant.SetString( MAKE_STRING("DispatchOnPostSpawn") );
 		g_EventQueue.AddEvent( this, "CallScriptFunction", variant, 0, this, this );
-		m_ScriptScope.ReleaseFunction( hFuncDisp );
-		
+		m_ScriptScope.ReleaseFunction( hFuncDisp );		
 	}
-	}
+}
 
 HSCRIPT	CBaseEntity::GetScriptOwnerEntity()
 {

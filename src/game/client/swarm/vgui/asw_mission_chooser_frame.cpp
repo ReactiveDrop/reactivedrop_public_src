@@ -292,7 +292,12 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 	if ( !pEntry->m_szCampaign[0] )
 		return;
 
-	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ) );
+	ApplyCampaign( pEntry->m_pList->m_ChooserType, pEntry->m_szCampaign );
+}
+
+void CASW_Mission_Chooser_Frame::ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
+{
+	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( szCampaignName ) );
 	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
 	{
 		g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
@@ -308,11 +313,26 @@ void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry 
 	}
 
 	m_pCampaignMissionList->SetVisible( true );
-	m_pCampaignMissionList->AddPage( new CASW_Mission_Chooser_List( m_pCampaignMissionList, "MissionChooserList", pEntry->m_pList->m_ChooserType, this, pEntry->m_szCampaign ), "#nb_select_starting_mission" );
+	m_pCampaignMissionList->AddPage( new CASW_Mission_Chooser_List( m_pCampaignMissionList, "MissionChooserList", iChooserType, this, szCampaignName ), "#nb_select_starting_mission" );
+}
+
+bool CASW_Mission_Chooser_Frame::SelectTab( ASW_CHOOSER_TYPE iChooserType )
+{
+	for ( int i = 0; i < m_pSheet->GetNumPages(); i++ )
+	{
+		CASW_Mission_Chooser_List *pList = assert_cast< CASW_Mission_Chooser_List * >( m_pSheet->GetPage( i ) );
+		if ( pList->m_ChooserType == iChooserType )
+		{
+			m_pSheet->SetActivePage( pList );
+			return true;
+		}
+	}
+
+	return false;
 }
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
-static void LaunchMissionChooser( ASW_HOST_TYPE iHostType )
+static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
 {
 	CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
 	if ( pFrame )
@@ -337,38 +357,120 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType )
 		pFrame->SetParent( rootpanel );
 	}
 
+	pFrame->MakeReadyForUse();
+
+	if ( iChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
+	{
+		pFrame->SelectTab( iChooserType );
+	}
+
+	if ( iChooserType == ASW_CHOOSER_TYPE::CAMPAIGN && szCampaignName )
+	{
+		pFrame->ApplyCampaign( iChooserType, szCampaignName );
+	}
+
 	pFrame->InvalidateLayout();
 	pFrame->SetVisible( true );
 
 	g_hChooserFrame = pFrame;
 }
 
-CON_COMMAND( asw_mission_chooser, "asw_mission_chooser [host type] - open mission chooser" )
+static int asw_mission_chooser_completion( const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH] )
 {
-	if ( args.ArgC() != 2 )
+	int count = 0;
+	char szCandidate[COMMAND_COMPLETION_ITEM_LENGTH]{};
+
+#define COMMAND_COMPLETION_CANDIDATE( pFormat, ... ) \
+	if ( count < COMMAND_COMPLETION_MAXITEMS ) \
+	{ \
+		V_snprintf( szCandidate, sizeof(szCandidate), pFormat, __VA_ARGS__ ); \
+		if ( StringHasPrefix( szCandidate, partial ) ) \
+		{ \
+			V_strncpy( commands[count], szCandidate, sizeof( commands[count] ) ); \
+			count++; \
+		} \
+	} \
+	else \
+	{ \
+		return count; \
+	}
+
+	COMMAND_COMPLETION_CANDIDATE( "asw_mission_chooser exit" );
+	for ( int i = 0; i < NELEMS( g_ASW_HostTypeName ); i++ )
 	{
-		ConMsg( "Usage: asw_mission_chooser [host type]\n" );
+		COMMAND_COMPLETION_CANDIDATE( "asw_mission_chooser %s", g_ASW_HostTypeName[i] );
+	}
+	for ( int i = 0; i < NELEMS( g_ASW_HostTypeName ); i++ )
+	{
+		for ( int j = 0; j < NELEMS( g_ASW_ChooserTypeName ); j++ )
+		{
+			COMMAND_COMPLETION_CANDIDATE( "asw_mission_chooser %s %s", g_ASW_HostTypeName[i], g_ASW_ChooserTypeName[j] );
+		}
+
+		for ( int j = 0; j < ReactiveDropMissions::CountCampaigns(); j++ )
+		{
+			COMMAND_COMPLETION_CANDIDATE( "asw_mission_chooser %s campaign %s", g_ASW_HostTypeName[i], ReactiveDropMissions::CampaignName( j ) );
+		}
+	}
+
+#undef COMMAND_COMPLETION_CANDIDATE
+
+	return count;
+}
+
+CON_COMMAND_F_COMPLETION( asw_mission_chooser, "asw_mission_chooser host [chooser] [campaign] - open mission chooser", FCVAR_CLIENTCMD_CAN_EXECUTE, asw_mission_chooser_completion )
+{
+	if ( args.ArgC() < 2 || args.ArgC() > 4 )
+	{
+		ConMsg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
 		return;
 	}
 
 	if ( !V_stricmp( args.Arg( 1 ), "exit" ) )
 	{
-		LaunchMissionChooser( ASW_HOST_TYPE::NUM_TYPES );
+		LaunchMissionChooser( ASW_HOST_TYPE::NUM_TYPES, ASW_CHOOSER_TYPE::NUM_TYPES, NULL );
 		return;
+	}
+
+	ASW_CHOOSER_TYPE iChooserType = ASW_CHOOSER_TYPE::NUM_TYPES;
+	if ( args.ArgC() >= 3 )
+	{
+		for ( int i = 0; i < int( ASW_CHOOSER_TYPE::NUM_TYPES ); i++ )
+		{
+			if ( !V_stricmp( args.Arg( 2 ), g_ASW_ChooserTypeName[i] ) )
+			{
+				iChooserType = ASW_CHOOSER_TYPE( i );
+				break;
+			}
+		}
+
+		if ( iChooserType == ASW_CHOOSER_TYPE::NUM_TYPES )
+		{
+			ConMsg( "Invalid host type.\n" );
+			return;
+		}
+	}
+
+	if ( args.ArgC() >= 4 && iChooserType != ASW_CHOOSER_TYPE::CAMPAIGN )
+	{
+		ConMsg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
+		return;
+	}
+
+	const char *szCampaignName = NULL;
+	if ( args.ArgC() >= 4 )
+	{
+		szCampaignName = args.Arg( 3 );
 	}
 
 	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
 	{
 		if ( !V_stricmp( args.Arg( 1 ), g_ASW_HostTypeName[i] ) )
 		{
-			LaunchMissionChooser( ASW_HOST_TYPE( i ) );
+			LaunchMissionChooser( ASW_HOST_TYPE( i ), iChooserType, szCampaignName );
 			return;
 		}
 	}
 
-	ConMsg( "Invalid host type. Host types are:\n" );
-	for ( int i = 0; i < int( ASW_HOST_TYPE::NUM_TYPES ); i++ )
-	{
-		ConMsg( "  %s\n", g_ASW_HostTypeName[i] );
-	}
+	ConMsg( "Invalid host type.\n" );
 }

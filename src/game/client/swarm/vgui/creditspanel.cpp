@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "CreditsPanel.h"
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
 #include <vgui_controls/AnimationController.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
@@ -32,9 +31,8 @@ CreditsPanel::CreditsPanel(vgui::Panel *parent, const char *name) : vgui::Panel(
 	}
 
 	char szCreditsPath[512];
-	CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
-	if ( pCampaign )
-		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pCampaign->m_CustomCreditsFile ) );
+	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pCampaign->CustomCreditsFile ) );
 	else if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
 		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pMission->CustomCreditsFile ) );
 	else

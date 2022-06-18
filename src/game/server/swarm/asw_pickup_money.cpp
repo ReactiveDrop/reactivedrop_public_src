@@ -63,7 +63,7 @@ void CASW_Pickup_Money::Precache( void )
 	BaseClass::Precache( );
 
 	PrecacheModel( MONEY_MODEL );
-	PrecacheModel("sprites/redglow1.vmt");
+	PrecacheModel("sprites/goldglow1.vmt");
 	PrecacheModel("sprites/bluelaser1.vmt");
 	//PrecacheScriptSound("ASW_Money.Pickup");
 }
@@ -90,7 +90,7 @@ void CASW_Pickup_Money::ItemTouch( CBaseEntity *pOther )
 void CASW_Pickup_Money::CreateEffects()
 {
 	// Start up the eye glow
-	m_pMainGlow = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetLocalOrigin(), false );
+	m_pMainGlow = CSprite::SpriteCreate( "sprites/goldglow1.vmt", GetLocalOrigin(), false );
 
 	int	nAttachment = LookupAttachment( "fuse" );
 

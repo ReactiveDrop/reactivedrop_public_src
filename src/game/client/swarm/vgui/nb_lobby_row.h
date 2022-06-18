@@ -68,12 +68,16 @@ public:
 	CBitmapButton	*m_pWeaponButton2;
 	vgui::ImagePanel *m_pVoiceIcon;
 	vgui::ImagePanel *m_pPromotionIcon;
+	vgui::ImagePanel *m_pMedalIcon;
 	vgui::ImagePanel *m_pChangingSlot[ 4 ];
 
 	char m_szLastWeaponImage[ ASW_NUM_INVENTORY_SLOTS ][ 255 ];
 	char m_szLastPortraitImage[ 255 ];
 	CSteamID m_lastSteamID;
 	int m_nLastPromotion;
+	int m_nMedalUpdates;
+	SteamInventoryResult_t m_hMedalResult;
+	bool m_bWaitingForMedal;
 
 	int m_nLobbySlot;
 };

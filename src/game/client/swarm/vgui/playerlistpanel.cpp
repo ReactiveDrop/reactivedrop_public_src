@@ -81,6 +81,10 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_iSecondsLeft = -1;
 	m_fUpdateDifficultyTime = 0;
 
+	m_pVisibilityButton = new CNB_Button( this, "VisibilityButton", "", this, "VisibilityButton" );
+	m_pVisibilityLabel = new vgui::Label( this, "VisibilityLabel", "" );
+	m_pTipsLabel = new vgui::Label( this, "TipsLabel", "" );
+
 	// voting buttons
 	//m_pVoteBackground = new vgui::Panel(this, "VoteBG");
 	m_pLeaderButtonsBackground = new vgui::Panel(this, "LeaderBG");
@@ -260,6 +264,41 @@ void PlayerListPanel::OnThink()
 				}
 			}
 		}
+	}
+
+	m_pTipsLabel->SetText("");
+
+	IMatchSession *pSession = g_pMatchFramework->GetMatchSession();
+	if ( pSession )
+	{
+		KeyValues *pSettings = pSession->GetSessionSettings();
+		if ( pSettings )
+		{
+			m_pVisibilityLabel->SetVisible( !Q_stricmp( pSettings->GetString( "options/server" ), "listen") );
+			m_pVisibilityButton->SetVisible( engine->IsClientLocalToActiveServer() );
+			const char* tip;
+
+			if ( !Q_stricmp( pSettings->GetString( "system/access"), "public" ) )
+			{
+				m_pVisibilityLabel->SetText( "#L4D360UI_Lobby_PublicTitle" );
+				m_pVisibilityButton->SetText( "#L4D360UI_Lobby_FriendsTitle" );
+				tip = "#L4D360UI_Lobby_MakeFriendOnly_Tip";
+			}
+			else
+			{
+				m_pVisibilityLabel->SetText( "#L4D360UI_Lobby_FriendsTitle" );
+				m_pVisibilityButton->SetText( "#L4D360UI_Lobby_PublicTitle" );
+				tip = "#L4D360UI_Lobby_OpenToPublic_Tip";
+			}
+
+			if ( m_pVisibilityButton->IsCursorOver() )
+				m_pTipsLabel->SetText( tip );
+		}
+	}
+	else
+	{
+		m_pVisibilityLabel->SetVisible( false );
+		m_pVisibilityButton->SetVisible( false );
 	}
 
 	//m_pPlayerListScroll->SetScrollBarVisible( IsPC() && iNumPlayersInGame > 6);
@@ -550,6 +589,22 @@ void PlayerListPanel::OnCommand( char const *cmd )
 	{
 		GetParent()->SetVisible( false );
 		GetParent()->MarkForDeletion();
+	}
+	else if ( !V_stricmp( cmd, "VisibilityButton" ) )
+	{
+		IMatchSession *pSession = g_pMatchFramework->GetMatchSession();
+		if ( pSession )
+		{
+			KeyValues *pSettings = pSession->GetSessionSettings();
+			if ( pSettings )
+			{
+				if ( !Q_stricmp( pSettings->GetString( "system/access" ), "public" ) )
+					engine->ClientCmd( "make_game_friends_only" );
+				else
+					engine->ClientCmd( "make_game_public" );
+			}
+		}
+		return;
 	}
 	else if ( !V_stricmp( cmd, "RestartMis" ) )
 	{

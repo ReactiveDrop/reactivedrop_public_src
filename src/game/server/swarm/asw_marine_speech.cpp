@@ -1151,7 +1151,7 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 	},
 };
 
-bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
+bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter, CBasePlayer *pOnlyForPlayer)
 {
 	if (!m_pMarine || !m_pMarine->GetMarineResource() || (m_pMarine->GetHealth() <= 0 && iChatterType != CHATTER_DIE))
 	{
@@ -1194,7 +1194,7 @@ bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
 		return false;
 	}
 
-	InternalPlayChatter(m_pMarine, szChatter, ASW_CHATTER_TIMER_TEAM, iChatterType, iSubChatter);
+	InternalPlayChatter(m_pMarine, szChatter, ASW_CHATTER_TIMER_TEAM, iChatterType, iSubChatter, pOnlyForPlayer);
 	return true;
 }
 

@@ -1939,6 +1939,12 @@ const char *UTIL_RD_EResultToString( EResult eResult )
 		return "k_EResultParseFailure";
 	case k_EResultNoVerifiedPhone:
 		return "k_EResultNoVerifiedPhone";
+	case k_EResultInsufficientBattery:
+		return "k_EResultInsufficientBattery";
+	case k_EResultChargerRequired:
+		return "k_EResultChargerRequired";
+	case k_EResultCachedCredentialInvalid:
+		return "k_EResultCachedCredentialInvalid";
 	}
 }
 

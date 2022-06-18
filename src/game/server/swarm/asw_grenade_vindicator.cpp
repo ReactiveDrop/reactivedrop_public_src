@@ -95,7 +95,10 @@ void CASW_Grenade_Vindicator::Spawn( void )
 	QAngle vecAngVelocity( random->RandomFloat ( -100, -500 ), 0, 0 );
 	SetLocalAngularVelocity( vecAngVelocity );
 
-	EmitSound( "ASWGrenade.Alarm" );  // 3 second warning sound
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASWGrenade.Alarm" );  // 3 second warning sound
+	}
 	SetFuseLength(asw_vindicator_grenade_fuse.GetFloat());
 
 	m_fEarliestTouchDetonationTime = GetEarliestTouchDetonationTime();
@@ -147,7 +150,10 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 				UTIL_ASW_DroneBleed( GetAbsOrigin(), Vector( 0, 0, 1 ), 4 );
 			}
 		}
-		EmitSound( "Grenade.ImpactHard" );		
+		if ( !m_bSilent )
+		{
+			EmitSound( "Grenade.ImpactHard" );
+		}
 
 		//UTIL_Remove( this );			// just removing the grenade is not looking good, let it bounce back and live for a few seconds
 		//StopParticleEffects( this );	// this removes smoke and glow, but for some reason it works only when marine is far from spawn point, tested on ocs2 map
@@ -165,9 +171,12 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
-		if (GetAbsVelocity().Length2D() > 60)
+		if ( GetAbsVelocity().Length2D() > 60 )
 		{
-			EmitSound("Grenade.ImpactHard");
+			if ( !m_bSilent )
+			{
+				EmitSound( "Grenade.ImpactHard" );
+			}
 		}
 	}
 
@@ -219,7 +228,10 @@ void CASW_Grenade_Vindicator::Detonate()
 		m_flDamage );
 	*/
 
-	EmitSound("ASWGrenade.Incendiary");
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASWGrenade.Incendiary" );
+	}
 	// throw out some flames
 	CEffectData	data;			
 	data.m_vOrigin = GetAbsOrigin();

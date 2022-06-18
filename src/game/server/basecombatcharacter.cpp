@@ -2286,40 +2286,43 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			newDamage.AssignTo( &flDamage );
 		}
 	}
-	if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any" ) )
+	if ( g_pScriptVM )
 	{
-		ScriptVariant_t newDamage;
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
-		if ( nStatus != SCRIPT_DONE )
+		if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any" ) )
 		{
-			DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
-		}
-		else
-		{
-			newDamage.AssignTo( &flDamage );
-		}
-		g_pScriptVM->ReleaseFunction( hFunction );
-	}
-	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-	{
-		ScriptVariant_t hModeScript;
-		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-		{
-			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any", hModeScript ) )
+			ScriptVariant_t newDamage;
+			ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+			if ( nStatus != SCRIPT_DONE )
 			{
-				ScriptVariant_t newDamage;
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
-				if ( nStatus != SCRIPT_DONE )
-				{
-					DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
-				}
-				else
-				{
-					newDamage.AssignTo( &flDamage );
-				}
-				g_pScriptVM->ReleaseFunction( hFunction );
+				DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
 			}
-			g_pScriptVM->ReleaseValue( hModeScript );
+			else
+			{
+				newDamage.AssignTo( &flDamage );
+			}
+			g_pScriptVM->ReleaseFunction( hFunction );
+		}
+		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
+		{
+			ScriptVariant_t hModeScript;
+			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
+			{
+				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any", hModeScript ) )
+				{
+					ScriptVariant_t newDamage;
+					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
+					if ( nStatus != SCRIPT_DONE )
+					{
+						DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
+					}
+					else
+					{
+						newDamage.AssignTo( &flDamage );
+					}
+					g_pScriptVM->ReleaseFunction( hFunction );
+				}
+				g_pScriptVM->ReleaseValue( hModeScript );
+			}
 		}
 	}
 #endif

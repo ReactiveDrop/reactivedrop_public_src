@@ -80,6 +80,7 @@ public:
 	void SetTitle( const char *szTitle );
 	void SetTitle( const wchar_t *wszTitle );
 	void SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries );
+	inline void ClearEntries() { m_gplLeaderboard->RemoveAllPanelItems(); }
 	void OverrideEntry( const RD_LeaderboardEntry_Points_t & entry );
 	void SetScrollable( bool bScrollable );
 

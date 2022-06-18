@@ -24,6 +24,8 @@ class COptionsDialog;
 #define TRANSITION_TO_MOVIE_DELAY_TIME	0.5f	// how long to wait before starting the fade
 #define TRANSITION_TO_MOVIE_FADE_TIME	1.2f	// how fast to fade
 
+#define SERVERBLACKLIST_FILENAME			"server_blacklist.txt"
+
 class IVTFTexture;
 
 namespace BaseModUI 
@@ -245,6 +247,10 @@ namespace BaseModUI
 		void ReleaseStartupGraphic();
 		void DrawStartupGraphic( float flNormalizedAlpha );
 		IVTFTexture			*m_pBackgroundTexture;
+
+		KeyValues		*m_pServerBlackList;
+		bool			LoadBlackListFile(KeyValues *&pBlacklist);
+		bool			IsOnList(const char* pServerAddress, KeyValues* pList);
 	};
 };
 

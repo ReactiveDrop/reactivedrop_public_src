@@ -15,6 +15,8 @@ using namespace BaseModUI;
 
 DECLARE_BUILD_FACTORY( CNB_Leaderboard_Panel_Points );
 
+#define HUMAN_BUTTON_ICON "vgui/briefing/human_icon"
+
 CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	GameUI().PreventEngineHideGameUI();
@@ -25,6 +27,11 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
 	m_pServerList = new CNB_Button( this, "ServerList", "", this, "ServerList" );
+	m_pStatsWebsite = new CNB_Button( this, "StatsWebsite", "", this, "StatsWebsite" );
+
+	m_pToggleButton = new CBitmapButton(this, "ToggleButton", "");
+	m_pToggleButton->AddActionSignalTarget(this);
+	m_pToggleButton->SetCommand("ToggleButton");
 
 	m_pHeaderFooter->SetTitle( "#nb_leaderboard" );
 
@@ -35,6 +42,8 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 	m_pNotFoundLabel = new vgui::Label( this, "NotFoundLabel", "" );
 
 	m_pLeaderboard->SetTitle( "#asw_iaf_heroes_title" );
+
+	m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobal;
 
 	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardFind );
@@ -52,6 +61,25 @@ void CNB_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "resource/ui/nb_leaderboard_panel.res" );
 
 	m_pServerList->SetVisible( true );
+	m_pStatsWebsite->SetVisible( true );
+
+	color32 white;
+	white.r = 255;
+	white.g = 255;
+	white.b = 255;
+	white.a = 255;
+
+	color32 grey;
+	grey.r = 190;
+	grey.g = 190;
+	grey.b = 190;
+	grey.a = 255;
+
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_ENABLED, HUMAN_BUTTON_ICON, grey );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_DISABLED, HUMAN_BUTTON_ICON, grey );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_PRESSED, HUMAN_BUTTON_ICON, white );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, HUMAN_BUTTON_ICON, white );
+	m_pToggleButton->SetVisible( true );
 }
 
 void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
@@ -65,6 +93,29 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 	{
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKSSERVERS, this, true );
+		return;
+	}
+	if ( !V_stricmp( command, "StatsWebsite" ) )
+	{
+		if ( SteamApps() )
+		{
+			char statsWeb[256];
+			V_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/heroes?lang=%s&utm_source=mainmenu",
+				SteamApps()->GetCurrentGameLanguage() );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
+		}
+		return;
+	}
+	if ( !Q_stricmp( command, "ToggleButton" ) )
+	{
+		m_iCurrentLeaderboardDisplayMode--;
+		if ( m_iCurrentLeaderboardDisplayMode < 0 )
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestFriends;
+
+		m_pLeaderboard->ClearEntries();
+		SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
+		m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardFind );
+
 		return;
 	}
 	BaseClass::OnCommand( command );
@@ -117,7 +168,20 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 		return;
 	}
 
-	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+	SteamAPICall_t hCall;
+	switch ( ELeaderboardDataRequest( m_iCurrentLeaderboardDisplayMode ) )
+	{
+	case k_ELeaderboardDataRequestFriends:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		break;
+	case k_ELeaderboardDataRequestGlobalAroundUser:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobalAroundUser, -50, 50 );
+		break;
+	default:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+		break;
+	}
+
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardDownload );
 }
 

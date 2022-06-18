@@ -79,7 +79,6 @@
 #include "c_asw_jeep_clientside.h"
 #include "obstacle_pushaway.h"
 #include "asw_shareddefs.h"
-#include "asw_campaign_info.h"
 #include "c_asw_camera_volume.h"
 #include "asw_medal_store.h"
 #include "asw_remote_turret_shared.h"
@@ -158,7 +157,6 @@ ConVar asw_particle_count("asw_particle_count", "0", 0, "Shows how many particle
 ConVar asw_dlight_list("asw_dlight_list", "0", 0, "Lists dynamic lights");
 
 ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file used for stim music" );
-ConVar asw_player_avoidance( "asw_player_avoidance", "1", FCVAR_CHEAT, "Enable/Disable player avoidance." );
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
 ConVar asw_player_avoidance_bounce( "asw_player_avoidance_bounce", "1.0", FCVAR_CHEAT, "Marine avoidance bounce." );
 ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", FCVAR_CHEAT, "Marine avoidance hull size." );
@@ -185,6 +183,7 @@ extern ConVar asw_rts_controls;
 extern ConVar asw_hud_alpha;
 extern ConVar asw_building_room_thumbnails;
 extern ConVar rd_chatwipe;
+extern ConVar asw_player_avoidance;
 
 // How fast to avoid collisions with center of other object, in units per second
 #define AVOID_SPEED 2000.0f
@@ -300,6 +299,8 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropInt( RECVINFO( m_iMouseY ) ),
 
 	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
+
+	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
@@ -308,6 +309,11 @@ BEGIN_PREDICTION_DATA( C_ASW_Player )
 	DEFINE_PRED_FIELD( m_hHighlightEntity, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
@@ -2313,6 +2319,8 @@ void C_ASW_Player::OnMissionRestart()
 
 	// reset vehicle cam yaw
 	m_fLastVehicleYaw = 0;
+
+	RequestExperience();
 }
 
 void C_ASW_Player::SendBlipSpeech(int iMarine)

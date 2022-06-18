@@ -140,6 +140,12 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 		MoveHelper()->SetHost( pMarine );
 	}
 
+	// BenLubar(spectator-mouse)
+	m_iScreenWidth = ucmd->screenw;
+	m_iScreenHeight = ucmd->screenh;
+	m_iMouseX = ucmd->mousex;
+	m_iMouseY = ucmd->mousey;
+
 	m_angMarineAutoAimFromClient = ucmd->aimangleoffset;
 	
 	// process turret movement
@@ -1260,6 +1266,13 @@ int CASW_Player::GetASWControls()
 	// if a camera is controlling our vision, we're in first person.
 	if ( GetViewEntity() )
 		return 0;
+
+#ifdef CLIENT_DLL
+	// if we're in a death cam, switch to third person temporarily.
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetMarineDeathCamInterp() )
+		return 1;
+#endif
 
 	return asw_controls.GetInt();
 }

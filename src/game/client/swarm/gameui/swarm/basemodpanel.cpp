@@ -86,6 +86,11 @@
 #include "asw_util_shared.h"
 #include "nb_leaderboard_panel_points.h"
 #include "vadvancedsettings.h"
+#include "baseviewport.h"
+#include "asw_hud_chat.h"
+#include "vguisystemmoduleloader.h"
+#include "missionchooser/iasw_mission_chooser.h"
+#include "missionchooser/iasw_mission_chooser_source.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -96,6 +101,7 @@ using namespace vgui;
 //setup in GameUI_Interface.cpp
 extern class IMatchSystem *matchsystem;
 extern const char *COM_GetModDirectory( void );
+extern ConVar rd_chatwipe_mainmenu;
 
 //=============================================================================
 CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
@@ -198,6 +204,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_flMovieFadeInTime = 0.0f;
 	m_pBackgroundMaterial = NULL;
 	m_pBackgroundTexture = NULL;
+	m_pServerBlackList = NULL;
 
 	// Subscribe to event notifications
 	g_pMatchFramework->GetEventsSubscription()->Subscribe( this );
@@ -206,6 +213,9 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 //=============================================================================
 CBaseModPanel::~CBaseModPanel()
 {
+	if (m_pServerBlackList)
+		m_pServerBlackList->deleteThis();
+	
 	ReleaseStartupGraphic();
 
 	// Unsubscribe from event notifications
@@ -527,6 +537,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		case WT_IAFRANKS:
 			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
 			break;
+
 		case WT_IAFRANKSSERVERS:
 			m_Frames[wt] = new FoundGroupGamesIAFRanks( this, "FoundGames" );
 			break;
@@ -846,6 +857,11 @@ void CBaseModPanel::CloseAllWindows( int ePolicyFlags )
 		m_Frames[i] = NULL;
 	}
 
+	if (IsPC())
+	{
+		g_VModuleLoader.ClosePlatformModuleWindows();
+	}
+
 	if ( UI_IsDebug() )
 	{
 		Msg( "[GAMEUI] After close all windows:\n" );
@@ -1060,6 +1076,17 @@ void CBaseModPanel::OpenFrontScreen()
 	{
 		if( GetActiveWindowType() != frontWindow )
 		{
+			if ( rd_chatwipe_mainmenu.GetBool() )
+			{
+				HACK_GETLOCALPLAYER_GUARD( "need to access chat HUD" );
+				// clear the chat history between games
+				CHudChat *pChat = GET_HUDELEMENT( CHudChat );
+				if ( pChat )
+				{
+					pChat->ClearHistory();
+				}
+			}
+
 			CloseAllWindows();
 			OpenWindow( frontWindow, NULL );
 		}
@@ -1552,26 +1579,65 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			if ( !pSession )
 				return;
 
+			//KeyValues *pSysData = pSession->GetSessionSystemData();
+			//if (pSysData) KeyValuesDumpAsDevMsg(pSysData, 1, 0);
+
 			KeyValues *pSettings = pSession->GetSessionSettings();
+			if (!pSettings)
+				return;
+
+			//KeyValuesDumpAsDevMsg(pSettings, 1, 0);
+			bool dedicatedServer = false;
+			if (!Q_strcmp(pSettings->GetString("server/server", "lobby"), "dedicated"))
+				dedicatedServer = true;
 
 			KeyValues *pInfoMission = NULL;
-			// TODO:
 			KeyValues *pInfoChapter = NULL;//GetMapInfoRespectingAnyChapter( pSettings, &pInfoMission );
 
 			bool bValidMission = true;
 
-			// TODO: Check if we have the map installed by querying local mission chooser source
+			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+			if (pSource)
+			{
+				pSource->Think();
+				const char *szCampaignName = pSettings->GetString("game/campaign");
+				const char *szMapName = pSettings->GetString("game/mission");
+				bValidMission = pSource->MissionExists(szMapName, false);
+				if (bValidMission)
+				{
+					Msg("Map %s is installed.\n", szMapName);
+					pInfoMission = pSource->GetMissionDetails(szMapName);
+					pInfoChapter = pSource->GetCampaignDetails(szCampaignName);
+				}
+			}
 
-			if ( bValidMission )
-				return;
+			bool bBlacklisted = false;
+			if (dedicatedServer)
+			{
+				const char* pServerAddress = pSettings->GetString("server/adronline", "0.0.0.0:0");
+				if (!m_pServerBlackList)
+				{
+					if (!LoadBlackListFile(m_pServerBlackList))
+					{
+						Msg("Failed to load the server blacklist.\n");
+					}
+				}
+				if (m_pServerBlackList)
+				{
+					bBlacklisted = IsOnList(pServerAddress, m_pServerBlackList);
+					if (bBlacklisted)
+					{
+						Msg("Server is on the blacklist, disconnecting from %s\n", pServerAddress);
+					}
+				}
+			}
 
 			// If we do not have a valid chapter/mission, then we need to quit
-			if ( pInfoChapter && pInfoMission &&
-				( !*pInfoMission->GetName() || pInfoMission->GetInt( "version" ) == pSettings->GetInt( "game/missioninfo/version", -1 ) ) )
+			if (!bBlacklisted && bValidMission && pInfoChapter && pInfoMission &&
+				(!*pInfoMission->GetName() || pInfoMission->GetInt("version") == pSettings->GetInt("game/missioninfo/version", -1)))
 				return;
 
-			if ( pSettings )
-				pSettings = pSettings->MakeCopy();
+			KeyValues *pSettings2 = pSettings->MakeCopy();
 
 			engine->ExecuteClientCmd( "disconnect" );
 			g_pMatchFramework->CloseSession();
@@ -1579,12 +1645,27 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			CloseAllWindows( CLOSE_POLICY_EVEN_MSGS | CLOSE_POLICY_EVEN_LOADING );
 			OpenFrontScreen();
 
-			const char *szCampaignWebsite = pSettings->GetString( "game/missioninfo/website", NULL );
+			if (bBlacklisted)
+			{
+				GenericConfirmation::Data_t data;
+
+				data.pWindowTitle = "#L4D360UI_MsgBx_DisconnectedFromSession";
+				data.pMessageText = "Server is on the blacklist.";
+				data.bOkButtonEnabled = true;
+
+				GenericConfirmation* confirmation =
+					static_cast< GenericConfirmation* >(OpenWindow(WT_GENERICCONFIRMATION, NULL, true));
+
+				confirmation->SetUsageData(data);
+				return;
+			}
+
+			const char *szCampaignWebsite = pSettings2->GetString( "game/missioninfo/website", NULL );
 			if ( szCampaignWebsite && *szCampaignWebsite )
 			{
 				OpenWindow( WT_DOWNLOADCAMPAIGN,
 					GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ),
-					true, pSettings );
+					true, pSettings2 );
 			}
 			else
 			{
@@ -1678,6 +1759,48 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 	{
 		OnLevelLoadingFinished( pEvent );
 	}
+}
+
+bool CBaseModPanel::LoadBlackListFile(KeyValues *&pBlacklist)
+{
+	char serverBlacklistFilename[MAX_PATH];
+
+	Q_snprintf(serverBlacklistFilename, sizeof(serverBlacklistFilename), "cfg/%s", SERVERBLACKLIST_FILENAME);
+	pBlacklist = new KeyValues("ServerBlackList");
+
+	return pBlacklist->LoadFromFile(filesystem, serverBlacklistFilename);
+}
+
+bool CBaseModPanel::IsOnList(const char* pServerAddress, KeyValues* pList)
+{
+	bool bListed = false;
+	if (pServerAddress && pList)
+	{
+		CSplitString outStrings1(pServerAddress, ":");
+		if (outStrings1.Count() > 1)
+		{
+			const char* serverIP = outStrings1[0];
+			int serverPort = Q_atoi(outStrings1[1]);
+
+			for (KeyValues* pServer = pList->GetFirstSubKey(); pServer; pServer = pServer->GetNextTrueSubKey())
+			{
+				const char* ipandPortString = pServer->GetString("addr", "0.0.0.0:0");
+				CSplitString outStrings(ipandPortString, ":");
+				if (outStrings.Count() > 1)
+				{
+					const char* ipString = outStrings[0];
+					int port = Q_atoi(outStrings[1]);
+					if (!Q_strcmp(ipString, serverIP) && (port == serverPort))
+					{
+						bListed = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return bListed;
 }
 
 //=============================================================================
