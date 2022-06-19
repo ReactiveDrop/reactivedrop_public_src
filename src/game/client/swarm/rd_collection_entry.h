@@ -6,8 +6,11 @@
 
 class CRD_Collection_List;
 class CRD_Collection_List_Equipment;
+class CRD_Collection_List_Marines;
 class CRD_Collection_List_Inventory;
 class vgui::ImagePanel;
+class CASW_WeaponInfo;
+class CASW_Marine_Profile;
 
 class CRD_Collection_Entry : public vgui::EditablePanel
 {
@@ -29,8 +32,22 @@ class CRD_Collection_Entry_Equipment : public CRD_Collection_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Equipment, CRD_Collection_Entry );
 public:
-	CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList );
+	CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList, int index, CASW_WeaponInfo *pWeaponInfo );
 	virtual ~CRD_Collection_Entry_Equipment();
+
+	int m_Index;
+	CASW_WeaponInfo *m_pWeaponInfo;
+};
+
+class CRD_Collection_Entry_Marines : public CRD_Collection_Entry
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Marines, CRD_Collection_Entry );
+public:
+	CRD_Collection_Entry_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Marines *pList, int index, CASW_Marine_Profile *pProfile );
+	virtual ~CRD_Collection_Entry_Marines();
+
+	int m_Index;
+	CASW_Marine_Profile *m_pProfile;
 };
 
 class CRD_Collection_Entry_Inventory : public CRD_Collection_Entry

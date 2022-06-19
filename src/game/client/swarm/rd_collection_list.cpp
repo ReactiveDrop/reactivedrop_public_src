@@ -5,10 +5,14 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/ScrollBar.h>
+#include "asw_equipment_list.h"
+#include "asw_marine_profile.h"
 #include "rd_inventory_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+ConVar rd_collection_equipment_show_hidden( "rd_collection_equipment_show_hidden", "0", FCVAR_NONE );
 
 CRD_Collection_List::CRD_Collection_List( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails )
 	: BaseClass( pParent, pElementName )
@@ -43,7 +47,10 @@ void CRD_Collection_List::PerformLayout()
 	BaseClass::PerformLayout();
 
 	if ( m_Entries.Count() == 0 )
+	{
+		m_pScrollBar->SetVisible( false );
 		return;
+	}
 
 	int totalWide, totalTall, eachWide, eachTall;
 	totalWide = m_pHolder->GetWide();
@@ -57,6 +64,7 @@ void CRD_Collection_List::PerformLayout()
 
 	m_pHolder->SetTall( totalHeight );
 
+	m_pScrollBar->SetVisible( true );
 	m_pScrollBar->SetTall( GetTall() );
 	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
 	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
@@ -123,9 +131,44 @@ void CRD_Collection_List::OnSliderMoved( int position )
 	Repaint();
 }
 
-CRD_Collection_List_Equipment::CRD_Collection_List_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails )
+CRD_Collection_List_Equipment::CRD_Collection_List_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails, bool bExtra )
 	: BaseClass( pParent, pElementName, pDetails )
 {
+	CASW_EquipmentList *pList = ASWEquipmentList();
+	Assert( pList );
+	if ( !pList )
+		return;
+
+	bool bShowHidden = !engine->IsConnected() && rd_collection_equipment_show_hidden.GetBool();
+
+	if ( bExtra )
+	{
+		int nExtra = pList->GetNumExtra( bShowHidden );
+		for ( int i = 0; i < nExtra; i++ )
+		{
+			CASW_EquipItem *pExtra = pList->GetExtra( i );
+			Assert( pExtra );
+			if ( !pExtra )
+				continue;
+
+			CASW_WeaponInfo *pWeaponData = pList->GetWeaponDataFor( STRING( pExtra->m_EquipClass ) );
+			m_Entries[m_Entries.AddToTail()] = new CRD_Collection_Entry_Equipment( m_pHolder, "CollectionEntryEquipmentExtra", this, i, pWeaponData );
+		}
+	}
+	else
+	{
+		int nRegular = pList->GetNumRegular( bShowHidden );
+		for ( int i = 0; i < nRegular; i++ )
+		{
+			CASW_EquipItem *pRegular = pList->GetRegular( i );
+			Assert( pRegular );
+			if ( !pRegular )
+				continue;
+
+			CASW_WeaponInfo *pWeaponData = pList->GetWeaponDataFor( STRING( pRegular->m_EquipClass ) );
+			m_Entries[m_Entries.AddToTail()] = new CRD_Collection_Entry_Equipment( m_pHolder, "CollectionEntryEquipmentRegular", this, i, pWeaponData );
+		}
+	}
 }
 
 CRD_Collection_List_Equipment::~CRD_Collection_List_Equipment()
@@ -134,7 +177,40 @@ CRD_Collection_List_Equipment::~CRD_Collection_List_Equipment()
 
 void CRD_Collection_List_Equipment::SetBriefingSlot( int iBriefingSlot, int iInventorySlot )
 {
-	// TODO
+	m_iBriefingSlot = iBriefingSlot;
+	m_iInventorySlot = iInventorySlot;
+}
+
+CRD_Collection_List_Aliens::CRD_Collection_List_Aliens( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails )
+	: BaseClass( pParent, pElementName, pDetails )
+{
+}
+
+CRD_Collection_List_Aliens::~CRD_Collection_List_Aliens()
+{
+}
+
+CRD_Collection_List_Marines::CRD_Collection_List_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails )
+	: BaseClass( pParent, pElementName, pDetails )
+{
+	CASW_Marine_ProfileList *pList = MarineProfileList();
+	Assert( pList );
+	if ( !pList )
+		return;
+
+	for ( int i = 0; i < pList->m_NumProfiles; i++ )
+	{
+		CASW_Marine_Profile *pProfile = pList->GetProfile( i );
+		Assert( pProfile );
+		if ( !pProfile )
+			continue;
+
+		m_Entries[m_Entries.AddToTail()] = new CRD_Collection_Entry_Marines( m_pHolder, "CollectionEntryMarines", this, i, pProfile );
+	}
+}
+
+CRD_Collection_List_Marines::~CRD_Collection_List_Marines()
+{
 }
 
 CRD_Collection_List_Inventory::CRD_Collection_List_Inventory( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails, const char *szSlot )

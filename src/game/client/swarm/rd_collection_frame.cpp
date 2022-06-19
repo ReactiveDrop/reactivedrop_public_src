@@ -53,8 +53,10 @@ CRD_Collection_Frame::CRD_Collection_Frame( vgui::Panel *pParent, const char *pE
 }
 
 CRD_Collection_Frame::CRD_Collection_Frame( vgui::Panel *pParent, const char *pElementName, int iBriefingSlot, int iInventorySlot )
-	: ThisClass( pParent, pElementName, RD_COLLECTION_TYPE::EQUIPMENT )
+	: ThisClass( pParent, pElementName, iInventorySlot == ASW_INVENTORY_SLOT_EXTRA ? RD_COLLECTION_TYPE::EQUIPMENT_EXTRA : RD_COLLECTION_TYPE::EQUIPMENT_REGULAR )
 {
+	Assert( iInventorySlot == ASW_INVENTORY_SLOT_PRIMARY || iInventorySlot == ASW_INVENTORY_SLOT_SECONDARY || iInventorySlot == ASW_INVENTORY_SLOT_EXTRA );
+
 	switch ( iInventorySlot )
 	{
 	case ASW_INVENTORY_SLOT_PRIMARY:
@@ -205,11 +207,25 @@ void CRD_Collection_Frame::AddTab( RD_COLLECTION_TYPE iCollectionType )
 
 	switch ( iCollectionType )
 	{
-	case RD_COLLECTION_TYPE::EQUIPMENT:
-		// TODO
-		//szTabName = "#rd_collection_equipment";
-		//pDetails = new CRD_Collection_Details_Equipment( this, "CollectionDetailsEquipment" );
-		//pList = new CRD_Collection_List_Equipment( m_pSheet, "CollectionListEquipment", pDetails );
+	case RD_COLLECTION_TYPE::EQUIPMENT_REGULAR:
+		szTabName = "#rd_collection_equipment_regular";
+		pDetails = new CRD_Collection_Details_Equipment( this, "CollectionDetailsEquipment" );
+		pList = new CRD_Collection_List_Equipment( m_pSheet, "CollectionListEquipment", pDetails, false );
+		break;
+	case RD_COLLECTION_TYPE::EQUIPMENT_EXTRA:
+		szTabName = "#rd_collection_equipment_extra";
+		pDetails = new CRD_Collection_Details_Equipment( this, "CollectionDetailsEquipment" );
+		pList = new CRD_Collection_List_Equipment( m_pSheet, "CollectionListEquipment", pDetails, true );
+		break;
+	case RD_COLLECTION_TYPE::ALIENS:
+		szTabName = "#rd_collection_aliens";
+		pDetails = new CRD_Collection_Details_Aliens( this, "CollectionDetailsAliens" );
+		pList = new CRD_Collection_List_Aliens( m_pSheet, "CollectionListAliens", pDetails );
+		break;
+	case RD_COLLECTION_TYPE::MARINES:
+		szTabName = "#rd_collection_marines";
+		pDetails = new CRD_Collection_Details_Marines( this, "CollectionDetailsMarines" );
+		pList = new CRD_Collection_List_Marines( m_pSheet, "CollectionListMarines", pDetails );
 		break;
 	case RD_COLLECTION_TYPE::INVENTORY_MEDALS:
 		szTabName = "#rd_collection_inventory_medals";

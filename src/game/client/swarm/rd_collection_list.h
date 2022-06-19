@@ -34,10 +34,29 @@ class CRD_Collection_List_Equipment : public CRD_Collection_List
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_List_Equipment, CRD_Collection_List );
 public:
-	CRD_Collection_List_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails );
+	CRD_Collection_List_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails, bool bExtra );
 	virtual ~CRD_Collection_List_Equipment();
 
 	void SetBriefingSlot( int iBriefingSlot, int iInventorySlot );
+
+	int m_iBriefingSlot{ -1 };
+	int m_iInventorySlot{ -1 };
+};
+
+class CRD_Collection_List_Aliens : public CRD_Collection_List
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_List_Aliens, CRD_Collection_List );
+public:
+	CRD_Collection_List_Aliens( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails );
+	virtual ~CRD_Collection_List_Aliens();
+};
+
+class CRD_Collection_List_Marines : public CRD_Collection_List
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_List_Marines, CRD_Collection_List );
+public:
+	CRD_Collection_List_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_Details *pDetails );
+	virtual ~CRD_Collection_List_Marines();
 };
 
 class CRD_Collection_List_Inventory : public CRD_Collection_List

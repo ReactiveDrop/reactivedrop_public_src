@@ -44,6 +44,24 @@ CRD_Collection_Details_Equipment::~CRD_Collection_Details_Equipment()
 {
 }
 
+CRD_Collection_Details_Aliens::CRD_Collection_Details_Aliens( vgui::Panel *pParent, const char *pElementName )
+	: BaseClass( pParent, pElementName )
+{
+}
+
+CRD_Collection_Details_Aliens::~CRD_Collection_Details_Aliens()
+{
+}
+
+CRD_Collection_Details_Marines::CRD_Collection_Details_Marines( vgui::Panel *pParent, const char *pElementName )
+	: BaseClass( pParent, pElementName )
+{
+}
+
+CRD_Collection_Details_Marines::~CRD_Collection_Details_Marines()
+{
+}
+
 CRD_Collection_Details_Inventory::CRD_Collection_Details_Inventory( vgui::Panel *pParent, const char *pElementName, const char *szSlot )
 	: BaseClass( pParent, pElementName )
 {

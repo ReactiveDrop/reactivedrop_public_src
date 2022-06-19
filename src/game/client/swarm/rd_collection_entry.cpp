@@ -6,6 +6,8 @@
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/ScrollBar.h>
 #include "rd_inventory_shared.h"
+#include "asw_weapon_parse.h"
+#include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -124,12 +126,25 @@ void CRD_Collection_Entry::Accept()
 {
 }
 
-CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList )
+CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList, int index, CASW_WeaponInfo *pWeaponInfo )
 	: BaseClass( pParent, pElementName, pList )
 {
+	m_Index = index;
+	m_pWeaponInfo = pWeaponInfo;
 }
 
 CRD_Collection_Entry_Equipment::~CRD_Collection_Entry_Equipment()
+{
+}
+
+CRD_Collection_Entry_Marines::CRD_Collection_Entry_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Marines *pList, int index, CASW_Marine_Profile *pProfile )
+	: BaseClass( pParent, pElementName, pList )
+{
+	m_Index = index;
+	m_pProfile = pProfile;
+}
+
+CRD_Collection_Entry_Marines::~CRD_Collection_Entry_Marines()
 {
 }
 

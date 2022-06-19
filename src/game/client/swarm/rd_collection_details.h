@@ -29,6 +29,22 @@ public:
 	virtual ~CRD_Collection_Details_Equipment();
 };
 
+class CRD_Collection_Details_Aliens : public CRD_Collection_Details
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Details_Aliens, CRD_Collection_Details );
+public:
+	CRD_Collection_Details_Aliens( vgui::Panel *pParent, const char *pElementName );
+	virtual ~CRD_Collection_Details_Aliens();
+};
+
+class CRD_Collection_Details_Marines : public CRD_Collection_Details
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Details_Marines, CRD_Collection_Details );
+public:
+	CRD_Collection_Details_Marines( vgui::Panel *pParent, const char *pElementName );
+	virtual ~CRD_Collection_Details_Marines();
+};
+
 class CRD_Collection_Details_Inventory : public CRD_Collection_Details
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Details_Inventory, CRD_Collection_Details );
