@@ -835,6 +835,18 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		fForwardDot = vecFacing.Dot( damageNormal );
 	}
 
+	if ( m_bDefending && bDirectional && fForwardDot > 0.66f )
+	{
+		// flamethrowering a defending shieldbug's shield is ineffective.
+		if ( ( newInfo.GetDamageType() & DMG_BURN ) != 0 && ( newInfo.GetDamageType() & DMG_DIRECT ) == 0 )
+		{
+			m_fLastHurtTime = gpGlobals->curtime;
+			CheckForShieldbugHint( newInfo );
+
+			return 0;
+		}
+	}
+
 	result = BaseClass::OnTakeDamage_Alive(newInfo);
 	
 	if ( result > 0 )
