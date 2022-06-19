@@ -3136,7 +3136,7 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 
 const Vector& CASW_Player::GetCrosshairTracePos()
 {
-	if ( GetASWControls() != 1 )
+	if ( GetASWControls() != 1 && GetMarine() )
 	{
 		trace_t tr;
 		Vector forward;
