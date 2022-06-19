@@ -45,10 +45,7 @@ CRD_Collection_Frame::CRD_Collection_Frame( vgui::Panel *pParent, const char *pE
 	}
 	else
 	{
-		for ( int i = 0; i < int( RD_COLLECTION_TYPE::NUM_TYPES ); i++ )
-		{
-			AddTab( RD_COLLECTION_TYPE( i ) );
-		}
+		AddTab( RD_COLLECTION_TYPE::INVENTORY_MEDALS );
 	}
 }
 
