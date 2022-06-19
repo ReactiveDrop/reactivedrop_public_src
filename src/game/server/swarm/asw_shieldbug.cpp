@@ -820,27 +820,10 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( bDirectional )
 	{
 		damageNormal = vecDamagePos - GetAbsOrigin();	// should be head pos
-		damageNormal.z = 0;	
+		damageNormal.z = 0;
+		VectorNormalize( damageNormal );
 
 		fForwardDot = vecFacing.Dot( damageNormal );
-	}
-	
-	if ( m_bDefending && bDirectional && fForwardDot > 0.66f )
-	{
-		if ( asw_debug_shieldbug.GetBool() )
-		{
-			Msg("Defending, check damage for block\n");
-		}
-
-		// is the attack in front
- 		if ( ( newInfo.GetDamageType() & DMG_BURN ) != 0 &&		// extra dot block check is only for flames
-			 ( newInfo.GetDamageType() & DMG_DIRECT ) == 0 )	// burning DoT doesn't get blocked
- 		{
- 			m_fLastHurtTime = gpGlobals->curtime;
- 			CheckForShieldbugHint(newInfo);
-
- 			return 0;
- 		}
 	}
 
 	result = BaseClass::OnTakeDamage_Alive(newInfo);
