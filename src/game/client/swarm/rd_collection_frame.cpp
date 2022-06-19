@@ -111,7 +111,7 @@ void CRD_Collection_Frame::OnCommand( const char *command )
 	}
 	else if ( !V_stricmp( command, "CyclePage" ) )
 	{
-		m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
+		m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetNumPages() ) );
 	}
 	else
 	{

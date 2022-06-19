@@ -156,19 +156,18 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 	m_pIcon->SetImage( ReactiveDropInventory::GetItemDef( m_Details.m_iDefinition )->Icon );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pList->m_szSlot ) );
+	Assert( equipID.IsValid() );
 	m_pEquippedMarker->SetVisible( strtoull( equipID.GetString(), NULL, 10 ) == m_Details.m_itemId );
 }
 
 void CRD_Collection_Entry_Inventory::Accept()
 {
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", assert_cast< CRD_Collection_List_Inventory * >( m_pList )->m_szSlot ) );
+	Assert( equipID.IsValid() );
 	const char *szValue = VarArgs( "%llu", m_Details.m_itemId );
 	equipID.SetValue( V_strcmp( equipID.GetString(), szValue ) ? szValue : "0" );
 	engine->ClientCmd( "host_writeconfig\n" );
 
 	m_pList->InvalidateLayout( true, true );
-	if ( m_pList->m_pDetails )
-	{
-		m_pList->m_pDetails->HighlightEntry( this );
-	}
+	m_pFocusHolder->OnSetFocus();
 }

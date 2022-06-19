@@ -151,7 +151,7 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 	{
 		if ( !m_bViewingCampaign )
 		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetActivePageNum() ) );
+			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetNumPages() ) );
 		}
 	}
 	else
