@@ -1235,7 +1235,7 @@ void CFire::Update( float simTime )
 					// don't hurt things like this if we're a mine fire - they have to be ignited by the touch function below so we can collect igniting stats
 					if ( m_nFireType != FIRE_WALL_MINE )
 					{
-						CTakeDamageInfo info( m_hOwner.Get() ? m_hOwner.Get() : this, this, outputDamage, damageFlags );
+						CTakeDamageInfo info( this, m_hOwner.Get() ? m_hOwner.Get() : this, outputDamage, damageFlags );
 						info.SetWeapon( m_hCreatorWeapon );
 						pOther->TakeDamage( info );
 					}
@@ -1848,7 +1848,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 						ASWGameRules()->ModifyAlienHealthBySkillLevel( flDamage );
 					}
 
-					CTakeDamageInfo info( pOwner ? pOwner : this, this, flDamage, damageFlags );
+					CTakeDamageInfo info( this, pOwner ? pOwner : this, flDamage, damageFlags );
 					info.SetWeapon( m_hCreatorWeapon );
 					pSpawnable->GetNPC()->TakeDamage( info );
 				}
