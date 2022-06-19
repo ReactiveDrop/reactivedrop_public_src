@@ -222,7 +222,47 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 {
 	if ( bShockBig || bOnFire || flFrozen > 0 )
 	{
-		if ( bShockBig )
+		if ( bShockBig && bOnFire && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_ohgod_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bShockBig && bOnFire )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockfire_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bShockBig && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockice_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bOnFire && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_icefire_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 24, 4.0f );
+			}
+		}
+		else if ( bShockBig )
 		{
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_shock_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
