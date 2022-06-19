@@ -27,7 +27,7 @@ extern ConVar asw_debug_marine_damage;
 extern ConVar ai_show_hull_attacks;
 #endif
 
-ConVar rd_marine_ff_fist("rd_marine_ff_fist", "0", FCVAR_REPLICATED, "If set to 1, enables friendly fire for fist attacks.");
+ConVar rd_marine_ff_fist("rd_marine_ff_fist", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If set to 1, enables friendly fire for fist attacks.");
 
 //-----------------------------------------------------------------------------
 // Purpose: 
