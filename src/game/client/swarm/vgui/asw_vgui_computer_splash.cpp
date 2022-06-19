@@ -28,11 +28,15 @@ CASW_VGUI_Computer_Splash::CASW_VGUI_Computer_Splash( vgui::Panel *pParent, cons
 		if (m_pHackComputer && m_pHackComputer->GetComputerArea())
 		{
 			// set the label based on PDA name
-			char namebuffer[64];
-			Q_snprintf(namebuffer, sizeof(namebuffer), "%s", m_pHackComputer->GetComputerArea()->m_PDAName.Get());
-
 			wchar_t wnamebuffer[64];
-			g_pVGuiLocalize->ConvertANSIToUnicode(namebuffer, wnamebuffer, sizeof( wnamebuffer ));
+			if ( const wchar_t *pwszName = g_pVGuiLocalize->Find( m_pHackComputer->GetComputerArea()->m_PDAName.Get() ) )
+			{
+				V_wcsncpy( wnamebuffer, pwszName, sizeof( wnamebuffer ) );
+			}
+			else
+			{
+				g_pVGuiLocalize->ConvertANSIToUnicode( m_pHackComputer->GetComputerArea()->m_PDAName.Get(), wnamebuffer, sizeof( wnamebuffer ) );
+			}
 			
 			wchar_t wbuffer[256];		
 			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
