@@ -226,33 +226,34 @@ void CASW_VGUI_Computer_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_VGUI_Computer_Frame::OnThink()
 {
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+	int x, y, w, t;
+	GetSize( w, t );
 
-	if (m_pCurrentPanel)
-		m_pCurrentPanel->SetPos(0,0);
+	if ( m_pCurrentPanel )
+		m_pCurrentPanel->SetPos( 0, 0 );
 
-	for (int i=0;i<3;i++)
+	for ( int i = 0; i < 3; i++ )
 	{
-		m_pScan[i]->GetPos(x,y);
-		if (y <= -m_iScanHeight)
+		m_pScan[i]->GetPos( x, y );
+		if ( y <= -m_iScanHeight )
 		{
-			m_pScan[i]->SetPos(0,t);			
-			vgui::GetAnimationController()->RunAnimationCommand(m_pScan[i], "ypos", -m_iScanHeight, 0, (i+1)*2, vgui::AnimationController::INTERPOLATOR_LINEAR);			
+			m_pScan[i]->SetPos( 0, t );
+			vgui::GetAnimationController()->RunAnimationCommand( m_pScan[i], "ypos", -m_iScanHeight, 0, ( i + 1 ) * 2, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		}
 	}
 
 	m_pLogoffLabel->SetVisible( !IsPDA() && !m_bHideLogoffButton );
 
-	if (m_pLogoffLabel->IsCursorOver() && m_pLogoffLabel->IsVisible() )
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+	if ( m_pLogoffLabel->IsWithin( x, y ) && m_pLogoffLabel->IsVisible() )
 	{
-		m_pLogoffLabel->SetBgColor(Color(255,255,255,255));
-		m_pLogoffLabel->SetFgColor(Color(0,0,0,255));
+		m_pLogoffLabel->SetBgColor( Color( 255, 255, 255, 255 ) );
+		m_pLogoffLabel->SetFgColor( Color( 0, 0, 0, 255 ) );
 	}
 	else
 	{
-		m_pLogoffLabel->SetBgColor(Color(19,20,40,255));
-		m_pLogoffLabel->SetFgColor(Color(255,255,255,255));
+		m_pLogoffLabel->SetBgColor( Color( 19, 20, 40, 255 ) );
+		m_pLogoffLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
 
 	m_fLastThinkTime = gpGlobals->curtime;

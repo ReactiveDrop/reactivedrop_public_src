@@ -411,35 +411,33 @@ void CASW_VGUI_Computer_Plant::ScrollRawTable()
 #define RAW_SCROLL_INTERVAL 0.3f
 
 void CASW_VGUI_Computer_Plant::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
-
-	SetPos(0,0);
+{
+	SetPos( 0, 0 );
 
 	m_bMouseOverBackButton = false;
 
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
 
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
-
-	if (m_bMouseOverBackButton)
+	if ( m_bMouseOverBackButton )
 	{
-		m_pBackButton->SetBgColor(Color(255,255,255,255));
-		m_pBackButton->SetFgColor(Color(0,0,0,255));
+		m_pBackButton->SetBgColor( Color( 255, 255, 255, 255 ) );
+		m_pBackButton->SetFgColor( Color( 0, 0, 0, 255 ) );
 	}
 	else
 	{
-		m_pBackButton->SetBgColor(Color(19,20,40,255));
-		m_pBackButton->SetFgColor(Color(255,255,255,255));
+		m_pBackButton->SetBgColor( Color( 19, 20, 40, 255 ) );
+		m_pBackButton->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
-	
-	if (gpGlobals->curtime > m_fNextScrollRawTableTime)
+
+	if ( gpGlobals->curtime > m_fNextScrollRawTableTime )
 	{
 		ScrollRawTable();
 		m_fNextScrollRawTableTime = gpGlobals->curtime + RAW_SCROLL_INTERVAL;
 	}
 	bool bReactorOnline = GetReactorOnline();
-	if (bReactorOnline != m_bReactorOnline)
+	if ( bReactorOnline != m_bReactorOnline )
 	{
 		m_bReactorOnline = bReactorOnline;
 		SetLabels();

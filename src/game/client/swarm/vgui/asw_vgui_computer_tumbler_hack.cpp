@@ -394,24 +394,24 @@ void CASW_VGUI_Computer_Tumbler_Hack::UpdateCorrectStatus(bool bForce)
 }
 
 void CASW_VGUI_Computer_Tumbler_Hack::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+{
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
 
 	// check if the mouse is over any tumbler controls we need to press
 	m_iMouseOverTumblerControl = -1;
-	
-	for (int i=0;i<m_iNumColumns;i++)
+
+	for ( int i = 0; i < m_iNumColumns; i++ )
 	{
-		if (m_pTumblerControls[i]->IsCursorOver())
+		if ( m_pTumblerControls[i]->IsWithin( x, y ) )
 		{
 			m_iMouseOverTumblerControl = i;
-			m_bTumblerControlMouseOver[i] = true;		
+			m_bTumblerControlMouseOver[i] = true;
 		}
-		else if (m_pTumblerPanels[i]->IsCursorOver())
+		else if ( m_pTumblerPanels[i]->IsWithin( x, y ) )
 		{
 			m_iMouseOverTumblerControl = i;
-			m_bTumblerControlMouseOver[i] = true;		
+			m_bTumblerControlMouseOver[i] = true;
 		}
 		else
 		{
@@ -421,50 +421,50 @@ void CASW_VGUI_Computer_Tumbler_Hack::OnThink()
 
 	UpdateCorrectStatus();
 
-	if (m_hHackComputer.Get() && m_pFastMarker)
+	if ( m_hHackComputer.Get() && m_pFastMarker )
 	{
-		if (m_hHackComputer->m_iNumTumblers < ASW_MIN_TUMBLERS_FAST_HACK)
+		if ( m_hHackComputer->m_iNumTumblers < ASW_MIN_TUMBLERS_FAST_HACK )
 		{
-			m_pFastMarker->SetVisible(false);
+			m_pFastMarker->SetVisible( false );
 		}
-		else if (m_hHackComputer->m_fStartedHackTime == 0)
+		else if ( m_hHackComputer->m_fStartedHackTime == 0 )
 		{
-			m_pFastMarker->SetVisible(false);
+			m_pFastMarker->SetVisible( false );
 		}
 		else
 		{
-			m_pFastMarker->SetVisible(true);
-			m_pFastMarker->SetSize(12.0f * m_fScale, 12.0f * m_fScale);
+			m_pFastMarker->SetVisible( true );
+			m_pFastMarker->SetSize( 12.0f * m_fScale, 12.0f * m_fScale );
 			float total_time = m_hHackComputer->m_fFastFinishTime - m_hHackComputer->m_fStartedHackTime;
-			if (total_time <= 0)
+			if ( total_time <= 0 )
 				total_time = 1.0f;
-			float fMarkerFraction = (gpGlobals->curtime - m_hHackComputer->m_fStartedHackTime) / total_time;
-			if (fMarkerFraction > 1.0f)
+			float fMarkerFraction = ( gpGlobals->curtime - m_hHackComputer->m_fStartedHackTime ) / total_time;
+			if ( fMarkerFraction > 1.0f )
 				fMarkerFraction = 1.0f;
-			if (fMarkerFraction < 0)
+			if ( fMarkerFraction < 0 )
 				fMarkerFraction = 0;
 
 			int w = GetWide();
 			float status_box_left_edge = 0.614f * w;		// 664
 			float status_box_width = 0.295f * w;
-						
-			m_pFastMarker->SetPos(status_box_left_edge + (status_box_width * 0.05f)
-				+ (status_box_width * 0.9f * fMarkerFraction) - (6.0f * m_fScale),
-				GetTracePanelY() - 9.0f * m_fScale);	
 
-			if (fMarkerFraction >= 1.0f && !m_pAccessLoggedLabel->IsVisible())
+			m_pFastMarker->SetPos( status_box_left_edge + ( status_box_width * 0.05f )
+				+ ( status_box_width * 0.9f * fMarkerFraction ) - ( 6.0f * m_fScale ),
+				GetTracePanelY() - 9.0f * m_fScale );
+
+			if ( fMarkerFraction >= 1.0f && !m_pAccessLoggedLabel->IsVisible() )
 			{
 				CLocalPlayerFilter filter;
-				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Select" );	
-				m_pAccessLoggedLabel->SetVisible(true);
+				C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.Select" );
+				m_pAccessLoggedLabel->SetVisible( true );
 			}
 		}
-	}	
+	}
 
 	UpdateTumblerButtonTextures();
 
-	m_pFastMarker->SetDrawColor(Color(255,0,0,255));
-	
+	m_pFastMarker->SetDrawColor( Color( 255, 0, 0, 255 ) );
+
 	m_fLastThinkTime = gpGlobals->curtime;
 }
 

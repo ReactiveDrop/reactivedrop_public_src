@@ -827,29 +827,29 @@ void CASW_Wire_Tile::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_Wire_Tile::Paint()
 {
-	if (!m_pHackWireTile || m_iWire == -1 || !m_pHackWireTile->m_hHack.Get())
+	if ( !m_pHackWireTile || m_iWire == -1 || !m_pHackWireTile->m_hHack.Get() )
 		return;
 
 #ifdef SHRINK_WHEN_ALL_WIRES_LIT
-	if (m_pHackWireTile->m_bLastAllLit)
+	if ( m_pHackWireTile->m_bLastAllLit )
 		return;
 #endif
-	bool bLocked = m_pHackWireTile->m_hHack->GetTileLocked(m_iWire, (m_y * m_pHackWireTile->m_hHack->m_iNumColumns) + m_x) > 0;
+	bool bLocked = m_pHackWireTile->m_hHack->GetTileLocked( m_iWire, ( m_y * m_pHackWireTile->m_hHack->m_iNumColumns ) + m_x ) > 0;
 
 	float m_fScale = m_pHackWireTile->m_fScale;
 	// set up vectors for the 4 points of this tile
-	Vector vTopLeft(-ASW_TILE_SIZE * 0.5f,-ASW_TILE_SIZE * 0.5f,0);
-	Vector vTopRight(ASW_TILE_SIZE * 0.5f,-ASW_TILE_SIZE * 0.5f,0);
-	Vector vBottomRight(ASW_TILE_SIZE * 0.5f,ASW_TILE_SIZE * 0.5f,0);
-	Vector vBottomLeft(-ASW_TILE_SIZE * 0.5f,ASW_TILE_SIZE * 0.5f,0);
+	Vector vTopLeft( -ASW_TILE_SIZE * 0.5f, -ASW_TILE_SIZE * 0.5f, 0 );
+	Vector vTopRight( ASW_TILE_SIZE * 0.5f, -ASW_TILE_SIZE * 0.5f, 0 );
+	Vector vBottomRight( ASW_TILE_SIZE * 0.5f, ASW_TILE_SIZE * 0.5f, 0 );
+	Vector vBottomLeft( -ASW_TILE_SIZE * 0.5f, ASW_TILE_SIZE * 0.5f, 0 );
 
 	// rotate the points by the angle of the tile
 	Vector vTopLeft_rotated;
 	Vector vTopRight_rotated;
 	Vector vBottomRight_rotated;
 	Vector vBottomLeft_rotated;
-	QAngle angTileRot(0, m_pHackWireTile->m_hHack->GetTileRotation(m_iWire, m_x, m_y) * 90.0f, 0);
-	if (bLocked)
+	QAngle angTileRot( 0, m_pHackWireTile->m_hHack->GetTileRotation( m_iWire, m_x, m_y ) * 90.0f, 0 );
+	if ( bLocked )
 	{
 		vTopLeft_rotated = vTopLeft;
 		vTopRight_rotated = vTopRight;
@@ -858,43 +858,46 @@ void CASW_Wire_Tile::Paint()
 	}
 	else
 	{
-		VectorRotate(vTopLeft, angTileRot, vTopLeft_rotated);
-		VectorRotate(vTopRight, angTileRot, vTopRight_rotated);
-		VectorRotate(vBottomRight, angTileRot, vBottomRight_rotated);
-		VectorRotate(vBottomLeft, angTileRot, vBottomLeft_rotated);
+		VectorRotate( vTopLeft, angTileRot, vTopLeft_rotated );
+		VectorRotate( vTopRight, angTileRot, vTopRight_rotated );
+		VectorRotate( vBottomRight, angTileRot, vBottomRight_rotated );
+		VectorRotate( vBottomLeft, angTileRot, vBottomLeft_rotated );
 	}
 
 	int cx = ASW_TILE_SIZE * 0.5f;
 	int cy = ASW_TILE_SIZE * 0.5f;
 
-	vgui::Vertex_t points[4] = 
-	{ 
-	vgui::Vertex_t( Vector2D(cx + vTopLeft_rotated.x, cy + vTopLeft_rotated.y), Vector2D(0,0) ), 
-	vgui::Vertex_t( Vector2D(cx + vTopRight_rotated.x, cy + vTopRight_rotated.y), Vector2D(1,0) ), 
-	vgui::Vertex_t( Vector2D(cx + vBottomRight_rotated.x, cy + vBottomRight_rotated.y), Vector2D(1,1) ), 
-	vgui::Vertex_t( Vector2D(cx + vBottomLeft_rotated.x, cy + vBottomLeft_rotated.y), Vector2D(0,1) ) 
-	}; 		
-	
-	// draw locked tiles in red
-	if (bLocked)
+	vgui::Vertex_t points[4] =
 	{
-		if (m_nLockedTexture != -1)
+	vgui::Vertex_t( Vector2D( cx + vTopLeft_rotated.x, cy + vTopLeft_rotated.y ), Vector2D( 0,0 ) ),
+	vgui::Vertex_t( Vector2D( cx + vTopRight_rotated.x, cy + vTopRight_rotated.y ), Vector2D( 1,0 ) ),
+	vgui::Vertex_t( Vector2D( cx + vBottomRight_rotated.x, cy + vBottomRight_rotated.y ), Vector2D( 1,1 ) ),
+	vgui::Vertex_t( Vector2D( cx + vBottomLeft_rotated.x, cy + vBottomLeft_rotated.y ), Vector2D( 0,1 ) )
+	};
+
+	// draw locked tiles in red
+	if ( bLocked )
+	{
+		if ( m_nLockedTexture != -1 )
 		{
-			vgui::surface()->DrawSetColor(Color(255,255,255,255));
-			vgui::surface()->DrawSetTexture(m_nLockedTexture);
+			vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
+			vgui::surface()->DrawSetTexture( m_nLockedTexture );
 			vgui::surface()->DrawTexturedPolygon( 4, points );
 		}
 		return;	// we're not showing you anything if it's locked!
 	}
 	else
 	{
+		int x, y;
+		ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+
 		// draw highlight if we're over any of them
-		if (IsCursorOver() && !m_pHackWireTile->m_hHack->IsWireLit(m_iWire))
+		if ( IsWithin( x, y ) && !m_pHackWireTile->m_hHack->IsWireLit( m_iWire ) )
 		{
-			if (m_nWhiteTexture != -1)
+			if ( m_nWhiteTexture != -1 )
 			{
-				vgui::surface()->DrawSetColor(Color(65,74,96,128));
-				vgui::surface()->DrawSetTexture(m_nWhiteTexture);
+				vgui::surface()->DrawSetColor( Color( 65, 74, 96, 128 ) );
+				vgui::surface()->DrawSetTexture( m_nWhiteTexture );
 				vgui::surface()->DrawTexturedPolygon( 4, points );
 			}
 		}
@@ -921,13 +924,13 @@ void CASW_Wire_Tile::Paint()
 	{
 		vgui::surface()->DrawSetColor( Color( 64, 64, 64, 255 ) );
 	}
-	
+
 	// get the texture for this type of tile
-	if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_HORIZ)
+	if ( m_pHackWireTile->m_hHack->GetTileType( m_iWire, m_x, m_y ) == ASW_WIRE_TILE_HORIZ )
 		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileHorizBright : m_pHackWireTile->s_nTileHoriz );
-	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_LEFT)
+	else if ( m_pHackWireTile->m_hHack->GetTileType( m_iWire, m_x, m_y ) == ASW_WIRE_TILE_LEFT )
 		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileLeftBright : m_pHackWireTile->s_nTileLeft );
-	else if (m_pHackWireTile->m_hHack->GetTileType(m_iWire, m_x, m_y) == ASW_WIRE_TILE_RIGHT)
+	else if ( m_pHackWireTile->m_hHack->GetTileType( m_iWire, m_x, m_y ) == ASW_WIRE_TILE_RIGHT )
 		vgui::surface()->DrawSetTexture( bUseBrightTexture ? m_pHackWireTile->s_nTileRightBright : m_pHackWireTile->s_nTileRight );
 	else
 		return;

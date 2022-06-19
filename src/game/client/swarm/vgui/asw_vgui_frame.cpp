@@ -13,6 +13,7 @@
 #include <filesystem.h>
 #include <keyvalues.h>
 #include "c_asw_player.h"
+#include "asw_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -91,36 +92,36 @@ void CASW_VGUI_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 
 void CASW_VGUI_Frame::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+{
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
 
-	if (m_pCloseImage->IsCursorOver() != m_bMouseOverCloseIcon)
+	if ( m_pCloseImage->IsWithin( x, y ) != m_bMouseOverCloseIcon )
 	{
-		m_bMouseOverCloseIcon = m_pCloseImage->IsCursorOver();
-		if (m_bMouseOverCloseIcon)
+		m_bMouseOverCloseIcon = m_pCloseImage->IsWithin( x, y );
+		if ( m_bMouseOverCloseIcon )
 		{
-			m_pCloseImage->SetImage("swarm/Computer/WindowCloseLit");
+			m_pCloseImage->SetImage( "swarm/Computer/WindowCloseLit" );
 		}
 		else
 		{
-			m_pCloseImage->SetImage("swarm/Computer/WindowClose");
+			m_pCloseImage->SetImage( "swarm/Computer/WindowClose" );
 		}
 	}
-	if (m_pMiniImage->IsCursorOver() != m_bMouseOverMiniIcon)
+	if ( m_pMiniImage->IsWithin( x, y ) != m_bMouseOverMiniIcon )
 	{
-		m_bMouseOverMiniIcon = m_pMiniImage->IsCursorOver();
-		if (m_bMouseOverMiniIcon)
+		m_bMouseOverMiniIcon = m_pMiniImage->IsWithin( x, y );
+		if ( m_bMouseOverMiniIcon )
 		{
-			m_pMiniImage->SetImage("swarm/Computer/WindowMinimiseLit");
+			m_pMiniImage->SetImage( "swarm/Computer/WindowMinimiseLit" );
 		}
 		else
 		{
-			m_pMiniImage->SetImage("swarm/Computer/WindowMinimise");
+			m_pMiniImage->SetImage( "swarm/Computer/WindowMinimise" );
 		}
 	}
-	
-	if (!m_pCloseImage->IsCursorOver())
+
+	if ( !m_pCloseImage->IsWithin( x, y ) )
 	{
 		m_bMouseOverTitleBar = true;	// todo: grab the cursor x y relative to our window top and see if it's less than the title bar height?
 	}
@@ -128,19 +129,19 @@ void CASW_VGUI_Frame::OnThink()
 	{
 		m_bMouseOverTitleBar = false;
 	}
-	if (m_bDragging && !vgui::input()->IsMouseDown( MOUSE_LEFT ))
+	if ( m_bDragging && !vgui::input()->IsMouseDown( MOUSE_LEFT ) )
 	{
 		m_bDragging = false;
 	}
-	if (m_bDragging)
+	if ( m_bDragging )
 	{
 		// set pos to x/y of cursor minus drag offset
 		int current_posx, current_posy;
-		vgui::input()->GetCursorPos(current_posx, current_posy);
+		vgui::input()->GetCursorPos( current_posx, current_posy );
 		current_posx -= m_iDragOffsetX;
 		current_posy -= m_iDragOffsetY;
-		GetParent()->ScreenToLocal(current_posx, current_posy);
-		SetPos(current_posx, current_posy);
+		GetParent()->ScreenToLocal( current_posx, current_posy );
+		SetPos( current_posx, current_posy );
 	}
 }
 

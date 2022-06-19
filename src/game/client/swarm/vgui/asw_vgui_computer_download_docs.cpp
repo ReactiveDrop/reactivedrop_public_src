@@ -231,8 +231,8 @@ void CASW_VGUI_Computer_Download_Docs::ApplySettingAndFadeLabelIn(vgui::Label* p
 
 void CASW_VGUI_Computer_Download_Docs::OnThink()
 {	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+	int w, t;
+	GetSize( w, t );
 
 	SetPos(0,0);
 
@@ -288,7 +288,10 @@ void CASW_VGUI_Computer_Download_Docs::OnThink()
 		m_pArrow->SetAlpha(m_pProgressBar->GetAlpha() * fAlpha);
 	}
 
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
 
 	if (m_bMouseOverBackButton)
 	{

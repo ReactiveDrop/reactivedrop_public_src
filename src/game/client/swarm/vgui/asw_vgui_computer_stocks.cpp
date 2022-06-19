@@ -233,24 +233,23 @@ void CASW_VGUI_Computer_Stocks::ApplySettingAndFadeLabelIn(vgui::Label* pLabel)
 
 
 void CASW_VGUI_Computer_Stocks::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
-
-	SetPos(0,0);
+{
+	SetPos( 0, 0 );
 	m_bMouseOverBackButton = false;
 
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
 
-	if (m_bMouseOverBackButton)
+	if ( m_bMouseOverBackButton )
 	{
-		m_pBackButton->SetBgColor(Color(255,255,255,m_pBackButton->GetAlpha()));
-		m_pBackButton->SetFgColor(Color(0,0,0,m_pBackButton->GetAlpha()));
+		m_pBackButton->SetBgColor( Color( 255, 255, 255, m_pBackButton->GetAlpha() ) );
+		m_pBackButton->SetFgColor( Color( 0, 0, 0, m_pBackButton->GetAlpha() ) );
 	}
 	else
 	{
-		m_pBackButton->SetBgColor(Color(19,20,40,m_pBackButton->GetAlpha()));
-		m_pBackButton->SetFgColor(Color(255,255,255,m_pBackButton->GetAlpha()));
+		m_pBackButton->SetBgColor( Color( 19, 20, 40, m_pBackButton->GetAlpha() ) );
+		m_pBackButton->SetFgColor( Color( 255, 255, 255, m_pBackButton->GetAlpha() ) );
 	}
 
 	m_fLastThinkTime = gpGlobals->curtime;

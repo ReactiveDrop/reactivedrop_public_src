@@ -159,14 +159,14 @@ void CASW_VGUI_Computer_Camera::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_VGUI_Computer_Camera::OnThink()
 {	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
 
-	SetPos(0,0);
+	SetPos( 0, 0 );
 
 	m_bMouseOverBackButton = false;
 
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
 
 	if (m_bMouseOverBackButton)
 	{
