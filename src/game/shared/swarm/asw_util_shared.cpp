@@ -1489,7 +1489,7 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 		iActualLevel = rd_override_commander_level.GetInt();
 	}
 
-	if ( iPromotion != iActualPromotion )
+	if ( iPromotion != -1 && iPromotion != iActualPromotion )
 	{
 		return iPromotion < iActualPromotion;
 	}
@@ -1699,8 +1699,6 @@ const char *UTIL_RD_EResultToString( EResult eResult )
 		return "k_EResultFail";
 	case k_EResultNoConnection:
 		return "k_EResultNoConnection";
-	case (EResult)4:
-		return "k_EResultNoConnectionRetry";
 	case k_EResultInvalidPassword:
 		return "k_EResultInvalidPassword";
 	case k_EResultLoggedInElsewhere:
