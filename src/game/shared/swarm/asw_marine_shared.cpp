@@ -12,9 +12,11 @@
 	#include "c_asw_pickup_weapon.h"
 	#include "c_asw_shieldbug.h"
 	#include "c_asw_hack.h"
+	#include "c_physics_prop_statue.h"
 	#define CASW_Simple_Alien C_ASW_Simple_Alien
 	#define CASW_Pickup_Weapon C_ASW_Pickup_Weapon
 	#define CAI_BaseNPC C_AI_BaseNPC
+	#define CStatueProp C_StatueProp
 #else
 	#include "te_effect_dispatch.h"
 	#include "asw_marine.h"
@@ -27,6 +29,7 @@
 	#include "asw_pickup_weapon.h"
 	#include "asw_alien.h"
 	#include "asw_hack.h"
+	#include "physics_prop_statue.h"
 #endif
 #include "game_timescale_shared.h"
 #include "asw_marine_gamemovement.h"
@@ -1467,15 +1470,15 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 		if (bPierce)
 		{
 			CAI_BaseNPC *pNPC = tr.m_pEnt->MyNPCPointer();
-			CASW_Simple_Alien *pAlien = dynamic_cast<CASW_Simple_Alien*>(tr.m_pEnt);
-			if (pNPC || pAlien)
+			CASW_Simple_Alien *pAlien = dynamic_cast< CASW_Simple_Alien * >( tr.m_pEnt );
+			CStatueProp *pStatue = dynamic_cast< CStatueProp * >( tr.m_pEnt );
+			if ( pNPC || pAlien || pStatue )
 			{
-
 				if ( tr.m_pEnt->Classify() == CLASS_ASW_SHIELDBUG )		// don't let bullets pass through shieldbugs
 				{
 					bPierce = false;
 				}
-				else if ((info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK) == 0)
+				else if ( ( info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK ) == 0 )
 				{
 					CEffectData	data;
 					data.m_vOrigin = tr.endpos;
