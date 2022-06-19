@@ -227,7 +227,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_ohgod_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailBlendFactor->SetFloatValue( 0.3f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 80, 4.0f );
 			}
@@ -237,7 +237,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockfire_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailBlendFactor->SetFloatValue( 0.2f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 80, 4.0f );
 			}
@@ -247,7 +247,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockice_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailBlendFactor->SetFloatValue( 0.4f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 80, 4.0f );
 			}
@@ -257,7 +257,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_icefire_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				m_pDetailBlendFactor->SetFloatValue( 1.0f );
+				m_pDetailBlendFactor->SetFloatValue( 0.2f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 24, 4.0f );
 			}
@@ -267,8 +267,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_shock_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				float flBlend = 0.75f;
-				m_pDetailBlendFactor->SetFloatValue( flBlend );
+				m_pDetailBlendFactor->SetFloatValue( 0.75f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 80, 4.0f );
 			}
