@@ -9,6 +9,7 @@ class CRD_Collection_List_Equipment;
 class CRD_Collection_List_Marines;
 class CRD_Collection_List_Inventory;
 class vgui::ImagePanel;
+class vgui::Label;
 class CASW_WeaponInfo;
 class CASW_Marine_Profile;
 
@@ -35,8 +36,18 @@ public:
 	CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList, int index, CASW_WeaponInfo *pWeaponInfo );
 	virtual ~CRD_Collection_Entry_Equipment();
 
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+
+	vgui::ImagePanel *m_pIcon;
+	vgui::ImagePanel *m_pClassIcon;
+	vgui::Label *m_pClassLabel;
+	vgui::ImagePanel *m_pLockedIcon;
+	vgui::Label *m_pLockedOverlay;
+	vgui::Label *m_pLockedLabel;
+
 	int m_Index;
 	CASW_WeaponInfo *m_pWeaponInfo;
+	int m_nLevelRequirement;
 };
 
 class CRD_Collection_Entry_Marines : public CRD_Collection_Entry
@@ -45,6 +56,11 @@ class CRD_Collection_Entry_Marines : public CRD_Collection_Entry
 public:
 	CRD_Collection_Entry_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Marines *pList, int index, CASW_Marine_Profile *pProfile );
 	virtual ~CRD_Collection_Entry_Marines();
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+
+	vgui::ImagePanel *m_pPortrait;
+	vgui::ImagePanel *m_pHighlightPortrait;
 
 	int m_Index;
 	CASW_Marine_Profile *m_pProfile;

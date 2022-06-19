@@ -3,14 +3,19 @@
 #include "rd_collection_entry.h"
 #include "rd_collection_details.h"
 #include "gameui/swarm/basemodui.h"
+#include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/ScrollBar.h>
 #include "rd_inventory_shared.h"
+#include "asw_util_shared.h"
 #include "asw_weapon_parse.h"
+#include "asw_weapon_shared.h"
 #include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern ConVar asw_unlock_all_weapons;
 
 class CRD_Collection_Entry_FocusHolder : public vgui::EditablePanel
 {
@@ -129,23 +134,99 @@ void CRD_Collection_Entry::Accept()
 CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Equipment *pList, int index, CASW_WeaponInfo *pWeaponInfo )
 	: BaseClass( pParent, pElementName, pList )
 {
+	m_pIcon = new vgui::ImagePanel( this, "Icon" );
+	m_pClassIcon = new vgui::ImagePanel( this, "ClassIcon" );
+	m_pClassLabel = new vgui::Label( this, "ClassLabel", L"" );
+	m_pLockedIcon = new vgui::ImagePanel( this, "LockedIcon" );
+	m_pLockedOverlay = new vgui::Label( this, "LockedOverlay", L"" );
+	m_pLockedLabel = new vgui::Label( this, "LockedLabel", L"" );
+
 	m_Index = index;
 	m_pWeaponInfo = pWeaponInfo;
+	m_nLevelRequirement = GetWeaponLevelRequirement( m_pWeaponInfo->szClassName ) + 1;
 }
 
 CRD_Collection_Entry_Equipment::~CRD_Collection_Entry_Equipment()
 {
 }
 
+void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	if ( !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_nLevelRequirement, -1 ) )
+	{
+		m_pHighlight->SetSize( 0, 0 );
+
+		m_pLockedIcon->SetVisible( true );
+		m_pLockedOverlay->SetVisible( true );
+		m_pLockedLabel->SetVisible( true );
+
+		m_pClassIcon->SetVisible( false );
+		m_pClassLabel->SetVisible( false );
+
+		m_pLockedLabel->SetText( VarArgs( "%d", m_nLevelRequirement ) );
+
+		return;
+	}
+
+	m_pLockedIcon->SetVisible( false );
+	m_pLockedOverlay->SetVisible( false );
+	m_pLockedLabel->SetVisible( false );
+
+	m_pIcon->SetImage( m_pWeaponInfo->szEquipIcon );
+
+	m_pClassIcon->SetVisible( true );
+	m_pClassLabel->SetVisible( true );
+	if ( m_pWeaponInfo->m_bTech )
+	{
+		m_pClassIcon->SetImage( "swarm/ClassIcons/TechClassIcon" );
+		m_pClassLabel->SetText( "#asw_requires_tech" );
+	}
+	else if ( m_pWeaponInfo->m_bFirstAid )
+	{
+		m_pClassIcon->SetImage( "swarm/ClassIcons/MedicClassIcon" );
+		m_pClassLabel->SetText( "#asw_requires_medic" );
+	}
+	else if ( m_pWeaponInfo->m_bSpecialWeapons )
+	{
+		m_pClassIcon->SetImage( "swarm/ClassIcons/SpecialWeaponsClassIcon" );
+		m_pClassLabel->SetText( "#asw_requires_sw" );
+	}
+	else if ( m_pWeaponInfo->m_bSapper )
+	{
+		m_pClassIcon->SetImage( "swarm/ClassIcons/NCOClassIcon" );
+		m_pClassLabel->SetText( "#asw_requires_nco" );
+	}
+	else
+	{
+		m_pClassIcon->SetVisible( false );
+		m_pClassLabel->SetVisible( false );
+	}
+}
+
 CRD_Collection_Entry_Marines::CRD_Collection_Entry_Marines( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Marines *pList, int index, CASW_Marine_Profile *pProfile )
 	: BaseClass( pParent, pElementName, pList )
 {
+	m_pPortrait = new vgui::ImagePanel( this, "Portrait" );
+	m_pHighlight->DeletePanel();
+	m_pHighlightPortrait = new vgui::ImagePanel( this, "Highlight" );
+	m_pHighlight = m_pHighlightPortrait;
+
 	m_Index = index;
 	m_pProfile = pProfile;
 }
 
 CRD_Collection_Entry_Marines::~CRD_Collection_Entry_Marines()
 {
+}
+
+void CRD_Collection_Entry_Marines::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pPortrait->SetImage( VarArgs( "briefing/face_%s", m_pProfile->m_PortraitName ) );
+	m_pHighlightPortrait->SetImage( VarArgs( "briefing/face_%s_lit", m_pProfile->m_PortraitName ) );
 }
 
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( vgui::Panel *pParent, const char *pElementName, CRD_Collection_List_Inventory *pList, int index, SteamItemDetails_t details )

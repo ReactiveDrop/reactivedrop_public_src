@@ -64,7 +64,7 @@ void CRD_Collection_List::PerformLayout()
 
 	m_pHolder->SetTall( totalHeight );
 
-	m_pScrollBar->SetVisible( true );
+	m_pScrollBar->SetVisible( totalTall < totalHeight );
 	m_pScrollBar->SetTall( GetTall() );
 	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
 	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
