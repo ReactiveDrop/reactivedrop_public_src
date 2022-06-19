@@ -30,6 +30,7 @@
 	#include "asw_alien.h"
 	#include "asw_hack.h"
 	#include "physics_prop_statue.h"
+	#include "asw_util_shared.h"
 #endif
 #include "game_timescale_shared.h"
 #include "asw_marine_gamemovement.h"
@@ -72,6 +73,7 @@ extern ConVar asw_melee_debug;
 extern ConVar asw_debug_marine_damage;
 extern ConVar asw_stim_time_scale;
 extern ConVar asw_marine_ff;
+extern ConVar asw_fist_finisher_damage_scale;
 ConVar asw_leadership_radius("asw_leadership_radius", "600", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of the leadership field around NCOs with the leadership skill");
 ConVar asw_marine_speed_scale_easy("asw_marine_speed_scale_easy", "0.96", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_speed_scale_normal("asw_marine_speed_scale_normal", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -2273,6 +2275,13 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dm
 
 void CASW_Marine::PlayMeleeImpactEffects( CBaseEntity *pEntity, trace_t *tr )
 {
+#ifdef GAME_DLL
+	if ( HasPowerFist() && m_iMeleeAttackID == CASW_Melee_System::s_nComboFinishAttackID )
+	{
+		UTIL_ASW_ScreenShake( Weapon_ShootPosition(), 10.0f, 20.0f, 0.5f, 512.0f, SHAKE_START );
+	}
+#endif
+
 	if ( !pEntity )
 		return;
 
@@ -2887,6 +2896,11 @@ void CASW_Marine::ApplyPassiveMeleeDamageEffects( CTakeDamageInfo &dmgInfo )
 				dmgInfo.ScaleDamage( flDamageScale );
 			}
 		}
+	}
+
+	if ( HasPowerFist() && m_iMeleeAttackID == CASW_Melee_System::s_nComboFinishAttackID )
+	{
+		dmgInfo.ScaleDamage( asw_fist_finisher_damage_scale.GetFloat() );
 	}
 }
 

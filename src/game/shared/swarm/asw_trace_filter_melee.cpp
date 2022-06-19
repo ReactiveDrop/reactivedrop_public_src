@@ -187,12 +187,12 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 		{
 			CASW_Trace_Filter_Skip_Marines skip_marines_filter( COLLISION_GROUP_NONE );
 			UTIL_TraceLine( vecAttackerCenter, pEntity->WorldSpaceCenter(),	// check center to center
-				MASK_BLOCKLOS_AND_NPCS, &skip_marines_filter, tr2 );
+				MASK_BLOCKLOS_AND_NPCS | CONTENTS_HITBOX, &skip_marines_filter, tr2 );
 		}
 		else
 		{
 			UTIL_TraceLine( vecAttackerCenter, pEntity->WorldSpaceCenter(),	// check center to center
-				MASK_BLOCKLOS_AND_NPCS, m_hAttacker, COLLISION_GROUP_NONE, tr2 );
+				MASK_BLOCKLOS_AND_NPCS | CONTENTS_HITBOX, m_hAttacker, COLLISION_GROUP_NONE, tr2 );
 		}
 		if ( !tr2->DidHit() || tr2->m_pEnt != pEntity )
 		{

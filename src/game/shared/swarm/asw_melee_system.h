@@ -135,6 +135,7 @@ public:
 	bool m_bAttacksValidated;
 
 	static int s_nRollAttackID;
+	static int s_nComboFinishAttackID;
 	static int s_nKnockdownForwardAttackID;
 	static int s_nKnockdownBackwardAttackID;
 };

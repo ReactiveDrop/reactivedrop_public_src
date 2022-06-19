@@ -702,10 +702,19 @@ void CASW_Shieldbug::CheckForShieldbugHint( const CTakeDamageInfo &info )
 			if (m_fMarineBlockCounter < 0)
 				m_fMarineBlockCounter = 0;
 		}
-		m_fMarineBlockCounter += info.GetDamage();
+		if ( info.GetDamageType() & DMG_CLUB )
+		{
+			// meleeing a shieldbug is a really bad idea, and players understand that innately.
+			// reduce the block counter contribution for melee because the power fist can cause this to spam voice lines otherwise.
+			m_fMarineBlockCounter += info.GetDamage() * 0.02f;
+		}
+		else
+		{
+			m_fMarineBlockCounter += info.GetDamage();
+		}
 		if (asw_debug_marine_chatter.GetBool())
 			Msg("m_fMarineBlockCounter = %f\n", m_fMarineBlockCounter);
-		if (m_fMarineBlockCounter > 600)		// 686 = burning a whole rifle clip no normal difficulty
+		if (m_fMarineBlockCounter > 600)		// 686 = burning a whole rifle clip on normal difficulty
 		{
 			if (asw_debug_marine_chatter.GetBool())
 				Msg("Doing shieldbug hint\n");

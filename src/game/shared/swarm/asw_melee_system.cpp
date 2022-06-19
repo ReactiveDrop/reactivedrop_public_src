@@ -84,6 +84,7 @@ mstudioevent_for_client_server_t *GetEventIndexForSequence( mstudioseqdesc_t &se
 void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc );
 
 int CASW_Melee_System::s_nRollAttackID = -1;
+int CASW_Melee_System::s_nComboFinishAttackID = -1;
 int CASW_Melee_System::s_nKnockdownForwardAttackID = -1;
 int CASW_Melee_System::s_nKnockdownBackwardAttackID = -1;
 
@@ -126,6 +127,7 @@ void CASW_Melee_System::LoadMeleeAttacks()
 	LinkUpCombos();
 
 	CASW_Melee_System::s_nRollAttackID = GetMeleeAttackByName( "Roll" ) ? GetMeleeAttackByName( "Roll" )->m_nAttackID : -1;
+	CASW_Melee_System::s_nComboFinishAttackID = GetMeleeAttackByName( "melee_combo_2c" ) ? GetMeleeAttackByName( "melee_combo_2c" )->m_nAttackID : -1;
 	CASW_Melee_System::s_nKnockdownForwardAttackID = GetMeleeAttackByName( "KnockdownForward" ) ? GetMeleeAttackByName( "KnockdownForward" )->m_nAttackID : -1;
 	CASW_Melee_System::s_nKnockdownBackwardAttackID = GetMeleeAttackByName( "KnockdownBackward" ) ? GetMeleeAttackByName( "KnockdownBackward" )->m_nAttackID : -1;
 }
