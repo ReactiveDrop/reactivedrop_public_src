@@ -10287,7 +10287,7 @@ entity
 	"id" "200"
 	"classname" "asw_objective_escape"
 	"objectiveimage" "tilarus04obj3"
-	"objectivetitle" "Go to the Extraction Point"
+	"objectivetitle" "#t5_area9800_3_title"
 	"targetname" "map_objective"
 	"Visible" "1"
 	"origin" "208 3504 16"
@@ -11829,9 +11829,9 @@ entity
 {
 	"id" "277"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Kill everything that aint human"
+	"objectivedescription1" "#t5_area9800_1a"
 	"objectiveimage" "tilarus04obj1"
-	"objectivetitle" "Clear the Hangar"
+	"objectivetitle" "#t5_area9800_1_title"
 	"targetname" "objective_destroy"
 	"Visible" "1"
 	connections
@@ -14761,9 +14761,9 @@ entity
 {
 	"id" "456"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Find the bridge and activate it."
+	"objectivedescription1" "#t5_area9800_2a"
 	"objectiveimage" "tilarus04obj2"
-	"objectivetitle" "Activate Bridge"
+	"objectivetitle" "#t5_area9800_2_title"
 	"targetname" "objective_bridge"
 	"Visible" "1"
 	"origin" "208 3536 16"

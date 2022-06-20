@@ -46616,9 +46616,9 @@ entity
 {
 	"id" "586"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Download the Dock Overseer's ID & Profile of the Nearest Interface, to gain acess to the Main Road leading to the colony"
+	"objectivedescription1" "#t5_roadtodawn_1a"
 	"objectiveimage" "tilarus02obj1"
-	"objectivetitle" "Take Dock Overseer's ID"
+	"objectivetitle" "#t5_roadtodawn_1_title"
 	"targetname" "Objective 1"
 	"Visible" "1"
 	connections
@@ -46638,9 +46638,9 @@ entity
 {
 	"id" "587"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Close the blast doors, to give the colonists more time to escape"
+	"objectivedescription1" "#t5_roadtodawn_2a"
 	"objectiveimage" "tilarus02obj2"
-	"objectivetitle" "Activate SuperBlast doors"
+	"objectivetitle" "#t5_roadtodawn_2_title"
 	"targetname" "Objetive 2"
 	"Visible" "1"
 	connections
@@ -48133,9 +48133,9 @@ entity
 {
 	"id" "623"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Hold Position, and make sure those Blast Doors close"
+	"objectivedescription1" "#t5_roadtodawn_3a"
 	"objectiveimage" "tilarus02obj2"
-	"objectivetitle" "Hold Position"
+	"objectivetitle" "#t5_roadtodawn_3_title"
 	"targetname" "Objetive 3"
 	"Visible" "1"
 	connections
@@ -48800,9 +48800,9 @@ entity
 {
 	"id" "651"
 	"classname" "asw_objective_escape"
-	"objectivedescription1" "Unless you want to stay here, with a load of angry trapped bugs, you should go to next area"
+	"objectivedescription1" "#t5_roadtodawn_4a"
 	"objectiveimage" "tilarus02obj4"
-	"objectivetitle" "Go to next area"
+	"objectivetitle" "#t5_roadtodawn_4_title"
 	"targetname" "Objetive 4"
 	"Visible" "1"
 	"origin" "6112 6208 169"
