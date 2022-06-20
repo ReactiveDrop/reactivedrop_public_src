@@ -59968,10 +59968,10 @@ entity
 {
 	"id" "1033"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "This Landing bay was locked down under quarantine after the initial Swarm attack, You need to hack into a docking bay computer, and unlock one of the Side Doors to gain entrance to the main complex"
+	"objectivedescription1" "#t5_midnight_1a"
 	"objectiveimage" "tilarus01obj1"
 	"objectivemarkername" "Facility access Marker"
-	"objectivetitle" "Gain access to GeoTerra Facility"
+	"objectivetitle" "#t5_midnight_1_title"
 	"targetname" "Objective 1"
 	"Visible" "1"
 	connections
@@ -60124,10 +60124,10 @@ entity
 {
 	"id" "1038"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Use controls located in the Main Server Room to open the gates to go towards the Dawn Colony"
+	"objectivedescription1" "#t5_midnight_2a"
 	"objectiveimage" "tilarus01obj2"
 	"objectivemarkername" "Controls"
-	"objectivetitle" "Open main gate"
+	"objectivetitle" "#t5_midnight_2_title"
 	"targetname" "Objective 2"
 	"Visible" "1"
 	connections
@@ -73381,10 +73381,10 @@ entity
 {
 	"id" "1847"
 	"classname" "asw_objective_escape"
-	"objectivedescription1" "Procede towards the Colony of Long Dawn, To help the Remaining colonists escape"
+	"objectivedescription1" "#t5_midnight_3a"
 	"objectiveimage" "tilarus01obj3"
 	"objectivemarkername" "Objective 3 Marker"
-	"objectivetitle" "Procede Towards Long Dawn"
+	"objectivetitle" "#t5_midnight_3_title"
 	"targetname" "Objective 3"
 	"Visible" "1"
 	"origin" "-4304 1616 105"

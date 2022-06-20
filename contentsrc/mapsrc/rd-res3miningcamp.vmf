@@ -112777,10 +112777,10 @@ entity
 {
 	"id" "215639"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Burn the biomass away"
+	"objectivedescription1" "#rd_res1_ob_find_bypass_gate_d"
 	"objectiveimage" "rd_res_MC-M2"
 	"objectivemarkername" "obj9_marker"
-	"objectivetitle" "Find a way to bypass the gate"
+	"objectivetitle" "#rd_res1_ob_find_bypass_gate"
 	"targetname" "obj9"
 	"Visible" "1"
 	connections
@@ -112891,10 +112891,10 @@ entity
 {
 	"id" "215704"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "You'll need to bring that lift up, hit the switch to activate it"
+	"objectivedescription1" "#rd_res1_ob_rise_lift_d"
 	"objectiveimage" "rd_res_MC-M3"
 	"objectivemarkername" "obj11_marker"
-	"objectivetitle" "Rise the lift"
+	"objectivetitle" "#rd_res1_ob_rise_lift"
 	"targetname" "obj11"
 	"Visible" "1"
 	connections
@@ -112914,11 +112914,11 @@ entity
 {
 	"id" "215706"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "The swarm seem to be attracted to something, defend the generator!"
-	"objectivedescription2" "If they damage it too much the lift won't reach you."
+	"objectivedescription1" "#rd_res1_ob_defend_generator_d"
+	"objectivedescription2" "#rd_res1_ob_defend_generator_d2"
 	"objectiveimage" "rd_res_MC-M4"
 	"objectivemarkername" "obj12_marker"
-	"objectivetitle" "Defend the generator"
+	"objectivetitle" "#rd_res1_ob_defend_generator"
 	"targetname" "obj12"
 	"Visible" "1"
 	connections
@@ -113036,7 +113036,7 @@ entity
 	"classname" "asw_objective_escape"
 	"objectiveimage" "rd_res_MC-M5"
 	"objectivemarkername" "obj13_marker"
-	"objectivetitle" "Get on the lift"
+	"objectivetitle" "#rd_res1_ob_on_lift"
 	"targetname" "obj13"
 	"Visible" "1"
 	"origin" "-16 160 143.911"
@@ -113440,12 +113440,12 @@ entity
 {
 	"id" "215395"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "There must be something to use in the caves nearby"
+	"objectivedescription1" "#rd_res1_ob_find_bypass_blockage_d"
 	"objectiveimage" "rd_res_MC-M1"
 	"objectiveinfoicon1" "RC7-MC-M1"
 	"objectiveinfoicon2" "RC7-MC-M1"
 	"objectivemarkername" "obj3_marker"
-	"objectivetitle" "Find a way past the blockage"
+	"objectivetitle" "#rd_res1_ob_find_bypass_blockage"
 	"targetname" "obj3"
 	"Visible" "1"
 	connections
