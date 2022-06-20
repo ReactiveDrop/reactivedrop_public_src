@@ -370,7 +370,7 @@
 		"Weapon_t" "40"
 		
 		"MarinePortrait_x" "5"
-		"MarinePortrait_y" "r94"
+		"MarinePortrait_y" "r75"
 		
 		// these coords are relative to the top left of the marine portrait
 		"MarinePortrait_circle_bg_x" "0"
