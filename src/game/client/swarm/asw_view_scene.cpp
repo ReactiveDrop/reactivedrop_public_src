@@ -87,10 +87,10 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	}
 
 	bool found;
-	IMaterialVar* mv = NULL;
+	IMaterialVar *mv = NULL;
 	IMaterial *pMatScreen = NULL;
 	ITexture *pMotionBlur = NULL;
-	ITexture *pOriginalTexture = NULL; 
+	ITexture *pOriginalTexture = NULL;
 
 	// Get the front buffer material
 	pMatScreen = materials->FindMaterial( "swarm/effects/frontbuffer", TEXTURE_GROUP_OTHER, true );
@@ -139,12 +139,12 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	if ( !g_bBlurredLastTime )
 		add_alpha = 1.0f;	// add the whole buffer if this is the first time we're blurring after a while, so we don't end up with images from ages ago
 
-	if ( fNextDrawTime - gpGlobals->curtime > 1.0f)
+	if ( fNextDrawTime - gpGlobals->curtime > 1.0f )
 	{
 		fNextDrawTime = 0.0f;
 	}
 
-	if( gpGlobals->curtime >= fNextDrawTime ) 
+	if ( gpGlobals->curtime >= fNextDrawTime )
 	{
 		UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height );
 
@@ -181,7 +181,7 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	// Set the texture to our buffer
 	mv = pMatScreen->FindVar( "$basetexture", &found, true );
 	Assert( found );
-	if (found)
+	if ( found )
 	{
 		pOriginalTexture = mv->GetTextureValue();
 		AssertMsg1( pOriginalTexture == GetFullFrameFrameBufferTexture( 0 ), "pOriginalTexture is %s", pOriginalTexture->GetName() );
@@ -199,6 +199,13 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	Assert( found );
 	if ( found )
 	{
+		ITexture *pFullFrameFB = GetFullFrameFrameBufferTexture( 0 );
+		if ( pOriginalTexture != pFullFrameFB )
+		{
+			Warning( "Fixing motion blur texture.\n" );
+			pOriginalTexture = pFullFrameFB;
+		}
+
 		mv->SetTextureValue( pOriginalTexture );
 	}
 
