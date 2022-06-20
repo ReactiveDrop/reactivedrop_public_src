@@ -30,14 +30,26 @@ CreditsPanel::CreditsPanel(vgui::Panel *parent, const char *name) : vgui::Panel(
 		m_LabelPool[i]->SetAlpha(0);
 	}
 
-	char szCreditsPath[512];
+	const char *szCreditsPrefix = "scripts/asw_credits";
 	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
-		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pCampaign->CustomCreditsFile ) );
+		szCreditsPrefix = STRING( pCampaign->CustomCreditsFile );
 	else if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
-		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", STRING( pMission->CustomCreditsFile ) );
+		szCreditsPrefix = STRING( pMission->CustomCreditsFile );
+
+	char szCreditsPath[512];
+	if ( SteamApps() )
+	{
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s_%s.txt", szCreditsPrefix, SteamApps()->GetCurrentGameLanguage() );
+
+		if ( !filesystem->FileExists( szCreditsPath, "GAME" ) )
+		{
+			V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", szCreditsPrefix );
+		}
+	}
 	else
-		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "scripts/asw_credits.txt" );
-		
+	{
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", szCreditsPrefix );
+	}
 
 	pCreditsText = new KeyValues( "Credits" );
 	pCreditsText->LoadFromFile( filesystem, szCreditsPath, "GAME" );
@@ -100,18 +112,7 @@ void CreditsPanel::OnThink()
 	{
 		vgui::Label *pLabel = m_LabelPool[m_iCurMessage % ASW_LABEL_POOL_SIZE];
 		
-		const unsigned char *pchCurrentChar = static_cast< const unsigned char * >( static_cast< const void * >( pCurrentCredit->GetString() ) );
-		wchar_t msg[ 128 ];
-		int nCharNumber = 0;
-
-		while ( *pchCurrentChar && nCharNumber < 127 )
-		{
-			msg[ nCharNumber ] = *pchCurrentChar;
-			pchCurrentChar++;
-			nCharNumber++;
-		}
-
-		msg[ nCharNumber ] = L'\0';
+		const wchar_t *msg = pCurrentCredit->GetWString();
 
 		pLabel->SetText(msg);
 		pLabel->SetAlpha(0);
