@@ -616,7 +616,8 @@ namespace ReactiveDropInventory
 			return;
 		}
 
-		char szToken[128];
+		char szToken[128]{};
+		wchar_t wszTokenReplacement[128]{};
 
 		for ( size_t i = 0; i < sizeOfBufferInBytes; i++ )
 		{
@@ -625,15 +626,17 @@ namespace ReactiveDropInventory
 				return;
 			}
 
-			if ( wszBuf[i] != '%' )
+			if ( wszBuf[i] != L'%' )
 			{
 				continue;
 			}
 
+			V_wcsncpy( wszTokenReplacement, L"MISSING", sizeof( wszTokenReplacement ) );
+
 			size_t tokenLength = 1;
-			while ( wszBuf[i + tokenLength] != '%' )
+			while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
 			{
-				if ( wszBuf[i + tokenLength] == '\0' )
+				if ( wszBuf[i + tokenLength] == L'\0' )
 				{
 					return;
 				}
@@ -647,6 +650,30 @@ namespace ReactiveDropInventory
 			}
 
 			szToken[tokenLength - 1] = '\0';
+
+			if ( wszBuf[i + tokenLength] == L':' )
+			{
+				size_t tokenReplacementLength = 0;
+				tokenLength++;
+
+				while ( wszBuf[i + tokenLength] != L'%' )
+				{
+					if ( wszBuf[i + tokenLength] == L'\0' )
+					{
+						return;
+					}
+
+					szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
+
+					tokenReplacementLength++;
+					tokenLength++;
+
+					Assert( tokenReplacementLength < NELEMS( wszTokenReplacement ) );
+				}
+
+				wszTokenReplacement[tokenReplacementLength] = L'\0';
+			}
+
 			tokenLength++;
 
 			if ( tokenLength == 2 )
@@ -657,7 +684,7 @@ namespace ReactiveDropInventory
 				continue;
 			}
 
-			const wchar_t *wszReplacement = pKV->GetWString( szToken, L"MISSING" );
+			const wchar_t *wszReplacement = pKV->GetWString( szToken, wszTokenReplacement );
 			size_t replacementLength = 0;
 			while ( wszReplacement[replacementLength] )
 			{
