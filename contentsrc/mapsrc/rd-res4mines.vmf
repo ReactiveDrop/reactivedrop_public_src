@@ -126863,7 +126863,7 @@ entity
 	"MailFile" "rd_res_houghton6"
 	"origin" "-5040 -3952 -1783"
 	"panelpropname" "pda2"
-	"PDAName" "Alpha Squad"
+	"PDAName" "#asw_pda_owner_name_alpha_squad"
 	"playersrequired" "1"
 	"spawnflags" "16"
 	"StartDisabled" "0"
