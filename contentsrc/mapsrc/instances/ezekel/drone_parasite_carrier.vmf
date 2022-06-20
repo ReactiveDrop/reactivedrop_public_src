@@ -1,0 +1,108 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "5032"
+	"mapversion" "3"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "16"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "3"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "2"
+	"classname" "asw_parasite"
+	"angles" "0 0 0"
+	"disablereceiveshadows" "0"
+	"disableshadows" "0"
+	"hintlimiting" "0"
+	"ignoreunseenenemies" "0"
+	"parentname" "$carrier_drone1"
+	"physdamagescale" "1.0"
+	"renderamt" "255"
+	"rendercolor" "243 169 107"
+	"renderfx" "0"
+	"rendermode" "1"
+	"sleepstate" "3"
+	"spawnflags" "0"
+	"targetname" "$carrier_drone_paras1"
+	"visiblewhenasleep" "1"
+	"wakeradius" "0"
+	"wakesquad" "0"
+	"origin" "-0.463867 0 43.6733"
+	editor
+	{
+		"color" "0 200 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "5"
+	"classname" "asw_drone"
+	"angles" "0 0 0"
+	"physdamagescale" "1.0"
+	"renderamt" "255"
+	"rendercolor" "243 169 107"
+	"rendermode" "1"
+	"sleepstate" "1"
+	"spawnflags" "516"
+	"targetname" "$carrier_drone1"
+	connections
+	{
+		"OnDeath" "$carrier_drone_paras1Wake0-1"
+		"OnDeath" "$carrier_drone_paras1ClearParent0-1"
+	}
+	"origin" "0 -0.268799 0"
+	editor
+	{
+		"color" "0 200 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "56"
+	"classname" "func_instance_parms"
+	"parm1" "$carrier_drone1 string"
+	"parm2" "$carrier_drone_paras1 string"
+	"origin" "0 0 80"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 2000]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}

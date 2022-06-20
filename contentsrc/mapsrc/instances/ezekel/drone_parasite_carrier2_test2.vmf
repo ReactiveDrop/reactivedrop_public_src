@@ -1,0 +1,266 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "5032"
+	"mapversion" "49"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "8"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "49"
+	"classname" "worldspawn"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+}
+entity
+{
+	"id" "102"
+	"classname" "npc_template_maker"
+	"angles" "0 0 0"
+	"CriterionDistance" "2"
+	"CriterionVisibility" "2"
+	"MaxLiveChildren" "1"
+	"MaxNPCCount" "1"
+	"parentname" "$1"
+	"Radius" "64"
+	"spawnflags" "0"
+	"SpawnFrequency" "5"
+	"StartDisabled" "1"
+	"targetname" "$3333"
+	"TemplateName" "22"
+	"origin" "-2 0 45.9967"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7500]"
+	}
+}
+entity
+{
+	"id" "104"
+	"classname" "asw_drone"
+	"angles" "0 0 0"
+	"physdamagescale" "1.0"
+	"renderamt" "255"
+	"rendercolor" "250 103 5"
+	"rendermode" "1"
+	"sleepstate" "3"
+	"spawnflags" "516"
+	"targetname" "$1"
+	connections
+	{
+		"OnDeath" "$3333ClearParent0-1"
+		"OnDeath" "$3333Spawn0-1"
+		"OnDeath" "$3333Kill0.1-1"
+		"OnDeath" "$parasite_visualiserKill0-1"
+		"OnWake" "$parasite_visualiserEnable0-1"
+		"OnDeath" "$long_death_spawnerClearParent0-1"
+		"OnFoundEnemy" "$fuseEnable01"
+		"OnDeath" "$fuseDisable0-1"
+		"OnDeath" "$fuseKill0.1-1"
+	}
+	"origin" "0 0 1.32667"
+	editor
+	{
+		"color" "0 200 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 5000]"
+	}
+}
+entity
+{
+	"id" "153"
+	"classname" "asw_parasite"
+	"angles" "0 0 0"
+	"disablereceiveshadows" "0"
+	"disableshadows" "0"
+	"hintlimiting" "0"
+	"ignoreunseenenemies" "0"
+	"physdamagescale" "1.0"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "1"
+	"sleepstate" "1"
+	"spawnflags" "2052"
+	"targetname" "22"
+	"visiblewhenasleep" "0"
+	"wakeradius" "0"
+	"wakesquad" "0"
+	"origin" "0 0 96"
+	editor
+	{
+		"color" "0 200 200"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 6000]"
+	}
+}
+entity
+{
+	"id" "232"
+	"classname" "func_instance_parms"
+	"parm1" "$1 string"
+	"parm2" "$parasite_visualiser string"
+	"parm3" "$3333 string"
+	"parm4" "$long_death_spawner string"
+	"parm5" "$fuse string"
+	"origin" "0 0 80"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "359"
+	"classname" "prop_dynamic_override"
+	"angles" "-67.5 0 0"
+	"DefaultAnim" "ragdoll"
+	"DisableBoneFollowers" "0"
+	"disablereceiveshadows" "0"
+	"ExplodeDamage" "0"
+	"ExplodeRadius" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"health" "0"
+	"HoldAnimation" "0"
+	"MaxAnimTime" "10"
+	"MinAnimTime" "5"
+	"model" "models/aliens/parasite/parasite.mdl"
+	"parentname" "$1"
+	"PerformanceMode" "0"
+	"pressuredelay" "0"
+	"RandomAnimation" "0"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "1"
+	"SetBodyGroup" "0"
+	"skin" "0"
+	"solid" "0"
+	"spawnflags" "0"
+	"StartDisabled" "1"
+	"targetname" "$parasite_visualiser"
+	"origin" "0 0 40"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "570"
+	"classname" "logic_timer"
+	"LowerRandomBound" "2.5"
+	"RefireTime" "3"
+	"spawnflags" "0"
+	"StartDisabled" "1"
+	"targetname" "$fuse"
+	"UpperRandomBound" "5"
+	"UseRandomTime" "1"
+	connections
+	{
+		"OnTimer" "$1SetHealth00-1"
+		"OnTimer" "$long_death_spawnerSpawn0-1"
+		"OnTimer" "$fuseKill0-1"
+	}
+	"origin" "-32 0 128"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 1000]"
+	}
+}
+entity
+{
+	"id" "588"
+	"classname" "npc_template_maker"
+	"angles" "0 0 0"
+	"CriterionDistance" "2"
+	"CriterionVisibility" "2"
+	"MaxLiveChildren" "1"
+	"MaxNPCCount" "1"
+	"parentname" "$1"
+	"Radius" "64"
+	"spawnflags" "0"
+	"SpawnFrequency" "5"
+	"StartDisabled" "1"
+	"targetname" "$long_death_spawner"
+	"TemplateName" "22"
+	connections
+	{
+		"OnSpawnNPC" "!selfKill0.1-1"
+	}
+	"origin" "-40 -24 64"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7500]"
+	}
+}
+entity
+{
+	"id" "792"
+	"classname" "npc_template_maker"
+	"angles" "0 0 0"
+	"CriterionDistance" "2"
+	"CriterionVisibility" "2"
+	"MaxLiveChildren" "1"
+	"MaxNPCCount" "1"
+	"parentname" "$1"
+	"Radius" "64"
+	"spawnflags" "0"
+	"SpawnFrequency" "5"
+	"StartDisabled" "1"
+	"targetname" "$long_death_spawner"
+	"TemplateName" "22"
+	connections
+	{
+		"OnSpawnNPC" "!selfKill0.1-1"
+	}
+	"origin" "-40 24 64"
+	editor
+	{
+		"color" "0 0 255"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 7500]"
+	}
+}
+cameras
+{
+	"activecamera" "-1"
+}
+cordons
+{
+	"active" "0"
+}
