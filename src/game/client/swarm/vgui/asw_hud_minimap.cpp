@@ -495,7 +495,7 @@ void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color 
 
 	if ( radius > 0 && nBlipTexture == MAP_BLIP_TEXTURE_NORMAL )
 	{
-		surface()->DrawOutlinedCircle( blip_centre.x, blip_centre.y, radius, radius * 10 );
+		surface()->DrawOutlinedCircle( blip_centre.x + 0.5f, blip_centre.y + 0.25f, radius * ( 1.0f - fBlipStrength * fBlipStrength ), radius * 10 );
 	}
 }
 
