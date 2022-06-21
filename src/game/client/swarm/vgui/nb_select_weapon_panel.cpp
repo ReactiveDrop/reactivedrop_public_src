@@ -163,8 +163,9 @@ void CNB_Select_Weapon_Panel::OnThink()
 			m_pWeaponDetail0->m_bHidden = true;
 			m_pWeaponDetail1->m_bHidden = true;
 			m_pWeaponDetail2->m_bHidden = true;
-			m_pWeaponDetail3->m_bHidden = true;
-			m_pWeaponDetail4->m_bHidden = true;
+			// non-damage-dealing primary weapons for medics have ammo
+			m_pWeaponDetail3->m_bHidden = m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA || !pWeaponInfo->m_bFirstAid;
+			m_pWeaponDetail4->m_bHidden = m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA || !pWeaponInfo->m_bFirstAid;
 			m_pWeaponDetail5->m_bHidden = false;
 			m_pWeaponDetail6->m_bHidden = false;
 		}
