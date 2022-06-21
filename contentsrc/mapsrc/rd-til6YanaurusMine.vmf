@@ -38515,7 +38515,7 @@ entity
 	"locked" "0"
 	"needstech" "1"
 	"nopower" "1"
-	"nopowermessage" "Turn on the power to gain access to the elevator."
+	"nopowermessage" "#asw_turn_on_power_for_elevator"
 	"numwires" "2"
 	"origin" "6619.5 7041 -26.02"
 	"panelpropname" "elevatorpanel"

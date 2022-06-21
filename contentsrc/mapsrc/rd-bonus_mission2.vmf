@@ -71470,7 +71470,7 @@ entity
 	"classname" "asw_objective_escape"
 	"objectiveimage" "rd_bon2_exit"
 	"objectivemarkername" "out_marker"
-	"objectivetitle" "Move to the Next Sector"
+	"objectivetitle" "#bon2_survivors_3_title"
 	"targetname" "out"
 	"Visible" "1"
 	"origin" "-10560 -9984 2"
@@ -71486,11 +71486,11 @@ entity
 {
 	"id" "59037"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Allow your tech marine to hack the door panel"
-	"objectivedescription2" "and obtain access to inner perimeter"
+	"objectivedescription1" "#bon2_survivors_1a"
+	"objectivedescription2" "#bon2_survivors_1b"
 	"objectiveimage" "rd_bon2_access"
 	"objectivemarkername" "obj_door_marker"
-	"objectivetitle" "Get Access to Inner Perimeter"
+	"objectivetitle" "#bon2_survivors_1_title"
 	"targetname" "door_obj"
 	"Visible" "1"
 	connections
@@ -78566,7 +78566,7 @@ entity
 	"id" "109670"
 	"classname" "asw_objective_triggered"
 	"objectiveimage" "rd_bon2_survivors"
-	"objectivetitle" "Search for Survivors"
+	"objectivetitle" "#bon2_survivors_2_title"
 	"targetname" "survivors_objecrtive"
 	"Visible" "1"
 	connections

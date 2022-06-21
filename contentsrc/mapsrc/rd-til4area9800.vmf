@@ -10663,7 +10663,7 @@ entity
 {
 	"id" "223"
 	"classname" "asw_debrief_info"
-	"DebriefText1" "Well done team!"
+	"DebriefText1" "#t5_area9800_debrief"
 	"origin" "968 -2488 -72"
 	editor
 	{
