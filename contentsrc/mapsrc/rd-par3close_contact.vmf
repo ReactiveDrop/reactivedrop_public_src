@@ -90316,12 +90316,12 @@ entity
 {
 	"id" "458798"
 	"classname" "asw_objective_escape"
-	"objectivedescription1" "#par_closecontact_4a"
+	"objectivedescription1" "#par_closecontact_3a"
 	"objectiveimage" "rd_par_objectif24"
 	"objectiveinfoicon1" "OIconDroneTop"
 	"objectiveinfoicon2" "OIconDroneSide"
 	"objectivemarkername" "exit_marker"
-	"objectivetitle" "#par_closecontact_4_title"
+	"objectivetitle" "#par_closecontact_3_title"
 	"targetname" "objectif4"
 	"Visible" "0"
 	"origin" "-3088 5504 720"
@@ -91349,8 +91349,8 @@ entity
 {
 	"id" "459376"
 	"classname" "asw_debrief_info"
-	"DebriefText1" "Our next objective is to reach the outpost's communication center."
-	"DebriefText2" "As we will be exiting the structure, be prepared for sub-zero temperatures and maintain situational awareness, as threats could come from any direction."
+	"DebriefText1" "#par_closecontact_debrief1"
+	"DebriefText2" "#par_closecontact_debrief2"
 	"origin" "-3257.59 5506.28 721"
 	editor
 	{
@@ -150546,9 +150546,9 @@ entity
 {
 	"id" "1444811"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "#par_closecontact_2a"
+	"objectivedescription1" "#par_closecontact_1a"
 	"objectiveimage" "rd_par_objectif22"
-	"objectivetitle" "#par_closecontact_2_title"
+	"objectivetitle" "#par_closecontact_1_title"
 	"targetname" "objectif2"
 	"Visible" "1"
 	connections
@@ -150569,11 +150569,11 @@ entity
 {
 	"id" "1444821"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "#par_closecontact_3a"
-	"objectivedescription2" "#par_closecontact_3b"
+	"objectivedescription1" "#par_closecontact_2a"
+	"objectivedescription2" "#par_closecontact_2b"
 	"objectiveimage" "rd_par_objectif23"
 	"objectivemarkername" "marker3"
-	"objectivetitle" "#par_closecontact_3_title"
+	"objectivetitle" "#par_closecontact_2_title"
 	"targetname" "objectif3"
 	"Visible" "0"
 	"origin" "-3088 5520 720"

@@ -39115,9 +39115,9 @@ entity
 {
 	"id" "915"
 	"classname" "asw_debrief_info"
-	"DebriefText1" "Great work, team. We have the generators online so the facility is now fully powered."
-	"DebriefText2" "IAF Tech Division had a look at the data you retrieved from the computers. They managed to extract information about the facility inlcuding a layout of it."
-	"DebriefText3" "Now we have a pretty good idea where you should proceed. More details will be available in the briefing of the next mission."
+	"DebriefText1" "#t5_arcticinfiltration_debrief1"
+	"DebriefText2" "#t5_arcticinfiltration_debrief2"
+	"DebriefText3" "#t5_arcticinfiltration_debrief3"
 	"origin" "1716 2718 466"
 	editor
 	{

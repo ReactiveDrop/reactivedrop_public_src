@@ -107325,7 +107325,7 @@ entity
 {
 	"id" "215514"
 	"classname" "asw_debrief_info"
-	"DebriefText1" "We found no survivors. The administrative area is in the lower levels of the outpost. We should search that location for documents about recent activities."
+	"DebriefText1" "#par_unexpectedencounter_debrief"
 	"origin" "-3693.25 5843.98 188"
 	editor
 	{

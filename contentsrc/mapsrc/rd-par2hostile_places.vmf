@@ -134406,7 +134406,7 @@ entity
 {
 	"id" "1444792"
 	"classname" "asw_debrief_info"
-	"DebriefText1" "We have arrived at the entrance to the administrative area. Our objective is to search this area for information relating to the outpost's most recent activities."
+	"DebriefText1" "#par_hostileplaces_debrief"
 	"origin" "-3472 -2144 568"
 	editor
 	{
