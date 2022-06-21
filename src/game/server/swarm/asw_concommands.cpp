@@ -2099,9 +2099,22 @@ static ConCommand rda_strafepush("rda_strafepush", MarineStrafePush, "Strafe pus
 
 void HideBackPackModels()
 {
+	if ( !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_INGAME )
+		return;
+
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if ( !pGameResource )
 		return;
+
+	CASW_Player* pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+		return;
+
+	if ( pGameResource->GetLeader() != pPlayer )
+	{
+		Msg( "%s is not the lobby leader and cannot disable marine backpacks.\n", pPlayer->GetPlayerName() );
+		return;
+	}
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{ 
@@ -2115,13 +2128,26 @@ void HideBackPackModels()
 		}
 	}
 }
-ConCommand rda_hide_backpack("rda_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rda_marine_backpack 0", FCVAR_NONE);
+ConCommand rd_server_hide_backpack("rd_server_hide_backpack", HideBackPackModels, "Hide backpack models while in game. To hide it completelly combine with rd_server_marine_backpacks 0", FCVAR_NONE);
 
 void DrawBackPackModels()
 {
+	if ( !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_INGAME )
+		return;
+
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if ( !pGameResource )
 		return;
+
+	CASW_Player* pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+		return;
+
+	if ( pGameResource->GetLeader() != pPlayer )
+	{
+		Msg( "%s is not the lobby leader and cannot enable marine backpacks.\n", pPlayer->GetPlayerName() );
+		return;
+	}
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
@@ -2145,4 +2171,4 @@ void DrawBackPackModels()
 		}
 	}
 }
-ConCommand rda_draw_backpack("rda_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rda_marine_backpack 1", FCVAR_NONE);
+ConCommand rd_server_draw_backpack("rd_server_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rd_server_marine_backpacks 1", FCVAR_NONE);

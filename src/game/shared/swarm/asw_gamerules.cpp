@@ -138,7 +138,7 @@ extern ConVar old_radius_damage;
 	extern ConVar asw_medal_barrel_kills;
 	extern ConVar rd_killingspree_time_limit;
 	extern ConVar rd_quake_sounds;
-	extern ConVar rda_marine_backpack;
+	extern ConVar rd_server_marine_backpacks;
 	ConVar asw_objective_slowdown_time( "asw_objective_slowdown_time", "1.8", FCVAR_CHEAT, "Length of time that the slowdown effect lasts." );
 	ConVar asw_marine_explosion_protection("asw_marine_explosion_protection", "0.5", FCVAR_CHEAT, "Reduction of explosion radius against marines");
 	ConVar asw_door_explosion_boost("asw_door_explosion_boost", "2.0", FCVAR_CHEAT, "Sets damage scale for grenades vs doors");
@@ -4239,7 +4239,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		pWeapon->SetWeaponVisible(false);
 	}
 
-	if (rda_marine_backpack.GetBool() && iSlot == 1)
+	if (rd_server_marine_backpacks.GetBool() && iSlot == 1)
 	{
 		//pMarine->RemoveBackPackModel();
 		pMarine->CreateBackPackModel(pWeapon);

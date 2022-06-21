@@ -90,6 +90,8 @@ ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_A
 ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
 ConVar rd_buzzer_blur( "rd_buzzer_blur", "1", FCVAR_NONE, "Set to 0 to disable buzzer blur" );	// TODO: Remove this once the buzzer blur issue is fixed. See #76
+ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE, "Show marine's un-equipped weapon on their back." );
+
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
@@ -431,6 +433,8 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_flLaserSightLength( 0 )
 {
 	m_hShoulderCone = NULL;
+	m_hBackpack = NULL;
+	m_sBackpackModel = "";
 	m_flNextChatter = 0;
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	SetPredictionEligible( true );
@@ -988,10 +992,22 @@ void C_ASW_Marine::ClientThink()
 		m_pHealEmitter = NULL;
 	}
 
-	if (m_hShoulderCone.Get() && ( GetHealth()<=0  || IsEffectActive(EF_NODRAW)) )
+	if ( m_hShoulderCone.Get() && ( GetHealth() <= 0  || IsEffectActive( EF_NODRAW ) ) )
 	{
 		UTIL_Remove( m_hShoulderCone );
 		m_hShoulderCone = NULL;
+	}
+
+	if ( m_hBackpack.Get() && ( GetHealth() <= 0 || m_bKnockedOut || !GetASWWeapon(0) || !GetASWWeapon(1) ) )
+	{
+		RemoveBackpack();
+	}
+	else if ( GetHealth() > 0 && !m_bKnockedOut && GetASWWeapon(0) && GetASWWeapon(1) )
+	{
+		if ( GetActiveWeapon() == GetASWWeapon(0) )
+			CreateBackpack( GetASWWeapon(1) );
+		else
+			CreateBackpack( GetASWWeapon(0) );
 	}
 
 	if (ShouldPredict() && rd_hearbeat.GetBool())
@@ -1198,6 +1214,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		CreateWeaponEmitters();
 		//CreateHealEmitter();
 		CreateShoulderCone();
+		CreateBackpack( GetASWWeapon(1) );
 
 		// We want to think every frame.
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
@@ -2497,6 +2514,8 @@ void C_ASW_Marine::UpdateOnRemove()
 		UTIL_Remove( m_hShoulderCone );
 		m_hShoulderCone = NULL;
 	}
+
+	RemoveBackpack();
 }
 
 // helper for movement code which will disable movement in controller mode if you're interacting and need those directionals
@@ -2537,6 +2556,127 @@ void C_ASW_Marine::CreateShoulderCone()
 	pEnt->RemoveEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
 
 	m_hShoulderCone = pEnt;
+}
+
+void C_ASW_Marine::CreateBackpack( C_BaseCombatWeapon *pWeapon )
+{
+	ConVarRef rd_server_marine_backpacks( "rd_server_marine_backpacks" );
+
+	if ( rd_client_marine_backpacks.GetInt() != 1 || rd_server_marine_backpacks.GetBool() )
+	{
+		RemoveBackpack();
+		return;
+	}
+
+	if ( !pWeapon )
+	{
+		RemoveBackpack();
+		Msg( "CreateBackpack no inactive weapon for marine.\n" );
+		return;
+	}
+
+	if ( m_hBackpack.Get() )
+	{
+		bool isBackpack = !Q_strcmp( pWeapon->GetWorldModel(), m_sBackpackModel );
+		if ( isBackpack )
+			return;
+		else
+			RemoveBackpack();
+	}
+
+	int iAttachment = LookupAttachment( "jump_jet_r" );
+	if ( iAttachment <= 0 )
+	{
+		Msg( "Error, CreateBackpack couldn't find jump_jet_r attachment for marine\n" );
+		return;
+	}
+
+	C_BaseAnimating *pEnt = new C_BaseAnimating;
+	if ( !pEnt )
+	{
+		Msg( "Error, CreateBackpack couldn't create new C_BaseAnimating\n" );
+		return;
+	}
+	
+	if ( !pEnt->InitializeAsClientEntity( pWeapon->GetWorldModel(), false ) )
+	{
+		Msg( "Error, CreateBackpack couldn't InitializeAsClientEntity\n" );
+		pEnt->Release();
+		return;
+	}
+	
+	pEnt->SetParent( this, iAttachment );
+	pEnt->SetModelScale( 0.75 );
+
+	int skin = 0;
+	bool shouldRotate = false;
+	Vector adjustPosition = Vector( 0, 0, 0 );
+
+	if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_ammo_bag" ) ||
+		 !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_ammo_satchel" ) ||
+		 !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_fire_extinguisher" ) )
+	{
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_pdw" ) ||
+		!Q_strcmp( pWeapon->GetClassname(), "asw_weapon_pistol" ) )
+	{
+		adjustPosition = Vector(0, -5, 0);
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_heal_grenade" ) || 
+		!Q_strcmp( pWeapon->GetClassname(), "asw_weapon_medical_satchel" ) )
+	{
+		skin = 1;
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry" ) )
+	{
+		skin = 2;
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_freeze" ) )
+	{
+		skin = 3;
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_flamer" ) )
+	{
+		skin = 4;
+		shouldRotate = true;
+	}
+	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_cannon" ) )
+	{
+		skin = 5;
+		shouldRotate = true;
+	}
+
+	if ( shouldRotate )
+	{
+		pEnt->SetLocalOrigin( Vector( 5, 0, 5 ) + adjustPosition );
+		pEnt->SetLocalAngles( QAngle( 0, 0, 90 ) );
+	}
+	else
+	{
+		pEnt->SetLocalOrigin( Vector( 0, -5, 0 ) );
+		pEnt->SetLocalAngles( QAngle( 0, 90, 0 ) );
+	}
+	pEnt->SetSkin( skin );
+	pEnt->SetSolid( SOLID_NONE );
+	pEnt->RemoveEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
+
+	m_hBackpack = pEnt;
+	m_sBackpackModel = pWeapon->GetWorldModel();
+}
+
+void C_ASW_Marine::RemoveBackpack()
+{
+	if ( m_hBackpack.Get() )
+	{
+		UTIL_Remove( m_hBackpack );
+		m_hBackpack = NULL;
+		m_sBackpackModel = "";
+	}
 }
 
 // when marine's health falls below this, name starts to blink red

@@ -22,7 +22,7 @@
 
 ConVar rd_sentry_is_attacked_by_aliens( "rd_sentry_is_attacked_by_aliens", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 0 aliens will not try to damage sentries." );
 ConVar rd_debug_sentry_placement( "rd_debug_sentry_placement", "0", FCVAR_CHEAT | FCVAR_REPLICATED);
-extern ConVar rda_marine_backpack;
+extern ConVar rd_server_marine_backpacks;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sentry, DT_ASW_Weapon_Sentry )
 
@@ -425,7 +425,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 	pMarine->OnWeaponFired( this, 1 );
 	Kill();
 
-	if (rda_marine_backpack.GetBool())
+	if (rd_server_marine_backpacks.GetBool())
 	{
 		pMarine->RemoveBackPackModel();
 	}
