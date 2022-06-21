@@ -12,14 +12,10 @@ public:
 	CASW_Scalable_Text();
 	virtual ~CASW_Scalable_Text();
 
-	int DrawSetLetterTexture( char ch, bool bGlow );
+	int DrawSetLetterTexture( wchar_t ch, bool bGlow );
 
-	bool m_bLetterSupported[ NUM_SCALABLE_LETTERS ];
-	int m_nLetterTextureID[ NUM_SCALABLE_LETTERS ];
-	const char *m_pszMaterialFilename[ NUM_SCALABLE_LETTERS ];
-
-	int m_nGlowLetterTextureID[ NUM_SCALABLE_LETTERS ];
-	const char *m_pszGlowMaterialFilename[ NUM_SCALABLE_LETTERS ];
+	CUtlMap<wchar_t, int> m_nLetterTextureID;
+	CUtlMap<wchar_t, int> m_nGlowLetterTextureID;
 };
 
 CASW_Scalable_Text* ASWScalableText();

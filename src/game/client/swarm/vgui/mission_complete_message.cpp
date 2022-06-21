@@ -20,14 +20,6 @@ CMission_Complete_Message::CMission_Complete_Message( vgui::Panel *parent, const
 
 CMission_Complete_Message::~CMission_Complete_Message()
 {
-
-}
-
-void CMission_Complete_Message::ApplySchemeSettings( vgui::IScheme *pScheme )
-{
-	BaseClass::ApplySchemeSettings( pScheme );
-	
-	//LoadControlSettings( "resource/ui/mission_complete_message.res" );
 }
 
 void CMission_Complete_Message::PerformLayout()
@@ -35,11 +27,6 @@ void CMission_Complete_Message::PerformLayout()
 	BaseClass::PerformLayout();
 
 	SetBounds( 0, 0, ScreenWidth(), ScreenHeight() );
-}
-
-void CMission_Complete_Message::OnThink()
-{
-	BaseClass::OnThink();
 }
 
 void CMission_Complete_Message::Paint()
@@ -57,12 +44,12 @@ void CMission_Complete_Message::PaintMessageBackground()
 
 	if ( m_bSuccess )
 	{
-		surface()->DrawSetColor(Color(35,41,57,flLerpAmount * 128.0f));
-		surface()->DrawSetColor(Color(0,0,0,flLerpAmount * 128.0f));
+		surface()->DrawSetColor( Color( 35, 41, 57, flLerpAmount * 128.0f ) );
+		surface()->DrawSetColor( Color( 0, 0, 0, flLerpAmount * 128.0f ) );
 	}
 	else
 	{
-		surface()->DrawSetColor(Color(64,0,0,flLerpAmount * 192.0f));
+		surface()->DrawSetColor( Color( 64, 0, 0, flLerpAmount * 192.0f ) );
 	}
 	int top = ScreenHeight() * 0.22f;
 	int bottom = ScreenHeight() * 0.62f;
@@ -71,7 +58,7 @@ void CMission_Complete_Message::PaintMessageBackground()
 	if ( !m_bSuccess )
 	{
 		// fail hint bg
-		surface()->DrawSetColor(Color(64,0,0,flLerpAmount * 192.0f));
+		surface()->DrawSetColor( Color( 64, 0, 0, flLerpAmount * 192.0f ) );
 		top = ScreenHeight() * 0.72f;
 		bottom = ScreenHeight() * 0.82f;
 		surface()->DrawFilledRect( 0, top, ScreenWidth() + 1, bottom );
@@ -95,24 +82,24 @@ void CMission_Complete_Message::StartMessage( bool bSuccess )
 	if ( m_bSuccess && ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
 	{
 		float flShiftRight = 0.2f;
-		AddLetter( 'C', row_middle_x, row_middle_y, -3.56 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'A', row_middle_x, row_middle_y, -2.6 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'M', row_middle_x, row_middle_y, -1.49 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'P', row_middle_x, row_middle_y, -0.43 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'A', row_middle_x, row_middle_y, 0.50 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'I', row_middle_x, row_middle_y, 1.27 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'G', row_middle_x, row_middle_y, 2.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'N', row_middle_x, row_middle_y, 3.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval; 
+		AddLetter( L'C', row_middle_x, row_middle_y, -3.56 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'A', row_middle_x, row_middle_y, -2.6 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'M', row_middle_x, row_middle_y, -1.49 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'P', row_middle_x, row_middle_y, -0.43 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'A', row_middle_x, row_middle_y, 0.50 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'I', row_middle_x, row_middle_y, 1.27 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'G', row_middle_x, row_middle_y, 2.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'N', row_middle_x, row_middle_y, 3.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
 	}
 	else
 	{
-		AddLetter( 'M', row_middle_x, row_middle_y, -2.44, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'I', row_middle_x, row_middle_y, -1.6, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'S', row_middle_x, row_middle_y, -0.9, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'S', row_middle_x, row_middle_y, 0, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'I', row_middle_x, row_middle_y, 0.71, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'O', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'N', row_middle_x, row_middle_y, 2.5, flStartTime ); flStartTime += flLetterTimeInterval; 
+		AddLetter( L'M', row_middle_x, row_middle_y, -2.44, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'I', row_middle_x, row_middle_y, -1.6, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'S', row_middle_x, row_middle_y, -0.9, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'S', row_middle_x, row_middle_y, 0, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'I', row_middle_x, row_middle_y, 0.71, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'O', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'N', row_middle_x, row_middle_y, 2.5, flStartTime ); flStartTime += flLetterTimeInterval;
 	}
 
 	flStartTime += 0.2f;
@@ -123,24 +110,24 @@ void CMission_Complete_Message::StartMessage( bool bSuccess )
 	if ( m_bSuccess )
 	{
 		row_middle_x += 18.0f * ( ScreenHeight() / 1050.0f );
-		AddLetter( 'C', row_middle_x, row_middle_y, -3.56, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'O', row_middle_x, row_middle_y, -2.6, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'M', row_middle_x, row_middle_y, -1.49, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'P', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'L', row_middle_x, row_middle_y, 0.45, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'E', row_middle_x, row_middle_y, 1.32, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'T', row_middle_x, row_middle_y, 2.25, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'E', row_middle_x, row_middle_y, 3.16, flStartTime ); flStartTime += flLetterTimeInterval; 
+		AddLetter( L'C', row_middle_x, row_middle_y, -3.56, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'O', row_middle_x, row_middle_y, -2.6, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'M', row_middle_x, row_middle_y, -1.49, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'P', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'L', row_middle_x, row_middle_y, 0.45, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'E', row_middle_x, row_middle_y, 1.32, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'T', row_middle_x, row_middle_y, 2.25, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'E', row_middle_x, row_middle_y, 3.16, flStartTime ); flStartTime += flLetterTimeInterval;
 	}
 	else
 	{
 		row_middle_x += 20.0f * ( ScreenHeight() / 1050.0f );
-		AddLetter( 'F', row_middle_x, row_middle_y, -2.1, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'A', row_middle_x, row_middle_y, -1.2, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'I', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( 'L', row_middle_x, row_middle_y, 0.22, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'E', row_middle_x, row_middle_y, 1.08, flStartTime ); flStartTime += flLetterTimeInterval; 
-		AddLetter( 'D', row_middle_x, row_middle_y, 2.01, flStartTime ); flStartTime += flLetterTimeInterval; 
+		AddLetter( L'F', row_middle_x, row_middle_y, -2.1, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'A', row_middle_x, row_middle_y, -1.2, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'I', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'L', row_middle_x, row_middle_y, 0.22, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'E', row_middle_x, row_middle_y, 1.08, flStartTime ); flStartTime += flLetterTimeInterval;
+		AddLetter( L'D', row_middle_x, row_middle_y, 2.01, flStartTime ); flStartTime += flLetterTimeInterval;
 	}
 }
 
@@ -194,10 +181,10 @@ void CMission_Complete_Message::PaintLetter( CAnimating_Letter *pLetter, bool bG
 	flLerpAmount *= flLerpAmount;
 	flLerpAmount *= flLerpAmount;
 
-	float flX = (float) pLetter->m_nStartX + ( (float) pLetter->m_nEndX - (float) pLetter->m_nStartX ) * flLerpAmount;
-	float flY = (float) pLetter->m_nStartY + ( (float) pLetter->m_nEndY - (float) pLetter->m_nStartY ) * flLerpAmount;
-	float flWidth = (float) YRES( pLetter->m_nStartWidth ) + ( (float) YRES( pLetter->m_nEndWidth ) - (float) YRES( pLetter->m_nStartWidth ) ) * flLerpAmount;
-	float flHeight = (float) YRES( pLetter->m_nStartHeight ) + ( (float) YRES( pLetter->m_nEndHeight ) - (float) YRES( pLetter->m_nStartHeight ) ) * flLerpAmount;
+	float flX = ( float )pLetter->m_nStartX + ( ( float )pLetter->m_nEndX - ( float )pLetter->m_nStartX ) * flLerpAmount;
+	float flY = ( float )pLetter->m_nStartY + ( ( float )pLetter->m_nEndY - ( float )pLetter->m_nStartY ) * flLerpAmount;
+	float flWidth = ( float )YRES( pLetter->m_nStartWidth ) + ( ( float )YRES( pLetter->m_nEndWidth ) - ( float )YRES( pLetter->m_nStartWidth ) ) * flLerpAmount;
+	float flHeight = ( float )YRES( pLetter->m_nStartHeight ) + ( ( float )YRES( pLetter->m_nEndHeight ) - ( float )YRES( pLetter->m_nStartHeight ) ) * flLerpAmount;
 	flWidth *= 0.5f;
 	flHeight *= 0.5f;
 
@@ -205,25 +192,25 @@ void CMission_Complete_Message::PaintLetter( CAnimating_Letter *pLetter, bool bG
 	{
 		if ( m_bSuccess )
 		{
-			surface()->DrawSetColor(Color(35,214,250,flLerpAmount * 112.0f));
+			surface()->DrawSetColor( Color( 35, 214, 250, flLerpAmount * 112.0f ) );
 		}
 		else
 		{
-			surface()->DrawSetColor(Color(250,0,0,flLerpAmount * 192.0f));
+			surface()->DrawSetColor( Color( 250, 0, 0, flLerpAmount * 192.0f ) );
 		}
 	}
 	else
 	{
-		surface()->DrawSetColor(Color(255,255,255,flLerpAmount * 255.0f));
+		surface()->DrawSetColor( Color( 255, 255, 255, flLerpAmount * 255.0f ) );
 	}
 	ASWScalableText()->DrawSetLetterTexture( pLetter->m_chLetter, bGlow );
 
-	Vertex_t points[4] = 
-	{ 
-		Vertex_t( Vector2D(flX - flWidth, flY - flHeight), Vector2D(0,0) ), 
-		Vertex_t( Vector2D(flX + flWidth, flY - flHeight), Vector2D(1,0) ), 
-		Vertex_t( Vector2D(flX + flWidth, flY + flHeight), Vector2D(1,1) ), 
-		Vertex_t( Vector2D(flX - flWidth, flY + flHeight), Vector2D(0,1) ) 
-	}; 
+	Vertex_t points[4] =
+	{
+		Vertex_t( Vector2D( flX - flWidth, flY - flHeight ), Vector2D( 0,0 ) ),
+		Vertex_t( Vector2D( flX + flWidth, flY - flHeight ), Vector2D( 1,0 ) ),
+		Vertex_t( Vector2D( flX + flWidth, flY + flHeight ), Vector2D( 1,1 ) ),
+		Vertex_t( Vector2D( flX - flWidth, flY + flHeight ), Vector2D( 0,1 ) )
+	};
 	surface()->DrawTexturedPolygon( 4, points );
 }

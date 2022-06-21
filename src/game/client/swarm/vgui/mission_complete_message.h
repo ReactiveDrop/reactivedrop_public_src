@@ -33,9 +33,7 @@ public:
 	CMission_Complete_Message( vgui::Panel *parent, const char *name );
 	virtual ~CMission_Complete_Message();
 	
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
-	virtual void OnThink();
 	virtual void Paint();
 
 	void PaintMessageBackground();
