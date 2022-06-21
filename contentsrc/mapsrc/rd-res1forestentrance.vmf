@@ -34338,7 +34338,7 @@ entity
 	"locked" "0"
 	"needstech" "1"
 	"nopower" "1"
-	"nopowermessage" "Find the generator switch"
+	"nopowermessage" "#asw_find_the_generator_switch"
 	"numwires" "2"
 	"origin" "568 744 88"
 	"playersrequired" "1"

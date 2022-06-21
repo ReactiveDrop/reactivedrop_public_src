@@ -160484,10 +160484,10 @@ entity
 {
 	"id" "409571"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Try to find survivors in this complex. Maybe someone will be able to help you."
+	"objectivedescription1" "#par_unexpectedencounter_2a"
 	"objectiveimage" "rd_par_objectif2"
 	"objectivemarkername" "marker1"
-	"objectivetitle" "Search for survivors"
+	"objectivetitle" "#par_unexpectedencounter_2_title"
 	"targetname" "objectif1"
 	"Visible" "1"
 	connections
@@ -160519,10 +160519,10 @@ entity
 {
 	"id" "409581"
 	"classname" "asw_objective_escape"
-	"objectivedescription1" "Use the elevator to descend to a lower level."
+	"objectivedescription1" "#par_unexpectedencounter_4a"
 	"objectiveimage" "rd_par_objectif4"
 	"objectivemarkername" "exit_marker"
-	"objectivetitle" "Descend in the elevator"
+	"objectivetitle" "#par_unexpectedencounter_4_title"
 	"targetname" "objective_escape"
 	"Visible" "1"
 	"origin" "-3412 5904 400"
@@ -160538,10 +160538,10 @@ entity
 {
 	"id" "409597"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Command wants the security records so they can find out what ships took off from this base."
+	"objectivedescription1" "#par_unexpectedencounter_3a"
 	"objectiveimage" "rd_par_objectif3"
 	"objectivemarkername" "marker2"
-	"objectivetitle" "Download security records"
+	"objectivetitle" "#par_unexpectedencounter_3_title"
 	"targetname" "objectif2"
 	"Visible" "1"
 	connections
@@ -160562,10 +160562,10 @@ entity
 {
 	"id" "409621"
 	"classname" "asw_objective_triggered"
-	"objectivedescription1" "Enter the outpost and investigate the loss of communications."
+	"objectivedescription1" "#par_unexpectedencounter_1a"
 	"objectiveimage" "rd_par_objectif1"
 	"objectivemarkername" "marker3"
-	"objectivetitle" "Enter the outpost"
+	"objectivetitle" "#par_unexpectedencounter_1_title"
 	"targetname" "objectif3"
 	"Visible" "1"
 	connections

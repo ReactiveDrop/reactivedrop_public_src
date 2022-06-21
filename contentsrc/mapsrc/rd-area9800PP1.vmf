@@ -161922,7 +161922,7 @@ entity
 	"objectivedescription1" "#rd_area9800PP1_ob_generator_d"
 	"objectiveimage" "rd-area9800PPBackupGenerator"
 	"objectivemarkername" "backup_generator_marker"
-	"objectivetitle" "StartUp Backup Generator"
+	"objectivetitle" "#rd_area9800PP1_ob_generator"
 	"targetname" "obj_backup_generator"
 	"Visible" "1"
 	connections
