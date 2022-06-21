@@ -76,30 +76,43 @@ void CMission_Complete_Message::StartMessage( bool bSuccess )
 	m_flMessageBackgroundStartTime = gpGlobals->curtime + 0.4f;
 	m_flMessageBackgroundFadeDuration = 0.6f;
 
+	const char *szLanguage = SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "english";
+
 	// MISSION
 	float flStartTime = gpGlobals->curtime + 0.2f;
 	float flLetterTimeInterval = 0.075f;
 	if ( m_bSuccess && ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
 	{
-		float flShiftRight = 0.2f;
-		AddLetter( L'C', row_middle_x, row_middle_y, -3.56 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'A', row_middle_x, row_middle_y, -2.6 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'M', row_middle_x, row_middle_y, -1.49 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'P', row_middle_x, row_middle_y, -0.43 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'A', row_middle_x, row_middle_y, 0.50 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'I', row_middle_x, row_middle_y, 1.27 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'G', row_middle_x, row_middle_y, 2.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'N', row_middle_x, row_middle_y, 3.00 + flShiftRight, flStartTime ); flStartTime += flLetterTimeInterval;
+		//if ( FStrEq( szLanguage, "" ) )
+		//{
+		//}
+		//else
+		{
+			AddLetter( L'C', row_middle_x, row_middle_y, -3.36, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'A', row_middle_x, row_middle_y, -2.4, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'M', row_middle_x, row_middle_y, -1.29, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'P', row_middle_x, row_middle_y, -0.23, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'A', row_middle_x, row_middle_y, 0.7, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'I', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'G', row_middle_x, row_middle_y, 2.2, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'N', row_middle_x, row_middle_y, 3.2, flStartTime ); flStartTime += flLetterTimeInterval;
+		}
 	}
 	else
 	{
-		AddLetter( L'M', row_middle_x, row_middle_y, -2.44, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'I', row_middle_x, row_middle_y, -1.6, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'S', row_middle_x, row_middle_y, -0.9, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'S', row_middle_x, row_middle_y, 0, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'I', row_middle_x, row_middle_y, 0.71, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'O', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'N', row_middle_x, row_middle_y, 2.5, flStartTime ); flStartTime += flLetterTimeInterval;
+		//if ( FStrEq( szLanguage, "" ) )
+		//{
+		//}
+		//else
+		{
+			AddLetter( L'M', row_middle_x, row_middle_y, -2.44, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'I', row_middle_x, row_middle_y, -1.6, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'S', row_middle_x, row_middle_y, -0.9, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'S', row_middle_x, row_middle_y, 0, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'I', row_middle_x, row_middle_y, 0.71, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'O', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'N', row_middle_x, row_middle_y, 2.5, flStartTime ); flStartTime += flLetterTimeInterval;
+		}
 	}
 
 	flStartTime += 0.2f;
@@ -109,25 +122,37 @@ void CMission_Complete_Message::StartMessage( bool bSuccess )
 
 	if ( m_bSuccess )
 	{
-		row_middle_x += 18.0f * ( ScreenHeight() / 1050.0f );
-		AddLetter( L'C', row_middle_x, row_middle_y, -3.56, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'O', row_middle_x, row_middle_y, -2.6, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'M', row_middle_x, row_middle_y, -1.49, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'P', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'L', row_middle_x, row_middle_y, 0.45, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'E', row_middle_x, row_middle_y, 1.32, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'T', row_middle_x, row_middle_y, 2.25, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'E', row_middle_x, row_middle_y, 3.16, flStartTime ); flStartTime += flLetterTimeInterval;
+		//if ( FStrEq( szLanguage, "" ) )
+		//{
+		//}
+		//else
+		{
+			row_middle_x += 18.0f * ( ScreenHeight() / 1050.0f );
+			AddLetter( L'C', row_middle_x, row_middle_y, -3.56, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'O', row_middle_x, row_middle_y, -2.6, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'M', row_middle_x, row_middle_y, -1.49, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'P', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'L', row_middle_x, row_middle_y, 0.45, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'E', row_middle_x, row_middle_y, 1.32, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'T', row_middle_x, row_middle_y, 2.25, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'E', row_middle_x, row_middle_y, 3.16, flStartTime ); flStartTime += flLetterTimeInterval;
+		}
 	}
 	else
 	{
-		row_middle_x += 20.0f * ( ScreenHeight() / 1050.0f );
-		AddLetter( L'F', row_middle_x, row_middle_y, -2.1, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'A', row_middle_x, row_middle_y, -1.2, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'I', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'L', row_middle_x, row_middle_y, 0.22, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'E', row_middle_x, row_middle_y, 1.08, flStartTime ); flStartTime += flLetterTimeInterval;
-		AddLetter( L'D', row_middle_x, row_middle_y, 2.01, flStartTime ); flStartTime += flLetterTimeInterval;
+		//if ( FStrEq( szLanguage, "" ) )
+		//{
+		//}
+		//else
+		{
+			row_middle_x += 20.0f * ( ScreenHeight() / 1050.0f );
+			AddLetter( L'F', row_middle_x, row_middle_y, -2.1, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'A', row_middle_x, row_middle_y, -1.2, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'I', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'L', row_middle_x, row_middle_y, 0.22, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'E', row_middle_x, row_middle_y, 1.08, flStartTime ); flStartTime += flLetterTimeInterval;
+			AddLetter( L'D', row_middle_x, row_middle_y, 2.01, flStartTime ); flStartTime += flLetterTimeInterval;
+		}
 	}
 }
 
