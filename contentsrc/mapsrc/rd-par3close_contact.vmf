@@ -96477,7 +96477,7 @@ entity
 	"MailFile" "rd_subject58"
 	"origin" "-3012.81 1736.5 545.47"
 	"panelpropname" "PDA1"
-	"PDAName" "Dr. Tom Hinler."
+	"PDAName" "#asw_pda_owner_name_doctor_tom_hinler"
 	"playersrequired" "1"
 	"spawnflags" "2"
 	"StartDisabled" "0"
