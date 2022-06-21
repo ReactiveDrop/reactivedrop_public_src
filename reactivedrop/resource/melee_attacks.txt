@@ -9,11 +9,11 @@
 	"sequence" "kick"
 	"AttackType" "Heavy"
 	"MinMeleeSkill" "0"
-	"MaxMeleeSkill" "5"    
+	"MaxMeleeSkill" "5"
 	"DamageScale" "0.5"
 	"Priority" "1"
- 	"ControlDirection" "any"
-	"TraceHullSize" "35" 
+	"ControlDirection" "any"
+	"TraceHullSize" "35"
 	"TraceDistance" "20"
 }
 
@@ -24,12 +24,12 @@
 	"sequence" "melee_combo_2a"
 	"AttackType" "Heavy"
 	"MinMeleeSkill" "0"
-	"MaxMeleeSkill" "5"    
-	"DamageScale" "0.5"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
 	"SpeedScale" "1.0"
 	"Priority" "10"
- 	"ControlDirection" "any"
-	"TraceHullSize" "35" 
+	"ControlDirection" "any"
+	"TraceHullSize" "35"
 	"TraceDistance" "20"
 }
 
@@ -40,13 +40,13 @@
 	"sequence" "melee_combo_2b"
 	"AttackType" "Heavy"
 	"MinMeleeSkill" "0"
-	"MaxMeleeSkill" "5"    
-	"DamageScale" "0.5"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
 	"SpeedScale" "1.0"
 	"Priority" "10"
 	"CombosFrom" "melee_combo_2a"
 	"ControlDirection" "any"
-	"TraceHullSize" "35" 
+	"TraceHullSize" "35"
 	"TraceDistance" "20"
 }
 
@@ -56,14 +56,14 @@
 	"sequence" "melee_combo_2c"
 	"AttackType" "Heavy"
 	"MinMeleeSkill" "0"
-	"MaxMeleeSkill" "5"    
-	"DamageScale" "1.5"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
 	"SpeedScale" "1.0"
 	"Priority" "10"
 	"CombosFrom" "melee_combo_2b"
 	"ControlDirection" "any"
-  "TraceHullSize" "70" 
-  "TraceDistance" "30" 
+	"TraceHullSize" "70"
+	"TraceDistance" "30"
 }
 
 
@@ -73,68 +73,68 @@
 
 // "MELEE"
 // {
-//     "name" "StumbleForward"
-//    	"sequence" "stumble_forward"
-//     "Priority" "-1.0"
-//     "ControlDirection" "none"
+// 	"name" "StumbleForward"
+// 	"sequence" "stumble_forward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
 // }
-// 
+//
 // "MELEE"
 // {
-//     "name" "StumbleBackward"
-//    	"sequence" "stumble_backward"
-//     "Priority" "-1.0"
-//     "ControlDirection" "none"
+// 	"name" "StumbleBackward"
+// 	"sequence" "stumble_backward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
 // }
-// 
+//
 // "MELEE"
 // {
-//     "name" "StumbleLeftward"
-//    	"sequence" "stumble_leftward"
-//     "Priority" "-1.0"
-//     "ControlDirection" "none"
+// 	"name" "StumbleLeftward"
+// 	"sequence" "stumble_leftward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
 // }
-// 
+//
 // "MELEE"
 // {
-//     "name" "StumbleRightward"
-//    	"sequence" "stumble_rightward"
-//     "Priority" "-1.0"
-//     "ControlDirection" "none"
+// 	"name" "StumbleRightward"
+// 	"sequence" "stumble_rightward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
 // }
 
 // Short stumbles
 
 "MELEE"
 {
-    "name" "StumbleShortForward"
-   	"sequence" "stumble_short_forward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
+	"name" "StumbleShortForward"
+	"sequence" "stumble_short_forward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
 }
 
 "MELEE"
 {
-    "name" "StumbleShortBackward"
-   	"sequence" "stumble_short_backward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
+	"name" "StumbleShortBackward"
+	"sequence" "stumble_short_backward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
 }
 
 "MELEE"
 {
-    "name" "StumbleShortLeftward"
-   	"sequence" "stumble_short_leftward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
+	"name" "StumbleShortLeftward"
+	"sequence" "stumble_short_leftward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
 }
 
 "MELEE"
 {
-    "name" "StumbleShortRightward"
-   	"sequence" "stumble_short_rightward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
+	"name" "StumbleShortRightward"
+	"sequence" "stumble_short_rightward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
 }
 
 //====================
@@ -143,20 +143,20 @@
 
 "MELEE"
 {
-    "name" "KnockdownForward"
-   	"sequence" "knockdown_forward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
-    "AllowMovement" "1"
+	"name" "KnockdownForward"
+	"sequence" "knockdown_forward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement" "1"
 }
 
 "MELEE"
 {
-    "name" "KnockdownBackward"
-   	"sequence" "knockdown_backward"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
-    "AllowMovement" "1"
+	"name" "KnockdownBackward"
+	"sequence" "knockdown_backward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement" "1"
 }
 
 //====================
@@ -165,13 +165,13 @@
 
 "MELEE"
 {
-    "name" "Roll"
-   	"sequence" "roll_N"
-    "MinMeleeSkill" "0"
-    "MaxMeleeSkill" "5"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
-    "AllowMovement"	"0"
+	"name" "Roll"
+	"sequence" "roll_N"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"0"
 }
 
 //=====================
@@ -181,10 +181,10 @@
 "MELEE"
 {
 	"name" "SyncKillChainsaw"
-	"sequence" "kick"   
+	"sequence" "kick"
 	"DamageScale" "0.5"
 	"Priority" "-1.0"
- 	"ControlDirection" "none"
+	"ControlDirection" "none"
 }
 
 // ========
@@ -193,24 +193,24 @@
 
 "MELEE"
 {
-    "name" "JumpJet"
-   	"sequence" "jumpjet_pound"
-    "MinMeleeSkill" "0"
-    "MaxMeleeSkill" "5"
-    "SpeedScale" "0.6"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
-    "AllowMovement"	"1"
+	"name" "JumpJet"
+	"sequence" "jumpjet_pound"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"SpeedScale" "0.6"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"1"
 }
 
 "MELEE"
 {
-    "name" "Blink"
-   	"sequence" "blink"
-    "MinMeleeSkill" "0"
-    "MaxMeleeSkill" "5"
-    "SpeedScale" "0.6"
-    "Priority" "-1.0"
-    "ControlDirection" "none"
-    "AllowMovement"	"0"
+	"name" "Blink"
+	"sequence" "blink"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"SpeedScale" "0.6"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"0"
 }
