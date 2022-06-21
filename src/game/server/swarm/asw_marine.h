@@ -207,7 +207,7 @@ public:
 	void PhysicsShove();
 	void DoMeleeDamageTrace( float flYawStart, float flYawEnd );
 	void PlayMeleeImpactEffects( CBaseEntity *pEntity, trace_t *tr );
-	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dmgInfo, Vector &vecAttackDir, trace_t *tr );
+	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmgInfo, Vector &vecAttackDir, trace_t *tr );
 	CBaseEntity *MeleeTraceHullAttack( const Vector &vecStart, const Vector &vecEnd, const Vector &vecMins, const Vector &vecMaxs, bool bHitBehindMarine, float flAttackCone );
 	float m_fKickTime;
 	// Keep track of recent melee hits so we can perform wide area of effect melee attacks without double-damaging entities

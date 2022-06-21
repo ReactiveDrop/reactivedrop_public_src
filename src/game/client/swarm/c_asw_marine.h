@@ -397,7 +397,7 @@ public:
 	float GetBaseMeleeDamage() { return m_flBaseMeleeDamage; }
 	float m_flBaseMeleeDamage;
 	void DoMeleeDamageTrace( float flYawStart, float flYawEnd );
-	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dmgInfo, Vector &vecAttackDir, trace_t *tr );
+	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmgInfo, Vector &vecAttackDir, trace_t *tr );
 	CBaseEntity *MeleeTraceHullAttack( const Vector &vecStart, const Vector &vecEnd, const Vector &vecMins, const Vector &vecMaxs, bool bHitBehindMarine, float flAttackCone );
 	void ApplyPassiveMeleeDamageEffects( CTakeDamageInfo &dmgInfo );
 	bool HasPowerFist();
