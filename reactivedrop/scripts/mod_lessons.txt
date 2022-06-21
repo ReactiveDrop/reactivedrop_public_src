@@ -1,0 +1,3174 @@
+//--------------------------------------------------------
+//
+// This file contains all the scripted lessons used by 
+// the game instructor.
+//
+//
+// PRIORITY LEVELS
+//
+// MARINE
+// 150	dead... switch your dude
+// 145  disturbance triggered
+// 140	infested (self)
+// 135	infested (other)
+// 130	extinguish
+// 125	scanner
+// 123	dive
+// 120	boss battle
+// 115	friendly fire
+// 110	button usage
+// 105	door welding
+// 100	heal self
+// 95	heal other
+// 90	presumed combat
+// 85	clip usage
+// 80	offhand
+// 75	switch weapon
+// 70-73build sentry
+// 65	pick up item
+// 60	get weapon/ammo
+// 55	ammo bag
+// 50	melee attack
+// 45	shoot
+// 35	map/general
+// 30	movement
+// 20	reload
+//
+// NOTE: Zero (0) priority lessons are NOT affected by, but NEVER affect priority
+// 00	notice panic button, notice finale radio, explain disturbance, open/close door, failed to take pills, get money/health/power
+//
+// INSTANCE TYPES
+//
+// 0 = multiple lessons of same type can be open at once
+// 1 = only one of each lesson type can be open at once
+// 2 = replace lesson of the same type and "replace_key" at a fixed amount "fixed_instances_max"
+// 3 = only one instance will display at a time (but all instances will be open)
+//
+//
+// FLAGS (use these to build an integer)
+//
+// 0x00000000 LOCATOR_ICON_FX_NONE
+// 0x00000001 LOCATOR_ICON_FX_PULSE_SLOW
+// 0x00000002 LOCATOR_ICON_FX_PULSE_FAST
+// 0x00000004 LOCATOR_ICON_FX_PULSE_URGENT
+// 0x00000008 LOCATOR_ICON_FX_ALPHA_SLOW
+// 0x00000010 LOCATOR_ICON_FX_ALPHA_FAST
+// 0x00000020 LOCATOR_ICON_FX_ALPHA_URGENT
+// 0x00000040 LOCATOR_ICON_FX_SHAKE_NARROW
+// 0x00000080 LOCATOR_ICON_FX_SHAKE_WIDE
+// 0x00000100 LOCATOR_ICON_FX_STATIC
+// 0x00000200 LOCATOR_ICON_FX_NO_OFFSCREEN
+// 0x00000400 LOCATOR_ICON_FX_FORCE_CAPTION
+// 0x00000800 LOCATOR_ICON_FX_FADE_OUT
+// 0x00001000 LOCATOR_ICON_FX_FADE_IN
+//
+// 
+// CAPTION COLOR - supply a string in the format "rrr,ggg,bbb"  ex. "255,255,255" for white
+//
+//--------------------------------------------------------
+
+"instructor_lessons"
+{
+	"version number"
+	{
+		"priority"			"0"
+		"success_limit"		"7"	// increase this number to force a reset counts for everyone
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to switch marines
+	//--------------------------------------------------------
+	"Killed By Infestation"
+	{
+		"priority"			"160"
+		"instance_type"		"1"
+		
+		"display_limit"		"3"
+	
+		"onscreen_icon"			"icon_bulb"
+		"caption"				"#asw_instructor_infestation_death"
+		"timeout"				"20"
+		"can_open_when_dead"	"1"
+
+		"open"
+		{			
+			"marine_infested_killed"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"marine_selected"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to switch marines
+	//--------------------------------------------------------
+	"Switch Marines"
+	{
+		"priority"			"150"
+		"instance_type"		"1"
+		
+		"success_limit"		"3"
+	
+		"binding"				"+selectmarine1;+selectmarine2;+selectmarine3;+selectmarine4;+selectmarine5;+selectmarine6;+selectmarine7;+selectmarine8"
+		"gamepad_binding"		"+mouse_menu ASW_SelectMarine"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_switch_marine"
+		"can_open_when_dead"	"1"
+
+		"open"
+		{			
+			"player_should_switch"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+			
+			"marine_no_ammo"
+			{
+				"entity1 set"				"entity entindex"
+				"local_player get marine"	"int 2"
+				"entity2 is"				"entity entity1"
+				"integer1 set"				"int count"
+				"integer1 !less than"		"int 2"
+				"timeout set"				"float 15"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"marine_selected"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"success"
+		{
+			"marine_selected"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to patch up during infestation
+	//--------------------------------------------------------
+	"Help Infested (self)"
+	{
+		"priority"			"140"
+		"instance_type"		"3"
+		"update_interval"	"0.25"
+		
+		"success_limit"		"3"
+	
+		"onscreen_icon"		"icon_alert"
+		"caption"			"#asw_instructor_cure_infestation"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"marine_infested"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+			}
+		}
+		
+		"close"
+		{
+			"marine_infested_cured"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"marine_infested_cured"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"			"string icon_alert"
+				"integer1 set"				"int -1"
+				"integer2 set"				"int 0"
+			}
+			
+			"Has Med Kit"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_medkit"
+				"binding set"				"string +grenade1"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+
+			"Holding Heal Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_gun"
+				"binding set"				"string +attack;+secondary;+attack2"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+						
+			"Holding Heal Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_grenade"
+				"binding set"				"string +attack"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_gun"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_grenade"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+
+			"Has ECA"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_electrified_armor"
+				"binding set"				"string +grenade1"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+
+			"Maybe Squad Has Heal Gun"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_gun"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"onscreen_icon set"				"string use_binding"
+					"caption set"					"string #asw_instructor_request_cure"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"onscreen_icon set"					"string use_binding"
+				"caption set"						"string #asw_instructor_request_cure"
+				"integer2 set"						"int 1"
+			}
+						
+			"Maybe Squad Has Heal Grenade"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_grenade"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"onscreen_icon set"				"string use_binding"
+					"caption set"					"string #asw_instructor_request_cure"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"onscreen_icon set"					"string use_binding"
+				"caption set"						"string #asw_instructor_request_cure"
+				"integer2 set"						"int 1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to patch up other during infestation
+	//--------------------------------------------------------
+	"Help Infested (other)"
+	{
+		"priority"			"135"
+		"instance_type"		"3"
+		"update_interval"	"0.25"
+		
+		"success_limit"		"3"
+	
+		"onscreen_icon"		"icon_alert"
+		"caption"			"#asw_instructor_cure_infestation_other"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"marine_infested"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 !is"								"entity icon_target"
+				"visible set"								"int 0"
+			}
+		}
+		
+		"close"
+		{
+			"marine_infested_cured"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"marine_infested_cured"
+			{
+				"local_player is"			"player curer"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"			"string icon_alert"
+				"integer1 set"				"int -1"
+				"integer2 set"				"int 0"
+			}
+
+			"Holding Heal Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_gun"
+				"binding set"				"string +attack"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+						
+			"Holding Heal Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_grenade"
+				"binding set"				"string +attack"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_gun"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_grenade"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+				"integer2 set"				"int 1"
+			}
+
+			"Maybe Squad Has Heal Gun"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_gun"
+				"local_player owns hotbar slot"		"int output"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"onscreen_icon set"				"string use_binding"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"onscreen_icon set"					"string use_binding"
+				"integer2 set"						"int 1"
+			}
+						
+			"Maybe Squad Has Heal Grenade"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_grenade"
+				"local_player owns hotbar slot"		"int output"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"onscreen_icon set"				"string use_binding"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"onscreen_icon set"					"string use_binding"
+				"integer2 set"						"int 1"
+			}
+			
+			"No Healing Items"
+			{
+				"integer2 is"						"int 0"
+				"void close"						"void"
+			}
+			
+			"Has Healing Items"
+			{
+				"integer2 is"						"int 1"
+				"visible set"						"int 1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can save on fire squad mates
+	//--------------------------------------------------------
+	"Extinguish"
+	{
+		"priority"			"130"
+		"instance_type"		"3"
+		
+		"display_limit"		"6"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_select_extinguisher"
+		"vgui_target_name"	"ASW_Hud_Master"
+		"vgui_target_lookup"	"weapon1"
+		"vgui_target_edge"	"5"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.2"
+		"fixed_position_y"	"0.75"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"marine_ignited"
+			{
+				"local_player weapon has"	"string asw_weapon_fire_extinguisher"
+				
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+			
+			"marine_ignited"
+			{
+				"local_player weapon has"	"string asw_weapon_flamer"
+				
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"marine_extinguished"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"caption set"				"string #asw_instructor_select_extinguisher"
+				"fixed_position set"		"bool 1"
+			}
+			
+			"Holding Flamer"
+			{
+				"local_player weapon is"	"string asw_weapon_flamer"
+				"binding set"				"string +secondary;+attack2"
+				"caption set"				"string #asw_instructor_extinguish"
+				"fixed_position set"		"bool 0"
+			}
+			
+			"Holding Extinguisher"
+			{
+				"local_player weapon is"	"string asw_weapon_fire_extinguisher"
+				"binding set"				"string +attack"
+				"caption set"				"string #asw_instructor_extinguish"
+				"fixed_position set"		"bool 0"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain to look at scanner blips
+	//--------------------------------------------------------
+	"Watch Scanner"
+	{
+		"priority"			"125"
+		"instance_type"		"1"
+	
+		"display_limit"		"4"
+
+		"onscreen_icon"		"icon_bulb"
+		"caption"			"#asw_instructor_watch_scanner"
+		"caption_param"		"0"
+		"vgui_target_name"	"ASWHudMinimap"
+		"vgui_target_edge"	"4"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.7"
+		"fixed_position_y"	"0.65"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"scanner_important"
+			{
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you shouldn't friendly fire
+	//--------------------------------------------------------
+	"Friendly Fire"
+	{
+		"priority"			"115"
+		"instance_type"		"2"
+		
+		"display_limit"		"4"
+	
+		"onscreen_icon"					"icon_no"
+		"caption"						"#asw_instructor_friendly_fire"
+		"range"							"convar asw_visrange_generic"
+		"timeout"						"3.5"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"marine_hurt"
+			{
+				"local_player get marine"	"int 1"
+				"entity1 is"				"entity attackerindex"
+				"icon_target set"			"entity entindex"
+				"entity1 !is"				"entity icon_target"
+				"integer1 set"				"bool friendlyfire"
+				"integer1 is"				"bool 1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain hacking buttons
+	//--------------------------------------------------------
+	"Hack Button Area"
+	{
+		"priority"				"110"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"display_limit"			"6"
+		"success_limit"			"3"
+	
+		"binding"				"+use"
+		"onscreen_icon"			"icon_button"
+		"caption"				"#asw_instructor_hack_button_area"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+
+		"open"
+		{
+			"button_area_active"
+			{
+				"local_player is"			"player userid"
+				"integer1 set"				"bool locked"
+				"integer1 is"				"bool 1"
+				
+				// Init
+				"entity2 set"				"entity entindex"
+				"icon_target set"			"entity prop"
+			}
+		}
+		
+		"close"
+		{
+			"button_area_inactive"
+			{
+				"entity2 is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"button_area_used"
+			{
+				"local_player is"			"player userid"
+				"entity2 is"				"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_button"
+				"caption set"					"string #asw_instructor_hack_button_area"
+			}
+			
+			"Non-Hackers"
+			{
+				"local_player !can hack"		"void"
+				"caption set"					"string #asw_instructor_need_hacker_button_area"
+			}
+			
+			"Selected It"
+			{
+				"local_player can hack"					"void"
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity entity2"
+				"onscreen_icon set"						"string use_binding"
+			}
+			
+			"Trigger Is Gone"
+			{
+				"entity2 is"							"entity NULL"
+				"void close"							"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain pressing buttons
+	//--------------------------------------------------------
+	"Use Button Area"
+	{
+		"priority"				"110"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"+use"
+		"onscreen_icon"			"icon_button"
+		"caption"				"#asw_instructor_use_button_area"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+
+		"open"
+		{
+			"button_area_active"
+			{
+				"local_player is"			"player userid"
+				"integer1 set"				"bool locked"
+				"integer1 is"				"bool 0"
+				
+				// Init
+				"entity2 set"				"entity entindex"
+				"icon_target set"			"entity prop"
+			}
+		}
+		
+		"close"
+		{
+			"button_area_inactive"
+			{
+				"entity2 is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"button_area_used"
+			{
+				"local_player is"			"player userid"
+				"entity2 is"				"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_button"
+			}
+			
+			"Selected It"
+			{
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity entity2"
+				"onscreen_icon set"						"string use_binding"
+			}
+			
+			"Trigger Is Gone"
+			{
+				"entity2 is"							"entity NULL"
+				"void close"							"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain destroying doors
+	//--------------------------------------------------------
+	"Destroy Door"
+	{
+		"priority"				"108"
+		"instance_type"			"0"
+		
+		"success_limit"			"2"
+	
+		"binding"				"+attack"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_destroy_door"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+
+		"open"
+		{
+			"door_recommend_destroy"
+			{
+				"local_player is"						"player userid"
+			
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"door_destroyed"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"door_destroyed"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"binding set"						"string +attack"
+				"caption set"						"string #asw_instructor_destroy_door"
+			}
+			
+			"Check Alt Ammo"
+			{
+				"local_player !weapon is"			"string asw_weapon_flamer"
+				"local_player !weapon is"			"string asw_weapon_prifle"
+				"local_player get active weapon"	"int 2"
+				"entity2 has secondary"				"void"
+				"binding set"						"string +secondary;+attack2"
+				"caption set"						"string #asw_instructor_destroy_door_secondary"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain destroying doors with secondary
+	//--------------------------------------------------------
+	"Destroy Door Secondary"
+	{
+		"priority"				"108"
+		"instance_type"			"0"
+		
+		"success_limit"			"2"
+		
+		"prereq"				"Destroy Door"
+	
+		"binding"				"+secondary;+attack2"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_destroy_door_secondary"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+		
+		"visible"				"0"
+
+		"open"
+		{
+			"door_recommend_destroy"
+			{
+				"local_player is"						"player userid"
+					
+				// Init
+				"icon_target set"							"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"door_destroyed"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"player_alt_fire"
+			{
+				"local_player is"			"player userid"
+				"local_player !weapon is"	"string asw_weapon_flamer"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"visible set"								"bool 0"
+				"local_player has secondary explosives"		"void"
+				"visible set"								"bool 1"
+				"binding set"								"string +secondary;+attack2"
+				"caption set"								"string #asw_instructor_alt_fire"
+			}
+			
+			"Check Alt Ammo"
+			{
+				"visible is"						"bool 1"
+				"local_player get active weapon"	"int 2"
+				"entity2 !has secondary"			"void"
+				"binding set"						"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"caption set"						"string #asw_instructor_select_alt_fire"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain welding doors
+	//--------------------------------------------------------
+	"Weld Door"
+	{
+		"priority"				"106"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"+grenade1"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_weld_door"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+		"visible"				"0"
+
+		"open"
+		{
+			"door_recommend_weld"
+			{
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"door_welded"
+			{
+				"icon_target is"			"entity entindex"
+			}
+			
+			"door_destroyed"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"door_welded"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"visible set"					"bool 0"
+			}
+			
+			"Only visible to welder havers"
+			{
+				"local_player !weapon is"		"string asw_weapon_welder"
+				"local_player weapon has"		"string asw_weapon_welder"
+				"visible set"					"bool 1"
+				"binding set"					"string +grenade1"
+			}
+			
+			"Maybe Squad Has It"
+			{
+				"visible is"					"bool 0"
+				"void weapon local hotbar slot"	"string asw_weapon_welder"
+				"local_player owns hotbar slot"	"int output"
+				"integer1 set"					"int output"
+				"integer1 !less than"			"int 0"
+				
+				"void scope in"					"void"
+					"integer1 !less than"		"int 100"
+					"binding set"				"string +walk"
+					"gamepad_binding set"		"string +mouse_menu ASW_UseExtra2"
+					"visible set"				"bool 1"
+					"integer2 set"				"int 1"
+					"void scope out"			"void"
+					
+				"visible is"					"bool 0"
+				"integer1 add"					"int 1"
+				"visible set"					"bool 1"
+				"binding set"					"string asw_squad_hotbar "
+				"binding add"					"string integer1"
+				"gamepad_binding set"			"string +mouse_menu ASW_UseExtra1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain unwelding doors
+	//--------------------------------------------------------
+	"Unweld Door"
+	{
+		"priority"				"105"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"+grenade1"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_unweld_door"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+		"visible"				"0"
+
+		"open"
+		{
+			"door_welded_visible"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"door_unwelded"
+			{
+				"icon_target is"			"entity entindex"
+			}
+			
+			"door_destroyed"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"door_unwelded"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"visible set"				"bool 0"
+			}
+			
+			"Only visible to welder havers"
+			{
+				"local_player !weapon is"		"string asw_weapon_welder"
+				"local_player weapon has"		"string asw_weapon_welder"
+				"visible set"					"bool 1"
+				"binding set"					"string +grenade1"
+			}
+			
+			"Maybe Squad Has It"
+			{
+				"visible is"					"bool 0"
+				"void weapon local hotbar slot"	"string asw_weapon_welder"
+				"local_player owns hotbar slot"	"int output"
+				"integer1 set"					"int output"
+				"integer1 !less than"			"int 0"
+				
+				"void scope in"					"void"
+					"integer1 !less than"		"int 100"
+					"binding set"				"string +walk"
+					"gamepad_binding set"		"string +mouse_menu ASW_UseExtra2"
+					"visible set"				"bool 1"
+					"integer2 set"				"int 1"
+					"void scope out"			"void"
+					
+				"visible is"					"bool 0"
+				"integer1 add"					"int 1"
+				"visible set"					"bool 1"
+				"binding set"					"string asw_squad_hotbar "
+				"binding add"					"string integer1"
+				"gamepad_binding set"			"string +mouse_menu ASW_UseExtra1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to heal yourself when low on health
+	//--------------------------------------------------------
+	"Heal Self"
+	{
+		"priority"			"100"
+		"instance_type"		"1"
+		"update_interval"	"0.25"
+		
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_heal_self"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"entity1 weapon has"						"string asw_weapon_heal_gun"
+			}
+						
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"entity1 weapon has"						"string asw_weapon_heal_grenade"
+			}
+			
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"entity1 weapon has"						"string asw_weapon_medkit"
+			}
+
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"void weapon local hotbar slot"				"string asw_weapon_heal_gun"
+				"output !less than"							"int 0"
+			}
+						
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"void weapon local hotbar slot"				"string asw_weapon_heal_grenade"
+				"output !less than"							"int 0"
+			}
+
+			"item_pickup"
+			{
+				"local_player is"							"player userid"
+				"local_player health percentage less than"	"float 0.4"
+				"string1 set"								"string classname"
+				"string1 is"								"string asw_weapon_heal_gun"
+				
+				// Init
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entity1"
+			}
+						
+			"item_pickup"
+			{
+				"local_player is"							"player userid"
+				"local_player health percentage less than"	"float 0.4"
+				"string1 set"								"string classname"
+				"string1 is"								"string asw_weapon_heal_grenade"
+				
+				// Init
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entity1"
+			}
+			
+			"item_pickup"
+			{
+				"local_player is"							"player userid"
+				"local_player health percentage less than"	"float 0.4"
+				"string1 set"								"string classname"
+				"string1 is"								"string asw_weapon_medkit"
+				
+				// Init
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entity1"
+			}
+		}
+		
+		"close"
+		{
+			"player_heal"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"player_heal"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"caption set"				"string #asw_instructor_heal_self"
+				"integer1 set"				"int -1"
+				"integer2 set"				"int 0"
+			}
+			
+			"Has Med Kit"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_medkit"
+				"binding set"				"string +grenade1"
+				"integer2 set"				"int 1"
+			}
+
+			"Holding Heal Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_gun"
+				"binding set"				"string +attack;+secondary;+attack2"
+				"integer2 set"				"int 1"
+			}
+						
+			"Holding Heal Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_grenade"
+				"binding set"				"string +attack"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_gun"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_grenade"
+				"integer2 set"				"int 1"
+			}
+
+			"Maybe Squad Has Heal Gun"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_gun"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"caption set"					"string #asw_instructor_request_heal"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"caption set"						"string #asw_instructor_request_heal"
+				"integer2 set"						"int 1"
+			}
+						
+			"Maybe Squad Has Grenade"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_grenade"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"caption set"					"string #asw_instructor_request_heal"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"caption set"						"string #asw_instructor_request_heal"
+				"integer2 set"						"int 1"
+			}	
+			
+			"Out Of Heal Items"
+			{
+				"integer2 is"							"int 0"
+				"void close"							"void"
+			}
+			
+			"Got Healthy"
+			{
+				"icon_target !health percentage less than"	"float 0.5"
+				"void close"								"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to heal other when low on health
+	//--------------------------------------------------------
+	"Heal Other"
+	{
+		"priority"			"95"
+		"instance_type"		"1"
+		"update_interval"	"0.25"
+		
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_heal"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 !is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"entity1 weapon has"						"string asw_weapon_heal_gun"
+			}
+						
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 !is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"entity1 weapon has"						"string asw_weapon_heal_grenade"
+			}
+			
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 !is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"void weapon local hotbar slot"				"string asw_weapon_heal_gun"
+				"local_player owns hotbar slot"				"int output"
+				"integer1 set"								"int output"
+				"output !less than"							"int 0"
+			}
+						
+			"marine_hurt"
+			{
+				"local_player get marine"					"int 1"
+				"icon_target set"							"entity entindex"
+				"entity1 !is"								"entity icon_target"
+				"float1 set"								"float health"
+				"float1 less than"							"float 0.4"
+				"void weapon local hotbar slot"				"string asw_weapon_heal_grenade"
+				"local_player owns hotbar slot"				"int output"
+				"integer1 set"								"int output"
+				"output !less than"							"int 0"
+			}
+		}
+		
+		"close"
+		{
+			"player_heal"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"player_heal"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"integer1 set"				"int -1"
+				"integer2 set"				"int 0"
+			}
+
+			"Holding Med Heal Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_gun"
+				"binding set"				"string +attack"
+				"integer2 set"				"int 1"
+			}
+						
+			"Holding Heal Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_heal_grenade"
+				"binding set"				"string +attack"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Gun"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_gun"
+				"integer2 set"				"int 1"
+			}
+			
+			"Has Med Grenade"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon has"	"string asw_weapon_heal_grenade"
+				"integer2 set"				"int 1"
+			}
+
+			"Maybe Squad Has Heal Gun"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_gun"
+				"local_player owns hotbar slot"		"int output"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"integer2 set"						"int 1"
+			}
+						
+			"Maybe Squad Has Heal Grenade"
+			{
+				"integer2 is"						"int 0"
+				"void weapon local hotbar slot"		"string asw_weapon_heal_grenade"
+				"local_player owns hotbar slot"		"int output"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+					
+				"integer2 is"						"int 0"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"integer2 set"						"int 1"
+			}	
+			
+			"Out Of Heal Items"
+			{
+				"integer2 is"							"int 0"
+				"void close"							"void"
+			}
+			
+			"Got Healthy"
+			{
+				"icon_target !health percentage less than"	"float 0.5"
+				"void close"								"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Invisibly change the priority to hide low priority 
+	// items while in presumed combat.
+	//--------------------------------------------------------
+	"Priority Bumper"
+	{
+		"priority"			"90"
+		"instance_type"		"2"
+
+		"timeout"						"5.0"
+		"can_timeout_while_inactive"	"1"
+		"no_icon_target"				"1"
+		"start_sound"					""
+
+		"open"
+		{
+			// Self hurt an alien
+			"alien_hurt"
+			{
+				"entity1 set"				"player attacker"
+				"entity1 is"				"player local_player"
+				"local_player get distance"	"entity entindex"
+				"output less than"			"float 300.0"
+			}
+
+			// Friend hurt a nearby alien
+			"alien_hurt"
+			{
+				"entity1 set"				"player attacker"
+				"entity1 team is"			"int 2"
+				"entity1 !is"				"player local_player"
+				"local_player get distance"	"entity entindex"
+				"output less than"			"float 300.0"
+			}
+
+			// Nearby friend (or self) hurt by a thing
+			"marine_hurt"
+			{
+				"entity1 set"				"player userid"
+				"entity2 set"				"entity attackerindex"
+				"local_player get distance"	"entity entity1"
+				"output less than"			"float 300.0"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that reloading trashes the bullets in the clip
+	//--------------------------------------------------------
+	"Clip Usage"
+	{
+		"priority"			"85"
+		"instance_type"		"1"
+	
+		"display_limit"		"6"
+
+		"onscreen_icon"		"icon_interact"
+		"caption"			"#asw_instructor_clip_usage"
+		"caption_param"		"0"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"weapon_reload"
+			{
+				"local_player is"			"player userid"
+				"float1 set"				"int clipsize"
+				"float1 !less than"			"float 2"
+				"float1 multiply"			"float 0.6"
+				"float2 set"				"int lost"
+				"float2 !less than"			"float float1"
+				
+				// Init
+				"integer2 set"				"int float2"
+				"caption_param set"			"string integer2"
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to offhand items
+	//--------------------------------------------------------
+	"Use Offhand"
+	{
+		"priority"			"80"
+		"instance_type"		"2"
+	
+		"display_limit"		"6"
+		"success_limit"		"3"
+
+		"binding"			"+grenade1"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_use_offhand"
+		"vgui_target_name"	"ASW_Hud_Master"
+		"vgui_target_lookup"	"squadpanel0"
+		"vgui_target_edge"	"1"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.4"
+		"fixed_position_y"	"0.8"
+		
+		"timeout"						"12.0"
+		"can_timeout_while_inactive"	"1"
+		
+		"integer2"			"0"
+
+		"open"
+		{
+			"item_pickup"
+			{
+				"local_player is"					"player userid"
+				"integer1 set"						"int slot"
+				"integer1 is"						"int 2"
+				"integer1 set"						"bool offhand"
+				"integer1 is"						"bool 1"
+				"string1 set"						"string classname"
+				"string1 !is"						"string asw_weapon_welder"
+				
+				// Init
+				"icon_target set"					"player local_player"
+			}
+		}
+		
+		"onopen"
+		{
+			"Health Kit Message"
+			{
+				"string1 is"						"string asw_weapon_medkit"
+				"caption set"						"string #asw_instructor_use_offhand_health"
+			}
+		}
+		
+		"close"
+		{
+			"item_pickup"
+			{
+				"local_player is"					"player userid"
+				"integer1 set"						"int slot"
+				"integer1 is"						"int 2"
+				"integer1 set"						"bool offhand"
+				"integer1 is"						"bool 0"
+			}
+			
+			"weapon_offhanded"
+			{
+				"local_player is"					"player userid"
+				"integer2 add"						"int 1"
+				"integer2 !less than"				"int 2"
+			}
+		}
+		
+		"success"
+		{
+			"weapon_offhanded"
+			{
+				"local_player is"					"player userid"
+			}
+		}
+		
+		"update"
+		{
+			"Dropped Extra Item"
+			{
+				"local_player get weapon in slot"	"int 2"
+				"entity1 is"						"entity NULL"
+				"void close"						"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to switch weapons
+	//--------------------------------------------------------
+	"Switch Weapon"
+	{
+		"priority"			"75"
+		"instance_type"		"1"
+	
+		"display_limit"		"4"
+
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_switch_weapon"
+		"caption_param"		"0"
+		"vgui_target_name"	"ASW_Hud_Master"
+		"vgui_target_lookup"	"weapon1"
+		"vgui_target_edge"	"5"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.2"
+		"fixed_position_y"	"0.75"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+		
+		"integer2"						"0"
+
+		"open"
+		{
+			"item_pickup"
+			{
+				"local_player is"					"player userid"
+				"integer1 set"						"bool replace"
+				"integer1 is"						"bool 0"
+				"integer1 set"						"int slot"
+				"integer1 !is"						"int 2"
+				
+				// Init
+				"icon_target set"					"player local_player"
+				"local_player get active weapon"	"int 1"
+			}
+		}
+		
+		"update"
+		{
+			"Selected other weapon"
+			{
+				"integer2 is"						"int 0"
+				"local_player get active weapon"	"int 2"
+				"integer2 set"						"int 1"
+			}
+			
+			"Selected other weapon"
+			{
+				"integer2 is"						"int 1"
+				"local_player get active weapon"	"int 1"
+				"entity1 !is"						"entity entity2"
+				"void success"						"void"
+				"void close"						"void"
+			}
+			
+			"Only 1 Item"
+			{
+				"void scope in"							"void"
+					"local_player get weapon in slot"	"int 0"
+					"entity1 is"						"entity NULL"
+					"void close"						"void"
+					"void scope out"					"void"
+				
+				"void scope in"							"void"
+					"local_player get weapon in slot"	"int 1"
+					"entity1 is"						"entity NULL"
+					"integer1 add"						"int 1"
+					"void close"						"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain placing sentries
+	//--------------------------------------------------------
+	"Place Sentry"
+	{
+		"priority"				"73"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_place_sentry"
+		"icon_offset"			"20"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+		"visible"				"0"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"			"player userid"
+				"string1 set"				"string classname"
+				"string1 is"				"string asw_holo_sentry"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"sentry_placed"
+			{
+			}
+		}
+		
+		"success"
+		{
+			"sentry_placed"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"visible set"					"bool 0"
+			}
+			
+			"Only visible to sentry havers"
+			{
+				"local_player !weapon is"		"string asw_weapon_sentry"
+				"local_player weapon has"		"string asw_weapon_sentry"
+				"visible set"					"bool 1"
+				"binding set"					"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+			}
+			
+			"Selected It"
+			{
+				"local_player weapon is"		"string asw_weapon_sentry"
+				"visible set"					"bool 1"
+				"binding set"					"string +attack"
+			}
+			
+			"Maybe Squad Has It"
+			{
+				"visible is"					"bool 0"
+				"void weapon local hotbar slot"	"string asw_weapon_sentry"
+				"local_player owns hotbar slot"	"int output"
+				"integer1 set"					"int output"
+				"integer1 !less than"			"int 0"
+				
+				"void scope in"					"void"
+					"integer1 !less than"		"int 100"
+					"binding set"				"string +walk"
+					"gamepad_binding set"		"string +mouse_menu ASW_UseExtra2"
+					"visible set"				"bool 1"
+					"integer2 set"				"int 1"
+					"void scope out"			"void"
+					
+				"visible is"					"bool 0"
+				"integer1 add"					"int 1"
+				"visible set"					"bool 1"
+				"binding set"					"string asw_squad_hotbar "
+				"binding add"					"string integer1"
+				"gamepad_binding set"			"string +mouse_menu ASW_UseExtra1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain building sentries
+	//--------------------------------------------------------
+	"Build Sentry"
+	{
+		"priority"				"72"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"+use"
+		"onscreen_icon"			"icon_interact"
+		"caption"				"#asw_instructor_build_sentry"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+
+		"open"
+		{
+			"sentry_stop_building"
+			{				
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"sentry_start_building"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"sentry_start_building"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_interact"
+			}
+			
+			"Selected It"
+			{
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity icon_target"
+				"onscreen_icon set"						"string use_binding"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain rotating sentry guns
+	//--------------------------------------------------------
+	"Rotate Sentry"
+	{
+		"priority"				"71"
+		"instance_type"			"0"
+		"update_interval"		"0.25"
+		
+		"success_limit"			"3"
+	
+		"binding"				"+use"
+		"onscreen_icon"			"icon_interact"
+		"caption"				"#asw_instructor_rotate_sentry"
+		"icon_offset"			"64"
+		"no_offscreen"			"1"
+		"allow_nodraw_target"	"1"
+		"show_when_occluded"	"1"
+		"force_caption"			"1"
+		"range"					"convar asw_visrange_generic"
+
+		"open"
+		{
+			"sentry_complete"
+			{	
+				"local_player is"			"player userid"
+				"local_player get marine"	"int 1"
+				"entity1 !is"				"entity marine"
+				
+				// Init
+				"icon_target set"			"entity entindex"
+			}
+		}
+		
+		"close"
+		{
+			"sentry_rotated"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"sentry_rotated"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_interact"
+			}
+			
+			"Selected It"
+			{
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity icon_target"
+				"onscreen_icon set"						"string use_binding"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can laser boulders
+	//--------------------------------------------------------
+	"Laser Boulder"
+	{
+		"priority"			"0"
+		"instance_type"		"3"
+		
+		"display_limit"		"6"
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"icon_bulb"
+		"caption"			"#asw_instructor_laser_boulder"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"			"player userid"
+				"string1 set"				"string classname"
+				"string1 is"				"string asw_prop_laserable"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"boulder_lasered"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"boulder_lasered"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"			"string icon_bulb"
+			}
+			
+			"Has Flamer"
+			{
+				"local_player weapon has"	"string asw_weapon_mining_laser"
+				"local_player !weapon is"	"string asw_weapon_mining_laser"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+			}
+			
+			"Holding Flamer"
+			{
+				"local_player weapon is"	"string asw_weapon_mining_laser"
+				"binding set"				"string +attack"
+				"onscreen_icon set"			"string use_binding"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can burn biomass
+	//--------------------------------------------------------
+	"Burn Biomass"
+	{
+		"priority"			"0"
+		"instance_type"		"3"
+		
+		"display_limit"		"6"
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"icon_fire"
+		"caption"			"#asw_instructor_burn_biomass"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"			"player userid"
+				"string1 set"				"string classname"
+				"string1 is"				"string asw_alien_goo"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"alien_ignited"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"alien_ignited"
+			{
+				"local_player is"			"player userid"
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"			"string icon_fire"
+			}
+			
+			"Has Flamer"
+			{
+				"local_player weapon has"	"string asw_weapon_flamer"
+				"local_player !weapon is"	"string asw_weapon_flamer"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+				"onscreen_icon set"			"string use_binding"
+			}
+			
+			"Holding Flamer"
+			{
+				"local_player weapon is"	"string asw_weapon_flamer"
+				"binding set"				"string +attack"
+				"onscreen_icon set"			"string use_binding"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to command marines
+	//--------------------------------------------------------
+	"Command Marines Follow"
+	{
+		"priority"			"70"
+		"instance_type"		"1"
+		
+		"success_limit"		"3"
+	
+		"binding"			"asw_OrderMarinesFollow"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_command_marine_follow"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+
+		"open"
+		{			
+			"player_command_hold"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+			
+			"marine_selected"
+			{
+				"local_player is"			"player userid"
+				"integer1 set"				"int old_marine"
+				"integer1 !is"				"int -1"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"player_command_follow"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"success"
+		{
+			"player_command_follow"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can get a weapon
+	//--------------------------------------------------------
+	"Get Weapon"
+	{
+		"priority"			"60"
+		"instance_type"		"3"
+		"replace_only_when_stopped"	"1"
+		"update_interval"	"0.25"
+		
+		"display_limit"		"6"
+	
+		"binding"			"+use"
+		"onscreen_icon"		"icon_interact"
+		"caption"			"#asw_instructor_get_item"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+		
+		"integer1"			"0"
+		"integer2"			"0"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"				"player userid"
+				"string1 set"					"string classname"
+				"string1 has prefix"			"string asw_weapon"
+				"entity1 set"					"entity subject"
+				
+				// Init
+				"void scope in"						"void"
+					"local_player is allowed item"	"entity entity1"
+					"visible set"					"bool 0"
+					"void scope out"				"void"
+					
+				"void scope in"						"void"
+					"integer1 is"					"int 0"
+					"local_player weapon has"		"string string1"
+					"integer1 set"					"int 1"
+					"integer2 set"					"int 1"			// BAIL!
+					"void scope out"				"void"
+				
+				"void scope in"										"void"
+					"integer1 is"									"int 0"
+					"string1 is"									"string asw_weapon_medkit"
+					"caption_param set"								"string #"
+					"caption_param add"								"string string1"
+					"integer1 set"									"int 1"
+					"local_player !health percentage less than"		"float 0.6"
+					"integer2 set"									"int 1"			// BAIL!
+					"void scope out"								"void"
+					
+				"void scope in"					"void"
+					"integer1 is"				"int 0"
+					"caption_param set"			"string #"
+					"caption_param add"			"string string1"
+					"integer1 set"				"int 1"
+					"void scope out"			"void"
+				
+				"integer2 is"				"int 0"
+				"icon_target set"			"entity entity1"
+			}
+		}
+		
+		"close"
+		{
+			"item_pickup"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_interact"
+				"caption set"					"string #asw_instructor_get_item"
+				"visible set"					"bool 1"
+			}
+			
+			"Not Usable"
+			{
+				"local_player !is allowed item"	"entity icon_target"
+				"visible set"					"bool 0"
+			}
+			
+			"Swaps"
+			{
+				"local_player item will swap"	"entity icon_target"
+				"caption set"					"string #asw_instructor_swap_for_item"
+			}
+			
+			"Selected It"
+			{
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity icon_target"
+				"onscreen_icon set"						"string use_binding"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can get ammo
+	//--------------------------------------------------------
+	"Get Ammo"
+	{
+		"priority"			"60"
+		"instance_type"		"3"
+		"replace_only_when_stopped"	"1"
+		"update_interval"	"0.25"
+		
+		"display_limit"		"6"
+	
+		"binding"			"+use"
+		"onscreen_icon"		"icon_interact"
+		"caption"			"#asw_instructor_get_item"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+		
+		"integer1"			"0"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"				"player userid"
+				"string1 set"					"string classname"
+				"string1 has prefix"			"string asw_ammo"
+				"entity1 set"					"entity subject"
+				"local_player is allowed item"	"entity entity1"
+				
+				// Init
+				"void scope in"					"void"
+					"integer1 is"				"int 0"
+					"string1 is"				"string asw_ammo_special_case"
+					"caption_param set"			"string #asw_ammo_oh_no_special_case"
+					"integer1 set"				"int 1"
+					"void scope out"			"void"
+					
+				"void scope in"					"void"
+					"integer1 is"				"int 0"
+					"caption_param set"			"string #"
+					"caption_param add"			"string string1"
+					"integer1 set"				"int 1"
+					"void scope out"			"void"			
+				
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"item_pickup"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"onscreen_icon set"				"string icon_interact"
+			}
+			
+			"Selected It"
+			{
+				"void present end"						"void"
+				"local_player get potential use target"	"int 1"
+				"entity1 is"							"entity icon_target"
+				"onscreen_icon set"						"string use_binding"
+			}
+			
+			"Became Full"
+			{
+				"local_player !is allowed item"	"entity icon_target"
+				"void close"					"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to give ammo
+	//--------------------------------------------------------
+	"Give Bag Ammo"
+	{
+		"priority"			"55"
+		"instance_type"		"2"
+		
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_give_satchel_ammo"
+		"caption_param"		"use_name"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+		
+		"vgui_target_name"		"ASW_Hud_Master"
+		"vgui_target_lookup"	"squadpanel1"
+		"vgui_target_edge"		"1"
+		"fixed_position"		"0"
+		"fixed_position_x"		"0.4"
+		"fixed_position_y"		"0.8"
+		
+		"open"
+		{		
+			"weapon_reload"
+			{
+				"entity1 set"							"entity marine"
+				"integer1 set"							"int clipsremaining"
+				"integer1 less than"					"int 1"
+				"local_player weapon has"				"string asw_weapon_ammo_satchel"
+				"local_player get marine"				"int 2"
+				
+				// Init
+				"icon_target set"						"entity entity1"
+			}
+			
+			"weapon_reload"
+			{
+				"entity1 set"							"entity marine"
+				"integer1 set"							"int clipsremaining"
+				"integer1 less than"					"int 1"
+				"void weapon local hotbar slot"			"string asw_weapon_ammo_satchel"
+				"output !less than"						"int 0"
+				"local_player owns hotbar slot"			"int output"
+				"local_player get marine"				"int 2"
+				
+				// Init
+				"icon_target set"						"entity entity1"
+			}
+			
+			"marine_no_ammo"
+			{
+				"entity1 set"							"entity entindex"
+				"local_player weapon has"				"string asw_weapon_ammo_satchel"
+				"local_player get marine"				"int 2"
+				
+				// Init
+				"icon_target set"						"entity entity2"
+			}
+			
+			"marine_no_ammo"
+			{
+				"entity1 set"							"entity entindex"
+				"void weapon local hotbar slot"			"string asw_weapon_ammo_satchel"
+				"output !less than"						"int 0"
+				"local_player owns hotbar slot"			"int output"
+				"local_player get marine"				"int 2"
+				
+				// Init
+				"icon_target set"						"entity entity2"
+			}
+		}
+		
+		"onopen"
+		{
+			"Self Needs Ammo"
+			{
+				"icon_target is"						"entity entity2"
+				"caption_param set"						"string #asw_instructor_yourself"
+			}
+		}
+		
+		"close"
+		{			
+			"ammo_pickup"
+			{
+				"entity1 is"				"entity entindex"
+			}
+			
+			"player_deploy_ammo"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"success"
+		{			
+			"player_deploy_ammo"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"integer2 set"				"int 0"
+				"fixed_position set"		"int 0"
+				"binding set"				"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+			}
+			
+			"Holding Ammo Bag"
+			{
+				"integer2 is"				"int 0"
+				"local_player weapon is"	"string asw_weapon_ammo_satchel"
+				"binding set"				"string +attack"
+				"integer2 set"				"int 1"
+			}
+			
+			"Maybe Squad Has It"
+			{
+				"integer2 is"						"int 0"
+				"local_player !weapon has"			"string asw_weapon_ammo_satchel"
+				"void weapon local hotbar slot"		"string asw_weapon_ammo_satchel"
+				"integer1 set"						"int output"
+				"integer1 !less than"				"int 0"
+				
+				"void scope in"						"void"
+					"integer1 !less than"			"int 100"
+					"binding set"					"string +walk"
+					"gamepad_binding set"			"string +mouse_menu ASW_UseExtra2"
+					"integer2 set"					"int 1"
+					"void scope out"				"void"
+				
+				"integer2 is"						"int 0"
+				"local_player owns hotbar slot"		"int integer1"
+				"integer1 add"						"int 1"
+				"binding set"						"string asw_squad_hotbar "
+				"binding add"						"string integer1"
+				"gamepad_binding set"				"string +mouse_menu ASW_UseExtra1"
+				"vgui_target_lookup set"			"string squadpanel"
+				"vgui_target_lookup add"			"string integer1"
+				"fixed_position set"				"int 1"
+				"integer2 set"						"int 1"
+			}
+			
+			"Out Of Ammo Bags"
+			{
+				"integer2 is"				"int 0"
+				"local_player !weapon has"	"string asw_weapon_ammo_satchel"
+				"void close"				"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to give weapon
+	//--------------------------------------------------------
+	"Give Weapon"
+	{
+		"priority"			"55"
+		"instance_type"		"2"
+		
+		"success_limit"		"3"
+	
+		"binding"			"ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_give_spare_weapon"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+		
+		"timeout"			"20.0"
+		
+		"open"
+		{		
+			"marine_no_ammo"
+			{
+				"entity1 set"							"entity entindex"
+				"entity1 !is bot"						"void"
+				"local_player get marine"				"int 2"
+				"entity1 !is"							"entity entity2"
+				"local_player weapon has spare"			"void"
+				
+				// Init
+				"icon_target set"						"entity entity1"
+			}
+		}
+		
+		"close"
+		{			
+			"player_dropped_weapon"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"success"
+		{
+			"player_dropped_weapon"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"binding set"						"string ASW_InvPrev;ASW_InvNext;ASW_InvLast"
+			}
+			
+			"Holding Spare"
+			{
+				"local_player weapon is offensive"	"void"
+				"binding set"						"string ASW_Drop"
+			}
+			
+			"No More Spare"
+			{
+				"local_player !weapon has spare"	"void"
+				"void close"						"void"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you can kick physics props
+	//--------------------------------------------------------
+	"Kick Object"
+	{
+		"priority"			"50"
+		"instance_type"		"0"
+		
+		"success_limit"		"2"
+	
+		"binding"			"+alt1"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_kick_object"
+		"icon_offset"		"30"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"physics_visible"
+			{
+				"local_player is"			"player userid"
+				"string1 set"				"string type"
+				"string1 is"				"string kicking"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"physics_melee"
+			{
+				"icon_target is"			"entity entindex"
+			}
+		}
+		
+		"success"
+		{
+			"physics_melee"
+			{
+				"local_player is"			"player attacker"
+				"icon_target is"			"entity entindex"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain that you explode red barrels
+	//--------------------------------------------------------
+	"Shoot Barrel"
+	{
+		"priority"			"45"
+		"instance_type"		"0"
+		
+		"display_limit"		"2"
+	
+		"binding"			"+attack"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_shoot_barrel"
+		"icon_offset"		"30"
+		"no_offscreen"		"1"
+		"show_when_occluded" "1"
+		"force_caption"		"1"
+		"range"				"convar asw_visrange_generic"
+
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"			"player userid"
+				"string1 set"				"string classname"
+				"string1 is"				"string asw_barrel_explosive"
+				
+				// Init
+				"icon_target set"			"entity subject"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"caption set"				"string #asw_instructor_shoot_barrel"
+				"binding set"				"string +attack"
+			}
+			
+			"Near"
+			{
+				"void !is singleplayer"		"void"
+				"local_player get distance"	"entity icon_target"
+				"output less than"			"float 150.0"
+				"caption set"				"string #asw_instructor_kick_object"
+				"binding set"				"string +alt1"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain to bring up full map
+	//--------------------------------------------------------
+	"General Hint 0"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+	
+		"display_limit"		"2"
+
+		"binding"			"ingamebriefing"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_view_map"
+		"caption_param"		"0"
+		"vgui_target_name"	"ASWHudMinimap"
+		"vgui_target_edge"	"4"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.7"
+		"fixed_position_y"	"0.65"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"general_hint"
+			{
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to toggle equipment orders
+	//--------------------------------------------------------
+	"General Hint SP1"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint 0"
+		
+		"display_limit"		"2"
+
+		"only_keyboard"		"1"
+
+		"binding"				"+walk"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_toggle_orders"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void is singleplayer"		"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to issue hold command
+	//--------------------------------------------------------
+	"General Hint SP2"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint SP1"
+		
+		"display_limit"		"2"
+		"success_limit"		"2"
+	
+		"binding"				"asw_orderMarinesHold"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_command_marine_hold"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void is singleplayer"		"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"player_command_hold"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+		
+		"success"
+		{
+			"player_command_hold"
+			{
+				"local_player is"			"player userid"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to roll
+	//--------------------------------------------------------
+	"General Hint SP3"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint SP2"
+		
+		"display_limit"		"2"
+	
+		"binding"				"+jump"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_roll"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void is singleplayer"	"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to emote
+	//--------------------------------------------------------
+	"General Hint MP1"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint 0"
+		
+		"display_limit"		"2"
+	
+		"binding"				"+mouse_menu"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_radial_emote"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void !is singleplayer"	"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to draw on the minimap
+	//--------------------------------------------------------
+	"General Hint MP2"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint MP1"
+	
+		"display_limit"		"2"
+
+		"binding"			"ingamebriefing"
+		"onscreen_icon"		"icon_bulb"
+		"caption"			"#asw_instructor_draw"
+		"caption_param"		"0"
+		"vgui_target_name"	"ASWHudMinimap"
+		"vgui_target_edge"	"4"
+		"fixed_position"	"1"
+		"fixed_position_x"	"0.7"
+		"fixed_position_y"	"0.65"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"general_hint"
+			{
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to roll
+	//--------------------------------------------------------
+	"General Hint MP3"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint MP2"
+		
+		"display_limit"		"2"
+	
+		"binding"				"+jump"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_roll"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void !is singleplayer"	"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to walk
+	//--------------------------------------------------------
+	"General Hint MP4"
+	{
+		"priority"			"35"
+		"instance_type"		"1"
+		
+		"prereq"			"General Hint MP3"
+		
+		"display_limit"		"2"
+		
+		"only_keyboard"		"1"
+	
+		"binding"				"+walk"
+		"onscreen_icon"			"use_binding"
+		"caption"				"#asw_instructor_walk"
+		
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{			
+			"general_hint"
+			{
+				"void !is singleplayer"	"void"
+					
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to move
+	//--------------------------------------------------------
+	"Move Marine"
+	{
+		"priority"			"30"
+		"instance_type"		"1"
+		
+		"success_limit"		"2"
+
+		"binding"			"+forward;+back;+moveleft;+moveright"
+		"gamepad_binding"	"xmove"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_movement"
+		"icon_offset"		"30"
+
+		"open"
+		{
+			"movement_hint"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"movement_hint_success"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+		
+		"success"
+		{
+			"movement_hint_success"
+			{
+				"local_player is"			"player userid"
+				
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain how to rotate the camera
+	//--------------------------------------------------------
+	"Rotate Camera"
+	{
+		"priority"			"30"
+		"instance_type"		"1"
+
+		"display_limit"		"2"
+
+		"only_keyboard"		"1"
+
+		"binding"			"rotatecameraleft;rotatecameraright"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_rotate_camera"
+		"icon_offset"		"30"
+
+		"timeout"						"10.0"
+		"can_timeout_while_inactive"	"1"
+
+		"open"
+		{
+			"general_hint"
+			{
+				"void can rotate camera"	"void"
+
+				// Init
+				"icon_target set"			"player local_player"
+			}
+		}
+	}
+	
+	//--------------------------------------------------------
+	// Explain manual reload
+	//--------------------------------------------------------
+	"Manual Reload"
+	{
+		"priority"			"20"
+		"instance_type"		"1"
+	
+		"success_limit"		"2"
+
+		"binding"			"+reload"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#asw_instructor_manual_reload"
+		
+		"visible"			"0"
+		"integer2"			"8"
+
+		"open"
+		{
+			"weapon_reload"
+			{
+				"local_player is"						"player userid"
+				"float1 set"							"int clipsize"
+				"float1 !less than"						"float 2"
+				"float1 multiply"						"float 0.1"
+				"float2 set"							"int lost"
+				"float2 less than"						"float float1"
+				"local_player get active weapon slot"	"void"
+				"local_player !weapon ammo empty"		"int output"
+				
+				// Init
+				"icon_target set"						"player local_player"
+				"integer1 set"							"int output"
+			}
+		}
+		
+		"close"
+		{
+			"weapon_reload"
+			{
+				"local_player is"						"player userid"
+				"float2 set"							"int lost"
+				"float2 !less than"						"float 1.0"
+				
+				// Init
+				"icon_target set"						"player local_player"
+			}
+		}
+		
+		"success"
+		{
+			"weapon_reload"
+			{
+				"local_player is"						"player userid"
+				"float2 set"							"int lost"
+				"float2 !less than"						"float 1.0"
+				
+				// Init
+				"icon_target set"						"player local_player"
+			}
+		}
+		
+		"update"
+		{
+			"Default"
+			{
+				"visible set"								"bool 0"
+			}
+			
+			"Low ammo"
+			{
+				"integer2 subtract"							"int 1"
+				"integer2 less than"						"int 1"
+				"local_player clip percentage less than"	"float 20.0f"
+				"local_player !clip percentage less than"	"float 0.0001f"
+				"local_player get active weapon slot"		"void"
+				"local_player !weapon ammo empty"			"int output"
+				"visible set"								"bool 1"
+			}
+			
+			"Swtiched weapons"
+			{
+				"local_player get active weapon slot"		"void"
+				"integer1 !is"								"int output"
+				"void close"								"void"
+			}
+		}
+	}
+}
