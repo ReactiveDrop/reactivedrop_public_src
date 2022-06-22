@@ -23,7 +23,7 @@ struct CAnimating_Letter
 	int m_nStartHeight;
 	int m_nEndWidth;	
 	int m_nEndHeight;
-	char m_chLetter;
+	wchar_t m_chLetter;
 };
 
 class CMission_Complete_Message : public vgui::EditablePanel
