@@ -103,8 +103,8 @@ ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_gre
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
-ConVar rda_marine_backpack("rda_marine_backpack", "0", FCVAR_REPLICATED, "Attach unactive weapon model to marine's back");
-ConVar rda_marine_backpack_alt_position("rda_marine_backpack_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
+ConVar rd_server_marine_backpacks("rd_server_marine_backpacks", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Attach unactive weapon model to marine's back");
+ConVar rd_server_marine_backpacks_alt_position("rd_server_marine_backpacks_alt_position", "0", FCVAR_NONE, "Set to 1 to use different rotation of backpack models");
 
 ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");
 ConVar rda_marine_strafe_push_hor_velocity("rda_marine_strafe_push_hor_velocity", "520", FCVAR_CHEAT, "Horizontal velocity for strafe push");
@@ -692,7 +692,7 @@ void CASW_Marine::ActivateUseIcon( CASW_Marine *pMarine, int nHoldType )
 				pPlayer->m_flUseKeyDownTime = 0.0f;
 			}
 
-			if (rda_marine_backpack.GetBool())
+			if (rd_server_marine_backpacks.GetBool())
 			{
 				CASW_Weapon* pWeapon0 = GetASWWeapon(0);
 				CASW_Weapon* pWeapon1 = GetASWWeapon(1);
@@ -1280,7 +1280,7 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				if ( !m_bKnockedOut )
 				{
-					if (rda_marine_backpack.GetBool())
+					if (rd_server_marine_backpacks.GetBool())
 					{
 						RemoveBackPackModel();
 					}
@@ -3020,7 +3020,7 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 
 	GetMarineResource()->UpdateWeaponIndices();
 
-	if (rda_marine_backpack.GetBool() && (index == 0 || index == 1))
+	if (rd_server_marine_backpacks.GetBool() && (index == 0 || index == 1))
 	{
 		//if this is pickup into empty slot GetLastWeaponSwitchedTo() gives us weapon we have
 		//if this is switch with existing weapon GetLastWeaponSwitchedTo() gives us weapon we picked up
@@ -3122,7 +3122,7 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 
 		CheckAndRequestAmmo();
 
-		if (rda_marine_backpack.GetBool() && (index == 0 || index == 1))
+		if (rd_server_marine_backpacks.GetBool() && (index == 0 || index == 1))
 		{
 			//if this is pickup into empty slot GetLastWeaponSwitchedTo() gives us weapon we have
 			//if this is switch with existing weapon GetLastWeaponSwitchedTo() gives us weapon we picked up
@@ -3189,7 +3189,7 @@ bool CASW_Marine::DropWeapon(int iWeaponIndex, bool bNoSwap)
 
 	RemoveWeaponPowerup( pWeapon );
 
-	if (rda_marine_backpack.GetBool() && iWeaponIndex != 2 && iWeaponIndex != ASW_TEMPORARY_WEAPON_SLOT && !bNoSwap)
+	if (rd_server_marine_backpacks.GetBool() && iWeaponIndex != 2 && iWeaponIndex != ASW_TEMPORARY_WEAPON_SLOT && !bNoSwap)
 	{
 		RemoveBackPackModel();
 	}
@@ -5870,6 +5870,7 @@ void CASW_Marine::CreateBackPackModel(CASW_Weapon *pWeapon)
 		UTIL_SetOrigin(pPrevWeaponBPModel, GetAbsOrigin());
 		pPrevWeaponBPModel->SetParent(this);
 		pPrevWeaponBPModel->SetParentAttachment("SetParentAttachment", "jump_jet_r", true);
+		pPrevWeaponBPModel->SetModelScale(0.75);
 
 		Class_T id = pWeapon->Classify();
 
@@ -5884,7 +5885,7 @@ void CASW_Marine::CreateBackPackModel(CASW_Weapon *pWeapon)
 		} 
 		else
 		{
-			if (!rda_marine_backpack_alt_position.GetBool())
+			if (!rd_server_marine_backpacks_alt_position.GetBool())
 			{
 				pPrevWeaponBPModel->SetLocalAngles(QAngle(0, 90, 0));
 

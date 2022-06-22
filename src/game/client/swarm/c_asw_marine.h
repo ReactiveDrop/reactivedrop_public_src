@@ -14,6 +14,7 @@
 #include "beamdraw.h"
 #include "object_motion_blur_effect.h"
 #include "asw_deathmatch_mode.h"
+#include "dlight.h"
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -427,6 +428,12 @@ public:
 	// shoulder cone
 	virtual void CreateShoulderCone();
 	EHANDLE m_hShoulderCone;
+
+	// backpack
+	virtual void CreateBackpack( C_BaseCombatWeapon *pWeapon );
+	virtual void RemoveBackpack();
+	EHANDLE m_hBackpack;
+	const char *m_sBackpackModel;
 
 	// powerup
 	bool HasAnyPowerups( void ) { return m_iPowerupType >= 0; }
