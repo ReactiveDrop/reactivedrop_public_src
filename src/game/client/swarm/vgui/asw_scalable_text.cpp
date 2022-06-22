@@ -116,6 +116,36 @@ float CASW_Scalable_Text::GetLetterWidth( wchar_t ch )
 		return 0.886f;
 	case L'T':
 		return 0.867f;
+	case L'А':
+		return 1.054f;
+	case L'В':
+		return 0.974f;
+	case L'Е':
+		return 0.892f;
+	case L'З':
+		return 0.732f;
+	case L'И':
+		return 1.054f;
+	case L'К':
+		return 0.974f;
+	case L'Л':
+		return 0.990f;
+	case L'М':
+		return 1.298f;
+	case L'Н':
+		return 1.054f;
+	case L'О':
+		return 1.054f;
+	case L'П':
+		return 1.054f;
+	case L'Р':
+		return 0.812f;
+	case L'С':
+		return 0.974f;
+	case L'Ш':
+		return 1.473f;
+	case L'Я':
+		return 0.974f;
 	default:
 		return 1.0f;
 	}
