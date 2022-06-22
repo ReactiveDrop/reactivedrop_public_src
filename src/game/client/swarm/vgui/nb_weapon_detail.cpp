@@ -182,7 +182,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 
 			if ( flDamage <= 0.0f )
 			{
-				g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" );
+				m_pValueLabel->SetText( "#asw_weapon_altfire_NA" );
 				m_pStatsBar->SetVisible( false );
 			}
 			else
