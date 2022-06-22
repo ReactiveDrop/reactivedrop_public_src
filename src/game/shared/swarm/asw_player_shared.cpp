@@ -95,6 +95,9 @@ ConVar asw_marine_nearby_angle("asw_marine_nearby_angle", "-75", FCVAR_REPLICATE
 ConVar asw_rts_controls("asw_rts_controls", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar asw_controls("asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Disable to get normal FPS controls (affects all players on the server)", ASWControlsChanged);
 ConVar asw_hl2_camera("asw_hl2_camera", "0", FCVAR_REPLICATED | FCVAR_DONTRECORD | FCVAR_CHEAT);
+#ifdef CLIENT_DLL
+ConVar asw_controls_spectator_override( "asw_controls_spectator_override", "-1", FCVAR_NONE, "Force a value for asw_controls while spectating.", ASWControlsChanged );
+#endif
 
 static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -1254,7 +1257,7 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 	if ( GetViewEntity() )
 		return GetViewEntity();
 
-	if (GetViewMarine())
+	if ( GetViewMarine() )
 		return GetViewMarine();
 
 	return this;
@@ -1272,6 +1275,11 @@ int CASW_Player::GetASWControls()
 	CAlienSwarm *pGameRules = ASWGameRules();
 	if ( pGameRules && pGameRules->GetMarineDeathCamInterp() )
 		return 1;
+
+	// if we're forcing a spectator override, everyone's controls change client-side while spectating.
+	C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
+	if ( asw_controls_spectator_override.GetInt() >= 0 && ( ( pLocal && pLocal->GetSpectatingMarine() ) || engine->IsPlayingDemo() ) )
+		return asw_controls_spectator_override.GetInt();
 #endif
 
 	return asw_controls.GetInt();
