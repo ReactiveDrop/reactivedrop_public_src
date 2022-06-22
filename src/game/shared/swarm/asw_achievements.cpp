@@ -1344,7 +1344,7 @@ class CAchievement_Mine_Kills : public CASW_Achievement
 		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_ALIEN_DEATH_EVENTS );
 		SetGoal( 100 );
 		SetStoreProgressInSteam( true );
-		SetWeaponClassFilter( CLASS_ASW_FIRE );
+		SetWeaponClassFilter( CLASS_ASW_MINES );
 	}
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Mine_Kills, ACHIEVEMENT_ASW_MINE_KILLS, "ASW_MINE_KILLS", 5, 1620 );
