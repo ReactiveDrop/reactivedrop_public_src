@@ -370,7 +370,7 @@
 		"Weapon_t" "40"
 		
 		"MarinePortrait_x" "5"
-		"MarinePortrait_y" "r75"
+		"MarinePortrait_y" "r80"
 		
 		// these coords are relative to the top left of the marine portrait
 		"MarinePortrait_circle_bg_x" "0"
@@ -438,7 +438,7 @@
 		"FastReload_t" "11"
 		
 		"SquadMates_x"	"151"		// spacing to the right of the currently active marine
-		"SquadMates_y"	"r55"
+		"SquadMates_y"	"r41"
 		"SquadMates_spacing"	"86"
 		
 		// these coords are relative to the top left of the squadmate's panel
