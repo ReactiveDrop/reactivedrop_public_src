@@ -56,7 +56,7 @@ CASW_Scalable_Text::~CASW_Scalable_Text()
 
 }
 
-int CASW_Scalable_Text::DrawSetLetterTexture( wchar_t ch, bool bGlow )
+int CASW_Scalable_Text::GetLetterTexture( wchar_t ch, bool bGlow )
 {
 	CUtlMap<wchar_t, int> &textures = bGlow ? m_nGlowLetterTextureID : m_nLetterTextureID;
 	ushort index = textures.Find( ch );
@@ -82,4 +82,41 @@ int CASW_Scalable_Text::DrawSetLetterTexture( wchar_t ch, bool bGlow )
 	vgui::surface()->DrawSetTextureFile( textureID, szMaterialName, true, false );
 
 	return textureID;
+}
+
+float CASW_Scalable_Text::GetLetterWidth( wchar_t ch )
+{
+	switch ( ch )
+	{
+	case L'A':
+		return 1.010f;
+	case L'C':
+		return 0.810f;
+	case L'D':
+		return 1.016f;
+	case L'E':
+		return 0.854f;
+	case L'F':
+		return 0.847f;
+	case L'G':
+		return 0.959f;
+	case L'I':
+		return 0.488f;
+	case L'L':
+		return 0.762f;
+	case L'M':
+		return 1.228f;
+	case L'N':
+		return 1.089f;
+	case L'O':
+		return 1.034f;
+	case L'P':
+		return 0.988f;
+	case L'S':
+		return 0.886f;
+	case L'T':
+		return 0.867f;
+	default:
+		return 1.0f;
+	}
 }

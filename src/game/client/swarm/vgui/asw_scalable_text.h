@@ -4,15 +4,14 @@
 #pragma once
 #endif
 
-#define NUM_SCALABLE_LETTERS 26
-
 class CASW_Scalable_Text
 {
 public:
 	CASW_Scalable_Text();
 	virtual ~CASW_Scalable_Text();
 
-	int DrawSetLetterTexture( wchar_t ch, bool bGlow );
+	int GetLetterTexture( wchar_t ch, bool bGlow );
+	float GetLetterWidth( wchar_t ch );
 
 	CUtlMap<wchar_t, int> m_nLetterTextureID;
 	CUtlMap<wchar_t, int> m_nGlowLetterTextureID;
@@ -21,17 +20,3 @@ public:
 CASW_Scalable_Text* ASWScalableText();
 
 #endif // _INCLUDED_ASW_SCALABLE_TEXT_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-

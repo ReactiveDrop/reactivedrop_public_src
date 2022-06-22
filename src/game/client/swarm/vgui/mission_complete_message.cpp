@@ -3,7 +3,8 @@
 #include "vgui_controls/Label.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/TextEntry.h"
-#include <vgui/isurface.h>
+#include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include "asw_scalable_text.h"
 #include "asw_gamerules.h"
 
@@ -68,95 +69,55 @@ void CMission_Complete_Message::PaintMessageBackground()
 void CMission_Complete_Message::StartMessage( bool bSuccess )
 {
 	m_bSuccess = bSuccess;
-	int row_middle_x = ScreenWidth() * 0.5f;
-	int row_middle_y = ScreenHeight() * 0.35f;
 
 	m_aAnimatingLetters.PurgeAndDeleteElements();
 
 	m_flMessageBackgroundStartTime = gpGlobals->curtime + 0.4f;
 	m_flMessageBackgroundFadeDuration = 0.6f;
 
-	const char *szLanguage = SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "english";
-
 	// MISSION
 	float flStartTime = gpGlobals->curtime + 0.2f;
-	float flLetterTimeInterval = 0.075f;
 	if ( m_bSuccess && ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
 	{
-		//if ( FStrEq( szLanguage, "" ) )
-		//{
-		//}
-		//else
-		{
-			AddLetter( L'C', row_middle_x, row_middle_y, -3.36, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'A', row_middle_x, row_middle_y, -2.4, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'M', row_middle_x, row_middle_y, -1.29, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'P', row_middle_x, row_middle_y, -0.23, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'A', row_middle_x, row_middle_y, 0.7, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'I', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'G', row_middle_x, row_middle_y, 2.2, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'N', row_middle_x, row_middle_y, 3.2, flStartTime ); flStartTime += flLetterTimeInterval;
-		}
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_CAMPAIGN" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
 	}
 	else
 	{
-		//if ( FStrEq( szLanguage, "" ) )
-		//{
-		//}
-		//else
-		{
-			AddLetter( L'M', row_middle_x, row_middle_y, -2.44, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'I', row_middle_x, row_middle_y, -1.6, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'S', row_middle_x, row_middle_y, -0.9, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'S', row_middle_x, row_middle_y, 0, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'I', row_middle_x, row_middle_y, 0.71, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'O', row_middle_x, row_middle_y, 1.47, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'N', row_middle_x, row_middle_y, 2.5, flStartTime ); flStartTime += flLetterTimeInterval;
-		}
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_MISSION" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
 	}
 
 	flStartTime += 0.2f;
 
-	// COMPLETE
-	row_middle_y = ScreenHeight() * 0.50f;
-
 	if ( m_bSuccess )
 	{
-		//if ( FStrEq( szLanguage, "" ) )
-		//{
-		//}
-		//else
-		{
-			row_middle_x += 18.0f * ( ScreenHeight() / 1050.0f );
-			AddLetter( L'C', row_middle_x, row_middle_y, -3.56, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'O', row_middle_x, row_middle_y, -2.6, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'M', row_middle_x, row_middle_y, -1.49, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'P', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'L', row_middle_x, row_middle_y, 0.45, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'E', row_middle_x, row_middle_y, 1.32, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'T', row_middle_x, row_middle_y, 2.25, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'E', row_middle_x, row_middle_y, 3.16, flStartTime ); flStartTime += flLetterTimeInterval;
-		}
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_COMPLETE" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
 	}
 	else
 	{
-		//if ( FStrEq( szLanguage, "" ) )
-		//{
-		//}
-		//else
-		{
-			row_middle_x += 20.0f * ( ScreenHeight() / 1050.0f );
-			AddLetter( L'F', row_middle_x, row_middle_y, -2.1, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'A', row_middle_x, row_middle_y, -1.2, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'I', row_middle_x, row_middle_y, -0.43, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'L', row_middle_x, row_middle_y, 0.22, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'E', row_middle_x, row_middle_y, 1.08, flStartTime ); flStartTime += flLetterTimeInterval;
-			AddLetter( L'D', row_middle_x, row_middle_y, 2.01, flStartTime ); flStartTime += flLetterTimeInterval;
-		}
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_FAILED" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
 	}
 }
 
-void CMission_Complete_Message::AddLetter( char letter, int x, int y, float letter_offset, float flStartTime )
+void CMission_Complete_Message::AddWord( const wchar_t *wszWord, int row_middle_x, int row_middle_y, float &flStartTime, float flLetterTimeInterval )
+{
+	float flTotalWidth = 0;
+	for ( const wchar_t *pLetter = wszWord; *pLetter; pLetter++ )
+	{
+		flTotalWidth += ASWScalableText()->GetLetterWidth( *pLetter );
+	}
+
+	float flLetterOffset = -flTotalWidth / 2.0f;
+	for ( const wchar_t *pLetter = wszWord; *pLetter; pLetter++ )
+	{
+		float flHalfWidth = ASWScalableText()->GetLetterWidth( *pLetter ) / 2.0f;
+		flLetterOffset += flHalfWidth;
+		AddLetter( *pLetter, row_middle_x, row_middle_y, flLetterOffset, flStartTime );
+		flLetterOffset += flHalfWidth;
+		flStartTime += flLetterTimeInterval;
+	}
+}
+
+void CMission_Complete_Message::AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime )
 {
 	const int letter_end_spacing = YRES( 50 );
 	const int letter_start_spacing = YRES( 100 );
@@ -185,9 +146,6 @@ void CMission_Complete_Message::AddLetter( char letter, int x, int y, float lett
 
 void CMission_Complete_Message::PaintLetters()
 {
-	if ( !ASWScalableText() )
-		return;
-
 	int nCount = m_aAnimatingLetters.Count();
 	for ( int i = 0; i < nCount; i++ )
 	{
@@ -228,7 +186,8 @@ void CMission_Complete_Message::PaintLetter( CAnimating_Letter *pLetter, bool bG
 	{
 		surface()->DrawSetColor( Color( 255, 255, 255, flLerpAmount * 255.0f ) );
 	}
-	ASWScalableText()->DrawSetLetterTexture( pLetter->m_chLetter, bGlow );
+	int iTexture = ASWScalableText()->GetLetterTexture( pLetter->m_chLetter, bGlow );
+	surface()->DrawSetTexture( iTexture );
 
 	Vertex_t points[4] =
 	{

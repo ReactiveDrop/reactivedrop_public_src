@@ -38,7 +38,8 @@ public:
 
 	void PaintMessageBackground();
 	void StartMessage( bool bSuccess );
-	void AddLetter( char letter, int x, int y, float letter_offset, float flStartTime );
+	void AddWord( const wchar_t *wszWord, int row_middle_x, int row_middle_y, float & flStartTime, float flLetterTimeInterval );
+	void AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime );
 	void PaintLetters();
 	void PaintLetter( CAnimating_Letter *pLetter, bool bGlow );
 	bool m_bSuccess;
