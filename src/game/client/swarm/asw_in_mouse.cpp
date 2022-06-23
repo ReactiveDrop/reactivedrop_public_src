@@ -16,7 +16,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar glow_outline_color_active( "glow_outline_color_active", "153 153 204", FCVAR_NONE );
-ConVar glow_outline_color_active( "glow_outline_color_inactive", "77 77 77", FCVAR_NONE );
+ConVar glow_outline_color_inactive( "glow_outline_color_inactive", "77 77 77", FCVAR_NONE );
 
 //-----------------------------------------------------------------------------
 // Purpose: make sure cursor isn't reset to 0 by the accumulation
