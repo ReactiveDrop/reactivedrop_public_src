@@ -1058,8 +1058,6 @@ void MainMenu::Activate()
 	// for us to be able to browse lobbies with up to 32 slots
 	mm_max_players.Revert();
 
-	// #iss-speaker-reset 
-	// restart sound engine here
 	static bool bRunOnce = true;
 	if ( bRunOnce )
 	{
@@ -1069,8 +1067,18 @@ void MainMenu::Activate()
 			SteamNetworkingUtils()->InitRelayNetworkAccess();
 		}
 
+		if ( ConVarRef( "net_steamcnx_allowrelay" ).GetBool() )
+		{
+			// if relayed connections are enabled, use them by default instead of trying direct IPv4 UDP first
+			ConVarRef( "net_steamcnx_enabled" ).SetValue( 2 );
+		}
+
+		// update soundcache on initial load
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
-		engine->ClientCmd( "execifexists loadouts" );	// added support for loadout editor, by element109
+
+		// added support for loadout editor, by element109
+		engine->ClientCmd( "execifexists loadouts" );
+
 		bRunOnce = false;
 	}
 	//
