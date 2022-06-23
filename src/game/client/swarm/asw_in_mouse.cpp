@@ -15,6 +15,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar glow_outline_color_active( "glow_outline_color_active", "153 153 204", FCVAR_NONE );
+ConVar glow_outline_color_active( "glow_outline_color_inactive", "77 77 77", FCVAR_NONE );
+
 //-----------------------------------------------------------------------------
 // Purpose: make sure cursor isn't reset to 0 by the accumulation
 //-----------------------------------------------------------------------------
@@ -257,12 +260,12 @@ void CASWInput::SetHighlightEntity( C_BaseEntity* pEnt, bool bGlow )
 	{
 		if ( bGlow )
 		{
-			m_HighLightGlowObject.SetColor( Vector( 0.6f, 0.6f, 0.8f ) );
+			m_HighLightGlowObject.SetColor( glow_outline_color_active.GetColorAsVector() );
 			m_HighLightGlowObject.SetAlpha( 0.7f );
 		}
 		else
 		{
-			m_HighLightGlowObject.SetColor( Vector( 0.3f, 0.3f, 0.3f ) );
+			m_HighLightGlowObject.SetColor( glow_outline_color_inactive.GetColorAsVector() );
 			m_HighLightGlowObject.SetAlpha( 0.5f );
 		}
 	}
