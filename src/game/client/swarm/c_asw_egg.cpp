@@ -11,6 +11,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar glow_outline_color_alien;
+
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Egg, DT_ASW_Egg, CASW_Egg)
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
 	RecvPropFloat( RECVINFO( m_fEggAwake ) ),
@@ -24,7 +26,7 @@ C_ASW_Egg::C_ASW_Egg()
 	m_pBurningEffect = NULL;
 	m_fEggAwake = 0;
 
-	m_GlowObject.SetColor( Vector( 0.3f, 0.6f, 0.1f ) );
+	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );

@@ -40,6 +40,7 @@ ConVar asw_alien_shadows("asw_alien_shadows", "0", 0, "If set to one, aliens wil
 ConVar asw_alien_footstep_interval( "asw_alien_footstep_interval", "0.25", 0, "Minimum interval between alien footstep sounds. Used to keep them from piling up and preventing others from playing." );
 ConVar asw_breakable_aliens( "asw_breakable_aliens", "1", 0, "If set, aliens can break into ragdoll gibs" );
 ConVar rd_max_drone_death_particles( "rd_max_drone_death_particles", "25", FCVAR_ARCHIVE, "Maximum number of drone blood particle being created per 1 frame" );
+ConVar glow_outline_color_alien( "glow_outline_color_alien", "77 153 26", FCVAR_NONE );
 extern ConVar asw_override_footstep_volume;
 extern ConVar asw_alien_debug_death_style;
 
@@ -90,7 +91,7 @@ m_MotionBlurObject( this, 0.0f )
 	m_vecLastRenderedPos = vec3_origin;
 	m_pBurningEffect = NULL;
 
-	m_GlowObject.SetColor( Vector( 0.3f, 0.6f, 0.1f ) );
+	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );

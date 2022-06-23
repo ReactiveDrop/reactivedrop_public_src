@@ -14,6 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar glow_outline_color_weapon;
+
 bool C_ASW_Pickup::s_bLoadedUseIconTextures = false;
 int C_ASW_Pickup::s_nUseIconTake = -1;
 int C_ASW_Pickup::s_nUseIconTakeRifleAmmo = -1;
@@ -37,7 +39,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup, DT_ASW_Pickup, CASW_Pickup )
 END_RECV_TABLE()
 
 C_ASW_Pickup::C_ASW_Pickup() :
-m_GlowObject( this, Vector( 0.0f, 0.4f, 0.75f ), 1.0f, false, true )
+m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
 {	
 	m_szUseIconText[0] = '\0';
 	//m_fAmbientLight = 0.02f;

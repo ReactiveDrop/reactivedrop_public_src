@@ -96,13 +96,14 @@ ConVar asw_muzzle_light( "asw_muzzle_light", "255 192 64 6", FCVAR_CHEAT );
 ConVar asw_muzzle_flash_new_type( "asw_muzzle_flash_new_type", "0", FCVAR_CHEAT );
 ConVar asw_laser_sight( "asw_laser_sight", "1", FCVAR_ARCHIVE );
 ConVar asw_laser_sight_min_distance( "asw_laser_sight_min_distance", "9999", 0, "The min distance at which to accurately draw the laser sight from the muzzle rather than using the shoot direction" );
+ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVAR_NONE );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
 C_ASW_Weapon::C_ASW_Weapon() :
-m_GlowObject( this, Vector( 0.0f, 0.4f, 0.75f ), 1.0f, false, true )
+m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
 {
 	SetPredictionEligible( true );
 	m_iEquipmentListIndex = -1;
