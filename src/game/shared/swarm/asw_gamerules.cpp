@@ -4280,6 +4280,7 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	// set up faction relationships
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_ALIENS, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ALIENS, D_LIKE, 0 );
@@ -4289,6 +4290,7 @@ void CAlienSwarm::InitDefaultAIRelationships()
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_MARINES, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
 
 	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
