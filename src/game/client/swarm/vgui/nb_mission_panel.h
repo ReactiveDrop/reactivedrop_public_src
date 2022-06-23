@@ -71,6 +71,7 @@ public:
 	int m_iLastHardcoreFF;
 	int m_iLastOnslaught;
 	bool m_bIgnoreSelections;
+	bool m_bAddedDropdownsToControllerFocus;
 };
 
 class InGameMissionPanelFrame : public vgui::Frame

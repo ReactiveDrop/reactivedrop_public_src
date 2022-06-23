@@ -77,25 +77,23 @@ CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : 
 	m_iLastHardcoreFF = -1;
 	m_iLastOnslaught = -1;
 	m_bIgnoreSelections = false;
+	m_bAddedDropdownsToControllerFocus = false;
 
 	// back button was auto-added, but we need it to be marked as modal
 	GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
 	GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
-
-	GetControllerFocus()->AddToFocusList( m_drpDifficulty, false, true );
-	GetControllerFocus()->AddToFocusList( m_drpGameMode, false, true );
-	GetControllerFocus()->AddToFocusList( m_drpFriendlyFire, false, true );
-	GetControllerFocus()->AddToFocusList( m_drpOnslaught, false, true );
-	GetControllerFocus()->AddToFocusList( m_drpChallenge, false, true );
 }
 
 CNB_Mission_Panel::~CNB_Mission_Panel()
 {
-	GetControllerFocus()->RemoveFromFocusList( m_drpDifficulty );
-	GetControllerFocus()->RemoveFromFocusList( m_drpGameMode );
-	GetControllerFocus()->RemoveFromFocusList( m_drpFriendlyFire );
-	GetControllerFocus()->RemoveFromFocusList( m_drpOnslaught );
-	GetControllerFocus()->RemoveFromFocusList( m_drpChallenge );
+	if ( m_bAddedDropdownsToControllerFocus )
+	{
+		GetControllerFocus()->RemoveFromFocusList( m_drpDifficulty->GetButton() );
+		GetControllerFocus()->RemoveFromFocusList( m_drpGameMode->GetButton() );
+		GetControllerFocus()->RemoveFromFocusList( m_drpFriendlyFire->GetButton() );
+		GetControllerFocus()->RemoveFromFocusList( m_drpOnslaught->GetButton() );
+		GetControllerFocus()->RemoveFromFocusList( m_drpChallenge->GetButton() );
+	}
 }
 
 void CNB_Mission_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -114,6 +112,16 @@ void CNB_Mission_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 // 		m_pObjectiveMap->SetTall( m_pObjectiveMap->GetTall() * 1.5f );
 		//m_drpDifficulty->SetVisible( false );
 		m_drpFixedSkillPoints->SetVisible( false );
+	}
+
+	if ( !m_bAddedDropdownsToControllerFocus )
+	{
+		m_bAddedDropdownsToControllerFocus = true;
+		GetControllerFocus()->AddToFocusList( m_drpDifficulty->GetButton(), false, true );
+		GetControllerFocus()->AddToFocusList( m_drpGameMode->GetButton(), false, true );
+		GetControllerFocus()->AddToFocusList( m_drpFriendlyFire->GetButton(), false, true );
+		GetControllerFocus()->AddToFocusList( m_drpOnslaught->GetButton(), false, true );
+		GetControllerFocus()->AddToFocusList( m_drpChallenge->GetButton(), false, true );
 	}
 }
 
@@ -168,22 +176,26 @@ void CNB_Mission_Panel::OnThink()
 
 		m_pHeaderFooter->SetTitle( wszTitleText );
 	}
-	if (ASWGameRules() && ASWGameRules()->GetCampaignSave())
+	if ( ASWGameRules() && ASWGameRules()->GetCampaignSave() )
 	{
 		int iRetries = ASWGameRules()->GetCampaignSave()->GetRetries();
-		
-		if (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING)	// #8 Number of retries in UI shows a number that is bigger by 1
+
+		if ( ASWGameRules()->GetGameState() != ASW_GS_BRIEFING )	// #8 Number of retries in UI shows a number that is bigger by 1
 			iRetries -= 1;	// since retries counter is incremented on mission start it is safer to -1 it here in UI
 
-		if (iRetries > 0)
+		if ( iRetries > 0 )
 		{
-			m_pRetriesLabel->SetVisible(true);
-			char buffer[24];
-			Q_snprintf(buffer, sizeof(buffer), "Retries: %d", iRetries);
-			m_pRetriesLabel->SetText(buffer);
+			m_pRetriesLabel->SetVisible( true );
+			wchar_t number[20];
+			V_snwprintf( number, sizeof( number ), L"%d", iRetries );
+			wchar_t buffer[64];
+			g_pVGuiLocalize->ConstructString( buffer, sizeof( buffer ), g_pVGuiLocalize->Find( "#asw_campaign_retries_label" ), 1, number );
+			m_pRetriesLabel->SetText( buffer );
 		}
 		else
-			m_pRetriesLabel->SetVisible(false);
+		{
+			m_pRetriesLabel->SetVisible( false );
+		}
 	}
 	else
 	{	

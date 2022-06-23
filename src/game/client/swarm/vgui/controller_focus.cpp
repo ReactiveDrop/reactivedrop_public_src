@@ -186,11 +186,18 @@ void CControllerFocus::RemoveFromFocusList(vgui::Panel* pPanel)
 
 void CControllerFocus::PushModal()
 {
+	if ( m_bDebugOutput )
+		Msg( "Entering modal scope...\n" );
 	m_iModalScope++;
+	if ( m_bDebugOutput )
+		Msg( "Modal scope increased to %d\n", m_iModalScope );
 }
 
 void CControllerFocus::PopModal()
 {
+	if ( m_bDebugOutput )
+		Msg( "Leaving modal scope...\n" );
+
 	Assert( m_iModalScope > 0 );
 	FOR_EACH_VEC_BACK( m_FocusAreas, i )
 	{
@@ -210,6 +217,8 @@ void CControllerFocus::PopModal()
 	}
 
 	m_iModalScope--;
+	if ( m_bDebugOutput )
+		Msg( "Modal scope decreased to %d\n", m_iModalScope );
 }
 
 bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)

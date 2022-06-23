@@ -4,6 +4,7 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
 #include "VFlyoutMenu.h"
 #include "VGenericPanelList.h"
 #include "VFooterPanel.h"
@@ -15,6 +16,7 @@
 
 #include "filesystem.h"
 #include "fmtstr.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -236,11 +238,27 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 	sm_pActiveMenu = this;	
 
 	SetVisible( true );
+
+	GetControllerFocus()->PushModal();
+	for ( int i = 0; i < GetChildCount(); ++i )
+	{
+		vgui::Button *button = dynamic_cast< vgui::Button * >( GetChild( i ) );
+		if ( button )
+		{
+			GetControllerFocus()->AddToFocusList( button, false, true );
+		}
+	}
+
+	if ( m_defaultControl )
+	{
+		GetControllerFocus()->SetFocusPanel( m_defaultControl );
+	}
 }
 
 void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 {
 	Assert( sm_pActiveMenu == NULL || sm_pActiveMenu == this );		// if we think there is an active menu right now, it should be us
+	bool bActuallyClosing = sm_pActiveMenu == this;
 	sm_pActiveMenu = NULL;
 
 	//clear any items that may have been highlighted
@@ -266,6 +284,19 @@ void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 	if ( button )
 	{
 		button->SetClosed();
+	}
+
+	if ( bActuallyClosing )
+	{
+		for ( int i = 0; i < GetChildCount(); ++i )
+		{
+			vgui::Button *button = dynamic_cast< vgui::Button * >( GetChild( i ) );
+			if ( button )
+			{
+				GetControllerFocus()->RemoveFromFocusList( button );
+			}
+		}
+		GetControllerFocus()->PopModal();
 	}
 }
 
