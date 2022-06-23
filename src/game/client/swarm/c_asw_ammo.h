@@ -10,6 +10,8 @@ public:
 
 	C_ASW_Ammo();
 
+	virtual bool AllowedToPickup( C_ASW_Marine *pMarine );
+
 	char m_szAmmoFullText[32];
 	char m_szNoGunText[32];
 	int m_iAmmoIndex;
