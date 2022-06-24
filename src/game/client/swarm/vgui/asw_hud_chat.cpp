@@ -465,11 +465,23 @@ Color CHudChat::GetClientColor( int clientIndex )
 void CHudChat::StartMessageMode( int iMessageModeType )
 {
 	BaseClass::StartMessageMode( iMessageModeType );
+
+	if ( SteamUtils() )
+	{
+		int x, y, w, t;
+		GetBounds( x, y, w, t );
+		SteamUtils()->ShowFloatingGamepadTextInput( k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+	}
 }
 
 void CHudChat::StopMessageMode( bool bFade )
 {
 	BaseClass::StopMessageMode( bFade );
+
+	if ( SteamUtils() )
+	{
+		SteamUtils()->DismissFloatingGamepadTextInput();
+	}
 }
 
 void CHudChat::ShowChatPanel()

@@ -5,6 +5,7 @@
 #endif
 
 #include <hud_basechat.h>
+#include "steam/steam_api.h"
 
 extern ConVar asw_draw_hud;
 
@@ -50,6 +51,11 @@ public:
 
 	vgui::Panel *m_pSwarmBackground;
 	vgui::Panel *m_pSwarmBackgroundInner;
+
+	STEAM_CALLBACK( CHudChat, OnFloatingGamepadTextInputDismissed, FloatingGamepadTextInputDismissed_t )
+	{
+		StopMessageMode();
+	}
 #endif
 };
 
