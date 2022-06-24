@@ -23,7 +23,9 @@ extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for
 
 
 ConVar asw_sentry_gun_type("asw_sentry_gun_type", "-1", FCVAR_CHEAT, "Force the type of sentry guns built to this. -1, the default, reads from the marine attributes.");
-ConVar asw_sentry_infinite_ammo( "asw_sentry_infinite_ammo", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
+ConVar asw_sentry_infinite_ammo( "asw_sentry_infinite_ammo", "0", FCVAR_CHEAT );
+ConVar asw_sentry_health_base( "asw_sentry_health_base", "300", FCVAR_CHEAT );
+ConVar asw_sentry_health_step( "asw_sentry_health_step", "0", FCVAR_CHEAT );
 ConVar rd_sentry_take_damage_from_marine( "rd_sentry_take_damage_from_marine", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 1, players can destroy sentry by shooting at it." );
 ConVar rd_sentry_invincible( "rd_sentry_invincible", "0", FCVAR_CHEAT, "If set to 1 sentries will not take damage from anything" );
 ConVar rd_sentry_refilled_by_dismantling( "rd_sentry_refilled_by_dismantling", "0", FCVAR_CHEAT, "If set to 1 marine will refill sentry ammo by dismantling it." );
@@ -113,8 +115,9 @@ void CASW_Sentry_Base::Spawn( void )
 
 	SetCollisionBounds( Vector(-26,-26,0), Vector(26,26,60));
 
-	SetMaxHealth(300);
-	SetHealth(300);
+	int iHealth = asw_sentry_health_base.GetInt() + ( ASWGameRules() ? ASWGameRules()->GetMissionDifficulty() - 5 : 0 ) * asw_sentry_health_step.GetInt();
+	SetMaxHealth( iHealth );
+	SetHealth( iHealth );
 	m_takedamage = DAMAGE_YES;
 
 	SetThink( &CASW_Sentry_Base::AnimThink );	
