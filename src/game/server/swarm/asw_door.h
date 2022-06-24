@@ -154,6 +154,8 @@ public:
 
 	inline int GetDoorType() { return m_iDoorType; }
 
+	void UpdateDoorHealthOnMissionStart( int iDifficulty );
+
 private:
 
 	float m_fLastFullyWeldedSound;

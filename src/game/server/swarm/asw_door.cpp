@@ -135,6 +135,12 @@ ConVar asw_door_drone_damage_scale("asw_door_drone_damage_scale", "2.0f", FCVAR_
 ConVar asw_door_seal_damage_reduction("asw_door_seal_damage_reduction", "0.6f", FCVAR_CHEAT, "Alien damage scale when door is fully sealed");
 ConVar asw_door_physics("asw_door_physics", "0", FCVAR_CHEAT, "If set, doors will turn into vphysics objects upon death.");
 ConVar rd_door_melee_damage("rd_door_melee_damage", "0", FCVAR_CHEAT, "Allow doors to take melee damage from marines.");
+ConVar asw_door_damage_base( "asw_door_damage_base", "1000", FCVAR_CHEAT, "Damage being hit by a door does on Normal." );
+ConVar asw_door_damage_step( "asw_door_damage_step", "0", FCVAR_CHEAT, "Increase/decrease in damage from being hit by a door for every mission difficulty above/below 5." );
+ConVar asw_door_normal_health_base( "asw_door_normal_health_base", MKSTRING( ASW_DOOR_NORMAL_HEALTH ), FCVAR_CHEAT | FCVAR_REPLICATED, "Base health for a non-reinforced door on Normal." );
+ConVar asw_door_normal_health_step( "asw_door_normal_health_step", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Increase/decrease in health for a non-reinforced door on for every mission difficulty above/below 5." );
+ConVar asw_door_reinforced_health_base( "asw_door_reinforced_health_base", MKSTRING( ASW_DOOR_REINFORCED_HEALTH ), FCVAR_CHEAT, "Base health for a reinforced door on Normal." );
+ConVar asw_door_reinforced_health_step( "asw_door_reinforced_health_step", "0", FCVAR_CHEAT, "Increase/decrease in health for a reinforced door on for every mission difficulty above/below 5." );
 extern ConVar asw_debug_marine_chatter;
 extern ConVar asw_difficulty_alien_damage_step;
 
@@ -338,7 +344,7 @@ bool CASW_Door::DestroyVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer
 	if ( pDoor->m_iHealth <= 0 )
 		return false;
 
-	if ( static_cast<float>( pDoor->m_iHealth ) / pDoor->GetMaxHealth() > 0.4f )
+	if ( float( pDoor->m_iHealth ) / pDoor->GetMaxHealth() > 0.4f )
 		return false;
 
 	return true;
@@ -2025,7 +2031,7 @@ void CASW_Door::FallCrush()
 	maxs.y = MAX(MAX(tl.y, tr.y), MAX(br.y, bl.y));
 	maxs.z = tall;
 
-	CTakeDamageInfo	dmgInfo( this, this, 1000, DMG_SLASH );	
+	CTakeDamageInfo	dmgInfo( this, this, asw_door_damage_base.GetFloat() + ( ASWGameRules()->GetMissionDifficulty() - 5 ) * asw_door_damage_step.GetFloat(), DMG_SLASH );
 	dmgInfo.SetDamageForce( vForward * 100.0f );
 	dmgInfo.SetDamagePosition( vEnd );
 	CASW_Trace_Filter_Door_Crush traceFilter( this, COLLISION_GROUP_NONE, &dmgInfo, 1.0f, true );
@@ -2098,4 +2104,38 @@ void CASW_Door::ComputeDoorExtent( Extent *extent, unsigned int extentType )
 
 	extent->lo += GetAbsOrigin();
 	extent->hi += GetAbsOrigin();
+}
+
+void CASW_Door::UpdateDoorHealthOnMissionStart( int iDifficulty )
+{
+	if ( m_iDoorType == 2 )
+		return;
+
+	Assert( ( m_iDoorType == 0 && m_iDoorStrength == ASW_DOOR_NORMAL_HEALTH ) || ( m_iDoorType == 1 && m_iDoorStrength == ASW_DOOR_REINFORCED_HEALTH ) );
+	Assert( m_DentAmount == ASWDD_NONE || m_DentAmount == ASWDD_PARTIAL || m_DentAmount == ASWDD_COMPLETE );
+
+	float flScale = 1.0f;
+	if ( m_DentAmount == ASWDD_PARTIAL )
+	{
+		flScale = ASW_DOOR_PARTIAL_DENT_HEALTH;
+	}
+	else if ( m_DentAmount == ASWDD_COMPLETE )
+	{
+		flScale = ASW_DOOR_COMPLETE_DENT_HEALTH;
+	}
+
+	Assert( m_iHealth == m_iMaxHealth );
+	Assert( m_iHealth == int( m_iDoorStrength * flScale ) );
+
+	if ( m_iDoorType == 0 )
+	{
+		m_iDoorStrength = asw_door_normal_health_base.GetInt() + ( iDifficulty - 5 ) * asw_door_normal_health_step.GetInt();
+	}
+	else
+	{
+		m_iDoorStrength = asw_door_reinforced_health_base.GetInt() + ( iDifficulty - 5 ) * asw_door_reinforced_health_step.GetInt();
+	}
+
+	m_iHealth = MAX( m_iDoorStrength * flScale, 1 );
+	SetMaxHealth( m_iHealth );
 }

@@ -100,6 +100,7 @@
 	#include "eventqueue.h"
 	#include "ai_dynamiclink.h"
 	#include "asw_spawn_selection.h"
+	#include "asw_door.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -7026,6 +7027,12 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 		{
 			FindAndModifyAlienHealth( ASWSpawnManager()->GetAlienClass( i )->m_pszAlienClass );
 		}
+	}
+
+	CBaseEntity *pDoor = NULL;
+	while ( ( pDoor = gEntList.FindEntityByClassname( pDoor, "asw_door" ) ) != NULL )
+	{
+		assert_cast< CASW_Door * >( pDoor )->UpdateDoorHealthOnMissionStart( m_iMissionDifficulty );
 	}
 
 	if ( gameeventmanager )

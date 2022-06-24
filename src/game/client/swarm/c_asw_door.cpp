@@ -5,6 +5,7 @@
 #include "vgui/IInput.h"
 #include "engine/ivdebugoverlay.h"
 #include "asw_shareddefs.h"
+#include "asw_gamerules.h"
 #include "effect_dispatch_data.h"
 #include "c_te_effect_dispatch.h"
 
@@ -29,6 +30,9 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Door, DT_ASW_Door, CASW_Door )
 	RecvPropVector		(RECVINFO(m_vecClosedPosition)),
 	RecvPropBool		(RECVINFO(m_bSkillMarineHelping)),	
 END_RECV_TABLE()
+
+ConVar asw_door_normal_health_base( "asw_door_normal_health_base", MKSTRING( ASW_DOOR_NORMAL_HEALTH ), FCVAR_CHEAT | FCVAR_REPLICATED, "Base health for a non-reinforced door on Normal." );
+ConVar asw_door_normal_health_step( "asw_door_normal_health_step", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Increase/decrease in health for a non-reinforced door on for every mission difficulty above/below 5." );
 
 bool C_ASW_Door::s_bLoadedSealedIconTexture = false;
 bool C_ASW_Door::s_bLoadedFullySealedIconTexture = false;
@@ -247,7 +251,7 @@ float C_ASW_Door::GetHealthFraction(int &iDoorType) const
 		iDoorType = 2;
 		return 1.0f;
 	}
-	if ( m_iDoorStrength == ASW_DOOR_NORMAL_HEALTH )		// normal
+	if ( m_iDoorStrength == asw_door_normal_health_base.GetInt() + ( ASWGameRules()->GetMissionDifficulty() - 5 ) * asw_door_normal_health_step.GetInt() )		// normal
 	{
 		iDoorType = 0;
 	}
@@ -256,7 +260,7 @@ float C_ASW_Door::GetHealthFraction(int &iDoorType) const
 		iDoorType = 1;		// reinforced
 	}
 
-	return ( static_cast< float >( MAX( 0, m_iHealth ) ) - MIN( 0.0f, m_fLastMomentFlipDamage ) ) / static_cast< float >( m_iDoorStrength );
+	return ( float( MAX( 0, m_iHealth ) ) - MIN( 0.0f, m_fLastMomentFlipDamage ) ) / float( m_iDoorStrength );
 }
 
 void C_ASW_Door::OnDataChanged( DataUpdateType_t type )
