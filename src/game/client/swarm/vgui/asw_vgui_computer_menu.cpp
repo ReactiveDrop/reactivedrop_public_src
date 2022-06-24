@@ -411,6 +411,12 @@ void CASW_VGUI_Computer_Menu::OnThink()
 			m_pMenuLabel[i]->SetFgColor(Color(255,255,255,255));
 		}
 	}
+
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pLocalPlayer && pLocalPlayer->GetSpectatingMarine() && m_hCurrentPage.Get() )
+	{
+		HideMenu( true );
+	}
 	
 	if (m_bFadingCurrentPage)
 	{
