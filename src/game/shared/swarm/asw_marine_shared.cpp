@@ -672,12 +672,12 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 
 	if ( m_iDamageAttributeEffects & BULLET_ATT_FREEZE )
 	{
-		if (pTarget)
+		if ( pTarget )
 		{
-			CAI_BaseNPC* pNPC = pTarget->MyNPCPointer();
-			if (pNPC)
+			CAI_BaseNPC *pNPC = pTarget->MyNPCPointer();
+			if ( pNPC )
 			{
-				pNPC->Freeze(100.0f, this);
+				pNPC->Freeze( 3.0f, this );
 			}
 		}
 	}
