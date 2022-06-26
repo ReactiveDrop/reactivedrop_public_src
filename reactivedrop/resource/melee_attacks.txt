@@ -59,7 +59,7 @@
 	"MaxMeleeSkill" "5"
 	"DamageScale" "1.0"
 	"SpeedScale" "1.0"
-	"KnockbackForce" "450"
+	"KnockbackForce" "150"
 	"Priority" "10"
 	"CombosFrom" "melee_combo_2b"
 	"ControlDirection" "any"
