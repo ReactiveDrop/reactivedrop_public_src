@@ -374,161 +374,169 @@ void CScriptGameEventListener::SetVScriptEventValues( IGameEvent *event, HSCRIPT
 
 bool CScriptGameEventListener::Init()
 {
-	ListenForGameEvent( "asw_mission_restart" );
-	ListenForGameEvent( "gameui_activated" );
-	ListenForGameEvent( "gameui_hidden" );
-	ListenForGameEvent( "player_fullyjoined" );
-	ListenForGameEvent( "player_should_switch" );
-	ListenForGameEvent( "player_commanding" );
-	ListenForGameEvent( "player_command_follow" );
-	ListenForGameEvent( "player_command_hold" );
-	ListenForGameEvent( "player_alt_fire" );
-	ListenForGameEvent( "player_heal_target" );
-	ListenForGameEvent( "player_heal_target_none" );
-	ListenForGameEvent( "player_heal" );
-	ListenForGameEvent( "player_give_ammo" );
-	ListenForGameEvent( "player_deploy_ammo" );
-	ListenForGameEvent( "player_dropped_weapon" );
-	ListenForGameEvent( "marine_selected" );
-	ListenForGameEvent( "marine_ignited" );
-	ListenForGameEvent( "marine_extinguished" );
-	ListenForGameEvent( "marine_infested" );
-	ListenForGameEvent( "marine_infested_cured" );
-	ListenForGameEvent( "marine_infested_killed" );
-	ListenForGameEvent( "marine_healed" );
-	ListenForGameEvent( "marine_no_ammo" );
-	ListenForGameEvent( "ammo_pickup" );
-	ListenForGameEvent( "item_pickup" );
-	ListenForGameEvent( "weapon_reload" );
-	ListenForGameEvent( "weapon_offhanded" );
-	ListenForGameEvent( "door_recommend_destroy" );
-	ListenForGameEvent( "door_destroyed" );
-	ListenForGameEvent( "door_welded_visible" );
-	ListenForGameEvent( "door_unwelded" );
-	ListenForGameEvent( "door_recommend_weld" );
-	ListenForGameEvent( "door_welded" );
-	ListenForGameEvent( "sentry_placed" );
-	ListenForGameEvent( "sentry_start_building" );
-	ListenForGameEvent( "sentry_stop_building" );
-	ListenForGameEvent( "sentry_complete" );
-	ListenForGameEvent( "sentry_rotated" );
-	ListenForGameEvent( "sentry_dismantled" );
-	ListenForGameEvent( "alien_ignited" );
-	ListenForGameEvent( "boulder_lasered" );
-	ListenForGameEvent( "physics_visible" );
-	ListenForGameEvent( "physics_melee" );
-	ListenForGameEvent( "recommend_hold_position" );
-	ListenForGameEvent( "scanner_important" );
-	ListenForGameEvent( "general_hint" );
-	ListenForGameEvent( "movement_hint" );
-	ListenForGameEvent( "movement_hint_success" );
-	ListenForGameEvent( "alien_died" );
-	ListenForGameEvent( "fast_reload" );
-	ListenForGameEvent( "difficulty_changed" );
-	ListenForGameEvent( "achievement_earned" );
-	ListenForGameEvent( "mission_success" );
-	ListenForGameEvent( "mission_failed" );
-	ListenForGameEvent( "alien_hurt" );
-	ListenForGameEvent( "marine_hurt" );
-	ListenForGameEvent( "pickup_selected" );
-	ListenForGameEvent( "sentry_selected" );
-	ListenForGameEvent( "button_area_active" );
-	ListenForGameEvent( "button_area_inactive" );
-	ListenForGameEvent( "button_area_used" );
-	ListenForGameEvent( "jukebox_play_random" );
-	ListenForGameEvent( "jukebox_stop" );
-	ListenForGameEvent( "level_up" );
-	ListenForGameEvent( "campaign_changed" );
-	ListenForGameEvent( "swarm_state_changed" );
-	ListenForGameEvent( "team_info" );
-	ListenForGameEvent( "team_score" );
-	ListenForGameEvent( "teamplay_broadcast_audio" );
-	ListenForGameEvent( "player_team" );
-	ListenForGameEvent( "player_class" );
-	ListenForGameEvent( "player_death" );
-	ListenForGameEvent( "player_hurt" );
-	ListenForGameEvent( "player_chat" );
-	ListenForGameEvent( "player_score" );
-	ListenForGameEvent( "player_spawn" );
-	ListenForGameEvent( "player_shoot" );
-	ListenForGameEvent( "player_use" );
-	ListenForGameEvent( "player_changename" );
-	ListenForGameEvent( "player_hintmessage" );
-	ListenForGameEvent( "game_init" );
-	ListenForGameEvent( "game_newmap" );
-	ListenForGameEvent( "game_start" );
-	ListenForGameEvent( "game_end" );
-	ListenForGameEvent( "round_start" );
-	ListenForGameEvent( "round_end" );
-	ListenForGameEvent( "round_start_pre_entity" );
-	ListenForGameEvent( "teamplay_round_start" );
-	ListenForGameEvent( "hostname_changed" );
-	ListenForGameEvent( "finale_start" );
-	ListenForGameEvent( "game_message" );
-	ListenForGameEvent( "break_breakable" );
-	ListenForGameEvent( "break_prop" );
-	ListenForGameEvent( "entity_killed" );
-	ListenForGameEvent( "bonus_updated" );
-	ListenForGameEvent( "player_stats_updated" );
-	ListenForGameEvent( "achievement_event" );
-	ListenForGameEvent( "achievement_earned" );
-	ListenForGameEvent( "achievement_write_failed" );
-	ListenForGameEvent( "physgun_pickup" );
-	ListenForGameEvent( "flare_ignite_npc" );
-	ListenForGameEvent( "helicopter_grenade_punt_miss" );
-	ListenForGameEvent( "user_data_downloaded" );
-	ListenForGameEvent( "ragdoll_dissolved" );
-	ListenForGameEvent( "gameinstructor_draw" );
-	ListenForGameEvent( "gameinstructor_nodraw" );
-	ListenForGameEvent( "map_transition" );
-	ListenForGameEvent( "entity_visible" );
-	ListenForGameEvent( "set_instructor_group_enabled" );
-	ListenForGameEvent( "instructor_server_hint_create" );
-	ListenForGameEvent( "instructor_server_hint_stop" );
-	ListenForGameEvent( "server_spawn" );
-	ListenForGameEvent( "server_pre_shutdown" );
-	ListenForGameEvent( "server_shutdown" );
-	ListenForGameEvent( "server_cvar" );
-	ListenForGameEvent( "server_message" );
-	ListenForGameEvent( "server_addban" );
-	ListenForGameEvent( "server_removeban" );
-	ListenForGameEvent( "player_connect" );
-	ListenForGameEvent( "player_info" );
-	ListenForGameEvent( "player_disconnect" );
-	ListenForGameEvent( "player_activate" );
-	ListenForGameEvent( "player_connect_full" );
-	ListenForGameEvent( "player_say" );
-	ListenForGameEvent( "hltv_status" );
-	ListenForGameEvent( "hltv_cameraman" );
-	ListenForGameEvent( "hltv_rank_camera" );
-	ListenForGameEvent( "hltv_rank_entity" );
-	ListenForGameEvent( "hltv_fixed" );
-	ListenForGameEvent( "hltv_chase" );
-	ListenForGameEvent( "hltv_message" );
-	ListenForGameEvent( "hltv_title" );
-	ListenForGameEvent( "hltv_chat" );
-	ListenForGameEvent( "marine_incapacitated" );
-	ListenForGameEvent( "marine_revived" );
-	ListenForGameEvent( "alien_spawn" );
-	ListenForGameEvent( "buzzer_spawn" );
-	ListenForGameEvent( "marine_spawn" );
-	ListenForGameEvent( "colonist_spawn" );
-	ListenForGameEvent( "weapon_reload_finish" );
-	ListenForGameEvent( "heal_beacon_placed" );
-	ListenForGameEvent( "damage_amplifier_placed" );
-	ListenForGameEvent( "weapon_fire" );
-	ListenForGameEvent( "weapon_offhand_activate" );
-	ListenForGameEvent( "laser_mine_active" );
-	ListenForGameEvent( "cluster_grenade_create" );
-	ListenForGameEvent( "tesla_trap_placed" );
-	ListenForGameEvent( "fire_mine_placed" );
-	ListenForGameEvent( "laser_mine_placed" );
-	ListenForGameEvent( "gas_grenade_placed" );
-	ListenForGameEvent( "flare_placed" );
-	ListenForGameEvent( "rocket_fired" );
+	for ( int i = 0; i < NUM_SCRIPT_GAME_EVENTS; i++ )
+	{
+		ListenForGameEvent( g_ScriptGameEventList[i] );
+	}
 
 	return true;
 }
+
+const char *const g_ScriptGameEventList[] =
+{
+	"asw_mission_restart",
+	"gameui_activated",
+	"gameui_hidden",
+	"player_fullyjoined",
+	"player_should_switch",
+	"player_commanding",
+	"player_command_follow",
+	"player_command_hold",
+	"player_alt_fire",
+	"player_heal_target",
+	"player_heal_target_none",
+	"player_heal",
+	"player_give_ammo",
+	"player_deploy_ammo",
+	"player_dropped_weapon",
+	"marine_selected",
+	"marine_ignited",
+	"marine_extinguished",
+	"marine_infested",
+	"marine_infested_cured",
+	"marine_infested_killed",
+	"marine_healed",
+	"marine_no_ammo",
+	"ammo_pickup",
+	"item_pickup",
+	"weapon_reload",
+	"weapon_offhanded",
+	"door_recommend_destroy",
+	"door_destroyed",
+	"door_welded_visible",
+	"door_unwelded",
+	"door_recommend_weld",
+	"door_welded",
+	"sentry_placed",
+	"sentry_start_building",
+	"sentry_stop_building",
+	"sentry_complete",
+	"sentry_rotated",
+	"sentry_dismantled",
+	"alien_ignited",
+	"boulder_lasered",
+	"physics_visible",
+	"physics_melee",
+	"recommend_hold_position",
+	"scanner_important",
+	"general_hint",
+	"movement_hint",
+	"movement_hint_success",
+	"alien_died",
+	"fast_reload",
+	"difficulty_changed",
+	"achievement_earned",
+	"mission_success",
+	"mission_failed",
+	"alien_hurt",
+	"marine_hurt",
+	"pickup_selected",
+	"sentry_selected",
+	"button_area_active",
+	"button_area_inactive",
+	"button_area_used",
+	"jukebox_play_random",
+	"jukebox_stop",
+	"level_up",
+	"campaign_changed",
+	"swarm_state_changed",
+	"team_info",
+	"team_score",
+	"teamplay_broadcast_audio",
+	"player_team",
+	"player_class",
+	"player_death",
+	"player_hurt",
+	"player_chat",
+	"player_score",
+	"player_spawn",
+	"player_shoot",
+	"player_use",
+	"player_changename",
+	"player_hintmessage",
+	"game_init",
+	"game_newmap",
+	"game_start",
+	"game_end",
+	"round_start",
+	"round_end",
+	"round_start_pre_entity",
+	"teamplay_round_start",
+	"hostname_changed",
+	"finale_start",
+	"game_message",
+	"break_breakable",
+	"break_prop",
+	"entity_killed",
+	"bonus_updated",
+	"player_stats_updated",
+	"achievement_event",
+	"achievement_earned",
+	"achievement_write_failed",
+	"physgun_pickup",
+	"flare_ignite_npc",
+	"helicopter_grenade_punt_miss",
+	"user_data_downloaded",
+	"ragdoll_dissolved",
+	"gameinstructor_draw",
+	"gameinstructor_nodraw",
+	"map_transition",
+	"entity_visible",
+	"set_instructor_group_enabled",
+	"instructor_server_hint_create",
+	"instructor_server_hint_stop",
+	"server_spawn",
+	"server_pre_shutdown",
+	"server_shutdown",
+	"server_cvar",
+	"server_message",
+	"server_addban",
+	"server_removeban",
+	"player_connect",
+	"player_info",
+	"player_disconnect",
+	"player_activate",
+	"player_connect_full",
+	"player_say",
+	"hltv_status",
+	"hltv_cameraman",
+	"hltv_rank_camera",
+	"hltv_rank_entity",
+	"hltv_fixed",
+	"hltv_chase",
+	"hltv_message",
+	"hltv_title",
+	"hltv_chat",
+	"marine_incapacitated",
+	"marine_revived",
+	"alien_spawn",
+	"buzzer_spawn",
+	"marine_spawn",
+	"colonist_spawn",
+	"weapon_reload_finish",
+	"heal_beacon_placed",
+	"damage_amplifier_placed",
+	"weapon_fire",
+	"weapon_offhand_activate",
+	"laser_mine_active",
+	"cluster_grenade_create",
+	"tesla_trap_placed",
+	"fire_mine_placed",
+	"laser_mine_placed",
+	"gas_grenade_placed",
+	"flare_placed",
+	"rocket_fired",
+};
 
 static CScriptGameEventListener	s_ScriptGameEventListener;
 CScriptGameEventListener *g_pScriptGameEventListener = &s_ScriptGameEventListener;
