@@ -52674,7 +52674,7 @@ entity
 	"id" "108303"
 	"classname" "asw_objective_triggered"
 	"objectivedescription1" "#rd_res1_ob_find_the_hut_d"
-	"objectivedescription2" "Check it out."
+	"objectivedescription2" "#rd_res1_ob_find_the_hut_d2"
 	"objectiveimage" "rd_res_RC-M4"
 	"objectivemarkername" "Obj6_marker"
 	"objectivetitle" "#rd_res1_ob_find_the_hut"
