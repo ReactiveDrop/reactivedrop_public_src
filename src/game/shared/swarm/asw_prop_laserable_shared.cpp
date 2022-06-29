@@ -57,7 +57,12 @@ void CASW_Prop_Laserable::Spawn()
 	memset( m_iszBreakSound.GetForModify(), 0, sizeof( m_iszBreakSound ) );
 	Precache();
 
-	VisibilityMonitor_AddEntity( this, asw_visrange_generic.GetFloat() * 0.9f, NULL, NULL );
+	// Boulders with a damage filter are used in TFT1 and not intended to be broken on the golden path.
+	// Only show instructor hints if boulders do NOT have a damage filter.
+	if ( !m_hDamageFilter )
+	{
+		VisibilityMonitor_AddEntity( this, asw_visrange_generic.GetFloat() * 0.9f, NULL, NULL );
+	}
 }
 
 void CASW_Prop_Laserable::Precache( void )
