@@ -123,7 +123,7 @@ public:
 	
 	void			InputDisableSwarm( inputdata_t &inputdata );	
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }	
+	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 
 	float GetMaxEnginePower();
 

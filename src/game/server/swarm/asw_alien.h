@@ -178,7 +178,7 @@ public:
 	virtual void BreakAlien( const CTakeDamageInfo &info );
 	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual Vector CalcDeathForceVector( const CTakeDamageInfo &info );
-	virtual	bool		AllowedToIgnite( void ) { return true; }
+	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 	float	m_fNextPainSound;
 	float	m_fNextStunSound;
 	void Event_Killed( const CTakeDamageInfo &info );

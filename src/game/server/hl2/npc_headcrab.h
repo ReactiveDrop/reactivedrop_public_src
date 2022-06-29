@@ -74,7 +74,7 @@ public:
 
 	void	CrawlFromCanister();
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
+	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 
 	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
 
