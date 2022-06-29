@@ -9355,21 +9355,23 @@ public:
 
 	virtual void Spawn()
 	{
-		// https://github.com/ReactiveDrop/reactivedrop_public_src/issues/138
-		// We need to make sure our scope includes every value that might be looked up from it.
-		// If we don't, global variables will be inherited by our scope and functions will be run twice.
-
-		HSCRIPT hScope = GetScriptScope();
-		Assert( hScope );
-		for ( int i = 0; i < NUM_SCRIPT_GAME_EVENTS; i++ )
+		if( g_pScriptVM )
 		{
-			g_pScriptVM->SetValue( hScope, CFmtStr( "OnGameEvent_%s", g_ScriptGameEventList[i] ), SCRIPT_VARIANT_NULL );
-		}
-		g_pScriptVM->SetValue( hScope, "OnTakeDamage_Alive_Any", SCRIPT_VARIANT_NULL );
-		g_pScriptVM->SetValue( hScope, "UserConsoleCommand", SCRIPT_VARIANT_NULL );
-		g_pScriptVM->SetValue( hScope, "OnMissionStart", SCRIPT_VARIANT_NULL );
-		g_pScriptVM->SetValue( hScope, "OnGameplayStart", SCRIPT_VARIANT_NULL );
+			// https://github.com/ReactiveDrop/reactivedrop_public_src/issues/138
+			// We need to make sure our scope includes every value that might be looked up from it.
+			// If we don't, global variables will be inherited by our scope and functions will be run twice.
 
+			HSCRIPT hScope = GetScriptScope();
+			Assert( hScope );
+			for ( int i = 0; i < NUM_SCRIPT_GAME_EVENTS; i++ )
+			{
+				g_pScriptVM->SetValue( hScope, CFmtStr( "OnGameEvent_%s", g_ScriptGameEventList[i] ), SCRIPT_VARIANT_NULL );
+			}
+			g_pScriptVM->SetValue( hScope, "OnTakeDamage_Alive_Any", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "UserConsoleCommand", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "OnMissionStart", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "OnGameplayStart", SCRIPT_VARIANT_NULL );
+		}
 		BaseClass::Spawn();
 	}
 };
