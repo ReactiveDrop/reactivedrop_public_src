@@ -236,6 +236,17 @@
 
 	autoaimradius(float) : "Autoaim Radius" : "0" : "Radius of autoaim influence. Use ent_autoaim <picker> to visualize."
 
+	faction(choices) : "Faction": 0 : "Faction this bullseye is a member of." =
+	[
+		0 : "None"
+		1 : "Marines"
+		2 : "Aliens"
+		3 : "Bait"
+		4 : "Neutral"
+	]
+	damagemultipliersamefaction(float) : "Same Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by the faction the bullseye is a member of."
+	damagemultiplierdifferentfaction(float) : "Different Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by a faction the bullseye is NOT a member of."
+
 	spawnflags(Flags) = 
 	[
 		65536   : "Not Solid" : 0

@@ -89,6 +89,9 @@ BEGIN_DATADESC( CNPC_Bullseye )
 	DEFINE_KEYFIELD( m_fAutoaimRadius, FIELD_FLOAT, "autoaimradius" ),
 	DEFINE_KEYFIELD( m_flFieldOfView, FIELD_FLOAT, "minangle" ),
 	DEFINE_KEYFIELD( m_flMinDistValidEnemy, FIELD_FLOAT, "mindist" ),
+	DEFINE_KEYFIELD( m_nBullseyeFaction, FIELD_INTEGER, "faction" ),
+	DEFINE_KEYFIELD( m_flDamageMultiplierSameFaction, FIELD_FLOAT, "damagemultipliersamefaction" ),
+	DEFINE_KEYFIELD( m_flDamageMultiplierDifferentFaction, FIELD_FLOAT, "damagemultiplierdifferentfaction" ),
 
 
 
@@ -117,6 +120,9 @@ CNPC_Bullseye::CNPC_Bullseye( void )
 	m_takedamage	= DAMAGE_YES;
 	m_iHealth		= sk_bullseye_health.GetFloat();
 	m_hPainPartner	= NULL;
+	m_nBullseyeFaction = FACTION_NONE;
+	m_flDamageMultiplierSameFaction = 1.0f;
+	m_flDamageMultiplierDifferentFaction = 1.0f;
 	g_BullseyeList.AddToList( this );
 	m_flFieldOfView = 360;
 	m_flMinDistValidEnemy = 0;
@@ -203,6 +209,8 @@ void CNPC_Bullseye::Spawn( void )
 		// Make this an aimtarget, since it has some autoaim influence.
 		AddFlag(FL_AIMTARGET);
 	}
+
+	ChangeFaction( m_nBullseyeFaction );
 }
 
 
@@ -416,10 +424,20 @@ int CNPC_Bullseye::OnTakeDamage( const CTakeDamageInfo &info )
 {
 	SetNextThink( gpGlobals->curtime );
 
+	CTakeDamageInfo newinfo = info;
+
+	CBaseCombatCharacter *pAttacker = newinfo.GetAttacker()->MyCombatCharacterPointer();
+	int nAttackerFaction = pAttacker ? pAttacker->GetFaction() : FACTION_NONE;
+	float flFactionDamageScale = nAttackerFaction == GetFaction() ? m_flDamageMultiplierSameFaction : m_flDamageMultiplierDifferentFaction;
+	if ( flFactionDamageScale <= 0.0f )
+		return 0;
+
+	newinfo.ScaleDamage( flFactionDamageScale );
+
 	//If specified, we must be the enemy of the target
 	if ( m_spawnflags & SF_BULLSEYE_ENEMYDAMAGEONLY )
 	{
-		CAI_BaseNPC *pInstigator = info.GetAttacker()->MyNPCPointer();
+		CAI_BaseNPC *pInstigator = newinfo.GetAttacker()->MyNPCPointer();
 
 		if ( pInstigator == NULL )
 			return 0;
@@ -431,10 +449,10 @@ int CNPC_Bullseye::OnTakeDamage( const CTakeDamageInfo &info )
 	//If we're a pain proxy, send the damage through
 	if ( m_hPainPartner != NULL )
 	{
-		m_hPainPartner->TakeDamage( info );
+		m_hPainPartner->TakeDamage( newinfo );
 		
 		//Fire all pain indicators but take no real damage
-		CTakeDamageInfo subInfo = info;
+		CTakeDamageInfo subInfo = newinfo;
 		subInfo.SetDamage( 0 );
 		return BaseClass::OnTakeDamage( subInfo );
 	}
