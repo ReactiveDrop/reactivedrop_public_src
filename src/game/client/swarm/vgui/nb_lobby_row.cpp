@@ -234,7 +234,7 @@ void CNB_Lobby_Row::UpdateDetails()
 
 			m_nMedalUpdates = 0;
 			m_pMedalIcon->SetVisible( false );
-			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, NULL );
+			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, "" );
 		}
 		m_lastSteamID = steamID;
 
