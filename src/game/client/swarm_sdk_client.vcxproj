@@ -1694,7 +1694,6 @@ exit 1
     <ClCompile Include="swarm\rd_collection_list.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
-    <ClCompile Include="swarm\rd_jpeglib_helper.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
     <ClCompile Include="swarm\rd_text_filtering.cpp" />
