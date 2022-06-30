@@ -259,8 +259,11 @@ void IN_HoldOrderUp()
 		if (dist_sqr > iMinPixels)
 		{
 			// order that marine to face this way
-			Vector vecOrderDir(dx, dy, 0);
-			fYaw = -UTIL_VecToYaw(vecOrderDir);
+			fYaw = RAD2DEG( atan2f( -dy, dx ) ) - 90;
+			if ( pPlayer->GetASWControls() == 1 )
+				fYaw += pPlayer->m_flMovementAxisYaw;
+			else
+				fYaw += pPlayer->EyeAngles().y;
 		}
 		else if ( pPlayer->GetViewMarine() )
 		{
