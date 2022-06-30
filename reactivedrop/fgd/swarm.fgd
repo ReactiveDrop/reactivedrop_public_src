@@ -251,7 +251,7 @@
 	[
 		65536   : "Not Solid" : 0
 		131072  : "Take No Damage" : 0
-		262144  : "Enemy Damage Only" : 0
+		262144  : "Enemy (intentional target of an NPC) Damage Only" : 0
 		524288  : "Bleed" : 0
 		1048576 : "Perfect Accuracy" : 0
 		2097152 : "Collide against physics objects (Creates VPhysics Shadow)" : 0
