@@ -493,9 +493,9 @@ void CASWMap::PaintWorldBlip(const Vector &worldpos, float fBlipStrength, Color 
 	};
 	surface()->DrawTexturedPolygon(4, points);
 
-	if ( radius > 0 && nBlipTexture == MAP_BLIP_TEXTURE_NORMAL )
+	if ( radius > 0 && fBlipStrength < 0.5f && nBlipTexture == MAP_BLIP_TEXTURE_NORMAL )
 	{
-		surface()->DrawOutlinedCircle( blip_centre.x + 0.5f, blip_centre.y + 0.25f, radius * ( 1.0f - fBlipStrength * fBlipStrength ), radius * 10 );
+		surface()->DrawOutlinedCircle( blip_centre.x + 0.5f, blip_centre.y + 0.25f, radius * 2.0f * ( 0.5f - fBlipStrength * fBlipStrength ), radius * 10 );
 	}
 }
 
@@ -1154,9 +1154,14 @@ void CASWHudMinimap::PaintScannerBlips()
 							break;
 						}
 					}
+
+					vecWorldPos = pClientEnt->GetAbsOrigin();
 				}
-				vecWorldPos.x = pScanner->m_fClientBlipX[i];
-				vecWorldPos.y = pScanner->m_fClientBlipY[i];
+				else
+				{
+					vecWorldPos.x = pScanner->m_fClientBlipX[i];
+					vecWorldPos.y = pScanner->m_fClientBlipY[i];
+				}
 				//float f = abs(0.5f - pScanner->m_fBlipStrength[i]) * 2.0f;	// fade in/out
 				float f = 1.0f - pScanner->m_fBlipStrength[i];	// just fade out
 
