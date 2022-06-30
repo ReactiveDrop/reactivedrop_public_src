@@ -685,7 +685,7 @@ void ObjectiveMapDrawingPanel::SendMapLine(int x, int y, bool bInitial)
 		engine->ClientCmd(buffer);
 		//Msg("%s\n", buffer);
 
-		m_fLastMapLine = gpGlobals->curtime;
+		m_fLastMapLine = gpGlobals->realtime;
 
 		// short circuit add it to your own list
 		MapLine line;
@@ -746,7 +746,7 @@ void ObjectiveMapDrawingPanel::OnCursorMoved( int x, int y )
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
-		if (m_bDrawingMapLines && gpGlobals->curtime >= m_fLastMapLine + MAP_LINE_INTERVAL)
+		if (m_bDrawingMapLines && gpGlobals->realtime >= m_fLastMapLine + MAP_LINE_INTERVAL)
 		{
 			SendMapLine(x,y,false);
 		}

@@ -748,7 +748,7 @@ void CASWHudMinimap::OnThink()
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
-		if (m_bDrawingMapLines && gpGlobals->curtime >= m_fLastMapLine + MAP_LINE_INTERVAL)
+		if (m_bDrawingMapLines && gpGlobals->realtime >= m_fLastMapLine + MAP_LINE_INTERVAL)
 		{
 			if (IsWithinMapBounds(m_iMouseX,m_iMouseY))
 			{
