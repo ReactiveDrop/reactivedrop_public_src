@@ -123,11 +123,21 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				if ( distance < m_flNearDistance )
 				{
 					if ( asw_debug_spawners.GetBool() )
-						Msg("asw_spawner(%s): Alien can't spawn because a marine (%d) is %f away\n", GetEntityNameAsCStr(), i, distance);
+					{
+						Msg( "asw_spawner(%s): Alien can't spawn because a marine (%d) is %f away\n", GetEntityNameAsCStr(), i, distance );
+
+						debugoverlay->AddLineOverlay( m_vecCurrentSpawnPosition, pMR->GetMarineEntity()->GetAbsOrigin(), 255, 0, 192, true, 1.0f );
+					}
 					return false;
 				}
 			}
 		}
+	}
+
+	if ( asw_debug_spawners.GetBool() )
+	{
+		debugoverlay->AddBoxOverlay2( m_vecCurrentSpawnPosition, vecHullMins - Vector( 0, 0, 1 ), vecHullMaxs + Vector( 0, 0, 1 ), vec3_angle, Color( 0, 0, 0, 0 ), Color( 255, 255, 64, 255 ), 1.0f );
+		debugoverlay->AddBoxOverlay2( m_vecCurrentSpawnPosition, Vector( -23, -23, 0 ), Vector( 23, 23, 0 ), vec3_angle, Color( 0, 0, 0, 0 ), Color( 192, 255, 0, 255 ), 1.0f );
 	}
 
 	Vector mins = m_vecCurrentSpawnPosition - Vector( 23, 23, 0 );
@@ -182,8 +192,18 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 						if (asw_debug_spawners.GetBool())
 							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point.\n", GetEntityNameAsCStr());
 					}
-						
+
+					if ( asw_debug_spawners.GetBool() && tr.m_pEnt && tr.m_pEnt->CollisionProp() )
+					{
+						debugoverlay->AddBoxOverlay2( tr.m_pEnt->CollisionProp()->GetCollisionOrigin(), tr.m_pEnt->CollisionProp()->OBBMins(), tr.m_pEnt->CollisionProp()->OBBMaxs(), tr.m_pEnt->CollisionProp()->GetCollisionAngles(), Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 255 ), 1.0f );
+					}
+
 					return false;
+				}
+
+				if ( asw_debug_spawners.GetBool() && tr.m_pEnt && tr.m_pEnt->CollisionProp() )
+				{
+					debugoverlay->AddBoxOverlay2( tr.m_pEnt->CollisionProp()->GetCollisionOrigin(), tr.m_pEnt->CollisionProp()->OBBMins(), tr.m_pEnt->CollisionProp()->OBBMaxs(), tr.m_pEnt->CollisionProp()->GetCollisionAngles(), Color( 0, 0, 0, 0 ), Color( 0, 255, 0, 255 ), 1.0f );
 				}
 			}
 		}
@@ -210,7 +230,14 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 		if( tr.fraction != 1.0 )
 		{
 			if ( asw_debug_spawners.GetBool() )
-				Msg("asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityNameAsCStr());
+			{
+				Msg( "asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityNameAsCStr() );
+
+				if ( tr.m_pEnt && tr.m_pEnt->CollisionProp() )
+				{
+					debugoverlay->AddBoxOverlay2( tr.m_pEnt->CollisionProp()->GetCollisionOrigin(), tr.m_pEnt->CollisionProp()->OBBMins(), tr.m_pEnt->CollisionProp()->OBBMaxs(), tr.m_pEnt->CollisionProp()->GetCollisionAngles(), Color( 0, 0, 0, 0 ), Color( 255, 0, 0, 255 ), 1.0f );
+				}
+			}
 			// TODO: If we were trying to spawn an uber, change to spawning a regular instead
 			return false;
 		}
