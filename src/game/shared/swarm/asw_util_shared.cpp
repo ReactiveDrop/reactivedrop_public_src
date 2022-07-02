@@ -65,6 +65,7 @@
 #include "tier2/fileutils.h"
 #include "vpklib/packedstore.h"
 #include "vgui/ILocalize.h"
+#include "iregistry.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1637,6 +1638,11 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 			pszLanguageReplacement = rd_dedicated_server_language.GetString();
 		}
 #endif
+		else if ( registry )
+		{
+			// If we failed to load the Steam API and we're not a dedicated server, attempt to grab the language for Steam itself from the Windows registry, or fall back to English.
+			pszLanguageReplacement = registry->ReadString( "HKEY_CURRENT_USER\\SOFTWARE\\Valve\\Steam", "Language", "english" );
+		}
 
 		strncpy_s( szPath, fileName, pszLanguageToken - fileName );
 		strcat_s( szPath, pszLanguageReplacement );

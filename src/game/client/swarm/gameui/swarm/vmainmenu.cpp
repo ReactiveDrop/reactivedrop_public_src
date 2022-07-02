@@ -265,10 +265,27 @@ void MainMenu::OnCommand( const char *command )
 	{
 		// clicking No Steam will provide some info
 		GenericConfirmation* confirmation =
-			static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, CBaseModPanel::GetSingleton().GetWindow( WT_GAMELOBBY ), false ) );
+			static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
 		GenericConfirmation::Data_t data;
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
+
+		if ( SteamUser() )
+		{
+			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
+			data.pMessageText = "#rd_no_steam_solutions_api";
+		}
+		else if ( !SteamAPI_IsSteamRunning() )
+		{
+			// Did not detect an instance of the Steam Client. If the Steam Client is running, try selecting Steam->Exit and then restarting Steam.
+			data.pMessageText = "#rd_no_steam_solutions_client";
+		}
+		else if ( !SteamAPI_GetSteamInstallPath() )
+		{
+			// Could not determine the location of the Steam Client through the registry. Try restarting Steam.
+			data.pMessageText = "#rd_no_steam_solutions_path";
+		}
+
 		data.bOkButtonEnabled = true;
 		confirmation->SetUsageData( data );
 	}
