@@ -313,6 +313,11 @@
 		"marine"		"short"		// entindex of the marine reloading
 		"reloads"		"byte"		// number of fast reloads the marine has done in a row
 	}
+					  
+	"fast_reload_fail"
+	{	
+		"marine"		"short"		// entindex of the marine reloading
+	}
 	
 	"difficulty_changed"
 	{

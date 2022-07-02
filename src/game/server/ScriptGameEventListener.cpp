@@ -434,6 +434,7 @@ const char *const g_ScriptGameEventList[] =
 	"movement_hint_success",
 	"alien_died",
 	"fast_reload",
+	"fast_reload_fail",
 	"difficulty_changed",
 	"achievement_earned",
 	"mission_success",
