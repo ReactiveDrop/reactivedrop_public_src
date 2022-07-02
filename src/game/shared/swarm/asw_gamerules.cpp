@@ -9353,9 +9353,9 @@ public:
 		m_iszScriptThinkFunction = AllocPooledString( "Update" );
 	}
 
-	virtual void Spawn()
+	virtual void RunVScripts()
 	{
-		if( g_pScriptVM )
+		if ( ValidateScriptScope() )
 		{
 			// https://github.com/ReactiveDrop/reactivedrop_public_src/issues/138
 			// We need to make sure our scope includes every value that might be looked up from it.
@@ -9372,7 +9372,8 @@ public:
 			g_pScriptVM->SetValue( hScope, "OnMissionStart", SCRIPT_VARIANT_NULL );
 			g_pScriptVM->SetValue( hScope, "OnGameplayStart", SCRIPT_VARIANT_NULL );
 		}
-		BaseClass::Spawn();
+
+		BaseClass::RunVScripts();
 	}
 };
 
