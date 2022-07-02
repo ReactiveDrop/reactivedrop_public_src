@@ -90,7 +90,7 @@ ConVar asw_blip_color_marine_officer("asw_blip_color_marine_officer", "0 192 0",
 ConVar asw_blip_color_marine_special("asw_blip_color_marine_special", "0 0 192", FCVAR_NONE, "Blip color of special weapon marines");
 ConVar asw_blip_color_marine_medic("asw_blip_color_marine_medic", "192 0 0", FCVAR_NONE, "Blip color of medic marines");
 ConVar asw_blip_color_marine_tech("asw_blip_color_marine_tech", "192 142 0", FCVAR_NONE, "Blip color of tech marines");
-ConVar asw_draw_blips_real_time("asw_draw_blips_real_time", "0", FCVAR_NONE, "Draw alien blips in realtime.", true, 0, true, 1);
+ConVar asw_draw_blips_real_time("asw_draw_blips_real_time", "1", FCVAR_ARCHIVE, "Draw alien blips in realtime.", true, 0, true, 1);
 ConVar asw_draw_scanner_rings("asw_draw_scanner_rings", "1", FCVAR_NONE);
 
 // was 0.75f..
