@@ -269,7 +269,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				if ( event )
 				{
 					event->SetInt( "marine", pMarine->entindex() );
-					gameeventmanager->FireEvent( event );
+					gameeventmanager->FireEvent( event, true );
 				}
 				
 				pMarine->m_nFastReloadsInARow = 0;
