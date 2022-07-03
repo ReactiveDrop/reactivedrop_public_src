@@ -44,6 +44,7 @@ ConVar asw_fail_sound_delay( "asw_fail_sound_delay", "0.0", FCVAR_CHEAT, "Delay 
 ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "1", FCVAR_NONE, "Show stats screen in singleplayer" );
 ConVar rd_show_leaderboard_debrief( "rd_show_leaderboard_debrief", "0", FCVAR_ARCHIVE, "Show leaderboard during debriefing" );
 ConVar rd_suggest_difficulty( "rd_suggest_difficulty", "1", FCVAR_NONE, "Suggest increasing or decreasing difficulty." );
+ConVar rd_fail_advice( "rd_fail_advice", "1", FCVAR_ARCHIVE, "Show advice on mission failed." );
 
 MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool bSuccess) : vgui::EditablePanel(parent, name)
 {	
@@ -52,6 +53,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_pFailAdvice = new vgui::Label( this, "FailAdvice", "" );
 	m_pFailAdvice->SetMouseInputEnabled( false );
+
 	m_pIconForwardArrow = new vgui::ImagePanel( this, "IconForwardArrow" );
 	m_pIconForwardArrow->SetMouseInputEnabled( false );
 
@@ -236,7 +238,11 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	}	
 
 	m_pFailAdvice->SetAlpha(0);
+	m_pFailAdvice->SetVisible( rd_fail_advice.GetBool() );
+
 	m_pIconForwardArrow->SetAlpha(0);
+	m_pIconForwardArrow->SetVisible( rd_fail_advice.GetBool() );
+
 	vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 255, 0, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
 	vgui::GetAnimationController()->RunAnimationCommand(m_pFailAdvice, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
 	if ( m_pFailedHeaderFooter )
