@@ -29,6 +29,8 @@ ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_AR
 ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
 ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
 ConVar rd_loading_image_per_map( "rd_loading_image_per_map", "1", FCVAR_ARCHIVE, "If set to 1 each map can have its own background image during loading screen, 0 means same image for every map" );
+ConVar rd_loading_status_text_visible( "rd_loading_status_text_visible", "1", FCVAR_ARCHIVE, "If set to 1 status text is visible on the loading screen." );
+
 extern ConVar asw_skill;
 
 static bool IsAvatarFemale( int iAvatar )
@@ -262,6 +264,8 @@ float LoadingProgress::GetProgress()
 
 void LoadingProgress::SetStatusText( const char *statusText )
 {
+	m_pLoadingText->SetVisible( rd_loading_status_text_visible.GetBool() );
+
 	if ( statusText )
 	{
 		m_pLoadingText->SetText( statusText );
