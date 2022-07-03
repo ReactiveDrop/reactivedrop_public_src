@@ -324,3 +324,21 @@ asw_pickup_50calmg : "50cal Machine Gun"
 @SolidClass base( Targetname, EnableDisable ) = rd_func_jumpjet : "An entity to control free jumping/blinking area."
 [
 ]
+
+@PointClass base(Targetname) = asw_voiceover_dialogue : "Simple entity to replace logic_choreographed_scene when only one globally-audible voice line is needed."
+[
+	soundname(sound) report : "Sound Script Name" : "" : "Sound script name, should be an entry from level_sounds_*.txt or game_sounds_*.txt. For custom maps, create a file named maps/[mapname]_level_sounds.txt."
+	actorname(string) : "Actor Name" : "" : "Name of actor for this voice line. If the same actor name is used for multiple asw_voiceover_dialogue entities, they will use the busy actor setting. Case insensitive, not displayed in-game."
+	busyactor(choices) : "If an Actor is talking..." : 1 : "What to do if an actor this voice line needs is already talking when this dialogue is told to start." =
+	[
+		0 : "Start immediately"
+		1 : "Wait for actor to finish"
+	]
+
+	// Inputs
+	input Start(void) : "Starts playback of the voice line"
+
+	// Outputs
+	output OnStart(void) : "The voice line has started"
+	output OnCompletion(void) : "The voice line has completed"
+]

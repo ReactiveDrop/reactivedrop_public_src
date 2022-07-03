@@ -1699,10 +1699,18 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 	// Emit sound
 	if ( actor )
 	{
-		CPASAttenuationFilter filter( actor, iSoundlevel );		
+		CPASAttenuationFilter filter( actor, iSoundlevel );
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			if ( !CBaseEntity::Instance( i ) )
+				continue;
 
-
-
+			const char *szSkipDialogue = engine->GetClientConVarValue( i, "rd_skip_all_dialogue" );
+			if ( szSkipDialogue && atoi( szSkipDialogue ) )
+			{
+				filter.RemoveRecipientByPlayerIndex( i );
+			}
+		}
 
 		if ( m_pRecipientFilter )
 		{

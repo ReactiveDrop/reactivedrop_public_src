@@ -518,6 +518,8 @@ ConVar rd_points_delay_max( "rd_points_delay_max", "5", FCVAR_REPLICATED, "Maxim
 ConVar rd_points_decay( "rd_points_decay", "0.97", FCVAR_REPLICATED, "Amount that score change decays by per tick.", true, 0, true, 0.999 );
 ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "Number of seconds between score decay ticks.", true, 0, false, 0 );
 
+ConVar rd_skip_all_dialogue( "rd_skip_all_dialogue", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Tell the server not to send audio from asw_voiceover_dialogue." );
+
 // ASW Weapons
 // Rifle
 ConVar	sk_plr_dmg_asw_r			( "sk_plr_dmg_asw_r","0", FCVAR_REPLICATED );
@@ -1394,7 +1396,7 @@ const char* CAlienSwarm::GetGameDescription( void )
 	return m_szGameDescription; 
 }
 
-CAlienSwarm::CAlienSwarm()
+CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 {
 	m_bShuttingDown = false;
 
@@ -1541,6 +1543,8 @@ void CAlienSwarm::FullReset()
 
 	V_memset( m_szApproximatePingLocation.GetForModify(), 0, sizeof( m_szApproximatePingLocation ) );
 	m_bObtainedPingLocation = false;
+
+	m_ActorSpeakingUntil.Purge();
 
 	ConVarRef sv_cheats( "sv_cheats" );
 	if ( !sv_cheats.GetBool() )

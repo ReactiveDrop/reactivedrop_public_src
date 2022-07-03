@@ -483,6 +483,7 @@ public:
 #ifdef GAME_DLL
 	// BenLubar: add game-specific vscript functions
 	virtual void RegisterScriptFunctions();
+	CUtlMap<string_t, float> m_ActorSpeakingUntil;
 #endif
 
 	// mission

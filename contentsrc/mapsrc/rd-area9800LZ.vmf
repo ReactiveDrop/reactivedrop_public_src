@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "843"
+	"mapversion" "844"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "843"
+	"mapversion" "844"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -169980,20 +169980,20 @@ entity
 entity
 {
 	"id" "1446281"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m3_ob1.vcd"
+	"soundname" "Command.co_m3_ob1"
 	"targetname" "area9800_command_1"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6329 -5746 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170002,20 +170002,20 @@ entity
 entity
 {
 	"id" "1446283"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m5_ob2.vcd"
+	"soundname" "Command.co_m5_ob2"
 	"targetname" "commander_choreo_m5_ob1"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6201 -5738 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170024,20 +170024,20 @@ entity
 entity
 {
 	"id" "1446285"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m5_ob3.vcd"
+	"soundname" "Command.co_m5_ob3"
 	"targetname" "commander_choreo_m5_ob2"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6201 -5770 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170046,20 +170046,20 @@ entity
 entity
 {
 	"id" "1446287"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m5_ob4.vcd"
+	"soundname" "Command.co_m5_ob4"
 	"targetname" "commander_choreo_m5_ob3"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6201 -5802 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170068,20 +170068,20 @@ entity
 entity
 {
 	"id" "1446289"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m5_ob5.vcd"
+	"soundname" "Command.co_m5_ob5"
 	"targetname" "commander_choreo_m5_ob4"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6201 -5834 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170090,20 +170090,20 @@ entity
 entity
 {
 	"id" "1446356"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m1_ob1.vcd"
+	"soundname" "Command.co_m1_ob1"
 	"targetname" "area9800_command_2"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6328 -5784 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170239,20 +170239,20 @@ entity
 entity
 {
 	"id" "1456567"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m1_ob2.vcd"
+	"soundname" "Command.co_m1_ob2"
 	"targetname" "area9800_command_3"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6384 -5744 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170279,20 +170279,20 @@ entity
 entity
 {
 	"id" "1476629"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_m1_ob8.vcd"
+	"soundname" "Command.co_m1_ob8"
 	"targetname" "area9800_command_4"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6416 -5744 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
@@ -170301,20 +170301,20 @@ entity
 entity
 {
 	"id" "1476645"
-	"classname" "logic_choreographed_scene"
+	"classname" "asw_voiceover_dialogue"
+	"actorname" "Williams"
 	"busyactor" "1"
-	"SceneFile" "scenes/swarmscenes/co_debriefing_ob1.vcd"
+	"soundname" "Commander.co_debriefing_ob1"
 	"targetname" "area9800_command_5"
 	connections
 	{
 		"OnStart" "commander_start_cameraTrigger0-1"
 		"OnCompletion" "commander_stop_cameraTrigger1-1"
-		"OnCanceled" "commander_stop_cameraTrigger0-1"
 	}
 	"origin" "6448 -5744 -247"
 	editor
 	{
-		"color" "0 0 255"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
