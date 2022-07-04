@@ -273,8 +273,8 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 			return false;
 	}
 
-	bool bServer = pGameDetails->GetInt( "game/dedicated" ) == 1;
-	if ( bServer && ui_public_lobby_filter_servers.GetBool() )
+	char const* szServer = pGameDetails->GetString( "options/server", "listen" );
+	if ( !Q_stricmp( szServer, "dedicated" ) && ui_public_lobby_filter_servers.GetBool() )
 	{
 		return false;
 	}

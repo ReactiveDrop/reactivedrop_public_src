@@ -406,10 +406,6 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	}
 	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", ASWGameRules()->IsOnslaught() ? "1" : "0" );
 	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", ASWGameRules()->IsHardcoreFF() ? "1" : "0" );
-
-#ifdef GAME_DLL
-	UTIL_RD_UpdateCurrentLobbyData( "game:dedicated", engine->IsDedicatedServer() ? "1" : "0" );
-#endif
 }
 
 // moved here for deathmatch
