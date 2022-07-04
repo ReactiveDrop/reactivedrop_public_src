@@ -1485,6 +1485,11 @@ void CASW_Steamstats::SpeedRunLeaderboardName( char *szBuf, size_t bufSize, cons
 			if ( pEDisplayType )
 				*pEDisplayType = k_ELeaderboardDisplayTypeNumeric;
 		}
+		else if ( pMission->HasTag( "endless" ) )
+		{
+			if ( pESortMethod )
+				*pESortMethod = k_ELeaderboardSortMethodDescending;
+		}
 	}
 
 	Q_snprintf( szBuf, bufSize, "RD_%s_%s/%llu_%s", szCategory, szChallengeLeaderboardName, nMapID, szMap );
