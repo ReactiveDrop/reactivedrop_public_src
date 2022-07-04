@@ -121,6 +121,7 @@
 #include "rd_missions_shared.h"
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
+#include "matchmaking/imatchframework.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -325,6 +326,17 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		return;
 	}
 
+	KeyValues *pSettings = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
+
+	// The matchmaking library knows if we're on a dedicated server but does not automatically add that information to the Steam lobby.
+	if ( V_strcmp( pSettings->GetString( "server/server" ), pSettings->GetString( "options/server" ) ) )
+	{
+		KeyValues::AutoDelete pUpdate( "update" );
+		pUpdate->SetString( "update/options/server", pSettings->GetString( "server/server" ) );
+		g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pUpdate );
+	}
+
+	// mm_max_players gets updated after it's read for the lobby, so we need to update the slot count here as well.
 	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
 
