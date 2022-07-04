@@ -38,6 +38,7 @@ static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challeng
 static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "none", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
 ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "official", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
 ConVar ui_public_lobby_filter_status( "ui_public_lobby_filter_status", "", FCVAR_ARCHIVE, "Filter type for game status on the public lobby display" );
+ConVar ui_public_lobby_filter_servers( "ui_public_lobby_filter_servers", "1", FCVAR_ARCHIVE, "Filter dedicated servers from the public lobby display" );
 extern ConVar rd_lobby_ping_low;
 extern ConVar rd_lobby_ping_high;
 
@@ -271,7 +272,13 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 			!Q_stricmp( ui_public_lobby_filter_campaign.GetString(), "official" ) ) )
 			return false;
 	}
-	
+
+	char const* szServer = pGameDetails->GetString( "options/server", "listen" );
+	if ( !Q_stricmp( szServer, "dedicated" ) && ui_public_lobby_filter_servers.GetBool() )
+	{
+		return false;
+	}
+
 	// TODO:
 	//char const *szWebsite = pGameDetails->GetString( "game/missioninfo/website", "" );
 	// if no mission and no website, skip it
