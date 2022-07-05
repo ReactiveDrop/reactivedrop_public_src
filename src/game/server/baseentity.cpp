@@ -7688,10 +7688,13 @@ void CBaseEntity::DispatchResponse( const char *conceptName )
 	// Let NPC fill in most match criteria
 	ModifyOrAppendCriteria( set );
 
+
+#ifndef INFESTED_DLL
 	// Append local player criteria to set,too
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 	if( pPlayer )
 		pPlayer->ModifyOrAppendPlayerCriteria( set );
+#endif
 
 	// Now that we have a criteria set, ask for a suitable response
 	AI_Response result;

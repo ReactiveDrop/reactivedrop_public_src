@@ -154,6 +154,7 @@ public:
 	virtual bool AllowedToPickup(CASW_Marine *pMarine);
 	bool IsBeingCarried() const;
 	bool IsCarriedByLocalPlayer();
+	virtual void FallInit();
 
 	// check if this weapon wants to perform a sync kill
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent ) { return false; }

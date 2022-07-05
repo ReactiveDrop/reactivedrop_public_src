@@ -378,3 +378,11 @@ bool CASW_Weapon::IsCarriedByLocalPlayer()
 
 	return false;
 }
+
+void CASW_Weapon::FallInit()
+{
+	BaseClass::FallInit();
+
+	// We can't touch triggers if we are a trigger ourself.
+	RemoveSolidFlags( FSOLID_TRIGGER );
+}
