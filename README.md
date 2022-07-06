@@ -14,7 +14,7 @@ There are two branches in this repository:
 * __master__ branch is the original Alien Swarm source code provided by Valve
 * __reactivedrop_public__ branch is the up to date Reactive Drop source code
 
-> **Tip:** It is better to make a fork of this repository before cloning it and work on your own fork. Do this using a button in the top left. The URL for your forked repository will be different from the one shown below.
+> **Tip:** It is better to make a fork of this repository before cloning it and work on your own fork. Do this using a button in the top right. The URL for your forked repository will be different from the one shown below.
 
 * Download and install [Git for Windows](https://git-scm.com/downloads). 
 * Open Git Bash
