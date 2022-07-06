@@ -279,6 +279,11 @@ const CReactiveDropWorkshop::WorkshopItem_t & CReactiveDropWorkshop::TryQueryAdd
 {
 	const static WorkshopItem_t nilWorkshopItem;
 
+	if ( nPublishedFileID == k_PublishedFileIdInvalid )
+	{
+		return nilWorkshopItem;
+	}
+
 	FOR_EACH_VEC( m_EnabledAddons, i )
 	{
 		if ( m_EnabledAddons[i].details.m_nPublishedFileId == nPublishedFileID )
