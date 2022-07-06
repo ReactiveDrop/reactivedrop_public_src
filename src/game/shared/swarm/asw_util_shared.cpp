@@ -1524,6 +1524,11 @@ static void LoadKeyValues( KeyValues *pKV, const char *fileName, const char *szP
 
 		pBuf = &buf2;
 	}
+	else if ( buf.TellPut() >= 3 && !V_strncmp( (const char *)buf.Base(), "\xEF\xBB\xBF", 3 ) )
+	{
+		// We've got a byte order mark in UTF-8. KeyValues will get confused by this.
+		buf.SeekGet( CUtlBuffer::SEEK_HEAD, 3 );
+	}
 
 	CUtlString fullFileName = CUtlString::PathJoin( szPath, fileName );
 
