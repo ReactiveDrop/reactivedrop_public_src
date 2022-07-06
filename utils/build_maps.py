@@ -10,82 +10,96 @@ from subprocess import call
 os.environ["RD_STEAM"] = "D:/Program Files/Steam/steamapps/common/Alien Swarm Reactive Drop"
 os.environ["RD_DEV"] = "C:/Users/dmitriy/work/reactivedropgit"
 
+class MapInfo:
+	def __init__(self, name, radius_override="2500", buildcubemaps="1", vbsp=None, vvis=None, vrad=None):
+		self.name = name.lower()
+		self.buildcubemaps = buildcubemaps
+		self.vbsp = vbsp or ["-alldetail"]
+		self.vvis = vvis or ["-radius_override", radius_override]
+		self.vrad = vrad or ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
+
 # list of maps to compile
-# each item is a list of: ["MapFileName", "radius_override", "buildcubemaps? 0 or 1 string"]
+# each item is a MapInfo ("MapFileName", "radius_override", "buildcubemaps? 0 or 1 string")
 VMFs = [
-##		["asi-jac1-landingbay_01", "3000", "0"],
-##		["asi-jac1-landingbay_02", "2500", "0"],
-##		["asi-jac1-landingbay_pract", "3000", "0"],
-##		["asi-jac2-deima", "2500", "0"],
-##		["asi-jac3-rydberg", "2500", "0"],
-##		["asi-jac4-residential", "2500", "0"],
-##		["asi-jac6-sewerjunction", "2500", "0"],
-##		["asi-jac7-timorstation", "2500", "0"],
-##		["rd-bio1operationx5", "750", "0"],
-##		["rd-bio2invisiblethreat", "750", "0"],
-##		["rd-bio3biogenlabs", "750", "0"],
-##		["dm_deima", "2500", "0"],
-##		["dm_desert", "1500", "0"],
-##		["dm_residential", "1500", "0"],
-##		["dm_testlab", "750", "0"],
-##		["nest01cave", "2500", "0"],
-##		["nest02bunker", "2500", "0"],
-##		["nest03rapture", "2500", "0"],
-##		["rd-area9800lz", "1500", "0"],
-##		["rd-area9800pp1", "1500", "0"],
-##		["rd-area9800pp2", "750", "0"],
-##		["rd-area9800wl", "1500", "0"],
-##		["rd-bonus_mission1", "2500", "0"],
-##		["rd-bonus_mission2", "2500", "0"],
-##		["rd-bonus_mission3", "750", "0"],
-##		["rd-bonus_mission4", "3000", "0"],
-##		["rd-bonus_mission5", "750", "1"],
-##		["rd-bonus_mission6", "1500", "1"],
-##		["rd-bonus_mission7", "1500", "0"],
-##		["rd-dc1_omega_city", "1500", "0"],
-##		["rd-dc2_breaking_an_entry", "750", "0"],
-##		["rd-dc3_search_and_rescue", "750", "0"],
-##		["rd-lan1_bridge", "2500", "0"],
-##		["rd-lan2_sewer", "1500", "0"],
-##		["rd-lan3_maintenance", "750", "0"],
-##		["rd-lan4_vent", "1500", "0"],
-##		["rd-lan5_complex", "750", "0"],
-##		["rd-ocs1storagefacility", "750", "0"],
-##		["rd-ocs2landingbay7", "750", "0"],
-##		["rd-ocs3uscmedusa", "750", "0"],
-##		["rd-ori1niosarefinary", "1500", "0"],
-##		["rd-ori2firstanomaly", "1500", "0"],
-##		["rd-par1unexpected_encounter", "1500", "1"],
-##		["rd-par2hostile_places", "750", "1"],
-##		["rd-par3close_contact", "750", "1"],
-##		["rd-par4high_tension", "1500", "1"],
-##		["rd-par5crucial_point", "1500", "1"],
-##		["rd-res1forestentrance", "750", "0"],
-##		["rd-res2research7", "1500", "0"],
-##		["rd-res3miningcamp", "1500", "0"],
-##		["rd-res4mines", "1500", "0"],
-##		["rd-tft1desertoutpost", "3000", "0"],
-##		["rd-tft2abandonedmaintenance", "1500", "0"],
-##		["rd-tft3spaceport", "2000", "0"],
-##		["rd-til1midnightport", "1500", "0"],
-##		["rd-til2roadtodawn", "750", "0"],
-##		["rd-til3arcticinfiltration", "2500", "1"],
-##		["rd-til4area9800", "750", "0"],
-##		["rd-til5coldcatwalks", "1500", "0"],
-##		["rd-til6yanaurusmine", "750", "0"],
-##		["rd-til7factory", "750", "0"],
-##		["rd-til8comcenter", "1500", "0"],
-##		["rd-til9syntekhospital", "750", "0"],
-##		["rd-reduction1", "2500", "0"],
-##		["rd-reduction2", "2500", "0"],
-##		["rd-reduction3", "2500", "0"],
-##		["rd-reduction4", "2500", "0"],
-##		["rd-reduction5", "2500", "0"],
-##		["rd-reduction6", "2500", "0"],
-##		["rd-nh01_logisticsarea", "2500", "1"],
-##		["rd-nh02_platformxvii", "2500", "1"],
-##		["rd-nh03_groundworklabs", "2500", "1"],
-		]
+##		MapInfo("asi-jac1-landingbay_01", "3000", "0"),
+##		MapInfo("asi-jac1-landingbay_02", "2500", "0"),
+##		MapInfo("asi-jac1-landingbay_pract", "3000", "0"),
+##		MapInfo("asi-jac2-deima", "2500", "0"),
+##		MapInfo("asi-jac3-rydberg", "2500", "0"),
+##		MapInfo("asi-jac4-residential", "2500", "0"),
+##		MapInfo("asi-jac6-sewerjunction", "2500", "0"),
+##		MapInfo("asi-jac7-timorstation", "2500", "0"),
+##		MapInfo("rd-bio1operationx5", "750", "0"),
+##		MapInfo("rd-bio2invisiblethreat", "750", "0"),
+##		MapInfo("rd-bio3biogenlabs", "750", "0"),
+##		MapInfo("dm_deima", "2500", "0"),
+##		MapInfo("dm_desert", "1500", "0"),
+##		MapInfo("dm_residential", "1500", "0"),
+##		MapInfo("dm_testlab", "750", "0"),
+##		MapInfo("nest01cave", "2500", "0"),
+##		MapInfo("nest02bunker", "2500", "0"),
+##		MapInfo("nest03rapture", "2500", "0"),
+##		MapInfo("rd-area9800lz", "1500", "0"),
+##		MapInfo("rd-area9800pp1", "1500", "0"),
+##		MapInfo("rd-area9800pp2", "750", "0"),
+##		MapInfo("rd-area9800wl", "1500", "0"),
+##		MapInfo("rd-bonus_mission1", "2500", "0"),
+##		MapInfo("rd-bonus_mission2", "2500", "0"),
+##		MapInfo("rd-bonus_mission3", "750", "0"),
+##		MapInfo("rd-bonus_mission4", "3000", "0"),
+##		MapInfo("rd-bonus_mission5", "750", "1"),
+##		MapInfo("rd-bonus_mission6", "1500", "1"),
+##		MapInfo("rd-bonus_mission7", "1500", "0"),
+##		MapInfo("rd-dc1_omega_city", "1500", "0"),
+##		MapInfo("rd-dc2_breaking_an_entry", "750", "0"),
+##		MapInfo("rd-dc3_search_and_rescue", "750", "0"),
+##		MapInfo("rd-lan1_bridge", "2500", "0"),
+##		MapInfo("rd-lan2_sewer", "1500", "0"),
+##		MapInfo("rd-lan3_maintenance", "750", "0"),
+##		MapInfo("rd-lan4_vent", "1500", "0"),
+##		MapInfo("rd-lan5_complex", "750", "0"),
+##		MapInfo("rd-ocs1storagefacility", "750", "0"),
+##		MapInfo("rd-ocs2landingbay7", "750", "0"),
+##		MapInfo("rd-ocs3uscmedusa", "750", "0"),
+##		MapInfo("rd-ori1niosarefinary", "1500", "0"),
+##		MapInfo("rd-ori2firstanomaly", "1500", "0"),
+##		MapInfo("rd-par1unexpected_encounter", "1500", "1"),
+##		MapInfo("rd-par2hostile_places", "750", "1"),
+##		MapInfo("rd-par3close_contact", "750", "1"),
+##		MapInfo("rd-par4high_tension", "1500", "1"),
+##		MapInfo("rd-par5crucial_point", "1500", "1"),
+##		MapInfo("rd-res1forestentrance", "750", "0"),
+##		MapInfo("rd-res2research7", "1500", "0"),
+##		MapInfo("rd-res3miningcamp", "1500", "0"),
+##		MapInfo("rd-res4mines", "1500", "0"),
+##		MapInfo("rd-tft1desertoutpost", "3000", "0"),
+##		MapInfo("rd-tft2abandonedmaintenance", "1500", "0"),
+##		MapInfo("rd-tft3spaceport", "2000", "0"),
+##		MapInfo("rd-til1midnightport", "1500", "0"),
+##		MapInfo("rd-til2roadtodawn", "750", "0"),
+##		MapInfo("rd-til3arcticinfiltration", "2500", "1"),
+##		MapInfo("rd-til4area9800", "750", "0"),
+##		MapInfo("rd-til5coldcatwalks", "1500", "0"),
+##		MapInfo("rd-til6yanaurusmine", "750", "0"),
+##		MapInfo("rd-til7factory", "750", "0"),
+##		MapInfo("rd-til8comcenter", "1500", "0"),
+##		MapInfo("rd-til9syntekhospital", "750", "0"),
+##		MapInfo("rd-reduction1", "2500", "0"),
+##		MapInfo("rd-reduction2", "2500", "0"),
+##		MapInfo("rd-reduction3", "2500", "0"),
+##		MapInfo("rd-reduction4", "2500", "0"),
+##		MapInfo("rd-reduction5", "2500", "0"),
+##		MapInfo("rd-reduction6", "2500", "0"),
+##		MapInfo("rd-nh01_logisticsarea", "2500", "1"),
+##		MapInfo("rd-nh02_platformxvii", "2500", "1"),
+##		MapInfo("rd-nh03_groundworklabs", "2500", "1"),
+##		MapInfo("rd-acc1_infodep", "1200", "0"),
+##		MapInfo("rd-acc2_powerhood", "900", "0"),
+##		MapInfo("rd-acc3_rescenter", "1500", "0", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
+##		MapInfo("rd-acc4_confacility", "900", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
+##		MapInfo("rd-acc5_j5connector", "1200", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
+##		MapInfo("rd-acc6_labruins", "1500", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
+]
 
 game = os.environ["RD_STEAM"]
 vbsp = game + "/bin/vbsp.exe"
@@ -117,14 +131,14 @@ with open(build_all_maps_cfg, "w") as myfile:
 
 # compile maps and copy to the 'maps' folder
 for i, mapinfo in enumerate(VMFs):
-	call([vbsp, "-alldetail", "-game", moddir, mapsrc + "/" + mapinfo[0]])
-	call([vvis, "-radius_override", mapinfo[1], "-game", moddir, mapsrc + "/" + mapinfo[0]])
-	call([vrad, "-low", "-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys", "-game", moddir, mapsrc + "/" + mapinfo[0]])
-	#call([vrad, "-low", "-threads", "4", "-fast", "-game", moddir, mapsrc + "/" + mapinfo[0]])
+	name = mapsrc + "/" + mapinfo.name
+	call([vbsp] + mapinfo.vbsp + ["-game", moddir, name])
+	call([vvis] + mapinfo.vvis + ["-game", moddir, name])
+	call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
 	try:
-		shutil.copy2(mapsrc + "/" + mapinfo[0] + ".bsp", mapdir + "/" + mapinfo[0] + ".bsp")
+		shutil.copy2(mapsrc + "/" + mapinfo.name + ".bsp", mapdir + "/" + mapinfo.name + ".bsp")
 	except:
-		print("Couldn't copy map %s" % mapinfo[0])
+		print("Couldn't copy map %s" % mapinfo.name)
 		raise
 	# write code into cfg file which requires map names
 	nextmap = None
@@ -133,7 +147,7 @@ for i, mapinfo in enumerate(VMFs):
 	else:
 		nextmap = "map" + str(i + 1)
 	with open(build_all_maps_cfg, "a") as myfile:
-		myfile.write("alias build_%s \"map %s;alias buildnextmap build_%s;buildmap%s\n" % ("map" + str(i),mapinfo[0],nextmap,mapinfo[2]))
+		myfile.write("alias build_%s \"map %s;alias buildnextmap build_%s;buildmap%s\n" % ("map" + str(i),mapinfo.name,nextmap,mapinfo.buildcubemaps))
 		
 # footer of the cfg file
 with open(build_all_maps_cfg, "a") as myfile:
