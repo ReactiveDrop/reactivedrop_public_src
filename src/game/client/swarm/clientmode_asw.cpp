@@ -53,6 +53,7 @@
 #include "asw_briefing.h"
 #include "c_gib.h"
 #include "asw_hud_chat.h"
+#include "game_timescale_shared.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
