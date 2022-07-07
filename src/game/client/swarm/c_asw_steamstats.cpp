@@ -158,9 +158,9 @@ namespace
 		"rd-acc6_labruins",
 		"rd-ad1_newbeginning", // pending rename
 		"rd-ad2_nexussubnode", // pending rename
-		"rd-ad3_darkpath_classic", // pending rename
-		"rd-ad3_fuel_junction", // pending rename
 		"rd-ad3_neon_carnage", // pending rename
+		"rd-ad3_fuel_junction", // pending rename
+		"rd-ad3_darkpath_classic", // pending rename
 		"rd-ad4_forbidden_outpost", // pending rename
 		"rd-ad2_anomaly", // pending rename
 		"rd-bonus_mission1",

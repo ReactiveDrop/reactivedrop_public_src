@@ -832,17 +832,17 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEXUSSUBNODE );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad3_darkpath_classic" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ad3_neon_carnage" ) ) // pending rename
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_DARKPATH_CLASSIC );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEON_CARNAGE );
 			}
 			else if ( !Q_stricmp( mapName, "rd-ad3_fuel_junction" ) ) // pending rename
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_FUEL_JUNCTION );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad3_neon_carnage" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ad3_darkpath_classic" ) ) // pending rename
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEON_CARNAGE );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_DARKPATH_CLASSIC );
 			}
 			else if ( !Q_stricmp( mapName, "rd-ad4_forbidden_outpost" ) ) // pending rename
 			{

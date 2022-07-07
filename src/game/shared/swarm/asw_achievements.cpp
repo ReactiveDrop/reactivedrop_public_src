@@ -442,9 +442,9 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-acc6_labruins",
 	"rd-ad1_newbeginning", // pending rename
 	"rd-ad2_nexussubnode", // pending rename
-	"rd-ad3_darkpath_classic", // pending rename
-	"rd-ad3_fuel_junction", // pending rename
 	"rd-ad3_neon_carnage", // pending rename
+	"rd-ad3_fuel_junction", // pending rename
+	"rd-ad3_darkpath_classic", // pending rename
 	"rd-ad4_forbidden_outpost", // pending rename
 	"rd-ad2_anomaly", // pending rename
 	"rd-bonus_mission1",
@@ -573,9 +573,9 @@ static const char *g_szAchievementMapNamesAD[] =
 {
 	"rd-ad1_newbeginning", // pending rename
 	"rd-ad2_nexussubnode", // pending rename
-	"rd-ad3_darkpath_classic", // pending rename
-	"rd-ad3_fuel_junction", // pending rename
 	"rd-ad3_neon_carnage", // pending rename
+	"rd-ad3_fuel_junction", // pending rename
+	"rd-ad3_darkpath_classic", // pending rename
 	"rd-ad4_forbidden_outpost", // pending rename
 };
 
@@ -782,9 +782,9 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_LABRUINS, 1281 );
 
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_NEWBEGINNING, 1282 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_NEXUSSUBNODE, 1283 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_DARKPATH_CLASSIC, 1284 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_NEON_CARNAGE, 1284 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_FUEL_JUNCTION, 1285 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_NEON_CARNAGE, 1286 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_DARKPATH_CLASSIC, 1286 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_FORBIDDEN_OUTPOST, 1287 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_ANOMALY, 1288 );
 
