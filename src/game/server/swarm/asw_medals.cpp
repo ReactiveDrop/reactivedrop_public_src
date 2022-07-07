@@ -271,10 +271,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TFT );
 			}
-//			else if ( !Q_stricmp( pszCampaignName, "rd_deadcity" ) )
-//			{
-//				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_DC );
-//			}
 			else if ( !Q_stricmp( pszCampaignName, "tilarus5" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TIL );
@@ -283,10 +279,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_LAN );
 			}
-//			else if ( !Q_stricmp( pszCampaignName, "rd_reduction_campaign" ) )
-//			{
-//				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_REDUCTION );
-//			}
 			else if ( !Q_stricmp( pszCampaignName, "rd_paranoia" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR );
@@ -298,6 +290,14 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( pszCampaignName, "rd_biogen_corporation" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_accident32" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ACC );
+			}
+			else if ( !Q_stricmp( pszCampaignName, "adanaxis" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AD );
 			}
 		}
 	}

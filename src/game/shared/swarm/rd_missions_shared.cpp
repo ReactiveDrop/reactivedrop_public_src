@@ -31,7 +31,9 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd-tarnorcampaign1",
 	"rd_paranoia",
 	"rd-area9800",
+	"adanaxis", // pending rename
 	"tilarus5",
+	"rd_accident32",
 	"rd_biogen_corporation",
 	"rd_research7",
 	"rd_lanasescape_campaign",
@@ -39,6 +41,7 @@ static const char *s_szCampaignNamesFirst[] =
 
 static const char *s_szMissionNamesFirst[] =
 {
+	"rd-ad2_anomaly", // pending rename
 	"dm_desert",
 	"dm_deima",
 	"dm_residential",
