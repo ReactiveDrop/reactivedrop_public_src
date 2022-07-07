@@ -870,6 +870,13 @@ void Script_GamePause( bool bPause )
 	}
 }
 
+bool Script_IsAnniversaryWeek()
+{
+	CAlienSwarm *pGameRules = ASWGameRules();
+	Assert( pGameRules );
+	return pGameRules ? pGameRules->IsAnniversaryWeek() : false;
+}
+
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	if ( !g_pScriptVM ) return;
@@ -906,4 +913,5 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMaxs, "GetHullMaxs", "Returns a Vector for the hull maxs (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_FindNearestNPC, "FindNearestNPC", "Find nearest NPC to position (position, ZcoordCheck, radius)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GamePause, "GamePause", "Pause or unpause the game" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_IsAnniversaryWeek, "IsAnniversaryWeek", "Returns true if it is the anniversary week of Alien Swarm: Reactive Drop" );
 }
