@@ -8773,21 +8773,27 @@ static void CreateCake( const char *mapname )
 	}
 	else if ( FStrEq( mapname, "rd-acc1_infodep" ) )
 	{
+		origin = Vector( 3232, 4240, 300 );
 	}
 	else if ( FStrEq( mapname, "rd-acc2_powerhood" ) )
 	{
+		origin = Vector( 512, 725, 296 );
 	}
 	else if ( FStrEq( mapname, "rd-acc3_rescenter" ) )
 	{
+		origin = Vector( 2528, 3424, -92 );
 	}
 	else if ( FStrEq( mapname, "rd-acc4_confacility" ) )
 	{
+		origin = Vector( 352, -2640, 492 );
 	}
 	else if ( FStrEq( mapname, "rd-acc5_j5connector" ) )
 	{
+		origin = Vector( 1448, 1712, 233 );
 	}
 	else if ( FStrEq( mapname, "rd-acc6_labruins" ) )
 	{
+		origin = Vector( 704, 824, -500 );
 	}
 	else if ( FStrEq( mapname, "rd-ad1_newbeginning" ) ) // pending rename
 	{
