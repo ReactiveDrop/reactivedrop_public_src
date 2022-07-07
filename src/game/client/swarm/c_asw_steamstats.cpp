@@ -86,6 +86,8 @@ namespace
 		"rd_paranoia",
 		"rd_nh_campaigns",
 		"rd_biogen_corporation",
+		"rd_accident32",
+		"adanaxis", // pending rename
 	};
 	const char *const g_OfficialMaps[] =
 	{
@@ -148,6 +150,19 @@ namespace
 		"rd-bio1operationx5",
 		"rd-bio2invisiblethreat",
 		"rd-bio3biogenlabs",
+		"rd-acc1_infodep",
+		"rd-acc2_powerhood",
+		"rd-acc3_rescenter",
+		"rd-acc4_confacility",
+		"rd-acc5_j5connector",
+		"rd-acc6_labruins",
+		"rd-ad1_newbeginning", // pending rename
+		"rd-ad2_nexussubnode", // pending rename
+		"rd-ad3_darkpath_classic", // pending rename
+		"rd-ad3_fuel_junction", // pending rename
+		"rd-ad3_neon_carnage", // pending rename
+		"rd-ad4_forbidden_outpost", // pending rename
+		"rd-ad2_anomaly", // pending rename
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
 		"rd-bonus_mission3",
@@ -159,6 +174,7 @@ namespace
 
 	const char *const g_OfficialNonCampaignMaps[] =
 	{
+		"rd-ad2_anomaly", // pending rename
 		"dm_desert",
 		"dm_deima",
 		"dm_residential",

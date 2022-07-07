@@ -800,6 +800,58 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_BIOGEN_LABS );
 			}
+			else if ( !Q_stricmp( mapName, "rd-acc1_infodep" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_INFODEP );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc2_powerhood" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_POWERHOOD );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc3_rescenter" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_RESCENTER );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc4_confacility" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_CONFACILITY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc5_j5connector" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_J5CONNECTOR );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc6_labruins" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_LABRUINS );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad1_newbeginning" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEWBEGINNING );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad2_nexussubnode" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEXUSSUBNODE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad3_darkpath_classic" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_DARKPATH_CLASSIC );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad3_fuel_junction" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_FUEL_JUNCTION );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad3_neon_carnage" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEON_CARNAGE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad4_forbidden_outpost" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_FORBIDDEN_OUTPOST );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ad2_anomaly" ) ) // pending rename
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_ANOMALY );
+			}
 		}
 
 		// Old medals

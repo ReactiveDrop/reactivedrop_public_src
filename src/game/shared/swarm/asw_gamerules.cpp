@@ -8771,6 +8771,45 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( 312, 2186, 156 );
 	}
+	else if ( FStrEq( mapname, "rd-acc1_infodep" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-acc2_powerhood" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-acc3_rescenter" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-acc4_confacility" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-acc5_j5connector" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-acc6_labruins" ) )
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad1_newbeginning" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad2_nexussubnode" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad3_darkpath_classic" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad3_fuel_junction" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad3_neon_carnage" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad4_forbidden_outpost" ) ) // pending rename
+	{
+	}
+	else if ( FStrEq( mapname, "rd-ad2_anomaly" ) ) // pending rename
+	{
+	}
 
 	if ( origin.IsZeroFast() )
 		return;
