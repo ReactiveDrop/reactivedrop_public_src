@@ -818,6 +818,9 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 			pPlayer->OnMissionRestart();
 		}
 
+		// re-init some systems
+		GameTimescale()->LevelInitPostEntity();
+
 		m_aAchievementsEarned.Purge();
 		m_aAwardedExperience.Purge();
 

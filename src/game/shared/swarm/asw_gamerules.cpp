@@ -2934,6 +2934,13 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		}
 	}
 
+	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
+	{
+		// They've been playing a bit... go to the mission fail screen instead!
+		ASWGameRules()->MissionComplete( false );
+		return;
+	}
+
 	// notify players of our mission restart
 	IGameEvent *event = gameeventmanager->CreateEvent( "asw_mission_restart" );
 	if ( event )
@@ -2941,13 +2948,6 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		m_iMissionRestartCount++;
 		event->SetInt( "restartcount", m_iMissionRestartCount );
 		gameeventmanager->FireEvent( event );
-	}
-
-	if ( !bSkipFail && GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
-	{
-		// They've been playing a bit... go to the mission fail screen instead!
-		ASWGameRules()->MissionComplete( false );
-		return;
 	}
 
 	StopStim();
