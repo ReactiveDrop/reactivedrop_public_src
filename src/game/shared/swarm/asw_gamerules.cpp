@@ -2968,14 +2968,11 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	if ( ASWGameResource() )
 		ASWGameResource()->RememberLeaderID();
 
-	if ( !asw_instant_restart.GetBool() || gEntList.FindEntityByClassname( NULL, "asw_challenge_thinker" ) )
+	if ( !asw_instant_restart.GetBool() )
 	{
 		if ( asw_instant_restart_debug.GetBool() )
 		{
-			if ( !asw_instant_restart.GetBool() )
-				Msg( "Not performing instant restart - disabled by convar.\n" );
-			else
-				Msg( "Not performing instant restart - current challenge uses vscript.\n" );
+			Msg( "Not performing instant restart - disabled by convar.\n" );
 		}
 
 		if ( GetCampaignSave() )
@@ -9390,6 +9387,16 @@ public:
 		}
 
 		BaseClass::RunVScripts();
+	}
+
+	virtual void UpdateOnRemove()
+	{
+		if ( GetScriptScope() )
+		{
+			g_pScriptVM->SetValue( "g_ModeScript", SCRIPT_VARIANT_NULL );
+		}
+
+		BaseClass::UpdateOnRemove();
 	}
 };
 
