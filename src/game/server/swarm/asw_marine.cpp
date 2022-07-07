@@ -4574,14 +4574,14 @@ bool CASW_Marine::BecomeRagdollOnClient( const Vector &force )
 
 	// Become server-side ragdoll if we're flagged to do it
 	//if ( m_spawnflags & SF_ANTLIONGUARD_SERVERSIDE_RAGDOLL )
-	if (asw_marine_server_ragdoll.GetBool())
+	if ( asw_marine_server_ragdoll.GetBool() || m_bForceServerRagdoll )
 	{
 		CTakeDamageInfo	info;
 
 		// Fake the info
 		info.SetDamageType( DMG_GENERIC );
 		info.SetDamageForce( force );
-		info.SetDamagePosition( WorldSpaceCenter() );		
+		info.SetDamagePosition( WorldSpaceCenter() );
 		IPhysicsObject *pPhysics = VPhysicsGetObject();
 		if ( pPhysics )
 		{
@@ -4596,7 +4596,7 @@ bool CASW_Marine::BecomeRagdollOnClient( const Vector &force )
 		// Transfer our name to the new ragdoll
 		pRagdoll->SetName( GetEntityName() );
 		//pRagdoll->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-		
+
 		// Get rid of our old body
 		//UTIL_Remove(this);
 		RemoveDeferred();
