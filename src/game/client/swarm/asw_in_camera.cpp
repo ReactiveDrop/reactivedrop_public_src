@@ -62,7 +62,6 @@ ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "412", FCVAR_CHEAT );
 extern kbutton_t in_zoom;
 extern ConVar asw_hide_local_marine;
 extern ConVar cam_command;
-extern ConVar sv_cheats;
 extern ConVar joy_pan_camera;
 
 #define	DIST	 2

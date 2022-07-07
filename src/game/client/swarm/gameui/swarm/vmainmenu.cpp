@@ -984,8 +984,13 @@ void MainMenu::OnThink()
 //=============================================================================
 void MainMenu::OnOpen()
 {
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( !sv_cheats.GetBool() )
+	extern ConVar *sv_cheats;
+	if ( !sv_cheats )
+	{
+		sv_cheats = cvar->FindVar( "sv_cheats" );
+	}
+
+	if ( sv_cheats && !sv_cheats->GetBool() )
 	{
 		if ( rd_revert_convars.GetBool() )
 		{

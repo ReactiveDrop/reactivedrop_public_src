@@ -60,7 +60,7 @@ float ScaleFOVByWidthRatio( float fovDegrees, float ratio );
 
 extern ConVar mat_wireframe;
 
-extern const ConVar *sv_cheats;
+extern ConVar *sv_cheats;
 
 
 static inline int WireFrameMode( void )

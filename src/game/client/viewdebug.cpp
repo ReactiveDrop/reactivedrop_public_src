@@ -46,7 +46,7 @@ static ConVar mat_drawColorRamp( "mat_drawColorRamp", "0", 0, "Draw color test p
 //-----------------------------------------------------------------------------
 // (the engine owns this cvar).
 ConVar mat_wireframe( "mat_wireframe", "0", FCVAR_CHEAT );
-const ConVar *sv_cheats = NULL;
+ConVar *sv_cheats = NULL;
 ConVar	mat_showlightmappage(  "mat_showlightmappage", "-1" ); // set this to the lightmap page that you want to see on screen, set to -1 to show nothing.
 ConVar cl_drawshadowtexture( "cl_drawshadowtexture", "0", FCVAR_CHEAT );
 ConVar cl_shadowtextureoverlaysize( "cl_shadowtextureoverlaysize", "256", FCVAR_CHEAT );

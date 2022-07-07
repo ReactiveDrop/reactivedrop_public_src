@@ -48,7 +48,7 @@ extern int giPrecacheGrunt;
 
 extern bool IsInCommentaryMode( void );
 
-ConVar  *sv_cheats = NULL;
+ConVar *sv_cheats = NULL;
 
 #define P_MAX_LEN 127 //used in CheckChatText and Host_Say to limit p pointer where pszFormat + pszPrefix + pszLocation + p as main text and few more symbols define the full text string. should be under 256
 //also seems not to be really usefull without client adjustment m_pInput->SetMaximumCharCount( 127 ); in hud_basechat.cpp

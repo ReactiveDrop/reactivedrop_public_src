@@ -59,7 +59,7 @@ static ConVar c_thirdpersonshoulderaimdist( "c_thirdpersonshoulderaimdist", "120
 static kbutton_t cam_pitchup, cam_pitchdown, cam_yawleft, cam_yawright;
 static kbutton_t cam_in, cam_out; // -- "cam_move" is unused
 
-extern const ConVar *sv_cheats;
+extern ConVar *sv_cheats;
 extern ConVar in_forceuser;
 
 CON_COMMAND_F( cam_command, "Tells camera to change modes", FCVAR_CHEAT )

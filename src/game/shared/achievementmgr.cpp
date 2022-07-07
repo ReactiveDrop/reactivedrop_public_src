@@ -252,7 +252,7 @@ void CAchievementMgr::InitializeAchievements( )
 }
 
 #ifdef CLIENT_DLL
-extern const ConVar *sv_cheats;
+extern ConVar *sv_cheats;
 #endif
 
 //-----------------------------------------------------------------------------

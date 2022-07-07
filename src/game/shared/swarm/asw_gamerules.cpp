@@ -1558,8 +1558,12 @@ void CAlienSwarm::FullReset()
 
 	m_ActorSpeakingUntil.Purge();
 
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( !sv_cheats.GetBool() )
+	if ( !sv_cheats )
+	{
+		sv_cheats = cvar->FindVar( "sv_cheats" );
+	}
+
+	if ( sv_cheats && !sv_cheats->GetBool() )
 	{
 		if ( CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI )
 		{
@@ -8172,8 +8176,12 @@ void CAlienSwarm::CheckDeathmatchFinish()
 
 void CAlienSwarm::OnSVCheatsChanged()
 {
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( sv_cheats.GetBool() )
+	if ( !sv_cheats )
+	{
+		sv_cheats = cvar->FindVar( "sv_cheats" );
+	}
+
+	if ( sv_cheats && sv_cheats->GetBool() )
 	{
 		m_bCheated = true;
 	}
@@ -8982,14 +8990,18 @@ void CAlienSwarm::LevelInitPostEntity()
 	if (pFire)
 		pFire->Spawn();
 
-	ConVar *var = (ConVar *)cvar->FindVar( "sv_cheats" );
-	if ( var )
+	if ( !sv_cheats )
 	{
-		m_bCheated = var->GetBool();
+		sv_cheats = cvar->FindVar( "sv_cheats" );
+	}
+
+	if ( sv_cheats )
+	{
+		m_bCheated = sv_cheats->GetBool();
 		static bool s_bInstalledCheatsChangeCallback = false;
 		if ( !s_bInstalledCheatsChangeCallback )
 		{
-			var->InstallChangeCallback( CheatsChangeCallback );
+			sv_cheats->InstallChangeCallback( CheatsChangeCallback );
 			s_bInstalledCheatsChangeCallback = true;
 		}
 	}
