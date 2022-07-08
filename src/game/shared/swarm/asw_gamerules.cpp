@@ -8779,6 +8779,7 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( 312, 2186, 156 );
 	}
+#ifdef RD_6A_CAMPAIGNS
 	else if ( FStrEq( mapname, "rd-acc1_infodep" ) )
 	{
 		origin = Vector( 3232, 4240, 300 );
@@ -8824,6 +8825,7 @@ static void CreateCake( const char *mapname )
 	else if ( FStrEq( mapname, "rd-ad2_anomaly" ) ) // pending rename
 	{
 	}
+#endif
 
 	if ( origin.IsZeroFast() )
 		return;

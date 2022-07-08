@@ -434,6 +434,7 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-bio1operationx5",
 	"rd-bio2invisiblethreat",
 	"rd-bio3biogenlabs",
+#ifdef RD_6A_CAMPAIGNS
 	"rd-acc1_infodep",
 	"rd-acc2_powerhood",
 	"rd-acc3_rescenter",
@@ -447,6 +448,7 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-ad3_darkpath_classic", // pending rename
 	"rd-ad4_forbidden_outpost", // pending rename
 	"rd-ad2_anomaly", // pending rename
+#endif
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -559,6 +561,7 @@ static const char *g_szAchievementMapNamesBIO[] =
 	"rd-bio3biogenlabs",
 };
 
+#ifdef RD_6A_CAMPAIGNS
 static const char *g_szAchievementMapNamesACC[] =
 {
 	"rd-acc1_infodep",
@@ -578,6 +581,7 @@ static const char *g_szAchievementMapNamesAD[] =
 	"rd-ad3_darkpath_classic", // pending rename
 	"rd-ad4_forbidden_outpost", // pending rename
 };
+#endif
 
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(150, ASW_, _CAMPAIGN, Jacob);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(155, RD_, _CAMPAIGN_OCS, OCS);
@@ -589,8 +593,10 @@ DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(180, RD_, _CAMPAIGN_LAN, Lana);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(185, RD_, _CAMPAIGN_PAR, PAR);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(190, RD_, _CAMPAIGN_NH, NH);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(195, RD_, _CAMPAIGN_BIO, BIO);
+#ifdef RD_6A_CAMPAIGNS
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(200, RD_, _CAMPAIGN_ACC, ACC);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(205, RD_, _CAMPAIGN_AD, AD);
+#endif
 
 class CAchievement_Kill_Grind_1 : public CASW_Achievement
 {
@@ -773,6 +779,7 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_OPERATION_X5, 1273 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_INVISIBLE_THREAT, 1274 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_BIOGEN_LABS, 1275 );
 
+#ifdef RD_6A_CAMPAIGNS
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_INFODEP, 1276 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_POWERHOOD, 1277 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_RESCENTER, 1278 );
@@ -787,6 +794,7 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_FUEL_JUNCTION, 1285 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_DARKPATH_CLASSIC, 1286 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_FORBIDDEN_OUTPOST, 1287 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( AD_ANOMALY, 1288 );
+#endif
 
 class CAchievement_Group_Heal : public CASW_Achievement
 {
@@ -1124,6 +1132,7 @@ class CAchievement_Campaign_No_Deaths_BIO : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_BIO, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO, "RD_CAMPAIGN_NO_DEATHS_BIO", 5, 1011 );
 
+#ifdef RD_6A_CAMPAIGNS
 class CAchievement_Campaign_No_Deaths_ACC : public CASW_Achievement
 {
 	void Init()
@@ -1145,6 +1154,7 @@ class CAchievement_Campaign_No_Deaths_AD : public CASW_Achievement
 	// server fires an event for this achievement, no other code within achievement necessary
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_AD, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AD, "RD_CAMPAIGN_NO_DEATHS_AD", 5, 1013 );
+#endif
 
 class CAchievement_Rifle_Kills : public CASW_Achievement
 {

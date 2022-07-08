@@ -291,6 +291,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO );
 			}
+#ifdef RD_6A_CAMPAIGNS
 			else if ( !Q_stricmp( pszCampaignName, "rd_accident32" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ACC );
@@ -299,6 +300,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AD );
 			}
+#endif
 		}
 	}
 
@@ -800,6 +802,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BIO_BIOGEN_LABS );
 			}
+#ifdef RD_6A_CAMPAIGNS
 			else if ( !Q_stricmp( mapName, "rd-acc1_infodep" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_INFODEP );
@@ -852,6 +855,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_ANOMALY );
 			}
+#endif
 		}
 
 		// Old medals

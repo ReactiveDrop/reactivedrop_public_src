@@ -1247,9 +1247,13 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd-tarnorcampaign1.txt",
 	"rd_paranoia.txt",
 	"rd-area9800.txt",
+#ifdef RD_6A_CAMPAIGNS
 	"adanaxis.txt", // pending rename
+#endif
 	"tilarus5.txt",
+#ifdef RD_6A_CAMPAIGNS
 	"rd_accident32.txt",
+#endif
 	"rd_biogen_corporation.txt",
 	"rd_research7.txt",
 	"rd_lanasescape_campaign.txt",
