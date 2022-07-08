@@ -1,9 +1,0 @@
-GAME
-{
-	"Headline"		"Architects of tomorrow"
-	"HeadlineDate"	"07/15/39"
-	"Paragraph1"	"On August 10, 2239, the Lugdunum expedition will be departing for the Gaethon System towards the colonization of Cassius-III. It comes after years of groundwork that the Interstellar Alliance’s scientific community, sponsored by SynTek Megacorporation and representatives of the Allied Systems Trade Leagues, has vouched for the expansion proposal aimed at establishing a foothold amidst exoplanets far remote from any current colony plans."
-	"Paragraph2"	"Rather than being designed at military or nationalistic ends, the Lugdunum mission takes pride in its scholarly leadership of scientific experts with Professors Jacques and Helen Moreau - last year awarded with the Intersystem Laureate in biology for their shared theory on the evolution of living cells in regards to gravitational changes, acting as the envoys of a Greater Good. Ensuring their safety and the safekeeping of all who would follow suit, is an independent group of custodians led by ex-Commander Arthur Carradine, a key actor in the bloodless Standstill of Sabattis; which, to further educate our youngest generation of readers, is widely considered as one of History’s major events in building upon a growing era of peace within our Allied Systems."
-	"Paragraph3"	"Hereafter set for the five-month journey towards the far reaches of our galaxy, Lugdunum’s ambitions consist not only in the creation of a new hub of civilization by planting our species’ flag on unfamiliar soil, but also in ensuring the active and steady march of Humanity in fields hitherto unexplored."
-	"Paragraph4"	"Nam Humanum, “For the Human”. Follow along the architects of tomorrow in mankind’s newest undertaking."
-}

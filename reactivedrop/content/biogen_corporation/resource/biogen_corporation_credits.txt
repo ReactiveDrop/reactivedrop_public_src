@@ -1,7 +1,0 @@
-"Credits"
-{
-	// these keys must be in this order!
-	"show_credits_logo" "0"
-	"asw_credits_"	"Campaign by Uradzimiru"
-	"asw_credits_"	""
-}
