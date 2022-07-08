@@ -317,8 +317,8 @@ public:
 	CUtlVector<int> m_aNonLocalPlayerAchievementsEarned;	// list of achievements earned by this non-local player
 
 #if !defined(NO_STEAM)
-	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived );
-	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsStored, UserStatsStored_t, m_CallbackUserStatsStored );
+	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsReceived, UserStatsReceived_t );
+	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsStored, UserStatsStored_t );
 #endif
 
 private:

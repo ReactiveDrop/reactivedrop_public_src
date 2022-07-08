@@ -82,10 +82,6 @@ static int AchievementOrderCompare( CBaseAchievement * const *ach1, CBaseAchieve
 // Purpose: constructor
 //-----------------------------------------------------------------------------
 CAchievementMgr::CAchievementMgr() : CAutoGameSystemPerFrame( "CAchievementMgr" )
-#if !defined(NO_STEAM)
-, m_CallbackUserStatsReceived( this, &CAchievementMgr::Steam_OnUserStatsReceived ),
-m_CallbackUserStatsStored( this, &CAchievementMgr::Steam_OnUserStatsStored )
-#endif
 {
 	for ( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; ++i )
 	{

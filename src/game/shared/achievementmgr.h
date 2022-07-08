@@ -80,8 +80,8 @@ public:
 	bool WereCheatsEverOn( void ) { return m_bCheatsEverOn; }
 
 #if !defined(NO_STEAM)
-	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived );
-	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsStored, UserStatsStored_t, m_CallbackUserStatsStored );
+	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsReceived, UserStatsReceived_t );
+	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsStored, UserStatsStored_t );
 #endif
 	const CUtlVector<int>& GetAchievedDuringCurrentGame( int nPlayerSlot );
 	void ResetAchievedDuringCurrentGame( int nPlayerSlot );

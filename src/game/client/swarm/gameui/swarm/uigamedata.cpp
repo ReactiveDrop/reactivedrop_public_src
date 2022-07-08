@@ -206,9 +206,6 @@ bool CUIGameData::m_bModuleShutDown = false;
 
 //=============================================================================
 CUIGameData::CUIGameData() :
-#if !defined( _X360 ) && !defined( NO_STEAM )
-	m_CallbackPersonaStateChanged( this, &CUIGameData::Steam_OnPersonaStateChanged ),
-#endif
 	m_CGameUIPostInit( false )
 {
 	m_LookSensitivity = 1.0f;

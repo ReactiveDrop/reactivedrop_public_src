@@ -322,11 +322,6 @@ C_ASW_Player::C_ASW_Player() :
 	m_iv_angEyeAngles( "C_ASW_Player::m_iv_angEyeAngles" ),
 	m_iv_iMouseX( "C_ASW_Player::m_iv_iMouseX" ),
 	m_iv_iMouseY( "C_ASW_Player::m_iv_iMouseY" )
-
-#if !defined(NO_STEAM)
-	, m_CallbackUserStatsReceived( this, &C_ASW_Player::Steam_OnUserStatsReceived )
-	, m_CallbackUserStatsStored( this, &C_ASW_Player::Steam_OnUserStatsStored )
-#endif
 {
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 			

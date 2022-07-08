@@ -775,9 +775,6 @@ public:
 GameLobby::GameLobby(vgui::Panel *parent, const char *panelName) :
 	BaseClass( parent, panelName, true, true, false ),
 	m_pSettings( NULL ),
-#if !defined( _X360 ) && !defined( NO_STEAM )
-	m_CallbackPersonaStateChanged( this, &GameLobby::Steam_OnPersonaStateChanged ),
-#endif
 	m_nMsgBoxId( 0 ),
 	m_xuidPlayerFlyout( 0 ),
 	m_bNoCommandHandling( false ),
