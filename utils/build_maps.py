@@ -99,6 +99,7 @@ VMFs = [
 ##		MapInfo("rd-acc4_confacility", "900", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
 ##		MapInfo("rd-acc5_j5connector", "1200", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
 ##		MapInfo("rd-acc6_labruins", "1500", "1", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
+##		MapInfo("rd-acc_complex", "1500", "0", vrad=["-final", "-StaticPropLighting", "-StaticPropPolys"]),
 ]
 
 game = os.environ["RD_STEAM"]
