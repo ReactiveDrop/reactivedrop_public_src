@@ -54,14 +54,14 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 		}
 		wchar_t wszChallenge[256];
 		const wchar_t *pwszChallenge = NULL;
-		const char *szChallenge = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:displaytitle" );
-		if ( *szChallenge == '#' )
+		const char *szChallengeTitle = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:displaytitle" );
+		if ( *szChallengeTitle == '#' )
 		{
-			pwszChallenge = g_pVGuiLocalize->Find( szChallenge );
+			pwszChallenge = g_pVGuiLocalize->Find( szChallengeTitle );
 		}
 		if ( !pwszChallenge )
 		{
-			g_pVGuiLocalize->ConvertANSIToUnicode( szChallenge, wszChallenge, sizeof( wszChallenge ) );
+			g_pVGuiLocalize->ConvertANSIToUnicode( szChallengeTitle, wszChallenge, sizeof( wszChallenge ) );
 			pwszChallenge = wszChallenge;
 		}
 		g_pVGuiLocalize->ConstructString( wszTitle, sizeof( wszTitle ), L"%s1: %s2", 2, pwszMission, pwszChallenge );

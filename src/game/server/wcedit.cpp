@@ -357,7 +357,7 @@ void NWCEdit::DestroyAINode( CBasePlayer *pPlayer )
 				{
 					int nWCSrcID = g_pAINetworkManager->GetEditOps()->m_pNodeIndexTable[nSrcID];
 					int nWCDstID = g_pAINetworkManager->GetEditOps()->m_pNodeIndexTable[nDstID];
-					int	status	 = Editor_DeleteNodeLink(nWCSrcID, nWCDstID);
+					status	 = Editor_DeleteNodeLink(nWCSrcID, nWCDstID);
 
 					if (status == Editor_BadCommand)
 					{

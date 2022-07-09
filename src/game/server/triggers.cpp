@@ -524,7 +524,6 @@ void CBaseTrigger::EndTouch(CBaseEntity *pOther)
 		int iSize = m_hTouchingEntities.Count();
 		for ( int i = iSize-1; i >= 0; i-- )
 		{
-			EHANDLE hOther;
 			hOther = m_hTouchingEntities[i];
 
 			if ( !hOther )

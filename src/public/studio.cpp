@@ -571,7 +571,7 @@ int	studiohdr_t::GetActivityListVersion( void )
 	virtualmodel_t *pVModel = (virtualmodel_t *)GetVirtualModel();
 	Assert( pVModel );
 
-	int version = activitylistversion;
+	int minversion = activitylistversion;
 
 	int i;
 	for (i = 1; i < pVModel->m_group.Count(); i++)
@@ -581,15 +581,15 @@ int	studiohdr_t::GetActivityListVersion( void )
 
 		Assert( pStudioHdr );
 
-		version = MIN( version, pStudioHdr->activitylistversion );
+		minversion = MIN( minversion, pStudioHdr->activitylistversion );
 	}
 
-	return version;
+	return minversion;
 }
 
-void studiohdr_t::SetActivityListVersion( int version ) const
+void studiohdr_t::SetActivityListVersion( int setversion ) const
 {
-	activitylistversion = version;
+	activitylistversion = setversion;
 
 	if (numincludemodels == 0)
 	{
@@ -607,7 +607,7 @@ void studiohdr_t::SetActivityListVersion( int version ) const
 
 		Assert( pStudioHdr );
 
-		pStudioHdr->SetActivityListVersion( version );
+		pStudioHdr->SetActivityListVersion( setversion );
 	}
 }
 
@@ -721,18 +721,18 @@ CStudioHdr::CStudioHdr( void )
 	Init( NULL );
 }
 
-CStudioHdr::CStudioHdr( const studiohdr_t *pStudioHdr, IMDLCache *mdlcache ) 
+CStudioHdr::CStudioHdr( const studiohdr_t *pStudioHdr, IMDLCache *pMDLCache ) 
 {
 	// preset pointer to bogus value (it may be overwritten with legitimate data later)
 	m_nFrameUnlockCounter = 0;
 	m_pFrameUnlockCounter = &m_nFrameUnlockCounter;
-	Init( pStudioHdr, mdlcache );
+	Init( pStudioHdr, pMDLCache );
 }
 
 
 // extern IDataCache *g_pDataCache;
 
-void CStudioHdr::Init( const studiohdr_t *pStudioHdr, IMDLCache *mdlcache )
+void CStudioHdr::Init( const studiohdr_t *pStudioHdr, IMDLCache *pMDLCache )
 {
 	m_pStudioHdr = pStudioHdr;
 
@@ -744,9 +744,9 @@ void CStudioHdr::Init( const studiohdr_t *pStudioHdr, IMDLCache *mdlcache )
 		return;
 	}
 
-	if ( mdlcache )
+	if ( pMDLCache )
 	{
-		m_pFrameUnlockCounter = mdlcache->GetFrameUnlockCounterPtr( MDLCACHE_STUDIOHDR );
+		m_pFrameUnlockCounter = pMDLCache->GetFrameUnlockCounterPtr( MDLCACHE_STUDIOHDR );
 		m_nFrameUnlockCounter = *m_pFrameUnlockCounter - 1;
 	}
 
@@ -1423,9 +1423,9 @@ void CStudioHdr::RunFlexRulesOld( const float *src, float *dest )
 				{
 					int m = pops->d.index;
 					int km = k - m;
-					for ( int i = km + 1; i < k; ++i )
+					for ( int l = km + 1; l < k; ++l )
 					{
-						stack[ km ] *= stack[ i ];
+						stack[ km ] *= stack[ l ];
 					}
 					k = k - m + 1;
 				}
@@ -1435,9 +1435,9 @@ void CStudioHdr::RunFlexRulesOld( const float *src, float *dest )
 					int m = pops->d.index;
 					int km = k - m;
 					float dv = stack[ km ];
-					for ( int i = km + 1; i < k; ++i )
+					for ( int l = km + 1; l < k; ++l )
 					{
-						dv *= stack[ i ];
+						dv *= stack[ l ];
 					}
 					stack[ km - 1 ] *= 1.0f - dv;
 					k -= m;

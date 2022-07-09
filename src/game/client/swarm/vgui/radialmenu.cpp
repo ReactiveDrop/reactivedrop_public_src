@@ -1420,7 +1420,6 @@ public:
 
 		bool bIsSpectating = pPlayer->GetSpectatingMarine() != NULL;
 		C_ASW_Marine *pLocalMarine = pPlayer->GetViewMarine();
-		C_ASW_Marine_Resource *pLocalMR = pLocalMarine ? pLocalMarine->GetMarineResource() : NULL;
 
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
 		Assert( pGameResource );

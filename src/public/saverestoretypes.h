@@ -253,14 +253,14 @@ public:
 			else
 			{
 				int i;
-				entitytable_t *pTable;
+				entitytable_t *pEntityTable;
 
 				int nEntities = NumEntities();
 				for ( i = 0; i < nEntities; i++ )
 				{
-					pTable = GetEntityInfo( i );
-					if ( pTable->hEnt == pEntity )
-						return pTable->id;
+					pEntityTable = GetEntityInfo( i );
+					if ( pEntityTable->hEnt == pEntity )
+						return pEntityTable->id;
 				}
 			}
 		}
