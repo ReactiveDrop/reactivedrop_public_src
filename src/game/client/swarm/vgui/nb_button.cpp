@@ -137,7 +137,6 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 	// TODO: is there a better way of knowing out-of-game whether a controller is active than just whether it's plugged in?
 	if ( m_szControllerButton && g_pInputSystem->GetJoystickCount() )
 	{
-		Assert( m_hButtonFont != INVALID_FONT );
 		const wchar_t *wszControllerButton = g_pVGuiLocalize->Find( m_szControllerButton );
 		Assert( wszControllerButton );
 		if ( m_hButtonFont != INVALID_FONT && wszControllerButton )
