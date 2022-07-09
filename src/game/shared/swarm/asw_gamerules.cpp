@@ -8804,6 +8804,10 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( 704, 824, -500 );
 	}
+	else if ( FStrEq( mapname, "rd-acc_complex" ) )
+	{
+		origin = Vector( -3925, -443, -20 );
+	}
 	else if ( FStrEq( mapname, "rd-ad1_newbeginning" ) ) // pending rename
 	{
 	}

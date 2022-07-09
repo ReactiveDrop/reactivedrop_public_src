@@ -26,18 +26,22 @@ int ReactiveDropMissions::s_nDataResets = 1;
 static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob",
+#if defined( RD_6A_CAMPAIGNS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
+	"rd_accident32",
+	"adanaxis", // pending rename
+#endif
 	"rd-operationcleansweep",
 	"rd_nh_campaigns",
 	"rd-tarnorcampaign1",
 	"rd_paranoia",
+#if defined( RD_6A_CAMPAIGNS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
+	"rd_accident32",
+#endif
 	"rd-area9800",
-#ifdef RD_6A_CAMPAIGNS
+#if defined( RD_6A_CAMPAIGNS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"adanaxis", // pending rename
 #endif
 	"tilarus5",
-#ifdef RD_6A_CAMPAIGNS
-	"rd_accident32",
-#endif
 	"rd_biogen_corporation",
 	"rd_research7",
 	"rd_lanasescape_campaign",
@@ -49,9 +53,6 @@ static const char *s_szMissionNamesFirst[] =
 	"dm_deima",
 	"dm_residential",
 	"dm_testlab",
-#ifdef RD_6A_CAMPAIGNS
-	"rd-ad2_anomaly", // pending rename
-#endif
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -59,6 +60,10 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-bonus_mission5",
 	"rd-bonus_mission6",
 	"rd-bonus_mission7",
+#ifdef RD_6A_CAMPAIGNS
+	"rd-acc_complex",
+	"rd-ad2_anomaly", // pending rename
+#endif
 };
 
 #pragma pack(push, 1)

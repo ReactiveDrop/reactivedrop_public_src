@@ -2356,6 +2356,7 @@ exit 1
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_release_flags.h" />
     <ClInclude Include="..\shared\swarm\rd_weapon_generic_object_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
     <ClInclude Include="..\shared\takedamageinfo.h" />

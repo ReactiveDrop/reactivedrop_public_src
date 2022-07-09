@@ -326,6 +326,7 @@ exit 1
     <ClInclude Include="..\..\public\missionchooser\iasw_random_missions.h" />
     <ClInclude Include="..\..\public\missionchooser\iasw_spawn_selection.h" />
     <ClInclude Include="..\..\public\tier1\interface.h" />
+    <ClInclude Include="..\shared\swarm\rd_release_flags.h" />
     <ClInclude Include="asw_key_values_database.h" />
     <ClInclude Include="asw_location_grid.h" />
     <ClInclude Include="asw_map_builder.h" />

@@ -159,6 +159,7 @@ namespace
 		"rd-acc4_confacility",
 		"rd-acc5_j5connector",
 		"rd-acc6_labruins",
+		"rd-acc_complex",
 		"rd-ad1_newbeginning", // pending rename
 		"rd-ad2_nexussubnode", // pending rename
 		"rd-ad3_neon_carnage", // pending rename
@@ -178,6 +179,7 @@ namespace
 
 	const char *const g_OfficialNonCampaignMaps[] =
 	{
+		"rd-acc_complex",
 		"rd-ad2_anomaly", // pending rename
 		"dm_desert",
 		"dm_deima",
