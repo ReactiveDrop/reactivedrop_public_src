@@ -379,9 +379,9 @@ public:
 #endif	// GAME_DLL above
 
 	CUtlStringMap<string_t> m_SavedConvars;
-	bool HaveSavedConvar( const ConVarRef &cvar );
+	bool HaveSavedConvar( const ConVarRef & cvar );
 	void SaveConvar( const ConVarRef & cvar );
-	void RevertSingleConvar( ConVarRef cvar );
+	void RevertSingleConvar( ConVarRef & cvar );
 	void RevertSavedConvars();
 
 	// stim music

@@ -1068,9 +1068,9 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 					Vector sparkNormal = GetAbsOrigin() - position;
 					sparkNormal.z = 0;
 					sparkNormal.NormalizeInPlace();
-					CPVSFilter filter( position );
-					filter.SetIgnorePredictionCull(true);		
-					te->Sparks( filter, 0.0, &position, 1, 1, &sparkNormal );
+					CPVSFilter filter2( position );
+					filter2.SetIgnorePredictionCull(true);		
+					te->Sparks( filter2, 0.0, &position, 1, 1, &sparkNormal );
 				}
 			}
 		}

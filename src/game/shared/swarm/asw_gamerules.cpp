@@ -9274,18 +9274,18 @@ void CAlienSwarm::SaveConvar( const ConVarRef & cvar )
 	m_SavedConvars[ cvar.GetName() ] = AllocPooledString( cvar.GetString() );
 }
 
-void CAlienSwarm::RevertSingleConvar( ConVarRef cvar )
+void CAlienSwarm::RevertSingleConvar( ConVarRef & ref )
 {
-	Assert( cvar.IsValid() );
+	Assert( ref.IsValid() );
 
-	if ( !HaveSavedConvar( cvar ) )
+	if ( !HaveSavedConvar( ref ) )
 	{
 		// don't have a saved value
 		return;
 	}
 
-	string_t & saved = m_SavedConvars[ cvar.GetName() ];
-	cvar.SetValue( STRING( saved ) );
+	string_t & saved = m_SavedConvars[ ref.GetName() ];
+	ref.SetValue( STRING( saved ) );
 	saved = NULL_STRING;
 }
 
@@ -9386,7 +9386,8 @@ void CAlienSwarm::ResetChallengeConVars()
 
 	FOR_EACH_VEC( names, i )
 	{
-		RevertSingleConvar( names[i] );
+		ConVarRef ref( names[i] );
+		RevertSingleConvar( ref );
 	}
 }
 

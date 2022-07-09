@@ -506,7 +506,8 @@ void CASW_Deathmatch_Mode::InstagibDisable(bool enable_weapon_respawn_timer/* = 
 		- Reset Scores
 	*/
 
-	ASWGameRules()->RevertSingleConvar( &rd_default_weapon );
+	ConVarRef ref( &rd_default_weapon );
+	ASWGameRules()->RevertSingleConvar( ref );
 
 	if ( enable_weapon_respawn_timer )
 	{
@@ -914,9 +915,9 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = 
 			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
 
 			// remove all weapons from marine
-			for ( int i = 0; i < 3; ++i )
+			for ( int j = 0; j < 3; ++j )
 			{
-				pMarine->RemoveWeapon(i, true); // true - no swap to other weapon
+				pMarine->RemoveWeapon(j, true); // true - no swap to other weapon
 			}
 
 			// give default weapon
@@ -936,13 +937,12 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = 
 			pMarine->AddSlowHeal( pMarine->GetMaxHealth() - pMarine->GetHealth(), 3, NULL );
 
 			// move to spawnpoint
-			CBaseEntity *(&spawn_point) = CASW_Player::spawn_point;
-			spawn_point = ASWGameRules()->GetMarineSpawnPoint(spawn_point);
-			if (!spawn_point)
-				spawn_point = ASWGameRules()->GetMarineSpawnPoint(NULL);
-			if (spawn_point) {
-				pMarine->Teleport(&spawn_point->GetAbsOrigin(), &spawn_point->GetAbsAngles(), &vec3_origin);
-			}
+			CBaseEntity *( &pSpawnPoint ) = CASW_Player::spawn_point;
+			pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( pSpawnPoint );
+			if ( !pSpawnPoint )
+				pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( NULL );
+			if ( pSpawnPoint )
+				pMarine->Teleport( &pSpawnPoint->GetAbsOrigin(), &pSpawnPoint->GetAbsAngles(), &vec3_origin );
 		}
 	}
 }

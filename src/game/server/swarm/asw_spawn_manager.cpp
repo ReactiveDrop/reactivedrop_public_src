@@ -388,10 +388,10 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 					{
 						NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 255, 255, true, 20.0f );
 						float flDist;
-						CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
-						if ( pMarine )
+						CASW_Marine *pDebugMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
+						if ( pDebugMarine )
 						{
-							NDebugOverlay::Line( pMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
+							NDebugOverlay::Line( pDebugMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
 						}
 					}
 					bAny = true;
