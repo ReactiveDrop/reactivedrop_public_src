@@ -8,8 +8,6 @@
 #include "ai_blended_movement.h"
 #include "util_shared.h"
 
-//typedef CAI_BlendingHost< CAI_BehaviorHost<CASW_BlendedAlien> > CAI_DroneBase;
-
 class CASW_Door;
 class CASW_Drone_Movement;
 

@@ -16,6 +16,6 @@ public:
 	virtual			~C_ASW_VPhysics_NPC();
 
 private:
-	C_ASW_VPhysics_NPC( const C_ASW_VPhysics_NPC & ); // not defined, not accessible
+	C_ASW_VPhysics_NPC( const C_ASW_VPhysics_NPC & ) = delete; // not defined, not accessible
 };
 #endif // _INCLUDED_C_ASW_VPHYSICS_NPC_H

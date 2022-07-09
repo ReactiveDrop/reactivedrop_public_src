@@ -11,11 +11,11 @@
 class CASW_Door;
 class CASW_Drone_Movement;
 
-class CASW_Mortarbug : public CASW_BlendedAlien
+class CASW_Mortarbug : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CASW_Mortarbug, CASW_BlendedAlien  );
+	DECLARE_CLASS( CASW_Mortarbug, CASW_Alien  );
 	DECLARE_DATADESC();
 	CASW_Mortarbug( void );
 	virtual ~CASW_Mortarbug( void );
