@@ -12,10 +12,11 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
-					C_ASW_Inhabitable_NPC();
-	virtual			~C_ASW_Inhabitable_NPC();
+	C_ASW_Inhabitable_NPC();
+	virtual ~C_ASW_Inhabitable_NPC();
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible
 };
+
 #endif // _INCLUDED_C_ASW_INHABITABLE_NPC_H

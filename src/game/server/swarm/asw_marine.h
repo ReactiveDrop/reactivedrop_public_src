@@ -3,7 +3,7 @@
 #pragma once
 
 #include "asw_marine_shared.h"
-#include "asw_inhabitable_npc.h"
+#include "asw_vphysics_npc.h"
 #include "asw_shareddefs.h"
 #include "asw_playeranimstate.h"
 #include "asw_lag_compensation.h"
@@ -60,10 +60,10 @@ class CBaseTrigger;
 #define ASW_MARINE_HISTORY_POSITIONS 6
 
 // riflemod: making marine a usable entity to allow reviving 
-class CASW_Marine : public CASW_Inhabitable_NPC, public IASWPlayerAnimStateHelpers, public IASW_Server_Usable_Entity
+class CASW_Marine : public CASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Server_Usable_Entity
 {
 public:
-	DECLARE_CLASS( CASW_Marine, CASW_Inhabitable_NPC );
+	DECLARE_CLASS( CASW_Marine, CASW_VPhysics_NPC );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_ENT_SCRIPTDESC();

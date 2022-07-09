@@ -7,7 +7,7 @@
 #include "asw_shareddefs.h"
 #include "asw_marine_shared.h"
 #include "c_ai_basenpc.h"
-#include "c_asw_inhabitable_npc.h"
+#include "c_asw_vphysics_npc.h"
 #include "iasw_client_aim_target.h"
 #include "iasw_client_usable_entity.h"
 #include "asw_playeranimstate.h"
@@ -39,10 +39,10 @@ class CASW_Melee_Attack;
 /*  We inherit C_ASW_Marine from IASW_Client_Aim_Target to allow autoaiming
 	on marines for deathmatch
 */
-class C_ASW_Marine : public C_ASW_Inhabitable_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target, public IASW_Client_Usable_Entity
+class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target, public IASW_Client_Usable_Entity
 {
 public:
-	DECLARE_CLASS( C_ASW_Marine, C_ASW_Inhabitable_NPC );
+	DECLARE_CLASS( C_ASW_Marine, C_ASW_VPhysics_NPC );
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
