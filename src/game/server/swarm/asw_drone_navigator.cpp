@@ -22,7 +22,7 @@ bool CASW_Drone_Navigator::Move( float flInterval )
 
 	bool b = BaseClass::Move(flInterval);
 
-	if ((int) GetOuter()->GetTask() == TASK_DRONE_WAIT_FOR_OVERRIDE_MOVE)
+	if ((int) GetOuter()->GetTask() == CASW_Drone_Advanced::TASK_DRONE_WAIT_FOR_OVERRIDE_MOVE)
 	{
 		Msg("in navigator move during the right task!\n");
 		//GetOuter()->OverrideMove(flInterval);

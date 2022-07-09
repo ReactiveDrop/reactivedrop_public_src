@@ -55,47 +55,6 @@ enum HeadcrabRelease_t
 	RELEASE_RAGDOLL_SLICED_OFF	// toss the crab up a bit
 };
 
-
-//=========================================================
-// schedules
-//=========================================================
-enum
-{
-	SCHED_ZOMBIE_CHASE_ENEMY = LAST_ASW_ALIEN_SHARED_SCHEDULE,
-	SCHED_ZOMBIE_MOVE_SWATITEM,
-	SCHED_ZOMBIE_SWATITEM,
-	SCHED_ZOMBIE_ATTACKITEM,
-	SCHED_ZOMBIE_RELEASECRAB,
-	SCHED_ZOMBIE_MOVE_TO_AMBUSH,
-	SCHED_ZOMBIE_WAIT_AMBUSH,
-	SCHED_ZOMBIE_WANDER_MEDIUM,	// medium range wandering behavior.
-	SCHED_ZOMBIE_WANDER_FAIL,
-	SCHED_ZOMBIE_WANDER_STANDOFF,
-	SCHED_ZOMBIE_MELEE_ATTACK1,
-	SCHED_ZOMBIE_POST_MELEE_WAIT,
-
-	LAST_BASE_ZOMBIE_SCHEDULE,
-};
-
-//=========================================================
-// tasks
-//=========================================================
-enum 
-{
-	TASK_ZOMBIE_DELAY_SWAT = LAST_ASW_ALIEN_SHARED_TASK,
-	TASK_ZOMBIE_GET_PATH_TO_PHYSOBJ,
-	TASK_ZOMBIE_SWAT_ITEM,
-	TASK_ZOMBIE_DIE,
-	TASK_ZOMBIE_RELEASE_HEADCRAB,
-	TASK_ZOMBIE_WAIT_POST_MELEE,
-
-	LAST_BASE_ZOMBIE_TASK,
-};
-
-
-
-// typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BaseNPC> > CAI_BaseZombieBase;
-
 //=========================================================
 //=========================================================
 abstract_class CNPC_BaseZombie : public CASW_Alien
@@ -273,6 +232,36 @@ protected:
 	static int g_numZombies;	// counts total number of existing zombies.
 
 	int m_iMoanSound; // each zombie picks one of the 4 and keeps it.
+
+	enum
+	{
+		SCHED_ZOMBIE_CHASE_ENEMY = BaseClass::NEXT_SCHEDULE,
+		SCHED_ZOMBIE_MOVE_SWATITEM,
+		SCHED_ZOMBIE_SWATITEM,
+		SCHED_ZOMBIE_ATTACKITEM,
+		SCHED_ZOMBIE_RELEASECRAB,
+		SCHED_ZOMBIE_MOVE_TO_AMBUSH,
+		SCHED_ZOMBIE_WAIT_AMBUSH,
+		SCHED_ZOMBIE_WANDER_MEDIUM,	// medium range wandering behavior.
+		SCHED_ZOMBIE_WANDER_FAIL,
+		SCHED_ZOMBIE_WANDER_STANDOFF,
+		SCHED_ZOMBIE_MELEE_ATTACK1,
+		SCHED_ZOMBIE_POST_MELEE_WAIT,
+
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_ZOMBIE_DELAY_SWAT = BaseClass::NEXT_TASK,
+		TASK_ZOMBIE_GET_PATH_TO_PHYSOBJ,
+		TASK_ZOMBIE_SWAT_ITEM,
+		TASK_ZOMBIE_DIE,
+		TASK_ZOMBIE_RELEASE_HEADCRAB,
+		TASK_ZOMBIE_WAIT_POST_MELEE,
+
+		NEXT_TASK,
+	};
 
 	static int ACT_ZOM_SWATLEFTMID;
 	static int ACT_ZOM_SWATRIGHTMID;

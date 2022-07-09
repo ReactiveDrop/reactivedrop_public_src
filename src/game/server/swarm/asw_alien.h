@@ -66,7 +66,7 @@ class CASW_Alien : public CASW_VPhysics_NPC, public IASW_Spawnable_NPC, public I
 #include "asw_alien_shared_classmembers.h"
 
 public:
-	virtual void NPCInit();	
+	virtual void NPCInit();
 	virtual void NPCThink();
 	virtual void OnRestore();
 	virtual void CallBehaviorThink();
@@ -77,15 +77,15 @@ public:
 	IMPLEMENT_AUTO_LIST_GET();
 
 	// custom sensing through walls
-	virtual void OnSwarmSensed(int iDistance);
-	virtual void OnSwarmSenseEntity(CBaseEntity* pEnt) { }
-	CAI_Senses* CreateSenses();
-	CASW_AI_Senses* GetASWSenses();
+	virtual void OnSwarmSensed( int iDistance );
+	virtual void OnSwarmSenseEntity( CBaseEntity *pEnt ) { }
+	CAI_Senses *CreateSenses();
+	CASW_AI_Senses *GetASWSenses();
 	virtual bool QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC );
 	void SetDistSwarmSense( float flDistSense );
-	bool MarineNearby(float radius, bool bCheck3D = false);
+	bool MarineNearby( float radius, bool bCheck3D = false );
 	bool FInViewCone( const Vector &vecSpot );
-	bool Knockback(Vector vecForce);
+	bool Knockback( Vector vecForce );
 	virtual int DrawDebugTextOverlays();
 	virtual void SetDefaultEyeOffset();
 
@@ -97,29 +97,29 @@ public:
 	float m_fLastSleepCheckTime;
 	bool m_bVisibleWhenAsleep;
 
-    bool m_bFlammable; 
-    bool m_bTeslable; 
-    bool m_bFreezable; 
-    bool m_bFlinchable; 
+	bool m_bFlammable;
+	bool m_bTeslable;
+	bool m_bFreezable;
+	bool m_bFlinchable;
 	bool m_bGrenadeReflector;
-    int  m_iHealthBonus; 
-    float m_fSizeScale; 
-    float m_fSpeedScale; 
-	
+	int  m_iHealthBonus;
+	float m_fSizeScale;
+	float m_fSpeedScale;
+
 	DECLARE_DATADESC();
 	CASW_Alien();
 	virtual ~CASW_Alien();
 
 	virtual void Precache();
-	
+
 	void ForceFlinch( const Vector &vecSrc );
 
-	virtual bool IsAlien(void) const { return true; } //Orange. For vscript together with buzzers, cant change for compatibility reasons, sad
-	virtual bool IsAlienClassType(void) const { return true; }
+	virtual bool IsAlien( void ) const { return true; } //Orange. For vscript together with buzzers, cant change for compatibility reasons, sad
+	virtual bool IsAlienClassType( void ) const { return true; }
 
 	// schedule/task stuff
-	virtual void StartTask(const Task_t *pTask);
-	virtual void RunTask(const Task_t *pTask);
+	virtual void StartTask( const Task_t *pTask );
+	virtual void RunTask( const Task_t *pTask );
 	virtual bool IsCurTaskContinuousMove();
 	int TranslateSchedule( int scheduleType );
 	virtual void BuildScheduleTestBits();
@@ -132,7 +132,7 @@ public:
 	float GetGoalRepathTolerance( CBaseEntity *pGoalEnt, GoalType_t type, const Vector &curGoal, const Vector &curTargetPos );
 
 	bool m_bRunAtChasingPathEnds;
-	
+
 	// movement
 	virtual bool ShouldMoveSlow() const;	// has this alien been hurt and so should move slow?
 	virtual bool ModifyAutoMovement( Vector &vecNewPos );
@@ -151,12 +151,12 @@ public:
 	bool m_bPushed;
 	int m_nAlienCollisionGroup;
 	// bleeding
-	virtual CBaseEntity		*CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, float flDamage, int iDmgType, float forceScale = 1.0f, bool bDamageAnyNPC = false );
-	virtual CBaseEntity		*CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, float flDamage, int iDmgType, float flForceScale = 1.0f, bool bDamageAnyNPC = false );
+	virtual CBaseEntity *CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, float flDamage, int iDmgType, float forceScale = 1.0f, bool bDamageAnyNPC = false );
+	virtual CBaseEntity *CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, float flDamage, int iDmgType, float flForceScale = 1.0f, bool bDamageAnyNPC = false );
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	virtual void Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const Vector &vecDir, trace_t *ptr );
 	virtual void DoBloodDecal( float flDamage, const Vector &vecPos, const Vector &vecDir, trace_t *ptr, int bitsDamageType );
-	void MeleeBleed(CTakeDamageInfo* info);
+	void MeleeBleed( CTakeDamageInfo *info );
 	bool ShouldGib( const CTakeDamageInfo &info );
 
 	//death
@@ -171,7 +171,7 @@ public:
 	int m_iDeadBodyGroup;
 
 	// set to true on aliens if they have break pieces that are used for ragdoll gibs 
-	virtual bool CanBreak ( void ) { return false; };
+	virtual bool CanBreak( void ) { return false; };
 
 	virtual void BreakAlien( const CTakeDamageInfo &info );
 	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
@@ -182,7 +182,7 @@ public:
 	void Event_Killed( const CTakeDamageInfo &info );
 	float m_fHurtSlowMoveTime;
 	float m_flElectroStunSlowMoveTime;
-	CNetworkVar(bool, m_bElectroStunned);
+	CNetworkVar( bool, m_bElectroStunned );
 	//CNetworkVar(bool, m_bGibber);
 	CNetworkVar( DeathStyle_t, m_nDeathStyle );
 	CUtlQueueFixed< CTakeDamageInfo, ASW_NUM_RECENT_DAMAGE >	m_RecentDamage;
@@ -214,9 +214,9 @@ public:
 
 	// IASW_Spawnable_NPC implementation
 	CHandle<CASW_Base_Spawner> m_hSpawner;
-	virtual void SetSpawner(CASW_Base_Spawner* spawner);
-	virtual CAI_BaseNPC* GetNPC() { return this; }
-	virtual void SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject);
+	virtual void SetSpawner( CASW_Base_Spawner *spawner );
+	virtual CAI_BaseNPC *GetNPC() { return this; }
+	virtual void SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject );
 	virtual AlienOrder_t GetAlienOrders();
 	virtual void ClearAlienOrders();
 	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
@@ -225,7 +225,7 @@ public:
 	virtual void OnMovementComplete();
 	virtual bool ShouldClearOrdersOnMovementComplete();
 	virtual void GatherConditions();
-	virtual void IgnoreMarines(bool bIgnoreMarines);
+	virtual void IgnoreMarines( bool bIgnoreMarines );
 	virtual void MoveAside();
 	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
@@ -234,7 +234,7 @@ public:
 	virtual void ElectroStun( float flStunTime );
 	virtual void ScriptElectroStun( float flStunTime );
 	bool IsElectroStunned() { return m_bElectroStunned.Get(); }
-	CNetworkVar(bool, m_bOnFire);
+	CNetworkVar( bool, m_bOnFire );
 	virtual void SetHoldoutAlien() { m_bHoldoutAlien = true; }
 	virtual bool IsHoldoutAlien() { return m_bHoldoutAlien; }
 
@@ -272,7 +272,7 @@ public:
 	string_t m_iMoveCloneName;
 	matrix3x4_t m_moveCloneOffset;
 
-	virtual void	SetHealth( int amt )	{ Assert( amt < ( pow( 2.0f, ASW_ALIEN_HEALTH_BITS ) ) ); m_iHealth = amt; }
+	virtual void	SetHealth( int amt ) { Assert( amt < ( pow( 2.0f, ASW_ALIEN_HEALTH_BITS ) ) ); m_iHealth = amt; }
 	virtual void SetHealthByDifficultyLevel();
 
 	// freezeing
@@ -288,16 +288,16 @@ public:
 	CASW_Lag_Compensation m_LagCompensation;
 
 	// can a marine see us?
-	bool MarineCanSee(int padding, float interval);
+	bool MarineCanSee( int padding, float interval );
 	float m_fLastMarineCanSeeTime;
 	bool m_bLastMarineCanSee;
-	
+
 	int m_iNumASWOrderRetries;
 
 	// notification that an alien we spawned has been killed (used by Harvesters/Queens, which spawn new aliens as part of their attacks)
-	virtual void ChildAlienKilled(CASW_Alien *pAlien) { }
+	virtual void ChildAlienKilled( CASW_Alien *pAlien ) { }
 
-	virtual float		StepHeight() const			{ return 24.0f; }
+	virtual float		StepHeight() const { return 24.0f; }
 
 	// dropping money
 	virtual void DropMoney( const CTakeDamageInfo &info );
@@ -317,7 +317,7 @@ public:
 	void	AddBehaviorParam( const char *pszParmName, int nDefaultValue );
 	int		GetBehaviorParam( CUtlSymbol ParmName );
 	void	SetBehaviorParam( CUtlSymbol ParmName, int nValue );
-	CAI_ASW_Behavior	*GetPrimaryASWBehavior();
+	CAI_ASW_Behavior *GetPrimaryASWBehavior();
 	virtual void	OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior );
 	void	SendBehaviorEvent( CBaseEntity *pInflictor, BehaviorEvent_t Event, int nParm, bool bToAllBehaviors );
 
@@ -328,13 +328,43 @@ public:
 
 	enum
 	{
+		SCHED_ASW_ALIEN_CHASE_ENEMY = BaseClass::NEXT_SCHEDULE,
+		SCHED_ASW_SPREAD_THEN_HIBERNATE,
+		SCHED_ASW_ORDER_MOVE,
+		SCHED_ASW_RETRY_ORDERS,
+		SCHED_ASW_ALIEN_MELEE_ATTACK1,
+		SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1,
+		SCHED_WAIT_FOR_CLEAR_UNBORROW,
+		SCHED_BURROW_WAIT,
+		SCHED_BURROW_OUT,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_ASW_ALIEN_ZIGZAG = BaseClass::NEXT_TASK,
+		TASK_ASW_SPREAD_THEN_HIBERNATE,
+		TASK_ASW_BUILD_PATH_TO_ORDER,
+		TASK_ASW_ORDER_RETRY_WAIT,
+		TASK_ASW_REPORT_BLOCKING_ENT,
+		TASK_UNBURROW,
+		TASK_CHECK_FOR_UNBORROW,
+		TASK_BURROW_WAIT,
+		TASK_SET_UNBURROW_ACTIVITY,
+		TASK_SET_UNBURROW_IDLE_ACTIVITY,
+		TASK_ASW_WAIT_FOR_ORDER_MOVE,
+		NEXT_TASK,
+	};
+
+	enum
+	{
 		COND_ASW_BEGIN_COMBAT_STUN = BaseClass::NEXT_CONDITION,
 		COND_ASW_FLINCH,
 		NEXT_CONDITION,
 	};
 
-protected:	
-	
+protected:
+
 	static float sm_flLastHurlTime;
 
 	const char *m_pszAlienModelName;
@@ -360,36 +390,6 @@ extern int ACT_ALIEN_FLINCH_GESTURE;
 extern int ACT_DEATH_FIRE;
 extern int ACT_DEATH_ELEC;
 extern int ACT_DIE_FANCY;
-
-enum
-{
-	SCHED_ASW_ALIEN_CHASE_ENEMY = LAST_SHARED_SCHEDULE,
-	SCHED_ASW_SPREAD_THEN_HIBERNATE,
-	SCHED_ASW_ORDER_MOVE,
-	SCHED_ASW_RETRY_ORDERS,
-	SCHED_ASW_ALIEN_MELEE_ATTACK1,
-	SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1,
-	SCHED_WAIT_FOR_CLEAR_UNBORROW,
-	SCHED_BURROW_WAIT,
-	SCHED_BURROW_OUT,
-	LAST_ASW_ALIEN_SHARED_SCHEDULE,
-};
-
-enum 
-{
-	TASK_ASW_ALIEN_ZIGZAG = LAST_SHARED_TASK,
-	TASK_ASW_SPREAD_THEN_HIBERNATE,
-	TASK_ASW_BUILD_PATH_TO_ORDER,
-	TASK_ASW_ORDER_RETRY_WAIT,
-	TASK_ASW_REPORT_BLOCKING_ENT,
-	TASK_UNBURROW,
-	TASK_CHECK_FOR_UNBORROW,
-	TASK_BURROW_WAIT,
-	TASK_SET_UNBURROW_ACTIVITY,
-	TASK_SET_UNBURROW_IDLE_ACTIVITY,
-	TASK_ASW_WAIT_FOR_ORDER_MOVE,
-	LAST_ASW_ALIEN_SHARED_TASK,
-};
 
 extern ConVar asw_alien_speed_scale_easy;
 extern ConVar asw_alien_speed_scale_normal;

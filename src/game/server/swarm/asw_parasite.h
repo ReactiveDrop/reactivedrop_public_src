@@ -108,6 +108,19 @@ public:
 	bool CheckInfestTarget( CBaseEntity *pOther );
 	EHANDLE m_hPrepareToInfest;
 
+	enum
+	{
+		SCHED_PARASITE_RANGE_ATTACK1 = BaseClass::NEXT_SCHEDULE,
+		SCHED_PARASITE_JUMP_FROM_EGG,
+		NEXT_SCHEDULE
+	};
+
+	enum
+	{
+		TASK_PARASITE_JUMP_FROM_EGG = BaseClass::NEXT_TASK,
+		NEXT_TASK,
+	};
+
 protected:
 	DEFINE_CUSTOM_AI;
 };
