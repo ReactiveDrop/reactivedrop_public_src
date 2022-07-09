@@ -2,7 +2,7 @@
 #define _INCLUDED_C_ASW_ALIEN_H
 
 #include "asw_alien_shared.h"
-#include "c_asw_vphysics_npc.h"
+#include "c_asw_inhabitable_npc.h"
 #include "iasw_client_aim_target.h"
 #include "asw_shareddefs.h"
 #include "glow_outline_effect.h"
@@ -10,10 +10,10 @@
 
 class CNewParticleEffect;
 
-class C_ASW_Alien : public C_ASW_VPhysics_NPC, public IASW_Client_Aim_Target
+class C_ASW_Alien : public C_ASW_Inhabitable_NPC, public IASW_Client_Aim_Target
 {
 public:
-	DECLARE_CLASS( C_ASW_Alien, C_ASW_VPhysics_NPC );
+	DECLARE_CLASS( C_ASW_Alien, C_ASW_Inhabitable_NPC );
 	DECLARE_CLIENTCLASS();
 	#include "asw_alien_shared_classmembers.h"
 

@@ -1112,7 +1112,7 @@ exit 1
     <ClCompile Include="swarm\asw_tutorial_spawning.cpp" />
     <ClCompile Include="swarm\asw_use_area.cpp" />
     <ClCompile Include="swarm\asw_voiceover_dialogue.cpp" />
-    <ClCompile Include="swarm\asw_vphysics_npc.cpp" />
+    <ClCompile Include="swarm\asw_inhabitable_npc.cpp" />
     <ClCompile Include="swarm\asw_wc_edit.cpp" />
     <ClCompile Include="swarm\asw_weapon.cpp" />
     <ClCompile Include="swarm\asw_weapon_rifle.cpp" />
@@ -1985,7 +1985,7 @@ exit 1
     <ClInclude Include="swarm\asw_tutorial_spawning.h" />
     <ClInclude Include="swarm\asw_use_area.h" />
     <ClInclude Include="swarm\asw_voiceover_dialogue.h" />
-    <ClInclude Include="swarm\asw_vphysics_npc.h" />
+    <ClInclude Include="swarm\asw_inhabitable_npc.h" />
     <ClInclude Include="swarm\asw_wc_edit.h" />
     <ClInclude Include="swarm\asw_weapon.h" />
     <ClInclude Include="swarm\asw_weapon_rifle.h" />

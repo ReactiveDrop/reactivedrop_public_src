@@ -2,12 +2,6 @@
 #define ASW_SQUADFORMATION_H
 #pragma once
 
-/*
-#include "asw_marine.h"
-#include "asw_vphysics_npc.h"
-#include "asw_shareddefs.h"
-*/
-
 class CAI_Hint;
 class HintData_t;
 

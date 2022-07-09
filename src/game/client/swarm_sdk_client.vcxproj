@@ -1058,7 +1058,7 @@ exit 1
     <ClCompile Include="swarm\c_asw_tesla_trap.cpp" />
     <ClCompile Include="swarm\c_asw_trail_beam.cpp" />
     <ClCompile Include="swarm\c_asw_use_area.cpp" />
-    <ClCompile Include="swarm\c_asw_vphysics_npc.cpp" />
+    <ClCompile Include="swarm\c_asw_inhabitable_npc.cpp" />
     <ClCompile Include="swarm\c_asw_weapon.cpp" />
     <ClCompile Include="swarm\c_asw_weapon_rifle.cpp" />
     <ClCompile Include="swarm\c_env_sprite_asw_fade.cpp" />
@@ -2678,7 +2678,7 @@ exit 1
     <ClInclude Include="swarm\c_asw_tesla_trap.h" />
     <ClInclude Include="swarm\c_asw_trail_beam.h" />
     <ClInclude Include="swarm\c_asw_use_area.h" />
-    <ClInclude Include="swarm\c_asw_vphysics_npc.h" />
+    <ClInclude Include="swarm\c_asw_inhabitable_npc.h" />
     <ClInclude Include="swarm\c_asw_weapon.h" />
     <ClInclude Include="swarm\c_asw_weapon_rifle.h" />
     <ClInclude Include="swarm\c_env_sprite_asw_fade.h" />

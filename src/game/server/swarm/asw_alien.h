@@ -4,7 +4,7 @@
 #pragma once
 #endif
 
-#include "asw_vphysics_npc.h"
+#include "asw_inhabitable_npc.h"
 #include "asw_alien_shared.h"
 #include "ai_basenpc.h"
 #include "ai_blended_movement.h"
@@ -56,9 +56,9 @@ struct CombatConditionData_t
 
 DECLARE_AUTO_LIST( IAlienAutoList );
 
-class CASW_Alien : public CASW_VPhysics_NPC, public IASW_Spawnable_NPC, public IAlienAutoList
+class CASW_Alien : public CASW_Inhabitable_NPC, public IASW_Spawnable_NPC, public IAlienAutoList
 {
-	DECLARE_CLASS( CASW_Alien, CASW_VPhysics_NPC );
+	DECLARE_CLASS( CASW_Alien, CASW_Inhabitable_NPC );
 	DECLARE_SERVERCLASS();
 	DECLARE_ENT_SCRIPTDESC();	// BenLubar(key-values-director)
 

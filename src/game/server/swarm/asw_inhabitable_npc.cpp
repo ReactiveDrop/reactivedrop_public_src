@@ -5,7 +5,7 @@
 //=============================================================================
 
 #include "cbase.h"
-#include "asw_vphysics_npc.h"
+#include "asw_inhabitable_npc.h"
 #include "physobj.h"
 #include "vphysics/player_controller.h"
 #include "vcollide_parse.h"
@@ -33,13 +33,13 @@ static ConVar marinephysicsshadowupdate_render( "marinephysicsshadowupdate_rende
 //=========================================================
 
 
-LINK_ENTITY_TO_CLASS( asw_vphysics_npc, CASW_VPhysics_NPC );
+LINK_ENTITY_TO_CLASS( funCASW_Inhabitable_NPC, CASW_Inhabitable_NPC );
 
 //---------------------------------------------------------
 // 
 //---------------------------------------------------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_VPhysics_NPC, DT_ASW_VPhysics_NPC)
+IMPLEMENT_SERVERCLASS_ST(CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC)
 	
 END_SEND_TABLE()
 
@@ -48,7 +48,7 @@ END_SEND_TABLE()
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CASW_VPhysics_NPC )
+BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_vNewVPhysicsPosition, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vNewVPhysicsVelocity, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecLastSafePosition, FIELD_VECTOR ),
@@ -63,18 +63,18 @@ BEGIN_DATADESC( CASW_VPhysics_NPC )
 END_DATADESC()
 
 
-CASW_VPhysics_NPC::CASW_VPhysics_NPC()
+CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
 	
 }
 
 
-CASW_VPhysics_NPC::~CASW_VPhysics_NPC()
+CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
 {
 	VPhysicsDestroyObject();
 }
 
-void CASW_VPhysics_NPC::UpdateOnRemove( void )
+void CASW_Inhabitable_NPC::UpdateOnRemove( void )
 {
 	VPhysicsDestroyObject();
 
@@ -85,7 +85,7 @@ void CASW_VPhysics_NPC::UpdateOnRemove( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CASW_VPhysics_NPC::Spawn( void )
+void CASW_Inhabitable_NPC::Spawn( void )
 {
 	BaseClass::Spawn();
 
@@ -97,7 +97,7 @@ void CASW_VPhysics_NPC::Spawn( void )
 #endif
 }
 
-int CASW_VPhysics_NPC::Restore( IRestore &restore )
+int CASW_Inhabitable_NPC::Restore( IRestore &restore )
 {
 	int status = BaseClass::Restore(restore);
 	if ( !status )
@@ -112,7 +112,7 @@ int CASW_VPhysics_NPC::Restore( IRestore &restore )
 	return 1;
 }
 
-void CASW_VPhysics_NPC::InhabitedPhysicsSimulate()
+void CASW_Inhabitable_NPC::InhabitedPhysicsSimulate()
 {
 #ifdef USE_VPHYSICS_SHADOW	
 	return;
@@ -130,7 +130,7 @@ void CASW_VPhysics_NPC::InhabitedPhysicsSimulate()
 #endif
 }
 
-void CASW_VPhysics_NPC::UpdateVPhysicsAfterMove()
+void CASW_Inhabitable_NPC::UpdateVPhysicsAfterMove()
 {
 #ifdef USE_VPHYSICS_SHADOW	
 	// Update our vphysics object.
@@ -146,7 +146,7 @@ void CASW_VPhysics_NPC::UpdateVPhysicsAfterMove()
 #endif
 }
 
-void CASW_VPhysics_NPC::PostThink( void )
+void CASW_Inhabitable_NPC::PostThink( void )
 {	
 	m_vecSmoothedVelocity = m_vecSmoothedVelocity * SMOOTHING_FACTOR + GetAbsVelocity() * ( 1 - SMOOTHING_FACTOR );
 
@@ -156,7 +156,7 @@ void CASW_VPhysics_NPC::PostThink( void )
 	//}
 }
 
-void CASW_VPhysics_NPC::InitVCollision( void )
+void CASW_Inhabitable_NPC::InitVCollision( void )
 {
 	// Cleanup any old vphysics stuff.
 	VPhysicsDestroyObject();
@@ -168,7 +168,7 @@ void CASW_VPhysics_NPC::InitVCollision( void )
 	SetupVPhysicsShadow( pModel, "player_stand", pCrouchModel, "player_crouch" );
 }
 
-void CASW_VPhysics_NPC::VPhysicsDestroyObject()
+void CASW_Inhabitable_NPC::VPhysicsDestroyObject()
 {
 #ifdef USE_VPHYSICS_SHADOW
 	// Since CBasePlayer aliases its pointer to the physics object, tell CBaseEntity to 
@@ -202,7 +202,7 @@ void CASW_VPhysics_NPC::VPhysicsDestroyObject()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CASW_VPhysics_NPC::SetVCollisionState( int collisionState )
+void CASW_Inhabitable_NPC::SetVCollisionState( int collisionState )
 {
 	Vector vel = vec3_origin;
 	Vector pos = vec3_origin;
@@ -237,7 +237,7 @@ void CASW_VPhysics_NPC::SetVCollisionState( int collisionState )
 	}
 }
 
-void CASW_VPhysics_NPC::VPhysicsShadowUpdate( IPhysicsObject *pPhysics )
+void CASW_Inhabitable_NPC::VPhysicsShadowUpdate( IPhysicsObject *pPhysics )
 {
 #ifdef USE_VPHYSICS_SHADOW
 	Vector newPosition;
@@ -479,7 +479,7 @@ void CASW_VPhysics_NPC::VPhysicsShadowUpdate( IPhysicsObject *pPhysics )
 }
 
 // recreate physics on save/load, don't try to save the state!
-bool CASW_VPhysics_NPC::ShouldSavePhysics()
+bool CASW_Inhabitable_NPC::ShouldSavePhysics()
 {
 	return false;
 }
@@ -487,7 +487,7 @@ bool CASW_VPhysics_NPC::ShouldSavePhysics()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CASW_VPhysics_NPC::PostThinkVPhysics(CMoveData* pMoveData)
+void CASW_Inhabitable_NPC::PostThinkVPhysics(CMoveData* pMoveData)
 {
 #ifdef USE_VPHYSICS_SHADOW
 	// Check to see if things are initialized!
@@ -572,7 +572,7 @@ void CASW_VPhysics_NPC::PostThinkVPhysics(CMoveData* pMoveData)
 #endif
 }
 
-void CASW_VPhysics_NPC::UpdateVPhysicsPosition( const Vector &position, const Vector &velocity, float secondsToArrival )
+void CASW_Inhabitable_NPC::UpdateVPhysicsPosition( const Vector &position, const Vector &velocity, float secondsToArrival )
 {
 #ifdef USE_VPHYSICS_SHADOW
 	bool onground = (GetFlags() & FL_ONGROUND) ? true : false;
@@ -589,14 +589,14 @@ void CASW_VPhysics_NPC::UpdateVPhysicsPosition( const Vector &position, const Ve
 #endif
 }
 
-void CASW_VPhysics_NPC::UpdatePhysicsShadowToCurrentPosition()
+void CASW_Inhabitable_NPC::UpdatePhysicsShadowToCurrentPosition()
 {
 #ifdef USE_VPHYSICS_SHADOW
 	UpdateVPhysicsPosition( GetAbsOrigin(), vec3_origin, 0 );
 #endif
 }
 
-void CASW_VPhysics_NPC::SetupVPhysicsShadow( CPhysCollide *pStandModel, const char *pStandHullName, CPhysCollide *pCrouchModel, const char *pCrouchHullName )
+void CASW_Inhabitable_NPC::SetupVPhysicsShadow( CPhysCollide *pStandModel, const char *pStandHullName, CPhysCollide *pCrouchModel, const char *pCrouchHullName )
 {
 	solid_t solid;
 	Q_strncpy( solid.surfaceprop, "player", sizeof(solid.surfaceprop) );
@@ -641,14 +641,14 @@ void CASW_VPhysics_NPC::SetupVPhysicsShadow( CPhysCollide *pStandModel, const ch
 // Purpose: Empty, just want to keep the baseentity version from being called
 //          current so we don't kick up dust, etc.
 //-----------------------------------------------------------------------------
-void CASW_VPhysics_NPC::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CASW_Inhabitable_NPC::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 {
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CASW_VPhysics_NPC::VPhysicsUpdate( IPhysicsObject *pPhysics )
+void CASW_Inhabitable_NPC::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
 	float savedImpact = m_impactEnergyScale;
 	
@@ -658,7 +658,7 @@ void CASW_VPhysics_NPC::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	m_impactEnergyScale = savedImpact;
 }
 
-bool CASW_VPhysics_NPC::IsRideablePhysics( IPhysicsObject *pPhysics )
+bool CASW_Inhabitable_NPC::IsRideablePhysics( IPhysicsObject *pPhysics )
 {
 	if ( pPhysics )
 	{
@@ -669,7 +669,7 @@ bool CASW_VPhysics_NPC::IsRideablePhysics( IPhysicsObject *pPhysics )
 	return false;
 }
 
-IPhysicsObject *CASW_VPhysics_NPC::GetGroundVPhysics()
+IPhysicsObject *CASW_Inhabitable_NPC::GetGroundVPhysics()
 {
 	CBaseEntity *pGroundEntity = GetGroundEntity();
 	if ( pGroundEntity && pGroundEntity->GetMoveType() == MOVETYPE_VPHYSICS )
@@ -681,7 +681,7 @@ IPhysicsObject *CASW_VPhysics_NPC::GetGroundVPhysics()
 	return NULL;
 }
 
-void CASW_VPhysics_NPC::Touch( CBaseEntity *pOther )
+void CASW_Inhabitable_NPC::Touch( CBaseEntity *pOther )
 {
 #ifdef USE_VPHYSICS_SHADOW
 	if ( pOther == GetGroundEntity() )
@@ -698,4 +698,4 @@ void CASW_VPhysics_NPC::Touch( CBaseEntity *pOther )
 #endif
 }
 
-float CASW_VPhysics_NPC::MaxSpeed() { return 300.0f; }
+float CASW_Inhabitable_NPC::MaxSpeed() { return 300.0f; }

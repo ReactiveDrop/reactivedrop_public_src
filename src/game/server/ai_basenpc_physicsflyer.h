@@ -14,16 +14,16 @@
 #include "ai_basenpc.h"
 #include "ai_navigator.h"
 #ifdef INFESTED_DLL
-#include "asw_vphysics_npc.h"
+#include "asw_inhabitable_npc.h"
 #endif
 
 //-----------------------------------------------------------------------------
 // The combot.
 //-----------------------------------------------------------------------------
 #ifdef INFESTED_DLL
-abstract_class CAI_BasePhysicsFlyingBot : public CASW_VPhysics_NPC, public IMotionEvent
+abstract_class CAI_BasePhysicsFlyingBot : public CASW_Inhabitable_NPC, public IMotionEvent
 {
-	DECLARE_CLASS( CAI_BasePhysicsFlyingBot, CASW_VPhysics_NPC );
+	DECLARE_CLASS( CAI_BasePhysicsFlyingBot, CASW_Inhabitable_NPC );
 #else
 abstract_class CAI_BasePhysicsFlyingBot : public CAI_BaseNPC, public IMotionEvent
 {
