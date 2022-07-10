@@ -67,17 +67,17 @@ void CASWViewRender::OnRenderStart()
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CASWViewRender::Render2DEffectsPreHUD( const CViewSetup &view )
+void CASWViewRender::Render2DEffectsPreHUD( const CViewSetup &viewsetup )
 {
-	PerformNightVisionEffect( view );	// this needs to come before the HUD is drawn, or it will wash the HUD out
+	PerformNightVisionEffect( viewsetup );	// this needs to come before the HUD is drawn, or it will wash the HUD out
 #ifndef _X360
 	// @TODO: Motion blur not supported on X360 yet due to EDRAM issues
-	DoMotionBlur( view );
+	DoMotionBlur( viewsetup );
 #endif
 }
 
 
-void CASWViewRender::DoMotionBlur( const CViewSetup &view )
+void CASWViewRender::DoMotionBlur( const CViewSetup &viewsetup )
 {
 	bool bShouldDraw = asw_motionblur.GetBool() || g_fMarinePoisonDuration > 0;
 	if ( !bShouldDraw && !asw_motionblur_forceupdate.GetBool() )
@@ -146,7 +146,7 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 
 	if ( gpGlobals->curtime >= fNextDrawTime )
 	{
-		UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height );
+		UpdateScreenEffectTexture( 0, viewsetup.x, viewsetup.y, viewsetup.width, viewsetup.height );
 
 		// Set the alpha to whatever our console variable is
 		mv = pMatScreen->FindVar( "$alpha", &found, true );
@@ -230,7 +230,7 @@ CON_COMMAND( asw_motionblur_check, "check for anomalies in asw_motionblur" )
 	}
 
 	ITexture *pMotionBlur = g_pASWRenderTargets->GetASWMotionBlurTexture();
-	if ( !pMatScreen )
+	if ( !pMotionBlur )
 	{
 		Warning( "motionblur texture missing\n" );
 		return;
@@ -366,7 +366,7 @@ void CASWNightVisionSelfIllumProxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if ( !pMarine )
 	{
 		SetFloatResult( 0.0f );
@@ -403,7 +403,7 @@ void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if ( !pMarine )
 		return;
 

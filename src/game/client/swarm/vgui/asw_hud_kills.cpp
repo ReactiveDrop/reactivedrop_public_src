@@ -235,7 +235,7 @@ void CASWHudKills::OnThink()
 				char szMarineName[MAX_PLAYER_NAME_LENGTH];
 				pMarineResource->GetDisplayName(szMarineName, sizeof(szMarineName));
 				LeaderboardEntry lbe;
-				lbe.isPlayer = pLocalPlayer ? pLocalPlayer->GetViewMarine() == pMarineResource->GetMarineEntity() : false;
+				lbe.isPlayer = pLocalPlayer ? pLocalPlayer->GetViewNPC() == pMarineResource->GetMarineEntity() : false;
 				Q_strncpy(lbe.name, szMarineName, sizeof(lbe.name));
 
 #ifdef USE_KILL_EVENT

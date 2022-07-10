@@ -308,7 +308,7 @@ void CASWHud3DMarineNames::PaintBoxAround(C_BaseEntity* pEnt, int padding)
 void CASWHud3DMarineNames::PaintBoxesAroundUseEntities()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer || !pPlayer->GetViewMarine() || pPlayer->GetViewMarine()->GetHealth() <= 0 )
+	if ( !pPlayer || !pPlayer->GetViewNPC() || pPlayer->GetViewNPC()->GetHealth() <= 0 )
 		return;
 
 	C_BaseEntity *pEnt = NULL;
@@ -482,15 +482,16 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 	if ( !pLocal )
 		return;
 
-    // if marine is not in our team, we don't draw his name and health 
-    if ( ASWDeathmatchMode() )
+	// if marine is not in our team, we don't draw his name and health 
+	if ( ASWDeathmatchMode() )
 	{
-		C_ASW_Marine_Resource *pViewMR = pLocal->GetViewMarine() ? pLocal->GetViewMarine()->GetMarineResource() : NULL;
+		C_ASW_Marine *pViewMarine = C_ASW_Marine::AsMarine( pLocal->GetViewNPC() );
+		C_ASW_Marine_Resource *pViewMR = pViewMarine ? pViewMarine->GetMarineResource() : NULL;
 		if ( !pViewMR || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ? pMR->GetTeamNumber() != pViewMR->GetTeamNumber() : pMR != pViewMR ) )
 		{
 			return;
 		}
-    }
+	}
 
 	// Verify we have input.
 	Assert( ASWInput() != NULL );
@@ -1326,8 +1327,8 @@ bool CASWHud3DMarineNames::PaintReloadBar( C_ASW_Weapon *pWeapon, float xPos, fl
 
 	float flProgress = 0.0f;
 	// if we're in single player, the progress code in the weapon doesn't run on the client because we aren't predicting
-	if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingMarine() )
-		flProgress = (gpGlobals->curtime - fStart) / fTotalTime;
+	if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingNPC() )
+		flProgress = ( gpGlobals->curtime - fStart ) / fTotalTime;
 	else
 		flProgress = pWeapon->m_fReloadProgress;
 
@@ -1514,31 +1515,31 @@ void CASWHud3DMarineNames::PaintAimingDebug()
 
 void CASWHud3DMarineNames::UpdateHealthTooltip()
 {
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer )
 	{
-		C_ASW_Marine* pViewMarine = pPlayer->GetViewMarine();
+		C_ASW_Inhabitable_NPC *pViewMarine = pPlayer->GetViewNPC();
 		if ( pViewMarine )
 		{
-			C_ASW_Weapon* pActiveWeapon = pViewMarine->GetActiveASWWeapon();
+			C_ASW_Weapon *pActiveWeapon = pViewMarine->GetActiveASWWeapon();
 			if ( pActiveWeapon && pActiveWeapon->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
 			{
-				C_BaseEntity* pHighlighted = ASWInput()->GetHighlightEntity();
+				C_BaseEntity *pHighlighted = ASWInput()->GetHighlightEntity();
 				if ( pHighlighted && pHighlighted->Classify() == CLASS_ASW_MARINE )
 				{
-					C_ASW_Marine* pHealMarine = assert_cast<C_ASW_Marine*>(pHighlighted);
-					SetHealthMarine(pHealMarine);
+					C_ASW_Marine *pHealMarine = assert_cast< C_ASW_Marine * >( pHighlighted );
+					SetHealthMarine( pHealMarine );
 				}
 			}
 			else
 			{
-				SetHealthMarine(NULL);
+				SetHealthMarine( NULL );
 			}
 		}
 		else
 		{
-			SetHealthMarine(NULL);
-		}		
+			SetHealthMarine( NULL );
+		}
 	}
 	// fade in/out as the marine changes
 	if ( m_bHealthQueuedMarine )
@@ -1556,7 +1557,7 @@ void CASWHud3DMarineNames::UpdateHealthTooltip()
 				// Fire event
 				if ( m_hHealthMarine.Get() )
 				{
-					IGameEvent * event = gameeventmanager->CreateEvent( "player_heal_target" );
+					IGameEvent *event = gameeventmanager->CreateEvent( "player_heal_target" );
 					if ( event )
 					{
 						event->SetInt( "userid", pPlayer->GetUserID() );
@@ -1566,7 +1567,7 @@ void CASWHud3DMarineNames::UpdateHealthTooltip()
 				}
 				else
 				{
-					IGameEvent * event = gameeventmanager->CreateEvent( "player_heal_target_none" );
+					IGameEvent *event = gameeventmanager->CreateEvent( "player_heal_target_none" );
 					if ( event )
 					{
 						event->SetInt( "userid", pPlayer->GetUserID() );
@@ -1575,30 +1576,30 @@ void CASWHud3DMarineNames::UpdateHealthTooltip()
 				}
 			}
 			m_hHealthQueuedMarine = NULL;
-			m_bHealthQueuedMarine = false;			
+			m_bHealthQueuedMarine = false;
 			m_fHealthAlpha = 0;
 		}
 	}
-	else if (m_hHealthMarine.Get())
+	else if ( m_hHealthMarine.Get() )
 	{
 		// no queue and a valid current, make sure it's shown
 		m_fHealthAlpha += gpGlobals->frametime * 5;
-		if (m_fHealthAlpha > 1.0f)
+		if ( m_fHealthAlpha > 1.0f )
 			m_fHealthAlpha = 1.0f;
 	}
 
-	
+
 	// check for updating health
-	C_ASW_Marine* pMarine = m_hHealthMarine.Get();
-	
+	C_ASW_Marine *pMarine = m_hHealthMarine.Get();
+
 	// hide the panel if we have no marine to report on
-	if (!pMarine && m_fHealthAlpha > 0)
+	if ( !pMarine && m_fHealthAlpha > 0 )
 	{
-		if (!m_bHealthQueuedMarine)
+		if ( !m_bHealthQueuedMarine )
 		{
 			m_hHealthQueuedMarine = NULL;
-			m_bHealthQueuedMarine = true;	
-		}		
+			m_bHealthQueuedMarine = true;
+		}
 	}
 }
 

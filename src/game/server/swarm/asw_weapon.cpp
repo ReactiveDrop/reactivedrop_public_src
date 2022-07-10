@@ -342,12 +342,16 @@ void CASW_Weapon::Drop( const Vector &vecVelocity )
 
 
 // player has used this item
-void CASW_Weapon::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Weapon::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	pMarine->TakeWeaponPickup(this);
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+		return;
+
+	pMarine->TakeWeaponPickup( this );
 	if ( pMarine->IsInhabited() && pMarine->GetCommander() )
 	{
 		pMarine->GetCommander()->m_hUseKeyDownEnt = NULL;

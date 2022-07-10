@@ -413,7 +413,7 @@ void CASW_VGUI_Computer_Menu::OnThink()
 	}
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pLocalPlayer && pLocalPlayer->GetSpectatingMarine() && m_hCurrentPage.Get() )
+	if ( pLocalPlayer && pLocalPlayer->GetSpectatingNPC() && m_hCurrentPage.Get() )
 	{
 		HideMenu( true );
 	}

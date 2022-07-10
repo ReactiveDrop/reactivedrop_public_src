@@ -1320,7 +1320,7 @@ void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProg
 
 		unsigned char botFlags = 0xFF;
 
-		if ( IMatchSession *pSession = g_pMatchFramework->GetMatchSession() )
+		if ( pSession )
 		{
 			KeyValues *pSettings = pSession->GetSessionSettings();
 			if ( pSettings )

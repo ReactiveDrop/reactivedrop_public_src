@@ -341,7 +341,7 @@ void CASW_VGUI_Hack_Wire_Tile::OnThink()
 			C_BaseEntity *pUsing = m_hHack.Get() ? m_hHack->GetHackTarget() : NULL;
 			// once it's faded out, stop the marine using this panel
 			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-			if (pUsing && pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->m_hUsingEntity.Get() == pUsing)
+			if (pUsing && pPlayer && pPlayer->GetNPC() && pPlayer->GetNPC()->m_hUsingEntity.Get() == pUsing)
 				pPlayer->StopUsing();
 			else if (GetParent())
 			{	

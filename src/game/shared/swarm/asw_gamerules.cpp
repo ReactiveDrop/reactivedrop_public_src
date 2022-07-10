@@ -2090,7 +2090,6 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 					Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
 					if (Q_strcmp(buffer, STRING(GetCampaignSave()->m_LastCommanders[RosterIndex])))
 					{
-						char buffer[16];
 						Q_snprintf( buffer, sizeof( buffer ), "%i", int( m_fReserveMarinesEndTime - gpGlobals->curtime ) );
 						ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_reserved", buffer );
 						bCanSelect = false;
@@ -2197,9 +2196,9 @@ void CAlienSwarm::RosterDeselect( CASW_Player *pPlayer, int RosterIndex)
 		if (pMR && pMR->GetCommander() == pPlayer && pMR->GetProfileIndex() == RosterIndex)
 		{
 			// if controls marine kill the marine first before choosing new
-			if ( ASWDeathmatchMode() && pPlayer->GetMarine() && pPlayer->GetMarine()->GetHealth() > 0 ) 
+			if ( ASWDeathmatchMode() && pPlayer->GetNPC() && pPlayer->GetNPC()->GetHealth() > 0 ) 
 			{
-				pPlayer->GetMarine()->Suicide();
+				pPlayer->GetNPC()->Suicide();
 			}
 			ASWGameResource()->SetRosterSelected(RosterIndex, 0);
 			ASWGameResource()->DeleteMarineResource(pMR);
@@ -2248,7 +2247,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 	for ( int k = 1; k <= gpGlobals->maxClients; ++k )
 	{
 		CASW_Player *pTmpPlayer = ToASW_Player( UTIL_PlayerByIndex( k ) );
-		if ( pTmpPlayer == pPlayer || !pTmpPlayer || !pTmpPlayer->IsConnected() || !pTmpPlayer->GetMarine() )
+		if ( pTmpPlayer == pPlayer || !pTmpPlayer || !pTmpPlayer->IsConnected() || !pTmpPlayer->GetNPC() )
 			continue;
 
 		int numMarines = 0;
@@ -2293,7 +2292,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 			if ( pMarine && pNewCommander )
 			{
 				pMarine->SetCommander( pNewCommander );
-				pMarine->OrdersFromPlayer( pNewCommander, ASW_ORDER_FOLLOW, pNewCommander->GetMarine(), false );
+				pMarine->OrdersFromPlayer( pNewCommander, ASW_ORDER_FOLLOW, pNewCommander->GetNPC(), false );
 			}
 		}
 	}
@@ -3064,18 +3063,18 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	// respawn players
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		CASW_Player *pPlayerToReset = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-		if ( pPlayer )
+		if ( pPlayerToReset )
 		{
-			pPlayer->ResetFragCount();
-			pPlayer->ResetDeathCount();
-			pPlayer->Spawn();
+			pPlayerToReset->ResetFragCount();
+			pPlayerToReset->ResetDeathCount();
+			pPlayerToReset->Spawn();
 
-			if ( pPlayer->m_bSentJoinedMessage )
+			if ( pPlayerToReset->m_bSentJoinedMessage )
 			{
-				pPlayer->m_bSentJoinedMessage = false;
-				pPlayer->OnFullyJoined( false );
+				pPlayerToReset->m_bSentJoinedMessage = false;
+				pPlayerToReset->OnFullyJoined( false );
 			}
 		}
 	}
@@ -3366,7 +3365,7 @@ void CAlienSwarm::VerifySpawnLocation( CASW_Marine *pMarine )
 	// found a valid node, teleport there
 	if (pNearest)
 	{
-		Vector vecPos = pNearest->GetOrigin();
+		vecPos = pNearest->GetOrigin();
 		pMarine->Teleport( &vecPos, NULL, NULL );
 	}
 }
@@ -4062,7 +4061,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 		CASW_Marine *pMarine = pMR->GetMarineEntity();
 		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
 		// switch commander to the marine if he hasn't already got one selected
-		if ( !pMR->GetCommander()->GetMarine() )
+		if ( !pMR->GetCommander()->GetNPC() )
 			pMR->GetCommander()->SwitchMarine(0 );
 		pMarine->PerformResurrectionEffect();
 	}
@@ -4083,7 +4082,7 @@ CASW_Marine* CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, V
 	{
 		pMarine = pMR->GetMarineEntity();
 		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
-		if ( !pMR->GetCommander()->GetMarine() )
+		if ( !pMR->GetCommander()->GetNPC() )
 			pMR->GetCommander()->SwitchMarine( 0 );
 		
 		if ( bEffect )
@@ -5172,14 +5171,15 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 							pGameResource->m_bAwardedDamageAmpAchievement = true;
 							for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 							{
-								CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-								if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() )
+								CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+								CASW_Marine *pOtherMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+								if ( !pPlayer || !pPlayer->IsConnected() || !pOtherMarine )
 									continue;
 
 								pPlayer->AwardAchievement( ACHIEVEMENT_ASW_GROUP_DAMAGE_AMP );
-								if ( pPlayer->GetMarine()->GetMarineResource() )
+								if ( pOtherMarine->GetMarineResource() )
 								{
-									pPlayer->GetMarine()->GetMarineResource()->m_bDamageAmpMedal = true;
+									pOtherMarine->GetMarineResource()->m_bDamageAmpMedal = true;
 								}
 							}
 						}
@@ -5257,8 +5257,8 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 					{
 						for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
 						{
-							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-							CASW_Marine *pOtherMarine = pMR ? pMR->GetMarineEntity() : NULL;
+							CASW_Marine_Resource *pOtherMR = pGameResource->GetMarineResource(i);
+							CASW_Marine *pOtherMarine = pOtherMR ? pOtherMR->GetMarineEntity() : NULL;
 							if (pOtherMarine && (pMarine->GetAbsOrigin().DistTo(pOtherMarine->GetAbsOrigin()) < 600)
 										&& pOtherMarine->GetHealth() > 0 && pOtherMarine->GetMarineProfile()
 										&& pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_CRASH)
@@ -5958,8 +5958,9 @@ void CAlienSwarm::CreateStandardEntities( void )
 
 // return true if our marine is using a weapon that can autoaim at flares
 //  and if the target is inside a flare radius
-bool CAlienSwarm::CanFlareAutoaimAt(CASW_Marine* pMarine, CBaseEntity *pEntity)
+bool CAlienSwarm::CanFlareAutoaimAt(CASW_Inhabitable_NPC* pAimer, CBaseEntity *pEntity)
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pAimer );
 	if (!pMarine || !pEntity || !g_pHeadFlare || !pEntity->IsNPC() )
 		return false;
 
@@ -6704,7 +6705,6 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 	const char *pcmd = args[0];
 	if ( FStrEq( pcmd, "achievement_earned" ) )
 	{
-		CASW_Player *pPlayer = static_cast<CASW_Player*>( pEdict );
 		if ( pPlayer && pPlayer->ShouldAnnounceAchievement() )
 		{
 			// let's check this came from the client .dll and not the console
@@ -6726,11 +6726,8 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 
 				pPlayer->OnAchievementEarned( iAchievement );
 
-				CASW_Marine_Resource *pMR = NULL;
-				if ( pPlayer->GetMarine() )
-				{
-					pMR = pPlayer->GetMarine()->GetMarineResource();
-				}
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+				CASW_Marine_Resource *pMR = pMarine ? pMarine->GetMarineResource() : NULL;
 				if ( !pMR )
 				{
 					pMR = ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer );
@@ -7460,42 +7457,38 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 		// if we're leader & this is listen server, then allow us to kick immediately
 	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() && !engine->IsDedicatedServer() )
 	{
-		CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
-		if (pOtherPlayer && pOtherPlayer != pPlayer)
+		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
+		if ( pOtherPlayer && pOtherPlayer != pPlayer )
 		{
 			// kick this player
-			CASW_Player* pOtherPlayer = dynamic_cast<CASW_Player*>(UTIL_PlayerByIndex(iPlayerIndex));
-			if (pOtherPlayer)
+			ClearLeaderKickVotes( pOtherPlayer, false, true );
+
+			ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName() );
+
+			bool bPlayerCrashed = false;
+			INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
+			if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
 			{
-				ClearLeaderKickVotes(pOtherPlayer, false, true);
-
-				ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
-				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName());
-
-				bool bPlayerCrashed = false;
-				INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
-				if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
-				{
-					// don't ban the player
-					DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
-					bPlayerCrashed = true;
-				}
-				if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
-				{
-					// don't roll the kick command into this, it will fail on a lan, where kickid will go through
-					engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
-				}
-
-				char buffer[256];
-				Q_snprintf(buffer, sizeof(buffer), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID());
-				Msg("sending command: %s\n", buffer);
-				engine->ServerCommand(buffer);			
-
-				//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
-				//{
-					//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
-				//}	
+				// don't ban the player
+				DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
+				bPlayerCrashed = true;
 			}
+			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed )
+			{
+				// don't roll the kick command into this, it will fail on a lan, where kickid will go through
+				engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
+			}
+
+			char buffer[256];
+			Q_snprintf( buffer, sizeof( buffer ), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID() );
+			Msg( "sending command: %s\n", buffer );
+			engine->ServerCommand( buffer );
+
+			//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
+			//{
+				//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
+			//}
 
 			return;
 		}
@@ -9212,11 +9205,11 @@ bool CAlienSwarm::IsOnslaught()
 	return ( asw_horde_override.GetBool() || asw_wanderer_override.GetBool() );
 }
 
-bool CAlienSwarm::HaveSavedConvar( const ConVarRef & cvar )
+bool CAlienSwarm::HaveSavedConvar( const ConVarRef & ref )
 {
-	Assert( cvar.IsValid() );
+	Assert( ref.IsValid() );
 
-	UtlSymId_t iSymbol = m_SavedConvars.Find( cvar.GetName() );
+	UtlSymId_t iSymbol = m_SavedConvars.Find( ref.GetName() );
 	if ( iSymbol == m_SavedConvars.InvalidIndex() )
 	{
 		return false;
@@ -9242,10 +9235,10 @@ void __MsgFunc_SavedConvar( bf_read &msg )
 	Assert( bReadValue );
 	if ( bReadKey && bReadValue )
 	{
-		ConVarRef cvar( szKey );
-		Assert( cvar.IsValid() );
-		Assert( cvar.IsFlagSet( FCVAR_REPLICATED ) );
-		if ( cvar.IsValid() && cvar.IsFlagSet( FCVAR_REPLICATED ) )
+		ConVarRef ref( szKey );
+		Assert( ref.IsValid() );
+		Assert( ref.IsFlagSet( FCVAR_REPLICATED ) );
+		if ( ref.IsValid() && ref.IsFlagSet( FCVAR_REPLICATED ) )
 		{
 			ASWGameRules()->m_SavedConvars[szKey] = AllocPooledString( szValue );
 		}
@@ -9254,11 +9247,11 @@ void __MsgFunc_SavedConvar( bf_read &msg )
 USER_MESSAGE_REGISTER( SavedConvar );
 #endif
 
-void CAlienSwarm::SaveConvar( const ConVarRef & cvar )
+void CAlienSwarm::SaveConvar( const ConVarRef & ref )
 {
-	Assert( cvar.IsValid() );
+	Assert( ref.IsValid() );
 
-	if ( HaveSavedConvar( cvar ) )
+	if ( HaveSavedConvar( ref ) )
 	{
 		// already saved, don't override.
 		return;
@@ -9266,16 +9259,16 @@ void CAlienSwarm::SaveConvar( const ConVarRef & cvar )
 
 #ifdef GAME_DLL
 	// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
-	if ( cvar.IsFlagSet( FCVAR_REPLICATED ) )
+	if ( ref.IsFlagSet( FCVAR_REPLICATED ) )
 	{
 		CReliableBroadcastRecipientFilter filter;
 		UserMessageBegin( filter, "SavedConvar" );
-		WRITE_STRING( cvar.GetName() );
-		WRITE_STRING( cvar.GetString() );
+		WRITE_STRING( ref.GetName() );
+		WRITE_STRING( ref.GetString() );
 		MessageEnd();
 	}
 #endif
-	m_SavedConvars[ cvar.GetName() ] = AllocPooledString( cvar.GetString() );
+	m_SavedConvars[ ref.GetName() ] = AllocPooledString( ref.GetString() );
 }
 
 void CAlienSwarm::RevertSingleConvar( ConVarRef & ref )
@@ -9300,11 +9293,11 @@ void CAlienSwarm::RevertSavedConvars()
 	{
 		const char *pszName = m_SavedConvars.String( i );
 		string_t iszValue = m_SavedConvars[i];
-		ConVarRef cvar( pszName );
-		Assert( cvar.IsValid() );
+		ConVarRef ref( pszName );
+		Assert( ref.IsValid() );
 		if ( iszValue != NULL_STRING )
 		{
-			cvar.SetValue( STRING( iszValue ) );
+			ref.SetValue( STRING( iszValue ) );
 		}
 	}
 	m_SavedConvars.Purge();
@@ -9363,15 +9356,15 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 void CAlienSwarm::CheckChallengeConVars()
 {
 	// make sure none of the variables were changed
-	for (int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++)
+	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
 	{
-		ConVarRef cvar(m_SavedConvars_Challenge.String(i));
-		const char *pszDesiredValue = STRING(m_SavedConvars_Challenge[i]);
+		ConVarRef ref( m_SavedConvars_Challenge.String( i ) );
+		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
 
-		if (cvar.IsValid() && Q_strcmp(cvar.GetString(), pszDesiredValue))
+		if ( ref.IsValid() && Q_strcmp( ref.GetString(), pszDesiredValue ) )
 		{
-			Warning("Fixing challenge convar %s\n", cvar.GetName());
-			cvar.SetValue(pszDesiredValue);
+			Warning( "Fixing challenge convar %s\n", ref.GetName() );
+			ref.SetValue( pszDesiredValue );
 		}
 	}
 }
@@ -9405,13 +9398,13 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 
 	FOR_EACH_VALUE( pConVars, pCV )
 	{
-		ConVarRef cvar( pCV->GetName() );
-		if ( cvar.IsValid() )
+		ConVarRef ref( pCV->GetName() );
+		if ( ref.IsValid() )
 		{
-			SaveConvar( cvar );
-			cvar.SetValue( pCV->GetString() );
+			SaveConvar( ref );
+			ref.SetValue( pCV->GetString() );
 			// use the actual value to make sure we don't run into issues with truncated values not being equal.
-			m_SavedConvars_Challenge[cvar.GetName()] = AllocPooledString( cvar.GetString() );
+			m_SavedConvars_Challenge[ref.GetName()] = AllocPooledString( ref.GetString() );
 		}
 		else
 		{

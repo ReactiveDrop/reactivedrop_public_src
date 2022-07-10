@@ -174,7 +174,7 @@ public:
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); } // was false
 
 	// Functions for weapons on the ground
-	virtual bool AllowedToPickup(C_ASW_Marine *pMarine);
+	virtual bool AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC );
 	bool m_bSwappingWeapon;
 	bool m_bIsTemporaryPickup;
 
@@ -183,8 +183,8 @@ public:
 
 	// IASW_Client_Usable_Entity
 	virtual C_BaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(C_BaseEntity *pUser);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool IsUsable( C_BaseEntity *pUser );
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) { }
 	virtual bool ShouldPaintBoxAround() { return true; }
 	virtual bool NeedsLOSCheck() { return true; }

@@ -131,7 +131,7 @@ void C_ASW_Marine_Resource::GetDisplayName( wchar_t *pwchDisplayName, int nMaxBy
 	else
 	{
 		// BenLubar: don't use the player name if they're controlling another marine after we died
-		bool bIsInhabited = IsInhabited() && GetCommander() && GetCommander()->m_hMarine.m_Value == m_MarineEntity;
+		bool bIsInhabited = IsInhabited() && GetCommander() && GetCommander()->GetNPC() == m_MarineEntity;
 
 		if ( bIsInhabited && g_PR->IsConnected( m_iCommanderIndex ) )
 		{

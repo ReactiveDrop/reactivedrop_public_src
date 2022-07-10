@@ -705,7 +705,7 @@ void CASWPlayerAnimState::UpdateLayerSequenceGeneric( int iLayer, bool &bEnabled
 		Vector vel;
 		GetOuterAbsVelocity( vel );
 
-		float speed = vel.Length2D();
+		speed = vel.Length2D();
 
 		if (speed > 50)
 		{

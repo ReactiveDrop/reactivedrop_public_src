@@ -153,11 +153,11 @@ void IN_SelectMarine8Up(void) { SelectMarineUp(7); }
 // ordering marines to hold a specific position/direction
 void IN_HoldOrderDown()
 {
-	KeyDown(&in_holdorder, NULL);
+	KeyDown( &in_holdorder, NULL );
 	// if we don't have a marine to order, find one
-	if (s_hOrderTarget.Get() == NULL)
+	if ( s_hOrderTarget.Get() == NULL )
 	{
-		GetVGUICursorPos(s_iMarineOrderingStartX, s_iMarineOrderingStartY);
+		GetVGUICursorPos( s_iMarineOrderingStartX, s_iMarineOrderingStartY );
 		int x, y;
 		engine->GetScreenSize( x, y );
 		x = x >> 1;
@@ -166,31 +166,31 @@ void IN_HoldOrderDown()
 		float mx, my;
 		mx = s_iMarineOrderingStartX - x;
 		my = s_iMarineOrderingStartY - y;
-		float mx_ratio =((float) mx) / ((float) x);
-		float my_ratio =((float) my) / ((float) y);
-		HUDTraceToWorld(-mx_ratio * 0.5f, -my_ratio * 0.5f, s_vecMarineOrderPos);	// store the spot we'll send a marine to
+		float mx_ratio = ( ( float )mx ) / ( ( float )x );
+		float my_ratio = ( ( float )my ) / ( ( float )y );
+		HUDTraceToWorld( -mx_ratio * 0.5f, -my_ratio * 0.5f, s_vecMarineOrderPos );	// store the spot we'll send a marine to
 
 		// find the marine nearest s_vecMarineOrderPos, biased against marines already holding a spot
-		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer)
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pPlayer )
 		{
 			// get the marine we're ordering
-			C_ASW_Marine *pTarget = pPlayer->FindMarineToHoldOrder(s_vecMarineOrderPos);
-			if (pTarget && pTarget->GetHealth() > 0)
+			C_ASW_Marine *pTarget = pPlayer->FindMarineToHoldOrder( s_vecMarineOrderPos );
+			if ( pTarget && pTarget->GetHealth() > 0 )
 			{
-				s_hOrderTarget = pTarget;				
-				ASWInput()->ASW_SetOrderingMarine(pTarget->entindex());
+				s_hOrderTarget = pTarget;
+				ASWInput()->ASW_SetOrderingMarine( pTarget->entindex() );
 			}
 		}
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
-		if (pGameResource && pGameResource->GetNumMarines(pPlayer, true) > 2)	// if we only have 2 marines selected, we can just fall through here and start ordering
+		if ( pGameResource && pGameResource->GetNumMarines( pPlayer, true ) > 2 )	// if we only have 2 marines selected, we can just fall through here and start ordering
 			return;
 	}
 
-	if (s_fMarineDownTime == 0)
+	if ( s_fMarineDownTime == 0 )
 	{
-		s_fMarineDownTime = gpGlobals->curtime;				
-		GetVGUICursorPos(s_iMarineOrderingStartX, s_iMarineOrderingStartY);
+		s_fMarineDownTime = gpGlobals->curtime;
+		GetVGUICursorPos( s_iMarineOrderingStartX, s_iMarineOrderingStartY );
 		int x, y;
 		engine->GetScreenSize( x, y );
 		x = x >> 1;
@@ -199,35 +199,35 @@ void IN_HoldOrderDown()
 		float mx, my;
 		mx = s_iMarineOrderingStartX - x;
 		my = s_iMarineOrderingStartY - y;
-		float mx_ratio =((float) mx) / ((float) x);
-		float my_ratio =((float) my) / ((float) y);			
-		HUDTraceToWorld(-mx_ratio * 0.5f, -my_ratio * 0.5f, s_vecMarineOrderPos, true);	// store the spot we'll send a marine to
+		float mx_ratio = ( ( float )mx ) / ( ( float )x );
+		float my_ratio = ( ( float )my ) / ( ( float )y );
+		HUDTraceToWorld( -mx_ratio * 0.5f, -my_ratio * 0.5f, s_vecMarineOrderPos, true );	// store the spot we'll send a marine to
 
 		// find the marine nearest s_vecMarineOrderPos, biased against marines already holding a spot
-		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer)
-		{	
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pPlayer )
+		{
 			C_ASW_Marine *pTarget = s_hOrderTarget.Get();
-			if (pTarget && pTarget->GetHealth() > 0)
+			if ( pTarget && pTarget->GetHealth() > 0 )
 			{
 				s_hOrderTarget = pTarget;
 				// position this marine's arrow here
-				if (pTarget->m_hOrderArrow.Get())
+				if ( pTarget->m_hOrderArrow.Get() )
 				{
 					// work out yaw to my marine
-					C_ASW_Marine *pMyMarine = pPlayer->GetViewMarine();
+					C_ASW_Inhabitable_NPC *pMyMarine = pPlayer->GetNPC();
 					float fYaw = 0;
-					if (pMyMarine)
+					if ( pMyMarine )
 					{
 						Vector diff = s_vecMarineOrderPos - pMyMarine->GetAbsOrigin();
 						diff.z = 0;
-						fYaw = UTIL_VecToYaw(diff);
+						fYaw = UTIL_VecToYaw( diff );
 					}
-					pTarget->m_hOrderArrow->SetAbsOrigin(s_vecMarineOrderPos);
-					pTarget->m_hOrderArrow->RemoveEffects(EF_NODRAW);
+					pTarget->m_hOrderArrow->SetAbsOrigin( s_vecMarineOrderPos );
+					pTarget->m_hOrderArrow->RemoveEffects( EF_NODRAW );
 					pTarget->m_hOrderArrow->RefreshArrow();
-					QAngle arrow_yaw(0, fYaw, 0);
-					pTarget->m_hOrderArrow->SetAbsAngles(arrow_yaw);
+					QAngle arrow_yaw( 0, fYaw, 0 );
+					pTarget->m_hOrderArrow->SetAbsAngles( arrow_yaw );
 				}
 			}
 		}
@@ -265,10 +265,10 @@ void IN_HoldOrderUp()
 			else
 				fYaw += pPlayer->EyeAngles().y;
 		}
-		else if ( pPlayer->GetViewMarine() )
+		else if ( pPlayer->GetNPC() )
 		{
 			// otherwise order the marine to face away from current marine
-			Vector diff = s_vecMarineOrderPos - pPlayer->GetViewMarine()->GetAbsOrigin();
+			Vector diff = s_vecMarineOrderPos - pPlayer->GetNPC()->GetAbsOrigin();
 			diff.z = 0;
 			fYaw = UTIL_VecToYaw(diff);
 		}
@@ -287,7 +287,7 @@ void UpdateOrderArrow()
 	if (!(in_holdorder.GetPerUser().state & 1))
 		return;
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer || !pPlayer->GetViewMarine() || s_hOrderTarget.Get() == NULL || s_fMarineDownTime == 0)
+	if (!pPlayer || !pPlayer->GetViewNPC() || s_hOrderTarget.Get() == NULL || s_fMarineDownTime == 0)
 		return;
 	// find how much the mouse has moved
 	int cx, cy;
@@ -308,7 +308,7 @@ void UpdateOrderArrow()
 	else
 	{
 		// otherwise order the marine to face away from current marine
-		Vector diff = s_vecMarineOrderPos - pPlayer->GetViewMarine()->GetAbsOrigin();
+		Vector diff = s_vecMarineOrderPos - pPlayer->GetViewNPC()->GetAbsOrigin();
 		diff.z = 0;
 		fYaw = UTIL_VecToYaw(diff);
 	}
@@ -534,13 +534,13 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 	}
 
 	// store the currently selected marine in the weapon subtype
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 	if ( ASWGameResource() && pMarine )
 	{
-		C_ASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
-		if (pPMR)
-			cmd->weaponsubtype = ASWGameResource()->GetMarineResourceIndex(pPMR);
+		C_ASW_Marine_Resource *pPMR = pMarine->GetMarineResource();
+		if ( pPMR )
+			cmd->weaponsubtype = ASWGameResource()->GetMarineResourceIndex( pPMR );
 
 		// get light at the current marine
 		//Vector pos = pPlayer->GetMarine()->GetAbsOrigin() + Vector(0, 0, 40);
@@ -668,11 +668,12 @@ bool CASWInput::ASWWriteVehicleMessage( bf_write *buf )
 		return false;
 
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer || !pPlayer->GetMarine() || !pPlayer->GetMarine()->GetClientsideVehicle())
+	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( !pMarine || !pMarine->GetClientsideVehicle() )
 		return false;
 
-	C_BaseAnimating *pAnimating = dynamic_cast<C_BaseAnimating*>(pPlayer->GetMarine()->GetClientsideVehicle()->GetEntity());
-	if (!pAnimating)
+	C_BaseAnimating *pAnimating = dynamic_cast< C_BaseAnimating * >( pMarine->GetClientsideVehicle()->GetEntity() );
+	if ( !pAnimating )
 		return false;
 
 	// = static_cast<C_BaseAnimating*>(s_pCVehicle->GetVehicleEnt());

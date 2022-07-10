@@ -276,7 +276,7 @@ void CASW_Weapon_Pistol::ItemPostFrame( void )
 		return;
 
 	// reactivedrop: don't allow bots to shoot so fast from pistols 
-	if ( pOwner->GetMarine() != GetOwner() )
+	if ( pOwner->GetNPC() != GetOwner() )
 		return;
 
 	//Allow a refire as fast as the player can click

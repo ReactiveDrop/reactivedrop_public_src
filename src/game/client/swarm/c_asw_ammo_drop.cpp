@@ -79,7 +79,7 @@ bool C_ASW_Ammo_Drop::IsUsable(C_BaseEntity *pUser)
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
 }
 
-bool C_ASW_Ammo_Drop::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Ammo_Drop::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
 	action.iUseIconTexture = GetAmmoDropIconTextureID();
 	action.UseTarget = this;
@@ -196,10 +196,11 @@ C_ASW_Weapon* C_ASW_Ammo_Drop::GetAmmoUseUnits( C_ASW_Marine *pMarine )
 	return NULL;
 }
 
-bool C_ASW_Ammo_Drop::AllowedToPickup( C_ASW_Marine *pMarine )
+bool C_ASW_Ammo_Drop::AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC )
 {
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
 	// if the marine can't use it, the use portion is zero
-	return ( GetAmmoUseUnits( pMarine ) != NULL );
+	return pMarine && ( GetAmmoUseUnits( pMarine ) != NULL );
 }
 
 void C_ASW_Ammo_Drop::OnDataChanged( DataUpdateType_t updateType )
@@ -216,12 +217,12 @@ void C_ASW_Ammo_Drop::ClientThink()
 {
 	bool bShouldGlow = false;
 	float flDistanceToMarineSqr = 0.0f;
-	float flWithinDistSqr = (ASW_MARINE_USE_RADIUS*4)*(ASW_MARINE_USE_RADIUS*4);
+	float flWithinDistSqr = ( ASW_MARINE_USE_RADIUS * 4 ) * ( ASW_MARINE_USE_RADIUS * 4 );
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewMarine() ) )
+	if ( pLocalPlayer && pLocalPlayer->GetViewNPC() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewNPC() ) )
 	{
-		flDistanceToMarineSqr = (pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
+		flDistanceToMarineSqr = ( pLocalPlayer->GetViewNPC()->GetAbsOrigin() - WorldSpaceCenter() ).LengthSqr();
 		if ( flDistanceToMarineSqr < flWithinDistSqr )
 			bShouldGlow = true;
 	}
@@ -230,6 +231,6 @@ void C_ASW_Ammo_Drop::ClientThink()
 
 	if ( m_GlowObject.IsRendering() )
 	{
-		m_GlowObject.SetAlpha( MIN( 0.7f, (1.0f - (flDistanceToMarineSqr / flWithinDistSqr)) * 1.0f) );
+		m_GlowObject.SetAlpha( MIN( 0.7f, ( 1.0f - ( flDistanceToMarineSqr / flWithinDistSqr ) ) * 1.0f ) );
 	}
 }

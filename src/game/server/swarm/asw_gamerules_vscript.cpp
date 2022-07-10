@@ -321,58 +321,58 @@ class CASW_Convars_VScript
 public:
 	ScriptVariant_t GetClientConvarValue( int clientIndex, const char *name )
 	{
-		const char *cvar = engine->GetClientConVarValue( clientIndex, name );
-		if ( cvar )
+		const char *szValue = engine->GetClientConVarValue( clientIndex, name );
+		if ( szValue )
 		{
-			return ScriptVariant_t( cvar, true );
+			return ScriptVariant_t( szValue, true );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
 	ScriptVariant_t GetStr( const char *name )
 	{
-		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		ConVarRef ref( name );
+		if ( ref.IsValid() )
 		{
-			return ScriptVariant_t( cvar.GetString(), true );
+			return ScriptVariant_t( ref.GetString(), true );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
 	ScriptVariant_t GetFloat( const char *name )
 	{
-		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		ConVarRef ref( name );
+		if ( ref.IsValid() )
 		{
-			return ScriptVariant_t( cvar.GetFloat() );
+			return ScriptVariant_t( ref.GetFloat() );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
 	void SetValue( const char *name, float value )
 	{
-		ConVarRef cvar( name );
-		if ( !cvar.IsValid() )
+		ConVarRef ref( name );
+		if ( !ref.IsValid() )
 		{
 			return;
 		}
 
-		ASWGameRules()->SaveConvar( cvar );
+		ASWGameRules()->SaveConvar( ref );
 		
-		cvar.SetValue( value );
+		ref.SetValue( value );
 	}
 
 	void SetValueString( const char *name, const char *value )
 	{
-		ConVarRef cvar( name );
-		if ( !cvar.IsValid() )
+		ConVarRef ref( name );
+		if ( !ref.IsValid() )
 		{
 			return;
 		}
 
-		ASWGameRules()->SaveConvar( cvar );
+		ASWGameRules()->SaveConvar( ref );
 		
-		cvar.SetValue( value );
+		ref.SetValue( value );
 	}
 
 	void ExecuteConCommand( const char *pszCommand )

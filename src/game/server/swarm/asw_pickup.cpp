@@ -7,6 +7,7 @@
 #include "npcevent.h"
 #include "asw_pickup.h"
 #include "asw_shareddefs.h"
+#include "asw_inhabitable_npc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -55,16 +56,21 @@ void CASW_Pickup::Spawn( void )
 	}
 }
 
-void CASW_Pickup::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+bool CASW_Pickup::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
+{
+	return pNPC && pNPC->Classify() == CLASS_ASW_MARINE;
+}
+
+void CASW_Pickup::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == 1 /*ASW_USE_HOLD_START*/ )
 		return;
 
 	// player has used this item
-	Msg("Player has activated a pickup\n");
+	DevMsg( "Player has activated a pickup\n" );
 }
 
 bool CASW_Pickup::IsUsable(CBaseEntity *pUser)
 {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
 }

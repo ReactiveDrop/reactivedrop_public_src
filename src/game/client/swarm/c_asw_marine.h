@@ -95,7 +95,6 @@ public:
 	CNetworkVar(float, m_fAIPitch);
 	QAngle m_AIEyeAngles;
 	Vector m_vecLastRenderedPos;	// marine position stored while drawing (since actual marine position is unreliable during CreateMove)
-	bool m_bUseLastRenderedEyePosition;
 	bool m_bLastNoDraw;
 	
 	// ammo
@@ -121,8 +120,6 @@ public:
 	bool m_bLastWeaponBeforeTempWasSecondary;
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
 	virtual void ProcessMuzzleFlashEvent();
-	C_ASW_Weapon* GetActiveASWWeapon(void) const;
-	C_ASW_Weapon* GetASWWeapon(int index) const;
 	virtual Vector			Weapon_ShootPosition();
 	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in	
 	int GetWeaponIndex( CBaseCombatWeapon *pWeapon ) const;		// returns weapon's position in our myweapons array
@@ -139,12 +136,9 @@ public:
 
 	// commander/inhabiting
 	C_ASW_Marine_Resource* GetMarineResource();
-	C_ASW_Player* GetCommander() const;
 	bool IsInhabited();
-	CNetworkHandle( C_ASW_Player, m_Commander );	
 	CHandle<C_ASW_Marine_Resource> m_hMarineResource;
 	CASW_Marine_Profile* GetMarineProfile();
-	const char *GetPlayerName() const;
 
 	// scanner
 	inline float GetBlipStrength() { return m_CurrentBlipStrength; }
@@ -286,9 +280,6 @@ public:
 	virtual bool TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	CNetworkVar(float, m_fInfestedTime);		// how many seconds of infestation we have left
 	CNetworkVar(float, m_fInfestedStartTime);	// when the marine first got infested
-	void TickRedName(float delta);
-	float m_fRedNamePulse;	// from 0 to 1, how red the marine's name should appear on the HUD for medics
-	bool m_bRedNamePulseUp;
 	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
 	virtual C_ClientRagdoll* CreateClientRagdoll( bool bRestoring = false );
 	virtual C_BaseAnimating* BecomeRagdollOnClient();
@@ -298,17 +289,9 @@ public:
 	// snow
 	//CSmartPtr<CASWGenericEmitter> m_hSnowEmitter;
 
-	// using entities over time
-	C_BaseEntity* GetUsingEntity() { return m_hUsingEntity.Get(); }
-	CNetworkHandle( C_BaseEntity, m_hUsingEntity );	// if set, marine will face this object
-	const Vector& GetFacingPoint();
-	void SetFacingPoint(const Vector &vec, float fDuration);
-	Vector m_vecFacingPoint, m_vecFacingPointFromServer;
-	float m_fStopFacingPointTime;
-
 	// client usable entity
 	virtual bool IsUsable( C_BaseEntity *pUser );
-	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser );
+	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) {}
 	virtual bool ShouldPaintBoxAround() { return m_bKnockedOut; }
 	virtual bool NeedsLOSCheck() { return m_bKnockedOut; }
@@ -358,7 +341,6 @@ public:
 	float m_fPoison;
 
 	// for smooth turning of the marine
-	float m_fLastTurningYaw;
 	Vector m_vLaserSightCorrection;
 	float m_flLaserSightLength;
 

@@ -1470,7 +1470,7 @@ class CAchievement_Hardcore : public CASW_Achievement
 			if ( !pLocalPlayer )
 				return;
 
-			if ( !pLocalPlayer->GetMarine() || pLocalPlayer->GetMarine()->GetHealth() <= 0 )
+			if ( !C_ASW_Marine::AsMarine( pLocalPlayer->GetNPC() ) || pLocalPlayer->GetNPC()->GetHealth() <= 0 )
 				return;
 
 			const char *szMapName = event->GetString( "strMapName" );

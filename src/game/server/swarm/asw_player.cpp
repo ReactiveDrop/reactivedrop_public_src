@@ -208,12 +208,12 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 0), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 1), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 2), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
-	SendPropEHandle( SENDINFO ( m_hMarine ) ),
-	SendPropEHandle( SENDINFO( m_hSpectatingMarine ) ),
-    SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
+	SendPropEHandle( SENDINFO( m_hInhabiting ) ),
+	SendPropEHandle( SENDINFO( m_hSpectating ) ),
+	SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
 	SendPropEHandle( SENDINFO( m_hOrderingMarine ) ),
 	SendPropEHandle( SENDINFO ( m_pCurrentInfoMessage ) ),
-	
+
 	SendPropInt(SENDINFO(m_iLeaderVoteIndex) ),
 	SendPropInt(SENDINFO(m_iKickVoteIndex) ),
 	SendPropFloat( SENDINFO( m_fMapGenerationProgress ) ),
@@ -242,8 +242,8 @@ END_SEND_TABLE()
 BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_fIsWalking, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_vecLastMarineOrigin, FIELD_VECTOR ),
-	DEFINE_FIELD( m_hMarine, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hSpectatingMarine, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hInhabiting, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hSpectating, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecStoredPosition, FIELD_VECTOR ),
 	DEFINE_FIELD( m_pCurrentInfoMessage, FIELD_EHANDLE ),
 	//DEFINE_FIELD( m_bLastAttackButton, FIELD_BOOLEAN ),		// keep this at no click after restore
@@ -353,7 +353,8 @@ CASW_Player::CASW_Player()
 
 	SetViewOffset( ASW_PLAYER_VIEW_OFFSET );
 
-	m_hMarine = NULL;
+	m_hInhabiting = NULL;
+	m_hSpectating = NULL;
 	m_pCurrentInfoMessage = NULL;
 	m_vecLastMarineOrigin = vec3_origin;
 
@@ -364,8 +365,8 @@ CASW_Player::CASW_Player()
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
 	m_flMovementAxisYaw = 90.0f;
-    m_fMarineDeathTime = 0.0f;
-	
+	m_fMarineDeathTime = 0.0f;
+
 	m_Local.m_vecPunchAngle.Set( ROLL, 15 );
 	m_Local.m_vecPunchAngle.Set( PITCH, 8 );
 	m_Local.m_vecPunchAngle.Set( YAW, 0 );
@@ -377,14 +378,14 @@ CASW_Player::CASW_Player()
 
 	m_bWelcomed = false;
 
-	if (ASWGameRules())
+	if ( ASWGameRules() )
 	{
-		ASWGameRules()->ClearLeaderKickVotes(this);
+		ASWGameRules()->ClearLeaderKickVotes( this );
 
-		if (ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+		if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 		{
 			SpectateNextMarine();
-		}		
+		}
 	}
 	m_fLastFragTime = FLT_MIN;
 	m_iKillingSpree = 0;
@@ -435,7 +436,7 @@ void CASW_Player::PostThink()
 	BaseClass::PostThink();
 
 	QAngle angles = GetLocalAngles();
-	if (GetMarine())
+	if ( GetNPC() )
 		angles[PITCH] = 0;
 	SetLocalAngles( angles );
 	
@@ -448,7 +449,7 @@ void CASW_Player::PostThink()
 	FindUseEntities();
 
 	// clicking while ingame on mission with no marine makes us spectate the next marine
-	if ((!GetMarine() || GetMarine()->GetHealth()<=0)
+	if ((!GetNPC() || GetNPC()->GetHealth()<=0)
 		/*&& !HasLiveMarines()*/ && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
 	{
 		//Msg("m_nButtons & IN_ATTACK = %d (m_Local.m_nOldButtons & IN_ATTACK) = %d\n", (m_nButtons & IN_ATTACK), (m_Local.m_nOldButtons & IN_ATTACK));
@@ -464,7 +465,7 @@ void CASW_Player::PostThink()
 			{
 				ASWDeathmatchMode()->SpawnMarine( this );
 			}
-			else if ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f )
+			else if ( !GetSpectatingNPC() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f )
 			{
 				SpectateNextMarine();
 				m_fLastControlledMarineTime = gpGlobals->curtime - 5.0f; // set this again so we don't spam SpectateNextMarine
@@ -483,10 +484,10 @@ void CASW_Player::PostThink()
 				bool found_available_marine = false;
 				CASW_Marine *pBotMarine = NULL;
 
-				if ( GetSpectatingMarine() && !GetSpectatingMarine()->IsInhabited() )
+				if ( CASW_Marine::AsMarine( GetSpectatingNPC() ) && !GetSpectatingNPC()->IsInhabited() )
 				{
 					found_available_marine = true;
-					pBotMarine = GetSpectatingMarine();
+					pBotMarine = CASW_Marine::AsMarine( GetSpectatingNPC() );
 				}
 				else 
 				{
@@ -508,14 +509,14 @@ void CASW_Player::PostThink()
 				if (found_available_marine)
 				{
 					DevMsg(" Riflemod Drop-In. Switching player to marine 0\n");
-					pBotMarine->SetCommander(this);
-					pBotMarine->GetMarineResource()->SetCommander(this);
-					SetSpectatingMarine(NULL);
-					SwitchMarine(0, false);
+					pBotMarine->SetCommander( this );
+					pBotMarine->GetMarineResource()->SetCommander( this );
+					SetSpectatingNPC( NULL );
+					SwitchMarine( 0, false );
 					// reactivedrop: when player took marine under control
 					// delay his primary attack to prevent immediate shooting at
 					// unknown posisition which can kill teammates
-					pBotMarine->SetNextAttack(gpGlobals->curtime + 1.0f);
+					pBotMarine->SetNextAttack( gpGlobals->curtime + 1.0f );
 
 					// reactivedrop: additionally check bots. If they have no 
 					// commander then assign to this player
@@ -539,7 +540,7 @@ void CASW_Player::PostThink()
 				}
 			}
 		}
-		else if (bRightClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
+		else if ( bRightClicked || ( !GetSpectatingNPC() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
 		{
 			// riflemod: right click when spectating cycles through marines 
 			SpectateNextMarine();
@@ -637,16 +638,16 @@ CBaseCombatWeapon* CASW_Player::ASWAnim_GetActiveWeapon()
 	return GetActiveWeapon();
 }
 
-void CASW_Player::EmitPrivateSound( const char *soundName, bool bFromMarine )
+void CASW_Player::EmitPrivateSound( const char *soundName, bool bFromNPC )
 {
 	CSoundParameters params;
-	if (!GetParametersForSound( soundName, params, NULL ))
+	if ( !GetParametersForSound( soundName, params, NULL ) )
 		return;
 
 	CSingleUserRecipientFilter filter( this );
-	if ( bFromMarine && GetMarine() )
+	if ( bFromNPC && GetNPC() )
 	{
-		EmitSound( filter, GetMarine()->entindex(), soundName );
+		EmitSound( filter, GetNPC()->entindex(), soundName );
 	}
 	else
 	{
@@ -1104,10 +1105,10 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 				int iEmote = atoi( args[1] );
-				CASW_Marine* pMarine = GetMarine();
-				if (pMarine && pMarine->GetHealth() > 0)
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
+				if ( pMarine && pMarine->GetHealth() > 0 )
 				{
-					pMarine->DoEmote(iEmote);
+					pMarine->DoEmote( iEmote );
 				}
 				return true;
 			}
@@ -1124,7 +1125,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				{
 					iSubChatter = atoi( args[2] );
 				}
-				CASW_Marine* pMarine = GetMarine();
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 				if (pMarine && pMarine->GetMarineSpeech())
 				{
 					pMarine->GetMarineSpeech()->ClientRequestChatter(iChatter, iSubChatter, asw_client_chatter_enabled.GetBool() ? NULL : this);
@@ -1155,12 +1156,13 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 
 				int iHackOption = atoi(args[1]);
-				if (GetMarine() && GetMarine()->m_hCurrentHack.Get())
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC());
+				if ( pMarine && pMarine->m_hCurrentHack.Get() )
 				{
-					CASW_Hack *pHack = dynamic_cast<CASW_Hack*>(GetMarine()->m_hCurrentHack.Get());
-					if (pHack)
+					CASW_Hack *pHack = pMarine->m_hCurrentHack.Get();
+					if ( pHack )
 					{
-						pHack->SelectHackOption(iHackOption);				
+						pHack->SelectHackOption( iHackOption );
 						return true;
 					}
 				}
@@ -1168,8 +1170,8 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_stopusing") )
 			{
-				if (GetMarine() && GetMarine()->m_hUsingEntity.Get())
-					GetMarine()->StopUsing();
+				if ( GetNPC() && GetNPC()->m_hUsingEntity.Get() )
+					GetNPC()->StopUsing();
 				return true;
 			}
 			else if ( FStrEq( pcmd, "cl_blipspeech") )
@@ -1191,7 +1193,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					Warning("Player sent a bad cl_viewmail command\n");
 					return false;
 				}
-				CASW_Marine* pMarine = GetMarine();
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 				if (pMarine)
 				{
 					CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
@@ -1212,7 +1214,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 				int slot = clamp(atoi(args[1]), 0, 3);
-				CASW_Marine* pMarine = GetMarine();
+				CASW_Marine* pMarine = CASW_Marine::AsMarine( GetNPC() );
 				if (pMarine && pMarine->GetHealth()>0 && !(pMarine->GetFlags() & FL_FROZEN))
 				{
 					// check we have an item in that slot
@@ -1809,68 +1811,29 @@ void CASW_Player::BecomeNonSolid()
 	return;
 }
 
-void CASW_Player::OnMarineCommanded( const CASW_Marine *pMarine )
+void CASW_Player::OnNPCCommanded( CASW_Inhabitable_NPC *pNPC )
 {
 	if ( !ASWGameResource() )
 	{
 		return;
 	}
 
-	int nNumMarines = 0;
-	int nNewMarine = 0;
-
-	const int max_marines = ASWGameResource()->GetMaxMarineResources();
-	for ( int i = 0; i < max_marines; i++ )
-	{		
-		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
-		if ( pMR )
-		{
-			if ( pMR->m_Commander.Get() == this)
-			{
-				if ( pMR->GetMarineEntity() == pMarine )
-				{
-					nNewMarine = nNumMarines;
-				}
-
-				nNumMarines++;
-			}
-		}
-	}
-
-	IGameEvent * event = gameeventmanager->CreateEvent( "player_commanding" );
-	if ( event )
+	if ( pNPC->Classify() == CLASS_ASW_MARINE )
 	{
-		event->SetInt( "userid", GetUserID() );
-		event->SetInt( "new_marine", pMarine->entindex() );
-		event->SetInt( "new_index", nNewMarine );
-		event->SetInt( "count", nNumMarines );
-		gameeventmanager->FireEvent( event );
-	}
-}
-
-void CASW_Player::SetMarine( CASW_Marine *pMarine )
-{
-	if ( pMarine && pMarine != GetMarine() )
-	{
-		if ( !ASWGameResource() )
-		{
-			return;
-		}
-
 		int nNumMarines = 0;
-		int nOldMarine = 0;
+		int nNewMarine = 0;
 
 		const int max_marines = ASWGameResource()->GetMaxMarineResources();
-		for ( int i = 0; i < max_marines; ++i )
-		{		
+		for ( int i = 0; i < max_marines; i++ )
+		{
 			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 			if ( pMR )
 			{
 				if ( pMR->m_Commander.Get() == this )
 				{
-					if ( pMR->GetMarineEntity() == GetMarine() )
+					if ( pMR->GetMarineEntity() == pNPC )
 					{
-						nOldMarine = nNumMarines;
+						nNewMarine = nNumMarines;
 					}
 
 					nNumMarines++;
@@ -1878,26 +1841,72 @@ void CASW_Player::SetMarine( CASW_Marine *pMarine )
 			}
 		}
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "marine_selected" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "player_commanding" );
 		if ( event )
 		{
 			event->SetInt( "userid", GetUserID() );
-			event->SetInt( "new_marine", pMarine->entindex() );
-			event->SetInt( "old_marine", ( GetMarine() ? GetMarine()->entindex() : -1 ) );
-			event->SetInt( "old_index", nOldMarine );
+			event->SetInt( "new_marine", pNPC->entindex() );
+			event->SetInt( "new_index", nNewMarine );
 			event->SetInt( "count", nNumMarines );
 			gameeventmanager->FireEvent( event );
 		}
+	}
+}
 
-		m_hMarine = pMarine;
+void CASW_Player::SetNPC( CASW_Inhabitable_NPC *pNPC )
+{
+	if ( pNPC && pNPC != GetNPC() )
+	{
+		if ( !ASWGameResource() )
+		{
+			return;
+		}
+
+
+		if ( pNPC->Classify() == CLASS_ASW_MARINE )
+		{
+			int nNumMarines = 0;
+			int nOldMarine = 0;
+
+			const int max_marines = ASWGameResource()->GetMaxMarineResources();
+			for ( int i = 0; i < max_marines; ++i )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( pMR )
+				{
+					if ( pMR->m_Commander.Get() == this )
+					{
+						if ( pMR->GetMarineEntity() == GetNPC() )
+						{
+							nOldMarine = nNumMarines;
+						}
+
+						nNumMarines++;
+					}
+				}
+			}
+
+			IGameEvent *event = gameeventmanager->CreateEvent( "marine_selected" );
+			if ( event )
+			{
+				event->SetInt( "userid", GetUserID() );
+				event->SetInt( "new_marine", pNPC->entindex() );
+				event->SetInt( "old_marine", ( GetNPC() ? GetNPC()->entindex() : -1 ) );
+				event->SetInt( "old_index", nOldMarine );
+				event->SetInt( "count", nNumMarines );
+				gameeventmanager->FireEvent( event );
+			}
+		}
+
+		m_hInhabiting = pNPC;
 		// make sure our list of usable entities is refreshed
 		FindUseEntities();
 	}
 }
 
-CASW_Marine* CASW_Player::GetMarine() const
+CASW_Inhabitable_NPC *CASW_Player::GetNPC() const
 {
-	return m_hMarine.Get();
+	return m_hInhabiting.Get();
 }
 
 void CASW_Player::SpectateNextMarine()
@@ -1926,54 +1935,44 @@ void CASW_Player::SpectateNextMarine()
 			pFirst = pMarine;
 			//Msg("  set this guy as our first\n");
 		}
-		if (GetSpectatingMarine() == NULL)		// if we're not spectating anything yet, then spectate the first one we find
+		if (GetSpectatingNPC() == NULL)		// if we're not spectating anything yet, then spectate the first one we find
 		{
 			//Msg("  We're not spectating anyone, so we're gonna spec this dude\n");
-			SetSpectatingMarine(pMarine);
+			SetSpectatingNPC(pMarine);
 			break;
 		}
-		if (GetSpectatingMarine() == pMarine)	// if we're spectating this one, then clear it, so the next one we find will get set
+		if (GetSpectatingNPC() == pMarine)	// if we're spectating this one, then clear it, so the next one we find will get set
 		{
 			//Msg("  we're spectating this dude, so clearing our current spectator\n");
-			SetSpectatingMarine(NULL);
+			SetSpectatingNPC(NULL);
 		}				
 	}
 	//Msg("end\n");
 	// if we're still not spectating anything but we found at least marine, then that means we were spectating the last one in the list and need to set this
-	if (GetSpectatingMarine() == NULL && pFirst)
+	if (GetSpectatingNPC() == NULL && pFirst)
 	{
 		//Msg("  but we're still not speccing anyone and we have a first set, so speccing that dude\n");
-		SetSpectatingMarine(pFirst);
+		SetSpectatingNPC(pFirst);
 	}
 }
 
-void CASW_Player::SetSpectatingMarine(CASW_Marine *pMarine)
+void CASW_Player::SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating )
 {
-	if (pMarine)
-	{
-		//Msg("Starting spectating marine %s\n", pMarine->GetEntityName());
-		m_hSpectatingMarine = pMarine;
-	}
-	else
-	{
-		//Msg("Clearing spectating marine\n");
-		m_hSpectatingMarine = NULL;
-	}
+	m_hSpectating = pSpectating;
 }
 
-CASW_Marine* CASW_Player::GetSpectatingMarine() const
+CASW_Inhabitable_NPC *CASW_Player::GetSpectatingNPC() const
 {
-	return m_hSpectatingMarine.Get();
+	return m_hSpectating.Get();
 }
 
-CASW_Marine* CASW_Player::GetViewMarine() const
+CASW_Inhabitable_NPC *CASW_Player::GetViewNPC() const
 {
-	CASW_Marine *pMarine = GetSpectatingMarine();
-	if (!pMarine)
-	{
-		pMarine = GetMarine();
-	}
-	return pMarine;
+	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
+	if ( !pNPC )
+		pNPC = GetNPC();
+
+	return pNPC;
 }
 
 void CASW_Player::SelectNextMarine(bool bReverse)
@@ -1993,7 +1992,7 @@ void CASW_Player::SelectNextMarine(bool bReverse)
 		if (pMR && pMR->GetCommander() == this)
 		{
 			iMarines++;
-			if (pMR->GetMarineEntity() && pMR->GetMarineEntity() == GetMarine())
+			if (pMR->GetMarineEntity() && pMR->GetMarineEntity() == GetNPC())
 				iCurrent = iMarines;
 		}
 	}
@@ -2056,7 +2055,7 @@ bool CASW_Player::CanSwitchToMarine(int num)
 
 void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader )
 {
-	CASW_Marine *pOldMarine = GetMarine();
+	CASW_Marine *pOldMarine = CASW_Marine::AsMarine( GetNPC() );
 	CASW_Marine *pNewMarine = pMR->GetMarineEntity();
 
 	// abort if we're trying to switch to a dead marine
@@ -2096,8 +2095,8 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 
 	m_ASWLocal.m_hAutoAimTarget.Set( NULL );
 
-	SetMarine( pNewMarine );
-	SetSpectatingMarine( NULL );
+	SetNPC( pNewMarine );
+	SetSpectatingNPC( NULL );
 	pNewMarine->SetCommander( this );
 	pNewMarine->InhabitedBy( this );
 
@@ -2158,7 +2157,7 @@ void CASW_Player::SwitchMarine(int num, bool set_squad_leader/* = true*/)
 
 	// if we got here, it means we pushed a marine number greater than the number of marines we have
 	// check again, this time counting up other player's marines, to see if we're trying to shout out to them (or trying to spectate them, if we're all dead)
-	CASW_Marine *pMarine = GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 	bool bSpectating = ( !pMarine || pMarine->GetHealth() <= 0 ) && !HasLiveMarines();
 	for (int i = 0; i < max_marines; i++ )
 	{
@@ -2176,7 +2175,7 @@ void CASW_Player::SwitchMarine(int num, bool set_squad_leader/* = true*/)
 					{
 						if ( bSpectating && pMR->GetMarineEntity() )
 						{
-							SetSpectatingMarine( pMR->GetMarineEntity() );
+							SetSpectatingNPC( pMR->GetMarineEntity() );
 							return;
 						}
 						else if ( pMarine )
@@ -2209,51 +2208,51 @@ void CASW_Player::SwitchMarine(int num, bool set_squad_leader/* = true*/)
 	
 }
 
-void CASW_Player::OrderMarineFace(int iMarine, float fYaw, Vector &vecOrderPos)
+void CASW_Player::OrderMarineFace( int iMarine, float fYaw, Vector &vecOrderPos )
 {
 	//Msg("Ordering marine %d ", iMarine);
 	// check if we were passed an ent index of the marine we're ordering
 
-	CASW_Marine* pTarget = NULL;
-	CBaseEntity* pEnt = CBaseEntity::Instance(iMarine);
+	CASW_Marine *pTarget = NULL;
+	CBaseEntity *pEnt = CBaseEntity::Instance( iMarine );
 	if ( iMarine != -1 && pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
-		pTarget = assert_cast<CASW_Marine*>(pEnt);
+		pTarget = assert_cast< CASW_Marine * >( pEnt );
 
-	CASW_Marine *pMyMarine = GetMarine();
-		if (!pMyMarine)
-			return;
+	CASW_Marine *pMyMarine = CASW_Marine::AsMarine( GetNPC() );
+	if ( !pMyMarine )
+		return;
 
 	// if we don't have a specific marine to order, find the best one
-	if (!pTarget)
+	if ( !pTarget )
 	{
 		CASW_Game_Resource *pGameResource = ASWGameResource();
-		if (!pGameResource)
+		if ( !pGameResource )
 			return;
-		
+
 		// if we didn't specify a marine, we'll order the one nearest to the order pos
 
 		// check if we preselected a specific marine to order
 		pTarget = m_hOrderingMarine.Get();
 
 		// find the nearest marine
-		if (!pTarget)
+		if ( !pTarget )
 		{
 			float nearest_dist = 9999;
-			for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 			{
-				CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-				if (!pMR)
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( !pMR )
 					continue;
 
-				CASW_Marine* pMarine = pMR->GetMarineEntity();
-				if (!pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0		// skip if dead
-						|| pMarine->GetCommander() != this)
+				CASW_Marine *pMarine = pMR->GetMarineEntity();
+				if ( !pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0		// skip if dead
+					|| pMarine->GetCommander() != this )
 					continue;
-			
-				float distance = vecOrderPos.DistTo(pMarine->GetAbsOrigin());
-				if (pMarine->GetASWOrders() != ASW_ORDER_FOLLOW)		// bias against marines that are already holding position somewhere
+
+				float distance = vecOrderPos.DistTo( pMarine->GetAbsOrigin() );
+				if ( pMarine->GetASWOrders() != ASW_ORDER_FOLLOW )		// bias against marines that are already holding position somewhere
 					distance += 5000;
-				if (distance < nearest_dist)
+				if ( distance < nearest_dist )
 				{
 					nearest_dist = distance;
 					pTarget = pMarine;
@@ -2265,21 +2264,21 @@ void CASW_Player::OrderMarineFace(int iMarine, float fYaw, Vector &vecOrderPos)
 	// do an emote
 	//pMyMarine->DoEmote(3);	// stop
 
-	if (!pTarget)
+	if ( !pTarget )
 		return;
 
-	pTarget->OrdersFromPlayer(this, ASW_ORDER_MOVE_TO, GetMarine(), true, fYaw, &vecOrderPos);
+	pTarget->OrdersFromPlayer( this, ASW_ORDER_MOVE_TO, pMyMarine, true, fYaw, &vecOrderPos );
 }
 
 // makes the player uninhabit marines and become free in control of his
 //   player entity as normal (this is just for debugging)
 void CASW_Player::LeaveMarines()
 {
-	if (GetMarine())
+	if (GetNPC())
 	{
-		GetMarine()->UninhabitedBy(this);
+		GetNPC()->UninhabitedBy( this );
 	}
-	m_hMarine = NULL;	
+	m_hInhabiting = NULL;
 }
 
 void CASW_Player::ChangeName( const char *pszNewName )
@@ -2400,7 +2399,7 @@ Vector CASW_Player::GetAutoaimVectorForMarine(CASW_Marine* marine, float flDelta
 #ifdef ASW_NO_SERVERSIDE_AUTOAIM
 	// test of no serverside autoaim
 	Vector	forward;
-	if ( GetMarine() == marine )
+	if ( GetNPC() == marine )
 		AngleVectors( EyeAngles() + m_angMarineAutoAimFromClient, &forward );
 	else
 		AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
@@ -2473,14 +2472,14 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 
 	//Reset this data
 	m_fOnTarget			= false;
-	CASW_Weapon* pWeapon = GetMarine() ? GetMarine()->GetActiveASWWeapon() : NULL;
+	CASW_Weapon *pWeapon = GetNPC() ? GetNPC()->GetActiveASWWeapon() : NULL;
 	bool bDoAutoaimEnt = pWeapon && pWeapon->GetAutoAimAmount() >= 0.25f;	// only the prifle + autogun show up their autoaim target
 
 	if (bDoAutoaimEnt || m_ASWLocal.m_hAutoAimTarget.Get())
 		m_ASWLocal.m_hAutoAimTarget.Set(NULL);
 	//Msg("marine aa def clearing aa ent\n");
 
-	UTIL_TraceLine( vecSrc, vecSrc + bestdir * flDist, MASK_SHOT, GetMarine(), COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( vecSrc, vecSrc + bestdir * flDist, MASK_SHOT, GetNPC(), COLLISION_GROUP_NONE, &tr );
 
 	CBaseEntity *pEntHit = tr.m_pEnt;
 	CBaseEntity* pFlareEnt = NULL;
@@ -2523,7 +2522,7 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 			//Msg("Checking autoaim vs %d:%s", pEntity->entindex, pEntity->GetClassname());
 
 			// Don't shoot yourself
-			if ( pEntity == this || pEntity == GetMarine())
+			if ( pEntity == this || pEntity == GetNPC())
 			{
 				//Msg("this is you!, skipping\n");
 				continue;
@@ -2604,7 +2603,7 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 			{
 				//Msg("too far to turn, skipping\n");
 				if (bestent==NULL && dot_flat <= ASW_FLARE_AUTOAIM_DOT
-					&& ASWGameRules()->CanFlareAutoaimAt(GetMarine(), pEntity))
+					&& ASWGameRules()->CanFlareAutoaimAt(CASW_Marine::AsMarine( GetNPC() ), pEntity))
 				{
 					pFlareEnt = pEntity;
 					// allow autoaim at this entity because it's inside a flare radius
@@ -2617,7 +2616,7 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 				}
 			}
 
-			UTIL_TraceLine( vecSrc, center, MASK_SHOT, GetMarine(), COLLISION_GROUP_NONE, &tr );
+			UTIL_TraceLine( vecSrc, center, MASK_SHOT, GetNPC(), COLLISION_GROUP_NONE, &tr );
 
 			if (tr.fraction != 1.0 && tr.m_pEnt != pEntity )
 			{
@@ -2701,7 +2700,7 @@ void OrderNearestHoldingMarineToFollow()
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 	if (pPlayer)
 	{
-		CASW_Marine *pMyMarine = pPlayer->GetMarine();
+		CASW_Marine *pMyMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 		if (pMyMarine)
 		{
 			if (pMyMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
@@ -2749,7 +2748,7 @@ void OrderNearestHoldingMarineToFollow()
 			if (!pTarget)
 				return;
 
-			pTarget->OrdersFromPlayer(pPlayer, ASW_ORDER_FOLLOW, pPlayer->GetMarine(), true);
+			pTarget->OrdersFromPlayer(pPlayer, ASW_ORDER_FOLLOW, pPlayer->GetNPC(), true);
 		}
 	}
 }
@@ -2759,7 +2758,7 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 	if ( !pPlayer )
 		return;
 
-	CASW_Marine *pMyMarine = pPlayer->GetMarine();
+	CASW_Marine *pMyMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	if ( pMyMarine )
 	{
 		if ( pMyMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
@@ -2823,7 +2822,7 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 			if ( distance < MARINE_ORDER_DISTANCE )
 			{
 				iChatter--;
-				pMarine->OrdersFromPlayer( pPlayer, NewOrders, pPlayer->GetMarine(), bAcknowledge && iChatter == 0 );
+				pMarine->OrdersFromPlayer( pPlayer, NewOrders, pPlayer->GetNPC(), bAcknowledge && iChatter == 0 );
 			}
 		}
 
@@ -2866,14 +2865,14 @@ void CASW_Player::HideInfoMessage()
 
 void CASW_Player::MoveMarineToPredictedPosition()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC )
 		return;
 
-	m_vecStoredPosition = pMarine->GetAbsOrigin();
+	m_vecStoredPosition = pNPC->GetAbsOrigin();
 
 	// sweep a bounding box ahead in the current velocity direction
-	Vector vel = pMarine->GetAbsVelocity();
+	Vector vel = pNPC->GetAbsVelocity();
 	INetChannelInfo *nci = engine->GetPlayerNetInfo( entindex() ); 
 	if (!nci)
 		return;
@@ -2882,30 +2881,30 @@ void CASW_Player::MoveMarineToPredictedPosition()
 
 	Ray_t ray;
 	trace_t pm;
-	ray.Init( m_vecStoredPosition, dest, pMarine->CollisionProp()->OBBMins(), pMarine->CollisionProp()->OBBMaxs() );
-	UTIL_TraceRay( ray, MASK_PLAYERSOLID, pMarine, ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION, &pm );
+	ray.Init( m_vecStoredPosition, dest, pNPC->CollisionProp()->OBBMins(), pNPC->CollisionProp()->OBBMaxs() );
+	UTIL_TraceRay( ray, MASK_PLAYERSOLID, pNPC, ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION, &pm );
 	
 	dest = m_vecStoredPosition + vel * fVelScale * pm.fraction;
-	pMarine->SetAbsOrigin(dest);
+	pNPC->SetAbsOrigin(dest);
 }
 
 void CASW_Player::RestoreMarinePosition()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC )
 		return;
 
-	pMarine->SetAbsOrigin(m_vecStoredPosition);
+	pNPC->SetAbsOrigin(m_vecStoredPosition);
 }
 
 void CASW_Player::ActivateUseIcon( int iUseEntityIndex, int nHoldType )
 {	
 	// no using when you're dead
-	if (!GetMarine() || GetMarine()->GetHealth()<=0)
+	if ( !GetNPC() || GetNPC()->GetHealth() <= 0 )
 		return;
 
-	if (GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
-			return;
+	if ( GetNPC()->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
+		return;
 
 	CBaseEntity *pEnt = CBaseEntity::Instance(iUseEntityIndex);
 	if (!pEnt)
@@ -2930,7 +2929,7 @@ void CASW_Player::ActivateUseIcon( int iUseEntityIndex, int nHoldType )
 	if (!pUsable)
 		return;
 
-	pUsable->ActivateUseIcon( GetMarine(), nHoldType );
+	pUsable->ActivateUseIcon( GetNPC(), nHoldType );
 }
 
 void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize )
@@ -2947,17 +2946,18 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 		}
 		engine->AddOriginToPVS(m_vecFreeCamOrigin);
 	}
-	CASW_Marine *pMarine = GetSpectatingMarine();
+	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
 	bool bSpectating = true;
-	if (!pMarine)
+	if (!pNPC)
 	{
-		pMarine = GetMarine();
+		pNPC = GetNPC();
 		bSpectating = false;
 	}
-	if (pMarine)
+	if ( pNPC )
 	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 		// asw - add the marine as our PVS position (since we're using radius based, this will do the job)
-		if (pMarine->IsInVehicle())
+		if ( pMarine && pMarine->IsInVehicle() )
 		{
 	#ifdef CLIENT_DLL
 			if (pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity())
@@ -2970,12 +2970,12 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 		else
 		{
 			//if (asw_debug_pvs.GetBool()) Msg(" Marine %f,%f,%f\n", pMarine->GetAbsOrigin().x, pMarine->GetAbsOrigin().y, pMarine->GetAbsOrigin().z);
-			if (asw_debug_pvs.GetBool())
+			if ( asw_debug_pvs.GetBool() )
 			{
-				const Vector pos = pMarine->GetAbsOrigin();
-				Msg("  Marine %f,%f,%f\n", pos.x, pos.y, pos.z);
+				const Vector pos = pNPC->GetAbsOrigin();
+				Msg( "  Marine %f,%f,%f\n", pos.x, pos.y, pos.z );
 			}
-			engine->AddOriginToPVS(pMarine->GetAbsOrigin());
+			engine->AddOriginToPVS( pNPC->GetAbsOrigin() );
 		}
 
 		// Check for mapper cameras
@@ -2993,12 +2993,12 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 			++cameraNum;
 		}
 
-		CBaseEntity* pUsing = pMarine->m_hUsingEntity.Get();
+		CBaseEntity *pUsing = pNPC->m_hUsingEntity.Get();
 		if ( pUsing )
 		{
 			if ( pUsing->Classify() == CLASS_ASW_COMPUTER_AREA )
 			{
-				CASW_Computer_Area* pComputer = assert_cast<CASW_Computer_Area*>(pUsing);
+				CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area * >( pUsing );
 				CASW_PointCamera *pComputerCam = pComputer->GetActiveCam();
 
 				// check if any mapper set cameras are active, we shouldn't be on if they are
@@ -3025,9 +3025,10 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 				}
 			}
 		}
-		if (pMarine->IsControllingTurret())
+
+		if ( pMarine && pMarine->IsControllingTurret() )
 		{
-			engine->AddOriginToPVS(pMarine->GetRemoteTurret()->GetAbsOrigin());
+			engine->AddOriginToPVS( pMarine->GetRemoteTurret()->GetAbsOrigin() );
 		}
 	}
 	else
@@ -3041,11 +3042,13 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 
 void CASW_Player::PushawayThink()
 {
-	if (GetMarine() && !GetMarine()->IsInVehicle())
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
+	if ( pMarine && !pMarine->IsInVehicle() )
 	{
 		// Push physics props out of our way.
-		PerformObstaclePushaway( GetMarine() );
+		PerformObstaclePushaway( pMarine );
 	}
+
 	SetNextThink( gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, ASW_PUSHAWAY_THINK_CONTEXT );
 }
 
@@ -3136,11 +3139,11 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 
 const Vector& CASW_Player::GetCrosshairTracePos()
 {
-	if ( GetASWControls() != 1 && GetMarine() )
+	if ( GetASWControls() != 1 && GetNPC() )
 	{
 		trace_t tr;
 		Vector forward;
-		Vector shootposition = GetMarine()->Weapon_ShootPosition();
+		Vector shootposition = GetNPC()->Weapon_ShootPosition();
 		EyeVectors( &forward );
 		UTIL_TraceLine( shootposition,
 			shootposition + forward * MAX_COORD_RANGE,

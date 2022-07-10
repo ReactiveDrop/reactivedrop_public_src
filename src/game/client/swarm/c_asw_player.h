@@ -21,6 +21,7 @@ namespace vgui
 	class Frame;
 };
 
+class C_ASW_Inhabitable_NPC;
 class C_ASW_Marine;
 class IASW_Client_Vehicle;
 class C_ASW_PointCamera;
@@ -46,7 +47,7 @@ public:
 	virtual const QAngle& GetRenderAngles();
 	virtual void UpdateClientSideAnimation();
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	void DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper );
+	void DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper );
 	virtual void AvoidPhysicsProps( CUserCmd *pCmd );
 	virtual Vector EyePosition(void);
 	virtual Vector	EarPosition( void );
@@ -62,9 +63,9 @@ public:
 	virtual bool ShouldInterpolate();  // BenLubar(spectator-mouse)
 
 	float m_fLastFloorZ;
-	CHandle<C_ASW_Marine> m_hLastMarine;
-	CHandle<C_ASW_Marine> m_hLastTurningMarine;	
-	CHandle<C_ASW_Marine> m_hLastAimingFloorZMarine;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastTurningNPC;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastAimingFloorZNPC;
 	float m_fLastVehicleYaw;
 	bool m_bLastInVehicle;
 	float m_fMarineChangeSmooth;
@@ -137,17 +138,17 @@ public:
 	virtual const QAngle& EyeAnglesWithCursorRoll();
 	QAngle	m_angEyeAngles;
 	CInterpolatedVar< QAngle >	m_iv_angEyeAngles;
-	CNetworkHandle( C_ASW_Marine, m_hMarine );    // our currently controlled marine
-	CNetworkHandle( C_ASW_Marine, m_hSpectatingMarine );    // the marine we're spectating when dead
+	CNetworkHandle( C_ASW_Inhabitable_NPC, m_hInhabiting ); // our currently controlled marine
+	CNetworkHandle( C_ASW_Inhabitable_NPC, m_hSpectating ); // the marine we're spectating when dead
 	const Vector& GetCrosshairTracePos() { return m_vecCrosshairTracePos; }
 	void SetCrosshairTracePos( const Vector &vecPos ) { m_vecCrosshairTracePos = vecPos; }
 	Vector m_vecCrosshairTracePos;			// the world location directly beneath the player's crosshair
 
 	bool IsSniperScopeActive();
 
-	C_ASW_Marine* GetMarine() const;
-	C_ASW_Marine* GetSpectatingMarine() const;
-	C_ASW_Marine* GetViewMarine() const;
+	C_ASW_Inhabitable_NPC *GetNPC() const;
+	C_ASW_Inhabitable_NPC *GetSpectatingNPC() const;
+	C_ASW_Inhabitable_NPC *GetViewNPC() const;
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 

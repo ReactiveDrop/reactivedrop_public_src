@@ -356,14 +356,10 @@ static void __MsgFunc_ASWBlur( bf_read &msg )
 {
 	float duration = msg.ReadShort() * 0.1f;
 	
-	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
-	if ( local )
+	C_ASW_Marine *marine = C_ASW_Marine::GetViewMarine();
+	if ( marine )
 	{
-		C_ASW_Marine *marine = local->GetViewMarine();
-		if (marine)
-		{
-			marine->SetPoisoned( duration );
-		}
+		marine->SetPoisoned( duration );
 	}
 }
 
@@ -1057,36 +1053,36 @@ void ClientModeASW::OverrideAudioState( AudioState_t *pAudioState )
 {
 	// lower hearing origin since cam is so far from the action
 	Vector hear_pos = pAudioState->m_Origin;
-	if (::input->CAM_IsThirdPerson())
+	if ( ::input->CAM_IsThirdPerson() )
 	{
 		// put audio position on our current marine if we have one selected
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		CASW_Marine *pMarine = NULL;
+		C_ASW_Inhabitable_NPC *pNPC = NULL;
 		if ( pPlayer && ( asw_hear_from_marine.GetBool() || asw_hear_height.GetFloat() != 0 ) )
 		{
-			pMarine = pPlayer->GetViewMarine();
+			pNPC = pPlayer->GetViewNPC();
 		}
-		
-		if ( pMarine )
+
+		if ( pNPC )
 		{
 			if ( asw_hear_height.GetFloat() > 0 )
 			{
 				Vector vecForward;
 				AngleVectors( pAudioState->m_Angles, &vecForward );
-				pAudioState->m_Origin = pMarine->EyePosition() - vecForward * asw_hear_height.GetFloat();
+				pAudioState->m_Origin = pNPC->EyePosition() - vecForward * asw_hear_height.GetFloat();
 			}
 			else if ( asw_hear_height.GetFloat() < 0 )
 			{
 				Vector vecForward;
 				AngleVectors( pAudioState->m_Angles, &vecForward );
-				pAudioState->m_Origin -= (vecForward * asw_hear_height.GetFloat() );
+				pAudioState->m_Origin -= ( vecForward * asw_hear_height.GetFloat() );
 			}
 		}
 		else
 		{
 			Vector vecForward;
 			AngleVectors( pAudioState->m_Angles, &vecForward );
-			pAudioState->m_Origin += (vecForward * 412.0f * 0.7f);	// hardcoded 412 is bad
+			pAudioState->m_Origin += ( vecForward * 412.0f * 0.7f );	// hardcoded 412 is bad
 		}
 	}
 
@@ -1102,8 +1098,8 @@ void ClientModeASW::OverrideAudioState( AudioState_t *pAudioState )
 		float flHeight = 80;
 		Vector vForward, vRight, vUp;
 		AngleVectors( pAudioState->m_Angles, &vForward, &vRight, &vUp );
-		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin+vRight*flBaseSize/2, pAudioState->m_Origin-vRight*flBaseSize/2, pAudioState->m_Origin+vForward*flHeight, 255, 255, 0, 255, false, 0.1 );
-		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin+vForward*flHeight, pAudioState->m_Origin-vRight*flBaseSize/2, pAudioState->m_Origin+vRight*flBaseSize/2, 255, 255, 0, 255, false, 0.1 );
+		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin + vRight * flBaseSize / 2, pAudioState->m_Origin - vRight * flBaseSize / 2, pAudioState->m_Origin + vForward * flHeight, 255, 255, 0, 255, false, 0.1 );
+		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin + vForward * flHeight, pAudioState->m_Origin - vRight * flBaseSize / 2, pAudioState->m_Origin + vRight * flBaseSize / 2, 255, 255, 0, 255, false, 0.1 );
 		NDebugOverlay::Box( pAudioState->m_Origin, -Vector( 3, 3, 3 ), Vector( 3, 3, 3 ), 255, 64, 0, 255, 0.1f );
 	}
 }

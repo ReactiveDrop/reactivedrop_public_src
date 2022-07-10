@@ -98,63 +98,63 @@
 #include "rd_rich_presence.h"
 
 #if defined( CASW_Player )
-	#undef CASW_Player
+#undef CASW_Player
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_marine_collision;
-ConVar g_DrawPlayer("asw_drawplayermesh", "0", FCVAR_ARCHIVE, "Draw the player entity or not");
-ConVar asw_clientside_avoidance("asw_clientside_avoidance", "1", FCVAR_CHEAT);
-ConVar asw_debug_clientside_avoidance("asw_debug_clientside_avoidance", "0", FCVAR_CHEAT);
-ConVar asw_clientside_avoidance_scale("asw_clientside_avoidance_scale", "1.0", FCVAR_CHEAT);
+ConVar g_DrawPlayer( "asw_drawplayermesh", "0", FCVAR_NONE, "Draw the player entity or not" );
+ConVar asw_clientside_avoidance( "asw_clientside_avoidance", "1", FCVAR_CHEAT );
+ConVar asw_debug_clientside_avoidance( "asw_debug_clientside_avoidance", "0", FCVAR_CHEAT );
+ConVar asw_clientside_avoidance_scale( "asw_clientside_avoidance_scale", "1.0", FCVAR_CHEAT );
 // stim cams: (p/y/r) (x/y/z)
 // (0/-10/0)  (-60 60 30) - foot level forward looking
 // (40/180/0) (50 0 70)	- close marine view cam
-ConVar asw_stim_cam_pitch("asw_stim_cam_pitch", "10", 0, "Controls angle of the small in-picture Stim camera");
-ConVar asw_stim_cam_yaw("asw_stim_cam_yaw", "15", 0, "Controls angle of the small in-picture Stim camera");
-ConVar asw_stim_cam_roll("asw_stim_cam_roll", "0", 0, "Controls angle of the small in-picture Stim camera");
-ConVar asw_stim_cam_x("asw_stim_cam_x", "-20", 0, "Controls offset of the small in-picture Stim camera");
-ConVar asw_stim_cam_y("asw_stim_cam_y", "-30", 0, "Controls offset of the small in-picture Stim camera");
-ConVar asw_stim_cam_z("asw_stim_cam_z", "70", 0, "Controls offset of the small in-picture Stim camera");
-ConVar asw_stim_cam_rotate_speed("asw_stim_cam_rotate_speed", "0", 0, "Rotation speed of the stim camera");
-ConVar asw_spinning_stim_cam("asw_spinning_stim_cam", "1", 0, "If set, slow motion will display a small spinning camera view");
-ConVar asw_show_mouse_entity("asw_show_mouse_entity", "0", FCVAR_CHEAT, "Show entity under the mouse cursor");
-ConVar asw_marine_switch_blend_speed("asw_marine_switch_blend_speed", "2.5", 0, "How quickly the camera blends between marines when switching");
-ConVar asw_marine_switch_blend_max_dist("asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur");
+ConVar asw_stim_cam_pitch( "asw_stim_cam_pitch", "10", 0, "Controls angle of the small in-picture Stim camera" );
+ConVar asw_stim_cam_yaw( "asw_stim_cam_yaw", "15", 0, "Controls angle of the small in-picture Stim camera" );
+ConVar asw_stim_cam_roll( "asw_stim_cam_roll", "0", 0, "Controls angle of the small in-picture Stim camera" );
+ConVar asw_stim_cam_x( "asw_stim_cam_x", "-20", 0, "Controls offset of the small in-picture Stim camera" );
+ConVar asw_stim_cam_y( "asw_stim_cam_y", "-30", 0, "Controls offset of the small in-picture Stim camera" );
+ConVar asw_stim_cam_z( "asw_stim_cam_z", "70", 0, "Controls offset of the small in-picture Stim camera" );
+ConVar asw_stim_cam_rotate_speed( "asw_stim_cam_rotate_speed", "0", 0, "Rotation speed of the stim camera" );
+ConVar asw_spinning_stim_cam( "asw_spinning_stim_cam", "1", 0, "If set, slow motion will display a small spinning camera view" );
+ConVar asw_show_mouse_entity( "asw_show_mouse_entity", "0", FCVAR_CHEAT, "Show entity under the mouse cursor" );
+ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0, "How quickly the camera blends between marines when switching" );
+ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-ConVar asw_default_primary_0("asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_0("asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_0("asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_1("asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_1("asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_1("asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_2("asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_2("asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_2("asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_3("asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_3("asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_3("asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_4("asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_4("asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_4("asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_5("asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_5("asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_5("asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_6("asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_6("asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_6("asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_7("asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_7("asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_7("asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
-ConVar asw_default_primary_8("asw_default_primary_8", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number");
-ConVar asw_default_secondary_8("asw_default_secondary_8", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number");
-ConVar asw_default_extra_8("asw_default_extra_8", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number");
+ConVar asw_default_primary_0( "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_0( "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_0( "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_1( "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_1( "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_1( "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_2( "asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_2( "asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_2( "asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_3( "asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_3( "asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_3( "asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_4( "asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_4( "asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_4( "asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_5( "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_5( "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_5( "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_6( "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_6( "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_6( "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_7( "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_7( "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_7( "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary_8( "asw_default_primary_8", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
+ConVar asw_default_secondary_8( "asw_default_secondary_8", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
+ConVar asw_default_extra_8( "asw_default_extra_8", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
 
-ConVar asw_particle_count("asw_particle_count", "0", 0, "Shows how many particles are being drawn");
-ConVar asw_dlight_list("asw_dlight_list", "0", 0, "Lists dynamic lights");
+ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
+ConVar asw_dlight_list( "asw_dlight_list", "0", 0, "Lists dynamic lights" );
 
 ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file used for stim music" );
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
@@ -163,17 +163,17 @@ ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", F
 
 ConVar asw_roster_select_bypass_steam( "asw_roster_select_bypass_steam", "0", FCVAR_CHEAT, "Bypass checking if data has been downloaded from steam when selecting a Marine." );
 
-void fnAutoReloadChangedCallback(IConVar *var, const char *pOldString, float flOldValue )
+void fnAutoReloadChangedCallback( IConVar *var, const char *pOldString, float flOldValue )
 {
 	if ( engine->IsInGame() )
 	{
-		engine->ClientCmd( VarArgs( "cl_autoreload %d\n", ((ConVar *)var)->GetInt() ) );
+		engine->ClientCmd( VarArgs( "cl_autoreload %d\n", ( ( ConVar * )var )->GetInt() ) );
 	}
 }
-ConVar asw_auto_reload("asw_auto_reload", "1", FCVAR_ARCHIVE, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1, fnAutoReloadChangedCallback);
+ConVar asw_auto_reload( "asw_auto_reload", "1", FCVAR_ARCHIVE, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1, fnAutoReloadChangedCallback );
 
-ConVar asw_turret_fog_start("asw_turret_fog_start", "900", 0, "Fog start distance for turret view");
-ConVar asw_turret_fog_end("asw_turret_fog_end", "1200", 0, "Fog end distance for turret view");
+ConVar asw_turret_fog_start( "asw_turret_fog_start", "900", 0, "Fog start distance for turret view" );
+ConVar asw_turret_fog_end( "asw_turret_fog_end", "1200", 0, "Fog end distance for turret view" );
 
 ConVar rd_force_spectate_marine( "rd_force_spectate_marine", "-1", FCVAR_DONTRECORD, "spectate this marine resource index if it exists", true, -1, true, ASW_MAX_MARINE_RESOURCES );
 
@@ -210,11 +210,11 @@ public:
 	virtual void PostDataUpdate( DataUpdateType_t updateType )
 	{
 		// Create the effect.
-		C_ASW_Player* pPlayer = ToASW_Player(m_hPlayer.Get());
+		C_ASW_Player *pPlayer = ToASW_Player( m_hPlayer.Get() );
 		if ( pPlayer && !pPlayer->IsDormant() )
 		{
-			pPlayer->DoAnimationEvent( (PlayerAnimEvent_t)m_iEvent.Get() );
-		}	
+			pPlayer->DoAnimationEvent( ( PlayerAnimEvent_t )m_iEvent.Get() );
+		}
 	}
 
 public:
@@ -225,8 +225,8 @@ public:
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
 
 BEGIN_RECV_TABLE_NOBASE( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent )
-	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
-	RecvPropInt( RECVINFO( m_iEvent ) )
+RecvPropEHandle( RECVINFO( m_hPlayer ) ),
+RecvPropInt( RECVINFO( m_iEvent ) )
 END_RECV_TABLE()
 
 // marine anim events
@@ -242,12 +242,12 @@ public:
 		if ( !engine->IsPlayingDemo() && C_BasePlayer::IsLocalPlayer( m_hExcludePlayer.Get() ) )
 			return;
 		// play anim event
-		C_ASW_Marine* pMarine = m_hMarine.Get();
+		C_ASW_Marine *pMarine = m_hMarine.Get();
 		if ( pMarine )
 		{
-			if (!pMarine->IsDormant())
+			if ( !pMarine->IsDormant() )
 			{
-				pMarine->DoAnimationEvent((PlayerAnimEvent_t)m_iEvent.Get());
+				pMarine->DoAnimationEvent( ( PlayerAnimEvent_t )m_iEvent.Get() );
 			}
 		}
 	}
@@ -261,70 +261,70 @@ public:
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEMarineAnimEvent, DT_TEMarineAnimEvent, CTEMarineAnimEvent );
 
 BEGIN_RECV_TABLE_NOBASE( C_TEMarineAnimEvent, DT_TEMarineAnimEvent )
-	RecvPropEHandle( RECVINFO( m_hMarine ) ),
-	RecvPropEHandle( RECVINFO( m_hExcludePlayer ) ),
-	RecvPropInt( RECVINFO( m_iEvent ) )
+RecvPropEHandle( RECVINFO( m_hMarine ) ),
+RecvPropEHandle( RECVINFO( m_hExcludePlayer ) ),
+RecvPropInt( RECVINFO( m_iEvent ) )
 END_RECV_TABLE()
 
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Player, DT_ASW_Player )
 
 BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
-	RecvPropBool( RECVINFO( m_fIsWalking ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[2] ) ),
-	RecvPropEHandle( RECVINFO( m_hMarine ) ),
-	RecvPropEHandle( RECVINFO( m_hSpectatingMarine ) ),
-	RecvPropInt		(RECVINFO(m_iHealth)),
-	RecvPropEHandle( RECVINFO ( m_pCurrentInfoMessage ) ),
-    RecvPropFloat(   RECVINFO ( m_fMarineDeathTime ) ),
-	RecvPropEHandle( RECVINFO ( m_hOrderingMarine ) ),	
-	RecvPropInt(RECVINFO(m_iLeaderVoteIndex) ),
-	RecvPropInt(RECVINFO(m_iKickVoteIndex) ),
-	RecvPropFloat(RECVINFO(m_fMapGenerationProgress) ),
-	RecvPropTime( RECVINFO( m_flUseKeyDownTime ) ),
-	RecvPropEHandle( RECVINFO ( m_hUseKeyDownEnt ) ),
-	RecvPropFloat	(RECVINFO(m_flMovementAxisYaw )),
-	RecvPropInt		(RECVINFO(m_nChangingMR)),
-	RecvPropInt		(RECVINFO(m_nChangingSlot)),
-	RecvPropInt		(RECVINFO(m_iMapVoted)),
-	RecvPropInt		(RECVINFO(m_iNetworkedXP)),
-	RecvPropInt		(RECVINFO(m_iNetworkedPromotion)),
+RecvPropBool( RECVINFO( m_fIsWalking ) ),
+RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
+RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
+RecvPropFloat( RECVINFO( m_angEyeAngles[2] ) ),
+RecvPropEHandle( RECVINFO( m_hInhabiting ) ),
+RecvPropEHandle( RECVINFO( m_hSpectating ) ),
+RecvPropInt( RECVINFO( m_iHealth ) ),
+RecvPropEHandle( RECVINFO( m_pCurrentInfoMessage ) ),
+RecvPropFloat( RECVINFO( m_fMarineDeathTime ) ),
+RecvPropEHandle( RECVINFO( m_hOrderingMarine ) ),
+RecvPropInt( RECVINFO( m_iLeaderVoteIndex ) ),
+RecvPropInt( RECVINFO( m_iKickVoteIndex ) ),
+RecvPropFloat( RECVINFO( m_fMapGenerationProgress ) ),
+RecvPropTime( RECVINFO( m_flUseKeyDownTime ) ),
+RecvPropEHandle( RECVINFO( m_hUseKeyDownEnt ) ),
+RecvPropFloat( RECVINFO( m_flMovementAxisYaw ) ),
+RecvPropInt( RECVINFO( m_nChangingMR ) ),
+RecvPropInt( RECVINFO( m_nChangingSlot ) ),
+RecvPropInt( RECVINFO( m_iMapVoted ) ),
+RecvPropInt( RECVINFO( m_iNetworkedXP ) ),
+RecvPropInt( RECVINFO( m_iNetworkedPromotion ) ),
 
-	// BenLubar(spectator-mouse)
-	RecvPropInt( RECVINFO( m_iScreenWidth ) ),
-	RecvPropInt( RECVINFO( m_iScreenHeight ) ),
-	RecvPropInt( RECVINFO( m_iMouseX ) ),
-	RecvPropInt( RECVINFO( m_iMouseY ) ),
+// BenLubar(spectator-mouse)
+RecvPropInt( RECVINFO( m_iScreenWidth ) ),
+RecvPropInt( RECVINFO( m_iScreenHeight ) ),
+RecvPropInt( RECVINFO( m_iMouseX ) ),
+RecvPropInt( RECVINFO( m_iMouseY ) ),
 
-	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
+RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
 
-	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
+RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
-	DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iHealth, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_hHighlightEntity, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_iHealth, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_hHighlightEntity, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
+DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
+DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
+DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
+DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
-C_ASW_Player::C_ASW_Player() : 
+C_ASW_Player::C_ASW_Player() :
 	m_iv_angEyeAngles( "C_ASW_Player::m_iv_angEyeAngles" ),
 	m_iv_iMouseX( "C_ASW_Player::m_iv_iMouseX" ),
 	m_iv_iMouseY( "C_ASW_Player::m_iv_iMouseY" )
 {
-	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
-			
+	m_PlayerAnimState = CreatePlayerAnimState( this, this, LEGANIM_9WAY, false );
+
 	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
 	AddVar( &m_iMouseX, &m_iv_iMouseX, LATCH_SIMULATION_VAR ); // BenLubar(spectator-mouse)
 	AddVar( &m_iMouseY, &m_iv_iMouseY, LATCH_SIMULATION_VAR );
@@ -332,23 +332,23 @@ C_ASW_Player::C_ASW_Player() :
 	// create the profile list for clients
 	//  (server creates it in the game rules constructor serverside)
 	MarineProfileList();
-	ASWEquipmentList();		
+	ASWEquipmentList();
 	m_pStimMusic = NULL;
 	m_bCheckedLevel = false;
-	m_vecLastMarineOrigin = vec3_origin;	
+	m_vecLastMarineOrigin = vec3_origin;
 	m_pCurrentInfoMessage = NULL;
 	m_fNextThinkPushAway = 0;
-	m_vecLastCameraPosition = vec3_origin;	
-	m_angLastCamera = QAngle(0,0,0);
+	m_vecLastCameraPosition = vec3_origin;
+	m_angLastCamera = QAngle( 0, 0, 0 );
 	m_nLastCameraFrame = -1;
-	m_hLastMarine = NULL;
-	m_hLastTurningMarine = NULL;
-	m_hLastAimingFloorZMarine = NULL;
+	m_hLastNPC = NULL;
+	m_hLastTurningNPC = NULL;
+	m_hLastAimingFloorZNPC = NULL;
 	m_fLastVehicleYaw = 0;
-	m_bLastInVehicle = false;	
+	m_bLastInVehicle = false;
 	m_fLastFloorZ = 0;
 	m_fLastRestartTime = 0;
-	m_fStimYaw = 0;		
+	m_fStimYaw = 0;
 	m_Local.m_vecPunchAngle.Set( ROLL, 0 );
 	m_Local.m_vecPunchAngle.Set( PITCH, 0 );
 	m_Local.m_vecPunchAngle.Set( YAW, 0 );
@@ -365,13 +365,13 @@ C_ASW_Player::C_ASW_Player() :
 	m_hUseKeyDownEnt = NULL;
 	m_flUseKeyDownTime = 0.0f;
 	m_flMovementAxisYaw = 90.0f;
-    m_fMarineDeathTime = 0.0f;
+	m_fMarineDeathTime = 0.0f;
 	m_roomDetailsCheckTimer.Invalidate();
 	m_szSoundscape[0] = 0;
 	for ( int i = 0; i < ASW_NUM_XP_TYPES; i++ )
 	{
-		m_iEarnedXP[ i ] = 0;
-		m_iStatNumXP[ i ] = 0;
+		m_iEarnedXP[i] = 0;
+		m_iStatNumXP[i] = 0;
 	}
 
 	m_nChangingMR = -1;
@@ -391,35 +391,35 @@ C_ASW_Player::~C_ASW_Player()
 {
 	m_PlayerAnimState->Release();
 
-	if (m_bPlayingSingleBreathSound)
+	if ( m_bPlayingSingleBreathSound )
 	{
 		StopStimSound();
 	}
 
-	if (m_pStimCam)
+	if ( m_pStimCam )
 		delete m_pStimCam;
 }
 
 void C_ASW_Player::Precache()
 {
-	BaseClass::Precache();	
+	BaseClass::Precache();
 }
 
 void C_ASW_Player::StopStimSound()
 {
-	StopSound("noslow.SingleBreath");
+	StopSound( "noslow.SingleBreath" );
 	m_bPlayingSingleBreathSound = false;
-	if (ASWGameRules()->GetGameState() == ASW_GS_INGAME)
-		EmitSound("noslow.BulletTimeOut");
+	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+		EmitSound( "noslow.BulletTimeOut" );
 }
 
-C_ASW_Player* C_ASW_Player::GetLocalASWPlayer( int nSlot )
+C_ASW_Player *C_ASW_Player::GetLocalASWPlayer( int nSlot )
 {
 	return ToASW_Player( C_BasePlayer::GetLocalPlayer( nSlot ) );
 }
 
 
-const QAngle& C_ASW_Player::GetRenderAngles()
+const QAngle &C_ASW_Player::GetRenderAngles()
 {
 	if ( IsRagdoll() )
 	{
@@ -445,7 +445,7 @@ void C_ASW_Player::UpdateClientSideAnimation()
 
 	// Update the animation data. It does the local check here so this works when using
 	// a third-person camera (and we don't have valid player angles).
-	if (IsLocalPlayer(this))
+	if ( IsLocalPlayer( this ) )
 	{
 
 		ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
@@ -488,10 +488,10 @@ void C_ASW_Player::PostDataUpdate( DataUpdateType_t updateType )
 
 void C_ASW_Player::DoAnimationEvent( PlayerAnimEvent_t event )
 {
-//	m_PlayerAnimState->DoAnimationEvent( event );
+	//	m_PlayerAnimState->DoAnimationEvent( event );
 }
 
-CBaseCombatWeapon* C_ASW_Player::ASWAnim_GetActiveWeapon()
+CBaseCombatWeapon *C_ASW_Player::ASWAnim_GetActiveWeapon()
 {
 	return GetActiveWeapon();
 }
@@ -506,50 +506,50 @@ bool C_ASW_Player::ASWAnim_CanMove()
 void C_ASW_Player::StopUsing()
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_stopusing");
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_stopusing" );
+	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::SelectHackOption(int iHackOption)
+void C_ASW_Player::SelectHackOption( int iHackOption )
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_selecthack %d", iHackOption);
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_selecthack %d", iHackOption );
+	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::SelectTumbler(int iTumblerImpulse)
+void C_ASW_Player::SelectTumbler( int iTumblerImpulse )
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "impulse %d", iTumblerImpulse);
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "impulse %d", iTumblerImpulse );
+	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::SendRosterSelectCommand( const char *command, int index, int nPreferredSlot )
+void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPreferredSlot )
 {
 	//if ( m_bPendingSteamStats && !asw_roster_select_bypass_steam.GetBool() && ( gpGlobals->curtime - m_flPendingSteamStatsStart ) < 2.0f )
 		//return;
 
 	char buffer[64];
-	if ( index >= 0 && index < ASW_NUM_MARINE_PROFILES )
+	if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
 	{
 		// grab default inventory numbers
 		char primarybuf[24];
 		char secondarybuf[26];
 		char extrabuf[24];
-		Q_snprintf(primarybuf, sizeof(primarybuf), "asw_default_primary_%d", index);
-		Q_snprintf(secondarybuf, sizeof(secondarybuf), "asw_default_secondary_%d", index);
-		Q_snprintf(extrabuf, sizeof(extrabuf), "asw_default_extra_%d", index);		
+		Q_snprintf( primarybuf, sizeof( primarybuf ), "asw_default_primary_%d", i );
+		Q_snprintf( secondarybuf, sizeof( secondarybuf ), "asw_default_secondary_%d", i );
+		Q_snprintf( extrabuf, sizeof( extrabuf ), "asw_default_extra_%d", i );
 		int default_primary = -1;
 		int default_secondary = -1;
 		int default_extra = -1;
-		ConVar *pCVar = cvar->FindVar(primarybuf);
-		if (pCVar)
+		ConVar *pCVar = cvar->FindVar( primarybuf );
+		if ( pCVar )
 			default_primary = pCVar->GetInt();
-		pCVar = cvar->FindVar(secondarybuf);
-		if (pCVar)
+		pCVar = cvar->FindVar( secondarybuf );
+		if ( pCVar )
 			default_secondary = pCVar->GetInt();
-		pCVar = cvar->FindVar(extrabuf);
-		if (pCVar)
+		pCVar = cvar->FindVar( extrabuf );
+		if ( pCVar )
 			default_extra = pCVar->GetInt();
 
 		CASW_EquipItem *pPrimary = ASWEquipmentList()->GetRegular( default_primary );
@@ -576,50 +576,50 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int index, int 
 				default_extra = ASWEquipmentList()->GetExtraIndex( "asw_weapon_medkit" );
 			}
 		}
-		Q_snprintf(buffer, sizeof(buffer), "%s %d %d %d %d %d", command, index, nPreferredSlot, default_primary, default_secondary, default_extra );
+		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra );
 
-		engine->ServerCmd(buffer);
+		engine->ServerCmd( buffer );
 	}
 	else
-	{	
-		Q_snprintf(buffer, sizeof(buffer), "%s %d %d", command, index, nPreferredSlot);
-		engine->ServerCmd(buffer);
+	{
+		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d", command, i, nPreferredSlot );
+		engine->ServerCmd( buffer );
 	}
 }
 
-void C_ASW_Player::RosterSelectMarine( int index )
+void C_ASW_Player::RosterSelectMarine( int i )
 {
-	SendRosterSelectCommand( "cl_selectm", index );
+	SendRosterSelectCommand( "cl_selectm", i );
 }
 
-void C_ASW_Player::RosterSelectSingleMarine( int index )
+void C_ASW_Player::RosterSelectSingleMarine( int i )
 {
-	SendRosterSelectCommand( "cl_selectsinglem", index );
+	SendRosterSelectCommand( "cl_selectsinglem", i );
 }
 
-void C_ASW_Player::RosterSelectMarineForSlot( int index, int nPreferredSlot )
+void C_ASW_Player::RosterSelectMarineForSlot( int i, int nPreferredSlot )
 {
-	SendRosterSelectCommand( "cl_selectm", index, nPreferredSlot );
+	SendRosterSelectCommand( "cl_selectm", i, nPreferredSlot );
 }
 
-void C_ASW_Player::RosterDeselectMarine(int iProfileIndex)
+void C_ASW_Player::RosterDeselectMarine( int iProfileIndex )
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_dselectm %d", iProfileIndex);
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_dselectm %d", iProfileIndex );
+	engine->ClientCmd( buffer );
 }
 
 void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 {
-	if (!ASWGameResource())
+	if ( !ASWGameResource() )
 		return;
-	if (iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
+	if ( iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
 	{
 		//Msg("bad profile index\n");
 		return;
 	}
 
-	if (nSkillSlot < 0 || nSkillSlot >= ASW_SKILL_SLOT_SPARE )
+	if ( nSkillSlot < 0 || nSkillSlot >= ASW_SKILL_SLOT_SPARE )
 	{
 		//Msg("bad skill index\n");
 		return;
@@ -629,12 +629,12 @@ void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 	C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.SkillUpgrade2" );
 
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_spendskill %d %d", iProfileIndex, nSkillSlot);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_spendskill %d %d", iProfileIndex, nSkillSlot );
 	//Msg("Sending command %s\n", buffer);
-	engine->ClientCmd(buffer);
+	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::LoadoutSelectEquip(int iMarineIndex, int iInvSlot, int iEquipIndex)
+void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex )
 {
 	CASW_EquipItem *pWeapon = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( pWeapon )
@@ -655,58 +655,58 @@ void C_ASW_Player::LoadoutSelectEquip(int iMarineIndex, int iInvSlot, int iEquip
 	int iProfileIndex = -1;
 	if ( ASWGameResource() )
 	{
-		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(iMarineIndex);
-		if (pMR)
+		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
+		if ( pMR )
 		{
 			// save this loadout selection, to be autoselected next time we pick this marine
 			iProfileIndex = pMR->GetProfileIndex();
-			if (iProfileIndex >=0 &&iProfileIndex<ASW_NUM_MARINE_PROFILES && iInvSlot>=0 && iInvSlot <=2)
+			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
 			{
 				char buffer[32];
-				if (iInvSlot == 0)
-					Q_snprintf(buffer, sizeof(buffer), "asw_default_primary_%d", iProfileIndex);
-				else if (iInvSlot == 1)
-					Q_snprintf(buffer, sizeof(buffer), "asw_default_secondary_%d", iProfileIndex);
-				else if (iInvSlot == 2)
-					Q_snprintf(buffer, sizeof(buffer), "asw_default_extra_%d", iProfileIndex);
-				ConVar *pCVar = cvar->FindVar(buffer);
-				if (pCVar)
+				if ( iInvSlot == 0 )
+					Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iProfileIndex );
+				else if ( iInvSlot == 1 )
+					Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iProfileIndex );
+				else if ( iInvSlot == 2 )
+					Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iProfileIndex );
+				ConVar *pCVar = cvar->FindVar( buffer );
+				if ( pCVar )
 				{
-					pCVar->SetValue(iEquipIndex);
+					pCVar->SetValue( iEquipIndex );
 				}
 			}
 		}
 	}
-	if (iProfileIndex != -1)
+	if ( iProfileIndex != -1 )
 	{
 		char buffer[64];
-		Q_snprintf(buffer, sizeof(buffer), "cl_loadout %d %d %d", iProfileIndex, iInvSlot, iEquipIndex);
-		engine->ClientCmd(buffer);
+		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d", iProfileIndex, iInvSlot, iEquipIndex );
+		engine->ClientCmd( buffer );
 	}
 }
 
-void C_ASW_Player::LoadoutSendStored(C_ASW_Marine_Resource *pMR)
-{	
-	if (!pMR)
+void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
+{
+	if ( !pMR )
 		return;
 
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return;
 
 	// find our index in the list of marine infos
-	int iMarineResourceIndex= -1;
-	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	int iMarineResourceIndex = -1;
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
-		C_ASW_Marine_Resource *pOtherResource = pGameResource->GetMarineResource(i);
-		if (pOtherResource == pMR)
+		C_ASW_Marine_Resource *pOtherResource = pGameResource->GetMarineResource( i );
+		if ( pOtherResource == pMR )
 		{
 			iMarineResourceIndex = i;
 			break;
 		}
 	}
 
-	if (iMarineResourceIndex == -1)
+	if ( iMarineResourceIndex == -1 )
 		return;
 
 	int iRosterIndex = pMR->m_MarineProfileIndex;
@@ -716,19 +716,19 @@ void C_ASW_Player::LoadoutSendStored(C_ASW_Marine_Resource *pMR)
 	int iExtra = -1;
 	ConVar *pCVar = NULL;
 	char buffer[32];
-	Q_snprintf(buffer, sizeof(buffer), "asw_default_primary_%d", iRosterIndex);
-	pCVar = cvar->FindVar(buffer);
-	if (pCVar)
+	Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iRosterIndex );
+	pCVar = cvar->FindVar( buffer );
+	if ( pCVar )
 		iPrimary = pCVar->GetInt();
 
-	Q_snprintf(buffer, sizeof(buffer), "asw_default_secondary_%d", iRosterIndex);
-	pCVar = cvar->FindVar(buffer);
-	if (pCVar)
+	Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iRosterIndex );
+	pCVar = cvar->FindVar( buffer );
+	if ( pCVar )
 		iSecondary = pCVar->GetInt();
 
-	Q_snprintf(buffer, sizeof(buffer), "asw_default_extra_%d", iRosterIndex);
-	pCVar = cvar->FindVar(buffer);
-	if (pCVar)
+	Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iRosterIndex );
+	pCVar = cvar->FindVar( buffer );
+	if ( pCVar )
 		iExtra = pCVar->GetInt();
 
 	CASW_EquipItem *pPrimary = ASWEquipmentList()->GetRegular( iPrimary );
@@ -757,68 +757,68 @@ void C_ASW_Player::LoadoutSendStored(C_ASW_Marine_Resource *pMR)
 	}
 
 	char mbuffer[64];
-	Q_snprintf(mbuffer, sizeof(mbuffer), "cl_loadouta %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra);
-	engine->ClientCmd(mbuffer);
+	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra );
+	engine->ClientCmd( mbuffer );
 }
 
 void C_ASW_Player::StartReady()
 {
 	// todo: if we're not the leader, do a cl_ready
-	if (ASWGameResource() && ASWGameResource()->GetLeader() == this)
-		engine->ClientCmd("cl_start");	
+	if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+		engine->ClientCmd( "cl_start" );
 	else
-		engine->ClientCmd("cl_ready");	
+		engine->ClientCmd( "cl_ready" );
 }
 
 void C_ASW_Player::CampaignSaveAndShow()
 {
-	engine->ClientCmd("cl_campaignsas");	
+	engine->ClientCmd( "cl_campaignsas" );
 }
 
-void C_ASW_Player::NextCampaignMission(int iTargetMission)
+void C_ASW_Player::NextCampaignMission( int iTargetMission )
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_campaignnext %d", iTargetMission);
-	engine->ClientCmd(buffer);	
+	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignnext %d", iTargetMission );
+	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::CampaignLaunchMission(int iTargetMission)
+void C_ASW_Player::CampaignLaunchMission( int iTargetMission )
 {
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_campaignlaunch %d", iTargetMission);
-	engine->ClientCmd(buffer);	
+	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignlaunch %d", iTargetMission );
+	engine->ClientCmd( buffer );
 }
 
 bool C_ASW_Player::ShouldDraw()			// we don't draw the player at all (only the npc's that he's remote controlling)
 {
-	if (m_hMarine.Get()!=NULL)
+	if ( m_hInhabiting.Get() != NULL )
 		return false;
 
-	return (g_DrawPlayer.GetBool());
+	return ( g_DrawPlayer.GetBool() );
 }
 
 // inventory
-void C_ASW_Player::ActivateInventoryItem(int slot)
+void C_ASW_Player::ActivateInventoryItem( int slot )
 {
-	C_ASW_Marine* pMarine = GetMarine();
-	if (!pMarine || pMarine->GetHealth()<=0)
+	C_ASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC || pNPC->GetHealth() <= 0 )
 		return;
 
-	if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+	if ( pNPC->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 		return;
 
 	// check we have an item in that slot
-	C_ASW_Weapon* pWeapon = pMarine->GetASWWeapon(slot);
-	if (!pWeapon)
+	C_ASW_Weapon *pWeapon = pNPC->GetASWWeapon( slot );
+	if ( !pWeapon )
 		return;
 
 	// if it's an offhand activate, tell the server we want to activate it
-	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
-	if (pWpnInfo && pWpnInfo->m_bOffhandActivate)
+	const CASW_WeaponInfo *pWpnInfo = pWeapon->GetWeaponInfo();
+	if ( pWpnInfo && pWpnInfo->m_bOffhandActivate )
 	{
 		char buffer[64];
-		Q_snprintf(buffer, sizeof(buffer), "cl_offhand %d", slot);
-		engine->ClientCmd(buffer);
+		Q_snprintf( buffer, sizeof( buffer ), "cl_offhand %d", slot );
+		engine->ClientCmd( buffer );
 
 		// and predict it?
 		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
@@ -827,26 +827,24 @@ void C_ASW_Player::ActivateInventoryItem(int slot)
 	}
 
 	// otherwise, make it our selected weapon
-	if (pWeapon != pMarine->GetActiveWeapon())
+	if ( pWeapon != pNPC->GetActiveWeapon() )
 		::input->MakeWeaponSelection( pWeapon );
 }
 
-
-
-void C_ASW_Player::LaunchMissionCompleteFrame(bool bSuccess)
+void C_ASW_Player::LaunchMissionCompleteFrame( bool bSuccess )
 {
 	// create the basic frame which holds our briefing panels
-	if (!GetClientModeASW())
+	if ( !GetClientModeASW() )
 		return;
 
-	GetClientModeASW()->m_hMissionCompleteFrame = new MissionCompleteFrame( bSuccess, GetClientMode()->GetViewport(), "m_MissionCompleteFrame" );	
+	GetClientModeASW()->m_hMissionCompleteFrame = new MissionCompleteFrame( bSuccess, GetClientMode()->GetViewport(), "m_MissionCompleteFrame" );
 }
 
-void C_ASW_Player::LaunchBriefingFrame(void)
+void C_ASW_Player::LaunchBriefingFrame( void )
 {
 	using namespace vgui;
 
-	if (engine->IsLevelMainMenuBackground())		// don't show briefing on main menu
+	if ( engine->IsLevelMainMenuBackground() )		// don't show briefing on main menu
 	{
 		::input->CAM_ToFirstPerson();
 		return;
@@ -856,9 +854,9 @@ void C_ASW_Player::LaunchBriefingFrame(void)
 	//Msg("[%d] Assigning briefing frame\n", entindex());
 	g_hBriefingFrame = new BriefingFrame( GetClientMode()->GetViewport(), "g_BriefingFrame" );
 
-	if (!g_hBriefingFrame.Get())
+	if ( !g_hBriefingFrame.Get() )
 	{
-		Msg("Error: Briefing frame was closed immediately on opening - game isn't in briefing state?\n");
+		Msg( "Error: Briefing frame was closed immediately on opening - game isn't in briefing state?\n" );
 	}
 }
 
@@ -875,63 +873,63 @@ void C_ASW_Player::StopAllMusic()
 }
 */
 
-void C_ASW_Player::LaunchOutroFrame(void)
+void C_ASW_Player::LaunchOutroFrame( void )
 {
-	if (!GetClientModeASW())
+	if ( !GetClientModeASW() )
 	{
-		Msg("Error, couldn't launch outro frame because clientmodeASW\n");
+		Msg( "Error, couldn't launch outro frame because clientmodeASW\n" );
 		return;
 	}
-	if (GetClientModeASW()->m_hOutroFrame.Get())
+	if ( GetClientModeASW()->m_hOutroFrame.Get() )
 	{
 		GetClientModeASW()->m_hOutroFrame->Close();
 		GetClientModeASW()->m_hOutroFrame = NULL;
 	}
 
 	// create the basic frame which holds our briefing panels
-	Msg("[%d] Assigning outro frame\n", entindex());
-	GetClientModeASW()->m_hOutroFrame = new OutroFrame( GetClientMode()->GetViewport(), "m_OutroFrame" );	
+	Msg( "[%d] Assigning outro frame\n", entindex() );
+	GetClientModeASW()->m_hOutroFrame = new OutroFrame( GetClientMode()->GetViewport(), "m_OutroFrame" );
 }
 
-void C_ASW_Player::LaunchCampaignFrame(void)
+void C_ASW_Player::LaunchCampaignFrame( void )
 {
-	if (GetClientModeASW()->m_hCampaignFrame.Get())
+	if ( GetClientModeASW()->m_hCampaignFrame.Get() )
 	{
 		GetClientModeASW()->m_hCampaignFrame->Close();
 		GetClientModeASW()->m_hCampaignFrame = NULL;
 	}
 
-	FadeInPanel *pFadeIn = dynamic_cast<FadeInPanel*>(GetClientMode()->GetViewport()->FindChildByName("FadeIn", true));
+	FadeInPanel *pFadeIn = dynamic_cast< FadeInPanel * >( GetClientMode()->GetViewport()->FindChildByName( "FadeIn", true ) );
 	char mapName[255];
-	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );
-	if (!pFadeIn && UTIL_ASW_MissionHasBriefing(mapName))  // don't create one of these if there's already one around, or in the intro
+	Q_FileBase( engine->GetLevelName(), mapName, sizeof( mapName ) );
+	if ( !pFadeIn && UTIL_ASW_MissionHasBriefing( mapName ) )  // don't create one of these if there's already one around, or in the intro
 	{
-		Msg("%f: creating fadein panel\n", gpGlobals->curtime);
-		new FadeInPanel(GetClientMode()->GetViewport(), "FadeIn");
+		Msg( "%f: creating fadein panel\n", gpGlobals->curtime );
+		new FadeInPanel( GetClientMode()->GetViewport(), "FadeIn" );
 	}
-	else if (pFadeIn)
+	else if ( pFadeIn )
 	{
 		pFadeIn->MoveToFront();
 	}
 
 	// create the basic frame which holds our briefing panels
-	Msg("[%d] Assigning campaign frame\n", entindex());
-	GetClientModeASW()->m_hCampaignFrame = new CampaignFrame( GetClientMode()->GetViewport(), "m_CampaignFrame" );	
+	Msg( "[%d] Assigning campaign frame\n", entindex() );
+	GetClientModeASW()->m_hCampaignFrame = new CampaignFrame( GetClientMode()->GetViewport(), "m_CampaignFrame" );
 }
 
 void C_ASW_Player::CloseBriefingFrame()
 {
-	if (g_hBriefingFrame.Get())
-	{	
-		Msg("C_ASW_Player::CloseBriefingFrame stopping music\n");
-		if (GetClientModeASW())
+	if ( g_hBriefingFrame.Get() )
+	{
+		Msg( "C_ASW_Player::CloseBriefingFrame stopping music\n" );
+		if ( GetClientModeASW() )
 			GetClientModeASW()->StopBriefingMusic();
-		g_hBriefingFrame->SetDeleteSelfOnClose(true);
+		g_hBriefingFrame->SetDeleteSelfOnClose( true );
 		g_hBriefingFrame->Close();
 		g_hBriefingFrame = NULL;
 
-		FadeInPanel *pFadeIn = dynamic_cast<FadeInPanel*>(GetClientMode()->GetViewport()->FindChildByName("FadeIn", true));
-		if (pFadeIn)
+		FadeInPanel *pFadeIn = dynamic_cast< FadeInPanel * >( GetClientMode()->GetViewport()->FindChildByName( "FadeIn", true ) );
+		if ( pFadeIn )
 		{
 			pFadeIn->AllowFastRemove();
 		}
@@ -943,15 +941,15 @@ void C_ASW_Player::CloseBriefingFrame()
 	}
 }
 
-C_ASW_Marine* C_ASW_Player::GetMarine() const
+C_ASW_Inhabitable_NPC *C_ASW_Player::GetNPC() const
 {
-	return m_hMarine.Get();
+	return m_hInhabiting.Get();
 }
 
-C_ASW_Marine* C_ASW_Player::GetSpectatingMarine() const
+C_ASW_Inhabitable_NPC *C_ASW_Player::GetSpectatingNPC() const
 {
 	// BenLubar: allow rd_force_spectate_marine to override the current marine if the player is spectating or watching a demo.
-	if ( rd_force_spectate_marine.GetInt() != -1 && ASWGameResource() && ( engine->IsPlayingDemo() || m_hSpectatingMarine.Get() ) )
+	if ( rd_force_spectate_marine.GetInt() != -1 && ASWGameResource() && ( engine->IsPlayingDemo() || m_hSpectating.Get() ) )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( rd_force_spectate_marine.GetInt() );
 		if ( pMR && pMR->GetMarineEntity() )
@@ -959,24 +957,24 @@ C_ASW_Marine* C_ASW_Player::GetSpectatingMarine() const
 			return pMR->GetMarineEntity();
 		}
 	}
-	return m_hSpectatingMarine.Get();
+	return m_hSpectating.Get();
 }
 
-C_ASW_Marine* C_ASW_Player::GetViewMarine() const
+C_ASW_Inhabitable_NPC *C_ASW_Player::GetViewNPC() const
 {
-	C_ASW_Marine *pMarine = GetSpectatingMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
+	if ( !pNPC )
 	{
-		pMarine = GetMarine();
+		pNPC = GetNPC();
 	}
-	return pMarine;
+	return pNPC;
 }
 
-Vector C_ASW_Player::GetAutoaimVectorForMarine( C_ASW_Marine* marine, float flDelta, float flNearMissDelta )
+Vector C_ASW_Player::GetAutoaimVectorForMarine( C_ASW_Marine *marine, float flDelta, float flNearMissDelta )
 {
 	// Never autoaim a predicted weapon (for now)
 	Vector	forward;
-	if ( GetMarine() == marine )
+	if ( GetNPC() == marine )
 		AngleVectors( EyeAngles() + m_angMarineAutoAimFromClient, &forward );
 	else
 		AngleVectors( EyeAngles(), &forward );	//  + m_Local.m_vecPunchAngle
@@ -995,7 +993,7 @@ void C_ASW_Player::ClientThink()
 	VPROF_BUDGET( "C_ASW_Player::ClientThink", VPROF_BUDGETGROUP_ASW_CLIENT );
 	BaseClass::ClientThink();
 
-	if (!IsLocalPlayer( this ))
+	if ( !IsLocalPlayer( this ) )
 		return;
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
@@ -1015,9 +1013,9 @@ void C_ASW_Player::ClientThink()
 			{
 				if ( !m_bPlayingSingleBreathSound )
 				{
-					EmitSound("noslow.BulletTimeIn");
+					EmitSound( "noslow.BulletTimeIn" );
 					if ( asw_stim_time_scale.GetFloat() < 1.0f )
-						EmitSound("noslow.SingleBreath");
+						EmitSound( "noslow.SingleBreath" );
 				}
 
 				if ( !bDeathCam )
@@ -1039,35 +1037,35 @@ void C_ASW_Player::ClientThink()
 					// if the stim has completely faded out, then clear the pointer to the music so the music is restarted from the beginning next time
 					ClearStimMusic();
 				}
-				
-			}			
-			
+
+			}
+
 			lastTimescale = f;
-			engine->SetPitchScale(f);
+			engine->SetPitchScale( f );
 			if ( f > asw_stim_cam_time.GetFloat() )
 			{
-				if (GetStimCam())
+				if ( GetStimCam() )
 					GetStimCam()->SetActive( false );
 			}
 		}
-		if (f < 1.0f && !ASWGameRules()->ShouldPlayStimMusic())	// check for stopping stim music if level music kicks in while we're rocking out to stims
+		if ( f < 1.0f && !ASWGameRules()->ShouldPlayStimMusic() )	// check for stopping stim music if level music kicks in while we're rocking out to stims
 		{
-			StopStimMusic(true);
+			StopStimMusic( true );
 		}
 		// we're in slomo, so make sure our stimcam is on
-		if (f < asw_stim_cam_time.GetFloat())
+		if ( f < asw_stim_cam_time.GetFloat() )
 		{
-			CASW_Marine *pMarine = GetViewMarine();
+			C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( GetViewNPC() );
 			// enable the stylin' cam
-			if (pMarine)
+			if ( pMarine )
 			{
 				// check if there's a mapper designed camera turned on
 				C_PointCamera *pCameraEnt = GetPointCameraList();
 				bool bMapperCam = false;
 				for ( int cameraNum = 0; pCameraEnt != NULL; pCameraEnt = pCameraEnt->m_pNext )
 				{
-					if ( pCameraEnt != GetStimCam() && pCameraEnt->IsActive() && !pCameraEnt->IsDormant())
-					{							
+					if ( pCameraEnt != GetStimCam() && pCameraEnt->IsActive() && !pCameraEnt->IsDormant() )
+					{
 						bMapperCam = true;
 						break;
 					}
@@ -1075,22 +1073,22 @@ void C_ASW_Player::ClientThink()
 					++cameraNum;
 				}
 
-				if (!bMapperCam)
+				if ( !bMapperCam )
 				{
-					if (asw_spinning_stim_cam.GetBool())
+					if ( asw_spinning_stim_cam.GetBool() )
 					{
-						if (!GetStimCam())
-							CreateStimCamera();	
-						if (GetStimCam())
+						if ( !GetStimCam() )
+							CreateStimCamera();
+						if ( GetStimCam() )
 						{
 							// no mapper cam, turn on our stim one
 							GetStimCam()->SetActive( true );
-							Vector offset = Vector(asw_stim_cam_x.GetFloat(), asw_stim_cam_y.GetFloat(), asw_stim_cam_z.GetFloat());
+							Vector offset = Vector( asw_stim_cam_x.GetFloat(), asw_stim_cam_y.GetFloat(), asw_stim_cam_z.GetFloat() );
 							Vector offset_r;
-							VectorRotate(offset, QAngle(0, pMarine->GetAbsAngles()[YAW] + m_fStimYaw, 0), offset_r);
-							GetStimCam()->SetAbsOrigin(pMarine->GetAbsOrigin() + offset_r);
+							VectorRotate( offset, QAngle( 0, pMarine->GetAbsAngles()[YAW] + m_fStimYaw, 0 ), offset_r );
+							GetStimCam()->SetAbsOrigin( pMarine->GetAbsOrigin() + offset_r );
 							// rotate it around us
-							GetStimCam()->SetAbsAngles(QAngle(asw_stim_cam_pitch.GetFloat(), m_fStimYaw + pMarine->GetAbsAngles()[YAW]+asw_stim_cam_yaw.GetFloat(), asw_stim_cam_roll.GetFloat()));
+							GetStimCam()->SetAbsAngles( QAngle( asw_stim_cam_pitch.GetFloat(), m_fStimYaw + pMarine->GetAbsAngles()[YAW] + asw_stim_cam_yaw.GetFloat(), asw_stim_cam_roll.GetFloat() ) );
 							m_fStimYaw += gpGlobals->frametime * asw_stim_cam_rotate_speed.GetFloat();
 							//Msg("Showing marine's cam\n");
 						}
@@ -1099,54 +1097,54 @@ void C_ASW_Player::ClientThink()
 				else
 				{
 					// make sure the stim cam is off, so the mapper placed cam can work
-					if (GetStimCam())
+					if ( GetStimCam() )
 						GetStimCam()->SetActive( false );
 					//Msg("Showing mapper's cam\n");
-				}				
-			}		
+				}
+			}
 		}
 
 		// check for launching the briefing
-		static int last_state=1;
-		if (ASWGameRules()->GetGameState() != last_state)
-			DevMsg("[%d] Game rules state changed to %d\n", entindex(), ASWGameRules()->GetGameState());
+		static int last_state = 1;
+		if ( ASWGameRules()->GetGameState() != last_state )
+			DevMsg( "[%d] Game rules state changed to %d\n", entindex(), ASWGameRules()->GetGameState() );
 		last_state = ASWGameRules()->GetGameState();
-		if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && !g_hBriefingFrame.Get() && !GetClientModeASW()->m_bLaunchedBriefing)
+		if ( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && !g_hBriefingFrame.Get() && !GetClientModeASW()->m_bLaunchedBriefing )
 		{
 			GetClientModeASW()->m_bLaunchedBriefing = true;
 			//Msg("[%d] Launching briefing frame\n", entindex());
 			LaunchBriefingFrame();
 		}
-		else if (ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+		else if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 		{
-			if (!m_bCheckedLevel)
+			if ( !m_bCheckedLevel )
 			{
-				m_bCheckedLevel = true;	
+				m_bCheckedLevel = true;
 			}
 		}
-		else if (ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF)
+		else if ( ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF )
 		{
-			if (m_bPlayingSingleBreathSound)
+			if ( m_bPlayingSingleBreathSound )
 				StopStimSound();
-			if (!GetClientModeASW()->m_hMissionCompleteFrame.Get() && !GetClientModeASW()->m_bLaunchedDebrief)
+			if ( !GetClientModeASW()->m_hMissionCompleteFrame.Get() && !GetClientModeASW()->m_bLaunchedDebrief )
 			{
-				if (ASWGameRules()->GetMissionSuccess())
+				if ( ASWGameRules()->GetMissionSuccess() )
 				{
 					GetClientModeASW()->m_bLaunchedDebrief = true;
-					LaunchMissionCompleteFrame(true);
+					LaunchMissionCompleteFrame( true );
 				}
-				else if (ASWGameRules()->GetMissionFailed())
+				else if ( ASWGameRules()->GetMissionFailed() )
 				{
 					GetClientModeASW()->m_bLaunchedDebrief = true;
-					LaunchMissionCompleteFrame(false);
+					LaunchMissionCompleteFrame( false );
 				}
 			}
 		}
-		else if (ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP)
+		else if ( ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP )
 		{
-			if (m_bPlayingSingleBreathSound)
+			if ( m_bPlayingSingleBreathSound )
 				StopStimSound();
-			if (!GetClientModeASW()->m_bLaunchedCampaignMap)
+			if ( !GetClientModeASW()->m_bLaunchedCampaignMap )
 			{
 				GetClientModeASW()->m_bLaunchedCampaignMap = true;
 				LaunchCampaignFrame();
@@ -1155,58 +1153,59 @@ void C_ASW_Player::ClientThink()
 	}
 	else
 	{
-		Msg("can't check briefing stuff, no game rules present\n");
+		Msg( "can't check briefing stuff, no game rules present\n" );
 	}
 
-	if (m_pCurrentInfoMessage.Get() != GetClientModeASW()->m_hLastInfoMessage.Get())
+	if ( m_pCurrentInfoMessage.Get() != GetClientModeASW()->m_hLastInfoMessage.Get() )
 	{
 		GetClientModeASW()->m_hLastInfoMessage = m_pCurrentInfoMessage;
 		// todo: launch a window with this message
-		if (GetClientModeASW()->m_hLastInfoMessage.Get())
+		if ( GetClientModeASW()->m_hLastInfoMessage.Get() )
 		{
-			DevMsg("Launching window cos the info message changed!\n");
+			DevMsg( "Launching window cos the info message changed!\n" );
 			// add it to the message log if we haven't seen it before
 			bool bOldMessage = false;
-			for (int i=0;i<GetClientModeASW()->m_InfoMessageLog.Count();i++)
+			for ( int i = 0; i < GetClientModeASW()->m_InfoMessageLog.Count(); i++ )
 			{
-				if (GetClientModeASW()->m_InfoMessageLog[i].Get() == m_pCurrentInfoMessage.Get())
+				if ( GetClientModeASW()->m_InfoMessageLog[i].Get() == m_pCurrentInfoMessage.Get() )
 				{
 					bOldMessage = true;
 					break;
 				}
 			}
-			if (!bOldMessage)
+			if ( !bOldMessage )
 			{
 				ClientModeASW::InfoMessageHandle_t handle = m_pCurrentInfoMessage.Get();
-				GetClientModeASW()->m_InfoMessageLog.AddToTail(handle);
+				GetClientModeASW()->m_InfoMessageLog.AddToTail( handle );
 			}
 			CASW_VGUI_Info_Message *pInfoWindow = new CASW_VGUI_Info_Message( GetClientMode()->GetViewport(),
-				"InfoMessageWindow",  m_pCurrentInfoMessage.Get());
-			vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-			pInfoWindow->SetScheme(scheme);				
-			pInfoWindow->InvalidateLayout(true);
+				"InfoMessageWindow", m_pCurrentInfoMessage.Get() );
+			vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+			pInfoWindow->SetScheme( scheme );
+			pInfoWindow->InvalidateLayout( true );
 			//pInfoWindow->ASWInit();
 		}
 		else
 		{
 			CASW_VGUI_Info_Message::CloseInfoMessage();
-			DevMsg("info message cleared!\n");
+			DevMsg( "info message cleared!\n" );
 		}
 	}
 
 	if ( gpGlobals->curtime >= m_fNextThinkPushAway )
 	{
-		if (GetMarine() && !GetMarine()->IsInVehicle())
+		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( GetNPC() );
+		if ( pMarine && !pMarine->IsInVehicle() )
 		{
-			PerformObstaclePushaway( GetMarine() );
+			PerformObstaclePushaway( pMarine );
 		}
-		m_fNextThinkPushAway =  gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL;
+		m_fNextThinkPushAway = gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL;
 	}
 
 	int nprintIndex = 0;
 	if ( asw_show_mouse_entity.GetBool() )
-	{		
-		engine->Con_NPrintf( nprintIndex, "Mouse over entity:");
+	{
+		engine->Con_NPrintf( nprintIndex, "Mouse over entity:" );
 		nprintIndex++;
 
 		if ( ASWInput() && ASWInput()->GetMouseOverEntity() )
@@ -1214,24 +1213,24 @@ void C_ASW_Player::ClientThink()
 			engine->Con_NPrintf( nprintIndex, "(%d) %s",
 				ASWInput()->GetMouseOverEntity()->entindex(),
 				ASWInput()->GetMouseOverEntity()->GetClassname()
-				);
+			);
 			nprintIndex++;
 		}
 		else
 		{
-			engine->Con_NPrintf( nprintIndex, "None");
+			engine->Con_NPrintf( nprintIndex, "None" );
 			nprintIndex++;
 		}
 	}
 
-	if (asw_particle_count.GetBool())
+	if ( asw_particle_count.GetBool() )
 	{
-		if (ParticleMgr())
+		if ( ParticleMgr() )
 		{
 			engine->Con_NPrintf( nprintIndex, "Num Particles: %d / 2048",
 				ParticleMgr()->GetNumParticles()
-				);
-			nprintIndex++;			
+			);
+			nprintIndex++;
 		}
 		else
 		{
@@ -1240,13 +1239,13 @@ void C_ASW_Player::ClientThink()
 		}
 	}
 
-	if (asw_dlight_list.GetBool())
+	if ( asw_dlight_list.GetBool() )
 	{
 		dlight_t *lights[MAX_DLIGHTS];
 		int nLights = effects->CL_GetActiveDLights( lights );
-		for (int i=0;i<MAX_DLIGHTS;i++)
+		for ( int i = 0; i < MAX_DLIGHTS; i++ )
 		{
-			if (i >= nLights)
+			if ( i >= nLights )
 			{
 				engine->Con_NPrintf( nprintIndex, "Light: %d - off", i );
 				nprintIndex++;
@@ -1254,35 +1253,35 @@ void C_ASW_Player::ClientThink()
 			else
 			{
 				const char *szLightType = "Generic";
-				if (lights[i]->key == 0)
+				if ( lights[i]->key == 0 )
 					szLightType = "Explosion/Sparks";
-				else if (lights[i]->key < 0)
+				else if ( lights[i]->key < 0 )
 					szLightType = "Spotlight end";
-				else if (lights[i]->key == LIGHT_INDEX_TE_DYNAMIC)
+				else if ( lights[i]->key == LIGHT_INDEX_TE_DYNAMIC )
 					szLightType = "Legacy TE";
-				else if (lights[i]->key >= ASW_LIGHT_INDEX_FIRES)
+				else if ( lights[i]->key >= ASW_LIGHT_INDEX_FIRES )
 					szLightType = "env_fire";
-				else if (lights[i]->key >= LIGHT_INDEX_MUZZLEFLASH)
+				else if ( lights[i]->key >= LIGHT_INDEX_MUZZLEFLASH )
 					szLightType = "muzzleflash";
 
-				if (lights[i]->key >= 0 && lights[i]->key < MAX_EDICTS)
+				if ( lights[i]->key >= 0 && lights[i]->key < MAX_EDICTS )
 				{
-					C_BaseEntity *pEnt = C_BaseEntity::Instance(lights[i]->key);
-					C_ASW_Flare_Projectile *pFlare = dynamic_cast<C_ASW_Flare_Projectile*>(pEnt);
-					if (pFlare)
+					C_BaseEntity *pEnt = C_BaseEntity::Instance( lights[i]->key );
+					C_ASW_Flare_Projectile *pFlare = dynamic_cast< C_ASW_Flare_Projectile * >( pEnt );
+					if ( pFlare )
 						szLightType = "Flare";
-					C_ASW_Flamer_Projectile *pFlamer = dynamic_cast<C_ASW_Flamer_Projectile*>(pEnt);
-					if (pFlamer)
+					C_ASW_Flamer_Projectile *pFlamer = dynamic_cast< C_ASW_Flamer_Projectile * >( pEnt );
+					if ( pFlamer )
 						szLightType = "Flamer";
 				}
-				engine->Con_NPrintf( nprintIndex, "Light: %d - %s (key:%d)", i, szLightType, lights[i]->key);
+				engine->Con_NPrintf( nprintIndex, "Light: %d - %s (key:%d)", i, szLightType, lights[i]->key );
 				nprintIndex++;
 			}
 		}
 	}
 
 	// update snow
-	C_ASW_Snow_Volume::UpdateSnow(this);
+	C_ASW_Snow_Volume::UpdateSnow( this );
 
 	UpdateLocalMarineGlow();
 
@@ -1296,7 +1295,7 @@ void ForceSoundscape( const char *pSoundscapeName, float radius );
 
 void C_ASW_Player::UpdateRoomDetails()
 {
-	VPROF("C_ASW_Player::UpdateRoomDetails");
+	VPROF( "C_ASW_Player::UpdateRoomDetails" );
 	if ( m_roomDetailsCheckTimer.HasStarted() && !m_roomDetailsCheckTimer.IsElapsed() )
 		return;
 
@@ -1307,12 +1306,12 @@ void C_ASW_Player::UpdateRoomDetails()
 		return;
 	}
 
-	C_ASW_Marine *pMarine = GetViewMarine();
+	C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
 
 	Vector vecAmbientPos = vec3_origin;
-	if ( pMarine )
+	if ( pNPC )
 	{
-		vecAmbientPos = pMarine->GetAbsOrigin();
+		vecAmbientPos = pNPC->GetAbsOrigin();
 	}
 	else
 	{
@@ -1320,7 +1319,7 @@ void C_ASW_Player::UpdateRoomDetails()
 	}
 
 	IASW_Random_Missions *pRandomMissions = missionchooser->RandomMissions();
-	IASW_Room_Details* pRoom = pRandomMissions->GetRoomDetails( vecAmbientPos );
+	IASW_Room_Details *pRoom = pRandomMissions->GetRoomDetails( vecAmbientPos );
 
 	if ( pRoom )
 	{
@@ -1366,40 +1365,40 @@ void C_ASW_Player::UpdateRoomDetails()
 
 void C_ASW_Player::ShowMessageLog()
 {
-	Msg("Launching window to show message log\n");
+	Msg( "Launching window to show message log\n" );
 	CASW_VGUI_Message_Log *pInfoWindow = new CASW_VGUI_Message_Log( GetClientMode()->GetViewport(),
-		"InfoMessageLog");
-			
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-	pInfoWindow->SetScheme(scheme);
-	pInfoWindow->InvalidateLayout(true);
+		"InfoMessageLog" );
+
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	pInfoWindow->SetScheme( scheme );
+	pInfoWindow->InvalidateLayout( true );
 }
 
-void C_ASW_Player::ShowPreviousInfoMessage(C_ASW_Info_Message *pMessage)
+void C_ASW_Player::ShowPreviousInfoMessage( C_ASW_Info_Message *pMessage )
 {
-	if (!pMessage)
+	if ( !pMessage )
 		return;
 
 	bool bOldMessage = false;
-	for (int i=0;i<GetClientModeASW()->m_InfoMessageLog.Count();i++)
+	for ( int i = 0; i < GetClientModeASW()->m_InfoMessageLog.Count(); i++ )
 	{
-		if (GetClientModeASW()->m_InfoMessageLog[i].Get() == pMessage)
+		if ( GetClientModeASW()->m_InfoMessageLog[i].Get() == pMessage )
 		{
 			bOldMessage = true;
 			break;
 		}
 	}
 
-	if (!bOldMessage)
+	if ( !bOldMessage )
 		return;
 
-	Msg("Launching window to show old info message\n");
+	Msg( "Launching window to show old info message\n" );
 	CASW_VGUI_Info_Message *pInfoWindow = new CASW_VGUI_Info_Message( GetClientMode()->GetViewport(),
-		"InfoMessageWindow",  pMessage);
-			
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-	pInfoWindow->SetScheme(scheme);				
-	pInfoWindow->InvalidateLayout(true);			
+		"InfoMessageWindow", pMessage );
+
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	pInfoWindow->SetScheme( scheme );
+	pInfoWindow->InvalidateLayout( true );
 }
 
 void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
@@ -1421,14 +1420,14 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 		{
 			int nSlot = C_BasePlayer::GetSplitScreenSlotForPlayer( this );
 			ACTIVE_SPLITSCREEN_PLAYER_GUARD( nSlot );
-			
+
 #ifdef USE_MEDAL_STORE
 			// inform server of our persistent counts
 			int iKills, iMissions, iCampaigns;
-			GetMedalStore()->GetCounts(iMissions, iCampaigns, iKills, (gpGlobals->maxClients <= 1));
+			GetMedalStore()->GetCounts( iMissions, iCampaigns, iKills, ( gpGlobals->maxClients <= 1 ) );
 			char buffer[48];
-			Q_snprintf(buffer, sizeof(buffer), "cl_ccounts %d %d %d", iMissions, iCampaigns, iKills);
-			engine->ClientCmd(buffer);
+			Q_snprintf( buffer, sizeof( buffer ), "cl_ccounts %d %d %d", iMissions, iCampaigns, iKills );
+			engine->ClientCmd( buffer );
 #endif
 			// inform server of our autoreload preferences
 			engine->ClientCmd( VarArgs( "cl_autoreload %d\n", asw_auto_reload.GetInt() ) );
@@ -1443,9 +1442,9 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			// This shows a panel where player can select a marine. 
 			// Called after player have joined the game 
 			// TODO check if this is correct
-			if (ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+			if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 			{
-				engine->ClientCmd("cl_select_loadout");
+				engine->ClientCmd( "cl_select_loadout" );
 			}
 		}
 
@@ -1467,26 +1466,26 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 	}
 
 	// update snow immediately upon changing marine
-	if (g_hSnowEmitter.IsValid() && IsLocalPlayer(this))
+	if ( g_hSnowEmitter.IsValid() && IsLocalPlayer( this ) )
 	{
-		C_ASW_Marine *pMarine = GetViewMarine();
-		if (g_hSnowEmitter->m_hLastMarine.Get() != pMarine)
+		C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+		if ( g_hSnowEmitter->m_hLastNPC.Get() != pNPC )
 		{
 			// update snow
-			C_ASW_Snow_Volume::UpdateSnow(this);
+			C_ASW_Snow_Volume::UpdateSnow( this );
 		}
 	}
 }
 
-C_BaseEntity* C_ASW_Player::GetUseEntity( void ) const 
+C_BaseEntity *C_ASW_Player::GetUseEntity( void ) const
 {
-	if ( m_iUseEntities > 0 && m_hUseEntities[ 0 ].Get() )
-		return m_hUseEntities[ 0 ].Get();
+	if ( m_iUseEntities > 0 && m_hUseEntities[0].Get() )
+		return m_hUseEntities[0].Get();
 
 	return BaseClass::GetUseEntity();
 }
 
-C_BaseEntity* C_ASW_Player::GetPotentialUseEntity( void ) const
+C_BaseEntity *C_ASW_Player::GetPotentialUseEntity( void ) const
 {
 	C_BaseEntity *pHighlightEntity = ASWInput()->GetHighlightEntity();
 
@@ -1544,17 +1543,17 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	// Get the player controlled marine.
 	// TODO: There may be more than one marine per player at some point.
-	C_ASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC )
 		return;
 
 	// Get the marine's collision properties.
-	CCollisionProperty *pMarineCollision = pMarine->CollisionProp();
+	CCollisionProperty *pMarineCollision = pNPC->CollisionProp();
 	if ( !pMarineCollision )
 		return;
 
 	// Test to see if the player controlled marine is dead.
-	if ( !pMarine->IsAlive() )
+	if ( !pNPC->IsAlive() )
 		return;
 
 	// Up vector.
@@ -1572,7 +1571,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	int nMarineCount = pGameResource->GetMaxMarineResources();
 	for ( int iMarine = 0; iMarine < nMarineCount; ++iMarine )
-	{	
+	{
 		// Get the marine resource - if it exists.
 		C_ASW_Marine_Resource *pTestMarineResource = pGameResource->GetMarineResource( iMarine );
 		if ( !pTestMarineResource )
@@ -1584,7 +1583,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 			continue;
 
 		// Is the player controlled marines?
-		if ( pMarine == pTestMarine )
+		if ( pNPC == pTestMarine )
 			continue;
 
 		// Check to see if the avoid player is dormant.
@@ -1594,7 +1593,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 		// Is the avoid player solid?
 		if ( pTestMarine->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
 			continue;
-		
+
 		// Get the test marines collision properties.
 		CCollisionProperty *pTestMarineCollision = pTestMarine->CollisionProp();
 		if ( pTestMarineCollision )
@@ -1652,7 +1651,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 		return;
 
 	// Get marine speeds.
-	float flMarineSpeed = pMarine->GetAbsVelocity().Length2D();
+	float flMarineSpeed = pNPC->GetAbsVelocity().Length2D();
 	float flIntersectingMarineSpeed = pIntersectingEntity->GetAbsVelocity().Length2D();
 
 	// If the local marine is not moving and the intersecting marine is, then do nothing.
@@ -1664,7 +1663,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 	Vector vecIntersectingMarineCenter = pIntersectingEntityCollision->WorldSpaceCenter();
 	VectorSubtract( vecMarineCenter, vecIntersectingMarineCenter, vecDelta );
 	float flAvoidRadius = pIntersectingEntityCollision->BoundingRadius();
-	float flPushStrength = RemapValClamped( vecDelta.Length(), flAvoidRadius, 0, 0, asw_player_avoidance_force.GetInt() ); 
+	float flPushStrength = RemapValClamped( vecDelta.Length(), flAvoidRadius, 0, 0, asw_player_avoidance_force.GetInt() );
 	if ( flPushStrength < 0.01f )
 		return;
 
@@ -1677,7 +1676,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 	float flPushThreshold = ASW_MOVEMENT_NORM_SPEED * 0.90f;
 	if ( flMarineSpeed > flPushThreshold )
 	{
-		Vector vecVelocity = pMarine->GetAbsVelocity();
+		Vector vecVelocity = pNPC->GetAbsVelocity();
 		VectorNormalize( vecVelocity );
 		Vector vecDeltaNorm = vecDelta;
 		VectorNormalize( vecDeltaNorm );
@@ -1699,7 +1698,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 		}
 
 		vecPush = vecBouncePlane;
- 		VectorNormalize( vecPush );
+		VectorNormalize( vecPush );
 		vecSeparationVelocity = vecPush * flPushStrength;
 
 		// Debug!
@@ -1735,8 +1734,8 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	//Msg( "fwd: %f - rt: %f - forward: %f - side: %f\n", fwd, rt, forward, side );
 
-	pCmd->forwardmove	+= forward;
-	pCmd->sidemove		+= side;
+	pCmd->forwardmove += forward;
+	pCmd->sidemove += side;
 
 	// Clamp the move to within legal limits, preserving direction. This is a little
 	// complicated because we have different limits for forward, back, and side
@@ -1772,26 +1771,27 @@ bool C_ASW_Player::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 	bool bResult = BaseClass::CreateMove( flInputSampleTime, pCmd );
 	AvoidMarines( pCmd );
 
-	if ( !IsInAVehicle() && asw_clientside_avoidance.GetBool() && !asw_marine_collision.GetBool())
+	if ( !IsInAVehicle() && asw_clientside_avoidance.GetBool() && !asw_marine_collision.GetBool() )
 	{
 		MarinePerformClientSideObstacleAvoidance( TICK_INTERVAL, pCmd );
 	}
 
-	C_ASW_Marine* pMarine = GetMarine();
+	C_ASW_Inhabitable_NPC *pNPC = GetNPC();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
 
 	// if we're using a turret, clamp view angles to the ones set in the turret
-	if (pMarine && pMarine->IsControllingTurret() && pMarine->GetRemoteTurret())
+	if ( pMarine && pMarine->IsControllingTurret() && pMarine->GetRemoteTurret() )
 	{
 		pMarine->GetRemoteTurret()->CreateMove( flInputSampleTime, pCmd );
 	}
 
 	// check if the marine is meant to be standing still	
-	if (pMarine && 
-		(gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
-		|| CASW_VGUI_Info_Message::HasInfoMessageOpen()
-		|| ( ASWInput()->ControllerModeActive() && pMarine->IsUsingComputerOrButtonPanel() )
-		|| pMarine->IsUsingComputerOrButtonPanel()
-		))
+	if ( pMarine &&
+		( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
+			|| CASW_VGUI_Info_Message::HasInfoMessageOpen()
+			|| ( ASWInput()->ControllerModeActive() && pMarine->IsUsingComputerOrButtonPanel() )
+			|| pMarine->IsUsingComputerOrButtonPanel()
+			) )
 	{
 		// asw temp comment
 		/*
@@ -1800,29 +1800,29 @@ bool C_ASW_Player::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 		*/
 	}
 
-	if (!pMarine && asw_rts_controls.GetBool())
+	if ( !pNPC && asw_rts_controls.GetBool() )
 	{
 		// set forward/side move to scroll the screen when mouse is at the edges
 		int current_posx, current_posy;
-		::input->GetFullscreenMousePos(&current_posx, &current_posy);
+		::input->GetFullscreenMousePos( &current_posx, &current_posy );
 
 		//Msg("Cursor pos = %d %d ", current_posx, current_posy);
-		if (current_posx <= 0)
+		if ( current_posx <= 0 )
 		{
 			//Msg("Scrolling left ");
 			pCmd->sidemove = -cl_sidespeed.GetFloat();
 		}
-		else if (current_posx >= ScreenWidth()-1)
+		else if ( current_posx >= ScreenWidth() - 1 )
 		{
 			//Msg("Scrolling right ");
 			pCmd->sidemove = cl_sidespeed.GetFloat();
 		}
-		if (current_posy <= 0)
+		if ( current_posy <= 0 )
 		{
 			//Msg("Scrolling up ");
 			pCmd->forwardmove = cl_sidespeed.GetFloat();
 		}
-		else if (current_posy >= ScreenHeight()-1)
+		else if ( current_posy >= ScreenHeight() - 1 )
 		{
 			//Msg("Scrolling down ");
 			pCmd->forwardmove = -cl_sidespeed.GetFloat();
@@ -1839,12 +1839,12 @@ bool C_ASW_Player::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 }
 
 #define LOOK_AHEAD 3.0f
-void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_ASW_Marine* pMarine)
+void C_ASW_Player::MarineStopMoveIfBlocked( float flFrameTime, CUserCmd *pCmd, C_ASW_Marine *pMarine )
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return;
-	Vector size = pMarine->WorldAlignSize();	
+	Vector size = pMarine->WorldAlignSize();
 	//float radius = 1.0f * sqrt( size.x * size.x + size.y * size.y );
 	size *= 2;
 	Vector currentdir;
@@ -1853,18 +1853,18 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 	vAngles.x = 0;
 
 	if ( GetASWControls() == 1 )
-		AngleVectors( QAngle(0, m_flMovementAxisYaw, 0), &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle( 0, m_flMovementAxisYaw, 0 ), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
 
-	
-	
+
+
 	Vector vel = pMarine->GetLocalVelocity();	// our current velocity, will it take us inside an NPC?	
-	bool bStill = (vel.Length2D() == 0);
-	if (pCmd->sidemove == 00 && pCmd->forwardmove == 0)
+	bool bStill = ( vel.Length2D() == 0 );
+	if ( pCmd->sidemove == 00 && pCmd->forwardmove == 0 )
 		m_bGuidingMarine = false;	// make sure to stop all guiding if the player lets go of movement keys
-	Vector vecPlayerPushing(pCmd->sidemove, pCmd->forwardmove, 0);
-	if (m_bGuidingMarine)
+	Vector vecPlayerPushing( pCmd->sidemove, pCmd->forwardmove, 0 );
+	if ( m_bGuidingMarine )
 	{
 		// make the marine move in the direction we want to guide in
 		pCmd->forwardmove = m_vecGuiding.y;
@@ -1880,43 +1880,43 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 		pCmd->sidemove *= cl_sidespeed.GetFloat();
 	}
 	//Msg("vel %f, %f, %f 2dlen %f still %d\n", vel.x, vel.y, vel.z, vel.Length2D(), bStill);
-	
+
 	//INetChannelInfo *nci = engine->GetNetChannelInfo();
-	
+
 
 	// check if we're stuck inside any NPCS and push ourselves out if we are
 	Vector vecMarinePos = pMarine->GetAbsOrigin();
-	Vector vecMarineSize = pMarine->WorldAlignSize();	
+	Vector vecMarineSize = pMarine->WorldAlignSize();
 	//float fMarineRadius = 1.0f * sqrt( vecMarineSize.x * vecMarineSize.x + vecMarineSize.y * vecMarineSize.y );
-	int c = pGameResource->EnumerateMarinesInBox(vecMarinePos - (vecMarineSize * 0.5f), vecMarinePos + (vecMarineSize * 0.5f));
+	int c = pGameResource->EnumerateMarinesInBox( vecMarinePos - ( vecMarineSize * 0.5f ), vecMarinePos + ( vecMarineSize * 0.5f ) );
 	//CASW_MarineAndObjectEnumerator stuckcheck( fMarineRadius );
 	//partition->EnumerateElementsInBox(PARTITION_CLIENT_SOLID_EDICTS,
 				//vecMarinePos - (vecMarineSize * 0.5f),
 				//vecMarinePos + (vecMarineSize * 0.5f), false, &stuckcheck );
-	if (asw_debug_clientside_avoidance.GetBool())
+	if ( asw_debug_clientside_avoidance.GetBool() )
 		debugoverlay->AddBoxOverlay( vecMarinePos, -vecMarineSize * 0.5f, vecMarineSize * 0.5f, vec3_angle, 0, 255, 0, true, 0 );
 
 	float adjustforwardmove = 0.0f;
-	float adjustsidemove	= 0.0f;
+	float adjustsidemove = 0.0f;
 
 	//int c = stuckcheck.GetObjectCount();
 	//bool bStuckInside = (c > 0);
 	//if ( c <= 0 )
 		//return;
-	
+
 	int i = 0;
 	for ( i = 0; i < c; i++ )
 	{
 		//C_AI_BaseNPC *obj = dynamic_cast< C_AI_BaseNPC *>(stuckcheck.GetObject( i ));
-		C_ASW_Marine *obj = pGameResource->EnumeratedMarine(i);
+		C_ASW_Marine *obj = pGameResource->EnumeratedMarine( i );
 
-		if( !obj || obj == pMarine )
+		if ( !obj || obj == pMarine )
 			continue;
 
 		// don't avoid aliens laying dead on the floor
-		if (!obj->IsAlive() || obj->GetHealth() <= 0)
+		if ( !obj->IsAlive() || obj->GetHealth() <= 0 )
 			continue;
-		
+
 		Vector vecToObject = obj->GetAbsOrigin() - pMarine->GetAbsOrigin();
 		Vector vRayDir = vecToObject;
 		VectorNormalize( vRayDir );
@@ -1927,8 +1927,8 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 		//Msg("inside an npc %f %f %f\n", vRayDir.x, vRayDir.y, vRayDir.z);
 	}
 
-	pCmd->forwardmove	+= adjustforwardmove;
-	pCmd->sidemove		+= adjustsidemove;
+	pCmd->forwardmove += adjustforwardmove;
+	pCmd->sidemove += adjustsidemove;
 
 	if ( pCmd->forwardmove > 0.0f )
 	{
@@ -1943,40 +1943,40 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 
 	Vector forward_vel = pCmd->forwardmove * currentdir;
 	Vector side_vel = pCmd->sidemove * rightdir;
-	if (bStill)
+	if ( bStill )
 		vel = forward_vel + side_vel;
 	float fVelScale = flFrameTime * LOOK_AHEAD;
-	
+
 	//fVelScale = nci->GetLatency( FLOW_OUTGOING );
 	////int lerpTicks = TIME_TO_TICKS( 0.1f );	// fix: hardcoded 0.1f amount of lerptime!
 	////fVelScale += TICKS_TO_TIME( lerpTicks );
 
 	Vector vel_norm = vel;
-	if (!bStill)
+	if ( !bStill )
 		vel_norm.NormalizeInPlace();
-	Vector dest = pMarine->GetAbsOrigin() + (vel_norm * fVelScale);
+	Vector dest = pMarine->GetAbsOrigin() + ( vel_norm * fVelScale );
 
 	// if our new position puts us inside an NPC, make a move to get rid of our current velocity
-	c = pGameResource->EnumerateMarinesInBox(dest - (size * 0.5f), dest + (size * 0.5f));
+	c = pGameResource->EnumerateMarinesInBox( dest - ( size * 0.5f ), dest + ( size * 0.5f ) );
 	//CASW_MarineAndObjectEnumerator avoid( radius );
 	//partition->EnumerateElementsInBox(PARTITION_CLIENT_SOLID_EDICTS, dest - (size * 0.5f), dest + (size * 0.5f), false, &avoid );
-	if (asw_debug_clientside_avoidance.GetBool())
+	if ( asw_debug_clientside_avoidance.GetBool() )
 		debugoverlay->AddBoxOverlay( dest, -size * 0.5f, size * 0.5f, vec3_angle, 0, 255, 255, true, 0 );
 
 	//c = avoid.GetObjectCount();	
 	for ( i = 0; i < c; i++ )
 	{
 		//C_AI_BaseNPC *obj = dynamic_cast< C_AI_BaseNPC *>(avoid.GetObject( i ));
-		C_ASW_Marine *obj = pGameResource->EnumeratedMarine(i);
+		C_ASW_Marine *obj = pGameResource->EnumeratedMarine( i );
 
-		if( !obj || obj == pMarine )
+		if ( !obj || obj == pMarine )
 			continue;
 
 		// don't avoid aliens laying dead on the floor
-		if (!obj->IsAlive() || obj->GetHealth() <= 0)
+		if ( !obj->IsAlive() || obj->GetHealth() <= 0 )
 			continue;
 
-		if (asw_debug_clientside_avoidance.GetBool())
+		if ( asw_debug_clientside_avoidance.GetBool() )
 		{
 			Vector vecOtherSize = obj->WorldAlignSize();
 			debugoverlay->AddBoxOverlay( obj->GetAbsOrigin(), -vecOtherSize * 0.5f, vecOtherSize * 0.5f, vec3_angle, 255, 0, 0, true, 5.0f );
@@ -1991,48 +1991,48 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 		Vector vecToObject = obj->GetAbsOrigin() - pMarine->GetAbsOrigin();
 		Vector vRayDir = vecToObject;
 		VectorNormalize( vRayDir );
-		
-		if (bStill)
+
+		if ( bStill )
 		{
 			// okay, we're still, but trying to push into a marine, start the guiding code to walk us around him instead
 			m_bGuidingMarine = true;
-			Vector velCopy(vel);
+			Vector velCopy( vel );
 			velCopy.NormalizeInPlace();
-			float vel_yaw = UTIL_VecToYaw(velCopy);
-			float object_yaw = UTIL_VecToYaw(vRayDir);
-			float yaw_diff = UTIL_AngleDiff(vel_yaw, object_yaw);
-			if (yaw_diff > 0)	// the object is ? of our current direction, so let's push 45 degrees to the ?
+			float vel_yaw = UTIL_VecToYaw( velCopy );
+			float object_yaw = UTIL_VecToYaw( vRayDir );
+			float yaw_diff = UTIL_AngleDiff( vel_yaw, object_yaw );
+			if ( yaw_diff > 0 )	// the object is ? of our current direction, so let's push 45 degrees to the ?
 			{
 				//Msg("travelling at %f degrees, will go left to %f degrees\n", vel_yaw, vel_yaw + 90);
-				m_vecGuiding.x = cos(DEG2RAD(vel_yaw + 90));
-				m_vecGuiding.y = sin(DEG2RAD(vel_yaw + 90));
+				m_vecGuiding.x = cos( DEG2RAD( vel_yaw + 90 ) );
+				m_vecGuiding.y = sin( DEG2RAD( vel_yaw + 90 ) );
 			}
 			else
 			{
 				//Msg("travelling at %f degrees, will go right to %f degrees\n", vel_yaw, vel_yaw - 90);
-				m_vecGuiding.x = cos(DEG2RAD(vel_yaw - 90));
-				m_vecGuiding.y = sin(DEG2RAD(vel_yaw - 90));
+				m_vecGuiding.x = cos( DEG2RAD( vel_yaw - 90 ) );
+				m_vecGuiding.y = sin( DEG2RAD( vel_yaw - 90 ) );
 			}
 			return;
 		}
 		float fMinDot = 0.6f;	// todo: make this depend on how far away we are
-		if (moveDir.Dot(vRayDir) < fMinDot)	// is our velocity taking us away from the npc?  if so, it's okay
+		if ( moveDir.Dot( vRayDir ) < fMinDot )	// is our velocity taking us away from the npc?  if so, it's okay
 		{
 			// but should check our command move isn't taking it towards it
-			if (bStill)
+			if ( bStill )
 				continue;
-			
+
 			vel = forward_vel + side_vel;
 			moveDir = vel;
 			VectorNormalize( moveDir );
-			if (moveDir.Dot(vRayDir) > fMinDot)		// we're moving away from the NPC, but the player is trying to push back into it, stop him
-			{				
+			if ( moveDir.Dot( vRayDir ) > fMinDot )		// we're moving away from the NPC, but the player is trying to push back into it, stop him
+			{
 				pCmd->forwardmove = 0;
 				pCmd->sidemove = 0;
 			}
 
 			continue;
-		}		
+		}
 		// otherwise, assume we're trying to run into the NPC and need to stop, like now
 		//if (!bStill)
 		{
@@ -2057,21 +2057,21 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 			pCmd->sidemove = rt * cl_forwardspeed.GetFloat();
 		}
 
-		pCmd->forwardmove = clamp( pCmd->forwardmove, -cl_forwardspeed.GetFloat(), cl_forwardspeed.GetFloat() );	
+		pCmd->forwardmove = clamp( pCmd->forwardmove, -cl_forwardspeed.GetFloat(), cl_forwardspeed.GetFloat() );
 		pCmd->sidemove = clamp( pCmd->sidemove, -cl_sidespeed.GetFloat(), cl_sidespeed.GetFloat() );
 		return;*/
 	}
-	if (m_bGuidingMarine)
+	if ( m_bGuidingMarine )
 	{
 		// check if the original way is safe to revert to
-		
-		dest = pMarine->GetAbsOrigin() + (vecPlayerPushing * fVelScale);
+
+		dest = pMarine->GetAbsOrigin() + ( vecPlayerPushing * fVelScale );
 
 		// if our new position puts us inside an NPC, make a move to get rid of our current velocity
-		c = pGameResource->EnumerateMarinesInBox(dest - (size * 0.5f), dest + (size * 0.5f));
+		c = pGameResource->EnumerateMarinesInBox( dest - ( size * 0.5f ), dest + ( size * 0.5f ) );
 		//CASW_MarineAndObjectEnumerator avoidoriginal( radius );
 		//partition->EnumerateElementsInBox(PARTITION_CLIENT_SOLID_EDICTS, dest - (size * 0.5f), dest + (size * 0.5f), false, &avoidoriginal );
-		if (asw_debug_clientside_avoidance.GetBool())
+		if ( asw_debug_clientside_avoidance.GetBool() )
 			debugoverlay->AddBoxOverlay( dest, -size * 0.5f, size * 0.5f, vec3_angle, 0, 0, 255, true, 0 );
 
 		//c = avoidoriginal.GetObjectCount();
@@ -2080,23 +2080,23 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 			m_bGuidingMarine = false;	// if we're moving freely, no need to guide anymore
 			return;
 		}
-		
+
 		for ( i = 0; i < c; i++ )
 		{
 			//C_AI_BaseNPC *obj = dynamic_cast< C_AI_BaseNPC *>(avoidoriginal.GetObject( i ));
-			C_ASW_Marine *obj = pGameResource->EnumeratedMarine(i);
+			C_ASW_Marine *obj = pGameResource->EnumeratedMarine( i );
 
-			if( !obj || obj == pMarine )
+			if ( !obj || obj == pMarine )
 				continue;
 
 			// don't avoid aliens laying dead on the floor
-			if (!obj->IsAlive() || obj->GetHealth() <= 0)
+			if ( !obj->IsAlive() || obj->GetHealth() <= 0 )
 				continue;
 
 			return;
 		}
 		m_bGuidingMarine = false;	// if we're moving freely and the original way is clear, no need to guide anymore
-	}	
+	}
 	// if we got here, it means we didn't have to do any emergency stopping
 	//if (!bStill)	// if we're moving somewhere and we're didn't have to emergency stop, chances are we're okay
 		//return;	
@@ -2104,14 +2104,14 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 
 void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, CUserCmd *pCmd )
 {
-	C_ASW_Marine* pMarine = GetMarine();
-	if (! pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC )
 	{
 		return;
 	}
 
 	// Don't avoid if noclipping or in movetype none
-	switch ( pMarine->GetMoveType() )
+	switch ( pNPC->GetMoveType() )
 	{
 	case MOVETYPE_NOCLIP:
 	case MOVETYPE_NONE:
@@ -2121,37 +2121,37 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 		break;
 	}
 
-// 	if (gpGlobals->maxClients > 1)
-// 		MarineStopMoveIfBlocked(flFrameTime, pCmd, pMarine);		
+	// 	if (gpGlobals->maxClients > 1)
+	// 		MarineStopMoveIfBlocked(flFrameTime, pCmd, pMarine);		
 	return;
 
 	// Try to steer away from any objects/players we might interpenetrate
-	Vector size = pMarine->WorldAlignSize();
+	Vector size = pNPC->WorldAlignSize();
 
 	float radius = 0.7f * sqrt( size.x * size.x + size.y * size.y );
-	float curspeed = pMarine->GetLocalVelocity().Length2D();
+	float curspeed = pNPC->GetLocalVelocity().Length2D();
 
-//	int slot = 1;
+	//	int slot = 1;
 
-//	engine->Con_NPrintf( slot++, "speed %f\n", curspeed );
-//	engine->Con_NPrintf( slot++, "radius %f\n", radius );
+	//	engine->Con_NPrintf( slot++, "speed %f\n", curspeed );
+	//	engine->Con_NPrintf( slot++, "radius %f\n", radius );
 
-	// If running, use a larger radius
+		// If running, use a larger radius
 	float factor = 1.0f;
 
 	if ( curspeed > 150.0f )
 	{
 		factor = ( 1.0f + ( curspeed - 150.0f ) / 150.0f );
 
-	//	engine->Con_NPrintf( slot++, "scaleup (%f) to radius %f\n", factor, radius * factor );
+		//	engine->Con_NPrintf( slot++, "scaleup (%f) to radius %f\n", factor, radius * factor );
 
 		radius = radius * factor;
 	}
 
 	Vector currentdir;
 	Vector rightdir;
-	
-	QAngle vAngles = pCmd->viewangles;	
+
+	QAngle vAngles = pCmd->viewangles;
 
 	vAngles.x = 0;
 
@@ -2163,13 +2163,13 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 	{
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
 	}
-	
-	
-		
+
+
+
 	bool istryingtomove = false;
 	bool ismovingforward = false;
-	if ( fabs( pCmd->forwardmove ) > 0.0f || 
-		 fabs( pCmd->sidemove ) > 0.0f )
+	if ( fabs( pCmd->forwardmove ) > 0.0f ||
+		fabs( pCmd->sidemove ) > 0.0f )
 	{
 		istryingtomove = true;
 		if ( pCmd->forwardmove > 1.0f )
@@ -2183,7 +2183,7 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 		 //radius *= 1.3f;
 
 	CASW_MarineAndObjectEnumerator avoid( radius );
-	partition->EnumerateElementsInSphere( PARTITION_CLIENT_SOLID_EDICTS, pMarine->GetAbsOrigin(), radius, false, &avoid );
+	partition->EnumerateElementsInSphere( PARTITION_CLIENT_SOLID_EDICTS, pNPC->GetAbsOrigin(), radius, false, &avoid );
 
 	// Okay, decide how to avoid if there's anything close by
 	int c = avoid.GetObjectCount();
@@ -2193,24 +2193,24 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 	//engine->Con_NPrintf( slot++, "moving %s forward %s\n", istryingtomove ? "true" : "false", ismovingforward ? "true" : "false"  );
 
 	float adjustforwardmove = 0.0f;
-	float adjustsidemove	= 0.0f;
+	float adjustsidemove = 0.0f;
 
 	int i;
 	for ( i = 0; i < c; i++ )
 	{
-		C_AI_BaseNPC *obj = dynamic_cast< C_AI_BaseNPC *>(avoid.GetObject( i ));
+		C_AI_BaseNPC *obj = dynamic_cast< C_AI_BaseNPC * >( avoid.GetObject( i ) );
 
-		if( !obj || obj == pMarine )
+		if ( !obj || obj == pNPC )
 			continue;
 
 		// don't avoid aliens laying dead on the floor
-		if (!obj->IsAlive() || obj->GetHealth() <= 0)
+		if ( !obj->IsAlive() || obj->GetHealth() <= 0 )
 			continue;
 
-		Vector vecToObject = obj->GetAbsOrigin() - pMarine->GetAbsOrigin();
+		Vector vecToObject = obj->GetAbsOrigin() - pNPC->GetAbsOrigin();
 
 		float flDist = vecToObject.Length2D();
-		
+
 		// Figure out a 2D radius for the object
 		Vector vecWorldMins, vecWorldMaxs;
 		obj->CollisionProp()->WorldSpaceAABB( &vecWorldMins, &vecWorldMaxs );
@@ -2229,9 +2229,9 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 		VectorNormalize( vRayDir );
 
-		if ( !IntersectInfiniteRayWithSphere( pMarine->GetAbsOrigin(), vRayDir,
-												obj->GetAbsOrigin(), radius,
-												&flHit1, &flHit2 ) )
+		if ( !IntersectInfiniteRayWithSphere( pNPC->GetAbsOrigin(), vRayDir,
+			obj->GetAbsOrigin(), radius,
+			&flHit1, &flHit2 ) )
 			continue;
 
 		float force = 1.0f;
@@ -2252,10 +2252,10 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 		if ( flDist < objectradius )
 		{
-			 fwd = currentdir.Dot( -vNPCForward );
-			 rt = rightdir.Dot( -vNPCForward );
+			fwd = currentdir.Dot( -vNPCForward );
+			rt = rightdir.Dot( -vNPCForward );
 
-			 //obj->SetEffects( EF_NODRAW );
+			//obj->SetEffects( EF_NODRAW );
 		}
 
 		// If running, then do a lot more sideways veer since we're not going to do anything to
@@ -2272,14 +2272,14 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 		forward = forwardscale * fwd * force * AVOID_SPEED;
 		side = sidescale * rt * force * AVOID_SPEED;
 
-	//	engine->Con_NPrintf( slot++, "forward %f side %f\n", forward, side );
+		//	engine->Con_NPrintf( slot++, "forward %f side %f\n", forward, side );
 
-		adjustforwardmove	+= forward;
-		adjustsidemove		+= side;
+		adjustforwardmove += forward;
+		adjustsidemove += side;
 	}
 
-	pCmd->forwardmove	+= adjustforwardmove;
-	pCmd->sidemove		+= adjustsidemove;
+	pCmd->forwardmove += adjustforwardmove;
+	pCmd->sidemove += adjustsidemove;
 
 	if ( pCmd->forwardmove > 0.0f )
 	{
@@ -2307,7 +2307,7 @@ void C_ASW_Player::OnMissionRestart()
 	// if we get this message before fully connecting
 	//if ( physenv )
 	//{
-        //C_PhysPropClientside::RecreateAll();
+		//C_PhysPropClientside::RecreateAll();
 	//}
 
 	// todo: remove other clientside effects from the map?
@@ -2318,19 +2318,19 @@ void C_ASW_Player::OnMissionRestart()
 	RequestExperience();
 }
 
-void C_ASW_Player::SendBlipSpeech(int iMarine)
+void C_ASW_Player::SendBlipSpeech( int iMarine )
 {
 	char buffer[64];
-	sprintf(buffer, "cl_blipspeech %d", iMarine);
-	engine->ClientCmd(buffer);
+	sprintf( buffer, "cl_blipspeech %d", iMarine );
+	engine->ClientCmd( buffer );
 }
 
 void C_ASW_Player::CreateStimCamera()
 {
 	m_pStimCam = new C_ASW_PointCamera;
-	if (m_pStimCam)
+	if ( m_pStimCam )
 	{
-		if (!m_pStimCam->InitializeAsClientEntity( NULL, false ))
+		if ( !m_pStimCam->InitializeAsClientEntity( NULL, false ) )
 		{
 			UTIL_Remove( m_pStimCam );
 			m_pStimCam = NULL;
@@ -2342,55 +2342,55 @@ void C_ASW_Player::CreateStimCamera()
 
 // smooth the Z motion of the camera
 #define ASW_CAMERA_Z_SPEED 60
-void C_ASW_Player::SmoothCameraZ(Vector &CameraPos)
+void C_ASW_Player::SmoothCameraZ( Vector &CameraPos )
 {
 	// no change if we have no marine or just starting out or just changed marine
-	if (!GetViewMarine() || GetViewMarine() != m_hLastMarine.Get() || m_vecLastCameraPosition == vec3_origin)
+	if ( !GetViewNPC() || GetViewNPC() != m_hLastNPC.Get() || m_vecLastCameraPosition == vec3_origin )
 	{
 		// clear any poison effects - bad place for this!
 		g_fMarinePoisonDuration = 0;
 		return;
 	}
 
-	float fAmountToMove = abs(CameraPos.z - m_vecLastCameraPosition.z) / 10.0f;
+	float fAmountToMove = abs( CameraPos.z - m_vecLastCameraPosition.z ) / 10.0f;
 	fAmountToMove *= gpGlobals->frametime * ASW_CAMERA_Z_SPEED;
-	if (CameraPos.z > m_vecLastCameraPosition.z)
+	if ( CameraPos.z > m_vecLastCameraPosition.z )
 	{
 		//CameraPos.z = MIN(m_vecLastCameraPosition.z + gpGlobals->frametime * ASW_CAMERA_Z_SPEED, CameraPos.z);
-		CameraPos.z = MIN(m_vecLastCameraPosition.z + fAmountToMove, CameraPos.z);
+		CameraPos.z = MIN( m_vecLastCameraPosition.z + fAmountToMove, CameraPos.z );
 	}
-	else if (CameraPos.z < m_vecLastCameraPosition.z)
+	else if ( CameraPos.z < m_vecLastCameraPosition.z )
 	{
 		//CameraPos.z = MAX(m_vecLastCameraPosition.z - gpGlobals->frametime * ASW_CAMERA_Z_SPEED, CameraPos.z);
-		CameraPos.z = MAX(m_vecLastCameraPosition.z - fAmountToMove, CameraPos.z);
+		CameraPos.z = MAX( m_vecLastCameraPosition.z - fAmountToMove, CameraPos.z );
 	}
-}	
+}
 
 // smooth the camera's overall coords when the player changes from marine to marine
-bool C_ASW_Player::SmoothMarineChangeCamera(Vector &CameraPos)
+bool C_ASW_Player::SmoothMarineChangeCamera( Vector &CameraPos )
 {
-	if (GetMarine() != m_hMarine.Get())
+	if ( GetViewNPC() && GetViewNPC() != m_hLastNPC.Get() )
 	{
 		g_RD_Rich_Presence.UpdatePresence();
-	}
 
-	if (GetViewMarine() && GetViewMarine() != m_hLastMarine.Get() && m_hLastMarine.Get())
-	{
-		// we changed, need to setup our smoothing vector		
-		if (m_fMarineChangeSmooth <= 0 && GetViewMarine()->GetAbsOrigin().DistTo(m_vecMarineChangeCameraPos) < asw_marine_switch_blend_max_dist.GetFloat())
+		if ( m_hLastNPC.Get() )
 		{
-			// check the camera can slide between the two camera positions without going inside a solid
-			trace_t tr;
-			UTIL_TraceLine(CameraPos, m_vecMarineChangeCameraPos, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr);
-			if (tr.fraction >= 1.0f)
-				m_fMarineChangeSmooth = 1.0f;
+			// we changed, need to setup our smoothing vector		
+			if ( m_fMarineChangeSmooth <= 0 && GetViewNPC()->GetAbsOrigin().DistTo( m_vecMarineChangeCameraPos ) < asw_marine_switch_blend_max_dist.GetFloat() )
+			{
+				// check the camera can slide between the two camera positions without going inside a solid
+				trace_t tr;
+				UTIL_TraceLine( CameraPos, m_vecMarineChangeCameraPos, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
+				if ( tr.fraction >= 1.0f )
+					m_fMarineChangeSmooth = 1.0f;
+			}
 		}
 	}
 
-	if (m_fMarineChangeSmooth > 0)	// we're in the middle of a smooth, transition between the two
+	if ( m_fMarineChangeSmooth > 0 )	// we're in the middle of a smooth, transition between the two
 	{
 		Vector diff = m_vecMarineChangeCameraPos - CameraPos;
-		float f = 1.0f - ( ( sin(m_fMarineChangeSmooth * DEG2RAD(180) + DEG2RAD(90)) * 0.5f )+ 0.5f);
+		float f = 1.0f - ( ( sin( m_fMarineChangeSmooth * DEG2RAD( 180 ) + DEG2RAD( 90 ) ) * 0.5f ) + 0.5f );
 
 		diff *= f;
 		CameraPos += diff;
@@ -2409,104 +2409,106 @@ bool C_ASW_Player::SmoothMarineChangeCamera(Vector &CameraPos)
 #define ASW_CAMERA_YAW_SPEED 60
 float C_ASW_Player::ASW_ClampYaw( float yawSpeedPerSec, float current, float target, float time )
 {
-	if (current != target)
+	if ( current != target )
 	{
 		float speed = yawSpeedPerSec * time;
 		float move = target - current;
 
-		if (target > current)
+		if ( target > current )
 		{
-			if (move >= 180)
+			if ( move >= 180 )
 				move = move - 360;
 		}
 		else
 		{
-			if (move <= -180)
+			if ( move <= -180 )
 				move = move + 360;
 		}
 
-		speed *= abs(move) / 360.0f;
+		speed *= abs( move ) / 360.0f;
 
-		if (move > 0)
+		if ( move > 0 )
 		{// turning to the npc's left
-			if (move > speed)
+			if ( move > speed )
 				move = speed;
 		}
 		else
 		{// turning to the npc's right
-			if (move < -speed)
+			if ( move < -speed )
 				move = -speed;
 		}
-		
-		return anglemod(current + move);
+
+		return anglemod( current + move );
 	}
-	
+
 	return target;
 }
 
 // smoothly rotates the camera yaw to the desired value, to give the camera a nice springy feeling when driving
-void C_ASW_Player::SmoothCameraYaw(float &yaw)
+void C_ASW_Player::SmoothCameraYaw( float &yaw )
 {
-	if (!GetViewMarine())
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( GetViewNPC() );
+	if ( !pMarine )
 		return;
+
 	// no change if we have no marine or just starting out or just changed marine
-	if (GetViewMarine()->IsInVehicle()!=m_bLastInVehicle || m_fLastVehicleYaw == 0)
+	if ( pMarine->IsInVehicle() != m_bLastInVehicle || m_fLastVehicleYaw == 0 )
 	{
-		m_bLastInVehicle = GetViewMarine()->IsInVehicle();
+		m_bLastInVehicle = pMarine->IsInVehicle();
 		m_fLastVehicleYaw = yaw;
 		return;
 	}
 
 	float dt = MIN( 0.2, gpGlobals->frametime );
-	
+
 	yaw = ASW_ClampYaw( 1000.0f, m_fLastVehicleYaw, yaw, dt );
 
-	m_bLastInVehicle = GetViewMarine()->IsInVehicle();
-	m_fLastVehicleYaw = yaw;//GetViewMarine()->EyeAngles()[YAW];
+	m_bLastInVehicle = pMarine->IsInVehicle();
+	m_fLastVehicleYaw = yaw;
 }
 
-// smooth the simulated floo rused for aiming
+// smooth the simulated floor used for aiming
 #define ASW_FLOOR_Z_SPEED 100
-void C_ASW_Player::SmoothAimingFloorZ(float &FloorZ)
+void C_ASW_Player::SmoothAimingFloorZ( float &FloorZ )
 {
-	if (m_fLastFloorZ == 0 || m_hLastAimingFloorZMarine.Get() != GetViewMarine())
+	if ( m_fLastFloorZ == 0 || m_hLastAimingFloorZNPC.Get() != GetViewNPC() )
 	{
 		m_fLastFloorZ = FloorZ;
-		m_hLastAimingFloorZMarine = GetViewMarine();
+		m_hLastAimingFloorZNPC = GetViewNPC();
 		return;
 	}
-	float fAmountToMove = abs(FloorZ - m_fLastFloorZ) / 10.0f;
+	float fAmountToMove = abs( FloorZ - m_fLastFloorZ ) / 10.0f;
 	fAmountToMove *= gpGlobals->frametime * ASW_FLOOR_Z_SPEED;
-	if (FloorZ > m_fLastFloorZ)
+	if ( FloorZ > m_fLastFloorZ )
 	{
-		FloorZ = MIN(m_fLastFloorZ + fAmountToMove, FloorZ);
+		FloorZ = MIN( m_fLastFloorZ + fAmountToMove, FloorZ );
 	}
-	else if (FloorZ < m_fLastFloorZ)
+	else if ( FloorZ < m_fLastFloorZ )
 	{
-		FloorZ = MAX(m_fLastFloorZ - fAmountToMove, FloorZ);
+		FloorZ = MAX( m_fLastFloorZ - fAmountToMove, FloorZ );
 	}
 	m_fLastFloorZ = FloorZ;
-}	
+}
 
 void C_ASW_Player::RequestMissionRestart()
 {
 	char buffer[20];
-	Q_snprintf(buffer, sizeof(buffer), "cl_restart_mission");
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_restart_mission" );
+	engine->ClientCmd( buffer );
 }
 
 void C_ASW_Player::RequestSkillUp()
 {
 	char buffer[20];
-	Q_snprintf(buffer, sizeof(buffer), "cl_skill_up");
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_skill_up" );
+	engine->ClientCmd( buffer );
 }
 
 void C_ASW_Player::RequestSkillDown()
 {
 	char buffer[20];
-	Q_snprintf(buffer, sizeof(buffer), "cl_skill_down");
-	engine->ClientCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_skill_down" );
+	engine->ClientCmd( buffer );
 }
 
 bool C_ASW_Player::ShouldAutoReload()
@@ -2516,80 +2518,80 @@ bool C_ASW_Player::ShouldAutoReload()
 
 C_BaseCombatWeapon *C_ASW_Player::GetActiveWeapon( void ) const
 {
-	const C_ASW_Marine *pMarine = GetViewMarine();
-	if ( !pMarine )
+	const C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( !pNPC )
 	{
 		return BaseClass::GetActiveWeapon();
 	}
 
-	return pMarine->GetActiveWeapon();
+	return pNPC->GetActiveWeapon();
 }
 
 C_BaseCombatWeapon *C_ASW_Player::GetWeapon( int i ) const
 {
-	const C_ASW_Marine *pMarine = GetViewMarine();
-	if ( !pMarine )
+	const C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( !pNPC )
 	{
 		return BaseClass::GetWeapon( i );
 	}
 
-	return pMarine->GetWeapon( i );
+	return pNPC->GetWeapon( i );
 }
 
 int C_ASW_Player::GetHealth() const
 {
-	const C_ASW_Marine *pMarine = GetViewMarine();
-	if ( !pMarine )
+	const C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( !pNPC )
 	{
 		return BaseClass::GetHealth();
 	}
 
-	return pMarine->GetHealth();
+	return pNPC->GetHealth();
 }
 
 int C_ASW_Player::GetMaxHealth() const
 {
-	const C_ASW_Marine *pMarine = GetViewMarine();
-	if ( !pMarine )
+	const C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( !pNPC )
 	{
 		return BaseClass::GetMaxHealth();
 	}
 
-	return pMarine->GetMaxHealth();
+	return pNPC->GetMaxHealth();
 }
 
-C_ASW_Marine* C_ASW_Player::FindMarineToHoldOrder(const Vector &pos)
+C_ASW_Marine *C_ASW_Player::FindMarineToHoldOrder( const Vector &pos )
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return NULL;
 
-	C_ASW_Marine *pMyMarine = GetMarine();
-	if (!pMyMarine)
+	C_ASW_Marine *pMyMarine = C_ASW_Marine::AsMarine( GetNPC() );
+	if ( !pMyMarine )
 		return NULL;
 
 	// check if we preselected a specific marine to order
 	C_ASW_Marine *pTarget = m_hOrderingMarine.Get();
 
 	// find the nearest marine
-	if (!pTarget)
+	if ( !pTarget )
 	{
 		float nearest_dist = 9999;
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
-			C_ASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-			if (!pMR)
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
 				continue;
 
-			C_ASW_Marine* pMarine = pMR->GetMarineEntity();
-			if (!pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0
-					|| pMarine->GetCommander()!=this)		// skip if dead
+			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+			if ( !pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0
+				|| pMarine->GetCommander() != this )		// skip if dead
 				continue;
-		
-			float distance = pos.DistTo(pMarine->GetAbsOrigin());
+
+			float distance = pos.DistTo( pMarine->GetAbsOrigin() );
 			//if (pMarine->GetASWOrders() != ASW_ORDER_FOLLOW)		// bias against marines that are already holding position somewhere
 				//distance += 5000;
-			if (distance < nearest_dist)
+			if ( distance < nearest_dist )
 			{
 				nearest_dist = distance;
 				pTarget = pMarine;
@@ -2599,40 +2601,40 @@ C_ASW_Marine* C_ASW_Player::FindMarineToHoldOrder(const Vector &pos)
 	return pTarget;
 }
 
-C_ASW_Marine* C_ASW_Player::FindMarineToFollowOrder(const Vector &pos)
+C_ASW_Marine *C_ASW_Player::FindMarineToFollowOrder( const Vector &pos )
 {
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return NULL;
 
-	C_ASW_Marine *pMyMarine = GetMarine();
-	if (!pMyMarine)
+	C_ASW_Marine *pMyMarine = C_ASW_Marine::AsMarine( GetNPC() );
+	if ( !pMyMarine )
 		return NULL;
 
 	// check if we preselected a specific marine to order
 	C_ASW_Marine *pTarget = m_hOrderingMarine.Get();
 
 	// find the nearest marine
-	if (!pTarget)
+	if ( !pTarget )
 	{
 		float nearest_dist = 9999;
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
-			C_ASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-			if (!pMR)
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
 				continue;
 
-			C_ASW_Marine* pMarine = pMR->GetMarineEntity();
-			if (!pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0
-					|| pMarine->GetCommander()!=this)		// skip if dead
+			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+			if ( !pMarine || pMarine == pMyMarine || pMarine->GetHealth() <= 0
+				|| pMarine->GetCommander() != this )		// skip if dead
 				continue;
 
-			if (pMarine->GetASWOrders() == ASW_ORDER_FOLLOW)
+			if ( pMarine->GetASWOrders() == ASW_ORDER_FOLLOW )
 				continue;
-		
-			float distance = pos.DistTo(pMarine->GetAbsOrigin());
-			
-			if (distance < nearest_dist)
+
+			float distance = pos.DistTo( pMarine->GetAbsOrigin() );
+
+			if ( distance < nearest_dist )
 			{
 				nearest_dist = distance;
 				pTarget = pMarine;
@@ -2642,22 +2644,22 @@ C_ASW_Marine* C_ASW_Player::FindMarineToFollowOrder(const Vector &pos)
 	return pTarget;
 }
 
-ConVar asw_local_dlight_radius("asw_local_dlight_radius", "0", FCVAR_CHEAT, "Radius of the light around the marine.");
-ConVar asw_local_dlight_offsetx("asw_local_dlight_offsetx", "0", FCVAR_CHEAT, "Offset of the local dlight");
-ConVar asw_local_dlight_offsety("asw_local_dlight_offsety", "-15", FCVAR_CHEAT, "Offset of the local local");
-ConVar asw_local_dlight_offsetz("asw_local_dlight_offsetz", "95", FCVAR_CHEAT, "Offset of the flashlight dlight");
-ConVar asw_local_dlight_r("asw_local_dlight_r", "250", FCVAR_CHEAT, "Red component of local colour");
-ConVar asw_local_dlight_g("asw_local_dlight_g", "250", FCVAR_CHEAT, "Green component of local colour");
-ConVar asw_local_dlight_b("asw_local_dlight_b", "250", FCVAR_CHEAT, "Blue component of local colour");
-ConVar asw_local_dlight_exponent("asw_local_dlight_exponent", "3", FCVAR_CHEAT, "Exponent of local colour");
-ConVar asw_local_dlight_rotate("asw_local_dlight_rotate", "0", FCVAR_CHEAT, "Whether local dlight's offset is rotated by marine facing");
+ConVar asw_local_dlight_radius( "asw_local_dlight_radius", "0", FCVAR_CHEAT, "Radius of the light around the marine." );
+ConVar asw_local_dlight_offsetx( "asw_local_dlight_offsetx", "0", FCVAR_CHEAT, "Offset of the local dlight" );
+ConVar asw_local_dlight_offsety( "asw_local_dlight_offsety", "-15", FCVAR_CHEAT, "Offset of the local local" );
+ConVar asw_local_dlight_offsetz( "asw_local_dlight_offsetz", "95", FCVAR_CHEAT, "Offset of the flashlight dlight" );
+ConVar asw_local_dlight_r( "asw_local_dlight_r", "250", FCVAR_CHEAT, "Red component of local colour" );
+ConVar asw_local_dlight_g( "asw_local_dlight_g", "250", FCVAR_CHEAT, "Green component of local colour" );
+ConVar asw_local_dlight_b( "asw_local_dlight_b", "250", FCVAR_CHEAT, "Blue component of local colour" );
+ConVar asw_local_dlight_exponent( "asw_local_dlight_exponent", "3", FCVAR_CHEAT, "Exponent of local colour" );
+ConVar asw_local_dlight_rotate( "asw_local_dlight_rotate", "0", FCVAR_CHEAT, "Whether local dlight's offset is rotated by marine facing" );
 
 
 void C_ASW_Player::UpdateLocalMarineGlow()
 {
-	C_ASW_Marine *pMarine = GetViewMarine();
+	C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
 
-	if ( !pMarine )
+	if ( !pNPC )
 	{
 		if ( m_pLocalMarineGlow )
 		{
@@ -2669,7 +2671,7 @@ void C_ASW_Player::UpdateLocalMarineGlow()
 	{
 		if ( !m_pLocalMarineGlow )
 		{
-			m_pLocalMarineGlow = effects->CL_AllocDlight ( index );
+			m_pLocalMarineGlow = effects->CL_AllocDlight( index );
 		}
 
 		if ( m_pLocalMarineGlow )
@@ -2677,13 +2679,13 @@ void C_ASW_Player::UpdateLocalMarineGlow()
 			if ( asw_local_dlight_rotate.GetBool() )
 			{
 				Vector vecForward, vecRight, vecUp;
-				AngleVectors( pMarine->GetLocalAngles(), &vecForward, &vecRight, &vecUp );
-				m_pLocalMarineGlow->origin = pMarine->GetAbsOrigin() + vecForward * asw_local_dlight_offsetx.GetFloat()
-					+ vecRight * asw_local_dlight_offsety.GetFloat() + vecUp * asw_local_dlight_offsetz.GetFloat();			
+				AngleVectors( pNPC->GetLocalAngles(), &vecForward, &vecRight, &vecUp );
+				m_pLocalMarineGlow->origin = pNPC->GetAbsOrigin() + vecForward * asw_local_dlight_offsetx.GetFloat()
+					+ vecRight * asw_local_dlight_offsety.GetFloat() + vecUp * asw_local_dlight_offsetz.GetFloat();
 			}
 			else
 			{
-				m_pLocalMarineGlow->origin = pMarine->GetAbsOrigin();
+				m_pLocalMarineGlow->origin = pNPC->GetAbsOrigin();
 				m_pLocalMarineGlow->origin.x += asw_local_dlight_offsetx.GetFloat();
 				m_pLocalMarineGlow->origin.y += asw_local_dlight_offsety.GetFloat();
 				m_pLocalMarineGlow->origin.z += asw_local_dlight_offsetz.GetFloat();
@@ -2706,14 +2708,14 @@ extern "C"
 };
 
 namespace
-{	
+{
 	// hacky function from mp3player to copy the custom sound file into the game folder so the filesystem can access it
 	void GetLocalCopyOfStimMusic( const char *filename, char *outsong, size_t outlen )
 	{
-		char fn[ 512 ];
+		char fn[512];
 		Q_snprintf( fn, sizeof( fn ), "%s", filename );
 
-		outsong[ 0 ] = 0;
+		outsong[0] = 0;
 
 		// Get temp filename from crc
 		CRC32_t crc;
@@ -2721,10 +2723,10 @@ namespace
 		CRC32_ProcessBuffer( &crc, fn, Q_strlen( fn ) );
 		CRC32_Final( &crc );
 
-		char hexname[ 16 ];
-		Q_binarytohex( (const byte *)&crc, sizeof( crc ), hexname, sizeof( hexname ) );
+		char hexname[16];
+		Q_binarytohex( ( const byte * )&crc, sizeof( crc ), hexname, sizeof( hexname ) );
 
-		char hexfilename[ 512 ];
+		char hexfilename[512];
 		Q_snprintf( hexfilename, sizeof( hexfilename ), "sound/_mp3/%s.mp3", hexname );
 
 		Q_FixSlashes( hexfilename );
@@ -2736,11 +2738,11 @@ namespace
 		else
 		{
 			// Make a local copy
-			char mp3_temp_path[ 512 ];
+			char mp3_temp_path[512];
 			Q_snprintf( mp3_temp_path, sizeof( mp3_temp_path ), "sound/_mp3" );
 			g_pFullFileSystem->CreateDirHierarchy( mp3_temp_path, "MOD" );
 
-			char destpath[ 512 ];
+			char destpath[512];
 			Q_snprintf( destpath, sizeof( destpath ), "%s/%s", engine->GetGameDirectory(), hexfilename );
 			Q_FixSlashes( destpath );
 
@@ -2763,37 +2765,37 @@ static void GetLocalCopyOfStimMusic( const char *filename, char *outsong, size_t
 
 void C_ASW_Player::StartStimMusic()
 {
-	if (ASWGameRules() && !ASWGameRules()->ShouldPlayStimMusic())
+	if ( ASWGameRules() && !ASWGameRules()->ShouldPlayStimMusic() )
 		return;
 
-	CLocalPlayerFilter filter;	
-	if (!m_pStimMusic)		
+	CLocalPlayerFilter filter;
+	if ( !m_pStimMusic )
 	{
 		// Check if custom combat music is playing
-		if( g_ASWJukebox.IsMusicPlaying() )
+		if ( g_ASWJukebox.IsMusicPlaying() )
 			return;
 
 		if ( Q_strlen( asw_stim_music.GetString() ) > 0 )
 		{
-			char soundname[ 512 ];
+			char soundname[512];
 			soundname[0] = '#';
 			soundname[1] = 0;
-			
+
 			GetLocalCopyOfStimMusic( asw_stim_music.GetString(), &soundname[1], sizeof( soundname ) - 1 );
-			if ( soundname[ 1 ] )
+			if ( soundname[1] )
 			{
 				m_pStimMusic = CSoundEnvelopeController::GetController().SoundCreate( filter, 0, CHAN_STATIC, soundname, SNDLVL_NONE );
 			}
 		}
-		
+
 		if ( !m_pStimMusic )
 		{
 			m_pStimMusic = CSoundEnvelopeController::GetController().SoundCreate( filter, 0, "asw_song.stims" );
 		}
 
-		if (m_pStimMusic)
+		if ( m_pStimMusic )
 		{
-			CSoundEnvelopeController::GetController().Play( m_pStimMusic, 1.0, 100 );			
+			CSoundEnvelopeController::GetController().Play( m_pStimMusic, 1.0, 100 );
 		}
 	}
 	else
@@ -2805,11 +2807,11 @@ void C_ASW_Player::StartStimMusic()
 	m_bStartedStimMusic = true;
 }
 
-void C_ASW_Player::StopStimMusic(bool bInstantly)
+void C_ASW_Player::StopStimMusic( bool bInstantly )
 {
-	if (m_pStimMusic)
+	if ( m_pStimMusic )
 	{
-		if (bInstantly)
+		if ( bInstantly )
 		{
 			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 			controller.SoundDestroy( m_pStimMusic );
@@ -2837,22 +2839,24 @@ void C_ASW_Player::UpdateOnRemove()
 	BaseClass::UpdateOnRemove();
 	StopStimMusic();
 	ClearStimMusic();
-	if (m_bPlayingSingleBreathSound)
+	if ( m_bPlayingSingleBreathSound )
 	{
 		StopStimSound();
 	}
 }
 
-fogparams_t* C_ASW_Player::GetFogParams( void )
+fogparams_t *C_ASW_Player::GetFogParams( void )
 {
-	static fogparams_t RemoteTurretFog;
-	if ( GetViewMarine() && GetViewMarine()->IsControllingTurret() )
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( GetViewNPC() );
+	if ( pMarine && pMarine->IsControllingTurret() )
 	{
+		static fogparams_t RemoteTurretFog;
+
 		RemoteTurretFog.enable = true;
-		RemoteTurretFog.colorPrimary.SetR(0);
-		RemoteTurretFog.colorPrimary.SetG(0);
-		RemoteTurretFog.colorPrimary.SetB(0);
-		RemoteTurretFog.colorPrimary.SetA(255);
+		RemoteTurretFog.colorPrimary.SetR( 0 );
+		RemoteTurretFog.colorPrimary.SetG( 0 );
+		RemoteTurretFog.colorPrimary.SetB( 0 );
+		RemoteTurretFog.colorPrimary.SetA( 255 );
 		RemoteTurretFog.colorSecondary = RemoteTurretFog.colorPrimary;
 		RemoteTurretFog.start = asw_turret_fog_start.GetFloat();
 		RemoteTurretFog.end = asw_turret_fog_end.GetFloat();
@@ -2860,7 +2864,7 @@ fogparams_t* C_ASW_Player::GetFogParams( void )
 		RemoteTurretFog.maxdensity = 1;
 		return &RemoteTurretFog;
 	}
-	
+
 	return &m_CurrentFog;
 }
 
@@ -2868,13 +2872,13 @@ fogparams_t* C_ASW_Player::GetFogParams( void )
 void __MsgFunc_LaunchCampaignMap( bf_read &msg )
 {
 	char mapName[255];
-	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );	
+	Q_FileBase( engine->GetLevelName(), mapName, sizeof( mapName ) );
 	// check if this is the intro map, if so then launch the campaign page
 	if ( !Q_strnicmp( mapName, "intro", 5 ) )
 	{
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer)
-		{			
+		if ( pPlayer )
+		{
 			pPlayer->LaunchCampaignFrame();
 		}
 	}
@@ -2889,8 +2893,8 @@ void C_ASW_Player::LaunchCredits( vgui::Panel *pParent /*= NULL*/ )
 	}
 
 	CreditsPanel *pPanel = new CreditsPanel( pParent, "Credits" );
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-	pPanel->SetScheme(scheme);
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	pPanel->SetScheme( scheme );
 	pPanel->SetZPos( 200 );
 	//pPanel->MakePopup();
 	//pPanel->MoveToFront();
@@ -2899,31 +2903,31 @@ void C_ASW_Player::LaunchCredits( vgui::Panel *pParent /*= NULL*/ )
 void C_ASW_Player::LaunchCainMail()
 {
 	CainMailPanel *pPanel = new CainMailPanel( GetClientMode()->GetViewport(), "Credits" );
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-	pPanel->SetScheme(scheme);
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	pPanel->SetScheme( scheme );
 	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( scheme );
-	pPanel->StartFadeIn(pScheme);
+	pPanel->StartFadeIn( pScheme );
 }
 
 void __MsgFunc_LaunchCredits( bf_read &msg )
-{	
-	Msg("__MsgFunc_LaunchCredits\n");
+{
+	Msg( "__MsgFunc_LaunchCredits\n" );
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
-	{			
-		Msg("  so launching credits\n");
+	if ( pPlayer )
+	{
+		Msg( "  so launching credits\n" );
 		pPlayer->LaunchCredits();
-	}	
+	}
 }
 USER_MESSAGE_REGISTER( LaunchCredits );
 
 void __MsgFunc_LaunchCainMail( bf_read &msg )
-{	
+{
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
-	{			
+	if ( pPlayer )
+	{
 		pPlayer->LaunchCainMail();
-	}	
+	}
 }
 USER_MESSAGE_REGISTER( LaunchCainMail );
 
@@ -2934,14 +2938,14 @@ bool C_ASW_Player::ShouldRegenerateOriginFromCellBits() const
 
 bool C_ASW_Player::IsSniperScopeActive()
 {
-	C_ASW_Marine *pMarine = GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( !pNPC )
 		return false;
 
-	C_BaseCombatWeapon*	pWeapon = pMarine->GetActiveWeapon();
+	C_BaseCombatWeapon *pWeapon = pNPC->GetActiveWeapon();
 	if ( pWeapon && pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE )
 	{
-		C_ASW_Weapon_Sniper_Rifle *pSniper = assert_cast<C_ASW_Weapon_Sniper_Rifle*>( pWeapon );
+		C_ASW_Weapon_Sniper_Rifle *pSniper = assert_cast< C_ASW_Weapon_Sniper_Rifle * >( pWeapon );
 		return pSniper->IsZoomed();
 	}
 	return false;
@@ -2951,7 +2955,7 @@ CSteamID C_ASW_Player::GetSteamID()
 {
 	int iIndex = entindex();
 	player_info_t pi;
-	if ( engine->GetPlayerInfo(iIndex, &pi) )
+	if ( engine->GetPlayerInfo( iIndex, &pi ) )
 	{
 		if ( pi.friendsID )
 		{

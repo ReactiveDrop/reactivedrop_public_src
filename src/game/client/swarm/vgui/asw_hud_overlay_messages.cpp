@@ -71,7 +71,7 @@ public:
 	bool PaintGenericBar( int iTextureID, float xPos, float yPos, int width, int height, float flProgress, Color BgColor );
 
 	vgui::Label *m_pSpectatingLabel;
-	CHandle<C_ASW_Marine> m_hLastSpectatingMarine;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastSpectatingNPC;
 	CHandle<C_ASW_Player> m_hLastSpectatingPlayer;
 	CNB_Vote_Panel *m_pVotePanel;
 
@@ -93,7 +93,7 @@ CASWHudOverlayMessages::CASWHudOverlayMessages( const char *pElementName ) : CAS
 	SetScheme(scheme);
 
 	m_pSpectatingLabel = new vgui::Label( this, "SpectatingLabel", "" );
-	m_hLastSpectatingMarine = NULL;
+	m_hLastSpectatingNPC = NULL;
 	m_hLastSpectatingPlayer = NULL;
 
 	m_pVotePanel = new CNB_Vote_Panel( this, "VotePanel" );
@@ -132,14 +132,14 @@ void CASWHudOverlayMessages::OnThink()
 	SetPaintEnabled(asw_draw_hud.GetBool());
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pSpectatingMarine = pPlayer ? pPlayer->GetSpectatingMarine() : NULL;
-	C_ASW_Player *pSpectatingPlayer = pSpectatingMarine && pSpectatingMarine->IsInhabited() ? pSpectatingMarine->GetCommander() : NULL;
+	C_ASW_Inhabitable_NPC *pSpectatingNPC = pPlayer ? pPlayer->GetSpectatingNPC() : NULL;
+	C_ASW_Player *pSpectatingPlayer = pSpectatingNPC && pSpectatingNPC->IsInhabited() ? pSpectatingNPC->GetCommander() : NULL;
 
-	m_pSpectatingLabel->SetVisible( pSpectatingMarine != NULL );
-	if ( pSpectatingMarine && ( pSpectatingMarine != m_hLastSpectatingMarine.Get() || pSpectatingPlayer != m_hLastSpectatingPlayer.Get() ) )
+	m_pSpectatingLabel->SetVisible( pSpectatingNPC != NULL );
+	if ( pSpectatingNPC && ( pSpectatingNPC != m_hLastSpectatingNPC.Get() || pSpectatingPlayer != m_hLastSpectatingPlayer.Get() ) )
 	{
 		UpdateSpectatingLabel();
-		m_hLastSpectatingMarine = pSpectatingMarine;
+		m_hLastSpectatingNPC = pSpectatingNPC;
 		m_hLastSpectatingPlayer = pSpectatingPlayer;
 	}
 }
@@ -215,28 +215,28 @@ void CASWHudOverlayMessages::UpdateSpectatingLabel()
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetSpectatingMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetSpectatingNPC();
+	if ( !pNPC )
 		return;
 
-	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
-	if ( !pProfile )
-		return;
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
+	CASW_Marine_Profile *pProfile = pMarine ? pMarine->GetMarineProfile() : NULL;
+	const char *szShortName = pProfile ? pProfile->GetShortName() : "";
 
 	wchar_t wbuffer[128];
-	if ( pMarine->GetCommander() && pMarine->IsInhabited() )
+	if ( pNPC->GetCommander() && pNPC->IsInhabited() )
 	{
 		wchar_t wplayer[34];
-		g_pVGuiLocalize->ConvertANSIToUnicode( pMarine->GetCommander()->GetPlayerName(), wplayer, sizeof( wplayer ) );	
+		g_pVGuiLocalize->ConvertANSIToUnicode( pNPC->GetCommander()->GetPlayerName(), wplayer, sizeof( wplayer ) );	
 		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
 			g_pVGuiLocalize->Find( "#asw_spectating_player" ), 2,
-			g_pVGuiLocalize->FindSafe( pProfile->GetShortName() ), wplayer);
+			g_pVGuiLocalize->FindSafe( szShortName ), wplayer);
 	}
 	else
 	{
 		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
 			g_pVGuiLocalize->Find( "#asw_spectating_marine" ), 1,
-			g_pVGuiLocalize->FindSafe( pProfile->GetShortName() ) );
+			g_pVGuiLocalize->FindSafe( szShortName ) );
 	}
 	
 	m_pSpectatingLabel->SetText(wbuffer);
@@ -248,7 +248,7 @@ void CASWHudOverlayMessages::PaintSpectatingOverlay()
 	if ( !pPlayer )
 		return;
 
-	if ( !pPlayer->GetSpectatingMarine() )
+	if ( !pPlayer->GetSpectatingNPC() )
 		return;
 
 	// draw black bar
@@ -273,8 +273,8 @@ void CASWHudOverlayMessages::PaintOverlays()
 		m_flDeathMessageStartTime = 0.0f;
 	}
 
-	C_ASW_Marine *marine = local->GetViewMarine();
-	if ( !marine || !marine->GetMarineResource())
+	C_ASW_Marine *marine = C_ASW_Marine::AsMarine( local->GetViewNPC() );
+	if ( !marine || !marine->GetMarineResource() )
 		return;
 
 	const bool bReloading = marine->GetActiveASWWeapon() && marine->GetActiveASWWeapon()->IsReloading();
@@ -491,7 +491,7 @@ bool CASWHudOverlayMessages::PaintDeathMessage()
 	}
 
 	wchar_t wszMarineDeathMessage[ 64 ];
-	if ( pLocalPlayer == pMR->GetCommander() && pMR->IsInhabited() && ( pLocalPlayer->GetMarine() == NULL || pLocalPlayer->GetMarine()->GetHealth() <= 0 ) )
+	if ( pLocalPlayer == pMR->GetCommander() && pMR->IsInhabited() && ( pLocalPlayer->GetNPC() == NULL || pLocalPlayer->GetNPC()->GetHealth() <= 0 ) )
 	{
 		V_snwprintf( wszMarineDeathMessage, ARRAYSIZE( wszMarineDeathMessage ), L"%s", g_pVGuiLocalize->Find( "#asw_hud_you_died" ) );
 	}

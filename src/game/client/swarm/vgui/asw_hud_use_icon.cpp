@@ -21,6 +21,8 @@
 extern ConVar asw_hud_alpha;
 extern ConVar asw_hud_scale;
 
+#define SHIFT_ICON_WHEN_HACKING
+
 //#define USE_AREA_WIDTH (288.f * fScale)
 #define USE_AREA_WIDTH (GetWide())
 #define USE_AREA_HEIGHT (160.f * fScale)
@@ -231,7 +233,7 @@ void CASW_HUD_Use_Icon::Paint()
 												255,
 												255,
 												bgalpha));			
-			int border = 7.0f * fScale;
+			border = 7.0f * fScale;
 
 			int backdrop_width = cw + border * 2;			
 			int backdrop_x = SCREEN_CENTER_X - (backdrop_width * 0.5f);
@@ -296,21 +298,21 @@ void CASW_HUD_Use_Icon::Paint()
 
 void CASW_HUD_Use_Icon::PositionIcon()
 {
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bHacking = false;
-	if (pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->m_hUsingEntity.Get())
+	if ( pPlayer && pPlayer->GetViewNPC() && pPlayer->GetViewNPC()->GetUsingEntity() )
 	{
-		C_ASW_Use_Area *pArea = dynamic_cast<C_ASW_Use_Area*>(pPlayer->GetViewMarine()->m_hUsingEntity.Get());
-		if (pArea)
+		C_ASW_Use_Area *pArea = dynamic_cast< C_ASW_Use_Area * >( pPlayer->GetViewNPC()->GetUsingEntity() );
+		if ( pArea )
 			bHacking = true;
 	}
 	InvalidateLayout( true );
-	if (bHacking != m_bHacking)
+	if ( bHacking != m_bHacking )
 	{
 		m_bHacking = bHacking;
 #ifdef SHIFT_ICON_WHEN_HACKING
 		// we skip fade animation when we move places
-		if (m_bHasQueued)
+		if ( m_bHasQueued )
 		{
 			FadeOut( 0.0f );
 		}

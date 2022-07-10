@@ -33,15 +33,15 @@ bool C_ASW_Use_Area::IsUsable(C_BaseEntity *pUser)
 	return m_bUseAreaEnabled.Get() && CollisionProp()->IsPointInBounds(pUser->WorldSpaceCenter());
 }
 
-bool C_ASW_Use_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Use_Area::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
 	// fill in by subclasses
 	return false;
 }
 
-bool C_ASW_Use_Area::CheckHeldObject( C_ASW_Marine *pMarine )
+bool C_ASW_Use_Area::CheckHeldObject( C_ASW_Inhabitable_NPC *pNPC )
 {
-	if ( !pMarine )
+	if ( !pNPC )
 	{
 		return false;
 	}
@@ -52,7 +52,7 @@ bool C_ASW_Use_Area::CheckHeldObject( C_ASW_Marine *pMarine )
 		return true;
 	}
 
-	C_RD_Weapon_Generic_Object *pObject = dynamic_cast<C_RD_Weapon_Generic_Object *>( pMarine->GetActiveASWWeapon() );
+	C_RD_Weapon_Generic_Object *pObject = dynamic_cast<C_RD_Weapon_Generic_Object *>( pNPC->GetActiveASWWeapon() );
 	if ( !pObject )
 	{
 		return false;

@@ -17,12 +17,18 @@
 // Generic give ammo function
 //-------------
 
-int ASW_GiveAmmo( CASW_Marine *pMarine, float flCount, const char *pszAmmoName, CBaseEntity *pAmmoEntity, bool bSuppressSound = false )
+int ASW_GiveAmmo( CASW_Inhabitable_NPC *pNPC, float flCount, const char *pszAmmoName, CBaseEntity *pAmmoEntity, bool bSuppressSound = false )
 {
-	int iAmmoType = GetAmmoDef()->Index(pszAmmoName);
+	int iAmmoType = GetAmmoDef()->Index( pszAmmoName );
 	if ( iAmmoType == -1 )
 	{
-		Msg("ERROR: Attempting to give unknown ammo type (%s)\n",pszAmmoName);
+		Msg( "ERROR: Attempting to give unknown ammo type (%s)\n", pszAmmoName );
+		return 0;
+	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+	{
 		return 0;
 	}
 
@@ -57,7 +63,7 @@ int ASW_GiveAmmo( CASW_Marine *pMarine, float flCount, const char *pszAmmoName, 
 			}
 		}
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "ammo_pickup" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "ammo_pickup" );
 		if ( event )
 		{
 			CASW_Player *pPlayer = pMarine->GetCommander();
@@ -86,12 +92,12 @@ void CASW_Ammo::Spawn( void )
 //---------------------------------------------------------
 bool CASW_Ammo::VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlayer )
 {
-	CASW_Ammo *pPickupPtr = dynamic_cast < CASW_Ammo* >( pPickup );
+	CASW_Ammo *pPickupPtr = dynamic_cast < CASW_Ammo * >( pPickup );
 
 	if ( !pPickupPtr )
 		return true;
 
-	IGameEvent * event = gameeventmanager->CreateEvent( "entity_visible" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "entity_visible" );
 	if ( event )
 	{
 		event->SetInt( "userid", pViewingPlayer->GetUserID() );
@@ -109,41 +115,41 @@ bool CASW_Ammo::VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlaye
 // Rifle Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Rifle, DT_ASW_Ammo_Rifle)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Rifle, DT_ASW_Ammo_Rifle )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Rifle )
-	DEFINE_KEYFIELD(m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary"),
+DEFINE_KEYFIELD( m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary" ),
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_rifle, CASW_Ammo_Rifle);
+LINK_ENTITY_TO_CLASS( asw_ammo_rifle, CASW_Ammo_Rifle );
 
 void CASW_Ammo_Rifle::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/ammo/ammoassaultrifle.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_R");
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammoassaultrifle.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_R" );
 }
 
 
 void CASW_Ammo_Rifle::Precache( void )
 {
-	PrecacheModel ("models/swarm/ammo/ammoassaultrifle.mdl");
+	PrecacheModel( "models/swarm/ammo/ammoassaultrifle.mdl" );
 }
 
-void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
 	// player has used this item	
-	if ( ASW_GiveAmmo( pMarine, 98, "ASW_R", this ) )
+	if ( ASW_GiveAmmo( pNPC, 98, "ASW_R", this ) )
 	{
 		if ( m_bAddSecondary )//add rifle grenade
 		{
 			bool bFilledActive = false;
-			CBaseCombatWeapon* pActive = pMarine->GetActiveWeapon();
+			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
 			if ( pActive && ( pActive->Classify() == CLASS_ASW_RIFLE || pActive->Classify() == CLASS_ASW_PRIFLE || pActive->Classify() == CLASS_ASW_COMBAT_RIFLE ) )
 			{
 				if ( pActive->Clip2() < pActive->GetMaxClip2() )
@@ -153,12 +159,12 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				}
 			}
 
-			if (!bFilledActive)
+			if ( !bFilledActive )
 			{
-				CBaseCombatWeapon* pWeapon;
+				CBaseCombatWeapon *pWeapon;
 				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 				{
-					pWeapon = pMarine->GetWeapon(i);
+					pWeapon = pNPC->GetWeapon( i );
 					if ( pWeapon == pActive )
 						continue;
 					if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_RIFLE || pWeapon->Classify() == CLASS_ASW_PRIFLE || pWeapon->Classify() == CLASS_ASW_COMBAT_RIFLE ) )
@@ -167,7 +173,7 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 				}
 			}
 		}
-		UTIL_Remove( this );	
+		UTIL_Remove( this );
 	}
 }
 
@@ -175,37 +181,37 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Autogun Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Autogun, DT_ASW_Ammo_Autogun)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Autogun, DT_ASW_Ammo_Autogun )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Autogun )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_autogun, CASW_Ammo_Autogun);
+LINK_ENTITY_TO_CLASS( asw_ammo_autogun, CASW_Ammo_Autogun );
 
 void CASW_Ammo_Autogun::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/ammo/ammoautogun.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_AG");
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammoautogun.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_AG" );
 }
 
 
 void CASW_Ammo_Autogun::Precache( void )
 {
-	PrecacheModel ("models/swarm/ammo/ammoautogun.mdl");
+	PrecacheModel( "models/swarm/ammo/ammoautogun.mdl" );
 }
 
-void CASW_Ammo_Autogun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Autogun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
 	// player has used this item	
-	if ( ASW_GiveAmmo( pMarine, 250, "ASW_AG", this ) )
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 250, "ASW_AG", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -213,36 +219,36 @@ void CASW_Ammo_Autogun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Shotgun Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Shotgun, DT_ASW_Ammo_Shotgun)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Shotgun, DT_ASW_Ammo_Shotgun )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Shotgun )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_shotgun, CASW_Ammo_Shotgun);
+LINK_ENTITY_TO_CLASS( asw_ammo_shotgun, CASW_Ammo_Shotgun );
 
 void CASW_Ammo_Shotgun::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammoshotgun.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_SG");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammoshotgun.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_SG" );
 }
 
 
 void CASW_Ammo_Shotgun::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammoshotgun.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammoshotgun.mdl" );
 }
 
-void CASW_Ammo_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Shotgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 8, "ASW_SG", this ))		// two clips per pack
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 8, "ASW_SG", this ) )		// two clips per pack
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -250,41 +256,40 @@ void CASW_Ammo_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Assault Shotgun Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Assault_Shotgun, DT_ASW_Ammo_Assault_Shotgun)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Assault_Shotgun, DT_ASW_Ammo_Assault_Shotgun )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Assault_Shotgun )
-	DEFINE_KEYFIELD(m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary"),
+DEFINE_KEYFIELD( m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary" ),
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_vindicator, CASW_Ammo_Assault_Shotgun);
+LINK_ENTITY_TO_CLASS( asw_ammo_vindicator, CASW_Ammo_Assault_Shotgun );
 
 void CASW_Ammo_Assault_Shotgun::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammovindicator.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_ASG");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammovindicator.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_ASG" );
 }
 
 
 void CASW_Ammo_Assault_Shotgun::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammovindicator.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammovindicator.mdl" );
 }
 
-void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-
-	if (ASW_GiveAmmo( pMarine, 14, "ASW_ASG", this ))
-	{	
+	if ( ASW_GiveAmmo( pNPC, 14, "ASW_ASG", this ) )
+	{
 		if ( m_bAddSecondary )
 		{
 			bool bFilledActive = false;
-			CBaseCombatWeapon* pActive = pMarine->GetActiveWeapon();
+			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
 			if ( pActive && pActive->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
 			{
 				if ( pActive->Clip2() < pActive->GetMaxClip2() )
@@ -296,10 +301,10 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHold
 
 			if ( !bFilledActive )
 			{
-				CBaseCombatWeapon* pWeapon;
+				CBaseCombatWeapon *pWeapon;
 				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 				{
-					pWeapon = pMarine->GetWeapon(i);
+					pWeapon = pNPC->GetWeapon( i );
 					if ( pWeapon == pActive )
 						continue;
 					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
@@ -308,7 +313,7 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHold
 				}
 			}
 		}
-		UTIL_Remove(this);	
+		UTIL_Remove( this );
 	}
 }
 
@@ -316,36 +321,36 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Marine* pMarine, int nHold
 // Flamer Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Flamer, DT_ASW_Ammo_Flamer)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Flamer, DT_ASW_Ammo_Flamer )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Flamer )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_flamer, CASW_Ammo_Flamer);
+LINK_ENTITY_TO_CLASS( asw_ammo_flamer, CASW_Ammo_Flamer );
 
 void CASW_Ammo_Flamer::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammoflamer.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_F");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammoflamer.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_F" );
 }
 
 
 void CASW_Ammo_Flamer::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammoflamer.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammoflamer.mdl" );
 }
 
-void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 40, "ASW_F", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 40, "ASW_F", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -353,36 +358,36 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Pistol Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Pistol, DT_ASW_Ammo_Pistol)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Pistol, DT_ASW_Ammo_Pistol )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Pistol )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_pistol, CASW_Ammo_Pistol);
+LINK_ENTITY_TO_CLASS( asw_ammo_pistol, CASW_Ammo_Pistol );
 
 void CASW_Ammo_Pistol::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammopistol.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_P");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammopistol.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_P" );
 }
 
 
 void CASW_Ammo_Pistol::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammopistol.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammopistol.mdl" );
 }
 
-void CASW_Ammo_Pistol::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Pistol::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 16, "ASW_P", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 16, "ASW_P", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -390,36 +395,36 @@ void CASW_Ammo_Pistol::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Mining Laser Battery Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Mining_Laser, DT_ASW_Ammo_Mining_Laser)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Mining_Laser, DT_ASW_Ammo_Mining_Laser )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Mining_Laser )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_mining_laser, CASW_Ammo_Mining_Laser);
+LINK_ENTITY_TO_CLASS( asw_ammo_mining_laser, CASW_Ammo_Mining_Laser );
 
 void CASW_Ammo_Mining_Laser::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammobattery.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_ML");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammobattery.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_ML" );
 }
 
 
 void CASW_Ammo_Mining_Laser::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammobattery.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammobattery.mdl" );
 }
 
-void CASW_Ammo_Mining_Laser::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Mining_Laser::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 50, "ASW_ML", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 50, "ASW_ML", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -427,7 +432,7 @@ void CASW_Ammo_Mining_Laser::ActivateUseIcon( CASW_Marine* pMarine, int nHoldTyp
 // Railgun Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Railgun, DT_ASW_Ammo_Railgun)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Railgun, DT_ASW_Ammo_Railgun )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Railgun )
@@ -436,27 +441,27 @@ END_DATADESC()
 //LINK_ENTITY_TO_CLASS(asw_ammo_railgun, CASW_Ammo_Railgun);
 
 void CASW_Ammo_Railgun::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammorailgun.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_RG");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammorailgun.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_RG" );
 }
 
 
 void CASW_Ammo_Railgun::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammorailgun.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammorailgun.mdl" );
 }
 
-void CASW_Ammo_Railgun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Railgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 12, "ASW_RG", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 12, "ASW_RG", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -464,36 +469,36 @@ void CASW_Ammo_Railgun::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // Chainsaw Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_Chainsaw, DT_ASW_Ammo_Chainsaw)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Chainsaw, DT_ASW_Ammo_Chainsaw )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_Chainsaw )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_chainsaw, CASW_Ammo_Chainsaw);
+LINK_ENTITY_TO_CLASS( asw_ammo_chainsaw, CASW_Ammo_Chainsaw );
 
 void CASW_Ammo_Chainsaw::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammobattery.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_CS");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammobattery.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_CS" );
 }
 
 
 void CASW_Ammo_Chainsaw::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammobattery.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammobattery.mdl" );
 }
 
-void CASW_Ammo_Chainsaw::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Chainsaw::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 150, "ASW_CS", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 150, "ASW_CS", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }
 
@@ -501,35 +506,35 @@ void CASW_Ammo_Chainsaw::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 // PDW Ammo
 //-------------
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Ammo_PDW, DT_ASW_Ammo_PDW)
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_PDW, DT_ASW_Ammo_PDW )
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Ammo_PDW )
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(asw_ammo_pdw, CASW_Ammo_PDW);
+LINK_ENTITY_TO_CLASS( asw_ammo_pdw, CASW_Ammo_PDW );
 
 void CASW_Ammo_PDW::Spawn( void )
-{ 
-	Precache( );
-	SetModel( "models/swarm/Ammo/ammopdw.mdl");
-	BaseClass::Spawn( );
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_PDW");
+{
+	Precache();
+	SetModel( "models/swarm/Ammo/ammopdw.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_PDW" );
 }
 
 
 void CASW_Ammo_PDW::Precache( void )
 {
-	PrecacheModel ("models/swarm/Ammo/ammopdw.mdl");
+	PrecacheModel( "models/swarm/Ammo/ammopdw.mdl" );
 }
 
-void CASW_Ammo_PDW::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_PDW::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if (ASW_GiveAmmo( pMarine, 80, "ASW_PDW", this ))
-	{			
-		UTIL_Remove(this);	
+	if ( ASW_GiveAmmo( pNPC, 80, "ASW_PDW", this ) )
+	{
+		UTIL_Remove( this );
 	}
 }

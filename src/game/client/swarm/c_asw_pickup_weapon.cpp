@@ -76,13 +76,14 @@ void C_ASW_Pickup_Weapon::GetUseIconText( wchar_t *unicode, int unicodeBufferSiz
 	}
 }
 
-bool C_ASW_Pickup_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Pickup_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
 	if ( BaseClass::GetUseAction( action, pUser ) )
 	{
 		if ( action.bShowUseKey )
 		{
-			action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup );
+			C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pUser );
+			action.iInventorySlot = pMarine ? pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup ) : -1;
 		}
 // 		if ( action.UseIconRed == 255 && action.UseIconGreen == 255 && action.UseIconBlue == 255 )
 // 		{

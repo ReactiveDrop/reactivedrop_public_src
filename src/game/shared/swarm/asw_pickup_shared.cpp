@@ -24,32 +24,34 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-bool CASW_Ammo::AllowedToPickup(CASW_Marine *pMarine)
+bool CASW_Ammo::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
 {
-	if (!pMarine)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
 		return false;
 
-	if (!ASWGameRules()->MarineCanPickupAmmo(pMarine, this))
+	if ( !ASWGameRules()->MarineCanPickupAmmo( pMarine, this ) )
 	{
-		if (!ASWGameRules()->MarineHasRoomInAmmoBag(pMarine, m_iAmmoIndex))
+		if ( !ASWGameRules()->MarineHasRoomInAmmoBag( pMarine, m_iAmmoIndex ) )
 			return false;
 	}
 
 	return true;
 }
 
-bool CASW_Pickup_Weapon::AllowedToPickup(CASW_Marine *pMarine)
+bool CASW_Pickup_Weapon::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
 {
-	if (!pMarine || !ASWGameRules() || !pMarine->GetMarineResource())
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine || !ASWGameRules() || !pMarine->GetMarineResource() )
 		return false;
 
 	// check if we're swapping for an existing item
-	int index = pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup );
-	CASW_Weapon* pWeapon = pMarine->GetASWWeapon(index);
-	const char* szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
-	
+	int i = pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup );
+	CASW_Weapon *pWeapon = pMarine->GetASWWeapon( i );
+	const char *szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
+
 	// first check if the gamerules will allow it
-	bool bAllowed = ASWGameRules()->MarineCanPickup(pMarine->GetMarineResource(), GetWeaponClass(), szSwappingClass);
+	bool bAllowed = ASWGameRules()->MarineCanPickup( pMarine->GetMarineResource(), GetWeaponClass(), szSwappingClass );
 
 #ifdef CLIENT_DLL
 	m_bSwappingWeapon = ( pWeapon != NULL );

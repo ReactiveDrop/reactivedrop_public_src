@@ -142,15 +142,21 @@ void CASW_Button_Area::Precache()
 	PrecacheScriptSound("ASWButtonPanel.TileLit");
 }
 
-void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Button_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
-	if ( !HasPower() || !ASWGameResource() || !CheckHeldObject( pMarine ) )
+	if ( !HasPower() || !ASWGameResource() || !CheckHeldObject( pNPC ) )
 	{
 		return;
 	}
 
 	if ( m_bIsLocked )
 	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+		if ( !pMarine )
+		{
+			return;
+		}
+
 		if ( nHoldType == ASW_USE_HOLD_START )
 		{
 			return;
@@ -161,7 +167,7 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 			// can hack, get the player to launch his hacking window
 			if ( !m_bIsInUse )
 			{
-				if ( pMarine->StartUsing(this) )
+				if ( pMarine->StartUsing( this ) )
 				{
 					if ( GetHackProgress() <= 0 && pMarine->GetMarineResource() )
 					{
@@ -220,39 +226,40 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 	{
 		if ( nHoldType == ASW_USE_RELEASE_QUICK )
 		{
-			if ( pMarine )
+			if ( pNPC )
 			{
-				pMarine->StopUsing();
+				pNPC->StopUsing();
 			}
 
 			return;
 		}
 
-		if ( nHoldType == ASW_USE_HOLD_START && pMarine )
+		if ( nHoldType == ASW_USE_HOLD_START && pNPC )
 		{
-			if ( !pMarine->m_hUsingEntity )
+			CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+			if ( pMarine && !pMarine->m_hUsingEntity )
 			{
 				pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 			}
 
-			pMarine->StartUsing( this );
+			pNPC->StartUsing( this );
 		}
 
 		if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
 		{
-			if ( pMarine )
+			if ( pNPC )
 			{
-				pMarine->StopUsing();
+				pNPC->StopUsing();
 
-				CASW_Player *pPlayer = pMarine->GetCommander();
-				if ( pPlayer && pMarine->IsInhabited() )
+				CASW_Player *pPlayer = pNPC->GetCommander();
+				if ( pPlayer && pNPC->IsInhabited() )
 				{
 					pPlayer->m_hUseKeyDownEnt = NULL;
 					pPlayer->m_flUseKeyDownTime = 0;
 				}
 			}
 
-			ActivateUnlockedButton( pMarine );
+			ActivateUnlockedButton( pNPC );
 		}
 	}
 	else
@@ -260,30 +267,31 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		if ( nHoldType == ASW_USE_HOLD_START )
 			return;
 
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 		if ( pMarine )
 		{
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 		}
 
-		ActivateUnlockedButton( pMarine );
+		ActivateUnlockedButton( pNPC );
 	}
 }
 
-void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
+void CASW_Button_Area::ActivateUnlockedButton( CASW_Inhabitable_NPC *pNPC )
 {
 	// don't use the button if we're in the delay between using
 	if ( m_fLastButtonUseTime != 0 && gpGlobals->curtime < m_fLastButtonUseTime + m_flWait )
 		return;
-	if ( !pMarine )
+	if ( !pNPC )
 		return;
 
-	if( !RequirementsMet( pMarine ) )
+	if ( !RequirementsMet( pNPC ) )
 		return;
 
 	if ( m_iHeldObjectName.Get() != NULL_STRING && *STRING( m_iHeldObjectName.Get() ) )
 	{
 		// We require a held object. If it's not there anymore, bail.
-		if ( !CheckHeldObject( pMarine ) )
+		if ( !CheckHeldObject( pNPC ) )
 		{
 			return;
 		}
@@ -292,8 +300,8 @@ void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
 
 		if ( m_bDestroyHeldObject )
 		{
-			CBaseCombatWeapon *pWeapon = pMarine->GetActiveWeapon();
-			pMarine->Weapon_Drop( pWeapon, NULL, NULL );
+			CBaseCombatWeapon *pWeapon = pNPC->GetActiveWeapon();
+			pNPC->Weapon_Drop( pWeapon, NULL, NULL );
 			UTIL_Remove( pWeapon );
 		}
 	}
@@ -302,30 +310,30 @@ void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
 	{
 		// if the door isn't sealed (or greater than a certain amount of damage?)
 		//  then make it open
-		CASW_Door* pDoor = GetDoor();
+		CASW_Door *pDoor = GetDoor();
 		if ( pDoor )
 		{
-			if (pDoor->GetSealAmount() > 0)
+			if ( pDoor->GetSealAmount() > 0 )
 			{
 				//Msg("Door mechanism not responding.  Maintenance Division has been notified of the problem.\n");
 			}
 			else
-			{				
+			{
 				//Msg("Toggling door...\n");
 				variant_t emptyVariant;
-				pDoor->AcceptInput("Toggle", pMarine, this, emptyVariant, 0);
+				pDoor->AcceptInput( "Toggle", pNPC, this, emptyVariant, 0 );
 			}
 		}
 	}
 
 	// send our 'activated' output
-	m_OnButtonActivated.FireOutput(pMarine, this);
+	m_OnButtonActivated.FireOutput( pNPC, this );
 
 	// Fire event
-	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_used" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "button_area_used" );
 	if ( event )
 	{
-		CASW_Player *pPlayer = pMarine->GetCommander();
+		CASW_Player *pPlayer = pNPC->GetCommander();
 
 		event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 		event->SetInt( "entindex", entindex() );
@@ -338,10 +346,10 @@ void CASW_Button_Area::ActivateUnlockedButton(CASW_Marine* pMarine)
 
 	if ( m_bDisableAfterUse )
 	{
-		UTIL_Remove(this);
+		m_bUseAreaEnabled = false;
+		UTIL_Remove( this );
 	}
 }
-
 
 CASW_Door* CASW_Button_Area::GetDoor()
 {
@@ -357,20 +365,32 @@ CASW_Hack* CASW_Button_Area::GetCurrentHack()
 }
 
 // traditional Swarm hacking
-void CASW_Button_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
+void CASW_Button_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 {
-	if (m_bIsInUse && m_bIsLocked && ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() ) )
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
 	{
-		float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
+		return;
+	}
+
+	if ( m_bIsInUse && m_bIsLocked && ( asw_simple_hacking.GetBool() || !pNPC->IsInhabited() ) )
+	{
+		float fTime = ( deltatime * ( 1.0f / ( ( float )m_iHackLevel ) ) );
 		// boost fTime by the marine's hack skill
-		fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
+		fTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
 		fTime *= asw_ai_button_hacking_scale.GetFloat();
-		SetHackProgress(m_fHackProgress + fTime, pMarine);
+		SetHackProgress( m_fHackProgress + fTime, pMarine );
 	}
 }
 
-void CASW_Button_Area::MarineStartedUsing(CASW_Marine* pMarine)
+void CASW_Button_Area::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+	{
+		return;
+	}
+
 	m_bIsInUse = true;
 	UpdateWaitingForInput();
 
@@ -380,15 +400,21 @@ void CASW_Button_Area::MarineStartedUsing(CASW_Marine* pMarine)
 	}
 }
 
-void CASW_Button_Area::MarineStoppedUsing(CASW_Marine* pMarine)
+void CASW_Button_Area::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+	{
+		return;
+	}
+
 	//Msg( "Marine stopped using button area\n" );
 	m_bIsInUse = false;
 	UpdateWaitingForInput();
 
-	if (GetCurrentHack())	// notify our current hack that we've stopped using the console
+	if ( GetCurrentHack() )	// notify our current hack that we've stopped using the console
 	{
-		GetCurrentHack()->MarineStoppedUsing(pMarine);
+		GetCurrentHack()->MarineStoppedUsing( pMarine );
 	}
 }
 
@@ -537,7 +563,7 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 					if ( !pPlayer || !pPlayer->IsConnected() )
 						continue;
 					
-					CASW_Marine* pOtherMarine = pPlayer->GetMarine();
+					CASW_Marine* pOtherMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 					if ( !pOtherMarine || pOtherMarine == pMarine )
 						continue;
 

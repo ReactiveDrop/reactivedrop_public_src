@@ -243,7 +243,6 @@ void CASW_Weapon_Heal_Gun::PrimaryAttack( void )
 			Vector vecAttach = hHealEntity->GetAbsOrigin() - pMarine->GetAbsOrigin();
 			Vector vecForward;
 			QAngle vecEyeAngles;
-			CASW_Player *pPlayer = pMarine->GetCommander();
 			if ( pMarine->IsInhabited() && pPlayer )
 				vecEyeAngles = pPlayer->EyeAngles();
 			else
@@ -600,7 +599,6 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 	if ( !bSkipChatter )
 	{
 		// try and do a special chatter?
-		bool bSkipChatter = false;
 		if ( pMarine->GetMarineSpeech()->AllowCalmConversations(CONV_HEALING_CRASH) )
 		{
 			if ( !pTarget->m_bDoneWoundedRebuke && pTarget->GetMarineResource() && pTarget->GetMarineResource()->m_bTakenWoundDamage )

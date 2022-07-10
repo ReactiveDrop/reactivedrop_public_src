@@ -70,9 +70,9 @@ void CASW_PlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelpe
 
 	// this forces horizontal movement
 	CASW_Player *pASWPlayer = ToASW_Player(player);
-	if (pASWPlayer && pASWPlayer->GetMarine() && !asw_allow_detach.GetBool())
+	if (pASWPlayer && pASWPlayer->GetNPC() && !asw_allow_detach.GetBool())
 	{
-			move->m_vecAngles.x = 0;
+		move->m_vecAngles.x = 0;
 		move->m_vecViewAngles.x = 0;
 
 		CBaseEntity *pMoveParent = player->GetMoveParent();
@@ -234,7 +234,7 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	lagcompensation->FinishLagCompensation( player );
 
 	// let the player drive marine movement here
-	pASWPlayer->DriveMarineMovement( ucmd, moveHelper );
+	pASWPlayer->DriveNPCMovement( ucmd, moveHelper );
 
 	g_pGameMovement->FinishTrackPredictionErrors( player );
 

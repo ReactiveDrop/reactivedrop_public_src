@@ -248,17 +248,17 @@ void C_ASW_Snow_Volume::UpdateSnow(C_ASW_Player *pPlayer)
 
 	if (g_hSnowEmitter.IsValid())
 	{
-		C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+		C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
 
 		Vector vecSnowPos;
-		if (pMarine)
-			vecSnowPos = pMarine->GetAbsOrigin();
+		if (pNPC)
+			vecSnowPos = pNPC->GetAbsOrigin();
 		else
 			vecSnowPos = pPlayer->m_vecLastMarineOrigin;
 
 		vecSnowPos += Vector(0,0,52);
 
-		if (g_hSnowEmitter->m_hLastMarine.Get() != pMarine)
+		if (g_hSnowEmitter->m_hLastNPC.Get() != pNPC)
 		{
 			g_hSnowEmitter->SetSortOrigin(vecSnowPos);
 			g_hSnowEmitter->GetBinding().DetectChanges();
@@ -266,7 +266,7 @@ void C_ASW_Snow_Volume::UpdateSnow(C_ASW_Player *pPlayer)
 			//if (g_hSnowCloudEmitter.IsValid())
 				//g_hSnowCloudEmitter->DoPresimulate(vecSnowPos, QAngle(0,0,0));
 		}
-		g_hSnowEmitter->m_hLastMarine = pMarine;
+		g_hSnowEmitter->m_hLastNPC = pNPC;
 		g_hSnowEmitter->Think(gpGlobals->frametime, vecSnowPos, QAngle(0,0,0));
 		//if (g_hSnowCloudEmitter.IsValid())
 			//g_hSnowCloudEmitter->Think(gpGlobals->frametime, vecSnowPos, QAngle(0,0,0));

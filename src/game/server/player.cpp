@@ -685,10 +685,10 @@ void CBasePlayer::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 	// Merge in PVS from split screen players
 	for ( int i = 1; i < MAX_SPLITSCREEN_PLAYERS; ++i )
 	{
-		CBasePlayer *pl = (CBasePlayer *)ToBasePlayer( GetContainingEntity( engine->GetSplitScreenPlayerForEdict( entindex(), i ) ) );
-		if ( !pl )
+		CBasePlayer *pPlayer = (CBasePlayer *)ToBasePlayer( GetContainingEntity( engine->GetSplitScreenPlayerForEdict( entindex(), i ) ) );
+		if ( !pPlayer )
 			continue;
-		org = pl->EyePosition();
+		org = pPlayer->EyePosition();
 		engine->AddOriginToPVS( org );
 	}
 }
@@ -6120,8 +6120,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 107:
 		{
-			trace_t tr;
-
 			edict_t		*pWorld = INDEXENT( 0 );
 
 			Vector start = EyePosition();
@@ -6258,18 +6256,14 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		if ( GetTeamNumber() == TEAM_SPECTATOR )
 			return true;
 
-		ConVarRef mp_allowspectators( "mp_allowspectators" );
-		if ( mp_allowspectators.IsValid() )
-		{
 #if defined( REPLAY_ENABLED )
-			if ( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() && !IsReplay() )
+		if ( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() && !IsReplay() )
 #else
-			if ( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() )
+		if ( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() )
 #endif
-			{
-				ClientPrint( this, HUD_PRINTCENTER, "#Cannot_Be_Spectator" );
-				return true;
-			}
+		{
+			ClientPrint( this, HUD_PRINTCENTER, "#Cannot_Be_Spectator" );
+			return true;
 		}
 
 		if ( !IsDead() )
@@ -6447,10 +6441,10 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			nRecords = MAX( Q_atoi( args.Arg( 2 ) ), 1 );
 		}
 
-		CBasePlayer *pl = UTIL_PlayerByIndex( nRecip );
-		if ( pl )
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( nRecip );
+		if ( pPlayer )
 		{
-			pl->DumpPerfToRecipient( this, nRecords );
+			pPlayer->DumpPerfToRecipient( this, nRecords );
 		}
 		return true;
 	}
@@ -7198,8 +7192,6 @@ QAngle CBasePlayer::AutoaimDeflection( Vector &vecSrc, autoaim_params_t &params 
 		}
 		if ( bestent )
 		{
-			QAngle bestang;
-
 			VectorAngles( bestdir, bestang );
 
 			if( IsInAVehicle() )

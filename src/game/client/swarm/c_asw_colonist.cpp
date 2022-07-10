@@ -1,12 +1,12 @@
 #include "cbase.h"
-#include "c_ai_basenpc.h"
+#include "c_asw_inhabitable_npc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-class C_ASW_Colonist : public C_AI_BaseNPC
+class C_ASW_Colonist : public C_ASW_Inhabitable_NPC
 {
-	DECLARE_CLASS( C_ASW_Colonist, C_AI_BaseNPC );
+	DECLARE_CLASS( C_ASW_Colonist, C_ASW_Inhabitable_NPC );
 public:
 	DECLARE_CLIENTCLASS();
 

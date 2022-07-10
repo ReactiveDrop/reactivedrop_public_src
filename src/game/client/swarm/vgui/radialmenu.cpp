@@ -1418,8 +1418,7 @@ public:
 			return NULL;
 		}
 
-		bool bIsSpectating = pPlayer->GetSpectatingMarine() != NULL;
-		C_ASW_Marine *pLocalMarine = pPlayer->GetViewMarine();
+		bool bIsSpectating = pPlayer->GetSpectatingNPC() != NULL;
 
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
 		Assert( pGameResource );
@@ -1495,7 +1494,7 @@ public:
 			return NULL;
 		}
 
-		C_ASW_Marine *pLocalMarine = pPlayer->GetMarine();
+		C_ASW_Marine *pLocalMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 		if ( !pLocalMarine )
 		{
 			// can't give orders as spectator
@@ -1704,7 +1703,7 @@ void OpenRadialMenu( const char *menuName )
 		return;
 	}
 
-	if ( !C_ASW_Marine::GetLocalMarine() && !menuKey->GetBool( "AllowSpectator" ) )
+	if ( !C_ASW_Player::GetLocalASWPlayer()->GetNPC() && !menuKey->GetBool("AllowSpectator") )
 	{
 		pMenu->ShowPanel( false );
 		return;

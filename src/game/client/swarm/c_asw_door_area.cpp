@@ -19,17 +19,17 @@ C_ASW_Door_Area::C_ASW_Door_Area()
 {
 }
 
-C_ASW_Door* C_ASW_Door_Area::GetASWDoor()
+C_ASW_Door *C_ASW_Door_Area::GetASWDoor()
 {
-	C_BaseEntity* pUseTargetH = GetUseTargetHandle().Get();
+	C_BaseEntity *pUseTargetH = GetUseTargetHandle().Get();
 	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
-		return assert_cast<C_ASW_Door*>(pUseTargetH);
+		return assert_cast< C_ASW_Door * >( pUseTargetH );
 	return NULL;
 }
 
-bool C_ASW_Door_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Door_Area::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
-	C_ASW_Door* pDoor = GetASWDoor();
+	C_ASW_Door *pDoor = GetASWDoor();
 	if ( !pDoor || !pUser || !pDoor->m_bCanPlayerWeld )
 		return false;
 
@@ -60,14 +60,14 @@ bool C_ASW_Door_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	{
 		V_strncpy( action.szCommand, "+grenade1", sizeof( action.szCommand ) );
 	}
-	
+
 	// if door is sealed
 		// add sealed icon with bar showing seal percent
 	if ( pDoor->GetHealth() > 0 )
 	{
 		if ( pDoor->GetSealAmount() > 0 )
 		{
-			if (pDoor->GetSealAmount() >= 1.0f)
+			if ( pDoor->GetSealAmount() >= 1.0f )
 				action.iUseIconTexture = pDoor->GetFullySealedIconTextureID();
 			else
 				action.iUseIconTexture = pDoor->GetSealedIconTextureID();

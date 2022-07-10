@@ -209,9 +209,9 @@ bool ASW_LineCircleIntersection(
 
 #ifdef GAME_DLL
 // a local helper to normalize some code below -- gets inlined
-static void ASW_WriteScreenShakeToMessage( CASW_Marine *pMarine, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
+static void ASW_WriteScreenShakeToMessage( CASW_Inhabitable_NPC *pNPC, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
 {
-	CASW_ViewMarineRecipientFilter user( pMarine );
+	CASW_ViewNPCRecipientFilter user( pNPC );
 	user.MakeReliable();
 	if ( direction.IsZeroFast() ) // nondirectional shake
 	{
@@ -238,7 +238,7 @@ static void ASW_WriteScreenShakeToMessage( CASW_Marine *pMarine, ShakeCommand_t 
 //-----------------------------------------------------------------------------
 // Transmits the actual shake event
 //-----------------------------------------------------------------------------
- void ASW_TransmitShakeEvent( CASW_Marine *pMarine, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
+ void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
 {
 	if (( localAmplitude > 0 ) || ( eCommand == SHAKE_STOP ))
 	{
@@ -246,7 +246,7 @@ static void ASW_WriteScreenShakeToMessage( CASW_Marine *pMarine, ShakeCommand_t 
 			localAmplitude = 0;
 
 #ifdef GAME_DLL
-		ASW_WriteScreenShakeToMessage( pMarine, eCommand, localAmplitude, frequency, duration, direction );
+		ASW_WriteScreenShakeToMessage( pNPC, eCommand, localAmplitude, frequency, duration, direction );
 #else
 		ScreenShake_t shake;
 
@@ -256,12 +256,12 @@ static void ASW_WriteScreenShakeToMessage( CASW_Marine *pMarine, ShakeCommand_t 
 		shake.duration	= duration;
 		shake.direction = direction;
 
-		ASW_TransmitShakeEvent( pMarine, shake );
+		ASW_TransmitShakeEvent( pNPC, shake);
 #endif
 	}
 }
 
-void ASW_TransmitShakeEvent( CASW_Marine *pMarine, const ScreenShake_t &shake )
+void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, const ScreenShake_t &shake )
 {
 	if ( shake.command == SHAKE_STOP && shake.amplitude != 0 )
 	{
@@ -269,10 +269,10 @@ void ASW_TransmitShakeEvent( CASW_Marine *pMarine, const ScreenShake_t &shake )
 		AssertMsg1( false, "A ScreenShake_t had a SHAKE_STOP command but a nonzero amplitude %.1f; this is meaningless.\n", shake.amplitude);
 		ScreenShake_t localShake = shake;
 		localShake.amplitude = 0;
-		ASW_TransmitShakeEvent( pMarine, localShake );
+		ASW_TransmitShakeEvent( pNPC, localShake );
 	}
 #ifdef GAME_DLL
-	ASW_WriteScreenShakeToMessage( pMarine, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
+	ASW_WriteScreenShakeToMessage( pNPC, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
 #else
 	if ( !( prediction && prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
 	{
@@ -566,7 +566,7 @@ void UTIL_ASW_PoisonBlur( CASW_Marine *pMarine, float duration )
 	if ( !pMarine )
 		return;
 
-	CASW_ViewMarineRecipientFilter user( pMarine );
+	CASW_ViewNPCRecipientFilter user( pMarine );
 	user.MakeReliable();
 
 	UserMessageBegin( user, "ASWBlur" );		// use the magic #1 for "one client"
@@ -669,12 +669,12 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 	return NULL;
 }
 
-CASW_ViewMarineRecipientFilter::CASW_ViewMarineRecipientFilter( CASW_Marine *pMarine )
+CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC )
 {
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer && pPlayer->GetViewMarine() == pMarine )
+		if ( pPlayer && pPlayer->GetViewNPC() == pNPC )
 		{
 			AddRecipient( pPlayer );
 		}

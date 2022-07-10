@@ -30,11 +30,11 @@ public:
 	int GetUseIconTextureID();
 	const char* GetUseIconText() { return "#asw_use_panel"; }
 	int GetHackIconTextureID();
-	const char* GetHackIconText(C_ASW_Marine *pUser);
+	const char* GetHackIconText(C_ASW_Inhabitable_NPC *pUser);
 	int GetNoPowerIconTextureID();
 	const char* GetNoPowerText();
 
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser);
 	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon ) { }
 	virtual C_BaseEntity* GetGlowEntity() { return m_hPanelProp.Get(); }
 

@@ -125,15 +125,9 @@ void CASW_Hud_Powerups::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_Hud_Powerups::OnThink()
 {
-	//SetAlpha( 0 );
-
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer)
-		return;
-
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 	if ( !pMarine )
 		return;
 
-	UpdatePowerupIcon( pMarine );	
+	UpdatePowerupIcon( pMarine );
 }

@@ -428,16 +428,16 @@ void ASWCircularProgressBar::DrawCircleSegmentAtPosition( int x, int y, int w, i
 				QAngle angFacing(0, flRotation, 0);
 
 				// now go and offset our verts by our position and rotate it;
-				for ( int i=0;i<=2;i++ )
+				for ( int j=0;j<=2;j++ )
 				{
-					Vector vecCorner( v[i].m_Position.x - flHalfWide, v[i].m_Position.y - flHalfTall, 0 );
+					Vector vecCorner( v[j].m_Position.x - flHalfWide, v[j].m_Position.y - flHalfTall, 0 );
 					Vector vecCorner_rotated;
 
 					// rotate it by our facing yaw
 					VectorRotate(vecCorner, angFacing, vecCorner_rotated);
 
-					v[i] = Vertex_t( Vector2D( vecCorner_rotated.x + flHalfWide, vecCorner_rotated.y + flHalfTall ),
-						Vector2D( v[i].m_TexCoord.x, v[i].m_TexCoord.y ) );
+					v[j] = Vertex_t( Vector2D( vecCorner_rotated.x + flHalfWide, vecCorner_rotated.y + flHalfTall ),
+						Vector2D( v[j].m_TexCoord.x, v[j].m_TexCoord.y ) );
 				}
 			}
 			// rotate UVs
@@ -446,31 +446,31 @@ void ASWCircularProgressBar::DrawCircleSegmentAtPosition( int x, int y, int w, i
 				QAngle angFacing(0, flUVRotation, 0);
 
 				// now go and offset our verts by our position and rotate it;
-				for ( int i=0;i<=2;i++ )
+				for ( int j=0;j<=2;j++ )
 				{
-					Vector vecCorner( v[i].m_TexCoord.x - 0.5f, v[i].m_TexCoord.y - 0.5f, 0 );
+					Vector vecCorner( v[j].m_TexCoord.x - 0.5f, v[j].m_TexCoord.y - 0.5f, 0 );
 					Vector vecCorner_rotated;
 
 					// rotate it by our facing yaw
 					VectorRotate(vecCorner, angFacing, vecCorner_rotated);
 
-					v[i] = Vertex_t( Vector2D( v[i].m_Position.x, v[i].m_Position.y ),
+					v[j] = Vertex_t( Vector2D( v[j].m_Position.x, v[j].m_Position.y ),
 						Vector2D( vecCorner_rotated.x + 0.5f, vecCorner_rotated.y  + 0.5f ) );
 				}
 			}
 			
 			// shift verts to the new position
-			for ( int i = 0; i < 3; i++ )
+			for ( int j = 0; j < 3; j++ )
 			{
-				v[i].m_Position.x += x - flHalfWide;
-				v[i].m_Position.y += y - flHalfTall;
+				v[j].m_Position.x += x - flHalfWide;
+				v[j].m_Position.y += y - flHalfTall;
 			}
 
 			// remap tex coords to sub rect
-			for ( int i = 0; i < 3; i++ )
+			for ( int j = 0; j < 3; j++ )
 			{
-				v[i].m_TexCoord.x = subrect_u + ( subrect_s - subrect_u ) * v[i].m_TexCoord.x;
-				v[i].m_TexCoord.y = subrect_v + ( subrect_t - subrect_v ) * v[i].m_TexCoord.y;
+				v[j].m_TexCoord.x = subrect_u + ( subrect_s - subrect_u ) * v[j].m_TexCoord.x;
+				v[j].m_TexCoord.y = subrect_v + ( subrect_t - subrect_v ) * v[j].m_TexCoord.y;
 			}
 
 			vgui::surface()->DrawTexturedPolygon( 3, v );
@@ -537,16 +537,16 @@ void ASWCircularProgressBar::DrawCircleSegmentAtPosition( int x, int y, int w, i
 				QAngle angFacing(0, flRotation, 0);
 
 				// now go and offset our verts by our position and rotate it;
-				for ( int i=0;i<=2;i++ )
+				for ( int j=0;j<=2;j++ )
 				{
-					Vector vecCorner( v[i].m_Position.x - flHalfWide, v[i].m_Position.y - flHalfTall, 0 );
+					Vector vecCorner( v[j].m_Position.x - flHalfWide, v[j].m_Position.y - flHalfTall, 0 );
 					Vector vecCorner_rotated;
 
 					// rotate it by our facing yaw
 					VectorRotate(vecCorner, angFacing, vecCorner_rotated);
 
-					v[i] = Vertex_t( Vector2D( vecCorner_rotated.x + flHalfWide, vecCorner_rotated.y + flHalfTall ),
-						Vector2D( v[i].m_TexCoord.x, v[i].m_TexCoord.y ) );
+					v[j] = Vertex_t( Vector2D( vecCorner_rotated.x + flHalfWide, vecCorner_rotated.y + flHalfTall ),
+						Vector2D( v[j].m_TexCoord.x, v[j].m_TexCoord.y ) );
 				}
 			}
 			// rotate UVs
@@ -555,31 +555,31 @@ void ASWCircularProgressBar::DrawCircleSegmentAtPosition( int x, int y, int w, i
 				QAngle angFacing(0, flUVRotation, 0);
 
 				// now go and offset our verts by our position and rotate it;
-				for ( int i=0;i<=2;i++ )
+				for ( int j=0;j<=2;j++ )
 				{
-					Vector vecCorner( v[i].m_TexCoord.x - 0.5f, v[i].m_TexCoord.y - 0.5f, 0 );
+					Vector vecCorner( v[j].m_TexCoord.x - 0.5f, v[j].m_TexCoord.y - 0.5f, 0 );
 					Vector vecCorner_rotated;
 
 					// rotate it by our facing yaw
 					VectorRotate(vecCorner, angFacing, vecCorner_rotated);
 
-					v[i] = Vertex_t( Vector2D( v[i].m_Position.x, v[i].m_Position.y ),
+					v[j] = Vertex_t( Vector2D( v[j].m_Position.x, v[j].m_Position.y ),
 						Vector2D( vecCorner_rotated.x + 0.5f, vecCorner_rotated.y  + 0.5f ) );
 				}
 			}
 
 			// shift verts to the new position
-			for ( int i = 0; i < 3; i++ )
+			for ( int j = 0; j < 3; j++ )
 			{
-				v[i].m_Position.x += x - flHalfWide;
-				v[i].m_Position.y += y - flHalfTall;
+				v[j].m_Position.x += x - flHalfWide;
+				v[j].m_Position.y += y - flHalfTall;
 			}
 
 			// remap tex coords to sub rect
-			for ( int i = 0; i < 3; i++ )
+			for ( int j = 0; j < 3; j++ )
 			{
-				v[i].m_TexCoord.x = subrect_u + ( subrect_s - subrect_u ) * v[i].m_TexCoord.x;
-				v[i].m_TexCoord.y = subrect_v + ( subrect_t - subrect_v ) * v[i].m_TexCoord.y;
+				v[j].m_TexCoord.x = subrect_u + ( subrect_s - subrect_u ) * v[j].m_TexCoord.x;
+				v[j].m_TexCoord.y = subrect_v + ( subrect_t - subrect_v ) * v[j].m_TexCoord.y;
 			}
 
 			vgui::surface()->DrawTexturedPolygon( 3, v );
@@ -590,16 +590,16 @@ void ASWCircularProgressBar::DrawCircleSegmentAtPosition( int x, int y, int w, i
 float ASWCircularProgressBar::GetMarineFacingYaw( int x, int y )
 {
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
-	if (!local)
-		return 0;	
+	if ( !local )
+		return 0;
 
-	C_ASW_Marine *pMarine = local->GetViewMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = local->GetViewNPC();
+	if ( !pNPC )
 		return 0;
 
 	Vector vecFacing;
 	Vector screenPos;
-	Vector MarinePos = pMarine->GetRenderOrigin();
+	Vector MarinePos = pNPC->GetRenderOrigin();
 	debugoverlay->ScreenPosition( MarinePos + Vector( 0, 0, 45 ), screenPos );
 
 	int current_posx = 0;

@@ -253,7 +253,7 @@ void CBaseAchievement::IncrementCount()
 			{
 				Q_snprintf( pszProgressName, 1024, "%s_COMP", GetName() );
 				int32 bits = (int32) GetComponentBits();
-				bool bRet = SteamUserStats()->SetStat( pszProgressName, bits );
+				bRet = SteamUserStats()->SetStat( pszProgressName, bits );
 				if ( !bRet )
 				{
 					DevMsg( "ISteamUserStats::GetStat failed to set component value in Steam for achievement %s\n", pszProgressName );

@@ -19,6 +19,7 @@
 	#define CAlienSwarm C_AlienSwarm
 	#define CAlienSwarmProxy C_AlienSwarmProxy
 	#define CASW_Game_Resource C_ASW_Game_Resource
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Player C_ASW_Player
 	#define CASW_Pickup C_ASW_Pickup
@@ -39,6 +40,7 @@
 	class CASW_Weapon;
 #endif
 
+class CASW_Inhabitable_NPC;
 class CASW_Marine_Resource;
 class CASW_Campaign_Save;
 class CASW_Ammo;
@@ -478,7 +480,7 @@ public:
 	virtual bool IsMultiplayer();	
 	bool IsOfflineGame();
 	bool IsAnniversaryWeek();
-	bool CanFlareAutoaimAt(CASW_Marine* pMarine, CBaseEntity *pEntity);
+	bool CanFlareAutoaimAt(CASW_Inhabitable_NPC* pAimer, CBaseEntity *pEntity);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 #ifdef GAME_DLL
 	// BenLubar: add game-specific vscript functions

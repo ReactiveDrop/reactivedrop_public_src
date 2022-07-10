@@ -155,7 +155,7 @@ void CASW_VGUI_Ammo_List::OnThink()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if (!pMarine)
 		return;
 

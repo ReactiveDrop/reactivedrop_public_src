@@ -6,6 +6,7 @@
 #include "c_asw_weapon.h"
 #include "c_asw_marine_resource.h"
 
+#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #define CASW_Marine C_ASW_Marine
 #define CASW_Weapon C_ASW_Weapon
 #define CASW_Pickup C_ASW_Pickup
@@ -175,9 +176,12 @@ void CASW_Powerup::ItemTouch( CBaseEntity *pOther )
 }
 */
 
-void CASW_Powerup::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Powerup::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
 		return;
 
 	PickupPowerup( pMarine );

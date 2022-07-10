@@ -134,15 +134,12 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat		( RECVINFO( m_fInfestedTime ) ),
 	RecvPropFloat		( RECVINFO( m_fInfestedStartTime ) ),
 	RecvPropInt			( RECVINFO( m_ASWOrders), 4),	
-	RecvPropEHandle		( RECVINFO( m_Commander) ),
 	RecvPropArray3		( RECVINFO_ARRAY( m_iAmmo ), RecvPropInt( RECVINFO( m_iAmmo[0] ) ) ),
 	RecvPropBool		( RECVINFO( m_bSlowHeal ) ),	
 	RecvPropInt			( RECVINFO( m_iSlowHealAmount ) ),
 	RecvPropBool		( RECVINFO( m_bPreventMovement ) ),
 	RecvPropBool		( RECVINFO( m_bWalking ) ),
 	RecvPropFloat		( RECVINFO( m_fFFGuardTime ) ),	
-	RecvPropEHandle		( RECVINFO( m_hUsingEntity ) ),
-	RecvPropVector		( RECVINFO( m_vecFacingPointFromServer ) ),
 	RecvPropEHandle		( RECVINFO( m_hGroundEntity ) ),	// , RecvProxy_Marine_GroundEnt
 	RecvPropEHandle		( RECVINFO( m_hMarineFollowTarget ) ),
 	
@@ -262,7 +259,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 
 	/*
 	DEFINE_FIELD( m_bSlowHeal, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecFacingPointFromServer, FIELD_VECTOR ),
 	DEFINE_FIELD( m_hRemoteTurret, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hASWVehicle, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bDriving, FIELD_BOOLEAN ),
@@ -278,10 +274,7 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_fStopFacingPointTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bHacking, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_hCurrentHack, FIELD_EHANDLE),
-	DEFINE_FIELD( m_hUsingEntity, FIELD_EHANDLE),
-	DEFINE_FIELD( m_fLastTurningYaw, FIELD_FLOAT),
 	DEFINE_FIELD( m_vecLastRenderedPos, FIELD_VECTOR),
-	DEFINE_FIELD( m_bUseLastRenderedEyePosition, FIELD_BOOLEAN),
 
 	// extra test
 	//DEFINE_FIELD( m_vecCustomRenderOrigin, FIELD_VECTOR),
@@ -312,7 +305,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_bClientOnFire, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_fInfestedTime, FIELD_FLOAT),
 	DEFINE_FIELD( m_fInfestedStartTime, FIELD_FLOAT),
-	DEFINE_FIELD( m_fRedNamePulse, FIELD_FLOAT),
 	DEFINE_FIELD( m_bRedNamePulseUp, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_vecFacingPoint, FIELD_VECTOR),
 	DEFINE_FIELD( bEmoteSmile, FIELD_BOOLEAN),
@@ -483,8 +475,6 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_pJumpJetEffect[0] = NULL;
 	m_pJumpJetEffect[1] = NULL;
 	m_hOrderArrow = C_ASW_Order_Arrow::CreateOrderArrow();
-	m_fRedNamePulse = 0;
-	m_bRedNamePulseUp = true;
 
 	bClientEmoteMedic = bClientEmoteAmmo = bClientEmoteSmile = bClientEmoteStop
 		= bClientEmoteGo = bClientEmoteExclaim = bClientEmoteAnimeSmile = bClientEmoteQuestion = false;
@@ -579,7 +569,7 @@ bool C_ASW_Marine::ShouldPredict()
 			ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
 
 			C_ASW_Player* player = C_ASW_Player::GetLocalASWPlayer();
-			if (player && player->GetMarine() == this)
+			if (player && player->GetNPC() == this)
 			{
 				return true;
 			}
@@ -665,7 +655,7 @@ void C_ASW_Marine::UpdateClientSideAnimation()
 
 	C_ASW_Player *pPlayer = GetCommander();
 		
-	if ( pPlayer && C_BasePlayer::IsLocalPlayer(pPlayer) && pPlayer->GetMarine() == this && !IsControllingTurret())
+	if ( pPlayer && C_BasePlayer::IsLocalPlayer( pPlayer ) && pPlayer->GetNPC() == this && !IsControllingTurret() )
 	{
 		m_PlayerAnimState->Update( pPlayer->EyeAngles()[YAW], pPlayer->EyeAngles()[PITCH] );
 		m_fLastYawHack = pPlayer->EyeAngles()[YAW];
@@ -1071,7 +1061,7 @@ void C_ASW_Marine::ClientThink()
 			case 1:
 			{
 				C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-				int nTeam = pPlayer ? pPlayer->GetSpectatingMarine() ? pPlayer->GetSpectatingMarine()->GetTeamNumber() : pPlayer->GetTeamNumber() : TEAM_ALPHA;
+				int nTeam = pPlayer ? pPlayer->GetSpectatingNPC() ? pPlayer->GetSpectatingNPC()->GetTeamNumber() : pPlayer->GetTeamNumber() : TEAM_ALPHA;
 				if ( nTeam == GetTeamNumber() )
 				{
 					teamColor = rd_team_color_ally.GetColor();
@@ -1330,11 +1320,6 @@ void C_ASW_Marine::ProcessMuzzleFlashEvent()
 		}
 #endif
 	}
-}
-
-C_ASW_Weapon* C_ASW_Marine::GetActiveASWWeapon( void ) const
-{
-	return static_cast<C_ASW_Weapon*>( GetActiveWeapon() );
 }
 
 void C_ASW_Marine::DoAnimationEvent( PlayerAnimEvent_t event )
@@ -1637,8 +1622,8 @@ void C_ASW_Marine::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, fl
 	if ( !stepSoundName )
 		return;
 
-	IPhysicsSurfaceProps *physprops = MoveHelper( )->GetSurfaceProps();
-	const char *pSoundName = physprops->GetString( stepSoundName );
+	IPhysicsSurfaceProps *pPhysProps = MoveHelper( )->GetSurfaceProps();
+	const char *pSoundName = pPhysProps->GetString( stepSoundName );
 	CSoundParameters params;
 	if ( !CBaseEntity::GetParametersForSound( pSoundName, params, NULL ) )
 		return;
@@ -2133,19 +2118,9 @@ void C_ASW_Marine::UpdateHeartbeat()
 	}
 }
 
-const Vector& C_ASW_Marine::GetFacingPoint()
+bool C_ASW_Marine::GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser )
 {
-	if (m_vecFacingPointFromServer != vec3_origin)
-	{
-		return m_vecFacingPointFromServer;
-	}
-
-	return m_vecFacingPoint;
-}
-
-bool C_ASW_Marine::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
-{
-	if ( !m_bKnockedOut )
+	if ( !m_bKnockedOut || !pUser || pUser->Classify() != CLASS_ASW_MARINE )
 	{
 		return false;
 	}
@@ -2679,51 +2654,6 @@ void C_ASW_Marine::RemoveBackpack()
 	}
 }
 
-// when marine's health falls below this, name starts to blink red
-#define MARINE_NAME_PULSE_THRESHOLD 0.5f
-void C_ASW_Marine::TickRedName(float delta)
-{
-	if (!GetMarineResource())
-		return;
-
-	// deltatime should be normal regardless of slowmo
-	float fTimeScale = GameTimescale()->GetCurrentTimescale();
-
- 	delta *= ( 1.0f / fTimeScale );
-
-	float fHealth = GetMarineResource()->GetHealthPercent();
-	
-	if ( fHealth > MARINE_NAME_PULSE_THRESHOLD || fHealth <= 0 )
-	{
-		m_fRedNamePulse -= delta * 2;	// take 0.5 seconds to fade completely to normal
-	}
-	else
-	{
-		float drate = ((MARINE_NAME_PULSE_THRESHOLD - fHealth) / 0.1f) + 2.0f;
-		if (m_bRedNamePulseUp)
-		{
-			m_fRedNamePulse += drate * delta * 0.5f;
-		}
-		else
-		{
-			m_fRedNamePulse -= drate * delta * 0.5f;
-		}
-		// how quick should we pulse?  at 60, once per second  i.e. 2d
-		// at 0, 4 times a second?  i.e. 8d
-	}
-
-	if (m_fRedNamePulse <= 0)
-	{
-		m_fRedNamePulse = 0;
-		m_bRedNamePulseUp = true;
-	}
-	if (m_fRedNamePulse >= 1.0f)
-	{
-		m_fRedNamePulse= 1.0f;
-		m_bRedNamePulseUp = false;
-	}
-}
-
 void C_ASW_Marine::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
 {
 	// do nothing
@@ -2908,7 +2838,7 @@ C_ASW_Marine* C_ASW_Marine::GetLocalMarine()
 	if ( !pPlayer )
 		return NULL;
 
-	return pPlayer->GetMarine();
+	return AsMarine( pPlayer->GetNPC() );
 }
 
 C_ASW_Marine* C_ASW_Marine::GetViewMarine()
@@ -2917,7 +2847,7 @@ C_ASW_Marine* C_ASW_Marine::GetViewMarine()
 	if ( !pPlayer )
 		return NULL;
 
-	return pPlayer->GetViewMarine();
+	return AsMarine( pPlayer->GetViewNPC() );
 }
 
 void C_ASW_Marine::UpdateElectrifiedArmor()

@@ -8,7 +8,7 @@
 
 DECLARE_AUTO_LIST( IASW_Fade_List_ );
 
-class C_ASW_Marine;
+class C_ASW_Inhabitable_NPC;
 
 class IASW_Fade_List : public IASW_Fade_List_
 {
@@ -24,7 +24,7 @@ public:
 
 protected:
 	int m_iLastControls;
-	CHandle<C_ASW_Marine> m_hLastMarine;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
 	float m_flInterpStart;
 	byte m_nNormalOpacity;
 	byte m_nFadeOpacity;

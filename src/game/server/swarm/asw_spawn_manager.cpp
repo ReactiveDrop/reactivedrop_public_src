@@ -1710,24 +1710,24 @@ void asw_alien_batch_f( const CCommand& args )
 	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
 	if (!pPlayer)
 		return;
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 	trace_t tr;
 	Vector forward;
 
-	AngleVectors( pMarine->EyeAngles(), &forward );
-	UTIL_TraceLine(pMarine->EyePosition(),
-		pMarine->EyePosition() + forward * 300.0f,MASK_SOLID, 
-		pMarine, COLLISION_GROUP_NONE, &tr );
+	AngleVectors( pNPC->EyeAngles(), &forward );
+	UTIL_TraceLine( pNPC->EyePosition(),
+		pNPC->EyePosition() + forward * 300.0f, MASK_SOLID,
+		pNPC, COLLISION_GROUP_NONE, &tr );
 	if ( tr.fraction != 0.0 )
 	{
 		// trace to the floor from this spot
 		Vector vecSrc = tr.endpos;
 		tr.endpos.z += 12;
-		UTIL_TraceLine( vecSrc + Vector(0, 0, 12),
-			vecSrc - Vector( 0, 0, 512 ) ,MASK_SOLID, 
-			pMarine, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecSrc + Vector( 0, 0, 12 ),
+			vecSrc - Vector( 0, 0, 512 ), MASK_SOLID,
+			pNPC, COLLISION_GROUP_NONE, &tr );
 		
 		ASWSpawnManager()->SpawnAlienBatch( "asw_parasite", 25, tr.endpos, vec3_angle );
 	}

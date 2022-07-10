@@ -382,7 +382,7 @@ void CAI_ASW_FlickBehavior::TryFlicking( CBaseEntity *pEntity )
 	CASW_Player	*pPlayer = ToASW_Player( pEntity );
 	if ( pPlayer )
 	{
-		CASW_Marine	*pBaseMarine = pPlayer->GetMarine();
+		CASW_Marine	*pBaseMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	//	CASW_Marine	*pBaseMarine = CASW_Marine::AsMarine( pEntity );
 		if ( pBaseMarine )
 		{

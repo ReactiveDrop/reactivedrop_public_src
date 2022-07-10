@@ -21,17 +21,18 @@ CASW_HudElement::CASW_HudElement( const char *pElementName ) : CHudElement( pEle
 //-----------------------------------------------------------------------------
 bool CASW_HudElement::ShouldDraw( void )
 {
-	if (!CHudElement::ShouldDraw())
+	if ( !CHudElement::ShouldDraw() )
 		return false;
 
-	if (engine->IsLevelMainMenuBackground())
+	if ( engine->IsLevelMainMenuBackground() )
 		return false;
 
 	C_ASW_Player *pASWPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pMarine = pASWPlayer ? C_ASW_Marine::AsMarine( pASWPlayer->GetViewNPC() ) : NULL;
 	// hide things due to turret control
-	if ( ( m_iHiddenBits & HIDEHUD_REMOTE_TURRET ) && (pASWPlayer && pASWPlayer->GetViewMarine() && pASWPlayer->GetViewMarine()->IsControllingTurret()) )
+	if ( ( m_iHiddenBits & HIDEHUD_REMOTE_TURRET ) && ( pMarine && pMarine->IsControllingTurret() ) )
 		return false;
-	if ( ( m_iHiddenBits & HIDEHUD_PLAYERDEAD ) && ( !pASWPlayer || !pASWPlayer->GetViewMarine() || pASWPlayer->GetViewMarine()->GetHealth()<= 0) )
+	if ( ( m_iHiddenBits & HIDEHUD_PLAYERDEAD ) && ( !pASWPlayer || !pASWPlayer->GetViewNPC() || pASWPlayer->GetViewNPC()->GetHealth() <= 0 ) )
 		return false;
 
 	if ( !asw_draw_hud.GetBool() )

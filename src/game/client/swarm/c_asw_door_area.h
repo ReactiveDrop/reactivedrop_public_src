@@ -14,7 +14,7 @@ public:
 	
 	C_ASW_Door* GetASWDoor();	
 
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) { }
 	virtual bool ShouldPaintBoxAround() { return false; }
 

@@ -268,29 +268,12 @@ const QAngle& CASW_Marine::ASWEyeAngles( void )
 	return EyeAngles();
 }
 
-CASW_Weapon* CASW_Marine::GetASWWeapon(int index) const
-{
-	CASW_Weapon* pWeapon = assert_cast<CASW_Weapon*>(GetWeapon(index));
-	return pWeapon;
-}
-
 bool CASW_Marine::IsInfested()
 {
 	if (!GetMarineResource())
 		return false;
 
 	return GetMarineResource()->IsInfested();
-}
-
-// forces marine to look towards a certain point
-void CASW_Marine::SetFacingPoint(const Vector &vec, float fDuration)
-{
-#ifdef CLIENT_DLL
-	m_vecFacingPoint = vec;
-#else
-	m_vecFacingPointFromServer = vec;
-#endif
-	m_fStopFacingPointTime = gpGlobals->curtime + fDuration;
 }
 
 // tick emotes, if server sets any emote bool to true, it causes the emote timer
@@ -544,25 +527,9 @@ CASW_Remote_Turret* CASW_Marine::GetRemoteTurret()
 	return m_hRemoteTurret.Get();
 }
 
-const char *CASW_Marine::GetPlayerName() const
-{
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-	{
-		return BaseClass::GetPlayerName();
-	}
-
-	return pPlayer->GetPlayerName();
-}
-
-CASW_Player* CASW_Marine::GetCommander() const
-{
-	return m_Commander.Get();
-}
-
 bool CASW_Marine::IsInhabited()
 {
-	if (!GetMarineResource())
+	if ( !GetMarineResource() )
 		return false;
 	return GetMarineResource()->IsInhabited();
 }
@@ -772,15 +739,15 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 
 					// shock this thing
 					vecAIPos = shockTR.endpos;
-					CTakeDamageInfo shockDmgInfo( this, this, flShockDamage, DMG_SHOCK );					
-					Vector vecDir = vecAIPos - vecShockSrc;
-					VectorNormalize( vecDir );
+					CTakeDamageInfo shockDmgInfo( this, this, flShockDamage, DMG_SHOCK );
+					Vector vecShockDir = vecAIPos - vecShockSrc;
+					VectorNormalize( vecShockDir );
 					shockDmgInfo.SetDamagePosition( shockTR.endpos );
-					shockDmgInfo.SetDamageForce( vecDir );
+					shockDmgInfo.SetDamageForce( vecShockDir );
 					shockDmgInfo.ScaleDamageForce( 1.0 );
-					shockDmgInfo.SetAmmoType( info.GetAmmoType() );								
+					shockDmgInfo.SetAmmoType( info.GetAmmoType() );
 
-					shockTR.m_pEnt->DispatchTraceAttack( shockDmgInfo, vecDir, &shockTR );
+					shockTR.m_pEnt->DispatchTraceAttack( shockDmgInfo, vecShockDir, &shockTR );
 
 					if ( shockTR.m_pEnt->IsAlienClassType() )
 					{
@@ -2623,8 +2590,8 @@ CBaseEntity *CASW_Marine::MeleeTraceHullAttack( const Vector &vecStart, const Ve
 		Vector vecAttackerCenter = WorldSpaceCenter();
 
 		// Perform damage on hit entities
-		trace_t* tr = &traceFilter.m_HitTraces[ nTrace ];
-		CBaseEntity *pHitEntity = tr->m_pEnt;
+		trace_t* pTR = &traceFilter.m_HitTraces[ nTrace ];
+		CBaseEntity *pHitEntity = pTR->m_pEnt;
 
 		if ( !pHitEntity )
 		{
@@ -2651,7 +2618,7 @@ CBaseEntity *CASW_Marine::MeleeTraceHullAttack( const Vector &vecStart, const Ve
 		Vector vecTraceAttackOffset = Vector( 0.0f, 0.0f, 0.0f );
 		ASWMeleeSystem()->ComputeTraceOffset( this, vecTraceAttackOffset );
 
-		Vector vecHitDir = tr->endpos - (vecAttackerCenter + vecTraceAttackOffset);
+		Vector vecHitDir = pTR->endpos - (vecAttackerCenter + vecTraceAttackOffset);
 		if ( vecHitDir.IsZero() )
 		{
 			vecHitDir = vecAttackDir;
@@ -2673,7 +2640,7 @@ CBaseEntity *CASW_Marine::MeleeTraceHullAttack( const Vector &vecStart, const Ve
 
 
 		// actually perform the damage
-		ApplyMeleeDamage( pHitEntity, dmgInfo, vecHitDir, tr );
+		ApplyMeleeDamage( pHitEntity, dmgInfo, vecHitDir, pTR );
 
 #ifdef GAME_DLL
 

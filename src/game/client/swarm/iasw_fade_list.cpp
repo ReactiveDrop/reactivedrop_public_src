@@ -19,7 +19,7 @@ int IASW_Fade_List::s_iFadeReflectionDepth = 0;
 IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 {
 	m_iLastControls = 1;
-	m_hLastMarine = NULL;
+	m_hLastNPC = NULL;
 	m_flInterpStart = 0;
 	m_bFaded = false;
 }
@@ -100,11 +100,11 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
 
 	C_BaseEntity *pEnt = GetEntity();
 
-	bool bFade = pPlayer->GetASWControls() == 1 && pMarine && pMarine->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
+	bool bFade = pPlayer->GetASWControls() == 1 && pNPC && pNPC->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
 	byte target = bFade ? m_nFadeOpacity : m_nNormalOpacity;
 	byte prev = bFade ? m_nNormalOpacity : m_nFadeOpacity;
 	if ( bFade != m_bFaded )
@@ -114,10 +114,10 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 		m_flInterpStart = MAX( 0, m_flInterpStart );
 	}
 
-	if ( pPlayer->GetASWControls() != m_iLastControls || pMarine != m_hLastMarine.Get() || !m_bAllowFade )
+	if ( pPlayer->GetASWControls() != m_iLastControls || pNPC != m_hLastNPC.Get() || !m_bAllowFade )
 	{
 		m_iLastControls = pPlayer->GetASWControls();
-		m_hLastMarine = pMarine;
+		m_hLastNPC = pNPC;
 		m_flInterpStart = 0;
 		pEnt->SetRenderAlpha( target );
 		return;

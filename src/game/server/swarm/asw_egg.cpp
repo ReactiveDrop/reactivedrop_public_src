@@ -606,7 +606,7 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 			{
 				CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() )
+				if ( !pPlayer || !pPlayer->IsConnected() || !CASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 					continue;
 
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_EGGS_BEFORE_HATCH );

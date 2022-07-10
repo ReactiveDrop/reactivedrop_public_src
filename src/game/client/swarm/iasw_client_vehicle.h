@@ -32,11 +32,6 @@ public:
 	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 
 	// IASW_Client_Usable_Entity
-	virtual C_BaseEntity* GetEntity() = 0;
-	virtual bool IsUsable(C_BaseEntity *pUser) = 0;
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser) = 0;
-	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) = 0;
-	virtual bool ShouldPaintBoxAround() = 0;
 	virtual bool NeedsLOSCheck() { return false; }
 };
 

@@ -189,33 +189,35 @@ CASW_T75* CASW_T75::ASW_T75_Create( const Vector &position, const QAngle &angles
 
 bool CASW_T75::IsUsable(CBaseEntity *pUser)
 {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return (pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 
 // player has used this item
-void CASW_T75::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_T75::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
-	if ( !m_bIsInUse && !m_bArmed )
-	{		
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !m_bIsInUse && !m_bArmed && pMarine )
+	{
 		pMarine->StartUsing( this );
 		pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 	}
 }
 
 #define T75_ARM_TIME 3.0f
-void CASW_T75::MarineUsing(CASW_Marine* pMarine, float deltatime)
+void CASW_T75::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( m_bIsInUse && !m_bArmed.Get() && pMarine )
 	{
-		float fSetupAmount = (deltatime * (1.0f/T75_ARM_TIME));
+		float fSetupAmount = ( deltatime * ( 1.0f / T75_ARM_TIME ) );
 		m_flArmProgress += fSetupAmount;
-		if (m_flArmProgress >= 1.0f)
+		if ( m_flArmProgress >= 1.0f )
 		{
 			m_flArmProgress = 1.0f;
 
 			pMarine->StopUsing();
 			m_bArmed = true;
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);  // TODO: Chatter for T75 being armed
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_MINE_DEPLOYED );  // TODO: Chatter for T75 being armed
 
 			// set detonate time
 			m_iCountdown = 6;
@@ -225,12 +227,12 @@ void CASW_T75::MarineUsing(CASW_Marine* pMarine, float deltatime)
 	}
 }
 
-void CASW_T75::MarineStartedUsing(CASW_Marine* pMarine)
+void CASW_T75::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 	m_bIsInUse = true;
 }
 
-void CASW_T75::MarineStoppedUsing(CASW_Marine* pMarine)
+void CASW_T75::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 	m_bIsInUse = false;
 }

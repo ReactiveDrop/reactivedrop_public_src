@@ -362,8 +362,9 @@ int C_ASW_PropJeep::GetRideIconTexture()
 
 bool C_ASW_PropJeep::MarineInVehicle()
 {
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	return (pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->IsInVehicle());
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	return pMarine && pMarine->IsInVehicle();
 }
 
 const char* C_ASW_PropJeep::GetDriveIconText()
@@ -387,7 +388,7 @@ bool C_ASW_PropJeep::IsUsable(C_BaseEntity *pUser)
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
 }
 
-bool C_ASW_PropJeep::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_PropJeep::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
 	action.iUseIconTexture = GetDriveIconTexture();
 	TryLocalize( GetDriveIconText(), action.wszText, sizeof( action.wszText ) );

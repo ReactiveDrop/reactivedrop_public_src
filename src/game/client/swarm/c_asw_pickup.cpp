@@ -63,9 +63,9 @@ void C_ASW_Pickup::ClientThink()
 	float flWithinDistSqr = (ASW_MARINE_USE_RADIUS*4)*(ASW_MARINE_USE_RADIUS*4);
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewMarine() ) )
+	if ( pLocalPlayer && pLocalPlayer->GetViewNPC() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewNPC() ) )
 	{
-		flDistanceToMarineSqr = (pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
+		flDistanceToMarineSqr = (pLocalPlayer->GetViewNPC()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
 		if ( flDistanceToMarineSqr < flWithinDistSqr )
 			bShouldGlow = true;
 	}
@@ -99,7 +99,7 @@ bool C_ASW_Pickup::IsUsable(C_BaseEntity *pUser)
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
 }
 
-bool C_ASW_Pickup::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Pickup::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
 	action.iUseIconTexture = GetUseIconTextureID();
 	GetUseIconText( action.wszText, sizeof( action.wszText ) );
@@ -129,6 +129,11 @@ bool C_ASW_Pickup::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	}
 
 	return true;
+}
+
+bool C_ASW_Pickup::AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC )
+{
+	return pNPC && pNPC->Classify() == CLASS_ASW_MARINE;
 }
 
 void C_ASW_Pickup::LoadUseIconTexture(const char* szTextureName, int &textureID)
@@ -189,15 +194,15 @@ void CASW_Deny_Pickup_Proxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
 	{
 		SetFloatResult( 0.0f );
 		return;
 	}
 
 	C_ASW_Pickup *pPickup = dynamic_cast<C_ASW_Pickup*>( BindArgToEntity( pC_BaseEntity ) );
-	if ( pPickup && !pPickup->AllowedToPickup( pMarine ) )
+	if ( pPickup && !pPickup->AllowedToPickup( pNPC ) )
 	{
 		SetFloatResult( 1.0f );
 	}

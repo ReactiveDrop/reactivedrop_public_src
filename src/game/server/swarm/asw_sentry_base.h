@@ -51,13 +51,13 @@ public:
 	int ScriptGetMaxAmmo();
 
 	// IASW_Server_Usable_Entity implementation
-	virtual CBaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual CBaseEntity *GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
-	virtual void MarineStartedUsing(CASW_Marine* pMarine);
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime );
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC );
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC );
 	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );

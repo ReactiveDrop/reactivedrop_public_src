@@ -6,6 +6,7 @@
 #include "basecombatweapon_shared.h"
 #include "iasw_server_usable_entity.h"
 
+class CASW_Inhabitable_NPC;
 class CASW_Player;
 class CASW_Marine;
 class CASW_WeaponInfo;
@@ -151,7 +152,7 @@ public:
 
 	// Functions for weapons on the ground
 	virtual void Drop( const Vector &vecVelocity );
-	virtual bool AllowedToPickup(CASW_Marine *pMarine);
+	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 	bool IsBeingCarried() const;
 	bool IsCarriedByLocalPlayer();
 	virtual void FallInit();
@@ -160,13 +161,13 @@ public:
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent ) { return false; }
 
 	// IASW_Server_Usable_Entity implementation
-	virtual CBaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual CBaseEntity *GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime) { }
-	virtual void MarineStartedUsing(CASW_Marine* pMarine) { }
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { }
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime ) { }
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) { }
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) { }
 	virtual bool NeedsLOSCheck() { return true; }
 
 protected:

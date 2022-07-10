@@ -38,6 +38,7 @@
 	#define CASW_Sentry_Base C_ASW_Sentry_Base
 	#define CASW_Weapon C_ASW_Weapon
 	#define CASW_Hack C_ASW_Hack
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #else
 	#include "player.h"
 	#include "asw_player.h"
@@ -135,12 +136,12 @@ static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOld
 
 extern void DiffPrint( bool bServer, int nCommandNumber, char const *fmt, ... );
 
-void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
+void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( pMarine )
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( pNPC )
 	{
-		MoveHelper()->SetHost( pMarine );
+		MoveHelper()->SetHost( pNPC );
 	}
 
 	// BenLubar(spectator-mouse)
@@ -150,12 +151,13 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	m_iMouseY = ucmd->mousey;
 
 	m_angMarineAutoAimFromClient = ucmd->aimangleoffset;
-	
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	// process turret movement
-	if ( pMarine && pMarine->IsControllingTurret())
+	if ( pMarine && pMarine->IsControllingTurret() )
 	{
-		CASW_Remote_Turret* pTurret = pMarine->GetRemoteTurret();
-		if (pTurret)
+		CASW_Remote_Turret *pTurret = pMarine->GetRemoteTurret();
+		if ( pTurret )
 		{
 			pTurret->SetupMove( this, ucmd, moveHelper, g_pMoveData );
 			pTurret->ProcessMovement( this, g_pMoveData );
@@ -167,10 +169,10 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 
 	// process vehicle movement
 #ifdef GAME_DLL
-	if ( pMarine && pMarine->IsDriving() && gpGlobals->maxClients == 1)
+	if ( pMarine && pMarine->IsDriving() && gpGlobals->maxClients == 1 )
 	{
-		IASW_Vehicle* pVehicle = pMarine->GetASWVehicle();
-		if (pVehicle)
+		IASW_Vehicle *pVehicle = pMarine->GetASWVehicle();
+		if ( pVehicle )
 		{
 			pVehicle->SetupMove( this, ucmd, moveHelper, g_pMoveData );
 			pVehicle->ProcessMovement( this, g_pMoveData );
@@ -183,28 +185,28 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 		//pMarine->m_iLightLevel = ucmd->light_level;
 	//}
 #else
-	if ( pMarine && gpGlobals->maxClients > 1)
+	if ( pMarine && gpGlobals->maxClients > 1 )
 	{
-		IASW_Client_Vehicle* pVehicle = pMarine->GetClientsideVehicle();
-		if ( pMarine->IsDriving())
+		IASW_Client_Vehicle *pVehicle = pMarine->GetClientsideVehicle();
+		if ( pMarine->IsDriving() )
 		{
-			if (pVehicle)
+			if ( pVehicle )
 			{
 				pVehicle->SetupMove( this, ucmd, moveHelper, g_pMoveData );
 				pVehicle->ProcessMovement( this, g_pMoveData );
 			}
-			else if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() && 
-					  pMarine->GetASWVehicle()->ASWGetDriver() == pMarine )
+			else if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() &&
+				pMarine->GetASWVehicle()->ASWGetDriver() == pMarine )
 			{
 				// need to create a clientside vehicle for us to drive			
-				CBaseEntity* pEnt = pMarine->GetASWVehicle()->GetEntity();
-				C_ASW_PropJeep_Clientside* pJeep = C_ASW_PropJeep_Clientside::CreateNew(false);
-				pJeep->SetAbsOrigin(pEnt->GetAbsOrigin());
-				pJeep->SetAbsAngles(pEnt->GetAbsAngles());
+				CBaseEntity *pEnt = pMarine->GetASWVehicle()->GetEntity();
+				C_ASW_PropJeep_Clientside *pJeep = C_ASW_PropJeep_Clientside::CreateNew( false );
+				pJeep->SetAbsOrigin( pEnt->GetAbsOrigin() );
+				pJeep->SetAbsAngles( pEnt->GetAbsAngles() );
 				// todo: set poseparameters too?
 				pJeep->Initialize();
-				pMarine->SetClientsideVehicle(pJeep);
-				
+				pMarine->SetClientsideVehicle( pJeep );
+
 				// hide the dummy for this client only
 				pMarine->GetASWVehicle()->GetEntity()->UpdateVisibility();
 			}
@@ -214,26 +216,26 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 			if ( pMarine->GetClientsideVehicle() )
 			{
 				pMarine->GetClientsideVehicle()->ASWStopEngine();	// destroys it
-				pMarine->SetClientsideVehicle(NULL);
+				pMarine->SetClientsideVehicle( NULL );
 				// the dummy will show itself in its next clientthink...
 			}
 		}
 	}
-	
+
 #endif
-	
+
 
 #ifdef GAME_DLL	
 	if ( asw_move_marine.GetBool() )
 	{
 #endif
 		if ( pMarine && !pMarine->IsInVehicle() && ASWGameResource() )
-		{			
+		{
 			// don't apply commands meant for another marine
-			if ( pMarine->GetMarineResource() && ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype)
+			if ( pMarine->GetMarineResource() && ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype )
 			{
 				// check if we should be stopped
-				if (gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
+				if ( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
 #ifdef CLIENT_DLL
 					|| CASW_VGUI_Info_Message::HasInfoMessageOpen()
 #endif
@@ -243,28 +245,28 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 					ucmd->sidemove = 0;
 					ucmd->buttons &= ~IN_JUMP;
 					// no firing when picking up stuff - does this do anything here?
-					if (gpGlobals->curtime < pMarine->GetStopTime())
+					if ( gpGlobals->curtime < pMarine->GetStopTime() )
 					{
 						ucmd->buttons &= ~IN_ATTACK;
 						ucmd->buttons &= ~IN_ATTACK2;
 					}
-					
+
 					//ucmd->buttons |= IN_ASW_STOP;
 				}
 
 				//m_hMarine->SetMoveType( MOVETYPE_WALK ); // commented out in order for marines to use other movetypes
-				MarineMove()->SetupMarineMove( this, m_hMarine.Get(), ucmd, moveHelper, g_pMoveData);
-				g_pMarineGameMovement->ProcessMovement(this, m_hMarine.Get(), g_pMoveData);
-				MarineMove()->FinishMarineMove( this, m_hMarine.Get(), ucmd, g_pMoveData );
+				MarineMove()->SetupMarineMove( this, pMarine, ucmd, moveHelper, g_pMoveData );
+				g_pMarineGameMovement->ProcessMovement( this, pMarine, g_pMoveData );
+				MarineMove()->FinishMarineMove( this, pMarine, ucmd, g_pMoveData );
 				moveHelper->ProcessImpacts();
-				
+
 				// Call this from within predicted code on both client & server
 				pMarine->PostThink();
 
-	#ifdef GAME_DLL
-				pMarine->PostThinkVPhysics(g_pMoveData);
+#ifdef GAME_DLL
+				pMarine->PostThinkVPhysics( g_pMoveData );
 				pMarine->UpdateVPhysicsAfterMove();
-	#endif
+#endif
 			}
 
 			if ( pMarine->m_hCurrentHack.Get() )
@@ -279,8 +281,8 @@ void CASW_Player::DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 
 			//m_pMarine->m_nSimulationTick = gpGlobals->tickcount;  // stop the entity doing any subsequence physicssimulate
 		}
-		
-#ifdef GAME_DLL	
+
+#ifdef GAME_DLL
 	}
 #endif
 
@@ -306,16 +308,16 @@ void CASW_Player::ItemPostFrame()
 #endif
 
 	CASW_Weapon* pWeapon = NULL;
-	CASW_Marine *pMarine = GetMarine();
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
 	float next_attack = m_flNextAttack;
-	if ( pMarine )
+	if ( pNPC )
 	{
-		pWeapon = GetMarine()->GetActiveASWWeapon();
-		next_attack = GetMarine()->GetNextAttack();
+		pWeapon = pNPC->GetActiveASWWeapon();
+		next_attack = pNPC->GetNextAttack();
 	}
 	else
 	{
-		pWeapon = dynamic_cast<CASW_Weapon*>(GetActiveWeapon());
+		pWeapon = assert_cast< CASW_Weapon * >( GetActiveWeapon() );
 	}
 
 	// CASW_Lag_Compensation NOTE:  From this point on, weapons can turn on lag compensation.
@@ -324,7 +326,7 @@ void CASW_Player::ItemPostFrame()
 	CASW_Lag_Compensation::AllowLagCompensation( this );
 #endif
 
-    if ( gpGlobals->curtime < next_attack )
+	if ( gpGlobals->curtime < next_attack )
 	{
 		if ( pWeapon )
 		{
@@ -344,13 +346,13 @@ void CASW_Player::ItemPostFrame()
 	}
 
 	// check if offhand weapon needs postframe
-	CASW_Weapon *pExtra = pMarine ? pMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA ) : NULL;
+	CASW_Weapon *pExtra = pNPC ? pNPC->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA ) : NULL;
 	if ( pExtra && pExtra != pWeapon && pExtra->WantsOffhandPostFrame() )
 	{
 		pExtra->ItemPostFrame();
 	}
 
-	CASW_Weapon *pTempExtra = pMarine ? pMarine->GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT ) : NULL;
+	CASW_Weapon *pTempExtra = pNPC ? pNPC->GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT ) : NULL;
 	if ( pTempExtra && pTempExtra->GetWeaponInfo() && pTempExtra->GetWeaponInfo()->m_bExtra )
 	{
 		pExtra = pTempExtra;
@@ -384,7 +386,7 @@ void CASW_Player::ItemPostFrame()
 					if ( event2 )
 					{
 						event2->SetInt( "userid", GetUserID() );
-						event2->SetInt( "marine", pMarine->entindex() );
+						event2->SetInt( "marine", pNPC->entindex() );
 						event2->SetInt( "weapon", pExtra->entindex() );
 
 						gameeventmanager->FireEvent( event2 );
@@ -429,19 +431,19 @@ Vector CASW_Player::EyePosition( )
 	{
 		return BaseClass::EyePosition();
 	}
-	CASW_Marine *pMarine = GetSpectatingMarine();
+	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
 	bool bSpectating = true;
-	if ( !pMarine )
+	if ( !pNPC )
 	{
-		pMarine = GetMarine();
+		pNPC = GetNPC();
 		bSpectating = false;
 	}
-	if ( pMarine && pMarine->GetHealth() > 0 )
+	if ( pNPC && pNPC->GetHealth() > 0 )
 	{
-			m_vecLastMarineOrigin = pMarine->EyePosition();
+		m_vecLastMarineOrigin = pNPC->EyePosition();
 	}
 
-	if (!pMarine && asw_rts_controls.GetBool())
+	if ( !pNPC && asw_rts_controls.GetBool() )
 	{
 		return GetAbsOrigin();
 	}
@@ -458,6 +460,7 @@ Vector CASW_Player::EyePosition( )
 
 		Vector org = vec3_origin;
 		QAngle ang;
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 		if ( pMarine && pMarine->IsInVehicle() )
 		{
 			ang[PITCH] = asw_vehicle_cam_pitch.GetFloat();
@@ -594,14 +597,15 @@ void CASW_Player::FindUseEntities()
 		m_hUseEntities[ i ] = NULL;
 	}
 
-	CASW_Marine* pMarine = GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pNPC )
 	{
 		return;
 	}
 
 	// if we're in a vehicle, only interact with the vehicle (to get out)
-	if ( pMarine->IsInVehicle() )
+	if ( pMarine && pMarine->IsInVehicle() )
 	{
 		if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() )
 		{
@@ -613,10 +617,10 @@ void CASW_Player::FindUseEntities()
 
 	CASW_UsableObjectsEnumerator items( ASW_MARINE_USE_RADIUS, this );
 #ifdef CLIENT_DLL
-	partition->EnumerateElementsInSphere( PARTITION_ALL_CLIENT_EDICTS, pMarine->GetAbsOrigin(), ASW_MARINE_USE_RADIUS, false, &items );
+	partition->EnumerateElementsInSphere( PARTITION_ALL_CLIENT_EDICTS, pNPC->GetAbsOrigin(), ASW_MARINE_USE_RADIUS, false, &items );
 #else
 	
-	partition->EnumerateElementsInSphere( ASW_PARTITION_ALL_SERVER_EDICTS , pMarine->GetAbsOrigin(), ASW_MARINE_USE_RADIUS, false, &items );
+	partition->EnumerateElementsInSphere( ASW_PARTITION_ALL_SERVER_EDICTS , pNPC->GetAbsOrigin(), ASW_MARINE_USE_RADIUS, false, &items );
 #endif
 	
 
@@ -711,11 +715,11 @@ void CASW_Player::SortUsePair( CBaseEntity **pEnt1, CBaseEntity **pEnt2, int *pn
 	bool bSwap = false;
 	if ( *pnFirstPriority == *pnSecondPriority )	// if items are the same type, put the closest first
 	{
-		CASW_Marine* pMarine = GetMarine();
-		if ( pMarine != NULL )
+		CASW_Inhabitable_NPC *pNPC = GetNPC();
+		if ( pNPC != NULL )
 		{
-			float fFirstDist = pMarine->GetAbsOrigin().DistToSqr( ( *pEnt1 )->WorldSpaceCenter() );
-			float fSecondDist = pMarine->GetAbsOrigin().DistToSqr( ( *pEnt2 )->WorldSpaceCenter() );
+			float fFirstDist = pNPC->GetAbsOrigin().DistToSqr( ( *pEnt1 )->WorldSpaceCenter() );
+			float fSecondDist = pNPC->GetAbsOrigin().DistToSqr( ( *pEnt2 )->WorldSpaceCenter() );
 			if ( fSecondDist < fFirstDist)
 			{
 				bSwap = true;
@@ -793,12 +797,14 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 
 		return 0;
 	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 	
 	// check if this item is usable by a marine
 	CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon* >( pEnt );
 	if ( pWeapon )
 	{
-		if ( pWeapon->AllowedToPickup( GetMarine() ) )
+		if ( pWeapon->AllowedToPickup( pMarine ) )
 		{
 			return 1;
 		}
@@ -812,7 +818,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 	CASW_Pickup *pPickup = dynamic_cast< CASW_Pickup* >( pEnt );
 	if ( pPickup )
 	{
-		if ( pPickup->AllowedToPickup( GetMarine() ) )
+		if ( pPickup->AllowedToPickup( pMarine ) )
 		{
 			return 1;
 		}
@@ -826,7 +832,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 	CASW_Ammo_Drop *pAmmoDrop = dynamic_cast< CASW_Ammo_Drop* >( pEnt );
 	if ( pAmmoDrop )
 	{
-		if ( pAmmoDrop->AllowedToPickup( GetMarine() ) )
+		if ( pAmmoDrop->AllowedToPickup( pMarine ) )
 		{
 			return 1;
 		}
@@ -842,13 +848,13 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 
 CBaseCombatCharacter *CASW_Player::ActivePlayerCombatCharacter( void )
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	if ( !pNPC )
 	{
 		return BaseClass::ActivePlayerCombatCharacter();
 	}
 
-	return pMarine;
+	return pNPC;
 }
 
 // for switching weapons on the current marine
@@ -857,7 +863,7 @@ void CASW_Player::ASWSelectWeapon(CBaseCombatWeapon* pWeapon, int subtype)
 	if ( !pWeapon )
 		return;
 
-	CASW_Marine* pMarine = GetMarine();
+	CASW_Marine* pMarine = CASW_Marine::AsMarine( GetNPC() );
 	if ( !pMarine )
 	{
 		SelectItem(pWeapon->GetName(), subtype);
@@ -873,10 +879,10 @@ void CASW_Player::ASWSelectWeapon(CBaseCombatWeapon* pWeapon, int subtype)
 
 bool CASW_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
-	CASW_Marine *pMarine = GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 	if ( !pMarine )
 	{
-		return BaseClass::Weapon_CanUse( pWeapon );
+		return false;
 	}
 
 	CASW_Weapon *pASWWeapon = static_cast< CASW_Weapon* >( pWeapon );
@@ -884,12 +890,12 @@ bool CASW_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 	return pASWWeapon->AllowedToPickup( pMarine );
 }
 
-CBaseCombatWeapon* CASW_Player::Weapon_OwnsThisType( const char *pszWeapon, int iSubType ) const
+CBaseCombatWeapon *CASW_Player::Weapon_OwnsThisType( const char *pszWeapon, int iSubType ) const
 {
-	const CASW_Marine *pMarine = GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 	if ( !pMarine )
 	{
-		return BaseClass::Weapon_OwnsThisType( pszWeapon, iSubType );
+		return NULL;
 	}
 
 	return pMarine->Weapon_OwnsThisType( pszWeapon, iSubType );
@@ -897,10 +903,10 @@ CBaseCombatWeapon* CASW_Player::Weapon_OwnsThisType( const char *pszWeapon, int 
 
 int CASW_Player::Weapon_GetSlot( const char *pszWeapon, int iSubType ) const
 {
-	const CASW_Marine* pMarine = GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
 	if ( !pMarine )
 	{
-		return BaseClass::Weapon_GetSlot( pszWeapon, iSubType );
+		return -1;
 	}
 
 	return pMarine->Weapon_GetSlot( pszWeapon, iSubType );
@@ -936,16 +942,16 @@ const QAngle& CASW_Player::EyeAngles( )
 #endif
 
 #ifdef CLIENT_DLL
-	if ( asw_allow_detach.GetBool() && GetMarine() )
+	if ( asw_allow_detach.GetBool() && GetNPC() )
 	{
 		return m_angEyeAngles;
 	}
 #endif
 
-	if ( GetViewMarine() )
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetViewNPC() );
+	if ( pMarine )
 	{
 		angAdjustedEyes.z = 0;
-		CASW_Marine *pMarine = GetViewMarine();
 
 		// if we're driving, return the angle
 		if ( pMarine->IsInVehicle() )
@@ -991,8 +997,9 @@ const QAngle& CASW_Player::EyeAnglesWithCursorRoll( )
 
 void CASW_Player::AvoidPhysicsProps(CUserCmd *pCmd)
 {
-	if (GetMarine() && !GetMarine()->IsInVehicle())
-		GetMarine()->AvoidPhysicsProps(pCmd);
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
+	if ( pMarine && !pMarine->IsInVehicle() )
+		pMarine->AvoidPhysicsProps( pCmd );
 }
 
 void CASW_Player::SetAnimation( PLAYER_ANIM playerAnim )
@@ -1017,14 +1024,15 @@ Vector CASW_Player::EarPosition( void )
 	if ( pViewEnt )
 		return pViewEnt->EarPosition();
 
-	CASW_Marine* pMarine = GetViewMarine();
-	if (pMarine)
-		return pMarine->EarPosition();
+	CASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( pNPC )
+		return pNPC->EarPosition();
 
-	if (asw_rts_controls.GetBool())
+	if ( asw_rts_controls.GetBool() )
 	{
 		return GetAbsOrigin();
 	}
+
 	return BaseClass::EarPosition();
 }
 
@@ -1059,13 +1067,14 @@ void CASW_Player::PlayerUse()
 	if ( ! ((m_nButtons | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
 		return;
 
-	if (!GetMarine() || GetMarine()->GetHealth()<=0)
+	CASW_Inhabitable_NPC *pNPC = GetNPC();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+
+	if ( !pNPC || pNPC->GetHealth() <= 0 )
 		return;
 
-	CASW_Marine *pMarine = GetMarine();
-
-	if ( pMarine->m_bKnockedOut )	//DRAVEN ~RMUSEBUG~
-		return;						//DRAVEN ~RMUSEBUG~
+	if ( pMarine && pMarine->m_bKnockedOut )
+		return;
 
 	if ( GetNumUseEntities() > 0 )
 	{		
@@ -1120,47 +1129,47 @@ void CASW_Player::PlayerUse()
 				}
 			}
 
-			if ( pActivateEnt )
+			if ( pMarine && pActivateEnt )
 			{
 				bool bCanTake = true;
 
 				CASW_Pickup *pItem = dynamic_cast<CASW_Pickup*>( pActivateEnt );
 				if ( pItem && nHoldType != ASW_USE_HOLD_START )
 				{
-					bCanTake = pItem->AllowedToPickup( GetMarine() );
-					if (bCanTake)
+					bCanTake = pItem->AllowedToPickup( pMarine );
+					if ( bCanTake )
 					{
-						GetMarine()->SetStopTime( gpGlobals->curtime + 1.0f );
-						GetMarine()->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
+						pMarine->SetStopTime( gpGlobals->curtime + 1.0f );
+						pMarine->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
 					}
 				}
 				else
 				{
-					CASW_Weapon *pWeapon = dynamic_cast<CASW_Weapon*>( pActivateEnt );
+					CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( pActivateEnt );
 					if ( pWeapon && nHoldType != ASW_USE_HOLD_START )
 					{
-						bCanTake = pWeapon->AllowedToPickup( GetMarine() );
-						if (bCanTake)
+						bCanTake = pWeapon->AllowedToPickup( pMarine );
+						if ( bCanTake )
 						{
-							GetMarine()->SetStopTime( gpGlobals->curtime + 1.0f );
-							GetMarine()->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
+							pMarine->SetStopTime( gpGlobals->curtime + 1.0f );
+							pMarine->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
 						}
 					}
 					else
 					{
-						CASW_Ammo_Drop *pAmmoDrop = dynamic_cast<CASW_Ammo_Drop*>( pActivateEnt );
+						CASW_Ammo_Drop *pAmmoDrop = dynamic_cast< CASW_Ammo_Drop * >( pActivateEnt );
 						if ( pAmmoDrop && nHoldType != ASW_USE_HOLD_START )
 						{
-							bCanTake = pAmmoDrop->AllowedToPickup( GetMarine() );
+							bCanTake = pAmmoDrop->AllowedToPickup( pMarine );
 							if ( bCanTake )
 							{
-								GetMarine()->SetStopTime( gpGlobals->curtime + 1.0f );
-								GetMarine()->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
-								CASW_Weapon *pWeapon = pAmmoDrop->GetAmmoUseUnits( pMarine );
+								pMarine->SetStopTime( gpGlobals->curtime + 1.0f );
+								pMarine->DoAnimationEvent( PLAYERANIMEVENT_PICKUP );
+								CASW_Weapon *pAmmoWeapon = pAmmoDrop->GetAmmoUseUnits( pMarine );
 
-								if ( pWeapon )
+								if ( pAmmoWeapon )
 								{
-									int iAmmoType = pWeapon->GetPrimaryAmmoType();
+									int iAmmoType = pAmmoWeapon->GetPrimaryAmmoType();
 									int iAmmoCost = pAmmoDrop->GetAmmoUnitCost( iAmmoType );
 									if ( iAmmoCost < 20 )
 									{
@@ -1182,24 +1191,24 @@ void CASW_Player::PlayerUse()
 						}
 					}
 				}
-
-		#ifdef GAME_DLL
-				IASW_Server_Usable_Entity *pUsable = dynamic_cast<IASW_Server_Usable_Entity*>( pActivateEnt );
-				if ( pUsable )
-				{
-					if ( !pMarine->m_hUsingEntity.Get() || pMarine->m_hUsingEntity.Get() == pActivateEnt )		// if we're in the middle of using an entity, only allow reusing that same entity
-					{
-						pUsable->ActivateUseIcon( GetMarine(), nHoldType );
-					}
-					//Mad Orange. This is a litte hacky but fixes ghost weapons may appear in inventory and other use area related issues like fail revives with marines when u press use button for a long time with more than 1 use item nearby.
-					if (nHoldType == ASW_USE_HOLD_RELEASE_FULL)
-					{
-						m_hUseKeyDownEnt = NULL;
-						m_flUseKeyDownTime = 0.0f;
-					}
-				}
-		#endif
 			}
+
+#ifdef GAME_DLL
+			IASW_Server_Usable_Entity *pUsable = dynamic_cast< IASW_Server_Usable_Entity * >( pActivateEnt );
+			if ( pUsable )
+			{
+				if ( !pNPC->m_hUsingEntity.Get() || pNPC->m_hUsingEntity.Get() == pActivateEnt )		// if we're in the middle of using an entity, only allow reusing that same entity
+				{
+					pUsable->ActivateUseIcon( pNPC, nHoldType );
+				}
+				//Mad Orange. This is a litte hacky but fixes ghost weapons may appear in inventory and other use area related issues like fail revives with marines when u press use button for a long time with more than 1 use item nearby.
+				if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
+				{
+					m_hUseKeyDownEnt = NULL;
+					m_flUseKeyDownTime = 0.0f;
+				}
+			}
+#endif
 		}
 	}
 
@@ -1257,8 +1266,8 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 	if ( GetViewEntity() )
 		return GetViewEntity();
 
-	if ( GetViewMarine() )
-		return GetViewMarine();
+	if ( GetViewNPC() )
+		return GetViewNPC();
 
 	return this;
 }
@@ -1278,7 +1287,7 @@ int CASW_Player::GetASWControls()
 
 	// if we're forcing a spectator override, everyone's controls change client-side while spectating.
 	C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
-	if ( asw_controls_spectator_override.GetInt() >= 0 && ( ( pLocal && pLocal->GetSpectatingMarine() ) || engine->IsPlayingDemo() ) )
+	if ( asw_controls_spectator_override.GetInt() >= 0 && ( ( pLocal && pLocal->GetSpectatingNPC() ) || engine->IsPlayingDemo() ) )
 		return asw_controls_spectator_override.GetInt();
 #endif
 

@@ -85,15 +85,10 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 	{
 		case LESSON_ACTION_IS_ALLOWED_ITEM:
 		{
-			C_ASW_Marine *pMarine = NULL;
-
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
-			if ( pPlayer )
-			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
-			}
+			C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetNPC() : NULL;
 
-			if ( !pMarine )
+			if ( !pNPC )
 			{
 				if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
 				{
@@ -127,12 +122,12 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 				}
 				else
 				{
-					bIsAllowed = pWeapon->AllowedToPickup( pMarine );
+					bIsAllowed = pWeapon->AllowedToPickup( pNPC );
 				}
 			}
 			else
 			{
-				bIsAllowed = pPickup->AllowedToPickup( pMarine );
+				bIsAllowed = pPickup->AllowedToPickup( pNPC );
 			}
 
 			if ( gameinstructor_verbose.GetInt() > 0 && ShouldShowSpew() )
@@ -152,7 +147,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
 			if ( pPlayer )
 			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+				pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 			}
 
 			if ( !pMarine )
@@ -216,7 +211,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
 			if ( pPlayer )
 			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+				pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 			}
 
 			if ( !pMarine )
@@ -314,7 +309,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
 			if ( pPlayer )
 			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+				pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 			}
 
 			if ( !pMarine )
@@ -399,7 +394,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 				return false;
 			}
 
-			C_ASW_Marine *pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+			C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 
 			pHandle->Set( pMarine );
 
@@ -447,7 +442,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
 			if ( pPlayer )
 			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+				pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 			}
 
 			if ( !pMarine )
@@ -497,7 +492,7 @@ bool CScriptedIconLesson::Mod_ProcessElementAction( int iAction, bool bNot, cons
 			C_ASW_Player *pPlayer = dynamic_cast< C_ASW_Player* >( pVar );
 			if ( pPlayer )
 			{
-				pMarine = dynamic_cast< C_ASW_Marine* >( pPlayer->GetMarine() );
+				pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
 			}
 
 			if ( !pMarine )

@@ -375,10 +375,10 @@ void CASW_Weapon_Sentry::DeploySentry()
 			}
 		}
 
+		bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
+		bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
 		CASW_Bait *pEnt3 = NULL;
 		{
-			Vector bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
-			Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
 			Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector( 0, 0, 10 );
 			pEnt3 = CASW_Bait::Bait_Create( bait_vec, QAngle( 90, 0, 0 ), vec3_origin, AngularImpulse( 0, 0, 0 ), pBase );
 			if ( pEnt3 )
@@ -390,8 +390,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 
 		CASW_Bait *pEnt4 = NULL;
 		{
-			Vector bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
-			Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
 			Vector bait_vec = m_vecValidSentrySpot - bait_dir + Vector( 0, 0, 10 );
 			pEnt4 = CASW_Bait::Bait_Create( bait_vec, QAngle( 90, 0, 0 ), vec3_origin, AngularImpulse( 0, 0, 0 ), pBase );
 			if ( pEnt4 )

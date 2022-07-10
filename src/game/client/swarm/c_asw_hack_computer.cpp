@@ -94,7 +94,7 @@ void C_ASW_Hack_Computer::ClientThink()
 	{
 		if (!m_bLaunchedHackPanel)
 		{
-			if ( C_ASW_Player::GetLocalASWPlayer()->GetViewMarine() == GetHackerMarineResource()->GetMarineEntity() )
+			if ( C_ASW_Player::GetLocalASWPlayer()->GetViewNPC() == GetHackerMarineResource()->GetMarineEntity() )
 			{
 				vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 

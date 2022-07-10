@@ -1066,43 +1066,43 @@ void DisableNoClip( CBasePlayer *pPlayer )
 	UTIL_LogPrintf( "%s left NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
 }
 
-void EnableRDNoClip( CASW_Marine *pMarine )
+void EnableRDNoClip( CASW_Inhabitable_NPC *pNPC )
 {
 	// Disengage from hierarchy
-	pMarine->SetParent( NULL );
-	pMarine->SetMoveType( MOVETYPE_NOCLIP );
-	ClientPrint( pMarine->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip ON\n");
-	pMarine->AddEFlags( EFL_NOCLIP_ACTIVE );
+	pNPC->SetParent( NULL );
+	pNPC->SetMoveType( MOVETYPE_NOCLIP );
+	ClientPrint( pNPC->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip ON\n");
+	pNPC->AddEFlags( EFL_NOCLIP_ACTIVE );
 
-	UTIL_LogPrintf( "%s entered RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pMarine->GetCommander() ) );
+	UTIL_LogPrintf( "%s entered RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pNPC->GetCommander() ) );
 }
 
-void DisableRDNoClip( CASW_Marine *pMarine )
+void DisableRDNoClip( CASW_Inhabitable_NPC *pNPC )
 {
-	CPlayerState *pl = pMarine->GetCommander()->PlayerData();
+	CPlayerState *pl = pNPC->GetCommander()->PlayerData();
 	Assert( pl );
 
-	pMarine->RemoveEFlags( EFL_NOCLIP_ACTIVE );
-	pMarine->SetMoveType( MOVETYPE_WALK );
+	pNPC->RemoveEFlags( EFL_NOCLIP_ACTIVE );
+	pNPC->SetMoveType( MOVETYPE_WALK );
 
-	ClientPrint( pMarine->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip OFF\n");
-	Vector oldorigin = pMarine->GetAbsOrigin();
+	ClientPrint( pNPC->GetCommander(), HUD_PRINTCONSOLE, "rd_noclip OFF\n");
+	Vector oldorigin = pNPC->GetAbsOrigin();
 	unsigned int mask = MASK_PLAYERSOLID;
-	if ( noclip_fixup.GetBool() && !TestEntityPosition( pMarine, mask ) )
+	if ( noclip_fixup.GetBool() && !TestEntityPosition( pNPC, mask ) )
 	{
 		Vector forward, right, up;
 
 		AngleVectors ( pl->v_angle, &forward, &right, &up);
 
-		if ( !FindEmptySpace( pMarine, mask, forward, right, up, &oldorigin ) )
+		if ( !FindEmptySpace( pNPC, mask, forward, right, up, &oldorigin ) )
 		{
 			Msg( "Can't find the world\n" );
 		}
 
-		pMarine->SetAbsOrigin( oldorigin );
+		pNPC->SetAbsOrigin( oldorigin );
 	}
 
-	UTIL_LogPrintf( "%s left RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pMarine->GetCommander() ) );
+	UTIL_LogPrintf( "%s left RD_NOCLIP mode\n", GameLogSystem()->FormatPlayer( pNPC->GetCommander() ) );
 }
 
 CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional argument of 0 or 1 to force enable/disable", FCVAR_CHEAT )
@@ -1116,33 +1116,33 @@ CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional
 
 #ifdef INFESTED_DLL
 	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
-	CASW_Marine *pMarine = pASWPlayer->GetMarine();
-	if ( !pMarine )
+	CASW_Inhabitable_NPC *pNPC = pASWPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 #endif
 
 	if ( args.ArgC() >= 2 )
 	{
 		bool bEnable = Q_atoi( args.Arg( 1 ) ) ? true : false;
-		if ( bEnable && pMarine->GetMoveType() != MOVETYPE_NOCLIP )
+		if ( bEnable && pNPC->GetMoveType() != MOVETYPE_NOCLIP )
 		{
-			EnableRDNoClip( pMarine );
+			EnableRDNoClip( pNPC );
 		}
-		else if ( !bEnable && pMarine->GetMoveType() == MOVETYPE_NOCLIP )
+		else if ( !bEnable && pNPC->GetMoveType() == MOVETYPE_NOCLIP )
 		{
-			DisableRDNoClip( pMarine );
+			DisableRDNoClip( pNPC );
 		}
 	}
 	else
 	{
 		// Toggle the noclip state if there aren't any arguments.
-		if ( pMarine->GetMoveType() != MOVETYPE_NOCLIP )
+		if ( pNPC->GetMoveType() != MOVETYPE_NOCLIP )
 		{
-			EnableRDNoClip( pMarine );
+			EnableRDNoClip( pNPC );
 		}
 		else
 		{
-			DisableRDNoClip( pMarine );
+			DisableRDNoClip( pNPC );
 		}
 	}
 }
@@ -1234,7 +1234,7 @@ CON_COMMAND_F( setpos, "Move player to specified origin (must have sv_cheats).",
 	CBaseEntity *pTeleportEnt = pPlayer;
 #ifdef INFESTED_DLL
 	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
-	pTeleportEnt = pASWPlayer->GetMarine();
+	pTeleportEnt = pASWPlayer->GetNPC();
 	if ( !pTeleportEnt )
 		return;
 #endif

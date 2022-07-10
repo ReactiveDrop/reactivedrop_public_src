@@ -31,20 +31,20 @@ CASW_VGUI_Fast_Reload::~CASW_VGUI_Fast_Reload()
 void CASW_VGUI_Fast_Reload::PerformLayout()
 {
 	int w, t;
-	GetSize(w, t);
-	m_pBar->SetBounds(1, 1, w-2, t-2);
+	GetSize( w, t );
+	m_pBar->SetBounds( 1, 1, w - 2, t - 2 );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer)
+	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if (pMarine && pMarine->GetActiveASWWeapon())
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( pNPC && pNPC->GetActiveASWWeapon() )
 	{
-		C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
-		if (pWeapon)
-			PositionBars(pWeapon);
-	}	
+		C_ASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
+		if ( pWeapon )
+			PositionBars( pWeapon );
+	}
 }
 
 void CASW_VGUI_Fast_Reload::PositionBars( C_ASW_Weapon *pWeapon )
@@ -153,11 +153,11 @@ void CASW_VGUI_Fast_Reload::OnThink()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
 		return;
 
-	C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
+	C_ASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
 	if ( !pWeapon || !pWeapon->IsReloading() )
 		return;
 

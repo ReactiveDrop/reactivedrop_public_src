@@ -1538,21 +1538,22 @@ CASW_Marine* CASW_PropJeep::ASWGetDriver()
 	return dynamic_cast<CASW_Marine*>(m_hDriver.Get());
 }
 
-void CASW_PropJeep::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_PropJeep::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( pMarine )
 	{
 		if ( pMarine->IsInVehicle() )
-			pMarine->StopDriving(this);
+			pMarine->StopDriving( this );
 		else
-			pMarine->StartDriving(this);
+			pMarine->StartDriving( this );
 	}
 }
 
-bool CASW_PropJeep::IsUsable(CBaseEntity *pUser)
+bool CASW_PropJeep::IsUsable( CBaseEntity *pUser )
 {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
 }

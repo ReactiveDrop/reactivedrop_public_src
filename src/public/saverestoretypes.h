@@ -220,13 +220,13 @@ public:
 		MEM_ALLOC_CREDIT();
 		new (&m_EntityToIndex) CEntityToIndexHash( 1024 );
 		int i;
-		entitytable_t *pTable;
+		entitytable_t *pEntityTable;
 		int nEntities = NumEntities();
 
 		for ( i = 0; i < nEntities; i++ )
 		{
-			pTable = GetEntityInfo( i );
-			m_EntityToIndex.Insert(  CHashElement( pTable->hEnt.Get(), i ) );
+			pEntityTable = GetEntityInfo( i );
+			m_EntityToIndex.Insert(  CHashElement( pEntityTable->hEnt.Get(), i ) );
 		}
 #endif
 	}

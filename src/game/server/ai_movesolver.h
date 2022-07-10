@@ -248,16 +248,16 @@ inline AI_MoveSuggestion_t::AI_MoveSuggestion_t( AI_MoveSuggType_t newType, floa
 
 //-------------------------------------
 
-inline AI_MoveSuggestion_t::AI_MoveSuggestion_t( AI_MoveSuggType_t newType, float newWeight, const AI_Arc_t &arc, CBaseEntity *pEntity  )
+inline AI_MoveSuggestion_t::AI_MoveSuggestion_t( AI_MoveSuggType_t newType, float newWeight, const AI_Arc_t &newArc, CBaseEntity *pEntity  )
 {
-	Set( newType, newWeight, arc.center, arc.span, pEntity );
+	Set( newType, newWeight, newArc.center, newArc.span, pEntity );
 }
 
 //-------------------------------------
 
-inline void AI_MoveSuggestion_t::Set( AI_MoveSuggType_t newType, float newWeight, const AI_Arc_t &arc, CBaseEntity *pEntity )
+inline void AI_MoveSuggestion_t::Set( AI_MoveSuggType_t newType, float newWeight, const AI_Arc_t &newArc, CBaseEntity *pEntity )
 {
-	Set( newType, newWeight, arc.center, arc.span, pEntity );
+	Set( newType, newWeight, newArc.center, newArc.span, pEntity );
 }
 
 //-----------------------------------------------------------------------------

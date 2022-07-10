@@ -4,6 +4,7 @@
 	#include "c_asw_marine.h"
 	#include "c_asw_weapon.h"
 	#include "prediction.h"
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CASW_Player C_ASW_Player
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Weapon C_ASW_Weapon
@@ -568,10 +569,10 @@ void CBasePlayer::UpdateWetness()
 //-----------------------------------------------------------------------------
 void CASW_MarineGameMovement::CategorizeGroundSurface( trace_t &pm )
 {
-	IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
+	IPhysicsSurfaceProps *pPhysProps = MoveHelper()->GetSurfaceProps();
 	marine->m_surfaceProps = pm.surface.surfaceProps;
-	marine->m_pSurfaceData = physprops->GetSurfaceData( marine->m_surfaceProps );
-	physprops->GetPhysicsProperties( marine->m_surfaceProps, NULL, NULL, &marine->m_surfaceFriction, NULL );
+	marine->m_pSurfaceData = pPhysProps->GetSurfaceData( marine->m_surfaceProps );
+	pPhysProps->GetPhysicsProperties( marine->m_surfaceProps, NULL, NULL, &marine->m_surfaceFriction, NULL );
 
 	// HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
 	// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
@@ -4089,8 +4090,8 @@ void CASW_MarineGameMovement::CategorizePosition( void )
 		if ( player->IsInAVehicle() == false )
 		{
 			// If our gamematerial has changed, tell any player surface triggers that are watching
-			IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
-			surfacedata_t *pSurfaceProp = physprops->GetSurfaceData( pm.surface.surfaceProps );
+			IPhysicsSurfaceProps *pPhysProps = MoveHelper()->GetSurfaceProps();
+			surfacedata_t *pSurfaceProp = pPhysProps->GetSurfaceData( pm.surface.surfaceProps );
 			char cCurrGameMaterial = pSurfaceProp->game.material;
 			if ( !marine->GetGroundEntity() )
 			{

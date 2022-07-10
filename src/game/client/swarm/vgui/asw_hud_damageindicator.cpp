@@ -188,11 +188,11 @@ bool CHudDamageIndicator::ShouldDraw( void )
 	if ( !pPlayer )
 		return false;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
 		return false;
 
-	float percentDead = 1.0 - clamp( (float)((float)pMarine->GetHealth() / (float)pMarine->GetMaxHealth()), 0.0f, 1.0f);
+	float percentDead = 1.0 - clamp( (float)((float)pNPC->GetHealth() / (float)pNPC->GetMaxHealth()), 0.0f, 1.0f);
 	if ( percentDead >= 0.66f )
 		return true;
 
@@ -237,12 +237,12 @@ void CHudDamageIndicator::GetDamagePosition( const Vector &vecDelta, float flRad
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
 		return;
 
 	Vector screenPos;
-	Vector MarinePos = pMarine->GetRenderOrigin();
+	Vector MarinePos = pNPC->GetRenderOrigin();
 	debugoverlay->ScreenPosition( MarinePos - Vector(0,10,0), screenPos );
 
 	// Rotate it around the circle
@@ -430,11 +430,11 @@ void CHudDamageIndicator::Paint()
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
 		return;
 
-	float percentDead = 1.0 - clamp( (float)((float)pMarine->GetHealth() / (float)pMarine->GetMaxHealth()), 0.0f, 1.0f);
+	float percentDead = 1.0 - clamp( (float)((float)pNPC->GetHealth() / (float)pNPC->GetMaxHealth()), 0.0f, 1.0f);
 	if ( percentDead < 0.66f )
 		return;
 
@@ -442,7 +442,7 @@ void CHudDamageIndicator::Paint()
 	if (!rd_health_effect.GetBool())
 		return; 
 
-	float bgalpha = ((245 * pMarine->m_fRedNamePulse) * percentDead) * asw_damageindicator_hurt_flash_alpha.GetFloat();
+	float bgalpha = ((245 * pNPC->m_fRedNamePulse) * percentDead) * asw_damageindicator_hurt_flash_alpha.GetFloat();
 
 	int w = ScreenWidth();
 	int t = ScreenHeight();
@@ -463,9 +463,9 @@ void CHudDamageIndicator::Paint()
 const Vector& CHudDamageIndicator::GetMarineOrigin()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->GetViewMarine() )
+	if ( pPlayer && pPlayer->GetViewNPC() )
 	{
-		return pPlayer->GetViewMarine()->GetAbsOrigin();
+		return pPlayer->GetViewNPC()->GetAbsOrigin();
 	}
 
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();

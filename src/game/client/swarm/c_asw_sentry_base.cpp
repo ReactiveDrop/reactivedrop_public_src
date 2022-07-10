@@ -98,8 +98,13 @@ bool C_ASW_Sentry_Base::IsUsable(C_BaseEntity *pUser)
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
 }
 
-bool C_ASW_Sentry_Base::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Sentry_Base::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
+	if ( !pUser || pUser->Classify() != CLASS_ASW_MARINE )
+	{
+		return false;
+	}
+
 	if ( IsAssembled() )
 	{
 		C_ASW_Player *pPlayer = pUser->GetCommander();

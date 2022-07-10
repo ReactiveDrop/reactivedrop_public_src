@@ -232,7 +232,6 @@ void CASW_Weapon_Tesla_Gun::PrimaryAttack( void )
 			// facing another direction
 			Vector vecAttach = hShockEntity->GetAbsOrigin() - pMarine->GetAbsOrigin();
 			Vector vecForward;
-			CASW_Player *pPlayer = pMarine->GetCommander();
 
 			if ( pPlayer && pMarine->IsInhabited() )
 			{

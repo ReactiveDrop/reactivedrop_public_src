@@ -399,9 +399,9 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	{
 	case COLOR_PLAYERNAME:
 		{
-			CASW_Player* pPlayer = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( clientIndex ) );
-			CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
-			
+			CASW_Player *pPlayer = dynamic_cast< CASW_Player * >( UTIL_PlayerByIndex( clientIndex ) );
+			CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+
 			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
 			{
 				c = pPlayer->GetTeamNumber() == TEAM_ALPHA ? g_ColorRed : g_ColorBlue;

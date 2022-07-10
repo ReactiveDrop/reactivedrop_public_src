@@ -417,9 +417,9 @@ void C_ASW_Weapon::ClientThink()
 	if ( !GetOwner() )
 	{
 		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewMarine() ) )
+		if ( pLocalPlayer && pLocalPlayer->GetViewNPC() && ASWInput()->GetUseGlowEntity() != this && AllowedToPickup( pLocalPlayer->GetViewNPC() ) )
 		{
-			flDistanceToMarineSqr = (pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
+			flDistanceToMarineSqr = (pLocalPlayer->GetViewNPC()->GetAbsOrigin() - WorldSpaceCenter()).LengthSqr();
 			if ( flDistanceToMarineSqr < flWithinDistSqr )
 				bShouldGlow = true;
 		}
@@ -534,7 +534,7 @@ void C_ASW_Weapon::ASWReloadSound(int iType)
 	if ( params.play_to_owner_only )
 	{
 		// Am I only to play to my owner?
-		if ( pPlayer && GetOwner() && pPlayer->GetMarine() == GetOwner() )
+		if ( pPlayer && GetOwner() && pPlayer->GetNPC() == GetOwner() )
 		{
 			CSingleUserRecipientFilter filter( pPlayer );
 			if ( prediction->InPrediction() && IsPredicted() )
@@ -621,30 +621,32 @@ int C_ASW_Weapon::GetUseIconTextureID()
 	return m_nUseIconTextureID;
 }
 
-bool C_ASW_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
 	if ( !pUser )
 		return false;
 
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pUser );
+
 	action.iUseIconTexture = GetUseIconTextureID();
 	action.UseTarget = this;
 	action.fProgress = -1;
-	action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
+	action.iInventorySlot = pMarine ? pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup ) : -1;
 	action.bWideIcon = ( action.iInventorySlot != ASW_INVENTORY_SLOT_EXTRA );
 
 	// build the appropriate take string
 	const CASW_WeaponInfo *pInfo = GetWeaponInfo();
 	if ( pInfo )
 	{
-		wchar_t wszWeaponName[ 128 ];
+		wchar_t wszWeaponName[128];
 		TryLocalize( pInfo->szPrintName, wszWeaponName, sizeof( wszWeaponName ) );
 		if ( m_bSwappingWeapon )
 		{
-			g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find("#asw_swap_weapon_format"), 1, wszWeaponName );
+			g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find( "#asw_swap_weapon_format" ), 1, wszWeaponName );
 		}
 		else
 		{
-			g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find("#asw_take_weapon_format"), 1, wszWeaponName );
+			g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find( "#asw_take_weapon_format" ), 1, wszWeaponName );
 		}
 	}
 
@@ -653,7 +655,7 @@ bool C_ASW_Weapon::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 		action.UseIconRed = 66;
 		action.UseIconGreen = 142;
 		action.UseIconBlue = 192;
-		action.bShowUseKey = true;	
+		action.bShowUseKey = true;
 	}
 	else
 	{

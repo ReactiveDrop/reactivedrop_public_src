@@ -180,14 +180,6 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 	IGameEvent * event = gameeventmanager->CreateEvent( "player_deploy_ammo" );
 	if ( event )
 	{
-		CASW_Marine *pMarine = GetMarine();
-		CASW_Player *pPlayer = NULL;
-
-		if ( pMarine )
-		{
-			pPlayer = pMarine->GetCommander();
-		}
-
 		event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 		event->SetInt( "entindex", pAmmoDrop->entindex() );
 		event->SetInt( "marine", ( pMarine ? pMarine->entindex() : -1 ) );

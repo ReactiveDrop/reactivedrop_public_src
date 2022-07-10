@@ -80,7 +80,7 @@ public:
 	virtual void ASWSetDriver(CASW_Marine* pDriver) { m_hDriver = pDriver; }
 	virtual CASW_Marine* ASWGetDriver();
 	virtual CASW_Marine* ASWGetPassenger(int i) { return NULL; }	// todo: implement
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
 	virtual CBaseEntity* GetEntity() { return this; }
 	virtual void ASWStartEngine() { StartEngine(); }
 	virtual void ASWStopEngine() { StopEngine(); }
@@ -154,10 +154,10 @@ private:
 	CNetworkVar( bool, m_bHeadlightIsOn );
 
 	// IASW_Server_Usable_Entity
-	virtual bool IsUsable(CBaseEntity *pUser);	
-	virtual void MarineStartedUsing(CASW_Marine* pMarine) { } 
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { } 
-	virtual void MarineUsing(CASW_Marine* pMarine, float fDeltaTime) { } 
+	virtual bool IsUsable( CBaseEntity *pUser );
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) {}
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) {}
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float fDeltaTime ) {}
 	virtual bool NeedsLOSCheck() { return false; }
 };
 

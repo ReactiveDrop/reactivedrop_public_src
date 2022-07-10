@@ -55,13 +55,13 @@ ConCommand MarineHealthscc( "MarineHealths", MarineHealths, "List health of all 
 
 void ShootMe()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if ( pPlayer->GetMarine() )
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer->GetNPC() )
 	{
 		CTakeDamageInfo dmgInfo( pPlayer, pPlayer, 3, DMG_BULLET );
-		Vector vecDir = RandomVector(-1, 1);
+		Vector vecDir = RandomVector( -1, 1 );
 		trace_t tr;
-		pPlayer->GetMarine()->DispatchTraceAttack( dmgInfo, vecDir, &tr );
+		pPlayer->GetNPC()->DispatchTraceAttack( dmgInfo, vecDir, &tr );
 	}
 }
 
@@ -140,18 +140,11 @@ void HurtMyMarinef()
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
-		CASW_Marine *marine = pPlayer->GetMarine();
-		CTakeDamageInfo damageinfo( marine, marine,
-			Vector(1,1,1), marine->GetAbsOrigin(), 10, DMG_BULLET );
-		/*vDamagePosition, m_iDamage, DMG_SLASH );
-		CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker,
-		float flDamage, int bitsDamageType, int iKillType = 0 );
-		CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker,
-		const Vector &damageForce, const Vector &damagePosition, float flDamage,
-		int bitsDamageType, int iKillType = 0, Vector *reportedPosition = NULL );*/
-		pPlayer->GetMarine()->TakeDamage(damageinfo);		
+		CASW_Inhabitable_NPC *marine = pPlayer->GetNPC();
+		CTakeDamageInfo damageinfo( marine, marine, Vector( 1, 1, 1 ), marine->GetAbsOrigin(), 10, DMG_BULLET );
+		marine->TakeDamage( damageinfo );
 	}
 }
 ConCommand HurtMyMarine( "HurtMyMarine", HurtMyMarinef, "Gives your marine 1-10 damage", FCVAR_CHEAT );
@@ -159,9 +152,9 @@ ConCommand HurtMyMarine( "HurtMyMarine", HurtMyMarinef, "Gives your marine 1-10 
 
 void asw_LeaveMarinef()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
 		pPlayer->LeaveMarines();
 	}
@@ -202,35 +195,35 @@ void asw_ClearHousef()
 }
 ConCommand ClearHouse( "asw_ClearHouse", asw_ClearHousef, "Removes all Swarm from the map", FCVAR_CHEAT );
 
-void rd_givemeweaponf(const CCommand &args)
+void rd_givemeweaponf( const CCommand &args )
 {
-    if (ASWGameRules())
-    {
-        if ( args.ArgC() < 2 )
-        {
-            Msg( "Please supply a weapon index \n" );
-            return;
-        }
+	if ( ASWGameRules() )
+	{
+		if ( args.ArgC() < 2 )
+		{
+			Msg( "Please supply a weapon index \n" );
+			return;
+		}
 
-        CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-        if ( !pPlayer )
-        {
-            Msg ( "No player found \n ");
-            return;
-        }
+		CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+		if ( !pPlayer )
+		{
+			Msg( "No player found \n " );
+			return;
+		}
 
-        CASW_Marine *mymarine = pPlayer->GetMarine();
-        if ( !mymarine )
-        {
-            Msg ( "No marine found \n" );
-            return;
-        }
+		CASW_Marine *mymarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+		if ( !mymarine )
+		{
+			Msg( "No marine found \n" );
+			return;
+		}
 
-        int weapon_index = 0;
-        weapon_index = atoi(args[1]);
+		int weapon_index = 0;
+		weapon_index = atoi( args[1] );
 
-        ASWGameRules()->GiveStartingWeaponToMarine(mymarine, weapon_index, 0);
-    }
+		ASWGameRules()->GiveStartingWeaponToMarine( mymarine, weapon_index, 0 );
+	}
 }
 ConCommand rd_givemeweapon( "rd_givemeweapon", rd_givemeweaponf, "Gives a specified weapon to me", FCVAR_CHEAT );
 
@@ -398,22 +391,22 @@ static ConCommand rd_team_create( "rd_team_create", CreateTeamF, "Create a new t
 
 void rd_team_change_f()
 {
-    if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
-    {
-        CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-        if (!pPlayer)
-            return;
-        
-        int team_number = pPlayer->GetTeamNumber();
-        int new_team_number = 0;
-        if ( team_number == TEAM_ALPHA ) new_team_number = TEAM_BETA;
-        else if ( team_number == TEAM_BETA ) new_team_number = TEAM_ALPHA;
-        else
-        {
-            Assert( false && "Uknown team number for player" );
-        }
+	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );;
+		if ( !pPlayer )
+			return;
 
-        pPlayer->ChangeTeam( new_team_number );
+		int team_number = pPlayer->GetTeamNumber();
+		int new_team_number = 0;
+		if ( team_number == TEAM_ALPHA ) new_team_number = TEAM_BETA;
+		else if ( team_number == TEAM_BETA ) new_team_number = TEAM_ALPHA;
+		else
+		{
+			Assert( false && "Uknown team number for player" );
+		}
+
+		pPlayer->ChangeTeam( new_team_number );
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
 			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
@@ -423,11 +416,11 @@ void rd_team_change_f()
 			}
 		}
 
-        if ( pPlayer->GetMarine() && pPlayer->GetMarine()->GetHealth() > 0 )
-        {
-            pPlayer->GetMarine()->Suicide();
-        }
-    }
+		if ( pPlayer->GetNPC() && pPlayer->GetNPC()->GetHealth() > 0 )
+		{
+			pPlayer->GetNPC()->Suicide();
+		}
+	}
 }
 static ConCommand rd_team_change( "rd_team_change", rd_team_change_f, "Change your current team to another ", FCVAR_NONE );
 
@@ -439,37 +432,36 @@ ConCommand MarineInvuln( "asw_MarineInvuln", asw_MarineInvulnf, "Makes your mari
 
 void ASW_DropTest_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-	
-	if (pPlayer && pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		CASW_Marine *pMarine = pPlayer->GetMarine();
-		if (pMarine->m_bKnockedOut) // reactivedrop: don't allow dropping weapons while incapacitated
+		if ( pMarine->m_bKnockedOut ) // reactivedrop: don't allow dropping weapons while incapacitated
 			return;
-		if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+		if ( pMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 			return;
-		if (pPlayer->GetFlags() & FL_FROZEN)
+		if ( pPlayer->GetFlags() & FL_FROZEN )
 			return;
 		int c = ASW_MAX_MARINE_WEAPONS;
 		int current = -1;
 		//int target = 0;
 
-		CBaseCombatWeapon* pWeapon = NULL;
-		for (int i=0;i<c;i++)
+		CBaseCombatWeapon *pWeapon = NULL;
+		for ( int i = 0; i < c; i++ )
 		{
-			pWeapon = pMarine->GetWeapon(i);
-			if (pWeapon == pMarine->GetActiveWeapon())
+			pWeapon = pMarine->GetWeapon( i );
+			if ( pWeapon == pMarine->GetActiveWeapon() )
 			{
 				current = i;
 				break;
 			}
 		}
-		if (current == -1)
+		if ( current == -1 )
 			return;
-		
-		pMarine->DropWeapon(current);
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
+		pMarine->DropWeapon( current );
+
+		IGameEvent *event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
 		if ( event )
 		{
 			event->SetInt( "userid", pPlayer->GetUserID() );
@@ -484,30 +476,29 @@ ConCommand ASW_Drop( "ASW_Drop", ASW_DropTest_f, "Makes your marine drop his cur
 // riflemod: allow dropping exra item 
 void ASW_DropExtraf()
 {
-    CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-
-    if (pPlayer && pPlayer->GetMarine())
-    {
-        CASW_Marine *pMarine = pPlayer->GetMarine();
-		if (pMarine->m_bKnockedOut) // reactivedrop: don't allow dropping weapons while incapacitated
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
+	{
+		if ( pMarine->m_bKnockedOut ) // reactivedrop: don't allow dropping weapons while incapacitated
 			return;
-        if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
-            return;
-        if (pPlayer->GetFlags() & FL_FROZEN)
-            return;
+		if ( pMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
+			return;
+		if ( pPlayer->GetFlags() & FL_FROZEN )
+			return;
 
-		CBaseCombatWeapon* pWeapon = pMarine->GetWeapon(2);
-        pMarine->DropWeapon(2, true);
+		CBaseCombatWeapon *pWeapon = pMarine->GetWeapon( 2 );
+		pMarine->DropWeapon( 2, true );
 
-        IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
-        if ( event )
-        {
-            event->SetInt( "userid", pPlayer->GetUserID() );
+		IGameEvent *event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
+		if ( event )
+		{
+			event->SetInt( "userid", pPlayer->GetUserID() );
 			event->SetInt( "entindex", pWeapon ? pWeapon->entindex() : 0 );
 
-            gameeventmanager->FireEvent( event );
-        }
-    }
+			gameeventmanager->FireEvent( event );
+		}
+	}
 }
 ConCommand ASW_DropExtra( "ASW_DropExtra", ASW_DropExtraf, "Makes your marine drop his current extra item", 0 );
 
@@ -570,27 +561,27 @@ void asw_flashlightf()
 		return;
 	}
 
-	if (pPlayer && pPlayer->GetMarine())
+	if (pPlayer && pPlayer->GetNPC())
 	{
-		CASW_Marine* pMarine = pPlayer->GetMarine();
-		if (pMarine->IsEffectActive(EF_DIMLIGHT))
+		CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+		if ( pNPC->IsEffectActive( EF_DIMLIGHT ) )
 		{
-			pMarine->EmitSound("ASWFlashlight.FlashlightToggle");
-			pMarine->RemoveEffects(EF_DIMLIGHT);
+			pNPC->EmitSound( "ASWFlashlight.FlashlightToggle" );
+			pNPC->RemoveEffects( EF_DIMLIGHT );
 		}
 		else
 		{
-			pMarine->AddEffects(EF_DIMLIGHT);
-			pMarine->EmitSound("ASWFlashlight.FlashlightToggle");
+			pNPC->AddEffects( EF_DIMLIGHT );
+			pNPC->EmitSound( "ASWFlashlight.FlashlightToggle" );
 		}
 	}
 }
-ConCommand asw_flashlight("asw_flashlight", asw_flashlightf, "Flashlight toggle for marine", 0);
+ConCommand asw_flashlight( "asw_flashlight", asw_flashlightf, "Flashlight toggle for marine", 0 );
 
 // riflemod: allow leaving marine to go afk and leave a bot for you 
 void asw_afkf()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 
 	if ( pPlayer && !rd_allow_afk.GetBool() )
 	{
@@ -622,12 +613,12 @@ void asw_afkf()
 				}
 			}
 		}
-		else if ( pPlayer->GetMarine() )
+		else if ( pPlayer->GetNPC() )
 		{
 			// prevent players from going afk when they are infested
 			// bots take less damage and players abuse this
-			CASW_Marine *pMarine = pPlayer->GetMarine();
-			if (pMarine->IsInfested())
+			CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+			if ( !pMarine || pMarine->IsInfested() )
 			{
 				return;
 			}
@@ -643,10 +634,10 @@ void asw_afkf()
 					pMR->SetInhabited( false );
 				}
 			}
-			ASWGameRules()->RosterDeselectAll(pPlayer);
-			ASWGameRules()->SetMaxMarines(pPlayer);
+			ASWGameRules()->RosterDeselectAll( pPlayer );
+			ASWGameRules()->SetMaxMarines( pPlayer );
 			// reassign marines owned by this player to someone else
-			ASWGameRules()->ReassignMarines(pPlayer);
+			ASWGameRules()->ReassignMarines( pPlayer );
 			pPlayer->SpectateNextMarine();
 			//*/
 		}
@@ -724,18 +715,17 @@ void ASW_AllowBriefing_f()
 {
 	ASWGameRules()->AllowBriefing();
 }
-ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Let's "
-							  "you restart the briefing", 0 );
+ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Lets you restart the briefing", 0 );
 
 void ASW_PhysicsShove_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	
-	if (pPlayer && pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		if (pPlayer->GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+		if ( pMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 			return;
-		pPlayer->GetMarine()->PhysicsShove();
+		pMarine->PhysicsShove();
 	}
 }
 ConCommand ASW_PhysicsShove( "ASW_PhysicsShove", ASW_PhysicsShove_f, "Shove objects in front of you", FCVAR_CHEAT );
@@ -754,12 +744,12 @@ ConCommand ASW_PermaStimStop( "ASW_PermaStimStop", ASW_PermaStim_Stop_f, "Free l
 
 void asw_stop_burning_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	
-	if (pPlayer && pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
-		CASW_Marine *pMarine = pPlayer->GetMarine();
-		pMarine->Extinguish();
+		CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+		pNPC->Extinguish();
 	}
 }
 ConCommand asw_stop_burning( "asw_stop_burning", asw_stop_burning_f, "Makes your marine stop burning", FCVAR_CHEAT );
@@ -800,31 +790,30 @@ ConCommand asw_spawn_alien( "asw_spawn_alien", asw_spawn_alien_f, "Make the name
 
 void asw_test_turret_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	
-	if (pPlayer && pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		CASW_Marine *pMarine = pPlayer->GetMarine();
-		if (pMarine->m_hRemoteTurret.Get())
+		if ( pMarine->m_hRemoteTurret.Get() )
 		{
 			pMarine->m_hRemoteTurret->StopUsingTurret();//m_hUser = NULL;
 			pMarine->m_hRemoteTurret = NULL;
 			return;
 		}
-		CBaseEntity* pEntity = NULL;
-		while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_remote_turret" )) != NULL)
+		CBaseEntity *pEntity = NULL;
+		while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, "asw_remote_turret" ) ) != NULL )
 		{
-			CASW_Remote_Turret* pTurret = dynamic_cast<CASW_Remote_Turret*>(pEntity);
-			if (pTurret)
+			CASW_Remote_Turret *pTurret = dynamic_cast< CASW_Remote_Turret * >( pEntity );
+			if ( pTurret )
 			{
 				pTurret->StartedUsingTurret( pMarine, NULL );
 				pMarine->m_hRemoteTurret = pTurret;
-				Msg("Set turret\n");
+				Msg( "Set turret\n" );
 				return;
 			}
 		}
-	}	
-	Msg("Failed to find a turret\n");
+	}
+	Msg( "Failed to find a turret\n" );
 }
 ConCommand asw_test_turret( "asw_test_turret", asw_test_turret_f, "Test remote turret", FCVAR_CHEAT );
 /*
@@ -971,9 +960,9 @@ void asw_suicide_f()
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 		
-	if (pPlayer && pPlayer->GetMarine() && pPlayer->GetMarine()->GetHealth() > 0)
+	if (pPlayer && pPlayer->GetNPC() && pPlayer->GetNPC()->GetHealth() > 0)
 	{
-		pPlayer->GetMarine()->Suicide();
+		pPlayer->GetNPC()->Suicide();
 	}
 }
 ConCommand asw_suicide( "asw_suicide", asw_suicide_f, "Kills your current marine", 0 );
@@ -982,19 +971,19 @@ void asw_hide_marine_f()
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
 		
-	if (pPlayer && pPlayer->GetMarine())
+	if (pPlayer && pPlayer->GetNPC())
 	{
-		if (pPlayer->GetMarine()->IsEffectActive(EF_NODRAW))
+		if (pPlayer->GetNPC()->IsEffectActive(EF_NODRAW))
 		{
-			pPlayer->GetMarine()->RemoveEffects( EF_NODRAW );
-			if (pPlayer->GetMarine()->GetActiveWeapon())
-				pPlayer->GetMarine()->GetActiveWeapon()->RemoveEffects( EF_NODRAW );
+			pPlayer->GetNPC()->RemoveEffects( EF_NODRAW );
+			if (pPlayer->GetNPC()->GetActiveWeapon())
+				pPlayer->GetNPC()->GetActiveWeapon()->RemoveEffects( EF_NODRAW );
 		}
 		else
 		{
-			pPlayer->GetMarine()->AddEffects( EF_NODRAW );
-			if (pPlayer->GetMarine()->GetActiveWeapon())
-				pPlayer->GetMarine()->GetActiveWeapon()->AddEffects( EF_NODRAW );
+			pPlayer->GetNPC()->AddEffects( EF_NODRAW );
+			if (pPlayer->GetNPC()->GetActiveWeapon())
+				pPlayer->GetNPC()->GetActiveWeapon()->AddEffects( EF_NODRAW );
 		}
 	}
 }
@@ -1002,50 +991,11 @@ ConCommand asw_hide_marine( "asw_hide_marine", asw_hide_marine_f, "Toggle drawin
 
 void asw_ragdoll_marine_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	static CRagdollProp * s_pRagdoll = NULL;
-
-	if (pPlayer && pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		CASW_Marine* pMarine = pPlayer->GetMarine();
-		pMarine->SetKnockedOut(!pMarine->m_bKnockedOut);
-
-		return;
-		
-		if (pMarine->IsEffectActive(EF_NODRAW) && s_pRagdoll)
-		{
-			//Calcs the diff between ragdoll worldspace center and victim worldspace center, moves the victim by this diff.
-			//Sets the victim's angles to 0, ragdoll yaw, 0
-			QAngle newAngles( 0, s_pRagdoll->GetAbsAngles()[YAW], 0 );
-
-			Vector centerDelta = s_pRagdoll->WorldSpaceCenter() - pMarine->WorldSpaceCenter();
-			centerDelta.z = 0;	// don't put us in the floor
-			Vector newOrigin = pMarine->GetAbsOrigin() + centerDelta;
-			pMarine->SetAbsOrigin( newOrigin );
-			pMarine->SetAbsAngles( newAngles );
-			//DetachAttachedRagdoll( s_pRagdoll ); 	// unnecessary since we remove it next?
-			UTIL_Remove( s_pRagdoll );
-			pMarine->RemoveEffects( EF_NODRAW );
-			pMarine->RemoveSolidFlags( FSOLID_NOT_SOLID );
-		}
-		else
-		{
-			pMarine->InvalidateBoneCache();
-			pMarine->AddSolidFlags( FSOLID_NOT_SOLID );			
-			CTakeDamageInfo	info;
-			info.SetDamageType( DMG_GENERIC );
-			info.SetDamageForce( vec3_origin );
-			info.SetDamagePosition( pMarine->WorldSpaceCenter() );
-			s_pRagdoll = (CRagdollProp*) CreateServerRagdoll( pMarine, 0, info, COLLISION_GROUP_NONE );
-			if ( s_pRagdoll )
-			{
-				s_pRagdoll->DisableAutoFade();
-				s_pRagdoll->SetThink( NULL );
-				s_pRagdoll->SetUnragdoll( pMarine );
-			}			
-			pMarine->AddEffects( EF_NODRAW );
-			//pMarine->SetupBones( m_pRagdollBones, BONE_USED_BY_ANYTHING );
-		}
+		pMarine->SetKnockedOut( !pMarine->m_bKnockedOut );
 	}
 }
 ConCommand asw_ragdoll_marine( "asw_ragdoll_marine", asw_ragdoll_marine_f, "Toggle ragdolling of the current marine", FCVAR_CHEAT );
@@ -1075,40 +1025,40 @@ ConCommand asw_ragdoll_blend_test( "asw_ragdoll_blend_test", asw_ragdoll_blend_t
 
 void asw_marine_server_anim_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (pPlayer)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer )
 	{
-		CASW_Marine *pMarine = pPlayer->GetMarine();
-		if (pMarine)
+		CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+		if ( pNPC )
 		{
-			Msg("[S] Marine playing sequence %d (%s) A:%s\n", pMarine->GetSequence(),
-				pMarine->GetSequenceName(pMarine->GetSequence()),
-				pMarine->GetSequenceActivityName(pMarine->GetSequence()));
-			int iLayers = pMarine->GetNumAnimOverlays();
-			Msg("Layers: %d\n", iLayers);
-			for (int i=0;i<iLayers;i++)
+			Msg( "[S] Marine playing sequence %d (%s) A:%s\n", pNPC->GetSequence(),
+				pNPC->GetSequenceName( pNPC->GetSequence() ),
+				pNPC->GetSequenceActivityName( pNPC->GetSequence() ) );
+			int iLayers = pNPC->GetNumAnimOverlays();
+			Msg( "Layers: %d\n", iLayers );
+			for ( int i = 0; i < iLayers; i++ )
 			{
-				CAnimationLayer* pLayer = pMarine->GetAnimOverlay(i);
-				if (!pLayer)
+				CAnimationLayer *pLayer = pNPC->GetAnimOverlay( i );
+				if ( !pLayer )
 				{
-					Msg("Layer %d is null\n", i);
+					Msg( "Layer %d is null\n", i );
 				}
 				else
 				{
 					int iSeq = pLayer->m_nSequence;
-					Msg("Layer %d sequence %d (%s) A:%s W:%f C:%f\n", i, iSeq, pMarine->GetSequenceName(iSeq),
-						pMarine->GetSequenceActivityName(iSeq), pLayer->m_flWeight.Get(), pLayer->m_flCycle.Get());
+					Msg( "Layer %d sequence %d (%s) A:%s W:%f C:%f\n", i, iSeq, pNPC->GetSequenceName( iSeq ),
+						pNPC->GetSequenceActivityName( iSeq ), pLayer->m_flWeight.Get(), pLayer->m_flCycle.Get() );
 				}
 			}
 		}
 		else
 		{
-			Msg("No Marine to list anims on\n");
+			Msg( "No Marine to list anims on\n" );
 		}
 	}
 	else
 	{
-		Msg("No command player!\n");
+		Msg( "No command player!\n" );
 	}
 }
 ConCommand asw_marine_server_anim( "asw_marine_server_anim", asw_marine_server_anim_f, "Lists animation playing on the player's current marine serverside", FCVAR_CHEAT );
@@ -1171,38 +1121,38 @@ void asw_mission_complete_f()
 static ConCommand asw_mission_complete("asw_mission_complete", asw_mission_complete_f, "Cheat to complete the current mission", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 
 
-void asw_marine_spectate_f(const CCommand &args)
+void asw_marine_spectate_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 	if ( args.ArgC() < 2 )
 	{
 		Msg( "Usage: asw_marine_spectate [marine_num]\n" );
 		return;
 	}
 
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	if (!pGameResource)
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 		return;
 
-	int iMarine = atof(args[1]);
-	if (iMarine < 0 || iMarine >= pGameResource->GetMaxMarineResources())
+	int iMarine = atof( args[1] );
+	if ( iMarine < 0 || iMarine >= pGameResource->GetMaxMarineResources() )
 		return;
 
-	CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(iMarine);
-	if (!pMR)
+	CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( iMarine );
+	if ( !pMR )
 	{
-		Msg("No marine resource in that index\n");
+		Msg( "No marine resource in that index\n" );
 		return;
 	}
 
 	CASW_Marine *pMarine = pMR->GetMarineEntity();
-	if (!pMarine)
+	if ( !pMarine )
 	{
-		Msg("No live marine in that slot\n");
+		Msg( "No live marine in that slot\n" );
 		return;
 	}
-		
-	pPlayer->SetSpectatingMarine(pMarine);
+
+	pPlayer->SetSpectatingNPC( pMarine );
 }
 static ConCommand asw_marine_spectate("asw_marine_spectate", asw_marine_spectate_f, "Usage: asw_marine_spectate [marine_num]", FCVAR_CHEAT);
 
@@ -1229,7 +1179,7 @@ void asw_marine_skill_f(const CCommand &args)
 		return;
 
 	CASW_Marine_Profile *pProfile = NULL;
-	CASW_Marine *pMarine = pPlayer->GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	if (pMarine)
 	{
 		pProfile = pMarine->GetMarineProfile();
@@ -1281,53 +1231,53 @@ void asw_marine_skill_f(const CCommand &args)
 static ConCommand asw_marine_skill("asw_marine_skill", asw_marine_skill_f, "Usage: asw_marine_skill [nSkillSlot]  - reports the number of skill points of the current marine in that skill\n  asw_marine_speed [nSkillSlot] [x]  - sets that skill to the specified number of skill points (0-5)", FCVAR_CHEAT);
 
 extern ConVar asw_marine_nearby_angle;
-void asw_test_marinenearby_f(const CCommand &args)
+void asw_test_marinenearby_f( const CCommand &args )
 {
-	Msg("0.5 as float = %f\n", 0.5f);
-	Msg("0.5f as int = %d\n", (int) 0.5f);
-	Msg("0.51f as int = %d\n", (int) 0.51f);
-	Msg("0.52f as int = %d\n", (int) 0.52f);
-	Msg("0.6f as int = %d\n", (int) 0.6f);
-	Msg("0.56f as int = %d\n", (int) 0.56f);
-	Msg("0.49f as int = %d\n", (int) 0.49f);
-	Msg("1.99f as int = %d\n", (int) 1.99f);
-	Msg("2.01f as int = %d\n", (int) 2.01f);
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());	
+	Msg( "0.5 as float = %f\n", 0.5f );
+	Msg( "0.5f as int = %d\n", ( int )0.5f );
+	Msg( "0.51f as int = %d\n", ( int )0.51f );
+	Msg( "0.52f as int = %d\n", ( int )0.52f );
+	Msg( "0.6f as int = %d\n", ( int )0.6f );
+	Msg( "0.56f as int = %d\n", ( int )0.56f );
+	Msg( "0.49f as int = %d\n", ( int )0.49f );
+	Msg( "1.99f as int = %d\n", ( int )1.99f );
+	Msg( "2.01f as int = %d\n", ( int )2.01f );
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 
-	if (!ASWGameRules())
+	if ( !ASWGameRules() )
 		return;
-	if (!pPlayer || !pPlayer->GetMarine())
+	if ( !pPlayer || !pPlayer->GetNPC() )
 		return;
-	
+
 	if ( args.ArgC() < 4 )
 	{
-		Msg("Usage: asw_test_marinenearby [0|1] [grid step] [grid count]\n");
+		Msg( "Usage: asw_test_marinenearby [0|1] [grid step] [grid count]\n" );
 	}
-	int iWide = atoi(args[1]);
-	float fGridStep = atof(args[2]);
-	int iGridCount = atoi(args[3]);
+	int iWide = atoi( args[1] );
+	float fGridStep = atof( args[2] );
+	int iGridCount = atoi( args[3] );
 	//Msg("Wide = %d, step = %f, count = %d\n", iWide, fGridStep, iGridCount);
 
 	Vector asw_default_camera_dir_2;
-	QAngle test_angle(asw_marine_nearby_angle.GetFloat(), 90, 0);
-	AngleVectors(test_angle, &asw_default_camera_dir_2);
+	QAngle test_angle( asw_marine_nearby_angle.GetFloat(), 90, 0 );
+	AngleVectors( test_angle, &asw_default_camera_dir_2 );
 	Vector asw_default_camera_offset_2 = asw_default_camera_dir_2 * -405.0f;
 
-	for (int x=-iGridCount;x<iGridCount;x++)
+	for ( int x = -iGridCount; x < iGridCount; x++ )
 	{
-		for (int y=-iGridCount;y<iGridCount*3;y++)
+		for ( int y = -iGridCount; y < iGridCount * 3; y++ )
 		{
-			Vector pos = pPlayer->GetMarine()->GetAbsOrigin() + Vector(x * fGridStep, y*fGridStep, 10);
+			Vector pos = pPlayer->GetNPC()->GetAbsOrigin() + Vector( x * fGridStep, y * fGridStep, 10 );
 			//Msg("Testing pos %f, %f, %f\n", pos.x, pos.y, pos.z);
 			bool bCorpseCanSee = false;
-			UTIL_ASW_AnyMarineCanSee(pos,
-				iWide, bCorpseCanSee);
+			UTIL_ASW_AnyMarineCanSee( pos,
+				iWide, bCorpseCanSee );
 		}
-	}	
-	Vector pos = (pPlayer->GetMarine()->GetAbsOrigin() + asw_default_camera_offset_2);
+	}
+	Vector pos = ( pPlayer->GetNPC()->GetAbsOrigin() + asw_default_camera_offset_2 );
 	//NDebugOverlay::Line(pos, pos + asw_default_camera_dir_2 * 410, 0,0,255,true, 30);
 }
-static ConCommand asw_test_marinenearby("asw_test_marinenearby", asw_test_marinenearby_f, "Tests the marine nearby util shared function", FCVAR_CHEAT);
+static ConCommand asw_test_marinenearby( "asw_test_marinenearby", asw_test_marinenearby_f, "Tests the marine nearby util shared function", FCVAR_CHEAT );
 
 
 void asw_set_drone_skin_f(const CCommand &args)
@@ -1378,68 +1328,70 @@ void asw_report_difficulty_f()
 }
 static ConCommand asw_report_difficulty("asw_report_difficulty", asw_report_difficulty_f, "Reports current skill and mission difficulty level", FCVAR_CHEAT);
 
-void asw_conv_f(const CCommand &args)
+void asw_conv_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());	
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 
-	if (!ASWGameRules())
+	if ( !ASWGameRules() )
 		return;
-	if (!pPlayer || !pPlayer->GetMarine())
+	if ( !pMarine )
 		return;
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	if (!pGameResource)
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 		return;
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pPlayer->GetMarine()->GetMarineProfile())
+	if ( !pMarine->GetMarineProfile() )
 		return;
 
 	if ( args.ArgC() < 2 )
 	{
-		Msg("Usage: asw_conv [conv num]	");
+		Msg( "Usage: asw_conv [conv num]	" );
 		return;
 	}
 
-	CASW_MarineSpeech::StartConversation(atoi(args[1]), pMarine);		
+	CASW_MarineSpeech::StartConversation( atoi( args[1] ), pMarine );
 }
-static ConCommand asw_conv("asw_conv", asw_conv_f, "Test a conversation", FCVAR_CHEAT);
+static ConCommand asw_conv( "asw_conv", asw_conv_f, "Test a conversation", FCVAR_CHEAT );
 
-void asw_medal_info_f(const CCommand &args)
+void asw_medal_info_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());	
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 
-	if (!ASWGameRules())
+	if ( !ASWGameRules() )
 		return;
-	if (!pPlayer || !pPlayer->GetMarine())
+	if ( !pMarine )
 		return;
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	if (!pGameResource)
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 		return;
 
 	if ( args.ArgC() < 2 )
 	{
-		Msg("Usage: asw_medal_info [marine info num from 0-3]");
+		Msg( "Usage: asw_medal_info [marine info num from 0-3]" );
 		return;
 	}
 
-	int i = atoi(args[1]);
-	if (pGameResource->GetMarineResource(i))
-		pGameResource->GetMarineResource(i)->DebugMedalStats();
+	int i = atoi( args[1] );
+	if ( pGameResource->GetMarineResource( i ) )
+		pGameResource->GetMarineResource( i )->DebugMedalStats();
 }
-static ConCommand asw_medal_info("asw_medal_info", asw_medal_info_f, "Give medal info on a particular marine", FCVAR_CHEAT);
+static ConCommand asw_medal_info( "asw_medal_info", asw_medal_info_f, "Give medal info on a particular marine", FCVAR_CHEAT );
 
 
 void asw_build_speech_durations_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());	
-	
-	if (!pPlayer || !MarineProfileList() || !pPlayer->GetMarine())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+
+	if ( !pMarine || !MarineProfileList() )
 		return;
-	Msg("Saving speech durations...");
-	MarineProfileList()->SaveSpeechDurations(pPlayer->GetMarine());
-	Msg("Done!\n");
+	Msg( "Saving speech durations..." );
+	MarineProfileList()->SaveSpeechDurations( pMarine );
+	Msg( "Done!\n" );
 }
-static ConCommand asw_build_speech_durations("asw_build_speech_durations", asw_build_speech_durations_f, "Measures speech durations and saves to file for use in async client speech", FCVAR_CHEAT);
+static ConCommand asw_build_speech_durations( "asw_build_speech_durations", asw_build_speech_durations_f, "Measures speech durations and saves to file for use in async client speech", FCVAR_CHEAT );
 
 void asw_network_id_f()
 {
@@ -1468,28 +1420,23 @@ static ConCommand asw_network_id("asw_network_id", asw_network_id_f, "returns ne
 
 void asw_corpse_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());	
-
-	if (!ASWGameRules())
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetNPC() : NULL;
+	if ( !ASWGameRules() )
 		return;
-	if (!pPlayer || !pPlayer->GetMarine())
+	if ( !pNPC )
 		return;
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	if (!pGameResource)
-		return;
-
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pPlayer->GetMarine()->GetMarineProfile())
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 		return;
 
-	QAngle facing = pMarine->GetAbsAngles();
+	QAngle facing = pNPC->GetAbsAngles();
 	Vector forward;
-	AngleVectors(facing, &forward);
-	Vector pos = pMarine->GetAbsOrigin() + forward * 100.0f;
-	//CBaseEntity *pGib = 
-	CreateRagGib( "models/swarm/colonist/male/malecolonist.mdl", pos, facing, Vector(0,0,0) );
+	AngleVectors( facing, &forward );
+	Vector pos = pNPC->GetAbsOrigin() + forward * 100.0f;
+	CreateRagGib( "models/swarm/colonist/male/malecolonist.mdl", pos, facing, Vector( 0, 0, 0 ) );
 }
-static ConCommand asw_corpse("asw_corpse", asw_corpse_f, "Test create a clientside corpse", FCVAR_CHEAT);
+static ConCommand asw_corpse( "asw_corpse", asw_corpse_f, "Test create a clientside corpse", FCVAR_CHEAT );
 
 void asw_gimme_ammo_f(void)
 {
@@ -1522,83 +1469,70 @@ void asw_gimme_ammo_f(void)
 
 static ConCommand asw_gimme_ammo("asw_gimme_ammo", asw_gimme_ammo_f, "Refills all marine ammo", FCVAR_CHEAT);
 
-void asw_drop_ammo_f(const CCommand &args)
+void asw_drop_ammo_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer)
-		return;
-	
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
 		return;
 
-	int iBagSlot = atoi(args[1]);
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+	if ( !pMarine )
+		return;
 
-	CASW_Weapon_Ammo_Bag *pBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetWeapon(0));
-	if (pBag)
+	int iBagSlot = atoi( args[1] );
+
+	CASW_Weapon_Ammo_Bag *pBag = dynamic_cast< CASW_Weapon_Ammo_Bag * >( pMarine->GetWeapon( 0 ) );
+	if ( pBag )
 	{
-		if (pBag->DropAmmoPickup(iBagSlot))
+		if ( pBag->DropAmmoPickup( iBagSlot ) )
 		{
 			return;
 		}
 	}
 
-	pBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetWeapon(1));
-	if (pBag)
+	pBag = dynamic_cast< CASW_Weapon_Ammo_Bag * >( pMarine->GetWeapon( 1 ) );
+	if ( pBag )
 	{
-		if (pBag->DropAmmoPickup(iBagSlot))
+		if ( pBag->DropAmmoPickup( iBagSlot ) )
 		{
 			return;
 		}
 	}
 }
+static ConCommand asw_drop_ammo( "asw_drop_ammo", asw_drop_ammo_f, "Drops ammo from an ammo bag", 0 );
 
-static ConCommand asw_drop_ammo("asw_drop_ammo", asw_drop_ammo_f, "Drops ammo from an ammo bag", 0);
-
-void asw_conversation_f(const CCommand &args)
+void asw_conversation_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer)
-		return;
-	
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
 		return;
 
-	if (args.ArgC() < 2)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+	if ( !pMarine )
+		return;
+
+	if ( args.ArgC() < 2 )
 	{
-		Msg("Usage: asw_conversation [conversation number]\n");
+		Msg( "Usage: asw_conversation [conversation number]\n" );
 	}
-	int iConv = atoi(args[1]);
-	CASW_MarineSpeech::StartConversation(iConv, pMarine);
+	int iConv = atoi( args[1] );
+	CASW_MarineSpeech::StartConversation( iConv, pMarine );
 }
+static ConCommand asw_conversation( "asw_conversation", asw_conversation_f, "Triggers a conversation", FCVAR_CHEAT );
 
-static ConCommand asw_conversation("asw_conversation", asw_conversation_f, "Triggers a conversation", FCVAR_CHEAT);
-
-/*
-void asw_show_game_stats_f(void)
+void asw_debug_spectator_server_f( void )
 {
-	if (ASWGameStats())
-		ASWGameStats()->DebugContents();
-}
-
-static ConCommand asw_show_game_stats("asw_show_game_stats", asw_show_game_stats_f, "Outputs contents of the asi_gamestats.dat file for debugging", FCVAR_CHEAT);
-*/
-
-void asw_debug_spectator_server_f(void)
-{
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
 		return;
-	
-	Msg("Server: m_bRequestedSpectator=%d\n", pPlayer->m_bRequestedSpectator);
-}
 
-static ConCommand asw_debug_spectator_server("asw_debug_spectator_server", asw_debug_spectator_server_f, "Prints whether a player wants to spectate", FCVAR_CHEAT);
+	Msg( "Server: m_bRequestedSpectator=%d\n", pPlayer->m_bRequestedSpectator );
+}
+static ConCommand asw_debug_spectator_server( "asw_debug_spectator_server", asw_debug_spectator_server_f, "Prints whether a player wants to spectate", FCVAR_CHEAT );
 
 void CC_asw_teleport( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 	if ( !pPlayer )
 		return;
 
@@ -1613,7 +1547,7 @@ void CC_asw_teleport( const CCommand &args )
 		pPlayer->EyeVectors( &vPlayerForward, NULL, NULL );
 
 		UTIL_TraceLine( pPlayer->GetAbsOrigin(), pPlayer->GetAbsOrigin() + vPlayerForward * 10000.0f, MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
-		
+
 		if ( tr.DidHit() )
 		{
 			vTargetPos = tr.endpos;
@@ -1645,9 +1579,9 @@ void CC_asw_teleport( const CCommand &args )
 		vTargetPos = target->GetAbsOrigin();
 	}
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
 
-	if ( !pMarine )
+	if ( !pNPC )
 	{
 		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); ++i )
 		{
@@ -1657,17 +1591,17 @@ void CC_asw_teleport( const CCommand &args )
 
 			if ( pMR->GetMarineEntity() && pMR->GetMarineEntity()->GetCommander() == pPlayer )
 			{
-				pMarine = pMR->GetMarineEntity();
+				pNPC = pMR->GetMarineEntity();
 				break;
 			}
 		}
 	}
 
-	if ( pMarine )
+	if ( pNPC )
 	{
 		// Teleport the dude under our control
 		Vector vecPos = vTargetPos;//pNearest->GetOrigin();
-		pMarine->Teleport( &vecPos, NULL, NULL );
+		pNPC->Teleport( &vecPos, NULL, NULL );
 	}
 }
 
@@ -1731,48 +1665,46 @@ static int CC_asw_teleport_autocomplete( char const *partial, char commands[ COM
 
 static ConCommand asw_teleport("asw_teleport", CC_asw_teleport, "Usage:\n   asw_teleport <target entity>\nTeleports your current marine to the named entity", FCVAR_CHEAT, CC_asw_teleport_autocomplete );
 
-void asw_solid_info_f(void)
+void asw_solid_info_f( void )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 
-	if (pPlayer == NULL)
+	if ( pPlayer == NULL )
 	{
-		Msg("Couldn't find local player.");
+		Msg( "Couldn't find local player." );
 		return;
 	}
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 
-	int solid0 = pMarine->GetSolid();
-	int nSolidFlags0 = pMarine->GetSolidFlags();
-	int movetype0 = pMarine->GetMoveType();
+	int solid0 = pNPC->GetSolid();
+	int nSolidFlags0 = pNPC->GetSolidFlags();
+	int movetype0 = pNPC->GetMoveType();
 
-	Msg("Marine(%d} solid=%d solidflags=%d movetype=%d\n", pMarine->entindex(), solid0, nSolidFlags0, movetype0);
+	Msg( "%s(%d) solid=%d solidflags=%d movetype=%d\n", pNPC->GetClassname(), pNPC->entindex(), solid0, nSolidFlags0, movetype0);
 }
-
 static ConCommand asw_solid_info("asw_solid_info", asw_solid_info_f, "Shows solid status of current marine", FCVAR_CHEAT);
 
 void asw_set_solid_f( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
 
-	if (pPlayer == NULL)
+	if ( pPlayer == NULL )
 	{
-		Msg("Couldn't find local player.");
+		Msg( "Couldn't find local player." );
 		return;
 	}
-	if (args.ArgC() != 2)
+	if ( args.ArgC() != 2 )
 		return;
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 
-	pMarine->SetSolid((SolidType_t) atoi(args[1]));
+	pNPC->SetSolid( ( SolidType_t )atoi( args[1] ) );
 }
-
-static ConCommand asw_set_solid("asw_set_solid", asw_set_solid_f, "Sets solid status of current marine", FCVAR_CHEAT);
+static ConCommand asw_set_solid( "asw_set_solid", asw_set_solid_f, "Sets solid status of current marine", FCVAR_CHEAT );
 
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
@@ -1856,13 +1788,13 @@ ConCommand ASW_PrevMarine( "ASW_PrevMarine", asw_PrevMarinef, "Select your previ
 
 void asw_room_info_f()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if ( pPlayer && pPlayer->GetMarine() && missionchooser && missionchooser->RandomMissions() )
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( pPlayer && pPlayer->GetNPC() && missionchooser && missionchooser->RandomMissions() )
 	{
-		IASW_Room_Details *pRoom = missionchooser->RandomMissions()->GetRoomDetails( pPlayer->GetMarine()->GetAbsOrigin() );
+		IASW_Room_Details *pRoom = missionchooser->RandomMissions()->GetRoomDetails( pPlayer->GetNPC()->GetAbsOrigin() );
 		if ( !pRoom )
 		{
-			Msg(" Couldn't find room\n" );
+			Msg( " Couldn't find room\n" );
 		}
 		else
 		{
@@ -1871,7 +1803,7 @@ void asw_room_info_f()
 			Msg( " Room name: %s\n", buf );
 			Msg( " Room tags: " );
 			int nNumTags = pRoom->GetNumTags();
-			for ( int i = 0; i < nNumTags; ++ i )
+			for ( int i = 0; i < nNumTags; ++i )
 			{
 				Msg( "%s    ", pRoom->GetTag( i ) );
 			}
@@ -1879,7 +1811,7 @@ void asw_room_info_f()
 		}
 	}
 }
-ConCommand asw_room_info( "asw_room_info", asw_room_info_f, "Shows details about the current room in a randomly generated map", 0);
+ConCommand asw_room_info( "asw_room_info", asw_room_info_f, "Shows details about the current room in a randomly generated map", 0 );
 
 
 void asw_debug_server_cursor_f( const CCommand& args )
@@ -1971,36 +1903,36 @@ static ConCommand asw_ent_teleport("asw_ent_teleport", CC_ASW_Ent_Teleport, "Tel
 
 void cc_asw_inventory()
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if ( pPlayer->GetMarine() )
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		for (int i=0;i<ASW_MAX_MARINE_WEAPONS;i++)
+		for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
 		{
-			CBaseEntity *pWeapon = pPlayer->GetMarine()->GetWeapon(i);
+			CBaseEntity *pWeapon = pMarine->GetWeapon( i );
 			if ( pWeapon )
 			{
-				Msg(" Inventory[%d] = %s (%d)\n", i, pWeapon->GetClassname(), pWeapon->entindex() );
+				Msg( " Inventory[%d] = %s (%d)\n", i, pWeapon->GetClassname(), pWeapon->entindex() );
 			}
 		}
 	}
 }
-
 ConCommand asw_inventory( "asw_inventory", cc_asw_inventory, "Lists marine's inventory", FCVAR_CHEAT );
 
 void cc_stuck( const CCommand &args )
 {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
 		return;
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+	if ( !pMarine )
 		return;
 
 	if ( !pMarine->TeleportStuckMarine() )
 	{
-		Msg("Error, couldn't find a valid free info_node to teleport to!\n");
-	}		
+		Msg( "Error, couldn't find a valid free info_node to teleport to!\n" );
+	}
 }
 ConCommand stuck( "stuck", cc_stuck, "Teleports marine to the nearest free node", FCVAR_CHEAT );
 
@@ -2056,24 +1988,24 @@ void SpawnBuzzerAboveMe( const CCommand &args )
 
 	// Try to create entity
 	CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName( "asw_buzzer" ) );
-	if (entity)
+	if ( entity )
 	{
-		entity->Precache();		
+		entity->Precache();
 
 		// Now attempt to drop into the world
-		CASW_Player* pPlayer = ToASW_Player( UTIL_GetCommandClient() );
-		if (!pPlayer)
+		CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+		if ( !pPlayer )
 			return;
 
-		CASW_Marine *pMarine = pPlayer->GetMarine();
-		if ( !pMarine )
+		CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+		if ( !pNPC )
 			return;
 
-		Vector vecPos = pMarine->GetAbsOrigin();
+		Vector vecPos = pNPC->GetAbsOrigin();
 		vecPos.z += atof( args[1] );
 		entity->Teleport( &vecPos, NULL, NULL );
 
-		DispatchSpawn(entity);
+		DispatchSpawn( entity );
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
@@ -2081,20 +2013,19 @@ static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Spaw
 
 void MarineStrafePush()
 {
-	if (!ASWGameRules() || !ASWGameRules()->ShouldAllowMarineStrafePush())
+	if ( !ASWGameRules() || !ASWGameRules()->ShouldAllowMarineStrafePush() )
 		return;
 
-	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer)
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
 		return;
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+	if ( !pMarine )
 		return;
 
 	pMarine->StrafePush();
 }
-
 static ConCommand rda_strafepush("rda_strafepush", MarineStrafePush, "Strafe push current marine", 0);
 
 void HideBackPackModels()

@@ -130,7 +130,7 @@ bool CASW_VGUI_Stylin_Cam::ShouldShowStylinCam()
 		return false;
 
 	C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
-	bool bHasMarine = pLocal && pLocal->GetViewMarine();
+	bool bHasMarine = pLocal && C_ASW_Marine::AsMarine( pLocal->GetViewNPC() );
 
 	bool bAdrenalineActive = GameTimescale()->GetCurrentTimescale() <= asw_stim_cam_time.GetFloat() && ASWGameRules()->GetStimEndTime() >= gpGlobals->curtime;
 	bool bShowCam = ASWGameRules()->ShouldForceStylinCam() ||

@@ -27,13 +27,7 @@ public:
 	virtual void ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 
 	// IASW_Server_Usable_Entity
-	virtual CBaseEntity* GetEntity() = 0;
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) = 0;
-	virtual bool IsUsable(CBaseEntity *pUser) = 0;
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void MarineStartedUsing(CASW_Marine* pMarine) = 0;
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) = 0;
-	virtual void MarineUsing(CASW_Marine* pMarine, float fDeltaTime) = 0;
 	virtual bool NeedsLOSCheck() { return false; }
 };
 

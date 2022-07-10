@@ -177,7 +177,7 @@ void CASW_Medals::AwardMedals()
 			AwardPlayerMedalsTo(pPlayer);
 #endif
 
-			if ( pPlayer->GetMarine() )
+			if ( CASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 			{
 				if ( ASWGameRules()->GetMissionSuccess() )
 				{

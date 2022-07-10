@@ -137,7 +137,7 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 
 		if ( m_pAttackDir && m_bConeFilter )
 		{
-			float flAttackDot = m_pAttackDir->Dot( vecAttackDirFlat );
+			flAttackDot = m_pAttackDir->Dot( vecAttackDirFlat );
 
 			if ( flAttackDot < m_flMinAttackDot )
 			{

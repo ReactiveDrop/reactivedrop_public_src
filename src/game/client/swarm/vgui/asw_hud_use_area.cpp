@@ -195,8 +195,8 @@ void CASWHudUseArea::Paint()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if (!pNPC)
 		return;
 	int r, g, b;
 	r = g = b = 255;
@@ -217,7 +217,7 @@ void CASWHudUseArea::Paint()
 	pPlayer->FindUseEntities();
 
 	// don't add any icons if our marine is dead
-	if (!pPlayer->GetViewMarine() || !pPlayer->GetViewMarine()->IsAlive())
+	if (!pPlayer->GetViewNPC() || !pPlayer->GetViewNPC()->IsAlive())
 	{
 		pPlayer->UseIconTarget[0] = NULL;
 		if (m_pUseIcon)
@@ -259,8 +259,8 @@ bool CASWHudUseArea::AddUseIconsFor(C_BaseEntity* pEnt)
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (!pPlayer)
 		return false;
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if (!pNPC)
 		return false;
 
 	if (g_asw_iGUIWindowsOpen > 0)	// don't show use icons while an info message is up
@@ -270,7 +270,7 @@ bool CASWHudUseArea::AddUseIconsFor(C_BaseEntity* pEnt)
 	if (pUsable)
 	{
 		ASWUseAction action;
-		if (!pUsable->GetUseAction(action, pMarine))
+		if (!pUsable->GetUseAction(action, pNPC))
 			return false;
 
 		if (m_pUseIcon)

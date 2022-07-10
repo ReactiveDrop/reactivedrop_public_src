@@ -127,7 +127,7 @@ int C_ASW_Button_Area::GetNoPowerIconTextureID()
 	return s_nNoPowerIconTextureID;
 }
 
-bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser)
 {
 	action.UseIconRed = 255;
 	action.UseIconGreen = 255;
@@ -145,12 +145,13 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	}
 	if (IsLocked())
 	{
-		CASW_Marine_Profile *pProfile = pUser->GetMarineProfile();
+		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pUser );
+		CASW_Marine_Profile *pProfile = pMarine ? pMarine->GetMarineProfile() : NULL;
 
-		if ( pProfile->CanHack() || !NeedsTech() )
+		if ( pProfile && ( pProfile->CanHack() || !NeedsTech() ) )
 		{
 			action.iUseIconTexture = GetHackIconTextureID();
-			TryLocalize( GetHackIconText(pUser), action.wszText, sizeof( action.wszText ) );
+			TryLocalize( GetHackIconText( pUser ), action.wszText, sizeof( action.wszText ) );
 			action.UseTarget = this;
 			action.fProgress = GetHackProgress();
 		}
@@ -160,7 +161,7 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 			TryLocalize( GetLockedIconText(), action.wszText, sizeof( action.wszText ) );
 			action.UseTarget = this;
 			action.fProgress = GetHackProgress();
-		}	
+		}
 	}
 
 	else
@@ -189,24 +190,19 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
 	return true;
 }
 
-const char* C_ASW_Button_Area::GetNoPowerText()
+const char *C_ASW_Button_Area::GetNoPowerText()
 {
 	const char *szCustom = GetNoPowerMessage();
-	if (!szCustom || Q_strlen(szCustom) <= 0)
+	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
 		return "#asw_no_power";
 
 	return szCustom;
 }
 
-const char* C_ASW_Button_Area::GetHackIconText(C_ASW_Marine *pUser)
+const char *C_ASW_Button_Area::GetHackIconText( C_ASW_Inhabitable_NPC *pUser )
 {
-	if (m_bIsInUse)
-	{
-		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer && pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->m_hUsingEntity.Get() == this)
-		{
-			return "#asw_exit_panel";
-		}
-	}
+	if ( m_bIsInUse && pUser && pUser->m_hUsingEntity.Get() == this )
+		return "#asw_exit_panel";
+
 	return "#asw_hack_panel";
 }

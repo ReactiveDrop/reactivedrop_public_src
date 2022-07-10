@@ -190,28 +190,32 @@ void CASW_Sentry_Base::AnimThink( void )
 }
 
 // player has used this item
-void CASW_Sentry_Base::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
-	if (!m_bIsInUse && !m_bAssembled && nHoldType != ASW_USE_HOLD_RELEASE_FULL)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+		return;
+
+	if ( !m_bIsInUse && !m_bAssembled && nHoldType != ASW_USE_HOLD_RELEASE_FULL )
 	{
-		pMarine->StartUsing(this);
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+		pMarine->StartUsing( this );
+		pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 	}
-	else if (m_bAssembled && GetSentryTop())
+	else if ( m_bAssembled && GetSentryTop() )
 	{
 		if ( nHoldType == ASW_USE_HOLD_START )
 		{
-			pMarine->StartUsing(this);
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+			pMarine->StartUsing( this );
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 		}
 		else if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
 		{
 			pMarine->StopUsing();
 
 			if ( !m_bAlreadyTaken )
-			{			
+			{
 				//Msg( "Disassembling sentry gun!\n" );
-				IGameEvent * event = gameeventmanager->CreateEvent( "sentry_dismantled" );
+				IGameEvent *event = gameeventmanager->CreateEvent( "sentry_dismantled" );
 				if ( event )
 				{
 					CBasePlayer *pPlayer = pMarine->GetCommander();
@@ -221,12 +225,12 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 					gameeventmanager->FireEvent( event );
 				}
 
-				CASW_Weapon_Sentry *pWeapon = dynamic_cast<CASW_Weapon_Sentry*>( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
+				CASW_Weapon_Sentry *pWeapon = dynamic_cast< CASW_Weapon_Sentry * >( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
 				if ( !rd_sentry_refilled_by_dismantling.GetBool() )
 				{
 					pWeapon->SetSentryAmmo( m_iAmmo );
 				}
-				
+
 				pMarine->TakeWeaponPickup( pWeapon );
 				EmitSound( "ASW_Sentry.Dismantled" );
 				UTIL_Remove( this );
@@ -244,9 +248,9 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		{
 			pMarine->StopUsing();
 
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 
-			IGameEvent * event = gameeventmanager->CreateEvent( "sentry_rotated" );
+			IGameEvent *event = gameeventmanager->CreateEvent( "sentry_rotated" );
 			if ( event )
 			{
 				CBasePlayer *pPlayer = pMarine->GetCommander();
@@ -257,22 +261,23 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 			}
 
 			// tell the top piece to turn to face the same way as pMarine is facing
-			GetSentryTop()->SetDeployYaw(pMarine->ASWEyeAngles().y);
+			GetSentryTop()->SetDeployYaw( pMarine->ASWEyeAngles().y );
 			GetSentryTop()->PlayTurnSound();
 		}
 	}
 }
 
 #define SENTRY_ASSEMBLE_TIME 7.0f			// was 14.0
-void CASW_Sentry_Base::MarineUsing(CASW_Marine* pMarine, float deltatime)
+void CASW_Sentry_Base::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 {
-	if (m_bIsInUse && !m_bAssembled && pMarine)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( m_bIsInUse && !m_bAssembled && pMarine )
 	{
 		// check if any techs nearby have engineering skill to speed this up
-		float fSkillScale = MarineSkills()->GetHighestSkillValueNearby(pMarine->GetAbsOrigin(), ENGINEERING_AURA_RADIUS,
-				ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY);
-		CASW_Marine *pSkillMarine = MarineSkills()->GetLastSkillMarine();		
-		if ( fSkillScale> 0.0f && pSkillMarine && pSkillMarine->GetMarineResource())
+		float fSkillScale = MarineSkills()->GetHighestSkillValueNearby( pMarine->GetAbsOrigin(), ENGINEERING_AURA_RADIUS,
+			ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY );
+		CASW_Marine *pSkillMarine = MarineSkills()->GetLastSkillMarine();
+		if ( fSkillScale > 0.0f && pSkillMarine && pSkillMarine->GetMarineResource() )
 		{
 			pSkillMarine->m_fUsingEngineeringAura = gpGlobals->curtime;
 			m_fSkillMarineHelping = gpGlobals->curtime;
@@ -281,20 +286,20 @@ void CASW_Sentry_Base::MarineUsing(CASW_Marine* pMarine, float deltatime)
 		{
 			m_fSkillMarineHelping = 0;
 		}
-		if (fSkillScale < 1.0)
+		if ( fSkillScale < 1.0 )
 			fSkillScale = 1.0f;
-		float fSetupAmount = (deltatime * (1.0f/SENTRY_ASSEMBLE_TIME)) * fSkillScale;
+		float fSetupAmount = ( deltatime * ( 1.0f / SENTRY_ASSEMBLE_TIME ) ) * fSkillScale;
 		m_fAssembleProgress += fSetupAmount;
-		if (m_fAssembleProgress >= 1.0f)
+		if ( m_fAssembleProgress >= 1.0f )
 		{
 			m_fAssembleProgress = 1.0f;
-			
+
 			pMarine->StopUsing();
 			m_bAssembled = true;
 			m_fAssembleCompleteTime = gpGlobals->curtime;
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_SENTRY);
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_SENTRY );
 			// spawn top half and activate it
-			CASW_Sentry_Top * RESTRICT  pSentryTop = dynamic_cast<CASW_Sentry_Top*>( CreateEntityByName( GetEntityNameForGunType( GetGunType() ) ) );	
+			CASW_Sentry_Top *RESTRICT  pSentryTop = dynamic_cast< CASW_Sentry_Top * >( CreateEntityByName( GetEntityNameForGunType( GetGunType() ) ) );
 			m_hSentryTop = pSentryTop;
 			if ( pSentryTop )
 			{
@@ -302,13 +307,13 @@ void CASW_Sentry_Base::MarineUsing(CASW_Marine* pMarine, float deltatime)
 
 				const QAngle &angles = GetAbsAngles();
 				pSentryTop->SetAbsAngles( angles );
-				DispatchSpawn( pSentryTop );				
+				DispatchSpawn( pSentryTop );
 			}
 		}
 	}
 }
 
-void CASW_Sentry_Base::MarineStartedUsing(CASW_Marine* pMarine)
+void CASW_Sentry_Base::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 	EmitSound( "ASW_Sentry.SetupLoop" );
 
@@ -316,27 +321,27 @@ void CASW_Sentry_Base::MarineStartedUsing(CASW_Marine* pMarine)
 	{
 		switch ( GetGunType() )
 		{
-			case kAUTOGUN:
-				this->m_nSkin = 2;
-				break;
-			case kCANNON:
-				this->m_nSkin = 5;
-				break;
-			case kFLAME:
-				this->m_nSkin = 4;
-				break;
-			case kICE:
-				this->m_nSkin = 3;
-				break;
+		case kAUTOGUN:
+			this->m_nSkin = 2;
+			break;
+		case kCANNON:
+			this->m_nSkin = 5;
+			break;
+		case kFLAME:
+			this->m_nSkin = 4;
+			break;
+		case kICE:
+			this->m_nSkin = 3;
+			break;
 		}
 	}
 
 	if ( !m_bIsInUse && m_fAssembleProgress < 1.0f )
 	{
-		IGameEvent * event = gameeventmanager->CreateEvent( "sentry_start_building" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "sentry_start_building" );
 		if ( event )
 		{
-			CBasePlayer *pPlayer = pMarine->GetCommander();
+			CBasePlayer *pPlayer = pNPC->GetCommander();
 			event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 			event->SetInt( "entindex", entindex() );
 
@@ -347,19 +352,19 @@ void CASW_Sentry_Base::MarineStartedUsing(CASW_Marine* pMarine)
 	m_bIsInUse = true;
 }
 
-void CASW_Sentry_Base::MarineStoppedUsing(CASW_Marine* pMarine)
+void CASW_Sentry_Base::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 	if ( m_fAssembleProgress >= 1.0f )
 	{
 		EmitSound( "ASW_Sentry.SetupComplete" );
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "sentry_complete" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "sentry_complete" );
 		if ( event )
 		{
-			CBasePlayer *pPlayer = pMarine->GetCommander();
+			CBasePlayer *pPlayer = pNPC->GetCommander();
 			event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 			event->SetInt( "entindex", entindex() );
-			event->SetInt( "marine", pMarine->entindex() );
+			event->SetInt( "marine", pNPC->entindex() );
 
 			gameeventmanager->FireEvent( event );
 		}
@@ -368,10 +373,10 @@ void CASW_Sentry_Base::MarineStoppedUsing(CASW_Marine* pMarine)
 	{
 		EmitSound( "ASW_Sentry.SetupInterrupt" );
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "sentry_stop_building" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "sentry_stop_building" );
 		if ( event )
 		{
-			CBasePlayer *pPlayer = pMarine->GetCommander();
+			CBasePlayer *pPlayer = pNPC->GetCommander();
 			event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 			event->SetInt( "entindex", entindex() );
 

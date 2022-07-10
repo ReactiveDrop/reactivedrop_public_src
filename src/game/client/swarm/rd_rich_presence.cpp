@@ -465,7 +465,7 @@ void RD_Rich_Presence::UpdatePresence()
 			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
 
 			CASW_Marine_Profile *pProfile = NULL;
-			if ( C_ASW_Marine *pMarine = pPlayer->GetMarine() )
+			if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 			{
 				pProfile = pMarine->GetMarineProfile();
 			}

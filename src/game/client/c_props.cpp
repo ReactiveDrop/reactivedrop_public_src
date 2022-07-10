@@ -150,10 +150,10 @@ void C_DynamicProp::UpdateGlow( void )
 
 	// fade the alpha based on distace
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pLocalPlayer && pLocalPlayer->GetViewMarine() && m_bShouldGlow )
+	if ( pLocalPlayer && pLocalPlayer->GetViewNPC() && m_bShouldGlow )
 	{
 		float flDistanceToMarine = 0.0f;
-		flDistanceToMarine = ( pLocalPlayer->GetViewMarine()->GetAbsOrigin() - WorldSpaceCenter() ).Length();
+		flDistanceToMarine = ( pLocalPlayer->GetViewNPC()->GetAbsOrigin() - WorldSpaceCenter() ).Length();
 		flAlpha = clamp( 1.0 - ( flDistanceToMarine / m_flGlowMaxDist ), 0.0, 0.9 );
 	}
 

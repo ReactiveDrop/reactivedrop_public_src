@@ -1584,7 +1584,7 @@ void cc_asw_melee_list_dps_f()
 		return;
 	}
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	CStudioHdr *pStudioHdr = pMarine? pMarine->GetModelPtr() : NULL;
 
 	if ( !pMarine || !pStudioHdr )

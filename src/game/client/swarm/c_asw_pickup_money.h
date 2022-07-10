@@ -10,9 +10,9 @@ class C_ASW_Pickup_Money : public C_ASW_Pickup
 public:
 	C_ASW_Pickup_Money();
 
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser) { return false; }
+	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser) { return false; }
 	virtual bool IsUsable(C_BaseEntity *pUser) { return false; }
-	virtual bool AllowedToPickup(C_ASW_Marine *pMarine) { return false; }
+	virtual bool AllowedToPickup(C_ASW_Inhabitable_NPC *pNPC) { return false; }
 	virtual bool NeedsLOSCheck() { return false; }
 
 protected:

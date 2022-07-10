@@ -585,7 +585,7 @@ int CASW_Marine::SelectHackingSchedule()
 		{
 			// notify to kill the effect in a couple of seconds
 			CASW_Player *pPlayer = GetCommander();
-			if ( pPlayer && pPlayer->GetMarine() )
+			if ( pPlayer && pPlayer->GetNPC() )
 			{
 				CSingleUserRecipientFilter user( pPlayer );
 				UserMessageBegin( user, "ASWOrderStopItemFX" );
@@ -650,7 +650,7 @@ void CASW_Marine::OrderHackArea( CASW_Use_Area *pArea )
 	if( bHackOrdered )
 	{
 		CASW_Player *pPlayer = GetCommander();
-		if ( pPlayer && pPlayer->GetMarine() )
+		if ( pPlayer && pPlayer->GetNPC() )
 		{
 			Vector vecOrigin = pArea->WorldSpaceCenter();
 			trace_t tr;
@@ -1276,12 +1276,12 @@ static bool AdjustOffhandItemDestination( CASW_Marine *pMarine, CASW_Weapon *pWe
 		if ( pLeader )
 		{
 			// move to whichever one is closer to our follow leader
-			CAI_Pathfinder *pathfinder = pLeader->GetPathfinder();
+			CAI_Pathfinder *pLeaderPathfinder = pLeader->GetPathfinder();
 			CPlainAutoPtr<AI_Waypoint_t> leaderRouteFwd(
-				pathfinder->BuildRoute( pLeader->GetAbsOrigin(), vStandPoints[0],
+				pLeaderPathfinder->BuildRoute( pLeader->GetAbsOrigin(), vStandPoints[0],
 				NULL, flTolerance, NAV_GROUND, bits_BUILD_GET_CLOSE   )	);
 			CPlainAutoPtr<AI_Waypoint_t> leaderRouteBack(
-				pathfinder->BuildRoute( pLeader->GetAbsOrigin(), vStandPoints[1],
+				pLeaderPathfinder->BuildRoute( pLeader->GetAbsOrigin(), vStandPoints[1],
 				NULL, flTolerance, NAV_GROUND, bits_BUILD_GET_CLOSE  ) );
 
 			float flLeaderDists[2];
@@ -1296,7 +1296,7 @@ static bool AdjustOffhandItemDestination( CASW_Marine *pMarine, CASW_Weapon *pWe
 					// leader is on an opposite side to the marine, push the point forward a bit more so marine clears the doorway he's running through
 					matrix3x4_t mat = pDoor->EntityToWorldTransform();
 					mat.SetOrigin( pDoor->GetClosedPosition() );
-					float fkickout = pMarine->BoundingRadius() * 2.2f;
+					fkickout = pMarine->BoundingRadius() * 2.2f;
 					VectorTransform( Vector(fkickout,0,0),  mat, vStandPoints[0] );
 					VectorTransform( Vector(-fkickout,0,0), mat, vStandPoints[1] );
 
@@ -1304,10 +1304,10 @@ static bool AdjustOffhandItemDestination( CASW_Marine *pMarine, CASW_Weapon *pWe
 					delete routeBack;
 
 					routeFwd =
-						pathfinder->BuildRoute( pMarine->GetAbsOrigin(), vStandPoints[0],
+						pLeaderPathfinder->BuildRoute( pMarine->GetAbsOrigin(), vStandPoints[0],
 						NULL, flTolerance, NAV_GROUND, bits_BUILD_GET_CLOSE );
 					routeBack =
-						pathfinder->BuildRoute( pMarine->GetAbsOrigin(), vStandPoints[1],
+						pLeaderPathfinder->BuildRoute( pMarine->GetAbsOrigin(), vStandPoints[1],
 						NULL, flTolerance, NAV_GROUND, bits_BUILD_GET_CLOSE );
 
 					if ( !routeBack && !routeFwd )
@@ -1546,9 +1546,10 @@ void CASW_Marine::FinishedUsingOffhandItem( bool bItemThrown, bool bFailed )
 {
 	// go back to following our commander's marine
 	CASW_Player *pPlayer = GetCommander();
-	if ( pPlayer && pPlayer->GetMarine() )
+	CASW_Marine *pMarine = pPlayer ? AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( pMarine )
 	{
-		OrdersFromPlayer( pPlayer, ASW_ORDER_FOLLOW, pPlayer->GetMarine(), true );
+		OrdersFromPlayer( pPlayer, ASW_ORDER_FOLLOW, pMarine, true );
 
 		CSingleUserRecipientFilter user( pPlayer );
 		UserMessageBegin( user, "ASWOrderStopItemFX" );
@@ -1992,10 +1993,10 @@ void CASW_Marine::StartTask(const Task_t *pTask)
 			{
 				for ( int iWeapon = 0; iWeapon < ASW_NUM_INVENTORY_SLOTS; iWeapon++ )
 				{
-					CASW_Weapon *pWeapon = GetASWWeapon( iWeapon );
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					CASW_Weapon *pPotentialBag = GetASWWeapon( iWeapon );
+					if ( pPotentialBag && pPotentialBag->Classify() == CLASS_ASW_AMMO_BAG )
 					{
-						Weapon_Switch( pWeapon );
+						Weapon_Switch( pPotentialBag );
 						break;
 					}
 				}

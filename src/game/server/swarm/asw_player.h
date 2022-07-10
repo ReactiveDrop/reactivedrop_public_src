@@ -15,6 +15,7 @@
 #include "basemultiplayerplayer.h"
 #include "steam/steam_api.h"
 
+class CASW_Inhabitable_NPC;
 class CASW_Marine;
 class CRagdollProp;
 
@@ -35,7 +36,7 @@ public:
 	virtual int UpdateTransmitState();
 
 	static CASW_Player *CreatePlayer( const char *className, edict_t *ed );
-	static CASW_Player* Instance( int iEnt );
+	static CASW_Player *Instance( int iEnt );
 
 	// This passes the event to the client's and server's CPlayerAnimState.
 	void DoAnimationEvent( PlayerAnimEvent_t event );
@@ -45,12 +46,12 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void UpdateBattery( void ) { }
-	void DriveMarineMovement( CUserCmd *ucmd, IMoveHelper *moveHelper );
+	void DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper );
 	void PushawayThink();
 	virtual void AvoidPhysicsProps( CUserCmd *pCmd );
 	virtual bool ClientCommand( const CCommand &args );
 
-	void EmitPrivateSound( const char *soundName, bool bFromMarine = false );
+	void EmitPrivateSound( const char *soundName, bool bFromNPC = false );
 
 	// eye position is above the marine we're remote controlling
 	virtual Vector EyePosition(void);
@@ -69,7 +70,7 @@ public:
 	virtual void  HandleSpeedChanges( void );
 	virtual bool CanBeSeenBy( CAI_BaseNPC *pNPC ) { return false; } // Players are never seen by NPCs
 
-	CNetworkHandle (CASW_Marine, m_hMarine);
+	CNetworkHandle( CASW_Inhabitable_NPC, m_hInhabiting );
 
 	bool ShouldAutoReload() { return m_bAutoReload; }
 	bool m_bAutoReload;
@@ -83,9 +84,9 @@ public:
 
 	// spectating
 	void SpectateNextMarine();
-	void SetSpectatingMarine(CASW_Marine *d);
-	CASW_Marine* GetSpectatingMarine() const;
-	CNetworkHandle (CASW_Marine, m_hSpectatingMarine);
+	void SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating );
+	CASW_Inhabitable_NPC *GetSpectatingNPC() const;
+	CNetworkHandle( CASW_Inhabitable_NPC, m_hSpectating );
 	bool m_bLastAttackButton;	// used to detect left clicks for cycling through marines
 	bool m_bLastAttack2Button;	// used to detect right clicks for cycling through marines
 	bool m_bRequestedSpectator;	// this player requested to be a spectator since the start of a match (won't be considered for leader, campaign votes, etc.)
@@ -93,9 +94,9 @@ public:
     CNetworkVar( float, m_fMarineDeathTime);    // same as above but optimized for networking
 
 	void BecomeNonSolid();
-	void OnMarineCommanded( const CASW_Marine *pMarine );
-	void SetMarine( CASW_Marine *pMarine );
-	CASW_Marine* GetMarine() const;
+	void OnNPCCommanded( CASW_Inhabitable_NPC *pNPC );
+	void SetNPC( CASW_Inhabitable_NPC *pNPC );
+	CASW_Inhabitable_NPC *GetNPC() const;
 	void SelectNextMarine( bool bReverse );
 	bool CanSwitchToMarine( int num );
 	// BenLubar(deathmatch-improvements)
@@ -106,7 +107,7 @@ public:
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 
-	CNetworkHandle(CASW_Marine, m_hOrderingMarine)
+	CNetworkHandle( CASW_Marine, m_hOrderingMarine );
 
 	CASW_Game_Resource* GetGNI();
 
@@ -131,7 +132,7 @@ public:
 	virtual	CBaseCombatCharacter *ActivePlayerCombatCharacter( void );
 
 	// shared code
-	CASW_Marine* GetViewMarine() const;
+	CASW_Inhabitable_NPC *GetViewNPC() const;
 	void ItemPostFrame();
 	void ASWSelectWeapon(CBaseCombatWeapon* pWeapon, int subtype);	// for switching weapons on the current marine
 	virtual bool Weapon_CanUse( CBaseCombatWeapon *pWeapon );
