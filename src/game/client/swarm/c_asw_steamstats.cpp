@@ -88,7 +88,7 @@ namespace
 		"rd_biogen_corporation",
 #ifdef RD_6A_CAMPAIGNS
 		"rd_accident32",
-		"adanaxis", // pending rename
+		"rd_adanaxis",
 #endif
 	};
 	const char *const g_OfficialMaps[] =
@@ -160,13 +160,14 @@ namespace
 		"rd-acc5_j5connector",
 		"rd-acc6_labruins",
 		"rd-acc_complex",
-		"rd-ad1_newbeginning", // pending rename
-		"rd-ad2_nexussubnode", // pending rename
-		"rd-ad3_neon_carnage", // pending rename
-		"rd-ad3_fuel_junction", // pending rename
-		"rd-ad3_darkpath_classic", // pending rename
-		"rd-ad4_forbidden_outpost", // pending rename
-		"rd-ad2_anomaly", // pending rename
+		"rd-ada_sector_a9",
+		"rd-ada_nexus_subnode",
+		"rd-ada_neon_carnage",
+		"rd-ada_fuel_junction",
+		"rd-ada_dark_path",
+		"rd-ada_forbidden_outpost",
+		"rd-ada_new_beginning",
+		"rd-ada_anomaly",
 #endif
 		"rd-bonus_mission1",
 		"rd-bonus_mission2",
@@ -180,7 +181,8 @@ namespace
 	const char *const g_OfficialNonCampaignMaps[] =
 	{
 		"rd-acc_complex",
-		"rd-ad2_anomaly", // pending rename
+		"rd-ada_new_beginning",
+		"rd-ada_anomaly",
 		"dm_desert",
 		"dm_deima",
 		"dm_residential",

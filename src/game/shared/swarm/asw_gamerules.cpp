@@ -8801,26 +8801,37 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -3925, -443, -20 );
 	}
-	else if ( FStrEq( mapname, "rd-ad1_newbeginning" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad2_nexussubnode" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_nexus_subnode" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad3_darkpath_classic" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_neon_carnage" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad3_fuel_junction" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_fuel_junction" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad3_neon_carnage" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_dark_path" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad4_forbidden_outpost" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_forbidden_outpost" ) )
 	{
+		// TODO: cake
 	}
-	else if ( FStrEq( mapname, "rd-ad2_anomaly" ) ) // pending rename
+	else if ( FStrEq( mapname, "rd-ada_new_beginning" ) )
 	{
+		// TODO: cake
+	}
+	else if ( FStrEq( mapname, "rd-ada_anomaly" ) )
+	{
+		// TODO: cake
 	}
 #endif
 

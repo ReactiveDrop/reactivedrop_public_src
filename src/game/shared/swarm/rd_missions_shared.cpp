@@ -28,7 +28,7 @@ static const char *s_szCampaignNamesFirst[] =
 	"jacob",
 #if defined( RD_6A_CAMPAIGNS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_accident32",
-	"adanaxis", // pending rename
+	"rd_adanaxis",
 #endif
 	"rd-operationcleansweep",
 	"rd_nh_campaigns",
@@ -39,7 +39,7 @@ static const char *s_szCampaignNamesFirst[] =
 #endif
 	"rd-area9800",
 #if defined( RD_6A_CAMPAIGNS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
-	"adanaxis", // pending rename
+	"rd_adanaxis",
 #endif
 	"tilarus5",
 	"rd_biogen_corporation",
@@ -62,7 +62,8 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-bonus_mission7",
 #ifdef RD_6A_CAMPAIGNS
 	"rd-acc_complex",
-	"rd-ad2_anomaly", // pending rename
+	"rd-ada_new_beginning",
+	"rd-ada_anomaly",
 #endif
 };
 

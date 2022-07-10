@@ -296,9 +296,9 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ACC );
 			}
-			else if ( !Q_stricmp( pszCampaignName, "adanaxis" ) ) // pending rename
+			else if ( !Q_stricmp( pszCampaignName, "rd_adanaxis" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AD );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ADA );
 			}
 #endif
 		}
@@ -666,18 +666,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TFT_SPACEPORT );
 			}
-// 			else if ( !Q_stricmp( mapName, "rd-dc1_omega_city" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_OMEGA_CITY );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-dc2_breaking_an_entry" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_BREAKING_AN_ENTRY );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-dc3_search_and_rescue" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_DC_SEARCH_AND_RESCUE );
-// 			}
 			else if ( !Q_stricmp( mapName, "rd-til1midnightport" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_TIL_MIDNIGHT_PORT );
@@ -734,30 +722,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_LAN_COMPLEX );
 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction1" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_1 );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction2" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_2 );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction3" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_3 );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction4" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_4 );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction5" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_5 );
-// 			}
-// 			else if ( !Q_stricmp( mapName, "rd-reduction6" ) )
-// 			{
-// 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_6 );
-// 			}
 			else if ( !Q_stricmp( mapName, "rd-par1unexpected_encounter" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_PAR_UNEXPECTED_ENCOUNTER );
@@ -827,33 +791,37 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_LABRUINS );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad1_newbeginning" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_sector_a9" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEWBEGINNING );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_SECTOR_A9 );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad2_nexussubnode" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_nexus_subnode" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEXUSSUBNODE );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_NEXUS_SUBNODE );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad3_neon_carnage" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_neon_carnage" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_NEON_CARNAGE );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_NEON_CARNAGE );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad3_fuel_junction" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_fuel_junction" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_FUEL_JUNCTION );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_FUEL_JUNCTION );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad3_darkpath_classic" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_dark_path" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_DARKPATH_CLASSIC );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_DARK_PATH );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad4_forbidden_outpost" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_forbidden_outpost" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_FORBIDDEN_OUTPOST );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_FORBIDDEN_OUTPOST );
 			}
-			else if ( !Q_stricmp( mapName, "rd-ad2_anomaly" ) ) // pending rename
+			else if ( !Q_stricmp( mapName, "rd-ada_new_beginning" ) )
 			{
-				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_AD_ANOMALY );
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_NEW_BEGINNING );
+			}
+			else if ( !Q_stricmp( mapName, "rd-ada_anomaly" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ADA_ANOMALY );
 			}
 #endif
 		}
