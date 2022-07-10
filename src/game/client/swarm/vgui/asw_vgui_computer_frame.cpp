@@ -114,6 +114,11 @@ void CASW_VGUI_Computer_Frame::ASWInit()
 	{
 		m_pSplash = NULL;
 		m_pCurrentPanel = m_pMenuPanel;
+
+		if ( !IsPDA() )
+		{
+			m_pMenuPanel->ShowMenu();
+		}
 	}
 	else
 	{

@@ -473,10 +473,6 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 void CASW_Computer_Area::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
-	if ( !pMarine )
-	{
-		return;
-	}
 
 	m_flStopUsingTime = 0.0f;
 	m_bIsInUse = true;
@@ -492,7 +488,7 @@ void CASW_Computer_Area::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pComputerInUseSound, 1, 1.5 );
 	}
 
-	if ( ASWDirector() && m_bIsLocked )
+	if ( ASWDirector() && m_bIsLocked && pMarine )
 	{
 		ASWDirector()->OnMarineStartedHack( pMarine, this );
 	}
@@ -500,16 +496,18 @@ void CASW_Computer_Area::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 
 void CASW_Computer_Area::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
-	if ( !pMarine )
+	if ( IsUsable( pNPC ) )
 	{
-		return;
+		// If we were close enough to the computer to use it when we stopped, that means we didn't walk away.
+		m_bLoggedIn = false;
 	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 
 	m_bIsInUse = false;
 	UpdateWaitingForInput();
 
-	if ( GetCurrentHack() )	// notify our current hack that we've stopped using the console
+	if ( GetCurrentHack() && pMarine )	// notify our current hack that we've stopped using the console
 	{
 		GetCurrentHack()->MarineStoppedUsing( pMarine );
 	}
