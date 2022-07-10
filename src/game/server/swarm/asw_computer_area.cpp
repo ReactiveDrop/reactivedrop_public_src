@@ -108,6 +108,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropBool		(SENDINFO(m_bIsLocked)),
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),
 	SendPropBool		(SENDINFO(m_bIsInUse)),
+	SendPropBool		(SENDINFO(m_bLoggedIn)),
 	SendPropFloat		(SENDINFO(m_fDownloadProgress)),
 
 	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),
@@ -157,6 +158,7 @@ CASW_Computer_Area::CASW_Computer_Area()
 	m_fDownloadProgress = 0;
 	m_bDownloadedDocs = false;
 	m_bDoSecureShout = true;
+	m_bLoggedIn = false;
 	m_iActiveCam = 0;
 	m_fNextSecureShoutCheck = 0;
 	m_flStopUsingTime = 0.0f;
@@ -368,7 +370,7 @@ void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
 
 CASW_Hack_Computer* CASW_Computer_Area::GetCurrentHack()
 {
-	return dynamic_cast<CASW_Hack_Computer*>(m_hComputerHack.Get());
+	return m_hComputerHack.Get();
 }
 
 // traditional Swarm hacking

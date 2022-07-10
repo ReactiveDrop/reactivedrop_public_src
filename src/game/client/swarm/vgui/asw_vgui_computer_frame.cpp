@@ -16,47 +16,48 @@
 #include "tier0/memdbgon.h"
 
 CASW_VGUI_Computer_Frame::CASW_VGUI_Computer_Frame( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackComputer ) 
-:	vgui::Panel( pParent, pElementName ),
+	: vgui::Panel( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
 	m_pHackComputer( pHackComputer )
 {
 	m_bHideLogoffButton = false;
 
-	SetKeyBoardInputEnabled(true);
+	SetKeyBoardInputEnabled( true );
 	m_fLastThinkTime = gpGlobals->curtime;
 	m_pCurrentPanel = NULL;
 	m_pMenuPanel = NULL;
 	m_pSplash = NULL;
 	m_bSetAlpha = false;
 
-	m_pLogoffLabel = new ImageButton(this, "LogoffLabel", "");
-	m_pLogoffLabel->AddActionSignalTarget(this);
+	m_pLogoffLabel = new ImageButton( this, "LogoffLabel", "" );
+	m_pLogoffLabel->AddActionSignalTarget( this );
 
-	KeyValues *msg = new KeyValues("Command");	
-	msg->SetString("command", "Logoff");
-	m_pLogoffLabel->SetCommand(msg);
+	KeyValues *msg = new KeyValues( "Command" );
+	msg->SetString( "command", "Logoff" );
+	m_pLogoffLabel->SetCommand( msg );
 
-	KeyValues *cmsg = new KeyValues("Command");			
+	KeyValues *cmsg = new KeyValues( "Command" );
 	cmsg->SetString( "command", "Cancel" );
 	m_pLogoffLabel->SetCancelCommand( cmsg );
-	
-	m_pLogoffLabel->SetText("#asw_log_off");
+
+	m_pLogoffLabel->SetText( "#asw_log_off" );
 
 
-	for (int i=0;i<3;i++)
+	for ( int i = 0; i < 3; i++ )
 	{
-		m_pScan[i] = new vgui::ImagePanel(this, "ComputerScan0");
-		m_pScan[i]->SetShouldScaleImage(true);
-		m_pScan[i]->SetImage("swarm/Computer/ComputerScan");
+		m_pScan[i] = new vgui::ImagePanel( this, "ComputerScan0" );
+		m_pScan[i]->SetShouldScaleImage( true );
+		m_pScan[i]->SetImage( "swarm/Computer/ComputerScan" );
 	}
-	m_pBackdropImage = new vgui::ImagePanel(this, "SplashImage");
-	m_pBackdropImage->SetShouldScaleImage(true);
+	m_pBackdropImage = new vgui::ImagePanel( this, "SplashImage" );
+	m_pBackdropImage->SetShouldScaleImage( true );
 	m_iBackdropType = -1;
-	SetBackdrop(0);
-	
+	SetBackdrop( 0 );
+
 	RequestFocus();
 
-	m_bPlayingSplash = !IsPDA();
+	C_ASW_Computer_Area *pComputerArea = pHackComputer ? pHackComputer->GetComputerArea() : NULL;
+	m_bPlayingSplash = pComputerArea && !pComputerArea->IsPDA() && ( pComputerArea->IsLocked() || !pComputerArea->IsLoggedIn() );
 }
 
 CASW_VGUI_Computer_Frame::~CASW_VGUI_Computer_Frame()
@@ -85,59 +86,55 @@ void CASW_VGUI_Computer_Frame::SetBackdrop(int iBackdropType)
 
 void CASW_VGUI_Computer_Frame::SplashFinished()
 {
-	if (m_pMenuPanel && !m_pMenuPanel->IsHacking())
+	if ( m_pMenuPanel && !m_pMenuPanel->IsHacking() )
+	{
 		m_pMenuPanel->ShowMenu();
-	m_bPlayingSplash = false;
+		m_bPlayingSplash = false;
+	}
 }
 
 void CASW_VGUI_Computer_Frame::ASWInit()
 {
-	SetPaintBackgroundType(0);
-	SetPaintBackgroundEnabled(true);
-	SetBgColor( Color(0,0,0,255) );
+	SetPaintBackgroundType( 0 );
+	SetPaintBackgroundEnabled( true );
+	SetBgColor( Color( 0, 0, 0, 255 ) );
 
-	m_pBackdropImage->SetAlpha(0);
-	vgui::GetAnimationController()->RunAnimationCommand(m_pBackdropImage, "Alpha", 255, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-	
-	SetAlpha(255);
+	m_pBackdropImage->SetAlpha( 0 );
+	vgui::GetAnimationController()->RunAnimationCommand( m_pBackdropImage, "Alpha", 255, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 
-	if (IsPDA())
+	SetAlpha( 255 );
+
+	m_iScanHeight = 0;
+
+	m_pMenuPanel = new CASW_VGUI_Computer_Menu( this, "ComputerMenu", m_pHackComputer );
+	m_pMenuPanel->ASWInit();
+	m_pMenuPanel->SetPos( 0, 0 );
+
+	if ( !m_bPlayingSplash )
 	{
-		m_pSplash = NULL;		
+		m_pSplash = NULL;
+		m_pCurrentPanel = m_pMenuPanel;
 	}
 	else
 	{
-		m_pSplash = new CASW_VGUI_Computer_Splash(this, "ComputerSplash", m_pHackComputer);
-		m_pSplash->ASWInit();	
-		m_pSplash->SetPos(0,0);
+		m_pSplash = new CASW_VGUI_Computer_Splash( this, "ComputerSplash", m_pHackComputer );
+		m_pSplash->ASWInit();
+		m_pSplash->SetPos( 0, 0 );
 		m_pCurrentPanel = m_pSplash;
 	}
-	m_iScanHeight = 0;
 
-	m_pMenuPanel = new CASW_VGUI_Computer_Menu(this, "ComputerMenu", m_pHackComputer);
-	m_pMenuPanel->ASWInit();	
-	m_pMenuPanel->SetPos(0,0);
-
-	if (IsPDA())
+	if ( GetControllerFocus() )
 	{
-		// hm, not true.. we want the first panel to be the mail one
-		m_pCurrentPanel = m_pMenuPanel;
+		GetControllerFocus()->AddToFocusList( m_pLogoffLabel );
+		GetControllerFocus()->SetFocusPanel( m_pLogoffLabel );
 	}
 
-	if (GetControllerFocus())
-	{
-		GetControllerFocus()->AddToFocusList(m_pLogoffLabel);
-		GetControllerFocus()->SetFocusPanel(m_pLogoffLabel);
-	}
-
-	vgui::GetAnimationController()->RunAnimationCommand(m_pLogoffLabel, "Alpha", 255, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-
-
+	vgui::GetAnimationController()->RunAnimationCommand( m_pLogoffLabel, "Alpha", 255, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 }
 
 bool CASW_VGUI_Computer_Frame::IsPDA()
 {
-	if (m_pHackComputer && m_pHackComputer->GetComputerArea())
+	if ( m_pHackComputer && m_pHackComputer->GetComputerArea() )
 		return m_pHackComputer->GetComputerArea()->IsPDA();
 
 	return false;

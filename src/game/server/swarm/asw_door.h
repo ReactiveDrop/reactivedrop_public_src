@@ -111,9 +111,6 @@ public:
 	float m_fSkillMarineHelping;	// last time an engineering marine was nearby helping a weld
 	CNetworkVar(bool, m_bSkillMarineHelping);		// is an engineer helping a weld on this door currently?
 
-	// player has hit a use icon which manipulates this door
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-
 	bool	IsOpen( void );
 	bool	IsMoving();
 

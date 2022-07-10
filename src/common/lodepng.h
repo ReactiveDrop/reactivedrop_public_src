@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #define LODEPNG_NO_COMPILE_ANCILLARY_CHUNKS
 #define LODEPNG_NO_COMPILE_DISK
 #define LODEPNG_NO_COMPILE_CPP
+#pragma warning(disable: 4267)
 // END AS:RD CHANGES
 
 #include <string.h> /*for size_t*/

@@ -194,15 +194,17 @@ void CRD_Weapon_Generic_Object::PostDataUpdate( DataUpdateType_t updateType )
 	}
 }
 
-bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser )
+bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser )
 {
 	if ( !pUser )
 		return false;
 
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
+
 	action.iUseIconTexture = -1;
 	action.UseTarget = this;
 	action.fProgress = -1;
-	action.iInventorySlot = pUser->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
+	action.iInventorySlot = pMarine ? pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup ) : -1;
 	action.bWideIcon = ( action.iInventorySlot != ASW_INVENTORY_SLOT_EXTRA );
 
 	// build the appropriate take string

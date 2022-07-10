@@ -908,14 +908,6 @@ void CASW_Door::InputNPCNear( inputdata_t &inputdata )
 	Msg("[S] NPC near door\n");
 }
 
-void CASW_Door::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
-{
-	if ( nHoldType == ASW_USE_HOLD_START )
-		return;
-
-	// player has used this item
-}
-
 // returns how sealed this door is, from 0 to 1.0
 float CASW_Door::GetSealAmount()
 {

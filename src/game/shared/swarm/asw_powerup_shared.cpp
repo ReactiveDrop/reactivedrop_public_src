@@ -216,8 +216,9 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Powerup_Bullets, DT_ASW_Powerup_Bullets );
 BEGIN_NETWORK_TABLE( CASW_Powerup_Bullets, DT_ASW_Powerup_Bullets )
 END_NETWORK_TABLE()
 
-bool CASW_Powerup_Bullets::AllowedToPickup(CASW_Marine *pMarine)
-{ 
+bool CASW_Powerup_Bullets::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
+{
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( !pMarine )
 		return false;
 
@@ -233,9 +234,13 @@ bool CASW_Powerup_Bullets::AllowedToPickup(CASW_Marine *pMarine)
 }
 
 #ifndef CLIENT_DLL
-void CASW_Powerup_Bullets::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Powerup_Bullets::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
 		return;
 
 	if ( ASWGameRules()->MarineCanPickupPowerup( pMarine, this ) )

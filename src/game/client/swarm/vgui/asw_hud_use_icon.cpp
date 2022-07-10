@@ -27,16 +27,13 @@ extern ConVar asw_hud_scale;
 #define USE_AREA_WIDTH (GetWide())
 #define USE_AREA_HEIGHT (160.f * fScale)
 #define SCREEN_CENTER_X (ScreenWidth() * 0.5f)
-#define SCREEN_LEFT (15.0f * fScale)
-#ifdef SHIFT_ICON_WHEN_HACKING
-#define ICON_Y (m_bHacking ? 0 : (96.f * fScale) )
-#else
+#define SCREEN_LEFT (ScreenWidth() * 0.15f)
 #define ICON_Y (96.f * fScale)
-#endif
 
 CASW_HUD_Use_Icon::CASW_HUD_Use_Icon(vgui::Panel *pParent, const char *szPanelName) :
 	vgui::Panel(pParent, szPanelName)
 {
+	m_bHacking = false;
 	m_bHasQueued = false;
 
 	m_pUseGlowText = new vgui::Label(this, "UseText", "");
@@ -115,25 +112,20 @@ void CASW_HUD_Use_Icon::PerformLayout()
 #ifdef SHIFT_ICON_WHEN_HACKING
 	if ( m_bHacking )
 	{
-		m_iImageX = border + SCREEN_LEFT;
-		text_x = border + SCREEN_LEFT;
-
-		m_pUseText->SetContentAlignment(vgui::Label::a_west);
-		m_pUseGlowText->SetContentAlignment(vgui::Label::a_west);
-		m_pHoldUseText->SetContentAlignment(vgui::Label::a_west);
-		m_pHoldUseGlowText->SetContentAlignment(vgui::Label::a_west);
+		m_iImageX = SCREEN_LEFT - ( m_iImageW * 0.5f );
+		text_x = SCREEN_LEFT - USE_AREA_WIDTH * 0.5f;
 	}
 	else
 #endif
 	{
 		m_iImageX = SCREEN_CENTER_X - (m_iImageW * 0.5f);
 		text_x = SCREEN_CENTER_X - USE_AREA_WIDTH * 0.5f;
-
-		m_pUseText->SetContentAlignment(vgui::Label::a_center);
-		m_pUseGlowText->SetContentAlignment(vgui::Label::a_center);
-		m_pHoldUseText->SetContentAlignment(vgui::Label::a_center);
-		m_pHoldUseGlowText->SetContentAlignment(vgui::Label::a_center);
 	}
+
+	m_pUseText->SetContentAlignment( vgui::Label::a_center );
+	m_pUseGlowText->SetContentAlignment( vgui::Label::a_center );
+	m_pHoldUseText->SetContentAlignment( vgui::Label::a_center );
+	m_pHoldUseGlowText->SetContentAlignment( vgui::Label::a_center );
 
 	int text_y = m_iImageY + m_iImageT + border;
 	int hold_text_x = text_x;
@@ -239,7 +231,7 @@ void CASW_HUD_Use_Icon::Paint()
 			int backdrop_x = SCREEN_CENTER_X - (backdrop_width * 0.5f);
 #ifdef SHIFT_ICON_WHEN_HACKING
 			if (m_bHacking)
-				backdrop_x = SCREEN_LEFT;
+				backdrop_x = SCREEN_LEFT - ( backdrop_width * 0.5f );
 #endif
 
 			// paint progress bar
@@ -306,7 +298,6 @@ void CASW_HUD_Use_Icon::PositionIcon()
 		if ( pArea )
 			bHacking = true;
 	}
-	InvalidateLayout( true );
 	if ( bHacking != m_bHacking )
 	{
 		m_bHacking = bHacking;
@@ -318,6 +309,7 @@ void CASW_HUD_Use_Icon::PositionIcon()
 		}
 #endif
 	}
+	InvalidateLayout( true );
 }
 
 void CASW_HUD_Use_Icon::SetCurrentToQueuedAction()

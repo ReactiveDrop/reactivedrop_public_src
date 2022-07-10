@@ -45,7 +45,8 @@ public:
 	CNetworkVar( float, m_fDownloadTime );
 	CNetworkVar( bool,  m_bIsLocked );
 	CNetworkVar( bool, m_bWaitingForInput );
-	EHANDLE m_hComputerHack;
+	CNetworkVar( bool, m_bLoggedIn );
+	CHandle<CASW_Hack_Computer> m_hComputerHack;
 
 	string_t		m_SecurityCam1Name;
 	string_t		m_SecurityCam2Name;

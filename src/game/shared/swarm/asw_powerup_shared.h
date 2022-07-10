@@ -52,10 +52,10 @@ public:
 	DECLARE_NETWORKCLASS();
 
 #ifndef CLIENT_DLL
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
 #endif
 
-	virtual bool AllowedToPickup(CASW_Marine *pMarine);
+	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 };
 
 class CASW_Powerup_Freeze_Bullets : public CASW_Powerup_Bullets
