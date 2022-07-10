@@ -290,7 +290,7 @@ class CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName : public CAS
 		} \
 	} \
 }; \
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName, (ACHIEVEMENT_ ## PREFIX ## DIFFICULTY_NAME ## SUFFIX), #PREFIX #DIFFICULTY_NAME #SUFFIX, 5, iOffset + iDifficulty - 1 )
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName, ACHIEVEMENT_ ## PREFIX ## DIFFICULTY_NAME ## SUFFIX, #PREFIX #DIFFICULTY_NAME #SUFFIX, 5, iOffset + iDifficulty - 1 )
 
 #define DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(iOffset, PREFIX, SUFFIX, CampaignName) \
 	DIFFICULTY_CAMPAIGN_ACHIEVEMENT(EASY, Easy, iOffset, 1, PREFIX, SUFFIX, CampaignName); \

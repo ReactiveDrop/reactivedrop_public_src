@@ -215,7 +215,7 @@ void AchievementListItem::ApplySchemeSettings(IScheme *pScheme)
 
 		int iNumRows = 0;
 
-		for ( int i = 0, iNumComponents = m_pAchievement->GetNumComponents(); i < iNumComponents; i++ )
+		for ( int i = 0; i < iNumComponents; i++ )
 		{
 			vgui::Label *pLabel = vgui::SETUP_PANEL( new vgui::Label( this, NULL, "" ) );
 			if ( !pLabel )
