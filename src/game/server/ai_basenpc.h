@@ -2351,7 +2351,7 @@ inline void CAI_BaseNPC::ResetScheduleCurTaskIndex()
 //-----------------------------------------------------------------------------
 inline bool CAI_BaseNPC::CrouchIsDesired( void ) const
 {
-	return ( (CapabilitiesGet() & bits_CAP_DUCK) && (m_bCrouchDesired | m_bForceCrouch) );
+	return ( (CapabilitiesGet() & bits_CAP_DUCK) && (m_bCrouchDesired || m_bForceCrouch) );
 }
 
 //-----------------------------------------------------------------------------
