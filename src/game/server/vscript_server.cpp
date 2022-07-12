@@ -915,8 +915,7 @@ static void Script_StringToFile( const char *pszFileName, const char *pszString 
 		g_pFullFileSystem->CreateDirHierarchy( CFmtStr( "save/vscripts/%s", szFolders ), "MOD" );
 	else
 		g_pFullFileSystem->CreateDirHierarchy( "save/vscripts", "MOD" );
-	CUtlBuffer buf;
-	buf.PutString( pszString );
+	CUtlBuffer buf( pszString, V_strlen( pszString ), CUtlBuffer::READ_ONLY );
 	g_pFullFileSystem->WriteFile( szFullFileName, "MOD", buf );
 }
 
@@ -943,15 +942,15 @@ static const char *Script_FileToString( const char *pszFileName )
 
 	static char szString[16384];
 	int size = g_pFullFileSystem->Size(fh) + 1;
-	if ( size > sizeof(szString) )
+	if ( size >= sizeof(szString) )
 	{
 		Log_Warning( LOG_VScript, "File %s (from %s) is len %i too long for a ScriptFileRead\n", szFullFileName, pszFileName, size );
 		return NULL;
 	}
 
-	CUtlBuffer buf( 0, size, CUtlBuffer::TEXT_BUFFER );
 	g_pFullFileSystem->Read( szString, size, fh );
 	g_pFullFileSystem->Close(fh);
+	szString[size] = '\0';
 
 	const char *pszString = (const char*)szString;
 	return pszString;
