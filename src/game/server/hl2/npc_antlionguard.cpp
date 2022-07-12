@@ -232,7 +232,11 @@ public:
 
 	CNPC_AntlionGuard( void );
 
+#ifdef INFESTED_DLL
+	Class_T Classify( void ) { return (Class_T)CLASS_ASW_ANTLIONGUARD; }
+#else
 	Class_T	Classify( void ) { return CLASS_ANTLION; }
+#endif
 	virtual int		GetSoundInterests( void ) { return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER|SOUND_DANGER); }
 	virtual bool	QueryHearSound( CSound *pSound );
 
