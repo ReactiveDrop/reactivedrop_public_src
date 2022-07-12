@@ -100,6 +100,7 @@ public:
 	void SelectNextMarine( bool bReverse );
 	bool CanSwitchToMarine( int num );
 	// BenLubar(deathmatch-improvements)
+	void SwitchInhabiting( CASW_Inhabitable_NPC *pNPC );
 	void SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader = true );
 	void SwitchMarine( int num, bool set_squad_leader = true );
 	void OrderMarineFace( int iMarine, float fYaw, Vector &vecOrderPos );

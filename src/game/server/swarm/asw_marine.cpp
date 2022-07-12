@@ -316,7 +316,6 @@ BEGIN_DATADESC( CASW_Marine )
 	// m_PlayerAnimState - recreated
 	// m_MarineSpeech - recreated
 	DEFINE_FIELD( m_MarineResource, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bWantsToFire, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bWantsToFire2, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fMarineAimError, FIELD_FLOAT ),
@@ -553,7 +552,6 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	UseClientSideAnimation();
 	m_HackedGunPos = Vector ( 0, 0, ASW_MARINE_GUN_OFFSET_Z );
-	m_nOldButtons = 0;
 	m_MarineSpeech = new CASW_MarineSpeech(this);
 	m_flHealRateScale = 1.0f;
 	m_fNextSlowHealTick = 0;

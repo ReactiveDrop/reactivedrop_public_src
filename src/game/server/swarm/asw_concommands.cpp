@@ -2103,3 +2103,57 @@ void DrawBackPackModels()
 	}
 }
 ConCommand rd_server_draw_backpack("rd_server_draw_backpack", DrawBackPackModels, "Draw backpack models while in game. To make it work regularly combine with rd_server_marine_backpacks 1", FCVAR_NONE);
+
+extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
+
+CON_COMMAND_F( asw_inhabit_npc, "inhabit targeted NPC", FCVAR_CHEAT )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "asw_inhabit_npc must be used by a player, not the server console.\n" );
+		return;
+	}
+
+	CBaseEntity *pTarget = GetNextCommandEntity( pPlayer, args.Arg( 1 ), NULL );
+	if ( !pTarget )
+	{
+		Warning( "Could not find target '%s'.\n", args.Arg( 1 ) );
+		return;
+	}
+
+	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( pTarget );
+	if ( !pNPC )
+	{
+		Warning( "Target '%s' (%d:%s) is not an inhabitable NPC.\n", pTarget->GetDebugName(), pTarget->entindex(), pTarget->GetClassname() );
+		return;
+	}
+
+	pPlayer->SwitchInhabiting( pNPC );
+}
+
+CON_COMMAND_F( asw_spectate_npc, "spectate targeted NPC", FCVAR_CHEAT )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "asw_spectate_npc must be used by a player, not the server console.\n" );
+		return;
+	}
+
+	CBaseEntity *pTarget = GetNextCommandEntity( pPlayer, args.Arg( 1 ), NULL );
+	if ( !pTarget )
+	{
+		Warning( "Could not find target '%s'.\n", args.Arg( 1 ) );
+		return;
+	}
+
+	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( pTarget );
+	if ( !pNPC )
+	{
+		Warning( "Target '%s' (%d:%s) is not an inhabitable NPC.\n", pTarget->GetDebugName(), pTarget->entindex(), pTarget->GetClassname() );
+		return;
+	}
+
+	pPlayer->SetSpectatingNPC( pNPC );
+}

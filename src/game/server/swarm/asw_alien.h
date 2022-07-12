@@ -140,6 +140,8 @@ public:
 
 	virtual bool ShouldPlayerAvoid( void );
 
+	virtual float MaxSpeed();
+	virtual float GetBasePlayerYawRate();
 
 	// soft drone collision
 	virtual bool CanBePushedAway();
@@ -262,6 +264,10 @@ public:
 	virtual void SetUnburrowActivity( string_t iszActivityName );
 	virtual void SetUnburrowIdleActivity( string_t iszActivityName );
 
+	// inhabiting
+	virtual void PhysicsSimulate();
+	virtual void InhabitedBy( CASW_Player *player );
+	virtual void UninhabitedBy( CASW_Player *player );
 
 	// move clone
 	virtual bool OverrideMove( float flInterval );

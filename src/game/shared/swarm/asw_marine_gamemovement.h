@@ -35,6 +35,11 @@ struct surfacedata_t;
 
 class CBasePlayer;
 class CASW_Marine;
+#ifdef CLIENT_DLL
+class C_ASW_Inhabitable_NPC;
+#else
+class CASW_Inhabitable_NPC;
+#endif
 
 class CASW_MarineGameMovement : public IMarineGameMovement
 {
@@ -58,7 +63,12 @@ protected:
 	// Input/Output for this movement
 	CMoveData		*mv;
 	CBasePlayer		*player;
-	CASW_Marine		*marine;
+#ifdef CLIENT_DLL
+	C_ASW_Inhabitable_NPC *marine;
+#else
+	CASW_Inhabitable_NPC *marine;
+#endif
+	CASW_Marine		*truemarine;
 	
 	int				m_nOldWaterLevel;
 	int				m_nOnLadder;

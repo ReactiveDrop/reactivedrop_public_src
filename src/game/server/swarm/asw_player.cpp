@@ -2053,22 +2053,21 @@ bool CASW_Player::CanSwitchToMarine(int num)
 	return false;
 }
 
-void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader )
+void CASW_Player::SwitchInhabiting( CASW_Inhabitable_NPC *pNPC )
 {
-	CASW_Marine *pOldMarine = CASW_Marine::AsMarine( GetNPC() );
-	CASW_Marine *pNewMarine = pMR->GetMarineEntity();
+	CASW_Inhabitable_NPC *pOld = GetNPC();
 
-	// abort if we're trying to switch to a dead marine
-	if ( !pNewMarine || pNewMarine->GetHealth() <= 0 )
+	// abort if we're trying to switch to a dead NPC
+	if ( !pNPC || pNPC->GetHealth() <= 0 )
 	{
 		return;
 	}
 
-	if ( pOldMarine )
+	if ( pOld )
 	{
-		if ( pNewMarine == pOldMarine )
+		if ( pNPC == pOld )
 			return;
-		pOldMarine->UninhabitedBy( this );
+		pOld->UninhabitedBy( this );
 	}
 	else
 	{
@@ -2086,8 +2085,8 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 
 	if ( asw_rts_controls.GetBool() )
 	{
-		DevMsg("Marine is at: %f, %f, %f\n", pMR->GetMarineEntity()->GetAbsOrigin().x, pMR->GetMarineEntity()->GetAbsOrigin().y, pMR->GetMarineEntity()->GetAbsOrigin().z);
-		Vector vecNewOrigin = pMR->GetMarineEntity()->GetAbsOrigin() + Vector(0, -200, 400);
+		DevMsg("Marine is at: %f, %f, %f\n", pNPC->GetAbsOrigin().x, pNPC->GetAbsOrigin().y, pNPC->GetAbsOrigin().z);
+		Vector vecNewOrigin = pNPC->GetAbsOrigin() + Vector(0, -200, 400);
 		SetAbsOrigin( vecNewOrigin );
 		DevMsg("Moved cam to: %f, %f, %f\n", vecNewOrigin.x, vecNewOrigin.y, vecNewOrigin.z);
 		return;
@@ -2095,10 +2094,23 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 
 	m_ASWLocal.m_hAutoAimTarget.Set( NULL );
 
-	SetNPC( pNewMarine );
+	SetNPC( pNPC );
 	SetSpectatingNPC( NULL );
-	pNewMarine->SetCommander( this );
-	pNewMarine->InhabitedBy( this );
+	pNPC->SetCommander( this );
+	pNPC->InhabitedBy( this );
+
+	if ( !m_bFirstInhabit )
+	{
+		m_bFirstInhabit = true;
+	}
+}
+
+void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader )
+{
+	CASW_Marine *pOldMarine = CASW_Marine::AsMarine( GetNPC() );
+	CASW_Marine *pNewMarine = pMR->GetMarineEntity();
+
+	SwitchInhabiting( pNewMarine );
 
 	if ( gpGlobals->curtime > ASWGameRules()->m_fMissionStartedTime + 5.0f )
 	{
@@ -2122,12 +2134,6 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 		{
 			pOldMarine->OrdersFromPlayer( this, ASW_ORDER_FOLLOW, pNewMarine, false );
 		}
-	}
-
-	if ( !m_bFirstInhabit )
-	{
-		//OrderNearbyMarines( this, ASW_ORDER_FOLLOW );
-		m_bFirstInhabit = true;
 	}
 }
 

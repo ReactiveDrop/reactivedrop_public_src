@@ -756,7 +756,7 @@ void SmoothTurningYaw( CASW_Player *pPlayer, float &yaw )
 	Assert( pNPC );
 	C_ASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
 
-	float fLinearTurnRate = asw_marine_linear_turn_rate.GetFloat();
+	float fLinearTurnRate = pNPC->GetBasePlayerYawRate();
 
 	if ( pNPC->GetActiveASWWeapon() )
 	{

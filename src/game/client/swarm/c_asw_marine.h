@@ -175,18 +175,10 @@ public:
 	float m_fStopMarineTime;
 	float MaxSpeed();
 	virtual void					EstimateAbsVelocity( Vector& vel );	// asw made virtual
-	int m_nOldButtons;
 	CNetworkVar(bool, m_bPreventMovement);
 	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
-
-	// Texture names and surface data, used by CASW_MarineGameMovement
-	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
-	float			m_surfaceFriction;
-	char			m_chTextureType;
-	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
 
 	// orders
 	CNetworkVar(int, m_ASWOrders);

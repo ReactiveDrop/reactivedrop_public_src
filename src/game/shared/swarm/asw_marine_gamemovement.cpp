@@ -731,7 +731,7 @@ void CASW_MarineGameMovement::CheckParameters( void )
 	}
 
 	// slow marine down if walk key is held down
-	if ( mv->m_nButtons & IN_WALK || marine->m_bForceWalking.Get() )
+	if ( mv->m_nButtons & IN_WALK || ( truemarine && truemarine->m_bForceWalking.Get() ) )
 	{
 		//Msg("Walking, forward=%f side=%f\n", mv->m_flForwardMove, mv->m_flSideMove);
 
@@ -880,7 +880,8 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 {
 	Assert( pMove && pPlayer && pMarine );
 
-	CASW_Marine *pMarineEntity = CASW_Marine::AsMarine( pMarine );
+	CASW_Inhabitable_NPC *pMarineEntity = assert_cast< CASW_Inhabitable_NPC * >( pMarine );
+	CASW_Marine *pTrueMarineEntity = CASW_Marine::AsMarine( pMarineEntity );
 
 	//static float old_z_pos = 0;
 
@@ -893,20 +894,20 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 #endif
 	//old_z_pos = pMarine->GetAbsOrigin().z;
 #ifdef GAME_DLL	// hurt the marine if he's trying to walk on top of an alien and it's not friendly
-	if ( pMarineEntity  )
+	if ( pTrueMarineEntity  )
 	{
 		CBaseEntity* pGround = pMarine->GetGroundEntity();
 		if ( pGround && pGround->IsAlienClassType() )
 		{
 			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
-			if ( gpGlobals->curtime > pMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != CASW_Alien::TASK_UNBURROW ) ) )
+			if ( gpGlobals->curtime > pTrueMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != CASW_Alien::TASK_UNBURROW ) ) )
 			{
 				CTakeDamageInfo info(pAlien, pAlien, 15, DMG_SLASH);
 				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
 				diff.NormalizeInPlace();
 				CalculateMeleeDamageForce(&info, diff, pMarine->GetAbsOrigin() - diff * 30);
 				pMarine->TakeDamage(info);
-				pMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + 0.4f;
+				pTrueMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + 0.4f;
 			}
 		}
 	}
@@ -935,11 +936,15 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 
 	player = pPlayer;
 	marine = pMarineEntity;
+	truemarine = pTrueMarineEntity;
 	mv = pMove;
 	mv->m_flMaxSpeed = asw_sv_maxspeed.GetFloat();
 
-	// check for melee attacks
-	ASWMeleeSystem()->ProcessMovement( pMarineEntity, mv );
+	if ( pTrueMarineEntity )
+	{
+		// check for melee attacks
+		ASWMeleeSystem()->ProcessMovement( pTrueMarineEntity, mv );
+	}
 
 	// Run the command.
 	PlayerMove();
@@ -1861,42 +1866,42 @@ ConVar asw_blink_visible_time( "asw_blink_visible_time", "0.15", FCVAR_REPLICATE
 void CASW_MarineGameMovement::FullJumpJetMove()
 {
 	CASW_MoveData *pASWMove = static_cast<CASW_MoveData*>( mv );
-	if ( marine->m_iJumpJetting == JJ_JUMP_JETS )
+	if ( truemarine->m_iJumpJetting == JJ_JUMP_JETS )
 	{
 		// update jump jet end over time with location sent up from the client
 		if ( pASWMove->m_vecSkillDest != vec3_origin )
 		{
-			marine->m_vecJumpJetEnd = pASWMove->m_vecSkillDest;
+			truemarine->m_vecJumpJetEnd = pASWMove->m_vecSkillDest;
 		}
 	}
 
-	float flJumpJetTime = marine->m_flJumpJetEndTime - marine->m_flJumpJetStartTime;
-	float flJumpJetProgress = ( gpGlobals->curtime - marine->m_flJumpJetStartTime ) / flJumpJetTime;
+	float flJumpJetTime = truemarine->m_flJumpJetEndTime - truemarine->m_flJumpJetStartTime;
+	float flJumpJetProgress = ( gpGlobals->curtime - truemarine->m_flJumpJetStartTime ) / flJumpJetTime;
 	flJumpJetProgress = clamp( flJumpJetProgress, 0.0f, 1.0f );
 
 	// x/y linearly between start and end
 	float xy_progress = flJumpJetProgress; //0.5f + 0.5f * sin( -0.5f * M_PI + flJumpJetProgress * M_PI );
 
-	Vector vecJumpJetEnd = marine->m_vecJumpJetEnd.Get();
+	Vector vecJumpJetEnd = truemarine->m_vecJumpJetEnd.Get();
 
-	Vector vecJump = vecJumpJetEnd - marine->m_vecJumpJetStart;
-	Vector vecDest = marine->m_vecJumpJetStart + vecJump * xy_progress;
+	Vector vecJump = vecJumpJetEnd - truemarine->m_vecJumpJetStart;
+	Vector vecDest = truemarine->m_vecJumpJetStart + vecJump * xy_progress;
 
-	if ( marine->m_iJumpJetting == JJ_JUMP_JETS )
+	if ( truemarine->m_iJumpJetting == JJ_JUMP_JETS )
 	{
 		// on the Z, blend between start and end dests, with a jump curve applied
 		float flJumpHeight = asw_jump_jet_height.GetFloat();
-		vecDest.z = marine->m_vecJumpJetStart.z + vecJump.z * flJumpJetProgress + sin( flJumpJetProgress * M_PI ) * flJumpHeight;
+		vecDest.z = truemarine->m_vecJumpJetStart.z + vecJump.z * flJumpJetProgress + sinf( flJumpJetProgress * M_PI ) * flJumpHeight;
 	}
-	else if ( marine->m_iJumpJetting == JJ_CHARGE )
+	else if ( truemarine->m_iJumpJetting == JJ_CHARGE )
 	{
 		// slide to the destination Z
 		float flJumpHeight = asw_charge_height.GetFloat();
-		vecDest.z = marine->m_vecJumpJetStart.z + vecJump.z * flJumpJetProgress + sin( flJumpJetProgress * M_PI ) * flJumpHeight;
+		vecDest.z = truemarine->m_vecJumpJetStart.z + vecJump.z * flJumpJetProgress + sinf( flJumpJetProgress * M_PI ) * flJumpHeight;
 	}
 
 	// check for hiding marine while he blinks
-	if ( marine->m_iJumpJetting == JJ_BLINK )
+	if ( truemarine->m_iJumpJetting == JJ_BLINK )
 	{
 		bool bHide = ( flJumpJetProgress > asw_blink_visible_time.GetFloat() && flJumpJetProgress < ( 1.0f - asw_blink_visible_time.GetFloat() ) );
 		if ( marine->IsEffectActive( EF_NODRAW ) != bHide )
@@ -1914,7 +1919,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 				}
 #else
 				CASW_Weapon *pWeapon = marine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
-				ASWGameRules()->ShockNearbyAliens( marine, pWeapon );
+				ASWGameRules()->ShockNearbyAliens( truemarine, pWeapon );
 #endif
 				marine->AddEffects( EF_NODRAW );
 			}
@@ -1931,7 +1936,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 				}
 #else
 					CASW_Weapon *pWeapon = marine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
-					ASWGameRules()->ShockNearbyAliens( marine, pWeapon );
+					ASWGameRules()->ShockNearbyAliens( truemarine, pWeapon );
 #endif
 				marine->RemoveEffects( EF_NODRAW );
 			}
@@ -1941,13 +1946,13 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 		if ( flJumpJetProgress < asw_blink_visible_time.GetFloat() )		// jump straight up
 		{
 			float flUpProgress = flJumpJetProgress / asw_blink_visible_time.GetFloat();
-			vecDest = marine->m_vecJumpJetStart;
-			vecDest.z = marine->m_vecJumpJetStart.z + sin( flUpProgress * M_PI * 0.5f ) * flJumpHeight;
+			vecDest = truemarine->m_vecJumpJetStart;
+			vecDest.z = truemarine->m_vecJumpJetStart.z + sin( flUpProgress * M_PI * 0.5f ) * flJumpHeight;
 		}
 		else if ( flJumpJetProgress < ( 1.0f - asw_blink_visible_time.GetFloat() ) )		// slide quickly to end X/Y
 		{
 			// lerp between start and end
-			Vector vecStartTop = marine->m_vecJumpJetStart + Vector( 0, 0, flJumpHeight );
+			Vector vecStartTop = truemarine->m_vecJumpJetStart + Vector( 0, 0, flJumpHeight );
 			Vector vecEndTop = vecJumpJetEnd + Vector( 0, 0, flJumpHeight );
 
 			float flSlideProgress = ( flJumpJetProgress - asw_blink_visible_time.GetFloat() ) / ( 1.0f - asw_blink_visible_time.GetFloat() * 2 );
@@ -1972,10 +1977,10 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 #ifdef GAME_DLL
 		int iBaseDamage = 150;
 #endif
-		CASW_Marine_Profile *pProfile = marine->GetMarineProfile();
+		CASW_Marine_Profile *pProfile = truemarine->GetMarineProfile();
 		if ( pProfile )
 		{
-			if ( marine->m_iJumpJetting == JJ_BLINK )
+			if ( truemarine->m_iJumpJetting == JJ_BLINK )
 			{
 				// TODO: Stun aliens at the point of exit?
 				/*
@@ -1996,7 +2001,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 			}
 		}
 
-		if ( marine->m_iJumpJetting == JJ_CHARGE || marine->m_iJumpJetting == JJ_JUMP_JETS )  // charge/jump jets
+		if ( truemarine->m_iJumpJetting == JJ_CHARGE || truemarine->m_iJumpJetting == JJ_JUMP_JETS )  // charge/jump jets
 		{
 			CEffectData	data;
 
@@ -2077,7 +2082,7 @@ void CASW_MarineGameMovement::FullJumpJetMove()
 #endif
 		}
 
-		marine->m_iJumpJetting = JJ_NONE;
+		truemarine->m_iJumpJetting = JJ_NONE;
 	}
 }
 
@@ -2167,7 +2172,7 @@ void CASW_MarineGameMovement::MeleeMove( void )
 
 	// first try moving directly to the next spot
 	TraceMarineBBox( mv->GetAbsOrigin(), dest, MASK_PLAYERSOLID, COLLISION_GROUP_PLAYER_MOVEMENT, pm );
-	if ( pm.DidHitNonWorldEntity() && marine->GetCurrentMeleeAttack() )
+	if ( pm.DidHitNonWorldEntity() && truemarine->GetCurrentMeleeAttack() )
 	{
 		//marine->GetCurrentMeleeAttack()->MovementCollision( marine, mv, &pm );
 	}
@@ -2269,7 +2274,7 @@ void CASW_MarineGameMovement::MeleeMove( void )
 //-----------------------------------------------------------------------------
 void CASW_MarineGameMovement::FullWalkMove( )
 {
-	if ( marine->GetCurrentMeleeAttack() && marine->m_iMeleeAllowMovement == MELEE_MOVEMENT_FALLING_ONLY )
+	if ( truemarine && truemarine->GetCurrentMeleeAttack() && truemarine->m_iMeleeAllowMovement == MELEE_MOVEMENT_FALLING_ONLY )
 	{
 		mv->m_flForwardMove = 0.0f;
 		mv->m_flSideMove = 0.0f;
@@ -2623,7 +2628,7 @@ void CASW_MarineGameMovement::DoJumpJet()
 	if ( player )
 		player->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
 
-	marine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
+	truemarine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
 
 	float flMul = sqrt(2 * asw_marine_gravity.GetFloat() * jump_jet_height.GetFloat() );
 
@@ -2657,7 +2662,7 @@ void CASW_MarineGameMovement::DoJumpJet()
 	CASW_Melee_Attack *pAttack = ASWMeleeSystem()->GetMeleeAttackByName( "JumpJetImpact" );
 	if ( pAttack )
 	{
-		marine->m_iOnLandMeleeAttackID = pAttack->m_nAttackID;
+		truemarine->m_iOnLandMeleeAttackID = pAttack->m_nAttackID;
 	}
 }
 
@@ -2687,7 +2692,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	//}
 
 	// No jumping while hacking
-	if ( marine->IsHacking() )
+	if ( !truemarine || truemarine->IsHacking() )
 		return false;
 
 	if ( asw_marine_rolls.GetBool() )
@@ -2751,7 +2756,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	if ( player )
 		player->PlayStepSound( vecSrc, marine->m_pSurfaceData, 1.0, true );
 	
-	marine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
+	truemarine->DoAnimationEvent( PLAYERANIMEVENT_JUMP );
 
 	float flGroundFactor = 1.0f;
 	if (marine->m_pSurfaceData)
@@ -3636,7 +3641,7 @@ int CASW_MarineGameMovement::CheckStuck( void )
 	trace_t traceresult;
 
 	// reactivedrop: don't unstuck knocked out marines because it leads to bugs
-	if (marine->m_bKnockedOut)
+	if ( !truemarine || truemarine->m_bKnockedOut )
 		return 0;
 
 	CreateMarineStuckTable();
@@ -3675,14 +3680,14 @@ int CASW_MarineGameMovement::CheckStuck( void )
 #endif
 
 #ifndef CLIENT_DLL
-	if ( marine )
+	if ( truemarine )
 	{
-		marine->m_fLastStuckTime = gpGlobals->curtime;	// let the marine know he's stuck, so he can enable his vphysics shadow (to push away any offending phys objects which might be making us stuck)
-		if ( marine->m_flFirstStuckTime == 0.0f )
+		truemarine->m_fLastStuckTime = gpGlobals->curtime;	// let the marine know he's stuck, so he can enable his vphysics shadow (to push away any offending phys objects which might be making us stuck)
+		if ( truemarine->m_flFirstStuckTime == 0.0f )
 		{
-			marine->m_flFirstStuckTime = gpGlobals->curtime;
+			truemarine->m_flFirstStuckTime = gpGlobals->curtime;
 		}
-		if ( gpGlobals->curtime - marine->m_flFirstStuckTime > 0.1f )
+		if ( gpGlobals->curtime - truemarine->m_flFirstStuckTime > 0.1f )
 		{
 			bool bTeleportMarine = true;
 			edict_t* pEdict = gEntList.GetEdict( hitent );
@@ -3701,14 +3706,14 @@ int CASW_MarineGameMovement::CheckStuck( void )
 			}
 			if ( bTeleportMarine )
 			{
-				marine->TeleportStuckMarine();
-				marine->m_flFirstStuckTime = 0.0f;
+				truemarine->TeleportStuckMarine();
+				truemarine->m_flFirstStuckTime = 0.0f;
 				mv->SetAbsOrigin( marine->GetAbsOrigin() );
 				return 0;
 			}
 			else
 			{
-				marine->m_flFirstStuckTime = gpGlobals->curtime;
+				truemarine->m_flFirstStuckTime = gpGlobals->curtime;
 			}
 		}
 	}
@@ -4732,7 +4737,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 
 	ReduceTimers();
 
-	if ( marine->m_iJumpJetting != JJ_NONE )
+	if ( truemarine && truemarine->m_iJumpJetting != JJ_NONE )
 	{
 		FullJumpJetMove();
 		return;
@@ -4827,7 +4832,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 			break;
 
 		case MOVETYPE_WALK:
-			if ( marine->GetCurrentMeleeAttack() && marine->m_iMeleeAllowMovement == MELEE_MOVEMENT_ANIMATION_ONLY )
+			if ( truemarine && truemarine->GetCurrentMeleeAttack() && truemarine->m_iMeleeAllowMovement == MELEE_MOVEMENT_ANIMATION_ONLY )
 			{
 				FullMeleeMove();
 			}

@@ -42,6 +42,18 @@ public:
 	bool m_bUseLastRenderedEyePosition;
 	float m_fLastTurningYaw;
 
+	virtual float MaxSpeed();
+	virtual float GetBasePlayerYawRate();
+	int m_nOldButtons;
+	bool m_bWalking;
+
+	// Texture names and surface data, used by CASW_MarineGameMovement
+	int				m_surfaceProps;
+	surfacedata_t *m_pSurfaceData;
+	float			m_surfaceFriction;
+	char			m_chTextureType;
+	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
+
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible
 };

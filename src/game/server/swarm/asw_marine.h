@@ -170,7 +170,6 @@ public:
 	void AvoidPhysicsProps( CUserCmd *pCmd );
 	void    PhysicsSimulate( void );		
 	virtual void InhabitedPhysicsSimulate();
-	int m_nOldButtons;
 	virtual bool ShouldPlayerAvoid( void );
 	virtual float GetIdealSpeed() const;
 	float m_fCachedIdealSpeed;
@@ -188,13 +187,6 @@ public:
 	CNetworkVector( m_vecGroundVelocity );
 
 	CASW_Lag_Compensation m_LagCompensation;
-
-	// Texture names and surface data, used by CASW_MarineGameMovement
-	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
-	float			m_surfaceFriction;
-	char			m_chTextureType;
-	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
 
 	// melee
 	void PhysicsShove();

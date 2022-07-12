@@ -94,6 +94,9 @@ public:
 
 	virtual float	GetInterpolationAmount( int flags );
 
+	virtual float MaxSpeed();
+	virtual float GetBasePlayerYawRate();
+
 	// Glows are enabled when the sniper scope is used
 	CGlowObject m_GlowObject;
 	CMotionBlurObject m_MotionBlurObject;

@@ -227,7 +227,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_PRED_FIELD_TOL( m_flPreventLaserSightTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),
 	DEFINE_PRED_FIELD( m_iJumpJetting, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
 
-	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 	DEFINE_FIELD( m_surfaceFriction, FIELD_FLOAT ),
 	DEFINE_FIELD( m_vecMeleeStartPos, FIELD_VECTOR ),
 	DEFINE_FIELD( m_flMeleeStartTime, FIELD_FLOAT ),
@@ -441,7 +440,6 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_LastThinkTime = gpGlobals->curtime;
 	m_fLastYawHack = m_fLastPitchHack = 0;	
 	m_bStepSideLeft = true;
-	m_nOldButtons = 0;
 	//m_fAmbientLight = asw_marine_ambient.GetFloat();
 	//m_fLightingScale = asw_marine_lightscale.GetFloat();
 	m_pFlashlight = NULL;
@@ -483,10 +481,6 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_flLastMedicCall = 0;
 	m_flLastAmmoCall = 0;
 
-	m_surfaceProps = 0;
-	m_pSurfaceData = NULL;
-	m_surfaceFriction = 1.0f;
-	m_chTextureType = m_chPreviousTextureType = 0;
 	m_iPowerupType = -1;
 	m_flPowerupExpireTime = -1;
 	m_bPowerupExpires = false;

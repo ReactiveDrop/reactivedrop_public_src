@@ -22,8 +22,8 @@ public:
 	HSCRIPT ScriptGetCommander() const;
 	CNetworkHandle( CASW_Player, m_Commander );
 
-	virtual bool IsInhabited() { return false; }
-	virtual void SetInhabited( bool bInhabited ) { }
+	virtual bool IsInhabited() { return m_bInhabited; }
+	virtual void SetInhabited( bool bInhabited ) { m_bInhabited = bInhabited; }
 	virtual void InhabitedBy( CASW_Player *player ) { }
 	virtual void UninhabitedBy( CASW_Player *player ) { }
 
@@ -43,6 +43,18 @@ public:
 	void SetFacingPoint( const Vector &vec, float fDuration );
 	CNetworkVar( Vector, m_vecFacingPointFromServer );
 	float m_fStopFacingPointTime;
+
+	virtual float MaxSpeed();
+	int m_nOldButtons;
+	bool m_bWalking;
+	bool m_bInhabited;
+
+	// Texture names and surface data, used by CASW_MarineGameMovement
+	int				m_surfaceProps;
+	surfacedata_t *m_pSurfaceData;
+	float			m_surfaceFriction;
+	char			m_chTextureType;
+	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

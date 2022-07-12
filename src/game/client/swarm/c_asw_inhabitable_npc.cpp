@@ -15,12 +15,20 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
+	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 END_PREDICTION_DATA()
 
 C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC()
 {
 	m_fRedNamePulse = 0;
 	m_bRedNamePulseUp = true;
+
+	m_nOldButtons = 0;
+
+	m_surfaceProps = 0;
+	m_pSurfaceData = NULL;
+	m_surfaceFriction = 1.0f;
+	m_chTextureType = m_chPreviousTextureType = 0;
 }
 
 C_ASW_Inhabitable_NPC::~C_ASW_Inhabitable_NPC()
@@ -113,4 +121,15 @@ void C_ASW_Inhabitable_NPC::TickRedName( float delta )
 		m_fRedNamePulse = 1.0f;
 		m_bRedNamePulseUp = false;
 	}
+}
+
+float C_ASW_Inhabitable_NPC::MaxSpeed()
+{
+	return 300;
+}
+
+float C_ASW_Inhabitable_NPC::GetBasePlayerYawRate()
+{
+	extern ConVar asw_marine_linear_turn_rate;
+	return asw_marine_linear_turn_rate.GetFloat();
 }

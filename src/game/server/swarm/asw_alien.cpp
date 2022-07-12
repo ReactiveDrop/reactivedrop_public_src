@@ -508,7 +508,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 			Wake();
 
 		bInPVS = MarineCanSee(384, 0.1f);
-		if ( bInPVS )
+		if ( bInPVS || IsInhabited() )
 			SetCondition( COND_IN_PVS );
 		else
 			ClearCondition( COND_IN_PVS );
@@ -533,7 +533,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 			if( m_fLastSleepCheckTime < gpGlobals->curtime + ASW_ALIEN_SLEEP_CHECK_INTERVAL )
 			{
 				//if (!GetEnemy() && !MarineNearby(1024.0f) )
-				if (!GetEnemy() && !MarineCanSee(384, 2.0f) )
+				if (!GetEnemy() && !MarineCanSee(384, 2.0f) && !IsInhabited() )
 				{
 					SetSleepState( AISS_WAITING_FOR_PVS );
 
@@ -3266,6 +3266,43 @@ void CASW_Alien::LookupBurrowActivities()
 			m_UnburrowIdleActivity = (Activity) ACT_BURROW_IDLE;
 		}
 	}
+}
+
+void CASW_Alien::PhysicsSimulate()
+{
+	if ( IsInhabited() )
+	{
+		SetMoveType( MOVETYPE_STEP );
+		BaseClass::PhysicsSimulate();
+		SetMoveType( MOVETYPE_WALK );
+	}
+	else
+	{
+		BaseClass::PhysicsSimulate();
+	}
+}
+
+void CASW_Alien::InhabitedBy( CASW_Player *player )
+{
+	SetInhabited( true );
+
+	TaskFail( FAIL_NO_PLAYER );
+	MDLCACHE_CRITICAL_SECTION();
+	NPCThink();
+	GetNavigator()->StopMoving( true );
+	SetPoseParameter( LookupPoseMoveYaw(), 0.0f );
+
+	Assert( GetMoveType() == MOVETYPE_STEP );
+	SetMoveType( MOVETYPE_WALK );
+}
+
+void CASW_Alien::UninhabitedBy( CASW_Player *player )
+{
+	SetInhabited( false );
+
+	TaskFail( FAIL_NO_PLAYER );
+	Assert( GetMoveType() == MOVETYPE_WALK );
+	SetMoveType( MOVETYPE_STEP );
 }
 
 class CASW_Trace_Filter_Disable_Collision_With_Traps : public CTraceFilterEntitiesOnly

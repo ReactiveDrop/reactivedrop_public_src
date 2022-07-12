@@ -19,10 +19,12 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_Commander, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hUsingEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecFacingPointFromServer, FIELD_VECTOR ),
+	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 END_DATADESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
+	m_nOldButtons = 0;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
@@ -134,10 +136,11 @@ void CASW_Inhabitable_NPC::StopUsing()
 // forces marine to look towards a certain point
 void CASW_Inhabitable_NPC::SetFacingPoint( const Vector &vec, float fDuration )
 {
-#ifdef CLIENT_DLL
-	m_vecFacingPoint = vec;
-#else
 	m_vecFacingPointFromServer = vec;
-#endif
 	m_fStopFacingPointTime = gpGlobals->curtime + fDuration;
+}
+
+float CASW_Inhabitable_NPC::MaxSpeed()
+{
+	return 300;
 }

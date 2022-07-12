@@ -229,13 +229,13 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	if ( asw_move_marine.GetBool() )
 	{
 #endif
-		if ( pMarine && !pMarine->IsInVehicle() && ASWGameResource() )
+		if ( pNPC && ( !pMarine || !pMarine->IsInVehicle() ) && ASWGameResource() )
 		{
 			// don't apply commands meant for another marine
-			if ( pMarine->GetMarineResource() && ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype )
+			if ( !pMarine || ( pMarine->GetMarineResource() && ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype ) )
 			{
 				// check if we should be stopped
-				if ( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
+				if ( pMarine && ( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement )
 #ifdef CLIENT_DLL
 					|| CASW_VGUI_Info_Message::HasInfoMessageOpen()
 #endif
@@ -255,21 +255,24 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 				}
 
 				//m_hMarine->SetMoveType( MOVETYPE_WALK ); // commented out in order for marines to use other movetypes
-				MarineMove()->SetupMarineMove( this, pMarine, ucmd, moveHelper, g_pMoveData );
-				g_pMarineGameMovement->ProcessMovement( this, pMarine, g_pMoveData );
-				MarineMove()->FinishMarineMove( this, pMarine, ucmd, g_pMoveData );
+				MarineMove()->SetupMarineMove( this, pNPC, ucmd, moveHelper, g_pMoveData );
+				g_pMarineGameMovement->ProcessMovement( this, pNPC, g_pMoveData );
+				MarineMove()->FinishMarineMove( this, pNPC, ucmd, g_pMoveData );
 				moveHelper->ProcessImpacts();
 
 				// Call this from within predicted code on both client & server
-				pMarine->PostThink();
+				if ( pMarine )
+				{
+					pMarine->PostThink();
 
 #ifdef GAME_DLL
-				pMarine->PostThinkVPhysics( g_pMoveData );
-				pMarine->UpdateVPhysicsAfterMove();
+					pMarine->PostThinkVPhysics( g_pMoveData );
+					pMarine->UpdateVPhysicsAfterMove();
 #endif
+				}
 			}
 
-			if ( pMarine->m_hCurrentHack.Get() )
+			if ( pMarine && pMarine->m_hCurrentHack.Get() )
 			{
 				pMarine->m_hCurrentHack->ASWPostThink( this, pMarine, ucmd, gpGlobals->frametime );
 			}
@@ -599,7 +602,7 @@ void CASW_Player::FindUseEntities()
 
 	CASW_Inhabitable_NPC *pNPC = GetNPC();
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
-	if ( !pNPC )
+	if ( !pMarine )
 	{
 		return;
 	}

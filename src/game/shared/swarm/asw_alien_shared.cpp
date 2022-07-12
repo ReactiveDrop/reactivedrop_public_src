@@ -168,3 +168,13 @@ void CASW_Alien::DoBloodDecal( float flDamage, const Vector &vecPos, const Vecto
 		}
 	}
 }
+
+float CASW_Alien::MaxSpeed()
+{
+	return 300;
+}
+
+float CASW_Alien::GetBasePlayerYawRate()
+{
+	return 1000;
+}
