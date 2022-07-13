@@ -47,7 +47,7 @@ public:
 	virtual float MaxSpeed();
 	int m_nOldButtons;
 	bool m_bWalking;
-	bool m_bInhabited;
+	CNetworkVar( bool, m_bInhabited );
 
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;

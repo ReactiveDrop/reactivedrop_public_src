@@ -12,6 +12,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
 	RecvPropEHandle( RECVINFO( m_hUsingEntity ) ),
 	RecvPropVector( RECVINFO( m_vecFacingPointFromServer ) ),
+	RecvPropBool( RECVINFO( m_bInhabited ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -24,6 +25,7 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC()
 	m_bRedNamePulseUp = true;
 
 	m_nOldButtons = 0;
+	m_bInhabited = false;
 
 	m_surfaceProps = 0;
 	m_pSurfaceData = NULL;
@@ -37,7 +39,7 @@ C_ASW_Inhabitable_NPC::~C_ASW_Inhabitable_NPC()
 
 bool C_ASW_Inhabitable_NPC::IsInhabited()
 {
-	return false;
+	return m_bInhabited;
 }
 
 C_ASW_Player *C_ASW_Inhabitable_NPC::GetCommander() const

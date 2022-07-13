@@ -60,6 +60,8 @@ BEGIN_NETWORK_TABLE( CASW_Alien, DT_ASW_Alien )
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
 	RecvPropInt( RECVINFO( m_nDeathStyle ), SPROP_UNSIGNED ),
 	RecvPropInt			( RECVINFO( m_iHealth) ),
+	RecvPropFloat( RECVINFO( m_flAlienWalkSpeed ) ),
+	RecvPropBool( RECVINFO( m_bInhabitedMovementAllowed ) ),
 END_RECV_TABLE()
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASW_Alien )
@@ -90,6 +92,8 @@ m_MotionBlurObject( this, 0.0f )
 	m_bClientOnFire = false;
 	m_vecLastRenderedPos = vec3_origin;
 	m_pBurningEffect = NULL;
+	m_flAlienWalkSpeed = 0.0f;
+	m_bInhabitedMovementAllowed = false;
 
 	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );

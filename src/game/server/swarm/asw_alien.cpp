@@ -31,6 +31,9 @@
 #include "sendprop_priorities.h"
 #include "asw_spawn_manager.h"
 #include "gameinterface.h"
+#include "asw_ai_behavior_ranged_attack.h"
+#include "asw_player.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -112,6 +115,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Alien, DT_ASW_Alien)
 	SendPropInt( SENDINFO(m_nDeathStyle), CASW_Alien::kDEATHSTYLE_NUM_TRANSMIT_BITS , SPROP_UNSIGNED ),
 	SendPropInt		(SENDINFO(m_iHealth), ASW_ALIEN_HEALTH_BITS ),
 	//SendPropBool(SENDINFO(m_bGibber)),
+	SendPropFloat( SENDINFO( m_flAlienWalkSpeed ) ),
+	SendPropBool( SENDINFO( m_bInhabitedMovementAllowed ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Alien )
@@ -210,6 +215,9 @@ CASW_Alien::CASW_Alien( void ) :
 	m_nDeathStyle = kDIE_RAGDOLLFADE;
 	m_flBaseThawRate = 0.5f;
 	m_flFrozenTime = 0.0f;
+	m_flAlienWalkSpeed = 0.0f;
+	m_bInhabitedMovementAllowed = false;
+	m_bNoTranslateNextSchedule = false;
 
 	m_UnburrowActivity = (Activity) ACT_BURROW_OUT;
 	m_UnburrowIdleActivity = (Activity) ACT_BURROW_IDLE;
@@ -1569,6 +1577,17 @@ void CASW_Alien::AddZigZagToPath(void)
 
 int CASW_Alien::TranslateSchedule( int scheduleType )
 {
+	if ( IsInhabited() )
+	{
+		if ( m_bNoTranslateNextSchedule )
+		{
+			m_bNoTranslateNextSchedule = false;
+			return scheduleType;
+		}
+
+		return SCHED_ASW_INHABITED;
+	}
+
 	if (scheduleType == SCHED_CHASE_ENEMY)
 		return SCHED_ASW_ALIEN_CHASE_ENEMY;
 
@@ -1932,6 +1951,17 @@ AI_BEGIN_CUSTOM_NPC( asw_alien, CASW_Alien )
 		"	Tasks"
 		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_BURROW_WAIT"
 		"		TASK_UNBURROW			0"
+		""
+		"	Interrupts"
+		"		COND_TASK_FAILED"
+	)
+
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_INHABITED,
+
+		"	Tasks"
+		"		TASK_WAIT			0.1"
 		""
 		"	Interrupts"
 		"		COND_TASK_FAILED"
@@ -3270,16 +3300,68 @@ void CASW_Alien::LookupBurrowActivities()
 
 void CASW_Alien::PhysicsSimulate()
 {
-	if ( IsInhabited() )
+	if ( !IsInhabited() )
 	{
+		BaseClass::PhysicsSimulate();
+
+		return;
+	}
+
+	Assert( GetCommander() );
+	if ( !GetCommander() )
+	{
+		UninhabitedBy( NULL );
+		return;
+	}
+
+	if ( !IsCurSchedule( SCHED_ASW_INHABITED, false ) )
+	{
+		m_bInhabitedMovementAllowed = false;
+
 		SetMoveType( MOVETYPE_STEP );
 		BaseClass::PhysicsSimulate();
 		SetMoveType( MOVETYPE_WALK );
+		return;
+	}
+
+	m_bInhabitedMovementAllowed = true;
+
+	const float flMinSpeed = 15.0f;
+	float flSpeed = GetLocalVelocity().Length();
+	Activity wantActivity = flSpeed > flMinSpeed ? ACT_WALK : ACT_IDLE;
+	int wantSeq = SelectHeaviestSequence( wantActivity );
+
+	if ( wantSeq != -1 )
+	{
+		if ( GetSequence() != wantSeq )
+		{
+			SetIdealSequence( wantSeq );
+		}
+	}
+	else if ( GetIdealActivity() != wantActivity )
+	{
+		SetIdealActivity( wantActivity );
+	}
+	MaintainActivity();
+	StudioFrameAdvance();
+
+	float flMoveYaw = UTIL_VecToYaw( GetLocalVelocity() );
+	float flFaceYaw = GetAbsAngles().y;
+
+	SetPoseParameter( LookupPoseMoveYaw(), AngleDiff( flMoveYaw, flFaceYaw ) );
+
+	if ( flSpeed > flMinSpeed )
+	{
+		float flSeqSpeed = GetSequenceGroundSpeed( GetSequence() );
+		SetPlaybackRate( flSpeed / flSeqSpeed );
+		m_flAlienWalkSpeed = flSeqSpeed;
 	}
 	else
 	{
-		BaseClass::PhysicsSimulate();
+		SetPlaybackRate( 1.0f );
 	}
+
+	SetInhabitedAlienAttackSchedule();
 }
 
 void CASW_Alien::InhabitedBy( CASW_Player *player )
@@ -3294,6 +3376,12 @@ void CASW_Alien::InhabitedBy( CASW_Player *player )
 
 	Assert( GetMoveType() == MOVETYPE_STEP );
 	SetMoveType( MOVETYPE_WALK );
+
+	int seq = SelectHeaviestSequence( ACT_WALK );
+	m_flAlienWalkSpeed = GetSequenceGroundSpeed( seq );
+	Assert( m_flAlienWalkSpeed > 0.0f );
+
+	SetEnemy( NULL );
 }
 
 void CASW_Alien::UninhabitedBy( CASW_Player *player )
@@ -3303,6 +3391,30 @@ void CASW_Alien::UninhabitedBy( CASW_Player *player )
 	TaskFail( FAIL_NO_PLAYER );
 	Assert( GetMoveType() == MOVETYPE_WALK );
 	SetMoveType( MOVETYPE_STEP );
+}
+
+bool CASW_Alien::IsValidEnemy( CBaseEntity *pEnemy )
+{
+	if ( IsInhabited() )
+	{
+		return false;
+	}
+
+	return BaseClass::IsValidEnemy( pEnemy );
+}
+
+void CASW_Alien::SetInhabitedAlienAttackSchedule()
+{
+	if ( GetCommander()->m_nButtons & IN_ATTACK )
+	{
+		CAI_ASW_RangedAttackBehavior *pRangedAttack = NULL;
+		if ( GetBehavior<CAI_ASW_RangedAttackBehavior>( &pRangedAttack ) )
+		{
+			m_bNoTranslateNextSchedule = true;
+			DeferSchedulingToBehavior( pRangedAttack );
+			SetSchedule( CAI_ASW_RangedAttackBehavior::SCHED_RANGED_ATTACK_INHABITED );
+		}
+	}
 }
 
 class CASW_Trace_Filter_Disable_Collision_With_Traps : public CTraceFilterEntitiesOnly

@@ -142,6 +142,8 @@ public:
 
 	virtual float MaxSpeed();
 	virtual float GetBasePlayerYawRate();
+	CNetworkVar( float, m_flAlienWalkSpeed );
+	CNetworkVar( bool, m_bInhabitedMovementAllowed );
 
 	// soft drone collision
 	virtual bool CanBePushedAway();
@@ -268,6 +270,9 @@ public:
 	virtual void PhysicsSimulate();
 	virtual void InhabitedBy( CASW_Player *player );
 	virtual void UninhabitedBy( CASW_Player *player );
+	virtual	bool IsValidEnemy( CBaseEntity *pEnemy );
+	virtual void SetInhabitedAlienAttackSchedule();
+	bool m_bNoTranslateNextSchedule;
 
 	// move clone
 	virtual bool OverrideMove( float flInterval );
@@ -343,6 +348,7 @@ public:
 		SCHED_WAIT_FOR_CLEAR_UNBORROW,
 		SCHED_BURROW_WAIT,
 		SCHED_BURROW_OUT,
+		SCHED_ASW_INHABITED,
 		NEXT_SCHEDULE,
 	};
 

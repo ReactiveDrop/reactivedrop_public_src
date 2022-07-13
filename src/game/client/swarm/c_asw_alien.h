@@ -96,6 +96,8 @@ public:
 
 	virtual float MaxSpeed();
 	virtual float GetBasePlayerYawRate();
+	float m_flAlienWalkSpeed;
+	bool m_bInhabitedMovementAllowed;
 
 	// Glows are enabled when the sniper scope is used
 	CGlowObject m_GlowObject;

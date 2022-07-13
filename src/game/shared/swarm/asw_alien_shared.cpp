@@ -171,7 +171,12 @@ void CASW_Alien::DoBloodDecal( float flDamage, const Vector &vecPos, const Vecto
 
 float CASW_Alien::MaxSpeed()
 {
-	return 300;
+	if ( m_bInhabitedMovementAllowed )
+	{
+		return m_flAlienWalkSpeed;
+	}
+
+	return FLT_EPSILON;
 }
 
 float CASW_Alien::GetBasePlayerYawRate()
