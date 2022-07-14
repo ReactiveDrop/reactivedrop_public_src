@@ -85,7 +85,7 @@ public:
 	// the egg we hatched from, if any (we notify it when we die)
 	void SetEgg(CASW_Egg* pEgg);
 	CASW_Egg* GetEgg();
-	EHANDLE m_hEgg;
+	CHandle<CASW_Egg> m_hEgg;
 	CNetworkVar(bool, m_bStartIdleSound);
 
 	// infesting
@@ -96,7 +96,7 @@ public:
 	bool m_bDefanged;	// if the parasite is defanged, he won't infest, just do melee damage on contact
 
 	// parasites can be spawned by a parent Harvester, who wishes to be notified when we die
-	EHANDLE m_hMother;
+	CHandle<CASW_Alien> m_hMother;
 	virtual void SetMother(CASW_Alien* spawner);
 	CASW_Alien* GetMother();
 	float m_fSuicideTime;	// harvesites don't hang around for ever, but pop after a while if they're not in combat

@@ -916,10 +916,7 @@ void CASW_Parasite::SetEgg(CASW_Egg* pEgg)
 
 CASW_Egg* CASW_Parasite::GetEgg()
 {
-	CBaseEntity* pEgg = m_hEgg.Get();
-	if ( pEgg && pEgg->Classify() == CLASS_ASW_EGG )
-		return assert_cast<CASW_Egg*>( pEgg );
-	return NULL;
+	return m_hEgg.Get();
 }	
 
 //-----------------------------------------------------------------------------
@@ -1254,14 +1251,16 @@ Activity CASW_Parasite::TranslateActivity( Activity baseAct, Activity *pIdealWea
 void CASW_Parasite::SetMother(CASW_Alien* spawner)
 {
 	m_hMother = spawner;
+
+	if ( spawner && spawner->IsInhabited() )
+	{
+		m_bVisibleWhenAsleep = true;
+	}
 }
 
 CASW_Alien* CASW_Parasite::GetMother()
 {
-	CBaseEntity* pMother = m_hMother.Get();
-	if ( pMother && pMother->IsAlienClassType() )
-		return assert_cast<CASW_Alien*>(pMother);
-	return NULL;
+	return m_hMother.Get();
 }
 
 int CASW_Parasite::OnTakeDamage_Alive( const CTakeDamageInfo &info )

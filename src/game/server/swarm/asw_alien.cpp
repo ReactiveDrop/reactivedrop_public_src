@@ -1577,11 +1577,14 @@ void CASW_Alien::AddZigZagToPath(void)
 
 int CASW_Alien::TranslateSchedule( int scheduleType )
 {
-	if ( IsInhabited() )
+	if ( m_bNoTranslateNextSchedule )
 	{
-		if ( m_bNoTranslateNextSchedule )
+		m_bNoTranslateNextSchedule = false;
+	}
+	else if ( IsInhabited() )
+	{
+		if ( scheduleType == SCHED_SMALL_FLINCH || scheduleType == SCHED_BIG_FLINCH || scheduleType == SCHED_DIE || scheduleType == SCHED_DIE_RAGDOLL || scheduleType == SCHED_SLEEP )
 		{
-			m_bNoTranslateNextSchedule = false;
 			return scheduleType;
 		}
 
@@ -1597,9 +1600,9 @@ int CASW_Alien::TranslateSchedule( int scheduleType )
 	{
 		if ( ShouldStopBeforeMeleeAttack() )
 		{
-			return SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1;
+			return IsInhabited() ? SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1_INHABITED : SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1;
 		}
-		return SCHED_ASW_ALIEN_MELEE_ATTACK1;
+		return IsInhabited() ? SCHED_ASW_ALIEN_MELEE_ATTACK1_INHABITED : SCHED_ASW_ALIEN_MELEE_ATTACK1;
 	}
 
 	return i;
@@ -1852,6 +1855,32 @@ AI_BEGIN_CUSTOM_NPC( asw_alien, CASW_Alien )
 		"		COND_HEAVY_DAMAGE"
 		"		COND_ENEMY_OCCLUDED"
 		);
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_ALIEN_MELEE_ATTACK1_INHABITED,
+
+		"	Tasks"
+		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+		"		TASK_MELEE_ATTACK1		0"
+		""
+		"	Interrupts"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+	);
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1_INHABITED,
+
+		"	Tasks"
+		"		TASK_STOP_MOVING		1"
+		"		TASK_WAIT				0.1"
+		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+		"		TASK_MELEE_ATTACK1		1"
+		""
+		"	Interrupts"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+	);
 
 	DEFINE_SCHEDULE
 	(
@@ -3413,6 +3442,12 @@ void CASW_Alien::SetInhabitedAlienAttackSchedule()
 			m_bNoTranslateNextSchedule = true;
 			DeferSchedulingToBehavior( pRangedAttack );
 			SetSchedule( CAI_ASW_RangedAttackBehavior::SCHED_RANGED_ATTACK_INHABITED );
+		}
+		else if ( MeleeAttack1Conditions( 0, 0 ) != COND_NONE )
+		{
+			m_bNoTranslateNextSchedule = true;
+			DeferSchedulingToBehavior( NULL );
+			SetSchedule( SCHED_MELEE_ATTACK1 );
 		}
 	}
 }

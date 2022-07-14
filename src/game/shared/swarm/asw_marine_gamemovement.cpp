@@ -13,6 +13,7 @@
 	#include "asw_player.h"
 	#include "asw_weapon.h"
 	#include "asw_alien.h"
+	#include "asw_drone_advanced.h"
 	#include "takedamageinfo.h"
 	#include "ndebugoverlay.h"
 	#include "world.h"
@@ -4778,6 +4779,13 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	{
 		player->m_Local.m_flFallVelocity = -mv->m_vecVelocity[ 2 ];
 	}
+
+#ifdef GAME_DLL
+	if ( marine->Classify() == CLASS_ASW_DRONE )
+	{
+		assert_cast< CASW_Drone_Advanced * >( marine )->m_hAimTarget = player->FindPickerEntity();
+	}
+#endif
 
 	m_nOnLadder = 0;
 

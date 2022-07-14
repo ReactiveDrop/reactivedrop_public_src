@@ -790,6 +790,13 @@ bool CASW_Harvester::CanBePushedAway()
 
 void CASW_Harvester::SetInhabitedAlienAttackSchedule()
 {
+	if ( !MarineCanSee( 384, 0.1f ) )
+	{
+		// Can't spawn xenomites outside of PVS.
+		// TODO: error message?
+		return;
+	}
+
 	if ( GetCommander()->m_nButtons & IN_ATTACK && !GetShotRegulator()->IsInRestInterval() )
 	{
 		m_bNoTranslateNextSchedule = true;
