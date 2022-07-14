@@ -1869,7 +1869,7 @@ public:
 	//
 
 	void ScriptSetSize( const Vector &mins, const Vector &maxs ) { UTIL_SetSize( this, mins, maxs ); }
-	void ScriptUtilRemove( void ) { UTIL_Remove( this ); }
+	void ScriptDestroy( void ) { inputdata_t inputdata{}; inputdata.pActivator = this; inputdata.pCaller = this; InputKill( inputdata ); }
 	void ScriptSetOwner( HSCRIPT hEntity ) { SetOwnerEntity( ToEnt( hEntity ) ); }
 	void ScriptSetOrigin( const Vector &v ) { Teleport( &v, NULL, NULL ); }
 	void ScriptSetForward( const Vector &v ) { QAngle angles; VectorAngles( v, angles ); Teleport( NULL, &angles, NULL ); }
