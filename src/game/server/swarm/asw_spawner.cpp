@@ -211,6 +211,21 @@ void CASW_Spawner::MissionStart()
 
 	if (m_SpawnerState == SST_StartSpawningWhenMissionStart)
 		SetSpawnerState(SST_Spawning);
+
+	if ( developer.GetBool() )
+	{
+		int nHull = g_Aliens[m_AlienClassNum].m_nHullType;
+		const Vector &hullMins = NAI_Hull::Mins( nHull );
+		const Vector &hullMaxs = NAI_Hull::Maxs( nHull );
+		Vector traceStart = GetAbsOrigin() + Vector( 0, 0, 16.0f );
+		Vector traceEnd = GetAbsOrigin() + Vector( 0, 0, 1.0f / 16.0f );
+		trace_t tr;
+		UTIL_TraceHull( traceStart, traceEnd, hullMins, hullMaxs, MASK_NPCSOLID, NULL, &tr );
+		if ( tr.fraction < 1.0f )
+		{
+			DevWarning( "Spawner %s at %f %f %f will spawn %s inside floor (%s). Recommendation: Raise spawner by %d units.\n", GetEntityName() == NULL_STRING ? "(unnamed)" : GetEntityNameAsCStr(), VectorExpand( GetAbsOrigin() ), STRING( m_AlienClassName ), tr.m_pEnt ? tr.m_pEnt->GetDebugName() : "no ent", Ceil2Int( tr.endpos.z - traceEnd.z ) );
+		}
+	}
 }
 
 void CASW_Spawner::SetSpawnerState(SpawnerState_t newState)

@@ -934,6 +934,22 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAtWithOrders( const char* szAlienClas
 	// give our aliens the orders
 	pSpawnable->SetAlienOrders( orders, vec3_origin, NULL );
 
+#ifdef _DEBUG
+	if ( pEntity->MyNPCPointer() )
+	{
+		Vector hullMins = pEntity->MyNPCPointer()->GetHullMins();
+		Vector hullMaxs = pEntity->MyNPCPointer()->GetHullMaxs();
+		Vector realMins = pEntity->CollisionProp()->OBBMins();
+		Vector realMaxs = pEntity->CollisionProp()->OBBMaxs();
+		Assert( hullMins.x <= realMins.x );
+		Assert( hullMins.y <= realMins.y );
+		Assert( hullMins.z <= realMins.z );
+		Assert( hullMaxs.x >= realMaxs.x );
+		Assert( hullMaxs.y >= realMaxs.y );
+		Assert( hullMaxs.z >= realMaxs.z );
+	}
+#endif
+
 	return pEntity;
 }
 
