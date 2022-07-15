@@ -370,7 +370,7 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		m_pTxtEditingTitle->GetText( szTitle, sizeof( szTitle ) );
 		if ( !*szTitle )
 		{
-			V_snprintf( szTitle, sizeof( szTitle ), "Untitled Addon" );
+			V_snprintf( szTitle, sizeof( szTitle ), "#rd_workshop_untitled_addon_title" );
 		}
 		if ( !SteamUGC()->SetItemTitle( m_hUpdate, szTitle ) )
 		{
