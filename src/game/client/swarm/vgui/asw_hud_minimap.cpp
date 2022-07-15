@@ -1766,7 +1766,7 @@ void CASWHudMinimap::SetMap(const char * levelname)
 			m_MapOrigin.x	= 0;
 			m_MapOrigin.y	= 0;
 			m_fMapScale		= 25.0f;
-			Q_snprintf(m_szMissionTitle, sizeof(m_szMissionTitle), "Unnamed Mission");
+			Q_snprintf(m_szMissionTitle, sizeof(m_szMissionTitle), "#asw_unnamed_mission_title");
 			m_bHasOverview = false;
 			return;
 		}
