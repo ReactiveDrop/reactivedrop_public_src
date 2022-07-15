@@ -26,6 +26,7 @@ public:
 	void HighlightEntry( CASW_Mission_Chooser_Entry *pEntry );
 
 	int m_nDataResets;
+	int m_nForceReLayout;
 	vgui::ImagePanel *m_pImage;
 	vgui::Panel *m_pBackdrop;
 	vgui::Label *m_pTitle;

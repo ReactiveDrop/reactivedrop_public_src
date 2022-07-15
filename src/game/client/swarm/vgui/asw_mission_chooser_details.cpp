@@ -13,6 +13,7 @@
 CASW_Mission_Chooser_Details::CASW_Mission_Chooser_Details( vgui::Panel *pParent, const char *pElementName ) : BaseClass( pParent, pElementName )
 {
 	m_nDataResets = 0;
+	m_nForceReLayout = 0;
 	m_pImage = new vgui::ImagePanel( this, "Image" );
 	m_pBackdrop = new vgui::Panel( this, "Backdrop" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
@@ -62,15 +63,28 @@ void CASW_Mission_Chooser_Details::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	int discard, y0, y1, tall;
+	int discard, y0, y1, tall, titleTallDiff;
+	m_pTitle->GetContentSize( discard, tall );
+	titleTallDiff = tall - m_pTitle->GetTall();
+	m_pTitle->SetTall( tall );
 	m_pBackdrop->GetPos( discard, y0 );
 	m_pDescription->GetPos( discard, y1 );
+	y1 += titleTallDiff;
+	m_pDescription->SetPos( discard, y1 );
 	m_pDescription->GetContentSize( discard, tall );
 	m_pBackdrop->SetTall( tall + m_pTitle->GetTall() / 2 + y1 - y0 );
+
+	if ( m_nForceReLayout )
+	{
+		m_nForceReLayout--;
+		InvalidateLayout();
+	}
 }
 
 void CASW_Mission_Chooser_Details::HighlightEntry( CASW_Mission_Chooser_Entry *pEntry )
 {
+	m_nForceReLayout = 1;
+
 	if ( !pEntry )
 	{
 		m_pImage->SetVisible( false );
