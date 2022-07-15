@@ -1005,6 +1005,9 @@ void MainMenu::OnOpen()
 		}
 	}
 
+	// Apply mixer convars.
+	engine->ClientCmd_Unrestricted( "_rd_mixer_init\n" );
+
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{
 		// if we were launched with "+connect_lobby <lobbyid>" on the command line, join that lobby immediately
