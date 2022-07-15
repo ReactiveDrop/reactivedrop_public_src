@@ -110,7 +110,7 @@
 		"stepSize"				"0.05"
 		"navUp"					"SldGameVolume"
 		"navDown"				"DrpSpeakerConfiguration"
-		"conCommand"			"snd_musicvolume"
+		"conCommand"			"rd_mixer_volume_music_ingame"
 		"inverseFill"			"0"
 		
 		//button and label
