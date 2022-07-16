@@ -20,6 +20,9 @@
 #include "envmicrophone.h"
 #include "sceneentity.h"
 #include "closedcaptions.h"
+#ifdef INFESTED_DLL
+#include "asw_util_shared.h"
+#endif
 #else
 #include <vgui_controls/Controls.h>
 #include <vgui/IVgui.h>
@@ -220,7 +223,9 @@ public:
 	bool			m_bLogPrecache;
 	FileHandle_t	m_hPrecacheLogFile;
 	CUtlSymbolTable m_PrecachedScriptSounds;
+#ifndef INFESTED_DLL
 	CUtlVector< AsyncCaption_t > m_ServerCaptions;
+#endif
 
 public:
 	CSoundEmitterSystem( char const *pszName ) :
@@ -309,7 +314,7 @@ public:
 		g_pClosecaption = cvar->FindVar("closecaption");
 		Assert(g_pClosecaption);
 
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && !defined( INFESTED_DLL )
 		// Server keys off of english file!!!
 		char dbfile [ 512 ];
 		Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", "english" );
@@ -1141,6 +1146,25 @@ public:
 #if !defined( CLIENT_DLL )
 	bool GetCaptionHash( char const *pchStringName, bool bWarnIfMissing, unsigned int &hash )
 	{
+#ifdef INFESTED_DLL
+		hash = UTIL_RD_CaptionToHash( pchStringName );
+		if ( hash != 0 )
+		{
+			return true;
+		}
+
+		if ( bWarnIfMissing && cc_showmissing.GetBool() )
+		{
+			static CUtlRBTree< CRC32_t > s_MissingHashes( 0, 0, DefLessFunc( CRC32_t ) );
+			if ( s_MissingHashes.Find( hash ) == s_MissingHashes.InvalidIndex() )
+			{
+				s_MissingHashes.Insert( hash );
+				Msg( "Missing caption for %s\n", pchStringName );
+			}
+		}
+
+		return false;
+#else
 		// hash the string, find in dictionary or return 0u if not there!!!
 		CUtlVector< AsyncCaption_t >& directories = m_ServerCaptions;
 
@@ -1182,6 +1206,7 @@ public:
 		}
 
 		return true;
+#endif
 	}
 	void StopSpeakerSounds( const char *wavename )	
 	{
