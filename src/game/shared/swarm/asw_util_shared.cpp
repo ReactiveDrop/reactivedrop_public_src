@@ -76,7 +76,7 @@ ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_R
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
 #else
-ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_NONE, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
+ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_DEVELOPMENTONLY, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
 extern int g_asw_iGUIWindowsOpen;
 #endif
 
@@ -1590,15 +1590,26 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 	}
 }
 
+struct AddLocalizeFileCallbackData_t
+{
+	bool bAny : 1;
+	bool bIsCaptions : 1;
+};
+
+static CUtlStringMap<CRC32_t> s_CaptionHashLookup{ true };
+static CUtlMap<CRC32_t, UtlSymId_t> s_CaptionHashRevLookup{ DefLessFunc( CRC32_t ) };
+
 static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
-	bool *bAny = static_cast<bool *>( pUserData );
+	AddLocalizeFileCallbackData_t *pData = static_cast< AddLocalizeFileCallbackData_t * >( pUserData );
 
 	KeyValues *pTokens = pKV->FindKey( "Tokens" );
 	if ( !pTokens )
 	{
 		return;
 	}
+
+	char szLowerKey[256]{};
 
 	FOR_EACH_VALUE( pTokens, pValue )
 	{
@@ -1615,7 +1626,24 @@ static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *
 
 		g_pVGuiLocalize->AddString( pszKey, const_cast<wchar_t *>( pValue->GetWString() ), NULL );
 
-		*bAny = true;
+		pData->bAny = true;
+
+		if ( pData->bIsCaptions )
+		{
+			int len = V_strlen( pszKey );
+			Assert( len < sizeof( szLowerKey ) );
+			V_strncpy( szLowerKey, pszKey, sizeof( szLowerKey ) );
+			V_strlower( szLowerKey );
+
+			CRC32_t hash;
+			CRC32_Init( &hash );
+			CRC32_ProcessBuffer( &hash, szLowerKey, len );
+			CRC32_Final( &hash );
+
+			UtlSymId_t sym = s_CaptionHashLookup.AddString( pszKey );
+			s_CaptionHashLookup[sym] = hash;
+			s_CaptionHashRevLookup.InsertOrReplace( hash, sym );
+		}
 	}
 }
 
@@ -1623,7 +1651,7 @@ static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *
 ConVar rd_dedicated_server_language( "rd_dedicated_server_language", "english", FCVAR_NONE, "translation language to load on dedicated server" );
 #endif
 
-bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths )
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths, bool bIsCaptions )
 {
 	char szPath[MAX_PATH];
 	if ( const char *pszLanguageToken = V_strstr( fileName, "%language%" ) )
@@ -1662,11 +1690,13 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 	if ( rd_load_all_localization_files.GetBool() )
 #endif
 	{
-		bool bAny = false;
+		AddLocalizeFileCallbackData_t data{};
+		data.bAny = false;
+		data.bIsCaptions = bIsCaptions;
 
-		UTIL_RD_LoadAllKeyValues( szPath, pPathID, "lang", &AddLocalizeFileCallback, &bAny );
+		UTIL_RD_LoadAllKeyValues( szPath, pPathID, "lang", &AddLocalizeFileCallback, &data );
 
-		return bAny;
+		return data.bAny;
 	}
 
 	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
@@ -1686,14 +1716,38 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 #endif
 
 	// load english first just in case an addon is not localized
-	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true );
-	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true, true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true, false );
 
 	// load actual localization files
-	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
-	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true, false );
 
 	DevMsg( 2, "Reloaded localization files.\n" );
+}
+
+CRC32_t UTIL_RD_CaptionToHash( const char *szToken )
+{
+	UtlSymId_t sym = s_CaptionHashLookup.Find( szToken );
+	if ( sym == UTL_INVAL_SYMBOL )
+	{
+		return 0;
+	}
+
+	return s_CaptionHashLookup[sym];
+}
+
+const char *UTIL_RD_HashToCaption( CRC32_t hash )
+{
+	unsigned short index = s_CaptionHashRevLookup.Find( hash );
+	if ( !s_CaptionHashRevLookup.IsValidIndex( index ) )
+	{
+		return NULL;
+	}
+
+	UtlSymId_t sym = s_CaptionHashRevLookup[index];
+	Assert( sym != UTL_INVAL_SYMBOL );
+	return s_CaptionHashLookup.String( sym );
 }
 
 const char *UTIL_RD_EResultToString( EResult eResult )
@@ -1956,4 +2010,3 @@ const char *UTIL_RD_EResultToString( EResult eResult )
 		return "k_EResultCachedCredentialInvalid";
 	}
 }
-

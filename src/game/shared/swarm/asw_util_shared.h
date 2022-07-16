@@ -127,7 +127,10 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 typedef void (*UTIL_RD_LoadAllKeyValuesCallback)( const char *pszPath, KeyValues *pKV, void *pUserData );
 void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData );
 
-bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false );
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false, bool bIsCaptions = false );
+
+CRC32_t UTIL_RD_CaptionToHash( const char *szToken );
+const char *UTIL_RD_HashToCaption( CRC32_t hash );
 
 const char *UTIL_RD_EResultToString( EResult eResult );
 

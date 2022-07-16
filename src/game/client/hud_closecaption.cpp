@@ -853,7 +853,7 @@ CHudCloseCaption::CHudCloseCaption( const char *pElementName )
 
 	if ( !IsX360() )
 	{
-		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
 	}
 
 	HOOK_HUD_MESSAGE( CHudCloseCaption, CloseCaption );
@@ -2831,7 +2831,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 	// Re-adding the file, even if it's "english" will overwrite the tokens as needed
 	if ( !IsX360() )
 	{
-		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
 	}
 
 	char uilanguage[ 64 ];
