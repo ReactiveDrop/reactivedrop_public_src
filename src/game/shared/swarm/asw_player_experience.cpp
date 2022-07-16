@@ -466,7 +466,6 @@ void CASW_Player::RequestExperience()
 				SteamAPICall_t hSteamAPICall = SteamGameServerStats()->RequestUserStats( steamID );
 				if ( hSteamAPICall != 0 )
 				{
-					m_CallbackUserStatsReceived.SetGameserverFlag();
 					m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
 				}
 			}
