@@ -63,6 +63,8 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_t", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_u", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_z", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c3", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00cd", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_a_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_b_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c_glow", IsAlphabet( 'L' ) )
@@ -82,6 +84,8 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_t_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_u_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_z_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c3_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00cd_glow", IsAlphabet( 'L' ) )
 	
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0410", IsAlphabet( 'C' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0412", IsAlphabet( 'C' ) )
@@ -234,6 +238,10 @@ float CASW_Scalable_Text::GetLetterWidth( wchar_t ch )
 		return 1.102f;
 	case L'Z':
 		return 0.953f;
+	case L'Ã':
+		return 1.037f;
+	case L'Í':
+		return 0.482f;
 	case L'А':
 		return 1.012f;
 	case L'В':
