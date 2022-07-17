@@ -61,11 +61,13 @@ public:
 	void			ProcessSentenceCaptionStream( char const *tokenstream );
 	void			PlayRandomCaption();
 
+#ifndef INFESTED_DLL
 	void			InitCaptionDictionary( char const *dbfile, bool bForce = false );
 	void			OnFinishAsyncLoad( int nFileIndex, int nBlockNum, AsyncCaptionData_t *pData );
 
 	void			Flush();
 	void			TogglePaintDebug();
+#endif
 
 	enum
 	{
@@ -101,15 +103,19 @@ public:
 
 private:
 
+#ifndef INFESTED_DLL
 	void ClearAsyncWork();
 	void ProcessAsyncWork();
+#endif
 	bool AddAsyncWork( char const *tokenstream, bool bIsStream, float duration, bool fromplayer, bool direct = false );
 	bool AddAsyncWorkByHash( unsigned int hash, float duration, bool fromplayer, bool direct = false );
 
 	void _ProcessSentenceCaptionStream( int wordCount, char const *tokenstream, const wchar_t *caption_full );
 	void _ProcessCaption( const wchar_t *caption, unsigned int hash, float duration, bool fromplayer, bool direct = false );
 
+#ifndef INFESTED_DLL
 	CUtlLinkedList< CAsyncCaption *, unsigned short >	m_AsyncWork;
+#endif
 
 	CUtlRBTree< CaptionRepeat, int >	m_CloseCaptionRepeats;
 
@@ -156,7 +162,9 @@ private:
 	CPanelAnimationVar( float, m_flItemFadeOutTime, "ItemFadeOutTime", "0.3" );
 	CPanelAnimationVar( int, m_nTopOffset, "topoffset", "40" );
 
+#ifndef INFESTED_DLL
 	CUtlVector< AsyncCaption_t > m_AsyncCaptions;
+#endif
 	bool		m_bLocked;
 	bool		m_bVisibleDueToDirect;
 	bool		m_bPaintDebugInfo;

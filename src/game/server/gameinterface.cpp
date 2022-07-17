@@ -1055,10 +1055,8 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	// BenLubar #iss-particles-manifest Load per-map manifests
 	ParseParticleEffectsMap( pMapName, false );
 
-	if ( engine->IsDedicatedServer() )
-	{
-		engine->ServerCommand( "rd_loc_reload_server\n" );
-	}
+	// Need to also run this on listen servers or caption hashes won't be available.
+	engine->ServerCommand( "rd_loc_reload_server\n" );
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()

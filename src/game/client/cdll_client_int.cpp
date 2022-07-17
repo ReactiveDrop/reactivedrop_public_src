@@ -3007,11 +3007,13 @@ void CHLClient::ResetHudCloseCaption()
 		return;
 	}
 
+#ifndef INFESTED_DLL
 	if ( m_pHudCloseCaption )
 	{
 		// force the caption dictionary to remount
 		m_pHudCloseCaption->InitCaptionDictionary( NULL, true );
 	}
+#endif
 }
 
 bool CHLClient::SupportsRandomMaps()

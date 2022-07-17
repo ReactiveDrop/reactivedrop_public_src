@@ -1709,7 +1709,7 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 #endif
 {
 #ifndef CLIENT_DLL
-	if ( !engine->IsDedicatedServer() || !UTIL_IsCommandIssuedByServerAdmin() )
+	if ( engine->IsDedicatedServer() && !UTIL_IsCommandIssuedByServerAdmin() )
 	{
 		return;
 	}
