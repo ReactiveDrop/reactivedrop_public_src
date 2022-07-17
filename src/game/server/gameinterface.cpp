@@ -2085,6 +2085,7 @@ static ConVar motdfile( "motdfile", "motd.txt", FCVAR_RELEASE, "The MOTD file to
 static ConVar hostfile( "hostfile", "host.txt", FCVAR_RELEASE, "The HOST file to load.", ValidateMOTDFilename );
 void LoadMOTDFile( const char *stringname, ConVar *pConvarFilename )
 {
+#ifndef INFESTED_DLL
 	char data[2048];
 
 	int length = filesystem->Size( pConvarFilename->GetString(), "GAME" );
@@ -2104,6 +2105,9 @@ void LoadMOTDFile( const char *stringname, ConVar *pConvarFilename )
 	data[length] = 0;
 
 	g_pStringTableInfoPanel->AddString( CBaseEntity::IsServer(), stringname, length+1, data );
+#else
+	g_pStringTableInfoPanel->AddString( CBaseEntity::IsServer(), stringname, 1, "" );
+#endif
 }
 
 void CServerGameDLL::LoadMessageOfTheDay()
