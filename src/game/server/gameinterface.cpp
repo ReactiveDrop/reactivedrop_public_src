@@ -1163,6 +1163,18 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 			fps_max.SetValue( rd_override_fps_max.GetInt() );
 		}
 	}
+	else if ( engine->IsDedicatedServer() )
+	{
+		// BenLubar: Dedicated servers are constrained by tick rate, not render speed.
+		// fps_max is somehow getting set to 30, meaning a server that would theoretically
+		// be able to run at 600 ticks can only run at 5% of that.
+		// If no override is specified and fps_max is less than the tick rate, set fps_max to unlimited.
+		ConVarRef fps_max( "fps_max" );
+		if ( fps_max.IsValid() && fps_max.GetInt() < TIME_TO_TICKS( 1 ) )
+		{
+			fps_max.SetValue( 0 );
+		}
+	}
 	return true;
 }
 
