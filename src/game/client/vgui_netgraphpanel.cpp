@@ -758,13 +758,13 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 	int totalsize = graph[ ( m_IncomingSequence & ( TIMINGS - 1 ) ) ].msgbytes[INetChannelInfo::TOTAL];
 	
-	Q_snprintf( sz, sizeof( sz ), "in :%4i   %2.2f k/s ", totalsize, m_IncomingData );
+	Q_snprintf( sz, sizeof( sz ), "in: %4i   %2.2f k/s  ", totalsize, m_IncomingData );
 
-	int textWidth = g_pMatSystemSurface->DrawTextLen( font, "%s", sz );
+	int textWidth = g_pMatSystemSurface->DrawTextLen( font, "in: 1234   12.34 k/s  " );
 
 	g_pMatSystemSurface->DrawColoredText( font, x, y, GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE, 255, sz );
 
-	Q_snprintf( sz, sizeof( sz ), "lerp: %5.1f ms", GetClientInterpAmount() * 1000.0f );
+	Q_snprintf( sz, sizeof( sz ), "lerp: %5.0f ms", GetClientInterpAmount() * 1000.0f );
 
 	int interpcolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE }; 
 	float flInterp = GetClientInterpAmount();
@@ -824,7 +824,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 	if ( graphvalue > 2 )
 	{
-		Q_snprintf( sz, sizeof( sz ), "loss:%3i    choke: %2i ", (int)(m_AvgPacketLoss*100.0f), (int)(m_AvgPacketChoke*100.0f) );
+		Q_snprintf( sz, sizeof( sz ), "loss:%3i   choke: %2i  ", (int)(m_AvgPacketLoss*100.0f), (int)(m_AvgPacketChoke*100.0f) );
 
 		textWidth = g_pMatSystemSurface->DrawTextLen( font, "%s", sz );
 
@@ -834,7 +834,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 
 		if ( graphvalue > 3 )
 		{
-			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv :%5.1f  var: %4.2f msec", (int)round(fTickRate), m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
+			Q_snprintf( sz, sizeof( sz ), "tick:%3i   sv: %5.1f  var: %4.2f msec", (int)round(fTickRate), m_flServerFramerate, m_flServerFramerateStdDeviation * 1000.0f );
 
 			int servercolor[ 3 ] = { GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE };
 
@@ -849,6 +849,12 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 				servercolor[ 0 ] = 255;
 				servercolor[ 1 ] = 255;
 				servercolor[ 2 ] = 0;
+			}
+			else if ( m_flServerFramerate < fTickRate )
+			{
+				servercolor[0] = 255;
+				servercolor[1] = 255;
+				servercolor[2] = 127;
 			}
 
 			g_pMatSystemSurface->DrawColoredText( font, x, y, servercolor[ 0 ], servercolor[ 1 ], servercolor[ 2 ], 255, sz );
