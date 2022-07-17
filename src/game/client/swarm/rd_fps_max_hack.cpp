@@ -50,6 +50,9 @@ public:
 		static_assert( sizeof( ConCommandBase ) == 24, "unexpected ConCommandBase size" );
 		static_assert( sizeof( ConVar ) == 88, "unexpected ConVar size" );
 
+		// Increase max by 1 to avoid limiting 60 fps monitors to 59 fps due to rounding error.
+		iRefreshRate++;
+
 		// Convert refresh rate to string, which will become the new default value.
 		static char szRefreshRate[30]{};
 		V_snprintf( szRefreshRate, sizeof( szRefreshRate ), "%d", iRefreshRate );
