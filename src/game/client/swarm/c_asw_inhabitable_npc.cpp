@@ -57,7 +57,65 @@ const char *C_ASW_Inhabitable_NPC::GetPlayerName() const
 	return BaseClass::GetPlayerName();
 }
 
-const Vector & C_ASW_Inhabitable_NPC::GetFacingPoint()
+void C_ASW_Inhabitable_NPC::PostDataUpdate( DataUpdateType_t updateType )
+{
+	bool bPredict = ShouldPredict();
+	if ( bPredict )
+	{
+		SetSimulatedEveryTick( true );
+	}
+	else
+	{
+		SetSimulatedEveryTick( false );
+
+		// estimate velocity for non local players
+		float flTimeDelta = m_flSimulationTime - m_flOldSimulationTime;
+		if ( flTimeDelta > 0 && !IsEffectActive( EF_NOINTERP ) )
+		{
+			Vector newVelo = ( GetNetworkOrigin() - GetOldOrigin() ) / flTimeDelta;
+			SetAbsVelocity( newVelo );
+		}
+	}
+
+	// if player has switched into this marine, set it to be prediction eligible
+	if ( bPredict )
+	{
+		// C_BaseEntity assumes we're networking the entity's angles, so pretend that it
+		// networked the same value we already have.
+		//SetNetworkAngles( GetLocalAngles() );
+		SetPredictionEligible( true );
+	}
+	else
+	{
+		SetPredictionEligible( false );
+	}
+
+	BaseClass::PostDataUpdate( updateType );
+
+	if ( GetPredictable() && !bPredict )
+	{
+		MDLCACHE_CRITICAL_SECTION();
+		ShutdownPredictable();
+	}
+}
+
+bool C_ASW_Inhabitable_NPC::ShouldPredict()
+{
+	return C_BasePlayer::IsLocalPlayer( GetCommander() ) && IsInhabited();
+}
+
+C_BasePlayer *C_ASW_Inhabitable_NPC::GetPredictionOwner()
+{
+	return GetCommander();
+}
+
+void C_ASW_Inhabitable_NPC::InitPredictable( C_BasePlayer *pOwner )
+{
+	SetLocalVelocity( vec3_origin );
+	BaseClass::InitPredictable( pOwner );
+}
+
+const Vector &C_ASW_Inhabitable_NPC::GetFacingPoint()
 {
 	if ( m_vecFacingPointFromServer != vec3_origin )
 	{

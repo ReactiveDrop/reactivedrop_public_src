@@ -24,6 +24,11 @@ public:
 	CNetworkHandle( C_ASW_Player, m_Commander );
 	const char *GetPlayerName() const;
 
+	virtual void PostDataUpdate( DataUpdateType_t updateType );
+	virtual bool ShouldPredict( void );
+	virtual C_BasePlayer *GetPredictionOwner();
+	virtual void InitPredictable( C_BasePlayer *pOwner );
+
 	// using entities over time
 	C_BaseEntity *GetUsingEntity() { return m_hUsingEntity.Get(); }
 	CNetworkHandle( C_BaseEntity, m_hUsingEntity );	// if set, marine will face this object

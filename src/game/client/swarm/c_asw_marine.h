@@ -82,10 +82,6 @@ public:
 	// networking
 	void NotifyShouldTransmit( ShouldTransmitState_t state );	
 	virtual void UpdateClientSideAnimation();
-	virtual void InitPredictable( C_BasePlayer *pOwner );
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool ShouldPredict( void );
-	virtual C_BasePlayer* GetPredictionOwner();
 	void OnDataChanged( DataUpdateType_t updateType );
 	// prediction smoothing on elevators
 	void NotePredictionError( const Vector &vDelta );

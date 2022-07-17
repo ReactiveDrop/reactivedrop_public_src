@@ -554,30 +554,6 @@ C_ASW_Marine::~C_ASW_Marine()
 }
 
 
-bool C_ASW_Marine::ShouldPredict()
-{
-	if (C_BasePlayer::IsLocalPlayer(GetCommander()))
-	{
-		FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
-		{
-			ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
-
-			C_ASW_Player* player = C_ASW_Player::GetLocalASWPlayer();
-			if (player && player->GetNPC() == this)
-			{
-				return true;
-			}
-		}
-	}
-	
-	return false;
-}
-
-C_BasePlayer *C_ASW_Marine::GetPredictionOwner()
-{
-	return GetCommander();
-}
-
 void C_ASW_Marine::PhysicsSimulate( void )
 {
 	if (ShouldPredict())
@@ -586,54 +562,6 @@ void C_ASW_Marine::PhysicsSimulate( void )
 		return;
 	}
 	BaseClass::PhysicsSimulate();
-}
-
-void C_ASW_Marine::InitPredictable( C_BasePlayer *pOwner )
-{
-	SetLocalVelocity(vec3_origin);
-	BaseClass::InitPredictable( pOwner );
-}
-
-void C_ASW_Marine::PostDataUpdate( DataUpdateType_t updateType )
-{
-	bool bPredict = ShouldPredict();
-	if ( bPredict )
-	{
-		SetSimulatedEveryTick( true );		
-	}
-	else
-	{
-		SetSimulatedEveryTick( false );
-
-		// estimate velocity for non local players
-		float flTimeDelta = m_flSimulationTime - m_flOldSimulationTime;
-		if ( flTimeDelta > 0  && !IsEffectActive(EF_NOINTERP) )
-		{
-			Vector newVelo = (GetNetworkOrigin() - GetOldOrigin()  ) / flTimeDelta;
-			SetAbsVelocity( newVelo);
-		}
-	}
-
-	// if player has switched into this marine, set it to be prediction eligible
-	if (bPredict)
-	{
-		// C_BaseEntity assumes we're networking the entity's angles, so pretend that it
-		// networked the same value we already have.
-		//SetNetworkAngles( GetLocalAngles() );
-		SetPredictionEligible( true );
-	}
-	else
-	{
-		SetPredictionEligible( false );
-	}
-	
-	BaseClass::PostDataUpdate( updateType );
-
-	if ( GetPredictable() && !bPredict )
-	{
-		MDLCACHE_CRITICAL_SECTION();
-		ShutdownPredictable();
-	}
 }
 
 void C_ASW_Marine::UpdateClientSideAnimation()
