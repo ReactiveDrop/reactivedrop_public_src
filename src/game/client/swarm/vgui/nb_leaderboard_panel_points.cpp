@@ -31,9 +31,10 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 	m_pServerList->SetControllerButton( KEY_XBUTTON_X );
 	m_pStatsWebsite = new CNB_Button( this, "StatsWebsite", "", this, "StatsWebsite" );
 
-	m_pToggleButton = new CBitmapButton(this, "ToggleButton", "");
-	m_pToggleButton->AddActionSignalTarget(this);
-	m_pToggleButton->SetCommand("ToggleButton");
+	m_pToggleButton = new CBitmapButton( this, "ToggleButton", "" );
+	m_pToggleButton->AddActionSignalTarget( this );
+	m_pToggleButton->SetCommand( "ToggleButton" );
+	m_pToggleLabel = new vgui::Label( this, "ToggleLabel", "#rd_leaderboard_filter_top" );
 
 	m_pHeaderFooter->SetTitle( "#nb_leaderboard" );
 
@@ -62,6 +63,7 @@ void CNB_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	LoadControlSettings( "resource/ui/nb_leaderboard_panel.res" );
 
+	m_pToggleLabel->SetVisible( true );
 	m_pServerList->SetVisible( true );
 	m_pStatsWebsite->SetVisible( true );
 
@@ -110,9 +112,20 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 	}
 	if ( !Q_stricmp( command, "ToggleButton" ) )
 	{
-		m_iCurrentLeaderboardDisplayMode--;
-		if ( m_iCurrentLeaderboardDisplayMode < 0 )
+		switch ( m_iCurrentLeaderboardDisplayMode )
+		{
+		default:
+		case k_ELeaderboardDataRequestGlobal:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_friends" );
 			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestFriends;
+		case k_ELeaderboardDataRequestGlobalAroundUser:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_top" );
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobal;
+		case k_ELeaderboardDataRequestFriends:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_nearby" );
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobalAroundUser;
+			break;
+		}
 
 		m_pLeaderboard->ClearEntries();
 		SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
@@ -160,12 +173,14 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 {
 	if ( bIOError )
 	{
+		m_pNotFoundLabel->SetVisible( false );
 		m_pErrorLabel->SetVisible( true );
 		return;
 	}
 
 	if ( !pResult->m_bLeaderboardFound )
 	{
+		m_pErrorLabel->SetVisible( false );
 		m_pNotFoundLabel->SetVisible( true );
 		return;
 	}
@@ -191,15 +206,20 @@ void CNB_Leaderboard_Panel_Points::LeaderboardDownload( LeaderboardScoresDownloa
 {
 	if ( bIOError )
 	{
+		m_pNotFoundLabel->SetVisible( false );
 		m_pErrorLabel->SetVisible( true );
 		return;
 	}
 
 	if ( pResult->m_cEntryCount == 0 )
 	{
+		m_pErrorLabel->SetVisible( false );
 		m_pNotFoundLabel->SetVisible( true );
 		return;
 	}
+
+	m_pErrorLabel->SetVisible( false );
+	m_pNotFoundLabel->SetVisible( false );
 
 	CUtlVector<RD_LeaderboardEntry_Points_t> entries;
 	g_ASW_Steamstats.ReadDownloadedLeaderboard( entries, pResult->m_hSteamLeaderboardEntries, pResult->m_cEntryCount );
