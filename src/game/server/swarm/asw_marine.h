@@ -744,6 +744,7 @@ public:
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)
 	void RequestForcedAction( int iForcedAction );
 	CNetworkVar( int, m_iForcedActionRequest );
+	int m_iForcedActionRequestTick;
 
 	void SetNextStumbleTime( float flStumbleTime ) { m_flNextStumbleTime = flStumbleTime; }
 	float m_flNextStumbleTime;

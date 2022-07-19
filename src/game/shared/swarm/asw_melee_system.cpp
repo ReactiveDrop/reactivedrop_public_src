@@ -242,6 +242,13 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 		m_bAttacksValidated = true;
 	}
 
+#ifdef GAME_DLL
+	if ( pASWMove->m_iForcedAction != pMarine->m_iForcedActionRequest && pMarine->m_iForcedActionRequestTick < gpGlobals->tickcount - TIME_TO_TICKS( 2 ) )
+	{
+		Warning( "Marine %s %s has not ack'd forced action request for %d ticks. Get a programmer!\n", pMarine->GetDebugName(), pMarine->IsInhabited() ? pMarine->GetCommander()->GetASWNetworkID() : "(uninhabited)", gpGlobals->tickcount - pMarine->m_iForcedActionRequestTick );
+	}
+#endif
+
 	//if ( pMarine->IsMeleeInhibited() )
 	//{
 		//return;
@@ -380,6 +387,13 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 						//pMarine->m_flJumpJetEndTime = gpGlobals->curtime + speedscale;
 						ASWMeleeSystem()->StartMeleeAttack(pBlinkAttack, pMarine, ASWGameMovement()->GetMoveData());
 					}
+					break;
+				}
+				default:
+				{
+#ifdef GAME_DLL
+					Warning( "Unhandled forced action from %s %s: %d; clearing, get a programmer!\n", pMarine->GetDebugName(), pMarine->IsInhabited() ? pMarine->GetCommander()->GetASWNetworkID() : "(uninhabited)", pASWMove->m_iForcedAction );
+#endif
 					break;
 				}
 			}

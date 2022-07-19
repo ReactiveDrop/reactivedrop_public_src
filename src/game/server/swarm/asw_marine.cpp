@@ -5513,6 +5513,7 @@ void CASW_Marine::ScriptKnockdown( const Vector &vecImpulse )
 void CASW_Marine::RequestForcedAction( int iForcedAction )
 {
 	m_iForcedActionRequest = iForcedAction;
+	m_iForcedActionRequestTick = gpGlobals->tickcount;
 
 	if ( !IsInhabited() )
 	{
