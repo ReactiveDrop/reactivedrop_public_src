@@ -151,12 +151,15 @@ void CRD_Collection_Details_Inventory::HighlightEntry( CRD_Collection_Entry *pEn
 	m_pDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 	m_pDescription->InsertString( wszBuf );
 
-	ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, pList->m_hResult, pInvEntry->m_Index );
-	if ( wszBuf[0] )
+	if ( !pDef->AfterDescriptionOnlyMultiStack || pInvEntry->m_Details.m_unQuantity > 1 )
 	{
-		m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-		m_pDescription->InsertString( L"\n\n" );
-		m_pDescription->InsertString( wszBuf );
+		ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, pList->m_hResult, pInvEntry->m_Index );
+		if ( wszBuf[0] )
+		{
+			m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
+			m_pDescription->InsertString( L"\n\n" );
+			m_pDescription->InsertString( wszBuf );
+		}
 	}
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pList->m_szSlot ) );

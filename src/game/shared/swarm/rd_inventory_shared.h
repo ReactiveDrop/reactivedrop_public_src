@@ -22,6 +22,7 @@ namespace ReactiveDropInventory
 		CUtlString Description;
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
+		bool AfterDescriptionOnlyMultiStack;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon;
 		vgui::IImage *IconSmall;

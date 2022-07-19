@@ -212,12 +212,15 @@ void CNB_Lobby_Tooltip::OnTick()
 			m_pItemDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 			m_pItemDescription->InsertString( wszBuf );
 
-			ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, m_hInventoryResult, 0 );
-			if ( wszBuf[0] )
+			if ( !pDef->AfterDescriptionOnlyMultiStack || details.m_unQuantity > 1 )
 			{
-				m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-				m_pItemDescription->InsertString( L"\n\n" );
-				m_pItemDescription->InsertString( wszBuf );
+				ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, m_hInventoryResult, 0 );
+				if ( wszBuf[0] )
+				{
+					m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
+					m_pItemDescription->InsertString( L"\n\n" );
+					m_pItemDescription->InsertString( wszBuf );
+				}
 			}
 
 			if ( rd_briefing_item_details_delay.GetFloat() < 0 )
