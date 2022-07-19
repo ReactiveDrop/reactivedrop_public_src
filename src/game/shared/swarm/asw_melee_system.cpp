@@ -440,7 +440,10 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 				}
 			}
 		}
-		pMarine->ClearForcedActionRequest();
+		if ( pASWMove->m_iForcedAction == pMarine->m_iForcedActionRequest )
+		{
+			pMarine->ClearForcedActionRequest();
+		}
 	}
 	else if ( gpGlobals->curtime >= pMarine->m_fNextMeleeTime )
 	{
