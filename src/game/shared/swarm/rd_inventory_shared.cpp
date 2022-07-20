@@ -578,8 +578,10 @@ namespace ReactiveDropInventory
 			pItemDef->Description = szBuf.Base();
 
 		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
+		pItemDef->BriefingName = pItemDef->Name;
 		FETCH_PROPERTY( "briefing_name_english" );
-		pItemDef->BriefingName = szBuf.Base();
+		if ( *szBuf.Base() )
+			pItemDef->BriefingName = szBuf.Base();
 		FETCH_PROPERTY( szKey );
 		if ( *szBuf.Base() )
 			pItemDef->BriefingName = szBuf.Base();
