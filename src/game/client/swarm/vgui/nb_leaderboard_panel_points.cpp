@@ -118,9 +118,11 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 		case k_ELeaderboardDataRequestGlobal:
 			m_pToggleLabel->SetText( "#rd_leaderboard_filter_friends" );
 			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestFriends;
+			break;
 		case k_ELeaderboardDataRequestGlobalAroundUser:
 			m_pToggleLabel->SetText( "#rd_leaderboard_filter_top" );
 			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobal;
+			break;
 		case k_ELeaderboardDataRequestFriends:
 			m_pToggleLabel->SetText( "#rd_leaderboard_filter_nearby" );
 			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobalAroundUser;

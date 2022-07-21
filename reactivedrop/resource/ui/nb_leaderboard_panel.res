@@ -69,8 +69,8 @@
 	{
 		"fieldName"		"ToggleLabel"
 		"xpos"		"c-124"
-		"ypos"		"r22"
-		"wide"		"40"
+		"ypos"		"r15"
+		"wide"		"120"
 		"tall"		"10"
 		"ControlName"		"Label"
 		"labelText"		"#rd_leaderboard_filter_top"
