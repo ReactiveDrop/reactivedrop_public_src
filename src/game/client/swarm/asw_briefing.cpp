@@ -151,7 +151,7 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		return;
 
 	// now add marines for other players in order
-	for( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
+	for ( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
 	{
 		if ( !g_PR->IsConnected( iClient ) )
 			continue;
@@ -178,12 +178,12 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 			if ( bAlreadyInList )
 				continue;
 
-            // don't add this player if he is in another team for team deathmatch
-            if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
-            {
-                if ( pMR->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
-                    continue;
-            }
+			// don't add this player if he is in another team for team deathmatch
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				if ( pMR->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+					continue;
+			}
 
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
 			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
@@ -200,12 +200,27 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		return;
 
 	// now add any players who don't have any marines
-	for( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
+	for ( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
 	{
 		if ( !g_PR->IsConnected( iClient ) )
 			continue;
 
 		if ( iClient == pLocalPlayer->entindex() )
+			continue;
+
+		// BenLubar: The methods on C_BasePlayer don't do what they do on the server version of players,
+		// so we need to ask the engine directly whether this is a utility bot.
+		player_info_t playerinfo{};
+
+		// Skip utility "players" when creating lobby list.
+		bool bGotPlayerInfo = engine->GetPlayerInfo( iClient, &playerinfo );
+		Assert( bGotPlayerInfo );
+		if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
+			continue;
+
+		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( iClient ) );
+		Assert( pPlayer );
+		if ( !pPlayer )
 			continue;
 
 		int nMarines = 0;
@@ -218,20 +233,17 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 			nMarines++;
 		}
 
-		if ( nMarines == 0)
-        {
-            // don't add this player if he is in another team for team deathmatch
-            if ( ASWDeathmatchMode() /*&& ASWDeathmatchMode()->IsTeamDeathmatchEnabled()*/ )
-            {
-                C_ASW_Player *pPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
-                if ( !pPlayer )
-                    continue;
-                if ( pPlayer->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
-                    continue;
-            }
+		if ( nMarines == 0 )
+		{
+			// don't add this player if he is in another team for team deathmatch
+			if ( ASWDeathmatchMode() /*&& ASWDeathmatchMode()->IsTeamDeathmatchEnabled()*/ )
+			{
+				if ( pPlayer->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+					continue;
+			}
 
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
-			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
+			m_LobbySlotMapping[ nSlot ].m_hPlayer = pPlayer;
 			m_LobbySlotMapping[ nSlot ].m_hMR = NULL;
 			m_LobbySlotMapping[ nSlot ].m_nMarineResourceIndex = -1;
 
@@ -274,17 +286,17 @@ const char* CASW_Briefing::GetLeaderName()
 
 const char* CASW_Briefing::GetTeamName()
 {
-    if ( !ASWGameResource() )
-        return "";
+	if ( !ASWGameResource() )
+		return "";
 
-    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-    if (!pPlayer)
-        return "";
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (!pPlayer)
+		return "";
 
-    if ( pPlayer->GetTeam() )
-        return pPlayer->GetTeam()->Get_Name();
-    else
-        return "";
+	if ( pPlayer->GetTeam() )
+		return pPlayer->GetTeam()->Get_Name();
+	else
+		return "";
 }
 
 Color CASW_Briefing::GetTeamColor()

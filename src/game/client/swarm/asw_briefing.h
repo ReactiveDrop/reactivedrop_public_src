@@ -24,7 +24,7 @@ public:
 	~CASW_Briefing();
 
 	virtual const char* GetLeaderName();
-    virtual const char* GetTeamName();
+	virtual const char* GetTeamName();
 	virtual Color GetTeamColor();
 
 	virtual bool IsLocalPlayerLeader();

@@ -365,8 +365,19 @@ void PlayerListLine::UpdateVoteIcons()
 	int iPlayers = 0;
 	for (int i=1;i<=gpGlobals->maxClients;i++)
 	{
-		if (g_PR->IsConnected(i))
+		if ( g_PR->IsConnected( i ) )
+		{
+			player_info_t playerinfo{};
+
+			bool bGotPlayerInfo = engine->GetPlayerInfo( i, &playerinfo );
+			Assert( bGotPlayerInfo );
+			if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
+			{
+				continue;
+			}
+
 			iPlayers++;
+		}
 	}
 	//Msg("%d players connected ", iPlayers);
 

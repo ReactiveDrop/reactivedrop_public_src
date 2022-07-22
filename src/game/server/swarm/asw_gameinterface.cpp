@@ -29,6 +29,14 @@ void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int 
 	minplayers = 1; 
 	defaultMaxPlayers = 8;
 	maxplayers = ASW_MAX_PLAYERS;
+
+	ConVarRef tv_enable( "tv_enable" );
+	if ( tv_enable.IsValid() && tv_enable.GetBool() )
+	{
+		minplayers++;
+		defaultMaxPlayers++;
+	}
+
 }
 
 // -------------------------------------------------------------------------------------------- //

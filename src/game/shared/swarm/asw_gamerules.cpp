@@ -102,6 +102,7 @@
 	#include "asw_spawn_selection.h"
 	#include "asw_door.h"
 	#include "ScriptGameEventListener.h"
+	#include "cdll_int.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -1799,6 +1800,17 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 {
 	BaseClass::PlayerSpawn(pPlayer);
 
+	// BenLubar: This gets called before player data is fully set up,
+	// so we need to ask the engine directly if this is a utility "player".
+	player_info_t playerinfo{};
+
+	bool bGotPlayerInfo = engine->GetPlayerInfo( ENTINDEX( pPlayer ), &playerinfo );
+	Assert( bGotPlayerInfo );
+	if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
+	{
+		return;
+	}
+
 	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
 
 	// assign leader if there isn't one already
@@ -1926,7 +1938,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 					// found a connected player?
 					CASW_Player *pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i + 1));
 					// if they're not connected, skip them
-					if (!pOtherPlayer || !pOtherPlayer->IsConnected())
+					if ( !pOtherPlayer || !pOtherPlayer->IsConnected() || pOtherPlayer->IsBot() || pOtherPlayer->IsHLTV() || pOtherPlayer->IsReplay() )
 						continue;
 					
 					if (!pBestPlayer || pBestPlayer->m_bRequestedSpectator)					
@@ -2273,7 +2285,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 		for ( int k = 1; k <= gpGlobals->maxClients; ++k )
 		{
 			pNewCommander = ToASW_Player( UTIL_PlayerByIndex( k ) );
-			if ( pNewCommander )
+			if ( pNewCommander && !pNewCommander->IsBot() && !pNewCommander->IsHLTV() && !pNewCommander->IsReplay() )
 				break;
 		}
 	}
@@ -3832,6 +3844,9 @@ void CAlienSwarm::Think()
 				{
 					CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 					if ( pOtherPlayer && pOtherPlayer->IsConnected()
+								&& !pOtherPlayer->IsBot()
+								&& !pOtherPlayer->IsHLTV()
+								&& !pOtherPlayer->IsReplay()
 								&& pOtherPlayer != pListenServer					// listen server doesn't generate the map clientside
 								&& pOtherPlayer->m_fMapGenerationProgress.Get() < 1.0f )
 					{
@@ -3881,7 +3896,7 @@ void CAlienSwarm::OnServerHibernating()
 	{
 		CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-		if ( pOtherPlayer && pOtherPlayer->IsConnected() )
+		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
 		{
 			iPlayers++;
 		}
@@ -7401,7 +7416,7 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 	{
 		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 		
-		if ( pOtherPlayer && pOtherPlayer->IsConnected())
+		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
 		{
 			if ( pOtherPlayer->m_iLeaderVoteIndex == iPlayerIndex )
 				iVotes++;
@@ -7535,7 +7550,7 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	{
 		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
-		if ( pOtherPlayer && pOtherPlayer->IsConnected())
+		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
 		{
 			if ( pOtherPlayer->m_iKickVoteIndex == iPlayerIndex )
 				iVotes++;
