@@ -69,7 +69,7 @@
 	{
 		"fieldName"		"ToggleLabel"
 		"xpos"		"c-124"
-		"ypos"		"r15"
+		"ypos"		"r18"
 		"wide"		"120"
 		"tall"		"10"
 		"ControlName"		"Label"
