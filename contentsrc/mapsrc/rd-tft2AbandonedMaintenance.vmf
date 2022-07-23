@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "1346"
+	"mapversion" "1348"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -74,7 +74,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "1346"
+	"mapversion" "1348"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -60486,6 +60486,7 @@ entity
 	"attach1" "crane_mover"
 	"attach2" "platform1"
 	"attachpoint" "-128 664 -1148"
+	"constraintsystem" "platform1_group"
 	"minlength" "0"
 	"spawnflags" "3"
 	"origin" "-144 648 -972"
@@ -60507,6 +60508,7 @@ entity
 	"attach1" "crane_mover"
 	"attach2" "platform1"
 	"attachpoint" "-128 808 -1148"
+	"constraintsystem" "platform1_group"
 	"minlength" "0"
 	"spawnflags" "3"
 	"origin" "-144 824 -972"
@@ -60528,6 +60530,7 @@ entity
 	"attach1" "crane_mover"
 	"attach2" "platform1"
 	"attachpoint" "32 664 -1148"
+	"constraintsystem" "platform1_group"
 	"minlength" "0"
 	"spawnflags" "3"
 	"origin" "48 648 -972"
@@ -60549,6 +60552,7 @@ entity
 	"attach1" "crane_mover"
 	"attach2" "platform1"
 	"attachpoint" "32 808 -1148"
+	"constraintsystem" "platform1_group"
 	"minlength" "0"
 	"spawnflags" "3"
 	"origin" "48 824 -972"
@@ -132165,6 +132169,21 @@ entity
 	"speedruntime" "142"
 	"speedruntimesp" "142"
 	"origin" "18.3673 -3748.44 -823"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "356141"
+	"classname" "phys_constraintsystem"
+	"additionaliterations" "0"
+	"targetname" "platform1_group"
+	"origin" "-64 736 -1096"
 	editor
 	{
 		"color" "220 30 220"
