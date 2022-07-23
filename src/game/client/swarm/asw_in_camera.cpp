@@ -179,7 +179,7 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		pPlayer = pSpectatingNPC->GetCommander();
 	}
 
-	if ( pPlayer && pPlayer->GetASWControls() != 1 )
+	if ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN )
 	{
 		if ( pSpectatingNPC && !pSpectatingNPC->IsInhabited() )
 		{
@@ -587,7 +587,7 @@ void CASWInput::UpdateASWControls()
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer || pPlayer->GetASWControls() == 1 )
+	if ( !pPlayer || pPlayer->GetASWControls() == ASWC_TOPDOWN )
 	{
 		CAM_ToThirdPerson();
 	}

@@ -1800,62 +1800,57 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 {
 	BaseClass::PlayerSpawn(pPlayer);
 
-	// BenLubar: This gets called before player data is fully set up,
-	// so we need to ask the engine directly if this is a utility "player".
-	player_info_t playerinfo{};
+	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
 
-	bool bGotPlayerInfo = engine->GetPlayerInfo( ENTINDEX( pPlayer ), &playerinfo );
-	Assert( bGotPlayerInfo );
-	if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
+	if ( pASWPlayer->IsAnyBot() )
 	{
 		return;
 	}
 
-	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
-
 	// assign leader if there isn't one already
-	if (ASWGameResource() && ASWGameResource()->GetLeader() == NULL)
+	if ( ASWGameResource() && ASWGameResource()->GetLeader() == NULL && pASWPlayer && pASWPlayer->CanBeLeader() )
 	{
-		if ( pASWPlayer )
+		ASWGameResource()->SetLeader( pASWPlayer );
+	}
+
+	if ( !pASWPlayer->IsSpectatorOnly() )
+	{
+		if ( ShouldQuickStart() )
 		{
-			ASWGameResource()->SetLeader( pASWPlayer );
+			StartTutorial( pASWPlayer );
+		}
+		else if ( IsTutorialMap() || engine->IsCreatingReslist() || engine->IsCreatingXboxReslist() )
+		{
+			StartTutorial( pASWPlayer );
+		}
+		else
+		{
+			AutoselectMarines( pASWPlayer );
 		}
 	}
 
-	if ( ShouldQuickStart() )
+	if ( !pASWPlayer->IsAnyBot() )
 	{
-		//SpawnNextMarine();
-		//pASWPlayer->SwitchMarine(0 );
-		StartTutorial( pASWPlayer );
-	}
-	else if (IsTutorialMap() || engine->IsCreatingReslist() || engine->IsCreatingXboxReslist())
-	{
-		StartTutorial(pASWPlayer);
-	}
-	else
-	{
-		AutoselectMarines(ToASW_Player(pPlayer));	
-	}
-
-	// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
-	CSingleUserRecipientFilter filter( pPlayer );
-	filter.MakeReliable();
-	for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
-	{
-		const char *pszCVarName = m_SavedConvars.String( i );
-		if ( ConVarRef( pszCVarName ).IsFlagSet( FCVAR_REPLICATED ) )
+		// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
+		CSingleUserRecipientFilter filter( pPlayer );
+		filter.MakeReliable();
+		for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
 		{
-			UserMessageBegin( filter, "SavedConvar" );
-			WRITE_STRING( pszCVarName );
-			WRITE_STRING( STRING( m_SavedConvars[i] ) );
-			MessageEnd();
+			const char *pszCVarName = m_SavedConvars.String( i );
+			if ( ConVarRef( pszCVarName ).IsFlagSet( FCVAR_REPLICATED ) )
+			{
+				UserMessageBegin( filter, "SavedConvar" );
+				WRITE_STRING( pszCVarName );
+				WRITE_STRING( STRING( m_SavedConvars[i] ) );
+				MessageEnd();
+			}
 		}
-	}
 
-	// ask Steam for our XP amounts
-	// sometimes caused crashes for a mod
-	if ( rd_request_experience.GetBool() )
-		pASWPlayer->RequestExperience();
+		// ask Steam for our XP amounts
+		// sometimes caused crashes for a mod
+		if ( rd_request_experience.GetBool() )
+			pASWPlayer->RequestExperience();
+	}
 }
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
@@ -1930,23 +1925,24 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 				int iPlayerEntIndex = pPlayer->entindex();
 				
 				CASW_Player *pBestPlayer = NULL;
-				for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
+				for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 				{
-					if (i+1 == iPlayerEntIndex)
-						continue; 
+					if ( i + 1 == iPlayerEntIndex )
+						continue;
 
 					// found a connected player?
-					CASW_Player *pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i + 1));
+					CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i + 1 ) );
 					// if they're not connected, skip them
-					if ( !pOtherPlayer || !pOtherPlayer->IsConnected() || pOtherPlayer->IsBot() || pOtherPlayer->IsHLTV() || pOtherPlayer->IsReplay() )
+					if ( !pOtherPlayer || !pOtherPlayer->IsConnected() || !pOtherPlayer->CanBeLeader() )
 						continue;
-					
-					if (!pBestPlayer || pBestPlayer->m_bRequestedSpectator)					
+
+					if ( !pBestPlayer || pBestPlayer->m_bRequestedSpectator )
 						pBestPlayer = pOtherPlayer;
 				}
-				if (pBestPlayer)
+
+				if ( pBestPlayer )
 				{
-					ASWGameResource()->SetLeader(pBestPlayer);
+					ASWGameResource()->SetLeader( pBestPlayer );
 				}
 			}
 
@@ -2285,7 +2281,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 		for ( int k = 1; k <= gpGlobals->maxClients; ++k )
 		{
 			pNewCommander = ToASW_Player( UTIL_PlayerByIndex( k ) );
-			if ( pNewCommander && !pNewCommander->IsBot() && !pNewCommander->IsHLTV() && !pNewCommander->IsReplay() )
+			if ( pNewCommander && !pNewCommander->IsAnyBot() )
 				break;
 		}
 	}
@@ -3844,9 +3840,7 @@ void CAlienSwarm::Think()
 				{
 					CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 					if ( pOtherPlayer && pOtherPlayer->IsConnected()
-								&& !pOtherPlayer->IsBot()
-								&& !pOtherPlayer->IsHLTV()
-								&& !pOtherPlayer->IsReplay()
+								&& !pOtherPlayer->IsAnyBot()
 								&& pOtherPlayer != pListenServer					// listen server doesn't generate the map clientside
 								&& pOtherPlayer->m_fMapGenerationProgress.Get() < 1.0f )
 					{
@@ -3896,7 +3890,7 @@ void CAlienSwarm::OnServerHibernating()
 	{
 		CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
+		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsAnyBot() )
 		{
 			iPlayers++;
 		}
@@ -7246,7 +7240,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
-		if ( pASWPlayer->GetASWControls() == 1 )
+		if ( pASWPlayer->GetASWControls() == ASWC_TOPDOWN )
 			iFov = clamp( iFov, 20, 75 );
 		else
 			iFov = clamp( iFov, 20, 120 );
@@ -7361,18 +7355,30 @@ void CAlienSwarm::ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader, 
 		ASWGameResource()->m_iKickVotes.Set(iSlotIndex, 0);
 }
 
-void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
+void CAlienSwarm::SetLeaderVote( CASW_Player *pPlayer, int iPlayerIndex )
 {
-	// if we're leader, then allow us to give leadership over to someone immediately
-	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader())
+	Assert( pPlayer && pPlayer->CanVote() );
+	if ( !pPlayer || !pPlayer->CanVote() )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
-		if (pOtherPlayer && pOtherPlayer != pPlayer)
+		return;
+	}
+
+	CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( iPlayerIndex ) );
+	Assert( !pOtherPlayer || pOtherPlayer->CanBeLeader() );
+	if ( pOtherPlayer && !pOtherPlayer->CanBeLeader() )
+	{
+		return;
+	}
+
+	// if we're leader, then allow us to give leadership over to someone immediately
+	if ( ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() )
+	{
+		if ( pOtherPlayer && pOtherPlayer != pPlayer )
 		{
-			ASWGameResource()->SetLeader(pOtherPlayer);
+			ASWGameResource()->SetLeader( pOtherPlayer );
 			CASW_Game_Resource::s_bLeaderGivenDifficultySuggestion = false;
-			UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", pOtherPlayer->GetPlayerName());
-			ClearLeaderKickVotes(pOtherPlayer, true, false);
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", pOtherPlayer->GetPlayerName() );
+			ClearLeaderKickVotes( pOtherPlayer, true, false );
 			return;
 		}
 	}
@@ -7381,98 +7387,99 @@ void CAlienSwarm::SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex)
 	pPlayer->m_iLeaderVoteIndex = iPlayerIndex;
 
 	// if we were previously voting for someone, update their vote count	
-	if (iOldPlayer != -1)
+	if ( iOldPlayer != -1 )
 	{
 		// this loop goes through every player, counting how many players have voted for the old guy
 		int iOldPlayerVotes = 0;
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+			CASW_Player *pVoter = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-			if ( pOtherPlayer && pOtherPlayer->IsConnected())
+			if ( pVoter && pVoter->IsConnected() && pVoter->CanVote() )
 			{
-				if ( pOtherPlayer->m_iLeaderVoteIndex == iOldPlayer )
+				if ( pVoter->m_iLeaderVoteIndex == iOldPlayer )
 					iOldPlayerVotes++;
 			}
 		}
 
 		// updates the target player's game resource entry with the number of leader votes against him
-		if (iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource())
+		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
 		{
-			ASWGameResource()->m_iLeaderVotes.Set(iOldPlayer-1, iOldPlayerVotes);
+			ASWGameResource()->m_iLeaderVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
 		}
 	}
-		
-	if (iPlayerIndex == -1)
-		return;
 
-	if (iPlayerIndex == 0)
+	if ( !pOtherPlayer )
+	{
 		return;
+	}
 
 	// check if this player has enough votes now
 	int iVotes = 0;
 	int iPlayers = 0;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
-		
-		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
+		CASW_Player *pVoter = ToASW_Player( UTIL_PlayerByIndex( i ) );
+
+		if ( pVoter && pVoter->IsConnected() && pVoter->CanVote() )
 		{
-			if ( pOtherPlayer->m_iLeaderVoteIndex == iPlayerIndex )
+			if ( pVoter->m_iLeaderVoteIndex == iPlayerIndex )
 				iVotes++;
 
 			iPlayers++;
 		}
 	}
 
-	if (iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource())
+	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
 	{
-		ASWGameResource()->m_iLeaderVotes.Set(iPlayerIndex-1, iVotes);
-	}	
+		ASWGameResource()->m_iLeaderVotes.Set( iPlayerIndex - 1, iVotes );
+	}
 
-	int iVotesNeeded = asw_vote_leader_fraction.GetFloat() * iPlayers;	
+	int iVotesNeeded = Ceil2Int( asw_vote_leader_fraction.GetFloat() * iPlayers );
 	// make sure we're not rounding down the number of needed players
-	if ((float(iPlayers) * asw_vote_leader_fraction.GetFloat()) > iVotesNeeded)
-		iVotesNeeded++;
-	if (iVotesNeeded <= 2)
+	if ( iVotesNeeded < 2 )
 		iVotesNeeded = 2;
-	if (iPlayerIndex > 0 && iVotes >= iVotesNeeded)
+
+	if ( iPlayerIndex > 0 && iVotes >= iVotesNeeded )
 	{
-		Msg("leader voting %d in (votes %d/%d\n", iPlayerIndex, iVotes, iVotesNeeded);
 		// make this player leader!
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
-		if (pOtherPlayer && ASWGameResource())
+		if ( pOtherPlayer && ASWGameResource() )
 		{
-			ASWGameResource()->SetLeader(pOtherPlayer);
+			ASWGameResource()->SetLeader( pOtherPlayer );
 			CASW_Game_Resource::s_bLeaderGivenDifficultySuggestion = false;
-			UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", pOtherPlayer->GetPlayerName());
-			ClearLeaderKickVotes(pOtherPlayer, true, false);
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_made_leader", pOtherPlayer->GetPlayerName() );
+			ClearLeaderKickVotes( pOtherPlayer, true, false );
 		}
 	}
-	else if (iVotes == 1 && iPlayerIndex != -1)	// if this is the first vote of this kind, check about announcing it
+	else if ( iVotes == 1 && iPlayerIndex != -1 )	// if this is the first vote of this kind, check about announcing it
 	{
 		pPlayer->m_iKLVotesStarted++;
-		if (pPlayer->m_iKLVotesStarted < 3 || (gpGlobals->curtime - pPlayer->m_fLastKLVoteTime) > 10.0f)
+		if ( pPlayer->m_iKLVotesStarted < 3 || ( gpGlobals->curtime - pPlayer->m_fLastKLVoteTime ) > 10.0f && pOtherPlayer )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
-			if (pOtherPlayer)
-			{
-				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_leader_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName());
-			}
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_leader_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName() );
 		}
 		pPlayer->m_fLastKLVoteTime = gpGlobals->curtime;
 	}
 }
 
-void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
+void CAlienSwarm::SetKickVote( CASW_Player *pPlayer, int iPlayerIndex )
 {
-	if (!pPlayer)
-		return;
-
-		// if we're leader & this is listen server, then allow us to kick immediately
-	if (ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() && !engine->IsDedicatedServer() )
+	Assert( pPlayer && pPlayer->CanVote() );
+	if ( !pPlayer || !pPlayer->CanVote() )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
+		return;
+	}
+
+	CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( iPlayerIndex ) );
+	Assert( !pOtherPlayer || pOtherPlayer->CanBeKicked() );
+	if ( pOtherPlayer && !pOtherPlayer->CanBeKicked() )
+	{
+		return;
+	}
+
+	// if we're leader & this is listen server, then allow us to kick immediately
+	if ( ASWGameResource() && pPlayer == ASWGameResource()->GetLeader() && !engine->IsDedicatedServer() )
+	{
 		if ( pOtherPlayer && pOtherPlayer != pPlayer )
 		{
 			// kick this player
@@ -7500,11 +7507,6 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 			Msg( "sending command: %s\n", buffer );
 			engine->ServerCommand( buffer );
 
-			//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
-			//{
-				//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
-			//}
-
 			return;
 		}
 	}
@@ -7513,46 +7515,45 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	pPlayer->m_iKickVoteIndex = iPlayerIndex;
 
 	// if we were previously voting for someone, update their vote count	
-	if (iOldPlayer != -1)
+	if ( iOldPlayer != -1 )
 	{
 		// this loop goes through every player, counting how many players have voted for the old guy
 		int iOldPlayerVotes = 0;
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+			CASW_Player *pVoter = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-			if ( pOtherPlayer && pOtherPlayer->IsConnected())
+			if ( pVoter && pVoter->IsConnected() && pVoter->CanVote() )
 			{
-				if ( pOtherPlayer->m_iKickVoteIndex == iOldPlayer )
+				if ( pVoter->m_iKickVoteIndex == iOldPlayer )
 					iOldPlayerVotes++;
 			}
 		}
 
 		// updates the target player's game resource entry with the number of kick votes against him
-		if (iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource())
+		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
 		{
-			ASWGameResource()->m_iKickVotes.Set(iOldPlayer-1, iOldPlayerVotes);
+			ASWGameResource()->m_iKickVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
 		}
 	}
-		
-	if (iPlayerIndex == -1)
-		return;
 
-	if (iPlayerIndex == 0)
+	if ( !pOtherPlayer )
+	{
 		return;
+	}
 
 	// check if this player has enough votes now to be kicked
 	int iVotes = 0;
 	int iPlayers = 0;
 	// this loop goes through every player, counting how many players there are and how many there are that
 	//  have voted for the same player to be kicked as the one that started this function
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+		CASW_Player *pVoter = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
-		if ( pOtherPlayer && pOtherPlayer->IsConnected() && !pOtherPlayer->IsBot() && !pOtherPlayer->IsHLTV() && !pOtherPlayer->IsReplay() )
+		if ( pVoter && pVoter->IsConnected() && pVoter->CanVote() )
 		{
-			if ( pOtherPlayer->m_iKickVoteIndex == iPlayerIndex )
+			if ( pVoter->m_iKickVoteIndex == iPlayerIndex )
 				iVotes++;
 
 			iPlayers++;
@@ -7560,90 +7561,76 @@ void CAlienSwarm::SetKickVote(CASW_Player *pPlayer, int iPlayerIndex)
 	}
 
 	// updates the target player's game resource entry with the number of kick votes against him
-	if (iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource())
+	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
 	{
-		ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, iVotes);
-	}	
-
-	int iVotesNeeded = asw_vote_kick_fraction.GetFloat() * iPlayers;	
-	// make sure we're not rounding down the number of needed players
-	if ((float(iPlayers) * asw_vote_kick_fraction.GetFloat()) > iVotesNeeded)
-	{		
-		iVotesNeeded++;
-		Msg("Rounding needed votes up to %d\n", iVotesNeeded);
+		ASWGameResource()->m_iKickVotes.Set( iPlayerIndex - 1, iVotes );
 	}
-	if (iVotesNeeded < 2)
+
+	int iVotesNeeded = Ceil2Int( asw_vote_kick_fraction.GetFloat() * iPlayers );
+	// make sure we're not rounding down the number of needed players
+	if ( iVotesNeeded < 2 )
 	{
-		Msg("Increasing needed votes to 2 because that's the minimum for a kick vote\n");
 		iVotesNeeded = 2;
 	}
-	Msg("Players %d, Votes %d, Votes needed %d\n", iPlayers, iVotes, iVotesNeeded);
-	if (iPlayerIndex > 0 && iVotes >= iVotesNeeded)
+
+	Msg( "Players %d, Votes %d, Votes needed %d\n", iPlayers, iVotes, iVotesNeeded );
+
+	if ( iPlayerIndex > 0 && iVotes >= iVotesNeeded )
 	{
 		// kick this player
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
-		if (pOtherPlayer)
+		ClearLeaderKickVotes( pOtherPlayer, false, true );
+
+		Msg( "kick voting %d out (votes %d/%d)\n", iPlayerIndex, iVotes, iVotesNeeded );
+		ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
+		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName() );
+
+		bool bPlayerCrashed = false;
+		INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
+		if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
 		{
-			ClearLeaderKickVotes(pOtherPlayer, false, true);
-
-			Msg("kick voting %d out (votes %d/%d)\n", iPlayerIndex, iVotes, iVotesNeeded);
-			ClientPrint( pOtherPlayer, HUD_PRINTCONSOLE, "#asw_kicked_by_vote" );
-			UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_kicked", pOtherPlayer->GetPlayerName());
-
-			bool bPlayerCrashed = false;
-			INetChannelInfo *pNetChanInfo = engine->GetPlayerNetInfo( pOtherPlayer->entindex() );
-			if ( !pNetChanInfo || pNetChanInfo->IsTimingOut() )
-			{
-				// don't ban the player
-				DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
-				bPlayerCrashed = true;
-			}
-			bool bIsListenHost = !engine->IsDedicatedServer() && UTIL_GetListenServerHost() == pOtherPlayer;
-			if ( ( sv_vote_kick_ban_duration.GetInt() > 0 ) && !bPlayerCrashed && !bIsListenHost )
-			{
-				// don't roll the kick command into this, it will fail on a lan, where kickid will go through
-				engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
-			}
-
-			char buffer[256];
-			Q_snprintf(buffer, sizeof(buffer), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID());
-			Msg("sending command: %s\n", buffer);
-			engine->ServerCommand(buffer);			
-
-			//if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS && ASWGameResource())
-			//{
-				//ASWGameResource()->m_iKickVotes.Set(iPlayerIndex-1, 0);
-			//}	
+			// don't ban the player
+			DevMsg( "Will not ban kicked player: net channel was idle for %.2f sec.\n", pNetChanInfo ? pNetChanInfo->GetTimeSinceLastReceived() : 0.0f );
+			bPlayerCrashed = true;
 		}
+
+		if ( sv_vote_kick_ban_duration.GetInt() > 0 && !bPlayerCrashed )
+		{
+			// don't roll the kick command into this, it will fail on a lan, where kickid will go through
+			engine->ServerCommand( CFmtStr( "banid %d %d;", sv_vote_kick_ban_duration.GetInt(), pOtherPlayer->GetUserID() ) );
+		}
+
+		char buffer[256];
+		Q_snprintf( buffer, sizeof( buffer ), "kickid %d Kicked by player vote.\n", pOtherPlayer->GetUserID() );
+		Msg( "sending command: %s\n", buffer );
+		engine->ServerCommand( buffer );
 	}
-	else if (iVotes == 1 && iPlayerIndex != -1)	// if this is the first vote of this kind, check about announcing it
+	else if ( iVotes == 1 && iPlayerIndex != -1 )	// if this is the first vote of this kind, check about announcing it
 	{
 		pPlayer->m_iKLVotesStarted++;
-		if (pPlayer->m_iKLVotesStarted < 3 || (gpGlobals->curtime - pPlayer->m_fLastKLVoteTime) > 10.0f)
+		if ( pPlayer->m_iKLVotesStarted < 3 || ( gpGlobals->curtime - pPlayer->m_fLastKLVoteTime ) > 10.0f )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(iPlayerIndex));
-			if (pOtherPlayer)
-			{
-				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_kick_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName());
-			}
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_started_kick_vote", pPlayer->GetPlayerName(), pOtherPlayer->GetPlayerName() );
 		}
 		pPlayer->m_fLastKLVoteTime = gpGlobals->curtime;
 	}
 }
 
-void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szVoteName, int nCampaignIndex)
+void CAlienSwarm::StartVote( CASW_Player *pPlayer, int iVoteType, const char *szVoteName, int nCampaignIndex )
 {
-	if (!pPlayer)
+	Assert( pPlayer && pPlayer->CanVote() );
+	if ( !pPlayer || !pPlayer->CanVote() )
 		return;
 
-	if (GetCurrentVoteType() != ASW_VOTE_NONE)
+	if ( GetCurrentVoteType() != ASW_VOTE_NONE )
 	{
-		ClientPrint(pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_already_in_progress");
+		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_already_in_progress" );
 		return;
 	}
 
-	if (iVoteType <= ASW_VOTE_SAVED_CAMPAIGN || iVoteType > ASW_VOTE_CHANGE_MISSION)
+	if ( iVoteType <= ASW_VOTE_SAVED_CAMPAIGN || iVoteType > ASW_VOTE_CHANGE_MISSION )
+	{
 		return;
+	}
 
 	if ( !Q_stricmp( szVoteName, "lobby" ) )
 	{
@@ -7655,13 +7642,13 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	//   if it's a campaign change, check that campaign exists
 	//   if it's a saved campaign game, check that save exists
 	// This can all be done by querying the local mission source...
-	if (!missionchooser || !missionchooser->LocalMissionSource())
+	if ( !missionchooser || !missionchooser->LocalMissionSource() )
 		return;
 
-	IASW_Mission_Chooser_Source* pMissionSource = missionchooser->LocalMissionSource();
+	IASW_Mission_Chooser_Source *pMissionSource = missionchooser->LocalMissionSource();
 
 	const RD_Mission_t *pMission = NULL;
-	if (iVoteType == ASW_VOTE_CHANGE_MISSION )
+	if ( iVoteType == ASW_VOTE_CHANGE_MISSION )
 	{
 		pMission = ReactiveDropMissions::GetMission( szVoteName );
 		if ( !pMission )
@@ -7670,9 +7657,9 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 			return;
 		}
 	}
-	if (iVoteType == ASW_VOTE_SAVED_CAMPAIGN && !pMissionSource->SavedCampaignExists(szVoteName))
+	if ( iVoteType == ASW_VOTE_SAVED_CAMPAIGN && !pMissionSource->SavedCampaignExists( szVoteName ) )
 	{
-		ClientPrint(pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_save_doesnt_exist");
+		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_save_doesnt_exist" );
 		return;
 	}
 
@@ -7691,8 +7678,8 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	m_iCurrentVoteType = iVoteType;
 	Q_strncpy( m_szCurrentVoteName, szVoteName, 128 );
 	// store a pretty description if we can
-	if (iVoteType == ASW_VOTE_CHANGE_MISSION)
-	{		
+	if ( iVoteType == ASW_VOTE_CHANGE_MISSION )
+	{
 		Q_strncpy( m_szCurrentVoteDescription.GetForModify(), STRING( pMission->MissionTitle ), 128 );
 		Q_strncpy( m_szCurrentVoteMapName.GetForModify(), szVoteName, 128 );
 		if ( !pContainingCampaign )
@@ -7704,9 +7691,9 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 			Q_strncpy( m_szCurrentVoteCampaignName.GetForModify(), pContainingCampaign->BaseName, 128 );
 		}
 	}
-	else if (iVoteType == ASW_VOTE_SAVED_CAMPAIGN)
-	{		
-		Q_strncpy( m_szCurrentVoteDescription.GetForModify(), pMissionSource->GetPrettySavedCampaignName(szVoteName), 128 );
+	else if ( iVoteType == ASW_VOTE_SAVED_CAMPAIGN )
+	{
+		Q_strncpy( m_szCurrentVoteDescription.GetForModify(), pMissionSource->GetPrettySavedCampaignName( szVoteName ), 128 );
 	}
 	m_iCurrentVoteYes = 0;
 	m_iCurrentVoteNo = 0;
@@ -7714,50 +7701,55 @@ void CAlienSwarm::StartVote(CASW_Player *pPlayer, int iVoteType, const char *szV
 	m_PlayersVoted.Purge();
 
 	// clear out current votes for all players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
-		if (pOtherPlayer)
+		CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pOtherPlayer )
 			pOtherPlayer->m_iMapVoted = 0;
 	}
-	
+
 	// print a message telling players about the new vote that has started and how to bring up their voting options
 	const char *desc = m_szCurrentVoteDescription;
-	if (iVoteType == ASW_VOTE_CHANGE_MISSION)
+	if ( iVoteType == ASW_VOTE_CHANGE_MISSION )
 	{
-		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_mission_start", pPlayer->GetPlayerName(), desc);		
+		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_mission_start", pPlayer->GetPlayerName(), desc );
 	}
-	else if (iVoteType == ASW_VOTE_SAVED_CAMPAIGN)
+	else if ( iVoteType == ASW_VOTE_SAVED_CAMPAIGN )
 	{
-		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_saved_start", pPlayer->GetPlayerName(), desc);		
+		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_saved_start", pPlayer->GetPlayerName(), desc );
 	}
-// 	else if (iVoteType == ASW_VOTE_CAMPAIGN)
-// 	{
-// 		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_campaign_start", pPlayer->GetPlayerName(), desc);		
-// 	}
+	// 	else if (iVoteType == ASW_VOTE_CAMPAIGN)
+	// 	{
+	// 		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_campaign_start", pPlayer->GetPlayerName(), desc);		
+	// 	}
 
 	//UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_press_vote_key", "^%playerlist%" );
-	CastVote(pPlayer, true);
+	CastVote( pPlayer, true );
 }
 
-void CAlienSwarm::CastVote(CASW_Player *pPlayer, bool bVoteYes)
+void CAlienSwarm::CastVote( CASW_Player *pPlayer, bool bVoteYes )
 {
-	if (!pPlayer)
+	Assert( pPlayer && pPlayer->CanVote() );
+	if ( !pPlayer || !pPlayer->CanVote() )
+	{
 		return;
+	}
 
-	if (m_iCurrentVoteType == ASW_VOTE_NONE)
+	if ( m_iCurrentVoteType == ASW_VOTE_NONE )
+	{
 		return;
+	}
 
 	// get an ID for this player
 	const char *pszNetworkID = pPlayer->GetASWNetworkID();
-	
+
 	// check this player hasn't voted already
-	for (int i=0;i<m_PlayersVoted.Count();i++)
+	for ( int i = 0; i < m_PlayersVoted.Count(); i++ )
 	{
-		const char *p = STRING(m_PlayersVoted[i]);
-		if (!Q_strcmp(p, pszNetworkID))
+		const char *p = STRING( m_PlayersVoted[i] );
+		if ( !Q_strcmp( p, pszNetworkID ) )
 		{
-			ClientPrint(pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_already_voted");
+			ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_already_voted" );
 			return;
 		}
 	}
@@ -7765,11 +7757,11 @@ void CAlienSwarm::CastVote(CASW_Player *pPlayer, bool bVoteYes)
 	pPlayer->m_iMapVoted = bVoteYes ? 2 : 1;
 
 	// add this player to the list of those who have voted
-	string_t stringID = AllocPooledString(pszNetworkID);
-	m_PlayersVoted.AddToTail(stringID);
+	string_t stringID = AllocPooledString( pszNetworkID );
+	m_PlayersVoted.AddToTail( stringID );
 
 	// count his vote
-	if (bVoteYes)
+	if ( bVoteYes )
 		m_iCurrentVoteYes++;
 	else
 		m_iCurrentVoteNo++;
@@ -7778,16 +7770,21 @@ void CAlienSwarm::CastVote(CASW_Player *pPlayer, bool bVoteYes)
 }
 
 // removes a player's vote from the current vote (used when they disconnect)
-void CAlienSwarm::RemoveVote(CASW_Player *pPlayer)
+void CAlienSwarm::RemoveVote( CASW_Player *pPlayer )
 {
-	if (!pPlayer || pPlayer->m_iMapVoted.Get() == 0)
+	Assert( pPlayer && pPlayer->CanVote() );
+	if ( !pPlayer || !pPlayer->CanVote() || pPlayer->m_iMapVoted.Get() == 0 )
+	{
 		return;
+	}
 
-	if (m_iCurrentVoteType == ASW_VOTE_NONE)
+	if ( m_iCurrentVoteType == ASW_VOTE_NONE )
+	{
 		return;
+	}
 
 	// count his vote
-	if (pPlayer->m_iMapVoted.Get() == 2)
+	if ( pPlayer->m_iMapVoted.Get() == 2 )
 		m_iCurrentVoteYes--;
 	else
 		m_iCurrentVoteNo--;
@@ -7797,28 +7794,39 @@ void CAlienSwarm::RemoveVote(CASW_Player *pPlayer)
 
 void CAlienSwarm::UpdateVote()
 {
-	if (m_iCurrentVoteType == ASW_VOTE_NONE)
+	if ( m_iCurrentVoteType == ASW_VOTE_NONE )
+	{
 		return;
+	}
 
 	// check if a yes/no total has reached the amount needed to make a decision
-	int iNumPlayers = UTIL_ASW_GetNumPlayers();
-	int iNeededVotes = asw_vote_map_fraction.GetFloat() * iNumPlayers;
-	if (iNeededVotes < 1)
-		iNeededVotes = 1;
+	int iNumPlayers = 0;
+	for ( int i = 1; i < gpGlobals->maxClients; i++ )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && pPlayer->IsConnected() && pPlayer->CanVote() )
+		{
+			iNumPlayers++;
+		}
+	}
+
+	int iNeededVotes = Ceil2Int( asw_vote_map_fraction.GetFloat() * iNumPlayers );
 	// make sure we're not rounding down the number of needed players
-	if ((float(iNumPlayers) * asw_vote_map_fraction.GetFloat()) > iNeededVotes)
-		iNeededVotes++;
+	if ( iNeededVotes < 1 )
+	{
+		iNeededVotes = 1;
+	}
 
 	bool bSinglePlayer = ASWGameResource() && ASWGameResource()->IsOfflineGame();
 
-	if (m_iCurrentVoteYes >= iNeededVotes)
+	if ( m_iCurrentVoteYes >= iNeededVotes )
 	{
-		if (ASWGameResource())
+		if ( ASWGameResource() )
 			ASWGameResource()->RememberLeaderID();
 
 		// make it so
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_passed" );
-		if (m_iCurrentVoteType == ASW_VOTE_CHANGE_MISSION)
+		if ( m_iCurrentVoteType == ASW_VOTE_CHANGE_MISSION )
 		{
 			// if we're ingame, then upload for state (we don't do this once the mission is over, as stats are already sent on MissionComplete)
 			// stats todo:
@@ -7829,17 +7837,17 @@ void CAlienSwarm::UpdateVote()
 			if ( !szCampaignName || !szCampaignName[0] )
 			{
 				// changes level into single mission mode
-				engine->ChangeLevel(GetCurrentVoteName(), NULL);
+				engine->ChangeLevel( GetCurrentVoteName(), NULL );
 			}
 			else
 			{
 				// start a new campaign on the specified mission
-				IASW_Mission_Chooser_Source* pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+				IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 				if ( !pSource )
 					return;
 
-				char szSaveFilename[ MAX_PATH ];
-				szSaveFilename[ 0 ] = 0;
+				char szSaveFilename[MAX_PATH];
+				szSaveFilename[0] = 0;
 				const char *szStartingMission = GetCurrentVoteName();
 				if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, ( gpGlobals->maxClients > 1 ), szStartingMission ) )
 				{
@@ -7852,7 +7860,7 @@ void CAlienSwarm::UpdateVote()
 					szSaveFilename ) );
 			}
 		}
-		else if (m_iCurrentVoteType == ASW_VOTE_SAVED_CAMPAIGN)
+		else if ( m_iCurrentVoteType == ASW_VOTE_SAVED_CAMPAIGN )
 		{
 			// if we're ingame, then upload for state (we don't do this once the mission is over, as stats are already sent on MissionComplete)
 			// stats todo:
@@ -7860,30 +7868,30 @@ void CAlienSwarm::UpdateVote()
 				//ASWGameStats()->AddMapRecord();
 
 			// check the save file still exists (in very rare cases it could have been deleted automatically and the player clicked really fast!)
-			if ( !missionchooser || !missionchooser->LocalMissionSource() || missionchooser->LocalMissionSource()->SavedCampaignExists(GetCurrentVoteName()) )
+			if ( !missionchooser || !missionchooser->LocalMissionSource() || missionchooser->LocalMissionSource()->SavedCampaignExists( GetCurrentVoteName() ) )
 			{
 				// load this saved campaign game
 				char szMapCommand[MAX_PATH];
-				Q_snprintf(szMapCommand, sizeof( szMapCommand ), "asw_server_loadcampaign %s %s change\n",
+				Q_snprintf( szMapCommand, sizeof( szMapCommand ), "asw_server_loadcampaign %s %s change\n",
 					GetCurrentVoteName(),
 					bSinglePlayer ? "SP" : "MP"
 				);
-				engine->ServerCommand(szMapCommand);
+				engine->ServerCommand( szMapCommand );
 			}
 		}
 
-		m_iCurrentVoteType = (int) ASW_VOTE_NONE;		
+		m_iCurrentVoteType = ( int )ASW_VOTE_NONE;
 		m_iCurrentVoteYes = 0;
 		m_iCurrentVoteNo = 0;
 		m_fVoteEndTime = 0;
 		m_PlayersVoted.Purge();
 	}
-	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && (m_iCurrentVoteNo >= iNeededVotes || gpGlobals->curtime >= m_fVoteEndTime		// check if vote has timed out also
-		|| (m_iCurrentVoteNo + m_iCurrentVoteYes) >= iNumPlayers) )			// or if everyone's voted and it didn't trigger a yes
+	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && ( m_iCurrentVoteNo >= iNeededVotes || gpGlobals->curtime >= m_fVoteEndTime		// check if vote has timed out also
+		|| ( m_iCurrentVoteNo + m_iCurrentVoteYes ) >= iNumPlayers ) )			// or if everyone's voted and it didn't trigger a yes
 	{
 		// the people decided against this vote, clear it all
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_failed" );
-		m_iCurrentVoteType = (int) ASW_VOTE_NONE;		
+		m_iCurrentVoteType = ( int )ASW_VOTE_NONE;
 		m_iCurrentVoteYes = 0;
 		m_iCurrentVoteNo = 0;
 		m_fVoteEndTime = 0;

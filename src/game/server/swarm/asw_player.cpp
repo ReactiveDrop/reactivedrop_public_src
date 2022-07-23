@@ -235,8 +235,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	//
 
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
-
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
+	SendPropBool( SENDINFO( m_bWantsSpectatorOnly ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -398,6 +398,7 @@ CASW_Player::CASW_Player()
 	// 
 
 	m_bLeaderboardReady = false;
+	m_bWantsSpectatorOnly = false;
 }
 
 
@@ -1855,13 +1856,14 @@ void CASW_Player::OnNPCCommanded( CASW_Inhabitable_NPC *pNPC )
 
 void CASW_Player::SetNPC( CASW_Inhabitable_NPC *pNPC )
 {
+	Assert( !pNPC || !IsSpectatorOnly() );
+
 	if ( pNPC && pNPC != GetNPC() )
 	{
 		if ( !ASWGameResource() )
 		{
 			return;
 		}
-
 
 		if ( pNPC->Classify() == CLASS_ASW_MARINE )
 		{
@@ -2055,6 +2057,8 @@ bool CASW_Player::CanSwitchToMarine(int num)
 
 void CASW_Player::SwitchInhabiting( CASW_Inhabitable_NPC *pNPC )
 {
+	Assert( !IsSpectatorOnly() );
+
 	CASW_Inhabitable_NPC *pOld = GetNPC();
 
 	// abort if we're trying to switch to a dead NPC
@@ -3145,7 +3149,7 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 
 const Vector& CASW_Player::GetCrosshairTracePos()
 {
-	if ( GetASWControls() != 1 && GetNPC() )
+	if ( GetASWControls() != ASWC_TOPDOWN && GetNPC() )
 	{
 		trace_t tr;
 		Vector forward;

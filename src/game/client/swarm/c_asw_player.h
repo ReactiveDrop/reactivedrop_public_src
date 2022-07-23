@@ -128,7 +128,7 @@ public:
 // Called by shared code.
 public:
 	void ItemPostFrame();
-	int GetASWControls();
+	ASW_Controls_t GetASWControls();
 
 	void DoAnimationEvent( PlayerAnimEvent_t event );
 
@@ -220,15 +220,21 @@ public:
 	
 	CNetworkHandle(C_ASW_Marine, m_hOrderingMarine);
 
-    CNetworkVar( float, m_fMarineDeathTime);
+	CNetworkVar( float, m_fMarineDeathTime);
+	bool IsSpectatorOnly();	// for players who can *only* spectate, i.e. not able to control characters
+	CNetworkVar( bool, m_bWantsSpectatorOnly );
 
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
 	CNetworkVar( bool, m_bSentJoinedMessage );
+	bool IsAnyBot();
 
 	// voting
 	CNetworkVar(int, m_iLeaderVoteIndex);	// entindex of the player we want to be leader
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
 	CNetworkVar(int, m_iMapVoted);	// my yes/no vote status during a map vote
+	bool CanVote();
+	bool CanBeKicked();
+	bool CanBeLeader();
 
 	// music	
 	void StartStimMusic();

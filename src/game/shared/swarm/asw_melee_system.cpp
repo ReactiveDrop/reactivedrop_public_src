@@ -572,9 +572,9 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	}
 	else
 	{
-		float flMoveAxis = pPlayer && pMarine->IsInhabited() && pPlayer->GetASWControls() != 1 ? pMarine->ASWEyeAngles()[YAW] : pMoveData->m_vecMovementAxis[YAW];
+		float flMoveAxis = pPlayer && pMarine->IsInhabited() && pPlayer->GetASWControls() != ASWC_TOPDOWN ? pMarine->ASWEyeAngles()[YAW] : pMoveData->m_vecMovementAxis[YAW];
 		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + flMoveAxis;	// assumes 45 degree cam!
-		pMarine->m_bFaceMeleeYaw = !pPlayer || !pMarine->IsInhabited() || pPlayer->GetASWControls() == 1;
+		pMarine->m_bFaceMeleeYaw = !pPlayer || !pMarine->IsInhabited() || pPlayer->GetASWControls() == ASWC_TOPDOWN;
 	}
 
 	// see if we just dodged any ranger shots

@@ -208,20 +208,13 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		if ( iClient == pLocalPlayer->entindex() )
 			continue;
 
-		// BenLubar: The methods on C_BasePlayer don't do what they do on the server version of players,
-		// so we need to ask the engine directly whether this is a utility bot.
-		player_info_t playerinfo{};
-
-		// Skip utility "players" when creating lobby list.
-		bool bGotPlayerInfo = engine->GetPlayerInfo( iClient, &playerinfo );
-		Assert( bGotPlayerInfo );
-		if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
-			continue;
-
 		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( iClient ) );
 		Assert( pPlayer );
 		if ( !pPlayer )
 			continue;
+
+		if ( pPlayer->IsSpectatorOnly() )
+			continue; // TODO: add spectator list somewhere
 
 		int nMarines = 0;
 		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )

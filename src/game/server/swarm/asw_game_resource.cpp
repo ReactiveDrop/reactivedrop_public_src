@@ -428,10 +428,10 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 		return;
 	}
 
-	Assert( !pPlayer->IsBot() && !pPlayer->IsReplay() && !pPlayer->IsHLTV() );
-	if ( pPlayer->IsBot() || pPlayer->IsReplay() || pPlayer->IsHLTV() )
+	Assert( pPlayer->CanBeLeader() );
+	if ( !pPlayer->CanBeLeader() )
 	{
-		Warning( "Tried to set lobby leader to utility bot '%s'!\n", pPlayer->GetPlayerName() );
+		Warning( "Tried to set lobby leader to '%s'!\n", pPlayer->GetPlayerName() );
 		return;
 	}
 

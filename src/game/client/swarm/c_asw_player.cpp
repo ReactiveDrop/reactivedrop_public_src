@@ -225,8 +225,8 @@ public:
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
 
 BEGIN_RECV_TABLE_NOBASE( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent )
-RecvPropEHandle( RECVINFO( m_hPlayer ) ),
-RecvPropInt( RECVINFO( m_iEvent ) )
+	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
+	RecvPropInt( RECVINFO( m_iEvent ) )
 END_RECV_TABLE()
 
 // marine anim events
@@ -261,59 +261,59 @@ public:
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEMarineAnimEvent, DT_TEMarineAnimEvent, CTEMarineAnimEvent );
 
 BEGIN_RECV_TABLE_NOBASE( C_TEMarineAnimEvent, DT_TEMarineAnimEvent )
-RecvPropEHandle( RECVINFO( m_hMarine ) ),
-RecvPropEHandle( RECVINFO( m_hExcludePlayer ) ),
-RecvPropInt( RECVINFO( m_iEvent ) )
+	RecvPropEHandle( RECVINFO( m_hMarine ) ),
+	RecvPropEHandle( RECVINFO( m_hExcludePlayer ) ),
+	RecvPropInt( RECVINFO( m_iEvent ) )
 END_RECV_TABLE()
 
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Player, DT_ASW_Player )
 
 BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
-RecvPropBool( RECVINFO( m_fIsWalking ) ),
-RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
-RecvPropFloat( RECVINFO( m_angEyeAngles[2] ) ),
-RecvPropEHandle( RECVINFO( m_hInhabiting ) ),
-RecvPropEHandle( RECVINFO( m_hSpectating ) ),
-RecvPropInt( RECVINFO( m_iHealth ) ),
-RecvPropEHandle( RECVINFO( m_pCurrentInfoMessage ) ),
-RecvPropFloat( RECVINFO( m_fMarineDeathTime ) ),
-RecvPropEHandle( RECVINFO( m_hOrderingMarine ) ),
-RecvPropInt( RECVINFO( m_iLeaderVoteIndex ) ),
-RecvPropInt( RECVINFO( m_iKickVoteIndex ) ),
-RecvPropFloat( RECVINFO( m_fMapGenerationProgress ) ),
-RecvPropTime( RECVINFO( m_flUseKeyDownTime ) ),
-RecvPropEHandle( RECVINFO( m_hUseKeyDownEnt ) ),
-RecvPropFloat( RECVINFO( m_flMovementAxisYaw ) ),
-RecvPropInt( RECVINFO( m_nChangingMR ) ),
-RecvPropInt( RECVINFO( m_nChangingSlot ) ),
-RecvPropInt( RECVINFO( m_iMapVoted ) ),
-RecvPropInt( RECVINFO( m_iNetworkedXP ) ),
-RecvPropInt( RECVINFO( m_iNetworkedPromotion ) ),
+	RecvPropBool( RECVINFO( m_fIsWalking ) ),
+	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
+	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
+	RecvPropFloat( RECVINFO( m_angEyeAngles[2] ) ),
+	RecvPropEHandle( RECVINFO( m_hInhabiting ) ),
+	RecvPropEHandle( RECVINFO( m_hSpectating ) ),
+	RecvPropInt( RECVINFO( m_iHealth ) ),
+	RecvPropEHandle( RECVINFO( m_pCurrentInfoMessage ) ),
+	RecvPropFloat( RECVINFO( m_fMarineDeathTime ) ),
+	RecvPropEHandle( RECVINFO( m_hOrderingMarine ) ),
+	RecvPropInt( RECVINFO( m_iLeaderVoteIndex ) ),
+	RecvPropInt( RECVINFO( m_iKickVoteIndex ) ),
+	RecvPropFloat( RECVINFO( m_fMapGenerationProgress ) ),
+	RecvPropTime( RECVINFO( m_flUseKeyDownTime ) ),
+	RecvPropEHandle( RECVINFO( m_hUseKeyDownEnt ) ),
+	RecvPropFloat( RECVINFO( m_flMovementAxisYaw ) ),
+	RecvPropInt( RECVINFO( m_nChangingMR ) ),
+	RecvPropInt( RECVINFO( m_nChangingSlot ) ),
+	RecvPropInt( RECVINFO( m_iMapVoted ) ),
+	RecvPropInt( RECVINFO( m_iNetworkedXP ) ),
+	RecvPropInt( RECVINFO( m_iNetworkedPromotion ) ),
 
-// BenLubar(spectator-mouse)
-RecvPropInt( RECVINFO( m_iScreenWidth ) ),
-RecvPropInt( RECVINFO( m_iScreenHeight ) ),
-RecvPropInt( RECVINFO( m_iMouseX ) ),
-RecvPropInt( RECVINFO( m_iMouseY ) ),
+	// BenLubar(spectator-mouse)
+	RecvPropInt( RECVINFO( m_iScreenWidth ) ),
+	RecvPropInt( RECVINFO( m_iScreenHeight ) ),
+	RecvPropInt( RECVINFO( m_iMouseX ) ),
+	RecvPropInt( RECVINFO( m_iMouseY ) ),
 
-RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
-
-RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
+	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
+	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
+	RecvPropBool( RECVINFO( m_bWantsSpectatorOnly ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
-DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-DEFINE_PRED_FIELD( m_iHealth, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-DEFINE_PRED_FIELD( m_hHighlightEntity, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
-DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
-DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
-DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
-DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iHealth, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_hHighlightEntity, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
@@ -1722,7 +1722,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	Vector currentdir;
 	Vector rightdir;
-	AngleVectors( QAngle( 0, GetASWControls() == 1 ? m_flMovementAxisYaw : pCmd->viewangles.y, 0 ), &currentdir, &rightdir, NULL );
+	AngleVectors( QAngle( 0, GetASWControls() == ASWC_TOPDOWN ? m_flMovementAxisYaw : pCmd->viewangles.y, 0 ), &currentdir, &rightdir, NULL );
 
 	Vector vDirection = vecSeparationVelocity;
 	VectorNormalize( vDirection );
@@ -1852,7 +1852,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked( float flFrameTime, CUserCmd *pCmd, C
 	QAngle vAngles = pCmd->viewangles;
 	vAngles.x = 0;
 
-	if ( GetASWControls() == 1 )
+	if ( GetASWControls() == ASWC_TOPDOWN )
 		AngleVectors( QAngle( 0, m_flMovementAxisYaw, 0 ), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
@@ -2155,7 +2155,7 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 	vAngles.x = 0;
 
-	if ( GetASWControls() == 1 )
+	if ( GetASWControls() == ASWC_TOPDOWN )
 	{
 		AngleVectors( QAngle( 0, m_flMovementAxisYaw, 0 ), &currentdir, &rightdir, NULL );
 	}

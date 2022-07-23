@@ -91,7 +91,9 @@ public:
 	bool m_bLastAttack2Button;	// used to detect right clicks for cycling through marines
 	bool m_bRequestedSpectator;	// this player requested to be a spectator since the start of a match (won't be considered for leader, campaign votes, etc.)
 	float m_fLastControlledMarineTime;
-    CNetworkVar( float, m_fMarineDeathTime);    // same as above but optimized for networking
+	CNetworkVar( float, m_fMarineDeathTime );	// same as above but optimized for networking
+	bool IsSpectatorOnly();	// for players who can *only* spectate, i.e. not able to control characters
+	CNetworkVar( bool, m_bWantsSpectatorOnly );
 
 	void BecomeNonSolid();
 	void OnNPCCommanded( CASW_Inhabitable_NPC *pNPC );
@@ -139,7 +141,7 @@ public:
 	virtual bool Weapon_CanUse( CBaseCombatWeapon *pWeapon );
 	virtual CBaseCombatWeapon*	Weapon_OwnsThisType( const char *pszWeapon, int iSubType = 0 ) const;  // True if already owns a weapon of this class
 	virtual int Weapon_GetSlot( const char *pszWeapon, int iSubType = 0 ) const;  // Returns -1 if they don't have one
-	int GetASWControls();
+	ASW_Controls_t GetASWControls();
 
 	// searches for nearby entities that we can use (pickups, buttons, etc)
 	virtual void PlayerUse();
@@ -185,6 +187,7 @@ public:
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
 	CNetworkVar(bool, m_bSentJoinedMessage);	// has this player told everyone that he's fully joined yet
 	void OnFullyJoined( bool bSendGameEvent );
+	bool IsAnyBot();
 
 	void WelcomeMessageThink();
 
@@ -195,6 +198,9 @@ public:
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
 	const char* GetASWNetworkID();
 	CNetworkVar( int, m_iMapVoted );	// 0 = didn't vote, 1 = "no" vote, 2 = "yes" vote
+	bool CanVote();
+	bool CanBeKicked();
+	bool CanBeLeader();
 
 	// client stat counts (these are numbers each client stores and provides to the server on player creation, so server can decide to award medals)
 	int m_iClientKills;

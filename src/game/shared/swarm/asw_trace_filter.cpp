@@ -35,7 +35,7 @@ bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int conten
 		return BaseClass::ShouldHitEntity( pServerEntity, contentsMask );
 	}
 
-	if ( !m_pNPC->IsInhabited() || !m_pNPC->GetCommander() || m_pNPC->GetCommander()->GetASWControls() != 1 )
+	if ( !m_pNPC->IsInhabited() || !m_pNPC->GetCommander() || m_pNPC->GetCommander()->GetASWControls() != ASWC_TOPDOWN )
 	{
 		if ( pServerEntity == m_pNPC )
 		{

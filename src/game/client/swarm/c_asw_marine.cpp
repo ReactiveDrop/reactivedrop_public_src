@@ -1637,7 +1637,7 @@ void C_ASW_Marine::UpdateFlashlight()
 		
 		C_ASW_Player *pPlayer = GetCommander();
 		QAngle angFlashlight;
-		if ( pPlayer && C_BasePlayer::IsLocalPlayer(pPlayer) && IsInhabited() && pPlayer->GetASWControls() == 1 && GetHealth() > 0 )
+		if ( pPlayer && C_BasePlayer::IsLocalPlayer(pPlayer) && IsInhabited() && pPlayer->GetASWControls() == ASWC_TOPDOWN && GetHealth() > 0 )
 		{
 			angFlashlight = pPlayer->EyeAnglesWithCursorRoll();	// z component of eye angles holds the distance of the cursor from the marine
 			angFlashlight.x = angFlashlight.z;

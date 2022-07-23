@@ -28,6 +28,7 @@
 	#include "prediction.h"
 	#include "igameevents.h"
 	#include "c_asw_ammo_drop.h"
+	#include "matchmaking/imatchframework.h"
 	#define CASW_Button_Area C_ASW_Button_Area
 	#define CASW_Computer_Area C_ASW_Computer_Area
 	#define CASW_Use_Area C_ASW_Use_Area
@@ -78,6 +79,7 @@
 #include "asw_weapon_parse.h"
 #include "collisionutils.h"
 #include "particle_parse.h"
+#include "cdll_int.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -227,8 +229,8 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 
 #ifdef GAME_DLL	
 	if ( asw_move_marine.GetBool() )
-	{
 #endif
+	{
 		if ( pNPC && ( !pMarine || !pMarine->IsInVehicle() ) && ASWGameResource() )
 		{
 			// don't apply commands meant for another marine
@@ -284,14 +286,98 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 
 			//m_pMarine->m_nSimulationTick = gpGlobals->tickcount;  // stop the entity doing any subsequence physicssimulate
 		}
-
-#ifdef GAME_DLL
 	}
-#endif
 
 	MoveHelper()->SetHost( this );
 }
 
+bool CASW_Player::IsSpectatorOnly()
+{
+	player_info_t playerinfo{};
+
+	bool bGotPlayerInfo = engine->GetPlayerInfo( entindex(), &playerinfo );
+	Assert( bGotPlayerInfo );
+	if ( bGotPlayerInfo && ( playerinfo.ishltv || playerinfo.isreplay ) )
+	{
+		return true;
+	}
+
+	return m_bWantsSpectatorOnly;
+}
+
+bool CASW_Player::IsAnyBot()
+{
+	player_info_t playerinfo{};
+
+	bool bGotPlayerInfo = engine->GetPlayerInfo( entindex(), &playerinfo );
+	Assert( bGotPlayerInfo );
+	return bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay );
+}
+
+bool CASW_Player::CanVote()
+{
+	if ( IsAnyBot() )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+// Can't use UTIL_GetListenServerHost because SourceTV joins before the host.
+static bool IsFirstNonBotPlayer( int entindex )
+{
+	for ( int i = 1; i < entindex; i++ )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( !pPlayer || !pPlayer->IsAnyBot() )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool CASW_Player::CanBeKicked()
+{
+	if ( IsAnyBot() )
+	{
+		return false;
+	}
+
+	if ( IsFirstNonBotPlayer( entindex() ) )
+	{
+#ifdef CLIENT_DLL
+		KeyValues *pSettings = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
+
+		if ( engine->IsClientLocalToActiveServer() || ( pSettings && !V_strcmp( pSettings->GetString( "server/server" ), "listen" ) ) )
+#else
+		if ( !engine->IsDedicatedServer() )
+#endif
+		{
+			// can't kick listen server host from their own listen server
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool CASW_Player::CanBeLeader()
+{
+	if ( IsAnyBot() )
+	{
+		return false;
+	}
+
+	if ( m_bWantsSpectatorOnly )
+	{
+		return false;
+	}
+
+	return true;
+}
 
 void CASW_Player::ItemPostFrame()
 {
@@ -980,7 +1066,7 @@ const QAngle& CASW_Player::EyeAngles( )
 const QAngle& CASW_Player::EyeAnglesWithCursorRoll( )
 {
 	// cursor roll for distance only makes sense in top-down view
-	Assert( GetASWControls() == 1 );
+	Assert( GetASWControls() == ASWC_TOPDOWN );
 
 	static QAngle angCursorEyes;
 #ifdef CLIENT_DLL
@@ -1276,23 +1362,23 @@ CBaseEntity* CASW_Player::GetSoundscapeListener()
 }
 
 // BenLubar: for code ported from Swarm Director 2, include this method just in case Reactive Drop ever has per-player asw_controls support.
-int CASW_Player::GetASWControls()
+ASW_Controls_t CASW_Player::GetASWControls()
 {
 	// if a camera is controlling our vision, we're in first person.
 	if ( GetViewEntity() )
-		return 0;
+		return ASWC_FIRSTPERSON;
 
 #ifdef CLIENT_DLL
 	// if we're in a death cam, switch to third person temporarily.
 	CAlienSwarm *pGameRules = ASWGameRules();
 	if ( pGameRules && pGameRules->GetMarineDeathCamInterp() )
-		return 1;
+		return ASWC_TOPDOWN;
 
 	// if we're forcing a spectator override, everyone's controls change client-side while spectating.
 	C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
 	if ( asw_controls_spectator_override.GetInt() >= 0 && ( ( pLocal && pLocal->GetSpectatingNPC() ) || engine->IsPlayingDemo() ) )
-		return asw_controls_spectator_override.GetInt();
+		return ( ASW_Controls_t )asw_controls_spectator_override.GetInt();
 #endif
 
-	return asw_controls.GetInt();
+	return ( ASW_Controls_t )asw_controls.GetInt();
 }

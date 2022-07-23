@@ -1451,7 +1451,7 @@ const char* MakeHumanReadable(const char *key)
 void ASW_AdjustViewAngleForGroundShooting( QAngle &viewangles )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer || pPlayer->GetASWControls() != 1 )
+	if ( !pPlayer || pPlayer->GetASWControls() != ASWC_TOPDOWN )
 		return;
 
 	// first check if we're using a weapon that supports ground alt-shooting
@@ -1792,7 +1792,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	QAngle	viewangles;
 	engine->GetViewAngles( viewangles );
 
-	if ( C_ASW_Player::GetLocalASWPlayer() && C_ASW_Player::GetLocalASWPlayer()->GetASWControls() == 1 )
+	if ( C_ASW_Player::GetLocalASWPlayer() && C_ASW_Player::GetLocalASWPlayer()->GetASWControls() == ASWC_TOPDOWN )
 	{
 		TurnTowardController( viewangles );
 	}

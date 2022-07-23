@@ -134,7 +134,7 @@ void CASW_Weapon_Assault_Shotgun::SecondaryAttack()
 
 	vecThrow = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );	 // 45 degrees = 0.707106781187
 	QAngle angAiming = pMarine->ASWEyeAngles();
-	if ( pMarine->IsInhabited() && pPlayer->GetASWControls() == 1 )
+	if ( pMarine->IsInhabited() && pPlayer->GetASWControls() == ASWC_TOPDOWN )
 	{
 		angAiming = pPlayer->EyeAnglesWithCursorRoll();
 		float dist = tan( DEG2RAD( 90 - angAiming.z ) ) * 50.0f;

@@ -260,7 +260,7 @@ void IN_HoldOrderUp()
 		{
 			// order that marine to face this way
 			fYaw = RAD2DEG( atan2f( -dy, dx ) ) - 90;
-			if ( pPlayer->GetASWControls() == 1 )
+			if ( pPlayer->GetASWControls() == ASWC_TOPDOWN )
 				fYaw += pPlayer->m_flMovementAxisYaw;
 			else
 				fYaw += pPlayer->EyeAngles().y;
@@ -603,7 +603,7 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 	}
 	cmd->crosshair_entity = GetHighlightEntity() ? GetHighlightEntity()->entindex() : 0;
 
-	if ( pPlayer && pPlayer->GetASWControls() != 1 && pMarine )
+	if ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN && pMarine )
 	{
 		Vector vecFacing;
 		AngleVectors( cmd->viewangles, &vecFacing );

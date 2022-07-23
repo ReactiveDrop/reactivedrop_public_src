@@ -18,7 +18,7 @@ int IASW_Fade_List::s_iFadeReflectionDepth = 0;
 
 IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 {
-	m_iLastControls = 1;
+	m_iLastControls = ASWC_TOPDOWN;
 	m_hLastNPC = NULL;
 	m_flInterpStart = 0;
 	m_bFaded = false;
@@ -104,7 +104,7 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 
 	C_BaseEntity *pEnt = GetEntity();
 
-	bool bFade = pPlayer->GetASWControls() == 1 && pNPC && pNPC->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
+	bool bFade = pPlayer->GetASWControls() == ASWC_TOPDOWN && pNPC && pNPC->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
 	byte target = bFade ? m_nFadeOpacity : m_nNormalOpacity;
 	byte prev = bFade ? m_nNormalOpacity : m_nFadeOpacity;
 	if ( bFade != m_bFaded )

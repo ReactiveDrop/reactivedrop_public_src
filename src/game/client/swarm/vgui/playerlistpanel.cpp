@@ -249,14 +249,6 @@ void PlayerListPanel::OnThink()
 	{	
 		if ( g_PR->IsConnected( j ) )
 		{
-			player_info_t playerinfo{};
-			bool bGotPlayerInfo = engine->GetPlayerInfo( j, &playerinfo );
-			Assert( bGotPlayerInfo );
-			if ( bGotPlayerInfo && ( playerinfo.fakeplayer || playerinfo.ishltv || playerinfo.isreplay ) )
-			{
-				continue;
-			}
-
 			iNumPlayersInGame++;
 			while (m_PlayerLine.Count() <= iNumPlayersInGame)
 			{

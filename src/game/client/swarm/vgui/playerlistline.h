@@ -43,7 +43,7 @@ namespace vgui
 class VoteCheck : public vgui::CheckButton
 {
 public:
-	VoteCheck(Panel *parent, const char *panelName, const char *text);
+	VoteCheck( Panel *parent, const char *panelName, const char *text );
 	virtual void DoClick();
 };
 
@@ -52,21 +52,21 @@ class PlayerListLine : public vgui::Panel, BaseModUI::IGenericPanelListItem
 {
 	DECLARE_CLASS_SIMPLE( PlayerListLine, vgui::Panel );
 public:
-	PlayerListLine(vgui::Panel *parent, const char *name);
-	
+	PlayerListLine( vgui::Panel *parent, const char *name );
+
 	virtual void OnThink();
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void OnCommand( const char *command );
 
 	virtual bool IsLabel() { return false; }
 
-	bool SetPlayerIndex(int i);
+	bool SetPlayerIndex( int i );
 	void UpdateVoteIcons();
 	void UpdateCheckBoxes();
 
-	CBitmapButton *m_pMuteButton; 
-	vgui::Button* m_pPlayerLabel;
+	CBitmapButton *m_pMuteButton;
+	vgui::Button *m_pPlayerLabel;
 	vgui::Label *m_pMarinesLabel;
 	vgui::Label *m_pFragsLabel;
 	vgui::Label *m_pDeathsLabel;
@@ -76,19 +76,19 @@ public:
 	VoteCheck *m_pMuteCheck;
 	vgui::ImagePanel *m_pKickVoteIcon[MAX_VOTE_ICONS];
 	vgui::ImagePanel *m_pLeaderVoteIcon[MAX_VOTE_ICONS];
-	
-	const char* GetFragsString();
-	const char* GetDeathsString();
-	const char* GetPingString();
-	wchar_t* GetMarineNames();
-	
+
+	const wchar_t *GetFragsString();
+	const wchar_t *GetDeathsString();
+	const wchar_t *GetPingString();
+	const wchar_t *GetMarineNames();
+
 	bool m_bKickChecked;
 	bool m_bLeaderChecked;
 	int m_iPlayerIndex;
-	char m_szPlayerName[32];
-	char m_szFragsString[12];
-	char m_szDeathsString[12];
-	char m_szPingString[12];
+	wchar_t m_wszPlayerName[k_cwchPersonaNameMax + 32]; // update this 32 if any of the " (leader)" translations are longer than 32 characters (including terminating null)
+	wchar_t m_wszFragsString[12];
+	wchar_t m_wszDeathsString[12];
+	wchar_t m_wszPingString[12];
 	wchar_t m_wszMarineNames[96];
 	int m_iKickIconState[MAX_VOTE_ICONS];
 	int m_iLeaderIconState[MAX_VOTE_ICONS];
