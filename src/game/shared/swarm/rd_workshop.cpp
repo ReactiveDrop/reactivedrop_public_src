@@ -100,7 +100,7 @@ bool CReactiveDropWorkshop::Init()
 	}
 
 	uint32 nSubscribed = SteamUGC()->GetNumSubscribedItems();
-	if ( nSubscribed != 0 )
+	if ( nSubscribed != 0 && !CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
 	{
 		int iStart = m_EnabledAddonsForQuery.AddMultipleToTail( nSubscribed );
 
