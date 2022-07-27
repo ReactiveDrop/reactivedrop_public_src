@@ -525,7 +525,11 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 		pCampaign->CampaignTextureLayer[1] = MAKE_STRING( "swarm/campaign/campaignmap_emptylayer" );
 		pCampaign->CampaignTextureLayer[2] = MAKE_STRING( "swarm/campaign/campaignmap_emptylayer" );
 
-		UnpackNetworkedTags( pCampaign->Tags, g_StringTableReactiveDropCampaigns, index );
+		Assert( engine->IsConnected() );
+		if ( engine->IsConnected() )
+		{
+			UnpackNetworkedTags( pCampaign->Tags, g_StringTableReactiveDropCampaigns, index );
+		}
 
 		return pCampaign;
 	}
