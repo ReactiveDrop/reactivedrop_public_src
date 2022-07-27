@@ -147,6 +147,7 @@ echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably 
 del /q "$(TargetDir)"$(TargetFileName)
 exit 1
 :BuildEventOK
+if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missionchooser
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -244,6 +245,7 @@ echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably 
 del /q "$(TargetDir)"$(TargetFileName)
 exit 1
 :BuildEventOK
+if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missionchooser
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

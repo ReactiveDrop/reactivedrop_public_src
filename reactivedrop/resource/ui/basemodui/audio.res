@@ -11,7 +11,7 @@
 		"visible"			"1"
 		"enabled"			"1"
 	}
-	
+
 	"Title"
 	{
 		"fieldName"		"Title"
@@ -26,7 +26,7 @@
 		"labelText"		"#GameUI_Audio"
 		"fgcolor_override"		"224 224 224 255"
 	}
-	
+
 	"ImgBackground" [$WIN32]
 	{
 		"ControlName"		"L4DMenuBackground"
@@ -43,7 +43,7 @@
 		"tabPosition"		"0"
 		"fillColor"			"0 0 0 0"
 	}
-	
+
 	"SldGameVolume"
 	{
 		"ControlName"			"SliderControl"
@@ -63,7 +63,7 @@
 		"navDown"				"SldMusicVolume"
 		"conCommand"			"volume"
 		"inverseFill"			"0"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -91,7 +91,7 @@
 			"usablePlayerIndex"		"nobody"
 		}
 	}
-	
+
 	"SldMusicVolume"
 	{
 		"ControlName"			"SliderControl"
@@ -106,13 +106,13 @@
 		"usetitlesafe"			"0"
 		"tabPosition"			"0"
 		"minValue"				"0.0"
-		"maxValue"				"1.0"
+		"maxValue"				"1.5"
 		"stepSize"				"0.05"
 		"navUp"					"SldGameVolume"
-		"navDown"				"DrpSpeakerConfiguration"
-		"conCommand"			"rd_mixer_volume_music_ingame"
+		"navDown"				"BtnAdvancedMixers"
+		"conCommand"			"_rd_mixer_volume_music_both_internal"
 		"inverseFill"			"0"
-		
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -140,13 +140,42 @@
 			"usablePlayerIndex"		"nobody"
 		}
 	}
-	
+
+	"BtnAdvancedMixers"
+	{
+		"ControlName"			"BaseModHybridButton"
+		"fieldName"				"BtnAdvancedMixers"
+		"xpos"					"c-180"
+		"ypos"					"110"
+		"zpos"					"0"
+		"wide"					"280"
+		"tall"					"15"
+		"autoResize"			"1"
+		"pinCorner"				"0"
+		"visible"				"1"
+		"enabled"				"1"
+		"tabPosition"			"0"
+		"wrap"					"1"
+		"navUp"					"SldMusicVolume"
+		"navDown"				"DrpSpeakerConfiguration"
+		"AllCaps"				"1"
+		"labelText"				"#rd_audio_advanced_mixers_label"
+		"tooltiptext"			"#rd_audio_advanced_mixers_tooltip"
+		"style"					"DefaultButton"
+		"command"				"AdvancedMixers"
+		"textAlignment"			"west"
+		EnabledTextInsetX		"2"
+		DisabledTextInsetX		"2"
+		FocusTextInsetX			"2"
+		OpenTextInsetX			"2"
+	}
+
 	"DrpSpeakerConfiguration"
 	{
 		"ControlName"		"DropDownMenu"
 		"fieldName"			"DrpSpeakerConfiguration"
 		"xpos"				"c-180"
-		"ypos"				"110"
+		"ypos"				"130"
 		"zpos"				"3"
 		"wide"				"360"
 		"tall"				"15"
@@ -154,9 +183,9 @@
 		"enabled"			"1"
 		"usetitlesafe"		"0"
 		"tabPosition"		"0"
-		"navUp"				"SldMusicVolume"
+		"navUp"				"BtnAdvancedMixers"
 		"navDown"			"DrpSoundQuality"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -182,8 +211,8 @@
 			"OnlyActiveUser"			"1"
 		}
 	}
-	
-	//flyouts		
+
+	//flyouts
 	"FlmSpeakerConfiguration"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -196,13 +225,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownSpeakerConfiguration.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"DrpSoundQuality"
 	{
 		"ControlName"		"DropDownMenu"
 		"fieldName"			"DrpSoundQuality"
 		"xpos"				"c-180"
-		"ypos"				"130"
+		"ypos"				"150"
 		"zpos"				"3"
 		"wide"				"360"
 		"tall"				"15"
@@ -212,7 +241,7 @@
 		"tabPosition"		"0"
 		"navUp"				"DrpSpeakerConfiguration"
 		"navDown"			"DrpCaptioning"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -238,8 +267,8 @@
 			"OnlyActiveUser"			"1"
 		}
 	}
-	
-	//flyouts		
+
+	//flyouts
 	"FlmSoundQuality"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -252,13 +281,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownSoundQuality.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"DrpCaptioning"
 	{
 		"ControlName"		"DropDownMenu"
 		"fieldName"			"DrpCaptioning"
 		"xpos"				"c-180"
-		"ypos"				"150"
+		"ypos"				"170"
 		"zpos"				"3"
 		"wide"				"360"
 		"tall"				"15"
@@ -268,7 +297,7 @@
 		"tabPosition"		"0"
 		"navUp"				"DrpSoundQuality"
 		"navDown"			"DrpLanguage"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -295,8 +324,8 @@
 			"OnlyActiveUser"			"1"
 		}
 	}
-	
-	//flyouts		
+
+	//flyouts
 	"FlmCaption"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -309,13 +338,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownCaption.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"DrpLanguage"
 	{
 		"ControlName"			"DropDownMenu"
 		"fieldName"				"DrpLanguage"
 		"xpos"					"c-180"
-		"ypos"					"170"
+		"ypos"					"190"
 		"zpos"					"3"
 		"wide"					"360"
 		"tall"					"15"
@@ -325,7 +354,7 @@
 		"tabPosition"			"0"
 		"navUp"					"DrpCaptioning"
 		"navDown"				"DrpVoiceCommunication"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -353,7 +382,7 @@
 		}
 	}
 
-	//flyouts		
+	//flyouts
 	"FlmLanguage"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -366,13 +395,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownLanguagePC.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"DrpVoiceCommunication"
 	{
 		"ControlName"		"DropDownMenu"
 		"fieldName"			"DrpVoiceCommunication"
 		"xpos"				"c-180"
-		"ypos"				"190"
+		"ypos"				"210"
 		"zpos"				"3"
 		"wide"				"360"
 		"tall"				"15"
@@ -382,7 +411,7 @@
 		"tabPosition"		"0"
 		"navUp"				"DrpLanguage"
 		"navDown"			"DrpVoiceCommunicationStyle"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -408,8 +437,8 @@
 			"OnlyActiveUser"			"1"
 		}
 	}
-	
-	//flyouts		
+
+	//flyouts
 	"FlmVoiceCommunication"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -422,13 +451,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownVoiceCommunication.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"DrpVoiceCommunicationStyle"
 	{
 		"ControlName"		"DropDownMenu"
 		"fieldName"			"DrpVoiceCommunicationStyle"
 		"xpos"				"c-180"
-		"ypos"				"210"
+		"ypos"				"230"
 		"zpos"				"3"
 		"wide"				"360"
 		"tall"				"15"
@@ -438,7 +467,7 @@
 		"tabPosition"		"0"
 		"navUp"				"DrpVoiceCommunication"
 		"navDown"			"SldVoiceVoxThreshold"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -465,8 +494,8 @@
 			"OnlyActiveUser"			"1"
 		}
 	}
-	
-	//flyouts		
+
+	//flyouts
 	"FlmVoiceCommunicationStyle"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -479,13 +508,13 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownVoiceCommunicationStyle.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"SldVoiceVoxThreshold"
 	{
 		"ControlName"			"SliderControl"
 		"fieldName"				"SldVoiceVoxThreshold"
 		"xpos"					"c-180"
-		"ypos"					"230"
+		"ypos"					"250"
 		"zpos"					"3"
 		"wide"					"360"
 		"tall"					"15"
@@ -496,10 +525,10 @@
 		"maxValue"				"2000"
 		"stepSize"				"100"
 		"navUp"					"DrpVoiceCommunicationStyle"
-		"navDown"				"SldVoiceTransmitVolume"
+		"navDown"				"SldVoiceReceiveVolume"
 		"conCommand"				"voice_threshold"
 		"inverseFill"				"1"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -528,54 +557,6 @@
 		}
 	}
 
-	"SldVoiceTransmitVolume"
-	{
-		"ControlName"			"SliderControl"
-		"fieldName"				"SldVoiceTransmitVolume"
-		"xpos"					"c-180"
-		"ypos"					"250"
-		"zpos"					"3"
-		"wide"					"360"
-		"tall"					"15"
-		"visible"				"1"
-		"enabled"				"1"
-		"tabPosition"			"0"
-		"minValue"				"0.0"
-		"maxValue"				"100.0"
-		"stepSize"				"10.0"
-		"navUp"					"SldVoiceVoxThreshold"
-		"navDown"				"SldVoiceReceiveVolume"
-		"conCommand"			""
-		"inverseFill"			"0"
-				
-		//button and label
-		"BtnDropButton"
-		{
-			"ControlName"			"BaseModHybridButton"
-			"fieldName"				"BtnDropButton"
-			"xpos"					"0"
-			"ypos"					"0"
-			"zpos"					"0"
-			"wide"					"360"
-			"wideatopen"			"260"	[$WIN32 && !$WIN32WIDE]
-			"tall"					"15"
-			"autoResize"			"1"
-			"pinCorner"				"0"
-			"visible"				"1"
-			"enabled"				"1"
-			"tabPosition"			"0"
-			"AllCaps"				"1"
-			"labelText"				"#GameUI_VoiceTransmitVolume"
-			"tooltiptext"			"#L4D_voice_transmit_tip"
-			//"disabled_tooltiptext"	"#L4D_disabled_voice_transmit_tip"
-			"style"					"DefaultButton"
-			"command"				""
-			"ActivationType"		"1"
-			"OnlyActiveUser"		"1"
-			"usablePlayerIndex"		"nobody"
-		}
-	}
-	
 	"SldVoiceReceiveVolume"
 	{
 		"ControlName"			"SliderControl"
@@ -589,13 +570,13 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"minValue"				"0.0"
-		"maxValue"				"1.0"
+		"maxValue"				"1.5"
 		"stepSize"				"0.05"
-		"navUp"					"SldVoiceTransmitVolume"
+		"navUp"					"SldVoiceVoxThreshold"
 		"navDown"				"DrpBoostMicrophone"
 		"conCommand"			"voice_scale"
 		"inverseFill"			"0"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -623,7 +604,7 @@
 			"usablePlayerIndex"		"nobody"
 		}
 	}
-	
+
 	"DrpBoostMicrophone"
 	{
 		"ControlName"		"DropDownMenu"
@@ -639,7 +620,7 @@
 		"tabPosition"		"0"
 		"navUp"				"SldVoiceReceiveVolume"
 		"navDown"			"BtnTestMicrophone"
-				
+
 		//button and label
 		"BtnDropButton"
 		{
@@ -667,7 +648,7 @@
 		}
 	}
 
-	//flyouts		
+	//flyouts
 	"FlmBoostMicrophone"
 	{
 		"ControlName"			"FlyoutMenu"
@@ -680,7 +661,7 @@
 		"ResourceFile"			"resource/UI/basemodui/DropDownBoostMicrophone.res"
 		"OnlyActiveUser"		"1"
 	}
-	
+
 	"BtnTestMicrophone"
 	{
 		"ControlName"			"BaseModHybridButton"
@@ -709,7 +690,7 @@
 		FocusTextInsetX			"2"
 		OpenTextInsetX			"2"
 	}
-	
+
 	"MicMeter"
 	{
 		"ControlName"		"ImagePanel"
@@ -729,7 +710,7 @@
 		"barCount"			"19"
 		"barSpacing"		"8"
 	}
-	
+
 	"MicMeter2"
 	{
 		"ControlName"		"ImagePanel"
@@ -748,7 +729,7 @@
 		"barCount"			"19"
 		"barSpacing"		"8"
 	}
-	
+
 	"MicMeterIndicator"
 	{
 		"ControlName"		"ImagePanel"
@@ -767,34 +748,6 @@
 		"barCount"			"19"
 		"barSpacing"		"8"
 	}
-	
-// 	"BtnCancel"
-// 	{
-// 		"ControlName"			"BaseModHybridButton"
-// 		"fieldName"				"BtnCancel"
-// 		"xpos"					"c-180"
-// 		"ypos"					"370"
-// 		"zpos"					"0"
-// 		"wide"					"200"
-// 		"tall"					"15"
-// 		"autoResize"			"1"
-// 		"pinCorner"				"0"
-// 		"visible"				"1"
-// 		"enabled"				"1"
-// 		"tabPosition"			"0"
-// 		"wrap"					"1"
-// 		"navUp"					"BtnTestMicrophone"
-// 		"navDown"				"Btn3rdPartyCredits"
-// 		"AllCaps"				"1"
-// 		"labelText"				"#L4D360UI_Done"
-// 		"tooltiptext"			"#L4D360UI_Tooltip_Back"
-// 		"style"					"RedButton"
-// 		"command"				"Back"
-// 		EnabledTextInsetX		"2"
-// 		DisabledTextInsetX		"2"
-// 		FocusTextInsetX			"2"
-// 		OpenTextInsetX			"2"
-// 	}
 
 	"BtnJukebox"
 	{
@@ -824,7 +777,7 @@
 		FocusTextInsetX			"2"
 		OpenTextInsetX			"2"
 	}
-		
+
 	"Btn3rdPartyCredits"
 	{
 		"ControlName"			"BaseModHybridButton"
@@ -852,7 +805,7 @@
 		FocusTextInsetX			"2"
 		OpenTextInsetX			"2"
 	}
-	
+
 	"BtnDone" [$WIN32]
 	{
 		"ControlName"			"CNB_Button"

@@ -31,6 +31,7 @@
 #include "VAddons.h"
 #include "VAttractScreen.h"
 #include "VAudio.h"
+#include "VAudioAdvancedMixers.h"
 #include "VAudioVideo.h"
 #include "VCloud.h"
 #include "VControllerOptions.h"
@@ -544,6 +545,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_ADVANCEDSETTINGS:
 			m_Frames[wt] = new AdvancedSettings( this, "AdvancedSettings" );
+			break;
+
+		case WT_AUDIOADVANCEDMIXERS:
+			m_Frames[wt] = new AudioAdvancedMixers( this, "AudioAdvancedMixers" );
 			break;
 
 		default:

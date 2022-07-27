@@ -78,6 +78,7 @@ private:
 
 	SliderControl	*m_sldGameVolume;
 	SliderControl	*m_sldMusicVolume;
+	BaseModHybridButton	*m_btnAdvancedMixers;
 	SliderControl	*m_sldVoiceThreshold;
 	DropDownMenu	*m_drpSpeakerConfiguration;
 	DropDownMenu	*m_drpSoundQuality;
@@ -86,7 +87,6 @@ private:
 
 	DropDownMenu	*m_drpVoiceCommunication;
 	DropDownMenu	*m_drpVoiceCommunicationStyle;
-	SliderControl	*m_sldTransmitVolume;
 	SliderControl	*m_sldRecieveVolume;
 	DropDownMenu	*m_drpBoostMicrophoneGain;
 	BaseModHybridButton	*m_btnTestMicrophone;
@@ -94,8 +94,6 @@ private:
 	vgui::ImagePanel	*m_pMicMeter;
 	vgui::ImagePanel	*m_pMicMeter2;
 	vgui::ImagePanel	*m_pMicMeterIndicator;
-
-	BaseModHybridButton	*m_btnCancel;
 
 	BaseModHybridButton	*m_btn3rdPartyCredits;
 

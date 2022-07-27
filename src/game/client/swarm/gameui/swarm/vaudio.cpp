@@ -37,9 +37,11 @@ using namespace BaseModUI;
 void SetFlyoutButtonText( const char *pchCommand, FlyoutMenu *pFlyout, const char *pchNewText );
 
 static void MixerVolumeMultiplierChanged( IConVar *var, const char *pOldValue, float flOldValue );
+static void MusicVolumeMultiplierChanged( IConVar *var, const char *pOldValue, float flOldValue );
 
 ConVar rd_mixer_volume_music_menus( "rd_mixer_volume_music_menus", "1", FCVAR_ARCHIVE, "Mixer volume multiplier for music played on menus.", true, 0, false, 0, MixerVolumeMultiplierChanged );
 ConVar rd_mixer_volume_music_ingame( "rd_mixer_volume_music_ingame", "1", FCVAR_ARCHIVE, "Mixer volume multiplier for music played during missions.", true, 0, false, 0, MixerVolumeMultiplierChanged );
+ConVar _rd_mixer_volume_music_both_internal( "_rd_mixer_volume_music_both_internal", "1", FCVAR_HIDDEN, "Internal convar. Get->Average music volume, Set->Set both music volumes", true, 0, false, 0, MusicVolumeMultiplierChanged );
 ConVar rd_mixer_volume_voice_dialogue( "rd_mixer_volume_voice_dialogue", "1", FCVAR_ARCHIVE, "Mixer volume multiplier for NPC and marine dialogue.", true, 0, false, 0, MixerVolumeMultiplierChanged );
 ConVar rd_mixer_volume_voice_players( "rd_mixer_volume_voice_players", "1", FCVAR_ARCHIVE, "Mixer volume multiplier for player voice chat.", true, 0, false, 0, MixerVolumeMultiplierChanged );
 ConVar rd_mixer_volume_voice_aliens( "rd_mixer_volume_voice_aliens", "1", FCVAR_ARCHIVE, "Mixer volume multiplier for alien vocalizations.", true, 0, false, 0, MixerVolumeMultiplierChanged );
@@ -350,6 +352,8 @@ static bool InitDefaultMixLevels()
 	return true;
 }
 
+static bool s_bIgnoreMusicVolumeChange = false;
+
 static void MixerVolumeMultiplierChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	if ( !InitDefaultMixLevels() )
@@ -358,6 +362,13 @@ static void MixerVolumeMultiplierChanged( IConVar *var, const char *pOldValue, f
 	}
 
 	float flScale = assert_cast<ConVar *>( var )->GetFloat();
+
+	if ( !s_bIgnoreMusicVolumeChange && ( var == &rd_mixer_volume_music_ingame || var == &rd_mixer_volume_music_menus ) )
+	{
+		s_bIgnoreMusicVolumeChange = true;
+		_rd_mixer_volume_music_both_internal.SetValue( ( rd_mixer_volume_music_ingame.GetFloat() + rd_mixer_volume_music_menus.GetFloat() ) / 2 );
+		s_bIgnoreMusicVolumeChange = false;
+	}
 
 	for ( int i = 0; i < NELEMS( s_MixerVars ); i++ )
 	{
@@ -375,6 +386,18 @@ static void MixerVolumeMultiplierChanged( IConVar *var, const char *pOldValue, f
 	Assert( !"Unhandled mixer convar - make sure it's added to the table!" );
 }
 
+static void MusicVolumeMultiplierChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	if ( s_bIgnoreMusicVolumeChange )
+	{
+		return;
+	}
+
+	float flTarget = _rd_mixer_volume_music_both_internal.GetFloat();
+	rd_mixer_volume_music_ingame.SetValue( flTarget );
+	rd_mixer_volume_music_menus.SetValue( flTarget );
+}
+
 CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HIDDEN )
 {
 	if ( !InitDefaultMixLevels() )
@@ -385,22 +408,25 @@ CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HI
 
 	ConVarRef snd_musicvolume( "snd_musicvolume" );
 	Assert( snd_musicvolume.IsValid() );
-	if ( snd_musicvolume.IsValid() && snd_musicvolume.GetFloat() < 1.0f && rd_mixer_volume_music_ingame.GetFloat() == 1.0f )
+	if ( snd_musicvolume.IsValid() && snd_musicvolume.GetFloat() < 1.0f && _rd_mixer_volume_music_both_internal.GetFloat() == 1.0f )
 	{
 		Msg( "Converting old ingame music volume setting to new mixer system.\n" );
-		rd_mixer_volume_music_ingame.SetValue( snd_musicvolume.GetFloat() );
+		_rd_mixer_volume_music_both_internal.SetValue( snd_musicvolume.GetFloat() );
 		snd_musicvolume.SetValue( "1.0" );
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 	}
 	else if ( snd_musicvolume.IsValid() && snd_musicvolume.GetFloat() < 1.0f )
 	{
-		Warning( "Both new (rd_mixer_volume_music_ingame) and old (snd_musicvolume) music volume settings are set. Music volume will be scaled twice!\n" );
+		Warning( "Both new (rd_mixer_volume_music_ingame/rd_mixer_volume_music_menus) and old (snd_musicvolume) music volume settings are set. Music volume will be scaled twice!\n" );
 	}
 
+	Assert( !s_bIgnoreMusicVolumeChange );
+	s_bIgnoreMusicVolumeChange = true;
 	for ( int i = 0; i < NELEMS( s_MixerVars ); i++ )
 	{
 		MixerVolumeMultiplierChanged( &s_MixerVars[i].var, "1", 1.0f );
 	}
+	s_bIgnoreMusicVolumeChange = false;
 }
 
 // This member is static so that the updated audio language can be referenced during shutdown
@@ -439,12 +465,12 @@ BaseClass(parent, panelName)
 
 	m_sldGameVolume = NULL;
 	m_sldMusicVolume = NULL;
+	m_btnAdvancedMixers = NULL;
 	m_drpSpeakerConfiguration = NULL;
 	m_drpSoundQuality = NULL;
 	m_drpLanguage = NULL;
 	m_drpCaptioning = NULL;
 	m_drpVoiceCommunication = NULL;
-	m_sldTransmitVolume = NULL;
 	m_sldRecieveVolume = NULL;
 	m_drpBoostMicrophoneGain = NULL;
 	m_btnTestMicrophone = NULL;
@@ -454,8 +480,6 @@ BaseClass(parent, panelName)
 	m_pMicMeter = NULL;
 	m_pMicMeter2 = NULL;
 	m_pMicMeterIndicator = NULL;
-
-	m_btnCancel = NULL;
 
 	m_btn3rdPartyCredits = NULL;
 
@@ -678,7 +702,6 @@ void Audio::Activate()
 	if ( !m_pVoiceTweak )
 	{
 		SetControlVisible( "DrpVoiceCommunication", false );
-		SetControlVisible( "SldVoiceTransmitVolume", false );
 		SetControlVisible( "SldVoiceReceiveVolume", false );
 		SetControlVisible( "DrpBoostMicrophone", false );
 		SetControlVisible( "BtnTestMicrophone", false );
@@ -732,15 +755,6 @@ void Audio::Activate()
 			{
 				pFlyout->SetListener( this );
 			}
-		}
-
-		if ( m_sldTransmitVolume )
-		{
-			bool bMicVolumeFound = m_pVoiceTweak->IsControlFound( MicrophoneVolume );
-			float micVolume = m_pVoiceTweak->GetControlFloat( MicrophoneVolume );
-			m_sldTransmitVolume->SetCurrentValue( (int)( 100.0f * micVolume ) );
-			m_sldTransmitVolume->ResetSliderPosAndDefaultMarkers();
-			m_sldTransmitVolume->SetEnabled( bVoiceEnabled && bMicVolumeFound );
 		}
 
 		if ( m_sldRecieveVolume )
@@ -806,115 +820,126 @@ void Audio::OnThink()
 
 	bool needsActivate = false;
 
-	if( !m_sldGameVolume )
+	if ( !m_sldGameVolume )
 	{
-		m_sldGameVolume = dynamic_cast< SliderControl* >( FindChildByName( "SldGameVolume" ) );
+		m_sldGameVolume = dynamic_cast< SliderControl * >( FindChildByName( "SldGameVolume" ) );
+		Assert( m_sldGameVolume );
 		needsActivate = true;
 	}
 
-	if( !m_sldMusicVolume )
+	if ( !m_sldMusicVolume )
 	{
-		m_sldMusicVolume = dynamic_cast< SliderControl* >( FindChildByName( "SldMusicVolume" ) );
+		m_sldMusicVolume = dynamic_cast< SliderControl * >( FindChildByName( "SldMusicVolume" ) );
+		Assert( m_sldMusicVolume );
 		needsActivate = true;
 	}
 
-	if( !m_sldVoiceThreshold )
+	if ( !m_btnAdvancedMixers )
 	{
-		m_sldVoiceThreshold = dynamic_cast< SliderControl* >( FindChildByName( "SldVoiceVoxThreshold" ) );
+		m_btnAdvancedMixers = dynamic_cast< BaseModHybridButton * >( FindChildByName( "BtnAdvancedMixers" ) );
+		Assert( m_btnAdvancedMixers );
 		needsActivate = true;
 	}
 
-	if( !m_drpSpeakerConfiguration )
+	if ( !m_sldVoiceThreshold )
 	{
-		m_drpSpeakerConfiguration = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpSpeakerConfiguration" ) );
+		m_sldVoiceThreshold = dynamic_cast< SliderControl * >( FindChildByName( "SldVoiceVoxThreshold" ) );
+		Assert( m_sldVoiceThreshold );
 		needsActivate = true;
 	}
 
-	if( !m_drpSoundQuality )
+	if ( !m_drpSpeakerConfiguration )
 	{
-		m_drpSoundQuality = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpSoundQuality" ) );
+		m_drpSpeakerConfiguration = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpSpeakerConfiguration" ) );
+		Assert( m_drpSpeakerConfiguration );
 		needsActivate = true;
 	}
 
-	if( !m_drpLanguage )
+	if ( !m_drpSoundQuality )
 	{
-		m_drpLanguage = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpLanguage" ) );
+		m_drpSoundQuality = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpSoundQuality" ) );
+		Assert( m_drpSoundQuality );
 		needsActivate = true;
 	}
 
-	if( !m_drpCaptioning )
+	if ( !m_drpLanguage )
 	{
-		m_drpCaptioning = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpCaptioning" ) );
+		m_drpLanguage = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpLanguage" ) );
+		Assert( m_drpLanguage );
 		needsActivate = true;
 	}
 
-	if( !m_drpVoiceCommunication )
+	if ( !m_drpCaptioning )
 	{
-		m_drpVoiceCommunication = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpVoiceCommunication" ) );
+		m_drpCaptioning = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpCaptioning" ) );
+		Assert( m_drpCaptioning );
 		needsActivate = true;
 	}
 
-	if( !m_drpVoiceCommunicationStyle )
+	if ( !m_drpVoiceCommunication )
 	{
-		m_drpVoiceCommunicationStyle = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpVoiceCommunicationStyle" ) );
+		m_drpVoiceCommunication = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpVoiceCommunication" ) );
+		Assert( m_drpVoiceCommunication );
 		needsActivate = true;
 	}
 
-	if( !m_sldTransmitVolume )
+	if ( !m_drpVoiceCommunicationStyle )
 	{
-		m_sldTransmitVolume = dynamic_cast< SliderControl* >( FindChildByName( "SldVoiceTransmitVolume" ) );
+		m_drpVoiceCommunicationStyle = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpVoiceCommunicationStyle" ) );
+		Assert( m_drpVoiceCommunicationStyle );
 		needsActivate = true;
 	}
 
-	if( !m_sldRecieveVolume )
+	if ( !m_sldRecieveVolume )
 	{
-		m_sldRecieveVolume = dynamic_cast< SliderControl* >( FindChildByName( "SldVoiceReceiveVolume" ) );
+		m_sldRecieveVolume = dynamic_cast< SliderControl * >( FindChildByName( "SldVoiceReceiveVolume" ) );
+		Assert( m_sldRecieveVolume );
 		needsActivate = true;
 	}
 
-	if( !m_drpBoostMicrophoneGain )
+	if ( !m_drpBoostMicrophoneGain )
 	{
-		m_drpBoostMicrophoneGain = dynamic_cast< DropDownMenu* >( FindChildByName( "DrpBoostMicrophone" ) );
+		m_drpBoostMicrophoneGain = dynamic_cast< DropDownMenu * >( FindChildByName( "DrpBoostMicrophone" ) );
+		Assert( m_drpBoostMicrophoneGain );
 		needsActivate = true;
 	}
 
-	if( !m_btnTestMicrophone )
+	if ( !m_btnTestMicrophone )
 	{
-		m_btnTestMicrophone = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnTestMicrophone" ) );
+		m_btnTestMicrophone = dynamic_cast< BaseModHybridButton * >( FindChildByName( "BtnTestMicrophone" ) );
+		Assert( m_btnTestMicrophone );
 		needsActivate = true;
 	}
 
-	if( !m_pMicMeter )
+	if ( !m_pMicMeter )
 	{
-		m_pMicMeter = dynamic_cast< ImagePanel* >( FindChildByName( "MicMeter" ) );
+		m_pMicMeter = dynamic_cast< ImagePanel * >( FindChildByName( "MicMeter" ) );
+		Assert( m_pMicMeter );
 		needsActivate = true;
 	}
 
-	if( !m_pMicMeter2 )
+	if ( !m_pMicMeter2 )
 	{
-		m_pMicMeter2 = dynamic_cast< ImagePanel* >( FindChildByName( "MicMeter2" ) );
+		m_pMicMeter2 = dynamic_cast< ImagePanel * >( FindChildByName( "MicMeter2" ) );
+		Assert( m_pMicMeter2 );
 		needsActivate = true;
 	}
 
-	if( !m_pMicMeterIndicator )
+	if ( !m_pMicMeterIndicator )
 	{
-		m_pMicMeterIndicator = dynamic_cast< ImagePanel* >( FindChildByName( "MicMeterIndicator" ) );
+		m_pMicMeterIndicator = dynamic_cast< ImagePanel * >( FindChildByName( "MicMeterIndicator" ) );
+		Assert( m_pMicMeterIndicator );
 		needsActivate = true;
 	}
 
-// 	if( !m_btnCancel )
-// 	{
-// 		m_btnCancel = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnCancel" ) );
-// 		needsActivate = true;
-// 	}
-
-	if( !m_btn3rdPartyCredits )
+	if ( !m_btn3rdPartyCredits )
 	{
-		m_btn3rdPartyCredits = dynamic_cast< BaseModHybridButton* >( FindChildByName( "Btn3rdPartyCredits" ) );
+		m_btn3rdPartyCredits = dynamic_cast< BaseModHybridButton * >( FindChildByName( "Btn3rdPartyCredits" ) );
+		Assert( m_btn3rdPartyCredits );
 		needsActivate = true;
 	}
 
-	if( needsActivate )
+	if ( needsActivate )
 	{
 		Activate();
 	}
@@ -929,15 +954,15 @@ void Audio::OnThink()
 		else
 		{
 			int wide, tall;
-			m_pMicMeter->GetSize(wide, tall);
+			m_pMicMeter->GetSize( wide, tall );
 
 			int indicatorWide, indicatorTall;
-			m_pMicMeterIndicator->GetSize(indicatorWide, indicatorTall);
+			m_pMicMeterIndicator->GetSize( indicatorWide, indicatorTall );
 
 			int iXPos, iYPos;
 			m_pMicMeter2->GetPos( iXPos, iYPos );
 
-			int iFinalPos = iXPos - ( indicatorWide / 2 ) + static_cast<float>( wide ) * m_pVoiceTweak->GetControlFloat( SpeakingVolume );
+			int iFinalPos = iXPos - ( indicatorWide / 2 ) + static_cast< float >( wide ) * m_pVoiceTweak->GetControlFloat( SpeakingVolume );
 
 			m_pMicMeterIndicator->GetPos( iXPos, iYPos );
 
@@ -1214,6 +1239,18 @@ void Audio::OnCommand(const char *command)
 
 		CBaseModPanel::GetSingleton().OpenWindow( WT_JUKEBOX, this, true );
 	}
+	else if ( !Q_strcmp( command, "AdvancedMixers" ) )
+	{
+		if ( m_pVoiceTweak && m_pMicMeter2 )
+		{
+			if ( m_pMicMeter2->IsVisible() )
+			{
+				EndTestMicrophone();
+			}
+		}
+
+		CBaseModPanel::GetSingleton().OpenWindow( WT_AUDIOADVANCEDMIXERS, this, true );
+	}
 	else if( Q_stricmp( "Back", command ) == 0 )
 	{
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
@@ -1288,13 +1325,6 @@ void Audio::OnFlyoutMenuCancelled()
 //=============================================================================
 Panel* Audio::NavigateBack()
 {
-	if ( m_pVoiceTweak && m_sldTransmitVolume )
-	{
-		int nVal = m_sldTransmitVolume->GetCurrentValue();
-		float val = static_cast<float>( nVal ) / 100.0f;
-		m_pVoiceTweak->SetControlFloat( MicrophoneVolume, val );
-	}
-
 	if ( m_pVoiceTweak && m_sldRecieveVolume )
 	{
 		float flVal = m_sldRecieveVolume->GetCurrentValue();
@@ -1318,13 +1348,6 @@ void Audio::ResetLanguage()
 
 void Audio::StartTestMicrophone()
 {
-	if ( m_pVoiceTweak && m_sldTransmitVolume )
-	{
-		int nVal = m_sldTransmitVolume->GetCurrentValue();
-		float val = static_cast<float>( nVal ) / 100.0f;
-		m_pVoiceTweak->SetControlFloat( MicrophoneVolume, val );
-	}
-
 	if ( m_pVoiceTweak && m_pVoiceTweak->StartVoiceTweakMode() )
 	{
 		if ( m_pMicMeter )
