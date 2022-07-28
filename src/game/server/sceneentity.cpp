@@ -65,6 +65,7 @@ class CBaseFlex;
 static ConVar scene_forcecombined( "scene_forcecombined", "0", 0, "When playing back, force use of combined .wav files even in english." );
 static ConVar scene_maxcaptionradius( "scene_maxcaptionradius", "1200", 0, "Only show closed captions if recipient is within this many units of speaking actor (0==disabled)." );
 ConVar scene_clientplayback( "scene_clientplayback", "1", 0, "Play all vcds on the clients." );
+ConVar rd_scene_extend_caption_to_sound( "rd_scene_extend_caption_to_sound", "1", FCVAR_NONE, "Force closed caption duration in VCD scenes to be at least the duration of the associated sound. Uses sound length from host." );
 
 // Assume sound system is 100 msec lagged (only used if we can't find snd_mixahead cvar!)
 #define SOUND_SYSTEM_LATENCY_DEFAULT ( 0.1f )
@@ -1876,6 +1877,11 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 					float durationLong = endtime - event->GetStartTime();
 
 					float duration = MAX( durationShort, durationLong );
+					if ( rd_scene_extend_caption_to_sound.GetBool() )
+					{
+						float durationSound = enginesound->GetSoundDuration( event->GetParameters() );
+						duration = MAX( duration, durationSound );
+					}
 
 					char const *pszActorModel = STRING( actor->GetModelName() );
 					gender_t gender = soundemitterbase->GetActorGender( pszActorModel );
