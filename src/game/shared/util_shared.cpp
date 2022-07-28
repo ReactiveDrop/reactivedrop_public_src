@@ -1161,7 +1161,7 @@ void CTimeline::RecordValue( float flValue )
 		}
 
 		// Get the last logged value (or the current if this is the first)
-		float flPrecedingValue = flCurrentValue;
+		float flPrecedingValue = 0.0f; // BenLubar: was flCurrentValue, but this causes incorrect behavior like friendly fire late in a mission teleporting to the start
 
 		if ( iPrecedingBucket >= 0 )
 		{
