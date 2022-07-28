@@ -393,11 +393,11 @@ void CGameUI::Start()
 	}
 
 	// localization
-	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt");
-	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt");
+	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt" );
+	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt" );
 
 	// (slightly) delayed localization setup
-	engine->ClientCmd_Unrestricted( "rd_loc_reload" );
+	UTIL_RD_ReloadLocalizeFiles();
 
 	Sys_SetLastError( SYS_NO_ERROR );
 

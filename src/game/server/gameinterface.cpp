@@ -111,6 +111,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 #include "asw_gamerules.h"
+#include "asw_util_shared.h"
 #endif
 
 
@@ -1056,7 +1057,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	ParseParticleEffectsMap( pMapName, false );
 
 	// Need to also run this on listen servers or caption hashes won't be available.
-	engine->ServerCommand( "rd_loc_reload_server\n" );
+	UTIL_RD_ReloadLocalizeFiles();
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()

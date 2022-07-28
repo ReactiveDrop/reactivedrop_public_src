@@ -129,6 +129,7 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 
 bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false, bool bIsCaptions = false );
 
+void UTIL_RD_ReloadLocalizeFiles();
 CRC32_t UTIL_RD_CaptionToHash( const char *szToken );
 const char *UTIL_RD_HashToCaption( CRC32_t hash );
 

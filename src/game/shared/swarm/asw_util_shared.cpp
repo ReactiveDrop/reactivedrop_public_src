@@ -1715,6 +1715,11 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 	}
 #endif
 
+	UTIL_RD_ReloadLocalizeFiles();
+}
+
+void UTIL_RD_ReloadLocalizeFiles()
+{
 	// load english first just in case an addon is not localized
 	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true, true );
 	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true, false );
@@ -1728,6 +1733,7 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 
 CRC32_t UTIL_RD_CaptionToHash( const char *szToken )
 {
+	Assert( s_CaptionHashLookup.GetNumStrings() );
 	UtlSymId_t sym = s_CaptionHashLookup.Find( szToken );
 	if ( sym == UTL_INVAL_SYMBOL )
 	{
@@ -1739,7 +1745,9 @@ CRC32_t UTIL_RD_CaptionToHash( const char *szToken )
 
 const char *UTIL_RD_HashToCaption( CRC32_t hash )
 {
+	Assert( s_CaptionHashRevLookup.Count() );
 	unsigned short index = s_CaptionHashRevLookup.Find( hash );
+	Assert( s_CaptionHashRevLookup.IsValidIndex( index ) );
 	if ( !s_CaptionHashRevLookup.IsValidIndex( index ) )
 	{
 		return NULL;
