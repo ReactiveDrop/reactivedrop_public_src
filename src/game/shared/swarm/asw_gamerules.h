@@ -58,7 +58,7 @@ public:
 
 	int m_iSpeedrunTime;
 	int m_iJumpJetType;
-	CNetworkVar( bool, m_bAllowCameraRotation );
+	CNetworkVar( bool, m_bDisallowCameraRotation );
 
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );

@@ -814,7 +814,7 @@ END_NETWORK_TABLE()
 BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_iSpeedrunTime, FIELD_INTEGER, "speedruntime" ),
 	DEFINE_KEYFIELD( m_iJumpJetType,  FIELD_INTEGER, "jumpjettype" ),
-	DEFINE_KEYFIELD( m_bAllowCameraRotation, FIELD_BOOLEAN, "allowcamerarotation" ),
+	DEFINE_KEYFIELD( m_bDisallowCameraRotation, FIELD_BOOLEAN, "disallowcamerarotation" ),
 #ifdef GAME_DLL
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
@@ -838,7 +838,7 @@ CAlienSwarmProxy::CAlienSwarmProxy()
 {
 	m_iSpeedrunTime = 0;
 	m_iJumpJetType = 0;
-	m_bAllowCameraRotation = false;
+	m_bDisallowCameraRotation = false;
 
 	g_pSwarmProxy = this;
 }
@@ -870,7 +870,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 
 	BEGIN_RECV_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
 		RecvPropDataTable( "asw_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_ASWGameRules ), RecvProxy_ASWGameRules ),
-		RecvPropBool( RECVINFO( m_bAllowCameraRotation ) ),		
+		RecvPropBool( RECVINFO( m_bDisallowCameraRotation ) ),		
 	END_RECV_TABLE()
 #else
 	void* SendProxy_ASWGameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
@@ -883,7 +883,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 
 	BEGIN_SEND_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
 		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules ),
-		SendPropBool( SENDINFO( m_bAllowCameraRotation ) ),
+		SendPropBool( SENDINFO( m_bDisallowCameraRotation ) ),
 	END_SEND_TABLE()
 
 void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
@@ -9672,9 +9672,9 @@ bool CAlienSwarm::ShouldAllowCameraRotation( void )
 
 	Assert( g_pSwarmProxy );
 	if ( !g_pSwarmProxy )
-		return false;
+		return true;
 
-	return g_pSwarmProxy->m_bAllowCameraRotation;
+	return !g_pSwarmProxy->m_bDisallowCameraRotation;
 }
 
 #ifdef GAME_DLL

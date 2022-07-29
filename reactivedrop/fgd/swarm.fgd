@@ -2160,10 +2160,10 @@
 		2 : "Allow jump everywhere"
 		3 : "Jump no matter what" 
 	]
-	allowcamerarotation(choices) : "Camera Rotation" : 0 : "Allow players to rotate the camera using rotatecameraleft and rotatecameraright." =
+	disallowcamerarotation(choices) : "Camera Rotation" : 0 : "Allow players to rotate the camera using rotatecameraleft and rotatecameraright." =
 	[
-		0 : "Deny rotation"
-		1 : "Allow rotation"
+		0 : "Allow rotation"
+		1 : "Deny rotation"
 	]
 	
 	input SetTutorialStage(integer) : "reset the tutorial to a different spawn; only works on the tutorial level"
