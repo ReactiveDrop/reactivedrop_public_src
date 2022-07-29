@@ -78,6 +78,8 @@ void CASW_Radiation_Volume::RadHurt(CBaseEntity *pEnt)
 	if (!pEnt)
 		return;
 
+	int iDamageType = DMG_RADIATION;
+
 	CBaseEntity *pAttacker = this;
 	if (m_hCreator.Get() && pEnt->Classify() != CLASS_ASW_MARINE)	// don't deal friendly fire damage from rad barrels
 		pAttacker = m_hCreator.Get();
@@ -87,13 +89,16 @@ void CASW_Radiation_Volume::RadHurt(CBaseEntity *pEnt)
 	{
 		pWeapon = m_hWeapon.Get();
 		if ( pWeapon->Classify() == CLASS_ASW_GAS_GRENADE )
+		{
 			pAttacker = m_hCreator.Get();
+			iDamageType = DMG_NERVEGAS;
+		}
 	}
 
 	float fDamage = m_flDamage;
 	if (pEnt->Classify() == CLASS_ASW_MARINE)
 		fDamage *= 0.5f;
-	pEnt->TakeDamage( CTakeDamageInfo( this, pAttacker, pWeapon, fDamage, DMG_RADIATION ) );
+	pEnt->TakeDamage( CTakeDamageInfo( this, pAttacker, pWeapon, vec3_origin, WorldSpaceCenter(), fDamage, iDamageType ) );
 }
 
 void CASW_Radiation_Volume::RadThink()

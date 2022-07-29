@@ -176,6 +176,7 @@ const Vector& CASW_Gas_Grenade_Projectile::GetEffectOrigin()
 void CASW_Gas_Grenade_Projectile::Precache( void )
 {
 	PrecacheModel( GAS_GRENADE_MODEL );
+	PrecacheParticleSystem( "grenade_gas_cloud" );
 
 	PrecacheScriptSound( "ASW_GasGrenade.Explode" );
 	PrecacheScriptSound( "ASW_Flare.Touch" );
@@ -355,8 +356,11 @@ void CASW_Gas_Grenade_Projectile::SetFuseLength( float fSeconds )
 
 void CASW_Gas_Grenade_Projectile::Detonate()
 {
+	// Reset our angles so the particle effect renders right-side up.
+	SetAbsAngles( QAngle( 0, GetAbsAngles().y, 0 ) );
+
 	// also spawn our big cloud marking out the area of radiation
-	DispatchParticleEffect( "barrel_rad_gas_cloud", WorldSpaceCenter(), QAngle( 0, 0, 0 ), PATTACH_CUSTOMORIGIN_FOLLOW, this );
+	DispatchParticleEffect( "grenade_gas_cloud", WorldSpaceCenter(), QAngle( 0, 0, 0 ), PATTACH_CUSTOMORIGIN_FOLLOW, this );
 	EmitSound( "ASW_GasGrenade.Explode" );
 
 	//StartRadLoopSound();
