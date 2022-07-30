@@ -2016,5 +2016,7 @@ const char *UTIL_RD_EResultToString( EResult eResult )
 		return "k_EResultChargerRequired";
 	case k_EResultCachedCredentialInvalid:
 		return "k_EResultCachedCredentialInvalid";
+	case K_EResultPhoneNumberIsVOIP:
+		return "k_EResultPhoneNumberIsVOIP"; // using lower-case k for consistency
 	}
 }
