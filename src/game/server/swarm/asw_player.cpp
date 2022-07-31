@@ -70,6 +70,8 @@ extern ConVar rd_respawn_time;
 
 ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game");
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
+ConVar rd_kick_inactive_players( "rd_kick_inactive_players", "0", FCVAR_NONE, "If positive, kick players who are inactive for this many seconds." );
+ConVar rd_kick_inactive_players_warning( "rd_kick_inactive_players_warning", "0.8", FCVAR_NONE, "Warn players that they will be kicked after this fraction of the inactive time.", true, 0, true, 1 );
 
 static const char* s_pWelcomeMessageContext = "WelcomeMessageDelayedContext";
 
@@ -237,6 +239,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 	SendPropBool( SENDINFO( m_bWantsSpectatorOnly ) ),
+	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -271,6 +274,9 @@ BEGIN_DATADESC( CASW_Player )
 	//
 
 	DEFINE_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR ),
+	DEFINE_FIELD( m_bWantsSpectatorOnly, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_flLastActiveTime, FIELD_TIME ),
+	DEFINE_FIELD( m_flInactiveKickWarning, FIELD_TIME ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
@@ -399,6 +405,9 @@ CASW_Player::CASW_Player()
 
 	m_bLeaderboardReady = false;
 	m_bWantsSpectatorOnly = false;
+
+	m_flLastActiveTime = 0.0f;
+	m_flInactiveKickWarning = 0.0f;
 }
 
 
@@ -448,6 +457,18 @@ void CASW_Player::PostThink()
 
 	// find nearby usable items
 	FindUseEntities();
+
+	if ( rd_kick_inactive_players.GetFloat() > 0 )
+	{
+		float flInactiveFor = gpGlobals->realtime - m_flLastActiveTime;
+		float flInactiveRatio = flInactiveFor / rd_kick_inactive_players.GetFloat();
+		m_flInactiveKickWarning = flInactiveRatio >= rd_kick_inactive_players_warning.GetFloat() ? m_flLastActiveTime + rd_kick_inactive_players.GetFloat() : 0.0f;
+
+		if ( flInactiveRatio >= 1.0f )
+		{
+			engine->ServerCommand( CFmtStr( "kickid %d Disconnected due to inactivity.\n", GetUserID() ) );
+		}
+	}
 
 	// clicking while ingame on mission with no marine makes us spectate the next marine
 	if ((!GetNPC() || GetNPC()->GetHealth()<=0)
@@ -623,6 +644,8 @@ void CASW_Player::Spawn()
 	m_bHasAwardedXP = false;
 	m_bSentPromotedMessage = false;
 
+	m_flLastActiveTime = gpGlobals->realtime;
+
 	if (ASWGameRules())
 	{
 		ASWGameRules()->SetMaxMarines();
@@ -674,6 +697,8 @@ void CASW_Player::WelcomeMessageThink()
 bool CASW_Player::ClientCommand( const CCommand &args )
 {
 	const char *pcmd = args[0];
+
+	m_flLastActiveTime = gpGlobals->realtime;
 
 	switch ( ASWGameRules()->GetGameState() )
 	{

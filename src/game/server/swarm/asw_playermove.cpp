@@ -220,6 +220,12 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	}
 
 	pASWPlayer->SetCrosshairTracePos( ucmd->crosshairtrace );
+
+	if ( ucmd->buttons != pASWPlayer->m_Local.m_nOldButtons )
+	{
+		pASWPlayer->m_flLastActiveTime = gpGlobals->realtime;
+	}
+
 	// Copy output
 	FinishMove( player, ucmd, g_pMoveData );
 

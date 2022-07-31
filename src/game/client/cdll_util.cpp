@@ -565,7 +565,7 @@ void ClientPrint( C_BasePlayer *player, int msg_dest, const char *msg_name, cons
 	if ( hudChat )
 	{
 		wchar_t wszLocalized[2048];
-		g_pVGuiLocalize->ConstructString( wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find( msg_name ), 4, param1, param2, param3, param4 );
+		g_pVGuiLocalize->ConstructString( wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->FindSafe( msg_name ), 4, param1, param2, param3, param4 );
 
 		char szLocalized[4096];
 		g_pVGuiLocalize->ConvertUnicodeToANSI( wszLocalized, szLocalized, sizeof( szLocalized ) );

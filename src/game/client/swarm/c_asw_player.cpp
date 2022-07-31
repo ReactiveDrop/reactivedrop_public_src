@@ -301,6 +301,7 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
 	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
 	RecvPropBool( RECVINFO( m_bWantsSpectatorOnly ) ),
+	RecvPropFloat( RECVINFO( m_flInactiveKickWarning ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
@@ -384,6 +385,8 @@ C_ASW_Player::C_ASW_Player() :
 	m_iMouseY = 0;
 
 	m_angMarineAutoAimFromClient = vec3_angle;
+	m_flInactiveKickWarning = 0.0f;
+	m_nLastInactiveKickWarning = 0;
 }
 
 
@@ -997,6 +1000,34 @@ void C_ASW_Player::ClientThink()
 		return;
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
+
+	float flInactiveKickAfter = m_flInactiveKickWarning - gpGlobals->realtime;
+	if ( flInactiveKickAfter < 0 )
+	{
+		m_nLastInactiveKickWarning = 0;
+	}
+	else
+	{
+		int nInactiveKickSeconds = flInactiveKickAfter;
+
+		if ( nInactiveKickSeconds > 30 )
+		{
+			int frac = nInactiveKickSeconds % 15;
+			if ( frac == 0 )
+				frac = 15;
+
+			nInactiveKickSeconds += 15 - frac;
+		}
+
+		if ( m_nLastInactiveKickWarning != nInactiveKickSeconds )
+		{
+			char buffer[12]{};
+			V_snprintf( buffer, sizeof( buffer ), "%d", nInactiveKickSeconds );
+			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", buffer );
+
+			m_nLastInactiveKickWarning = nInactiveKickSeconds;
+		}
+	}
 
 	// check for stims	
 	if ( ASWGameRules() )

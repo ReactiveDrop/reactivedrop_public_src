@@ -236,6 +236,9 @@ public:
 	bool CanBeKicked();
 	bool CanBeLeader();
 
+	CNetworkVar( float, m_flInactiveKickWarning );
+	int m_nLastInactiveKickWarning;
+
 	// music	
 	void StartStimMusic();
 	void StopStimMusic(bool bInstantly = false);
