@@ -182,7 +182,6 @@ public:
 	virtual unsigned int PhysicsSolidMaskForEntity() const;
 	bool TeleportStuckMarine();
 	bool TeleportToFreeNode( CASW_Marine *pTarget = NULL, float fNearestDist = -1 );
-	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
 

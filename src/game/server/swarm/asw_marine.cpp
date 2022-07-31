@@ -207,7 +207,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	(SENDINFO(m_bSlowHeal)),
 	SendPropInt	(SENDINFO(m_iSlowHealAmount), 10 ),
 	SendPropBool	(SENDINFO(m_bPreventMovement)),
-	SendPropBool	(SENDINFO(m_bWalking) ),
 	SendPropFloat	(SENDINFO(m_fFFGuardTime), 0, SPROP_NOSCALE ),
 
 	SendPropEHandle( SENDINFO ( m_hCurrentHack ) ),

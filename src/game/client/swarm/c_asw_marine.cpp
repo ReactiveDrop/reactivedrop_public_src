@@ -138,7 +138,6 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropBool		( RECVINFO( m_bSlowHeal ) ),	
 	RecvPropInt			( RECVINFO( m_iSlowHealAmount ) ),
 	RecvPropBool		( RECVINFO( m_bPreventMovement ) ),
-	RecvPropBool		( RECVINFO( m_bWalking ) ),
 	RecvPropFloat		( RECVINFO( m_fFFGuardTime ) ),	
 	RecvPropEHandle		( RECVINFO( m_hGroundEntity ) ),	// , RecvProxy_Marine_GroundEnt
 	RecvPropEHandle		( RECVINFO( m_hMarineFollowTarget ) ),

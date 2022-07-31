@@ -13,6 +13,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropEHandle( RECVINFO( m_hUsingEntity ) ),
 	RecvPropVector( RECVINFO( m_vecFacingPointFromServer ) ),
 	RecvPropBool( RECVINFO( m_bInhabited ) ),
+	RecvPropBool( RECVINFO( m_bWalking ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )

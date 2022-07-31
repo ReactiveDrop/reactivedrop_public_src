@@ -172,7 +172,6 @@ public:
 	float MaxSpeed();
 	virtual void					EstimateAbsVelocity( Vector& vel );	// asw made virtual
 	CNetworkVar(bool, m_bPreventMovement);
-	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
 

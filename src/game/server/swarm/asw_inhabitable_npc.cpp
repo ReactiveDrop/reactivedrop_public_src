@@ -14,6 +14,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC)
 	SendPropEHandle( SENDINFO( m_hUsingEntity ) ),
 	SendPropVector( SENDINFO( m_vecFacingPointFromServer ), 0, SPROP_NOSCALE ),
 	SendPropBool( SENDINFO( m_bInhabited ) ),
+	SendPropBool( SENDINFO( m_bWalking ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
