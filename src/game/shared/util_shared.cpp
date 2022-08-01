@@ -167,11 +167,11 @@ Vector SharedRandomVector( const char *sharedname, float minVal, float maxVal, i
 	RandomSeed( seed );
 	// HACK:  Can't call RandomVector/Angle because it uses rand() not vstlib Random*() functions!
 	// Get a random vector.
-	Vector random;
-	random.x = RandomFloat( minVal, maxVal );
-	random.y = RandomFloat( minVal, maxVal );
-	random.z = RandomFloat( minVal, maxVal );
-	return random;
+	Vector vecRandom;
+	vecRandom.x = RandomFloat( minVal, maxVal );
+	vecRandom.y = RandomFloat( minVal, maxVal );
+	vecRandom.z = RandomFloat( minVal, maxVal );
+	return vecRandom;
 }
 
 QAngle SharedRandomAngle( const char *sharedname, float minVal, float maxVal, int additionalSeed /*=0*/ )
@@ -183,11 +183,11 @@ QAngle SharedRandomAngle( const char *sharedname, float minVal, float maxVal, in
 
 	// HACK:  Can't call RandomVector/Angle because it uses rand() not vstlib Random*() functions!
 	// Get a random vector.
-	Vector random;
-	random.x = RandomFloat( minVal, maxVal );
-	random.y = RandomFloat( minVal, maxVal );
-	random.z = RandomFloat( minVal, maxVal );
-	return QAngle( random.x, random.y, random.z );
+	QAngle angRandom;
+	angRandom.x = RandomFloat( minVal, maxVal );
+	angRandom.y = RandomFloat( minVal, maxVal );
+	angRandom.z = RandomFloat( minVal, maxVal );
+	return angRandom;
 }
 
 

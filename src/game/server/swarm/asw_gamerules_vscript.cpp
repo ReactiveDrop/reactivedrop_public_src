@@ -33,12 +33,14 @@ static void CreateArray( ScriptVariant_t &array )
 	Assert( array.m_type == FIELD_VOID );
 	ScriptStatus_t status = g_pScriptVM->Call( s_newArrayFunc, NULL, false, &array );
 	Assert( status == SCRIPT_DONE );
+	( void )status;
 }
 static void ArrayPush( ScriptVariant_t &array, ScriptVariant_t item )
 {
 	if ( !g_pScriptVM ) return;
 	ScriptStatus_t status = g_pScriptVM->Call( s_arrayPushFunc, NULL, false, &array, array, item );
 	Assert( status == SCRIPT_DONE );
+	( void )status;
 }
 
 // BenLubar(key-values-director): this class provides the Director object for vscripts
@@ -886,11 +888,14 @@ void CAlienSwarm::RegisterScriptFunctions()
 	HSCRIPT arrayHelperScope = g_pScriptVM->CreateScope( "arrayhelpers" );
 	ScriptStatus_t status = g_pScriptVM->Run( arrayHelperScript, arrayHelperScope, false );
 	Assert( status == SCRIPT_DONE );
+	( void )status;
 	g_pScriptVM->ReleaseScript( arrayHelperScript );
 	bool bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "newArray", &s_newArrayFunc );
 	Assert( bSuccess );
+	( void )bSuccess;
 	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayPush", &s_arrayPushFunc );
 	Assert( bSuccess );
+	( void )bSuccess;
 	g_pScriptVM->ReleaseScope( arrayHelperScope );
 
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );

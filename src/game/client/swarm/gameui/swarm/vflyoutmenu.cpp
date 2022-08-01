@@ -290,10 +290,10 @@ void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 	{
 		for ( int i = 0; i < GetChildCount(); ++i )
 		{
-			vgui::Button *button = dynamic_cast< vgui::Button * >( GetChild( i ) );
-			if ( button )
+			vgui::Button *button2 = dynamic_cast< vgui::Button * >( GetChild( i ) );
+			if ( button2 )
 			{
-				GetControllerFocus()->RemoveFromFocusList( button );
+				GetControllerFocus()->RemoveFromFocusList( button2 );
 			}
 		}
 		GetControllerFocus()->PopModal();

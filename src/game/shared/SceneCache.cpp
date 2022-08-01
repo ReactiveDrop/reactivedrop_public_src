@@ -100,7 +100,7 @@ void CSceneCache::PrecacheSceneEvent( CChoreoEvent *event, CUtlVector< unsigned 
 		char tok[ CChoreoEvent::MAX_CCTOKEN_STRING ];
 		if ( event->GetPlaybackCloseCaptionToken( tok, sizeof( tok ) ) )
 		{
-			int idx = soundemitterbase->GetSoundIndex( tok );
+			idx = soundemitterbase->GetSoundIndex( tok );
 			if ( idx != -1 && soundlist.Find( idx ) == soundlist.InvalidIndex() )
 			{
 				MEM_ALLOC_CREDIT();

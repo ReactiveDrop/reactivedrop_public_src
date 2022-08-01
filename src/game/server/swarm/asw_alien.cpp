@@ -1654,7 +1654,6 @@ void CASW_Alien::SetupPushawayVector()
 	CASW_Alien *pOtherAlien;
 	Vector vecPush;
 	vecPush.Init();
-	bool m_bPushed = false;
 	float flSpringColRadius = GetSpringColRadius();
 	// go through all aliens
 
@@ -1676,7 +1675,7 @@ void CASW_Alien::SetupPushawayVector()
 					dist = 1;
 				float push_amount = flSpringColRadius / dist;
 				vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-				m_bPushed = true;
+				//m_bPushed = true;
 			}
 		}
 	}
@@ -1710,7 +1709,7 @@ void CASW_Alien::SetupPushawayVector()
 			}
 			float push_amount = flSpringColRadius / dist;
 			vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-			m_bPushed = true;
+			//m_bPushed = true;
 		}
 	}
 	// push away from tesla traps
@@ -1729,7 +1728,7 @@ void CASW_Alien::SetupPushawayVector()
 			}
 			float push_amount = flSpringColRadius / dist;
 			vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-			m_bPushed = true;
+			//m_bPushed = true;
 		}
 	}
 	// cap the push vector

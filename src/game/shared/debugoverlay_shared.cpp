@@ -456,33 +456,33 @@ void NDebugOverlay::HorzArrow( const Vector &startPos, const Vector &endPos, flo
 
 	CrossProduct(lineDir, upVec, sideDir);
 
-	Vector p1 =	startPos - sideDir * radius;
-	Vector p2 = endPos - lineDir * width - sideDir * radius;
-	Vector p3 = endPos - lineDir * width - sideDir * width;
-	Vector p4 = endPos;
-	Vector p5 = endPos - lineDir * width + sideDir * width;
-	Vector p6 = endPos - lineDir * width + sideDir * radius;
-	Vector p7 =	startPos + sideDir * radius;
+	Vector v1 =	startPos - sideDir * radius;
+	Vector v2 = endPos - lineDir * width - sideDir * radius;
+	Vector v3 = endPos - lineDir * width - sideDir * width;
+	Vector v4 = endPos;
+	Vector v5 = endPos - lineDir * width + sideDir * width;
+	Vector v6 = endPos - lineDir * width + sideDir * radius;
+	Vector v7 =	startPos + sideDir * radius;
 
 	// Outline the arrow
-	Line(p1, p2, r,g,b,noDepthTest,flDuration);
-	Line(p2, p3, r,g,b,noDepthTest,flDuration);
-	Line(p3, p4, r,g,b,noDepthTest,flDuration);
-	Line(p4, p5, r,g,b,noDepthTest,flDuration);
-	Line(p5, p6, r,g,b,noDepthTest,flDuration);
-	Line(p6, p7, r,g,b,noDepthTest,flDuration);
+	Line(v1, v2, r,g,b,noDepthTest,flDuration);
+	Line(v2, v3, r,g,b,noDepthTest,flDuration);
+	Line(v3, v4, r,g,b,noDepthTest,flDuration);
+	Line(v4, v5, r,g,b,noDepthTest,flDuration);
+	Line(v5, v6, r,g,b,noDepthTest,flDuration);
+	Line(v6, v7, r,g,b,noDepthTest,flDuration);
 
 	if ( a > 0 )
 	{
 		// Fill us in with triangles
-		Triangle( p5, p4, p3, r, g, b, a, noDepthTest, flDuration ); // Tip
-		Triangle( p1, p7, p6, r, g, b, a, noDepthTest, flDuration ); // Shaft
-		Triangle( p6, p2, p1, r, g, b, a, noDepthTest, flDuration );
+		Triangle( v5, v4, v3, r, g, b, a, noDepthTest, flDuration ); // Tip
+		Triangle( v1, v7, v6, r, g, b, a, noDepthTest, flDuration ); // Shaft
+		Triangle( v6, v2, v1, r, g, b, a, noDepthTest, flDuration );
 
 		// And backfaces
-		Triangle( p3, p4, p5, r, g, b, a, noDepthTest, flDuration ); // Tip
-		Triangle( p6, p7, p1, r, g, b, a, noDepthTest, flDuration ); // Shaft
-		Triangle( p1, p2, p6, r, g, b, a, noDepthTest, flDuration );
+		Triangle( v3, v4, v5, r, g, b, a, noDepthTest, flDuration ); // Tip
+		Triangle( v6, v7, v1, r, g, b, a, noDepthTest, flDuration ); // Shaft
+		Triangle( v1, v2, v6, r, g, b, a, noDepthTest, flDuration );
 	}
 }
 
@@ -509,33 +509,33 @@ void NDebugOverlay::VertArrow( const Vector &startPos, const Vector &endPos, flo
 
 	VectorVectors( lineDir, sideDir, upVec );
 
-	Vector p1 =	startPos - upVec * radius;
-	Vector p2 = endPos - lineDir * width - upVec * radius;
-	Vector p3 = endPos - lineDir * width - upVec * width;
-	Vector p4 = endPos;
-	Vector p5 = endPos - lineDir * width + upVec * width;
-	Vector p6 = endPos - lineDir * width + upVec * radius;
-	Vector p7 =	startPos + upVec * radius;
+	Vector v1 =	startPos - upVec * radius;
+	Vector v2 = endPos - lineDir * width - upVec * radius;
+	Vector v3 = endPos - lineDir * width - upVec * width;
+	Vector v4 = endPos;
+	Vector v5 = endPos - lineDir * width + upVec * width;
+	Vector v6 = endPos - lineDir * width + upVec * radius;
+	Vector v7 =	startPos + upVec * radius;
 
 	// Outline the arrow
-	Line(p1, p2, r,g,b,noDepthTest,flDuration);
-	Line(p2, p3, r,g,b,noDepthTest,flDuration);
-	Line(p3, p4, r,g,b,noDepthTest,flDuration);
-	Line(p4, p5, r,g,b,noDepthTest,flDuration);
-	Line(p5, p6, r,g,b,noDepthTest,flDuration);
-	Line(p6, p7, r,g,b,noDepthTest,flDuration);
+	Line(v1, v2, r,g,b,noDepthTest,flDuration);
+	Line(v2, v3, r,g,b,noDepthTest,flDuration);
+	Line(v3, v4, r,g,b,noDepthTest,flDuration);
+	Line(v4, v5, r,g,b,noDepthTest,flDuration);
+	Line(v5, v6, r,g,b,noDepthTest,flDuration);
+	Line(v6, v7, r,g,b,noDepthTest,flDuration);
 
 	if ( a > 0 )
 	{
 		// Fill us in with triangles
-		Triangle( p5, p4, p3, r, g, b, a, noDepthTest, flDuration ); // Tip
-		Triangle( p1, p7, p6, r, g, b, a, noDepthTest, flDuration ); // Shaft
-		Triangle( p6, p2, p1, r, g, b, a, noDepthTest, flDuration );
+		Triangle( v5, v4, v3, r, g, b, a, noDepthTest, flDuration ); // Tip
+		Triangle( v1, v7, v6, r, g, b, a, noDepthTest, flDuration ); // Shaft
+		Triangle( v6, v2, v1, r, g, b, a, noDepthTest, flDuration );
 
 		// And backfaces
-		Triangle( p3, p4, p5, r, g, b, a, noDepthTest, flDuration ); // Tip
-		Triangle( p6, p7, p1, r, g, b, a, noDepthTest, flDuration ); // Shaft
-		Triangle( p1, p2, p6, r, g, b, a, noDepthTest, flDuration );
+		Triangle( v3, v4, v5, r, g, b, a, noDepthTest, flDuration ); // Tip
+		Triangle( v6, v7, v1, r, g, b, a, noDepthTest, flDuration ); // Shaft
+		Triangle( v1, v2, v6, r, g, b, a, noDepthTest, flDuration );
 	}
 }
 

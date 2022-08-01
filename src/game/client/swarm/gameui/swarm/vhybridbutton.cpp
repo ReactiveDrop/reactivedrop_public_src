@@ -507,10 +507,10 @@ void BaseModHybridButton::PaintButtonEx()
 
 		if ( m_bShowDropDownIndicator )
 		{
-			int textTall = vgui::surface()->GetFontTall( m_hTextFont );
+			textTall = vgui::surface()->GetFontTall( m_hTextFont );
 			int textLen = 0;
 
-			int len = wcslen( szUnicode );
+			len = wcslen( szUnicode );
 			for ( int i=0;i<len;i++ )
 			{
 				textLen += vgui::surface()->GetCharacterWidth( m_hTextFont, szUnicode[i] );
@@ -633,9 +633,8 @@ void BaseModHybridButton::PaintButtonEx()
 			g_pVGuiLocalize->ConvertANSIToUnicode( m_DropDownSelection.String(), szUnicode, sizeof( szUnicode ) );
 			pUnicodeString = szUnicode;
 		}
-		int len = V_wcslen( pUnicodeString );
+		len = V_wcslen( pUnicodeString );
 
-		int textWide, textTall;
 		surface()->GetTextSize( m_hSelectionFont, pUnicodeString, textWide, textTall );
 
 		// horizontal right justify

@@ -68,7 +68,6 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 	// map launch comes in (it might be nested under reservation
 	// processing)
 	bool bAlreadyLoadingMap = false;
-	char const *szBspName = NULL;
 	const char *pGameDir = COM_GetModDirectory();
 	if ( !Q_stricmp( pKV->GetName(), "::ExecGameTypeCfg" ) )
 	{

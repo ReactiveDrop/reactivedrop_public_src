@@ -628,15 +628,15 @@ public:
 		if ( ep.m_pflSoundDuration )
 		{
 #ifdef GAME_DLL
-			float startTime = Plat_FloatTime();
+			float startTime2 = Plat_FloatTime();
 #endif
 			*ep.m_pflSoundDuration = enginesound->GetSoundDuration( params.soundname );
 #ifdef GAME_DLL
-			float timeSpent = ( Plat_FloatTime() - startTime ) * 1000.0f;
-			const float thinkLimit = 10.0f;
-			if ( timeSpent > thinkLimit )
+			float timeSpent2 = ( Plat_FloatTime() - startTime2 ) * 1000.0f;
+			const float thinkLimit2 = 10.0f;
+			if ( timeSpent2 > thinkLimit2 )
 			{
-				UTIL_LogPrintf( "getting sound duration for %s took %f milliseconds\n", params.soundname, timeSpent );
+				UTIL_LogPrintf( "getting sound duration for %s took %f milliseconds\n", params.soundname, timeSpent2 );
 			}
 #endif
 		}

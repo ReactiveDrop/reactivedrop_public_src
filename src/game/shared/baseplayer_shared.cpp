@@ -657,8 +657,8 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	}
 	else
 	{
-		IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
-		const char *pSoundName = physprops->GetString( stepSoundName );
+		IPhysicsSurfaceProps *pPhysProps = MoveHelper()->GetSurfaceProps();
+		const char *pSoundName = pPhysProps->GetString( stepSoundName );
 		if ( !CBaseEntity::GetParametersForSound( pSoundName, params, NULL ) )
 			return;
 

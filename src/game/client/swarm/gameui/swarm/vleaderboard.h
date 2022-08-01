@@ -279,7 +279,7 @@ namespace BaseModUI {
 
 		int m_iPrevSelectedRank;
 
-		typedef struct 
+		struct PendingAsyncRequest_t
 		{
 			AsyncQueryType asyncQueryType;
 			int iData;							// same data as m_iAsyncQueryData
@@ -289,10 +289,7 @@ namespace BaseModUI {
 				asyncQueryType = QUERY_NONE;
 				iData = 0;
 			}
-
-		} PendingAsyncRequest_t;
-
-		PendingAsyncRequest_t m_pendingRequest;	// The request that we last sent and haven't yet recieved
+		} m_pendingRequest;	// The request that we last sent and haven't yet recieved
 
 		CUtlQueue<PendingAsyncRequest_t> m_AsyncQueryQueue;
 

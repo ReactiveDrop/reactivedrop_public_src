@@ -2071,7 +2071,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 	CNB_Button *joinButton = dynamic_cast< CNB_Button* >( FindChildByName( "BtnJoinSelected" ) );
 	BaseModUI::BaseModHybridButton *downloadButton = dynamic_cast< BaseModUI::BaseModHybridButton* >( FindChildByName( "BtnDownloadSelected" ) );
 	vgui::Label *downloadVersionLabel = dynamic_cast< vgui::Label* >( FindChildByName( "LblNewVersion" ) );
-	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "ImgSelectedAvatar" ) );																						   
+	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "ImgSelectedAvatar" ) );
 	DropDownMenu *pDrpPlayer = dynamic_cast< DropDownMenu * > ( FindChildByName( "DrpSelectedPlayerName" ) );
 	int bBuiltIn = 0;
 
@@ -2101,7 +2101,6 @@ void FoundGames::OnItemSelected( const char* panelName )
 		{
 			if ( bChangedSelection )
 			{
-				DropDownMenu *pDrpPlayer = dynamic_cast< DropDownMenu * > ( FindChildByName( "DrpSelectedPlayerName" ) );
 				if ( pDrpPlayer )
 				{
 					pDrpPlayer->SetVisible( true );
