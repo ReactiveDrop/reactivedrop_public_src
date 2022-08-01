@@ -349,7 +349,7 @@ bool CASW_Player::CanBeKicked()
 	if ( IsFirstNonBotPlayer( entindex() ) )
 	{
 #ifdef CLIENT_DLL
-		KeyValues *pSettings = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
+		KeyValues *pSettings = g_pMatchFramework->GetMatchSession() ? g_pMatchFramework->GetMatchSession()->GetSessionSettings() : NULL;
 
 		if ( engine->IsClientLocalToActiveServer() || ( pSettings && !V_strcmp( pSettings->GetString( "server/server" ), "listen" ) ) )
 #else
