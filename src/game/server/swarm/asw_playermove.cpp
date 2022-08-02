@@ -223,7 +223,7 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 
 	if ( ucmd->buttons != pASWPlayer->m_Local.m_nOldButtons )
 	{
-		pASWPlayer->m_flLastActiveTime = gpGlobals->realtime;
+		pASWPlayer->m_flLastActiveTime = gpGlobals->curtime;
 	}
 
 	// Copy output
