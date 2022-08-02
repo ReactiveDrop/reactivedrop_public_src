@@ -4,6 +4,7 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
 #include "VMainMenu.h"
 #include "EngineInterface.h"
 #include "VFooterPanel.h"
@@ -40,7 +41,7 @@
 #include "fmtstr.h"
 #include "cdll_client_int.h"
 #include "inputsystem/iinputsystem.h"
-
+#include "asw_util_shared.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1136,6 +1137,14 @@ void MainMenu::SetFooterState()
 //=============================================================================
 void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
+	static bool s_bReloadLocOnce = true;
+	if ( s_bReloadLocOnce )
+	{
+		// BenLubar: load translations again right before the main menu appears for the first time
+		UTIL_RD_ReloadLocalizeFiles();
+		s_bReloadLocOnce = false;
+	}
+
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";

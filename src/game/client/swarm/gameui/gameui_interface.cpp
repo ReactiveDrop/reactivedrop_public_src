@@ -184,14 +184,11 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	vgui::VGui_InitInterfacesList( "GameUI", &factory, 1 );
 	vgui::VGui_InitMatSysInterfacesList( "GameUI", &factory, 1 );
 
-	// load localization file
-	UTIL_RD_AddLocalizeFile( "Resource/gameui_%language%.txt", "GAME", true );
-
 	// load mod info
 	ModInfo().LoadCurrentGameInfo();
 
-	// load localization file for kb_act.lst
-	UTIL_RD_AddLocalizeFile( "Resource/valve_%language%.txt", "GAME", true );
+	// localization setup
+	UTIL_RD_ReloadLocalizeFiles();
 
 	bool bFailed = false;
 	enginevguifuncs = (IEngineVGui *)factory( VENGINE_VGUI_VERSION, NULL );
@@ -391,13 +388,6 @@ void CGameUI::Start()
 
 		g_pFullFileSystem->AddSearchPath( "platform", "PLATFORM" );
 	}
-
-	// localization
-	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt" );
-	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt" );
-
-	// (slightly) delayed localization setup
-	UTIL_RD_ReloadLocalizeFiles();
 
 	Sys_SetLastError( SYS_NO_ERROR );
 

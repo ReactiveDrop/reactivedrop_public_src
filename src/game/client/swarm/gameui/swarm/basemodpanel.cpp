@@ -154,8 +154,6 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	Assert(m_CFactoryBasePanel == 0);
 	m_CFactoryBasePanel = this;
 
-	UTIL_RD_AddLocalizeFile( "Resource/basemodui_%language%.txt");
-
 	m_LevelLoading = false;
 	
 	for ( int k = 0; k < WPRI_COUNT; ++ k )

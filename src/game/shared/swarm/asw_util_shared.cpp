@@ -1661,7 +1661,11 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		// Replace the language name here so we have control over what it is.
 
 		const char *pszLanguageReplacement = "%language%";
-		if ( SteamApps() )
+		if ( CommandLine()->FindParm( "-language" ) )
+		{
+			pszLanguageReplacement = CommandLine()->ParmValue( "-language", "english" );
+		}
+		else if ( SteamApps() )
 		{
 			pszLanguageReplacement = SteamApps()->GetCurrentGameLanguage();
 		}
@@ -1721,10 +1725,20 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 void UTIL_RD_ReloadLocalizeFiles()
 {
 	// load english first just in case an addon is not localized
+	UTIL_RD_AddLocalizeFile( "resource/gameui_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/valve_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/platform_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/vgui_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/basemodui_english.txt", "GAME", true, false );
 	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true, true );
 	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true, false );
 
 	// load actual localization files
+	UTIL_RD_AddLocalizeFile( "resource/gameui_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/valve_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/platform_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/vgui_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/basemodui_%language%.txt", "GAME", true, false );
 	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
 	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true, false );
 
