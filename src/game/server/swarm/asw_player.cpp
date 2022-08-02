@@ -458,7 +458,7 @@ void CASW_Player::PostThink()
 	// find nearby usable items
 	FindUseEntities();
 
-	if ( rd_kick_inactive_players.GetFloat() > 0 )
+	if ( !IsAnyBot() && rd_kick_inactive_players.GetFloat() > 0 )
 	{
 		float flInactiveFor = gpGlobals->curtime - m_flLastActiveTime;
 		float flInactiveRatio = flInactiveFor / rd_kick_inactive_players.GetFloat();
