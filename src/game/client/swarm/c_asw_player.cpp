@@ -1001,7 +1001,7 @@ void C_ASW_Player::ClientThink()
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
 
-	float flInactiveKickAfter = m_flInactiveKickWarning - gpGlobals->realtime;
+	float flInactiveKickAfter = m_flInactiveKickWarning - gpGlobals->curtime;
 	if ( flInactiveKickAfter < 0 )
 	{
 		m_nLastInactiveKickWarning = 0;
@@ -1021,9 +1021,10 @@ void C_ASW_Player::ClientThink()
 
 		if ( m_nLastInactiveKickWarning != nInactiveKickSeconds )
 		{
-			char buffer[12]{};
-			V_snprintf( buffer, sizeof( buffer ), "%d", nInactiveKickSeconds );
-			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", buffer );
+			wchar_t buffer[12]{};
+			V_snwprintf( buffer, sizeof( buffer ), L"%d", nInactiveKickSeconds );
+			char *szBuffer = reinterpret_cast< char * >( &buffer[0] ); // FIXME: ClientPrint is weird on the client-side.
+			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", szBuffer );
 
 			m_nLastInactiveKickWarning = nInactiveKickSeconds;
 		}

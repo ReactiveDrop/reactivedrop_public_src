@@ -458,15 +458,15 @@ void CASW_Player::PostThink()
 	// find nearby usable items
 	FindUseEntities();
 
-	if ( rd_kick_inactive_players.GetFloat() > 0 )
+	if ( CanBeKicked() && rd_kick_inactive_players.GetFloat() > 0 )
 	{
-		float flInactiveFor = gpGlobals->realtime - m_flLastActiveTime;
+		float flInactiveFor = gpGlobals->curtime - m_flLastActiveTime;
 		float flInactiveRatio = flInactiveFor / rd_kick_inactive_players.GetFloat();
 		m_flInactiveKickWarning = flInactiveRatio >= rd_kick_inactive_players_warning.GetFloat() ? m_flLastActiveTime + rd_kick_inactive_players.GetFloat() : 0.0f;
 
 		if ( flInactiveRatio >= 1.0f )
 		{
-			engine->ServerCommand( CFmtStr( "kickid %d Disconnected due to inactivity.\n", GetUserID() ) );
+			engine->ServerCommand( CFmtStr( "kickid %d Disconnected due to inactivity\n", GetUserID() ) );
 		}
 	}
 
@@ -644,7 +644,7 @@ void CASW_Player::Spawn()
 	m_bHasAwardedXP = false;
 	m_bSentPromotedMessage = false;
 
-	m_flLastActiveTime = gpGlobals->realtime;
+	m_flLastActiveTime = gpGlobals->curtime;
 
 	if (ASWGameRules())
 	{
@@ -698,7 +698,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 {
 	const char *pcmd = args[0];
 
-	m_flLastActiveTime = gpGlobals->realtime;
+	m_flLastActiveTime = gpGlobals->curtime;
 
 	switch ( ASWGameRules()->GetGameState() )
 	{
