@@ -1991,6 +1991,25 @@ CON_COMMAND_F( ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:
 	g_ReactiveDropWorkshop.UploadWorkshopItem( args[1], args[2], args[3], args[4], tags );
 }
 
+CON_COMMAND_F( ugc_curated_create, "", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
+{
+	ISteamUGC *pUGC = SteamUGC();
+	if ( !pUGC )
+	{
+		Warning( "Could not obtain SteamUGC interface!\n" );
+		return;
+	}
+
+	if ( g_ReactiveDropWorkshop.m_CreateItemResultCallbackCurated.IsActive() )
+	{
+		Warning( "Call already active!\n" );
+		return;
+	}
+
+	SteamAPICall_t hCall = pUGC->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeMicrotransaction );
+	g_ReactiveDropWorkshop.m_CreateItemResultCallbackCurated.Set( hCall, &g_ReactiveDropWorkshop, &CReactiveDropWorkshop::CreateItemResultCallbackCurated );
+}
+
 void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResult, bool bIOFailure )
 {
 	if ( bIOFailure || pResult->m_eResult != k_EResultOK )
@@ -2296,6 +2315,28 @@ CON_COMMAND_F( ugc_update, "Usage: ugc_update 826481632 \"C:\\Path\\to\\content.
 	}
 
 	g_ReactiveDropWorkshop.UpdateWorkshopItem( nFileID, args[2], args[3], changeDescription );
+}
+
+void CReactiveDropWorkshop::CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure )
+{
+	if ( bIOFailure )
+	{
+		Warning( "Steam Workshop CreateItem API call failed! (IO Failure)\n" );
+		return;
+	}
+	if ( pResult->m_eResult != k_EResultOK )
+	{
+		Warning( "Steam Workshop CreateItem API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
+		return;
+	}
+
+	if ( pResult->m_bUserNeedsToAcceptWorkshopLegalAgreement )
+	{
+		Warning( "You need to accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement\n" );
+	}
+
+	Msg( "Workshop assigned published file ID: %llu\n", pResult->m_nPublishedFileId );
+	OpenWorkshopPageForFile( pResult->m_nPublishedFileId );
 }
 
 void CReactiveDropWorkshop::SetWorkshopItemTags( PublishedFileId_t nFileID, const CUtlVector<const char *> & aszTags )
