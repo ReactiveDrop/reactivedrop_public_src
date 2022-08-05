@@ -1,18 +1,18 @@
 #include "cbase.h"
-#include "clientmode_asw.h"
-#include "ienginevgui.h"
 #include "asw_mission_chooser_frame.h"
-#include "asw_mission_chooser_list.h"
-#include "asw_mission_chooser_entry.h"
-#include "asw_mission_chooser_details.h"
-#include "nb_header_footer.h"
-#include "gameui/swarm/basemodui.h"
-#include <vgui_controls/PropertySheet.h>
+#include "gameui/swarm/basemodpanel.h"
+#include "gameui/swarm/uigamedata.h"
 #include "rd_missions_shared.h"
 #include "rd_workshop.h"
+#include "rd_missions_shared.h"
+#include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/Label.h>
+#include "campaignmapsearchlights.h"
+#include "fmtstr.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 extern ConVar rd_last_game_access;
 
@@ -43,293 +43,25 @@ const char *const g_ASW_HostTypeName[] =
 	"callvote",
 };
 
-CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( vgui::Panel *pParent, const char *pElementName, ASW_HOST_TYPE iHostType )
-	: BaseClass( pParent, pElementName )
+static const char *const s_WorkshopChooserTypeName[] =
 {
-	SetConsoleStylePanel( true );
-	SetProportional( true );
-	SetSizeable( false );
-	SetCloseButtonVisible( false );
+	"#rd_workshop_find_new_campaign",
+	"", // saved campaign
+	"", // single mission
+	"#rd_workshop_find_new_bonus_mission",
+	"#rd_workshop_find_new_deathmatch",
+	"#rd_workshop_find_new_endless",
+};
 
-	HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
-	SetScheme( scheme );
-
-	m_HostType = iHostType;
-	m_bViewingCampaign = false;
-
-	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
-	m_pHeaderFooter->SetGradientBarPos( 40, 410 );
-
-	switch ( iHostType )
-	{
-	case ASW_HOST_TYPE::SINGLEPLAYER:
-		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
-		break;
-	case ASW_HOST_TYPE::CREATESERVER:
-		m_pHeaderFooter->SetTitle( "#nb_select_mission" );
-		break;
-	case ASW_HOST_TYPE::CALLVOTE:
-		m_pHeaderFooter->SetTitle( "#asw_vote_server" );
-		break;
-	default:
-		Assert( !"unexpected missionchooser host type" );
-		break;
-	}
-
-	m_pSheet = new vgui::PropertySheet( this, "TabSheet" );
-	m_pSheet->SetKBNavigationEnabled( false );
-
-	extern ConVar sv_gametypes;
-	CSplitString AllowedGameTypes( sv_gametypes.GetString(), "," );
-
-	// create our lists and put them in as pages in the property sheet
-	FOR_EACH_VEC( AllowedGameTypes, i )
-	{
-		for ( int j = 0; j < NELEMS( g_ASW_ChooserTypeName ); j++ )
-		{
-			if ( V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[j] ) )
-			{
-				continue;
-			}
-
-			CASW_Mission_Chooser_List *pChooserList = new CASW_Mission_Chooser_List( m_pSheet, "MissionChooserList", ASW_CHOOSER_TYPE( j ), this );
-			m_pSheet->AddPage( pChooserList, s_ChooserTabName[j] );
-		}
-	}
-
-	m_pDetails = new CASW_Mission_Chooser_Details( this, "MissionChooserDetails" );
-
-	m_pCampaignMissionList = new vgui::PropertySheet( this, "CampaignMissionList" );
-	m_pCampaignMissionList->SetKBNavigationEnabled( false );
-}
-
-CASW_Mission_Chooser_Frame::~CASW_Mission_Chooser_Frame()
+static const char *const s_WorkshopChooserTypeTag[] =
 {
-}
-
-void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
-{
-	if ( !V_stricmp( command, "BackButton" ) )
-	{
-		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
-		if ( m_bViewingCampaign )
-		{
-			m_pCampaignMissionList->SetVisible( false );
-			m_pSheet->SetVisible( true );
-			m_pSheet->InvalidateLayout();
-			m_bViewingCampaign = false;
-		}
-		else
-		{
-			MarkForDeletion();
-		}
-	}
-	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
-	{
-		CASW_Mission_Chooser_Entry *pEntry = m_pDetails->m_pLastEntry;
-		if ( pEntry && pEntry->m_pFocusHolder )
-		{
-			pEntry->m_pFocusHolder->OnMousePressed( MOUSE_LEFT );
-			pEntry->m_pFocusHolder->OnMouseReleased( MOUSE_LEFT );
-		}
-	}
-	else if ( !V_stricmp( command, "PrevPage" ) )
-	{
-		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() > 0 )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() - 1 ) );
-		}
-	}
-	else if ( !V_stricmp( command, "NextPage" ) )
-	{
-		if ( !m_bViewingCampaign && m_pSheet->GetActivePageNum() < m_pSheet->GetNumPages() - 1 )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( m_pSheet->GetActivePageNum() + 1 ) );
-		}
-	}
-	else if ( !V_stricmp( command, "CyclePage" ) )
-	{
-		if ( !m_bViewingCampaign )
-		{
-			m_pSheet->SetActivePage( m_pSheet->GetPage( ( m_pSheet->GetActivePageNum() + 1 ) % m_pSheet->GetNumPages() ) );
-		}
-	}
-	else
-	{
-		BaseClass::OnCommand( command );
-	}
-}
-
-void CASW_Mission_Chooser_Frame::OnKeyCodeTyped( vgui::KeyCode keycode )
-{
-	switch ( keycode )
-	{
-	case KEY_ESCAPE:
-		OnCommand( "BackButton" );
-		break;
-	case KEY_ENTER:
-		OnCommand( "ApplyCurrentEntry" );
-		break;
-	case KEY_PAGEUP:
-		OnCommand( "PrevPage" );
-		break;
-	case KEY_PAGEDOWN:
-		OnCommand( "NextPage" );
-		break;
-	case KEY_TAB:
-		OnCommand( "CyclePage" );
-		break;
-	default:
-		BaseClass::OnKeyCodeTyped( keycode );
-		break;
-	}
-}
-
-void CASW_Mission_Chooser_Frame::OnKeyCodePressed( vgui::KeyCode keycode )
-{
-	int lastUser = GetJoystickForCode( keycode );
-	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
-
-	vgui::KeyCode code = GetBaseButtonCode( keycode );
-
-	switch ( code )
-	{
-	case KEY_XBUTTON_A:
-		OnCommand( "ApplyCurrentEntry" );
-		break;
-	case KEY_XBUTTON_B:
-		OnCommand( "BackButton" );
-		break;
-	case KEY_XBUTTON_LEFT_SHOULDER:
-		OnCommand( "PrevPage" );
-		break;
-	case KEY_XBUTTON_RIGHT_SHOULDER:
-		OnCommand( "NextPage" );
-		break;
-	default:
-		BaseClass::OnKeyCodePressed( keycode );
-		break;
-	}
-}
-
-void CASW_Mission_Chooser_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
-{
-	LoadControlSettings( "Resource/UI/MissionChooserFrame.res" );
-
-	BaseClass::ApplySchemeSettings( pScheme );
-}
-
-void CASW_Mission_Chooser_Frame::ApplyEntry( CASW_Mission_Chooser_Entry *pEntry )
-{
-	if ( pEntry->m_szMission[0] )
-	{
-		PublishedFileId_t iWorkshopID = ReactiveDropMissions::MissionWorkshopID( ReactiveDropMissions::GetMissionIndex( pEntry->m_szMission ) );
-		if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
-		{
-			g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
-			return;
-		}
-
-		if ( m_HostType == ASW_HOST_TYPE::CALLVOTE )
-		{
-			if ( pEntry->m_szCampaign[0] )
-			{
-				engine->ServerCmd( CFmtStr( "asw_vote_campaign %d %s", ReactiveDropMissions::GetCampaignIndex( pEntry->m_szCampaign ), pEntry->m_szMission ) );
-			}
-			else
-			{
-				engine->ServerCmd( CFmtStr( "asw_vote_mission %s", pEntry->m_szMission ) );
-			}
-
-			MarkForDeletion();
-			return;
-		}
-
-		KeyValues::AutoDelete pSettings( "Settings" );
-
-		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
-		{
-			pSettings->SetString( "system/network", "offline" );
-		}
-		else
-		{
-			Assert( m_HostType == ASW_HOST_TYPE::CREATESERVER );
-			pSettings->SetString( "system/network", "LIVE" );
-			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
-			pSettings->SetString( "options/action", "create" );
-		}
-
-		if ( pEntry->m_szCampaign[0] )
-		{
-			pSettings->SetString( "game/mode", "campaign" );
-			pSettings->SetString( "game/campaign", pEntry->m_szCampaign );
-		}
-		else
-		{
-			pSettings->SetString( "game/mode", "single_mission" );
-		}
-
-		pSettings->SetString( "game/mission", pEntry->m_szMission );
-		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
-
-		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
-		BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
-
-		if ( m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
-		{
-			g_pMatchFramework->CreateSession( pSettings );
-		}
-		else
-		{
-			BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GAMESETTINGS, NULL, true, pSettings );
-		}
-
-		MarkForDeletion();
-		return;
-	}
-
-	Assert( pEntry->m_szCampaign[0] );
-	if ( !pEntry->m_szCampaign[0] )
-		return;
-
-	ApplyCampaign( pEntry->m_pList->m_ChooserType, pEntry->m_szCampaign );
-}
-
-void CASW_Mission_Chooser_Frame::ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
-{
-	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( szCampaignName ) );
-	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
-	{
-		g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
-		return;
-	}
-
-	m_bViewingCampaign = true;
-	m_pSheet->SetVisible( false );
-
-	while ( m_pCampaignMissionList->GetNumPages() )
-	{
-		m_pCampaignMissionList->DeletePage( m_pCampaignMissionList->GetPage( 0 ) );
-	}
-
-	m_pCampaignMissionList->SetVisible( true );
-	m_pCampaignMissionList->AddPage( new CASW_Mission_Chooser_List( m_pCampaignMissionList, "MissionChooserList", iChooserType, this, szCampaignName ), "#nb_select_starting_mission" );
-}
-
-bool CASW_Mission_Chooser_Frame::SelectTab( ASW_CHOOSER_TYPE iChooserType )
-{
-	for ( int i = 0; i < m_pSheet->GetNumPages(); i++ )
-	{
-		CASW_Mission_Chooser_List *pList = assert_cast< CASW_Mission_Chooser_List * >( m_pSheet->GetPage( i ) );
-		if ( pList->m_ChooserType == iChooserType )
-		{
-			m_pSheet->SetActivePage( pList );
-			return true;
-		}
-	}
-
-	return false;
-}
+	"Campaign",
+	"", // saved campaign
+	"", // single mission
+	"Bonus",
+	"Deathmatch",
+	"Endless",
+};
 
 vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
 static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
@@ -343,21 +75,12 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iCho
 	}
 
 	if ( iHostType == ASW_HOST_TYPE::NUM_TYPES )
+	{
 		return;
-
-	pFrame = new CASW_Mission_Chooser_Frame( NULL, "MissionChooserFrame", iHostType );
-
-	if ( engine->IsConnected() )
-	{
-		pFrame->SetParent( GetClientMode()->GetViewport() );
-	}
-	else
-	{
-		vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-		pFrame->SetParent( rootpanel );
 	}
 
-	pFrame->MakeReadyForUse();
+	pFrame = new CASW_Mission_Chooser_Frame( iHostType );
+	pFrame->ShowFullScreen();
 
 	if ( iChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
 	{
@@ -368,9 +91,6 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iCho
 	{
 		pFrame->ApplyCampaign( iChooserType, szCampaignName );
 	}
-
-	pFrame->InvalidateLayout();
-	pFrame->SetVisible( true );
 
 	g_hChooserFrame = pFrame;
 }
@@ -422,7 +142,7 @@ CON_COMMAND_F_COMPLETION( asw_mission_chooser, "asw_mission_chooser host [choose
 {
 	if ( args.ArgC() < 2 || args.ArgC() > 4 )
 	{
-		ConMsg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
+		Msg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
 		return;
 	}
 
@@ -446,14 +166,14 @@ CON_COMMAND_F_COMPLETION( asw_mission_chooser, "asw_mission_chooser host [choose
 
 		if ( iChooserType == ASW_CHOOSER_TYPE::NUM_TYPES )
 		{
-			ConMsg( "Invalid host type.\n" );
+			Msg( "Invalid host type.\n" );
 			return;
 		}
 	}
 
 	if ( args.ArgC() >= 4 && iChooserType != ASW_CHOOSER_TYPE::CAMPAIGN )
 	{
-		ConMsg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
+		Msg( "Usage: asw_mission_chooser host [chooser] [campaign]\n" );
 		return;
 	}
 
@@ -472,5 +192,567 @@ CON_COMMAND_F_COMPLETION( asw_mission_chooser, "asw_mission_chooser host [choose
 		}
 	}
 
-	ConMsg( "Invalid host type.\n" );
+	Msg( "Invalid host type.\n" );
+}
+
+CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( ASW_HOST_TYPE iHostType )
+{
+	m_HostType = iHostType;
+	m_bViewingCampaign = false;
+
+	switch ( iHostType )
+	{
+	case ASW_HOST_TYPE::SINGLEPLAYER:
+		SetTitle( "#nb_select_mission", true );
+		break;
+	case ASW_HOST_TYPE::CREATESERVER:
+		SetTitle( "#nb_select_mission", true );
+		break;
+	case ASW_HOST_TYPE::CALLVOTE:
+		SetTitle( "#asw_vote_server", true );
+		break;
+	default:
+		Assert( !"unexpected missionchooser host type" );
+		break;
+	}
+
+	extern ConVar sv_gametypes;
+	CSplitString AllowedGameTypes( sv_gametypes.GetString(), "," );
+
+	// create our lists and put them in as pages in the property sheet
+	FOR_EACH_VEC( AllowedGameTypes, i )
+	{
+		for ( int j = 0; j < NELEMS( g_ASW_ChooserTypeName ); j++ )
+		{
+			if ( V_stricmp( AllowedGameTypes[i], g_ASW_ChooserTypeName[j] ) )
+			{
+				continue;
+			}
+
+			CASW_Mission_Chooser_Tab *pChooserList = new CASW_Mission_Chooser_Tab( this, ASW_CHOOSER_TYPE( j ) );
+			m_MainTabs.AddToTail( pChooserList );
+			AddTab( pChooserList );
+		}
+	}
+}
+
+void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "BackButton" ) && m_bViewingCampaign )
+	{
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
+
+		FOR_EACH_VEC_BACK( m_Tabs, i )
+		{
+			TGD_Tab *pTab = m_Tabs[i];
+			RemoveTab( pTab );
+			pTab->MarkForDeletion();
+		}
+
+		FOR_EACH_VEC( m_MainTabs, i )
+		{
+			AddTab( m_MainTabs[i] );
+		}
+
+		m_bViewingCampaign = false;
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CASW_Mission_Chooser_Frame::ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
+{
+	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( szCampaignName ) );
+	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+	{
+		g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+		return;
+	}
+
+	m_bViewingCampaign = true;
+
+	FOR_EACH_VEC( m_MainTabs, i )
+	{
+		RemoveTab( m_MainTabs[i] );
+	}
+
+	AddTab( new CASW_Mission_Chooser_Tab( this, iChooserType, szCampaignName ) );
+}
+
+bool CASW_Mission_Chooser_Frame::SelectTab( ASW_CHOOSER_TYPE iChooserType )
+{
+	FOR_EACH_VEC( m_Tabs, i )
+	{
+		CASW_Mission_Chooser_Tab *pTab = assert_cast< CASW_Mission_Chooser_Tab * >( m_Tabs[i] );
+		if ( pTab->m_ChooserType == iChooserType )
+		{
+			ActivateTab( pTab );
+			return true;
+		}
+	}
+
+	return false;
+}
+
+CASW_Mission_Chooser_Tab::CASW_Mission_Chooser_Tab( CASW_Mission_Chooser_Frame *pFrame, ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName ) : BaseClass( pFrame, szCampaignName ? "#nb_select_starting_mission" : s_ChooserTabName[int(iChooserType)] )
+{
+	m_nDataResets = 0;
+	m_nLastX = -1;
+	m_nLastY = -1;
+	m_ChooserType = iChooserType;
+	m_szCampaignName[0] = '\0';
+
+	if ( szCampaignName )
+	{
+		V_strncpy( m_szCampaignName, szCampaignName, sizeof( m_szCampaignName ) );
+	}
+}
+
+TGD_Details *CASW_Mission_Chooser_Tab::CreateDetails()
+{
+	return new CASW_Mission_Chooser_Details( this );
+}
+
+void CASW_Mission_Chooser_Tab::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( !m_pGrid || !m_pDetails )
+	{
+		// wait until we get initialized.
+		return;
+	}
+
+	// make sure data reset count is up to date.
+	ReactiveDropMissions::GetCampaign( -1 );
+
+	if ( ReactiveDropMissions::s_nDataResets == m_nDataResets )
+	{
+		return;
+	}
+
+	if ( m_szCampaignName[0] )
+	{
+		BuildCampaignMissionList();
+
+		m_nDataResets = ReactiveDropMissions::s_nDataResets;
+
+		InvalidateLayout();
+
+		return;
+	}
+
+	bool bOnWorkshop = true;
+
+	switch ( m_ChooserType )
+	{
+	case ASW_CHOOSER_TYPE::CAMPAIGN:
+		BuildCampaignList( NULL );
+		break;
+	case ASW_CHOOSER_TYPE::SAVED_CAMPAIGN:
+		Assert( !"Saved campaign mission chooser list not implemented!" );
+		bOnWorkshop = false;
+		break;
+	case ASW_CHOOSER_TYPE::SINGLE_MISSION:
+		BuildMissionList( NULL );
+		bOnWorkshop = false;
+		break;
+	case ASW_CHOOSER_TYPE::BONUS_MISSION:
+		BuildMissionList( "bonus" );
+		break;
+	case ASW_CHOOSER_TYPE::DEATHMATCH:
+		BuildMissionList( "deathmatch" );
+		break;
+	case ASW_CHOOSER_TYPE::ENDLESS:
+		BuildMissionList( "endless" );
+		break;
+	default:
+		Assert( !"Unhandled ASW_CHOOSER_TYPE in CASW_Mission_Chooser_List" );
+		bOnWorkshop = false;
+		break;
+	}
+
+	if ( bOnWorkshop )
+	{
+		m_pGrid->AddEntry( new CASW_Mission_Chooser_Entry( m_pGrid, "MissionChooserEntry", m_ChooserType ) );
+	}
+
+	m_nDataResets = ReactiveDropMissions::s_nDataResets;
+}
+
+void CASW_Mission_Chooser_Tab::BuildCampaignList( const char *szRequiredTag )
+{
+	m_pGrid->DeleteAllEntries();
+
+	for ( int i = 0; i < ReactiveDropMissions::CountCampaigns(); i++ )
+	{
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( i );
+		Assert( pCampaign );
+		if ( !pCampaign )
+			continue;
+
+		if ( szRequiredTag && !pCampaign->HasTag( szRequiredTag ) )
+			continue;
+
+		m_pGrid->AddEntry( new CASW_Mission_Chooser_Entry( m_pGrid, "MissionChooserEntry", pCampaign, NULL ) );
+	}
+}
+
+void CASW_Mission_Chooser_Tab::BuildMissionList( const char *szRequiredTag )
+{
+	m_pGrid->DeleteAllEntries();
+
+	for ( int i = 0; i < ReactiveDropMissions::CountMissions(); i++ )
+	{
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( i );
+		Assert( pMission );
+		if ( !pMission )
+			continue;
+
+		if ( szRequiredTag && !pMission->HasTag( szRequiredTag ) )
+			continue;
+
+		m_pGrid->AddEntry( new CASW_Mission_Chooser_Entry( m_pGrid, "MissionChooserEntry", NULL, pMission ) );
+	}
+}
+
+void CASW_Mission_Chooser_Tab::BuildCampaignMissionList()
+{
+	m_pGrid->DeleteAllEntries();
+
+	const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( m_szCampaignName );
+	Assert( pCampaign );
+	if ( !pCampaign )
+		return;
+
+	for ( int i = 1; i < pCampaign->Missions.Count(); i++ )
+	{
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( pCampaign->Missions[i].MapName );
+		Assert( pMission );
+		if ( !pMission )
+			continue;
+
+		m_pGrid->AddEntry( new CASW_Mission_Chooser_Entry( m_pGrid, "MissionChooserEntry", pCampaign, pMission ) );
+	}
+}
+
+CASW_Mission_Chooser_Details::CASW_Mission_Chooser_Details( TGD_Tab *pTab ) : BaseClass( pTab )
+{
+	m_nDataResets = 0;
+	m_nForceReLayout = 0;
+	m_pImage = new vgui::ImagePanel( this, "Image" );
+	m_pBackdrop = new vgui::Panel( this, "Backdrop" );
+	m_pTitle = new vgui::Label( this, "Title", "" );
+	m_pDescription = new vgui::Label( this, "Description", "" );
+	m_pMapBase = new vgui::ImagePanel( this, "MapBase" );
+	m_pMapLayer[0] = new vgui::ImagePanel( this, "MapLayer1" );
+	m_pMapLayer[1] = new vgui::ImagePanel( this, "MapLayer2" );
+	m_pMapLayer[2] = new vgui::ImagePanel( this, "MapLayer3" );
+	m_pSearchLights = new CampaignMapSearchLights( this, "MapSearchLights" );
+
+	DisplayEntry( NULL );
+}
+
+CASW_Mission_Chooser_Details::~CASW_Mission_Chooser_Details()
+{
+}
+
+void CASW_Mission_Chooser_Details::OnThink()
+{
+	BaseClass::OnThink();
+
+	// make sure data reset count is up to date.
+	ReactiveDropMissions::GetCampaign( -1 );
+
+	if ( ReactiveDropMissions::s_nDataResets == m_nDataResets )
+	{
+		return;
+	}
+
+	m_nDataResets = ReactiveDropMissions::s_nDataResets;
+
+	DisplayEntry( NULL );
+}
+
+void CASW_Mission_Chooser_Details::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	LoadControlSettings( "Resource/UI/MissionChooserDetails.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pBackdrop->SetPaintBackgroundEnabled( true );
+	m_pBackdrop->SetBgColor( Color( 0, 0, 0, 224 ) );
+
+}
+
+void CASW_Mission_Chooser_Details::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	int discard, y0, y1, tall, titleTallDiff;
+	m_pTitle->GetContentSize( discard, tall );
+	titleTallDiff = tall - m_pTitle->GetTall();
+	m_pTitle->SetTall( tall );
+	m_pBackdrop->GetPos( discard, y0 );
+	m_pDescription->GetPos( discard, y1 );
+	y1 += titleTallDiff;
+	m_pDescription->SetPos( discard, y1 );
+	m_pDescription->GetContentSize( discard, tall );
+	m_pBackdrop->SetTall( tall + m_pTitle->GetTall() / 2 + y1 - y0 );
+
+	if ( m_nForceReLayout )
+	{
+		m_nForceReLayout--;
+		InvalidateLayout();
+	}
+}
+
+void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
+{
+	m_nForceReLayout = 1;
+
+	if ( !pBaseEntry )
+	{
+		m_pImage->SetVisible( false );
+		m_pBackdrop->SetVisible( false );
+		m_pTitle->SetVisible( false );
+		m_pDescription->SetVisible( false );
+		m_pMapBase->SetVisible( false );
+		m_pMapLayer[0]->SetVisible( false );
+		m_pMapLayer[1]->SetVisible( false );
+		m_pMapLayer[2]->SetVisible( false );
+		m_pSearchLights->SetVisible( false );
+
+		InvalidateLayout();
+
+		return;
+	}
+
+	// make sure we don't immediately clear this entry.
+	OnThink();
+
+	m_pImage->SetVisible( true );
+	m_pBackdrop->SetVisible( true );
+	m_pTitle->SetVisible( true );
+	m_pDescription->SetVisible( true );
+	m_pMapBase->SetVisible( true );
+
+	CASW_Mission_Chooser_Entry *pEntry = assert_cast< CASW_Mission_Chooser_Entry * >( pBaseEntry );
+
+	if ( pEntry->m_szMission[0] )
+	{
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( pEntry->m_szMission );
+		Assert( pMission );
+		if ( !pMission )
+		{
+			DisplayEntry( NULL );
+			return;
+		}
+
+		m_pImage->SetImage( STRING( pMission->Image ) );
+		m_pTitle->SetText( STRING( pMission->MissionTitle ) );
+		m_pDescription->SetText( STRING( pMission->Description ) );
+		m_pMapBase->SetImage( CFmtStr( "../%s", STRING( pMission->BriefingMaterial ) ) );
+		m_pMapLayer[0]->SetVisible( false );
+		m_pMapLayer[1]->SetVisible( false );
+		m_pMapLayer[2]->SetVisible( false );
+		m_pSearchLights->SetVisible( false );
+
+		InvalidateLayout();
+
+		return;
+	}
+
+	if ( pEntry->m_szCampaign[0] )
+	{
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( pEntry->m_szCampaign );
+		Assert( pCampaign );
+		if ( !pCampaign )
+		{
+			DisplayEntry( NULL );
+			return;
+		}
+
+		m_pImage->SetImage( STRING( pCampaign->ChooseCampaignTexture ) );
+		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
+		m_pDescription->SetText( STRING( pCampaign->CampaignDescription ) );
+		m_pMapBase->SetImage( STRING( pCampaign->CampaignTextureName ) );
+		m_pMapLayer[0]->SetVisible( true );
+		m_pMapLayer[1]->SetVisible( true );
+		m_pMapLayer[2]->SetVisible( true );
+		m_pMapLayer[0]->SetImage( STRING( pCampaign->CampaignTextureLayer[0] ) );
+		m_pMapLayer[1]->SetImage( STRING( pCampaign->CampaignTextureLayer[1] ) );
+		m_pMapLayer[2]->SetImage( STRING( pCampaign->CampaignTextureLayer[2] ) );
+		m_pSearchLights->SetVisible( true );
+		m_pSearchLights->SetCampaign( pCampaign );
+
+		InvalidateLayout();
+
+		return;
+	}
+
+	// not a campaign or a mission; remove overview (it's a placeholder)
+	DisplayEntry( NULL );
+}
+
+CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const char *pElementName, const RD_Campaign_t *pCampaign, const RD_Mission_t *pMission ) : BaseClass( parent, pElementName )
+{
+	m_szCampaign[0] = '\0';
+	m_szMission[0] = '\0';
+	m_WorkshopChooserType = ASW_CHOOSER_TYPE::NUM_TYPES;
+
+	if ( pCampaign )
+	{
+		V_strncpy( m_szCampaign, pCampaign->BaseName, sizeof( m_szCampaign ) );
+	}
+	if ( pMission )
+	{
+		V_strncpy( m_szMission, pMission->BaseName, sizeof( m_szMission ) );
+	}
+
+	m_pImage = new vgui::ImagePanel( this, "Image" );
+	m_pTitle = new vgui::Label( this, "Title", "" );
+}
+
+CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType ) : BaseClass( parent, pElementName )
+{
+	m_szCampaign[0] = '\0';
+	m_szMission[0] = '\0';
+	m_WorkshopChooserType = iChooserType;
+
+	m_pImage = new vgui::ImagePanel( this, "Image" );
+	m_pTitle = new vgui::Label( this, "Title", "" );
+}
+
+void CASW_Mission_Chooser_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	if ( m_WorkshopChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
+	{
+		m_pImage->SetImage( "swarm/missionpics/downloadfromworkshopplaceholder" );
+		m_pTitle->SetText( s_WorkshopChooserTypeName[int( m_WorkshopChooserType )] );
+		SetAlpha( 255 );
+		return;
+	}
+
+	Assert( m_szCampaign[0] || m_szMission[0] );
+
+	const RD_Campaign_t *pCampaign = NULL;
+	const RD_Mission_t *pMission = NULL;
+
+	if ( m_szCampaign[0] )
+	{
+		pCampaign = ReactiveDropMissions::GetCampaign( m_szCampaign );
+		Assert( pCampaign );
+	}
+	if ( m_szMission[0] )
+	{
+		pMission = ReactiveDropMissions::GetMission( m_szMission );
+		Assert( pMission );
+	}
+
+	bool bIsSubscribed = false;
+	if ( pMission )
+	{
+		m_pImage->SetImage( STRING( pMission->Image ) );
+		m_pTitle->SetText( STRING( pMission->MissionTitle ) );
+		bIsSubscribed = pMission->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( pMission->WorkshopID );
+	}
+	else if ( pCampaign )
+	{
+		m_pImage->SetImage( STRING( pCampaign->ChooseCampaignTexture ) );
+		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
+		bIsSubscribed = pCampaign->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( pCampaign->WorkshopID );
+	}
+
+	if ( bIsSubscribed )
+	{
+		SetAlpha( 255 );
+	}
+	else
+	{
+		SetAlpha( 96 );
+	}
+}
+
+void CASW_Mission_Chooser_Entry::ApplyEntry()
+{
+	CASW_Mission_Chooser_Tab *pTab = assert_cast< CASW_Mission_Chooser_Tab * >( m_pParent->m_pParent );
+	CASW_Mission_Chooser_Frame *pFrame = assert_cast< CASW_Mission_Chooser_Frame * >( pTab->m_pParent );
+
+	if ( m_szMission[0] )
+	{
+		PublishedFileId_t iWorkshopID = ReactiveDropMissions::MissionWorkshopID( ReactiveDropMissions::GetMissionIndex( m_szMission ) );
+		if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
+		{
+			g_ReactiveDropWorkshop.OpenWorkshopPageForFile( iWorkshopID );
+			return;
+		}
+
+		if ( pFrame->m_HostType == ASW_HOST_TYPE::CALLVOTE )
+		{
+			if ( m_szCampaign[0] )
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_campaign %d %s\n", ReactiveDropMissions::GetCampaignIndex( m_szCampaign ), m_szMission ) );
+			}
+			else
+			{
+				engine->ServerCmd( CFmtStr( "asw_vote_mission %s\n", m_szMission ) );
+			}
+
+			pFrame->MarkForDeletion();
+			return;
+		}
+
+		KeyValues::AutoDelete pSettings( "Settings" );
+
+		if ( pFrame->m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			pSettings->SetString( "system/network", "offline" );
+		}
+		else
+		{
+			Assert( pFrame->m_HostType == ASW_HOST_TYPE::CREATESERVER );
+			pSettings->SetString( "system/network", "LIVE" );
+			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
+			pSettings->SetString( "options/action", "create" );
+		}
+
+		if ( m_szCampaign[0] )
+		{
+			pSettings->SetString( "game/mode", "campaign" );
+			pSettings->SetString( "game/campaign", m_szCampaign );
+		}
+		else
+		{
+			pSettings->SetString( "game/mode", "single_mission" );
+		}
+
+		pSettings->SetString( "game/mission", m_szMission );
+		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
+
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();
+
+		if ( pFrame->m_HostType == ASW_HOST_TYPE::SINGLEPLAYER )
+		{
+			g_pMatchFramework->CreateSession( pSettings );
+		}
+		else
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GAMESETTINGS, NULL, true, pSettings );
+		}
+
+		pFrame->MarkForDeletion();
+		return;
+	}
+
+	Assert( m_szCampaign[0] );
+	if ( !m_szCampaign[0] )
+		return;
+
+	pFrame->ApplyCampaign( pTab->m_ChooserType, m_szCampaign );
 }

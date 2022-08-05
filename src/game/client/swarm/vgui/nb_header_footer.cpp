@@ -331,7 +331,7 @@ void CNB_Header_Footer::SetTitle( const char *pszTitle )
 	m_pTitle->SetText( pszTitle );
 }
 
-void CNB_Header_Footer::SetTitle( wchar_t *pwszTitle )
+void CNB_Header_Footer::SetTitle( const wchar_t *pwszTitle )
 {
 	m_pTitle->SetText( pwszTitle );
 }

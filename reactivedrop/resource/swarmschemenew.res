@@ -647,6 +647,17 @@ Scheme
 			}
 		}
 		
+		GameUIButtonsTinier
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"Buttons"
+				"scalex"	"0.25"
+				"scaley"	"0.25"
+			}
+		}
+		
 		//
 		// ScreenTitle is the super large font ONLY used as THE major screen title heading.
 		//

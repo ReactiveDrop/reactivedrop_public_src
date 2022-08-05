@@ -1698,10 +1698,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
-    <ClCompile Include="swarm\rd_collection_details.cpp" />
-    <ClCompile Include="swarm\rd_collection_entry.cpp" />
-    <ClCompile Include="swarm\rd_collection_frame.cpp" />
-    <ClCompile Include="swarm\rd_collection_list.cpp" />
+    <ClCompile Include="swarm\rd_collections.cpp" />
     <ClCompile Include="swarm\rd_convar_hacks.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
@@ -1737,10 +1734,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\asw_hud_weapons.cpp" />
     <ClCompile Include="swarm\vgui\asw_loading_panel.cpp" />
     <ClCompile Include="swarm\vgui\asw_logo_panel.cpp" />
-    <ClCompile Include="swarm\vgui\asw_mission_chooser_details.cpp" />
-    <ClCompile Include="swarm\vgui\asw_mission_chooser_entry.cpp" />
     <ClCompile Include="swarm\vgui\asw_mission_chooser_frame.cpp" />
-    <ClCompile Include="swarm\vgui\asw_mission_chooser_list.cpp" />
     <ClCompile Include="swarm\vgui\asw_model_panel.cpp" />
     <ClCompile Include="swarm\vgui\asw_scalable_text.cpp" />
     <ClCompile Include="swarm\vgui\asw_vgui_ammo_list.cpp" />
@@ -1869,6 +1863,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\stat_graph.cpp" />
     <ClCompile Include="swarm\vgui\stat_graph_player.cpp" />
     <ClCompile Include="swarm\vgui\stimmusicselectdialog.cpp" />
+    <ClCompile Include="swarm\vgui\tabbedgriddetails.cpp" />
     <ClCompile Include="swarm\vgui\techmarinefailpanel.cpp" />
     <ClCompile Include="swarm\vgui\weapon_unlock_panel.cpp" />
     <ClCompile Include="swarm\vgui\wrappedlabel.cpp" />
@@ -2805,10 +2800,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\iasw_client_vehicle.h" />
     <ClInclude Include="swarm\iasw_fade_list.h" />
     <ClInclude Include="swarm\ibriefing.h" />
-    <ClInclude Include="swarm\rd_collection_details.h" />
-    <ClInclude Include="swarm\rd_collection_entry.h" />
-    <ClInclude Include="swarm\rd_collection_frame.h" />
-    <ClInclude Include="swarm\rd_collection_list.h" />
+    <ClInclude Include="swarm\rd_collections.h" />
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />
@@ -2833,10 +2825,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\asw_hud_use_icon.h" />
     <ClInclude Include="swarm\vgui\asw_loading_panel.h" />
     <ClInclude Include="swarm\vgui\asw_logo_panel.h" />
-    <ClInclude Include="swarm\vgui\asw_mission_chooser_details.h" />
-    <ClInclude Include="swarm\vgui\asw_mission_chooser_entry.h" />
     <ClInclude Include="swarm\vgui\asw_mission_chooser_frame.h" />
-    <ClInclude Include="swarm\vgui\asw_mission_chooser_list.h" />
     <ClInclude Include="swarm\vgui\asw_model_panel.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.h" />
     <ClInclude Include="swarm\vgui\asw_vgui_ammo_list.h" />
@@ -2965,6 +2954,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\stat_graph.h" />
     <ClInclude Include="swarm\vgui\stat_graph_player.h" />
     <ClInclude Include="swarm\vgui\stimmusicselectdialog.h" />
+    <ClInclude Include="swarm\vgui\tabbedgriddetails.h" />
     <ClInclude Include="swarm\vgui\techmarinefailpanel.h" />
     <ClInclude Include="swarm\vgui\weapon_unlock_panel.h" />
     <ClInclude Include="swarm\vgui\wrappedlabel.h" />
