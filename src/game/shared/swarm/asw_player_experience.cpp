@@ -927,7 +927,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 
 	if ( bIOError )
 	{
-		Warning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
+		DevWarning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
 		m_bPendingSteamStats = false;
 		return;
 	}
