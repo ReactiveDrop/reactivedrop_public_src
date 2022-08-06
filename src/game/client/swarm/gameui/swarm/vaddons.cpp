@@ -127,8 +127,11 @@ void AddonListItem::SetPublishedFile( PublishedFileId_t id )
 		wchar_t wszTitle[k_cchPublishedDocumentTitleMax];
 		Q_UTF8ToUnicode( item.details.m_rgchTitle, wszTitle, sizeof( wszTitle ) );
 		m_LblName->SetText( wszTitle );
-		break;
+		return;
 	}
+
+	// at least put SOMETHING there.
+	m_LblName->SetText( VarArgs( "/!\\ %llu", id ) );
 }
 
 //=============================================================================
