@@ -41,9 +41,9 @@ extern ConVar asw_cam_marine_yaw;
 int in_impulse[ MAX_SPLITSCREEN_PLAYERS ];
 static int in_cancel[ MAX_SPLITSCREEN_PLAYERS ];
 
-ConVar cl_anglespeedkey( "cl_anglespeedkey", "0.67", 0 );
-ConVar cl_yawspeed( "cl_yawspeed", "210", 0 );
-ConVar cl_pitchspeed( "cl_pitchspeed", "225", 0 );
+ConVar cl_anglespeedkey( "cl_anglespeedkey", "0.67", FCVAR_CHEAT );
+ConVar cl_yawspeed( "cl_yawspeed", "210", FCVAR_CHEAT );
+ConVar cl_pitchspeed( "cl_pitchspeed", "225", FCVAR_CHEAT );
 ConVar cl_pitchdown( "cl_pitchdown", "89", FCVAR_CHEAT );
 ConVar cl_pitchup( "cl_pitchup", "89", FCVAR_CHEAT );
 ConVar cl_sidespeed( "cl_sidespeed", "450", FCVAR_CHEAT );
