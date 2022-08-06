@@ -234,12 +234,16 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 		footer->SetButtonText( FB_BBUTTON, "#L4D360UI_Cancel" );
 	}
 
+	if ( sm_pActiveMenu == NULL )
+	{
+		GetControllerFocus()->PushModal();
+	}
+
 	// keep track of what menu is open
 	sm_pActiveMenu = this;	
 
 	SetVisible( true );
 
-	GetControllerFocus()->PushModal();
 	for ( int i = 0; i < GetChildCount(); ++i )
 	{
 		vgui::Button *button = dynamic_cast< vgui::Button * >( GetChild( i ) );
