@@ -16,7 +16,7 @@ static FileFindHandle_t	g_hsavedfind = FILESYSTEM_INVALID_FIND_HANDLE;
 
 #define ASW_SKILL_POINTS_PER_MISSION 2		// keep in sync with asw_shareddefs.h (we need a h shared between missionchooser and game dlls...)
 
-ConVar asw_max_saves("asw_max_saves", "10", FCVAR_ARCHIVE, "Maximum number of multiplayer saves that will be stored on this server.");
+ConVar asw_max_saves("asw_max_saves", "10", FCVAR_ARCHIVE, "Maximum number of multiplayer saves that will be stored on this server.", true, 2, false, 0);
 
 namespace
 {
