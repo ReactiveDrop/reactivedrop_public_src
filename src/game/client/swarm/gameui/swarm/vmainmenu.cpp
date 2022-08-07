@@ -87,16 +87,6 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_iQuickJoinHelpText = MMQJHT_NONE;
 
 	SetDeleteSelfOnClose( true );
-
-	// reactivedrop: #iss-depthblur HACK
-	// We need to make mat_depth_blur_strength_override FCVAR_ARCHIVE
-	// but it is defined in Engine_Post_dx9.cpp which is in
-	// separate project and separate DLL, stdshader_dx9_sdk.vcproj
-	// so we add FCVAR_ARCHIVE flag here during creation of main menu
-	// This hack can be moved into more appropriate place though
-	CGameUIConVarRef mat_depth_blur_strength_override("mat_depth_blur_strength_override");
-	if ( mat_depth_blur_strength_override.IsValid() && !mat_depth_blur_strength_override.IsFlagSet( FCVAR_ARCHIVE ) )
-		mat_depth_blur_strength_override.AddFlags( FCVAR_ARCHIVE );
 }
 
 //=============================================================================

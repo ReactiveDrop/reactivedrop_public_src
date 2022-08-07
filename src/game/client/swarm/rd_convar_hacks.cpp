@@ -29,6 +29,12 @@ public:
 		"showbudget_texture",
 	};
 
+	constexpr static const char *s_szAddArchive[] =
+	{
+		// Depth blur strength is a setting (0 or -1), so we need it to be saved.
+		"mat_depth_blur_strength_override",
+	};
+
 	virtual bool Init() override
 	{
 		Assert( g_pCVar );
@@ -43,6 +49,16 @@ public:
 				continue;
 
 			pCmd->RemoveFlags( FCVAR_CHEAT );
+		}
+
+		for ( int i = 0; i < NELEMS( s_szAddArchive ); i++ )
+		{
+			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddArchive[i] );
+			Assert( pCmd );
+			if ( !pCmd )
+				continue;
+
+			pCmd->AddFlags( FCVAR_ARCHIVE );
 		}
 
 		return true;
