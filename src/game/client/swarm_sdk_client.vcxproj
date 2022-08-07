@@ -1571,12 +1571,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="swarm\gameui\swarm\vleaderboard.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="swarm\gameui\swarm\vloadingprogress.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -2775,7 +2769,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vjukebox.h" />
     <ClInclude Include="swarm\gameui\swarm\vkeyboard.h" />
     <ClInclude Include="swarm\gameui\swarm\vkeyboardmouse.h" />
-    <ClInclude Include="swarm\gameui\swarm\vleaderboard.h" />
     <ClInclude Include="swarm\gameui\swarm\vloadingprogress.h" />
     <ClInclude Include="swarm\gameui\swarm\vmainmenu.h" />
     <ClInclude Include="swarm\gameui\swarm\vmultiplayer.h" />

@@ -185,37 +185,6 @@ void InGameMainMenu::OnCommand( const char *command )
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ACHIEVEMENTS, this, true );
 	}
-	else if ( char const *szLeaderboards = StringAfterPrefix( command, "Leaderboards_" ) )
-	{
-		if ( CheckAndDisplayErrorIfNotLoggedIn() ||
-			CUIGameData::Get()->CheckAndDisplayErrorIfOffline( this,
-			"#L4D360UI_MainMenu_SurvivalLeaderboards_Tip_Disabled" ) )
-			return;
-
-		KeyValues *pSettings = NULL;
-		if ( *szLeaderboards )
-		{
-			pSettings = KeyValues::FromString(
-				"settings",
-				" game { "
-					" mode = "
-				" } "
-				);
-			pSettings->SetString( "game/mode", szLeaderboards );
-		}
-		else
-		{
-			pSettings = g_pMatchFramework->GetMatchNetworkMsgController()->GetActiveServerGameDetails( NULL );
-		}
-		
-		if ( !pSettings )
-			return;
-		
-		KeyValues::AutoDelete autodelete( pSettings );
-		
-		m_ActiveControl->NavigateFrom( );
-		CBaseModPanel::GetSingleton().OpenWindow( WT_LEADERBOARD, this, true, pSettings );
-	}
 	else if (!Q_strcmp(command, "AudioVideo"))
 	{
 		CBaseModPanel::GetSingleton().OpenWindow(WT_AUDIOVIDEO, this, true );

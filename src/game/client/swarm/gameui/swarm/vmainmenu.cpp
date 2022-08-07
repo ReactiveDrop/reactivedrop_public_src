@@ -205,44 +205,6 @@ void MainMenu::OnCommand( const char *command )
 		}
 		CBaseModPanel::GetSingleton().OpenWindow( WT_STEAMGROUPSERVERS, this, true, pSettings );
 	}
-	else if ( char const *szLeaderboards = StringAfterPrefix( command, "Leaderboards_" ) )
-	{
-		if ( CheckAndDisplayErrorIfNotLoggedIn() ||
-			CUIGameData::Get()->CheckAndDisplayErrorIfOffline( this,
-			"#L4D360UI_MainMenu_SurvivalLeaderboards_Tip_Disabled" ) )
-			return;
-
-		KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" game { "
-				" mode = "
-			" } "
-			);
-		KeyValues::AutoDelete autodelete( pSettings );
-
-		pSettings->SetString( "game/mode", szLeaderboards );
-
-		if ( m_ActiveControl )
-		{
-			m_ActiveControl->NavigateFrom( );
-		}
-		CBaseModPanel::GetSingleton().OpenWindow( WT_LEADERBOARD, this, true, pSettings );
-	}
-	else if( !Q_strcmp( command, "VersusSoftLock" ) )
-	{
-		OnCommand( "FlmVersusFlyout" );
-		return;
-	}
-	else if ( !Q_strcmp( command, "SurvivalCheck" ) )
-	{
-		OnCommand( "FlmSurvivalFlyout" );
-		return;
-	}
-	else if ( !Q_strcmp( command, "ScavengeCheck" ) )
-	{
-		OnCommand( "FlmScavengeFlyout" );
-		return;
-	}
 	else if ( !Q_strcmp( command, "BtnStub" ) )
 	{
 		// clicking No Steam will provide some info
@@ -732,35 +694,8 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else
 	{
-		const char *pchCommand = command;
-		if ( !Q_strcmp(command, "FlmOptionsFlyout") )
-		{
-#ifdef _X360
-			if ( XBX_GetPrimaryUserIsGuest() )
-			{
-				pchCommand = "FlmOptionsGuestFlyout";
-			}
-#endif
-		}
-		else if ( !Q_strcmp(command, "FlmVersusFlyout") )
-		{
-			command = "VersusSoftLock";
-		}
-		else if ( !Q_strcmp( command, "FlmSurvivalFlyout" ) )
-		{
-			command = "SurvivalCheck";
-		}
-		else if ( !Q_strcmp( command, "FlmScavengeFlyout" ) )
-		{
-			command = "ScavengeCheck";
-		}
-		else if ( StringHasPrefix( command, "FlmExtrasFlyout_" ) )
-		{
-			command = "FlmExtrasFlyoutCheck";
-		}
-
 		// does this command match a flyout menu?
-		BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( pchCommand ) );
+		BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( command ) );
 		if ( flyout )
 		{
 			bOpeningFlyout = true;
@@ -1250,21 +1185,6 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 		Warning( "======= SIGNIN RESET SIGNIN RESET SIGNIN RESET SIGNIN RESET ==========\n" );
 	}
 #endif
-}
-
-const char *pDemoDisabledButtons[] = { "BtnVersus", "BtnSurvival", "BtnStatsAndAchievements", "BtnExtras" };
-
-void MainMenu::Demo_DisableButtons( void )
-{
-	for ( int i = 0; i < ARRAYSIZE( pDemoDisabledButtons ); i++ )
-	{
-		BaseModHybridButton *pButton = dynamic_cast< BaseModHybridButton* >( FindChildByName( pDemoDisabledButtons[i] ) );
-
-		if ( pButton )
-		{
-			Demo_DisableButton( pButton );
-		}
-	}
 }
 
 void MainMenu::AcceptCommentaryRulesCallback() 

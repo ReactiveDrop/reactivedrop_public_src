@@ -67,7 +67,6 @@
 #include "vcustomcampaigns.h"
 #include "vdownloadcampaign.h"
 #include "vjukebox.h"
-#include "vleaderboard.h"
 #include "rd_workshop_frame.h"
 #include "vgamepad.h"
 #include "gameconsole.h"
@@ -475,10 +474,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 #else
 			m_Frames[ wt ] = new DownloadCampaign( this, "DownloadCampaign" );
 #endif
-			break;
-
-		case WT_LEADERBOARD:
-			m_Frames[ wt ] = new Leaderboard( this );
 			break;
 
 		case WT_ADDONS:
