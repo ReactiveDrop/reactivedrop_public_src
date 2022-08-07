@@ -793,6 +793,8 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 {
 	StopProgressBar( bError, failureReason, extendedReason );
 
+	GetUiBaseModPanelClass().OnLevelLoadingFinished( KeyValues::AutoDeleteInline( new KeyValues( "OnEngineLevelLoadingFinished", "error", bError ? "1" : "0", "reason", failureReason ) ) );
+
 	// notify all the modules
 	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingFinished" ) );
 
