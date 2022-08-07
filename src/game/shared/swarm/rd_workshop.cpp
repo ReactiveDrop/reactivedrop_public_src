@@ -1158,7 +1158,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 		buf[hAddonInfo.m_nFileSize] = '\0';
 
 		KeyValues::AutoDelete pKV( "AddonInfo" );
-		pKV->LoadFromBuffer( "addoninfo.txt", buf );
+		pKV->LoadFromBuffer( CFmtStr( "%llu/addoninfo.txt", id ), buf );
 
 		FOR_EACH_VALUE( pKV, pValue )
 		{
