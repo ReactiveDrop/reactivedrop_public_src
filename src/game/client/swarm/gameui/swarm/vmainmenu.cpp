@@ -53,17 +53,8 @@ using namespace BaseModUI;
 //=============================================================================
 static ConVar connect_lobby( "connect_lobby", "", FCVAR_HIDDEN, "Sets the lobby ID to connect to on start." );
 static ConVar ui_old_options_menu( "ui_old_options_menu", "0", FCVAR_HIDDEN, "Brings up the old tabbed options dialog from Keyboard/Mouse when set to 1." );
-static ConVar ui_play_online_browser( "ui_play_online_browser",
-#if defined( _DEMO ) && !defined( _X360 )
-									 "0",
-									 FCVAR_NONE,
-#else
-									 "1",
-									 FCVAR_RELEASE,
-#endif
-									 "Whether play online displays a browser or plain search dialog." );
+static ConVar ui_play_online_browser( "ui_play_online_browser", "1", FCVAR_RELEASE, "Whether play online displays a browser or plain search dialog." );
 
-ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "1", FCVAR_NONE, "If set, offline practice option on the main menu will show all maps." );
 extern ConVar mm_max_players;
 ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
 ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
@@ -310,35 +301,7 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "SoloPlay" ) )
 	{
-		if ( !asw_show_all_singleplayer_maps.GetBool() )
-		{
-			KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" system { "
-			" network offline "
-			" } "
-			" game { "
-			" mode single_mission "
-			" campaign jacob "
-			" mission asi-jac1-landingbay_pract "
-			" } "
-			);
-			KeyValues::AutoDelete autodelete( pSettings );
-
-			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
-
-			g_pMatchFramework->CreateSession( pSettings );
-
-			// Automatically start the credits session, no configuration required
-			if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
-			{
-				pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
-			}
-		}
-		else
-		{
-			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
-		}
+		engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
 	}
 	else if ( !Q_strcmp( command, "DeveloperCommentary" ) )
 	{
