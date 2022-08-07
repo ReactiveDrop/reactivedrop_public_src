@@ -24,7 +24,7 @@ using namespace vgui;
 using namespace BaseModUI;
 
 //=============================================================================
-ConVar cl_support_vpk_assocation( "cl_support_vpk_assocation", "1", FCVAR_ARCHIVE, "Whether vpk associations are enabled for this mod" );
+ConVar cl_support_vpk_assocation( "cl_support_vpk_assocation", "0", FCVAR_NONE, "Whether vpk associations are enabled for this mod" );
 ConVar cl_ignore_vpk_assocation( "cl_ignore_vpk_assocation", "0", FCVAR_ARCHIVE, "Do not ask to set vpk assocation" );
 
 static bool s_checkedNoShow = false;
