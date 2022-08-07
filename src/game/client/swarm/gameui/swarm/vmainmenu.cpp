@@ -995,7 +995,22 @@ void MainMenu::Activate()
 
 		bRunOnce = false;
 	}
-	//
+
+	vgui::Label *pBranchDisclaimer = dynamic_cast< vgui::Label * >( FindChildByName( "LblBranchDisclaimer" ) );
+	ISteamApps *pApps = SteamApps();
+	if ( pBranchDisclaimer && pApps )
+	{
+		char szBranch[256]{};
+		if ( !pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) )
+		{
+			pBranchDisclaimer->SetVisible( false );
+		}
+		else
+		{
+			pBranchDisclaimer->SetText( VarArgs( "#rd_branch_disclaimer_%s", szBranch ) );
+			pBranchDisclaimer->SetVisible( true );
+		}
+	}
 }
 
 //=============================================================================
