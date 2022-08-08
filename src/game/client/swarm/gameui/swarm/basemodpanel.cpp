@@ -257,6 +257,8 @@ void CBaseModPanel::ReloadScheme()
 //=============================================================================
 CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame * caller, bool hidePrevious, KeyValues *pParameters)
 {
+	FlyoutMenu::CloseActiveMenu();
+
 	CBaseModFrame *newNav = m_Frames[ wt ].Get();
 	bool setActiveWindow = true;
 
