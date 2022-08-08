@@ -105,61 +105,7 @@ void MainMenu::OnCommand( const char *command )
 
 	bool bOpeningFlyout = false;
 
-	if ( char const *szQuickMatch = StringAfterPrefix( command, "QuickMatch_" ) )
-	{
-		if ( CheckAndDisplayErrorIfNotLoggedIn() ||
-			CUIGameData::Get()->CheckAndDisplayErrorIfNotSignedInToLive( this ) )
-			return;
-
-		KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" system { "
-				" network LIVE "
-			" } "
-			" game { "
-				" mode = "
-			" } "
-			" options { "
-				" action quickmatch "
-			" } "
-			);
-		KeyValues::AutoDelete autodelete( pSettings );
-
-		pSettings->SetString( "game/mode", szQuickMatch );
-
-		// TCR: We need to respect the default difficulty
-		if ( GameModeHasDifficulty( szQuickMatch ) )
-			pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( szQuickMatch ) );
-
-		g_pMatchFramework->MatchSession( pSettings );
-	}
-	else if ( char const *szCustomMatch = StringAfterPrefix( command, "CustomMatch_" ) )
-	{
-		if ( CheckAndDisplayErrorIfNotLoggedIn() ||
-			 CUIGameData::Get()->CheckAndDisplayErrorIfNotSignedInToLive( this ) )
-			return;
-
-		KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" system { "
-				" network LIVE "
-			" } "
-			" game { "
-				" mode = "
-			" } "
-			" options { "
-				" action custommatch "
-			" } "
-			);
-		KeyValues::AutoDelete autodelete( pSettings );
-
-		pSettings->SetString( "game/mode", szCustomMatch );
-
-		CBaseModPanel::GetSingleton().OpenWindow(
-			ui_play_online_browser.GetBool() ? WT_FOUNDPUBLICGAMES : WT_GAMESETTINGS,
-			this, true, pSettings );
-	}
-	else if ( char const *szFriendsMatch = StringAfterPrefix( command, "FriendsMatch_" ) )
+	if ( char const *szFriendsMatch = StringAfterPrefix( command, "FriendsMatch_" ) )
 	{
 		if ( CheckAndDisplayErrorIfNotLoggedIn() )
 			return;
@@ -333,14 +279,6 @@ void MainMenu::OnCommand( const char *command )
 		}
 
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ACHIEVEMENTS, this, true );
-	}
-	else if ( !Q_strcmp( command, "FlmExtrasFlyoutCheck" ) )
-	{
-		if ( IsX360() && CUIGameData::Get()->SignedInToLive() )
-			OnCommand( "FlmExtrasFlyout_Live" );
-		else
-			OnCommand( "FlmExtrasFlyout_Simple" );
-		return;
 	}
 	else if ( char const *szInviteType = StringAfterPrefix( command, "InviteUI_" ) )
 	{
