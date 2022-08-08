@@ -15,6 +15,11 @@
 
 
 extern ConVar rd_last_game_access;
+extern ConVar rd_last_game_difficulty;
+extern ConVar rd_last_game_challenge;
+extern ConVar rd_last_game_onslaught;
+extern ConVar rd_last_game_hardcoreff;
+extern ConVar rd_last_game_maxplayers;
 
 const char *const g_ASW_ChooserTypeName[] =
 {
@@ -732,7 +737,15 @@ void CASW_Mission_Chooser_Entry::ApplyEntry()
 		}
 
 		pSettings->SetString( "game/mission", m_szMission );
-		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "game/mode" ) ) );
+		pSettings->SetInt( "members/numSlots", rd_last_game_maxplayers.GetInt() );
+
+		if ( pTab->m_ChooserType != ASW_CHOOSER_TYPE::DEATHMATCH )
+		{
+			pSettings->SetString( "game/difficulty", rd_last_game_difficulty.GetString() );
+			pSettings->SetString( "game/challenge", rd_last_game_challenge.GetString() );
+			pSettings->SetBool( "game/onslaught", rd_last_game_onslaught.GetBool() );
+			pSettings->SetBool( "game/hardcoreFF", rd_last_game_hardcoreff.GetBool() );
+		}
 
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 		BaseModUI::CBaseModPanel::GetSingleton().CloseAllWindows();

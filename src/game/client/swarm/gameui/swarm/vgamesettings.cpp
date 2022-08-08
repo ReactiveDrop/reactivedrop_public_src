@@ -48,6 +48,11 @@ ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" 
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
 extern ConVar mm_max_players;
 extern ConVar rd_last_game_access;
+extern ConVar rd_last_game_difficulty;
+extern ConVar rd_last_game_challenge;
+extern ConVar rd_last_game_onslaught;
+extern ConVar rd_last_game_hardcoreff;
+extern ConVar rd_last_game_maxplayers;
 
 using namespace vgui;
 using namespace BaseModUI;
@@ -351,15 +356,25 @@ void GameSettings::Activate()
 		m_drpNumSlots->SetVisible( showNumSlots );
 		m_drpNumSlots->SetEnabled( showNumSlots );
 
-		if ( m_pSettings->GetInt( "members/numSlots", 4 ) <= 4 )
+		if ( m_pSettings->GetInt( "members/numSlots" ) <= 4 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_4_slots" );
 			mm_max_players.SetValue( 4 );
 		}
-		else
+		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 8 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_8_slots" );
 			mm_max_players.SetValue( 8 );
+		}
+		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 12 )
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_12_slots" );
+			mm_max_players.SetValue( 12 );
+		}
+		else
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_16_slots" );
+			mm_max_players.SetValue( 16 );
 		}
 
 		if ( FlyoutMenu* flyout = m_drpNumSlots->GetCurrentFlyout() )
@@ -632,6 +647,8 @@ void GameSettings::OnCommand(const char *command)
 	{
 		KeyValues::AutoDelete pSettings( "update" );
 		pSettings->SetString( "update/game/challenge", szChallengeSelected );
+
+		rd_last_game_challenge.SetValue( szChallengeSelected );
 		UpdateSessionSettings( pSettings );
 
 		if ( m_drpChallenge )
@@ -701,10 +718,6 @@ void GameSettings::OnCommand(const char *command)
 	{
 		SelectNetworkAccess( "LIVE", szAccessType );
 	}
-// 	else if( V_strcmp( command, "StartLobby" ) == 0 )
-// 	{
-// 		
-// 	}
 	else if( V_strcmp( command, "Back" ) == 0 )
 	{
 		// Act as though 360 back button was pressed
@@ -725,6 +738,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetString( "update/game/difficulty", szDifficultyValue );
 
+		rd_last_game_difficulty.SetValue( szDifficultyValue );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpDifficulty )
@@ -747,6 +761,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/hardcoreFF", 0 );
 
+		rd_last_game_hardcoreff.SetValue( 0 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -772,6 +787,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/hardcoreFF", 1 );
 
+		rd_last_game_hardcoreff.SetValue( 1 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -797,6 +813,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/onslaught", 0 );
 
+		rd_last_game_onslaught.SetValue( 0 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -822,6 +839,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/onslaught", 1 );
 
+		rd_last_game_onslaught.SetValue( 1 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -841,12 +859,10 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/maxrounds", atoi( szRoundLimitValue ) );
 
 		UpdateSessionSettings( pSettings );
-
-
 	}
 	else if ( const char *szServerTypeValue = StringAfterPrefix( command, "#L4D360UI_ServerType_" ) )
 	{
-	KeyValues *pSettings = KeyValues::FromString(
+		KeyValues *pSettings = KeyValues::FromString(
 			"update",
 			" update { "
 				" options { "
@@ -877,10 +893,22 @@ void GameSettings::OnCommand(const char *command)
 	else if ( !Q_strcmp( command, "#rd_ui_4_slots" ) )
 	{
 		mm_max_players.SetValue( 4 );
+		rd_last_game_maxplayers.SetValue( 4 );
 	}
 	else if ( !Q_strcmp( command, "#rd_ui_8_slots" ) )
 	{
 		mm_max_players.SetValue( 8 );
+		rd_last_game_maxplayers.SetValue( 8 );
+	}
+	else if ( !Q_strcmp( command, "#rd_ui_12_slots" ) )
+	{
+		mm_max_players.SetValue( 12 );
+		rd_last_game_maxplayers.SetValue( 12 );
+	}
+	else if ( !Q_strcmp( command, "#rd_ui_16_slots" ) )
+	{
+		mm_max_players.SetValue( 16 );
+		rd_last_game_maxplayers.SetValue( 16 );
 	}
 	else
 	{
