@@ -118,22 +118,38 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0428_glow", IsAlphabet( 'C' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_042f_glow", IsAlphabet( 'C' ) )
 
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_3002", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_4e86", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_4efb", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_52a1", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5355", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_573a", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5931", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5b8c", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5df2", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5f79", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6210", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6218", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6b21", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6b64", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_8d25", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_ff01", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_3002_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_4e86_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_4efb_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_52a1_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5355_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_573a_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5931_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5b8c_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5df2_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_5f79_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6210_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6218_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6b21_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_6b64_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_8d25_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_ff01_glow", IsAlphabet( 'H' ) )
 PRECACHE_REGISTER_END()
 
 CASW_Scalable_Text* g_pScalableText = NULL;
@@ -272,23 +288,10 @@ float CASW_Scalable_Text::GetLetterWidth( wchar_t ch )
 		return 1.477f;
 	case L'Я':
 		return 1.014f;
-	case L'任':
-		return 1.550f;
-	case L'务':
-		return 1.550f;
-	case L'失':
-		return 1.550f;
-	case L'完':
-		return 1.550f;
-	case L'役':
-		return 1.550f;
-	case L'成':
-		return 1.550f;
-	case L'战':
-		return 1.550f;
-	case L'败':
-		return 1.550f;
 	default:
-		return 1.0f;
+		if ( ch >= 0x2E80 )
+			return 1.550f;
+		else
+			return 1.0f;
 	}
 }
