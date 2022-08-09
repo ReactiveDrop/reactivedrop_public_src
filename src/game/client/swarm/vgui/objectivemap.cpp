@@ -27,6 +27,7 @@
 
 extern ConVar asw_hud_scale;
 extern ConVar rd_hud_minimap_drawing;
+extern ConVar rd_reduce_motion;
 
 Color GetColorPerIndex(int player_index)
 {
@@ -123,17 +124,17 @@ void ObjectiveMap::OnThink()
 	if ( m_iNumMapMarks > 0 )
 	{
 		//m_MapMarkPanels[0]->m_bDebug = true;
-		if (m_MapMarkPanels[0]->GetAlpha() >= 255)
+		if ( m_MapMarkPanels[0]->GetAlpha() >= 255 )
 		{
 			bSetPulsing = true;
 		}
-		if (m_MapMarkPanels[0]->m_bPulsing)
+		if ( m_MapMarkPanels[0]->m_bPulsing && !rd_reduce_motion.GetBool() )
 		{
-			if (m_MapMarkPanels[0]->GetAlpha() <= 128)
+			if ( m_MapMarkPanels[0]->GetAlpha() <= 128 )
 			{
-				bFadeIn = true;				
+				bFadeIn = true;
 			}
-			else if (m_MapMarkPanels[0]->GetAlpha() >= 255)
+			else if ( m_MapMarkPanels[0]->GetAlpha() >= 255 )
 			{
 				bFadeOut = true;
 			}
@@ -321,7 +322,7 @@ void ObjectiveMap::AddMapMark( const MapMarkCandidate & candidate, bool bComplet
 	int markw = ( ( mapSpaceMaxs.x - mapSpaceMins.x ) / 1024.0f ) * mw;
 	int markh = ( ( mapSpaceMaxs.y - mapSpaceMins.y ) / 1024.0f ) * mt;
 
-	const float fDuration = 0.3f;
+	const float fDuration = rd_reduce_motion.GetBool() ? 0.0f : 0.3f;
 
 	int i = m_iNumMapMarks++;
 	m_MapMarkPanels[i]->SetVisible( true );

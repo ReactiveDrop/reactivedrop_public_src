@@ -1693,6 +1693,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
     <ClCompile Include="swarm\rd_collections.cpp" />
+    <ClCompile Include="swarm\rd_collections_equipment.cpp" />
+    <ClCompile Include="swarm\rd_collections_inventory.cpp" />
     <ClCompile Include="swarm\rd_convar_hacks.cpp" />
     <ClCompile Include="swarm\rd_font_hack.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />

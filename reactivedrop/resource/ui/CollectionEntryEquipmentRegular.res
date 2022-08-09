@@ -18,7 +18,7 @@
 		"wide"		"112"
 		"tall"		"56"
 		"zpos"		"999"
-		"ControlName"		"CRD_Collection_Entry_FocusHolder"
+		"ControlName"		"TGD_Entry_FocusHolder"
 	}
 
 	"Background"

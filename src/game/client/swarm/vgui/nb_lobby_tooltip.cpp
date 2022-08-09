@@ -361,57 +361,18 @@ void CNB_Lobby_Tooltip::OnTick()
 	{
 		m_pWeaponDetail5->m_bHidden = false;
 
-		Vector vecPos = Vector( -275.0, 0.0, 190.0 );
-		QAngle angRot = QAngle( 32.0, 0.0, 0.0 );
-
-		vecPos.z += pWeaponInfo->m_flModelPanelZOffset;
-
-		Vector vecBoundsMins, vecBoundsMax;
-		m_pItemModelPanel->GetBoundingBox( vecBoundsMins, vecBoundsMax );
-		int iMaxBounds = -vecBoundsMins.x + vecBoundsMax.x;
-		iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.y + vecBoundsMax.y );
-		iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.z + vecBoundsMax.z );
-		vecPos *= (float)iMaxBounds/64.0f;
-
-		m_pItemModelPanel->SetCameraPositionAndAngles( vecPos, angRot );
-		m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0.0f, gpGlobals->curtime * 45.0f , 0.0f ), vec3_origin );
+		m_pItemModelPanel->SetCameraForWeapon( pWeaponInfo->m_flModelPanelZOffset, gpGlobals->curtime );
 		m_pItemModelPanel->m_bShouldPaint = true;
 		m_pItemModelPanel->SetVisible( true );
 
 		if ( bWeaponChanged )
 		{
-			m_pItemModelPanel->ClearMergeMDLs();
-			if ( Q_stricmp( pWeaponInfo->szDisplayModel, "" ) )
-			{
-				m_pItemModelPanel->SetMDL( pWeaponInfo->szDisplayModel );
-				if ( Q_stricmp( pWeaponInfo->szDisplayModel2, "" ) )
-					m_pItemModelPanel->SetMergeMDL( pWeaponInfo->szDisplayModel2 );
-			}
-			else
-			{
-				m_pItemModelPanel->SetMDL( pWeaponInfo->szWorldModel );
-			}
-
-			int nSkin = 0;
-			if ( pWeaponInfo->m_iDisplayModelSkin > 0 )
-				nSkin = pWeaponInfo->m_iDisplayModelSkin;
-			else
-				nSkin = pWeaponInfo->m_iPlayerModelSkin;
-
-			m_pItemModelPanel->SetSkin( nSkin );
-			m_pItemModelPanel->SetModelAnim( m_pItemModelPanel->FindAnimByName( "idle" ) );
+			m_pItemModelPanel->SetModelByWeapon( pWeaponInfo );
 
 			// force resetup of various things (this block of code fixes size popping when changing model)
 			m_pItemModelPanel->InvalidateLayout( true );
 
-			m_pItemModelPanel->GetBoundingBox( vecBoundsMins, vecBoundsMax );
-			iMaxBounds = -vecBoundsMins.x + vecBoundsMax.x;
-			iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.y + vecBoundsMax.y );
-			iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.z + vecBoundsMax.z );
-			vecPos *= (float)iMaxBounds/64.0f;
-
-			m_pItemModelPanel->SetCameraPositionAndAngles( vecPos, angRot );
-			m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0.0f, gpGlobals->curtime * 45.0f , 0.0f ), vec3_origin );
+			m_pItemModelPanel->SetCameraForWeapon( pWeaponInfo->m_flModelPanelZOffset, gpGlobals->curtime );
 
 			m_pItemModelPanel->InvalidateLayout( true );
 			m_pItemModelPanel->SetAlpha( 0 );

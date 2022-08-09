@@ -7,6 +7,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+extern ConVar rd_reduce_motion;
+
 int CampaignMapSearchLights::s_nSearchLightTexture = -1;
 
 CampaignMapSearchLights::CampaignMapSearchLights(vgui::Panel *parent, const char *panelName) :
@@ -33,6 +35,8 @@ void CampaignMapSearchLights::Paint()
 	vgui::surface()->DrawSetTexture( s_nSearchLightTexture );
 	vgui::surface()->DrawSetColor( Color( 255, 255, 255, 128 ) );
 
+	float flTime = rd_reduce_motion.GetBool() ? M_PI_F / 2 : gpGlobals->curtime;
+
 	for ( int i = 0; i < ASW_NUM_SEARCH_LIGHTS; i++ )
 	{
 		if ( m_iSearchLightX[i] != 0 )
@@ -46,7 +50,7 @@ void CampaignMapSearchLights::Paint()
 			float fOscSize = 40.0f;
 			float fOscScale = 0.5f + 0.05f * i;
 			float fOscOffset = 1.9f * i;
-			float fFacingYaw = m_iSearchLightAngle[i] + ( sin( ( gpGlobals->curtime * fOscScale ) + fOscOffset ) * fOscSize );
+			float fFacingYaw = m_iSearchLightAngle[i] + ( sin( ( flTime * fOscScale ) + fOscOffset ) * fOscSize );
 			Vector vecCornerTL( xoffset, fLightSize * -0.5f + yoffset, 0 );
 			Vector vecCornerTR( fLightSize + xoffset, fLightSize * -0.5f + yoffset, 0 );
 			Vector vecCornerBR( fLightSize + xoffset, fLightSize * 0.5f + yoffset, 0 );

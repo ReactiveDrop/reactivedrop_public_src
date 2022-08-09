@@ -2,6 +2,7 @@
 #include "asw_model_panel.h"
 #include "renderparm.h"
 #include "animation.h"
+#include "asw_weapon_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -16,6 +17,7 @@ ConVar asw_rim_innerCone( "asw_rim_innerCone" , "20.0" , FCVAR_NONE );
 ConVar asw_rim_outerCone( "asw_rim_outerCone" , "30.0" , FCVAR_NONE );
 ConVar asw_key_range( "asw_key_range" , "0" , FCVAR_NONE );
 ConVar asw_rim_range( "asw_rim_range" , "0" , FCVAR_NONE );
+extern ConVar rd_reduce_motion;
 
 CASW_Model_Panel::CASW_Model_Panel( vgui::Panel *parent, const char *name ) : CBaseModelPanel( parent, name )
 {
@@ -147,3 +149,53 @@ numFacesRendered += R_StudioDrawPoints( pRenderContext, skin, pClientEntity,
 									   ppMaterials, pMaterialFlags, boneMask, lod, pColorMeshes );
 
 									   */
+
+void CASW_Model_Panel::SetModelByWeapon( CASW_WeaponInfo *pWeaponInfo )
+{
+	Assert( pWeaponInfo );
+
+	ClearMergeMDLs();
+	if ( pWeaponInfo->szDisplayModel[0] )
+	{
+		SetMDL( pWeaponInfo->szDisplayModel );
+		if ( pWeaponInfo->szDisplayModel2[0] )
+			SetMergeMDL( pWeaponInfo->szDisplayModel2 );
+	}
+	else
+	{
+		SetMDL( pWeaponInfo->szWorldModel );
+	}
+
+	int nSkin = 0;
+	if ( pWeaponInfo->m_iDisplayModelSkin > 0 )
+		nSkin = pWeaponInfo->m_iDisplayModelSkin;
+	else
+		nSkin = pWeaponInfo->m_iPlayerModelSkin;
+
+	SetSkin( nSkin );
+	SetModelAnim( FindAnimByName( "idle" ) );
+}
+
+void CASW_Model_Panel::SetCameraForWeapon( float flZOffset, float flTime )
+{
+	if ( rd_reduce_motion.GetBool() )
+	{
+		flTime = 1.0f;
+	}
+
+	Vector vecPos( -275.0f, 0.0f, 190.0f );
+	QAngle angRot( 32.0f, 0.0f, 0.0f );
+
+	vecPos.z += flZOffset;
+
+	Vector vecBoundsMins, vecBoundsMax;
+	GetBoundingBox( vecBoundsMins, vecBoundsMax );
+
+	int iMaxBounds = -vecBoundsMins.x + vecBoundsMax.x;
+	iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.y + vecBoundsMax.y );
+	iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.z + vecBoundsMax.z );
+	vecPos *= ( float )iMaxBounds / 64.0f;
+
+	SetCameraPositionAndAngles( vecPos, angRot );
+	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 45.0f, 0.0f ), vec3_origin );
+}

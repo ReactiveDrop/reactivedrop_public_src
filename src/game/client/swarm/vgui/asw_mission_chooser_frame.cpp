@@ -20,6 +20,7 @@ extern ConVar rd_last_game_challenge;
 extern ConVar rd_last_game_onslaught;
 extern ConVar rd_last_game_hardcoreff;
 extern ConVar rd_last_game_maxplayers;
+extern ConVar rd_reduce_motion;
 
 const char *const g_ASW_ChooserTypeName[] =
 {
@@ -584,9 +585,9 @@ void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
 		m_pDescription->SetText( STRING( pCampaign->CampaignDescription ) );
 		m_pMapBase->SetImage( STRING( pCampaign->CampaignTextureName ) );
-		m_pMapLayer[0]->SetVisible( true );
-		m_pMapLayer[1]->SetVisible( true );
-		m_pMapLayer[2]->SetVisible( true );
+		m_pMapLayer[0]->SetVisible( !rd_reduce_motion.GetBool() );
+		m_pMapLayer[1]->SetVisible( !rd_reduce_motion.GetBool() );
+		m_pMapLayer[2]->SetVisible( !rd_reduce_motion.GetBool() );
 		m_pMapLayer[0]->SetImage( STRING( pCampaign->CampaignTextureLayer[0] ) );
 		m_pMapLayer[1]->SetImage( STRING( pCampaign->CampaignTextureLayer[1] ) );
 		m_pMapLayer[2]->SetImage( STRING( pCampaign->CampaignTextureLayer[2] ) );

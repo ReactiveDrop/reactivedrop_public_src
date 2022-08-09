@@ -8,6 +8,7 @@
 #include "basemodel_panel.h"
 
 class CStudioHdr;
+class CASW_WeaponInfo;
 
 //-----------------------------------------------------------------------------
 // Base class for all Alien Swarm model panels
@@ -31,6 +32,9 @@ public:
 	CStudioHdr *GetModelPtr();
 
 	// TODO: Add support for flex weights/rules to this panel
+
+	void SetModelByWeapon( CASW_WeaponInfo *pWeaponInfo );
+	void SetCameraForWeapon( float flZOffset, float flTime );
 
 	bool m_bShouldPaint;
 

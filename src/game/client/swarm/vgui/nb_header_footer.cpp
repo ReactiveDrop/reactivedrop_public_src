@@ -7,11 +7,16 @@
 #include "asw_video.h"
 #include "VGUIMatSurface/IMatSystemSurface.h"
 #include "asw_gamerules.h"
+#include "filesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
 using namespace vgui;
+
+ConVar rd_reduce_motion( "rd_reduce_motion", "0", FCVAR_ARCHIVE, "reduce ambient motion in menus" );
+static bool s_bLastReduceMotion = false;
 
 CASW_Background_Movie *g_pBackgroundMovie = NULL;
 
@@ -56,6 +61,7 @@ void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 
 		char szMaterialName[ MAX_PATH ];
 		Q_snprintf( szMaterialName, sizeof( szMaterialName ), "BackgroundBIKMaterial%i", g_pBIK->GetGlobalMaterialAllocationNumber() );
+		g_pFullFileSystem->GetLocalCopy( szFilename );
 		m_nBIKMaterial = bik->CreateMaterial( szMaterialName, szFilename, "GAME", BIK_LOOP );
 #else
 		if ( m_nAVIMaterial != AVIMATERIAL_INVALID )
@@ -77,6 +83,7 @@ void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 #endif
 
 		Q_snprintf( m_szCurrentMovie, sizeof( m_szCurrentMovie ), "%s", szFilename );
+		s_bLastReduceMotion = false; // we need to render at least one frame before we can pause.
 	}
 }
 
@@ -195,6 +202,19 @@ void CASW_Background_Movie::Update()
 			// FIXME: Make sure the m_pMaterial is actually destroyed at this point!
 			g_pBIK->DestroyMaterial( m_nBIKMaterial );
 			m_nBIKMaterial = BIKMATERIAL_INVALID;
+		}
+	}
+
+	if ( rd_reduce_motion.GetBool() != s_bLastReduceMotion )
+	{
+		s_bLastReduceMotion = rd_reduce_motion.GetBool();
+		if ( s_bLastReduceMotion )
+		{
+			bik->Pause( m_nBIKMaterial );
+		}
+		else
+		{
+			bik->Unpause( m_nBIKMaterial );
 		}
 	}
 #else
