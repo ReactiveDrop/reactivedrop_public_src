@@ -299,4 +299,15 @@
 		"visible"			"1"
 		"enabled"			"1"
 	}
+
+	"LblBranchDisclaimer"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblBranchDisclaimer"
+		"xpos"				"r205"
+		"ypos"				"5"
+		"wide"				"200"
+		"tall"				"80"
+		"textAlignment"		"north-east"
+	}
 }
