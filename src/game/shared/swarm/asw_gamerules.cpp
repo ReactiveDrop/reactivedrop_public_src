@@ -534,134 +534,134 @@ ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "
 ConVar rd_skip_all_dialogue( "rd_skip_all_dialogue", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Tell the server not to send audio from asw_voiceover_dialogue." );
 
 // ASW Weapons
-// Rifle
-ConVar	sk_plr_dmg_asw_r			( "sk_plr_dmg_asw_r","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_r			( "sk_npc_dmg_asw_r","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_r				( "sk_max_asw_r","0", FCVAR_REPLICATED);
-// Rifle Grenade
-ConVar	sk_plr_dmg_asw_r_g			( "sk_plr_dmg_asw_r_g","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_r_g			( "sk_npc_dmg_asw_r_g","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_r_g				( "sk_max_asw_r_g","0", FCVAR_REPLICATED);
-// Autogun
-ConVar	sk_plr_dmg_asw_ag			( "sk_plr_dmg_asw_ag","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ag			( "sk_npc_dmg_asw_ag","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_ag				( "sk_max_asw_ag","0", FCVAR_REPLICATED);
-// Shotgun
-ConVar	sk_plr_dmg_asw_sg			( "sk_plr_dmg_asw_sg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_sg			( "sk_npc_dmg_asw_sg","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_sg				( "sk_max_asw_sg","0", FCVAR_REPLICATED);
+// Rifle (5 clips, 98 per)
+ConVar	sk_plr_dmg_asw_r( "sk_plr_dmg_asw_r", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_r( "sk_npc_dmg_asw_r", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_r( "sk_max_asw_r", "490", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Rifle Grenade (4 def 8 max)
+ConVar	sk_plr_dmg_asw_r_g( "sk_plr_dmg_asw_r_g", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_r_g( "sk_npc_dmg_asw_r_g", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_r_g( "sk_max_asw_r_g", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Autogun (1 clip max on this)
+ConVar	sk_plr_dmg_asw_ag( "sk_plr_dmg_asw_ag", "9", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_ag( "sk_npc_dmg_asw_ag", "9", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_ag( "sk_max_asw_ag", "250", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Shotgun (12 clips, 4 per)
+ConVar	sk_plr_dmg_asw_sg( "sk_plr_dmg_asw_sg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_sg( "sk_npc_dmg_asw_sg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_sg( "sk_max_asw_sg", "48", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Shotgun (secondary)
-ConVar	sk_plr_dmg_asw_sg_g			( "sk_plr_dmg_asw_sg_g","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_sg_g			( "sk_npc_dmg_asw_sg_g","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_sg_g				( "sk_max_asw_sg_g","0", FCVAR_REPLICATED);
-// Assault Shotgun
-ConVar	sk_plr_dmg_asw_asg			( "sk_plr_dmg_asw_asg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_asg			( "sk_npc_dmg_asw_asg","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_asg				( "sk_max_asw_asg","0", FCVAR_REPLICATED);
-// Flamer
-ConVar	sk_plr_dmg_asw_f			( "sk_plr_dmg_asw_f","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_f			( "sk_npc_dmg_asw_f","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_f				( "sk_max_asw_f","0", FCVAR_REPLICATED);
-// Pistol
-ConVar	sk_plr_dmg_asw_p			( "sk_plr_dmg_asw_p","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_p			( "sk_npc_dmg_asw_p","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_p				( "sk_max_asw_p","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_sg_g( "sk_plr_dmg_asw_sg_g", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_sg_g( "sk_npc_dmg_asw_sg_g", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_sg_g( "sk_max_asw_sg_g", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Vindicator (5 clips, 14 per)
+ConVar	sk_plr_dmg_asw_asg( "sk_plr_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_asg( "sk_npc_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_asg( "sk_max_asw_asg", "70", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Flamer (5 clips, 60 per)
+ConVar	sk_plr_dmg_asw_f( "sk_plr_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_f( "sk_npc_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_f( "sk_max_asw_f", "200", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Pistol (10 clips, 32 per)
+ConVar	sk_plr_dmg_asw_p( "sk_plr_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_p( "sk_npc_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_p( "sk_max_asw_p", "240", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Mining laser
-ConVar	sk_plr_dmg_asw_ml			( "sk_plr_dmg_asw_ml","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ml			( "sk_npc_dmg_asw_ml","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_ml				( "sk_max_asw_ml","0", FCVAR_REPLICATED);
-// TeslaGun
-ConVar	sk_plr_dmg_asw_tg			( "sk_plr_dmg_asw_tg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_tg			( "sk_npc_dmg_asw_tg","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_tg				( "sk_max_asw_tg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_ml( "sk_plr_dmg_asw_ml", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_ml( "sk_npc_dmg_asw_ml", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_ml( "sk_max_asw_ml", "250", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Tesla CANNON
+ConVar	sk_plr_dmg_asw_tg( "sk_plr_dmg_asw_tg", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_tg( "sk_npc_dmg_asw_tg", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_tg( "sk_max_asw_tg", "260", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Chainsaw
-ConVar	sk_plr_dmg_asw_cs			( "sk_plr_dmg_asw_cs","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_cs			( "sk_npc_dmg_asw_cs","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_cs				( "sk_max_asw_cs","0", FCVAR_REPLICATED);
-// Rails
-ConVar	sk_plr_dmg_asw_rg			( "sk_plr_dmg_asw_rg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_rg			( "sk_npc_dmg_asw_rg","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_rg				( "sk_max_asw_rg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_cs( "sk_plr_dmg_asw_cs", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_cs( "sk_npc_dmg_asw_cs", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_cs( "sk_max_asw_cs", "1111", FCVAR_REPLICATED | FCVAR_CHEAT );
+// Railgun
+ConVar	sk_plr_dmg_asw_rg( "sk_plr_dmg_asw_rg", "45", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_rg( "sk_npc_dmg_asw_rg", "45", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_rg( "sk_max_asw_rg", "72", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Flares
-ConVar	sk_plr_dmg_asw_flares			( "sk_plr_dmg_asw_flares","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_flares			( "sk_npc_dmg_asw_flares","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_flares				( "sk_max_asw_flares","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_flares( "sk_plr_dmg_asw_flares", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_flares( "sk_npc_dmg_asw_flares", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_flares( "sk_max_asw_flares", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Medkit
-ConVar	sk_plr_dmg_asw_medkit			( "sk_plr_dmg_asw_medkit","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medkit			( "sk_npc_dmg_asw_medkit","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_medkit				( "sk_max_asw_medkit","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medkit( "sk_plr_dmg_asw_medkit", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_medkit( "sk_npc_dmg_asw_medkit", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_medkit( "sk_max_asw_medkit", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Med Satchel
-ConVar	sk_plr_dmg_asw_medsat			( "sk_plr_dmg_asw_medsat","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medsat			( "sk_npc_dmg_asw_medsat","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_medsat				( "sk_max_asw_medsat","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medsat( "sk_plr_dmg_asw_medsat", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_medsat( "sk_npc_dmg_asw_medsat", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_medsat( "sk_max_asw_medsat", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Med Satchel self heal secondary fire
-ConVar	sk_plr_dmg_asw_medself			( "sk_plr_dmg_asw_medself","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medself			( "sk_npc_dmg_asw_medself","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_medself				( "sk_max_asw_medself","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medself( "sk_plr_dmg_asw_medself", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_medself( "sk_npc_dmg_asw_medself", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_medself( "sk_max_asw_medself", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Med Stim
-ConVar	sk_plr_dmg_asw_stim			( "sk_plr_dmg_asw_stim","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_stim			( "sk_npc_dmg_asw_stim","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_stim				( "sk_max_asw_stim","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_stim( "sk_plr_dmg_asw_stim", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_stim( "sk_npc_dmg_asw_stim", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_stim( "sk_max_asw_stim", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Welder
-ConVar	sk_plr_dmg_asw_welder			( "sk_plr_dmg_asw_welder","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_welder		( "sk_npc_dmg_asw_welder","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_welder				( "sk_max_asw_welder","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_welder( "sk_plr_dmg_asw_welder", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_welder( "sk_npc_dmg_asw_welder", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_welder( "sk_max_asw_welder", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Extinguisher
-ConVar	sk_plr_dmg_asw_ext			( "sk_plr_dmg_asw_ext","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ext			( "sk_npc_dmg_asw_ext","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_ext				( "sk_max_asw_ext","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_ext( "sk_plr_dmg_asw_ext", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_ext( "sk_npc_dmg_asw_ext", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_ext( "sk_max_asw_ext", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Mines
-ConVar	sk_plr_dmg_asw_mines			( "sk_plr_dmg_asw_mines","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_mines			( "sk_npc_dmg_asw_mines","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_mines				( "sk_max_asw_mines","0", FCVAR_REPLICATED);
-// PDW
-ConVar	sk_plr_dmg_asw_pdw			( "sk_plr_dmg_asw_pdw","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_pdw			( "sk_npc_dmg_asw_pdw","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_pdw				( "sk_max_asw_pdw","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_mines( "sk_plr_dmg_asw_mines", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_mines( "sk_npc_dmg_asw_mines", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_mines( "sk_max_asw_mines", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+// PDW (6 clips, 80 per)
+ConVar	sk_plr_dmg_asw_pdw( "sk_plr_dmg_asw_pdw", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_pdw( "sk_npc_dmg_asw_pdw", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_pdw( "sk_max_asw_pdw", "480", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Hand Grenades
-ConVar	sk_npc_dmg_asw_hg			( "sk_npc_dmg_asw_hg","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_hg				( "sk_max_asw_hg","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_hg( "sk_npc_dmg_asw_hg", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_hg( "sk_max_asw_hg", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Grenade launcher
-ConVar	sk_npc_dmg_asw_gl			( "sk_npc_dmg_asw_gl","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_gl				( "sk_max_asw_gl","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_gl( "sk_npc_dmg_asw_gl", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_gl( "sk_max_asw_gl", "18", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Sniper Rifle
-ConVar	sk_npc_dmg_asw_sniper			( "sk_npc_dmg_asw_sniper","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_sniper				( "sk_max_asw_sniper","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_sniper( "sk_npc_dmg_asw_sniper", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_sniper( "sk_max_asw_sniper", "60", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Desert Eagle
-ConVar	sk_plr_dmg_asw_deagle			( "sk_plr_dmg_asw_deagle","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_deagle			( "sk_npc_dmg_asw_deagle","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_deagle				( "sk_max_asw_deagle","0", FCVAR_REPLICATED);
+// Desert Eagle (9 clips, 7 per)
+ConVar	sk_plr_dmg_asw_deagle( "sk_plr_dmg_asw_deagle", "75", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_deagle( "sk_npc_dmg_asw_deagle", "75", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_deagle( "sk_max_asw_deagle", "63", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Devastator Automated Heavy Shotgun  
-ConVar	sk_plr_dmg_asw_devastator		( "sk_plr_dmg_asw_devastator", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_asw_devastator		( "sk_npc_dmg_asw_devastator", "0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_devastator			( "sk_max_asw_devastator", "0", FCVAR_REPLICATED);
+// Devastator Automated Heavy Shotgun (1 clip, 70 per)
+ConVar	sk_plr_dmg_asw_devastator( "sk_plr_dmg_asw_devastator", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_devastator( "sk_npc_dmg_asw_devastator", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_devastator( "sk_max_asw_devastator", "70", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // 50 Cal Magine Gun
-ConVar	sk_plr_dmg_asw_50calmg			( "sk_plr_dmg_asw_50calmg", "0", FCVAR_REPLICATED);
-ConVar	sk_npc_dmg_asw_50calmg			( "sk_npc_dmg_asw_50calmg", "0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_50calmg				( "sk_max_asw_50calmg", "0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_50calmg( "sk_plr_dmg_asw_50calmg", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_50calmg( "sk_npc_dmg_asw_50calmg", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_50calmg( "sk_max_asw_50calmg", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // Gas_Grenades
-ConVar	sk_plr_dmg_asw_gas_grenades( "sk_plr_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_gas_grenades( "sk_npc_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED );
-ConVar	sk_max_asw_gas_grenades( "sk_max_asw_gas_grenades", "0", FCVAR_REPLICATED );
+ConVar	sk_plr_dmg_asw_gas_grenades( "sk_plr_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_gas_grenades( "sk_npc_dmg_asw_gas_grenades", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_gas_grenades( "sk_max_asw_gas_grenades", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // Heavy Rifle
-ConVar	sk_plr_dmg_asw_hr			( "sk_plr_dmg_asw_hr","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_hr			( "sk_npc_dmg_asw_hr","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_hr				( "sk_max_asw_hr","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_hr( "sk_plr_dmg_asw_hr", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_hr( "sk_npc_dmg_asw_hr", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_hr( "sk_max_asw_hr", "490", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // Heavy Rifle (secondary)
-ConVar	sk_plr_dmg_asw_hr_g			( "sk_plr_dmg_asw_hr_g","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_hr_g			( "sk_npc_dmg_asw_hr_g","0", FCVAR_REPLICATED);
-ConVar	sk_max_asw_hr_g				( "sk_max_asw_hr_g","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_hr_g( "sk_plr_dmg_asw_hr_g", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_hr_g( "sk_npc_dmg_asw_hr_g", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_hr_g( "sk_max_asw_hr_g", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Med Rifle
-ConVar	sk_plr_dmg_asw_medrifle			( "sk_plr_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medrifle			( "sk_npc_dmg_asw_medrifle", "0", FCVAR_REPLICATED );
-ConVar	sk_max_asw_medrifle				( "sk_max_asw_medrifle", "0", FCVAR_REPLICATED );
+// Med Rifle (7 clips, 72 per)
+ConVar	sk_plr_dmg_asw_medrifle( "sk_plr_dmg_asw_medrifle", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_medrifle( "sk_npc_dmg_asw_medrifle", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_medrifle( "sk_max_asw_medrifle", "504", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
