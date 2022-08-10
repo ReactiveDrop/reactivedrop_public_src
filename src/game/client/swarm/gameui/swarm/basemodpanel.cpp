@@ -1405,8 +1405,6 @@ void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 {
 	int bError = kvEvent->GetInt( "error" );
 	const char *failureReason = kvEvent->GetString( "reason" );
-	
-	Assert( m_LevelLoading );
 
 	if ( UI_IsDebug() )
 	{

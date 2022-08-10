@@ -4,7 +4,7 @@
 #include <vgui_controls/Controls.h>
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
-
+#include "steam/steam_api.h"
 #include "winlite.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -57,8 +57,12 @@ bool CRD_Font_Hack::Init()
 	VirtualProtect( reinterpret_cast< char * >( ppszAllowedFont ) - 1, 5, oldProtect, &oldProtect );
 	FlushInstructionCache( GetCurrentProcess(), reinterpret_cast< const char * >( ppszAllowedFont ) - 1, 5 );
 
-	// BenLubar: We want consistent font loading logic regardless of the player's Steam language.
-	vgui::scheme()->SetLanguage( "english" );
+	// BenLubar: vgui2 uses the Steam language rather than the game language by default. Fix that.
+	// This causes languages that do not use Latin or Cyrillic characters to use the fallback font exclusively.
+	if ( SteamApps() )
+	{
+		vgui::scheme()->SetLanguage( SteamApps()->GetCurrentGameLanguage() );
+	}
 
 	// BenLubar: Our final hurdle is that ReloadFonts doesn't actually do anything if the screen size hasn't changed. Luckily, we can fake it.
 	vgui::surface()->ForceScreenSizeOverride( true, 1, 1 );
