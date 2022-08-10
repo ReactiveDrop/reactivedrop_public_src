@@ -941,8 +941,8 @@ static const char *Script_FileToString( const char *pszFileName )
 		return NULL;
 
 	static char szString[16384];
-	int size = g_pFullFileSystem->Size(fh) + 1;
-	if ( size >= sizeof(szString) )
+	int size = g_pFullFileSystem->Size(fh);
+	if ( size + 1 >= sizeof(szString) )
 	{
 		Log_Warning( LOG_VScript, "File %s (from %s) is len %i too long for a ScriptFileRead\n", szFullFileName, pszFileName, size );
 		return NULL;
