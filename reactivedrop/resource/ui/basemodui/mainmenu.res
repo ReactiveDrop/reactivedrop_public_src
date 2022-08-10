@@ -304,10 +304,11 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblBranchDisclaimer"
-		"xpos"				"r205"
+		"xpos"				"r305"
 		"ypos"				"5"
-		"wide"				"200"
-		"tall"				"80"
+		"wide"				"300"
+		"tall"				"150"
 		"textAlignment"		"north-east"
+		"wrap"				"1"
 	}
 }
