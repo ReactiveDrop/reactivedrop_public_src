@@ -29,7 +29,7 @@
 		"xpos"				"0"
 		"ypos"				"120"
 		"wide"				"170"
-		"tall"				"120"
+		"tall"				"200"
 		"textAlignment"		"north-west"
 		"wrap"				"1"
 		"fgcolor_override"	"255 255 255 255"
