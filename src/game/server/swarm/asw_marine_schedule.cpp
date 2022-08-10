@@ -303,7 +303,7 @@ int CASW_Marine::RangeAttack1Conditions ( float flDot, float flDist )
 // ========== ASW Schedule Stuff =========
 int CASW_Marine::SelectSchedule()
 {
-	if ( rd_bot_melee.GetBool() && ( GetForcedActionRequest() || GetCurrentMeleeAttack() ) )
+	if ( GetForcedActionRequest() || GetCurrentMeleeAttack() )
 	{
 		return SCHED_ASW_MELEE_SYSTEM;
 	}
