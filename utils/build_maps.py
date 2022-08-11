@@ -1,7 +1,6 @@
 # this script recompiles maps, 
 # and for each map: 
 # - creates stringtabledictionary: stringtabledictionary
-# - creates sound manifest: snd_writemanifest
 # - builds cubemaps: buildcubemaps
 # 
 import os,subprocess,shutil,sys
@@ -128,8 +127,8 @@ if not os.path.exists(mapdir):
 with open(build_all_maps_cfg, "w") as myfile:
 	myfile.write("alias wait1 \"echo 10;wait 100;echo 9;wait 100;echo 8;wait 100;echo 7;wait 100;echo 6;wait 100;echo 5;wait 100;echo 4;wait 100;echo 3;wait 100;echo 2;wait 100;echo 1;wait 100;disconnect;buildnextmap\"\n")
 	myfile.write("alias buildcubemaps1 \"wait 1000;buildcubemaps 2;wait1\"\n")
-	myfile.write("alias buildmap0 \"wait 1000;stringtabledictionary;wait 100;snd_writemanifest;wait 100;asw_restart_mission;wait1\"\n")
-	myfile.write("alias buildmap1 \"wait 1000;stringtabledictionary;wait 100;snd_writemanifest;wait 100;buildcubemaps1\"\n")
+	myfile.write("alias buildmap0 \"wait 1000;stringtabledictionary;wait 100;asw_restart_mission;wait1\"\n")
+	myfile.write("alias buildmap1 \"wait 1000;stringtabledictionary;wait 100;buildcubemaps1\"\n")
 	myfile.write("alias build_exit \"exit\"\n")
 
 # compile maps and copy to the 'maps' folder
@@ -159,5 +158,5 @@ with open(build_all_maps_cfg, "a") as myfile:
 
 # run the game and execute the cfg file
 # game will load each map and execute these commands using 
-# aliases and wait command: stringtabledictionary;snd_writemanifest;buildcubemaps;
+# aliases and wait command: stringtabledictionary;buildcubemaps;
 call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-game", moddir, "+exec build_all_maps"])
