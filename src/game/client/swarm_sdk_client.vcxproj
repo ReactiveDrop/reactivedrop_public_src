@@ -124,7 +124,7 @@ if ERRORLEVEL 1 exit 1
       <TargetMachine>MachineX86</TargetMachine>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /SOURCELINK:..\..\sourcelink.json %(AdditionalOptions)</AdditionalOptions>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
@@ -156,6 +156,9 @@ exit 1
 if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd client
 </Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>..\..\devtools\bin\sourcelink.cmd</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
@@ -222,7 +225,7 @@ if ERRORLEVEL 1 exit 1
       <TargetMachine>MachineX86</TargetMachine>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /SOURCELINK:..\..\sourcelink.json %(AdditionalOptions)</AdditionalOptions>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <LargeAddressAware>true</LargeAddressAware>
       <SetChecksum>true</SetChecksum>
@@ -256,6 +259,9 @@ exit 1
 if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd client
 </Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>..\..\devtools\bin\sourcelink.cmd</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />

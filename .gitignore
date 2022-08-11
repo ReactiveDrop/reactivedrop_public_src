@@ -46,3 +46,4 @@ src/game/server/Release_swarm/
 src/ipch
 src/reactivedrop_vs13.opensdf
 src/.vs
+src/sourcelink.json
