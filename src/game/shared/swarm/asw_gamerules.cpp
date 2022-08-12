@@ -772,6 +772,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
 		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
+		RecvPropString(RECVINFO(m_szBriefingVideo)),
+		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
@@ -807,6 +809,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
 		SendPropString(SENDINFO(m_szApproximatePingLocation)),
+		SendPropString(SENDINFO(m_szBriefingVideo)),
+		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 	#endif
 END_NETWORK_TABLE()
 
@@ -885,6 +889,23 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules ),
 		SendPropBool( SENDINFO( m_bDisallowCameraRotation ) ),
 	END_SEND_TABLE()
+
+bool CAlienSwarmProxy::KeyValue( const char *szKeyName, const char *szValue )
+{
+	if ( FStrEq( szKeyName, "briefingmovie" ) )
+	{
+		CAlienSwarm *pGameRules = ASWGameRules();
+		Assert( pGameRules );
+		if ( pGameRules && szValue[0] != '\0' )
+		{
+			V_snprintf( pGameRules->m_szBriefingVideo.GetForModify(), sizeof( pGameRules->m_szBriefingVideo ), "media/%s.bik", szValue );
+		}
+
+		return true;
+	}
+
+	return BaseClass::KeyValue( szKeyName, szValue );
+}
 
 void CAlienSwarmProxy::InputSetTutorialStage( inputdata_t & inputdata )
 {
@@ -1556,6 +1577,25 @@ void CAlienSwarm::FullReset()
 
 	V_memset( m_szApproximatePingLocation.GetForModify(), 0, sizeof( m_szApproximatePingLocation ) );
 	m_bObtainedPingLocation = false;
+
+	m_hBriefingCamera = NULL;
+	m_bHadBriefingCamera = false;
+	switch ( RandomInt( 0, 3 ) )
+	{
+	case 0:
+		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_01.bik", sizeof( m_szBriefingVideo ) );
+		break;
+	case 1:
+		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_02.bik", sizeof( m_szBriefingVideo ) );
+		break;
+	default:
+	case 2:
+		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_03.bik", sizeof( m_szBriefingVideo ) );
+		break;
+	case 3:
+		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BG_04_FX.bik", sizeof( m_szBriefingVideo ) );
+		break;
+	}
 
 	m_ActorSpeakingUntil.Purge();
 
@@ -3710,6 +3750,13 @@ void CAlienSwarm::Think()
 		{
 			SetPingLocation( location );
 		}
+	}
+
+	// If a briefing camera gets deleted, check whether there's another one we can switch to.
+	if ( m_bHadBriefingCamera && !m_hBriefingCamera )
+	{
+		m_hBriefingCamera = gEntList.FindEntityByClassname( NULL, "rd_briefing_camera" );
+		m_bHadBriefingCamera = !!m_hBriefingCamera;
 	}
 
 	ThinkUpdateTimescale();
@@ -9038,6 +9085,9 @@ void CAlienSwarm::LevelInitPostEntity()
 			s_bInstalledCheatsChangeCallback = true;
 		}
 	}
+
+	m_hBriefingCamera = gEntList.FindEntityByClassname( NULL, "rd_briefing_camera" );
+	m_bHadBriefingCamera = !!m_hBriefingCamera;
 
 	if ( IsAnniversaryWeek() )
 	{

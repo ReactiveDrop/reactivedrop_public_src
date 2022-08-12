@@ -520,6 +520,11 @@ Vector CASW_Player::EyePosition( )
 	{
 		return BaseClass::EyePosition();
 	}
+
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
+		return pGameRules->m_hBriefingCamera->EyePosition();
+
 	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
 	bool bSpectating = true;
 	if ( !pNPC )
@@ -1015,6 +1020,10 @@ const QAngle& CASW_Player::EyeAngles( )
 		return BaseClass::EyeAngles();
 	}
 
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
+		return pGameRules->m_hBriefingCamera->EyeAngles();
+
 	static QAngle angAdjustedEyes;
 
 #ifdef CLIENT_DLL
@@ -1112,6 +1121,10 @@ Vector CASW_Player::EarPosition( void )
 	CBaseEntity *pViewEnt = GetViewEntity();
 	if ( pViewEnt )
 		return pViewEnt->EarPosition();
+
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
+		return pGameRules->m_hBriefingCamera->EarPosition();
 
 	CASW_Inhabitable_NPC *pNPC = GetViewNPC();
 	if ( pNPC )
@@ -1368,9 +1381,13 @@ ASW_Controls_t CASW_Player::GetASWControls()
 	if ( GetViewEntity() )
 		return ASWC_FIRSTPERSON;
 
+	// briefing camera controls vision during briefing.
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
+		return ASWC_FIRSTPERSON;
+
 #ifdef CLIENT_DLL
 	// if we're in a death cam, switch to third person temporarily.
-	CAlienSwarm *pGameRules = ASWGameRules();
 	if ( pGameRules && pGameRules->GetMarineDeathCamInterp() )
 		return ASWC_TOPDOWN;
 

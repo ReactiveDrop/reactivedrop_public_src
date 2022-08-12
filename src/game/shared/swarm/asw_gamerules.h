@@ -63,6 +63,7 @@ public:
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 #else
+	virtual bool KeyValue( const char *szKeyName, const char *szValue ) override;
 	void InputSetTutorialStage( inputdata_t & inputdata );
 	void InputAddPoints( inputdata_t & inputdata );
 	void InputModifyDifficulty( inputdata_t & inputdata );
@@ -572,6 +573,12 @@ public:
 #ifdef GAME_DLL
 	bool m_bObtainedPingLocation;
 	void SetPingLocation( const SteamNetworkPingLocation_t & location );
+#endif
+
+	CNetworkString( m_szBriefingVideo, 64 );
+	CNetworkHandle( CBaseEntity, m_hBriefingCamera );
+#ifdef GAME_DLL
+	bool m_bHadBriefingCamera;
 #endif
 
 private:

@@ -51,6 +51,7 @@ public:
 		m_hFavoritedAddonsQuery( k_UGCQueryHandleInvalid ) {}
 
 	virtual bool Init();
+	void InitNonWorkshopAddons();
 	void OnMissionStart();
 	virtual void LevelInitPostEntity();
 	virtual void LevelShutdownPreEntity();
@@ -60,6 +61,7 @@ public:
 #endif
 
 	PublishedFileId_t FindAddonProvidingFile( const char *pszFileName );
+	const char *GetNativeFileSystemFile( const char *pszFileName );
 
 	struct WorkshopItem_t
 	{

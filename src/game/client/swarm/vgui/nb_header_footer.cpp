@@ -8,6 +8,7 @@
 #include "VGUIMatSurface/IMatSystemSurface.h"
 #include "asw_gamerules.h"
 #include "filesystem.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -48,6 +49,20 @@ CASW_Background_Movie::~CASW_Background_Movie()
 
 void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 {
+	// Safety check as we're possibly going to overwrite a file here!
+	char szBaseName[MAX_PATH];
+	V_FileBase( szFilename, szBaseName, sizeof( szBaseName ) );
+	char szExpectedName[MAX_PATH];
+	V_snprintf( szExpectedName, sizeof( szExpectedName ), "media/%s.bik", szBaseName );
+	Assert( !V_strcmp( szFilename, szExpectedName ) );
+	if ( V_strcmp( szFilename, szExpectedName ) )
+	{
+		// If we're trying to set the movie to something dangerous, use a known safe filename instead.
+		szFilename = "media/BGFX_03.bik";
+	}
+
+	szFilename = g_ReactiveDropWorkshop.GetNativeFileSystemFile( szFilename );
+
 	if ( Q_strcmp( m_szCurrentMovie, szFilename ) )
 	{
 #ifdef ASW_BINK_MOVIES
@@ -61,7 +76,6 @@ void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 
 		char szMaterialName[ MAX_PATH ];
 		Q_snprintf( szMaterialName, sizeof( szMaterialName ), "BackgroundBIKMaterial%i", g_pBIK->GetGlobalMaterialAllocationNumber() );
-		g_pFullFileSystem->GetLocalCopy( szFilename );
 		m_nBIKMaterial = bik->CreateMaterial( szMaterialName, szFilename, "GAME", BIK_LOOP );
 #else
 		if ( m_nAVIMaterial != AVIMATERIAL_INVALID )
@@ -157,15 +171,7 @@ void CASW_Background_Movie::Update()
 			}
 			else
 			{
-				int nChosenMovie = RandomInt( 0, 3 );
-				switch( nChosenMovie )
-				{
-					case 0: pFilename = "media/BGFX_01.bik"; break;
-					case 1: pFilename = "media/BGFX_02.bik"; break;
-					default:
-					case 2: pFilename = "media/BGFX_03.bik"; break;
-					case 3: pFilename = "media/BG_04_FX.bik"; break;
-				}
+				pFilename = ASWGameRules()->m_szBriefingVideo;
 			}
 #else
 			pFilename = "media/test.avi";
@@ -203,19 +209,17 @@ void CASW_Background_Movie::Update()
 			g_pBIK->DestroyMaterial( m_nBIKMaterial );
 			m_nBIKMaterial = BIKMATERIAL_INVALID;
 		}
-	}
-
-	if ( rd_reduce_motion.GetBool() != s_bLastReduceMotion )
-	{
-		s_bLastReduceMotion = rd_reduce_motion.GetBool();
-		if ( s_bLastReduceMotion )
+		else if ( !s_bLastReduceMotion && rd_reduce_motion.GetBool() )
 		{
+			s_bLastReduceMotion = true;
 			bik->Pause( m_nBIKMaterial );
 		}
-		else
-		{
-			bik->Unpause( m_nBIKMaterial );
-		}
+	}
+
+	if ( m_nBIKMaterial != BIKMATERIAL_INVALID && s_bLastReduceMotion && !rd_reduce_motion.GetBool() )
+	{
+		s_bLastReduceMotion = false;
+		bik->Unpause( m_nBIKMaterial );
 	}
 #else
 	if ( m_nAVIMaterial == AVIMATERIAL_INVALID )
@@ -405,7 +409,7 @@ void CNB_Header_Footer::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_bMovieEnabled && ASWBackgroundMovie() )
+	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
 	{
 		ASWBackgroundMovie()->Update();
 		if ( ASWBackgroundMovie()->SetTextureMaterial() != -1 )

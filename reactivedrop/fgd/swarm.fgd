@@ -2165,6 +2165,7 @@
 		0 : "Allow rotation"
 		1 : "Deny rotation"
 	]
+	briefingmovie(string) : "Briefing Background Movie" : "" : "The name of the BIK file in the media folder to play behind the briefing for this mission. The movie is hidden if an rd_briefing_camera entity exists, and paused if rd_reduce_motion is enabled. If empty, the game will randomly pick between BGFX_01, BGFX_02, BGFX_03, and BG_04_FX."
 	
 	input SetTutorialStage(integer) : "reset the tutorial to a different spawn; only works on the tutorial level"
 	input AddPoints(integer) : "Award points to the players. Only works if the mission is in progress and the mission overview is tagged with 'points'."

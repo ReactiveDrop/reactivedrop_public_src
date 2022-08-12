@@ -342,3 +342,8 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	output OnStart(void) : "The voice line has started"
 	output OnCompletion(void) : "The voice line has completed"
 ]
+
+@PointClass base(Targetname, Parentname, Angles) studioprop("models/editor/camera.mdl") = rd_briefing_camera : "During briefing, show this camera's view instead of a looping video."
+[
+	fov(float) : "FOV" : 75 : "Field of view in degrees"
+]

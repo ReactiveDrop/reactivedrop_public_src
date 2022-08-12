@@ -37,6 +37,8 @@
 #define WORKSHOP_PREVIEW_IMAGE_PRIORITY 0
 
 #define WORKSHOP_DISABLED_ADDONS_FILENAME "addonlist_workshop.txt"
+#define ADDONLIST_FILENAME			"addonlist.txt"
+#define ADDONS_DIRNAME				"addons"
 
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
@@ -84,7 +86,10 @@ static void RealLoadAddon( PublishedFileId_t id );
 static void LoadAddon( PublishedFileId_t id, bool bFromDownload );
 static void RealUnloadAddon( PublishedFileId_t id );
 static void UnloadAddon( PublishedFileId_t id );
+static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore &vpk );
+static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem );
 static bool s_bStartingUp = false;
+static CUtlStringList s_NonWorkshopAddons;
 static CUtlStringMap<PublishedFileId_t> s_FileNameToAddon;
 static CUtlStringMap<CRC32_t> s_FileNameToCRC;
 static CUtlVectorAutoPurge<CReactiveDropWorkshop::AddonFileConflict_t *> s_FileConflicts;
@@ -106,6 +111,8 @@ bool CReactiveDropWorkshop::Init()
 		return true;
 	}
 #endif
+
+	InitNonWorkshopAddons();
 
 	if ( !SteamUGC() )
 	{
@@ -178,6 +185,45 @@ bool CReactiveDropWorkshop::Init()
 #endif
 
 	return true;
+}
+
+void CReactiveDropWorkshop::InitNonWorkshopAddons()
+{
+	// The engine has already updated addonlist.txt to remove invalid or missing addons from it at this point.
+
+	KeyValues::AutoDelete pKV( "AddonList" );
+	if ( !pKV->LoadFromFile( g_pFullFileSystem, ADDONLIST_FILENAME, "GAME" ) )
+	{
+		return;
+	}
+
+	PublishedFileId_t nFakePublishedFileId = 0;
+
+	FOR_EACH_VALUE( pKV, pAddonName )
+	{
+		if ( !pAddonName->GetBool() )
+		{
+			continue;
+		}
+
+		nFakePublishedFileId++;
+
+		char szAddonName[MAX_PATH];
+		V_snprintf( szAddonName, sizeof( szAddonName ), "%s%c%s", ADDONS_DIRNAME, CORRECT_PATH_SEPARATOR, pAddonName->GetName() );
+		s_NonWorkshopAddons.CopyAndAddToTail( szAddonName );
+		Assert( nFakePublishedFileId == s_NonWorkshopAddons.Count() );
+
+		const char *szExtension = V_strrchr( szAddonName, '.' );
+		if ( szExtension && !V_strcmp( szExtension, ".vpk" ) )
+		{
+			CPackedStore vpk( szAddonName, g_pFullFileSystem );
+			AddToFileNameAddonMapping( nFakePublishedFileId, vpk );
+		}
+		else
+		{
+			AddToFileNameAddonMapping( nFakePublishedFileId, szAddonName, g_pFullFileSystem );
+		}
+	}
 }
 
 static void SaveDisabledAddons()
@@ -1072,6 +1118,58 @@ PublishedFileId_t CReactiveDropWorkshop::FindAddonProvidingFile( const char *psz
 	return s_FileNameToAddon[sym];
 }
 
+const char *CReactiveDropWorkshop::GetNativeFileSystemFile( const char *pszFileName )
+{
+	UtlSymId_t sym = s_FileNameToAddon.Find( pszFileName );
+	if ( sym == UTL_INVAL_SYMBOL )
+	{
+#ifdef DBGFLAG_ASSERT
+		// This function should only be called for addon files, not official VPK contents.
+		CPackedStore pak01( "pak01", filesystem );
+		Assert( !pak01.OpenFile( pszFileName ) );
+#endif
+
+		return pszFileName;
+	}
+
+	static CUtlSymbolTable s_CopiedThisSession;
+	static char s_szMappedFileName[MAX_PATH];
+
+	PublishedFileId_t id = s_FileNameToAddon[sym];
+	if ( id <= s_NonWorkshopAddons.Count() )
+	{
+		const char *szAddonPath = s_NonWorkshopAddons[id - 1];
+		const char *szVPKExtension = V_strrchr( szAddonPath, '.' );
+		if ( !szVPKExtension || V_strcmp( szVPKExtension, ".vpk" ) )
+		{
+			V_snprintf( s_szMappedFileName, sizeof( s_szMappedFileName ), "%s%c%s", szAddonPath, CORRECT_PATH_SEPARATOR, pszFileName );
+			return s_szMappedFileName;
+		}
+	}
+
+	V_snprintf( s_szMappedFileName, sizeof( s_szMappedFileName ), "temp%cunpacked%c%s", CORRECT_PATH_SEPARATOR, CORRECT_PATH_SEPARATOR, pszFileName );
+	if ( !s_CopiedThisSession.Find( pszFileName ).IsValid() )
+	{
+		char szParent[MAX_PATH];
+		V_ExtractFilePath( s_szMappedFileName, szParent, sizeof( szParent ) );
+		filesystem->CreateDirHierarchy( szParent );
+
+		CUtlBuffer buf;
+		if ( !filesystem->ReadFile( pszFileName, NULL, buf ) )
+		{
+			Assert( !"file read failed" );
+			return pszFileName;
+		}
+		bool bSuccess = filesystem->WriteFile( s_szMappedFileName, NULL, buf );
+		Assert( bSuccess );
+		( void )bSuccess;
+
+		s_CopiedThisSession.AddString( pszFileName );
+	}
+	
+	return s_szMappedFileName;
+}
+
 #pragma pack(push, 1)
 struct CFileHeaderFixedData
 {
@@ -1155,6 +1253,23 @@ static bool AddonPathCanConflict( const char *szPath )
 	return true;
 }
 
+static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szFileName, CRC32_t nFileHash )
+{
+	if ( AddonPathCanConflict( szFileName ) )
+	{
+		PublishedFileId_t nExistingAddon = s_FileNameToAddon.Defined( szFileName ) ? s_FileNameToAddon[szFileName] : k_PublishedFileIdInvalid;
+		if ( nExistingAddon == k_PublishedFileIdInvalid )
+		{
+			s_FileNameToAddon[szFileName] = id;
+			s_FileNameToCRC[szFileName] = nFileHash;
+		}
+		else if ( s_FileNameToCRC[szFileName] != nFileHash && s_AddonAllowOverride.Find( PublishedFileIdPair{ nExistingAddon, id } ) == s_AddonAllowOverride.InvalidIndex() )
+		{
+			s_FileConflicts.AddToTail( new CReactiveDropWorkshop::AddonFileConflict_t( szFileName, nExistingAddon, id, s_FileNameToCRC[szFileName], nFileHash ) );
+		}
+	}
+}
+
 static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk )
 {
 	if ( CPackedStoreFileHandle hAddonInfo = vpk.OpenFile( "addoninfo.txt" ) )
@@ -1210,22 +1325,70 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 
 				pRawDirectoryData = reinterpret_cast< const char * >( pHeader + 1 ) + pHeader->MetadataSize;
 
-				if ( AddonPathCanConflict( szFileName ) )
-				{
-					PublishedFileId_t nExistingAddon = s_FileNameToAddon.Defined( szFileName ) ? s_FileNameToAddon[szFileName] : k_PublishedFileIdInvalid;
-					if ( nExistingAddon == k_PublishedFileIdInvalid )
-					{
-						s_FileNameToAddon[szFileName] = id;
-						s_FileNameToCRC[szFileName] = pHeader->FileHash;
-					}
-					else if ( s_FileNameToCRC[szFileName] != pHeader->FileHash && s_AddonAllowOverride.Find( PublishedFileIdPair{ nExistingAddon, id } ) == s_AddonAllowOverride.InvalidIndex() )
-					{
-						s_FileConflicts.AddToTail( new CReactiveDropWorkshop::AddonFileConflict_t( szFileName, nExistingAddon, id, s_FileNameToCRC[szFileName], pHeader->FileHash ) );
-					}
-				}
+				AddToFileNameAddonMapping( id, szFileName, pHeader->FileHash );
 			}
 		}
 	}
+}
+
+static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem, const char *szPrefix )
+{
+	char szDirPrefix[MAX_PATH];
+	if ( szPrefix[0] != '\0' )
+	{
+		V_snprintf( szDirPrefix, sizeof( szDirPrefix ), "%s%c%s", szDirName, CORRECT_PATH_SEPARATOR, szPrefix );
+	}
+	else
+	{
+		V_strncpy( szDirPrefix, szDirName, sizeof( szDirPrefix ) );
+	}
+	Assert( pFileSystem->IsDirectory( szDirPrefix ) );
+
+	char szSearch[MAX_PATH];
+	V_snprintf( szSearch, sizeof( szSearch ), "%s%c*", szDirPrefix, CORRECT_PATH_SEPARATOR );
+
+	FileFindHandle_t handle = FILESYSTEM_INVALID_FIND_HANDLE;
+	for ( const char *szSuffix = pFileSystem->FindFirst( szSearch, &handle ); szSuffix; szSuffix = pFileSystem->FindNext( handle ) )
+	{
+		char szPartialFileName[MAX_PATH];
+		if ( szPrefix[0] != '\0' )
+		{
+			V_snprintf( szPartialFileName, sizeof( szPartialFileName ), "%s%c%s", szPrefix, CORRECT_PATH_SEPARATOR, szSuffix );
+		}
+		else
+		{
+			V_strncpy( szPartialFileName, szSuffix, sizeof( szPartialFileName ) );
+		}
+
+		if ( pFileSystem->FindIsDirectory( handle ) )
+		{
+			AddToFileNameAddonMapping( id, szDirName, pFileSystem, szPartialFileName );
+		}
+		else
+		{
+			char szComposedFileName[MAX_PATH];
+			V_snprintf( szComposedFileName, sizeof( szComposedFileName ), "%s%c%s", szDirPrefix, CORRECT_PATH_SEPARATOR, szSuffix );
+
+			CRC32_t crc = 0;
+			EFileCRCStatus status = pFileSystem->CheckCachedFileCRC( NULL, szComposedFileName, &crc );
+			Assert( status == k_eFileCRCStatus_GotCRC );
+			if ( status != k_eFileCRCStatus_GotCRC )
+			{
+				crc = id;
+			}
+
+			AddToFileNameAddonMapping( id, szPartialFileName, crc );
+		}
+	}
+	pFileSystem->FindClose( handle );
+}
+
+
+static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem )
+{
+	pFileSystem->CacheFileCRCs( szDirName, k_eCacheCRCType_Directory_Recursive, NULL );
+
+	AddToFileNameAddonMapping( id, szDirName, pFileSystem, "" );
 }
 
 #ifdef CLIENT_DLL
@@ -1642,6 +1805,7 @@ static void RealUnloadAddon( PublishedFileId_t id )
 	s_FileNameToAddon.Purge();
 	s_FileNameToCRC.Purge();
 	s_FileConflicts.PurgeAndDeleteElements();
+	g_ReactiveDropWorkshop.InitNonWorkshopAddons();
 	FOR_EACH_VEC( s_LoadedAddonPaths, i )
 	{
 		CPackedStore vpk( s_LoadedAddonPaths[i].m_Path, filesystem );
