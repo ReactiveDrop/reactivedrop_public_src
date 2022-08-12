@@ -627,6 +627,7 @@ void CASW_Player::Spawn()
 
 	BaseClass::Spawn();
 
+	m_vecLastMarineOrigin = vec3_origin;
 	m_flMovementAxisYaw = 90.0f;
 
 	SetMoveType( MOVETYPE_WALK );

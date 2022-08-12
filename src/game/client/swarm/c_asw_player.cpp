@@ -2347,6 +2347,8 @@ void C_ASW_Player::OnMissionRestart()
 	// reset vehicle cam yaw
 	m_fLastVehicleYaw = 0;
 
+	m_vecLastMarineOrigin = vec3_origin;
+
 	RequestExperience();
 }
 
