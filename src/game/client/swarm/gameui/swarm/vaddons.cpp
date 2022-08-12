@@ -27,6 +27,7 @@
 #include "vgui_controls/ProgressBar.h"
 #include "vgui_controls/Label.h"
 #include "vgui_controls/TextImage.h"
+#include "vgenericconfirmation.h"
 #include "UtlBuffer.h"
 #include "vpklib/packedstore.h"
 #include "tier2/fileutils.h"
@@ -111,6 +112,11 @@ bool AddonListItem::GetAddonEnabled( )
 //=============================================================================
 void AddonListItem::SetPublishedFile( PublishedFileId_t id )
 {
+	if ( g_ReactiveDropWorkshop.FindAddonConflicts( id, NULL ) )
+	{
+		m_LblName->SetFgColor( Color( 255, 64, 0, 255 ) );
+	}
+
 	m_BtnEnabled->SetSelected( g_ReactiveDropWorkshop.IsAddonEnabled( id ) );
 	m_nPublishedFileId = id;
 	m_bWaitingForDetails = true;
@@ -162,6 +168,58 @@ void AddonListItem::OnMousePressed( vgui::MouseCode code )
 		unsigned short nindex;
 		if ( pGenericList && pGenericList->GetPanelItemIndex( this, nindex ) )
 		{
+			if ( pGenericList->GetSelectedPanelItem() == this )
+			{
+				CUtlVector<const CReactiveDropWorkshop::AddonFileConflict_t *> conflicts;
+				if ( g_ReactiveDropWorkshop.FindAddonConflicts( m_nPublishedFileId, &conflicts ) )
+				{
+					wchar_t wszMessage[8192];
+					V_wcsncpy( wszMessage, g_pVGuiLocalize->FindSafe( "#rd_workshop_conflict_explain" ), sizeof( wszMessage ) );
+
+					FOR_EACH_VEC( conflicts, i )
+					{
+						bool bWonConflict = conflicts[i]->ReplacingAddon == m_nPublishedFileId;
+
+						wchar_t wszFileName[MAX_PATH];
+						V_UTF8ToUnicode( conflicts[i]->FileName, wszFileName, sizeof( wszFileName ) );
+
+						PublishedFileId_t otherID = bWonConflict ? conflicts[i]->HiddenAddon : conflicts[i]->ReplacingAddon;
+						wchar_t wszAddonName[k_cchPublishedDocumentTitleMax];
+						V_snwprintf( wszAddonName, sizeof( wszAddonName ), L"%llu", otherID );
+
+						FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, j )
+						{
+							if ( g_ReactiveDropWorkshop.m_EnabledAddons[j].details.m_nPublishedFileId == otherID )
+							{
+								V_UTF8ToUnicode( g_ReactiveDropWorkshop.m_EnabledAddons[j].details.m_rgchTitle, wszAddonName, sizeof( wszAddonName ) );
+								break;
+							}
+						}
+
+						wchar_t wszAddonLine[1024];
+						g_pVGuiLocalize->ConstructString( wszAddonLine, sizeof( wszAddonLine ),
+							g_pVGuiLocalize->FindSafe( bWonConflict ? "#rd_workshop_conflict_won" : "#rd_workshop_conflict_lost" ),
+							2, wszFileName, wszAddonName );
+
+						char szAddonLine[2048];
+						V_UnicodeToUTF8( wszAddonLine, szAddonLine, sizeof( szAddonLine ) );
+
+						int len = V_wcslen( wszMessage );
+						V_wcsncpy( &wszMessage[len], wszAddonLine, sizeof( wszMessage ) - len * sizeof( wchar_t ) );
+					}
+
+					GenericConfirmation *pMsg = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, NULL, false ) );
+					if ( pMsg )
+					{
+						GenericConfirmation::Data_t data;
+						data.pWindowTitle = "#rd_workshop_conflict_title";
+						data.pMessageTextW = wszMessage;
+						data.bOkButtonEnabled = true;
+						pMsg->SetUsageData( data );
+					}
+				}
+			}
+
 			pGenericList->SelectPanelItem( nindex, GenericPanelList::SD_DOWN );
 		}
 	}
@@ -181,7 +239,6 @@ void AddonListItem::OnMessage(const KeyValues *params, vgui::VPANEL ifromPanel)
 	{
 		m_bCurrentlySelected = false;
 	}
-
 }
 
 void AddonListItem::ShowWorkshopStatistic()
@@ -399,7 +456,6 @@ BaseClass( parent, panelName, false, true )
 	m_pHeaderFooter->SetGradientBarPos( 75, 350 );
 
 	m_GplAddons = new GenericPanelList( this, "GplAddons", GenericPanelList::ISM_ELEVATOR );
-	m_GplAddons->ShowScrollProgress( true );
 	m_GplAddons->SetScrollBarVisible( IsPC() );
 
 	m_LblName = new Label( this, "LblName", "" );
@@ -848,7 +904,6 @@ void Addons::SetDetailsUIForAddon( int nIndex )
 
 void Addons::SetDetailsUIForWorkshopItem( PublishedFileId_t id )
 {
-
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		const CReactiveDropWorkshop::WorkshopItem_t & item = g_ReactiveDropWorkshop.m_EnabledAddons[i];
@@ -875,8 +930,29 @@ void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopI
 	wchar_t wsTypeLabel[k_cchTagListMax];
 	V_UTF8ToUnicode( item.details.m_rgchTags, wsTypeLabel, sizeof( wsTypeLabel ) );
 	wchar_t wsDescriptionLabel[k_cchPublishedDocumentDescriptionMax];
-	// TODO: parse formatting
 	V_UTF8ToUnicode( item.details.m_rgchDescription, wsDescriptionLabel, sizeof( wsDescriptionLabel ) );
+
+	int iDest = 0;
+	bool bInsideBBCode = false;
+	for ( int iSrc = 0; wsDescriptionLabel[iSrc]; iSrc++ )
+	{
+		if ( wsDescriptionLabel[iSrc] == L'[' )
+		{
+			bInsideBBCode = true;
+		}
+
+		if ( !bInsideBBCode )
+		{
+			wsDescriptionLabel[iDest++] = wsDescriptionLabel[iSrc];
+		}
+
+		if ( wsDescriptionLabel[iSrc] == L']' )
+		{
+			bInsideBBCode = false;
+		}
+	}
+
+	wsDescriptionLabel[iDest] = L'\0';
 
 	m_LblName->SetText( wsNameLabel );
 	m_LblType->SetText( wsTypeLabel );

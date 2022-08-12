@@ -66,20 +66,6 @@ const char *const g_RDWorkshopMissionTags[] =
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
-struct AddonFileConflict_t
-{
-	AddonFileConflict_t( const char *szFileName, PublishedFileId_t iReplacingAddon, PublishedFileId_t iHiddenAddon, CRC32_t iReplacingCRC, CRC32_t iHiddenCRC )
-		: FileName( szFileName ), ReplacingAddon( iReplacingAddon ), HiddenAddon( iHiddenAddon ), ReplacingCRC( iReplacingCRC ), HiddenCRC( iHiddenCRC )
-	{
-	}
-
-	CUtlString FileName;
-	PublishedFileId_t ReplacingAddon;
-	PublishedFileId_t HiddenAddon;
-	CRC32_t ReplacingCRC;
-	CRC32_t HiddenCRC;
-};
-
 struct PublishedFileIdPair
 {
 	PublishedFileId_t First;
@@ -101,7 +87,7 @@ static void UnloadAddon( PublishedFileId_t id );
 static bool s_bStartingUp = false;
 static CUtlStringMap<PublishedFileId_t> s_FileNameToAddon;
 static CUtlStringMap<CRC32_t> s_FileNameToCRC;
-static CUtlVectorAutoPurge<AddonFileConflict_t *> s_FileConflicts;
+static CUtlVectorAutoPurge<CReactiveDropWorkshop::AddonFileConflict_t *> s_FileConflicts;
 static CUtlVector<PublishedFileIdPair> s_AddonAllowOverride;
 #ifdef CLIENT_DLL
 static CUtlVector<PublishedFileId_t> s_DelayedLoadAddons;
@@ -741,6 +727,26 @@ void CReactiveDropWorkshop::SetAddonEnabled( PublishedFileId_t nPublishedFileId,
 	UnloadAddon( nPublishedFileId );
 }
 
+int CReactiveDropWorkshop::FindAddonConflicts( PublishedFileId_t nPublishedFileId, CUtlVector<const AddonFileConflict_t *> *pConflicts )
+{
+	int nConflictCount = 0;
+
+	FOR_EACH_VEC( s_FileConflicts, i )
+	{
+		AddonFileConflict_t *pConflict = s_FileConflicts[i];
+		if ( pConflict->HiddenAddon == nPublishedFileId || pConflict->ReplacingAddon == nPublishedFileId )
+		{
+			nConflictCount++;
+			if ( pConflicts )
+			{
+				pConflicts->AddToTail( pConflict );
+			}
+		}
+	}
+
+	return nConflictCount;
+}
+
 void CReactiveDropWorkshop::DownloadItemResultCallback( DownloadItemResult_t *pResult )
 {
 	if ( pResult->m_unAppID != SteamUtils()->GetAppID() )
@@ -1214,7 +1220,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 					}
 					else if ( s_FileNameToCRC[szFileName] != pHeader->FileHash && s_AddonAllowOverride.Find( PublishedFileIdPair{ nExistingAddon, id } ) == s_AddonAllowOverride.InvalidIndex() )
 					{
-						s_FileConflicts.AddToTail( new AddonFileConflict_t( szFileName, nExistingAddon, id, s_FileNameToCRC[szFileName], pHeader->FileHash ) );
+						s_FileConflicts.AddToTail( new CReactiveDropWorkshop::AddonFileConflict_t( szFileName, nExistingAddon, id, s_FileNameToCRC[szFileName], pHeader->FileHash ) );
 					}
 				}
 			}

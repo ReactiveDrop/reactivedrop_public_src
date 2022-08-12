@@ -148,6 +148,21 @@ public:
 	bool IsAddonEnabled( PublishedFileId_t nPublishedFileId );
 	void SetAddonEnabled( PublishedFileId_t nPublishedFileId, bool bEnabled );
 
+	struct AddonFileConflict_t
+	{
+		AddonFileConflict_t( const char *szFileName, PublishedFileId_t iReplacingAddon, PublishedFileId_t iHiddenAddon, CRC32_t iReplacingCRC, CRC32_t iHiddenCRC )
+			: FileName( szFileName ), ReplacingAddon( iReplacingAddon ), HiddenAddon( iHiddenAddon ), ReplacingCRC( iReplacingCRC ), HiddenCRC( iHiddenCRC )
+		{
+		}
+
+		CUtlString FileName;
+		PublishedFileId_t ReplacingAddon;
+		PublishedFileId_t HiddenAddon;
+		CRC32_t ReplacingCRC;
+		CRC32_t HiddenCRC;
+	};
+	int FindAddonConflicts( PublishedFileId_t nPublishedFileId, CUtlVector<const AddonFileConflict_t *> *pConflicts );
+
 private:
 	friend class BaseModUI::Addons;
 	friend class BaseModUI::AddonListItem;
