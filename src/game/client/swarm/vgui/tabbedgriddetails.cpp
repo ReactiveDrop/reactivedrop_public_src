@@ -615,6 +615,7 @@ public:
 		SetConsoleStylePanel( true );
 
 		m_bMousePressed = false;
+		m_bNoScrollOnFocus = false;
 	}
 
 	virtual void NavigateTo() override
@@ -633,23 +634,26 @@ public:
 		pParent->m_pHighlight->SetVisible( true );
 		pParent->m_pParent->m_pParent->m_pDetails->DisplayEntry( pParent );
 
-		TGD_Grid *pGrid = pParent->m_pParent;
-
-		int x, y;
-		pParent->GetPos( x, y );
-
-		int scroll = pGrid->m_pScrollBar->GetValue();
-		y += scroll;
-
-		int minScroll = y + GetTall() - pGrid->m_pScrollBar->GetRangeWindow();
-		int maxScroll = y;
-		if ( scroll < minScroll )
+		if ( !m_bNoScrollOnFocus )
 		{
-			pGrid->m_pScrollBar->SetValue( minScroll );
-		}
-		else if ( scroll > maxScroll )
-		{
-			pGrid->m_pScrollBar->SetValue( maxScroll );
+			TGD_Grid *pGrid = pParent->m_pParent;
+
+			int x, y;
+			pParent->GetPos( x, y );
+
+			int scroll = pGrid->m_pScrollBar->GetValue();
+			y += scroll;
+
+			int minScroll = y + GetTall() * 1.5f - pGrid->m_pScrollBar->GetRangeWindow();
+			int maxScroll = y - GetTall() * 0.5f;
+			if ( scroll < minScroll )
+			{
+				pGrid->m_pScrollBar->SetValue( minScroll );
+			}
+			else if ( scroll > maxScroll )
+			{
+				pGrid->m_pScrollBar->SetValue( maxScroll );
+			}
 		}
 	}
 
@@ -659,11 +663,14 @@ public:
 
 		TGD_Entry *pParent = assert_cast< TGD_Entry * >( GetParent() );
 		m_bMousePressed = false;
+		m_bNoScrollOnFocus = false;
 		pParent->m_pHighlight->SetVisible( false );
 	}
 
 	virtual void OnCursorMoved( int x, int y ) override
 	{
+		m_bNoScrollOnFocus = true;
+
 		if ( GetParent() )
 			GetParent()->NavigateToChild( this );
 		else
@@ -695,6 +702,7 @@ public:
 	}
 
 	bool m_bMousePressed;
+	bool m_bNoScrollOnFocus;
 };
 
 TGD_Entry::TGD_Entry( TGD_Grid *parent, const char *panelName )
