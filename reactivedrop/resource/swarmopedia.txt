@@ -1,0 +1,484 @@
+// This file uses text from the unofficial Alien Swarm wiki. Content is available under CC-BY-SA.
+
+"Swarmopedia" {
+	"ALIEN" {
+		"ID" "asw_drone"
+		"Name" "#rd_so_alien_drone"
+		"Ability" "#rd_so_ability_overwhelming_numbers"
+		"Ability" "#rd_so_ability_razor_sharp_claws"
+		"Ability" "#rd_so_ability_attacks_doors"
+		"AppearsIn" {
+			// Empty AppearsIn represents all missions. Beware!
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/drone/drone.mdl"
+				"Animation" "Idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/drone/drone.mdl"
+				"Animation" "Idle"
+				"BodyGroup" {
+					"Group" "0"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "1"
+					"Value" "2"
+				}
+				"BodyGroup" {
+					"Group" "2"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "3"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "4"
+					"Value" "0"
+				}
+				"BodyGroup" {
+					"Group" "5"
+					"Value" "1"
+				}
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_drone_0"
+		"Paragraph" "#rd_so_paragraph_drone_1"
+		"Paragraph" "#rd_so_paragraph_drone_2"
+		"Paragraph" "#rd_so_paragraph_drone_3"
+		"Paragraph" "#rd_so_paragraph_drone_4"
+		"Paragraph" "#rd_so_paragraph_drone_5"
+	}
+	"ALIEN" {
+		"ID" "asw_ranger"
+		"Name" "#rd_so_alien_ranger"
+		"Ability" "#rd_so_ability_corrosive_spit"
+		"Ability" "#rd_so_ability_long_range"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_01"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_02"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac2-deima"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/mortar3/mortar3.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_ranger_0"
+		"Paragraph" "#rd_so_paragraph_ranger_1"
+	}
+	"ALIEN" {
+		"ID" "asw_shieldbug"
+		"Name" "#rd_so_alien_shieldbug"
+		"Ability" "#rd_so_ability_immune_to_frontal_attacks"
+		"Ability" "#rd_so_ability_knocks_down_marines"
+		"AppearsIn" {
+			"Challenge" "0"
+			"OnslaughtOnly" "1"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac2-deima"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac6-sewerjunction"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
+				"Animation" "idle_defend"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_shieldbug_0"
+		"Paragraph" "#rd_so_paragraph_shieldbug_1"
+		"Paragraph" "#rd_so_paragraph_shieldbug_2"
+		"Paragraph" "#rd_so_paragraph_shieldbug_3"
+		"Paragraph" "#rd_so_paragraph_shieldbug_4"
+	}
+	"ALIEN" {
+		"ID" "asw_boomer"
+		"Name" "#rd_so_alien_boomer"
+		"Ability" "#rd_so_ability_suicide_bomber"
+		"Ability" "#rd_so_ability_explosive_projectiles"
+		"Ability" "#rd_so_ability_inflates"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_01"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_02"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac2-deima"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/boomer/boomer_swarmopedia.mdl"
+				"Animation" "walk"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_boomer_0"
+		"Paragraph" "#rd_so_paragraph_boomer_1"
+	}
+	"ALIEN" {
+		"ID" "asw_buzzer"
+		"Name" "#rd_so_alien_buzzer"
+		"Ability" "#rd_so_ability_flight"
+		"Ability" "#rd_so_ability_poison_blurs_vision"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_01"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_02"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac6-sewerjunction"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/buzzer/buzzer.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_buzzer_0"
+		"Paragraph" "#rd_so_paragraph_buzzer_1"
+	}
+	"ALIEN" {
+		"ID" "asw_parasite"
+		"Name" "#rd_so_alien_parasite"
+		"Ability" "#rd_so_ability_infests_marines"
+		"Ability" "#rd_so_ability_jumping_attack"
+		"Ability" "#rd_so_ability_hatches_from_eggs"
+		"AppearsIn" {
+			"Challenge" "0"
+			"OnslaughtOnly" "1"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_01"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac6-sewerjunction"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/parasite/parasite_swarmopedia.mdl"
+				"Animation" "Idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_parasite_0"
+		"Paragraph" "#rd_so_paragraph_parasite_1"
+	}
+	"ALIEN" {
+		"ID" "asw_mortarbug"
+		"Name" "#rd_so_alien_mortarbug"
+		"Ability" "#rd_so_ability_explosive_projectiles"
+		"Ability" "#rd_so_ability_long_range"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_02"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac2-deima"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac3-rydberg"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac6-sewerjunction"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/mortar/mortar.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_mortarbug_0"
+		"Paragraph" "#rd_so_paragraph_mortarbug_1"
+	}
+	"ALIEN" {
+		"ID" "asw_harvester"
+		"Name" "#rd_so_alien_harvester"
+		"Ability" "#rd_so_ability_explosive_spawn"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_01"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac1-landingbay_02"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/harvester/harvester.mdl"
+				"Animation" "IDLE"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_harvester_0"
+		"Paragraph" "#rd_so_paragraph_harvester_1"
+		"Paragraph" "#rd_so_paragraph_harvester_2"
+		"Paragraph" "#rd_so_paragraph_harvester_3"
+		"Paragraph" "#rd_so_paragraph_harvester_4"
+	}
+	"ALIEN" {
+		"ID" "asw_parasite_defanged"
+		"Name" "#rd_so_alien_parasite_defanged"
+		"Ability" "#rd_so_ability_jumping_attack"
+		"Ability" "#rd_so_ability_suicide_bomber"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+			"MinDifficulty" "4"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/parasite/parasite.mdl"
+				"Animation" "Idle"
+				"BodyGroup" {
+					"Group" "0"
+					"Value" "1"
+				}
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_parasite_defanged_0"
+		"Paragraph" "#rd_so_paragraph_parasite_defanged_1"
+	}
+	"ALIEN" {
+		"ID" "asw_shaman"
+		"Name" "#rd_so_alien_shaman"
+		"Ability" "#rd_so_ability_heals_other_aliens"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/shaman/shaman.mdl"
+				"Animation" "idle"
+			}
+		}
+		// TODO: Paragraph
+	}
+	"ALIEN" {
+		"ID" "asw_biomass"
+		"Name" "#rd_so_alien_biomass"
+		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
+		"Ability" "#rd_so_ability_alerts_swarm"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac6-sewerjunction"
+		}
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac7-timorstation"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomasshelix.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomassl.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_c"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomasss.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_d"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomassu.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_biomass_0"
+		"Paragraph" "#rd_so_paragraph_biomass_1"
+		"Paragraph" "#rd_so_paragraph_biomass_2"
+		"Paragraph" "#rd_so_paragraph_biomass_3"
+		"Paragraph" "#rd_so_paragraph_biomass_4"
+	}
+	"ALIEN" {
+		"ID" "asw_grub"
+		"Name" "#rd_so_alien_grub"
+		"Ability" "#rd_so_ability_harmless"
+		"Ability" "#rd_so_ability_hatches_from_sacs"
+		"AppearsIn" {
+			"Campaign" "jacob"
+			"Map" "asi-jac4-residential"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/swarm/grubs/grub.mdl"
+				"Animation" "CrawlA"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/swarm/grubsac/grubsac.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" "#rd_so_paragraph_grub_0"
+	}
+	"ALIEN" {
+		"ID" "hl2_antlionguard"
+		"Name" "#rd_so_alien_antlionguard"
+		"Ability" "#rd_so_ability_knocks_down_marines"
+		"Ability" "#rd_so_ability_charging_attack"
+		"Ability" "#rd_so_ability_resistant_to_damage"
+		"AppearsIn" {
+			"Challenge" "0"
+			"OnslaughtOnly" "1"
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/antlion_guard.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/antlion_guard.mdl"
+				"Animation" "roar"
+				"Skin" "1"
+			}
+		}
+		// TODO: Paragraph
+	}
+}
