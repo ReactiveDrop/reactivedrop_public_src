@@ -82,7 +82,6 @@
 #include "fmtstr.h"
 #include "smartptr.h"
 #include "nb_header_footer.h"
-#include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include "nb_leaderboard_panel_points.h"
 #include "vadvancedsettings.h"
@@ -524,10 +523,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_GAMEPAD:
 			m_Frames[wt] = new Gamepad( this, "Gamepad" );
-			break;
-
-		case WT_SWARMOPEDIA:
-			m_Frames[wt] = new Swarmopedia( this, "Swarmopedia" );			
 			break;
 
 		case WT_IAFRANKS:

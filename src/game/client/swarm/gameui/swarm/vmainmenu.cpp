@@ -622,10 +622,6 @@ void MainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ADDONS, this, true );
 	}
-	else if ( !Q_strcmp( command, "Swarmopedia" ) )
-	{
-		CBaseModPanel::GetSingleton().OpenWindow( WT_SWARMOPEDIA, this, true );
-	}
 	else if ( !Q_strcmp( command, "IafRanks" ) )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKS, this, true );

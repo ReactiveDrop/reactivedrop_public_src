@@ -5,6 +5,11 @@
 
 class CASW_WeaponInfo;
 class CASW_Model_Panel;
+namespace RD_Swarmopedia
+{
+	struct Collection;
+	struct Alien;
+}
 
 void LaunchCollectionsFrame();
 
@@ -105,4 +110,41 @@ public:
 
 	int m_Index;
 	SteamItemDetails_t m_Details;
+};
+
+class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Swarmopedia, TGD_Tab );
+public:
+	CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel );
+	virtual ~CRD_Collection_Tab_Swarmopedia();
+
+	virtual TGD_Grid *CreateGrid() override;
+	virtual TGD_Details *CreateDetails() override;
+
+	RD_Swarmopedia::Collection *m_pCollection;
+};
+
+class CRD_Collection_Details_Swarmopedia : public TGD_Details
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Details_Swarmopedia, TGD_Details );
+public:
+	CRD_Collection_Details_Swarmopedia( CRD_Collection_Tab_Swarmopedia *parent );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
+};
+
+class CRD_Collection_Entry_Swarmopedia : public TGD_Entry
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Swarmopedia, TGD_Entry );
+public:
+	CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, RD_Swarmopedia::Alien *pAlien );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void ApplyEntry() override;
+
+	vgui::ImagePanel *m_pImage;
+
+	const RD_Swarmopedia::Alien *m_pAlien;
 };

@@ -10,6 +10,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "asw_util_shared.h"
 #include "fmtstr.h"
+#include "tier2/fileutils.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_game_resource.h"
@@ -79,6 +80,17 @@ struct PublishedFileIdPair
 	}
 };
 
+struct LoadedAddonPath_t
+{
+	PublishedFileId_t ID;
+	CUtlString Path;
+
+	bool operator==( const LoadedAddonPath_t &other ) const
+	{
+		return ID == other.ID && Path == other.Path;
+	}
+};
+
 static void ClearCaches( const char *szReason );
 static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active );
 static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
@@ -90,6 +102,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore &vpk )
 static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem );
 static bool s_bStartingUp = false;
 static CUtlStringList s_NonWorkshopAddons;
+static CUtlVector<LoadedAddonPath_t> s_LoadedAddonPaths;
 static CUtlStringMap<PublishedFileId_t> s_FileNameToAddon;
 static CUtlStringMap<CRC32_t> s_FileNameToCRC;
 static CUtlVectorAutoPurge<CReactiveDropWorkshop::AddonFileConflict_t *> s_FileConflicts;
@@ -793,6 +806,33 @@ int CReactiveDropWorkshop::FindAddonConflicts( PublishedFileId_t nPublishedFileI
 	return nConflictCount;
 }
 
+PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szPath )
+{
+	FOR_EACH_VEC( s_LoadedAddonPaths, i )
+	{
+		if ( s_LoadedAddonPaths[i].Path == szPath )
+		{
+			return s_LoadedAddonPaths[i].ID;
+		}
+	}
+
+	CUtlVector< CUtlString > modPaths;
+	GetSearchPath( modPaths, "MOD" );
+
+	FOR_EACH_VEC( modPaths, i )
+	{
+		if ( modPaths[i] == szPath )
+		{
+			return 0;
+		}
+	}
+
+	// TODO: handle non-workshop addons
+
+	Assert( !"Could not find addon for path." );
+	return PublishedFileId_t( -1 );
+}
+
 void CReactiveDropWorkshop::DownloadItemResultCallback( DownloadItemResult_t *pResult )
 {
 	if ( pResult->m_unAppID != SteamUtils()->GetAppID() )
@@ -1474,21 +1514,6 @@ static void ClearCaches( const char *szReason )
 #endif
 }
 
-struct LoadedAddonPath_t
-{
-	PublishedFileId_t m_ID;
-	CUtlString m_Path;
-
-	bool operator==( const LoadedAddonPath_t & other ) const
-	{
-		return m_ID == other.m_ID && m_Path == other.m_Path;
-	}
-	bool operator!=( const LoadedAddonPath_t & other ) const
-	{
-		return m_ID != other.m_ID || m_Path != other.m_Path;
-	}
-};
-
 static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 {
 #ifdef GAME_DLL
@@ -1520,8 +1545,6 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 
 	return false;
 }
-
-static CUtlVector<LoadedAddonPath_t> s_LoadedAddonPaths;
 
 static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
 {
@@ -1712,8 +1735,8 @@ static void RealLoadAddon( PublishedFileId_t id )
 	bool bDontClearCache = false;
 
 	LoadedAddonPath_t path;
-	path.m_ID = id;
-	path.m_Path = vpkname;
+	path.ID = id;
+	path.Path = vpkname;
 	if ( s_LoadedAddonPaths.FindAndRemove( path ) )
 	{
 		filesystem->RemoveVPKFile( vpkname );
@@ -1779,7 +1802,7 @@ static void RealUnloadAddon( PublishedFileId_t id )
 	bool bFound = false;
 	FOR_EACH_VEC( s_LoadedAddonPaths, i )
 	{
-		if ( s_LoadedAddonPaths[i].m_ID == id )
+		if ( s_LoadedAddonPaths[i].ID == id )
 		{
 			path = s_LoadedAddonPaths[i];
 			s_LoadedAddonPaths.Remove( i );
@@ -1799,7 +1822,7 @@ static void RealUnloadAddon( PublishedFileId_t id )
 
 	Msg( "Unloading addon %llu\n", id );
 
-	filesystem->RemoveVPKFile( path.m_Path );
+	filesystem->RemoveVPKFile( path.Path );
 
 	s_AddonAllowOverride.Purge();
 	s_FileNameToAddon.Purge();
@@ -1808,8 +1831,8 @@ static void RealUnloadAddon( PublishedFileId_t id )
 	g_ReactiveDropWorkshop.InitNonWorkshopAddons();
 	FOR_EACH_VEC( s_LoadedAddonPaths, i )
 	{
-		CPackedStore vpk( s_LoadedAddonPaths[i].m_Path, filesystem );
-		AddToFileNameAddonMapping( s_LoadedAddonPaths[i].m_ID, vpk );
+		CPackedStore vpk( s_LoadedAddonPaths[i].Path, filesystem );
+		AddToFileNameAddonMapping( s_LoadedAddonPaths[i].ID, vpk );
 	}
 
 	ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
@@ -1855,7 +1878,7 @@ bool CReactiveDropWorkshop::LoadAddonEarly( PublishedFileId_t nPublishedFileID )
 	{
 		FOR_EACH_VEC( s_LoadedAddonPaths, i )
 		{
-			if ( s_LoadedAddonPaths[i].m_ID == nPublishedFileID )
+			if ( s_LoadedAddonPaths[i].ID == nPublishedFileID )
 			{
 				return true;
 			}
