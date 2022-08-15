@@ -10,9 +10,12 @@
 #include "gamestringpool.h"
 #include "rd_rich_presence.h"
 #include "rd_text_filtering.h"
+#include "rd_lobby_utils.h"
+#include "fmtstr.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 const float PLAYER_RESOURCE_THINK_INTERVAL = 0.2f;
 #define PLAYER_UNCONNECTED_NAME	"unconnected"
@@ -101,6 +104,22 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 		SetNextClientThink( gpGlobals->curtime + PLAYER_RESOURCE_THINK_INTERVAL );
 	}
 	g_RD_Rich_Presence.UpdatePresence();
+
+	if ( UTIL_RD_IsLobbyOwner() )
+	{
+		CFmtStr1024 playerIDs;
+
+		for ( int slot = 1; slot <= gpGlobals->maxClients; slot++ )
+		{
+			player_info_t info;
+			if ( IsConnected( slot ) && engine->GetPlayerInfo( slot, &info ) && !info.fakeplayer && !info.ishltv && !info.isreplay )
+			{
+				playerIDs.AppendFormat( "%s%08x", playerIDs.Length() ? "," : "", info.friendsID );
+			}
+		}
+
+		UTIL_RD_UpdateCurrentLobbyData( "system:rd_players", playerIDs );
+	}
 }
 
 void C_PlayerResource::UpdatePlayerName( int slot )
