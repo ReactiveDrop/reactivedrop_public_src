@@ -198,5 +198,35 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 void CRD_Collection_Entry_Equipment::ApplyEntry()
 {
-	// do nothing for now
+	TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
+	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
+	if ( pPanel )
+	{
+		CRD_Collection_Panel_Equipment *pEquipmentPanel = dynamic_cast< CRD_Collection_Panel_Equipment * >( pPanel );
+		bool bStop = pEquipmentPanel && pEquipmentPanel->m_pWeaponInfo == m_pWeaponInfo;
+
+		pTGD->SetOverridePanel( NULL );
+		pPanel->MarkForDeletion();
+
+		if ( bStop )
+		{
+			return;
+		}
+	}
+
+	pPanel = new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", m_pWeaponInfo );
+	pTGD->SetOverridePanel( pPanel );
+}
+
+CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CASW_WeaponInfo *pWeaponInfo )
+	: BaseClass( parent, panelName )
+{
+	m_pWeaponInfo = pWeaponInfo;
+}
+
+void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	Assert( !"TODO: Equipment collection big view" );
 }

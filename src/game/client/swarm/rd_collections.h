@@ -61,6 +61,17 @@ public:
 	vgui::Label *m_pClassLabel;
 };
 
+class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Equipment, vgui::EditablePanel );
+public:
+	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CASW_WeaponInfo *pWeaponInfo );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+
+	CASW_WeaponInfo *m_pWeaponInfo;
+};
+
 class CRD_Collection_Tab_Inventory : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Inventory, TGD_Tab );
@@ -139,12 +150,23 @@ class CRD_Collection_Entry_Swarmopedia : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Swarmopedia, TGD_Entry );
 public:
-	CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, RD_Swarmopedia::Alien *pAlien );
+	CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;
 
-	vgui::ImagePanel *m_pImage;
+	vgui::ImagePanel *m_pIcon;
+
+	const RD_Swarmopedia::Alien *m_pAlien;
+};
+
+class CRD_Collection_Panel_Swarmopedia : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Swarmopedia, vgui::EditablePanel );
+public:
+	CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
 	const RD_Swarmopedia::Alien *m_pAlien;
 };

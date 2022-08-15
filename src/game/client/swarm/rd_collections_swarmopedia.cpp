@@ -59,23 +59,53 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 	Assert( !"TODO: display entry" );
 }
 
-CRD_Collection_Entry_Swarmopedia::CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, RD_Swarmopedia::Alien *pAlien )
+CRD_Collection_Entry_Swarmopedia::CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )
 	: BaseClass( parent, panelName )
 {
 	m_pAlien = pAlien;
 
-	m_pImage = new vgui::ImagePanel( this, "Image" );
+	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 }
 
 void CRD_Collection_Entry_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_pImage->SetImage( m_pAlien->Image );
-	m_pImage->SetDrawColor( m_pAlien->AllRequirementsSatisfied() ? Color( 255, 255, 255, 255 ) : Color( 0, 0, 0, 255 ) );
+	m_pIcon->SetImage( m_pAlien->Icon );
+	m_pIcon->SetDrawColor( m_pAlien->AllRequirementsSatisfied() ? Color( 255, 255, 255, 255 ) : Color( 0, 0, 0, 255 ) );
 }
 
 void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 {
-	Assert( !"TODO: open swarmopedia big view" );
+	TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
+	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
+	if ( pPanel )
+	{
+		CRD_Collection_Panel_Swarmopedia *pSwarmopediaPanel = dynamic_cast< CRD_Collection_Panel_Swarmopedia * >( pPanel );
+		bool bStop = pSwarmopediaPanel && pSwarmopediaPanel->m_pAlien == m_pAlien;
+
+		pTGD->SetOverridePanel( NULL );
+		pPanel->MarkForDeletion();
+
+		if ( bStop )
+		{
+			return;
+		}
+	}
+
+	pPanel = new CRD_Collection_Panel_Swarmopedia( pTGD, "SwarmopediaPanel", m_pAlien );
+	pTGD->SetOverridePanel( pPanel );
+}
+
+CRD_Collection_Panel_Swarmopedia::CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )
+	: BaseClass( parent, panelName )
+{
+	m_pAlien = pAlien;
+}
+
+void CRD_Collection_Panel_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	Assert( !"TODO: Swarmopedia big view" );
 }

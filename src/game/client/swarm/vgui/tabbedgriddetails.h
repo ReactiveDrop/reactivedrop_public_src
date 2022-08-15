@@ -29,6 +29,7 @@ public:
 	void AddTab( TGD_Tab *pTab );
 	void RemoveTab( TGD_Tab *pTab );
 	void ActivateTab( TGD_Tab *pTab );
+	void SetOverridePanel( vgui::Panel *pPanel );
 
 	CNB_Header_Footer *m_pHeaderFooter;
 	CNB_Button *m_pBackButton;
@@ -37,6 +38,7 @@ public:
 	vgui::Label *m_pTabRightHint;
 	vgui::Dar<TGD_Tab *> m_Tabs;
 	vgui::DHANDLE<TGD_Tab> m_hCurrentTab;
+	vgui::PHandle m_hOverridePanel;
 };
 
 abstract_class TGD_Tab : public vgui::EditablePanel

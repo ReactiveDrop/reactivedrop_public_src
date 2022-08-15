@@ -51,7 +51,7 @@ namespace RD_Swarmopedia
 
 		CUtlString ID{};
 		CUtlString Name{};
-		CUtlString Image{};
+		CUtlString Icon{};
 		CUtlVectorAutoPurge<Requirement *> Requirements{};
 		CUtlVectorAutoPurge<GlobalStat *> GlobalStats{};
 		CUtlVectorAutoPurge<Display *> Display{};

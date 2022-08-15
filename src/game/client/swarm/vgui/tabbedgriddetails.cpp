@@ -49,6 +49,24 @@ void TabbedGridDetails::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
+	if ( m_hCurrentTab )
+	{
+		m_hCurrentTab->m_pGrid->SetVisible( !m_hOverridePanel );
+	}
+
+	if ( m_hOverridePanel )
+	{
+		m_pTabLeftHint->SetVisible( false );
+		m_pTabRightHint->SetVisible( false );
+
+		FOR_EACH_VEC( m_Tabs, i )
+		{
+			m_Tabs[i]->SetVisible( false );
+		}
+
+		return;
+	}
+
 	bool bHaveGamepad = g_pInputSystem->GetJoystickCount() > 0 && m_Tabs.Count() > 1;
 	m_pTabLeftHint->SetVisible( bHaveGamepad );
 	m_pTabRightHint->SetVisible( bHaveGamepad );
@@ -62,6 +80,7 @@ void TabbedGridDetails::PerformLayout()
 
 	FOR_EACH_VEC( m_Tabs, i )
 	{
+		m_Tabs[i]->SetVisible( true );
 		m_Tabs[i]->SetPos( x, y );
 		x += m_Tabs[i]->GetWide() + YRES( 2 );
 	}
@@ -74,7 +93,15 @@ void TabbedGridDetails::OnCommand( const char *command )
 	if ( !V_strcmp( command, "BackButton" ) )
 	{
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
-		MarkForDeletion();
+		if ( m_hOverridePanel )
+		{
+			m_hOverridePanel->MarkForDeletion();
+			SetOverridePanel( NULL );
+		}
+		else
+		{
+			MarkForDeletion();
+		}
 	}
 	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
 	{
@@ -97,7 +124,7 @@ void TabbedGridDetails::OnCommand( const char *command )
 	}
 	else if ( !V_stricmp( command, "PrevPage" ) )
 	{
-		if ( m_Tabs.Count() <= 1 )
+		if ( m_Tabs.Count() <= 1 || m_hOverridePanel )
 		{
 			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
 			return;
@@ -117,7 +144,7 @@ void TabbedGridDetails::OnCommand( const char *command )
 	}
 	else if ( !V_stricmp( command, "NextPage" ) )
 	{
-		if ( m_Tabs.Count() <= 1 )
+		if ( m_Tabs.Count() <= 1 || m_hOverridePanel )
 		{
 			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
 			return;
@@ -137,7 +164,7 @@ void TabbedGridDetails::OnCommand( const char *command )
 	}
 	else if ( !V_stricmp( command, "CyclePage" ) )
 	{
-		if ( m_Tabs.Count() <= 1 )
+		if ( m_Tabs.Count() <= 1 || m_hOverridePanel )
 		{
 			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
 			return;
@@ -301,6 +328,18 @@ void TabbedGridDetails::ActivateTab( TGD_Tab *pTab )
 	if ( pTab )
 	{
 		pTab->ActivateTab();
+	}
+}
+
+void TabbedGridDetails::SetOverridePanel( vgui::Panel *pPanel )
+{
+	m_hOverridePanel = pPanel;
+
+	InvalidateLayout();
+
+	if ( pPanel )
+	{
+		NavigateToChild( pPanel );
 	}
 }
 

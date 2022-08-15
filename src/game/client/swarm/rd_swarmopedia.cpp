@@ -114,7 +114,7 @@ void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
 Alien::Alien( const Alien &copy ) :
 	ID{ copy.ID },
 	Name{ copy.Name },
-	Image{ copy.Image }
+	Icon{ copy.Icon }
 {
 	Helpers::CopyVector( Requirements, copy.Requirements );
 	Helpers::CopyVector( GlobalStats, copy.GlobalStats );
@@ -169,11 +169,11 @@ bool Alien::ReadFromFile( const char *pszPath, KeyValues *pKV )
 				Name = pSubKey->GetString();
 			}
 		}
-		else if ( FStrEq( szName, "Image" ) )
+		else if ( FStrEq( szName, "Icon" ) )
 		{
-			if ( Image.IsEmpty() )
+			if ( Icon.IsEmpty() )
 			{
-				Image = pSubKey->GetString();
+				Icon = pSubKey->GetString();
 			}
 		}
 		else if ( FStrEq( szName, "SteamStatLoreRequirement" ) )
@@ -223,14 +223,14 @@ void Alien::Merge( const Alien *pAlien )
 {
 	Assert( ID == pAlien->ID );
 
-	// first value for Name/Image wins.
+	// first value for Name/Icon wins.
 	if ( Name.IsEmpty() )
 	{
 		Name = pAlien->Name;
 	}
-	if ( Image.IsEmpty() )
+	if ( Icon.IsEmpty() )
 	{
-		Image = pAlien->Image;
+		Icon = pAlien->Icon;
 	}
 
 	// everything else gets merged.
