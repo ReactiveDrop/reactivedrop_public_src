@@ -14,5 +14,5 @@ LINK_ENTITY_TO_CLASS( rd_briefing_camera, CRD_Briefing_Camera );
 
 int CRD_Briefing_Camera::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
-	return FL_EDICT_ALWAYS;
+	return FL_EDICT_PVSCHECK;
 }

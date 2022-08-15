@@ -1,8 +1,8 @@
 #pragma once
 
-class CRD_Briefing_Camera : public CPointEntity
+class CRD_Briefing_Camera : public CBaseEntity
 {
-	DECLARE_CLASS( CRD_Briefing_Camera, CPointEntity );
+	DECLARE_CLASS( CRD_Briefing_Camera, CBaseEntity );
 public:
 	DECLARE_DATADESC();
 
