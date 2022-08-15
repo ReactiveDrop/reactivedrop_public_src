@@ -4,12 +4,25 @@
 	"ALIEN" {
 		"ID" "asw_drone"
 		"Name" "#rd_so_alien_drone"
+		"Icon" "swarm/swarmopedia/alien/asw_drone"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_drone" "100"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone"
+			"Caption" "#rd_so_stat_killed_drone"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone_jumper"
+			"Caption" "#rd_so_stat_killed_drone_jumper"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone_uber"
+			"Caption" "#rd_so_stat_killed_drone_uber"
+		}
 		"Ability" "#rd_so_ability_overwhelming_numbers"
 		"Ability" "#rd_so_ability_razor_sharp_claws"
 		"Ability" "#rd_so_ability_attacks_doors"
-		"AppearsIn" {
-			// Empty AppearsIn represents all missions. Beware!
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -58,34 +71,16 @@
 	"ALIEN" {
 		"ID" "asw_ranger"
 		"Name" "#rd_so_alien_ranger"
+		"Icon" "swarm/swarmopedia/alien/asw_ranger"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_ranger" "10"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_ranger"
+			"Caption" "#rd_so_stat_killed_ranger"
+		}
 		"Ability" "#rd_so_ability_corrosive_spit"
 		"Ability" "#rd_so_ability_long_range"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_01"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_02"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac2-deima"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -99,29 +94,16 @@
 	"ALIEN" {
 		"ID" "asw_shieldbug"
 		"Name" "#rd_so_alien_shieldbug"
+		"Icon" "swarm/swarmopedia/alien/asw_shieldbug"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_shieldbug" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_shieldbug"
+			"Caption" "#rd_so_stat_killed_shieldbug"
+		}
 		"Ability" "#rd_so_ability_immune_to_frontal_attacks"
 		"Ability" "#rd_so_ability_knocks_down_marines"
-		"AppearsIn" {
-			"Challenge" "0"
-			"OnslaughtOnly" "1"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac2-deima"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac6-sewerjunction"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -138,36 +120,17 @@
 	"ALIEN" {
 		"ID" "asw_boomer"
 		"Name" "#rd_so_alien_boomer"
+		"Icon" "swarm/swarmopedia/alien/asw_boomer"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_boomer" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_boomer"
+			"Caption" "#rd_so_stat_killed_boomer"
+		}
 		"Ability" "#rd_so_ability_suicide_bomber"
 		"Ability" "#rd_so_ability_explosive_projectiles"
 		"Ability" "#rd_so_ability_inflates"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_01"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_02"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac2-deima"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -181,34 +144,16 @@
 	"ALIEN" {
 		"ID" "asw_buzzer"
 		"Name" "#rd_so_alien_buzzer"
+		"Icon" "swarm/swarmopedia/alien/asw_buzzer"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_buzzer" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_buzzer"
+			"Caption" "#rd_so_stat_killed_buzzer"
+		}
 		"Ability" "#rd_so_ability_flight"
 		"Ability" "#rd_so_ability_poison_blurs_vision"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_01"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_02"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac6-sewerjunction"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -222,35 +167,17 @@
 	"ALIEN" {
 		"ID" "asw_parasite"
 		"Name" "#rd_so_alien_parasite"
+		"Icon" "swarm/swarmopedia/alien/asw_parasite"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_parasite" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_parasite"
+			"Caption" "#rd_so_stat_killed_parasite"
+		}
 		"Ability" "#rd_so_ability_infests_marines"
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_hatches_from_eggs"
-		"AppearsIn" {
-			"Challenge" "0"
-			"OnslaughtOnly" "1"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_01"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac6-sewerjunction"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -264,36 +191,17 @@
 	"ALIEN" {
 		"ID" "asw_mortarbug"
 		"Name" "#rd_so_alien_mortarbug"
+		"Icon" "swarm/swarmopedia/alien/asw_mortarbug"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_mortarbug" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_mortarbug"
+			"Caption" "#rd_so_stat_killed_mortarbug"
+		}
 		"Ability" "#rd_so_ability_explosive_projectiles"
 		"Ability" "#rd_so_ability_long_range"
 		"Ability" "#rd_so_ability_corrosive_skin"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_02"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac2-deima"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac3-rydberg"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac6-sewerjunction"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -307,22 +215,16 @@
 	"ALIEN" {
 		"ID" "asw_harvester"
 		"Name" "#rd_so_alien_harvester"
+		"Icon" "swarm/swarmopedia/alien/asw_harvester"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_harvester" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_harvester"
+			"Caption" "#rd_so_stat_killed_harvester"
+		}
 		"Ability" "#rd_so_ability_explosive_spawn"
 		"Ability" "#rd_so_ability_corrosive_skin"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_01"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac1-landingbay_02"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -339,17 +241,16 @@
 	"ALIEN" {
 		"ID" "asw_parasite_defanged"
 		"Name" "#rd_so_alien_parasite_defanged"
+		"Icon" "swarm/swarmopedia/alien/asw_parasite_defanged"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_parasite_defanged" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
+			"Caption" "#rd_so_stat_killed_parasite_defanged"
+		}
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_suicide_bomber"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-			"MinDifficulty" "4"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -367,6 +268,14 @@
 	"ALIEN" {
 		"ID" "asw_shaman"
 		"Name" "#rd_so_alien_shaman"
+		"Icon" "swarm/swarmopedia/alien/asw_shaman"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.asw_shaman" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_shaman"
+			"Caption" "#rd_so_stat_killed_shaman"
+		}
 		"Ability" "#rd_so_ability_heals_other_aliens"
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
@@ -380,21 +289,13 @@
 	"ALIEN" {
 		"ID" "asw_biomass"
 		"Name" "#rd_so_alien_biomass"
+		"Icon" "swarm/swarmopedia/alien/asw_biomass"
+		"SteamStatLoreRequirement" {
+			"iAliensBurned" "100"
+		}
 		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
 		"Ability" "#rd_so_ability_alerts_swarm"
 		"Ability" "#rd_so_ability_corrosive_skin"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac6-sewerjunction"
-		}
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac7-timorstation"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -432,12 +333,16 @@
 	"ALIEN" {
 		"ID" "asw_grub"
 		"Name" "#rd_so_alien_grub"
+		"SteamStatLoreRequirement" {
+			"ASW_GRUB_KILLS_STAT" "100"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_grub"
+			"Caption" "#rd_so_stat_killed_grub"
+		}
+		"Icon" "swarm/swarmopedia/alien/asw_grub"
 		"Ability" "#rd_so_ability_harmless"
 		"Ability" "#rd_so_ability_hatches_from_sacs"
-		"AppearsIn" {
-			"Campaign" "jacob"
-			"Map" "asi-jac4-residential"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
@@ -457,13 +362,21 @@
 	"ALIEN" {
 		"ID" "hl2_antlionguard"
 		"Name" "#rd_so_alien_antlionguard"
+		"Icon" "swarm/swarmopedia/alien/hl2_antlionguard"
+		"SteamStatLoreRequirement" {
+			"lifetime_alien_kills.npc_antlionguard_normal" "1"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_antlionguard_normal"
+			"Caption" "#rd_so_stat_killed_antlionguard_normal"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_antlionguard_cavern"
+			"Caption" "#rd_so_stat_killed_antlionguard_cavern"
+		}
 		"Ability" "#rd_so_ability_knocks_down_marines"
 		"Ability" "#rd_so_ability_charging_attack"
 		"Ability" "#rd_so_ability_resistant_to_damage"
-		"AppearsIn" {
-			"Challenge" "0"
-			"OnslaughtOnly" "1"
-		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
