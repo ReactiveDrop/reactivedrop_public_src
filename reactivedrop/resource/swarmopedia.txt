@@ -239,15 +239,15 @@
 		"Paragraph" "#rd_so_paragraph_harvester_4"
 	}
 	"ALIEN" {
-		"ID" "asw_parasite_defanged"
-		"Name" "#rd_so_alien_parasite_defanged"
-		"Icon" "swarm/swarmopedia/alien/asw_parasite_defanged"
+		"ID" "asw_xenomite"
+		"Name" "#rd_so_alien_xenomite"
+		"Icon" "swarm/swarmopedia/alien/asw_xenomite"
 		"SteamStatLoreRequirement" {
 			"lifetime_alien_kills.asw_parasite_defanged" "1"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
-			"Caption" "#rd_so_stat_killed_parasite_defanged"
+			"Caption" "#rd_so_stat_killed_xenomite"
 		}
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_suicide_bomber"
@@ -291,10 +291,13 @@
 		"Name" "#rd_so_alien_biomass"
 		"Icon" "swarm/swarmopedia/alien/asw_biomass"
 		"SteamStatLoreRequirement" {
-			"iAliensBurned" "100"
+			"iBiomassIgnited" "1"
+		}
+		"GlobalStat" {
+			"StatName" "iBiomassIgnited"
+			"Caption" "#rd_so_stat_killed_biomass"
 		}
 		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
-		"Ability" "#rd_so_ability_alerts_swarm"
 		"Ability" "#rd_so_ability_corrosive_skin"
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"

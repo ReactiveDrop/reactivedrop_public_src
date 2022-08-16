@@ -24,6 +24,7 @@ public:
 	int GetShotsFired(int iMarineIndex) { return m_iShotsFired[iMarineIndex]; }
 	int GetShotsHit(int iMarineIndex) { return m_iShotsHit[iMarineIndex]; }
 	int GetAliensBurned(int iMarineIndex) { return m_iAliensBurned[iMarineIndex]; }
+	int GetBiomassIgnited( int iMarineIndex ) { return m_iBiomassIgnited[iMarineIndex]; }
 	int GetHealthHealed(int iMarineIndex) { return m_iHealthHealed[iMarineIndex]; }
 	int GetFastHacks(int iMarineIndex) { return m_iFastHacks[iMarineIndex]; }
 	int GetSkillPointsAwarded(int iMarineIndex) { return m_iSkillPointsAwarded[iMarineIndex]; }
@@ -121,6 +122,7 @@ public:
 	CNetworkArray( int,		m_iHealAmpGunHeals,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iMedRifleHeals,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iBiomassIgnited,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

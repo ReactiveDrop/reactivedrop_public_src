@@ -12,6 +12,7 @@
 	#include "asw_grub.h"
 	#include "asw_simple_grub.h"
 	#include "asw_marine.h"
+	#include "asw_marine_resource.h"
 	#include "asw_player.h"
 	#include "asw_fx_shared.h"
 	#include "asw_util_shared.h"
@@ -103,6 +104,7 @@ CASW_Alien_Goo::CASW_Alien_Goo()
 	m_fPulseStrength = 1.0f;
 	m_fPulseSpeed = 1.0f;	
 #ifndef CLIENT_DLL
+	m_hIgnitedBy = NULL;
 	g_AlienGoo.AddToTail( this );
 #endif
 }
@@ -255,15 +257,13 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	// riflemod: goo takes blast damage, e.g. from explosions. But they only ignite it
 	if ( rd_biomass_ignite_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST )
 	{
+		OnIgnitedByMarine( pMarine ? pMarine->GetMarineResource() : NULL );
 		Ignite( 30.0f );
 
 		// notify the marine that he's hurting this, so his accuracy doesn't drop
-		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		if ( pMarine )
 		{
-			if ( pMarine )
-			{
-				pMarine->HurtJunkItem( this, info );
-			}
+			pMarine->HurtJunkItem( this, info );
 		}
 
 		CASW_Player *pPlayerAttacer = NULL;
@@ -319,6 +319,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	{		
 		if ( info.GetDamageType() & DMG_BURN )
 		{
+			OnIgnitedByMarine( pMarine ? pMarine->GetMarineResource() : NULL );
 			Ignite( 30.0f );
 
 			CASW_Player *pPlayerAttacer = NULL;
@@ -454,6 +455,7 @@ void CASW_Alien_Goo::BurningLinkThink()
 					(FStrEq("asw_alien_goo", ent->GetClassname()) || FStrEq("asw_grub_sac", ent->GetClassname())
 						)))
 			{
+				pGoo->OnIgnitedByMarine( m_hIgnitedBy );
 				pGoo->Ignite(30.0f);
 			}
 		}
@@ -664,6 +666,17 @@ bool CASW_Alien_Goo::Dissolve( const char *pMaterialName, float flStartTime, boo
 	}
 
 	return bRagdollCreated;
+}
+
+void CASW_Alien_Goo::OnIgnitedByMarine( CASW_Marine_Resource *pMR )
+{
+	if ( m_hIgnitedBy || !pMR || m_bHasGrubs )
+	{
+		return;
+	}
+
+	m_hIgnitedBy = pMR;
+	pMR->m_iBiomassIgnited++;
 }
 
 #else

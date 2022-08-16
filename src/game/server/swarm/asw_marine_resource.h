@@ -198,6 +198,7 @@ public:
 	int m_iHealAmpGunHeals;
 	int m_iHealAmpGunAmps;
 	int m_iMedRifleHeals;
+	int m_iBiomassIgnited;
 
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );

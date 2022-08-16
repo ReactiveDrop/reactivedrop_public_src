@@ -172,6 +172,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iHealAmpGunHeals = 0;
 	m_iHealAmpGunAmps = 0;
 	m_iMedRifleHeals = 0;
+	m_iBiomassIgnited = 0;
 	m_iScore = -1;
 	m_flFinishedMissionTime = -1;
 

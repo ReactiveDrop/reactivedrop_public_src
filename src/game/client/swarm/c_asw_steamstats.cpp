@@ -449,6 +449,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "iShotsFired", m_iShotsFired );
 	FETCH_STEAM_STATS( "iShotsHit", m_iShotsHit );
 	FETCH_STEAM_STATS( "iAliensBurned", m_iAliensBurned );
+	FETCH_STEAM_STATS( "iBiomassIgnited", m_iBiomassIgnited );
 	FETCH_STEAM_STATS( "iHealing", m_iHealing );
 	FETCH_STEAM_STATS( "iFastHacks", m_iFastHacks );
 	FETCH_STEAM_STATS( "iGamesTotal", m_iGamesTotal );
@@ -627,6 +628,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iShotsHit += GetDebriefStats()->GetShotsHit( iMarineIndex );
 	m_fAccuracy = ( m_iShotsFired > 0 ) ? ( m_iShotsHit / (float)m_iShotsFired * 100.0f ) : 0;
 	m_iAliensBurned += GetDebriefStats()->GetAliensBurned( iMarineIndex );
+	m_iBiomassIgnited += GetDebriefStats()->GetBiomassIgnited( iMarineIndex );
 	m_iHealing += GetDebriefStats()->GetHealthHealed( iMarineIndex );
 	m_iFastHacks += GetDebriefStats()->GetFastHacks( iMarineIndex );
 	m_iGamesTotal++;
@@ -689,6 +691,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "iShotsFired", m_iShotsFired );
 	SEND_STEAM_STATS( "iShotsHit", m_iShotsHit );
 	SEND_STEAM_STATS( "iAliensBurned", m_iAliensBurned );
+	SEND_STEAM_STATS( "iBiomassIgnited", m_iBiomassIgnited );
 	SEND_STEAM_STATS( "iHealing", m_iHealing );
 	SEND_STEAM_STATS( "iFastHacks", m_iFastHacks );
 	SEND_STEAM_STATS( "iGamesTotal", m_iGamesTotal );

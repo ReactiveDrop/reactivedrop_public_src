@@ -159,6 +159,7 @@ private:
 	int32 m_iShotsFired;
 	int32 m_iShotsHit;
 	int32 m_iAliensBurned;
+	int32 m_iBiomassIgnited;
 	int32 m_iHealing;
 	int32 m_iFastHacks;
 	int32 m_iGamesTotal;
