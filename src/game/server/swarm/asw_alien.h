@@ -97,6 +97,7 @@ public:
 	float m_fLastSleepCheckTime;
 	bool m_bVisibleWhenAsleep;
 
+	bool m_bWasOnFireForStats;
 	bool m_bFlammable;
 	bool m_bTeslable;
 	bool m_bFreezable;

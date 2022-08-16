@@ -196,14 +196,15 @@ CASW_Alien::CASW_Alien( void ) :
 	m_bIgnoreMarines = false;
 	m_fLastSleepCheckTime = 0;
 	m_bVisibleWhenAsleep = false;
-    m_bFlammable = true; 
-    m_bTeslable = true; 
-    m_bFreezable = true; 
-    m_bFlinchable = true; 
+	m_bWasOnFireForStats = false;
+	m_bFlammable = true;
+	m_bTeslable = true;
+	m_bFreezable = true;
+	m_bFlinchable = true;
 	m_bGrenadeReflector = false;
 	m_iHealthBonus = 0;
-    m_fSizeScale = 1.0f; 
-    m_fSpeedScale = 1.0f; 
+	m_fSizeScale = 1.0f;
+	m_fSpeedScale = 1.0f;
 
 	m_fLastMarineCanSeeTime = -100;
 	m_bLastMarineCanSee = false;

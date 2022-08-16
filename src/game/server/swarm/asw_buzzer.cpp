@@ -237,6 +237,7 @@ CASW_Buzzer::CASW_Buzzer()
 	m_fNextPainSound = 0;
 	m_bHoldoutAlien = false;
 	m_flLastMarineDamageTime = 0;
+	m_bWasOnFireForStats = false;
 	m_bFlammable = true;
 	m_bTeslable = true;
 	m_bFreezable = true;

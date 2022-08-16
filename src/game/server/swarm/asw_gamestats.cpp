@@ -171,7 +171,11 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
 					}
 
-					pMR->m_iAliensBurned++;
+					if ( !pBaseAlien->m_bWasOnFireForStats )
+					{
+						pBaseAlien->m_bWasOnFireForStats = true;
+						pMR->m_iAliensBurned++;
+					}
 				}
 			}
 			else if ( pAlien->Classify() == CLASS_ASW_BUZZER )
@@ -184,7 +188,11 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
 					}
 
-					pMR->m_iAliensBurned++;
+					if ( !pBuzzer->m_bWasOnFireForStats )
+					{
+						pBuzzer->m_bWasOnFireForStats = true;
+						pMR->m_iAliensBurned++;
+					}
 				}
 			}
 		}

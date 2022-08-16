@@ -182,6 +182,7 @@ public:
 	bool m_bIgnoreMarines;
 	bool m_bFailedMoveTo;
 
+	bool m_bWasOnFireForStats;
 	bool m_bFlammable;
 	bool m_bTeslable;
 	bool m_bFreezable;
