@@ -360,6 +360,21 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	{
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
 	}
+
+	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
+	UTIL_RD_UpdateCurrentLobbyData( "system:engine_version", int( engine->GetEngineBuildNumber() ) );
+	if ( SteamApps() )
+	{
+		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", SteamApps()->GetAppBuildId() );
+		char szBranch[256]{};
+		SteamApps()->GetCurrentBetaName( szBranch, sizeof( szBranch ) );
+		UTIL_RD_UpdateCurrentLobbyData( "system:game_branch", szBranch );
+	}
+	else
+	{
+		UTIL_RD_RemoveCurrentLobbyData( "system:game_build" );
+		UTIL_RD_RemoveCurrentLobbyData( "system:game_branch" );
+	}
 #endif
 
 	if ( ASWDeathmatchMode() )
