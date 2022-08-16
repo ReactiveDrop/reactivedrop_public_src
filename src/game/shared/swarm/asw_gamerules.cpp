@@ -24,6 +24,7 @@
 	#define CASW_Ammo C_ASW_Ammo
 	#include "c_asw_steamstats.h"
 	#include "rd_rich_presence.h"
+	#include "c_world.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -205,30 +206,6 @@ extern ConVar old_radius_damage;
 		highres_timer_set( rd_dedicated_high_resolution_timer_ms.GetFloat() );
 	}
 
-	static void UpdateMatchmakingTagsCallback_Server( IConVar *pConVar, const char *pOldValue, float flOldValue )
-	{
-		// don't allow changing challenge convars from their desired values
-		if ( pConVar && ASWGameRules() && ASWGameRules()->m_SavedConvars_Challenge.Defined( pConVar->GetName() ) )
-		{
-			const char *pszDesiredValue = STRING( ASWGameRules()->m_SavedConvars_Challenge[pConVar->GetName()] );
-			if ( Q_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
-			{
-				pConVar->SetValue( pszDesiredValue );
-				return;
-			}
-		}
-
-		// update sv_tags to force an update of the matchmaking tags
-		static ConVarRef sv_tags( "sv_tags" );
-
-		if ( sv_tags.IsValid() )
-		{
-			char buffer[ 1024 ];
-			Q_snprintf( buffer, sizeof( buffer ), "%s", sv_tags.GetString() );
-			sv_tags.SetValue( buffer );
-		}
-	}
-
 	static void EnforceWeaponClassRestriction( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
 	{
 		// don't do anything if the new value is the same as the old value
@@ -319,9 +296,27 @@ extern ConVar old_radius_damage;
 static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
 {
 #ifdef GAME_DLL
-	UpdateMatchmakingTagsCallback_Server( pConVar, pOldValue, flOldValue );
-#endif
+	// don't allow changing challenge convars from their desired values
+	if ( pConVar && ASWGameRules() && ASWGameRules()->m_SavedConvars_Challenge.Defined( pConVar->GetName() ) )
+	{
+		const char *pszDesiredValue = STRING( ASWGameRules()->m_SavedConvars_Challenge[pConVar->GetName()] );
+		if ( Q_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
+		{
+			pConVar->SetValue( pszDesiredValue );
+			return;
+		}
+	}
 
+	// update sv_tags to force an update of the matchmaking tags
+	static ConVarRef sv_tags( "sv_tags" );
+
+	if ( sv_tags.IsValid() )
+	{
+		char buffer[1024];
+		Q_snprintf( buffer, sizeof( buffer ), "%s", sv_tags.GetString() );
+		sv_tags.SetValue( buffer );
+	}
+#else
 	if ( !ASWGameRules() || !UTIL_RD_IsLobbyOwner() )
 	{
 		return;
@@ -351,7 +346,6 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:workshop", missionAddonID );
 	}
 
-#ifdef CLIENT_DLL
 	if ( g_ASW_Steamstats.IsOfficialCampaign() )
 	{
 		UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:official", "1" );
@@ -363,6 +357,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:engine_version", int( engine->GetEngineBuildNumber() ) );
+	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
 	if ( SteamApps() )
 	{
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", SteamApps()->GetAppBuildId() );
@@ -375,7 +370,6 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_RemoveCurrentLobbyData( "system:game_build" );
 		UTIL_RD_RemoveCurrentLobbyData( "system:game_branch" );
 	}
-#endif
 
 	if ( ASWDeathmatchMode() )
 	{
@@ -434,6 +428,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	}
 	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", ASWGameRules()->IsOnslaught() ? "1" : "0" );
 	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", ASWGameRules()->IsHardcoreFF() ? "1" : "0" );
+#endif
 }
 
 // moved here for deathmatch

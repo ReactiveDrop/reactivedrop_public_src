@@ -832,6 +832,15 @@
 	detailvbsp(string) : "Detail.vbsp file" : "detail.vbsp" : "Detail.vbsp file to use for emitting detail props (found in directory <root>/modname)"
 	detailmaterial(string) : "Detail material file" : "detail/detailsprites" : "Material for detail sprites to use for drawing detail props"
 	coldworld(boolean) : "World is cold" : 0
+	timeofday(choices) : "Time of day" : 0 =
+	[
+		0 : "Midnight"
+		1 : "Dawn"
+		2 : "Morning"
+		3 : "Afternoon"
+		4 : "Dusk"
+		5 : "Evening"
+	]
 ]
 
 

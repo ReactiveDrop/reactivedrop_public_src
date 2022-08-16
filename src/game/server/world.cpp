@@ -530,6 +530,7 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
 	DEFINE_KEYFIELD( m_iTimeOfDay,		FIELD_INTEGER, "timeofday" ),
 
+	DEFINE_KEYFIELD( m_nMapVersion, FIELD_INTEGER, "mapversion" ),
 END_DATADESC()
 
 
@@ -545,6 +546,7 @@ IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD)
 	SendPropFloat	(SENDINFO(m_flMinPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
 	SendPropStringT (SENDINFO(m_iszDetailSpriteMaterial) ),
 	SendPropInt		(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED ),
+	SendPropInt		(SENDINFO(m_nMapVersion)),
 END_SEND_TABLE()
 
 //

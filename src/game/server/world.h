@@ -85,6 +85,7 @@ private:
 	CNetworkVar( bool, m_bStartDark );
 	CNetworkVar( bool, m_bColdWorld );
 	CNetworkVar( int, m_iTimeOfDay );
+	CNetworkVar( int, m_nMapVersion );
 	bool m_bDisplayTitle;
 };
 
