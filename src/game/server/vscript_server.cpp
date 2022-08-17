@@ -985,6 +985,16 @@ bool Script_IsModelPrecached( const char *modelname )
 	return engine->IsModelPrecached( VScriptCutDownString( modelname ) );
 }
 
+static int Script_PrecacheModel( const char *modelname )
+{
+	return CBaseEntity::PrecacheModel( VScriptCutDownString( modelname ) );
+}
+
+static int Script_GetModelIndex( const char *modelname )
+{
+	return modelinfo->GetModelIndex( modelname );
+}
+
 static void Script_GetPlayerConnectionInfo( HSCRIPT hPlayer, HSCRIPT hTable )
 {
 	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
@@ -1132,6 +1142,8 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ScreenFade, "ScreenFade", "Start a screenfade with the following parameters. player, red, green, blue, alpha, flFadeTime, flFadeHold, flags" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ChangeLevel, "ChangeLevel", "Tell engine to change level." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_IsModelPrecached, "IsModelPrecached", "Checks if the modelname is precached." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PrecacheModel, "PrecacheModel", "Precache a model after the map has loaded and return index of the model" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetModelIndex, "GetModelIndex", "Returns index of model by name." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerConnectionInfo, "GetPlayerConnectionInfo", "Returns a table containing the player's connection info." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetClientXUID, "GetClientXUID", "Get the player's xuid (i.e. SteamID64)." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FadeClientVolume, "FadeClientVolume", "Fade out the client's volume level toward silence (or fadePercent)" );
