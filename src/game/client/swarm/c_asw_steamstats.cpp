@@ -86,8 +86,10 @@ namespace
 		"rd_paranoia",
 		"rd_nh_campaigns",
 		"rd_biogen_corporation",
-#ifdef RD_6A_CAMPAIGNS
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 		"rd_accident32",
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
 		"rd_adanaxis",
 #endif
 	};
@@ -152,7 +154,7 @@ namespace
 		"rd-bio1operationx5",
 		"rd-bio2invisiblethreat",
 		"rd-bio3biogenlabs",
-#ifdef RD_6A_CAMPAIGNS
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 		"rd-acc1_infodep",
 		"rd-acc2_powerhood",
 		"rd-acc3_rescenter",
@@ -160,6 +162,8 @@ namespace
 		"rd-acc5_j5connector",
 		"rd-acc6_labruins",
 		"rd-acc_complex",
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
 		"rd-ada_sector_a9",
 		"rd-ada_nexus_subnode",
 		"rd-ada_neon_carnage",

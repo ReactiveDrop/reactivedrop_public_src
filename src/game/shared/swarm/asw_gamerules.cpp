@@ -8855,7 +8855,7 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( 312, 2186, 156 );
 	}
-#ifdef RD_6A_CAMPAIGNS
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 	else if ( FStrEq( mapname, "rd-acc1_infodep" ) )
 	{
 		origin = Vector( 3232, 4240, 300 );
@@ -8884,6 +8884,8 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -3925, -443, -20 );
 	}
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )
 	{
 		// TODO: cake

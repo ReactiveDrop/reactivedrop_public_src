@@ -5,4 +5,5 @@
 #define RD_NEW_CAMPAIGN_SPOTLIGHT
 
 // build includes 6th anniversary campaigns
-//#define RD_6A_CAMPAIGNS
+#define RD_6A_CAMPAIGNS_ACCIDENT32
+//#define RD_6A_CAMPAIGNS_ADANAXIS
