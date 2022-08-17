@@ -6,19 +6,23 @@
 		"Name" "#rd_so_alien_drone"
 		"Icon" "swarm/swarmopedia/alien/asw_drone"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_drone" "100"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_drone"
+			"StatName" "lifetime_alien_kills.asw_drone_jumper"
+			"StatName" "lifetime_alien_kills.asw_drone_uber"
+			"MinValue" "100"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_drone"
-			"Caption" "#rd_so_stat_killed_drone"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_drone_jumper"
-			"Caption" "#rd_so_stat_killed_drone_jumper"
+			"Caption" "#rd_so_stat_killed_jumper"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_drone_uber"
-			"Caption" "#rd_so_stat_killed_drone_uber"
+			"Caption" "#rd_so_stat_killed_uber"
 		}
 		"Ability" "#rd_so_ability_overwhelming_numbers"
 		"Ability" "#rd_so_ability_razor_sharp_claws"
@@ -73,11 +77,13 @@
 		"Name" "#rd_so_alien_ranger"
 		"Icon" "swarm/swarmopedia/alien/asw_ranger"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_ranger" "10"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_ranger"
+			"MinValue" "10"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_ranger"
-			"Caption" "#rd_so_stat_killed_ranger"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_corrosive_spit"
 		"Ability" "#rd_so_ability_long_range"
@@ -96,11 +102,13 @@
 		"Name" "#rd_so_alien_shieldbug"
 		"Icon" "swarm/swarmopedia/alien/asw_shieldbug"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_shieldbug" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_shieldbug"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_shieldbug"
-			"Caption" "#rd_so_stat_killed_shieldbug"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_immune_to_frontal_attacks"
 		"Ability" "#rd_so_ability_knocks_down_marines"
@@ -122,11 +130,13 @@
 		"Name" "#rd_so_alien_boomer"
 		"Icon" "swarm/swarmopedia/alien/asw_boomer"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_boomer" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_boomer"
+			"MinValue" "10"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_boomer"
-			"Caption" "#rd_so_stat_killed_boomer"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_suicide_bomber"
 		"Ability" "#rd_so_ability_explosive_projectiles"
@@ -146,11 +156,13 @@
 		"Name" "#rd_so_alien_buzzer"
 		"Icon" "swarm/swarmopedia/alien/asw_buzzer"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_buzzer" "5"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_buzzer"
+			"MinValue" "10"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_buzzer"
-			"Caption" "#rd_so_stat_killed_buzzer"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_flight"
 		"Ability" "#rd_so_ability_poison_blurs_vision"
@@ -169,11 +181,18 @@
 		"Name" "#rd_so_alien_parasite"
 		"Icon" "swarm/swarmopedia/alien/asw_parasite"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_parasite" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_parasite"
+			"StatName" "lifetime_alien_kills.asw_egg"
+			"MinValue" "25"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_parasite"
-			"Caption" "#rd_so_stat_killed_parasite"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_egg"
+			"Caption" "#rd_so_stat_killed_egg"
 		}
 		"Ability" "#rd_so_ability_infests_marines"
 		"Ability" "#rd_so_ability_jumping_attack"
@@ -193,11 +212,13 @@
 		"Name" "#rd_so_alien_mortarbug"
 		"Icon" "swarm/swarmopedia/alien/asw_mortarbug"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_mortarbug" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_mortarbug"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_mortarbug"
-			"Caption" "#rd_so_stat_killed_mortarbug"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_explosive_projectiles"
 		"Ability" "#rd_so_ability_long_range"
@@ -217,11 +238,13 @@
 		"Name" "#rd_so_alien_harvester"
 		"Icon" "swarm/swarmopedia/alien/asw_harvester"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_harvester" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_harvester"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_harvester"
-			"Caption" "#rd_so_stat_killed_harvester"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_explosive_spawn"
 		"Ability" "#rd_so_ability_corrosive_skin"
@@ -243,11 +266,13 @@
 		"Name" "#rd_so_alien_xenomite"
 		"Icon" "swarm/swarmopedia/alien/asw_xenomite"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_parasite_defanged" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
+			"MinValue" "10"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
-			"Caption" "#rd_so_stat_killed_xenomite"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_suicide_bomber"
@@ -270,11 +295,13 @@
 		"Name" "#rd_so_alien_shaman"
 		"Icon" "swarm/swarmopedia/alien/asw_shaman"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.asw_shaman" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_shaman"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_shaman"
-			"Caption" "#rd_so_stat_killed_shaman"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_heals_other_aliens"
 		"Display" {
@@ -291,11 +318,13 @@
 		"Name" "#rd_so_alien_biomass"
 		"Icon" "swarm/swarmopedia/alien/asw_biomass"
 		"SteamStatLoreRequirement" {
-			"iBiomassIgnited" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "iBiomassIgnited"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "iBiomassIgnited"
-			"Caption" "#rd_so_stat_killed_biomass"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
 		"Ability" "#rd_so_ability_corrosive_skin"
@@ -337,11 +366,13 @@
 		"ID" "asw_grub"
 		"Name" "#rd_so_alien_grub"
 		"SteamStatLoreRequirement" {
-			"ASW_GRUB_KILLS_STAT" "100"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "ASW_GRUB_KILLS_STAT"
+			"MinValue" "100"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_grub"
-			"Caption" "#rd_so_stat_killed_grub"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"Icon" "swarm/swarmopedia/alien/asw_grub"
 		"Ability" "#rd_so_ability_harmless"
@@ -367,15 +398,18 @@
 		"Name" "#rd_so_alien_antlionguard"
 		"Icon" "swarm/swarmopedia/alien/hl2_antlionguard"
 		"SteamStatLoreRequirement" {
-			"lifetime_alien_kills.npc_antlionguard_normal" "1"
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_normal"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_cavern"
+			"MinValue" "5"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_antlionguard_normal"
-			"Caption" "#rd_so_stat_killed_antlionguard_normal"
+			"Caption" "#rd_so_stat_killed"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_antlionguard_cavern"
-			"Caption" "#rd_so_stat_killed_antlionguard_cavern"
+			"Caption" "#rd_so_stat_killed_cavern"
 		}
 		"Ability" "#rd_so_ability_knocks_down_marines"
 		"Ability" "#rd_so_ability_charging_attack"

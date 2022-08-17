@@ -59,7 +59,7 @@ namespace RD_Swarmopedia
 		CUtlVectorAutoPurge<Content *> Content{};
 		CUtlVector<PublishedFileId_t> Sources{};
 
-		bool AllRequirementsSatisfied() const;
+		float GetOverallRequirementProgress() const;
 
 	private:
 		friend struct Helpers;
@@ -78,10 +78,11 @@ namespace RD_Swarmopedia
 			SteamStat,
 		} Type{ Type_t::SteamStat };
 
-		CUtlString Name{};
-		int Value{ 0 };
+		CUtlString Caption{};
+		CUtlStringList StatNames{};
+		int MinValue{ 0 };
 
-		bool IsSatisfied() const;
+		float GetProgress() const;
 
 	private:
 		friend struct Helpers;

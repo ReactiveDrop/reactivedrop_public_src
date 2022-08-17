@@ -124,17 +124,16 @@ Alien::Alien( const Alien &copy ) :
 	Sources = copy.Sources;
 }
 
-bool Alien::AllRequirementsSatisfied() const
+float Alien::GetOverallRequirementProgress() const
 {
+	float flTotal = 0.0f;
+
 	FOR_EACH_VEC( Requirements, i )
 	{
-		if ( !Requirements[i]->IsSatisfied() )
-		{
-			return false;
-		}
+		flTotal += Requirements[i]->GetProgress();
 	}
 
-	return true;
+	return flTotal / Requirements.Count();
 }
 
 bool Alien::ReadFromFile( const char *pszPath, KeyValues *pKV )
@@ -178,10 +177,7 @@ bool Alien::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		}
 		else if ( FStrEq( szName, "SteamStatLoreRequirement" ) )
 		{
-			FOR_EACH_VALUE( pSubKey, pReq )
-			{
-				Helpers::AddMerge( Requirements, pszPath, pReq );
-			}
+			Helpers::AddMerge( Requirements, pszPath, pSubKey );
 		}
 		else if ( FStrEq( szName, "GlobalStat" ) )
 		{
@@ -243,49 +239,78 @@ void Alien::Merge( const Alien *pAlien )
 
 Requirement::Requirement( const Requirement &copy ) :
 	Type{ copy.Type },
-	Name{ copy.Name },
-	Value{ copy.Value }
+	Caption{ copy.Caption },
+	MinValue{ copy.MinValue }
 {
+	FOR_EACH_VEC( copy.StatNames, i )
+	{
+		StatNames.CopyAndAddToTail( copy.StatNames[i] );
+	}
 }
 
-bool Requirement::IsSatisfied() const
+float Requirement::GetProgress() const
 {
 	if ( Type == Type_t::SteamStat )
 	{
-		int iStat{};
-		if ( !SteamUserStats() || !SteamUserStats()->GetStat( Name, &iStat ) )
+		if ( MinValue <= 0 )
 		{
-			DevWarning( "Failed to retrieve stat '%s' for Swarmopedia\n", Name.Get() );
-			return Value <= 0;
+			return 1.0f;
 		}
 
-		return iStat >= Value;
+		int iStatTotal{};
+		FOR_EACH_VEC( StatNames, i )
+		{
+			int iStat{};
+			if ( !SteamUserStats() || !SteamUserStats()->GetStat( StatNames[i], &iStat ) )
+			{
+				DevWarning( "Failed to retrieve stat '%s' for Swarmopedia\n", StatNames[i] );
+			}
+
+			iStatTotal += iStat;
+		}
+
+		return clamp( ( float )iStatTotal / ( float )MinValue, 0.0f, 1.0f );
 	}
 
 	Assert( !"Unhandled Swarmopedia requirement type" );
-	return false;
+	return 0.0f;
 }
 
 bool Requirement::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
 	Type = Type_t::SteamStat;
-	Name = pKV->GetName();
-	Value = pKV->GetInt();
+
+	Caption = pKV->GetString( "Caption" );
+	MinValue = pKV->GetInt( "MinValue" );
+
+	FOR_EACH_VALUE( pKV, pValue )
+	{
+		const char *szName = pValue->GetName();
+		if ( FStrEq( szName, "Caption" ) || FStrEq( szName, "MinValue" ) )
+		{
+			// Already handled.
+		}
+		else if ( FStrEq( szName, "StatName" ) )
+		{
+			StatNames.CopyAndAddToTail( pValue->GetString() );
+		}
+		else
+		{
+			DevWarning( "Unhandled field in Swarmopedia '%s' in %s\n", pKV->GetName(), pszPath );
+		}
+	}
 
 	return true;
 }
 
 bool Requirement::IsSame( const Requirement *pRequirement ) const
 {
-	return Type == pRequirement->Type && Name == pRequirement->Name;
+	return false;
 }
 
 void Requirement::Merge( const Requirement *pRequirement )
 {
-	Assert( Type == pRequirement->Type );
-	Assert( Name == pRequirement->Name );
-
-	Value = MAX( Value, pRequirement->Value );
+	Assert( !"RD_Swarmopedia::Requirement::Merge should not have been called." );
 }
 
 Ability::Ability( const Ability &copy ) :

@@ -144,6 +144,15 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
+
+	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
+
+	int m_nStatsDays;
+	bool m_bStatsReady;
+	CCallResult<CRD_Collection_Details_Swarmopedia, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
+
+	vgui::Label *m_pLblHeader;
+	vgui::Label *m_pLblGlobalStatData;
 };
 
 class CRD_Collection_Entry_Swarmopedia : public TGD_Entry
@@ -156,6 +165,7 @@ public:
 	virtual void ApplyEntry() override;
 
 	vgui::ImagePanel *m_pIcon;
+	vgui::Panel *m_pUnlockProgress;
 
 	const RD_Swarmopedia::Alien *m_pAlien;
 };
