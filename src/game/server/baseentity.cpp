@@ -2439,7 +2439,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 
 	DEFINE_SCRIPTFUNC( SetModel, "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetModelName, "GetModelName", "Returns the name of the model" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptPrecacheModel, "PrecacheModel", "Precache a model after the map has loaded" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptPrecacheModel, "PrecacheModel", "Precache a model after the map has loaded and return index of the model" )
 	
 	DEFINE_SCRIPTFUNC_NAMED( ScriptEmitSound, "EmitSound", "Plays a sound from this entity." )
 	DEFINE_SCRIPTFUNC_NAMED( VScriptPrecacheScriptSound, "PrecacheSoundScript", "Precache a sound for later playing." )
@@ -5571,13 +5571,14 @@ int CBaseEntity::PrecacheModel( const char *name )
 //-----------------------------------------------------------------------------
 // Purpose: VScript: Precache model after map has loaded
 // Input  : *name - model name
+// Output : int -- model index for model
 //-----------------------------------------------------------------------------
-void CBaseEntity::ScriptPrecacheModel( const char *name )
+int CBaseEntity::ScriptPrecacheModel( const char *name )
 {
 	if ( !name || !*name )
 	{
 		Msg( "Attempting to precache model, but model name is NULL\n");
-		return;
+		return -1;
 	}
 
 	int idx = engine->PrecacheModel( VScriptCutDownString( name ), true );
@@ -5585,6 +5586,7 @@ void CBaseEntity::ScriptPrecacheModel( const char *name )
 	{
 		PrecacheModelComponents( idx );
 	}
+	return idx;
 }
 
 //-----------------------------------------------------------------------------
