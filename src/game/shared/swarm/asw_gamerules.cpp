@@ -355,6 +355,8 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
 	}
 
+	UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:map_name", engine->GetLevelName() );
+
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:engine_version", int( engine->GetEngineBuildNumber() ) );
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
