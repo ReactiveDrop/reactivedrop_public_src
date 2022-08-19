@@ -166,6 +166,7 @@ public:
 	int FindAddonConflicts( PublishedFileId_t nPublishedFileId, CUtlVector<const AddonFileConflict_t *> *pConflicts );
 
 	PublishedFileId_t AddonForFileSystemPath( const char *szPath );
+	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
 
 private:
 	friend class BaseModUI::Addons;

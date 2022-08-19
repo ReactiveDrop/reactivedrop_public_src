@@ -11,6 +11,7 @@
 #include "asw_util_shared.h"
 #include "fmtstr.h"
 #include "tier2/fileutils.h"
+#include "localize/ilocalize.h"
 
 #ifdef CLIENT_DLL
 #include "c_asw_game_resource.h"
@@ -825,12 +826,75 @@ PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szP
 		{
 			return 0;
 		}
-	}
 
-	// TODO: handle non-workshop addons
+		FOR_EACH_VEC( s_NonWorkshopAddons, j )
+		{
+			CUtlString szAddonPath = modPaths[i];
+			szAddonPath += s_NonWorkshopAddons[j];
+
+			if ( szAddonPath == szPath )
+			{
+				return PublishedFileId_t( j ) + 1;
+			}
+
+			szAddonPath += CORRECT_PATH_SEPARATOR;
+
+			if ( szAddonPath == szPath )
+			{
+				return PublishedFileId_t( j ) + 1;
+			}
+		}
+	}
 
 	Assert( !"Could not find addon for path." );
 	return PublishedFileId_t( -1 );
+}
+
+const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFileId )
+{
+	if ( nPublishedFileId == 0 )
+	{
+		return g_pLocalize->FindSafe( "#rd_official_content" );
+	}
+
+	static wchar_t wszName[256];
+
+	if ( nPublishedFileId <= s_NonWorkshopAddons.Count() )
+	{
+		const char *szPath = s_NonWorkshopAddons[nPublishedFileId - 1];
+		CFmtStr szAddonInfoPath( "%s%c%s", szPath, CORRECT_PATH_SEPARATOR, "addoninfo.txt" );
+
+		V_UTF8ToUnicode( szPath + V_strlen( ADDONS_DIRNAME ) + 1, wszName, sizeof( wszName ) );
+
+		KeyValues::AutoDelete pKV( "AddonInfo" );
+
+		const char *szVPKExtension = V_strrchr( szPath, '.' );
+		if ( !szVPKExtension || V_strcmp( szVPKExtension, ".vpk" ) )
+		{
+			pKV->LoadFromFile( filesystem, szAddonInfoPath, "GAME" );
+		}
+		else
+		{
+			CPackedStore vpk( szPath, filesystem );
+			if ( CPackedStoreFileHandle hAddonInfoFile = vpk.OpenFile( "addoninfo.txt" ) )
+			{
+				CUtlBuffer buf( 0, hAddonInfoFile.m_nFileSize, 0 );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hAddonInfoFile.Read( buf.Base(), buf.Size() ) );
+
+				pKV->LoadFromBuffer( szAddonInfoPath, buf );
+			}
+		}
+
+		if ( const wchar_t *wszTitle = pKV->GetWString( "addontitle", NULL ) )
+		{
+			V_wcsncpy( wszName, wszTitle, sizeof( wszName ) );
+		}
+
+		return wszName;
+	}
+
+	V_UTF8ToUnicode( TryQueryAddon( nPublishedFileId ).details.m_rgchTitle, wszName, sizeof( wszName ) );
+	return wszName;
 }
 
 void CReactiveDropWorkshop::DownloadItemResultCallback( DownloadItemResult_t *pResult )
@@ -1371,7 +1435,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 	}
 }
 
-static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem, const char *szPrefix )
+static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem, const char *szPrefix, CUtlBuffer &buf )
 {
 	char szDirPrefix[MAX_PATH];
 	if ( szPrefix[0] != '\0' )
@@ -1390,6 +1454,11 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirNa
 	FileFindHandle_t handle = FILESYSTEM_INVALID_FIND_HANDLE;
 	for ( const char *szSuffix = pFileSystem->FindFirst( szSearch, &handle ); szSuffix; szSuffix = pFileSystem->FindNext( handle ) )
 	{
+		if ( !V_strcmp( szSuffix, "." ) || !V_strcmp( szSuffix, ".." ) )
+		{
+			continue;
+		}
+
 		char szPartialFileName[MAX_PATH];
 		if ( szPrefix[0] != '\0' )
 		{
@@ -1402,17 +1471,21 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirNa
 
 		if ( pFileSystem->FindIsDirectory( handle ) )
 		{
-			AddToFileNameAddonMapping( id, szDirName, pFileSystem, szPartialFileName );
+			AddToFileNameAddonMapping( id, szDirName, pFileSystem, szPartialFileName, buf );
 		}
 		else
 		{
 			char szComposedFileName[MAX_PATH];
 			V_snprintf( szComposedFileName, sizeof( szComposedFileName ), "%s%c%s", szDirPrefix, CORRECT_PATH_SEPARATOR, szSuffix );
 
-			CRC32_t crc = 0;
-			EFileCRCStatus status = pFileSystem->CheckCachedFileCRC( NULL, szComposedFileName, &crc );
-			Assert( status == k_eFileCRCStatus_GotCRC );
-			if ( status != k_eFileCRCStatus_GotCRC )
+			buf.Clear();
+
+			CRC32_t crc;
+			if ( pFileSystem->ReadFile( szComposedFileName, "GAME", buf ) )
+			{
+				crc = CRC32_ProcessSingleBuffer( buf.Base(), buf.TellMaxPut() );
+			}
+			else
 			{
 				crc = id;
 			}
@@ -1423,12 +1496,11 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirNa
 	pFileSystem->FindClose( handle );
 }
 
-
 static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem )
 {
-	pFileSystem->CacheFileCRCs( szDirName, k_eCacheCRCType_Directory_Recursive, NULL );
+	CUtlBuffer buf;
 
-	AddToFileNameAddonMapping( id, szDirName, pFileSystem, "" );
+	AddToFileNameAddonMapping( id, szDirName, pFileSystem, "", buf );
 }
 
 #ifdef CLIENT_DLL
