@@ -1,5 +1,3 @@
-// This file uses text from the unofficial Alien Swarm wiki. Content is available under CC-BY-SA.
-
 "Swarmopedia" {
 	"ALIEN" {
 		"ID" "asw_drone"
@@ -70,7 +68,6 @@
 		"Paragraph" "#rd_so_paragraph_drone_2"
 		"Paragraph" "#rd_so_paragraph_drone_3"
 		"Paragraph" "#rd_so_paragraph_drone_4"
-		"Paragraph" "#rd_so_paragraph_drone_5"
 	}
 	"ALIEN" {
 		"ID" "asw_ranger"
@@ -96,6 +93,9 @@
 		}
 		"Paragraph" "#rd_so_paragraph_ranger_0"
 		"Paragraph" "#rd_so_paragraph_ranger_1"
+		"Paragraph" "#rd_so_paragraph_ranger_2"
+		"Paragraph" "#rd_so_paragraph_ranger_3"
+		"Paragraph" "#rd_so_paragraph_ranger_4"
 	}
 	"ALIEN" {
 		"ID" "asw_shieldbug"
@@ -150,6 +150,9 @@
 		}
 		"Paragraph" "#rd_so_paragraph_boomer_0"
 		"Paragraph" "#rd_so_paragraph_boomer_1"
+		"Paragraph" "#rd_so_paragraph_boomer_2"
+		"Paragraph" "#rd_so_paragraph_boomer_3"
+		"Paragraph" "#rd_so_paragraph_boomer_4"
 	}
 	"ALIEN" {
 		"ID" "asw_buzzer"
@@ -175,6 +178,9 @@
 		}
 		"Paragraph" "#rd_so_paragraph_buzzer_0"
 		"Paragraph" "#rd_so_paragraph_buzzer_1"
+		"Paragraph" "#rd_so_paragraph_buzzer_2"
+		"Paragraph" "#rd_so_paragraph_buzzer_3"
+		"Paragraph" "#rd_so_paragraph_buzzer_4"
 	}
 	"ALIEN" {
 		"ID" "asw_parasite"
@@ -206,6 +212,9 @@
 		}
 		"Paragraph" "#rd_so_paragraph_parasite_0"
 		"Paragraph" "#rd_so_paragraph_parasite_1"
+		"Paragraph" "#rd_so_paragraph_parasite_2"
+		"Paragraph" "#rd_so_paragraph_parasite_3"
+		"Paragraph" "#rd_so_paragraph_parasite_4"
 	}
 	"ALIEN" {
 		"ID" "asw_mortarbug"
@@ -232,6 +241,9 @@
 		}
 		"Paragraph" "#rd_so_paragraph_mortarbug_0"
 		"Paragraph" "#rd_so_paragraph_mortarbug_1"
+		"Paragraph" "#rd_so_paragraph_mortarbug_2"
+		"Paragraph" "#rd_so_paragraph_mortarbug_3"
+		"Paragraph" "#rd_so_paragraph_mortarbug_4"
 	}
 	"ALIEN" {
 		"ID" "asw_harvester"
@@ -287,8 +299,11 @@
 				}
 			}
 		}
-		"Paragraph" "#rd_so_paragraph_parasite_defanged_0"
-		"Paragraph" "#rd_so_paragraph_parasite_defanged_1"
+		"Paragraph" "#rd_so_paragraph_xenomite_0"
+		"Paragraph" "#rd_so_paragraph_xenomite_1"
+		"Paragraph" "#rd_so_paragraph_xenomite_2"
+		"Paragraph" "#rd_so_paragraph_xenomite_3"
+		"Paragraph" "#rd_so_paragraph_xenomite_4"
 	}
 	"ALIEN" {
 		"ID" "asw_shaman"
@@ -311,7 +326,11 @@
 				"Animation" "idle"
 			}
 		}
-		// TODO: Paragraph
+		"Paragraph" "#rd_so_paragraph_shaman_0"
+		"Paragraph" "#rd_so_paragraph_shaman_1"
+		"Paragraph" "#rd_so_paragraph_shaman_2"
+		"Paragraph" "#rd_so_paragraph_shaman_3"
+		"Paragraph" "#rd_so_paragraph_shaman_4"
 	}
 	"ALIEN" {
 		"ID" "asw_biomass"
@@ -392,6 +411,10 @@
 			}
 		}
 		"Paragraph" "#rd_so_paragraph_grub_0"
+		"Paragraph" "#rd_so_paragraph_grub_1"
+		"Paragraph" "#rd_so_paragraph_grub_2"
+		"Paragraph" "#rd_so_paragraph_grub_3"
+		"Paragraph" "#rd_so_paragraph_grub_4"
 	}
 	"ALIEN" {
 		"ID" "hl2_antlionguard"
@@ -429,6 +452,10 @@
 				"Skin" "1"
 			}
 		}
-		// TODO: Paragraph
+		"Paragraph" "#rd_so_paragraph_antlionguard_0"
+		"Paragraph" "#rd_so_paragraph_antlionguard_1"
+		"Paragraph" "#rd_so_paragraph_antlionguard_2"
+		"Paragraph" "#rd_so_paragraph_antlionguard_3"
+		"Paragraph" "#rd_so_paragraph_antlionguard_4"
 	}
 }
