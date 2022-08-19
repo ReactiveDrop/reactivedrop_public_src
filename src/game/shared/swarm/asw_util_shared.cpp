@@ -2034,3 +2034,57 @@ const char *UTIL_RD_EResultToString( EResult eResult )
 		return "k_EResultPhoneNumberIsVOIP"; // using lower-case k for consistency
 	}
 }
+
+const wchar_t *UTIL_RD_CommaNumber( int64_t num )
+{
+	static wchar_t s_wszBuf[16][28];
+	static int s_iSlot = 0;
+
+	// Special case: can't negate this number.
+	if ( num == INT64_MIN )
+	{
+		return L"-9,223,372,036,854,775,808";
+	}
+
+	// Special case 2:
+	if ( num == 0 )
+	{
+		return L"0";
+	}
+
+	wchar_t *pBuf = &s_wszBuf[s_iSlot][27];
+	*pBuf-- = L'\0';
+
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_wszBuf );
+
+	bool bNegative = num < 0;
+	if ( bNegative )
+	{
+		num = -num;
+	}
+
+	for ( int64_t next = num / 1000ll; next; num = next, next = next / 1000ll )
+	{
+		*pBuf-- = L'0' + ( num % 10 );
+		*pBuf-- = L'0' + ( ( num / 10 ) % 10 );
+		*pBuf-- = L'0' + ( ( num / 100 ) % 10 );
+		*pBuf-- = L',';
+	}
+
+	while ( num )
+	{
+		*pBuf-- = L'0' + ( num % 10 );
+		num /= 10;
+	}
+
+	if ( bNegative )
+	{
+		*pBuf = L'-';
+	}
+	else
+	{
+		pBuf++;
+	}
+
+	return pBuf;
+}

@@ -135,4 +135,6 @@ const char *UTIL_RD_HashToCaption( CRC32_t hash );
 
 const char *UTIL_RD_EResultToString( EResult eResult );
 
+const wchar_t *UTIL_RD_CommaNumber( int64_t num );
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H
