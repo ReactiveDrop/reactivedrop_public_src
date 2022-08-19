@@ -88,7 +88,7 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 
 	wchar_t wszStatLines[4096]{};
 	wchar_t wszStatLine[256]{};
-	wchar_t wszStatNum[22]{};
+	wchar_t wszStatNum[32]{};
 
 	CRD_Collection_Entry_Swarmopedia *pSwarmopediaEntry = assert_cast< CRD_Collection_Entry_Swarmopedia * >( pEntry );
 	const RD_Swarmopedia::Alien *pAlien = pSwarmopediaEntry->m_pAlien;
@@ -159,7 +159,34 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 				nStat[0] += nStat[j];
 			}
 
-			V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld", nStat[0] );
+			if ( nStat[0] < 1000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld", nStat[0] );
+			}
+			else if ( nStat[0] < 1000000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld", nStat[0] / 1000ll, nStat[0] % 1000ll );
+			}
+			else if ( nStat[0] < 1000000000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld,%03lld", nStat[0] / 1000000ll, nStat[0] / 1000ll % 1000ll, nStat[0] % 1000ll );
+			}
+			else if ( nStat[0] < 1000000000000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld,%03lld,%03lld", nStat[0] / 1000000000ll, nStat[0] / 1000000ll % 1000ll, nStat[0] / 1000ll % 1000ll, nStat[0] % 1000ll );
+			}
+			else if ( nStat[0] < 1000000000000000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld,%03lld,%03lld,%03lld", nStat[0] / 1000000000000ll, nStat[0] / 1000000000ll % 1000ll, nStat[0] / 1000000ll % 1000ll, nStat[0] / 1000ll % 1000ll, nStat[0] % 1000ll );
+			}
+			else if ( nStat[0] < 1000000000000000000ll )
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld,%03lld,%03lld,%03lld,%03lld", nStat[0] / 1000000000000000ll, nStat[0] / 1000000000000ll % 1000ll, nStat[0] / 1000000000ll % 1000ll, nStat[0] / 1000000ll % 1000ll, nStat[0] / 1000ll % 1000ll, nStat[0] % 1000ll );
+			}
+			else
+			{
+				V_snwprintf( wszStatNum, sizeof( wszStatNum ), L"%lld,%03lld,%03lld,%03lld,%03lld,%03lld,%03lld", nStat[0] / 1000000000000000000ll, nStat[0] / 1000000000000000ll % 1000ll, nStat[0] / 1000000000000ll % 1000ll, nStat[0] / 1000000000ll % 1000ll, nStat[0] / 1000000ll % 1000ll, nStat[0] / 1000ll % 1000ll, nStat[0] % 1000ll );
+			}
 
 			g_pVGuiLocalize->ConstructString( wszStatLine, sizeof( wszStatLine ),
 				wszStatFormat, 3, g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ), wszDays, wszStatNum );
