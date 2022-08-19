@@ -213,6 +213,9 @@ void TabbedGridDetails::OnKeyCodePressed( vgui::KeyCode keycode )
 
 	switch ( code )
 	{
+	case KEY_XBUTTON_A:
+		OnCommand( "ApplyCurrentEntry" );
+		break;
 	case KEY_XBUTTON_B:
 		OnCommand( "BackButton" );
 		break;
