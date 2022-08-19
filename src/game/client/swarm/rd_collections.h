@@ -5,6 +5,7 @@
 
 class CASW_WeaponInfo;
 class CASW_Model_Panel;
+class CRD_Swarmopedia_Model_Panel;
 namespace RD_Swarmopedia
 {
 	struct Collection;
@@ -143,6 +144,7 @@ public:
 	CRD_Collection_Details_Swarmopedia( CRD_Collection_Tab_Swarmopedia *parent );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void PerformLayout() override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
 
 	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
@@ -152,6 +154,7 @@ public:
 	CCallResult<CRD_Collection_Details_Swarmopedia, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
 
 	vgui::Label *m_pLblHeader;
+	vgui::Label *m_pLblAbilities;
 	vgui::Label *m_pLblGlobalStatData;
 };
 
@@ -177,6 +180,15 @@ public:
 	CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void PerformLayout() override;
+	virtual void OnCommand( const char *command ) override;
+	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+
+	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
+	CNB_Button *m_pModelButton;
+	vgui::Label *m_pLblNoModel;
+	vgui::RichText *m_pContent;
 
 	const RD_Swarmopedia::Alien *m_pAlien;
+	int m_iCurrentDisplay;
 };

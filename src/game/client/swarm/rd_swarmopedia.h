@@ -167,6 +167,7 @@ namespace RD_Swarmopedia
 		} Type{ Type_t::Paragraph };
 
 		CUtlString Text{};
+		Color Color{ 83, 148, 192, 255 };
 
 	private:
 		friend struct Helpers;

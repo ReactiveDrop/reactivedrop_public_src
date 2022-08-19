@@ -105,22 +105,6 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	}
 
 	m_pWeaponDescLabel->SetText( pEquip->m_pWeaponInfo->szEquipDescription1 );
-
-	// TODO:
-	int iMaxAmmo = GetAmmoDef()->MaxCarry( pEquip->m_pWeaponInfo->iAmmoType, NULL );
-	int iMaxAmmo2 = GetAmmoDef()->MaxCarry( pEquip->m_pWeaponInfo->iAmmo2Type, NULL );
-	pEquip->m_pWeaponInfo->iMaxClip1;
-	pEquip->m_pWeaponInfo->iMaxClip2;
-	pEquip->m_pWeaponInfo->iDefaultClip1;
-	pEquip->m_pWeaponInfo->iDefaultClip2;
-	pEquip->m_pWeaponInfo->m_flBaseDamage;
-	pEquip->m_pWeaponInfo->m_flFireRate;
-	pEquip->m_pWeaponInfo->szAttributesText;
-	pEquip->m_pWeaponInfo->szAltFireText;
-	pEquip->m_pWeaponInfo->m_bUnique;
-	pEquip->m_pWeaponInfo->m_bShowClipsDoubled;
-	CASW_Ammo_Drop_Shared::GetAmmoUnitCost( pEquip->m_pWeaponInfo->iAmmoType );
-	CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( pEquip->m_pWeaponInfo->iAmmoType );
 }
 
 CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const char *szEquipClass )
@@ -229,4 +213,20 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	Assert( !"TODO: Equipment collection big view" );
+
+	// TODO:
+	int iMaxAmmo = GetAmmoDef()->MaxCarry( m_pWeaponInfo->iAmmoType, NULL );
+	int iMaxAmmo2 = GetAmmoDef()->MaxCarry( m_pWeaponInfo->iAmmo2Type, NULL );
+	m_pWeaponInfo->iMaxClip1;
+	m_pWeaponInfo->iMaxClip2;
+	m_pWeaponInfo->iDefaultClip1;
+	m_pWeaponInfo->iDefaultClip2;
+	m_pWeaponInfo->m_flBaseDamage;
+	m_pWeaponInfo->m_flFireRate;
+	m_pWeaponInfo->szAttributesText;
+	m_pWeaponInfo->szAltFireText;
+	m_pWeaponInfo->m_bUnique;
+	m_pWeaponInfo->m_bShowClipsDoubled;
+	CASW_Ammo_Drop_Shared::GetAmmoUnitCost( m_pWeaponInfo->iAmmoType );
+	CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( m_pWeaponInfo->iAmmoType );
 }

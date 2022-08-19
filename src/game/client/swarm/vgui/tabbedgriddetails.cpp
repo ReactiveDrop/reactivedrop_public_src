@@ -97,6 +97,11 @@ void TabbedGridDetails::OnCommand( const char *command )
 		{
 			m_hOverridePanel->MarkForDeletion();
 			SetOverridePanel( NULL );
+
+			if ( m_hCurrentTab && m_hCurrentTab->m_pGrid && m_hCurrentTab->m_pGrid->m_hCurrentEntry )
+			{
+				m_hCurrentTab->m_pGrid->m_hCurrentEntry->m_pFocusHolder->RequestFocus();
+			}
 		}
 		else
 		{
@@ -105,7 +110,7 @@ void TabbedGridDetails::OnCommand( const char *command )
 	}
 	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
 	{
-		if ( !m_hCurrentTab )
+		if ( !m_hCurrentTab || m_hOverridePanel )
 		{
 			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
 			return;
@@ -206,6 +211,19 @@ void TabbedGridDetails::OnKeyCodeTyped( vgui::KeyCode keycode )
 
 void TabbedGridDetails::OnKeyCodePressed( vgui::KeyCode keycode )
 {
+	static bool s_bForwarded = false;
+	if ( s_bForwarded )
+	{
+		return;
+	}
+
+	if ( m_hOverridePanel )
+	{
+		s_bForwarded = true;
+		m_hOverridePanel->OnKeyCodePressed( keycode );
+		s_bForwarded = false;
+	}
+
 	int lastUser = GetJoystickForCode( keycode );
 	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
 

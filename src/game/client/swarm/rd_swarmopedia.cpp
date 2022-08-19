@@ -487,7 +487,8 @@ void Model::Merge( const Model *pModel )
 
 Content::Content( const Content &copy ) :
 	Type{ copy.Type },
-	Text{ copy.Text }
+	Text{ copy.Text },
+	Color{ copy.Color }
 {
 }
 
@@ -496,7 +497,15 @@ bool Content::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	if ( FStrEq( pKV->GetName(), "Paragraph" ) )
 	{
 		Type = Type_t::Paragraph;
-		Text = pKV->GetString();
+		if ( pKV->GetDataType() == KeyValues::TYPE_NONE )
+		{
+			Text = pKV->GetString( "Text" );
+			Color = pKV->GetColor( "Color", Color );
+		}
+		else
+		{
+			Text = pKV->GetString();
+		}
 
 		return true;
 	}
