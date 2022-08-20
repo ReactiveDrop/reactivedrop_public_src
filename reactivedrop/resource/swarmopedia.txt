@@ -63,6 +63,18 @@
 				}
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_drone"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_drone"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_julie_duval"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_drone_0"
 		"Paragraph" "#rd_so_paragraph_drone_1"
 		"Paragraph" "#rd_so_paragraph_drone_2"
@@ -91,6 +103,18 @@
 				"Animation" "idle"
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_101hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_ranger"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_ranger_0"
 		"Paragraph" "#rd_so_paragraph_ranger_1"
 		"Paragraph" "#rd_so_paragraph_ranger_2"
@@ -118,6 +142,18 @@
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "idle_defend"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_1000hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_shieldbug"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_julie_duval"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_shieldbug_0"
 		"Paragraph" "#rd_so_paragraph_shieldbug_1"
@@ -148,6 +184,18 @@
 				"Animation" "walk"
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_800hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_boomer"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_boomer_0"
 		"Paragraph" "#rd_so_paragraph_boomer_1"
 		"Paragraph" "#rd_so_paragraph_boomer_2"
@@ -175,6 +223,18 @@
 				"ModelName" "models/aliens/buzzer/buzzer.mdl"
 				"Animation" "idle"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_30hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_buzzer"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_buzzer_0"
 		"Paragraph" "#rd_so_paragraph_buzzer_1"
@@ -210,6 +270,18 @@
 				"Animation" "Idle"
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_25hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_parasite"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_parasite_0"
 		"Paragraph" "#rd_so_paragraph_parasite_1"
 		"Paragraph" "#rd_so_paragraph_parasite_2"
@@ -239,6 +311,18 @@
 				"Animation" "idle"
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_350hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_mortarbug"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_mortarbug_0"
 		"Paragraph" "#rd_so_paragraph_mortarbug_1"
 		"Paragraph" "#rd_so_paragraph_mortarbug_2"
@@ -266,6 +350,18 @@
 				"ModelName" "models/aliens/harvester/harvester.mdl"
 				"Animation" "IDLE"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_200hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_harvester"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_harvester_0"
 		"Paragraph" "#rd_so_paragraph_harvester_1"
@@ -299,6 +395,18 @@
 				}
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_10hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_xenomite"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_xenomite_0"
 		"Paragraph" "#rd_so_paragraph_xenomite_1"
 		"Paragraph" "#rd_so_paragraph_xenomite_2"
@@ -325,6 +433,18 @@
 				"ModelName" "models/aliens/shaman/shaman.mdl"
 				"Animation" "idle"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_59hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_shaman"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_shaman_0"
 		"Paragraph" "#rd_so_paragraph_shaman_1"
@@ -375,6 +495,18 @@
 				"Animation" "idle"
 			}
 		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_biomass"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_biomass"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "65 74 96 255"
+		}
 		"Paragraph" "#rd_so_paragraph_biomass_0"
 		"Paragraph" "#rd_so_paragraph_biomass_1"
 		"Paragraph" "#rd_so_paragraph_biomass_2"
@@ -409,6 +541,18 @@
 				"ModelName" "models/swarm/grubsac/grubsac.mdl"
 				"Animation" "idle"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_1hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_grub"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_grub_0"
 		"Paragraph" "#rd_so_paragraph_grub_1"
@@ -451,6 +595,18 @@
 				"Animation" "roar"
 				"Skin" "1"
 			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_500hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_antlionguard"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_isaac_kleiner"
+			"Color" "65 74 96 255"
 		}
 		"Paragraph" "#rd_so_paragraph_antlionguard_0"
 		"Paragraph" "#rd_so_paragraph_antlionguard_1"
