@@ -73,6 +73,7 @@ public:
 		bool IsDownloadable() const;
 		bool IsDLC() const;
 		bool HaveMap() const;
+		int CompareMapVersion() const;
 		char const * IsOtherTitle() const;
 		PublishedFileId_t GetWorkshopID() const;
 
