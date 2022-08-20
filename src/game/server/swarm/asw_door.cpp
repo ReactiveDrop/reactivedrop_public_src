@@ -1265,6 +1265,22 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 
 			//change this to check if the door is denting the right way
 			//Msg( "Door dead. needs flip = %d  flipped = %d\n", DoorNeedsFlip(), m_bFlipped );
+			
+			if ( m_DentAmount == ASWDD_NONE )
+			{
+				SetBodygroup( 0 , 4 );
+				m_DentAmount = ASWDD_COMPLETE;
+
+				if ( DoorNeedsFlip() )
+				{
+					SetBodygroup( 0 , 2 );
+					FlipDoor();
+				}
+
+				Event_Killed( newInfo );
+
+				return 0;
+			}
 
 			if ( DoorNeedsFlip() )
 			{
