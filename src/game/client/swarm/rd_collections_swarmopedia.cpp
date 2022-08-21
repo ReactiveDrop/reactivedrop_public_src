@@ -19,6 +19,7 @@
 
 
 ConVar rd_swarmopedia_global_stat_window_days( "rd_swarmopedia_global_stat_window_days", "30", FCVAR_ARCHIVE, "Number of days to sum for global stats in the Swarmopedia. 0 for all time.", true, 0, true, 60 );
+ConVar rd_swarmopedia_timescale( "rd_swarmopedia_timescale", "0.3", FCVAR_ARCHIVE, "Speed for Swarmopedia specimen animations" );
 extern ConVar rd_reduce_motion;
 
 CRD_Collection_Tab_Swarmopedia::CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel )
@@ -298,50 +299,59 @@ public:
 	CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName )
 		: BaseClass( parent, panelName )
 	{
+		for ( int i = 0; i < MATERIAL_MAX_LIGHT_COUNT; i++ )
+		{
+			SetIdentityMatrix( m_LightToWorld[i] );
+		}
 	}
 
-	void SetModel( const CUtlVector<RD_Swarmopedia::Model *> &models )
+	void SetDisplay( const RD_Swarmopedia::Display *pDisplay )
 	{
-		Assert( models.Count() != 0 );
-		if ( models.Count() == 0 )
+		Assert( pDisplay && pDisplay->Models.Count() != 0 );
+		if ( !pDisplay || pDisplay->Models.Count() == 0 )
 		{
 			return;
 		}
 
+		m_LightingState = pDisplay->LightingState;
+
 		ClearMergeMDLs();
 
-		SetMDL( models[0]->ModelName );
+		SetMDL( pDisplay->Models[0]->ModelName );
 
-		m_Models.SetCount( models.Count() );
+		m_Models.SetCount( pDisplay->Models.Count() );
 
-		FOR_EACH_VEC( models, i )
+		FOR_EACH_VEC( pDisplay->Models, i )
 		{
-			const model_t *pWorldModel = modelinfo->FindOrLoadModel( models[i]->ModelName );
+			const RD_Swarmopedia::Model *pModel = pDisplay->Models[i];
+
+			const model_t *pWorldModel = modelinfo->FindOrLoadModel( pModel->ModelName );
 			MDLHandle_t hStudioHdr = pWorldModel ? modelinfo->GetCacheHandle( pWorldModel ) : MDLHANDLE_INVALID;
 			const studiohdr_t *pStudioHdr = hStudioHdr == MDLHANDLE_INVALID ? NULL : mdlcache->GetStudioHdr( hStudioHdr );
 			if ( !pStudioHdr )
 			{
-				DevWarning( "Could not load model %s\n", models[i]->ModelName.Get() );
+				DevWarning( "Could not load model %s\n", pModel->ModelName.Get() );
 				continue;
 			}
 
 			CStudioHdr studioHdr( pStudioHdr, mdlcache );
 
 			m_Models[i].m_MDL.SetMDL( hStudioHdr );
-			m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, models[i]->Animation );
-			m_Models[i].m_MDL.m_nSkin = models[i]->Skin;
-			m_Models[i].m_MDL.m_Color = models[i]->Color;
+			m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->Animation );
+			Assert( m_Models[i].m_MDL.m_nSequence != -1 );
+			m_Models[i].m_MDL.m_nSkin = pModel->Skin;
+			m_Models[i].m_MDL.m_Color = pModel->Color;
 
-			const QAngle angles( models[i]->Pitch, models[i]->Yaw, models[i]->Roll );
-			const Vector position( models[i]->X, models[i]->Y, models[i]->Z );
+			const QAngle angles( pModel->Pitch, pModel->Yaw, pModel->Roll );
+			const Vector position( pModel->X, pModel->Y, pModel->Z );
 			matrix3x4_t anglePos, scale;
 			AngleMatrix( angles, position, anglePos );
-			SetScaleMatrix( models[i]->Scale, scale );
+			SetScaleMatrix( pModel->Scale, scale );
 			ConcatTransforms( scale, anglePos, m_Models[i].m_MDLToWorld );
 
-			FOR_EACH_MAP_FAST( models[i]->BodyGroups, j )
+			FOR_EACH_MAP_FAST( pModel->BodyGroups, j )
 			{
-				::SetBodygroup( &studioHdr, m_Models[i].m_MDL.m_nBody, models[i]->BodyGroups.Key( j ), models[i]->BodyGroups.Element( j ) );
+				::SetBodygroup( &studioHdr, m_Models[i].m_MDL.m_nBody, pModel->BodyGroups.Key( j ), pModel->BodyGroups.Element( j ) );
 			}
 		}
 	}
@@ -359,7 +369,7 @@ private:
 		GetBoundingSphere( vecCenter, flRadius );
 		VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
 
-		float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime();
+		float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
 
 		SetCameraPositionAndAngles( vecPos, angRot );
 		SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
@@ -387,6 +397,7 @@ CRD_Collection_Panel_Swarmopedia::CRD_Collection_Panel_Swarmopedia( vgui::Panel 
 	m_pLblNoModel = new vgui::Label( this, "LblNoModel", "#rd_so_display_no_model" );
 	m_pContent = new vgui::RichText( this, "Content" );
 
+	m_pModelPanel->SetMouseInputEnabled( false );
 	m_pModelButton->SetControllerButton( KEY_XBUTTON_X );
 	m_pContent->GetScrollBar()->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
 	m_pContent->SetUnusedScrollbarInvisible( true );
@@ -439,7 +450,7 @@ void CRD_Collection_Panel_Swarmopedia::PerformLayout()
 
 	if ( 0 <= m_iCurrentDisplay && m_iCurrentDisplay < m_pAlien->Display.Count() )
 	{
-		m_pModelPanel->SetModel( m_pAlien->Display[m_iCurrentDisplay]->Models );
+		m_pModelPanel->SetDisplay( m_pAlien->Display[m_iCurrentDisplay] );
 		m_pModelPanel->m_bShouldPaint = true;
 		m_pModelPanel->SetVisible( true );
 

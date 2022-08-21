@@ -127,6 +127,20 @@ namespace RD_Swarmopedia
 
 		CUtlString Caption{};
 		CUtlVectorAutoPurge<Model *> Models{};
+		MaterialLightingState_t LightingState
+		{
+			{
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+			},
+			{ 0.0f, 0.0f, 0.0f },
+			0,
+			{},
+		};
 
 	private:
 		friend struct Helpers;

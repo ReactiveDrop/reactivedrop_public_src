@@ -29,14 +29,48 @@
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
 				"ModelName" "models/aliens/drone/drone.mdl"
-				"Animation" "Idle"
+				"Animation" "Run"
+				"BodyGroup" {
+					"Group" "1"
+					"Value" "2"
+				}
+				"BodyGroup" {
+					"Group" "2"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "4"
+					"Value" "1"
+				}
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
 			"Model" {
 				"ModelName" "models/aliens/drone/drone.mdl"
-				"Animation" "Idle"
+				"Animation" "Attack02"
 				"BodyGroup" {
 					"Group" "0"
 					"Value" "1"
@@ -54,13 +88,31 @@
 					"Value" "1"
 				}
 				"BodyGroup" {
-					"Group" "4"
-					"Value" "0"
-				}
-				"BodyGroup" {
 					"Group" "5"
 					"Value" "1"
 				}
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Paragraph" {
@@ -73,7 +125,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_julie_duval"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_drone_0"
 		"Paragraph" "#rd_so_paragraph_drone_1"
@@ -102,6 +154,28 @@
 				"ModelName" "models/aliens/mortar3/mortar3.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_101hp"
@@ -113,7 +187,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_ranger_0"
 		"Paragraph" "#rd_so_paragraph_ranger_1"
@@ -140,7 +214,58 @@
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
+				"Animation" "roar_02"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "idle_defend"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Paragraph" {
@@ -153,7 +278,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_julie_duval"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_shieldbug_0"
 		"Paragraph" "#rd_so_paragraph_shieldbug_1"
@@ -180,8 +305,59 @@
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_a"
 			"Model" {
-				"ModelName" "models/aliens/boomer/boomer_swarmopedia.mdl"
+				"ModelName" "models/aliens/boomer/boomer.mdl"
 				"Animation" "walk"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/boomer/boomer.mdl"
+				"Animation" "idle_inflated"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Paragraph" {
@@ -194,7 +370,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_boomer_0"
 		"Paragraph" "#rd_so_paragraph_boomer_1"
@@ -223,6 +399,28 @@
 				"ModelName" "models/aliens/buzzer/buzzer.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_30hp"
@@ -234,7 +432,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_buzzer_0"
 		"Paragraph" "#rd_so_paragraph_buzzer_1"
@@ -269,6 +467,28 @@
 				"ModelName" "models/aliens/parasite/parasite_swarmopedia.mdl"
 				"Animation" "Idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_25hp"
@@ -280,7 +500,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_parasite_0"
 		"Paragraph" "#rd_so_paragraph_parasite_1"
@@ -321,7 +541,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_mortarbug_0"
 		"Paragraph" "#rd_so_paragraph_mortarbug_1"
@@ -350,6 +570,28 @@
 				"ModelName" "models/aliens/harvester/harvester.mdl"
 				"Animation" "IDLE"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_200hp"
@@ -361,7 +603,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_harvester_0"
 		"Paragraph" "#rd_so_paragraph_harvester_1"
@@ -394,6 +636,28 @@
 					"Value" "1"
 				}
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_10hp"
@@ -405,7 +669,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_xenomite_0"
 		"Paragraph" "#rd_so_paragraph_xenomite_1"
@@ -433,6 +697,28 @@
 				"ModelName" "models/aliens/shaman/shaman.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_59hp"
@@ -444,7 +730,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_shaman_0"
 		"Paragraph" "#rd_so_paragraph_shaman_1"
@@ -473,12 +759,56 @@
 				"ModelName" "models/aliens/biomass/biomasshelix.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
 			"Model" {
 				"ModelName" "models/aliens/biomass/biomassl.mdl"
 				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Display" {
@@ -494,6 +824,28 @@
 				"ModelName" "models/aliens/biomass/biomassu.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_biomass"
@@ -505,7 +857,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_biomass_0"
 		"Paragraph" "#rd_so_paragraph_biomass_1"
@@ -534,12 +886,56 @@
 				"ModelName" "models/swarm/grubs/grub.mdl"
 				"Animation" "CrawlA"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
 			"Model" {
 				"ModelName" "models/swarm/grubsac/grubsac.mdl"
 				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Paragraph" {
@@ -552,7 +948,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_grub_0"
 		"Paragraph" "#rd_so_paragraph_grub_1"
@@ -587,6 +983,28 @@
 				"ModelName" "models/antlion_guard.mdl"
 				"Animation" "idle"
 			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -594,6 +1012,28 @@
 				"ModelName" "models/antlion_guard.mdl"
 				"Animation" "roar"
 				"Skin" "1"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
 			}
 		}
 		"Paragraph" {
@@ -606,7 +1046,7 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_isaac_kleiner"
-			"Color" "65 74 96 255"
+			"Color" "169 213 255 255"
 		}
 		"Paragraph" "#rd_so_paragraph_antlionguard_0"
 		"Paragraph" "#rd_so_paragraph_antlionguard_1"

@@ -373,9 +373,45 @@ void GlobalStat::Merge( const GlobalStat *pGlobalStat )
 }
 
 Display::Display( const Display &copy ) :
-	Caption{ copy.Caption }
+	Caption{ copy.Caption },
+	LightingState{ copy.LightingState }
 {
 	Helpers::CopyVector( Models, copy.Models );
+}
+
+static Vector ColorToVector( Color c )
+{
+	return Vector{ c.r() / 255.0f, c.g() / 255.0f, c.b() / 255.0f };
+}
+
+static void FixLightCoordSystem( Vector &vec )
+{
+	// The Swarmopedia camera faces east, but everything else in the game faces north.
+	// Do a trivial coordinate system swap:
+	float flTemp = vec.x;
+	vec.x = vec.y;
+	vec.y = -flTemp;
+}
+
+static void SetupLightAttenuation( const char *pszPath, LightDesc_t &light, KeyValues *pKV )
+{
+	bool bOldAtten = pKV->FindKey( "Constant" ) || pKV->FindKey( "Linear" ) || pKV->FindKey( "Quadratic" );
+	bool bNewAtten = pKV->FindKey( "ZeroPercent" ) || pKV->FindKey( "FiftyPercent" );
+
+	if ( bOldAtten && bNewAtten )
+	{
+		Warning( "Swarmopedia: cannot define both CLQ light attenuation and percentage light attenuation for the same light in %s\n", pszPath );
+		return;
+	}
+
+	if ( bOldAtten )
+	{
+		light.SetupOldStyleAttenuation( pKV->GetFloat( "Quadratic" ), pKV->GetFloat( "Linear" ), pKV->GetFloat( "Constant" ) );
+	}
+	else if ( bNewAtten )
+	{
+		light.SetupNewStyleAttenuation( pKV->GetFloat( "FiftyPercent" ), pKV->GetFloat( "ZeroPercent" ) );
+	}
 }
 
 bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
@@ -384,9 +420,111 @@ bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 	FOR_EACH_SUBKEY( pKV, pSubKey )
 	{
-		if ( FStrEq( pSubKey->GetName(), "Model" ) )
+		const char *szName = pSubKey->GetName();
+		if ( FStrEq( szName, "Model" ) )
 		{
 			Helpers::AddMerge( Models, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "LightingOriginX" ) )
+		{
+			LightingState.m_vecLightingOrigin.x = pSubKey->GetFloat();
+		}
+		else if ( FStrEq( szName, "LightingOriginY" ) )
+		{
+			LightingState.m_vecLightingOrigin.y = pSubKey->GetFloat();
+		}
+		else if ( FStrEq( szName, "LightingOriginZ" ) )
+		{
+			LightingState.m_vecLightingOrigin.z = pSubKey->GetFloat();
+		}
+		else if ( FStrEq( szName, "Ambient" ) )
+		{
+			Vector ambient = ColorToVector( pSubKey->GetColor() );
+			LightingState.m_vecAmbientCube[0] = ambient;
+			LightingState.m_vecAmbientCube[1] = ambient;
+			LightingState.m_vecAmbientCube[2] = ambient;
+			LightingState.m_vecAmbientCube[3] = ambient;
+			LightingState.m_vecAmbientCube[4] = ambient;
+			LightingState.m_vecAmbientCube[5] = ambient;
+		}
+		else if ( FStrEq( szName, "AmbientFar" ) )
+		{
+			LightingState.m_vecAmbientCube[0] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientNear" ) )
+		{
+			LightingState.m_vecAmbientCube[1] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientLeft" ) )
+		{
+			LightingState.m_vecAmbientCube[2] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientRight" ) )
+		{
+			LightingState.m_vecAmbientCube[3] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientTop" ) )
+		{
+			LightingState.m_vecAmbientCube[4] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientBottom" ) )
+		{
+			LightingState.m_vecAmbientCube[5] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "LightPoint" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
+			{
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecPos{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+
+			FixLightCoordSystem( vecPos );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitPoint( vecPos, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ) );
+			SetupLightAttenuation( pszPath, LightingState.m_pLocalLightDesc[iLight], pSubKey );
+		}
+		else if ( FStrEq( szName, "LightDirectional" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
+			{
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecDir{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+
+			FixLightCoordSystem( vecDir );
+			VectorNormalizeFast( vecDir );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitDirectional( vecDir, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ) );
+		}
+		else if ( FStrEq( szName, "LightSpot" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
+			{
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecPos{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+			Vector vecPointAt{ pSubKey->GetFloat( "TargetX" ), pSubKey->GetFloat( "TargetY" ), pSubKey->GetFloat( "TargetZ" ) };
+			float flInnerCone = DEG2RAD( pSubKey->GetFloat( "InnerCone", 45.0f ) );
+			float flOuterCone = DEG2RAD( pSubKey->GetFloat( "OuterCone", 60.0f ) );
+
+			FixLightCoordSystem( vecPos );
+			FixLightCoordSystem( vecPointAt );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitSpot( vecPos, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ), vecPointAt, flInnerCone, flOuterCone );
+			SetupLightAttenuation( pszPath, LightingState.m_pLocalLightDesc[iLight], pSubKey );
 		}
 	}
 
