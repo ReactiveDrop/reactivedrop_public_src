@@ -256,6 +256,10 @@ public:
 
 		if ( pParam->m_handle == m_EquippedMedalResult )
 		{
+			// Pre-load our own equipped medal icon even if we're not in a lobby.
+			SteamItemDef_t iMedalDef = ReactiveDropInventory::GetItemDetails( m_EquippedMedalResult, 0 ).m_iDefinition;
+			( void )ReactiveDropInventory::GetItemDef( iMedalDef );
+
 			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
 		}
 		else if ( pParam->m_handle == m_PromotionalItemsResult )
@@ -388,7 +392,8 @@ public:
 	}
 
 	virtual bool Evict() { return false; }
-	virtual int GetNumFrames() { return 1; }
+	// Using GetNumFrames to signal whether the HTTP request has finished.
+	virtual int GetNumFrames() { return m_HTTPRequestCompleted.IsActive() ? 0 : 1; }
 	virtual void SetFrame( int nFrame ) {}
 	virtual vgui::HTexture GetID() { return m_iTextureID; }
 	virtual void SetRotation( int iRotation ) {}

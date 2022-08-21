@@ -47,7 +47,7 @@ void CRD_Collection_Tab_Inventory::OnThink()
 {
 	BaseClass::OnThink();
 
-	if ( !m_pGrid || m_pGrid->m_Entries.Count() )
+	if ( !m_pGrid )
 	{
 		return;
 	}
@@ -57,7 +57,7 @@ void CRD_Collection_Tab_Inventory::OnThink()
 		UpdateErrorMessage( m_pGrid );
 	}
 
-	if ( m_bUnavailable )
+	if ( m_pGrid->m_Entries.Count() || m_bUnavailable )
 	{
 		return;
 	}
@@ -134,6 +134,17 @@ void CRD_Collection_Tab_Inventory::UpdateErrorMessage( TGD_Grid *pGrid )
 	}
 	else
 	{
+		FOR_EACH_VEC( pGrid->m_Entries, i )
+		{
+			// Using GetNumFrames to signal whether the HTTP request has finished.
+			if ( !assert_cast< CRD_Collection_Entry_Inventory * >( pGrid->m_Entries[i] )->m_pIcon->GetNumFrames() )
+			{
+				pGrid->SetMessage( VarArgs( "#rd_collection_inventory_error_%d", k_EResultPending ) );
+				m_bForceUpdateMessage = true;
+				return;
+			}
+		}
+
 		pGrid->SetMessage( L"" );
 	}
 }
