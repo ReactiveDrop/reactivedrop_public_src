@@ -7,6 +7,7 @@
 		"ypos"				"0"
 		"wide"				"170"
 		"tall"				"20"
+		"ControlName"		"Label"
 		"font"				"DefaultLarge"
 	}
 
@@ -24,14 +25,27 @@
 		"wrap"				"1"
 	}
 
-	"LblGlobalStatData"
+	"LblError"
 	{
-		"fieldName"			"LblGlobalStatData"
+		"fieldName"			"LblError"
 		"xpos"				"0"
 		"ypos"				"20"
 		"wide"				"170"
 		"tall"				"100"
+		"ControlName"		"Label"
 		"textAlignment"		"north-west"
 		"wrap"				"1"
+	}
+
+	"GplStats"
+	{
+		"fieldName"			"GplStats"
+		"xpos"				"0"
+		"ypos"				"120"
+		"wide"				"170"
+		"tall"				"100"
+		"ControlName"		"GenericPanelList"
+		"panelBorder"		"0"
+		"bgcolor_override"	"0 0 0 0"
 	}
 }

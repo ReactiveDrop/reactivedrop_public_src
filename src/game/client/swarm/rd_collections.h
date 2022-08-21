@@ -11,8 +11,28 @@ namespace RD_Swarmopedia
 	struct Collection;
 	struct Alien;
 }
+namespace BaseModUI
+{
+	class GenericPanelList;
+}
 
 void LaunchCollectionsFrame();
+
+class CRD_Collection_StatLine : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_StatLine, vgui::EditablePanel );
+public:
+	CRD_Collection_StatLine( vgui::Panel *parent, const char *panelName );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+
+	void SetLabel( const char *szLabel );
+	void SetLabel( const wchar_t *wszLabel );
+	void SetValue( int64_t nValue );
+
+	vgui::Label *m_pLblTitle;
+	vgui::Label *m_pLblStat;
+};
 
 class CRD_Collection_Tab_Equipment : public TGD_Tab
 {
@@ -148,6 +168,7 @@ public:
 	virtual void PerformLayout() override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
 
+	void DisplayEntryLocked( const RD_Swarmopedia::Alien *pAlien );
 	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
 
 	int m_nStatsDays;
@@ -156,7 +177,8 @@ public:
 
 	vgui::Label *m_pLblHeader;
 	vgui::Label *m_pLblAbilities;
-	vgui::Label *m_pLblGlobalStatData;
+	vgui::Label *m_pLblError;
+	BaseModUI::GenericPanelList *m_pGplStats;
 };
 
 class CRD_Collection_Entry_Swarmopedia : public TGD_Entry

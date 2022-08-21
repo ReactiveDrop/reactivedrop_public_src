@@ -13,6 +13,7 @@
 #include "animation.h"
 #include "asw_util_shared.h"
 #include "gameui/swarm/basemodpanel.h"
+#include "gameui/swarm/vgenericpanellist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -64,7 +65,8 @@ CRD_Collection_Details_Swarmopedia::CRD_Collection_Details_Swarmopedia( CRD_Coll
 {
 	m_pLblHeader = new vgui::Label( this, "LblHeader", L"" );
 	m_pLblAbilities = new vgui::Label( this, "LblAbilities", L"" );
-	m_pLblGlobalStatData = new vgui::Label( this, "LblGlobalStatData", L"" );
+	m_pLblError = new vgui::Label( this, "LblError", L"" );
+	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
 
 	if ( SteamUserStats() )
 	{
@@ -102,61 +104,45 @@ void CRD_Collection_Details_Swarmopedia::PerformLayout()
 		t = 0;
 	}
 
-	m_pLblGlobalStatData->GetPos( x, discard );
-	m_pLblGlobalStatData->SetPos( x, y + t + vgui::Label::Content );
+	y += t + vgui::Label::Content;
+
+	m_pLblError->GetPos( x, discard );
+	m_pLblError->SetPos( x, y );
+	m_pLblError->GetTextImage()->ResizeImageToContentMaxWidth( m_pLblError->GetWide() );
+	m_pLblError->GetContentSize( discard, t );
+
+	if ( *m_pLblError->GetTextImage()->GetUText() == L'\0' )
+	{
+		t = 0;
+	}
+
+	y += t + vgui::Label::Content;
+
+	m_pGplStats->GetPos( x, discard );
+	m_pGplStats->SetPos( x, y );
 }
 
 void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 {
+	m_pGplStats->RemoveAllPanelItems();
+
 	if ( !pEntry )
 	{
 		m_pLblHeader->SetText( L"" );
 		m_pLblAbilities->SetText( L"" );
-		m_pLblGlobalStatData->SetText( L"" );
+		m_pLblError->SetText( L"" );
 
 		InvalidateLayout();
 
 		return;
 	}
 
-	wchar_t wszStatLines[4096]{};
-	wchar_t wszStatLine[256]{};
-
 	CRD_Collection_Entry_Swarmopedia *pSwarmopediaEntry = assert_cast< CRD_Collection_Entry_Swarmopedia * >( pEntry );
 	const RD_Swarmopedia::Alien *pAlien = pSwarmopediaEntry->m_pAlien;
 
 	if ( pAlien->GetOverallRequirementProgress() < 1.0f )
 	{
-		m_pLblHeader->SetText( "#rd_so_requirements_not_met" );
-		m_pLblHeader->SetFgColor( Color( 255, 96, 0, 255 ) );
-
-		m_pLblAbilities->SetText( L"" );
-
-		FOR_EACH_VEC( pAlien->Requirements, i )
-		{
-			float flProgress = pAlien->Requirements[i]->GetProgress();
-			if ( flProgress >= 1.0f )
-			{
-				continue;
-			}
-
-			g_pVGuiLocalize->ConstructString( wszStatLine, sizeof( wszStatLine ),
-				g_pVGuiLocalize->FindSafe( pAlien->Requirements[i]->Caption ), 1,
-				UTIL_RD_CommaNumber( int( flProgress * 100 ) ) );
-
-			if ( wszStatLines[0] != L'\0' )
-			{
-				V_snwprintf( wszStatLines, sizeof( wszStatLines ), L"%s\n%s", wszStatLines, wszStatLine );
-			}
-			else
-			{
-				V_wcsncpy( wszStatLines, wszStatLine, sizeof( wszStatLines ) );
-			}
-		}
-
-		m_pLblGlobalStatData->SetText( wszStatLines );
-
-		InvalidateLayout();
+		DisplayEntryLocked( pAlien );
 
 		return;
 	}
@@ -164,33 +150,34 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 	m_pLblHeader->SetText( pAlien->Name );
 	m_pLblHeader->SetFgColor( Color( 255, 255, 255, 255 ) );
 
-	wszStatLines[0] = L'\0';
+	wchar_t buf[1024]{};
 	FOR_EACH_VEC( pAlien->Abilities, i )
 	{
-		int len = V_wcslen( wszStatLines );
+		int len = V_wcslen( buf );
 		if ( i != 0 )
 		{
-			V_wcsncpy( &wszStatLines[len], L" \u2022 ", sizeof( wszStatLines ) - len * sizeof( wchar_t ) );
-			len = V_wcslen( wszStatLines );
+			V_wcsncpy( &buf[len], L" \u2022 ", sizeof( buf ) - len * sizeof( wchar_t ) );
+			len = V_wcslen( buf );
 		}
 
-		TryLocalize( pAlien->Abilities[i]->Caption, &wszStatLines[len], sizeof( wszStatLines ) - len * sizeof( wchar_t ) );
+		TryLocalize( pAlien->Abilities[i]->Caption, &buf[len], sizeof( buf ) - len * sizeof( wchar_t ) );
 	}
 
-	m_pLblAbilities->SetText( wszStatLines );
+	m_pLblAbilities->SetText( buf );
 
 	if ( m_nStatsDays == -1 )
 	{
-		m_pLblGlobalStatData->SetText( "#rd_so_global_stat_failed" );
+		m_pLblError->SetText( "#rd_so_global_stat_failed" );
 	}
 	else if ( m_bStatsReady )
 	{
+		m_pLblError->SetText( L"" );
+
 		Assert( SteamUserStats() );
 
 		wchar_t wszDays[4]{};
 		V_snwprintf( wszDays, sizeof( wszDays ), L"%d", m_nStatsDays );
 
-		const wchar_t *wszStatFormat = g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" );
 		FOR_EACH_VEC( pAlien->GlobalStats, i )
 		{
 			int nOK{};
@@ -209,26 +196,56 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 				nStat[0] += nStat[j];
 			}
 
-			g_pVGuiLocalize->ConstructString( wszStatLine, sizeof( wszStatLine ),
-				wszStatFormat, 3,
-				g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ), wszDays, UTIL_RD_CommaNumber( nStat[0] ) );
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 2,
+				g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ), wszDays );
 
-			if ( i )
-			{
-				V_snwprintf( wszStatLines, sizeof( wszStatLines ), L"%s\n%s", wszStatLines, wszStatLine );
-			}
-			else
-			{
-				V_wcsncpy( wszStatLines, wszStatLine, sizeof( wszStatLines ) );
-			}
+			CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
+			pStatLine->SetLabel( buf );
+			pStatLine->SetValue( nStat[0] );
 		}
-
-		m_pLblGlobalStatData->SetText( wszStatLines );
 	}
 	else
 	{
-		m_pLblGlobalStatData->SetText( "#rd_so_global_stat_loading" );
+		m_pLblError->SetText( "#rd_so_global_stat_loading" );
 	}
+
+	InvalidateLayout();
+}
+
+void CRD_Collection_Details_Swarmopedia::DisplayEntryLocked( const RD_Swarmopedia::Alien *pAlien )
+{
+	wchar_t buf[4096]{};
+	wchar_t line[256]{};
+
+	m_pLblHeader->SetText( "#rd_so_requirements_not_met" );
+	m_pLblHeader->SetFgColor( Color( 255, 96, 0, 255 ) );
+
+	m_pLblAbilities->SetText( L"" );
+
+	FOR_EACH_VEC( pAlien->Requirements, i )
+	{
+		float flProgress = pAlien->Requirements[i]->GetProgress();
+		if ( flProgress >= 1.0f )
+		{
+			continue;
+		}
+
+		g_pVGuiLocalize->ConstructString( line, sizeof( line ),
+			g_pVGuiLocalize->FindSafe( pAlien->Requirements[i]->Caption ), 1,
+			UTIL_RD_CommaNumber( int( flProgress * 100 ) ) );
+
+		if ( buf[0] != L'\0' )
+		{
+			V_snwprintf( buf, sizeof( buf ), L"%s\n\n%s", buf, line );
+		}
+		else
+		{
+			V_wcsncpy( buf, line, sizeof( buf ) );
+		}
+	}
+
+	m_pLblError->SetText( buf );
 
 	InvalidateLayout();
 }
@@ -292,6 +309,37 @@ void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 	}
 }
 
+DECLARE_BUILD_FACTORY( CRD_Collection_StatLine );
+
+CRD_Collection_StatLine::CRD_Collection_StatLine( vgui::Panel *parent, const char *panelName )
+	: BaseClass( parent, panelName )
+{
+	m_pLblTitle = new vgui::Label( this, "LblTitle", L"" );
+	m_pLblStat = new vgui::Label( this, "LblStat", L"" );
+}
+
+void CRD_Collection_StatLine::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	LoadControlSettings( "resource/UI/CollectionStatLine.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+}
+
+void CRD_Collection_StatLine::SetLabel( const char *szLabel )
+{
+	m_pLblTitle->SetText( szLabel );
+}
+
+void CRD_Collection_StatLine::SetLabel( const wchar_t *wszLabel )
+{
+	m_pLblTitle->SetText( wszLabel );
+}
+
+void CRD_Collection_StatLine::SetValue( int64_t nValue )
+{
+	m_pLblStat->SetText( UTIL_RD_CommaNumber( nValue ) );
+}
+
 class CRD_Swarmopedia_Model_Panel : public CASW_Model_Panel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Swarmopedia_Model_Panel, CASW_Model_Panel );
@@ -317,6 +365,7 @@ public:
 
 		ClearMergeMDLs();
 
+		// The parent class model is only used for sizing.
 		SetMDL( pDisplay->Models[0]->ModelName );
 
 		m_Models.SetCount( pDisplay->Models.Count() );
