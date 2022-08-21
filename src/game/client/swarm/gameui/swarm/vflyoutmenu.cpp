@@ -64,7 +64,7 @@ FlyoutMenu::~FlyoutMenu()
 {
 	if ( sm_pActiveMenu == this )
 	{
-		sm_pActiveMenu = NULL;
+		CloseMenu( NULL );
 	}
 }
 
@@ -627,10 +627,8 @@ void FlyoutMenu::CloseActiveMenu( vgui::Panel *pFlyTo )
 	{
 		if ( sm_pActiveMenu->IsVisible() )
 		{
-			FlyoutMenu *pOldActiveMenu = sm_pActiveMenu;
-			sm_pActiveMenu = NULL;
-			pOldActiveMenu->CloseMenu( pFlyTo );
-		}		
+			sm_pActiveMenu->CloseMenu( pFlyTo );
+		}
 	}
 }
 
