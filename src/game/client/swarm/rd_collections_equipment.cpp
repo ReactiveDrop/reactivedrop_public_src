@@ -93,7 +93,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	if ( pEquip->m_pLockedLabel->IsVisible() )
 	{
 		wchar_t wszRequiredLevel[12]{};
-		V_snwprintf( wszRequiredLevel, sizeof( wszRequiredLevel ), L"%d", GetWeaponLevelRequirement( pEquip->m_pWeaponInfo->szClassName ) );
+		V_snwprintf( wszRequiredLevel, sizeof( wszRequiredLevel ), L"%d", pEquip->m_iRequiredLevel );
 
 		wchar_t wszBuf[1024]{};
 		g_pVGuiLocalize->ConstructString( wszBuf, sizeof( wszBuf ),
@@ -113,6 +113,7 @@ CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent
 	m_iEquipIndex = iEquipIndex;
 	m_pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( szEquipClass );
 	Assert( m_pWeaponInfo );
+	m_iRequiredLevel = GetWeaponLevelRequirement( m_pWeaponInfo->szClassName ) + 1;
 
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pLockedIcon = new vgui::ImagePanel( this, "LockedIcon" );
@@ -157,8 +158,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 		m_pClassLabel->SetVisible( false );
 	}
 
-	int iRequiredLevel = GetWeaponLevelRequirement( m_pWeaponInfo->szClassName );
-	if ( asw_unlock_all_weapons.GetBool() || UTIL_ASW_CommanderLevelAtLeast( NULL, iRequiredLevel, -1 ) )
+	if ( asw_unlock_all_weapons.GetBool() || UTIL_ASW_CommanderLevelAtLeast( NULL, m_iRequiredLevel, -1 ) )
 	{
 		m_pLockedIcon->SetVisible( false );
 		m_pLockedOverlay->SetVisible( false );
@@ -175,13 +175,18 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 		m_pClassLabel->SetVisible( false );
 
 		wchar_t wszLevel[12];
-		V_snwprintf( wszLevel, sizeof( wszLevel ), L"%d", iRequiredLevel );
+		V_snwprintf( wszLevel, sizeof( wszLevel ), L"%d", m_iRequiredLevel );
 		m_pLockedLabel->SetText( wszLevel );
 	}
 }
 
 void CRD_Collection_Entry_Equipment::ApplyEntry()
 {
+	if ( m_pLockedLabel->IsVisible() )
+	{
+		return;
+	}
+
 	TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
 	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
 	if ( pPanel )

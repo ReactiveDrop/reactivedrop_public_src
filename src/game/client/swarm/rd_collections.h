@@ -53,6 +53,7 @@ public:
 
 	int m_iEquipIndex;
 	CASW_WeaponInfo *m_pWeaponInfo;
+	int m_iRequiredLevel;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pLockedIcon;
