@@ -15,6 +15,8 @@
 #include "tier0/memdbgon.h"
 
 
+#ifdef RD_COLLECTIONS_WEAPONS_ENABLED
+
 extern ConVar asw_unlock_all_weapons;
 extern ConVar rd_reduce_motion;
 ConVar rd_weapon_rotate_speed( "rd_weapon_rotate_speed", "0.3", FCVAR_ARCHIVE, "" );
@@ -235,3 +237,5 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	CASW_Ammo_Drop_Shared::GetAmmoUnitCost( m_pWeaponInfo->iAmmoType );
 	CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( m_pWeaponInfo->iAmmoType );
 }
+
+#endif

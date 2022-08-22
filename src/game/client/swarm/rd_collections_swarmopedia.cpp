@@ -18,8 +18,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
 
 ConVar rd_swarmopedia_global_stat_window_days( "rd_swarmopedia_global_stat_window_days", "30", FCVAR_ARCHIVE, "Number of days to sum for global stats in the Swarmopedia. 0 for all time.", true, 0, true, 60 );
+ConVar rd_swarmopedia_global_stat_update_seconds( "rd_swarmopedia_global_stat_update_seconds", "60", FCVAR_HIDDEN, "", true, 30, true, 10000000 );
 ConVar rd_swarmopedia_timescale( "rd_swarmopedia_timescale", "0.3", FCVAR_ARCHIVE, "Speed for Swarmopedia specimen animations" );
 extern ConVar rd_reduce_motion;
 
@@ -67,6 +69,8 @@ CRD_Collection_Details_Swarmopedia::CRD_Collection_Details_Swarmopedia( CRD_Coll
 	m_pLblAbilities = new vgui::Label( this, "LblAbilities", L"" );
 	m_pLblError = new vgui::Label( this, "LblError", L"" );
 	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
+
+	m_nDisplayedFrames = 0;
 
 	if ( SteamUserStats() )
 	{
@@ -213,6 +217,25 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 	InvalidateLayout();
 }
 
+void CRD_Collection_Details_Swarmopedia::OnThink()
+{
+	if ( !m_OnGlobalStatsReceived.IsActive() )
+	{
+		m_nDisplayedFrames++;
+
+		if ( m_nDisplayedFrames >= rd_swarmopedia_global_stat_update_seconds.GetInt() * 60 )
+		{
+			m_nDisplayedFrames = 0;
+
+			m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
+			m_bStatsReady = false;
+
+			SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
+			m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Swarmopedia::OnGlobalStatsReceived );
+		}
+	}
+}
+
 void CRD_Collection_Details_Swarmopedia::DisplayEntryLocked( const RD_Swarmopedia::Alien *pAlien )
 {
 	wchar_t buf[4096]{};
@@ -307,37 +330,6 @@ void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 		pPanel = new CRD_Collection_Panel_Swarmopedia( pTGD, "SwarmopediaPanel", m_pAlien );
 		pTGD->SetOverridePanel( pPanel );
 	}
-}
-
-DECLARE_BUILD_FACTORY( CRD_Collection_StatLine );
-
-CRD_Collection_StatLine::CRD_Collection_StatLine( vgui::Panel *parent, const char *panelName )
-	: BaseClass( parent, panelName )
-{
-	m_pLblTitle = new vgui::Label( this, "LblTitle", L"" );
-	m_pLblStat = new vgui::Label( this, "LblStat", L"" );
-}
-
-void CRD_Collection_StatLine::ApplySchemeSettings( vgui::IScheme *pScheme )
-{
-	LoadControlSettings( "resource/UI/CollectionStatLine.res" );
-
-	BaseClass::ApplySchemeSettings( pScheme );
-}
-
-void CRD_Collection_StatLine::SetLabel( const char *szLabel )
-{
-	m_pLblTitle->SetText( szLabel );
-}
-
-void CRD_Collection_StatLine::SetLabel( const wchar_t *wszLabel )
-{
-	m_pLblTitle->SetText( wszLabel );
-}
-
-void CRD_Collection_StatLine::SetValue( int64_t nValue )
-{
-	m_pLblStat->SetText( UTIL_RD_CommaNumber( nValue ) );
 }
 
 class CRD_Swarmopedia_Model_Panel : public CASW_Model_Panel
@@ -550,3 +542,5 @@ void CRD_Collection_Panel_Swarmopedia::OnKeyCodePressed( vgui::KeyCode keycode )
 		break;
 	}
 }
+
+#endif

@@ -34,6 +34,8 @@ public:
 	vgui::Label *m_pLblStat;
 };
 
+#ifdef RD_COLLECTIONS_WEAPONS_ENABLED
+
 class CRD_Collection_Tab_Equipment : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
@@ -94,6 +96,8 @@ public:
 	CASW_WeaponInfo *m_pWeaponInfo;
 };
 
+#endif
+
 class CRD_Collection_Tab_Inventory : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Inventory, TGD_Tab );
@@ -145,6 +149,8 @@ public:
 	SteamItemDetails_t m_Details;
 };
 
+#ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
+
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Swarmopedia, TGD_Tab );
@@ -167,6 +173,7 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void PerformLayout() override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
+	virtual void OnThink() override;
 
 	void DisplayEntryLocked( const RD_Swarmopedia::Alien *pAlien );
 	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
@@ -174,6 +181,7 @@ public:
 	int m_nStatsDays;
 	bool m_bStatsReady;
 	CCallResult<CRD_Collection_Details_Swarmopedia, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
+	int m_nDisplayedFrames;
 
 	vgui::Label *m_pLblHeader;
 	vgui::Label *m_pLblAbilities;
@@ -215,3 +223,5 @@ public:
 	const RD_Swarmopedia::Alien *m_pAlien;
 	int m_iCurrentDisplay;
 };
+
+#endif
