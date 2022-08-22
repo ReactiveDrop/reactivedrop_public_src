@@ -75,7 +75,7 @@ KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
 		char szValue[1024];
 		if ( SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
 		{
-			if ( StringHasPrefix( szKey, "game:" ) )
+			if ( StringHasPrefix( szKey, "game:" ) || StringHasPrefix( szKey, "system:" ) )
 			{
 				for ( char *pszKey = szKey; *pszKey; pszKey++ )
 				{

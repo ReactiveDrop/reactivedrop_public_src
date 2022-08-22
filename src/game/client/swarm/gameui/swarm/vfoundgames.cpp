@@ -1876,7 +1876,7 @@ void FoundGames::AddServersToList()
 		}
 		else if ( V_strcmp( pGameDetails->GetString( "system/game_version" ), engine->GetProductVersionString() ) )
 		{
-			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", "non-beta" ), sizeof( fi.mchOtherTitle ) );
+			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", pGameDetails->GetString( "system/game_version", "?" ) ), sizeof( fi.mchOtherTitle ) );
 		}
 
 		//
