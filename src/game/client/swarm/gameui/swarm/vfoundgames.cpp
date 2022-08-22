@@ -121,18 +121,12 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 		return INT_MIN;
 	}
 
-	FileHandle_t hFile = filesystem->Open( szBSPName, "rb", "GAME" );
-	if ( !hFile )
+	if ( !filesystem->FileExists( szBSPName, "GAME" ) )
 	{
 		return INT_MIN;
 	}
 
-	BSPHeader_t header{};
-	filesystem->Read( &header, sizeof( header ), hFile );
-
-	filesystem->Close( hFile );
-
-	return header.mapRevision - iExpectedRevision;
+	return 0; // BSP header version is not the one we are looking for in worldspawn. returning 0 here for a hotfix.
 }
 
 char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
@@ -1882,7 +1876,7 @@ void FoundGames::AddServersToList()
 		}
 		else if ( V_strcmp( pGameDetails->GetString( "system/game_version" ), engine->GetProductVersionString() ) )
 		{
-			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", "beta" ), sizeof( fi.mchOtherTitle ) );
+			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", "non-beta" ), sizeof( fi.mchOtherTitle ) );
 		}
 
 		//
