@@ -756,7 +756,7 @@ void CReactiveDropWorkshop::SetSubscribedToFile( PublishedFileId_t nPublishedFil
 
 bool CReactiveDropWorkshop::IsAddonEnabled( PublishedFileId_t nPublishedFileId )
 {
-	return IsSubscribedToFile( nPublishedFileId ) && !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( nPublishedFileId ) );
+	return !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( nPublishedFileId ) );
 }
 
 void CReactiveDropWorkshop::SetAddonEnabled( PublishedFileId_t nPublishedFileId, bool bEnabled )
