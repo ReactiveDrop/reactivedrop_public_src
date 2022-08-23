@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Entity that propagates general data needed by clients for every player.
 //
@@ -119,7 +119,20 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 				CBasePlayer* pPlayer = UTIL_PlayerByIndex( index );
 				if ( pPlayer )
 				{
-					playerIDs.AppendFormat( "%s\"%s\"|%d|%f", playerIDs.Length() ? "," : "", pPlayer->GetPlayerName(), score, pPlayer->GetTimeBase() );
+					if ( playerIDs.Length() )
+					{
+						playerIDs.Append( ',' );
+					}
+					playerIDs.Append( '"' );
+					for ( const char *psz = pPlayer->GetPlayerName(); *psz; psz++ )
+					{
+						if ( *psz == '\\' || *psz == '"' )
+						{
+							playerIDs.Append( '\\' );
+						}
+						playerIDs.Append( *psz );
+					}
+					playerIDs.AppendFormat( "\"|%d|%f", score, pPlayer->GetTimeBase() );
 				}
 			}
 		}
