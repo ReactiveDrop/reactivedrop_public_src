@@ -119,7 +119,7 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 				CBasePlayer* pPlayer = UTIL_PlayerByIndex( index );
 				if ( pPlayer )
 				{
-					playerIDs.AppendFormat( "\"%s\"|%d|%f", playerIDs.Length() ? "," : "", pPlayer->GetPlayerName(), score, pPlayer->GetTimeBase() );
+					playerIDs.AppendFormat( "%s\"%s\"|%d|%f", playerIDs.Length() ? "," : "", pPlayer->GetPlayerName(), score, pPlayer->GetTimeBase() );
 				}
 			}
 		}
