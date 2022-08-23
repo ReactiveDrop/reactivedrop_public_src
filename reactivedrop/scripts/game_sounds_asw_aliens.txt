@@ -1265,10 +1265,16 @@
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.7, 1"
-	"pitch"			"75,80,85"
+	//"pitch"			"75,80,85"
+	//"rndwave"
+	//{
+	//	"wave"		"aliens\voc\queen\pain.wav"
+	//}
+	"pitch"		"100,140"
 	"rndwave"
 	{
-		"wave"		"aliens\voc\queen\pain.wav"
+		"wave"	"aliens\voc\shieldbug\pain01.wav"
+		"wave"	"aliens\voc\shieldbug\pain02.wav"
 	}
 }
 
@@ -1277,7 +1283,8 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_150dB"
 	"volume"		"0.8, 1"
-	"pitch"			"100"
+	//"pitch"			"100"
+	"pitch"			"70"
     "rndwave"
 	{
 		"wave"		"aliens\voc\queen\death.wav"
@@ -1290,10 +1297,11 @@
 	"soundlevel"	"SNDLVL_130dB"
 	"volume"		"0.9, 1"
 	"pitch"			"95,100,105"
-	"rndwave"
-	{
-        "wave"		"aliens\voc\queen\painbig.wav"
-	}
+	//"rndwave"
+	//{
+    //    "wave"		"aliens\voc\queen\painbig.wav"
+	//}
+	"wave"	"aliens\voc\shieldbug\roar.wav"
 }
 
 "ASW_Queen.SlashShort"
@@ -1302,9 +1310,14 @@
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.6, 1"
 	"pitch"			"85,90,95"
+	//"rndwave"
+	//{
+	//	"wave"		"aliens\voc\queen\slashshort.wav"
+	//}
 	"rndwave"
 	{
-		"wave"		"aliens\voc\queen\slashshort.wav"
+		"wave"		"aliens/voc/boomer/melee_whoosh01.wav"
+		"wave"		"aliens/voc/boomer/melee_whoosh02.wav"
 	}
 }
 
@@ -1314,10 +1327,11 @@
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.9, 1"
 	"pitch"			"90,95,100"
-	"rndwave"
-	{
-	"wave"			"aliens\voc\queen\slash.wav"
-	}
+	//"rndwave"
+	//{
+	//	"wave"			"aliens\voc\queen\slash.wav"
+	//}
+	"wave"		"aliens/voc/boomer/melee_voc.wav"
 }
 
 "ASW_Queen.AttackWave"
@@ -1328,7 +1342,7 @@
 	"pitch"			"95,100"
 	"rndwave"
 	{
-	"wave"			"aliens\voc\queen\attackwave.wav"
+		"wave"			"aliens\voc\queen\attackwave.wav"
 	}
 }
 
@@ -1337,8 +1351,9 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.8, 1"
-	"pitch"			"100"
-	"wave"			"aliens\voc\queen\spit.wav"
+	"pitch"			"80"
+	//"wave"			"aliens\voc\queen\spit.wav"
+	"wave"			"aliens\voc\ranger\fire.wav"
 }
 
 "ASW_Queen.TentacleAttackStart"
