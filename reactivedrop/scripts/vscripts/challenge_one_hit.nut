@@ -41,8 +41,6 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 	if ( !victim )
 		return damage;
 
-	printl( "attacker = " + attacker + ", inflictor = " + inflictor );
-
 	if ( victim.GetClassname() == "asw_marine" && IsAlien( attacker ) )
 	{
 		if ( !bCorrosiveSkinKills )
