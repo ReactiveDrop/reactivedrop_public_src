@@ -114,7 +114,13 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 			player_info_t info;
 			if ( IsConnected( slot ) && engine->GetPlayerInfo( slot, &info ) && !info.fakeplayer && !info.ishltv && !info.isreplay )
 			{
-				playerIDs.AppendFormat( "%s%08x", playerIDs.Length() ? "," : "", info.friendsID );
+				int index = engine->GetPlayerForUserID( info.userID );
+				int score = g_PR->GetPlayerScore( index );
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex( index );
+				if ( pPlayer )
+				{
+					playerIDs.AppendFormat( "\"%s\"|%d|%f", playerIDs.Length() ? "," : "", pPlayer->GetPlayerName(), score, pPlayer->GetTimeBase() );
+				}
 			}
 		}
 
