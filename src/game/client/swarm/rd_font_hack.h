@@ -2,6 +2,8 @@
 
 #include <vgui/VGUI.h>
 
+#ifdef RD_USE_FONT_HACK
+
 class CRD_Font_Hack : public CAutoGameSystem
 {
 public:
@@ -10,3 +12,5 @@ public:
 };
 
 extern CRD_Font_Hack g_ReactiveDropFontHack;
+
+#endif

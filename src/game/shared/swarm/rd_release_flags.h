@@ -14,5 +14,6 @@
 // features that are not ready for prime time
 #define RD_COLLECTIONS_WEAPONS_ENABLED
 #define RD_COLLECTIONS_SWARMOPEDIA_ENABLED
+//#define RD_USE_FONT_HACK
 
 #endif

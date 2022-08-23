@@ -11,6 +11,8 @@
 #include "tier0/memdbgon.h"
 
 
+#ifdef RD_USE_FONT_HACK
+
 #define REPLACEMENT_FONT_PATH "resource/NotoSansSC-Regular.otf"
 #define REPLACEMENT_FONT_NAME "Noto Sans SC"
 
@@ -142,3 +144,5 @@ bool CRD_Font_Hack::Init()
 
 	return true;
 }
+
+#endif
