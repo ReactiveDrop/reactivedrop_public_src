@@ -11,9 +11,11 @@ g_strAlienClassnames <- [
 	
 	"asw_shieldbug",
 	"asw_boomer",
-	"asw_boomer_blob",
+	"asw_boomer_blob",	// when boomer dies this becomes the attacker
 	"asw_mortarbug",
+	"asw_mortarbug_shell",	// when mortarbug dies this becomes the attacker
 	"asw_ranger",
+	"asw_missile_round",	// when ranger dies this becomes the attacker
 	"asw_parasite_defanged",
 	"asw_parasite"
 ];
