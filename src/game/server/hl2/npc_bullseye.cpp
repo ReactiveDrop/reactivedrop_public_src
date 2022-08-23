@@ -91,7 +91,7 @@ BEGIN_DATADESC( CNPC_Bullseye )
 	DEFINE_KEYFIELD( m_flMinDistValidEnemy, FIELD_FLOAT, "mindist" ),
 	DEFINE_KEYFIELD( m_nBullseyeFaction, FIELD_INTEGER, "faction" ),
 	DEFINE_KEYFIELD( m_flDamageMultiplierSameFaction, FIELD_FLOAT, "damagemultipliersamefaction" ),
-	DEFINE_KEYFIELD( m_flDamageMultiplierDifferentFaction, FIELD_FLOAT, "damagemultiplierdifferentfaction" ),
+	DEFINE_KEYFIELD( m_flDamageMultiplierDifferentFaction, FIELD_FLOAT, "damagemultiplierotherfaction" ),
 
 
 

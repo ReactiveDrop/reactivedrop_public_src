@@ -245,7 +245,7 @@
 		4 : "Neutral"
 	]
 	damagemultipliersamefaction(float) : "Same Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by the faction the bullseye is a member of."
-	damagemultiplierdifferentfaction(float) : "Different Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by a faction the bullseye is NOT a member of."
+	damagemultiplierotherfaction(float) : "Different Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by a faction the bullseye is NOT a member of."
 
 	spawnflags(Flags) = 
 	[
