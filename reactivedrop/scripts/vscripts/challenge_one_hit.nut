@@ -41,14 +41,23 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 	if ( !victim )
 		return damage;
 
-	if ( victim.GetClassname() == "asw_marine" && IsAlien( attacker ) )
+	if ( victim.GetClassname() == "asw_marine" )
 	{
+		if ( !IsAlien( attacker ) )
+			return damage;
+	
 		if ( !bCorrosiveSkinKills )
 			if ( attacker.GetClassname() == "asw_mortarbug" || attacker.GetClassname() == "asw_harvester" )
 				if ( attacker == inflictor )
 					return damage;
 		
 		return 1000;
+	}
+	else if ( inflictor )
+	{
+		// reduce damage from alien's explosions to other aliens back to normal
+		if ( inflictor.GetClassname() == "asw_boomer_blob" || inflictor.GetClassname() == "asw_mortarbug_shell" )
+			return damage / 12;
 	}
 	
 	return damage;
