@@ -2,16 +2,30 @@ g_strAlienClassnames <- [
 	//"asw_drone",	//"sk_asw_drone_damage" "600" in one_hit.txt so drones still kill doors fast
 	//"asw_drone_jumper",
 	//"asw_drone_uber",
-	//"asw_buzzer",
-	//"asw_harvester",
-	//"asw_queen",
+	//"asw_buzzer",	// buzzer one hit killing could be too annoying
 	//"asw_shaman",
-	//"npc_antlionguard",
-	//"npc_antlionguard_cavern",
 	
+	"asw_queen",
+	"asw_queen_grabber",	// when queen dies this becomes the attacker
+	"npc_headcrab",
+	"npc_headcrab_black",
+	"npc_headcrab_fast",
+	"npc_headcrab_poison",
+	"npc_antlion",
+	"npc_antlion_worker",
+	"grenade_spit",			// when antlion_worker dies this becomes the attacker
+	"npc_antlionguard",
+	"npc_antlionguard_cavern",
+	"npc_zombie",
+	//"npc_zombie_torso",	// doesnt attack, marines only take damage when stepping on it
+	"npc_fastzombie",
+	//"npc_fastzombie_torso",	// doesnt attack, marines only take damage when stepping on it
+	"npc_poisonzombie",
+	
+	"asw_harvester",
 	"asw_shieldbug",
 	"asw_boomer",
-	"asw_boomer_blob",	// when boomer dies this becomes the attacker
+	"asw_boomer_blob",		// when boomer dies this becomes the attacker
 	"asw_mortarbug",
 	"asw_mortarbug_shell",	// when mortarbug dies this becomes the attacker
 	"asw_ranger",
@@ -20,13 +34,24 @@ g_strAlienClassnames <- [
 	"asw_parasite"
 ];
 
+const bCorrosiveSkinKills = 0;
+
 function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, damageType, ammoName )
 {	
 	if ( !victim )
 		return damage;
 
+	printl( "attacker = " + attacker + ", inflictor = " + inflictor );
+
 	if ( victim.GetClassname() == "asw_marine" && IsAlien( attacker ) )
+	{
+		if ( !bCorrosiveSkinKills )
+			if ( attacker.GetClassname() == "asw_mortarbug" || attacker.GetClassname() == "asw_harvester" )
+				if ( attacker == inflictor )
+					return damage;
+		
 		return 1000;
+	}
 	
 	return damage;
 }
