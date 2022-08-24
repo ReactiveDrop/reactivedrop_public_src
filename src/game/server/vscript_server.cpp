@@ -22,6 +22,7 @@
 #include "ai_link.h"
 #include "ai_basenpc.h"
 #include "inetchannelinfo.h"
+#include "decals.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -43,6 +44,7 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 #endif // VMPROFILE
 
 static ConVar sv_mapspawn_nut_exec( "sv_mapspawn_nut_exec", "0", FCVAR_NONE, "If set to 1, server will execute scripts/vscripts/mapspawn.nut file" );
+extern char *s_ElementNames[MAX_ARRAY_ELEMENTS];
 
 //-----------------------------------------------------------------------------
 // Iterate through keys in a table and assign KeyValues on entity for spawn
@@ -96,6 +98,199 @@ void ParseTable( CBaseEntity *pEntity, HSCRIPT hTable, const char *pszKey = "" )
 		}
 
 		nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &value );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Sets value of a SendProp for Temp Entity from a table
+//-----------------------------------------------------------------------------
+void TE_SetSendProp( SendProp *pSendProp, CBaseTempEntity *pTempEntity, int iOffset, int iElement, HSCRIPT hTable )
+{
+	const char *pszPropName = pSendProp->GetName();
+	if ( iElement > -1 )
+		pszPropName = s_ElementNames[iElement];
+
+	ScriptVariant_t value;
+	bool bKeyExists = g_pScriptVM->GetValue( hTable, pszPropName, &value );
+
+	uint8 *pEntityPropData = (uint8 *)pTempEntity + iOffset + pSendProp->GetOffset();
+	switch ( pSendProp->GetType() )
+	{
+		case DPT_Int:
+		{
+			int nBits = pSendProp->m_nBits;
+			if ( nBits == 21 )
+			{
+				CBaseEntity *pOtherEntity = ToEnt( value.m_hScript );
+				CBaseHandle &baseHandle = *(CBaseHandle *)pEntityPropData;
+				if ( !pOtherEntity )
+					baseHandle.Set( NULL );
+				else
+					baseHandle.Set( (IHandleEntity *)pOtherEntity );
+			}
+			else if ( nBits >= 17 )
+			{
+				*(int32 *)pEntityPropData = (int32)value.m_int;
+			}
+			else if ( nBits >= 9 )
+			{
+				if (!pSendProp->IsSigned())
+					*(uint16 *)pEntityPropData = (uint16)value.m_int;
+				else
+					*(int16 *)pEntityPropData = (int16)value.m_int;
+			}
+			else if ( nBits >= 2 )
+			{
+				if (!pSendProp->IsSigned())
+					*(uint8 *)pEntityPropData = (uint8)value.m_int;
+				else
+					*(int8 *)pEntityPropData = (int8)value.m_int;
+			}
+			else
+			{
+				*(bool *)pEntityPropData = value.m_bool ? true : false;
+			}
+			break;
+		}
+		case DPT_Float:
+		{
+			*(float *)(uint8 *)pEntityPropData = value.m_float;
+			break;
+		}
+		case DPT_Vector:
+		{
+			if ( !bKeyExists )
+				value = Vector( 0, 0, 0 );
+
+			Vector *pVec = (Vector *)(uint8 *)pEntityPropData;
+			pVec->x = value.m_pVector->x;
+			pVec->y = value.m_pVector->y;
+			pVec->z = value.m_pVector->z;
+			break;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Iterate through SendTable setting SendProp data for Temp Entity from a table
+//-----------------------------------------------------------------------------
+void TE_ParseSendPropTable( SendTable *pSendTable, CBaseTempEntity *pTempEntity, int iOffset, HSCRIPT hTable )
+{
+	for ( int nPropIdx = 0; nPropIdx < pSendTable->GetNumProps(); nPropIdx++ )
+	{
+		SendProp *pSendProp = pSendTable->GetProp( nPropIdx );
+		if ( pSendProp->IsExcludeProp() )
+			continue;
+
+		SendTable *pInternalSendTable = pSendProp->GetDataTable();
+		if ( pInternalSendTable )
+			TE_ParseSendPropTable( pInternalSendTable, pTempEntity, (iOffset + pSendProp->GetOffset()), hTable );
+		else
+		{
+			if ( pSendProp->GetType() == DPT_Array )
+			{
+				SendProp *pArrayProp = pSendProp->GetArrayProp();
+				ScriptVariant_t value;
+				bool bSuccess = g_pScriptVM->GetValue( hTable, pArrayProp->GetName(), &value );
+				if ( bSuccess && value.m_type == FIELD_HSCRIPT )
+				{
+					for ( int element = 0; element < pSendProp->GetNumElements(); element++ )
+					{
+						TE_SetSendProp( pArrayProp, pTempEntity, iOffset + ( element * pSendProp->GetElementStride() ), element, value.m_hScript );
+					}
+				}
+			}
+			else
+				TE_SetSendProp( pSendProp, pTempEntity, iOffset, -1, hTable );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Store SendProp type in a table for Temp Entity
+//-----------------------------------------------------------------------------
+void TE_StoreSendPropValue( SendProp *pSendProp, int iElement, HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+
+	const char *pszPropType = "unknown";
+	const char *pszPropName = pSendProp->GetName();
+	if ( iElement > -1 )
+		pszPropName = s_ElementNames[iElement];
+
+	switch ( pSendProp->GetType() )
+	{
+		case DPT_Int:
+		{
+			int nBits = pSendProp->m_nBits;
+			if ( nBits == 21 )
+				pszPropType = "instance";
+			else
+				pszPropType = "integer";
+			break;
+		}
+		case DPT_Float:
+		{
+			pszPropType = "float";
+			break;
+		}
+		case DPT_Vector:
+		{
+			pszPropType = "Vector";
+			break;
+		}
+	}
+
+	g_pScriptVM->SetValue( hTable, pszPropName, pszPropType );
+}
+
+//-----------------------------------------------------------------------------
+// Iterate through SendTable storing SendProp types in a table for Temp Entity
+//-----------------------------------------------------------------------------
+void TE_CollectNestedSendProps( SendTable *pSendTable, HSCRIPT hTable )
+{
+	if ( !hTable )
+		return;
+
+	for ( int nPropIdx = 0; nPropIdx < pSendTable->GetNumProps(); nPropIdx++ )
+	{
+		SendProp *pSendProp = pSendTable->GetProp( nPropIdx );
+		if ( pSendProp->IsExcludeProp() )
+			continue;
+
+		const char *pszPropName = pSendProp->GetName();
+		SendTable *pInternalSendTable = pSendProp->GetDataTable();
+		if ( pInternalSendTable )
+		{
+			if ( V_strcmp( pSendProp->GetName(), "baseclass" ) == 0 )
+				pszPropName = pInternalSendTable->m_pNetTableName;
+
+			ScriptVariant_t hPropTable;
+			g_pScriptVM->CreateTable( hPropTable );
+			TE_CollectNestedSendProps( pInternalSendTable, hPropTable );
+			g_pScriptVM->SetValue( hTable, pszPropName, hPropTable );
+			g_pScriptVM->ReleaseValue( hPropTable );
+		}
+		else
+		{
+			if ( pSendProp->GetType() == DPT_Array )
+			{
+				SendProp *pArrayProp = pSendProp->GetArrayProp();
+				ScriptVariant_t hPropTable;
+				g_pScriptVM->CreateTable( hPropTable );
+
+				for ( int element = 0; element < pSendProp->GetNumElements(); element++ )
+				{
+					TE_StoreSendPropValue( pArrayProp, element, hPropTable );
+				}
+
+				g_pScriptVM->SetValue( hTable, pszPropName, hPropTable );
+				g_pScriptVM->ReleaseValue( hPropTable );
+			}
+			else
+				TE_StoreSendPropValue( pSendProp, -1, hTable );
+		}
 	}
 }
 
@@ -672,6 +867,85 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CNetPropManager, "CNetPropManager", SCRIPT_SINGLETO
 END_SCRIPTDESC()
 
 
+class CScriptTempEnts
+{
+public:
+	void Create( HSCRIPT hPlayer, const char *pName, float flDelay, HSCRIPT hTable )
+	{
+		if ( !hTable )
+			return;
+
+		CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+		CBasePlayer *pPlayer = NULL;
+		CRecipientFilter filter;
+
+		if ( pBaseEntity )
+			pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+
+		if ( pPlayer )
+		{
+			CSingleUserRecipientFilter user( pPlayer );
+			filter = user;
+		}
+		else
+		{
+			CBroadcastRecipientFilter broadcast;
+			filter = broadcast;
+		}
+
+		CBaseTempEntity *tempEnt = CBaseTempEntity::GetList();
+		while ( tempEnt )
+		{
+			if ( V_strcmp( tempEnt->GetName(), pName ) == 0 )
+			{
+				ServerClass *pServerClass = tempEnt->GetServerClass();
+				SendTable   *pSendTable = pServerClass->m_pTable;
+				TE_ParseSendPropTable( pSendTable, tempEnt, 0, hTable );
+				tempEnt->Create( filter, flDelay );
+				break;
+			}
+			tempEnt = tempEnt->GetNext();
+		}
+	}
+	void GetPropTypes( const char *pName, HSCRIPT hTable )
+	{
+		if ( !hTable )
+			return;
+
+		CBaseTempEntity *tempEnt = CBaseTempEntity::GetList();
+		while ( tempEnt )
+		{
+			if ( V_strcmp( tempEnt->GetName(), pName ) == 0 )
+			{
+				ServerClass *pServerClass = tempEnt->GetServerClass();
+				SendTable   *pSendTable = pServerClass->m_pTable;
+				TE_CollectNestedSendProps( pSendTable, hTable );
+				break;
+			}
+			tempEnt = tempEnt->GetNext();
+		}
+	}
+	void GetNames( HSCRIPT hTable )
+	{
+		if ( !hTable )
+			return;
+
+		int i = 0;
+		CBaseTempEntity *tempEnt = CBaseTempEntity::GetList();
+		while ( tempEnt )
+		{
+			g_pScriptVM->SetValue( hTable, CFmtStr( "name%i", i++ ), tempEnt->GetName() );
+			tempEnt = tempEnt->GetNext();
+		}
+	}
+} g_ScriptTempEnts;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptTempEnts, "CScriptTempEnts", SCRIPT_SINGLETON "Used to create temp entities on clients" )
+	DEFINE_SCRIPTFUNC( Create, "Arguments: ( player, tempEntName, flDelay, table ) - Queue a temp entity for transmission from a passed table of SendProp data" )
+	DEFINE_SCRIPTFUNC( GetPropTypes, "Arguments: ( tempEntName, table ) - Fills in a passed table with all SendProps and their types for the temp entity" )
+	DEFINE_SCRIPTFUNC( GetNames, "Arguments: ( table ) - Fills in a passed table with the names of all temp entities" )
+END_SCRIPTDESC();
+
 
 
 //-----------------------------------------------------------------------------
@@ -1144,6 +1418,11 @@ HSCRIPT Script_SpawnEntityFromTable( const char *pszEntityName, HSCRIPT hTable )
 	return ToHScript( pBaseEntity );
 }
 
+static int Script_GetDecalIndexForName( const char *decalName )
+{
+	return decalsystem->GetDecalIndexForName( decalName );
+}
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -1219,6 +1498,13 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FadeClientVolume, "FadeClientVolume", "Fade out the client's volume level toward silence (or fadePercent)" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_LocalTime, "LocalTime", "Fills in the passed table with the local system time." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_SpawnEntityFromTable, "SpawnEntityFromTable", "Spawn entity from KeyValues in table - 'name' is entity name, rest are KeyValues for spawn." );
+				ScriptRegisterFunction( g_pScriptVM, PrecacheParticleSystem, "Precaches a particle material" );
+				ScriptRegisterFunction( g_pScriptVM, GetParticleSystemIndex, "Converts a previously precached material into an index" );
+				ScriptRegisterFunction( g_pScriptVM, GetParticleSystemNameFromIndex, "Converts a previously precached material index into a string" );
+				ScriptRegisterFunction( g_pScriptVM, PrecacheEffect, "Precaches an effect" );
+				ScriptRegisterFunction( g_pScriptVM, GetEffectIndex, "Converts a previously precached effect into an index" );
+				ScriptRegisterFunction( g_pScriptVM, GetEffectNameFromIndex, "Converts a previously precached effect index into a string" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetDecalIndexForName, "GetDecalIndexForName", "Get decal index from a string" );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
@@ -1235,6 +1521,7 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptResponseCriteria, "ResponseCriteria" );
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityOutputs, "EntityOutputs" );
 				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
+				g_pScriptVM->RegisterInstance( &g_ScriptTempEnts, "TempEnts" );
 
 				// To be used with Script_ClientPrint
 				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );
