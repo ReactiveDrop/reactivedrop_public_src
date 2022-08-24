@@ -122,17 +122,13 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 					if ( playerIDs.Length() )
 					{
 						playerIDs.Append( ',' );
-					}
-					playerIDs.Append( '"' );
+					}					
 					for ( const char *psz = pPlayer->GetPlayerName(); *psz; psz++ )
 					{
-						if ( *psz == '\\' || *psz == '"' )
-						{
-							playerIDs.Append( '\\' );
-						}
-						playerIDs.Append( *psz );
+						playerIDs.AppendFormat( "%02x", *psz );
+						playerIDs.Append('-');
 					}
-					playerIDs.AppendFormat( "\"|%d|%f", score, pPlayer->GetTimeBase() );
+					playerIDs.AppendFormat( "|%d|%f", score, pPlayer->GetTimeBase() );
 				}
 			}
 		}
