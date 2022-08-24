@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "585"
+	"mapversion" "586"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "585"
+	"mapversion" "586"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -129543,7 +129543,10 @@ entity
 	"id" "330701"
 	"classname" "npc_bullseye"
 	"angles" "0 0 0"
+	"damagemultiplierotherfaction" "1.0"
+	"damagemultipliersamefaction" "1.0"
 	"disableshadows" "1"
+	"faction" "1"
 	"health" "10000"
 	"minangle" "360"
 	"physdamagescale" ".75"
@@ -130899,8 +130902,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-1099.7 6744.54 -48.5794]"
-		"look" "[-1092.1 7067.08 -571.363]"
+		"position" "[-998.522 6859.24 -383.717]"
+		"look" "[-1134.74 7292.57 -797.32]"
 	}
 }
 cordons
