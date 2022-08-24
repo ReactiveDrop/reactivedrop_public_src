@@ -126,7 +126,6 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 					for ( const char *psz = pPlayer->GetPlayerName(); *psz; psz++ )
 					{
 						playerIDs.AppendFormat( "%02x", *psz );
-						playerIDs.Append('-');
 					}
 					playerIDs.AppendFormat( "|%d|%f", score, pPlayer->GetTimeBase() );
 				}
