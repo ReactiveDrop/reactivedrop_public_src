@@ -23,6 +23,7 @@
 #include "ai_basenpc.h"
 #include "inetchannelinfo.h"
 #include "decals.h"
+#include "player_voice_listener.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -1522,6 +1523,7 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityOutputs, "EntityOutputs" );
 				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
 				g_pScriptVM->RegisterInstance( &g_ScriptTempEnts, "TempEnts" );
+				g_pScriptVM->RegisterInstance( &PlayerVoiceListener(), "PlayerVoiceListener" );
 
 				// To be used with Script_ClientPrint
 				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );
