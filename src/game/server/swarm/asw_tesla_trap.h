@@ -45,6 +45,7 @@ public:
 	void TeslaChargeThink( void );
 	void TeslaSearchThink( void );
 	bool ZapTarget( CBaseEntity *pEntity );
+	void ShockNearbyAliens();
 
 	void RunAnimation ( void );
 	virtual void ReachedEndOfSequence( void );

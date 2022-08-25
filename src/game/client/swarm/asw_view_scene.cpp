@@ -23,12 +23,14 @@
 
 float g_fMarinePoisonDuration = 0;
 bool g_bBlurredLastTime = false;
-ConVar asw_motionblur("asw_motionblur", "0", 0, "Motion Blur");			// motion blur on/off
-ConVar asw_motionblur_addalpha("asw_motionblur_addalpha", "0.1", 0, "Motion Blur Alpha");	// The amount of alpha to use when adding the FB to our custom buffer
-ConVar asw_motionblur_drawalpha("asw_motionblur_drawalpha", "1", 0, "Motion Blur Draw Alpha");		// The amount of alpha to use when adding our custom buffer to the FB
-ConVar asw_motionblur_time("asw_motionblur_time", "0.05", 0, "The amount of time to wait until updating the FB");	// Delay to add between capturing the FB
-ConVar asw_night_vision_self_illum_multiplier( "asw_night_vision_self_illum_multiplier", "25", 0, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
-ConVar asw_sniper_scope_self_illum_multiplier( "asw_sniper_scope_self_illum_multiplier", "0.5", 0, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
+static float fNextDrawTime = 0.0f;
+ConVar asw_motionblur( "asw_motionblur", "0", FCVAR_NONE, "Motion Blur" );			// motion blur on/off
+ConVar asw_motionblur_addalpha( "asw_motionblur_addalpha", "0.3", FCVAR_NONE, "Motion Blur Alpha" );	// The amount of alpha to use when adding the FB to our custom buffer
+ConVar asw_motionblur_drawalpha( "asw_motionblur_drawalpha", "1", FCVAR_NONE, "Motion Blur Draw Alpha" );		// The amount of alpha to use when adding our custom buffer to the FB
+ConVar asw_motionblur_time( "asw_motionblur_time", "0.05", FCVAR_CHEAT, "The amount of time to wait until updating the FB" );	// Delay to add between capturing the FB
+ConVar asw_motionblur_forceupdate( "asw_motionblur_forceupdate", "0", FCVAR_NONE, "update the motion blur buffer even if it's not being displayed" );
+ConVar asw_night_vision_self_illum_multiplier( "asw_night_vision_self_illum_multiplier", "25", FCVAR_CHEAT, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
+ConVar asw_sniper_scope_self_illum_multiplier( "asw_sniper_scope_self_illum_multiplier", "0.5", FCVAR_CHEAT, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
 
 // @TODO: move this parameter to an entity property rather than convar
 ConVar mat_dest_alpha_range( "mat_dest_alpha_range", "1000", 0, "Amount to scale depth values before writing into destination alpha ([0,1] range)." );
@@ -65,39 +67,41 @@ void CASWViewRender::OnRenderStart()
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CASWViewRender::Render2DEffectsPreHUD( const CViewSetup &view )
+void CASWViewRender::Render2DEffectsPreHUD( const CViewSetup &viewsetup )
 {
-	PerformNightVisionEffect( view );	// this needs to come before the HUD is drawn, or it will wash the HUD out
+	PerformNightVisionEffect( viewsetup );	// this needs to come before the HUD is drawn, or it will wash the HUD out
 #ifndef _X360
 	// @TODO: Motion blur not supported on X360 yet due to EDRAM issues
-	DoMotionBlur( view );
+	DoMotionBlur( viewsetup );
 #endif
 }
 
 
-void CASWViewRender::DoMotionBlur( const CViewSetup &view )
-{	
-	if ( asw_motionblur.GetInt() == 0 && g_fMarinePoisonDuration <= 0)
+void CASWViewRender::DoMotionBlur( const CViewSetup &viewsetup )
+{
+	bool bShouldDraw = asw_motionblur.GetBool() || g_fMarinePoisonDuration > 0;
+	if ( !bShouldDraw && !asw_motionblur_forceupdate.GetBool() )
 	{
 		g_bBlurredLastTime = false;
 		return;
 	}
 
-	static float fNextDrawTime = 0.0f;
-
 	bool found;
-	IMaterialVar* mv = NULL;
+	IMaterialVar *mv = NULL;
 	IMaterial *pMatScreen = NULL;
 	ITexture *pMotionBlur = NULL;
-	ITexture *pOriginalTexture = NULL; 
+	ITexture *pOriginalTexture = NULL;
 
 	// Get the front buffer material
 	pMatScreen = materials->FindMaterial( "swarm/effects/frontbuffer", TEXTURE_GROUP_OTHER, true );
+	Assert( pMatScreen );
 	// Get our custom render target
 	pMotionBlur = g_pASWRenderTargets->GetASWMotionBlurTexture();
+	Assert( pMotionBlur );
 	// Store the current render target
 	CMatRenderContextPtr pRenderContext( materials );
 	ITexture *pOriginalRenderTarget = pRenderContext->GetRenderTarget();
+	Assert( !pOriginalRenderTarget );
 
 	// Set the camera up so we can draw the overlay
 	int oldX, oldY, oldW, oldH;
@@ -115,9 +119,9 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	float add_alpha = asw_motionblur_addalpha.GetFloat();
 	float blur_time = asw_motionblur_time.GetFloat();
 	float draw_alpha = asw_motionblur_drawalpha.GetFloat();
-	if (g_fMarinePoisonDuration > 0)
-	{		
-		if (g_fMarinePoisonDuration < 1.0f)
+	if ( g_fMarinePoisonDuration > 0 )
+	{
+		if ( g_fMarinePoisonDuration < 1.0f )
 		{
 			draw_alpha = g_fMarinePoisonDuration;
 			add_alpha = 0.3f;
@@ -126,27 +130,28 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 		{
 			draw_alpha = 1.0f;
 			float over_time = g_fMarinePoisonDuration - 1.0f;
-			over_time = -MIN(4.0f, over_time);
+			over_time = -MIN( 4.0f, over_time );
 			// map 0 to -4, to 0.3 to 0.05
-			add_alpha = (over_time + 4) * 0.0625 + 0.05f;
+			add_alpha = ( over_time + 4 ) * 0.0625 + 0.05f;
 		}
 		blur_time = 0.05f;
 	}
-	if (!g_bBlurredLastTime)
+	if ( !g_bBlurredLastTime )
 		add_alpha = 1.0f;	// add the whole buffer if this is the first time we're blurring after a while, so we don't end up with images from ages ago
 
-	if ( fNextDrawTime - gpGlobals->curtime > 1.0f)
+	if ( fNextDrawTime - gpGlobals->curtime > 1.0f )
 	{
 		fNextDrawTime = 0.0f;
 	}
 
-	if( gpGlobals->curtime >= fNextDrawTime ) 
+	if ( gpGlobals->curtime >= fNextDrawTime )
 	{
-		UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height );
+		UpdateScreenEffectTexture( 0, viewsetup.x, viewsetup.y, viewsetup.width, viewsetup.height );
 
 		// Set the alpha to whatever our console variable is
-		mv = pMatScreen->FindVar( "$alpha", &found, false );
-		if (found)
+		mv = pMatScreen->FindVar( "$alpha", &found, true );
+		Assert( found );
+		if ( found )
 		{
 			if ( fNextDrawTime == 0 )
 			{
@@ -166,27 +171,41 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	}
 
 	// Set the alpha
-	mv = pMatScreen->FindVar( "$alpha", &found, false );
-	if (found)
+	mv = pMatScreen->FindVar( "$alpha", &found, true );
+	Assert( found );
+	if ( found )
 	{
 		mv->SetFloatValue( draw_alpha );
 	}
 
 	// Set the texture to our buffer
-	mv = pMatScreen->FindVar( "$basetexture", &found, false );
-	if (found)
+	mv = pMatScreen->FindVar( "$basetexture", &found, true );
+	Assert( found );
+	if ( found )
 	{
 		pOriginalTexture = mv->GetTextureValue();
+		AssertMsg1( pOriginalTexture == GetFullFrameFrameBufferTexture( 0 ), "pOriginalTexture is %s", pOriginalTexture->GetName() );
 		mv->SetTextureValue( pMotionBlur );
 	}
 
 	// Pretend we were never here, set everything back
 	pRenderContext->SetRenderTarget( pOriginalRenderTarget );
-	pRenderContext->DrawScreenSpaceQuad( pMatScreen );
+	if ( bShouldDraw )
+	{
+		pRenderContext->DrawScreenSpaceQuad( pMatScreen );
+	}
 
 	// Set our texture back to _rt_FullFrameFB
-	if (found)
+	Assert( found );
+	if ( found )
 	{
+		ITexture *pFullFrameFB = GetFullFrameFrameBufferTexture( 0 );
+		if ( pOriginalTexture != pFullFrameFB )
+		{
+			Warning( "Fixing motion blur texture.\n" );
+			pOriginalTexture = pFullFrameFB;
+		}
+
 		mv->SetTextureValue( pOriginalTexture );
 	}
 
@@ -199,6 +218,62 @@ void CASWViewRender::DoMotionBlur( const CViewSetup &view )
 	g_bBlurredLastTime = true;
 }
 
+CON_COMMAND( asw_motionblur_check, "check for anomalies in asw_motionblur" )
+{
+	Msg( "next draw time is in %f sec\n", fNextDrawTime - gpGlobals->curtime );
+
+	IMaterial *pMatScreen = materials->FindMaterial( "swarm/effects/frontbuffer", TEXTURE_GROUP_OTHER, true );
+	if ( !pMatScreen )
+	{
+		Warning( "frontbuffer material missing\n" );
+		return;
+	}
+
+	ITexture *pMotionBlur = g_pASWRenderTargets->GetASWMotionBlurTexture();
+	if ( !pMotionBlur )
+	{
+		Warning( "motionblur texture missing\n" );
+		return;
+	}
+
+	CMatRenderContextPtr pRenderContext( materials );
+	ITexture *pOriginalRenderTarget = pRenderContext->GetRenderTarget();
+	if ( pOriginalRenderTarget )
+	{
+		Warning( "unexpectedly have render target texture %s\n", pOriginalRenderTarget->GetName() );
+		return;
+	}
+
+	bool found = false;
+	IMaterialVar *mv = pMatScreen->FindVar( "$alpha", &found, true );
+	if ( !found )
+	{
+		Warning( "could not find $alpha in frontbuffer material\n" );
+		return;
+	}
+
+	mv = pMatScreen->FindVar( "$basetexture", &found, true );
+	if ( !found )
+	{
+		Warning( "could not find $basetexture in frontbuffer material\n" );
+		return;
+	}
+
+	ITexture *pOriginalTexture = mv->GetTextureValue();
+	if ( !pOriginalTexture )
+	{
+		Warning( "missing original texture in frontbuffer material\n" );
+		return;
+	}
+
+	if ( pOriginalTexture != GetFullFrameFrameBufferTexture( 0 ) )
+	{
+		Warning( "original texture in frontbuffer material is %s\n", pOriginalTexture->GetName() );
+		return;
+	}
+
+	Msg( "no motion blur anomalies found. if motion blur is currently broken, this command needs to be expanded.\n" );
+}
 
 inline bool ASW_SetMaterialVarFloat( IMaterial* pMat, const char* pVarName, float flValue )
 {
@@ -291,7 +366,7 @@ void CASWNightVisionSelfIllumProxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if ( !pMarine )
 	{
 		SetFloatResult( 0.0f );
@@ -328,7 +403,7 @@ void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if ( !pMarine )
 		return;
 

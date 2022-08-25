@@ -23,7 +23,6 @@
 #include "asw_remote_turret_shared.h"
 #include "asw_gamerules.h"
 #include "asw_util_shared.h"
-#include "asw_campaign_info.h"
 #include "techmarinefailpanel.h"
 #include "FadeInPanel.h"
 #include <vgui/IInput.h>
@@ -52,6 +51,9 @@
 #include "materialsystem/imaterialvar.h"
 #include "nb_header_footer.h"
 #include "asw_briefing.h"
+#include "c_gib.h"
+#include "asw_hud_chat.h"
+#include "game_timescale_shared.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -74,7 +76,8 @@ ConVar asw_hear_pos_debug("asw_hear_pos_debug", "0", FCVAR_NONE, "Shows audio he
 ConVar asw_hear_height("asw_hear_height", "0", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
 ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio position is locked in place.  Use asw_set_hear_pos to set the fixed position to the current audio location." );
 
-ConVar asw_tree_sway_enabled("asw_tree_sway_enabled", "0", FCVAR_NONE, "If set, trees sway in the wind.", true, 0, true, 1);
+ConVar rd_tree_sway_enabled("rd_tree_sway_enabled", "1", FCVAR_ARCHIVE, "If set, some trees sway in the wind.", true, 0, true, 1);
+ConVar rd_tree_sway_strength("rd_tree_sway_strength", "8", FCVAR_ARCHIVE, "How strong is the wind. 0-16", true, 0, true, 16);
 
 Vector g_asw_vec_fixed_cam(-276.03076, -530.74951, -196.65625);
 QAngle g_asw_ang_fixed_cam(42.610226, 90.289375, 0);
@@ -87,6 +90,9 @@ Vector g_asw_vec_last_hear_pos = vec3_origin;
 
 ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 120.0 );
+
+ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
+ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
@@ -350,14 +356,10 @@ static void __MsgFunc_ASWBlur( bf_read &msg )
 {
 	float duration = msg.ReadShort() * 0.1f;
 	
-	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
-	if ( local )
+	C_ASW_Marine *marine = C_ASW_Marine::GetViewMarine();
+	if ( marine )
 	{
-		C_ASW_Marine *marine = local->GetMarine();
-		if (marine)
-		{
-			marine->SetPoisoned(duration);
-		}
+		marine->SetPoisoned( duration );
 	}
 }
 
@@ -384,85 +386,6 @@ static void __MsgFunc_ASWCampaignCompleted( bf_read &msg )
 			&& !engine->IsPlayingDemo())
 			GetMedalStore()->OnIncreaseCounts(0,1,0, (gpGlobals->maxClients <= 1));
 #endif
-	}
-
-#ifdef OUTRO_MAP
-	// check for changing to the outro map
-	//int iDedicated =
-						msg.ReadByte();	
-	int iHostIndex = msg.ReadByte();	
-
-	Msg("[C] __MsgFunc_ASWCampaignCompleted. playerindex=%d hostindex =%d offline=%d\n",
-		pPlayer ? pPlayer->entindex() : -1, iHostIndex, (gpGlobals->maxClients <= 1));
-	if (pPlayer && pPlayer->entindex() == iHostIndex)
-	{
-		// don't launch the outro map clientside if we're a server
-		Msg("[C] We're the host, so not doing client map outro\n");
-	}
-	else
-	{
-		// if we're a client, flag us for a reconnect once the outro is done
-		ConVar *var = (ConVar *)cvar->FindVar( "asw_reconnect_after_outro" );
-		if (var)
-		{
-			engine->ClientCmd("asw_save_server");	/// save the server we're on, so we can reconnect to it later
-			var->SetValue(1);
-		}		
-		Msg("[C] Doing client map outro\n");
-		// find the outro map name
-		CASW_Campaign_Info *pCampaign = ASWGameRules() ? ASWGameRules()->GetCampaignInfo() : NULL;
-		Msg("[C] Campaign debug info:\n");
-		if (pCampaign)
-			pCampaign->DebugInfo();
-		const char *pszOutro = "outro_jacob";	 // the default
-		if (pCampaign)
-		{
-			const char *pszCustomOutro = STRING(pCampaign->m_OutroMap);
-			if (pszCustomOutro && ( !Q_strnicmp( pszCustomOutro, "outro", 5 ) ))
-			{
-				pszOutro = pszCustomOutro;
-				Msg("[C] Using custom outro: %s\n", pszCustomOutro);
-			}
-			else
-			{
-				Msg("[C] No valid custom outro defined in campaign info, using default\n");
-			}
-		}
-		else
-		{
-			Msg("[C] Using default outro as we can't find the campaign info\n");
-		}
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "disconnect\nwait\nwait\nmaxplayers 1\nmap %s", pszOutro);
-		Msg("[C] Sending client outro command: %s\n", buffer);
-		engine->ClientCmd(buffer);
-	}
-#endif
-}
-
-// we get this message after watching the outro
-static void __MsgFunc_ASWReconnectAfterOutro( bf_read &msg )
-{	
-	if (ASWGameRules() && ASWGameRules()->IsOutroMap())
-	{
-		// clear the reconnect flag
-		ConVar *var = (ConVar *)cvar->FindVar( "asw_reconnect_after_outro" );
-		Msg("Client checking for reconnect\n");
-		if (var && var->GetInt() != 0)
-		{
-			var->SetValue(0);
-
-			Msg("  sending asw_retry_saved_server cmd\n");
-			// reconnect to the previous server
-			engine->ClientCmd("asw_retry_saved_server");
-		}
-		else		// if we're not reconnecting to a server after watching the outro, go back to the main menu
-		{
-			if (gpGlobals->maxClients <= 1)
-			{
-				engine->ClientCmd("disconnect\nwait\nwait\nmap_background RdSelectionScreen");
-			}
-		}
 	}
 }
 
@@ -500,11 +423,11 @@ void ClientModeASW::Init()
 {
 	BaseClass::Init();
 
+	gameeventmanager->AddListener( this, "mission_failed", false );
 	gameeventmanager->AddListener( this, "asw_mission_restart", false );
 	gameeventmanager->AddListener( this, "game_newmap", false );
 	HOOK_MESSAGE( ASWBlur );
 	HOOK_MESSAGE( ASWCampaignCompleted );
-	HOOK_MESSAGE( ASWReconnectAfterOutro );
 	HOOK_MESSAGE( ASWTechFailure );
 }
 
@@ -872,13 +795,47 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 {
 	const char *eventname = event->GetName();
 
+	if ( Q_strcmp( "mission_failed", eventname ) == 0 )
+	{
+		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pPlayer && cl_auto_restart_mission.GetBool() && ASWGameResource()->GetLeader() == pPlayer )
+		{
+			engine->ClientCmd( "asw_restart_mission" );
+		}
+	}
+
 	if ( Q_strcmp( "asw_mission_restart", eventname ) == 0 )
 	{
+		( GET_HUDELEMENT( CHudChat ) )->m_bSkipNextReset = true;
+
 		ASW_CloseAllWindows();
 		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if (pPlayer)
 		{
 			pPlayer->OnMissionRestart();
+		}
+
+		// re-init some systems
+		GameTimescale()->LevelInitPostEntity();
+
+		m_aAchievementsEarned.Purge();
+		m_aAwardedExperience.Purge();
+
+		if ( asw_instant_restart_cleanup.GetBool() )
+		{
+			// remove all decals
+			engine->ClientCmd( "r_cleardecals\n" );
+
+			for ( C_BaseEntity *pEntity = ClientEntityList().FirstBaseEntity(); pEntity; pEntity = ClientEntityList().NextBaseEntity( pEntity ) )
+			{
+				if ( pEntity->index != -1 )
+					continue;
+
+				if ( C_ClientRagdoll *pRagdoll = dynamic_cast<C_ClientRagdoll *>( pEntity ) )
+					pRagdoll->ReleaseRagdoll();
+				else if ( C_Gib *pGib = dynamic_cast<C_Gib *>( pEntity ) )
+					pGib->ClientThink();
+			}
 		}
 
 		// Remove any left over particle effects
@@ -888,10 +845,10 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 	{
 		engine->ClientCmd("exec newmapsettings\n");
 
-		if ( asw_tree_sway_enabled.GetBool() )
+		if ( rd_tree_sway_enabled.GetBool() )
 		{
-			int iWindDir = random->RandomInt( 8, 24 );
-			if ( !random->RandomInt( 0, 1 ) )
+			int iWindDir = random->RandomInt( rd_tree_sway_strength.GetInt(), 3 * rd_tree_sway_strength.GetInt() );
+			if ( random->RandomInt( 0, 1 ) )
 				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", iWindDir, -iWindDir ) );
 			else
 				engine->ClientCmd( VarArgs( "cl_tree_sway_dir %d %d", -iWindDir, iWindDir ) );
@@ -975,10 +932,10 @@ void ClientModeASW::ASW_CloseAllWindows()
 	ASW_CloseAllWindowsFrom(GetViewport());
 
 	g_hBriefingFrame = NULL;
+	m_hMissionCompleteFrame = NULL;
 
 	// make sure we don't have a mission chooser up
-	//Msg("clientmode asw closing vote windows with asw_vote_chooser cc\n");
-	engine->ClientCmd("asw_vote_chooser -1");
+	engine->ClientCmd( "asw_mission_chooser exit" );
 }
 
 // recursive search for matching window names
@@ -1096,36 +1053,36 @@ void ClientModeASW::OverrideAudioState( AudioState_t *pAudioState )
 {
 	// lower hearing origin since cam is so far from the action
 	Vector hear_pos = pAudioState->m_Origin;
-	if (::input->CAM_IsThirdPerson())
+	if ( ::input->CAM_IsThirdPerson() )
 	{
 		// put audio position on our current marine if we have one selected
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		CASW_Marine *pMarine = NULL;
+		C_ASW_Inhabitable_NPC *pNPC = NULL;
 		if ( pPlayer && ( asw_hear_from_marine.GetBool() || asw_hear_height.GetFloat() != 0 ) )
 		{
-			pMarine = pPlayer->GetViewMarine();
+			pNPC = pPlayer->GetViewNPC();
 		}
-		
-		if ( pMarine )
+
+		if ( pNPC )
 		{
 			if ( asw_hear_height.GetFloat() > 0 )
 			{
 				Vector vecForward;
 				AngleVectors( pAudioState->m_Angles, &vecForward );
-				pAudioState->m_Origin = pMarine->EyePosition() - vecForward * asw_hear_height.GetFloat();
+				pAudioState->m_Origin = pNPC->EyePosition() - vecForward * asw_hear_height.GetFloat();
 			}
 			else if ( asw_hear_height.GetFloat() < 0 )
 			{
 				Vector vecForward;
 				AngleVectors( pAudioState->m_Angles, &vecForward );
-				pAudioState->m_Origin -= (vecForward * asw_hear_height.GetFloat() );
+				pAudioState->m_Origin -= ( vecForward * asw_hear_height.GetFloat() );
 			}
 		}
 		else
 		{
 			Vector vecForward;
 			AngleVectors( pAudioState->m_Angles, &vecForward );
-			pAudioState->m_Origin += (vecForward * 412.0f * 0.7f);	// hardcoded 412 is bad
+			pAudioState->m_Origin += ( vecForward * 412.0f * 0.7f );	// hardcoded 412 is bad
 		}
 	}
 
@@ -1141,8 +1098,8 @@ void ClientModeASW::OverrideAudioState( AudioState_t *pAudioState )
 		float flHeight = 80;
 		Vector vForward, vRight, vUp;
 		AngleVectors( pAudioState->m_Angles, &vForward, &vRight, &vUp );
-		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin+vRight*flBaseSize/2, pAudioState->m_Origin-vRight*flBaseSize/2, pAudioState->m_Origin+vForward*flHeight, 255, 255, 0, 255, false, 0.1 );
-		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin+vForward*flHeight, pAudioState->m_Origin-vRight*flBaseSize/2, pAudioState->m_Origin+vRight*flBaseSize/2, 255, 255, 0, 255, false, 0.1 );
+		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin + vRight * flBaseSize / 2, pAudioState->m_Origin - vRight * flBaseSize / 2, pAudioState->m_Origin + vForward * flHeight, 255, 255, 0, 255, false, 0.1 );
+		debugoverlay->AddTriangleOverlay( pAudioState->m_Origin + vForward * flHeight, pAudioState->m_Origin - vRight * flBaseSize / 2, pAudioState->m_Origin + vRight * flBaseSize / 2, 255, 255, 0, 255, false, 0.1 );
 		NDebugOverlay::Box( pAudioState->m_Origin, -Vector( 3, 3, 3 ), Vector( 3, 3, 3 ), 255, 64, 0, 255, 0.1f );
 	}
 }

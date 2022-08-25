@@ -43,12 +43,12 @@ int C_ASW_T75::GetT75IconTextureID()
 	return s_nArmIconTextureID;
 }
 
-bool C_ASW_T75::IsUsable(C_BaseEntity *pUser)
+bool C_ASW_T75::IsUsable( C_BaseEntity *pUser )
 {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 
-bool C_ASW_T75::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_T75::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
 	if ( IsArmed() )
 	{

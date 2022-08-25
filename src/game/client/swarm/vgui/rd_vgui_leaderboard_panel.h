@@ -20,7 +20,7 @@ public:
 	void SetEntries( const CUtlVector<RD_LeaderboardEntry_t> & entries );
 	void OverrideEntry( const RD_LeaderboardEntry_t & entry );
 	void SetScrollable( bool bScrollable );
-	void SetDisplayAsTime( bool b ) { m_bDisplayAsTime = b; }
+	void SetDisplayType( ELeaderboardDisplayType e ) { m_eDisplayType = e; }
 
 private:
 	void DoOverrideEntry();
@@ -29,7 +29,7 @@ private:
 	BaseModUI::GenericPanelList *m_gplLeaderboard;
 	bool m_bOverrideEntry;
 	RD_LeaderboardEntry_t m_OverrideEntry;
-	bool m_bDisplayAsTime;	// if true the scores will be displayed as time, otherwise a numerical value will be displayed
+	ELeaderboardDisplayType m_eDisplayType;
 };
 
 class CReactiveDrop_VGUI_Leaderboard_Entry : public vgui::EditablePanel
@@ -44,7 +44,7 @@ public:
 
 	void SetEntry( const RD_LeaderboardEntry_t & entry );
 	void SetEntry( const RD_LeaderboardEntry_Points_t & entry );
-	void SetDisplayAsTime( bool b ) { m_bDisplayAsTime = b; }
+	void SetDisplayType( ELeaderboardDisplayType e ) { m_eDisplayType = e; }
 
 	int32 m_nRank;
 	int32 m_nScore;
@@ -64,7 +64,7 @@ private:
 	vgui::Label *m_lblDifficulty;
 	vgui::Label *m_lblOnslaught;
 	vgui::Label *m_lblHardcoreFF;
-	bool m_bDisplayAsTime;	// if true the scores will be displayed as time, otherwise a numerical value will be displayed
+	ELeaderboardDisplayType m_eDisplayType;
 };
 
 class CReactiveDrop_VGUI_Leaderboard_Panel_Points : public vgui::EditablePanel
@@ -80,6 +80,7 @@ public:
 	void SetTitle( const char *szTitle );
 	void SetTitle( const wchar_t *wszTitle );
 	void SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries );
+	inline void ClearEntries() { m_gplLeaderboard->RemoveAllPanelItems(); }
 	void OverrideEntry( const RD_LeaderboardEntry_Points_t & entry );
 	void SetScrollable( bool bScrollable );
 

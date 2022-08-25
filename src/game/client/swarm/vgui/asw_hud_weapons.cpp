@@ -138,7 +138,7 @@ void CASWHudWeapons::Paint()
 	if (!pPlayer)
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if (!pMarine)
 		return;		
 	char cbuffer[64];
@@ -278,11 +278,11 @@ void CASWHudWeapons::Paint()
 					}
 					else
 					{
-						C_ASW_Weapon *pWeapon = dynamic_cast<C_ASW_Weapon*>( pUseAction->UseTarget.Get() );
-						if ( pWeapon )
+						C_ASW_Weapon *pPickupWeapon = dynamic_cast<C_ASW_Weapon*>( pUseAction->UseTarget.Get() );
+						if ( pPickupWeapon )
 						{
-							pWeaponData = pWeapon->GetWeaponInfo();
-							szWeaponClass = pWeapon->GetClassname();
+							pWeaponData = pPickupWeapon->GetWeaponInfo();
+							szWeaponClass = pPickupWeapon->GetClassname();
 						}
 					}
 					if ( pWeaponData )

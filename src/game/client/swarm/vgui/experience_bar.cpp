@@ -17,7 +17,7 @@
 #include <tier0/memdbgon.h>
 
 ConVar asw_xp_screen_debug( "asw_xp_screen_debug", "0", FCVAR_CHEAT, "If enabled, XP screen will show dummy player slots" );
-ConVar rd_console_debug_xp( "rd_console_debug_xp", "1", FCVAR_ARCHIVE, "Show client-sided xp award messages in console" );
+ConVar rd_console_debug_xp( "rd_console_debug_xp", "0", FCVAR_NONE, "Show client-sided xp award messages in console" );
 
 ExperienceBar::ExperienceBar(vgui::Panel *parent, const char *name) :
 	vgui::EditablePanel( parent, name )

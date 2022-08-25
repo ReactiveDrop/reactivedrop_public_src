@@ -6,7 +6,7 @@
 
 CASWSnowEmitter::CASWSnowEmitter( const char *pDebugName ) : CASWGenericEmitter( pDebugName )
 {
-	m_hLastMarine = NULL;
+	m_hLastNPC = NULL;
 }
 
 CSmartPtr<CASWSnowEmitter> CASWSnowEmitter::Create( const char *pDebugName )

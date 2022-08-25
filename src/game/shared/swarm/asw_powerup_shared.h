@@ -25,8 +25,8 @@ public:
 	//virtual void ItemTouch( CBaseEntity *pOther );
 	virtual void PickupPowerup( CASW_Marine *pMarine );
 
-	virtual bool IsUsable(CBaseEntity *pUser) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual bool IsUsable( CBaseEntity *pUser ) { return true; }
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
 	virtual void SetIsSpawnFlipping( float flMaxPickupDelay );
 
 	virtual const char* GetPowerupModelName( void ) { return "models/swarm/Ammo/ammorailgun.mdl"; }
@@ -37,13 +37,12 @@ public:
 	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTakePowerup_FireB; }
 #endif
 
-	virtual bool AllowedToPickup(CASW_Marine *pMarine) { return true; }
+	virtual bool AllowedToPickup( CASW_Marine *pMarine ) { return true; }
 
 	float m_flCanPickupMaxTime;
 	bool m_bSpawnDelayDenyPickup : 1;
 	int m_nPowerupType;
 	float m_flPowerupDuration;
-
 };
 
 class CASW_Powerup_Bullets : public CASW_Powerup
@@ -53,10 +52,10 @@ public:
 	DECLARE_NETWORKCLASS();
 
 #ifndef CLIENT_DLL
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
 #endif
 
-	virtual bool AllowedToPickup(CASW_Marine *pMarine);
+	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 };
 
 class CASW_Powerup_Freeze_Bullets : public CASW_Powerup_Bullets

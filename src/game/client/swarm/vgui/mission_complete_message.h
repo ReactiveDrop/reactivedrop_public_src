@@ -23,7 +23,7 @@ struct CAnimating_Letter
 	int m_nStartHeight;
 	int m_nEndWidth;	
 	int m_nEndHeight;
-	char m_chLetter;
+	wchar_t m_chLetter;
 };
 
 class CMission_Complete_Message : public vgui::EditablePanel
@@ -33,14 +33,13 @@ public:
 	CMission_Complete_Message( vgui::Panel *parent, const char *name );
 	virtual ~CMission_Complete_Message();
 	
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
-	virtual void OnThink();
 	virtual void Paint();
 
 	void PaintMessageBackground();
 	void StartMessage( bool bSuccess );
-	void AddLetter( char letter, int x, int y, float letter_offset, float flStartTime );
+	void AddWord( const wchar_t *wszWord, int row_middle_x, int row_middle_y, float & flStartTime, float flLetterTimeInterval );
+	void AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime );
 	void PaintLetters();
 	void PaintLetter( CAnimating_Letter *pLetter, bool bGlow );
 	bool m_bSuccess;

@@ -11,8 +11,8 @@ public:
 	DECLARE_CLIENTCLASS();
 
 	C_ASW_Pickup_Weapon();
-	virtual bool AllowedToPickup(C_ASW_Marine *pMarine);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool AllowedToPickup(C_ASW_Inhabitable_NPC *pNPC);
+	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser);
 	virtual const char* GetWeaponClass() { return "asw_weapon_rifle"; }
 	virtual int GetUseIconTextureID() { return m_nUseIconTextureID; }
 	virtual void GetUseIconText( wchar_t *unicode, int unicodeBufferSizeInBytes );

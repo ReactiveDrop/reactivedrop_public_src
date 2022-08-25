@@ -65,6 +65,7 @@ class CBaseFlex;
 static ConVar scene_forcecombined( "scene_forcecombined", "0", 0, "When playing back, force use of combined .wav files even in english." );
 static ConVar scene_maxcaptionradius( "scene_maxcaptionradius", "1200", 0, "Only show closed captions if recipient is within this many units of speaking actor (0==disabled)." );
 ConVar scene_clientplayback( "scene_clientplayback", "1", 0, "Play all vcds on the clients." );
+ConVar rd_scene_extend_caption_to_sound( "rd_scene_extend_caption_to_sound", "1", FCVAR_NONE, "Force closed caption duration in VCD scenes to be at least the duration of the associated sound. Uses sound length from host." );
 
 // Assume sound system is 100 msec lagged (only used if we can't find snd_mixahead cvar!)
 #define SOUND_SYSTEM_LATENCY_DEFAULT ( 0.1f )
@@ -1699,10 +1700,18 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 	// Emit sound
 	if ( actor )
 	{
-		CPASAttenuationFilter filter( actor, iSoundlevel );		
+		CPASAttenuationFilter filter( actor, iSoundlevel );
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			if ( !CBaseEntity::Instance( i ) )
+				continue;
 
-
-
+			const char *szSkipDialogue = engine->GetClientConVarValue( i, "rd_skip_all_dialogue" );
+			if ( szSkipDialogue && atoi( szSkipDialogue ) )
+			{
+				filter.RemoveRecipientByPlayerIndex( i );
+			}
+		}
 
 		if ( m_pRecipientFilter )
 		{
@@ -1868,6 +1877,11 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 					float durationLong = endtime - event->GetStartTime();
 
 					float duration = MAX( durationShort, durationLong );
+					if ( rd_scene_extend_caption_to_sound.GetBool() )
+					{
+						float durationSound = enginesound->GetSoundDuration( event->GetParameters() );
+						duration = MAX( duration, durationSound );
+					}
 
 					char const *pszActorModel = STRING( actor->GetModelName() );
 					gender_t gender = soundemitterbase->GetActorGender( pszActorModel );
@@ -2479,11 +2493,11 @@ void CSceneEntity::PrefetchAnimBlocks( CChoreoScene *scene )
 							{
 								// Now look up the animblock
 								mstudioseqdesc_t &seqdesc = pStudioHdr->pSeqdesc( seq );
-								for ( int i = 0 ; i < seqdesc.groupsize[ 0 ] ; ++i )
+								for ( int j = 0 ; j < seqdesc.groupsize[ 0 ] ; ++j )
 								{
-									for ( int j = 0; j < seqdesc.groupsize[ 1 ]; ++j )
+									for ( int k = 0; k < seqdesc.groupsize[ 1 ]; ++k )
 									{
-										int animation = seqdesc.anim( i, j );
+										int animation = seqdesc.anim( j, k );
 										int baseanimation = pStudioHdr->iRelativeAnim( seq, animation );
 										mstudioanimdesc_t &animdesc = pStudioHdr->pAnimdesc( baseanimation );
 
@@ -2502,14 +2516,14 @@ void CSceneEntity::PrefetchAnimBlocks( CChoreoScene *scene )
 											++resident;
 											if ( spew > 1 )
 											{
-												Msg( "%s:%s[%i:%i] was resident\n", pStudioHdr->pszName(), animdesc.pszName(), i, j );
+												Msg( "%s:%s[%i:%i] was resident\n", pStudioHdr->pszName(), animdesc.pszName(), j, k );
 											}
 										}
 										else
 										{
 											if ( spew != 0 )
 											{
-												Msg( "%s:%s[%i:%i] async load\n", pStudioHdr->pszName(), animdesc.pszName(), i, j );
+												Msg( "%s:%s[%i:%i] async load\n", pStudioHdr->pszName(), animdesc.pszName(), j, k );
 											}
 										}
 									}
@@ -4942,6 +4956,8 @@ HSCRIPT ScriptCreateSceneEntity( const char* pszScene )
 		Warning( "VScript error: A script attempted to create a scene entity mid-game. Entity creation from scripts is only allowed during map init.\n" );
 		return NULL;
 	}
+
+	if ( !g_pScriptVM ) return NULL;
 
 	g_pScriptVM->RegisterClass( GetScriptDescForClass( CSceneEntity ) );
 	CSceneEntity *pScene = (CSceneEntity *)CBaseEntity::CreateNoSpawn( "logic_choreographed_scene", vec3_origin, vec3_angle );

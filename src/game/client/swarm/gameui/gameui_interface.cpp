@@ -178,25 +178,17 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	engine = (IVEngineClient *)factory( VENGINE_CLIENT_INTERFACE_VERSION, NULL );
 	bik = (IBik*)factory( BIK_INTERFACE_VERSION, NULL );
 
-#ifndef _X360
-	SteamAPI_InitSafe();
-	steamapicontext->Init();
-#endif
-
 	CGameUIConVarRef var( "gameui_xbox" );
 	m_bIsConsoleUI = var.IsValid() && var.GetBool();
 
 	vgui::VGui_InitInterfacesList( "GameUI", &factory, 1 );
 	vgui::VGui_InitMatSysInterfacesList( "GameUI", &factory, 1 );
 
-	// load localization file
-	UTIL_RD_AddLocalizeFile( "Resource/gameui_%language%.txt", "GAME", true );
-
 	// load mod info
 	ModInfo().LoadCurrentGameInfo();
 
-	// load localization file for kb_act.lst
-	UTIL_RD_AddLocalizeFile( "Resource/valve_%language%.txt", "GAME", true );
+	// localization setup
+	UTIL_RD_ReloadLocalizeFiles();
 
 	bool bFailed = false;
 	enginevguifuncs = (IEngineVGui *)factory( VENGINE_VGUI_VERSION, NULL );
@@ -397,13 +389,6 @@ void CGameUI::Start()
 		g_pFullFileSystem->AddSearchPath( "platform", "PLATFORM" );
 	}
 
-	// localization
-	UTIL_RD_AddLocalizeFile( "Resource/platform_%language%.txt");
-	UTIL_RD_AddLocalizeFile( "Resource/vgui_%language%.txt");
-
-	// (slightly) delayed localization setup
-	engine->ClientCmd_Unrestricted( "rd_loc_reload" );
-
 	Sys_SetLastError( SYS_NO_ERROR );
 
 	if ( IsPC() )
@@ -523,7 +508,6 @@ void CGameUI::Shutdown()
 		Sys_ReleaseMutex(g_hWaitMutex);
 	}
 
-	steamapicontext->Clear();
 #ifndef _X360
 	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
 #endif
@@ -808,6 +792,8 @@ void CGameUI::OnLevelLoadingStarted( const char *levelName, bool bShowProgressDi
 void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, const char *extendedReason)
 {
 	StopProgressBar( bError, failureReason, extendedReason );
+
+	GetUiBaseModPanelClass().OnLevelLoadingFinished( KeyValues::AutoDeleteInline( new KeyValues( "OnEngineLevelLoadingFinished", "error", bError ? "1" : "0", "reason", failureReason ) ) );
 
 	// notify all the modules
 	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingFinished" ) );

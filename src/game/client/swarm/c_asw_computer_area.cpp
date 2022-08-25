@@ -18,6 +18,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Computer_Area, DT_ASW_Computer_Area, CASW_Comput
 	RecvPropBool		(RECVINFO(m_bIsLocked)),
 	RecvPropBool		(RECVINFO(m_bWaitingForInput)),
 	RecvPropBool		(RECVINFO(m_bIsInUse)),
+	RecvPropBool		(RECVINFO(m_bLoggedIn)),
 	RecvPropFloat		(RECVINFO(m_fDownloadProgress)),
 
 	RecvPropEHandle( RECVINFO( m_hSecurityCam1 ) ),
@@ -186,45 +187,46 @@ int C_ASW_Computer_Area::GetNumMenuOptions()
 	return n;
 }
 
-bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_Computer_Area::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
-	CASW_Marine_Profile *pProfile = pUser->GetMarineProfile();
-	bool bTech = pProfile->CanHack();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pUser );
+	CASW_Marine_Profile *pProfile = pMarine ? pMarine->GetMarineProfile() : NULL;
+	bool bTech = pProfile && pProfile->CanHack();
 
 	action.UseIconRed = 255;
 	action.UseIconGreen = 255;
 	action.UseIconBlue = 255;
 	action.bShowUseKey = true;
 	action.iInventorySlot = -1;
-	if (pUser->m_hCurrentHack.Get())
+	if ( pMarine && pMarine->m_hCurrentHack.Get() )
 	{
 		// if we're a tech and we're on the 'access denied' screen, then change use icon to be an 'override'
-		if (bTech && pUser->m_hCurrentHack->CanOverrideHack())
+		if ( bTech && pMarine->m_hCurrentHack->CanOverrideHack() )
 		{
 			action.iUseIconTexture = GetHackIconTextureID();
 			TryLocalize( "#asw_override_security", action.wszText, sizeof( action.wszText ) );
 			action.UseTarget = this;
-			if (IsLocked())
-				action.fProgress = GetTumblerProgress(pUser);
+			if ( IsLocked() )
+				action.fProgress = GetTumblerProgress( pMarine );
 			else
 				action.fProgress = GetDownloadProgress();
 		}
 		else
 		{
 			action.iUseIconTexture = GetHackIconTextureID();
-			TryLocalize(  "#asw_log_off", action.wszText, sizeof( action.wszText ) );
+			TryLocalize( "#asw_log_off", action.wszText, sizeof( action.wszText ) );
 			action.UseTarget = this;
-			if (IsLocked())
-				action.fProgress = GetTumblerProgress(pUser);
+			if ( IsLocked() )
+				action.fProgress = GetTumblerProgress( pMarine );
 			else
 				action.fProgress = GetDownloadProgress();
 		}
 	}
 	else
 	{
-		if (IsLocked())
-		{					
-			if (bTech)
+		if ( IsLocked() )
+		{
+			if ( bTech )
 			{
 				action.iUseIconTexture = GetHackIconTextureID();
 				TryLocalize( "#asw_hack_comp", action.wszText, sizeof( action.wszText ) );
@@ -237,8 +239,8 @@ bool C_ASW_Computer_Area::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser
 				TryLocalize( "#asw_requires_tech", action.wszText, sizeof( action.wszText ) );
 				action.UseTarget = this;
 				action.fProgress = GetDownloadProgress();
-			}		
-		}	
+			}
+		}
 		else
 		{
 			action.iUseIconTexture = GetUseIconTextureID();

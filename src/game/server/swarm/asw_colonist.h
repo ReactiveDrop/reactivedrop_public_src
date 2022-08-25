@@ -3,16 +3,16 @@
 #ifdef _WIN32
 #pragma once
 #endif
-#include "ai_playerally.h"
+#include "asw_inhabitable_npc.h"
 #include "asw_shareddefs.h"
 #include "iasw_server_usable_entity.h"
 
-class CASW_Marine;
 class CASW_Alien;
+class CASW_Marine;
 
-class CASW_Colonist : public CAI_PlayerAlly, public IASW_Server_Usable_Entity
+class CASW_Colonist : public CASW_Inhabitable_NPC, public IASW_Server_Usable_Entity
 {
-	DECLARE_CLASS( CASW_Colonist, CAI_PlayerAlly );
+	DECLARE_CLASS( CASW_Colonist, CASW_Inhabitable_NPC );
 	DECLARE_SERVERCLASS();
 public:
 	CASW_Colonist();
@@ -68,7 +68,7 @@ public:
 
 	int selectedBy;
 	bool isSelectedBy(CASW_Marine* marine);
-	static void ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &targetPos, const Vector &traceDir);
+	static void ASW_Colonist_GoTo(CASW_Player *pPlayer, CASW_Marine *pMarine, const Vector &targetPos, const Vector &traceDir);
 	void Extinguish();
 	const Vector GetFollowPos();
 
@@ -84,13 +84,13 @@ public:
 
 
 	// IASW_Server_Usable_Entity implementation
-	virtual CBaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual CBaseEntity *GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime) {}
-	virtual void MarineStartedUsing(CASW_Marine* pMarine) {}
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) {}
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime ) {}
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) {}
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) {}
 	virtual bool NeedsLOSCheck() { return true; }
 private:
 	DECLARE_DATADESC();

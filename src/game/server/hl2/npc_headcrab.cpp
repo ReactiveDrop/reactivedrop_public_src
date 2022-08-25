@@ -71,6 +71,7 @@ const int HEADCRAB_MAX_JUMP_DIST = 256;
 #define HEADCRAB_BURN_SOUND_FREQUENCY 10
 
 ConVar g_debug_headcrab( "g_debug_headcrab", "0", FCVAR_CHEAT );
+extern ConVar asw_debug_alien_damage;
 
 //------------------------------------
 // Spawnflags
@@ -98,76 +99,6 @@ int AE_HEADCRAB_BURROW_IN;
 int AE_HEADCRAB_BURROW_IN_FINISH;
 int AE_HEADCRAB_BURROW_OUT;
 int AE_HEADCRAB_CEILING_DETACH;
-
-
-//-----------------------------------------------------------------------------
-// Custom schedules.
-//-----------------------------------------------------------------------------
-enum
-{
-	SCHED_HEADCRAB_RANGE_ATTACK1 = LAST_SHARED_SCHEDULE,
-	SCHED_HEADCRAB_WAKE_ANGRY,
-	SCHED_HEADCRAB_WAKE_ANGRY_NO_DISPLAY,
-	SCHED_HEADCRAB_DROWN,
-	SCHED_HEADCRAB_FAIL_DROWN,
-	SCHED_HEADCRAB_AMBUSH,
-	SCHED_HEADCRAB_HOP_RANDOMLY, // get off something you're not supposed to be on.
-	SCHED_HEADCRAB_BARNACLED,
-	SCHED_HEADCRAB_UNHIDE,
-	SCHED_HEADCRAB_HARASS_ENEMY,
-	SCHED_HEADCRAB_FALL_TO_GROUND,
-	SCHED_HEADCRAB_RUN_TO_BURROW_IN,
-	SCHED_HEADCRAB_RUN_TO_SPECIFIC_BURROW,
-	SCHED_HEADCRAB_BURROW_IN,
-	SCHED_HEADCRAB_BURROW_WAIT,
-	SCHED_HEADCRAB_BURROW_OUT,
-	SCHED_HEADCRAB_WAIT_FOR_CLEAR_UNBURROW,
-	SCHED_HEADCRAB_CRAWL_FROM_CANISTER,
-
-	SCHED_FAST_HEADCRAB_RANGE_ATTACK1,
-
-	SCHED_HEADCRAB_CEILING_WAIT,
-	SCHED_HEADCRAB_CEILING_DROP,
-};
-
-
-//=========================================================
-// tasks
-//=========================================================
-enum 
-{
-	TASK_HEADCRAB_HOP_ASIDE = LAST_SHARED_TASK,
-	TASK_HEADCRAB_HOP_OFF_NPC,
-	TASK_HEADCRAB_DROWN,
-	TASK_HEADCRAB_WAIT_FOR_BARNACLE_KILL,
-	TASK_HEADCRAB_UNHIDE,
-	TASK_HEADCRAB_HARASS_HOP,
-	TASK_HEADCRAB_FIND_BURROW_IN_POINT,
-	TASK_HEADCRAB_BURROW,
-	TASK_HEADCRAB_UNBURROW,
-	TASK_HEADCRAB_BURROW_WAIT,
-	TASK_HEADCRAB_CHECK_FOR_UNBURROW,
-	TASK_HEADCRAB_JUMP_FROM_CANISTER,
-	TASK_HEADCRAB_CLIMB_FROM_CANISTER,
-
-	TASK_HEADCRAB_CEILING_WAIT,
-	TASK_HEADCRAB_CEILING_POSITION,
-	TASK_HEADCRAB_CEILING_DETACH,
-	TASK_HEADCRAB_CEILING_FALL,
-	TASK_HEADCRAB_CEILING_LAND,
-};
-
-
-//=========================================================
-// conditions 
-//=========================================================
-enum
-{
-	COND_HEADCRAB_IN_WATER = LAST_SHARED_CONDITION,
-	COND_HEADCRAB_ILLEGAL_GROUNDENT,
-	COND_HEADCRAB_BARNACLED,
-	COND_HEADCRAB_UNHIDE,
-};
 
 //=========================================================
 // private activities
@@ -236,28 +167,11 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CBaseHeadcrab::Spawn( void )
 {
-	//Precache();
-	//SetModel( "models/headcrab.mdl" );
-	//m_iHealth			= sk_headcrab_health.GetFloat();
-	
-#ifdef _XBOX
-	// Always fade the corpse
-	AddSpawnFlags( SF_NPC_FADE_CORPSE );
-#endif // _XBOX
+	SetHullType( HULL_TINY );
+	SetHealthByDifficultyLevel();
 
-	SetHullType(HULL_TINY);
-	SetHullSizeNormal();
+	SetViewOffset( Vector( 6, 0, 11 ) ); // Position of the eyes relative to NPC's origin.
 
-	SetSolid( SOLID_BBOX );
-	AddSolidFlags( FSOLID_NOT_STANDABLE );
-	SetMoveType( MOVETYPE_STEP );
-
-	// reactivedrop: was HL2COLLISION_GROUP_HEADCRAB
-	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN );
-
-	SetViewOffset( Vector(6, 0, 11) ) ;		// Position of the eyes relative to NPC's origin.
-
-	SetBloodColor( BLOOD_COLOR_GREEN );
 	m_flFieldOfView		= 0.5;
 	m_NPCState			= NPC_STATE_NONE;
 	m_nGibCount			= HEADCRAB_ALL_GIB_COUNT;
@@ -287,37 +201,33 @@ void CBaseHeadcrab::Spawn( void )
 	m_bHangingFromCeiling = false;
 	m_flIlluminatedTime = -1;
 
-	// reactivedrop: 
-	ChangeFaction(FACTION_ALIENS);
+	BaseClass::Spawn();
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Stuff that must happen after NPCInit is called.
-//-----------------------------------------------------------------------------
-void CBaseHeadcrab::HeadcrabInit()
+
+void CBaseHeadcrab::SetHealthByDifficultyLevel( void )
 {
-	// See if we're supposed to start burrowed
-	if ( m_bStartBurrowed )
+	if ( FClassnameIs( this, "npc_headcrab" ) )
 	{
-		SetBurrowed( true );
-		SetSchedule( SCHED_HEADCRAB_BURROW_WAIT );
+		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_health.GetInt() ) + m_iHealthBonus );
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting headcrab's initial health to %d\n", GetHealth() );
+	}
+	else if ( FClassnameIs( this, "npc_headcrab_fast" ) )
+	{
+		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_fast_health.GetInt() ) + m_iHealthBonus );
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting fast headcrab's initial health to %d\n", GetHealth() );
+	}
+	else
+	{
+		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_poison_health.GetInt() ) + m_iHealthBonus );
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "Setting poison headcrab's initial health to %d\n", GetHealth() );
 	}
 
-	if ( GetSpawnFlags() & SF_HEADCRAB_START_HANGING )
-	{
-		SetSchedule( SCHED_HEADCRAB_CEILING_WAIT );
-		m_flIlluminatedTime = -1;
-	}
-}	
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Precaches all resources this monster needs.
-//-----------------------------------------------------------------------------
-void CBaseHeadcrab::Precache( void )
-{
-	BaseClass::Precache();
-}	
+	SetMaxHealth( GetHealth() );
+}
 
 
 //-----------------------------------------------------------------------------
@@ -2413,6 +2323,14 @@ void CBaseHeadcrab::CreateDust( bool placeDecal )
 	}
 }
 
+CHeadcrab::CHeadcrab()
+{
+	m_pszAlienModelName = "models/headcrabclassic.mdl";
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+
+	m_bCrawlFromCanister = false;
+	m_bMidJump = false;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2432,26 +2350,6 @@ void CHeadcrab::Precache( void )
 	PrecacheScriptSound( "NPC_Headcrab.BurrowOut" );
 
 	BaseClass::Precache();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CHeadcrab::Spawn( void )
-{
-	Precache();
-	SetModel( "models/headcrabclassic.mdl" );
-
-	BaseClass::Spawn();
-
-	m_iHealth = sk_headcrab_health.GetFloat();
-	m_flBurrowTime = 0.0f;
-	m_bCrawlFromCanister = false;
-	m_bMidJump = false;
-
-	NPCInit();
-	HeadcrabInit();
 }
 
 
@@ -2551,6 +2449,16 @@ BEGIN_DATADESC( CFastHeadcrab )
 END_DATADESC()
 
 
+CFastHeadcrab::CFastHeadcrab()
+{
+	m_pszAlienModelName = "models/headcrab.mdl";
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+
+	m_iRunMode = HEADCRAB_RUNMODE_IDLE;
+	m_flPauseTime = 999999;
+}
+
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2566,26 +2474,6 @@ void CFastHeadcrab::Precache( void )
 	PrecacheScriptSound( "NPC_FastHeadcrab.Attack" );
 
 	BaseClass::Precache();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CFastHeadcrab::Spawn( void )
-{
-	Precache();
-	SetModel( "models/headcrab.mdl" );
-
-	BaseClass::Spawn();
-
-	m_iHealth = sk_headcrab_health.GetFloat();
-
-	m_iRunMode = HEADCRAB_RUNMODE_IDLE;
-	m_flPauseTime = 999999;
-
-	NPCInit();
-	HeadcrabInit();
 }
 
 
@@ -3044,6 +2932,15 @@ LINK_ENTITY_TO_CLASS( npc_headcrab_black, CBlackHeadcrab );
 LINK_ENTITY_TO_CLASS( npc_headcrab_poison, CBlackHeadcrab );
 
 
+CBlackHeadcrab::CBlackHeadcrab()
+{
+	m_pszAlienModelName = "models/headcrabblack.mdl";
+	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+
+	m_bPanicState = false;
+}
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Make the sound of this headcrab chomping a target.
 //-----------------------------------------------------------------------------
@@ -3067,23 +2964,6 @@ void CBlackHeadcrab::AttackSound( void )
 void CBlackHeadcrab::TelegraphSound( void )
 {
 	EmitSound( "NPC_BlackHeadcrab.Telegraph" );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBlackHeadcrab::Spawn( void )
-{
-	Precache();
-	SetModel( "models/headcrabblack.mdl" );
-
-	BaseClass::Spawn();
-
-	m_bPanicState = false;
-	m_iHealth = sk_headcrab_poison_health.GetFloat();
-
-	NPCInit();
-	HeadcrabInit();
 }
 
 
@@ -3288,7 +3168,7 @@ void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 			// Episodic change to avoid NPCs dying too quickly from poison bites
 			if ( hl2_episodic.GetBool() )
 			{
-				if ( pOther->IsPlayer() )
+				if ( pOther->Classify() == CLASS_ASW_MARINE )
 				{
 					// That didn't finish them. Take them down to one point with poison damage. It'll heal.
 					pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON ) );

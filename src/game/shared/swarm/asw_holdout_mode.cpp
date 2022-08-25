@@ -559,7 +559,7 @@ void CASW_Holdout_Mode::OnAlienKilled( CBaseEntity *pAlien, const CTakeDamageInf
 		return;
 
 	IASW_Spawnable_NPC *pSpawnable = NULL;
-	if ( IsAlienClass( pAlien->Classify() ) )
+	if ( pAlien->IsAlienClassType() )
 	{
 		CASW_Alien *pAlienNPC = static_cast<CASW_Alien*>( pAlien );
 		pSpawnable = pAlienNPC;

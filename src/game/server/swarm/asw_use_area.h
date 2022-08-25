@@ -5,6 +5,7 @@
 #include "asw_shareddefs.h"
 #include "iasw_server_usable_entity.h"
 
+class CASW_Marine;
 class CASW_Player;
 
 DECLARE_AUTO_LIST( IASW_Use_Area_List );
@@ -32,15 +33,15 @@ public:
 	virtual Class_T Classify() { return CLASS_HACKED_ROLLERMINE; }
 
 	// IASW_Server_Usable_Entity implementation
-	virtual CBaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(CBaseEntity *pUser);
-	virtual bool RequirementsMet(CBaseEntity *pUser);
+	virtual CBaseEntity *GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser );
+	virtual bool RequirementsMet( CBaseEntity *pUser );
 	// fill in by subclasses
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) { }
-	virtual void MarineStartedUsing(CASW_Marine* pMarine) { }
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { }
-	virtual void MarineUsing(CASW_Marine* pMarine, float fDeltaTime) { } 
-	virtual void ActivateMultiTrigger(CBaseEntity *pActivator);
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType ) { }
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) { }
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) { }
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float fDeltaTime ) { }
+	virtual void ActivateMultiTrigger( CBaseEntity *pActivator );
 	virtual bool NeedsLOSCheck() { return false; }
 
 	virtual void UpdateWaitingForInput() {}
@@ -58,7 +59,7 @@ public:
 	CNetworkHandle( CBaseEntity, m_hPanelProp );
 
 	CNetworkVar( string_t, m_iHeldObjectName );
-	bool CheckHeldObject( CASW_Marine *pMarine );
+	bool CheckHeldObject( CASW_Inhabitable_NPC *pNPC );
 };
 
 #endif /* _DEFINED_ASW_USE_AREA_H */

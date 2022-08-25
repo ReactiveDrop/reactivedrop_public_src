@@ -6,7 +6,6 @@
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "rd_lobby_utils.h"
-#include "asw_campaign_info.h"
 #include "rd_challenges_shared.h"
 #include "c_playerresource.h"
 #include "asw_briefing.h"
@@ -18,6 +17,7 @@
 #include "c_asw_steamstats.h"
 #include "asw_util_shared.h"
 #include "inetchannelinfo.h"
+#include "rd_missions_shared.h"
 
 #include <ctime>
 
@@ -297,7 +297,7 @@ void RD_Rich_Presence::UpdatePresence()
 			szLargeImageText[0] = 0;
 			szState[0] = 0;
 
-			if ( CASW_Campaign_Info *pCampaign = pASW->GetCampaignInfo() )
+			if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
 			{
 				if ( ASWDeathmatchMode() )
 				{
@@ -350,24 +350,17 @@ void RD_Rich_Presence::UpdatePresence()
 					V_strncpy( szSteamDisplay, "#Campaign_Difficulty_Challenge", sizeof( szSteamDisplay ) );
 				}
 
-				if ( CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaign->GetMissionByMapName( MapName() ) )
+				static char szMissionName[128];
+				if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
 				{
-					static char szMissionName[128];
-					if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->m_MissionName ) ) )
-					{
-						V_UnicodeToUTF8( pwszTranslatedMissionName, szMissionName, sizeof( szMissionName ) );
-					}
-					else
-					{
-						V_strncpy( szMissionName, STRING( pMission->m_MissionName ), sizeof( szMissionName ) );
-					}
-					pSteamFriends->SetRichPresence( "rd_mission", szMissionName );
-					V_strncpy( szLargeImageText, szMissionName, sizeof( szLargeImageText ) );
+					V_UnicodeToUTF8( pwszTranslatedMissionName, szMissionName, sizeof( szMissionName ) );
 				}
 				else
 				{
-					pSteamFriends->SetRichPresence( "rd_mission", "???" );
+					V_strncpy( szMissionName, STRING( pMission->MissionTitle ), sizeof( szMissionName ) );
 				}
+				pSteamFriends->SetRichPresence( "rd_mission", szMissionName );
+				V_strncpy( szLargeImageText, szMissionName, sizeof( szLargeImageText ) );
 
 				if ( !ASWDeathmatchMode() )
 				{
@@ -472,7 +465,7 @@ void RD_Rich_Presence::UpdatePresence()
 			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
 
 			CASW_Marine_Profile *pProfile = NULL;
-			if ( C_ASW_Marine *pMarine = pPlayer->GetMarine() )
+			if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 			{
 				pProfile = pMarine->GetMarineProfile();
 			}

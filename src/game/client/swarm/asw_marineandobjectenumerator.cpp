@@ -45,17 +45,17 @@ IterationRetval_t CASW_MarineAndObjectEnumerator::EnumElement( IHandleEntity *pH
 		return ITERATION_CONTINUE;
 
 	if ( !pEnt->IsPlayer() &&
-		 !pEnt->IsNPC() )
+		!pEnt->IsNPC() )
 	{
 		return ITERATION_CONTINUE;
 	}
 
 	if ( pEnt->IsNPC() )
 	{
-		C_AI_BaseNPC *pNPC = (C_AI_BaseNPC *)pEnt;
+		C_AI_BaseNPC *pNPC = ( C_AI_BaseNPC * )pEnt;
 
 		if ( !pNPC->ShouldAvoidObstacle() )
-			 return ITERATION_CONTINUE;
+			return ITERATION_CONTINUE;
 	}
 
 	// Ignore vehicles, since they have vcollide collisions that's push me away
@@ -68,11 +68,11 @@ IterationRetval_t CASW_MarineAndObjectEnumerator::EnumElement( IHandleEntity *pH
 		return ITERATION_CONTINUE;
 #endif
 
-	C_ASW_Marine *pMarine = m_pLocal->GetMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = m_pLocal->GetNPC();
+	if ( !pNPC )
 		return ITERATION_CONTINUE;
 
-	Vector	deltaPos = pEnt->GetAbsOrigin() - pMarine->GetAbsOrigin();
+	Vector	deltaPos = pEnt->GetAbsOrigin() - pNPC->GetAbsOrigin();
 	//if ( deltaPos.LengthSqr() > m_flRadiusSquared )
 		//return ITERATION_CONTINUE;
 

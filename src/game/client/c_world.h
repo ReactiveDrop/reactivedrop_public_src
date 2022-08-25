@@ -57,6 +57,7 @@ public:
 	float	m_flMaxPropScreenSpaceWidth;
 	bool	m_bColdWorld;
 	int		m_iTimeOfDay;
+	int		m_nMapVersion;
 
 private:
 	char	m_iszDetailSpriteMaterial[MAX_DETAIL_SPRITE_MATERIAL_NAME_LENGTH];

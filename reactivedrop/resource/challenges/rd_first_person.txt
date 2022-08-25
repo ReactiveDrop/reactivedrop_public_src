@@ -1,0 +1,8 @@
+"CHALLENGE" {
+	"name"	"#rd_challenge_name_first_person"
+	"description"	"#rd_challenge_desc_first_person"
+
+	"convars" {
+		"asw_controls"	"0"
+	}
+}

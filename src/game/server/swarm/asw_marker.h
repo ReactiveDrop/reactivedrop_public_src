@@ -4,12 +4,7 @@
 #pragma once
 #endif
 
-#include "baseentity.h"
-
-
 // This class is used for marking world positions of objectives
-
-
 class CASW_Marker : public CBaseEntity
 {
 public:
@@ -19,25 +14,20 @@ public:
 
 	virtual void Spawn( void );
 	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 
-	virtual void SetComplete( bool bComplete );
-
-	virtual bool IsObjectiveComplete() { return m_bComplete; }
+	bool IsObjectiveComplete() { return m_bComplete; }
 
 	void InputSetComplete( inputdata_t &inputdata );
+	void InputSetIncomplete( inputdata_t &inputdata );
 	void InputEnable( inputdata_t &inputdata );
 	void InputDisable( inputdata_t &inputdata );
 
-private:
-
-	CNetworkString( m_ObjectiveName, 256 );
+	CNetworkVar( string_t, m_ObjectiveName );
 	CNetworkVar( int, m_nMapWidth );
 	CNetworkVar( int, m_nMapHeight );
 	CNetworkVar( bool, m_bComplete );
 	CNetworkVar( bool, m_bEnabled );
 	bool m_bStartDisabled;
-
 };
 
 #endif /* ASW_MARKER_H */

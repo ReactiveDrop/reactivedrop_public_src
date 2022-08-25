@@ -300,6 +300,10 @@ void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bAct
 			{
 				MDLCACHE_CRITICAL_SECTION();
 				pEntity->Activate();
+
+				// BenLubar: instant restart is sometimes crashing due to entities created and immediately destroyed during this section.
+				// Tell the engine that we don't care if an edict has the same ID as another edict that we just deleted.
+				engine->AllowImmediateEdictReuse();
 			}
 		}
 		mdlcache->SetAsyncLoad( MDLCACHE_ANIMBLOCK, bAsyncAnims );

@@ -45,28 +45,29 @@ void FadeInPanel::AllowFastRemove()
 
 void FadeInPanel::OnThink()
 {
-	if ( !rd_draw_briefing_ui.GetBool() )
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( !rd_draw_briefing_ui.GetBool() || ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera ) )
 	{
 		SetAlpha( 0 );
 		return;
 	}
 
 	// fade out if we're ingame for more than a second
-	if (ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+	if ( pGameRules && pGameRules->GetGameState() == ASW_GS_INGAME )
 	{
 		//Msg("FadeInPanel ingame, m_fIngameTime = %f\n", m_fIngameTime);
 		m_fIngameTime += gpGlobals->frametime;
-		if (m_fIngameTime >= 2.0f || m_bFastRemove)
+		if ( m_fIngameTime >= 2.0f || m_bFastRemove )
 		{
 			m_bSlowRemove = true;
 		}
 	}
-	if (GetAlpha() >= 255 && m_bSlowRemove)
+	if ( GetAlpha() >= 255 && m_bSlowRemove )
 	{
-		SetAlpha(254);
-		vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 0, 0.0f, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		SetAlpha( 254 );
+		vgui::GetAnimationController()->RunAnimationCommand( this, "alpha", 0, 0.0f, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
-	if (GetAlpha() <= 0)
+	if ( GetAlpha() <= 0 )
 	{
 		MarkForDeletion();
 	}

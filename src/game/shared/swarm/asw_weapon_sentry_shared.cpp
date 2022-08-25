@@ -22,7 +22,7 @@
 
 ConVar rd_sentry_is_attacked_by_aliens( "rd_sentry_is_attacked_by_aliens", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If set to 0 aliens will not try to damage sentries." );
 ConVar rd_debug_sentry_placement( "rd_debug_sentry_placement", "0", FCVAR_CHEAT | FCVAR_REPLICATED);
-extern ConVar rda_marine_backpack;
+extern ConVar rd_server_marine_backpacks;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sentry, DT_ASW_Weapon_Sentry )
 
@@ -41,8 +41,13 @@ PRECACHE_WEAPON_REGISTER(asw_weapon_sentry);
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon_Sentry )
-	
+
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Weapon_Sentry, CASW_Weapon, "sentry gun case" )
+	DEFINE_SCRIPTFUNC( GetSentryAmmo, "returns the amount of ammo for the contained sentry" )
+	DEFINE_SCRIPTFUNC( SetSentryAmmo, "changes the amount of ammo for the contained sentry" )
+END_SCRIPTDESC()
 #endif /* not client */
 
 CASW_Weapon_Sentry::CASW_Weapon_Sentry()
@@ -370,10 +375,10 @@ void CASW_Weapon_Sentry::DeploySentry()
 			}
 		}
 
+		bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
+		bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
 		CASW_Bait *pEnt3 = NULL;
 		{
-			Vector bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
-			Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
 			Vector bait_vec = m_vecValidSentrySpot + bait_dir + Vector( 0, 0, 10 );
 			pEnt3 = CASW_Bait::Bait_Create( bait_vec, QAngle( 90, 0, 0 ), vec3_origin, AngularImpulse( 0, 0, 0 ), pBase );
 			if ( pEnt3 )
@@ -385,8 +390,6 @@ void CASW_Weapon_Sentry::DeploySentry()
 
 		CASW_Bait *pEnt4 = NULL;
 		{
-			Vector bait_ang = Vector( cos( DEG2RAD( sentry_angle + 90 ) ), sin( DEG2RAD( sentry_angle + 90 ) ), 0 );
-			Vector bait_dir = bait_ang.Normalized() * BAIT_OFFSETY;
 			Vector bait_vec = m_vecValidSentrySpot - bait_dir + Vector( 0, 0, 10 );
 			pEnt4 = CASW_Bait::Bait_Create( bait_vec, QAngle( 90, 0, 0 ), vec3_origin, AngularImpulse( 0, 0, 0 ), pBase );
 			if ( pEnt4 )
@@ -420,7 +423,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 	pMarine->OnWeaponFired( this, 1 );
 	Kill();
 
-	if (rda_marine_backpack.GetBool())
+	if (rd_server_marine_backpacks.GetBool())
 	{
 		pMarine->RemoveBackPackModel();
 	}

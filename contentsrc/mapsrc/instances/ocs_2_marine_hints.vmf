@@ -1,0 +1,5609 @@
+versioninfo
+{
+	"editorversion" "400"
+	"editorbuild" "5032"
+	"mapversion" "23"
+	"formatversion" "100"
+	"prefab" "0"
+}
+visgroups
+{
+}
+viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "1"
+	"bShow3DGrid" "0"
+}
+world
+{
+	"id" "1"
+	"mapversion" "23"
+	"classname" "worldspawn"
+	"comment" "Decompiled by BSPSource v1.3.6 from ocs_2.bsp"
+	"detailmaterial" "detail/detailsprites"
+	"detailvbsp" "detail.vbsp"
+	"maxpropscreenwidth" "-1"
+	"skyname" "blacksky"
+	"targetname" "Landing Bay 7"
+}
+entity
+{
+	"id" "277"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3942 -214 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -8268]"
+	}
+}
+entity
+{
+	"id" "278"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3464 -112 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -7768]"
+	}
+}
+entity
+{
+	"id" "279"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3464 48 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -7268]"
+	}
+}
+entity
+{
+	"id" "280"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3542.06 138.996 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -6768]"
+	}
+}
+entity
+{
+	"id" "281"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3624.24 235.037 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -6268]"
+	}
+}
+entity
+{
+	"id" "282"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3716.93 155.471 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -5768]"
+	}
+}
+entity
+{
+	"id" "283"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3832.72 186.478 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -5268]"
+	}
+}
+entity
+{
+	"id" "284"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3984.13 215.322 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -4768]"
+	}
+}
+entity
+{
+	"id" "285"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4128.34 159.163 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -4268]"
+	}
+}
+entity
+{
+	"id" "286"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4236.55 226.53 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -3768]"
+	}
+}
+entity
+{
+	"id" "287"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4311.47 87.2702 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -3268]"
+	}
+}
+entity
+{
+	"id" "288"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4288 -64 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -2768]"
+	}
+}
+entity
+{
+	"id" "289"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4344.46 -164.917 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -2268]"
+	}
+}
+entity
+{
+	"id" "290"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4334.04 -263.395 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -1768]"
+	}
+}
+entity
+{
+	"id" "291"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4098 -116 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -1268]"
+	}
+}
+entity
+{
+	"id" "292"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4058 -242 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1000 -768]"
+	}
+}
+entity
+{
+	"id" "293"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3816.15 -182.564 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 0]"
+	}
+}
+entity
+{
+	"id" "294"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3608.6 -217.419 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 500]"
+	}
+}
+entity
+{
+	"id" "295"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3815.37 -285.241 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 1000]"
+	}
+}
+entity
+{
+	"id" "296"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3487.32 -283.672 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 1500]"
+	}
+}
+entity
+{
+	"id" "297"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3581.05 -386.453 -40.0001"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 2000]"
+	}
+}
+entity
+{
+	"id" "298"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3970.38 -587.571 -40.0001"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 2500]"
+	}
+}
+entity
+{
+	"id" "299"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3486.1 -470.417 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 3000]"
+	}
+}
+entity
+{
+	"id" "300"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3406.54 -580.021 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 3500]"
+	}
+}
+entity
+{
+	"id" "301"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4158.11 -310.544 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 4000]"
+	}
+}
+entity
+{
+	"id" "302"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4082 -362 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 4500]"
+	}
+}
+entity
+{
+	"id" "303"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4163.99 -580.781 10.9952"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 5000]"
+	}
+}
+entity
+{
+	"id" "304"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4065.21 -587.09 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 5500]"
+	}
+}
+entity
+{
+	"id" "305"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4057.39 -459.157 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 6000]"
+	}
+}
+entity
+{
+	"id" "306"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4351.99 -385.025 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 6500]"
+	}
+}
+entity
+{
+	"id" "307"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4340.38 -478.619 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 7000]"
+	}
+}
+entity
+{
+	"id" "308"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4307.6 -577.955 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 7500]"
+	}
+}
+entity
+{
+	"id" "309"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4168.97 -702.59 13.4863"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 8000]"
+	}
+}
+entity
+{
+	"id" "310"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4021.74 -808.57 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 8500]"
+	}
+}
+entity
+{
+	"id" "311"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3869.16 -819.322 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 9000]"
+	}
+}
+entity
+{
+	"id" "312"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3713.64 -845.569 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 9500]"
+	}
+}
+entity
+{
+	"id" "313"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3575.26 -835.08 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 10000]"
+	}
+}
+entity
+{
+	"id" "314"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3481.58 -810.994 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 10500]"
+	}
+}
+entity
+{
+	"id" "315"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3413.69 -764.472 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 11000]"
+	}
+}
+entity
+{
+	"id" "316"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3593.55 -531.45 -40.0001"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 11500]"
+	}
+}
+entity
+{
+	"id" "317"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3748.83 -734.103 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 12000]"
+	}
+}
+entity
+{
+	"id" "318"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3680.87 -638.376 -40.0001"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 12500]"
+	}
+}
+entity
+{
+	"id" "319"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3904.1 -82.3047 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 13000]"
+	}
+}
+entity
+{
+	"id" "320"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3376 -448 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 13500]"
+	}
+}
+entity
+{
+	"id" "321"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3280 -448 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 14000]"
+	}
+}
+entity
+{
+	"id" "322"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3141.34 -223.162 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 14500]"
+	}
+}
+entity
+{
+	"id" "323"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3060.13 -339.127 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 15000]"
+	}
+}
+entity
+{
+	"id" "324"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3135.64 -490.782 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 15500]"
+	}
+}
+entity
+{
+	"id" "325"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3059.36 -612.678 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 16000]"
+	}
+}
+entity
+{
+	"id" "326"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3146.79 -693.036 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -16268]"
+	}
+}
+entity
+{
+	"id" "327"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2970.07 -717.064 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -15768]"
+	}
+}
+entity
+{
+	"id" "328"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2853.86 -707.601 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -15268]"
+	}
+}
+entity
+{
+	"id" "329"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2806.04 -574.34 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -14768]"
+	}
+}
+entity
+{
+	"id" "330"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2942.15 -510.478 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -14268]"
+	}
+}
+entity
+{
+	"id" "331"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2823.62 -344.551 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -13768]"
+	}
+}
+entity
+{
+	"id" "332"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2967.11 -217.864 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -13268]"
+	}
+}
+entity
+{
+	"id" "333"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2821.69 -148.167 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -12768]"
+	}
+}
+entity
+{
+	"id" "334"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3088 -152 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -12268]"
+	}
+}
+entity
+{
+	"id" "335"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3269.45 -643.475 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -11768]"
+	}
+}
+entity
+{
+	"id" "336"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3269.64 -791.39 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -11268]"
+	}
+}
+entity
+{
+	"id" "337"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3129.97 -830.883 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -10768]"
+	}
+}
+entity
+{
+	"id" "338"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2983.46 -815.62 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -10268]"
+	}
+}
+entity
+{
+	"id" "339"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2860.5 -827.792 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9768]"
+	}
+}
+entity
+{
+	"id" "340"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2768 -832 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -9268]"
+	}
+}
+entity
+{
+	"id" "341"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2608 -832 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -8768]"
+	}
+}
+entity
+{
+	"id" "342"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2608 -440 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -8268]"
+	}
+}
+entity
+{
+	"id" "343"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2768 -440 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -7768]"
+	}
+}
+entity
+{
+	"id" "344"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2972.16 -107.489 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -7268]"
+	}
+}
+entity
+{
+	"id" "345"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2976 48 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -6768]"
+	}
+}
+entity
+{
+	"id" "346"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2976.53 190.25 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -6268]"
+	}
+}
+entity
+{
+	"id" "347"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3185.96 187.741 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -5768]"
+	}
+}
+entity
+{
+	"id" "348"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2862.44 185.496 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -5268]"
+	}
+}
+entity
+{
+	"id" "349"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2739.11 148.401 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -4768]"
+	}
+}
+entity
+{
+	"id" "350"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2570.59 181.545 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -4268]"
+	}
+}
+entity
+{
+	"id" "351"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2548.67 35.7316 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -3768]"
+	}
+}
+entity
+{
+	"id" "352"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2547.61 -99.9363 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -3268]"
+	}
+}
+entity
+{
+	"id" "353"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2548.68 -241.747 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -2768]"
+	}
+}
+entity
+{
+	"id" "354"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2551.56 -330.321 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -2268]"
+	}
+}
+entity
+{
+	"id" "355"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2549.32 -510.404 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -1768]"
+	}
+}
+entity
+{
+	"id" "356"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2550.35 -599.064 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -1268]"
+	}
+}
+entity
+{
+	"id" "357"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2550.64 -693.796 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[1500 -768]"
+	}
+}
+entity
+{
+	"id" "358"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2542.5 -885.951 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 0]"
+	}
+}
+entity
+{
+	"id" "359"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2432.14 -637.301 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 500]"
+	}
+}
+entity
+{
+	"id" "360"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2291.89 -625.273 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 1000]"
+	}
+}
+entity
+{
+	"id" "361"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2163.27 -616.745 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 1500]"
+	}
+}
+entity
+{
+	"id" "362"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2051.93 -626.029 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 2000]"
+	}
+}
+entity
+{
+	"id" "363"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1862.12 -637.029 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 2500]"
+	}
+}
+entity
+{
+	"id" "364"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2082.1 -793.961 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 3000]"
+	}
+}
+entity
+{
+	"id" "365"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2025.74 -887.373 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 3500]"
+	}
+}
+entity
+{
+	"id" "366"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2154.06 -899.506 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 4000]"
+	}
+}
+entity
+{
+	"id" "367"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2216.26 -401.303 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 4500]"
+	}
+}
+entity
+{
+	"id" "368"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1968.54 -390.263 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 5000]"
+	}
+}
+entity
+{
+	"id" "369"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2104.3 -454.745 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 5500]"
+	}
+}
+entity
+{
+	"id" "370"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2397.44 166.583 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 6000]"
+	}
+}
+entity
+{
+	"id" "371"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2278.72 162.951 68"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 6500]"
+	}
+}
+entity
+{
+	"id" "372"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2150.52 109.619 68"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 7000]"
+	}
+}
+entity
+{
+	"id" "373"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2165.42 218.17 68"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 7500]"
+	}
+}
+entity
+{
+	"id" "374"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2171.54 386.625 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 8000]"
+	}
+}
+entity
+{
+	"id" "375"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2130.27 502.836 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 8500]"
+	}
+}
+entity
+{
+	"id" "376"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2040.52 483.669 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 9000]"
+	}
+}
+entity
+{
+	"id" "377"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1926.02 490.35 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 9500]"
+	}
+}
+entity
+{
+	"id" "378"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1843.18 572.056 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 10000]"
+	}
+}
+entity
+{
+	"id" "379"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1769.32 444.67 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 10500]"
+	}
+}
+entity
+{
+	"id" "380"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1655.81 476.067 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 11000]"
+	}
+}
+entity
+{
+	"id" "381"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1494.66 499.705 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 11500]"
+	}
+}
+entity
+{
+	"id" "382"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1536.16 439.44 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 12000]"
+	}
+}
+entity
+{
+	"id" "383"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1360.62 453.036 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 12500]"
+	}
+}
+entity
+{
+	"id" "384"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1226.83 592.533 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 13000]"
+	}
+}
+entity
+{
+	"id" "385"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1284.93 657.77 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 13500]"
+	}
+}
+entity
+{
+	"id" "386"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1405.25 609.906 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 14000]"
+	}
+}
+entity
+{
+	"id" "387"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1688 608 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 14500]"
+	}
+}
+entity
+{
+	"id" "388"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1737.21 765.656 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 15000]"
+	}
+}
+entity
+{
+	"id" "389"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1597.13 767.843 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 15500]"
+	}
+}
+entity
+{
+	"id" "390"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1848 768 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 16000]"
+	}
+}
+entity
+{
+	"id" "391"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1910.4 883.455 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -16268]"
+	}
+}
+entity
+{
+	"id" "392"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1566.43 875.422 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -15768]"
+	}
+}
+entity
+{
+	"id" "393"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1503.23 971.017 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -15268]"
+	}
+}
+entity
+{
+	"id" "394"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1631.29 980.336 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -14768]"
+	}
+}
+entity
+{
+	"id" "395"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1848.82 993.907 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -14268]"
+	}
+}
+entity
+{
+	"id" "396"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1957.05 999.739 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -13768]"
+	}
+}
+entity
+{
+	"id" "397"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1461.62 762.984 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -13268]"
+	}
+}
+entity
+{
+	"id" "398"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1968 742 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -12768]"
+	}
+}
+entity
+{
+	"id" "399"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "929.172 435.479 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -12268]"
+	}
+}
+entity
+{
+	"id" "400"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1111.96 446.141 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -11768]"
+	}
+}
+entity
+{
+	"id" "401"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1140.38 574.128 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -11268]"
+	}
+}
+entity
+{
+	"id" "402"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1238.88 390.238 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -10768]"
+	}
+}
+entity
+{
+	"id" "403"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1232.27 202.452 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -10268]"
+	}
+}
+entity
+{
+	"id" "404"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1224.77 108.565 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -9768]"
+	}
+}
+entity
+{
+	"id" "405"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1246.36 25.795 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -9268]"
+	}
+}
+entity
+{
+	"id" "406"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1220.32 -70.5601 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -8768]"
+	}
+}
+entity
+{
+	"id" "407"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1255.78 -165.089 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -8268]"
+	}
+}
+entity
+{
+	"id" "408"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1208.01 -328.719 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -7768]"
+	}
+}
+entity
+{
+	"id" "409"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1275.29 -415.111 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -7268]"
+	}
+}
+entity
+{
+	"id" "410"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1735.68 -626.696 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -6768]"
+	}
+}
+entity
+{
+	"id" "411"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1565.74 -571.458 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -6268]"
+	}
+}
+entity
+{
+	"id" "412"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1388.93 -496.668 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -5768]"
+	}
+}
+entity
+{
+	"id" "413"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1637.24 -449.556 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -5268]"
+	}
+}
+entity
+{
+	"id" "414"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1502.31 -446.718 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -4768]"
+	}
+}
+entity
+{
+	"id" "415"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1412.25 -625.46 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -4268]"
+	}
+}
+entity
+{
+	"id" "416"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1586.8 -731.953 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -3768]"
+	}
+}
+entity
+{
+	"id" "417"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1569.55 -248.881 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -3268]"
+	}
+}
+entity
+{
+	"id" "418"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1141.73 -457.19 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -2768]"
+	}
+}
+entity
+{
+	"id" "419"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1079.16 -579.634 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -2268]"
+	}
+}
+entity
+{
+	"id" "420"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1007.36 -485.652 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -1768]"
+	}
+}
+entity
+{
+	"id" "421"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1019.02 -684.243 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -1268]"
+	}
+}
+entity
+{
+	"id" "422"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "897.758 -673.247 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2000 -768]"
+	}
+}
+entity
+{
+	"id" "423"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "858.503 -434.106 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 0]"
+	}
+}
+entity
+{
+	"id" "424"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "920.849 -573.064 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 500]"
+	}
+}
+entity
+{
+	"id" "425"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1127.61 -752.94 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 1000]"
+	}
+}
+entity
+{
+	"id" "426"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "605.073 -698.673 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 1500]"
+	}
+}
+entity
+{
+	"id" "427"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "619.54 -420.82 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 2000]"
+	}
+}
+entity
+{
+	"id" "428"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "864.315 -287.882 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 2500]"
+	}
+}
+entity
+{
+	"id" "430"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "504.412 -689.03 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 3500]"
+	}
+}
+entity
+{
+	"id" "431"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "514.775 -527.489 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 4000]"
+	}
+}
+entity
+{
+	"id" "432"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "567.147 -344.896 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 4500]"
+	}
+}
+entity
+{
+	"id" "433"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "487.516 -156.724 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 5000]"
+	}
+}
+entity
+{
+	"id" "434"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "600.579 5.9723 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 5500]"
+	}
+}
+entity
+{
+	"id" "435"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "353.978 30.9602 97.0823"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 6000]"
+	}
+}
+entity
+{
+	"id" "436"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "476.039 -15.9748 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 6500]"
+	}
+}
+entity
+{
+	"id" "437"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "558.723 133.039 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 7000]"
+	}
+}
+entity
+{
+	"id" "438"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "450.338 220.708 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 7500]"
+	}
+}
+entity
+{
+	"id" "439"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "523.884 357.67 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 8000]"
+	}
+}
+entity
+{
+	"id" "440"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "443.285 532.12 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 8500]"
+	}
+}
+entity
+{
+	"id" "441"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "600.306 546.398 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 9000]"
+	}
+}
+entity
+{
+	"id" "442"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "597.4 448.732 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 9500]"
+	}
+}
+entity
+{
+	"id" "443"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "422.627 456.58 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 10000]"
+	}
+}
+entity
+{
+	"id" "444"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "310.884 507.649 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 10500]"
+	}
+}
+entity
+{
+	"id" "445"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "273.928 591.624 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 11000]"
+	}
+}
+entity
+{
+	"id" "446"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "171.14 499.981 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 11500]"
+	}
+}
+entity
+{
+	"id" "447"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "69.732 650.981 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 12000]"
+	}
+}
+entity
+{
+	"id" "448"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-6.31622 499.698 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 12500]"
+	}
+}
+entity
+{
+	"id" "449"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-128 592 112"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13000]"
+	}
+}
+entity
+{
+	"id" "450"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-454.126 546.971 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13500]"
+	}
+}
+entity
+{
+	"id" "451"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-481.022 703.739 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 14000]"
+	}
+}
+entity
+{
+	"id" "452"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-600.54 571.647 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 14500]"
+	}
+}
+entity
+{
+	"id" "453"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-640.667 395.185 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 15000]"
+	}
+}
+entity
+{
+	"id" "454"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-485.338 414.024 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 15500]"
+	}
+}
+entity
+{
+	"id" "455"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-628.886 256.396 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 16000]"
+	}
+}
+entity
+{
+	"id" "456"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-544.583 164.135 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -16268]"
+	}
+}
+entity
+{
+	"id" "457"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-672.983 48.68 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -15768]"
+	}
+}
+entity
+{
+	"id" "458"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-504.636 -17.8052 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -15268]"
+	}
+}
+entity
+{
+	"id" "459"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-686.385 -166.216 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -14768]"
+	}
+}
+entity
+{
+	"id" "460"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-517.809 -251.677 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -14268]"
+	}
+}
+entity
+{
+	"id" "461"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-687.833 -448.299 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -13768]"
+	}
+}
+entity
+{
+	"id" "462"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-515.582 -634.262 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -13268]"
+	}
+}
+entity
+{
+	"id" "463"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-688.077 -1154.53 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -12768]"
+	}
+}
+entity
+{
+	"id" "464"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-513.683 -1053.1 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -12268]"
+	}
+}
+entity
+{
+	"id" "465"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-465.288 -866.973 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -11768]"
+	}
+}
+entity
+{
+	"id" "466"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-634.32 -610.03 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -11268]"
+	}
+}
+entity
+{
+	"id" "467"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-689.614 -801.479 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -10768]"
+	}
+}
+entity
+{
+	"id" "468"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-658.205 -942.111 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -10268]"
+	}
+}
+entity
+{
+	"id" "469"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-820.163 -871.698 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -9768]"
+	}
+}
+entity
+{
+	"id" "470"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-824.154 -746.373 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -9268]"
+	}
+}
+entity
+{
+	"id" "471"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-957.664 -752.033 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -8768]"
+	}
+}
+entity
+{
+	"id" "472"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1157.26 -755.235 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -8268]"
+	}
+}
+entity
+{
+	"id" "473"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-954.703 -901.514 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -7768]"
+	}
+}
+entity
+{
+	"id" "474"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1194.33 -938.234 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -7268]"
+	}
+}
+entity
+{
+	"id" "475"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1085.41 -644.786 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -6768]"
+	}
+}
+entity
+{
+	"id" "476"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1111.1 -470.153 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -6268]"
+	}
+}
+entity
+{
+	"id" "477"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-979.976 -545.023 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -5768]"
+	}
+}
+entity
+{
+	"id" "478"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1345.38 -898.016 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -5268]"
+	}
+}
+entity
+{
+	"id" "479"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1362.64 -701.039 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -4768]"
+	}
+}
+entity
+{
+	"id" "480"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1374.07 -559.21 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -4268]"
+	}
+}
+entity
+{
+	"id" "481"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1376.99 -417.06 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -3768]"
+	}
+}
+entity
+{
+	"id" "482"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1366.41 -204.928 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -3268]"
+	}
+}
+entity
+{
+	"id" "483"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1248.6 -194.833 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -2768]"
+	}
+}
+entity
+{
+	"id" "484"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-983.407 -148.726 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -2268]"
+	}
+}
+entity
+{
+	"id" "485"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1075.12 -302.498 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -1768]"
+	}
+}
+entity
+{
+	"id" "486"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1141.98 -180.41 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -1268]"
+	}
+}
+entity
+{
+	"id" "487"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-957.602 -1161.22 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 -768]"
+	}
+}
+entity
+{
+	"id" "488"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1064.66 -1158.06 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 0]"
+	}
+}
+entity
+{
+	"id" "489"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1195.49 -1157.32 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 500]"
+	}
+}
+entity
+{
+	"id" "490"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1293.98 -1155.46 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 1000]"
+	}
+}
+entity
+{
+	"id" "491"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1414.98 -1156.21 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 1500]"
+	}
+}
+entity
+{
+	"id" "492"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1375.57 -1027.07 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 2000]"
+	}
+}
+entity
+{
+	"id" "493"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1512.17 -1006.6 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 2500]"
+	}
+}
+entity
+{
+	"id" "494"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1479.26 -753.426 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 3000]"
+	}
+}
+entity
+{
+	"id" "495"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1420.94 -1267.75 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 3500]"
+	}
+}
+entity
+{
+	"id" "496"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1340.39 -1355.48 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 4000]"
+	}
+}
+entity
+{
+	"id" "497"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1376.04 -1510.12 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 4500]"
+	}
+}
+entity
+{
+	"id" "498"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1468.05 -1410.62 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 5000]"
+	}
+}
+entity
+{
+	"id" "499"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1566.48 -1409.13 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 5500]"
+	}
+}
+entity
+{
+	"id" "500"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1629.48 -1336.04 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 6000]"
+	}
+}
+entity
+{
+	"id" "501"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1704.79 -1390.38 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 6500]"
+	}
+}
+entity
+{
+	"id" "502"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1652.36 -1474.7 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 7000]"
+	}
+}
+entity
+{
+	"id" "503"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1293.08 -1461.16 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 7500]"
+	}
+}
+entity
+{
+	"id" "504"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1204.9 -1513.29 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 8000]"
+	}
+}
+entity
+{
+	"id" "505"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1120.3 -1546.66 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 8500]"
+	}
+}
+entity
+{
+	"id" "506"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1014.76 -1518.43 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 9000]"
+	}
+}
+entity
+{
+	"id" "507"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-988.536 -1430.19 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 9500]"
+	}
+}
+entity
+{
+	"id" "508"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1118.78 -1431.66 257"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 10000]"
+	}
+}
+entity
+{
+	"id" "519"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3737.49 -437.822 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 15500]"
+	}
+}
+entity
+{
+	"id" "520"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3808 -416 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+entity
+{
+	"id" "521"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3708.02 -500.122 -20.6362"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 -16268]"
+	}
+}
+entity
+{
+	"id" "551"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3708.39 -151.57 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 -1268]"
+	}
+}
+entity
+{
+	"id" "552"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3651.39 -298.735 -32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 -768]"
+	}
+}
+entity
+{
+	"id" "553"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3451.94 -360.615 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 0]"
+	}
+}
+entity
+{
+	"id" "554"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3155.43 -348.569 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 500]"
+	}
+}
+entity
+{
+	"id" "555"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2933.09 -343.84 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 1000]"
+	}
+}
+entity
+{
+	"id" "556"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3031.02 -444.524 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3500 1500]"
+	}
+}
+entity
+{
+	"id" "626"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2761.02 53.501 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4000 4000]"
+	}
+}
+entity
+{
+	"id" "630"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4095.43 49.0972 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4000 6000]"
+	}
+}
+entity
+{
+	"id" "634"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1736 648 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4000 8000]"
+	}
+}
+entity
+{
+	"id" "646"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4826.67 -3515.63 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4000 14000]"
+	}
+}
+entity
+{
+	"id" "722"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1831.23 -1373.83 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -14268]"
+	}
+}
+entity
+{
+	"id" "723"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1856.66 -1468.44 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -13768]"
+	}
+}
+entity
+{
+	"id" "724"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1940.64 -1379.4 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -13268]"
+	}
+}
+entity
+{
+	"id" "725"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-1979.55 -1467.69 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -12768]"
+	}
+}
+entity
+{
+	"id" "726"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2036.04 -1346.9 256"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -12268]"
+	}
+}
+entity
+{
+	"id" "727"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2185.92 -1344.47 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -11768]"
+	}
+}
+entity
+{
+	"id" "728"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2267.43 -1340.82 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -11268]"
+	}
+}
+entity
+{
+	"id" "729"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2499.46 -1355.11 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -10768]"
+	}
+}
+entity
+{
+	"id" "730"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2644.72 -1319.56 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -10268]"
+	}
+}
+entity
+{
+	"id" "731"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2671.01 -1663.46 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -9768]"
+	}
+}
+entity
+{
+	"id" "732"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2437.96 -1553.82 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -9268]"
+	}
+}
+entity
+{
+	"id" "733"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2508.41 -1456.21 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -8768]"
+	}
+}
+entity
+{
+	"id" "734"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2281.61 -1447.16 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -8268]"
+	}
+}
+entity
+{
+	"id" "735"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2275.58 -1606.98 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -7768]"
+	}
+}
+entity
+{
+	"id" "736"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2482.26 -1692.26 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -7268]"
+	}
+}
+entity
+{
+	"id" "737"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2575.16 -1818.92 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -6768]"
+	}
+}
+entity
+{
+	"id" "738"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2340.33 -1804.48 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -6268]"
+	}
+}
+entity
+{
+	"id" "739"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2252.78 -1952.68 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -5768]"
+	}
+}
+entity
+{
+	"id" "740"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2444 -2008 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -5268]"
+	}
+}
+entity
+{
+	"id" "741"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2609.8 -1983.7 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -4768]"
+	}
+}
+entity
+{
+	"id" "742"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2428 -1876 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -4268]"
+	}
+}
+entity
+{
+	"id" "743"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2432 -2164 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -3768]"
+	}
+}
+entity
+{
+	"id" "744"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2115.94 -2577.51 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -3268]"
+	}
+}
+entity
+{
+	"id" "745"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2162.03 -2415.1 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -2768]"
+	}
+}
+entity
+{
+	"id" "746"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2178.16 -2250.5 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -2268]"
+	}
+}
+entity
+{
+	"id" "747"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2294.88 -2243.05 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -1768]"
+	}
+}
+entity
+{
+	"id" "748"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2332 -2160 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -1268]"
+	}
+}
+entity
+{
+	"id" "749"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2679.18 -2244.51 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[4500 -768]"
+	}
+}
+entity
+{
+	"id" "750"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2555.73 -2332.74 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 0]"
+	}
+}
+entity
+{
+	"id" "751"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2612.12 -2459.06 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 500]"
+	}
+}
+entity
+{
+	"id" "752"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2360.97 -2631.89 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 1000]"
+	}
+}
+entity
+{
+	"id" "753"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2508.98 -2622.67 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 1500]"
+	}
+}
+entity
+{
+	"id" "754"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2649.46 -2666.19 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 2000]"
+	}
+}
+entity
+{
+	"id" "755"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2332.53 -2508.21 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 2500]"
+	}
+}
+entity
+{
+	"id" "756"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2209.06 -2667.24 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 3000]"
+	}
+}
+entity
+{
+	"id" "757"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2775.44 -2386.28 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 3500]"
+	}
+}
+entity
+{
+	"id" "758"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2839.79 -2506.24 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 4000]"
+	}
+}
+entity
+{
+	"id" "759"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3003.06 -2356.45 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 4500]"
+	}
+}
+entity
+{
+	"id" "760"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3045.47 -2494.9 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 5000]"
+	}
+}
+entity
+{
+	"id" "761"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3170.08 -2315.12 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 5500]"
+	}
+}
+entity
+{
+	"id" "762"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3214.67 -2488.74 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 6000]"
+	}
+}
+entity
+{
+	"id" "763"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3102.14 -2173.01 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 6500]"
+	}
+}
+entity
+{
+	"id" "764"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3324.22 -2158.82 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 7000]"
+	}
+}
+entity
+{
+	"id" "765"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2935.59 -2252.41 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 7500]"
+	}
+}
+entity
+{
+	"id" "766"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3397.56 -2491.53 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 8000]"
+	}
+}
+entity
+{
+	"id" "767"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3472.18 -2378.56 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 8500]"
+	}
+}
+entity
+{
+	"id" "768"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3416.73 -2590.11 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 9000]"
+	}
+}
+entity
+{
+	"id" "769"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3530.35 -2523.68 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 9500]"
+	}
+}
+entity
+{
+	"id" "770"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3902.87 -2497.45 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 10000]"
+	}
+}
+entity
+{
+	"id" "771"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3589.16 -2454.94 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 10500]"
+	}
+}
+entity
+{
+	"id" "772"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3594.58 -2344.24 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 11000]"
+	}
+}
+entity
+{
+	"id" "773"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4094.01 -2420.53 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 11500]"
+	}
+}
+entity
+{
+	"id" "774"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4086.68 -2263.36 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 12000]"
+	}
+}
+entity
+{
+	"id" "775"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3925.44 -2344.05 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 12500]"
+	}
+}
+entity
+{
+	"id" "776"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3892.39 -2191.37 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 13000]"
+	}
+}
+entity
+{
+	"id" "777"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3729.42 -2206.6 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 13500]"
+	}
+}
+entity
+{
+	"id" "778"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4184.71 -2491.94 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 14000]"
+	}
+}
+entity
+{
+	"id" "779"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4153.09 -2634.51 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 14500]"
+	}
+}
+entity
+{
+	"id" "780"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4247.13 -2649.95 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 15000]"
+	}
+}
+entity
+{
+	"id" "781"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4374.63 -2488.53 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 15500]"
+	}
+}
+entity
+{
+	"id" "782"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4290.71 -2370.97 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 16000]"
+	}
+}
+entity
+{
+	"id" "783"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4249.5 -2263.07 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -16268]"
+	}
+}
+entity
+{
+	"id" "784"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4114.39 -2163.36 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -15768]"
+	}
+}
+entity
+{
+	"id" "785"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3996.99 -2445.71 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -15268]"
+	}
+}
+entity
+{
+	"id" "786"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3752.43 -2527.22 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -14768]"
+	}
+}
+entity
+{
+	"id" "787"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3652.43 -2526.6 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -14268]"
+	}
+}
+entity
+{
+	"id" "788"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3657.95 -2664.14 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -13768]"
+	}
+}
+entity
+{
+	"id" "789"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3490.88 -2694.76 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -13268]"
+	}
+}
+entity
+{
+	"id" "790"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3632.82 -2815.83 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -12768]"
+	}
+}
+entity
+{
+	"id" "791"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3534.44 -2819.11 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -12268]"
+	}
+}
+entity
+{
+	"id" "792"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3636.67 -2968.17 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -11768]"
+	}
+}
+entity
+{
+	"id" "793"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3547.87 -3008.72 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -11268]"
+	}
+}
+entity
+{
+	"id" "794"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3425.67 -3217.28 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -10768]"
+	}
+}
+entity
+{
+	"id" "795"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3551.82 -3136.54 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -10268]"
+	}
+}
+entity
+{
+	"id" "796"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3641.82 -3213.47 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -9768]"
+	}
+}
+entity
+{
+	"id" "797"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3745.77 -3150.91 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -9268]"
+	}
+}
+entity
+{
+	"id" "798"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3738.5 -2780.68 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -8768]"
+	}
+}
+entity
+{
+	"id" "799"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3434.8 -2769.54 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -8268]"
+	}
+}
+entity
+{
+	"id" "800"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3404.13 -3388.7 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -7768]"
+	}
+}
+entity
+{
+	"id" "801"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3537.13 -3272 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -7268]"
+	}
+}
+entity
+{
+	"id" "802"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3741.39 -3377.35 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -6768]"
+	}
+}
+entity
+{
+	"id" "803"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3667.93 -3497.02 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -6268]"
+	}
+}
+entity
+{
+	"id" "804"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3536.8 -3444.68 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -5768]"
+	}
+}
+entity
+{
+	"id" "805"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3534.69 -3627.83 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -5268]"
+	}
+}
+entity
+{
+	"id" "806"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3628.71 -3637.7 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -4768]"
+	}
+}
+entity
+{
+	"id" "807"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3083.83 -3549.22 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -4268]"
+	}
+}
+entity
+{
+	"id" "808"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3193.04 -3430.3 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -3768]"
+	}
+}
+entity
+{
+	"id" "809"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3348.64 -3398.27 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -3268]"
+	}
+}
+entity
+{
+	"id" "810"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3081.3 -3636.72 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -2768]"
+	}
+}
+entity
+{
+	"id" "811"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3214.2 -3623.1 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -2268]"
+	}
+}
+entity
+{
+	"id" "812"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3338.99 -3643.07 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -1768]"
+	}
+}
+entity
+{
+	"id" "813"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4104.79 -3633.41 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -1268]"
+	}
+}
+entity
+{
+	"id" "814"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4045.15 -3531.37 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5000 -768]"
+	}
+}
+entity
+{
+	"id" "815"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3970.76 -3636.96 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 0]"
+	}
+}
+entity
+{
+	"id" "816"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3814 -3645.54 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 500]"
+	}
+}
+entity
+{
+	"id" "817"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3771.21 -3545.2 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 1000]"
+	}
+}
+entity
+{
+	"id" "818"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3922.35 -3402.51 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 1500]"
+	}
+}
+entity
+{
+	"id" "819"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4016.04 -3413.21 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 2000]"
+	}
+}
+entity
+{
+	"id" "820"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3837.68 -3396.47 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 2500]"
+	}
+}
+entity
+{
+	"id" "821"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4146.21 -3513.23 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 3000]"
+	}
+}
+entity
+{
+	"id" "822"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4264.38 -3663.35 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 3500]"
+	}
+}
+entity
+{
+	"id" "823"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4250.65 -3377.92 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 4000]"
+	}
+}
+entity
+{
+	"id" "824"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4312.01 -3509.63 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 4500]"
+	}
+}
+entity
+{
+	"id" "825"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4396.58 -3618.8 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 5000]"
+	}
+}
+entity
+{
+	"id" "826"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4460.46 -3446.89 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 5500]"
+	}
+}
+entity
+{
+	"id" "827"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4557.6 -3567.18 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 6000]"
+	}
+}
+entity
+{
+	"id" "828"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4574.22 -3458.44 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 6500]"
+	}
+}
+entity
+{
+	"id" "829"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4699.96 -3579.54 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 7000]"
+	}
+}
+entity
+{
+	"id" "830"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4681.71 -3402.66 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 7500]"
+	}
+}
+entity
+{
+	"id" "831"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-4830.45 -3647.6 224"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 8000]"
+	}
+}
+entity
+{
+	"id" "879"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-2568 -2184 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 -1268]"
+	}
+}
+entity
+{
+	"id" "880"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3320.97 -2343.76 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[5500 -768]"
+	}
+}
+entity
+{
+	"id" "881"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3441.39 -3532.7 192"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 0]"
+	}
+}
+entity
+{
+	"id" "891"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1916.49 -710.261 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 5000]"
+	}
+}
+entity
+{
+	"id" "892"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1940.38 -569.551 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 5500]"
+	}
+}
+entity
+{
+	"id" "893"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2114.64 -694.03 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 6000]"
+	}
+}
+entity
+{
+	"id" "894"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2265.27 -702.411 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 6500]"
+	}
+}
+entity
+{
+	"id" "895"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2098.78 -353.136 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 7000]"
+	}
+}
+entity
+{
+	"id" "896"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "804.839 -686.65 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 7500]"
+	}
+}
+entity
+{
+	"id" "897"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "795.595 -424.533 32"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 8000]"
+	}
+}
+entity
+{
+	"id" "898"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "1939.3 404.794 96"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 8500]"
+	}
+}
+entity
+{
+	"id" "899"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2474.38 109.573 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 9000]"
+	}
+}
+entity
+{
+	"id" "900"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2537.34 -793.689 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 9500]"
+	}
+}
+entity
+{
+	"id" "901"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2556.54 -955.518 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 10000]"
+	}
+}
+entity
+{
+	"id" "902"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2424.57 -557.902 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 10500]"
+	}
+}
+entity
+{
+	"id" "903"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2425.67 -723.67 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 11000]"
+	}
+}
+entity
+{
+	"id" "904"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "2224.89 -560.95 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 11500]"
+	}
+}
+entity
+{
+	"id" "916"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4275.3 -656.053 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -15268]"
+	}
+}
+entity
+{
+	"id" "917"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4267.38 -511.863 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -14768]"
+	}
+}
+entity
+{
+	"id" "918"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4271.45 -366.673 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -14268]"
+	}
+}
+entity
+{
+	"id" "919"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4269.11 -135.806 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -13768]"
+	}
+}
+entity
+{
+	"id" "920"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3891.46 105.181 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -13268]"
+	}
+}
+entity
+{
+	"id" "921"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "4020.25 97.6172 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -12768]"
+	}
+}
+entity
+{
+	"id" "922"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3635.52 78.776 40"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -12268]"
+	}
+}
+entity
+{
+	"id" "936"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3743.3 -2412.26 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -5268]"
+	}
+}
+entity
+{
+	"id" "937"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-3830.44 -2430.5 184"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -4768]"
+	}
+}
+entity
+{
+	"id" "939"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3238.23 -379.289 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -3768]"
+	}
+}
+entity
+{
+	"id" "940"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3226.18 -478.827 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -3268]"
+	}
+}
+entity
+{
+	"id" "941"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3426.67 -505.641 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -2768]"
+	}
+}
+entity
+{
+	"id" "942"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3428.77 -418.981 -24"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[6000 -2268]"
+	}
+}
+entity
+{
+	"id" "9553"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-384 480 272"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13500]"
+	}
+}
+entity
+{
+	"id" "9555"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-384 592 272"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13500]"
+	}
+}
+entity
+{
+	"id" "9559"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-128 480 112"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13000]"
+	}
+}
+entity
+{
+	"id" "9569"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "-32 608 112"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[2500 13000]"
+	}
+}
+entity
+{
+	"id" "16585"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3808 -448 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+entity
+{
+	"id" "16589"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3776 -400 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+entity
+{
+	"id" "16591"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3776 -448 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+entity
+{
+	"id" "16593"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3728 -384 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+entity
+{
+	"id" "16595"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3744 -416 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 15500]"
+	}
+}
+entity
+{
+	"id" "16597"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3760 -416 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 15500]"
+	}
+}
+entity
+{
+	"id" "16599"
+	"classname" "info_marine_hint"
+	"angles" "0 0 0"
+	"origin" "3824 -416 -5.99999"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[3000 16000]"
+	}
+}
+cameras
+{
+	"activecamera" "0"
+	camera
+	{
+		"position" "[3144.63 -266.326 242.905]"
+		"look" "[3228.38 -226.203 -6.78186]"
+	}
+	camera
+	{
+		"position" "[-4842.53 -3460.31 308.239]"
+		"look" "[-4589.81 -3460.31 224]"
+	}
+	camera
+	{
+		"position" "[-4864.07 -3578.77 308.239]"
+		"look" "[-4611.35 -3578.77 224]"
+	}
+	camera
+	{
+		"position" "[-4808.42 -3638.55 308.239]"
+		"look" "[-4555.7 -3638.55 224]"
+	}
+	camera
+	{
+		"position" "[-4712.52 -3618.23 308.239]"
+		"look" "[-4459.8 -3618.23 224]"
+	}
+	camera
+	{
+		"position" "[-4716.29 -3529.91 308.239]"
+		"look" "[-4463.57 -3529.91 224]"
+	}
+	camera
+	{
+		"position" "[-4728.18 -3452.33 308.239]"
+		"look" "[-4475.46 -3452.33 224]"
+	}
+	camera
+	{
+		"position" "[-4793.14 -3584.49 308.239]"
+		"look" "[-4540.42 -3584.49 224]"
+	}
+}
+cordons
+{
+	"active" "0"
+}

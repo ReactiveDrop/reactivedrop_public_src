@@ -12,6 +12,7 @@
 	#include "asw_grub.h"
 	#include "asw_simple_grub.h"
 	#include "asw_marine.h"
+	#include "asw_marine_resource.h"
 	#include "asw_player.h"
 	#include "asw_fx_shared.h"
 	#include "asw_util_shared.h"
@@ -52,6 +53,7 @@ END_NETWORK_TABLE()
 
 #ifdef GAME_DLL
 ConVar asw_goo_volume("asw_goo_volume", "1.0f", FCVAR_CHEAT, "Volume of the alien goo looping sound");
+ConVar asw_goo_burning_damage( "asw_goo_burning_damage", "2.0f", FCVAR_CHEAT, "Damage applied per interval while burning" );
 extern ConVar rd_biomass_ignite_from_explosions;
 ConVar rd_biomass_damage_from_explosions( "rd_biomass_damage_from_explosions", "0", FCVAR_CHEAT, "If 1, biomass will take damage from explosions" );
 LINK_ENTITY_TO_CLASS( asw_alien_goo, CASW_Alien_Goo );
@@ -102,6 +104,7 @@ CASW_Alien_Goo::CASW_Alien_Goo()
 	m_fPulseStrength = 1.0f;
 	m_fPulseSpeed = 1.0f;	
 #ifndef CLIENT_DLL
+	m_hIgnitedBy = NULL;
 	g_AlienGoo.AddToTail( this );
 #endif
 }
@@ -254,15 +257,13 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	// riflemod: goo takes blast damage, e.g. from explosions. But they only ignite it
 	if ( rd_biomass_ignite_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST )
 	{
+		OnIgnitedByMarine( pMarine ? pMarine->GetMarineResource() : NULL );
 		Ignite( 30.0f );
 
 		// notify the marine that he's hurting this, so his accuracy doesn't drop
-		if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
+		if ( pMarine )
 		{
-			if ( pMarine )
-			{
-				pMarine->HurtJunkItem( this, info );
-			}
+			pMarine->HurtJunkItem( this, info );
 		}
 
 		CASW_Player *pPlayerAttacer = NULL;
@@ -276,7 +277,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 		{
 			event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
 			event->SetInt( "entindex", entindex() );
-			gameeventmanager->FireEventClientSide( event );
+			gameeventmanager->FireEvent( event );
 		}
 		return 0;
 	}
@@ -318,6 +319,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	{		
 		if ( info.GetDamageType() & DMG_BURN )
 		{
+			OnIgnitedByMarine( pMarine ? pMarine->GetMarineResource() : NULL );
 			Ignite( 30.0f );
 
 			CASW_Player *pPlayerAttacer = NULL;
@@ -331,7 +333,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
 				event->SetInt( "entindex", entindex() );
-				gameeventmanager->FireEventClientSide( event );
+				gameeventmanager->FireEvent( event );
 			}
 		}
 	}
@@ -350,7 +352,7 @@ void CASW_Alien_Goo::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 
 	if ( ASWBurning() )
 	{
-		ASWBurning()->BurnEntity(this, NULL, flFlameLifetime, 0.4f, 5.0f * 0.4f);	// 5 dps, applied every 0.4 seconds
+		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, 0.4f, asw_goo_burning_damage.GetFloat() );	// 5 dps, applied every 0.4 seconds
 	}
 
 	m_OnIgnite.FireOutput( this, this );
@@ -453,6 +455,7 @@ void CASW_Alien_Goo::BurningLinkThink()
 					(FStrEq("asw_alien_goo", ent->GetClassname()) || FStrEq("asw_grub_sac", ent->GetClassname())
 						)))
 			{
+				pGoo->OnIgnitedByMarine( m_hIgnitedBy );
 				pGoo->Ignite(30.0f);
 			}
 		}
@@ -663,6 +666,17 @@ bool CASW_Alien_Goo::Dissolve( const char *pMaterialName, float flStartTime, boo
 	}
 
 	return bRagdollCreated;
+}
+
+void CASW_Alien_Goo::OnIgnitedByMarine( CASW_Marine_Resource *pMR )
+{
+	if ( m_hIgnitedBy || !pMR || m_bHasGrubs )
+	{
+		return;
+	}
+
+	m_hIgnitedBy = pMR;
+	pMR->m_iBiomassIgnited++;
 }
 
 #else

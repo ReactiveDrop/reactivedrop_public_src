@@ -37,6 +37,7 @@ BEGIN_DATADESC( CASW_Mortar_Round )
 	DEFINE_FIELD( m_fDetonateTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fEarliestAOEDetonationTime, FIELD_TIME ),
 	DEFINE_FIELD( m_nGrenadeExplosionType, FIELD_INTEGER ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "CreateEffects", InputCreateEffects ),
 END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
@@ -84,7 +85,10 @@ void CASW_Mortar_Round::Spawn( void )
 	//EmitSound( "ASWGrenade.Alarm" );
 	SetFuseLength( asw_mortar_round_fuse.GetFloat() );	
 
-	EmitSound( "ASW_Ranger_Projectile.Spawned" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASW_Ranger_Projectile.Spawned" );
+	}
 
 	if ( m_fDetonateTime <= gpGlobals->curtime + asw_mortar_round_radius_check_interval.GetFloat() )
 	{
@@ -150,9 +154,12 @@ void CASW_Mortar_Round::Touch( CBaseEntity *pOther )
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
-		if (GetAbsVelocity().Length2D() > 60)
+		if ( GetAbsVelocity().Length2D() > 60 )
 		{
-			EmitSound("Grenade.ImpactHard");
+			if ( !m_bSilent )
+			{
+				EmitSound( "Grenade.ImpactHard" );
+			}
 		}
 	}
 
@@ -282,7 +289,10 @@ void CASW_Mortar_Round::DoExplosion( )
 
 	// explosion effects
 	DispatchParticleEffect( "mortar_explosion", GetAbsOrigin(), Vector( m_DmgRadius, 0.0f, 0.0f ), QAngle( 0.0f, 0.0f, 0.0f ) );
-	EmitSound( "ASWGrenade.Explode" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASWGrenade.Explode" );
+	}
 
 	// damage to nearby things
 	ASWGameRules()->RadiusDamage( CTakeDamageInfo( this, m_hFirer.Get(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
@@ -367,4 +377,9 @@ void CASW_Mortar_Round::CreateEffects()
 				break;
 			}	
 	}
+}
+
+void CASW_Mortar_Round::InputCreateEffects( inputdata_t &data )
+{
+	CreateEffects();
 }

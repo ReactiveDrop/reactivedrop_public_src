@@ -4,6 +4,7 @@
 
 #include "util_shared.h"
 #include "asw_shareddefs.h"
+#include "steam/steamclientpublic.h"
 
 #ifdef CLIENT_DLL
 #define CPointCamera C_PointCamera
@@ -11,6 +12,7 @@
 
 class CPhysicsProp;
 class CASW_Player;
+class CASW_Inhabitable_NPC;
 class CASW_Marine;
 class CASW_Marine_Resource;
 class CPointCamera;
@@ -68,12 +70,18 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake = false, CASW_Marine *pOnlyMarine = NULL );
 	void UTIL_ASW_ScreenPunch( const Vector &center, const Vector &direction, float amplitude, float frequency, float duration, float radius );
 	void UTIL_ASW_ScreenPunch( const Vector &center, float radius, const ScreenShake_t &shake );
-	void UTIL_ASW_PoisonBlur(CBaseEntity *pEntity, float duration);
+	void UTIL_ASW_PoisonBlur( CASW_Marine *pMarine, float duration );
 	CASW_Marine* UTIL_ASW_NearestMarine( const Vector &pos, float &marine_distance, ASW_Marine_Class marineClass = MARINE_CLASS_UNDEFINED, bool bAIOnly = false );	// returns the nearest marine to this point
 	CASW_Marine* UTIL_ASW_NearestMarine( const CASW_Marine *pMarine, float &marine_distance );	// returns the nearest marine to this marine
 	int UTIL_ASW_NumCommandedMarines( const CASW_Player *pPlayer );	// returns the number of marines commanded by this player
 	bool UTIL_ASW_BlockingMarine( CBaseEntity *pEntity );
 	CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot( CBaseEntity *pEntity, float fDist = 500.0f );
+
+	class CASW_ViewNPCRecipientFilter : public CRecipientFilter
+	{
+	public:
+		CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC );
+	};
 #else
 	bool UTIL_ASW_ClientsideGib(C_BaseAnimating* pEnt);
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );
@@ -82,8 +90,8 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	void UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity );
 #endif
 
-void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction = Vector(0,0,0) );
-void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, const ScreenShake_t &shake );
+void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction = Vector(0,0,0) );
+void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, const ScreenShake_t &shake );
 
 /// this is a convenience function for rapidly iterating on a screenshake. (see .cpp for details)
 ScreenShake_t ASW_DefaultScreenShake( void );
@@ -119,6 +127,14 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 typedef void (*UTIL_RD_LoadAllKeyValuesCallback)( const char *pszPath, KeyValues *pKV, void *pUserData );
 void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData );
 
-bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false );
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID = NULL, bool bIncludeFallbackSearchPaths = false, bool bIsCaptions = false );
+
+void UTIL_RD_ReloadLocalizeFiles();
+CRC32_t UTIL_RD_CaptionToHash( const char *szToken );
+const char *UTIL_RD_HashToCaption( CRC32_t hash );
+
+const char *UTIL_RD_EResultToString( EResult eResult );
+
+const wchar_t *UTIL_RD_CommaNumber( int64_t num );
 
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

@@ -62,7 +62,6 @@ ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "412", FCVAR_CHEAT );
 extern kbutton_t in_zoom;
 extern ConVar asw_hide_local_marine;
 extern ConVar cam_command;
-extern ConVar sv_cheats;
 extern ConVar joy_pan_camera;
 
 #define	DIST	 2
@@ -126,10 +125,10 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 
 	// Check to see if we are in a camera volume.
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetViewMarine() : NULL;
-	if ( pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
+	if ( pNPC )
 	{
-		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pMarine->GetAbsOrigin() );
+		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pNPC->GetAbsOrigin() );
 		if ( fCameraVolumePitch != -1 )
 		{
 			flPitch = fCameraVolumePitch;
@@ -174,13 +173,19 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	// BenLubar: When spectating a player, use their camera yaw.
-	if ( pPlayer && pPlayer->GetSpectatingMarine() && pPlayer->GetSpectatingMarine()->IsInhabited() )
+	C_ASW_Inhabitable_NPC *pSpectatingNPC = pPlayer ? pPlayer->GetSpectatingNPC() : NULL;
+	if ( pSpectatingNPC && pSpectatingNPC->IsInhabited() )
 	{
-		pPlayer = pPlayer->GetSpectatingMarine()->GetCommander();
+		pPlayer = pSpectatingNPC->GetCommander();
 	}
 
-	if ( pPlayer && pPlayer->GetASWControls() != 1 )
+	if ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN )
 	{
+		if ( pSpectatingNPC && !pSpectatingNPC->IsInhabited() )
+		{
+			return pSpectatingNPC->EyeAngles().y;
+		}
+
 		return pPlayer->EyeAngles().y;
 	}
 
@@ -371,7 +376,7 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	if ( !asw_cam_marine_shift_enable.GetBool() )
 		return;
 
-	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingMarine() && !pPlayer->GetSpectatingMarine()->IsInhabited() ) )
+	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingNPC() && !pPlayer->GetSpectatingNPC()->IsInhabited() ) )
 	{
 		m_fShiftFraction = Approach( 0.0f, m_fShiftFraction, gpGlobals->frametime );
 	}
@@ -513,7 +518,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	pPlayer->m_nLastCameraFrame = gpGlobals->framecount;
 	pPlayer->m_angLastCamera = angCamera;
 
-	if ( ASWDeathmatchMode() && pPlayer->m_hLastMarine == NULL && !pPlayer->GetSpectatingMarine() && pPlayer->GetMarine() )
+	if ( ASWDeathmatchMode() && pPlayer->m_hLastNPC == NULL && !pPlayer->GetSpectatingNPC() && pPlayer->GetNPC() )
 	{
 		IGameEvent *event = gameeventmanager->CreateEvent( "general_hint" );
 		if ( event )
@@ -521,7 +526,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 			gameeventmanager->FireEventClientSide( event );
 		}
 	}
-	pPlayer->m_hLastMarine = pPlayer->GetViewMarine();
+	pPlayer->m_hLastNPC = pPlayer->GetViewNPC();
 }
 
 
@@ -582,7 +587,7 @@ void CASWInput::UpdateASWControls()
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer->GetASWControls() == 1 )
+	if ( !pPlayer || pPlayer->GetASWControls() == ASWC_TOPDOWN )
 	{
 		CAM_ToThirdPerson();
 	}

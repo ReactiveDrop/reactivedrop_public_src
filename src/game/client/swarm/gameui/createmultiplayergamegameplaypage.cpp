@@ -254,7 +254,6 @@ void CCreateMultiplayerGameGameplayPage::LoadGameOptionsList()
 		}
 		else
 		{
-			mpcontrol_t *p;
 			p = m_pList;
 			while ( p )
 			{

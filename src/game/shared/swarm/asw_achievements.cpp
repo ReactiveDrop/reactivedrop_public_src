@@ -7,6 +7,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_player.h"
 #endif
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -147,18 +148,17 @@ const char *CASW_Achievement::GetIconPath()
 	return szImage;
 }
 
-// =====================
-
-class CAchievement_No_Friendly_Fire : public CASW_Achievement
+class CAchievement_Server_Triggered : public CASW_Achievement
 {
-	void Init() 
+	void Init()
 	{
 		SetFlags( ACH_SAVE_GLOBAL );
 		SetGoal( 1 );
 	}
 	// server fires an event for this achievement, no other code within achievement necessary
 };
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_No_Friendly_Fire, ACHIEVEMENT_ASW_NO_FRIENDLY_FIRE, "ASW_NO_FRIENDLY_FIRE", 5, 10 );
+
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_NO_FRIENDLY_FIRE, "ASW_NO_FRIENDLY_FIRE", 5, 10 );
 
 class CAchievement_Shieldbug : public CASW_Achievement
 {
@@ -171,38 +171,9 @@ class CAchievement_Shieldbug : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Shieldbug, ACHIEVEMENT_ASW_SHIELDBUG, "ASW_SHIELDBUG", 5, 20 );
 
-class CAchievement_Grenade_Multi_Kill : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Grenade_Multi_Kill, ACHIEVEMENT_ASW_GRENADE_MULTI_KILL, "ASW_GRENADE_MULTI_KILL", 5, 30 );
-
-class CAchievement_Accuracy : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Accuracy, ACHIEVEMENT_ASW_ACCURACY, "ASW_ACCURACY", 5, 40 );
-
-class CAchievement_No_Damage_Taken : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_No_Damage_Taken, ACHIEVEMENT_ASW_NO_DAMAGE_TAKEN, "ASW_NO_DAMAGE_TAKEN", 5, 50 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_GRENADE_MULTI_KILL, "ASW_GRENADE_MULTI_KILL", 5, 30 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_ACCURACY, "ASW_ACCURACY", 5, 40 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_NO_DAMAGE_TAKEN, "ASW_NO_DAMAGE_TAKEN", 5, 50 );
 
 class CAchievement_Sentry_Gun_Kills : public CASW_Achievement
 {
@@ -230,16 +201,7 @@ class CAchievement_Sentry_Gun_Kills : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Sentry_Gun_Kills, ACHIEVEMENT_ASW_SENTRY_GUN_KILLS, "ASW_SENTRY_GUN_KILLS", 5, 60 );
 
-class CAchievement_Eggs_Before_Hatch : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Eggs_Before_Hatch, ACHIEVEMENT_ASW_EGGS_BEFORE_HATCH, "ASW_EGGS_BEFORE_HATCH", 5, 70 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_EGGS_BEFORE_HATCH, "ASW_EGGS_BEFORE_HATCH", 5, 70 );
 
 class CAchievement_Grub_Kills : public CASW_Achievement
 {
@@ -253,49 +215,10 @@ class CAchievement_Grub_Kills : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Grub_Kills, ACHIEVEMENT_ASW_GRUB_KILLS, "ASW_GRUB_KILLS", 5, 80 );
 
-class CAchievement_Melee_Parasite : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Melee_Parasite, ACHIEVEMENT_ASW_MELEE_PARASITE, "ASW_MELEE_PARASITE", 5, 90 );
-
-class CAchievement_Melee_Kills : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Melee_Kills, ACHIEVEMENT_ASW_MELEE_KILLS, "ASW_MELEE_KILLS", 5, 100 );
-
-class CAchievement_Barrel_Kills : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Barrel_Kills, ACHIEVEMENT_ASW_BARREL_KILLS, "ASW_BARREL_KILLS", 5, 110 );
-
-class CAchievement_Infestation_Curing : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Infestation_Curing, ACHIEVEMENT_ASW_INFESTATION_CURING, "ASW_INFESTATION_CURING", 5, 120 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_MELEE_PARASITE, "ASW_MELEE_PARASITE", 5, 90 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_MELEE_KILLS, "ASW_MELEE_KILLS", 5, 100 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_BARREL_KILLS, "ASW_BARREL_KILLS", 5, 110 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_INFESTATION_CURING, "ASW_INFESTATION_CURING", 5, 120 );
 
 class CAchievement_Fast_Wire_Hacks : public CASW_Achievement
 {
@@ -336,6 +259,18 @@ class CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName : public CAS
 		ListenForGameEvent( "mission_success" ); \
 	} \
 \
+	virtual int GetNumComponents() \
+	{ \
+		return NELEMS( g_szAchievementMapNames ## CampaignName ); \
+	} \
+\
+	virtual const char *GetComponentDisplayString( int iComponent ) \
+	{ \
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( g_szAchievementMapNames ## CampaignName[iComponent] ); \
+		Assert( pMission ); \
+		return pMission ? STRING( pMission->MissionTitle ) : NULL; \
+	} \
+\
 	void FireGameEvent_Internal( IGameEvent *event ) \
 	{ \
 		if ( !Q_stricmp( event->GetName(), "mission_success" ) && ASWGameRules() && ASWGameRules()->GetSkillLevel() >= iDifficulty && !ASWGameRules()->m_bChallengeActiveThisMission ) \
@@ -355,7 +290,7 @@ class CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName : public CAS
 		} \
 	} \
 }; \
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName, (ACHIEVEMENT_ ## PREFIX ## DIFFICULTY_NAME ## SUFFIX), #PREFIX #DIFFICULTY_NAME #SUFFIX, 5, iOffset + iDifficulty - 1 )
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName, ACHIEVEMENT_ ## PREFIX ## DIFFICULTY_NAME ## SUFFIX, #PREFIX #DIFFICULTY_NAME #SUFFIX, 5, iOffset + iDifficulty - 1 )
 
 #define DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(iOffset, PREFIX, SUFFIX, CampaignName) \
 	DIFFICULTY_CAMPAIGN_ACHIEVEMENT(EASY, Easy, iOffset, 1, PREFIX, SUFFIX, CampaignName); \
@@ -421,6 +356,25 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-bio1operationx5",
 	"rd-bio2invisiblethreat",
 	"rd-bio3biogenlabs",
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
+	"rd-acc1_infodep",
+	"rd-acc2_powerhood",
+	"rd-acc3_rescenter",
+	"rd-acc4_confacility",
+	"rd-acc5_j5connector",
+	"rd-acc6_labruins",
+	"rd-acc_complex",
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
+	"rd-ada_sector_a9",
+	"rd-ada_nexus_subnode",
+	"rd-ada_neon_carnage",
+	"rd-ada_fuel_junction",
+	"rd-ada_dark_path",
+	"rd-ada_forbidden_outpost",
+	"rd-ada_new_beginning",
+	"rd-ada_anomaly",
+#endif
 	"rd-bonus_mission1",
 	"rd-bonus_mission2",
 	"rd-bonus_mission3",
@@ -533,18 +487,46 @@ static const char *g_szAchievementMapNamesBIO[] =
 	"rd-bio3biogenlabs",
 };
 
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
+static const char *g_szAchievementMapNamesACC[] =
+{
+	"rd-acc1_infodep",
+	"rd-acc2_powerhood",
+	"rd-acc3_rescenter",
+	"rd-acc4_confacility",
+	"rd-acc5_j5connector",
+	"rd-acc6_labruins",
+};
+#endif
+
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
+static const char *g_szAchievementMapNamesADA[] =
+{
+	"rd-ada_sector_a9",
+	"rd-ada_nexus_subnode",
+	"rd-ada_neon_carnage",
+	"rd-ada_fuel_junction",
+	"rd-ada_dark_path",
+	"rd-ada_forbidden_outpost",
+};
+#endif
+
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(150, ASW_, _CAMPAIGN, Jacob);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(155, RD_, _CAMPAIGN_OCS, OCS);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(160, RD_, _CAMPAIGN_RES, RES);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(165, RD_, _CAMPAIGN_AREA9800, Area9800);
 DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(170, RD_, _CAMPAIGN_TFT, TFT);
-//DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(175, RD_, _CAMPAIGN_DC, DC);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(180, RD_, _CAMPAIGN_TIL, TIL);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(185, RD_, _CAMPAIGN_LAN, Lana);
-//DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(190, RD_, _CAMPAIGN_REDUCTION, Reduction);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(195, RD_, _CAMPAIGN_PAR, PAR);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(200, RD_, _CAMPAIGN_NH, NH);
-DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(205, RD_, _CAMPAIGN_BIO, BIO);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(175, RD_, _CAMPAIGN_TIL, TIL);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(180, RD_, _CAMPAIGN_LAN, Lana);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(185, RD_, _CAMPAIGN_PAR, PAR);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(190, RD_, _CAMPAIGN_NH, NH);
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(195, RD_, _CAMPAIGN_BIO, BIO);
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(200, RD_, _CAMPAIGN_ACC, ACC);
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
+DIFFICULTY_CAMPAIGN_ACHIEVEMENTS(205, RD_, _CAMPAIGN_ADA, ADA);
+#endif
 
 class CAchievement_Kill_Grind_1 : public CASW_Achievement
 {
@@ -590,94 +572,16 @@ class CAchievement_Kill_Grind_4 : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Kill_Grind_4, ACHIEVEMENT_ASW_KILL_GRIND_4, "ASW_KILL_GRIND_4", 5, 1228 );
 
-class CAchievement_Speedrun_Landing_Bay : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Landing_Bay, ACHIEVEMENT_ASW_SPEEDRUN_LANDING_BAY, "ASW_SPEEDRUN_LANDING_BAY", 5, 1230 );
-
-class CAchievement_Speedrun_Descent : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Descent, ACHIEVEMENT_ASW_SPEEDRUN_DESCENT, "ASW_SPEEDRUN_DESCENT", 5, 1231 );
-
-class CAchievement_Speedrun_Deima : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Deima, ACHIEVEMENT_ASW_SPEEDRUN_DEIMA, "ASW_SPEEDRUN_DEIMA", 5, 1232 );
-
-class CAchievement_Speedrun_Rydberg : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Rydberg, ACHIEVEMENT_ASW_SPEEDRUN_RYDBERG, "ASW_SPEEDRUN_RYDBERG", 5, 1233 );
-
-class CAchievement_Speedrun_Residential : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Residential, ACHIEVEMENT_ASW_SPEEDRUN_RESIDENTIAL, "ASW_SPEEDRUN_RESIDENTIAL", 5, 1234 );
-
-class CAchievement_Speedrun_Sewer : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Sewer, ACHIEVEMENT_ASW_SPEEDRUN_SEWER, "ASW_SPEEDRUN_SEWER", 5, 1235 );
-
-class CAchievement_Speedrun_Timor : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_Timor, ACHIEVEMENT_ASW_SPEEDRUN_TIMOR, "ASW_SPEEDRUN_TIMOR", 5, 1236 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_LANDING_BAY, "ASW_SPEEDRUN_LANDING_BAY", 5, 1230 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_DESCENT, "ASW_SPEEDRUN_DESCENT", 5, 1231 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_DEIMA, "ASW_SPEEDRUN_DEIMA", 5, 1232 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_RYDBERG, "ASW_SPEEDRUN_RYDBERG", 5, 1233 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_RESIDENTIAL, "ASW_SPEEDRUN_RESIDENTIAL", 5, 1234 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_SEWER, "ASW_SPEEDRUN_SEWER", 5, 1235 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_SPEEDRUN_TIMOR, "ASW_SPEEDRUN_TIMOR", 5, 1236 );
 
 #define DECLARE_RD_SPEEDRUN_ACHIEVEMENT( suffix, order ) \
-	class CAchievement_Speedrun_ ## suffix : public CASW_Achievement \
-	{ \
-		void Init() \
-		{ \
-			SetFlags( ACH_SAVE_GLOBAL ); \
-			SetGoal( 1 ); \
-		} \
-		/* server fires an event for this achievement, no other code within achievement necessary */ \
-	}; \
-	DECLARE_ACHIEVEMENT_ORDER( CAchievement_Speedrun_ ## suffix, ACHIEVEMENT_RD_SPEEDRUN_ ## suffix, "RD_SPEEDRUN_" #suffix, 5, order )
+	DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_SPEEDRUN_ ## suffix, "RD_SPEEDRUN_" #suffix, 5, order )
 
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( OCS_STORAGE_FACILITY, 1237 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( OCS_LANDING_BAY_7, 1238 );
@@ -697,79 +601,59 @@ DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TFT_DESERT_OUTPOST, 1248 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TFT_ABANDONED_MAINTENANCE, 1249 );
 DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TFT_SPACEPORT, 1250 );
 
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( DC_OMEGA_CITY, 1251 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( DC_BREAKING_AN_ENTRY, 1252 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( DC_SEARCH_AND_RESCUE, 1253 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_MIDNIGHT_PORT, 1251 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_ROAD_TO_DAWN, 1252 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_ARCTIC_INFILTRATION, 1253 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_AREA9800, 1254 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_COLD_CATWALKS, 1255 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_YANAURUS_MINE, 1256 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_FACTORY, 1257 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_COM_CENTER, 1258 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_SYNTEK_HOSPITAL, 1259 );
 
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_MIDNIGHT_PORT, 1254 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_ROAD_TO_DAWN, 1255 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_ARCTIC_INFILTRATION, 1256 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_AREA9800, 1257 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_COLD_CATWALKS, 1258 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_YANAURUS_MINE, 1259 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_FACTORY, 1260 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_COM_CENTER, 1261 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( TIL_SYNTEK_HOSPITAL, 1262 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_BRIDGE, 1260 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_SEWER, 1261 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_MAINTENANCE, 1262 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_VENT, 1263 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_COMPLEX, 1264 );
 
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_BRIDGE, 1263 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_SEWER, 1264 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_MAINTENANCE, 1265 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_VENT, 1266 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( LAN_COMPLEX, 1267 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_UNEXPECTED_ENCOUNTER, 1265 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HOSTILE_PLACES, 1266 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CLOSE_CONTACT, 1267 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HIGH_TENSION, 1268 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CRUCIAL_POINT, 1269 );
 
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_1, 1268 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_2, 1269 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_3, 1270 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_4, 1271 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_5, 1272 );
-// DECLARE_RD_SPEEDRUN_ACHIEVEMENT( REDUCTION_6, 1273 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_LOGISTICS_AREA, 1270 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_PLATFORM_XVII, 1271 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_GROUNDWORK_LABS, 1272 );
 
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_UNEXPECTED_ENCOUNTER, 1274 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HOSTILE_PLACES, 1275 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CLOSE_CONTACT, 1276 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_HIGH_TENSION, 1277 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( PAR_CRUCIAL_POINT, 1278 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_OPERATION_X5, 1273 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_INVISIBLE_THREAT, 1274 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_BIOGEN_LABS, 1275 );
 
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_LOGISTICS_AREA, 1279 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_PLATFORM_XVII, 1280 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( NH_GROUNDWORK_LABS, 1281 );
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_INFODEP, 1276 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_POWERHOOD, 1277 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_RESCENTER, 1278 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_CONFACILITY, 1279 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_J5CONNECTOR, 1280 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ACC_LABRUINS, 1281 );
+#endif
 
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_OPERATION_X5, 1282 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_INVISIBLE_THREAT, 1283 );
-DECLARE_RD_SPEEDRUN_ACHIEVEMENT( BIO_BIOGEN_LABS, 1284 );
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_SECTOR_A9, 1282 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_NEXUS_SUBNODE, 1283 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_NEON_CARNAGE, 1284 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_FUEL_JUNCTION, 1285 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_DARK_PATH, 1286 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_FORBIDDEN_OUTPOST, 1287 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_NEW_BEGINNING, 1288 );
+DECLARE_RD_SPEEDRUN_ACHIEVEMENT( ADA_ANOMALY, 1289 );
+#endif
 
-class CAchievement_Group_Heal : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Group_Heal, ACHIEVEMENT_ASW_GROUP_HEAL, "ASW_GROUP_HEAL", 5, 2300 );
-
-class CAchievement_Group_Damage_Amp : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Group_Damage_Amp, ACHIEVEMENT_ASW_GROUP_DAMAGE_AMP, "ASW_GROUP_DAMAGE_AMP", 5, 2310 );
-
-class CAchievement_Fast_Reloads_In_A_Row : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Fast_Reloads_In_A_Row, ACHIEVEMENT_ASW_FAST_RELOADS_IN_A_ROW, "ASW_FAST_RELOADS_IN_A_ROW", 5, 2320 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_GROUP_HEAL, "ASW_GROUP_HEAL", 5, 2300 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_GROUP_DAMAGE_AMP, "ASW_GROUP_DAMAGE_AMP", 5, 2310 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_FAST_RELOADS_IN_A_ROW, "ASW_FAST_RELOADS_IN_A_ROW", 5, 2320 );
 
 class CAchievement_Fast_Reload : public CASW_Achievement
 {
@@ -804,38 +688,10 @@ class CAchievement_Fast_Reload : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Fast_Reload, ACHIEVEMENT_ASW_FAST_RELOAD, "ASW_FAST_RELOAD", 5, 2330 );
 
-class CAchievement_All_Healing : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_All_Healing, ACHIEVEMENT_ASW_ALL_HEALING, "ASW_ALL_HEALING", 5, 2340 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_ALL_HEALING, "ASW_ALL_HEALING", 5, 2340 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_PROTECT_TECH, "ASW_PROTECT_TECH", 5, 2350 );
 
-class CAchievement_Protect_Tech : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Protect_Tech, ACHIEVEMENT_ASW_PROTECT_TECH, "ASW_PROTECT_TECH", 5, 2350 );
-
-class CAchievement_Stun_Grenade : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Stun_Grenade, ACHIEVEMENT_ASW_STUN_GRENADE, "ASW_STUN_GRENADE", 5, 2360 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_STUN_GRENADE, "ASW_STUN_GRENADE", 5, 2360 );
 
 class CAchievement_Weld_Door : public CASW_Achievement
 {
@@ -871,27 +727,8 @@ class CAchievement_Weld_Door : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Weld_Door, ACHIEVEMENT_ASW_WELD_DOOR, "ASW_WELD_DOOR", 5, 2370 );
 
-class CAchievement_Dodge_Ranger_Shot : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Dodge_Ranger_Shot, ACHIEVEMENT_ASW_DODGE_RANGER_SHOT, "ASW_DODGE_RANGER_SHOT", 5, 2380 );
-
-class CAchievement_Boomer_Kill_Early : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Boomer_Kill_Early, ACHIEVEMENT_ASW_BOOMER_KILL_EARLY, "ASW_BOOMER_KILL_EARLY", 5, 2390 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_DODGE_RANGER_SHOT, "ASW_DODGE_RANGER_SHOT", 5, 2380 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_BOOMER_KILL_EARLY, "ASW_BOOMER_KILL_EARLY", 5, 2390 );
 
 class CAchievement_Unlock_All_Weapons : public CASW_Achievement
 {
@@ -919,38 +756,9 @@ class CAchievement_Unlock_All_Weapons : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Unlock_All_Weapons, ACHIEVEMENT_ASW_UNLOCK_ALL_WEAPONS, "ASW_UNLOCK_ALL_WEAPONS", 5, 2400 );
 
-class CAchievement_Freeze_Grenade : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Freeze_Grenade, ACHIEVEMENT_ASW_FREEZE_GRENADE, "ASW_FREEZE_GRENADE", 5, 2410 );
-
-class CAchievement_Kill_Without_Friendly_Fire : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Kill_Without_Friendly_Fire, ACHIEVEMENT_ASW_KILL_WITHOUT_FRIENDLY_FIRE, "ASW_KILL_WITHOUT_FRIENDLY_FIRE", 5, 2420 );
-
-class CAchievement_Tech_Survives : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Tech_Survives, ACHIEVEMENT_ASW_TECH_SURVIVES, "ASW_TECH_SURVIVES", 5, 2430 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_FREEZE_GRENADE, "ASW_FREEZE_GRENADE", 5, 2410 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_KILL_WITHOUT_FRIENDLY_FIRE, "ASW_KILL_WITHOUT_FRIENDLY_FIRE", 5, 2420 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_TECH_SURVIVES, "ASW_TECH_SURVIVES", 5, 2430 );
 
 class CAchievement_Ammo_Resupply : public CASW_Achievement
 {
@@ -964,137 +772,22 @@ class CAchievement_Ammo_Resupply : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Ammo_Resupply, ACHIEVEMENT_ASW_AMMO_RESUPPLY, "ASW_AMMO_RESUPPLY", 5, 2440 );
 
-class CAchievement_Campaign_No_Deaths : public CASW_Achievement
-{
-	void Init() 
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths, ACHIEVEMENT_ASW_CAMPAIGN_NO_DEATHS, "ASW_CAMPAIGN_NO_DEATHS", 5, 1000 );
-
-class CAchievement_Campaign_No_Deaths_OCS : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_OCS, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_OCS, "RD_CAMPAIGN_NO_DEATHS_OCS", 5, 1001 );
-
-class CAchievement_Campaign_No_Deaths_RES : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_RES, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_RES, "RD_CAMPAIGN_NO_DEATHS_RES", 5, 1002 );
-
-class CAchievement_Campaign_No_Deaths_Area9800 : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_Area9800, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AREA9800, "RD_CAMPAIGN_NO_DEATHS_AREA9800", 5, 1003 );
-
-class CAchievement_Campaign_No_Deaths_TFT : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_TFT, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TFT, "RD_CAMPAIGN_NO_DEATHS_TFT", 5, 1004 );
-
-// class CAchievement_Campaign_No_Deaths_DC : public CASW_Achievement
-// {
-// 	void Init()
-// 	{
-// 		SetFlags( ACH_SAVE_GLOBAL );
-// 		SetGoal( 1 );
-// 	}
-// 	// server fires an event for this achievement, no other code within achievement necessary
-// };
-// DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_DC, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_DC, "RD_CAMPAIGN_NO_DEATHS_DC", 5, 1005 );
-
-class CAchievement_Campaign_No_Deaths_TIL : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_TIL, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TIL, "RD_CAMPAIGN_NO_DEATHS_TIL", 5, 1006 );
-
-class CAchievement_Campaign_No_Deaths_LAN : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_LAN, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_LAN, "RD_CAMPAIGN_NO_DEATHS_LAN", 5, 1007 );
-
-// class CAchievement_Campaign_No_Deaths_REDUCTION : public CASW_Achievement
-// {
-// 	void Init()
-// 	{
-// 		SetFlags( ACH_SAVE_GLOBAL );
-// 		SetGoal( 1 );
-// 	}
-// 	// server fires an event for this achievement, no other code within achievement necessary
-// };
-// DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_REDUCTION, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_REDUCTION, "RD_CAMPAIGN_NO_DEATHS_REDUCTION", 5, 1008 );
-
-class CAchievement_Campaign_No_Deaths_PAR : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_PAR, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR, "RD_CAMPAIGN_NO_DEATHS_PAR", 5, 1009 );
-
-class CAchievement_Campaign_No_Deaths_NH : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_NH, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_NH, "RD_CAMPAIGN_NO_DEATHS_NH", 5, 1010 );
-
-class CAchievement_Campaign_No_Deaths_BIO : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Campaign_No_Deaths_BIO, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO, "RD_CAMPAIGN_NO_DEATHS_BIO", 5, 1011 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_ASW_CAMPAIGN_NO_DEATHS, "ASW_CAMPAIGN_NO_DEATHS", 5, 1000 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_OCS, "RD_CAMPAIGN_NO_DEATHS_OCS", 5, 1001 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_RES, "RD_CAMPAIGN_NO_DEATHS_RES", 5, 1002 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_AREA9800, "RD_CAMPAIGN_NO_DEATHS_AREA9800", 5, 1003 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TFT, "RD_CAMPAIGN_NO_DEATHS_TFT", 5, 1004 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_TIL, "RD_CAMPAIGN_NO_DEATHS_TIL", 5, 1006 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_LAN, "RD_CAMPAIGN_NO_DEATHS_LAN", 5, 1007 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_PAR, "RD_CAMPAIGN_NO_DEATHS_PAR", 5, 1009 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_NH, "RD_CAMPAIGN_NO_DEATHS_NH", 5, 1010 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_BIO, "RD_CAMPAIGN_NO_DEATHS_BIO", 5, 1011 );
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ACC, "RD_CAMPAIGN_NO_DEATHS_ACC", 5, 1012 );
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ADA, "RD_CAMPAIGN_NO_DEATHS_ADA", 5, 1013 );
+#endif
 
 class CAchievement_Rifle_Kills : public CASW_Achievement
 {
@@ -1331,7 +1024,7 @@ class CAchievement_Mine_Kills : public CASW_Achievement
 		SetFlags( ACH_SAVE_GLOBAL | ACH_LISTEN_ALIEN_DEATH_EVENTS );
 		SetGoal( 100 );
 		SetStoreProgressInSteam( true );
-		SetWeaponClassFilter( CLASS_ASW_FIRE );
+		SetWeaponClassFilter( CLASS_ASW_MINES );
 	}
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Mine_Kills, ACHIEVEMENT_ASW_MINE_KILLS, "ASW_MINE_KILLS", 5, 1620 );
@@ -1409,7 +1102,7 @@ class CAchievement_Hardcore : public CASW_Achievement
 			if ( !pLocalPlayer )
 				return;
 
-			if ( !pLocalPlayer->GetMarine() || pLocalPlayer->GetMarine()->GetHealth() <= 0 )
+			if ( !C_ASW_Marine::AsMarine( pLocalPlayer->GetNPC() ) || pLocalPlayer->GetNPC()->GetHealth() <= 0 )
 				return;
 
 			const char *szMapName = event->GetString( "strMapName" );
@@ -1426,16 +1119,7 @@ class CAchievement_Hardcore : public CASW_Achievement
 };
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Hardcore, ACHIEVEMENT_ASW_HARDCORE, "ASW_HARDCORE", 5, 3185 );
 
-class CAchievement_NH_Bonus_Objective : public CASW_Achievement
-{
-	void Init()
-	{
-		SetFlags( ACH_SAVE_GLOBAL );
-		SetGoal( 1 );
-	}
-	// server fires an event for this achievement, no other code within achievement necessary
-};
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_NH_Bonus_Objective, ACHIEVEMENT_RD_NH_BONUS_OBJECTIVE, "RD_NH_BONUS_OBJECTIVE", 5, 3186 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_NH_BONUS_OBJECTIVE, "RD_NH_BONUS_OBJECTIVE", 5, 3186 );
 
 CON_COMMAND_F( rd_achievement_order, "", FCVAR_HIDDEN )
 {

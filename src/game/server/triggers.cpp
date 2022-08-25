@@ -524,7 +524,6 @@ void CBaseTrigger::EndTouch(CBaseEntity *pOther)
 		int iSize = m_hTouchingEntities.Count();
 		for ( int i = iSize-1; i >= 0; i-- )
 		{
-			EHANDLE hOther;
 			hOther = m_hTouchingEntities[i];
 
 			if ( !hOther )
@@ -3502,6 +3501,8 @@ void CTriggerCamera::FollowTarget( )
 
 void CTriggerCamera::StartCameraShot( const char *pszShotType, CBaseEntity *pSceneEntity, CBaseEntity *pActor1, CBaseEntity *pActor2, float duration )
 {
+	if ( !g_pScriptVM ) return;
+
 	// called from SceneEntity in response to a CChoreoEvent::CAMERA sent from a VCD.
 	// talk to vscript, start a camera move
 

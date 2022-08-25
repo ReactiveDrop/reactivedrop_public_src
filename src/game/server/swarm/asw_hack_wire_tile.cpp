@@ -447,10 +447,10 @@ void CASW_Hack_Wire_Tile::JumbleWire(int iWire)
 	}
 	// now work from the end back, making mistakes on the lit wire
 	int iMistakes = 0;
-	int k = 0;
-	while (iMistakes <= 0 && k <= 10)
+	int iAttempts = 0;
+	while (iMistakes <= 0 && iAttempts <= 10)
 	{
-		k++;
+		iAttempts++;
 		for (int x=m_iNumColumns-1;x>=0;x--)
 		{
 			for (int y=0;y<m_iNumRows;y++)

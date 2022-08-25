@@ -472,9 +472,9 @@ void CASW_Weapon_Chainsaw::UpdateEffect( const Vector &startPoint, const Vector 
 		filter.RemoveRecipient(pOwner->GetCommander());
 	}
 	
-	DispatchEffect( filter, 0.0, "ASWWelderSparks", data );
+	//DispatchEffect( filter, 0.0, "ASWWelderSparks", data );
 #else
-	FX_Sparks( endPoint, 1, 2, vecNormal, 5, 32, 160 );
+	//FX_Sparks( endPoint, 1, 2, vecNormal, 5, 32, 160 );
 #endif
 
 	if ( m_hNoise )

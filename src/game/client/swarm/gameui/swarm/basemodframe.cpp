@@ -798,13 +798,13 @@ bool CBaseModFrame::CheckAndDisplayErrorIfNotLoggedIn()
 #ifndef NO_STEAM
 #ifndef SWDS
 	// if we have Steam interfaces and user is logged on, everything is OK
-	if ( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamMatchmaking() )
+	if ( SteamUser() && SteamMatchmaking() )
 	{
 		/*
 		// Try starting to log on
-		if ( !steamapicontext->SteamUser()->BLoggedOn() )
+		if ( !SteamUser()->BLoggedOn() )
 		{
-		steamapicontext->SteamUser()->LogOn();
+		SteamUser()->LogOn();
 		}
 		*/
 

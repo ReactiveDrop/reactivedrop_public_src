@@ -15,8 +15,8 @@
 #define CASW_Equip_Req C_ASW_Equip_Req
 #include "asw_equip_req.h"
 #include "voice_status.h"
-#include "asw_campaign_info.h"
 #include "asw_deathmatch_mode.h"
+#include "rd_lobby_utils.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -151,7 +151,7 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		return;
 
 	// now add marines for other players in order
-	for( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
+	for ( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
 	{
 		if ( !g_PR->IsConnected( iClient ) )
 			continue;
@@ -178,12 +178,12 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 			if ( bAlreadyInList )
 				continue;
 
-            // don't add this player if he is in another team for team deathmatch
-            if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
-            {
-                if ( pMR->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
-                    continue;
-            }
+			// don't add this player if he is in another team for team deathmatch
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				if ( pMR->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+					continue;
+			}
 
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
 			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
@@ -200,13 +200,21 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 		return;
 
 	// now add any players who don't have any marines
-	for( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
+	for ( int iClient = 1; iClient < MAX_PLAYERS; iClient++ )
 	{
 		if ( !g_PR->IsConnected( iClient ) )
 			continue;
 
 		if ( iClient == pLocalPlayer->entindex() )
 			continue;
+
+		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( iClient ) );
+		Assert( pPlayer );
+		if ( !pPlayer )
+			continue;
+
+		if ( pPlayer->IsSpectatorOnly() )
+			continue; // TODO: add spectator list somewhere
 
 		int nMarines = 0;
 		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
@@ -218,20 +226,17 @@ void CASW_Briefing::UpdateLobbySlotMapping()
 			nMarines++;
 		}
 
-		if ( nMarines == 0)
-        {
-            // don't add this player if he is in another team for team deathmatch
-            if ( ASWDeathmatchMode() /*&& ASWDeathmatchMode()->IsTeamDeathmatchEnabled()*/ )
-            {
-                C_ASW_Player *pPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
-                if ( !pPlayer )
-                    continue;
-                if ( pPlayer->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
-                    continue;
-            }
+		if ( nMarines == 0 )
+		{
+			// don't add this player if he is in another team for team deathmatch
+			if ( ASWDeathmatchMode() /*&& ASWDeathmatchMode()->IsTeamDeathmatchEnabled()*/ )
+			{
+				if ( pPlayer->GetTeamNumber() != pLocalPlayer->GetTeamNumber() )
+					continue;
+			}
 
 			m_LobbySlotMapping[ nSlot ].m_nPlayerEntIndex = iClient;
-			m_LobbySlotMapping[ nSlot ].m_hPlayer = static_cast<C_ASW_Player*>( UTIL_PlayerByIndex( iClient ) );
+			m_LobbySlotMapping[ nSlot ].m_hPlayer = pPlayer;
 			m_LobbySlotMapping[ nSlot ].m_hMR = NULL;
 			m_LobbySlotMapping[ nSlot ].m_nMarineResourceIndex = -1;
 
@@ -274,17 +279,17 @@ const char* CASW_Briefing::GetLeaderName()
 
 const char* CASW_Briefing::GetTeamName()
 {
-    if ( !ASWGameResource() )
-        return "";
+	if ( !ASWGameResource() )
+		return "";
 
-    C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-    if (!pPlayer)
-        return "";
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (!pPlayer)
+		return "";
 
-    if ( pPlayer->GetTeam() )
-        return pPlayer->GetTeam()->Get_Name();
-    else
-        return "";
+	if ( pPlayer->GetTeam() )
+		return pPlayer->GetTeam()->Get_Name();
+	else
+		return "";
 }
 
 Color CASW_Briefing::GetTeamColor()
@@ -459,7 +464,7 @@ CSteamID CASW_Briefing::GetCommanderSteamID( int nLobbySlot )
 	{
 		if ( pi.friendsID )
 		{
-			CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+			CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 			return steamIDForPlayer;
 		}
 	}
@@ -807,14 +812,14 @@ bool CASW_Briefing::CheckMissionRequirements()
 
 		if ( ASWGameResource() && !asw_ignore_need_two_player_requirement.GetBool() )
 		{
-			CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
+			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 
 			char mapname[64];
 			V_FileBase( engine->GetLevelName(), mapname, sizeof( mapname ) );
 
 			if ( pCampaign && pCampaign->GetMissionByMapName( mapname ) )
 			{
-				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->m_bNeedsMoreThanOneMarine;
+				bool bNeedsMoreThanOneMarine = pCampaign->GetMissionByMapName( mapname )->NeedsMoreThanOneMarine;
 				if ( bNeedsMoreThanOneMarine )
 				{
 					// how many marines do we have?
@@ -925,7 +930,7 @@ bool CASW_Briefing::IsCampaignGame()
 
 bool CASW_Briefing::UsingFixedSkillPoints()
 {
-	if ( !IsCampaignGame() || !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
+	if ( !ASWGameRules() || !ASWGameRules()->GetCampaignSave() )
 	{
 		return false;
 	}
@@ -979,4 +984,36 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 		bTalking = pVoiceMgr->IsPlayerSpeaking( index );
 	}
 	return bTalking;
+}
+
+int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
+	{
+		return 0;
+	}
+
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
+	if ( !sz || !*sz )
+	{
+		return 0;
+	}
+
+	return atoi( sz );
+}
+
+const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
+{
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
+	if ( !pMatchmaking || !currentLobby.IsValid() )
+	{
+		return "";
+	}
+
+	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
+
+	return sz ? sz : "";
 }

@@ -55,7 +55,7 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 	ClearAvatarSteamID();
 	m_steamIDUser = steamIDUser;
 
-	if ( steamapicontext->SteamFriends() && steamapicontext->SteamUtils() )
+	if ( SteamFriends() && SteamUtils() )
 	{
 		m_SteamID = steamIDUser;
 
@@ -64,14 +64,14 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 		switch (m_SourceArtSize)
 		{
 		case k_EAvatarSize32x32:
-			iAvatar = steamapicontext->SteamFriends()->GetSmallFriendAvatar( steamIDUser );
+			iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDUser );
 			break;
 		case k_EAvatarSize64x64:
-			iAvatar = steamapicontext->SteamFriends()->GetMediumFriendAvatar( steamIDUser );
+			iAvatar = SteamFriends()->GetMediumFriendAvatar( steamIDUser );
 			break;
 		case k_EAvatarSize184x184:
 		default:
-			iAvatar = steamapicontext->SteamFriends()->GetLargeFriendAvatar( steamIDUser );
+			iAvatar = SteamFriends()->GetLargeFriendAvatar( steamIDUser );
 			break;
 		}
 
@@ -80,11 +80,11 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 		*/
 
 		uint32 wide, tall;
-		if ( steamapicontext->SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
+		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
 		{
 			int cubImage = wide * tall * 4;
 			byte *rgubDest = (byte*)_alloca( cubImage );
-			steamapicontext->SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
+			SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
 			InitFromRGBA( rgubDest, wide, tall );
 
 			/*
@@ -109,9 +109,9 @@ void CAvatarImage::UpdateFriendStatus( void )
 	if ( !m_SteamID.IsValid() )
 		return;
 
-	if ( steamapicontext->SteamFriends() && steamapicontext->SteamUtils() )
+	if ( SteamFriends() && SteamUtils() )
 	{
-		m_bFriend = steamapicontext->SteamFriends()->HasFriend( m_SteamID, k_EFriendFlagImmediate );
+		m_bFriend = SteamFriends()->HasFriend( m_SteamID, k_EFriendFlagImmediate );
 		if ( m_bFriend && !m_pFriendIcon )
 		{
 			m_pFriendIcon = HudIcons().GetIcon( "ico_friend_indicator_avatar" );
@@ -179,14 +179,14 @@ void CAvatarImagePanel::SetPlayer( C_BasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 void CAvatarImagePanel::SetPlayerByIndex( int iIndex )
 {
-	if ( iIndex && steamapicontext->SteamUtils() )
+	if ( iIndex && SteamUtils() )
 	{
 		player_info_t pi;
 		if ( engine->GetPlayerInfo(iIndex, &pi) )
 		{
 			if ( pi.friendsID )
 			{
-				CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 				SetAvatarBySteamID( &steamIDForPlayer );
 			}
 		}

@@ -240,7 +240,7 @@ void C_ASW_Drone_Advanced::UpdatePoseParams()
 	pose_index = LookupPoseParameter( "aim_yaw" );
 	if ( pose_index >= 0 )
 	{
-		float flTargetAimPose = 0.0f;
+		float flTargetAimPose = speed_fraction > 0.5f ? diff / -90.0f + 0.5f : 0;
 		if ( m_hAimTarget.Get() )
 		{
 			C_BaseEntity *pEnemy = m_hAimTarget.Get();

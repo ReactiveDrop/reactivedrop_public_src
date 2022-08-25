@@ -159,5 +159,6 @@ class CSound;
 #include "recipientfilter.h"
 #include "npcevent.h"
 #include "vprof.h"
+#include "rd_release_flags.h"
 
 #endif // CBASE_H

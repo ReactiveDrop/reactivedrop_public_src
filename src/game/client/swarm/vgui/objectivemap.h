@@ -17,12 +17,12 @@ class ObjectiveMapMarkPanel;
 class ObjectiveMapDrawingPanel;
 class CASWHudMinimap;
 class KeyValues;
+struct MapMarkCandidate;
 
 // responsible for managing all the ObjectiveTitlePanels
 
 
 // this panel shows the map on the mission tab of the briefing
-
 class ObjectiveMap : public vgui::Panel, public CASWMap
 {
 	DECLARE_CLASS_SIMPLE( ObjectiveMap, vgui::Panel );
@@ -66,9 +66,9 @@ public:
 
 	ObjectiveMapDrawingPanel* m_pMapDrawing;
 
-	// support up to 6 markings
+	void AddMapMark( const MapMarkCandidate & candidate, bool bComplete );
 	void FindMapMarks();
-	
+
 	int m_iNumMapMarks;
 	ObjectiveMapMarkPanel* m_MapMarkPanels[ASW_NUM_MAP_MARKS];
 };

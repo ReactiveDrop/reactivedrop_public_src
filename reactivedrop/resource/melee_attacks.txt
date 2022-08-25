@@ -1,0 +1,217 @@
+
+// =============================
+// Non-melee class melee attacks
+// =============================
+
+"MELEE"
+{
+	"name" "kick"
+	"sequence" "kick"
+	"AttackType" "Heavy"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "0.5"
+	"Priority" "1"
+	"ControlDirection" "any"
+	"TraceHullSize" "35"
+	"TraceDistance" "20"
+}
+
+
+"MELEE"
+{
+	"name" "melee_combo_2a"
+	"sequence" "melee_combo_2a"
+	"AttackType" "Heavy"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
+	"SpeedScale" "1.0"
+	"Priority" "10"
+	"ControlDirection" "any"
+	"TraceHullSize" "35"
+	"TraceDistance" "20"
+}
+
+
+"MELEE"
+{
+	"name" "melee_combo_2b"
+	"sequence" "melee_combo_2b"
+	"AttackType" "Heavy"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
+	"SpeedScale" "1.0"
+	"Priority" "10"
+	"CombosFrom" "melee_combo_2a"
+	"ControlDirection" "any"
+	"TraceHullSize" "35"
+	"TraceDistance" "20"
+}
+
+"MELEE"
+{
+	"name" "melee_combo_2c"
+	"sequence" "melee_combo_2c"
+	"AttackType" "Heavy"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"DamageScale" "1.0"
+	"SpeedScale" "1.0"
+	"KnockbackForce" "150"
+	"Priority" "10"
+	"CombosFrom" "melee_combo_2b"
+	"ControlDirection" "any"
+	"TraceHullSize" "120"
+	"TraceDistance" "30"
+}
+
+
+//====================
+// Stumbles
+//====================
+
+// "MELEE"
+// {
+// 	"name" "StumbleForward"
+// 	"sequence" "stumble_forward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
+// }
+//
+// "MELEE"
+// {
+// 	"name" "StumbleBackward"
+// 	"sequence" "stumble_backward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
+// }
+//
+// "MELEE"
+// {
+// 	"name" "StumbleLeftward"
+// 	"sequence" "stumble_leftward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
+// }
+//
+// "MELEE"
+// {
+// 	"name" "StumbleRightward"
+// 	"sequence" "stumble_rightward"
+// 	"Priority" "-1.0"
+// 	"ControlDirection" "none"
+// }
+
+// Short stumbles
+
+"MELEE"
+{
+	"name" "StumbleShortForward"
+	"sequence" "stumble_short_forward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+}
+
+"MELEE"
+{
+	"name" "StumbleShortBackward"
+	"sequence" "stumble_short_backward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+}
+
+"MELEE"
+{
+	"name" "StumbleShortLeftward"
+	"sequence" "stumble_short_leftward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+}
+
+"MELEE"
+{
+	"name" "StumbleShortRightward"
+	"sequence" "stumble_short_rightward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+}
+
+//====================
+// Knockdowns
+//====================
+
+"MELEE"
+{
+	"name" "KnockdownForward"
+	"sequence" "knockdown_forward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement" "1"
+}
+
+"MELEE"
+{
+	"name" "KnockdownBackward"
+	"sequence" "knockdown_backward"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement" "1"
+}
+
+//====================
+// Rolling
+//====================
+
+"MELEE"
+{
+	"name" "Roll"
+	"sequence" "roll_N"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"0"
+}
+
+//=====================
+// Sync Kills
+//=====================
+
+"MELEE"
+{
+	"name" "SyncKillChainsaw"
+	"sequence" "kick"
+	"DamageScale" "0.5"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+}
+
+// ========
+// Other
+// ========
+
+"MELEE"
+{
+	"name" "JumpJet"
+	"sequence" "jumpjet_pound"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"SpeedScale" "0.6"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"1"
+}
+
+"MELEE"
+{
+	"name" "Blink"
+	"sequence" "blink"
+	"MinMeleeSkill" "0"
+	"MaxMeleeSkill" "5"
+	"SpeedScale" "0.6"
+	"Priority" "-1.0"
+	"ControlDirection" "none"
+	"AllowMovement"	"0"
+}

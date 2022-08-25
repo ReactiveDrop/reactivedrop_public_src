@@ -23,6 +23,7 @@
 	#include "tier0/vprof.h"
 	#include "c_asw_marine.h"
 	#include "c_asw_player.h"
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -63,7 +64,7 @@ extern void DiffPrint( bool bServer, int nCommandNumber, char const *fmt, ... );
 void CMarineMove::FinishMarineMove( const CBasePlayer *player, CBaseEntity *marine, CUserCmd *ucmd, CMoveData *move )
 {
 	VPROF( "CMarineMove::FinishMarineMove" );
-	CASW_Marine *aswmarine = static_cast< CASW_Marine * >(marine);
+	CASW_Inhabitable_NPC *aswmarine = assert_cast< CASW_Inhabitable_NPC * >(marine);
 	if (aswmarine == NULL)
 		return;
 	
@@ -129,7 +130,7 @@ void CMarineMove::SetupMarineMove( const CBasePlayer *player, CBaseEntity *marin
 	VPROF( "CMarineMove::SetupMarineMove" );
 
 	// hm, we need it to be a specific swarm marine here, not a generic entity
-	CASW_Marine *aswmarine = static_cast< CASW_Marine * >(marine);
+	CASW_Inhabitable_NPC *aswmarine = assert_cast< CASW_Inhabitable_NPC * >(marine);
 	if (aswmarine == NULL)
 		return;
 

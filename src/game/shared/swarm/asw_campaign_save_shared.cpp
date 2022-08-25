@@ -6,33 +6,34 @@
 #include "asw_campaign_save.h"
 #endif
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-bool CASW_Campaign_Save::IsMissionLinkedToACompleteMission(int i, CASW_Campaign_Info* pCampaignInfo)
+bool CASW_Campaign_Save::IsMissionLinkedToACompleteMission( int i, const RD_Campaign_t *pCampaignInfo )
 {
-	if (!pCampaignInfo || !ASWGameRules())
+	if ( !pCampaignInfo || !ASWGameRules() )
 		return false;
 
-	CASW_Campaign_Info::CASW_Campaign_Mission_t *pMission = pCampaignInfo->GetMission(i);
-	if (!pMission)
+	const RD_Campaign_Mission_t *pMission = pCampaignInfo->GetMission( i );
+	if ( !pMission )
 		return false;
 
 	// last mission, don't reveal it unless all other missions are complete
-	if (i == pCampaignInfo->GetNumMissions()-1)
+	if ( i == pCampaignInfo->Missions.Count() - 1 )
 	{
-		if (ASWGameRules()->CampaignMissionsLeft() > 1)
+		if ( ASWGameRules()->CampaignMissionsLeft() > 1 )
 			return false;
 	}
 
-	for (int k=0;k<pMission->m_Links.Count();k++)
+	FOR_EACH_VEC( pMission->Links, k )
 	{
-		int iLinked = pMission->m_Links[k];
-		if (iLinked >= 0 && iLinked < ASW_MAX_MISSIONS_PER_CAMPAIGN && (m_MissionComplete[iLinked] == 1 || iLinked == 0))
+		int iLinked = pMission->Links[k];
+		if ( iLinked >= 0 && iLinked < ASW_MAX_MISSIONS_PER_CAMPAIGN && ( m_MissionComplete[iLinked] == 1 || iLinked == 0 ) )
 			return true;
 	}
+
 	return false;
 }
 

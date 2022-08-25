@@ -147,7 +147,7 @@ void CASW_Weapon_Ammo_Bag::ThrowAmmo()
 	CASW_Marine *pTargetMarine = NULL;
 	float flMaxDist = FLT_MAX;
 
-	if ( pOwner->GetMarine() == pMarine )
+	if ( pOwner->GetNPC() == pMarine )
 	{
 		// commander throwing ammo
 		pTargetMarine = dynamic_cast< CASW_Marine* >( pOwner->GetHighlightEntity() );
@@ -410,20 +410,20 @@ bool CASW_Weapon_Ammo_Bag::DropAmmoPickup(int iBagSlot)
 }
 #endif
 
-int CASW_Weapon_Ammo_Bag::AmmoCount(int index)
+int CASW_Weapon_Ammo_Bag::AmmoCount(int i)
 {
-	if (index < 0 || index >= ASW_AMMO_BAG_SLOTS)
+	if (i < 0 || i >= ASW_AMMO_BAG_SLOTS)
 		return 0;
 
-	return m_AmmoCount.Get(index);
+	return m_AmmoCount.Get(i);
 }
 
-int CASW_Weapon_Ammo_Bag::MaxAmmoCount(int index)
+int CASW_Weapon_Ammo_Bag::MaxAmmoCount(int i)
 {
-	if (index < 0 || index >= ASW_AMMO_BAG_SLOTS)
+	if (i < 0 || i >= ASW_AMMO_BAG_SLOTS)
 		return 0;
 
-	return m_MaxAmmoCount[index];
+	return m_MaxAmmoCount[i];
 }
 
 int CASW_Weapon_Ammo_Bag::FindBagIndexForAmmoType(int iAmmoType)

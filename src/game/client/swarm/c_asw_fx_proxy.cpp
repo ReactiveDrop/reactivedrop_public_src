@@ -33,6 +33,7 @@ public:
 	CASW_Model_FX_Proxy( void );
 	virtual				~CASW_Model_FX_Proxy( void );
 	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
+	virtual void OnBind( void * );
 	virtual void OnBind( C_BaseEntity *pEnt );
 	void UpdateEffects( bool bShockBig, bool bOnFire, float flFrozen );
 	void TextureTransform( float flSpeed = 0, float flScale = 6.0f );
@@ -103,6 +104,16 @@ bool CASW_Model_FX_Proxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues )
 	m_pTextureScrollVar = pMaterial->FindVar( "$detailtexturetransform", &bScrollVar );
 
 	return ( bDetail && bScale && bBlendFact && bBlendMode && bScrollVar );
+}
+
+void CASW_Model_FX_Proxy::OnBind( void *pC_BaseEntity )
+{
+	if ( !pC_BaseEntity )
+	{
+		m_pDetailBlendFactor->SetFloatValue( 0.0f );
+	}
+
+	CEntityMaterialProxy::OnBind( pC_BaseEntity );
 }
 
 void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
@@ -211,13 +222,52 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 {
 	if ( bShockBig || bOnFire || flFrozen > 0 )
 	{
-		if ( bShockBig )
+		if ( bShockBig && bOnFire && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_ohgod_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 0.3f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bShockBig && bOnFire )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockfire_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 0.2f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bShockBig && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockice_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 0.4f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 80, 4.0f );
+			}
+		}
+		else if ( bOnFire && flFrozen > 0 )
+		{
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_icefire_1", TEXTURE_GROUP_MODEL );//
+			if ( m_pFXTexture )
+			{
+				m_pDetailBlendFactor->SetFloatValue( 0.2f );
+				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+				TextureTransform( 24, 4.0f );
+			}
+		}
+		else if ( bShockBig )
 		{
 			m_pFXTexture = materials->FindTexture( "effects/model_layer_shock_1", TEXTURE_GROUP_MODEL );//
 			if ( m_pFXTexture )
 			{
-				float flBlend = 0.75f;
-				m_pDetailBlendFactor->SetFloatValue( flBlend );
+				m_pDetailBlendFactor->SetFloatValue( 0.75f );
 				m_pDetailMaterial->SetTextureValue( m_pFXTexture );
 				TextureTransform( 80, 4.0f );
 			}

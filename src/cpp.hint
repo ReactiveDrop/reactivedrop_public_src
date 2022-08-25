@@ -1,0 +1,369 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+
+#define RESTRICT
+#define ALLOC_CALL
+#define FREE_CALL
+#define FMTFUNCTION( a, b )
+
+#define abstract_class class
+#define DLL_EXPORT extern "C" __declspec( dllexport )
+#define FASTCALL __fastcall
+
+#define COMPILE_TIME_ASSERT( pred )	static_assert( (pred), "COMPILE_TIME_ASSERT( " #pred " )" )
+#define ASSERT_INVARIANT( pred )	static_assert( (pred), "ASSERT_INVARIANT( " #pred " )" )
+
+#define BEGIN_DATADESC( className ) \
+	datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
+	datamap_t *className::GetDataDescMap( void ) { return &m_DataMap; } \
+	datamap_t *className::GetBaseMap() { datamap_t *pResult; DataMapAccess((BaseClass *)NULL, &pResult); return pResult; } \
+	template <typename T> datamap_t *DataMapInit(T *); \
+	template <> datamap_t *DataMapInit<className>( className * ); \
+	namespace className##_DataDescInit \
+	{ \
+		datamap_t *g_DataMapHolder = DataMapInit( (className *)NULL ); /* This can/will be used for some clean up duties later */ \
+	} \
+	\
+	template <> datamap_t *DataMapInit<className>( className * ) \
+	{ \
+		typedef className classNameTypedef; \
+		static CDatadescGeneratedNameHolder nameHolder(#className); \
+		className::m_DataMap.baseMap = className::GetBaseMap(); \
+		static typedescription_t dataDesc[] = \
+		{ \
+		{ FIELD_VOID,0,0,0,0,0,0,0,0}, /* so you can define "empty" tables */
+
+#define END_DATADESC() \
+		}; \
+		\
+		if ( sizeof( dataDesc ) > sizeof( dataDesc[0] ) ) \
+		{ \
+			classNameTypedef::m_DataMap.dataNumFields = SIZE_OF_ARRAY( dataDesc ) - 1; \
+			classNameTypedef::m_DataMap.dataDesc 	  = &dataDesc[1]; \
+		} \
+		else \
+		{ \
+			classNameTypedef::m_DataMap.dataNumFields = 1; \
+			classNameTypedef::m_DataMap.dataDesc 	  = dataDesc; \
+		} \
+		return &classNameTypedef::m_DataMap; \
+	}
+
+#define BEGIN_DATADESC_NO_BASE( className ) \
+	datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
+	datamap_t *className::GetDataDescMap( void ) { return &m_DataMap; } \
+	datamap_t *className::GetBaseMap() { return NULL; } \
+	template <typename T> datamap_t *DataMapInit(T *); \
+	template <> datamap_t *DataMapInit<className>( className * ); \
+	namespace className##_DataDescInit \
+	{ \
+		datamap_t *g_DataMapHolder = DataMapInit( (className *)NULL ); /* This can/will be used for some clean up duties later */ \
+	} \
+	\
+	template <> datamap_t *DataMapInit<className>( className * ) \
+	{ \
+		typedef className classNameTypedef; \
+		static CDatadescGeneratedNameHolder nameHolder(#className); \
+		className::m_DataMap.baseMap = className::GetBaseMap(); \
+		static typedescription_t dataDesc[] = \
+		{ \
+		{ FIELD_VOID,0,0,0,0,0,0,0,0}, /* so you can define "empty" tables */
+
+#define BEGIN_SIMPLE_DATADESC_( className, BaseClass ) \
+	datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
+	datamap_t *className::GetBaseMap() { datamap_t *pResult; DataMapAccess((BaseClass *)NULL, &pResult); return pResult; } \
+	template <typename T> datamap_t *DataMapInit(T *); \
+	template <> datamap_t *DataMapInit<className>( className * ); \
+	namespace className##_DataDescInit \
+	{ \
+		datamap_t *g_DataMapHolder = DataMapInit( (className *)NULL ); /* This can/will be used for some clean up duties later */ \
+	} \
+	\
+	template <> datamap_t *DataMapInit<className>( className * ) \
+	{ \
+		typedef className classNameTypedef; \
+		static CDatadescGeneratedNameHolder nameHolder(#className); \
+		className::m_DataMap.baseMap = className::GetBaseMap(); \
+		static typedescription_t dataDesc[] = \
+		{ \
+		{ FIELD_VOID,0,0,0,0,0,0,0,0}, /* so you can define "empty" tables */
+
+#define BEGIN_SIMPLE_DATADESC( className ) \
+	datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
+	datamap_t *className::GetBaseMap() { return NULL; } \
+	template <typename T> datamap_t *DataMapInit(T *); \
+	template <> datamap_t *DataMapInit<className>( className * ); \
+	namespace className##_DataDescInit \
+	{ \
+		datamap_t *g_DataMapHolder = DataMapInit( (className *)NULL ); /* This can/will be used for some clean up duties later */ \
+	} \
+	\
+	template <> datamap_t *DataMapInit<className>( className * ) \
+	{ \
+		typedef className classNameTypedef; \
+		static CDatadescGeneratedNameHolder nameHolder(#className); \
+		className::m_DataMap.baseMap = className::GetBaseMap(); \
+		static typedescription_t dataDesc[] = \
+		{ \
+		{ FIELD_VOID,0,0,0,0,0,0,0,0}, /* so you can define "empty" tables */
+
+#define DEFINE_FIELD_NULL { FIELD_VOID,0,0,0,0,0,0,0,0}
+#define DEFINE_FIELD(name,fieldtype) { fieldtype, #name, (int)offsetof(classNameTypedef, name), 1, FTYPEDESC_SAVE, NULL, NULL, NULL, NULL, sizeof( ((classNameTypedef *)0)->name ), NULL, 0, 0 }
+
+#define IMPLEMENT_SERVERCLASS_ST(DLLClassName, sendTable) \
+	namespace sendTable \
+	{ \
+		struct ignored; \
+		extern SendTable g_SendTable; \
+	} \
+	static ServerClass g_##DLLClassName##_ClassReg(\
+		#DLLClassName, \
+		&sendTable::g_SendTable\
+	); \
+	\
+	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
+	SendTable *DLLClassName::m_pClassSendTable = &sendTable::g_SendTable;\
+	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;} \
+	template <typename T> int ServerClassInit(T *); \
+	namespace sendTable { \
+		struct ignored; \
+	} \
+	template <> int ServerClassInit<sendTable::ignored>(sendTable::ignored *); \
+	namespace sendTable { \
+		SendTable g_SendTable;\
+		int g_SendTableInit = ServerClassInit((sendTable::ignored *)NULL); \
+	} \
+	template <> int ServerClassInit<sendTable::ignored>(sendTable::ignored *) \
+	{ \
+		typedef DLLClassName currentSendDTClass; \
+		static char *g_pSendTableName = #sendTable; \
+		SendTable &sendTable = sendTable::g_SendTable; \
+		static SendProp g_SendProps[] = { \
+			SendPropInt("should_never_see_this", 0, sizeof(int)),		/* It adds a dummy property at the start so you can define "empty" SendTables. */ \
+			SendPropDataTable("baseclass", 0, DLLClassName::BaseClass::m_pClassSendTable, SendProxy_DataTableToDataTable),
+
+#define END_SEND_TABLE() \
+		};\
+		sendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, g_pSendTableName);\
+		return 1; \
+	} 
+
+#define SENDINFO(varName) #varName, (size_t)&(((currentSendDTClass::MakeANetworkVar_##varName *)0)->varName), sizeof(((currentSendDTClass*)0)->varName)
+
+#define DECLARE_CLASS( className, baseClassName ) \
+	typedef baseClassName BaseClass; \
+	typedef className ThisClass;
+#define DECLARE_CLASS_GAMEROOT( className, baseClassName ) \
+	typedef baseClassName BaseClass; \
+	typedef className ThisClass;
+#define DECLARE_CLASS_NOFRIEND( className, baseClassName ) \
+	typedef baseClassName BaseClass; \
+	typedef className ThisClass;
+#define DECLARE_CLASS_NOBASE( className ) \
+	typedef className ThisClass;
+
+#define DECLARE_SIMPLE_DATADESC() \
+	static datamap_t m_DataMap; \
+	static datamap_t *GetBaseMap(); \
+	template <typename T> friend void DataMapAccess(T *, datamap_t **p); \
+	template <typename T> friend datamap_t *DataMapInit(T *);
+
+#define DECLARE_BYTESWAP_DATADESC() \
+	static datamap_t m_DataMap; \
+	static datamap_t *GetBaseMap(); \
+	template <typename T> friend void DataMapAccess(T *, datamap_t **p); \
+	template <typename T> friend datamap_t *DataMapInit(T *);
+
+#define	DECLARE_DATADESC() \
+	static datamap_t m_DataMap; \
+	static datamap_t *GetBaseMap(); \
+	template <typename T> friend void DataMapAccess(T *, datamap_t **p); \
+	template <typename T> friend datamap_t *DataMapInit(T *); \
+	virtual datamap_t *GetDataDescMap( void );
+
+#define CON_COMMAND( name, description ) \
+	static void name( const CCommand &args ); \
+	static ConCommand name##_command( #name, name, description ); \
+	static void name( const CCommand &args )
+
+#define CON_COMMAND_SHARED( name, description ) \
+	static void name( const CCommand &args ); \
+	static ConCommand name##_command( #name, name, description ); \
+	static void name( const CCommand &args )
+
+#define CON_COMMAND_F( name, description, flags ) \
+	static void name( const CCommand &args ); \
+	static ConCommand name##_command( #name, name, description, flags ); \
+	static void name( const CCommand &args )
+
+#define CON_COMMAND_F_SHARED( name, description, flags ) \
+	static void name( const CCommand &args ); \
+	static ConCommand name##_command( #name, name, description, flags ); \
+	static void name( const CCommand &args )
+
+#define AI_BEGIN_CUSTOM_NPC( className, derivedClass ) \
+	AI_SchedLoadStatus_t		derivedClass::gm_SchedLoadStatus = { true, -1 }; \
+	CAI_ClassScheduleIdSpace 	derivedClass::gm_ClassScheduleIdSpace; \
+	const char *				derivedClass::gm_pszErrorClassName = #derivedClass; \
+	\
+	derivedClass::CScheduleLoader::CScheduleLoader()\
+	{ \
+		derivedClass::LoadSchedules(); \
+	} \
+	\
+	/* --------------------------------------------- */ \
+	/* Load schedules for this type of NPC           */ \
+	/* --------------------------------------------- */ \
+	bool derivedClass::LoadSchedules(void)\
+	{\
+		return AI_DoLoadSchedules( derivedClass::BaseClass::LoadSchedules, \
+								   derivedClass::InitCustomSchedules, \
+								   &derivedClass::gm_SchedLoadStatus ); \
+	}\
+	\
+	bool derivedClass::LoadedSchedules(void) \
+	{ \
+		return derivedClass::gm_SchedLoadStatus.fValid;\
+	} \
+	\
+	CAI_LocalIdSpace 	derivedClass::gm_SquadSlotIdSpace; \
+	\
+	/* -------------------------------------------------- */ \
+	/* Given squadSlot enumeration return squadSlot name */ \
+	/* -------------------------------------------------- */ \
+	const char* derivedClass::SquadSlotName(int slotEN)\
+	{\
+		return gm_SquadSlotNamespace.IdToSymbol( derivedClass::gm_SquadSlotIdSpace.LocalToGlobal(slotEN) );\
+	}\
+	void derivedClass::InitCustomSchedules( void ) \
+	{ \
+		typedef derivedClass CNpc; \
+		const char *pszClassName = #derivedClass; \
+		\
+		CUtlVector<char *> schedulesToLoad; \
+		CUtlVector<AIScheduleLoadFunc_t> reqiredOthers; \
+		CAI_NamespaceInfos scheduleIds; \
+		CAI_NamespaceInfos taskIds; \
+		CAI_NamespaceInfos conditionIds; \
+		CAI_NamespaceInfos squadSlotIds;
+
+#define AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( derivedClass ) \
+	AI_SchedLoadStatus_t		derivedClass::gm_SchedLoadStatus = { true, -1 }; \
+	CAI_ClassScheduleIdSpace 	derivedClass::gm_ClassScheduleIdSpace; \
+	const char *				derivedClass::gm_pszErrorClassName = #derivedClass; \
+	\
+	derivedClass::CScheduleLoader::CScheduleLoader()\
+	{ \
+		derivedClass::LoadSchedules(); \
+	} \
+	\
+	/* --------------------------------------------- */ \
+	/* Load schedules for this type of NPC           */ \
+	/* --------------------------------------------- */ \
+	bool derivedClass::LoadSchedules(void)\
+	{\
+		return AI_DoLoadSchedules( derivedClass::BaseClass::LoadSchedules, \
+								   derivedClass::InitCustomSchedules, \
+								   &derivedClass::gm_SchedLoadStatus ); \
+	}\
+	\
+	bool derivedClass::LoadedSchedules(void) \
+	{ \
+		return derivedClass::gm_SchedLoadStatus.fValid;\
+	} \
+	void derivedClass::InitCustomSchedules( void ) \
+	{ \
+		typedef derivedClass CNpc; \
+		const char *pszClassName = #derivedClass; \
+		\
+		CUtlVector<char *> schedulesToLoad; \
+		CUtlVector<AIScheduleLoadFunc_t> reqiredOthers; \
+		CAI_NamespaceInfos scheduleIds; \
+		CAI_NamespaceInfos taskIds; \
+		CAI_NamespaceInfos conditionIds;
+
+#define AI_END_CUSTOM_SCHEDULE_PROVIDER() \
+		\
+		int i; \
+		\
+		CNpc::AccessClassScheduleIdSpaceDirect().Init( pszClassName, BaseClass::GetSchedulingSymbols(), &BaseClass::AccessClassScheduleIdSpaceDirect() ); \
+		\
+		scheduleIds.Sort(); \
+		taskIds.Sort(); \
+		conditionIds.Sort(); \
+		\
+		for ( i = 0; i < scheduleIds.Count(); i++ ) \
+		{ \
+			ADD_CUSTOM_SCHEDULE_NAMED( CNpc, scheduleIds[i].pszName, scheduleIds[i].localId );  \
+		} \
+		\
+		for ( i = 0; i < taskIds.Count(); i++ ) \
+		{ \
+			ADD_CUSTOM_TASK_NAMED( CNpc, taskIds[i].pszName, taskIds[i].localId );  \
+		} \
+		\
+		for ( i = 0; i < conditionIds.Count(); i++ ) \
+		{ \
+			if ( ValidateConditionLimits( conditionIds[i].pszName ) ) \
+			{ \
+				ADD_CUSTOM_CONDITION_NAMED( CNpc, conditionIds[i].pszName, conditionIds[i].localId );  \
+			} \
+		} \
+		\
+		for ( i = 0; i < reqiredOthers.Count(); i++ ) \
+		{ \
+			(*reqiredOthers[i])();  \
+		} \
+		\
+		for ( i = 0; i < schedulesToLoad.Count(); i++ ) \
+		{ \
+			if ( CNpc::gm_SchedLoadStatus.fValid ) \
+			{ \
+				CNpc::gm_SchedLoadStatus.fValid = g_AI_SchedulesManager.LoadSchedulesFromBuffer( pszClassName, schedulesToLoad[i], &AccessClassScheduleIdSpaceDirect() ); \
+			} \
+			else \
+				break; \
+		} \
+	}
+
+#define DECLARE_CONDITION( id ) \
+	conditionIds.PushBack( #id, id );
+
+#define DECLARE_TASK( id ) \
+	taskIds.PushBack( #id, id );
+
+#define DECLARE_SQUADSLOT( id ) \
+	squadSlotIds.PushBack( #id, id );
+
+
+#define	PRECACHE_REGISTER_BEGIN( _system, _className )	\
+	namespace _className ## Precache						\
+{														\
+class CResourcePrecacher : public CBaseResourcePrecacher\
+{														\
+public:													\
+	CResourcePrecacher() : CBaseResourcePrecacher( _system, #_className ) {}	\
+public:													\
+	virtual void Cache( IPrecacheHandler *pPrecacheHandler, bool bPrecache, ResourceList_t hResourceList, bool bIgnoreConditionals );	\
+};														\
+	void CResourcePrecacher::Cache( IPrecacheHandler *pPrecacheHandler, bool bPrecache, ResourceList_t hResourceList, bool bIgnoreConditionals )	\
+{														\
+	if ( !bIgnoreConditionals && !( true ) )		\
+	return;
+
+#define	PRECACHE_REGISTER_END( )							\
+}														\
+	CResourcePrecacher	s_ResourcePrecacher;				\
+}
+
+#define	PRECACHE( _type, _name )				pPrecacheHandler->CacheResource( _type, _name, bPrecache, hResourceList, NULL ); 
+#define	PRECACHE_INDEX( _type, _name, _index )	pPrecacheHandler->CacheResource( _type, _name, bPrecache, hResourceList, (int*)( &(_index) ) ); 
+
+#define REFERENCE_SEND_TABLE(tableName)	tableName::g_SendTable
+#define REFERENCE_RECV_TABLE(tableName)	tableName::g_RecvTable
+
+#define FOR_EACH_VEC( vecName, iteratorName ) \
+	for ( int iteratorName = 0; iteratorName < (vecName).Count(); iteratorName++ )
+#define FOR_EACH_VEC_BACK( vecName, iteratorName ) \
+	for ( int iteratorName = (vecName).Count()-1; iteratorName >= 0; iteratorName-- )

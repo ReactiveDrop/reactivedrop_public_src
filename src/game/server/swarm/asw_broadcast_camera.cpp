@@ -72,6 +72,13 @@ void CASW_Broadcast_Camera::Spawn( void )
 	DispatchUpdateTransmitState();
 }
 
+void CASW_Broadcast_Camera::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	RestoreAllPlayerViews();
+}
+
 int CASW_Broadcast_Camera::UpdateTransmitState()
 {
 	// always tranmit if currently used by a monitor
@@ -560,8 +567,6 @@ void CASW_Broadcast_Camera::Move()
 // makes sure all players are viewing this and frozen if needed
 void CASW_Broadcast_Camera::UpdateAllPlayers()
 {
-	asw_controls.SetValue(0);
-
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
@@ -580,7 +585,6 @@ void CASW_Broadcast_Camera::UpdateAllPlayers()
 // note: does not set camera to first person mode
 void CASW_Broadcast_Camera::UpdatePlayerByID( int playerindex )
 {
-	//asw_controls.SetValue(0);
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerindex );
 
 	if (pPlayer)
@@ -595,13 +599,11 @@ void CASW_Broadcast_Camera::UpdatePlayerByID( int playerindex )
 // puts player views back to normal
 void CASW_Broadcast_Camera::RestoreAllPlayerViews()
 {
-	asw_controls.SetValue(1);
-
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
-		if ( pPlayer )
+		if ( pPlayer && pPlayer->GetViewEntity() == this )
 		{
 			pPlayer->SetViewEntity(NULL);
 			pPlayer->EnableControl(true);

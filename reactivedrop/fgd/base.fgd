@@ -825,13 +825,22 @@
 	]
 	maxoccludeearea(float) : "Max occludee area" : "0" : "[Used on PC] Prevents occlusion testing for entities that take up more than X% of the screen." 
 	minoccluderarea(float) : "Min occluder area" : "0" : "[Used on PC] Prevents occluders from being used if they take up less than X% of the screen." 
-	maxoccludeearea_x360(float) : "Max occludee area (Xbox)" : "0" : "[Used on 360] Prevents occlusion testing for entities that take up more than X% of the screen." 
-	minoccluderarea_x360(float) : "Min occluder area (Xbox)" : "0" : "[Used on 360] Prevents occluders from being used if they take up less than X% of the screen." 
+	//maxoccludeearea_x360(float) : "Max occludee area (Xbox)" : "0" : "[Used on 360] Prevents occlusion testing for entities that take up more than X% of the screen." 
+	//minoccluderarea_x360(float) : "Min occluder area (Xbox)" : "0" : "[Used on 360] Prevents occluders from being used if they take up less than X% of the screen." 
 	maxpropscreenwidth(float) : "Start Fade Pixels" : -1 : "Number of pixels wide at which all props in the level start to fade (<0 = use fademaxdist). This number is ignored if the prop has a specific fade distance specified."
 	minpropscreenwidth(float) : "End Fade Pixels" : 0 : "Minimum number of pixels wide at which the prop is visible (0 = don't fade out). This number is ignored if the prop has a specific fade distance specified."
 	detailvbsp(string) : "Detail.vbsp file" : "detail.vbsp" : "Detail.vbsp file to use for emitting detail props (found in directory <root>/modname)"
 	detailmaterial(string) : "Detail material file" : "detail/detailsprites" : "Material for detail sprites to use for drawing detail props"
 	coldworld(boolean) : "World is cold" : 0
+	timeofday(choices) : "Time of day" : 0 =
+	[
+		0 : "Midnight"
+		1 : "Dawn"
+		2 : "Morning"
+		3 : "Afternoon"
+		4 : "Dusk"
+		5 : "Evening"
+	]
 ]
 
 
@@ -2492,6 +2501,13 @@
 
 @PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_servercommand : 
 	"An entity that issues commands to the server console."
+[
+	// Inputs
+	input Command(string) : "Command to execute."
+]
+
+@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_broadcastclientcommand : 
+	"An entity that issues commands to each valid client's console, as if it was typed in by that player locally."
 [
 	// Inputs
 	input Command(string) : "Command to execute."

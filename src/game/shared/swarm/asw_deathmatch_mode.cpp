@@ -95,7 +95,6 @@ extern ConVar rd_sentry_take_damage_from_marine;
 extern ConVar rd_show_arrow_to_marine;
 extern ConVar rd_show_others_laser_pointer;
 extern ConVar rd_weapon_on_ground_time;
-extern ConVar rd_pistols_min_delay;
 
 extern ConVar asw_marine_death_protection;
 extern ConVar asw_skill;
@@ -168,7 +167,6 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	SaveSetConvar( rd_rocket_target_marine, 1 );
 	SaveSetConvar( rd_sentry_take_damage_from_marine, 1 );
 	SaveSetConvar( rd_weapon_on_ground_time, 30 );
-	SaveSetConvar( rd_pistols_min_delay, 0.1f );
 
 	SaveSetConvar( rd_chainsaw_slows_down, 0 );
 	SaveSetConvar( rd_jumpjet_knockdown_marines, 0 );
@@ -508,7 +506,8 @@ void CASW_Deathmatch_Mode::InstagibDisable(bool enable_weapon_respawn_timer/* = 
 		- Reset Scores
 	*/
 
-	ASWGameRules()->RevertSingleConvar( &rd_default_weapon );
+	ConVarRef ref( &rd_default_weapon );
+	ASWGameRules()->RevertSingleConvar( ref );
 
 	if ( enable_weapon_respawn_timer )
 	{
@@ -916,9 +915,9 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = 
 			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
 
 			// remove all weapons from marine
-			for ( int i = 0; i < 3; ++i )
+			for ( int j = 0; j < 3; ++j )
 			{
-				pMarine->RemoveWeapon(i, true); // true - no swap to other weapon
+				pMarine->RemoveWeapon(j, true); // true - no swap to other weapon
 			}
 
 			// give default weapon
@@ -938,13 +937,12 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = 
 			pMarine->AddSlowHeal( pMarine->GetMaxHealth() - pMarine->GetHealth(), 3, NULL );
 
 			// move to spawnpoint
-			CBaseEntity *(&spawn_point) = CASW_Player::spawn_point;
-			spawn_point = ASWGameRules()->GetMarineSpawnPoint(spawn_point);
-			if (!spawn_point)
-				spawn_point = ASWGameRules()->GetMarineSpawnPoint(NULL);
-			if (spawn_point) {
-				pMarine->Teleport(&spawn_point->GetAbsOrigin(), &spawn_point->GetAbsAngles(), &vec3_origin);
-			}
+			CBaseEntity *( &pSpawnPoint ) = CASW_Player::spawn_point;
+			pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( pSpawnPoint );
+			if ( !pSpawnPoint )
+				pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( NULL );
+			if ( pSpawnPoint )
+				pMarine->Teleport( &pSpawnPoint->GetAbsOrigin(), &pSpawnPoint->GetAbsAngles(), &vec3_origin );
 		}
 	}
 }

@@ -15,11 +15,11 @@ class CASW_Button_Area : public CASW_Use_Area
 public:
 	CASW_Button_Area();
 	virtual ~CASW_Button_Area();
-	virtual void Spawn( void );	
+	virtual void Spawn( void );
 	virtual void Precache();
-	void ActivateUnlockedButton(CASW_Marine* pMarine);
-	CASW_Door* GetDoor();
-	CASW_Hack* GetCurrentHack();
+	void ActivateUnlockedButton( CASW_Inhabitable_NPC *pNPC );
+	CASW_Door *GetDoor();
+	CASW_Hack *GetCurrentHack();
 	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 	virtual bool IsLocked() { return m_bIsLocked.Get(); }
 	virtual bool HasPower() { return !m_bNoPower.Get(); }
@@ -61,10 +61,10 @@ public:
 	void InputResetHack( inputdata_t &inputdata );
 	void InputUnlock( inputdata_t &inputdata );
 	
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
-	virtual void MarineStartedUsing(CASW_Marine* pMarine);
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pMarine, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime );
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC );
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC );
 	virtual bool IsActive( void );
 	virtual bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }
 

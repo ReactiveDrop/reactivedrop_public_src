@@ -416,16 +416,16 @@ void CBasePlayerAnimState::OptimizeLayerWeights( int iFirstLayer, int nLayers )
 	int iLastOne = -1;
 	for ( i=0; i < nLayers; i++ )
 	{
-		CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
+		pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
 		if ( pLayer->IsActive() && pLayer->GetWeight() > 0.99 )
 			iLastOne = i;
 	}
 
 	if ( iLastOne != -1 )
 	{
-		for ( int i=iLastOne-1; i >= 0; i-- )
+		for ( i=iLastOne-1; i >= 0; i-- )
 		{
-			CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
+			pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
 #ifdef CLIENT_DLL 
 			pLayer->SetOrder( CBaseAnimatingOverlay::MAX_OVERLAYS );
 #else

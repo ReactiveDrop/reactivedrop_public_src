@@ -105,11 +105,12 @@ CASW_Marine* CASW_Dummy_Vehicle::ASWGetDriver()
 	return dynamic_cast<CASW_Marine*>(m_hDriver.Get());
 }
 
-void CASW_Dummy_Vehicle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Dummy_Vehicle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( pMarine )
 	{
 		if ( pMarine->IsInVehicle() )
@@ -121,7 +122,7 @@ void CASW_Dummy_Vehicle::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 
 bool CASW_Dummy_Vehicle::IsUsable(CBaseEntity *pUser)
 {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return (pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 
 void asw_move_dummy_f()

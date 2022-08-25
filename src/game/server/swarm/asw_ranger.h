@@ -16,11 +16,11 @@
 #include "asw_ai_behavior_chase_enemy.h"
 #include "asw_ai_behavior_idle.h"
 
-class CASW_Ranger : public CAI_ExpresserHostWithData<CASW_BlendedAlien, CAI_Expresser>
+class CASW_Ranger : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CASW_Ranger, CAI_ExpresserHostWithData  );
+	DECLARE_CLASS( CASW_Ranger, CASW_Alien );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 

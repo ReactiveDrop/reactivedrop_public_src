@@ -15,6 +15,8 @@ using namespace BaseModUI;
 
 DECLARE_BUILD_FACTORY( CNB_Leaderboard_Panel_Points );
 
+#define HUMAN_BUTTON_ICON "vgui/briefing/human_icon"
+
 CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	GameUI().PreventEngineHideGameUI();
@@ -24,7 +26,15 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
+	m_pBackButton->SetControllerButton( KEY_XBUTTON_B );
 	m_pServerList = new CNB_Button( this, "ServerList", "", this, "ServerList" );
+	m_pServerList->SetControllerButton( KEY_XBUTTON_X );
+	m_pStatsWebsite = new CNB_Button( this, "StatsWebsite", "", this, "StatsWebsite" );
+
+	m_pToggleButton = new CBitmapButton( this, "ToggleButton", "" );
+	m_pToggleButton->AddActionSignalTarget( this );
+	m_pToggleButton->SetCommand( "ToggleButton" );
+	m_pToggleLabel = new vgui::Label( this, "ToggleLabel", "#rd_leaderboard_filter_top" );
 
 	m_pHeaderFooter->SetTitle( "#nb_leaderboard" );
 
@@ -36,7 +46,9 @@ CNB_Leaderboard_Panel_Points::CNB_Leaderboard_Panel_Points( vgui::Panel *parent,
 
 	m_pLeaderboard->SetTitle( "#asw_iaf_heroes_title" );
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
+	m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobal;
+
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardFind );
 }
 
@@ -51,7 +63,27 @@ void CNB_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	LoadControlSettings( "resource/ui/nb_leaderboard_panel.res" );
 
+	m_pToggleLabel->SetVisible( true );
 	m_pServerList->SetVisible( true );
+	m_pStatsWebsite->SetVisible( true );
+
+	color32 white;
+	white.r = 255;
+	white.g = 255;
+	white.b = 255;
+	white.a = 255;
+
+	color32 grey;
+	grey.r = 190;
+	grey.g = 190;
+	grey.b = 190;
+	grey.a = 255;
+
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_ENABLED, HUMAN_BUTTON_ICON, grey );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_DISABLED, HUMAN_BUTTON_ICON, grey );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_PRESSED, HUMAN_BUTTON_ICON, white );
+	m_pToggleButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, HUMAN_BUTTON_ICON, white );
+	m_pToggleButton->SetVisible( true );
 }
 
 void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
@@ -65,6 +97,42 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 	{
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKSSERVERS, this, true );
+		return;
+	}
+	if ( !V_stricmp( command, "StatsWebsite" ) )
+	{
+		if ( SteamApps() )
+		{
+			char statsWeb[256];
+			V_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/heroes?lang=%s&utm_source=mainmenu",
+				SteamApps()->GetCurrentGameLanguage() );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
+		}
+		return;
+	}
+	if ( !Q_stricmp( command, "ToggleButton" ) )
+	{
+		switch ( m_iCurrentLeaderboardDisplayMode )
+		{
+		default:
+		case k_ELeaderboardDataRequestGlobal:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_friends" );
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestFriends;
+			break;
+		case k_ELeaderboardDataRequestGlobalAroundUser:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_top" );
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobal;
+			break;
+		case k_ELeaderboardDataRequestFriends:
+			m_pToggleLabel->SetText( "#rd_leaderboard_filter_nearby" );
+			m_iCurrentLeaderboardDisplayMode = k_ELeaderboardDataRequestGlobalAroundUser;
+			break;
+		}
+
+		m_pLeaderboard->ClearEntries();
+		SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( "RD_1PLAYERS_SEASON_POINTS" );
+		m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardFind );
+
 		return;
 	}
 	BaseClass::OnCommand( command );
@@ -107,17 +175,32 @@ void CNB_Leaderboard_Panel_Points::LeaderboardFind( LeaderboardFindResult_t *pRe
 {
 	if ( bIOError )
 	{
+		m_pNotFoundLabel->SetVisible( false );
 		m_pErrorLabel->SetVisible( true );
 		return;
 	}
 
 	if ( !pResult->m_bLeaderboardFound )
 	{
+		m_pErrorLabel->SetVisible( false );
 		m_pNotFoundLabel->SetVisible( true );
 		return;
 	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+	SteamAPICall_t hCall;
+	switch ( ELeaderboardDataRequest( m_iCurrentLeaderboardDisplayMode ) )
+	{
+	case k_ELeaderboardDataRequestFriends:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		break;
+	case k_ELeaderboardDataRequestGlobalAroundUser:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobalAroundUser, -50, 50 );
+		break;
+	default:
+		hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestGlobal, 0, 100 );
+		break;
+	}
+
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel_Points::LeaderboardDownload );
 }
 
@@ -125,15 +208,20 @@ void CNB_Leaderboard_Panel_Points::LeaderboardDownload( LeaderboardScoresDownloa
 {
 	if ( bIOError )
 	{
+		m_pNotFoundLabel->SetVisible( false );
 		m_pErrorLabel->SetVisible( true );
 		return;
 	}
 
 	if ( pResult->m_cEntryCount == 0 )
 	{
+		m_pErrorLabel->SetVisible( false );
 		m_pNotFoundLabel->SetVisible( true );
 		return;
 	}
+
+	m_pErrorLabel->SetVisible( false );
+	m_pNotFoundLabel->SetVisible( false );
 
 	CUtlVector<RD_LeaderboardEntry_Points_t> entries;
 	g_ASW_Steamstats.ReadDownloadedLeaderboard( entries, pResult->m_hSteamLeaderboardEntries, pResult->m_cEntryCount );

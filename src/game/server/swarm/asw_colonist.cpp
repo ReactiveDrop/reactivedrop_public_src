@@ -898,12 +898,12 @@ static ConVar asw_npc_go_do_run( "asw_npc_go_do_run", "1", FCVAR_CHEAT, "Set whe
 void CC_ASW_NPC_Go( void )
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-	if ( !pPlayer || !pPlayer->GetMarine() )
+	if ( !pPlayer || !pPlayer->GetNPC() )
 		return;
 
 	trace_t tr;
 	Vector forward;
-	Vector vecSrc = pPlayer->GetMarine()->EyePosition();
+	Vector vecSrc = pPlayer->GetNPC()->EyePosition();
 	QAngle angAiming = pPlayer->EyeAnglesWithCursorRoll();
 	float dist = tan(DEG2RAD(90 - angAiming.z)) * 60.0f;
 	AngleVectors( pPlayer->EyeAngles(), &forward );
@@ -916,46 +916,55 @@ void CC_ASW_NPC_Go( void )
 static ConCommand asw_npc_go("asw_npc_go", CC_ASW_NPC_Go, "Selected NPC(s) will go to the location that the player is looking (shown with a purple box)\n\tArguments:	-none-", FCVAR_CHEAT);
 
 
-void CASW_Colonist::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Colonist::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+		return;
 
-	if (!isSelectedBy(pMarine)) {
+	if ( !isSelectedBy( pMarine ) )
+	{
 		SetPrimaryBehavior( NULL );
-		SetTarget(pMarine);
-		SetSchedule(SCHED_SA_FOLLOW_MOVE);
-		if (m_hCine != NULL) {
+		SetTarget( pMarine );
+		SetSchedule( SCHED_SA_FOLLOW_MOVE );
+		if ( m_hCine != NULL ) {
 			ExitScriptedSequence();
 		}
 
 		selectedBy = pMarine->entindex();
-		SetEffects(0);
-		SetRenderColor(255,255,255);
-	} else {
+		SetEffects( 0 );
+		SetRenderColor( 255, 255, 255 );
+	}
+	else
+	{
 		selectedBy = -1;
-		SetSchedule(SCHED_IDLE_STAND);
-		SetRenderColor(180,180,180);
+		SetSchedule( SCHED_IDLE_STAND );
+		SetRenderColor( 180, 180, 180 );
 	}
 }
 
-bool CASW_Colonist::isSelectedBy(CASW_Marine* marine) {
+bool CASW_Colonist::isSelectedBy( CASW_Marine *marine )
+{
 	return selectedBy == marine->entindex();
 }
 
-bool CASW_Colonist::IsUsable(CBaseEntity *pUser) {
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+bool CASW_Colonist::IsUsable( CBaseEntity *pUser )
+{
+	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 
-
-void CC_ASW_Colonist_GoTo( void ) {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-	if ( !pPlayer || !pPlayer->GetMarine() )
+void CC_ASW_Colonist_GoTo( void )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	if ( !pMarine )
 		return;
 
 	trace_t tr;
 	Vector forward;
-	Vector vecSrc = pPlayer->GetMarine()->EyePosition();
+	Vector vecSrc = pPlayer->GetNPC()->EyePosition();
 	QAngle angAiming = pPlayer->EyeAnglesWithCursorRoll();
 	float dist = tan(DEG2RAD(90 - angAiming.z)) * 60.0f;
 	AngleVectors( pPlayer->EyeAngles(), &forward );
@@ -963,13 +972,16 @@ void CC_ASW_Colonist_GoTo( void ) {
 	//AI_TraceLine( vecSrc,
 		//vecSrc + forward * dist,  MASK_NPCSOLID,
 		//pPlayer->GetMarine(), COLLISION_GROUP_NONE, &tr );
-	CASW_Colonist::ASW_Colonist_GoTo(pPlayer, vecSrc + forward * dist, forward);
+	CASW_Colonist::ASW_Colonist_GoTo(pPlayer, pMarine, vecSrc + forward * dist, forward);
 }
  
-void CASW_Colonist::ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &targetPos, const Vector &traceDir) {
-	CASW_Colonist *npc = gEntList.NextEntByClass( (CASW_Colonist *)NULL );
-	for ( ; npc; npc = gEntList.NextEntByClass(npc) ) {
-		if (!npc->isSelectedBy(pPlayer->GetMarine())) {
+void CASW_Colonist::ASW_Colonist_GoTo( CASW_Player *pPlayer, CASW_Marine *pMarine, const Vector &targetPos, const Vector &traceDir )
+{
+	CASW_Colonist *npc = gEntList.NextEntByClass( ( CASW_Colonist * )NULL );
+	for ( ; npc; npc = gEntList.NextEntByClass( npc ) )
+	{
+		if ( !npc->isSelectedBy( pMarine ) )
+		{
 			continue;
 		}
 
@@ -983,17 +995,17 @@ void CASW_Colonist::ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &target
 		vUpBit.z += 1;
 
 		trace_t tr;
-		AI_TraceHull( chasePosition, vUpBit, npc->GetHullMins(), 
+		AI_TraceHull( chasePosition, vUpBit, npc->GetHullMins(),
 			npc->GetHullMaxs(), npc->GetAITraceMask(), npc, COLLISION_GROUP_NONE, &tr );
-		if (tr.startsolid || tr.fraction != 1.0 )
+		if ( tr.startsolid || tr.fraction != 1.0 )
 		{
-			NDebugOverlay::BoxAngles(chasePosition, npc->GetHullMins(), 
-				npc->GetHullMaxs(), npc->GetAbsAngles(), 255,0,0,20,0.5);
+			NDebugOverlay::BoxAngles( chasePosition, npc->GetHullMins(),
+				npc->GetHullMaxs(), npc->GetAbsAngles(), 255, 0, 0, 20, 0.5 );
 		}
 
 		npc->m_vecLastPosition = chasePosition;
 
-		if (npc->m_hCine != NULL)
+		if ( npc->m_hCine != NULL )
 		{
 			npc->ExitScriptedSequence();
 		}
@@ -1002,35 +1014,39 @@ void CASW_Colonist::ASW_Colonist_GoTo(CASW_Player *pPlayer, const Vector &target
 		npc->m_flMoveWaitFinished = gpGlobals->curtime;
 
 		npc->selectedBy = -1;
-		npc->SetRenderColor(180,180,180);
+		npc->SetRenderColor( 180, 180, 180 );
 	}
 }
 
 static ConCommand asw_colonist_goto("asw_colonist_goto", CC_ASW_Colonist_GoTo, "Selected Colonist(s) will go to the location that the player is looking\n    Arguments: none", FCVAR_NONE);
 
 int SELECT_DISTANCE = 128;
-void CC_ASW_Colonist_SelectAll( void ) {
-	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
-	if ( !pPlayer)
+void CC_ASW_Colonist_SelectAll( void )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );;
+	if ( !pPlayer )
 		return;
-	CASW_Marine *marine = pPlayer->GetMarine();
-	if (!marine)
+	CASW_Marine *marine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+	if ( !marine )
 		return;
 
 	Vector marinePos = marine->GetAbsOrigin();
 
 
-	CASW_Colonist *npc = gEntList.NextEntByClass( (CASW_Colonist *)NULL );
-	for ( ; npc; npc = gEntList.NextEntByClass(npc) ) {
-		if (npc->isSelectedBy(marine)) {
+	CASW_Colonist *npc = gEntList.NextEntByClass( ( CASW_Colonist * )NULL );
+	for ( ; npc; npc = gEntList.NextEntByClass( npc ) )
+	{
+		if ( npc->isSelectedBy( marine ) )
+		{
 			continue;
 		}
 
 		Vector coloPos = npc->GetAbsOrigin();
 
-		float dist = UTIL_DistApprox(coloPos, marinePos);
-		if (dist < SELECT_DISTANCE) {
-			npc->ActivateUseIcon(marine, ASW_USE_RELEASE_QUICK);
+		float dist = UTIL_DistApprox( coloPos, marinePos );
+		if ( dist < SELECT_DISTANCE )
+		{
+			npc->ActivateUseIcon( marine, ASW_USE_RELEASE_QUICK );
 		}
 	}
 }

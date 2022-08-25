@@ -14,6 +14,7 @@
 #include "beamdraw.h"
 #include "object_motion_blur_effect.h"
 #include "asw_deathmatch_mode.h"
+#include "dlight.h"
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -74,14 +75,13 @@ public:
 	Vector m_vecCustomRenderOrigin;
 	virtual const Vector& GetRenderOrigin();
 	virtual void MouseOverEntity(C_BaseEntity* pEnt, Vector vecCrosshairAimingPos);
+	void ForceVisibleFirstPerson( bool bForce );
+	byte m_PrevRenderAlpha;
+	bool m_bIsHiddenLocal;
 		
 	// networking
 	void NotifyShouldTransmit( ShouldTransmitState_t state );	
 	virtual void UpdateClientSideAnimation();
-	virtual void InitPredictable( C_BasePlayer *pOwner );
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool ShouldPredict( void );
-	virtual C_BasePlayer* GetPredictionOwner();
 	void OnDataChanged( DataUpdateType_t updateType );
 	// prediction smoothing on elevators
 	void NotePredictionError( const Vector &vDelta );
@@ -91,7 +91,6 @@ public:
 	CNetworkVar(float, m_fAIPitch);
 	QAngle m_AIEyeAngles;
 	Vector m_vecLastRenderedPos;	// marine position stored while drawing (since actual marine position is unreliable during CreateMove)
-	bool m_bUseLastRenderedEyePosition;
 	bool m_bLastNoDraw;
 	
 	// ammo
@@ -117,8 +116,6 @@ public:
 	bool m_bLastWeaponBeforeTempWasSecondary;
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
 	virtual void ProcessMuzzleFlashEvent();
-	C_ASW_Weapon* GetActiveASWWeapon(void) const;
-	C_ASW_Weapon* GetASWWeapon(int index) const;
 	virtual Vector			Weapon_ShootPosition();
 	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in	
 	int GetWeaponIndex( CBaseCombatWeapon *pWeapon ) const;		// returns weapon's position in our myweapons array
@@ -131,15 +128,13 @@ public:
 	// shadow
 	Vector m_ShadowDirection;
 	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;	
-	
+	ShadowType_t ShadowCastType();
+
 	// commander/inhabiting
 	C_ASW_Marine_Resource* GetMarineResource();
-	C_ASW_Player* GetCommander() const;
 	bool IsInhabited();
-	CNetworkHandle( C_ASW_Player, m_Commander );	
 	CHandle<C_ASW_Marine_Resource> m_hMarineResource;
 	CASW_Marine_Profile* GetMarineProfile();
-	const char *GetPlayerName() const;
 
 	// scanner
 	inline float GetBlipStrength() { return m_CurrentBlipStrength; }
@@ -153,6 +148,7 @@ public:
 	void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 	void MarineStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity );
 	void DoWaterRipples();
+	float m_flNextChatter;
 
 	// footprints
 	const char *GetMarineFootprintParticleName( surfacedata_t *psurface );
@@ -175,18 +171,9 @@ public:
 	float m_fStopMarineTime;
 	float MaxSpeed();
 	virtual void					EstimateAbsVelocity( Vector& vel );	// asw made virtual
-	int m_nOldButtons;
 	CNetworkVar(bool, m_bPreventMovement);
-	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
-
-	// Texture names and surface data, used by CASW_MarineGameMovement
-	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
-	float			m_surfaceFriction;
-	char			m_chTextureType;
-	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
 
 	// orders
 	CNetworkVar(int, m_ASWOrders);
@@ -280,9 +267,6 @@ public:
 	virtual bool TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	CNetworkVar(float, m_fInfestedTime);		// how many seconds of infestation we have left
 	CNetworkVar(float, m_fInfestedStartTime);	// when the marine first got infested
-	void TickRedName(float delta);
-	float m_fRedNamePulse;	// from 0 to 1, how red the marine's name should appear on the HUD for medics
-	bool m_bRedNamePulseUp;
 	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
 	virtual C_ClientRagdoll* CreateClientRagdoll( bool bRestoring = false );
 	virtual C_BaseAnimating* BecomeRagdollOnClient();
@@ -292,17 +276,9 @@ public:
 	// snow
 	//CSmartPtr<CASWGenericEmitter> m_hSnowEmitter;
 
-	// using entities over time
-	C_BaseEntity* GetUsingEntity() { return m_hUsingEntity.Get(); }
-	CNetworkHandle( C_BaseEntity, m_hUsingEntity );	// if set, marine will face this object
-	const Vector& GetFacingPoint();
-	void SetFacingPoint(const Vector &vec, float fDuration);
-	Vector m_vecFacingPoint, m_vecFacingPointFromServer;
-	float m_fStopFacingPointTime;
-
 	// client usable entity
 	virtual bool IsUsable( C_BaseEntity *pUser );
-	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser );
+	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) {}
 	virtual bool ShouldPaintBoxAround() { return m_bKnockedOut; }
 	virtual bool NeedsLOSCheck() { return m_bKnockedOut; }
@@ -352,7 +328,6 @@ public:
 	float m_fPoison;
 
 	// for smooth turning of the marine
-	float m_fLastTurningYaw;
 	Vector m_vLaserSightCorrection;
 	float m_flLaserSightLength;
 
@@ -392,7 +367,7 @@ public:
 	float GetBaseMeleeDamage() { return m_flBaseMeleeDamage; }
 	float m_flBaseMeleeDamage;
 	void DoMeleeDamageTrace( float flYawStart, float flYawEnd );
-	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dmgInfo, Vector &vecAttackDir, trace_t *tr );
+	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmgInfo, Vector &vecAttackDir, trace_t *tr );
 	CBaseEntity *MeleeTraceHullAttack( const Vector &vecStart, const Vector &vecEnd, const Vector &vecMins, const Vector &vecMaxs, bool bHitBehindMarine, float flAttackCone );
 	void ApplyPassiveMeleeDamageEffects( CTakeDamageInfo &dmgInfo );
 	bool HasPowerFist();
@@ -422,6 +397,12 @@ public:
 	// shoulder cone
 	virtual void CreateShoulderCone();
 	EHANDLE m_hShoulderCone;
+
+	// backpack
+	virtual void CreateBackpack( C_BaseCombatWeapon *pWeapon );
+	virtual void RemoveBackpack();
+	EHANDLE m_hBackpack;
+	const char *m_sBackpackModel;
 
 	// powerup
 	bool HasAnyPowerups( void ) { return m_iPowerupType >= 0; }

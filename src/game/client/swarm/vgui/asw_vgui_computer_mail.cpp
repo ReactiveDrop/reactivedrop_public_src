@@ -66,11 +66,15 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 		if (m_pHackComputer && m_pHackComputer->GetComputerArea())
 		{
 			// set the label based on PDA name
-			char namebuffer[64];
-			Q_snprintf(namebuffer, sizeof(namebuffer), "%s", m_pHackComputer->GetComputerArea()->m_PDAName.Get());
-
 			wchar_t wnamebuffer[64];
-			g_pVGuiLocalize->ConvertANSIToUnicode(namebuffer, wnamebuffer, sizeof( wnamebuffer ));
+			if ( const wchar_t *pwszName = g_pVGuiLocalize->Find( m_pHackComputer->GetComputerArea()->m_PDAName.Get() ) )
+			{
+				V_wcsncpy( wnamebuffer, pwszName, sizeof( wnamebuffer ) );
+			}
+			else
+			{
+				g_pVGuiLocalize->ConvertANSIToUnicode( m_pHackComputer->GetComputerArea()->m_PDAName.Get(), wnamebuffer, sizeof( wnamebuffer ) );
+			}
 			
 			wchar_t wbuffer[256];		
 			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
@@ -519,69 +523,70 @@ void CASW_VGUI_Computer_Mail::ApplySettingAndFadeLabelIn(vgui::Label* pLabel)
 
 
 void CASW_VGUI_Computer_Mail::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+{
+	int x, y, w, t;
+	GetSize( w, t );
 
-	SetPos(0,0);
+	SetPos( 0, 0 );
 
 	m_bMouseOverBackButton = false;
 
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
-	
-	if (m_bMouseOverBackButton)
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
+
+	if ( m_bMouseOverBackButton )
 	{
-		m_pBackButton->SetBgColor(Color(255,255,255,m_pBackButton->GetAlpha()));
+		m_pBackButton->SetBgColor( Color( 255, 255, 255, m_pBackButton->GetAlpha() ) );
 	}
 	else
 	{
-		m_pBackButton->SetBgColor(Color(19,20,40,m_pBackButton->GetAlpha()));
+		m_pBackButton->SetBgColor( Color( 19, 20, 40, m_pBackButton->GetAlpha() ) );
 	}
 
-	if (m_pMoreButton->IsCursorOver())
+	if ( m_pMoreButton->IsWithin( x, y ) )
 	{
-		m_pMoreButton->SetBgColor(Color(255,255,255,m_pBackButton->GetAlpha()));
+		m_pMoreButton->SetBgColor( Color( 255, 255, 255, m_pBackButton->GetAlpha() ) );
 	}
 	else
 	{
-		m_pMoreButton->SetBgColor(Color(19,20,40,m_pBackButton->GetAlpha()));
+		m_pMoreButton->SetBgColor( Color( 19, 20, 40, m_pBackButton->GetAlpha() ) );
 	}
 
-	if (m_pBodyList && m_pBodyList->GetScrollBar())
+	if ( m_pBodyList && m_pBodyList->GetScrollBar() )
 	{
 		int smin, smax;
 		int rw = m_pBodyList->GetScrollBar()->GetRangeWindow();
-		m_pBodyList->GetScrollBar()->GetRange(smin, smax);
-		if (smax > rw)
+		m_pBodyList->GetScrollBar()->GetRange( smin, smax );
+		if ( smax > rw )
 		{
-			m_pMoreButton->SetVisible(true);
-			m_pBodyList->SetShowScrollBar(true);
-			m_pBodyList->GetScrollBar()->GetButton(0)->SetVisible(false);
-			m_pBodyList->GetScrollBar()->GetButton(1)->SetVisible(false);
-			m_pMoreButton->SetPaintBackgroundType(2);
+			m_pMoreButton->SetVisible( true );
+			m_pBodyList->SetShowScrollBar( true );
+			m_pBodyList->GetScrollBar()->GetButton( 0 )->SetVisible( false );
+			m_pBodyList->GetScrollBar()->GetButton( 1 )->SetVisible( false );
+			m_pMoreButton->SetPaintBackgroundType( 2 );
 		}
 		else
 		{
-			m_pMoreButton->SetVisible(false);
-			m_pBodyList->SetShowScrollBar(false);
+			m_pMoreButton->SetVisible( false );
+			m_pBodyList->SetShowScrollBar( false );
 		}
 	}
 
 	const float rows_top = 0.2f * t;
 	const float row_height = 0.05f * t;
-	float cursor_y = rows_top + row_height * (ASW_MAIL_ROWS);
-	for (int i=0;i<4;i++)
+	float cursor_y = rows_top + row_height * ( ASW_MAIL_ROWS );
+	for ( int i = 0; i < 4; i++ )
 	{
 		// resize these based on their content
 		int ch = 0;
 
-		float body_width = m_pBodyList->GetWide() - (m_pBodyList->GetScrollBar()->GetWide() + 15);
-		m_pBody[i]->SetSize(body_width, m_pBodyList->GetTall());
-		m_pBody[i]->GetTextImage()->SetDrawWidth(body_width);
+		float body_width = m_pBodyList->GetWide() - ( m_pBodyList->GetScrollBar()->GetWide() + 15 );
+		m_pBody[i]->SetSize( body_width, m_pBodyList->GetTall() );
+		m_pBody[i]->GetTextImage()->SetDrawWidth( body_width );
 		int texwide, texttall;
-		m_pBody[i]->GetTextImage()->GetContentSize(texwide, texttall);		
-		m_pBody[i]->SetSize(texwide, texttall);
-		m_pBodyList->InvalidateLayout(true);
+		m_pBody[i]->GetTextImage()->GetContentSize( texwide, texttall );
+		m_pBody[i]->SetSize( texwide, texttall );
+		m_pBodyList->InvalidateLayout( true );
 		cursor_y += ch + 0.01f * t;
 	}
 

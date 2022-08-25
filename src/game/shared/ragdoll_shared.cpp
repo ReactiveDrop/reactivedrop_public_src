@@ -1108,16 +1108,16 @@ void CRagdollLRURetirement::MoveToTopOfLRU( CBaseAnimating *pRagdoll, bool bImpo
 		{
 			int iIndex = m_LRUImportantRagdolls.Head();
 
-			CBaseAnimating *pRagdoll = m_LRUImportantRagdolls[iIndex].Get();
+			CBaseAnimating *pToRetire = m_LRUImportantRagdolls[iIndex].Get();
 
-			if ( pRagdoll )
+			if ( pToRetire )
 			{
 #ifdef CLIENT_DLL
-				pRagdoll->SUB_Remove();
+				pToRetire->SUB_Remove();
 #else
-				pRagdoll->SUB_StartFadeOut( 0 );
+				pToRetire->SUB_StartFadeOut( 0 );
 #endif
-				m_LRUImportantRagdolls.Remove(iIndex);
+				m_LRUImportantRagdolls.Remove( iIndex );
 			}
 
 		}

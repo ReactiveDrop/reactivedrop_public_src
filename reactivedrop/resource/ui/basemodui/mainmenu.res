@@ -145,7 +145,7 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnWorkshop"
-		"navDown"				"BtnSwarmopedia"
+		"navDown"				"BtnCollections"
 		"labelText"				"#L4D360UI_MainMenu_Options"
 		"tooltiptext"			"#L4D360UI_MainMenu_Options_Tip"
 		"style"					"AlienSwarmMenuButtonSmall"
@@ -153,10 +153,10 @@
 		"ActivationType"		"1"
 	}
 	
-	"BtnSwarmopedia"
+	"BtnCollections"
 	{
 		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnSwarmopedia"
+		"fieldName"				"BtnCollections"
 		"xpos"					"100"
 		"ypos"					"285"
 		"wide"					"180"
@@ -168,10 +168,10 @@
 		"tabPosition"			"0"
 		"navUp"					"BtnOptions"
 		"navDown"				"BtnIafRanks"
-		"labelText"				"#asw_swarmopedia"
+		"labelText"				"#rd_mainmenu_collections"
 		"tooltiptext"			""
 		"style"					"AlienSwarmMenuButtonSmall"
-		"command"				"Swarmopedia"	
+		"command"				"#rd_collections"
 		"ActivationType"		"1"
 	}
 	
@@ -188,7 +188,7 @@
 		"visible"				"1"
 		"enabled"				"1"
 		"tabPosition"			"0"
-		"navUp"					"BtnSwarmopedia"
+		"navUp"					"BtnCollections"
 		"navDown"				"BtnQuit"
 		"labelText"				"#asw_iafranks"
 		"tooltiptext"			""
@@ -298,5 +298,17 @@
 		"zpos"				"20"
 		"visible"			"1"
 		"enabled"			"1"
+	}
+
+	"LblBranchDisclaimer"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblBranchDisclaimer"
+		"xpos"				"r305"
+		"ypos"				"5"
+		"wide"				"300"
+		"tall"				"150"
+		"textAlignment"		"north-east"
+		"wrap"				"1"
 	}
 }

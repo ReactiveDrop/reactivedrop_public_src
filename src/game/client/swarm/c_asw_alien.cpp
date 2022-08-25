@@ -40,6 +40,7 @@ ConVar asw_alien_shadows("asw_alien_shadows", "0", 0, "If set to one, aliens wil
 ConVar asw_alien_footstep_interval( "asw_alien_footstep_interval", "0.25", 0, "Minimum interval between alien footstep sounds. Used to keep them from piling up and preventing others from playing." );
 ConVar asw_breakable_aliens( "asw_breakable_aliens", "1", 0, "If set, aliens can break into ragdoll gibs" );
 ConVar rd_max_drone_death_particles( "rd_max_drone_death_particles", "25", FCVAR_ARCHIVE, "Maximum number of drone blood particle being created per 1 frame" );
+ConVar glow_outline_color_alien( "glow_outline_color_alien", "77 153 26", FCVAR_NONE );
 extern ConVar asw_override_footstep_volume;
 extern ConVar asw_alien_debug_death_style;
 
@@ -59,12 +60,18 @@ BEGIN_NETWORK_TABLE( CASW_Alien, DT_ASW_Alien )
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
 	RecvPropInt( RECVINFO( m_nDeathStyle ), SPROP_UNSIGNED ),
 	RecvPropInt			( RECVINFO( m_iHealth) ),
+	RecvPropFloat( RECVINFO( m_flAlienWalkSpeed ) ),
+	RecvPropBool( RECVINFO( m_bInhabitedMovementAllowed ) ),
 END_RECV_TABLE()
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASW_Alien )
 PRECACHE( MATERIAL, "effects/TiledFire/fire_tiled_precache" )
 PRECACHE( MATERIAL, "effects/model_layer_shock_1_precache" )
 PRECACHE( MATERIAL, "effects/model_layer_ice_1_precache" )
+PRECACHE( MATERIAL, "effects/model_layer_shockfire_1_precache" )
+PRECACHE( MATERIAL, "effects/model_layer_shockice_1_precache" )
+PRECACHE( MATERIAL, "effects/model_layer_icefire_1_precache" )
+PRECACHE( MATERIAL, "effects/model_layer_ohgod_1_precache" )
 PRECACHE( PARTICLE_SYSTEM, "damage_numbers" )
 PRECACHE_REGISTER_END()
 
@@ -85,8 +92,10 @@ m_MotionBlurObject( this, 0.0f )
 	m_bClientOnFire = false;
 	m_vecLastRenderedPos = vec3_origin;
 	m_pBurningEffect = NULL;
+	m_flAlienWalkSpeed = 0.0f;
+	m_bInhabitedMovementAllowed = false;
 
-	m_GlowObject.SetColor( Vector( 0.3f, 0.6f, 0.1f ) );
+	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );

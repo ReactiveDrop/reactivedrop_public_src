@@ -208,7 +208,7 @@ void CASW_Hud_Squad_Hotbar::UpdateList()
 		}
 
 		// add your offhand item to the hotbar first
-		CASW_Marine *pPlayerMarine = pPlayer->GetViewMarine();
+		C_ASW_Marine *pPlayerMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 		if ( pPlayerMarine )
 		{
 			C_ASW_Weapon *pWeapon = pPlayerMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );

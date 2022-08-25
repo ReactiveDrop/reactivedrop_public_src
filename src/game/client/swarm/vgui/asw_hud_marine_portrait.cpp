@@ -209,13 +209,10 @@ void CASW_HUD_Marine_Portrait::PerformLayout()
 	}
 	else
 	{
-		int portrait_y = PORTRAIT_Y;
-		int portrait_size = PORTRAIT_SIZE;
-
-		int healthbar_y = portrait_y + (2 * m_fScale);
+		int healthbar_y = PORTRAIT_Y + (2 * m_fScale);
 		if ( asw_portrait_face.GetBool() )
 		{
-			healthbar_y += portrait_size;
+			healthbar_y += PORTRAIT_SIZE;
 		}
 		int healthbar_height = 7 * m_fScale;
 		int healthbar_y2 = healthbar_y + healthbar_height;
@@ -262,18 +259,18 @@ void CASW_HUD_Marine_Portrait::OnThink()
 		}
 		else
 		{
-			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-			if (pPlayer->GetViewMarine() && pPlayer->GetViewMarine()->GetMarineResource() == m_hMarineResource.Get())
+			C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+			if ( pMarine && pMarine->GetMarineResource() == m_hMarineResource.Get() )
 			{
-				m_pMarineName->SetFgColor(Color(255,255,0,255));
-				m_pMarineNumber->SetFgColor(Color(255,255,0,255));
-				m_pMarineNameGlow->SetFgColor(Color(235,177,0,255));
+				m_pMarineName->SetFgColor( Color( 255, 255, 0, 255 ) );
+				m_pMarineNumber->SetFgColor( Color( 255, 255, 0, 255 ) );
+				m_pMarineNameGlow->SetFgColor( Color( 235, 177, 0, 255 ) );
 			}
 			else
 			{
-				m_pMarineName->SetFgColor(Color(255,255,255,255));
-				m_pMarineNumber->SetFgColor(Color(255,255,255,255));
-				m_pMarineNameGlow->SetFgColor(Color(35,214,250,255));
+				m_pMarineName->SetFgColor( Color( 255, 255, 255, 255 ) );
+				m_pMarineNumber->SetFgColor( Color( 255, 255, 255, 255 ) );
+				m_pMarineNameGlow->SetFgColor( Color( 35, 214, 250, 255 ) );
 			}
 		}
 		if (m_hMarineResource->IsInfested())

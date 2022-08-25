@@ -364,7 +364,8 @@ CAI_Node::~CAI_Node()
 {
 	if ( m_hScriptInstance )
 	{
-		g_pScriptVM->RemoveInstance( m_hScriptInstance );
+		if ( g_pScriptVM )
+			g_pScriptVM->RemoveInstance( m_hScriptInstance );
 		m_hScriptInstance = NULL;
 	}
 }
@@ -376,7 +377,8 @@ HSCRIPT CAI_Node::GetScriptInstance()
 {
 	if ( !m_hScriptInstance )
 	{
-		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
+		if ( g_pScriptVM )
+			m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
 	}
 	return m_hScriptInstance;
 }

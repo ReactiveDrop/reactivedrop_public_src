@@ -83,6 +83,7 @@ public:
 		screenw = 0;
 		screenh = 0;
 
+		aimangleoffset.Init();
 	}
 
 	CUserCmd& operator =( const CUserCmd& src )
@@ -135,6 +136,8 @@ public:
 		screenw = src.screenw;
 		screenh = src.screenh;
 
+		aimangleoffset = src.aimangleoffset;
+
 		return *this;
 	}
 
@@ -182,6 +185,8 @@ public:
 		CRC32_ProcessBuffer( &crc, &mousey, sizeof( mousey ) );
 		CRC32_ProcessBuffer( &crc, &screenw, sizeof( screenw ) );
 		CRC32_ProcessBuffer( &crc, &screenh, sizeof( screenh ) );
+
+		CRC32_ProcessBuffer( &crc, &aimangleoffset, sizeof( aimangleoffset ) );
 
 		CRC32_Final( &crc );
 
@@ -247,6 +252,8 @@ public:
 	short mousey;
 	short screenw;
 	short screenh;
+
+	QAngle aimangleoffset;
 };
 
 void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from );

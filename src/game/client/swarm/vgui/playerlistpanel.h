@@ -45,7 +45,10 @@ public:
 	vgui::Label *m_pFragsHeader;
 	vgui::Label *m_pDeathsHeader;
 	vgui::Label *m_pPingHeader;
-	
+	vgui::Label *m_pTipsLabel;
+	vgui::Label *m_pVisibilityLabel;
+	CNB_Button	*m_pVisibilityButton;
+
 	// todo: button to start a map vote
 	// todo: button to vote yes/no to a map vote
 	

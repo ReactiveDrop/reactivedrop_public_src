@@ -69,7 +69,7 @@ enum ASW_Skill_Slot
 
 // Re-use base damage bits
 #define DMG_INFEST					(DMG_AIRBOAT)		// damage from parasite infestation
-#define DMG_BLURPOISON				(DMG_POISON)		// damage from buzzers, blurs the player's view
+#define DMG_BLURPOISON				(DMG_LASTGENERICFLAG << 1)		// damage from buzzers, blurs the player's view
 
 #define DMG_GIB_CORPSE				( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB | DMG_INFEST )
 
@@ -176,6 +176,8 @@ enum
 
 // must follow from last HUD_ entry in shareddefs.h
 #define ASW_HUD_PRINTTALKANDCONSOLE 5
+
+#define ASW_NUM_SEARCH_LIGHTS 4
 
 enum ASW_Orders
 {
@@ -580,6 +582,7 @@ enum
 	CLASS_ASW_HEAVY_RIFLE,
 	CLASS_ASW_MEDRIFLE,
 	CLASS_RD_WEAPON_GENERIC_OBJECT,
+	CLASS_ASW_ANTLIONGUARD,
 
 	// Add new classes here ^^^^
 	CLASS_FUNC_TRACKTRAIN,

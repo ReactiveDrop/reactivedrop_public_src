@@ -1,9 +1,9 @@
 "Sarge"
 {
-	"Rank"		"Master Sergeant"
+	"Rank"		"#asw_rank_sarge"
 	"Bio"       "#asw_bio_sarge"
-	"FirstName"	"Joseph"
-	"LastName"	"Conrad"
+	"FirstName"	"#asw_firstname_sarge"
+	"LastName"	"#asw_lastname_sarge"
 	"ShortName"	"#asw_name_sarge"
 	"RRName"	"Officer1"
 	"Age"		"43"
@@ -47,9 +47,9 @@
 
 "Wildcat"
 {
-	"Rank"		"Private First Class"
-	"FirstName"	"Adele"
-	"LastName"	"Lyon"
+	"Rank"		"#asw_rank_wildcat"
+	"FirstName"	"#asw_firstname_wildcat"
+	"LastName"	"#asw_lastname_wildcat"
 	"ShortName"	"#asw_name_wildcat"
 	"RRName"	"Spec1"
 	"Bio"       "#asw_bio_wildcat"
@@ -94,9 +94,9 @@
 
 "Faith"
 {
-	"Rank"		"Corporal"
-	"FirstName"	"Eva"
-	"LastName"	"Jensen"
+	"Rank"		"#asw_rank_faith"
+	"FirstName"	"#asw_firstname_faith"
+	"LastName"	"#asw_lastname_faith"
 	"ShortName"	"#asw_name_faith"
 	"RRName"	"Medic1"
 	"Bio"       "#asw_bio_faith"
@@ -141,9 +141,9 @@
 
 "Crash"
 {
-	"Rank"		"Private"
-	"FirstName"	"David"
-	"LastName"	"Murphy"
+	"Rank"		"#asw_rank_crash"
+	"FirstName"	"#asw_firstname_crash"
+	"LastName"	"#asw_lastname_crash"
 	"ShortName"	"#asw_name_crash"
 	"RRName"	"Tech1"
 	"Bio"       "#asw_bio_crash"
@@ -188,9 +188,9 @@
 
 "Jaeger"
 {
-	"Rank"		"Corporal"
-	"FirstName"	"Karl"
-	"LastName"	"Jaeger"
+	"Rank"		"#asw_rank_jaeger"
+	"FirstName"	"#asw_firstname_jaeger"
+	"LastName"	"#asw_lastname_jaeger"
 	"ShortName"	"#asw_name_jaeger"
 	"RRName"	"Officer2"
 	"Bio"       "#asw_bio_jaeger"
@@ -237,9 +237,9 @@
 
 "Wolfe"
 {
-	"Rank"		"Private"
-	"FirstName"	"Thomas"
-	"LastName"	"Wolfe"
+	"Rank"		"#asw_rank_wolfe"
+	"FirstName"	"#asw_firstname_wolfe"
+	"LastName"	"#asw_lastname_wolfe"
 	"ShortName"	"#asw_name_wolfe"
 	"RRName"	"Spec2"
 	"Bio"       "#asw_bio_wolfe"
@@ -286,9 +286,9 @@
 
 "Bastille"
 {
-	"Rank"		"Private"
-	"FirstName"	"Leon"
-	"LastName"	"Bastille"
+	"Rank"		"#asw_rank_bastille"
+	"FirstName"	"#asw_firstname_bastille"
+	"LastName"	"#asw_lastname_bastille"
 	"ShortName"	"#asw_name_bastille"
 	"RRName"	"Medic2"
 	"Bio"       "#asw_bio_bastille"
@@ -333,9 +333,9 @@
 
 "Vegas"
 {
-	"Rank"		"Private"
-	"FirstName"	"Argento"
-	"LastName"	"Guerra"
+	"Rank"		"#asw_rank_vegas"
+	"FirstName"	"#asw_firstname_vegas"
+	"LastName"	"#asw_lastname_vegas"
 	"ShortName"	"#asw_name_vegas"
 	"RRName"	"Tech3"
 	"Bio"       "#asw_bio_vegas"

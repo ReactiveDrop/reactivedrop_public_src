@@ -52,6 +52,7 @@ public:
 	struct FocusArea
 	{		
 		vgui::PHandle hPanel;
+		int iModalScope;
 		bool bClickOnFocus;
 		bool bModal;
 	};
@@ -60,6 +61,9 @@ public:
 	// registering for focus
 	void AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus=false, bool bModal=false);
 	void RemoveFromFocusList(vgui::Panel* pPanel);
+
+	void PushModal();
+	void PopModal();
 
 	// changing focus
 	void SetFocusPanel(int index);
@@ -96,6 +100,7 @@ public:
 	vgui::DHANDLE<CControllerOutline> m_hOutline;
 
 	int m_iModal;	// how many modal-type focus panels we have.  If there are more than 1, all non-modal panels will be ignored when moving around
+	int m_iModalScope; // only pay attention to focus panels with the same modal scope setting.
 	bool m_bControllerMode;
 	bool m_bDebugOutput;
 };

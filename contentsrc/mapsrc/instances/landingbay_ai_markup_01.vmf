@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "32"
+	"mapversion" "33"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "32"
+	"mapversion" "33"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -1052,10 +1052,8 @@ entity
 entity
 {
 	"id" "6322"
-	"classname" "info_node_marine_hint"
+	"classname" "info_marine_hint"
 	"angles" "0 255 0"
-	"nodeid" "29"
-	"spawnflags" "0"
 	"origin" "-6640.28 -2519.37 851"
 	editor
 	{
@@ -5386,10 +5384,8 @@ entity
 entity
 {
 	"id" "8068"
-	"classname" "info_node_marine_hint"
+	"classname" "info_marine_hint"
 	"angles" "0 105 0"
-	"nodeid" "92"
-	"spawnflags" "0"
 	"origin" "-6642.65 -2434.07 851"
 	editor
 	{

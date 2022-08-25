@@ -1026,11 +1026,11 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			matrix3x4_t matrix;
 			AngleMatrix( params.angles, params.origin, matrix );
 
-			CStudioHdr studioHdr;
-			const model_t *model = modelinfo->GetModel( modelIndex );
-			if ( model )
+			CStudioHdr studioHdr2;
+			const model_t *model2 = modelinfo->GetModel( modelIndex );
+			if ( model2 )
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+				studioHdr2.Init( modelinfo->GetStudiomodel( model2 ) );
 			}
 			else
 			{
@@ -1055,7 +1055,7 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 				}
 				else
 				{
-					int attachmentIndex = Studio_FindAttachment( &studioHdr, list[i].placementName ) + 1;
+					int attachmentIndex = Studio_FindAttachment( &studioHdr2, list[i].placementName ) + 1;
 					if ( attachmentIndex > 0 )
 					{
 						pOwnerAnim->GetAttachment( attachmentIndex, matrix );
@@ -1065,11 +1065,11 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			}
 			else
 			{
-				int placementIndex = Studio_FindAttachment( &studioHdr, "placementOrigin" ) + 1;
+				int placementIndex = Studio_FindAttachment( &studioHdr2, "placementOrigin" ) + 1;
 				Vector placementOrigin = parentOrigin;
 				if ( placementIndex > 0 )
 				{
-					GetAttachmentLocalSpace( &studioHdr, placementIndex-1, localToWorld );
+					GetAttachmentLocalSpace( &studioHdr2, placementIndex-1, localToWorld );
 					MatrixGetColumn( localToWorld, 3, placementOrigin );
 					placementOrigin -= parentOrigin;
 				}
@@ -1091,7 +1091,7 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			}
 
 			int nActualSkin = nSkin;
-			if ( nActualSkin > studioHdr.numskinfamilies() )
+			if ( nActualSkin > studioHdr2.numskinfamilies() )
 				nActualSkin = 0;
 
 			CBaseEntity *pBreakable = NULL;
@@ -1436,11 +1436,11 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			matrix3x4_t matrix;
 			AngleMatrix( params.angles, params.origin, matrix );
 
-			CStudioHdr studioHdr;
-			const model_t *model = modelinfo->GetModel( modelIndex );
-			if ( model )
+			CStudioHdr studioHdr2;
+			const model_t *model2 = modelinfo->GetModel( modelIndex );
+			if ( model2 )
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+				studioHdr2.Init( modelinfo->GetStudiomodel( model2 ) );
 			}
 			else
 			{
@@ -1466,7 +1466,7 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 				}
 				else
 				{
-					int attachmentIndex = Studio_FindAttachment( &studioHdr, list[i].placementName ) + 1;
+					int attachmentIndex = Studio_FindAttachment( &studioHdr2, list[i].placementName ) + 1;
 					if ( attachmentIndex > 0 )
 					{
 						pOwnerAnim->GetAttachment( attachmentIndex, matrix );
@@ -1476,11 +1476,11 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			}
 			else
 			{
-				int placementIndex = Studio_FindAttachment( &studioHdr, "placementOrigin" ) + 1;
+				int placementIndex = Studio_FindAttachment( &studioHdr2, "placementOrigin" ) + 1;
 				Vector placementOrigin = parentOrigin;
 				if ( placementIndex > 0 )
 				{
-					GetAttachmentLocalSpace( &studioHdr, placementIndex-1, localToWorld );
+					GetAttachmentLocalSpace( &studioHdr2, placementIndex-1, localToWorld );
 					MatrixGetColumn( localToWorld, 3, placementOrigin );
 					placementOrigin -= parentOrigin;
 				}
@@ -1502,7 +1502,7 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			}
 
 			int nActualSkin = nSkin;
-			if ( nActualSkin > studioHdr.numskinfamilies() )
+			if ( nActualSkin > studioHdr2.numskinfamilies() )
 				nActualSkin = 0;
 
 			CBaseEntity *pBreakable = NULL;

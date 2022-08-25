@@ -445,6 +445,7 @@ struct VisibleStreamItem
 	CCloseCaptionItem	*item;
 };
 
+#ifndef INFESTED_DLL
 //-----------------------------------------------------------------------------
 // Purpose: The only resource manager parameter we currently care about is the name 
 //  of the .vcd to cache into memory
@@ -817,6 +818,7 @@ void CaptionAsyncLoaderCallback( const FileAsyncRequest_t &request, int numReadB
 {
 	g_AsyncCaptionResourceManager.CaptionAsyncLoaderCallback( request, numReadBytes, asyncStatus );
 }
+#endif
 
 DECLARE_HUDELEMENT_FLAGS( CHudCloseCaption, HUDELEMENT_SS_FULLSCREEN_ONLY );
 
@@ -853,7 +855,7 @@ CHudCloseCaption::CHudCloseCaption( const char *pElementName )
 
 	if ( !IsX360() )
 	{
-		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
 	}
 
 	HOOK_HUD_MESSAGE( CHudCloseCaption, CloseCaption );
@@ -871,9 +873,11 @@ CHudCloseCaption::CHudCloseCaption( const char *pElementName )
 		english.SetValue( 0 );
 	}
 
+#ifndef INFESTED_DLL
 	char dbfile [ 512 ];
 	Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", uilanguage );
 	InitCaptionDictionary( dbfile );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -883,7 +887,9 @@ CHudCloseCaption::~CHudCloseCaption()
 {
 	m_CloseCaptionRepeats.RemoveAll();
 
+#ifndef INFESTED_DLL
 	ClearAsyncWork();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -896,16 +902,20 @@ void CHudCloseCaption::LevelInit( void )
 	// Reset repeat counters per level
 	m_CloseCaptionRepeats.RemoveAll();
 
+#ifndef INFESTED_DLL
 	// Wipe any stale pending work items...
 	ClearAsyncWork();
+#endif
 }
 
 static ConVar cc_minvisibleitems( "cc_minvisibleitems", "1", 0, "Minimum number of caption items to show." );
 
+#ifndef INFESTED_DLL
 void CHudCloseCaption::TogglePaintDebug()
 {
 	m_bPaintDebugInfo = !m_bPaintDebugInfo;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -915,6 +925,7 @@ void CHudCloseCaption::Paint( void )
 	int w, h;
 	GetSize( w, h );
 
+#ifndef INFESTED_DLL
 	if ( m_bPaintDebugInfo )
 	{
 		int blockWide = 350;
@@ -963,6 +974,7 @@ void CHudCloseCaption::Paint( void )
 			y += sizewithgap;
 		}
 	}
+#endif
 
 	wrect_t rcOutput;
 	rcOutput.left = 0;
@@ -1242,9 +1254,10 @@ void CHudCloseCaption::Paint( void )
 
 void CHudCloseCaption::OnTick( void )
 {
+#ifndef INFESTED_DLL
 	// See if any async work has completed
 	ProcessAsyncWork();
-
+#endif
 
 	float dt = gpGlobals->frametime;
 
@@ -1256,8 +1269,10 @@ void CHudCloseCaption::OnTick( void )
 		SetVisible( true );
 		if ( !c )
 		{
+#ifndef INFESTED_DLL
 			// Don't clear our force visible if we're waiting for the caption to load
 			if ( m_AsyncWork.Count() == 0 )
+#endif
 			{
 				m_bVisibleDueToDirect = false;
 			}
@@ -1332,7 +1347,9 @@ void CHudCloseCaption::Reset( void )
 		m_Items.Remove( 0 );
 	}
 
+#ifndef INFESTED_DLL
 	ClearAsyncWork();
+#endif
 	Unlock();
 }
 
@@ -2009,6 +2026,7 @@ int CRCString( const char *str )
 	return ( int )crc;
 }
 
+#ifndef INFESTED_DLL
 class CAsyncCaption
 {
 public:
@@ -2372,6 +2390,7 @@ void CHudCloseCaption::ClearAsyncWork()
 	}
 	m_AsyncWork.Purge();
 }
+#endif
 
 extern void Hack_FixEscapeChars( char *str );
 
@@ -2393,6 +2412,7 @@ void CHudCloseCaption::PlayRandomCaption()
 {
 	if ( !closecaption.GetBool() )
 		return;
+#ifndef INFESTED_DLL
 	CAsyncCaption *async = new CAsyncCaption;
 	async->SetIsStream( false );
 	async->AddRandomToken( m_AsyncCaptions );
@@ -2400,12 +2420,17 @@ void CHudCloseCaption::PlayRandomCaption()
 	async->SetFromPlayer( RandomInt( 0, 1 ) == 0 ? true : false );
 	async->StartRequesting( this, m_AsyncCaptions );
 	m_AsyncWork.AddToTail( async );
+#else
+	Assert( !"What is PlayRandomCaption even used for?" );
+#endif
 }
 
 bool CHudCloseCaption::AddAsyncWork( char const *tokenstream, bool bIsStream, float duration, bool fromplayer, bool direct /*=false*/ )
 {
 	if ( !closecaption.GetBool() && !direct )
 		return false;
+
+#ifndef INFESTED_DLL
 	bool bret = true;
 
 	CAsyncCaption *async = new CAsyncCaption();
@@ -2449,12 +2474,22 @@ bool CHudCloseCaption::AddAsyncWork( char const *tokenstream, bool bIsStream, fl
 	// Do this last as the block might be resident already and this will finish immediately...
 	async->StartRequesting( this, m_AsyncCaptions );
 	return bret;
+#else
+	Assert( !bIsStream );
+	const wchar_t *wszCaptionText = g_pVGuiLocalize->Find( tokenstream );
+	if ( !wszCaptionText )
+		return false;
+	_ProcessCaption( wszCaptionText, UTIL_RD_CaptionToHash( tokenstream ), duration, fromplayer, direct );
+	return true;
+#endif
 }
 
 bool CHudCloseCaption::AddAsyncWorkByHash( unsigned int hash, float duration, bool fromplayer, bool direct /*=false*/ )
 {
 	if ( !closecaption.GetBool() && !direct )
 		return false;
+
+#ifndef INFESTED_DLL
 	bool bret = true;
 
 	CAsyncCaption *async = new CAsyncCaption();
@@ -2474,6 +2509,14 @@ bool CHudCloseCaption::AddAsyncWorkByHash( unsigned int hash, float duration, bo
 	// Do this last as the block might be resident already and this will finish immediately...
 	async->StartRequesting( this, m_AsyncCaptions );
 	return bret;
+#else
+	const char *szCaptionToken = UTIL_RD_HashToCaption( hash );
+	Assert( szCaptionToken );
+	if ( !szCaptionToken )
+		return false;
+
+	return AddAsyncWork( szCaptionToken, false, duration, fromplayer, direct );
+#endif
 }
 
 void CHudCloseCaption::ProcessSentenceCaptionStream( const char *tokenstream )
@@ -2642,6 +2685,7 @@ int CHudCloseCaption::GetFontNumber( bool bold, bool italic )
 	return CHudCloseCaption::CCFONT_NORMAL;
 }
 
+#ifndef INFESTED_DLL
 void CHudCloseCaption::Flush()
 {
 	g_AsyncCaptionResourceManager.Flush();
@@ -2713,6 +2757,7 @@ void CHudCloseCaption::OnFinishAsyncLoad( int nFileIndex, int nBlockNum, AsyncCa
 		}
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2752,7 +2797,7 @@ static int EmitCaptionCompletion( const char *partial, char commands[ COMMAND_CO
 		 current < COMMAND_COMPLETION_MAXITEMS )
 	{
 		const char *ccname = g_pVGuiLocalize->GetNameByIndex( i );
-		if ( ccname )
+		if ( ccname && UTIL_RD_CaptionToHash( ccname ) )
 		{
 			if ( !substring || !Q_strncasecmp( ccname, substring, substringLen ) )
 			{
@@ -2781,6 +2826,7 @@ CON_COMMAND_F_COMPLETION( cc_emit, "Emits a closed caption", 0, EmitCaptionCompl
 	}
 }
 
+#ifndef INFESTED_DLL
 CON_COMMAND( cc_random, "Emits a random caption" )
 {
 	int count = 1;
@@ -2799,7 +2845,6 @@ CON_COMMAND( cc_random, "Emits a random caption" )
 	}
 }
 
-
 CON_COMMAND( cc_flush, "Flushes async'd captions." )
 {
 	CHudCloseCaption *hudCloseCaption = GET_FULLSCREEN_HUDELEMENT( CHudCloseCaption );
@@ -2817,6 +2862,7 @@ CON_COMMAND( cc_showblocks, "Toggles showing which blocks are pending/loaded asy
 		hudCloseCaption->TogglePaintDebug();
 	}
 }
+#endif
 
 void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
@@ -2831,7 +2877,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 	// Re-adding the file, even if it's "english" will overwrite the tokens as needed
 	if ( !IsX360() )
 	{
-		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
+		UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
 	}
 
 	char uilanguage[ 64 ];
@@ -2858,6 +2904,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 			}
 		}
 
+#ifndef INFESTED_DLL
 		if ( hudCloseCaption )
 		{
 			char dbfile [ 512 ];
@@ -2873,6 +2920,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 			Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", uilanguage );
 			hudCloseCaption->InitCaptionDictionary( dbfile );
 		}
+#endif
 	}
 	DevMsg( "cc_lang = %s\n", var.GetString() );
 }
@@ -2881,6 +2929,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 
 ConVar cc_lang( "cc_lang", "", FCVAR_ARCHIVE, "Current close caption language (emtpy = use game UI language)", OnCaptionLanguageChanged );
 
+#ifndef INFESTED_DLL
 CON_COMMAND( cc_findsound, "Searches for soundname which emits specified text." )
 {
 	if ( args.ArgC() != 2 )
@@ -2992,3 +3041,4 @@ void CHudCloseCaption::FindSound( char const *pchANSI )
 		delete[] block;
 	}
 }
+#endif

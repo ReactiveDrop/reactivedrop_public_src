@@ -1,639 +1,662 @@
 #include "cbase.h"
 #include "rd_swarmopedia.h"
-#include "animation.h"
-#include "gameui_interface.h"
-#include "gameui/swarm/vfooterpanel.h"
-#include "gameui/swarm/vgenericpanellist.h"
-#include "nb_button.h"
-#include "nb_header_footer.h"
-#include "vgui/ILocalize.h"
-#include <vgui_controls/Button.h>
-#include <vgui_controls/TextImage.h>
-#include <missionchooser/iasw_mission_chooser.h>
-#include <missionchooser/iasw_mission_chooser_source.h>
-#include "rd_challenges_shared.h"
 #include "asw_util_shared.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-using namespace vgui;
-using namespace BaseModUI;
 
 #define SWARMOPEDIA_PATH "resource/swarmopedia.txt"
 
-DECLARE_BUILD_FACTORY( Swarmopedia_Model_Panel );
-DECLARE_BUILD_FACTORY( Swarmopedia );
+using namespace RD_Swarmopedia;
 
-Swarmopedia_Model_Panel::Swarmopedia_Model_Panel( Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
+template<typename T>
+T *Helpers::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
-}
+	T *p = new T();
 
-Swarmopedia_Model_Panel::~Swarmopedia_Model_Panel()
-{
-}
-
-void Swarmopedia_Model_Panel::ApplyConfig( KeyValues *pKV )
-{
-	// Set the first model for scaling.
-	SetMDL( pKV->GetString( "Model/ModelName" ) );
-
-	FOR_EACH_SUBKEY( pKV, pModel )
+	if ( p->ReadFromFile( pszPath, pKV ) )
 	{
-		if ( !V_stricmp( pModel->GetName(), "Model" ) )
+		return p;
+	}
+
+	delete p;
+
+	return NULL;
+}
+
+template<typename T>
+void Helpers::CopyAddVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorAutoPurge<T *> &src )
+{
+	dst.EnsureCapacity( dst.Count() + src.Count() );
+
+	FOR_EACH_VEC( src, i )
+	{
+		dst.AddToTail( new T( *src[i] ) );
+	}
+}
+
+template<typename T>
+void Helpers::CopyVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorAutoPurge<T *> &src )
+{
+	Assert( dst.Count() == 0 );
+
+	CopyAddVector( dst, src );
+}
+
+template<typename T>
+void Helpers::AddMerge( CUtlVectorAutoPurge<T *> &dst, const char *pszPath, KeyValues *pKV )
+{
+	if ( T *p = ReadFromFile<T>( pszPath, pKV ) )
+	{
+		AddMerge( dst, p );
+	}
+}
+
+template<typename T>
+void Helpers::AddMerge( CUtlVectorAutoPurge<T *> &dst, T *pElement )
+{
+	FOR_EACH_VEC( dst, i )
+	{
+		if ( dst[i]->IsSame( pElement ) )
 		{
-			int iModel = m_Models.AddToTail();
-			if ( !m_Models.IsValidIndex( iModel ) )
-			{
-				DevWarning( "Could not add model\n" );
-				return;
-			}
+			dst[i]->Merge( pElement );
 
-			const model_t *pWorldModel = modelinfo->FindOrLoadModel( pModel->GetString( "ModelName" ) );
-			MDLHandle_t hStudioHdr = pWorldModel ? modelinfo->GetCacheHandle( pWorldModel ) : MDLHANDLE_INVALID;
-			const studiohdr_t *pStudioHdr = hStudioHdr == MDLHANDLE_INVALID ? NULL : mdlcache->GetStudioHdr( hStudioHdr );
-			if ( !pStudioHdr )
-			{
-				DevWarning( "Could not load model %s\n", pModel->GetString( "ModelName" ) );
-				KeyValuesDumpAsDevMsg( pKV );
-				continue;
-			}
-			CStudioHdr studioHdr( pStudioHdr, mdlcache );
+			delete pElement;
 
-			m_Models[iModel].m_MDL.SetMDL( hStudioHdr );
-			m_Models[iModel].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->GetString( "Animation" ) );
-			m_Models[iModel].m_MDL.m_nSkin = pModel->GetInt( "Skin", -1 );
-			m_Models[iModel].m_MDL.m_Color = pModel->GetColor( "Color", Color( 255, 255, 255, 255 ) );
+			return;
+		}
+	}
 
-			const QAngle angles( pModel->GetFloat( "pitch" ), pModel->GetFloat( "yaw" ), pModel->GetFloat( "roll" ) );
-			const Vector position( pModel->GetFloat( "x" ), pModel->GetFloat( "y" ), pModel->GetFloat( "z" ) );
-			matrix3x4_t anglePos, scale;
-			AngleMatrix( angles, position, anglePos );
-			SetScaleMatrix( pModel->GetFloat( "scale", 1.0f ), scale );
-			ConcatTransforms( scale, anglePos, m_Models[iModel].m_MDLToWorld );
+	dst.AddToTail( pElement );
+}
 
-			FOR_EACH_SUBKEY( pModel, pKey )
-			{
-				if ( !V_stricmp( pKey->GetName(), "BodyGroup" ) )
-				{
-					::SetBodygroup( &studioHdr, m_Models[iModel].m_MDL.m_nBody, pKey->GetInt( "Group" ), pKey->GetInt( "Value" ) );
-				}
-			}
+template<typename T>
+void Helpers::CopyUniqueVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorAutoPurge<T *> &src )
+{
+	FOR_EACH_VEC( src, i )
+	{
+		AddMerge( dst, new T( *src[i] ) );
+	}
+}
+
+Collection::Collection( const Collection &copy )
+{
+	Helpers::CopyVector( Aliens, copy.Aliens );
+}
+
+void Collection::ReadFromFiles()
+{
+	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &ReadHelper, this );
+}
+
+void Collection::ReadHelper( const char *pszPath, KeyValues *pKV, void *pUserData )
+{
+	static_cast< Collection * >( pUserData )->ReadFromFile( pszPath, pKV );
+}
+
+void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	FOR_EACH_SUBKEY( pKV, pEntry )
+	{
+		if ( FStrEq( pEntry->GetName(), "ALIEN" ) )
+		{
+			Helpers::AddMerge( Aliens, pszPath, pEntry );
+		}
+		else
+		{
+			Warning( "Swarmopedia: unexpected entry type '%s' in %s\n", pEntry->GetName(), pszPath );
 		}
 	}
 }
 
-void Swarmopedia_Model_Panel::OnPaint3D()
+Alien::Alien( const Alien &copy ) :
+	ID{ copy.ID },
+	Name{ copy.Name },
+	Icon{ copy.Icon }
 {
-	Vector vecPos;
-	Vector vecCenter;
-	float flRadius;
-	QAngle angRot( 32.0, 0.0, 0.0 );
-	Vector vecOffset;
+	Helpers::CopyVector( Requirements, copy.Requirements );
+	Helpers::CopyVector( GlobalStats, copy.GlobalStats );
+	Helpers::CopyVector( Display, copy.Display );
+	Helpers::CopyVector( Abilities, copy.Abilities );
+	Helpers::CopyVector( Content, copy.Content );
+	Sources = copy.Sources;
+}
 
-	AngleVectors( angRot, &vecOffset );
-	GetBoundingSphere( vecCenter, flRadius );
-	VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
+float Alien::GetOverallRequirementProgress() const
+{
+	float flTotal = 0.0f;
 
-	float flTime = Plat_FloatTime();
-
-	SetCameraPositionAndAngles( vecPos, angRot );
-	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f , 0.0f ), vec3_origin );
-
-	FOR_EACH_VEC( m_Models, i )
+	FOR_EACH_VEC( Requirements, i )
 	{
-		matrix3x4_t mat;
-		ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
-		m_Models[i].m_MDL.m_flTime = flTime;
-		m_Models[i].m_MDL.Draw( mat );
+		flTotal += Requirements[i]->GetProgress();
+	}
+
+	return flTotal / Requirements.Count();
+}
+
+bool Alien::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	ID = pKV->GetString( "ID" );
+	if ( ID.IsEmpty() )
+	{
+		Warning( "Swarmopedia: ALIEN entry missing ID in %s\n", pszPath );
+		return false;
+	}
+
+	Sources.AddToTail( g_ReactiveDropWorkshop.AddonForFileSystemPath( pszPath ) );
+
+	bool bSeenID = false;
+	FOR_EACH_SUBKEY( pKV, pSubKey )
+	{
+		const char *szName = pSubKey->GetName();
+		if ( FStrEq( szName, "ID" ) )
+		{
+			if ( bSeenID )
+			{
+				Warning( "Swarmopedia: ALIEN entry '%s' has multiple ID fields in %s\n", ID.Get(), pszPath );
+				return false;
+			}
+
+			bSeenID = true;
+		}
+		else if ( FStrEq( szName, "Name" ) )
+		{
+			if ( Name.IsEmpty() )
+			{
+				Name = pSubKey->GetString();
+			}
+		}
+		else if ( FStrEq( szName, "Icon" ) )
+		{
+			if ( Icon.IsEmpty() )
+			{
+				Icon = pSubKey->GetString();
+			}
+		}
+		else if ( FStrEq( szName, "SteamStatLoreRequirement" ) )
+		{
+			Helpers::AddMerge( Requirements, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "GlobalStat" ) )
+		{
+			Helpers::AddMerge( GlobalStats, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Display" ) )
+		{
+			Helpers::AddMerge( Display, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Ability" ) )
+		{
+			Ability *a = new Ability();
+			a->Caption = pSubKey->GetString();
+			Helpers::AddMerge( Abilities, a );
+		}
+		else if ( FStrEq( szName, "Paragraph" ) )
+		{
+			Helpers::AddMerge( Content, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "AppearsIn" ) )
+		{
+			// TODO: decide whether we want to use this; the data was very incomplete last time we tried
+		}
+		else
+		{
+			Warning( "Swarmopedia: Unhandled key '%s' in ALIEN '%s' in %s\n", szName, ID.Get(), pszPath );
+		}
+	}
+
+	return true;
+}
+
+bool Alien::IsSame( const Alien *pAlien ) const
+{
+	return ID == pAlien->ID;
+}
+
+void Alien::Merge( const Alien *pAlien )
+{
+	Assert( ID == pAlien->ID );
+
+	// first value for Name/Icon wins.
+	if ( Name.IsEmpty() )
+	{
+		Name = pAlien->Name;
+	}
+	if ( Icon.IsEmpty() )
+	{
+		Icon = pAlien->Icon;
+	}
+
+	// everything else gets merged.
+	Helpers::CopyUniqueVector( Requirements, pAlien->Requirements );
+	Helpers::CopyUniqueVector( GlobalStats, pAlien->GlobalStats );
+	Helpers::CopyUniqueVector( Display, pAlien->Display );
+	Helpers::CopyUniqueVector( Abilities, pAlien->Abilities );
+	Helpers::CopyUniqueVector( Content, pAlien->Content );
+}
+
+Requirement::Requirement( const Requirement &copy ) :
+	Type{ copy.Type },
+	Caption{ copy.Caption },
+	MinValue{ copy.MinValue }
+{
+	FOR_EACH_VEC( copy.StatNames, i )
+	{
+		StatNames.CopyAndAddToTail( copy.StatNames[i] );
 	}
 }
 
-Swarmopedia::Swarmopedia( Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
+float Requirement::GetProgress() const
 {
-	GameUI().PreventEngineHideGameUI();
-
-	SetDeleteSelfOnClose( true );
-	SetProportional( true );
-
-	m_iSelectedAlien = 0;
-	m_iSelectedModel = 0;
-
-	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
-	m_pModelCaption = new CNB_Button( this, "ModelCaption", "", this, "NextModel" );
-	m_pLblName = new Label( this, "LblName", "" );
-	m_pLblAbilities = new Label( this, "LblAbilities", "" );
-	m_pGplAliens = new GenericPanelList( this, "GplAliens", GenericPanelList::ISM_ELEVATOR );
-	m_pGplParagraphs = new GenericPanelList( this, "GplParagraphs", GenericPanelList::ISM_ELEVATOR );
-	m_pGplAppears = new GenericPanelList( this, "GplAppears", GenericPanelList::ISM_ELEVATOR );
-
-	LoadAllAliens();
-
-	LoadControlSettings( "Resource/UI/BaseModUI/Swarmopedia.res" );
-
-	m_pHeaderFooter->SetTitle( "#asw_swarmopedia" );
-}
-
-Swarmopedia::~Swarmopedia()
-{
-	GameUI().AllowEngineHideGameUI();
-}
-
-void Swarmopedia::Clear()
-{
-	m_pGplAliens->RemoveAllPanelItems();
-	m_Aliens.PurgeAndDeleteElements();
-}
-
-static void LoadAliensCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
-{
-	DevMsg( "Loading aliens for Swarmopedia from filesystem: %s\n", pszPath );
-
-	static_cast< Swarmopedia * >( pUserData )->LoadAliens( pKV );
-}
-
-void Swarmopedia::LoadAllAliens()
-{
-	// Unlike most files, the Swarmopedia is constructed from *all* paths, not just the last one.
-
-	Clear();
-
-	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &LoadAliensCallback, this );
-
-	FOR_EACH_VEC( m_Aliens, i )
+	if ( Type == Type_t::SteamStat )
 	{
-		Button *pButton = m_pGplAliens->AddPanelItem<Button>( "BtnAlienSelection", m_Aliens[i]->m_szName.Get(), this, CFmtStr( "SelectAlien%d", i ) );
-		pButton->SetPaintBackgroundEnabled( false );
+		if ( MinValue <= 0 )
+		{
+			return 1.0f;
+		}
+
+		int iStatTotal{};
+		FOR_EACH_VEC( StatNames, i )
+		{
+			int iStat{};
+			if ( !SteamUserStats() || !SteamUserStats()->GetStat( StatNames[i], &iStat ) )
+			{
+				DevWarning( "Failed to retrieve stat '%s' for Swarmopedia\n", StatNames[i] );
+			}
+
+			iStatTotal += iStat;
+		}
+
+		return clamp( ( float )iStatTotal / ( float )MinValue, 0.0f, 1.0f );
 	}
 
-	InvalidateLayout( true, true );
+	Assert( !"Unhandled Swarmopedia requirement type" );
+	return 0.0f;
 }
 
-void Swarmopedia::LoadAliens( KeyValues *pKV )
+bool Requirement::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
-	FOR_EACH_TRUE_SUBKEY( pKV, pAlien )
+	Type = Type_t::SteamStat;
+
+	Caption = pKV->GetString( "Caption" );
+	MinValue = pKV->GetInt( "MinValue" );
+
+	FOR_EACH_VALUE( pKV, pValue )
 	{
-		if ( V_stricmp( pAlien->GetName(), "ALIEN" ) )
+		const char *szName = pValue->GetName();
+		if ( FStrEq( szName, "Caption" ) || FStrEq( szName, "MinValue" ) )
 		{
-			continue;
+			// Already handled.
 		}
-
-		const char *szID = pAlien->GetString( "ID", NULL );
-
-		if ( !szID )
+		else if ( FStrEq( szName, "StatName" ) )
 		{
-			DevWarning( "Alien missing ID!\n" );
-			KeyValuesDumpAsDevMsg( pAlien );
-			continue;
+			StatNames.CopyAndAddToTail( pValue->GetString() );
 		}
-
-		bool bFound = false;
-		FOR_EACH_VEC( m_Aliens, i )
+		else
 		{
-			if ( !V_stricmp( m_Aliens[i]->m_szID.Get(), szID ) )
-			{
-				m_Aliens[i]->Merge( this, pAlien );
-				bFound = true;
-				break;
-			}
-		}
-
-		if ( !bFound )
-		{
-			m_Aliens.AddToTail( new Alien_t( this, pAlien ) );
+			DevWarning( "Unhandled field in Swarmopedia '%s' in %s\n", pKV->GetName(), pszPath );
 		}
 	}
+
+	return true;
 }
 
-static void WrapLabel( Label *pLabel )
+bool Requirement::IsSame( const Requirement *pRequirement ) const
 {
-	pLabel->SetWrap( true );
-	pLabel->GetParent()->GetParent()->InvalidateLayout( true );
-	pLabel->GetTextImage()->ResizeImageToContentMaxWidth( pLabel->GetWide() );
-	int wide, tall;
-	pLabel->GetContentSize( wide, tall );
-	pLabel->SetSize( wide, tall );
+	return false;
 }
 
-void Swarmopedia::SetSelectedAlien( int iSelection )
+void Requirement::Merge( const Requirement *pRequirement )
 {
-	Assert( iSelection >= 0 && iSelection < m_Aliens.Count() );
+	Assert( !"RD_Swarmopedia::Requirement::Merge should not have been called." );
+}
 
-	if ( m_Aliens[m_iSelectedAlien]->m_DisplayPanel.Count() > m_iSelectedModel )
+Ability::Ability( const Ability &copy ) :
+	Caption{ copy.Caption }
+{
+}
+
+bool Ability::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	Assert( FStrEq( pKV->GetName(), "Ability" ) );
+
+	Caption = pKV->GetString();
+
+	return true;
+}
+
+bool Ability::IsSame( const Ability *pAbility ) const
+{
+	return Caption == pAbility->Caption;
+}
+
+void Ability::Merge( const Ability *pAbility )
+{
+	Assert( Caption == pAbility->Caption );
+}
+
+GlobalStat::GlobalStat( const GlobalStat &copy ) :
+	StatName{ copy.StatName },
+	Caption{ copy.Caption }
+{
+}
+
+bool GlobalStat::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	StatName = pKV->GetString( "StatName" );
+	if ( StatName.IsEmpty() )
 	{
-		m_Aliens[m_iSelectedAlien]->m_DisplayPanel[m_iSelectedModel]->SetVisible( false );
+		Warning( "Swarmopedia: GlobalStat missing StatName in %s\n", pszPath );
+		return false;
 	}
 
-	m_iSelectedAlien = iSelection;
-	m_iSelectedModel = 0;
+	Caption = pKV->GetString( "Caption" );
 
-	if ( m_Aliens[m_iSelectedAlien]->m_DisplayPanel.Count() != 0 )
+	return true;
+}
+
+bool GlobalStat::IsSame( const GlobalStat *pGlobalStat ) const
+{
+	return StatName == pGlobalStat->StatName;
+}
+
+void GlobalStat::Merge( const GlobalStat *pGlobalStat )
+{
+	Assert( StatName == pGlobalStat->StatName );
+
+	if ( Caption.IsEmpty() )
 	{
-		m_Aliens[m_iSelectedAlien]->m_DisplayPanel[m_iSelectedModel]->SetVisible( true );
-		m_pModelCaption->SetText( m_Aliens[m_iSelectedAlien]->m_DisplayCaption[m_iSelectedModel] );
-		m_pModelCaption->SetVisible( true );
-	}
-	else
-	{
-		m_pModelCaption->SetVisible( false );
-	}
-
-	m_pLblName->SetText( m_Aliens[m_iSelectedAlien]->m_szName.Get() );
-	wchar_t wszAbilities[2048] = { 0 };
-	wchar_t wszAbility[512];
-	FOR_EACH_VEC( m_Aliens[m_iSelectedAlien]->m_Abilities, i )
-	{
-		if ( i != 0 )
-		{
-			int len = V_wcslen( wszAbilities );
-			V_wcsncpy( wszAbilities + len, L" \u2022 ", sizeof( wszAbilities ) - len * sizeof( wchar_t ) );
-		}
-		if ( *m_Aliens[m_iSelectedAlien]->m_Abilities[i] == '#' )
-		{
-			if ( wchar_t *wszTranslatedAbility = g_pVGuiLocalize->Find( m_Aliens[m_iSelectedAlien]->m_Abilities[i] ) )
-			{
-				int len = V_wcslen( wszAbilities );
-				V_wcsncpy( wszAbilities + len, wszTranslatedAbility, sizeof( wszAbilities ) - len * sizeof( wchar_t ) );
-				continue;
-			}
-		}
-		int len = V_wcslen( wszAbilities );
-		g_pVGuiLocalize->ConvertANSIToUnicode( m_Aliens[m_iSelectedAlien]->m_Abilities[i], wszAbility, sizeof( wszAbility ) );
-		V_wcsncpy( wszAbilities + len, wszAbility, sizeof( wszAbilities ) - len * sizeof( wchar_t ) );
-	}
-	m_pLblAbilities->SetText( wszAbilities );
-
-	m_pGplParagraphs->RemoveAllPanelItems();
-
-	FOR_EACH_VEC( m_Aliens[m_iSelectedAlien]->m_Paragraphs, i )
-	{
-		Label *pLabel = m_pGplParagraphs->AddPanelItem<Label>( "LblParagraph", m_Aliens[m_iSelectedAlien]->m_Paragraphs[i] );
-		WrapLabel( pLabel );
-	}
-
-	m_pGplAppears->RemoveAllPanelItems();
-
-	FOR_EACH_VEC( m_Aliens[m_iSelectedAlien]->m_AppearsIn, i )
-	{
-		static const char *s_szDifficulty[5] =
-		{
-			"#asw_difficulty_easy",
-			"#asw_difficulty_normal",
-			"#asw_difficulty_hard",
-			"#asw_difficulty_insane",
-			"#asw_difficulty_imba",
-		};
-
-		const Alien_t::AppearsIn_t & appears = m_Aliens[m_iSelectedAlien]->m_AppearsIn[i];
-
-		const char *szCampaign = NULL;
-		const char *szMap = NULL;
-		const char *szChallenge = NULL;
-
-		if ( !appears.m_szCampaign.IsEmpty() && missionchooser && missionchooser->LocalMissionSource() )
-		{
-			szCampaign = missionchooser->LocalMissionSource()->GetPrettyCampaignName( appears.m_szCampaign.Get() );
-		}
-
-		if ( !appears.m_szMap.IsEmpty() && missionchooser && missionchooser->LocalMissionSource() )
-		{
-			szMap = missionchooser->LocalMissionSource()->GetPrettyMissionName( appears.m_szMap.Get() );
-		}
-
-		if ( !appears.m_szChallenge.IsEmpty() )
-		{
-			szChallenge = ReactiveDropChallenges::DisplayName( appears.m_szChallenge.Get() );
-		}
-
-		wchar_t wszAppears[512];
-
-		if ( szCampaign && szMap )
-		{
-			wchar_t wszBuffer1[256];
-			const wchar_t *wszCampaign = NULL;
-			if ( *szCampaign == '#' )
-			{
-				wszCampaign = g_pVGuiLocalize->Find( szCampaign );
-			}
-			if ( !wszCampaign )
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( szCampaign, wszBuffer1, sizeof( wszBuffer1 ) );
-				wszCampaign = wszBuffer1;
-			}
-
-			wchar_t wszBuffer2[256];
-			const wchar_t *wszMap = NULL;
-			if ( *szMap == '#' )
-			{
-				wszMap = g_pVGuiLocalize->Find( szMap );
-			}
-			if ( !wszMap )
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( szMap, wszBuffer2, sizeof( wszBuffer2 ) );
-				wszMap = wszBuffer2;
-			}
-
-			g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_campaign_map" ), 2, wszCampaign, wszMap );
-		}
-		else if ( szCampaign )
-		{
-			const wchar_t *wszCampaign = NULL;
-			if ( *szCampaign == '#' )
-			{
-				wszCampaign = g_pVGuiLocalize->Find( szCampaign );
-			}
-			if ( wszCampaign )
-			{
-				V_wcsncpy( wszAppears, wszCampaign, sizeof( wszAppears ) );
-			}
-			else
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( szCampaign, wszAppears, sizeof( wszAppears ) );
-			}
-		}
-		else if ( szMap )
-		{
-			const wchar_t *wszMap = NULL;
-			if ( *szMap == '#' )
-			{
-				wszMap = g_pVGuiLocalize->Find( szMap );
-			}
-			if ( wszMap )
-			{
-				V_wcsncpy( wszAppears, wszMap, sizeof( wszAppears ) );
-			}
-			else
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( szMap, wszAppears, sizeof( wszAppears ) );
-			}
-		}
-
-		if ( szChallenge )
-		{
-			wchar_t wszBuffer[256];
-			const wchar_t *wszChallenge = NULL;
-			if ( appears.m_szChallenge == "0" )
-			{
-				wszChallenge = g_pVGuiLocalize->Find( "#rd_so_appears_no_challenge" );
-			}
-			else if ( *szChallenge == '#' )
-			{
-				wszChallenge = g_pVGuiLocalize->Find( szChallenge );
-			}
-			if ( !wszChallenge )
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( szChallenge, wszBuffer, sizeof( wszBuffer ) );
-				wszChallenge = wszBuffer;
-			}
-
-			if ( szCampaign || szMap )
-			{
-				wchar_t wszAppears_temp[NELEMS( wszAppears )];
-				V_wcsncpy( wszAppears_temp, wszAppears, sizeof( wszAppears_temp ) );
-				g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_mission_challenge" ), 2, wszAppears_temp, wszChallenge );
-			}
-			else
-			{
-				V_wcsncpy( wszAppears, wszChallenge, sizeof( wszAppears ) );
-			}
-		}
-
-		if ( !szCampaign && !szMap && !szChallenge )
-		{
-			V_wcsncpy( wszAppears, g_pVGuiLocalize->FindSafe( "#rd_so_appears_everywhere" ), sizeof( wszAppears ) );
-		}
-
-		if ( appears.m_iMinDifficulty != 1 || appears.m_iMaxDifficulty != NELEMS( s_szDifficulty ) )
-		{
-			wchar_t wszAppears_temp[NELEMS( wszAppears )];
-			V_wcsncpy( wszAppears_temp, wszAppears, sizeof( wszAppears_temp ) );
-
-			if ( appears.m_iMinDifficulty == appears.m_iMaxDifficulty )
-			{
-				g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_difficulty_single" ), 2, wszAppears_temp, g_pVGuiLocalize->FindSafe( s_szDifficulty[appears.m_iMinDifficulty - 1] ) );
-			}
-			else if ( appears.m_iMinDifficulty == 1 )
-			{
-				g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_difficulty_max" ), 2, wszAppears_temp, g_pVGuiLocalize->FindSafe( s_szDifficulty[appears.m_iMaxDifficulty - 1] ) );
-			}
-			else if ( appears.m_iMaxDifficulty == NELEMS( s_szDifficulty ) )
-			{
-				g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_difficulty_min" ), 2, wszAppears_temp, g_pVGuiLocalize->FindSafe( s_szDifficulty[appears.m_iMinDifficulty - 1] ) );
-			}
-			else
-			{
-				g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_difficulty_range" ), 3, wszAppears_temp, g_pVGuiLocalize->FindSafe( s_szDifficulty[appears.m_iMinDifficulty - 1] ), g_pVGuiLocalize->FindSafe( s_szDifficulty[appears.m_iMaxDifficulty - 1] ) );
-			}
-		}
-
-		if ( appears.m_bOnslaughtOnly )
-		{
-			wchar_t wszAppears_temp[NELEMS( wszAppears )];
-			V_wcsncpy( wszAppears_temp, wszAppears, sizeof( wszAppears_temp ) );
-			g_pVGuiLocalize->ConstructString( wszAppears, sizeof( wszAppears ), g_pVGuiLocalize->FindSafe( "#rd_so_appears_onslaught_only" ), 1, wszAppears_temp );
-		}
-
-		Label *pLabel = m_pGplAppears->AddPanelItem<Label>( "LblAppears", "" );
-		pLabel->SetText( wszAppears );
-		WrapLabel( pLabel );
+		Caption = pGlobalStat->Caption;
 	}
 }
 
-void Swarmopedia::UpdateFooter()
+Display::Display( const Display &copy ) :
+	Caption{ copy.Caption },
+	LightingState{ copy.LightingState }
 {
-	CBaseModFooterPanel *footer = BaseModUI::CBaseModPanel::GetSingleton().GetFooterPanel();
-	if ( footer )
-	{
-		footer->SetButtons( FB_BBUTTON, FF_B_ONLY, false );
-		footer->SetButtonText( FB_BBUTTON, "#L4D360UI_Back" );
-	}
+	Helpers::CopyVector( Models, copy.Models );
 }
 
-void Swarmopedia::ApplySchemeSettings( IScheme *pScheme )
+static Vector ColorToVector( Color c )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
-	SetSelectedAlien( 0 );
+	return Vector{ c.r() / 255.0f, c.g() / 255.0f, c.b() / 255.0f };
 }
 
-static void SetScrollBarVisibleAuto( GenericPanelList *pGPL )
+static void FixLightCoordSystem( Vector &vec )
 {
-	if ( pGPL->GetPanelItemCount() == 0 )
+	// The Swarmopedia camera faces east, but everything else in the game faces north.
+	// Do a trivial coordinate system swap:
+	float flTemp = vec.x;
+	vec.x = vec.y;
+	vec.y = -flTemp;
+}
+
+static void SetupLightAttenuation( const char *pszPath, LightDesc_t &light, KeyValues *pKV )
+{
+	bool bOldAtten = pKV->FindKey( "Constant" ) || pKV->FindKey( "Linear" ) || pKV->FindKey( "Quadratic" );
+	bool bNewAtten = pKV->FindKey( "ZeroPercent" ) || pKV->FindKey( "FiftyPercent" );
+
+	if ( bOldAtten && bNewAtten )
 	{
-		pGPL->SetScrollBarVisible( false );
+		Warning( "Swarmopedia: cannot define both CLQ light attenuation and percentage light attenuation for the same light in %s\n", pszPath );
 		return;
 	}
 
-	pGPL->ScrollToPanelItem( 0 );
-	pGPL->SetScrollBarVisible( pGPL->GetLastVisibleItemNumber( true ) != pGPL->GetPanelItemCount() - 1 );
-}
-
-void Swarmopedia::PerformLayout()
-{
-	BaseClass::PerformLayout();
-
-	SetScrollBarVisibleAuto( m_pGplAliens );
-	SetScrollBarVisibleAuto( m_pGplParagraphs );
-	SetScrollBarVisibleAuto( m_pGplAppears );
-}
-
-void Swarmopedia::OnOpen()
-{
-	BaseClass::OnOpen();
-
-	SetSelectedAlien( 0 );
-}
-
-void Swarmopedia::OnCommand( const char *command )
-{
-	if ( !V_strcmp( command, "Back" ) )
+	if ( bOldAtten )
 	{
-		// Act as though 360 back button was pressed
-		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
+		light.SetupOldStyleAttenuation( pKV->GetFloat( "Quadratic" ), pKV->GetFloat( "Linear" ), pKV->GetFloat( "Constant" ) );
 	}
-	else if ( !V_strcmp( command, "NextModel" ) )
+	else if ( bNewAtten )
 	{
-		if ( m_Aliens[m_iSelectedAlien]->m_DisplayPanel.Count() == 0 )
+		light.SetupNewStyleAttenuation( pKV->GetFloat( "FiftyPercent" ), pKV->GetFloat( "ZeroPercent" ) );
+	}
+}
+
+bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	Caption = pKV->GetString( "Caption" );
+
+	FOR_EACH_SUBKEY( pKV, pSubKey )
+	{
+		const char *szName = pSubKey->GetName();
+		if ( FStrEq( szName, "Model" ) )
 		{
-			return;
+			Helpers::AddMerge( Models, pszPath, pSubKey );
 		}
-		m_Aliens[m_iSelectedAlien]->m_DisplayPanel[m_iSelectedModel]->SetVisible( false );
-		m_iSelectedModel = ( m_iSelectedModel + 1 ) % m_Aliens[m_iSelectedAlien]->m_DisplayPanel.Count();
-		m_Aliens[m_iSelectedAlien]->m_DisplayPanel[m_iSelectedModel]->SetVisible( true );
-		m_pModelCaption->SetText( m_Aliens[m_iSelectedAlien]->m_DisplayCaption[m_iSelectedModel] );
-	}
-	else if ( const char *szAlienIndex = StringAfterPrefix( command, "SelectAlien" ) )
-	{
-		SetSelectedAlien( atoi( szAlienIndex ) );
-	}
-	else
-	{
-		BaseClass::OnCommand( command );
-	}
-}
-
-void Swarmopedia::OnKeyCodePressed( vgui::KeyCode keycode )
-{
-	int lastUser = GetJoystickForCode( keycode );
-	vgui::KeyCode code = GetBaseButtonCode( keycode );
-
-	switch ( code )
-	{
-	case KEY_XBUTTON_UP:
-	case KEY_XSTICK1_UP:
-		if ( m_iSelectedAlien != 0 )
-			SetSelectedAlien( m_iSelectedAlien - 1 );
-		break;
-	case KEY_XBUTTON_DOWN:
-	case KEY_XSTICK1_DOWN:
-		if ( m_iSelectedAlien + 1 < m_Aliens.Count() )
-			SetSelectedAlien( m_iSelectedAlien + 1 );
-		break;
-	case KEY_XBUTTON_X:
-		OnCommand( "NextModel" );
-		break;
-	case KEY_XSTICK2_UP:
-	case KEY_XSTICK2_DOWN:
-		m_pGplParagraphs->OnKeyCodePressed( keycode );
-		break;
-	default:
-		BaseClass::OnKeyCodePressed( keycode );
-		break;
-	}
-}
-
-Swarmopedia::Alien_t::Alien_t( Swarmopedia *pSwarmopedia, KeyValues *pKV ) : m_szID( pKV->GetString( "ID" ) )
-{
-	Merge( pSwarmopedia, pKV );
-}
-
-Swarmopedia::Alien_t::~Alien_t()
-{
-}
-
-void Swarmopedia::Alien_t::Merge( Swarmopedia *pSwarmopedia, KeyValues *pKV )
-{
-	Assert( m_szID == pKV->GetString( "ID" ) );
-
-	if ( const char *szName = pKV->GetString( "Name", NULL ) )
-	{
-		if ( !m_szName.IsEmpty() && V_strcmp( szName, m_szName ) )
+		else if ( FStrEq( szName, "LightingOriginX" ) )
 		{
-			DevWarning( "Overriding name of %s from %s to %s!\n", m_szID.Get(), m_szName.Get(), szName );
+			LightingState.m_vecLightingOrigin.x = pSubKey->GetFloat();
 		}
-		m_szName = szName;
-	}
-
-	FOR_EACH_VALUE( pKV, pAbility )
-	{
-		if ( V_stricmp( pAbility->GetName(), "Ability" ) )
+		else if ( FStrEq( szName, "LightingOriginY" ) )
 		{
-			continue;
+			LightingState.m_vecLightingOrigin.y = pSubKey->GetFloat();
 		}
-
-		bool bFound = false;
-		FOR_EACH_VEC( m_Abilities, i )
+		else if ( FStrEq( szName, "LightingOriginZ" ) )
 		{
-			if ( !V_strcmp( m_Abilities[i], pAbility->GetString() ) )
+			LightingState.m_vecLightingOrigin.z = pSubKey->GetFloat();
+		}
+		else if ( FStrEq( szName, "Ambient" ) )
+		{
+			Vector ambient = ColorToVector( pSubKey->GetColor() );
+			LightingState.m_vecAmbientCube[0] = ambient;
+			LightingState.m_vecAmbientCube[1] = ambient;
+			LightingState.m_vecAmbientCube[2] = ambient;
+			LightingState.m_vecAmbientCube[3] = ambient;
+			LightingState.m_vecAmbientCube[4] = ambient;
+			LightingState.m_vecAmbientCube[5] = ambient;
+		}
+		else if ( FStrEq( szName, "AmbientFar" ) )
+		{
+			LightingState.m_vecAmbientCube[0] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientNear" ) )
+		{
+			LightingState.m_vecAmbientCube[1] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientLeft" ) )
+		{
+			LightingState.m_vecAmbientCube[2] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientRight" ) )
+		{
+			LightingState.m_vecAmbientCube[3] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientTop" ) )
+		{
+			LightingState.m_vecAmbientCube[4] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "AmbientBottom" ) )
+		{
+			LightingState.m_vecAmbientCube[5] = ColorToVector( pSubKey->GetColor() );
+		}
+		else if ( FStrEq( szName, "LightPoint" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
 			{
-				bFound = true;
-				break;
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecPos{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+
+			FixLightCoordSystem( vecPos );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitPoint( vecPos, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ) );
+			SetupLightAttenuation( pszPath, LightingState.m_pLocalLightDesc[iLight], pSubKey );
+		}
+		else if ( FStrEq( szName, "LightDirectional" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
+			{
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecDir{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+
+			FixLightCoordSystem( vecDir );
+			VectorNormalizeFast( vecDir );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitDirectional( vecDir, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ) );
+		}
+		else if ( FStrEq( szName, "LightSpot" ) )
+		{
+			if ( LightingState.m_nLocalLightCount >= MATERIAL_MAX_LIGHT_COUNT )
+			{
+				Warning( "Swarmopedia: too many lights (max %d per Display) in %s\n", MATERIAL_MAX_LIGHT_COUNT, pszPath );
+				continue;
+			}
+
+			Vector vecPos{ pSubKey->GetFloat( "X" ), pSubKey->GetFloat( "Y" ), pSubKey->GetFloat( "Z" ) };
+			Color color = pSubKey->GetColor( "Color", Color{ 255, 255, 255, 255 } );
+			Vector vecPointAt{ pSubKey->GetFloat( "TargetX" ), pSubKey->GetFloat( "TargetY" ), pSubKey->GetFloat( "TargetZ" ) };
+			float flInnerCone = DEG2RAD( pSubKey->GetFloat( "InnerCone", 45.0f ) );
+			float flOuterCone = DEG2RAD( pSubKey->GetFloat( "OuterCone", 60.0f ) );
+
+			FixLightCoordSystem( vecPos );
+			FixLightCoordSystem( vecPointAt );
+
+			int iLight = LightingState.m_nLocalLightCount++;
+			LightingState.m_pLocalLightDesc[iLight].InitSpot( vecPos, ColorToVector( color ) * pSubKey->GetFloat( "Boost", 1.0f ), vecPointAt, flInnerCone, flOuterCone );
+			SetupLightAttenuation( pszPath, LightingState.m_pLocalLightDesc[iLight], pSubKey );
+		}
+	}
+
+	if ( Models.Count() == 0 )
+	{
+		Warning( "Swarmopedia: Display contains no valid Model in %s\n", pszPath );
+
+		return false;
+	}
+
+	return true;
+}
+
+bool Display::IsSame( const Display *pDisplay ) const
+{
+	return false;
+}
+
+void Display::Merge( const Display *pDisplay )
+{
+	Assert( !"RD_Swarmopedia::Display::Merge should not have been called." );
+}
+
+Model::Model( const Model &copy ) :
+	ModelName{ copy.ModelName },
+	Animation{ copy.Animation },
+	Skin{ copy.Skin },
+	Color{ copy.Color },
+	Pitch{ copy.Pitch },
+	Yaw{ copy.Yaw },
+	Roll{ copy.Roll },
+	X{ copy.X },
+	Y{ copy.Y },
+	Z{ copy.Z },
+	Scale{ copy.Scale }
+{
+	BodyGroups.EnsureCapacity( copy.BodyGroups.Count() );
+
+	FOR_EACH_MAP_FAST( copy.BodyGroups, i )
+	{
+		BodyGroups.Insert( copy.BodyGroups.Key( i ), copy.BodyGroups.Element( i ) );
+	}
+}
+
+bool Model::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	ModelName = pKV->GetString( "ModelName" );
+	if ( ModelName.IsEmpty() )
+	{
+		Warning( "Swarmopedia: Missing ModelName for Model in %s\n", pszPath );
+		return false;
+	}
+
+	Animation = pKV->GetString( "Animation" );
+	if ( Animation.IsEmpty() )
+	{
+		Warning( "Swarmopedia: Missing Animation for Model in %s\n", pszPath );
+		return false;
+	}
+
+	Skin = pKV->GetInt( "Skin", Skin );
+	Color = pKV->GetColor( "Color", Color );
+	Pitch = pKV->GetFloat( "Pitch", Pitch );
+	Yaw = pKV->GetFloat( "Yaw", Yaw );
+	Roll = pKV->GetFloat( "Roll", Roll );
+	X = pKV->GetFloat( "X", X );
+	Y = pKV->GetFloat( "Y", Y );
+	Z = pKV->GetFloat( "Z", Z );
+	Scale = pKV->GetFloat( "Scale", Scale );
+
+	FOR_EACH_SUBKEY( pKV, pSubKey )
+	{
+		if ( FStrEq( pSubKey->GetName(), "BodyGroup" ) )
+		{
+			BodyGroups.Insert( pSubKey->GetInt( "Group" ), pSubKey->GetInt( "Value" ) );
+		}
+		else if ( FStrEq( pSubKey->GetName(), "BodyGroups" ) )
+		{
+			FOR_EACH_VALUE( pSubKey, pGroup )
+			{
+				BodyGroups.Insert( atoi( pGroup->GetName() ), pGroup->GetInt() );
 			}
 		}
-
-		if ( !bFound )
-		{
-			m_Abilities.CopyAndAddToTail( pAbility->GetString() );
-		}
 	}
 
-	FOR_EACH_TRUE_SUBKEY( pKV, pDisplay )
-	{
-		if ( V_stricmp( pDisplay->GetName(), "Display" ) )
-		{
-			continue;
-		}
-
-		m_DisplayCaption.CopyAndAddToTail( pDisplay->GetString( "Caption", "" ) );
-		Swarmopedia_Model_Panel *pPanel = new Swarmopedia_Model_Panel( pSwarmopedia, "ModelPanel" );
-		pPanel->ApplyConfig( pDisplay );
-		pPanel->SetBounds( ScreenWidth() - YRES( 300 ), YRES( 30 ), YRES( 266 ), YRES( 200 ) );
-		pPanel->SetVisible( false );
-		m_DisplayPanel.AddToTail( pPanel );
-	}
-
-	FOR_EACH_TRUE_SUBKEY( pKV, pAppears )
-	{
-		if ( V_stricmp( pAppears->GetName(), "AppearsIn" ) )
-		{
-			continue;
-		}
-
-		m_AppearsIn.AddToTail( pAppears );
-	}
-
-	FOR_EACH_VALUE( pKV, pParagraph )
-	{
-		if ( V_stricmp( pParagraph->GetName(), "Paragraph" ) )
-		{
-			continue;
-		}
-
-		m_Paragraphs.CopyAndAddToTail( pParagraph->GetString() );
-	}
+	return true;
 }
 
-Swarmopedia::Alien_t::AppearsIn_t::AppearsIn_t( KeyValues *pKV )
+bool Model::IsSame( const Model *pModel ) const
 {
-	m_szCampaign = pKV->GetString( "Campaign" );
-	m_szMap = pKV->GetString( "Map" );
-	m_szChallenge = pKV->GetString( "Challenge" );
-	m_iMinDifficulty = clamp( pKV->GetInt( "MinDifficulty", 1 ), 1, 5 );
-	m_iMaxDifficulty = clamp( pKV->GetInt( "MaxDifficulty", 5 ), 1, 5 );
-	m_bOnslaughtOnly = pKV->GetBool( "OnslaughtOnly" );
+	return false;
 }
 
-CON_COMMAND( rd_swarmopedia, "" )
+void Model::Merge( const Model *pModel )
 {
-	CBaseModPanel::GetSingleton().OpenWindow( WT_SWARMOPEDIA, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ), true );
+	Assert( !"RD_Swarmopedia::Model::Merge should not have been called." );
+}
+
+Content::Content( const Content &copy ) :
+	Type{ copy.Type },
+	Text{ copy.Text },
+	Color{ copy.Color }
+{
+}
+
+bool Content::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	if ( FStrEq( pKV->GetName(), "Paragraph" ) )
+	{
+		Type = Type_t::Paragraph;
+		if ( pKV->GetDataType() == KeyValues::TYPE_NONE )
+		{
+			Text = pKV->GetString( "Text" );
+			Color = pKV->GetColor( "Color", Color );
+		}
+		else
+		{
+			Text = pKV->GetString();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Content::IsSame( const Content *pContent ) const
+{
+	return false;
+}
+
+void Content::Merge( const Content *pContent )
+{
+	Assert( !"RD_Swarmopedia::Content::Merge should not have been called." );
 }

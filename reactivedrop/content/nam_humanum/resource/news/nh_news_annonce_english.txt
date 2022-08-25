@@ -1,9 +1,0 @@
-GAME
-{
-	"Headline"		"[PUBLIC ANNOUNCEMENT] Curfew procedure"
-	"HeadlineDate"	"05/07/42"
-	"Paragraph1"	"Citizens of Lugdunum,"
-	"Paragraph2"	"Emergency procedure #03-41 has been deployed covering the full colonial installation with immediate effect. Under the astute supervision of Doctor Jacques Moreau, the Board of Administration humbly asks of you to remain calm. Please appreciate in these words a public responsibility of compliance with your custodians’ requests compounding to the strict necessity for each canton to abide by curfew hours, enforced outside work schedules between hours 1700-0900 (earthling dial)."
-	"Paragraph3"	"Companions and compeers, we strongly advise not to give in to mass hysteria in response to recent events. As to guarantee a swift remedial to any void that you may endure as well as your own personal security, we are pleased to inform you that we have put Captain Arthur Carradine, whose duty has been to work toward our collective safety for the past 3 years, in direct charge of the ongoing searches."
-	"Paragraph4"	"For Lugdunum, Science and Mankind, let us all preserve tranquility within our common walls. Nam Humanum."
-}

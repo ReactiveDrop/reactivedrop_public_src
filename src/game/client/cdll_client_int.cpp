@@ -180,6 +180,7 @@ IUploadGameStats *gamestatsuploader = NULL;
 IBlackBox *blackboxrecorder = NULL;
 #ifdef INFESTED_DLL
 IASW_Mission_Chooser *missionchooser = NULL;
+IConsistency *consistency = NULL;
 #endif
 #if defined( REPLAY_ENABLED )
 IReplayHistoryManager *g_pReplayHistoryManager = NULL;
@@ -190,9 +191,6 @@ IScriptManager *scriptmanager = NULL;
 IGameSystem *SoundEmitterSystem();
 IGameSystem *ToolFrameworkClientSystem();
 IViewRender *GetViewRenderInstance();
-
-static CSteamAPIContext g_SteamAPIContext;
-CSteamAPIContext *steamapicontext = &g_SteamAPIContext;
 
 
 bool g_bEngineIsHLTV = false;
@@ -522,6 +520,7 @@ public:
 #endif
 #ifdef INFESTED_DLL
 		AddAppSystem( "missionchooser", ASW_MISSION_CHOOSER_VERSION );
+		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V1 );
 #endif
 	}
 
@@ -1083,15 +1082,6 @@ int CHLClient::Connect( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGl
 	ConnectTier2Libraries( &appSystemFactory, 1 );
 	ConnectTier3Libraries( &appSystemFactory, 1 );
 
-#ifndef _X360
-	SteamAPI_InitSafe();
-	g_SteamAPIContext.Init();
-
-#ifdef INFESTED_DLL
-	
-#endif
-#endif
-
 	// Initialize the console variables.
 	ConVar_Register( FCVAR_CLIENTDLL );
 
@@ -1173,6 +1163,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGloba
 
 #ifdef INFESTED_DLL
 	if ( (missionchooser = (IASW_Mission_Chooser *)appSystemFactory(ASW_MISSION_CHOOSER_VERSION, NULL)) == NULL )
+		return false;
+	if ( (consistency = (IConsistency *)appSystemFactory(INTERFACEVERSION_ICONSISTENCY_V1, NULL)) == NULL )
 		return false;
 #endif
 
@@ -1325,14 +1317,6 @@ void CHLClient::Shutdown( void )
 	
 	ClearKeyValuesCache();
 
-#ifndef NO_STEAM
-	g_SteamAPIContext.Clear();
-	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
-#ifdef INFESTED_DLL
-	
-#endif
-#endif
-	
 	DisconnectTier3Libraries( );
 	DisconnectTier2Libraries( );
 	ConVar_Unregister();
@@ -3023,11 +3007,13 @@ void CHLClient::ResetHudCloseCaption()
 		return;
 	}
 
+#ifndef INFESTED_DLL
 	if ( m_pHudCloseCaption )
 	{
 		// force the caption dictionary to remount
 		m_pHudCloseCaption->InitCaptionDictionary( NULL, true );
 	}
+#endif
 }
 
 bool CHLClient::SupportsRandomMaps()

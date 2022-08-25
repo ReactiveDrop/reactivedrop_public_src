@@ -51,6 +51,7 @@
 #include "asw_shareddefs.h"
 #include "asw_weapon_parse.h"
 #include "asw_medals_shared.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -376,10 +377,13 @@ void CASW_Player::CalculateEarnedXP()
 		m_iEarnedXP[ ASW_XP_TOTAL ] += m_iEarnedXP[ i ];
 	}
 
-	// apply difficulty bonus
+	// apply bonuses
 	if ( ASWGameRules() )
 	{
 		m_iEarnedXP[ ASW_XP_TOTAL ] *= g_flXPDifficultyScale[ ASWGameRules()->GetSkillLevel() - 1 ];
+
+		if ( ASWGameRules()->IsAnniversaryWeek() )
+			m_iEarnedXP[ ASW_XP_TOTAL ] *= 2;
 	}
 
 	if ( asw_show_xp_details.GetBool() )
@@ -430,41 +434,62 @@ void CASW_Player::RequestExperience()
 		return;
 #endif
 
-	Assert( steamapicontext->SteamUserStats() );
-	if ( steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( SteamUserStats() )
 	{
 		if ( IsLocalPlayer( this ) )
 		{
-			steamapicontext->SteamUserStats()->RequestCurrentStats();
+			SteamUserStats()->RequestCurrentStats();
 		}
 		else
 		{
 			player_info_t pi;
 			if ( engine->GetPlayerInfo( entindex(), &pi ) && pi.friendsID )
 			{
-				CSteamID steamID( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 				Msg( "Requesting Steam stats for %s (%s)\n", pi.name ? pi.name : "NULL", pi.friendsName ? pi.friendsName : "NULL" );
-				steamapicontext->SteamUserStats()->RequestUserStats( steamID );
+				SteamUserStats()->RequestUserStats( steamID );
 			}
 		}
 		m_bPendingSteamStats = true;
 		m_flPendingSteamStatsStart = gpGlobals->curtime;
 	}	
 #else
-	Assert( steamapicontext->SteamUserStats() );
-	if ( steamapicontext->SteamUserStats() )
+	if ( engine->IsDedicatedServer() )
 	{
-		CSteamID steamID;
-		if ( GetSteamID( &steamID ) )
+		Assert( SteamGameServerStats() );
+		if ( SteamGameServerStats() )
 		{
-			SteamAPICall_t hSteamAPICall = steamapicontext->SteamUserStats()->RequestUserStats( steamID );
-			if ( hSteamAPICall != 0 )
+			CSteamID steamID;
+			if ( GetSteamID( &steamID ) )
 			{
-				m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				SteamAPICall_t hSteamAPICall = SteamGameServerStats()->RequestUserStats( steamID );
+				if ( hSteamAPICall != 0 )
+				{
+					m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				}
 			}
+			m_bPendingSteamStats = true;
+			m_flPendingSteamStatsStart = gpGlobals->curtime;
 		}
-		m_bPendingSteamStats = true;
-		m_flPendingSteamStatsStart = gpGlobals->curtime;
+	}
+	else
+	{
+		Assert( SteamUserStats() );
+		if ( SteamUserStats() )
+		{
+			CSteamID steamID;
+			if ( GetSteamID( &steamID ) )
+			{
+				SteamAPICall_t hSteamAPICall = SteamUserStats()->RequestUserStats( steamID );
+				if ( hSteamAPICall != 0 )
+				{
+					m_CallbackUserStatsReceived.Set( hSteamAPICall, this, &CASW_Player::Steam_OnUserStatsReceived );
+				}
+			}
+			m_bPendingSteamStats = true;
+			m_flPendingSteamStatsStart = gpGlobals->curtime;
+		}
 	}
 #endif
 
@@ -489,25 +514,27 @@ void CASW_Player::AwardExperience()
 
 	CalculateEarnedXP();
 
+#ifdef CLIENT_DLL
 	ConVarRef rd_console_debug_xp( "rd_console_debug_xp" );
 
 	if ( rd_console_debug_xp.GetInt() > 0 )
 	{
 		Msg( "%s: AwardExperience: Pre XP is %d\n", IsServerDll() ? "S" : "C", m_iExperience );
 	}
+#endif
 	m_iExperience += m_iEarnedXP[ ASW_XP_TOTAL ];
 	m_iExperience = MIN( m_iExperience, ASW_XP_CAP * g_flPromotionXPScale[ GetPromotion() ] );
 
 #ifdef CLIENT_DLL
-	if ( IsLocalPlayer() )
+	if ( IsLocalPlayer() && !engine->IsPlayingDemo() )
 	{
 		#if !defined(NO_STEAM)
 		// only upload if Steam is running
-		if ( steamapicontext->SteamUserStats() )
+		if ( SteamUserStats() )
 		{
 			if( GetLocalASWPlayer() == this )
 				g_ASW_Steamstats.PrepStatsForSend( this );
-			steamapicontext->SteamUserStats()->SetStat( "experience", m_iExperience );
+			SteamUserStats()->SetStat( "experience", m_iExperience );
 			g_ASW_AchievementMgr.UploadUserData( GetSplitScreenPlayerSlot() );
 
 			if ( GetMedalStore() )
@@ -524,10 +551,12 @@ void CASW_Player::AwardExperience()
 	m_bHasAwardedXP = true;
 #endif
 
+#ifdef CLIENT_DLL
 	if ( rd_console_debug_xp.GetInt() > 0 )
 	{
 		Msg( "%s: Awarded %d XP for player %s (total is now %d)\n", IsServerDll() ? "S" : "C", m_iEarnedXP[ASW_XP_TOTAL], GetPlayerName(), m_iExperience );
 	}
+#endif
 }
 
 int GetWeaponLevelRequirement( const char *szWeaponClass )
@@ -606,15 +635,15 @@ const char *CASW_Player::GetWeaponUnlockedAtLevel( int nLevel )
 //-----------------------------------------------------------------------------
 void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived )
 {
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( !SteamUserStats() )
 		return;
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		//Msg( "CASW_Player: failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
-		//Msg( " m_nGameID = %I64u\n", pUserStatsReceived->m_nGameID );
-		//Msg( " SteamID = %I64u\n", pUserStatsReceived->m_steamIDUser.ConvertToUint64() );
+		DevMsg( 2, "CASW_Player: failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
+		DevMsg( 2, " m_nGameID = %I64u\n", pUserStatsReceived->m_nGameID );
+		DevMsg( 2, " SteamID = %I64u\n", pUserStatsReceived->m_steamIDUser.ConvertToUint64() );
 		m_bPendingSteamStats = false;
 		return;
 	}
@@ -635,10 +664,10 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 	{
 		bool achievementEarned;
 		uint32 achievementUnlockTime;
-		steamapicontext->SteamUserStats()->GetAchievementAndUnlockTime( pAchievementNames[i], &achievementEarned, &achievementUnlockTime );
+		SteamUserStats()->GetAchievementAndUnlockTime( pAchievementNames[i], &achievementEarned, &achievementUnlockTime );
 
 		if ( achievementEarned && achievementUnlockTime < 1546300800 )
-			steamapicontext->SteamUserStats()->ClearAchievement( pAchievementNames[i] );
+			SteamUserStats()->ClearAchievement( pAchievementNames[i] );
 	}
 
 	// These achievements had inconsistent state at some point.
@@ -661,12 +690,12 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		int32_t nComp;
 		int32_t nStat;
 
-		if ( !steamapicontext->SteamUserStats()->GetStat( szComp, &nComp ) )
+		if ( !SteamUserStats()->GetStat( szComp, &nComp ) )
 		{
 			continue;
 		}
 
-		if ( !steamapicontext->SteamUserStats()->GetStat( szStat, &nStat ) )
+		if ( !SteamUserStats()->GetStat( szStat, &nStat ) )
 		{
 			continue;
 		}
@@ -683,15 +712,15 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		if ( nPop != nStat )
 		{
 			Warning( "Resetting progress for achievement %s: progress counter is inconsistent\n", pAchievementsInconsistent[i] );
-			steamapicontext->SteamUserStats()->SetStat( szComp, 0 );
-			steamapicontext->SteamUserStats()->SetStat( szStat, 0 );
+			SteamUserStats()->SetStat( szComp, 0 );
+			SteamUserStats()->SetStat( szStat, 0 );
 		}
 	}
 
 	CSteamID steamID;
 	if ( IsLocalPlayer() )
 	{
-		steamID = steamapicontext->SteamUser()->GetSteamID();
+		steamID = SteamUser()->GetSteamID();
 	}
 	else
 	{
@@ -702,7 +731,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		if ( !pi.friendsID )
 			return;
 			
-		CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+		CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 		steamID = steamIDForPlayer;
 
 		DevMsg( "Steam_OnUserStatsReceived for non local player %s (%s)\n", pi.name ? pi.name : "NULL", pi.friendsName ? pi.friendsName : "NULL" );
@@ -711,7 +740,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		return;
 
 #ifdef USE_XP_FROM_STEAM
-	if ( steamapicontext->SteamUserStats()->GetUserStat( steamID, "experience", &m_iExperience ) )
+	if ( SteamUserStats()->GetUserStat( steamID, "experience", &m_iExperience ) )
 	{
 		m_bPendingSteamStats = false;
 	}
@@ -724,7 +753,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		}
 	}
 
-	if ( !steamapicontext->SteamUserStats()->GetUserStat( steamID, "promotion", &m_iPromotion ) )
+	if ( !SteamUserStats()->GetUserStat( steamID, "promotion", &m_iPromotion ) )
 	{
 		Msg( "Error retrieving promotion stat for player %s.\n", GetPlayerName() );
 		if ( !IsLocalPlayer() )
@@ -739,7 +768,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		{
 			if ( !GetMedalStore()->m_bFoundNewClientDat )		// if we failed to find the new client dat, then take steam numbers
 			{
-				if ( steamapicontext->SteamUserStats()->GetUserStat( steamID, "experience", &m_iExperience ) )
+				if ( SteamUserStats()->GetUserStat( steamID, "experience", &m_iExperience ) )
 				{
 					m_bPendingSteamStats = false;
 				}
@@ -748,7 +777,7 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 					Msg( "Error retrieving experience stat for player %s.\n", GetPlayerName() );
 				}
 
-				if ( !steamapicontext->SteamUserStats()->GetUserStat( steamID, "promotion", &m_iPromotion ) )
+				if ( !SteamUserStats()->GetUserStat( steamID, "promotion", &m_iPromotion ) )
 				{
 					Msg( "Error retrieving promotion stat for player %s.\n", GetPlayerName() );
 				}
@@ -781,14 +810,14 @@ void CASW_Player::Steam_OnUserStatsStored( UserStatsStored_t *pUserStatsStored )
 	if ( !IsLocalPlayer( this ) )
 		return;
 
-	CSteamID steamID = steamapicontext->SteamUser()->GetSteamID();
+	CSteamID steamID = SteamUser()->GetSteamID();
 
 	if ( k_EResultOK != pUserStatsStored->m_eResult )
 	{
-		DevMsg( "CASW_Player: failed to upload stats to Steam, EResult %d\n", pUserStatsStored->m_eResult );
+		DevMsg( "CASW_Player: failed to upload stats to Steam, EResult %d (%s)\n", pUserStatsStored->m_eResult, UTIL_RD_EResultToString( pUserStatsStored->m_eResult ) );
 #ifdef USE_XP_FROM_STEAM
-		steamapicontext->SteamUserStats()->GetStat( "experience", &m_iExperience );
-		steamapicontext->SteamUserStats()->GetStat( "promotion", &m_iPromotion );
+		SteamUserStats()->GetStat( "experience", &m_iExperience );
+		SteamUserStats()->GetStat( "promotion", &m_iPromotion );
 #endif
 
 		// Set stats to whatever is stored on steam
@@ -821,17 +850,20 @@ void CASW_Player::AcceptPromotion()
 	if ( GetPromotion() >= ASW_PROMOTION_CAP )
 		return;
 
+	if ( engine->IsPlayingDemo() )
+		return;
+
 	m_iExperience = 0;
 	m_iPromotion++;
 
 #if !defined(NO_STEAM)
 	// only upload if Steam is running
-	if ( steamapicontext->SteamUserStats() )
+	if ( SteamUserStats() )
 	{
-		steamapicontext->SteamUserStats()->SetStat( "experience", m_iExperience );
-		steamapicontext->SteamUserStats()->SetStat( "promotion", m_iPromotion );
-		steamapicontext->SteamUserStats()->SetStat( "level", 1 );
-		steamapicontext->SteamUserStats()->SetStat( "level.xprequired", 0 );
+		SteamUserStats()->SetStat( "experience", m_iExperience );
+		SteamUserStats()->SetStat( "promotion", m_iPromotion );
+		SteamUserStats()->SetStat( "level", 1 );
+		SteamUserStats()->SetStat( "level.xprequired", 0 );
 		g_ASW_AchievementMgr.UploadUserData( GetSplitScreenPlayerSlot() );
 
 		if ( GetMedalStore() )
@@ -878,20 +910,31 @@ void CASW_Player::AcceptPromotion()
 
 void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bIOError )
 {
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
-		return;
+#if GAME_DLL
+	if ( engine->IsDedicatedServer() )
+	{
+		Assert( SteamGameServerStats() );
+		if ( !SteamGameServerStats() )
+			return;
+	}
+	else
+#endif
+	{
+		Assert( SteamUserStats() );
+		if ( !SteamUserStats() )
+			return;
+	}
 
 	if ( bIOError )
 	{
-		Warning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
+		DevWarning( "CASW_Player: Server failed to download stats from Steam, IO error\n" );
 		m_bPendingSteamStats = false;
 		return;
 	}
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
 	{
-		Warning( "CASW_Player: Server failed to download stats from Steam, EResult %d\n", pUserStatsReceived->m_eResult );
+		DevWarning( "CASW_Player: Server failed to download stats from Steam, EResult %d (%s)\n", pUserStatsReceived->m_eResult, UTIL_RD_EResultToString( pUserStatsReceived->m_eResult ) );
 		m_bPendingSteamStats = false;
 		return;
 	}
@@ -904,15 +947,32 @@ void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsRece
 		return;
 
 #ifdef USE_XP_FROM_STEAM
-	if ( steamapicontext->SteamUserStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+#if GAME_DLL
+	if ( engine->IsDedicatedServer() )
 	{
-		m_bPendingSteamStats = false;
+		if ( SteamGameServerStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+		{
+			m_bPendingSteamStats = false;
+		}
+		else
+		{
+			Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		}
+		SteamGameServerStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 	}
 	else
+#endif
 	{
-		Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		if ( SteamUserStats()->GetUserStat( steamIDForPlayer, "experience", &m_iExperience ) )
+		{
+			m_bPendingSteamStats = false;
+		}
+		else
+		{
+			Msg( "Server error retrieving experience stat for player %s.\n", GetPlayerName() );
+		}
+		SteamUserStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 	}
-	steamapicontext->SteamUserStats()->GetUserStat( steamIDForPlayer, "promotion", &m_iPromotion );
 #endif
 }
 #endif	// NO_STEAM

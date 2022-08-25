@@ -18,12 +18,18 @@
 #include <filesystem.h>
 #include "c_team.h"
 #include "vgui/isurface.h"
+#include "vgui/ilocalize.h"
 #include "iclientmode.h"
 #include "asw_gamerules.h"
 #include "asw_vgui_ingame_panel.h"
 #include "asw_input.h"
+#include "c_asw_player.h"
 #include "c_asw_marine.h"
-
+#include "c_asw_game_resource.h"
+#include "c_asw_marine_resource.h"
+#include "asw_marine_profile.h"
+#include "c_asw_weapon.h"
+#include "asw_weapon_parse.h"
 #include "vgui/polygonbutton.h"
 #include "vgui/radialmenu.h"
 #include "vgui/cursor.h"
@@ -1226,7 +1232,7 @@ void CRadialMenu::SetData( KeyValues *data )
 		const char *owner = buttonData->GetString( "owner", NULL );
 		if ( owner )
 		{
-			ButtonDir dir = DirFromButtonName( owner );
+			dir = DirFromButtonName( owner );
 			m_buttons[i]->SetPassthru( m_buttons[dir] );
 		}
 		else
@@ -1333,8 +1339,17 @@ public:
 			return m_menuKeys->FindKey( "Default", false );
 		}
 
+		if ( FStrEq( menuName, "ASW_SelectMarine" ) )
+			return BuildASWSwitchMenu();
+		if ( FStrEq( menuName, "ASW_UseExtra" ) )
+			return BuildASWExtraMenu( -1 );
+		if ( FStrEq( menuName, "ASW_UseExtra1" ) )
+			return BuildASWExtraMenu( 0 );
+		if ( FStrEq( menuName, "ASW_UseExtra2" ) )
+			return BuildASWExtraMenu( 1 );
+
 		// Find our menu, honoring Alive/Dead/Team suffixes
-		const char *teamSuffix = player->GetTeam()->Get_Name();
+		const char *teamSuffix = player->GetTeam() ? player->GetTeam()->Get_Name() : "NoTeam";
 		const char *lifeSuffix = player->IsAlive() ? "Alive" : "Dead";
 
 		CFmtStr str;
@@ -1374,6 +1389,226 @@ public:
 		}
 	}
 
+	constexpr static CRadialMenu::ButtonDir s_MarineProfileToDir[] =
+	{
+		CRadialMenu::NORTH_WEST, // sarge
+		CRadialMenu::SOUTH_WEST, // wildcat
+		CRadialMenu::WEST,       // faith
+		CRadialMenu::NORTH,      // crash
+		CRadialMenu::NORTH_EAST, // jaeger
+		CRadialMenu::SOUTH_EAST, // wolfe
+		CRadialMenu::EAST,       // bastille
+		CRadialMenu::SOUTH,      // vegas
+	};
+	static_assert( ASW_NUM_MARINE_PROFILES == NELEMS( s_MarineProfileToDir ), "number of marine profiles changed" );
+	KeyValues *BuildASWSwitchMenu()
+	{
+		ASSERT_LOCAL_PLAYER_RESOLVABLE();
+
+		if ( ASWDeathmatchMode() )
+		{
+			// no radial menu in deathmatch
+			return NULL;
+		}
+
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		Assert( pPlayer );
+		if ( !pPlayer )
+		{
+			return NULL;
+		}
+
+		bool bIsSpectating = pPlayer->GetSpectatingNPC() != NULL;
+
+		C_ASW_Game_Resource *pGameResource = ASWGameResource();
+		Assert( pGameResource );
+		if ( !pGameResource )
+		{
+			return NULL;
+		}
+
+		m_specialMenu->Clear();
+
+		m_specialMenu->SetBool( "AllowSpectator", true );
+
+		int num = 0;
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+		{
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
+				continue;
+
+			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+			if ( !pMarine || pMarine->GetHealth() <= 0 )
+				continue;
+
+			CASW_Marine_Profile *pProfile = pMR->GetProfile();
+			Assert( pProfile );
+			if ( !pProfile )
+				continue;
+
+			if ( pMR->GetCommander() != pPlayer )
+				continue;
+
+			KeyValues *pDirection = m_specialMenu->FindKey( CRadialMenu::ButtonNameFromDir( pProfile->m_ProfileIndex < NELEMS( s_MarineProfileToDir ) ? s_MarineProfileToDir[pProfile->m_ProfileIndex] : CRadialMenu::CENTER ), true );
+			Assert( pDirection );
+			if ( !pDirection )
+				continue;
+
+			num++;
+			pDirection->SetString( "command", VarArgs( "+selectmarine%d", num ) );
+
+			if ( pMR->GetCommander() == pPlayer )
+			{
+				// right now, only this case can be hit, but I'd like to make the others accessible in the future
+				pDirection->SetString( "text", VarArgs( "#rd_radial_switch_to_%s", pProfile->m_PortraitName ) );
+			}
+			else if ( bIsSpectating )
+			{
+				pDirection->SetString( "text", VarArgs( "#rd_radial_spectate_%s", pProfile->m_PortraitName ) );
+			}
+			else
+			{
+				pDirection->SetString( "text", VarArgs( "#rd_radial_call_for_%s", pProfile->m_PortraitName ) );
+			}
+		}
+
+		return m_specialMenu;
+	}
+
+	KeyValues *BuildASWExtraMenu( int index )
+	{
+		ASSERT_LOCAL_PLAYER_RESOLVABLE();
+
+		if ( ASWDeathmatchMode() )
+		{
+			// no radial menu in deathmatch
+			// TODO: layout for team deathmatch?
+			return NULL;
+		}
+
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		Assert( pPlayer );
+		if ( !pPlayer )
+		{
+			return NULL;
+		}
+
+		C_ASW_Marine *pLocalMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() );
+		if ( !pLocalMarine )
+		{
+			// can't give orders as spectator
+			return NULL;
+		}
+
+		if ( index == -1 )
+		{
+			index = pLocalMarine->m_bWalking ? 1 : 0;
+		}
+
+		C_ASW_Game_Resource *pGameResource = ASWGameResource();
+		Assert( pGameResource );
+		if ( !pGameResource )
+		{
+			return NULL;
+		}
+
+		m_specialMenu->Clear();
+
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+		{
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
+				continue;
+
+			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
+			if ( !pMarine || pMarine->GetHealth() <= 0 )
+				continue;
+
+			CASW_Marine_Profile *pProfile = pMR->GetProfile();
+			Assert( pProfile );
+			if ( !pProfile )
+				continue;
+
+			int nItemCount = 0;
+			int nSelectedInventoryIndex = -1;
+			C_ASW_Weapon *pWeapon = NULL;
+			for ( int k = 0; k < ASW_NUM_INVENTORY_SLOTS && nItemCount < 2; k++ )
+			{
+				pWeapon = pMarine->GetASWWeapon( k );
+				if ( !pWeapon )
+				{
+					continue;
+				}
+
+				const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
+				if ( !pInfo || !( pInfo->m_bOffhandActivate || ( pInfo->m_bHUDPlayerActivate && pMR->IsInhabited() ) ) )
+				{
+					continue;
+				}
+
+				if ( nItemCount == index )
+				{
+					nSelectedInventoryIndex = k;
+					break;
+				}
+
+				nItemCount++;
+			}
+
+			if ( nSelectedInventoryIndex == -1 )
+				continue;
+
+			const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
+			Assert( pInfo );
+			if ( !pInfo )
+				continue;
+
+			if ( pMR->GetCommander() != pPlayer && pInfo->m_iSquadEmote == -1 )
+				continue;
+
+			KeyValues *pDirection = m_specialMenu->FindKey( CRadialMenu::ButtonNameFromDir( pProfile->m_ProfileIndex < NELEMS( s_MarineProfileToDir ) ? s_MarineProfileToDir[pProfile->m_ProfileIndex] : CRadialMenu::CENTER ), true );
+			Assert( pDirection );
+			if ( !pDirection )
+				continue;
+
+			wchar_t wszText[256]{};
+			g_pVGuiLocalize->ConstructString( wszText, sizeof( wszText ),
+				g_pVGuiLocalize->FindSafe( VarArgs( "#rd_radial_use_extra_%s", pProfile->m_PortraitName ) ),
+				1,
+				g_pVGuiLocalize->FindSafe( pInfo->szPrintName )
+			);
+			pDirection->SetWString( "text", wszText );
+
+			if ( pMarine == pLocalMarine )
+			{
+				if ( nSelectedInventoryIndex == ASW_INVENTORY_SLOT_PRIMARY )
+				{
+					pDirection->SetString( "command", "ASW_ActivatePrimary" );
+				}
+				else if ( nSelectedInventoryIndex == ASW_INVENTORY_SLOT_SECONDARY )
+				{
+					pDirection->SetString( "command", "ASW_ActivateSecondary" );
+				}
+				else
+				{
+					Assert( nSelectedInventoryIndex == ASW_INVENTORY_SLOT_EXTRA );
+					pDirection->SetString( "command", "+grenade1" );
+				}
+			}
+			else if ( pMR->GetCommander() == pPlayer )
+			{
+				pDirection->SetString( "command", VarArgs( "cl_ai_offhand %d %d", nSelectedInventoryIndex, pMarine->entindex() ) );
+			}
+			else if ( pInfo->m_iSquadEmote != -1 )
+			{
+				pDirection->SetString( "command", VarArgs( "cl_emote %d", pInfo->m_iSquadEmote ) );
+			}
+		}
+
+		return m_specialMenu;
+	}
+
 private:
 	void Reset( void )
 	{
@@ -1382,9 +1617,12 @@ private:
 			m_menuKeys->deleteThis();
 		}
 		m_menuKeys = NULL;
+
+		m_specialMenu->Clear();
 	}
 
 	KeyValues *m_menuKeys;
+	KeyValues::AutoDelete m_specialMenu{ "Special" };
 };
 
 
@@ -1457,10 +1695,16 @@ void OpenRadialMenu( const char *menuName )
 		FlushClientMenus(); // for now, reload every time
 	}
 
-	KeyValues *menuKey = TheClientMenuManager.FindMenu( NULL );
+	KeyValues *menuKey = TheClientMenuManager.FindMenu( menuName );
 	if ( !menuKey )
 	{
 		//DevMsg( "No client menu currently matches %s\n", menuName );
+		pMenu->ShowPanel( false );
+		return;
+	}
+
+	if ( !C_ASW_Player::GetLocalASWPlayer()->GetNPC() && !menuKey->GetBool("AllowSpectator") )
+	{
 		pMenu->ShowPanel( false );
 		return;
 	}
@@ -1487,9 +1731,11 @@ void OpenRadialMenu( const char *menuName )
 //--------------------------------------------------------------------------------------------------------
 CON_COMMAND( radialmenu, "Opens a radial menu" )
 {
-	if ( args.ArgC() < 2 )
+	// +mouse_menu seems to get the ButtonCode_t added as an extra argument.
+	// Ignore radial menu names if they start with a digit.
+	if ( args.ArgC() < 2 || V_isdigit( *args.Arg( 1 ) ) )
 	{
-		OpenRadialMenu( NULL );
+		OpenRadialMenu( "Default" );
 	}
 	else
 	{
@@ -1507,7 +1753,7 @@ void openradialmenu( const CCommand &args )
 	if ( s_mouseMenuKeyHeld[ nSlot ] )
 		return;
 
-	if ( !C_ASW_Marine::GetLocalMarine() )
+	if ( !C_ASW_Marine::GetViewMarine() )
 		return;
 
 	s_mouseMenuKeyHeld[ nSlot ] = true;
@@ -1523,9 +1769,6 @@ void closeradialmenu( void )
 	int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 
 	s_mouseMenuKeyHeld[ nSlot ] = false;
-
-	if ( !C_ASW_Marine::GetLocalMarine() )
-		return;
 
 	if ( !cl_fastradial.GetBool() )
 	{

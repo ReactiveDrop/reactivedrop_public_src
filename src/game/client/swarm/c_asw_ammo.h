@@ -6,10 +6,12 @@
 class C_ASW_Ammo : public C_ASW_Pickup
 {
 public:	
-	DECLARE_CLASS( C_ASW_Ammo, C_ASW_Pickup );	
-	
-	virtual bool AllowedToPickup(C_ASW_Marine *pMarine);
-	
+	DECLARE_CLASS( C_ASW_Ammo, C_ASW_Pickup );
+
+	C_ASW_Ammo();
+
+	virtual bool AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC );
+
 	char m_szAmmoFullText[32];
 	char m_szNoGunText[32];
 	int m_iAmmoIndex;

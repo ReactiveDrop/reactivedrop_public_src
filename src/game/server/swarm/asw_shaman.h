@@ -15,11 +15,11 @@
 #include "asw_ai_behavior_idle.h"
 
 
-class CASW_Shaman : public CAI_ExpresserHostWithData<CASW_BlendedAlien, CAI_Expresser>
+class CASW_Shaman : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CASW_Shaman, CAI_ExpresserHostWithData  );
+	DECLARE_CLASS( CASW_Shaman, CASW_Alien );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 

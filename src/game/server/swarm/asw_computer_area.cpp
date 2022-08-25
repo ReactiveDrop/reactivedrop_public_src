@@ -108,6 +108,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropBool		(SENDINFO(m_bIsLocked)),
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),
 	SendPropBool		(SENDINFO(m_bIsInUse)),
+	SendPropBool		(SENDINFO(m_bLoggedIn)),
 	SendPropFloat		(SENDINFO(m_fDownloadProgress)),
 
 	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),
@@ -157,6 +158,7 @@ CASW_Computer_Area::CASW_Computer_Area()
 	m_fDownloadProgress = 0;
 	m_bDownloadedDocs = false;
 	m_bDoSecureShout = true;
+	m_bLoggedIn = false;
 	m_iActiveCam = 0;
 	m_fNextSecureShoutCheck = 0;
 	m_flStopUsingTime = 0.0f;
@@ -257,11 +259,12 @@ void CASW_Computer_Area::Override( CASW_Marine *pMarine )
 	m_OnComputerHackStarted.FireOutput(pMarine, this);
 }
 
-void CASW_Computer_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( !pMarine || !pMarine->GetMarineProfile() )
 		return;
 
@@ -367,12 +370,18 @@ void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
 
 CASW_Hack_Computer* CASW_Computer_Area::GetCurrentHack()
 {
-	return dynamic_cast<CASW_Hack_Computer*>(m_hComputerHack.Get());
+	return m_hComputerHack.Get();
 }
 
 // traditional Swarm hacking
-void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
+void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+	{
+		return;
+	}
+
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
 		if ( m_bIsInUse && GetDownloadProgress() < 1.0f )
@@ -461,8 +470,10 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 	}
 }
 
-void CASW_Computer_Area::MarineStartedUsing(CASW_Marine* pMarine)
+void CASW_Computer_Area::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+
 	m_flStopUsingTime = 0.0f;
 	m_bIsInUse = true;
 	UpdateWaitingForInput();
@@ -472,27 +483,35 @@ void CASW_Computer_Area::MarineStartedUsing(CASW_Marine* pMarine)
 	m_pComputerInUseSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
 
 	CSoundEnvelopeController::GetController().Play( m_pComputerInUseSound, 0.1, 100 );
-	if (m_pComputerInUseSound)
+	if ( m_pComputerInUseSound )
 	{
 		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pComputerInUseSound, 1, 1.5 );
 	}
 
-	if ( ASWDirector() && m_bIsLocked )
+	if ( ASWDirector() && m_bIsLocked && pMarine )
 	{
 		ASWDirector()->OnMarineStartedHack( pMarine, this );
 	}
 }
 
-void CASW_Computer_Area::MarineStoppedUsing(CASW_Marine* pMarine)
+void CASW_Computer_Area::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
+	if ( IsUsable( pNPC ) )
+	{
+		// If we were close enough to the computer to use it when we stopped, that means we didn't walk away.
+		m_bLoggedIn = false;
+	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+
 	m_bIsInUse = false;
 	UpdateWaitingForInput();
 
-	if (GetCurrentHack())	// notify our current hack that we've stopped using the console
+	if ( GetCurrentHack() && pMarine )	// notify our current hack that we've stopped using the console
 	{
-		GetCurrentHack()->MarineStoppedUsing(pMarine);
+		GetCurrentHack()->MarineStoppedUsing( pMarine );
 	}
-	if (m_pComputerInUseSound)
+	if ( m_pComputerInUseSound )
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pComputerInUseSound );
 		m_pComputerInUseSound = NULL;
@@ -615,13 +634,14 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 		{
 			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 			{
-				CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() || pPlayer->GetMarine() == pMarine )
+				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+				CASW_Marine *pPlayerMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayerMarine || pPlayerMarine == pMarine )
 					continue;
 
-				if ( pPlayer->GetMarine()->GetMarineResource() )
+				if ( pPlayerMarine->GetMarineResource() )
 				{
-					pPlayer->GetMarine()->GetMarineResource()->m_bProtectedTech = true;
+					pPlayerMarine->GetMarineResource()->m_bProtectedTech = true;
 				}
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_PROTECT_TECH );
 			}

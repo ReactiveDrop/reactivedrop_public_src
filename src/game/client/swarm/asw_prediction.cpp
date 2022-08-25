@@ -86,7 +86,7 @@ void CASW_Prediction::CheckMarineError( int nSlot, int commands_acknowledged )
 	if ( !player )
 		return;
 
-	C_ASW_Marine* pMarine = player->GetMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( player->GetNPC() );
 	if (!pMarine)
 		return;
 
@@ -170,7 +170,7 @@ void CASW_Prediction::SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	CASW_Player *pASWPlayer = static_cast<CASW_Player*>( player );
 	if ( !asw_allow_detach.GetBool() )
 	{		
-		if ( pASWPlayer && pASWPlayer->GetMarine() )
+		if ( pASWPlayer && pASWPlayer->GetNPC() )
 		{
 			// this forces horizontal movement
 			move->m_vecAngles.x = 0;
@@ -306,7 +306,7 @@ void CASW_Prediction::RunCommand( C_BasePlayer *player, CUserCmd *ucmd, IMoveHel
 	RunPostThink( player );
 
 	// let the player drive marine movement here
-	pASWPlayer->DriveMarineMovement( ucmd, moveHelper );
+	pASWPlayer->DriveNPCMovement( ucmd, moveHelper );
 
 	g_pGameMovement->FinishTrackPredictionErrors( player );	
 

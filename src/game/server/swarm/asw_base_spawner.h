@@ -16,10 +16,10 @@ class CASW_Spawn_NPC;
 //===============================================
 //  Base alien spawner
 //===============================================
-class CASW_Base_Spawner : public CBaseEntity
+class CASW_Base_Spawner : public CServerOnlyPointEntity
 {
 public:
-	DECLARE_CLASS( CASW_Base_Spawner, CBaseEntity );
+	DECLARE_CLASS( CASW_Base_Spawner, CServerOnlyPointEntity );
 	DECLARE_DATADESC();
 
 	CASW_Base_Spawner();

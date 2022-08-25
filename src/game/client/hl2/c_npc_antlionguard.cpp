@@ -63,6 +63,7 @@ public:
 	DECLARE_CLIENTCLASS();
  	DECLARE_DATADESC();
 
+	virtual Class_T Classify() { return (Class_T)CLASS_ASW_ANTLIONGUARD; }
 	virtual void OnDataChanged( DataUpdateType_t type );
 	virtual void ClientThink();
 	virtual C_BaseAnimating* BecomeRagdollOnClient(void)

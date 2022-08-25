@@ -19,6 +19,7 @@
 #include "gameui/swarm/vflyoutmenu.h"
 #include "gameui/swarm/vdropdownmenu.h"
 #include "gameui/swarm/vhybridbutton.h"
+#include "rd_inventory_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -65,6 +66,8 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pVoiceIcon = new vgui::ImagePanel( this, "VoiceIcon" );
 	m_pPromotionIcon = new vgui::ImagePanel( this, "PromotionIcon" );
 	m_pPromotionIcon->SetVisible( false );
+	m_pMedalIcon = new vgui::ImagePanel( this, "MedalIcon" );
+	m_pMedalIcon->SetVisible( false );
 
 	m_nLobbySlot = -1;
 
@@ -84,6 +87,9 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	//m_pXPBar->m_bShowCumulativeTotal = true;
 	m_nLastPromotion = 0;
+	m_nMedalUpdates = 0;
+	m_hMedalResult = k_SteamInventoryResultInvalid;
+	m_bWaitingForMedal = false;
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
@@ -100,6 +106,11 @@ CNB_Lobby_Row::~CNB_Lobby_Row()
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
+
+	if ( ISteamInventory *pInventory = SteamInventory() )
+	{
+		pInventory->DestroyResult( m_hMedalResult );
+	}
 }
 
 void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -155,6 +166,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pXPBar->SetVisible( false );
 		m_pLevelLabel->SetVisible( false );
 		m_pPromotionIcon->SetVisible( false );
+		m_pMedalIcon->SetVisible( false );
 		m_pNameDropdown->SetVisible( false );
 		m_pAvatarImage->SetVisible( false );
 		m_pClassLabel->SetVisible( false );
@@ -219,8 +231,31 @@ void CNB_Lobby_Row::UpdateDetails()
 			m_pAvatarImage->GetSize( wide, tall );
 			((CAvatarImage*)m_pAvatarImage->GetImage())->SetAvatarSize( wide, tall );
 			((CAvatarImage*)m_pAvatarImage->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+
+			m_nMedalUpdates = 0;
+			m_pMedalIcon->SetVisible( false );
+			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, "" );
 		}
 		m_lastSteamID = steamID;
+
+		int nMedalUpdates = Briefing()->GetMedalUpdateCount( m_nLobbySlot );
+		if ( m_nMedalUpdates != nMedalUpdates )
+		{
+			m_pMedalIcon->SetVisible( false );
+			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, Briefing()->GetEncodedMedalData( m_nLobbySlot ) );
+			m_nMedalUpdates = nMedalUpdates;
+		}
+		bool bMedalOK = false;
+		if ( m_bWaitingForMedal && ReactiveDropInventory::ValidateItemData( bMedalOK, m_hMedalResult, "medal", steamID ) )
+		{
+			m_bWaitingForMedal = false;
+			if ( bMedalOK )
+			{
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( ReactiveDropInventory::GetItemDetails( m_hMedalResult, 0 ).m_iDefinition );
+				m_pMedalIcon->SetImage( pDef->IconSmall );
+				m_pMedalIcon->SetVisible( true );
+			}
+		}
 	}
 #endif
 
@@ -427,6 +462,10 @@ void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
 	{
 		pTooltip->ShowMarinePromotionTooltip( m_nLobbySlot );
 	}
+	else if ( CControllerFocus::IsPanelReallyVisible( m_pMedalIcon ) && m_pMedalIcon->IsCursorOver() )
+	{
+		pTooltip->ShowMarineMedalTooltip( m_nLobbySlot, m_hMedalResult );
+	}
 }
 
 extern ConVar developer;
@@ -475,17 +514,17 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamStats" ) )
 	{
 #if !defined( _X360 ) && !defined( NO_STEAM )
-		if ( steamapicontext && steamapicontext->SteamUser() )
+		if ( SteamUser() )
 		{
 			if ( developer.GetBool() )
 			{
-				Msg( "Local player SteamID = %I64u\n", steamapicontext->SteamUser()->GetSteamID().ConvertToUint64() );
+				Msg( "Local player SteamID = %I64u\n", SteamUser()->GetSteamID().ConvertToUint64() );
 				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
 			char statsWeb[256];
 			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
 				Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64(),
-				steamapicontext->SteamApps()->GetCurrentGameLanguage() );
+				SteamApps()->GetCurrentGameLanguage() );
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif

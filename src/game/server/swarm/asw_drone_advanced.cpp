@@ -107,19 +107,6 @@ int AE_DRONE_SHADOW_ON;
 int ACT_DRONE_RUN_ATTACKING;
 int ACT_DRONE_WALLPOUND;
 
-enum
-{
-	SCHED_DRONE_BASH_DOOR = LAST_ASW_ALIEN_JUMPER_SHARED_SCHEDULE,
-	SCHED_DRONE_CHASE_ENEMY,
-	SCHED_DRONE_OVERRIDE_MOVE,
-	SCHED_DRONE_DOOR_WAIT,
-	SCHED_DRONE_BASH_CLOSE_DOOR,
-	SCHED_DRONE_CIRCLE_ENEMY,
-	SCHED_DRONE_CIRCLE_ENEMY_FAILED,
-	SCHED_DRONE_STANDOFF,
-	LAST_ASW_DRONE_SHARED_SCHEDULE,
-};
-
 CUtlVector<CASW_Drone_Advanced*> g_DroneList;
 static CASW_Drone_Movement g_DroneGameMovement;
 CASW_Drone_Movement *g_pDroneMovement = &g_DroneGameMovement;
@@ -323,29 +310,9 @@ float CASW_Drone_Advanced::GetIdealSpeed() const
 			default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
 		}
 	}
-
-	if (rd_difficulty_tier.GetInt() == 1)
+	else
 	{
-		switch (ASWGameRules()->GetSkillLevel())
-		{
-			case 5: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.6; break;
-			case 4: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.5; break;
-			case 3: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.4; break;
-			case 2: boost  *= asw_alien_speed_scale_insane.GetFloat() + 0.3; break;
-			default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.2; break;
-		}
-	}
-
-	if (rd_difficulty_tier.GetInt() == 2)
-	{
-		switch (ASWGameRules()->GetSkillLevel())
-		{
-		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.1; break;
-		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.0; break;
-		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.9; break;
-		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.8; break;
-		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.7; break;
-		}
+		boost *= asw_alien_speed_scale_insane.GetFloat() + ( ASWGameRules()->GetSkillLevel() - 4 ) * 0.1f + rd_difficulty_tier.GetInt() * 0.5f;
 	}
 
 	float flFreezeSpeedScale = 1.0f - m_flFrozen;

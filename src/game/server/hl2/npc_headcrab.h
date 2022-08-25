@@ -11,18 +11,17 @@
 #endif
 
 #include "ai_squadslot.h"
-#include "ai_basenpc.h"
+#include "asw_alien_jumper.h"
 #include "soundent.h"
 
 
 
-abstract_class CBaseHeadcrab : public CAI_BaseNPC
+abstract_class CBaseHeadcrab : public CASW_Alien_Jumper
 {
-	DECLARE_CLASS( CBaseHeadcrab, CAI_BaseNPC );
+	DECLARE_CLASS( CBaseHeadcrab, CASW_Alien_Jumper );
 
 public:
 	void Spawn( void );
-	void Precache( void );
 	void RunTask( const Task_t *pTask );
 	void StartTask( const Task_t *pTask );
 
@@ -38,6 +37,7 @@ public:
 	bool	HasHeadroom();
 	void	LeapTouch ( CBaseEntity *pOther );
 	virtual void TouchDamage( CBaseEntity *pOther );
+	virtual bool ShouldGib( const CTakeDamageInfo &info ) { return false; }
 	bool	CorpseGib( const CTakeDamageInfo &info );
 	void	Touch( CBaseEntity *pOther );
 	Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
@@ -74,7 +74,7 @@ public:
 
 	void	CrawlFromCanister();
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
+	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 
 	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
 
@@ -88,15 +88,78 @@ public:
 	}
 
 	virtual void PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot );
+	virtual void SetHealthByDifficultyLevel( void );
 
 	void DropFromCeiling( void );
 
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();
 
-protected:
-	void HeadcrabInit();
+	enum
+	{
+		SCHED_HEADCRAB_RANGE_ATTACK1 = BaseClass::NEXT_SCHEDULE,
+		SCHED_HEADCRAB_WAKE_ANGRY,
+		SCHED_HEADCRAB_WAKE_ANGRY_NO_DISPLAY,
+		SCHED_HEADCRAB_DROWN,
+		SCHED_HEADCRAB_FAIL_DROWN,
+		SCHED_HEADCRAB_AMBUSH,
+		SCHED_HEADCRAB_HOP_RANDOMLY, // get off something you're not supposed to be on.
+		SCHED_HEADCRAB_BARNACLED,
+		SCHED_HEADCRAB_UNHIDE,
+		SCHED_HEADCRAB_HARASS_ENEMY,
+		SCHED_HEADCRAB_FALL_TO_GROUND,
+		SCHED_HEADCRAB_RUN_TO_BURROW_IN,
+		SCHED_HEADCRAB_RUN_TO_SPECIFIC_BURROW,
+		SCHED_HEADCRAB_BURROW_IN,
+		SCHED_HEADCRAB_BURROW_WAIT,
+		SCHED_HEADCRAB_BURROW_OUT,
+		SCHED_HEADCRAB_WAIT_FOR_CLEAR_UNBURROW,
+		SCHED_HEADCRAB_CRAWL_FROM_CANISTER,
 
+		SCHED_FAST_HEADCRAB_RANGE_ATTACK1,
+
+		SCHED_HEADCRAB_CEILING_WAIT,
+		SCHED_HEADCRAB_CEILING_DROP,
+
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_HEADCRAB_HOP_ASIDE = BaseClass::NEXT_TASK,
+		TASK_HEADCRAB_HOP_OFF_NPC,
+		TASK_HEADCRAB_DROWN,
+		TASK_HEADCRAB_WAIT_FOR_BARNACLE_KILL,
+		TASK_HEADCRAB_UNHIDE,
+		TASK_HEADCRAB_HARASS_HOP,
+		TASK_HEADCRAB_FIND_BURROW_IN_POINT,
+		TASK_HEADCRAB_BURROW,
+		TASK_HEADCRAB_UNBURROW,
+		TASK_HEADCRAB_BURROW_WAIT,
+		TASK_HEADCRAB_CHECK_FOR_UNBURROW,
+		TASK_HEADCRAB_JUMP_FROM_CANISTER,
+		TASK_HEADCRAB_CLIMB_FROM_CANISTER,
+
+		TASK_HEADCRAB_CEILING_WAIT,
+		TASK_HEADCRAB_CEILING_POSITION,
+		TASK_HEADCRAB_CEILING_DETACH,
+		TASK_HEADCRAB_CEILING_FALL,
+		TASK_HEADCRAB_CEILING_LAND,
+
+		NEXT_TASK,
+	};
+
+	enum
+	{
+		COND_HEADCRAB_IN_WATER = BaseClass::NEXT_CONDITION,
+		COND_HEADCRAB_ILLEGAL_GROUNDENT,
+		COND_HEADCRAB_BARNACLED,
+		COND_HEADCRAB_UNHIDE,
+
+		NEXT_CONDITION,
+	};
+
+protected:
 	void Leap( const Vector &vecVel );
 
 	void GrabHintNode( CAI_Hint *pHint );
@@ -162,8 +225,9 @@ class CHeadcrab : public CBaseHeadcrab
 	DECLARE_CLASS( CHeadcrab, CBaseHeadcrab );
 
 public:
+	CHeadcrab();
+
 	void Precache( void );
-	void Spawn( void );
 
 	float	MaxYawSpeed( void );
 	Activity NPC_TranslateActivity( Activity eNewActivity );
@@ -188,8 +252,9 @@ class CFastHeadcrab : public CBaseHeadcrab
 public:
 	DECLARE_CLASS( CFastHeadcrab, CBaseHeadcrab );
 
+	CFastHeadcrab();
+
 	void	Precache( void );
-	void	Spawn( void );
 	bool	QuerySeeEntity(CBaseEntity *pSightEnt, bool bOnlyHateOrFearIfNPC = false);
 
 	float	MaxYawSpeed( void );
@@ -216,7 +281,7 @@ public:
 
 	enum SquadSlot_t
 	{	
-		SQUAD_SLOT_ENGAGE1 = LAST_SHARED_SQUADSLOT,
+		SQUAD_SLOT_ENGAGE1 = LAST_SHARED_SQUADSLOT + 1,
 		SQUAD_SLOT_ENGAGE2,
 		SQUAD_SLOT_ENGAGE3,
 		SQUAD_SLOT_ENGAGE4,
@@ -236,6 +301,8 @@ class CBlackHeadcrab : public CBaseHeadcrab
 	DECLARE_CLASS( CBlackHeadcrab, CBaseHeadcrab );
 
 public:
+	CBlackHeadcrab();
+
 	void Eject( const QAngle &vecAngles, float flVelocityScale, CBaseEntity *pEnemy );
 	void EjectTouch( CBaseEntity *pOther );
 
@@ -276,7 +343,6 @@ public:
 	// CBaseEntity implementation.
 	//
 	virtual void Precache( void );
-	virtual void Spawn( void );
 
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();

@@ -1965,7 +1965,7 @@ entity
 	"locked" "0"
 	"needstech" "1"
 	"nopower" "0"
-	"nopowermessage" "Need TNT"
+	"nopowermessage" "#asw_need_dynamite"
 	"numwires" "2"
 	"origin" "32 448 48"
 	"panelpropname" "tnt_in_cart"

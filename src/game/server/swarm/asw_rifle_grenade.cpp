@@ -32,7 +32,8 @@ PRECACHE_REGISTER(asw_rifle_grenade);
 
 BEGIN_DATADESC( CASW_Rifle_Grenade )
 	DEFINE_FUNCTION( GrenadeTouch ),
-		
+
+	DEFINE_KEYFIELD( m_bSilent, FIELD_BOOLEAN, "silent" ),
 	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
 	DEFINE_FIELD( m_DmgRadius, FIELD_FLOAT ),
@@ -190,9 +191,11 @@ void CASW_Rifle_Grenade::GrenadeTouch( CBaseEntity *pOther )
 
 		ApplyMultiDamage();
 
-		
-		// play body "thwack" sound
-		EmitSound( "Weapon_Crossbow.BoltHitBody" );
+		if ( !m_bSilent )
+		{
+			// play body "thwack" sound
+			EmitSound( "Weapon_Crossbow.BoltHitBody" );
+		}
 
 		Vector vForward;
 
@@ -324,7 +327,10 @@ void CASW_Rifle_Grenade::Detonate()
 
 	UTIL_ASW_GrenadeExplosion( GetAbsOrigin(), m_DmgRadius );
 
-	EmitSound( "ASWGrenade.Explode" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASWGrenade.Explode" );
+	}
 
 	int iPreExplosionKills = 0;
 

@@ -129,6 +129,7 @@
     <ClInclude Include="TileSource\Room.h" />
     <ClInclude Include="TileSource\RoomTemplate.h" />
     <ClInclude Include="TileSource\TagList.h" />
+    <ClInclude Include="..\shared\swarm\rd_release_flags.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\public\bitmap.lib" />

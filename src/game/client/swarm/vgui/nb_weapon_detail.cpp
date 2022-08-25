@@ -182,7 +182,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 
 			if ( flDamage <= 0.0f )
 			{
-				m_pValueLabel->SetText( L"N/A" );
+				m_pValueLabel->SetText( "#asw_weapon_altfire_NA" );
 				m_pStatsBar->SetVisible( false );
 			}
 			else

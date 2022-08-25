@@ -53,6 +53,6 @@ public:
 	wchar_t m_wszCarriedName[256];
 	char m_iOriginalName[MAX_PATH];
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Marine *pUser );
+	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser );
 #endif
 };

@@ -609,8 +609,6 @@ void CRagdollProp::HandleFirstCollisionInteractions( int index, gamevcollisionev
 
 	if( HasPhysgunInteraction( "onfirstimpact", "paintsplat" ) )
 	{
-		IPhysicsObject *pObj = VPhysicsGetObject();
- 
 		Vector vecPos;
 		pObj->GetPosition( &vecPos, NULL );
  
@@ -636,8 +634,6 @@ void CRagdollProp::HandleFirstCollisionInteractions( int index, gamevcollisionev
 	bool bAlienBloodSplat = HasPhysgunInteraction( "onfirstimpact", "alienbloodsplat" );
 	if( bAlienBloodSplat || HasPhysgunInteraction( "onfirstimpact", "bloodsplat" ) )
 	{
-		IPhysicsObject *pObj = VPhysicsGetObject();
- 
 		Vector vecPos;
 		pObj->GetPosition( &vecPos, NULL );
  

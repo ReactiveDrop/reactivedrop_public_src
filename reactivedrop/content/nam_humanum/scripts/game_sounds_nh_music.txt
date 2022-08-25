@@ -1,36 +1,3 @@
-"NH_adrenaline"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_adrenaline.wav"
-}
-
-"NH_MoovePlatMusic"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_MoovePlatMusic.wav"
-}
-
-"NH_Plat02_FirstStep"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_Plat02_FirstStep.wav"
-}
-
 "NH_Plat02_Hacking02"
 {
 	"channel"		"CHAN_AUTO"
@@ -39,18 +6,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*NH_Plat02_Hacking02.wav"
-}
-
-"NH_Plat02_Start"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_Plat02_Start.wav"
+	"wave"			"*#music\NH_Plat02_Hacking02.mp3"
 }
 
 "NH_Plat02_StartRuning02"
@@ -61,7 +17,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*NH_Plat02_StartRuning02.wav"
+	"wave"			"*#music\NH_Plat02_StartRuning02.mp3"
 }
 
 "NH_Plat02_TheLastSeconds02"
@@ -72,73 +28,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*NH_Plat02_TheLastSeconds02.wav"
-}
-
-"NH_Plat03_BossFight"
-{
-	"channel"		"CHAN_AUTO
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_Plat03_BossFight.wav"
-}
-
-"NH_Plat03_Fight"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_Plat03_Fight.wav"
-}
-
-"NH_portal_party_escortv2"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_portal_party_escortv2.wav"
-}
-
-"NH_portal_stop_what_you_are_doing0"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_portal_stop_what_you_are_doing0.wav"
-}
-
-"NH_vlvx_song"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*NH_vlvx_song.wav"
-}
-
-"vlvx_song21"
-{
-	"channel"		"CHAN_AUTO"
-	"volume"		"1.0"
-	"pitch"			"100"
-
-	"soundlevel"	"0"
-
-	"wave"			"*vlvx_song21.mp3"
+	"wave"			"*#music\NH_Plat02_TheLastSeconds02.mp3"
 }
 
 "NH_Lab_MidArenaFight"
@@ -149,5 +39,5 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*NH_Lab_MidArenaFight.mp3"
+	"wave"			"*#music\NH_Lab_MidArenaFight.mp3"
 }

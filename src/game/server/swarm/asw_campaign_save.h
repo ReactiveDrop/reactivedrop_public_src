@@ -8,7 +8,7 @@
 #include "asw_marine_skills.h"
 
 class CASW_Player;
-class CASW_Campaign_Info;
+struct RD_Campaign_t;
 
 // This class describes the state of the current campaign game.  This is what gets saved when the players save their game.
 //   When a savegame is loaded in, it is networked to all the clients (so they can bring up the campaign map, etc)
@@ -142,7 +142,7 @@ public:
 	void UpdateSkillUndoState();
 
 	// helper functions for examining the campaign save state
-	bool IsMissionLinkedToACompleteMission(int i, CASW_Campaign_Info* pCampaignInfo);
+	bool IsMissionLinkedToACompleteMission( int i, const RD_Campaign_t *pCampaignInfo );
 
 	void SelectDefaultNextCampaignMission();
 
@@ -159,10 +159,10 @@ public:
 		float g;	// cost from starting point to here, following generated path
 		float h;	// estimate of cost to destination
 	};
-	bool BuildCampaignRoute(int iStart, int iEnd);
-	float EstimateCost(CASW_Campaign_Info *pCI, int iStart, int iEnd);
+	bool BuildCampaignRoute( int iStart, int iEnd );
+	float EstimateCost( const RD_Campaign_t *pCI, int iStart, int iEnd );
 	void DebugBuiltRoute();
-	CASW_Campaign_Save::campaign_route_node_t* FindMissionInClosedList(int iMission);
+	CASW_Campaign_Save::campaign_route_node_t *FindMissionInClosedList( int iMission );
 	int m_iRouteDest;
 	int m_iRouteStart;
 	CUtlVector<campaign_route_node_t> m_ClosedList;

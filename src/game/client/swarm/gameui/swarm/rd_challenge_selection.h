@@ -7,6 +7,7 @@
 #include "rd_workshop.h"
 
 class CNB_Header_Footer;
+class CNB_Button;
 
 namespace BaseModUI
 {
@@ -32,7 +33,7 @@ namespace BaseModUI
 	private:
 		void PopulateChallenge( const char *szName );
 		friend class ReactiveDropChallengeSelection;
-		CReactiveDropWorkshop::WorkshopItem_t GetWorkshopItem();
+		const CReactiveDropWorkshop::WorkshopItem_t &GetWorkshopItem();
 
 		bool m_bCurrentlySelected;
 		vgui::HFont	m_hTextFont;
@@ -51,6 +52,7 @@ namespace BaseModUI
 
 	public:
 		ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName );
+		virtual ~ReactiveDropChallengeSelection();
 
 		bool SetSelectedChallenge( const char *szName );
 
@@ -63,11 +65,14 @@ namespace BaseModUI
 
 		CNB_Header_Footer *m_pHeaderFooter;
 		GenericPanelList *m_gplChallenges;
+		CNB_Button *m_pBackButton;
 
 		vgui::Label *m_lblName;
 		vgui::ImagePanel *m_imgIcon;
 		vgui::Label *m_lblDescription;
 		vgui::Label *m_lblAuthor;
+
+		bool m_bIgnoreSelectionChange;
 	};
 }
 

@@ -46,6 +46,7 @@ CAI_ASW_RangedAttackBehavior::CAI_ASW_RangedAttackBehavior( )
 	m_flDeferUntil = gpGlobals->curtime;
 
 	m_bRadiusAttack = false;
+	m_bInhabitedAttack = false;
 }
 
 
@@ -136,6 +137,11 @@ bool CAI_ASW_RangedAttackBehavior::CanSelectSchedule()
 	if ( !GetOuter()->IsInterruptable() )
 	{
 		return false;
+	}
+
+	if ( m_bInhabitedAttack )
+	{
+		return true;
 	}
 
 	if ( !HasCondition( COND_CAN_RANGE_ATTACK1 ) )
@@ -301,6 +307,18 @@ void CAI_ASW_RangedAttackBehavior::StartTask( const Task_t *pTask )
 {
 	switch( pTask->iTask )
 	{
+		case TASK_RANGED_FIND_MISSILE_LOCATION_INHABITED:
+		{
+			trace_t		tr;
+			Vector		vStart = GetAbsOrigin() + Vector( 0.0f, 0.0f, 15.0f );
+			Vector		vFinal = vStart + m_flMaxFiringDistance * UTIL_YawToVector( GetAbsAngles().y );
+
+			UTIL_TraceHull( vStart, vFinal, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), MASK_SOLID, GetOuter(), ASW_COLLISION_GROUP_IGNORE_NPCS, &tr );
+
+			m_vMissileLocation = tr.startsolid ? vFinal : tr.endpos;
+
+			break;
+		}
 		case TASK_RANGED_FIND_MISSILE_LOCATION:
 			{
 				if ( !FindFiringLocation() )
@@ -358,6 +376,7 @@ void CAI_ASW_RangedAttackBehavior::RunTask( const Task_t *pTask )
 	switch( pTask->iTask )
 	{
 		case TASK_RANGED_FIND_MISSILE_LOCATION:
+		case TASK_RANGED_FIND_MISSILE_LOCATION_INHABITED:
 			{
 				TaskComplete();
 				m_flDeferUntil = gpGlobals->curtime + m_flFireRate;
@@ -410,6 +429,12 @@ void CAI_ASW_RangedAttackBehavior::RunTask( const Task_t *pTask )
 //------------------------------------------------------------------------------
 int CAI_ASW_RangedAttackBehavior::SelectSchedule()
 {
+	if ( m_bInhabitedAttack )
+	{
+		m_bInhabitedAttack = false;
+		return SCHED_RANGED_ATTACK_INHABITED;
+	}
+
 	return SCHED_RANGED_MOVE_TO_FIRE_SPOT;
 }
 
@@ -420,6 +445,7 @@ AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_ASW_RangedAttackBehavior )
 	DECLARE_TASK( TASK_RANGED_PREPARE_TO_FIRE )
 	DECLARE_TASK( TASK_RANGED_FIRE )
 	DECLARE_TASK( TASK_RANGED_FIRE_RECOVER )
+	DECLARE_TASK( TASK_RANGED_FIND_MISSILE_LOCATION_INHABITED )
 
 	DEFINE_SCHEDULE
 	(
@@ -435,6 +461,19 @@ AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_ASW_RangedAttackBehavior )
 		"		COND_ENEMY_DEAD"
 		"		COND_ENEMY_UNREACHABLE"
 		"		COND_LOST_ENEMY"
+	);
+
+	DEFINE_SCHEDULE
+	(
+		SCHED_RANGED_ATTACK_INHABITED,
+		"	Tasks"
+		"		TASK_RANGED_FIND_MISSILE_LOCATION_INHABITED	0"
+		"		TASK_RANGED_PREPARE_TO_FIRE				0"
+		"		TASK_RANGED_FIRE						0"
+		"		TASK_RANGED_FIRE_RECOVER				0"
+		""
+		"	Interrupts"
+		"		COND_TASK_FAILED"
 	);
 
 AI_END_CUSTOM_SCHEDULE_PROVIDER()

@@ -3,7 +3,7 @@
 #include "c_func_asw_fade.h"
 #include "c_prop_asw_fade.h"
 #include "c_asw_player.h"
-#include "c_asw_marine.h"
+#include "c_asw_inhabitable_npc.h"
 #define CFunc_ASW_Fade C_Func_ASW_Fade
 #define CProp_ASW_Fade C_Prop_ASW_Fade
 #define CASW_Player C_ASW_Player
@@ -11,7 +11,7 @@
 #include "func_asw_fade.h"
 #include "prop_asw_fade.h"
 #include "asw_player.h"
-#include "asw_marine.h"
+#include "asw_inhabitable_npc.h"
 #endif
 #include "asw_trace_filter.h"
 // memdbgon must be the last include file in a .cpp file!!!
@@ -20,24 +20,24 @@
 CASW_Trace_Filter::CASW_Trace_Filter( CBasePlayer *pPlayer, Collision_Group_t collisionGroup )
 	: BaseClass( NULL, collisionGroup )
 {
-	m_pMarine = assert_cast<CASW_Player *>( pPlayer )->GetViewMarine();
+	m_pNPC = assert_cast<CASW_Player *>( pPlayer )->GetViewNPC();
 }
 
-CASW_Trace_Filter::CASW_Trace_Filter( CASW_Marine *pMarine, Collision_Group_t collisionGroup )
-	: BaseClass( NULL, collisionGroup ), m_pMarine( pMarine )
+CASW_Trace_Filter::CASW_Trace_Filter( CASW_Inhabitable_NPC *pNPC, Collision_Group_t collisionGroup )
+	: BaseClass( NULL, collisionGroup ), m_pNPC( pNPC )
 {
 }
 
 bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int contentsMask)
 {
-	if ( !m_pMarine )
+	if ( !m_pNPC )
 	{
 		return BaseClass::ShouldHitEntity( pServerEntity, contentsMask );
 	}
 
-	if ( !m_pMarine->IsInhabited() || !m_pMarine->GetCommander() || m_pMarine->GetCommander()->GetASWControls() != 1 )
+	if ( !m_pNPC->IsInhabited() || !m_pNPC->GetCommander() || m_pNPC->GetCommander()->GetASWControls() != ASWC_TOPDOWN )
 	{
-		if ( pServerEntity == m_pMarine )
+		if ( pServerEntity == m_pNPC )
 		{
 			return false;
 		}
@@ -45,7 +45,7 @@ bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int conten
 	else
 	{
 		CFunc_ASW_Fade *pBrush = dynamic_cast<CFunc_ASW_Fade *>( pServerEntity );
-		if ( pBrush && pBrush->GetAbsOrigin().z > m_pMarine->GetAbsOrigin().z )
+		if ( pBrush && pBrush->GetAbsOrigin().z > m_pNPC->GetAbsOrigin().z )
 		{
 			return false;
 		}
@@ -53,7 +53,7 @@ bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int conten
 #ifdef GAME_DLL
 #define m_vecFadeOrigin m_vecFadeOrigin.Get()
 #endif
-		if ( pProp && pProp->m_vecFadeOrigin.z > m_pMarine->GetAbsOrigin().z )
+		if ( pProp && pProp->m_vecFadeOrigin.z > m_pNPC->GetAbsOrigin().z )
 		{
 			return false;
 		}

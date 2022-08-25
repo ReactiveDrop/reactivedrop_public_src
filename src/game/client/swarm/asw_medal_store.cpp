@@ -49,9 +49,8 @@ void C_ASW_Medal_Store::LoadMedalStore()
 #if defined(NO_STEAM)
 	AssertMsg( false, "SteamCloud not available." );
 #else
-	ISteamRemoteStorage *pRemoteStorage = SteamClient() ? ( ISteamRemoteStorage * )SteamClient()->GetISteamGenericInterface(
-		SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMREMOTESTORAGE_INTERFACE_VERSION ) : NULL;
-	ISteamUser *pSteamUser = steamapicontext ? steamapicontext->SteamUser() : NULL;
+	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	ISteamUser *pSteamUser = SteamUser();
 	if ( !pSteamUser )
 		return;
 
@@ -317,7 +316,7 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	}
 	UTIL_EncodeICE( (unsigned char*) buf.Base(), buf.TellPut(), g_ucMedalStoreEncryptionKey );
 
-	ISteamUser *pSteamUser = steamapicontext ? steamapicontext->SteamUser() : NULL;
+	ISteamUser *pSteamUser = SteamUser();
 	if ( !pSteamUser )
 		return false;
 
@@ -336,8 +335,7 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	#if defined(NO_STEAM)
 		AssertMsg( false, "SteamCloud not available." );
 	#else
-		ISteamRemoteStorage *pRemoteStorage = SteamClient() ? ( ISteamRemoteStorage * )SteamClient()->GetISteamGenericInterface(
-			SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMREMOTESTORAGE_INTERFACE_VERSION ) : NULL;
+		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
 
 		if ( asw_steam_cloud.GetBool() && pRemoteStorage )
 		{

@@ -1,12 +1,12 @@
 #include "cbase.h"
 #include "CreditsPanel.h"
 #include "asw_gamerules.h"
-#include "asw_campaign_info.h"
 #include <vgui_controls/AnimationController.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include "vgui/ISurface.h"
 #include "filesystem.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -30,13 +30,26 @@ CreditsPanel::CreditsPanel(vgui::Panel *parent, const char *name) : vgui::Panel(
 		m_LabelPool[i]->SetAlpha(0);
 	}
 
+	const char *szCreditsPrefix = "scripts/asw_credits";
+	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
+		szCreditsPrefix = STRING( pCampaign->CustomCreditsFile );
+	else if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
+		szCreditsPrefix = STRING( pMission->CustomCreditsFile );
+
 	char szCreditsPath[512];
-	CASW_Campaign_Info *pCampaign = ASWGameRules()->GetCampaignInfo();
-	if ( pCampaign )
-		Q_snprintf(szCreditsPath,sizeof(szCreditsPath), "%s.txt", STRING(pCampaign->m_CustomCreditsFile));
+	if ( SteamApps() )
+	{
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s_%s.txt", szCreditsPrefix, SteamApps()->GetCurrentGameLanguage() );
+
+		if ( !filesystem->FileExists( szCreditsPath, "GAME" ) )
+		{
+			V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", szCreditsPrefix );
+		}
+	}
 	else
-		Q_snprintf(szCreditsPath,sizeof(szCreditsPath), "scripts/asw_credits.txt");
-		
+	{
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s.txt", szCreditsPrefix );
+	}
 
 	pCreditsText = new KeyValues( "Credits" );
 	pCreditsText->LoadFromFile( filesystem, szCreditsPath, "GAME" );
@@ -99,18 +112,7 @@ void CreditsPanel::OnThink()
 	{
 		vgui::Label *pLabel = m_LabelPool[m_iCurMessage % ASW_LABEL_POOL_SIZE];
 		
-		const unsigned char *pchCurrentChar = static_cast< const unsigned char * >( static_cast< const void * >( pCurrentCredit->GetString() ) );
-		wchar_t msg[ 128 ];
-		int nCharNumber = 0;
-
-		while ( *pchCurrentChar && nCharNumber < 127 )
-		{
-			msg[ nCharNumber ] = *pchCurrentChar;
-			pchCurrentChar++;
-			nCharNumber++;
-		}
-
-		msg[ nCharNumber ] = L'\0';
+		const wchar_t *msg = pCurrentCredit->GetWString();
 
 		pLabel->SetText(msg);
 		pLabel->SetAlpha(0);

@@ -46,6 +46,7 @@ public:
 	CNetworkVarEmbedded( CTimeline, m_TimelineAmmo );
 	CNetworkVarEmbedded( CTimeline, m_TimelinePosX );
 	CNetworkVarEmbedded( CTimeline, m_TimelinePosY );
+	CNetworkVarEmbedded( CTimeline, m_TimelineScore );
 
 	bool m_bTakenWoundDamage;
 	CNetworkVar( bool, m_bHealthHalved );	
@@ -107,7 +108,9 @@ public:
 
 	CNetworkHandle(C_ASW_Door, m_hWeldingDoor);	// networks down which door this marine tried to cut/seal last, so all players can see its progress on the HUD
 
-	CNetworkVar(bool, m_bUsingEngineeringAura);	
+	CNetworkVar(bool, m_bUsingEngineeringAura);
+	CNetworkVar( int, m_iScore );
+	CNetworkVar( float, m_flFinishedMissionTime );
 
 private:
 	C_ASW_Marine_Resource( const C_ASW_Marine_Resource & ); // not defined, not accessible

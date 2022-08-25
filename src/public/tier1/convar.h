@@ -376,6 +376,11 @@ public:
 	FORCEINLINE_CVAR Color			GetColor( void ) const;
 	FORCEINLINE_CVAR bool			GetBool() const {  return !!GetInt(); }
 	FORCEINLINE_CVAR char const	   *GetString( void ) const;
+	FORCEINLINE_CVAR Vector			GetColorAsVector( void ) const
+	{
+		Color c = GetColor();
+		return Vector( c.r() / 255.0f, c.g() / 255.0f, c.b() / 255.0f );
+	}
 
 	// Compiler driven selection for template use
 	template <typename T> T Get( void ) const;

@@ -24,7 +24,10 @@ void CASW_Grenade_Freeze::DoExplosion()
 {
 	// Spawn a freeze explosion effect
 	DispatchParticleEffect( "freeze_grenade_explosion", GetAbsOrigin(), Vector( m_DmgRadius, 0, 0 ), QAngle( 0, 0, 0 ) );
-	EmitSound( "ASW_Freeze_Grenade.Explode" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASW_Freeze_Grenade.Explode" );
+	}
 
 	// Add freeze to all creatures in the radius
 	ASWGameRules()->FreezeAliensInRadius( m_hFirer.Get(), m_flFreezeAmount, GetAbsOrigin(), m_DmgRadius );

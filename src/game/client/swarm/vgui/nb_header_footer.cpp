@@ -7,11 +7,17 @@
 #include "asw_video.h"
 #include "VGUIMatSurface/IMatSystemSurface.h"
 #include "asw_gamerules.h"
+#include "filesystem.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
 using namespace vgui;
+
+ConVar rd_reduce_motion( "rd_reduce_motion", "0", FCVAR_ARCHIVE, "reduce ambient motion in menus" );
+static bool s_bLastReduceMotion = false;
 
 CASW_Background_Movie *g_pBackgroundMovie = NULL;
 
@@ -43,6 +49,20 @@ CASW_Background_Movie::~CASW_Background_Movie()
 
 void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 {
+	// Safety check as we're possibly going to overwrite a file here!
+	char szBaseName[MAX_PATH];
+	V_FileBase( szFilename, szBaseName, sizeof( szBaseName ) );
+	char szExpectedName[MAX_PATH];
+	V_snprintf( szExpectedName, sizeof( szExpectedName ), "media/%s.bik", szBaseName );
+	Assert( !V_strcmp( szFilename, szExpectedName ) );
+	if ( V_strcmp( szFilename, szExpectedName ) )
+	{
+		// If we're trying to set the movie to something dangerous, use a known safe filename instead.
+		szFilename = "media/BGFX_03.bik";
+	}
+
+	szFilename = g_ReactiveDropWorkshop.GetNativeFileSystemFile( szFilename );
+
 	if ( Q_strcmp( m_szCurrentMovie, szFilename ) )
 	{
 #ifdef ASW_BINK_MOVIES
@@ -77,6 +97,7 @@ void CASW_Background_Movie::SetCurrentMovie( const char *szFilename )
 #endif
 
 		Q_snprintf( m_szCurrentMovie, sizeof( m_szCurrentMovie ), "%s", szFilename );
+		s_bLastReduceMotion = false; // we need to render at least one frame before we can pause.
 	}
 }
 
@@ -150,15 +171,7 @@ void CASW_Background_Movie::Update()
 			}
 			else
 			{
-				int nChosenMovie = RandomInt( 0, 3 );
-				switch( nChosenMovie )
-				{
-					case 0: pFilename = "media/BGFX_01.bik"; break;
-					case 1: pFilename = "media/BGFX_02.bik"; break;
-					default:
-					case 2: pFilename = "media/BGFX_03.bik"; break;
-					case 3: pFilename = "media/BG_04_FX.bik"; break;
-				}
+				pFilename = ASWGameRules()->m_szBriefingVideo;
 			}
 #else
 			pFilename = "media/test.avi";
@@ -196,6 +209,17 @@ void CASW_Background_Movie::Update()
 			g_pBIK->DestroyMaterial( m_nBIKMaterial );
 			m_nBIKMaterial = BIKMATERIAL_INVALID;
 		}
+		else if ( !s_bLastReduceMotion && rd_reduce_motion.GetBool() )
+		{
+			s_bLastReduceMotion = true;
+			bik->Pause( m_nBIKMaterial );
+		}
+	}
+
+	if ( m_nBIKMaterial != BIKMATERIAL_INVALID && s_bLastReduceMotion && !rd_reduce_motion.GetBool() )
+	{
+		s_bLastReduceMotion = false;
+		bik->Unpause( m_nBIKMaterial );
 	}
 #else
 	if ( m_nAVIMaterial == AVIMATERIAL_INVALID )
@@ -331,7 +355,7 @@ void CNB_Header_Footer::SetTitle( const char *pszTitle )
 	m_pTitle->SetText( pszTitle );
 }
 
-void CNB_Header_Footer::SetTitle( wchar_t *pwszTitle )
+void CNB_Header_Footer::SetTitle( const wchar_t *pwszTitle )
 {
 	m_pTitle->SetText( pwszTitle );
 }
@@ -385,7 +409,7 @@ void CNB_Header_Footer::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_bMovieEnabled && ASWBackgroundMovie() )
+	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
 	{
 		ASWBackgroundMovie()->Update();
 		if ( ASWBackgroundMovie()->SetTextureMaterial() != -1 )

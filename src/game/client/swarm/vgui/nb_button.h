@@ -19,17 +19,18 @@ public:
 	virtual ~CNB_Button();
 	
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void PerformLayout();
-	virtual void OnThink();
-	virtual void OnCommand( const char *command );
 	virtual void Paint();
 	virtual void PaintBackground();
 	virtual void OnCursorEntered();
 
 	void DrawRoundedBox( int x, int y, int wide, int tall, Color color, float normalizedAlpha, bool bHighlightGradient, Color highlightCenterColor );
-	
+	void SetControllerButton( vgui::KeyCode code );
+
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	// == MANAGED_MEMBER_POINTERS_END ==
+
+	vgui::HFont m_hButtonFont;
+	const char *m_szControllerButton;
 
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId1, "NBTexture1", "vgui/hud/800corner1", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId2, "NBTexture2", "vgui/hud/800corner2", "textureid" );

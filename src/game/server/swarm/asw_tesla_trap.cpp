@@ -16,6 +16,8 @@
 #include "asw_trace_filter_shot.h"
 #include "asw_alien.h"
 #include "asw_marine.h"
+#include "asw_gamerules.h"
+#include "particle_parse.h"
 
 enum
 {
@@ -85,6 +87,9 @@ CUtlVector<CASW_TeslaTrap*> g_aTeslaTraps;
 
 ConVar rd_tesla_trap_dmg( "rd_tesla_trap_dmg", "5", FCVAR_CHEAT );
 ConVar rd_tesla_trap_ammo( "rd_tesla_trap_ammo", "30", FCVAR_CHEAT );
+ConVar rd_tesla_trap_area_damage( "rd_tesla_trap_area_damage", "0", FCVAR_CHEAT, "If 1 then tesla traps will cause area damage to all aliens near it" );
+ConVar rd_tesla_trap_area_damage_interval( "rd_tesla_trap_area_damage_interval", "1", FCVAR_CHEAT );
+
 
 CASW_TeslaTrap::CASW_TeslaTrap()
 {
@@ -107,6 +112,7 @@ void CASW_TeslaTrap::Precache()
 	PrecacheModel( "models/items/teslaCoil/teslacoil.mdl" );
 
 	PrecacheScriptSound( "ASW_Tesla_Trap.Zap" );
+	PrecacheParticleSystem("electrified_armor_burst");
 }
 
 static const char *s_pTeslaAnimThink = "TeslaAnimThink";
@@ -488,22 +494,39 @@ void CASW_TeslaTrap::TeslaSearchThink()
 		return;
 	}*/
 
-	float flNearestNPCDist = FindNearestNPC();
-
-	if( flNearestNPCDist <= m_flRadius && !IsFriend( m_hNearestNPC ) )
+	if ( rd_tesla_trap_area_damage.GetBool() )
 	{
-		// Don't pop up in the air, just explode if the NPC gets closer than explode radius.
-		if ( ZapTarget( m_hNearestNPC ) )
+		ShockNearbyAliens();
+
+		DispatchParticleEffect( "electrified_armor_burst", GetAbsOrigin(), QAngle(0, 0, 0) );
+
+		m_iAmmo = m_iAmmo - 1;
+		if (m_iAmmo.Get() <= 0)
 		{
-			m_iAmmo = m_iAmmo - 1;
-			if ( m_iAmmo.Get() <= 0 )
+			SetThink(&CASW_TeslaTrap::SUB_Remove);
+		}
+
+		SetNextThink( gpGlobals->curtime + rd_tesla_trap_area_damage_interval.GetFloat() );
+	}
+	else
+	{
+		float flNearestNPCDist = FindNearestNPC();
+
+		if( flNearestNPCDist <= m_flRadius && !IsFriend( m_hNearestNPC ) )
+		{
+			// Don't pop up in the air, just explode if the NPC gets closer than explode radius.
+			if ( ZapTarget( m_hNearestNPC ) )
 			{
-				SetThink( &CASW_TeslaTrap::SUB_Remove );
+				m_iAmmo = m_iAmmo - 1;
+				if ( m_iAmmo.Get() <= 0 )
+				{
+					SetThink( &CASW_TeslaTrap::SUB_Remove );
+				}
 			}
 		}
-	}
 
-	SetNextThink( gpGlobals->curtime + 0.05 );
+		SetNextThink( gpGlobals->curtime + 0.05 );
+	}
 }
 
 void CASW_TeslaTrap::LayFlat()
@@ -670,6 +693,59 @@ bool CASW_TeslaTrap::ZapTarget( CBaseEntity *pEntity )
 	}
 
 	return false;
+}
+
+void CASW_TeslaTrap::ShockNearbyAliens()
+{
+	const float flRadiusSqr = m_flRadius * m_flRadius;
+
+	// debug stun radius
+	//NDebugOverlay::Circle( GetAbsOrigin() + Vector( 0, 0, 1.0f ), QAngle( -90.0f, 0, 0 ), flRadius, 255, 0, 0, 0, true, 5.0f );
+
+	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+	int nAIs = g_AI_Manager.NumAIs();
+
+	for ( int i = 0; i < nAIs; i++ )
+	{
+		CAI_BaseNPC *pNPC = ppAIs[ i ];
+
+		if( !pNPC->IsAlive() )
+			continue;
+
+		// ignore hidden objects
+		if ( pNPC->IsEffectActive( EF_NODRAW ) )
+			continue;
+
+		// Disregard things that want to be disregarded
+		if( pNPC->Classify() == CLASS_NONE )
+			continue; 
+
+		// Disregard bullseyes
+		if( pNPC->Classify() == CLASS_BULLSEYE )
+			continue;
+
+		// ignore marines
+		if( pNPC->Classify() == CLASS_ASW_MARINE || pNPC->Classify() == CLASS_ASW_COLONIST )
+			continue;
+
+		float flDist = (WorldSpaceCenter() - pNPC->GetAbsOrigin()).LengthSqr();
+		if( flDist > flRadiusSqr )
+			continue;
+
+		ClearMultiDamage();	
+		CTakeDamageInfo shockDmgInfo( m_hCreatorWeapon.Get(), GetOwnerEntity(), m_flDamage, DMG_SHOCK);
+		Vector vecDir = pNPC->WorldSpaceCenter() - WorldSpaceCenter();
+		VectorNormalize( vecDir );
+		shockDmgInfo.SetDamagePosition( pNPC->WorldSpaceCenter() * vecDir * -20.0f );
+		shockDmgInfo.SetDamageForce( vecDir );
+		shockDmgInfo.ScaleDamageForce( 1.0 );
+		shockDmgInfo.SetWeapon( m_hCreatorWeapon.Get() );
+
+		trace_t tr;
+		UTIL_TraceLine( WorldSpaceCenter(), pNPC->WorldSpaceCenter(), MASK_SHOT, GetOwnerEntity(), COLLISION_GROUP_NONE, &tr );
+		pNPC->DispatchTraceAttack( shockDmgInfo, vecDir, &tr );
+		ApplyMultiDamage();
+	}
 }
 
 CASW_TeslaTrap* CASW_TeslaTrap::Tesla_Trap_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon )

@@ -10,32 +10,32 @@ class C_ASW_Use_Area : public C_BaseTrigger, public IASW_Client_Usable_Entity
 	DECLARE_CLIENTCLASS();
 public:
 	C_ASW_Use_Area();
-	
-	C_BaseEntity* GetUseTarget();
+
+	C_BaseEntity *GetUseTarget();
 
 	EHANDLE	m_hUseTarget;
 	EHANDLE	GetUseTargetHandle() { return m_hUseTarget; }
-	CNetworkVar(bool, m_bUseAreaEnabled);
+	CNetworkVar( bool, m_bUseAreaEnabled );
 
 	// IASW_Client_Usable_Entity implementation
 
-	virtual C_BaseEntity* GetEntity() { return this; }
-	virtual bool IsUsable(C_BaseEntity *pUser);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
-	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) { }
+	virtual C_BaseEntity *GetEntity() { return this; }
+	virtual bool IsUsable( C_BaseEntity *pUser );
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
+	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) { }
 	virtual bool ShouldPaintBoxAround() { return true; }
 	virtual bool NeedsLOSCheck() { return false; }
 
 	// the entity that should glow when a marine can use this area
-	virtual C_BaseEntity* GetGlowEntity() { return NULL; }
+	virtual C_BaseEntity *GetGlowEntity() { return NULL; }
 
 	CNetworkHandle( C_BaseEntity, m_hPanelProp );
 
 	char m_iHeldObjectName[MAX_PATH];
-	bool CheckHeldObject( C_ASW_Marine *pMarine );
+	bool CheckHeldObject( C_ASW_Inhabitable_NPC *pNPC );
 
 protected:
-	C_ASW_Use_Area( const C_ASW_Use_Area & ); // not defined, not accessible		
+	C_ASW_Use_Area( const C_ASW_Use_Area & ) = delete; // not defined, not accessible
 };
 
 #endif /* _DEFINED_C_ASW_USE_AREA_H */

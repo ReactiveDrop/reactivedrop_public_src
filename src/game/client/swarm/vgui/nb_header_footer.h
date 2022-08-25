@@ -74,7 +74,7 @@ public:
 	virtual void OnThink();
 	virtual void PaintBackground();
 	void SetTitle( const char *pszTitle );
-	void SetTitle( wchar_t *pwszTitle );
+	void SetTitle( const wchar_t *pwszTitle );
 	void SetHeaderEnabled( bool bEnabled );
 	void SetFooterEnabled( bool bEnabled );
 	void SetTitleStyle( NB_Title_Style nTitleStyle );

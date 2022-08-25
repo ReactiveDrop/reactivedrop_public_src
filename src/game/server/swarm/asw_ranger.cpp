@@ -15,6 +15,8 @@
 #include "asw_ai_behavior.h"
 #include "props_shared.h"
 #include "ammodef.h"
+#include "asw_player.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

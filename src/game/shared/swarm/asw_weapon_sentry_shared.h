@@ -40,9 +40,11 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
+	int		GetSentryAmmo() { return m_nSentryAmmo; }
 	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }
 
 	virtual const char* GetPickupClass() { return "asw_pickup_sentry"; }

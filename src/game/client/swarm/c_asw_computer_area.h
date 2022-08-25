@@ -16,6 +16,7 @@ public:
 	C_ASW_Computer_Area();
 
 	bool IsLocked() { return m_bIsLocked; }
+	bool IsLoggedIn() { return m_bLoggedIn; }
 	int GetHackLevel() { return m_iHackLevel; }
 	C_ASW_Door* GetDoor();
 
@@ -36,7 +37,7 @@ public:
 	const char* GetUseIconPDAText() { return "#asw_access_pda"; }
 
 	virtual float GetTumblerProgress(C_ASW_Marine *pUser);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser);
 	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) { }
 	virtual C_BaseEntity* GetGlowEntity() { return m_hPanelProp.Get(); }
 
@@ -81,6 +82,7 @@ public:
 	// traditional Swarm hacking
 	float GetDownloadProgress() { return m_fDownloadProgress; }
 	CNetworkVar(bool, m_bIsInUse);
+	CNetworkVar(bool, m_bLoggedIn);
 	CNetworkVar(float, m_fDownloadProgress);
 
 	bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }

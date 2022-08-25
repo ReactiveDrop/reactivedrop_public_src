@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2008, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -45,7 +45,7 @@
 #include "VPasswordEntry.h"
 // vgui controls
 #include "vgui/ILocalize.h"
-
+#include "vgui/ISystem.h"
 
 
 #ifndef _X360
@@ -53,6 +53,7 @@
 #endif
 
 #include "gameui_util.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -205,9 +206,6 @@ bool CUIGameData::m_bModuleShutDown = false;
 
 //=============================================================================
 CUIGameData::CUIGameData() :
-#if !defined( _X360 ) && !defined( NO_STEAM )
-	m_CallbackPersonaStateChanged( this, &CUIGameData::Steam_OnPersonaStateChanged ),
-#endif
 	m_CGameUIPostInit( false )
 {
 	m_LookSensitivity = 1.0f;
@@ -432,14 +430,13 @@ void CUIGameData::OpenInviteUI( char const *szInviteUiType )
 void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	if ( steamapicontext && steamapicontext->SteamFriends() &&
-		 steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 	{
-		steamapicontext->SteamFriends()->ActivateGameOverlay( szCommand );
+		SteamFriends()->ActivateGameOverlay( szCommand );
 	}
 	else
 	{
-		DisplayOkOnlyMsgBox( NULL, "#L4D360UI_SteamOverlay_Title", "#L4D360UI_SteamOverlay_Text" );
+		DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
 	}
 #else
 	ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
@@ -447,21 +444,24 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 #endif
 }
 
-void CUIGameData::ExecuteOverlayUrl( char const *szUrl )
+void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal, bool bOpenInBrowserIfOverlayDisabled )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
-    if ( steamapicontext && steamapicontext->SteamFriends() &&
-        steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->IsOverlayEnabled() )
-    {
-        steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( szUrl );
-    }
-    else
-    {
-        DisplayOkOnlyMsgBox( NULL, "#L4D360UI_SteamOverlay_Title", "#L4D360UI_SteamOverlay_Text" );
-    }
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+	{
+		SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
+	}
+	else if ( bOpenInBrowserIfOverlayDisabled )
+	{
+		vgui::system()->ShellExecute( "open", szUrl );
+	}
+	else
+	{
+		DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
+	}
 #else
-    ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
-    Assert( !"ExecuteOverlayCommand" );
+	ExecuteNTimes( 5, DevWarning( "ExecuteOverlayCommand( %s ) is unsupported\n", szCommand ) );
+	Assert( !"ExecuteOverlayCommand" );
 #endif
 }
 
@@ -829,16 +829,19 @@ char const * CUIGameData::GetPlayerName( XUID playerID, char const *szPlayerName
 		return "WWWWWWWWWWWWWWW";
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	if ( steamapicontext && steamapicontext->SteamUtils() &&
-		steamapicontext->SteamFriends() && steamapicontext->SteamUser() )
+	if ( SteamUtils() && SteamFriends() && SteamUser() )
 	{
 		int iIndex = m_mapUserXuidToName.Find( playerID );
 		if ( iIndex == m_mapUserXuidToName.InvalidIndex() )
 		{
-			char const *szName = steamapicontext->SteamFriends()->GetFriendPersonaName( playerID );
+			char const *szName = SteamFriends()->GetFriendPersonaName( playerID );
 			if ( szName && *szName )
 			{
-				iIndex = m_mapUserXuidToName.Insert( playerID, szName );
+				CUtlString szNameFiltered( szName );
+
+				g_RDTextFiltering.FilterTextName( szNameFiltered, playerID );
+
+				iIndex = m_mapUserXuidToName.Insert( playerID, szNameFiltered );
 			}
 		}
 
@@ -1207,6 +1210,7 @@ void CUIGameData::OnEvent( KeyValues *pEvent )
 			{ "Kicked and banned", "#SessionError_Kicked", RemapText_t::MATCH_SUBSTR },
 			{ "You have been voted off", "#SessionError_Kicked", RemapText_t::MATCH_SUBSTR },
 			{ "All players idle", "#L4D_ServerShutdownIdle", RemapText_t::MATCH_SUBSTR },
+			{ "Connection failed after 10 retries", "#SessionError_Connect", RemapText_t::MATCH_SUBSTR },
 #ifdef _X360
 			{ "", "#DisconnectReason_Unknown", RemapText_t::MATCH_START },	// Catch all cases for X360
 #endif

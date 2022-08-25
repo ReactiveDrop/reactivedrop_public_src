@@ -151,7 +151,7 @@ bool CRoomTemplate::SaveRoomTemplate()
 	}
 	pRoomTemplateKeyValues->AddSubKey(pkvSubSection);
 
-	if (!pRoomTemplateKeyValues->SaveToFile(g_pFullFileSystem, szFullFileName, "GAME"))
+	if (!pRoomTemplateKeyValues->SaveToFile(g_pFullFileSystem, szFullFileName, "MOD"))
 	{
 		Msg("Error: Failed to save room template %s\n", szFullFileName);
 		return false;

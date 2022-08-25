@@ -411,6 +411,12 @@ void CASW_VGUI_Computer_Menu::OnThink()
 			m_pMenuLabel[i]->SetFgColor(Color(255,255,255,255));
 		}
 	}
+
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pLocalPlayer && pLocalPlayer->GetSpectatingNPC() && m_hCurrentPage.Get() )
+	{
+		HideMenu( true );
+	}
 	
 	if (m_bFadingCurrentPage)
 	{
@@ -455,12 +461,15 @@ void CASW_VGUI_Computer_Menu::FindMouseOverOption()
 
 	// if the computer is locked, we can't mouse over any options (shouldn't ever get to the main menu though)
 	C_ASW_Computer_Area *pArea = m_pHackComputer->GetComputerArea();
-	if (!pArea || pArea->IsLocked())
+	if ( !pArea || pArea->IsLocked() )
 		return;
-	
-	for (int i=0;i<m_iOptions;i++)
+
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
+
+	for ( int i = 0; i < m_iOptions; i++ )
 	{
-		if (m_pMenuLabel[i]->IsCursorOver() || m_pMenuLabel[i]->IsCursorOver())
+		if ( m_pMenuLabel[i]->IsWithin( x, y ) || m_pMenuLabel[i]->IsCursorOver() )
 		{
 			m_iMouseOverOption = i;
 			return;

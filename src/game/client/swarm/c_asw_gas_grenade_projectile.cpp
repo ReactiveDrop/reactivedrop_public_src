@@ -31,8 +31,10 @@ END_RECV_TABLE()
 C_ASW_Gas_Grenade_Projectile::C_ASW_Gas_Grenade_Projectile()
 {
 	m_flTimeBurnOut	= 0.0f;
+	m_flTimeCreated = gpGlobals->curtime;
 
 	m_bSmoke		= true;
+	m_bStopped		= false;
 
 	//SetDynamicallyAllocated( false );
 	m_queryHandle = 0;
@@ -101,6 +103,18 @@ void C_ASW_Gas_Grenade_Projectile::ClientThink( void )
 
 	if ( baseScale < 0.01f )
 		return;
+
+	if ( m_pTrailEffect.GetObject() == NULL && !m_bStopped )
+	{
+		m_pTrailEffect = ParticleProp()->Create( "gas_trail_small", PATTACH_ABSORIGIN_FOLLOW, -1, GetEffectOrigin() - GetAbsOrigin() );
+		Assert( m_pTrailEffect.GetObject() != NULL );
+	}
+
+	if ( !m_bStopped && gpGlobals->curtime - m_flTimeCreated > 2.0f )
+	{
+		ParticleProp()->StopEmission( m_pTrailEffect );
+		m_bStopped = true;
+	}
 
 	SetNextClientThink(gpGlobals->curtime + 0.1f);
 }

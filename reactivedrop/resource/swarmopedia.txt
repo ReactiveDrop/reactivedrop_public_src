@@ -1,0 +1,1057 @@
+"Swarmopedia" {
+	"ALIEN" {
+		"ID" "asw_drone"
+		"Name" "#rd_so_alien_drone"
+		"Icon" "swarm/swarmopedia/alien/asw_drone"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_drone"
+			"StatName" "lifetime_alien_kills.asw_drone_jumper"
+			"StatName" "lifetime_alien_kills.asw_drone_uber"
+			"MinValue" "100"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone_jumper"
+			"Caption" "#rd_so_stat_killed_jumper"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_drone_uber"
+			"Caption" "#rd_so_stat_killed_uber"
+		}
+		"Ability" "#rd_so_ability_overwhelming_numbers"
+		"Ability" "#rd_so_ability_razor_sharp_claws"
+		"Ability" "#rd_so_ability_attacks_doors"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/drone/drone.mdl"
+				"Animation" "Run"
+				"BodyGroup" {
+					"Group" "1"
+					"Value" "2"
+				}
+				"BodyGroup" {
+					"Group" "2"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "4"
+					"Value" "1"
+				}
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/drone/drone.mdl"
+				"Animation" "Attack02"
+				"BodyGroup" {
+					"Group" "0"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "1"
+					"Value" "2"
+				}
+				"BodyGroup" {
+					"Group" "2"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "3"
+					"Value" "1"
+				}
+				"BodyGroup" {
+					"Group" "5"
+					"Value" "1"
+				}
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_drone"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_drone"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_julie_duval"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_drone_0"
+		"Paragraph" "#rd_so_paragraph_drone_1"
+		"Paragraph" "#rd_so_paragraph_drone_2"
+		"Paragraph" "#rd_so_paragraph_drone_3"
+		"Paragraph" "#rd_so_paragraph_drone_4"
+	}
+	"ALIEN" {
+		"ID" "asw_ranger"
+		"Name" "#rd_so_alien_ranger"
+		"Icon" "swarm/swarmopedia/alien/asw_ranger"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_ranger"
+			"MinValue" "10"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_ranger"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_corrosive_spit"
+		"Ability" "#rd_so_ability_long_range"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/mortar3/mortar3.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_101hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_ranger"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_ranger_0"
+		"Paragraph" "#rd_so_paragraph_ranger_1"
+		"Paragraph" "#rd_so_paragraph_ranger_2"
+		"Paragraph" "#rd_so_paragraph_ranger_3"
+		"Paragraph" "#rd_so_paragraph_ranger_4"
+	}
+	"ALIEN" {
+		"ID" "asw_shieldbug"
+		"Name" "#rd_so_alien_shieldbug"
+		"Icon" "swarm/swarmopedia/alien/asw_shieldbug"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_shieldbug"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_shieldbug"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_immune_to_frontal_attacks"
+		"Ability" "#rd_so_ability_knocks_down_marines"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
+				"Animation" "roar_02"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
+				"Animation" "idle_defend"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_1000hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_shieldbug"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_julie_duval"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_shieldbug_0"
+		"Paragraph" "#rd_so_paragraph_shieldbug_1"
+		"Paragraph" "#rd_so_paragraph_shieldbug_2"
+		"Paragraph" "#rd_so_paragraph_shieldbug_3"
+		"Paragraph" "#rd_so_paragraph_shieldbug_4"
+	}
+	"ALIEN" {
+		"ID" "asw_boomer"
+		"Name" "#rd_so_alien_boomer"
+		"Icon" "swarm/swarmopedia/alien/asw_boomer"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_boomer"
+			"MinValue" "10"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_boomer"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_suicide_bomber"
+		"Ability" "#rd_so_ability_explosive_projectiles"
+		"Ability" "#rd_so_ability_inflates"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/boomer/boomer.mdl"
+				"Animation" "walk"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/boomer/boomer.mdl"
+				"Animation" "idle_inflated"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_800hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_boomer"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_boomer_0"
+		"Paragraph" "#rd_so_paragraph_boomer_1"
+		"Paragraph" "#rd_so_paragraph_boomer_2"
+		"Paragraph" "#rd_so_paragraph_boomer_3"
+		"Paragraph" "#rd_so_paragraph_boomer_4"
+	}
+	"ALIEN" {
+		"ID" "asw_buzzer"
+		"Name" "#rd_so_alien_buzzer"
+		"Icon" "swarm/swarmopedia/alien/asw_buzzer"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_buzzer"
+			"MinValue" "10"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_buzzer"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_flight"
+		"Ability" "#rd_so_ability_poison_blurs_vision"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/buzzer/buzzer.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_30hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_buzzer"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_buzzer_0"
+		"Paragraph" "#rd_so_paragraph_buzzer_1"
+		"Paragraph" "#rd_so_paragraph_buzzer_2"
+		"Paragraph" "#rd_so_paragraph_buzzer_3"
+		"Paragraph" "#rd_so_paragraph_buzzer_4"
+	}
+	"ALIEN" {
+		"ID" "asw_parasite"
+		"Name" "#rd_so_alien_parasite"
+		"Icon" "swarm/swarmopedia/alien/asw_parasite"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_parasite"
+			"StatName" "lifetime_alien_kills.asw_egg"
+			"MinValue" "25"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_parasite"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_egg"
+			"Caption" "#rd_so_stat_killed_egg"
+		}
+		"Ability" "#rd_so_ability_infests_marines"
+		"Ability" "#rd_so_ability_jumping_attack"
+		"Ability" "#rd_so_ability_hatches_from_eggs"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/parasite/parasite_swarmopedia.mdl"
+				"Animation" "Idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_25hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_parasite"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_parasite_0"
+		"Paragraph" "#rd_so_paragraph_parasite_1"
+		"Paragraph" "#rd_so_paragraph_parasite_2"
+		"Paragraph" "#rd_so_paragraph_parasite_3"
+		"Paragraph" "#rd_so_paragraph_parasite_4"
+	}
+	"ALIEN" {
+		"ID" "asw_mortarbug"
+		"Name" "#rd_so_alien_mortarbug"
+		"Icon" "swarm/swarmopedia/alien/asw_mortarbug"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_mortarbug"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_mortarbug"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_explosive_projectiles"
+		"Ability" "#rd_so_ability_long_range"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/mortar/mortar.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_350hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_mortarbug"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_mortarbug_0"
+		"Paragraph" "#rd_so_paragraph_mortarbug_1"
+		"Paragraph" "#rd_so_paragraph_mortarbug_2"
+		"Paragraph" "#rd_so_paragraph_mortarbug_3"
+		"Paragraph" "#rd_so_paragraph_mortarbug_4"
+	}
+	"ALIEN" {
+		"ID" "asw_harvester"
+		"Name" "#rd_so_alien_harvester"
+		"Icon" "swarm/swarmopedia/alien/asw_harvester"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_harvester"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_harvester"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_explosive_spawn"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/harvester/harvester.mdl"
+				"Animation" "IDLE"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_200hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_harvester"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_harvester_0"
+		"Paragraph" "#rd_so_paragraph_harvester_1"
+		"Paragraph" "#rd_so_paragraph_harvester_2"
+		"Paragraph" "#rd_so_paragraph_harvester_3"
+		"Paragraph" "#rd_so_paragraph_harvester_4"
+	}
+	"ALIEN" {
+		"ID" "asw_xenomite"
+		"Name" "#rd_so_alien_xenomite"
+		"Icon" "swarm/swarmopedia/alien/asw_xenomite"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
+			"MinValue" "10"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_parasite_defanged"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_jumping_attack"
+		"Ability" "#rd_so_ability_suicide_bomber"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/parasite/parasite.mdl"
+				"Animation" "Idle"
+				"BodyGroup" {
+					"Group" "0"
+					"Value" "1"
+				}
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_10hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_xenomite"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_brad_irwing"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_xenomite_0"
+		"Paragraph" "#rd_so_paragraph_xenomite_1"
+		"Paragraph" "#rd_so_paragraph_xenomite_2"
+		"Paragraph" "#rd_so_paragraph_xenomite_3"
+		"Paragraph" "#rd_so_paragraph_xenomite_4"
+	}
+	"ALIEN" {
+		"ID" "asw_shaman"
+		"Name" "#rd_so_alien_shaman"
+		"Icon" "swarm/swarmopedia/alien/asw_shaman"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.asw_shaman"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_shaman"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_heals_other_aliens"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/shaman/shaman.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_59hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_shaman"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_bur_nable"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_shaman_0"
+		"Paragraph" "#rd_so_paragraph_shaman_1"
+		"Paragraph" "#rd_so_paragraph_shaman_2"
+		"Paragraph" "#rd_so_paragraph_shaman_3"
+		"Paragraph" "#rd_so_paragraph_shaman_4"
+	}
+	"ALIEN" {
+		"ID" "asw_biomass"
+		"Name" "#rd_so_alien_biomass"
+		"Icon" "swarm/swarmopedia/alien/asw_biomass"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "iBiomassIgnited"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "iBiomassIgnited"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
+		"Ability" "#rd_so_ability_corrosive_skin"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomasshelix.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomassl.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_c"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomasss.mdl"
+				"Animation" "idle"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_d"
+			"Model" {
+				"ModelName" "models/aliens/biomass/biomassu.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_biomass"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_biomass"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_biomass_0"
+		"Paragraph" "#rd_so_paragraph_biomass_1"
+		"Paragraph" "#rd_so_paragraph_biomass_2"
+		"Paragraph" "#rd_so_paragraph_biomass_3"
+		"Paragraph" "#rd_so_paragraph_biomass_4"
+	}
+	"ALIEN" {
+		"ID" "asw_grub"
+		"Name" "#rd_so_alien_grub"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "ASW_GRUB_KILLS_STAT"
+			"MinValue" "100"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_grub"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"Icon" "swarm/swarmopedia/alien/asw_grub"
+		"Ability" "#rd_so_ability_harmless"
+		"Ability" "#rd_so_ability_hatches_from_sacs"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/swarm/grubs/grub.mdl"
+				"Animation" "CrawlA"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/swarm/grubsac/grubsac.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_1hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_grub"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_shaun_ming"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_grub_0"
+		"Paragraph" "#rd_so_paragraph_grub_1"
+		"Paragraph" "#rd_so_paragraph_grub_2"
+		"Paragraph" "#rd_so_paragraph_grub_3"
+		"Paragraph" "#rd_so_paragraph_grub_4"
+	}
+	"ALIEN" {
+		"ID" "hl2_antlionguard"
+		"Name" "#rd_so_alien_antlionguard"
+		"Icon" "swarm/swarmopedia/alien/hl2_antlionguard"
+		"SteamStatLoreRequirement" {
+			"Caption" "#rd_so_requirement_kill_this_alien"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_normal"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_cavern"
+			"MinValue" "5"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_antlionguard_normal"
+			"Caption" "#rd_so_stat_killed"
+		}
+		"GlobalStat" {
+			"StatName" "lifetime_alien_kills.asw_antlionguard_cavern"
+			"Caption" "#rd_so_stat_killed_cavern"
+		}
+		"Ability" "#rd_so_ability_knocks_down_marines"
+		"Ability" "#rd_so_ability_charging_attack"
+		"Ability" "#rd_so_ability_resistant_to_damage"
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_a"
+			"Model" {
+				"ModelName" "models/antlion_guard.mdl"
+				"Animation" "idle"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Display" {
+			"Caption" "#rd_so_display_caption_specimen_b"
+			"Model" {
+				"ModelName" "models/antlion_guard.mdl"
+				"Animation" "roar"
+				"Skin" "1"
+			}
+			"Ambient" "24 24 24"
+			"LightPoint" {
+				"X" "64"
+				"Y" "-128"
+				"Z" "96"
+				"Color" "255 255 255"
+				"Boost" "3"
+			}
+			"LightPoint" {
+				"X" "-256"
+				"Y" "0"
+				"Z" "48"
+				"Color" "255 224 64"
+				"Boost" "1.5"
+			}
+			"LightDirectional" {
+				"X" "-192"
+				"Y" "-128"
+				"Z" "16"
+				"Color" "255 255 255"
+				"Boost" "5"
+			}
+		}
+		"Paragraph" {
+			"Text" "#rd_so_damage_resistance_500hp"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_tips_antlionguard"
+			"Color" "255 255 255 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_author_isaac_kleiner"
+			"Color" "169 213 255 255"
+		}
+		"Paragraph" "#rd_so_paragraph_antlionguard_0"
+		"Paragraph" "#rd_so_paragraph_antlionguard_1"
+		"Paragraph" "#rd_so_paragraph_antlionguard_2"
+		"Paragraph" "#rd_so_paragraph_antlionguard_3"
+		"Paragraph" "#rd_so_paragraph_antlionguard_4"
+	}
+}

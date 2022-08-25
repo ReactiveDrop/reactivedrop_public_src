@@ -110,14 +110,15 @@ void CASW_Pickup_Weapon::InitWeapon(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
 }
 
 // player has used this item
-void CASW_Pickup_Weapon::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Pickup_Weapon::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	//if (UseIconType==USE_ICON_TAKE)
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( pMarine )
 	{
-		if (pMarine->TakeWeaponPickup(this))
+		if ( pMarine->TakeWeaponPickup( this ) )
 		{
 			// destroy self
 		}

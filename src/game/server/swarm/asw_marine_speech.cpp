@@ -458,7 +458,7 @@ void CASW_MarineSpeech::InternalPlayChatter(CASW_Marine* pMarine, const char* sz
 		iSubChatter = random->RandomInt(0, iMaxChatter - 1);
 
 	// asw temp comment
-	CPASAttenuationFilter filter( pMarine );		
+	//CPASAttenuationFilter filter( pMarine );		
 	//CSoundParameters params;
 	//char chatterbuffer[128];
 	//Q_snprintf(chatterbuffer, sizeof(chatterbuffer), "%s%d", szSoundName, iSubChatter);
@@ -654,7 +654,6 @@ void CASW_MarineSpeech::QueueChatter(int iChatterType, float fPlayTime, float fM
 
 	if (iChatterType == CHATTER_HOLDING_POSITION)		// if marine is holding
 	{
-		int iCount = m_SpeechQueue.Count();
 		for (int i=iCount-1;i>=0;i--)
 		{
 			if (m_SpeechQueue[i].iChatterType == CHATTER_USE)		// then remove any 'confirming move order' type speech queued up
@@ -663,7 +662,6 @@ void CASW_MarineSpeech::QueueChatter(int iChatterType, float fPlayTime, float fM
 	}
 	else if (iChatterType == CHATTER_USE)		// if marine is confirming move order
 	{
-		int iCount = m_SpeechQueue.Count();
 		for (int i=iCount-1;i>=0;i--)
 		{
 			if (m_SpeechQueue[i].iChatterType == CHATTER_HOLDING_POSITION)		// then remove any holding position speech queued up
@@ -1151,7 +1149,7 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 	},
 };
 
-bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
+bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter, CBasePlayer *pOnlyForPlayer)
 {
 	if (!m_pMarine || !m_pMarine->GetMarineResource() || (m_pMarine->GetHealth() <= 0 && iChatterType != CHATTER_DIE))
 	{
@@ -1194,7 +1192,7 @@ bool CASW_MarineSpeech::ClientRequestChatter(int iChatterType, int iSubChatter)
 		return false;
 	}
 
-	InternalPlayChatter(m_pMarine, szChatter, ASW_CHATTER_TIMER_TEAM, iChatterType, iSubChatter);
+	InternalPlayChatter(m_pMarine, szChatter, ASW_CHATTER_TIMER_TEAM, iChatterType, iSubChatter, pOnlyForPlayer);
 	return true;
 }
 

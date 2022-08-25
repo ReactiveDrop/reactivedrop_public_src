@@ -302,7 +302,7 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 				//m_pAmmoOverflow[i]->SetVisible(false);
 			m_pAmmoIcon[i]->SetVisible(true);
 			m_pClipsIcon[i]->SetVisible(true);
-			char buffer[20];
+			char buffer[32];
 			if (i == 5)	// PDW hack to show ammo doubled
 				Q_snprintf(buffer, sizeof(buffer), "%d", ammo * 2);
 			else
@@ -319,7 +319,6 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 			if (pCrosshair && pCrosshair->m_iShowGiveAmmoType != -1
 				&& pCrosshair->m_iShowGiveAmmoType == iAmmoType)
 			{
-				char buffer[32];
 				m_pAmmoName[i]->GetText(buffer, sizeof(buffer));
 				m_pGlowLabel->SetText(buffer);
 				int lx, ly, lw, lt;
@@ -369,7 +368,7 @@ void CASW_VGUI_Marine_Ammo_Report::OnThink()
 	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer)
 	{
-		if (pPlayer->GetMarine() && dynamic_cast<C_ASW_Weapon_Ammo_Bag*>(pPlayer->GetMarine()->GetActiveASWWeapon()))
+		if (pPlayer->GetNPC() && dynamic_cast<C_ASW_Weapon_Ammo_Bag*>(pPlayer->GetNPC()->GetActiveASWWeapon()))
 		{			
 			C_ASW_Marine* pAmmoMarine = dynamic_cast<C_ASW_Marine*>(pPlayer->GetHighlightEntity());
 			SetMarine(pAmmoMarine);

@@ -360,7 +360,6 @@ void CASW_Flamer_Projectile::CollideThink()
 	// scan for setting on fire nearby NPCs
 	if (!bHit)
 	{
-		trace_t tr;
 		Ray_t ray;
 		CTraceFilterAliensEggsGoo filter( this, COLLISION_GROUP_NONE );				
 		//UTIL_TraceHull(GetAbsOrigin(), GetAbsOrigin() + Vector(0,0,1), ASW_FLAMER_HULL_MINS, ASW_FLAMER_HULL_MAXS, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr); 

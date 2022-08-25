@@ -4,6 +4,7 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
 #include "EngineInterface.h"
 #include "VGenericPanelList.h"
 #include "IAchievementMgr.h"
@@ -25,17 +26,10 @@
 #include "cdll_util.h"
 #include "vgui/ISurface.h"
 #include "VAchievements.h"
-//#include "asw_achievements.h"
+#include "asw_achievements.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-// TODO: this is a temporary merge workaround until achievment interfaces get merged properly
-// REMOVE THIS BLOCK AFTER ACHIEVEMENTS GET MERGED
-//#define IAchievementMgr IAchievementMgr_TempMerge_CrashCrash
-//#define achievementmgr ( ( IAchievementMgr_TempMerge_CrashCrash * ) NULL )
-// -- END TODO
-//#define achievementmgr ASWAchievementManager()
 
 using namespace vgui;
 using namespace BaseModUI;
@@ -78,7 +72,7 @@ void AchievementListItem::SetAchievement( IAchievement *pAchievement )
 	if ( !pAchievement )
 		return;
 
-	m_pAchievement = pAchievement;
+	m_pAchievement = assert_cast<CASW_Achievement *>( pAchievement );
 
 	InvalidateLayout();
 }
@@ -115,14 +109,6 @@ void AchievementListItem::SetAchievementProgress(int progress)
 	m_LblCurrProgress->SetText(buffer);
 
 	m_PrgProgress->SetProgress(fProgress);
-
-	if(fProgress < 1.0f)
-	{
-		fProgress *= 100.0f;
-
-		char buffer[8];
-		Q_snprintf(buffer, 7, "%2.0f%%", fProgress);
-	}
 
 	// For achievements that don't have multiple steps do not display progress bar or progress label
 	m_PrgProgress->SetVisible( m_AchievementGoal > 1 );
@@ -200,9 +186,13 @@ void AchievementListItem::ApplySchemeSettings(IScheme *pScheme)
 	m_iOriginalTall = GetTall();
 
 	KeyValues *pListItem = g_pPreloadedAchievementListItemLayout->FindKey( "AchievementListItem" );
-	if ( pListItem )
+	if ( pListItem && m_pAchievement->IsAchieved() )
 	{
 		SetBgColor( pListItem->GetColor( "BackgroundColor" ) );
+	}
+	else
+	{
+		SetBgColor( Color( 65, 70, 80, 255 ) );
 	}
 
 	SetAchievementName( ACHIEVEMENT_LOCALIZED_NAME( m_pAchievement ) );
@@ -212,8 +202,6 @@ void AchievementListItem::ApplySchemeSettings(IScheme *pScheme)
 	SetGamerScore( m_pAchievement->GetPointValue() );
 	SetAchievementProgress( m_pAchievement->IsAchieved() ? m_pAchievement->GetGoal() : m_pAchievement->GetCount() );
 
-	// TODO:
-	/*
 	int iNumComponents = m_pAchievement->GetNumComponents();
 	if ( iNumComponents > 0 )
 	{
@@ -227,7 +215,7 @@ void AchievementListItem::ApplySchemeSettings(IScheme *pScheme)
 
 		int iNumRows = 0;
 
-		for ( int i = 0, iNumComponents = m_pAchievement->GetNumComponents(); i < iNumComponents; i++ )
+		for ( int i = 0; i < iNumComponents; i++ )
 		{
 			vgui::Label *pLabel = vgui::SETUP_PANEL( new vgui::Label( this, NULL, "" ) );
 			if ( !pLabel )
@@ -272,11 +260,10 @@ void AchievementListItem::ApplySchemeSettings(IScheme *pScheme)
 		vgui::Label *pDetailsLabel = dynamic_cast< vgui::Label * >( FindChildByName( "LblDetails" ) );
 		if ( pDetailsLabel )
 		{
-			pDetailsLabel ->SetVisible( true );
-			SetControlString( "LblDetails", "#GameUI_ShowDetails" );
+			pDetailsLabel->SetVisible( true );
+			pDetailsLabel->SetText( "#nb_objective_details" );
 		}
 	}
-	*/
 #else	
 	SetBgColor(pScheme->GetColor( "Button.BgColor", Color( 32, 32, 32, 255 ) ) );
 #endif
@@ -295,8 +282,6 @@ void AchievementListItem::PerformLayout( void )
 	BaseClass::PerformLayout();
 
 #ifndef _X360
-	// TODO:
-	/*
 	uint64 iComponentBits = m_pAchievement->GetComponentBits();
 
 	for ( int i=0;i<m_pAchievement->GetNumComponents(); i++ )
@@ -334,7 +319,6 @@ void AchievementListItem::PerformLayout( void )
 			}
 		}
 	}
-	*/
 #endif
 }
 
@@ -346,8 +330,6 @@ void AchievementListItem::OnCommand( const char *command )
 	{
 		m_bShowingDetails = !m_bShowingDetails;
 
-		// TODO:
-		/*
 		uint64 iComponentBits = m_pAchievement->GetComponentBits();
 
 		int iNumRows = 0;
@@ -392,7 +374,6 @@ void AchievementListItem::OnCommand( const char *command )
 			SetControlString( "BtnDetails", "+" );
 			SetControlString( "LblDetails", "#GameUI_ShowDetails" );
 		}
-		*/
 
 		InvalidateLayout();
 	}
@@ -496,7 +477,7 @@ BaseClass(parent, panelName, false, true)
 	m_LblComplete = new Label(this, "LblComplete", ""); 
 	m_LblGamerscore = new Label(this, "LblGamerscore", ""); 
 	m_GplAchievements = new AchievementGenericPanelList( this, "GplAchievements", GenericPanelList::ISM_ELEVATOR, m_iStartingUserSlot );
-	m_GplAchievements->ShowScrollProgress( true );
+	m_GplAchievements->ShowScrollProgress( false );
 	m_GplAchievements->SetScrollBarVisible( IsPC() );
 	m_GplAchievements->SetBgColor( Color( 0, 0, 0, 0 ) );
 
@@ -553,44 +534,28 @@ void Achievements::Activate()
 	int incompleteCount= 0;
 	int gamerScore = 0;
 
-	//
-	// Add the "Achieved" ones
-	//
 	for(int i = 0; i < achievementmgr->GetAchievementCount(); i++)
 	{
-		IAchievement* achievement = achievementmgr->GetAchievementByDisplayOrder( i, m_iStartingUserSlot );
+		IAchievement *achievement = achievementmgr->GetAchievementByDisplayOrder( i, m_iStartingUserSlot );
+		if ( !achievement )
+			continue;
 
-		if ( achievement && achievement->IsAchieved() )
+		AchievementListItem *panelItem = new AchievementListItem( achievement );
+		if ( panelItem )
 		{
-			AchievementListItem *panelItem = new AchievementListItem( achievement );
-			if ( panelItem )
-			{
-				m_GplAchievements->AddPanelItem( panelItem, true );
-			}
+			m_GplAchievements->AddPanelItem( panelItem, true );
+		}
 
+		if ( achievement->IsAchieved() )
+		{
 			gamerScore += achievement->GetPointValue();
 			++m_iAchCompleteCount;
 		}
-	}
-
-	//
-	// Add the "Unattained" ones
-	//
-	for(int i = 0; i < achievementmgr->GetAchievementCount(); i++)
-	{
-		IAchievement* achievement = achievementmgr->GetAchievementByDisplayOrder( i, m_iStartingUserSlot );
-
-		if ( achievement && !achievement->IsAchieved() )
+		else
 		{
-			AchievementListItem *panelItem = new AchievementListItem( achievement );
-			if ( panelItem )
-			{
-				m_GplAchievements->AddPanelItem( panelItem, true );
-			}
-
 			++incompleteCount;
 		}
-	} 
+	}
 
 	// Populate the awards list.
 	int awardIncompleteCount= 0;
@@ -701,8 +666,8 @@ void Achievements::OnKeyCodePressed(KeyCode code)
 	if ( m_iStartingUserSlot != GetJoystickForCode( code ) )
 		return;
 
-//	int iUserSlot = GetJoystickForCode( code );
-//	CBaseModPanel::GetSingleton().SetLastActiveUserId( iUserSlot );
+	int iUserSlot = GetJoystickForCode( code );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( iUserSlot );
 
 	switch( GetBaseButtonCode( code ) )
 	{

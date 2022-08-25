@@ -3,8 +3,8 @@
 	ASWHudMinimap
 	{
 		"fieldName"		"ASWHudMinimap"
-		"xpos"	"r171"
-		"ypos"	"298"
+		"xpos"	"r160"
+		"ypos"	"r160"
 		"wide"	"160"
 		"tall"  "160"
 		"visible" "1"
@@ -297,6 +297,20 @@
 
 		"text_xpos"	"26"
 	}
+
+	ASWHudKills
+	{
+		"fieldName"		"ASWHudKills"
+		"xpos"	"r100"
+		"ypos"	"100"
+		"wide"	"90"
+		"tall"  "200"
+		"visible" "1"
+		"enabled" "1"
+		"BgColor" "0 0 0 255"
+		"PaintBackgroundType"	"2"
+		"BgColor_override" "0 0 0 192"
+	}
 	
 	ASWHudMoney
 	{
@@ -321,6 +335,10 @@
 		"ypos"	"35"
 		"wide"	"f0"
 		"tall"	"480"
+	}
+
+	AchievementNotificationPanel
+	{
 	}
 
 	RD_Hud_Boss_Bars
@@ -351,8 +369,8 @@
 		"Weapon_w" "80"
 		"Weapon_t" "40"
 		
-		"MarinePortrait_x" "18"
-		"MarinePortrait_y" "r94"
+		"MarinePortrait_x" "5"
+		"MarinePortrait_y" "r80"
 		
 		// these coords are relative to the top left of the marine portrait
 		"MarinePortrait_circle_bg_x" "0"
@@ -419,9 +437,9 @@
 		"FastReload_w" "84"
 		"FastReload_t" "11"
 		
-		"SquadMates_x"	"172"		// spacing to the right of the currently active marine
-		"SquadMates_y"	"r55"
-		"SquadMates_spacing"	"100"
+		"SquadMates_x"	"151"		// spacing to the right of the currently active marine
+		"SquadMates_y"	"r41"
+		"SquadMates_spacing"	"86"
 		
 		// these coords are relative to the top left of the squadmate's panel
 		"SquadMate_name_color" "255 255 255 255"

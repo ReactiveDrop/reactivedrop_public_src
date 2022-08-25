@@ -251,7 +251,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//Msg( "S: %f - %f - %f RELOAD MISSED! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 				m_fFastReloadEnd = 0;
 				m_fFastReloadStart = 0;
-
+				
 				CBaseCombatCharacter *pOwner = GetOwner();
 				if ( pOwner )
 				{
@@ -265,6 +265,13 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_FAIL );
 
 #ifdef GAME_DLL
+				IGameEvent * event = gameeventmanager->CreateEvent( "fast_reload_fail" );
+				if ( event )
+				{
+					event->SetInt( "marine", pMarine->entindex() );
+					gameeventmanager->FireEvent( event, true );
+				}
+				
 				pMarine->m_nFastReloadsInARow = 0;
 
 				if (rd_fast_reload_explode_chance.GetFloat() > 0)
@@ -475,7 +482,7 @@ void CASW_Weapon::ItemPostFrame( void )
 						event->SetInt( "marine", pOwner->entindex() );
 						event->SetInt( "weapon", entindex() );
 
-						gameeventmanager->FireEvent( event );
+						gameeventmanager->FireEvent( event, true );
 					}
 	#endif
 					 m_flNextPrimaryAttack = gpGlobals->curtime;
@@ -1473,7 +1480,7 @@ void CASW_Weapon::WeaponSound( WeaponSound_t sound_type, float soundtime /* = 0.
 	if ( params.play_to_owner_only )
 	{
 		// Am I only to play to my owner?
-		if ( GetOwner() && pPlayer && pPlayer->GetMarine() == GetOwner() )
+		if ( GetOwner() && pPlayer && pPlayer->GetNPC() == GetOwner() )
 		{
 			CSingleUserRecipientFilter filter( pPlayer );
 			if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
@@ -1579,7 +1586,7 @@ void CASW_Weapon::PlaySoundToOthers( const char *szSoundName )
 void CASW_Weapon::LowAmmoSound()
 {
 	CASW_Player *pPlayer = GetCommander();
-	if ( GetOwner() && pPlayer && pPlayer->GetMarine() == GetOwner() )
+	if ( GetOwner() && pPlayer && pPlayer->GetNPC() == GetOwner() )
 	{
 		CSingleUserRecipientFilter filter( pPlayer );
 		if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
@@ -1634,18 +1641,19 @@ void CASW_Weapon::UpdateOnRemove( void )
 // Dropped weapon functions
 //-----------------------------------------------------------------------------
 
-bool CASW_Weapon::AllowedToPickup(CASW_Marine *pMarine)
+bool CASW_Weapon::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
 {
-	if (!pMarine || !ASWGameRules() || !pMarine->GetMarineResource())
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine || !ASWGameRules() || !pMarine->GetMarineResource() )
 		return false;
 
 	// check if we're swapping for an existing item
-	int index = pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
-	CASW_Weapon* pWeapon = pMarine->GetASWWeapon(index);
-	const char* szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
+	int i = pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
+	CASW_Weapon *pWeapon = pMarine->GetASWWeapon( i );
+	const char *szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
 
 	// first check if the gamerules will allow it
-	bool bAllowed = ASWGameRules()->MarineCanPickup(pMarine->GetMarineResource(), GetClassname(), szSwappingClass);
+	bool bAllowed = ASWGameRules()->MarineCanPickup( pMarine->GetMarineResource(), GetClassname(), szSwappingClass );
 #ifdef CLIENT_DLL
 	m_bSwappingWeapon = ( pWeapon != NULL );
 #endif

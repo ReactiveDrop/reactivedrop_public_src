@@ -212,14 +212,14 @@ void asw_weapon_switch_f( int direction )
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine *pMarine = pPlayer->GetMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 
-	C_BaseCombatWeapon *pCurrent = pMarine->GetActiveWeapon();
-	C_BaseCombatWeapon *pPrimary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
-	C_BaseCombatWeapon *pSecondary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
-	C_BaseCombatWeapon *pTertiary = pMarine->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+	C_BaseCombatWeapon *pCurrent = pNPC->GetActiveWeapon();
+	C_BaseCombatWeapon *pPrimary = pNPC->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
+	C_BaseCombatWeapon *pSecondary = pNPC->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+	C_BaseCombatWeapon *pTertiary = pNPC->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
 	if ( pCurrent == pTertiary && direction == 1 && pPrimary )
 	{
 		::input->MakeWeaponSelection( pPrimary );
@@ -234,7 +234,8 @@ void asw_weapon_switch_f( int direction )
 
 	if ( pCurrent == pTertiary && direction == 0 && pPrimary && pSecondary )
 	{
-		::input->MakeWeaponSelection( pMarine->m_bLastWeaponBeforeTempWasSecondary ? pSecondary : pPrimary );
+		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
+		::input->MakeWeaponSelection( pMarine && pMarine->m_bLastWeaponBeforeTempWasSecondary ? pSecondary : pPrimary );
 		return;
 	}
 
@@ -266,18 +267,18 @@ CON_COMMAND( ASW_InvPrev, "Makes your marine select the previous weapon" )
 
 void asw_slot_select_f( int slot )
 {
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine* pMarine = pPlayer->GetMarine();
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 
-	C_BaseCombatWeapon* pCurrent = pMarine->GetActiveWeapon();
-	C_BaseCombatWeapon* pPrimary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
-	C_BaseCombatWeapon* pSecondary = pMarine->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
-	//C_BaseCombatWeapon* pTertiary = pMarine->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
+	C_BaseCombatWeapon *pCurrent = pNPC->GetActiveWeapon();
+	C_BaseCombatWeapon *pPrimary = pNPC->GetWeapon( ASW_INVENTORY_SLOT_PRIMARY );
+	C_BaseCombatWeapon *pSecondary = pNPC->GetWeapon( ASW_INVENTORY_SLOT_SECONDARY );
+	//C_BaseCombatWeapon* pTertiary = pNPC->GetWeapon( ASW_TEMPORARY_WEAPON_SLOT );
 
 	if ( slot == ASW_INVENTORY_SLOT_PRIMARY && pPrimary && pCurrent != pPrimary )
 		::input->MakeWeaponSelection( pPrimary );
@@ -300,7 +301,7 @@ void ASW_ActivatePrimary_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if ( pPlayer && pPlayer->GetMarine() )
+	if ( pPlayer && C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 	{
 		pPlayer->ActivateInventoryItem( ASW_INVENTORY_SLOT_PRIMARY );
 	}
@@ -309,7 +310,7 @@ void ASW_ActivateSecondary_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if ( pPlayer && pPlayer->GetMarine() )
+	if ( pPlayer && C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 	{
 		pPlayer->ActivateInventoryItem( ASW_INVENTORY_SLOT_SECONDARY );
 	}
@@ -318,7 +319,7 @@ void ASW_ActivateTertiary_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if ( pPlayer && pPlayer->GetMarine() )
+	if ( pPlayer && C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 	{
 		pPlayer->ActivateInventoryItem( ASW_TEMPORARY_WEAPON_SLOT );
 	}
@@ -326,7 +327,7 @@ void ASW_ActivateTertiary_f()
 void ASW_ActivateExtra_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 	
 	int index = ASW_INVENTORY_SLOT_EXTRA;
 
@@ -424,30 +425,30 @@ ConCommand asw_minimap_scale( "asw_minimap_scale", asw_minimap_scale_f, "Overrid
 void asw_entindex_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
+	if ( pPlayer )
 	{
-		Msg("Hidehud is %d\n", pPlayer->m_Local.m_iHideHUD);		
-		Msg("Local player entity index is %d\n", pPlayer->entindex());
-		if (pPlayer->GetMarine())
+		Msg( "Hidehud is %d\n", pPlayer->m_Local.m_iHideHUD );
+		Msg( "Local player entity index is %d\n", pPlayer->entindex() );
+		if ( C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 		{
-			Msg("  and your current marine's entity index is %d\n", pPlayer->GetMarine()->entindex());
-			if (pPlayer->GetMarine()->GetMarineResource())
+			Msg( "  and your current marine's entity index is %d\n", C_ASW_Marine::AsMarine( pPlayer->GetNPC() )->entindex() );
+			if ( C_ASW_Marine::AsMarine( pPlayer->GetNPC() )->GetMarineResource() )
 			{
-				Msg("    and your current marine's marine info's entity index is %d\n", pPlayer->GetMarine()->GetMarineResource()->entindex());
+				Msg( "    and your current marine's marine info's entity index is %d\n", C_ASW_Marine::AsMarine( pPlayer->GetNPC() )->GetMarineResource()->entindex() );
 			}
 			else
 			{
-				Msg("    and your current marine has no marine info\n");
+				Msg( "    and your current marine has no marine info\n" );
 			}
 		}
 		else
 		{
-			Msg("  and you have no current marine\n");
+			Msg( "  and you have no current marine\n" );
 		}
 	}
 	else
 	{
-		Msg("No local player!\n");
+		Msg( "No local player!\n" );
 	}
 }
 ConCommand asw_entindex( "asw_entindex", asw_entindex_f, "Returns the entity index of the player", FCVAR_CHEAT );
@@ -516,9 +517,9 @@ ConCommand asw_edit_panel( "asw_edit_panel", asw_edit_panel_f, "ASW Edit a VGUI 
 void asw_marine_update_visibility_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
-		pPlayer->GetMarine()->UpdateVisibility();
+		pPlayer->GetNPC()->UpdateVisibility();
 	}
 }
 ConCommand asw_marine_update_visibility( "asw_marine_update_visibility", asw_marine_update_visibility_f, "Updates marine visibility", FCVAR_CHEAT );
@@ -526,9 +527,9 @@ ConCommand asw_marine_update_visibility( "asw_marine_update_visibility", asw_mar
 void asw_camera_volume_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
-		Msg("Marine inside camera volume = %d\n", C_ASW_Camera_Volume::IsPointInCameraVolume(pPlayer->GetMarine()->GetAbsOrigin()));
+		Msg( "Marine inside camera volume = %d\n", C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetNPC()->GetAbsOrigin() ) );
 	}
 }
 ConCommand asw_camera_volume( "asw_camera_volume", asw_camera_volume_f, "check if the marine is inside an asw_camera_control volume", FCVAR_CHEAT );
@@ -554,24 +555,24 @@ ConCommand asw_camera_report_defaults( "asw_camera_report_defaults", asw_camera_
 void asw_mesh_emitter_test_f()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
+	if ( pPlayer && pPlayer->GetNPC() )
 	{
-		C_ASW_Marine *pMarine = pPlayer->GetMarine();
+		C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
 		C_ASW_Mesh_Emitter *pEmitter = new C_ASW_Mesh_Emitter;
-		if (pEmitter)
+		if ( pEmitter )
 		{
-			if (pEmitter->InitializeAsClientEntity( "models/swarm/DroneGibs/dronepart01.mdl", false ))
+			if ( pEmitter->InitializeAsClientEntity( "models/swarm/DroneGibs/dronepart01.mdl", false ) )
 			{
 				Vector vecForward;
-				AngleVectors(pMarine->GetAbsAngles(), &vecForward);
-				Vector vecEmitterPos = pMarine->GetAbsOrigin() + vecForward * 200.0f;
-				Q_snprintf(pEmitter->m_szTemplateName, sizeof(pEmitter->m_szTemplateName), "dronegiblots");
+				AngleVectors( pNPC->GetAbsAngles(), &vecForward );
+				Vector vecEmitterPos = pNPC->GetAbsOrigin() + vecForward * 200.0f;
+				Q_snprintf( pEmitter->m_szTemplateName, sizeof( pEmitter->m_szTemplateName ), "dronegiblots" );
 				pEmitter->m_fScale = 1.0f;
 				pEmitter->m_bEmit = true;
-				pEmitter->SetAbsOrigin(vecEmitterPos);
-				pEmitter->CreateEmitter(vec3_origin);
-				pEmitter->SetAbsOrigin(vecEmitterPos);
-				pEmitter->SetDieTime(gpGlobals->curtime + 15.0f);
+				pEmitter->SetAbsOrigin( vecEmitterPos );
+				pEmitter->CreateEmitter( vec3_origin );
+				pEmitter->SetAbsOrigin( vecEmitterPos );
+				pEmitter->SetDieTime( gpGlobals->curtime + 15.0f );
 			}
 			else
 			{
@@ -1022,11 +1023,11 @@ ConCommand asw_debug_spectator( "asw_debug_spectator", asw_debug_spectator_f, "P
 // TODO: Remove this before ship?
 void reset_steam_stats_f()
 {
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( !SteamUserStats() )
 		return;
 
-	steamapicontext->SteamUserStats()->ResetAllStats( false );
+	SteamUserStats()->ResetAllStats( false );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
@@ -1040,8 +1041,8 @@ void rd_reset_level_and_promotion_f()
 {
 	Msg( "Resetting your level and promotion...\n" );
 
-	Assert( steamapicontext->SteamUserStats() );
-	if ( !steamapicontext->SteamUserStats() )
+	Assert( SteamUserStats() );
+	if ( !SteamUserStats() )
 	{
 		Msg( "Error. Cannot access SteamUserStats()\n" );
 		return;
@@ -1049,11 +1050,11 @@ void rd_reset_level_and_promotion_f()
 
 	int32 m_iExperience = 0, m_iPromotion = 0;
 
-	steamapicontext->SteamUserStats()->SetStat( "experience", m_iExperience );
-	steamapicontext->SteamUserStats()->SetStat( "promotion", m_iPromotion );
-	steamapicontext->SteamUserStats()->SetStat( "level", 1 );
-	steamapicontext->SteamUserStats()->SetStat( "level.xprequired", 0 );
-	steamapicontext->SteamUserStats()->StoreStats();
+	SteamUserStats()->SetStat( "experience", m_iExperience );
+	SteamUserStats()->SetStat( "promotion", m_iPromotion );
+	SteamUserStats()->SetStat( "level", 1 );
+	SteamUserStats()->SetStat( "level.xprequired", 0 );
+	SteamUserStats()->StoreStats();
 
 	C_ASW_Medal_Store *pStore = GetMedalStore();
 
@@ -1101,6 +1102,8 @@ CON_COMMAND( make_game_public, "Changes access for the current game to public." 
 	pSettings->SetString( "update/system/access", "public" );
 
 	g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pSettings );
+
+	ClientPrint( NULL, 8, "#L4D360UI_Lobby_Access_Changed_Public" );
 }
 
 CON_COMMAND( make_game_friends_only, "Changes access for the current game to friends only." )
@@ -1117,4 +1120,6 @@ CON_COMMAND( make_game_friends_only, "Changes access for the current game to fri
 	pSettings->SetString( "update/system/access", "friends" );
 
 	g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pSettings );
+
+	ClientPrint( NULL, 8, "#L4D360UI_Lobby_Access_Changed_Friends" );
 }

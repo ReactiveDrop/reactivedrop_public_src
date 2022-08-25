@@ -15,6 +15,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar glow_outline_color_active( "glow_outline_color_active", "153 153 204", FCVAR_NONE );
+ConVar glow_outline_color_inactive( "glow_outline_color_inactive", "77 77 77", FCVAR_NONE );
+
 //-----------------------------------------------------------------------------
 // Purpose: make sure cursor isn't reset to 0 by the accumulation
 //-----------------------------------------------------------------------------
@@ -40,9 +43,12 @@ void CASWInput::ResetMouse( void )
 {
 	int x, y;
 	HACK_GETLOCALPLAYER_GUARD( "Mouse behavior is tied to a specific player's status - splitscreen player would depend on which player (if any) is using mouse control" );
-	if ( MarineControllingTurret() || ( C_ASW_Player::GetLocalASWPlayer()->GetASWControls() != 1 && IsGameplayCrosshair() ) )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( MarineControllingTurret() || ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN && IsGameplayCrosshair() ) )
 	{
 		GetWindowCenter( x, y );
+		m_flJoypadStartMouseX = x;
+		m_flJoypadStartMouseY = y;
 		SetMousePos( x, y );
 	}
 	else
@@ -108,7 +114,7 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 		// force the mouse to the center, so there's room to move
 		ResetMouse();
 	}
-	else if ( C_ASW_Player::GetLocalASWPlayer( nSlot )->GetASWControls() == 1 || !IsGameplayCrosshair() )
+	else if ( C_ASW_Player::GetLocalASWPlayer( nSlot )->GetASWControls() == ASWC_TOPDOWN )
 	{
 		TurnTowardMouse( viewangles, cmd );
 
@@ -120,10 +126,20 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 	}
 	else
 	{
-		CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( nSlot );
+		if ( !IsGameplayCrosshair() )
+		{
+			// just reset no move
+			ResetMouse();
+			SetMousePos( current_posx, current_posy );
+		}
+		else
+		{
+			CInput::ApplyMouse( nSlot, viewangles, cmd, mouse_x, mouse_y );
 
-		// force the mouse to the center, so there's room to move
-		ResetMouse();
+			// force the mouse to the center, so there's room to move
+			ResetMouse();
+		}
 	}
 }
 
@@ -169,6 +185,13 @@ void CASWInput::GetFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL
 	*my = current_posy;
 }
 
+void CASWInput::SetFullscreenMousePos( int mx, int my )
+{
+	m_flJoypadStartMouseX = mx;
+	m_flJoypadStartMouseY = my;
+	CInput::SetFullscreenMousePos( mx, my );
+}
+
 void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 {	
 	// highlight the next entity
@@ -184,17 +207,17 @@ void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 		return;
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();	
-	C_ASW_Marine *pMarine = pPlayer ? pPlayer->GetViewMarine() : NULL;
-	if ( !pMarine )
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
+	if ( !pNPC )
 		return;
 
 	IASW_Client_Aim_Target* pAimEnt = dynamic_cast<IASW_Client_Aim_Target*>( pEnt );
 	if ( pAimEnt )
 	{
 		// check we have LOS to the target
-		CTraceFilterLOS traceFilter( pMarine, COLLISION_GROUP_NONE );
+		CTraceFilterLOS traceFilter( pNPC, COLLISION_GROUP_NONE );
 		trace_t tr2;
-		Vector vecWeaponPos = pMarine->GetRenderOrigin() + Vector( 0,0, ASW_MARINE_GUN_OFFSET_Z );
+		Vector vecWeaponPos = pNPC->GetRenderOrigin() + Vector( 0,0, ASW_MARINE_GUN_OFFSET_Z );
 		UTIL_TraceLine( vecWeaponPos, pAimEnt->GetAimTargetRadiusPos( vecWeaponPos ), MASK_OPAQUE, &traceFilter, &tr2 );
 		//C_BaseEntity *pEnt = pAimEnt->GetEntity();
 		//bool bHasLOS = (!tr2.startsolid && (tr2.fraction >= 1.0 || tr2.m_pEnt == pEnt));
@@ -237,12 +260,12 @@ void CASWInput::SetHighlightEntity( C_BaseEntity* pEnt, bool bGlow )
 	{
 		if ( bGlow )
 		{
-			m_HighLightGlowObject.SetColor( Vector( 0.6f, 0.6f, 0.8f ) );
+			m_HighLightGlowObject.SetColor( glow_outline_color_active.GetColorAsVector() );
 			m_HighLightGlowObject.SetAlpha( 0.7f );
 		}
 		else
 		{
-			m_HighLightGlowObject.SetColor( Vector( 0.3f, 0.3f, 0.3f ) );
+			m_HighLightGlowObject.SetColor( glow_outline_color_inactive.GetColorAsVector() );
 			m_HighLightGlowObject.SetAlpha( 0.5f );
 		}
 	}
@@ -265,11 +288,11 @@ void CASWInput::UpdateHighlightEntity()
 		pCrosshair->SetShowGiveHealth( false );
 	}
 
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 	if ( !pMarine )
 		return;
 
@@ -277,8 +300,8 @@ void CASWInput::UpdateHighlightEntity()
 	pMarine->MouseOverEntity( GetMouseOverEntity(), GetCrosshairAimingPos() );
 }
 
-void CASWInput::SetUseGlowEntity( C_BaseEntity* pEnt )
-{	
+void CASWInput::SetUseGlowEntity( C_BaseEntity *pEnt )
+{
 	// if we're currently highlighting something, stop
 	/*
 	if ( m_hUseGlowEntity.Get() )
@@ -296,25 +319,25 @@ void CASWInput::SetUseGlowEntity( C_BaseEntity* pEnt )
 	bool bIsAllowed = true;
 	if ( m_hUseGlowEntity.Get() )
 	{
-		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if ( !pPlayer )
 			return;
 
-		C_ASW_Marine* pMarine = pPlayer->GetViewMarine();
-		if ( !pMarine )
+		C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+		if ( !pNPC )
 			return;
 
 		C_ASW_Pickup *pPickup = dynamic_cast< C_ASW_Pickup * >( pEnt );
 		if ( pPickup )
 		{
-			bIsAllowed = pPickup->AllowedToPickup( pMarine );
+			bIsAllowed = pPickup->AllowedToPickup( pNPC );
 		}
 		else
 		{
 			C_ASW_Weapon *pWeapon = dynamic_cast< C_ASW_Weapon * >( pEnt );
 			if ( pWeapon )
 			{
-				bIsAllowed = pWeapon->AllowedToPickup( pMarine );
+				bIsAllowed = pWeapon->AllowedToPickup( pNPC );
 			}
 		}
 	}

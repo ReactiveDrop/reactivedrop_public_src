@@ -29,6 +29,8 @@ ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_AR
 ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
 ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
 ConVar rd_loading_image_per_map( "rd_loading_image_per_map", "1", FCVAR_ARCHIVE, "If set to 1 each map can have its own background image during loading screen, 0 means same image for every map" );
+ConVar rd_loading_status_text_visible( "rd_loading_status_text_visible", "1", FCVAR_ARCHIVE, "If set to 1 status text is visible on the loading screen." );
+
 extern ConVar asw_skill;
 
 static bool IsAvatarFemale( int iAvatar )
@@ -105,6 +107,8 @@ LoadingProgress::LoadingProgress(Panel *parent, const char *panelName, LoadingWi
 	{
 		m_pTipPanel = new CLoadingTipPanel( this );
 	}
+
+	m_pLoadingText = new vgui::Label( this, "LoadingText", "#L4D360UI_Loading" );
 
 	m_pLeaderboardBackground = new vgui::Panel( this, "LeaderboardBackground" );
 	m_pLeaderboardPanel = new CReactiveDrop_VGUI_Leaderboard_Panel( this, "Leaderboard" );
@@ -256,6 +260,16 @@ float LoadingProgress::GetProgress()
 	}
 
 	return retVal;
+}
+
+void LoadingProgress::SetStatusText( const char *statusText )
+{
+	m_pLoadingText->SetVisible( rd_loading_status_text_visible.GetBool() );
+
+	if ( statusText )
+	{
+		m_pLoadingText->SetText( statusText );
+	}
 }
 
 void LoadingProgress::PaintBackground()
@@ -506,7 +520,7 @@ void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapte
 
 void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName )
 {
-	if ( !rd_show_leaderboard_loading.GetBool() || !steamapicontext || !steamapicontext->SteamUserStats() || !steamapicontext->SteamFriends() )
+	if ( !rd_show_leaderboard_loading.GetBool() || !SteamUserStats() || !SteamFriends() )
 	{
 		return;
 	}
@@ -541,17 +555,22 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 	}
 
 	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
-	char szLeaderboardName[k_cchLeaderboardNameMax];
+	char szLeaderboardName[k_cchLeaderboardNameMax]{};
 	if ( rd_leaderboard_by_difficulty.GetBool() && iSkillLevel > 2 )
 	{
 		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), iSkillLevel, pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	}
-	else
+	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	}
+	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, "0", k_PublishedFileIdInvalid );
+		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
+	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	m_LeaderboardFind.Set( hCall, this, &LoadingProgress::LeaderboardFind );
 }
 
@@ -562,7 +581,9 @@ void LoadingProgress::LeaderboardFind( LeaderboardFindResult_t *pResult, bool bI
 		return;
 	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+	m_pLeaderboardPanel->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownloaded.Set( hCall, this, &LoadingProgress::LeaderboardDownloaded );
 }
 

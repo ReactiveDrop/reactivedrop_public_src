@@ -10,6 +10,7 @@ class CASW_Objective_Triggered : public CASW_Objective
 {
 public:
 	DECLARE_CLASS( CASW_Objective_Triggered, CASW_Objective );
+	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 	CASW_Objective_Triggered();
@@ -19,6 +20,9 @@ public:
 	void InputSetComplete( inputdata_t &inputdata );
 	void InputSetIncomplete( inputdata_t &inputdata );
 	void InputSetFailed( inputdata_t &inputdata );
+
+	CNetworkVar( int, m_nProgress );
+	CNetworkVar( int, m_nMaxProgress );
 };
 
 #endif /* _INCLUDED_ASW_OBJECTIVE_TRIGGERED_H */

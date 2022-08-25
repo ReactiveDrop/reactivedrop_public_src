@@ -44,7 +44,7 @@
 extern ConVar lookstrafe;
 extern ConVar cl_pitchdown;
 extern ConVar cl_pitchup;
-extern const ConVar *sv_cheats;
+extern ConVar *sv_cheats;
 
 
 

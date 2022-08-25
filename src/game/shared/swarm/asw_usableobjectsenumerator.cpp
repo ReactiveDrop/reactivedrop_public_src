@@ -23,6 +23,7 @@
 	#define C_ASW_Use_Area CASW_Use_Area
 	#define C_ASW_Pickup CASW_Pickup
 	#define C_ASW_Sentry_Base CASW_Sentry_Base
+	#define C_ASW_Inhabitable_NPC CASW_Inhabitable_NPC
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -71,8 +72,8 @@ IterationRetval_t CASW_UsableObjectsEnumerator::EnumElement( IHandleEntity *pHan
 	if ( pEnt == m_pLocal )
 		return ITERATION_CONTINUE;
 
-	C_ASW_Marine *pMarine = m_pLocal->GetMarine();
-	if (!pMarine)
+	C_ASW_Inhabitable_NPC *pNPC = m_pLocal->GetNPC();
+	if ( !pNPC )
 		return ITERATION_CONTINUE;
 
 #ifdef CLIENT_DLL
@@ -81,15 +82,15 @@ IterationRetval_t CASW_UsableObjectsEnumerator::EnumElement( IHandleEntity *pHan
 	IASW_Server_Usable_Entity *pUsable = dynamic_cast<IASW_Server_Usable_Entity*>(pEnt);
 #endif
 
-	if (!pUsable || !pUsable->IsUsable(pMarine))
-		return ITERATION_CONTINUE;	
+	if ( !pUsable || !pUsable->IsUsable( pNPC ) )
+		return ITERATION_CONTINUE;
 
 	if (pUsable->NeedsLOSCheck())
 	{
 		trace_t tr;
-		Vector vecSrc = pMarine->WorldSpaceCenter();
+		Vector vecSrc = pNPC->WorldSpaceCenter();
 		Vector vecDest = pEnt->WorldSpaceCenter();
-		UTIL_TraceLine(vecSrc, vecDest, MASK_SOLID_BRUSHONLY, pMarine, COLLISION_GROUP_NONE, &tr);
+		UTIL_TraceLine(vecSrc, vecDest, MASK_SOLID_BRUSHONLY, pNPC, COLLISION_GROUP_NONE, &tr);
 		if (tr.fraction < 1.0f && tr.m_pEnt != pEnt)	// didn't hit our target
 		{
 #ifdef CLIENT_DLL
@@ -106,8 +107,7 @@ IterationRetval_t CASW_UsableObjectsEnumerator::EnumElement( IHandleEntity *pHan
 #endif
 	}
 
-	CHandle< C_BaseEntity > h;
-	h = pEnt;
+	EHANDLE h = pEnt;
 	m_Objects.AddToTail( h );
 
 	return ITERATION_CONTINUE;

@@ -51,6 +51,10 @@
 #include "demo_polish/demo_polish.h"
 #endif
 
+#ifdef INFESTED_DLL
+#include "asw_gamerules.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -2314,6 +2318,12 @@ C_BaseEntity* C_BasePlayer::GetPotentialUseEntity( void ) const
 //-----------------------------------------------------------------------------
 float C_BasePlayer::GetFOV( void ) const
 {
+#ifdef INFESTED_DLL
+	CAlienSwarm *pGameRules = ASWGameRules();
+	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
+		return pGameRules->m_hBriefingCamera->GetElasticity();
+#endif
+
 	if ( GetObserverMode() == OBS_MODE_IN_EYE )
 	{
 		C_BasePlayer *pTargetPlayer = ToBasePlayer( GetObserverTarget() );

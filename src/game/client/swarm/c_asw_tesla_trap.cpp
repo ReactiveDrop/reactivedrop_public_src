@@ -191,7 +191,7 @@ bool C_ASW_TeslaTrap::IsUsable(C_BaseEntity *pUser)
 	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
 }
 
-bool C_ASW_TeslaTrap::GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser)
+bool C_ASW_TeslaTrap::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
 	action.iUseIconTexture = GetTeslaIconTextureID();
 	TryLocalize( "#asw_tesla_ammo", action.wszText, sizeof( action.wszText ) );

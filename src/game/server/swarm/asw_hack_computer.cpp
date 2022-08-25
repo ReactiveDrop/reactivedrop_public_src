@@ -184,6 +184,9 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 
 	m_iShowOption = i;
 
+	// remember that the boot-up sequence finished
+	pArea->m_bLoggedIn = true;
+
 	// make sure the computer area knows if we're viewing mail or not
 	bool bViewingMail = (iOptionType == ASW_COMPUTER_OPTION_TYPE_MAIL);
 	
@@ -197,7 +200,7 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 
 	if (iOptionType == ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS)
 	{
-		// note: being on this option causes the computer area's MarineUsing function to count up to downloading the files
+		// note: being on this option causes the computer area's NPCUsing function to count up to downloading the files
 	}
 	else if (iOptionType == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_1)
 	{

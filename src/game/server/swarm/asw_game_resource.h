@@ -5,12 +5,12 @@
 #include "baseentity.h"
 #include "asw_shareddefs.h"
 #include "asw_marine_profile.h"
+#include "rd_missions_shared.h"
 
 class CASW_Marine_Resource;
 class CASW_Objective;
 class CASW_Player;
 class CASW_Scanner_Info;
-class CASW_Campaign_Info;
 class CASW_Campaign_Save;
 class CASW_Marine_Profile;
 class CASW_Marine;
@@ -126,7 +126,7 @@ public:
 
 	int GetAliensKilledInThisMission();
 
-	CASW_Campaign_Info* m_pCampaignInfo;
+	CampaignHandle m_pCampaignInfo;
 
 	// money
 	int  GetMoney() { return m_iMoney; }

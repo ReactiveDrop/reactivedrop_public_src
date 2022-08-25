@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2003, Valve Corporation, All rights reserved. =======
+//====== Copyright ?1996-2003, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Game rules for Alien Swarm
 //
@@ -19,6 +19,7 @@
 	#define CAlienSwarm C_AlienSwarm
 	#define CAlienSwarmProxy C_AlienSwarmProxy
 	#define CASW_Game_Resource C_ASW_Game_Resource
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Player C_ASW_Player
 	#define CASW_Pickup C_ASW_Pickup
@@ -39,10 +40,11 @@
 	class CASW_Weapon;
 #endif
 
+class CASW_Inhabitable_NPC;
 class CASW_Marine_Resource;
-class CASW_Campaign_Info;
 class CASW_Campaign_Save;
 class CASW_Ammo;
+struct RD_Campaign_t;
 
 class CAlienSwarmProxy : public CGameRulesProxy
 {
@@ -56,18 +58,24 @@ public:
 
 	int m_iSpeedrunTime;
 	int m_iJumpJetType;
-	CNetworkVar( bool, m_bAllowCameraRotation );
+	CNetworkVar( bool, m_bDisallowCameraRotation );
 
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 #else
+	virtual bool KeyValue( const char *szKeyName, const char *szValue ) override;
 	void InputSetTutorialStage( inputdata_t & inputdata );
+	void InputAddPoints( inputdata_t & inputdata );
+	void InputModifyDifficulty( inputdata_t & inputdata );
+	void InputMarineFinishedMission( inputdata_t & inputdata );
 	void OnMissionStart();
 
 	COutputInt m_OnDifficulty;
 	COutputInt m_OnOnslaught;
 	COutputInt m_OnFriendlyFire;
 	COutputString m_OnChallenge;
+	COutputInt m_TotalPoints;
+	COutputInt m_MissionDifficulty;
 #endif
 };
 
@@ -115,15 +123,17 @@ public:
 
 	CAlienSwarm();
 	virtual ~CAlienSwarm();
+	void FullReset();
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
 	// reactivedrop: m_szGameDescription holds the name of current game mode 
-	const char *m_szGameDescription;
+	char m_szGameDescription[k_cbMaxGameServerGameDescription];
 	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	virtual void			Shutdown();
-	
+	bool m_bShuttingDown;
+
 	// briefing roster functions
 	virtual bool			RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot=-1 );
 	virtual void			RosterDeselect( CASW_Player *pPlayer, int RosterIndex);
@@ -177,6 +187,8 @@ public:
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine );
 	//resurects on the next spawn point
 	void Resurrect( CASW_Marine_Resource * RESTRICT pMR );
+	//resurects on the spawn point
+	CASW_Marine* ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos, bool bEffect = true );
 
 	// cheats
 	bool m_bMarineInvuln;
@@ -359,21 +371,20 @@ public:
 	CASW_Info_Heal *GetInfoHeal();
 	CHandle<CASW_Info_Heal> m_hInfoHeal;
 
-	float m_fObjectiveSlowDownEndTime;
-
 	void EnableChallenge( const char *szChallengeName );
 	void ApplyChallenge();
 
 	CUtlStringMap<string_t> m_SavedConvars_Challenge;
 	void ResetChallengeConVars();
+	void CheckChallengeConVars();
 	void ApplyChallengeConVars( KeyValues *pKV );
 
 #endif	// GAME_DLL above
 
 	CUtlStringMap<string_t> m_SavedConvars;
-	bool HaveSavedConvar( const ConVarRef &cvar );
+	bool HaveSavedConvar( const ConVarRef & cvar );
 	void SaveConvar( const ConVarRef & cvar );
-	void RevertSingleConvar( ConVarRef cvar );
+	void RevertSingleConvar( ConVarRef & cvar );
 	void RevertSavedConvars();
 
 	// stim music
@@ -469,11 +480,13 @@ public:
 	virtual void CreateStandardEntities( void );	
 	virtual bool IsMultiplayer();	
 	bool IsOfflineGame();
-	bool CanFlareAutoaimAt(CASW_Marine* pMarine, CBaseEntity *pEntity);
+	bool IsAnniversaryWeek();
+	bool CanFlareAutoaimAt(CASW_Inhabitable_NPC* pAimer, CBaseEntity *pEntity);
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 #ifdef GAME_DLL
 	// BenLubar: add game-specific vscript functions
 	virtual void RegisterScriptFunctions();
+	CUtlMap<string_t, float> m_ActorSpeakingUntil;
 #endif
 
 	// mission
@@ -505,9 +518,9 @@ public:
 
 	// campaign related
 	int IsCampaignGame();	// -1 = unknown, 0 = single mission, 1 = campaign game
-	int CampaignMissionsLeft();	
-	CASW_Campaign_Info* GetCampaignInfo();
-	CASW_Campaign_Save* GetCampaignSave();	
+	int CampaignMissionsLeft();
+	const RD_Campaign_t *GetCampaignInfo();
+	CASW_Campaign_Save *GetCampaignSave();
 
 	// special game modes
 #ifndef CLIENT_DLL
@@ -536,16 +549,12 @@ public:
 
 	// special maps
 	bool IsTutorialMap() { return m_bIsTutorial; }
-	bool IsIntroMap() { return m_bIsIntro; }
-	bool IsOutroMap() { return m_bIsOutro; }
 	bool IsLobbyMap() { return m_bIsLobby; }
 	static bool IsHardcoreFF();
 	static bool IsOnslaught();
 
 	bool m_bIsTutorial;
-	bool m_bIsIntro;
-	bool m_bIsOutro;
-	bool m_bIsLobby;		// lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
+	bool m_bIsLobby; // lobby map is a temporary map that dedicated servers load into.  We detect that and start a new campaign game.
 
 #ifndef CLIENT_DLL
 	void CheckLeaderboardReady();
@@ -560,11 +569,24 @@ public:
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
 	CNetworkVar( bool, m_bChallengeActiveThisMission );
 
+	CNetworkString( m_szApproximatePingLocation, MIN( k_cchMaxSteamNetworkingPingLocationString, DT_MAX_STRING_BUFFERSIZE ) );
+#ifdef GAME_DLL
+	bool m_bObtainedPingLocation;
+	void SetPingLocation( const SteamNetworkPingLocation_t & location );
+#endif
+
+	CNetworkString( m_szBriefingVideo, 64 );
+	CNetworkHandle( CBaseEntity, m_hBriefingCamera );
+#ifdef GAME_DLL
+	bool m_bHadBriefingCamera;
+#endif
+
 private:
 	char m_szPickupDenial[128];
 
 #ifndef CLIENT_DLL
 	IASW_Map_Builder *m_pMapBuilder;
+	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
 #endif
 };
 

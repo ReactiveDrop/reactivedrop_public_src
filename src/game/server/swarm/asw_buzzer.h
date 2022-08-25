@@ -123,7 +123,7 @@ public:
 	
 	void			InputDisableSwarm( inputdata_t &inputdata );	
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }	
+	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 
 	float GetMaxEnginePower();
 
@@ -132,7 +132,28 @@ public:
 		m_iHealth = 0;
 	}
 
-	enum BuzzerConditions
+	enum
+	{
+		SCHED_ASW_BUZZER_ATTACK_HOVER = BaseClass::NEXT_SCHEDULE,
+		SCHED_ASW_BUZZER_REGROUP,
+		SCHED_ASW_BUZZER_SWARM_IDLE,
+		SCHED_ASW_BUZZER_SWARM,
+		SCHED_ASW_BUZZER_SWARM_FAILURE,
+		SCHED_ASW_BUZZER_ORDER_MOVE,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_ASW_BUZZER_HOVER = BaseClass::NEXT_TASK,
+		TASK_ASW_BUZZER_FIND_SQUAD_CENTER,
+		TASK_ASW_BUZZER_FIND_SQUAD_MEMBER,
+		TASK_ASW_BUZZER_MOVEAT_SAVEPOSITION,
+		TASK_ASW_BUZZER_BUILD_PATH_TO_ORDER,
+		NEXT_TASK,
+	};
+
+	enum
 	{
 		COND_ASW_BUZZER_START_ATTACK = BaseClass::NEXT_CONDITION,	// We are able to do a bombing run on the current enemy.
 		NEXT_CONDITION,
@@ -161,6 +182,7 @@ public:
 	bool m_bIgnoreMarines;
 	bool m_bFailedMoveTo;
 
+	bool m_bWasOnFireForStats;
 	bool m_bFlammable;
 	bool m_bTeslable;
 	bool m_bFreezable;

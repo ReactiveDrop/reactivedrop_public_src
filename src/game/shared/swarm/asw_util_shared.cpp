@@ -65,6 +65,7 @@
 #include "tier2/fileutils.h"
 #include "vpklib/packedstore.h"
 #include "vgui/ILocalize.h"
+#include "iregistry.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,7 +76,7 @@ ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_R
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
 #else
-ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_NONE, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
+ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_DEVELOPMENTONLY, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
 extern int g_asw_iGUIWindowsOpen;
 #endif
 
@@ -208,9 +209,9 @@ bool ASW_LineCircleIntersection(
 
 #ifdef GAME_DLL
 // a local helper to normalize some code below -- gets inlined
-static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
+static void ASW_WriteScreenShakeToMessage( CASW_Inhabitable_NPC *pNPC, ShakeCommand_t eCommand, float amplitude, float frequency, float duration, const Vector &direction )
 {
-	CSingleUserRecipientFilter user( pPlayer );
+	CASW_ViewNPCRecipientFilter user( pNPC );
 	user.MakeReliable();
 	if ( direction.IsZeroFast() ) // nondirectional shake
 	{
@@ -237,7 +238,7 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 //-----------------------------------------------------------------------------
 // Transmits the actual shake event
 //-----------------------------------------------------------------------------
- void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
+ void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction )
 {
 	if (( localAmplitude > 0 ) || ( eCommand == SHAKE_STOP ))
 	{
@@ -245,7 +246,7 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 			localAmplitude = 0;
 
 #ifdef GAME_DLL
-		ASW_WriteScreenShakeToMessage( pPlayer, eCommand, localAmplitude, frequency, duration, direction );
+		ASW_WriteScreenShakeToMessage( pNPC, eCommand, localAmplitude, frequency, duration, direction );
 #else
 		ScreenShake_t shake;
 
@@ -255,12 +256,12 @@ static void ASW_WriteScreenShakeToMessage( CBasePlayer *pPlayer, ShakeCommand_t 
 		shake.duration	= duration;
 		shake.direction = direction;
 
-		ASW_TransmitShakeEvent( pPlayer, shake );
+		ASW_TransmitShakeEvent( pNPC, shake);
 #endif
 	}
 }
 
-void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, const ScreenShake_t &shake )
+void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, const ScreenShake_t &shake )
 {
 	if ( shake.command == SHAKE_STOP && shake.amplitude != 0 )
 	{
@@ -268,10 +269,10 @@ void ASW_TransmitShakeEvent( CBasePlayer *pPlayer, const ScreenShake_t &shake )
 		AssertMsg1( false, "A ScreenShake_t had a SHAKE_STOP command but a nonzero amplitude %.1f; this is meaningless.\n", shake.amplitude);
 		ScreenShake_t localShake = shake;
 		localShake.amplitude = 0;
-		ASW_TransmitShakeEvent( pPlayer, localShake );
+		ASW_TransmitShakeEvent( pNPC, localShake );
 	}
 #ifdef GAME_DLL
-	ASW_WriteScreenShakeToMessage( pPlayer, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
+	ASW_WriteScreenShakeToMessage( pNPC, shake.command, shake.amplitude, shake.frequency, shake.duration, shake.direction );
 #else
 	if ( !( prediction && prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
 	{
@@ -333,19 +334,25 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		amplitude = ASW_MAX_SHAKE_AMPLITUDE;
 	}
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-		if ( !pPlayer )
+		return;
+	}
+
+	for ( i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
 		{
 			continue;
 		}
 
-		// find the player's marine
-		CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
-		CASW_Marine *pMarine = pASWPlayer ? pASWPlayer->GetViewMarine() : NULL;
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
 		if ( !pMarine )
+		{
 			continue;
+		}
 
 		// Only start shakes for players that are on the ground unless doing an air shake.
 		if ( !bAirShake && !pMarine->m_bOnGround )
@@ -365,7 +372,7 @@ void UTIL_ASW_ScreenShake( const Vector &center, float amplitude, float frequenc
 		if (localAmplitude < 0)
 			continue;
 
-		ASW_TransmitShakeEvent( pASWPlayer, localAmplitude, frequency, duration, eCommand );
+		ASW_TransmitShakeEvent( pMarine, localAmplitude, frequency, duration, eCommand );
 	}
 }
 
@@ -398,31 +405,34 @@ void UTIL_ASW_ScreenPunch( const Vector &center, float radius, const ScreenShake
 
 	AssertMsg( CloseEnough(shake.direction.LengthSqr(), 1), "Direction param to ASW_ScreenPunch is abnormal\n" );
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
 	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
+		return;
+	}
 
-		//
-		// Only start shakes for players that are on the ground unless doing an air shake.
-		//
-		if ( !pPlayer )
+	for ( i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
 		{
 			continue;
 		}
 
-		// find the player's marine
-		CASW_Player *pASWPlayer = assert_cast<CASW_Player*>(pPlayer);
-		if (!pASWPlayer || !pASWPlayer->GetViewMarine())
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
+		if ( !pMarine )
+		{
 			continue;
+		}
 
-		Vector vecMarinePos = pASWPlayer->GetViewMarine()->WorldSpaceCenter();
-		if (pASWPlayer->GetViewMarine()->IsControllingTurret() && pASWPlayer->GetViewMarine()->GetRemoteTurret())
-			vecMarinePos = pASWPlayer->GetViewMarine()->GetRemoteTurret()->GetAbsOrigin();
+		Vector vecMarinePos = pMarine->WorldSpaceCenter();
+		if ( pMarine->IsControllingTurret() && pMarine->GetRemoteTurret() )
+			vecMarinePos = pMarine->GetRemoteTurret()->GetAbsOrigin();
 
 		if ( vecMarinePos.DistToSqr(center) > radiusSqr )
 			continue;
 
-		ASW_TransmitShakeEvent( (CBasePlayer *)pPlayer, shake );
+		ASW_TransmitShakeEvent( pMarine, shake );
 	}
 }
 
@@ -551,12 +561,12 @@ void UTIL_ASW_ValidateSoundName( char *szString, int stringlength, const char *d
 }
 
 #ifdef GAME_DLL
-void UTIL_ASW_PoisonBlur(CBaseEntity *pEntity, float duration)
+void UTIL_ASW_PoisonBlur( CASW_Marine *pMarine, float duration )
 {
-	if ( !pEntity || !pEntity->IsNetClient() )
+	if ( !pMarine )
 		return;
 
-	CSingleUserRecipientFilter user( (CBasePlayer *)pEntity );
+	CASW_ViewNPCRecipientFilter user( pMarine );
 	user.MakeReliable();
 
 	UserMessageBegin( user, "ASWBlur" );		// use the magic #1 for "one client"
@@ -657,6 +667,18 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 		}
 	}
 	return NULL;
+}
+
+CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC )
+{
+	for ( int i = 1; i <= MAX_PLAYERS; i++ )
+	{
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && pPlayer->GetViewNPC() == pNPC )
+		{
+			AddRecipient( pPlayer );
+		}
+	}
 }
 
 #endif
@@ -1468,7 +1490,7 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 		iActualLevel = rd_override_commander_level.GetInt();
 	}
 
-	if ( iPromotion != iActualPromotion )
+	if ( iPromotion != -1 && iPromotion != iActualPromotion )
 	{
 		return iPromotion < iActualPromotion;
 	}
@@ -1501,6 +1523,11 @@ static void LoadKeyValues( KeyValues *pKV, const char *fileName, const char *szP
 		buf2.SeekPut( CUtlBuffer::SEEK_HEAD, V_strlen( pszBuf ) );
 
 		pBuf = &buf2;
+	}
+	else if ( buf.TellPut() >= 3 && !V_strncmp( (const char *)buf.Base(), "\xEF\xBB\xBF", 3 ) )
+	{
+		// We've got a byte order mark in UTF-8. KeyValues will get confused by this.
+		buf.SeekGet( CUtlBuffer::SEEK_HEAD, 3 );
 	}
 
 	CUtlString fullFileName = CUtlString::PathJoin( szPath, fileName );
@@ -1563,15 +1590,26 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 	}
 }
 
+struct AddLocalizeFileCallbackData_t
+{
+	bool bAny : 1;
+	bool bIsCaptions : 1;
+};
+
+static CUtlStringMap<CRC32_t> s_CaptionHashLookup{ true };
+static CUtlMap<CRC32_t, UtlSymId_t> s_CaptionHashRevLookup{ DefLessFunc( CRC32_t ) };
+
 static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
-	bool *bAny = static_cast<bool *>( pUserData );
+	AddLocalizeFileCallbackData_t *pData = static_cast< AddLocalizeFileCallbackData_t * >( pUserData );
 
 	KeyValues *pTokens = pKV->FindKey( "Tokens" );
 	if ( !pTokens )
 	{
 		return;
 	}
+
+	char szLowerKey[256]{};
 
 	FOR_EACH_VALUE( pTokens, pValue )
 	{
@@ -1588,7 +1626,24 @@ static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *
 
 		g_pVGuiLocalize->AddString( pszKey, const_cast<wchar_t *>( pValue->GetWString() ), NULL );
 
-		*bAny = true;
+		pData->bAny = true;
+
+		if ( pData->bIsCaptions )
+		{
+			int len = V_strlen( pszKey );
+			Assert( len < sizeof( szLowerKey ) );
+			V_strncpy( szLowerKey, pszKey, sizeof( szLowerKey ) );
+			V_strlower( szLowerKey );
+
+			CRC32_t hash;
+			CRC32_Init( &hash );
+			CRC32_ProcessBuffer( &hash, szLowerKey, len );
+			CRC32_Final( &hash );
+
+			UtlSymId_t sym = s_CaptionHashLookup.AddString( pszKey );
+			s_CaptionHashLookup[sym] = hash;
+			s_CaptionHashRevLookup.InsertOrReplace( hash, sym );
+		}
 	}
 }
 
@@ -1596,7 +1651,7 @@ static void AddLocalizeFileCallback( const char *pszPath, KeyValues *pKV, void *
 ConVar rd_dedicated_server_language( "rd_dedicated_server_language", "english", FCVAR_NONE, "translation language to load on dedicated server" );
 #endif
 
-bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths )
+bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bIncludeFallbackSearchPaths, bool bIsCaptions )
 {
 	char szPath[MAX_PATH];
 	if ( const char *pszLanguageToken = V_strstr( fileName, "%language%" ) )
@@ -1606,9 +1661,13 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		// Replace the language name here so we have control over what it is.
 
 		const char *pszLanguageReplacement = "%language%";
-		if ( steamapicontext && steamapicontext->SteamApps() )
+		if ( CommandLine()->FindParm( "-language" ) )
 		{
-			pszLanguageReplacement = steamapicontext->SteamApps()->GetCurrentGameLanguage();
+			pszLanguageReplacement = CommandLine()->ParmValue( "-language", "english" );
+		}
+		else if ( SteamApps() )
+		{
+			pszLanguageReplacement = SteamApps()->GetCurrentGameLanguage();
 		}
 #ifdef GAME_DLL
 		else if ( engine->IsDedicatedServer() )
@@ -1616,6 +1675,11 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 			pszLanguageReplacement = rd_dedicated_server_language.GetString();
 		}
 #endif
+		else if ( registry )
+		{
+			// If we failed to load the Steam API and we're not a dedicated server, attempt to grab the language for Steam itself from the Windows registry, or fall back to English.
+			pszLanguageReplacement = registry->ReadString( "HKEY_CURRENT_USER\\SOFTWARE\\Valve\\Steam", "Language", "english" );
+		}
 
 		strncpy_s( szPath, fileName, pszLanguageToken - fileName );
 		strcat_s( szPath, pszLanguageReplacement );
@@ -1630,11 +1694,13 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 	if ( rd_load_all_localization_files.GetBool() )
 #endif
 	{
-		bool bAny = false;
+		AddLocalizeFileCallbackData_t data{};
+		data.bAny = false;
+		data.bIsCaptions = bIsCaptions;
 
-		UTIL_RD_LoadAllKeyValues( szPath, pPathID, "lang", &AddLocalizeFileCallback, &bAny );
+		UTIL_RD_LoadAllKeyValues( szPath, pPathID, "lang", &AddLocalizeFileCallback, &data );
 
-		return bAny;
+		return data.bAny;
 	}
 
 	return g_pVGuiLocalize->AddFile( szPath, pPathID, bIncludeFallbackSearchPaths );
@@ -1647,19 +1713,378 @@ CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated serve
 #endif
 {
 #ifndef CLIENT_DLL
-	if ( !engine->IsDedicatedServer() || !UTIL_IsCommandIssuedByServerAdmin() )
+	if ( engine->IsDedicatedServer() && !UTIL_IsCommandIssuedByServerAdmin() )
 	{
 		return;
 	}
 #endif
 
+	UTIL_RD_ReloadLocalizeFiles();
+}
+
+void UTIL_RD_ReloadLocalizeFiles()
+{
 	// load english first just in case an addon is not localized
-	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true );
-	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/gameui_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/valve_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/platform_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/vgui_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/basemodui_english.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_english.txt", "GAME", true, true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_english.txt", "GAME", true, false );
 
 	// load actual localization files
-	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true );
-	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true );
+	UTIL_RD_AddLocalizeFile( "resource/gameui_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/valve_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/platform_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/vgui_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/basemodui_%language%.txt", "GAME", true, false );
+	UTIL_RD_AddLocalizeFile( "resource/closecaption_%language%.txt", "GAME", true, true );
+	UTIL_RD_AddLocalizeFile( "resource/reactivedrop_%language%.txt", "GAME", true, false );
 
 	DevMsg( 2, "Reloaded localization files.\n" );
+}
+
+CRC32_t UTIL_RD_CaptionToHash( const char *szToken )
+{
+	Assert( s_CaptionHashLookup.GetNumStrings() );
+	UtlSymId_t sym = s_CaptionHashLookup.Find( szToken );
+	if ( sym == UTL_INVAL_SYMBOL )
+	{
+		return 0;
+	}
+
+	return s_CaptionHashLookup[sym];
+}
+
+const char *UTIL_RD_HashToCaption( CRC32_t hash )
+{
+	Assert( s_CaptionHashRevLookup.Count() );
+	unsigned short index = s_CaptionHashRevLookup.Find( hash );
+	Assert( s_CaptionHashRevLookup.IsValidIndex( index ) );
+	if ( !s_CaptionHashRevLookup.IsValidIndex( index ) )
+	{
+		return NULL;
+	}
+
+	UtlSymId_t sym = s_CaptionHashRevLookup[index];
+	Assert( sym != UTL_INVAL_SYMBOL );
+	return s_CaptionHashLookup.String( sym );
+}
+
+const char *UTIL_RD_EResultToString( EResult eResult )
+{
+	switch ( eResult )
+	{
+	default:
+		return "unknown EResult value";
+	case k_EResultNone:
+		return "k_EResultNone";
+	case k_EResultOK:
+		return "k_EResultOK";
+	case k_EResultFail:
+		return "k_EResultFail";
+	case k_EResultNoConnection:
+		return "k_EResultNoConnection";
+	case k_EResultInvalidPassword:
+		return "k_EResultInvalidPassword";
+	case k_EResultLoggedInElsewhere:
+		return "k_EResultLoggedInElsewhere";
+	case k_EResultInvalidProtocolVer:
+		return "k_EResultInvalidProtocolVer";
+	case k_EResultInvalidParam:
+		return "k_EResultInvalidParam";
+	case k_EResultFileNotFound:
+		return "k_EResultFileNotFound";
+	case k_EResultBusy:
+		return "k_EResultBusy";
+	case k_EResultInvalidState:
+		return "k_EResultInvalidState";
+	case k_EResultInvalidName:
+		return "k_EResultInvalidName";
+	case k_EResultInvalidEmail:
+		return "k_EResultInvalidEmail";
+	case k_EResultDuplicateName:
+		return "k_EResultDuplicateName";
+	case k_EResultAccessDenied:
+		return "k_EResultAccessDenied";
+	case k_EResultTimeout:
+		return "k_EResultTimeout";
+	case k_EResultBanned:
+		return "k_EResultBanned";
+	case k_EResultAccountNotFound:
+		return "k_EResultAccountNotFound";
+	case k_EResultInvalidSteamID:
+		return "k_EResultInvalidSteamID";
+	case k_EResultServiceUnavailable:
+		return "k_EResultServiceUnavailable";
+	case k_EResultNotLoggedOn:
+		return "k_EResultNotLoggedOn";
+	case k_EResultPending:
+		return "k_EResultPending";
+	case k_EResultEncryptionFailure:
+		return "k_EResultEncryptionFailure";
+	case k_EResultInsufficientPrivilege:
+		return "k_EResultInsufficientPrivilege";
+	case k_EResultLimitExceeded:
+		return "k_EResultLimitExceeded";
+	case k_EResultRevoked:
+		return "k_EResultRevoked";
+	case k_EResultExpired:
+		return "k_EResultExpired";
+	case k_EResultAlreadyRedeemed:
+		return "k_EResultAlreadyRedeemed";
+	case k_EResultDuplicateRequest:
+		return "k_EResultDuplicateRequest";
+	case k_EResultAlreadyOwned:
+		return "k_EResultAlreadyOwned";
+	case k_EResultIPNotFound:
+		return "k_EResultIPNotFound";
+	case k_EResultPersistFailed:
+		return "k_EResultPersistFailed";
+	case k_EResultLockingFailed:
+		return "k_EResultLockingFailed";
+	case k_EResultLogonSessionReplaced:
+		return "k_EResultLogonSessionReplaced";
+	case k_EResultConnectFailed:
+		return "k_EResultConnectFailed";
+	case k_EResultHandshakeFailed:
+		return "k_EResultHandshakeFailed";
+	case k_EResultIOFailure:
+		return "k_EResultIOFailure";
+	case k_EResultRemoteDisconnect:
+		return "k_EResultRemoteDisconnect";
+	case k_EResultShoppingCartNotFound:
+		return "k_EResultShoppingCartNotFound";
+	case k_EResultBlocked:
+		return "k_EResultBlocked";
+	case k_EResultIgnored:
+		return "k_EResultIgnored";
+	case k_EResultNoMatch:
+		return "k_EResultNoMatch";
+	case k_EResultAccountDisabled:
+		return "k_EResultAccountDisabled";
+	case k_EResultServiceReadOnly:
+		return "k_EResultServiceReadOnly";
+	case k_EResultAccountNotFeatured:
+		return "k_EResultAccountNotFeatured";
+	case k_EResultAdministratorOK:
+		return "k_EResultAdministratorOK";
+	case k_EResultContentVersion:
+		return "k_EResultContentVersion";
+	case k_EResultTryAnotherCM:
+		return "k_EResultTryAnotherCM";
+	case k_EResultPasswordRequiredToKickSession:
+		return "k_EResultPasswordRequiredToKickSession";
+	case k_EResultAlreadyLoggedInElsewhere:
+		return "k_EResultAlreadyLoggedInElsewhere";
+	case k_EResultSuspended:
+		return "k_EResultSuspended";
+	case k_EResultCancelled:
+		return "k_EResultCancelled";
+	case k_EResultDataCorruption:
+		return "k_EResultDataCorruption";
+	case k_EResultDiskFull:
+		return "k_EResultDiskFull";
+	case k_EResultRemoteCallFailed:
+		return "k_EResultRemoteCallFailed";
+	case k_EResultPasswordUnset:
+		return "k_EResultPasswordUnset";
+	case k_EResultExternalAccountUnlinked:
+		return "k_EResultExternalAccountUnlinked";
+	case k_EResultPSNTicketInvalid:
+		return "k_EResultPSNTicketInvalid";
+	case k_EResultExternalAccountAlreadyLinked:
+		return "k_EResultExternalAccountAlreadyLinked";
+	case k_EResultRemoteFileConflict:
+		return "k_EResultRemoteFileConflict";
+	case k_EResultIllegalPassword:
+		return "k_EResultIllegalPassword";
+	case k_EResultSameAsPreviousValue:
+		return "k_EResultSameAsPreviousValue";
+	case k_EResultAccountLogonDenied:
+		return "k_EResultAccountLogonDenied";
+	case k_EResultCannotUseOldPassword:
+		return "k_EResultCannotUseOldPassword";
+	case k_EResultInvalidLoginAuthCode:
+		return "k_EResultInvalidLoginAuthCode";
+	case k_EResultAccountLogonDeniedNoMail:
+		return "k_EResultAccountLogonDeniedNoMail";
+	case k_EResultHardwareNotCapableOfIPT:
+		return "k_EResultHardwareNotCapableOfIPT";
+	case k_EResultIPTInitError:
+		return "k_EResultIPTInitError";
+	case k_EResultParentalControlRestricted:
+		return "k_EResultParentalControlRestricted";
+	case k_EResultFacebookQueryError:
+		return "k_EResultFacebookQueryError";
+	case k_EResultExpiredLoginAuthCode:
+		return "k_EResultExpiredLoginAuthCode";
+	case k_EResultIPLoginRestrictionFailed:
+		return "k_EResultIPLoginRestrictionFailed";
+	case k_EResultAccountLockedDown:
+		return "k_EResultAccountLockedDown";
+	case k_EResultAccountLogonDeniedVerifiedEmailRequired:
+		return "k_EResultAccountLogonDeniedVerifiedEmailRequired";
+	case k_EResultNoMatchingURL:
+		return "k_EResultNoMatchingURL";
+	case k_EResultBadResponse:
+		return "k_EResultBadResponse";
+	case k_EResultRequirePasswordReEntry:
+		return "k_EResultRequirePasswordReEntry";
+	case k_EResultValueOutOfRange:
+		return "k_EResultValueOutOfRange";
+	case k_EResultUnexpectedError:
+		return "k_EResultUnexpectedError";
+	case k_EResultDisabled:
+		return "k_EResultDisabled";
+	case k_EResultInvalidCEGSubmission:
+		return "k_EResultInvalidCEGSubmission";
+	case k_EResultRestrictedDevice:
+		return "k_EResultRestrictedDevice";
+	case k_EResultRegionLocked:
+		return "k_EResultRegionLocked";
+	case k_EResultRateLimitExceeded:
+		return "k_EResultRateLimitExceeded";
+	case k_EResultAccountLoginDeniedNeedTwoFactor:
+		return "k_EResultAccountLoginDeniedNeedTwoFactor";
+	case k_EResultItemDeleted:
+		return "k_EResultItemDeleted";
+	case k_EResultAccountLoginDeniedThrottle:
+		return "k_EResultAccountLoginDeniedThrottle";
+	case k_EResultTwoFactorCodeMismatch:
+		return "k_EResultTwoFactorCodeMismatch";
+	case k_EResultTwoFactorActivationCodeMismatch:
+		return "k_EResultTwoFactorActivationCodeMismatch";
+	case k_EResultAccountAssociatedToMultiplePartners:
+		return "k_EResultAccountAssociatedToMultiplePartners";
+	case k_EResultNotModified:
+		return "k_EResultNotModified";
+	case k_EResultNoMobileDevice:
+		return "k_EResultNoMobileDevice";
+	case k_EResultTimeNotSynced:
+		return "k_EResultTimeNotSynced";
+	case k_EResultSmsCodeFailed:
+		return "k_EResultSmsCodeFailed";
+	case k_EResultAccountLimitExceeded:
+		return "k_EResultAccountLimitExceeded";
+	case k_EResultAccountActivityLimitExceeded:
+		return "k_EResultAccountActivityLimitExceeded";
+	case k_EResultPhoneActivityLimitExceeded:
+		return "k_EResultPhoneActivityLimitExceeded";
+	case k_EResultRefundToWallet:
+		return "k_EResultRefundToWallet";
+	case k_EResultEmailSendFailure:
+		return "k_EResultEmailSendFailure";
+	case k_EResultNotSettled:
+		return "k_EResultNotSettled";
+	case k_EResultNeedCaptcha:
+		return "k_EResultNeedCaptcha";
+	case k_EResultGSLTDenied:
+		return "k_EResultGSLTDenied";
+	case k_EResultGSOwnerDenied:
+		return "k_EResultGSOwnerDenied";
+	case k_EResultInvalidItemType:
+		return "k_EResultInvalidItemType";
+	case k_EResultIPBanned:
+		return "k_EResultIPBanned";
+	case k_EResultGSLTExpired:
+		return "k_EResultGSLTExpired";
+	case k_EResultInsufficientFunds:
+		return "k_EResultInsufficientFunds";
+	case k_EResultTooManyPending:
+		return "k_EResultTooManyPending";
+	case k_EResultNoSiteLicensesFound:
+		return "k_EResultNoSiteLicensesFound";
+	case k_EResultWGNetworkSendExceeded:
+		return "k_EResultWGNetworkSendExceeded";
+	case k_EResultAccountNotFriends:
+		return "k_EResultAccountNotFriends";
+	case k_EResultLimitedUserAccount:
+		return "k_EResultLimitedUserAccount";
+	case k_EResultCantRemoveItem:
+		return "k_EResultCantRemoveItem";
+	case k_EResultAccountDeleted:
+		return "k_EResultAccountDeleted";
+	case k_EResultExistingUserCancelledLicense:
+		return "k_EResultExistingUserCancelledLicense";
+	case k_EResultCommunityCooldown:
+		return "k_EResultCommunityCooldown";
+	case k_EResultNoLauncherSpecified:
+		return "k_EResultNoLauncherSpecified";
+	case k_EResultMustAgreeToSSA:
+		return "k_EResultMustAgreeToSSA";
+	case k_EResultLauncherMigrated:
+		return "k_EResultLauncherMigrated";
+	case k_EResultSteamRealmMismatch:
+		return "k_EResultSteamRealmMismatch";
+	case k_EResultInvalidSignature:
+		return "k_EResultInvalidSignature";
+	case k_EResultParseFailure:
+		return "k_EResultParseFailure";
+	case k_EResultNoVerifiedPhone:
+		return "k_EResultNoVerifiedPhone";
+	case k_EResultInsufficientBattery:
+		return "k_EResultInsufficientBattery";
+	case k_EResultChargerRequired:
+		return "k_EResultChargerRequired";
+	case k_EResultCachedCredentialInvalid:
+		return "k_EResultCachedCredentialInvalid";
+	case K_EResultPhoneNumberIsVOIP:
+		return "k_EResultPhoneNumberIsVOIP"; // using lower-case k for consistency
+	}
+}
+
+const wchar_t *UTIL_RD_CommaNumber( int64_t num )
+{
+	static wchar_t s_wszBuf[16][28];
+	static int s_iSlot = 0;
+
+	// Special case: can't negate this number.
+	if ( num == INT64_MIN )
+	{
+		return L"-9,223,372,036,854,775,808";
+	}
+
+	// Special case 2:
+	if ( num == 0 )
+	{
+		return L"0";
+	}
+
+	wchar_t *pBuf = &s_wszBuf[s_iSlot][27];
+	*pBuf-- = L'\0';
+
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_wszBuf );
+
+	bool bNegative = num < 0;
+	if ( bNegative )
+	{
+		num = -num;
+	}
+
+	for ( int64_t next = num / 1000ll; next; num = next, next = next / 1000ll )
+	{
+		*pBuf-- = L'0' + ( num % 10 );
+		*pBuf-- = L'0' + ( ( num / 10 ) % 10 );
+		*pBuf-- = L'0' + ( ( num / 100 ) % 10 );
+		*pBuf-- = L',';
+	}
+
+	while ( num )
+	{
+		*pBuf-- = L'0' + ( num % 10 );
+		num /= 10;
+	}
+
+	if ( bNegative )
+	{
+		*pBuf = L'-';
+	}
+	else
+	{
+		pBuf++;
+	}
+
+	return pBuf;
 }

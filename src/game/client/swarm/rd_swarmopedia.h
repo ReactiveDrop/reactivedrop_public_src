@@ -1,98 +1,192 @@
-#ifndef RD_SWARMOPEDIA_H
-#define RD_SWARMOPEDIA_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#include "gameui/swarm/basemodframe.h"
-#include "basemodel_panel.h"
+#include "steam/steam_api.h"
 
-class CNB_Button;
-class CNB_Header_Footer;
-
-namespace vgui
+namespace RD_Swarmopedia
 {
-	class Button;
-}
+	struct Alien;
+	struct Requirement;
+	struct Ability;
+	struct GlobalStat;
+	struct Display;
+	struct Model;
+	struct Content;
 
-namespace BaseModUI
-{
-	class GenericPanelList;
-
-	class Swarmopedia_Model_Panel : public CBaseModelPanel
+	struct Helpers
 	{
-		DECLARE_CLASS_SIMPLE( Swarmopedia_Model_Panel, CBaseModelPanel );
+		Helpers() = delete;
 
-	public:
-		Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName );
-		virtual ~Swarmopedia_Model_Panel();
-
-		void ApplyConfig( KeyValues *pKV );
-		virtual void OnPaint3D();
-
-	protected:
-		CUtlVector<MDLData_t> m_Models;
+		template<typename T>
+		static T *ReadFromFile( const char *, KeyValues * );
+		template<typename T>
+		static void CopyAddVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
+		template<typename T>
+		static void CopyVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
+		template<typename T>
+		static void AddMerge( CUtlVectorAutoPurge<T *> &, const char *, KeyValues * );
+		template<typename T>
+		static void AddMerge( CUtlVectorAutoPurge<T *> &, T * );
+		template<typename T>
+		static void CopyUniqueVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
 	};
 
-	class Swarmopedia : public CBaseModFrame
+	struct Collection
 	{
-		DECLARE_CLASS_SIMPLE( Swarmopedia, CBaseModFrame );
+		Collection() = default;
+		Collection( const Collection &copy );
 
-	public:
-		Swarmopedia( vgui::Panel *parent, const char *panelName );
-		virtual ~Swarmopedia();
+		CUtlVectorAutoPurge<Alien *> Aliens{};
 
-		void Clear();
-		void LoadAllAliens();
-		void LoadAliens( KeyValues *pKV );
-		void SetSelectedAlien( int iSelection );
-		void UpdateFooter();
+		void ReadFromFiles();
+	private:
+		friend struct Helpers;
+		static void ReadHelper( const char *, KeyValues *, void * );
+		void ReadFromFile( const char *, KeyValues * );
+	};
 
-		virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-		virtual void PerformLayout();
-		virtual void OnOpen();
-		virtual void OnCommand( const char *command );
-		virtual void OnKeyCodePressed( vgui::KeyCode code );
+	struct Alien
+	{
+		Alien() = default;
+		Alien( const Alien &copy );
 
-		struct Alien_t
+		CUtlString ID{};
+		CUtlString Name{};
+		CUtlString Icon{};
+		CUtlVectorAutoPurge<Requirement *> Requirements{};
+		CUtlVectorAutoPurge<GlobalStat *> GlobalStats{};
+		CUtlVectorAutoPurge<Display *> Display{};
+		CUtlVectorAutoPurge<Ability *> Abilities{};
+		CUtlVectorAutoPurge<Content *> Content{};
+		CUtlVector<PublishedFileId_t> Sources{};
+
+		float GetOverallRequirementProgress() const;
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Alien * ) const;
+		void Merge( const Alien * );
+	};
+
+	struct Requirement
+	{
+		Requirement() = default;
+		Requirement( const Requirement &copy );
+
+		enum class Type_t
 		{
-			Alien_t( Swarmopedia *pSwarmopedia, KeyValues *pKV );
-			~Alien_t();
+			SteamStat,
+		} Type{ Type_t::SteamStat };
 
-			void Merge( Swarmopedia *pSwarmopedia, KeyValues *pKV );
+		CUtlString Caption{};
+		CUtlStringList StatNames{};
+		int MinValue{ 0 };
 
-			struct AppearsIn_t
+		float GetProgress() const;
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Requirement * ) const;
+		void Merge( const Requirement * );
+	};
+
+	struct Ability
+	{
+		Ability() = default;
+		Ability( const Ability &copy );
+
+		CUtlString Caption{};
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Ability * ) const;
+		void Merge( const Ability * );
+	};
+
+	struct GlobalStat
+	{
+		GlobalStat() = default;
+		GlobalStat( const GlobalStat &copy );
+
+		CUtlString StatName{};
+		CUtlString Caption{};
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const GlobalStat * ) const;
+		void Merge( const GlobalStat * );
+	};
+
+	struct Display
+	{
+		Display() = default;
+		Display( const Display &copy );
+
+		CUtlString Caption{};
+		CUtlVectorAutoPurge<Model *> Models{};
+		MaterialLightingState_t LightingState
+		{
 			{
-				AppearsIn_t( KeyValues *pKV );
-
-				CUtlString m_szCampaign;
-				CUtlString m_szMap;
-				CUtlString m_szChallenge;
-				int m_iMinDifficulty;
-				int m_iMaxDifficulty;
-				bool m_bOnslaughtOnly;
-			};
-
-			CUtlString m_szID;
-			CUtlString m_szName;
-			CUtlStringList m_Abilities;
-			CUtlVector<Swarmopedia_Model_Panel *> m_DisplayPanel;
-			CUtlStringList m_DisplayCaption;
-			CUtlVector<AppearsIn_t> m_AppearsIn;
-			CUtlStringList m_Paragraphs;
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+				{ 1.0f, 1.0f, 1.0f },
+			},
+			{ 0.0f, 0.0f, 0.0f },
+			0,
+			{},
 		};
 
-		CNB_Header_Footer *m_pHeaderFooter;
-		CNB_Button *m_pModelCaption;
-		vgui::Label *m_pLblName;
-		vgui::Label *m_pLblAbilities;
-		GenericPanelList *m_pGplAliens;
-		GenericPanelList *m_pGplParagraphs;
-		GenericPanelList *m_pGplAppears;
-		CUtlVectorAutoPurge<Alien_t *> m_Aliens;
-		int m_iSelectedAlien;
-		int m_iSelectedModel;
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Display * ) const;
+		void Merge( const Display * );
+	};
+
+	struct Model
+	{
+		Model() = default;
+		Model( const Model &copy );
+
+		CUtlString ModelName{};
+		CUtlString Animation{};
+		int Skin{ -1 };
+		Color Color{ 255, 255, 255, 255 };
+		float Pitch{ 0.0f }, Yaw{ 0.0f }, Roll{ 0.0f };
+		float X{ 0.0f }, Y{ 0.0f }, Z{ 0.0f };
+		float Scale{ 1.0f };
+		CUtlMap<int, int> BodyGroups{ DefLessFunc( int ) };
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Model * ) const;
+		void Merge( const Model * );
+	};
+
+	struct Content
+	{
+		Content() = default;
+		Content( const Content &copy );
+
+		enum class Type_t
+		{
+			Paragraph,
+		} Type{ Type_t::Paragraph };
+
+		CUtlString Text{};
+		Color Color{ 83, 148, 192, 255 };
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Content * ) const;
+		void Merge( const Content * );
 	};
 }
-
-#endif // RD_SWARMOPEDIA_H

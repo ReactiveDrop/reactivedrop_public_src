@@ -6,9 +6,6 @@
 
 // An objective that counts down to zero, blowing up the level and failing the mission when it hits zero
 //   can be triggered to cancel the countdown
-
-class CBaseTrigger;
-
 class CASW_Objective_Countdown : public CASW_Objective
 {
 public:
@@ -27,7 +24,15 @@ public:
 	void InputStartCountdown( inputdata_t &inputdata );
 	void InputCancelCountdown( inputdata_t &inputdata );
 
-	CNetworkVar(float, m_fCountdownFinishTime);
+	CNetworkVar( float, m_fCountdownFinishTime );
+	CNetworkVar( string_t, m_szWarningText );
+	CNetworkVar( string_t, m_szCaptionText );
+	CNetworkVar( string_t, m_szSound60 );
+	CNetworkVar( string_t, m_szSound30 );
+	CNetworkVar( string_t, m_szSound10 );
+	CNetworkVar( string_t, m_szSoundFail );
+	CNetworkVar( string_t, m_szSoundFailLF );
+	CNetworkColor32( m_FailColor );
 	float m_fCountdownLength;
 	bool m_bCountdownStarted;
 

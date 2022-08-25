@@ -2,7 +2,7 @@
 #define _INCLUDED_C_ASW_ALIEN_H
 
 #include "asw_alien_shared.h"
-#include "c_ai_basenpc.h"
+#include "c_asw_inhabitable_npc.h"
 #include "iasw_client_aim_target.h"
 #include "asw_shareddefs.h"
 #include "glow_outline_effect.h"
@@ -10,10 +10,10 @@
 
 class CNewParticleEffect;
 
-class C_ASW_Alien : public C_AI_BaseNPC, public IASW_Client_Aim_Target
+class C_ASW_Alien : public C_ASW_Inhabitable_NPC, public IASW_Client_Aim_Target
 {
 public:
-	DECLARE_CLASS( C_ASW_Alien, C_AI_BaseNPC );
+	DECLARE_CLASS( C_ASW_Alien, C_ASW_Inhabitable_NPC );
 	DECLARE_CLIENTCLASS();
 	#include "asw_alien_shared_classmembers.h"
 
@@ -94,11 +94,16 @@ public:
 
 	virtual float	GetInterpolationAmount( int flags );
 
+	virtual float MaxSpeed();
+	virtual float GetBasePlayerYawRate();
+	float m_flAlienWalkSpeed;
+	bool m_bInhabitedMovementAllowed;
+
 	// Glows are enabled when the sniper scope is used
 	CGlowObject m_GlowObject;
 	CMotionBlurObject m_MotionBlurObject;
 private:
-	C_ASW_Alien( const C_ASW_Alien & ); // not defined, not accessible
+	C_ASW_Alien( const C_ASW_Alien & ) = delete; // not defined, not accessible
 	static float sm_flLastFootstepTime;
 };
 

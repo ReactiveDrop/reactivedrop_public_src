@@ -1,0 +1,146 @@
+"Resource/UI/HudKills.res"
+{	
+	"ScoresLabel1"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel1"
+		"xpos"			"0"
+		"ypos"			"10"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel2"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel2"
+		"xpos"			"0"
+		"ypos"			"30"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel3"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel3"
+		"xpos"			"0"
+		"ypos"			"50"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel4"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel4"
+		"xpos"			"0"
+		"ypos"			"70"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel5"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel5"
+		"xpos"			"0"
+		"ypos"			"90"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel6"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel6"
+		"xpos"			"0"
+		"ypos"			"110"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel7"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel7"
+		"xpos"			"0"
+		"ypos"			"130"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"ScoresLabel8"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ScoresLabel8"
+		"xpos"			"0"
+		"ypos"			"150"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		""
+		"textAlignment"		"east"
+		"font" "DefaultSmall"
+		"FgColor_override" "255 255 255 255"
+	}
+
+	"KillsLabel"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"KillsLabel"
+		"xpos"			"0"
+		"ypos"			"170"
+		"wide"			"80"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"labelText"		"0 Total Kills"
+		"textAlignment"		"east"
+		"font" "DefaultMedium"
+		"FgColor_override" "255 255 255 255"
+	}
+}

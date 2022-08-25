@@ -9,8 +9,8 @@
 
 extern bool MarineBusy();
 
-class CASW_Player;
 class C_ASW_Player;
+class C_ASW_Inhabitable_NPC;
 class IASW_Client_Aim_Target;
 
 // storing autoaim data for debug visualisation
@@ -24,8 +24,8 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	Vector &HitLocation, IASW_Client_Aim_Target* &pAutoAimEnt, bool bPreferFlatAiming=false, bool bIgnoreCursorPosition = false, float flForwardMove = 0.0f, float flSideMove = 0.0f);
 void RoundToPixel(Vector &vecPos);
-void SmoothTurningYaw(CASW_Player *pPlayer, float &yaw);
-void SmoothControllerYaw(CASW_Player *pPlayer, float &yaw);
+void SmoothTurningYaw(C_ASW_Player *pPlayer, float &yaw);
+void SmoothControllerYaw(C_ASW_Player *pPlayer, float &yaw);
 
 bool PlayerDriving();
 void ASW_UpdateControllerCodes();
@@ -50,6 +50,7 @@ public:
 
 	virtual void		ASW_GetWindowCenter( int&x, int& y )	{ GetWindowCenter(x, y); }
 	virtual	void		GetFullscreenMousePos( int *mx, int *my, int *unclampedx = NULL, int *unclampedy = NULL );
+	virtual	void		SetFullscreenMousePos( int mx, int my );
 	virtual void		GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclampedx = 0, int *unclampedy = 0 );
 	virtual void		GetSimulatedFullscreenMousePosFromController( int *mx, int *my, float fControllerPitch, float fControllerYaw, float flForwardFraction = 0.4f );
 	void				TurnTowardMouse(QAngle& viewangles, CUserCmd *cmd);	// asw	
@@ -65,8 +66,9 @@ public:
 	virtual void		JoyStickApplyMovement( CUserCmd *cmd, float joyForwardMove, float joySideMove );
 
 	int m_LastMouseX, m_LastMouseY;
-	EHANDLE m_hLastMarine;
-	bool m_bDontTurnMarine;	// set when changing marines, so we don't turn them until the cursor moves
+	float m_flJoypadStartMouseX, m_flJoypadStartMouseY;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
+	bool m_bDontTurnNPC;	// set when changing marines, so we don't turn them until the cursor moves
 	float m_fJoypadPitch;		// up/down on analogue stick
 	float m_fJoypadYaw;			// left/right on analogue stick
 	float m_fJoypadFacingYaw;	// desired yaw for our marine

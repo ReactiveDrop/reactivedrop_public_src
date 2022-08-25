@@ -161,9 +161,9 @@ void CASW_Use_Area::InputToggle( inputdata_t &inputdata )
 	m_bUseAreaEnabled = !(m_bUseAreaEnabled.Get());
 }
 
-bool CASW_Use_Area::CheckHeldObject( CASW_Marine *pMarine )
+bool CASW_Use_Area::CheckHeldObject( CASW_Inhabitable_NPC *pNPC )
 {
-	if ( !pMarine )
+	if ( !pNPC )
 	{
 		return false;
 	}
@@ -174,7 +174,7 @@ bool CASW_Use_Area::CheckHeldObject( CASW_Marine *pMarine )
 		return true;
 	}
 
-	CRD_Weapon_Generic_Object *pObject = dynamic_cast<CRD_Weapon_Generic_Object *>( pMarine->GetActiveASWWeapon() );
+	CRD_Weapon_Generic_Object *pObject = dynamic_cast<CRD_Weapon_Generic_Object *>( pNPC->GetActiveASWWeapon() );
 	if ( !pObject )
 	{
 		return false;

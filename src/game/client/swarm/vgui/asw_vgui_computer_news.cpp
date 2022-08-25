@@ -304,38 +304,40 @@ void CASW_VGUI_Computer_News::ApplySettingAndFadeLabelIn(vgui::Label* pLabel)
 
 
 void CASW_VGUI_Computer_News::OnThink()
-{	
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
+{
+	int w, t;
+	GetSize( w, t );
 
-	SetPos(0,0);
+	SetPos( 0, 0 );
 
 	//const float full_width = 0.9 * w;
 	const float left_edge = 0.05f * w;
-	float cursor_y = 0.3f * t;	
-	for (int i=0;i<4;i++)
+	float cursor_y = 0.3f * t;
+	for ( int i = 0; i < 4; i++ )
 	{
 		// todo: resize these based on their content
-		m_pBody[i]->SetPos(left_edge, cursor_y);
+		m_pBody[i]->SetPos( left_edge, cursor_y );
 		//m_pBody[i]->SetSize(full_width, 0.7f * t - ypos);
 		int cw, ch;
-		m_pBody[i]->GetTextImage()->GetContentSize(cw, ch);
-		m_pBody[i]->SetTall(ch);
+		m_pBody[i]->GetTextImage()->GetContentSize( cw, ch );
+		m_pBody[i]->SetTall( ch );
 		cursor_y += ch + 0.01f * t;
 	}
 
+	int x, y;
+	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
 	m_bMouseOverBackButton = false;
-	m_bMouseOverBackButton = m_pBackButton->IsCursorOver();
+	m_bMouseOverBackButton = m_pBackButton->IsWithin( x, y );
 
-	if (m_bMouseOverBackButton)
+	if ( m_bMouseOverBackButton )
 	{
-		m_pBackButton->SetBgColor(Color(255,255,255,255));
-		m_pBackButton->SetFgColor(Color(0,0,0,255));
+		m_pBackButton->SetBgColor( Color( 255, 255, 255, 255 ) );
+		m_pBackButton->SetFgColor( Color( 0, 0, 0, 255 ) );
 	}
 	else
 	{
-		m_pBackButton->SetBgColor(Color(19,20,40,255));
-		m_pBackButton->SetFgColor(Color(255,255,255,255));
+		m_pBackButton->SetBgColor( Color( 19, 20, 40, 255 ) );
+		m_pBackButton->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
 
 	m_fLastThinkTime = gpGlobals->curtime;

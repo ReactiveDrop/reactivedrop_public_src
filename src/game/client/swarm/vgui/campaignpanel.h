@@ -9,7 +9,6 @@
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include "asw_shareddefs.h"
-#include "asw_campaign_info.h"
 
 namespace vgui
 {
@@ -20,7 +19,6 @@ namespace vgui
 };
 
 class ObjectiveMapMarkPanel;
-class CASW_Campaign_Info;
 class C_ASW_Campaign_Save;
 class CampaignMapLocation;
 //class ChatEchoPanel;
@@ -33,6 +31,7 @@ class CNB_Button;
 class CNB_Commander_List;
 class CNB_Campaign_Mission_Details;
 class CNB_Vote_Panel;
+struct RD_Campaign_t;
 
 #define ASW_NUM_CAMPAIGN_LABELS 16
 #define ASW_CAMPAIGN_PANEL_PLAYERS 6
@@ -72,19 +71,20 @@ public:
 	void PositionSoftLines();
 	void PositionLocationDots();
 
-	CASW_Campaign_Info* GetCampaignInfo();
-	C_ASW_Campaign_Save* GetCampaignSave();
+	const RD_Campaign_t *GetCampaignInfo();
+	C_ASW_Campaign_Save *GetCampaignSave();
 
 	CNB_Header_Footer* m_pHeaderFooter;
 
 	vgui::Label *m_pLeaderLabel;
 	CNB_Button *m_pLaunchButton;
 	CNB_Button *m_pFriendsButton;
+	CNB_Button *m_pChangeMissionButton;
 	CNB_Commander_List *m_pCommanderList;
 	CNB_Campaign_Mission_Details *m_pMissionDetails;
 
 	vgui::ImagePanel* m_pBackDrop;
-	vgui::ImagePanel* m_pGalacticMap;		
+	vgui::ImagePanel* m_pGalacticMap;
 	vgui::ImagePanel* m_pGalaxyLines;
 	vgui::ImagePanel* m_pSurfaceMap;
 	vgui::ImagePanel* m_pSurfaceMapLayer[3];

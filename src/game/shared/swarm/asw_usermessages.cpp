@@ -52,7 +52,6 @@ void RegisterUserMessages( void )
 	usermessages->Register( "ASWMapLine", 10 ); // send 2 bytes payload
 	usermessages->Register( "ASWBlur", 2 ); // send 2 bytes payload
 	usermessages->Register( "ASWCampaignCompleted", 2 );
-	usermessages->Register( "ASWReconnectAfterOutro", 0 );	
 	usermessages->Register( "ASWUTracer", -1 );
 	usermessages->Register( "ASWUTracerless", -1 );
 	usermessages->Register( "ASWUTracerDual", -1 );
@@ -97,4 +96,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "SavedConvar", -1 );
 	usermessages->Register( "RDPlayerPromoted", 1 );
 	usermessages->Register( "RDLeaderboardReady", 0 );
+	usermessages->Register( "RDAlienKillStat", 2 );
 }

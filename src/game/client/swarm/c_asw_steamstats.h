@@ -8,7 +8,7 @@
 
 struct DifficultyStats_t
 {
-	bool FetchDifficultyStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, int iDifficulty );
+	bool FetchDifficultyStats( CSteamID playerSteamID, int iDifficulty );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iGamesTotal;
@@ -25,7 +25,7 @@ struct DifficultyStats_t
 
 struct MissionStats_t
 {
-	bool FetchMissionStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID );
+	bool FetchMissionStats( CSteamID playerSteamID );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iGamesTotal;
@@ -46,7 +46,7 @@ struct MissionStats_t
 
 struct WeaponStats_t
 {
-	bool FetchWeaponStats( CSteamAPIContext * pSteamContext, CSteamID playerSteamID, const char *szClassName );
+	bool FetchWeaponStats( CSteamID playerSteamID, const char *szClassName );
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	int32 m_iWeaponIndex;
@@ -140,11 +140,12 @@ public:
 	void PrepStatsForSend( CASW_Player *pPlayer ); 
 
 	bool IsOfficialCampaign();
+	bool IsLBWhitelisted( const char *name );
 
 	// Send leaderboard entries to Steam
 	void PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial );
 
-	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
+	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0, ELeaderboardSortMethod *pESortMethod = NULL, ELeaderboardDisplayType *pEDisplayType = NULL );
 	void DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
 
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
@@ -158,6 +159,7 @@ private:
 	int32 m_iShotsFired;
 	int32 m_iShotsHit;
 	int32 m_iAliensBurned;
+	int32 m_iBiomassIgnited;
 	int32 m_iHealing;
 	int32 m_iFastHacks;
 	int32 m_iGamesTotal;

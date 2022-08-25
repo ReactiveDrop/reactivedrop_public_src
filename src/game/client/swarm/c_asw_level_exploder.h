@@ -13,8 +13,9 @@ public:
 
 	virtual void ClientThink();
 	
-	static C_ASW_Level_Exploder *CreateClientsideLevelExploder();
+	static C_ASW_Level_Exploder *CreateClientsideLevelExploder( const CBaseHandle & hObj );
 
+	color32 m_FadeToColor;
 	bool m_bFlashed;
 	float m_fDieTime;
 };

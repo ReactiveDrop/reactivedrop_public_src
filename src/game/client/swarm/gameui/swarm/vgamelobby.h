@@ -56,7 +56,7 @@ public:
 	MESSAGE_FUNC( MsgChangeGameSettings, "ChangeGameSettings" );
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
-	STEAM_CALLBACK( GameLobby, Steam_OnPersonaStateChanged, PersonaStateChange_t, m_CallbackPersonaStateChanged );
+	STEAM_CALLBACK( GameLobby, Steam_OnPersonaStateChanged, PersonaStateChange_t );
 #endif
 
 protected:

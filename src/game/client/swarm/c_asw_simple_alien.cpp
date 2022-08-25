@@ -20,6 +20,7 @@ extern ConVar asw_drone_gib_time_min;
 extern ConVar asw_drone_gib_time_max;
 extern ConVar asw_directional_shadows;
 extern ConVar asw_alien_footstep_interval;
+extern ConVar glow_outline_color_alien;
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Simple_Alien, DT_ASW_Simple_Alien, CASW_Simple_Alien)
 
@@ -33,7 +34,7 @@ C_ASW_Simple_Alien::C_ASW_Simple_Alien()
 	m_nLastSetModel = 0;
 	m_vecLastRenderedPos = vec3_origin;
 
-	m_GlowObject.SetColor( Vector( 0.3f, 0.6f, 0.1f ) );
+	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );

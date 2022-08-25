@@ -8,17 +8,16 @@
 #include "ai_blended_movement.h"
 #include "util_shared.h"
 #include "ai_speech.h"
-//typedef CAI_BlendingHost< CAI_BehaviorHost<CASW_BlendedAlien> > CAI_DroneBase;
 
 class CASW_Door;
 class CASW_Drone_Movement;
 class CASW_Parasite;
 
-class CASW_Harvester : public CAI_ExpresserHostWithData<CASW_BlendedAlien, CAI_Expresser>
+class CASW_Harvester : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CASW_Harvester, CAI_ExpresserHostWithData  );
+	DECLARE_CLASS( CASW_Harvester, CASW_Alien );
 	DECLARE_DATADESC();
 	CASW_Harvester( void );
 	virtual ~CASW_Harvester( void );
@@ -72,6 +71,7 @@ public:
 	
 	virtual bool IsHeavyDamage( const CTakeDamageInfo &info );
 	virtual bool CanBePushedAway();
+	virtual void SetInhabitedAlienAttackSchedule();
 
 	float m_fLastLayTime;		// last time we laid a critter
 	int m_iCrittersAlive;		// how many spawned critters we currently have
@@ -81,20 +81,22 @@ public:
 	static float s_fNextSpawnSoundTime;
 	static float s_fNextPainSoundTime;
 
+	enum
+	{
+		SCHED_ASW_HARVESTER_LAY_CRITTER = BaseClass::NEXT_SCHEDULE,
+		SCHED_ASW_HARVESTER_LAY_CRITTER_INHABITED,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_LAY_CRITTER = BaseClass::NEXT_TASK,
+		NEXT_TASK,
+	};
+
 private:
 	DEFINE_CUSTOM_AI;
 };
 
-enum
-{
-	SCHED_ASW_HARVESTER_LAY_CRITTER = LAST_ASW_ALIEN_SHARED_SCHEDULE,	
-	LAST_ASW_HARVESTER_SHARED_SCHEDULE,
-};
-
-enum
-{
-	TASK_LAY_CRITTER = LAST_ASW_ALIEN_SHARED_TASK,
-	LAST_ASW_HARVESTER_SHARED_TASK,
-};
 
 #endif	//_INCLUDED_ASW_HARVESTER_H

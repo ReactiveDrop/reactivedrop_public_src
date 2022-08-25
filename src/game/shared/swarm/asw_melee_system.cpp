@@ -84,6 +84,7 @@ mstudioevent_for_client_server_t *GetEventIndexForSequence( mstudioseqdesc_t &se
 void SetEventIndexForSequence( mstudioseqdesc_t &seqdesc );
 
 int CASW_Melee_System::s_nRollAttackID = -1;
+int CASW_Melee_System::s_nComboFinishAttackID = -1;
 int CASW_Melee_System::s_nKnockdownForwardAttackID = -1;
 int CASW_Melee_System::s_nKnockdownBackwardAttackID = -1;
 
@@ -126,6 +127,7 @@ void CASW_Melee_System::LoadMeleeAttacks()
 	LinkUpCombos();
 
 	CASW_Melee_System::s_nRollAttackID = GetMeleeAttackByName( "Roll" ) ? GetMeleeAttackByName( "Roll" )->m_nAttackID : -1;
+	CASW_Melee_System::s_nComboFinishAttackID = GetMeleeAttackByName( "melee_combo_2c" ) ? GetMeleeAttackByName( "melee_combo_2c" )->m_nAttackID : -1;
 	CASW_Melee_System::s_nKnockdownForwardAttackID = GetMeleeAttackByName( "KnockdownForward" ) ? GetMeleeAttackByName( "KnockdownForward" )->m_nAttackID : -1;
 	CASW_Melee_System::s_nKnockdownBackwardAttackID = GetMeleeAttackByName( "KnockdownBackward" ) ? GetMeleeAttackByName( "KnockdownBackward" )->m_nAttackID : -1;
 }
@@ -239,6 +241,13 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 		ValidateMeleeAttacks( pMarine );
 		m_bAttacksValidated = true;
 	}
+
+#ifdef GAME_DLL
+	if ( pASWMove->m_iForcedAction != pMarine->m_iForcedActionRequest && pMarine->m_iForcedActionRequestTick < gpGlobals->tickcount - TIME_TO_TICKS( 2 ) )
+	{
+		Warning( "Marine %s %s has not ack'd forced action request for %d ticks. Get a programmer!\n", pMarine->GetDebugName(), pMarine->IsInhabited() ? pMarine->GetCommander()->GetASWNetworkID() : "(uninhabited)", gpGlobals->tickcount - pMarine->m_iForcedActionRequestTick );
+	}
+#endif
 
 	//if ( pMarine->IsMeleeInhibited() )
 	//{
@@ -380,6 +389,13 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 					}
 					break;
 				}
+				default:
+				{
+#ifdef GAME_DLL
+					Warning( "Unhandled forced action from %s %s: %d; clearing, get a programmer!\n", pMarine->GetDebugName(), pMarine->IsInhabited() ? pMarine->GetCommander()->GetASWNetworkID() : "(uninhabited)", pASWMove->m_iForcedAction );
+#endif
+					break;
+				}
 			}
 			if ( pAttack )
 			{
@@ -424,7 +440,10 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 				}
 			}
 		}
-		pMarine->ClearForcedActionRequest();
+		if ( pASWMove->m_iForcedAction == pMarine->m_iForcedActionRequest )
+		{
+			pMarine->ClearForcedActionRequest();
+		}
 	}
 	else if ( gpGlobals->curtime >= pMarine->m_fNextMeleeTime )
 	{
@@ -553,9 +572,9 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	}
 	else
 	{
-		float flMoveAxis = pPlayer && pMarine->IsInhabited() && pPlayer->GetASWControls() != 1 ? pMarine->ASWEyeAngles()[YAW] : pMoveData->m_vecMovementAxis[YAW];
+		float flMoveAxis = pPlayer && pMarine->IsInhabited() && pPlayer->GetASWControls() != ASWC_TOPDOWN ? pMarine->ASWEyeAngles()[YAW] : pMoveData->m_vecMovementAxis[YAW];
 		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + flMoveAxis;	// assumes 45 degree cam!
-		pMarine->m_bFaceMeleeYaw = !pPlayer || !pMarine->IsInhabited() || pPlayer->GetASWControls() == 1;
+		pMarine->m_bFaceMeleeYaw = !pPlayer || !pMarine->IsInhabited() || pPlayer->GetASWControls() == ASWC_TOPDOWN;
 	}
 
 	// see if we just dodged any ranger shots
@@ -1582,7 +1601,7 @@ void cc_asw_melee_list_dps_f()
 		return;
 	}
 
-	CASW_Marine *pMarine = pPlayer->GetMarine();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	CStudioHdr *pStudioHdr = pMarine? pMarine->GetModelPtr() : NULL;
 
 	if ( !pMarine || !pStudioHdr )

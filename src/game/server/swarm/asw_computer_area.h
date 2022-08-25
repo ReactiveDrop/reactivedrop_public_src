@@ -45,7 +45,8 @@ public:
 	CNetworkVar( float, m_fDownloadTime );
 	CNetworkVar( bool,  m_bIsLocked );
 	CNetworkVar( bool, m_bWaitingForInput );
-	EHANDLE m_hComputerHack;
+	CNetworkVar( bool, m_bLoggedIn );
+	CHandle<CASW_Hack_Computer> m_hComputerHack;
 
 	string_t		m_SecurityCam1Name;
 	string_t		m_SecurityCam2Name;
@@ -108,12 +109,12 @@ public:
 	int m_iNumEntriesPerTumbler;
 	float m_fMoveInterval;	
 	
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
-	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
-	virtual void MarineStartedUsing(CASW_Marine* pMarine);
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
-	virtual void UnlockFromHack(CASW_Marine* pMarine);
-	virtual void HackHalfway(CASW_Marine* pMarine);
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime);
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC );
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC );
+	virtual void UnlockFromHack( CASW_Marine *pMarine );
+	virtual void HackHalfway( CASW_Marine *pMarine );
 	virtual bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }
 
 	virtual int GetNumMenuOptions();

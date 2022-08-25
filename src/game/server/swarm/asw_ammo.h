@@ -15,7 +15,7 @@ public:
 
 	virtual void Spawn( void );
 	
-	virtual bool AllowedToPickup(CASW_Marine *pMarine);
+	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 	int GetAmmoType() { return m_iAmmoIndex; }
 	
 	static bool VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlayer );
@@ -39,7 +39,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	bool m_bAddSecondary;
 
@@ -56,7 +56,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_AUTOGUN; }
@@ -71,7 +71,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_SHOTGUN; }
@@ -91,7 +91,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	bool m_bAddSecondary;
 
@@ -108,7 +108,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_PISTOL; }
@@ -123,7 +123,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_PISTOL; }
@@ -138,7 +138,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_MINING_LASER; }
@@ -153,7 +153,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_RAILGUN; }
@@ -168,7 +168,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_CHAINSAW; }
@@ -183,7 +183,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_PDW; }

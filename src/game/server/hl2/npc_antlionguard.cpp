@@ -106,51 +106,6 @@ ConVar	sk_antlionguard_health( "sk_antlionguard_health", "500", FCVAR_CHEAT ); /
 int	g_interactionAntlionGuardFoundPhysicsObject = 0;	// We're moving to a physics object to shove it, don't all choose the same object
 int	g_interactionAntlionGuardShovedPhysicsObject = 0;	// We've punted an object, it is now clear to be chosen by others
 
-//==================================================
-// AntlionGuardSchedules
-//==================================================
-
-enum
-{
-	SCHED_ANTLIONGUARD_CHARGE = LAST_ASW_ALIEN_SHOVER_SHARED_SCHEDULE,
-	SCHED_ANTLIONGUARD_CHARGE_CRASH,
-	SCHED_ANTLIONGUARD_CHARGE_CANCEL,
-	SCHED_ANTLIONGUARD_PHYSICS_ATTACK,
-	SCHED_ANTLIONGUARD_PHYSICS_DAMAGE_HEAVY,
-	SCHED_ANTLIONGUARD_UNBURROW,
-	SCHED_ANTLIONGUARD_CHARGE_TARGET,
-	SCHED_ANTLIONGUARD_FIND_CHARGE_POSITION,
-	SCHED_ANTLIONGUARD_MELEE_ATTACK1,
-	SCHED_ANTLIONGUARD_SUMMON,
-	SCHED_ANTLIONGUARD_PATROL_RUN,
-	SCHED_ANTLIONGUARD_ROAR,
-	SCHED_ANTLIONGUARD_CHASE_ENEMY_TOLERANCE,
-	SCHED_FORCE_ANTLIONGUARD_PHYSICS_ATTACK,
-	SCHED_ANTLIONGUARD_CANT_ATTACK,
-	SCHED_ANTLIONGUARD_TAKE_COVER_FROM_ENEMY,
-	SCHED_ANTLIONGUARD_CHASE_ENEMY
-};
-
-
-//==================================================
-// AntlionGuardTasks
-//==================================================
-
-enum
-{
-	TASK_ANTLIONGUARD_CHARGE = LAST_ASW_ALIEN_SHOVER_SHARED_TASK,
-	TASK_ANTLIONGUARD_GET_PATH_TO_PHYSOBJECT,
-	TASK_ANTLIONGUARD_SHOVE_PHYSOBJECT,
-	TASK_ANTLIONGUARD_SUMMON,
-	TASK_ANTLIONGUARD_SET_FLINCH_ACTIVITY,
-	TASK_ANTLIONGUARD_GET_PATH_TO_CHARGE_POSITION,
-	TASK_ANTLIONGUARD_GET_PATH_TO_NEAREST_NODE,
-	TASK_ANTLIONGUARD_GET_CHASE_PATH_ENEMY_TOLERANCE,
-	TASK_ANTLIONGUARD_OPPORTUNITY_THROW,
-	TASK_ANTLIONGUARD_FIND_PHYSOBJECT,
-};
-
-
 enum
 {	
 	SQUAD_SLOT_ANTLIONGUARD_CHARGE = LAST_SHARED_SQUADSLOT,
@@ -228,9 +183,42 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	//==================================================
-	// AntlionGuardConditions
-	//==================================================
+	enum
+	{
+		SCHED_ANTLIONGUARD_CHARGE = BaseClass::NEXT_SCHEDULE,
+		SCHED_ANTLIONGUARD_CHARGE_CRASH,
+		SCHED_ANTLIONGUARD_CHARGE_CANCEL,
+		SCHED_ANTLIONGUARD_PHYSICS_ATTACK,
+		SCHED_ANTLIONGUARD_PHYSICS_DAMAGE_HEAVY,
+		SCHED_ANTLIONGUARD_UNBURROW,
+		SCHED_ANTLIONGUARD_CHARGE_TARGET,
+		SCHED_ANTLIONGUARD_FIND_CHARGE_POSITION,
+		SCHED_ANTLIONGUARD_MELEE_ATTACK1,
+		SCHED_ANTLIONGUARD_SUMMON,
+		SCHED_ANTLIONGUARD_PATROL_RUN,
+		SCHED_ANTLIONGUARD_ROAR,
+		SCHED_ANTLIONGUARD_CHASE_ENEMY_TOLERANCE,
+		SCHED_FORCE_ANTLIONGUARD_PHYSICS_ATTACK,
+		SCHED_ANTLIONGUARD_CANT_ATTACK,
+		SCHED_ANTLIONGUARD_TAKE_COVER_FROM_ENEMY,
+		SCHED_ANTLIONGUARD_CHASE_ENEMY,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_ANTLIONGUARD_CHARGE = BaseClass::NEXT_TASK,
+		TASK_ANTLIONGUARD_GET_PATH_TO_PHYSOBJECT,
+		TASK_ANTLIONGUARD_SHOVE_PHYSOBJECT,
+		TASK_ANTLIONGUARD_SUMMON,
+		TASK_ANTLIONGUARD_SET_FLINCH_ACTIVITY,
+		TASK_ANTLIONGUARD_GET_PATH_TO_CHARGE_POSITION,
+		TASK_ANTLIONGUARD_GET_PATH_TO_NEAREST_NODE,
+		TASK_ANTLIONGUARD_GET_CHASE_PATH_ENEMY_TOLERANCE,
+		TASK_ANTLIONGUARD_OPPORTUNITY_THROW,
+		TASK_ANTLIONGUARD_FIND_PHYSOBJECT,
+		NEXT_TASK,
+	};
 
 	enum
 	{
@@ -244,7 +232,11 @@ public:
 
 	CNPC_AntlionGuard( void );
 
+#ifdef INFESTED_DLL
+	Class_T Classify( void ) { return (Class_T)CLASS_ASW_ANTLIONGUARD; }
+#else
 	Class_T	Classify( void ) { return CLASS_ANTLION; }
+#endif
 	virtual int		GetSoundInterests( void ) { return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER|SOUND_DANGER); }
 	virtual bool	QueryHearSound( CSound *pSound );
 
@@ -1566,12 +1558,12 @@ void CNPC_AntlionGuard::Shove( void )
 
 	for ( int i = 0; i < traceFilter.m_nNumHits; i++ )
 	{
-		trace_t *tr = &traceFilter.m_HitTraces[i];
-		CBaseEntity *pHurt = tr->m_pEnt;
+		trace_t *pTR = &traceFilter.m_HitTraces[i];
+		CBaseEntity *pHurt = pTR->m_pEnt;
 
 		if ( pHurt )
 		{
-			Vector traceDir = ( tr->endpos - tr->startpos );
+			Vector traceDir = ( pTR->endpos - pTR->startpos );
 			VectorNormalize( traceDir );
 
 			// reactivedrop: knock down marines
@@ -1589,7 +1581,7 @@ void CNPC_AntlionGuard::Shove( void )
 
 			// Generate enough force to make a 75kg guy move away at 600 in/sec
 			Vector vecForce = traceDir * ImpulseScale( 75, 600 );
-			CTakeDamageInfo info( this, this, vecForce, tr->endpos, damage, DMG_CLUB );
+			CTakeDamageInfo info( this, this, vecForce, pTR->endpos, damage, DMG_CLUB );
 			pHurt->TakeDamage( info );
 		}
 	}

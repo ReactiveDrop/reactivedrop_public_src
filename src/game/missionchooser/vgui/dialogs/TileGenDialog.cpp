@@ -755,7 +755,7 @@ void CTileGenDialog::GenerateMission( const char *szMissionFile )
 
 		if ( tilegen_preprocess_mission.GetBool() )
 		{
-			m_pGenerationOptions->SaveToFile( g_pFullFileSystem, "preprocessed_mission.txt", "GAME" );
+			m_pGenerationOptions->SaveToFile( g_pFullFileSystem, "preprocessed_mission.txt", "MOD" );
 		}
 		
 		m_pLayoutSystem = new CLayoutSystem();
@@ -900,7 +900,7 @@ void CTileGenDialog::GenerateRoomThumbnails( bool bAddToPerforce )
 		pKV->AddSubKey( pkvEntry );
 	}
 
-	if ( !pKV->SaveToFile( g_pFullFileSystem, THUMBNAILS_FILE, "GAME" ) )
+	if ( !pKV->SaveToFile( g_pFullFileSystem, THUMBNAILS_FILE, "MOD" ) )
 	{
 		Msg( "Error: Couldn't save %s\n", THUMBNAILS_FILE );
 		pKV->deleteThis();

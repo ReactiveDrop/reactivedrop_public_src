@@ -49,6 +49,8 @@ ConVar ui_foundgames_spinner_time( "ui_foundgames_spinner_time", "1", FCVAR_DEVE
 ConVar ui_foundgames_update_time( "ui_foundgames_update_time", "1", FCVAR_DEVELOPMENTONLY );
 ConVar ui_foundgames_fake_content( "ui_foundgames_fake_content", "0", FCVAR_DEVELOPMENTONLY );
 ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPMENTONLY );
+ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
+ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
 
 void Demo_DisableButton( Button *pButton );
 
@@ -86,7 +88,7 @@ static char const * NoTeamGameMode( char const * szGameMode )
 
 bool BaseModUI::FoundGameListItem::Info::IsJoinable() const
 {
-	return mbInGame && mIsJoinable && HaveMap();
+	return mbInGame && mIsJoinable && !CompareMapVersion();
 }
 
 bool BaseModUI::FoundGameListItem::Info::IsDLC() const
@@ -99,13 +101,32 @@ bool BaseModUI::FoundGameListItem::Info::IsDLC() const
 
 bool BaseModUI::FoundGameListItem::Info::HaveMap() const
 {
+	return CompareMapVersion() != INT_MIN;
+}
+
+int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
+{
+	char szBSPName[MAX_PATH]{};
+	int iExpectedRevision = mpGameDetails->GetInt( "system/map_version" );
 	if ( *mpGameDetails->GetString( "game/mission" ) )
 	{
-		char szBSPName[MAX_PATH];
-		Q_snprintf( szBSPName, sizeof( szBSPName ), "maps/%s.bsp", mpGameDetails->GetString( "game/mission" ) );
-		return filesystem->FileExists( szBSPName );
+		V_snprintf( szBSPName, sizeof( szBSPName ), "maps/%s.bsp", mpGameDetails->GetString( "game/mission" ) );
 	}
-	return false;
+	else if ( const char *szName = mpGameDetails->GetString( "game/missioninfo/map_name", NULL ) )
+	{
+		V_strncpy( szBSPName, szName, sizeof( szBSPName ) );
+	}
+	else
+	{
+		return INT_MIN;
+	}
+
+	if ( !filesystem->FileExists( szBSPName, "GAME" ) )
+	{
+		return INT_MIN;
+	}
+
+	return 0; // BSP header version is not the one we are looking for in worldspawn. returning 0 here for a hotfix.
 }
 
 char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
@@ -118,7 +139,7 @@ char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
 
 PublishedFileId_t BaseModUI::FoundGameListItem::Info::GetWorkshopID() const
 {
-	if ( !mbInGame || !mpGameDetails || !steamapicontext->SteamMatchmaking() )
+	if ( !mbInGame || !mpGameDetails || !SteamMatchmaking() )
 	{
 		return k_PublishedFileIdInvalid;
 	}
@@ -126,7 +147,7 @@ PublishedFileId_t BaseModUI::FoundGameListItem::Info::GetWorkshopID() const
 	CSteamID lobby( mpGameDetails->GetUint64( "options/sessionid" ) );
 	if ( lobby.IsValid() && lobby.IsLobby() )
 	{
-		const char *szWorkshopID = steamapicontext->SteamMatchmaking()->GetLobbyData( lobby, "game:missioninfo:workshop" );
+		const char *szWorkshopID = SteamMatchmaking()->GetLobbyData( lobby, "game:missioninfo:workshop" );
 		if ( *szWorkshopID )
 		{
 			return strtoull( szWorkshopID, NULL, 16 );
@@ -170,9 +191,19 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 	{
 		return "#L4D360UI_FoundGames_Join_Download";
 	}
-	if ( !HaveMap() )
+	if ( int iMapVersionDiff = CompareMapVersion() )
 	{
-		return "#L4D360UI_Lobby_CampaignUnavailable";
+		if ( iMapVersionDiff == INT_MIN )
+		{
+			return "#L4D360UI_Lobby_CampaignUnavailable";
+		}
+
+		if ( iMapVersionDiff < 0 )
+		{
+			return "#L4D360UI_Lobby_LocalMapNewer";
+		}
+
+		return "#L4D360UI_Lobby_LocalMapOlder";
 	}
 	if ( IsJoinable() )
 	{
@@ -221,6 +252,7 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	m_pListCtrlr( ( GenericPanelList * ) parent )
 {
 	m_pImgPing = NULL;
+	m_pImgPingSmall = NULL;
 	m_pLblPing = NULL;
 	m_pLblPlayerGamerTag = NULL;
 	m_pLblDifficulty = NULL;
@@ -476,28 +508,28 @@ void FoundGameListItem::SetGamerTag( char const* gamerTag )
 //=============================================================================
 void FoundGameListItem::SetGamePing( Info::GAME_PING ping )
 {
-	if( m_pImgPing )
+	if( m_pImgPingSmall )
 	{
 		switch( ping )
 		{
 		case Info::GP_LOW:
-			m_pImgPing->SetImage( "icon_con_high" );
+			m_pImgPingSmall->SetImage( "icon_con_high" );
 			break;
 
 		case Info::GP_MEDIUM:
-			m_pImgPing->SetImage( "icon_con_medium" );
+			m_pImgPingSmall->SetImage( "icon_con_medium" );
 			break;
 
 		case Info::GP_HIGH:
-			m_pImgPing->SetImage( "icon_con_low" );
+			m_pImgPingSmall->SetImage( "icon_con_low" );
 			break;
 
 		case Info::GP_SYSTEMLINK:
-			m_pImgPing->SetImage( "icon_lan" );
+			m_pImgPingSmall->SetImage( "icon_lan" );
 			break;
 
 		case Info::GP_NONE:
-			m_pImgPing->SetImage( "" );
+			m_pImgPingSmall->SetImage( "" );
 			break;
 		}
 	}
@@ -932,6 +964,9 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 		m_pImgPing->SetVisible( false );
 	}
 
+	// this one is drawn normally
+	m_pImgPingSmall = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgPingSmall" ) );
+
 	m_pLblPing = dynamic_cast< vgui::Label * > ( FindChildByName( "LblPing" ) );
 	if ( m_pLblPing )
 	{
@@ -1112,6 +1147,7 @@ void FoundGames::Activate()
 	{
 		pWndCreateGame->SetVisible( CanCreateGame() );
 		pWndCreateGame->SetText( CFmtStr( "#L4D360UI_FoudGames_CreateNew_%s", "campaign" ) );
+		pWndCreateGame->SetControllerButton( KEY_XBUTTON_X );
 	}
 
 	if ( Panel *pLabelX = FindChildByName( "LblPressX" ) )
@@ -1286,7 +1322,7 @@ void FoundGames::OpenPlayerFlyout( BaseModHybridButton *button, uint64 playerId,
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout_SteamGroup" ) );
 	}
-	else if ( steamapicontext->SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
+	else if ( SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout" ) );
 	}
@@ -1557,7 +1593,7 @@ bool FoundGames::AddGameFromDetails( const FoundGameListItem::Info &fi )
 		Q_strncpy( fiCopy.Name, "WWWWWWWWWWWWWWW", sizeof( fiCopy.Name ) );
 
 	// fix up ping - friends games do not contain useful ping info
-	if ( fi.mPing != FoundGameListItem::Info::GP_SYSTEMLINK )
+	if ( fi.mPing != FoundGameListItem::Info::GP_SYSTEMLINK && fi.miPing == 0 )
 	{
 		fiCopy.mPing = FoundGameListItem::Info::GP_NONE;
 	}
@@ -1788,7 +1824,7 @@ void FoundGames::AddServersToList()
 		// BenLubar(dedicated-server-friends-list): if the friend is not in a lobby but they are on a dedicated server
 		// that we know information for, use the dedicated server's game details instead.
 		FriendGameInfo_t friendGameInfo;
-		if ( !pGameDetails && steamapicontext->SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
+		if ( !pGameDetails && SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
 		{
 			int numServers = srvMgr->GetNumServers();
 			for ( int j = 0; j < numServers; j++ )
@@ -1813,11 +1849,19 @@ void FoundGames::AddServersToList()
 
 		fi.mIsJoinable = false;
 
-		fi.mPing = fi.GP_HIGH;
+		fi.miPing = pGameDetails ? pGameDetails->GetInt( "system/ping", 0 ) : 0;
+
+		if ( fi.miPing == 0 )
+			fi.mPing = fi.GP_NONE;
+		else if ( fi.miPing < rd_lobby_ping_low.GetInt() )
+			fi.mPing = fi.GP_LOW;
+		else if ( fi.miPing <= rd_lobby_ping_high.GetInt() )
+			fi.mPing = fi.GP_MEDIUM;
+		else
+			fi.mPing = fi.GP_HIGH;
+
 		if ( pGameDetails && !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
 			fi.mPing = fi.GP_SYSTEMLINK;
-
-		fi.miPing = pGameDetails ? pGameDetails->GetInt( "system/ping", 0 ) : 0;
 
 		fi.mpGameDetails = pGameDetails;
 		fi.mFriendXUID = item->GetXUID();
@@ -1826,9 +1870,13 @@ void FoundGames::AddServersToList()
 		KeyValues *pMissionMapInfo = NULL; pMissionMapInfo;
 
 		const char *szModDir = pGameDetails->GetString( "game/dir", "reactivedrop" );
-		if ( Q_stricmp( szModDir, COM_GetModDirectory() ) )
+		if ( V_stricmp( szModDir, COM_GetModDirectory() ) )
 		{
-			Q_snprintf( fi.mchOtherTitle, sizeof( fi.mchOtherTitle ), szModDir );
+			V_strncpy( fi.mchOtherTitle, szModDir, sizeof( fi.mchOtherTitle ) );
+		}
+		else if ( V_strcmp( pGameDetails->GetString( "system/game_version" ), engine->GetProductVersionString() ) )
+		{
+			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", pGameDetails->GetString( "system/game_version", "?" ) ), sizeof( fi.mchOtherTitle ) );
 		}
 
 		//
@@ -2056,7 +2104,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 	CNB_Button *joinButton = dynamic_cast< CNB_Button* >( FindChildByName( "BtnJoinSelected" ) );
 	BaseModUI::BaseModHybridButton *downloadButton = dynamic_cast< BaseModUI::BaseModHybridButton* >( FindChildByName( "BtnDownloadSelected" ) );
 	vgui::Label *downloadVersionLabel = dynamic_cast< vgui::Label* >( FindChildByName( "LblNewVersion" ) );
-	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "ImgSelectedAvatar" ) );																						   
+	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "ImgSelectedAvatar" ) );
 	DropDownMenu *pDrpPlayer = dynamic_cast< DropDownMenu * > ( FindChildByName( "DrpSelectedPlayerName" ) );
 	int bBuiltIn = 0;
 
@@ -2086,7 +2134,6 @@ void FoundGames::OnItemSelected( const char* panelName )
 		{
 			if ( bChangedSelection )
 			{
-				DropDownMenu *pDrpPlayer = dynamic_cast< DropDownMenu * > ( FindChildByName( "DrpSelectedPlayerName" ) );
 				if ( pDrpPlayer )
 				{
 					pDrpPlayer->SetVisible( true );
@@ -2384,6 +2431,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 
 			joinButton->SetVisible( true );
 			joinButton->SetEnabled( bGameJoinable );
+			joinButton->SetControllerButton( KEY_XBUTTON_A );
 			//joinButton->SetHelpText( fi.GetJoinButtonHint(), bGameJoinable );
 
 			SetControlVisible( "IconForwardArrow", bGameJoinable );

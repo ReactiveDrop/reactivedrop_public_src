@@ -88,8 +88,8 @@
 		"fieldName"		"GplLeaderboard"
 		"xpos"			"0"
 		"ypos"			"20"
-		"wide"			"f0"
-		"tall"			"f20"
+		"wide"			"520"
+		"tall"			"400"
 		"bgcolor_override"	"0 0 0 0"
 		"ControlName"	"GenericPanelList"
 	}

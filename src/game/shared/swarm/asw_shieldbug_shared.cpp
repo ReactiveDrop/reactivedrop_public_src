@@ -27,6 +27,10 @@ bool CASW_Shieldbug::BlockedDamage( const CTakeDamageInfo &info, const Vector &v
 	if ( ptr->hitgroup == HITGROUP_BONE_SHIELD )
 		return true;
 
+	// BenLubar: The middle leg's hitbox clips through in defend pose. Consider the back of the middle shield to also be a shield.
+	if ( ptr->hitbox == 1 )
+		return true;
+
 #if 0
 	Vector sparkNormal;
 	Vector vecDamagePos = info.GetDamagePosition();
@@ -90,7 +94,12 @@ bool CASW_Shieldbug::BlockedDamage( const CTakeDamageInfo &info, const Vector &v
 
 void CASW_Shieldbug::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
 {
-	//Msg( "Shieldbug hit on hitbox %d hitgroup %d\n", ptr->hitbox, ptr->hitgroup );
+#ifdef GAME_DLL
+	if ( asw_debug_shieldbug.GetBool() )
+	{
+		Msg( "Shieldbug hit on hitbox %d hitgroup %d\n", ptr->hitbox, ptr->hitgroup );
+	}
+#endif
 
 	if ( info.GetDamageType() != DMG_BLAST && BlockedDamage( info, vecDir, ptr ) )	// m_bDefending && 
 	{

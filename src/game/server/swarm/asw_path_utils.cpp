@@ -119,10 +119,10 @@ void asw_path_start_f()
 	if ( !pPlayer || !ASWPathUtils() )
 		return;
 
-	if ( !pPlayer->GetMarine() )
+	if ( !pPlayer->GetNPC() )
 		return;
 	
-	g_vecPathStart = pPlayer->GetMarine()->GetAbsOrigin();
+	g_vecPathStart = pPlayer->GetNPC()->GetAbsOrigin();
 }
 ConCommand asw_path_start( "asw_path_start", asw_path_start_f, "mark start of pathfinding test", FCVAR_CHEAT );
 
@@ -145,10 +145,10 @@ void asw_path_end_f()
 	if ( !pPlayer || !ASWPathUtils() )
 		return;
 
-	if ( !pPlayer->GetMarine() )
+	if ( !pPlayer->GetNPC() )
 		return;
 
-	Vector vecPathEnd = pPlayer->GetMarine()->GetAbsOrigin();
+	Vector vecPathEnd = pPlayer->GetNPC()->GetAbsOrigin();
 	debugoverlay->AddBoxOverlay( g_vecPathStart, Vector(-10, -10, -10 ), Vector(10, 10, 10) , vec3_angle, 255, 0, 0, 255, 30.0f );
 	debugoverlay->AddBoxOverlay( vecPathEnd, Vector(-10, -10, -10 ), Vector(10, 10, 10) , vec3_angle, 255, 255, 0, 255, 30.0f );
 

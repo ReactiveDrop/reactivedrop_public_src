@@ -5,6 +5,7 @@
 #endif
 
 #include <hud_basechat.h>
+#include "steam/steam_api.h"
 
 extern ConVar asw_draw_hud;
 
@@ -16,6 +17,7 @@ public:
 	CHudChat( const char *pElementName );
 
 	virtual void	Init( void );
+	virtual void	Reset( void );
 
 	void			MsgFunc_SayText(bf_read &msg);
 	void			MsgFunc_SayText2( bf_read &msg );
@@ -27,7 +29,7 @@ public:
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CHudElement::ShouldDraw(); }
 	int GetChatInputOffset( void );
 
-	virtual void	OnTick( void );
+	void ClearHistory();
 
 	virtual void	StartMessageMode( int iMessageModeType );
 	virtual void	StopMessageMode( bool bFade = true );
@@ -45,9 +47,15 @@ public:
 
 	void SetBriefingPosition( bool bUseBriefingPosition );
 	bool m_bBriefingPosition;
+	bool m_bSkipNextReset;
 
 	vgui::Panel *m_pSwarmBackground;
 	vgui::Panel *m_pSwarmBackgroundInner;
+
+	STEAM_CALLBACK( CHudChat, OnFloatingGamepadTextInputDismissed, FloatingGamepadTextInputDismissed_t )
+	{
+		StopMessageMode();
+	}
 #endif
 };
 

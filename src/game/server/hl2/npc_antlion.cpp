@@ -922,7 +922,9 @@ static Vector VecCheckThrowTolerance( CBaseEntity *pEdict, const Vector &vecSpot
 {
 	flSpeed = MAX( 1.0f, flSpeed );
 
-	float flGravity = sv_gravity.GetFloat();
+	// BenLubar: not sure why 800 was ending up throwing the spit way too far. 600 is right on the money.
+	//float flGravity = sv_gravity.GetFloat();
+	float flGravity = sv_gravity.GetFloat() * 0.75f;
 
 	Vector vecGrenadeVel = (vecSpot2 - vecSpot1);
 
@@ -4440,10 +4442,10 @@ void CNPC_Antlion::LookupBurrowActivities()
 		m_UnburrowActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
+			DevWarning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowActivity = ( Activity ) ACT_ANTLION_BURROW_OUT;
 		}
@@ -4458,10 +4460,10 @@ void CNPC_Antlion::LookupBurrowActivities()
 		m_UnburrowIdleActivity = ( Activity ) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
 		if ( m_UnburrowIdleActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
+			DevWarning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowIdleActivity = ( Activity ) ACT_ANTLION_BURROW_IDLE;
 		}

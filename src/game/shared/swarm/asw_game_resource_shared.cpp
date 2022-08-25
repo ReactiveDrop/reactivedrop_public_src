@@ -75,14 +75,20 @@ bool CASW_Game_Resource::AreAllOtherPlayersReady(int iPlayerEntIndex)
 
 	for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 	{
-		// found a connected player who isn't ready?
-#ifdef CLIENT_DLL
-		if (g_PR->IsConnected(i+1) && !m_bPlayerReady[i] && i!=iPlayerEntIndex)
-			return false;
-#else
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i + 1);
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i + 1 ) );
+
 		// if they're not connected, skip them
-		if (!pPlayer || !pPlayer->IsConnected())
+#ifdef CLIENT_DLL
+		if ( !pPlayer || !g_PR->IsConnected( i + 1 ) )
+#else
+		if ( !pPlayer || !pPlayer->IsConnected() )
+#endif
+		{
+			continue;
+		}
+
+		// bots don't participate in ready check
+		if ( pPlayer->IsAnyBot() )
 		{
 			continue;
 		}
@@ -92,7 +98,6 @@ bool CASW_Game_Resource::AreAllOtherPlayersReady(int iPlayerEntIndex)
 		{
 			return false;
 		}
-#endif
 	}
 	return true;
 }

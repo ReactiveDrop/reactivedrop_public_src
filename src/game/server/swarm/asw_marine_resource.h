@@ -70,6 +70,7 @@ public:
 	CNetworkVarEmbedded( CTimeline, m_TimelineAmmo );
 	CNetworkVarEmbedded( CTimeline, m_TimelinePosX );
 	CNetworkVarEmbedded( CTimeline, m_TimelinePosY );
+	CNetworkVarEmbedded( CTimeline, m_TimelineScore );
 
 	// skills
 	CNetworkArray( int, m_index, ASW_SCANNER_MAX_BLIPS );
@@ -197,6 +198,10 @@ public:
 	int m_iHealAmpGunHeals;
 	int m_iHealAmpGunAmps;
 	int m_iMedRifleHeals;
+	int m_iBiomassIgnited;
+
+	CNetworkVar( int, m_iScore );
+	CNetworkVar( float, m_flFinishedMissionTime );
 
 private:
 	CASW_Intensity* m_pIntensity;

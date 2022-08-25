@@ -40,8 +40,6 @@ protected:
 	virtual void RunFrame();
 	virtual void PaintBackground();
 
-	void	Demo_DisableButtons( void );
-
 private:
 	static void AcceptCommentaryRulesCallback();
 	static void AcceptSplitscreenDisableCallback();

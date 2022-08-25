@@ -32,6 +32,7 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "nb_header_footer.h"
+#include "nb_button.h"
 
 #include "rd_workshop.h"
 
@@ -47,6 +48,11 @@ ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" 
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
 extern ConVar mm_max_players;
 extern ConVar rd_last_game_access;
+extern ConVar rd_last_game_difficulty;
+extern ConVar rd_last_game_challenge;
+extern ConVar rd_last_game_onslaught;
+extern ConVar rd_last_game_hardcoreff;
+extern ConVar rd_last_game_maxplayers;
 
 using namespace vgui;
 using namespace BaseModUI;
@@ -291,6 +297,12 @@ void GameSettings::Activate()
 		firstOption->NavigateTo();
 	}
 
+	CNB_Button *button = dynamic_cast< CNB_Button * >( FindChildByName( "BtnStart" ) );
+	if ( button )
+	{
+		button->SetControllerButton( KEY_XBUTTON_X );
+	}
+
 	/*
 	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnStartGame" ) );
 	if( button )
@@ -344,15 +356,25 @@ void GameSettings::Activate()
 		m_drpNumSlots->SetVisible( showNumSlots );
 		m_drpNumSlots->SetEnabled( showNumSlots );
 
-		if ( m_pSettings->GetInt( "members/numSlots", 4 ) <= 4 )
+		if ( m_pSettings->GetInt( "members/numSlots" ) <= 4 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_4_slots" );
 			mm_max_players.SetValue( 4 );
 		}
-		else
+		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 8 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_8_slots" );
 			mm_max_players.SetValue( 8 );
+		}
+		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 12 )
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_12_slots" );
+			mm_max_players.SetValue( 12 );
+		}
+		else
+		{
+			m_drpNumSlots->SetCurrentSelection( "#rd_ui_16_slots" );
+			mm_max_players.SetValue( 16 );
 		}
 
 		if ( FlyoutMenu* flyout = m_drpNumSlots->GetCurrentFlyout() )
@@ -625,6 +647,8 @@ void GameSettings::OnCommand(const char *command)
 	{
 		KeyValues::AutoDelete pSettings( "update" );
 		pSettings->SetString( "update/game/challenge", szChallengeSelected );
+
+		rd_last_game_challenge.SetValue( szChallengeSelected );
 		UpdateSessionSettings( pSettings );
 
 		if ( m_drpChallenge )
@@ -694,10 +718,6 @@ void GameSettings::OnCommand(const char *command)
 	{
 		SelectNetworkAccess( "LIVE", szAccessType );
 	}
-// 	else if( V_strcmp( command, "StartLobby" ) == 0 )
-// 	{
-// 		
-// 	}
 	else if( V_strcmp( command, "Back" ) == 0 )
 	{
 		// Act as though 360 back button was pressed
@@ -718,6 +738,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetString( "update/game/difficulty", szDifficultyValue );
 
+		rd_last_game_difficulty.SetValue( szDifficultyValue );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpDifficulty )
@@ -740,6 +761,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/hardcoreFF", 0 );
 
+		rd_last_game_hardcoreff.SetValue( 0 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -765,6 +787,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/hardcoreFF", 1 );
 
+		rd_last_game_hardcoreff.SetValue( 1 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -790,6 +813,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/onslaught", 0 );
 
+		rd_last_game_onslaught.SetValue( 0 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -815,6 +839,7 @@ void GameSettings::OnCommand(const char *command)
 
 		pSettings->SetInt( "update/game/onslaught", 1 );
 
+		rd_last_game_onslaught.SetValue( 1 );
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -834,12 +859,10 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/maxrounds", atoi( szRoundLimitValue ) );
 
 		UpdateSessionSettings( pSettings );
-
-
 	}
 	else if ( const char *szServerTypeValue = StringAfterPrefix( command, "#L4D360UI_ServerType_" ) )
 	{
-	KeyValues *pSettings = KeyValues::FromString(
+		KeyValues *pSettings = KeyValues::FromString(
 			"update",
 			" update { "
 				" options { "
@@ -870,10 +893,22 @@ void GameSettings::OnCommand(const char *command)
 	else if ( !Q_strcmp( command, "#rd_ui_4_slots" ) )
 	{
 		mm_max_players.SetValue( 4 );
+		rd_last_game_maxplayers.SetValue( 4 );
 	}
 	else if ( !Q_strcmp( command, "#rd_ui_8_slots" ) )
 	{
 		mm_max_players.SetValue( 8 );
+		rd_last_game_maxplayers.SetValue( 8 );
+	}
+	else if ( !Q_strcmp( command, "#rd_ui_12_slots" ) )
+	{
+		mm_max_players.SetValue( 12 );
+		rd_last_game_maxplayers.SetValue( 12 );
+	}
+	else if ( !Q_strcmp( command, "#rd_ui_16_slots" ) )
+	{
+		mm_max_players.SetValue( 16 );
+		rd_last_game_maxplayers.SetValue( 16 );
 	}
 	else
 	{
@@ -1239,30 +1274,19 @@ void GameSettings::ShowMissionSelect()
 		m_hSubScreen->MarkForDeletion();
 	}
 
+	Activate();
+
 	if ( m_pSettings )
 	{
-		const char *szGameType = m_pSettings->GetString( "game/mode", "campaign" );
-		if ( !Q_stricmp( szGameType, "campaign" ) )
+		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			CNB_Select_Campaign_Panel *pPanel = new CNB_Select_Campaign_Panel( this, "Select_Campaign_Panel" );
-			//pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer\n" );
 		}
-		else if ( !Q_stricmp( szGameType, "single_mission" ) )
+		else
 		{
-			CNB_Select_Mission_Panel *pPanel = new CNB_Select_Mission_Panel( this, "Select_Mission_Panel" );
-			pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver\n" );
 		}
-	}	
+	}
 }
 
 void GameSettings::ShowStartingMissionSelect()
@@ -1272,21 +1296,19 @@ void GameSettings::ShowStartingMissionSelect()
 		m_hSubScreen->MarkForDeletion();
 	}
 
+	Activate();
+
 	if ( m_pSettings )
 	{
-		const char *szGameType = m_pSettings->GetString( "game/mode", "campaign" );
-		if ( !Q_stricmp( szGameType, "campaign" ) )
+		if ( !V_stricmp( m_pSettings->GetString( "system/network" ), "offline" ) )
 		{
-			CNB_Select_Mission_Panel *pPanel = new CNB_Select_Mission_Panel( this, "Select_Mission_Panel" );
-			pPanel->SelectMissionsFromCampaign( m_pSettings->GetString( "game/campaign", "jacob" ) );
-			pPanel->InitList();
-			pPanel->MoveToFront();
-
-			UpdateMissionImage();
-
-			m_hSubScreen = pPanel;
+			engine->ClientCmd_Unrestricted( VarArgs( "asw_mission_chooser singleplayer campaign %s\n", m_pSettings->GetString( "game/campaign" ) ) );
 		}
-	}	
+		else
+		{
+			engine->ClientCmd_Unrestricted( VarArgs( "asw_mission_chooser createserver campaign %s\n", m_pSettings->GetString( "game/campaign" ) ) );
+		}
+	}
 }
 
 void GameSettings::ShowChallengeSelect()
@@ -1314,73 +1336,16 @@ void GameSettings::UpdateChallenge( const char *szChallengeName )
 	bool bForceHardcoreFFOn = false;
 	bool bForceHardcoreFFOff = false;
 
-	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( ReactiveDropChallenges::ReadData( pKV, szChallengeName ) )
+	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( szChallengeName ) )
 	{
-		if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
-		{
-			if ( KeyValues *pFFAbsorption = pConVars->FindKey( "asw_marine_ff_absorption" ) )
-			{
-				if ( pFFAbsorption->GetInt() == 1 )
-				{
-					if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
-					{
-						if ( pSentryFFScale->GetFloat() == 0.0f )
-						{
-							bForceHardcoreFFOff = true;
-						}
-						else
-						{
-							bForceHardcoreFFOn = true;
-						}
-					}
-				}
-				else
-				{
-					bForceHardcoreFFOn = true;
-				}
-			}
-			else if ( KeyValues *pSentryFFScale = pConVars->FindKey( "asw_sentry_friendly_fire_scale" ) )
-			{
-				if ( pSentryFFScale->GetFloat() != 0.0f )
-				{
-					bForceHardcoreFFOn = true;
-				}
-			}
-
-			if ( KeyValues *pHordeOverride = pConVars->FindKey( "asw_horde_override" ) )
-			{
-				if ( pHordeOverride->GetBool() )
-				{
-					bForceOnslaughtOn = true;
-				}
-				else
-				{
-					if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
-					{
-						if ( pWandererOverride->GetBool() )
-						{
-							bForceOnslaughtOn = true;
-						}
-						else
-						{
-							bForceOnslaughtOff = true;
-						}
-					}
-				}
-			}
-			else if ( KeyValues *pWandererOverride = pConVars->FindKey( "asw_wanderer_override" ) )
-			{
-				if ( pWandererOverride->GetBool() )
-				{
-					bForceOnslaughtOn = true;
-				}
-			}
-		}
+		bForceOnslaughtOn = pChallenge->ForceOnslaught && pChallenge->IsOnslaught;
+		bForceOnslaughtOff = pChallenge->ForceOnslaught && !pChallenge->IsOnslaught;
+		bForceHardcoreFFOn = pChallenge->ForceHardcore && pChallenge->IsHardcore;
+		bForceHardcoreFFOff = pChallenge->ForceHardcore && !pChallenge->IsHardcore;
 
 		KeyValues::AutoDelete pUpdate( "update" );
-		pUpdate->SetUint64( "update/game/challengeinfo/workshop", pKV->GetUint64( "workshop" ) );
-		pUpdate->SetString( "update/game/challengeinfo/displaytitle", pKV->GetString( "name", szChallengeName ) );
+		pUpdate->SetUint64( "update/game/challengeinfo/workshop", pChallenge->WorkshopID );
+		pUpdate->SetString( "update/game/challengeinfo/displaytitle", pChallenge->Title );
 		UpdateSessionSettings( pUpdate );
 	}
 

@@ -147,10 +147,10 @@ void CASW_Hud_Master::VidInit()
 				m_HudSheets[i].m_pSize->x = pTexture->GetActualWidth();
 				m_HudSheets[i].m_pSize->y = pTexture->GetActualHeight();
 				size_t numBytes;
-				void const *pSheet =  pTexture->GetResourceData( VTF_RSRC_SHEET, &numBytes );
-				if ( pSheet )
+				void const *pSheetData =  pTexture->GetResourceData( VTF_RSRC_SHEET, &numBytes );
+				if ( pSheetData )
 				{				
-					CUtlBuffer bufLoad( pSheet, numBytes, CUtlBuffer::READ_ONLY );
+					CUtlBuffer bufLoad( pSheetData, numBytes, CUtlBuffer::READ_ONLY );
 					CSheet *pSheet = new CSheet( bufLoad );
 					for ( int k = 0; k < pSheet->m_SheetInfo.Count(); k++ )
 					{
@@ -344,7 +344,7 @@ void CASW_Hud_Master::OnThink()
 
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 		
-		if ( pMR && pPlayer->GetViewMarine() != pMR->GetMarineEntity() )
+		if ( pMR && pPlayer->GetViewNPC() != pMR->GetMarineEntity() )
 		{
 			CASW_Marine_Profile *pProfile = pMR->GetProfile();
 			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
@@ -355,7 +355,7 @@ void CASW_Hud_Master::OnThink()
 				if ( !pMarine )
 					continue;
 
-				C_ASW_Marine_Resource *pViewMR = pPlayer->GetViewMarine() ? pPlayer->GetViewMarine()->GetMarineResource() : NULL;
+				C_ASW_Marine_Resource *pViewMR = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() ) ? C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() )->GetMarineResource() : NULL;
 				if (!pViewMR)
 					break;
 
@@ -447,7 +447,7 @@ void CASW_Hud_Master::OnThink()
 					nItemCount++;
 				}
 
-				bool bWalking = ( pPlayer->GetMarine() && pPlayer->GetMarine()->m_bWalking );
+				bool bWalking = ( C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) && C_ASW_Marine::AsMarine( pPlayer->GetNPC() )->m_bWalking );
 
 				int nItemSelect = bWalking ? 1 : 0;
 				int nItemShift = nItemSelect == 0 ? 1 : 0;
@@ -527,7 +527,7 @@ void CASW_Hud_Master::Paint( void )
 		return;
 
 	// gather data for local player
-	m_pLocalMarine = pPlayer->GetViewMarine();		// only valid inside OnThink and Paint
+	m_pLocalMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );		// only valid inside OnThink and Paint
 	m_hLocalMarine = m_pLocalMarine;		// take a handle copy for things like the CLocatorPanel which want to find this outside of our Paint
 	m_pLocalMarineResource = m_pLocalMarine ? m_pLocalMarine->GetMarineResource() : NULL;
 	m_pLocalMarineProfile = m_pLocalMarineResource ? m_pLocalMarineResource->GetProfile() : NULL;
@@ -667,8 +667,7 @@ void CASW_Hud_Master::Paint( void )
 	{
 		if ( i == 0 )
 		{
-			m_nMarinePortrait_x = cursor_x;
-			cursor_x += m_nSquadMates_x;
+			cursor_x = m_nMarinePortrait_x + m_nSquadMates_x;
 		}
 		else if ( nSquadMate < MAX_SQUADMATE_HUD_POSITIONS )
 		{
@@ -1337,7 +1336,7 @@ void CASW_Hud_Master::PaintFastReload()
 
 	float flProgress = 0.0f;
 	// if we're in single player, the progress code in the weapon doesn't run on the client because we aren't predicting
-	if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingMarine() )
+	if ( !cl_predict->GetInt() || !C_ASW_Player::GetLocalASWPlayer() || C_ASW_Player::GetLocalASWPlayer()->GetSpectatingNPC() )
 		flProgress = (gpGlobals->curtime - fStart) / fTotalTime;
 	else
 		flProgress = pWeapon->m_fReloadProgress;
@@ -1728,6 +1727,8 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 			char szBinding[ 128 ];
 			Q_snprintf( szBinding, sizeof( szBinding ), "asw_squad_hotbar %d", nPosition + 1 );
 			const char *pszKey = ASW_FindKeyBoundTo( szBinding );
+			if ( !V_strcmp( pszKey, "<NOT BOUND>" ) )
+				pszKey = "";
 			
  			char szKey[ 12 ];
 			Q_snprintf( szKey, sizeof(szKey), "%s", pszKey );

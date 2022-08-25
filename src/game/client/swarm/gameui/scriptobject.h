@@ -87,7 +87,7 @@ abstract_class CDescription
 {
 public:
 	CDescription( CPanelListPanel *panel );
-	~CDescription();
+	virtual ~CDescription();
 
 	bool ReadFromBuffer( const char **pBuffer );
 	bool InitFromFile( char *pszFileName );

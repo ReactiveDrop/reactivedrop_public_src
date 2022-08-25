@@ -702,10 +702,19 @@ void CASW_Shieldbug::CheckForShieldbugHint( const CTakeDamageInfo &info )
 			if (m_fMarineBlockCounter < 0)
 				m_fMarineBlockCounter = 0;
 		}
-		m_fMarineBlockCounter += info.GetDamage();
+		if ( info.GetDamageType() & DMG_CLUB )
+		{
+			// meleeing a shieldbug is a really bad idea, and players understand that innately.
+			// reduce the block counter contribution for melee because the power fist can cause this to spam voice lines otherwise.
+			m_fMarineBlockCounter += info.GetDamage() * 0.02f;
+		}
+		else
+		{
+			m_fMarineBlockCounter += info.GetDamage();
+		}
 		if (asw_debug_marine_chatter.GetBool())
 			Msg("m_fMarineBlockCounter = %f\n", m_fMarineBlockCounter);
-		if (m_fMarineBlockCounter > 600)		// 686 = burning a whole rifle clip no normal difficulty
+		if (m_fMarineBlockCounter > 600)		// 686 = burning a whole rifle clip on normal difficulty
 		{
 			if (asw_debug_marine_chatter.GetBool())
 				Msg("Doing shieldbug hint\n");
@@ -820,27 +829,22 @@ int CASW_Shieldbug::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( bDirectional )
 	{
 		damageNormal = vecDamagePos - GetAbsOrigin();	// should be head pos
-		damageNormal.z = 0;	
+		damageNormal.z = 0;
+		VectorNormalize( damageNormal );
 
 		fForwardDot = vecFacing.Dot( damageNormal );
 	}
-	
+
 	if ( m_bDefending && bDirectional && fForwardDot > 0.66f )
 	{
-		if ( asw_debug_shieldbug.GetBool() )
+		// flamethrowering a defending shieldbug's shield is ineffective.
+		if ( ( newInfo.GetDamageType() & DMG_BURN ) != 0 && ( newInfo.GetDamageType() & DMG_DIRECT ) == 0 )
 		{
-			Msg("Defending, check damage for block\n");
+			m_fLastHurtTime = gpGlobals->curtime;
+			CheckForShieldbugHint( newInfo );
+
+			return 0;
 		}
-
-		// is the attack in front
- 		if ( ( newInfo.GetDamageType() & DMG_BURN ) != 0 &&		// extra dot block check is only for flames
-			 ( newInfo.GetDamageType() & DMG_DIRECT ) == 0 )	// burning DoT doesn't get blocked
- 		{
- 			m_fLastHurtTime = gpGlobals->curtime;
- 			CheckForShieldbugHint(newInfo);
-
- 			return 0;
- 		}
 	}
 
 	result = BaseClass::OnTakeDamage_Alive(newInfo);

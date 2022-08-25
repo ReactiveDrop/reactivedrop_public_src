@@ -111,6 +111,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 #include "asw_gamerules.h"
+#include "asw_util_shared.h"
 #endif
 
 
@@ -134,18 +135,6 @@ extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
 
 extern ConVar commentary;
-
-// this context is not available on dedicated servers
-// WARNING! always check if interfaces are available before using
-#if !defined(NO_STEAM)
-static CSteamAPIContext s_SteamAPIContext;	
-CSteamAPIContext *steamapicontext = &s_SteamAPIContext;
-
-// this context is not available on a pure client connected to a remote server.
-// WARNING! always check if interfaces are available before using
-static CSteamGameServerAPIContext s_SteamGameServerAPIContext;
-CSteamGameServerAPIContext *steamgameserverapicontext = &s_SteamGameServerAPIContext;
-#endif
 
 
 IUploadGameStats *gamestatsuploader = NULL;
@@ -229,25 +218,6 @@ ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCV
 ConVar rd_override_fps_max("rd_override_fps_max", "-1", FCVAR_NONE, "overrides fps_max, this option sticks across map changes without touching newmapsettings", true, -1, true, 1000);
 ConVar sv_frametime_limit("sv_frametime_limit", "3.0", FCVAR_CHEAT, "When exceed this number of frames, switch to more efficient ai");
 
-
-#if !defined(NO_STEAM)
-//-----------------------------------------------------------------------------
-// Purpose: singleton accessor
-//-----------------------------------------------------------------------------
-static CSteam3Server s_Steam3Server;
-CSteam3Server  &Steam3Server()
-{
-	return s_Steam3Server;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Constructor
-//-----------------------------------------------------------------------------
-CSteam3Server::CSteam3Server() 
-{
-	m_bInitialized = false;
-}
-#endif
 
 // String tables
 INetworkStringTable *g_pStringTableParticleEffectNames = NULL;
@@ -659,14 +629,6 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ( cvar == NULL )
 		return false;
 
-#if !defined( SWDS ) && !defined(NO_STEAM)
-	SteamAPI_InitSafe();
-	s_SteamAPIContext.Init();
-#endif
-#if !defined(NO_STEAM)
-	s_SteamGameServerAPIContext.Init();
-#endif
-
 	COM_TimestampedLog( "Factories - Start" );
 
 	// init each (seperated for ease of debugging)
@@ -927,12 +889,6 @@ void CServerGameDLL::DLLShutdown( void )
 		TheNavMesh = NULL;
 	}
 
-#if !defined(NO_STEAM)
-	s_SteamAPIContext.Clear(); // Steam API context shutdown
-	s_SteamGameServerAPIContext.Clear();	
-	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
-#endif
-	
 	DisconnectTier3Libraries();
 	DisconnectTier2Libraries();
 	ConVar_Unregister();
@@ -1100,10 +1056,8 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	// BenLubar #iss-particles-manifest Load per-map manifests
 	ParseParticleEffectsMap( pMapName, false );
 
-	if ( engine->IsDedicatedServer() )
-	{
-		engine->ServerCommand( "rd_loc_reload_server" );
-	}
+	// Need to also run this on listen servers or caption hashes won't be available.
+	UTIL_RD_ReloadLocalizeFiles();
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()
@@ -1210,6 +1164,18 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 			fps_max.SetValue( rd_override_fps_max.GetInt() );
 		}
 	}
+	else if ( engine->IsDedicatedServer() )
+	{
+		// BenLubar: Dedicated servers are constrained by tick rate, not render speed.
+		// fps_max is somehow getting set to 30, meaning a server that would theoretically
+		// be able to run at 600 ticks can only run at 5% of that.
+		// If no override is specified and fps_max is less than the tick rate, set fps_max to unlimited.
+		ConVarRef fps_max( "fps_max" );
+		if ( fps_max.IsValid() && fps_max.GetInt() < TIME_TO_TICKS( 1 ) )
+		{
+			fps_max.SetValue( 0 );
+		}
+	}
 	return true;
 }
 
@@ -1285,10 +1251,7 @@ void CServerGameDLL::ServerActivate( edict_t *pEdictList, int edictCount, int cl
 //-----------------------------------------------------------------------------
 void CServerGameDLL::GameServerSteamAPIActivated( void )
 {
-#if !defined( NO_STEAM )
-	steamgameserverapicontext->Init();
-#endif
-	
+	// the Steam API pointers used to be initialized here, but that happens automatically now.
 }
 
 //-----------------------------------------------------------------------------
@@ -1307,7 +1270,7 @@ void CServerGameDLL::GameFrame( bool simulating )
 #ifndef NO_STEAM
 	// All the calls to us from the engine prior to gameframe (like LevelInit & ServerActivate)
 	// are done before the engine has got the Steam API connected, so we have to wait until now to connect ourselves.
-	if ( Steam3Server().CheckInitialized() )
+	if ( SteamGameServerStats() )
 	{
 		GameRules()->UpdateGameplayStatsFromSteam();
 	}
@@ -1495,10 +1458,6 @@ void CServerGameDLL::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_
 // Called when a level is shutdown (including changing levels)
 void CServerGameDLL::LevelShutdown( void )
 {
-#if !defined( NO_STEAM )
-	steamgameserverapicontext->Clear();
-#endif
-
 	MDLCACHE_CRITICAL_SECTION();
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 
@@ -2139,6 +2098,7 @@ static ConVar motdfile( "motdfile", "motd.txt", FCVAR_RELEASE, "The MOTD file to
 static ConVar hostfile( "hostfile", "host.txt", FCVAR_RELEASE, "The HOST file to load.", ValidateMOTDFilename );
 void LoadMOTDFile( const char *stringname, ConVar *pConvarFilename )
 {
+#ifndef INFESTED_DLL
 	char data[2048];
 
 	int length = filesystem->Size( pConvarFilename->GetString(), "GAME" );
@@ -2158,6 +2118,9 @@ void LoadMOTDFile( const char *stringname, ConVar *pConvarFilename )
 	data[length] = 0;
 
 	g_pStringTableInfoPanel->AddString( CBaseEntity::IsServer(), stringname, length+1, data );
+#else
+	g_pStringTableInfoPanel->AddString( CBaseEntity::IsServer(), stringname, 1, "" );
+#endif
 }
 
 void CServerGameDLL::LoadMessageOfTheDay()

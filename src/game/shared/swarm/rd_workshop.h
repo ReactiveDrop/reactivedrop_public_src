@@ -17,6 +17,14 @@
 #include "steam/steam_gameserver.h"
 #endif
 
+#define RD_NUM_WORKSHOP_CAMPAIGN_TAGS 0
+#define RD_NUM_WORKSHOP_MISSION_TAGS 5
+
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+extern const char *const g_RDWorkshopCampaignTags[RD_NUM_WORKSHOP_CAMPAIGN_TAGS];
+#endif
+extern const char *const g_RDWorkshopMissionTags[RD_NUM_WORKSHOP_MISSION_TAGS];
+
 namespace BaseModUI
 {
 	class AddonListItem;
@@ -43,6 +51,7 @@ public:
 		m_hFavoritedAddonsQuery( k_UGCQueryHandleInvalid ) {}
 
 	virtual bool Init();
+	void InitNonWorkshopAddons();
 	void OnMissionStart();
 	virtual void LevelInitPostEntity();
 	virtual void LevelShutdownPreEntity();
@@ -52,6 +61,7 @@ public:
 #endif
 
 	PublishedFileId_t FindAddonProvidingFile( const char *pszFileName );
+	const char *GetNativeFileSystemFile( const char *pszFileName );
 
 	struct WorkshopItem_t
 	{
@@ -68,34 +78,11 @@ public:
 			nSecondsPlayed = 0;
 			nPlaytimeSessions = 0;
 			nComments = 0;
+			bAdminOverrideBonus = false;
+			bAdminOverrideDeathmatch = false;
 		}
 
-		WorkshopItem_t( const WorkshopItem_t & other )
-		{
-			details = other.details;
-			nSubscriptions = other.nSubscriptions;
-			nFavorites = other.nFavorites;
-			nFollowers = other.nFollowers;
-			nUniqueSubscriptions = other.nUniqueSubscriptions;
-			nUniqueFavorites = other.nUniqueFavorites;
-			nUniqueFollowers = other.nUniqueFollowers;
-			nUniqueWebsiteViews = other.nUniqueWebsiteViews;
-			nSecondsPlayed = other.nSecondsPlayed;
-			nPlaytimeSessions = other.nPlaytimeSessions;
-			nComments = other.nComments;
-#ifdef CLIENT_DLL
-			if (other.pPreviewImage.IsValid())
-				pPreviewImage = other.pPreviewImage;
-#endif
-			for ( int i = 0; i < other.kvTags.GetNumStrings(); i++ )
-			{
-				CUtlStringList & values = kvTags[other.kvTags.String( i )];
-				FOR_EACH_VEC( other.kvTags[i], j )
-				{
-					values.CopyAndAddToTail( other.kvTags[i][j] );
-				}
-			}
-		}
+		WorkshopItem_t( const WorkshopItem_t &other ) = delete;
 
 		~WorkshopItem_t()
 		{
@@ -121,9 +108,11 @@ public:
 		CUtlReference<CReactiveDropWorkshopPreviewImage> pPreviewImage;
 #endif
 		CUtlStringMap<CUtlStringList> kvTags;
+		bool bAdminOverrideBonus : 1;
+		bool bAdminOverrideDeathmatch : 1;
 	};
 
-	WorkshopItem_t TryQueryAddon( PublishedFileId_t nPublishedFileID );
+	const WorkshopItem_t & TryQueryAddon( PublishedFileId_t nPublishedFileID );
 #ifdef CLIENT_DLL
 	bool LoadAddonEarly( PublishedFileId_t nPublishedFileID );
 #endif
@@ -160,6 +149,24 @@ public:
 	void SetSubscribedToFile( PublishedFileId_t nPublishedFileId, bool bSubscribe );
 	bool IsAddonEnabled( PublishedFileId_t nPublishedFileId );
 	void SetAddonEnabled( PublishedFileId_t nPublishedFileId, bool bEnabled );
+
+	struct AddonFileConflict_t
+	{
+		AddonFileConflict_t( const char *szFileName, PublishedFileId_t iReplacingAddon, PublishedFileId_t iHiddenAddon, CRC32_t iReplacingCRC, CRC32_t iHiddenCRC )
+			: FileName( szFileName ), ReplacingAddon( iReplacingAddon ), HiddenAddon( iHiddenAddon ), ReplacingCRC( iReplacingCRC ), HiddenCRC( iHiddenCRC )
+		{
+		}
+
+		CUtlString FileName;
+		PublishedFileId_t ReplacingAddon;
+		PublishedFileId_t HiddenAddon;
+		CRC32_t ReplacingCRC;
+		CRC32_t HiddenCRC;
+	};
+	int FindAddonConflicts( PublishedFileId_t nPublishedFileId, CUtlVector<const AddonFileConflict_t *> *pConflicts );
+
+	PublishedFileId_t AddonForFileSystemPath( const char *szPath );
+	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
 
 private:
 	friend class BaseModUI::Addons;
@@ -211,7 +218,10 @@ private:
 	CUtlStringList m_aszIncludedCampaigns;
 	CUtlStringList m_aszIncludedMissions;
 	CUtlStringList m_aszIncludedChallenges;
-	CUtlStringList m_aszIncludedDeathmatch;
+#if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
+	CUtlStringList m_aszIncludedTaggedCampaigns[RD_NUM_WORKSHOP_CAMPAIGN_TAGS];
+#endif
+	CUtlStringList m_aszIncludedTaggedMissions[RD_NUM_WORKSHOP_MISSION_TAGS];
 	CUtlStringMap<CUtlString> m_IncludedCampaignNames;
 	CUtlStringMap<CUtlStringList> m_IncludedCampaignMissions;
 	CUtlStringMap<CUtlString> m_IncludedMissionNames;
@@ -226,7 +236,10 @@ private:
 	void SubmitItemUpdateResultCallback( SubmitItemUpdateResult_t *pResult, bool bIOFailure );
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_UpdateWorkshopItemQueryResultCallback;
 	void UpdateWorkshopItemQueryResultCallback( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
+	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallbackCurated;
+	void CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure );
 	friend static void ugc_create(const CCommand & args);
+	friend static void ugc_curated_create(const CCommand & args);
 	friend static void ugc_update(const CCommand & args);
 	friend static void ugc_updatetags(const CCommand & args);
 	friend static void _ugc_update_progress(const CCommand & args);

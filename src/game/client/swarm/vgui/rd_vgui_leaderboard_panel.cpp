@@ -6,6 +6,7 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
 #include "c_asw_steamstats.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -15,7 +16,7 @@ CReactiveDrop_VGUI_Leaderboard_Panel::CReactiveDrop_VGUI_Leaderboard_Panel( vgui
 	m_lblTitle = new vgui::Label( this, "LblTitle", "Leaderboard" );
 	m_gplLeaderboard = new BaseModUI::GenericPanelList( this, "GplLeaderboard", BaseModUI::GenericPanelList::ISM_ELEVATOR );
 	m_bOverrideEntry = false;
-	m_bDisplayAsTime = true;
+	m_eDisplayType = k_ELeaderboardDisplayTypeTimeMilliSeconds;
 }
 
 CReactiveDrop_VGUI_Leaderboard_Panel::~CReactiveDrop_VGUI_Leaderboard_Panel()
@@ -41,14 +42,14 @@ void CReactiveDrop_VGUI_Leaderboard_Panel::SetTitle( const wchar_t *wszTitle )
 
 void CReactiveDrop_VGUI_Leaderboard_Panel::SetEntries( const CUtlVector<RD_LeaderboardEntry_t> & entries )
 {
-	CSteamID localUserID = steamapicontext->SteamUser()->GetSteamID();
+	CSteamID localUserID = SteamUser()->GetSteamID();
 
 	m_gplLeaderboard->RemoveAllPanelItems();
 
 	FOR_EACH_VEC( entries, i )
 	{
 		CReactiveDrop_VGUI_Leaderboard_Entry *pEntry = m_gplLeaderboard->AddPanelItem<CReactiveDrop_VGUI_Leaderboard_Entry>( "Entry" );
-		pEntry->SetDisplayAsTime(m_bDisplayAsTime);
+		pEntry->SetDisplayType( m_eDisplayType );
 		pEntry->SetEntry( entries[i] );
 
 		if ( entries[i].entry.m_steamIDUser == localUserID )
@@ -111,7 +112,6 @@ void CReactiveDrop_VGUI_Leaderboard_Panel::DoOverrideEntry()
 
 void CReactiveDrop_VGUI_Leaderboard_Panel::SetScrollable( bool bScrollable )
 {
-	m_gplLeaderboard->ShowScrollProgress( bScrollable );
 	m_gplLeaderboard->SetScrollBarVisible( bScrollable );
 }
 
@@ -132,7 +132,7 @@ CReactiveDrop_VGUI_Leaderboard_Entry::CReactiveDrop_VGUI_Leaderboard_Entry( vgui
 	m_lblDifficulty = new vgui::Label( this, "LblDifficulty", "" );
 	m_lblOnslaught = new vgui::Label( this, "LblOnslaught", "#nb_onslaught_title" );
 	m_lblHardcoreFF = new vgui::Label( this, "LblHardcoreFF", "#L4D360UI_HardcoreFF" );
-	m_bDisplayAsTime = true;
+	m_eDisplayType = k_ELeaderboardDisplayTypeTimeMilliSeconds;
 }
 
 CReactiveDrop_VGUI_Leaderboard_Entry::~CReactiveDrop_VGUI_Leaderboard_Entry()
@@ -166,10 +166,11 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
-	Q_UTF8ToUnicode( steamapicontext->SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
 	m_lblName->SetText( wszName );
 
-	if ( m_bDisplayAsTime )
+	if ( m_eDisplayType == k_ELeaderboardDisplayTypeTimeMilliSeconds )
 	{
 		int32 milliseconds = entry.entry.m_nScore % 1000;
 		int32 seconds = ( entry.entry.m_nScore / 1000 ) % 60;
@@ -182,6 +183,20 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		else
 		{
 			m_lblScore->SetText( VarArgs( "%d:%02d.%03d", minutes, seconds, milliseconds ) );
+		}
+	}
+	else if ( m_eDisplayType == k_ELeaderboardDisplayTypeTimeSeconds )
+	{
+		int32 seconds = ( entry.entry.m_nScore ) % 60;
+		int32 minutes = ( entry.entry.m_nScore / 60 ) % 60;
+		int32 hours = entry.entry.m_nScore / 60 / 60;
+		if ( hours > 0 )
+		{
+			m_lblScore->SetText( VarArgs( "%d:%02d:%02d", hours, minutes, seconds ) );
+		}
+		else
+		{
+			m_lblScore->SetText( VarArgs( "%d:%02d", minutes, seconds ) );
 		}
 	}
 	else
@@ -309,6 +324,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 			}
 			m_lblOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
 			m_lblHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
+			// TODO: do something if mission failed ( ( entry.details.v1.m_iModeFlags & 4 ) != 0 )
 		}
 		break;
 	}
@@ -344,7 +360,7 @@ void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetTitle( const wchar_t *wszTi
 
 void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries )
 {
-	CSteamID localUserID = steamapicontext->SteamUser()->GetSteamID();
+	CSteamID localUserID = SteamUser()->GetSteamID();
 
 	m_gplLeaderboard->RemoveAllPanelItems();
 
@@ -413,7 +429,6 @@ void CReactiveDrop_VGUI_Leaderboard_Panel_Points::DoOverrideEntry()
 
 void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetScrollable( bool bScrollable )
 {
-	m_gplLeaderboard->ShowScrollProgress( bScrollable );
 	m_gplLeaderboard->SetScrollBarVisible( bScrollable );
 }
 
@@ -464,150 +479,21 @@ void CReactiveDrop_VGUI_Leaderboard_Entry_Points::SetEntry( const RD_Leaderboard
 	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
-	Q_UTF8ToUnicode(steamapicontext->SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
+	Q_UTF8ToUnicode(SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
+	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
 	m_lblName->SetText(wszName);
 
 	m_lblScore_Points->SetText( VarArgs( "%d", m_nScore ) );
-	/*
-	if (!MarineProfileList() || !ASWEquipmentList())
-	{
-		return;
-	}
-	*/
+
 	wchar_t wszCountry[ 3 ];
 	wszCountry[ 0 ] = entry.details.m_CountryCode[ 0 ];
 	wszCountry[ 1 ] = entry.details.m_CountryCode[ 1 ];
 	wszCountry[ 2 ] = 0;
 	m_lblCountry->SetText( wszCountry );
 
-	m_lblScore_AlienKills->SetText( VarArgs( "%d", entry.details.m_iAlienKills ) );
+	m_lblScore_AlienKills->SetText( VarArgs( "%d", entry.details.m_iAlienKills));
 	m_lblScore_PlayerKills->SetText( VarArgs( "%d", entry.details.m_iPlayerKills ) );
 	m_lblScore_GamesWon->SetText( VarArgs( "%d", entry.details.m_iGamesWon ) );
 	m_lblScore_GamesLost->SetText( VarArgs( "%d", entry.details.m_iGamesLost ) );
 	m_lblScore_GamesTotal->SetText( VarArgs( "%d", entry.details.m_iGamesWon + entry.details.m_iGamesLost ) );
-
-	/*
-	switch (entry.details.version)
-	{
-	case 1:
-	{
-		if (CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile(entry.details.v1.m_iMarine))
-		{
-			m_imgMarine->SetImage(VarArgs("briefing/face_%s", pMarine->m_PortraitName));
-		}
-		if (CASW_EquipItem *pPrimaryWeapon = ASWEquipmentList()->GetRegular(entry.details.v1.m_iPrimaryWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pPrimaryWeapon->m_EquipClass)))
-			{
-				m_imgPrimaryWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (CASW_EquipItem *pSecondaryWeapon = ASWEquipmentList()->GetRegular(entry.details.v1.m_iSecondaryWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pSecondaryWeapon->m_EquipClass)))
-			{
-				m_imgSecondaryWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (CASW_EquipItem *pExtraWeapon = ASWEquipmentList()->GetExtra(entry.details.v1.m_iExtraWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pExtraWeapon->m_EquipClass)))
-			{
-				m_imgExtraWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (entry.details.v1.m_iSquadSize > 1)
-		{
-			m_lblSquadMembers->SetText(VarArgs("+%d", entry.details.v1.m_iSquadSize - 1));
-		}
-		// TODO: uint64 m_iTimestamp;
-		wchar_t wszCountry[3];
-		wszCountry[0] = entry.details.v1.m_CountryCode[0];
-		wszCountry[1] = entry.details.v1.m_CountryCode[1];
-		wszCountry[2] = 0;
-		m_lblCountry->SetText(wszCountry);
-		switch (entry.details.v1.m_iDifficulty)
-		{
-		case 1:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_easy");
-			break;
-		case 2:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_normal");
-			break;
-		case 3:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_hard");
-			break;
-		case 4:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_insane");
-			break;
-		case 5:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_imba");
-			break;
-		}
-		m_lblOnslaught->SetVisible(entry.details.v1.m_iModeFlags & 1);
-		m_lblHardcoreFF->SetVisible(entry.details.v1.m_iModeFlags & 2);
-	}
-	break;
-	/*
-	case 2:
-	{
-		if (CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile(entry.details.v2.m_iMarine))
-		{
-			m_imgMarine->SetImage(VarArgs("briefing/face_%s", pMarine->m_PortraitName));
-		}
-		if (CASW_EquipItem *pPrimaryWeapon = ASWEquipmentList()->GetRegular(entry.details.v2.m_iPrimaryWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pPrimaryWeapon->m_EquipClass)))
-			{
-				m_imgPrimaryWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (CASW_EquipItem *pSecondaryWeapon = ASWEquipmentList()->GetRegular(entry.details.v2.m_iSecondaryWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pSecondaryWeapon->m_EquipClass)))
-			{
-				m_imgSecondaryWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (CASW_EquipItem *pExtraWeapon = ASWEquipmentList()->GetExtra(entry.details.v2.m_iExtraWeapon))
-		{
-			if (CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor(STRING(pExtraWeapon->m_EquipClass)))
-			{
-				m_imgExtraWeapon->SetImage(pWeaponInfo->szEquipIcon);
-			}
-		}
-		if (entry.details.v2.m_iSquadSize > 1)
-		{
-			m_lblSquadMembers->SetText(VarArgs("+%d", entry.details.v2.m_iSquadSize - 1));
-		}
-		// TODO: uint64 m_iTimestamp;
-		wchar_t wszCountry[3];
-		wszCountry[0] = entry.details.v2.m_CountryCode[0];
-		wszCountry[1] = entry.details.v2.m_CountryCode[1];
-		wszCountry[2] = 0;
-		m_lblCountry->SetText(wszCountry);
-		switch (entry.details.v2.m_iDifficulty)
-		{
-		case 1:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_easy");
-			break;
-		case 2:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_normal");
-			break;
-		case 3:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_hard");
-			break;
-		case 4:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_insane");
-			break;
-		case 5:
-			m_lblDifficulty->SetText("#L4D360UI_Difficulty_imba");
-			break;
-		}
-		m_lblOnslaught->SetVisible(entry.details.v2.m_iModeFlags & 1);
-		m_lblHardcoreFF->SetVisible(entry.details.v2.m_iModeFlags & 2);
-	}
-	break;
-	}
-	*/
 }

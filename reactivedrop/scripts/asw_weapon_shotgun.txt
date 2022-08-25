@@ -1,0 +1,56 @@
+// Alien Swarm Shotgun
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_shotgun"
+	"viewmodel"			"models/weapons/shotgun/shotgun.mdl"
+	"playermodel"			"models/weapons/shotgun/shotgun.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"1"
+
+	"clip_size"			"4"
+	"default_clip"			"4"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_SG"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+					
+	// asw properties
+	"reload_time"			"1.3"
+	"base_damage"			"25"
+	"fire_rate"				"1.0"
+	"num_pellets"			"7"
+	"equipicon"			"swarm/EquipIcons/EquipShotgun"
+	"equiplongname"			"#asw_weaponl_shotgun"
+	"equipdescription1"		"#asw_wdesc_shotgun"
+	"altfiretext"			"#asw_weapon_shotgun_altfire"
+	"attributestext"		"#asw_weapon_shotgun_attributes"
+	
+	// flinching
+	"FlinchChance"              "0.20"
+	"StoppingPowerFlinchBonus"  "0.10"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+	
+	"HUDIconOffsetX" "-4"
+
+// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"				// weapon switch
+
+		"single_shot"		"ASW_Weapon_Shotgun.FireAndPumpFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_Shotgun.FireAndPump"		// sound for other marines
+	}
+}

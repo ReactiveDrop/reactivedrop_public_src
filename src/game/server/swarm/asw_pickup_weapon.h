@@ -19,11 +19,11 @@ public:
 	CASW_Pickup_Weapon();
 
 	virtual void Spawn( void );
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );	// player has used this item
-	virtual void InitFrom(CASW_Marine* pMarine,CASW_Weapon* pWeapon);  // sets the pickup up with the contents of the specified marine+weapon
-	virtual const char* GetWeaponClass() { return "asw_weapon_rifle"; }
-	virtual void InitWeapon(CASW_Marine* pMarine, CASW_Weapon* pWeapon);
-	virtual bool AllowedToPickup(CASW_Marine *pMarine);
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType ); // player has used this item
+	virtual void InitFrom( CASW_Marine *pMarine, CASW_Weapon *pWeapon ); // sets the pickup up with the contents of the specified marine+weapon
+	virtual const char *GetWeaponClass() { return "asw_weapon_rifle"; }
+	virtual void InitWeapon( CASW_Marine *pMarine, CASW_Weapon *pWeapon );
+	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 
 	virtual int GetNumClips() { return m_iClips; }
 	virtual int GetNumBulletsInGun() { return m_iBulletsInGun; }

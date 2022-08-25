@@ -11,11 +11,11 @@
 class CASW_Door;
 class CASW_Drone_Movement;
 
-class CASW_Mortarbug : public CASW_BlendedAlien
+class CASW_Mortarbug : public CASW_Alien
 {
 public:
 
-	DECLARE_CLASS( CASW_Mortarbug, CASW_BlendedAlien  );
+	DECLARE_CLASS( CASW_Mortarbug, CASW_Alien  );
 	DECLARE_DATADESC();
 	CASW_Mortarbug( void );
 	virtual ~CASW_Mortarbug( void );
@@ -78,22 +78,22 @@ public:
 	static float s_fNextSpawnSoundTime;
 	static float s_fNextPainSoundTime;
 
+	enum
+	{
+		SCHED_ASW_MORTARBUG_SPIT = BaseClass::NEXT_SCHEDULE,
+		SCHED_ESTABLISH_LINE_OF_MORTAR_FIRE,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_MORTARBUG_SPIT = BaseClass::NEXT_TASK,
+		TASK_GET_PATH_TO_MORTAR_ENEMY,
+		NEXT_TASK,
+	};
+
 private:
 	DEFINE_CUSTOM_AI;
-};
-
-enum
-{
-	SCHED_ASW_MORTARBUG_SPIT = LAST_ASW_ALIEN_SHARED_SCHEDULE,	
-	SCHED_ESTABLISH_LINE_OF_MORTAR_FIRE,
-	LAST_ASW_MORTARBUG_SHARED_SCHEDULE,
-};
-
-enum
-{
-	TASK_MORTARBUG_SPIT = LAST_ASW_ALIEN_SHARED_TASK,
-	TASK_GET_PATH_TO_MORTAR_ENEMY,
-	LAST_ASW_MORTARBUG_SHARED_TASK,
 };
 
 #endif	//_INCLUDED_ASW_MORTARBUG_H

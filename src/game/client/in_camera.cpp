@@ -59,7 +59,7 @@ static ConVar c_thirdpersonshoulderaimdist( "c_thirdpersonshoulderaimdist", "120
 static kbutton_t cam_pitchup, cam_pitchdown, cam_yawleft, cam_yawright;
 static kbutton_t cam_in, cam_out; // -- "cam_move" is unused
 
-extern const ConVar *sv_cheats;
+extern ConVar *sv_cheats;
 extern ConVar in_forceuser;
 
 CON_COMMAND_F( cam_command, "Tells camera to change modes", FCVAR_CHEAT )
@@ -946,7 +946,7 @@ static ConCommand endcamin( "-camin", CAM_InUp );
 static ConCommand startcamout( "+camout", CAM_OutDown );
 static ConCommand camout( "-camout", CAM_OutUp );
 #ifdef INFESTED_DLL
-static ConCommand thirdperson( "thirdperson", Cmd_CAM_ToThirdPerson, "Switch to thirdperson camera." );
+static ConCommand thirdperson( "thirdperson", Cmd_CAM_ToThirdPerson, "Switch to thirdperson camera.", FCVAR_CHEAT );
 static ConCommand firstperson( "firstperson", Cmd_CAM_ToFirstPerson, "Switch to firstperson camera.", FCVAR_CHEAT );
 #else
 static ConCommand thirdperson( "thirdperson", Cmd_CAM_ToThirdPerson, "Switch to thirdperson camera.", FCVAR_CHEAT );

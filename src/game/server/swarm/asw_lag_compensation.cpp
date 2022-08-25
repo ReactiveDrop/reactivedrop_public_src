@@ -247,20 +247,20 @@ void CASW_Lag_Compensation::RequestLagCompensation(CASW_Player *player, const CU
 	if (gpGlobals->curtime - fLaggedTime < ASW_MIN_LAG_TIME)
 		return;
 
-	CASW_Marine *pMarine = player->GetMarine();
+	CASW_Inhabitable_NPC *pNPC = player->GetNPC();
 
-	for (int i=0;i<g_LagCompensatingEntities.Count();i++)
+	for ( int i = 0; i < g_LagCompensatingEntities.Count(); i++ )
 	{
-		if ( g_LagCompensatingEntities[i]->m_hOwnerEntity.Get() == pMarine )		// don't lag compensate my own marine
+		if ( g_LagCompensatingEntities[i]->m_hOwnerEntity.Get() == pNPC )		// don't lag compensate my own NPC
 			continue;
 
 		g_LagCompensatingEntities[i]->MoveToLaggedPosition( fLaggedTime );
 
-		if( sv_showlagcompensation.GetInt() == 1)
+		if ( sv_showlagcompensation.GetInt() == 1 )
 		{
 			CBaseAnimating *pAnim = g_LagCompensatingEntities[i]->m_hOwnerEntity.Get();
-			if (pAnim)
-				pAnim->DrawServerHitboxes(4, true);
+			if ( pAnim )
+				pAnim->DrawServerHitboxes( 4, true );
 		}
 	}
 }

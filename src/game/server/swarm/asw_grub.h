@@ -64,7 +64,20 @@ public:
 	virtual void AttackSound();
 	virtual void IdleSound();
 	//virtual void PrescheduleThink();
-	
+
+	enum
+	{
+		SCHED_GRUB_JUMP_FROM_GOO = BaseClass::NEXT_SCHEDULE,
+		SCHED_ASW_GRUB_WANDER_ANGRILY,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_GRUB_JUMP_FROM_GOO = BaseClass::NEXT_TASK,
+		NEXT_TASK,
+	};
+
 protected:
 	DEFINE_CUSTOM_AI;
 };

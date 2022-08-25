@@ -19,9 +19,11 @@ public:
 	virtual ~CASW_Objective_Kill_Queen();
 
 	virtual void Spawn();
+	virtual void AlienKilled( CBaseEntity *pAlien );
+	virtual float GetObjectiveProgress();
 
-	CNetworkHandle(CASW_Queen, m_hQueen);
-	string_t	m_QueenName;
+	CNetworkHandle( CASW_Queen, m_hQueen );
+	string_t m_QueenName;
 };
 
 #endif // _INCLUDED_ASW_OBJECTIVE_KILL_QUEEN_H

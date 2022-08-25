@@ -44,6 +44,7 @@ public:
 
 	void				SetProgress( float progress );
 	float				GetProgress();
+	void				SetStatusText( const char *statusText );
 
 	void				SetLoadingType( LoadingType loadingType );
 	LoadingType			GetLoadingType();
@@ -72,6 +73,7 @@ private:
 	vgui::ImagePanel	*m_pBGImage;
 	vgui::ImagePanel	*m_pPoster; 
 	vgui::EditablePanel *m_pFooter;
+	vgui::Label			*m_pLoadingText;
 	LoadingType			m_LoadingType;
 	LoadingWindowType	m_LoadingWindowType;
 

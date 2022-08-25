@@ -301,6 +301,9 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 	{
 		buf->WriteOneBit( 0 );
 	}
+
+	WriteUserCmdDeltaAngle( buf, "aimangleoffset[0]", from->aimangleoffset[ 0 ], to->aimangleoffset[ 0 ], 16 );
+	WriteUserCmdDeltaAngle( buf, "aimangleoffset[1]", from->aimangleoffset[ 1 ], to->aimangleoffset[ 1 ], 16 );
 }
 
 //-----------------------------------------------------------------------------
@@ -500,5 +503,14 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 	if ( buf->ReadOneBit() )
 	{
 		move->mousey = buf->ReadShort();
+	}
+
+	if ( buf->ReadOneBit() )
+	{
+		move->aimangleoffset[0] = buf->ReadBitAngle( 16 );
+	}
+	if ( buf->ReadOneBit() )
+	{
+		move->aimangleoffset[1] = buf->ReadBitAngle( 16 );
 	}
 }

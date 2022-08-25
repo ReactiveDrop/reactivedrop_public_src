@@ -31,6 +31,9 @@
 #include "sendprop_priorities.h"
 #include "asw_spawn_manager.h"
 #include "gameinterface.h"
+#include "asw_ai_behavior_ranged_attack.h"
+#include "asw_player.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -112,6 +115,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Alien, DT_ASW_Alien)
 	SendPropInt( SENDINFO(m_nDeathStyle), CASW_Alien::kDEATHSTYLE_NUM_TRANSMIT_BITS , SPROP_UNSIGNED ),
 	SendPropInt		(SENDINFO(m_iHealth), ASW_ALIEN_HEALTH_BITS ),
 	//SendPropBool(SENDINFO(m_bGibber)),
+	SendPropFloat( SENDINFO( m_flAlienWalkSpeed ) ),
+	SendPropBool( SENDINFO( m_bInhabitedMovementAllowed ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Alien )
@@ -191,14 +196,15 @@ CASW_Alien::CASW_Alien( void ) :
 	m_bIgnoreMarines = false;
 	m_fLastSleepCheckTime = 0;
 	m_bVisibleWhenAsleep = false;
-    m_bFlammable = true; 
-    m_bTeslable = true; 
-    m_bFreezable = true; 
-    m_bFlinchable = true; 
+	m_bWasOnFireForStats = false;
+	m_bFlammable = true;
+	m_bTeslable = true;
+	m_bFreezable = true;
+	m_bFlinchable = true;
 	m_bGrenadeReflector = false;
 	m_iHealthBonus = 0;
-    m_fSizeScale = 1.0f; 
-    m_fSpeedScale = 1.0f; 
+	m_fSizeScale = 1.0f;
+	m_fSpeedScale = 1.0f;
 
 	m_fLastMarineCanSeeTime = -100;
 	m_bLastMarineCanSee = false;
@@ -210,6 +216,9 @@ CASW_Alien::CASW_Alien( void ) :
 	m_nDeathStyle = kDIE_RAGDOLLFADE;
 	m_flBaseThawRate = 0.5f;
 	m_flFrozenTime = 0.0f;
+	m_flAlienWalkSpeed = 0.0f;
+	m_bInhabitedMovementAllowed = false;
+	m_bNoTranslateNextSchedule = false;
 
 	m_UnburrowActivity = (Activity) ACT_BURROW_OUT;
 	m_UnburrowIdleActivity = (Activity) ACT_BURROW_IDLE;
@@ -351,7 +360,7 @@ void CASW_Alien::Spawn()
 	if ( event )
 	{
 		event->SetInt( "entindex", entindex() );
-		gameeventmanager->FireEvent( event );
+		gameeventmanager->FireEvent( event, true );
 	}
 }
 
@@ -508,7 +517,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 			Wake();
 
 		bInPVS = MarineCanSee(384, 0.1f);
-		if ( bInPVS )
+		if ( bInPVS || IsInhabited() )
 			SetCondition( COND_IN_PVS );
 		else
 			ClearCondition( COND_IN_PVS );
@@ -533,7 +542,7 @@ void CASW_Alien::UpdateSleepState(bool bInPVS)
 			if( m_fLastSleepCheckTime < gpGlobals->curtime + ASW_ALIEN_SLEEP_CHECK_INTERVAL )
 			{
 				//if (!GetEnemy() && !MarineNearby(1024.0f) )
-				if (!GetEnemy() && !MarineCanSee(384, 2.0f) )
+				if (!GetEnemy() && !MarineCanSee(384, 2.0f) && !IsInhabited() )
 				{
 					SetSleepState( AISS_WAITING_FOR_PVS );
 
@@ -1569,6 +1578,20 @@ void CASW_Alien::AddZigZagToPath(void)
 
 int CASW_Alien::TranslateSchedule( int scheduleType )
 {
+	if ( m_bNoTranslateNextSchedule )
+	{
+		m_bNoTranslateNextSchedule = false;
+	}
+	else if ( IsInhabited() )
+	{
+		if ( scheduleType == SCHED_SMALL_FLINCH || scheduleType == SCHED_BIG_FLINCH || scheduleType == SCHED_DIE || scheduleType == SCHED_DIE_RAGDOLL || scheduleType == SCHED_SLEEP )
+		{
+			return scheduleType;
+		}
+
+		return SCHED_ASW_INHABITED;
+	}
+
 	if (scheduleType == SCHED_CHASE_ENEMY)
 		return SCHED_ASW_ALIEN_CHASE_ENEMY;
 
@@ -1578,9 +1601,9 @@ int CASW_Alien::TranslateSchedule( int scheduleType )
 	{
 		if ( ShouldStopBeforeMeleeAttack() )
 		{
-			return SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1;
+			return IsInhabited() ? SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1_INHABITED : SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1;
 		}
-		return SCHED_ASW_ALIEN_MELEE_ATTACK1;
+		return IsInhabited() ? SCHED_ASW_ALIEN_MELEE_ATTACK1_INHABITED : SCHED_ASW_ALIEN_MELEE_ATTACK1;
 	}
 
 	return i;
@@ -1632,7 +1655,6 @@ void CASW_Alien::SetupPushawayVector()
 	CASW_Alien *pOtherAlien;
 	Vector vecPush;
 	vecPush.Init();
-	bool m_bPushed = false;
 	float flSpringColRadius = GetSpringColRadius();
 	// go through all aliens
 
@@ -1654,7 +1676,7 @@ void CASW_Alien::SetupPushawayVector()
 					dist = 1;
 				float push_amount = flSpringColRadius / dist;
 				vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-				m_bPushed = true;
+				//m_bPushed = true;
 			}
 		}
 	}
@@ -1688,7 +1710,7 @@ void CASW_Alien::SetupPushawayVector()
 			}
 			float push_amount = flSpringColRadius / dist;
 			vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-			m_bPushed = true;
+			//m_bPushed = true;
 		}
 	}
 	// push away from tesla traps
@@ -1707,7 +1729,7 @@ void CASW_Alien::SetupPushawayVector()
 			}
 			float push_amount = flSpringColRadius / dist;
 			vecPush += push_amount * diff * asw_springcol_force_scale.GetFloat();
-			m_bPushed = true;
+			//m_bPushed = true;
 		}
 	}
 	// cap the push vector
@@ -1833,6 +1855,32 @@ AI_BEGIN_CUSTOM_NPC( asw_alien, CASW_Alien )
 		"		COND_HEAVY_DAMAGE"
 		"		COND_ENEMY_OCCLUDED"
 		);
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_ALIEN_MELEE_ATTACK1_INHABITED,
+
+		"	Tasks"
+		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+		"		TASK_MELEE_ATTACK1		0"
+		""
+		"	Interrupts"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+	);
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_ALIEN_SLOW_MELEE_ATTACK1_INHABITED,
+
+		"	Tasks"
+		"		TASK_STOP_MOVING		1"
+		"		TASK_WAIT				0.1"
+		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+		"		TASK_MELEE_ATTACK1		1"
+		""
+		"	Interrupts"
+		"		COND_LIGHT_DAMAGE"
+		"		COND_HEAVY_DAMAGE"
+	);
 
 	DEFINE_SCHEDULE
 	(
@@ -1932,6 +1980,17 @@ AI_BEGIN_CUSTOM_NPC( asw_alien, CASW_Alien )
 		"	Tasks"
 		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_BURROW_WAIT"
 		"		TASK_UNBURROW			0"
+		""
+		"	Interrupts"
+		"		COND_TASK_FAILED"
+	)
+
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_INHABITED,
+
+		"	Tasks"
+		"		TASK_WAIT			0.1"
 		""
 		"	Interrupts"
 		"		COND_TASK_FAILED"
@@ -3240,10 +3299,10 @@ void CASW_Alien::LookupBurrowActivities()
 		m_UnburrowActivity = (Activity) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
+			DevWarning( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowActivity = (Activity) ACT_BURROW_OUT;
 		}
@@ -3258,12 +3317,137 @@ void CASW_Alien::LookupBurrowActivities()
 		m_UnburrowIdleActivity = (Activity) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
 		if ( m_UnburrowIdleActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
+			DevWarning( "Unknown unburrow idle activity %s\n", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
-				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
+				DevWarning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
 			}
 			m_UnburrowIdleActivity = (Activity) ACT_BURROW_IDLE;
+		}
+	}
+}
+
+void CASW_Alien::PhysicsSimulate()
+{
+	if ( !IsInhabited() )
+	{
+		BaseClass::PhysicsSimulate();
+
+		return;
+	}
+
+	Assert( GetCommander() );
+	if ( !GetCommander() )
+	{
+		UninhabitedBy( NULL );
+		return;
+	}
+
+	if ( !IsCurSchedule( SCHED_ASW_INHABITED, false ) )
+	{
+		m_bInhabitedMovementAllowed = false;
+
+		SetMoveType( MOVETYPE_STEP );
+		BaseClass::PhysicsSimulate();
+		SetMoveType( MOVETYPE_WALK );
+		return;
+	}
+
+	m_bInhabitedMovementAllowed = true;
+
+	const float flMinSpeed = 15.0f;
+	float flSpeed = GetLocalVelocity().Length();
+	Activity wantActivity = flSpeed > flMinSpeed ? ACT_WALK : ACT_IDLE;
+	int wantSeq = SelectHeaviestSequence( wantActivity );
+
+	if ( wantSeq != -1 )
+	{
+		if ( GetSequence() != wantSeq )
+		{
+			SetIdealSequence( wantSeq );
+		}
+	}
+	else if ( GetIdealActivity() != wantActivity )
+	{
+		SetIdealActivity( wantActivity );
+	}
+	MaintainActivity();
+	StudioFrameAdvance();
+
+	float flMoveYaw = UTIL_VecToYaw( GetLocalVelocity() );
+	float flFaceYaw = GetAbsAngles().y;
+
+	SetPoseParameter( LookupPoseMoveYaw(), AngleDiff( flMoveYaw, flFaceYaw ) );
+
+	if ( flSpeed > flMinSpeed )
+	{
+		float flSeqSpeed = GetSequenceGroundSpeed( GetSequence() );
+		SetPlaybackRate( flSpeed / flSeqSpeed );
+		m_flAlienWalkSpeed = flSeqSpeed;
+	}
+	else
+	{
+		SetPlaybackRate( 1.0f );
+	}
+
+	SetInhabitedAlienAttackSchedule();
+}
+
+void CASW_Alien::InhabitedBy( CASW_Player *player )
+{
+	SetInhabited( true );
+
+	TaskFail( FAIL_NO_PLAYER );
+	MDLCACHE_CRITICAL_SECTION();
+	NPCThink();
+	GetNavigator()->StopMoving( true );
+	SetPoseParameter( LookupPoseMoveYaw(), 0.0f );
+
+	Assert( GetMoveType() == MOVETYPE_STEP );
+	SetMoveType( MOVETYPE_WALK );
+
+	int seq = SelectHeaviestSequence( ACT_WALK );
+	m_flAlienWalkSpeed = GetSequenceGroundSpeed( seq );
+	Assert( m_flAlienWalkSpeed > 0.0f );
+
+	SetEnemy( NULL );
+}
+
+void CASW_Alien::UninhabitedBy( CASW_Player *player )
+{
+	SetInhabited( false );
+
+	TaskFail( FAIL_NO_PLAYER );
+	Assert( GetMoveType() == MOVETYPE_WALK );
+	SetMoveType( MOVETYPE_STEP );
+}
+
+bool CASW_Alien::IsValidEnemy( CBaseEntity *pEnemy )
+{
+	if ( IsInhabited() )
+	{
+		return false;
+	}
+
+	return BaseClass::IsValidEnemy( pEnemy );
+}
+
+void CASW_Alien::SetInhabitedAlienAttackSchedule()
+{
+	if ( GetCommander()->m_nButtons & IN_ATTACK )
+	{
+		CAI_ASW_RangedAttackBehavior *pRangedAttack = NULL;
+		if ( GetBehavior<CAI_ASW_RangedAttackBehavior>( &pRangedAttack ) )
+		{
+			m_bNoTranslateNextSchedule = true;
+			DeferSchedulingToBehavior( pRangedAttack );
+			SetSchedule( CAI_ASW_RangedAttackBehavior::SCHED_RANGED_ATTACK_INHABITED );
+		}
+		else if ( MeleeAttack1Conditions( 0, 0 ) != COND_NONE )
+		{
+			m_bNoTranslateNextSchedule = true;
+			DeferSchedulingToBehavior( NULL );
+			SetSchedule( SCHED_MELEE_ATTACK1 );
 		}
 	}
 }

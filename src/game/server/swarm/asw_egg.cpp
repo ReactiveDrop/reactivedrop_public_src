@@ -588,6 +588,15 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 		{
 			pMarine->GetMarineResource()->m_iEggKills++;
 		}
+		CASW_Player *pCommander = pMarine->GetCommander();
+		if ( pCommander && pMarine->IsInhabited() )
+		{
+			CSingleUserRecipientFilter filter( pCommander );
+			filter.MakeReliable();
+			UserMessageBegin( filter, "RDAlienKillStat" );
+				WRITE_SHORT( -1 );
+			MessageEnd();
+		}
 	}
 	if ( ASWGameResource() )
 	{
@@ -597,7 +606,7 @@ void CASW_Egg::Event_Killed( const CTakeDamageInfo &info )
 			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
 			{
 				CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-				if ( !pPlayer || !pPlayer->IsConnected() || !pPlayer->GetMarine() )
+				if ( !pPlayer || !pPlayer->IsConnected() || !CASW_Marine::AsMarine( pPlayer->GetNPC() ) )
 					continue;
 
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_EGGS_BEFORE_HATCH );

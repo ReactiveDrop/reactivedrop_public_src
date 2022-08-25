@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:  ASW version of hud_chat.cpp (exclude hud_chat.cpp from build)
 //
@@ -21,6 +21,7 @@
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "c_asw_game_resource.h"
+#include "rd_text_filtering.h"
 
 DECLARE_HUDELEMENT_FLAGS( CHudChat, HUDELEMENT_SS_FULLSCREEN_ONLY );
 
@@ -58,6 +59,7 @@ CHudChat::CHudChat( const char *pElementName ) : BaseClass( pElementName )
 {
 	SetProportional( false );
 	m_bBriefingPosition = false;
+	m_bSkipNextReset = false;
 
 	m_pSwarmBackground = new vgui::Panel( this, "SwarmBackground" );
 	m_pSwarmBackgroundInner = new vgui::Panel( this, "SwarmBackgroundInner" );
@@ -70,6 +72,17 @@ void CHudChat::Init( void )
 	HOOK_HUD_MESSAGE( CHudChat, SayText );
 	HOOK_HUD_MESSAGE( CHudChat, SayText2 );
 	HOOK_HUD_MESSAGE( CHudChat, TextMsg );
+}
+
+void CHudChat::Reset( void )
+{
+	if ( m_bSkipNextReset )
+	{
+		m_bSkipNextReset = false;
+		return;
+	}
+
+	BaseClass::Reset();
 }
 
 void CHudChat::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -113,6 +126,10 @@ void CHudChat::MsgFunc_SayText2( bf_read &msg )
 	ReadLocalizedString( msg, szBuf[3], sizeof( szBuf[3] ), true );
 	ReadLocalizedString( msg, szBuf[4], sizeof( szBuf[4] ), true );
 
+	CSteamID playerSteamID = g_RDTextFiltering.GetClientSteamID( client );
+	g_RDTextFiltering.FilterTextName( szBuf[1], playerSteamID );
+	g_RDTextFiltering.FilterTextChat( szBuf[2], playerSteamID );
+
 	g_pVGuiLocalize->ConstructString( szBuf[5], sizeof( szBuf[5] ), msg_text, 4, szBuf[1], szBuf[2], szBuf[3], szBuf[4] );
 
 	char ansiString[512];
@@ -154,6 +171,10 @@ void CHudChat::MsgFunc_SayText( bf_read &msg )
 
 	int iPlayerID = msg.ReadByte(); // client ID
 	msg.ReadString( szString, sizeof(szString) );
+
+	CSteamID playerSteamID = g_RDTextFiltering.GetClientSteamID( iPlayerID );
+	g_RDTextFiltering.FilterTextChat( szString, playerSteamID );
+
 	//Printf( CHAT_FILTER_NONE, "%s", szString );
 	ChatPrintf( iPlayerID, CHAT_FILTER_PUBLICCHAT, "%s", szString );
 }
@@ -207,6 +228,7 @@ void CHudChat::MsgFunc_TextMsg( bf_read &msg )
 					StripEndNewlineFromString( tmpStr );  // these strings are meant for subsitution into the main strings, so cull the automatic end newlines
 				}
 				g_pVGuiLocalize->ConvertANSIToUnicode( tmpStr, szBuf[i], sizeof(szBuf[i]) );
+				g_RDTextFiltering.FilterTextUnknown( szBuf[i] );
 			}
 		}
 	}
@@ -362,6 +384,14 @@ void CHudChat::InsertBlankPage()
 	}
 }
 
+void CHudChat::ClearHistory()
+{
+	if ( GetChatHistory() )
+	{
+		GetChatHistory()->SetText( "" );
+	}
+}
+
 Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 {
 	Color c;
@@ -369,9 +399,15 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 	{
 	case COLOR_PLAYERNAME:
 		{
-			CASW_Player* pPlayer = dynamic_cast<CASW_Player*>( UTIL_PlayerByIndex( clientIndex ) );
-			CASW_Marine* pMarine = pPlayer ? pPlayer->GetMarine() : NULL;
+			CASW_Player *pPlayer = dynamic_cast< CASW_Player * >( UTIL_PlayerByIndex( clientIndex ) );
+			CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			{
+				c = pPlayer->GetTeamNumber() == TEAM_ALPHA ? g_ColorRed : g_ColorBlue;
+				break;
+			}
+			
 			if ( rd_chat_colorful_player_names.GetBool() && pMarine )
 			{
 				int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
@@ -381,7 +417,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 					break;
 				}
 			}
-			c = GetClientColor( clientIndex );
+			c = g_ColorBlue;
 		}
 		break;
 	case COLOR_LOCATION:
@@ -400,7 +436,13 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 			}
 		}
 		break;
-
+	case COLOR_MOD_CUSTOM:
+		c = g_ColoPurple;
+		break;
+	case COLOR_MOD_CUSTOM2:
+		c = g_ColorRed;
+		break;
+	
 	default:
 		c = GetClientColor( clientIndex );
 		//c = g_ASWColorWhite;
@@ -420,35 +462,26 @@ Color CHudChat::GetClientColor( int clientIndex )
 	return cl_chatcolor.GetColor();
 }
 
-void CHudChat::OnTick()
-{
-	BaseClass::OnTick();
-
-	if ( !GetChatHistory() )
-		return;
-
-	if ( ASWGameRules() && 
-		( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF || ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP ) && rd_chatwipe.GetBool() )
-	{
-		//m_flHistoryFadeTime = gpGlobals->curtime;
-		GetChatHistory()->SetVerticalScrollbar( false );
-	}	
-
- 	int iLines = 7;
-	GetChatHistory()->SetBounds( YRES( 10 ), YRES( 10 ), YRES( 300 ), m_iFontHeight * iLines );
-
-	// hack to fix visibility of the scrollbar
-	//GetChatHistory()->SetVerticalScrollbar( IsKeyBoardInputEnabled() );   	// scroll bar always visible if we're hijacked into the debrief
-}
-
 void CHudChat::StartMessageMode( int iMessageModeType )
 {
 	BaseClass::StartMessageMode( iMessageModeType );
+
+	if ( SteamUtils() )
+	{
+		int x, y, w, t;
+		GetBounds( x, y, w, t );
+		SteamUtils()->ShowFloatingGamepadTextInput( k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+	}
 }
 
 void CHudChat::StopMessageMode( bool bFade )
 {
 	BaseClass::StopMessageMode( bFade );
+
+	if ( SteamUtils() )
+	{
+		SteamUtils()->DismissFloatingGamepadTextInput();
+	}
 }
 
 void CHudChat::ShowChatPanel()
@@ -513,19 +546,30 @@ void CHudChat::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
-	if ( m_bBriefingPosition )
-	{
-		int x = ( ScreenWidth() * 0.5f ) - YRES( 264 );		
-		SetPos( x, YRES( 349 ) );
+	//if ( m_bBriefingPosition )
+	//{
+		int x = ( ScreenWidth() * 0.5f ) - YRES( 235 );		
+		SetPos( x, YRES( 355 ) );
 
 		int iLines = 7;
-		int iHistoryHeight = m_iFontHeight * iLines;
-		SetSize( YRES( 319 ), YRES( 20 ) + iHistoryHeight + m_iFontHeight );
-	}
-	else
-	{
-		SetPos( YRES( 110 ), YRES( 345 ) );
-	}
+		int iHistoryHeight = ( m_iFontHeight * iLines ) + m_iFontHeight;
+		SetSize( YRES( 275 ), YRES( 20 ) + iHistoryHeight );
+		if ( GetChatHistory() )
+		{
+			GetChatHistory()->GetScrollBar()->SetSize( 16, iHistoryHeight );
+			if (GetChatInput())
+			{
+				int w, t;
+				GetChatHistory()->GetSize(w, t);
+				GetChatInput()->SetSize(w, m_iFontHeight);
+			}
+		}
+	//}
+	//else
+	//{
+	//	int x = ( ScreenWidth() * 0.5f ) - YRES( 160 );
+	//	SetPos( x, YRES( 360 ) );
+	//}
 
 	m_pSwarmBackground->SetBounds( 0, 0, GetWide(), GetTall() );
 	m_pSwarmBackground->SetZPos( 0 );

@@ -27,7 +27,7 @@ extern ConVar asw_debug_marine_damage;
 extern ConVar ai_show_hull_attacks;
 #endif
 
-ConVar rd_marine_ff_fist("rd_marine_ff_fist", "0", FCVAR_REPLICATED, "If set to 1, enables friendly fire for fist attacks.");
+ConVar rd_marine_ff_fist("rd_marine_ff_fist", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If set to 1, enables friendly fire for fist attacks.");
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -137,7 +137,7 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 
 		if ( m_pAttackDir && m_bConeFilter )
 		{
-			float flAttackDot = m_pAttackDir->Dot( vecAttackDirFlat );
+			flAttackDot = m_pAttackDir->Dot( vecAttackDirFlat );
 
 			if ( flAttackDot < m_flMinAttackDot )
 			{
@@ -187,12 +187,12 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 		{
 			CASW_Trace_Filter_Skip_Marines skip_marines_filter( COLLISION_GROUP_NONE );
 			UTIL_TraceLine( vecAttackerCenter, pEntity->WorldSpaceCenter(),	// check center to center
-				MASK_BLOCKLOS_AND_NPCS, &skip_marines_filter, tr2 );
+				MASK_BLOCKLOS_AND_NPCS | CONTENTS_HITBOX, &skip_marines_filter, tr2 );
 		}
 		else
 		{
 			UTIL_TraceLine( vecAttackerCenter, pEntity->WorldSpaceCenter(),	// check center to center
-				MASK_BLOCKLOS_AND_NPCS, m_hAttacker, COLLISION_GROUP_NONE, tr2 );
+				MASK_BLOCKLOS_AND_NPCS | CONTENTS_HITBOX, m_hAttacker, COLLISION_GROUP_NONE, tr2 );
 		}
 		if ( !tr2->DidHit() || tr2->m_pEnt != pEntity )
 		{

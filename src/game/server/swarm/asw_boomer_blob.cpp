@@ -38,6 +38,7 @@ BEGIN_DATADESC( CASW_Boomer_Blob )
 	DEFINE_THINKFUNC( Detonate ),
 	DEFINE_FIELD( m_fDetonateTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fEarliestAOEDetonationTime, FIELD_TIME ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "CreateEffects", InputCreateEffects ),
 END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
@@ -163,9 +164,12 @@ void CASW_Boomer_Blob::Touch( CBaseEntity *pOther )
 
 	if ( pOther->m_takedamage == DAMAGE_NO )
 	{
-		if (GetAbsVelocity().Length2D() > 60)
+		if ( GetAbsVelocity().Length2D() > 60 )
 		{
-			EmitSound("Grenade.ImpactHard");
+			if ( !m_bSilent )
+			{
+				EmitSound( "Grenade.ImpactHard" );
+			}
 		}
 	}
 
@@ -294,7 +298,10 @@ void CASW_Boomer_Blob::DoExplosion( )
 
 	// explosion effects
 	DispatchParticleEffect( "boomer_drop_explosion", GetAbsOrigin(), Vector( m_DmgRadius, 0.0f, 0.0f ), QAngle( 0.0f, 0.0f, 0.0f ) );
-	EmitSound( "ASW_Boomer_Grenade.Explode" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASW_Boomer_Grenade.Explode" );
+	}
 
 	// damage to nearby things
 	ASWGameRules()->RadiusDamage( CTakeDamageInfo( this, m_hFirer.Get(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
@@ -353,5 +360,13 @@ void CASW_Boomer_Blob::CreateEffects()
 	CPASFilter filter( data.m_vOrigin );
 	filter.SetIgnorePredictionCull(true);
 	DispatchParticleEffect( "boomer_projectile_main_trail", PATTACH_ABSORIGIN_FOLLOW, this, -1, false, -1, &filter );
-	EmitSound( "ASW_Boomer_Projectile.Spawned" );
+	if ( !m_bSilent )
+	{
+		EmitSound( "ASW_Boomer_Projectile.Spawned" );
+	}
+}
+
+void CASW_Boomer_Blob::InputCreateEffects( inputdata_t &data )
+{
+	CreateEffects();
 }

@@ -41,9 +41,9 @@ extern ConVar asw_cam_marine_yaw;
 int in_impulse[ MAX_SPLITSCREEN_PLAYERS ];
 static int in_cancel[ MAX_SPLITSCREEN_PLAYERS ];
 
-ConVar cl_anglespeedkey( "cl_anglespeedkey", "0.67", 0 );
-ConVar cl_yawspeed( "cl_yawspeed", "210", 0 );
-ConVar cl_pitchspeed( "cl_pitchspeed", "225", 0 );
+ConVar cl_anglespeedkey( "cl_anglespeedkey", "0.67", FCVAR_CHEAT );
+ConVar cl_yawspeed( "cl_yawspeed", "210", FCVAR_CHEAT );
+ConVar cl_pitchspeed( "cl_pitchspeed", "225", FCVAR_CHEAT );
 ConVar cl_pitchdown( "cl_pitchdown", "89", FCVAR_CHEAT );
 ConVar cl_pitchup( "cl_pitchup", "89", FCVAR_CHEAT );
 ConVar cl_sidespeed( "cl_sidespeed", "450", FCVAR_CHEAT );
@@ -54,7 +54,7 @@ ConVar lookspring( "lookspring", "0", FCVAR_ARCHIVE );
 ConVar lookstrafe( "lookstrafe", "0", FCVAR_ARCHIVE );
 
 void IN_JoystickChangedCallback_f( IConVar *pConVar, const char *pOldString, float flOldValue );
-ConVar in_joystick( "joystick","0", FCVAR_ARCHIVE, "True if the joystick is enabled, false otherwise.", IN_JoystickChangedCallback_f );
+ConVar in_joystick( "joystick","1", FCVAR_ARCHIVE, "True if the joystick is enabled, false otherwise.", IN_JoystickChangedCallback_f );
 
 ConVar thirdperson_platformer( "thirdperson_platformer", "0", 0, "Player will aim in the direction they are moving." );
 ConVar thirdperson_screenspace( "thirdperson_screenspace", "0", 0, "Movement will be relative to the camera, eg: left means screen-left" );

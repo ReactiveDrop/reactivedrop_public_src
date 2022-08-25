@@ -22,15 +22,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar asw_auto_override_computer( "asw_auto_override_computer", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+
 void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine,  CUserCmd *ucmd, float fDeltaTime)
 {
-	if (m_bLastAllCorrect)	// don't do any processing the puzzle became correct
+	if ( m_bLastAllCorrect )	// don't do any processing the puzzle became correct
 		return;
 	// todo: make sure we don't rotate them twice for the same tick?
 
 #ifndef CLIENT_DLL
 	// check for auto overriding
-	if ( GetComputerArea() && pMarine )
+	if ( GetComputerArea() && pMarine && asw_auto_override_computer.GetBool() )
 	{
 		if ( pMarine->GetMarineProfile()->CanHack() && GetComputerArea()->m_bIsLocked
 			&& m_iShowOption.Get() != ASW_HACK_OPTION_OVERRIDE && gpGlobals->curtime > GetComputerArea()->m_fAutoOverrideTime )

@@ -2,6 +2,7 @@
 #include "c_asw_objective_kill_aliens.h"
 #include <vgui/ILocalize.h>
 #include <vgui_controls/Panel.h>
+#include "asw_alien_classes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,48 +76,24 @@ void C_ASW_Objective_Kill_Aliens::FindText()
 	m_bFoundText = true;
 }
 
-wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
+const wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
 {
-	switch (m_AlienClassNum)
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
 	{
-		case 8:	// any drone
-		case 0:
-		case 7:
-		{
-			return g_pVGuiLocalize->Find("#asw_drones");
-		}
-		break;		
-		case 6: return g_pVGuiLocalize->Find("#asw_harvesters"); break;
-		case 5: return g_pVGuiLocalize->Find("#asw_drone_jumpers"); break;
-		case 4: return g_pVGuiLocalize->Find("#asw_grubs"); break;
-		case 3: return g_pVGuiLocalize->Find("#asw_shieldbugs"); break;
-		case 2: return g_pVGuiLocalize->Find("#asw_parasites"); break;
-		case 1: return g_pVGuiLocalize->Find("#asw_buzzers"); break;
-		default: return NULL;
+		return NULL;
 	}
-	return NULL;
+
+	return g_pVGuiLocalize->Find( VarArgs( "#%ss", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
 }
 
-wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
+const wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
 {
-	switch (m_AlienClassNum)
+	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
 	{
-		case 8:	// any drone
-		case 0:
-		case 7:
-		{
-			return g_pVGuiLocalize->Find("#asw_drone");
-		}
-		break;		
-		case 6: return g_pVGuiLocalize->Find("#asw_harvester"); break;
-		case 5: return g_pVGuiLocalize->Find("#asw_drone_jumper"); break;
-		case 4: return g_pVGuiLocalize->Find("#asw_grub"); break;
-		case 3: return g_pVGuiLocalize->Find("#asw_shieldbug"); break;
-		case 2: return g_pVGuiLocalize->Find("#asw_parasite"); break;
-		case 1: return g_pVGuiLocalize->Find("#asw_buzzer"); break;
-		default: return NULL;
+		return NULL;
 	}
-	return NULL;
+
+	return g_pVGuiLocalize->Find( VarArgs( "#%s", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
 }
 
 float C_ASW_Objective_Kill_Aliens::GetObjectiveProgress()

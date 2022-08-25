@@ -3,7 +3,7 @@
 
 #include "c_asw_generic_emitter.h"
 
-class C_ASW_Marine;
+class C_ASW_Inhabitable_NPC;
 
 class CASWSnowEmitter : public CASWGenericEmitter
 {
@@ -15,7 +15,7 @@ public:
 	// creates a single particle	
 	virtual ASWParticle*	AddASWParticle( PMaterialHandle hMaterial, const Vector &vOrigin, float flDieTime=3, unsigned char uchSize=10 );
 
-	CHandle<C_ASW_Marine> m_hLastMarine;
+	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
 
 private:
 	CASWSnowEmitter( const CASWSnowEmitter & ); // not defined, not accessible

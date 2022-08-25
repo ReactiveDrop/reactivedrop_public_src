@@ -54,31 +54,36 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 		}
 		wchar_t wszChallenge[256];
 		const wchar_t *pwszChallenge = NULL;
-		const char *szChallenge = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:displaytitle" );
-		if ( *szChallenge == '#' )
+		const char *szChallengeTitle = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:displaytitle" );
+		if ( *szChallengeTitle == '#' )
 		{
-			pwszChallenge = g_pVGuiLocalize->Find( szChallenge );
+			pwszChallenge = g_pVGuiLocalize->Find( szChallengeTitle );
 		}
 		if ( !pwszChallenge )
 		{
-			g_pVGuiLocalize->ConvertANSIToUnicode( szChallenge, wszChallenge, sizeof( wszChallenge ) );
+			g_pVGuiLocalize->ConvertANSIToUnicode( szChallengeTitle, wszChallenge, sizeof( wszChallenge ) );
 			pwszChallenge = wszChallenge;
 		}
 		g_pVGuiLocalize->ConstructString( wszTitle, sizeof( wszTitle ), L"%s1: %s2", 2, pwszMission, pwszChallenge );
 		m_pLeaderboard->SetTitle( wszTitle );
 	}
 
-	char szLeaderboardName[k_cchLeaderboardNameMax];
+	char szLeaderboardName[k_cchLeaderboardNameMax]{};
 	if ( rd_leaderboard_by_difficulty.GetBool() && ASWGameRules()->GetSkillLevel() > 2 )
 	{
 		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules()->GetSkillLevel(), szMap, nMapID, szChallenge, nChallengeID );
 	}
-	else
+	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
 	}
+	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
+	{
+		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, "0", k_PublishedFileIdInvalid );
+		m_pLeaderboard->SetTitle( UTIL_RD_GetCurrentLobbyData( "game:missioninfo:displaytitle" ) );
+	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->FindLeaderboard( szLeaderboardName );
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardFind );
 }
 
@@ -117,7 +122,9 @@ void CNB_Leaderboard_Panel::LeaderboardFind( LeaderboardFindResult_t *pResult, b
 		return;
 	}
 
-	SteamAPICall_t hCall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+	m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardDownload );
 }
 

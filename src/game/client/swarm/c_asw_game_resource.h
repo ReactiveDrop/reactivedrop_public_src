@@ -5,13 +5,13 @@
 #include "c_baseentity.h"	
 #include "asw_shareddefs.h"
 #include "asw_marine_skills.h"
+#include "rd_missions_shared.h"
 
 class C_ASW_Objective;
 class C_ASW_Marine_Resource;
 class C_ASW_Marine;
 class C_ASW_Player;
 class C_ASW_Scanner_Info;
-class CASW_Campaign_Info;
 class C_ASW_Campaign_Save;
 class CASW_Marine_Profile;
 
@@ -138,7 +138,7 @@ public:
 	// access the singleton info struct giving info on marines close to crosshairs
 	inline CMarineToCrosshairInfo *GetMarineCrosshairCache() { return &m_marineToCrosshairInfo; } 
 
-	CASW_Campaign_Info* m_pCampaignInfo;
+	CampaignHandle m_pCampaignInfo;
 
 	// money
 	int  GetMoney() { return m_iMoney; }

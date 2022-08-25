@@ -119,9 +119,13 @@ int CASW_Ammo_Drop::UpdateTransmitState()
 	return SetTransmitState( FL_EDICT_FULLCHECK );
 }
 
-void CASW_Ammo_Drop::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+void CASW_Ammo_Drop::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
 		return;
 
 	CASW_Weapon *pWeapon = GetAmmoUseUnits( pMarine );
@@ -194,15 +198,15 @@ void CASW_Ammo_Drop::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 	}
 }
 
-void CASW_Ammo_Drop::MarineUsing(CASW_Marine* pMarine, float deltatime)
+void CASW_Ammo_Drop::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 {
 }
 
-void CASW_Ammo_Drop::MarineStartedUsing(CASW_Marine* pMarine)
+void CASW_Ammo_Drop::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 }
- 
-void CASW_Ammo_Drop::MarineStoppedUsing(CASW_Marine* pMarine)
+
+void CASW_Ammo_Drop::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 {
 }
 

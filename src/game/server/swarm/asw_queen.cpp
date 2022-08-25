@@ -21,6 +21,7 @@
 #include "asw_weapon_assault_shotgun_shared.h"
 #include "asw_weapon_deagle_shared.h"
 #include "asw_sentry_base.h"
+#include "asw_melee_system.h"
 #include "props.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -102,6 +103,7 @@ ConVar asw_queen_force_parasite_spawn("asw_queen_force_parasite_spawn", "0", FCV
 ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spit");
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
+extern ConVar asw_fist_finisher_damage_scale;
 extern ConVar asw_debug_alien_damage;
 
 #define ASW_QUEEN_CLAW_MINS Vector(-asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat() * 2.0f)
@@ -1066,9 +1068,9 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 					Vector sparkNormal = GetAbsOrigin() - position;
 					sparkNormal.z = 0;
 					sparkNormal.NormalizeInPlace();
-					CPVSFilter filter( position );
-					filter.SetIgnorePredictionCull(true);		
-					te->Sparks( filter, 0.0, &position, 1, 1, &sparkNormal );
+					CPVSFilter filter2( position );
+					filter2.SetIgnorePredictionCull(true);		
+					te->Sparks( filter2, 0.0, &position, 1, 1, &sparkNormal );
 				}
 			}
 		}
@@ -1329,6 +1331,16 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	
 	// reduce all damage because the queen is TUFF!
 	damage *= 0.2f;
+
+	if ( info.GetDamageType() & DMG_CLUB )
+	{
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker );
+		if ( pMarine && pMarine->HasPowerFist() && pMarine->m_iMeleeAttackID == CASW_Melee_System::s_nComboFinishAttackID )
+		{
+			// power fist combo bonus doesn't apply to queens
+			damage /= asw_fist_finisher_damage_scale.GetFloat();
+		}
+	}
 
 	// reduce damage from shotguns and mining laser
 	if (info.GetDamageType() & DMG_ENERGYBEAM)

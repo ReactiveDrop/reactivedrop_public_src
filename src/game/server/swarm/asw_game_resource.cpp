@@ -5,7 +5,6 @@
 #include "asw_scanner_info.h"
 #include "asw_player.h"
 #include "asw_campaign_save.h"
-#include "asw_campaign_info.h"
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "asw_deathmatch_mode.h"
@@ -100,7 +99,6 @@ CASW_Game_Resource::CASW_Game_Resource()
 {
 	g_pASWGameResource = this;
 	m_iNumEnumeratedMarines = NULL;
-	m_pCampaignInfo = NULL;
 	m_iMaxMarines = ASW_MAX_MARINE_RESOURCES; // reactivedrop: was 4
 	m_bOneMarineEach = false;
 	m_iNumMarinesSelected = 0;
@@ -112,23 +110,23 @@ CASW_Game_Resource::CASW_Game_Resource()
 	m_bAwardedDamageAmpAchievement = false;
 	m_iAliensKilledWithDamageAmp = 0;
 	m_iElectroStunnedAliens = 0;
-	for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
+	for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 	{
-		m_bPlayerReady.Set(i, false);
-		m_iKickVotes.Set(i, 0);
-		m_iLeaderVotes.Set(i, 0);
+		m_bPlayerReady.Set( i, false );
+		m_iKickVotes.Set( i, 0 );
+		m_iLeaderVotes.Set( i, 0 );
 		m_iCampaignVote[i] = -1;
 	}
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		m_MarineResources.Set(i, NULL);		
+		m_MarineResources.Set( i, NULL );
 	}
-	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
+	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
-		m_Objectives.Set(i, NULL);
+		m_Objectives.Set( i, NULL );
 	}
-	CASW_Scanner_Info* pScanner = (CASW_Scanner_Info*)CreateEntityByName("asw_scanner_info");
-	if (pScanner)
+	CASW_Scanner_Info *pScanner = ( CASW_Scanner_Info * )CreateEntityByName( "asw_scanner_info" );
+	if ( pScanner )
 	{
 		pScanner->Spawn();
 		m_hScannerInfo = pScanner;
@@ -139,17 +137,17 @@ CASW_Game_Resource::CASW_Game_Resource()
 	m_szCampaignSaveName[0] = '\0';
 	// query map's launch options to see if we're in campaign mode
 	KeyValues *pLaunchOptions = engine->GetLaunchOptions();
-	if (pLaunchOptions)
+	if ( pLaunchOptions )
 	{
 		KeyValues *pKey = pLaunchOptions->GetFirstSubKey();
 		while ( pKey )
 		{
-			if ( !Q_stricmp( pKey->GetString(), "campaign" ) )
+			if ( !Q_stricmp( pKey->GetString(), "campaign" ) || !Q_stricmp( pKey->GetString(), "single_mission" ) )
 			{
-				m_iCampaignGame = 1;
+				m_iCampaignGame = !Q_stricmp( pKey->GetString(), "campaign" );
 				KeyValues *pCampaignSaveName = pKey->GetNextKey();
-				if (pCampaignSaveName)
-					Q_snprintf(m_szCampaignSaveName, sizeof(m_szCampaignSaveName), "%s", pCampaignSaveName->GetString());
+				if ( pCampaignSaveName )
+					Q_snprintf( m_szCampaignSaveName, sizeof( m_szCampaignSaveName ), "%s", pCampaignSaveName->GetString() );
 				break;
 			}
 			pKey = pKey->GetNextKey();
@@ -157,7 +155,7 @@ CASW_Game_Resource::CASW_Game_Resource()
 	}
 
 	// make skills default for single mission
-	UpdateMarineSkills(NULL);
+	UpdateMarineSkills( NULL );
 }
 
 CASW_Game_Resource::~CASW_Game_Resource()
@@ -205,33 +203,26 @@ void CASW_Game_Resource::FindObjectives()
 	// search through all entities and populate the objectives array
 	m_NumObjectives = 0;
 
-	FindObjectivesOfClass("asw_objective_dummy");
-	FindObjectivesOfClass("asw_objective_kill_eggs");
-	FindObjectivesOfClass("asw_objective_destroy_goo");
-	FindObjectivesOfClass("asw_objective_triggered");
-	FindObjectivesOfClass("asw_objective_escape");
-	FindObjectivesOfClass("asw_objective_survive");
-	FindObjectivesOfClass("asw_objective_countdown");
-	FindObjectivesOfClass("asw_objective_kill_aliens");
+	FindObjectivesOfClass( "asw_objective_dummy" );
+	FindObjectivesOfClass( "asw_objective_kill_eggs" );
+	FindObjectivesOfClass( "asw_objective_destroy_goo" );
+	FindObjectivesOfClass( "asw_objective_triggered" );
+	FindObjectivesOfClass( "asw_objective_escape" );
+	FindObjectivesOfClass( "asw_objective_survive" );
+	FindObjectivesOfClass( "asw_objective_countdown" );
+	FindObjectivesOfClass( "asw_objective_kill_aliens" );
+	FindObjectivesOfClass( "asw_objective_kill_queen" );
 	
 	// bubble sort objectives by their Y coord
-	CASW_Objective* pObjective;
-	//for (int k=0;k<m_NumObjectives-1;k++)
-	//{
-		//Msg("Objective %d has coord %f and title %s\n", k, GetObjective(k)->GetAbsOrigin().y, 
-				//GetObjective(k)->m_ObjectiveTitle);
-	//}
-	for (int i=0;i<m_NumObjectives;i++)
+	for ( int i = 0; i < m_NumObjectives; i++ )
 	{
-		for (int j=i+1; j<m_NumObjectives; j++)
+		for ( int j = i + 1; j < m_NumObjectives; j++ )
 		{
-			if (GetObjective(j)->GetAbsOrigin().y > GetObjective(i)->GetAbsOrigin().y)
+			if ( GetObjective( j )->GetAbsOrigin().y > GetObjective( i )->GetAbsOrigin().y )
 			{
-				//Msg("Swapping %d (%f) with %d (%f)\n", i, GetObjective(i)->GetAbsOrigin().y,
-					//j, GetObjective(j)->GetAbsOrigin().y);
-				pObjective = GetObjective(j);
-				m_Objectives.Set(j, GetObjective(i));
-				m_Objectives.Set(i, pObjective);
+				CASW_Objective *pObjective = GetObjective( j );
+				m_Objectives.Set( j, GetObjective( i ) );
+				m_Objectives.Set( i, pObjective );
 			}
 		}
 	}
@@ -434,6 +425,13 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 	{
 		m_Leader = NULL;
 		m_iLeaderIndex = -1;
+		return;
+	}
+
+	Assert( pPlayer->CanBeLeader() );
+	if ( !pPlayer->CanBeLeader() )
+	{
+		Warning( "Tried to set lobby leader to '%s'!\n", pPlayer->GetPlayerName() );
 		return;
 	}
 

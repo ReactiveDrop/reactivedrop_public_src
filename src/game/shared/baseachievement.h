@@ -202,7 +202,7 @@ public:
 };
 
 #define DECLARE_ACHIEVEMENT_( className, achievementID, achievementName, gameDirFilter, iPointValue, bHidden, iDisplayOrder ) \
-static CBaseAchievement *Create_##className( void )					\
+static CBaseAchievement *Create_##className##achievementID( void )					\
 {																		\
 	CBaseAchievement *pAchievement = new className( );					\
 	pAchievement->SetAchievementID( achievementID );					\
@@ -213,7 +213,7 @@ static CBaseAchievement *Create_##className( void )					\
 	if ( gameDirFilter ) pAchievement->SetGameDirFilter( gameDirFilter ); \
 	return pAchievement;												\
 };																		\
-static CBaseAchievementHelper g_##className##_Helper( Create_##className );
+static CBaseAchievementHelper g_##className##achievementID##_Helper( Create_##className##achievementID );
 
 #define DECLARE_ACHIEVEMENT( className, achievementID, achievementName, iPointValue ) \
 	DECLARE_ACHIEVEMENT_( className, achievementID, achievementName, NULL, iPointValue, false )

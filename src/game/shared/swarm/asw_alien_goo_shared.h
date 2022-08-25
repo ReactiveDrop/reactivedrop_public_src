@@ -81,6 +81,9 @@ public:
 	float m_fGrubSpawnAngle;				// size of random yaw used when spawning grubs
 	float m_fNextAcidBurnTime;				// timer for periodic acid damage dealt to touching marines
 
+	void OnIgnitedByMarine( CASW_Marine_Resource *pMR );
+	CHandle<CASW_Marine_Resource> m_hIgnitedBy;
+
 	static float s_fNextSpottedChatterTime;
 
 	COutputEvent m_OnGooDestroyed;

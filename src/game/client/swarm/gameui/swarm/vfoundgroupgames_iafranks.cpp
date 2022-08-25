@@ -12,6 +12,8 @@ using namespace vgui;
 using namespace BaseModUI;
 
 extern ConVar ui_foundgames_spinner_time;
+extern ConVar rd_lobby_ping_low;
+extern ConVar rd_lobby_ping_high;
 
 static void JoinIAFRanksServerGame( const FoundGameListItem::Info & fi )
 {
@@ -26,10 +28,10 @@ FoundGroupGamesIAFRanks::FoundGroupGamesIAFRanks( Panel *parent, const char *pan
 
 FoundGroupGamesIAFRanks::~FoundGroupGamesIAFRanks()
 {
-	if ( m_hServerListRequest && steamapicontext->SteamMatchmakingServers() )
+	if ( m_hServerListRequest && SteamMatchmakingServers() )
 	{
-		steamapicontext->SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
-		steamapicontext->SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+		SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
 	}
 }
 
@@ -51,8 +53,8 @@ void FoundGroupGamesIAFRanks::StartSearching( void )
 {
 	if ( m_hServerListRequest )
 	{
-		steamapicontext->SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
-		steamapicontext->SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+		SteamMatchmakingServers()->CancelQuery( m_hServerListRequest );
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
 	}
 
 	MatchMakingKeyValuePair_t filterTag;
@@ -60,7 +62,7 @@ void FoundGroupGamesIAFRanks::StartSearching( void )
 	Q_strncpy( filterTag.m_szValue, "HoIAF", sizeof( filterTag.m_szValue ) );
 	MatchMakingKeyValuePair_t *filters[] = { &filterTag };
 
-	m_hServerListRequest = steamapicontext->SteamMatchmakingServers()->RequestInternetServerList( 563560, filters, NELEMS( filters ), this );
+	m_hServerListRequest = SteamMatchmakingServers()->RequestInternetServerList( 563560, filters, NELEMS( filters ), this );
 	m_bRefreshFinished = false;
 	m_flSearchStartedTime = Plat_FloatTime();
 	m_flSearchEndTime = m_flSearchStartedTime + ui_foundgames_spinner_time.GetFloat();
@@ -84,10 +86,10 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		}
 	}
 
-	int nServerCount = steamapicontext->SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
+	int nServerCount = SteamMatchmakingServers()->GetServerCount( m_hServerListRequest );
 	for ( int i = 0; i < nServerCount; i++ )
 	{
-		gameserveritem_t *pServer = steamapicontext->SteamMatchmakingServers()->GetServerDetails( m_hServerListRequest, i );
+		gameserveritem_t *pServer = SteamMatchmakingServers()->GetServerDetails( m_hServerListRequest, i );
 		uint32 iServerAddr = pServer->m_NetAdr.GetIP();
 
 		if ( s_ParticipatingServers.Find( iServerAddr ) == -1 )
@@ -98,10 +100,9 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		FoundGameListItem::Info info;
 		info.mInfoType = FoundGameListItem::FGT_SERVER;
 		Q_strncpy( info.Name, pServer->GetName(), sizeof( info.Name ) );
-		info.mIsJoinable = true;
+		info.mIsJoinable = pServer->m_nPlayers < pServer->m_nMaxPlayers;
 		info.mbDLC = false;
 		info.mbInGame = true;
-		info.mPing = FoundGameListItem::Info::GP_HIGH;
 		info.mpGameDetails = new KeyValues( "settings" );
 		info.mpGameDetails->SetString( "system/network", "LIVE" );
 		info.mpGameDetails->SetString( "system/access", "public" );
@@ -133,15 +134,25 @@ void FoundGroupGamesIAFRanks::AddServersToList( void )
 		info.mpGameDetails->SetInt( "game/dlcrequired", 0 );
 		if ( KeyValues *pMapInfo = g_pMatchExtSwarm->GetMapInfoByBspName( info.mpGameDetails, pServer->m_szMap ) )
 		{
-			info.mpGameDetails->SetInt( "game/missioninfo/version", pMapInfo->GetInt( "version" ) );
-			info.mpGameDetails->SetString( "game/missioninfo/displaytitle", pMapInfo->GetString( "displaytitle" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/version", pMapInfo->GetString( "version" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/displaytitle", pMapInfo->GetString( "missiontitle" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/author", pMapInfo->GetString( "author" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/website", pMapInfo->GetString( "website" ) );
-			info.mpGameDetails->SetBool( "game/missioninfo/builtin", pMapInfo->GetBool( "builtin" ) );
+			info.mpGameDetails->SetString( "game/missioninfo/builtin", pMapInfo->GetString( "builtin" ) );
 			info.mpGameDetails->SetString( "game/missioninfo/image", pMapInfo->GetString( "image" ) );
 		}
 		info.mFriendXUID = pServer->m_steamID.ConvertToUint64();
 		info.miPing = pServer->m_nPing;
+
+		if ( info.miPing == 0 )
+			info.mPing = info.GP_NONE;
+		else if ( info.miPing < rd_lobby_ping_low.GetInt() )
+			info.mPing = info.GP_LOW;
+		else if ( info.miPing <= rd_lobby_ping_high.GetInt() )
+			info.mPing = info.GP_MEDIUM;
+		else
+			info.mPing = info.GP_HIGH;
+
 		info.mpfnJoinGame = &JoinIAFRanksServerGame;
 		AddGameFromDetails( info );
 	}

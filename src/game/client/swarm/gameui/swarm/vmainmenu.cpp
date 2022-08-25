@@ -4,6 +4,7 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
 #include "VMainMenu.h"
 #include "EngineInterface.h"
 #include "VFooterPanel.h"
@@ -40,7 +41,7 @@
 #include "fmtstr.h"
 #include "cdll_client_int.h"
 #include "inputsystem/iinputsystem.h"
-
+#include "asw_util_shared.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -52,20 +53,15 @@ using namespace BaseModUI;
 //=============================================================================
 static ConVar connect_lobby( "connect_lobby", "", FCVAR_HIDDEN, "Sets the lobby ID to connect to on start." );
 static ConVar ui_old_options_menu( "ui_old_options_menu", "0", FCVAR_HIDDEN, "Brings up the old tabbed options dialog from Keyboard/Mouse when set to 1." );
-static ConVar ui_play_online_browser( "ui_play_online_browser",
-#if defined( _DEMO ) && !defined( _X360 )
-									 "0",
-									 FCVAR_NONE,
-#else
-									 "1",
-									 FCVAR_RELEASE,
-#endif
-									 "Whether play online displays a browser or plain search dialog." );
+static ConVar ui_play_online_browser( "ui_play_online_browser", "1", FCVAR_RELEASE, "Whether play online displays a browser or plain search dialog." );
 
-ConVar asw_show_all_singleplayer_maps( "asw_show_all_singleplayer_maps", "1", FCVAR_NONE, "If set, offline practice option on the main menu will show all maps." );
-ConVar rd_never_show_steamgroup_join( "rd_never_show_steamgroup_join", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "If 0 display a dialog that shows a link to Reactive Drop Gamers Steam group" );
 extern ConVar mm_max_players;
 ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
+ConVar rd_last_game_difficulty( "rd_last_game_difficulty", "normal", FCVAR_ARCHIVE, "Remembers the last game difficulty setting (easy/normal/hard/insane/imba) for a lobby created from the main menu." );
+ConVar rd_last_game_challenge( "rd_last_game_challenge", "0", FCVAR_ARCHIVE, "Remembers the last game challenge ID (0 for none) for a lobby created from the main menu." );
+ConVar rd_last_game_onslaught( "rd_last_game_onslaught", "0", FCVAR_ARCHIVE, "Remembers the last game onslaught setting for a lobby created from the main menu." );
+ConVar rd_last_game_hardcoreff( "rd_last_game_hardcoreff", "0", FCVAR_ARCHIVE, "Remembers the last game hardcore friendly fire setting for a lobby created from the main menu." );
+ConVar rd_last_game_maxplayers( "rd_last_game_maxplayers", "4", FCVAR_ARCHIVE, "Remembers the last game max players setting for a lobby created from the main menu." );
 ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
 
 void Demo_DisableButton( Button *pButton );
@@ -87,16 +83,6 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_iQuickJoinHelpText = MMQJHT_NONE;
 
 	SetDeleteSelfOnClose( true );
-
-	// reactivedrop: #iss-depthblur HACK
-	// We need to make mat_depth_blur_strength_override FCVAR_ARCHIVE
-	// but it is defined in Engine_Post_dx9.cpp which is in
-	// separate project and separate DLL, stdshader_dx9_sdk.vcproj
-	// so we add FCVAR_ARCHIVE flag here during creation of main menu
-	// This hack can be moved into more appropriate place though
-	CGameUIConVarRef mat_depth_blur_strength_override("mat_depth_blur_strength_override");
-	if ( mat_depth_blur_strength_override.IsValid() && !mat_depth_blur_strength_override.IsFlagSet( FCVAR_ARCHIVE ) )
-		mat_depth_blur_strength_override.AddFlags( FCVAR_ARCHIVE );
 }
 
 //=============================================================================
@@ -104,23 +90,6 @@ MainMenu::~MainMenu()
 {
 	RemoveFrameListener( this );
 
-}
-
-void AcceptJoinSteamgroupCallback()
-{
-    // open create event page
-    const char *url = "http://steamcommunity.com/groups/reactivedropgamers";
-#ifndef _X360 
-    if ( BaseModUI::CUIGameData::Get() )
-    {
-        BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
-    }
-    else if ( vgui::system() )
-    {
-        vgui::system()->ShellExecute("open", url );
-    }
-#endif
-    rd_never_show_steamgroup_join.SetValue(1);
 }
 
 //=============================================================================
@@ -241,52 +210,31 @@ void MainMenu::OnCommand( const char *command )
 		}
 		CBaseModPanel::GetSingleton().OpenWindow( WT_STEAMGROUPSERVERS, this, true, pSettings );
 	}
-	else if ( char const *szLeaderboards = StringAfterPrefix( command, "Leaderboards_" ) )
-	{
-		if ( CheckAndDisplayErrorIfNotLoggedIn() ||
-			CUIGameData::Get()->CheckAndDisplayErrorIfOffline( this,
-			"#L4D360UI_MainMenu_SurvivalLeaderboards_Tip_Disabled" ) )
-			return;
-
-		KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" game { "
-				" mode = "
-			" } "
-			);
-		KeyValues::AutoDelete autodelete( pSettings );
-
-		pSettings->SetString( "game/mode", szLeaderboards );
-
-		if ( m_ActiveControl )
-		{
-			m_ActiveControl->NavigateFrom( );
-		}
-		CBaseModPanel::GetSingleton().OpenWindow( WT_LEADERBOARD, this, true, pSettings );
-	}
-	else if( !Q_strcmp( command, "VersusSoftLock" ) )
-	{
-		OnCommand( "FlmVersusFlyout" );
-		return;
-	}
-	else if ( !Q_strcmp( command, "SurvivalCheck" ) )
-	{
-		OnCommand( "FlmSurvivalFlyout" );
-		return;
-	}
-	else if ( !Q_strcmp( command, "ScavengeCheck" ) )
-	{
-		OnCommand( "FlmScavengeFlyout" );
-		return;
-	}
 	else if ( !Q_strcmp( command, "BtnStub" ) )
 	{
 		// clicking No Steam will provide some info
 		GenericConfirmation* confirmation =
-			static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, CBaseModPanel::GetSingleton().GetWindow( WT_GAMELOBBY ), false ) );
+			static_cast<GenericConfirmation*>( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
 		GenericConfirmation::Data_t data;
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
+
+		if ( SteamUser() )
+		{
+			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
+			data.pMessageText = "#rd_no_steam_solutions_api";
+		}
+		else if ( !SteamAPI_IsSteamRunning() )
+		{
+			// Did not detect an instance of the Steam Client. If the Steam Client is running, try selecting Steam->Exit and then restarting Steam.
+			data.pMessageText = "#rd_no_steam_solutions_client";
+		}
+		else if ( !SteamAPI_GetSteamInstallPath() )
+		{
+			// Could not determine the location of the Steam Client through the registry. Try restarting Steam.
+			data.pMessageText = "#rd_no_steam_solutions_path";
+		}
+
 		data.bOkButtonEnabled = true;
 		confirmation->SetUsageData( data );
 	}
@@ -304,11 +252,10 @@ void MainMenu::OnCommand( const char *command )
 			" mode single_mission "
 			" campaign jacob "
 			" mission asi-jac1-landingbay_pract "
+			" difficulty normal "
 			" } "
 		);
 		KeyValues::AutoDelete autodelete( pSettings );
-
-		pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
 
 		g_pMatchFramework->CreateSession( pSettings );
 
@@ -320,51 +267,7 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "SoloPlay" ) )
 	{
-		if ( !asw_show_all_singleplayer_maps.GetBool() )
-		{
-			KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" system { "
-			" network offline "
-			" } "
-			" game { "
-			" mode single_mission "
-			" campaign jacob "
-			" mission asi-jac1-landingbay_pract "
-			" } "
-			);
-			KeyValues::AutoDelete autodelete( pSettings );
-
-			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
-
-			g_pMatchFramework->CreateSession( pSettings );
-
-			// Automatically start the credits session, no configuration required
-			if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
-			{
-				pMatchSession->Command( KeyValues::AutoDeleteInline( new KeyValues( "Start" ) ) );
-			}
-		}
-		else
-		{
-			KeyValues *pSettings = KeyValues::FromString(
-				"Settings",
-				" System { "
-				" network offline "
-				" } "
-				" Game { "
-				" mode campaign "
-				" campaign jacob "
-				" mission asi-jac1-landingbay_01 "
-				" } "
-				);
-			KeyValues::AutoDelete autodelete( pSettings );
-
-			// TCR: We need to respect the default difficulty
-			pSettings->SetString( "Game/difficulty", GameModeGetDefaultDifficulty( pSettings->GetString( "Game/mode" ) ) );
-
-			g_pMatchFramework->CreateSession( pSettings );
-		}
+		engine->ClientCmd_Unrestricted( "asw_mission_chooser singleplayer" );
 	}
 	else if ( !Q_strcmp( command, "DeveloperCommentary" ) )
 	{
@@ -496,7 +399,7 @@ void MainMenu::OnCommand( const char *command )
 		const char *url = "https://steamcommunity.com/app/563560/workshop/";
 		if ( BaseModUI::CUIGameData::Get() )
 		{
-			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url, true );
 		}
 		else if ( vgui::system() )
 		{
@@ -583,68 +486,6 @@ void MainMenu::OnCommand( const char *command )
 			engine->ClientCmd( "quit" );
 		}
 	}
-    else if (!Q_strcmp(command, "CreateEvent"))
-    {
-        if ( IsPC() )
-        {
-            if ( rd_never_show_steamgroup_join.GetBool() )
-            {
-                // open create event web page
-#ifndef _X360 
-                const char *url = "http://steamcommunity.com/groups/reactivedropgamers/eventEdit";
-                if ( BaseModUI::CUIGameData::Get() )
-                {
-                    BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
-                }
-                else 
-                {
-                    system()->ShellExecute("open", url );
-                }
-#endif
-            }
-            else
-            {
-                // show a "first time" help dialog that explains this feature 
-                GenericConfirmation* confirmation = 
-                    static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
-
-                GenericConfirmation::Data_t data;
-
-                data.pWindowTitle = "#rd_str_schedule_event"; // Feature Description
-                data.pMessageText = "#rd_schedule_event_information";
-
-                data.bOkButtonEnabled = true;
-                data.pfnOkCallback = &AcceptJoinSteamgroupCallback;
-                data.bCancelButtonEnabled = true;
-
-//                data.bCheckBoxEnabled = true; 
-//                data.pCheckBoxLabelText = "Never show this again";
-//                data.pCheckBoxCvarName = "rd_never_show_steamgroup_join";
-
-                confirmation->SetUsageData(data);
-
-                NavigateFrom();
-            }
-        }
-    }
-    else if (!Q_strcmp(command, "LeaveFeedback"))
-    {
-        if ( IsPC() )
-        {
-            // open feedback tread web page
-#ifndef _X360 
-            const char *url = "http://steamcommunity.com/app/630/discussions/0/828924672576706420/";
-            if ( BaseModUI::CUIGameData::Get() )
-            {
-                BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url );
-            }
-            else 
-            {
-                system()->ShellExecute("open", url );
-            }
-#endif
-        }
-    }
 	else if ( !Q_strcmp( command, "EnableSplitscreen" ) )
 	{
 		Msg( "Enabling splitscreen from main menu...\n" );
@@ -843,95 +684,18 @@ void MainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ADDONS, this, true );
 	}
-	else if ( !Q_strcmp( command, "Swarmopedia" ) )
-	{
-		CBaseModPanel::GetSingleton().OpenWindow( WT_SWARMOPEDIA, this, true );
-	}
 	else if ( !Q_strcmp( command, "IafRanks" ) )
 	{
 		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKS, this, true );
 	}
 	else if( !Q_strcmp( command, "CreateGame" ) )
 	{
-		KeyValues *pSettings = KeyValues::FromString(
-			"settings",
-			" system { "
-			" network LIVE "
-			" access public "
-			" } "
-			" game { "
-			" mode = "
-			" campaign = "
-			" mission = "
-			" } "
-			" options { "
-			" action create "
-			" } "
-			);
-		KeyValues::AutoDelete autodelete( pSettings );
-
-		char const *szGameMode = "campaign";
-		pSettings->SetString( "game/mode", szGameMode );
-		pSettings->SetString( "game/campaign", "jacob" );
-		pSettings->SetString( "game/mission", "asi-jac1-landingbay_01" );
-
-		if ( !CUIGameData::Get()->SignedInToLive() )
-		{
-			pSettings->SetString( "system/network", "lan" );
-			pSettings->SetString( "system/access", "public" );
-		}
-		else
-		{
-			pSettings->SetString( "system/access", rd_last_game_access.GetString() );
-		}
-
-		if ( StringHasPrefix( szGameMode, "team" ) )
-		{
-			pSettings->SetString( "system/netflag", "teamlobby" );
-		}
-// 		else if ( !Q_stricmp( "custommatch", m_pDataSettings->GetString( "options/action", "" ) ) )
-// 		{
-// 			pSettings->SetString( "system/access", "public" );
-// 		}
-
-		// TCR: We need to respect the default difficulty
-		pSettings->SetString( "game/difficulty", GameModeGetDefaultDifficulty( szGameMode ) );
-
-		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
-		CBaseModPanel::GetSingleton().CloseAllWindows();
-		CBaseModPanel::GetSingleton().OpenWindow( WT_GAMESETTINGS, NULL, true, pSettings );
+		engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
 	}
 	else
 	{
-		const char *pchCommand = command;
-		if ( !Q_strcmp(command, "FlmOptionsFlyout") )
-		{
-#ifdef _X360
-			if ( XBX_GetPrimaryUserIsGuest() )
-			{
-				pchCommand = "FlmOptionsGuestFlyout";
-			}
-#endif
-		}
-		else if ( !Q_strcmp(command, "FlmVersusFlyout") )
-		{
-			command = "VersusSoftLock";
-		}
-		else if ( !Q_strcmp( command, "FlmSurvivalFlyout" ) )
-		{
-			command = "SurvivalCheck";
-		}
-		else if ( !Q_strcmp( command, "FlmScavengeFlyout" ) )
-		{
-			command = "ScavengeCheck";
-		}
-		else if ( StringHasPrefix( command, "FlmExtrasFlyout_" ) )
-		{
-			command = "FlmExtrasFlyoutCheck";
-		}
-
 		// does this command match a flyout menu?
-		BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( pchCommand ) );
+		BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( command ) );
 		if ( flyout )
 		{
 			bOpeningFlyout = true;
@@ -1109,8 +873,13 @@ void MainMenu::OnThink()
 //=============================================================================
 void MainMenu::OnOpen()
 {
-	ConVarRef sv_cheats( "sv_cheats" );
-	if ( !sv_cheats.GetBool() )
+	extern ConVar *sv_cheats;
+	if ( !sv_cheats )
+	{
+		sv_cheats = cvar->FindVar( "sv_cheats" );
+	}
+
+	if ( sv_cheats && !sv_cheats->GetBool() )
 	{
 		if ( rd_revert_convars.GetBool() )
 		{
@@ -1119,8 +888,14 @@ void MainMenu::OnOpen()
 
 		g_pCVar->RevertFlaggedConVars( FCVAR_CHEAT );
 
-		engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+		if ( rd_revert_convars.GetBool() )
+		{
+			engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+		}
 	}
+
+	// Apply mixer convars.
+	engine->ClientCmd_Unrestricted( "_rd_mixer_init\n" );
 
 	if ( IsPC() && connect_lobby.GetString()[0] )
 	{
@@ -1197,16 +972,29 @@ void MainMenu::Activate()
 	// for us to be able to browse lobbies with up to 32 slots
 	mm_max_players.Revert();
 
-	// #iss-speaker-reset 
-	// restart sound engine here
 	static bool bRunOnce = true;
 	if ( bRunOnce )
 	{
+		if ( SteamNetworkingUtils() )
+		{
+			// need to know our ping location to show pings in the lobby browser
+			SteamNetworkingUtils()->InitRelayNetworkAccess();
+		}
+
+		if ( ConVarRef( "net_steamcnx_allowrelay" ).GetBool() )
+		{
+			// if relayed connections are enabled, use them by default instead of trying direct IPv4 UDP first
+			ConVarRef( "net_steamcnx_enabled" ).SetValue( 2 );
+		}
+
+		// update soundcache on initial load
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
-		engine->ClientCmd( "execifexists loadouts" );	// added support for loadout editor, by element109
+
+		// added support for loadout editor, by element109
+		engine->ClientCmd( "execifexists loadouts" );
+
+		bRunOnce = false;
 	}
-	bRunOnce = false;
-	//
 }
 
 //=============================================================================
@@ -1236,6 +1024,14 @@ void MainMenu::SetFooterState()
 //=============================================================================
 void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
+	static bool s_bReloadLocOnce = true;
+	if ( s_bReloadLocOnce )
+	{
+		// BenLubar: load translations again right before the main menu appears for the first time
+		UTIL_RD_ReloadLocalizeFiles();
+		s_bReloadLocOnce = false;
+	}
+
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";
@@ -1334,8 +1130,7 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 			bool bUsesCloud = false;
 
 #ifdef IS_WINDOWS_PC
-			ISteamRemoteStorage *pRemoteStorage = SteamClient()?(ISteamRemoteStorage *)SteamClient()->GetISteamGenericInterface(
-				SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMREMOTESTORAGE_INTERFACE_VERSION ):NULL;
+			ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
 #else
 			ISteamRemoteStorage *pRemoteStorage =  NULL; 
 			AssertMsg( false, "This branch run on a PC build without IS_WINDOWS_PC defined." );
@@ -1389,19 +1184,20 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 		Warning( "======= SIGNIN RESET SIGNIN RESET SIGNIN RESET SIGNIN RESET ==========\n" );
 	}
 #endif
-}
 
-const char *pDemoDisabledButtons[] = { "BtnVersus", "BtnSurvival", "BtnStatsAndAchievements", "BtnExtras" };
-
-void MainMenu::Demo_DisableButtons( void )
-{
-	for ( int i = 0; i < ARRAYSIZE( pDemoDisabledButtons ); i++ )
+	vgui::Label *pBranchDisclaimer = dynamic_cast< vgui::Label * >( FindChildByName( "LblBranchDisclaimer" ) );
+	ISteamApps *pApps = SteamApps();
+	if ( pBranchDisclaimer && pApps )
 	{
-		BaseModHybridButton *pButton = dynamic_cast< BaseModHybridButton* >( FindChildByName( pDemoDisabledButtons[i] ) );
-
-		if ( pButton )
+		char szBranch[256]{};
+		if ( !pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) )
 		{
-			Demo_DisableButton( pButton );
+			pBranchDisclaimer->SetVisible( false );
+		}
+		else
+		{
+			pBranchDisclaimer->SetText( VarArgs( "#rd_branch_disclaimer_%s", szBranch ) );
+			pBranchDisclaimer->SetVisible( true );
 		}
 	}
 }
@@ -1457,7 +1253,7 @@ void MainMenu::AcceptVersusSoftLockCallback()
 #ifndef _X360
 CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 {
-	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
+	bool isSteam = IsPC() && SteamFriends() && SteamUtils();
 	if ( isSteam )
 	{
 		// show the server browser

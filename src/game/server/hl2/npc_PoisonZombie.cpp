@@ -93,15 +93,6 @@ envelopePoint_t envPoisonZombieBreatheVolumeOffShort[] =
 };
 
 
-//
-// Custom schedules.
-//
-enum
-{
-	SCHED_ZOMBIE_POISON_RANGE_ATTACK2 = LAST_BASE_ZOMBIE_SCHEDULE,
-	SCHED_ZOMBIE_POISON_RANGE_ATTACK1,
-};
-
 
 //-----------------------------------------------------------------------------
 // The maximum number of headcrabs we can have riding on our back.
@@ -238,6 +229,13 @@ private:
 
 	// NOT serialized:
 	int m_nThrowCrab;				// The crab we are about to throw.
+
+	enum
+	{
+		SCHED_ZOMBIE_POISON_RANGE_ATTACK2 = BaseClass::NEXT_SCHEDULE,
+		SCHED_ZOMBIE_POISON_RANGE_ATTACK1,
+		NEXT_SCHEDULE,
+	};
 };
 
 LINK_ENTITY_TO_CLASS( npc_poisonzombie, CNPC_PoisonZombie );

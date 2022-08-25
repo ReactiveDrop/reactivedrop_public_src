@@ -436,43 +436,41 @@ void Multiplayer::OnCommand(const char *command)
 		CGameUIConVarRef snd_surround_speakers("Snd_Surround_Speakers");
 		snd_surround_speakers.SetValue( "0" );
 	}
-	
 	else if ( char const *sz = StringAfterPrefix( command, "#GameUI_DownloadFilter_" ) )
 	{
 		CGameUIConVarRef  cl_downloadfilter( "cl_downloadfilter" );
 		cl_downloadfilter.SetValue( sz );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "#rdui_cmdnetwork_" ) )
+	else if ( ( sz = StringAfterPrefix( command, "#rdui_cmdnetwork_" ) ) != NULL )
 	{
 		CGameUIConVarRef  rate( "rate" );
 		rate.SetValue( sz );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "ColorBlind" ) )
+	else if ( ( sz = StringAfterPrefix( command, "ColorBlind" ) ) != NULL )
 	{
 		CGameUIConVarRef cl_colorblind( "cl_colorblind" );
 		cl_colorblind.SetValue( sz );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "GameInstructor" ) )
+	else if ( ( sz = StringAfterPrefix( command, "GameInstructor" ) ) != NULL )
 	{
 		CGameUIConVarRef gameinstructor_enable( "gameinstructor_enable" );
 		gameinstructor_enable.SetValue( !Q_stricmp( sz, "Enabled" ) );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "rdui_cmd_deathcam_" ) )
+	else if ( ( sz = StringAfterPrefix( command, "rdui_cmd_deathcam_" ) ) != NULL )
 	{
 		CGameUIConVarRef asw_marine_death_cam( "asw_marine_death_cam" );
 		asw_marine_death_cam.SetValue( sz );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "AllowFreeLook" ) )
+	else if ( ( sz = StringAfterPrefix( command, "AllowFreeLook" ) ) != NULL )
 	{
 		CGameUIConVarRef spec_allowroaming( "spec_allowroaming" );
 		spec_allowroaming.SetValue( !Q_stricmp( sz, "Enabled" ) );
 	}
-	else if ( char const *sz = StringAfterPrefix( command, "MpLanGames" ) )
+	else if ( ( sz = StringAfterPrefix( command, "MpLanGames" ) ) != NULL )
 	{
 		CGameUIConVarRef net_allow_multicast( "net_allow_multicast" );
 		net_allow_multicast.SetValue( !Q_stricmp( sz, "Enabled" ) );
 	}
-
 	else if ( StringHasPrefix( command, "_spraypaint" ) )
 	{
 		int iCommandNumberPosition = Q_strlen( MULTIPLAYER_SPRAYPAINT_COMMAND_PREFIX );

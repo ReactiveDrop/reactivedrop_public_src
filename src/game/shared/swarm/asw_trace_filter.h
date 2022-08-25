@@ -8,21 +8,21 @@
 
 #ifdef CLIENT_DLL
 #define CBasePlayer C_BasePlayer
-#define CASW_Marine C_ASW_Marine
+#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #endif
 
 class CBasePlayer;
-class CASW_Marine;
+class CASW_Inhabitable_NPC;
 
 class CASW_Trace_Filter : public CTraceFilterSimple
 {
 public:
 	CASW_Trace_Filter( CBasePlayer *pPlayer, Collision_Group_t collisionGroup );
-	CASW_Trace_Filter( CASW_Marine *pMarine, Collision_Group_t collisionGroup );
+	CASW_Trace_Filter( CASW_Inhabitable_NPC *pNPC, Collision_Group_t collisionGroup );
 
 	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask );
 
-	CASW_Marine *m_pMarine;
+	CASW_Inhabitable_NPC *m_pNPC;
 
 private:
 	typedef CTraceFilterSimple BaseClass;

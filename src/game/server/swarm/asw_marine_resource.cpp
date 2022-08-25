@@ -72,6 +72,8 @@ BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_iFastDoorHacks, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iFastComputerHacks, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iAliensKilledByBouncingBullets, FIELD_INTEGER ),
+	DEFINE_FIELD( m_iScore, FIELD_INTEGER ),
+	DEFINE_FIELD( m_flFinishedMissionTime, FIELD_FLOAT ),
 END_DATADESC()
 
 void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
@@ -93,6 +95,7 @@ BEGIN_SEND_TABLE_NOBASE( CASW_Marine_Resource, DT_MR_Timelines )
 	SendPropDataTable( SENDINFO_DT( m_TimelineAmmo ), &REFERENCE_SEND_TABLE(DT_Timeline) ),
 	SendPropDataTable( SENDINFO_DT( m_TimelinePosX ), &REFERENCE_SEND_TABLE(DT_Timeline) ),
 	SendPropDataTable( SENDINFO_DT( m_TimelinePosY ), &REFERENCE_SEND_TABLE(DT_Timeline) ),
+	SendPropDataTable( SENDINFO_DT( m_TimelineScore ), &REFERENCE_SEND_TABLE(DT_Timeline) ),
 END_SEND_TABLE();
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
@@ -113,7 +116,9 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
 	SendPropString	(SENDINFO(m_MedalsAwarded)),
 	SendPropEHandle	(SENDINFO(m_hWeldingDoor)),
 	SendPropBool	(SENDINFO(m_bUsingEngineeringAura)),
-	SendPropInt     (SENDINFO(m_iBotFrags)),
+	SendPropInt		(SENDINFO(m_iBotFrags)),
+	SendPropInt		(SENDINFO(m_iScore)),
+	SendPropFloat	(SENDINFO(m_flFinishedMissionTime)),
 END_SEND_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -167,6 +172,9 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iHealAmpGunHeals = 0;
 	m_iHealAmpGunAmps = 0;
 	m_iMedRifleHeals = 0;
+	m_iBiomassIgnited = 0;
+	m_iScore = -1;
+	m_flFinishedMissionTime = -1;
 
 	m_TimelineFriendlyFire.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 	m_TimelineKillsTotal.SetCompressionType( TIMELINE_COMPRESSION_SUM );
@@ -174,6 +182,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_TimelineAmmo.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
 	m_TimelinePosX.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
 	m_TimelinePosY.SetCompressionType( TIMELINE_COMPRESSION_AVERAGE );
+	m_TimelineScore.SetCompressionType( TIMELINE_COMPRESSION_SUM );
 
 	// BenLubar(deathmatch-improvements): if we're already in game (such as deathmatch mode), make sure we still record stats for the graph
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
@@ -191,6 +200,8 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 		m_TimelinePosX.StartFromTime( flStart );
 		m_TimelinePosY.ClearValues();
 		m_TimelinePosY.StartFromTime( flStart );
+		m_TimelineScore.ClearValues();
+		m_TimelineScore.StartFromTime( flStart );
 	}
 
 	m_bHealthHalved = false;

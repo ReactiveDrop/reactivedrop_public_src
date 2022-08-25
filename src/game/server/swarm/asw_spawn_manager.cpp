@@ -59,44 +59,6 @@ CASW_Spawn_Manager::~CASW_Spawn_Manager()
 
 }
 
-// ==================================
-// == Master list of alien classes ==
-// ==================================
-
-// NOTE: If you add new entries to this list, update the asw_spawner choices in swarm.fgd.
-//       Do not rearrange the order or you will be changing what spawns in all the maps.
-
-ASW_Alien_Class_Entry g_Aliens[]=
-{
-	ASW_Alien_Class_Entry( "asw_drone", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_buzzer", HULL_TINY_CENTERED ),
-	ASW_Alien_Class_Entry( "asw_parasite", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_grub", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_harvester", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_queen", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "asw_ranger", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_shaman", HULL_MEDIUM ),
-	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlion", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_antlion_worker", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_zombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_zombie_torso", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_poisonzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie_torso", HULL_HUMAN )
-};
-
-// Array indices of drones.  Used by carnage mode.
-const int g_nDroneClassEntry = 0;
-const int g_nDroneJumperClassEntry = 5;
-
 int CASW_Spawn_Manager::GetNumAlienClasses()
 {
 	return NELEMS( g_Aliens );
@@ -112,11 +74,6 @@ void CASW_Spawn_Manager::LevelInitPreEntity()
 {
 	m_nAwakeAliens = 0;
 	m_nAwakeDrones = 0;
-	// init alien classes
-	for ( int i = 0; i < GetNumAlienClasses(); i++ )
-	{
-		GetAlienClass( i )->m_iszAlienClass = AllocPooledString( GetAlienClass( i )->m_pszAlienClass );
-	}
 }
 
 void CASW_Spawn_Manager::LevelInitPostEntity()
@@ -431,10 +388,10 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 					{
 						NDebugOverlay::Cross3D( vecSpawnPos, 25.0f, 255, 255, 255, true, 20.0f );
 						float flDist;
-						CASW_Marine *pMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
-						if ( pMarine )
+						CASW_Marine *pDebugMarine = UTIL_ASW_NearestMarine( vecSpawnPos, flDist );
+						if ( pDebugMarine )
 						{
-							NDebugOverlay::Line( pMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
+							NDebugOverlay::Line( pDebugMarine->GetAbsOrigin(), vecSpawnPos, 64, 64, 64, true, 60.0f );
 						}
 					}
 					bAny = true;
@@ -976,6 +933,22 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAtWithOrders( const char* szAlienClas
 
 	// give our aliens the orders
 	pSpawnable->SetAlienOrders( orders, vec3_origin, NULL );
+
+#ifdef _DEBUG
+	if ( pEntity->MyNPCPointer() )
+	{
+		Vector hullMins = pEntity->MyNPCPointer()->GetHullMins();
+		Vector hullMaxs = pEntity->MyNPCPointer()->GetHullMaxs();
+		Vector realMins = pEntity->CollisionProp()->OBBMins();
+		Vector realMaxs = pEntity->CollisionProp()->OBBMaxs();
+		Assert( hullMins.x <= realMins.x );
+		Assert( hullMins.y <= realMins.y );
+		Assert( hullMins.z <= realMins.z );
+		Assert( hullMaxs.x >= realMaxs.x );
+		Assert( hullMaxs.y >= realMaxs.y );
+		Assert( hullMaxs.z >= realMaxs.z );
+	}
+#endif
 
 	return pEntity;
 }
@@ -1753,24 +1726,24 @@ void asw_alien_batch_f( const CCommand& args )
 	CASW_Player* pPlayer = ToASW_Player(UTIL_GetCommandClient());
 	if (!pPlayer)
 		return;
-	CASW_Marine *pMarine = pPlayer->GetMarine();
-	if (!pMarine)
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetNPC();
+	if ( !pNPC )
 		return;
 	trace_t tr;
 	Vector forward;
 
-	AngleVectors( pMarine->EyeAngles(), &forward );
-	UTIL_TraceLine(pMarine->EyePosition(),
-		pMarine->EyePosition() + forward * 300.0f,MASK_SOLID, 
-		pMarine, COLLISION_GROUP_NONE, &tr );
+	AngleVectors( pNPC->EyeAngles(), &forward );
+	UTIL_TraceLine( pNPC->EyePosition(),
+		pNPC->EyePosition() + forward * 300.0f, MASK_SOLID,
+		pNPC, COLLISION_GROUP_NONE, &tr );
 	if ( tr.fraction != 0.0 )
 	{
 		// trace to the floor from this spot
 		Vector vecSrc = tr.endpos;
 		tr.endpos.z += 12;
-		UTIL_TraceLine( vecSrc + Vector(0, 0, 12),
-			vecSrc - Vector( 0, 0, 512 ) ,MASK_SOLID, 
-			pMarine, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecSrc + Vector( 0, 0, 12 ),
+			vecSrc - Vector( 0, 0, 512 ), MASK_SOLID,
+			pNPC, COLLISION_GROUP_NONE, &tr );
 		
 		ASWSpawnManager()->SpawnAlienBatch( "asw_parasite", 25, tr.endpos, vec3_angle );
 	}

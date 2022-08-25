@@ -1044,6 +1044,8 @@ bool CNetPropManager::GetPropInfo( HSCRIPT hEnt, const char *pszProperty, int el
 	if ( !propInfo.m_IsPropValid )
 		return false;
 
+	if ( !g_pScriptVM ) return false;
+
 	g_pScriptVM->SetValue( hTable, "is_sendprop", propInfo.m_bIsSendProp );
 	g_pScriptVM->SetValue( hTable, "type", propInfo.m_eType );
 	g_pScriptVM->SetValue( hTable, "bits", propInfo.m_nBitCount );
@@ -1074,6 +1076,8 @@ void CNetPropManager::StoreSendPropValue( SendProp *pSendProp, CBaseEntity *pBas
 		if ( !pBaseEntityOrGameRules )
 			return;
 	}
+
+	if ( !g_pScriptVM ) return;
 
 	uint8 *pEntityPropData = (uint8 *)pBaseEntityOrGameRules + iOffset + pSendProp->GetOffset();
 
@@ -1149,6 +1153,8 @@ void CNetPropManager::StoreDataPropValue( typedescription_t *pTypeDesc, CBaseEnt
 {
 	if ( !hTable )
 		return;
+
+	if ( !g_pScriptVM ) return;
 
 	const char *pszPropName = pTypeDesc->fieldName;
 	if ( iElement > -1 )
@@ -1261,6 +1267,8 @@ void CNetPropManager::CollectNestedSendProps( SendTable *pSendTable, CBaseEntity
 	if ( !hTable )
 		return;
 
+	if ( !g_pScriptVM ) return;
+
 	for ( int nPropIdx = 0; nPropIdx < pSendTable->GetNumProps(); nPropIdx++ )
 	{
 		SendProp *pSendProp = pSendTable->GetProp( nPropIdx );
@@ -1308,6 +1316,8 @@ void CNetPropManager::CollectNestedDataMaps( datamap_t *pMap, CBaseEntity *pBase
 {
 	if ( !hTable )
 		return;
+
+	if ( !g_pScriptVM ) return;
 
 	while ( pMap )
 	{

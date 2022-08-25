@@ -57,6 +57,7 @@ BEGIN_RECV_TABLE( C_World, DT_World )
 	RecvPropString(RECVINFO(m_iszDetailSpriteMaterial)),
 	RecvPropInt(RECVINFO(m_bColdWorld)),
 	RecvPropInt(RECVINFO(m_iTimeOfDay)),
+	RecvPropInt(RECVINFO(m_nMapVersion)),
 END_RECV_TABLE()
 
 

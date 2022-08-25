@@ -42,6 +42,12 @@ struct ShaderStencilState_t;
 //#endif
 #endif
 
+#ifdef _DEBUG
+#define RD_MAT_SYSTEM_PARANOID( mode, ptr, size ) ( AssertValid##mode##Ptr )( ( ptr ), ( size ) )
+#else
+#define RD_MAT_SYSTEM_PARANOID( mode, ptr, size )
+#endif
+
 
 //-----------------------------------------------------------------------------
 // The Vertex Buffer interface
@@ -1501,6 +1507,8 @@ inline void	CVertexBuilder::Position3f( float x, float y, float z )
 {
 	Assert( m_pPosition && m_pCurrPosition );
 	Assert( IsFinite(x) && IsFinite(y) && IsFinite(z) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrPosition, sizeof( float ) * 3 );
+
 	float *pDst = m_pCurrPosition;
 	*pDst++ = x;
 	*pDst++ = y;
@@ -1511,6 +1519,7 @@ inline void	CVertexBuilder::Position3fv( const float *v )
 {
 	Assert(v);
 	Assert( m_pPosition && m_pCurrPosition );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrPosition, sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrPosition;
 	*pDst++ = *v++;
@@ -1530,6 +1539,7 @@ inline void	CVertexBuilder::Normal3f( float nx, float ny, float nz )
 	Assert( nx >= -1.05f && nx <= 1.05f );
 	Assert( ny >= -1.05f && ny <= 1.05f );
 	Assert( nz >= -1.05f && nz <= 1.05f );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrNormal, sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrNormal;
 	*pDst++ = nx;
@@ -1546,6 +1556,7 @@ inline void	CVertexBuilder::Normal3fv( const float *n )
 	Assert( n[0] >= -1.05f && n[0] <= 1.05f );
 	Assert( n[1] >= -1.05f && n[1] <= 1.05f );
 	Assert( n[2] >= -1.05f && n[2] <= 1.05f );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrNormal, sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrNormal;
 	*pDst++ = *n++;
@@ -1558,6 +1569,7 @@ inline void	CVertexBuilder::NormalDelta3f( float nx, float ny, float nz )
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // Use the templatized version if you want to support compression
 	Assert( m_pNormal );
 	Assert( IsFinite(nx) && IsFinite(ny) && IsFinite(nz) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrNormal, sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrNormal;
 	*pDst++ = nx;
@@ -1571,6 +1583,7 @@ inline void	CVertexBuilder::NormalDelta3fv( const float *n )
 	Assert( n );
 	Assert( m_pNormal && m_pCurrNormal );
 	Assert( IsFinite(n[0]) && IsFinite(n[1]) && IsFinite(n[2]) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrNormal, sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrNormal;
 	*pDst++ = *n++;
@@ -1633,6 +1646,7 @@ inline void	CVertexBuilder::Color3f( float r, float g, float b )
 	Assert( IsFinite(r) && IsFinite(g) && IsFinite(b) );
 	Assert( (r >= 0.0) && (g >= 0.0) && (b >= 0.0) );
 	Assert( (r <= 1.0) && (g <= 1.0) && (b <= 1.0) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 
 	int col = (FastFToC(b)) | (FastFToC(g) << 8) | (FastFToC(r) << 16) | 0xFF000000;
 	*(int*)m_pCurrColor = col;
@@ -1645,6 +1659,7 @@ inline void	CVertexBuilder::Color3fv( const float *rgb )
 	Assert( IsFinite(rgb[0]) && IsFinite(rgb[1]) && IsFinite(rgb[2]) );
 	Assert( (rgb[0] >= 0.0) && (rgb[1] >= 0.0) && (rgb[2] >= 0.0) );
 	Assert( (rgb[0] <= 1.0) && (rgb[1] <= 1.0) && (rgb[2] <= 1.0) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 
 	int col = (FastFToC(rgb[2])) | (FastFToC(rgb[1]) << 8) | (FastFToC(rgb[0]) << 16) | 0xFF000000;
 	*(int*)m_pCurrColor = col;
@@ -1656,6 +1671,7 @@ inline void	CVertexBuilder::Color4f( float r, float g, float b, float a )
 	Assert( IsFinite(r) && IsFinite(g) && IsFinite(b) && IsFinite(a) );
 	Assert( (r >= 0.0) && (g >= 0.0) && (b >= 0.0) && (a >= 0.0) );
 	Assert( (r <= 1.0) && (g <= 1.0) && (b <= 1.0) && (a <= 1.0) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 
 	int col = (FastFToC(b)) | (FastFToC(g) << 8) | (FastFToC(r) << 16) | (FastFToC(a) << 24);
 	*(int*)m_pCurrColor = col;
@@ -1668,6 +1684,7 @@ inline void	CVertexBuilder::Color4fv( const float *rgba )
 	Assert( IsFinite(rgba[0]) && IsFinite(rgba[1]) && IsFinite(rgba[2]) && IsFinite(rgba[3]) );
 	Assert( (rgba[0] >= 0.0) && (rgba[1] >= 0.0) && (rgba[2] >= 0.0) && (rgba[3] >= 0.0) );
 	Assert( (rgba[0] <= 1.0) && (rgba[1] <= 1.0) && (rgba[2] <= 1.0) && (rgba[3] <= 1.0) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 
 	int col = (FastFToC(rgba[2])) | (FastFToC(rgba[1]) << 8) | (FastFToC(rgba[0]) << 16) | (FastFToC(rgba[3]) << 24);
 	*(int*)m_pCurrColor = col;
@@ -1683,6 +1700,7 @@ inline void	CVertexBuilder::Color4fv( const float *rgba )
 inline void CVertexBuilder::Color3ub( unsigned char r, unsigned char g, unsigned char b )
 {
 	Assert( m_pColor && m_pCurrColor );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 	#ifdef OPENGL_SWAP_COLORS
 		int col = r | (g << 8) | (b << 16) | 0xFF000000;	// r, g, b, a in memory
 	#else
@@ -1696,6 +1714,7 @@ inline void CVertexBuilder::Color3ubv( unsigned char const* rgb )
 {
 	Assert(rgb);
 	Assert( m_pColor && m_pCurrColor );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 	#ifdef OPENGL_SWAP_COLORS
 		int col = rgb[0] | (rgb[1] << 8) | (rgb[2] << 16) | 0xFF000000;	// r, g, b, a in memory
 	#else
@@ -1708,6 +1727,7 @@ inline void CVertexBuilder::Color3ubv( unsigned char const* rgb )
 inline void CVertexBuilder::Color4ub( unsigned char r, unsigned char g, unsigned char b, unsigned char a )
 {
 	Assert( m_pColor && m_pCurrColor );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 	#ifdef OPENGL_SWAP_COLORS
 		int col = r | (g << 8) | (b << 16) | (a << 24);	// r, g, b, a in memory
 	#else
@@ -1721,6 +1741,7 @@ inline void CVertexBuilder::Color4ubv( unsigned char const* rgba )
 {
 	Assert( rgba );
 	Assert( m_pColor && m_pCurrColor );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 	#ifdef OPENGL_SWAP_COLORS
 		int col = rgba[0] | (rgba[1] << 8) | (rgba[2] << 16) | (rgba[3] << 24);	// r, g, b, a in memory
 	#else
@@ -1731,6 +1752,7 @@ inline void CVertexBuilder::Color4ubv( unsigned char const* rgba )
 
 FORCEINLINE void CVertexBuilder::Color4Packed( int packedColor )
 {
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrColor, sizeof( int ) );
 	*(int*)m_pCurrColor = packedColor;
 }
 
@@ -1748,6 +1770,7 @@ inline void	CVertexBuilder::Specular3f( float r, float g, float b )
 	Assert( (r <= 1.0) && (g <= 1.0) && (b <= 1.0) );
 
 	unsigned char* pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 	int col = (FastFToC(b)) | (FastFToC(g) << 8) | (FastFToC(r) << 16) | 0xFF000000;
 	*(int*)pSpecular = col;
 }
@@ -1761,6 +1784,7 @@ inline void	CVertexBuilder::Specular3fv( const float *rgb )
 	Assert( (rgb[0] <= 1.0) && (rgb[1] <= 1.0) && (rgb[2] <= 1.0) );
 
 	unsigned char* pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 	int col = (FastFToC(rgb[2])) | (FastFToC(rgb[1]) << 8) | (FastFToC(rgb[0]) << 16) | 0xFF000000;
 	*(int*)pSpecular = col;
 }
@@ -1773,6 +1797,7 @@ inline void	CVertexBuilder::Specular4f( float r, float g, float b, float a )
 	Assert( (r <= 1.0) && (g <= 1.0) && (b <= 1.0) && (a <= 1.0f) );
 
 	unsigned char* pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 	int col = (FastFToC(b)) | (FastFToC(g) << 8) | (FastFToC(r) << 16) | (FastFToC(a) << 24);
 	*(int*)pSpecular = col;
 }
@@ -1786,6 +1811,7 @@ inline void	CVertexBuilder::Specular4fv( const float *rgb )
 	Assert( (rgb[0] <= 1.0) && (rgb[1] <= 1.0) && (rgb[2] <= 1.0) && (rgb[3] <= 1.0) );
 
 	unsigned char* pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 	int col = (FastFToC(rgb[2])) | (FastFToC(rgb[1]) << 8) | (FastFToC(rgb[0]) << 16) | (FastFToC(rgb[3]) << 24);
 	*(int*)pSpecular = col;
 }
@@ -1794,6 +1820,7 @@ inline void CVertexBuilder::Specular3ub( unsigned char r, unsigned char g, unsig
 {
 	Assert( m_pSpecular );
 	unsigned char *pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 
 	#ifdef OPENGL_SWAP_COLORS
 		int col = r | (g << 8) | (b << 16) | 0xFF000000;	// r, g, b, a in memory
@@ -1808,6 +1835,7 @@ inline void CVertexBuilder::Specular3ubv( unsigned char const *c )
 {
 	Assert( m_pSpecular );
 	unsigned char *pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 
 	#ifdef OPENGL_SWAP_COLORS
 		int col = c[0] | (c[1] << 8) | (c[2] << 16) | 0xFF000000;	// r, g, b, a in memory
@@ -1822,6 +1850,7 @@ inline void CVertexBuilder::Specular4ub( unsigned char r, unsigned char g, unsig
 {
 	Assert( m_pSpecular );
 	unsigned char *pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 
 	#ifdef OPENGL_SWAP_COLORS
 		int col = r | (g << 8) | (b << 16) | (a << 24);	// r, g, b, a in memory
@@ -1836,6 +1865,7 @@ inline void CVertexBuilder::Specular4ubv( unsigned char const *c )
 {
 	Assert( m_pSpecular );
 	unsigned char *pSpecular = &m_pSpecular[m_nCurrentVertex * m_VertexSize_Specular];
+	RD_MAT_SYSTEM_PARANOID( Write, pSpecular, sizeof( int ) );
 
 	#ifdef OPENGL_SWAP_COLORS
 		int col = c[0] | (c[1] << 8) | (c[2] << 16) | (c[3] << 24);
@@ -1854,6 +1884,7 @@ inline void CVertexBuilder::TexCoord1f( int nStage, float s )
 {
 	Assert( m_pTexCoord[nStage] && m_pCurrTexCoord[nStage] );
 	Assert( IsFinite(s) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[nStage], sizeof( float ) );
 
 	float *pDst = m_pCurrTexCoord[nStage];
 	*pDst = s;
@@ -1863,6 +1894,7 @@ inline void	CVertexBuilder::TexCoord2f( int nStage, float s, float t )
 {
 	Assert( m_pTexCoord[nStage] && m_pCurrTexCoord[nStage] );
 	Assert( IsFinite(s) && IsFinite(t) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[nStage], sizeof( float ) * 2 );
 
 	float *pDst = m_pCurrTexCoord[nStage];
 	*pDst++ = s;
@@ -1874,6 +1906,7 @@ inline void	CVertexBuilder::TexCoord2fv( int nStage, const float *st )
 	Assert(st);
 	Assert( m_pTexCoord[nStage] && m_pCurrTexCoord[nStage] );
 	Assert( IsFinite(st[0]) && IsFinite(st[1]) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[nStage], sizeof( float ) * 2 );
 
 	float *pDst = m_pCurrTexCoord[nStage];
 	*pDst++ = *st++;
@@ -1885,6 +1918,8 @@ inline void	CVertexBuilder::TexCoord3f( int stage, float s, float t, float u )
 	// Tried to add too much!
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(s) && IsFinite(t)  && IsFinite(u) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 3 );
+
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = s;
 	*pDst++ = t;
@@ -1896,6 +1931,7 @@ inline void	CVertexBuilder::TexCoord3fv( int stage, const float *stu )
 	Assert(stu);
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(stu[0]) && IsFinite(stu[1]) && IsFinite(stu[2]) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 3 );
 
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = *stu++;
@@ -1908,6 +1944,8 @@ inline void	CVertexBuilder::TexCoord4f( int stage, float s, float t, float u, fl
 	// Tried to add too much!
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(s) && IsFinite(t)  && IsFinite(u) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 4 );
+
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = s;
 	*pDst++ = t;
@@ -1920,6 +1958,7 @@ inline void	CVertexBuilder::TexCoord4fv( int stage, const float *stuv )
 	Assert(stuv);
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(stuv[0]) && IsFinite(stuv[1]) && IsFinite(stuv[2]) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 4 );
 
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = *stuv++;
@@ -1933,6 +1972,7 @@ inline void CVertexBuilder::TexCoordSubRect2f( int stage, float s, float t, floa
 {
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(s) && IsFinite(t) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 2 );
 
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = ( s * scaleS ) + offsetS;
@@ -1944,6 +1984,7 @@ inline void CVertexBuilder::TexCoordSubRect2fv( int stage, const float *st, cons
 	Assert(st);
 	Assert( m_pTexCoord[stage] && m_pCurrTexCoord[stage] );
 	Assert( IsFinite(st[0]) && IsFinite(st[1]) );
+	RD_MAT_SYSTEM_PARANOID( Write, m_pCurrTexCoord[stage], sizeof( float ) * 2 );
 
 	float *pDst = m_pCurrTexCoord[stage];
 	*pDst++ = ( *st++ * *scale++ ) + *offset++;
@@ -1960,6 +2001,7 @@ inline void CVertexBuilder::TangentS3f( float sx, float sy, float sz )
 	Assert( IsFinite(sx) && IsFinite(sy) && IsFinite(sz) );
 
 	float* pTangentS = OffsetFloatPointer( m_pTangentS, m_nCurrentVertex, m_VertexSize_TangentS );
+	RD_MAT_SYSTEM_PARANOID( Write, pTangentS, sizeof( float ) * 3 );
 	*pTangentS++ = sx;
 	*pTangentS++ = sy;
 	*pTangentS = sz;
@@ -1972,6 +2014,7 @@ inline void CVertexBuilder::TangentS3fv( const float* s )
 	Assert( IsFinite(s[0]) && IsFinite(s[1]) && IsFinite(s[2]) );
 
 	float* pTangentS = OffsetFloatPointer( m_pTangentS, m_nCurrentVertex, m_VertexSize_TangentS );
+	RD_MAT_SYSTEM_PARANOID( Write, pTangentS, sizeof( float ) * 3 );
 	*pTangentS++ = *s++;
 	*pTangentS++ = *s++;
 	*pTangentS = *s;
@@ -1983,6 +2026,7 @@ inline void CVertexBuilder::TangentT3f( float tx, float ty, float tz )
 	Assert( IsFinite(tx) && IsFinite(ty) && IsFinite(tz) );
 
 	float* pTangentT = OffsetFloatPointer( m_pTangentT, m_nCurrentVertex, m_VertexSize_TangentT );
+	RD_MAT_SYSTEM_PARANOID( Write, pTangentT, sizeof( float ) * 3 );
 	*pTangentT++ = tx;
 	*pTangentT++ = ty;
 	*pTangentT = tz;
@@ -1995,6 +2039,7 @@ inline void CVertexBuilder::TangentT3fv( const float* t )
 	Assert( IsFinite(t[0]) && IsFinite(t[1]) && IsFinite(t[2]) );
 
 	float* pTangentT = OffsetFloatPointer( m_pTangentT, m_nCurrentVertex, m_VertexSize_TangentT );
+	RD_MAT_SYSTEM_PARANOID( Write, pTangentT, sizeof( float ) * 3 );
 	*pTangentT++ = *t++;
 	*pTangentT++ = *t++;
 	*pTangentT = *t;
@@ -2010,6 +2055,7 @@ inline void CVertexBuilder::Wrinkle1f( float flWrinkle )
 	Assert( IsFinite(flWrinkle) );
 
 	float *pWrinkle = OffsetFloatPointer( m_pWrinkle, m_nCurrentVertex, m_VertexSize_Wrinkle );
+	RD_MAT_SYSTEM_PARANOID( Write, pWrinkle, sizeof( float ) );
 	*pWrinkle = flWrinkle;
 }
 

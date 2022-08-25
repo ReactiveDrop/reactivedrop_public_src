@@ -271,7 +271,6 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 			if ( !bSkipChatter )
 			{
 				// try and do a special chatter?
-				bool bSkipChatter = false;
 				if (pMarine->GetMarineSpeech()->AllowCalmConversations(CONV_HEALING_CRASH))
 				{
 					if (!pTarget->m_bDoneWoundedRebuke && pTarget->GetMarineResource() && pTarget->GetMarineResource()->m_bTakenWoundDamage)

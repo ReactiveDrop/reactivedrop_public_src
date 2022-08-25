@@ -25,6 +25,8 @@ using namespace vgui;
 
 #define ASW_BRIEFING_MUSIC_DURATION 120
 
+extern ConVar rd_chatwipe;
+
 BriefingImagePanel::BriefingImagePanel(Panel *parent, const char *name) : ImagePanel(parent, name)
 {
 //	float f = random->RandomFloat();
@@ -138,7 +140,7 @@ void BriefingImagePanel::CloseBriefingFrame()
 
 		// clear the currently visible part of the chat
 		CHudChat *pChat = GET_HUDELEMENT( CHudChat );
-		if (pChat && pChat->GetChatHistory())
+		if ( pChat && pChat->GetChatHistory() && rd_chatwipe.GetBool() )
 			pChat->GetChatHistory()->ResetAllFades( false, false, 0 );
 // 		if (m_pChatEcho)
 // 		{

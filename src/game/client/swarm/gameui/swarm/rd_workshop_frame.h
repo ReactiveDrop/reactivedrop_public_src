@@ -25,7 +25,7 @@ namespace BaseModUI
 		ReactiveDropWorkshopListItem( vgui::Panel *parent, const char *panelName );
 		virtual ~ReactiveDropWorkshopListItem();
 
-		CReactiveDropWorkshop::WorkshopItem_t GetDetails();
+		const CReactiveDropWorkshop::WorkshopItem_t &GetDetails();
 		CReactiveDropWorkshopPreviewImage *GetPreviewImage();
 
 		virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
@@ -67,7 +67,7 @@ namespace BaseModUI
 	private:
 		void InitReady();
 		void InitWait();
-		void InitEdit( CReactiveDropWorkshop::WorkshopItem_t item, CReactiveDropWorkshopPreviewImage *pPreviewImage );
+		void InitEdit( const CReactiveDropWorkshop::WorkshopItem_t &item, CReactiveDropWorkshopPreviewImage *pPreviewImage );
 		ReactiveDropWorkshopListItem *AddWorkshopItem( PublishedFileId_t nFileID );
 		void RequestSingleItem( PublishedFileId_t nPublishedFileID );
 

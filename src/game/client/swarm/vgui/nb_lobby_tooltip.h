@@ -6,6 +6,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
+#include "steam/steam_api.h"
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::Panel;
@@ -16,6 +17,7 @@ class CASW_Model_Panel;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class vgui::ImagePanel;
 class vgui::Label;
+class vgui::RichText;
 
 class CNB_Lobby_Tooltip : public vgui::EditablePanel
 {
@@ -32,6 +34,7 @@ public:
 	void ShowMarineTooltip( int nLobbySlot );
 	void ShowWeaponTooltip( int nLobbySlot, int nInventorySlot );
 	void ShowMarinePromotionTooltip( int nLobbySlot );
+	void ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult );
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;
@@ -55,15 +58,19 @@ public:
 	// == MANAGED_MEMBER_POINTERS_END ==
 	vgui::ImagePanel *m_pPromotionIcon;
 	vgui::Label *m_pPromotionLabel;
+	vgui::RichText *m_pItemDescription;
 
 	bool m_bPromotionTooltip;
 	bool m_bMarineTooltip;
 	int m_nLobbySlot;
 	int m_nInventorySlot;
 	bool m_bValidTooltip;
-	
+	SteamInventoryResult_t m_hInventoryResult;
+
 	int m_nLastWeaponHash;
 	int m_nLastInventorySlot;
+	SteamItemInstanceID_t m_nLastItemInstance;
+	float m_flInventoryDetailsAfter;
 };
 
 #endif // _INCLUDED_NB_LOBBY_TOOLTIP_H

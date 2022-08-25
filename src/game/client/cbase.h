@@ -59,5 +59,6 @@ struct studiohdr_t;
 #include "engine/ivmodelinfo.h"
 #include "npcevent.h"
 #include "debugoverlay_shared.h"
+#include "rd_release_flags.h"
 
 #endif // CBASE_H

@@ -168,7 +168,25 @@ public:
 	void FootscuffSound( bool fRightFoot );
 
 	const char *GetMoanSound( int nSound );
-	
+
+	enum
+	{
+		SCHED_ZOMBIE_BASH_DOOR = BaseClass::NEXT_SCHEDULE,
+		SCHED_ZOMBIE_WANDER_ANGRILY,
+		SCHED_ZOMBIE_CHARGE_ENEMY,
+		SCHED_ZOMBIE_FAIL,
+		NEXT_SCHEDULE,
+	};
+
+	enum
+	{
+		TASK_ZOMBIE_EXPRESS_ANGER = BaseClass::NEXT_TASK,
+		TASK_ZOMBIE_YAW_TO_DOOR,
+		TASK_ZOMBIE_ATTACK_DOOR,
+		TASK_ZOMBIE_CHARGE_ENEMY,
+		NEXT_TASK,
+	};
+
 public:
 	DEFINE_CUSTOM_AI;
 
@@ -197,28 +215,6 @@ const char *CZombie::pMoanSounds[] =
 	 "NPC_BaseZombie.Moan2",
 	 "NPC_BaseZombie.Moan3",
 	 "NPC_BaseZombie.Moan4",
-};
-
-//=========================================================
-// Schedules
-//=========================================================
-enum
-{
-	SCHED_ZOMBIE_BASH_DOOR = LAST_BASE_ZOMBIE_SCHEDULE,
-	SCHED_ZOMBIE_WANDER_ANGRILY,
-	SCHED_ZOMBIE_CHARGE_ENEMY,
-	SCHED_ZOMBIE_FAIL,
-};
-
-//=========================================================
-// Tasks
-//=========================================================
-enum
-{
-	TASK_ZOMBIE_EXPRESS_ANGER = LAST_BASE_ZOMBIE_TASK,
-	TASK_ZOMBIE_YAW_TO_DOOR,
-	TASK_ZOMBIE_ATTACK_DOOR,
-	TASK_ZOMBIE_CHARGE_ENEMY,
 };
 
 //-----------------------------------------------------------------------------

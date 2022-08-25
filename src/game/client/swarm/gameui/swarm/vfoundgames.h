@@ -73,6 +73,7 @@ public:
 		bool IsDownloadable() const;
 		bool IsDLC() const;
 		bool HaveMap() const;
+		int CompareMapVersion() const;
 		char const * IsOtherTitle() const;
 		PublishedFileId_t GetWorkshopID() const;
 
@@ -143,6 +144,7 @@ private:
 
 	GenericPanelList	*m_pListCtrlr;
 	vgui::ImagePanel	*m_pImgPing;
+	vgui::ImagePanel	*m_pImgPingSmall;
 	vgui::Label			*m_pLblPing;
 	vgui::Label			*m_pLblPlayerGamerTag;
 	vgui::Label			*m_pLblDifficulty;

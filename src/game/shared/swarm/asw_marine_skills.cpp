@@ -150,6 +150,10 @@ ConVar asw_skill_accuracy_heavy_rifle_dmg_step( "asw_skill_accuracy_heavy_rifle_
 ConVar asw_skill_accuracy_medrifle_dmg_base( "asw_skill_accuracy_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_medrifle_dmg_step( "asw_skill_accuracy_medrifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 
+ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with no Explosives skills", true, 1, true, 10 );
+ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
+ConVar asw_skill_laser_mines_expert( "asw_skill_laser_mines_expert", "3", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with expert(>3) Explosives skills. Currently only Jaeger have it", true, 1, true, 10 );
+
 namespace
 {
 	float MuzzleFlashScale(int iSkillPoints)
@@ -322,7 +326,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 				case ASW_MARINE_SUBSKILL_GRENADE_FREEZE_DURATION: return asw_skill_grenades_freeze_duration_base.GetFloat() + asw_skill_grenades_freeze_duration_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT: return asw_skill_grenades_smart_count_base.GetFloat() + asw_skill_grenades_smart_count_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL: return asw_skill_grenades_smart_interval_base.GetFloat() + asw_skill_grenades_smart_interval_step.GetFloat() * iSkillPoints; break;
-				case ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES: return ( iSkillPoints > 3 ? 3 : ( iSkillPoints > 0 ? 2 : 1 ) ); break;
+				case ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES: return ( iSkillPoints > 3 ? asw_skill_laser_mines_expert.GetInt() : (iSkillPoints > 0 ? asw_skill_laser_mines_moderate.GetInt() : asw_skill_laser_mines_base.GetInt())); break;
 				case ASW_MARINE_SUBSKILL_GRENADE_MINES_FIRES: return asw_skill_mines_fires_base.GetFloat() + asw_skill_mines_fires_step.GetFloat() * iSkillPoints; break;
 				case ASW_MARINE_SUBSKILL_GRENADE_MINES_DURATION: return asw_skill_mines_duration_base.GetFloat() + asw_skill_mines_duration_step.GetFloat() * iSkillPoints; break;
 				default: return asw_skill_grenades_dmg_base.GetFloat() + asw_skill_grenades_dmg_step.GetFloat() * iSkillPoints; break;

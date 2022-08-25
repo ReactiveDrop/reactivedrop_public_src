@@ -77,10 +77,10 @@ public:
 	virtual CBaseEntity* GetEntity() { return this; }
 	virtual bool IsUsable( CBaseEntity *pUser );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
-	virtual void ActivateUseIcon( CASW_Marine *pMarine, int nHoldType );
-	virtual void MarineUsing( CASW_Marine *pMarine, float deltatime );
-	virtual void MarineStartedUsing( CASW_Marine *pMarine );
-	virtual void MarineStoppedUsing( CASW_Marine *pMarine );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime );
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC );
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC );
 	virtual bool NeedsLOSCheck() { return true; }
 
 	// Use this in preference to CASW_Marine::AsMarine( pEnt ) :
@@ -130,18 +130,11 @@ public:
 	CASW_Marine_Profile* GetMarineProfile();
 	EHANDLE m_MarineResource;
 
-	// Commander/Inhabiting	
-	void SetCommander(CASW_Player *player);		// sets which player commands this marine
-	CASW_Player* GetCommander() const;
-	HSCRIPT ScriptGetCommander() const;
+	// Commander/Inhabiting
 	bool IsInhabited();
-	void SetInhabited(bool bInhabited);
-	void InhabitedBy(CASW_Player *player);		// called when a player takes direct control of this marine
-	void UninhabitedBy(CASW_Player *player);	// called when a player stops direct control of this marine	
-	CNetworkHandle (CASW_Player, m_Commander); 	// the player in charge of this marine
-	void SetInitialCommander(CASW_Player *player);
-	char m_szInitialCommanderNetworkID[64];		// ASWNetworkID of the first commander for this marine in this mission
-	const char *GetPlayerName() const;
+	void SetInhabited( bool bInhabited );
+	void InhabitedBy( CASW_Player *player ); // called when a player takes direct control of this marine
+	void UninhabitedBy( CASW_Player *player ); // called when a player stops direct control of this marine
 
 	// Alien related
 	bool IsAlienNear();	// is an alien nearby? (used by speech to know if we should shout urgent lines)
@@ -177,7 +170,6 @@ public:
 	void AvoidPhysicsProps( CUserCmd *pCmd );
 	void    PhysicsSimulate( void );		
 	virtual void InhabitedPhysicsSimulate();
-	int m_nOldButtons;
 	virtual bool ShouldPlayerAvoid( void );
 	virtual float GetIdealSpeed() const;
 	float m_fCachedIdealSpeed;
@@ -190,24 +182,16 @@ public:
 	virtual unsigned int PhysicsSolidMaskForEntity() const;
 	bool TeleportStuckMarine();
 	bool TeleportToFreeNode( CASW_Marine *pTarget = NULL, float fNearestDist = -1 );
-	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
 
 	CASW_Lag_Compensation m_LagCompensation;
 
-	// Texture names and surface data, used by CASW_MarineGameMovement
-	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
-	float			m_surfaceFriction;
-	char			m_chTextureType;
-	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
-
 	// melee
 	void PhysicsShove();
 	void DoMeleeDamageTrace( float flYawStart, float flYawEnd );
 	void PlayMeleeImpactEffects( CBaseEntity *pEntity, trace_t *tr );
-	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo &dmgInfo, Vector &vecAttackDir, trace_t *tr );
+	void ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmgInfo, Vector &vecAttackDir, trace_t *tr );
 	CBaseEntity *MeleeTraceHullAttack( const Vector &vecStart, const Vector &vecEnd, const Vector &vecMins, const Vector &vecMaxs, bool bHitBehindMarine, float flAttackCone );
 	float m_fKickTime;
 	// Keep track of recent melee hits so we can perform wide area of effect melee attacks without double-damaging entities
@@ -533,7 +517,6 @@ public:
 	// weapons
 	virtual bool Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex=0 ) ;
 	virtual bool Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon );
-	CASW_Weapon* GetASWWeapon(int index) const;	
 	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in
 	bool TakeWeaponPickup(CASW_Weapon* pWeapon);
 	bool TakeWeaponPickup(CASW_Pickup_Weapon* pPickup);				// takes a weapon	
@@ -543,7 +526,6 @@ public:
 	bool DropWeapon(CASW_Weapon* pWeapon, bool bNoSwap, const Vector *pvecTarget=NULL, const Vector *pVelocity=NULL);
 	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget /* = NULL */, const Vector *pVelocity /* = NULL */ );	// HL version	
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();
-	CASW_Weapon* GetActiveASWWeapon( void ) const;
 	virtual Vector Weapon_ShootPosition();					// source point for firing weapons	
 	virtual bool IsFiring();
 	int m_nIndexActWeapBeforeTempPickup;
@@ -667,15 +649,10 @@ public:
 	void PerformResurrectionEffect( void );		///< issue any special effects or sounds on resurrection
 	// we want to no part of this freezing business!
 	void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) { }
+	int m_iPoisonHeal;
+	float m_flNextPoisonHeal;
 
-	// using entities over time
-	virtual bool StartUsing(CBaseEntity *pEntity);
 	virtual void StopUsing();
-	inline CBaseEntity *GetUsingEntity() const { return m_hUsingEntity.Get(); }
-	CNetworkHandle( CBaseEntity, m_hUsingEntity );
-	void SetFacingPoint(const Vector &vec, float fDuration);
-	CNetworkVar(Vector, m_vecFacingPointFromServer);
-	float m_fStopFacingPointTime;
 	float m_fLastASWThink;
 	virtual int DrawDebugTextOverlays();
 	virtual void DrawDebugGeometryOverlays();
@@ -766,6 +743,7 @@ public:
 	bool CanDoForcedAction( int iForcedAction );		// check if we're allowed to perform a forced action (certain abilities limit this)
 	void RequestForcedAction( int iForcedAction );
 	CNetworkVar( int, m_iForcedActionRequest );
+	int m_iForcedActionRequestTick;
 
 	void SetNextStumbleTime( float flStumbleTime ) { m_flNextStumbleTime = flStumbleTime; }
 	float m_flNextStumbleTime;

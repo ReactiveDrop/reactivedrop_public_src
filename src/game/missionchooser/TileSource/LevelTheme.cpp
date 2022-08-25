@@ -110,7 +110,7 @@ bool CLevelTheme::SaveTheme(const char *pszThemeName)
 	char buffer[128];
 	Q_snprintf( buffer, sizeof( buffer ), "%f %f %f", m_vecAmbientLight.x, m_vecAmbientLight.y, m_vecAmbientLight.z );
 	pThemeKeyValues->SetString( "AmbientLight", buffer );
-	if (!pThemeKeyValues->SaveToFile(g_pFullFileSystem, szFullFileName, "GAME"))
+	if (!pThemeKeyValues->SaveToFile(g_pFullFileSystem, szFullFileName, "MOD"))
 	{
 		Msg("Error: Failed to save theme %s\n", szFullFileName);
 		return false;

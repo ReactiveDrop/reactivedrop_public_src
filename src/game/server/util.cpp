@@ -2998,7 +2998,7 @@ bool UTIL_IsGroundLevel( float radius, const Vector &position, float hullHeight,
 	for( j=0; j<subdivisions; ++j )
 	{
 		x = -radius;
-		for( int i=0; i<subdivisions; ++i )
+		for( int k=0; k<subdivisions; ++k )
 		{
 			UTIL_TraceHull( position + Vector( 0, 0, hullHeight ), 
 							position + Vector( 0, 0, -100 ), 

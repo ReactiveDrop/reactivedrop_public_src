@@ -780,9 +780,9 @@ bool VMFExporter::ProcessEntityKey( KeyValues *pKey )
 		if (!stricmp(szKey, pNodeKey))
 		{
 			int iNodeID = atoi(szValue);
-			for (int i=0;i<m_NodeTranslations.Count();i++)
+			for (int j=0;j<m_NodeTranslations.Count();j++)
 			{
-				NodeTranslation_t *pTranslation = m_NodeTranslations[i];
+				NodeTranslation_t *pTranslation = m_NodeTranslations[j];
 				if ( pTranslation->m_iOriginalNodeID == iNodeID )
 				{
 

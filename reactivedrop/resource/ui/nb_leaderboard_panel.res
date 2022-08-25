@@ -27,7 +27,7 @@
 	"ServerList"
 	{
 		"fieldName"			"ServerList"
-		"xpos"				"c10"
+		"xpos"				"c20"
 		"ypos"				"r23"
 		"wide"				"117"
 		"tall"				"27"
@@ -38,6 +38,44 @@
 		"fgcolor_override"	"113 142 181 255"
 		"zpos"				"3"
 		"visible"			"0"
+	}
+	"StatsWebsite"
+	{
+		"fieldName"			"StatsWebsite"
+		"xpos"				"c147"
+		"ypos"				"r23"
+		"wide"				"117"
+		"tall"				"27"
+		"ControlName"		"CNB_Button"
+		"labelText"			"#L4D360UI_Leaderboard_Show_Global"
+		"textAlignment"		"center"
+		"font"				"DefaultMedium"
+		"fgcolor_override"	"113 142 181 255"
+		"zpos"				"3"
+		"visible"			"0"
+	}
+	"ToggleButton"
+	{
+		"fieldName"		"ToggleButton"
+		"xpos"		"c-142"
+		"ypos"		"r20"
+		"wide"		"16"
+		"tall"		"16"
+		"ControlName"		"CBitmapButton"
+		"zpos"		"3"
+		"scaleImage"		"1"
+	}
+	"ToggleLabel"
+	{
+		"fieldName"		"ToggleLabel"
+		"xpos"		"c-124"
+		"ypos"		"r18"
+		"wide"		"120"
+		"tall"		"10"
+		"ControlName"		"Label"
+		"labelText"		"#rd_leaderboard_filter_top"
+		"visible"		"0"
+		"zpos"		"3"
 	}
 	"LeaderboardBackground"
 	{

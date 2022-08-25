@@ -35,12 +35,12 @@ public:
 	int GetAmmoUnitCost( int iAmmoType );
 	int GetAmmoUnitsRemaining() { return m_iAmmoUnitsRemaining; }
 	C_ASW_Weapon* GetAmmoUseUnits( C_ASW_Marine *pMarine );
-	bool AllowedToPickup( C_ASW_Marine *pMarine );
+	bool AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC );
 
 	// IASW_Client_Usable_Entity
 	virtual C_BaseEntity* GetEntity() { return this; }
 	virtual bool IsUsable( C_BaseEntity *pUser );
-	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Marine *pUser );
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon );
 	virtual bool ShouldPaintBoxAround() { return true; }
 	virtual bool NeedsLOSCheck() { return true; }

@@ -28,6 +28,7 @@ BEGIN_RECV_TABLE_NOBASE( C_ASW_Marine_Resource, DT_MR_Timelines )
 	RecvPropDataTable( RECVINFO_DT( m_TimelineAmmo ), 0, &REFERENCE_RECV_TABLE(DT_Timeline) ),
 	RecvPropDataTable( RECVINFO_DT( m_TimelinePosX ), 0, &REFERENCE_RECV_TABLE(DT_Timeline) ),
 	RecvPropDataTable( RECVINFO_DT( m_TimelinePosY ), 0, &REFERENCE_RECV_TABLE(DT_Timeline) ),
+	RecvPropDataTable( RECVINFO_DT( m_TimelineScore ), 0, &REFERENCE_RECV_TABLE(DT_Timeline) ),
 END_RECV_TABLE();
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Marine_Resource)
@@ -47,7 +48,9 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Mar
 	RecvPropString	(RECVINFO(m_MedalsAwarded) ),
 	RecvPropEHandle	(RECVINFO(m_hWeldingDoor)),
 	RecvPropBool	(RECVINFO(m_bUsingEngineeringAura) ),
-	RecvPropInt     (RECVINFO(m_iBotFrags)),
+	RecvPropInt		(RECVINFO(m_iBotFrags)),
+	RecvPropInt		(RECVINFO(m_iScore)),
+	RecvPropFloat	(RECVINFO(m_flFinishedMissionTime)),
 END_RECV_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -74,6 +77,8 @@ C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 	m_iBotFrags = 0;
 	m_Commander = NULL;
 	m_iCommanderIndex = -1;
+	m_iScore = -1;
+	m_flFinishedMissionTime = -1;
 	memset( m_iWeaponsInSlots, -1, sizeof( m_iWeaponsInSlots ) );
 }
 
@@ -126,7 +131,7 @@ void C_ASW_Marine_Resource::GetDisplayName( wchar_t *pwchDisplayName, int nMaxBy
 	else
 	{
 		// BenLubar: don't use the player name if they're controlling another marine after we died
-		bool bIsInhabited = IsInhabited() && GetCommander() && GetCommander()->m_hMarine.m_Value == m_MarineEntity;
+		bool bIsInhabited = IsInhabited() && GetCommander() && GetCommander()->GetNPC() == m_MarineEntity;
 
 		if ( bIsInhabited && g_PR->IsConnected( m_iCommanderIndex ) )
 		{
@@ -313,7 +318,7 @@ void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 				pPlayer->LoadoutSendStored(this);
 
 				// see if we need to spend skill points
-				if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() 
+				if ( ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() 
 					&& ASWGameResource() && ASWGameResource()->GetMarineSkill( this, ASW_SKILL_SLOT_SPARE ) > 0 )
 				{
 					CNB_Main_Panel::QueueSpendSkillPoints( GetProfileIndex() );

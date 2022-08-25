@@ -12,6 +12,7 @@ public:
 	DECLARE_CLASS( CASW_Broadcast_Camera, CBaseEntity );
 
 	void Spawn( void );
+	void UpdateOnRemove( void );
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	void Enable( void );
 	void EnableForPlayerIndex(int playerindex);

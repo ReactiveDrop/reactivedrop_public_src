@@ -363,6 +363,8 @@ void AdvancedSettings::OnCommand( const char *command )
 			m_iCurrentSection = 0;
 		}
 
+		FlyoutMenu::CloseActiveMenu();
+
 		InvalidateLayout();
 	}
 	else

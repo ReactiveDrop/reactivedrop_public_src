@@ -13,6 +13,7 @@
 #include "clientmode_asw.h"
 #include "nb_main_panel.h"
 #include "asw_deathmatch_mode.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -58,7 +59,7 @@ BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTask
 	if (pChat)
 	{
 		if ( rd_chatwipe.GetBool() )
-			pChat->InsertBlankPage();
+			pChat->ClearHistory();
 		pChat->ShowChatPanel();	// chat up all the time during briefing
 	}
 

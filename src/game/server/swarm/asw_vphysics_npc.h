@@ -2,14 +2,14 @@
 #define ASW_VPHYSICS_NPC_H
 #pragma once
 
-#include "ai_playerally.h"
+#include "asw_inhabitable_npc.h"
 
 class CMoveData;
 
-class CASW_VPhysics_NPC : public CAI_PlayerAlly
+class CASW_VPhysics_NPC : public CASW_Inhabitable_NPC
 {
 public:
-	DECLARE_CLASS( CASW_VPhysics_NPC, CAI_PlayerAlly );
+	DECLARE_CLASS( CASW_VPhysics_NPC, CASW_Inhabitable_NPC );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 

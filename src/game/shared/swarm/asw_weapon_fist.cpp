@@ -46,8 +46,8 @@ END_DATADESC()
 ConVar asw_fist_ragdoll_chance( "asw_fist_ragdoll_chance", "0.4f" );
 #endif /* not client */
 
-ConVar asw_fist_passive_damage_scale( "asw_fist_passive_damage_scale", "2.0f", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage scale applied from charged fist passive item" );
-
+ConVar asw_fist_passive_damage_scale( "asw_fist_passive_damage_scale", "1.5f", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage scale applied from charged fist passive item" );
+ConVar asw_fist_finisher_damage_scale( "asw_fist_finisher_damage_scale", "40.0f", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage scale applied (in addition to passive scale) on combo finisher with fist" );
 
 CASW_Weapon_Fist::CASW_Weapon_Fist()
 {

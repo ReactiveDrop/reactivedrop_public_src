@@ -7,6 +7,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar glow_outline_color_ammo;
+
+C_ASW_Ammo::C_ASW_Ammo()
+{
+	m_GlowObject.SetColor( glow_outline_color_ammo.GetColorAsVector() );
+}
 
 //------------
 // Rifle Ammo

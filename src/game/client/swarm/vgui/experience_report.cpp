@@ -51,6 +51,9 @@ CExperienceReport::CExperienceReport( vgui::Panel *parent, const char *name ) : 
 
 	m_pXPDifficultyScaleTitle = new vgui::Label( this, "XPDifficultyScaleTitle", "" );
 	m_pXPDifficultyScaleNumber = new vgui::Label( this, "XPDifficultyScaleNumber", "" );
+
+	m_pXPBonusEventScaleTitle = new vgui::Label( this, "XPBonusEventScaleTitle", "" );
+	m_pXPBonusEventScaleNumber = new vgui::Label( this, "XPBonusEventScaleNumber", "" );
 	
 	m_pSkillAnim = new SkillAnimPanel(this, "SkillAnim");
 
@@ -139,10 +142,17 @@ void CExperienceReport::PerformLayout()
 
 	y += m_pXPDifficultyScaleNumber->GetTall() + padding;
 
+	if ( m_pXPBonusEventScaleTitle->IsVisible() )
+	{
+		m_pXPBonusEventScaleTitle->SetPos( x, y );
+		m_pXPBonusEventScaleNumber->SetPos( x, y );
+
+		y += m_pXPBonusEventScaleNumber->GetTall() + padding;
+	}
+
 	m_pEarnedXPTitle->SetPos( x, y );
 	m_pEarnedXPNumber->SetPos( x, y );
 
-	
 	if ( m_pCheatsUsedLabel->IsVisible() )
 	{
 		y += m_pEarnedXPTitle->GetTall();
@@ -267,6 +277,21 @@ void CExperienceReport::OnThink()
 		bool bShowDifficultyBonus = ( ASWGameRules()->GetSkillLevel() != 2 );
 		m_pXPDifficultyScaleNumber->SetVisible( bShowDifficultyBonus );
 		m_pXPDifficultyScaleTitle->SetVisible( bShowDifficultyBonus );
+
+		bool bShowAnniversaryBonus = ASWGameRules()->IsAnniversaryWeek();
+		if ( bShowAnniversaryBonus )
+			flTotalXP = floorf( flTotalXP ) * 2;
+
+		if ( bShowAnniversaryBonus != m_pXPBonusEventScaleNumber->IsVisible() )
+		{
+			m_pXPBonusEventScaleNumber->SetVisible( bShowAnniversaryBonus );
+			m_pXPBonusEventScaleTitle->SetVisible( bShowAnniversaryBonus );
+
+			m_pXPBonusEventScaleNumber->SetText( "x2" );
+			m_pXPBonusEventScaleTitle->SetText( "#rd_xp_bonus_anniversary" );
+
+			InvalidateLayout();
+		}
 	}
 
 	int nEarnedXP = (int) flTotalXP;

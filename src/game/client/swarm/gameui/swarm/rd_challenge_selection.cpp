@@ -5,9 +5,11 @@
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include "nb_header_footer.h"
+#include "nb_button.h"
 #include "vfooterpanel.h"
 #include "rd_workshop.h"
 #include "filesystem.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -34,11 +36,20 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::OnMousePressed( vgui::Mo
 {
 	if ( MOUSE_LEFT == code )
 	{
-		GenericPanelList *pGenericList = dynamic_cast<GenericPanelList *>( GetParent()->GetParent() );
-
+		GenericPanelList *pGenericList = dynamic_cast< GenericPanelList * >( GetParent()->GetParent() );
+		Assert( pGenericList );
 		if ( pGenericList )
 		{
 			pGenericList->SelectPanelItemByPanel( this );
+		}
+	}
+	else if ( MOUSE_RIGHT == code && GetControllerFocus()->IsControllerMode() )
+	{
+		ReactiveDropChallengeSelection *pChallengeSelection = dynamic_cast< ReactiveDropChallengeSelection * >( GetParent()->GetParent()->GetParent() );
+		Assert( pChallengeSelection );
+		if ( pChallengeSelection )
+		{
+			pChallengeSelection->OnCommand( "BackButton" );
 		}
 	}
 
@@ -129,17 +140,21 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	}
 
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( !ReactiveDropChallenges::ReadData( pKV, szName ) )
+	const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( szName );
+	if ( !pChallenge )
 	{
 		m_lblError->SetText( "#rd_challenge_selection_error" );
 		m_lblError->SetVisible( true );
 		return;
 	}
 
-	m_nWorkshopID = static_cast<PublishedFileId_t>( pKV->GetUint64( "workshop", k_PublishedFileIdInvalid ) );
-	CReactiveDropWorkshop::WorkshopItem_t item = GetWorkshopItem();
+	// get local data if available
+	( void )ReactiveDropChallenges::ReadData( pKV, szName );
 
-	m_lblName->SetText( pKV->GetString( "name", szName ) );
+	m_nWorkshopID = pChallenge->WorkshopID;
+	const CReactiveDropWorkshop::WorkshopItem_t & item = GetWorkshopItem();
+
+	m_lblName->SetText( pKV->GetString( "name", pChallenge->Title ) );
 	m_lblName->SetVisible( true );
 	if ( const char *szIcon = pKV->GetString( "icon", NULL ) )
 	{
@@ -149,15 +164,15 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	}
 	else if ( item.pPreviewImage.IsValid() )
 	{
-		m_imgIcon->SetImage( item.pPreviewImage.GetObject() );
+		m_imgIcon->SetImage( const_cast<CReactiveDropWorkshopPreviewImage *>( item.pPreviewImage.GetObject() ) );
 		m_imgIcon->SetVisible( true );
 	}
 	else
 	{
 		m_imgIcon->SetVisible( false );
 	}
-	m_szChallengeDescription = pKV->GetString( "description", "#rd_challenge_selection_no_description" );
-	m_szChallengeAuthor = pKV->GetString( "author", "" );
+	m_szChallengeDescription = pKV->GetString( "description", item.details.m_rgchDescription[0] ? item.details.m_rgchDescription : "#rd_challenge_selection_no_description" );
+	m_szChallengeAuthor = pKV->GetString( "author", item.details.m_ulSteamIDOwner ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "" );
 
 	if ( m_nWorkshopID == k_PublishedFileIdInvalid )
 	{
@@ -181,7 +196,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 	m_lblSource->SetVisible( true );
 }
 
-CReactiveDropWorkshop::WorkshopItem_t BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
+const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
 {
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
@@ -194,7 +209,9 @@ CReactiveDropWorkshop::WorkshopItem_t BaseModUI::ReactiveDropChallengeSelectionL
 		return enabledAddon;
 	}
 
-	return CReactiveDropWorkshop::WorkshopItem_t();
+	static CReactiveDropWorkshop::WorkshopItem_t emptyWorkshopItem;
+
+	return emptyWorkshopItem;
 }
 
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
@@ -208,17 +225,32 @@ BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui:
 	m_pHeaderFooter->SetGradientBarPos( 75, 350 );
 
 	m_gplChallenges = new GenericPanelList( this, "GplChallenges", GenericPanelList::ISM_PERITEM );
-	m_gplChallenges->ShowScrollProgress( true );
 	m_gplChallenges->SetScrollBarVisible( true );
+
+	m_pBackButton = new CNB_Button( this, "BackButton", "#nb_back", this, "BackButton" );
+	m_pBackButton->SetControllerButton( KEY_XBUTTON_B );
 
 	m_lblName = new vgui::Label( this, "LblName", "" );
 	m_imgIcon = new vgui::ImagePanel( this, "ImgIcon" );
 	m_lblDescription = new vgui::Label( this, "LblDescription", "" );
 	m_lblAuthor = new vgui::Label( this, "LblAuthor", "" );
 
+	m_bIgnoreSelectionChange = false;
+
+	GetControllerFocus()->PushModal();
 	PopulateChallenges();
 
 	LoadControlSettings( "Resource/UI/BaseModUI/ReactiveDropChallengeSelection.res" );
+}
+
+BaseModUI::ReactiveDropChallengeSelection::~ReactiveDropChallengeSelection()
+{
+	m_bIgnoreSelectionChange = true;
+	for ( unsigned i = 0; i < m_gplChallenges->GetPanelItemCount(); i++ )
+	{
+		GetControllerFocus()->RemoveFromFocusList( m_gplChallenges->GetPanelItem( i ) );
+	}
+	GetControllerFocus()->PopModal();
 }
 
 bool BaseModUI::ReactiveDropChallengeSelection::SetSelectedChallenge( const char *szName )
@@ -254,9 +286,22 @@ void BaseModUI::ReactiveDropChallengeSelection::OnMessage( const KeyValues *para
 
 	if ( Q_strcmp( params->GetName(), "OnItemSelected" ) == 0 ) 
 	{
+		if ( m_bIgnoreSelectionChange )
+		{
+			return;
+		}
+
 		int index = const_cast<KeyValues *>( params )->GetInt( "index" );
 
 		SetDetailsForChallenge( assert_cast<ReactiveDropChallengeSelectionListItem *>( m_gplChallenges->GetPanelItem( index ) ) );
+
+		if ( GetControllerFocus()->IsControllerMode() )
+		{
+			// ensure we can see the previous and next item or controller navigation won't work.
+			m_gplChallenges->ScrollToPanelItem( MAX( index - 1, 0 ) );
+			m_gplChallenges->ScrollToPanelItem( index + 1 );
+			m_gplChallenges->ScrollToPanelItem( index );
+		}
 	}
 }
 
@@ -265,12 +310,14 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 	m_gplChallenges->RemoveAllPanelItems();
 	ReactiveDropChallengeSelectionListItem *pDisabled = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
 	pDisabled->PopulateChallenge( "0" );
+	GetControllerFocus()->AddToFocusList( pDisabled, true, true );
 
 	int iCount = ReactiveDropChallenges::Count();
 	for ( int i = 0; i < iCount; i++ )
 	{
 		ReactiveDropChallengeSelectionListItem *pChallenge = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
 		pChallenge->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
+		GetControllerFocus()->AddToFocusList( pChallenge, true, true );
 	}
 }
 
@@ -305,10 +352,10 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	m_lblDescription->SetText( pChallenge->m_szChallengeDescription.Get() );
 	m_lblDescription->SetVisible( true );
 
-	CReactiveDropWorkshop::WorkshopItem_t item = pChallenge->GetWorkshopItem();
+	const CReactiveDropWorkshop::WorkshopItem_t &item = pChallenge->GetWorkshopItem();
 	if ( item.details.m_nPublishedFileId )
 	{
-		const char *szName = steamapicontext->SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
+		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
 		wchar_t wszName[k_cwchPersonaNameMax];
 		Q_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
 

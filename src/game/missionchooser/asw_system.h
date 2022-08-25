@@ -5,6 +5,7 @@
 #endif
 
 #include "filesystem.h"
+#include "../shared/swarm/rd_release_flags.h"
 
 bool ASW_System_GetCurrentTimeAndDate(int *year, int *month, int *dayOfWeek, int *day, int *hour, int *minute, int *second);
 

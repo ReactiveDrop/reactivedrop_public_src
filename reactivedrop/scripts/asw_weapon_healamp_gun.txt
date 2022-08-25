@@ -30,6 +30,7 @@ WeaponData
 	"RequiresFirstAid"		"1"
 	"ShowCharges"			"1"
 	"equipdescription1"		"#asw_wdesc_healampgun"
+	"altfiretext"			"#asw_weapon_healampgun_altfire"
 	"attributestext"		"#asw_weapon_healampgun_attributes"
 	"Unique"			"1"
 	

@@ -353,9 +353,9 @@ protected:
 	// Pitch drifting data
 	CPitchDrift		m_PitchDrift;
 
-	virtual void	RenderPreScene( const CViewSetup &view ) { }
-	virtual void	PreViewDrawScene( const CViewSetup &view ) {}
-	virtual void	PostViewDrawScene( const CViewSetup &view ) {}
+	virtual void	RenderPreScene( const CViewSetup & ) { }
+	virtual void	PreViewDrawScene( const CViewSetup & ) {}
+	virtual void	PostViewDrawScene( const CViewSetup & ) {}
 
 public:
 					CViewRender();

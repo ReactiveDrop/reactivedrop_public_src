@@ -76,7 +76,7 @@ void CTilegenKVEditorPage::OnCommand( const char *command )
 	if ( !Q_stricmp( command, "Save" ) )
 	{
 		KeyValues *pKV = GetKeyValues();
-		if ( pKV != NULL && !pKV->SaveToFile( g_pFullFileSystem, m_szFilename, "GAME" ) )
+		if ( pKV != NULL && !pKV->SaveToFile( g_pFullFileSystem, m_szFilename, "MOD" ) )
 		{
 			if ( p4 )
 			{

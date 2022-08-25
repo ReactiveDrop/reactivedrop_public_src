@@ -24,7 +24,7 @@ public:
 	~CASW_Briefing();
 
 	virtual const char* GetLeaderName();
-    virtual const char* GetTeamName();
+	virtual const char* GetTeamName();
 	virtual Color GetTeamColor();
 
 	virtual bool IsLocalPlayerLeader();
@@ -72,6 +72,9 @@ public:
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex );
 
 	virtual void ResetLastChatterTime() { m_flLastSelectionChatterTime = 0.0f; }
+
+	virtual int GetMedalUpdateCount( int nLobbySlot );
+	virtual const char *GetEncodedMedalData( int nLobbySlot );
 
 	int LobbySlotToMarineResourceIndex( int nLobbySlot );
 	void UpdateLobbySlotMapping();

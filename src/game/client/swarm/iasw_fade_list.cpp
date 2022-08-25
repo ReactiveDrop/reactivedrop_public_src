@@ -11,13 +11,15 @@
 IMPLEMENT_AUTO_LIST( IASW_Fade_List_ );
 
 ConVar asw_fade_duration( "asw_fade_duration", "0.5", FCVAR_ARCHIVE, "", true, 0.01f, false, 0 );
+extern ConVar asw_hide_local_marine;
+extern ConVar asw_allow_detach;
 
-static int s_iFadeReflectionDepth = 0;
+int IASW_Fade_List::s_iFadeReflectionDepth = 0;
 
 IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 {
-	m_iLastControls = 1;
-	m_hLastMarine = NULL;
+	m_iLastControls = ASWC_TOPDOWN;
+	m_hLastNPC = NULL;
 	m_flInterpStart = 0;
 	m_bFaded = false;
 }
@@ -37,6 +39,15 @@ void IASW_Fade_List::DisableFading()
 		pItem->m_nSavedAlpha = pEnt->GetRenderAlpha();
 		pEnt->SetRenderAlpha( pItem->m_nNormalOpacity );
 	}
+
+	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	{
+		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+		if ( pViewMarine )
+		{
+			pViewMarine->ForceVisibleFirstPerson( true );
+		}
+	}
 }
 
 void IASW_Fade_List::EnableFading()
@@ -52,6 +63,15 @@ void IASW_Fade_List::EnableFading()
 		C_BaseEntity *pEnt = pItem->GetEntity();
 
 		pEnt->SetRenderAlpha( pItem->m_nSavedAlpha );
+	}
+
+	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	{
+		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+		if ( pViewMarine )
+		{
+			pViewMarine->ForceVisibleFirstPerson( false );
+		}
 	}
 }
 
@@ -80,11 +100,11 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 		return;
 	}
 
-	C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
 
 	C_BaseEntity *pEnt = GetEntity();
 
-	bool bFade = pPlayer->GetASWControls() == 1 && pMarine && pMarine->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
+	bool bFade = pPlayer->GetASWControls() == ASWC_TOPDOWN && pNPC && pNPC->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
 	byte target = bFade ? m_nFadeOpacity : m_nNormalOpacity;
 	byte prev = bFade ? m_nNormalOpacity : m_nFadeOpacity;
 	if ( bFade != m_bFaded )
@@ -94,10 +114,10 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 		m_flInterpStart = MAX( 0, m_flInterpStart );
 	}
 
-	if ( pPlayer->GetASWControls() != m_iLastControls || pMarine != m_hLastMarine.Get() || !m_bAllowFade )
+	if ( pPlayer->GetASWControls() != m_iLastControls || pNPC != m_hLastNPC.Get() || !m_bAllowFade )
 	{
 		m_iLastControls = pPlayer->GetASWControls();
-		m_hLastMarine = pMarine;
+		m_hLastNPC = pNPC;
 		m_flInterpStart = 0;
 		pEnt->SetRenderAlpha( target );
 		return;

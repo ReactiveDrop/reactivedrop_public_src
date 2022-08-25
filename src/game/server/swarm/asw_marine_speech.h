@@ -68,10 +68,10 @@ public:
 	//  they will return false if the speech failed to play for other reasons (someone else was talking, no live marine, etc.)
 
 	// player has requested a chatter to be played, we allow some to be played for comms/taunts/flavour
-	bool ClientRequestChatter(int iChatterType, int iSubChatter=-1);
+	bool ClientRequestChatter(int iChatterType, int iSubChatter = -1, CBasePlayer* pOnlyForPlayer = NULL);
 
 	// play a chatter from the marine's profile
-	bool Chatter(int iChatterType, int iSubChatter=-1, CBasePlayer* pOnlyForPlayer=NULL);
+	bool Chatter(int iChatterType, int iSubChatter = -1, CBasePlayer* pOnlyForPlayer = NULL);
 
 	// this will play the chatter even if someone else is talking, but won't interrupt ourselves
 	bool PersonalChatter(int iChatterType);

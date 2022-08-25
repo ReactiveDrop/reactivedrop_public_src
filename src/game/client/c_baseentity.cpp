@@ -1364,7 +1364,8 @@ void C_BaseEntity::Term()
 
 	if ( m_hScriptInstance )
 	{
-		g_pScriptVM->RemoveInstance( m_hScriptInstance );
+		if ( g_pScriptVM )
+			g_pScriptVM->RemoveInstance( m_hScriptInstance );
 		m_hScriptInstance = NULL;
 	}
 }
@@ -2332,6 +2333,13 @@ bool C_BaseEntity::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, int
 //-----------------------------------------------------------------------------
 void C_BaseEntity::SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights )
 {
+	// BenLubar: clear weights so prop_dynamic instances of models with flex support don't glitch out.
+	int nSizeInBytes = nFlexWeightCount * sizeof( float );
+	memset( pFlexWeights, 0, nSizeInBytes );
+	if ( pFlexDelayedWeights )
+	{
+		memset( pFlexDelayedWeights, 0, nSizeInBytes );
+	}
 }
 
 
@@ -6360,15 +6368,18 @@ HSCRIPT C_BaseEntity::GetScriptInstance()
 {
 	if ( !m_hScriptInstance )
 	{
-		if ( m_iszScriptId == NULL_STRING )
+		if ( g_pScriptVM )
 		{
-			char *szName = (char *)stackalloc( 1024 );
-			g_pScriptVM->GenerateUniqueKey( ( m_iName != NULL_STRING ) ? STRING(GetEntityName()) : GetClassname(), szName, 1024 );
-			m_iszScriptId = AllocPooledString( szName );
-		}
+			if ( m_iszScriptId == NULL_STRING )
+			{
+				char *szName = (char *)stackalloc( 1024 );
+				g_pScriptVM->GenerateUniqueKey( ( m_iName != NULL_STRING ) ? STRING(GetEntityName()) : GetClassname(), szName, 1024 );
+				m_iszScriptId = AllocPooledString( szName );
+			}
 
-		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
-		g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, STRING(m_iszScriptId) );
+			m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
+			g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, STRING(m_iszScriptId) );
+		}
 	}
 	return m_hScriptInstance;
 }

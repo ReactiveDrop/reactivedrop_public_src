@@ -139,7 +139,6 @@ CASWHudAmmo::CASWHudAmmo( const char *pElementName ) : BaseClass( GetClientMode(
 	{
 		m_pAmmoList = new CASW_VGUI_Ammo_List( GetParent(),
 			"AmmoListWindow");
-		vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 		m_pAmmoList->SetScheme(scheme);
 		m_pAmmoList->SetAlpha(0);
 	}
@@ -187,7 +186,7 @@ void CASWHudAmmo::OnThink()
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
 	{
-		C_ASW_Marine *marine = local->GetViewMarine();
+		C_ASW_Inhabitable_NPC *marine = local->GetViewNPC();
 		if (marine)
 		{			
 			C_ASW_Weapon *wpn = marine->GetActiveASWWeapon();
@@ -625,7 +624,7 @@ void CASWHudAmmo::Paint()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (pPlayer && (m_iDisplayPrimaryValue > 0))
 	{
-		C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
+		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
 		if ( pMarine && pMarine->GetMarineResource())
 		{
 			C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
@@ -786,7 +785,7 @@ void CASWHudAmmo::PaintAmmoWarnings()
 	if (!local)
 		return;
 
-	C_ASW_Marine *marine = local->GetViewMarine();
+	C_ASW_Marine *marine = C_ASW_Marine::AsMarine( local->GetViewNPC() );
 	if ( !marine || !marine->GetMarineResource())
 		return;
 

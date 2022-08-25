@@ -13,6 +13,8 @@
 #include "asw_shareddefs.h"
 #include "asw_weapon_assault_shotgun_shared.h"
 #include "asw_weapon_deagle_shared.h"
+#include "asw_player.h"
+#include "in_buttons.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -786,6 +788,23 @@ bool CASW_Harvester::CanBePushedAway()
 	return ( ( gpGlobals->curtime - m_fLastLayTime ) > 2.0f ) && BaseClass::CanBePushedAway();
 }
 
+void CASW_Harvester::SetInhabitedAlienAttackSchedule()
+{
+	if ( !MarineCanSee( 384, 0.1f ) )
+	{
+		// Can't spawn xenomites outside of PVS.
+		// TODO: error message?
+		return;
+	}
+
+	if ( GetCommander()->m_nButtons & IN_ATTACK && !GetShotRegulator()->IsInRestInterval() )
+	{
+		m_bNoTranslateNextSchedule = true;
+		DeferSchedulingToBehavior( NULL );
+		SetSchedule( SCHED_ASW_HARVESTER_LAY_CRITTER_INHABITED );
+	}
+}
+
 AI_BEGIN_CUSTOM_NPC( asw_harvester, CASW_Harvester )
 
 	// Tasks
@@ -803,6 +822,19 @@ AI_BEGIN_CUSTOM_NPC( asw_harvester, CASW_Harvester )
 		"	Tasks"
 		"		TASK_STOP_MOVING		0"
 		"		TASK_FACE_ENEMY			0"
+		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+		"		TASK_LAY_CRITTER		0"
+		""
+		"	Interrupts"
+		//"		COND_HEAVY_DAMAGE"
+	)
+
+	DEFINE_SCHEDULE
+	(
+		SCHED_ASW_HARVESTER_LAY_CRITTER_INHABITED,
+
+		"	Tasks"
+		"		TASK_STOP_MOVING		0"
 		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
 		"		TASK_LAY_CRITTER		0"
 		""

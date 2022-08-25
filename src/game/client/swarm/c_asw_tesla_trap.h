@@ -44,7 +44,7 @@ public:
 	// IASW_Client_Usable_Entity
 	virtual C_BaseEntity* GetEntity() { return this; }
 	virtual bool IsUsable(C_BaseEntity *pUser);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Marine *pUser);
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
 	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon);
 	virtual bool ShouldPaintBoxAround() { return false; }
 	virtual bool NeedsLOSCheck() { return true; }

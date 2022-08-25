@@ -47,6 +47,8 @@ namespace BaseModUI {
 		SliderControl		*m_sldGamepadVSensitivity;
 		DropDownMenu		*m_drpGamepadYInvert;
 		DropDownMenu		*m_drpGamepadSwapSticks;
+		DropDownMenu		*m_drpGamepadAimToMovement;
+		DropDownMenu		*m_drpGamepadAutoAttack;
 
 		CNB_Button	*m_btnDone;
 

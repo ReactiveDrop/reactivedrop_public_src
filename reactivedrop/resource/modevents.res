@@ -94,6 +94,8 @@
 	"player_deploy_ammo"
 	{
 		"userid"		"short"		// user ID on server
+		"entindex"		"long"		// entindex of the ammo
+		"marine"		"long"   	// marine entindex who placed the ammo
 	}
 	
 	"player_dropped_weapon"
@@ -311,6 +313,11 @@
 		"marine"		"short"		// entindex of the marine reloading
 		"reloads"		"byte"		// number of fast reloads the marine has done in a row
 	}
+					  
+	"fast_reload_fail"
+	{	
+		"marine"		"short"		// entindex of the marine reloading
+	}
 	
 	"difficulty_changed"
 	{
@@ -362,6 +369,14 @@
 		"entindex"		"long"		// entindex of the marine
 	}
 	
+	"marine_healed"
+	{
+		"medic_entindex"	"long"		// entindex of the marine medic
+		"patient_entindex"	"long"		// entindex of the marine patient 
+		"amount_healed"		"short"		// amount of meds given
+		"weapon_class"		"string"	// classname of the healing device
+	}
+
 	"colonist_spawn"
 	{
 		"entindex"		"long"		// entindex of the colonist
@@ -388,6 +403,42 @@
 		"marine"		"long"   	// marine entindex who placed the damage amplifier
 	}
 	
+	"tesla_trap_placed"
+	{
+		"entindex"		"long"		// entindex of the tesla trap
+		"marine"		"long"   	// marine entindex who placed the tesla trap
+	}
+
+	"fire_mine_placed"
+	{
+		"entindex"		"long"		// entindex of the fire mine
+		"marine"		"long"   	// marine entindex who placed the fire mine
+	}
+
+	"laser_mine_placed"
+	{
+		"entindex"		"long"		// entindex of the laser mine
+		"marine"		"long"   	// marine entindex who placed the laser mine
+	}
+
+	"gas_grenade_placed"
+	{
+		"entindex"		"long"		// entindex of the gas grenade
+		"marine"		"long"   	// marine entindex who placed the gas grenade
+	}
+
+	"flare_placed"
+	{
+		"entindex"		"long"		// entindex of the flare
+		"marine"		"long"   	// marine entindex who placed the flare
+	}
+
+	"rocket_fired"
+	{
+		"entindex"		"long"		// entindex of the rocket
+		"marine"		"long"   	// marine entindex who fired the rocket
+	}
+
 	"weapon_fire"
 	{
 		"userid"			"short"		// user ID on server

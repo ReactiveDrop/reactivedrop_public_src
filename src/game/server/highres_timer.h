@@ -1,3 +1,3 @@
 #pragma once
 
-void winmm_timer_acquire_once ( float ms );
+void highres_timer_set( float ms );

@@ -1,14 +1,14 @@
 #ifndef _INCLUDED_C_ASW_VPHYSICS_NPC_H
 #define _INCLUDED_C_ASW_VPHYSICS_NPC_H
-#include "c_ai_basenpc.h"
+#include "c_asw_inhabitable_npc.h"
 #ifdef _WIN32
 #pragma once
 #endif
 
-class C_ASW_VPhysics_NPC : public C_AI_BaseNPC
+class C_ASW_VPhysics_NPC : public C_ASW_Inhabitable_NPC
 {
 public:
-	DECLARE_CLASS( C_ASW_VPhysics_NPC, C_AI_BaseNPC );
+	DECLARE_CLASS( C_ASW_VPhysics_NPC, C_ASW_Inhabitable_NPC );
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 

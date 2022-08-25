@@ -32,6 +32,7 @@
 #include "nb_island.h"
 #include "asw_hud_minimap.h"
 #include "c_user_message_register.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -43,6 +44,7 @@ ConVar asw_fail_sound_delay( "asw_fail_sound_delay", "0.0", FCVAR_CHEAT, "Delay 
 ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "1", FCVAR_NONE, "Show stats screen in singleplayer" );
 ConVar rd_show_leaderboard_debrief( "rd_show_leaderboard_debrief", "0", FCVAR_ARCHIVE, "Show leaderboard during debriefing" );
 ConVar rd_suggest_difficulty( "rd_suggest_difficulty", "1", FCVAR_NONE, "Suggest increasing or decreasing difficulty." );
+ConVar rd_fail_advice( "rd_fail_advice", "1", FCVAR_ARCHIVE, "Show advice on mission failed." );
 
 MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool bSuccess) : vgui::EditablePanel(parent, name)
 {	
@@ -51,13 +53,12 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_pFailAdvice = new vgui::Label( this, "FailAdvice", "" );
 	m_pFailAdvice->SetMouseInputEnabled( false );
+
 	m_pIconForwardArrow = new vgui::ImagePanel( this, "IconForwardArrow" );
 	m_pIconForwardArrow->SetMouseInputEnabled( false );
 
 	m_PropertySheet = NULL;
 	m_bSetAlpha = false;
-
-	m_bCreditsSeen = false;
 
 	m_bShowQueuedUnlocks = false;
 
@@ -98,7 +99,8 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pMainElements = new vgui::Panel( this, "MainElements" );
 
 	m_bSuccess = bSuccess;
-	m_bLastMission = ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1;
+	m_bLastMission = ASWGameRules() && ( !ASWGameRules()->IsCampaignGame() || ASWGameRules()->CampaignMissionsLeft() <= 1 );
+	m_bCreditsSeen = false;
 	
 	vgui::Panel *pParent = m_pMainElements;
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
@@ -236,7 +238,11 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	}	
 
 	m_pFailAdvice->SetAlpha(0);
+	m_pFailAdvice->SetVisible( rd_fail_advice.GetBool() );
+
 	m_pIconForwardArrow->SetAlpha(0);
+	m_pIconForwardArrow->SetVisible( rd_fail_advice.GetBool() );
+
 	vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 255, 0, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
 	vgui::GetAnimationController()->RunAnimationCommand(m_pFailAdvice, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
 	if ( m_pFailedHeaderFooter )
@@ -580,7 +586,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 			else
 			{
 				// Vote on a new mission
-				engine->ClientCmd("asw_vote_chooser 0 notrans");
+				engine->ClientCmd( VarArgs( "asw_mission_chooser callvote %s\n", ASWDeathmatchMode() ? "deathmatch" : "campaign" ) );
 			}
 		}
 		else if ( bLeader )
@@ -679,10 +685,11 @@ void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 void MissionCompletePanel::OnLeaderboardFound( SteamLeaderboard_t id )
 {
 	m_hLeaderboard = id;
+	m_pExperienceReport->m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( id ) );
 
 	if ( m_bLeaderboardReady )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }
@@ -697,7 +704,7 @@ void MissionCompletePanel::LeaderboardReady()
 	m_bLeaderboardReady = true;
 	if ( m_hLeaderboard != 0 )
 	{
-		SteamAPICall_t hAPICall = steamapicontext->SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }

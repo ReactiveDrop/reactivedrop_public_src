@@ -157,6 +157,14 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 		pMine->m_iExtraFires = iExtraFires;
 
 		pMarine->OnWeaponFired( this, 1 );
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "fire_mine_placed" );
+		if ( event )
+		{
+			event->SetInt( "entindex", pMine->entindex() );
+			event->SetInt( "marine", pMarine->entindex() );
+			gameeventmanager->FireEvent( event );
+		}
 	}
 
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);

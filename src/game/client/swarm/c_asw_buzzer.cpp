@@ -13,6 +13,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar glow_outline_color_alien;
+
 // Buzzer is our flying poisoning alien (based on the hl2 manhack code)
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Buzzer, DT_ASW_Buzzer, CASW_Buzzer)
@@ -31,7 +33,7 @@ C_ASW_Buzzer::C_ASW_Buzzer()
 	m_fNextElectroStunEffect = 0;
 	m_pBurningEffect = NULL;
 
-	m_GlowObject.SetColor( Vector( 0.3f, 0.6f, 0.1f ) );
+	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
 	m_GlowObject.SetFullBloomRender( true );

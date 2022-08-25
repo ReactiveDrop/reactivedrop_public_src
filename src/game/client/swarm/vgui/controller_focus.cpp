@@ -17,6 +17,7 @@ CControllerFocus::CControllerFocus()
 	m_bControllerMode = false;
 	m_bDebugOutput = false;
 	m_iModal = 0;
+	m_iModalScope = 0;
 
 	m_FocusAreas.Purge();
 	m_CurrentFocus.bClickOnFocus = false;
@@ -66,8 +67,11 @@ void CControllerFocus::AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus, b
 	if (!pPanel)
 		return;
 
+	Assert( bModal || !m_iModalScope );
+
 	FocusArea Focus;
 	Focus.hPanel = pPanel;
+	Focus.iModalScope = m_iModalScope;
 	Focus.bClickOnFocus = bClickOnFocus;
 	Focus.bModal = bModal;
 	if (bModal)
@@ -178,6 +182,43 @@ void CControllerFocus::RemoveFromFocusList(vgui::Panel* pPanel)
 		if (index != -1)
 			SetFocusPanel( index );
 	}
+}
+
+void CControllerFocus::PushModal()
+{
+	if ( m_bDebugOutput )
+		Msg( "Entering modal scope...\n" );
+	m_iModalScope++;
+	if ( m_bDebugOutput )
+		Msg( "Modal scope increased to %d\n", m_iModalScope );
+}
+
+void CControllerFocus::PopModal()
+{
+	if ( m_bDebugOutput )
+		Msg( "Leaving modal scope...\n" );
+
+	Assert( m_iModalScope > 0 );
+	FOR_EACH_VEC_BACK( m_FocusAreas, i )
+	{
+		// this can happen if a panel was left active while PopModal was called and also was active multiple times
+		Assert( i < m_FocusAreas.Count() );
+		if ( i >= m_FocusAreas.Count() )
+		{
+			continue;
+		}
+
+		// make sure we're not leaving behind any modal panels
+		Assert( m_FocusAreas[i].iModalScope < m_iModalScope );
+		if ( m_FocusAreas[i].iModalScope == m_iModalScope )
+		{
+			RemoveFromFocusList( m_FocusAreas[i].hPanel );
+		}
+	}
+
+	m_iModalScope--;
+	if ( m_bDebugOutput )
+		Msg( "Modal scope decreased to %d\n", m_iModalScope );
 }
 
 bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
@@ -339,29 +380,33 @@ void CControllerFocus::DoubleClickFocusPanel(bool bRightMouse)
 }
 
 // find a panel in the specified direction
-int CControllerFocus::FindNextPanel(vgui::Panel *pSource, float angle)
+int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 {
-	if (!pSource)
+	if ( !pSource )
 	{
 		// no panel selected, should pick the top left most one
 		int iBestIndex = -1;
 		float fBestRating = -1;
-		for (int i=0;i<m_FocusAreas.Count();i++)
+		for ( int i = 0; i < m_FocusAreas.Count(); i++ )
 		{
-			if (m_iModal>0 && !m_FocusAreas[i].bModal)
+			Assert( m_FocusAreas[i].iModalScope <= m_iModalScope );
+			if ( m_FocusAreas[i].iModalScope != m_iModalScope )
+				continue;
+
+			if ( m_iModal > 0 && !m_FocusAreas[i].bModal )
 				continue;
 
 			vgui::Panel *pPanel = m_FocusAreas[i].hPanel;
-			if (!pPanel)
+			if ( !pPanel )
 				continue;
 
 			if ( !IsPanelReallyVisible( pPanel ) )
 				continue;
 
 			int x, y;
-			pPanel->GetPos(x, y);
+			pPanel->GetPos( x, y );
 			float fRating = x * 1.3 + y;
-			if (fBestRating == -1 || fRating < fBestRating)
+			if ( fBestRating == -1 || fRating < fBestRating )
 			{
 				fBestRating = fRating;
 				iBestIndex = i;
@@ -370,27 +415,27 @@ int CControllerFocus::FindNextPanel(vgui::Panel *pSource, float angle)
 		return iBestIndex;
 	}
 
-	if (m_bDebugOutput)
-	Msg("angle = %f ", angle);
-	float radangle = angle * (3.14159265f / 180.0f);
-	float xdir = cos(radangle);
-	float ydir = sin(radangle);
-	if (m_bDebugOutput)
-		Msg("xdir = %f ydir = %f\n", xdir, ydir);
-	
+	if ( m_bDebugOutput )
+		Msg( "angle = %f ", angle );
+	float radangle = DEG2RAD( angle );
+	float xdir, ydir;
+	SinCos( radangle, &ydir, &xdir );
+	if ( m_bDebugOutput )
+		Msg( "xdir = %f ydir = %f\n", xdir, ydir );
+
 	//Vector2D dir(xdir, ydir);
 	//dir.NormalizeInPlace();	// normalization unnecessary?
 
 	// find the centre of our panel
 	int x, y, w, t;
-	pSource->GetBounds(x, y, w, t);
+	pSource->GetBounds( x, y, w, t );
 	int posx = w * 0.5f;
-	int posy = t * 0.5f;	
-	pSource->LocalToScreen(posx, posy);	
+	int posy = t * 0.5f;
+	pSource->LocalToScreen( posx, posy );
 
 	// position the source dot at the middle of the edge in the direction we're searching in
-	posx += (w * 0.5f) * xdir - xdir;
-	posy += (t * 0.5f) * ydir - ydir;
+	posx += ( w * 0.5f ) * xdir - xdir;
+	posy += ( t * 0.5f ) * ydir - ydir;
 
 	//Vector2D vecSource(posx, posy);
 
@@ -398,83 +443,86 @@ int CControllerFocus::FindNextPanel(vgui::Panel *pSource, float angle)
 	vgui::Panel *pBest = NULL;
 	int iBestIndex = -1;
 	float fBestRating = -1;
-	for (int i=0;i<m_FocusAreas.Count();i++)
+	for ( int i = 0; i < m_FocusAreas.Count(); i++ )
 	{
-		vgui::Panel* pOther = m_FocusAreas[i].hPanel;
-		if (!pOther || pOther == pSource || !IsPanelReallyVisible(pOther))
+		Assert( m_FocusAreas[i].iModalScope <= m_iModalScope );
+		if ( m_FocusAreas[i].iModalScope != m_iModalScope )
 			continue;
-		if (m_iModal>0 && !m_FocusAreas[i].bModal)
+		if ( m_iModal > 0 && !m_FocusAreas[i].bModal )
+			continue;
+		vgui::Panel *pOther = m_FocusAreas[i].hPanel;
+		if ( !pOther || pOther == pSource || !IsPanelReallyVisible( pOther ) )
 			continue;
 		// check if it's within our arc
 		int w2, t2;
-		pOther->GetSize(w2, t2);
+		pOther->GetSize( w2, t2 );
 		int posx2 = w2 * 0.5f;
 		int posy2 = t2 * 0.5f;
-		pOther->LocalToScreen(posx2, posy2);		
+		pOther->LocalToScreen( posx2, posy2 );
 		// pick the point in our bounds closest to the source point
-		if (posx < posx2)
-			posx2 = MAX((posx2 - w2 * 0.5f), posx);
-		else if (posx > posx2)
-			posx2 = MIN((posx2 + w2 * 0.5f), posx);
+		if ( posx < posx2 )
+			posx2 = MAX( ( posx2 - w2 * 0.5f ), posx );
+		else if ( posx > posx2 )
+			posx2 = MIN( ( posx2 + w2 * 0.5f ), posx );
 
-		if (posy < posy2)
-			posy2 = MAX((posy2 - t2 * 0.5f), posy);
-		else if (posy > posy2)
-			posy2 = MIN((posy2 + t2 * 0.5f), posy);
+		if ( posy < posy2 )
+			posy2 = MAX( ( posy2 - t2 * 0.5f ), posy );
+		else if ( posy > posy2 )
+			posy2 = MIN( ( posy2 + t2 * 0.5f ), posy );
 		//Vector2D vecOther(posx2, posy2);
 
 		float diffx = posx2 - posx;
 		float diffy = posy2 - posy;
-		float diff_len = sqrt(diffx * diffx + diffy * diffy);
-		if (diff_len <= 0)
+		float diff_len = sqrt( diffx * diffx + diffy * diffy );
+		if ( diff_len <= 0 )
 			diff_len = 0.1f;
 		float diffx_norm = diffx / diff_len;
 		float diffy_norm = diffy / diff_len;
 
 		float the_dot = 0;
 		the_dot += diffx_norm * xdir;
-		the_dot += diffy_norm * ydir;			
+		the_dot += diffy_norm * ydir;
 		//Vector2D difference;
 		//difference = vecOther - vecSource;
 		//Vector2D diffnorm = difference;
 		//diffnorm.NormalizeInPlace();
-		if (m_bDebugOutput)
-			Msg("Checking panel %i (%s). diff=%f,%f dir=%f, %f dot=%f\n", i, pOther->GetClassName(), diffx, diffy, xdir, ydir, the_dot);
+		if ( m_bDebugOutput )
+			Msg( "Checking panel %i (%s). diff=%f,%f dir=%f, %f dot=%f\n", i, pOther->GetClassName(), diffx, diffy, xdir, ydir, the_dot );
 
-		if (the_dot > 0.3f)
+		if ( the_dot > 0.3f )
 		{
 			// this panel is in the right direction, now rate it
 			float fRating = -1;
-			if (angle == 0 || angle == 90 || angle == 180 || angle == 270)	// we're searching in a perpendicular direction, so we can do a more accurate rating
+			if ( angle == 0 || angle == 90 || angle == 180 || angle == 270 )	// we're searching in a perpendicular direction, so we can do a more accurate rating
 			{
 				fRating = 0;
 				// double perpendicular distance cost
-				if (angle == 90 || angle == 270)
+				if ( angle == 90 || angle == 270 )
 				{
-					if (m_bDebugOutput)
-						Msg("  vertical rating: %f * 3 + %f\n", fabs(diffx), fabs(diffy));
-					fRating = fabs(diffy) + (fabs(diffx) * 3.0f);
+					if ( m_bDebugOutput )
+						Msg( "  vertical rating: %f * 3 + %f\n", fabs( diffx ), fabs( diffy ) );
+					fRating = fabs( diffy ) + ( fabs( diffx ) * 3.0f );
 				}
 				else
 				{
-					if (m_bDebugOutput)
-						Msg("  horiz rating: %f + %f * 3\n", fabs(diffx), fabs(diffy));
-					fRating = fabs(diffx) + (fabs(diffy) * 3.0f);
+					if ( m_bDebugOutput )
+						Msg( "  horiz rating: %f + %f * 3\n", fabs( diffx ), fabs( diffy ) );
+					fRating = fabs( diffx ) + ( fabs( diffy ) * 3.0f );
 				}
 			}
 			else	// strange angle, just rate based on distance
 			{
-				if (m_bDebugOutput)
-					Msg("  distancebased rating\n");
+				if ( m_bDebugOutput )
+					Msg( "  distancebased rating\n" );
 				fRating = diff_len;
 			}
-			if (m_bDebugOutput)
-				Msg("  Panel is in right dir, rating = %f\n", fRating);
+			if ( m_bDebugOutput )
+				Msg( "  Panel is in right dir, rating = %f\n", fRating );
 			// if this panel is better, remember it
-			if (pBest == NULL || (fRating != -1 && fRating < fBestRating))
+			if ( pBest == NULL || ( fRating != -1 && fRating < fBestRating ) )
 			{
-				if (m_bDebugOutput)
-					Msg("  this is the new best!\n");
+				if ( m_bDebugOutput )
+					Msg( "  this is the new best!\n" );
 				pBest = pOther;
 				iBestIndex = i;
 				fBestRating = fRating;

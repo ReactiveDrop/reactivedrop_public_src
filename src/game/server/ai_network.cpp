@@ -396,6 +396,8 @@ int CAI_Network::ScriptNearestNodesInBox( HSCRIPT hNPC, const Vector &vecOrigin,
 {
 	AI_PROFILE_SCOPE( CAI_Network_NearestNodeToNPCAtPoint );
 	
+	if ( !g_pScriptVM )
+		return NO_NODE;
 	// --------------------------------
 	//  Check if network has no nodes
 	// --------------------------------
