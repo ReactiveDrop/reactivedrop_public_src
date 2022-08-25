@@ -7,6 +7,9 @@
 #include "cbase.h"
 #include "ndebugoverlay.h"
 #include "ai_basenpc.h"
+#ifdef INFESTED_DLL
+#include "asw_gamerules.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -195,7 +198,11 @@ void CAI_Relationship::ApplyRelationship( CBaseEntity *pActivator, CBaseEntity *
 	
 	// The player spawns slightly after the NPCs, meaning that if we don't wait, the
 	// player will miss any relationships placed on them.
+#ifdef INFESTED_DLL
+	if ( ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME )
+#else
 	if ( AI_IsSinglePlayer() && !UTIL_GetLocalPlayer() )
+#endif
 	{
 		SetThink( &CAI_Relationship::ApplyRelationshipThink );
 		SetNextThink( gpGlobals->curtime );
