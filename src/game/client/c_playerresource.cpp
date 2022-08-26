@@ -127,7 +127,7 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 					{
 						playerIDs.AppendFormat( "%02x", *psz );
 					}
-					playerIDs.AppendFormat( "|%d|%f", score, pPlayer->GetTimeBase() );
+					playerIDs.AppendFormat( "|%d|%f", score, gpGlobals->curtime - pPlayer->GetConnectionTime() );
 				}
 			}
 		}
