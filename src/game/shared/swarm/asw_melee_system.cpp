@@ -243,7 +243,7 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 	}
 
 #ifdef GAME_DLL
-	if ( pASWMove->m_iForcedAction != pMarine->m_iForcedActionRequest && pMarine->m_iForcedActionRequestTick < gpGlobals->tickcount - TIME_TO_TICKS( 2 ) )
+	if ( pASWMove->m_iForcedAction != pMarine->m_iForcedActionRequest && pMarine->m_iForcedActionRequestTick < gpGlobals->tickcount - TIME_TO_TICKS( 2 ) && ( gpGlobals->tickcount - pMarine->m_iForcedActionRequestTick ) % TIME_TO_TICKS( 1 ) == 0 )
 	{
 		Warning( "Marine %s %s has not ack'd forced action request for %d ticks. Get a programmer!\n", pMarine->GetDebugName(), pMarine->IsInhabited() ? pMarine->GetCommander()->GetASWNetworkID() : "(uninhabited)", gpGlobals->tickcount - pMarine->m_iForcedActionRequestTick );
 	}
