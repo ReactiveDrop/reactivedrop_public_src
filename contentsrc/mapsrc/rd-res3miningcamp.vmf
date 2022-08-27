@@ -129494,7 +129494,7 @@ entity
 	"BarMode" "0"
 	"BarRow" "1"
 	"BarScale" "1.0"
-	"BarTitle" "Generator Damage"
+	"BarTitle" "#rd_res1_healthbar_generator"
 	"BarValue" "0"
 	"targetname" "gencounter_vis"
 	"origin" "-1136 7072 -573.964"
