@@ -45,11 +45,13 @@
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
 ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
+#define rd_workshop_debug cl_workshop_debug
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
 ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If nonzero, call ISteamUGC::DownloadItem every [number] map loads, even if the API reports it being up-to-date." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
+#define rd_workshop_debug sv_workshop_debug
 ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NONE, "0 = load workshop.cfg on official dedicated servers, 1 = load official addon list, 2 = load both" );
 #endif
 
@@ -270,7 +272,11 @@ static void SaveDisabledAddons()
 			return;
 		}
 	}
-	DevMsg( "Saved disabled workshop addons list.\n" );
+
+	if ( rd_workshop_debug.GetBool() )
+	{
+		DevMsg( "Saved disabled workshop addons list.\n" );
+	}
 }
 
 #ifdef GAME_DLL
@@ -390,7 +396,10 @@ void CReactiveDropWorkshop::ClearOldPreviewRequests()
 			continue;
 		}
 
-		DevMsg( "Clearing completed preview request for workshop file %llu (preview ID %llu)\n", m_PreviewRequests[i]->m_nFileID, m_PreviewRequests[i]->m_nPreviewImage );
+		if ( cl_workshop_debug.GetBool() )
+		{
+			DevMsg( "Clearing completed preview request for workshop file %llu (preview ID %llu)\n", m_PreviewRequests[i]->m_nFileID, m_PreviewRequests[i]->m_nPreviewImage );
+		}
 
 		delete m_PreviewRequests[i];
 		m_PreviewRequests.Remove( i );
@@ -422,11 +431,18 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 
 	if ( m_hEnabledAddonsQuery != k_UGCQueryHandleInvalid )
 	{
-		DevMsg( "Clearing previous Workshop metadata request\n" );
+		if ( rd_workshop_debug.GetBool() )
+		{
+			DevMsg( "Clearing previous Workshop metadata request\n" );
+		}
+
 		pUGC->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
 	}
 
-	DevMsg( "Sending Workshop metadata request\n" );
+	if ( rd_workshop_debug.GetBool() )
+	{
+		DevMsg( "Sending Workshop metadata request\n" );
+	}
 
 	UGCQueryHandle_t hQuery = pUGC->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
 	m_hEnabledAddonsQuery = hQuery;
@@ -964,7 +980,10 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 		return;
 	}
 
-	DevMsg( "Got Workshop metadata response\n" );
+	if ( rd_workshop_debug.GetBool() )
+	{
+		DevMsg( "Got Workshop metadata response\n" );
+	}
 
 	int nextIndex = m_EnabledAddons.AddMultipleToTail( pResult->m_unNumResultsReturned );
 
@@ -1099,7 +1118,10 @@ void CReactiveDropWorkshop::SteamPublishedAddonsRequestCompleted( SteamUGCQueryC
 
 CReactiveDropWorkshop::WorkshopPreviewRequest_t::WorkshopPreviewRequest_t( const SteamUGCDetails_t & details )
 {
-	DevMsg( "Starting preview request for addon %llu \"%s\" (preview file %llu)\n", details.m_nPublishedFileId, details.m_rgchTitle, details.m_hPreviewFile );
+	if ( cl_workshop_debug.GetBool() )
+	{
+		DevMsg( "Starting preview request for addon %llu \"%s\" (preview file %llu)\n", details.m_nPublishedFileId, details.m_rgchTitle, details.m_hPreviewFile );
+	}
 
 	m_bCancelled = false;
 	m_nFileID = details.m_nPublishedFileId;
@@ -1131,7 +1153,11 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 	{
 		if ( g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId == m_nFileID )
 		{
-			DevMsg( "Completed preview request for addon %llu (preview file %llu, size %d bytes)\n", m_nFileID, m_nPreviewImage, pResult->m_nSizeInBytes );
+			if ( cl_workshop_debug.GetBool() )
+			{
+				DevMsg( "Completed preview request for addon %llu (preview file %llu, size %d bytes)\n", m_nFileID, m_nPreviewImage, pResult->m_nSizeInBytes );
+			}
+
 			CUtlBuffer buf;
 			SteamRemoteStorage()->UGCRead( m_nPreviewImage, buf.AccessForDirectRead( pResult->m_nSizeInBytes ), pResult->m_nSizeInBytes, 0, k_EUGCRead_Close );
 			g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage = new CReactiveDropWorkshopPreviewImage( buf );
@@ -1143,7 +1169,11 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 			{
 				int wide, tall;
 				g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage->GetSize( wide, tall );
-				DevMsg( "Decoding preview image for addon %llu succeeded. Size: %d by %d\n", m_nFileID, wide, tall );
+
+				if ( cl_workshop_debug.GetBool() )
+				{
+					DevMsg( "Decoding preview image for addon %llu succeeded. Size: %d by %d\n", m_nFileID, wide, tall );
+				}
 			}
 			if ( BaseModUI::Addons *pFrame = dynamic_cast<BaseModUI::Addons *>( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_ADDONS ) ) )
 			{
@@ -1639,11 +1669,7 @@ static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool b
 	uint32 iState = pWorkshop->GetItemState( id );
 	if ( !ShouldUnconditionalDownload( id ) && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
-#ifdef CLIENT_DLL
-		if ( cl_workshop_debug.GetBool() )
-#else 
-		if ( sv_workshop_debug.GetBool() )
-#endif
+		if ( rd_workshop_debug.GetBool() )
 		{
 			Msg( "Addon %llu is installed and does not need an update.\n", id );
 
@@ -1742,7 +1768,11 @@ static void RealLoadAddon( PublishedFileId_t id )
 {
 	if ( s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) )
 	{
-		Msg( "Not loading addon %llu: disabled by user\n", id );
+		if ( rd_workshop_debug.GetBool() )
+		{
+			Msg( "Not loading addon %llu: disabled by user\n", id );
+		}
+
 		return;
 	}
 
@@ -1761,12 +1791,10 @@ static void RealLoadAddon( PublishedFileId_t id )
 
 	if ( pWorkshop->GetItemState( id ) & k_EItemStateLegacyItem )
 	{
-#ifdef CLIENT_DLL
-		if ( cl_workshop_debug.GetBool() )
-#else
-		if ( sv_workshop_debug.GetBool() )
-#endif
+		if ( rd_workshop_debug.GetBool() )
+		{
 			Msg( "UGC item %llu is a legacy item; assuming collection.\n", id );
+		}
 
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
@@ -1797,12 +1825,10 @@ static void RealLoadAddon( PublishedFileId_t id )
 	char vpkname[MAX_PATH];
 	V_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
 
-#ifdef CLIENT_DLL
-	if ( cl_workshop_debug.GetBool() )
-#else 
-	if ( sv_workshop_debug.GetBool() )
-#endif
+	if ( rd_workshop_debug.GetBool() )
+	{
 		Msg( "Loading addon %llu\n", id );
+	}
 
 	bool bDontClearCache = false;
 
