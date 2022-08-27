@@ -699,6 +699,7 @@ public:
 	void SetOldPlayerZ( float flOld ) { m_flOldPlayerZ = flOld;	}
 	
 	const fogplayerparams_t& GetPlayerFog() const { return m_PlayerFog; }
+	float GetConnectionTime( void ) { return m_flConnectionTime; }
 
 private:
 	friend class CMoveHelperClient;
@@ -708,6 +709,7 @@ private:
 
 	// fog params
 	fogplayerparams_t		m_PlayerFog;
+	float m_flConnectionTime;
 };
 
 EXTERN_RECV_TABLE(DT_BasePlayer);
