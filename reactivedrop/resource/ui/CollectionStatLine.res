@@ -18,7 +18,7 @@
 		"wide"				"100"
 		"tall"				"12"
 		"ControlName"		"Label"
-		"font"				"Default"
+		"font"				"DefaultNoMinRes"
 		"textAlignment"		"north-west"
 	}
 
@@ -30,7 +30,7 @@
 		"wide"				"70"
 		"tall"				"12"
 		"ControlName"		"Label"
-		"font"				"Default"
+		"font"				"DefaultNoMinRes"
 		"textAlignment"		"north-east"
 		"fgcolor_override"	"255 255 255 255"
 	}

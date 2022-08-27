@@ -8,6 +8,7 @@
 		"wide"			"240"
 		"tall"			"20"
 		"labelText"		"#asw_iaf_heroes_title"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -20,6 +21,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_score"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -32,6 +34,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_kills"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -44,6 +47,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_teamkills"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -56,6 +60,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_missionsuccess"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -68,6 +73,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_missionfails"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -80,6 +86,7 @@
 		"tall"			"20"
 		"textAlignment"	"east"
 		"labelText"		"#rd_iaf_rank_missiontotal"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -89,7 +96,7 @@
 		"xpos"			"0"
 		"ypos"			"20"
 		"wide"			"520"
-		"tall"			"400"
+		"tall"			"380"
 		"bgcolor_override"	"0 0 0 0"
 		"ControlName"	"GenericPanelList"
 	}

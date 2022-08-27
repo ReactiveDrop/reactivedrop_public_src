@@ -28,7 +28,7 @@
 	"TabStrip"
 	{
 		"fieldName"		"TabStrip"
-		"xpos"		"c-310"
+		"xpos"		"c-305"
 		"ypos"		"40"
 		"wide"		"450"
 		"tall"		"12"
@@ -38,7 +38,7 @@
 	"TabLeftHint"
 	{
 		"fieldName"		"TabLeftHint"
-		"xpos"		"c-320"
+		"xpos"		"c-315"
 		"ypos"		"40"
 		"wide"		"18"
 		"tall"		"12"
@@ -50,7 +50,7 @@
 	"TabRightHint"
 	{
 		"fieldName"		"TabRightHint"
-		"xpos"		"c140"
+		"xpos"		"c145"
 		"ypos"		"40"
 		"wide"		"18"
 		"tall"		"12"

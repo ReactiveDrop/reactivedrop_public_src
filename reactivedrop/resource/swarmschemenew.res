@@ -343,7 +343,18 @@ Scheme
 				"antialias"	"1"
 			}
 		}
-			
+
+		"DefaultNoMinRes"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"10"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+			}
+		}
 		"DefaultBlur"
 		{
 			"1"

@@ -3,7 +3,7 @@
 	"Grid"
 	{
 		"fieldName"		"Grid"
-		"xpos"		"c-320"
+		"xpos"		"c-315"
 		"ypos"		"55"
 		"wide"		"470"
 		"tall"		"395"

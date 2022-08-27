@@ -6,7 +6,7 @@
 		"fieldName"				"ModelPanel"
 		"xpos"					"0"
 		"ypos"					"0"
-		"wide"					"170"
+		"wide"					"165"
 		"tall"					"100"
 	}
 
@@ -16,7 +16,7 @@
 		"fieldName"			"WeaponNameLabel"
 		"xpos"				"0"
 		"ypos"				"100"
-		"wide"				"170"
+		"wide"				"165"
 		"tall"				"20"
 		"font"				"DefaultLarge"
 		"fgcolor_override"	"255 255 255 255"
@@ -28,8 +28,8 @@
 		"fieldName"			"WeaponDescLabel"
 		"xpos"				"0"
 		"ypos"				"120"
-		"wide"				"170"
-		"tall"				"200"
+		"wide"				"165"
+		"tall"				"290"
 		"textAlignment"		"north-west"
 		"wrap"				"1"
 		"fgcolor_override"	"255 255 255 255"
