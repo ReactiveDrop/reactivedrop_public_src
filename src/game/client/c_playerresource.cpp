@@ -107,7 +107,7 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 
 	if ( UTIL_RD_IsLobbyOwner() )
 	{
-		CFmtStr1024 playerIDs;
+		CFmtStrMax playerIDs;
 
 		for ( int slot = 1; slot <= gpGlobals->maxClients; slot++ )
 		{
