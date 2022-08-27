@@ -422,6 +422,11 @@
 			title "#RD_AdvancedSettings_VisualEffects_MarineGibs"
 			cvar "rd_marine_explodes_into_gibs"
 		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_ReduceMotion"
+			cvar "rd_reduce_motion"
+		}
 	}
 
 	SECTION
