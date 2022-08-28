@@ -60,8 +60,6 @@ public:
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
 
-	CNetworkVar(bool, m_bBulletMod);	// used to skip ammo consumption on every other shot
-
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PDW; }
 };

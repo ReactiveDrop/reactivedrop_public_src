@@ -34,17 +34,12 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_PDW, DT_ASW_Weapon_PDW )
 BEGIN_NETWORK_TABLE( CASW_Weapon_PDW, DT_ASW_Weapon_PDW )
 #ifdef CLIENT_DLL
 	// recvprops
-	RecvPropBool(RECVINFO(m_bBulletMod)),
 #else
 	// sendprops
-	SendPropBool(SENDINFO(m_bBulletMod)),
 #endif
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( CASW_Weapon_PDW )
-#ifdef CLIENT_DLL
-	DEFINE_PRED_FIELD( m_bBulletMod, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-#endif
 END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( asw_weapon_pdw, CASW_Weapon_PDW );
@@ -56,7 +51,6 @@ extern ConVar asw_weapon_force_scale;
 
 CASW_Weapon_PDW::CASW_Weapon_PDW()
 {
-	m_bBulletMod = false;
 }
 
 
@@ -179,40 +173,34 @@ void CASW_Weapon_PDW::PrimaryAttack()
 
 			for (int k=0;k<info.m_iShots;k++)
 			{
-				//if (m_bBulletMod)
-				{
-					m_iClip1 -= 1;
+				m_iClip1 -= 1;
 #ifdef GAME_DLL
-					if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+				if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+				{
+					// check he doesn't have ammo in an ammo bay
+					CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
+					if (!pAmmoBag)
 					{
-						// check he doesn't have ammo in an ammo bay
-						CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-						CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+						pWeapon = pMarine->GetASWWeapon(1);
 						if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
 							pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-
-						if (!pAmmoBag)
-						{
-							pWeapon = pMarine->GetASWWeapon(1);
-							if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-								pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-						}
-						if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-							pMarine->OnWeaponOutOfAmmo(true);
 					}
-#endif
+					if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
+						pMarine->OnWeaponOutOfAmmo(true);
 				}
-				//m_bBulletMod = !m_bBulletMod;
+#endif
 			}
 		}
 		else
 		{
 			info.m_iShots = MIN( info.m_iShots, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-			for (int k=0;k<info.m_iShots;k++)
+			for ( int k = 0; k < info.m_iShots; k++ )
 			{
-				if (m_bBulletMod)
-					pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );;
-				m_bBulletMod = !m_bBulletMod;
+				pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );;
 			}
 		}
 
