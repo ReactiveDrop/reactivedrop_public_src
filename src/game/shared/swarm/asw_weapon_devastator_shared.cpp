@@ -87,7 +87,7 @@ float CASW_Weapon_Devastator::GetWeaponDamage()
 
 	if (GetMarine())
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG );
 	}
 
 	return flDamage;
