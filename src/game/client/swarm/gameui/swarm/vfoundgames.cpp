@@ -281,7 +281,7 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 	return "#L4D360UI_FoundGames_Join_Fail_Not_In_Joinable";
 }
 
-const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint() const
+const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint( bool bWarnOnNoHint ) const
 {
 	if (mpGameDetails) //can be null for real in void FoundGameListItem::SetGameIndex( const Info& fi )
 	{
@@ -312,7 +312,10 @@ const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint() const
 			return "#L4D360UI_Lobby_LocalMapOlder";
 		}
 
-		Assert( !"No specific hint for non-joinable lobby" );
+		if ( bWarnOnNoHint )
+		{
+			Assert( !"No specific hint for non-joinable lobby" );
+		}
 	}
 	return "";
 }
@@ -534,8 +537,10 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 			SetGameChallenge(fi.mpGameDetails->GetString("game/challengeinfo/displaytitle"));
 
 			char const *szDiff = fi.mpGameDetails->GetString("game/swarmstate", "ingame");
+#if 0
 			DevMsg("Adding a server to the list:\n");
 			KeyValuesDumpAsDevMsg(fi.mpGameDetails);
+#endif
 			if (!Q_stricmp(szDiff, "ingame"))
 			{
 				SetSwarmState("#L4D360UI_ingame");
