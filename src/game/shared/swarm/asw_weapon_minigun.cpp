@@ -223,7 +223,7 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 		info.m_iShots = MIN( info.m_iShots, iEffectiveClip );
 		iEffectiveClip -= info.m_iShots;
 		m_iClip1 = ( iEffectiveClip + 1 ) / 2;
-		m_bHalfShot = iEffectiveClip & 1 != 0;
+		m_bHalfShot = ( iEffectiveClip & 1 ) != 0;
 
 #ifdef GAME_DLL
 		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
