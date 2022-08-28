@@ -40,6 +40,8 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_buff_grenade, CASW_Weapon_Buff_Grenade );
 PRECACHE_WEAPON_REGISTER( asw_weapon_buff_grenade );
 
+ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "if set, special weapons deploy amp grenades to themselves, not to the floor" );
+
 #ifndef CLIENT_DLL
 
 //---------------------------------------------------------
@@ -48,8 +50,6 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_buff_grenade );
 BEGIN_DATADESC( CASW_Weapon_Buff_Grenade )
 	DEFINE_FIELD( m_flSoonestPrimaryAttack, FIELD_TIME ),
 END_DATADESC()
-
-ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT, "if set, special weapons deploy amp grenades to themselves, not to the floor" );
 
 #endif /* not client */
 

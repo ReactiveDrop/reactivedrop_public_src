@@ -6,6 +6,7 @@
 class CASW_WeaponInfo;
 class CASW_Model_Panel;
 class CRD_Swarmopedia_Model_Panel;
+class CASW_Marine_Profile;
 namespace RD_Swarmopedia
 {
 	struct Collection;
@@ -40,11 +41,12 @@ class CRD_Collection_Tab_Equipment : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
 public:
-	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, bool bExtra );
+	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, bool bExtra );
 
 	virtual TGD_Grid *CreateGrid() override;
 	virtual TGD_Details *CreateDetails() override;
 
+	CASW_Marine_Profile *m_pProfile;
 	bool m_bExtra;
 };
 

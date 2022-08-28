@@ -10,6 +10,7 @@
 #include <vgui_controls/Label.h>
 #include <vgui/ILocalize.h>
 #include "asw_model_panel.h"
+#include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -21,9 +22,10 @@ extern ConVar asw_unlock_all_weapons;
 extern ConVar rd_reduce_motion;
 ConVar rd_weapon_rotate_speed( "rd_weapon_rotate_speed", "0.3", FCVAR_ARCHIVE, "" );
 
-CRD_Collection_Tab_Equipment::CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, bool bExtra )
+CRD_Collection_Tab_Equipment::CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, bool bExtra )
 	: BaseClass( parent, szLabel )
 {
+	m_pProfile = pProfile;
 	m_bExtra = bExtra;
 }
 
@@ -220,22 +222,6 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	Assert( !"TODO: Equipment collection big view" );
-
-	// TODO:
-	int iMaxAmmo = GetAmmoDef()->MaxCarry( m_pWeaponInfo->iAmmoType, NULL );
-	int iMaxAmmo2 = GetAmmoDef()->MaxCarry( m_pWeaponInfo->iAmmo2Type, NULL );
-	m_pWeaponInfo->iMaxClip1;
-	m_pWeaponInfo->iMaxClip2;
-	m_pWeaponInfo->iDefaultClip1;
-	m_pWeaponInfo->iDefaultClip2;
-	m_pWeaponInfo->m_flBaseDamage;
-	m_pWeaponInfo->m_flFireRate;
-	m_pWeaponInfo->szAttributesText;
-	m_pWeaponInfo->szAltFireText;
-	m_pWeaponInfo->m_bUnique;
-	m_pWeaponInfo->m_bShowClipsDoubled;
-	CASW_Ammo_Drop_Shared::GetAmmoUnitCost( m_pWeaponInfo->iAmmoType );
-	CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( m_pWeaponInfo->iAmmoType );
 }
 
 #endif

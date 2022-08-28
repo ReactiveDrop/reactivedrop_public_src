@@ -12,6 +12,9 @@ namespace RD_Swarmopedia
 	struct Model;
 	struct Content;
 
+	struct Weapon;
+	struct WeaponFact;
+
 	struct Helpers
 	{
 		Helpers() = delete;
@@ -36,6 +39,7 @@ namespace RD_Swarmopedia
 		Collection( const Collection &copy );
 
 		CUtlVectorAutoPurge<Alien *> Aliens{};
+		CUtlVectorAutoPurge<Weapon *> Weapons{};
 
 		void ReadFromFiles();
 	private:
@@ -188,5 +192,26 @@ namespace RD_Swarmopedia
 		bool ReadFromFile( const char *, KeyValues * );
 		bool IsSame( const Content * ) const;
 		void Merge( const Content * );
+	};
+
+	struct Weapon
+	{
+		Weapon() = default;
+		Weapon( const Weapon &copy );
+
+		CUtlString ClassName{};
+		bool Builtin{ false };
+		CUtlVectorAutoPurge<WeaponFact *> Facts{};
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const Weapon *) const;
+		void Merge( const Weapon * );
+	};
+
+	struct WeaponFact
+	{
+		// TODO
 	};
 }

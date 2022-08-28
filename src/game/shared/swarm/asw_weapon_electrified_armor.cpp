@@ -35,10 +35,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_electrified_armor, CASW_Weapon_Electrified_Armor );
 PRECACHE_WEAPON_REGISTER( asw_weapon_electrified_armor );
 
+ConVar asw_electrified_armor_duration( "asw_electrified_armor_duration", "12.0f", FCVAR_CHEAT | FCVAR_REPLICATED, "Duration of electrified armor when activated" );
+
 #ifndef CLIENT_DLL
-
-ConVar asw_electrified_armor_duration( "asw_electrified_armor_duration", "12.0f", FCVAR_CHEAT, "Duration of electrified armor when activated" );
-
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
