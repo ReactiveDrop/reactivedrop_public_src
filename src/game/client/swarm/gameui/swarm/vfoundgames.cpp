@@ -127,6 +127,13 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 		return INT_MIN;
 	}
 
+	if ( iExpectedVersion == 0 )
+	{
+		// We've done all we can. The lobby or dedicated server didn't tell us
+		// what version of the map we needed to have.
+		return 0;
+	}
+
 	// Only load the map version from each map once per session. Workshop maps
 	// could technically change, but the game isn't set up to handle that
 	// gracefully in a lot of other places, so just assume the player will
@@ -135,7 +142,7 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 
 	if ( s_LocalMapVersion.Defined( szBSPName ) )
 	{
-		return s_LocalMapVersion[szBSPName] - iExpectedVersion;
+		return iExpectedVersion - s_LocalMapVersion[szBSPName];
 	}
 
 	FileHandle_t hFile = filesystem->Open( szBSPName, "rb", "GAME" );
@@ -175,7 +182,7 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 
 	s_LocalMapVersion[szBSPName] = iMapVersion;
 
-	return iMapVersion - iExpectedVersion;
+	return iExpectedVersion - iMapVersion;
 }
 
 char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
