@@ -566,122 +566,30 @@ float CASW_Marine_Skills::GetLowestSkillValueNearby( const Vector &pos, float Ma
 
 static const char *const s_szSkillImageName[ASW_NUM_MARINE_SKILLS] =
 {
-	"swarm/SkillButtons/Leadership", // ASW_MARINE_SKILL_LEADERSHIP = 0,
-	"swarm/SkillButtons/Vindicator", // ASW_MARINE_SKILL_VINDICATOR,
-
-	// special weapons
-	"swarm/SkillButtons/Autogun", // ASW_MARINE_SKILL_AUTOGUN,
-	"swarm/SkillButtons/Secondary", // ASW_MARINE_SKILL_STOPPING_POWER,
-	"swarm/SkillButtons/Piercing", // ASW_MARINE_SKILL_PIERCING,
-
-	// medic
-	"swarm/SkillButtons/Healing", // ASW_MARINE_SKILL_HEALING,
-	"swarm/SkillButtons/Xenowound", // ASW_MARINE_SKILL_XENOWOUNDS,
-	"swarm/SkillButtons/Drugs", // ASW_MARINE_SKILL_DRUGS,
-
-	// tech
-	"swarm/SkillButtons/Hacking", //ASW_MARINE_SKILL_HACKING,
-	"swarm/SkillButtons/Scanner", // 3ASW_MARINE_SKILL_SCANNER,
-	"swarm/SkillButtons/Engineering", // 3ASW_MARINE_SKILL_ENGINEERING,
-
-	"swarm/SkillButtons/Accuracy", // ASW_MARINE_SKILL_ACCURACY,
-	"swarm/SkillButtons/Grenade", // ASW_MARINE_SKILL_GRENADES,
-	"swarm/SkillButtons/Health", // ASW_MARINE_SKILL_HEALTH,
-	"swarm/SkillButtons/Melee", // ASW_MARINE_SKILL_MELEE,
-	"swarm/SkillButtons/SkillReload", // ASW_MARINE_SKILL_RELOADING,
-	"swarm/SkillButtons/Agility", // ASW_MARINE_SKILL_AGILITY
-
-	"swarm/SkillButtons/Spare", // ASW_MARINE_SKILL_SPARE
+#define ENUM_ITEM( name, icon, title, desc, max ) icon,
+	ASW_SKILL_ENUM
+#undef ENUM_ITEM
 };
 
 static const char *const s_szSkillName[ASW_NUM_MARINE_SKILLS] =
 {
-	"#asw_leadership", // ASW_MARINE_SKILL_LEADERSHIP = 0,
-	"#asw_vindicator", // ASW_MARINE_SKILL_VINDICATOR,
-
-	// special weapons
-	"#asw_autogunsk", // ASW_MARINE_SKILL_AUTOGUN,
-	"#asw_stopping", // ASW_MARINE_SKILL_STOPPING_POWER,
-	"#asw_piercingbullets", // ASW_MARINE_SKILL_PIERCING,
-
-	// medic
-	"#asw_healing", // ASW_MARINE_SKILL_HEALING,
-	"#asw_xenowound", // ASW_MARINE_SKILL_XENOWOUNDS,
-	"#asw_combatdrugs", // ASW_MARINE_SKILL_DRUGS,
-
-	// tech
-	"#asw_hacking", //ASW_MARINE_SKILL_HACKING,
-	"#asw_scanner", // 3ASW_MARINE_SKILL_SCANNER,
-	"#asw_engineering", // 3ASW_MARINE_SKILL_ENGINEERING,
-
-	"#asw_accuracy_skill", // ASW_MARINE_SKILL_ACCURACY,
-	"#asw_grenades", // ASW_MARINE_SKILL_GRENADES,
-	"#asw_health", // ASW_MARINE_SKILL_HEALTH,
-	"#asw_melee", // ASW_MARINE_SKILL_MELEE,
-	"#asw_reloading", // ASW_MARINE_SKILL_RELOADING,
-	"#asw_agility", // ASW_MARINE_SKILL_AGILITY
-
-	"#asw_points", // ASW_MARINE_SKILL_SPARE
+#define ENUM_ITEM( name, icon, title, desc, max ) title,
+	ASW_SKILL_ENUM
+#undef ENUM_ITEM
 };
 
 static const char *const s_szSkillDescription[ASW_NUM_MARINE_SKILLS] =
 {
-	"#asw_leadership_desc", // ASW_MARINE_SKILL_LEADERSHIP = 0,
-	"#asw_vindicator_desc", // ASW_MARINE_SKILL_VINDICATOR,
-
-	// special weapons
-	"#asw_autogunsk_desc", // ASW_MARINE_SKILL_AUTOGUN,
-	"#asw_stopping_desc", // ASW_MARINE_SKILL_STOPPING_POWER,
-	"#asw_piercingbullets_desc", // ASW_MARINE_SKILL_PIERCING,
-
-	// medic
-	"#asw_healing_desc", // ASW_MARINE_SKILL_HEALING,
-	"#asw_xenowound_desc", // ASW_MARINE_SKILL_XENOWOUNDS,
-	"#asw_combatdrugs_desc", // ASW_MARINE_SKILL_DRUGS,
-
-	// tech
-	"#asw_hacking_desc", //ASW_MARINE_SKILL_HACKING,
-	"#asw_scanner_desc", // 3ASW_MARINE_SKILL_SCANNER,
-	"#asw_engineering_desc", // 3ASW_MARINE_SKILL_ENGINEERING,
-
-	"#asw_accuracy_skill_desc", // ASW_MARINE_SKILL_ACCURACY,
-	"#asw_grenades_desc", // ASW_MARINE_SKILL_GRENADES,
-	"#asw_health_desc", // ASW_MARINE_SKILL_HEALTH,
-	"#asw_melee_desc", // ASW_MARINE_SKILL_MELEE,
-	"#asw_reloading_desc", // ASW_MARINE_SKILL_RELOADING,
-	"#asw_agility_desc", // ASW_MARINE_SKILL_AGILITY
-
-	"#asw_points_desc", // ASW_MARINE_SKILL_SPARE
+#define ENUM_ITEM( name, icon, title, desc, max ) desc,
+	ASW_SKILL_ENUM
+#undef ENUM_ITEM
 };
 
 static const int s_nMaxSkillPoints[ASW_NUM_MARINE_SKILLS] =
 {
-	5, // ASW_MARINE_SKILL_LEADERSHIP = 0,
-	5, // ASW_MARINE_SKILL_VINDICATOR,
-
-	// special weapons
-	5, // ASW_MARINE_SKILL_AUTOGUN,
-	5, // ASW_MARINE_SKILL_STOPPING_POWER,
-	5, // ASW_MARINE_SKILL_PIERCING,
-
-	// medic
-	5, // ASW_MARINE_SKILL_HEALING,
-	3, // ASW_MARINE_SKILL_XENOWOUNDS,
-	5, // ASW_MARINE_SKILL_DRUGS,
-
-	// tech
-	5, //ASW_MARINE_SKILL_HACKING,
-	3, // 3ASW_MARINE_SKILL_SCANNER,
-	3, // 3ASW_MARINE_SKILL_ENGINEERING,
-
-	5, // ASW_MARINE_SKILL_ACCURACY,
-	5, // ASW_MARINE_SKILL_GRENADES,
-	5, // ASW_MARINE_SKILL_HEALTH,
-	5, // ASW_MARINE_SKILL_MELEE,
-	5, // ASW_MARINE_SKILL_RELOADING,
-	5, // ASW_MARINE_SKILL_AGILITY
-
-	99, // ASW_MARINE_SKILL_SPARE
+#define ENUM_ITEM( name, icon, title, desc, max ) max,
+	ASW_SKILL_ENUM
+#undef ENUM_ITEM
 };
 
 #ifdef CLIENT_DLL
@@ -724,32 +632,9 @@ int CASW_Marine_Skills::GetMaxSkillPoints( ASW_Skill nSkillIndex )
 
 const char *g_szSkillNames[ASW_NUM_MARINE_SKILLS] =
 {
-	"ASW_MARINE_SKILL_LEADERSHIP",
-	"ASW_MARINE_SKILL_VINDICATOR",
-
-	// special weapons
-	"ASW_MARINE_SKILL_AUTOGUN",
-	"ASW_MARINE_SKILL_STOPPING_POWER",
-	"ASW_MARINE_SKILL_PIERCING",
-
-	// medic
-	"ASW_MARINE_SKILL_HEALING",
-	"ASW_MARINE_SKILL_XENOWOUNDS",
-	"ASW_MARINE_SKILL_DRUGS",
-
-	// tech
-	"ASW_MARINE_SKILL_HACKING",
-	"ASW_MARINE_SKILL_SCANNER",
-	"ASW_MARINE_SKILL_ENGINEERING",
-
-	"ASW_MARINE_SKILL_ACCURACY",
-	"ASW_MARINE_SKILL_GRENADES",
-	"ASW_MARINE_SKILL_HEALTH",
-	"ASW_MARINE_SKILL_MELEE",
-	"ASW_MARINE_SKILL_RELOADING",
-	"ASW_MARINE_SKILL_AGILITY",
-
-	"ASW_MARINE_SKILL_SPARE",
+#define ENUM_ITEM( name, ... ) "ASW_MARINE_SKILL_" #name,
+	ASW_SKILL_ENUM
+#undef ENUM_ITEM
 };
 
 ASW_Skill SkillFromString( const char *szSkill )
@@ -775,6 +660,31 @@ const char *SkillToString( ASW_Skill nSkill )
 	}
 
 	return g_szSkillNames[nSkill];
+}
+
+int SubSkillFromString( const char *szSubSkill, ASW_Skill nExpectedSkill )
+{
+#define ENUM_ITEM( category, name, value ) \
+	if ( !V_stricmp( szSubSkill, "ASW_MARINE_SUBSKILL_" #name ) ) \
+	{ \
+		return nExpectedSkill == ASW_MARINE_SKILL_INVALID || nExpectedSkill == ASW_MARINE_SKILL_##category ? value : -1; \
+	}
+	ASW_SUBSKILL_ENUM
+#undef ENUM_ITEM
+
+	return -1;
+}
+
+const char *SubSkillToString( ASW_Skill nSkill, int nSubSkill )
+{
+#define ENUM_ITEM( category, name, value ) \
+	if ( nSkill == ASW_MARINE_SKILL_##category && nSubSkill == value ) \
+	{ \
+		return "ASW_MARINE_SUBSKILL_" #name; \
+	}
+#undef ENUM_ITEM
+
+	return "ASW_MARINE_SUBSKILL_INVALID";
 }
 
 // global instance
