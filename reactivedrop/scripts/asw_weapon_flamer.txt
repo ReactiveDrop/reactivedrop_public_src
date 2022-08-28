@@ -10,8 +10,8 @@ WeaponData
 	"bucket"			"0"
 	"bucket_position"		"0"
 
-	"clip_size"			"40"
-	"default_clip"			"40"
+	"clip_size"			"80"
+	"default_clip"			"80"
 
 	"clip2_size"			"-1"
 	"default_clip2"			"-1"

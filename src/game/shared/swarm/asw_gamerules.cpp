@@ -569,10 +569,10 @@ ConVar	sk_max_asw_sg_g( "sk_max_asw_sg_g", "0", FCVAR_REPLICATED | FCVAR_CHEAT )
 ConVar	sk_plr_dmg_asw_asg( "sk_plr_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_asg( "sk_npc_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_asg( "sk_max_asw_asg", "70", FCVAR_REPLICATED | FCVAR_CHEAT );
-// Flamer (5 clips, 60 per)
+// Flamer (5 clips, 80 per)
 ConVar	sk_plr_dmg_asw_f( "sk_plr_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_f( "sk_npc_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar	sk_max_asw_f( "sk_max_asw_f", "200", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_f( "sk_max_asw_f", "400", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Pistol (10 clips, 32 per)
 ConVar	sk_plr_dmg_asw_p( "sk_plr_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_p( "sk_npc_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
