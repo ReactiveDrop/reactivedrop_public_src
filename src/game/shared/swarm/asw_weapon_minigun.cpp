@@ -46,10 +46,10 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Minigun, DT_ASW_Weapon_Minigun )
 BEGIN_NETWORK_TABLE( CASW_Weapon_Minigun, DT_ASW_Weapon_Minigun )
 #ifdef CLIENT_DLL
 	RecvPropFloat( RECVINFO( m_flSpinRate ) ),
-	RecvPropFloat( RECVINFO( m_flPartialBullets ) ),
+	RecvPropBool( RECVINFO( m_bHalfShot ) ),
 #else
 	SendPropFloat( SENDINFO( m_flSpinRate ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flPartialBullets ), 0, SPROP_NOSCALE, 0.0f, 1.0f ),
+	SendPropBool( SENDINFO( m_bHalfShot ) ),
 	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),	
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),	
 	SendPropExclude( "DT_BaseAnimatingOverlay", "overlay_vars" ),
@@ -61,7 +61,7 @@ END_NETWORK_TABLE()
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CASW_Weapon_Minigun )
 	DEFINE_PRED_FIELD_TOL( m_flSpinRate, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),
-	DEFINE_PRED_FIELD( m_flPartialBullets, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_bHalfShot, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),	
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
@@ -115,6 +115,7 @@ CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 	m_bShouldUpdateActivityClient = false;
 #endif
 	m_flTimeFireStarted = 0;
+	m_bHalfShot = false;
 }
 
 bool CASW_Weapon_Minigun::Holster( CBaseCombatWeapon *pSwitchingTo )
@@ -214,16 +215,15 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 	// Make sure we don't fire more than the amount in the clip
 	if ( UsesClipsForAmmo1() )
 	{
-		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
-		m_flPartialBullets += static_cast<float>( info.m_iShots ) * 0.5f;
-
-		if ( m_flPartialBullets >= 1.0f )
+		int iEffectiveClip = m_iClip1 * 2;
+		if ( m_bHalfShot && iEffectiveClip )
 		{
-			// Subtract ammo if we've counted up a whole bullet
-			int nBullets = m_flPartialBullets;
-			m_iClip1 -= nBullets;
-			m_flPartialBullets -= nBullets;
+			iEffectiveClip--;
 		}
+		info.m_iShots = MIN( info.m_iShots, iEffectiveClip );
+		iEffectiveClip -= info.m_iShots;
+		m_iClip1 = ( iEffectiveClip + 1 ) / 2;
+		m_bHalfShot = iEffectiveClip & 1 != 0;
 
 #ifdef GAME_DLL
 		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
@@ -269,9 +269,6 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 		NDebugOverlay::Line(info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0);
 	}
 #endif
-
-	// fire extra shots per ammo from the minigun, so we get a nice solid spray of bullets
-	//info.m_iShots = 2;
 
 	if ( !m_flTimeFireStarted )
 		m_flTimeFireStarted = gpGlobals->curtime;
@@ -443,18 +440,18 @@ float CASW_Weapon_Minigun::GetWeaponDamage()
 	return flDamage;
 }
 
-const Vector& CASW_Weapon_Minigun::GetBulletSpread( void )
+const Vector &CASW_Weapon_Minigun::GetBulletSpread( void )
 {
 	static Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
-    static Vector cone_duck = Vector( 0.05234, 0.05234, 0.01 ); // VECTOR_CONE_6DEGREES with flattened Z
+	static Vector cone_duck = Vector( 0.05234, 0.05234, 0.01 ); // VECTOR_CONE_6DEGREES with flattened Z
 
-    CASW_Marine *marine = GetMarine();
+	CASW_Marine *marine = GetMarine();
 
-    if ( marine )
-    {
-        if ( marine->GetAbsVelocity() == Vector(0, 0, 0) && marine->m_bWalking )
-            return cone_duck;
-    }
+	if ( marine )
+	{
+		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking )
+			return cone_duck;
+	}
 	return cone;
 }
 
