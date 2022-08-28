@@ -4227,10 +4227,15 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		return;
 
 	const char* szWeaponClass = STRING( ASWEquipmentList()->GetItemForSlot( iSlot, iEquipIndex )->m_EquipClass );
+	Assert( szWeaponClass );
+	if ( !szWeaponClass )
+		return;
 		
 	CASW_Weapon* pWeapon = dynamic_cast<CASW_Weapon*>(pMarine->Weapon_Create(szWeaponClass));
-	if (!pWeapon)
+	Assert( pWeapon );
+	if ( !pWeapon )
 		return;
+
 	// If I have a name, make my weapon match it with "_weapon" appended
 	if ( pMarine->GetEntityName() != NULL_STRING )
 	{
