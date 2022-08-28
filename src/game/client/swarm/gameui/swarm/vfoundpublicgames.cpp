@@ -385,7 +385,7 @@ void FoundPublicGames::AddServersToList( void )
 		}
 		else if ( fi.mbInGame )
 		{
-			char const *szHint = fi.GetNonJoinableShortHint();
+			char const *szHint = fi.GetNonJoinableShortHint( false );
 			if ( !*szHint )
 			{
 				fi.mIsJoinable = true;

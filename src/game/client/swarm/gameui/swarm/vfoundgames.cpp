@@ -555,7 +555,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	{
 		if( m_pLblNotJoinable )
 		{
-			char const *szHint = fi.GetNonJoinableShortHint();
+			char const *szHint = fi.GetNonJoinableShortHint( true );
 			if ( !szHint || !*szHint )
 				szHint = "#L4D360UI_Lobby_NotInJoinableGame";
 
@@ -853,7 +853,7 @@ void FoundGameListItem::CmdJoinGame()
 {
 	if ( !m_FullInfo.IsJoinable() || !m_FullInfo.mpfnJoinGame )
 	{
-		const char *szShortHint = m_FullInfo.GetNonJoinableShortHint();
+		const char *szShortHint = m_FullInfo.GetNonJoinableShortHint( true );
 
 		if ( m_FullInfo.IsDLC() )
 			szShortHint = "#L4D2360_FoundGames_DLC_Msg";
@@ -1969,7 +1969,7 @@ void FoundGames::AddServersToList()
 		{
 			if ( !fi.IsDownloadable() )
 			{
-				char const *szHint = fi.GetNonJoinableShortHint();
+				char const *szHint = fi.GetNonJoinableShortHint( false );
 				if ( !*szHint )
 				{
 					fi.mIsJoinable = true;
