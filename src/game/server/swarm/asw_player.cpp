@@ -281,6 +281,12 @@ END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
 	DEFINE_SCRIPTFUNC( ResurrectMarine, "Resurrect the marine" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetNPC, "GetNPC", "Returns entity the player is inhabiting" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSpectatingNPC, "GetSpectatingNPC", "Returns entity the player is spectating" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetViewNPC, "GetViewNPC", "Returns entity the player is spectating, else will return inhabiting entity" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMarine, "GetMarine", "Returns the marine the player is commanding" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptFindPickerEntity, "FindPickerEntity", "Finds the nearest entity in front of the player" )
+	DEFINE_SCRIPTFUNC( GetCrosshairTracePos, "Returns the world location directly beneath the player's crosshair" )
 END_SCRIPTDESC()
 
 // -------------------------------------------------------------------------------- //
@@ -1937,6 +1943,11 @@ CASW_Inhabitable_NPC *CASW_Player::GetNPC() const
 	return m_hInhabiting.Get();
 }
 
+HSCRIPT CASW_Player::ScriptGetNPC() const
+{
+	return ToHScript( GetNPC() );
+}
+
 void CASW_Player::SpectateNextMarine()
 {
 	CASW_Game_Resource* pGameResource = ASWGameResource();
@@ -1994,6 +2005,11 @@ CASW_Inhabitable_NPC *CASW_Player::GetSpectatingNPC() const
 	return m_hSpectating.Get();
 }
 
+HSCRIPT CASW_Player::ScriptGetSpectatingNPC() const
+{
+	return ToHScript( GetSpectatingNPC() );
+}
+
 CASW_Inhabitable_NPC *CASW_Player::GetViewNPC() const
 {
 	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
@@ -2001,6 +2017,11 @@ CASW_Inhabitable_NPC *CASW_Player::GetViewNPC() const
 		pNPC = GetNPC();
 
 	return pNPC;
+}
+
+HSCRIPT CASW_Player::ScriptGetViewNPC() const
+{
+	return ToHScript( GetViewNPC() );
 }
 
 void CASW_Player::SelectNextMarine(bool bReverse)
@@ -3178,6 +3199,11 @@ CBaseEntity* CASW_Player::FindPickerEntity()
 	return pNearestEntity;
 }
 
+HSCRIPT CASW_Player::ScriptFindPickerEntity()
+{
+	return ToHScript( FindPickerEntity() );
+}
+
 const Vector& CASW_Player::GetCrosshairTracePos()
 {
 	if ( GetASWControls() != ASWC_TOPDOWN && GetNPC() )
@@ -3217,4 +3243,20 @@ HSCRIPT CASW_Player::ResurrectMarine( const Vector position, bool bEffect )
 	}
 
 	return ToHScript( pMarine );
+}
+
+HSCRIPT CASW_Player::ScriptGetMarine()
+{
+	const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
+
+	for ( int i = 0; i < numMarineResources; i++ )
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR && pMR->IsInhabited() && pMR->GetCommander() == this )
+		{
+			return ToHScript( pMR->GetMarineEntity() );
+		}
+	}
+
+	return NULL;
 }
