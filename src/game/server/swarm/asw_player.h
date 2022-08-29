@@ -86,6 +86,7 @@ public:
 	void SpectateNextMarine();
 	void SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating );
 	CASW_Inhabitable_NPC *GetSpectatingNPC() const;
+	HSCRIPT ScriptGetSpectatingNPC() const;
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hSpectating );
 	bool m_bLastAttackButton;	// used to detect left clicks for cycling through marines
 	bool m_bLastAttack2Button;	// used to detect right clicks for cycling through marines
@@ -99,6 +100,7 @@ public:
 	void OnNPCCommanded( CASW_Inhabitable_NPC *pNPC );
 	void SetNPC( CASW_Inhabitable_NPC *pNPC );
 	CASW_Inhabitable_NPC *GetNPC() const;
+	HSCRIPT ScriptGetNPC() const;
 	void SelectNextMarine( bool bReverse );
 	bool CanSwitchToMarine( int num );
 	// BenLubar(deathmatch-improvements)
@@ -109,6 +111,7 @@ public:
 	void LeaveMarines();
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
+	HSCRIPT ScriptGetMarine();
 
 	CNetworkHandle( CASW_Marine, m_hOrderingMarine );
 
@@ -136,6 +139,7 @@ public:
 
 	// shared code
 	CASW_Inhabitable_NPC *GetViewNPC() const;
+	HSCRIPT ScriptGetViewNPC() const;
 	void ItemPostFrame();
 	void ASWSelectWeapon(CBaseCombatWeapon* pWeapon, int subtype);	// for switching weapons on the current marine
 	virtual bool Weapon_CanUse( CBaseCombatWeapon *pWeapon );
@@ -228,6 +232,7 @@ public:
 	CNetworkVar( float, m_fMapGenerationProgress );			// how far this player is through generating their local copy of the next random map
 
 	virtual CBaseEntity* FindPickerEntity();
+	HSCRIPT ScriptFindPickerEntity();
 
 	// entity this player is highlighting with his mouse cursor
 	void SetHighlightEntity( CBaseEntity* pEnt ) { m_hHighlightEntity = pEnt; }
