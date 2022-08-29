@@ -272,8 +272,13 @@ void CRD_Hud_Boss_Bar_Container::Paint()
 {
 	if ( !rd_paint_boss_bars.GetBool() )
 	{
+		SetPaintBackgroundEnabled( false );
+		m_pLabel->SetVisible( false );
 		return;
 	}
+
+	SetPaintBackgroundEnabled( true );
+	m_pLabel->SetVisible( true );
 
 	BaseClass::Paint();
 
