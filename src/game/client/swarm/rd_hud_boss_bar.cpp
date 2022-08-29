@@ -7,6 +7,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+ConVar rd_paint_boss_bars( "rd_paint_boss_bars", "1", FCVAR_ARCHIVE, "Draw boss bars on the HUD when rd_boss_bar entities are active" );
+
 #define BAR_HEIGHT_BASE 15
 #define BAR_PADDING 2
 #define BAR_TITLE_TALL 25
@@ -267,6 +270,16 @@ void CRD_Hud_Boss_Bar_Container::ApplySchemeSettings( IScheme *pScheme )
 
 void CRD_Hud_Boss_Bar_Container::Paint()
 {
+	if ( !rd_paint_boss_bars.GetBool() )
+	{
+		SetPaintBackgroundEnabled( false );
+		m_pLabel->SetVisible( false );
+		return;
+	}
+
+	SetPaintBackgroundEnabled( true );
+	m_pLabel->SetVisible( true );
+
 	BaseClass::Paint();
 
 	int x0 = 0, y0 = 0, x1, y1;

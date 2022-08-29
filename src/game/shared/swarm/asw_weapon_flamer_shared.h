@@ -72,7 +72,6 @@ public:
 	#endif
 
 	float m_flLastFireTime;
-	CNetworkVar(bool, m_bBulletMod);	// used to skip ammo consumption on every other shot
 	CNetworkVar(bool, m_bIsSecondaryFiring);
 
 	enum 

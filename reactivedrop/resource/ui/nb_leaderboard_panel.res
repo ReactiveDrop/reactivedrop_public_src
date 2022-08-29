@@ -73,6 +73,7 @@
 		"wide"		"120"
 		"tall"		"10"
 		"ControlName"		"Label"
+		"font"		"DefaultNoMinRes"
 		"labelText"		"#rd_leaderboard_filter_top"
 		"visible"		"0"
 		"zpos"		"3"

@@ -40,11 +40,9 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Flamer, DT_ASW_Weapon_Flamer )
 BEGIN_NETWORK_TABLE( CASW_Weapon_Flamer, DT_ASW_Weapon_Flamer )
 #ifdef CLIENT_DLL
 	// recvprops
-	RecvPropBool(RECVINFO(m_bBulletMod)),
 	RecvPropBool(RECVINFO(m_bIsSecondaryFiring)),
 #else
 	// sendprops
-	SendPropBool(SENDINFO(m_bBulletMod)),
 	SendPropBool(SENDINFO(m_bIsSecondaryFiring)),
 	SendPropExclude( "DT_BaseAnimating", "m_nSkin" ),
 #endif
@@ -52,7 +50,6 @@ END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( CASW_Weapon_Flamer )
 #ifdef CLIENT_DLL
-	DEFINE_PRED_FIELD( m_bBulletMod, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bIsSecondaryFiring, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 #endif
 END_PREDICTION_DATA()
@@ -80,7 +77,6 @@ CASW_Weapon_Flamer::CASW_Weapon_Flamer()
 	m_fMaxRange2	= 160;
 
 	m_flLastFireTime = 0;
-	m_bBulletMod = false;
 }
 
 
@@ -287,31 +283,27 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 		}
 #endif
 
-		if (!m_bBulletMod)
-		{
-			// decrement ammo
-			m_iClip1 -= 1;
+		// decrement ammo
+		m_iClip1 -= 1;
 #ifdef GAME_DLL
-			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		{
+			// check he doesn't have ammo in an ammo bay
+			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
+			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+
+			if (!pAmmoBag)
 			{
-				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+				pWeapon = pMarine->GetASWWeapon(1);
 				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
 					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-
-				if (!pAmmoBag)
-				{
-					pWeapon = pMarine->GetASWWeapon(1);
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-				}
-				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-					pMarine->OnWeaponOutOfAmmo(true);
 			}
-#endif
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
+				pMarine->OnWeaponOutOfAmmo(true);
 		}
-		m_bBulletMod = !m_bBulletMod;
+#endif
 
 		/*
 		if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
@@ -339,7 +331,7 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 void CASW_Weapon_Flamer::SecondaryAttack( void )
 {
 	// If my clip is empty (and I use clips) start reload
-	if ( !rd_flamer_infinite_extinguisher.GetBool() && UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( !rd_flamer_infinite_extinguisher.GetBool() && UsesClipsForAmmo1() && m_iClip1 < 2 ) 
 	{
 		Reload();
 		return;
@@ -419,19 +411,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 		if ( !rd_flamer_infinite_extinguisher.GetBool() )
 		{
 			// decrement ammo
-			m_iClip1 -= 1;
-
-			//Mad Orange. Suit is unused in ASW
-			/*
-			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-			{
-				// HEV suit - indicate out of ammo condition
-				if (pPlayer)
-					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
-
-				m_bIsSecondaryFiring = false;
-			}
-			*/
+			m_iClip1 -= 2;
 		}
 	}
 	if (!rd_flamer_infinite_extinguisher.GetBool() || m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot

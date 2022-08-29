@@ -21,6 +21,13 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+ConVar asw_gas_grenade_duration( "asw_gas_grenade_duration", "30.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Duration of the gas grenade" );
+ConVar asw_gas_grenade_fuse( "asw_gas_grenade_fuse", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Fuse time on gas grenades" );
+ConVar asw_gas_grenade_damage( "asw_gas_grenade_damage", "20.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Damage the gas grenade inflicts" );
+ConVar asw_gas_grenade_damage_interval( "asw_gas_grenade_damage_interval", "0.3", FCVAR_CHEAT | FCVAR_REPLICATED, "Interval of the gas grenade damage" );
+ConVar asw_gas_grenade_cloud_width( "asw_gas_grenade_cloud_width", "100.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Width of the gas grenade cloud" );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Gas_Grenades, DT_ASW_Weapon_Gas_Grenades )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Gas_Grenades, DT_ASW_Weapon_Gas_Grenades )

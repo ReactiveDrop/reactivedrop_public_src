@@ -149,6 +149,10 @@ void AdvancedSettings::PerformLayout()
 
 			pPrevSetting->SetNavDown( pSetting );
 			pSetting->SetNavUp( pPrevSetting );
+			pSetting->SetNavDown( m_pSectionName );
+			SetNavUp( pSetting );
+			if ( j == 0 )
+				SetNavDown( pSetting );
 			pPrevSetting = pSetting;
 		}
 	}

@@ -38,6 +38,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 
 #include "rd_lobby_utils.h"
+#include "mapentities_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -107,7 +108,7 @@ bool BaseModUI::FoundGameListItem::Info::HaveMap() const
 int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 {
 	char szBSPName[MAX_PATH]{};
-	int iExpectedRevision = mpGameDetails->GetInt( "system/map_version" );
+	int iExpectedVersion = mpGameDetails->GetInt( "system/map_version" );
 	if ( *mpGameDetails->GetString( "game/mission" ) )
 	{
 		V_snprintf( szBSPName, sizeof( szBSPName ), "maps/%s.bsp", mpGameDetails->GetString( "game/mission" ) );
@@ -126,7 +127,62 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 		return INT_MIN;
 	}
 
-	return 0; // BSP header version is not the one we are looking for in worldspawn. returning 0 here for a hotfix.
+	if ( iExpectedVersion == 0 )
+	{
+		// We've done all we can. The lobby or dedicated server didn't tell us
+		// what version of the map we needed to have.
+		return 0;
+	}
+
+	// Only load the map version from each map once per session. Workshop maps
+	// could technically change, but the game isn't set up to handle that
+	// gracefully in a lot of other places, so just assume the player will
+	// restart the game if needed.
+	static CUtlStringMap<int> s_LocalMapVersion;
+
+	if ( s_LocalMapVersion.Defined( szBSPName ) )
+	{
+		return iExpectedVersion - s_LocalMapVersion[szBSPName];
+	}
+
+	FileHandle_t hFile = filesystem->Open( szBSPName, "rb", "GAME" );
+	Assert( hFile );
+	if ( !hFile )
+	{
+		return INT_MIN;
+	}
+
+	BSPHeader_t header;
+	int iRead = filesystem->Read( &header, sizeof( header ), hFile );
+	Assert( iRead == sizeof( header ) );
+	if ( iRead != sizeof( header ) )
+	{
+		filesystem->Close( hFile );
+		return INT_MIN;
+	}
+
+	Assert( header.ident == IDBSPHEADER );
+	filesystem->Seek( hFile, header.lumps[LUMP_ENTITIES].fileofs, FILESYSTEM_SEEK_HEAD );
+
+	CUtlMemory<char> entities{ 0, header.lumps[LUMP_ENTITIES].filelen };
+	iRead = filesystem->Read( entities.Base(), entities.Count(), hFile );
+	Assert( iRead == entities.Count() );
+
+	filesystem->Close( hFile );
+
+	int iMapVersion = 0;
+
+	Assert( *entities.Base() == '{' );
+
+	char szMapVersion[MAPKEY_MAXLENGTH]{};
+	if ( MapEntity_ExtractValue( entities.Base() + 1, "mapversion", szMapVersion ) )
+	{
+		iMapVersion = atoi( szMapVersion );
+	}
+
+	s_LocalMapVersion[szBSPName] = iMapVersion;
+
+	return iExpectedVersion - iMapVersion;
 }
 
 char const * BaseModUI::FoundGameListItem::Info::IsOtherTitle() const
@@ -225,7 +281,7 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 	return "#L4D360UI_FoundGames_Join_Fail_Not_In_Joinable";
 }
 
-const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint() const
+const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint( bool bWarnOnNoHint ) const
 {
 	if (mpGameDetails) //can be null for real in void FoundGameListItem::SetGameIndex( const Info& fi )
 	{
@@ -240,6 +296,26 @@ const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint() const
 
 		if (!Q_stricmp("private", mpGameDetails->GetString("system/access", "")))
 			return "#L4D360UI_WaitScreen_GamePrivate";
+
+		if ( int iMapVersionDiff = CompareMapVersion() )
+		{
+			if ( iMapVersionDiff == INT_MIN )
+			{
+				return "#L4D360UI_Lobby_CampaignUnavailable";
+			}
+
+			if ( iMapVersionDiff < 0 )
+			{
+				return "#L4D360UI_Lobby_LocalMapNewer";
+			}
+
+			return "#L4D360UI_Lobby_LocalMapOlder";
+		}
+
+		if ( bWarnOnNoHint )
+		{
+			Assert( !"No specific hint for non-joinable lobby" );
+		}
 	}
 	return "";
 }
@@ -461,8 +537,10 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 			SetGameChallenge(fi.mpGameDetails->GetString("game/challengeinfo/displaytitle"));
 
 			char const *szDiff = fi.mpGameDetails->GetString("game/swarmstate", "ingame");
+#if 0
 			DevMsg("Adding a server to the list:\n");
 			KeyValuesDumpAsDevMsg(fi.mpGameDetails);
+#endif
 			if (!Q_stricmp(szDiff, "ingame"))
 			{
 				SetSwarmState("#L4D360UI_ingame");
@@ -477,7 +555,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	{
 		if( m_pLblNotJoinable )
 		{
-			char const *szHint = fi.GetNonJoinableShortHint();
+			char const *szHint = fi.GetNonJoinableShortHint( true );
 			if ( !szHint || !*szHint )
 				szHint = "#L4D360UI_Lobby_NotInJoinableGame";
 
@@ -775,7 +853,7 @@ void FoundGameListItem::CmdJoinGame()
 {
 	if ( !m_FullInfo.IsJoinable() || !m_FullInfo.mpfnJoinGame )
 	{
-		const char *szShortHint = m_FullInfo.GetNonJoinableShortHint();
+		const char *szShortHint = m_FullInfo.GetNonJoinableShortHint( true );
 
 		if ( m_FullInfo.IsDLC() )
 			szShortHint = "#L4D2360_FoundGames_DLC_Msg";
@@ -1891,7 +1969,7 @@ void FoundGames::AddServersToList()
 		{
 			if ( !fi.IsDownloadable() )
 			{
-				char const *szHint = fi.GetNonJoinableShortHint();
+				char const *szHint = fi.GetNonJoinableShortHint( false );
 				if ( !*szHint )
 				{
 					fi.mIsJoinable = true;

@@ -44,7 +44,7 @@ public:
 
 		virtual const char* GetPickupClass() { return "asw_pickup_minigun"; }
 		virtual void Spawn();
-		virtual void SecondaryAttack();		
+		virtual void SecondaryAttack();
 		virtual float GetMadFiringBias() { return 1.0f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
 		virtual void Drop( const Vector &vecVelocity );
 
@@ -85,8 +85,8 @@ public:
 
 	float GetSpinRate() { return m_flSpinRate.Get(); }
 
+	CNetworkVar( bool, m_bHalfShot );
 	CNetworkVar( float, m_flSpinRate );		// barrel spin speed
-	CNetworkVar( float, m_flPartialBullets );	// we fire a few shots per ammo bullet count
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MINIGUN; }

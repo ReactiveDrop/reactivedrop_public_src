@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Entity that propagates general data needed by clients for every player.
 //
@@ -107,14 +107,28 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 
 	if ( UTIL_RD_IsLobbyOwner() )
 	{
-		CFmtStr1024 playerIDs;
+		CFmtStrMax playerIDs;
 
 		for ( int slot = 1; slot <= gpGlobals->maxClients; slot++ )
 		{
 			player_info_t info;
 			if ( IsConnected( slot ) && engine->GetPlayerInfo( slot, &info ) && !info.fakeplayer && !info.ishltv && !info.isreplay )
 			{
-				playerIDs.AppendFormat( "%s%08x", playerIDs.Length() ? "," : "", info.friendsID );
+				int index = engine->GetPlayerForUserID( info.userID );
+				int score = g_PR->GetPlayerScore( index );
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex( index );
+				if ( pPlayer )
+				{
+					if ( playerIDs.Length() )
+					{
+						playerIDs.Append( ',' );
+					}					
+					for ( const char *psz = pPlayer->GetPlayerName(); *psz; psz++ )
+					{
+						playerIDs.AppendFormat( "%02x", *psz );
+					}
+					playerIDs.AppendFormat( "|%d|%f", score, gpGlobals->curtime - pPlayer->GetConnectionTime() );
+				}
 			}
 		}
 

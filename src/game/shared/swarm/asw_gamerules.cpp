@@ -569,10 +569,10 @@ ConVar	sk_max_asw_sg_g( "sk_max_asw_sg_g", "0", FCVAR_REPLICATED | FCVAR_CHEAT )
 ConVar	sk_plr_dmg_asw_asg( "sk_plr_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_asg( "sk_npc_dmg_asw_asg", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_asg( "sk_max_asw_asg", "70", FCVAR_REPLICATED | FCVAR_CHEAT );
-// Flamer (5 clips, 60 per)
+// Flamer (5 clips, 80 per)
 ConVar	sk_plr_dmg_asw_f( "sk_plr_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_f( "sk_npc_dmg_asw_f", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar	sk_max_asw_f( "sk_max_asw_f", "200", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_f( "sk_max_asw_f", "400", FCVAR_REPLICATED | FCVAR_CHEAT );
 // Pistol (10 clips, 32 per)
 ConVar	sk_plr_dmg_asw_p( "sk_plr_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_p( "sk_npc_dmg_asw_p", "22", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -4227,10 +4227,15 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		return;
 
 	const char* szWeaponClass = STRING( ASWEquipmentList()->GetItemForSlot( iSlot, iEquipIndex )->m_EquipClass );
+	Assert( szWeaponClass );
+	if ( !szWeaponClass )
+		return;
 		
 	CASW_Weapon* pWeapon = dynamic_cast<CASW_Weapon*>(pMarine->Weapon_Create(szWeaponClass));
-	if (!pWeapon)
+	Assert( pWeapon );
+	if ( !pWeapon )
 		return;
+
 	// If I have a name, make my weapon match it with "_weapon" appended
 	if ( pMarine->GetEntityName() != NULL_STRING )
 	{
@@ -4378,19 +4383,11 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
 
-	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
-
-	for ( int i = 0; i < iNumClasses; i++ )
-	{
-		// compat: make bullseye everyone's enemy by default
-		// it would previously read uninitialized memory
-		CBaseCombatCharacter::SetDefaultRelationship( (Class_T)i, CLASS_BULLSEYE, D_HATE, 0 );
-	}
-
 	/*
 	// --------------------------------------------------------------
 	// First initialize table so we can report missing relationships
 	// --------------------------------------------------------------
+	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
 	for (int i=0;i<iNumClasses;i++)
 	{
 		for (int j=0;j<iNumClasses;j++)

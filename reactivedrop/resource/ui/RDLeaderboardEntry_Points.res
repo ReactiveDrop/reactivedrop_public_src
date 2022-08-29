@@ -64,6 +64,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -75,6 +76,7 @@
 		"wide"			"45"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -86,6 +88,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -97,6 +100,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -108,6 +112,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 
@@ -119,6 +124,7 @@
 		"wide"			"35"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 	
@@ -130,6 +136,7 @@
 		"wide"			"20"
 		"tall"			"20"
 		"textAlignment"	"east"
+		"font"			"DefaultNoMinRes"
 		"ControlName"	"Label"
 	}
 }

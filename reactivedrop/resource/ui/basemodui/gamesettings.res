@@ -111,7 +111,7 @@
 		"tall"					"20"			[$X360]
 		"visible"				"0"
 		"enabled"				"1"
-		"navUp"					"BtnSelectMission"	[$X360]
+		"navUp"					"DrpGameAccess"
 		"navDown"				"DrpChapter"
 		
 		//button and label

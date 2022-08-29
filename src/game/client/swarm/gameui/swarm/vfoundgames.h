@@ -77,7 +77,7 @@ public:
 		char const * IsOtherTitle() const;
 		PublishedFileId_t GetWorkshopID() const;
 
-		char const * GetNonJoinableShortHint() const;
+		char const * GetNonJoinableShortHint( bool bWarnOnNoHint ) const;
 		char const * GetJoinButtonHint() const;
 	};
 
