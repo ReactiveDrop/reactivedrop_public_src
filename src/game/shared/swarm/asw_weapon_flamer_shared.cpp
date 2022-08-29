@@ -331,7 +331,7 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 void CASW_Weapon_Flamer::SecondaryAttack( void )
 {
 	// If my clip is empty (and I use clips) start reload
-	if ( !rd_flamer_infinite_extinguisher.GetBool() && UsesClipsForAmmo1() && !m_iClip1 ) 
+	if ( !rd_flamer_infinite_extinguisher.GetBool() && UsesClipsForAmmo1() && m_iClip1 < 2 ) 
 	{
 		Reload();
 		return;
@@ -411,19 +411,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 		if ( !rd_flamer_infinite_extinguisher.GetBool() )
 		{
 			// decrement ammo
-			m_iClip1 -= 1;
-
-			//Mad Orange. Suit is unused in ASW
-			/*
-			if (!m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-			{
-				// HEV suit - indicate out of ammo condition
-				if (pPlayer)
-					pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0); 
-
-				m_bIsSecondaryFiring = false;
-			}
-			*/
+			m_iClip1 -= 2;
 		}
 	}
 	if (!rd_flamer_infinite_extinguisher.GetBool() || m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
