@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "334"
+	"mapversion" "335"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -44,7 +44,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "334"
+	"mapversion" "335"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -120667,7 +120667,7 @@ entity
 	"wait" "1"
 	connections
 	{
-		"OnStartTouch" "obj_escape_sewerMarineInEscapeArea0-1"
+		"OnTrigger" "obj_escape_sewerMarineInEscapeArea0-1"
 	}
 	solid
 	{
@@ -167853,8 +167853,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-1670.13 -3965.27 284.735]"
-		"look" "[-1476.08 -3717.09 9.42664]"
+		"position" "[-2318.89 3432.84 445.736]"
+		"look" "[-2259.49 3732.24 159.6]"
 	}
 }
 cordons
