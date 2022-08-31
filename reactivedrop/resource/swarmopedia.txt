@@ -1085,6 +1085,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "rd_ammo_bonus"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_deployable"
@@ -1119,6 +1120,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_attracts_alien_attention"
@@ -1134,7 +1136,7 @@
 		"Facts" {
 			"Recharges" {
 				"CVar" "asw_blink_charge_time"
-				"Multiplier" "0.714285714286" // 1 / 1.4
+				"BaseDivisor" "1.4"
 			}
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_range"
@@ -1151,6 +1153,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_bubble_radius"
@@ -1277,6 +1280,7 @@
 			}
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
@@ -1311,8 +1315,8 @@
 				"Caption" "#rd_weapon_fact_melee_damage_finisher"
 				"Skill" "ASW_MARINE_SKILL_MELEE"
 				"SubSkill" "ASW_MARINE_SUBSKILL_MELEE_DMG"
-				"MultiplierCVar" "asw_fist_passive_damage_scale"
-				"MultiplierCVar" "asw_fist_finisher_damage_scale"
+				"SkillMultiplierCVar" "asw_fist_passive_damage_scale"
+				"SkillMultiplierCVar" "asw_fist_finisher_damage_scale"
 			}
 		}
 	}
@@ -1351,6 +1355,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_throwable"
@@ -1359,7 +1364,7 @@
 				"Caption" "#rd_weapon_fact_grants_aim_assist"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius",
+				"Caption" "#rd_weapon_fact_radius"
 				"CVar" "asw_flare_autoaim_radius"
 			}
 		}
@@ -1395,6 +1400,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_throwable"
@@ -1417,6 +1423,7 @@
 		"Facts" {
 			"Ammo" {
 				"Damaging" "0" // damage is done by the gas cloud, not the grenade
+				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_throwable"
@@ -1424,7 +1431,7 @@
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_damage_over_time"
 				"CVar" "asw_gas_grenade_damage"
-				"DivideCVar" "asw_gas_grenade_damage_interval"
+				"BaseDivisorCVar" "asw_gas_grenade_damage_interval"
 			}
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_duration"
@@ -1440,14 +1447,48 @@
 		"ClassName" "asw_weapon_grenade_launcher"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_grenade_launcher_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_radius"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_grenade_cluster"
+				"RequireCVar" "rd_grenade_launcher_num_clusters"
+				"CVar" "rd_grenade_launcher_num_clusters"
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_grenades"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_grenades_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
+			}
+			"Ammo" {
+				"Damaging" "0" // damage is done by grenade entity, not weapon
+				"CVar" "asw_bonus_charges"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_radius"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_grenade_cluster"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS"
+			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_throwable"
 			}
@@ -1457,7 +1498,22 @@
 		"ClassName" "asw_weapon_heal_grenade"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"RequireCVar" "rd_infinite_healgrenade"
+				"RequireValue" "0"
+				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_bubble_radius"
+				"Base" "100"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_duration"
+				"Base" "20"
+			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_deployable"
 			}
@@ -1467,7 +1523,12 @@
 		"ClassName" "asw_weapon_heal_gun"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"RequireCVar" "rd_medgun_infinite_ammo"
+				"RequireValue" "0"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES"
+			}
 		}
 	}
 	"WEAPON" {

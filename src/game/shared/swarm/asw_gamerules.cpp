@@ -169,7 +169,6 @@ extern ConVar old_radius_damage;
 	ConVar asw_default_campaign("asw_default_campaign", "jacob", FCVAR_ARCHIVE, "Default campaign used when dedicated server restarts");
 	ConVar rd_max_marines("rd_max_marines", "-1", FCVAR_NONE, "Sets how many marines can be selected"); 
 	ConVar asw_last_game_variation("asw_last_game_variation", "0", FCVAR_ARCHIVE, "Which game variation was used last game");
-	ConVar asw_bonus_charges("asw_bonus_charges", "0", FCVAR_CHEAT, "Bonus ammo given to starting equipment");
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
 	ConVar asw_drop_powerups("asw_drop_powerups", "0", FCVAR_CHEAT, "Do aliens drop powerups?");
 	ConVar asw_adjust_difficulty_by_number_of_marines( "asw_adjust_difficulty_by_number_of_marines", "1", FCVAR_CHEAT, "If enabled, difficulty will be reduced when there are only 3 or 2 marines." );
@@ -523,6 +522,7 @@ ConVar rd_revive_health( "rd_revive_health", "10", FCVAR_CHEAT | FCVAR_REPLICATE
 ConVar rd_hp_regen( "rd_hp_regen", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "0 disable marines' health regeneration" );
 ConVar rd_add_bots( "rd_add_bots", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "1 add bots to fill free slots, 0 don't add" );
 ConVar rd_ammo_bonus( "rd_ammo_bonus", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_bonus_charges( "asw_bonus_charges", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Bonus ammo given to starting equipment" );
 ConVar rd_infinite_spawners( "rd_infinite_spawners", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all spawners will be set to infinitely spawn aliens" );
 ConVar rd_hud_hide_clips( "rd_hud_hide_clips", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar rd_biomass_ignite_from_explosions( "rd_biomass_ignite_from_explosions", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1, biomass will ignite from blast damage" );

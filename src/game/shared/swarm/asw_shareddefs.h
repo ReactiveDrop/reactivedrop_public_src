@@ -89,6 +89,9 @@ enum ASW_Marine_Class
 	NUM_MARINE_CLASSES
 };
 
+const char *ClassToString( ASW_Marine_Class nClass );
+ASW_Marine_Class ClassFromString( const char *szClass );
+
 enum ASW_Melee_Movement_t
 {
 	MELEE_MOVEMENT_ANIMATION_ONLY,
