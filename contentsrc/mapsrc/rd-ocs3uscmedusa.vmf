@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "104"
+	"mapversion" "105"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "104"
+	"mapversion" "105"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from ocs_3.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -13893,10 +13893,10 @@ entity
 		"OnStartTouchAll" "pod4lightTurnOn0-1"
 		"OnStartTouchAll" "pod4ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod4TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod4TurnOn0-1"
-		"OnEndTouchAll" "pod4ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod4lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor4Close0-1"
+		"OnEndTouch" "nodelink_pod4TurnOn0-1"
+		"OnEndTouch" "pod4ambientlightTurnOn0-1"
+		"OnEndTouch" "pod4lightTurnOff0-1"
+		"OnEndTouch" "poddoor4Close0-1"
 	}
 	solid
 	{
@@ -16715,10 +16715,10 @@ entity
 		"OnStartTouchAll" "pod5lightTurnOn0-1"
 		"OnStartTouchAll" "pod5ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod5TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod5TurnOn0-1"
-		"OnEndTouchAll" "pod5ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod5lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor5Close0-1"
+		"OnEndTouch" "nodelink_pod5TurnOn0-1"
+		"OnEndTouch" "pod5ambientlightTurnOn0-1"
+		"OnEndTouch" "pod5lightTurnOff0-1"
+		"OnEndTouch" "poddoor5Close0-1"
 	}
 	solid
 	{
@@ -19537,10 +19537,10 @@ entity
 		"OnStartTouchAll" "pod6lightTurnOn0-1"
 		"OnStartTouchAll" "pod6ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod6TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod6TurnOn0-1"
-		"OnEndTouchAll" "pod6ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod6lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor6Close0-1"
+		"OnEndTouch" "nodelink_pod6TurnOn0-1"
+		"OnEndTouch" "pod6ambientlightTurnOn0-1"
+		"OnEndTouch" "pod6lightTurnOff0-1"
+		"OnEndTouch" "poddoor6Close0-1"
 	}
 	solid
 	{
@@ -22359,10 +22359,10 @@ entity
 		"OnStartTouchAll" "pod7lightTurnOn0-1"
 		"OnStartTouchAll" "pod7ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod7TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod7TurnOn0-1"
-		"OnEndTouchAll" "pod7ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod7lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor7Close0-1"
+		"OnEndTouch" "nodelink_pod7TurnOn0-1"
+		"OnEndTouch" "pod7ambientlightTurnOn0-1"
+		"OnEndTouch" "pod7lightTurnOff0-1"
+		"OnEndTouch" "poddoor7Close0-1"
 	}
 	solid
 	{
@@ -25181,10 +25181,10 @@ entity
 		"OnStartTouchAll" "pod8lightTurnOn0-1"
 		"OnStartTouchAll" "pod8ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod8TurnOff0-1"
-		"OnEndTouchAll" "poddoor8Close0-1"
-		"OnEndTouchAll" "pod8lightTurnOff0-1"
-		"OnEndTouchAll" "pod8ambientlightTurnOn0-1"
-		"OnEndTouchAll" "nodelink_pod8TurnOn0-1"
+		"OnEndTouch" "poddoor8Close0-1"
+		"OnEndTouch" "pod8lightTurnOff0-1"
+		"OnEndTouch" "pod8ambientlightTurnOn0-1"
+		"OnEndTouch" "nodelink_pod8TurnOn0-1"
 	}
 	solid
 	{
@@ -46007,10 +46007,10 @@ entity
 		"OnStartTouchAll" "pod1lightTurnOn0-1"
 		"OnStartTouchAll" "pod1ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod1TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod1TurnOn0-1"
-		"OnEndTouchAll" "pod1ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod1lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor1Close0-1"
+		"OnEndTouch" "nodelink_pod1TurnOn0-1"
+		"OnEndTouch" "pod1ambientlightTurnOn0-1"
+		"OnEndTouch" "pod1lightTurnOff0-1"
+		"OnEndTouch" "poddoor1Close0-1"
 	}
 	solid
 	{
@@ -46993,10 +46993,10 @@ entity
 		"OnStartTouchAll" "pod2lightTurnOn0-1"
 		"OnStartTouchAll" "pod2ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod2TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod2TurnOn0-1"
-		"OnEndTouchAll" "pod2ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod2lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor2Close0-1"
+		"OnEndTouch" "nodelink_pod2TurnOn0-1"
+		"OnEndTouch" "pod2ambientlightTurnOn0-1"
+		"OnEndTouch" "pod2lightTurnOff0-1"
+		"OnEndTouch" "poddoor2Close0-1"
 	}
 	solid
 	{
@@ -47979,10 +47979,10 @@ entity
 		"OnStartTouchAll" "pod3lightTurnOn0-1"
 		"OnStartTouchAll" "pod3ambientlightTurnOff0-1"
 		"OnStartTouchAll" "nodelink_pod3TurnOff0-1"
-		"OnEndTouchAll" "nodelink_pod3TurnOn0-1"
-		"OnEndTouchAll" "pod3ambientlightTurnOn0-1"
-		"OnEndTouchAll" "pod3lightTurnOff0-1"
-		"OnEndTouchAll" "poddoor3Close0-1"
+		"OnEndTouch" "nodelink_pod3TurnOn0-1"
+		"OnEndTouch" "pod3ambientlightTurnOn0-1"
+		"OnEndTouch" "pod3lightTurnOff0-1"
+		"OnEndTouch" "poddoor3Close0-1"
 	}
 	solid
 	{
@@ -167606,8 +167606,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2174.85 -1859.86 154.695]"
-		"look" "[2037.46 -1787.66 -61.7793]"
+		"position" "[2279.13 2660.76 1404.33]"
+		"look" "[2310.36 2687.22 1141.13]"
 	}
 	camera
 	{
