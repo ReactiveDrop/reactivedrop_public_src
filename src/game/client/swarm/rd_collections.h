@@ -11,6 +11,7 @@ namespace RD_Swarmopedia
 {
 	struct Collection;
 	struct Alien;
+	struct Weapon;
 }
 namespace BaseModUI
 {
@@ -42,6 +43,7 @@ class CRD_Collection_Tab_Equipment : public TGD_Tab
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
 public:
 	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, bool bExtra );
+	virtual ~CRD_Collection_Tab_Equipment();
 
 	virtual TGD_Grid *CreateGrid() override;
 	virtual TGD_Details *CreateDetails() override;
