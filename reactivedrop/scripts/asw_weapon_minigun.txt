@@ -12,6 +12,7 @@ WeaponData
 
 	"clip_size"			"250"
 	"default_clip"			"250"
+	"display_clip_size"			"500"
 
 	"clip2_size"			"-1"
 	"default_clip2"			"-1"

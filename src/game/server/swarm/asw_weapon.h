@@ -170,6 +170,11 @@ public:
 	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) { }
 	virtual bool NeedsLOSCheck() { return true; }
 
+	virtual int DisplayClip1() { return Clip1(); }
+	virtual int DisplayMaxClip1() { return GetMaxClip1(); }
+	virtual int DisplayClip2() { return Clip2(); }
+	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
+
 protected:
 	int m_iEquipmentListIndex;
 };

@@ -214,9 +214,14 @@ public:
 	CUtlReference<CNewParticleEffect> m_pMuzzleFlashEffect;
 	float m_fMuzzleFlashTime;
 
-	// returnw true if secondary attack should aim at ground where
+	// returns true if secondary attack should aim at ground where
 	// mouse pointer points at 
 	virtual bool GroundSecondary();
+
+	virtual int DisplayClip1() { return Clip1(); }
+	virtual int DisplayMaxClip1() { return GetMaxClip1(); }
+	virtual int DisplayClip2() { return Clip2(); }
+	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
 
 private:	
 	C_ASW_Weapon( const C_ASW_Weapon & ); // not defined, not accessible
