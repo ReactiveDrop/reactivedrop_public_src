@@ -1054,46 +1054,26 @@
 		"Paragraph" "#rd_so_paragraph_antlionguard_3"
 		"Paragraph" "#rd_so_paragraph_antlionguard_4"
 	}
+
 	"WEAPON" {
-		"ClassName" "asw_weapon_50calmg"
+		"ClassName" "asw_weapon_rifle"
 		"Builtin" "1"
 		"Facts" {
-			"DamagePerShot" {
-				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
-			}
-			"BulletSpread" {
-				"Degrees" "20"
-				"Flattened" "1"
-			}
-			"FireRate" {}
-			"Ammo" {}
+			// TODO
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_ammo_bag"
+		"ClassName" "asw_weapon_prifle"
 		"Builtin" "1"
 		"Facts" {
+			// TODO
 			"Generic" {
-				"Caption" "#rd_weapon_fact_explodes_if_burned"
+				"Caption" "#rd_weapon_fact_aim_assist"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_ammo_satchel"
-		"Builtin" "1"
-		"Facts" {
-			"Ammo" {
-				"Damaging" "0"
-				"CVar" "rd_ammo_bonus"
-			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_ammo_autogun"
+		"ClassName" "asw_weapon_autogun"
 		"Builtin" "1"
 		"Facts" {
 			"DamagePerShot" {
@@ -1115,60 +1095,190 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_bait"
+		"ClassName" "asw_weapon_vindicator"
 		"Builtin" "1"
 		"Facts" {
-			"Ammo" {
-				"Damaging" "0"
-				"CVar" "asw_bonus_charges"
-			}
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_pistol"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
 			"Generic" {
-				"Caption" "#rd_weapon_fact_attracts_alien_attention"
-			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_throwable"
+				"Caption" "#rd_weapon_fact_drone_bonus_damage"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_blink"
+		"ClassName" "asw_weapon_sentry"
 		"Builtin" "1"
 		"Facts" {
-			"Recharges" {
-				"CVar" "asw_blink_charge_time"
-				"BaseDivisor" "1.4"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_range"
-				"CVar" "asw_blink_range"
-			}
+			// TODO
 			"Generic" {
-				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_buff_grenade"
+		"ClassName" "asw_weapon_heal_grenade"
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
+				"RequireCVar" "rd_infinite_healgrenade"
+				"RequireValue" "0"
 				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
 			}
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_bubble_radius"
-				"Base" "120"
+				"Base" "100"
 			}
 			"Numeric" {
 				"Caption" "#rd_weapon_fact_duration"
-				"Base" "30"
+				"Base" "20"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_deployable"
 			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_medical_satchel"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_ammo_satchel"
+		"Builtin" "1"
+		"Facts" {
+			"Ammo" {
+				"Damaging" "0"
+				"CVar" "rd_ammo_bonus"
+			}
 			"Generic" {
-				"RequireCVar" "rd_buff_grenade_attach_sw"
-				"Caption" "#rd_weapon_fact_special_weapons_carry"
+				"Caption" "#rd_weapon_fact_deployable"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_ammo_bag"
+		"Builtin" "1"
+		"Facts" {
+			"Generic" {
+				"Caption" "#rd_weapon_fact_explodes_if_burned"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_shotgun"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_tesla_gun"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_railgun"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_heal_gun"
+		"Builtin" "1"
+		"Facts" {
+			"Ammo" {
+				"RequireCVar" "rd_medgun_infinite_ammo"
+				"RequireValue" "0"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_pdw"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_flamer"
+		"Builtin" "1"
+		"Facts" {
+			"DamagePerShot" {
+				"CVar" "rd_flamer_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG"
+			}
+			"FireRate" {}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_ignites"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_burning_dps"
+			}
+			"Ammo" {}
+			"Secondary" {
+				"Generic" {
+					"RequireCVar" "rd_flamer_infinite_extinguisher"
+					"RequireValue" "0"
+					"Caption" "#rd_weapon_fact_secondary_uses_primary_ammo"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_extinguishes_fires"
+				}
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_sentry_freeze"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"Generic" {
+				"Caption" "#rd_weapon_fact_deployable_sentry"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_minigun"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"Piercing" {}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_sniper_rifle"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_sentry_flamer"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"Generic" {
+				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
 		}
 	}
@@ -1189,31 +1299,35 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_combat_rifle"
+		"ClassName" "asw_weapon_sentry_cannon"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"Generic" {
+				"Caption" "#rd_weapon_fact_deployable_sentry"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_grenade_launcher"
 		"Builtin" "1"
 		"Facts" {
 			"DamagePerShot" {
-				"CVar" "rd_combat_rifle_dmg_base"
-				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				"CVar" "rd_grenade_launcher_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
 			}
+			"FireRate" {}
 			"Ammo" {}
-			"Secondary" {
-				"ShotgunPellets" {
-					"UseWeaponInfo" "0"
-					"Base" "14"
-				}
-				"DamagePerShot" {
-					"CVar" "rd_combat_rifle_dmg_base"
-					"Skill" "ASW_MARINE_SKILL_ACCURACY"
-					"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
-					"BaseMultiplier" "6"
-					"SkillMultiplier" "6"
-				}
-				"BulletSpread" {
-					"Degrees" "30"
-				}
-				"Ammo" {}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_radius"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_grenade_cluster"
+				"RequireCVar" "rd_grenade_launcher_num_clusters"
+				"CVar" "rd_grenade_launcher_num_clusters"
 			}
 		}
 	}
@@ -1271,23 +1385,59 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_electrified_armor"
+		"ClassName" "asw_weapon_combat_rifle"
 		"Builtin" "1"
 		"Facts" {
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_duration"
-				"CVar" "asw_electrified_armor_duration"
+			"DamagePerShot" {
+				"CVar" "rd_combat_rifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
-			"Ammo" {
-				"Damaging" "0"
-				"CVar" "asw_bonus_charges"
+			"Ammo" {}
+			"Secondary" {
+				"ShotgunPellets" {
+					"UseWeaponInfo" "0"
+					"Base" "14"
+				}
+				"DamagePerShot" {
+					"CVar" "rd_combat_rifle_dmg_base"
+					"Skill" "ASW_MARINE_SKILL_ACCURACY"
+					"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+					"BaseMultiplier" "6"
+					"SkillMultiplier" "6"
+				}
+				"BulletSpread" {
+					"Degrees" "30"
+				}
+				"Ammo" {}
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_healamp_gun"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_heavy_rifle"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"LargeAlienDamageScale" {
+				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
 			}
 			"Generic" {
-				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
-			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_medrifle"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
 		}
 	}
 	"WEAPON" {
@@ -1304,49 +1454,74 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_fist"
+		"ClassName" "asw_weapon_mining_laser"
 		"Builtin" "1"
 		"Facts" {
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_melee_damage_scale_passive"
-				"CVar" "asw_fist_passive_damage_scale"
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_50calmg"
+		"Builtin" "1"
+		"Facts" {
+			"DamagePerShot" {
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_melee_damage_finisher"
-				"Skill" "ASW_MARINE_SKILL_MELEE"
-				"SubSkill" "ASW_MARINE_SUBSKILL_MELEE_DMG"
-				"SkillMultiplierCVar" "asw_fist_passive_damage_scale"
-				"SkillMultiplierCVar" "asw_fist_finisher_damage_scale"
+			"BulletSpread" {
+				"Degrees" "20"
+				"Flattened" "1"
+			}
+			"FireRate" {}
+			"Ammo" {}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_flechette"
+		"Builtin" "1"
+		"Facts" {
+			"DamagePerShot" {
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
+				"BaseMultiplier" "0"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_flamer"
+		"ClassName" "asw_weapon_ricochet"
 		"Builtin" "1"
 		"Facts" {
 			"DamagePerShot" {
-				"CVar" "rd_flamer_dmg_base"
+				"CVar" "rd_rifle_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"FireRate" {}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_ignites"
-			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_burning_dps"
+			"BulletSpread" {
+				"Degrees" "3"
 			}
 			"Ammo" {}
-			"Secondary" {
-				"Generic" {
-					"RequireCVar" "rd_flamer_infinite_extinguisher"
-					"RequireValue" "0"
-					"Caption" "#rd_weapon_fact_secondary_uses_primary_ammo"
-				}
-				"Generic" {
-					"Caption" "#rd_weapon_fact_extinguishes_fires"
-				}
-			}
+			"Secondary" {}
+		}
+	}
+
+	"WEAPON" {
+		"ClassName" "asw_weapon_medkit"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_welder"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
 		}
 	}
 	"WEAPON" {
@@ -1370,25 +1545,52 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_flashlight"
+		"ClassName" "asw_weapon_laser_mines"
 		"Builtin" "1"
 		"Facts" {
+			// TODO
 			"Generic" {
-				"Caption" "#rd_weapon_fact_flashlight_toggle"
+				"Caption" "#rd_weapon_fact_throwable"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_flechette"
+		"ClassName" "asw_weapon_normal_armor"
 		"Builtin" "1"
 		"Facts" {
-			"DamagePerShot" {
-				"Skill" "ASW_MARINE_SKILL_GRENADES"
-				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
-				"BaseMultiplier" "0"
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_buff_grenade"
+		"Builtin" "1"
+		"Facts" {
+			"Ammo" {
+				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
 			}
-			"FireRate" {}
-			"Ammo" {}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_bubble_radius"
+				"Base" "120"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_duration"
+				"Base" "30"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Generic" {
+				"RequireCVar" "rd_buff_grenade_attach_sw"
+				"Caption" "#rd_weapon_fact_special_weapons_carry"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_hornet_barrage"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
 			"Generic" {
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
@@ -1418,51 +1620,75 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_gas_grenades"
+		"ClassName" "asw_weapon_stim"
 		"Builtin" "1"
 		"Facts" {
-			"Ammo" {
-				"Damaging" "0" // damage is done by the gas cloud, not the grenade
-				"CVar" "asw_bonus_charges"
-			}
+			// TODO
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_tesla_trap"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
 			"Generic" {
-				"Caption" "#rd_weapon_fact_throwable"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_damage_over_time"
-				"CVar" "asw_gas_grenade_damage"
-				"BaseDivisorCVar" "asw_gas_grenade_damage_interval"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_duration"
-				"CVar" "asw_gas_grenade_duration"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
-				"CVar" "asw_gas_grenade_cloud_width"
+				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_grenade_launcher"
+		"ClassName" "asw_weapon_electrified_armor"
 		"Builtin" "1"
 		"Facts" {
-			"DamagePerShot" {
-				"CVar" "rd_grenade_launcher_dmg_base"
-				"Skill" "ASW_MARINE_SKILL_GRENADES"
-				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
-			}
-			"FireRate" {}
-			"Ammo" {}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
-				"Skill" "ASW_MARINE_SKILL_GRENADES"
-				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+				"Caption" "#rd_weapon_fact_duration"
+				"CVar" "asw_electrified_armor_duration"
+			}
+			"Ammo" {
+				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_mines"
+		"Builtin" "1"
+		"Facts" {
+			// TODO
+			"Generic" {
+				"Caption" "#rd_weapon_fact_deployable"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_flashlight"
+		"Builtin" "1"
+		"Facts" {
+			"Generic" {
+				"Caption" "#rd_weapon_fact_flashlight_toggle"
+			}
+		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_fist"
+		"Builtin" "1"
+		"Facts" {
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_melee_damage_scale_passive"
+				"CVar" "asw_fist_passive_damage_scale"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_grenade_cluster"
-				"RequireCVar" "rd_grenade_launcher_num_clusters"
-				"CVar" "rd_grenade_launcher_num_clusters"
+				"Caption" "#rd_weapon_fact_melee_damage_finisher"
+				"Skill" "ASW_MARINE_SKILL_MELEE"
+				"SubSkill" "ASW_MARINE_SUBSKILL_MELEE_DMG"
+				"SkillMultiplierCVar" "asw_fist_passive_damage_scale"
+				"SkillMultiplierCVar" "asw_fist_finisher_damage_scale"
 			}
 		}
 	}
@@ -1495,252 +1721,7 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_heal_grenade"
-		"Builtin" "1"
-		"Facts" {
-			"Ammo" {
-				"RequireCVar" "rd_infinite_healgrenade"
-				"RequireValue" "0"
-				"Damaging" "0"
-				"CVar" "asw_bonus_charges"
-				"Skill" "ASW_MARINE_SKILL_HEALING"
-				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_bubble_radius"
-				"Base" "100"
-			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_duration"
-				"Base" "20"
-			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_heal_gun"
-		"Builtin" "1"
-		"Facts" {
-			"Ammo" {
-				"RequireCVar" "rd_medgun_infinite_ammo"
-				"RequireValue" "0"
-				"Skill" "ASW_MARINE_SKILL_HEALING"
-				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_healamp_gun"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_heavy_rifle"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"LargeAlienDamageScale" {
-				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
-			}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_hornet_barrage"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_rockets_auto_aim"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_jump_jet"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_laser_mines"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_throwable"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_medical_satchel"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_medkit"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_medrifle"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_mines"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_minigun"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Piercing" {}
-			"Generic" {
-				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_mining_laser"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
 		"ClassName" "asw_weapon_night_vision"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_normal_armor"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_pdw"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_pistol"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_drone_bonus_damage"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_prifle"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_aim_assist"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_railgun"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_ricochet"
-		"Builtin" "1"
-		"Facts" {
-			"DamagePerShot" {
-				"CVar" "rd_rifle_dmg_base"
-				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
-			}
-			"FireRate" {}
-			"BulletSpread" {
-				"Degrees" "3"
-			}
-			"Ammo" {}
-			"Secondary" {}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_rifle"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_sentry_cannon"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable_sentry"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_sentry_flamer"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable_sentry"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_sentry_freeze"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable_sentry"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_sentry"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
-			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable_sentry"
-			}
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_shotgun"
 		"Builtin" "1"
 		"Facts" {
 			// TODO
@@ -1754,17 +1735,29 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_sniper_rifle"
+		"ClassName" "asw_weapon_gas_grenades"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_stim"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
+			"Ammo" {
+				"Damaging" "0" // damage is done by the gas cloud, not the grenade
+				"CVar" "asw_bonus_charges"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_throwable"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_damage_over_time"
+				"CVar" "asw_gas_grenade_damage"
+				"BaseDivisorCVar" "asw_gas_grenade_damage_interval"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_duration"
+				"CVar" "asw_gas_grenade_duration"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_radius"
+				"CVar" "asw_gas_grenade_cloud_width"
+			}
 		}
 	}
 	"WEAPON" {
@@ -1778,34 +1771,43 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_tesla_gun"
+		"ClassName" "asw_weapon_blink"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
-		}
-	}
-	"WEAPON" {
-		"ClassName" "asw_weapon_tesla_trap"
-		"Builtin" "1"
-		"Facts" {
-			// TODO
+			"Recharges" {
+				"CVar" "asw_blink_charge_time"
+				"BaseDivisor" "1.4"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_range"
+				"CVar" "asw_blink_range"
+			}
 			"Generic" {
-				"Caption" "#rd_weapon_fact_deployable"
+				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
 			}
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_vindicator"
+		"ClassName" "asw_weapon_jump_jet"
 		"Builtin" "1"
 		"Facts" {
 			// TODO
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_weapon_welder"
+		"ClassName" "asw_weapon_bait"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Damaging" "0"
+				"CVar" "asw_bonus_charges"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_throwable"
+			}
 		}
 	}
 }
