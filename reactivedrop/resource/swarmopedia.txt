@@ -1059,16 +1059,75 @@
 		"ClassName" "asw_weapon_rifle"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_rifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+			}
+			"BulletSpread" {
+				"Degrees" "3"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"DamagePerShot" {
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_DMG"
+				}
+				"Ammo" {
+					"Damaging" "0" // damage is done by grenade entity, not weapon
+				}
+				"Numeric" {
+					"Caption" "#rd_weapon_fact_projectile_speed"
+					"Base" "1000"
+				}
+				"Numeric" {
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+				}
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_prifle"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_prifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG"
+			}
+			"BulletSpread" {
+				"Degrees" "3"
+			}
+			"FireRate" {
+				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE"
+				"SkillMultiplier" "-1"
+				"MinimumValue" "0.005"
+			}
+			"Ammo" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_aim_assist"
+			}
+			"Secondary" {
+				// TODO: does 1 point of DMG_SHOCK
+				"Ammo" {
+					"Damaging" "0" // damage is done by grenade entity, not weapon
+				}
+				"Numeric" {
+					"Caption" "#rd_weapon_fact_projectile_speed"
+					"Base" "1000"
+				}
+				"Numeric" {
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+				}
 			}
 		}
 	}
@@ -1320,7 +1379,7 @@
 			"FireRate" {}
 			"Ammo" {}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
+				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
 			}
@@ -1539,7 +1598,7 @@
 				"Caption" "#rd_weapon_fact_grants_aim_assist"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
+				"Caption" "#rd_weapon_fact_area_radius"
 				"CVar" "asw_flare_autoaim_radius"
 			}
 		}
@@ -1608,7 +1667,7 @@
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
+				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FREEZE_RADIUS"
 			}
@@ -1706,7 +1765,7 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
+				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
 			}
@@ -1755,7 +1814,7 @@
 				"CVar" "asw_gas_grenade_duration"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_radius"
+				"Caption" "#rd_weapon_fact_area_radius"
 				"CVar" "asw_gas_grenade_cloud_width"
 			}
 		}
