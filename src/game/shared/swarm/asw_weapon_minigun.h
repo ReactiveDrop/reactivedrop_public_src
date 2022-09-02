@@ -90,6 +90,9 @@ public:
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MINIGUN; }
+
+	virtual int DisplayClip1() override;
+	virtual int DisplayMaxClip1() override;
 private:
 #ifdef CLIENT_DLL
 	bool m_bShouldUpdateActivityClient;

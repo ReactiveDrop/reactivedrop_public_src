@@ -622,3 +622,19 @@ bool CASW_Weapon_Minigun::ShouldMarineMinigunShoot()
 }
 
 #endif
+
+int CASW_Weapon_Minigun::DisplayClip1()
+{
+	int iClip1 = Clip1() * 2;
+	if ( m_bHalfShot )
+	{
+		iClip1--;
+	}
+
+	return iClip1;
+}
+
+int CASW_Weapon_Minigun::DisplayMaxClip1()
+{
+	return GetMaxClip1() * 2;
+}

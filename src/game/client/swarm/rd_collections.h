@@ -11,6 +11,7 @@ namespace RD_Swarmopedia
 {
 	struct Collection;
 	struct Alien;
+	struct Weapon;
 }
 namespace BaseModUI
 {
@@ -42,10 +43,12 @@ class CRD_Collection_Tab_Equipment : public TGD_Tab
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
 public:
 	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, bool bExtra );
+	virtual ~CRD_Collection_Tab_Equipment();
 
 	virtual TGD_Grid *CreateGrid() override;
 	virtual TGD_Details *CreateDetails() override;
 
+	RD_Swarmopedia::Collection *m_pCollection;
 	CASW_Marine_Profile *m_pProfile;
 	bool m_bExtra;
 };
@@ -70,13 +73,14 @@ class CRD_Collection_Entry_Equipment : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Equipment, TGD_Entry );
 public:
-	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const char *szEquipClass );
+	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const char *szEquipClass, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;
 
 	int m_iEquipIndex;
 	CASW_WeaponInfo *m_pWeaponInfo;
+	const RD_Swarmopedia::Weapon *m_pWeapon;
 	int m_iRequiredLevel;
 
 	vgui::ImagePanel *m_pIcon;

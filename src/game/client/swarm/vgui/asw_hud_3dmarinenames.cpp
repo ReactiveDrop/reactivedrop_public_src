@@ -1458,14 +1458,14 @@ bool CASWHud3DMarineNames::PaintAmmoBar( C_ASW_Weapon *pWeapon, float ammoPercen
 			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
 				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E/\u221E" ); //infinity symbol
 			else
-				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d/%d", pWeapon->Clip1(), pWeapon->GetMaxClip1() );
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d/%d", pWeapon->DisplayClip1(), pWeapon->DisplayMaxClip1() );
 		}
 		else
 		{
 			if ( !Q_stricmp(pWeapon->GetClassname(), "asw_weapon_chainsaw") )
 				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"\u221E");
 			else
-				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d", pWeapon->Clip1() );
+				V_snwprintf( wszMarineAmmo, ARRAYSIZE( wszMarineAmmo ), L"%d", pWeapon->DisplayClip1() );
 		}
 
 		int nAmmoCounterLength = Q_wcslen( wszMarineAmmo );

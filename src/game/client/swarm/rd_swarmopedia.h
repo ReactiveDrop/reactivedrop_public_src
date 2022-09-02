@@ -1,6 +1,7 @@
 #pragma once
 
 #include "steam/steam_api.h"
+#include "asw_marine_skills.h"
 
 namespace RD_Swarmopedia
 {
@@ -25,6 +26,7 @@ namespace RD_Swarmopedia
 		static void CopyAddVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
 		template<typename T>
 		static void CopyVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
+		static void CopyVector( CUtlStringList &, const CUtlStringList & );
 		template<typename T>
 		static void AddMerge( CUtlVectorAutoPurge<T *> &, const char *, KeyValues * );
 		template<typename T>
@@ -200,8 +202,12 @@ namespace RD_Swarmopedia
 		Weapon( const Weapon &copy );
 
 		CUtlString ClassName{};
+		CUtlString Icon{};
+		ASW_Marine_Class RequiredClass{ MARINE_CLASS_UNDEFINED };
+		int RequiredLevel{ 0 };
 		bool Builtin{ false };
 		CUtlVectorAutoPurge<WeaponFact *> Facts{};
+		CUtlVector<PublishedFileId_t> Sources{};
 
 	private:
 		friend struct Helpers;
@@ -212,6 +218,66 @@ namespace RD_Swarmopedia
 
 	struct WeaponFact
 	{
-		// TODO
+		WeaponFact() = default;
+		WeaponFact( const WeaponFact &copy );
+
+		enum class Type_T
+		{
+			Generic,
+			Numeric,
+			ShotgunPellets,
+			DamagePerShot,
+			LargeAlienDamageScale,
+			BulletSpread,
+			Piercing,
+			FireRate,
+			Ammo,
+			Recharges,
+			Secondary,
+			RequirementLevel,
+			RequirementClass,
+		} Type{ Type_T::Generic };
+
+		// Generic, etc.
+		CUtlString Icon{};
+		CUtlString Caption{};
+		CUtlString RequireCVar{};
+		CUtlString RequireValue{};
+		bool HaveRequireValue{ false };
+
+		// Numeric, etc.
+		float Base{ 0.0f };
+		CUtlString CVar{};
+		float BaseMultiplier{ 1.0f };
+		CUtlStringList BaseMultiplierCVar{};
+		CUtlStringList BaseDivisorCVar{};
+
+		ASW_Skill Skill{ ASW_MARINE_SKILL_INVALID };
+		int SubSkill{ -1 };
+		float SkillMultiplier{ 1.0f };
+		CUtlStringList SkillMultiplierCVar{};
+		CUtlStringList SkillDivisorCVar{};
+
+		// ShotgunPellets
+		bool UseWeaponInfo{ true };
+
+		// BulletSpread
+		float Degrees{ 0.0f };
+		bool Flattened{ false };
+
+		// Ammo
+		bool Damaging{ true };
+
+		// RequirementClass
+		ASW_Marine_Class Class{ MARINE_CLASS_UNDEFINED };
+
+		// Secondary
+		CUtlVectorAutoPurge<WeaponFact *> Facts{};
+
+	private:
+		friend struct Helpers;
+		bool ReadFromFile( const char *, KeyValues * );
+		bool IsSame( const WeaponFact * ) const;
+		void Merge( const WeaponFact * );
 	};
 }

@@ -535,7 +535,7 @@ void CASW_Hotbar_Entry::UpdateImage()
 	m_pKeybindLabel->SetText( szKey );		// TODO: Eventually make this into instructor key style? or a version of that which fits the HUD
 
 	char szQuantity[ 32 ];
-	Q_snprintf( szQuantity, sizeof( szQuantity ), "x%d", pWeapon->Clip1() );
+	Q_snprintf( szQuantity, sizeof( szQuantity ), "x%d", pWeapon->DisplayClip1() );
 	m_pQuantityLabel->SetText( szQuantity );
 }
 

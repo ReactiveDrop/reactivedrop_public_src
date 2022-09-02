@@ -483,14 +483,14 @@ void CASWHudCrosshair::PaintReloadProgressBar( void )
 		m_pAmmoProgress->SetFgColor( Color( 220, 220, 220, 140 * flScale ) );
 		m_pFastReloadBar->SetVisible( false );
 
-		int	nClip1 = pWeapon->Clip1();
+		int	nClip1 = pWeapon->DisplayClip1();
 		if ( nClip1 < 0 )
 		{
 			m_pAmmoProgress->SetVisible( false );
 			return;
 		}
 
-		float flProgress = RescaleProgessForArt( float( nClip1 ) / float( pWeapon->GetMaxClip1() ) );
+		float flProgress = RescaleProgessForArt( float( nClip1 ) / float( pWeapon->DisplayMaxClip1() ) );
 
 		m_pAmmoProgress->SetProgress( flProgress );
 		if ( flProgress < 0.25 && ( int( gpGlobals->curtime * 10 ) % 2 ) == 0 )

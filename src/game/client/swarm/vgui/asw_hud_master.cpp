@@ -457,7 +457,7 @@ void CASW_Hud_Master::OnThink()
 					m_SquadMateInfo[ nPosition ].pExtraItemInfo = pExtraItem[ nItemSelect ]->GetWeaponInfo();
 					m_SquadMateInfo[ nPosition ].nExtraItemInventoryIndex = nInventoryIndex[ nItemSelect ];
 					m_SquadMateInfo[ nPosition ].nEquipmentListIndex = pExtraItem[ nItemSelect ]->GetEquipmentListIndex();
-					m_SquadMateInfo[ nPosition ].nExtraItemQuantity = pExtraItem[ nItemSelect ]->Clip1();
+					m_SquadMateInfo[ nPosition ].nExtraItemQuantity = pExtraItem[ nItemSelect ]->DisplayClip1();
 				}
 				else
 				{
@@ -548,10 +548,10 @@ void CASW_Hud_Master::Paint( void )
 		{
 			m_nLocalMarineClips *= 2;
 		}
-		m_nLocalMarineBullets = m_pLocalMarineActiveWeapon->Clip1();
-		m_nLocalMarineGrenades = m_pLocalMarineActiveWeapon->Clip2();
+		m_nLocalMarineBullets = m_pLocalMarineActiveWeapon->DisplayClip1();
+		m_nLocalMarineGrenades = m_pLocalMarineActiveWeapon->DisplayClip2();
 		m_nLocalMarineGrenades = MIN( m_nLocalMarineGrenades, 9 );
-		m_nLocalMarineSecondaryBullets = m_pLocalMarineActiveWeapon->Clip2();
+		m_nLocalMarineSecondaryBullets = m_pLocalMarineActiveWeapon->DisplayClip2();
 		m_nLocalMarineSecondaryBullets = MIN( m_nLocalMarineSecondaryBullets, 99 );
 	}
 	else
@@ -1497,7 +1497,7 @@ void CASW_Hud_Master::PaintText()
 			if ( pInfo->m_bShowCharges )
 			{
 				wchar_t wszQuantity[ 12 ];
-				V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pExtraItem->Clip1() );
+				V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pExtraItem->DisplayClip1() );
 
 				surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );		
 				surface()->DrawSetTextFont( m_hDefaultSmallFont );	
@@ -1573,7 +1573,7 @@ void CASW_Hud_Master::PaintText()
 			int w, t;
 
 			wchar_t wszQuantity[ 12 ];
-			V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pWeapon->Clip1() );
+			V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pWeapon->DisplayClip1() );
 	
 			surface()->DrawSetTextColor( ( pWeapon == m_pLocalMarineActiveWeapon ) ? Color( 255, 255, 255, 255 ) : Color( 66, 142, 192, 255 ) );
 			surface()->DrawSetTextFont( m_hDefaultSmallFont );	

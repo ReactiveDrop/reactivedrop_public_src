@@ -229,3 +229,42 @@ int GetAchievementIndexForMedal( int nMedalIndex )
 	}
 	return -1;
 }
+
+const char *ClassToString( ASW_Marine_Class nClass )
+{
+	switch ( nClass )
+	{
+	default:
+	case MARINE_CLASS_UNDEFINED:
+		return "MARINE_CLASS_UNDEFINED";
+	case MARINE_CLASS_NCO:
+		return "MARINE_CLASS_NCO";
+	case MARINE_CLASS_SPECIAL_WEAPONS:
+		return "MARINE_CLASS_SPECIAL_WEAPONS";
+	case MARINE_CLASS_MEDIC:
+		return "MARINE_CLASS_MEDIC";
+	case MARINE_CLASS_TECH:
+		return "MARINE_CLASS_TECH";
+	}
+}
+
+ASW_Marine_Class ClassFromString( const char *szClass )
+{
+	if ( !V_stricmp( szClass, "MARINE_CLASS_NCO" ) )
+	{
+		return MARINE_CLASS_NCO;
+	}
+	if ( !V_stricmp( szClass, "MARINE_CLASS_SPECIAL_WEAPONS" ) )
+	{
+		return MARINE_CLASS_SPECIAL_WEAPONS;
+	}
+	if ( !V_stricmp( szClass, "MARINE_CLASS_MEDIC" ) )
+	{
+		return MARINE_CLASS_MEDIC;
+	}
+	if ( !V_stricmp( szClass, "MARINE_CLASS_TECH" ) )
+	{
+		return MARINE_CLASS_TECH;
+	}
+	return MARINE_CLASS_UNDEFINED;
+}

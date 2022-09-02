@@ -2,6 +2,9 @@
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include "rd_workshop.h"
+#include "asw_equipment_list.h"
+#include "asw_weapon_parse.h"
+#include "asw_weapon_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -45,6 +48,17 @@ void Helpers::CopyVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorAutoPur
 	CopyAddVector( dst, src );
 }
 
+void Helpers::CopyVector( CUtlStringList &dst, const CUtlStringList &src )
+{
+	Assert( dst.Count() == 0 );
+
+	dst.EnsureCapacity( src.Count() );
+	FOR_EACH_VEC( src, i )
+	{
+		dst.CopyAndAddToTail( src[i] );
+	}
+}
+
 template<typename T>
 void Helpers::AddMerge( CUtlVectorAutoPurge<T *> &dst, const char *pszPath, KeyValues *pKV )
 {
@@ -84,6 +98,7 @@ void Helpers::CopyUniqueVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorA
 Collection::Collection( const Collection &copy )
 {
 	Helpers::CopyVector( Aliens, copy.Aliens );
+	Helpers::CopyVector( Weapons, copy.Weapons );
 }
 
 void Collection::ReadFromFiles()
@@ -103,6 +118,10 @@ void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( FStrEq( pEntry->GetName(), "ALIEN" ) )
 		{
 			Helpers::AddMerge( Aliens, pszPath, pEntry );
+		}
+		else if ( FStrEq( pEntry->GetName(), "WEAPON" ) )
+		{
+			Helpers::AddMerge( Weapons, pszPath, pEntry );
 		}
 		else
 		{
@@ -242,10 +261,7 @@ Requirement::Requirement( const Requirement &copy ) :
 	Caption{ copy.Caption },
 	MinValue{ copy.MinValue }
 {
-	FOR_EACH_VEC( copy.StatNames, i )
-	{
-		StatNames.CopyAndAddToTail( copy.StatNames[i] );
-	}
+	Helpers::CopyVector( StatNames, copy.StatNames );
 }
 
 float Requirement::GetProgress() const
@@ -659,4 +675,309 @@ bool Content::IsSame( const Content *pContent ) const
 void Content::Merge( const Content *pContent )
 {
 	Assert( !"RD_Swarmopedia::Content::Merge should not have been called." );
+}
+
+Weapon::Weapon( const Weapon &copy ) :
+	ClassName{ copy.ClassName },
+	Icon{ copy.Icon },
+	RequiredClass{ copy.RequiredClass },
+	RequiredLevel{ copy.RequiredLevel },
+	Builtin{ copy.Builtin }
+{
+	Helpers::CopyVector( Facts, copy.Facts );
+	Sources = copy.Sources;
+}
+
+bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	ClassName = pKV->GetString( "ClassName" );
+	if ( ClassName.IsEmpty() )
+	{
+		Warning( "Swarmopedia: WEAPON entry missing ClassName in %s\n", pszPath );
+		return false;
+	}
+
+	Sources.AddToTail( g_ReactiveDropWorkshop.AddonForFileSystemPath( pszPath ) );
+
+	Builtin = pKV->GetBool( "Builtin" );
+	if ( Builtin )
+	{
+		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
+		Assert( pWeaponInfo );
+		if ( !pWeaponInfo )
+		{
+			Warning( "Swarmopedia: no data for builtin weapon %s in %s\n", ClassName.Get(), pszPath );
+			return false;
+		}
+
+		Icon = pWeaponInfo->szEquipIcon;
+		RequiredLevel = GetWeaponLevelRequirement( ClassName ) + 1;
+
+		if ( pWeaponInfo->m_bSapper )
+		{
+			RequiredClass = MARINE_CLASS_NCO;
+		}
+		else if ( pWeaponInfo->m_bSpecialWeapons )
+		{
+			RequiredClass = MARINE_CLASS_SPECIAL_WEAPONS;
+		}
+		else if ( pWeaponInfo->m_bFirstAid )
+		{
+			RequiredClass = MARINE_CLASS_MEDIC;
+		}
+		else if ( pWeaponInfo->m_bTech )
+		{
+			RequiredClass = MARINE_CLASS_TECH;
+		}
+
+		if ( RequiredLevel )
+		{
+			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "RequirementLevel", "Base", RequiredLevel ) ) );
+		}
+
+		if ( RequiredClass != MARINE_CLASS_UNDEFINED )
+		{
+			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "RequirementClass", "Class", ClassToString( RequiredClass ) ) ) );
+		}
+	}
+
+	if ( KeyValues *pFacts = pKV->FindKey( "Facts" ) )
+	{
+		FOR_EACH_SUBKEY( pFacts, pFact )
+		{
+			Helpers::AddMerge( Facts, pszPath, pFact );
+		}
+	}
+
+	return true;
+}
+
+bool Weapon::IsSame( const Weapon *pWeapon ) const
+{
+	return ClassName == pWeapon->ClassName;
+}
+
+void Weapon::Merge( const Weapon *pWeapon )
+{
+	Assert( !"TODO" );
+}
+
+WeaponFact::WeaponFact( const WeaponFact &copy ) :
+	Type{ copy.Type },
+	Icon{ copy.Icon },
+	Caption{ copy.Caption },
+	RequireCVar{ copy.RequireCVar },
+	RequireValue{ copy.RequireValue },
+	HaveRequireValue{ copy.HaveRequireValue },
+	Base{ copy.Base },
+	CVar{ copy.CVar },
+	BaseMultiplier{ copy.BaseMultiplier },
+	Skill{ copy.Skill },
+	SubSkill{ copy.SubSkill },
+	SkillMultiplier{ copy.SkillMultiplier },
+	UseWeaponInfo{ copy.UseWeaponInfo },
+	Degrees{ copy.Degrees },
+	Flattened{ copy.Flattened },
+	Damaging{ copy.Damaging },
+	Class{ copy.Class }
+{
+	Helpers::CopyVector( BaseMultiplierCVar, copy.BaseMultiplierCVar );
+	Helpers::CopyVector( BaseDivisorCVar, copy.BaseDivisorCVar );
+	Helpers::CopyVector( SkillMultiplierCVar, copy.SkillMultiplierCVar );
+	Helpers::CopyVector( SkillDivisorCVar, copy.SkillDivisorCVar );
+	Helpers::CopyVector( Facts, copy.Facts );
+}
+
+bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
+{
+	const char *szName = pKV->GetName();
+	if ( FStrEq( szName, "Generic" ) )
+	{
+		Type = Type_T::Generic;
+	}
+	else if ( FStrEq( szName, "Numeric" ) )
+	{
+		Type = Type_T::Numeric;
+	}
+	else if ( FStrEq( szName, "ShotgunPellets" ) )
+	{
+		Type = Type_T::ShotgunPellets;
+	}
+	else if ( FStrEq( szName, "DamagePerShot" ) )
+	{
+		Type = Type_T::DamagePerShot;
+	}
+	else if ( FStrEq( szName, "LargeAlienDamageScale" ) )
+	{
+		Type = Type_T::LargeAlienDamageScale;
+	}
+	else if ( FStrEq( szName, "BulletSpread" ) )
+	{
+		Type = Type_T::BulletSpread;
+	}
+	else if ( FStrEq( szName, "Piercing" ) )
+	{
+		Type = Type_T::Piercing;
+	}
+	else if ( FStrEq( szName, "FireRate" ) )
+	{
+		Type = Type_T::FireRate;
+	}
+	else if ( FStrEq( szName, "Ammo" ) )
+	{
+		Type = Type_T::Ammo;
+	}
+	else if ( FStrEq( szName, "Recharges" ) )
+	{
+		Type = Type_T::Recharges;
+	}
+	else if ( FStrEq( szName, "Secondary" ) )
+	{
+		Type = Type_T::Secondary;
+
+		FOR_EACH_SUBKEY( pKV, pFact )
+		{
+			Helpers::AddMerge( Facts, pszPath, pFact );
+		}
+
+		return true;
+	}
+	else if ( FStrEq( szName, "RequirementLevel" ) )
+	{
+		Type = Type_T::RequirementLevel;
+	}
+	else if ( FStrEq( szName, "RequirementClass" ) )
+	{
+		Type = Type_T::RequirementClass;
+	}
+	else
+	{
+		Warning( "Swarmopedia: unhandled weapon fact type %s in %s\n", szName, pszPath );
+		return false;
+	}
+
+	Icon = pKV->GetString( "Icon" );
+	Caption = pKV->GetString( "Caption" );
+	RequireCVar = pKV->GetString( "RequireCVar" );
+	if ( const char *szRequired = pKV->GetString( "RequireValue", NULL ) )
+	{
+		RequireValue = szRequired;
+		HaveRequireValue = true;
+	}
+
+	Base = pKV->GetFloat( "Base" );
+	CVar = pKV->GetString( "CVar" );
+
+	if ( const char *szSkill = pKV->GetString( "Skill", NULL ) )
+	{
+		Skill = SkillFromString( szSkill );
+		if ( Skill == ASW_MARINE_SKILL_INVALID )
+		{
+			Warning( "Swarmopedia: Invalid skill %s in weapon fact in %s\n", szSkill, pszPath );
+		}
+	}
+
+	if ( const char *szSubSkill = pKV->GetString( "SubSkill", NULL ) )
+	{
+		if ( Skill == ASW_MARINE_SKILL_INVALID )
+		{
+			Warning( "Swarmopedia: Cannot define subskill %s without valid skill in weapon fact in %s\n", szSubSkill, pszPath );
+		}
+		else
+		{
+			SubSkill = SubSkillFromString( szSubSkill, Skill );
+			if ( SubSkill == -1 )
+			{
+				Warning( "Swarmopedia: Invalid subskill %s for skill %s in weapon fact in %s\n", szSubSkill, SkillToString( Skill ), pszPath );
+			}
+		}
+	}
+
+	UseWeaponInfo = pKV->GetBool( "UseWeaponInfo", true );
+
+	Degrees = pKV->GetFloat( "Degrees" );
+	Flattened = pKV->GetBool( "Flattened" );
+
+	Damaging = pKV->GetBool( "Damaging", true );
+
+	if ( const char *szClass = pKV->GetString( "Class", NULL ) )
+	{
+		Class = ClassFromString( szClass );
+		if ( Class == MARINE_CLASS_UNDEFINED )
+		{
+			Warning( "Swarmopedia: Invalid class %s in weapon fact in %s\n", szClass, pszPath );
+		}
+	}
+
+	FOR_EACH_VALUE( pKV, pValue )
+	{
+		szName = pValue->GetName();
+		if ( FStrEq( szName, "Icon" ) ||
+			FStrEq( szName, "Caption" ) ||
+			FStrEq( szName, "RequireCVar" ) ||
+			FStrEq( szName, "RequireValue" ) ||
+			FStrEq( szName, "Base" ) ||
+			FStrEq( szName, "CVar" ) ||
+			FStrEq( szName, "Skill" ) ||
+			FStrEq( szName, "SubSkill" ) ||
+			FStrEq( szName, "UseWeaponInfo" ) ||
+			FStrEq( szName, "Degrees" ) ||
+			FStrEq( szName, "Flattened" ) ||
+			FStrEq( szName, "Damaging" ) ||
+			FStrEq( szName, "Class" ) )
+		{
+			// handled
+			continue;
+		}
+
+		if ( FStrEq( szName, "BaseMultiplier" ) )
+		{
+			BaseMultiplier *= pValue->GetFloat();
+		}
+		else if ( FStrEq( szName, "BaseDivisor" ) )
+		{
+			BaseMultiplier /= pValue->GetFloat();
+		}
+		else if ( FStrEq( szName, "BaseMultiplierCVar" ) )
+		{
+			BaseMultiplierCVar.CopyAndAddToTail( pValue->GetString() );
+		}
+		else if ( FStrEq( szName, "BaseDivisorCVar" ) )
+		{
+			BaseDivisorCVar.CopyAndAddToTail( pValue->GetString() );
+		}
+		else if ( FStrEq( szName, "SkillMultiplier" ) )
+		{
+			SkillMultiplier *= pValue->GetFloat();
+		}
+		else if ( FStrEq( szName, "SkillDivisor" ) )
+		{
+			SkillMultiplier /= pValue->GetFloat();
+		}
+		else if ( FStrEq( szName, "SkillMultiplierCVar" ) )
+		{
+			SkillMultiplierCVar.CopyAndAddToTail( pValue->GetString() );
+		}
+		else if ( FStrEq( szName, "SkillDivisorCVar" ) )
+		{
+			SkillDivisorCVar.CopyAndAddToTail( pValue->GetString() );
+		}
+		else
+		{
+			Warning( "Swarmopedia: unhandled weapon fact key %s in %s\n", szName, pszPath );
+		}
+	}
+
+	return true;
+}
+
+bool WeaponFact::IsSame( const WeaponFact *pWeaponFact ) const
+{
+	// TODO
+	return false;
+}
+
+void WeaponFact::Merge( const WeaponFact *pWeaponFact )
+{
+	Assert( !"TODO" );
 }

@@ -1953,10 +1953,12 @@ END_SEND_TABLE()
 CDynamicProp::CDynamicProp()
 {
 	m_nPendingSequence = -1;
+#ifndef INFESTED_DLL
 	if ( g_pGameRules->IsMultiplayer() )
 	{
 		UseClientSideAnimation();
 	}
+#endif
 	m_iGoalSequence = -1;
 	m_bShouldGlow = false;
 	m_clrGlow.Init( 255, 255, 255, 0 );
