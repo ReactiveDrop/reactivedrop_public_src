@@ -770,6 +770,8 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	RequireValue{ copy.RequireValue },
 	HaveRequireValue{ copy.HaveRequireValue },
 	Base{ copy.Base },
+	MinimumValue{ copy.MinimumValue },
+	MaximumValue{ copy.MaximumValue },
 	CVar{ copy.CVar },
 	BaseMultiplier{ copy.BaseMultiplier },
 	Skill{ copy.Skill },
@@ -866,6 +868,8 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	}
 
 	Base = pKV->GetFloat( "Base" );
+	MinimumValue = pKV->GetFloat( "MinimumValue", -FLT_MAX );
+	MaximumValue = pKV->GetFloat( "MaximumValue", FLT_MAX );
 	CVar = pKV->GetString( "CVar" );
 
 	if ( const char *szSkill = pKV->GetString( "Skill", NULL ) )
@@ -917,6 +921,8 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			FStrEq( szName, "RequireCVar" ) ||
 			FStrEq( szName, "RequireValue" ) ||
 			FStrEq( szName, "Base" ) ||
+			FStrEq( szName, "MinimumValue" ) ||
+			FStrEq( szName, "MaximumValue" ) ||
 			FStrEq( szName, "CVar" ) ||
 			FStrEq( szName, "Skill" ) ||
 			FStrEq( szName, "SubSkill" ) ||

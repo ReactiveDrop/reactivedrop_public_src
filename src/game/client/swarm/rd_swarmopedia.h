@@ -247,6 +247,8 @@ namespace RD_Swarmopedia
 
 		// Numeric, etc.
 		float Base{ 0.0f };
+		float MinimumValue{ -FLT_MAX };
+		float MaximumValue{ FLT_MAX };
 		CUtlString CVar{};
 		float BaseMultiplier{ 1.0f };
 		CUtlStringList BaseMultiplierCVar{};
