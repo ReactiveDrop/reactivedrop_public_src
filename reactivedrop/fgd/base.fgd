@@ -5443,6 +5443,7 @@
 	DisableBoneFollowers(boolean) : "Disable Bone Followers" : 0 : "If set, the prop will not use bone followers, even if it has them defined."
 
 	HoldAnimation(boolean) : "Hold Animation" : 0 : "If set, the prop will not loop its animation, but hold the last frame."
+	AlwaysTransmit(boolean) : "Always Transmit" : 0 : "Always send this prop to clients, even if it is far away. This is automatically enabled by the game for certain model names. Use this for props that do gameplay-relevant animations, especially one-time, one-way animations."
 
 	MinAnimTime(float) : "Min Random Anim Time" : "5" : "Minimum time between random animations."
 	MaxAnimTime(float) : "Max Random Anim Time" : "10" : "Maximum time between random animations."

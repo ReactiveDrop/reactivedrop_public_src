@@ -281,6 +281,7 @@ public:
 	void	Spawn( void );
 	bool	CreateVPhysics( void );
 	void	CreateBoneFollowers();
+	int		UpdateTransmitState( void );
 	void	UpdateOnRemove( void );
 	void	AnimThink( void );
 	void	PropSetSequence( int nSequence );
@@ -338,6 +339,7 @@ public:
 
 	bool				m_bStartDisabled;
 	bool				m_bUpdateAttachedChildren;	// For props with children on attachment points, update their child touches as we animate
+	bool				m_bAlwaysTransmit;
 
 	CNetworkVar( bool, m_bUseHitboxesForRenderBox );
 	
