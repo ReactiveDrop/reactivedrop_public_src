@@ -61,7 +61,7 @@ TGD_Grid *CRD_Collection_Tab_Equipment::CreateGrid()
 
 		int index = m_bExtra ? pEquipmentList->GetExtraIndex( pWeapon->ClassName ) : pEquipmentList->GetRegularIndex( pWeapon->ClassName );
 
-		pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, m_bExtra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", i, pWeapon ) );
+		pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, m_bExtra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", index, pWeapon ) );
 	}
 
 	return pGrid;
