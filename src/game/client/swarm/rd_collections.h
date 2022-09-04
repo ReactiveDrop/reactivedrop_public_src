@@ -1,16 +1,16 @@
 #pragma once
 
 #include "tabbedgriddetails.h"
+#include "asw_model_panel.h"
 #include "steam/steam_api.h"
 
 class CASW_WeaponInfo;
-class CASW_Model_Panel;
-class CRD_Swarmopedia_Model_Panel;
 class CASW_Marine_Profile;
 namespace RD_Swarmopedia
 {
 	struct Collection;
 	struct Alien;
+	struct Display;
 	struct Weapon;
 }
 namespace BaseModUI
@@ -34,6 +34,20 @@ public:
 
 	vgui::Label *m_pLblTitle;
 	vgui::Label *m_pLblStat;
+};
+
+class CRD_Swarmopedia_Model_Panel : public CASW_Model_Panel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Swarmopedia_Model_Panel, CASW_Model_Panel );
+public:
+	CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName );
+
+	void SetDisplay( const RD_Swarmopedia::Display *pDisplay );
+
+private:
+	void OnPaint3D() override;
+
+	CUtlVector<MDLData_t> m_Models;
 };
 
 #ifdef RD_COLLECTIONS_WEAPONS_ENABLED
@@ -60,11 +74,9 @@ public:
 	CRD_Collection_Details_Equipment( CRD_Collection_Tab_Equipment *parent );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void OnThink() override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
 
-	float m_flZOffset;
-	CASW_Model_Panel *m_pModelPanel;
+	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
 	vgui::Label *m_pWeaponDescLabel;
 };
@@ -73,15 +85,13 @@ class CRD_Collection_Entry_Equipment : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Equipment, TGD_Entry );
 public:
-	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const char *szEquipClass, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;
 
 	int m_iEquipIndex;
-	CASW_WeaponInfo *m_pWeaponInfo;
 	const RD_Swarmopedia::Weapon *m_pWeapon;
-	int m_iRequiredLevel;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pLockedIcon;
@@ -95,11 +105,11 @@ class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Equipment, vgui::EditablePanel );
 public:
-	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CASW_WeaponInfo *pWeaponInfo );
+	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
-	CASW_WeaponInfo *m_pWeaponInfo;
+	const RD_Swarmopedia::Weapon *m_pWeapon;
 };
 
 #endif

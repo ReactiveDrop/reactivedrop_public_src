@@ -47,7 +47,7 @@ TGD_Grid *CRD_Collection_Tab_Swarmopedia::CreateGrid()
 
 	Assert( !m_pCollection );
 	m_pCollection = new RD_Swarmopedia::Collection();
-	m_pCollection->ReadFromFiles();
+	m_pCollection->ReadFromFiles( RD_Swarmopedia::Subset::Aliens );
 
 	FOR_EACH_VEC( m_pCollection->Aliens, i )
 	{
@@ -332,100 +332,92 @@ void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 	}
 }
 
-class CRD_Swarmopedia_Model_Panel : public CASW_Model_Panel
+CRD_Swarmopedia_Model_Panel::CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName )
+	: BaseClass( parent, panelName )
 {
-	DECLARE_CLASS_SIMPLE( CRD_Swarmopedia_Model_Panel, CASW_Model_Panel );
-public:
-	CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName )
-		: BaseClass( parent, panelName )
+	for ( int i = 0; i < MATERIAL_MAX_LIGHT_COUNT; i++ )
 	{
-		for ( int i = 0; i < MATERIAL_MAX_LIGHT_COUNT; i++ )
-		{
-			SetIdentityMatrix( m_LightToWorld[i] );
-		}
+		SetIdentityMatrix( m_LightToWorld[i] );
+	}
+}
+
+void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDisplay )
+{
+	Assert( pDisplay && pDisplay->Models.Count() != 0 );
+	if ( !pDisplay || pDisplay->Models.Count() == 0 )
+	{
+		return;
 	}
 
-	void SetDisplay( const RD_Swarmopedia::Display *pDisplay )
+	m_LightingState = pDisplay->LightingState;
+
+	ClearMergeMDLs();
+
+	// The parent class model is only used for sizing.
+	SetMDL( pDisplay->Models[0]->ModelName );
+
+	m_Models.SetCount( pDisplay->Models.Count() );
+
+	FOR_EACH_VEC( pDisplay->Models, i )
 	{
-		Assert( pDisplay && pDisplay->Models.Count() != 0 );
-		if ( !pDisplay || pDisplay->Models.Count() == 0 )
+		const RD_Swarmopedia::Model *pModel = pDisplay->Models[i];
+
+		const model_t *pWorldModel = modelinfo->FindOrLoadModel( pModel->ModelName );
+		MDLHandle_t hStudioHdr = pWorldModel ? modelinfo->GetCacheHandle( pWorldModel ) : MDLHANDLE_INVALID;
+		const studiohdr_t *pStudioHdr = hStudioHdr == MDLHANDLE_INVALID ? NULL : mdlcache->GetStudioHdr( hStudioHdr );
+		if ( !pStudioHdr )
 		{
-			return;
+			DevWarning( "Could not load model %s\n", pModel->ModelName.Get() );
+			continue;
 		}
 
-		m_LightingState = pDisplay->LightingState;
+		CStudioHdr studioHdr( pStudioHdr, mdlcache );
 
-		ClearMergeMDLs();
+		m_Models[i].m_MDL.SetMDL( hStudioHdr );
+		m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->Animation );
+		Assert( m_Models[i].m_MDL.m_nSequence != -1 );
+		m_Models[i].m_MDL.m_nSkin = pModel->Skin;
+		m_Models[i].m_MDL.m_Color = pModel->Color;
 
-		// The parent class model is only used for sizing.
-		SetMDL( pDisplay->Models[0]->ModelName );
+		const QAngle angles( pModel->Pitch, pModel->Yaw, pModel->Roll );
+		const Vector position( pModel->X, pModel->Y, pModel->Z );
+		matrix3x4_t anglePos, scale;
+		AngleMatrix( angles, position, anglePos );
+		SetScaleMatrix( pModel->Scale, scale );
+		ConcatTransforms( scale, anglePos, m_Models[i].m_MDLToWorld );
 
-		m_Models.SetCount( pDisplay->Models.Count() );
-
-		FOR_EACH_VEC( pDisplay->Models, i )
+		FOR_EACH_MAP_FAST( pModel->BodyGroups, j )
 		{
-			const RD_Swarmopedia::Model *pModel = pDisplay->Models[i];
-
-			const model_t *pWorldModel = modelinfo->FindOrLoadModel( pModel->ModelName );
-			MDLHandle_t hStudioHdr = pWorldModel ? modelinfo->GetCacheHandle( pWorldModel ) : MDLHANDLE_INVALID;
-			const studiohdr_t *pStudioHdr = hStudioHdr == MDLHANDLE_INVALID ? NULL : mdlcache->GetStudioHdr( hStudioHdr );
-			if ( !pStudioHdr )
-			{
-				DevWarning( "Could not load model %s\n", pModel->ModelName.Get() );
-				continue;
-			}
-
-			CStudioHdr studioHdr( pStudioHdr, mdlcache );
-
-			m_Models[i].m_MDL.SetMDL( hStudioHdr );
-			m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->Animation );
-			Assert( m_Models[i].m_MDL.m_nSequence != -1 );
-			m_Models[i].m_MDL.m_nSkin = pModel->Skin;
-			m_Models[i].m_MDL.m_Color = pModel->Color;
-
-			const QAngle angles( pModel->Pitch, pModel->Yaw, pModel->Roll );
-			const Vector position( pModel->X, pModel->Y, pModel->Z );
-			matrix3x4_t anglePos, scale;
-			AngleMatrix( angles, position, anglePos );
-			SetScaleMatrix( pModel->Scale, scale );
-			ConcatTransforms( scale, anglePos, m_Models[i].m_MDLToWorld );
-
-			FOR_EACH_MAP_FAST( pModel->BodyGroups, j )
-			{
-				::SetBodygroup( &studioHdr, m_Models[i].m_MDL.m_nBody, pModel->BodyGroups.Key( j ), pModel->BodyGroups.Element( j ) );
-			}
+			::SetBodygroup( &studioHdr, m_Models[i].m_MDL.m_nBody, pModel->BodyGroups.Key( j ), pModel->BodyGroups.Element( j ) );
 		}
 	}
+}
 
-private:
-	void OnPaint3D() override
+void CRD_Swarmopedia_Model_Panel::OnPaint3D()
+{
+	Vector vecPos;
+	Vector vecCenter;
+	float flRadius;
+	QAngle angRot( 32.0, 0.0, 0.0 );
+	Vector vecOffset;
+
+	AngleVectors( angRot, &vecOffset );
+	GetBoundingSphere( vecCenter, flRadius );
+	VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
+
+	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
+
+	SetCameraPositionAndAngles( vecPos, angRot );
+	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+
+	FOR_EACH_VEC( m_Models, i )
 	{
-		Vector vecPos;
-		Vector vecCenter;
-		float flRadius;
-		QAngle angRot( 32.0, 0.0, 0.0 );
-		Vector vecOffset;
-
-		AngleVectors( angRot, &vecOffset );
-		GetBoundingSphere( vecCenter, flRadius );
-		VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
-
-		float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
-
-		SetCameraPositionAndAngles( vecPos, angRot );
-		SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
-
-		FOR_EACH_VEC( m_Models, i )
-		{
-			matrix3x4_t mat;
-			ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
-			m_Models[i].m_MDL.m_flTime = flTime;
-			m_Models[i].m_MDL.Draw( mat );
-		}
+		matrix3x4_t mat;
+		ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
+		m_Models[i].m_MDL.m_flTime = flTime;
+		m_Models[i].m_MDL.Draw( mat );
 	}
-
-	CUtlVector<MDLData_t> m_Models;
-};
+}
 
 CRD_Collection_Panel_Swarmopedia::CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )
 	: BaseClass( parent, panelName )

@@ -35,6 +35,15 @@ namespace RD_Swarmopedia
 		static void CopyUniqueVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
 	};
 
+	enum class Subset
+	{
+		Aliens = 1 << 0,
+		RegularWeapons = 1 << 1,
+		ExtraWeapons = 1 << 2,
+		Weapons = RegularWeapons | ExtraWeapons,
+		All = Aliens | Weapons,
+	};
+
 	struct Collection
 	{
 		Collection() = default;
@@ -43,11 +52,13 @@ namespace RD_Swarmopedia
 		CUtlVectorAutoPurge<Alien *> Aliens{};
 		CUtlVectorAutoPurge<Weapon *> Weapons{};
 
-		void ReadFromFiles();
+		void ReadFromFiles( Subset subset = Subset::All );
 	private:
 		friend struct Helpers;
 		static void ReadHelper( const char *, KeyValues *, void * );
 		void ReadFromFile( const char *, KeyValues * );
+
+		Subset ReadSubset{};
 	};
 
 	struct Alien
@@ -202,10 +213,15 @@ namespace RD_Swarmopedia
 		Weapon( const Weapon &copy );
 
 		CUtlString ClassName{};
+		CUtlString Name{};
 		CUtlString Icon{};
 		ASW_Marine_Class RequiredClass{ MARINE_CLASS_UNDEFINED };
 		int RequiredLevel{ 0 };
 		bool Builtin{ false };
+		bool Extra{ false };
+		bool Hidden{ false };
+		CUtlVectorAutoPurge<Display *> Display{};
+		CUtlVectorAutoPurge<Content *> Content{};
 		CUtlVectorAutoPurge<WeaponFact *> Facts{};
 		CUtlVector<PublishedFileId_t> Sources{};
 
