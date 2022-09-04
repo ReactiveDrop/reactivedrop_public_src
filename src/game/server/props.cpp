@@ -1905,6 +1905,7 @@ BEGIN_DATADESC( CDynamicProp )
 	DEFINE_KEYFIELD( m_bUpdateAttachedChildren, FIELD_BOOLEAN, "updatechildren" ),
 	DEFINE_KEYFIELD( m_bDisableBoneFollowers, FIELD_BOOLEAN, "DisableBoneFollowers" ),
 	DEFINE_KEYFIELD( m_bHoldAnimation, FIELD_BOOLEAN, "HoldAnimation" ),
+	DEFINE_KEYFIELD( m_bAlwaysTransmit, FIELD_BOOLEAN, "AlwaysTransmit" ),
 	
 	DEFINE_KEYFIELD( m_flGlowMaxDist, FIELD_FLOAT, "glowdist" ),
 	DEFINE_KEYFIELD( m_bShouldGlow, FIELD_BOOLEAN, "glowenabled" ),
@@ -1953,13 +1954,12 @@ END_SEND_TABLE()
 CDynamicProp::CDynamicProp()
 {
 	m_nPendingSequence = -1;
-#ifndef INFESTED_DLL
 	if ( g_pGameRules->IsMultiplayer() )
 	{
 		UseClientSideAnimation();
 	}
-#endif
 	m_iGoalSequence = -1;
+	m_bAlwaysTransmit = false;
 	m_bShouldGlow = false;
 	m_clrGlow.Init( 255, 255, 255, 0 );
 }
@@ -2188,6 +2188,20 @@ IPhysicsObject *CDynamicProp::GetRootPhysicsObjectForBreak()
 	}
 
 	return BaseClass::GetRootPhysicsObjectForBreak();
+}
+
+int CDynamicProp::UpdateTransmitState()
+{
+	if ( m_bAlwaysTransmit )
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	if ( FStrEq( STRING( GetModelName() ), "models/props/doors/slow_heavy_door/slow_heavy_door.mdl") )
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	if ( FStrEq( STRING( GetModelName() ), "models/props/machinery/elevators/elevator_landingbay_ramp.mdl" ) )
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	if ( FStrEq( STRING( GetModelName() ), "models/props/destructable_pipe_set/destroyed_pipe.mdl" ) )
+		return SetTransmitState( FL_EDICT_ALWAYS );
+
+	return BaseClass::UpdateTransmitState();
 }
 
 //-----------------------------------------------------------------------------

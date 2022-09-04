@@ -101,8 +101,9 @@ Collection::Collection( const Collection &copy )
 	Helpers::CopyVector( Weapons, copy.Weapons );
 }
 
-void Collection::ReadFromFiles()
+void Collection::ReadFromFiles( Subset subset )
 {
+	ReadSubset = subset;
 	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &ReadHelper, this );
 }
 
@@ -117,11 +118,27 @@ void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	{
 		if ( FStrEq( pEntry->GetName(), "ALIEN" ) )
 		{
-			Helpers::AddMerge( Aliens, pszPath, pEntry );
+			if ( int( ReadSubset ) & int( Subset::Aliens ) )
+			{
+				Helpers::AddMerge( Aliens, pszPath, pEntry );
+			}
 		}
 		else if ( FStrEq( pEntry->GetName(), "WEAPON" ) )
 		{
-			Helpers::AddMerge( Weapons, pszPath, pEntry );
+			if ( int( ReadSubset ) & int( Subset::Weapons ) )
+			{
+				if ( Weapon *pWeapon = Helpers::ReadFromFile<Weapon>( pszPath, pEntry ) )
+				{
+					if ( int( ReadSubset ) & int( pWeapon->Extra ? Subset::ExtraWeapons : Subset::RegularWeapons ) )
+					{
+						Helpers::AddMerge( Weapons, pWeapon );
+					}
+					else
+					{
+						delete pWeapon;
+					}
+				}
+			}
 		}
 		else
 		{
@@ -430,6 +447,31 @@ static void SetupLightAttenuation( const char *pszPath, LightDesc_t &light, KeyV
 	}
 }
 
+static const MaterialLightingState_t &SwarmopediaDefaultLightingState()
+{
+	static MaterialLightingState_t s_State{};
+	static bool s_bInit = false;
+	if ( !s_bInit )
+	{
+		s_bInit = true;
+
+		s_State.m_vecAmbientCube[0].Init( 24.0f / 255.0f, 24.0f / 255.0f, 24.0f / 255.0f );
+		s_State.m_vecAmbientCube[1] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[2] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[3] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[4] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[5] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecLightingOrigin.Init();
+
+		s_State.m_nLocalLightCount = 3;
+		s_State.m_pLocalLightDesc[0].InitPoint( Vector{ -128.0f, -64.0f, 96.0f }, Vector{ 3.0f, 3.0f, 3.0f } );
+		s_State.m_pLocalLightDesc[1].InitPoint( Vector{ 0.0f, 256.0f, 48.0f }, Vector{ 1.5f, 1.5f, 96.0f / 255.0f } );
+		s_State.m_pLocalLightDesc[2].InitDirectional( Vector{ -128, 192, 16 }.Normalized(), Vector{ 5.0f, 5.0f, 5.0f } );
+	}
+
+	return s_State;
+}
+
 bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
 	Caption = pKV->GetString( "Caption" );
@@ -440,6 +482,17 @@ bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( FStrEq( szName, "Model" ) )
 		{
 			Helpers::AddMerge( Models, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "LightingPreset" ) )
+		{
+			if ( pSubKey->GetInt() == 1 )
+			{
+				LightingState = SwarmopediaDefaultLightingState();
+			}
+			else
+			{
+				Warning( "Swarmopedia: Unknown lighting preset value (only 1 is currently supported) in %s\n", pszPath );
+			}
 		}
 		else if ( FStrEq( szName, "LightingOriginX" ) )
 		{
@@ -679,11 +732,16 @@ void Content::Merge( const Content *pContent )
 
 Weapon::Weapon( const Weapon &copy ) :
 	ClassName{ copy.ClassName },
+	Name{ copy.Name },
 	Icon{ copy.Icon },
 	RequiredClass{ copy.RequiredClass },
 	RequiredLevel{ copy.RequiredLevel },
-	Builtin{ copy.Builtin }
+	Builtin{ copy.Builtin },
+	Extra{ copy.Extra },
+	Hidden{ copy.Hidden }
 {
+	Helpers::CopyVector( Display, copy.Display );
+	Helpers::CopyVector( Content, copy.Content );
 	Helpers::CopyVector( Facts, copy.Facts );
 	Sources = copy.Sources;
 }
@@ -730,6 +788,18 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			RequiredClass = MARINE_CLASS_TECH;
 		}
 
+		Extra = pWeaponInfo->m_bExtra;
+		if ( Extra )
+		{
+			int i = ASWEquipmentList()->GetExtraIndex( ClassName );
+			Hidden = !ASWEquipmentList()->GetExtra( i )->m_bSelectableInBriefing;
+		}
+		else
+		{
+			int i = ASWEquipmentList()->GetRegularIndex( ClassName );
+			Hidden = !ASWEquipmentList()->GetRegular( i )->m_bSelectableInBriefing;
+		}
+
 		if ( RequiredLevel )
 		{
 			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "RequirementLevel", "Base", RequiredLevel ) ) );
@@ -739,6 +809,43 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		{
 			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "RequirementClass", "Class", ClassToString( RequiredClass ) ) ) );
 		}
+
+		Name = pWeaponInfo->szPrintName;
+
+		RD_Swarmopedia::Display *pDisplay = new RD_Swarmopedia::Display{};
+		Display.AddToTail( pDisplay );
+		pDisplay->Caption = pWeaponInfo->szEquipLongName;
+
+		pDisplay->LightingState = SwarmopediaDefaultLightingState();
+
+		int i = pDisplay->Models.AddToTail( new Model{} );
+		if ( pWeaponInfo->szDisplayModel[0] )
+		{
+			pDisplay->Models[i]->ModelName = pWeaponInfo->szDisplayModel;
+			if ( pWeaponInfo->szDisplayModel2[0] )
+			{
+				int j = pDisplay->Models.AddToTail( new Model{} );
+				pDisplay->Models[j]->ModelName = pWeaponInfo->szDisplayModel2;
+			}
+		}
+		else
+		{
+			pDisplay->Models[i]->ModelName = pWeaponInfo->szWorldModel;
+		}
+
+		if ( pWeaponInfo->m_iDisplayModelSkin > 0 )
+		{
+			pDisplay->Models[i]->Skin = pWeaponInfo->m_iDisplayModelSkin;
+		}
+		else
+		{
+			pDisplay->Models[i]->Skin = pWeaponInfo->m_iPlayerModelSkin;
+		}
+
+		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
+		Content.AddToTail( pContent );
+		pContent->Text = pWeaponInfo->szEquipDescription1;
+		pContent->Color = Color{ 255, 255, 255, 255 };
 	}
 
 	if ( KeyValues *pFacts = pKV->FindKey( "Facts" ) )
