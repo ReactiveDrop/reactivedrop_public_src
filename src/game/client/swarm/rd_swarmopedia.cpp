@@ -447,6 +447,31 @@ static void SetupLightAttenuation( const char *pszPath, LightDesc_t &light, KeyV
 	}
 }
 
+static const MaterialLightingState_t &SwarmopediaDefaultLightingState()
+{
+	static MaterialLightingState_t s_State{};
+	static bool s_bInit = false;
+	if ( !s_bInit )
+	{
+		s_bInit = true;
+
+		s_State.m_vecAmbientCube[0].Init( 24.0f / 255.0f, 24.0f / 255.0f, 24.0f / 255.0f );
+		s_State.m_vecAmbientCube[1] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[2] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[3] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[4] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecAmbientCube[5] = s_State.m_vecAmbientCube[0];
+		s_State.m_vecLightingOrigin.Init();
+
+		s_State.m_nLocalLightCount = 3;
+		s_State.m_pLocalLightDesc[0].InitPoint( Vector{ -128.0f, -64.0f, 96.0f }, Vector{ 3.0f, 3.0f, 3.0f } );
+		s_State.m_pLocalLightDesc[1].InitPoint( Vector{ 0.0f, 256.0f, 48.0f }, Vector{ 1.5f, 1.5f, 96.0f / 255.0f } );
+		s_State.m_pLocalLightDesc[2].InitDirectional( Vector{ -128, 192, 16 }.Normalized(), Vector{ 5.0f, 5.0f, 5.0f } );
+	}
+
+	return s_State;
+}
+
 bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
 	Caption = pKV->GetString( "Caption" );
@@ -457,6 +482,17 @@ bool Display::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( FStrEq( szName, "Model" ) )
 		{
 			Helpers::AddMerge( Models, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "LightingPreset" ) )
+		{
+			if ( pSubKey->GetInt() == 1 )
+			{
+				LightingState = SwarmopediaDefaultLightingState();
+			}
+			else
+			{
+				Warning( "Swarmopedia: Unknown lighting preset value (only 1 is currently supported) in %s\n", pszPath );
+			}
 		}
 		else if ( FStrEq( szName, "LightingOriginX" ) )
 		{
@@ -780,6 +816,8 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		Display.AddToTail( pDisplay );
 		pDisplay->Caption = pWeaponInfo->szEquipLongName;
 
+		pDisplay->LightingState = SwarmopediaDefaultLightingState();
+
 		int i = pDisplay->Models.AddToTail( new Model() );
 		pDisplay->Models[i]->Z = -pWeaponInfo->m_flModelPanelZOffset;
 		if ( pWeaponInfo->szDisplayModel[0] )
@@ -805,8 +843,6 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		{
 			pDisplay->Models[i]->Skin = pWeaponInfo->m_iPlayerModelSkin;
 		}
-
-		pDisplay->Models[i]->Animation = "idle";
 
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
 		Content.AddToTail( pContent );

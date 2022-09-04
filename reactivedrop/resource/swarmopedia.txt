@@ -43,28 +43,30 @@
 					"Value" "1"
 				}
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			// This is equivalent to:
+			//"Ambient" "24 24 24"
+			//"LightPoint" {
+			//	"X" "64"
+			//	"Y" "-128"
+			//	"Z" "96"
+			//	"Color" "255 255 255"
+			//	"Boost" "3"
+			//}
+			//"LightPoint" {
+			//	"X" "-256"
+			//	"Y" "0"
+			//	"Z" "48"
+			//	"Color" "255 224 64"
+			//	"Boost" "1.5"
+			//}
+			//"LightDirectional" {
+			//	"X" "-192"
+			//	"Y" "-128"
+			//	"Z" "16"
+			//	"Color" "255 255 255"
+			//	"Boost" "5"
+			//}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -92,28 +94,7 @@
 					"Value" "1"
 				}
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_drone"
@@ -154,28 +135,7 @@
 				"ModelName" "models/aliens/mortar3/mortar3.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_101hp"
@@ -216,28 +176,7 @@
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "roar_02"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -245,28 +184,7 @@
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "idle_defend"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_1000hp"
@@ -308,28 +226,7 @@
 				"ModelName" "models/aliens/boomer/boomer.mdl"
 				"Animation" "walk"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -337,28 +234,7 @@
 				"ModelName" "models/aliens/boomer/boomer.mdl"
 				"Animation" "idle_inflated"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_800hp"
@@ -399,28 +275,7 @@
 				"ModelName" "models/aliens/buzzer/buzzer.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_30hp"
@@ -467,28 +322,7 @@
 				"ModelName" "models/aliens/parasite/parasite_swarmopedia.mdl"
 				"Animation" "Idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_25hp"
@@ -570,28 +404,7 @@
 				"ModelName" "models/aliens/harvester/harvester.mdl"
 				"Animation" "IDLE"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_200hp"
@@ -636,28 +449,7 @@
 					"Value" "1"
 				}
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_10hp"
@@ -697,28 +489,7 @@
 				"ModelName" "models/aliens/shaman/shaman.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_59hp"
@@ -759,28 +530,7 @@
 				"ModelName" "models/aliens/biomass/biomasshelix.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -788,28 +538,7 @@
 				"ModelName" "models/aliens/biomass/biomassl.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_c"
@@ -824,28 +553,7 @@
 				"ModelName" "models/aliens/biomass/biomassu.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_biomass"
@@ -886,28 +594,7 @@
 				"ModelName" "models/swarm/grubs/grub.mdl"
 				"Animation" "CrawlA"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -915,28 +602,7 @@
 				"ModelName" "models/swarm/grubsac/grubsac.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_1hp"
@@ -983,28 +649,7 @@
 				"ModelName" "models/antlion_guard.mdl"
 				"Animation" "idle"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Display" {
 			"Caption" "#rd_so_display_caption_specimen_b"
@@ -1013,28 +658,7 @@
 				"Animation" "roar"
 				"Skin" "1"
 			}
-			"Ambient" "24 24 24"
-			"LightPoint" {
-				"X" "64"
-				"Y" "-128"
-				"Z" "96"
-				"Color" "255 255 255"
-				"Boost" "3"
-			}
-			"LightPoint" {
-				"X" "-256"
-				"Y" "0"
-				"Z" "48"
-				"Color" "255 224 64"
-				"Boost" "1.5"
-			}
-			"LightDirectional" {
-				"X" "-192"
-				"Y" "-128"
-				"Z" "16"
-				"Color" "255 255 255"
-				"Boost" "5"
-			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_500hp"
@@ -1226,7 +850,7 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_ammo_bag"
+		"ClassName" "asw_weapon_ammo_bag"
 		"Builtin" "1"
 		"Facts" {
 			"Generic" {
@@ -1342,7 +966,7 @@
 		}
 	}
 	"WEAPON" {
-		"ClassName" "asw_chainsaw"
+		"ClassName" "asw_weapon_chainsaw"
 		"Builtin" "1"
 		"Facts" {
 			"DamagePerShot" {

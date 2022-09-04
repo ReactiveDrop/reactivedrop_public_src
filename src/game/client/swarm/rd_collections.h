@@ -46,6 +46,7 @@ public:
 
 private:
 	void OnPaint3D() override;
+	void OnMouseDoublePressed( vgui::MouseCode code ) override;
 
 	CUtlVector<MDLData_t> m_Models;
 };

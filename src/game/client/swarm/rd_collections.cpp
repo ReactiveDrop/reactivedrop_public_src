@@ -1,11 +1,16 @@
 #include "cbase.h"
 #include "rd_collections.h"
+#include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include <vgui_controls/Label.h>
+#include "animation.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+ConVar rd_swarmopedia_timescale( "rd_swarmopedia_timescale", "0.3", FCVAR_ARCHIVE, "Speed for Swarmopedia specimen animations" );
+extern ConVar rd_reduce_motion;
 
 vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
 void LaunchCollectionsFrame()
@@ -78,4 +83,102 @@ void CRD_Collection_StatLine::SetLabel( const wchar_t *wszLabel )
 void CRD_Collection_StatLine::SetValue( int64_t nValue )
 {
 	m_pLblStat->SetText( UTIL_RD_CommaNumber( nValue ) );
+}
+
+CRD_Swarmopedia_Model_Panel::CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, const char *panelName )
+	: BaseClass( parent, panelName )
+{
+	for ( int i = 0; i < MATERIAL_MAX_LIGHT_COUNT; i++ )
+	{
+		SetIdentityMatrix( m_LightToWorld[i] );
+	}
+}
+
+void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDisplay )
+{
+	Assert( pDisplay && pDisplay->Models.Count() != 0 );
+	if ( !pDisplay || pDisplay->Models.Count() == 0 )
+	{
+		return;
+	}
+
+	m_LightingState = pDisplay->LightingState;
+
+	ClearMergeMDLs();
+
+	// The parent class model is only used for sizing.
+	SetMDL( pDisplay->Models[0]->ModelName );
+
+	m_Models.SetCount( pDisplay->Models.Count() );
+
+	FOR_EACH_VEC( pDisplay->Models, i )
+	{
+		const RD_Swarmopedia::Model *pModel = pDisplay->Models[i];
+
+		const model_t *pWorldModel = modelinfo->FindOrLoadModel( pModel->ModelName );
+		MDLHandle_t hStudioHdr = pWorldModel ? modelinfo->GetCacheHandle( pWorldModel ) : MDLHANDLE_INVALID;
+		const studiohdr_t *pStudioHdr = hStudioHdr == MDLHANDLE_INVALID ? NULL : mdlcache->GetStudioHdr( hStudioHdr );
+		if ( !pStudioHdr )
+		{
+			DevWarning( "Could not load model %s\n", pModel->ModelName.Get() );
+			continue;
+		}
+
+		CStudioHdr studioHdr( pStudioHdr, mdlcache );
+
+		m_Models[i].m_MDL.SetMDL( hStudioHdr );
+		m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->Animation );
+		Assert( m_Models[i].m_MDL.m_nSequence != -1 || pModel->Animation.IsEmpty() );
+		if ( m_Models[i].m_MDL.m_nSequence == -1 )
+		{
+			Assert( studioHdr.GetNumSeq() > 0 );
+			m_Models[i].m_MDL.m_nSequence = 0;
+		}
+
+		m_Models[i].m_MDL.m_nSkin = pModel->Skin;
+		m_Models[i].m_MDL.m_Color = pModel->Color;
+
+		const QAngle angles( pModel->Pitch, pModel->Yaw, pModel->Roll );
+		const Vector position( pModel->X, pModel->Y, pModel->Z );
+		matrix3x4_t anglePos, scale;
+		AngleMatrix( angles, position, anglePos );
+		SetScaleMatrix( pModel->Scale, scale );
+		ConcatTransforms( scale, anglePos, m_Models[i].m_MDLToWorld );
+
+		FOR_EACH_MAP_FAST( pModel->BodyGroups, j )
+		{
+			::SetBodygroup( &studioHdr, m_Models[i].m_MDL.m_nBody, pModel->BodyGroups.Key( j ), pModel->BodyGroups.Element( j ) );
+		}
+	}
+}
+
+void CRD_Swarmopedia_Model_Panel::OnPaint3D()
+{
+	Vector vecPos;
+	Vector vecCenter;
+	float flRadius;
+	QAngle angRot( 32.0, 0.0, 0.0 );
+	Vector vecOffset;
+
+	AngleVectors( angRot, &vecOffset );
+	GetBoundingSphere( vecCenter, flRadius );
+	VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
+
+	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
+
+	SetCameraPositionAndAngles( vecPos, angRot );
+	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+
+	FOR_EACH_VEC( m_Models, i )
+	{
+		matrix3x4_t mat;
+		ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
+		m_Models[i].m_MDL.m_flTime = flTime;
+		m_Models[i].m_MDL.Draw( mat );
+	}
+}
+
+void CRD_Swarmopedia_Model_Panel::OnMouseDoublePressed( vgui::MouseCode code )
+{
+	// do nothing
 }
