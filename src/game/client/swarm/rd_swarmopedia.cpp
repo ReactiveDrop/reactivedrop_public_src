@@ -818,15 +818,13 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 		pDisplay->LightingState = SwarmopediaDefaultLightingState();
 
-		int i = pDisplay->Models.AddToTail( new Model() );
-		pDisplay->Models[i]->Z = -pWeaponInfo->m_flModelPanelZOffset;
+		int i = pDisplay->Models.AddToTail( new Model{} );
 		if ( pWeaponInfo->szDisplayModel[0] )
 		{
 			pDisplay->Models[i]->ModelName = pWeaponInfo->szDisplayModel;
 			if ( pWeaponInfo->szDisplayModel2[0] )
 			{
-				int j = pDisplay->Models.AddToTail( new Model() );
-				pDisplay->Models[j]->Z = -pWeaponInfo->m_flModelPanelZOffset;
+				int j = pDisplay->Models.AddToTail( new Model{} );
 				pDisplay->Models[j]->ModelName = pWeaponInfo->szDisplayModel2;
 			}
 		}

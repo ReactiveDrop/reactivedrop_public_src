@@ -157,24 +157,32 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 
 void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 {
-	Vector vecPos;
-	Vector vecCenter;
-	float flRadius;
-	QAngle angRot( 32.0, 0.0, 0.0 );
-	Vector vecOffset;
-
 	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
 	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
-
-	AngleVectors( angRot, &vecOffset );
-	GetBoundingSphere( vecCenter, flRadius );
-	VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
-
-	SetCameraPositionAndAngles( vecPos, angRot );
 
 	if ( m_bDisplayChanged )
 	{
 		m_bDisplayChanged = false;
+
+		// Added optimization: only compute camera pos on new display.
+		Vector vecPos, vecOffset;
+		QAngle angRot( 32.0, 0.0, 0.0 );
+		AngleVectors( angRot, &vecOffset );
+
+		Vector vecMins, vecMaxs, vecOverallMins, vecOverallMaxs;
+		FOR_EACH_VEC( m_Models, i )
+		{
+			GetMDLBoundingBox( &vecMins, &vecMaxs, m_Models[i].m_MDL.m_MDLHandle, m_Models[i].m_MDL.m_nSequence );
+			vecOverallMins = i ? vecOverallMins.Min( vecMins ) : vecMins;
+			vecOverallMaxs = i ? vecOverallMaxs.Max( vecMaxs ) : vecMaxs;
+		}
+
+		Vector vecCenter = ( vecOverallMins + vecOverallMaxs ) * 0.5f;
+		float flRadius = vecCenter.DistTo( vecOverallMaxs );
+
+		VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
+
+		SetCameraPositionAndAngles( vecPos, angRot );
 
 		// Camera position is used in Paint, which calls this function.
 		// If the model changes, we have one frame where we are using a camera position calculated using the old model.
