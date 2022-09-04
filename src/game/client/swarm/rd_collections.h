@@ -49,6 +49,7 @@ private:
 	void OnMouseDoublePressed( vgui::MouseCode code ) override;
 
 	CUtlVector<MDLData_t> m_Models;
+	bool m_bDisplayChanged;
 };
 
 #ifdef RD_COLLECTIONS_WEAPONS_ENABLED

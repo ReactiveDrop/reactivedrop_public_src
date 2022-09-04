@@ -92,6 +92,8 @@ CRD_Swarmopedia_Model_Panel::CRD_Swarmopedia_Model_Panel( vgui::Panel *parent, c
 	{
 		SetIdentityMatrix( m_LightToWorld[i] );
 	}
+
+	m_bDisplayChanged = false;
 }
 
 void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDisplay )
@@ -102,6 +104,7 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 		return;
 	}
 
+	m_bDisplayChanged = true;
 	m_LightingState = pDisplay->LightingState;
 
 	ClearMergeMDLs();
@@ -160,14 +163,27 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 	QAngle angRot( 32.0, 0.0, 0.0 );
 	Vector vecOffset;
 
+	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
+	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+
 	AngleVectors( angRot, &vecOffset );
 	GetBoundingSphere( vecCenter, flRadius );
 	VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
 
-	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
-
 	SetCameraPositionAndAngles( vecPos, angRot );
-	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+
+	if ( m_bDisplayChanged )
+	{
+		m_bDisplayChanged = false;
+
+		// Camera position is used in Paint, which calls this function.
+		// If the model changes, we have one frame where we are using a camera position calculated using the old model.
+		// Render that frame as blank and then immediately render another frame as a workaround.
+
+		Paint();
+
+		return;
+	}
 
 	FOR_EACH_VEC( m_Models, i )
 	{
