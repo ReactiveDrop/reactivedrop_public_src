@@ -761,8 +761,8 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	if ( Builtin )
 	{
 		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
-		Assert( pWeaponInfo );
-		if ( !pWeaponInfo )
+		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
+		if ( !pWeaponInfo || pWeaponInfo->szClassName[0] == '\0' )
 		{
 			Warning( "Swarmopedia: no data for builtin weapon %s in %s\n", ClassName.Get(), pszPath );
 			return false;
@@ -856,6 +856,17 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		}
 	}
 
+	if ( Builtin )
+	{
+		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
+		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
+
+		FOR_EACH_VEC( Facts, i )
+		{
+			PostProcessBuiltin( Facts[i], pWeaponInfo );
+		}
+	}
+
 	return true;
 }
 
@@ -867,6 +878,51 @@ bool Weapon::IsSame( const Weapon *pWeapon ) const
 void Weapon::Merge( const Weapon *pWeapon )
 {
 	Assert( !"TODO" );
+}
+
+void Weapon::PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo )
+{
+	if ( !pFact->UseWeaponInfo )
+	{
+		return;
+	}
+
+	switch ( pFact->Type )
+	{
+	case WeaponFact::Type_T::Generic:
+		break;
+	case WeaponFact::Type_T::Numeric:
+		break;
+	case WeaponFact::Type_T::ShotgunPellets:
+		// TODO
+		break;
+	case WeaponFact::Type_T::DamagePerShot:
+		pFact->Base += pWeaponInfo->m_flBaseDamage;
+		break;
+	case WeaponFact::Type_T::LargeAlienDamageScale:
+		break;
+	case WeaponFact::Type_T::BulletSpread:
+		break;
+	case WeaponFact::Type_T::Piercing:
+		// TODO
+		break;
+	case WeaponFact::Type_T::FireRate:
+		// TODO
+		break;
+	case WeaponFact::Type_T::Ammo:
+		// TODO
+		break;
+	case WeaponFact::Type_T::Recharges:
+		// TODO
+		break;
+	case WeaponFact::Type_T::Secondary:
+		pFact->Caption += pWeaponInfo->szAltFireText;
+		break;
+	case WeaponFact::Type_T::RequirementLevel:
+		break;
+	case WeaponFact::Type_T::RequirementClass:
+		break;
+	}
 }
 
 WeaponFact::WeaponFact( const WeaponFact &copy ) :
@@ -885,7 +941,6 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	SubSkill{ copy.SubSkill },
 	SkillMultiplier{ copy.SkillMultiplier },
 	UseWeaponInfo{ copy.UseWeaponInfo },
-	Degrees{ copy.Degrees },
 	Flattened{ copy.Flattened },
 	Damaging{ copy.Damaging },
 	Class{ copy.Class }
@@ -1005,10 +1060,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	}
 
 	UseWeaponInfo = pKV->GetBool( "UseWeaponInfo", true );
-
-	Degrees = pKV->GetFloat( "Degrees" );
-	Flattened = pKV->GetBool( "Flattened" );
-
+	Flattened = pKV->GetBool( "Flattened", false );
 	Damaging = pKV->GetBool( "Damaging", true );
 
 	if ( const char *szClass = pKV->GetString( "Class", NULL ) )
@@ -1034,7 +1086,6 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			FStrEq( szName, "Skill" ) ||
 			FStrEq( szName, "SubSkill" ) ||
 			FStrEq( szName, "UseWeaponInfo" ) ||
-			FStrEq( szName, "Degrees" ) ||
 			FStrEq( szName, "Flattened" ) ||
 			FStrEq( szName, "Damaging" ) ||
 			FStrEq( szName, "Class" ) )

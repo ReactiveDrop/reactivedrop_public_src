@@ -689,7 +689,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
@@ -723,7 +723,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"FireRate" {
 				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
@@ -765,7 +765,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "7"
+				"Base" "7"
 			}
 			"FireRate" {}
 			"Ammo" {}
@@ -1027,7 +1027,7 @@
 				"CVar" "rd_deagle_bigalien_dmg_scale"
 			}
 			"BulletSpread" {
-				"Degrees" "15"
+				"Base" "15"
 				"Flattened" "1"
 			}
 			"FireRate" {}
@@ -1054,7 +1054,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "11"
+				"Base" "11"
 			}
 			"Piercing" {}
 			"FireRate" {}
@@ -1090,7 +1090,7 @@
 					"SkillMultiplier" "6"
 				}
 				"BulletSpread" {
-					"Degrees" "30"
+					"Base" "30"
 				}
 				"Ammo" {}
 			}
@@ -1152,7 +1152,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "20"
+				"Base" "20"
 				"Flattened" "1"
 			}
 			"FireRate" {}
@@ -1186,7 +1186,7 @@
 			}
 			"FireRate" {}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"Ammo" {}
 			"Secondary" {}

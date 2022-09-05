@@ -3,6 +3,8 @@
 #include "steam/steam_api.h"
 #include "asw_marine_skills.h"
 
+class CASW_WeaponInfo;
+
 namespace RD_Swarmopedia
 {
 	struct Alien;
@@ -230,6 +232,7 @@ namespace RD_Swarmopedia
 		bool ReadFromFile( const char *, KeyValues * );
 		bool IsSame( const Weapon *) const;
 		void Merge( const Weapon * );
+		void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo );
 	};
 
 	struct WeaponFact
@@ -280,7 +283,6 @@ namespace RD_Swarmopedia
 		bool UseWeaponInfo{ true };
 
 		// BulletSpread
-		float Degrees{ 0.0f };
 		bool Flattened{ false };
 
 		// Ammo

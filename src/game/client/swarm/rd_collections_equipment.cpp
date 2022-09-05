@@ -1,17 +1,12 @@
 #include "cbase.h"
 #include "rd_collections.h"
+#include "rd_swarmopedia.h"
 #include "asw_equipment_list.h"
-#include "asw_weapon_parse.h"
-#include "asw_weapon_shared.h"
-#include "asw_ammo_drop_shared.h"
-#include "ammodef.h"
 #include "asw_util_shared.h"
+#include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
-#include <vgui/ILocalize.h>
-#include "asw_model_panel.h"
-#include "asw_marine_profile.h"
-#include "rd_swarmopedia.h"
+#include "gameui/swarm/vgenericpanellist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -218,7 +213,8 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 		return;
 	}
 
-	TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
+	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
+	TabbedGridDetails *pTGD = pTab->m_pParent;
 	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
 	if ( pPanel )
 	{
@@ -234,13 +230,122 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 		}
 	}
 
-	pPanel = new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", m_pWeapon );
+	pPanel = new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon );
 	pTGD->SetOverridePanel( pPanel );
 }
 
-CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon )
+class CRD_Equipment_WeaponFact : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Equipment_WeaponFact, vgui::EditablePanel );
+public:
+	CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact ) :
+		BaseClass( parent, panelName )
+	{
+		m_pTab = pTab;
+		m_pFact = pFact;
+	}
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override
+	{
+		BaseClass::ApplySchemeSettings( pScheme );
+
+		using Type_T = RD_Swarmopedia::WeaponFact::Type_T;
+
+		const char *szIcon = "error";
+		const char *szCaption = "";
+		const char *szValue = NULL;
+		bool bHasValue = true;
+		bool bIgnoreCustomCaption = false;
+		bool bConVarIsOverride = false;
+
+		switch ( m_pFact->Type )
+		{
+		case Type_T::Generic:
+			bHasValue = false;
+			break;
+		case Type_T::Numeric:
+			break;
+		case Type_T::ShotgunPellets:
+			szCaption = "#rd_weapon_fact_shotgun_pellets";
+			break;
+		case Type_T::DamagePerShot:
+			szCaption = "#rd_weapon_fact_damage_per_shot";
+			bConVarIsOverride = true;
+			break;
+		case Type_T::LargeAlienDamageScale:
+			szCaption = "#rd_weapon_fact_large_alien_damage_scale";
+			break;
+		case Type_T::BulletSpread:
+			szCaption = m_pFact->Flattened ? "#rd_weapon_fact_bullet_spread_degrees_flattened" : "#rd_weapon_fact_bullet_spread_degrees";
+			break;
+		case Type_T::Piercing:
+			szCaption = "#rd_weapon_fact_piercing";
+			break;
+		case Type_T::FireRate:
+			szCaption = "#rd_weapon_fact_fire_rate";
+			break;
+		case Type_T::Ammo:
+			szCaption = "#rd_weapon_fact_ammo";
+			break;
+		case Type_T::Recharges:
+			szCaption = "#rd_weapon_fact_recharges";
+			break;
+		case Type_T::Secondary:
+			szCaption = "#rd_weapon_fact_secondary";
+			if ( !m_pFact->Caption.IsEmpty() )
+			{
+				szValue = m_pFact->Caption;
+			}
+
+			bIgnoreCustomCaption = true;
+			break;
+		case Type_T::RequirementLevel:
+			szCaption = "#rd_weapon_fact_requirement_level";
+			break;
+		case Type_T::RequirementClass:
+			szCaption = "#rd_weapon_fact_requirement_class";
+
+			switch ( m_pFact->Class )
+			{
+			case MARINE_CLASS_NCO:
+				szIcon = "swarm/ClassIcons/NCOClassIcon";
+				szValue = "#asw_requires_nco";
+				break;
+			case MARINE_CLASS_SPECIAL_WEAPONS:
+				szIcon = "swarm/ClassIcons/SpecialWeaponsClassIcon";
+				szValue = "#asw_requires_sw";
+				break;
+			case MARINE_CLASS_MEDIC:
+				szIcon = "swarm/ClassIcons/MedicClassIcon";
+				szValue = "#asw_requires_medic";
+				break;
+			case MARINE_CLASS_TECH:
+				szIcon = "swarm/ClassIcons/TechClassIcon";
+				szValue = "#asw_requires_tech";
+				break;
+			}
+
+			break;
+		}
+
+		if ( !bIgnoreCustomCaption && !m_pFact->Caption.IsEmpty() )
+		{
+			szCaption = m_pFact->Caption;
+		}
+
+		Assert( !"TODO" );
+	}
+
+	CRD_Collection_Tab_Equipment *m_pTab;
+	const RD_Swarmopedia::WeaponFact *m_pFact;
+};
+
+CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 	: BaseClass( parent, panelName )
 {
+	m_pGplFacts = new BaseModUI::GenericPanelList( this, "GplFacts", BaseModUI::GenericPanelList::ISM_ELEVATOR );
+
+	m_pTab = pTab;
 	m_pWeapon = pWeapon;
 }
 
@@ -248,8 +353,41 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	
-	Assert( !"TODO: Equipment collection big view" );
+	m_pGplFacts->RemoveAllPanelItems();
+
+	FOR_EACH_VEC( m_pWeapon->Facts, i )
+	{
+		AddWeaponFact( m_pWeapon->Facts[i] );
+	}
+}
+
+void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact )
+{
+	if ( !pFact->RequireCVar.IsEmpty() )
+	{
+		ConVarRef var( pFact->RequireCVar );
+		bool bCorrectValue;
+		if ( pFact->HaveRequireValue )
+		{
+			bCorrectValue = !V_stricmp( pFact->RequireValue.Get(), var.GetString() );
+		}
+		else
+		{
+			bCorrectValue = var.GetBool();
+		}
+
+		if ( !bCorrectValue )
+		{
+			return;
+		}
+	}
+
+	m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), false );
+
+	FOR_EACH_VEC( pFact->Facts, i )
+	{
+		AddWeaponFact( pFact->Facts[i] );
+	}
 }
 
 #endif

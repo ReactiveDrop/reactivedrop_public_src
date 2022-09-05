@@ -12,6 +12,7 @@ namespace RD_Swarmopedia
 	struct Alien;
 	struct Display;
 	struct Weapon;
+	struct WeaponFact;
 }
 namespace BaseModUI
 {
@@ -107,10 +108,15 @@ class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Equipment, vgui::EditablePanel );
 public:
-	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
+	void AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact );
+
+	BaseModUI::GenericPanelList *m_pGplFacts;
+
+	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::Weapon *m_pWeapon;
 };
 
