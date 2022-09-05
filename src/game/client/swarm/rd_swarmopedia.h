@@ -3,8 +3,6 @@
 #include "steam/steam_api.h"
 #include "asw_marine_skills.h"
 
-class CASW_WeaponInfo;
-
 namespace RD_Swarmopedia
 {
 	struct Alien;
@@ -234,7 +232,6 @@ namespace RD_Swarmopedia
 		bool ReadFromFile( const char *, KeyValues * );
 		bool IsSame( const Weapon *) const;
 		void Merge( const Weapon * );
-		void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo );
 	};
 
 	struct WeaponFact
@@ -265,8 +262,10 @@ namespace RD_Swarmopedia
 		CUtlString RequireCVar{};
 		CUtlString RequireValue{};
 		bool HaveRequireValue{ false };
+		bool UseWeaponInfo{ true };
 
 		// Numeric, etc.
+		int Precision{ 0 };
 		float Base{ 0.0f };
 		float MinimumValue{ -FLT_MAX };
 		float MaximumValue{ FLT_MAX };
@@ -281,14 +280,11 @@ namespace RD_Swarmopedia
 		CUtlStringList SkillMultiplierCVar{};
 		CUtlStringList SkillDivisorCVar{};
 
-		// ShotgunPellets
-		bool UseWeaponInfo{ true };
-
 		// BulletSpread
 		bool Flattened{ false };
 
 		// Ammo
-		bool Damaging{ true };
+		int ClipSize{ 0 };
 
 		// RequirementClass
 		ASW_Marine_Class Class{ MARINE_CLASS_UNDEFINED };

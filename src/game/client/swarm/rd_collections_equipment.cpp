@@ -338,29 +338,13 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
 	TabbedGridDetails *pTGD = pTab->m_pParent;
 	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
+	Assert( !pPanel );
 	if ( pPanel )
 	{
-		CRD_Collection_Panel_Equipment *pEquipmentPanel = dynamic_cast< CRD_Collection_Panel_Equipment * >( pPanel );
-		bool bStop = pEquipmentPanel && pEquipmentPanel->m_pWeapon == m_pWeapon;
-
-		if ( bStop && pTab->m_pBriefing )
-		{
-			pEquipmentPanel->OnCommand( "AcceptEquip" );
-
-			return;
-		}
-
-		pTGD->SetOverridePanel( NULL );
 		pPanel->MarkForDeletion();
-
-		if ( bStop )
-		{
-			return;
-		}
 	}
 
-	pPanel = new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon );
-	pTGD->SetOverridePanel( pPanel );
+	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon ) );
 }
 
 class CRD_Equipment_WeaponFact : public vgui::EditablePanel
@@ -372,20 +356,36 @@ public:
 	{
 		m_pTab = pTab;
 		m_pFact = pFact;
+
+		m_pIcon = new vgui::ImagePanel( this, "Icon" );
+		m_pLblName = new vgui::Label( this, "LblName", L"" );
+		m_pLblValue = new vgui::Label( this, "LblValue", L"" );
 	}
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override
 	{
+		LoadControlSettings( "Resource/UI/CollectionPanelEquipmentWeaponFact.res" );
+
 		BaseClass::ApplySchemeSettings( pScheme );
+
+		if ( !m_pFact )
+		{
+			m_pIcon->SetVisible( false );
+			m_pLblName->SetVisible( false );
+			m_pLblValue->SetVisible( false );
+
+			return;
+		}
 
 		using Type_T = RD_Swarmopedia::WeaponFact::Type_T;
 
-		const char *szIcon = "error";
+		const char *szIcon = "no icon was set for this weapon fact";
 		const char *szCaption = "";
 		const char *szValue = NULL;
 		bool bHasValue = true;
 		bool bIgnoreCustomCaption = false;
 		bool bConVarIsOverride = false;
+		bool bShowReciprocal = false;
 
 		switch ( m_pFact->Type )
 		{
@@ -412,6 +412,7 @@ public:
 			break;
 		case Type_T::FireRate:
 			szCaption = "#rd_weapon_fact_fire_rate";
+			bShowReciprocal = true;
 			break;
 		case Type_T::Ammo:
 			szCaption = "#rd_weapon_fact_ammo";
@@ -429,10 +430,10 @@ public:
 			bIgnoreCustomCaption = true;
 			break;
 		case Type_T::RequirementLevel:
-			szCaption = "#rd_weapon_fact_requirement_level";
+			szCaption = "#rd_weapon_fact_requires_level";
 			break;
 		case Type_T::RequirementClass:
-			szCaption = "#rd_weapon_fact_requirement_class";
+			szCaption = "#rd_weapon_fact_requires_class";
 
 			switch ( m_pFact->Class )
 			{
@@ -457,13 +458,140 @@ public:
 			break;
 		}
 
+		if ( !m_pFact->Icon.IsEmpty() )
+		{
+			szIcon = m_pFact->Icon;
+		}
+
 		if ( !bIgnoreCustomCaption && !m_pFact->Caption.IsEmpty() )
 		{
 			szCaption = m_pFact->Caption;
 		}
 
-		Assert( !"TODO" );
+		m_pIcon->SetImage( szIcon );
+		m_pLblName->SetText( szCaption );
+
+		if ( !bHasValue )
+		{
+			m_pLblName->SetWide( m_pLblName->GetWide() + m_pLblValue->GetWide() );
+			m_pLblName->SetFgColor( m_pLblValue->GetFgColor() );
+			m_pLblValue->SetVisible( false );
+
+			return;
+		}
+
+		if ( szValue )
+		{
+			m_pLblValue->SetText( szValue );
+			return;
+		}
+
+		const wchar_t *wszBefore = g_pVGuiLocalize->Find( VarArgs( "%s_before", szCaption ) );
+		const wchar_t *wszAfter = g_pVGuiLocalize->Find( VarArgs( "%s_after", szCaption ) );
+		if ( !wszBefore )
+			wszBefore = L"";
+		if ( !wszAfter )
+			wszAfter = L"";
+
+		float flBaseValue = m_pFact->Base;
+		if ( !m_pFact->CVar.IsEmpty() )
+		{
+			ConVarRef var( m_pFact->CVar );
+			if ( !bConVarIsOverride )
+			{
+				flBaseValue += var.GetFloat();
+			}
+			else if ( var.GetFloat() > 0 )
+			{
+				flBaseValue = var.GetFloat();
+			}
+		}
+
+		flBaseValue *= m_pFact->BaseMultiplier;
+		FOR_EACH_VEC( m_pFact->BaseMultiplierCVar, i )
+		{
+			ConVarRef var( m_pFact->BaseMultiplierCVar[i] );
+			flBaseValue *= var.GetFloat();
+		}
+		FOR_EACH_VEC( m_pFact->BaseDivisorCVar, i )
+		{
+			ConVarRef var( m_pFact->BaseDivisorCVar[i] );
+			flBaseValue /= var.GetFloat();
+		}
+
+		float flSkillValue = 0.0f;
+		if ( m_pFact->Skill != ASW_MARINE_SKILL_INVALID )
+		{
+			if ( m_pTab->m_pProfile )
+			{
+				flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill );
+			}
+			else
+			{
+				// TODO: better than this
+				int iMidSkill = ( MarineSkills()->GetMaxSkillPoints( m_pFact->Skill ) - 1 ) / 2 + 1;
+				flSkillValue = MarineSkills()->GetSkillBasedValue( NULL, m_pFact->Skill, m_pFact->SubSkill, iMidSkill );
+			}
+		}
+
+		flSkillValue *= m_pFact->SkillMultiplier;
+		FOR_EACH_VEC( m_pFact->SkillMultiplierCVar, i )
+		{
+			ConVarRef var( m_pFact->SkillMultiplierCVar[i] );
+			flSkillValue *= var.GetFloat();
+		}
+		FOR_EACH_VEC( m_pFact->SkillDivisorCVar, i )
+		{
+			ConVarRef var( m_pFact->SkillDivisorCVar[i] );
+			flSkillValue /= var.GetFloat();
+		}
+
+		if ( flBaseValue + flSkillValue < m_pFact->MinimumValue )
+		{
+			flBaseValue = m_pFact->MinimumValue - flSkillValue;
+		}
+		else if ( flBaseValue + flSkillValue > m_pFact->MaximumValue )
+		{
+			flBaseValue = m_pFact->MaximumValue - flSkillValue;
+		}
+
+		if ( bShowReciprocal )
+		{
+			flBaseValue += flSkillValue;
+			flSkillValue = 0.0f;
+
+			if ( flBaseValue != 0.0f )
+			{
+				flBaseValue = 1.0f / flBaseValue;
+			}
+		}
+
+		wchar_t buf[4096];
+		if ( m_pFact->Type == Type_T::Ammo && m_pFact->ClipSize )
+		{
+			wchar_t wszSize[32];
+			wchar_t wszClips[64];
+			V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
+			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", m_pFact->Precision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
+				2, wszSize, wszClips );
+		}
+		else if ( flBaseValue == 0.0f || flSkillValue == 0.0f )
+		{
+			V_snwprintf( buf, sizeof( buf ), L"%s%.*f%s", wszBefore, m_pFact->Precision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfter );
+		}
+		else
+		{
+			V_snwprintf( buf, sizeof( buf ), L"%s%.*f+%.*f%s", wszBefore, m_pFact->Precision, flBaseValue, m_pFact->Precision, flSkillValue, wszAfter );
+		}
+
+		m_pLblValue->SetText( buf );
 	}
+
+	vgui::ImagePanel *m_pIcon;
+	vgui::Label *m_pLblName;
+	vgui::Label *m_pLblValue;
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::WeaponFact *m_pFact;
@@ -480,6 +608,8 @@ CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *par
 
 void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
+	LoadControlSettings( "Resource/UI/CollectionPanelEquipment.res" );
+
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_pGplFacts->RemoveAllPanelItems();
@@ -538,7 +668,12 @@ void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::Weapon
 		}
 	}
 
-	m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), false );
+	if ( pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
+	{
+		m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, NULL ), true );
+	}
+
+	m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), true );
 
 	FOR_EACH_VEC( pFact->Facts, i )
 	{

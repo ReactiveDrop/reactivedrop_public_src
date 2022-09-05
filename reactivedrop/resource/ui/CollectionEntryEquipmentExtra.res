@@ -97,6 +97,22 @@
 		"font"		"DefaultExtraLarge"
 	}
 
+	"CantEquipLabel"
+	{
+		"fieldName"		"CantEquipLabel"
+		"xpos"		"2"
+		"ypos"		"3"
+		"wide"		"86"
+		"tall"		"86"
+		"ControlName"		"Label"
+		"textAlignment"		"center"
+		"fgcolor_override"		"255 255 255 255"
+		"bgcolor_override"		"0 0 0 224"
+		"font"		"DefaultMedium"
+		"wrap"		"1"
+		"centerwrap"		"1"
+	}
+
 	"ClassIcon"
 	{
 		"fieldName"		"ClassIcon"

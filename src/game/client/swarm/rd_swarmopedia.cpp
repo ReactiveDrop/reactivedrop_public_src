@@ -5,6 +5,7 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
 #include "asw_weapon_shared.h"
+#include "ammodef.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -748,12 +749,124 @@ Weapon::Weapon( const Weapon &copy ) :
 	Sources = copy.Sources;
 }
 
+static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo, bool bIsSecondary )
+{
+	if ( !pFact->UseWeaponInfo )
+	{
+		return;
+	}
+
+	switch ( pFact->Type )
+	{
+	case WeaponFact::Type_T::Generic:
+		break;
+	case WeaponFact::Type_T::Numeric:
+		break;
+	case WeaponFact::Type_T::ShotgunPellets:
+		pFact->Base += pWeaponInfo->m_iNumPellets;
+		break;
+	case WeaponFact::Type_T::DamagePerShot:
+		if ( pFact->Caption.IsEmpty() )
+		{
+			int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
+			switch ( iDamageType )
+			{
+			case DMG_BULLET:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_bullet";
+				break;
+			case DMG_SLASH:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_slash";
+				break;
+			case DMG_BURN:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_burn";
+				break;
+			case DMG_BLAST:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_blast";
+				break;
+			case DMG_SHOCK:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_shock";
+				break;
+			case DMG_SONIC:
+				// special case; untyped or non-damaging
+				break;
+			case DMG_NERVEGAS:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_gas";
+				break;
+			case DMG_BULLET | DMG_BUCKSHOT:
+				pFact->Caption = "#rd_weapon_fact_damage_per_shot_buckshot";
+				break;
+			default:
+				Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
+				DebuggerBreakIfDebugging();
+				break;
+			}
+		}
+
+		pFact->Base += pWeaponInfo->m_flBaseDamage;
+		break;
+	case WeaponFact::Type_T::LargeAlienDamageScale:
+		break;
+	case WeaponFact::Type_T::BulletSpread:
+		break;
+	case WeaponFact::Type_T::Piercing:
+		// TODO
+		break;
+	case WeaponFact::Type_T::FireRate:
+		pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
+		break;
+	case WeaponFact::Type_T::Ammo:
+		pFact->Base += bIsSecondary ? pWeaponInfo->iDefaultClip2 : pWeaponInfo->iDefaultClip1;
+
+		if ( pFact->ClipSize == 0 )
+		{
+			pFact->ClipSize = bIsSecondary ? pWeaponInfo->iMaxClip2 : pWeaponInfo->iMaxClip1;
+		}
+
+		// TODO: figure out where "AR2" ammo type has its max carry ignored normally
+		if ( pFact->ClipSize == WEAPON_NOCLIP || bIsSecondary || pWeaponInfo->iAmmoType <= 1 )
+		{
+			pFact->ClipSize = 0;
+		}
+		else
+		{
+			Ammo_t *pAmmo = GetAmmoDef()->GetAmmoOfIndex( pWeaponInfo->iAmmoType );
+			if ( pAmmo->pMaxCarry == USE_CVAR )
+			{
+				pFact->CVar = pAmmo->pMaxCarryCVar->GetName();
+			}
+			else
+			{
+				Assert( pAmmo->pMaxCarry != INFINITE_AMMO );
+				pFact->Base += pAmmo->pMaxCarry;
+			}
+		}
+
+		break;
+	case WeaponFact::Type_T::Recharges:
+		// TODO
+		break;
+	case WeaponFact::Type_T::Secondary:
+		pFact->Caption += pWeaponInfo->szAltFireText;
+
+		FOR_EACH_VEC( pFact->Facts, i )
+		{
+			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, true );
+		}
+		break;
+	case WeaponFact::Type_T::RequirementLevel:
+		break;
+	case WeaponFact::Type_T::RequirementClass:
+		break;
+	}
+}
+
 bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
 	ClassName = pKV->GetString( "ClassName" );
 	if ( ClassName.IsEmpty() )
 	{
 		Warning( "Swarmopedia: WEAPON entry missing ClassName in %s\n", pszPath );
+		DebuggerBreakIfDebugging();
 		return false;
 	}
 
@@ -767,6 +880,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( !pWeaponInfo || pWeaponInfo->szClassName[0] == '\0' )
 		{
 			Warning( "Swarmopedia: no data for builtin weapon %s in %s\n", ClassName.Get(), pszPath );
+			DebuggerBreakIfDebugging();
 			return false;
 		}
 
@@ -874,7 +988,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 		FOR_EACH_VEC( Facts, i )
 		{
-			PostProcessBuiltin( Facts[i], pWeaponInfo );
+			PostProcessBuiltin( Facts[i], pWeaponInfo, false );
 		}
 	}
 
@@ -891,51 +1005,6 @@ void Weapon::Merge( const Weapon *pWeapon )
 	Assert( !"TODO" );
 }
 
-void Weapon::PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo )
-{
-	if ( !pFact->UseWeaponInfo )
-	{
-		return;
-	}
-
-	switch ( pFact->Type )
-	{
-	case WeaponFact::Type_T::Generic:
-		break;
-	case WeaponFact::Type_T::Numeric:
-		break;
-	case WeaponFact::Type_T::ShotgunPellets:
-		// TODO
-		break;
-	case WeaponFact::Type_T::DamagePerShot:
-		pFact->Base += pWeaponInfo->m_flBaseDamage;
-		break;
-	case WeaponFact::Type_T::LargeAlienDamageScale:
-		break;
-	case WeaponFact::Type_T::BulletSpread:
-		break;
-	case WeaponFact::Type_T::Piercing:
-		// TODO
-		break;
-	case WeaponFact::Type_T::FireRate:
-		// TODO
-		break;
-	case WeaponFact::Type_T::Ammo:
-		// TODO
-		break;
-	case WeaponFact::Type_T::Recharges:
-		// TODO
-		break;
-	case WeaponFact::Type_T::Secondary:
-		pFact->Caption += pWeaponInfo->szAltFireText;
-		break;
-	case WeaponFact::Type_T::RequirementLevel:
-		break;
-	case WeaponFact::Type_T::RequirementClass:
-		break;
-	}
-}
-
 WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	Type{ copy.Type },
 	Icon{ copy.Icon },
@@ -943,6 +1012,8 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	RequireCVar{ copy.RequireCVar },
 	RequireValue{ copy.RequireValue },
 	HaveRequireValue{ copy.HaveRequireValue },
+	UseWeaponInfo{ copy.UseWeaponInfo },
+	Precision{ copy.Precision },
 	Base{ copy.Base },
 	MinimumValue{ copy.MinimumValue },
 	MaximumValue{ copy.MaximumValue },
@@ -951,9 +1022,8 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	Skill{ copy.Skill },
 	SubSkill{ copy.SubSkill },
 	SkillMultiplier{ copy.SkillMultiplier },
-	UseWeaponInfo{ copy.UseWeaponInfo },
 	Flattened{ copy.Flattened },
-	Damaging{ copy.Damaging },
+	ClipSize{ copy.ClipSize },
 	Class{ copy.Class }
 {
 	Helpers::CopyVector( BaseMultiplierCVar, copy.BaseMultiplierCVar );
@@ -977,18 +1047,22 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "ShotgunPellets" ) )
 	{
 		Type = Type_T::ShotgunPellets;
+		Precision = 0;
 	}
 	else if ( FStrEq( szName, "DamagePerShot" ) )
 	{
 		Type = Type_T::DamagePerShot;
+		Precision = 0;
 	}
 	else if ( FStrEq( szName, "LargeAlienDamageScale" ) )
 	{
 		Type = Type_T::LargeAlienDamageScale;
+		Precision = 1;
 	}
 	else if ( FStrEq( szName, "BulletSpread" ) )
 	{
 		Type = Type_T::BulletSpread;
+		Precision = 0;
 	}
 	else if ( FStrEq( szName, "Piercing" ) )
 	{
@@ -997,10 +1071,12 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "FireRate" ) )
 	{
 		Type = Type_T::FireRate;
+		Precision = 2;
 	}
 	else if ( FStrEq( szName, "Ammo" ) )
 	{
 		Type = Type_T::Ammo;
+		Precision = 0;
 	}
 	else if ( FStrEq( szName, "Recharges" ) )
 	{
@@ -1020,6 +1096,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "RequirementLevel" ) )
 	{
 		Type = Type_T::RequirementLevel;
+		Precision = 0;
 	}
 	else if ( FStrEq( szName, "RequirementClass" ) )
 	{
@@ -1028,6 +1105,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else
 	{
 		Warning( "Swarmopedia: unhandled weapon fact type %s in %s\n", szName, pszPath );
+		DebuggerBreakIfDebugging();
 		return false;
 	}
 
@@ -1040,6 +1118,9 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		HaveRequireValue = true;
 	}
 
+	UseWeaponInfo = pKV->GetBool( "UseWeaponInfo", true );
+	Precision = pKV->GetInt( "Precision", Precision );
+
 	Base = pKV->GetFloat( "Base" );
 	MinimumValue = pKV->GetFloat( "MinimumValue", -FLT_MAX );
 	MaximumValue = pKV->GetFloat( "MaximumValue", FLT_MAX );
@@ -1051,6 +1132,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( Skill == ASW_MARINE_SKILL_INVALID )
 		{
 			Warning( "Swarmopedia: Invalid skill %s in weapon fact in %s\n", szSkill, pszPath );
+			DebuggerBreakIfDebugging();
 		}
 	}
 
@@ -1059,6 +1141,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( Skill == ASW_MARINE_SKILL_INVALID )
 		{
 			Warning( "Swarmopedia: Cannot define subskill %s without valid skill in weapon fact in %s\n", szSubSkill, pszPath );
+			DebuggerBreakIfDebugging();
 		}
 		else
 		{
@@ -1066,13 +1149,13 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			if ( SubSkill == -1 )
 			{
 				Warning( "Swarmopedia: Invalid subskill %s for skill %s in weapon fact in %s\n", szSubSkill, SkillToString( Skill ), pszPath );
+				DebuggerBreakIfDebugging();
 			}
 		}
 	}
 
-	UseWeaponInfo = pKV->GetBool( "UseWeaponInfo", true );
 	Flattened = pKV->GetBool( "Flattened", false );
-	Damaging = pKV->GetBool( "Damaging", true );
+	ClipSize = pKV->GetInt( "ClipSize" );
 
 	if ( const char *szClass = pKV->GetString( "Class", NULL ) )
 	{
@@ -1080,6 +1163,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( Class == MARINE_CLASS_UNDEFINED )
 		{
 			Warning( "Swarmopedia: Invalid class %s in weapon fact in %s\n", szClass, pszPath );
+			DebuggerBreakIfDebugging();
 		}
 	}
 
@@ -1090,15 +1174,16 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			FStrEq( szName, "Caption" ) ||
 			FStrEq( szName, "RequireCVar" ) ||
 			FStrEq( szName, "RequireValue" ) ||
+			FStrEq( szName, "UseWeaponInfo" ) ||
+			FStrEq( szName, "Precision" ) ||
 			FStrEq( szName, "Base" ) ||
 			FStrEq( szName, "MinimumValue" ) ||
 			FStrEq( szName, "MaximumValue" ) ||
 			FStrEq( szName, "CVar" ) ||
 			FStrEq( szName, "Skill" ) ||
 			FStrEq( szName, "SubSkill" ) ||
-			FStrEq( szName, "UseWeaponInfo" ) ||
 			FStrEq( szName, "Flattened" ) ||
-			FStrEq( szName, "Damaging" ) ||
+			FStrEq( szName, "ClipSize" ) ||
 			FStrEq( szName, "Class" ) )
 		{
 			// handled
@@ -1140,6 +1225,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		else
 		{
 			Warning( "Swarmopedia: unhandled weapon fact key %s in %s\n", szName, pszPath );
+			DebuggerBreakIfDebugging();
 		}
 	}
 
