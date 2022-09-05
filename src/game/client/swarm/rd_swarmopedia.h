@@ -215,12 +215,14 @@ namespace RD_Swarmopedia
 		Weapon( const Weapon &copy );
 
 		CUtlString ClassName{};
+		int EquipIndex{ -1 };
 		CUtlString Name{};
 		CUtlString Icon{};
 		ASW_Marine_Class RequiredClass{ MARINE_CLASS_UNDEFINED };
 		int RequiredLevel{ 0 };
 		bool Builtin{ false };
 		bool Extra{ false };
+		bool Unique{ false };
 		bool Hidden{ false };
 		CUtlVectorAutoPurge<Display *> Display{};
 		CUtlVectorAutoPurge<Content *> Content{};

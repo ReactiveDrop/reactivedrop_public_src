@@ -7,6 +7,9 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 
+
+#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
+
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::Label;
 class CNB_Horiz_List;
@@ -57,20 +60,6 @@ public:
 	int m_nLastWeaponHash;
 };
 
+#endif
+
 #endif // _INCLUDED_NB_SELECT_WEAPON_PANEL_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

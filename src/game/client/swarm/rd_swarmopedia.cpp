@@ -732,12 +732,14 @@ void Content::Merge( const Content *pContent )
 
 Weapon::Weapon( const Weapon &copy ) :
 	ClassName{ copy.ClassName },
+	EquipIndex{ copy.EquipIndex },
 	Name{ copy.Name },
 	Icon{ copy.Icon },
 	RequiredClass{ copy.RequiredClass },
 	RequiredLevel{ copy.RequiredLevel },
 	Builtin{ copy.Builtin },
 	Extra{ copy.Extra },
+	Unique{ copy.Unique },
 	Hidden{ copy.Hidden }
 {
 	Helpers::CopyVector( Display, copy.Display );
@@ -789,16 +791,20 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		}
 
 		Extra = pWeaponInfo->m_bExtra;
+		Unique = pWeaponInfo->m_bUnique;
+
 		if ( Extra )
 		{
-			int i = ASWEquipmentList()->GetExtraIndex( ClassName );
-			Hidden = !ASWEquipmentList()->GetExtra( i )->m_bSelectableInBriefing;
+			EquipIndex = ASWEquipmentList()->GetExtraIndex( ClassName );
+			Hidden = EquipIndex == -1 || !ASWEquipmentList()->GetExtra( EquipIndex )->m_bSelectableInBriefing;
 		}
 		else
 		{
-			int i = ASWEquipmentList()->GetRegularIndex( ClassName );
-			Hidden = !ASWEquipmentList()->GetRegular( i )->m_bSelectableInBriefing;
+			EquipIndex = ASWEquipmentList()->GetRegularIndex( ClassName );
+			Hidden = EquipIndex == -1 || !ASWEquipmentList()->GetRegular( EquipIndex )->m_bSelectableInBriefing;
 		}
+
+		Assert( EquipIndex != -1 );
 
 		if ( RequiredLevel )
 		{
@@ -808,6 +814,11 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		if ( RequiredClass != MARINE_CLASS_UNDEFINED )
 		{
 			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "RequirementClass", "Class", ClassToString( RequiredClass ) ) ) );
+		}
+
+		if ( Unique )
+		{
+			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Caption", "#rd_weapon_fact_unique" ) ) );
 		}
 
 		Name = pWeaponInfo->szPrintName;

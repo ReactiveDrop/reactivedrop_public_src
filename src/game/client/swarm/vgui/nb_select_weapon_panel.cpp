@@ -20,6 +20,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
+
 extern ConVar rd_weapons_show_hidden;
 
 CNB_Select_Weapon_Panel::CNB_Select_Weapon_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
@@ -283,3 +285,5 @@ void CNB_Select_Weapon_Panel::OnCommand( const char *command )
 	}
 	BaseClass::OnCommand( command );
 }
+
+#endif

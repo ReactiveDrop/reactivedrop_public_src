@@ -7,6 +7,9 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 
+
+#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
+
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::ImagePanel;
 class vgui::Label;
@@ -45,10 +48,6 @@ public:
 	char m_szLastImage[ 256 ];
 };
 
+#endif
+
 #endif // _INCLUDED_NB_SELECT_WEAPON_ENTRY_H
-
-
-
-
-
-

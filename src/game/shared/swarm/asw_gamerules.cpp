@@ -256,7 +256,7 @@ extern ConVar old_radius_damage;
 
 				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
 				{
-					pMR->m_iWeaponsInSlots.Set( j, ASWGameRules()->ApplyWeaponSelectionRules( pMR, j, pMR->m_iWeaponsInSlots.Get( j ) ) );
+					pMR->m_iWeaponsInSlots.Set( j, ASWGameRules()->ApplyWeaponSelectionRules( j, pMR->m_iWeaponsInSlots.Get( j ) ) );
 				}
 			}
 		}
@@ -2198,7 +2198,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 							nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, "asw_weapon_rifle" );
 						}
 					}
-					nWeaponIndex = ApplyWeaponSelectionRules( m, iWpnSlot, nWeaponIndex );
+					nWeaponIndex = ApplyWeaponSelectionRules( iWpnSlot, nWeaponIndex );
 
 					if ( nWeaponIndex >= 0 )
 					{
@@ -2496,7 +2496,7 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		return;
 
 	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
-	iEquipIndex = ApplyWeaponSelectionRules( pMarineResource, iInvSlot, iEquipIndex );
+	iEquipIndex = ApplyWeaponSelectionRules( iInvSlot, iEquipIndex );
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
@@ -3601,7 +3601,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		{
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; iWpnSlot++ )
 			{
-				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( pMR, iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
+				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
 			}
 		}
 
@@ -9685,7 +9685,7 @@ static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &a
 // reactivedrop: This function reads rd_weapons_<slot>_allowed and checks whether
 // the iWeaponIndex is allowed for pMR marine. If not it returns an ID of an
 // alternative allowed weapon
-int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex )
+int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 {
 #ifdef CLIENT_DLL
 	if ( !rd_weapon_requirement_override.GetBool() )
