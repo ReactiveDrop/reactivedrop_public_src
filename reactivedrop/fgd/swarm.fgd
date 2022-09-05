@@ -3340,7 +3340,7 @@
 
 @PointClass base(ASWPickup) studio("models/weapons/flamethrower/flamethrower.mdl")= asw_pickup_flamer : "Flamer"
 [
-	BulletsInGun(integer) : "Bullets In Gun" : 60
+	BulletsInGun(integer) : "Bullets In Gun" : 80
 	Clips(integer) : "Clips" : 5
 	SecondaryBullets(integer) : "Secondary Bullets" : 0
 ]
