@@ -3535,12 +3535,12 @@ const char* CASW_Marine::Script_GetMarineName()
 	if ( !GetMarineResource() )
 		return "";
 
-	char *shortName = GetMarineResource()->GetProfile()->m_ShortName;
-	char *name = new char[14];
-	V_StrSlice( shortName, 10, V_strlen(shortName), name, 14 );
-	name[0] = toupper( name[0] );
+	wchar_t wszName[256];
+	TryLocalize( GetMarineResource()->GetProfile()->m_ShortName, wszName, sizeof( wszName ) );
+	static char s_szName[256];
+	V_UnicodeToUTF8( wszName, s_szName, sizeof( s_szName ) );
 
-	return name;
+	return s_szName;
 }
 
 void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char *pszCriteria )

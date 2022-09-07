@@ -85,10 +85,11 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 #else
 	bool UTIL_ASW_ClientsideGib(C_BaseAnimating* pEnt);
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );
-	void TryLocalize(const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes);
 	void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info );
 	void UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity );
 #endif
+
+void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes );
 
 void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, float localAmplitude, float frequency, float duration, ShakeCommand_t eCommand, const Vector &direction = Vector(0,0,0) );
 void ASW_TransmitShakeEvent( CASW_Inhabitable_NPC *pNPC, const ScreenShake_t &shake );
