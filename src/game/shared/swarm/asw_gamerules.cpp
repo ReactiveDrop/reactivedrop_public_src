@@ -256,7 +256,7 @@ extern ConVar old_radius_damage;
 
 				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
 				{
-					pMR->m_iWeaponsInSlots.Set( j, ASWGameRules()->ApplyWeaponSelectionRules( pMR, j, pMR->m_iWeaponsInSlots.Get( j ) ) );
+					pMR->m_iWeaponsInSlots.Set( j, ASWGameRules()->ApplyWeaponSelectionRules( j, pMR->m_iWeaponsInSlots.Get( j ) ) );
 				}
 			}
 		}
@@ -1214,7 +1214,7 @@ CAmmoDef *GetAmmoDef()
 		// rifle  DMG_BULLET
 		def.AddAmmoType("ASW_R",			DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_r",			"sk_npc_dmg_asw_r",			"sk_max_asw_r",			BULLET_IMPULSE(200, 1225),	0 );
 		// rifle grenades
-		def.AddAmmoType("ASW_R_G",			DMG_BURN,					TRACER_NONE,	"sk_plr_dmg_asw_r_g",			"sk_npc_dmg_asw_r_g",			"sk_max_asw_r_g",			0,	0 );
+		def.AddAmmoType("ASW_R_G",			DMG_BLAST,					TRACER_NONE,	"sk_plr_dmg_asw_r_g",			"sk_npc_dmg_asw_r_g",			"sk_max_asw_r_g",			0,	0 );
 		// autogun
 		def.AddAmmoType("ASW_AG",			DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_ag",		"sk_npc_dmg_asw_ag",		"sk_max_asw_ag",		BULLET_IMPULSE(200, 1225),	0 );
 		// shotgun
@@ -1256,9 +1256,9 @@ CAmmoDef *GetAmmoDef()
 		// PDW
 		def.AddAmmoType("ASW_PDW",			DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_pdw",			"sk_npc_dmg_asw_pdw",			"sk_max_asw_pdw",		BULLET_IMPULSE(200, 1225),	0 );
 		// Hand Grenades
-		def.AddAmmoType("ASW_HG",			DMG_BURN,					TRACER_NONE,	"sk_npc_dmg_asw_hg",			"sk_npc_dmg_asw_hg",			"sk_max_asw_hg",		BULLET_IMPULSE(200, 1225),	0 );
+		def.AddAmmoType("ASW_HG",			DMG_BLAST,					TRACER_NONE,	"sk_npc_dmg_asw_hg",			"sk_npc_dmg_asw_hg",			"sk_max_asw_hg",		BULLET_IMPULSE(200, 1225),	0 );
 		// Grenade launcher
-		def.AddAmmoType("ASW_GL",			DMG_BURN,					TRACER_NONE,	"sk_npc_dmg_asw_gl",			"sk_npc_dmg_asw_gl",			"sk_max_asw_gl",		BULLET_IMPULSE(200, 1225),	0 );
+		def.AddAmmoType("ASW_GL",			DMG_BLAST,					TRACER_NONE,	"sk_npc_dmg_asw_gl",			"sk_npc_dmg_asw_gl",			"sk_max_asw_gl",		BULLET_IMPULSE(200, 1225),	0 );
 		// Sniper Rifle
 		def.AddAmmoType("ASW_SNIPER",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_npc_dmg_asw_sniper",		"sk_npc_dmg_asw_sniper",			"sk_max_asw_sniper",		BULLET_IMPULSE(200, 1225),	0 );
 		// desert eagle
@@ -1268,7 +1268,7 @@ CAmmoDef *GetAmmoDef()
 		// 
 		def.AddAmmoType( "ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
 		// gas_grenades
-		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_SONIC,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
+		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_NERVEGAS,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
 		// heavy rifle
 		def.AddAmmoType( "ASW_HR",			DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_hr",			"sk_npc_dmg_asw_hr",			"sk_max_asw_hr",			BULLET_IMPULSE(200, 1225),	0 );
 		// heavy rifle secondary
@@ -2198,7 +2198,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 							nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, "asw_weapon_rifle" );
 						}
 					}
-					nWeaponIndex = ApplyWeaponSelectionRules( m, iWpnSlot, nWeaponIndex );
+					nWeaponIndex = ApplyWeaponSelectionRules( iWpnSlot, nWeaponIndex );
 
 					if ( nWeaponIndex >= 0 )
 					{
@@ -2496,7 +2496,7 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		return;
 
 	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
-	iEquipIndex = ApplyWeaponSelectionRules( pMarineResource, iInvSlot, iEquipIndex );
+	iEquipIndex = ApplyWeaponSelectionRules( iInvSlot, iEquipIndex );
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
@@ -3601,7 +3601,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		{
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; iWpnSlot++ )
 			{
-				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( pMR, iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
+				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
 			}
 		}
 
@@ -9685,7 +9685,7 @@ static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &a
 // reactivedrop: This function reads rd_weapons_<slot>_allowed and checks whether
 // the iWeaponIndex is allowed for pMR marine. If not it returns an ID of an
 // alternative allowed weapon
-int CAlienSwarm::ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex )
+int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 {
 #ifdef CLIENT_DLL
 	if ( !rd_weapon_requirement_override.GetBool() )

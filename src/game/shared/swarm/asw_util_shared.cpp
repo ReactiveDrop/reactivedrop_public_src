@@ -1088,22 +1088,6 @@ CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity )
 	return pBurningEffect;
 }
 
-// attempts to localize a string
-//  if it fails, it just fills the destination with the token name
-void TryLocalize(const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes)
-{
-	if ( token[0] == '#' )
-	{
-		wchar_t *pLocalized = g_pVGuiLocalize->Find( token );
-		if ( pLocalized )
-		{
-			V_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
-			return;
-		}
-	}
-	g_pVGuiLocalize->ConvertANSIToUnicode( token, unicode, unicodeBufferSizeInBytes);
-}
-
 ConVar asw_floating_number_type( "asw_floating_number_type", "0", FCVAR_NONE, "1 = vgui, 2 = particles" );
 
 void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
@@ -1274,6 +1258,21 @@ void __MsgFunc_ASWDamageNumber( bf_read &msg )
 USER_MESSAGE_REGISTER( ASWDamageNumber );
 #endif
 
+// attempts to localize a string
+//  if it fails, it just fills the destination with the token name
+void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes )
+{
+	if ( token[0] == '#' )
+	{
+		wchar_t *pLocalized = g_pVGuiLocalize->Find( token );
+		if ( pLocalized )
+		{
+			V_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
+			return;
+		}
+	}
+	g_pVGuiLocalize->ConvertANSIToUnicode( token, unicode, unicodeBufferSizeInBytes );
+}
 
 /// @desc This function can be used as a convenience for when you want to
 /// rapidly experiment with different screenshakes for a gameplay feature.

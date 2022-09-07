@@ -93,6 +93,7 @@ public:
 
 	virtual int DisplayClip1() override;
 	virtual int DisplayMaxClip1() override;
+	virtual void FinishReload() override;
 private:
 #ifdef CLIENT_DLL
 	bool m_bShouldUpdateActivityClient;

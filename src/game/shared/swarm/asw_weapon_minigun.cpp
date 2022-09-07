@@ -638,3 +638,10 @@ int CASW_Weapon_Minigun::DisplayMaxClip1()
 {
 	return GetMaxClip1() * 2;
 }
+
+void CASW_Weapon_Minigun::FinishReload()
+{
+	BaseClass::FinishReload();
+
+	m_bHalfShot = false;
+}

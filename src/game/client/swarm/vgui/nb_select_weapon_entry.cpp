@@ -19,6 +19,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
+
 extern ConVar rd_weapons_regular_class_unrestricted;
 extern ConVar rd_weapons_extra_class_unrestricted;
 
@@ -269,7 +272,7 @@ void CNB_Select_Weapon_Entry::OnThink()
 
 			if ( pMR->GetProfileIndex() == m_nProfileIndex )
 			{
-				if ( ASWGameRules()->ApplyWeaponSelectionRules( pMR, m_nInventorySlot, m_nEquipIndex ) != m_nEquipIndex )
+				if ( ASWGameRules()->ApplyWeaponSelectionRules( m_nInventorySlot, m_nEquipIndex ) != m_nEquipIndex )
 				{
 					// greay out a not allowed weapon
 					m_bCanEquip = false;
@@ -347,3 +350,5 @@ void CNB_Select_Weapon_Entry::OnCommand( const char *command )
 	}
 	BaseClass::OnCommand( command );
 }
+
+#endif

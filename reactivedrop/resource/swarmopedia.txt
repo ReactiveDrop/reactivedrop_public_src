@@ -689,18 +689,18 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
 			"Secondary" {
 				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_DMG"
 				}
-				"Ammo" {
-					"Damaging" "0" // damage is done by grenade entity, not weapon
-				}
+				"Ammo" {}
 				"Numeric" {
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
@@ -723,7 +723,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"FireRate" {
 				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
@@ -736,10 +736,12 @@
 				"Caption" "#rd_weapon_fact_aim_assist"
 			}
 			"Secondary" {
-				// TODO: does 1 point of DMG_SHOCK
-				"Ammo" {
-					"Damaging" "0" // damage is done by grenade entity, not weapon
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
+					"Base" "1"
 				}
+				"Ammo" {}
 				"Numeric" {
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
@@ -765,7 +767,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "7"
+				"Base" "7"
 			}
 			"FireRate" {}
 			"Ammo" {}
@@ -811,7 +813,7 @@
 			"Ammo" {
 				"RequireCVar" "rd_infinite_healgrenade"
 				"RequireValue" "0"
-				"Damaging" "0"
+				"UseWeaponInfo" "0"
 				"CVar" "asw_bonus_charges"
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
@@ -841,7 +843,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "rd_ammo_bonus"
 			}
 			"Generic" {
@@ -974,6 +975,7 @@
 				"Skill" "ASW_MARINE_SKILL_MELEE"
 				"SubSkill" "ASW_MARINE_SUBSKILL_MELEE_DMG"
 				"BaseMultiplier" "0.5"
+				"Precision" "1"
 			}
 			"FireRate" {
 				"UseWeaponInfo" "0"
@@ -1027,7 +1029,7 @@
 				"CVar" "rd_deagle_bigalien_dmg_scale"
 			}
 			"BulletSpread" {
-				"Degrees" "15"
+				"Base" "15"
 				"Flattened" "1"
 			}
 			"FireRate" {}
@@ -1054,7 +1056,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "11"
+				"Base" "11"
 			}
 			"Piercing" {}
 			"FireRate" {}
@@ -1090,7 +1092,7 @@
 					"SkillMultiplier" "6"
 				}
 				"BulletSpread" {
-					"Degrees" "30"
+					"Base" "30"
 				}
 				"Ammo" {}
 			}
@@ -1127,9 +1129,7 @@
 		"ClassName" "asw_weapon_fire_extinguisher"
 		"Builtin" "1"
 		"Facts" {
-			"Ammo" {
-				"Damaging" "0"
-			}
+			"Ammo" {}
 			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_extinguishes_fires"
@@ -1152,7 +1152,7 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
 			"BulletSpread" {
-				"Degrees" "20"
+				"Base" "20"
 				"Flattened" "1"
 			}
 			"FireRate" {}
@@ -1186,7 +1186,7 @@
 			}
 			"FireRate" {}
 			"BulletSpread" {
-				"Degrees" "3"
+				"Base" "3"
 			}
 			"Ammo" {}
 			"Secondary" {}
@@ -1212,7 +1212,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
@@ -1249,7 +1248,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
 			}
 			"Numeric" {
@@ -1284,7 +1282,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
@@ -1328,7 +1325,6 @@
 				"CVar" "asw_electrified_armor_duration"
 			}
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
@@ -1385,7 +1381,6 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
 			}
 			"Ammo" {
-				"Damaging" "0" // damage is done by grenade entity, not weapon
 				"CVar" "asw_bonus_charges"
 			}
 			"Numeric" {
@@ -1422,7 +1417,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0" // damage is done by the gas cloud, not the grenade
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
@@ -1482,7 +1476,6 @@
 		"Builtin" "1"
 		"Facts" {
 			"Ammo" {
-				"Damaging" "0"
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {

@@ -213,12 +213,14 @@ namespace RD_Swarmopedia
 		Weapon( const Weapon &copy );
 
 		CUtlString ClassName{};
+		int EquipIndex{ -1 };
 		CUtlString Name{};
 		CUtlString Icon{};
 		ASW_Marine_Class RequiredClass{ MARINE_CLASS_UNDEFINED };
 		int RequiredLevel{ 0 };
 		bool Builtin{ false };
 		bool Extra{ false };
+		bool Unique{ false };
 		bool Hidden{ false };
 		CUtlVectorAutoPurge<Display *> Display{};
 		CUtlVectorAutoPurge<Content *> Content{};
@@ -260,8 +262,10 @@ namespace RD_Swarmopedia
 		CUtlString RequireCVar{};
 		CUtlString RequireValue{};
 		bool HaveRequireValue{ false };
+		bool UseWeaponInfo{ true };
 
 		// Numeric, etc.
+		int Precision{ 0 };
 		float Base{ 0.0f };
 		float MinimumValue{ -FLT_MAX };
 		float MaximumValue{ FLT_MAX };
@@ -276,15 +280,11 @@ namespace RD_Swarmopedia
 		CUtlStringList SkillMultiplierCVar{};
 		CUtlStringList SkillDivisorCVar{};
 
-		// ShotgunPellets
-		bool UseWeaponInfo{ true };
-
 		// BulletSpread
-		float Degrees{ 0.0f };
 		bool Flattened{ false };
 
 		// Ammo
-		bool Damaging{ true };
+		int ClipSize{ 0 };
 
 		// RequirementClass
 		ASW_Marine_Class Class{ MARINE_CLASS_UNDEFINED };

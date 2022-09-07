@@ -6,12 +6,14 @@
 
 class CASW_WeaponInfo;
 class CASW_Marine_Profile;
+class IBriefing;
 namespace RD_Swarmopedia
 {
 	struct Collection;
 	struct Alien;
 	struct Display;
 	struct Weapon;
+	struct WeaponFact;
 }
 namespace BaseModUI
 {
@@ -52,21 +54,25 @@ private:
 	bool m_bDisplayChanged;
 };
 
-#ifdef RD_COLLECTIONS_WEAPONS_ENABLED
+#if defined(RD_COLLECTIONS_WEAPONS_ENABLED) || defined(RD_COLLECTIONS_WEAPONS_CHOOSER)
 
 class CRD_Collection_Tab_Equipment : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
 public:
-	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, bool bExtra );
+	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, int nInventorySlot );
 	virtual ~CRD_Collection_Tab_Equipment();
 
 	virtual TGD_Grid *CreateGrid() override;
 	virtual TGD_Details *CreateDetails() override;
 
+	void SetBriefing( IBriefing *pBriefing, int nLobbySlot );
+
 	RD_Swarmopedia::Collection *m_pCollection;
 	CASW_Marine_Profile *m_pProfile;
-	bool m_bExtra;
+	int m_nInventorySlot;
+	IBriefing *m_pBriefing;
+	int m_nLobbySlot;
 };
 
 class CRD_Collection_Details_Equipment : public TGD_Details
@@ -87,18 +93,19 @@ class CRD_Collection_Entry_Equipment : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Equipment, TGD_Entry );
 public:
-	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, int iEquipIndex, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;
 
-	int m_iEquipIndex;
 	const RD_Swarmopedia::Weapon *m_pWeapon;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pLockedIcon;
 	vgui::Label *m_pLockedOverlay;
 	vgui::Label *m_pLockedLabel;
+	vgui::Label *m_pCantEquipLabel;
+	vgui::Label *m_pNewLabel;
 	vgui::ImagePanel *m_pClassIcon;
 	vgui::Label *m_pClassLabel;
 };
@@ -107,10 +114,16 @@ class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Equipment, vgui::EditablePanel );
 public:
-	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void OnCommand( const char *command ) override;
 
+	void AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact );
+
+	BaseModUI::GenericPanelList *m_pGplFacts;
+
+	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::Weapon *m_pWeapon;
 };
 

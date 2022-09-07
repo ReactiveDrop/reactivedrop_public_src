@@ -535,7 +535,7 @@ public:
 	bool m_bQuickStart;
 
 #endif
-	int ApplyWeaponSelectionRules( CASW_Marine_Resource *pMR, int iEquipSlot, int iWeaponIndex );
+	int ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex );
 
 	bool IsCarnageMode() { return (m_iSpecialMode & ASW_SM_CARNAGE) != 0; }	
 	bool IsUberMode() { return (m_iSpecialMode & ASW_SM_UBER) != 0; }	
