@@ -945,7 +945,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 		if ( Unique )
 		{
-			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Caption", "#rd_weapon_fact_unique" ) ) );
+			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Icon", "swarm/swarmopedia/fact/unique", "Caption", "#rd_weapon_fact_unique" ) ) );
 		}
 
 		Name = pWeaponInfo->szPrintName;
@@ -978,6 +978,22 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		else
 		{
 			pDisplay->Models[i]->Skin = pWeaponInfo->m_iPlayerModelSkin;
+		}
+
+		if ( KeyValues *pTransform = pKV->FindKey( "BuiltinModelTransform" ) )
+		{
+			FOR_EACH_VEC( pDisplay->Models, j )
+			{
+				Model *pModel = pDisplay->Models[j];
+				pModel->Color = pTransform->GetColor( "Color", pModel->Color );
+				pModel->Pitch = pTransform->GetFloat( "Pitch", pModel->Pitch );
+				pModel->Yaw = pTransform->GetFloat( "Yaw", pModel->Yaw );
+				pModel->Roll = pTransform->GetFloat( "Roll", pModel->Roll );
+				pModel->X = pTransform->GetFloat( "X", pModel->X );
+				pModel->Y = pTransform->GetFloat( "Y", pModel->Y );
+				pModel->Z = pTransform->GetFloat( "Z", pModel->Z );
+				pModel->Scale = pTransform->GetFloat( "Scale", pModel->Scale );
+			}
 		}
 
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};

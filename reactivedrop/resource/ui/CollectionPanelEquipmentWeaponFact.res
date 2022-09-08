@@ -22,7 +22,7 @@
 	"SkillIcon"
 	{
 		"fieldName"		"SkillIcon"
-		"xpos"		"270"
+		"xpos"		"272"
 		"ypos"		"0"
 		"wide"		"20"
 		"tall"		"20"
@@ -49,7 +49,7 @@
 		"fieldName"		"LblValue"
 		"xpos"		"100"
 		"ypos"		"0"
-		"wide"		"190"
+		"wide"		"192"
 		"tall"		"20"
 		"ControlName"		"Label"
 		"font"		"DefaultMedium"

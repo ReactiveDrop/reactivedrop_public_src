@@ -36,6 +36,8 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
 	m_pTabStrip = new vgui::Panel( this, "TabStrip" );
 	m_pTabLeftHint = new vgui::Label( this, "TabLeftHint", "#GameUI_Icons_LEFT_BUMPER" );
 	m_pTabRightHint = new vgui::Label( this, "TabRightHint", "#GameUI_Icons_RIGHT_BUMPER" );
+
+	m_pLastTabConVar = NULL;
 }
 
 void TabbedGridDetails::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -276,6 +278,13 @@ void TabbedGridDetails::ShowFullScreen()
 	SetVisible( true );
 }
 
+void TabbedGridDetails::RememberTabIndex( ConVar *pCVar )
+{
+	ActivateTab( m_Tabs[clamp<int>( pCVar->GetInt(), 0, m_Tabs.Count() - 1 )] );
+
+	m_pLastTabConVar = pCVar;
+}
+
 void TabbedGridDetails::AddTab( TGD_Tab *pTab )
 {
 	Assert( pTab );
@@ -348,6 +357,12 @@ void TabbedGridDetails::ActivateTab( TGD_Tab *pTab )
 
 	if ( pTab )
 	{
+		if ( m_pLastTabConVar )
+		{
+			m_pLastTabConVar->SetValue( m_Tabs.Find( pTab ) );
+			engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+		}
+
 		pTab->ActivateTab();
 	}
 }

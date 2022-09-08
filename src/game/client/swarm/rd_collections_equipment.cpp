@@ -6,6 +6,7 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
+#include <vgui_controls/TextImage.h>
 #include "gameui/swarm/vgenericpanellist.h"
 #include "ibriefing.h"
 #include "asw_medal_store.h"
@@ -202,6 +203,15 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 		m_pModelPanel->SetDisplay( pEquip->m_pWeapon->Display[0] );
 
 		m_pWeaponNameLabel->SetText( pEquip->m_pWeapon->Display[0]->Caption );
+
+		m_pWeaponNameLabel->GetTextImage()->ResizeImageToContentMaxWidth( m_pWeaponNameLabel->GetWide() );
+		int iTall = m_pWeaponNameLabel->GetTextImage()->GetTall();
+		int iDiff = iTall - m_pWeaponNameLabel->GetTall();
+		m_pWeaponNameLabel->SetTall( iTall );
+		int x, y;
+		m_pWeaponDescLabel->GetPos( x, y );
+		y += iDiff;
+		m_pWeaponDescLabel->SetPos( x, y );
 	}
 	else
 	{

@@ -696,16 +696,19 @@
 			"Secondary" {
 				"DamagePerShot" {
 					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
 					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_DMG"
 				}
 				"Ammo" {}
 				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/projectile_speed"
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
 				}
 				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
 					"Caption" "#rd_weapon_fact_blast_radius"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
@@ -733,22 +736,27 @@
 			}
 			"Ammo" {}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/aim_assist"
 				"Caption" "#rd_weapon_fact_aim_assist"
 			}
 			"Secondary" {
 				"DamagePerShot" {
 					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_shock"
 					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
 					"Base" "1"
 				}
 				"Ammo" {
+					"Icon" "swarm/swarmopedia/fact/ammo_shock"
 					"Caption" "#rd_weapon_fact_ammo_shock"
 				}
 				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/projectile_speed"
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
 				}
 				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
 					"Caption" "#rd_weapon_fact_blast_radius"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
@@ -771,9 +779,11 @@
 			"FireRate" {}
 			"Ammo" {}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heavy"
 				"Caption" "#rd_weapon_fact_slow_movement_while_held"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/aim_assist"
 				"Caption" "#rd_weapon_fact_aim_assist"
 			}
 		}
@@ -788,9 +798,14 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pistol"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-1"
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_drone_bonus_damage"
 			}
 		}
@@ -798,9 +813,13 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_sentry"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
 		}
@@ -818,7 +837,8 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_bubble_radius"
+				"Icon" "swarm/swarmopedia/fact/buff_radius"
+				"Caption" "#rd_weapon_fact_buff_radius"
 				"Base" "100"
 			}
 			"Numeric" {
@@ -852,6 +872,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_ammo_bag"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_explodes_if_burned"
@@ -875,6 +898,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_railgun"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-4"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -894,6 +920,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pdw"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -930,6 +959,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_sentry_freeze"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -958,6 +990,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_sentry_flamer"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -985,6 +1020,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_sentry_cannon"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -1018,6 +1056,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_deagle"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Z" "-4"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_deagle_dmg_base"
@@ -1047,6 +1088,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_devastator"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-6"
+		}
 		"Facts" {
 			"ShotgunPellets" {}
 			"DamagePerShot" {
@@ -1107,6 +1151,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heavy_rifle"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-6"
+		}
 		"Facts" {
 			// TODO
 			"LargeAlienDamageScale" {
@@ -1127,6 +1174,11 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_fire_extinguisher"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"X" "-3"
+			"Z" "8"
+			"Pitch" "90"
+		}
 		"Facts" {
 			"Ammo" {}
 			"FireRate" {}
@@ -1195,6 +1247,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_medkit"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -1202,6 +1257,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_welder"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-8"
+			"Yaw" "180"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -1250,7 +1309,8 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Numeric" {
-				"Caption" "#rd_weapon_fact_bubble_radius"
+				"Icon" "swarm/swarmopedia/fact/buff_radius"
+				"Caption" "#rd_weapon_fact_buff_radius"
 				"Base" "120"
 			}
 			"Numeric" {
@@ -1262,6 +1322,7 @@
 			}
 			"Generic" {
 				"RequireCVar" "rd_buff_grenade_attach_sw"
+				"Icon" "swarm/ClassIcons/SpecialWeaponsClassIcon"
 				"Caption" "#rd_weapon_fact_special_weapons_carry"
 			}
 		}
@@ -1279,6 +1340,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_freeze_grenades"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "270"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -1337,6 +1401,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_mines"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -1347,6 +1414,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_flashlight"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_flashlight_toggle"
@@ -1373,6 +1443,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_grenades"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "270"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_grenades_dmg_base"
