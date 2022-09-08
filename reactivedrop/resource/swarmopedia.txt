@@ -741,7 +741,9 @@
 					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
 					"Base" "1"
 				}
-				"Ammo" {}
+				"Ammo" {
+					"Caption" "#rd_weapon_fact_ammo_shock"
+				}
 				"Numeric" {
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
@@ -750,9 +752,6 @@
 					"Caption" "#rd_weapon_fact_blast_radius"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
-				}
-				"Generic" {
-					"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
 				}
 			}
 		}

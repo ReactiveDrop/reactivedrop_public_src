@@ -351,251 +351,281 @@ class CRD_Equipment_WeaponFact : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Equipment_WeaponFact, vgui::EditablePanel );
 public:
-	CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact ) :
-		BaseClass( parent, panelName )
-	{
-		m_pTab = pTab;
-		m_pFact = pFact;
+	CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact );
 
-		m_pIcon = new vgui::ImagePanel( this, "Icon" );
-		m_pLblName = new vgui::Label( this, "LblName", L"" );
-		m_pLblValue = new vgui::Label( this, "LblValue", L"" );
-	}
-
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override
-	{
-		LoadControlSettings( "Resource/UI/CollectionPanelEquipmentWeaponFact.res" );
-
-		BaseClass::ApplySchemeSettings( pScheme );
-
-		if ( !m_pFact )
-		{
-			m_pIcon->SetVisible( false );
-			m_pLblName->SetVisible( false );
-			m_pLblValue->SetVisible( false );
-
-			return;
-		}
-
-		using Type_T = RD_Swarmopedia::WeaponFact::Type_T;
-
-		const char *szIcon = "no icon was set for this weapon fact";
-		const char *szCaption = "";
-		const char *szValue = NULL;
-		bool bHasValue = true;
-		bool bIgnoreCustomCaption = false;
-		bool bConVarIsOverride = false;
-		bool bShowReciprocal = false;
-
-		switch ( m_pFact->Type )
-		{
-		case Type_T::Generic:
-			bHasValue = false;
-			break;
-		case Type_T::Numeric:
-			break;
-		case Type_T::ShotgunPellets:
-			szCaption = "#rd_weapon_fact_shotgun_pellets";
-			break;
-		case Type_T::DamagePerShot:
-			szCaption = "#rd_weapon_fact_damage_per_shot";
-			bConVarIsOverride = true;
-			break;
-		case Type_T::LargeAlienDamageScale:
-			szCaption = "#rd_weapon_fact_large_alien_damage_scale";
-			break;
-		case Type_T::BulletSpread:
-			szCaption = m_pFact->Flattened ? "#rd_weapon_fact_bullet_spread_degrees_flattened" : "#rd_weapon_fact_bullet_spread_degrees";
-			break;
-		case Type_T::Piercing:
-			szCaption = "#rd_weapon_fact_piercing";
-			break;
-		case Type_T::FireRate:
-			szCaption = "#rd_weapon_fact_fire_rate";
-			bShowReciprocal = true;
-			break;
-		case Type_T::Ammo:
-			szCaption = "#rd_weapon_fact_ammo";
-			break;
-		case Type_T::Recharges:
-			szCaption = "#rd_weapon_fact_recharges";
-			break;
-		case Type_T::Secondary:
-			szCaption = "#rd_weapon_fact_secondary";
-			if ( !m_pFact->Caption.IsEmpty() )
-			{
-				szValue = m_pFact->Caption;
-			}
-
-			bIgnoreCustomCaption = true;
-			break;
-		case Type_T::RequirementLevel:
-			szCaption = "#rd_weapon_fact_requires_level";
-			break;
-		case Type_T::RequirementClass:
-			szCaption = "#rd_weapon_fact_requires_class";
-
-			switch ( m_pFact->Class )
-			{
-			case MARINE_CLASS_NCO:
-				szIcon = "swarm/ClassIcons/NCOClassIcon";
-				szValue = "#asw_requires_nco";
-				break;
-			case MARINE_CLASS_SPECIAL_WEAPONS:
-				szIcon = "swarm/ClassIcons/SpecialWeaponsClassIcon";
-				szValue = "#asw_requires_sw";
-				break;
-			case MARINE_CLASS_MEDIC:
-				szIcon = "swarm/ClassIcons/MedicClassIcon";
-				szValue = "#asw_requires_medic";
-				break;
-			case MARINE_CLASS_TECH:
-				szIcon = "swarm/ClassIcons/TechClassIcon";
-				szValue = "#asw_requires_tech";
-				break;
-			}
-
-			break;
-		}
-
-		if ( !m_pFact->Icon.IsEmpty() )
-		{
-			szIcon = m_pFact->Icon;
-		}
-
-		if ( !bIgnoreCustomCaption && !m_pFact->Caption.IsEmpty() )
-		{
-			szCaption = m_pFact->Caption;
-		}
-
-		m_pIcon->SetImage( szIcon );
-		m_pLblName->SetText( szCaption );
-
-		if ( !bHasValue )
-		{
-			m_pLblName->SetWide( m_pLblName->GetWide() + m_pLblValue->GetWide() );
-			m_pLblName->SetFgColor( m_pLblValue->GetFgColor() );
-			m_pLblValue->SetVisible( false );
-
-			return;
-		}
-
-		if ( szValue )
-		{
-			m_pLblValue->SetText( szValue );
-			return;
-		}
-
-		const wchar_t *wszBefore = g_pVGuiLocalize->Find( VarArgs( "%s_before", szCaption ) );
-		const wchar_t *wszAfter = g_pVGuiLocalize->Find( VarArgs( "%s_after", szCaption ) );
-		if ( !wszBefore )
-			wszBefore = L"";
-		if ( !wszAfter )
-			wszAfter = L"";
-
-		float flBaseValue = m_pFact->Base;
-		if ( !m_pFact->CVar.IsEmpty() )
-		{
-			ConVarRef var( m_pFact->CVar );
-			if ( !bConVarIsOverride )
-			{
-				flBaseValue += var.GetFloat();
-			}
-			else if ( var.GetFloat() > 0 )
-			{
-				flBaseValue = var.GetFloat();
-			}
-		}
-
-		flBaseValue *= m_pFact->BaseMultiplier;
-		FOR_EACH_VEC( m_pFact->BaseMultiplierCVar, i )
-		{
-			ConVarRef var( m_pFact->BaseMultiplierCVar[i] );
-			flBaseValue *= var.GetFloat();
-		}
-		FOR_EACH_VEC( m_pFact->BaseDivisorCVar, i )
-		{
-			ConVarRef var( m_pFact->BaseDivisorCVar[i] );
-			flBaseValue /= var.GetFloat();
-		}
-
-		float flSkillValue = 0.0f;
-		if ( m_pFact->Skill != ASW_MARINE_SKILL_INVALID )
-		{
-			if ( m_pTab->m_pProfile )
-			{
-				flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill );
-			}
-			else
-			{
-				// TODO: better than this
-				int iMidSkill = ( MarineSkills()->GetMaxSkillPoints( m_pFact->Skill ) - 1 ) / 2 + 1;
-				flSkillValue = MarineSkills()->GetSkillBasedValue( NULL, m_pFact->Skill, m_pFact->SubSkill, iMidSkill );
-			}
-		}
-
-		flSkillValue *= m_pFact->SkillMultiplier;
-		FOR_EACH_VEC( m_pFact->SkillMultiplierCVar, i )
-		{
-			ConVarRef var( m_pFact->SkillMultiplierCVar[i] );
-			flSkillValue *= var.GetFloat();
-		}
-		FOR_EACH_VEC( m_pFact->SkillDivisorCVar, i )
-		{
-			ConVarRef var( m_pFact->SkillDivisorCVar[i] );
-			flSkillValue /= var.GetFloat();
-		}
-
-		if ( flBaseValue + flSkillValue < m_pFact->MinimumValue )
-		{
-			flBaseValue = m_pFact->MinimumValue - flSkillValue;
-		}
-		else if ( flBaseValue + flSkillValue > m_pFact->MaximumValue )
-		{
-			flBaseValue = m_pFact->MaximumValue - flSkillValue;
-		}
-
-		if ( bShowReciprocal )
-		{
-			flBaseValue += flSkillValue;
-			flSkillValue = 0.0f;
-
-			if ( flBaseValue != 0.0f )
-			{
-				flBaseValue = 1.0f / flBaseValue;
-			}
-		}
-
-		wchar_t buf[4096];
-		if ( m_pFact->Type == Type_T::Ammo && m_pFact->ClipSize )
-		{
-			wchar_t wszSize[32];
-			wchar_t wszClips[64];
-			V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
-			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", m_pFact->Precision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
-			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
-				g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
-				2, wszSize, wszClips );
-		}
-		else if ( flBaseValue == 0.0f || flSkillValue == 0.0f )
-		{
-			V_snwprintf( buf, sizeof( buf ), L"%s%.*f%s", wszBefore, m_pFact->Precision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfter );
-		}
-		else
-		{
-			V_snwprintf( buf, sizeof( buf ), L"%s%.*f+%.*f%s", wszBefore, m_pFact->Precision, flBaseValue, m_pFact->Precision, flSkillValue, wszAfter );
-		}
-
-		m_pLblValue->SetText( buf );
-	}
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
 	vgui::ImagePanel *m_pIcon;
+	vgui::ImagePanel *m_pSkillIcon;
 	vgui::Label *m_pLblName;
 	vgui::Label *m_pLblValue;
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::WeaponFact *m_pFact;
 };
+
+CRD_Equipment_WeaponFact::CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact ) :
+	BaseClass( parent, panelName )
+{
+	m_pTab = pTab;
+	m_pFact = pFact;
+
+	m_pIcon = new vgui::ImagePanel( this, "Icon" );
+	m_pSkillIcon = new vgui::ImagePanel( this, "SkillIcon" );
+	m_pLblName = new vgui::Label( this, "LblName", L"" );
+	m_pLblValue = new vgui::Label( this, "LblValue", L"" );
+}
+
+void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	LoadControlSettings( "Resource/UI/CollectionPanelEquipmentWeaponFact.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pSkillIcon->SetVisible( false );
+
+	if ( !m_pFact )
+	{
+		m_pIcon->SetVisible( false );
+		m_pLblName->SetVisible( false );
+		m_pLblValue->SetVisible( false );
+		SetTall( GetTall() * 0.3f );
+
+		return;
+	}
+
+	using Type_T = RD_Swarmopedia::WeaponFact::Type_T;
+
+	const char *szIcon = "";
+	const char *szCaption = "";
+	const char *szValue = NULL;
+	bool bHasValue = true;
+	bool bIgnoreCustomCaption = false;
+	bool bConVarIsOverride = false;
+	bool bShowReciprocal = false;
+
+	switch ( m_pFact->Type )
+	{
+	case Type_T::Generic:
+		szIcon = "swarm/swarmopedia/fact/generic";
+		bHasValue = false;
+		break;
+	case Type_T::Numeric:
+		szIcon = "swarm/swarmopedia/fact/generic";
+		break;
+	case Type_T::ShotgunPellets:
+		szIcon = "swarm/swarmopedia/fact/shotgun_pellets";
+		szCaption = "#rd_weapon_fact_shotgun_pellets";
+		break;
+	case Type_T::DamagePerShot:
+		szIcon = "swarm/swarmopedia/fact/damage";
+		szCaption = "#rd_weapon_fact_damage_per_shot";
+		bConVarIsOverride = true;
+		break;
+	case Type_T::LargeAlienDamageScale:
+		szIcon = "swarm/swarmopedia/fact/large_alien_damage";
+		szCaption = "#rd_weapon_fact_large_alien_damage_scale";
+		break;
+	case Type_T::BulletSpread:
+		szIcon = "swarm/swarmopedia/fact/bullet_spread";
+		szCaption = m_pFact->Flattened ? "#rd_weapon_fact_bullet_spread_degrees_flattened" : "#rd_weapon_fact_bullet_spread_degrees";
+		break;
+	case Type_T::Piercing:
+		szIcon = "swarm/swarmopedia/fact/piercing";
+		szCaption = "#rd_weapon_fact_piercing";
+		break;
+	case Type_T::FireRate:
+		szIcon = "swarm/swarmopedia/fact/fire_rate";
+		szCaption = "#rd_weapon_fact_fire_rate";
+		bShowReciprocal = true;
+		break;
+	case Type_T::Ammo:
+		szIcon = "swarm/swarmopedia/fact/ammo";
+		szCaption = "#rd_weapon_fact_ammo";
+		break;
+	case Type_T::Recharges:
+		szIcon = "swarm/swarmopedia/fact/recharges";
+		szCaption = "#rd_weapon_fact_recharges";
+		break;
+	case Type_T::Secondary:
+		szIcon = "swarm/swarmopedia/fact/secondary";
+		szCaption = "#rd_weapon_fact_secondary";
+		if ( !m_pFact->Caption.IsEmpty() )
+		{
+			szValue = m_pFact->Caption;
+		}
+
+		bIgnoreCustomCaption = true;
+		break;
+	case Type_T::RequirementLevel:
+		szIcon = "swarm/swarmopedia/fact/level";
+		szCaption = "#rd_weapon_fact_requires_level";
+		break;
+	case Type_T::RequirementClass:
+		szCaption = "#rd_weapon_fact_requires_class";
+
+		switch ( m_pFact->Class )
+		{
+		case MARINE_CLASS_NCO:
+			szIcon = "swarm/ClassIcons/NCOClassIcon";
+			szValue = "#asw_requires_nco";
+			break;
+		case MARINE_CLASS_SPECIAL_WEAPONS:
+			szIcon = "swarm/ClassIcons/SpecialWeaponsClassIcon";
+			szValue = "#asw_requires_sw";
+			break;
+		case MARINE_CLASS_MEDIC:
+			szIcon = "swarm/ClassIcons/MedicClassIcon";
+			szValue = "#asw_requires_medic";
+			break;
+		case MARINE_CLASS_TECH:
+			szIcon = "swarm/ClassIcons/TechClassIcon";
+			szValue = "#asw_requires_tech";
+			break;
+		}
+
+		break;
+	}
+
+	if ( !m_pFact->Icon.IsEmpty() )
+	{
+		szIcon = m_pFact->Icon;
+	}
+
+	if ( !bIgnoreCustomCaption && !m_pFact->Caption.IsEmpty() )
+	{
+		szCaption = m_pFact->Caption;
+	}
+
+	m_pIcon->SetImage( szIcon );
+	m_pLblName->SetText( szCaption );
+
+	if ( !bHasValue )
+	{
+		m_pLblName->SetWide( m_pLblName->GetWide() + m_pLblValue->GetWide() );
+
+		// For some reason, without this, text that would wrap is forced to the top of the text area.
+		m_pLblName->InvalidateLayout( true, true );
+
+		m_pLblName->SetFgColor( m_pLblValue->GetFgColor() );
+		m_pLblValue->SetVisible( false );
+
+		return;
+	}
+
+	if ( szValue )
+	{
+		m_pLblValue->SetText( szValue );
+		return;
+	}
+
+	const wchar_t *wszBefore = g_pVGuiLocalize->Find( VarArgs( "%s_before", szCaption ) );
+	const wchar_t *wszAfter = g_pVGuiLocalize->Find( VarArgs( "%s_after", szCaption ) );
+	if ( !wszBefore )
+		wszBefore = L"";
+	if ( !wszAfter )
+		wszAfter = L"";
+
+	float flBaseValue = m_pFact->Base;
+	if ( !m_pFact->CVar.IsEmpty() )
+	{
+		ConVarRef var( m_pFact->CVar );
+		if ( !bConVarIsOverride )
+		{
+			flBaseValue += var.GetFloat();
+		}
+		else if ( var.GetFloat() > 0 )
+		{
+			flBaseValue = var.GetFloat();
+		}
+	}
+
+	flBaseValue *= m_pFact->BaseMultiplier;
+	FOR_EACH_VEC( m_pFact->BaseMultiplierCVar, i )
+	{
+		ConVarRef var( m_pFact->BaseMultiplierCVar[i] );
+		flBaseValue *= var.GetFloat();
+	}
+	FOR_EACH_VEC( m_pFact->BaseDivisorCVar, i )
+	{
+		ConVarRef var( m_pFact->BaseDivisorCVar[i] );
+		flBaseValue /= var.GetFloat();
+	}
+
+	float flSkillValue = 0.0f;
+	if ( m_pFact->Skill != ASW_MARINE_SKILL_INVALID )
+	{
+		m_pSkillIcon->SetImage( MarineSkills()->GetSkillImage( m_pFact->Skill ) );
+		m_pSkillIcon->SetVisible( true );
+
+		if ( m_pTab->m_pProfile )
+		{
+			flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill );
+		}
+		else
+		{
+			// TODO: better than this
+			int iMidSkill = ( MarineSkills()->GetMaxSkillPoints( m_pFact->Skill ) - 1 ) / 2 + 1;
+			flSkillValue = MarineSkills()->GetSkillBasedValue( NULL, m_pFact->Skill, m_pFact->SubSkill, iMidSkill );
+		}
+	}
+
+	flSkillValue *= m_pFact->SkillMultiplier;
+	FOR_EACH_VEC( m_pFact->SkillMultiplierCVar, i )
+	{
+		ConVarRef var( m_pFact->SkillMultiplierCVar[i] );
+		flSkillValue *= var.GetFloat();
+	}
+	FOR_EACH_VEC( m_pFact->SkillDivisorCVar, i )
+	{
+		ConVarRef var( m_pFact->SkillDivisorCVar[i] );
+		flSkillValue /= var.GetFloat();
+	}
+
+	if ( flBaseValue + flSkillValue < m_pFact->MinimumValue )
+	{
+		flBaseValue = m_pFact->MinimumValue - flSkillValue;
+	}
+	else if ( flBaseValue + flSkillValue > m_pFact->MaximumValue )
+	{
+		flBaseValue = m_pFact->MaximumValue - flSkillValue;
+	}
+
+	if ( bShowReciprocal )
+	{
+		flBaseValue += flSkillValue;
+		flSkillValue = 0.0f;
+
+		if ( flBaseValue != 0.0f )
+		{
+			flBaseValue = 1.0f / flBaseValue;
+		}
+	}
+
+	wchar_t buf[4096];
+	if ( m_pFact->Type == Type_T::Ammo && m_pFact->ClipSize )
+	{
+		wchar_t wszClips[64];
+		wchar_t wszSize[32];
+		wchar_t wszAmmoClips[128];
+		V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", m_pFact->Precision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
+		V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
+		g_pVGuiLocalize->ConstructString( wszAmmoClips, sizeof( wszAmmoClips ),
+			g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
+			2, wszClips, wszSize );
+		V_snwprintf( buf, sizeof( buf ), L"%s%s%s", wszBefore, wszAmmoClips, wszAfter );
+	}
+	else if ( flBaseValue == 0.0f || flSkillValue == 0.0f )
+	{
+		V_snwprintf( buf, sizeof( buf ), L"%s%.*f%s", wszBefore, m_pFact->Precision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfter );
+	}
+	else
+	{
+		V_snwprintf( buf, sizeof( buf ), L"%s%.*f+%.*f%s", wszBefore, m_pFact->Precision, flBaseValue, m_pFact->Precision, flSkillValue, wszAfter );
+	}
+
+	m_pLblValue->SetText( buf );
+}
 
 CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 	: BaseClass( parent, panelName )

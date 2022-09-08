@@ -756,6 +756,55 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		return;
 	}
 
+	if ( pFact->Type == WeaponFact::Type_T::DamagePerShot || pFact->Type == WeaponFact::Type_T::Ammo )
+	{
+		const char *szSuffix = NULL;
+		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
+		switch ( iDamageType )
+		{
+		case DMG_BULLET:
+			szSuffix = "_bullet";
+			break;
+		case DMG_SLASH:
+			szSuffix = "_slash";
+			break;
+		case DMG_BURN:
+			szSuffix = "_burn";
+			break;
+		case DMG_BLAST:
+			szSuffix = "_blast";
+			break;
+		case DMG_SHOCK:
+			szSuffix = "_shock";
+			break;
+		case DMG_SONIC:
+			// special case; untyped or non-damaging
+			break;
+		case DMG_NERVEGAS:
+			szSuffix = "_gas";
+			break;
+		case DMG_BULLET | DMG_BUCKSHOT:
+			szSuffix = "_buckshot";
+			break;
+		default:
+			Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
+			DebuggerBreakIfDebugging();
+			break;
+		}
+
+		if ( szSuffix && pFact->Caption.IsEmpty() )
+		{
+			pFact->Caption = pFact->Type == WeaponFact::Type_T::DamagePerShot ? "#rd_weapon_fact_damage_per_shot" : "#rd_weapon_fact_ammo";
+			pFact->Caption += szSuffix;
+		}
+
+		if ( szSuffix && pFact->Icon.IsEmpty() )
+		{
+			pFact->Icon = pFact->Type == WeaponFact::Type_T::DamagePerShot ? "swarm/swarmopedia/fact/damage" : "swarm/swarmopedia/fact/ammo";
+			pFact->Icon += szSuffix;
+		}
+	}
+
 	switch ( pFact->Type )
 	{
 	case WeaponFact::Type_T::Generic:
@@ -766,42 +815,6 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		pFact->Base += pWeaponInfo->m_iNumPellets;
 		break;
 	case WeaponFact::Type_T::DamagePerShot:
-		if ( pFact->Caption.IsEmpty() )
-		{
-			int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
-			switch ( iDamageType )
-			{
-			case DMG_BULLET:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_bullet";
-				break;
-			case DMG_SLASH:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_slash";
-				break;
-			case DMG_BURN:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_burn";
-				break;
-			case DMG_BLAST:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_blast";
-				break;
-			case DMG_SHOCK:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_shock";
-				break;
-			case DMG_SONIC:
-				// special case; untyped or non-damaging
-				break;
-			case DMG_NERVEGAS:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_gas";
-				break;
-			case DMG_BULLET | DMG_BUCKSHOT:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_buckshot";
-				break;
-			default:
-				Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
-				DebuggerBreakIfDebugging();
-				break;
-			}
-		}
-
 		pFact->Base += pWeaponInfo->m_flBaseDamage;
 		break;
 	case WeaponFact::Type_T::LargeAlienDamageScale:
