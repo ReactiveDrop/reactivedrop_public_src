@@ -7,6 +7,7 @@
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
+#include <vgui_controls/Tooltip.h>
 #include "gameui/swarm/vgenericpanellist.h"
 #include "ibriefing.h"
 #include "asw_medal_store.h"
@@ -15,6 +16,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+ConVar rd_swarmopedia_units_preference( "rd_swarmopedia_units_preference", "0", FCVAR_ARCHIVE, "0=hammer, 1=metric, 2=imperial" );
+ConVar rd_swarmopedia_units_per_foot( "rd_swarmopedia_units_per_foot", "16", FCVAR_NONE, "recommended: 12 to 16" );
+ConVar rd_swarmopedia_units_per_meter( "rd_swarmopedia_units_per_meter", "52.49", FCVAR_NONE, "recommended: 39.37 to 52.49" );
 
 #if defined(RD_COLLECTIONS_WEAPONS_ENABLED) || defined(RD_COLLECTIONS_WEAPONS_CHOOSER)
 
@@ -410,6 +415,7 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	const char *szCaption = "";
 	const char *szValue = NULL;
 	bool bHasValue = true;
+	bool bIsHammerUnits = false;
 	bool bIgnoreCustomCaption = false;
 	bool bConVarIsOverride = false;
 	bool bShowReciprocal = false;
@@ -422,6 +428,10 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		break;
 	case Type_T::Numeric:
 		szIcon = "swarm/swarmopedia/fact/generic";
+		break;
+	case Type_T::HammerUnits:
+		szIcon = "swarm/swarmopedia/fact/generic";
+		bIsHammerUnits = true;
 		break;
 	case Type_T::ShotgunPellets:
 		szIcon = "swarm/swarmopedia/fact/shotgun_pellets";
@@ -612,26 +622,65 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		}
 	}
 
+	int iPrecision = m_pFact->Precision;
+	const wchar_t *wszBeforeNum = L"";
+	const wchar_t *wszAfterNum = L"";
+	if ( bIsHammerUnits )
+	{
+		float flDivisor = 1.0f;
+		switch ( rd_swarmopedia_units_preference.GetInt() )
+		{
+		default:
+			wszBeforeNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_hammer_before" );
+			wszAfterNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_hammer_after" );
+			break;
+		case 1:
+			wszBeforeNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_meters_before" );
+			wszAfterNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_meters_after" );
+			flDivisor = rd_swarmopedia_units_per_meter.GetFloat();
+			iPrecision = MAX( iPrecision, 2 );
+			break;
+		case 2:
+			wszBeforeNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_feet_before" );
+			wszAfterNum = g_pVGuiLocalize->Find( "#rd_weapon_fact_units_feet_after" );
+			flDivisor = rd_swarmopedia_units_per_foot.GetFloat();
+			iPrecision = MAX( iPrecision, 1 );
+			break;
+		}
+
+		Assert( flDivisor > 0.0f );
+		if ( flDivisor > 0.0f )
+		{
+			flBaseValue /= flDivisor;
+			flSkillValue /= flDivisor;
+		}
+
+		if ( !wszBeforeNum )
+			wszBeforeNum = L"";
+		if ( !wszAfterNum )
+			wszAfterNum = L"";
+	}
+
 	wchar_t buf[4096];
 	if ( m_pFact->Type == Type_T::Ammo && m_pFact->ClipSize )
 	{
 		wchar_t wszClips[64];
 		wchar_t wszSize[32];
 		wchar_t wszAmmoClips[128];
-		V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", m_pFact->Precision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
+		V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
 		V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
 		g_pVGuiLocalize->ConstructString( wszAmmoClips, sizeof( wszAmmoClips ),
 			g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
 			2, wszClips, wszSize );
-		V_snwprintf( buf, sizeof( buf ), L"%s%s%s", wszBefore, wszAmmoClips, wszAfter );
+		V_snwprintf( buf, sizeof( buf ), L"%s%s%s%s%s", wszBefore, wszBeforeNum, wszAmmoClips, wszAfterNum, wszAfter );
 	}
 	else if ( flBaseValue == 0.0f || flSkillValue == 0.0f )
 	{
-		V_snwprintf( buf, sizeof( buf ), L"%s%.*f%s", wszBefore, m_pFact->Precision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfter );
+		V_snwprintf( buf, sizeof( buf ), L"%s%s%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfterNum, wszAfter );
 	}
 	else
 	{
-		V_snwprintf( buf, sizeof( buf ), L"%s%.*f+%.*f%s", wszBefore, m_pFact->Precision, flBaseValue, m_pFact->Precision, flSkillValue, wszAfter );
+		V_snwprintf( buf, sizeof( buf ), L"%s%s%.*f+%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue, iPrecision, flSkillValue, wszAfterNum, wszAfter );
 	}
 
 	m_pLblValue->SetText( buf );
@@ -640,7 +689,8 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 	: BaseClass( parent, panelName )
 {
-	m_pGplFacts = new BaseModUI::GenericPanelList( this, "GplFacts", BaseModUI::GenericPanelList::ISM_ELEVATOR );
+	m_pGplFacts = new BaseModUI::GenericPanelList( this, "GplFacts", BaseModUI::GenericPanelList::ISM_PERITEM );
+	m_pGplFacts->AddActionSignalTarget( this );
 
 	m_pTab = pTab;
 	m_pWeapon = pWeapon;
@@ -685,6 +735,14 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 	{
 		BaseClass::OnCommand( command );
 	}
+}
+
+void CRD_Collection_Panel_Equipment::OnItemSelected( const char *panelName )
+{
+	CRD_Equipment_WeaponFact *pSelected = assert_cast< CRD_Equipment_WeaponFact * >( m_pGplFacts->GetSelectedPanelItem() );
+
+	int debug = 3;
+	debug = debug;
 }
 
 void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact )

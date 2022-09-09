@@ -8,6 +8,18 @@
 		"ControlName"		"EditablePanel"
 	}
 
+	"Background"
+	{
+		"fieldName"		"Background"
+		"xpos"		"10"
+		"ypos"		"0"
+		"zpos"		"-1"
+		"wide"		"270"
+		"tall"		"20"
+		"ControlName"		"Panel"
+		"bgcolor_override"		"0 0 0 192"
+	}
+
 	"Icon"
 	{
 		"fieldName"		"Icon"

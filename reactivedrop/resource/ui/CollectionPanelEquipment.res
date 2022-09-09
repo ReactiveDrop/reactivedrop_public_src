@@ -16,6 +16,6 @@
 		"wide"		"300"
 		"tall"		"410"
 		"ControlName"		"GenericPanelList"
-		"bgcolor_override"		"0 0 0 96"
+		"bgcolor_override"		"0 0 0 0"
 	}
 }

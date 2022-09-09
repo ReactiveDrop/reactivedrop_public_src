@@ -119,6 +119,8 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void OnCommand( const char *command ) override;
 
+	MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
+
 	void AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact );
 
 	BaseModUI::GenericPanelList *m_pGplFacts;

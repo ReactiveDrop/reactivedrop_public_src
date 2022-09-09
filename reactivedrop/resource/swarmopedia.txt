@@ -702,12 +702,12 @@
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_DMG"
 				}
 				"Ammo" {}
-				"Numeric" {
+				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/projectile_speed"
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
 				}
-				"Numeric" {
+				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/blast_radius"
 					"Caption" "#rd_weapon_fact_blast_radius"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
@@ -750,12 +750,12 @@
 					"Icon" "swarm/swarmopedia/fact/ammo_shock"
 					"Caption" "#rd_weapon_fact_ammo_shock"
 				}
-				"Numeric" {
+				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/projectile_speed"
 					"Caption" "#rd_weapon_fact_projectile_speed"
 					"Base" "1000"
 				}
-				"Numeric" {
+				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/blast_radius"
 					"Caption" "#rd_weapon_fact_blast_radius"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
@@ -792,7 +792,55 @@
 		"ClassName" "asw_weapon_vindicator"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"ShotgunPellets" {
+				"UseWeaponInfo" "0"
+				"Skill" "ASW_MARINE_SKILL_VINDICATOR"
+				"SubSkill" "ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS"
+			}
+			"DamagePerShot" {
+				"CVar" "rd_vindicator_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_VINDICATOR"
+				"SubSkill" "ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE"
+			}
+			"BulletSpread" {
+				"Base" "22"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_burn"
+					"Caption" "#rd_weapon_fact_damage_per_shot_burn"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_INCENDIARY_DMG"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_ignites"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_burning_dps"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "1"
+				}
+				"Ammo" {
+					"Caption" "#rd_weapon_fact_ammo_burn_blast"
+				}
+				"HammerUnits" {
+					// This stat is for first person; in third person the velocity is determined by the aiming distance.
+					"Icon" "swarm/swarmopedia/fact/projectile_speed"
+					"Caption" "#rd_weapon_fact_projectile_speed"
+					"Base" "900"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+				}
+			}
 		}
 	}
 	"WEAPON" {
@@ -803,10 +851,22 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_pistol_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_drone_bonus_damage"
+			}
+			"BulletSpread" {
+				"Base" "0"
+			}
+			"Ammo" {}
+			"FireRate" {}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_can_be_fired_faster"
 			}
 		}
 	}
@@ -822,6 +882,11 @@
 				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
+			"Generic" {
+				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+				"Icon" "swarm/swarmopedia/fact/bait"
+				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			}
 		}
 	}
 	"WEAPON" {
@@ -836,16 +901,31 @@
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
 			}
-			"Numeric" {
+			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/buff_radius"
 				"Caption" "#rd_weapon_fact_buff_radius"
 				"Base" "100"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_duration"
 				"Base" "20"
 			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/facts/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GRENADE_HEAL_AMOUNT"
+			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_heals_low_health_faster"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
@@ -863,8 +943,11 @@
 		"Facts" {
 			"Ammo" {
 				"CVar" "rd_ammo_bonus"
+				"Icon" "swarm/swarmopedia/fact/ammo"
+				"Caption" "#rd_weapon_fact_ammo"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
@@ -877,6 +960,7 @@
 		}
 		"Facts" {
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/warning"
 				"Caption" "#rd_weapon_fact_explodes_if_burned"
 			}
 		}
@@ -886,6 +970,22 @@
 		"Builtin" "1"
 		"Facts" {
 			// TODO
+			"ShotgunPellets" {}
+			"DamagePerShot" {
+				"CVar" "rd_shotgun_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG"
+			}
+			"BulletSpread" {
+				"Base" "22"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"Generic" {
+					"Caption" "#rd_weapon_fact_secondary_uses_primary_ammo"
+				}
+			}
 		}
 	}
 	"WEAPON" {
@@ -893,6 +993,20 @@
 		"Builtin" "1"
 		"Facts" {
 			// TODO
+			"DamagePerShot" {
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/range"
+				"Caption" "#rd_weapon_fact_range"
+				"Base" "240"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_no_friendly_fire"
+			}
 		}
 	}
 	"WEAPON" {
@@ -903,6 +1017,12 @@
 		}
 		"Facts" {
 			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_railgun_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG"
+			}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -912,8 +1032,30 @@
 			"Ammo" {
 				"RequireCVar" "rd_medgun_infinite_ammo"
 				"RequireValue" "0"
+				"UseWeaponInfo" "0"
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES"
+			}
+			"FireRate" {}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/facts/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/range"
+				"Caption" "#rd_weapon_fact_range"
+				"Base" "240"
+			}
+			"Secondary" {
+				"Generic" {
+					"Caption" "#rd_weapon_fact_secondary_uses_primary_ammo"
+				}
 			}
 		}
 	}
@@ -965,7 +1107,13 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
+			}
+			"Generic" {
+				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+				"Icon" "swarm/swarmopedia/fact/bait"
+				"Caption" "#rd_weapon_fact_attracts_alien_attention"
 			}
 		}
 	}
@@ -974,8 +1122,12 @@
 		"Builtin" "1"
 		"Facts" {
 			// TODO
-			"Piercing" {}
+			"Piercing" {
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
 		}
@@ -996,7 +1148,13 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
+			}
+			"Generic" {
+				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+				"Icon" "swarm/swarmopedia/fact/bait"
+				"Caption" "#rd_weapon_fact_attracts_alien_attention"
 			}
 		}
 	}
@@ -1026,7 +1184,13 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
+			}
+			"Generic" {
+				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+				"Icon" "swarm/swarmopedia/fact/bait"
+				"Caption" "#rd_weapon_fact_attracts_alien_attention"
 			}
 		}
 	}
@@ -1041,12 +1205,14 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
-			"Numeric" {
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/blast_radius"
 				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/grenade_cluster"
 				"Caption" "#rd_weapon_fact_grenade_cluster"
 				"RequireCVar" "rd_grenade_launcher_num_clusters"
 				"CVar" "rd_grenade_launcher_num_clusters"
@@ -1075,12 +1241,15 @@
 			"FireRate" {}
 			"Ammo" {}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_guaranteed_ranger_kill"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/door_defense"
 				"Caption" "#rd_weapon_fact_reduced_damage_to_doors"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
 		}
@@ -1105,9 +1274,11 @@
 			"FireRate" {}
 			"Ammo" {}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heavy"
 				"Caption" "#rd_weapon_fact_slow_movement_while_held"
 			}
 		}
@@ -1160,6 +1331,7 @@
 				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
 		}
@@ -1215,13 +1387,19 @@
 		"Builtin" "1"
 		"Facts" {
 			"DamagePerShot" {
+				"Icon" "swarm/swarmopedia/fact/damage_blast"
+				"Caption" "#rd_weapon_fact_damage_per_shot_blast"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
 				"BaseMultiplier" "0"
 			}
 			"FireRate" {}
-			"Ammo" {}
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast"
+			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
 		}
@@ -1273,13 +1451,16 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/aim_assist"
 				"Caption" "#rd_weapon_fact_grants_aim_assist"
 			}
-			"Numeric" {
-				"Caption" "#rd_weapon_fact_area_radius"
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/buff_radius"
+				"Caption" "#rd_weapon_fact_buff_radius"
 				"CVar" "asw_flare_autoaim_radius"
 			}
 		}
@@ -1290,6 +1471,7 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 		}
@@ -1307,17 +1489,20 @@
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
+				"Caption" "#rd_weapon_fact_ammo"
 			}
-			"Numeric" {
+			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/buff_radius"
 				"Caption" "#rd_weapon_fact_buff_radius"
 				"Base" "120"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_duration"
 				"Base" "30"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 			"Generic" {
@@ -1333,6 +1518,7 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
 		}
@@ -1348,14 +1534,17 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
-			"Numeric" {
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/blast_radius"
 				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FREEZE_RADIUS"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_duration"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FREEZE_DURATION"
@@ -1375,6 +1564,7 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
@@ -1384,6 +1574,7 @@
 		"Builtin" "1"
 		"Facts" {
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_duration"
 				"CVar" "asw_electrified_armor_duration"
 			}
@@ -1391,9 +1582,11 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/damage_shock"
 				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
 				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
 			}
 		}
@@ -1407,6 +1600,7 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
@@ -1428,10 +1622,12 @@
 		"Builtin" "1"
 		"Facts" {
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/damage_club"
 				"Caption" "#rd_weapon_fact_melee_damage_scale_passive"
 				"CVar" "asw_fist_passive_damage_scale"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/damage_club"
 				"Caption" "#rd_weapon_fact_melee_damage_finisher"
 				"Skill" "ASW_MARINE_SKILL_MELEE"
 				"SubSkill" "ASW_MARINE_SUBSKILL_MELEE_DMG"
@@ -1455,17 +1651,20 @@
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
 			}
-			"Numeric" {
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/blast_radius"
 				"Caption" "#rd_weapon_fact_blast_radius"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/grenade_cluster"
 				"Caption" "#rd_weapon_fact_grenade_cluster"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 		}
@@ -1492,18 +1691,22 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/damage_gas"
 				"Caption" "#rd_weapon_fact_damage_over_time"
 				"CVar" "asw_gas_grenade_damage"
 				"BaseDivisorCVar" "asw_gas_grenade_damage_interval"
 			}
 			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_duration"
 				"CVar" "asw_gas_grenade_duration"
 			}
-			"Numeric" {
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/area_radius"
 				"Caption" "#rd_weapon_fact_area_radius"
 				"CVar" "asw_gas_grenade_cloud_width"
 			}
@@ -1515,6 +1718,7 @@
 		"Facts" {
 			// TODO
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
 			}
 		}
@@ -1527,11 +1731,13 @@
 				"CVar" "asw_blink_charge_time"
 				"BaseDivisor" "1.4"
 			}
-			"Numeric" {
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/range"
 				"Caption" "#rd_weapon_fact_range"
 				"CVar" "asw_blink_range"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/damage_shock"
 				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
 			}
 		}
@@ -1551,9 +1757,11 @@
 				"CVar" "asw_bonus_charges"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/bait"
 				"Caption" "#rd_weapon_fact_attracts_alien_attention"
 			}
 			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 		}
