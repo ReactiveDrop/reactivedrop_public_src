@@ -9,7 +9,7 @@ namespace BaseModUI
 {
 	class BaseModHybridButton;
 
-	class AdvancedSettings : public CBaseModFrame
+	class AdvancedSettings : public CBaseModFrame, public FlyoutMenuListener
 	{
 		DECLARE_CLASS_SIMPLE( AdvancedSettings, CBaseModFrame );
 
@@ -51,6 +51,14 @@ namespace BaseModUI
 
 		virtual void PerformLayout();
 		virtual void OnCommand( const char *command );
+		virtual void OnKeyCodePressed( vgui::KeyCode code );
+		virtual void OnKeyCodeTyped( vgui::KeyCode code );
+		virtual void OnThink();
+
+		//FloutMenuListener
+		virtual void OnNotifyChildFocus( vgui::Panel* child );
+		virtual void OnFlyoutMenuClose( vgui::Panel* flyTo );
+		virtual void OnFlyoutMenuCancelled();
 
 	private:
 		void LoadSettingDefinitions();
@@ -60,5 +68,6 @@ namespace BaseModUI
 		CUtlVectorAutoPurge<Section_t *> m_SectionDefs;
 		BaseModHybridButton *m_pSectionName;
 		int m_iCurrentSection;
+		vgui::Button *m_pFlyoutButton;
 	};
 }

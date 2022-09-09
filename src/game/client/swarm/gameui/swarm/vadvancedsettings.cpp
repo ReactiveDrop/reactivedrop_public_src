@@ -38,6 +38,7 @@ AdvancedSettings::AdvancedSettings( Panel *parent, const char *panelName )
 	m_pSectionName = new BaseModHybridButton( this, "SectionName", L"" );
 
 	m_iCurrentSection = 0;
+	m_pFlyoutButton = NULL;
 
 	LoadSettingDefinitions();
 	CreateSettingControls();
@@ -294,6 +295,7 @@ void AdvancedSettings::CreateSettingControls()
 			FlyoutMenu *pOptions = new FlyoutMenu( this, VarArgs( "Flm%s", szConVar ) );
 			pSetting->SetFlyout( VarArgs( "Flm%s", szConVar ) );
 			pOptions->SetZPos( 4 );
+			pOptions->SetListener( this );
 
 			Panel *pBackground = new Panel( pOptions, "PnlBackground" );
 			pBackground->SetZPos( -1 );
@@ -375,4 +377,77 @@ void AdvancedSettings::OnCommand( const char *command )
 	{
 		BaseClass::OnCommand( command );
 	}
+}
+
+//=============================================================================
+void AdvancedSettings::OnThink()
+{
+	if ( FlyoutMenu::GetActiveMenu() && !HasFocus() )
+		RequestFocus();
+
+	BaseClass::OnThink();
+}
+
+//=============================================================================
+void AdvancedSettings::OnKeyCodePressed( KeyCode code )
+{
+	FlyoutMenu *pFlyout = FlyoutMenu::GetActiveMenu();
+	if ( pFlyout && m_pFlyoutButton )
+	{
+		switch( GetBaseButtonCode( code ) )
+		{
+		case KEY_XSTICK1_DOWN:
+		case KEY_XSTICK2_DOWN:
+		case KEY_XBUTTON_DOWN:
+		case KEY_DOWN:
+			m_pFlyoutButton->NavigateDown();
+			break;
+		case KEY_XSTICK1_UP:
+		case KEY_XSTICK2_UP:
+		case KEY_XBUTTON_UP:
+		case KEY_UP:
+			m_pFlyoutButton->NavigateUp();
+			break;
+		case KEY_ENTER:
+		case KEY_SPACE:
+		case KEY_XBUTTON_A:
+			m_pFlyoutButton->DoClick();
+			break;
+		case KEY_XBUTTON_B:
+			pFlyout->CloseMenu( pFlyout->GetNavFrom() );
+			break;
+
+		default:
+			BaseClass::OnKeyCodePressed( code );
+			break;
+		}
+	}
+	else
+		BaseClass::OnKeyCodePressed( code );
+}
+
+void AdvancedSettings::OnKeyCodeTyped( KeyCode code )
+{
+	if ( FlyoutMenu::GetActiveMenu() && code == KEY_SPACE )
+		return;
+	else
+		BaseClass::OnKeyCodeTyped( code );
+}
+
+void AdvancedSettings::OnNotifyChildFocus( vgui::Panel* child )
+{
+	if ( !child )
+		return;
+
+	m_pFlyoutButton = dynamic_cast<vgui::Button *>( child );
+}
+
+void AdvancedSettings::OnFlyoutMenuClose( vgui::Panel* flyTo )
+{
+	m_pFlyoutButton = NULL;
+}
+
+void AdvancedSettings::OnFlyoutMenuCancelled()
+{
+
 }
