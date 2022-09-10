@@ -118,6 +118,7 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void OnCommand( const char *command ) override;
+	virtual void OnKeyCodePressed( vgui::KeyCode code ) override;
 
 	MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
 

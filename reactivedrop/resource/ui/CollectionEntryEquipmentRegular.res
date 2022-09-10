@@ -97,6 +97,20 @@
 		"font"		"DefaultExtraLarge"
 	}
 
+	"NewLabel"
+	{
+		"fieldName"		"NewLabel"
+		"xpos"		"80"
+		"ypos"		"4"
+		"wide"		"25"
+		"tall"		"15"
+		"ControlName"		"Label"
+		"textAlignment"		"north-east"
+		"allcaps"		"1"
+		"fgcolor_override"		"255 255 255 255"
+		"font"		"DefaultMedium"
+	}
+
 	"CantEquipLabel"
 	{
 		"fieldName"		"CantEquipLabel"

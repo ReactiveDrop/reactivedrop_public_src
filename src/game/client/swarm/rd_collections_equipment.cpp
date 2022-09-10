@@ -760,6 +760,24 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 	}
 }
 
+void CRD_Collection_Panel_Equipment::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		OnCommand( "AcceptEquip" );
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
 void CRD_Collection_Panel_Equipment::OnItemSelected( const char *panelName )
 {
 	CRD_Equipment_WeaponFact *pSelected = assert_cast< CRD_Equipment_WeaponFact * >( m_pGplFacts->GetSelectedPanelItem() );
