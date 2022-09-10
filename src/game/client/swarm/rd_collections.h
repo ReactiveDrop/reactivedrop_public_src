@@ -124,6 +124,7 @@ public:
 	void AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact );
 
 	BaseModUI::GenericPanelList *m_pGplFacts;
+	CNB_Button *m_pBtnEquip;
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::Weapon *m_pWeapon;

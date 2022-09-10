@@ -9,6 +9,7 @@
 #include <vgui_controls/TextImage.h>
 #include <vgui_controls/Tooltip.h>
 #include "gameui/swarm/vgenericpanellist.h"
+#include "nb_button.h"
 #include "ibriefing.h"
 #include "asw_medal_store.h"
 #include "asw_gamerules.h"
@@ -691,6 +692,7 @@ CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *par
 {
 	m_pGplFacts = new BaseModUI::GenericPanelList( this, "GplFacts", BaseModUI::GenericPanelList::ISM_PERITEM );
 	m_pGplFacts->AddActionSignalTarget( this );
+	m_pBtnEquip = new CNB_Button( this, "BtnEquip", "#asw_equip", this, "AcceptEquip" );
 
 	m_pTab = pTab;
 	m_pWeapon = pWeapon;
@@ -701,6 +703,27 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	LoadControlSettings( "Resource/UI/CollectionPanelEquipment.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	if ( m_pTab->m_pBriefing )
+	{
+		m_pBtnEquip->SetVisible( true );
+
+		const char *szReason = CantEquipReason( m_pTab, m_pWeapon );
+		if ( szReason )
+		{
+			m_pBtnEquip->SetText( szReason );
+			m_pBtnEquip->SetEnabled( false );
+		}
+		else
+		{
+			m_pBtnEquip->SetEnabled( true );
+			m_pBtnEquip->SetControllerButton( KEY_XBUTTON_A );
+		}
+	}
+	else
+	{
+		m_pBtnEquip->SetVisible( false );
+	}
 
 	m_pGplFacts->RemoveAllPanelItems();
 
