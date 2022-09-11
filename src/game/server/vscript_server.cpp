@@ -23,6 +23,7 @@
 #include "ai_basenpc.h"
 #include "inetchannelinfo.h"
 #include "decals.h"
+#include "player_voice_listener.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -1230,14 +1231,14 @@ static char* Script_TextColor(int R, int G, int B)
 	{
 		B = 0;
 	}
-	
+
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R = R / 255.0f;
 	float outputMod_G = G / 255.0f;
 	float outputMod_B = B / 255.0f;
 
 	//This char must match the char used for the client's COLOR_INPUTCUSTOMCOL - in my case it's 0x08
-	char Con_Char = (char)0x08; 
+	char Con_Char = (char)0x08;
 	//pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
 	char R_Char = (char)(32 + (outputMod_R * 94));
 	char G_Char = (char)(32 + (outputMod_G * 94));
@@ -1574,6 +1575,7 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityOutputs, "EntityOutputs" );
 				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
 				g_pScriptVM->RegisterInstance( &g_ScriptTempEnts, "TempEnts" );
+				g_pScriptVM->RegisterInstance( &PlayerVoiceListener(), "PlayerVoiceListener" );
 
 				// To be used with Script_ClientPrint
 				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );
