@@ -14,6 +14,9 @@
 #include "UtlDict.h"
 #include "filesystem.h"
 #include <KeyValues.h>
+#ifdef INFESTED_DLL
+#include "asw_util_shared.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -317,6 +320,10 @@ bool CPanelMetaClassMgrImp::ParseMetaClassList( const char* pFileName,
 	return true;
 }
 
+static void MergeKeyValues( const char *pszPath, KeyValues *pKV, void *pUserData )
+{
+	pKV->CopySubkeys( static_cast< KeyValues * >( pUserData ) );
+}
 
 //-----------------------------------------------------------------------------
 // Loads up a file containing metaclass definitions
@@ -352,6 +359,9 @@ void CPanelMetaClassMgrImp::LoadMetaClassDefinitionFile( const char *pFileName )
 
 	// Read in all metaclass definitions...
 
+#ifdef INFESTED_DLL
+	UTIL_RD_LoadAllKeyValues( pFileName, "GAME", pFileName, MergeKeyValues, pKeyValues );
+#else
 	// Load the file
 	if ( !pKeyValues->LoadFromFile( filesystem, pFileName ) )
 	{
@@ -361,6 +371,7 @@ void CPanelMetaClassMgrImp::LoadMetaClassDefinitionFile( const char *pFileName )
 		return;
 	}
 	else
+#endif
 	{
 		// Go ahead and parse the data now
 		if ( !ParseMetaClassList( pFileName, pKeyValues, idx ) )
