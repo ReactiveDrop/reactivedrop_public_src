@@ -23,7 +23,6 @@
 #include "ai_basenpc.h"
 #include "inetchannelinfo.h"
 #include "decals.h"
-#include "player_voice_listener.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -1201,6 +1200,57 @@ static void Script_Say( HSCRIPT hPlayer, const char *pText )
 	}
 }
 
+//This is a vscript function that converts RGB into a transmittable format for colored text
+static char* Script_TextColor(int R, int G, int B)
+{
+	//Force channel ranges between 0 - 255
+	if (R > 255)
+	{
+		R = 255;
+	}
+	else if (R < 0)
+	{
+		R = 0;
+	}
+
+	if (G > 255)
+	{
+		G = 255;
+	}
+	else if (G < 0)
+	{
+		G = 0;
+	}
+
+	if (B > 255)
+	{
+		B = 255;
+	}
+	else if (B < 0)
+	{
+		B = 0;
+	}
+	
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R = R / 255.0f;
+	float outputMod_G = G / 255.0f;
+	float outputMod_B = B / 255.0f;
+
+	//This char must match the char used for the client's COLOR_INPUTCUSTOMCOL - in my case it's 0x08
+	char Con_Char = (char)0x08; 
+	//pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	char R_Char = (char)(32 + (outputMod_R * 94));
+	char G_Char = (char)(32 + (outputMod_G * 94));
+	char B_Char = (char)(32 + (outputMod_B * 94));
+
+
+	//Format a string with results as 4 characters.
+	char outputChars[5];
+	Q_snprintf(outputChars, sizeof(outputChars), "%c%c%c%c", Con_Char, R_Char, G_Char, B_Char);
+
+	return outputChars;
+}
+
 static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 {
 	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
@@ -1485,6 +1535,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
+				ScriptRegisterFunctionNamed(g_pScriptVM,  Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RBG input.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );
@@ -1523,7 +1574,6 @@ bool VScriptServerInit()
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityOutputs, "EntityOutputs" );
 				g_pScriptVM->RegisterInstance( &g_ScriptInfoNodes, "InfoNodes" );
 				g_pScriptVM->RegisterInstance( &g_ScriptTempEnts, "TempEnts" );
-				g_pScriptVM->RegisterInstance( &PlayerVoiceListener(), "PlayerVoiceListener" );
 
 				// To be used with Script_ClientPrint
 				g_pScriptVM->SetValue( "HUD_PRINTNOTIFY", HUD_PRINTNOTIFY );

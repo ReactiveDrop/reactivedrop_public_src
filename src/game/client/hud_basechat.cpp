@@ -1484,6 +1484,31 @@ Color CBaseHudChat::GetClientColor( int clientIndex )
 	return g_ColorYellow;
 }
 
+//This method is used to translate the ascii range character into a 0 - 255 range int for color channel
+int CBaseHudChatLine::TranslateChannelRange(byte inputval)
+{
+	//Check for out of ASCII range
+	if (inputval < 32)
+	{
+		return 0;
+	}
+	if (inputval > 126)
+	{
+		return 255;
+	}
+
+	//Offset to the floor
+	inputval -= 32;
+
+	//float modifier for range alignment
+	float outputMod = inputval / 94.0f;
+
+	//pass float modifier into range 0 - 255
+	outputMod *= 255.0f;
+	
+	return outputMod;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Parses a line of text for color markup and inserts it via Colorize()
 //-----------------------------------------------------------------------------
@@ -1505,7 +1530,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 	wchar_t *txt = m_text;
 	int lineLen = wcslen( m_text );
-	if ( m_text[0] == COLOR_PLAYERNAME || m_text[0] == COLOR_LOCATION || m_text[0] == COLOR_NORMAL || m_text[0] == COLOR_ACHIEVEMENT || m_text[0] == COLOR_MOD_CUSTOM || m_text[0] == COLOR_MOD_CUSTOM2 )
+	if ( m_text[0] == COLOR_PLAYERNAME || m_text[0] == COLOR_LOCATION || m_text[0] == COLOR_NORMAL || m_text[0] == COLOR_ACHIEVEMENT || m_text[0] == COLOR_MOD_CUSTOM || m_text[0] == COLOR_MOD_CUSTOM2 || m_text[0] == COLOR_INPUTCUSTOMCOL)
 	{
 		while ( txt && *txt )
 		{
@@ -1535,7 +1560,41 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 				}
 				++txt;
 				break;
+			case COLOR_INPUTCUSTOMCOL:
+			{
+				//This is the custom input color that accepts ASCII translated RGB
 
+				//Check that range will not overflow passed string length
+				int diffResult = lineLen - (txt - m_text);
+				if (diffResult <= 3)
+				{
+					++txt;
+					break;
+				}
+
+				//Get a value of 0 - 255 from translated color channel characters
+				byte redChan = TranslateChannelRange((byte)txt[1]);
+				byte greenChan = TranslateChannelRange((byte)txt[2]);
+				byte blueChan = TranslateChannelRange((byte)txt[3]);
+				// save this start
+				range.start = (txt - m_text) + 4; //4 Offset accounts for color channel translation characters
+				range.color = Color(redChan, greenChan, blueChan, 255);
+				range.end = lineLen;
+
+				int count = m_textRanges.Count();
+				if (count)
+				{
+					m_textRanges[count - 1].end = range.start - 3; //3 Offset accounts for color channel translation characters
+				}
+
+				m_textRanges.AddToTail(range);
+				//Pass by all color channel characters
+				++txt;
+				++txt;
+				++txt;
+				++txt;
+				break;
+			}
 			default:
 				++txt;
 			}
@@ -1758,6 +1817,13 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	char *pmsg = msg;
 	while ( *pmsg && ( *pmsg == '\n' || ( *pmsg > 0 && *pmsg < COLOR_MAX ) ) )
 	{
+		//This is code I added to clear the 3 bytes that come after the custom RGB character.
+		if (*pmsg == COLOR_INPUTCUSTOMCOL)
+		{
+			pmsg++;
+			pmsg++;
+			pmsg++;
+		}
 		pmsg++;
 	}
 

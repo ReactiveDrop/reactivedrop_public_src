@@ -195,11 +195,11 @@ void CHudChat::MsgFunc_SayText( bf_read &msg )
 
 void CHudChat::MsgFunc_TextMsg( bf_read &msg )
 {
-	char szString[2048];
+	char szString[4096]; //Changed to 4096 to increase buffer size for custom color.
 	int msg_dest = msg.ReadByte();
 
-	wchar_t szBuf[5][128];
-	wchar_t outputBuf[256];
+	wchar_t szBuf[5][4096]; //Changed to 4096 to increase buffer size for custom color.
+	wchar_t outputBuf[4096]; //Changed to 4096 to increase buffer size for custom color.
 
 	for ( int i=0; i<5; ++i )
 	{
