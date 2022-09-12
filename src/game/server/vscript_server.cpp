@@ -1202,7 +1202,7 @@ static void Script_Say( HSCRIPT hPlayer, const char *pText )
 }
 
 //This is a vscript function that converts RGB into a transmittable format for colored text
-static char* Script_TextColor(int R, int G, int B)
+static ScriptVariant_t Script_TextColor(int R, int G, int B)
 {
 	//Force channel ranges between 0 - 255
 	if (R > 255)
@@ -1249,7 +1249,7 @@ static char* Script_TextColor(int R, int G, int B)
 	char outputChars[5];
 	Q_snprintf(outputChars, sizeof(outputChars), "%c%c%c%c", Con_Char, R_Char, G_Char, B_Char);
 
-	return outputChars;
+	return ScriptVariant_t(outputChars, true);
 }
 
 static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
