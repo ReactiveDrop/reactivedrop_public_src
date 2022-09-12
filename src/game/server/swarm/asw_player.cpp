@@ -287,6 +287,9 @@ BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMarine, "GetMarine", "Returns the marine the player is commanding" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFindPickerEntity, "FindPickerEntity", "Finds the nearest entity in front of the player" )
 	DEFINE_SCRIPTFUNC( GetCrosshairTracePos, "Returns the world location directly beneath the player's crosshair" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetAutoExposure, "SetAutoExposure", "Sets custom autoexposure (simply - brightness) for the player" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetBloomScale, "SetBloomScale", "Sets a custom bloomscale for the player" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapRate, "SetTonemapRate", "Sets a custom tonemaprate (rate for autoexposure adjustment) for the player" )
 END_SCRIPTDESC()
 
 // -------------------------------------------------------------------------------- //
@@ -3259,4 +3262,54 @@ HSCRIPT CASW_Player::ScriptGetMarine()
 	}
 
 	return NULL;
+}
+
+enum TonemapSettings_t
+{
+	TNMP_AUTOEXPOSURE = 0,
+	TNMP_BLOOMSCALE,
+	TNMP_TONEMAPRATE
+};
+
+void CASW_Player::ScriptSetAutoExposure( float min, float max )
+{	
+	CRecipientFilter filter;
+	filter.AddRecipient( this );
+	
+	UserMessageBegin( filter, "EditTonemapSettings" );
+
+	WRITE_BYTE( TNMP_AUTOEXPOSURE );
+
+	WRITE_FLOAT( min );
+	WRITE_FLOAT( max );
+
+	MessageEnd();
+}
+
+void CASW_Player::ScriptSetBloomScale( float scale )
+{	
+	CRecipientFilter filter;
+	filter.AddRecipient( this );
+	
+	UserMessageBegin( filter, "EditTonemapSettings" );
+
+	WRITE_BYTE( TNMP_BLOOMSCALE );
+
+	WRITE_FLOAT( scale );
+
+	MessageEnd();
+}
+
+void CASW_Player::ScriptSetTonemapRate( float rate )
+{	
+	CRecipientFilter filter;
+	filter.AddRecipient( this );
+	
+	UserMessageBegin( filter, "EditTonemapSettings" );
+
+	WRITE_BYTE( TNMP_TONEMAPRATE );
+
+	WRITE_FLOAT( rate );
+
+	MessageEnd();
 }

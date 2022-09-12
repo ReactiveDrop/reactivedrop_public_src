@@ -5,6 +5,7 @@
 //=============================================================================
 
 #include "cbase.h"
+#include "c_user_message_register.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
@@ -49,6 +50,7 @@ private:
 	C_EnvTonemapController( const C_EnvTonemapController & );
 
 	friend void GetTonemapSettingsFromEnvTonemapController( void );
+	friend void __MsgFunc_EditTonemapSettings( bf_read &msg );
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvTonemapController, DT_EnvTonemapController, CEnvTonemapController )
@@ -83,16 +85,14 @@ C_EnvTonemapController::C_EnvTonemapController( void )
 	m_flCustomManualTonemapRate = 1.0f;
 }
 
-
-
 void GetTonemapSettingsFromEnvTonemapController( void )
-{
+{	
 	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
 	if ( localPlayer )
 	{
 		C_EnvTonemapController *tonemapController = dynamic_cast< C_EnvTonemapController * >(localPlayer->m_hTonemapController.Get());
 		if ( tonemapController != NULL )
-		{
+		{	
 			g_bUseCustomAutoExposureMin = tonemapController->m_bUseCustomAutoExposureMin;
 			g_bUseCustomAutoExposureMax = tonemapController->m_bUseCustomAutoExposureMax;
 			g_bUseCustomBloomScale = tonemapController->m_bUseCustomBloomScale;
@@ -111,3 +111,53 @@ void GetTonemapSettingsFromEnvTonemapController( void )
 	g_bUseCustomBloomScale = false;
 	g_bUseCustomManualTonemapRate = false;
 }
+
+enum TonemapSettings_t
+{
+	TNMP_AUTOEXPOSURE = 0,
+	TNMP_BLOOMSCALE,
+	TNMP_TONEMAPRATE
+};
+
+void __MsgFunc_EditTonemapSettings( bf_read &msg )
+{
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+	if ( !localPlayer )
+		return;
+	
+	C_EnvTonemapController *tonemapController = dynamic_cast< C_EnvTonemapController * >(localPlayer->m_hTonemapController.Get());
+	if ( !tonemapController )
+		return;
+
+	byte setting = msg.ReadByte();
+
+	switch ( setting )
+	{
+		case TNMP_AUTOEXPOSURE:
+		{
+			tonemapController->m_bUseCustomAutoExposureMin = true;
+			tonemapController->m_bUseCustomAutoExposureMax = true;
+			tonemapController->m_flCustomAutoExposureMin = msg.ReadFloat();
+			tonemapController->m_flCustomAutoExposureMax = msg.ReadFloat();
+			
+			return;
+		}
+		case TNMP_BLOOMSCALE:
+		{
+			tonemapController->m_bUseCustomBloomScale = true;
+			tonemapController->m_flCustomBloomScale = msg.ReadFloat();
+
+			return;
+		}
+		case TNMP_TONEMAPRATE:
+		{
+			tonemapController->m_bUseCustomManualTonemapRate = true;
+			tonemapController->m_flCustomManualTonemapRate = msg.ReadFloat();
+
+			return;
+		}
+		default:
+			return;
+	}
+}
+USER_MESSAGE_REGISTER( EditTonemapSettings );

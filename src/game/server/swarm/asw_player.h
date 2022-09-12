@@ -112,6 +112,9 @@ public:
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 	HSCRIPT ScriptGetMarine();
+	void ScriptSetAutoExposure( float min, float max );
+	void ScriptSetBloomScale( float scale );
+	void ScriptSetTonemapRate( float rate );
 
 	CNetworkHandle( CASW_Marine, m_hOrderingMarine );
 
