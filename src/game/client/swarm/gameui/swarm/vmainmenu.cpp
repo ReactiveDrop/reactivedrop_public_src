@@ -17,6 +17,7 @@
 #include "VGameSettings.h"
 #include "VSteamCloudConfirmation.h"
 #include "vaddonassociation.h"
+#include "ConfigManager.h"
 
 #include "VSignInDialog.h"
 #include "VGuiSystemModuleLoader.h"
@@ -932,8 +933,14 @@ void MainMenu::OnOpen()
 		static CGameUIConVarRef cl_cloud_settings( "cl_cloud_settings" );
 		if ( cl_cloud_settings.GetInt() == -1 )
 		{
+#if 0
 			CBaseModPanel::GetSingleton().OpenWindow( WT_STEAMCLOUDCONFIRM, this, false );
 			bSteamCloudVisible = true;
+#else
+			// Default to allowing Steam Cloud; if the user doesn't want it, they can disable
+			// it in game properties or via the menu after initial game launch.
+			cl_cloud_settings.SetValue( STEAMREMOTESTORAGE_CLOUD_ALL );
+#endif
 		}
 	}
 
