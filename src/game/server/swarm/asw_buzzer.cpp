@@ -209,7 +209,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Buzzer, DT_ASW_Buzzer)
 	SendPropBool(SENDINFO(m_bElectroStunned)),
 END_SEND_TABLE()
 
-BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CBaseCombatCharacter, "Alien Swarm buzzer" )
+BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CASW_Inhabitable_NPC, "Alien Swarm buzzer" )
 	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the buzzer's orders" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the buzzer to move to an entity handle, second parameter ignore marines" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the buzzer to chase the nearest marine" )

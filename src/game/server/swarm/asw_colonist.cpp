@@ -43,7 +43,7 @@ BEGIN_DATADESC( CASW_Colonist )
 	DEFINE_INPUTFUNC( FIELD_STRING, "GiveWeapon", InputGiveWeapon ),
 END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC( CASW_Colonist, CBaseCombatCharacter, "Colonist" )
+BEGIN_ENT_SCRIPTDESC( CASW_Colonist, CASW_Inhabitable_NPC, "Colonist" )
 	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning colonist." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the colonist into flames." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the colonist." )

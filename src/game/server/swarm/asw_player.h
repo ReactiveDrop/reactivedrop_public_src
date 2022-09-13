@@ -50,6 +50,7 @@ public:
 	void PushawayThink();
 	virtual void AvoidPhysicsProps( CUserCmd *pCmd );
 	virtual bool ClientCommand( const CCommand &args );
+	virtual void UpdateTonemapController( void );
 
 	void EmitPrivateSound( const char *soundName, bool bFromNPC = false );
 
