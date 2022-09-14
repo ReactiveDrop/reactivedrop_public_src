@@ -132,7 +132,7 @@ public:
 	void			SetNameColor( Color cColor ){ m_clrNameColor = cColor; 	}
 		
 	virtual void	PerformFadeout( void );
-	int				CBaseHudChatLine::TranslateChannelRange(byte inputval);
+	static int		TranslateChannelRange(byte inputval);
 	virtual void	InsertAndColorizeText( wchar_t *buf, int clientIndex );
 	virtual			void Colorize( int alpha = 255 );								///< Re-inserts the text in the appropriate colors at the given alpha
 
