@@ -27,7 +27,8 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "Get the player entity that is controlling this character." )
+	DEFINE_SCRIPTFUNC( IsInhabited, "Returns true if a player is controlling this character, false if it is AI-controlled." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "Get the player entity that is \"owns\" this character, eg. the player that is playing this marine or added this marine bot to the lobby." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapController, "SetTonemapController", "Force this character to use a specific tonemap controller." )
 END_SCRIPTDESC()
 
