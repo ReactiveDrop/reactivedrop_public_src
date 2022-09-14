@@ -439,6 +439,16 @@ void CRD_Collection_Panel_Swarmopedia::OnKeyCodePressed( vgui::KeyCode keycode )
 	case KEY_XBUTTON_X:
 		OnCommand( "CycleDisplay" );
 		break;
+	case KEY_XBUTTON_UP:
+	case KEY_XSTICK1_UP:
+	case KEY_XSTICK2_UP:
+		m_pContent->GetScrollBar()->SetValue( m_pContent->GetScrollBar()->GetValue() - 10 );
+		break;
+	case KEY_XBUTTON_DOWN:
+	case KEY_XSTICK1_DOWN:
+	case KEY_XSTICK2_DOWN:
+		m_pContent->GetScrollBar()->SetValue( m_pContent->GetScrollBar()->GetValue() + 10 );
+		break;
 	default:
 		BaseClass::OnKeyCodePressed( keycode );
 		break;
