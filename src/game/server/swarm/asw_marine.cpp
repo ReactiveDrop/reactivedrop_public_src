@@ -377,7 +377,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
 END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC( CASW_Marine, CBaseCombatCharacter, "Marine" )
+BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC( IsInhabited, "true if the marine is a player, false if the marine is a bot" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "get the player that owns the marine" )
 	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning marine." )

@@ -2,6 +2,7 @@
 #include "asw_inhabitable_npc.h"
 #include "asw_player.h"
 #include "asw_weapon.h"
+#include "env_tonemap_controller.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -22,7 +23,13 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_hUsingEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecFacingPointFromServer, FIELD_VECTOR ),
 	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
+	DEFINE_FIELD( m_hTonemapController, FIELD_EHANDLE ),
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "Get the player entity that is controlling this character." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapController, "SetTonemapController", "Force this character to use a specific tonemap controller." )
+END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
@@ -145,4 +152,34 @@ void CASW_Inhabitable_NPC::SetFacingPoint( const Vector &vec, float fDuration )
 float CASW_Inhabitable_NPC::MaxSpeed()
 {
 	return 300;
+}
+
+void CASW_Inhabitable_NPC::ScriptSetTonemapController( HSCRIPT hEnt )
+{
+	CBaseEntity *pEnt = ToEnt( hEnt );
+	if ( !pEnt )
+	{
+		m_hTonemapController = NULL;
+		return;
+	}
+
+	CEnvTonemapController *pController = dynamic_cast< CEnvTonemapController * >( pEnt );
+	if ( !pController )
+	{
+		Warning( "[%s] SetTonemapController called with an entity that was not an env_tonemap_controller.\n", GetDebugName() );
+		return;
+	}
+
+	m_hTonemapController = pController;
+}
+
+void CASW_Inhabitable_NPC::OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger )
+{
+	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
+	m_hTriggerTonemapList.AddToTail( pTonemapTrigger );
+}
+
+void CASW_Inhabitable_NPC::OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger )
+{
+	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 }

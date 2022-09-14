@@ -1226,7 +1226,10 @@
 	input SetAutoExposureMin(float) : "Set a custom tonemap auto exposure minimum."
 	input SetAutoExposureMax(float) : "Set a custom tonemap auto exposure maximum."
 	input SetBloomScale(float) : "Set a custom bloom scale."
+	//input SetBloomScaleRange(string) : "Set a custom bloom scale range. Syntax: <max> <min>"
 	input SetTonemapRate(float) : "Set the rate for autoexposure adjustment."
+	//input SetBloomExponent(float) : "Set a custom bloom exponent."
+	//input SetBloomSaturation(float) : "Set a custom bloom saturation."
 ]
 
 @PointClass base(Targetname, Parentname) sweptplayerhull() = func_useableladder : 

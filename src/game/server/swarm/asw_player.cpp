@@ -51,6 +51,7 @@
 #include "sendprop_priorities.h"
 #include "asw_deathmatch_mode.h"
 #include "asw_trace_filter.h"
+#include "env_tonemap_controller.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1826,6 +1827,35 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	}
 	
 	return BaseClass::ClientCommand( args );
+}
+
+void CASW_Player::UpdateTonemapController()
+{
+	CASW_Inhabitable_NPC *pNPC = GetViewNPC();
+	if ( pNPC )
+	{
+		if ( CBaseEntity *pController = pNPC->m_hTonemapController )
+		{
+			m_hTonemapController = pController;
+			return;
+		}
+
+		FOR_EACH_VEC_BACK( pNPC->m_hTriggerTonemapList, i )
+		{
+			CTonemapTrigger *pTrigger = pNPC->m_hTriggerTonemapList[i];
+			CBaseEntity *pController = pTrigger ? pTrigger->GetTonemapController() : NULL;
+			if ( pController )
+			{
+				m_hTonemapController = pController;
+				return;
+			}
+
+			// missing trigger or controller; remove to save loop iterations on future frames
+			pNPC->m_hTriggerTonemapList.Remove( i );
+		}
+	}
+
+	BaseClass::UpdateTonemapController();
 }
 
 void CASW_Player::BecomeNonSolid()

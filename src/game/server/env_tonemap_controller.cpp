@@ -10,70 +10,19 @@
 #include "entityoutput.h"
 #include "convar.h"
 #include "triggers.h"
-
+#ifdef INFESTED_DLL
+#include "asw_inhabitable_npc.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-// Spawn Flags
-#define SF_TONEMAP_MASTER			0x0001
+
 
 ConVar mat_hdr_tonemapscale( "mat_hdr_tonemapscale", "1.0", FCVAR_CHEAT, "The HDR tonemap scale. 1 = Use autoexposure, 0 = eyes fully closed, 16 = eyes wide open." );
 
 // 0 - eyes fully closed / fully black
 // 1 - nominal 
 // 16 - eyes wide open / fully white
-
-//-----------------------------------------------------------------------------
-// Purpose: Entity that controls player's tonemap
-//-----------------------------------------------------------------------------
-class CEnvTonemapController : public CPointEntity
-{
-	DECLARE_CLASS( CEnvTonemapController, CPointEntity );
-public:
-	DECLARE_DATADESC();
-	DECLARE_SERVERCLASS();
-
-	CEnvTonemapController();
-
-	void	Spawn( void );
-	int		UpdateTransmitState( void );
-	void	UpdateTonemapScaleBlend( void );
-
-	bool	IsMaster( void ) const					{ return HasSpawnFlags( SF_TONEMAP_MASTER ); }
-
-	// Inputs
-	void	InputSetTonemapScale( inputdata_t &inputdata );
-	void	InputBlendTonemapScale( inputdata_t &inputdata );
-	void	InputSetTonemapRate( inputdata_t &inputdata );
-	void	InputSetAutoExposureMin( inputdata_t &inputdata );
-	void	InputSetAutoExposureMax( inputdata_t &inputdata );
-	void	InputUseDefaultAutoExposure( inputdata_t &inputdata );
-	void	InputSetBloomScale( inputdata_t &inputdata );
-	void	InputUseDefaultBloomScale( inputdata_t &inputdata );
-	void	InputSetBloomScaleRange( inputdata_t &inputdata );
-
-	void	InputSetBloomExponent( inputdata_t &inputdata );
-	void	InputSetBloomSaturation( inputdata_t &inputdata );
-
-private:
-	float	m_flBlendTonemapStart;		// HDR Tonemap at the start of the blend
-	float	m_flBlendTonemapEnd;		// Target HDR Tonemap at the end of the blend
-	float	m_flBlendEndTime;			// Time at which the blend ends
-	float	m_flBlendStartTime;			// Time at which the blend started
-
-public:
-	CNetworkVar( bool, m_bUseCustomAutoExposureMin );
-	CNetworkVar( bool, m_bUseCustomAutoExposureMax );
-	CNetworkVar( bool, m_bUseCustomBloomScale );
-	CNetworkVar( bool, m_bUseCustomManualTonemapRate );
-	CNetworkVar( float, m_flCustomAutoExposureMin );
-	CNetworkVar( float, m_flCustomAutoExposureMax );
-	CNetworkVar( float, m_flCustomBloomScale);
-	CNetworkVar( float, m_flCustomBloomScaleMinimum);
-	CNetworkVar( float, m_flBloomExponent);
-	CNetworkVar( float, m_flBloomSaturation);
-	CNetworkVar( float, m_flCustomManualTonemapRate );
-};
 
 LINK_ENTITY_TO_CLASS( env_tonemap_controller, CEnvTonemapController );
 
@@ -328,11 +277,19 @@ void CTonemapTrigger::StartTouch( CBaseEntity *other )
 
 	BaseClass::StartTouch( other );
 
+#ifndef INFESTED_DLL
 	CBasePlayer *player = ToBasePlayer( other );
 	if ( !player )
 		return;
 
 	player->OnTonemapTriggerStartTouch( this );
+#else
+	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( other );
+	if ( !pNPC )
+		return;
+
+	pNPC->OnTonemapTriggerStartTouch( this );
+#endif
 }
 
 
@@ -344,11 +301,19 @@ void CTonemapTrigger::EndTouch( CBaseEntity *other )
 
 	BaseClass::EndTouch( other );
 
+#ifndef INFESTED_DLL
 	CBasePlayer *player = ToBasePlayer( other );
 	if ( !player )
 		return;
 
 	player->OnTonemapTriggerEndTouch( this );
+#else
+	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( other );
+	if ( !pNPC )
+		return;
+
+	pNPC->OnTonemapTriggerEndTouch( this );
+#endif
 }
 
 
@@ -370,24 +335,21 @@ void CTonemapSystem::LevelInitPostEntity( void )
 	CEnvTonemapController *pTonemapController = NULL;
 	do
 	{
-		pTonemapController = static_cast<CEnvTonemapController*>( gEntList.FindEntityByClassname( pTonemapController, "env_tonemap_controller" ) );
+		pTonemapController = static_cast< CEnvTonemapController * >( gEntList.FindEntityByClassname( pTonemapController, "env_tonemap_controller" ) );
 		if ( pTonemapController )
 		{
+			if ( pTonemapController->IsMaster() )
+			{
+				m_hMasterController = pTonemapController;
+				break;
+			}
+
 			if ( m_hMasterController == NULL )
 			{
 				m_hMasterController = pTonemapController;
 			}
-			else
-			{
-				if ( pTonemapController->IsMaster() )
-				{
-					m_hMasterController = pTonemapController;
-				}
-			}
 		}
 	} while ( pTonemapController );
-
-	
 }
 
 
