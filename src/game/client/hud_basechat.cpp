@@ -1589,10 +1589,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 				m_textRanges.AddToTail(range);
 				//Pass by all color channel characters
-				++txt;
-				++txt;
-				++txt;
-				++txt;
+				txt += 4;
 				break;
 			}
 			default:
