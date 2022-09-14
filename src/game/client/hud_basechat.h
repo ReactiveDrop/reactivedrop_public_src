@@ -68,8 +68,9 @@ enum TextColor
 	COLOR_PLAYERNAME = 3,
 	COLOR_LOCATION = 4,
 	COLOR_ACHIEVEMENT = 5,
-	COLOR_MOD_CUSTOM = 6, 
-	COLOR_MOD_CUSTOM2 = 7,	
+	COLOR_MOD_CUSTOM = 6,
+	COLOR_MOD_CUSTOM2 = 7,
+	COLOR_INPUTCUSTOMCOL = 8,
 	COLOR_MAX
 };
 
@@ -131,6 +132,7 @@ public:
 	void			SetNameColor( Color cColor ){ m_clrNameColor = cColor; 	}
 		
 	virtual void	PerformFadeout( void );
+	static int		TranslateChannelRange(byte inputval);
 	virtual void	InsertAndColorizeText( wchar_t *buf, int clientIndex );
 	virtual			void Colorize( int alpha = 255 );								///< Re-inserts the text in the appropriate colors at the given alpha
 
