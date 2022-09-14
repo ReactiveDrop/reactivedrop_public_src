@@ -1237,17 +1237,12 @@ static ScriptVariant_t Script_TextColor(int R, int G, int B)
 	float outputMod_G = G / 255.0f;
 	float outputMod_B = B / 255.0f;
 
-	//This char must match the char used for the client's COLOR_INPUTCUSTOMCOL - in my case it's 0x08
-	char Con_Char = (char)0x08;
-	//pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
-	char R_Char = (char)(32 + (outputMod_R * 94));
-	char G_Char = (char)(32 + (outputMod_G * 94));
-	char B_Char = (char)(32 + (outputMod_B * 94));
-
-
-	//Format a string with results as 4 characters.
-	char outputChars[5];
-	Q_snprintf(outputChars, sizeof(outputChars), "%c%c%c%c", Con_Char, R_Char, G_Char, B_Char);
+	char outputChars[5]{};
+	outputChars[0] = '\x08'; // COLOR_INPUTCUSTOMCOL
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[1] = (char)( 32 + ( outputMod_R * 94 ) );
+	outputChars[2] = (char)( 32 + ( outputMod_G * 94 ) );
+	outputChars[3] = (char)( 32 + ( outputMod_B * 94 ) );
 
 	return ScriptVariant_t(outputChars, true);
 }
