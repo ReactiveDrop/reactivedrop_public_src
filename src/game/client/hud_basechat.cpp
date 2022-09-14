@@ -1814,14 +1814,10 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	char *pmsg = msg;
 	while ( *pmsg && ( *pmsg == '\n' || ( *pmsg > 0 && *pmsg < COLOR_MAX ) ) )
 	{
-		//This is code I added to clear the 3 bytes that come after the custom RGB character.
-		if (*pmsg == COLOR_INPUTCUSTOMCOL)
-		{
+		if ( *pmsg == COLOR_INPUTCUSTOMCOL )
+			pmsg += 4;
+		else
 			pmsg++;
-			pmsg++;
-			pmsg++;
-		}
-		pmsg++;
 	}
 
 	if ( !*pmsg )
