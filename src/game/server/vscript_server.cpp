@@ -1,4 +1,4 @@
-//========== Copyright © 2008, Valve Corporation, All rights reserved. ========
+//========== Copyright Â© 2008, Valve Corporation, All rights reserved. ========
 //
 // Purpose:
 //
@@ -1536,7 +1536,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
-				ScriptRegisterFunctionNamed(g_pScriptVM,  Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RBG input.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RGB input." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );
