@@ -52,6 +52,7 @@
 #include "asw_deathmatch_mode.h"
 #include "asw_trace_filter.h"
 #include "env_tonemap_controller.h"
+#include "fogvolume.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1856,6 +1857,88 @@ void CASW_Player::UpdateTonemapController()
 	}
 
 	BaseClass::UpdateTonemapController();
+}
+
+void CASW_Player::UpdateFXVolume()
+{
+	CFogController *pFogController = NULL;
+	CPostProcessController *pPostProcessController = NULL;
+	CColorCorrection *pColorCorrectionEnt = NULL;
+
+	Vector eyePos;
+	CASW_Inhabitable_NPC *pViewNPC = GetViewNPC();
+	if ( pViewNPC )
+	{
+		eyePos = pViewNPC->EyePosition();
+	}
+	else if ( CBaseEntity *pViewEntity = GetViewEntity() )
+	{
+		eyePos = pViewEntity->GetAbsOrigin();
+	}
+	else
+	{
+		eyePos = EyePosition();
+	}
+
+	CFogVolume *pFogVolume = CFogVolume::FindFogVolumeForPosition( eyePos );
+	if ( pFogVolume )
+	{
+		pFogController = pFogVolume->GetFogController();
+		pPostProcessController = pFogVolume->GetPostProcessController();
+		pColorCorrectionEnt = pFogVolume->GetColorCorrectionController();
+
+		if ( !pFogController )
+		{
+			pFogController = FogSystem()->GetMasterFogController();
+		}
+
+		if ( !pPostProcessController )
+		{
+			pPostProcessController = PostProcessSystem()->GetMasterPostProcessController();
+		}
+
+		if ( !pColorCorrectionEnt )
+		{
+			pColorCorrectionEnt = ColorCorrectionSystem()->GetMasterColorCorrection();
+		}
+	}
+	else if ( TheFogVolumes.Count() > 0 )
+	{
+		pFogController = FogSystem()->GetMasterFogController();
+		pPostProcessController = PostProcessSystem()->GetMasterPostProcessController();
+		pColorCorrectionEnt = ColorCorrectionSystem()->GetMasterColorCorrection();
+	}
+
+	if ( pViewNPC )
+	{
+		if ( CFogController *pNPCFogController = pViewNPC->m_hFogController )
+		{
+			pFogController = pNPCFogController;
+		}
+		if ( CPostProcessController *pNPCPostProcessController = pViewNPC->m_hPostProcessController )
+		{
+			pPostProcessController = pNPCPostProcessController;
+		}
+		if ( CColorCorrection *pNPCColorCorrection = pViewNPC->m_hColorCorrection )
+		{
+			pColorCorrectionEnt = pNPCColorCorrection;
+		}
+	}
+
+	if ( pFogController && m_PlayerFog.m_hCtrl.Get() != pFogController )
+	{
+		m_PlayerFog.m_hCtrl.Set( pFogController );
+	}
+
+	if ( pPostProcessController )
+	{
+		m_hPostProcessCtrl.Set( pPostProcessController );
+	}
+
+	if ( pColorCorrectionEnt )
+	{
+		m_hColorCorrectionCtrl.Set( pColorCorrectionEnt );
+	}
 }
 
 void CASW_Player::BecomeNonSolid()

@@ -59,6 +59,12 @@ public:
 	char			m_chTextureType;
 	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
 
+	void ScriptSetFogController( HSCRIPT hEnt );
+	CHandle<CFogController> m_hFogController;
+	void ScriptSetPostProcessController( HSCRIPT hEnt );
+	CHandle<CPostProcessController> m_hPostProcessController;
+	void ScriptSetColorCorrection( HSCRIPT hEnt );
+	CHandle<CColorCorrection> m_hColorCorrection;
 	void ScriptSetTonemapController( HSCRIPT hEnt );
 	CHandle<CEnvTonemapController> m_hTonemapController;
 	void OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger );
