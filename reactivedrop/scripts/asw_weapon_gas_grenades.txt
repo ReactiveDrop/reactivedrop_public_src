@@ -4,9 +4,9 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"				"#asw_weapon_gas_grenades"
-	"viewmodel"				"models/items/itembox/itemboxsmall.mdl"
-	"playermodel"			"models/items/itembox/itemboxsmall.mdl"
-	"playermodel_skin"		"12"
+	"viewmodel"				"models/swarm/grenades/grenadebox.mdl"
+	"playermodel"			"models/swarm/grenades/grenadebox.mdl"
+	"playermodel_skin"		"2"
 	"anim_prefix"			"ar2"
 	"bucket"				"0"
 	"bucket_position"		"0"
