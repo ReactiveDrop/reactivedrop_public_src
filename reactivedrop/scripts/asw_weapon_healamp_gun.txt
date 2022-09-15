@@ -6,6 +6,7 @@ WeaponData
 	"printname"	"#asw_weapon_healampgun"
 	"viewmodel"			"Models/weapons/healgun/healgun.mdl"
 	"playermodel"			"Models/weapons/healgun/healgun.mdl"
+	"playermodel_skin"		"1"
 	"anim_prefix"			"ar2"
 	"bucket"			"0"
 	"bucket_position"		"1"
