@@ -3,6 +3,7 @@
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include <vgui_controls/Label.h>
+#include <vgui_controls/TextImage.h>
 #include "animation.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

@@ -61,7 +61,7 @@
 		"fieldName"		"LblValue"
 		"xpos"		"100"
 		"ypos"		"0"
-		"wide"		"192"
+		"wide"		"172"
 		"tall"		"20"
 		"ControlName"		"Label"
 		"font"		"DefaultMedium"

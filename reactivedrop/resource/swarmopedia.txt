@@ -1686,6 +1686,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_gas_grenades"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "270"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"

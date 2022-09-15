@@ -4,6 +4,7 @@
 #include "asw_marine_profile.h"
 #include "asw_util_shared.h"
 #include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
@@ -370,6 +371,7 @@ public:
 	CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void PerformLayout() override;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pSkillIcon;
@@ -378,6 +380,7 @@ public:
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::WeaponFact *m_pFact;
+	int m_iOriginalTall;
 };
 
 CRD_Equipment_WeaponFact::CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact ) :
@@ -397,6 +400,9 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/CollectionPanelEquipmentWeaponFact.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	Assert( m_pLblName->GetTall() == m_pLblValue->GetTall() && m_pLblName->GetTall() == GetTall() );
+	m_iOriginalTall = GetTall();
 
 	m_pSkillIcon->SetVisible( false );
 
@@ -685,6 +691,59 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 
 	m_pLblValue->SetText( buf );
+}
+
+void CRD_Equipment_WeaponFact::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	Assert( m_pLblName->GetFont() == m_pLblValue->GetFont() );
+
+	if ( GetTall() < m_iOriginalTall )
+	{
+		return;
+	}
+
+	m_pLblName->GetTextImage()->RecalculateNewLinePositions();
+	m_pLblValue->GetTextImage()->RecalculateNewLinePositions();
+
+	int x, y;
+
+	m_pLblName->GetTextImage()->GetContentSize( x, y );
+	int iTextTall = y;
+
+	m_pLblValue->GetTextImage()->GetContentSize( x, y );
+	if ( y > iTextTall )
+	{
+		iTextTall = y;
+	}
+
+	int iFontTall = vgui::surface()->GetFontTall( m_pLblName->GetFont() );
+	int iNewTall = iTextTall - iFontTall + m_iOriginalTall;
+	int iTallDiff = iNewTall - GetTall();
+
+	if ( iTallDiff != 0 )
+	{
+		Assert( GetParent() && GetParent()->GetParent() );
+		GetParent()->GetParent()->InvalidateLayout();
+	}
+
+	m_pIcon->GetPos( x, y );
+	y += iTallDiff / 2;
+	m_pIcon->SetPos( x, y );
+
+	m_pSkillIcon->GetPos( x, y );
+	y += iTallDiff / 2;
+	m_pSkillIcon->SetPos( x, y );
+
+	if ( vgui::Panel *pBackground = FindChildByName( "Background" ) )
+	{
+		pBackground->SetTall( iNewTall );
+	}
+
+	m_pLblName->SetTall( iNewTall );
+	m_pLblValue->SetTall( iNewTall );
+	SetTall( iNewTall );
 }
 
 CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
