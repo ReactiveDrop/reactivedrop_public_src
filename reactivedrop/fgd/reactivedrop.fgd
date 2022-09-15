@@ -347,3 +347,8 @@ asw_pickup_50calmg : "50cal Machine Gun"
 [
 	fov(float) : "FOV" : 75 : "Field of view in degrees"
 ]
+
+@SolidClass base(Trigger) = trigger_tonemap : "Change active tonemap for characters in this volume."
+[
+	TonemapName(target_destination) : "Tonemap Name" : : "Name of an env_tonemap_controller entity to make active."
+]

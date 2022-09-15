@@ -243,6 +243,7 @@ namespace RD_Swarmopedia
 		{
 			Generic,
 			Numeric,
+			HammerUnits,
 			ShotgunPellets,
 			DamagePerShot,
 			LargeAlienDamageScale,
@@ -275,7 +276,7 @@ namespace RD_Swarmopedia
 		CUtlStringList BaseDivisorCVar{};
 
 		ASW_Skill Skill{ ASW_MARINE_SKILL_INVALID };
-		int SubSkill{ -1 };
+		int SubSkill{ 0 };
 		float SkillMultiplier{ 1.0f };
 		CUtlStringList SkillMultiplierCVar{};
 		CUtlStringList SkillDivisorCVar{};

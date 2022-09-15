@@ -6,6 +6,8 @@
 
 class CASW_Player;
 class CASW_Weapon;
+class CEnvTonemapController;
+class CTonemapTrigger;
 
 class CASW_Inhabitable_NPC : public CAI_PlayerAlly
 {
@@ -13,6 +15,7 @@ public:
 	DECLARE_CLASS( CASW_Inhabitable_NPC, CAI_PlayerAlly );
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Inhabitable_NPC();
 	virtual ~CASW_Inhabitable_NPC();
@@ -55,6 +58,18 @@ public:
 	float			m_surfaceFriction;
 	char			m_chTextureType;
 	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
+
+	void ScriptSetFogController( HSCRIPT hEnt );
+	CHandle<CFogController> m_hFogController;
+	void ScriptSetPostProcessController( HSCRIPT hEnt );
+	CHandle<CPostProcessController> m_hPostProcessController;
+	void ScriptSetColorCorrection( HSCRIPT hEnt );
+	CHandle<CColorCorrection> m_hColorCorrection;
+	void ScriptSetTonemapController( HSCRIPT hEnt );
+	CHandle<CEnvTonemapController> m_hTonemapController;
+	void OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger );
+	void OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger );
+	CUtlVector<CHandle<CTonemapTrigger>> m_hTriggerTonemapList;
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

@@ -666,7 +666,7 @@ public:
 
 	virtual void			ForceChangeTeam( int iTeamNum ) { }
 
-	void					UpdateFXVolume( void );
+	virtual void			UpdateFXVolume( void );
 public:
 	// Player Physics Shadow
 	void					SetupVPhysicsShadow( const Vector &vecAbsOrigin, const Vector &vecAbsVelocity, CPhysCollide *pStandModel, const char *pStandHullName, CPhysCollide *pCrouchModel, const char *pCrouchHullName );

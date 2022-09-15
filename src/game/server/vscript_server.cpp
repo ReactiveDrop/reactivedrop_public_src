@@ -1,4 +1,4 @@
-//========== Copyright © 2008, Valve Corporation, All rights reserved. ========
+//========== Copyright Â© 2008, Valve Corporation, All rights reserved. ========
 //
 // Purpose:
 //
@@ -1201,6 +1201,52 @@ static void Script_Say( HSCRIPT hPlayer, const char *pText )
 	}
 }
 
+//This is a vscript function that converts RGB into a transmittable format for colored text
+static ScriptVariant_t Script_TextColor(int R, int G, int B)
+{
+	//Force channel ranges between 0 - 255
+	if (R > 255)
+	{
+		R = 255;
+	}
+	else if (R < 0)
+	{
+		R = 0;
+	}
+
+	if (G > 255)
+	{
+		G = 255;
+	}
+	else if (G < 0)
+	{
+		G = 0;
+	}
+
+	if (B > 255)
+	{
+		B = 255;
+	}
+	else if (B < 0)
+	{
+		B = 0;
+	}
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R = R / 255.0f;
+	float outputMod_G = G / 255.0f;
+	float outputMod_B = B / 255.0f;
+
+	char outputChars[5]{};
+	outputChars[0] = '\x08'; // COLOR_INPUTCUSTOMCOL
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[1] = (char)( 32 + ( outputMod_R * 94 ) );
+	outputChars[2] = (char)( 32 + ( outputMod_G * 94 ) );
+	outputChars[3] = (char)( 32 + ( outputMod_B * 94 ) );
+
+	return ScriptVariant_t(outputChars, true);
+}
+
 static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
 {
 	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
@@ -1485,6 +1531,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RGB input." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );

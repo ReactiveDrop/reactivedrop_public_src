@@ -162,7 +162,7 @@ BEGIN_DATADESC( CASW_Alien )
 	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
 END_DATADESC()
 // BenLubar(key-values-director)
-BEGIN_ENT_SCRIPTDESC( CASW_Alien, CBaseCombatCharacter, "Alien Swarm alien" )
+BEGIN_ENT_SCRIPTDESC( CASW_Alien, CASW_Inhabitable_NPC, "Alien Swarm alien" )
 	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )

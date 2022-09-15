@@ -12,7 +12,7 @@
 	"ScrollBar"
 	{
 		"fieldName"		"ScrollBar"
-		"xpos"		"450"
+		"xpos"		"445"
 		"ypos"		"0"
 		"wide"		"20"
 		"tall"		"385"

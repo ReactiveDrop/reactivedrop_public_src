@@ -2,6 +2,7 @@
 #include "asw_inhabitable_npc.h"
 #include "asw_player.h"
 #include "asw_weapon.h"
+#include "env_tonemap_controller.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -9,7 +10,7 @@
 
 LINK_ENTITY_TO_CLASS( funCASW_Inhabitable_NPC, CASW_Inhabitable_NPC );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC)
+IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropEHandle( SENDINFO( m_Commander ) ),
 	SendPropEHandle( SENDINFO( m_hUsingEntity ) ),
 	SendPropVector( SENDINFO( m_vecFacingPointFromServer ), 0, SPROP_NOSCALE ),
@@ -22,7 +23,20 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_hUsingEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecFacingPointFromServer, FIELD_VECTOR ),
 	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
+	DEFINE_FIELD( m_hFogController, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hPostProcessController, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hColorCorrection, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hTonemapController, FIELD_EHANDLE ),
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
+	DEFINE_SCRIPTFUNC( IsInhabited, "Returns true if a player is controlling this character, false if it is AI-controlled." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "Get the player entity that is \"owns\" this character, eg. the player that is playing this marine or added this marine bot to the lobby." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetFogController, "SetFogController", "Force this character to use a specific env_fog_controller." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetPostProcessController, "SetPostProcessController", "Force this character to use a specific postprocess_controller." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetColorCorrection, "SetColorCorrection", "Force this character to use a specific color_correction." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapController, "SetTonemapController", "Force this character to use a specific env_tonemap_controller." )
+END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
@@ -145,4 +159,40 @@ void CASW_Inhabitable_NPC::SetFacingPoint( const Vector &vec, float fDuration )
 float CASW_Inhabitable_NPC::MaxSpeed()
 {
 	return 300;
+}
+
+#define IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( FuncName, EntityClass, MemberVariable, HammerClassName ) \
+void CASW_Inhabitable_NPC::FuncName( HSCRIPT hEnt ) \
+{ \
+	CBaseEntity *pEnt = ToEnt( hEnt ); \
+	if ( !pEnt ) \
+	{ \
+		MemberVariable = NULL; \
+		return; \
+	} \
+\
+	EntityClass *pController = dynamic_cast< EntityClass * >( pEnt ); \
+	if ( !pController ) \
+	{ \
+		Warning( "[%s] " #FuncName " called with an entity that was not " #HammerClassName ".\n", GetDebugName() ); \
+		return; \
+	} \
+\
+	MemberVariable = pController; \
+}
+
+IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( ScriptSetFogController, CFogController, m_hFogController, env_fog_controller )
+IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( ScriptSetPostProcessController, CPostProcessController, m_hPostProcessController, postprocess_controller )
+IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( ScriptSetColorCorrection, CColorCorrection, m_hColorCorrection, color_correction )
+IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( ScriptSetTonemapController, CEnvTonemapController, m_hTonemapController, env_tonemap_controller )
+
+void CASW_Inhabitable_NPC::OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger )
+{
+	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
+	m_hTriggerTonemapList.AddToTail( pTonemapTrigger );
+}
+
+void CASW_Inhabitable_NPC::OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger )
+{
+	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 }

@@ -10,6 +10,8 @@
 
 
 ConVar rd_swarmopedia_timescale( "rd_swarmopedia_timescale", "0.3", FCVAR_ARCHIVE, "Speed for Swarmopedia specimen animations" );
+ConVar rd_swarmopedia_grid( "rd_swarmopedia_grid", "0", FCVAR_ARCHIVE, "Draw a grid in the Swarmopedia model viewer" );
+ConVar rd_collections_last_tab( "rd_collections_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the collections screen." );
 extern ConVar rd_reduce_motion;
 
 vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
@@ -33,6 +35,7 @@ void LaunchCollectionsFrame()
 #ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
 	pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
 #endif
+	pFrame->RememberTabIndex( &rd_collections_last_tab );
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;
@@ -199,6 +202,11 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 		ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
 		m_Models[i].m_MDL.m_flTime = flTime;
 		m_Models[i].m_MDL.Draw( mat );
+	}
+
+	if ( rd_swarmopedia_grid.GetBool() )
+	{
+		DrawGrid();
 	}
 }
 

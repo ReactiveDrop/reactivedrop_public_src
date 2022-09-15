@@ -17,8 +17,9 @@
 		"xpos"				"0"
 		"ypos"				"100"
 		"wide"				"165"
-		"tall"				"20"
+		"tall"				"15"
 		"font"				"DefaultLarge"
+		"wrap"				"1"
 		"fgcolor_override"	"255 255 255 255"
 	}
 

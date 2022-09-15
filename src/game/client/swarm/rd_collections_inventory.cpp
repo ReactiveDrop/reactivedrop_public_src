@@ -114,7 +114,9 @@ void CRD_Collection_Tab_Inventory::OnThink()
 
 	UpdateErrorMessage( m_pGrid );
 
-	m_pGrid->InvalidateLayout( false, true );
+	bool bVisibleBefore = m_pGrid->IsVisible();
+	m_pGrid->InvalidateLayout( true, true );
+	m_pGrid->SetVisible( bVisibleBefore );
 }
 
 void CRD_Collection_Tab_Inventory::UpdateErrorMessage( TGD_Grid *pGrid )

@@ -6,6 +6,7 @@
 #include "asw_weapon_parse.h"
 #include "asw_weapon_shared.h"
 #include "ammodef.h"
+#include "asw_ammo_drop_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -756,52 +757,70 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		return;
 	}
 
+	if ( pFact->Type == WeaponFact::Type_T::DamagePerShot || pFact->Type == WeaponFact::Type_T::Ammo )
+	{
+		const char *szSuffix = NULL;
+		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
+		switch ( iDamageType )
+		{
+		case DMG_BULLET:
+			szSuffix = "_bullet";
+			break;
+		case DMG_SLASH:
+			szSuffix = "_slash";
+			break;
+		case DMG_BURN:
+			szSuffix = "_burn";
+			break;
+		case DMG_BLAST:
+			szSuffix = "_blast";
+			break;
+		case DMG_SHOCK:
+			szSuffix = "_shock";
+			break;
+		case DMG_SONIC:
+			// special case; untyped or non-damaging
+			break;
+		case DMG_ENERGYBEAM:
+			szSuffix = "_beam";
+			break;
+		case DMG_NERVEGAS:
+			szSuffix = "_gas";
+			break;
+		case DMG_BULLET | DMG_BUCKSHOT:
+			szSuffix = "_buckshot";
+			break;
+		default:
+			Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
+			DebuggerBreakIfDebugging();
+			break;
+		}
+
+		if ( szSuffix && pFact->Caption.IsEmpty() )
+		{
+			pFact->Caption = pFact->Type == WeaponFact::Type_T::DamagePerShot ? "#rd_weapon_fact_damage_per_shot" : "#rd_weapon_fact_ammo";
+			pFact->Caption += szSuffix;
+		}
+
+		if ( szSuffix && pFact->Icon.IsEmpty() )
+		{
+			pFact->Icon = pFact->Type == WeaponFact::Type_T::DamagePerShot ? "swarm/swarmopedia/fact/damage" : "swarm/swarmopedia/fact/ammo";
+			pFact->Icon += szSuffix;
+		}
+	}
+
 	switch ( pFact->Type )
 	{
 	case WeaponFact::Type_T::Generic:
 		break;
 	case WeaponFact::Type_T::Numeric:
 		break;
+	case WeaponFact::Type_T::HammerUnits:
+		break;
 	case WeaponFact::Type_T::ShotgunPellets:
 		pFact->Base += pWeaponInfo->m_iNumPellets;
 		break;
 	case WeaponFact::Type_T::DamagePerShot:
-		if ( pFact->Caption.IsEmpty() )
-		{
-			int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
-			switch ( iDamageType )
-			{
-			case DMG_BULLET:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_bullet";
-				break;
-			case DMG_SLASH:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_slash";
-				break;
-			case DMG_BURN:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_burn";
-				break;
-			case DMG_BLAST:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_blast";
-				break;
-			case DMG_SHOCK:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_shock";
-				break;
-			case DMG_SONIC:
-				// special case; untyped or non-damaging
-				break;
-			case DMG_NERVEGAS:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_gas";
-				break;
-			case DMG_BULLET | DMG_BUCKSHOT:
-				pFact->Caption = "#rd_weapon_fact_damage_per_shot_buckshot";
-				break;
-			default:
-				Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
-				DebuggerBreakIfDebugging();
-				break;
-			}
-		}
-
 		pFact->Base += pWeaponInfo->m_flBaseDamage;
 		break;
 	case WeaponFact::Type_T::LargeAlienDamageScale:
@@ -932,7 +951,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 		if ( Unique )
 		{
-			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Caption", "#rd_weapon_fact_unique" ) ) );
+			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Icon", "swarm/swarmopedia/fact/unique", "Caption", "#rd_weapon_fact_unique" ) ) );
 		}
 
 		Name = pWeaponInfo->szPrintName;
@@ -967,6 +986,22 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			pDisplay->Models[i]->Skin = pWeaponInfo->m_iPlayerModelSkin;
 		}
 
+		if ( KeyValues *pTransform = pKV->FindKey( "BuiltinModelTransform" ) )
+		{
+			FOR_EACH_VEC( pDisplay->Models, j )
+			{
+				Model *pModel = pDisplay->Models[j];
+				pModel->Color = pTransform->GetColor( "Color", pModel->Color );
+				pModel->Pitch = pTransform->GetFloat( "Pitch", pModel->Pitch );
+				pModel->Yaw = pTransform->GetFloat( "Yaw", pModel->Yaw );
+				pModel->Roll = pTransform->GetFloat( "Roll", pModel->Roll );
+				pModel->X = pTransform->GetFloat( "X", pModel->X );
+				pModel->Y = pTransform->GetFloat( "Y", pModel->Y );
+				pModel->Z = pTransform->GetFloat( "Z", pModel->Z );
+				pModel->Scale = pTransform->GetFloat( "Scale", pModel->Scale );
+			}
+		}
+
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
 		Content.AddToTail( pContent );
 		pContent->Text = pWeaponInfo->szEquipDescription1;
@@ -986,9 +1021,54 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
 		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
 
+		bool bWantAmmoFacts = !Extra && pWeaponInfo->iAmmoType > 1;
+
 		FOR_EACH_VEC( Facts, i )
 		{
 			PostProcessBuiltin( Facts[i], pWeaponInfo, false );
+
+			if ( Facts[i]->Type == WeaponFact::Type_T::Ammo && bWantAmmoFacts )
+			{
+				bWantAmmoFacts = false;
+
+				ASSERT_INVARIANT( DEFAULT_AMMO_DROP_UNITS == 100 );
+				int iUnitCost = CASW_Ammo_Drop_Shared::GetAmmoUnitCost( pWeaponInfo->iAmmoType );
+				int iClipsPerRefill = CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( pWeaponInfo->iAmmoType );
+
+				int iNext = i;
+				if ( iUnitCost > DEFAULT_AMMO_DROP_UNITS )
+				{
+					Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Icon", "swarm/swarmopedia/fact/generic_ammo_refill", "Caption", "#rd_weapon_fact_generic_ammo_refill_none" ) ) ) );
+				}
+				else
+				{
+					KeyValues::AutoDelete pFact( "Numeric" );
+					pFact->SetString( "Icon", "swarm/swarmopedia/fact/generic_ammo_refill" );
+					pFact->SetString( "Caption", "#rd_weapon_fact_generic_ammo_refill_cost" );
+					pFact->SetInt( "Base", iUnitCost );
+					Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
+
+					if ( iClipsPerRefill != 1 )
+					{
+						pFact->SetString( "Icon", "swarm/swarmopedia/fact/generic_ammo_refill_clips" );
+						pFact->SetString( "Caption", "#rd_weapon_fact_generic_ammo_refill_clips" );
+						pFact->SetInt( "Base", iClipsPerRefill );
+						Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
+					}
+				}
+
+				if ( Facts[i]->UseWeaponInfo && Facts[i]->ClipSize )
+				{
+					KeyValues::AutoDelete pFact( "Numeric" );
+					pFact->SetString( "Icon", "swarm/swarmopedia/fact/reload" );
+					pFact->SetString( "Caption", "#rd_weapon_fact_reload" );
+					pFact->SetInt( "Precision", 2 );
+					pFact->SetString( "Skill", "ASW_MARINE_SKILL_RELOADING" );
+					pFact->SetString( "SubSkill", "ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE" );
+					pFact->SetFloat( "SkillMultiplier", pWeaponInfo->m_flDisplayReloadTime > 0 ? pWeaponInfo->m_flDisplayReloadTime : pWeaponInfo->flReloadTime );
+					Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
+				}
+			}
 		}
 	}
 
@@ -1043,6 +1123,10 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "Numeric" ) )
 	{
 		Type = Type_T::Numeric;
+	}
+	else if ( FStrEq( szName, "HammerUnits" ) )
+	{
+		Type = Type_T::HammerUnits;
 	}
 	else if ( FStrEq( szName, "ShotgunPellets" ) )
 	{
