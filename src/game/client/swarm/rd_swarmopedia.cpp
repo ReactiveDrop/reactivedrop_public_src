@@ -828,10 +828,10 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 	case WeaponFact::Type_T::BulletSpread:
 		break;
 	case WeaponFact::Type_T::Piercing:
-		// TODO
 		break;
 	case WeaponFact::Type_T::FireRate:
-		pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
+		//pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
+		pFact->Base += pWeaponInfo->m_flFireRate;
 		break;
 	case WeaponFact::Type_T::Ammo:
 		pFact->Base += bIsSecondary ? pWeaponInfo->iDefaultClip2 : pWeaponInfo->iDefaultClip1;

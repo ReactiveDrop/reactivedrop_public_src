@@ -1097,7 +1097,16 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_pdw_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG"
+			}
+			"BulletSpread" {
+				"Base" "3"
+			}
+			"FireRate" {}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -1152,15 +1161,33 @@
 		"ClassName" "asw_weapon_minigun"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
-			"Piercing" {
-				"Precision" "1"
-				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			"DamagePerShot" {
+				"CVar" "rd_minigun_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_AUTOGUN"
+				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
+			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
+			"Piercing" {
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_minigun_sustained_fire_piercing"
+			}
+			"FireRate" {}
+			"Ammo" {
+				"BaseMultiplier" "2"
+				"ClipSize" "500"
+			}
+			"Secondary" {}
 		}
 	}
 	"WEAPON" {
@@ -1203,6 +1230,10 @@
 			"FireRate" {
 				"UseWeaponInfo" "0"
 				"Base" "0.1"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/ammo"
+				"Caption" "#rd_weapon_fact_unlimited_ammo"
 			}
 		}
 	}
@@ -1265,12 +1296,6 @@
 			"LargeAlienDamageScale" {
 				"CVar" "rd_deagle_bigalien_dmg_scale"
 			}
-			"BulletSpread" {
-				"Base" "15"
-				"Flattened" "1"
-			}
-			"FireRate" {}
-			"Ammo" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_guaranteed_ranger_kill"
@@ -1279,10 +1304,16 @@
 				"Icon" "swarm/swarmopedia/fact/door_defense"
 				"Caption" "#rd_weapon_fact_reduced_damage_to_doors"
 			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
+			"FireRate" {}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -1301,7 +1332,10 @@
 			"BulletSpread" {
 				"Base" "11"
 			}
-			"Piercing" {}
+			"Piercing" {
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			}
 			"FireRate" {}
 			"Ammo" {}
 			"Generic" {
@@ -1357,13 +1391,52 @@
 			"Y" "-6"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_heavy_rifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG"
+			}
 			"LargeAlienDamageScale" {
 				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
+			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
+			}
+			"FireRate" {}
+			"Secondary" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_duration"
+					"CVar" "rd_heavy_rifle_fastfire_duration"
+				}
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_bullet"
+					"Caption" "#rd_weapon_fact_damage_per_shot_bullet"
+					"CVar" "rd_heavy_rifle_dmg_base"
+					"Skill" "ASW_MARINE_SKILL_ACCURACY"
+					"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG"
+					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
+					"SkillMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
+				}
+				"LargeAlienDamageScale" {
+					"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
+				}
+				"BulletSpread" {
+					"Base" "15"
+					"Flattened" "1"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_more_accurate_while_crouching_heavy_rifle_exception"
+				}
+				"FireRate" {
+					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_fire_rate_multiplier"
+				}
+				"Ammo" {}
 			}
 		}
 	}
