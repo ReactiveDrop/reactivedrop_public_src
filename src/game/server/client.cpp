@@ -49,6 +49,7 @@ extern int giPrecacheGrunt;
 extern bool IsInCommentaryMode( void );
 
 ConVar *sv_cheats = NULL;
+ConVar rd_check_clientdll_consistency( "rd_check_clientdll_consistency", "-1", FCVAR_NONE, "If 1, client.dll must match on the client and server. If -1, becomes 0 on beta branches and 1 on the live branch." );
 
 #define P_MAX_LEN 127 //used in CheckChatText and Host_Say to limit p pointer where pszFormat + pszPrefix + pszLocation + p as main text and few more symbols define the full text string. should be under 256
 //also seems not to be really usefull without client adjustment m_pInput->SetMaximumCharCount( 127 ); in hud_basechat.cpp
@@ -378,6 +379,23 @@ void ClientPrecache( void )
 		engine->ForceExactFile( "cfg/gpu_level_360.ekv" );
 		engine->ForceExactFile( "cfg/cpu_level_360.ekv" );
 		engine->ForceExactFile( "cfg/cpu_level_360_ss.ekv" );
+	}
+
+	if ( rd_check_clientdll_consistency.GetInt() == -1 )
+	{
+		ISteamApps *pSteamApps = SteamApps();
+		if ( !pSteamApps )
+		{
+			pSteamApps = SteamGameServerApps();
+		}
+
+		char szBetaName[256]{};
+		rd_check_clientdll_consistency.SetValue( pSteamApps && !pSteamApps->GetCurrentBetaName( szBetaName, sizeof( szBetaName ) ) );
+	}
+
+	if ( rd_check_clientdll_consistency.GetBool() )
+	{
+		engine->ForceExactFile( "bin/client.dll" );
 	}
 
 	// BenLubar: not particularly worried about wallhacks in a top-down game.
