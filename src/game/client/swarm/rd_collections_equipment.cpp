@@ -841,8 +841,8 @@ void CRD_Collection_Panel_Equipment::OnItemSelected( const char *panelName )
 {
 	CRD_Equipment_WeaponFact *pSelected = assert_cast< CRD_Equipment_WeaponFact * >( m_pGplFacts->GetSelectedPanelItem() );
 
-	int debug = 3;
-	debug = debug;
+	// TODO
+	( void )pSelected;
 }
 
 void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact )
