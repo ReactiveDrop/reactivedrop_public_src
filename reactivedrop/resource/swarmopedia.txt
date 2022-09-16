@@ -2034,7 +2034,6 @@
 		"ClassName" "asw_weapon_ricochet"
 		"Builtin" "1"
 		"GlobalStat" {
-		"GlobalStat" {
 			"StatName" "equips.asw_weapon_ricochet.shots_fired"
 			"Caption" "#rd_so_stat_shots_fired"
 		}
