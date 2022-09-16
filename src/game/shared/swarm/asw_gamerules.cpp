@@ -2871,6 +2871,16 @@ void CAlienSwarm::UpdateLaunching()
 		mm_swarm_state.SetValue( "ingame" );
 		DevMsg( "Setting game state to ingame\n" );
 
+		// Re-compute FOV in case we were in first person on the lobby screen.
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+			if ( pPlayer )
+			{
+				ClientSettingsChanged( pPlayer );
+			}
+		}
+
 		// Alert gamestats of spawning
 		CASW_GameStats.Event_MarinesSpawned();
 
