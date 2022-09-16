@@ -90,7 +90,7 @@ CASWHudObjective::CASWHudObjective( const char *pElementName ) :
 	m_bPlayMissionCompleteSequence = false;
 	m_hObjectiveComplete = NULL;
 	m_flCurrentAlpha = 0;
-	m_fLastVisibleTime = 0;
+	m_fLastVisibleTime = -10;
 	m_flShowObjectivesTime = 0;
 	m_bLastSpectating = false;
 

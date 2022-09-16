@@ -4,6 +4,7 @@
 #include "asw_marine_profile.h"
 #include "asw_util_shared.h"
 #include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
@@ -29,6 +30,8 @@ extern ConVar rd_weapons_show_hidden;
 extern ConVar rd_weapons_regular_class_unrestricted;
 extern ConVar rd_weapons_extra_class_unrestricted;
 extern ConVar rd_reduce_motion;
+extern ConVar rd_swarmopedia_global_stat_window_days;
+extern ConVar rd_swarmopedia_global_stat_update_seconds;
 
 static const char *CantEquipReason( CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 {
@@ -176,7 +179,25 @@ CRD_Collection_Details_Equipment::CRD_Collection_Details_Equipment( CRD_Collecti
 {
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pWeaponNameLabel = new vgui::Label( this, "WeaponNameLabel", L"" );
+	m_pWeaponAttrLabel = new vgui::Label( this, "WeaponAttrLabel", L"" );
 	m_pWeaponDescLabel = new vgui::Label( this, "WeaponDescLabel", L"" );
+	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
+
+	m_nDisplayedFrames = 0;
+
+	if ( SteamUserStats() )
+	{
+		m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
+		m_bStatsReady = false;
+
+		SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
+		m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Equipment::OnGlobalStatsReceived );
+	}
+	else
+	{
+		m_nStatsDays = -1;
+		m_bStatsReady = true;
+	}
 }
 
 void CRD_Collection_Details_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -188,12 +209,15 @@ void CRD_Collection_Details_Equipment::ApplySchemeSettings( vgui::IScheme *pSche
 
 void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 {
+	m_pGplStats->RemoveAllPanelItems();
+
 	CRD_Collection_Entry_Equipment *pEquip = assert_cast< CRD_Collection_Entry_Equipment * >( pEntry );
 	if ( !pEquip )
 	{
 		m_pModelPanel->m_bShouldPaint = false;
 		m_pModelPanel->SetVisible( false );
 		m_pWeaponNameLabel->SetText( L"" );
+		m_pWeaponAttrLabel->SetText( L"" );
 		m_pWeaponDescLabel->SetText( L"" );
 		return;
 	}
@@ -202,6 +226,21 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	Assert( pEquip->m_pWeapon->Display.Count() == 1 );
 	Assert( pEquip->m_pWeapon->Content.Count() == 1 );
 
+	wchar_t buf[1024]{};
+	FOR_EACH_VEC( pEquip->m_pWeapon->Abilities, i )
+	{
+		int len = V_wcslen( buf );
+		if ( i != 0 )
+		{
+			V_wcsncpy( &buf[len], L" \u2022 ", sizeof( buf ) - len * sizeof( wchar_t ) );
+			len = V_wcslen( buf );
+		}
+
+		TryLocalize( pEquip->m_pWeapon->Abilities[i]->Caption, &buf[len], sizeof( buf ) - len * sizeof( wchar_t ) );
+	}
+
+	m_pWeaponAttrLabel->SetText( buf );
+
 	if ( pEquip->m_pWeapon->Display.Count() == 1 )
 	{
 		m_pModelPanel->m_bShouldPaint = true;
@@ -209,15 +248,6 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 		m_pModelPanel->SetDisplay( pEquip->m_pWeapon->Display[0] );
 
 		m_pWeaponNameLabel->SetText( pEquip->m_pWeapon->Display[0]->Caption );
-
-		m_pWeaponNameLabel->GetTextImage()->ResizeImageToContentMaxWidth( m_pWeaponNameLabel->GetWide() );
-		int iTall = m_pWeaponNameLabel->GetTextImage()->GetTall();
-		int iDiff = iTall - m_pWeaponNameLabel->GetTall();
-		m_pWeaponNameLabel->SetTall( iTall );
-		int x, y;
-		m_pWeaponDescLabel->GetPos( x, y );
-		y += iDiff;
-		m_pWeaponDescLabel->SetPos( x, y );
 	}
 	else
 	{
@@ -236,18 +266,105 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			g_pVGuiLocalize->Find( "#rd_reach_level_to_unlock_weapon" ), 2,
 			wszRequiredLevel, g_pVGuiLocalize->Find( pEquip->m_pWeapon->Name ) );
 		m_pWeaponDescLabel->SetText( wszBuf );
-
-		return;
-	}
-
-	if ( pEquip->m_pWeapon->Content.Count() == 1 )
-	{
-		m_pWeaponDescLabel->SetText( pEquip->m_pWeapon->Content[0]->Text );
 	}
 	else
 	{
-		m_pWeaponDescLabel->SetText( L"" );
+		if ( pEquip->m_pWeapon->Content.Count() == 1 )
+		{
+			m_pWeaponDescLabel->SetText( pEquip->m_pWeapon->Content[0]->Text );
+		}
+		else
+		{
+			m_pWeaponDescLabel->SetText( L"" );
+		}
+
+		if ( m_nStatsDays != -1 && m_bStatsReady )
+		{
+			Assert( SteamUserStats() );
+
+			wchar_t wszDays[4]{};
+			V_snwprintf( wszDays, sizeof( wszDays ), L"%d", m_nStatsDays );
+
+			FOR_EACH_VEC( pEquip->m_pWeapon->GlobalStats, i )
+			{
+				int nOK{};
+				int64 nStat[61]{};
+				if ( m_nStatsDays == 0 )
+				{
+					nOK = SteamUserStats()->GetGlobalStat( pEquip->m_pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
+				}
+				else
+				{
+					nOK = SteamUserStats()->GetGlobalStatHistory( pEquip->m_pWeapon->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
+				}
+
+				for ( int j = 1; j <= nOK; j++ )
+				{
+					nStat[0] += nStat[j];
+				}
+
+				g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+					g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 2,
+					g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->GlobalStats[i]->Caption ), wszDays );
+
+				CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
+				pStatLine->SetLabel( buf );
+				pStatLine->SetValue( nStat[0] );
+			}
+		}
 	}
+
+	m_pWeaponNameLabel->GetTextImage()->ResizeImageToContentMaxWidth( m_pWeaponNameLabel->GetWide() );
+	int iTall = m_pWeaponNameLabel->GetTextImage()->GetTall();
+	int iDiff = iTall - m_pWeaponNameLabel->GetTall();
+	m_pWeaponNameLabel->SetTall( iTall );
+
+	int x, y;
+	m_pWeaponAttrLabel->GetPos( x, y );
+	y += iDiff;
+	m_pWeaponAttrLabel->SetPos( x, y );
+
+	m_pWeaponAttrLabel->GetTextImage()->ResizeImageToContentMaxWidth( m_pWeaponAttrLabel->GetWide() );
+	iTall = m_pWeaponAttrLabel->GetTextImage()->GetUText()[0] != L'\0' ? m_pWeaponAttrLabel->GetTextImage()->GetTall() : 0;
+	iDiff += iTall - m_pWeaponAttrLabel->GetTall();
+	m_pWeaponAttrLabel->SetTall( iTall );
+
+	m_pWeaponDescLabel->GetPos( x, y );
+	y += iDiff;
+	m_pWeaponDescLabel->SetPos( x, y );
+
+	m_pGplStats->SetPos( 0, YRES( 380 ) - YRES( 12 ) * m_pGplStats->GetPanelItemCount() );
+}
+
+void CRD_Collection_Details_Equipment::OnThink()
+{
+	if ( !m_OnGlobalStatsReceived.IsActive() )
+	{
+		m_nDisplayedFrames++;
+
+		if ( m_nDisplayedFrames >= rd_swarmopedia_global_stat_update_seconds.GetInt() * 60 )
+		{
+			m_nDisplayedFrames = 0;
+
+			m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
+			m_bStatsReady = false;
+
+			SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
+			m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Equipment::OnGlobalStatsReceived );
+		}
+	}
+}
+
+void CRD_Collection_Details_Equipment::OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError )
+{
+	if ( bIOError || pParam->m_eResult != k_EResultOK )
+	{
+		Warning( "Failed to retrieve global stat history for Swarmopedia: %s\n", bIOError ? "IO Error" : UTIL_RD_EResultToString( pParam->m_eResult ) );
+		m_nStatsDays = -1;
+	}
+
+	m_bStatsReady = true;
+	DisplayEntry( GetCurrentEntry() );
 }
 
 CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon )
@@ -370,6 +487,7 @@ public:
 	CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void PerformLayout() override;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pSkillIcon;
@@ -378,6 +496,7 @@ public:
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::WeaponFact *m_pFact;
+	int m_iOriginalTall;
 };
 
 CRD_Equipment_WeaponFact::CRD_Equipment_WeaponFact( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::WeaponFact *pFact ) :
@@ -397,6 +516,9 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/CollectionPanelEquipmentWeaponFact.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	Assert( m_pLblName->GetTall() == m_pLblValue->GetTall() && m_pLblName->GetTall() == GetTall() );
+	m_iOriginalTall = GetTall();
 
 	m_pSkillIcon->SetVisible( false );
 
@@ -477,6 +599,9 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		}
 
 		bIgnoreCustomCaption = true;
+		break;
+	case Type_T::Deployed:
+		// doesn't get displayed.
 		break;
 	case Type_T::RequirementLevel:
 		szIcon = "swarm/swarmopedia/fact/level";
@@ -687,6 +812,59 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pLblValue->SetText( buf );
 }
 
+void CRD_Equipment_WeaponFact::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	Assert( m_pLblName->GetFont() == m_pLblValue->GetFont() );
+
+	if ( GetTall() < m_iOriginalTall )
+	{
+		return;
+	}
+
+	m_pLblName->GetTextImage()->RecalculateNewLinePositions();
+	m_pLblValue->GetTextImage()->RecalculateNewLinePositions();
+
+	int x, y;
+
+	m_pLblName->GetTextImage()->GetContentSize( x, y );
+	int iTextTall = y;
+
+	m_pLblValue->GetTextImage()->GetContentSize( x, y );
+	if ( y > iTextTall )
+	{
+		iTextTall = y;
+	}
+
+	int iFontTall = vgui::surface()->GetFontTall( m_pLblName->GetFont() );
+	int iNewTall = iTextTall - iFontTall + m_iOriginalTall;
+	int iTallDiff = iNewTall - GetTall();
+
+	if ( iTallDiff != 0 )
+	{
+		Assert( GetParent() && GetParent()->GetParent() );
+		GetParent()->GetParent()->InvalidateLayout();
+	}
+
+	m_pIcon->GetPos( x, y );
+	y += iTallDiff / 2;
+	m_pIcon->SetPos( x, y );
+
+	m_pSkillIcon->GetPos( x, y );
+	y += iTallDiff / 2;
+	m_pSkillIcon->SetPos( x, y );
+
+	if ( vgui::Panel *pBackground = FindChildByName( "Background" ) )
+	{
+		pBackground->SetTall( iNewTall );
+	}
+
+	m_pLblName->SetTall( iNewTall );
+	m_pLblValue->SetTall( iNewTall );
+	SetTall( iNewTall );
+}
+
 CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 	: BaseClass( parent, panelName )
 {
@@ -782,8 +960,8 @@ void CRD_Collection_Panel_Equipment::OnItemSelected( const char *panelName )
 {
 	CRD_Equipment_WeaponFact *pSelected = assert_cast< CRD_Equipment_WeaponFact * >( m_pGplFacts->GetSelectedPanelItem() );
 
-	int debug = 3;
-	debug = debug;
+	// TODO
+	( void )pSelected;
 }
 
 void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::WeaponFact *pFact )
@@ -807,12 +985,15 @@ void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::Weapon
 		}
 	}
 
-	if ( pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
+	if ( pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Secondary || pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Deployed )
 	{
 		m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, NULL ), true );
 	}
 
-	m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), true );
+	if ( pFact->Type != RD_Swarmopedia::WeaponFact::Type_T::Deployed )
+	{
+		m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), true );
+	}
 
 	FOR_EACH_VEC( pFact->Facts, i )
 	{

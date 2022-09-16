@@ -682,6 +682,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_rifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_rifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_rifle_dmg_base"
@@ -719,6 +743,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_prifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_prifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_prifle_dmg_base"
@@ -767,6 +815,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_autogun"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_autogun.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_autogun_dmg_base"
@@ -791,6 +863,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_vindicator"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_vindicator.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"ShotgunPellets" {
 				"UseWeaponInfo" "0"
@@ -846,6 +942,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pistol"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pistol.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Y" "-1"
 			"Yaw" "90"
@@ -863,11 +983,11 @@
 			"BulletSpread" {
 				"Base" "0"
 			}
-			"Ammo" {}
 			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_can_be_fired_faster"
 			}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -934,7 +1054,38 @@
 		"ClassName" "asw_weapon_medical_satchel"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/facts/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
+			}
+			"Secondary" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/facts/healing"
+					"Caption" "#rd_weapon_fact_healing"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
+				}
+				"Generic" {
+					"Icon" "swarm/swarmopedia/fact/heals_infestation"
+					"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES"
+				}
+			}
 		}
 	}
 	"WEAPON" {
@@ -968,8 +1119,31 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_shotgun"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_shotgun.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
 			"ShotgunPellets" {}
 			"DamagePerShot" {
 				"CVar" "rd_shotgun_dmg_base"
@@ -991,8 +1165,31 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_tesla_gun"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_gun.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
 			"DamagePerShot" {
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG"
@@ -1012,11 +1209,34 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_railgun"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_railgun.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Y" "-4"
 		}
 		"Facts" {
-			// TODO
 			"DamagePerShot" {
 				"CVar" "rd_railgun_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
@@ -1062,16 +1282,73 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pdw"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_pdw.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_pdw_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG"
+			}
+			"BulletSpread" {
+				"Base" "3"
+			}
+			"FireRate" {}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_flamer"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flamer.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_flamer_dmg_base"
@@ -1120,21 +1397,87 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_minigun"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_minigun.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
-			"Piercing" {
-				"Precision" "1"
-				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			"DamagePerShot" {
+				"CVar" "rd_minigun_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_AUTOGUN"
+				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
+			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
+			"Piercing" {
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_minigun_sustained_fire_piercing"
+			}
+			"FireRate" {}
+			"Ammo" {
+				"BaseMultiplier" "2"
+				"ClipSize" "500"
+			}
+			"Secondary" {}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_sniper_rifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sniper_rifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -1161,6 +1504,22 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_chainsaw"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_chainsaw.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_chainsaw.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_chainsaw.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_chainsaw.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_chainsaw_dmg_base"
@@ -1172,6 +1531,10 @@
 			"FireRate" {
 				"UseWeaponInfo" "0"
 				"Base" "0.1"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/ammo"
+				"Caption" "#rd_weapon_fact_unlimited_ammo"
 			}
 		}
 	}
@@ -1197,11 +1560,41 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_grenade_launcher"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenade_launcher.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_grenade_launcher_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
+				"Caption" "#rd_weapon_fact_direct_hit_damage_scale"
+				"CVar" "rd_grenade_launcher_direct_hit_damage_mult"
+				"Precision" "1"
 			}
 			"FireRate" {}
 			"Ammo" {}
@@ -1222,6 +1615,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_deagle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_deagle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Z" "-4"
 		}
@@ -1234,12 +1651,6 @@
 			"LargeAlienDamageScale" {
 				"CVar" "rd_deagle_bigalien_dmg_scale"
 			}
-			"BulletSpread" {
-				"Base" "15"
-				"Flattened" "1"
-			}
-			"FireRate" {}
-			"Ammo" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_guaranteed_ranger_kill"
@@ -1248,15 +1659,45 @@
 				"Icon" "swarm/swarmopedia/fact/door_defense"
 				"Caption" "#rd_weapon_fact_reduced_damage_to_doors"
 			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
+			"FireRate" {}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_devastator"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_devastator.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Y" "-6"
 		}
@@ -1270,7 +1711,10 @@
 			"BulletSpread" {
 				"Base" "11"
 			}
-			"Piercing" {}
+			"Piercing" {
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_PIERCING"
+			}
 			"FireRate" {}
 			"Ammo" {}
 			"Generic" {
@@ -1286,6 +1730,30 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_combat_rifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_combat_rifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_combat_rifle_dmg_base"
@@ -1322,23 +1790,107 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heavy_rifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heavy_rifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"BuiltinModelTransform" {
 			"Y" "-6"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_heavy_rifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG"
+			}
 			"LargeAlienDamageScale" {
 				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
+			}
+			"BulletSpread" {
+				"Base" "15"
+				"Flattened" "1"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_duration"
+					"CVar" "rd_heavy_rifle_fastfire_duration"
+				}
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_bullet"
+					"Caption" "#rd_weapon_fact_damage_per_shot_bullet"
+					"CVar" "rd_heavy_rifle_dmg_base"
+					"Skill" "ASW_MARINE_SKILL_ACCURACY"
+					"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG"
+					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
+					"SkillMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_more_accurate_while_crouching_heavy_rifle_exception"
+				}
+				"FireRate" {
+					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_fire_rate_multiplier"
+				}
+				"Ammo" {
+					"Icon" "swarm/swarmopedia/fact/ammo_beam"
+					"Caption" "#rd_weapon_fact_ammo_beam"
+				}
 			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_medrifle"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medrifle.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -1352,23 +1904,76 @@
 			"Pitch" "90"
 		}
 		"Facts" {
-			"Ammo" {}
-			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_extinguishes_fires"
+			}
+			"FireRate" {}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Base" "200"
 			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_mining_laser"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mining_laser.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mining_laser.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mining_laser.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mining_laser.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_mininglaser_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				// ammo is used every 0.2 seconds, but damage is dealt every 0.1 seconds.
+				"BaseMultiplier" "2"
+				"SkillMultiplier" "2"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_charge_time"
+				"Precision" "1"
+				"Base" "1.6"
+			}
+			"FireRate" {
+				"UseWeaponInfo" "0"
+				"Base" "0.2"
+			}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_50calmg"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_50calmg.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_50calmg.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_50calmg.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_50calmg.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
@@ -1379,12 +1984,33 @@
 				"Flattened" "1"
 			}
 			"FireRate" {}
-			"Ammo" {}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Icon" "swarm/swarmopedia/fact/ammo_bullet"
+				"Caption" "#rd_weapon_fact_ammo_bullet"
+				"Base" "200"
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_flechette"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flechette.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flechette.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flechette.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flechette.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"Icon" "swarm/swarmopedia/fact/damage_blast"
@@ -1393,30 +2019,46 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
 				"BaseMultiplier" "0"
 			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
+				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
 			"FireRate" {}
 			"Ammo" {
 				"Icon" "swarm/swarmopedia/fact/ammo_blast"
 				"Caption" "#rd_weapon_fact_ammo_blast"
-			}
-			"Generic" {
-				"Icon" "swarm/swarmopedia/fact/rocket_aim"
-				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_ricochet"
 		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ricochet.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ricochet.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ricochet.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ricochet.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_rifle_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
-			"FireRate" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
+			"FireRate" {}
 			"Ammo" {}
 			"Secondary" {}
 		}
@@ -1562,10 +2204,40 @@
 		"ClassName" "asw_weapon_tesla_trap"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo"
+				"Caption" "#rd_weapon_fact_ammo"
+				"ClipSize" "-1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_shock"
+					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
+					"Base" "5" // rd_tesla_trap_dmg
+				}
+				"FireRate" {
+					"Base" "0.3"
+				}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_arm_time"
+					"Base" "1"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo_shock"
+					"Caption" "#rd_weapon_fact_ammo_shock"
+					"Base" "30" // rd_tesla_trap_ammo
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/area_radius"
+					"Caption" "#rd_weapon_fact_area_radius"
+					"Base" "200"
+				}
 			}
 		}
 	}
@@ -1681,11 +2353,18 @@
 		"Builtin" "1"
 		"Facts" {
 			// TODO
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
+				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_gas_grenades"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "270"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"

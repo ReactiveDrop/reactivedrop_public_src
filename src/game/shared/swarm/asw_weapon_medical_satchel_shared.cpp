@@ -346,6 +346,8 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 		if ( pSatchel )
 			iMeds += pSatchel->Clip1();
 
+		pSatchel = NULL;
+
 		pBCW = pMarine->GetWeapon(1);
 		if ( pBCW && pBCW->Classify() == CLASS_ASW_MEDICAL_SATCHEL )
 			pSatchel = assert_cast<CASW_Weapon_Medical_Satchel*>(pBCW);

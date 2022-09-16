@@ -1,21 +1,20 @@
-// Reactive Drop Heal + Amplifier Gun
+// Alien Swarm Medical Satchel
 
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"	"#asw_weapon_healampgun"
+	"printname"	"#asw_weapon_healgun"
 	"viewmodel"			"Models/weapons/healgun/healgun.mdl"
 	"playermodel"			"Models/weapons/healgun/healgun.mdl"
-	"playermodel_skin"		"1"
 	"anim_prefix"			"ar2"
 	"bucket"			"0"
 	"bucket_position"		"1"
 
-	"clip_size"			"50"
-	"default_clip"			"50"
+	"clip_size"			"100"
+	"default_clip"			"100"
 
-	"clip2_size"			"100"
-	"default_clip2"			"100"
+	"clip2_size"			"5"
+	"default_clip2"			"2"
 
 	"primary_ammo"			"ASW_MEDSAT"
 	"secondary_ammo"		"ASW_MEDSELF"
@@ -27,12 +26,12 @@ WeaponData
 	"reload_time"			"2.2"
 	"fire_rate"				"0.33"
 	"equipicon"				"swarm/EquipIcons/EquipHealGun"
-	"equiplongname"			"#asw_weaponl_healampgun"
+	"equiplongname"			"#asw_weaponl_healgun"
 	"RequiresFirstAid"		"1"
 	"ShowCharges"			"1"
-	"equipdescription1"		"#asw_wdesc_healampgun"
-	"altfiretext"			"#asw_weapon_healampgun_altfire"
-	"attributestext"		"#asw_weapon_healampgun_attributes"
+	"equipdescription1"		"#asw_wdesc_healgun"
+	"altfiretext"			"#asw_weapon_healgun_altfire"
+	"attributestext"		"#asw_weapon_healgun_attributes"
 	"Unique"			"1"
 	
 	// flinching
@@ -41,7 +40,6 @@ WeaponData
 	
 	// which ammo elements this weapon should display on the hud
 	"ShowBulletsOnHUD"      "2"
-	"ShowSecondaryBulletsOnHUD" "1"
 	"ShowClipsOnHUD"      "0"
 	"ShowGrenadesOnHUD"      "0"
 

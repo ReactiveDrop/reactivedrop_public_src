@@ -526,7 +526,14 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 
 	if ( m_bExplodeOnWorldContact )
 	{
+		if ( pOther->m_takedamage != DAMAGE_NO && pOther->IsNPC() )
+		{
+			m_flDamage *= m_flDirectHitDamageMultiplier;
+			m_flDirectHitDamageMultiplier = 1.0f;
+		}
+
 		Detonate();
+		return;
 	}
 
 	//Orange. Ricochet stuff

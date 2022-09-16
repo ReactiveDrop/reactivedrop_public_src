@@ -744,7 +744,9 @@ Weapon::Weapon( const Weapon &copy ) :
 	Unique{ copy.Unique },
 	Hidden{ copy.Hidden }
 {
+	Helpers::CopyVector( GlobalStats, copy.GlobalStats );
 	Helpers::CopyVector( Display, copy.Display );
+	Helpers::CopyVector( Abilities, copy.Abilities );
 	Helpers::CopyVector( Content, copy.Content );
 	Helpers::CopyVector( Facts, copy.Facts );
 	Sources = copy.Sources;
@@ -828,10 +830,10 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 	case WeaponFact::Type_T::BulletSpread:
 		break;
 	case WeaponFact::Type_T::Piercing:
-		// TODO
 		break;
 	case WeaponFact::Type_T::FireRate:
-		pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
+		//pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
+		pFact->Base += pWeaponInfo->m_flFireRate;
 		break;
 	case WeaponFact::Type_T::Ammo:
 		pFact->Base += bIsSecondary ? pWeaponInfo->iDefaultClip2 : pWeaponInfo->iDefaultClip1;
@@ -871,6 +873,8 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		{
 			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, true );
 		}
+		break;
+	case WeaponFact::Type_T::Deployed:
 		break;
 	case WeaponFact::Type_T::RequirementLevel:
 		break;
@@ -1002,10 +1006,40 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			}
 		}
 
+		if ( pWeaponInfo->szAttributesText[0] != '\0' )
+		{
+			Ability *a = new Ability();
+			a->Caption = pWeaponInfo->szAttributesText;
+			Helpers::AddMerge( Abilities, a );
+		}
+
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
 		Content.AddToTail( pContent );
 		pContent->Text = pWeaponInfo->szEquipDescription1;
 		pContent->Color = Color{ 255, 255, 255, 255 };
+	}
+
+	FOR_EACH_SUBKEY( pKV, pSubKey )
+	{
+		const char *szName = pSubKey->GetName();
+		if ( FStrEq( szName, "GlobalStat" ) )
+		{
+			Helpers::AddMerge( GlobalStats, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Display" ) )
+		{
+			Helpers::AddMerge( Display, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Ability" ) )
+		{
+			Ability *a = new Ability();
+			a->Caption = pSubKey->GetString();
+			Helpers::AddMerge( Abilities, a );
+		}
+		else if ( FStrEq( szName, "Paragraph" ) )
+		{
+			Helpers::AddMerge( Content, pszPath, pSubKey );
+		}
 	}
 
 	if ( KeyValues *pFacts = pKV->FindKey( "Facts" ) )
@@ -1169,6 +1203,17 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "Secondary" ) )
 	{
 		Type = Type_T::Secondary;
+
+		FOR_EACH_SUBKEY( pKV, pFact )
+		{
+			Helpers::AddMerge( Facts, pszPath, pFact );
+		}
+
+		return true;
+	}
+	else if ( FStrEq( szName, "Deployed" ) )
+	{
+		Type = Type_T::Deployed;
 
 		FOR_EACH_SUBKEY( pKV, pFact )
 		{
