@@ -872,6 +872,8 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, true );
 		}
 		break;
+	case WeaponFact::Type_T::Deployed:
+		break;
 	case WeaponFact::Type_T::RequirementLevel:
 		break;
 	case WeaponFact::Type_T::RequirementClass:
@@ -1169,6 +1171,17 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	else if ( FStrEq( szName, "Secondary" ) )
 	{
 		Type = Type_T::Secondary;
+
+		FOR_EACH_SUBKEY( pKV, pFact )
+		{
+			Helpers::AddMerge( Facts, pszPath, pFact );
+		}
+
+		return true;
+	}
+	else if ( FStrEq( szName, "Deployed" ) )
+	{
+		Type = Type_T::Deployed;
 
 		FOR_EACH_SUBKEY( pKV, pFact )
 		{

@@ -1265,6 +1265,12 @@
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
 			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
+				"Caption" "#rd_weapon_fact_direct_hit_damage_scale"
+				"CVar" "rd_grenade_launcher_direct_hit_damage_mult"
+				"Precision" "1"
+			}
 			"FireRate" {}
 			"Ammo" {}
 			"HammerUnits" {
@@ -1689,10 +1695,40 @@
 		"ClassName" "asw_weapon_tesla_trap"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo"
+				"Caption" "#rd_weapon_fact_ammo"
+				"ClipSize" "-1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_shock"
+					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
+					"Base" "5" // rd_tesla_trap_dmg
+				}
+				"FireRate" {
+					"Base" "0.3"
+				}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_arm_time"
+					"Base" "1"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo_shock"
+					"Caption" "#rd_weapon_fact_ammo_shock"
+					"Base" "30" // rd_tesla_trap_ammo
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/area_radius"
+					"Caption" "#rd_weapon_fact_area_radius"
+					"Base" "200"
+				}
 			}
 		}
 	}
@@ -1808,6 +1844,10 @@
 		"Builtin" "1"
 		"Facts" {
 			// TODO
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
+				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
 		}
 	}
 	"WEAPON" {

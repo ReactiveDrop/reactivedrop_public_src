@@ -253,6 +253,7 @@ namespace RD_Swarmopedia
 			Ammo,
 			Recharges,
 			Secondary,
+			Deployed,
 			RequirementLevel,
 			RequirementClass,
 		} Type{ Type_T::Generic };

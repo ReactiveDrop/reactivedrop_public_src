@@ -55,6 +55,7 @@ CASW_Grenade_Vindicator::CASW_Grenade_Vindicator()
 {
 	g_aExplosiveProjectiles.AddToTail( this );
 	SetBloodColor( DONT_BLEED ); 
+	m_flDirectHitDamageMultiplier = 1.0f;
 }
 
 CASW_Grenade_Vindicator::~CASW_Grenade_Vindicator()
@@ -166,7 +167,14 @@ void CASW_Grenade_Vindicator::VGrenadeTouch( CBaseEntity *pOther )
 
 	if ( m_bExplodeOnWorldContact )
 	{
+		if ( pOther->m_takedamage != DAMAGE_NO && pOther->IsNPC() )
+		{
+			m_flDamage *= m_flDirectHitDamageMultiplier;
+			m_flDirectHitDamageMultiplier = 1.0f;
+		}
+
 		Detonate();
+		return;
 	}
 
 	if ( pOther->m_takedamage == DAMAGE_NO )

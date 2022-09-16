@@ -36,10 +36,12 @@ public:
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void BurntAlien(CBaseEntity *pAlien);
 	void SetExplodeOnWorldContact( bool bExplode ) { m_bExplodeOnWorldContact = bExplode; }		// if set, grenade will explode on the first thing it touches
+	void SetDirectHitDamageMultiplier( float flMultiplier ) { m_flDirectHitDamageMultiplier = flMultiplier; }
 
 	int m_iClusters;
 	bool m_bMaster;
 	float m_fEarliestTouchDetonationTime;
+	float m_flDirectHitDamageMultiplier;
 
 	EHANDLE m_hFirer;
 

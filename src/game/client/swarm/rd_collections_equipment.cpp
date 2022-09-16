@@ -484,6 +484,9 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 		bIgnoreCustomCaption = true;
 		break;
+	case Type_T::Deployed:
+		// doesn't get displayed.
+		break;
 	case Type_T::RequirementLevel:
 		szIcon = "swarm/swarmopedia/fact/level";
 		szCaption = "#rd_weapon_fact_requires_level";
@@ -866,12 +869,15 @@ void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::Weapon
 		}
 	}
 
-	if ( pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
+	if ( pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Secondary || pFact->Type == RD_Swarmopedia::WeaponFact::Type_T::Deployed )
 	{
 		m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, NULL ), true );
 	}
 
-	m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), true );
+	if ( pFact->Type != RD_Swarmopedia::WeaponFact::Type_T::Deployed )
+	{
+		m_pGplFacts->AddPanelItem( new CRD_Equipment_WeaponFact( m_pGplFacts, "WeaponFact", m_pTab, pFact ), true );
+	}
 
 	FOR_EACH_VEC( pFact->Facts, i )
 	{
