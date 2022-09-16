@@ -744,7 +744,9 @@ Weapon::Weapon( const Weapon &copy ) :
 	Unique{ copy.Unique },
 	Hidden{ copy.Hidden }
 {
+	Helpers::CopyVector( GlobalStats, copy.GlobalStats );
 	Helpers::CopyVector( Display, copy.Display );
+	Helpers::CopyVector( Abilities, copy.Abilities );
 	Helpers::CopyVector( Content, copy.Content );
 	Helpers::CopyVector( Facts, copy.Facts );
 	Sources = copy.Sources;
@@ -1004,10 +1006,40 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			}
 		}
 
+		if ( pWeaponInfo->szAttributesText[0] != '\0' )
+		{
+			Ability *a = new Ability();
+			a->Caption = pWeaponInfo->szAttributesText;
+			Helpers::AddMerge( Abilities, a );
+		}
+
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
 		Content.AddToTail( pContent );
 		pContent->Text = pWeaponInfo->szEquipDescription1;
 		pContent->Color = Color{ 255, 255, 255, 255 };
+	}
+
+	FOR_EACH_SUBKEY( pKV, pSubKey )
+	{
+		const char *szName = pSubKey->GetName();
+		if ( FStrEq( szName, "GlobalStat" ) )
+		{
+			Helpers::AddMerge( GlobalStats, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Display" ) )
+		{
+			Helpers::AddMerge( Display, pszPath, pSubKey );
+		}
+		else if ( FStrEq( szName, "Ability" ) )
+		{
+			Ability *a = new Ability();
+			a->Caption = pSubKey->GetString();
+			Helpers::AddMerge( Abilities, a );
+		}
+		else if ( FStrEq( szName, "Paragraph" ) )
+		{
+			Helpers::AddMerge( Content, pszPath, pSubKey );
+		}
 	}
 
 	if ( KeyValues *pFacts = pKV->FindKey( "Facts" ) )

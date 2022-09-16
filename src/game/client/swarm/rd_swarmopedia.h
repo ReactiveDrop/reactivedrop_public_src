@@ -222,7 +222,9 @@ namespace RD_Swarmopedia
 		bool Extra{ false };
 		bool Unique{ false };
 		bool Hidden{ false };
+		CUtlVectorAutoPurge<GlobalStat *> GlobalStats{};
 		CUtlVectorAutoPurge<Display *> Display{};
+		CUtlVectorAutoPurge<Ability *> Abilities{};
 		CUtlVectorAutoPurge<Content *> Content{};
 		CUtlVectorAutoPurge<WeaponFact *> Facts{};
 		CUtlVector<PublishedFileId_t> Sources{};

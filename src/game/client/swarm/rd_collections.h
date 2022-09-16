@@ -83,10 +83,20 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
+	virtual void OnThink() override;
+
+	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
+
+	int m_nStatsDays;
+	bool m_bStatsReady;
+	CCallResult<CRD_Collection_Details_Equipment, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
+	int m_nDisplayedFrames;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
+	vgui::Label *m_pWeaponAttrLabel;
 	vgui::Label *m_pWeaponDescLabel;
+	BaseModUI::GenericPanelList *m_pGplStats;
 };
 
 class CRD_Collection_Entry_Equipment : public TGD_Entry
