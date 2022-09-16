@@ -863,11 +863,11 @@
 			"BulletSpread" {
 				"Base" "0"
 			}
-			"Ammo" {}
 			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_can_be_fired_faster"
 			}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -1408,6 +1408,7 @@
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
 			}
 			"FireRate" {}
+			"Ammo" {}
 			"Secondary" {
 				"Numeric" {
 					"Icon" "swarm/swarmopedia/fact/duration"
@@ -1423,20 +1424,16 @@
 					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
 					"SkillMultiplierCVar" "rd_heavy_rifle_fastfire_dmg_scale"
 				}
-				"LargeAlienDamageScale" {
-					"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
-				}
-				"BulletSpread" {
-					"Base" "15"
-					"Flattened" "1"
-				}
 				"Generic" {
 					"Caption" "#rd_weapon_fact_more_accurate_while_crouching_heavy_rifle_exception"
 				}
 				"FireRate" {
 					"BaseMultiplierCVar" "rd_heavy_rifle_fastfire_fire_rate_multiplier"
 				}
-				"Ammo" {}
+				"Ammo" {
+					"Icon" "swarm/swarmopedia/fact/ammo_beam"
+					"Caption" "#rd_weapon_fact_ammo_beam"
+				}
 			}
 		}
 	}
@@ -1456,10 +1453,13 @@
 			"Pitch" "90"
 		}
 		"Facts" {
-			"Ammo" {}
-			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_extinguishes_fires"
+			}
+			"FireRate" {}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Base" "200"
 			}
 		}
 	}
@@ -1467,7 +1467,25 @@
 		"ClassName" "asw_weapon_mining_laser"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_mininglaser_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				// ammo is used every 0.2 seconds, but damage is dealt every 0.1 seconds.
+				"BaseMultiplier" "2"
+				"SkillMultiplier" "2"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_charge_time"
+				"Precision" "1"
+				"Base" "1.6"
+			}
+			"FireRate" {
+				"UseWeaponInfo" "0"
+				"Base" "0.2"
+			}
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
@@ -1483,7 +1501,12 @@
 				"Flattened" "1"
 			}
 			"FireRate" {}
-			"Ammo" {}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Icon" "swarm/swarmopedia/fact/ammo_bullet"
+				"Caption" "#rd_weapon_fact_ammo_bullet"
+				"Base" "200"
+			}
 		}
 	}
 	"WEAPON" {
@@ -1497,14 +1520,14 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
 				"BaseMultiplier" "0"
 			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/rocket_aim"
+				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
 			"FireRate" {}
 			"Ammo" {
 				"Icon" "swarm/swarmopedia/fact/ammo_blast"
 				"Caption" "#rd_weapon_fact_ammo_blast"
-			}
-			"Generic" {
-				"Icon" "swarm/swarmopedia/fact/rocket_aim"
-				"Caption" "#rd_weapon_fact_rockets_auto_aim"
 			}
 		}
 	}
@@ -1517,10 +1540,10 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
-			"FireRate" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
+			"FireRate" {}
 			"Ammo" {}
 			"Secondary" {}
 		}
