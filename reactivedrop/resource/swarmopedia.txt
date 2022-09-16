@@ -934,7 +934,38 @@
 		"ClassName" "asw_weapon_medical_satchel"
 		"Builtin" "1"
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/facts/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"Ammo" {
+				"UseWeaponInfo" "0"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_CHARGES"
+			}
+			"Secondary" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/facts/healing"
+					"Caption" "#rd_weapon_fact_healing"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
+				}
+				"Generic" {
+					"Icon" "swarm/swarmopedia/fact/heals_infestation"
+					"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES"
+				}
+			}
 		}
 	}
 	"WEAPON" {
