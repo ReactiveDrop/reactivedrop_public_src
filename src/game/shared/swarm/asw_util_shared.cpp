@@ -1566,7 +1566,7 @@ static bool ReadToken( CUtlBuffer &buf, KeyValuesFilePos &pos, const CUtlVector<
 	pos.Advance( buf );
 
 	const char *c = static_cast< const char * >( buf.PeekGet( sizeof( char ), 0 ) );
-	if ( !c )
+	if ( !c || *c == '\0' )
 	{
 		return false;
 	}
