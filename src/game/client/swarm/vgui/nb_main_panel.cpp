@@ -28,7 +28,6 @@
 #include "nb_mission_options.h"
 #include "nb_spend_skill_points.h"
 #include "nb_header_footer.h"
-#include "nb_select_mission_panel.h"
 #include "nb_button.h"
 #include "gameui/swarm/uigamedata.h"
 #include "gameui/swarm/vgenericpanellist.h"

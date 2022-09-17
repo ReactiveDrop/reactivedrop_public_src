@@ -154,11 +154,11 @@ bool CReactiveDropWorkshop::Init()
 			SteamRemoteStorage()->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
 			filesystem->WriteFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf );
 			buf.SetBufferType( true, true );
-			bLoaded = pKV->LoadFromBuffer( WORKSHOP_DISABLED_ADDONS_FILENAME, buf );
+			bLoaded = UTIL_RD_LoadKeyValues( pKV, WORKSHOP_DISABLED_ADDONS_FILENAME, buf );
 		}
 		else
 		{
-			bLoaded = pKV->LoadFromFile( filesystem, WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD" );
+			bLoaded = UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD" );
 		}
 
 		if ( bLoaded )
@@ -208,7 +208,7 @@ void CReactiveDropWorkshop::InitNonWorkshopAddons()
 	// The engine has already updated addonlist.txt to remove invalid or missing addons from it at this point.
 
 	KeyValues::AutoDelete pKV( "AddonList" );
-	if ( !pKV->LoadFromFile( g_pFullFileSystem, ADDONLIST_FILENAME, "GAME" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, ADDONLIST_FILENAME, "GAME" ) )
 	{
 		return;
 	}
@@ -887,7 +887,7 @@ const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFil
 		const char *szVPKExtension = V_strrchr( szPath, '.' );
 		if ( !szVPKExtension || V_strcmp( szVPKExtension, ".vpk" ) )
 		{
-			pKV->LoadFromFile( filesystem, szAddonInfoPath, "GAME" );
+			UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szAddonInfoPath, "GAME" );
 		}
 		else
 		{
@@ -897,7 +897,7 @@ const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFil
 				CUtlBuffer buf( 0, hAddonInfoFile.m_nFileSize, 0 );
 				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hAddonInfoFile.Read( buf.Base(), buf.Size() ) );
 
-				pKV->LoadFromBuffer( szAddonInfoPath, buf );
+				UTIL_RD_LoadKeyValues( pKV, szAddonInfoPath, buf );
 			}
 		}
 
@@ -1408,18 +1408,19 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 {
 	if ( CPackedStoreFileHandle hAddonInfo = vpk.OpenFile( "addoninfo.txt" ) )
 	{
-		char *buf = ( char * )stackalloc( hAddonInfo.m_nFileSize + 1 );
-		hAddonInfo.Read( buf, hAddonInfo.m_nFileSize );
-		buf[hAddonInfo.m_nFileSize] = '\0';
+		CUtlBuffer buf{ 0, hAddonInfo.m_nFileSize, CUtlBuffer::TEXT_BUFFER };
+		hAddonInfo.Read( buf.Base(), hAddonInfo.m_nFileSize );
+		buf.SeekPut( CUtlBuffer::SEEK_HEAD, hAddonInfo.m_nFileSize );
 
 		KeyValues::AutoDelete pKV( "AddonInfo" );
-		pKV->LoadFromBuffer( CFmtStr( "%llu/addoninfo.txt", id ), buf );
-
-		FOR_EACH_VALUE( pKV, pValue )
+		if ( UTIL_RD_LoadKeyValues( pKV, CFmtStr( "%llu/addoninfo.txt", id ), buf ) )
 		{
-			if ( FStrEq( pValue->GetName(), "overrideaddon" ) )
+			FOR_EACH_VALUE( pKV, pValue )
 			{
-				s_AddonAllowOverride.AddToTail( PublishedFileIdPair{ id, pValue->GetUint64() } );
+				if ( FStrEq( pValue->GetName(), "overrideaddon" ) )
+				{
+					s_AddonAllowOverride.AddToTail( PublishedFileIdPair{ id, pValue->GetUint64() } );
+				}
 			}
 		}
 	}
@@ -2109,7 +2110,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CUtlBuffer buf;
 				hCampaign.Read( buf.AccessForDirectRead( hCampaign.m_nFileSize ), hCampaign.m_nFileSize );
 				buf.SetBufferType( true, true );
-				pKV->LoadFromBuffer( szFileNameVerify, buf );
+				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedCampaignNames[szFileName] = pKV->GetString( "CampaignName", "Invalid Campaign" );
 				CUtlStringList & aszCampaignMissions = m_IncludedCampaignMissions[szFileName];
 				bool bSkippedFirst = false;
@@ -2175,7 +2176,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CUtlBuffer buf;
 				hMission.Read( buf.AccessForDirectRead( hMission.m_nFileSize ), hMission.m_nFileSize );
 				buf.SetBufferType( true, true );
-				pKV->LoadFromBuffer( szFileNameVerify, buf );
+				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedMissionNames[szFileName] = pKV->GetString( "missiontitle", "Invalid Mission" );
 
 				for ( int j = 0; j < RD_NUM_WORKSHOP_MISSION_TAGS; j++ )
@@ -2223,7 +2224,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CUtlBuffer buf;
 				hChallenge.Read( buf.AccessForDirectRead( hChallenge.m_nFileSize ), hChallenge.m_nFileSize );
 				buf.SetBufferType( true, true );
-				pKV->LoadFromBuffer( szFileNameVerify, buf );
+				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedChallengeNames[szFileName] = pKV->GetString( "name", "Invalid Challenge" );
 			}
 		}

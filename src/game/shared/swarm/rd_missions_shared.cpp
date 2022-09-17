@@ -8,9 +8,11 @@
 #endif
 #include "fmtstr.h"
 #include "rd_workshop.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 #define RD_CAMPAIGNS_STRINGTABLE_NAME "ReactiveDropCampaigns"
 #define RD_MISSIONS_STRINGTABLE_NAME "ReactiveDropMissions"
@@ -26,19 +28,21 @@ int ReactiveDropMissions::s_nDataResets = 1;
 static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob",
-#if defined( RD_6A_CAMPAIGNS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
+#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_accident32",
+#endif
+#if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis",
 #endif
 	"rd-operationcleansweep",
 	"rd_nh_campaigns",
 	"rd-tarnorcampaign1",
 	"rd_paranoia",
-#if defined( RD_6A_CAMPAIGNS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
+#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_accident32",
 #endif
 	"rd-area9800",
-#if defined( RD_6A_CAMPAIGNS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
+#if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis",
 #endif
 	"tilarus5",
@@ -103,7 +107,7 @@ struct NetworkedMissionMetadata_t
 		}
 
 		KeyValues::AutoDelete pKV( "GAME" );
-		if ( pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
+		if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szKVFileName, "GAME" ) )
 		{
 			FOR_EACH_VALUE( pKV, pValue )
 			{
@@ -429,7 +433,7 @@ static bool ReadCampaignData( KeyValues *pKV, int index )
 	char szPath[MAX_PATH];
 	V_snprintf( szPath, sizeof( szPath ), "resource/campaigns/%s.txt", pszCampaignName );
 
-	return pKV->LoadFromFile( filesystem, szPath, "GAME" );
+	return UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szPath, "GAME" );
 }
 
 static bool ReadMissionData( KeyValues *pKV, int index )
@@ -455,7 +459,7 @@ static bool ReadMissionData( KeyValues *pKV, int index )
 	char szPath[MAX_PATH];
 	V_snprintf( szPath, sizeof( szPath ), "resource/overviews/%s.txt", pszMissionName );
 
-	return pKV->LoadFromFile( filesystem, szPath, "GAME" );
+	return UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szPath, "GAME" );
 }
 
 static void ClearUnpackedMissionData()
@@ -689,7 +693,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 				{
 					V_strncpy( szSuffix, campaignMissions[i], pCampaignNameEnd - campaignMissions[i] );
 					pCampaign.Assign( new KeyValues( "GAME" ) );
-					if ( pCampaign->LoadFromFile( filesystem, CFmtStr( "resource/campaigns/%s.txt", szSuffix ), "GAME" ) )
+					if ( UTIL_RD_LoadKeyValuesFromFile( pCampaign, filesystem, CFmtStr( "resource/campaigns/%s.txt", szSuffix ), "GAME" ) )
 					{
 						szDefaultCredits = pCampaign->GetString( "CustomCreditsFile", szDefaultCredits );
 					}

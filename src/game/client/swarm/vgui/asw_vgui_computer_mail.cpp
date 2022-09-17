@@ -20,6 +20,7 @@
 #include "asw_vgui_computer_frame.h"
 #include "clientmode_asw.h"
 #include "c_asw_player.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -215,22 +216,28 @@ void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 	if ( pArea->m_MailFile == NULL_STRING )
 		return;
 	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	if ( SteamApps() )
+	{
+		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
+	}
+
 	Q_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_%s.txt", pszMailFile, uilanguage );
 	if ( m_pMailKeyValues )
 		m_pMailKeyValues->deleteThis();
 
 	m_pMailKeyValues = new KeyValues( "Mail" );
 
-	if ( !m_pMailKeyValues->LoadFromFile( filesystem, buffer, "GAME" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( m_pMailKeyValues, filesystem, buffer, "GAME" ) )
 	{
 		// if we failed, fall back to the english file
 		Q_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_english.txt", pszMailFile );
-		if ( !m_pMailKeyValues->LoadFromFile( filesystem, buffer, "GAME" ) )
+		if ( !UTIL_RD_LoadKeyValuesFromFile( m_pMailKeyValues, filesystem, buffer, "GAME" ) )
 		{
 			DevMsg( 1, "CASW_VGUI_Computer_Mail::SetLabelsFromMailFile failed to load %s\n", buffer );
 			return;
 		}
 	}
+
 	// now set our labels from the keyvalues
 	char keybuffer[64];
 	for ( int i = 0; i < ASW_MAIL_ROWS; i++ )

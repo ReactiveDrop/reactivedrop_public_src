@@ -131,13 +131,13 @@ CASW_Marine_ProfileList::CASW_Marine_ProfileList()
 	m_NumProfiles = 0;
 
 	KeyValues *kv = new KeyValues( "resource/Profiles.res" );
-	if (kv->LoadFromFile(filesystem, "resource/Profiles.res"))
+	if ( UTIL_RD_LoadKeyValuesFromFile( kv, filesystem, "resource/Profiles.res" ) )
 	{
 		// find each section and make a new marine profile, fill in data based on the keys in that section
 		KeyValues *pKeys = kv;
 		while ( pKeys )
-		{		
-			CASW_Marine_Profile* profile = new CASW_Marine_Profile();
+		{
+			CASW_Marine_Profile *profile = new CASW_Marine_Profile();
 			m_Profiles[m_NumProfiles] = profile;
 			profile->m_ProfileIndex = m_NumProfiles;
 			profile->ApplyKeyValues( pKeys );
@@ -433,22 +433,21 @@ void CASW_Marine_Profile::InitChatterNames(const char *szMarineName)
 	// read speech counts in
 	char szKeyName[64];
 	char szFileName[128];
-	Q_snprintf(szKeyName, sizeof(szKeyName), "%sChatterCount", szMarineName);
-	Q_snprintf(szFileName, sizeof(szFileName), "scripts/asw_speech_count_%s.txt", szMarineName);
+	Q_snprintf( szKeyName, sizeof( szKeyName ), "%sChatterCount", szMarineName );
+	Q_snprintf( szFileName, sizeof( szFileName ), "scripts/asw_speech_count_%s.txt", szMarineName );
 	KeyValues *pCountKeyValues = new KeyValues( szKeyName );
-	if (pCountKeyValues && pCountKeyValues->LoadFromFile(filesystem, szFileName))
+	if ( UTIL_RD_LoadKeyValuesFromFile( pCountKeyValues, filesystem, szFileName ) )
 	{
 		// now go down all the chatters, grabbing the count
-		for (int i=0;i<NUM_CHATTER_LINES;i++)
+		for ( int i = 0; i < NUM_CHATTER_LINES; i++ )
 		{
-			int iCount = pCountKeyValues->GetInt(m_Chatter[i]);;
-			iCount = MIN(iCount, NUM_SUB_CHATTERS);
+			int iCount = pCountKeyValues->GetInt( m_Chatter[i] );
+			iCount = MIN( iCount, NUM_SUB_CHATTERS );
 			m_iChatterCount[i] = iCount;
 		}
-	}	
-	if (pCountKeyValues)
-		pCountKeyValues->deleteThis();
-		
+	}
+	pCountKeyValues->deleteThis();
+
 #ifndef CLIENT_DLL
 	// setup chatter chances
 	m_fChatterChance[CHATTER_HOLDING_POSITION] = 0.2f;
@@ -460,21 +459,21 @@ void CASW_Marine_Profile::InitChatterNames(const char *szMarineName)
 	m_fChatterChance[CHATTER_HEALING] = 0.5f;
 
 	// read speech durations in
-	Q_snprintf(szKeyName, sizeof(szKeyName), "%sChatterDuration", szMarineName);
-	Q_snprintf(szFileName, sizeof(szFileName), "scripts/asw_speech_duration_%s.txt", szMarineName);
+	Q_snprintf( szKeyName, sizeof( szKeyName ), "%sChatterDuration", szMarineName );
+	Q_snprintf( szFileName, sizeof( szFileName ), "scripts/asw_speech_duration_%s.txt", szMarineName );
 	KeyValues *pDurationKeyValues = new KeyValues( szKeyName );
-	if (pDurationKeyValues)
+	if ( pDurationKeyValues )
 	{
-		if (pDurationKeyValues->LoadFromFile(filesystem, szFileName))
+		if ( UTIL_RD_LoadKeyValuesFromFile( pDurationKeyValues, filesystem, szFileName ) )
 		{
 			// now go down all the chatters, grabbing the count
-			for (int i = 0; i < NUM_CHATTER_LINES; i++)
+			for ( int i = 0; i < NUM_CHATTER_LINES; i++ )
 			{
-				for (int k = 0; k < m_iChatterCount[i]; k++)
+				for ( int k = 0; k < m_iChatterCount[i]; k++ )
 				{
 					char chatterbuffer[128];
-					Q_snprintf(chatterbuffer, sizeof(chatterbuffer), "%s%d", m_Chatter[i], k);
-					m_fChatterDuration[i][k] = pDurationKeyValues->GetFloat(chatterbuffer);
+					Q_snprintf( chatterbuffer, sizeof( chatterbuffer ), "%s%d", m_Chatter[i], k );
+					m_fChatterDuration[i][k] = pDurationKeyValues->GetFloat( chatterbuffer );
 				}
 			}
 		}

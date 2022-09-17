@@ -18,8 +18,6 @@
 #include "EngineInterface.h"
 #include "VLoadingProgress.h"
 #include "VGenericConfirmation.h"
-#include "nb_select_mission_panel.h"
-#include "nb_select_campaign_panel.h"
 
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/Button.h"

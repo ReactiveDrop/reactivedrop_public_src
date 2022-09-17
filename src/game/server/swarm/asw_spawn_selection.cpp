@@ -5,6 +5,7 @@
 #include "asw_gamerules.h"
 #include "asw_objective.h"
 #include "asw_spawner.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,7 +39,7 @@ CASW_Spawn_Selection *ASWSpawnSelection() { return &g_ASW_Spawn_Selection; }
 void CASW_Spawn_Selection::LevelInitPreEntity()
 {
 	KeyValues *pKV = new KeyValues( "SpawnSet" );
-	if ( pKV->LoadFromFile( filesystem, "resource/alien_selection.txt", "GAME" ) )
+	if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, "resource/alien_selection.txt", "GAME" ) )
 	{
 		DevMsg( "Loading global spawn selection data\n" );
 		PopulateSpawnSets( pKV );
@@ -53,7 +54,7 @@ void CASW_Spawn_Selection::LevelInitPreEntity()
 	Q_snprintf( szFilename, sizeof( szFilename ), "resource/alien_selection_%s.txt", STRING( gpGlobals->mapname ) );
 
 	pKV = new KeyValues( "SpawnSet" );
-	if ( pKV->LoadFromFile( filesystem, szFilename, "GAME" ) )
+	if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szFilename, "GAME" ) )
 	{
 		DevMsg( "Loading map-specific spawn selection data for %s\n", STRING( gpGlobals->mapname ) );
 		PopulateSpawnSets( pKV );
@@ -87,7 +88,7 @@ void CASW_Spawn_Selection::OnMissionStarted()
 		Q_snprintf( szFilename, sizeof( szFilename ), "resource/alien_selection_%s.txt", pszChallenge );
 
 		KeyValues *pKV = new KeyValues( "SpawnSet" );
-		if ( pKV->LoadFromFile( filesystem, szFilename, "GAME" ) )
+		if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szFilename, "GAME" ) )
 		{
 			DevMsg( "Loading challenge-specific spawn selection data for %s\n", pszChallenge );
 			PopulateSpawnSets( pKV );
@@ -101,7 +102,7 @@ void CASW_Spawn_Selection::OnMissionStarted()
 		Q_snprintf( szFilename, sizeof( szFilename ), "resource/alien_selection_%s_%s.txt", STRING( gpGlobals->mapname ), pszChallenge );
 
 		pKV = new KeyValues( "SpawnSet" );
-		if ( pKV->LoadFromFile( filesystem, szFilename, "GAME" ) )
+		if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szFilename, "GAME" ) )
 		{
 			DevMsg( "Loading map+challenge-specific spawn selection data for %s+%s\n", STRING( gpGlobals->mapname ), pszChallenge );
 			PopulateSpawnSets( pKV );

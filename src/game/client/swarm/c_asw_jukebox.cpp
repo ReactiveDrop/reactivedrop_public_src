@@ -5,6 +5,7 @@
 #include "KeyValues.h"
 #include "gamestringpool.h"
 #include "fmtstr.h"
+#include "asw_util_shared.h"
 
 const char *sz_PlaylistFilename = "scripts/jukebox_playlist.txt";
 
@@ -85,19 +86,19 @@ void CASWJukeboxPlaylist::AddMusicToPlaylist( const char *szFilename, const char
 void CASWJukeboxPlaylist::LoadPlaylistKV()
 {
 	KeyValues *pKV = new KeyValues( "playlist" );
-	if (pKV)
+	if ( pKV )
 	{
-		if (pKV->LoadFromFile(filesystem, sz_PlaylistFilename))
+		if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, sz_PlaylistFilename ) )
 		{
 			// If the load succeeded, create the playlist
-			for (KeyValues *sub = pKV->GetFirstSubKey(); sub != NULL; sub = sub->GetNextTrueSubKey())
+			for ( KeyValues *sub = pKV->GetFirstSubKey(); sub != NULL; sub = sub->GetNextTrueSubKey() )
 			{
-				const char *szTrackName = sub->GetString("TrackName");
-				const char *szHexName = sub->GetString("HexName");
-				const char *szAlbum = sub->GetString("Album");
-				const char *szArtist = sub->GetString("Artist");
-				const char *szGenre = sub->GetString("Genre");
-				AddMusicToPlaylist(szTrackName, szHexName, szAlbum, szArtist, szGenre);
+				const char *szTrackName = sub->GetString( "TrackName" );
+				const char *szHexName = sub->GetString( "HexName" );
+				const char *szAlbum = sub->GetString( "Album" );
+				const char *szArtist = sub->GetString( "Artist" );
+				const char *szGenre = sub->GetString( "Genre" );
+				AddMusicToPlaylist( szTrackName, szHexName, szAlbum, szArtist, szGenre );
 			}
 		}
 		pKV->deleteThis();

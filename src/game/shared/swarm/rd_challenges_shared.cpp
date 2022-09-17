@@ -8,6 +8,7 @@
 #include "networkstringtable_clientdll.h"
 #endif
 #include "rd_workshop.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -16,7 +17,7 @@
 
 INetworkStringTable *g_StringTableReactiveDropChallenges = NULL;
 
-static bool FillChallengeSummary( RD_Challenge_t & summary, const char *szKVFileName )
+static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileName )
 {
 	summary.ForceOnslaught = false;
 	summary.IsOnslaught = false;
@@ -27,7 +28,7 @@ static bool FillChallengeSummary( RD_Challenge_t & summary, const char *szKVFile
 	summary.WorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName );
 
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
-	if ( !pKV->LoadFromFile( filesystem, szKVFileName, "GAME" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szKVFileName, "GAME" ) )
 	{
 		return false;
 	}
@@ -234,7 +235,7 @@ bool ReactiveDropChallenges::ReadData( KeyValues *pKV, const char *pszChallengeN
 	char szPath[MAX_PATH];
 	Q_snprintf( szPath, sizeof( szPath ), "resource/challenges/%s.txt", pszChallengeName );
 
-	if ( pKV->LoadFromFile( filesystem, szPath, "GAME" ) )
+	if ( UTIL_RD_LoadKeyValuesFromFile( pKV, filesystem, szPath, "GAME" ) )
 	{
 		pKV->SetUint64( "workshop", g_ReactiveDropWorkshop.FindAddonProvidingFile( szPath ) );
 		return true;

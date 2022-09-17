@@ -58,7 +58,6 @@ ObjectiveMap::ObjectiveMap(Panel *parent, const char *name) : Panel(parent, name
 	m_pNoMapLabel->SetVisible(false);
 
 	m_bHaveQueuedItem = false;
-	m_MapKeyValues = NULL;
 	m_iNumMapMarks = 0;
 
 	for (int i=0;i<ASW_NUM_MAP_MARKS;i++)
@@ -69,7 +68,7 @@ ObjectiveMap::ObjectiveMap(Panel *parent, const char *name) : Panel(parent, name
 	m_pMapDrawing = new ObjectiveMapDrawingPanel(this, "MapDrawing");
 	m_pMapDrawing->SetZPos(200);
 
-	SetMap(engine->GetLevelName());
+	SetMap(engine->GetLevelNameShort());
 }
 	
 ObjectiveMap::~ObjectiveMap()
@@ -212,84 +211,40 @@ void ObjectiveMap::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 
 // loads in the script file for a particular map to set scale/origin
-void ObjectiveMap::SetMap(const char * levelname)
+void ObjectiveMap::SetMap( const char *levelname )
 {
-	if (!m_pMapImage)
+	if ( !m_pMapImage )
 	{
-		DevMsg(1, "Error, no image panel to load overview into\n");
+		DevMsg( 1, "Error, no image panel to load overview into\n" );
 		return;
 	}
 
 	// load new KeyValues
-	if ( m_MapKeyValues && Q_strcmp( levelname, m_MapKeyValues->GetName() ) == 0 )
+	if ( m_szLastLevelName == levelname )
 	{
 		return;	// map didn't change
 	}
 
-	if ( m_MapKeyValues )
-		m_MapKeyValues->deleteThis();
+	m_szLastLevelName = levelname;
 
-	m_MapKeyValues = new KeyValues( levelname );
-
-	// strip off the .bsp
-	char mapname[MAX_PATH];
-	Q_snprintf(mapname, sizeof(mapname), "%s", levelname);
-	if (Q_strlen(mapname) > 5)
-		mapname[Q_strlen(mapname)-4] = '\0';
-	// strip off everything before the slash
-	int slash_pos = -1;
-	int len = Q_strlen(mapname);
-	for (int i=len-1; i>=0; i--)
+	const RD_Mission_t *pOverview = ReactiveDropMissions::GetMission( levelname );
+	if ( !pOverview )
 	{
-		if (mapname[i] =='/' || mapname[i]=='\\')
-		{
-			slash_pos = i;
-			break;
-		}
-	}
-	char justmap[64];
-	int k = 0;
-	for (int i = slash_pos+1;i<len && k<63;i++)
-	{
-		justmap[k] = mapname[i];
-		k++;
-	}
-	justmap[k] = '\0';
-	// add in the overviews folder
-	char tempfile[MAX_PATH];
-	Q_snprintf( tempfile, sizeof( tempfile ), "resource/overviews/%s.txt", justmap );
-	
-	if ( !m_MapKeyValues->LoadFromFile( filesystem, tempfile, "GAME" ) )
-	{
-		// try to load it directly from the maps folder
-		Q_snprintf( tempfile, sizeof( tempfile ), "maps/%s.txt", justmap );
-		if ( !m_MapKeyValues->LoadFromFile( filesystem, tempfile, "GAME" ) )
-		{
-			DevMsg( 1, "ObjectiveMap::SetMap: couldn't load overview file for map %s.\n", justmap );
-			m_pNoMapLabel->SetVisible(true);
-			return;
-		}
+		DevMsg( 1, "ObjectiveMap::SetMap: couldn't load overview file for map %s.\n", levelname );
+		m_pNoMapLabel->SetVisible( true );
+		return;
 	}
 
 	// strip the vgui/ off the start
-	Q_strcpy(mapname, m_MapKeyValues->GetString("briefingmaterial"));
-	k = 0; slash_pos = 4;
-	len = Q_strlen(mapname);
-	for (int i = slash_pos+1;i<len && k<63;i++)
-	{
-		justmap[k] = mapname[i];
-		k++;
-	}
-	justmap[k] = '\0';
-	m_pMapImage->SetImage(justmap);
+	m_pMapImage->SetImage( VarArgs( "../%s", STRING( pOverview->BriefingMaterial ) ) );
 	int mx, my, mw, mt;
-	GetDesiredMapBounds(mx, my, mw, mt);
-	m_pMapImage->SetBounds(mx, my, mw, mt);
-	m_pNoMapLabel->SetVisible(false);	
-	
-	m_MapOrigin.x	= m_MapKeyValues->GetInt("pos_x");
-	m_MapOrigin.y	= m_MapKeyValues->GetInt("pos_y");
-	m_fMapScale		= m_MapKeyValues->GetFloat("scale", 1.0f);
+	GetDesiredMapBounds( mx, my, mw, mt );
+	m_pMapImage->SetBounds( mx, my, mw, mt );
+	m_pNoMapLabel->SetVisible( false );
+
+	m_MapOrigin.x = pOverview->PosX;
+	m_MapOrigin.y = pOverview->PosY;
+	m_fMapScale = pOverview->Scale;
 }
 
 void ObjectiveMap::AddMapMark( const MapMarkCandidate & candidate, bool bComplete )

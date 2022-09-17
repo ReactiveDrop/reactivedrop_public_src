@@ -3,6 +3,7 @@
 #include "asw_holdout_mode.h"
 #include "asw_holdout_wave.h"
 #include "filesystem.h"
+#include "asw_util_shared.h"
 #ifdef GAME_DLL
 #include "asw_spawn_manager.h"
 #include "asw_spawn_group.h"
@@ -17,8 +18,10 @@
 #include "entityinput.h"
 #include "entityoutput.h"
 #endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Holdout_Mode, DT_ASW_Holdout_Mode )
 
@@ -720,16 +723,16 @@ void CASW_Holdout_Mode::LoadWaves()
 	Q_snprintf( tempfile, sizeof( tempfile ), "resource/holdout/%s.txt", m_netHoldoutFilename.Get() );
 
 	KeyValues *pKV = new KeyValues( "HoldoutWaves" );
-	if (pKV)
+	if ( pKV )
 	{
-		if (!pKV->LoadFromFile(g_pFullFileSystem, tempfile, "GAME"))
+		if ( !UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, tempfile, "GAME" ) )
 		{
-			Warning("Failed to load holdout resource file: '%s'  Attempting to load default.\n", tempfile);
+			Warning( "Failed to load holdout resource file: '%s'  Attempting to load default.\n", tempfile );
 
-			Q_snprintf(tempfile, sizeof(tempfile), "resource/holdout/%s.txt", "HoldoutWaves_Default");
-			if (!pKV->LoadFromFile(g_pFullFileSystem, tempfile, "GAME"))
+			Q_snprintf( tempfile, sizeof( tempfile ), "resource/holdout/%s.txt", "HoldoutWaves_Default" );
+			if ( !UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, tempfile, "GAME" ) )
 			{
-				Warning("WARNING: Failed to load default holdout resource file.  'resource/holdout/HoldoutWaves_Default.txt' is missing!\n");
+				Warning( "WARNING: Failed to load default holdout resource file.  'resource/holdout/HoldoutWaves_Default.txt' is missing!\n" );
 				pKV->deleteThis();
 				return;
 			}
@@ -737,15 +740,15 @@ void CASW_Holdout_Mode::LoadWaves()
 
 
 		KeyValues *pKeys = pKV;
-		while (pKeys)
+		while ( pKeys )
 		{
-			if (asw_holdout_debug.GetBool())
+			if ( asw_holdout_debug.GetBool() )
 			{
-				Msg("  Loading a wave\n");
+				Msg( "  Loading a wave\n" );
 			}
-			CASW_Holdout_Wave* pWave = new CASW_Holdout_Wave;
-			pWave->LoadFromKeyValues(m_Waves.Count(), pKeys);
-			m_Waves.AddToTail(pWave);
+			CASW_Holdout_Wave *pWave = new CASW_Holdout_Wave;
+			pWave->LoadFromKeyValues( m_Waves.Count(), pKeys );
+			m_Waves.AddToTail( pWave );
 
 			pKeys = pKeys->GetNextKey();
 		}

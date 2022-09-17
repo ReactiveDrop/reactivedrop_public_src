@@ -59,8 +59,8 @@ public:
 	Vector	m_MapOrigin;	// read from KeyValues files
 	float	m_fMapScale;	// origin and scale used when screenshot was made
 		
-	void SetMap(const char * levelname);
-	KeyValues * m_MapKeyValues; // keyvalues describing overview parameters
+	void SetMap( const char *levelname );
+	CUtlString m_szLastLevelName;
 
 	void GetDesiredMapBounds(int &mx, int &my, int &mw, int &mt);
 

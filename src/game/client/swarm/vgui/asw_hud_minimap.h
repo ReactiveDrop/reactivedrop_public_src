@@ -219,7 +219,7 @@ public:
 	float m_fLastMapLine;
 	bool m_bHasOverview;
 
-	KeyValues * m_MapKeyValues; // keyvalues describing overview parameters
+	CUtlString m_szLastLevelName;
 	CASWHudMinimapLinePanel *m_pLinePanel;
 	CASWHudMinimapFramePanel *m_pFramePanel;	// for the border around the edge
 	ScanLinePanel *m_pScanLinePanel;

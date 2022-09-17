@@ -7,6 +7,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "asw_marine_resource.h"
 #include "asw_game_resource.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -111,7 +112,7 @@ bool CASW_Campaign_Save::LoadGameFromFile( const char *szFileName )
 	KeyValues *pSaveKeyValues = new KeyValues( szFileName );
 	if ( pSaveKeyValues )
 	{
-		if ( pSaveKeyValues->LoadFromFile( filesystem, szFullFileName ) )
+		if ( UTIL_RD_LoadKeyValuesFromFile( pSaveKeyValues, filesystem, szFullFileName ) )
 		{
 			m_CurrentSaveFileName = AllocPooledString( szFullFileName );
 

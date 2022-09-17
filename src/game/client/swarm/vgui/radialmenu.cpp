@@ -35,6 +35,7 @@
 #include "vgui/cursor.h"
 #include "fmtstr.h"
 #include "vgui_int.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -530,7 +531,7 @@ CASW_HudElement( pElementName ), BaseClass( NULL, PANEL_RADIAL_MENU )
 
 	// initialize dialog
 	m_resource = new KeyValues( "RadialMenu" );
-	m_resource->LoadFromFile( filesystem, "resource/UI/RadialMenu.res" );
+	UTIL_RD_LoadKeyValuesFromFile( m_resource, filesystem, "resource/UI/RadialMenu.res" );
 	m_menuData = NULL;
 	FlushClientMenus();
 
@@ -1184,7 +1185,7 @@ void CRadialMenu::SetData( KeyValues *data )
 	{
 		m_resource->deleteThis();
 		m_resource = new KeyValues( "RadialMenu" );
-		m_resource->LoadFromFile( filesystem, "resource/UI/RadialMenu.res" );
+		UTIL_RD_LoadKeyValuesFromFile( m_resource, filesystem, "resource/UI/RadialMenu.res" );
 	}
 
 	if ( m_menuData != data )
@@ -1307,7 +1308,7 @@ public:
 		}
 
 		KeyValues *data = new KeyValues( "ClientMenu" );
-		if ( !data->LoadFromFile( filesystem, filename ) )
+		if ( !UTIL_RD_LoadKeyValuesFromFile( data, filesystem, filename ) )
 		{
 			Warning( "Could not load client menu %s\n", filename );
 			data->deleteThis();
