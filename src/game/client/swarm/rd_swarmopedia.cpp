@@ -875,6 +875,10 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		}
 		break;
 	case WeaponFact::Type_T::Deployed:
+		FOR_EACH_VEC( pFact->Facts, i )
+		{
+			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, bIsSecondary );
+		}
 		break;
 	case WeaponFact::Type_T::RequirementLevel:
 		break;
@@ -1136,6 +1140,7 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	Skill{ copy.Skill },
 	SubSkill{ copy.SubSkill },
 	SkillMultiplier{ copy.SkillMultiplier },
+	ShowReciprocal{ copy.ShowReciprocal },
 	Flattened{ copy.Flattened },
 	ClipSize{ copy.ClipSize },
 	Class{ copy.Class }
@@ -1283,6 +1288,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		}
 	}
 
+	ShowReciprocal = pKV->GetBool( "ShowReciprocal", false );
 	Flattened = pKV->GetBool( "Flattened", false );
 	ClipSize = pKV->GetInt( "ClipSize" );
 
@@ -1311,6 +1317,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			FStrEq( szName, "CVar" ) ||
 			FStrEq( szName, "Skill" ) ||
 			FStrEq( szName, "SubSkill" ) ||
+			FStrEq( szName, "ShowReciprocal" ) ||
 			FStrEq( szName, "Flattened" ) ||
 			FStrEq( szName, "ClipSize" ) ||
 			FStrEq( szName, "Class" ) )
@@ -1363,11 +1370,10 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 bool WeaponFact::IsSame( const WeaponFact *pWeaponFact ) const
 {
-	// TODO
 	return false;
 }
 
 void WeaponFact::Merge( const WeaponFact *pWeaponFact )
 {
-	Assert( !"TODO" );
+	Assert( !"RD_Swarmopedia::WeaponFact::Merge should not have been called." );
 }
