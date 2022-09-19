@@ -110,25 +110,6 @@ void TabbedGridDetails::OnCommand( const char *command )
 			MarkForDeletion();
 		}
 	}
-	else if ( !V_stricmp( command, "ApplyCurrentEntry" ) )
-	{
-		if ( !m_hCurrentTab || m_hOverridePanel )
-		{
-			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
-			return;
-		}
-
-		Assert( m_hCurrentTab->m_pGrid );
-
-		if ( !m_hCurrentTab->m_pGrid->m_hCurrentEntry )
-		{
-			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
-			return;
-		}
-
-		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
-		m_hCurrentTab->m_pGrid->m_hCurrentEntry->ApplyEntry();
-	}
 	else if ( !V_stricmp( command, "PrevPage" ) )
 	{
 		if ( m_Tabs.Count() <= 1 || m_hOverridePanel )
@@ -225,6 +206,12 @@ void TabbedGridDetails::OnKeyCodePressed( vgui::KeyCode keycode )
 		m_hOverridePanel->OnKeyCodePressed( keycode );
 		s_bForwarded = false;
 	}
+	else if ( m_hCurrentTab && m_hCurrentTab->m_pGrid->m_hCurrentEntry )
+	{
+		s_bForwarded = true;
+		m_hCurrentTab->m_pGrid->m_hCurrentEntry->OnKeyCodePressed( keycode );
+		s_bForwarded = false;
+	}
 
 	int lastUser = GetJoystickForCode( keycode );
 	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
@@ -233,9 +220,6 @@ void TabbedGridDetails::OnKeyCodePressed( vgui::KeyCode keycode )
 
 	switch ( code )
 	{
-	case KEY_XBUTTON_A:
-		OnCommand( "ApplyCurrentEntry" );
-		break;
 	case KEY_XBUTTON_B:
 		OnCommand( "BackButton" );
 		break;
@@ -801,6 +785,25 @@ void TGD_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pFocusHolder->SetZPos( 999 );
 	m_pFocusHolder->SetWide( GetWide() );
 	m_pFocusHolder->SetTall( GetTall() );
+}
+
+void TGD_Entry::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		ApplyEntry();
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
 }
 
 TGD_Details::TGD_Details( TGD_Tab *pTab )

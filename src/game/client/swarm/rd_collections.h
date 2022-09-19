@@ -6,6 +6,7 @@
 
 class CASW_WeaponInfo;
 class CASW_Marine_Profile;
+class CBitmapButton;
 class IBriefing;
 namespace RD_Swarmopedia
 {
@@ -106,9 +107,12 @@ public:
 	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	virtual void OnCommand( const char *command ) override;
 	virtual void ApplyEntry() override;
 
 	const RD_Swarmopedia::Weapon *m_pWeapon;
+	bool m_bNoDirectEquip;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pLockedIcon;
@@ -118,6 +122,7 @@ public:
 	vgui::Label *m_pNewLabel;
 	vgui::ImagePanel *m_pClassIcon;
 	vgui::Label *m_pClassLabel;
+	CBitmapButton *m_pInfoButton;
 };
 
 class CRD_Collection_Panel_Equipment : public vgui::EditablePanel

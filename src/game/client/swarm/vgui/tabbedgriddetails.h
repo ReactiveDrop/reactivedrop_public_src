@@ -107,6 +107,7 @@ public:
 	TGD_Entry( TGD_Grid *parent, const char *panelName );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
 
 	virtual void ApplyEntry() = 0;
 
