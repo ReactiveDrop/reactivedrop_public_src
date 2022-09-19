@@ -613,8 +613,8 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed(info);
 
-	// If we died to an explosion (and no other damage type), the xenomites died with us.
-	if ( info.GetDamageType() == DMG_BLAST )
+	// If we died to an explosion which inflicted two times more damage than we had health (and no other damage type), the xenomites died with us.
+	if ( ( info.GetDamageType() == DMG_BLAST ) && ( m_iHealth + info.GetDamage() / 2 <= 0 ) )
 		return;
 
 	// spawn a bunch of xenomites
