@@ -109,6 +109,7 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
 	virtual void OnCommand( const char *command ) override;
+	virtual void OnThink() override;
 	virtual void ApplyEntry() override;
 
 	const RD_Swarmopedia::Weapon *m_pWeapon;

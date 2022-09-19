@@ -383,13 +383,6 @@ CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent
 	m_pClassIcon = new vgui::ImagePanel( this, "ClassIcon" );
 	m_pClassLabel = new vgui::Label( this, "ClassLabel", L"" );
 	m_pInfoButton = new CBitmapButton( this, "InfoButton", "" );
-
-	color32 white{ 255, 255, 255, 255 };
-	color32 lgray{ 192, 192, 192, 255 };
-	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/swarmopedia/fact/generic", lgray );
-	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/swarmopedia/fact/generic", white );
-	m_pInfoButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/swarm/swarmopedia/fact/generic", white );
-	m_pInfoButton->SetImage( CBitmapButton::BUTTON_DISABLED, "vgui/swarm/swarmopedia/fact/generic", lgray );
 	m_pInfoButton->AddActionSignalTarget( this );
 }
 
@@ -398,6 +391,14 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_pInfoButton->SetVisible( false );
+
+	color32 white{ 255, 255, 255, 255 };
+	color32 lgray{ 192, 192, 192, 255 };
+	color32 transparent{ 0, 0, 0, 0 };
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/swarmopedia/fact/generic", lgray );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/swarmopedia/fact/generic", white );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/swarm/swarmopedia/fact/generic", white );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_DISABLED, "vgui/swarm/swarmopedia/fact/generic", transparent );
 
 	m_pIcon->SetImage( m_pWeapon->Icon );
 
@@ -520,6 +521,13 @@ void CRD_Collection_Entry_Equipment::OnCommand( const char *command )
 	{
 		BaseClass::OnCommand( command );
 	}
+}
+
+void CRD_Collection_Entry_Equipment::OnThink()
+{
+	BaseClass::OnThink();
+
+	m_pInfoButton->SetEnabled( IsCursorOver() );
 }
 
 void CRD_Collection_Entry_Equipment::ApplyEntry()
