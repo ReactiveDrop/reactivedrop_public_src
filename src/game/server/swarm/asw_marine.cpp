@@ -1475,6 +1475,10 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			if (newInfo.GetDamage() >= GetHealth())
 				bKillProtection = true;
 		}
+
+		// no protection when the blast damage was 3 times higher than marine's health
+		if ( newInfo.GetDamageType() == DMG_BLAST && newInfo.GetDamage() >= GetHealth() * 3 )
+			bKillProtection = false;
 	}
 
 	CBaseEntity* pInflictor = newInfo.GetInflictor();
