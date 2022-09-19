@@ -125,6 +125,8 @@ bool UTIL_ASW_CommanderLevelAtLeast( C_ASW_Player *pPlayer, int iLevel, int iPro
 bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iPromotion = 0 );
 #endif
 
+bool UTIL_RD_LoadKeyValues( KeyValues *pKV, const char *resourceName, const CUtlBuffer &buf );
+bool UTIL_RD_LoadKeyValuesFromFile( KeyValues *pKV, IFileSystem *pFileSystem, const char *szFileName, const char *szPath = NULL );
 typedef void (*UTIL_RD_LoadAllKeyValuesCallback)( const char *pszPath, KeyValues *pKV, void *pUserData );
 void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData );
 

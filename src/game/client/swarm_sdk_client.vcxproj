@@ -1822,12 +1822,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\nb_mission_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_mission_summary.cpp" />
     <ClCompile Include="swarm\vgui\nb_promotion_panel.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_campaign_entry.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_campaign_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_marine_entry.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_marine_panel.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_mission_entry.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_mission_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_save_entry.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_save_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_weapon_entry.cpp" />
@@ -2913,12 +2909,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\nb_mission_panel.h" />
     <ClInclude Include="swarm\vgui\nb_mission_summary.h" />
     <ClInclude Include="swarm\vgui\nb_promotion_panel.h" />
-    <ClInclude Include="swarm\vgui\nb_select_campaign_entry.h" />
-    <ClInclude Include="swarm\vgui\nb_select_campaign_panel.h" />
     <ClInclude Include="swarm\vgui\nb_select_marine_entry.h" />
     <ClInclude Include="swarm\vgui\nb_select_marine_panel.h" />
-    <ClInclude Include="swarm\vgui\nb_select_mission_entry.h" />
-    <ClInclude Include="swarm\vgui\nb_select_mission_panel.h" />
     <ClInclude Include="swarm\vgui\nb_select_save_entry.h" />
     <ClInclude Include="swarm\vgui\nb_select_save_panel.h" />
     <ClInclude Include="swarm\vgui\nb_select_weapon_entry.h" />

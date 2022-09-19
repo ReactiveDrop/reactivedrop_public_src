@@ -831,13 +831,13 @@ CBaseEntity *CASW_Alien::CheckTraceHullAttack( const Vector &vStart, const Vecto
 	
 	for ( int i = 0; i < traceFilter.m_nNumHits; i++ )
 	{
-		trace_t *tr = &traceFilter.m_HitTraces[i];
-		CBaseEntity *pHitEntity = tr->m_pEnt;
+		trace_t *ptr = &traceFilter.m_HitTraces[i];
+		CBaseEntity *pHitEntity = ptr->m_pEnt;
 
 		Vector attackDir = pHitEntity->WorldSpaceCenter() - vecAttackerCenter;
 		VectorNormalize( attackDir );
 		CalculateMeleeDamageForce( &dmgInfo, attackDir, vecAttackerCenter, flForceScale );
-		tr->m_pEnt->DispatchTraceAttack( dmgInfo, tr->endpos - vecAttackerCenter, tr );
+		ptr->m_pEnt->DispatchTraceAttack( dmgInfo, ptr->endpos - vecAttackerCenter, ptr );
 #ifdef GAME_DLL
 		ApplyMultiDamage();
 #endif

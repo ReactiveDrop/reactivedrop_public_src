@@ -997,15 +997,52 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
-			"Generic" {
-				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
-				"Icon" "swarm/swarmopedia/fact/bait"
-				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_deploy_time"
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY"
+				"SkillDivisor" "7"
+				"ShowReciprocal" "1"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_bullet"
+					"Caption" "#rd_weapon_fact_damage_per_shot_bullet"
+					// asw_sentry_top_machinegun_dmg_override if nonzero,
+					// else 10 * (1 + (difficulty - 5) * asw_difficulty_alien_damage_step) * sentry base damage scale
+					// just use the normal difficulty value for now
+					"Base" "10"
+				}
+				"BulletSpread" {
+					"Base" "5"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "0.08" // asw_sentry_top_machinegun_fire_rate
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo_bullet"
+					"Caption" "#rd_weapon_fact_ammo_bullet"
+					"Base" "450"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/range"
+					"Caption" "#rd_weapon_fact_range"
+					"Base" "525"
+				}
+				"Generic" {
+					"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+					"Icon" "swarm/swarmopedia/fact/bait"
+					"Caption" "#rd_weapon_fact_attracts_alien_attention"
+				}
 			}
 		}
 	}
@@ -1032,7 +1069,7 @@
 				"Base" "20"
 			}
 			"Numeric" {
-				"Icon" "swarm/swarmopedia/facts/healing"
+				"Icon" "swarm/swarmopedia/fact/healing"
 				"Caption" "#rd_weapon_fact_healing"
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GRENADE_HEAL_AMOUNT"
@@ -1055,7 +1092,7 @@
 		"Builtin" "1"
 		"Facts" {
 			"Numeric" {
-				"Icon" "swarm/swarmopedia/facts/healing"
+				"Icon" "swarm/swarmopedia/fact/healing"
 				"Caption" "#rd_weapon_fact_healing"
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
@@ -1071,7 +1108,7 @@
 			}
 			"Secondary" {
 				"Numeric" {
-					"Icon" "swarm/swarmopedia/facts/healing"
+					"Icon" "swarm/swarmopedia/fact/healing"
 					"Caption" "#rd_weapon_fact_healing"
 					"Skill" "ASW_MARINE_SKILL_HEALING"
 					"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_HPS"
@@ -1258,7 +1295,7 @@
 			}
 			"FireRate" {}
 			"Numeric" {
-				"Icon" "swarm/swarmopedia/facts/healing"
+				"Icon" "swarm/swarmopedia/fact/healing"
 				"Caption" "#rd_weapon_fact_healing"
 				"Skill" "ASW_MARINE_SKILL_HEALING"
 				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT"
@@ -1382,15 +1419,40 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
-			"Generic" {
-				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
-				"Icon" "swarm/swarmopedia/fact/bait"
-				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_deploy_time"
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY"
+				"SkillDivisor" "7"
+				"ShowReciprocal" "1"
+			}
+			"Deployed" {
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "0.1"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo"
+					"Caption" "#rd_weapon_fact_ammo"
+					"Base" "800"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/range"
+					"Caption" "#rd_weapon_fact_range"
+					"Base" "300"
+				}
+				"Generic" {
+					"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+					"Icon" "swarm/swarmopedia/fact/bait"
+					"Caption" "#rd_weapon_fact_attracts_alien_attention"
+				}
 			}
 		}
 	}
@@ -1489,15 +1551,53 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
-			"Generic" {
-				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
-				"Icon" "swarm/swarmopedia/fact/bait"
-				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_deploy_time"
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY"
+				"SkillDivisor" "7"
+				"ShowReciprocal" "1"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_burn"
+					"Caption" "#rd_weapon_fact_damage_per_shot_burn"
+					// See asw_weapon_sentry for caveats about sentry damage calulations.
+					"Base" "4"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_ignites"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_burning_dps"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "0.1"
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo_burn"
+					"Caption" "#rd_weapon_fact_ammo_burn"
+					"Base" "1200"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/range"
+					"Caption" "#rd_weapon_fact_range"
+					"Base" "375"
+				}
+				"Generic" {
+					"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+					"Icon" "swarm/swarmopedia/fact/bait"
+					"Caption" "#rd_weapon_fact_attracts_alien_attention"
+				}
 			}
 		}
 	}
@@ -1545,15 +1645,54 @@
 			"Yaw" "90"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
 				"Caption" "#rd_weapon_fact_deployable_sentry"
 			}
-			"Generic" {
-				"RequireCVar" "rd_sentry_is_attacked_by_aliens"
-				"Icon" "swarm/swarmopedia/fact/bait"
-				"Caption" "#rd_weapon_fact_attracts_alien_attention"
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_deploy_time"
+				"Precision" "1"
+				"Skill" "ASW_MARINE_SKILL_ENGINEERING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY"
+				"SkillDivisor" "7"
+				"ShowReciprocal" "1"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"CVar" "asw_sentry_top_cannon_dmg_override"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "1.75" // asw_sentry_top_cannon_fire_rate
+				}
+				"Ammo" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/ammo_blast"
+					"Caption" "#rd_weapon_fact_ammo_blast"
+					"Base" "40"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_RADIUS"
+					"SkillMultiplier" "0.5"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/range"
+					"Caption" "#rd_weapon_fact_range"
+					"Base" "1000"
+				}
+				"Generic" {
+					"RequireCVar" "rd_sentry_is_attacked_by_aliens"
+					"Icon" "swarm/swarmopedia/fact/bait"
+					"Caption" "#rd_weapon_fact_attracts_alien_attention"
+				}
 			}
 		}
 	}

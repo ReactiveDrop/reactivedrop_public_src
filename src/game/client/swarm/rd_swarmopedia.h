@@ -283,6 +283,7 @@ namespace RD_Swarmopedia
 		float SkillMultiplier{ 1.0f };
 		CUtlStringList SkillMultiplierCVar{};
 		CUtlStringList SkillDivisorCVar{};
+		bool ShowReciprocal{ false };
 
 		// BulletSpread
 		bool Flattened{ false };

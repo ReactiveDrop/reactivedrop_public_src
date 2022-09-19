@@ -541,7 +541,7 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	bool bIsHammerUnits = false;
 	bool bIgnoreCustomCaption = false;
 	bool bConVarIsOverride = false;
-	bool bShowReciprocal = false;
+	bool bShowReciprocal = m_pFact->ShowReciprocal;
 
 	switch ( m_pFact->Type )
 	{
@@ -580,7 +580,7 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	case Type_T::FireRate:
 		szIcon = "swarm/swarmopedia/fact/fire_rate";
 		szCaption = "#rd_weapon_fact_fire_rate";
-		bShowReciprocal = true;
+		bShowReciprocal = !bShowReciprocal;
 		break;
 	case Type_T::Ammo:
 		szIcon = "swarm/swarmopedia/fact/ammo";

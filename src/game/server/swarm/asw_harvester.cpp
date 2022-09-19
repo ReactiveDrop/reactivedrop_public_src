@@ -37,9 +37,9 @@ END_DATADESC()
 ConVar asw_harvester_speedboost( "asw_harvester_speedboost", "1.0",FCVAR_CHEAT , "boost speed for the harvesters" );
 ConVar asw_harvester_max_critters( "asw_harvester_max_critters", "5",FCVAR_CHEAT , "maximum critters the harvester can spawn" );
 ConVar asw_harvester_touch_damage( "asw_harvester_touch_damage", "5",FCVAR_CHEAT , "Damage caused by harvesters on touch" );
-ConVar asw_harverter_suppress_children( "asw_harverter_suppress_children", "0", FCVAR_CHEAT, "If set to 1, harvesters won't spawn harvesites");
+ConVar asw_harverter_suppress_children( "asw_harverter_suppress_children", "0", FCVAR_CHEAT, "If set to 1, harvesters won't spawn xenomites");
 ConVar asw_harvester_new( "asw_harvester_new", "1", FCVAR_CHEAT, "If set to 1, use the new model");
-ConVar asw_harvester_spawn_height( "asw_harvester_spawn_height", "16", FCVAR_CHEAT, "Height above harvester origin to spawn harvesites at" );
+ConVar asw_harvester_spawn_height( "asw_harvester_spawn_height", "16", FCVAR_CHEAT, "Height above harvester origin to spawn xenomites at" );
 ConVar asw_harvester_spawn_interval( "asw_harvester_spawn_interval", "1.0", FCVAR_CHEAT, "Time between spawning a harvesite and starting to spawn another" );
 ConVar rd_harvester_health( "rd_harvester_health", "200", FCVAR_CHEAT, "Health of the harvester" );
 
@@ -613,7 +613,11 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed(info);
 
-	// spawn a bunch of harvesites
+	// If we died to an explosion (and no other damage type), the xenomites died with us.
+	if ( info.GetDamageType() == DMG_BLAST )
+		return;
+
+	// spawn a bunch of xenomites
 	int iNumParasites = 4 + RandomInt(0,2);
 	QAngle angParasiteFacing[6];
 	float fJumpDistance[6];

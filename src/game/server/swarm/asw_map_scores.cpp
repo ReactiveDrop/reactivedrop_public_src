@@ -2,6 +2,7 @@
 #include <KeyValues.h>
 #include <filesystem.h>
 #include "asw_map_scores.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -31,9 +32,8 @@ void CASW_Map_Scores::LoadMapScores()
 		return;
 	}
 	m_pScoreKeyValues = new KeyValues( "MAPSCORES" );
-	if ( !m_pScoreKeyValues->LoadFromFile( filesystem, "cfg/mapscores.dat" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( m_pScoreKeyValues, filesystem, "cfg/mapscores.dat" ) )
 	{
-		Msg("couldn't fine any, keyvalues is empty!\n");
 		// if we get here, it means the player has no mapscores.dat file and therefore no scores
 		// (but that's fine)
 		return;
@@ -45,6 +45,7 @@ bool CASW_Map_Scores::SaveMapScores()
 	if (!m_pScoreKeyValues)
 	{
 		Msg("Error: Attempted to save CASW_Map_Scores without loading first\n");
+		return false;
 	}
 
 	return (m_pScoreKeyValues->SaveToFile(filesystem, "cfg/mapscores.dat"));	

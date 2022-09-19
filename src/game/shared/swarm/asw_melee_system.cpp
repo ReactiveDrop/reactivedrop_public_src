@@ -110,7 +110,7 @@ void CASW_Melee_System::Reload()
 void CASW_Melee_System::LoadMeleeAttacks()
 {
 	KeyValues *kv = new KeyValues( "resource/melee_attacks.txt" );
-	if ( kv->LoadFromFile( g_pFullFileSystem, "resource/melee_attacks.txt" ) )
+	if ( UTIL_RD_LoadKeyValuesFromFile( kv, g_pFullFileSystem, "resource/melee_attacks.txt" ) )
 	{
 		KeyValues *pKeys = kv;
 		while ( pKeys )

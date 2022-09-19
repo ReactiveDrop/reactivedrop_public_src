@@ -10,6 +10,7 @@
 #endif
 #include "asw_weapon_parse.h"
 #include "asw_gamerules.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -63,63 +64,63 @@ void CASW_EquipmentList::LoadEquipmentList()
 	m_iNumRegular = 0;
 	m_iNumExtra = 0;
 
-	KeyValues *kv = new KeyValues("Equipment");
+	KeyValues *kv = new KeyValues( "Equipment" );
 	// load equipment
-	if (kv->LoadFromFile(filesystem, "resource/equipment.res"))
-	{		
+	if ( UTIL_RD_LoadKeyValuesFromFile( kv, filesystem, "resource/equipment.res" ) )
+	{
 		int iNumEquip = 0;
 		KeyValues *pKeys = kv;
 		while ( pKeys )
 		{
-			for (KeyValues *details = pKeys->GetFirstSubKey(); details; details = details->GetNextKey())
-			{			
+			for ( KeyValues *details = pKeys->GetFirstSubKey(); details; details = details->GetNextKey() )
+			{
 				if ( FStrEq( details->GetName(), "Regular" ) )
 				{
 					//Msg("adding regular equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem* equip = new CASW_EquipItem();
+					CASW_EquipItem *equip = new CASW_EquipItem();
 					equip->m_EquipClass = MAKE_STRING( details->GetString() );
 					equip->m_iItemIndex = iNumEquip;
 					equip->m_bSelectableInBriefing = true;
-					m_Regular.AddToTail(equip);	
+					m_Regular.AddToTail( equip );
 					m_iNumRegular++;
 					iNumEquip++;
 				}
 				else if ( FStrEq( details->GetName(), "Extra" ) )
 				{
 					//Msg("adding extra equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem* equip = new CASW_EquipItem();
+					CASW_EquipItem *equip = new CASW_EquipItem();
 					equip->m_EquipClass = MAKE_STRING( details->GetString() );
 					equip->m_iItemIndex = iNumEquip;
 					equip->m_bSelectableInBriefing = true;
-					m_Extra.AddToTail(equip);
+					m_Extra.AddToTail( equip );
 					m_iNumExtra++;
-					iNumEquip++;							
+					iNumEquip++;
 				}
 				// hidden equip
 				else if ( FStrEq( details->GetName(), "RegularOther" ) )
 				{
 					//Msg("adding regular equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem* equip = new CASW_EquipItem();
+					CASW_EquipItem *equip = new CASW_EquipItem();
 					equip->m_EquipClass = MAKE_STRING( details->GetString() );
 					equip->m_iItemIndex = iNumEquip;
 					equip->m_bSelectableInBriefing = false;
-					m_Regular.AddToTail(equip);	
+					m_Regular.AddToTail( equip );
 					iNumEquip++;
 				}
 				else if ( FStrEq( details->GetName(), "ExtraOther" ) )
 				{
 					//Msg("adding extra equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem* equip = new CASW_EquipItem();
+					CASW_EquipItem *equip = new CASW_EquipItem();
 					equip->m_EquipClass = MAKE_STRING( details->GetString() );
 					equip->m_iItemIndex = iNumEquip;
 					equip->m_bSelectableInBriefing = false;
-					m_Extra.AddToTail(equip);
-					iNumEquip++;							
+					m_Extra.AddToTail( equip );
+					iNumEquip++;
 				}
 			}
 			pKeys = pKeys->GetNextKey();
-		}							
-	}	
+		}
+	}
 }
 
 void CASW_EquipmentList::FindWeaponData()

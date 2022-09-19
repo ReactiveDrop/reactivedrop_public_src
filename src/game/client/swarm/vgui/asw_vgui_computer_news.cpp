@@ -16,6 +16,7 @@
 #include "asw_vgui_computer_frame.h"
 #include "clientmode_asw.h"
 #include "ImageButton.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -99,23 +100,30 @@ void CASW_VGUI_Computer_News::SetLabelsFromFile()
 	// first try to load in a localised file
 	if ( pArea->m_NewsFile == NULL_STRING )
 		return;
+
 	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	if ( SteamApps() )
+	{
+		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
+	}
+
 	Q_snprintf( buffer, sizeof( buffer ), "resource/news/%s_%s.txt", pszNewsFile, uilanguage );
 	if ( m_pKeyValues )
 		m_pKeyValues->deleteThis();
 
 	m_pKeyValues = new KeyValues( "News" );
 
-	if ( !m_pKeyValues->LoadFromFile( filesystem, buffer, "GAME" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( m_pKeyValues, filesystem, buffer, "GAME" ) )
 	{
 		// if we failed, fall back to the english file
 		Q_snprintf( buffer, sizeof( buffer ), "resource/news/%s_english.txt", pszNewsFile );
-		if ( !m_pKeyValues->LoadFromFile( filesystem, buffer, "GAME" ) )
+		if ( !UTIL_RD_LoadKeyValuesFromFile( m_pKeyValues, filesystem, buffer, "GAME" ) )
 		{
 			DevMsg( 1, "CASW_VGUI_Computer_News::SetLabelsFromFile failed to load %s\n", buffer );
 			return;
 		}
 	}
+
 	// now set our labels from the keyvalues
 	char keybuffer[64];
 	for ( int i = 0; i < 4; i++ )

@@ -1497,45 +1497,466 @@ bool UTIL_ASW_CommanderLevelAtLeast( CASW_Player *pPlayer, int iLevel, int iProm
 	return iLevel <= iActualLevel;
 }
 
-static void LoadKeyValues( KeyValues *pKV, const char *fileName, const char *szPath, CUtlBuffer & buf, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData )
+struct KeyValuesFilePos
 {
-	CUtlBuffer *pBuf = &buf;
-	CUtlBuffer buf2( 0, 0, CUtlBuffer::TEXT_BUFFER );
+	explicit KeyValuesFilePos( const char *szName ) :
+		szName{ szName },
+		nLine{ 1 },
+		nColumn{ 1 },
+		nOffset{ 0 }
+	{
+	}
 
-	buf.EnsureCapacity( buf.TellPut() + 2 );
-	*(char *)buf.PeekPut( 0 ) = 0;
-	*(char *)buf.PeekPut( 1 ) = 0;
+	void Advance( const CUtlBuffer &buf )
+	{
+		const char *sz = static_cast< const char * >( buf.Base() );
+		int nTarget = buf.TellGet();
+		while ( nOffset < nTarget )
+		{
+			char ch = sz[nOffset];
+			if ( ch == '\0' )
+			{
+				return;
+			}
 
-	const wchar_t *pwszBuf = (const wchar_t *)buf.Base();
+			nOffset++;
+			if ( ch == '\n' )
+			{
+				nLine++;
+				nColumn = 1;
+			}
+			else
+			{
+				// This is wrong for non-ASCII UTF-8 characters, but most errors are between the start of a line and the first non-ASCII character.
+				nColumn++;
+			}
+		}
+	}
+
+	const char *szName;
+	int nLine;
+	int nColumn;
+	int nOffset;
+};
+
+static void ReportKeyValuesError( const KeyValuesFilePos &pos, const CUtlVector<KeyValuesFilePos> &tokenStack, const char *szMessage )
+{
+	Warning( "KeyValues error: %s\n\tin %s:%d:%d (byte offset %d)\n", szMessage, pos.szName, pos.nLine, pos.nColumn, pos.nOffset );
+
+	FOR_EACH_VEC( tokenStack, i )
+	{
+		DevWarning( "\t%s (line %d col %d)\n", tokenStack[i].szName, tokenStack[i].nLine, tokenStack[i].nColumn );
+	}
+}
+
+static bool ReadToken( CUtlBuffer &buf, KeyValuesFilePos &pos, const CUtlVector<KeyValuesFilePos> &tokenStack, CUtlCharConversion *pConv, char *szBuf, int nBufLength, bool & bWasQuoted, bool & bWasConditional )
+{
+	bWasQuoted = false;
+	bWasConditional = false;
+
+	do
+	{
+		buf.EatWhiteSpace();
+		if ( !buf.IsValid() )
+		{
+			pos.Advance( buf );
+			return false;
+		}
+	} while ( buf.EatCPPComment() );
+	pos.Advance( buf );
+
+	const char *c = static_cast< const char * >( buf.PeekGet( sizeof( char ), 0 ) );
+	if ( !c || *c == '\0' )
+	{
+		return false;
+	}
+
+	if ( *c == '"' )
+	{
+		int len = buf.PeekDelimitedStringLength( pConv );
+		if ( len >= nBufLength )
+		{
+			ReportKeyValuesError( pos, tokenStack, "token too long" );
+		}
+
+		bWasQuoted = true;
+		buf.GetDelimitedString( pConv, szBuf, nBufLength );
+		return true;
+	}
+
+	if ( *c == '{' || *c == '}' )
+	{
+		Assert( nBufLength >= 2 );
+		szBuf[0] = *c;
+		szBuf[1] = '\0';
+		buf.SeekGet( CUtlBuffer::SEEK_CURRENT, 1 );
+		return szBuf;
+	}
+
+	bool bReportedError = false;
+	bool bConditionalStart = false;
+	int nCount = 0;
+	while ( ( c = static_cast< const char * >( buf.PeekGet( sizeof( char ), 0 ) ) ) != NULL )
+	{
+		// end of file
+		if ( *c == '\0' )
+		{
+			break;
+		}
+
+		// break if any control character appears in non quoted tokens
+		if ( *c == '"' || *c == '{' || *c == '}' )
+		{
+			break;
+		}
+
+		if ( *c == '[' )
+		{
+			bConditionalStart = true;
+		}
+
+		if ( *c == ']' && bConditionalStart )
+		{
+			bWasConditional = true;
+		}
+
+		// break on whitespace
+		if ( *c == ' ' || *c == '\t' || *c == '\n' || *c == '\v' || *c == '\f' || *c == '\r' )
+		{
+			break;
+		}
+
+		if ( nCount < ( nBufLength - 1 ) )
+		{
+			szBuf[nCount++] = *c;	// add char to buffer
+		}
+		else if ( !bReportedError )
+		{
+			bReportedError = true;
+
+			ReportKeyValuesError( pos, tokenStack, "token too long" );
+		}
+
+		buf.SeekGet( CUtlBuffer::SEEK_CURRENT, 1 );
+	}
+
+	szBuf[nCount] = '\0';
+
+	// non-quoted token cannot be both valid and empty
+	return nCount != 0;
+}
+
+static bool LoadKeyValuesRecursive( CUtlBuffer &buf, KeyValuesFilePos &pos, CUtlVector<KeyValuesFilePos> &tokenStack, CUtlCharConversion *pConv, KeyValues *pKV, char *szBuf, int nBufLength )
+{
+	if ( tokenStack.Count() > 100 )
+	{
+		ReportKeyValuesError( pos, tokenStack, "recursion overflow" );
+
+		return false;
+	}
+
+	// Locate the last child.  (Almost always, we will not have any children.)
+	// We maintain the pointer to the last child here, so we don't have to re-locate
+	// it each time we append the next subkey, which causes O(N^2) time
+	KeyValues *pLastChild = pKV->GetFirstSubKey();
+	for ( KeyValues *pNext = pLastChild; pNext; pNext = pNext->GetNextKey() )
+	{
+		pLastChild = pNext;
+	}
+
+#ifdef DBGFLAG_ASSERT
+	int nTokensAtStart = tokenStack.Count();
+#endif
+
+	bool bWasQuoted, bWasConditional;
+	int nLastKeyLine = 0;
+
+	while ( true )
+	{
+		if ( !ReadToken( buf, pos, tokenStack, pConv, szBuf, nBufLength, bWasQuoted, bWasConditional ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected end of file" );
+
+			return false;
+		}
+
+		if ( szBuf[0] == '\0' )
+		{
+			ReportKeyValuesError( pos, tokenStack, "key cannot be empty string" );
+
+			return false;
+		}
+
+		if ( bWasConditional )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected conditional" );
+
+			return false;
+		}
+
+		if ( !bWasQuoted && !V_strcmp( szBuf, "{" ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected {" );
+
+			return false;
+		}
+
+		if ( !bWasQuoted && !V_strcmp( szBuf, "}" ) )
+		{
+			return true;
+		}
+
+		if ( nLastKeyLine == pos.nLine )
+		{
+			DevWarning( "KeyValues warning: last key started on the same line - %s:%d\n", pos.szName, pos.nLine );
+		}
+
+		nLastKeyLine = pos.nLine;
+
+		KeyValues *pChild = new KeyValues{ szBuf };
+		pChild->UsesEscapeSequences( true );
+
+		if ( pLastChild )
+		{
+			Assert( !pLastChild->GetNextKey() );
+			pLastChild->SetNextKey( pChild );
+		}
+		else
+		{
+			Assert( !pKV->GetFirstSubKey() );
+			pKV->AddSubKey( pChild );
+		}
+		pLastChild = pChild;
+
+		tokenStack[tokenStack.AddToTail( pos )].szName = pChild->GetName();
+
+		if ( !ReadToken( buf, pos, tokenStack, pConv, szBuf, nBufLength, bWasQuoted, bWasConditional ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected end of file" );
+
+			return false;
+		}
+
+		if ( bWasConditional )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unimplemented KeyValues feature: conditionals" );
+
+			return false;
+		}
+
+		if ( !bWasQuoted && !V_strcmp( szBuf, "{" ) )
+		{
+			if ( !LoadKeyValuesRecursive( buf, pos, tokenStack, pConv, pChild, szBuf, nBufLength ) )
+			{
+				return false;
+			}
+
+			Assert( tokenStack.Count() == nTokensAtStart + 1 );
+			tokenStack.RemoveMultipleFromTail( 1 );
+
+			continue;
+		}
+
+		if ( !bWasQuoted && !V_strcmp( szBuf, "}" ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected }" );
+
+			return false;
+		}
+
+		// Valve's KeyValues parser determines whether the value is some kind of number at this point,
+		// but we don't care - just throw it in as a string.
+		pChild->SetStringValue( szBuf );
+
+		Assert( tokenStack.Count() == nTokensAtStart + 1 );
+		tokenStack.RemoveMultipleFromTail( 1 );
+	}
+}
+
+static bool LoadKeyValuesFromBuffer( KeyValues *pKV, const char *resourceName, CUtlBuffer &buf )
+{
+	// This truncates values that are more than 1023 bytes long.
+	//return pKV->LoadFromBuffer( resourceName, buf );
+
+	// We have translations that are longer than that, so we need to parse the file ourself.
+	// Luckily, Source SDK 2013 has a public copy of KeyValues.cpp, and it supports values up to 4095 bytes.
+	// Additionally, we don't use #base, #include, or conditionals, so our code can be simpler.
+	// And while we're at it, why not give a little bit better error messages than what KeyValues does by default:
+
+	KeyValues *pCurrentKey = pKV;
+	KeyValues *pPreviousKey = NULL;
+	KeyValuesFilePos pos{ resourceName };
+	CUtlCharConversion *pConv = GetCStringCharConversion();
+	char szBuf[4096]{};
+	CUtlVector<KeyValuesFilePos> tokenStack{};
+	bool bWasQuoted, bWasConditional;
+
+	while ( true )
+	{
+		if ( !ReadToken( buf, pos, tokenStack, pConv, szBuf, sizeof( szBuf ), bWasQuoted, bWasConditional ) )
+		{
+			if ( pPreviousKey )
+			{
+				return true;
+			}
+
+			ReportKeyValuesError( pos, tokenStack, "empty file" );
+
+			return false;
+		}
+
+		if ( szBuf[0] == '\0' )
+		{
+			ReportKeyValuesError( pos, tokenStack, "key cannot be empty string" );
+
+			return false;
+		}
+
+		if ( bWasConditional )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected conditional" );
+
+			return false;
+		}
+
+		if ( !bWasQuoted && ( !V_strcmp( szBuf, "{" ) || !V_strcmp( szBuf, "}" ) ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "file starts with control character" );
+
+			return false;
+		}
+
+		if ( !V_stricmp( szBuf, "#include" ) || !V_stricmp( szBuf, "#base" ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unimplemented KeyValues feature: #include/#base" );
+
+			return false;
+		}
+
+		if ( pCurrentKey )
+		{
+			pCurrentKey->SetName( szBuf );
+		}
+		else
+		{
+			pCurrentKey = new KeyValues{ szBuf };
+			pCurrentKey->UsesEscapeSequences( true );
+
+			if ( pPreviousKey )
+			{
+				pPreviousKey->SetNextKey( pCurrentKey );
+			}
+		}
+
+		Assert( tokenStack.Count() == 0 );
+		tokenStack[tokenStack.AddToTail( pos )].szName = pCurrentKey->GetName();
+
+		if ( !ReadToken( buf, pos, tokenStack, pConv, szBuf, sizeof( szBuf ), bWasQuoted, bWasConditional ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unexpected end of file" );
+
+			return false;
+		}
+
+		bool bAccepted = true;
+		if ( bWasConditional )
+		{
+			ReportKeyValuesError( pos, tokenStack, "unimplemented KeyValues feature: conditionals" );
+
+			return false;
+		}
+
+		if ( bWasQuoted || V_strcmp( szBuf, "{" ) )
+		{
+			ReportKeyValuesError( pos, tokenStack, "expected {" );
+
+			return false;
+		}
+
+		if ( !LoadKeyValuesRecursive( buf, pos, tokenStack, pConv, pCurrentKey, szBuf, sizeof( szBuf ) ) )
+		{
+			return false;
+		}
+
+		Assert( tokenStack.Count() == 1 );
+
+		if ( bAccepted )
+		{
+			pPreviousKey = pCurrentKey;
+			pCurrentKey = NULL;
+		}
+		else
+		{
+			if ( pPreviousKey )
+			{
+				pPreviousKey->SetNextKey( NULL );
+			}
+
+			pCurrentKey->Clear();
+		}
+
+		tokenStack.RemoveMultipleFromTail( 1 );
+	}
+}
+
+bool UTIL_RD_LoadKeyValues( KeyValues *pKV, const char *resourceName, const CUtlBuffer &buf )
+{
+	const wchar_t *pwszBuf = static_cast< const wchar_t * >( buf.Base() );
 	if ( buf.TellPut() >= sizeof( wchar_t ) && *pwszBuf == 0xFEFF )
 	{
 		// File starts with a byte order mark. Convert it from UTF-16LE to UTF-8.
 
 		// We don't have a function in this version of the Source Engine to tell us how
 		// many bytes of UTF8 data there are in a UTF16 string, so just assume the worst.
-		buf2.EnsureCapacity( buf.TellPut() * 2 );
+		//
+		// Additionally, we don't know that the buffer we received is null-terminated
+		// (it likely isn't), so we need to copy the buffer multiple times to get this right.
+		CUtlBuffer buf2{};
+		buf2.EnsureCapacity( buf.TellPut() );
+		buf2.Put( pwszBuf + 1, buf.TellPut() - sizeof( wchar_t ) );
+		buf2.Put( L"", sizeof( wchar_t ) );
 
-		char *pszBuf = (char *)buf2.Base();
+		// Now that we have a null-terminated UTF-16LE buffer, convert it to UTF-8.
+		CUtlBuffer buf3{ 0, buf.TellPut() * 2, CUtlBuffer::TEXT_BUFFER };
+		char *pszBuf = static_cast< char * >( buf3.Base() );
+		V_UnicodeToUTF8( static_cast< const wchar_t * >( buf2.Base() ), pszBuf, buf3.Size() );
+		buf3.SeekPut( CUtlBuffer::SEEK_HEAD, V_strlen( pszBuf ) );
 
-		// This function is supposed to return the number of bytes written, but it doesn't.
-		V_UnicodeToUTF8( pwszBuf + 1, pszBuf, buf2.Size() );
-		buf2.SeekPut( CUtlBuffer::SEEK_HEAD, V_strlen( pszBuf ) );
-
-		pBuf = &buf2;
+		return LoadKeyValuesFromBuffer( pKV, resourceName, buf3 );
 	}
-	else if ( buf.TellPut() >= 3 && !V_strncmp( (const char *)buf.Base(), "\xEF\xBB\xBF", 3 ) )
+
+	const char *pszBuf = static_cast< const char * >( buf.Base() );
+	if ( buf.TellPut() >= 3 && !V_strncmp( pszBuf, "\xEF\xBB\xBF", 3 ) )
 	{
 		// We've got a byte order mark in UTF-8. KeyValues will get confused by this.
-		buf.SeekGet( CUtlBuffer::SEEK_HEAD, 3 );
+		CUtlBuffer buf2{ pszBuf + 3, buf.Size() - 3, CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
+		return LoadKeyValuesFromBuffer( pKV, resourceName, buf2 );
 	}
 
-	CUtlString fullFileName = CUtlString::PathJoin( szPath, fileName );
+	// Use the buffer as-is.
+	CUtlBuffer buf2{ buf.Base(), buf.Size(), CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
+	return LoadKeyValuesFromBuffer( pKV, resourceName, buf2 );
+}
 
-	pKV->Clear();
-	if ( pKV->LoadFromBuffer( fullFileName.Get(), *pBuf, g_pFullFileSystem ) )
+bool UTIL_RD_LoadKeyValuesFromFile( KeyValues *pKV, IFileSystem *pFileSystem, const char *szFileName, const char *szPath )
+{
+	// g_pFullFileSystem->ReadFile doesn't move the PUT pointer to the right place,
+	// so we're implementing our own.
+
+	if ( FileHandle_t hFile = pFileSystem->Open( szFileName, "rb", szPath ) )
 	{
-		callback( szPath, pKV, pUserData );
+		int nBytes = pFileSystem->Size( hFile );
+
+		CUtlBuffer buf{ 0, nBytes, CUtlBuffer::TEXT_BUFFER };
+		g_pFullFileSystem->Read( buf.Base(), nBytes, hFile );
+		buf.SeekPut( CUtlBuffer::SEEK_HEAD, nBytes );
+
+		g_pFullFileSystem->Close( hFile );
+
+		return UTIL_RD_LoadKeyValues( pKV, szFileName, buf );
 	}
+
+	return false;
 }
 
 void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const char *pKVName, UTIL_RD_LoadAllKeyValuesCallback callback, void *pUserData )
@@ -1549,22 +1970,12 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 
 		FOR_EACH_VEC( paths, i )
 		{
-			CUtlString path = CUtlString::PathJoin( paths[i].Get(), fileName );
+			CUtlString path = CUtlString::PathJoin( paths[i], fileName );
 
-			// g_pFullFileSystem->ReadFile doesn't move the PUT pointer to the right place,
-			// so we're implementing our own.
-
-			if ( FileHandle_t hFile = g_pFullFileSystem->Open( path.Get(), "rb", NULL ) )
+			pKV->Clear();
+			if ( UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, path, NULL ) )
 			{
-				unsigned int nBytes = g_pFullFileSystem->Size( hFile );
-
-				CUtlBuffer buf( 0, nBytes, CUtlBuffer::TEXT_BUFFER );
-				g_pFullFileSystem->Read( buf.Base(), nBytes, hFile );
-				buf.SeekPut( CUtlBuffer::SEEK_HEAD, nBytes );
-
-				g_pFullFileSystem->Close( hFile );
-
-				LoadKeyValues( pKV, fileName, paths[i].Get(), buf, callback, pUserData );
+				callback( paths[i], pKV, pUserData );
 			}
 		}
 	}
@@ -1575,7 +1986,7 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 
 		FOR_EACH_VEC( vpks, i )
 		{
-			CPackedStore vpk( vpks[i].Get(), g_pFullFileSystem );
+			CPackedStore vpk( vpks[i], g_pFullFileSystem );
 
 			if ( CPackedStoreFileHandle hFile = vpk.OpenFile( fileName ) )
 			{
@@ -1583,7 +1994,12 @@ void UTIL_RD_LoadAllKeyValues( const char *fileName, const char *pPathID, const 
 				hFile.Read( buf.Base(), buf.Size() );
 				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hFile.m_nFileSize );
 
-				LoadKeyValues( pKV, fileName, vpks[i].Get(), buf, callback, pUserData );
+				CUtlString fullFileName = CUtlString::PathJoin( vpks[i], fileName );
+				pKV->Clear();
+				if ( UTIL_RD_LoadKeyValues( pKV, fullFileName, buf ) )
+				{
+					callback( vpks[i], pKV, pUserData );
+				}
 			}
 		}
 	}

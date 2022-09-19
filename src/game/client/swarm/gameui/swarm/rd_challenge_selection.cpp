@@ -356,11 +356,11 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	if ( item.details.m_nPublishedFileId )
 	{
 		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
-		wchar_t wszName[k_cwchPersonaNameMax];
-		Q_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
+		wchar_t wszAuthorName[k_cwchPersonaNameMax];
+		Q_UTF8ToUnicode( szName, wszAuthorName, sizeof( wszAuthorName ) );
 
 		wchar_t wszAuthor[256];
-		g_pVGuiLocalize->ConstructString( wszAuthor, sizeof( wszAuthor ), g_pVGuiLocalize->FindSafe( "#rd_challenge_selection_author" ), 1, wszName );
+		g_pVGuiLocalize->ConstructString( wszAuthor, sizeof( wszAuthor ), g_pVGuiLocalize->FindSafe( "#rd_challenge_selection_author" ), 1, wszAuthorName );
 
 		m_lblAuthor->SetText( wszAuthor );
 		m_lblAuthor->SetVisible( true );

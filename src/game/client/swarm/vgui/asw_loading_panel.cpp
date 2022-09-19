@@ -21,7 +21,7 @@
 #include <game/client/iviewport.h>
 #include "asw_loading_panel.h"
 #include "filesystem.h"
-
+#include "asw_util_shared.h"
 #include <convar.h>
 #include "fmtstr.h"
 
@@ -206,7 +206,7 @@ void CASW_Loading_Panel::SetLoadingMapName( const char *szMapName )
 	char szLayoutFilename[MAX_PATH];	
 	Q_snprintf( szLayoutFilename, sizeof( szLayoutFilename ), "maps/%s.layout", szStrippedFilename );
 	KeyValues *pLayoutKeys = new KeyValues( "MapLayout" );
-	if ( !pLayoutKeys->LoadFromFile( g_pFullFileSystem, szLayoutFilename, "GAME" ) )
+	if ( !UTIL_RD_LoadKeyValuesFromFile( pLayoutKeys, g_pFullFileSystem, szLayoutFilename, "GAME" ) )
 	{
 		pLayoutKeys->deleteThis();
 		return;
