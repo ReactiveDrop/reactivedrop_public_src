@@ -48,7 +48,10 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 static ConVar sv_mapspawn_nut_exec( "sv_mapspawn_nut_exec", "0", FCVAR_NONE, "If set to 1, server will execute scripts/vscripts/mapspawn.nut file" );
 extern char *s_ElementNames[MAX_ARRAY_ELEMENTS];
 
-//static char COLOR_INPUTCUSTOMCOL = '\x08';
+constexpr int CLAMP_COLOR(int value)
+{
+	return value < 0 ? 0 : value > 255 ? 255 : value;
+}
 
 //-----------------------------------------------------------------------------
 // Iterate through keys in a table and assign KeyValues on entity for spawn
@@ -1208,32 +1211,9 @@ static void Script_Say( HSCRIPT hPlayer, const char *pText )
 static ScriptVariant_t Script_TextColor(int R, int G, int B)
 {
 	//Force channel ranges between 0 - 255
-	if (R > 255)
-	{
-		R = 255;
-	}
-	else if (R < 0)
-	{
-		R = 0;
-	}
-
-	if (G > 255)
-	{
-		G = 255;
-	}
-	else if (G < 0)
-	{
-		G = 0;
-	}
-
-	if (B > 255)
-	{
-		B = 255;
-	}
-	else if (B < 0)
-	{
-		B = 0;
-	}
+	R = CLAMP_COLOR(R);
+	G = CLAMP_COLOR(G);
+	B = CLAMP_COLOR(B);
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R = R / 255.0f;
@@ -1241,7 +1221,7 @@ static ScriptVariant_t Script_TextColor(int R, int G, int B)
 	float outputMod_B = B / 255.0f;
 
 	char outputChars[5]{};
-	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
 	outputChars[1] = (char)( 32 + ( outputMod_R * 94 ) );
 	outputChars[2] = (char)( 32 + ( outputMod_G * 94 ) );
@@ -1253,59 +1233,13 @@ static ScriptVariant_t Script_TextColor(int R, int G, int B)
 static ScriptVariant_t Script_TextColorBlend(int R1, int G1, int B1, int R2, int G2, int B2)
 {
 	//Force channel ranges between 0 - 255
-	if (R1 > 255)
-	{
-		R1 = 255;
-	}
-	else if (R1 < 0)
-	{
-		R1 = 0;
-	}
+	R1 = CLAMP_COLOR(R1);
+	G1 = CLAMP_COLOR(G1);
+	B1 = CLAMP_COLOR(B1);
 
-	if (G1 > 255)
-	{
-		G1 = 255;
-	}
-	else if (G1 < 0)
-	{
-		G1 = 0;
-	}
-
-	if (B1 > 255)
-	{
-		B1 = 255;
-	}
-	else if (B1 < 0)
-	{
-		B1 = 0;
-	}
-
-	if (R2 > 255)
-	{
-		R2 = 255;
-	}
-	else if (R2 < 0)
-	{
-		R2 = 0;
-	}
-
-	if (G2 > 255)
-	{
-		G2 = 255;
-	}
-	else if (G2 < 0)
-	{
-		G2 = 0;
-	}
-
-	if (B2 > 255)
-	{
-		B2 = 255;
-	}
-	else if (B2 < 0)
-	{
-		B2 = 0;
-	}
+	R2 = CLAMP_COLOR(R2);
+	G2 = CLAMP_COLOR(G2);
+	B2 = CLAMP_COLOR(B2);
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R1 = R1 / 255.0f;
@@ -1317,8 +1251,8 @@ static ScriptVariant_t Script_TextColorBlend(int R1, int G1, int B1, int R2, int
 	float outputMod_B2 = B2 / 255.0f;
 
 	char outputChars[10]{};
-	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
-	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
+	outputChars[1] = COLOR_INPUTCUSTOMCOL;
 	outputChars[2] = BLEND_NORMAL;
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
 	outputChars[3] = (char)(32 + (outputMod_R1 * 94));
@@ -1335,59 +1269,13 @@ static ScriptVariant_t Script_TextColorBlend(int R1, int G1, int B1, int R2, int
 static ScriptVariant_t Script_TextColorBlendCycle(int iBlendLength, int R1, int G1, int B1, int R2, int G2, int B2)
 {
 	//Force channel ranges between 0 - 255
-	if (R1 > 255)
-	{
-		R1 = 255;
-	}
-	else if (R1 < 0)
-	{
-		R1 = 0;
-	}
+	R1 = CLAMP_COLOR(R1);
+	G1 = CLAMP_COLOR(G1);
+	B1 = CLAMP_COLOR(B1);
 
-	if (G1 > 255)
-	{
-		G1 = 255;
-	}
-	else if (G1 < 0)
-	{
-		G1 = 0;
-	}
-
-	if (B1 > 255)
-	{
-		B1 = 255;
-	}
-	else if (B1 < 0)
-	{
-		B1 = 0;
-	}
-
-	if (R2 > 255)
-	{
-		R2 = 255;
-	}
-	else if (R2 < 0)
-	{
-		R2 = 0;
-	}
-
-	if (G2 > 255)
-	{
-		G2 = 255;
-	}
-	else if (G2 < 0)
-	{
-		G2 = 0;
-	}
-
-	if (B2 > 255)
-	{
-		B2 = 255;
-	}
-	else if (B2 < 0)
-	{
-		B2 = 0;
-	}
+	R2 = CLAMP_COLOR(R2);
+	G2 = CLAMP_COLOR(G2);
+	B2 = CLAMP_COLOR(B2);
 
 	if (iBlendLength > 96)
 	{
@@ -1398,9 +1286,7 @@ static ScriptVariant_t Script_TextColorBlendCycle(int iBlendLength, int R1, int 
 		iBlendLength = 2;
 	}
 
-	iBlendLength -= 2;
-
-	//iBlendLength -= 2; //align offset
+	iBlendLength -= 2; //Align offset
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R1 = R1 / 255.0f;
@@ -1412,8 +1298,8 @@ static ScriptVariant_t Script_TextColorBlendCycle(int iBlendLength, int R1, int 
 	float outputMod_B2 = B2 / 255.0f;
 
 	char outputChars[11]{};
-	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
-	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
+	outputChars[1] = COLOR_INPUTCUSTOMCOL;
 	outputChars[2] = BLEND_CYCLE;
 	outputChars[3] = iBlendLength + 32;
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
@@ -1431,59 +1317,13 @@ static ScriptVariant_t Script_TextColorBlendCycle(int iBlendLength, int R1, int 
 static ScriptVariant_t Script_TextColorBlendSmoothCycle(int iBlendLength, int R1, int G1, int B1, int R2, int G2, int B2)
 {
 	//Force channel ranges between 0 - 255
-	if (R1 > 255)
-	{
-		R1 = 255;
-	}
-	else if (R1 < 0)
-	{
-		R1 = 0;
-	}
+	R1 = CLAMP_COLOR(R1);
+	G1 = CLAMP_COLOR(G1);
+	B1 = CLAMP_COLOR(B1);
 
-	if (G1 > 255)
-	{
-		G1 = 255;
-	}
-	else if (G1 < 0)
-	{
-		G1 = 0;
-	}
-
-	if (B1 > 255)
-	{
-		B1 = 255;
-	}
-	else if (B1 < 0)
-	{
-		B1 = 0;
-	}
-
-	if (R2 > 255)
-	{
-		R2 = 255;
-	}
-	else if (R2 < 0)
-	{
-		R2 = 0;
-	}
-
-	if (G2 > 255)
-	{
-		G2 = 255;
-	}
-	else if (G2 < 0)
-	{
-		G2 = 0;
-	}
-
-	if (B2 > 255)
-	{
-		B2 = 255;
-	}
-	else if (B2 < 0)
-	{
-		B2 = 0;
-	}
+	R2 = CLAMP_COLOR(R2);
+	G2 = CLAMP_COLOR(G2);
+	B2 = CLAMP_COLOR(B2);
 
 	if (iBlendLength > 96)
 	{
@@ -1494,9 +1334,7 @@ static ScriptVariant_t Script_TextColorBlendSmoothCycle(int iBlendLength, int R1
 		iBlendLength = 2;
 	}
 
-	iBlendLength -= 2;
-
-	//iBlendLength -= 2; //align offset
+	iBlendLength -= 2; //align offset
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R1 = R1 / 255.0f;
@@ -1508,8 +1346,8 @@ static ScriptVariant_t Script_TextColorBlendSmoothCycle(int iBlendLength, int R1
 	float outputMod_B2 = B2 / 255.0f;
 
 	char outputChars[11]{};
-	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
-	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
+	outputChars[1] = COLOR_INPUTCUSTOMCOL;
 	outputChars[2] = BLEND_SMOOTHCYCLE;
 	outputChars[3] = iBlendLength + 32;
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
@@ -1527,32 +1365,9 @@ static ScriptVariant_t Script_TextColorBlendSmoothCycle(int iBlendLength, int R1
 static ScriptVariant_t Script_TextColorBlendInvert(int R1, int G1, int B1)
 {
 	//Force channel ranges between 0 - 255
-	if (R1 > 255)
-	{
-		R1 = 255;
-	}
-	else if (R1 < 0)
-	{
-		R1 = 0;
-	}
-
-	if (G1 > 255)
-	{
-		G1 = 255;
-	}
-	else if (G1 < 0)
-	{
-		G1 = 0;
-	}
-
-	if (B1 > 255)
-	{
-		B1 = 255;
-	}
-	else if (B1 < 0)
-	{
-		B1 = 0;
-	}
+	R1 = CLAMP_COLOR(R1);
+	G1 = CLAMP_COLOR(G1);
+	B1 = CLAMP_COLOR(B1);
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R1 = R1 / 255.0f;
@@ -1574,86 +1389,17 @@ static ScriptVariant_t Script_TextColorBlendInvert(int R1, int G1, int B1)
 static ScriptVariant_t Script_TextColorBlend3(int R1, int G1, int B1, int R2, int G2, int B2, int R3, int G3, int B3)
 {
 	//Force channel ranges between 0 - 255
-	if (R1 > 255)
-	{
-		R1 = 255;
-	}
-	else if (R1 < 0)
-	{
-		R1 = 0;
-	}
+	R1 = CLAMP_COLOR(R1);
+	G1 = CLAMP_COLOR(G1);
+	B1 = CLAMP_COLOR(B1);
 
-	if (G1 > 255)
-	{
-		G1 = 255;
-	}
-	else if (G1 < 0)
-	{
-		G1 = 0;
-	}
+	R2 = CLAMP_COLOR(R2);
+	G2 = CLAMP_COLOR(G2);
+	B2 = CLAMP_COLOR(B2);
 
-	if (B1 > 255)
-	{
-		B1 = 255;
-	}
-	else if (B1 < 0)
-	{
-		B1 = 0;
-	}
-
-	if (R2 > 255)
-	{
-		R2 = 255;
-	}
-	else if (R2 < 0)
-	{
-		R2 = 0;
-	}
-
-	if (G2 > 255)
-	{
-		G2 = 255;
-	}
-	else if (G2 < 0)
-	{
-		G2 = 0;
-	}
-
-	if (B2 > 255)
-	{
-		B2 = 255;
-	}
-	else if (B2 < 0)
-	{
-		B2 = 0;
-	}
-
-	if (R3 > 255)
-	{
-		R3 = 255;
-	}
-	else if (R3 < 0)
-	{
-		R3 = 0;
-	}
-
-	if (G3 > 255)
-	{
-		G3 = 255;
-	}
-	else if (G3 < 0)
-	{
-		G3 = 0;
-	}
-
-	if (B3 > 255)
-	{
-		B3 = 255;
-	}
-	else if (B3 < 0)
-	{
-		B3 = 0;
-	}
+	R3 = CLAMP_COLOR(R3);
+	G3 = CLAMP_COLOR(G3);
+	B3 = CLAMP_COLOR(B3);
 
 	//create float modifiers at range 0 - 255 for conversion output
 	float outputMod_R1 = R1 / 255.0f;
@@ -1669,8 +1415,8 @@ static ScriptVariant_t Script_TextColorBlend3(int R1, int G1, int B1, int R2, in
 	float outputMod_B3 = B3 / 255.0f;
 
 	char outputChars[13]{};
-	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
-	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
+	outputChars[1] = COLOR_INPUTCUSTOMCOL;
 	outputChars[2] = BLEND_3COLOR;
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
 	outputChars[3] = (char)(32 + (outputMod_R1 * 94));
