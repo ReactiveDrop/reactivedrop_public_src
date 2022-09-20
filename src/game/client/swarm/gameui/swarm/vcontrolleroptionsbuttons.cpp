@@ -230,7 +230,7 @@ void ControllerOptionsButtons::RecalculateBindingLabels( void )
 		if ( !pBinding )
 		{
 			// key is not bound to anything
-			pContainer->SetControlString( sControllerBindings[i].m_pszLabelName, L"<Not Bound>" );
+			pContainer->SetControlString( sControllerBindings[i].m_pszLabelName, "#GameUI_KeyNames_Not_Bound" );
 			continue;
 		}
 

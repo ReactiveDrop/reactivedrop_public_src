@@ -1727,7 +1727,7 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 			char szBinding[ 128 ];
 			Q_snprintf( szBinding, sizeof( szBinding ), "asw_squad_hotbar %d", nPosition + 1 );
 			const char *pszKey = ASW_FindKeyBoundTo( szBinding );
-			if ( !V_strcmp( pszKey, "<NOT BOUND>" ) )
+			if ( !V_strcmp( pszKey, "#GameUI_KeyNames_Not_Bound_CAPS" ) )
 				pszKey = "";
 			
  			char szKey[ 12 ];

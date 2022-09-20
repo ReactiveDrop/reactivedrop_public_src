@@ -1416,7 +1416,7 @@ const char* ASW_FindKeyBoundTo(const char *binding)
 	const char* pKeyText = engine->Key_LookupBindingEx( binding, -1, 0, ASWInput()->ControllerModeActive() );
 	if ( !pKeyText )
 	{
-		return "<NOT BOUND>";
+		return "#GameUI_KeyNames_Not_Bound_CAPS";
 	}
 	return MakeHumanReadable(pKeyText);
 }

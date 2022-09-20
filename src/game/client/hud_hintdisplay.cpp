@@ -582,7 +582,7 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 				const char *key = engine->Key_LookupBinding( *binding == '+' ? binding + 1 : binding );
 				if ( !key )
 				{
-					key = "< not bound >";
+					key = "#GameUI_KeyNames_Not_Nound_lowercase";
 				}
 
 				Q_snprintf( friendlyName, sizeof(friendlyName), "#%s", key );

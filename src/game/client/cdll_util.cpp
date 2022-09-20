@@ -830,7 +830,7 @@ void UTIL_ReplaceKeyBindings( const wchar_t *inbuf, int inbufsizebytes, wchar_t 
 				const char *key = engine->Key_LookupBindingEx( *binding == '+' ? binding + 1 : binding, nSlot );
 				if ( !key )
 				{
-					key = IsX360() ? "" : "< not bound >";
+					key = IsX360() ? "" : "#GameUI_KeyNames_Not_Nound_lowercase";
 				}
 
 				//!! change some key names into better names
@@ -1335,7 +1335,7 @@ wchar_t *UTIL_GetLocalizedKeyString( const char *command, const char *fmt, const
 	const char *lowercaseKey = engine->Key_LookupBinding( command );
 	if ( !lowercaseKey )
 	{
-		lowercaseKey = "<NOT BOUND>";
+		lowercaseKey = "#GameUI_KeyNames_Not_Bound_CAPS";
 	}
 
 	char szKey[64];
