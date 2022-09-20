@@ -459,18 +459,17 @@ void CASW_HUD_Use_Icon::SetUseAction(ASWUseAction &action)
 
 void CASW_HUD_Use_Icon::FindUseKeyBind()
 {
-	char szOldKey[12];
-	Q_snprintf(szOldKey, sizeof(szOldKey), "%s", m_szUseKeyText);
+	char szOldKey[128];
+	Q_snprintf( szOldKey, sizeof( szOldKey ), "%s", m_szUseKeyText );
 
-	char *pchCommand = "+use";
-	if ( m_CurrentAction.szCommand[ 0 ] )
+	const char *pchCommand = "+use";
+	if ( m_CurrentAction.szCommand[0] )
 	{
 		pchCommand = m_CurrentAction.szCommand;
 	}
 
-	Q_snprintf(m_szUseKeyText, sizeof(m_szUseKeyText), "%s", ASW_FindKeyBoundTo( pchCommand ));
-	Q_strupr(m_szUseKeyText);
-	if ( Q_stricmp( m_szUseKeyText, szOldKey) )
+	V_snprintf( m_szUseKeyText, sizeof( m_szUseKeyText ), "%s", ASW_FindKeyBoundTo( pchCommand ) );
+	if ( V_stricmp( m_szUseKeyText, szOldKey ) )
 	{
 		ClearUseAction();
 		m_pBindPanel->SetBind( pchCommand );

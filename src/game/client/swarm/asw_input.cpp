@@ -79,78 +79,62 @@ CASWInput *ASWInput()
 
 void GetVGUICursorPos( int& x, int& y );
 
-#define ASW_NUM_HUMAN_READABLE 5
-static char const *s_HumanKeynames[ASW_NUM_HUMAN_READABLE][2]={
-	{"MWHEELUP", "#asw_mouse_wheel_up"},
-	{"MWHEELDOWN", "#asw_mouse_wheel_down"},
-	{"MOUSE1", "#asw_mouse1"},
-	{"MOUSE2", "#asw_mouse2"},
-	{"MOUSE3", "#asw_mouse3"},
+static char const *s_HumanKeynames[][2] =
+{
+	{ "MWHEELUP", "#asw_mouse_wheel_up" },
+	{ "MWHEELDOWN", "#asw_mouse_wheel_down" },
+	{ "MOUSE1", "#asw_mouse1" },
+	{ "MOUSE2", "#asw_mouse2" },
+	{ "MOUSE3", "#asw_mouse3" },
+	{ "JOY1", "#asw_360_a" },
+	{ "JOY2", "#asw_360_b" },
+	{ "JOY3", "#asw_360_x" },
+	{ "JOY4", "#asw_360_y" },
+	{ "AUX5", "#asw_360_left_bumper" },
+	{ "AUX6", "#asw_360_right_bumper" },
+	{ "AUX7", "#asw_360_back" },
+	{ "AUX8", "#asw_360_start" },
+	{ "AUX9", "#asw_360_left_stick_in" },
+	{ "AUX10", "#asw_360_right_stick_in" },
+	{ "AUX29", "#asw_360_dpad_up" },
+	{ "AUX30", "#asw_360_dpad_right" },
+	{ "AUX31", "#asw_360_dpad_down" },
+	{ "AUX32", "#asw_360_dpad_left" },
+	{ "Z AXIS NEG", "#asw_360_right_trigger" },
+	{ "Z AXIS POS", "#asw_360_left_trigger" },
+	{ "X AXIS POS", "#asw_360_left_stick_right" },
+	{ "X AXIS NEG", "#asw_360_left_stick_left" },
+	{ "Y AXIS POS", "#asw_360_left_stick_down" },
+	{ "Y AXIS NEG", "#asw_360_left_stick_up" },
+	{ "U AXIS POS", "#asw_360_right_stick_right" },
+	{ "U AXIS NEG", "#asw_360_right_stick_left" },
+	{ "R AXIS POS", "#asw_360_right_stick_down" },
+	{ "R AXIS NEG", "#asw_360_right_stick_up" },
+	{ "A_BUTTON", "#asw_360_a" },
+	{ "B_BUTTON", "#asw_360_b" },
+	{ "X_BUTTON", "#asw_360_x" },
+	{ "Y_BUTTON", "#asw_360_y" },
+	{ "L_SHOULDER", "#asw_360_left_bumper" },
+	{ "R_SHOULDER", "#asw_360_right_bumper" },
+	{ "BACK", "#asw_360_back" },
+	{ "START", "#asw_360_start" },
+	{ "STICK1", "#asw_360_left_stick_in" },
+	{ "STICK2", "#asw_360_right_stick_in" },
+	{ "UP", "#asw_360_dpad_up" },
+	{ "RIGHT", "#asw_360_dpad_right" },
+	{ "DOWN", "#asw_360_dpad_down" },
+	{ "LEFT", "#asw_360_dpad_left" },
+	{ "R_TRIGGER", "#asw_360_right_trigger" },
+	{ "L_TRIGGER", "#asw_360_left_trigger" },
+	{ "S1_RIGHT", "#asw_360_left_stick_right" },
+	{ "S1_LEFT", "#asw_360_left_stick_left" },
+	{ "S1_DOWN", "#asw_360_left_stick_down" },
+	{ "S1_UP", "#asw_360_left_stick_up" },
+	{ "S2_RIGHT", "#asw_360_right_stick_right" },
+	{ "S2_LEFT", "#asw_360_right_stick_left" },
+	{ "S2_DOWN", "#asw_360_right_stick_down" },
+	{ "S2_UP", "#asw_360_right_stick_up" },
 };
-
-#ifdef _X360
-
-// human readable names for xbox 360 controller buttons on Xbox360
-#define ASW_NUM_360_READABLE 24
-static char const *s_360Keynames[ASW_NUM_360_READABLE][2]={
-	{"A_BUTTON", "#asw_360_a"},
-	{"B_BUTTON", "#asw_360_b"},
-	{"X_BUTTON", "#asw_360_x"},
-	{"Y_BUTTON", "#asw_360_y"},
-	{"L_SHOULDER", "#asw_360_left_bumper"},
-	{"R_SHOULDER", "#asw_360_right_bumper"},
-	{"BACK", "#asw_360_back"},
-	{"START", "#asw_360_start"},
-	{"STICK1", "#asw_360_left_stick_in"},
-	{"STICK2", "#asw_360_right_stick_in"},
-	{"UP", "#asw_360_dpad_up"},
-	{"RIGHT", "#asw_360_dpad_right"},
-	{"DOWN", "#asw_360_dpad_down"},
-	{"LEFT", "#asw_360_dpad_left"},
-	{"R_TRIGGER", "#asw_360_right_trigger"},
-	{"L_TRIGGER", "#asw_360_left_trigger"},
-	{"S1_RIGHT", "#asw_360_left_stick_right"},
-	{"S1_LEFT", "#asw_360_left_stick_left"},
-	{"S1_DOWN", "#asw_360_left_stick_down"},
-	{"S1_UP", "#asw_360_left_stick_up"},
-	{"S2_RIGHT", "#asw_360_right_stick_right"},
-	{"S2_LEFT", "#asw_360_right_stick_left"},
-	{"S2_DOWN", "#asw_360_right_stick_down"},
-	{"S2_UP", "#asw_360_right_stick_up"},
-};
-
-#else // !_X360
-
-// human readable names for xbox 360 controller buttons under windows
-#define ASW_NUM_360_READABLE 24
-static char const *s_360Keynames[ASW_NUM_360_READABLE][2]={
-	{"JOY1", "#asw_360_a"},
-	{"JOY2", "#asw_360_b"},
-	{"JOY3", "#asw_360_x"},
-	{"JOY4", "#asw_360_y"},
-	{"AUX5", "#asw_360_left_bumper"},
-	{"AUX6", "#asw_360_right_bumper"},
-	{"AUX7", "#asw_360_back"},
-	{"AUX8", "#asw_360_start"},
-	{"AUX9", "#asw_360_left_stick_in"},
-	{"AUX10", "#asw_360_right_stick_in"},
-	{"AUX29", "#asw_360_dpad_up"},
-	{"AUX30", "#asw_360_dpad_right"},
-	{"AUX31", "#asw_360_dpad_down"},
-	{"AUX32", "#asw_360_dpad_left"},
-	{"Z AXIS NEG", "#asw_360_right_trigger"},
-	{"Z AXIS POS", "#asw_360_left_trigger"},
-	{"X AXIS POS", "#asw_360_left_stick_right"},
-	{"X AXIS NEG", "#asw_360_left_stick_left"},
-	{"Y AXIS POS", "#asw_360_left_stick_down"},
-	{"Y AXIS NEG", "#asw_360_left_stick_up"},
-	{"U AXIS POS", "#asw_360_right_stick_right"},
-	{"U AXIS NEG", "#asw_360_right_stick_left"},
-	{"R AXIS POS", "#asw_360_right_stick_down"},
-	{"R AXIS NEG", "#asw_360_right_stick_up"},
-};
-
-#endif
 
 #define ASW_NUM_STORES 25
 static float StoreAlienPosX[ASW_NUM_STORES];
@@ -1411,38 +1395,27 @@ void ASW_UpdateControllerCodes()
 }
 
 
-const char* ASW_FindKeyBoundTo(const char *binding)
+const char *ASW_FindKeyBoundTo( const char *binding )
 {
-	const char* pKeyText = engine->Key_LookupBindingEx( binding, -1, 0, ASWInput()->ControllerModeActive() );
+	const char *pKeyText = engine->Key_LookupBindingEx( binding, -1, 0, ASWInput()->ControllerModeActive() );
 	if ( !pKeyText )
 	{
-		return "<NOT BOUND>";
+		return "#GameUI_KeyNames_Not_Bound";
 	}
-	return MakeHumanReadable(pKeyText);
+
+	return MakeHumanReadable( pKeyText );
 }
 
-const char* MakeHumanReadable(const char *key)
+const char *MakeHumanReadable( const char *key )
 {
-	if ( ASWInput()->ControllerModeActive() )
+	for ( int i = 0; i < NELEMS( s_HumanKeynames ); i++ )
 	{
-		for (int i=0;i<ASW_NUM_360_READABLE;i++)
-		{
-			if (!Q_stricmp(s_360Keynames[i][0], key))
-			{
-				return s_360Keynames[i][1];
-			}
-		}
-	}	
-	for (int i=0;i<ASW_NUM_HUMAN_READABLE;i++)
-	{
-		if (!Q_stricmp(s_HumanKeynames[i][0], key))
+		if ( !V_stricmp( s_HumanKeynames[i][0], key ) )
 		{
 			return s_HumanKeynames[i][1];
 		}
 	}
-	char friendlyName[64];
-	Q_snprintf( friendlyName, sizeof(friendlyName), "#%s", key );
-	Q_strupr( friendlyName );
+
 	return key;
 }
 

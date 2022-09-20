@@ -213,12 +213,12 @@ void ControllerOptionsButtons::RecalculateBindingLabels( void )
 {
 	// Populate the bindings labels with the currently bound keys
 
-	EditablePanel *pContainer = dynamic_cast<EditablePanel *>( FindChildByName( "LabelContainer" ) );
+	EditablePanel *pContainer = dynamic_cast< EditablePanel * >( FindChildByName( "LabelContainer" ) );
 	if ( !pContainer )
 		return;
 
 	// for every button on the controller
-	for ( int i=0;i<sizeof(sControllerBindings) / sizeof( ControllerBindingMap );i++ )
+	for ( int i = 0; i < sizeof( sControllerBindings ) / sizeof( ControllerBindingMap ); i++ )
 	{
 		// what is it bound to?
 		vgui::KeyCode code = sControllerBindings[i].m_keyCode;
@@ -230,14 +230,14 @@ void ControllerOptionsButtons::RecalculateBindingLabels( void )
 		if ( !pBinding )
 		{
 			// key is not bound to anything
-			pContainer->SetControlString( sControllerBindings[i].m_pszLabelName, L"<Not Bound>" );
+			pContainer->SetControlString( sControllerBindings[i].m_pszLabelName, "#GameUI_KeyNames_Not_Bound" );
 			continue;
 		}
 
 		// find the localized string for this binding and set the label text
-		for( int j=0;j<sizeof( sBindingToDisplay ) / sizeof( BindingDisplayMap );j++ )
+		for ( int j = 0; j < sizeof( sBindingToDisplay ) / sizeof( BindingDisplayMap ); j++ )
 		{
-			const BindingDisplayMap *entry =  &( sBindingToDisplay[ j ] );
+			const BindingDisplayMap *entry = &( sBindingToDisplay[j] );
 
 			if ( Q_strstr( pBinding, entry->pszBinding ) )
 			{
