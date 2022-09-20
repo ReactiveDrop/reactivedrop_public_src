@@ -830,7 +830,7 @@ void UTIL_ReplaceKeyBindings( const wchar_t *inbuf, int inbufsizebytes, wchar_t 
 				const char *key = engine->Key_LookupBindingEx( *binding == '+' ? binding + 1 : binding, nSlot );
 				if ( !key )
 				{
-					key = IsX360() ? "" : "#GameUI_KeyNames_Not_Nound_lowercase";
+					key = IsX360() ? "" : "#GameUI_KeyNames_Not_Bound_lowercase";
 				}
 
 				//!! change some key names into better names
