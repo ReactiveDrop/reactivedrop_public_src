@@ -1922,14 +1922,6 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 						range.color = Color(redChan, greenChan, blueChan, 255);
 						range.end = range.start + endIndexPos;
 
-						/*
-						int count = m_textRanges.Count();
-						if (count)
-						{
-							m_textRanges[count - 1].end = range.start;
-						}
-						*/
-
 						m_textRanges.AddToTail(range);
 					}
 					bIsBlending = false;
@@ -1958,11 +1950,6 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 
 							TextRange blendRange;
-
-							if (fCurrentBlendIndex == 0)
-							{
-
-							}
 
 							blendRange.start = (txt - m_text);
 							blendRange.color = Color(blendR, blendG, blendB, 255);
@@ -2023,10 +2010,6 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 							TextRange blendRange;
 
-							if (fCurrentBlendIndex == 0)
-							{
-
-							}
 
 							blendRange.start = (txt - m_text);
 							blendRange.color = Color(blendR, blendG, blendB, 255);
@@ -2069,10 +2052,6 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 							TextRange blendRange;
 
-							if (fCurrentBlendIndex == 0)
-							{
-
-							}
 
 							blendRange.start = (txt - m_text);
 							blendRange.color = Color(blendR, blendG, blendB, 255);
@@ -2114,10 +2093,6 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 							TextRange blendRange;
 
-							if (fCurrentBlendIndex == 0)
-							{
-
-							}
 
 							blendRange.start = (txt - m_text);
 							blendRange.color = Color(blendR, blendG, blendB, 255);
@@ -2191,7 +2166,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 		wchar_t * start = m_text + m_textRanges[i].start;
 		if ( *start > 0 && *start < COLOR_MAX )
 		{
-				m_textRanges[i].start += 1;
+			m_textRanges[i].start += 1;
 		}
 	}
 
