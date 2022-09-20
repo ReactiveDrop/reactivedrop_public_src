@@ -24,6 +24,7 @@
 #include "inetchannelinfo.h"
 #include "decals.h"
 #include "player_voice_listener.h"
+#include "ColorText_Shared.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -46,6 +47,8 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 
 static ConVar sv_mapspawn_nut_exec( "sv_mapspawn_nut_exec", "0", FCVAR_NONE, "If set to 1, server will execute scripts/vscripts/mapspawn.nut file" );
 extern char *s_ElementNames[MAX_ARRAY_ELEMENTS];
+
+//static char COLOR_INPUTCUSTOMCOL = '\x08';
 
 //-----------------------------------------------------------------------------
 // Iterate through keys in a table and assign KeyValues on entity for spawn
@@ -1238,11 +1241,449 @@ static ScriptVariant_t Script_TextColor(int R, int G, int B)
 	float outputMod_B = B / 255.0f;
 
 	char outputChars[5]{};
-	outputChars[0] = '\x08'; // COLOR_INPUTCUSTOMCOL
+	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
 	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
 	outputChars[1] = (char)( 32 + ( outputMod_R * 94 ) );
 	outputChars[2] = (char)( 32 + ( outputMod_G * 94 ) );
 	outputChars[3] = (char)( 32 + ( outputMod_B * 94 ) );
+
+	return ScriptVariant_t(outputChars, true);
+}
+
+static ScriptVariant_t Script_TextColorBlend(int R1, int G1, int B1, int R2, int G2, int B2)
+{
+	//Force channel ranges between 0 - 255
+	if (R1 > 255)
+	{
+		R1 = 255;
+	}
+	else if (R1 < 0)
+	{
+		R1 = 0;
+	}
+
+	if (G1 > 255)
+	{
+		G1 = 255;
+	}
+	else if (G1 < 0)
+	{
+		G1 = 0;
+	}
+
+	if (B1 > 255)
+	{
+		B1 = 255;
+	}
+	else if (B1 < 0)
+	{
+		B1 = 0;
+	}
+
+	if (R2 > 255)
+	{
+		R2 = 255;
+	}
+	else if (R2 < 0)
+	{
+		R2 = 0;
+	}
+
+	if (G2 > 255)
+	{
+		G2 = 255;
+	}
+	else if (G2 < 0)
+	{
+		G2 = 0;
+	}
+
+	if (B2 > 255)
+	{
+		B2 = 255;
+	}
+	else if (B2 < 0)
+	{
+		B2 = 0;
+	}
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R1 = R1 / 255.0f;
+	float outputMod_G1 = G1 / 255.0f;
+	float outputMod_B1 = B1 / 255.0f;
+
+	float outputMod_R2 = R2 / 255.0f;
+	float outputMod_G2 = G2 / 255.0f;
+	float outputMod_B2 = B2 / 255.0f;
+
+	char outputChars[10]{};
+	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[2] = BLEND_NORMAL;
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[3] = (char)(32 + (outputMod_R1 * 94));
+	outputChars[4] = (char)(32 + (outputMod_G1 * 94));
+	outputChars[5] = (char)(32 + (outputMod_B1 * 94));
+
+	outputChars[6] = (char)(32 + (outputMod_R2 * 94));
+	outputChars[7] = (char)(32 + (outputMod_G2 * 94));
+	outputChars[8] = (char)(32 + (outputMod_B2 * 94));
+
+	return ScriptVariant_t(outputChars, true);
+}
+
+static ScriptVariant_t Script_TextColorBlendCycle(int iBlendLength, int R1, int G1, int B1, int R2, int G2, int B2)
+{
+	//Force channel ranges between 0 - 255
+	if (R1 > 255)
+	{
+		R1 = 255;
+	}
+	else if (R1 < 0)
+	{
+		R1 = 0;
+	}
+
+	if (G1 > 255)
+	{
+		G1 = 255;
+	}
+	else if (G1 < 0)
+	{
+		G1 = 0;
+	}
+
+	if (B1 > 255)
+	{
+		B1 = 255;
+	}
+	else if (B1 < 0)
+	{
+		B1 = 0;
+	}
+
+	if (R2 > 255)
+	{
+		R2 = 255;
+	}
+	else if (R2 < 0)
+	{
+		R2 = 0;
+	}
+
+	if (G2 > 255)
+	{
+		G2 = 255;
+	}
+	else if (G2 < 0)
+	{
+		G2 = 0;
+	}
+
+	if (B2 > 255)
+	{
+		B2 = 255;
+	}
+	else if (B2 < 0)
+	{
+		B2 = 0;
+	}
+
+	if (iBlendLength > 96)
+	{
+		iBlendLength = 96;
+	}
+	else if (iBlendLength < 2)
+	{
+		iBlendLength = 2;
+	}
+
+	iBlendLength -= 2;
+
+	//iBlendLength -= 2; //align offset
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R1 = R1 / 255.0f;
+	float outputMod_G1 = G1 / 255.0f;
+	float outputMod_B1 = B1 / 255.0f;
+
+	float outputMod_R2 = R2 / 255.0f;
+	float outputMod_G2 = G2 / 255.0f;
+	float outputMod_B2 = B2 / 255.0f;
+
+	char outputChars[11]{};
+	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[2] = BLEND_CYCLE;
+	outputChars[3] = iBlendLength + 32;
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[4] = (char)(32 + (outputMod_R1 * 94));
+	outputChars[5] = (char)(32 + (outputMod_G1 * 94));
+	outputChars[6] = (char)(32 + (outputMod_B1 * 94));
+
+	outputChars[7] = (char)(32 + (outputMod_R2 * 94));
+	outputChars[8] = (char)(32 + (outputMod_G2 * 94));
+	outputChars[9] = (char)(32 + (outputMod_B2 * 94));
+
+	return ScriptVariant_t(outputChars, true);
+}
+
+static ScriptVariant_t Script_TextColorBlendSmoothCycle(int iBlendLength, int R1, int G1, int B1, int R2, int G2, int B2)
+{
+	//Force channel ranges between 0 - 255
+	if (R1 > 255)
+	{
+		R1 = 255;
+	}
+	else if (R1 < 0)
+	{
+		R1 = 0;
+	}
+
+	if (G1 > 255)
+	{
+		G1 = 255;
+	}
+	else if (G1 < 0)
+	{
+		G1 = 0;
+	}
+
+	if (B1 > 255)
+	{
+		B1 = 255;
+	}
+	else if (B1 < 0)
+	{
+		B1 = 0;
+	}
+
+	if (R2 > 255)
+	{
+		R2 = 255;
+	}
+	else if (R2 < 0)
+	{
+		R2 = 0;
+	}
+
+	if (G2 > 255)
+	{
+		G2 = 255;
+	}
+	else if (G2 < 0)
+	{
+		G2 = 0;
+	}
+
+	if (B2 > 255)
+	{
+		B2 = 255;
+	}
+	else if (B2 < 0)
+	{
+		B2 = 0;
+	}
+
+	if (iBlendLength > 96)
+	{
+		iBlendLength = 96;
+	}
+	else if (iBlendLength < 2)
+	{
+		iBlendLength = 2;
+	}
+
+	iBlendLength -= 2;
+
+	//iBlendLength -= 2; //align offset
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R1 = R1 / 255.0f;
+	float outputMod_G1 = G1 / 255.0f;
+	float outputMod_B1 = B1 / 255.0f;
+
+	float outputMod_R2 = R2 / 255.0f;
+	float outputMod_G2 = G2 / 255.0f;
+	float outputMod_B2 = B2 / 255.0f;
+
+	char outputChars[11]{};
+	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[2] = BLEND_SMOOTHCYCLE;
+	outputChars[3] = iBlendLength + 32;
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[4] = (char)(32 + (outputMod_R1 * 94));
+	outputChars[5] = (char)(32 + (outputMod_G1 * 94));
+	outputChars[6] = (char)(32 + (outputMod_B1 * 94));
+
+	outputChars[7] = (char)(32 + (outputMod_R2 * 94));
+	outputChars[8] = (char)(32 + (outputMod_G2 * 94));
+	outputChars[9] = (char)(32 + (outputMod_B2 * 94));
+
+	return ScriptVariant_t(outputChars, true);
+}
+
+static ScriptVariant_t Script_TextColorBlendInvert(int R1, int G1, int B1)
+{
+	//Force channel ranges between 0 - 255
+	if (R1 > 255)
+	{
+		R1 = 255;
+	}
+	else if (R1 < 0)
+	{
+		R1 = 0;
+	}
+
+	if (G1 > 255)
+	{
+		G1 = 255;
+	}
+	else if (G1 < 0)
+	{
+		G1 = 0;
+	}
+
+	if (B1 > 255)
+	{
+		B1 = 255;
+	}
+	else if (B1 < 0)
+	{
+		B1 = 0;
+	}
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R1 = R1 / 255.0f;
+	float outputMod_G1 = G1 / 255.0f;
+	float outputMod_B1 = B1 / 255.0f;
+
+	char outputChars[7]{};
+	outputChars[0] = COLOR_INPUTCUSTOMCOL;
+	outputChars[1] = COLOR_INPUTCUSTOMCOL;
+	outputChars[2] = BLEND_INVERT;
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[3] = (char)(32 + (outputMod_R1 * 94));
+	outputChars[4] = (char)(32 + (outputMod_G1 * 94));
+	outputChars[5] = (char)(32 + (outputMod_B1 * 94));
+
+	return ScriptVariant_t(outputChars, true);
+}
+
+static ScriptVariant_t Script_TextColorBlend3(int R1, int G1, int B1, int R2, int G2, int B2, int R3, int G3, int B3)
+{
+	//Force channel ranges between 0 - 255
+	if (R1 > 255)
+	{
+		R1 = 255;
+	}
+	else if (R1 < 0)
+	{
+		R1 = 0;
+	}
+
+	if (G1 > 255)
+	{
+		G1 = 255;
+	}
+	else if (G1 < 0)
+	{
+		G1 = 0;
+	}
+
+	if (B1 > 255)
+	{
+		B1 = 255;
+	}
+	else if (B1 < 0)
+	{
+		B1 = 0;
+	}
+
+	if (R2 > 255)
+	{
+		R2 = 255;
+	}
+	else if (R2 < 0)
+	{
+		R2 = 0;
+	}
+
+	if (G2 > 255)
+	{
+		G2 = 255;
+	}
+	else if (G2 < 0)
+	{
+		G2 = 0;
+	}
+
+	if (B2 > 255)
+	{
+		B2 = 255;
+	}
+	else if (B2 < 0)
+	{
+		B2 = 0;
+	}
+
+	if (R3 > 255)
+	{
+		R3 = 255;
+	}
+	else if (R3 < 0)
+	{
+		R3 = 0;
+	}
+
+	if (G3 > 255)
+	{
+		G3 = 255;
+	}
+	else if (G3 < 0)
+	{
+		G3 = 0;
+	}
+
+	if (B3 > 255)
+	{
+		B3 = 255;
+	}
+	else if (B3 < 0)
+	{
+		B3 = 0;
+	}
+
+	//create float modifiers at range 0 - 255 for conversion output
+	float outputMod_R1 = R1 / 255.0f;
+	float outputMod_G1 = G1 / 255.0f;
+	float outputMod_B1 = B1 / 255.0f;
+
+	float outputMod_R2 = R2 / 255.0f;
+	float outputMod_G2 = G2 / 255.0f;
+	float outputMod_B2 = B2 / 255.0f;
+
+	float outputMod_R3 = R3 / 255.0f;
+	float outputMod_G3 = G3 / 255.0f;
+	float outputMod_B3 = B3 / 255.0f;
+
+	char outputChars[13]{};
+	outputChars[0] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[1] = COLOR_INPUTCUSTOMCOL; // COLOR_INPUTCUSTOMCOL
+	outputChars[2] = BLEND_3COLOR;
+	// pass float modifiers multiplied by max ASCII translation base then increment by 32 which is float ASCII offset
+	outputChars[3] = (char)(32 + (outputMod_R1 * 94));
+	outputChars[4] = (char)(32 + (outputMod_G1 * 94));
+	outputChars[5] = (char)(32 + (outputMod_B1 * 94));
+
+	outputChars[6] = (char)(32 + (outputMod_R2 * 94));
+	outputChars[7] = (char)(32 + (outputMod_G2 * 94));
+	outputChars[8] = (char)(32 + (outputMod_B2 * 94));
+
+	outputChars[9] = (char)(32 + (outputMod_R3 * 94));
+	outputChars[10] = (char)(32 + (outputMod_G3 * 94));
+	outputChars[11] = (char)(32 + (outputMod_B3 * 94));
 
 	return ScriptVariant_t(outputChars, true);
 }
@@ -1532,6 +1973,11 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RGB input." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlend, "TextColorBlend", "Gets the translated ASCII characters for an RGB blend input.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlendCycle, "TextColorBlendCycle", "Gets the translated ASCII characters for an RGB blend cycle input.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlendSmoothCycle, "TextColorBlendSmoothCycle", "Gets the translated ASCII characters for an RGB blend smooth cycle input.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlend3, "TextColorBlend3", "Gets the translated ASCII characters for a 3 color RGB blend input.");
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlendInvert, "TextColorBlendInvert", "Gets the translated ASCII characters for an RGB blend invert input.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_StringToFile, "StringToFile", "Stores the string into the file." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_FileToString, "FileToString", "Reads a string from file. Returns the string from the file, null if no file or file is too big." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_AddThinkToEnt, "AddThinkToEnt", "Adds a late bound think function to the C++ think tables for the obj" );

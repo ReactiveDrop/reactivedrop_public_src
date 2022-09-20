@@ -52,7 +52,7 @@ Color g_ColorGreen( 153, 255, 153, 255 );
 Color g_ColorDarkGreen( 64, 255, 64, 255 );
 Color g_ColorYellow( 255, 178.5, 0.0, 255 );
 Color g_ColorGrey( 204, 204, 204, 255 );
-Color g_ColoPurple( 160, 115, 205, 255 );
+Color g_ColorPurple( 160, 115, 205, 255 );
 
 static const char *gBugPriorityTable[] = {
 	"TODAY", 
@@ -1530,6 +1530,15 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 
 	wchar_t *txt = m_text;
 	int lineLen = wcslen( m_text );
+	byte BlendRChan1=255, BlendRChan2 = 255, BlendGChan1 = 255, BlendGChan2 = 255, BlendBChan1 = 255, BlendBChan2 = 255, BlendRChan3 = 255, BlendGChan3 = 255, BlendBChan3 = 255;
+	bool bIsBlending = false;
+	float fBlendCharCount = 0.0f;
+	float fCurrentBlendIndex = 0.0f;
+	int i3ColorStageCount = 0;
+	int iStage1Max = 0, iStage2Max = 0;
+	int iCycleLength = 0, iCycleCurrent = 0;
+	int iCurrentStage = 1;
+	CHATCOLORBLENDMODE currentBlendMode = BLEND_NONE;
 	if ( m_text[0] == COLOR_PLAYERNAME || m_text[0] == COLOR_LOCATION || m_text[0] == COLOR_NORMAL || m_text[0] == COLOR_ACHIEVEMENT || m_text[0] == COLOR_MOD_CUSTOM || m_text[0] == COLOR_MOD_CUSTOM2 || m_text[0] == COLOR_INPUTCUSTOMCOL)
 	{
 		while ( txt && *txt )
@@ -1545,54 +1554,605 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 			case COLOR_MOD_CUSTOM:
 			case COLOR_MOD_CUSTOM2:
 				{
-					// save this start
-					range.start = (txt-m_text) + 1;
-					range.color = pChat->GetTextColorForClient( (TextColor)(*txt), clientIndex );
-					range.end = lineLen;
+					int diffResult = lineLen - (txt - m_text);
 
-					int count = m_textRanges.Count();
-					if ( count )
+					TextColor textColor = (TextColor)(*txt);
+
+					++txt;
+
+					int index = 0;
+					int endIndexPos = -1;
+					while (index < diffResult)
 					{
-						m_textRanges[count-1].end = range.start - 1;
+						wchar_t currentChar = txt[index];
+						if (currentChar < COLOR_MAX)
+						{
+							endIndexPos = index;
+							break;
+						}
+						index++;
+					}
+					if (endIndexPos == -1)
+					{
+						endIndexPos = diffResult;
 					}
 
-					m_textRanges.AddToTail( range );
+					
+
+					
+					if (endIndexPos > 0)
+					{
+						// save this start
+						range.start = (txt - m_text);
+						range.color = pChat->GetTextColorForClient(textColor, clientIndex);
+						range.end = range.start + endIndexPos;
+
+						txt += endIndexPos;
+
+						m_textRanges.AddToTail(range);
+					}
 				}
-				++txt;
+				bIsBlending = false;
 				break;
 			case COLOR_INPUTCUSTOMCOL:
 			{
 				//This is the custom input color that accepts ASCII translated RGB
-
-				//Check that range will not overflow passed string length
+				bool bIsBlend = false;
 				int diffResult = lineLen - (txt - m_text);
-				if (diffResult <= 3)
+				if (diffResult > 3)
 				{
-					++txt;
-					break;
+					if (txt[1] == COLOR_INPUTCUSTOMCOL)
+					{
+						if (txt[2] == BLEND_NORMAL)
+						{
+							if (diffResult >= 9)
+							{
+								//This is a noraml blend
+								bIsBlend = true;
+								currentBlendMode = BLEND_NORMAL;
+							}
+						}
+						else if (txt[2] == BLEND_INVERT)
+						{
+							if (diffResult >= 6)
+							{
+								//This is an invert blend
+								bIsBlend = true;
+								currentBlendMode = BLEND_INVERT;
+							}
+						}
+						else if (txt[2] == BLEND_3COLOR)
+						{
+							if (diffResult >= 12)
+							{
+								//This is a 3 color blend
+								bIsBlend = true;
+								currentBlendMode = BLEND_3COLOR;
+							}
+						}
+						else if (txt[2] == BLEND_CYCLE)
+						{
+							if (diffResult >= 10)
+							{
+								//This is a 2 color blend cycle. This version jumps from color2 to color1 after cycle ends.
+								bIsBlend = true;
+								currentBlendMode = BLEND_CYCLE;
+							}
+						}
+						else if (txt[2] == BLEND_SMOOTHCYCLE)
+						{
+							if (diffResult >= 10)
+							{
+								//This is a 2 color smooth blend cycle. This version smoothly returns to color1
+								bIsBlend = true;
+								currentBlendMode = BLEND_SMOOTHCYCLE;
+							}
+						}
+					}
 				}
 
-				//Get a value of 0 - 255 from translated color channel characters
-				byte redChan = TranslateChannelRange((byte)txt[1]);
-				byte greenChan = TranslateChannelRange((byte)txt[2]);
-				byte blueChan = TranslateChannelRange((byte)txt[3]);
-				// save this start
-				range.start = (txt - m_text) + 4; //4 Offset accounts for color channel translation characters
-				range.color = Color(redChan, greenChan, blueChan, 255);
-				range.end = lineLen;
-
-				int count = m_textRanges.Count();
-				if (count)
+				if (bIsBlend)
 				{
-					m_textRanges[count - 1].end = range.start - 3; //3 Offset accounts for color channel translation characters
-				}
+					if (currentBlendMode == BLEND_NORMAL)
+					{
+						//Get a value of 0 - 255 from translated color channel characters
+						BlendRChan1 = TranslateChannelRange((byte)txt[3]);
+						BlendGChan1 = TranslateChannelRange((byte)txt[4]);
+						BlendBChan1 = TranslateChannelRange((byte)txt[5]);
 
-				m_textRanges.AddToTail(range);
-				//Pass by all color channel characters
-				txt += 4;
+						BlendRChan2 = TranslateChannelRange((byte)txt[6]);
+						BlendGChan2 = TranslateChannelRange((byte)txt[7]);
+						BlendBChan2 = TranslateChannelRange((byte)txt[8]);
+
+						txt += 9;
+
+
+						int index = 0;
+						int endIndexPos = -1;
+						while (index < diffResult)
+						{
+							if (txt[index] < COLOR_MAX)
+							{
+								endIndexPos = index;
+								break;
+							}
+							index++;
+						}
+						if (endIndexPos == -1)
+						{
+							endIndexPos = diffResult;
+						}
+
+						fBlendCharCount = endIndexPos;
+						fCurrentBlendIndex = 0.0f;
+
+						if (fBlendCharCount > 0)
+							bIsBlending = true;
+					}
+					else if (currentBlendMode == BLEND_INVERT)
+					{
+						//Get a value of 0 - 255 from translated color channel characters
+						BlendRChan1 = TranslateChannelRange((byte)txt[3]);
+						BlendGChan1 = TranslateChannelRange((byte)txt[4]);
+						BlendBChan1 = TranslateChannelRange((byte)txt[5]);
+
+						BlendRChan2 = 255 - BlendRChan1;
+						BlendGChan2 = 255 - BlendGChan1;
+						BlendBChan2 = 255 - BlendBChan1;
+
+						txt += 6;
+
+
+						int index = 0;
+						int endIndexPos = -1;
+						while (index < diffResult)
+						{
+							if (txt[index] < COLOR_MAX)
+							{
+								endIndexPos = index;
+								break;
+							}
+							index++;
+						}
+						if (endIndexPos == -1)
+						{
+							endIndexPos = diffResult;
+						}
+
+						fBlendCharCount = endIndexPos;
+						fCurrentBlendIndex = 0.0f;
+
+						if (fBlendCharCount > 0)
+							bIsBlending = true;
+					}
+					else if (currentBlendMode == BLEND_3COLOR)
+					{
+						//Get a value of 0 - 255 from translated color channel characters
+						BlendRChan1 = TranslateChannelRange((byte)txt[3]);
+						BlendGChan1 = TranslateChannelRange((byte)txt[4]);
+						BlendBChan1 = TranslateChannelRange((byte)txt[5]);
+
+						BlendRChan2 = TranslateChannelRange((byte)txt[6]);
+						BlendGChan2 = TranslateChannelRange((byte)txt[7]);
+						BlendBChan2 = TranslateChannelRange((byte)txt[8]);
+
+						BlendRChan3 = TranslateChannelRange((byte)txt[9]);
+						BlendGChan3 = TranslateChannelRange((byte)txt[10]);
+						BlendBChan3 = TranslateChannelRange((byte)txt[11]);
+
+						txt += 12;
+
+
+						int index = 0;
+						int endIndexPos = -1;
+						while (index < diffResult)
+						{
+							if (txt[index] < COLOR_MAX)
+							{
+								endIndexPos = index;
+								break;
+							}
+							index++;
+						}
+						if (endIndexPos == -1)
+						{
+							endIndexPos = diffResult;
+						}
+
+						fBlendCharCount = endIndexPos;
+						fCurrentBlendIndex = 0.0f;
+
+
+						i3ColorStageCount = fBlendCharCount / 2;
+
+						iStage2Max = i3ColorStageCount;
+
+						if (remainder(fBlendCharCount, 2) != 0)
+						{
+							i3ColorStageCount++;
+						}
+
+						iStage1Max = i3ColorStageCount;
+						i3ColorStageCount = 0;
+						iCurrentStage = 1;
+
+						if (fBlendCharCount > 0)
+							bIsBlending = true;
+					}
+					else if (currentBlendMode == BLEND_CYCLE)
+					{
+						//Get a value of 0 - 255 from translated color channel characters
+						byte iBlendLength = (byte)txt[3];
+
+						iBlendLength -= 32;
+
+						if (iBlendLength > 94)
+						{
+							iBlendLength = 94;
+						}
+
+						iBlendLength += 2; //Restore offset
+
+						iCycleLength = iBlendLength;
+						iCycleCurrent = 0;
+
+						BlendRChan1 = TranslateChannelRange((byte)txt[4]);
+						BlendGChan1 = TranslateChannelRange((byte)txt[5]);
+						BlendBChan1 = TranslateChannelRange((byte)txt[6]);
+
+						BlendRChan2 = TranslateChannelRange((byte)txt[7]);
+						BlendGChan2 = TranslateChannelRange((byte)txt[8]);
+						BlendBChan2 = TranslateChannelRange((byte)txt[9]);
+
+						txt += 10;
+
+
+						int index = 0;
+						int endIndexPos = -1;
+						while (index < diffResult)
+						{
+							if (txt[index] < COLOR_MAX)
+							{
+								endIndexPos = index;
+								break;
+							}
+							index++;
+						}
+						if (endIndexPos == -1)
+						{
+							endIndexPos = diffResult;
+						}
+
+						fBlendCharCount = endIndexPos;
+						fCurrentBlendIndex = 0.0f;
+
+						if (fBlendCharCount > 0)
+							bIsBlending = true;
+					}
+					else if (currentBlendMode == BLEND_SMOOTHCYCLE)
+					{
+						//Get a value of 0 - 255 from translated color channel characters
+						byte iBlendLength = (byte)txt[3];
+
+						iBlendLength -= 32;
+
+						if (iBlendLength > 94)
+						{
+							iBlendLength = 94;
+						}
+
+						iBlendLength += 2; //Restore offset
+
+						iCycleLength = iBlendLength;
+						iCycleCurrent = 0;
+
+						BlendRChan1 = TranslateChannelRange((byte)txt[4]);
+						BlendGChan1 = TranslateChannelRange((byte)txt[5]);
+						BlendBChan1 = TranslateChannelRange((byte)txt[6]);
+
+						BlendRChan2 = TranslateChannelRange((byte)txt[7]);
+						BlendGChan2 = TranslateChannelRange((byte)txt[8]);
+						BlendBChan2 = TranslateChannelRange((byte)txt[9]);
+
+						txt += 10;
+
+
+						int index = 0;
+						int endIndexPos = -1;
+						while (index < diffResult)
+						{
+							if (txt[index] < COLOR_MAX)
+							{
+								endIndexPos = index;
+								break;
+							}
+							index++;
+						}
+						if (endIndexPos == -1)
+						{
+							endIndexPos = diffResult;
+						}
+
+						fBlendCharCount = endIndexPos;
+						fCurrentBlendIndex = 0.0f;
+
+						if (fBlendCharCount > 0)
+							bIsBlending = true;
+					}
+				}
+				else
+				{
+					//Check that range will not overflow passed string length
+					diffResult = lineLen - (txt - m_text);
+					if (diffResult <= 3)
+					{
+						++txt;
+						break;
+					}
+
+					//Get a value of 0 - 255 from translated color channel characters
+					byte redChan = TranslateChannelRange((byte)txt[1]);
+					byte greenChan = TranslateChannelRange((byte)txt[2]);
+					byte blueChan = TranslateChannelRange((byte)txt[3]);
+
+					txt += 4;
+
+					diffResult = lineLen - (txt - m_text);
+
+					int index = 0;
+					int endIndexPos = -1;
+					while (index < diffResult)
+					{
+						if (txt[index] < COLOR_MAX)
+						{
+							endIndexPos = index;
+							break;
+						}
+						index++;
+					}
+					if (endIndexPos == -1)
+					{
+						endIndexPos = diffResult;
+					}
+
+					if (endIndexPos > 0)
+					{
+						// save this start
+						range.start = (txt - m_text);
+						range.color = Color(redChan, greenChan, blueChan, 255);
+						range.end = range.start + endIndexPos;
+
+						/*
+						int count = m_textRanges.Count();
+						if (count)
+						{
+							m_textRanges[count - 1].end = range.start;
+						}
+						*/
+
+						m_textRanges.AddToTail(range);
+					}
+					bIsBlending = false;
+				}
 				break;
 			}
 			default:
+				if (bIsBlending)
+				{
+					if (currentBlendMode == BLEND_NORMAL || currentBlendMode == BLEND_INVERT)
+					{
+						if (fCurrentBlendIndex < fBlendCharCount)
+						{
+							float blendMod = ((float)(fCurrentBlendIndex)) / fBlendCharCount;
+
+
+							float blendRDiff = BlendRChan2 - BlendRChan1;
+							float blendR = BlendRChan1 + (blendRDiff * blendMod);
+
+							float blendGDiff = BlendGChan2 - BlendGChan1;
+							float blendG = BlendGChan1 + (blendGDiff * blendMod);
+
+							float blendBDiff = BlendBChan2 - BlendBChan1;
+							float blendB = BlendBChan1 + (blendBDiff * blendMod);
+
+
+
+							TextRange blendRange;
+
+							if (fCurrentBlendIndex == 0)
+							{
+
+							}
+
+							blendRange.start = (txt - m_text);
+							blendRange.color = Color(blendR, blendG, blendB, 255);
+							blendRange.end = blendRange.start + 1;
+
+							m_textRanges.AddToTail(blendRange);
+
+							fCurrentBlendIndex++;
+						}
+						else
+						{
+							currentBlendMode = BLEND_NONE;
+							bIsBlending = false;
+						}
+					}
+					else if (currentBlendMode == BLEND_3COLOR)
+					{
+						if (fCurrentBlendIndex < fBlendCharCount)
+						{
+							float blendMod;
+
+
+							float blendRDiff;
+							float blendR;
+
+							float blendGDiff;
+							float blendG;
+
+							float blendBDiff;
+							float blendB;
+
+							if (iCurrentStage == 1)
+							{
+								blendMod = ((float)(i3ColorStageCount)) / iStage1Max;
+
+								blendRDiff = BlendRChan2 - BlendRChan1;
+								blendR = BlendRChan1 + (blendRDiff * blendMod);
+
+								blendGDiff = BlendGChan2 - BlendGChan1;
+								blendG = BlendGChan1 + (blendGDiff * blendMod);
+
+								blendBDiff = BlendBChan2 - BlendBChan1;
+								blendB = BlendBChan1 + (blendBDiff * blendMod);
+							}
+							else
+							{
+								blendMod = ((float)(i3ColorStageCount)) / iStage2Max;
+
+								blendRDiff = BlendRChan3 - BlendRChan2;
+								blendR = BlendRChan2 + (blendRDiff * blendMod);
+
+								blendGDiff = BlendGChan3 - BlendGChan2;
+								blendG = BlendGChan2 + (blendGDiff * blendMod);
+
+								blendBDiff = BlendBChan3 - BlendBChan2;
+								blendB = BlendBChan2 + (blendBDiff * blendMod);
+							}
+
+							TextRange blendRange;
+
+							if (fCurrentBlendIndex == 0)
+							{
+
+							}
+
+							blendRange.start = (txt - m_text);
+							blendRange.color = Color(blendR, blendG, blendB, 255);
+							blendRange.end = blendRange.start + 1;
+
+
+							m_textRanges.AddToTail(blendRange);
+
+							fCurrentBlendIndex++;
+							i3ColorStageCount++;
+							if (iCurrentStage == 1 && i3ColorStageCount>=iStage1Max)
+							{
+								iCurrentStage = 2;
+								i3ColorStageCount = 0;
+							}
+						}
+						else
+						{
+							currentBlendMode = BLEND_NONE;
+							bIsBlending = false;
+						}
+					}
+					else if (currentBlendMode == BLEND_CYCLE)
+					{
+						if (fCurrentBlendIndex < fBlendCharCount)
+						{
+							float blendMod = ((float)(iCycleCurrent)) / (float)iCycleLength;
+
+
+							float blendRDiff = BlendRChan2 - BlendRChan1;
+							float blendR = BlendRChan1 + (blendRDiff * blendMod);
+
+							float blendGDiff = BlendGChan2 - BlendGChan1;
+							float blendG = BlendGChan1 + (blendGDiff * blendMod);
+
+							float blendBDiff = BlendBChan2 - BlendBChan1;
+							float blendB = BlendBChan1 + (blendBDiff * blendMod);
+
+
+
+							TextRange blendRange;
+
+							if (fCurrentBlendIndex == 0)
+							{
+
+							}
+
+							blendRange.start = (txt - m_text);
+							blendRange.color = Color(blendR, blendG, blendB, 255);
+							blendRange.end = blendRange.start + 1;
+
+							m_textRanges.AddToTail(blendRange);
+
+							fCurrentBlendIndex++;
+							iCycleCurrent++;
+
+							if (iCycleCurrent >= iCycleLength)
+							{
+								iCycleCurrent = 0;
+							}
+						}
+						else
+						{
+							currentBlendMode = BLEND_NONE;
+							bIsBlending = false;
+						}
+					}
+					else if (currentBlendMode == BLEND_SMOOTHCYCLE)
+					{
+						if (fCurrentBlendIndex < fBlendCharCount)
+						{
+							float blendMod = ((float)(iCycleCurrent)) / (float)iCycleLength;
+
+
+							float blendRDiff = BlendRChan2 - BlendRChan1;
+							float blendR = BlendRChan1 + (blendRDiff * blendMod);
+
+							float blendGDiff = BlendGChan2 - BlendGChan1;
+							float blendG = BlendGChan1 + (blendGDiff * blendMod);
+
+							float blendBDiff = BlendBChan2 - BlendBChan1;
+							float blendB = BlendBChan1 + (blendBDiff * blendMod);
+
+
+
+							TextRange blendRange;
+
+							if (fCurrentBlendIndex == 0)
+							{
+
+							}
+
+							blendRange.start = (txt - m_text);
+							blendRange.color = Color(blendR, blendG, blendB, 255);
+							blendRange.end = blendRange.start + 1;
+
+
+							m_textRanges.AddToTail(blendRange);
+
+							fCurrentBlendIndex++;
+							iCycleCurrent++;
+
+							if (iCycleCurrent >= iCycleLength)
+							{
+								byte tempHolderR = BlendRChan1;
+								byte tempHolderG = BlendGChan1;
+								byte tempHolderB = BlendBChan1;
+
+								BlendRChan1 = BlendRChan2;
+								BlendGChan1 = BlendGChan2;
+								BlendBChan1 = BlendBChan2;
+
+								BlendRChan2 = tempHolderR;
+								BlendGChan2 = tempHolderG;
+								BlendBChan2 = tempHolderB;
+
+								iCycleCurrent = 1;
+							}
+						}
+						else
+						{
+							currentBlendMode = BLEND_NONE;
+							bIsBlending = false;
+						}
+					}
+				}
 				++txt;
 			}
 		}
@@ -1631,7 +2191,7 @@ void CBaseHudChatLine::InsertAndColorizeText( wchar_t *buf, int clientIndex )
 		wchar_t * start = m_text + m_textRanges[i].start;
 		if ( *start > 0 && *start < COLOR_MAX )
 		{
-			m_textRanges[i].start += 1;
+				m_textRanges[i].start += 1;
 		}
 	}
 
@@ -1811,11 +2371,68 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	}
 
 	// Strip leading \n characters ( or notify/color signifiers ) for empty string check
+
 	char *pmsg = msg;
+
 	while ( *pmsg && ( *pmsg == '\n' || ( *pmsg > 0 && *pmsg < COLOR_MAX ) ) )
 	{
-		if ( *pmsg == COLOR_INPUTCUSTOMCOL )
-			pmsg += 4;
+		if (*pmsg == COLOR_INPUTCUSTOMCOL)
+		{
+			if (strlen(pmsg) >= 2)
+			{
+				if (msg[1] == COLOR_INPUTCUSTOMCOL)
+				{
+					if (msg[2] == BLEND_NORMAL)
+					{
+						int msgLen = strlen(pmsg);
+						if (msgLen >= 9)
+							pmsg += 9;
+						else
+							pmsg += msgLen;
+					}
+					else if (msg[2] == BLEND_INVERT)
+					{
+						int msgLen = strlen(pmsg);
+						if (msgLen >= 6)
+							pmsg += 6;
+						else
+							pmsg += msgLen;
+					}
+					else if (msg[2] == BLEND_3COLOR)
+					{
+						int msgLen = strlen(pmsg);
+						if (msgLen >= 12)
+							pmsg += 12;
+						else
+							pmsg += msgLen;
+					}
+					else if (msg[2] == BLEND_CYCLE || msg[2] == BLEND_SMOOTHCYCLE)
+					{
+						int msgLen = strlen(pmsg);
+						if (msgLen >= 10)
+							pmsg += 10;
+						else
+							pmsg += msgLen;
+					}
+					else
+					{
+						pmsg += strlen(pmsg);
+					}
+				}
+				else
+				{
+					int msgLen = strlen(pmsg);
+					if (msgLen >= 4)
+						pmsg += 4;
+					else
+						pmsg += msgLen;
+				}
+			}
+			else
+			{
+				pmsg += strlen(pmsg);
+			}
+		}
 		else
 			pmsg++;
 	}
