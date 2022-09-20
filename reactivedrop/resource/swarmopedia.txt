@@ -26,7 +26,7 @@
 		"Ability" "#rd_so_ability_razor_sharp_claws"
 		"Ability" "#rd_so_ability_attacks_doors"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/drone/drone.mdl"
 				"Animation" "Run"
@@ -69,7 +69,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/aliens/drone/drone.mdl"
 				"Animation" "Attack02"
@@ -130,7 +130,7 @@
 		"Ability" "#rd_so_ability_corrosive_spit"
 		"Ability" "#rd_so_ability_long_range"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/mortar3/mortar3.mdl"
 				"Animation" "idle"
@@ -171,7 +171,7 @@
 		"Ability" "#rd_so_ability_immune_to_frontal_attacks"
 		"Ability" "#rd_so_ability_knocks_down_marines"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "roar_02"
@@ -179,7 +179,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/aliens/shieldbug/shieldbug_swarmopedia.mdl"
 				"Animation" "idle_defend"
@@ -221,7 +221,7 @@
 		"Ability" "#rd_so_ability_explosive_projectiles"
 		"Ability" "#rd_so_ability_inflates"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/boomer/boomer.mdl"
 				"Animation" "walk"
@@ -229,7 +229,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/aliens/boomer/boomer.mdl"
 				"Animation" "idle_inflated"
@@ -270,7 +270,7 @@
 		"Ability" "#rd_so_ability_flight"
 		"Ability" "#rd_so_ability_poison_blurs_vision"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/buzzer/buzzer.mdl"
 				"Animation" "idle"
@@ -317,7 +317,7 @@
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_hatches_from_eggs"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/parasite/parasite_swarmopedia.mdl"
 				"Animation" "Idle"
@@ -359,7 +359,7 @@
 		"Ability" "#rd_so_ability_long_range"
 		"Ability" "#rd_so_ability_corrosive_skin"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/mortar/mortar.mdl"
 				"Animation" "idle"
@@ -399,7 +399,7 @@
 		"Ability" "#rd_so_ability_explosive_spawn"
 		"Ability" "#rd_so_ability_corrosive_skin"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/harvester/harvester.mdl"
 				"Animation" "IDLE"
@@ -440,7 +440,7 @@
 		"Ability" "#rd_so_ability_jumping_attack"
 		"Ability" "#rd_so_ability_suicide_bomber"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/parasite/parasite.mdl"
 				"Animation" "Idle"
@@ -484,7 +484,7 @@
 		}
 		"Ability" "#rd_so_ability_heals_other_aliens"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/shaman/shaman.mdl"
 				"Animation" "idle"
@@ -525,7 +525,7 @@
 		"Ability" "#rd_so_ability_only_vulnerable_to_fire"
 		"Ability" "#rd_so_ability_corrosive_skin"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/aliens/biomass/biomasshelix.mdl"
 				"Animation" "idle"
@@ -533,7 +533,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/aliens/biomass/biomassl.mdl"
 				"Animation" "idle"
@@ -541,14 +541,14 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_c"
+			"Caption" "#rd_so_display_caption_third_specimen"
 			"Model" {
 				"ModelName" "models/aliens/biomass/biomasss.mdl"
 				"Animation" "idle"
 			}
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_d"
+			"Caption" "#rd_so_display_caption_fourth_specimen"
 			"Model" {
 				"ModelName" "models/aliens/biomass/biomassu.mdl"
 				"Animation" "idle"
@@ -589,7 +589,7 @@
 		"Ability" "#rd_so_ability_harmless"
 		"Ability" "#rd_so_ability_hatches_from_sacs"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/swarm/grubs/grub.mdl"
 				"Animation" "CrawlA"
@@ -597,7 +597,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/swarm/grubsac/grubsac.mdl"
 				"Animation" "idle"
@@ -644,7 +644,7 @@
 		"Ability" "#rd_so_ability_charging_attack"
 		"Ability" "#rd_so_ability_resistant_to_damage"
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_a"
+			"Caption" "#rd_so_display_caption_first_specimen"
 			"Model" {
 				"ModelName" "models/antlion_guard.mdl"
 				"Animation" "idle"
@@ -652,7 +652,7 @@
 			"LightingPreset" "1"
 		}
 		"Display" {
-			"Caption" "#rd_so_display_caption_specimen_b"
+			"Caption" "#rd_so_display_caption_second_specimen"
 			"Model" {
 				"ModelName" "models/antlion_guard.mdl"
 				"Animation" "roar"

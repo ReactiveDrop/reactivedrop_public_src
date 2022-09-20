@@ -22,6 +22,7 @@
 #include "asw_hud_minimap.h"
 #include "stats_report.h"
 #include "rd_weapon_generic_object_shared.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1721,23 +1722,19 @@ void CASW_Hud_Master::PaintSquadMemberText( int nPosition )
 			surface()->DrawUnicodeString( wszQuantity );
 		}
 
-		if ( ( !m_SquadMateInfo[ nPosition ].bInhabited && m_SquadMateInfo[ nPosition ].pExtraItemInfo->m_bOffhandActivate ) || m_SquadMateInfo[ nPosition ].pExtraItemInfo->m_bShowMultiplayerHotkey )
+		if ( ( !m_SquadMateInfo[nPosition].bInhabited && m_SquadMateInfo[nPosition].pExtraItemInfo->m_bOffhandActivate ) || m_SquadMateInfo[nPosition].pExtraItemInfo->m_bShowMultiplayerHotkey )
 		{
 			// show hotkey for this marine's extra item
-			char szBinding[ 128 ];
+			char szBinding[128];
 			Q_snprintf( szBinding, sizeof( szBinding ), "asw_squad_hotbar %d", nPosition + 1 );
 			const char *pszKey = ASW_FindKeyBoundTo( szBinding );
-			if ( !V_strcmp( pszKey, "<NOT BOUND>" ) )
+			if ( !V_strcmp( pszKey, "#GameUI_KeyNames_Not_Bound" ) )
 				pszKey = "";
-			
- 			char szKey[ 12 ];
-			Q_snprintf( szKey, sizeof(szKey), "%s", pszKey );
-			Q_strupr( szKey );
 
-			wchar_t wszKey[ 12 ];
-			g_pVGuiLocalize->ConvertANSIToUnicode( pszKey, wszKey, sizeof( wszKey )  );
+			wchar_t wszKey[128];
+			TryLocalize( pszKey, wszKey, sizeof( wszKey ) );
 
-			surface()->DrawSetTextColor( m_SquadMate_ExtraItem_hotkey_color );	
+			surface()->DrawSetTextColor( m_SquadMate_ExtraItem_hotkey_color );
 			surface()->GetTextSize( m_hDefaultFont, wszKey, w, t );
 			surface()->DrawSetTextPos( x + m_nSquadMate_ExtraItem_hotkey_x - w,
 				y + m_nSquadMate_ExtraItem_hotkey_y );
