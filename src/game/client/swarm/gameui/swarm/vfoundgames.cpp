@@ -222,7 +222,7 @@ bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
 		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMissionName );
 		char const *szWebsite = mpGameDetails->GetString( "game/missioninfo/website", NULL );
 		PublishedFileId_t iWorkshopFile = GetWorkshopID();
-		if ( ( !pMission || V_stricmp( STRING( pMission->Version ), mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
+		if ( ( !pMission || !pMission->Installed || V_stricmp( STRING( pMission->Version ), mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
 			&& ( ( szWebsite && *szWebsite ) || iWorkshopFile != k_PublishedFileIdInvalid ) )
 			return true;
 	}

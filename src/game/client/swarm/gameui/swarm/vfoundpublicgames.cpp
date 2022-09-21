@@ -250,7 +250,8 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	if ( !Q_stricmp( szMode, "campaign" ) )
 	{
 		char const *szCampaign = pGameDetails->GetString( "game/campaign", NULL );
-		bool bCampaignInstalled = ReactiveDropMissions::GetCampaign( szCampaign ) != NULL;
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( szCampaign );
+		bool bCampaignInstalled = pCampaign && pCampaign->Installed;
 
 		if ( !bCampaignInstalled &&
 			( !Q_stricmp( ui_public_lobby_filter_campaign.GetString(), "installedaddon" ) ||
@@ -260,7 +261,8 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	else if ( !Q_stricmp( szMode, "single_mission" ) )
 	{
 		char const *szMission = pGameDetails->GetString( "game/mission", NULL );
-		bool bMissionInstalled = ReactiveDropMissions::GetMission( szMission ) != NULL;
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMission );
+		bool bMissionInstalled = pMission && pMission->Installed;
 
 		if ( !bMissionInstalled &&
 			( !Q_stricmp( ui_public_lobby_filter_campaign.GetString(), "installedaddon" ) ||

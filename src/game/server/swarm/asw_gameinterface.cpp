@@ -15,6 +15,7 @@
 #include "asw_spawn_manager.h"
 #include "rd_lobby_utils.h"
 #include "matchmaking/imatchframework.h"
+#include "rd_missions_shared.h"
 
 extern ConVar sv_force_transmit_ents;
 extern ConVar mm_max_players;
@@ -251,31 +252,9 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 		if ( bCampaignGame && szStartingMission && !Q_stricmp( szCampaignName, "jacob" ) && !Q_stricmp( pKV->GetString( "game/state" ), "lobby" ) && Q_stricmp( asw_default_campaign.GetString(), "jacob" ) )
 		{
 			// BenLubar: waking up a dedicated server has been giving us Jacob's Rest as the campaign but keeping the default campaign's first mission. This is a hack to detect and fix this situation.
-			if ( KeyValues *pJacob = pSource->GetCampaignDetails( "jacob" ) )
+			if ( const RD_Campaign_t *pJacob = ReactiveDropMissions::GetCampaign( "jacob" ) )
 			{
-				bool bSkippedFirst = false;
-				bool bFound = false;
-				FOR_EACH_TRUE_SUBKEY( pJacob, pKey )
-				{
-					if ( Q_stricmp( pKey->GetName(), "MISSION" ) )
-					{
-						continue;
-					}
-
-					if ( !bSkippedFirst )
-					{
-						bSkippedFirst = true;
-						continue;
-					}
-
-					if ( !Q_stricmp( pKey->GetString( "MapName" ), szStartingMission ) )
-					{
-						bFound = true;
-						break;
-					}
-				}
-
-				if ( bFound )
+				if ( pJacob->GetMissionByMapName( szStartingMission ) )
 				{
 					Warning( "Found mission %s in Jacob's Rest, but we're waking up from hibernation and Jacob's Rest isn't the default campaign!\n", szStartingMission );
 				}
@@ -289,31 +268,9 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 				Warning( "Could not load Jacob's Rest campaign details. Continuing anyway.\n" );
 			}
 
-			if ( KeyValues *pDefault = pSource->GetCampaignDetails( asw_default_campaign.GetString() ) )
+			if ( const RD_Campaign_t *pDefault = ReactiveDropMissions::GetCampaign( asw_default_campaign.GetString() ) )
 			{
-				bool bSkippedFirst = false;
-				bool bFound = false;
-				FOR_EACH_TRUE_SUBKEY( pDefault, pKey )
-				{
-					if ( Q_stricmp( pKey->GetName(), "MISSION" ) )
-					{
-						continue;
-					}
-
-					if ( !bSkippedFirst )
-					{
-						bSkippedFirst = true;
-						continue;
-					}
-
-					if ( !Q_stricmp( pKey->GetString( "MapName" ), szStartingMission ) )
-					{
-						bFound = true;
-						break;
-					}
-				}
-
-				if ( bFound )
+				if ( pDefault->GetMissionByMapName( szStartingMission ) )
 				{
 					Msg( "Fixing campaign in hibernation wakeup: setting to %s for mission %s.\n", asw_default_campaign.GetString(), szStartingMission );
 					szCampaignName = asw_default_campaign.GetString();

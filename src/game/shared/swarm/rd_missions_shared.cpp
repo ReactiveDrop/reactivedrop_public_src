@@ -542,6 +542,8 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 		return pCampaign;
 	}
 
+	pCampaign->Installed = true;
+
 	pCampaign->CampaignName = AllocMissionsPooledString( pKV->GetString( "CampaignName" ) );
 	pCampaign->CampaignDescription = AllocMissionsPooledString( pKV->GetString( "CampaignDescription" ) );
 	pCampaign->CustomCreditsFile = AllocMissionsPooledString( pKV->GetString( "CustomCreditsFile", DEFAULT_CREDITS_FILE ) );
@@ -663,6 +665,8 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 		return pMission;
 	}
+
+	pMission->Installed = true;
 
 	pMission->PosX = pKV->GetInt( "pos_x" );
 	pMission->PosY = pKV->GetInt( "pos_y" );

@@ -15,6 +15,7 @@
 #include "asw_input.h"
 #include "clientmode_asw.h"
 #include "asw_util_shared.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -269,13 +270,8 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 		if ( ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION )
 		{
 			m_pTitle->SetText( "#asw_vote_mission_title" );
-			m_bVoteMapInstalled = true;
-			if ( missionchooser && missionchooser->LocalMissionSource() )
-			{
-				if ( !missionchooser->LocalMissionSource()->GetMissionDetails( ASWGameRules()->GetCurrentVoteMapName() ) )
-					m_bVoteMapInstalled = false;
-			}
-
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( ASWGameRules()->GetCurrentVoteMapName() );
+			m_bVoteMapInstalled = pMission && pMission->Installed;
 			if ( m_bVoteMapInstalled )
 			{
 				const char *szContainingCampaign = ASWGameRules()->GetCurrentVoteCampaignName();
