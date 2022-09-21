@@ -20,8 +20,7 @@
 
 #include "nb_header_footer.h"
 
-#include "missionchooser/iasw_mission_chooser.h"
-#include "missionchooser/iasw_mission_chooser_source.h"
+#include "rd_missions_shared.h"
 #include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -247,15 +246,11 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	DevMsg( "FoundPublicGames::ShouldShowPublicGame\n" );
 	KeyValuesDumpAsDevMsg( pGameDetails );
 
-	IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-	if ( !pSource )
-		return false;
-
 	const char *szMode = pGameDetails->GetString( "game/mode", "campaign" );
 	if ( !Q_stricmp( szMode, "campaign" ) )
 	{
 		char const *szCampaign = pGameDetails->GetString( "game/campaign", NULL );
-		bool bCampaignInstalled = pSource->CampaignExists( szCampaign );
+		bool bCampaignInstalled = ReactiveDropMissions::GetCampaign( szCampaign ) != NULL;
 
 		if ( !bCampaignInstalled &&
 			( !Q_stricmp( ui_public_lobby_filter_campaign.GetString(), "installedaddon" ) ||
@@ -265,7 +260,7 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	else if ( !Q_stricmp( szMode, "single_mission" ) )
 	{
 		char const *szMission = pGameDetails->GetString( "game/mission", NULL );
-		bool bMissionInstalled = pSource->MissionExists( szMission, false );
+		bool bMissionInstalled = ReactiveDropMissions::GetMission( szMission ) != NULL;
 
 		if ( !bMissionInstalled &&
 			( !Q_stricmp( ui_public_lobby_filter_campaign.GetString(), "installedaddon" ) ||
@@ -278,12 +273,6 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	{
 		return false;
 	}
-
-	// TODO:
-	//char const *szWebsite = pGameDetails->GetString( "game/missioninfo/website", "" );
-	// if no mission and no website, skip it
-	//if ( !pInstalledMission && !*szWebsite )
-		//return false;
 
 	return true;
 }

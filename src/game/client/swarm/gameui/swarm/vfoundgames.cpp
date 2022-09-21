@@ -34,9 +34,7 @@
 #include "nb_button.h"
 #include "fmtstr.h"
 #include "smartptr.h"
-#include "missionchooser/iasw_mission_chooser.h"
-#include "missionchooser/iasw_mission_chooser_source.h"
-
+#include "rd_missions_shared.h"
 #include "rd_lobby_utils.h"
 #include "mapentities_shared.h"
 
@@ -220,18 +218,13 @@ bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
 
 	if ( mbInGame && mpGameDetails )
 	{
-		IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-		if ( pSource )
-		{
-			const char *szMissionName = mpGameDetails->GetString( "game/mission", "" );
-			KeyValues *pMissionKeys = pSource->GetMissionDetails( szMissionName );
-			char const *szWebsite = mpGameDetails->GetString( "game/missioninfo/website", NULL );
-			PublishedFileId_t iWorkshopFile = GetWorkshopID();
-			if ( ( !pMissionKeys || Q_stricmp( pMissionKeys->GetString( "version", "" ),
-				mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
-				&& ( ( szWebsite && *szWebsite ) || iWorkshopFile != k_PublishedFileIdInvalid ) )
-				return true;
-		}
+		const char *szMissionName = mpGameDetails->GetString( "game/mission", "" );
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMissionName );
+		char const *szWebsite = mpGameDetails->GetString( "game/missioninfo/website", NULL );
+		PublishedFileId_t iWorkshopFile = GetWorkshopID();
+		if ( ( !pMission || V_stricmp( STRING( pMission->Version ), mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
+			&& ( ( szWebsite && *szWebsite ) || iWorkshopFile != k_PublishedFileIdInvalid ) )
+			return true;
 	}
 
 	return false;
@@ -2290,23 +2283,31 @@ void FoundGames::OnItemSelected( const char* panelName )
 		else if( fi.mbInGame )
 		{
 			chapterName = "";
-			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 			const char *szDetailsMissionName = fi.mpGameDetails->GetString( "game/mission", "" );
-			KeyValues *pMissionKeys = NULL;
-			if ( pSource && szDetailsMissionName && szDetailsMissionName[0] )
+			const RD_Mission_t *pMission = NULL;
+			if ( szDetailsMissionName && szDetailsMissionName[0] )
 			{
-				pMissionKeys = pSource->GetMissionDetails( szDetailsMissionName );
+				pMission = ReactiveDropMissions::GetMission( szDetailsMissionName );
 			}
 
-			if ( pMissionKeys )
+			if ( pMission )
 			{
-				if ( pMissionKeys->GetString( "image", NULL ) )
+				if ( pMission->Image != NULL_STRING )
 				{
-					chapterImage = pMissionKeys->GetString( "image" );
+					chapterImage = STRING( pMission->Image );
 				}
-				campaignName = pMissionKeys->GetString( "displaytitle" );
-				szDownloadAuthor = pMissionKeys->GetString( "author", szDownloadAuthor );
-				szDownloadWebsite = pMissionKeys->GetString( "website", szDownloadWebsite );
+				if ( pMission->MissionTitle != NULL_STRING )
+				{
+					campaignName = STRING( pMission->MissionTitle );
+				}
+				if ( pMission->Author != NULL_STRING )
+				{
+					szDownloadAuthor = STRING( pMission->Author );
+				}
+				if ( pMission->Website != NULL_STRING )
+				{
+					szDownloadWebsite = STRING( pMission->Website );
+				}
 			}
 			else
 			{
@@ -2606,7 +2607,7 @@ void FoundGames::OnItemSelected( const char* panelName )
 		}
 
 		btnWebsite->SetText( finalString );
-		btnWebsite->SetVisible( finalString[0] != 0 );
+		btnWebsite->SetVisible( finalString[0] != 0 && ( gameListItem->GetFullInfo().GetWorkshopID() == k_PublishedFileIdInvalid || !SteamUtils() || !SteamUtils()->IsOverlayEnabled() ) );
 	}
 
 	vgui::Label *lblAccess = dynamic_cast< vgui::Label* >( FindChildByName( "LblPlayerAccess" ) );
