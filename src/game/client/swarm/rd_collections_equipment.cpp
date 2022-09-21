@@ -431,7 +431,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
 
-	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_pWeapon->RequiredLevel, -1 );
+	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_pWeapon->RequiredLevel - 1, -1 );
 	if ( pTab->m_pBriefing && m_pWeapon->Builtin )
 	{
 		bLevelLocked = !pTab->m_pBriefing->IsWeaponUnlocked( m_pWeapon->ClassName );
