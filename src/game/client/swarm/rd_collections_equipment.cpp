@@ -662,10 +662,6 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		szIcon = "swarm/swarmopedia/fact/ammo";
 		szCaption = "#rd_weapon_fact_ammo";
 		break;
-	case Type_T::Recharges:
-		szIcon = "swarm/swarmopedia/fact/recharges";
-		szCaption = "#rd_weapon_fact_recharges";
-		break;
 	case Type_T::Secondary:
 		szIcon = "swarm/swarmopedia/fact/secondary";
 		szCaption = "#rd_weapon_fact_secondary";
