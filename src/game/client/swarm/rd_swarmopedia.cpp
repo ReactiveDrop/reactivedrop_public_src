@@ -863,9 +863,6 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		}
 
 		break;
-	case WeaponFact::Type_T::Recharges:
-		// TODO
-		break;
 	case WeaponFact::Type_T::Secondary:
 		pFact->Caption += pWeaponInfo->szAltFireText;
 
@@ -1200,10 +1197,6 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	{
 		Type = Type_T::Ammo;
 		Precision = 0;
-	}
-	else if ( FStrEq( szName, "Recharges" ) )
-	{
-		Type = Type_T::Recharges;
 	}
 	else if ( FStrEq( szName, "Secondary" ) )
 	{

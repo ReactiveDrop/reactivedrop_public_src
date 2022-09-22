@@ -253,7 +253,6 @@ namespace RD_Swarmopedia
 			Piercing,
 			FireRate,
 			Ammo,
-			Recharges,
 			Secondary,
 			Deployed,
 			RequirementLevel,

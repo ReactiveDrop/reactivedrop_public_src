@@ -2969,10 +2969,10 @@ public:
 		int idx = m_BindingListeners.Find( pchNewBinding );
 		if ( idx != m_BindingListeners.InvalidIndex() )
 		{
-			CUtlVector< IKeyBindingListener * > &list = m_BindingListeners[ idx ].m_List;
-			for ( int i = 0 ; i < list.Count(); ++i )
+			CUtlVector< IKeyBindingListener * > &list2 = m_BindingListeners[ idx ].m_List;
+			for ( int i = 0 ; i < list2.Count(); ++i )
 			{
-				list[ i ]->OnKeyBindingChanged( nSplitScreenSlot, buttonCode, pchKeyName, pchNewBinding );
+				list2[ i ]->OnKeyBindingChanged( nSplitScreenSlot, buttonCode, pchKeyName, pchNewBinding );
 			}
 		}
 	}

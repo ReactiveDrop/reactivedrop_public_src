@@ -2545,9 +2545,12 @@
 		"ClassName" "asw_weapon_blink"
 		"Builtin" "1"
 		"Facts" {
-			"Recharges" {
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_charge_time"
 				"CVar" "asw_blink_charge_time"
 				"BaseDivisor" "1.4"
+				"Precision" "1"
 			}
 			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/range"

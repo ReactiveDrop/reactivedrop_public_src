@@ -3970,53 +3970,39 @@ void CAlienSwarm::OnServerHibernating()
 	{
 		// when server has no players, switch to the default campaign
 
-		IASW_Mission_Chooser_Source* pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+		IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 		if ( !pSource )
 			return;
 
 		const char *szCampaignName = asw_default_campaign.GetString();
 		const char *szMissionName = NULL;
-		KeyValues *pCampaignDetails = pSource->GetCampaignDetails( szCampaignName );
-		if ( !pCampaignDetails )
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( szCampaignName );
+		if ( !pCampaign || !pCampaign->Installed )
 		{
 			Warning( "Unable to find default campaign %s when server started hibernating.", szCampaignName );
 			return;
 		}
 
-		bool bSkippedFirst = false;
-		for ( KeyValues *pMission = pCampaignDetails->GetFirstSubKey(); pMission; pMission = pMission->GetNextKey() )
-		{
-			if ( !Q_stricmp( pMission->GetName(), "MISSION" ) )
-			{
-				if ( !bSkippedFirst )
-				{
-					bSkippedFirst = true;
-				}
-				else
-				{
-					szMissionName = pMission->GetString( "MapName", NULL );
-					break;
-				}
-			}
-		}
+		szMissionName = pCampaign->Missions.Count() > 1 ? pCampaign->Missions[1].MapName : NULL;
 		if ( !szMissionName )
 		{
 			Warning( "Unabled to find starting mission for campaign %s when server started hibernating.", szCampaignName );
 			return;
 		}
 
-		char szSaveFilename[ MAX_PATH ];
-		szSaveFilename[ 0 ] = 0;
+		char szSaveFilename[MAX_PATH]{};
 		if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, ( gpGlobals->maxClients > 1 ), szMissionName ) )
 		{
 			Warning( "Unable to create new save game when server started hibernating.\n" );
 			return;
 		}
+
 		// quit server
 		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
 		{
 			Shutdown();
 		}
+
 		// reset difficulty and challenge
 		asw_skill.SetValue( 2 );
 		SetSkillLevel( asw_skill.GetInt() );
