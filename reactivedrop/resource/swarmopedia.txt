@@ -996,6 +996,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1049,6 +1050,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heal_grenade"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"RequireCVar" "rd_infinite_healgrenade"
@@ -1090,6 +1092,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_medical_satchel"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/healing"
@@ -1128,15 +1131,21 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_ammo_satchel"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "rd_ammo_bonus"
-				"Icon" "swarm/swarmopedia/fact/ammo"
-				"Caption" "#rd_weapon_fact_ammo"
+				"Icon" "swarm/swarmopedia/fact/ammo_drop"
+				"Caption" "#rd_weapon_fact_ammo_drop"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Deployed" {
+				"Generic" {
+					"Caption" "#rd_weapon_fact_ammo_stash"
+				}
 			}
 		}
 	}
@@ -1146,10 +1155,15 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/warning"
 				"Caption" "#rd_weapon_fact_explodes_if_burned"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/ammo_drop"
+				"Caption" "#rd_weapon_fact_ammo_bag"
 			}
 		}
 	}
@@ -1285,6 +1299,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heal_gun"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"RequireCVar" "rd_medgun_infinite_ammo"
@@ -1418,6 +1433,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1541,7 +1557,31 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_sniper_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG"
+			}
+			// TODO: this gun does 1/2/3 max penetrate when idle/zoomed/damage-amped. piercing chance is always 350%. need to figure out a good way to represent this.
+			"Piercing" {
+				"Base" "3.5"
+				"Precision" "1"
+			}
+			"BulletSpread" {
+				"Base" "0"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
+					"Caption" "#rd_weapon_fact_damage_bonus_additive"
+					"CVar" "rd_sniper_rifle_dmg_zoomed_bonus"
+				}
+				"FireRate" {
+					"BaseMultiplier" "1.9"
+				}
+			}
 		}
 	}
 	"WEAPON" {
@@ -1644,6 +1684,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1922,6 +1963,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_healamp_gun"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2042,6 +2084,7 @@
 			"Z" "8"
 			"Pitch" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_extinguishes_fires"
@@ -2209,6 +2252,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2220,6 +2264,7 @@
 			"Y" "-8"
 			"Yaw" "180"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2227,6 +2272,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_flares"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2249,6 +2295,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_laser_mines"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2260,6 +2307,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_normal_armor"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2267,6 +2315,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_buff_grenade"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2296,6 +2345,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_hornet_barrage"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2310,6 +2360,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2335,6 +2386,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_stim"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2342,6 +2394,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_tesla_trap"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"Icon" "swarm/swarmopedia/fact/ammo"
@@ -2383,6 +2436,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_electrified_armor"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/duration"
@@ -2408,6 +2462,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2422,6 +2477,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_flashlight_toggle"
@@ -2431,6 +2487,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_fist"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/damage_club"
@@ -2453,6 +2510,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_grenades_dmg_base"
@@ -2483,6 +2541,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_night_vision"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2490,6 +2549,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_smart_bomb"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2504,6 +2564,7 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2533,6 +2594,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_t75"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2544,6 +2606,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_blink"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/duration"
@@ -2566,6 +2629,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_jump_jet"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			// TODO
 		}
@@ -2573,6 +2637,7 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_bait"
 		"Builtin" "1"
+		// TODO: GlobalStat
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
