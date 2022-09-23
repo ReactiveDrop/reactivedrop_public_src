@@ -1415,6 +1415,10 @@
 				"Caption" "#rd_weapon_fact_burning_dps"
 			}
 			"Ammo" {}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heavy"
+				"Caption" "#rd_weapon_fact_slow_movement_while_held"
+			}
 			"Secondary" {
 				"Generic" {
 					"RequireCVar" "rd_flamer_infinite_extinguisher"
