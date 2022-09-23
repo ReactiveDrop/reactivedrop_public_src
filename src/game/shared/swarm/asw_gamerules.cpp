@@ -5567,9 +5567,10 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 
 	// asw test, let drones pass through one another
 #ifndef CLIENT_DLL
-	if ((collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
-			&& collisionGroup1 == ASW_COLLISION_GROUP_ALIEN && asw_springcol.GetBool())
-			return false;
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_ALIEN && asw_springcol.GetBool() )
+	{
+		return false;
+	}
 #endif
 
 	if ( collisionGroup0 > collisionGroup1 )
@@ -5579,6 +5580,14 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		collisionGroup0 = collisionGroup1;
 		collisionGroup1 = tmp;
 	}
+
+#ifndef CLIENT_DLL
+	// reactivedrop: allow drones and shieldbugs to pass but not shieldbugs and other shieldbugs
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN && asw_springcol.GetBool() )
+	{
+		return false;
+	}
+#endif
 
 	// players don't collide with buzzers (since the buzzers use vphysics collision and that makes the player get stuck)
 	if (collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == ASW_COLLISION_GROUP_BUZZER)
