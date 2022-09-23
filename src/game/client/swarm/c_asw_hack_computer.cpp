@@ -195,19 +195,20 @@ bool C_ASW_Hack_Computer::ShouldPredict()
 //  also allows overriding during the splash screen
 bool C_ASW_Hack_Computer::CanOverrideHack()
 {
-	if (m_hComputerFrame.Get())
+	CASW_VGUI_Computer_Frame *pFrame = m_hComputerFrame;
+	C_ASW_Computer_Area *pArea = GetComputerArea();
+	if ( !pFrame || !pArea )
+		return false;
+
+	if ( pArea->IsLocked() )
 	{
-		if (GetComputerArea() && GetComputerArea()->IsLocked())
-		{
-			if (m_hComputerFrame->m_iBackdropType == 1 || m_hComputerFrame->m_bPlayingSplash)
-			{
-				if (m_hComputerFrame->m_pMenuPanel && m_hComputerFrame->m_pMenuPanel->IsHacking())	// already hacking
-					return false;
-				return true;
-			}
-		}
+		if ( pFrame->m_pMenuPanel && pFrame->m_pMenuPanel->IsHacking() ) // already hacking
+			return false;
+
+		return pFrame->m_iBackdropType == 1 || pFrame->m_bPlayingSplash;
 	}
-	return false;
+
+	return pArea->m_DownloadObjectiveName[0] != '\0' && !pArea->m_bDownloadedDocs && pFrame->m_pHackComputer->m_iShowOption == 0;
 }
 
 int C_ASW_Hack_Computer::GetTumblerPosition(int i)
