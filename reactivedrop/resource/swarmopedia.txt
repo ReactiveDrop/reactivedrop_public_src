@@ -1969,7 +1969,46 @@
 		"Builtin" "1"
 		// TODO: GlobalStat
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"RequireCVar" "rd_medgun_infinite_ammo"
+				"RequireValue" "0"
+				"UseWeaponInfo" "0"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALAMP_GUN_CHARGES"
+			}
+			"FireRate" {}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/heals_infestation"
+				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"HammerUnits" {
+				"Icon" "swarm/swarmopedia/fact/range"
+				"Caption" "#rd_weapon_fact_range"
+				"Base" "240"
+			}
+			"Secondary" {
+				"Ammo" {
+					"RequireCVar" "rd_medgun_infinite_ammo"
+					"RequireValue" "0"
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_DRUGS"
+					"SubSkill" "ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Base" "1"
+				}
+				"Generic" {
+					"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
+					"Caption" "#rd_weapon_fact_damage_amp"
+				}
+			}
 		}
 	}
 	"WEAPON" {
@@ -2077,7 +2116,38 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
+			"DamagePerShot" {
+				"CVar" "rd_medrifle_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG"
+			}
+			"BulletSpread" {
+				"Base" "3"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"Ammo" {
+					"RequireCVar" "rd_medgun_infinite_ammo"
+					"RequireValue" "0"
+				}
+				"FireRate" {}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/healing"
+					"Caption" "#rd_weapon_fact_healing"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT"
+				}
+				"Generic" {
+					"Icon" "swarm/swarmopedia/fact/heals_infestation"
+					"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/range"
+					"Caption" "#rd_weapon_fact_range"
+					"Base" "240"
+				}
+			}
 		}
 	}
 	"WEAPON" {
