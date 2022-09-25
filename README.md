@@ -48,8 +48,7 @@ This way we will be able to see which changes did you introduce to the content f
 
 Changes can be submitted as pull requests.
 
-A pull request should be as granular as possible and only change one thing at a time. If changes are related or more complex, it would
-be good to start a discussion on how to approach this, before making a change to ensure it can be merged.
+A pull request should be as granular as possible and only change one thing at a time. If changes are related or more complex, it would be good to start a discussion on how to approach this, before making a change to ensure it can be merged.
 
 ### LICENSE ###
 Alien Swarm SDK Copyright(c) Valve Corp.
