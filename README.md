@@ -5,8 +5,9 @@
 ### What is this repository for? ###
 Having access to the source code you can:
 
-* Add new weapons, NPCs, fix bugs and generally add new features to the game and submit them as pull requests 
-* Create mods. Both server side and client side mods. Or fully standalone mods 
+* Add new weapons, NPCs;
+* Fix bugs;
+* Add new features to the game
 
 ### How to download the repository ###
 There are two branches in this repository:
@@ -16,9 +17,9 @@ There are two branches in this repository:
 
 > **Tip:** It is better to make a fork of this repository before cloning it and work on your own fork. Do this using a button in the top right. The URL for your forked repository will be different from the one shown below.
 
-* Download and install [Git for Windows](https://git-scm.com/downloads). 
+* Download and install [Git for Windows](https://git-scm.com/downloads).
 * Open Git Bash
-* Input commands into Git Bash 
+* Input commands into Git Bash
 ```sh
     git clone https://github.com/ReactiveDrop/reactivedrop_public_src.git
     cd reactivedrop_public_src
@@ -38,12 +39,19 @@ The reactivedrop folder contains games content: materials, models, scripts, soun
 * First commit only adds unmodified content files. You can get them from the Alien Swarm: Reactive Drop game folder
 * Second commit introduces your modifications to both content files and, if necessary, source code
 
-This way we will be able to see which changes did you introduce to the content files. 
+This way we will be able to see which changes did you introduce to the content files.
+
+### How to submit changes ###
+
+Changes can be submitted as pull requests.
+
+A pull request should be as granular as possible and only change one thing at a time. If changes are related or more complex, it would
+be good to start a discussion on how to approach this, before making a change to ensure it can be merged.
 
 ### LICENSE ###
-Alien Swarm SDK Copyright(c) Valve Corp. 
+Alien Swarm SDK Copyright(c) Valve Corp.
 Valve did not explicitly specify a licence for Alien Swarm SDK but it is most likely similar to SOURCE 1 SDK LICENSE https://github.com/ValveSoftware/source-sdk-2013/blob/master/LICENSE
-If you would like to use the SDK for a commercial purpose, please contact Valve at 
+If you would like to use the SDK for a commercial purpose, please contact Valve at
 sourceengine@valvesoftware.com.
 
 ### CONTRIBUTING ###
@@ -52,19 +60,19 @@ contribution to the project (e.g. create an Issue or submit a Pull Request)
 (a "Contribution"), Reactive Drop Team wants to be able to use your Contribution to improve
 the game.
 
-As a condition of providing a Contribution, you agree that: 
+As a condition of providing a Contribution, you agree that:
 
 * You irrevocably grant anyone the right to use your work under the following license: Creative Commons CC0 Waiver (release all rights, like public domain: [legal code](https://creativecommons.org/publicdomain/zero/1.0/))
 * You warrant and represent that the Contribution is your original creation,
 that you have the authority to grant this license to anyone, and that this
 license does not require the permission of any third party.  Otherwise, you
-provide your Contribution "as is" without warranties.  
+provide your Contribution "as is" without warranties.
 
 Should you wish to submit a suggestion or work that is not your original
 creation, you may submit it to Reactive Drop Team separate from any Contribution,
 explicitly identifying it as sourced from a third party, stating the details
 of its origin, and informing Reactive Drop Team of any license or other restriction of
-which you are personally aware. 
+which you are personally aware.
 
 
 Reactive Drop Team is happy to accept pull requests and issues in the reactivedrop_public_src
