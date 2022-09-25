@@ -5,9 +5,12 @@
 ### What is this repository for? ###
 Having access to the source code you can:
 
-* Add new weapons, NPCs;
-* Fix bugs;
-* Add new features to the game
+
+* Add new weapons, NPCs, fix bugs and generally add new features to the game and submit them as pull requests
+* Create mods. Both server side and client side mods. Or fully standalone mods**
+
+** Mods can be used to create local games or servers, to play local or with friends. Modded clients are not allowed to cheat, gain advantage, or modify gameplay in any way on non-modded servers, this includes ranked servers.
+
 
 ### How to download the repository ###
 There are two branches in this repository:
