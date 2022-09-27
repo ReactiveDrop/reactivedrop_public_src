@@ -4200,6 +4200,57 @@ void CBaseEntity::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 	if ( pInfo->m_pTransmitEdict->Get( index ) )
 		return;
 
+	//AG3_KILLSTREAK added code:
+	int iVScriptsShouldTransmit = -1;
+	if (index>0 && !m_bIgnoreVScriptTransmit && g_pScriptVM)
+	{
+		edict_t* clientEdict = pInfo->m_pClientEnt;
+		int clientIndex = ENTINDEX(clientEdict);
+		CBaseEntity* clientEntity = UTIL_EntityByIndex(clientIndex);
+
+		if (HSCRIPT hFunction = g_pScriptVM->LookupFunction("OnSetTransmit"))
+		{
+			ScriptVariant_t newResult;
+			ScriptStatus_t nStatus = g_pScriptVM->Call(hFunction, NULL, true, &newResult, ToHScript(clientEntity), ToHScript(this));
+			if (nStatus != SCRIPT_DONE)
+			{
+				DevWarning("OnSetTransmit VScript function did not finish!\n");
+			}
+			else
+			{
+				newResult.AssignTo(&iVScriptsShouldTransmit);
+			}
+			g_pScriptVM->ReleaseFunction(hFunction);
+		}
+		else if (g_pScriptVM->ValueExists("g_ModeScript"))
+		{
+			ScriptVariant_t hModeScript;
+			if (g_pScriptVM->GetValue("g_ModeScript", &hModeScript))
+			{
+				if (HSCRIPT hFunction = g_pScriptVM->LookupFunction("OnSetTransmit", hModeScript))
+				{
+					ScriptVariant_t newResult;
+					ScriptStatus_t nStatus = g_pScriptVM->Call(hFunction, hModeScript, true, &newResult, ToHScript(clientEntity), ToHScript(this));
+					if (nStatus != SCRIPT_DONE)
+					{
+						DevWarning("OnSetTransmit VScript function did not finish!\n");
+					}
+					else
+					{
+						newResult.AssignTo(&iVScriptsShouldTransmit);
+					}
+					g_pScriptVM->ReleaseFunction(hFunction);
+				}
+				g_pScriptVM->ReleaseValue(hModeScript);
+			}
+		}
+	}
+	if (iVScriptsShouldTransmit == 0)
+	{
+		return;
+	}
+	//END OF ----------------
+
 	CServerNetworkProperty *pNetworkParent = NetworkProp()->GetNetworkParent();
 
 	pInfo->m_pTransmitEdict->Set( index );

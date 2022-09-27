@@ -213,6 +213,8 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 
 	memset( m_iInitialWeaponsInSlots, -1, sizeof( m_iInitialWeaponsInSlots ) );
 	memset( const_cast<int*>( m_iWeaponsInSlots.Base() ), -1, sizeof( m_iInitialWeaponsInSlots ) );
+
+	m_bIgnoreVScriptTransmit = true;
 }
 
 

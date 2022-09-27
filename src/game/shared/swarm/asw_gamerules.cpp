@@ -9556,6 +9556,7 @@ public:
 			g_pScriptVM->SetValue( hScope, "UserConsoleCommand", SCRIPT_VARIANT_NULL );
 			g_pScriptVM->SetValue( hScope, "OnMissionStart", SCRIPT_VARIANT_NULL );
 			g_pScriptVM->SetValue( hScope, "OnGameplayStart", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue(hScope, "OnSetTransmit", SCRIPT_VARIANT_NULL);
 		}
 
 		BaseClass::RunVScripts();

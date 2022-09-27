@@ -749,6 +749,8 @@ public:
 	string_t m_iGlobalname; // identifier for carrying entity across level transitions
 	string_t m_iParent;	// the name of the entities parent; linked into m_pParent during Activate()
 
+	bool m_bIgnoreVScriptTransmit = false;
+
 	// This comes from the "id" key/value that Hammer adds to entities.
 	// It is used by Foundry to match up live (engine) entities with Hammer entities.
 	int		m_iHammerID; // Hammer unique edit id number
