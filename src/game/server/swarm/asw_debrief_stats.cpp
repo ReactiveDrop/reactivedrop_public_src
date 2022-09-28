@@ -117,6 +117,8 @@ CASW_Debrief_Stats::CASW_Debrief_Stats()
 {
 	//Msg("[S] CASW_Debrief_Stats created\n");
 	m_bBeatSpeedrunTime = false;
+
+	m_bIgnoreVScriptTransmit = true;
 }
 
 CASW_Debrief_Stats::~CASW_Debrief_Stats()
