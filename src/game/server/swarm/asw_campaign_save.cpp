@@ -92,6 +92,8 @@ CASW_Campaign_Save::CASW_Campaign_Save()
 		m_iParasitesKilled[i] = 0;
 	}
 	m_iNumDeaths = 0;
+
+	m_bIgnoreVScriptTransmit = true;
 }
 
 CASW_Campaign_Save::~CASW_Campaign_Save()

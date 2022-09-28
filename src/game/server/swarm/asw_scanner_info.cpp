@@ -33,6 +33,8 @@ CASW_Scanner_Info::CASW_Scanner_Info()
 		m_index.Set(i, 0);
 		m_BlipType.Set(i, 0);
 	}
+
+	m_bIgnoreVScriptTransmit = true;
 }
 
 CASW_Scanner_Info::~CASW_Scanner_Info()

@@ -156,6 +156,8 @@ CASW_Game_Resource::CASW_Game_Resource()
 
 	// make skills default for single mission
 	UpdateMarineSkills( NULL );
+	
+	m_bIgnoreVScriptTransmit = true;
 }
 
 CASW_Game_Resource::~CASW_Game_Resource()
