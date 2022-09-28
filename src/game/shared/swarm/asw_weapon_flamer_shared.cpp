@@ -474,6 +474,11 @@ float CASW_Weapon_Flamer::GetWeaponDamage()
 	return flDamage;
 }
 
+float CASW_Weapon_Flamer::GetMovementScale()
+{
+	return ShouldMarineMoveSlow() ? 0.5f : 0.8f;
+}
+
 #ifdef CLIENT_DLL
 const char* CASW_Weapon_Flamer::GetPartialReloadSound(int iPart)
 {

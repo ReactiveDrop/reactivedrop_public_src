@@ -9,6 +9,7 @@
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
 #include <vgui_controls/Tooltip.h>
+#include "vgui_bitmapbutton.h"
 #include "gameui/swarm/vgenericpanellist.h"
 #include "nb_button.h"
 #include "ibriefing.h"
@@ -371,6 +372,7 @@ CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent
 	: BaseClass( parent, panelName )
 {
 	m_pWeapon = pWeapon;
+	m_bNoDirectEquip = false;
 
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pLockedIcon = new vgui::ImagePanel( this, "LockedIcon" );
@@ -380,11 +382,23 @@ CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent
 	m_pNewLabel = new vgui::Label( this, "NewLabel", "#new_weapon" );
 	m_pClassIcon = new vgui::ImagePanel( this, "ClassIcon" );
 	m_pClassLabel = new vgui::Label( this, "ClassLabel", L"" );
+	m_pInfoButton = new CBitmapButton( this, "InfoButton", "" );
+	m_pInfoButton->AddActionSignalTarget( this );
 }
 
 void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pInfoButton->SetVisible( false );
+
+	color32 white{ 255, 255, 255, 255 };
+	color32 lgray{ 192, 192, 192, 255 };
+	color32 transparent{ 0, 0, 0, 0 };
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/swarm/swarmopedia/fact/generic", lgray );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/swarmopedia/fact/generic", white );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/swarm/swarmopedia/fact/generic", white );
+	m_pInfoButton->SetImage( CBitmapButton::BUTTON_DISABLED, "vgui/swarm/swarmopedia/fact/generic", transparent );
 
 	m_pIcon->SetImage( m_pWeapon->Icon );
 
@@ -417,7 +431,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
 
-	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_pWeapon->RequiredLevel, -1 );
+	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_pWeapon->RequiredLevel - 1, -1 );
 	if ( pTab->m_pBriefing && m_pWeapon->Builtin )
 	{
 		bLevelLocked = !pTab->m_pBriefing->IsWeaponUnlocked( m_pWeapon->ClassName );
@@ -432,6 +446,11 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	else
 	{
 		m_pCantEquipLabel->SetVisible( false );
+
+		if ( pTab->m_pBriefing )
+		{
+			m_pInfoButton->SetVisible( true );
+		}
 	}
 
 	if ( bLevelLocked )
@@ -461,6 +480,56 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	}
 }
 
+void CRD_Collection_Entry_Equipment::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	if ( !m_pInfoButton->IsVisible() )
+	{
+		BaseClass::OnKeyCodePressed( keycode );
+		return;
+	}
+
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		ApplyEntry();
+		break;
+	case KEY_XBUTTON_X:
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		m_bNoDirectEquip = true;
+		ApplyEntry();
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
+void CRD_Collection_Entry_Equipment::OnCommand( const char *command )
+{
+	if ( !V_strcmp( command, "ShowInfo" ) )
+	{
+		m_bNoDirectEquip = true;
+		ApplyEntry();
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CRD_Collection_Entry_Equipment::OnThink()
+{
+	BaseClass::OnThink();
+
+	m_pInfoButton->SetEnabled( IsCursorOver() );
+}
+
 void CRD_Collection_Entry_Equipment::ApplyEntry()
 {
 	if ( m_pLockedLabel->IsVisible() )
@@ -478,6 +547,13 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 	}
 
 	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon ) );
+
+	if ( !m_bNoDirectEquip && pTab->m_pBriefing )
+	{
+		pTGD->m_hOverridePanel->OnCommand( "AcceptEquip" );
+	}
+
+	m_bNoDirectEquip = false;
 }
 
 class CRD_Equipment_WeaponFact : public vgui::EditablePanel
@@ -585,10 +661,6 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	case Type_T::Ammo:
 		szIcon = "swarm/swarmopedia/fact/ammo";
 		szCaption = "#rd_weapon_fact_ammo";
-		break;
-	case Type_T::Recharges:
-		szIcon = "swarm/swarmopedia/fact/recharges";
-		szCaption = "#rd_weapon_fact_recharges";
 		break;
 	case Type_T::Secondary:
 		szIcon = "swarm/swarmopedia/fact/secondary";

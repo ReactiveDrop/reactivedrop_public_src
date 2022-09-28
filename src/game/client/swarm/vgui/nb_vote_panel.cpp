@@ -14,6 +14,8 @@
 #include "c_asw_player.h"
 #include "asw_input.h"
 #include "clientmode_asw.h"
+#include "asw_util_shared.h"
+#include "rd_missions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,8 +43,8 @@ CNB_Vote_Panel::CNB_Vote_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_iYesCount = -1;
 	m_iSecondsLeft = -1;
 	m_flCheckBindings = 0;
-	m_szVoteYesKey[0] = 0;
-	m_szVoteNoKey[0] = 0;
+	m_wszVoteYesKey[0] = 0;
+	m_wszVoteNoKey[0] = 0;
 	m_VotePanelType = VPT_BRIEFING;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel(), 250 );
@@ -176,22 +178,17 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	{
 		if ( gpGlobals->curtime > m_flCheckBindings )
 		{
-			Q_snprintf(m_szVoteYesKey, sizeof(m_szVoteYesKey), "%s", ASW_FindKeyBoundTo( "vote_yes" ) );
-			Q_strupr(m_szVoteYesKey);
-			Q_snprintf(m_szVoteNoKey, sizeof(m_szVoteNoKey), "%s", ASW_FindKeyBoundTo( "vote_no" ) );
-			Q_strupr(m_szVoteNoKey);
+			TryLocalize( ASW_FindKeyBoundTo( "vote_yes" ), m_wszVoteYesKey, sizeof( m_wszVoteYesKey ) );
+			TryLocalize( ASW_FindKeyBoundTo( "vote_no" ), m_wszVoteNoKey, sizeof( m_wszVoteNoKey ) );
 
 			m_flCheckBindings += 1.0f;
-		}		
-		// copy the found key into wchar_t format (localize it if it's a token rather than a normal keyname)
-		wchar_t keybuffer[ 12 ];
+		}
+
 		wchar_t buffer[64];
-		g_pVGuiLocalize->ConvertANSIToUnicode( m_szVoteYesKey, keybuffer, sizeof( keybuffer ) );		
-		g_pVGuiLocalize->ConstructString( buffer, sizeof(buffer), g_pVGuiLocalize->Find("#press_to_vote_yes"), 1, keybuffer );
+		g_pVGuiLocalize->ConstructString( buffer, sizeof( buffer ), g_pVGuiLocalize->Find( "#press_to_vote_yes" ), 1, m_wszVoteYesKey );
 		m_pPressToVoteYesLabel->SetText( buffer );
 
-		g_pVGuiLocalize->ConvertANSIToUnicode( m_szVoteNoKey, keybuffer, sizeof( keybuffer ) );		
-		g_pVGuiLocalize->ConstructString( buffer, sizeof(buffer), g_pVGuiLocalize->Find("#press_to_vote_no"), 1, keybuffer );
+		g_pVGuiLocalize->ConstructString( buffer, sizeof( buffer ), g_pVGuiLocalize->Find( "#press_to_vote_no" ), 1, m_wszVoteNoKey );
 		m_pPressToVoteNoLabel->SetText( buffer );
 	}
 	else if ( pPlayer->m_iMapVoted.Get() == 1 )
@@ -217,7 +214,7 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 		wchar_t wnumber[8];
 		g_pVGuiLocalize->ConvertANSIToUnicode(buffer, wnumber, sizeof( wnumber ));
 
-		wchar_t wbuffer[96];		
+		wchar_t wbuffer[96];
 		g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
 			g_pVGuiLocalize->Find("#asw_time_left"), 1,
 			wnumber);
@@ -227,39 +224,39 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	m_pCounterLabel->SetText( "" );
 
 	// update count and other labels
-	if (m_iYesCount != ASWGameRules()->GetCurrentVoteYes())
+	if ( m_iYesCount != ASWGameRules()->GetCurrentVoteYes() )
 	{
 		m_iYesCount = ASWGameRules()->GetCurrentVoteYes();
 		char buffer[8];
-		Q_snprintf(buffer, sizeof(buffer), "%d", m_iYesCount);
+		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iYesCount );
 
 		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode(buffer, wnumber, sizeof( wnumber ));
+		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
-		wchar_t wbuffer[96];		
-		g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-			g_pVGuiLocalize->Find("#asw_yes_votes"), 1,
-			wnumber);
-		m_pYesVotesLabel->SetText(wbuffer);
+		wchar_t wbuffer[96];
+		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+			g_pVGuiLocalize->Find( "#asw_yes_votes" ), 1,
+			wnumber );
+		m_pYesVotesLabel->SetText( wbuffer );
 	}
-	if (m_iNoCount != ASWGameRules()->GetCurrentVoteNo())
+	if ( m_iNoCount != ASWGameRules()->GetCurrentVoteNo() )
 	{
 		m_iNoCount = ASWGameRules()->GetCurrentVoteNo();
 		char buffer[8];
-		Q_snprintf(buffer, sizeof(buffer), "%d", m_iNoCount);
+		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iNoCount );
 
 		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode(buffer, wnumber, sizeof( wnumber ));
+		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
-		wchar_t wbuffer[96];		
-		g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-			g_pVGuiLocalize->Find("#asw_no_votes"), 1,
-			wnumber);
-		m_pNoVotesLabel->SetText(wbuffer);
-	}	
-	if (Q_strcmp(m_szMapName, ASWGameRules()->GetCurrentVoteDescription()))
+		wchar_t wbuffer[96];
+		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+			g_pVGuiLocalize->Find( "#asw_no_votes" ), 1,
+			wnumber );
+		m_pNoVotesLabel->SetText( wbuffer );
+	}
+	if ( Q_strcmp( m_szMapName, ASWGameRules()->GetCurrentVoteDescription() ) )
 	{
-		Q_snprintf(m_szMapName, sizeof(m_szMapName), "%s", ASWGameRules()->GetCurrentVoteDescription());
+		Q_snprintf( m_szMapName, sizeof( m_szMapName ), "%s", ASWGameRules()->GetCurrentVoteDescription() );
 
 		wchar_t wmapnamebuf[64];
 		const wchar_t *wmapname = g_pVGuiLocalize->Find( m_szMapName );
@@ -269,17 +266,12 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 			wmapname = wmapnamebuf;
 		}
 
-		wchar_t wbuffer[96];						
-		if (ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION)
+		wchar_t wbuffer[96];
+		if ( ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION )
 		{
 			m_pTitle->SetText( "#asw_vote_mission_title" );
-			m_bVoteMapInstalled = true;
-			if ( missionchooser && missionchooser->LocalMissionSource() )
-			{
-				if ( !missionchooser->LocalMissionSource()->GetMissionDetails( ASWGameRules()->GetCurrentVoteMapName() ) )
-					m_bVoteMapInstalled = false;
-			}
-
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( ASWGameRules()->GetCurrentVoteMapName() );
+			m_bVoteMapInstalled = pMission && pMission->Installed;
 			if ( m_bVoteMapInstalled )
 			{
 				const char *szContainingCampaign = ASWGameRules()->GetCurrentVoteCampaignName();
@@ -294,25 +286,25 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 			}
 			else
 			{
-				g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_current_mission_vote_not_installed"), 1,
-					wmapname);
+				g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+					g_pVGuiLocalize->Find( "#asw_current_mission_vote_not_installed" ), 1,
+					wmapname );
 			}
 		}
-		else if (ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_SAVED_CAMPAIGN)
+		else if ( ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_SAVED_CAMPAIGN )
 		{
 			m_pTitle->SetText( "#asw_vote_saved_title" );
-			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-				g_pVGuiLocalize->Find("#asw_current_saved_vote"), 1,
-				wmapname);
+			g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+				g_pVGuiLocalize->Find( "#asw_current_saved_vote" ), 1,
+				wmapname );
 		}
 
 		int w, t;
-		m_pMapNameLabel->GetSize(w, t);
-		if (m_pMapNameLabel->GetTextImage())
-			m_pMapNameLabel->GetTextImage()->SetSize(w, t);
-		m_pMapNameLabel->SetText(wbuffer);
-		m_pMapNameLabel->InvalidateLayout(true);
+		m_pMapNameLabel->GetSize( w, t );
+		if ( m_pMapNameLabel->GetTextImage() )
+			m_pMapNameLabel->GetTextImage()->SetSize( w, t );
+		m_pMapNameLabel->SetText( wbuffer );
+		m_pMapNameLabel->InvalidateLayout( true );
 	}
 }
 

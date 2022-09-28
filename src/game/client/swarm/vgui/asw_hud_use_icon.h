@@ -60,7 +60,7 @@ public:
 
 	// finding the current use key
 	void FindUseKeyBind();
-	char m_szUseKeyText[12];
+	char m_szUseKeyText[128];
 
 	bool m_bHacking;
 

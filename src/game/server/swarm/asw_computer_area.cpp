@@ -250,13 +250,13 @@ void CASW_Computer_Area::FindTurretsAndCams()
 void CASW_Computer_Area::Override( CASW_Marine *pMarine )
 {
 	Assert( pMarine );
-	if (m_iHackLevel > 5)						
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_HACK_LONG_STARTED);
+	if ( m_iHackLevel > 5 )
+		pMarine->GetMarineSpeech()->Chatter( CHATTER_HACK_LONG_STARTED );
 	else
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_HACK_STARTED);
+		pMarine->GetMarineSpeech()->Chatter( CHATTER_HACK_STARTED );
 	//  launch the hack puzzle by choosing the special hack option
-	GetCurrentHack()->SelectHackOption(ASW_HACK_OPTION_OVERRIDE);
-	m_OnComputerHackStarted.FireOutput(pMarine, this);
+	GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_OVERRIDE );
+	m_OnComputerHackStarted.FireOutput( pMarine, this );
 }
 
 void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
@@ -275,6 +275,13 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 				&& GetCurrentHack()->m_iShowOption.Get() != ASW_HACK_OPTION_OVERRIDE)
 		{
 			Override( pMarine );
+			return;
+		}
+
+		if ( pMarine->GetMarineProfile()->CanHack() && GetCurrentHack() && !m_bIsLocked && GetCurrentHack()->m_iShowOption == 0 && m_DownloadObjectiveName.Get()[0] != '\0' && !m_bDownloadedDocs )
+		{
+			Assert( GetCurrentHack()->GetOptionTypeForEntry( ASW_HACK_OPTION_ICON_1 ) == ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS );
+			GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_ICON_1 );
 			return;
 		}
 		

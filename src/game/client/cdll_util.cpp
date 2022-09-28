@@ -830,7 +830,7 @@ void UTIL_ReplaceKeyBindings( const wchar_t *inbuf, int inbufsizebytes, wchar_t 
 				const char *key = engine->Key_LookupBindingEx( *binding == '+' ? binding + 1 : binding, nSlot );
 				if ( !key )
 				{
-					key = IsX360() ? "" : "< not bound >";
+					key = IsX360() ? "" : "#GameUI_KeyNames_Not_Bound";
 				}
 
 				//!! change some key names into better names
@@ -1320,50 +1320,6 @@ int UTIL_GetMapKeyCount( const char *pszCustomKey )
 	}
 
 	return iCount;
-}
-
-
-wchar_t *UTIL_GetLocalizedKeyString( const char *command, const char *fmt, const wchar_t *arg1, const wchar_t *arg2, const wchar_t *arg3 )
-{
-	static wchar_t useString[4][256];
-	static int index = 0;
-
-	index = index + 1;
-	if ( index > 3 )
-		index = 0;
-
-	const char *lowercaseKey = engine->Key_LookupBinding( command );
-	if ( !lowercaseKey )
-	{
-		lowercaseKey = "<NOT BOUND>";
-	}
-
-	char szKey[64];
-	V_strncpy( szKey, lowercaseKey, sizeof( szKey ) );
-	for ( char *tmp = szKey; *tmp; ++tmp )
-	{
-		*tmp = toupper( *tmp );
-	}
-
-	wchar_t wszKey[64];
-	g_pVGuiLocalize->ConvertANSIToUnicode( szKey,  wszKey, sizeof(wszKey) );
-
-	int argCount = 1;
-	if ( arg1 )
-	{
-		++argCount;
-		if ( arg2 )
-		{
-			++argCount;
-			if ( arg3 )
-			{
-				++argCount;
-			}
-		}
-	}
-
-	g_pVGuiLocalize->ConstructString( useString[index], sizeof( useString[index] ), g_pVGuiLocalize->Find( fmt ), argCount, wszKey, arg1, arg2, arg3 );
-	return useString[index];
 }
 
 void UTIL_ClearTrace( trace_t &trace )

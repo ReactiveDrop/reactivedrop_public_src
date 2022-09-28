@@ -106,7 +106,7 @@ void CGameRulesProxy::NotifyNetworkStateChanged()
 
 
 
-ConVar	old_radius_damage( "old_radiusdamage", "0.0", FCVAR_REPLICATED );
+ConVar	old_radius_damage( "old_radiusdamage", "0.0", FCVAR_CHEAT | FCVAR_REPLICATED );
 
 #ifdef CLIENT_DLL //{
 

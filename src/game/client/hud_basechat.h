@@ -11,6 +11,7 @@
 #pragma once
 #endif
 
+#include "ColorText_Shared.h"
 #include "hudelement.h"
 #include <vgui_controls/Panel.h>
 #include "vgui_basepanel.h"
@@ -45,7 +46,7 @@ extern Color g_ColorGreen;
 extern Color g_ColorDarkGreen;
 extern Color g_ColorYellow;
 extern Color g_ColorGrey;
-extern Color g_ColoPurple;
+extern Color g_ColorPurple;
 
 extern ConVar cl_showtextmsg;
 
@@ -59,20 +60,6 @@ enum ChatFilters
 	CHAT_FILTER_TEAMCHANGE = 16
 };
 
-
-//-----------------------------------------------------------------------------
-enum TextColor
-{
-	COLOR_NORMAL = 1,
-	COLOR_USEOLDCOLORS = 2,
-	COLOR_PLAYERNAME = 3,
-	COLOR_LOCATION = 4,
-	COLOR_ACHIEVEMENT = 5,
-	COLOR_MOD_CUSTOM = 6,
-	COLOR_MOD_CUSTOM2 = 7,
-	COLOR_INPUTCUSTOMCOL = 8,
-	COLOR_MAX
-};
 
 //--------------------------------------------------------------------------------------------------------------
 struct TextRange

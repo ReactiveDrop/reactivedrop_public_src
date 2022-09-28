@@ -505,6 +505,10 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 		ClearUnpackedMissionData();
 
 	Assert( s_UnpackedCampaigns.Count() == CountCampaigns() );
+	// somehow, the campaign string table is getting stuff added to it without firing the change listener.
+	// pretend it did notify us of the change if that happens.
+	if ( s_UnpackedCampaigns.Count() != CountCampaigns() )
+		ClearUnpackedMissionData();
 
 	if ( index < 0 || index >= CountCampaigns() )
 	{
@@ -541,6 +545,8 @@ const RD_Campaign_t *ReactiveDropMissions::GetCampaign( int index )
 
 		return pCampaign;
 	}
+
+	pCampaign->Installed = true;
 
 	pCampaign->CampaignName = AllocMissionsPooledString( pKV->GetString( "CampaignName" ) );
 	pCampaign->CampaignDescription = AllocMissionsPooledString( pKV->GetString( "CampaignDescription" ) );
@@ -631,6 +637,8 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 		ClearUnpackedMissionData();
 
 	Assert( s_UnpackedMissions.Count() == CountMissions() );
+	if ( s_UnpackedMissions.Count() != CountMissions() )
+		ClearUnpackedMissionData();
 
 	if ( index < 0 || index >= CountMissions() )
 	{
@@ -663,6 +671,8 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 		return pMission;
 	}
+
+	pMission->Installed = true;
 
 	pMission->PosX = pKV->GetInt( "pos_x" );
 	pMission->PosY = pKV->GetInt( "pos_y" );

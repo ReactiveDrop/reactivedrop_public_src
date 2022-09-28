@@ -42,6 +42,7 @@ ConVar asw_harvester_new( "asw_harvester_new", "1", FCVAR_CHEAT, "If set to 1, u
 ConVar asw_harvester_spawn_height( "asw_harvester_spawn_height", "16", FCVAR_CHEAT, "Height above harvester origin to spawn xenomites at" );
 ConVar asw_harvester_spawn_interval( "asw_harvester_spawn_interval", "1.0", FCVAR_CHEAT, "Time between spawning a harvesite and starting to spawn another" );
 ConVar rd_harvester_health( "rd_harvester_health", "200", FCVAR_CHEAT, "Health of the harvester" );
+ConVar rd_harvester_always_release_xenomites( "rd_harvester_always_release_xenomites", "0", FCVAR_CHEAT, "If set, harvesters will always release xenomites after death" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 extern ConVar asw_debug_alien_damage;
@@ -613,9 +614,12 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed(info);
 
-	// If we died to an explosion which inflicted two times more damage than we had health (and no other damage type), the xenomites died with us.
-	if ( ( info.GetDamageType() == DMG_BLAST ) && ( m_iHealth + info.GetDamage() / 2 <= 0 ) )
-		return;
+	if ( !rd_harvester_always_release_xenomites.GetBool() )
+	{
+		// If we died to an explosion which inflicted two times more damage than we had health (and no other damage type), the xenomites died with us.
+		if ( ( info.GetDamageType() == DMG_BLAST ) && ( info.GetDamage() > 135.0f ) && ( m_iHealth + info.GetDamage() / 2 <= 0 ) )
+			return;
+	}
 
 	// spawn a bunch of xenomites
 	int iNumParasites = 4 + RandomInt(0,2);

@@ -500,12 +500,8 @@ void PlayerListPanel::UpdateVoteButtons()
 		wchar_t wbuffer[96];
 		if (ASWGameRules()->GetCurrentVoteType() == ASW_VOTE_CHANGE_MISSION)
 		{
-			m_bVoteMapInstalled = true;
-			if ( missionchooser && missionchooser->LocalMissionSource() )
-			{
-				if ( !missionchooser->LocalMissionSource()->GetMissionDetails( ASWGameRules()->GetCurrentVoteMapName() ) )
-					m_bVoteMapInstalled = false;
-			}
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( ASWGameRules()->GetCurrentVoteMapName() );
+			m_bVoteMapInstalled = pMission && pMission->Installed;
 
 			if ( m_bVoteMapInstalled )
 			{

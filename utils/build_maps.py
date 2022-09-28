@@ -159,4 +159,4 @@ with open(build_all_maps_cfg, "a") as myfile:
 # run the game and execute the cfg file
 # game will load each map and execute these commands using 
 # aliases and wait command: stringtabledictionary;buildcubemaps;
-call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-game", moddir, "+exec build_all_maps"])
+call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-skiploadingworkshopaddons", "-game", moddir, "+exec build_all_maps"])

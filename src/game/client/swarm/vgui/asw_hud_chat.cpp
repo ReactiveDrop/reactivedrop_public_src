@@ -437,7 +437,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 		}
 		break;
 	case COLOR_MOD_CUSTOM:
-		c = g_ColoPurple;
+		c = g_ColorPurple;
 		break;
 	case COLOR_MOD_CUSTOM2:
 		c = g_ColorRed;

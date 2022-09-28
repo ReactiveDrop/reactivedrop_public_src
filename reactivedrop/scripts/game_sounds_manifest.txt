@@ -23,6 +23,7 @@ game_sounds_manifest
 	"precache_file"		"scripts/game_sounds_ui.txt"
 	"precache_file"		"scripts/game_sounds_player.txt"
 	"precache_file"		"scripts/game_sounds_nh_actors.txt"
+	"precache_file"		"scripts/game_sounds_accident32.txt"
 
 	// Weapon sounds
 	"precache_file"		"scripts/game_sounds_weapons.txt"

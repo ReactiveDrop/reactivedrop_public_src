@@ -195,7 +195,7 @@ extern ConVar old_radius_damage;
 	ConVar rda_auto_mission_failed_instant_restart( "rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "", &RDAAutoMissionFailedInstantRestartChanged );
 	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
 	ConVar rd_dedicated_high_resolution_timer_ms( "rd_dedicated_high_resolution_timer_ms", "0.01", FCVAR_NONE, "Acquire timer with specified resolution in ms" );
-
+	ConVar rd_radial_damage_no_falloff_distance( "rd_radial_damage_no_falloff_distance", "16", FCVAR_CHEAT, "Distance from an explosion where damage starts to decrease based on distance.", true, 0, false, 0 );
 	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
 
 	// allow updateing the high res timer realtime
@@ -542,7 +542,9 @@ ConVar rd_points_delay_max( "rd_points_delay_max", "5", FCVAR_REPLICATED, "Maxim
 ConVar rd_points_decay( "rd_points_decay", "0.97", FCVAR_REPLICATED, "Amount that score change decays by per tick.", true, 0, true, 0.999 );
 ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "Number of seconds between score decay ticks.", true, 0, false, 0 );
 
+#ifdef CLIENT_DLL
 ConVar rd_skip_all_dialogue( "rd_skip_all_dialogue", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Tell the server not to send audio from asw_voiceover_dialogue." );
+#endif
 
 // ASW Weapons
 // Rifle (5 clips, 98 per)
@@ -3968,53 +3970,39 @@ void CAlienSwarm::OnServerHibernating()
 	{
 		// when server has no players, switch to the default campaign
 
-		IASW_Mission_Chooser_Source* pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+		IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 		if ( !pSource )
 			return;
 
 		const char *szCampaignName = asw_default_campaign.GetString();
 		const char *szMissionName = NULL;
-		KeyValues *pCampaignDetails = pSource->GetCampaignDetails( szCampaignName );
-		if ( !pCampaignDetails )
+		const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( szCampaignName );
+		if ( !pCampaign || !pCampaign->Installed )
 		{
 			Warning( "Unable to find default campaign %s when server started hibernating.", szCampaignName );
 			return;
 		}
 
-		bool bSkippedFirst = false;
-		for ( KeyValues *pMission = pCampaignDetails->GetFirstSubKey(); pMission; pMission = pMission->GetNextKey() )
-		{
-			if ( !Q_stricmp( pMission->GetName(), "MISSION" ) )
-			{
-				if ( !bSkippedFirst )
-				{
-					bSkippedFirst = true;
-				}
-				else
-				{
-					szMissionName = pMission->GetString( "MapName", NULL );
-					break;
-				}
-			}
-		}
+		szMissionName = pCampaign->Missions.Count() > 1 ? pCampaign->Missions[1].MapName : NULL;
 		if ( !szMissionName )
 		{
 			Warning( "Unabled to find starting mission for campaign %s when server started hibernating.", szCampaignName );
 			return;
 		}
 
-		char szSaveFilename[ MAX_PATH ];
-		szSaveFilename[ 0 ] = 0;
+		char szSaveFilename[MAX_PATH]{};
 		if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, ( gpGlobals->maxClients > 1 ), szMissionName ) )
 		{
 			Warning( "Unable to create new save game when server started hibernating.\n" );
 			return;
 		}
+
 		// quit server
 		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
 		{
 			Shutdown();
 		}
+
 		// reset difficulty and challenge
 		asw_skill.SetValue( 2 );
 		SetSkillLevel( asw_skill.GetInt() );
@@ -5579,9 +5567,10 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 
 	// asw test, let drones pass through one another
 #ifndef CLIENT_DLL
-	if ((collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
-			&& collisionGroup1 == ASW_COLLISION_GROUP_ALIEN && asw_springcol.GetBool())
-			return false;
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_ALIEN && asw_springcol.GetBool() )
+	{
+		return false;
+	}
 #endif
 
 	if ( collisionGroup0 > collisionGroup1 )
@@ -5591,6 +5580,14 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		collisionGroup0 = collisionGroup1;
 		collisionGroup1 = tmp;
 	}
+
+#ifndef CLIENT_DLL
+	// reactivedrop: allow drones and shieldbugs to pass but not shieldbugs and other shieldbugs
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN && asw_springcol.GetBool() )
+	{
+		return false;
+	}
+#endif
 
 	// players don't collide with buzzers (since the buzzers use vphysics collision and that makes the player get stuck)
 	if (collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == ASW_COLLISION_GROUP_BUZZER)
@@ -6134,7 +6131,7 @@ extern bool IsExplosionTraceBlocked( trace_t *ptr );
 #define ROBUST_RADIUS_PROBE_DIST 16.0f // If a solid surface blocks the explosion, this is how far to creep along the surface looking for another way to the target
 void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore, CBaseEntity *pEntityIgnore )
 {
-	const int MASK_RADIUS_DAMAGE = MASK_SHOT&(~CONTENTS_HITBOX);
+	const int MASK_RADIUS_DAMAGE = MASK_SHOT & ( ~CONTENTS_HITBOX );
 	CBaseEntity *pEntity = NULL;
 	trace_t		tr;
 	float		flAdjustedDamage, falloff;
@@ -6144,16 +6141,17 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 
 	if ( asw_debug_alien_damage.GetBool() )
 	{
-		NDebugOverlay::Circle( vecSrc, QAngle( -90.0f, 0, 0 ), flRadius, 255, 160, 0, 255, true, 4.0f );
+		NDebugOverlay::Circle( vecSrc, QAngle( -90.0f, 0, 0 ), flRadius, 255, 160, 0, 127, true, 4.0f );
+		NDebugOverlay::Circle( vecSrc, QAngle( -90.0f, 0, 0 ), rd_radial_damage_no_falloff_distance.GetFloat(), 255, 160, 0, 255, true, 4.0f );
 	}
 
-	if ( flRadius )
-		falloff = info.GetDamage() / flRadius;
+	if ( flRadius > rd_radial_damage_no_falloff_distance.GetFloat() )
+		falloff = info.GetDamage() / ( flRadius - rd_radial_damage_no_falloff_distance.GetFloat() );
 	else
 		falloff = 1.0;
 
 	float fMarineRadius = flRadius * asw_marine_explosion_protection.GetFloat();
-	float fMarineFalloff = falloff / MAX(0.01f, asw_marine_explosion_protection.GetFloat());	 
+	float fMarineFalloff = falloff / MAX( 0.01f, asw_marine_explosion_protection.GetFloat() );
 
 	if ( info.GetDamageCustom() & DAMAGE_FLAG_NO_FALLOFF )
 	{
@@ -6172,7 +6170,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 	//float flMarineHalfRadiusSqr = flHalfRadiusSqr * asw_marine_explosion_protection.GetFloat();
 
 	// iterate on all entities in the vicinity.
-	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
+	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
 		// This value is used to scale damage when the explosion is blocked by some other object.
 		float flBlockedDamagePercent = 0.0f;
@@ -6190,9 +6188,9 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		}
 
 		// check if this is a marine and if so, he may be outside the explosion radius				
-		if (pEntity->Classify() == CLASS_ASW_MARINE)
+		if ( pEntity->Classify() == CLASS_ASW_MARINE )
 		{
-			if (( vecSrc - pEntity->WorldSpaceCenter() ).Length() > fMarineRadius)
+			if ( ( vecSrc - pEntity->WorldSpaceCenter() ).Length() > fMarineRadius )
 				continue;
 		}
 
@@ -6200,20 +6198,20 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		vecSpot = pEntity->BodyTarget( vecSrc, false );
 		UTIL_TraceLine( vecSrc, vecSpot, MASK_RADIUS_DAMAGE, info.GetInflictor(), COLLISION_GROUP_NONE, &tr );
 
-		if( old_radius_damage.GetBool() )
+		if ( old_radius_damage.GetBool() )
 		{
 			if ( tr.fraction != 1.0 && tr.m_pEnt != pEntity )
-			continue;
+				continue;
 		}
 		else
 		{
 			if ( tr.fraction != 1.0 )
 			{
-				if ( IsExplosionTraceBlocked(&tr) )
+				if ( IsExplosionTraceBlocked( &tr ) )
 				{
-					if( ShouldUseRobustRadiusDamage( pEntity ) )
+					if ( ShouldUseRobustRadiusDamage( pEntity ) )
 					{
-						if( vecSpot.DistToSqr( vecSrc ) > flHalfRadiusSqr )
+						if ( vecSpot.DistToSqr( vecSrc ) > flHalfRadiusSqr )
 						{
 							// Only use robust model on a target within one-half of the explosion's radius.
 							continue;
@@ -6237,7 +6235,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 						UTIL_TraceLine( tr.endpos, vecSpot, MASK_RADIUS_DAMAGE, info.GetInflictor(), COLLISION_GROUP_NONE, &tr );
 						//NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 0, 0, false, 10 );
 
-						if( tr.fraction != 1.0 && tr.DidHitWorld() )
+						if ( tr.fraction != 1.0 && tr.DidHitWorld() )
 						{
 							// Still can't reach the target.
 							continue;
@@ -6251,7 +6249,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 				}
 
 				// UNDONE: Probably shouldn't let children block parents either?  Or maybe those guys should set their owner if they want this behavior?
-				if( tr.m_pEnt && tr.m_pEnt != pEntity && tr.m_pEnt->GetOwnerEntity() != pEntity )
+				if ( tr.m_pEnt && tr.m_pEnt != pEntity && tr.m_pEnt->GetOwnerEntity() != pEntity )
 				{
 					// Some entity was hit by the trace, meaning the explosion does not have clear
 					// line of sight to the entity that it's trying to hurt. If the world is also
@@ -6261,23 +6259,23 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 
 					UTIL_TraceLine( vecSrc, vecSpot, CONTENTS_SOLID, info.GetInflictor(), COLLISION_GROUP_NONE, &tr );
 
-					if( tr.fraction != 1.0 )
+					if ( tr.fraction != 1.0 )
 					{
 						continue;
 					}
-					
+
 					// asw - don't let npcs reduce the damage from explosions
-					if (!pBlockingEntity->IsNPC())
-					{	
+					if ( !pBlockingEntity->IsNPC() )
+					{
 						// Now, if the interposing object is physics, block some explosion force based on its mass.
-						if( pBlockingEntity->VPhysicsGetObject() )
+						if ( pBlockingEntity->VPhysicsGetObject() )
 						{
 							const float MASS_ABSORB_ALL_DAMAGE = 350.0f;
 							float flMass = pBlockingEntity->VPhysicsGetObject()->GetMass();
 							float scale = flMass / MASS_ABSORB_ALL_DAMAGE;
 
 							// Absorbed all the damage.
-							if( scale >= 1.0f )
+							if ( scale >= 1.0f )
 							{
 								continue;
 							}
@@ -6295,18 +6293,30 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 				}
 			}
 		}
-		// decrease damage for marines
-		if (pEntity->Classify() == CLASS_ASW_MARINE)
-			flAdjustedDamage = ( vecSrc - tr.endpos ).Length() * fMarineFalloff;
+
+		float flFalloffDist = ( vecSrc - tr.endpos ).Length();
+		if ( flFalloffDist > rd_radial_damage_no_falloff_distance.GetFloat() )
+		{
+			flFalloffDist -= rd_radial_damage_no_falloff_distance.GetFloat();
+
+			// decrease damage for marines
+			if ( pEntity->Classify() == CLASS_ASW_MARINE )
+				flAdjustedDamage = flFalloffDist * fMarineFalloff;
+			else
+				flAdjustedDamage = flFalloffDist * falloff;
+
+			flAdjustedDamage = info.GetDamage() - flAdjustedDamage;
+		}
 		else
-			flAdjustedDamage = ( vecSrc - tr.endpos ).Length() * falloff;
-		flAdjustedDamage = info.GetDamage() - flAdjustedDamage;
+		{
+			flAdjustedDamage = info.GetDamage();
+		}
 
 		if ( flAdjustedDamage <= 0 )
 			continue;
 
 		// the explosion can 'see' this entity, so hurt them!
-		if (tr.startsolid)
+		if ( tr.startsolid )
 		{
 			// if we're stuck inside them, fixup the position and distance
 			tr.endpos = vecSrc;
@@ -6314,36 +6324,36 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		}
 
 		// make explosions hurt asw_doors more
-		if (FClassnameIs(pEntity, "asw_door"))
+		if ( FClassnameIs( pEntity, "asw_door" ) )
 			flAdjustedDamage *= asw_door_explosion_boost.GetFloat();
-		
+
 		CTakeDamageInfo adjustedInfo = info;
 		//Msg("%s: Blocked damage: %f percent (in:%f  out:%f)\n", pEntity->GetClassname(), flBlockedDamagePercent * 100, flAdjustedDamage, flAdjustedDamage - (flAdjustedDamage * flBlockedDamagePercent) );
-		adjustedInfo.SetDamage( flAdjustedDamage - (flAdjustedDamage * flBlockedDamagePercent) );
+		adjustedInfo.SetDamage( flAdjustedDamage - ( flAdjustedDamage * flBlockedDamagePercent ) );
 
 		// Now make a consideration for skill level!
-		if( info.GetAttacker() && info.GetAttacker()->IsPlayer() && pEntity->IsNPC() )
+		if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() && pEntity->IsNPC() )
 		{
 			// An explosion set off by the player is harming an NPC. Adjust damage accordingly.
 			adjustedInfo.AdjustPlayerDamageInflictedForSkillLevel();
 		}
 
 		// asw - if this is burn damage, don't kill the target, let him burn for a bit
-		if ((adjustedInfo.GetDamageType() & DMG_BURN) && adjustedInfo.GetDamage() > 3)
+		if ( ( adjustedInfo.GetDamageType() & DMG_BURN ) && adjustedInfo.GetDamage() > 3 )
 		{
-			if (adjustedInfo.GetDamage() > pEntity->GetHealth())
+			if ( adjustedInfo.GetDamage() > pEntity->GetHealth() )
 			{
-				int newDamage = pEntity->GetHealth() - random->RandomInt(8, 23);
-				if (newDamage <= 3)
+				int newDamage = pEntity->GetHealth() - random->RandomInt( 8, 23 );
+				if ( newDamage <= 3 )
 					newDamage = 3;
-				adjustedInfo.SetDamage(newDamage);
+				adjustedInfo.SetDamage( newDamage );
 			}
 
 			// check if this damage is coming from an incendiary grenade that might need to collect stats
 			if ( adjustedInfo.GetInflictor() && adjustedInfo.GetInflictor()->Classify() == CLASS_ASW_GRENADE_VINDICATOR )
 			{
-				CASW_Grenade_Vindicator* pGrenade = assert_cast<CASW_Grenade_Vindicator*>(adjustedInfo.GetInflictor());
-				pGrenade->BurntAlien(pEntity);
+				CASW_Grenade_Vindicator *pGrenade = assert_cast< CASW_Grenade_Vindicator * >( adjustedInfo.GetInflictor() );
+				pGrenade->BurntAlien( pEntity );
 			}
 		}
 
@@ -6365,7 +6375,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 
 		if ( tr.fraction != 1.0 && pEntity == tr.m_pEnt )
 		{
-			ClearMultiDamage( );
+			ClearMultiDamage();
 			pEntity->DispatchTraceAttack( adjustedInfo, dir, &tr );
 			ApplyMultiDamage();
 		}
@@ -6377,8 +6387,8 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		if ( asw_debug_alien_damage.GetBool() )
 		{
 			Msg( "Explosion did %f damage to %d:%s\n", adjustedInfo.GetDamage(), pEntity->entindex(), pEntity->GetClassname() );
-			NDebugOverlay::Line( vecSrc, pEntity->WorldSpaceCenter(), 255, 255, 0, false, 4 );			
-			NDebugOverlay::EntityText( pEntity->entindex(), 0, CFmtStr("%d", (int) adjustedInfo.GetDamage() ), 4.0, 255, 255, 255, 255 );
+			NDebugOverlay::Line( vecSrc, pEntity->WorldSpaceCenter(), 255, 255, 0, false, 4 );
+			NDebugOverlay::EntityText( pEntity->entindex(), 0, CFmtStr( "%d", ( int )adjustedInfo.GetDamage() ), 4.0, 255, 255, 255, 255 );
 		}
 
 		// Now hit all triggers along the way that respond to damage... 

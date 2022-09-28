@@ -22,7 +22,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_auto_override_computer( "asw_auto_override_computer", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_auto_override_computer( "asw_auto_override_computer", "1", FCVAR_CHEAT | FCVAR_REPLICATED );
 
 void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine,  CUserCmd *ucmd, float fDeltaTime)
 {

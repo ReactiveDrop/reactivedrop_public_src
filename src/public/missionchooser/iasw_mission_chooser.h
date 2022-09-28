@@ -120,10 +120,10 @@ public:
 abstract_class IASW_Mission_Chooser : public IAppSystem
 {
 public:
-	virtual bool GetCurrentTimeAndDate(int *year, int *month, int *dayOfWeek, int *day, int *hour, int *minute, int *second) = 0;
+	virtual bool GetCurrentTimeAndDate( int *year, int *month, int *dayOfWeek, int *day, int *hour, int *minute, int *second ) = 0;
 
 	virtual IASW_Random_Missions *RandomMissions() = 0;
-	virtual IASW_Mission_Chooser_Source *LocalMissionSource() = 0;	
+	virtual IASW_Mission_Chooser_Source *LocalMissionSource() = 0;
 	virtual IASW_Location_Grid *LocationGrid() = 0;
 	virtual IASW_Mission_Text_Database *MissionTextDatabase() = 0;
 	virtual IASW_Map_Builder *MapBuilder() = 0;

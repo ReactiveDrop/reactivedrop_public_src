@@ -1929,12 +1929,12 @@ bool UTIL_RD_LoadKeyValues( KeyValues *pKV, const char *resourceName, const CUtl
 	if ( buf.TellPut() >= 3 && !V_strncmp( pszBuf, "\xEF\xBB\xBF", 3 ) )
 	{
 		// We've got a byte order mark in UTF-8. KeyValues will get confused by this.
-		CUtlBuffer buf2{ pszBuf + 3, buf.Size() - 3, CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
+		CUtlBuffer buf2{ pszBuf + 3, buf.TellPut() - 3, CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
 		return LoadKeyValuesFromBuffer( pKV, resourceName, buf2 );
 	}
 
 	// Use the buffer as-is.
-	CUtlBuffer buf2{ buf.Base(), buf.Size(), CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
+	CUtlBuffer buf2{ buf.Base(), buf.TellPut(), CUtlBuffer::READ_ONLY | CUtlBuffer::TEXT_BUFFER };
 	return LoadKeyValuesFromBuffer( pKV, resourceName, buf2 );
 }
 
@@ -1952,6 +1952,12 @@ bool UTIL_RD_LoadKeyValuesFromFile( KeyValues *pKV, IFileSystem *pFileSystem, co
 		buf.SeekPut( CUtlBuffer::SEEK_HEAD, nBytes );
 
 		g_pFullFileSystem->Close( hFile );
+
+		// This mission is included in HoIAF but its overview file is missing a closing brace.
+		if ( !V_strcmp( szFileName, "resource/overviews/researchlab2.txt" ) && CRC32_ProcessSingleBuffer( buf.Base(), buf.TellPut() ) == 0x5a28bbce )
+		{
+			buf.PutChar( '}' );
+		}
 
 		return UTIL_RD_LoadKeyValues( pKV, szFileName, buf );
 	}

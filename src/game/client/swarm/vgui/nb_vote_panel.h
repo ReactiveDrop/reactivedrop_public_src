@@ -79,8 +79,8 @@ public:
 	vgui::Label* m_pPressToVoteNoLabel;
 
 	float m_flCheckBindings;
-	char m_szVoteYesKey[12];
-	char m_szVoteNoKey[12];
+	wchar_t m_wszVoteYesKey[128];
+	wchar_t m_wszVoteNoKey[128];
 
 	char m_szMapName[64];
 	int m_iNoCount;

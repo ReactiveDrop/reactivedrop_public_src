@@ -1353,7 +1353,7 @@ void CHudCloseCaption::Reset( void )
 	Unlock();
 }
 
-bool CHudCloseCaption::SplitCommand( wchar_t const **ppIn, wchar_t *cmd, wchar_t *args ) const
+bool CHudCloseCaption::SplitCommand( wchar_t const **ppIn, wchar_t( &cmd )[256], wchar_t( &args )[256] ) const
 {
 	const wchar_t *in = *ppIn;
 	const wchar_t *oldin = in;
@@ -1364,15 +1364,15 @@ bool CHudCloseCaption::SplitCommand( wchar_t const **ppIn, wchar_t *cmd, wchar_t
 		return false;
 	}
 
-	args[ 0 ] = 0;
-	cmd[ 0 ]= 0;
-	wchar_t *out = cmd;
+	args[0] = 0;
+	cmd[0] = 0;
+	int out = 0;
 	in++;
-	while ( *in != L'\0' && *in != L':' && *in != L'>' && !V_isspace( *in ) )
+	while ( *in != L'\0' && *in != L':' && *in != L'>' && !V_isspace( *in ) && out < 255 )
 	{
-		*out++ = *in++;
+		cmd[out++] = *in++;
 	}
-	*out = L'\0';
+	cmd[out] = L'\0';
 
 	if ( *in != L':' )
 	{
@@ -1381,12 +1381,12 @@ bool CHudCloseCaption::SplitCommand( wchar_t const **ppIn, wchar_t *cmd, wchar_t
 	}
 
 	in++;
-	out = args;
-	while ( *in != L'\0' && *in != L'>' )
+	out = 0;
+	while ( *in != L'\0' && *in != L'>' && out < 255 )
 	{
-		*out++ = *in++;
+		args[out++] = *in++;
 	}
-	*out = L'\0';
+	args[out] = L'\0';
 
 	//if ( *in == L'>' )
 	//	in++;
