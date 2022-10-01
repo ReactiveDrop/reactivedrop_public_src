@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "939"
+	"mapversion" "941"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -44,7 +44,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "939"
+	"mapversion" "941"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -66035,6 +66035,82 @@ world
 	}
 	solid
 	{
+		"id" "402454"
+		side
+		{
+			"id" "18601"
+			"plane" "(-12320 -7168 -1536) (-10720 -7168 -1536) (-10720 -7184 -1536)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "18602"
+			"plane" "(-12320 -7184 -2048) (-10720 -7184 -2048) (-10720 -7168 -2048)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "18603"
+			"plane" "(-12320 -7168 -1536) (-12320 -7184 -1536) (-12320 -7184 -2048)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "18604"
+			"plane" "(-10720 -7168 -2048) (-10720 -7184 -2048) (-10720 -7184 -1536)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "18605"
+			"plane" "(-10720 -7168 -1536) (-12320 -7168 -1536) (-12320 -7168 -2048)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "18606"
+			"plane" "(-10720 -7184 -2048) (-12320 -7184 -2048) (-12320 -7184 -1536)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 138 199"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
 		"id" "93385"
 		side
 		{
@@ -66645,82 +66721,6 @@ world
 		{
 			"color" "220 220 220"
 			"groupid" "93394"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	solid
-	{
-		"id" "402454"
-		side
-		{
-			"id" "18601"
-			"plane" "(-12320 -7168 -1536) (-10720 -7168 -1536) (-10720 -7184 -1536)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "18602"
-			"plane" "(-12320 -7184 -2048) (-10720 -7184 -2048) (-10720 -7168 -2048)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "18603"
-			"plane" "(-12320 -7168 -1536) (-12320 -7184 -1536) (-12320 -7184 -2048)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "18604"
-			"plane" "(-10720 -7168 -2048) (-10720 -7184 -2048) (-10720 -7184 -1536)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "18605"
-			"plane" "(-10720 -7168 -1536) (-12320 -7168 -1536) (-12320 -7168 -2048)"
-			"material" "TOOLS/TOOLSNOLIGHT"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "18606"
-			"plane" "(-10720 -7184 -2048) (-12320 -7184 -2048) (-12320 -7184 -1536)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "0 138 199"
 			"visgroupshown" "1"
 			"visgroupautoshown" "1"
 		}
@@ -98831,6 +98831,7 @@ entity
 		"OnButtonActivated" "liftdronesTrigger01"
 		"OnButtonActivated" "liftdronesDisable11"
 		"OnButtonActivated" "texthint02EndHint0-1"
+		"OnButtonActivated" "obj1marker_1SetComplete0-1"
 	}
 	solid
 	{
@@ -99051,7 +99052,7 @@ entity
 		"OnButtonActivated" "liftdronesTrigger01"
 		"OnButtonActivated" "liftdronesDisable11"
 		"OnButtonActivated" "texthint03EndHint0-1"
-		"OnButtonActivated" "texthint04ShowHint0-1"
+		"OnButtonActivated" "obj1marker_2SetComplete0-1"
 	}
 	solid
 	{
@@ -101789,6 +101790,7 @@ entity
 		"OnHitMax" "obj1SetComplete0-1"
 		"OnHitMax" "turnspriteShowSprite0-1"
 		"OnHitMax" "doorshotSetHealth10-1"
+		"OnHitMax" "texthint04ShowHint0-1"
 	}
 	"origin" "-11553.3 1900.81 -1975"
 	editor
@@ -104687,6 +104689,7 @@ entity
 		"OnButtonActivated" "hordespawn1StartSpawning2-1"
 		"OnButtonActivated" "hordespawn1StartSpawning17-1"
 		"OnButtonActivated" "obj12SetComplete0-1"
+		"OnButtonActivated" "obj2markerEnable32-1"
 	}
 	solid
 	{
@@ -105502,6 +105505,7 @@ entity
 		"OnButtonActivated" "obj2SetComplete30-1"
 		"OnButtonActivated" "hordespawn3StartSpawning0-1"
 		"OnButtonActivated" "hordespawn4StartSpawning15-1"
+		"OnButtonActivated" "obj2markerDisable0-1"
 	}
 	solid
 	{
@@ -105620,6 +105624,7 @@ entity
 		"OnButtonActivated" "texthint01EndHint0-1"
 		"OnButtonActivated" "texthint02ShowHint0-1"
 		"OnButtonActivated" "texthint03ShowHint0-1"
+		"OnButtonActivated" "obj1marker_0SetComplete0-1"
 	}
 	solid
 	{
@@ -127216,7 +127221,7 @@ entity
 	"mapheight" "256"
 	"mapwidth" "256"
 	"objectivename" "obj1"
-	"targetname" "obj1marker"
+	"targetname" "obj1marker_0"
 	"origin" "-12496 2128 -2001"
 	editor
 	{
@@ -127233,7 +127238,7 @@ entity
 	"mapheight" "256"
 	"mapwidth" "256"
 	"objectivename" "obj1"
-	"targetname" "obj1marker"
+	"targetname" "obj1marker_1"
 	"origin" "-11808 2008.92 -2032"
 	editor
 	{
@@ -127250,7 +127255,7 @@ entity
 	"mapheight" "256"
 	"mapwidth" "256"
 	"objectivename" "obj1"
-	"targetname" "obj1marker"
+	"targetname" "obj1marker_2"
 	"origin" "-11216 2012.49 -2016"
 	editor
 	{
@@ -127489,10 +127494,6 @@ entity
 	"objectivetitle" "#rd_res1_ob_rotate_laser"
 	"targetname" "obj12"
 	"Visible" "1"
-	connections
-	{
-		"OnObjectiveComplete" "obj2markerEnable0-1"
-	}
 	"origin" "-5072 -4032 -1584"
 	editor
 	{
@@ -133133,7 +133134,7 @@ hidden
 				editor
 				{
 					"color" "220 30 220"
-					"visgroupshown" "0"
+					"visgroupshown" "1"
 					"visgroupautoshown" "1"
 				}
 			}
@@ -133312,8 +133313,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-11177.1 -3343.63 -2066.42]"
-		"look" "[-11177.1 -3340.83 -2467.29]"
+		"position" "[-11112.5 -5960.5 -1945.28]"
+		"look" "[-11001.5 -5805.47 -2297.91]"
 	}
 }
 cordons
