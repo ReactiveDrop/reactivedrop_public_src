@@ -99,17 +99,11 @@ void MissionStatsPanel::SetMissionLabels(vgui::Label *pMissionLabel, vgui::Label
 	int iDiff = 1;
 	const char* pszToken = "#asw_difficulty_normal";
 	bool bCampaign = false;
-	bool bCarnage = false;
-	bool bUber = false;
 	bool bCheated = false;
-	bool bHardcore = false;
 	if (ASWGameRules())
 	{
 		iDiff = ASWGameRules()->GetSkillLevel();
 		bCampaign = ASWGameRules()->IsCampaignGame() == 1;
-		bCarnage = ASWGameRules()->IsCarnageMode();
-		bUber = ASWGameRules()->IsUberMode();
-		bHardcore = ASWGameRules()->IsHardcoreMode();
 		bCheated = ASWGameRules()->m_bCheated;
 	}
 	if (iDiff <= 1)
@@ -486,130 +480,90 @@ void MissionStatsPanel::ApplySchemeSettings( vgui::IScheme *scheme )
 	}
 }
 
-void MissionStatsPanel::InitFrom(C_ASW_Debrief_Stats* pStats)
+void MissionStatsPanel::InitFrom( C_ASW_Debrief_Stats *pStats )
 {
-	if (!pStats || !ASWGameRules())
+	if ( !pStats || !ASWGameRules() )
 		return;
 
 	m_hStats = pStats;
 
-	for (int i=0;i<MAX_STAT_LINES;i++)
+	for ( int i = 0; i < MAX_STAT_LINES; i++ )
 	{
-		if (m_pStatLines[i])
-			m_pStatLines[i]->InitFrom(pStats);
+		if ( m_pStatLines[i] )
+			m_pStatLines[i]->InitFrom( pStats );
 	}
-	
+
 	float fDelay = 2.0f;	// roughly how many seconds we want it to take for the bars to fill
-	float fHighestTime = MAX(pStats->GetTimeTaken(), pStats->GetBestTime());
-	float fHighestKills = MAX(pStats->GetTotalKills(), pStats->GetBestKills());
+	float fHighestTime = MAX( pStats->GetTimeTaken(), pStats->GetBestTime() );
+	float fHighestKills = MAX( pStats->GetTotalKills(), pStats->GetBestKills() );
 	float fTimeRate = fHighestTime / fDelay;
-	m_pTimeTakenBar->Init(0, pStats->GetTimeTaken(), fTimeRate, true, false);
+	m_pTimeTakenBar->Init( 0, pStats->GetTimeTaken(), fTimeRate, true, false );
 	m_pTimeTakenBar->AddMinMax( 0, fHighestTime );
-	m_pTotalKillsBar->Init(0, pStats->GetTotalKills(), fTimeRate, true, false);
+	m_pTotalKillsBar->Init( 0, pStats->GetTotalKills(), fTimeRate, true, false );
 	m_pTotalKillsBar->AddMinMax( 0, fHighestKills );
 
-	// if we unlocked Uber mode, we're going to display the speedrun time the player beat
-	wchar_t wszUnlockMsg[128];
-	bool bShowSpeedrunTime = false;
-	if (pStats->m_bJustUnlockedUber)	// beat the speedrun so show the uber message
+	wchar_t buf[128]{};
+	wchar_t number[8]{};
+	if ( pStats->m_bBeatSpeedrunTime )
 	{
 		// so grab the speedrun time and format it into our message
 		int iTotalSeconds = pStats->GetSpeedrunTime();
 		int iMinutes = iTotalSeconds / 60;
-		int iSeconds = iTotalSeconds - (iMinutes * 60);
+		int iSeconds = iTotalSeconds - ( iMinutes * 60 );
 
-		char timebuffer[8];
-		Q_snprintf(timebuffer, sizeof(timebuffer), "%.2d:%.2d", iMinutes, iSeconds);
+		V_snwprintf( number, sizeof( number ), L"%.2d:%02d", iMinutes, iSeconds );
 
-		wchar_t wtimebuffer[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode(timebuffer, wtimebuffer, sizeof( wtimebuffer ));
-
-		g_pVGuiLocalize->ConstructString( wszUnlockMsg, sizeof(wszUnlockMsg),
-			g_pVGuiLocalize->Find("#asw_unlocked_uber_format"), 1,
-			wtimebuffer);
-
-		bShowSpeedrunTime = true;
-	}
-	else if (pStats->m_bBeatSpeedrunTime)	// didn't unlock uber (already unlocked), but we did beat the speedrun time
-	{
-		// so grab the speedrun time and format it into our message
-		int iTotalSeconds = pStats->GetSpeedrunTime();
-		int iMinutes = iTotalSeconds / 60;
-		int iSeconds = iTotalSeconds - (iMinutes * 60);
-
-		char timebuffer[8];
-		Q_snprintf(timebuffer, sizeof(timebuffer), "%.2d:%.2d", iMinutes, iSeconds);
-
-		wchar_t wtimebuffer[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode(timebuffer, wtimebuffer, sizeof( wtimebuffer ));
-
-		g_pVGuiLocalize->ConstructString( wszUnlockMsg, sizeof(wszUnlockMsg),
-			g_pVGuiLocalize->Find("#asw_beat_speedrun_format"), 1,
-			wtimebuffer);
-
-		bShowSpeedrunTime = true;
+		g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+			g_pVGuiLocalize->Find( "#asw_beat_speedrun_format" ), 1,
+			number );
 	}
 
-	// set our label to show which modes were just unlocked
-	wchar_t wbuffer[255];		
-	g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-		g_pVGuiLocalize->Find("#asw_unlocked_format"), 3,
-		bShowSpeedrunTime ? wszUnlockMsg : L"",
-		pStats->m_bJustUnlockedCarnage ? g_pVGuiLocalize->Find("#asw_unlocked_carnage") : L"",
-		pStats->m_bJustUnlockedHardcore ? g_pVGuiLocalize->Find("#asw_unlocked_hardcore") : L""
-		);
-	m_pUnlockedLabel->SetText(wbuffer);
+	m_pUnlockedLabel->SetText( buf );
 
-	if (ASWGameRules()->GetMissionSuccess())
+	if ( ASWGameRules()->GetMissionSuccess() )
 	{
-		bool bNewRecordTime = ((pStats->GetTimeTaken() < pStats->GetBestTime()) || pStats->GetBestTime() == 0);
-		bool bNewRecordKills = ((pStats->GetTotalKills() > pStats->GetBestKills()) ||
-									(pStats->GetBestKills() == 0 && pStats->GetTotalKills() > 0));
+		bool bNewRecordTime = ( ( pStats->GetTimeTaken() < pStats->GetBestTime() ) || pStats->GetBestTime() == 0 );
+		bool bNewRecordKills = ( ( pStats->GetTotalKills() > pStats->GetBestKills() ) ||
+			( pStats->GetBestKills() == 0 && pStats->GetTotalKills() > 0 ) );
 
 		// format the best time
 		int iTotalSeconds = pStats->GetBestTime();
 		int iMinutes = iTotalSeconds / 60;
-		int iSeconds = iTotalSeconds - (iMinutes * 60);
+		int iSeconds = iTotalSeconds - ( iMinutes * 60 );
 
-		char timebuffer[8];
-		Q_snprintf(timebuffer, sizeof(timebuffer), "%.2d:%.2d", iMinutes, iSeconds);
+		V_snwprintf( number, sizeof( number ), L"%.2d:%02d", iMinutes, iSeconds );
 
-		wchar_t wtimebuffer[8];
-			g_pVGuiLocalize->ConvertANSIToUnicode(timebuffer, wtimebuffer, sizeof( wtimebuffer ));
-
-
-		if (bNewRecordTime)
+		if ( bNewRecordTime )
 		{
-			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_newbest_time_format"), 1,
-					wtimebuffer);
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->Find( "#asw_newbest_time_format" ), 1,
+				number );
 		}
 		else
 		{
-			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_best_time_format"), 1,
-					wtimebuffer);
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->Find( "#asw_best_time_format" ), 1,
+				number );
 		}
 
-		m_pBestTimeLabel->SetText(wbuffer);
+		m_pBestTimeLabel->SetText( buf );
 
 		// format the best kills
-		Q_snprintf(timebuffer, sizeof(timebuffer), "%d", pStats->GetBestKills());
-		g_pVGuiLocalize->ConvertANSIToUnicode(timebuffer, wtimebuffer, sizeof( wtimebuffer ));
+		V_snwprintf( number, sizeof( number ), L"%d", pStats->GetBestKills() );
 
-		if (bNewRecordKills)
+		if ( bNewRecordKills )
 		{
-			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_newbest_kills_format"), 1,
-					wtimebuffer);
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->Find( "#asw_newbest_kills_format" ), 1,
+				number );
 		}
 		else
 		{
-			g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-					g_pVGuiLocalize->Find("#asw_best_kills_format"), 1,
-					wtimebuffer);
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->Find( "#asw_best_kills_format" ), 1,
+				number );
 		}
 
-		m_pBestKillsLabel->SetText(wbuffer);
+		m_pBestKillsLabel->SetText( buf );
 	}
 }

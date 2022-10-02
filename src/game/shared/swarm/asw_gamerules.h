@@ -84,14 +84,6 @@ class CASW_Marine;
 class CASW_Pickup;
 class CASW_Powerup;
 
-// special game modes
-enum
-{
-	ASW_SM_CARNAGE	=				(1<<0),	// More aliens with less health
-	ASW_SM_UBER		=				(1<<1),	// Occasional large slow big health aliens
-	ASW_SM_HARDCORE	=				(1<<2),	// Instakill sites, no friendly fire damage reduction, etc.
-};
-
 // Faction defines
 #define FACTION_MARINES				( LAST_SHARED_FACTION + 1 )
 #define FACTION_ALIENS				( LAST_SHARED_FACTION + 2 )
@@ -524,25 +516,13 @@ public:
 
 	// special game modes
 #ifndef CLIENT_DLL
-	void SetInitialGameMode();
-	void SetCarnageMode(bool bCarnageMode);
-	void SetUberMode(bool bUberMode);
-	void SetHardcoreMode(bool bHardcoreMode);
-
 	void StartTutorial(CASW_Player *pPlayer);
 
 	bool ShouldQuickStart() { return m_bQuickStart; }
 	bool m_bQuickStart;
-
 #endif
-	int ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex );
 
-	bool IsCarnageMode() { return (m_iSpecialMode & ASW_SM_CARNAGE) != 0; }	
-	bool IsUberMode() { return (m_iSpecialMode & ASW_SM_UBER) != 0; }	
-	bool IsHardcoreMode() { return (m_iSpecialMode & ASW_SM_HARDCORE) != 0; }	
-	int GetUnlockedModes() { return m_iUnlockedModes; }
-	CNetworkVar(int, m_iSpecialMode);
-	CNetworkVar(int, m_iUnlockedModes);
+	int ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex );
 
 	virtual bool IsTopDown() { return true; }
 	virtual const QAngle& GetTopDownMovementAxis();

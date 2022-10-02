@@ -871,18 +871,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					ASWGameRules()->SkillsUndo(this, iProfileIndex);
 				return true;
 			}
-			else if ( FStrEq( pcmd, "cl_skill_up") )
-			{
-				if (ASWGameRules())
-					ASWGameRules()->RequestSkillUp(this);
-				return true;
-			}
-			else if ( FStrEq( pcmd, "cl_skill_down") )
-			{
-				if (ASWGameRules())
-					ASWGameRules()->RequestSkillDown(this);
-				return true;
-			}
 			else if ( FStrEq( pcmd, "cl_hardcore_ff") )
 			{
 				if ( args.ArgC() < 2 )
@@ -953,39 +941,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					ASWGameRules()->GetCampaignSave()->SaveGameToFile();
 				}
 				*/
-				return true;
-			}
-			else if ( FStrEq( pcmd, "cl_carnage") )
-			{
-				if ( args.ArgC() < 2 )
-				{
-					Warning("Player sent a bad cl_carnage command\n");
-					return false;
-				}		
-				if (ASWGameRules() && ASWGameResource() && ASWGameResource()->m_Leader.Get() == this)
-					ASWGameRules()->SetCarnageMode(atoi(args[1]) == 1);
-				return true;
-			}
-			else if ( FStrEq( pcmd, "cl_uber") )
-			{
-				if ( args.ArgC() < 2 )
-				{
-					Warning("Player sent a bad cl_uber command\n");
-					return false;
-				}		
-				if (ASWGameRules() && ASWGameResource() && ASWGameResource()->m_Leader.Get() == this)
-					ASWGameRules()->SetUberMode(atoi(args[1]) == 1);
-				return true;
-			}
-			else if ( FStrEq( pcmd, "cl_hardcore") )
-			{
-				if ( args.ArgC() < 2 )
-				{
-					Warning("Player sent a bad cl_hardcore command\n");
-					return false;
-				}		
-				if (ASWGameRules() && ASWGameResource() && ASWGameResource()->m_Leader.Get() == this)
-					ASWGameRules()->SetHardcoreMode(atoi(args[1]) == 1);
 				return true;
 			}
 			else if ( FStrEq( pcmd, "cl_needtech") )
@@ -2618,9 +2573,6 @@ QAngle CASW_Player::MarineAutoaimDeflection( Vector &vecSrc, float flDist, float
 	CBaseEntity	*bestent;
 	trace_t		tr;
 	Vector		v_forward, v_right, v_up;
-
-	if (ASWGameRules() && ASWGameRules()->IsHardcoreMode())
-		return vec3_angle;
 
 	//if ( ShouldAutoaim() == false )
 	//{

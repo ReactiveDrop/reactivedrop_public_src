@@ -100,9 +100,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropString( SENDINFO( m_DebriefText2 ) ),
 	SendPropString( SENDINFO( m_DebriefText3 ) ),
 
-	SendPropBool( SENDINFO( m_bJustUnlockedCarnage ) ),
-	SendPropBool( SENDINFO( m_bJustUnlockedUber ) ),
-	SendPropBool( SENDINFO( m_bJustUnlockedHardcore ) ),
 	SendPropBool( SENDINFO( m_bBeatSpeedrunTime ) ),
 
 	SendPropFloat(SENDINFO(m_fBestTimeTaken)),

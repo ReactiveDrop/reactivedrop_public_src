@@ -168,7 +168,6 @@ extern ConVar old_radius_damage;
 	ConVar asw_compliment_chatter_interval_max("asw_compliment_chatter_interval_max", "240", 0, "Max time between kill compliments");	
 	ConVar asw_default_campaign("asw_default_campaign", "jacob", FCVAR_ARCHIVE, "Default campaign used when dedicated server restarts");
 	ConVar rd_max_marines("rd_max_marines", "-1", FCVAR_NONE, "Sets how many marines can be selected"); 
-	ConVar asw_last_game_variation("asw_last_game_variation", "0", FCVAR_ARCHIVE, "Which game variation was used last game");
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
 	ConVar asw_drop_powerups("asw_drop_powerups", "0", FCVAR_CHEAT, "Do aliens drop powerups?");
 	ConVar asw_adjust_difficulty_by_number_of_marines( "asw_adjust_difficulty_by_number_of_marines", "1", FCVAR_CHEAT, "If enabled, difficulty will be reduced when there are only 3 or 2 marines." );
@@ -752,7 +751,6 @@ REGISTER_GAMERULES_CLASS( CAlienSwarm );
 BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 	#ifdef CLIENT_DLL
 		RecvPropInt(RECVINFO(m_iGameState)),
-		RecvPropInt(RECVINFO(m_iSpecialMode)),
 		RecvPropBool(RECVINFO(m_bMissionSuccess)),
 		RecvPropBool(RECVINFO(m_bMissionFailed)),
 		RecvPropInt(RECVINFO(m_nFailAdvice)),
@@ -768,7 +766,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropFloat(RECVINFO(m_fBriefingStartedTime) ),
 		RecvPropBool(RECVINFO(m_bMissionRequiresTech)),
 		RecvPropBool(RECVINFO(m_bCheated)),
-		RecvPropInt(RECVINFO(m_iUnlockedModes)),
 		RecvPropEHandle(RECVINFO(m_hStartStimPlayer)),
 		RecvPropFloat(RECVINFO(m_flStimEndTime)),
 		RecvPropFloat(RECVINFO(m_flStimStartTime)),
@@ -789,7 +786,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
-		SendPropInt(SENDINFO(m_iSpecialMode), 3, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
 		SendPropBool(SENDINFO(m_bMissionFailed)),
 		SendPropInt(SENDINFO(m_nFailAdvice)),
@@ -805,7 +801,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropFloat(SENDINFO(m_fBriefingStartedTime) ),
 		SendPropBool(SENDINFO(m_bMissionRequiresTech)),
 		SendPropBool(SENDINFO(m_bCheated)),
-		SendPropInt(SENDINFO(m_iUnlockedModes), 4, SPROP_UNSIGNED ),
 		SendPropEHandle(SENDINFO(m_hStartStimPlayer)),
 		SendPropFloat(SENDINFO(m_flStimEndTime), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flStimStartTime), 0, SPROP_NOSCALE),
@@ -1510,7 +1505,6 @@ void CAlienSwarm::FullReset()
 	m_bMarineInvuln = false;
 
 	SetGameState( ASW_GS_NONE );
-	m_iSpecialMode = 0;
 	m_bMissionSuccess = false;
 	m_bMissionFailed = false;
 	m_fReserveMarinesEndTime = 0;
@@ -2660,12 +2654,7 @@ void CAlienSwarm::StartMission()
 	StartAllAmbientSounds();
 
 	// carnage mode?
-	float flCarnage = 1;
-	if (IsCarnageMode())
-	{
-		flCarnage *= 2;
-	}
-	flCarnage *= rd_carnage_scale.GetFloat();
+	float flCarnage = rd_carnage_scale.GetFloat();
 
 	if ( rd_alien_num_min_players.GetFloat() == rd_alien_num_max_players.GetFloat() )
 	{
@@ -2776,15 +2765,6 @@ void CAlienSwarm::StartMission()
 
 	m_bSargeAndJaeger = bSarge && bJaeger;
 	m_bWolfeAndWildcat = bWildcat && bWolfe;
-
-	if (IsCarnageMode())
-		asw_last_game_variation.SetValue(1);
-	else if (IsUberMode())
-		asw_last_game_variation.SetValue(2);
-	else if (IsHardcoreMode())
-		asw_last_game_variation.SetValue(3);
-	else
-		asw_last_game_variation.SetValue(0);
 
 	CASW_GameStats.Event_MissionStarted();
 
@@ -4585,7 +4565,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	if ( bSuccess )
 	{
 		m_bMissionSuccess = true;
-		IGameEvent * event = gameeventmanager->CreateEvent( "mission_success" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "mission_success" );
 		if ( event )
 		{
 			event->SetString( "strMapName", STRING( gpGlobals->mapname ) );
@@ -4596,7 +4576,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	{
 		m_bMissionFailed = true;
 		m_nFailAdvice = ASWFailAdvice()->UseCurrentFailAdvice();
-		IGameEvent * event = gameeventmanager->CreateEvent( "mission_failed" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "mission_failed" );
 		if ( event )
 		{
 			event->SetString( "strMapName", STRING( gpGlobals->mapname ) );
@@ -4655,7 +4635,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		}
 	}
 
-	DevMsg("Set game state to debrief\n");
+	DevMsg( "Set game state to debrief\n" );
 
 	// set all players to FL_FROZEN and calc their XP serverside
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
@@ -4664,7 +4644,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 
 		if ( pPlayer )
 		{
-			pPlayer->AddFlag( FL_FROZEN );			
+			pPlayer->AddFlag( FL_FROZEN );
 		}
 	}
 
@@ -4674,14 +4654,14 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	// freeze all the npcs, because Freeze(-1) doesn't work at all
 	// and Freeze(9999) makes NPCs look frozen we disable think function	
 	const bool bAllDead = ASWGameRules()->GetMissionManager()->AllMarinesDead();
-	CAI_BaseNPC *npc = gEntList.NextEntByClass( (CAI_BaseNPC *) NULL );
+	CAI_BaseNPC *npc = gEntList.NextEntByClass( ( CAI_BaseNPC * )NULL );
 	if ( !bAllDead )
-	while ( npc )
-	{
-		npc->SetThink( NULL );
-		npc->StopLoopingSounds(); // helps against buzzers' noize, parasites still do idle sounds, but those are played on client
-		npc = gEntList.NextEntByClass( npc );
-	}
+		while ( npc )
+		{
+			npc->SetThink( NULL );
+			npc->StopLoopingSounds(); // helps against buzzers' noize, parasites still do idle sounds, but those are played on client
+			npc = gEntList.NextEntByClass( npc );
+		}
 	// disable all the spawners
 	CBaseEntity *ent = NULL;
 	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_spawner" ) ) != NULL )
@@ -4720,17 +4700,16 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		m_Medals.AwardMedals();
 
 	// create stats entity to network down all the interesting numbers
-	m_hDebriefStats = dynamic_cast<CASW_Debrief_Stats*>(CreateEntityByName("asw_debrief_stats"));
-	
-	if (m_hDebriefStats.Get() == NULL)
+	m_hDebriefStats = dynamic_cast< CASW_Debrief_Stats * >( CreateEntityByName( "asw_debrief_stats" ) );
+
+	if ( m_hDebriefStats.Get() == NULL )
 	{
-		Msg("ASW: Error! Failed to create Debrief Stats\n");
+		Msg( "ASW: Error! Failed to create Debrief Stats\n" );
 		return;
 	}
 	else if ( pGameResource )
 	{
 		// fill in debrief stats
-		//Msg("Created debrief stats, filling in values\n");	
 		int iTotalKills = 0;
 		float fWorstPenalty = 0;
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
@@ -4738,12 +4717,12 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 			if ( !pMR )
 				continue;
-		
+
 			int iKills = 0;
 			if ( pMR->IsInhabited() )
 			{
-				CASW_Player* pPlayer = pMR->GetCommander();
-				if (pPlayer)
+				CASW_Player *pPlayer = pMR->GetCommander();
+				if ( pPlayer )
 					iKills = pPlayer->FragCount();
 				else
 					iKills = pMR->m_iAliensKilled;
@@ -4751,56 +4730,56 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			else
 				iKills = pMR->m_iBotFrags;
 
-			m_hDebriefStats->m_iKills.Set(i, iKills);
+			m_hDebriefStats->m_iKills.Set( i, iKills );
 			iTotalKills += iKills;
 
 			float acc = 0;
-			if (pMR->m_iPlayerShotsFired > 0)
-			{				
-				acc = float(pMR->m_iPlayerShotsFired - pMR->m_iPlayerShotsMissed) / float(pMR->m_iPlayerShotsFired);
+			if ( pMR->m_iPlayerShotsFired > 0 )
+			{
+				acc = float( pMR->m_iPlayerShotsFired - pMR->m_iPlayerShotsMissed ) / float( pMR->m_iPlayerShotsFired );
 				acc *= 100.0f;
 			}
-			m_hDebriefStats->m_fAccuracy.Set(i,acc);
-			m_hDebriefStats->m_iFF.Set(i,pMR->m_fFriendlyFireDamageDealt);
-			m_hDebriefStats->m_iDamage.Set(i,pMR->m_fDamageTaken);
-			m_hDebriefStats->m_iShotsFired.Set(i,pMR->m_iShotsFired);
-			m_hDebriefStats->m_iShotsHit.Set(i, pMR->m_iPlayerShotsFired - pMR->m_iPlayerShotsMissed );
-			m_hDebriefStats->m_iWounded.Set(i,pMR->m_bTakenWoundDamage);
-			m_hDebriefStats->m_iAliensBurned.Set(i,pMR->m_iAliensBurned);
-			m_hDebriefStats->m_iHealthHealed.Set(i,pMR->m_iMedicHealing);
-			m_hDebriefStats->m_iFastHacks.Set(i,pMR->m_iFastDoorHacks + pMR->m_iFastComputerHacks);
-			m_hDebriefStats->m_iAmmoDeployed.Set(i,pMR->m_iAmmoDeployed);
-			m_hDebriefStats->m_iSentryGunsDeployed.Set(i,pMR->m_iSentryGunsDeployed);
-			m_hDebriefStats->m_iSentryFlamerDeployed.Set(i,pMR->m_iSentryFlamerDeployed);
-			m_hDebriefStats->m_iSentryFreezeDeployed.Set(i,pMR->m_iSentryFreezeDeployed);
-			m_hDebriefStats->m_iSentryCannonDeployed.Set(i,pMR->m_iSentryCannonDeployed);
-			m_hDebriefStats->m_iMedkitsUsed.Set(i,pMR->m_iMedkitsUsed);
-			m_hDebriefStats->m_iFlaresUsed.Set(i,pMR->m_iFlaresUsed);
-			m_hDebriefStats->m_iAdrenalineUsed.Set(i,pMR->m_iAdrenalineUsed);
-			m_hDebriefStats->m_iTeslaTrapsDeployed.Set(i,pMR->m_iTeslaTrapsDeployed);
-			m_hDebriefStats->m_iFreezeGrenadesThrown.Set(i,pMR->m_iFreezeGrenadesThrown);
-			m_hDebriefStats->m_iElectricArmorUsed.Set(i,pMR->m_iElectricArmorUsed);
-			m_hDebriefStats->m_iHealGunHeals.Set(i,pMR->m_iHealGunHeals);
-			m_hDebriefStats->m_iHealBeaconHeals.Set(i,pMR->m_iHealBeaconHeals);
-			m_hDebriefStats->m_iHealGunHeals_Self.Set(i,pMR->m_iHealGunHeals_Self);
-			m_hDebriefStats->m_iHealBeaconHeals_Self.Set(i,pMR->m_iHealBeaconHeals_Self);
-			m_hDebriefStats->m_iDamageAmpsUsed.Set(i,pMR->m_iDamageAmpsUsed);
-			m_hDebriefStats->m_iHealBeaconsDeployed.Set(i,pMR->m_iHealBeaconsDeployed);
-			m_hDebriefStats->m_iMedkitHeals_Self.Set(i,pMR->m_iMedkitHeals_Self);
-			m_hDebriefStats->m_iGrenadeExtinguishMarine.Set(i,pMR->m_iGrenadeExtinguishMarine);
-			m_hDebriefStats->m_iGrenadeFreezeAlien.Set(i,pMR->m_iGrenadeFreezeAlien);
-			m_hDebriefStats->m_iDamageAmpAmps.Set(i,pMR->m_iDamageAmpAmps);
-			m_hDebriefStats->m_iNormalArmorReduction.Set(i,pMR->m_iNormalArmorReduction);
-			m_hDebriefStats->m_iElectricArmorReduction.Set(i,pMR->m_iElectricArmorReduction);
-			m_hDebriefStats->m_iHealAmpGunHeals.Set(i,pMR->m_iHealAmpGunHeals);
-			m_hDebriefStats->m_iHealAmpGunAmps.Set(i,pMR->m_iHealAmpGunAmps);
-			m_hDebriefStats->m_iMedRifleHeals.Set(i,pMR->m_iMedRifleHeals);
-			m_hDebriefStats->m_iBiomassIgnited.Set(i,pMR->m_iBiomassIgnited);
+			m_hDebriefStats->m_fAccuracy.Set( i, acc );
+			m_hDebriefStats->m_iFF.Set( i, pMR->m_fFriendlyFireDamageDealt );
+			m_hDebriefStats->m_iDamage.Set( i, pMR->m_fDamageTaken );
+			m_hDebriefStats->m_iShotsFired.Set( i, pMR->m_iShotsFired );
+			m_hDebriefStats->m_iShotsHit.Set( i, pMR->m_iPlayerShotsFired - pMR->m_iPlayerShotsMissed );
+			m_hDebriefStats->m_iWounded.Set( i, pMR->m_bTakenWoundDamage );
+			m_hDebriefStats->m_iAliensBurned.Set( i, pMR->m_iAliensBurned );
+			m_hDebriefStats->m_iHealthHealed.Set( i, pMR->m_iMedicHealing );
+			m_hDebriefStats->m_iFastHacks.Set( i, pMR->m_iFastDoorHacks + pMR->m_iFastComputerHacks );
+			m_hDebriefStats->m_iAmmoDeployed.Set( i, pMR->m_iAmmoDeployed );
+			m_hDebriefStats->m_iSentryGunsDeployed.Set( i, pMR->m_iSentryGunsDeployed );
+			m_hDebriefStats->m_iSentryFlamerDeployed.Set( i, pMR->m_iSentryFlamerDeployed );
+			m_hDebriefStats->m_iSentryFreezeDeployed.Set( i, pMR->m_iSentryFreezeDeployed );
+			m_hDebriefStats->m_iSentryCannonDeployed.Set( i, pMR->m_iSentryCannonDeployed );
+			m_hDebriefStats->m_iMedkitsUsed.Set( i, pMR->m_iMedkitsUsed );
+			m_hDebriefStats->m_iFlaresUsed.Set( i, pMR->m_iFlaresUsed );
+			m_hDebriefStats->m_iAdrenalineUsed.Set( i, pMR->m_iAdrenalineUsed );
+			m_hDebriefStats->m_iTeslaTrapsDeployed.Set( i, pMR->m_iTeslaTrapsDeployed );
+			m_hDebriefStats->m_iFreezeGrenadesThrown.Set( i, pMR->m_iFreezeGrenadesThrown );
+			m_hDebriefStats->m_iElectricArmorUsed.Set( i, pMR->m_iElectricArmorUsed );
+			m_hDebriefStats->m_iHealGunHeals.Set( i, pMR->m_iHealGunHeals );
+			m_hDebriefStats->m_iHealBeaconHeals.Set( i, pMR->m_iHealBeaconHeals );
+			m_hDebriefStats->m_iHealGunHeals_Self.Set( i, pMR->m_iHealGunHeals_Self );
+			m_hDebriefStats->m_iHealBeaconHeals_Self.Set( i, pMR->m_iHealBeaconHeals_Self );
+			m_hDebriefStats->m_iDamageAmpsUsed.Set( i, pMR->m_iDamageAmpsUsed );
+			m_hDebriefStats->m_iHealBeaconsDeployed.Set( i, pMR->m_iHealBeaconsDeployed );
+			m_hDebriefStats->m_iMedkitHeals_Self.Set( i, pMR->m_iMedkitHeals_Self );
+			m_hDebriefStats->m_iGrenadeExtinguishMarine.Set( i, pMR->m_iGrenadeExtinguishMarine );
+			m_hDebriefStats->m_iGrenadeFreezeAlien.Set( i, pMR->m_iGrenadeFreezeAlien );
+			m_hDebriefStats->m_iDamageAmpAmps.Set( i, pMR->m_iDamageAmpAmps );
+			m_hDebriefStats->m_iNormalArmorReduction.Set( i, pMR->m_iNormalArmorReduction );
+			m_hDebriefStats->m_iElectricArmorReduction.Set( i, pMR->m_iElectricArmorReduction );
+			m_hDebriefStats->m_iHealAmpGunHeals.Set( i, pMR->m_iHealAmpGunHeals );
+			m_hDebriefStats->m_iHealAmpGunAmps.Set( i, pMR->m_iHealAmpGunAmps );
+			m_hDebriefStats->m_iMedRifleHeals.Set( i, pMR->m_iMedRifleHeals );
+			m_hDebriefStats->m_iBiomassIgnited.Set( i, pMR->m_iBiomassIgnited );
 
 			// Set starting equips for the marine
-			m_hDebriefStats->m_iStartingEquip0.Set(i, pMR->m_iInitialWeaponsInSlots[0]);
-			m_hDebriefStats->m_iStartingEquip1.Set(i, pMR->m_iInitialWeaponsInSlots[1]);
-			m_hDebriefStats->m_iStartingEquip2.Set(i, pMR->m_iInitialWeaponsInSlots[2]);
+			m_hDebriefStats->m_iStartingEquip0.Set( i, pMR->m_iInitialWeaponsInSlots[0] );
+			m_hDebriefStats->m_iStartingEquip1.Set( i, pMR->m_iInitialWeaponsInSlots[1] );
+			m_hDebriefStats->m_iStartingEquip2.Set( i, pMR->m_iInitialWeaponsInSlots[2] );
 
 			pMR->m_WeaponStats.Sort( &CASW_Marine_Resource::CompareWeaponStats );
 			for ( int j = 0; j < 8 && j < pMR->m_WeaponStats.Count(); j++ )
@@ -4816,68 +4795,68 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 
 			// store the worst penalty for use later when penalizing skill points
 			float fPenalty = pMR->m_fFriendlyFireDamageDealt * 2 + pMR->m_fDamageTaken;
-			if (fPenalty > fWorstPenalty)
+			if ( fPenalty > fWorstPenalty )
 				fWorstPenalty = fPenalty;
 
 			// award an additional skill point if they acheived certain medals in this mission:
 			int iMedalPoints = 0;
 #ifdef AWARD_SKILL_POINTS_FOR_MEDALS
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_PERFECT, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_IRON_HAMMER, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_INCENDIARY_DEFENCE, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_IRON_SWORD, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_SWARM_SUPPRESSION, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_SILVER_HALO, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_GOLDEN_HALO, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_ELECTRICAL_SYSTEMS_EXPERT, pMR, true)) ? 1 : 0;
-			iMedalPoints += (m_Medals.HasMedal(MEDAL_COMPUTER_SYSTEMS_EXPERT, pMR, true)) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_PERFECT, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_IRON_HAMMER, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_INCENDIARY_DEFENCE, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_IRON_SWORD, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_SWARM_SUPPRESSION, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_SILVER_HALO, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_GOLDEN_HALO, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_ELECTRICAL_SYSTEMS_EXPERT, pMR, true ) ) ? 1 : 0;
+			iMedalPoints += ( m_Medals.HasMedal( MEDAL_COMPUTER_SYSTEMS_EXPERT, pMR, true ) ) ? 1 : 0;
 #endif
 
 			// give each marine a base of 4 skill points
 			m_hDebriefStats->m_iSkillPointsAwarded.Set( i, ASW_SKILL_POINTS_PER_MISSION + iMedalPoints );
 
 			// tell everyone about bouncing shot kills for debugging:
-			if (pMR->m_iAliensKilledByBouncingBullets > 0)
-			{				
+			if ( pMR->m_iAliensKilledByBouncingBullets > 0 )
+			{
 				char buffer[256];
-				Q_snprintf(buffer,sizeof(buffer), "%d", pMR->m_iAliensKilledByBouncingBullets);
-				UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_bouncing_kills", pMR->GetProfile()->m_ShortName, buffer);
+				Q_snprintf( buffer, sizeof( buffer ), "%d", pMR->m_iAliensKilledByBouncingBullets );
+				UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_bouncing_kills", pMR->GetProfile()->m_ShortName, buffer );
 			}
-		}		
+		}
 
 		// penalize skill points if each marine's penalty is over threshold of 60 and at least 20% of the worst marine's penalty
 #ifdef PENALIZE_SKILL_POINTS
-		for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
-			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-			if (!pMR)
+			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( !pMR )
 				continue;
 
 			float fPenalty = pMR->m_fFriendlyFireDamageDealt * 2 + pMR->m_fDamageTaken;
-			if (fPenalty > 60 && fPenalty >= fWorstPenalty * 0.8f)
+			if ( fPenalty > 60 && fPenalty >= fWorstPenalty * 0.8f )
 			{
 				int points = m_hDebriefStats->m_iSkillPointsAwarded[i];
-				m_hDebriefStats->m_iSkillPointsAwarded.Set(i, points - 1);
+				m_hDebriefStats->m_iSkillPointsAwarded.Set( i, points - 1 );
 				// double penalty if they've done really badly
-				if (fPenalty >= 200)
+				if ( fPenalty >= 200 )
 				{
 					points = m_hDebriefStats->m_iSkillPointsAwarded[i];
-					m_hDebriefStats->m_iSkillPointsAwarded.Set(i, points - 1);
+					m_hDebriefStats->m_iSkillPointsAwarded.Set( i, points - 1 );
 				}
 			}
 
 			// a marine is dead, give him nothing
-			if (pMR->GetHealthPercent() <= 0)
+			if ( pMR->GetHealthPercent() <= 0 )
 			{
 				if ( asw_campaign_death.GetBool() )
 				{
-					m_hDebriefStats->m_iSkillPointsAwarded.Set(i, 0);
+					m_hDebriefStats->m_iSkillPointsAwarded.Set( i, 0 );
 				}
 				else
 				{
 					// penalize one skill point if they died
 					int points = MAX( 0, m_hDebriefStats->m_iSkillPointsAwarded[i] - 1 );
-					m_hDebriefStats->m_iSkillPointsAwarded.Set(i, points);
+					m_hDebriefStats->m_iSkillPointsAwarded.Set( i, points );
 				}
 			}
 		}
@@ -4906,87 +4885,32 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 
 		// calc the speedrun time
 		int speedrun_time = 180;	// default of 3 mins
-		if (GetWorldEntity() && GetSpeedrunTime() > 0)
+		if ( GetWorldEntity() && GetSpeedrunTime() > 0 )
 			speedrun_time = GetSpeedrunTime();
 
 		// put in the previous best times/kills for the debrief stats
-		const char *mapName = STRING(gpGlobals->mapname);
-		if (MapScores())
+		const char *mapName = STRING( gpGlobals->mapname );
+		if ( MapScores() )
 		{
-			m_hDebriefStats->m_fBestTimeTaken = MapScores()->GetBestTime(mapName, GetSkillLevel());
-			m_hDebriefStats->m_iBestKills = MapScores()->GetBestKills(mapName, GetSkillLevel());
+			m_hDebriefStats->m_fBestTimeTaken = MapScores()->GetBestTime( mapName, GetSkillLevel() );
+			m_hDebriefStats->m_iBestKills = MapScores()->GetBestKills( mapName, GetSkillLevel() );
 			m_hDebriefStats->m_iSpeedrunTime = speedrun_time;
-		}
 
-		// check for updating unlocked modes and scores
-		if (MapScores() && GetMissionSuccess())	// && !m_bCheated
-		{
-			bool bJustUnlockedCarnage = false;
-			bool bJustUnlockedUber = false;
-			bool bJustUnlockedHardcore = false;
-
-			// unlock special modes only in single mission mode
-			if (!IsCampaignGame() && GetSkillLevel() >= 2)
+			if ( GetMissionSuccess() )
 			{
-				//Msg("Checking for map %s unlocks\n", mapName);
-				if (!MapScores()->IsModeUnlocked(mapName, GetSkillLevel(), ASW_SM_CARNAGE))
-				{					
-					// check for unlocking carnage (if we completed the mission on Insane)
-					bJustUnlockedCarnage = (GetSkillLevel() >= 4);
-					//Msg("Checked just carnage unlock = %d\n", bJustUnlockedCarnage);
-				}
-				if (!MapScores()->IsModeUnlocked(mapName, GetSkillLevel(), ASW_SM_UBER))
-				{
-					// check for unlocking uber
-					bJustUnlockedUber = (m_hDebriefStats->m_fTimeTaken.Get() < speedrun_time);
-					//Msg("Checked just uber unlock = %d (time take %f, speedryn time = %f)\n", bJustUnlockedUber,
-						//m_hDebriefStats->m_fTimeTaken.Get(), speedrun_time);
-				}
-				if (!MapScores()->IsModeUnlocked(mapName, GetSkillLevel(), ASW_SM_HARDCORE))
-				{
-					// check for unlocking hardcore (all marines alive on normal or above
-					if ( pGameResource )
-					{
-						bool bAllMarinesAlive = true;
-						for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-						{
-							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-							if (!pMR)
-								continue;
-							
-							if (pMR->GetHealthPercent() <= 0)
-							{
-								bAllMarinesAlive = false;
-								break;
-							}
-						}
-						bJustUnlockedHardcore = bAllMarinesAlive;
-						//Msg("Checked just hardcore unlock = %d\n", bJustUnlockedHardcore);
-					}
-				}
-			}			
+				// notify players if we beat the speedrun time, even if we already have uber unlocked
+				m_hDebriefStats->m_bBeatSpeedrunTime = ( m_hDebriefStats->m_fTimeTaken.Get() < speedrun_time );
 
-			int iUnlockModes = (bJustUnlockedCarnage ? ASW_SM_CARNAGE : 0) +
-							   (bJustUnlockedUber ? ASW_SM_UBER : 0) +
-							   (bJustUnlockedHardcore ? ASW_SM_HARDCORE : 0);
-
-			// put the just unlocked modes into the debrief stats, so players can print a message on their debrief
-			m_hDebriefStats->m_bJustUnlockedCarnage = bJustUnlockedCarnage;
-			m_hDebriefStats->m_bJustUnlockedUber = bJustUnlockedUber;
-			m_hDebriefStats->m_bJustUnlockedHardcore = bJustUnlockedHardcore;
-
-			// notify players if we beat the speedrun time, even if we already have uber unlocked
-			m_hDebriefStats->m_bBeatSpeedrunTime = (m_hDebriefStats->m_fTimeTaken.Get() < speedrun_time);
-
-			// notify the mapscores of our data so it can save it
-			MapScores()->OnMapCompleted(mapName, GetSkillLevel(), m_hDebriefStats->m_fTimeTaken.Get(), m_hDebriefStats->m_iTotalKills.Get(), iUnlockModes);
+				// notify the mapscores of our data so it can save it
+				MapScores()->OnMapCompleted( mapName, GetSkillLevel(), m_hDebriefStats->m_fTimeTaken.Get(), m_hDebriefStats->m_iTotalKills.Get() );
+			}
 		}
 
 		m_hDebriefStats->Spawn();
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+			CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 			if ( pOtherPlayer )
 			{
 				pOtherPlayer->AwardExperience();
@@ -4995,29 +4919,16 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	}
 
 	// reset the progress if we finish the tutorial successfully
-	if (IsTutorialMap() && bSuccess)
+	if ( IsTutorialMap() && bSuccess )
 	{
-		asw_tutorial_save_stage.SetValue(0);
+		asw_tutorial_save_stage.SetValue( 0 );
 	}
 
 	// shut everything up
 	StopAllAmbientSounds();
 
-
 	// store stats for uploading
 	CASW_GameStats.Event_MissionComplete( m_bMissionSuccess, m_nFailAdvice, ASWFailAdvice()->GetFailAdviceStatus() );
-
-	// stats todo:
-	//if (ASWGameStats())
-		//ASWGameStats()->AddMapRecord();
-
-	// print debug messages for uber spawning
-	//char buffer[256];
-	//Q_snprintf(buffer, sizeof(buffer), "Uber: Fail=%d Spawn=%d Normal:%d\n", 
-			//CASW_Spawner::s_iFailedUberSpawns,
-			//CASW_Spawner::s_iUberDronesSpawned,
-			//CASW_Spawner::s_iNormalDronesSpawned);
-	//UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, buffer);	
 
 	// set a timer to remove all the aliens once clients have had a chance to fade out
 	m_fRemoveAliensTime = gpGlobals->curtime + 2.4f;
@@ -7975,66 +7886,6 @@ void CAlienSwarm::UpdateVote()
 	}
 }
 
-void CAlienSwarm::SetInitialGameMode()
-{
-	m_iSpecialMode = 0;
-	if (asw_last_game_variation.GetInt() == 1)
-		SetCarnageMode(true);
-	else if (asw_last_game_variation.GetInt() == 2)
-		SetUberMode(true);
-	else if (asw_last_game_variation.GetInt() == 3)
-		SetHardcoreMode(true);
-	Msg("SetInitialGameMode to %d (last variation = %d)\n", m_iSpecialMode.Get(), asw_last_game_variation.GetInt());
-}
-
-void CAlienSwarm::SetCarnageMode(bool bCarnageMode)
-{
-	if (m_iGameState != ASW_GS_BRIEFING)
-		return;
-
-	if (bCarnageMode)
-	{
-		if (MapScores() && MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_CARNAGE))
-			m_iSpecialMode |= (int) ASW_SM_CARNAGE;
-	}
-	else
-		m_iSpecialMode &= ~ASW_SM_CARNAGE;
-
-	Msg("Changed carnage mode to %d\n", m_iSpecialMode & ASW_SM_CARNAGE);
-}
-
-void CAlienSwarm::SetUberMode(bool bUberMode)
-{
-	if (m_iGameState != ASW_GS_BRIEFING)
-		return;
-
-	if (bUberMode)
-	{
-		if (MapScores() && MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_UBER))
-			m_iSpecialMode |= (int) ASW_SM_UBER;
-	}
-	else
-		m_iSpecialMode &= ~ASW_SM_UBER;
-
-	Msg("Changed uber mode to %d\n", bUberMode);
-}
-
-void CAlienSwarm::SetHardcoreMode(bool bHardcoreMode)
-{
-	if (m_iGameState != ASW_GS_BRIEFING)
-		return;
-
-	if (bHardcoreMode)
-	{
-		if (MapScores() && MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_HARDCORE))
-			m_iSpecialMode |= (int) ASW_SM_HARDCORE;
-	}
-	else
-		m_iSpecialMode &= ~ASW_SM_HARDCORE;
-
-	Msg("Changed hardcore mode to %d\n", bHardcoreMode);
-}
-
 void CAlienSwarm::StopAllAmbientSounds()
 {
 	CBaseEntity *pAmbient = gEntList.FindEntityByClassname( NULL, "ambient_generic" );
@@ -9079,22 +8930,9 @@ void CAlienSwarm::LevelInitPostEntity()
 		OnSkillLevelChanged( m_iSkillLevel );
 	}
 
-	// set available game modes
-	if (MapScores())
-	{
-		m_iUnlockedModes = (MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_CARNAGE) ? ASW_SM_CARNAGE : 0) +
-							(MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_UBER) ? ASW_SM_UBER : 0) +
-							(MapScores()->IsModeUnlocked(STRING(gpGlobals->mapname), GetSkillLevel(), ASW_SM_HARDCORE) ? ASW_SM_HARDCORE : 0);
-	}
-	else
-	{
-		m_iUnlockedModes = 0;
-	}
-	
 	SetGameState(ASW_GS_BRIEFING);
 	mm_swarm_state.SetValue( "briefing" );
 	SetMaxMarines();
-	SetInitialGameMode();
 
 	// create the burning system
 	CASW_Burning *pFire = dynamic_cast<CASW_Burning*>( CreateEntityByName( "asw_burning" ) );
@@ -9141,11 +8979,6 @@ void CAlienSwarm::LevelShutdownPostEntity()
 
 int CAlienSwarm::TotalInfestDamage()
 {
-	if (IsHardcoreMode())
-	{
-		return 500;
-	}
-
 	switch ( m_iSkillLevel )
 	{
 	case 1:

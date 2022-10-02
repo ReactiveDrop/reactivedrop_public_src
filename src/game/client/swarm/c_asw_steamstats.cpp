@@ -572,7 +572,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	}
 
 	// Get difficulty counts
-	for ( int i = 0; i < 5; ++i )
+	for ( i = 0; i < 5; ++i )
 	{
 		int32 iTempCount;
 		FETCH_STEAM_STATS( CFmtStr( "%s.games.total", g_szDifficulties[i] ), iTempCount );
