@@ -104,7 +104,7 @@ void rd_apply_new_server_defaults()
 	
 	// client upload rate is almost never limited, the amount of information sent is minimal
 	// this should however not exceed tickrate (the amount of ticks the server processes
-	setConvarValue("sv_mincmdrate", 10);
+	// setConvarValue("sv_mincmdrate", 10);
 	setConvarValue("sv_maxcmdrate", round(1 / g_ServerGameDLL.GetTickInterval()));
 
 	// client download should be determined by the client, however it should not
