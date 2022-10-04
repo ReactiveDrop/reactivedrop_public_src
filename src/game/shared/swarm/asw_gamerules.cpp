@@ -2433,7 +2433,7 @@ void CAlienSwarm::ReviveDeadMarines()
 		{
 			GetCampaignSave()->ReviveMarine(i);
 		}
-		GetCampaignSave()->SaveGameToFile();
+		//GetCampaignSave()->SaveGameToFile();
 		if (ASWGameResource())
 			ASWGameResource()->UpdateMarineSkills(GetCampaignSave());
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_marines_revived" );

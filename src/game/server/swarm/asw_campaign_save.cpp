@@ -1196,5 +1196,5 @@ void CASW_Campaign_Save::SelectDefaultNextCampaignMission()
 void CASW_Campaign_Save::OnMarineKilled()
 {
 	m_iNumDeaths++;
-	SaveGameToFile();
+	//SaveGameToFile();
 }
