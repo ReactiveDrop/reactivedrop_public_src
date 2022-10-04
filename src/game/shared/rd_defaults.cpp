@@ -83,20 +83,20 @@ void rd_apply_new_server_defaults()
 
 	// rates, takes from cs:go update 
 	/*
-	.5 Mbps – rate 62500
-	1.0 Mbps – rate 125000
-	1.5 Mbps – rate 187500
-	1.57 Mbps – rate 196608 (New Default)
-	2.0 Mbps – rate 250000
-	2.5 Mbps – rate 312500
-	3.0 Mbps – rate 375000
-	3.5 Mbps – rate 437500
-	4.0 Mbps – rate 500000
-	4.5 Mbps – rate 562500
-	5.0 Mbps – rate 625000
-	5.5 Mbps – rate 687500
-	6.0 Mbps – rate 750000
-	6.2 Mbps – rate 786432 (New Max)
+	.5 Mbps   rate 62500
+	1.0 Mbps  rate 125000
+	1.5 Mbps  rate 187500
+	1.57 Mbps rate 196608 (New Default)
+	2.0 Mbps  rate 250000
+	2.5 Mbps  rate 312500
+	3.0 Mbps  rate 375000
+	3.5 Mbps  rate 437500
+	4.0 Mbps  rate 500000
+	4.5 Mbps  rate 562500
+	5.0 Mbps  rate 625000
+	5.5 Mbps  rate 687500
+	6.0 Mbps  rate 750000
+	6.2 Mbps  rate 786432 (New Max)
 	*/
 
 	setConvarValue("sv_minrate", 62500);
@@ -124,7 +124,7 @@ void rd_apply_new_server_defaults()
 
 	// splitrate should be higher than 1 to prevent lags during events like adrenaline of high
 	// burst of new created entities, however clients can be sensitive to this. A value of 2
-	// is fine, but we should split further.
+	// is fine, but we should not split further, not all clients have good connections.
 	const int iSplitrate = 2;
 	setConvarValue("net_splitrate", iSplitrate);
 
