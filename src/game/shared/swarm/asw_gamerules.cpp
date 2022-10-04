@@ -95,7 +95,6 @@
 	#include "team.h"
 	#include "asw_pickup_equipment.h"
 	#include "Sprite.h"
-	#include "highres_timer.h"
 	#include "env_tonemap_controller.h"
 	#include "asw_marine_hint.h"
 	#include "eventqueue.h"
@@ -124,6 +123,7 @@
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 #include "matchmaking/imatchframework.h"
+#include "rd_defaults.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -192,17 +192,9 @@ extern ConVar old_radius_damage;
 		rd_auto_fast_restart.SetValue( ConVarRef( pConVar ).GetString() );
 	}
 	ConVar rda_auto_mission_failed_instant_restart( "rda_auto_mission_failed_instant_restart", "0", FCVAR_HIDDEN, "", &RDAAutoMissionFailedInstantRestartChanged );
-	ConVar rd_adjust_mod_dont_load_vertices("rd_adjust_mod_dont_load_vertices", "1", FCVAR_NONE, "Automatically disables loading of vertex data.", true, 0, true, 1);
-	ConVar rd_dedicated_high_resolution_timer_ms( "rd_dedicated_high_resolution_timer_ms", "0.01", FCVAR_NONE, "Acquire timer with specified resolution in ms" );
 	ConVar rd_radial_damage_no_falloff_distance( "rd_radial_damage_no_falloff_distance", "16", FCVAR_CHEAT, "Distance from an explosion where damage starts to decrease based on distance.", true, 0, false, 0 );
 	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
 
-	// allow updateing the high res timer realtime
-	inline void HighResTimerChangeCallback( IConVar* pConVar, const char* pOldString, float flOldValue )
-	{
-		// on change apply timer resolution immediately
-		highres_timer_set( rd_dedicated_high_resolution_timer_ms.GetFloat() );
-	}
 
 	static void EnforceWeaponClassRestriction( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
 	{
@@ -1284,6 +1276,8 @@ CAlienSwarm::CAlienSwarm()
 {
 	Msg("C_AlienSwarm created\n");
 
+	rd_apply_new_client_defaults();
+
 	if (ASWEquipmentList())
 		ASWEquipmentList()->LoadTextures();
 
@@ -1442,14 +1436,7 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 {
 	m_bShuttingDown = false;
 
-	// fixes a memory leak on dedicated server where model vertex data
-	// is not freed on map transition and remains locked, leading to increased
-	// memory usage and cache trashing over time
-	if ( engine->IsDedicatedServer() && rd_adjust_mod_dont_load_vertices.GetBool() )
-	{
-		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
-		mod_dont_load_vertices.SetValue( 1 );
-	}
+	rd_apply_new_server_defaults();
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
@@ -1902,15 +1889,6 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
 {	
-#ifndef CLIENT_DLL
-	// request a high resolution timer from the os
-	if ( engine->IsDedicatedServer() )
-	{
-		// we have a client, apply the new timer resolution
-		highres_timer_set( rd_dedicated_high_resolution_timer_ms.GetFloat() );
-	}
-#endif
-
 	GetVoiceGameMgr()->ClientConnected( pEntity );
 
 	CASW_Player *pPlayer = ToASW_Player(CBaseEntity::Instance( pEntity ));
