@@ -76,7 +76,6 @@ void rd_apply_new_server_defaults()
 
 	// ignore two player requirement
 	setConvarValue("rd_override_allow_rotate_camera", 1);
-	setConvarValue("rd_ready_mark_override", 1);
 
 	// fps
 	setConvarValue("rd_override_fps_max", 1);
