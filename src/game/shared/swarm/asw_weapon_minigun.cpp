@@ -529,10 +529,7 @@ void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 	{
 		if ( m_pBarrelSpinSound )
 		{
-			if (CSoundEnvelopeController::GetController().SoundIsStillPlaying(m_pBarrelSpinSound))
-			{
-				CSoundEnvelopeController::GetController().Shutdown(m_pBarrelSpinSound);
-			}
+			CSoundEnvelopeController::GetController().SoundDestroy(m_pBarrelSpinSound);
 			m_pBarrelSpinSound = NULL;
 		}
 	}
@@ -584,8 +581,10 @@ void CASW_Weapon_Minigun::SetDormant( bool bDormant )
 	{
 		if ( m_pBarrelSpinSound )
 		{
-			CSoundEnvelopeController::GetController().SoundDestroy(m_pBarrelSpinSound);
-			m_pBarrelSpinSound = NULL;
+			if (CSoundEnvelopeController::GetController().SoundIsStillPlaying(m_pBarrelSpinSound)) 
+			{
+				CSoundEnvelopeController::GetController().Shutdown(m_pBarrelSpinSound);
+			}
 		}
 	}
 	BaseClass::SetDormant( bDormant );
