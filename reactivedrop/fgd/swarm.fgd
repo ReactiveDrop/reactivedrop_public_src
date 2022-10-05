@@ -2432,6 +2432,7 @@
 		1 : "Infinite even on Easy mode" : 0
 		2 : "Don't spawn Uber aliens here" : 0
 		4 : "Spawned aliens never sleep" : 0
+		8 : "Not affected by carnage scale" : 0
 	]
 
 	output OnDirectorSpawned(string) : "Fires when an alien is spawned by the director. The activator is the alien."
