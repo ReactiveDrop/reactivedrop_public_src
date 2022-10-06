@@ -26,10 +26,13 @@ public:
 	CNetworkHandle( C_ASW_Player, m_Commander );
 	const char *GetPlayerName() const;
 
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool ShouldPredict( void );
-	virtual C_BasePlayer *GetPredictionOwner();
-	virtual void InitPredictable( C_BasePlayer *pOwner );
+	virtual void PostDataUpdate( DataUpdateType_t updateType ) override;
+	virtual bool ShouldPredict( void ) override;
+	virtual C_BasePlayer *GetPredictionOwner() override;
+	virtual void InitPredictable( C_BasePlayer *pOwner ) override;
+
+	virtual bool IsAlien( void ) const { return false; }
+	virtual void ClientThink( void ) override;
 
 	// using entities over time
 	C_BaseEntity *GetUsingEntity() { return m_hUsingEntity.Get(); }

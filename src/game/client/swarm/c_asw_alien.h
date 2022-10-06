@@ -20,6 +20,7 @@ public:
 		
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
 
+	virtual bool IsAlien( void ) const { return true; }
 	virtual bool IsAlienClassType( void ) const { return true; }
 
 	// death;

@@ -23,6 +23,7 @@ public:
 	virtual void OnRestore();
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUZZER; }
+	virtual bool IsAlien( void ) const { return true; }
 
 	IMPLEMENT_AUTO_LIST_GET();
 	virtual float GetRadius() { return 18; }

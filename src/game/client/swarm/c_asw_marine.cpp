@@ -47,9 +47,11 @@
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
 #include <vgui/IScheme.h>
+#include "stats_report.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 //extern ConVar cl_predict;
 static ConVar	cl_asw_smooth		( "cl_asw_smooth", "1", 0, "Smooth marine's render origin after prediction errors" );
@@ -699,25 +701,35 @@ const QAngle& C_ASW_Marine::GetRenderAngles()
 	//}
 }
 
-C_ASW_Marine_Resource* C_ASW_Marine::GetMarineResource() 
-{	
-	if (m_hMarineResource.Get() != NULL)
+C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
+{
+	if ( m_hMarineResource.Get() != NULL )
 		return m_hMarineResource.Get();
 
 	// find our marine info
-	C_ASW_Game_Resource* pGameResource = ASWGameResource();
-	if (pGameResource != NULL)
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( pGameResource != NULL )
 	{
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
-			C_ASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-			if (pMR != NULL && pMR->GetMarineEntity() == this)
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( pMR != NULL && pMR->GetMarineEntity() == this )
 			{
 				m_hMarineResource = pMR;
+
+				if ( i >= 0 && i < NELEMS( g_rgbaStatsReportPlayerColors ) )
+				{
+					m_GlowObject.SetColor( Vector{
+						g_rgbaStatsReportPlayerColors[i].r() / 255.0f,
+						g_rgbaStatsReportPlayerColors[i].g() / 255.0f,
+						g_rgbaStatsReportPlayerColors[i].b() / 255.0f,
+					} );
+				}
 				return pMR;
 			}
 		}
 	}
+
 	return NULL;
 }
 

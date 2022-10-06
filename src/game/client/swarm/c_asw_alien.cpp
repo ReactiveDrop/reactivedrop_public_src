@@ -641,16 +641,6 @@ void C_ASW_Alien::ClientThink()
 	}
 
 	UpdateFireEmitters();
-
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->IsSniperScopeActive() )
-	{
-		m_GlowObject.SetRenderFlags( true, true );
-	}
-	else
-	{
-		m_GlowObject.SetRenderFlags( false, false );
-	}
 }
 
 // asw - test always advancing the frames

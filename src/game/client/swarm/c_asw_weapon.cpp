@@ -97,6 +97,8 @@ ConVar asw_muzzle_flash_new_type( "asw_muzzle_flash_new_type", "0", FCVAR_CHEAT 
 ConVar asw_laser_sight( "asw_laser_sight", "1", FCVAR_ARCHIVE );
 ConVar asw_laser_sight_min_distance( "asw_laser_sight_min_distance", "9999", 0, "The min distance at which to accurately draw the laser sight from the muzzle rather than using the shoot direction" );
 ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVAR_NONE );
+ConVar rd_tracer_tint_self( "rd_tracer_tint_self", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from own marine" );
+ConVar rd_tracer_tint_other( "rd_tracer_tint_other", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from other marines" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -148,7 +150,7 @@ C_ASW_Weapon::~C_ASW_Weapon()
 		m_hBayonet = NULL;
 	}
 
-    RemoveLaserPointerEffect();
+	RemoveLaserPointerEffect();
 	if (m_hLaserSight.Get())
 	{
 		UTIL_Remove( m_hLaserSight.Get() );
@@ -157,7 +159,7 @@ C_ASW_Weapon::~C_ASW_Weapon()
 }
 
 void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
-{	
+{
 	bool bPredict = ShouldPredict();
 	if (bPredict)
 	{
@@ -319,12 +321,18 @@ float C_ASW_Weapon::GetMuzzleFlashScale( void )
 
 Vector C_ASW_Weapon::GetMuzzleFlashTint()
 {
+	HACK_GETLOCALPLAYER_GUARD( "need local player to see what color the muzzle flash should be" );
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Inhabitable_NPC *pViewNPC = pLocalPlayer ? pLocalPlayer->GetViewNPC() : NULL;
+	Vector vecColor = pViewNPC && GetOwner() == pViewNPC ? rd_tracer_tint_self.GetColorAsVector() : rd_tracer_tint_other.GetColorAsVector();
+
 	if ( GetMuzzleFlashScale() >= 1.9f ) // red if our muzzle flash is the biggest size based on our skill
 	{
-		return Vector{ 1.0f, 0.65f, 0.65f };
+		vecColor.y *= 0.65f;
+		vecColor.z *= 0.65f;
 	}
 
-	return Vector{ 1, 1, 1 };
+	return vecColor;
 }
 
 void C_ASW_Weapon::ProcessMuzzleFlashEvent()

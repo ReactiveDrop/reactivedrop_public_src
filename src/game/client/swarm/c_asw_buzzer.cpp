@@ -174,16 +174,6 @@ void C_ASW_Buzzer::ClientThink()
 		FX_ElectroStun(this);
 		m_fNextElectroStunEffect = gpGlobals->curtime + RandomFloat( 0.2, 0.7 );
 	}
-
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->IsSniperScopeActive() )
-	{
-		m_GlowObject.SetRenderFlags( true, true );
-	}
-	else
-	{
-		m_GlowObject.SetRenderFlags( false, false );
-	}
 }
 
 int C_ASW_Buzzer::DrawModel( int flags, const RenderableInstance_t &instance )
