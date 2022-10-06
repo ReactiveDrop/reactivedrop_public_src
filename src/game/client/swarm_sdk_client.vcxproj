@@ -872,6 +872,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="hl2\c_rotorwash.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
     <ClCompile Include="hltvcamera.cpp" />
+    <ClCompile Include="HSVColorSquarePanel.cpp" />
+    <ClCompile Include="HSVSliderPanel.cpp" />
     <ClCompile Include="hud.cpp" />
     <ClCompile Include="hud_basechat.cpp" />
     <ClCompile Include="hud_basetimer.cpp" />
@@ -916,6 +918,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="modelrendersystem.cpp" />
     <ClCompile Include="movehelper_client.cpp" />
     <ClCompile Include="mp3player.cpp" />
+    <ClCompile Include="nb_lobby_laser_rgb_menu.cpp" />
     <ClCompile Include="object_motion_blur_effect.cpp" />
     <ClCompile Include="panelmetaclassmgr.cpp" />
     <ClCompile Include="particlemgr.cpp" />
@@ -2502,6 +2505,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="glow_overlay.h" />
     <ClInclude Include="history_resource.h" />
     <ClInclude Include="hltvcamera.h" />
+    <ClInclude Include="HSVColorSquarePanel.h" />
+    <ClInclude Include="HSVSliderPanel.h" />
     <ClInclude Include="hud.h" />
     <ClInclude Include="hudelement.h" />
     <ClInclude Include="hudtexturehandle.h" />
@@ -2546,6 +2551,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="modelrendersystem.h" />
     <ClInclude Include="movehelper_client.h" />
     <ClInclude Include="mp3player.h" />
+    <ClInclude Include="nb_lobby_laser_rgb_menu.h" />
     <ClInclude Include="networkstringtable_clientdll.h" />
     <ClInclude Include="object_motion_blur_effect.h" />
     <ClInclude Include="panelmetaclassmgr.h" />
