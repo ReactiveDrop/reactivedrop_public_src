@@ -79,9 +79,7 @@ IMPLEMENT_AUTO_LIST( IClientAimTargetsAutoList );
 
 float C_ASW_Alien::sm_flLastFootstepTime = 0.0f;
 
-C_ASW_Alien::C_ASW_Alien() : 
-m_GlowObject( this ),
-m_MotionBlurObject( this, 0.0f )
+C_ASW_Alien::C_ASW_Alien()
 {
 	m_bStepSideLeft = false;
 	m_nLastSetModel = 0;

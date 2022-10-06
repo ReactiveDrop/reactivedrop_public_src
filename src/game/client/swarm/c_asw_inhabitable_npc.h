@@ -5,6 +5,8 @@
 #endif
 
 #include "c_ai_basenpc.h"
+#include "glow_outline_effect.h"
+#include "object_motion_blur_effect.h"
 
 class C_ASW_Player;
 class C_ASW_Weapon;
@@ -59,6 +61,10 @@ public:
 	float			m_surfaceFriction;
 	char			m_chTextureType;
 	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
+
+	// Glows are enabled when the sniper scope is used
+	CGlowObject m_GlowObject;
+	CMotionBlurObject m_MotionBlurObject;
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible

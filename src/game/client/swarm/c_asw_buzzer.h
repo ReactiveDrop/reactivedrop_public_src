@@ -3,7 +3,6 @@
 
 #include "c_asw_alien.h"
 #include "asw_shareddefs.h"
-#include "glow_outline_effect.h"
 
 class CNewParticleEffect;
 
@@ -50,8 +49,6 @@ private:
 	// Purpose: Start + stop the buzzer's engine sound.
 	void SoundInit( void );
 	void SoundShutdown( void );
-
-	CGlowObject m_GlowObject;
 
 	CSoundPatch		*m_pEngineSound1;
 

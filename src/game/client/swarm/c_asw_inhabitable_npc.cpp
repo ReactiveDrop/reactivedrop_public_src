@@ -20,7 +20,9 @@ BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 END_PREDICTION_DATA()
 
-C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC()
+C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
+	m_GlowObject( this ),
+	m_MotionBlurObject( this, 0.0f )
 {
 	m_fRedNamePulse = 0;
 	m_bRedNamePulseUp = true;

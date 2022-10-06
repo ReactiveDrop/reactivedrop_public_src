@@ -26,7 +26,6 @@ END_RECV_TABLE()
 
 
 C_ASW_Buzzer::C_ASW_Buzzer()
-	: m_GlowObject( this )
 {
 	//m_fAmbientLight = 0.02f;
 	m_bClientOnFire = false;

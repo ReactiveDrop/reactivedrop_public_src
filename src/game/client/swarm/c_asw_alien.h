@@ -5,8 +5,6 @@
 #include "c_asw_inhabitable_npc.h"
 #include "iasw_client_aim_target.h"
 #include "asw_shareddefs.h"
-#include "glow_outline_effect.h"
-#include "object_motion_blur_effect.h"
 
 class CNewParticleEffect;
 
@@ -98,10 +96,6 @@ public:
 	virtual float GetBasePlayerYawRate();
 	float m_flAlienWalkSpeed;
 	bool m_bInhabitedMovementAllowed;
-
-	// Glows are enabled when the sniper scope is used
-	CGlowObject m_GlowObject;
-	CMotionBlurObject m_MotionBlurObject;
 private:
 	C_ASW_Alien( const C_ASW_Alien & ) = delete; // not defined, not accessible
 	static float sm_flLastFootstepTime;
