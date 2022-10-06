@@ -31,7 +31,7 @@ class CNB_Main_Panel : public vgui::EditablePanel
 public:
 	CNB_Main_Panel( vgui::Panel *parent, const char *name );
 	virtual ~CNB_Main_Panel();
-
+	
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
 	virtual void OnThink();
@@ -39,6 +39,8 @@ public:
 	virtual void OnCommand( const char *command );
 
 	void ChangeMarine( int nLobbySlot );
+	bool ChangeLaserColor(int nLobbySlot);
+	void SetChangingLaserColor(Color rgbColor);
 	void AddBot();
 	void ChangeWeapon( int nLobbySlot, int nInventorySlot );
 	void SpendSkillPointsOnMarine( int nProfileIndex );
@@ -47,14 +49,14 @@ public:
 	void ShowLeaderboard();
 
 	vgui::DHANDLE<vgui::Panel> m_hSubScreen;
-
+	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_pLeaderLabel;
-	vgui::Label *m_pTeamLabel;
-
+    vgui::Label *m_pTeamLabel;
+	
 	vgui::ImagePanel *m_pReadyCheckImage;
-	BaseModUI::GenericPanelList *m_pLobbyRowsScroll;
+    BaseModUI::GenericPanelList *m_pLobbyRowsScroll;
 	CNB_Lobby_Row *m_pLobbyRow0;
 	CNB_Lobby_Tooltip *m_pLobbyTooltip;
 	CNB_Mission_Summary *m_pMissionSummary;
@@ -63,7 +65,7 @@ public:
 	CNB_Button *m_pMissionDetailsButton;
 	CNB_Button *m_pFriendsButton;
 	CNB_Button *m_pPromotionButton;
-	CNB_Button *m_pTeamChangeButtonButton;
+    CNB_Button *m_pTeamChangeButtonButton;
 	CNB_Button *m_pChangeMissionButton;
 	CNB_Vote_Panel *m_pVotePanel;
 	CBitmapButton *m_pChatButton;
@@ -82,6 +84,7 @@ public:
 	static void RemoveFromSpendQueue( int nProfileIndex );
 	static CUtlVector<int> s_QueuedSpendSkillPoints;	// queue of marine profile indices to spend points on
 	bool m_bLobbyValidityChecked;
+	bool m_bHSVIsActive = false;
 };
 
 #endif // _INCLUDED_NB_MAIN_PANEL_H

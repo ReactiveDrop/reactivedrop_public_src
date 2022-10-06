@@ -49,6 +49,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_Re
 	RecvPropFloat( RECVINFO(m_fMapGenerationProgress) ),
 	RecvPropString( RECVINFO(m_szMapGenerationStatus) ),
 	RecvPropInt( RECVINFO(m_iRandomMapSeed) ),
+	RecvPropArray3( RECVINFO_ARRAY(m_vecLobbyLaserColor), RecvPropVector( RECVINFO(m_vecLobbyLaserColor[0]))),
 END_RECV_TABLE()
 
 C_ASW_Game_Resource *g_pASWGameResource = NULL;
@@ -68,6 +69,11 @@ C_ASW_Game_Resource::C_ASW_Game_Resource()
 	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
 	{
 		m_iRosterSelected.Set(i, 0);
+	}
+
+	for (int i = 0; i < ASW_MAX_READY_PLAYERS; i++)
+	{
+		m_vecLobbyLaserColor.Set(i, Vector(0, 0, 0));
 	}
 	m_iCampaignGame = -1;
 	m_iNumEnumeratedMarines = NULL;

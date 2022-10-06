@@ -155,6 +155,8 @@ public:
 	static int s_nNumConsecutiveFailures;
 	static bool s_bLeaderGivenDifficultySuggestion;
 
+	CNetworkArray(Vector, m_vecLobbyLaserColor, ASW_MAX_READY_PLAYERS);
+
 private:
 	CNetworkArray( int, m_iRosterSelected, ASW_NUM_MARINE_PROFILES );	
 

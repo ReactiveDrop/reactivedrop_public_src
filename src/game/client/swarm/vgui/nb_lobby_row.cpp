@@ -20,11 +20,19 @@
 #include "gameui/swarm/vdropdownmenu.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "rd_inventory_shared.h"
+#include "c_asw_player.h"
+//#include "convar.h"
+
+#include "c_asw_weapon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 using namespace BaseModUI;
+
+extern ConVar cl_asw_laser_sight_color;
+
+class C_ASW_Player;
 
 CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -52,16 +60,22 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pWeaponButton1 = new CBitmapButton( this, "WeaponButton1", "" );
 	m_pWeaponButton2 = new CBitmapButton( this, "WeaponButton2", "" );
 
+	m_pLaserButton = new CBitmapButton(this, "ChangeLaserButton", "");
+	m_pLaserOverlayButton = new CBitmapButton(this, "LaserOverlayButton", "");
+
 	m_pPortraitButton->AddActionSignalTarget( this );
 	m_pPortraitButton->SetCommand( "ChangeMarine" );
 
 	m_pWeaponButton0->AddActionSignalTarget( this );
 	m_pWeaponButton1->AddActionSignalTarget( this );
 	m_pWeaponButton2->AddActionSignalTarget( this );
+	m_pLaserButton->AddActionSignalTarget(this);
 
 	m_pWeaponButton0->SetCommand( "ChangeWeapon0" );
 	m_pWeaponButton1->SetCommand( "ChangeWeapon1" );
 	m_pWeaponButton2->SetCommand( "ChangeWeapon2" );
+	m_pLaserButton->SetCommand(	  "ChangeLaserColor");
+	m_pLaserOverlayButton->SetCommand("ChangeLaserColor");
 
 	m_pVoiceIcon = new vgui::ImagePanel( this, "VoiceIcon" );
 	m_pPromotionIcon = new vgui::ImagePanel( this, "PromotionIcon" );
@@ -98,6 +112,7 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton2 );
+	GetControllerFocus()->AddToFocusList(m_pLaserOverlayButton);
 }
 
 CNB_Lobby_Row::~CNB_Lobby_Row()
@@ -106,6 +121,7 @@ CNB_Lobby_Row::~CNB_Lobby_Row()
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
+	GetControllerFocus()->RemoveFromFocusList(m_pLaserOverlayButton);
 
 	if ( ISteamInventory *pInventory = SteamInventory() )
 	{
@@ -345,6 +361,7 @@ void CNB_Lobby_Row::UpdateDetails()
 	else
 	{
 		m_pAvatarImage->SetVisible( true );
+		m_pAvatarImage->SetVisible(true);
 	}
 	
 
@@ -438,6 +455,72 @@ void CNB_Lobby_Row::UpdateDetails()
 			pSilhouette->SetVisible( false );
 		}
 	}
+
+	//AG3 Test Code
+
+	if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && Briefing()->IsLobbySlotLocal(m_nLobbySlot) && !Briefing()->IsLobbySlotBot(m_nLobbySlot))
+	{
+
+
+
+		Color _inputRGBColor = cl_asw_laser_sight_color.GetColor();
+		color32 rgbLaserColor = color32();
+		rgbLaserColor.r = _inputRGBColor.r();
+		rgbLaserColor.g = _inputRGBColor.g();
+		rgbLaserColor.b = _inputRGBColor.b();
+		rgbLaserColor.a = 255;
+
+		m_pLaserButton->SetSize(25, 25);
+		m_pLaserButton->SetPos(0, 45);
+		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
+		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", Briefing()->IsLobbySlotLocal(m_nLobbySlot) ? white : rgbLaserColor);
+		m_pLaserButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", lightblue);
+
+
+		m_pLaserOverlayButton->SetSize(25, 25);
+		m_pLaserOverlayButton->SetPos(0, 45);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", lightblue);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
+
+
+		m_pLaserButton->SetVisible(true);
+		m_pLaserOverlayButton->SetVisible(true);
+	}
+	/*
+	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot))
+	{
+		CASW_Briefing* ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
+		C_BasePlayer* hPlayer = ASW_Briefing->GetPlayer(m_nLobbySlot);
+
+		if (hPlayer)
+		{
+
+			Vector vecCol = hPlayer->m_vecLobbyCustLaserColor.GetForModify();
+
+			color32 rgbLaserColor = color32();
+			rgbLaserColor.r = vecCol.x;
+			rgbLaserColor.g = vecCol.y;
+			rgbLaserColor.b = vecCol.z;
+			rgbLaserColor.a = 255;
+
+			m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
+
+			m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", lightblue);
+			m_pLaserButton->SetVisible(true);
+			m_pLaserOverlayButton->SetVisible(true);
+		}
+		else
+		{
+			m_pLaserButton->SetVisible(false);
+			m_pLaserOverlayButton->SetVisible(false);
+		}
+	}
+	*/
+	else
+	{
+		m_pLaserButton->SetVisible(false);
+		m_pLaserOverlayButton->SetVisible(false);
+	}
 }
 
 void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
@@ -491,6 +574,25 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	else if ( !Q_stricmp( command, "ChangeWeapon2" ) )
 	{
 		pMainPanel->ChangeWeapon( m_nLobbySlot, 2 );
+	}
+	else if (!Q_stricmp(command, "ChangeLaserColor"))
+	{
+		bool bResult = pMainPanel->ChangeLaserColor(m_nLobbySlot);
+
+		if (bResult)
+		{
+			GetControllerFocus()->RemoveFromFocusList(m_pPortraitButton);
+			GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton0);
+			GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton1);
+			GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton2);
+		}
+		else
+		{
+			GetControllerFocus()->AddToFocusList(m_pPortraitButton);
+			GetControllerFocus()->AddToFocusList(m_pWeaponButton0);
+			GetControllerFocus()->AddToFocusList(m_pWeaponButton1);
+			GetControllerFocus()->AddToFocusList(m_pWeaponButton2);
+		}
 	}
 	else if ( !Q_stricmp( command, "PlayerFlyout" ) )
 	{

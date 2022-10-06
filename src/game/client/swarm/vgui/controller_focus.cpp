@@ -221,86 +221,110 @@ void CControllerFocus::PopModal()
 		Msg( "Modal scope decreased to %d\n", m_iModalScope );
 }
 
+void CControllerFocus::SetIsRawOverride(bool bActive)
+{
+	m_bRawOverride = bActive;
+}
+
 bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
 {
-	if (!IsControllerMode())
-		return false;
-
-	// don't allow multiple direction presses at once
-	int iDirectionPress = -1;
-	
-	for (int i=0;i<4;i++)
+	if (!m_bRawOverride)
 	{
-		if (m_KeyNum[i] == keynum)
-			iDirectionPress = i;		
-	}
-	bool bDirectionAlreadyDown = false;
-	if (iDirectionPress != -1)
-	{		
-		for (int i=0;i<4;i++)
+		if (!IsControllerMode())
+			return false;
+
+		// don't allow multiple direction presses at once
+		int iDirectionPress = -1;
+
+		for (int i = 0; i < 4; i++)
 		{
-			if (m_bKeyDown[i] && i != iDirectionPress)	// if it's a direction we're already pushing, we allow it?
-				bDirectionAlreadyDown = true;		
-		}		
-		// abort if we're pushing a direction and another direction is already down
-		if (bDirectionAlreadyDown)
+			if (m_KeyNum[i] == keynum)
+				iDirectionPress = i;
+		}
+		bool bDirectionAlreadyDown = false;
+		if (iDirectionPress != -1)
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (m_bKeyDown[i] && i != iDirectionPress)	// if it's a direction we're already pushing, we allow it?
+					bDirectionAlreadyDown = true;
+			}
+			// abort if we're pushing a direction and another direction is already down
+			if (bDirectionAlreadyDown)
+			{
+				return true;
+			}
+		}
+
+		// clear current focus panel if it's now hidden
+		if (GetFocusPanel() && !IsPanelReallyVisible(GetFocusPanel()))
+		{
+			m_CurrentFocus.hPanel = NULL;
+		}
+
+		bool bSwallowKey = false;
+		if (keynum == m_KeyNum[JF_KEY_UP] || keynum == m_KeyNum[JF_KEY_UP_ALT])
+		{
+			int index = FindNextPanel(GetFocusPanel(), 270);
+			if (index != -1)
+				SetFocusPanel(index);
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		else if (keynum == m_KeyNum[JF_KEY_DOWN] || keynum == m_KeyNum[JF_KEY_DOWN_ALT])
+		{
+			int index = FindNextPanel(GetFocusPanel(), 90);
+			if (index != -1)
+				SetFocusPanel(index);
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		else if (keynum == m_KeyNum[JF_KEY_LEFT] || keynum == m_KeyNum[JF_KEY_LEFT_ALT])
+		{
+			int index = FindNextPanel(GetFocusPanel(), 180);
+			if (index != -1)
+				SetFocusPanel(index);
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		else if (keynum == m_KeyNum[JF_KEY_RIGHT] || keynum == m_KeyNum[JF_KEY_RIGHT_ALT])
+		{
+			int index = FindNextPanel(GetFocusPanel(), 0);
+			if (index != -1)
+				SetFocusPanel(index);
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		else if (keynum == m_KeyNum[JF_KEY_CONFIRM])
+		{
+			if (m_CurrentFocus.bClickOnFocus)
+				DoubleClickFocusPanel(false);
+			else
+				ClickFocusPanel(true, false);
+
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		else if (keynum == m_KeyNum[JF_KEY_CANCEL])
+		{
+			ClickFocusPanel(true, true);
+			bSwallowKey = (GetFocusPanel() != NULL);
+		}
+		if (bSwallowKey)
+		{
+			for (int i = 0; i < NUM_JF_KEYS; i++)
+			{
+				if (m_KeyNum[i] == keynum)
+				{
+					m_bKeyDown[i] = true;
+					m_fNextKeyRepeatTime[i] = vgui::system()->GetTimeMillis() + JF_KEY_REPEAT_DELAY;
+				}
+			}
 			return true;
 		}
-	}	
+		// don't swallow non-direction or confirm/cancel keys
+		return false;
+	}
+	else
+	{
+		//This is a raw override input
 
-	// clear current focus panel if it's now hidden
-	if ( GetFocusPanel() && !IsPanelReallyVisible( GetFocusPanel() ) )
-	{
-		m_CurrentFocus.hPanel = NULL;
-	}
-
-	bool bSwallowKey = false;
-	if (keynum == m_KeyNum[JF_KEY_UP] || keynum == m_KeyNum[JF_KEY_UP_ALT])
-	{
-		int index = FindNextPanel(GetFocusPanel(), 270);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	else if (keynum == m_KeyNum[JF_KEY_DOWN] || keynum == m_KeyNum[JF_KEY_DOWN_ALT])
-	{
-		int index = FindNextPanel(GetFocusPanel(), 90);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	else if (keynum == m_KeyNum[JF_KEY_LEFT] || keynum == m_KeyNum[JF_KEY_LEFT_ALT])
-	{
-		int index = FindNextPanel(GetFocusPanel(), 180);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	else if (keynum == m_KeyNum[JF_KEY_RIGHT] || keynum == m_KeyNum[JF_KEY_RIGHT_ALT])
-	{
-		int index = FindNextPanel(GetFocusPanel(), 0);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	else if (keynum == m_KeyNum[JF_KEY_CONFIRM])
-	{
-		if (m_CurrentFocus.bClickOnFocus)
-			DoubleClickFocusPanel(false);
-		else
-			ClickFocusPanel(true, false);
-
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	else if (keynum == m_KeyNum[JF_KEY_CANCEL])
-	{		
-		ClickFocusPanel(true, true);
-		bSwallowKey = (GetFocusPanel() != NULL);
-	}
-	if ( bSwallowKey )
-	{
-		for (int i=0;i<NUM_JF_KEYS;i++)
+		for (int i = 0; i < NUM_JF_KEYS; i++)
 		{
 			if (m_KeyNum[i] == keynum)
 			{
@@ -310,8 +334,6 @@ bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
 		}
 		return true;
 	}
-	// don't swallow non-direction or confirm/cancel keys
-	return false;
 }
 
 bool CControllerFocus::OnControllerButtonReleased(ButtonCode_t keynum)

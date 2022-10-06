@@ -21,6 +21,31 @@
 class CBaseEntity;
 class CNewParticleEffect;
 
+
+class C_INIT_RandomColor : public CParticleInitializerOperatorInstance
+{
+	// C_INIT_RandomColor additional information
+	// particles.dll, project particles
+	// Alignment: 16
+	// SCHEMA_CLASS_HAS_VIRTUAL_MEMBERS
+	// SCHEMA_CLASS_TEMP_HACK_HAS_NOSCHEMA_MEMBERS
+
+public:
+	Vector m_flNormColorMin;
+	Vector m_flNormColorMax;
+	//char C_INIT_RandomColor_088[0x18];
+	Color m_ColorMin;// 0x88, size 4 (0x4)
+	Color m_ColorMax;// 0x8c, size 4 (0x4)
+	Color m_TintMin;// 0x90, size 4 (0x4)
+	Color m_TintMax;// 0x94, size 4 (0x4)
+	float m_flTintPerc;// 0x98, size 4 (0x4)
+	float m_flUpdateThreshold;// 0x9c, size 4 (0x4)
+	int32_t m_nTintCP;// 0xa0, size 4 (0x4)
+	int32_t m_nFieldOutput;// 0xa4, size 4 (0x4)
+	int m_nTintBlendMode;// 0xa8, size 4 (0x4)   THIS ISN'T SUPPOSED TO BE AN INT
+	float m_flLightAmplification;// 0xac, size 4 (0x4)
+}; // size: 176 (0xb0)
+
 struct ParticleControlPoint_t
 {
 	ParticleControlPoint_t()
@@ -75,6 +100,7 @@ public:
 	CNewParticleEffect *Create( const char *pszParticleName, ParticleAttachment_t iAttachType, const char *pszAttachmentName );
 	CNewParticleEffect *Create( const char *pszParticleName, ParticleAttachment_t iAttachType, int iAttachmentPoint = -1, Vector vecOriginOffset = vec3_origin, matrix3x4_t *vecOffsetMatrix = NULL );
 	CNewParticleEffect *CreatePrecached( int nPrecacheIndex, ParticleAttachment_t iAttachType, int iAttachmentPoint = -1, Vector vecOriginOffset = vec3_origin, matrix3x4_t *vecOffsetMatrix = NULL );
+	CNewParticleEffect *Colored_Create(const char* pszParticleName, ParticleAttachment_t iAttachType, int iAttachmentPoint,Vector colorMul, Vector vecOriginOffset = vec3_origin, matrix3x4_t* matOffset = NULL);
 	void				AddControlPoint( CNewParticleEffect *pEffect, int iPoint, C_BaseEntity *pEntity, ParticleAttachment_t iAttachType, const char *pszAttachmentName = NULL, Vector vecOriginOffset = vec3_origin, matrix3x4_t *vecOffsetMatrix = NULL );
 	void				AddControlPoint( int iEffectIndex, int iPoint, C_BaseEntity *pEntity, ParticleAttachment_t iAttachType, int iAttachmentPoint = -1, Vector vecOriginOffset = vec3_origin, matrix3x4_t *vecOffsetMatrix = NULL );
 

@@ -39,6 +39,7 @@
 #include "rd_lobby_utils.h"
 #include "nb_leaderboard_panel.h"
 #include "controller_focus.h"
+#include "nb_lobby_laser_rgb_menu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -53,6 +54,7 @@
 extern ConVar mp_gamemode;
 extern ConVar mm_max_players;
 extern ConVar rd_player_bots_allowed;
+extern ConVar cl_asw_laser_sight_color;
 ConVar rd_draw_briefing_ui( "rd_draw_briefing_ui", "1", FCVAR_CHEAT );
 
 using BaseModUI::GenericPanelList;
@@ -138,6 +140,8 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	GetControllerFocus()->AddToFocusList( m_pLeaderboardButton );
 	GetControllerFocus()->AddToFocusList( m_pAddBotButton );
 	GetControllerFocus()->AddToFocusList( m_pDeselectMarinesButton );
+
+	SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
 }
 
 CNB_Main_Panel::~CNB_Main_Panel()
@@ -390,6 +394,7 @@ void CNB_Main_Panel::ChangeMarine( int nLobbySlot )
 	if ( m_hSubScreen.Get() )
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CNB_Select_Marine_Panel *pMarinePanel = new CNB_Select_Marine_Panel( this, "Select_Marine_Panel" );
@@ -406,6 +411,46 @@ void CNB_Main_Panel::ChangeMarine( int nLobbySlot )
 	C_BaseEntity::EmitSound( filter, -1, "ASWComputer.MenuButton" );
 }
 
+bool CNB_Main_Panel::ChangeLaserColor(int nLobbySlot)
+{
+	bool bResult = false;
+	if (!Briefing()->IsLobbySlotLocal(nLobbySlot))
+		return false;
+
+	if (m_hSubScreen.Get())
+	{
+		m_hSubScreen->MarkForDeletion();
+	}
+
+	if (!m_bHSVIsActive)
+	{
+		bResult = true;
+		Cnb_lobby_laser_rgb_menu* pLaserPanel = new Cnb_lobby_laser_rgb_menu(this, "Select_LaserColor_Panel");
+
+		pLaserPanel->MoveToFront();
+
+		m_hSubScreen = pLaserPanel;
+
+		m_bHSVIsActive = true;
+
+		CLocalPlayerFilter filter;
+		C_BaseEntity::EmitSound(filter, -1, "ASWComputer.MenuButton");
+
+		m_bHSVIsActive = true;
+	}
+	else
+	{
+		if (m_hSubScreen.Get())
+		{
+			m_bHSVIsActive = false;
+			m_hSubScreen->MarkForDeletion();
+			m_hSubScreen = NULL;
+		}
+	}
+
+	return bResult;
+}
+
 void CNB_Main_Panel::AddBot()
 {
 	if ( !rd_player_bots_allowed.GetBool() )
@@ -418,6 +463,7 @@ void CNB_Main_Panel::AddBot()
 	if (m_hSubScreen.Get())
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CNB_Select_Marine_Panel *pMarinePanel = new CNB_Select_Marine_Panel(this, "Select_Marine_Panel");	
@@ -446,6 +492,7 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	if ( m_hSubScreen.Get() )
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( nLobbySlot );
@@ -516,7 +563,7 @@ void CNB_Main_Panel::OnCommand( const char *command )
 		{
 			// because briefing frame fades out slowly a user can click the
 			// Ready button one more time and get a crash here, so we do this check
-			if ( g_hBriefingFrame.Get() )
+			if ( g_hBriefingFrame.Get() )	
 			{
 				// for DM we only close the briefing panel
 				g_hBriefingFrame->SetDeleteSelfOnClose( true );
@@ -589,10 +636,10 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	{
 		ShowPromotionPanel();
 	}
-	else if ( !Q_stricmp( command, "TeamChangeButton" ) )
-	{
-		engine->ServerCmd( "rd_team_change" );
-	}
+    else if ( !Q_stricmp( command, "TeamChangeButton" ) )
+    {
+        engine->ServerCmd( "rd_team_change" );
+    }
 	BaseClass::OnCommand( command );
 }
 
@@ -603,6 +650,7 @@ void CNB_Main_Panel::ShowMissionDetails()
 	if ( m_hSubScreen.Get() )
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CNB_Mission_Panel *pPanel = new CNB_Mission_Panel( this, "MissionPanel" );
@@ -616,6 +664,7 @@ void CNB_Main_Panel::ShowPromotionPanel()
 	if ( m_hSubScreen.Get() )
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CNB_Promotion_Panel *pPanel = new CNB_Promotion_Panel( this, "PromotionPanel" );
@@ -629,10 +678,16 @@ void CNB_Main_Panel::ShowLeaderboard()
 	if ( m_hSubScreen.Get() )
 	{
 		m_hSubScreen->MarkForDeletion();
+		m_bHSVIsActive = false;
 	}
 
 	CNB_Leaderboard_Panel *pPanel = new CNB_Leaderboard_Panel( this, "LeaderboardPanel" );
 	pPanel->MoveToFront();
 
 	m_hSubScreen = pPanel;
+}
+
+void CNB_Main_Panel::SetChangingLaserColor(Color rgbColor)
+{
+	engine->ClientCmd(VarArgs("cl_editing_lasercolor %d %d %d", rgbColor.r(), rgbColor.g(), rgbColor.b()));
 }

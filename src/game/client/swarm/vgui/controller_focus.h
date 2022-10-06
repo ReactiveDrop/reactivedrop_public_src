@@ -82,6 +82,8 @@ public:
 	void SetControllerMode(bool b) { m_bControllerMode = b; }
 	bool IsControllerMode() { return m_bControllerMode; }
 
+	void SetIsRawOverride(bool bActive);
+
 	// checks a panel and all its parents are visible
 	static bool IsPanelReallyVisible(vgui::Panel *pPanel);
 
@@ -103,6 +105,8 @@ public:
 	int m_iModalScope; // only pay attention to focus panels with the same modal scope setting.
 	bool m_bControllerMode;
 	bool m_bDebugOutput;
+
+	bool m_bRawOverride = false;
 };
 
 CControllerFocus* GetControllerFocus();

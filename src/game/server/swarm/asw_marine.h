@@ -285,6 +285,8 @@ public:
 	virtual bool ShouldNotDistanceCull();	// BenLubar(deathmatch-improvements):
 	virtual Disposition_t IRelationType( CBaseEntity *pTarget );	// BenLubar(deathmatch-improvements):
 
+	CNetworkVar(Vector, m_vecCustLaserColor);
+
 	// Custom conditions, schedules and tasks
 	enum
 	{

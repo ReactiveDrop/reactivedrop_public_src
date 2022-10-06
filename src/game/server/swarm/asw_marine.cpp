@@ -269,6 +269,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
+	SendPropVector  ( SENDINFO( m_vecCustLaserColor)),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -634,6 +635,16 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	m_iPoisonHeal = 0;
 	m_flNextPoisonHeal = -1;
+
+
+	Vector vecCol = Vector(0, 0, 0);
+	Vector vecHSV = Vector(RandomFloat(0.0f, 360.0f), RandomFloat(0.0f, 255.0f), 255.0);
+	HSVtoRGB(vecHSV, vecCol);
+
+	m_vecCustLaserColor.GetForModify().x = vecCol.x;
+	m_vecCustLaserColor.GetForModify().y = vecCol.y;
+	m_vecCustLaserColor.GetForModify().z = vecCol.z;
+
 }
 
 
@@ -1091,6 +1102,33 @@ void CASW_Marine::InhabitedBy( CASW_Player *player )
 		m_vecSmoothedVelocity.z = GetAbsVelocity().z;
 	}
 	SetInhabited( true );
+
+
+	int entIndex = player->entindex();
+
+	const char* szLSValue = engine->GetClientConVarValue(entIndex, "cl_asw_laser_sight_color");
+
+
+
+	if (szLSValue)
+	{
+		CUtlStringList szSplitFloats;
+		V_SplitString(szLSValue, " ", szSplitFloats);
+
+		if (szSplitFloats.Count() >= 3)
+		{
+			m_vecCustLaserColor.GetForModify().x = atof(szSplitFloats[0]);
+			m_vecCustLaserColor.GetForModify().y = atof(szSplitFloats[1]);
+			m_vecCustLaserColor.GetForModify().z = atof(szSplitFloats[2]);
+		}
+		else
+		{
+			Vector vecCustColor = m_vecCustLaserColor.GetForModify();
+			vecCustColor.x = 255.0f;
+			vecCustColor.y = 0.0f;
+			vecCustColor.z = 0.0f;
+		}
+	}
 
 
 	// stop the AI firing

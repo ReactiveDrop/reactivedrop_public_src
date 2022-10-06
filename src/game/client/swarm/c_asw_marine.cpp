@@ -199,6 +199,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat   ( RECVINFO( m_fJumpJetDurationOverride )),
 	RecvPropFloat   ( RECVINFO( m_fJumpJetAnimationDurationOverride )),
 	RecvPropBool	( RECVINFO( m_bForceWalking )),
+	RecvPropVector	( RECVINFO( m_vecCustLaserColor ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )

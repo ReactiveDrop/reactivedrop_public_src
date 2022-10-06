@@ -331,6 +331,9 @@ public:
 	Vector m_vLaserSightCorrection;
 	float m_flLaserSightLength;
 
+	//RGB LASER
+	CNetworkVar(Vector, m_vecCustLaserColor);
+
 	CNetworkVar( bool, m_bAICrouch );		// if set, the AI will appear crouched when still
 
 	// melee

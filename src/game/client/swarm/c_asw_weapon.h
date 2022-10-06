@@ -14,6 +14,10 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 
+static bool g_bLaserIndexInUse[8]{}; //LS INDEX SIZE 8
+
+
+
 extern ConVar rd_ground_shooting;
 
 class C_ASW_Weapon : public C_BaseCombatWeapon, public IASW_Client_Usable_Entity
@@ -37,8 +41,12 @@ public:
 	virtual void CreateBayonet();
 	virtual bool SupportsBayonet();
 	virtual void CreateLaserSight();
+	int C_ASW_Weapon::GetFreeLaserIndex(bool bSetAsTaken=false);
+	void C_ASW_Weapon::MarkLaserIndexAsTaken(int index);
+	void C_ASW_Weapon::FreeLaserIndex();
 	CHandle<C_BreakableProp> m_hBayonet;
 	EHANDLE m_hLaserSight;
+	int m_iUsingLSIndex = -1;
 
 	virtual int DrawModel( int flags, const RenderableInstance_t &instance );
 	virtual IClientModelRenderable*	GetClientModelRenderable();

@@ -37,6 +37,8 @@ public:
 	CNetworkHandle (C_ASW_Player, m_Leader);
 	CNetworkVar(int, m_iLeaderIndex);
 	CNetworkArray( bool, m_bPlayerReady, ASW_MAX_READY_PLAYERS );
+
+	CNetworkArray(Vector, m_vecLobbyLaserColor, ASW_MAX_READY_PLAYERS);
 	bool IsPlayerReady(C_ASW_Player *pPlayer);
 	bool IsPlayerReady(int iPlayerEntIndex);
 
