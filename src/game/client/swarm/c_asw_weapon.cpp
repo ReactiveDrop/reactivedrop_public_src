@@ -317,9 +317,14 @@ float C_ASW_Weapon::GetMuzzleFlashScale( void )
 	return m_fMuzzleFlashScale;
 }
 
-bool C_ASW_Weapon::GetMuzzleFlashRed()
+Vector C_ASW_Weapon::GetMuzzleFlashTint()
 {
-	return GetMuzzleFlashScale() >= 1.9f;	// red if our muzzle flash is the biggest size based on our skill
+	if ( GetMuzzleFlashScale() >= 1.9f ) // red if our muzzle flash is the biggest size based on our skill
+	{
+		return Vector{ 1.0f, 0.65f, 0.65f };
+	}
+
+	return Vector{ 1, 1, 1 };
 }
 
 void C_ASW_Weapon::ProcessMuzzleFlashEvent()
@@ -360,18 +365,11 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 		float flScale = GetMuzzleFlashScale();	
 		if ( asw_use_particle_tracers.GetBool() )
 		{
-			FX_ASW_ParticleMuzzleFlashAttached( flScale, GetRefEHandle(), iAttachment, GetMuzzleFlashRed() );
+			FX_ASW_ParticleMuzzleFlashAttached( flScale, GetRefEHandle(), iAttachment, GetMuzzleFlashTint() );
 		}
 		else
 		{
-			if (GetMuzzleFlashRed())
-			{			
-				FX_ASW_RedMuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-			}
-			else
-			{
-				FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-			}
+			FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
 		}
 	}
 
@@ -868,12 +866,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		m_pMuzzleFlashEffect->SetControlPoint( 10, Vector( GetMuzzleFlashScale(), 0, 0 ) );
 
 		// color
-		Vector vecColor = Vector( 1, 1, 1 );
-		if ( GetMuzzleFlashRed() )
-		{
-			vecColor = Vector( 1, 0.55, 0.55 );
-		}
-		m_pMuzzleFlashEffect->SetControlPoint( 20, vecColor );
+		m_pMuzzleFlashEffect->SetControlPoint( 20, GetMuzzleFlashTint() );
 
 		// Set Alpha control point
 		float fAlpha;

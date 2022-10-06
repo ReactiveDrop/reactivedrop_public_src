@@ -158,16 +158,6 @@ void CASW_Weapon_Autogun::ReachedEndOfSequence()
 	}
 }
 
-float CASW_Weapon_Autogun::GetMuzzleFlashScale( void )
-{
-	return BaseClass::GetMuzzleFlashScale();
-}
-
-bool CASW_Weapon_Autogun::GetMuzzleFlashRed()
-{
-	return BaseClass::GetMuzzleFlashRed();
-}
-
 #endif
 
 bool CASW_Weapon_Autogun::SupportsBayonet()

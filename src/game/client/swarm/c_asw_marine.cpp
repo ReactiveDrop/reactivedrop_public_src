@@ -1225,20 +1225,11 @@ void C_ASW_Marine::ProcessMuzzleFlashEvent()
 
 
 	// attach muzzle flash particle system effect
-	int iAttachment = pWeapon->GetMuzzleAttachment();		
+	int iAttachment = pWeapon->GetMuzzleAttachment();
 	if ( iAttachment > 0 )
 	{
-#ifndef _DEBUG
-		float flScale = pWeapon->GetMuzzleFlashScale();				
-		if (pWeapon->GetMuzzleFlashRed())
-		{			
-			FX_ASW_RedMuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
-		}
-		else
-		{
-			FX_ASW_MuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
-		}
-#endif
+		float flScale = pWeapon->GetMuzzleFlashScale();
+		FX_ASW_MuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
 	}
 }
 

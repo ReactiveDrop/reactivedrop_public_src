@@ -270,52 +270,6 @@ float CASW_Weapon_PDW::GetWeaponDamage()
 	return flDamage;
 }
 
-#ifdef CLIENT_DLL
-void CASW_Weapon_PDW::OnMuzzleFlashed()
-{
-	BaseClass::OnMuzzleFlashed();
-
-	// UNDONE: flash both guns from ASWUTracerDual 
-// 	int iAttachment = LookupAttachment( "muzzle_flash_l" );	
-// 	if ( iAttachment > 0 )
-// 	{
-// 		float flScale = GetMuzzleFlashScale();		
-// 		if (GetMuzzleFlashRed())
-// 		{			
-// 			FX_ASW_RedMuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-// 		}
-// 		else
-// 		{
-// 			FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-// 		}
-// 	}
-}
-
-float CASW_Weapon_PDW::GetMuzzleFlashScale( void )
-{
-	return BaseClass::GetMuzzleFlashScale();
-	/*
-	// if we haven't calculated the muzzle scale based on the carrying marine's skill yet, then do so
-	if (m_fMuzzleFlashScale == -1)
-	{
-		C_ASW_Marine *pMarine = GetMarine();
-		if (pMarine)
-			m_fMuzzleFlashScale = 2.0f * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MUZZLE);
-		else
-			return 2.0f;
-	}
-
-	return m_fMuzzleFlashScale;
-	*/
-}
-
-bool CASW_Weapon_PDW::GetMuzzleFlashRed()
-{
-	return BaseClass::GetMuzzleFlashRed();
-	//return ((GetMuzzleFlashScale() / 2.0f) >= 1.15f);	// red if our muzzle flash is the biggest size based on our skill
-}
-#endif
-
 // user message based tracer type
 const char* CASW_Weapon_PDW::GetUTracerType()
 {

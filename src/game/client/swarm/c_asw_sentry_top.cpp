@@ -132,7 +132,6 @@ void C_ASW_Sentry_Top::ProcessMuzzleFlashEvent()
 	BaseClass::ProcessMuzzleFlashEvent();
 }
 
-extern void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart, const Vector &vecEnd, bool bRedTracer, int iAttributeEffects = 0 );
 void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 {
 	MDLCACHE_CRITICAL_SECTION();
@@ -150,7 +149,7 @@ void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 		return;
 	}
 	
-	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd, false );
+	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd );
 
 	C_BaseAnimating::PopBoneAccess( "sentgun" );
 }

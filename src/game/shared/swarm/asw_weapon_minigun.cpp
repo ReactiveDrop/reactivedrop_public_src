@@ -399,9 +399,14 @@ float CASW_Weapon_Minigun::GetMuzzleFlashScale( void )
 	return m_fMuzzleFlashScale;
 }
 
-bool CASW_Weapon_Minigun::GetMuzzleFlashRed()
+Vector CASW_Weapon_Minigun::GetMuzzleFlashTint()
 {
-	return ((GetMuzzleFlashScale() / 2.0f) >= 1.15f);	// red if our muzzle flash is the biggest size based on our skill
+	if ( ( GetMuzzleFlashScale() / 2.0f ) >= 1.15f ) // red if our muzzle flash is the biggest size based on our skill
+	{
+		return Vector{ 1.0f, 0.65f, 0.65f };
+	}
+
+	return Vector{ 1, 1, 1 };
 }
 
 #endif
