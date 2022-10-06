@@ -2672,6 +2672,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 				if ( pRagdoll )
 				{
 					pRagdoll->ApplyAbsVelocityImpulse( vecForce );
+					ASWGameRules()->m_hMarineDeathRagdoll = pRagdoll;
 				}
 			}
 		}
@@ -2722,6 +2723,9 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 
 		if ( !pGib )
 			continue;
+
+		if ( i == 0 )
+			ASWGameRules()->m_hMarineDeathRagdoll = pGib;
 
 		pGib->SetSkin( pProfile->GetSkinNum() );
 
