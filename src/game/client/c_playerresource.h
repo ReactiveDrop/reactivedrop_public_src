@@ -54,6 +54,9 @@ public : // IGameResources intreface
 	virtual	void	OnDataChanged(DataUpdateType_t updateType);
 	virtual void	TeamChanged( void ){ }
 
+	void	TogglePlayerMuteState( int slot, bool bMuteDontCache );
+	bool	IsMuted( int slot );
+
 protected:
 	void	UpdatePlayerName( int slot );
 
@@ -72,5 +75,6 @@ protected:
 };
 
 extern C_PlayerResource *g_PR;
+static CUtlVector<uint64> MutedList;
 
 #endif // C_PLAYERRESOURCE_H
