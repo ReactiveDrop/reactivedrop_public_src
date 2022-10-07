@@ -12,6 +12,7 @@
 #include "rd_text_filtering.h"
 #include "rd_lobby_utils.h"
 #include "fmtstr.h"
+#include "voice_status.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -58,7 +59,7 @@ BEGIN_PREDICTION_DATA( C_PlayerResource )
 
 END_PREDICTION_DATA()	
 
-C_PlayerResource *g_PR;
+C_PlayerResource *g_PR = NULL;
 
 IGameResources * GameResources( void ) { return g_PR; }
 
@@ -161,9 +162,20 @@ void C_PlayerResource::ClientThink()
 {
 	BaseClass::ClientThink();
 
+	CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
+
 	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
 	{
 		UpdatePlayerName( i );
+
+		if ( !pVoiceMgr )
+			continue;
+
+		if ( IsMuted( i ) && !pVoiceMgr->IsPlayerBlocked( i ) )
+		{
+			Warning( "Fixing player %d being unmuted\n", i );
+			TogglePlayerMuteState( i, true );
+		}
 	}
 
 	SetNextClientThink( gpGlobals->curtime + PLAYER_RESOURCE_THINK_INTERVAL );
@@ -195,6 +207,43 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 
 	// This gets updated in ClientThink, so it could be up to 1 second out of date, oh well.
 	return m_szName[iIndex];
+}
+
+void C_PlayerResource::TogglePlayerMuteState( int slot, bool bMuteDontCache )
+{	
+	CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
+	if ( pVoiceMgr )
+	{
+		if ( bMuteDontCache )
+		{
+			pVoiceMgr->SetPlayerBlockedState( slot, true );
+			return;
+		}
+		
+		bool bMuted = pVoiceMgr->IsPlayerBlocked( slot );
+		pVoiceMgr->SetPlayerBlockedState( slot, !bMuted );
+
+		player_info_t pi;
+		if ( !engine->GetPlayerInfo( slot, &pi ) )
+			return;
+
+		uint64 xuid = pi.xuid;
+
+		if ( bMuted )
+			MutedList.FindAndRemove( xuid );
+		else
+			if ( !MutedList.HasElement( xuid ) )
+				MutedList.AddToHead( xuid );
+	}
+}
+
+bool C_PlayerResource::IsMuted( int slot )
+{
+	player_info_t pi;
+	if ( !engine->GetPlayerInfo( slot, &pi ) )
+		return false;
+	
+	return MutedList.HasElement( pi.xuid );
 }
 
 bool C_PlayerResource::IsAlive(int iIndex )
