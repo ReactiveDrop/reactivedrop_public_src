@@ -3,7 +3,6 @@
 
 #include "c_asw_alien.h"
 #include "asw_shareddefs.h"
-#include "glow_outline_effect.h"
 
 class CNewParticleEffect;
 
@@ -24,6 +23,7 @@ public:
 	virtual void OnRestore();
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUZZER; }
+	virtual bool IsAlien( void ) const { return true; }
 
 	IMPLEMENT_AUTO_LIST_GET();
 	virtual float GetRadius() { return 18; }
@@ -50,8 +50,6 @@ private:
 	// Purpose: Start + stop the buzzer's engine sound.
 	void SoundInit( void );
 	void SoundShutdown( void );
-
-	CGlowObject m_GlowObject;
 
 	CSoundPatch		*m_pEngineSound1;
 

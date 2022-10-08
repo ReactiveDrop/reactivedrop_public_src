@@ -57,7 +57,7 @@ public:
 	virtual int		GetMuzzleAttachment( void );
 	virtual void	SetMuzzleAttachment( int nNewAttachment );
 	virtual float	GetMuzzleFlashScale( void );
-	virtual bool	GetMuzzleFlashRed();	// returns true of the muzzle flash should be a mean red
+	virtual Vector	GetMuzzleFlashTint();
 	virtual void	ProcessMuzzleFlashEvent();
 	virtual int		LookupAttachment( const char *pAttachmentName );
 	virtual const char* GetUTracerType();

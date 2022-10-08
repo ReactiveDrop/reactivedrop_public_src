@@ -54,7 +54,7 @@ public:
 		virtual bool ShouldMarineMinigunShoot();
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 		virtual float GetMuzzleFlashScale();
-		virtual bool GetMuzzleFlashRed();
+		virtual Vector GetMuzzleFlashTint();
 		virtual void OnMuzzleFlashed();
 		virtual void ReachedEndOfSequence();
 		float m_flLastMuzzleFlashTime;

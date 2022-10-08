@@ -5,6 +5,8 @@
 #endif
 
 #include "c_ai_basenpc.h"
+#include "glow_outline_effect.h"
+#include "object_motion_blur_effect.h"
 
 class C_ASW_Player;
 class C_ASW_Weapon;
@@ -24,10 +26,13 @@ public:
 	CNetworkHandle( C_ASW_Player, m_Commander );
 	const char *GetPlayerName() const;
 
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool ShouldPredict( void );
-	virtual C_BasePlayer *GetPredictionOwner();
-	virtual void InitPredictable( C_BasePlayer *pOwner );
+	virtual void PostDataUpdate( DataUpdateType_t updateType ) override;
+	virtual bool ShouldPredict( void ) override;
+	virtual C_BasePlayer *GetPredictionOwner() override;
+	virtual void InitPredictable( C_BasePlayer *pOwner ) override;
+
+	virtual bool IsAlien( void ) const { return false; }
+	virtual void ClientThink( void ) override;
 
 	// using entities over time
 	C_BaseEntity *GetUsingEntity() { return m_hUsingEntity.Get(); }
@@ -59,6 +64,10 @@ public:
 	float			m_surfaceFriction;
 	char			m_chTextureType;
 	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.
+
+	// Glows are enabled when the sniper scope is used
+	CGlowObject m_GlowObject;
+	CMotionBlurObject m_MotionBlurObject;
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible

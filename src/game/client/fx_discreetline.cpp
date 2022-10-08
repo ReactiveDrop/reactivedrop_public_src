@@ -26,7 +26,7 @@ CFXLine
 */
 
 CFXDiscreetLine::CFXDiscreetLine( const char *name, const Vector& start, const Vector& direction, 
-	float velocity, float length, float clipLength, float scale, float life, const char *shader )
+	float velocity, float length, float clipLength, float scale, float life, const char *shader, Vector vecColor )
 : CClientSideEffect( name )
 {
 	assert( materials );
@@ -39,6 +39,7 @@ CFXDiscreetLine::CFXDiscreetLine( const char *name, const Vector& start, const V
 
 	m_vecOrigin			= start;
 	m_vecDirection		= direction;
+	m_vecColor			= vecColor;
 	m_fVelocity			= velocity;
 	m_fClipLength		= clipLength;
 	m_fScale			= scale;
@@ -139,66 +140,70 @@ void CFXDiscreetLine::Draw( double frametime )
 
 		meshBuilder.Begin( pMesh, MATERIAL_QUADS, 2 );
 
-		float color = (int) 255.0f * flAlpha;
+		unsigned char colorR = m_vecColor.x * 255.0f * flAlpha;
+		unsigned char colorG = m_vecColor.y * 255.0f * flAlpha;
+		unsigned char colorB = m_vecColor.z * 255.0f * flAlpha;
 
 		//FIXME: for now no coloration
 		VectorMA( vecStart, -flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecStart,  flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, fOffset );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, -flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, fOffset );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		flScale = flScale * 2.0f;
-		color = (int) 64.0f * flAlpha;
+		colorR = m_vecColor.x * 64 * flAlpha;
+		colorG = m_vecColor.y * 64 * flAlpha;
+		colorB = m_vecColor.z * 64 * flAlpha;
 
 		// Soft outline
 		VectorMA( vecStart, -flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecStart,  flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, fOffset );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, -flScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, fOffset );
-		meshBuilder.Color4ub( color, color, color, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 	}
@@ -209,32 +214,35 @@ void CFXDiscreetLine::Draw( double frametime )
 
 		meshBuilder.Begin( pMesh, MATERIAL_QUADS, 1 );
 
-		//FIXME: for now no coloration
+		unsigned char colorR = m_vecColor.x * 255.0f;
+		unsigned char colorG = m_vecColor.y * 255.0f;
+		unsigned char colorB = m_vecColor.z * 255.0f;
+
 		VectorMA( vecStart, -m_fScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
-		meshBuilder.Color4ub( 255, 255, 255, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecStart,  m_fScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
-		meshBuilder.Color4ub( 255, 255, 255, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, m_fScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 0.0f, fOffset );
-		meshBuilder.Color4ub( 255, 255, 255, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 
 		VectorMA( vecEnd, -m_fScale, cross, tmp );
 		meshBuilder.Position3fv( tmp.Base() );
 		meshBuilder.TexCoord2f( 0, 1.0f, fOffset );
-		meshBuilder.Color4ub( 255, 255, 255, 255 );
+		meshBuilder.Color4ub( colorR, colorG, colorB, 255 );
 		meshBuilder.Normal3fv( cross.Base() );
 		meshBuilder.AdvanceVertex();
 	}

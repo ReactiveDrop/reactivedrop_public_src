@@ -47,9 +47,11 @@
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
 #include <vgui/IScheme.h>
+#include "stats_report.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 //extern ConVar cl_predict;
 static ConVar	cl_asw_smooth		( "cl_asw_smooth", "1", 0, "Smooth marine's render origin after prediction errors" );
@@ -89,7 +91,6 @@ ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FC
 ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
 ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
-ConVar rd_buzzer_blur( "rd_buzzer_blur", "1", FCVAR_NONE, "Set to 0 to disable buzzer blur" );	// TODO: Remove this once the buzzer blur issue is fixed. See #76
 ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE, "Show marine's un-equipped weapon on their back." );
 
 extern ConVar asw_DebugAutoAim;
@@ -701,25 +702,35 @@ const QAngle& C_ASW_Marine::GetRenderAngles()
 	//}
 }
 
-C_ASW_Marine_Resource* C_ASW_Marine::GetMarineResource() 
-{	
-	if (m_hMarineResource.Get() != NULL)
+C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
+{
+	if ( m_hMarineResource.Get() != NULL )
 		return m_hMarineResource.Get();
 
 	// find our marine info
-	C_ASW_Game_Resource* pGameResource = ASWGameResource();
-	if (pGameResource != NULL)
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( pGameResource != NULL )
 	{
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
-			C_ASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-			if (pMR != NULL && pMR->GetMarineEntity() == this)
+			C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( pMR != NULL && pMR->GetMarineEntity() == this )
 			{
 				m_hMarineResource = pMR;
+
+				if ( i >= 0 && i < NELEMS( g_rgbaStatsReportPlayerColors ) )
+				{
+					m_GlowObject.SetColor( Vector{
+						g_rgbaStatsReportPlayerColors[i].r() / 255.0f,
+						g_rgbaStatsReportPlayerColors[i].g() / 255.0f,
+						g_rgbaStatsReportPlayerColors[i].b() / 255.0f,
+					} );
+				}
 				return pMR;
 			}
 		}
 	}
+
 	return NULL;
 }
 
@@ -1227,20 +1238,11 @@ void C_ASW_Marine::ProcessMuzzleFlashEvent()
 
 
 	// attach muzzle flash particle system effect
-	int iAttachment = pWeapon->GetMuzzleAttachment();		
+	int iAttachment = pWeapon->GetMuzzleAttachment();
 	if ( iAttachment > 0 )
 	{
-#ifndef _DEBUG
-		float flScale = pWeapon->GetMuzzleFlashScale();				
-		if (pWeapon->GetMuzzleFlashRed())
-		{			
-			FX_ASW_RedMuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
-		}
-		else
-		{
-			FX_ASW_MuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
-		}
-#endif
+		float flScale = pWeapon->GetMuzzleFlashScale();
+		FX_ASW_MuzzleEffectAttached( flScale, pWeapon->GetRefEHandle(), iAttachment, NULL, false );
 	}
 }
 
@@ -2150,8 +2152,7 @@ int C_ASW_Marine::DrawModel( int flags, const RenderableInstance_t &instance )
 
 void C_ASW_Marine::SetPoisoned(float f)
 {
-	if ( rd_buzzer_blur.GetBool() )
-		m_fPoison = f;
+	m_fPoison = f;
 }
 
 // IK the left hand?
@@ -2673,6 +2674,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 				if ( pRagdoll )
 				{
 					pRagdoll->ApplyAbsVelocityImpulse( vecForce );
+					ASWGameRules()->m_hMarineDeathRagdoll = pRagdoll;
 				}
 			}
 		}
@@ -2723,6 +2725,9 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 
 		if ( !pGib )
 			continue;
+
+		if ( i == 0 )
+			ASWGameRules()->m_hMarineDeathRagdoll = pGib;
 
 		pGib->SetSkin( pProfile->GetSkinNum() );
 

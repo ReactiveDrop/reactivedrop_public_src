@@ -97,6 +97,8 @@ ConVar asw_muzzle_flash_new_type( "asw_muzzle_flash_new_type", "0", FCVAR_CHEAT 
 ConVar asw_laser_sight( "asw_laser_sight", "1", FCVAR_ARCHIVE );
 ConVar asw_laser_sight_min_distance( "asw_laser_sight_min_distance", "9999", 0, "The min distance at which to accurately draw the laser sight from the muzzle rather than using the shoot direction" );
 ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVAR_NONE );
+ConVar rd_tracer_tint_self( "rd_tracer_tint_self", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from own marine" );
+ConVar rd_tracer_tint_other( "rd_tracer_tint_other", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from other marines" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -162,7 +164,7 @@ C_ASW_Weapon::~C_ASW_Weapon()
 		m_hBayonet = NULL;
 	}
 
-    RemoveLaserPointerEffect();
+	RemoveLaserPointerEffect();
 	if (m_hLaserSight.Get())
 	{
 		UTIL_Remove( m_hLaserSight.Get() );
@@ -171,7 +173,7 @@ C_ASW_Weapon::~C_ASW_Weapon()
 }
 
 void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
-{	
+{
 	bool bPredict = ShouldPredict();
 	if (bPredict)
 	{
@@ -331,9 +333,20 @@ float C_ASW_Weapon::GetMuzzleFlashScale( void )
 	return m_fMuzzleFlashScale;
 }
 
-bool C_ASW_Weapon::GetMuzzleFlashRed()
+Vector C_ASW_Weapon::GetMuzzleFlashTint()
 {
-	return GetMuzzleFlashScale() >= 1.9f;	// red if our muzzle flash is the biggest size based on our skill
+	HACK_GETLOCALPLAYER_GUARD( "need local player to see what color the muzzle flash should be" );
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Inhabitable_NPC *pViewNPC = pLocalPlayer ? pLocalPlayer->GetViewNPC() : NULL;
+	Vector vecColor = pViewNPC && GetOwner() == pViewNPC ? rd_tracer_tint_self.GetColorAsVector() : rd_tracer_tint_other.GetColorAsVector();
+
+	if ( GetMuzzleFlashScale() >= 1.9f ) // red if our muzzle flash is the biggest size based on our skill
+	{
+		vecColor.y *= 0.65f;
+		vecColor.z *= 0.65f;
+	}
+
+	return vecColor;
 }
 
 void C_ASW_Weapon::ProcessMuzzleFlashEvent()
@@ -374,18 +387,11 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 		float flScale = GetMuzzleFlashScale();	
 		if ( asw_use_particle_tracers.GetBool() )
 		{
-			FX_ASW_ParticleMuzzleFlashAttached( flScale, GetRefEHandle(), iAttachment, GetMuzzleFlashRed() );
+			FX_ASW_ParticleMuzzleFlashAttached( flScale, GetRefEHandle(), iAttachment, GetMuzzleFlashTint() );
 		}
 		else
 		{
-			if (GetMuzzleFlashRed())
-			{			
-				FX_ASW_RedMuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-			}
-			else
-			{
-				FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
-			}
+			FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
 		}
 	}
 
@@ -882,12 +888,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		m_pMuzzleFlashEffect->SetControlPoint( 10, Vector( GetMuzzleFlashScale(), 0, 0 ) );
 
 		// color
-		Vector vecColor = Vector( 1, 1, 1 );
-		if ( GetMuzzleFlashRed() )
-		{
-			vecColor = Vector( 1, 0.55, 0.55 );
-		}
-		m_pMuzzleFlashEffect->SetControlPoint( 20, vecColor );
+		m_pMuzzleFlashEffect->SetControlPoint( 20, GetMuzzleFlashTint() );
 
 		// Set Alpha control point
 		float fAlpha;
