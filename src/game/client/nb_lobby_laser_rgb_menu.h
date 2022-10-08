@@ -94,6 +94,22 @@ public:
 	CBitmapButton* m_pCustomColor8;
 	CBitmapButton* m_pCustomColor9;
 
+	vgui::ImagePanel* m_pHighlightColor1;
+	vgui::ImagePanel* m_pHighlightColor2;
+	vgui::ImagePanel* m_pHighlightColor3;
+	vgui::ImagePanel* m_pHighlightColor4;
+	vgui::ImagePanel* m_pHighlightColor5;
+	vgui::ImagePanel* m_pHighlightColor6;
+	vgui::ImagePanel* m_pHighlightColor7;
+	vgui::ImagePanel* m_pHighlightColor8;
+	vgui::ImagePanel* m_pHighlightColor9;
+
+
+	vgui::ImagePanel* m_pHighlightHSVSquare;
+	vgui::ImagePanel* m_pHightlightHSVPreview;
+	vgui::ImagePanel* m_pHighlightHSVSlider;
+	vgui::ImagePanel* m_pHighlightReplaceColor;
+
 	CBitmapButton* m_pReplaceColorButton;
 
 	int m_localMouseX = 0;

@@ -63,7 +63,7 @@ Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const ch
 	m_fHSV_Val = vecHSV.z;
     */
 
-	m_pBackground = new vgui::ImagePanel(this, "BackgroundImage");
+	m_pBackground = new vgui::ImagePanel(this, "Background");
 	m_pHSVSquare = new CHSVColorSquarePanel(this, "HSVSquare");
 
 	m_pLaserButton = new CBitmapButton(this, "LaserPreviewButton", "");
@@ -85,6 +85,25 @@ Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const ch
 	m_pCustomColor7 = new CBitmapButton(this, "Color7Button", "");
 	m_pCustomColor8 = new CBitmapButton(this, "Color8Button", "");
 	m_pCustomColor9 = new CBitmapButton(this, "Color9Button", "");
+
+
+	m_pHighlightColor1 = new vgui::ImagePanel(this, "Color1Highlight");
+	m_pHighlightColor2 = new vgui::ImagePanel(this, "Color2Highlight");
+	m_pHighlightColor3 = new vgui::ImagePanel(this, "Color3Highlight");
+	m_pHighlightColor4 = new vgui::ImagePanel(this, "Color4Highlight");
+	m_pHighlightColor5 = new vgui::ImagePanel(this, "Color5Highlight");
+	m_pHighlightColor6 = new vgui::ImagePanel(this, "Color6Highlight");
+	m_pHighlightColor7 = new vgui::ImagePanel(this, "Color7Highlight");
+	m_pHighlightColor8 = new vgui::ImagePanel(this, "Color8Highlight");
+	m_pHighlightColor9 = new vgui::ImagePanel(this, "Color9Highlight");
+
+	m_pHighlightHSVSquare = new vgui::ImagePanel(this, "HSVSquareHighlight");
+	m_pHightlightHSVPreview = new vgui::ImagePanel(this, "HSVPreviewHighlight");
+
+	m_pHighlightHSVSlider = new vgui::ImagePanel(this, "HSVSliderHighlight");
+
+	m_pHighlightReplaceColor = new vgui::ImagePanel(this, "ActivateReplaceColorHighlight");
+
 
 
 	m_pReplaceColorButton = new CBitmapButton(this, "ActivateReplaceColorButton", "");
@@ -190,6 +209,12 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	white.b = 255;
 	white.a = 255;
 
+	color32 lightgrey;
+	lightgrey.r = 255;
+	lightgrey.g = 255;
+	lightgrey.b = 255;
+	lightgrey.a = 255;
+
 
 	Color _inputRGBCustColor1 = cl_asw_archived_lsc1.GetColor();
 	color32 rgbLaserCustColor1 = color32();
@@ -197,7 +222,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor1.g = _inputRGBCustColor1.g();
 	rgbLaserCustColor1.b = _inputRGBCustColor1.b();
 	rgbLaserCustColor1.a = 255;
-	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor1);
+	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor1);
+	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor1);
+	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor1);
 
 	Color _inputRGBCustColor2 = cl_asw_archived_lsc2.GetColor();
 	color32 rgbLaserCustColor2 = color32();
@@ -205,7 +232,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor2.g = _inputRGBCustColor2.g();
 	rgbLaserCustColor2.b = _inputRGBCustColor2.b();
 	rgbLaserCustColor2.a = 255;
-	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor2);
+	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor2);
+	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor2);
+	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor2);
 
 	Color _inputRGBCustColor3 = cl_asw_archived_lsc3.GetColor();
 	color32 rgbLaserCustColor3 = color32();
@@ -213,7 +242,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor3.g = _inputRGBCustColor3.g();
 	rgbLaserCustColor3.b = _inputRGBCustColor3.b();
 	rgbLaserCustColor3.a = 255;
-	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor3);
+	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor3);
+	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor3);
+	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor3);
 
 	Color _inputRGBCustColor4 = cl_asw_archived_lsc4.GetColor();
 	color32 rgbLaserCustColor4 = color32();
@@ -221,7 +252,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor4.g = _inputRGBCustColor4.g();
 	rgbLaserCustColor4.b = _inputRGBCustColor4.b();
 	rgbLaserCustColor4.a = 255;
-	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor4);
+	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor4);
+	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor4);
+	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor4);
 
 	Color _inputRGBCustColor5 = cl_asw_archived_lsc5.GetColor();
 	color32 rgbLaserCustColor5 = color32();
@@ -229,7 +262,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor5.g = _inputRGBCustColor5.g();
 	rgbLaserCustColor5.b = _inputRGBCustColor5.b();
 	rgbLaserCustColor5.a = 255;
-	m_pCustomColor5->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor5);
+	m_pCustomColor5->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor5);
+	m_pCustomColor5->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor5);
+	m_pCustomColor5->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor5);
 
 
 	Color _inputRGBCustColor6= cl_asw_archived_lsc6.GetColor();
@@ -238,7 +273,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor6.g = _inputRGBCustColor6.g();
 	rgbLaserCustColor6.b = _inputRGBCustColor6.b();
 	rgbLaserCustColor6.a = 255;
-	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor6);
+	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor6);
+	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor6);
+	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor6);
 
 	Color _inputRGBCustColor7 = cl_asw_archived_lsc7.GetColor();
 	color32 rgbLaserCustColor7 = color32();
@@ -246,7 +283,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor7.g = _inputRGBCustColor7.g();
 	rgbLaserCustColor7.b = _inputRGBCustColor7.b();
 	rgbLaserCustColor7.a = 255;
-	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor7);
+	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor7);
+	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor7);
+	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor7);
 
 	Color _inputRGBCustColor8 = cl_asw_archived_lsc8.GetColor();
 	color32 rgbLaserCustColor8 = color32();
@@ -254,7 +293,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor8.g = _inputRGBCustColor8.g();
 	rgbLaserCustColor8.b = _inputRGBCustColor8.b();
 	rgbLaserCustColor8.a = 255;
-	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor8);
+	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor8);
+	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor8);
+	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor8);
 
 	Color _inputRGBCustColor9 = cl_asw_archived_lsc9.GetColor();
 	color32 rgbLaserCustColor9 = color32();
@@ -262,20 +303,163 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	rgbLaserCustColor9.g = _inputRGBCustColor9.g();
 	rgbLaserCustColor9.b = _inputRGBCustColor9.b();
 	rgbLaserCustColor9.a = 255;
-	m_pCustomColor9->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserCustColor9);
+	m_pCustomColor9->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/color_highlight", rgbLaserCustColor9);
+	m_pCustomColor9->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor9);
+	m_pCustomColor9->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor9);
 
 
-	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/hsv_replace_color_button", white);
+	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/hsv_replace_color_button", rgbLaserColor);
 	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/hsv_replace_color_button", white);
+	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/hsv_replace_color_button", rgbLaserColor);
+
+	int custColX, custColY, custColWidth, custColHeight;
+	m_pCustomColor1->GetPos(custColX, custColY);
+	m_pHighlightColor1->SetPos(custColX-1, custColY-1);
+
+	m_pCustomColor2->GetPos(custColX, custColY);
+	m_pHighlightColor2->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor3->GetPos(custColX, custColY);
+	m_pHighlightColor3->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor4->GetPos(custColX, custColY);
+	m_pHighlightColor4->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor5->GetPos(custColX, custColY);
+	m_pHighlightColor5->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor6->GetPos(custColX, custColY);
+	m_pHighlightColor6->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor7->GetPos(custColX, custColY);
+	m_pHighlightColor7->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor8->GetPos(custColX, custColY);
+	m_pHighlightColor8->SetPos(custColX - 1, custColY - 1);
+
+	m_pCustomColor9->GetPos(custColX, custColY);
+	m_pHighlightColor9->SetPos(custColX - 1, custColY - 1);
+
+	m_pHSVSquare->GetPos(custColX, custColY);
+	m_pHighlightHSVSquare->SetPos(custColX - 1, custColY - 1);
+
+	m_pHSVSquare->GetSize(custColWidth, custColHeight);
+	m_pHighlightHSVSquare->SetSize(custColWidth+2, custColHeight+2);
+
+	m_pLaserButton->GetPos(custColX, custColY);
+	m_pHightlightHSVPreview->SetPos(custColX - 1, custColY - 1);
+
+	m_pLaserButton->GetSize(custColWidth, custColHeight);
+	m_pHightlightHSVPreview->SetSize(custColWidth + 2, custColHeight + 2);
+
+	m_pHSVSlider->GetPos(custColX, custColY);
+	m_pHighlightHSVSlider->SetPos(custColX - 1, custColY - 1);
+
+	m_pHSVSlider->GetSize(custColWidth, custColHeight);
+	m_pHighlightHSVSlider->SetSize(custColWidth + 2, custColHeight + 2);
+
+
+	m_pReplaceColorButton-> GetPos(custColX, custColY);
+	m_pHighlightReplaceColor->SetPos(custColX - 1, custColY - 1);
+
+	m_pReplaceColorButton->GetSize(custColWidth, custColHeight);
+	m_pHighlightReplaceColor->SetSize(custColWidth + 2, custColHeight + 2);
+
+
+
+
+
+	Panel* _focusedPanel = GetControllerFocus()->GetFocusPanel();
+
+	if (_focusedPanel == m_pCustomColor1 || m_bReplaceColor)
+	{
+		m_pHighlightColor1->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor1->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor2 || m_bReplaceColor)
+	{
+		m_pHighlightColor2->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor2->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor3 || m_bReplaceColor)
+	{
+		m_pHighlightColor3->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor3->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor4 || m_bReplaceColor)
+	{
+		m_pHighlightColor4->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor4->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor5 || m_bReplaceColor)
+	{
+		m_pHighlightColor5->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor5->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor6 || m_bReplaceColor)
+	{
+		m_pHighlightColor6->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor6->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor7 || m_bReplaceColor)
+	{
+		m_pHighlightColor7->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor7->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor8 || m_bReplaceColor)
+	{
+		m_pHighlightColor8->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor8->SetAlpha(255);
+	}
+
+	if (_focusedPanel == m_pCustomColor9 || m_bReplaceColor)
+	{
+		m_pHighlightColor9->SetAlpha(55);
+	}
+	else
+	{
+		m_pHighlightColor9->SetAlpha(255);
+	}
 
 	//m_pBackground->SetSize(200, 200);
 	//m_pBackground->SetPos(0, 45);
-	m_pBackground->SetImage("vgui/white");
+	m_pBackground->SetImage("swarm/color/HSVbackground");
 
-	m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
-	m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon2", white);
-	m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon2", white);
-	m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon2", white);
+	m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_glow", rgbLaserColor);
+	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon2", white);
+	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon2", white);
+	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon2", white);
 
 	//int xpos, ypos;
 	//(&g_Input)->GetCursorPos(xpos, ypos);
@@ -582,7 +766,7 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	}
 	else if (!Q_stricmp(command, "ActivateReplaceColor"))
 	{
-		m_bReplaceColor = true;
+		m_bReplaceColor = !m_bReplaceColor;
 	}
 }
 

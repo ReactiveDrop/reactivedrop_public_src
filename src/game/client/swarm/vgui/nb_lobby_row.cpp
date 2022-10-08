@@ -474,13 +474,14 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pLaserButton->SetPos(0, 45);
 		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
 		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", Briefing()->IsLobbySlotLocal(m_nLobbySlot) ? white : rgbLaserColor);
-		m_pLaserButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", lightblue);
+		m_pLaserButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserColor);
 
 
 		m_pLaserOverlayButton->SetSize(25, 25);
 		m_pLaserOverlayButton->SetPos(0, 45);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", lightblue);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
 		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
 
 
 		m_pLaserButton->SetVisible(true);
