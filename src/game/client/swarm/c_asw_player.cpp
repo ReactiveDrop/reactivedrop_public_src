@@ -2531,20 +2531,6 @@ void C_ASW_Player::RequestMissionRestart()
 	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::RequestSkillUp()
-{
-	char buffer[20];
-	Q_snprintf( buffer, sizeof( buffer ), "cl_skill_up" );
-	engine->ClientCmd( buffer );
-}
-
-void C_ASW_Player::RequestSkillDown()
-{
-	char buffer[20];
-	Q_snprintf( buffer, sizeof( buffer ), "cl_skill_down" );
-	engine->ClientCmd( buffer );
-}
-
 bool C_ASW_Player::ShouldAutoReload()
 {
 	return asw_auto_reload.GetBool();

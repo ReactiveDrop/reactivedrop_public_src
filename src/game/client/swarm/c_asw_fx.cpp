@@ -45,20 +45,18 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_gib_bleed_time("asw_gib_bleed_time", "1.5", 0, "How long drone gibs bleed for");
-ConVar asw_pierce_spark_scale("asw_pierce_spark_scale", "0.9", 0, "Scale applied to piercing spark effect");
-ConVar asw_tracer_style("asw_tracer_style", "1", FCVAR_ARCHIVE, "Specify tracer style. 0=none 1=normal 2=grey line");
+ConVar asw_gib_bleed_time( "asw_gib_bleed_time", "1.5", 0, "How long drone gibs bleed for" );
+ConVar asw_pierce_spark_scale( "asw_pierce_spark_scale", "0.9", 0, "Scale applied to piercing spark effect" );
+ConVar asw_tracer_style( "asw_tracer_style", "1", FCVAR_CHEAT, "Specify tracer style. 0=none 1=normal 2=grey line" );
 ConVar asw_use_particle_tracers( "asw_use_particle_tracers", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Use particle tracers instead of the old school HL2 ones" );
 
-static ConVar asw_create_generic_emitters_for_drone_gibs("asw_create_generic_emitters_for_drone_gibs", "1", FCVAR_NONE, "Create generic emitters for drone gibs");
+static ConVar asw_create_generic_emitters_for_drone_gibs( "asw_create_generic_emitters_for_drone_gibs", "1", FCVAR_NONE, "Create generic emitters for drone gibs" );
 
 extern ConVar asw_muzzle_flash_new_type;
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASW )
 PRECACHE( MATERIAL, "swarm/effects/aswtracer" )
 PRECACHE( MATERIAL, "swarm/effects/aswtracernormal" )
-PRECACHE( MATERIAL, "swarm/effects/aswtracerred" )
-PRECACHE( MATERIAL, "swarm/effects/aswtracernormalred" )
 PRECACHE( MATERIAL, "swarm/effects/muzzleflashred1" )
 PRECACHE( MATERIAL, "swarm/effects/muzzleflashred2" )
 PRECACHE( MATERIAL, "swarm/effects/muzzleflashred3" )
@@ -1868,7 +1866,7 @@ void FX_ASW_RGEffect(const Vector &vecStart, const Vector &vecEnd)
 }
 
 extern Vector GetTracerOrigin( const CEffectData &data );
-void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz, bool bRedTracer, int iForceStyle )
+void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz, Vector vecColor, int iForceStyle )
 {
 	VPROF_BUDGET( "FX_ASWTracer", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	
@@ -1899,7 +1897,7 @@ void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool ma
 
 		//Add it
 		FX_AddDiscreetLine( start, dir, velocity, length, dist, random->RandomFloat( 0.5f, 1.5f ),
-			life, bRedTracer ? "swarm/effects/aswtracerred" : "swarm/effects/aswtracer" );
+			life, "swarm/effects/aswtracer", vecColor );
 	}
 	else		//standard short per bullet tracer
 	{
@@ -1928,14 +1926,14 @@ void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool ma
 
 		//Add it
 		FX_AddDiscreetLine( start, dir, velocity, length, dist, random->RandomFloat( 0.5f, 1.5f ),
-			life, bRedTracer ? "swarm/effects/aswtracernormalred" : "swarm/effects/aswtracernormal" );
+			life, "swarm/effects/aswtracernormal", vecColor );
 	}
 
 	// note: not bothering with whiz sounds as the camera is too high up to hear them anyway
 }
 
 
-void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart, const Vector &vecEnd, bool bRedTracer, int iAttributeEffects = 0 )
+void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart, const Vector &vecEnd, Vector vecColor, int iAttributeEffects )
 {
 	VPROF_BUDGET( "ASWDoParticleTracer", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 
@@ -1949,11 +1947,6 @@ void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart,
 	{
 		pTracer->SetControlPoint( 0, vecStart );
 		pTracer->SetControlPoint( 1, vecEnd );
-		// the color
-		Vector vecColor = Vector( 1, 1, 1 );
-		if ( bRedTracer )
-			vecColor = Vector( 1, 0.65, 0.65 );
-
 		pTracer->SetControlPoint( 10, vecColor );
 	}
 
@@ -1979,9 +1972,9 @@ void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart,
 	}
 }
 
-void ASWDoParticleTracer( C_ASW_Weapon *pWeapon, const Vector &vecStart, const Vector &vecEnd, bool bRedTracer, int iAttributeEffects )
+void ASWDoParticleTracer( C_ASW_Weapon *pWeapon, const Vector &vecStart, const Vector &vecEnd, Vector vecColor, int iAttributeEffects )
 {
-	ASWDoParticleTracer( pWeapon->GetTracerEffectName(), vecStart, vecEnd, bRedTracer, iAttributeEffects );
+	ASWDoParticleTracer( pWeapon->GetTracerEffectName(), vecStart, vecEnd, vecColor, iAttributeEffects );
 }
 
 void ASWTracerCallback( const CEffectData &data )
@@ -1997,7 +1990,7 @@ void ASWTracerCallback( const CEffectData &data )
 	bool bWhiz = (data.m_fFlags & TRACER_FLAG_WHIZ);
 	
 	C_ASW_Weapon *pWpn = dynamic_cast<C_ASW_Weapon*>( data.m_hEntity.Get() );
-	bool bRedTracer = ( pWpn && pWpn->GetMuzzleFlashRed() );
+	Vector vecColor = pWpn ? pWpn->GetMuzzleFlashTint() : Vector{ 1, 1, 1 };
 	
 	// Use default velocity if none specified
 	if ( !flVelocity )
@@ -2007,7 +2000,7 @@ void ASWTracerCallback( const CEffectData &data )
 
 	// Do tracer effect
 	Msg("spawning dispatch effect tracer\n");
-	FX_ASWTracer( (Vector&)vecStart, (Vector&)data.m_vOrigin, flVelocity, bWhiz, bRedTracer );
+	FX_ASWTracer( (Vector&)vecStart, (Vector&)data.m_vOrigin, flVelocity, bWhiz, vecColor );
 }
 
 DECLARE_CLIENT_EFFECT( ASWTracer, ASWTracerCallback );
@@ -2042,9 +2035,9 @@ void ASWUTracer(C_ASW_Marine *pMarine, const Vector &vecEnd, int iAttributeEffec
 
 	asw_num_u_tracers++;
 	if ( asw_use_particle_tracers.GetBool() )
-		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashRed(), iAttributeEffects );
+		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashTint(), iAttributeEffects );
 	else
-		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashRed() );
+		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashTint() );
 
 	// do a trace to the hit surface for impacts
 	trace_t tr;
@@ -2147,9 +2140,9 @@ void ASWUTracerDual( C_ASW_Marine *pMarine, const Vector &vecEnd, int nDualType 
 
 		asw_num_u_tracers++;
 		if ( asw_use_particle_tracers.GetBool() )
-			ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashRed(), iAttributeEffects );
+			ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashTint(), iAttributeEffects );
 		else
-			FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashRed() );
+			FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashTint() );
 
 		// do a trace to the hit surface for impacts
 		diff = vecStart - vecEnd;
@@ -2183,9 +2176,9 @@ void ASWUTracerDual( C_ASW_Marine *pMarine, const Vector &vecEnd, int nDualType 
 
 		asw_num_u_tracers++;
 		if ( asw_use_particle_tracers.GetBool() )
-			ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashRed(), iAttributeEffects );
+			ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashTint(), iAttributeEffects );
 		else
-			FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashRed() );
+			FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashTint() );
 
 		// do a trace to the hit surface for impacts
 		diff = vecStart - vecEnd;
@@ -2215,9 +2208,9 @@ void ASWUTracerUnattached(C_ASW_Marine *pMarine, const Vector &vecStart, const V
 		return;
 
 	if ( asw_use_particle_tracers.GetBool() )
-		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashRed(), iAttributeEffects );
+		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashTint(), iAttributeEffects );
 	else
-		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashRed() );
+		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashTint() );
 
 	// do a trace to the hit surface for impacts
 	trace_t tr;
@@ -2260,11 +2253,11 @@ void ASWUTracerRG(C_ASW_Marine *pMarine, const Vector &vecEnd, int iAttributeEff
 	asw_num_u_tracers++;
 	if ( asw_use_particle_tracers.GetBool() )
 	{
-		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashRed(), iAttributeEffects );
+		ASWDoParticleTracer( pWpn, vecStart, vecEnd, pWpn->GetMuzzleFlashTint(), iAttributeEffects );
 	}
 	else
 	{
-		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashRed(), 2 );
+		FX_ASWTracer( vecStart, vecEnd, 3000, false, pWpn->GetMuzzleFlashTint(), 2 );
 		FX_ASW_RGEffect( vecStart, vecEnd );
 	}
 
@@ -3215,169 +3208,6 @@ void FX_ASW_MuzzleEffectAttached(
 	msg->deleteThis();
 }
 
-void FX_ASW_RedMuzzleEffectAttached( 
-	float scale, 
-	ClientEntityHandle_t hEntity, 
-	int attachmentIndex, 
-	unsigned char *pFlashColor,
-	bool bOneFrame )
-{
-	VPROF_BUDGET( "FX_ASW_RedMuzzleEffectAttached", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
-	
-	CSmartPtr<CLocalSpaceEmitter> pSimple = CLocalSpaceEmitter::Create( "MuzzleFlash", hEntity, attachmentIndex );
-	
-	SimpleParticle *pParticle;
-	Vector			forward(1,0,0), offset;
-	// asw
-	Vector movement;
-
-	float flScale = random->RandomFloat( scale-0.25f, scale+0.25f );
-
-	if ( flScale < 0.5f )
-	{
-		flScale = 0.5f;
-	}
-	else if ( flScale > 8.0f )
-	{
-		flScale = 8.0f;
-	}
-
-	//
-	// Flash
-	//
-
-	int i;
-	for ( i = 1; i < 9; i++ )
-	{
-#ifndef INFESTED_DLL
-		offset = (forward * (i*2.0f*scale));
-#else
-		offset = vec3_origin;
-		movement = (forward * (i*2.0f*scale)) / 0.1f;
-#endif
-
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs("swarm/effects/muzzleflashred%d", random->RandomInt(1,4)) ), offset );
-			
-		if ( pParticle == NULL )
-			return;
-
-		pParticle->m_flLifetime		= 0.0f;
-		pParticle->m_flDieTime		= bOneFrame ? 0.0001f : 0.1f;
-
-		pParticle->m_vecVelocity.Init();
-		// asw test
-		pParticle->m_vecVelocity = movement;
-
-		if ( !pFlashColor )
-		{
-			pParticle->m_uchColor[0]	= 255;
-			pParticle->m_uchColor[1]	= 255;
-			pParticle->m_uchColor[2]	= 255;
-		}
-		else
-		{
-			pParticle->m_uchColor[0]	= pFlashColor[0];
-			pParticle->m_uchColor[1]	= pFlashColor[1];
-			pParticle->m_uchColor[2]	= pFlashColor[2];
-		}
-
-		pParticle->m_uchStartAlpha	= 255;
-		pParticle->m_uchEndAlpha	= 128;
-
-		pParticle->m_uchStartSize	= (random->RandomFloat( 6.0f, 9.0f ) * (12-(i))/9) * flScale;
-		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		// asw test
-		pParticle->m_uchStartSize		= 0;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= 0.0f;
-	}
-
-
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( !clienttools->IsInRecordingMode() )
-		return;
-
-	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( hEntity );
-	if ( pEnt )
-	{
-		pEnt->RecordToolMessage();
-	}
-
-	// NOTE: Particle system destruction message will be sent by the particle effect itself.
-	int nId = pSimple->AllocateToolParticleEffectId();
-
-	KeyValues *msg = new KeyValues( "ParticleSystem_Create" );
-	msg->SetString( "name", "FX_MuzzleEffectAttached" );
-	msg->SetInt( "id", nId );
-	msg->SetFloat( "time", gpGlobals->curtime );
-
-	KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
-	pEmitter->SetInt( "count", 9 );
-	pEmitter->SetFloat( "duration", 0 );
-	pEmitter->SetString( "material", "effects/muzzleflash2" ); // FIXME - create DmeMultiMaterialSpriteEmitter to support the 4 materials of muzzleflash
-	pEmitter->SetInt( "active", true );
-
-	KeyValues *pInitializers = pEmitter->FindKey( "initializers", true );
-
-	KeyValues *pPosition = pInitializers->FindKey( "DmeLinearAttachedPositionInitializer", true );
-	pPosition->SetPtr( "entindex", (void*)pEnt->entindex() );
-	pPosition->SetInt( "attachmentIndex", attachmentIndex );
-	pPosition->SetFloat( "linearOffsetX", 2.0f * scale );
-
-	// TODO - create a DmeConstantLifetimeInitializer
-	KeyValues *pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
-	pLifetime->SetFloat( "minLifetime", bOneFrame ? 1.0f / 24.0f : 0.1f );
-	pLifetime->SetFloat( "maxLifetime", bOneFrame ? 1.0f / 24.0f : 0.1f );
-
-	KeyValues *pVelocity = pInitializers->FindKey( "DmeConstantVelocityInitializer", true );
-	pVelocity->SetFloat( "velocityX", 0.0f );
-	pVelocity->SetFloat( "velocityY", 0.0f );
-	pVelocity->SetFloat( "velocityZ", 0.0f );
-
-	KeyValues *pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
-	pRoll->SetFloat( "minRoll", 0.0f );
-	pRoll->SetFloat( "maxRoll", 360.0f );
-
-	// TODO - create a DmeConstantRollSpeedInitializer
-	KeyValues *pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
-	pRollSpeed->SetFloat( "minRollSpeed", 0.0f );
-	pRollSpeed->SetFloat( "maxRollSpeed", 0.0f );
-
-	// TODO - create a DmeConstantColorInitializer
-	KeyValues *pColor = pInitializers->FindKey( "DmeRandomInterpolatedColorInitializer", true );
-	Color color( pFlashColor ? pFlashColor[ 0 ] : 255, pFlashColor ? pFlashColor[ 1 ] : 255, pFlashColor ? pFlashColor[ 2 ] : 255, 255 );
-	pColor->SetColor( "color1", color );
-	pColor->SetColor( "color2", color );
-
-	// TODO - create a DmeConstantAlphaInitializer
-	KeyValues *pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
-	pAlpha->SetInt( "minStartAlpha", 255 );
-	pAlpha->SetInt( "maxStartAlpha", 255 );
-	pAlpha->SetInt( "minEndAlpha", 128 );
-	pAlpha->SetInt( "maxEndAlpha", 128 );
-
-	// size = rand(6..9) * indexed(12/9..4/9) * flScale = rand(6..9) * ( 4f + f * i )
-	KeyValues *pSize = pInitializers->FindKey( "DmeMuzzleFlashSizeInitializer", true );
-	float f = flScale / 9.0f;
-	pSize->SetFloat( "indexedBase", 4.0f * f );
-	pSize->SetFloat( "indexedDelta", f );
-	pSize->SetFloat( "minRandomFactor", 6.0f );
-	pSize->SetFloat( "maxRandomFactor", 9.0f );
-
-/*
-	KeyValues *pUpdaters = pEmitter->FindKey( "updaters", true );
-
-	pUpdaters->FindKey( "DmePositionVelocityUpdater", true );
-	pUpdaters->FindKey( "DmeRollUpdater", true );
-	pUpdaters->FindKey( "DmeAlphaLinearUpdater", true );
-	pUpdaters->FindKey( "DmeSizeUpdater", true );
-*/
-	ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-	msg->deleteThis();
-}
-
 void FX_QueenDie(C_BaseAnimating *pQueen)
 {
 	if (!pQueen)
@@ -3407,7 +3237,7 @@ void FX_QueenDie(C_BaseAnimating *pQueen)
 //-----------------------------------------------------------------------------
 // Purpose: create a muzzle flassh using the new particle system
 //-----------------------------------------------------------------------------
-void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, bool bIsRed )
+void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, Vector vecColor )
 {
 	VPROF_BUDGET( "FX_ASW_ParticleMuzzleFlashAttached", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 
@@ -3431,9 +3261,6 @@ void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEnti
 		pMuzzle->SetControlPoint( 10, Vector( scale, 0, 0 ) );
 
 		// color
-		Vector vecColor = Vector( 1, 1, 1 );
-		if ( bIsRed )
-			vecColor = Vector( 1, 0.55, 0.55 );
 		pMuzzle->SetControlPoint( 20, vecColor );
 	}
 	else

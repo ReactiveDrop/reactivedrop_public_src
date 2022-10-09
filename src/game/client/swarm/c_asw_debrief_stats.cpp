@@ -100,9 +100,6 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Debrief_Stats, DT_ASW_Debrief_Stats, CASW_Debrief
 	RecvPropString( RECVINFO( m_DebriefText2 ) ),
 	RecvPropString( RECVINFO( m_DebriefText3 ) ),
 
-	RecvPropBool( RECVINFO( m_bJustUnlockedCarnage ) ),
-	RecvPropBool( RECVINFO( m_bJustUnlockedUber ) ),
-	RecvPropBool( RECVINFO( m_bJustUnlockedHardcore ) ),
 	RecvPropBool( RECVINFO( m_bBeatSpeedrunTime ) ),
 
 	RecvPropFloat(RECVINFO(m_fBestTimeTaken)),

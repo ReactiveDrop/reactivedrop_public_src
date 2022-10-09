@@ -112,12 +112,10 @@ void PlayerListLine::OnCommand( const char *command )
 {
 	if ( !Q_stricmp( command, "MuteButton" ) )
 	{
-		CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();
-		if ( pVoiceMgr )
-		{
-			bool bMuted = pVoiceMgr->IsPlayerBlocked( m_iPlayerIndex );
-			pVoiceMgr->SetPlayerBlockedState( m_iPlayerIndex, !bMuted );
-		}
+		C_PlayerResource *p_GR = dynamic_cast< C_PlayerResource* >( GameResources() );
+
+		if ( p_GR )
+			p_GR->TogglePlayerMuteState( m_iPlayerIndex, false );
 	}
 	else if ( !Q_stricmp( command, "PlayerLabel" )  )
 	{

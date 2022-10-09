@@ -39,6 +39,10 @@ ConVar rd_minigun_additional_piercing_delay("rd_minigun_additional_piercing_dela
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar asw_weapon_force_scale;
 extern ConVar asw_DebugAutoAim;
+#ifdef CLIENT_DLL
+extern ConVar rd_tracer_tint_self;
+extern ConVar rd_tracer_tint_other;
+#endif
 
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Minigun, DT_ASW_Weapon_Minigun )
@@ -399,9 +403,20 @@ float CASW_Weapon_Minigun::GetMuzzleFlashScale( void )
 	return m_fMuzzleFlashScale;
 }
 
-bool CASW_Weapon_Minigun::GetMuzzleFlashRed()
+Vector CASW_Weapon_Minigun::GetMuzzleFlashTint()
 {
-	return ((GetMuzzleFlashScale() / 2.0f) >= 1.15f);	// red if our muzzle flash is the biggest size based on our skill
+	HACK_GETLOCALPLAYER_GUARD( "need local player to see what color the muzzle flash should be" );
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Inhabitable_NPC *pViewNPC = pLocalPlayer ? pLocalPlayer->GetViewNPC() : NULL;
+	Vector vecColor = pViewNPC && GetOwner() == pViewNPC ? rd_tracer_tint_self.GetColorAsVector() : rd_tracer_tint_other.GetColorAsVector();
+
+	if ( ( GetMuzzleFlashScale() / 2.0f ) >= 1.15f ) // red if our muzzle flash is the biggest size based on our skill
+	{
+		vecColor.y *= 0.65f;
+		vecColor.z *= 0.65f;
+	}
+
+	return vecColor;
 }
 
 #endif

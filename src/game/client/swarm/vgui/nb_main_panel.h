@@ -31,7 +31,7 @@ class CNB_Main_Panel : public vgui::EditablePanel
 public:
 	CNB_Main_Panel( vgui::Panel *parent, const char *name );
 	virtual ~CNB_Main_Panel();
-	
+
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
 	virtual void OnThink();
@@ -43,29 +43,28 @@ public:
 	void ChangeWeapon( int nLobbySlot, int nInventorySlot );
 	void SpendSkillPointsOnMarine( int nProfileIndex );
 	void ShowMissionDetails();
-	void ShowMissionOptions();
 	void ShowPromotionPanel();
 	void ShowLeaderboard();
 
 	vgui::DHANDLE<vgui::Panel> m_hSubScreen;
-	
+
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	CNB_Header_Footer *m_pHeaderFooter;
-	vgui::Label	*m_pLeaderLabel;
-    vgui::Label	*m_pTeamLabel;
-	
-	vgui::ImagePanel	*m_pReadyCheckImage;
-    BaseModUI::GenericPanelList *m_pLobbyRowsScroll;
-	CNB_Lobby_Row	*m_pLobbyRow0;
-	CNB_Lobby_Tooltip	*m_pLobbyTooltip;
-	CNB_Mission_Summary	*m_pMissionSummary;
+	vgui::Label *m_pLeaderLabel;
+	vgui::Label *m_pTeamLabel;
+
+	vgui::ImagePanel *m_pReadyCheckImage;
+	BaseModUI::GenericPanelList *m_pLobbyRowsScroll;
+	CNB_Lobby_Row *m_pLobbyRow0;
+	CNB_Lobby_Tooltip *m_pLobbyTooltip;
+	CNB_Mission_Summary *m_pMissionSummary;
 	// == MANAGED_MEMBER_POINTERS_END ==
-	CNB_Button	*m_pReadyButton;
-	CNB_Button	*m_pMissionDetailsButton;
-	CNB_Button	*m_pFriendsButton;
-	CNB_Button	*m_pPromotionButton;
-    CNB_Button	*m_pTeamChangeButtonButton;
-	CNB_Button	*m_pChangeMissionButton;
+	CNB_Button *m_pReadyButton;
+	CNB_Button *m_pMissionDetailsButton;
+	CNB_Button *m_pFriendsButton;
+	CNB_Button *m_pPromotionButton;
+	CNB_Button *m_pTeamChangeButtonButton;
+	CNB_Button *m_pChangeMissionButton;
 	CNB_Vote_Panel *m_pVotePanel;
 	CBitmapButton *m_pChatButton;
 	CBitmapButton *m_pVoteButton;

@@ -1818,7 +1818,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\nb_lobby_row_small.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_tooltip.cpp" />
     <ClCompile Include="swarm\vgui\nb_main_panel.cpp" />
-    <ClCompile Include="swarm\vgui\nb_mission_options.cpp" />
     <ClCompile Include="swarm\vgui\nb_mission_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_mission_summary.cpp" />
     <ClCompile Include="swarm\vgui\nb_promotion_panel.cpp" />
@@ -2905,7 +2904,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\nb_lobby_row_small.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_tooltip.h" />
     <ClInclude Include="swarm\vgui\nb_main_panel.h" />
-    <ClInclude Include="swarm\vgui\nb_mission_options.h" />
     <ClInclude Include="swarm\vgui\nb_mission_panel.h" />
     <ClInclude Include="swarm\vgui\nb_mission_summary.h" />
     <ClInclude Include="swarm\vgui\nb_promotion_panel.h" />

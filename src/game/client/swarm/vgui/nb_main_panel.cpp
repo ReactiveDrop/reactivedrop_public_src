@@ -25,7 +25,6 @@
 #include "KeyValues.h"
 #include "nb_mission_summary.h"
 #include "nb_mission_panel.h"
-#include "nb_mission_options.h"
 #include "nb_spend_skill_points.h"
 #include "nb_header_footer.h"
 #include "nb_button.h"
@@ -517,10 +516,10 @@ void CNB_Main_Panel::OnCommand( const char *command )
 		{
 			// because briefing frame fades out slowly a user can click the
 			// Ready button one more time and get a crash here, so we do this check
-			if ( g_hBriefingFrame.Get() )	
+			if ( g_hBriefingFrame.Get() )
 			{
 				// for DM we only close the briefing panel
-				g_hBriefingFrame->SetDeleteSelfOnClose(true);
+				g_hBriefingFrame->SetDeleteSelfOnClose( true );
 				g_hBriefingFrame->Close();
 				g_hBriefingFrame = NULL;
 			}
@@ -536,7 +535,7 @@ void CNB_Main_Panel::OnCommand( const char *command )
 				else
 				{
 					// force other players to be ready?
-					engine->ClientCmd("cl_wants_start"); // notify other players that we're waiting on them
+					engine->ClientCmd( "cl_wants_start" ); // notify other players that we're waiting on them
 					new ForceReadyPanel( GetParent(), "ForceReady", "#asw_force_startm", ASW_FR_BRIEFING );		// TODO: this breaks the IBriefing abstraction, fix it if we need that
 				}
 			}
@@ -545,10 +544,6 @@ void CNB_Main_Panel::OnCommand( const char *command )
 		{
 			Briefing()->ToggleLocalPlayerReady();
 		}
-	}
-	else if ( !Q_stricmp( command, "OptionsButton" ) )
-	{
-		ShowMissionOptions();
 	}
 	else if ( !Q_stricmp( command, "FriendsButton" ) )
 	{
@@ -582,22 +577,22 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	{
 		ShowLeaderboard();
 	}
-	else if (!Q_stricmp(command, "AddBotButton"))
+	else if ( !Q_stricmp( command, "AddBotButton" ) )
 	{
 		AddBot();
 	}
-	else if (!Q_stricmp(command, "DeselectMarines"))
+	else if ( !Q_stricmp( command, "DeselectMarines" ) )
 	{
-		engine->ClientCmd("cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;");
+		engine->ClientCmd( "cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;" );
 	}
 	else if ( !Q_stricmp( command, "PromotionButton" ) )
 	{
 		ShowPromotionPanel();
 	}
-    else if ( !Q_stricmp( command, "TeamChangeButton" ) )
-    {
-        engine->ServerCmd( "rd_team_change" );
-    }
+	else if ( !Q_stricmp( command, "TeamChangeButton" ) )
+	{
+		engine->ServerCmd( "rd_team_change" );
+	}
 	BaseClass::OnCommand( command );
 }
 
@@ -611,19 +606,6 @@ void CNB_Main_Panel::ShowMissionDetails()
 	}
 
 	CNB_Mission_Panel *pPanel = new CNB_Mission_Panel( this, "MissionPanel" );
-	pPanel->MoveToFront();
-
-	m_hSubScreen = pPanel;
-}
-
-void CNB_Main_Panel::ShowMissionOptions()
-{
-	if ( m_hSubScreen.Get() )
-	{
-		m_hSubScreen->MarkForDeletion();
-	}
-
-	CNB_Mission_Options *pPanel = new CNB_Mission_Options( this, "MissionOptions" );
 	pPanel->MoveToFront();
 
 	m_hSubScreen = pPanel;

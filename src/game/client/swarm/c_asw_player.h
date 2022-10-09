@@ -194,9 +194,6 @@ public:
 	float m_fLastRestartTime;
 	virtual void RequestMissionRestart();	// sends the server a request to restart the mission
 
-	virtual void RequestSkillUp();
-	virtual void RequestSkillDown();
-
 	virtual void SendBlipSpeech(int iMarine);
 	
 	void CreateStimCamera();

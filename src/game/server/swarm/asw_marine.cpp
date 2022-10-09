@@ -1445,8 +1445,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			bool bFlamerDot = !!(newInfo.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) );
 			if ( newInfo.GetDamage() > 0 && pAttacker != this && !bFlamerDot )
 			{
-				bool bHardcoreMode = ASWGameRules() && ASWGameRules()->IsHardcoreMode();
-				if ( !bHardcoreMode && asw_marine_ff_absorption.GetInt() != 0 )
+				if ( asw_marine_ff_absorption.GetInt() != 0 )
 				{
 					float flNewDamage = info.GetDamage() * GetFFAbsorptionScale();
 					newInfo.SetDamage(flNewDamage);
@@ -1467,12 +1466,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// don't kill the marine in one hit unless he's on 1 health
 	bool bKillProtection = false;
-	if (asw_marine_death_protection.GetBool() && !(ASWGameRules() && ASWGameRules()->IsHardcoreMode()))	// no 1 hit protection in hardcore mode
+	if ( asw_marine_death_protection.GetBool() )	// no 1 hit protection in hardcore mode
 	{
-		if (newInfo.GetDamageType() != DMG_CRUSH && newInfo.GetDamageType() != DMG_FALL
-				&& newInfo.GetDamageType() != DMG_INFEST && GetHealth() > 1)
+		if ( newInfo.GetDamageType() != DMG_CRUSH && newInfo.GetDamageType() != DMG_FALL
+			&& newInfo.GetDamageType() != DMG_INFEST && GetHealth() > 1 )
 		{
-			if (newInfo.GetDamage() >= GetHealth())
+			if ( newInfo.GetDamage() >= GetHealth() )
 				bKillProtection = true;
 		}
 
@@ -5063,12 +5062,7 @@ float CASW_Marine::GetReceivedDamageScale( CBaseEntity *pAttacker )
 		CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker );
 		if (pMarine)
 		{
-			if (ASWGameRules() && ASWGameRules()->IsHardcoreMode())
-			{
-				// full damage in hardcore mode
-				flScale = 1;
-			}
-			else if (asw_marine_ff.GetInt() == 0)		// FF Guard
+			if (asw_marine_ff.GetInt() == 0)		// FF Guard
 			{
 				flScale = 0.01f;
 				pMarine->ActivateFriendlyFireGuard(this);

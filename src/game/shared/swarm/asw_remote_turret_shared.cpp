@@ -666,10 +666,6 @@ int CASW_Remote_Turret::GetSentryDamage()
 	return 25.0f - ((ASWGameRules()->GetMissionDifficulty() - 5.0f) * 0.75f);
 }
 
-#ifdef CLIENT_DLL
-extern void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart, const Vector &vecEnd, bool bRedTracer, int iAttributeEffects = 0 );
-#endif
-
 void CASW_Remote_Turret::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
 {
 #ifdef GAME_DLL
@@ -727,7 +723,7 @@ void CASW_Remote_Turret::ASWRemoteTurretTracer( const Vector &vecEnd )
 		return;
 	}
 
-	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd, false );
+	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd );
 
 	C_BaseAnimating::PopBoneAccess( "remoteturret" );
 }

@@ -138,9 +138,6 @@ public:
 	CNetworkString( m_DebriefText2, 255 );
 	CNetworkString( m_DebriefText3, 255 );
 
-	CNetworkVar( bool, m_bJustUnlockedCarnage );
-	CNetworkVar( bool, m_bJustUnlockedUber );
-	CNetworkVar( bool, m_bJustUnlockedHardcore );
 	CNetworkVar( bool, m_bBeatSpeedrunTime );
 
 	CNetworkVar( float, m_fBestTimeTaken );
