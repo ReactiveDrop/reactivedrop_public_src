@@ -65,6 +65,7 @@ public:
 	virtual void SetChangingWeaponSlot( int nLobbySlot, int nWeaponSlot );
 	virtual int GetChangingWeaponSlot( int nLobbySlot );
 	virtual bool IsCommanderSpeaking( int nLobbySlot );
+	Color GetMarineLaserColor(int nLobbySlot);
 
 	virtual void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot );
 	virtual void SelectBot( int nOrder, int nProfileIndex );

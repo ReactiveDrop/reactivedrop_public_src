@@ -33,6 +33,7 @@ using namespace BaseModUI;
 extern ConVar cl_asw_laser_sight_color;
 
 class C_ASW_Player;
+class vgui::ISurface;
 
 CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -169,6 +170,10 @@ void CNB_Lobby_Row::OnThink()
 
 void CNB_Lobby_Row::UpdateDetails()
 {
+	int screenWidth = ScreenWidth(), screenHeight = ScreenHeight();
+	float widthMod = screenWidth / 640;
+	float heightMod = screenHeight / 480;
+
 	color32 white;
 	white.r = 255;
 	white.g = 255;
@@ -405,6 +410,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		}
 	}
 
+
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
 		bool bSetButtonImage = false;
@@ -456,6 +462,10 @@ void CNB_Lobby_Row::UpdateDetails()
 		}
 	}
 
+	CASW_Briefing* ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
+	Color _BoopColor = ASW_Briefing->GetMarineLaserColor(m_nLobbySlot);
+
+
 	//AG3 Test Code
 
 	if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && Briefing()->IsLobbySlotLocal(m_nLobbySlot) && !Briefing()->IsLobbySlotBot(m_nLobbySlot))
@@ -470,51 +480,95 @@ void CNB_Lobby_Row::UpdateDetails()
 		rgbLaserColor.b = _inputRGBColor.b();
 		rgbLaserColor.a = 255;
 
-		m_pLaserButton->SetSize(25, 25);
-		m_pLaserButton->SetPos(0, 45);
-		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
-		m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", Briefing()->IsLobbySlotLocal(m_nLobbySlot) ? white : rgbLaserColor);
-		m_pLaserButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserColor);
+		//m_pLaserButton->SetSize(25, 25);
+		//m_pLaserButton->SetPos(0, 45);
+		//m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		//m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", Briefing()->IsLobbySlotLocal(m_nLobbySlot) ? white : rgbLaserColor);
+		//m_pLaserButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+
+		//float avgMod = (heightMod + widthMod) * 0.5f;
+		int tempBGSizeX, tempBGSizeY;
+		m_pBackground->GetSize(tempBGSizeX, tempBGSizeY);
+
+		float lsOverlayWidthMod = tempBGSizeX / 319.0f; //319 is base width
+		float lsOverlayHeightMod = tempBGSizeY / 76.0f; //76 is base height
+
+		m_pLaserOverlayButton->SetSize(20.0f * lsOverlayWidthMod, 20.0f * lsOverlayHeightMod);
+		m_pLaserOverlayButton->SetPos(lsOverlayWidthMod * 0.0f, lsOverlayHeightMod * 25.0f);
+		
+		const char* szEmptyFaceLit = "vgui/swarm/color/laser_icon";
+
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFaceLit, rgbLaserColor);
 
 
-		m_pLaserOverlayButton->SetSize(25, 25);
-		m_pLaserOverlayButton->SetPos(0, 45);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
+		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
 
 
-		m_pLaserButton->SetVisible(true);
+		m_pLaserButton->SetVisible(false);
 		m_pLaserOverlayButton->SetVisible(true);
 	}
-	/*
 	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot))
 	{
 		CASW_Briefing* ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
-		C_BasePlayer* hPlayer = ASW_Briefing->GetPlayer(m_nLobbySlot);
+		Color _BoopColor = ASW_Briefing->GetMarineLaserColor(m_nLobbySlot); //Do not defy the power of the boop!
 
-		if (hPlayer)
-		{
 
-			Vector vecCol = hPlayer->m_vecLobbyCustLaserColor.GetForModify();
+		color32 rgbLaserColor = color32();
+		rgbLaserColor.r = _BoopColor.r();
+		rgbLaserColor.g = _BoopColor.g();
+		rgbLaserColor.b = _BoopColor.b();
+		rgbLaserColor.a = 255;
 
-			color32 rgbLaserColor = color32();
-			rgbLaserColor.r = vecCol.x;
-			rgbLaserColor.g = vecCol.y;
-			rgbLaserColor.b = vecCol.z;
-			rgbLaserColor.a = 255;
+		int tempBGSizeX, tempBGSizeY;
+		m_pClassImage->GetSize(tempBGSizeX, tempBGSizeY);
 
-			m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", rgbLaserColor);
+		float lsOverlayWidthMod = tempBGSizeX / 16.0f; //16 is base width
+		float lsOverlayHeightMod = tempBGSizeY / 16.0f; //16 is base height
 
-			m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", lightblue);
-			m_pLaserButton->SetVisible(true);
-			m_pLaserOverlayButton->SetVisible(true);
-		}
-		else
-		{
-			m_pLaserButton->SetVisible(false);
-			m_pLaserOverlayButton->SetVisible(false);
-		}
+		m_pLaserOverlayButton->SetSize(10.0f * lsOverlayWidthMod, 10.0f * lsOverlayHeightMod);
+		m_pLaserOverlayButton->SetPos(lsOverlayWidthMod * 5.0f, lsOverlayHeightMod * 30.0f);
+
+		const char* szEmptyFaceLit = "vgui/swarm/color/laser_icon";
+
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFaceLit, rgbLaserColor);
+
+		m_pLaserButton->SetVisible(false);
+		m_pLaserOverlayButton->SetVisible(true);
+	}
+	/*
+	else if (true)
+	{
+		Color _inputRGBColor = _BoopColor;
+		color32 rgbLaserColor = color32();
+		rgbLaserColor.r = _inputRGBColor.r();
+		rgbLaserColor.g = _inputRGBColor.g();
+		rgbLaserColor.b = _inputRGBColor.b();
+		rgbLaserColor.a = 255;
+
+		int tempBGSizeX, tempBGSizeY;
+		//m_pBackground->GetSize(tempBGSizeX, tempBGSizeY);
+		m_pClassImage->GetSize(tempBGSizeX, tempBGSizeY);
+
+		float lsOverlayWidthMod = tempBGSizeX / 16.0f; //16 is base width
+		float lsOverlayHeightMod = tempBGSizeY / 16.0f; //16 is base height
+
+		m_pLaserOverlayButton->SetSize(10.0f * lsOverlayWidthMod, 10.0f * lsOverlayHeightMod);
+		m_pLaserOverlayButton->SetPos(lsOverlayWidthMod * 5.0f, lsOverlayHeightMod * 30.0f);
+
+		const char* szEmptyFaceLit = "vgui/swarm/color/laser_icon";
+
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFaceLit, rgbLaserColor);
+
+		m_pLaserButton->SetVisible(false);
+		m_pLaserOverlayButton->SetVisible(true);
 	}
 	*/
 	else
@@ -522,6 +576,22 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pLaserButton->SetVisible(false);
 		m_pLaserOverlayButton->SetVisible(false);
 	}
+
+
+
+
+
+	/*
+	m_pVoiceIcon->SetVisible(true); //Setting this to true to force showing for debugging visuals
+	m_pXPBar->SetVisible(true);
+	m_pLevelLabel->SetVisible(true);
+	m_pPromotionIcon->SetVisible(true);
+	m_pMedalIcon->SetVisible(true);
+	m_pNameDropdown->SetVisible(true);
+	m_pAvatarImage->SetVisible(true);
+	m_pClassLabel->SetVisible(true);
+	m_pClassImage->SetVisible(true);
+	*/
 }
 
 void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )

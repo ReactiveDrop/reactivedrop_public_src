@@ -958,6 +958,22 @@ int CASW_Briefing::GetChangingWeaponSlot( int nLobbySlot )
 	return pPlayer->m_nChangingSlot.Get();
 }
 
+Color CASW_Briefing::GetMarineLaserColor(int nLobbySlot)
+{
+	UpdateLobbySlotMapping();
+
+	C_ASW_Player* pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
+	if (!pPlayer)
+		return Color(255, 0, 0);
+
+	//if (pPlayer->m_vecLobbyLaserColor.Get() == NULL)
+	//	return Color(255, 0, 0);
+
+	Vector vecCol = pPlayer->m_vecLobbyLaserColor.Get();
+
+	return Color(vecCol.x, vecCol.y, vecCol.z);
+}
+
 bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 {
 	if ( gpGlobals->maxClients <= 1 )

@@ -261,6 +261,7 @@ public:
 	// status of selecting marine/weapons in the briefing
 	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
+	CNetworkVar( Vector, m_vecLobbyLaserColor );
 
 	// BenLubar(spectator-mouse)
 	short m_iScreenWidth;

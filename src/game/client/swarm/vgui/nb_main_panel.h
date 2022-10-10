@@ -85,6 +85,9 @@ public:
 	static CUtlVector<int> s_QueuedSpendSkillPoints;	// queue of marine profile indices to spend points on
 	bool m_bLobbyValidityChecked;
 	bool m_bHSVIsActive = false;
+
+	float m_lastColorNetworkUpdate = -999.0f;
+	Color m_LastNetworkSentColor = Color(255, 255, 255);
 };
 
 #endif // _INCLUDED_NB_MAIN_PANEL_H

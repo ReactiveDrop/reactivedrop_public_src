@@ -230,6 +230,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropInt	(SENDINFO( m_iMapVoted ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
+	SendPropVector	(SENDINFO(m_vecLobbyLaserColor ) ),
 
 	// BenLubar(spectator-mouse)
 	SendPropInt( SENDINFO( m_iScreenWidth ) ),
@@ -974,6 +975,20 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				m_nChangingMR = atoi( args[1] );
 				m_nChangingSlot = atoi( args[2] );
+
+				return true;
+			}
+			else if (FStrEq(pcmd, "cl_editing_lasercolor"))
+			{
+				if (args.ArgC() < 4)
+				{
+					Warning("Player sent a bad cl_editing_lasercolor command\n");
+					return false;
+				}
+
+				Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
+
+				m_vecLobbyLaserColor.Set(vecColor);
 
 				return true;
 			}

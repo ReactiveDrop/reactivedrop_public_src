@@ -67,4 +67,9 @@ void CNB_Lobby_Row_Small::UpdateDetails()
 	}
 
 	BaseClass::UpdateDetails();
+
+
+	//DEBUGGING - REMOVE LATER:
+	m_pReadyCheckImage->SetImage("swarm/HUD/TickBoxTicked");
+	m_pReadyCheckImage->SetVisible(true);
 }

@@ -384,6 +384,19 @@ void CNB_Main_Panel::OnTick()
 	}
 
 	m_pLobbyRowsScroll->SetScrollBarVisible( nBriefingSlots > 5 );
+
+
+
+
+
+	//Check Color Network updates
+
+	if (m_LastNetworkSentColor != cl_asw_laser_sight_color.GetColor() && gpGlobals->curtime > m_lastColorNetworkUpdate + 0.25f)
+	{
+		SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
+		m_LastNetworkSentColor = cl_asw_laser_sight_color.GetColor();
+		m_lastColorNetworkUpdate = gpGlobals->curtime;
+	}
 }
 
 void CNB_Main_Panel::ChangeMarine( int nLobbySlot )

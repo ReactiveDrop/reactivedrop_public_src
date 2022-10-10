@@ -312,9 +312,20 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/hsv_replace_color_button", white);
 	m_pReplaceColorButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/hsv_replace_color_button", rgbLaserColor);
 
+
+	
+	float baseWidth = 15.0f, baseHeight = 15.0f;
+
+	//int tempWidth, tempHeight;
+	//m_pCustomColor1->GetSize(tempWidth, tempHeight);
+
+	//float widthMod = tempWidth / baseWidth;
+	//float heightMod = tempHeight / baseHeight;
+
 	int custColX, custColY, custColWidth, custColHeight;
+	/*
 	m_pCustomColor1->GetPos(custColX, custColY);
-	m_pHighlightColor1->SetPos(custColX-1, custColY-1);
+	m_pHighlightColor1->SetPos(custColX-(1*widthMod), custColY-(1*heightMod));
 
 	m_pCustomColor2->GetPos(custColX, custColY);
 	m_pHighlightColor2->SetPos(custColX - 1, custColY - 1);
@@ -339,6 +350,7 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 
 	m_pCustomColor9->GetPos(custColX, custColY);
 	m_pHighlightColor9->SetPos(custColX - 1, custColY - 1);
+	*/
 
 	m_pHSVSquare->GetPos(custColX, custColY);
 	m_pHighlightHSVSquare->SetPos(custColX - 1, custColY - 1);
@@ -824,18 +836,26 @@ void Cnb_lobby_laser_rgb_menu::UpdateHSVColor()
 	snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
 	cl_asw_laser_sight_color.SetValue(sLaserColor);
 
-	SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
+	//SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
 }
 
 void Cnb_lobby_laser_rgb_menu::SetHSVMarkerPos()
 {
+	float baseMarkerWidth = 25.0f, baseMarkerHeight = 25.0f;
 	//HSV SQUARE MARKER
 	int widtha, heighta;
 	m_pHSVSquare->GetSize(widtha, heighta);
 	int xa, ya;
 	m_pHSVSquare->GetPos(xa, ya);
 
-	int baseX = xa - 17, baseY = ya - 15;
+	int widthd, heightd;
+
+	m_pHSVSquareMarker->GetSize(widthd, heightd);
+
+	float widthMod = widthd / baseMarkerWidth;
+	float heightMod = heightd / baseMarkerHeight;
+
+	int baseX = xa - (10.0f * widthMod), baseY = ya - (10.0f * heightMod);
 
 	float horMod = m_fHSV_Hue / 360.0;
 	float verMod = 1.0f-(m_fHSV_Sat / 1.0);
@@ -853,8 +873,8 @@ void Cnb_lobby_laser_rgb_menu::SetHSVMarkerPos()
 	m_pHSVSlider->GetPos(xb, yb);
 	m_pHSVSlider->GetSize(widthb, heightb);
 
-	baseX = xb - 17;
-	baseY = yb - 15;
+	baseX = xb - (11.0f * widthMod);
+	baseY = yb - (10.0f * heightMod);
 
 	verMod = 1.0f - (m_fHSV_Val / 1.0);
 
