@@ -61,7 +61,6 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pWeaponButton1 = new CBitmapButton( this, "WeaponButton1", "" );
 	m_pWeaponButton2 = new CBitmapButton( this, "WeaponButton2", "" );
 
-	m_pLaserButton = new CBitmapButton(this, "ChangeLaserButton", "");
 	m_pLaserOverlayButton = new CBitmapButton(this, "LaserOverlayButton", "");
 
 	m_pPortraitButton->AddActionSignalTarget( this );
@@ -70,12 +69,11 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pWeaponButton0->AddActionSignalTarget( this );
 	m_pWeaponButton1->AddActionSignalTarget( this );
 	m_pWeaponButton2->AddActionSignalTarget( this );
-	m_pLaserButton->AddActionSignalTarget(this);
+	m_pLaserOverlayButton->AddActionSignalTarget(this);
 
 	m_pWeaponButton0->SetCommand( "ChangeWeapon0" );
 	m_pWeaponButton1->SetCommand( "ChangeWeapon1" );
 	m_pWeaponButton2->SetCommand( "ChangeWeapon2" );
-	m_pLaserButton->SetCommand(	  "ChangeLaserColor");
 	m_pLaserOverlayButton->SetCommand("ChangeLaserColor");
 
 	m_pVoiceIcon = new vgui::ImagePanel( this, "VoiceIcon" );
@@ -495,20 +493,12 @@ void CNB_Lobby_Row::UpdateDetails()
 
 		m_pLaserOverlayButton->SetSize(20.0f * lsOverlayWidthMod, 20.0f * lsOverlayHeightMod);
 		m_pLaserOverlayButton->SetPos(lsOverlayWidthMod * 0.0f, lsOverlayHeightMod * 25.0f);
-		
-		const char* szEmptyFaceLit = "vgui/swarm/color/laser_icon";
 
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFaceLit, rgbLaserColor);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFaceLit, rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
 
 
-		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
-		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", white);
-		//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
-
-
-		m_pLaserButton->SetVisible(false);
 		m_pLaserOverlayButton->SetVisible(true);
 	}
 	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot))
@@ -532,13 +522,10 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pLaserOverlayButton->SetSize(10.0f * lsOverlayWidthMod, 10.0f * lsOverlayHeightMod);
 		m_pLaserOverlayButton->SetPos(lsOverlayWidthMod * 5.0f, lsOverlayHeightMod * 30.0f);
 
-		const char* szEmptyFaceLit = "vgui/swarm/color/laser_icon";
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon", rgbLaserColor);
+		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon", rgbLaserColor);
 
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFaceLit, rgbLaserColor);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, rgbLaserColor);
-		m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFaceLit, rgbLaserColor);
-
-		m_pLaserButton->SetVisible(false);
 		m_pLaserOverlayButton->SetVisible(true);
 	}
 	/*
@@ -573,7 +560,6 @@ void CNB_Lobby_Row::UpdateDetails()
 	*/
 	else
 	{
-		m_pLaserButton->SetVisible(false);
 		m_pLaserOverlayButton->SetVisible(false);
 	}
 

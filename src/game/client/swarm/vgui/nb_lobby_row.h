@@ -66,7 +66,6 @@ public:
 	CBitmapButton	*m_pWeaponButton0;
 	CBitmapButton	*m_pWeaponButton1;
 	CBitmapButton	*m_pWeaponButton2;
-	CBitmapButton	*m_pLaserButton;
 	CBitmapButton	*m_pLaserOverlayButton;
 	vgui::ImagePanel *m_pVoiceIcon;
 	vgui::ImagePanel *m_pPromotionIcon;
