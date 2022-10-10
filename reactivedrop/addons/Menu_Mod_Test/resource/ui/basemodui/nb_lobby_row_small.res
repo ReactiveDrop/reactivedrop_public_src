@@ -429,4 +429,24 @@
 		"zpos"		"5"
 		"drawcolor"	"169 213 255 64"
 	}
+	"ChangeLaserButton"
+	{
+		"fieldName"		"ChangeLaserButton"
+		"xpos"		"50"
+		"ypos"		"50"
+		"wide"		"50"
+		"tall"		"50"
+		"ControlName"		"CBitmapButton"
+		"zpos"		"4"
+	}
+	"LaserOverlayButton"
+	{
+		"fieldName"		"LaserOverlayButton"
+		"xpos"		"50"
+		"ypos"		"50"
+		"wide"		"999"
+		"tall"		"999"
+		"ControlName"		"CBitmapButton"
+		"zpos"		"4"
+	}
 }

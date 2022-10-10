@@ -22,17 +22,6 @@
 		"scaleImage"		"1"
 		"zpos"		"4"
 	}
-	"AvatarImage_test"
-	{
-		"fieldName"		"AvatarImage_test"
-		"xpos"		"50"
-		"ypos"		"999"
-		"wide"		"20"
-		"tall"		"20"
-		"ControlName"		"CAvatarImagePanel"
-		"scaleImage"		"1"
-		"zpos"		"4"
-	}
 	"ClassImage"
 	{
 		"fieldName"		"ClassImage"
@@ -446,32 +435,25 @@
 		"zpos"		"5"
 		"drawcolor"	"169 213 255 64"
 	}
+
 	"ChangeLaserButton"
 	{
 		"fieldName"		"ChangeLaserButton"
-		"xpos"		"50"
-		"ypos"		"1"
-		"wide"		"20"
-		"tall"		"47"
+		"xpos"		"22"
+		"ypos"		"28"
+		"wide"		"73"
+		"tall"		"73"
 		"ControlName"		"CBitmapButton"
-		"image"		"briefing/weapon_extra_silhouette"
-// 		"pin_to_sibling"		"WeaponButton1"
-// 		"pin_corner_to_sibling"		"0"
-// 		"pin_to_sibling_corner"		"1"
 		"zpos"		"4"
 	}
 	"LaserOverlayButton"
 	{
 		"fieldName"		"LaserOverlayButton"
-		"xpos"		"50"
-		"ypos"		"1"
-		"wide"		"20"
-		"tall"		"47"
+		"xpos"		"999"
+		"ypos"		"999"
+		"wide"		"73"
+		"tall"		"73"
 		"ControlName"		"CBitmapButton"
-		"image"		"swarm\color\laser_icon"
-// 		"pin_to_sibling"		"WeaponButton1"
-// 		"pin_corner_to_sibling"		"0"
-// 		"pin_to_sibling_corner"		"1"
 		"zpos"		"4"
 	}
 }

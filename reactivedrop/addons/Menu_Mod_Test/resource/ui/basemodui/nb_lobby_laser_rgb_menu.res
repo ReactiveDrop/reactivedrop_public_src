@@ -60,6 +60,7 @@
 		"tall"		"75"
 		"ControlName"		"CBitmapButton"
 		"image"		"swarm\color\laser_icon"
+		"scaleImage"		"1"
 // 		"pin_to_sibling"		"WeaponButton1"
 // 		"pin_corner_to_sibling"		"0"
 // 		"pin_to_sibling_corner"		"1"
@@ -122,6 +123,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color2Button"
 	{
@@ -132,6 +134,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color3Button"
 	{
@@ -142,6 +145,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color4Button"
 	{
@@ -152,6 +156,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color5Button"
 	{
@@ -162,6 +167,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color6Button"
 	{
@@ -172,6 +178,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color7Button"
 	{
@@ -182,6 +189,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color8Button"
 	{
@@ -192,6 +200,7 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color9Button"
 	{
@@ -202,105 +211,115 @@
 		"tall"		"15"
 		"ControlName"		"CBitmapButton"
 		"zpos"		"5"
+		"scaleImage"		"1"
 	}
 	"Color1Highlight"
 	{
 		"fieldName"		"Color1Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"247"
+		"ypos"		"4"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color2Highlight"
 	{
 		"fieldName"		"Color2Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"270"
+		"ypos"		"4"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color3Highlight"
 	{
 		"fieldName"		"Color3Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"293"
+		"ypos"		"4"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color4Highlight"
 	{
 		"fieldName"		"Color4Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"247"
+		"ypos"		"28"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color5Highlight"
 	{
 		"fieldName"		"Color5Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"270"
+		"ypos"		"28"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color6Highlight"
 	{
 		"fieldName"		"Color6Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"293"
+		"ypos"		"28"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color7Highlight"
 	{
 		"fieldName"		"Color7Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"247"
+		"ypos"		"52"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color8Highlight"
 	{
 		"fieldName"		"Color8Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"270"
+		"ypos"		"52"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 	"Color9Highlight"
 	{
 		"fieldName"		"Color9Highlight"
-		"xpos"		"265"
-		"ypos"		"0"
+		"xpos"		"293"
+		"ypos"		"52"
 		"wide"		"17"
 		"tall"		"17"
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"4"
+		"scaleImage"		"1"
 	}
 
 	"HSVPreviewHighlight"
@@ -313,6 +332,7 @@
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"1"
+		"scaleImage"		"1"
 	}
 	"HSVSquareHighlight"
 	{
@@ -324,6 +344,7 @@
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"1"
+		"scaleImage"		"1"
 	}
 	"HSVSliderHighlight"
 	{
@@ -335,6 +356,7 @@
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"1"
+		"scaleImage"		"1"
 	}
 	"ActivateReplaceColorHighlight"
 	{
@@ -346,5 +368,6 @@
 		"image" 	"swarm\color\behind_color_highlight"
 		"ControlName"		"Panel"
 		"zpos"		"1"
+		"scaleImage"		"1"
 	}
 }
