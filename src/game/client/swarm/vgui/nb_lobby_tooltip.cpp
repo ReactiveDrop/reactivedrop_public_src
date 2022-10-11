@@ -59,6 +59,7 @@ CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : 
 	m_nLastInventorySlot = -1;
 	m_nLastItemInstance = k_SteamItemInstanceIDInvalid;
 	m_bPromotionTooltip = false;
+	m_bLasersightTooltip = false;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
@@ -103,6 +104,8 @@ void CNB_Lobby_Tooltip::ShowMarineTooltip( int nLobbySlot )
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
 	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bLasersightTooltip = false;
+	m_bLasersightTooltip_Init = false;
 }
 
 void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
@@ -112,6 +115,8 @@ void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
 	m_nInventorySlot = nInventorySlot;
 	m_bPromotionTooltip = false;
 	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bLasersightTooltip = false;
+	m_bLasersightTooltip_Init = false;
 }
 
 void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
@@ -120,6 +125,8 @@ void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = true;
 	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bLasersightTooltip = false;
+	m_bLasersightTooltip_Init = false;
 }
 
 void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult )
@@ -128,6 +135,17 @@ void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryRe
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
 	m_hInventoryResult = hResult;
+	m_bLasersightTooltip = false;
+	m_bLasersightTooltip_Init = false;
+}
+
+void CNB_Lobby_Tooltip::ShowLaserSightTooltip(int nLobbySlot)
+{
+	m_bMarineTooltip = false;
+	m_nLobbySlot = nLobbySlot;
+	m_bPromotionTooltip = false;
+	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bLasersightTooltip = true;
 }
 
 void CNB_Lobby_Tooltip::OnTick()
@@ -316,6 +334,41 @@ void CNB_Lobby_Tooltip::OnTick()
 			m_bMarineTooltip = false;
 		}
 
+		return;
+	}
+
+
+	if (m_bLasersightTooltip)
+	{
+		m_pTitle->SetVisible(true);
+		m_pWeaponDetail5->m_bHidden = false;
+
+		m_pItemModelPanel->SetCameraForWeapon(-10.0f, gpGlobals->curtime);
+		m_pItemModelPanel->m_bShouldPaint = true;
+		m_pItemModelPanel->SetVisible(true);
+
+		if (!m_bLasersightTooltip_Init)
+		{
+			m_pItemModelPanel->SetModelByName("models/swarm/flashlight/flashlightpickup.mdl");
+
+			// force resetup of various things (this block of code fixes size popping when changing model)
+			m_pItemModelPanel->InvalidateLayout(true);
+
+			m_pItemModelPanel->SetCameraForWeapon(-10.0f, gpGlobals->curtime);
+
+			m_pItemModelPanel->InvalidateLayout(true);
+			m_pItemModelPanel->SetAlpha(0);
+			vgui::GetAnimationController()->RunAnimationCommand(m_pItemModelPanel, "Alpha", 255, 0.01f, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			m_bLasersightTooltip_Init = true;
+		}
+		m_pWeaponDetail5->m_bHidden = false;
+		m_pItemModelPanel->m_bShouldPaint = true;
+		m_pItemModelPanel->SetVisible(true);
+
+		m_pTitle->SetText("TX-60 Laser Sight");
+
+		m_bValidTooltip = true;
+		m_nLastInventorySlot = -69;
 		return;
 	}
 

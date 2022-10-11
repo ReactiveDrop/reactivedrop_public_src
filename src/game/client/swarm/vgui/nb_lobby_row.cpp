@@ -606,6 +606,11 @@ void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
 	{
 		pTooltip->ShowMarineMedalTooltip( m_nLobbySlot, m_hMedalResult );
 	}
+	else if (CControllerFocus::IsPanelReallyVisible(m_pLaserOverlayButton) && m_pLaserOverlayButton->IsCursorOver())
+	{
+		//This code is here for if I decide to add a preview model of a laser sight.
+		//pTooltip->ShowLaserSightTooltip(m_nLobbySlot);
+	}
 }
 
 extern ConVar developer;

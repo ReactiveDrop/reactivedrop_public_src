@@ -35,6 +35,7 @@ public:
 	void ShowWeaponTooltip( int nLobbySlot, int nInventorySlot );
 	void ShowMarinePromotionTooltip( int nLobbySlot );
 	void ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult );
+	void ShowLaserSightTooltip(int nLobbySlot);
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;
@@ -62,10 +63,13 @@ public:
 
 	bool m_bPromotionTooltip;
 	bool m_bMarineTooltip;
+	bool m_bLasersightTooltip;
 	int m_nLobbySlot;
 	int m_nInventorySlot;
 	bool m_bValidTooltip;
 	SteamInventoryResult_t m_hInventoryResult;
+
+	bool m_bLasersightTooltip_Init = false;
 
 	int m_nLastWeaponHash;
 	int m_nLastInventorySlot;
