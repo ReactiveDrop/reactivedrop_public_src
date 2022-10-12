@@ -35,6 +35,7 @@ public:
 
 	void SetModelByWeapon( CASW_WeaponInfo *pWeaponInfo );
 	void SetCameraForWeapon( float flZOffset, float flTime );
+	void SetModelByName(const char* szModelName);
 
 	bool m_bShouldPaint;
 

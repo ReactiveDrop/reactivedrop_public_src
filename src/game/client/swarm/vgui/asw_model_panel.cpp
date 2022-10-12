@@ -150,6 +150,17 @@ numFacesRendered += R_StudioDrawPoints( pRenderContext, skin, pClientEntity,
 
 									   */
 
+void CASW_Model_Panel::SetModelByName(const char* szModelName)
+{
+	ClearMergeMDLs();
+	SetMDL(szModelName);
+
+	int nSkin = 0;
+
+	SetSkin(nSkin);
+	SetModelAnim(FindAnimByName("idle"));
+}
+
 void CASW_Model_Panel::SetModelByWeapon( CASW_WeaponInfo *pWeaponInfo )
 {
 	Assert( pWeaponInfo );
