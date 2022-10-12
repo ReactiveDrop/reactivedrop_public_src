@@ -2566,7 +2566,7 @@ CBaseEntity *CASW_Marine::MeleeTraceHullAttack( const Vector &vecStart, const Ve
 
 	CTakeDamageInfo	dmgInfo( this, this, 0.0f, DMG_CLUB );
 	dmgInfo.SetDamage( MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG ) );
-	dmgInfo.ScaleDamage( GetCurrentMeleeAttack()->m_flDamageScale );
+	dmgInfo.ScaleDamage( GetCurrentMeleeAttack() ? GetCurrentMeleeAttack()->m_flDamageScale : 0.0f );
 
 	Vector vecAttackDir = vecEnd - vecStart;
 	VectorNormalize( vecAttackDir );
