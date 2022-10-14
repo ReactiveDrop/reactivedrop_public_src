@@ -20,8 +20,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define MEDKIT_HEAL_AMOUNT 50
-
 ConVar rd_medkit_overheal("rd_medkit_overheal", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If marine health is at max level medkit is used for additional small health boost");
 ConVar rd_medkit_overheal_divider("rd_medkit_overheal_divider", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Divider for medkit overhealth amount from base healing value. Bigger divider lesser health it adds");
 
@@ -169,14 +167,11 @@ void CASW_Weapon_Medkit::SelfHeal()
 int CASW_Weapon_Medkit::GetHealAmount()
 {
 	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return 0;
-
 	// medics adjust heal amount by their skills
-	if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
+	if ( pMarine && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
 	{
-		return MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS);
+		return MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS );
 	}
 
-	return MEDKIT_HEAL_AMOUNT;
+	return MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS, 0 );
 }
