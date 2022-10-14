@@ -1177,6 +1177,36 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		}
 	}
 	UpdateFireEmitters();
+
+	if (m_LastLaserColor != m_vecCustLaserColor)
+	{
+		C_ASW_Weapon* pWeapon = GetActiveASWWeapon();
+
+		if (pWeapon)
+		{
+			if (pWeapon->m_pLaserPointerEffect)
+			{
+				pWeapon->RemoveLaserPointerEffect();
+
+
+				int iAttachment = pWeapon->GetMuzzleAttachment();
+				if (iAttachment > 0)
+				{
+					bool bLocalPlayer = false;
+					C_ASW_Player* pPlayer = GetCommander();
+					C_ASW_Player* pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+
+					if (pPlayer == pLocalPlayer && IsInhabited())
+					{
+						bLocalPlayer = true;
+					}
+					pWeapon->CreateLaserPointerEffect(bLocalPlayer, iAttachment);
+				}
+			}
+		}
+
+		m_LastLaserColor = m_vecCustLaserColor;
+	}
 }
 
 // note: this function doesn't seem to be used in sp. Maybe just in a netgame?
