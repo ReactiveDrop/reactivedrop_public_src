@@ -12,6 +12,11 @@ END_DATADESC();
 
 LINK_ENTITY_TO_CLASS( rd_briefing_camera, CRD_Briefing_Camera );
 
+CRD_Briefing_Camera::CRD_Briefing_Camera()
+{
+	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
+}
+
 int CRD_Briefing_Camera::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
 	return FL_EDICT_PVSCHECK;
