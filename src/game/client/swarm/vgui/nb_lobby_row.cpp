@@ -501,7 +501,7 @@ void CNB_Lobby_Row::UpdateDetails()
 
 		m_pLaserOverlayButton->SetVisible(true);
 	}
-	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot))
+	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot) && !Briefing()->IsLobbySlotBot(m_nLobbySlot))
 	{
 		CASW_Briefing* ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
 		Color _BoopColor = ASW_Briefing->GetMarineLaserColor(m_nLobbySlot); //Do not defy the power of the boop!

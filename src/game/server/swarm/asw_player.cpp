@@ -1267,6 +1267,33 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
+			else if (FStrEq(pcmd, "cl_changelaser"))
+			{
+				if (args.ArgC() < 4)
+				{
+					Warning("Player sent a bad changelaser command\n");
+					return false;
+				}
+
+				Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
+
+				const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
+
+				for (int i = 0; i < numMarineResources; i++)
+				{
+					CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+					if (pMR && pMR->IsInhabited() && pMR->GetCommander() == this)
+					{
+						CASW_Marine* hMarine = pMR->GetMarineEntity();
+						if (hMarine)
+						{
+							hMarine->m_vecCustLaserColor.Set(vecColor);
+						}
+					}
+				}
+
+				return true;
+			}
 
 			break;
 		}

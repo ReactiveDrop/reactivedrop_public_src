@@ -1123,3 +1123,18 @@ CON_COMMAND( make_game_friends_only, "Changes access for the current game to fri
 
 	ClientPrint( NULL, 8, "#L4D360UI_Lobby_Access_Changed_Friends" );
 }
+
+
+extern ConVar cl_asw_laser_sight_color;
+void ASW_ChangeLaser_f(const CCommand& args)
+{
+	if (args.ArgC() >= 4)
+	{
+		engine->ClientCmd(VarArgs("cl_changelaser %d %d %d", atoi(args[1]), atoi(args[2]), atoi(args[3])));
+
+		char sLaserColor[64]{};
+		snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", atoi(args[1]), atoi(args[2]), atoi(args[3]));
+		cl_asw_laser_sight_color.SetValue(sLaserColor);
+	}
+}
+ConCommand ASW_ChangeLaser("ASW_ChangeLaser", ASW_ChangeLaser_f, "Change your laser color while in a mission.", 0);
