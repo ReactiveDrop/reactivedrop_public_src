@@ -104,7 +104,28 @@ extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
-ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.");
+void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
+{
+	Msg("DEBUG: CONVAR LASER COLOR CHANGED");
+	if (engine->IsConnected() && engine->IsInGame())
+	{
+		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if (pPlayer)
+		{
+			//pPlayer->g_hBriefingFrame
+			if (!pPlayer->IsBriefingActive())
+			{
+				Msg("DEBUG: CONVAR LASER COLOR CHANGED - SUB 2");
+
+				Color laserCol = ((ConVar*)var)->GetColor();
+
+				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d", laserCol.r(), laserCol.g(), laserCol.b()));
+			}
+		}
+	}
+}
+
+ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.", OnClientLaserChanged);
 
 ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
 ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");

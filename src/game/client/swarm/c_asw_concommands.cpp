@@ -1130,8 +1130,6 @@ void ASW_ChangeLaser_f(const CCommand& args)
 {
 	if (args.ArgC() >= 4)
 	{
-		engine->ClientCmd(VarArgs("cl_changelaser %d %d %d", atoi(args[1]), atoi(args[2]), atoi(args[3])));
-
 		char sLaserColor[64]{};
 		snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", atoi(args[1]), atoi(args[2]), atoi(args[3]));
 		cl_asw_laser_sight_color.SetValue(sLaserColor);

@@ -844,6 +844,12 @@ void C_ASW_Player::LaunchMissionCompleteFrame( bool bSuccess )
 	GetClientModeASW()->m_hMissionCompleteFrame = new MissionCompleteFrame( bSuccess, GetClientMode()->GetViewport(), "m_MissionCompleteFrame" );
 }
 
+bool C_ASW_Player::IsBriefingActive()
+{
+	return g_hBriefingFrame.Get();
+}
+
+
 void C_ASW_Player::LaunchBriefingFrame( void )
 {
 	using namespace vgui;
