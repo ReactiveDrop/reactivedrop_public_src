@@ -2529,7 +2529,16 @@
 			"Caption" "#rd_so_stat_healing_self"
 		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/warning"
+				"Caption" "#rd_weapon_fact_medkit_infestation"
+			}
 		}
 	}
 	"WEAPON" {
@@ -2544,7 +2553,17 @@
 			"Caption" "#rd_so_stat_equip_extra"
 		}
 		"Facts" {
-			// TODO
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_welder_time"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_welder_partial"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/door_defense"
+				"Caption" "#rd_weapon_fact_welder_reinforce"
+			}
 		}
 	}
 	"WEAPON" {
@@ -2747,7 +2766,20 @@
 			"Caption" "#rd_so_stat_deployed"
 		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_duration"
+				"Skill" "ASW_MARINE_SKILL_DRUGS"
+				"SubSkill" "ASW_MARINE_SUBSKILL_STIM_DURATION"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_stim_skill"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_stim_slowdown"
+				"CVar" "asw_stim_time_scale"
+				"BaseMultiplier" "100"
+			}
 		}
 	}
 	"WEAPON" {
