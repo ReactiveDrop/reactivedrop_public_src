@@ -197,6 +197,7 @@ void CASW_Lag_Compensation::RequestLagCompensation(CASW_Player *player, const CU
 		 || !asw_alien_unlag.GetBool()				// disabled by server admin
 		 || player->IsBot() 				// not for bots
 		 //|| player->IsObserver()			// not for spectators
+		||	!cmd
 		)
 		return;
 
