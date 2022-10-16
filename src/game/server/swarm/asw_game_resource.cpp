@@ -60,7 +60,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Game_Resource, DT_ASW_Game_Resource)
 	SendPropString( SENDINFO(m_szMapGenerationStatus) ),
 	SendPropInt( SENDINFO(m_iRandomMapSeed) ),
 
-	SendPropArray3( SENDINFO_ARRAY3( m_vecLobbyLaserColor ), SendPropVector( SENDINFO_ARRAY( m_vecLobbyLaserColor ), ASW_MAX_READY_PLAYERS, SPROP_UNSIGNED) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------

@@ -106,19 +106,14 @@ extern ConVar rd_show_others_laser_pointer;
 
 void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
-	Msg("DEBUG: CONVAR LASER COLOR CHANGED");
 	if (engine->IsConnected() && engine->IsInGame())
 	{
 		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if (pPlayer)
 		{
-			//pPlayer->g_hBriefingFrame
 			if (!pPlayer->IsBriefingActive())
 			{
-				Msg("DEBUG: CONVAR LASER COLOR CHANGED - SUB 2");
-
 				Color laserCol = ((ConVar*)var)->GetColor();
-
 				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d", laserCol.r(), laserCol.g(), laserCol.b()));
 			}
 		}
@@ -129,13 +124,13 @@ ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_CLI
 
 ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
 ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");
-ConVar cl_asw_archived_lsc3("cl_asw_archived_lsc3", "55 255 55", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 3.");
-ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "0 255 55", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 4.");
-ConVar cl_asw_archived_lsc5("cl_asw_archived_lsc5", "155 255 55", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 5.");
-ConVar cl_asw_archived_lsc6("cl_asw_archived_lsc6", "0 55 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 6.");
-ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 255 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 7.");
+ConVar cl_asw_archived_lsc3("cl_asw_archived_lsc3", "0 255 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 3.");
+ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "170 243 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 4.");
+ConVar cl_asw_archived_lsc5("cl_asw_archived_lsc5", "0 54 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 5.");
+ConVar cl_asw_archived_lsc6("cl_asw_archived_lsc6", "183 19 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 6.");
+ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 8 224", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 7.");
 ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "155 255 155", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
-ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "155 155 155", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
+ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
 
 
 
@@ -963,18 +958,6 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 	{
 		C_ASW_Marine* marine = GetMarine();
 
-		/*
-		Color tempCol = cl_asw_laser_sight_color.GetColor();
-		float rchan = tempCol.r(); // cl_asw_laser_sight_col_r.GetFloat();
-		rchan = rchan / 255;
-
-		float gchan = tempCol.g(); // cl_asw_laser_sight_col_g.GetFloat();
-		gchan = gchan / 255;
-
-		float bchan = tempCol.b(); // cl_asw_laser_sight_col_b.GetFloat();
-		bchan = bchan / 255;
-		*/
-
 		float rchan, gchan, bchan;
 
 		
@@ -983,19 +966,12 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 		{
 			if (marine->IsInhabited())
 			{
-				//C_ASW_Player* hPlayer = marine->GetCommander();
-				//rchan = hPlayer->m_vecCustLaserColor.m_Value.x;
-				//gchan = hPlayer->m_vecCustLaserColor.m_Value.y;
-				//bchan = hPlayer->m_vecCustLaserColor.m_Value.z;
 				rchan = marine->m_vecCustLaserColor.m_Value.x;
 				gchan = marine->m_vecCustLaserColor.m_Value.y;
 				bchan = marine->m_vecCustLaserColor.m_Value.z;
 			}
 			else
 			{
-				//rchan = RandomFloat(0.0f, 255.0f);
-				//gchan = RandomFloat(0.0f, 255.0f);
-				//bchan = RandomFloat(0.0f, 255.0f);
 				rchan = marine->m_vecCustLaserColor.m_Value.x;
 				gchan = marine->m_vecCustLaserColor.m_Value.y;
 				bchan = marine->m_vecCustLaserColor.m_Value.z;
@@ -1026,8 +1002,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 				{
 					snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other", iUsingLaserIndex);
 				}
-				//m_pLaserPointerEffect = ParticleProp()->Colored_Create(sLaserName, PATTACH_POINT_FOLLOW, iAttachment, colorMul);
-				m_pLaserPointerEffect = ParticleProp()->Colored_Create(sLaserName, PATTACH_POINT_FOLLOW, iAttachment, colorMul); //weapon_laser_sight
+				m_pLaserPointerEffect = ParticleProp()->Colored_Create(sLaserName, PATTACH_POINT_FOLLOW, iAttachment, colorMul);
 			}
 
 
