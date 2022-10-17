@@ -129,7 +129,7 @@ ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "170 243 255", FCVAR_CLIENTD
 ConVar cl_asw_archived_lsc5("cl_asw_archived_lsc5", "0 54 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 5.");
 ConVar cl_asw_archived_lsc6("cl_asw_archived_lsc6", "183 19 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 6.");
 ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 8 224", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 7.");
-ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "155 255 155", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
+ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "255 205 58", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
 ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
 
 
