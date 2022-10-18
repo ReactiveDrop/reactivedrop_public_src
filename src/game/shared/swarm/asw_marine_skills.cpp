@@ -154,11 +154,6 @@ ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPL
 ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
 ConVar asw_skill_laser_mines_expert( "asw_skill_laser_mines_expert", "3", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with expert(>3) Explosives skills. Currently only Jaeger have it", true, 1, true, 10 );
 
-static float MuzzleFlashScale( int iSkillPoints )
-{
-	return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
-}
-
 CASW_Marine_Skills::CASW_Marine_Skills()
 {
 #ifndef CLIENT_DLL
@@ -169,14 +164,13 @@ CASW_Marine_Skills::CASW_Marine_Skills()
 // accessor functions to get at any game variables that are based on a skill
 float CASW_Marine_Skills::GetSkillBasedValueByMarine( CASW_Marine *pMarine, ASW_Skill iSkillIndex, int iSubSkill )
 {
-	Assert( pMarine );
 	if ( !pMarine )
-		return 0;
+		return GetSkillBasedValue( NULL, iSkillIndex, iSubSkill, 0 );
 
 	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
 	Assert( pProfile );
 	if ( !pProfile )
-		return 0;
+		return GetSkillBasedValue( NULL, iSkillIndex, iSubSkill, 0 );
 
 	return GetSkillBasedValue( pProfile, iSkillIndex, iSubSkill );
 }
@@ -185,7 +179,7 @@ float CASW_Marine_Skills::GetSkillBasedValueByMarineResource( CASW_Marine_Resour
 {
 	Assert( pMarineResource );
 	if ( !pMarineResource )
-		return 0;
+		return GetSkillBasedValue( NULL, iSkillIndex, iSubSkill, 0 );
 
 	return GetSkillBasedValue( pMarineResource->GetProfile(), iSkillIndex, iSubSkill );
 }
@@ -245,7 +239,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS:
 			return asw_skill_vindicator_pellets_base.GetFloat() + asw_skill_vindicator_pellets_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_VINDICATOR_MUZZLE:
-			return MuzzleFlashScale( iSkillPoints );
+			return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
@@ -256,7 +250,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SUBSKILL_AUTOGUN_DMG:
 			return asw_skill_autogun_base.GetFloat() + asw_skill_autogun_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_AUTOGUN_MUZZLE:
-			return MuzzleFlashScale( iSkillPoints );
+			return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
@@ -368,7 +362,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG:
 			return asw_skill_accuracy_medrifle_dmg_base.GetFloat() + asw_skill_accuracy_medrifle_dmg_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ACCURACY_MUZZLE:
-			return MuzzleFlashScale( iSkillPoints );
+			return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG:
 			return asw_skill_accuracy_deagle_dmg_base.GetFloat() + asw_skill_accuracy_deagle_dmg_step.GetFloat() * iSkillPoints;
 		default:

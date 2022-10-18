@@ -612,6 +612,34 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_MINE, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_TIMOR );
 			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission1" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BONUS_SPC );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission2" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BONUS_RAPTURE );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission3" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BONUS_BUNKER );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission4" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_UNSPLIT_JACOBS_1_2 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission5" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_UNSPLIT_PARANOIA_2_3 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission6" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_UNSPLIT_PARANOIA_4_5 );
+			}
+			else if ( !Q_stricmp( mapName, "rd-bonus_mission7" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_UNSPLIT_AREA9800_2_3 );
+			}
 			else if ( !Q_stricmp( mapName, "rd-ocs1storagefacility" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_OCS_STORAGE_FACILITY );
@@ -792,6 +820,10 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( mapName, "rd-acc6_labruins" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_LABRUINS );
+			}
+			else if ( !Q_stricmp( mapName, "rd-acc_complex" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_COMPLEX );
 			}
 #endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS

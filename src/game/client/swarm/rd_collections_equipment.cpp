@@ -865,8 +865,16 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		wchar_t wszClips[64];
 		wchar_t wszSize[32];
 		wchar_t wszAmmoClips[128];
-		V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
-		V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
+		if ( m_pFact->SkillValueIsClipSize )
+		{
+			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, flBaseValue );
+			V_snwprintf( wszSize, sizeof( wszSize ), L"%.0f", flSkillValue );
+		}
+		else
+		{
+			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
+			V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
+		}
 		g_pVGuiLocalize->ConstructString( wszAmmoClips, sizeof( wszAmmoClips ),
 			g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
 			2, wszClips, wszSize );

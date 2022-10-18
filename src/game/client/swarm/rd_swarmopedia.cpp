@@ -1139,6 +1139,7 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	SkillMultiplier{ copy.SkillMultiplier },
 	ShowReciprocal{ copy.ShowReciprocal },
 	Flattened{ copy.Flattened },
+	SkillValueIsClipSize{ copy.SkillValueIsClipSize },
 	ClipSize{ copy.ClipSize },
 	Class{ copy.Class }
 {
@@ -1283,6 +1284,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 	ShowReciprocal = pKV->GetBool( "ShowReciprocal", false );
 	Flattened = pKV->GetBool( "Flattened", false );
+	SkillValueIsClipSize = pKV->GetBool( "SkillValueIsClipSize", false );
 	ClipSize = pKV->GetInt( "ClipSize" );
 
 	if ( const char *szClass = pKV->GetString( "Class", NULL ) )
@@ -1312,6 +1314,7 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			FStrEq( szName, "SubSkill" ) ||
 			FStrEq( szName, "ShowReciprocal" ) ||
 			FStrEq( szName, "Flattened" ) ||
+			FStrEq( szName, "SkillValueIsClipSize" ) ||
 			FStrEq( szName, "ClipSize" ) ||
 			FStrEq( szName, "Class" ) )
 		{

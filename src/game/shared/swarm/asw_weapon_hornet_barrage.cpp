@@ -134,20 +134,12 @@ void CASW_Weapon_Hornet_Barrage::ItemPostFrame( void )
 
 void CASW_Weapon_Hornet_Barrage::SetRocketsToFire()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return;
-
-	m_iRocketsToFire = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_COUNT );
+	m_iRocketsToFire = MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_COUNT );
 }
 
 float CASW_Weapon_Hornet_Barrage::GetRocketFireInterval()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return 0.5f;
-
-	return MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_INTERVAL );
+	return MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_INTERVAL );
 }
 
 void CASW_Weapon_Hornet_Barrage::FireRocket()

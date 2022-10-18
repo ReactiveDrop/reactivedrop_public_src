@@ -2703,10 +2703,30 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast_rocket"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_COUNT"
+				"SkillValueIsClipSize" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
+					"BaseMultiplier" "0"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_INTERVAL"
+				}
 			}
 		}
 	}
@@ -3042,10 +3062,30 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast_rocket"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT"
+				"SkillValueIsClipSize" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
+					"BaseMultiplier" "0"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL"
+				}
 			}
 		}
 	}
@@ -3109,10 +3149,32 @@
 			"Caption" "#rd_so_stat_equip_extra"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast"
+			}
+			"Deployed" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_arm_time"
+					// 3 seconds to arm manually, followed by 0.1 second pause, followed by 5 second countdown
+					"Base" "5.1"
+				}
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Base" "600"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Base" "250"
+				}
 			}
 		}
 	}
