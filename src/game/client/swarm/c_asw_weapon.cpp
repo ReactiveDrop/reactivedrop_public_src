@@ -133,7 +133,6 @@ ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "255 205 58", FCVAR_CLIENTDL
 ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
 
 
-
 C_ASW_Weapon::C_ASW_Weapon() :
 m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
 {
@@ -947,35 +946,26 @@ void C_ASW_Weapon::FreeLaserIndex()
 	m_iUsingLSIndex = -1;
 }
 
-void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment )
+void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 {
-	if ( m_pLaserPointerEffect )
+	if (m_pLaserPointerEffect)
 	{
 		RemoveLaserPointerEffect();
 	}
 
-	if ( !m_pLaserPointerEffect )
+	if (!m_pLaserPointerEffect)
 	{
 		C_ASW_Marine* marine = GetMarine();
 
 		float rchan, gchan, bchan;
 
-		
+
 
 		if (marine)
 		{
-			if (marine->IsInhabited())
-			{
-				rchan = marine->m_vecCustLaserColor.m_Value.x;
-				gchan = marine->m_vecCustLaserColor.m_Value.y;
-				bchan = marine->m_vecCustLaserColor.m_Value.z;
-			}
-			else
-			{
-				rchan = marine->m_vecCustLaserColor.m_Value.x;
-				gchan = marine->m_vecCustLaserColor.m_Value.y;
-				bchan = marine->m_vecCustLaserColor.m_Value.z;
-			}
+			rchan = marine->m_vecCustLaserColor.m_Value.x;
+			gchan = marine->m_vecCustLaserColor.m_Value.y;
+			bchan = marine->m_vecCustLaserColor.m_Value.z;
 
 			rchan = rchan / 255;
 			gchan = gchan / 255;
@@ -994,18 +984,16 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 				char sLaserName[32];
 				if (iUsingLaserIndex > -1)
 				{
-					snprintf(sLaserName, sizeof(sLaserName), "other_laser%d", (iUsingLaserIndex+1));
+					snprintf(sLaserName, sizeof(sLaserName), "other_laser%d", (iUsingLaserIndex + 1));
 					MarkLaserIndexAsTaken(iUsingLaserIndex);
 					m_iUsingLSIndex = iUsingLaserIndex;
 				}
 				else
 				{
-					snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other", iUsingLaserIndex);
+					snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other");
 				}
 				m_pLaserPointerEffect = ParticleProp()->Colored_Create(sLaserName, PATTACH_POINT_FOLLOW, iAttachment, colorMul);
 			}
-
-
 		}
 		else
 		{
