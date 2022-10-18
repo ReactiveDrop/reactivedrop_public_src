@@ -288,6 +288,7 @@ namespace RD_Swarmopedia
 		bool Flattened{ false };
 
 		// Ammo
+		bool SkillValueIsClipSize{ false };
 		int ClipSize{ 0 };
 
 		// RequirementClass
