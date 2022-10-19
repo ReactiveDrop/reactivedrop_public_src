@@ -79,8 +79,6 @@ public:
 
 	bool m_bTechFailure;
 
-	bool IsOfficialMap() { return m_bOfficialMap; }
-
 private:
 	IGameUI			*m_pGameUI;
 
@@ -100,8 +98,6 @@ private:
 
 	ClientCCHandle_t	m_CCInfestedHandle;
 	float				m_fInfestedCCWeight;
-
-	bool m_bOfficialMap;
 };
 
 extern IClientMode *GetClientModeNormal();
