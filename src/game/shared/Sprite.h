@@ -100,8 +100,6 @@ public:
 	{
 		return true;
 	};
-
-	bool IsClientOnly() const { return m_bClientOnly; }
 #endif
 
 	void Spawn( void );
@@ -242,15 +240,6 @@ public:
 
 	virtual void	ClientThink( void );
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
-
-	static void RecreateAllClientside();
-	static void DestroyAllClientside();
-	static void ParseAllClientsideEntities(const char *pMapData);
-	static const char *ParseClientsideEntity( const char *pEntData );
-
-	bool InitializeClientside();
-
-	virtual bool KeyValue( const char *szKeyName, const char *szValue ) ;	
 #endif
 
 public:
@@ -282,10 +271,6 @@ private:
 	int			m_nStartBrightness;
 	int			m_nDestBrightness;		//Destination brightness
 	float		m_flBrightnessTimeStart;//Real time for brightness
-
-#ifdef CLIENT_DLL
-	bool		m_bClientOnly;
-#endif
 };
 
 
