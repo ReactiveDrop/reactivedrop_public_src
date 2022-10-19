@@ -100,7 +100,6 @@
 #include "GameStats.h"
 #include "videocfg/videocfg.h"
 #include "tier2/tier2_logging.h"
-#include "Sprite.h"
 #include "vscript/ivscript.h"
 #include "activitylist.h"
 #include "eventlist.h"
@@ -1866,7 +1865,6 @@ void CHLClient::LevelInitPostEntity( )
 
 	IGameSystem::LevelInitPostEntityAllSystems();
 	C_PhysPropClientside::RecreateAll();
-	C_Sprite::RecreateAllClientside();
 
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
@@ -1909,7 +1907,6 @@ void CHLClient::LevelShutdown( void )
 	// First do the pre-entity shutdown of all systems
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 
-	C_Sprite::DestroyAllClientside();
 	C_PhysPropClientside::DestroyAll();
 
 	modemanager->LevelShutdown();

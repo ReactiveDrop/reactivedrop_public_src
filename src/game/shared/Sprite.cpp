@@ -162,27 +162,14 @@ END_NETWORK_TABLE()
 
 
 
-#ifdef CLIENT_DLL
-extern CUtlVector< CSprite * > g_ClientsideSprites;
-#endif
-
 CSprite::CSprite()
 {
-#ifdef CLIENT_DLL
-	m_bClientOnly = false;
-#endif
 	m_flGlowProxySize = 2.0f;
 	m_flHDRColorScale = 1.0f;
 }
 
 CSprite::~CSprite()
 {
-#ifdef CLIENT_DLL
-	if ( m_bClientOnly )
-	{
-		g_ClientsideSprites.FindAndFastRemove( this );
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -250,14 +237,23 @@ void CSprite::Spawn( void )
 	m_nStartBrightness = m_nDestBrightness = m_nBrightness;
 #endif
 
-#ifndef CLIENT_DLL
+	// Detect a clientside sprite which was meant to be serversided and convert it.
 	// Server has no use for client-only entities.
 	// Seems like a waste to create the entity, only to UTIL_Remove it on Spawn, but this pattern works safely...
 	if ( FClassnameIs( this, "env_sprite_clientside" ) )
-	{
-		UTIL_Remove( this );
-	}
+	{	
+		if ( STRING( GetEntityName() ) != "" || GetMoveParent() )
+		{
+			Warning( "LEVEL DESIGN ERROR: an env_sprite_clientside has a targetname or a parent - use env_sprite instead.\n" );
+			SetClassname( "env_sprite" );
+		}
+#ifdef GAME_DLL
+		else
+		{
+			UTIL_Remove( this );
+		}
 #endif
+	}
 }
 
 
