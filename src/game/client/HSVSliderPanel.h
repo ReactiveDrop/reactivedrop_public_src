@@ -41,11 +41,14 @@ public:
 	virtual void OnMousePressed(vgui::MouseCode code);
 	virtual void OnMouseReleased(vgui::MouseCode code);
 	virtual void OnCursorMoved(int x, int y);
+	virtual void OnThink();
+
+	void CheckHSVUpdate();
+
+	bool m_LeftMousePressed = false;
 
 	int m_localMouseX = 0;
 	int m_localMouseY = 0;
-
-	bool m_bLMousePressed = false;
 
 };
 #endif

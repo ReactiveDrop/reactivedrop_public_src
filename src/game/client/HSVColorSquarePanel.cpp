@@ -4,6 +4,7 @@
 #include "vgui_controls/AnimationController.h"
 #include "nb_lobby_laser_rgb_menu.h"
 #include <controller_focus.h>
+#include "vgui/IInput.h"
 
 extern ConVar cl_asw_laser_sight_color;
 
@@ -19,64 +20,91 @@ CHSVColorSquarePanel::~CHSVColorSquarePanel()
 
 }
 
-void CHSVColorSquarePanel::OnMousePressed(vgui::MouseCode code)
+void CHSVColorSquarePanel::OnThink()
 {
-	Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
+	BaseClass::OnThink();
 
-	if (!GetControllerFocus()->IsControllerMode() || GetControllerFocus()->GetFocusPanel() == NULL)
-	{
-		parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSquare;
-		GetControllerFocus()->SetIsRawOverride(true);
-	}
+	CheckHSVUpdate();
+}
 
-	if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::Main || parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSlider)
+void CHSVColorSquarePanel::CheckHSVUpdate()
+{
+	if (m_LeftMousePressed)
 	{
-		parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSquare;
-	}
-	else if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSquare)
-	{
-		if (code == MOUSE_LEFT)
+		int width, height;
+		GetSize(width, height);
+
+		int worldCursorX, worldCursorY;
+		vgui::input()->GetCursorPos(worldCursorX, worldCursorY);
+
+		int worldPosX = 0;
+		int worldPosY = 0;
+
+		LocalToScreen(worldPosX, worldPosY);
+
+		m_localMouseX = MIN(MAX(0, worldCursorX - worldPosX), width);
+		m_localMouseY = MIN(MAX(0, worldCursorY - worldPosY), height);
+
+
+		if (vgui::input()->IsMouseDown(MOUSE_LEFT))
 		{
-			int width, height;
-			GetSize(width, height);
+			Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
 
-			int Xa, Ya;
-			GetPos(Xa, Ya);
-			float offsetX = m_localMouseX; //No offset needed for this calculation
-			float offsetY = m_localMouseY;
-
-			float XMod = offsetX / width;
-			float YMod = offsetY / height;
-
-			float outputHue = XMod * 360.0f;
-			float outputSat = 1.0f - YMod; // *255.0f;
-
-			/*
-			float outputVal = 1.0f; //255.0f;
-
-			Vector hsvVec = Vector(outputHue, outputSat, outputVal);
-			Vector colVec = Vector(0, 0, 0);
-
-			HSVtoRGB(hsvVec, colVec);
-			*/
-
-
-
-			if (parentRGB)
+			if (!GetControllerFocus()->IsControllerMode() || GetControllerFocus()->GetFocusPanel() == NULL)
 			{
-				parentRGB->SetHSV_Hue(outputHue);
-				parentRGB->SetHSV_Sat(outputSat);
-				parentRGB->RecalculateHSVColor();
-
-				parentRGB->UpdateHSVColor();
+				parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSquare;
+				GetControllerFocus()->SetIsRawOverride(true);
 			}
 
-			/*
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", (int)(colVec.x*255.0f), (int)(colVec.y * 255.0f), (int)(colVec.z * 255.0f));
-			cl_asw_laser_sight_color.SetValue(sLaserColor);
-			*/
+			if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::Main || parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSlider)
+			{
+				parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSquare;
+			}
+			else if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSquare)
+			{
+				int Xa, Ya;
+				GetPos(Xa, Ya);
+				float offsetX = m_localMouseX; //No offset needed for this calculation
+				float offsetY = m_localMouseY;
+
+				float XMod = offsetX / width;
+				float YMod = offsetY / height;
+
+				float outputHue = XMod * 360.0f;
+				float outputSat = 1.0f - YMod; // *255.0f;
+
+
+
+				if (parentRGB)
+				{
+					parentRGB->SetHSV_Hue(outputHue);
+					parentRGB->SetHSV_Sat(outputSat);
+					parentRGB->RecalculateHSVColor();
+
+					parentRGB->UpdateHSVColor();
+				}
+			}
 		}
+		else
+		{
+			m_LeftMousePressed = false;
+		}
+	}
+}
+
+void CHSVColorSquarePanel::OnMousePressed(vgui::MouseCode code)
+{
+	if (code == MOUSE_LEFT)
+	{
+		m_LeftMousePressed = true;
+	}
+}
+
+void CHSVColorSquarePanel::OnMouseReleased(vgui::MouseCode code)
+{
+	if (code == MOUSE_LEFT)
+	{
+		m_LeftMousePressed = false;
 	}
 }
 

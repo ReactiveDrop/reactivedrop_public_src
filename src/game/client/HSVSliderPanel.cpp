@@ -5,6 +5,7 @@
 #include "vgui_controls/AnimationController.h"
 #include "nb_lobby_laser_rgb_menu.h"
 #include <controller_focus.h>
+#include "vgui/IInput.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,47 +24,76 @@ CHSVSliderPanel::~CHSVSliderPanel()
 
 }
 
-void CHSVSliderPanel::OnMousePressed(vgui::MouseCode code)
+void CHSVSliderPanel::OnThink()
 {
-	Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
+	BaseClass::OnThink();
 
-	if (!GetControllerFocus()->IsControllerMode() || GetControllerFocus()->GetFocusPanel() == NULL)
-	{
-		parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSlider;
-		GetControllerFocus()->SetIsRawOverride(true);
-	}
+	CheckHSVUpdate();
+}
 
-	if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::Main || parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSquare)
+void CHSVSliderPanel::CheckHSVUpdate()
+{
+	if (m_LeftMousePressed)
 	{
-		parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSlider;
-	}
-	else if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSlider)
-	{
-		if (code == MOUSE_LEFT)
+		int width, height;
+		GetSize(width, height);
+
+		int worldCursorX, worldCursorY;
+		vgui::input()->GetCursorPos(worldCursorX, worldCursorY);
+
+		int worldPosX, worldPosY = 0;
+		//GetWorldPos(worldPosX, worldPosY);
+		LocalToScreen(worldPosX, worldPosY);
+
+		m_localMouseX = MIN(MAX(0, worldCursorX - worldPosX), width);
+		m_localMouseY = MIN(MAX(0, worldCursorY - worldPosY), height);
+
+		if (vgui::input()->IsMouseDown(MOUSE_LEFT))
 		{
-			m_bLMousePressed = true;
-
-
-			int width, height;
-			GetSize(width, height);
-
-			int Xa, Ya;
-			GetPos(Xa, Ya);
-			float offsetY = m_localMouseY;
-
-			float YMod = offsetY / height;
-
-			float outputVal = 1.0f - YMod;
-
 			Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
 
-			if (parentRGB)
+			if (!GetControllerFocus()->IsControllerMode() || GetControllerFocus()->GetFocusPanel() == NULL)
 			{
-				parentRGB->SetHSV_Val(outputVal);
-				parentRGB->RecalculateHSVColor();
-				parentRGB->UpdateHSVColor();
+				parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSlider;
+				GetControllerFocus()->SetIsRawOverride(true);
+			}
+
+			if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::Main || parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSquare)
+			{
+				parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSlider;
+			}
+			else if (parentRGB->m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSlider)
+			{
+				int Xa, Ya;
+				GetPos(Xa, Ya);
+				float offsetY = m_localMouseY;
+
+				float YMod = offsetY / height;
+
+				float outputVal = 1.0f - YMod;
+
+				Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
+
+				if (parentRGB)
+				{
+					parentRGB->SetHSV_Val(outputVal);
+					parentRGB->RecalculateHSVColor();
+					parentRGB->UpdateHSVColor();
+				}
 			}
 		}
+		else
+		{
+			m_LeftMousePressed = false;
+		}
+	}
+}
+
+void CHSVSliderPanel::OnMousePressed(vgui::MouseCode code)
+{
+	if (code == MOUSE_LEFT)
+	{
+		m_LeftMousePressed = true;
 	}
 }
 
@@ -71,7 +101,7 @@ void CHSVSliderPanel::OnMouseReleased(vgui::MouseCode code)
 {
 	if (code == MOUSE_LEFT)
 	{
-		m_bLMousePressed = false;
+		m_LeftMousePressed = false;
 	}
 }
 
