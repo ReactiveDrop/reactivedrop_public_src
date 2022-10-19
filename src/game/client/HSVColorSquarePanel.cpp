@@ -116,20 +116,6 @@ void CHSVColorSquarePanel::OnCursorMoved(int x, int y)
 
 void CHSVColorSquarePanel::OnKeyCodeTyped(vgui::KeyCode code)
 {
-	/*
-	// force ourselves to be closed if the escape key it pressed
-	if (code == KEY_ESCAPE)
-	{
-		Close();
-	}
-	else
-	{
-		BaseClass::OnKeyCodeTyped(code);
-	}
-	*/
-
-
-
 	BaseClass::OnKeyCodeTyped(code);
 }
 
@@ -140,14 +126,6 @@ void CHSVColorSquarePanel::OnKeyCodePressed(vgui::KeyCode code)
 
 void CHSVColorSquarePanel::PerformLayout()
 {
-	/*
-	// Get the screen size
-	int wide, tall;
-	vgui::surface()->GetScreenSize(wide, tall);
-
-	float LogoWidth = wide * 0.8f;
-	SetBounds((wide - LogoWidth) * 0.5f, tall * 0.12f, LogoWidth, LogoWidth * 0.25f);
-	*/
 }
 
 

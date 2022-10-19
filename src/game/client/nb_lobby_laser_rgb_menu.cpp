@@ -46,22 +46,6 @@ extern ConVar cl_asw_archived_lsc9;
 Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const char* name) : BaseClass(parent, name)
 {
 	SetColorData(cl_asw_laser_sight_color.GetColor());
-	/*
-	Color lsColor = cl_asw_laser_sight_color.GetColor();
-
-	m_currentLSColor.r = lsColor.r();
-	m_currentLSColor.g = lsColor.g();
-	m_currentLSColor.b = lsColor.b();
-	m_currentLSColor.a = 255;
-
-	Vector vecCol = Vector(((float)m_currentLSColor.r)/255.0f, ((float)m_currentLSColor.g) / 255.0f, ((float)m_currentLSColor.b) / 255.0f);
-	Vector vecHSV = Vector(0, 0, 0);
-	RGBtoHSV(vecCol, vecHSV);
-
-	m_fHSV_Hue = vecHSV.x;
-	m_fHSV_Sat = vecHSV.y;
-	m_fHSV_Val = vecHSV.z;
-    */
 
 	m_pBackground = new vgui::ImagePanel(this, "Background");
 	m_pHSVSquare = new CHSVColorSquarePanel(this, "HSVSquare");
@@ -133,15 +117,6 @@ Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const ch
 
 	m_pReplaceColorButton->SetCommand("ActivateReplaceColor");
 
-
-
-	//m_pHSVSquare->SetShouldScaleImage(true);
-	//m_pHSVSquare->SetScaleAmount(0.1);
-
-	//m_pHSVSquare->OnMousePressed() += 
-
-	//GetControllerFocus()->m_FocusAreas.Purge();
-
 	GetControllerFocus()->AddToFocusList(m_pHSVSquare);
 	GetControllerFocus()->AddToFocusList(m_pHSVSlider);
 
@@ -156,8 +131,6 @@ Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const ch
 	GetControllerFocus()->AddToFocusList(m_pCustomColor9);
 
 	GetControllerFocus()->AddToFocusList(m_pReplaceColorButton);
-
-	//GetControllerFocus()->SetFocusPanel(m_pHSVSquare);
 
 	InvalidateLayout(true, true);
 }
@@ -316,41 +289,7 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	
 	float baseWidth = 15.0f, baseHeight = 15.0f;
 
-	//int tempWidth, tempHeight;
-	//m_pCustomColor1->GetSize(tempWidth, tempHeight);
-
-	//float widthMod = tempWidth / baseWidth;
-	//float heightMod = tempHeight / baseHeight;
-
 	int custColX, custColY, custColWidth, custColHeight;
-	/*
-	m_pCustomColor1->GetPos(custColX, custColY);
-	m_pHighlightColor1->SetPos(custColX-(1*widthMod), custColY-(1*heightMod));
-
-	m_pCustomColor2->GetPos(custColX, custColY);
-	m_pHighlightColor2->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor3->GetPos(custColX, custColY);
-	m_pHighlightColor3->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor4->GetPos(custColX, custColY);
-	m_pHighlightColor4->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor5->GetPos(custColX, custColY);
-	m_pHighlightColor5->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor6->GetPos(custColX, custColY);
-	m_pHighlightColor6->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor7->GetPos(custColX, custColY);
-	m_pHighlightColor7->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor8->GetPos(custColX, custColY);
-	m_pHighlightColor8->SetPos(custColX - 1, custColY - 1);
-
-	m_pCustomColor9->GetPos(custColX, custColY);
-	m_pHighlightColor9->SetPos(custColX - 1, custColY - 1);
-	*/
 
 	m_pHSVSquare->GetPos(custColX, custColY);
 	m_pHighlightHSVSquare->SetPos(custColX - 1, custColY - 1);
@@ -464,20 +403,11 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 		m_pHighlightColor9->SetAlpha(255);
 	}
 
-	//m_pBackground->SetSize(200, 200);
-	//m_pBackground->SetPos(0, 45);
 	m_pBackground->SetImage("swarm/color/HSVbackground");
 
 	m_pLaserButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_glow", rgbLaserColor);
-	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/swarm/color/laser_icon2", white);
-	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/laser_icon2", white);
-	//m_pLaserOverlayButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/swarm/color/laser_icon2", white);
-
-	//int xpos, ypos;
-	//(&g_Input)->GetCursorPos(xpos, ypos);
 
 	m_pHSVSlider->SetVisible(true);
-	//m_pHSVSlider->SetImage("white");
 
 	if (m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSquare || m_CurrentFocusMode == LaserRGBMenuFocusMode::HSVSlider)
 	{
@@ -575,8 +505,6 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 
 
 	SetHSVMarkerPos();
-	//RecalculateHSVColor();
-	//UpdateHSVColor();
 }
 
 void Cnb_lobby_laser_rgb_menu::CheckTooltip(CNB_Lobby_Tooltip* pTooltip)
@@ -835,8 +763,6 @@ void Cnb_lobby_laser_rgb_menu::UpdateHSVColor()
 	char sLaserColor[16]{};
 	snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
 	cl_asw_laser_sight_color.SetValue(sLaserColor);
-
-	//SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
 }
 
 void Cnb_lobby_laser_rgb_menu::SetHSVMarkerPos()
@@ -897,22 +823,6 @@ void Cnb_lobby_laser_rgb_menu::UpdateChangingSlot()
 
 void Cnb_lobby_laser_rgb_menu::OnMousePressed(vgui::MouseCode code)
 {
-	/*
-	if (code == MOUSE_LEFT)
-	{
-		int ax, ay;
-		m_pHSVSquare->GetPos(ax, ay);
-		if (m_localMouseX > ax && m_localMouseY > ay)
-		{
-			m_pHSVSquare->SetAlpha(255);
-
-		}
-		else
-		{
-			m_pHSVSquare->SetAlpha(155);
-		}
-	}
-	*/
 }
 
 void Cnb_lobby_laser_rgb_menu::OnCursorMoved(int x, int y)
@@ -923,110 +833,5 @@ void Cnb_lobby_laser_rgb_menu::OnCursorMoved(int x, int y)
 
 void Cnb_lobby_laser_rgb_menu::SetChangingLaserColor(Color rgbColor)
 {
-	//engine->ClientCmd(VarArgs("cl_editing_lasercolor %d %d %d", rgbColor.r(), rgbColor.g(), rgbColor.b()));
 	GetMainPanel()->SetChangingLaserColor(rgbColor);
 }
-
-/*
-void Cnb_lobby_laser_rgb_menu::OnKeyCodePressed(vgui::KeyCode code)
-{
-	int joystick = GetJoystickForCode(code);
-	int userId = CBaseModPanel::GetSingleton().GetLastActiveUserId();
-	if (joystick != userId || joystick < 0)
-	{
-		return;
-	}
-
-	switch (GetBaseButtonCode(code))
-	{
-	case KEY_XBUTTON_UP:
-	case KEY_XSTICK1_UP:
-	case KEY_XSTICK2_UP:
-		
-		break;
-
-	case KEY_XBUTTON_DOWN:
-	case KEY_XSTICK1_DOWN:
-	case KEY_XSTICK2_DOWN:
-		
-		break;
-
-	case KEY_XBUTTON_X:
-		
-		break;
-
-	default:
-		BaseClass::OnKeyCodePressed(code);
-		break;
-	}
-}
-*/
-
-/*
-bool Cnb_lobby_laser_rgb_menu::OnControllerButtonPressed(ButtonCode_t keynum)
-{
-	if (!GetControllerFocus()->IsControllerMode())
-		return false;
-
-
-	bool bSwallowKey = false;
-	if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_UP] || keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_UP_ALT])
-	{
-		m_fHSV_Sat += 0.01;
-		if (m_fHSV_Sat > 1.0f)
-		{
-			m_fHSV_Sat = 1.0f;
-		}
-		bSwallowKey = true;
-	}
-	else if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_DOWN] || keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_DOWN_ALT])
-	{
-		m_fHSV_Sat -= 0.01;
-		if (m_fHSV_Sat < 0.0f)
-		{
-			m_fHSV_Sat = 0.0f;
-		}
-		bSwallowKey = true;
-	}
-	else if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_LEFT] || keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_LEFT_ALT])
-	{
-		m_fHSV_Hue -= 1.0f;
-		if (m_fHSV_Hue < 0.0f)
-		{
-			m_fHSV_Hue += 360.0;
-		}
-		bSwallowKey = true;
-	}
-	else if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_RIGHT] || keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_RIGHT_ALT])
-	{
-		m_fHSV_Hue += 1.0f;
-		if (m_fHSV_Hue > 360.0f)
-		{
-			m_fHSV_Hue -= 360.0;
-		}
-		bSwallowKey = true;
-	}
-	else if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_CONFIRM])
-	{
-		bSwallowKey = true;
-	}
-	else if (keynum == GetControllerFocus()->m_KeyNum[GetControllerFocus()->JF_KEY_CANCEL])
-	{		
-		bSwallowKey = true;
-	}
-	if ( bSwallowKey )
-	{
-		for (int i=0;i< GetControllerFocus()->NUM_JF_KEYS;i++)
-		{
-			if (GetControllerFocus()->m_KeyNum[i] == keynum)
-			{
-				GetControllerFocus()->m_bKeyDown[i] = true;
-				GetControllerFocus()->m_fNextKeyRepeatTime[i] = vgui::system()->GetTimeMillis() + JF_KEY_REPEAT_DELAY;
-			}
-		}
-		return true;
-	}
-	// don't swallow non-direction or confirm/cancel keys
-	return false;
-}
-*/

@@ -42,7 +42,7 @@ void CHSVSliderPanel::CheckHSVUpdate()
 		vgui::input()->GetCursorPos(worldCursorX, worldCursorY);
 
 		int worldPosX, worldPosY = 0;
-		//GetWorldPos(worldPosX, worldPosY);
+
 		LocalToScreen(worldPosX, worldPosY);
 
 		m_localMouseX = MIN(MAX(0, worldCursorX - worldPosX), width);
@@ -113,14 +113,7 @@ void CHSVSliderPanel::OnCursorMoved(int x, int y)
 
 void CHSVSliderPanel::PerformLayout()
 {
-	/*
-	// Get the screen size
-	int wide, tall;
-	vgui::surface()->GetScreenSize(wide, tall);
 
-	float LogoWidth = wide * 0.8f;
-	SetBounds((wide - LogoWidth) * 0.5f, tall * 0.12f, LogoWidth, LogoWidth * 0.25f);
-	*/
 }
 
 

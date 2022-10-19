@@ -1,6 +1,6 @@
 UnlitGeneric
 {
-	$basetexture "vgui\swarm\color\hsv_square3"
+	$basetexture "vgui\swarm\color\hsv_square"
 	$no_fullbright 1
 	$vertexcolor 1
 }

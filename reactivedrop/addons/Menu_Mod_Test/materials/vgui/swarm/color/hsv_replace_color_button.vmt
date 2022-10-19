@@ -1,6 +1,6 @@
 UnlitGeneric
 {
-	$basetexture "vgui\swarm\color\replacecolorbutton2"
+	$basetexture "vgui\swarm\color\replacecolorbutton"
 	$translucent 1
 	$alpha 1
 	$vertexalpha 1
