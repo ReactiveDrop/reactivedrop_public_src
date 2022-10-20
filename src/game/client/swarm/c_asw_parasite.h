@@ -23,6 +23,8 @@ public:
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PARASITE; }	
 	virtual bool IsAimTarget();
 
+	bool IsEggIdle() { return m_bDoEggIdle; }
+
 private:
 	C_ASW_Parasite( const C_ASW_Parasite & ); // not defined, not accessible
 	CSoundPatch		*m_pLoopingSound;
