@@ -565,18 +565,29 @@ const char *CSprite::ParseClientsideEntity( const char *pEntData )
 
 	if ( !Q_strcmp( className, "env_sprite_clientside" ))
 	{
-		// always force clientside entities placed in maps
-		CSprite *pEntity = new CSprite(); 
+		char targetName[MAPKEY_MAXLENGTH]{};
+		char parentName[MAPKEY_MAXLENGTH]{};
+		entData.ExtractValue( "targetname", targetName );
+		entData.ExtractValue( "parentname", parentName );
+		if ( targetName[0] != '\0' || parentName[0] != '\0' )
+		{
+			//simply skip
+		}
+		else
+		{
+			// always force clientside entities placed in maps
+			CSprite* pEntity = new CSprite();
 
-		if ( pEntity )
-		{	
-			// Set up keyvalues.
-			pEntity->ParseMapData(&entData);
+			if ( pEntity )
+			{
+				// Set up keyvalues.
+				pEntity->ParseMapData(&entData);
 
-			if ( !pEntity->InitializeClientside() )
-				pEntity->Release();
+				if ( !pEntity->InitializeClientside() )
+					pEntity->Release();
 
-			return entData.CurrentBufferPosition();
+				return entData.CurrentBufferPosition();
+			}
 		}
 	}
 
