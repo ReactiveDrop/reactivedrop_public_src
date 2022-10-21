@@ -82,7 +82,7 @@ public:
 	void LaunchOutroFrame();
 	void LaunchMissionCompleteFrame(bool bSuccess);
 	void CloseBriefingFrame();
-	bool C_ASW_Player::IsBriefingActive();
+	bool IsBriefingActive();
 	
 	// contacting the server for briefing stuff
 	void StartReady();	// player is ready to start the mission
