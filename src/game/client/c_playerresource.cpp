@@ -209,7 +209,7 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 	return m_szName[iIndex];
 }
 
-static CUtlVector<uint64> MutedList;
+CUtlVector<uint64> MutedList;
 
 void C_PlayerResource::TogglePlayerMuteState( int slot, bool bMuteDontCache )
 {	
