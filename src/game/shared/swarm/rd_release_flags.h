@@ -18,4 +18,7 @@
 //#define RD_USE_FONT_HACK
 //#define RD_BONUS_MISSION_ACHIEVEMENTS
 
+#define RD_IS_RELEASE 0
+#else
+#define RD_IS_RELEASE 1
 #endif
