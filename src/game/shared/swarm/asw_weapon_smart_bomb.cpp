@@ -80,20 +80,12 @@ const QAngle& CASW_Weapon_Smart_Bomb::GetRocketAngle()
 
 void CASW_Weapon_Smart_Bomb::SetRocketsToFire()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return;
-
-	m_iRocketsToFire = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT );
+	m_iRocketsToFire = MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT );
 }
 
 float CASW_Weapon_Smart_Bomb::GetRocketFireInterval()
 {
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return 0.5f;
-
-	return MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL );
+	return MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL );
 }
 
 const Vector& CASW_Weapon_Smart_Bomb::GetRocketFiringPosition()

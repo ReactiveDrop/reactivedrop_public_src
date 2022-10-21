@@ -613,29 +613,6 @@ void ClientModeASW::OverrideView( CViewSetup *pSetup )
 	}
 }
 
-class MapDescription_t
-{
-public:
-	MapDescription_t( const char *szMapName, unsigned int nFileSize, unsigned int nEntityStringLength ) :
-		m_szMapName( szMapName ), m_nFileSize( nFileSize ), m_nEntityStringLength( nEntityStringLength )
-	{
-	}
-	const char *m_szMapName;
-	unsigned int m_nFileSize;
-	unsigned int m_nEntityStringLength;
-};
-
-static MapDescription_t s_OfficialMaps[]=
-{
-	MapDescription_t( "maps/asi-jac1-landingbay_01.bsp",	45793676, 412634 ),
-	MapDescription_t( "maps/asi-jac1-landingbay_02.bsp",	25773204, 324141 ),
-	MapDescription_t( "maps/asi-jac2-deima.bsp",			44665212, 345367 ),
-	MapDescription_t( "maps/asi-jac3-rydberg.bsp",			27302616, 359228 ),
-	MapDescription_t( "maps/asi-jac4-residential.bsp",		31244468, 455840 ),
-	MapDescription_t( "maps/asi-jac6-sewerjunction.bsp",	18986884, 287554 ),
-	MapDescription_t( "maps/asi-jac7-timorstation.bsp",		37830468, 506193 ),
-};
-
 void ClientModeASW::LevelInit( const char *newmap )
 {
 	// reset ambient light
@@ -746,25 +723,14 @@ void ClientModeASW::LevelInit( const char *newmap )
 		Briefing()->ResetLastChatterTime();
 	}
 
+#ifdef _DEBUG
 	const char *szMapName = engine->GetLevelName();
 	unsigned int nFileSize = g_pFullFileSystem->Size( szMapName, "GAME" );
 
 	unsigned int nEntityLen = Q_strlen( engine->GetMapEntitiesString() );
 
-	m_bOfficialMap = false;
-	for ( int i = 0; i < NELEMS( s_OfficialMaps ); i++ )
-	{
-		if ( !Q_stricmp( szMapName, s_OfficialMaps[i].m_szMapName ) )
-		{
-			m_bOfficialMap = ( ( s_OfficialMaps[i].m_nFileSize == nFileSize ) && ( s_OfficialMaps[i].m_nEntityStringLength == nEntityLen ) );
-			break;
-		}
-	}
-
-#ifdef _DEBUG
 	Msg( "map %s file size is %d\n", szMapName, nFileSize );
 	Msg( "    entity string is %d chars long\n", nEntityLen );
-	Msg( "Official map = %d\n", m_bOfficialMap );
 #endif
 }
 

@@ -104,5 +104,6 @@ protected:
 #define ASW_SF_ALWAYS_INFINITE 1
 #define ASW_SF_NO_UBER 2
 #define ASW_SF_NEVER_SLEEP 4
+#define ASW_SF_NO_CARNAGE 8
 
 #endif /* _INCLUDED_ASW_BASE_SPAWNER_H */

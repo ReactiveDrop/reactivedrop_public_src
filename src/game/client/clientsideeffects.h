@@ -64,7 +64,7 @@ class IMaterialSystem;
 void FX_AddCube( const Vector &mins, const Vector &maxs, const Vector &vColor, float life, const char *materialName );
 void FX_AddCenteredCube( const Vector &center, float size, const Vector &vColor, float life, const char *materialName );
 void FX_AddStaticLine( const Vector& start, const Vector& end, float scale, float life, const char *materialName, unsigned char flags );
-void FX_AddDiscreetLine( const Vector& start, const Vector& direction, float velocity, float length, float clipLength, float scale, float life, const char *shader );
+void FX_AddDiscreetLine( const Vector& start, const Vector& direction, float velocity, float length, float clipLength, float scale, float life, const char *shader, Vector vecColor = Vector{ 1, 1, 1 } );
 
 void FX_AddLine( const FXLineData_t &data );
 

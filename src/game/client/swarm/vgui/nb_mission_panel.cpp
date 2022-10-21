@@ -86,6 +86,8 @@ CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : 
 
 CNB_Mission_Panel::~CNB_Mission_Panel()
 {
+	BaseModUI::FlyoutMenu::CloseActiveMenu();
+
 	if ( m_bAddedDropdownsToControllerFocus )
 	{
 		GetControllerFocus()->RemoveFromFocusList( m_drpDifficulty->GetButton() );

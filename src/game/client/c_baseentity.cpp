@@ -1062,6 +1062,7 @@ C_BaseEntity::C_BaseEntity() :
 
 	// Assume drawing everything
 	m_bReadyToDraw = true;
+	m_bClientSideRagdoll = false;
 	m_flProxyRandomValue = 0.0f;
 
 	m_fBBoxVisFlags = 0;
