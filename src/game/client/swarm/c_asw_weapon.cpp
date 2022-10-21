@@ -120,17 +120,17 @@ void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 	}
 }
 
-ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.", OnClientLaserChanged);
+ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.", OnClientLaserChanged);
 
-ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
-ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");
-ConVar cl_asw_archived_lsc3("cl_asw_archived_lsc3", "0 255 0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 3.");
-ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "170 243 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 4.");
-ConVar cl_asw_archived_lsc5("cl_asw_archived_lsc5", "0 54 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 5.");
-ConVar cl_asw_archived_lsc6("cl_asw_archived_lsc6", "183 19 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 6.");
-ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 8 224", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 7.");
-ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "255 205 58", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
-ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
+ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
+ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");
+ConVar cl_asw_archived_lsc3("cl_asw_archived_lsc3", "0 255 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 3.");
+ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "170 243 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 4.");
+ConVar cl_asw_archived_lsc5("cl_asw_archived_lsc5", "0 54 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 5.");
+ConVar cl_asw_archived_lsc6("cl_asw_archived_lsc6", "183 19 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 6.");
+ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 8 224", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 7.");
+ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "255 205 58", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
+ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
 
 
 C_ASW_Weapon::C_ASW_Weapon() :
