@@ -226,9 +226,6 @@ void CASW_Player::CalculateEarnedXP()
 #ifdef CLIENT_DLL
 	if ( engine->IsPlayingDemo() )
 		return;
-
-	//if ( GetClientModeASW() && !GetClientModeASW()->IsOfficialMap() )
-		//return;
 #endif
 
 	int iNumObjectives = 0;

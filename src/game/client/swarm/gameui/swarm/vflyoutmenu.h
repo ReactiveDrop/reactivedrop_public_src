@@ -72,7 +72,7 @@ protected:
 
 	FlyoutMenuListener* m_listener;
 
-	static FlyoutMenu *sm_pActiveMenu;			// what menu is currently open
+	static vgui::DHANDLE<FlyoutMenu> sm_pActiveMenu;			// what menu is currently open
 
 	int m_offsetX, m_offsetY;
 	char m_resFile[ DEFAULT_STR_LEN ];

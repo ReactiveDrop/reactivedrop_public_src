@@ -419,7 +419,7 @@ static void __MsgFunc_RDAlienKillStat( bf_read &msg )
 	}
 
 	int32_t nCount = 0;
-	if ( SteamUserStats()->GetStat( szApiName, &nCount ) )
+	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
 	{
 		SteamUserStats()->SetStat( szApiName, nCount + 1 );
 	}
