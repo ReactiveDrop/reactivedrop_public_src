@@ -218,13 +218,24 @@ bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
 
 	if ( mbInGame && mpGameDetails )
 	{
-		const char *szMissionName = mpGameDetails->GetString( "game/mission", "" );
-		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMissionName );
 		char const *szWebsite = mpGameDetails->GetString( "game/missioninfo/website", NULL );
 		PublishedFileId_t iWorkshopFile = GetWorkshopID();
-		if ( ( !pMission || !pMission->Installed || V_stricmp( STRING( pMission->Version ), mpGameDetails->GetString( "game/missioninfo/version", "" ) ) )
-			&& ( ( szWebsite && *szWebsite ) || iWorkshopFile != k_PublishedFileIdInvalid ) )
+		if ( ( !szWebsite || !*szWebsite ) && iWorkshopFile == k_PublishedFileIdInvalid )
+			return false;
+
+		const char *szMissionName = mpGameDetails->GetString( "game/mission", "" );
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMissionName );
+		if ( !pMission || !pMission->Installed )
 			return true;
+
+		char *pEndPos = NULL;
+		float flApproximateMapVersion = strtof( STRING( pMission->Version ), &pEndPos );
+		return V_stricmp( STRING( pMission->Version ), mpGameDetails->GetString( "game/missioninfo/version" ) ) &&
+			// BenLubar: ugh, we're dealing with multiple layers of string->floating point->string conversions.
+			// matchmaking.dll uses Valve KeyValues, which automatically reformats float-like strings, and we're using
+			// our own implementation that handles longer strings without corrupting them.
+			// just check if the numbers are about the same, assuming they're numbers.
+			( *pEndPos || pEndPos == STRING( pMission->Version ) || !CloseEnough( flApproximateMapVersion, mpGameDetails->GetFloat( "game/missioninfo/version" ) ) );
 	}
 
 	return false;
