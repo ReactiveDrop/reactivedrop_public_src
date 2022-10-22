@@ -117,16 +117,20 @@ void CASWHudCrosshair::ApplySchemeSettings( IScheme *scheme )
 	m_pTurretTextTopLeft->SetFont( scheme->GetFont( "Default", true ) );
 	m_pTurretTextTopLeft->SetFgColor( Color( 255, 255, 255, 255 ) );
 	m_pTurretTextTopLeft->SetPaintBackgroundEnabled( false );
+	m_pTurretTextTopLeft->SetVisible( false );
 	m_pTurretTextTopRight->SetFont( scheme->GetFont( "Default", true ) );
 	m_pTurretTextTopRight->SetFgColor( Color( 255, 255, 255, 255 ) );
 	m_pTurretTextTopRight->SetPaintBackgroundEnabled( false );
+	m_pTurretTextTopRight->SetVisible( false );
 
 	m_pTurretTextTopLeftGlow->SetFont( scheme->GetFont( "DefaultBlur", true ) );
 	m_pTurretTextTopLeftGlow->SetFgColor(scheme->GetColor("LightBlue", Color(128,128,128,255)));
 	m_pTurretTextTopLeftGlow->SetPaintBackgroundEnabled( false );
+	m_pTurretTextTopLeftGlow->SetVisible( false );
 	m_pTurretTextTopRightGlow->SetFont( scheme->GetFont( "DefaultBlur", true ) );
 	m_pTurretTextTopRightGlow->SetFgColor(scheme->GetColor("LightBlue", Color(128, 128, 128, 255)));
 	m_pTurretTextTopRightGlow->SetPaintBackgroundEnabled( false );
+	m_pTurretTextTopRightGlow->SetVisible( false );
 }
 
 void CASWHudCrosshair::Paint( void )

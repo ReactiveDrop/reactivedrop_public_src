@@ -26,7 +26,6 @@ END_RECV_TABLE()
 
 
 C_ASW_Buzzer::C_ASW_Buzzer()
-	: m_GlowObject( this )
 {
 	//m_fAmbientLight = 0.02f;
 	m_bClientOnFire = false;
@@ -174,16 +173,6 @@ void C_ASW_Buzzer::ClientThink()
 		// apply electro stun effect
 		FX_ElectroStun(this);
 		m_fNextElectroStunEffect = gpGlobals->curtime + RandomFloat( 0.2, 0.7 );
-	}
-
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->IsSniperScopeActive() )
-	{
-		m_GlowObject.SetRenderFlags( true, true );
-	}
-	else
-	{
-		m_GlowObject.SetRenderFlags( false, false );
 	}
 }
 

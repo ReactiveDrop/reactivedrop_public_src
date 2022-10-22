@@ -255,7 +255,11 @@ void CSprite::Spawn( void )
 	// Seems like a waste to create the entity, only to UTIL_Remove it on Spawn, but this pattern works safely...
 	if ( FClassnameIs( this, "env_sprite_clientside" ) )
 	{
-		UTIL_Remove( this );
+		if ( FStrEq( STRING( GetEntityName() ), "" ) && !GetMoveParent() )
+		{ 
+			//remove all with empty name and without moveparent, we do not parse same on client
+			UTIL_Remove( this );
+		}
 	}
 #endif
 }

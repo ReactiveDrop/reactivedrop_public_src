@@ -43,7 +43,8 @@ void FX_ElectroStunSplash( const Vector &pos, const Vector &normal, int nFlags )
 void FX_QueenDie(C_BaseAnimating *pAnimating);
 
 void FX_ASW_RGEffect(const Vector &vecStart, const Vector &vecEnd);
-void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz, bool bRedTracer, int iForceStyle=-1 );
+void FX_ASWTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz, Vector vecColor, int iForceStyle=-1 );
+void ASWDoParticleTracer( const char *pTracerEffectName, const Vector &vecStart, const Vector &vecEnd, Vector vecColor = Vector{ 1, 1, 1 }, int iAttributeEffects = 0 );
 // user message based tracers
 void ASWUTracer( C_ASW_Marine *pMarine, const Vector& vecEnd, int iAttributeEffects = 0 );
 void ASWUTracerless( C_ASW_Marine *pMarine, const Vector& vecEnd, int iAttributeEffects = 0 );	// just muzzle flash and impact, no tracer line
@@ -52,8 +53,7 @@ void ASWUTracerUnattached( C_ASW_Marine *pMarine, const Vector &vecStart, const 
 void ASWUTracerRG( C_ASW_Marine *pMarine, const Vector& vecEnd, int iAttributeEffects = 0 );
 void FX_ASW_ShotgunSmoke( const Vector& vecOrigin, const QAngle& angFacing );
 void FX_ASW_MuzzleEffectAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, unsigned char *pFlashColor = NULL, bool bOneFrame = false  );
-void FX_ASW_RedMuzzleEffectAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, unsigned char *pFlashColor = NULL, bool bOneFrame = false  );
-void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, bool bIsRed );
+void FX_ASW_ParticleMuzzleFlashAttached( float scale, ClientEntityHandle_t hEntity, int attachmentIndex, Vector vecColor );
 
 void FX_ASW_StunExplosion(const Vector &origin);
 void FX_ASW_Potential_Burst_Pipe( const Vector &vecImpactPoint, const Vector &vecReflect, const Vector &vecShotBackward, const Vector &vecNormal );

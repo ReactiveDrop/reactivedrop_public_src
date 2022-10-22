@@ -388,7 +388,7 @@ void ASW_ApplyCarnage_f(float fScaler)
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_spawner" )) != NULL)
 	{
 		CASW_Spawner* pSpawner = dynamic_cast<CASW_Spawner*>(pEntity);			
-		if (pSpawner)
+		if ( pSpawner && !pSpawner->HasSpawnFlags( ASW_SF_NO_CARNAGE ) )
 		{
 			if ( pSpawner->ApplyCarnageMode( fScaler, fInvScaler ) )
 			{

@@ -43,8 +43,6 @@ public:
 	#else
 		DECLARE_PREDICTABLE();
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
-		virtual float GetMuzzleFlashScale();
-		virtual bool GetMuzzleFlashRed();
 		virtual void OnMuzzleFlashed();
 		virtual void ReachedEndOfSequence();
 		float m_flLastMuzzleFlashTime;

@@ -33,7 +33,6 @@ public:
 	float	GetFireRate( void );
 	virtual bool SupportsBayonet();
 	virtual float GetWeaponDamage();
-	virtual float GetMovementScale();
 	
 	Activity	GetPrimaryAttackActivity( void );
 	virtual void	SecondaryAttack();

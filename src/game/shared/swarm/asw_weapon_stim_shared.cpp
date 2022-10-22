@@ -37,8 +37,6 @@ PRECACHE_WEAPON_REGISTER(asw_weapon_stim);
 
 #ifndef CLIENT_DLL
 
-ConVar asw_stim_duration("asw_stim_duration", "6.0f", FCVAR_CHEAT, "Default duration of the stimpack slomo (medics with skills will override this number)");
-
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
@@ -115,7 +113,7 @@ void CASW_Weapon_Stim::InjectStim()
 		// make it cause the slow time
 		float fDuration = MarineSkills()->GetBestSkillValue( ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_STIM_DURATION );
 		if (fDuration < 0)
-			fDuration = asw_stim_duration.GetFloat();
+			fDuration = 5;
 
 		//CALL_ATTRIB_HOOK_FLOAT( fDuration, mod_duration );
 

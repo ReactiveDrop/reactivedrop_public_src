@@ -37,7 +37,7 @@ static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challeng
 static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "none", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
 ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "official", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
 ConVar ui_public_lobby_filter_status( "ui_public_lobby_filter_status", "", FCVAR_ARCHIVE, "Filter type for game status on the public lobby display" );
-ConVar ui_public_lobby_filter_servers( "ui_public_lobby_filter_servers", "1", FCVAR_ARCHIVE, "Filter dedicated servers from the public lobby display" );
+ConVar ui_public_lobby_filter_dedicated_servers( "ui_public_lobby_filter_dedicated_servers", "0", FCVAR_NONE, "Filter dedicated servers from the public lobby display" );
 extern ConVar rd_lobby_ping_low;
 extern ConVar rd_lobby_ping_high;
 
@@ -271,7 +271,7 @@ bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 	}
 
 	char const* szServer = pGameDetails->GetString( "options/server", "listen" );
-	if ( !Q_stricmp( szServer, "dedicated" ) && ui_public_lobby_filter_servers.GetBool() )
+	if ( !Q_stricmp( szServer, "dedicated" ) && ui_public_lobby_filter_dedicated_servers.GetBool() )
 	{
 		return false;
 	}

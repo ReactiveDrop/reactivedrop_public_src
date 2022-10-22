@@ -942,6 +942,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pistol"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-1"
+			"Yaw" "90"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_pistol.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -965,10 +969,6 @@
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_pistol.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
-		}
-		"BuiltinModelTransform" {
-			"Y" "-1"
-			"Yaw" "90"
 		}
 		"Facts" {
 			"DamagePerShot" {
@@ -996,7 +996,34 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "sentryguns_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1050,7 +1077,26 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heal_grenade"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heal_grenade.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heal_grenade.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "healbeacons_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "healbeacon_heals"
+			"Caption" "#rd_so_stat_healing"
+		}
+		"GlobalStat" {
+			"StatName" "healbeacon_heals_self"
+			"Caption" "#rd_so_stat_healing_self"
+		}
 		"Facts" {
 			"Ammo" {
 				"RequireCVar" "rd_infinite_healgrenade"
@@ -1092,7 +1138,14 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_medical_satchel"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medical_satchel.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medical_satchel.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/healing"
@@ -1131,7 +1184,18 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_ammo_satchel"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ammo_satchel.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ammo_satchel.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "ammo_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "rd_ammo_bonus"
@@ -1155,7 +1219,14 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ammo_bag.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ammo_bag.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/warning"
@@ -1260,6 +1331,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_railgun"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-4"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_railgun.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -1284,9 +1358,6 @@
 			"StatName" "equips.asw_weapon_railgun.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
-		"BuiltinModelTransform" {
-			"Y" "-4"
-		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_railgun_dmg_base"
@@ -1299,7 +1370,22 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heal_gun"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heal_gun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_heal_gun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "healgun_heals"
+			"Caption" "#rd_so_stat_healing"
+		}
+		"GlobalStat" {
+			"StatName" "healgun_heals_self"
+			"Caption" "#rd_so_stat_healing_self"
+		}
 		"Facts" {
 			"Ammo" {
 				"RequireCVar" "rd_medgun_infinite_ammo"
@@ -1334,6 +1420,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_pdw"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Yaw" "90"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_pdw.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -1357,9 +1446,6 @@
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_pdw.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
-		}
-		"BuiltinModelTransform" {
-			"Yaw" "90"
 		}
 		"Facts" {
 			"DamagePerShot" {
@@ -1415,10 +1501,6 @@
 				"Caption" "#rd_weapon_fact_burning_dps"
 			}
 			"Ammo" {}
-			"Generic" {
-				"Icon" "swarm/swarmopedia/fact/heavy"
-				"Caption" "#rd_weapon_fact_slow_movement_while_held"
-			}
 			"Secondary" {
 				"Generic" {
 					"RequireCVar" "rd_flamer_infinite_extinguisher"
@@ -1437,7 +1519,34 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "sentry_freeze_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_freeze.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1594,6 +1703,34 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "sentry_flamers_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_flamer.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1688,7 +1825,34 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "sentry_cannon_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_sentry_cannon.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/sentry"
@@ -1799,6 +1963,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_deagle"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Z" "-4"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_deagle.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -1822,9 +1989,6 @@
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_deagle.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
-		}
-		"BuiltinModelTransform" {
-			"Z" "-4"
 		}
 		"Facts" {
 			"DamagePerShot" {
@@ -1858,6 +2022,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_devastator"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-6"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_devastator.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -1881,9 +2048,6 @@
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_devastator.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
-		}
-		"BuiltinModelTransform" {
-			"Y" "-6"
 		}
 		"Facts" {
 			"ShotgunPellets" {}
@@ -1967,7 +2131,22 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_healamp_gun"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_healamp_gun.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_healamp_gun.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
+		"GlobalStat" {
+			"StatName" "healampgun_heals"
+			"Caption" "#rd_so_stat_healing"
+		}
+		"GlobalStat" {
+			"StatName" "healampgun_amps"
+			"Caption" "#rd_so_stat_damage_doubled"
+		}
 		"Facts" {
 			"Ammo" {
 				"RequireCVar" "rd_medgun_infinite_ammo"
@@ -2014,6 +2193,9 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_heavy_rifle"
 		"Builtin" "1"
+		"BuiltinModelTransform" {
+			"Y" "-6"
+		}
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_heavy_rifle.primary"
 			"Caption" "#rd_so_stat_equip_primary"
@@ -2037,9 +2219,6 @@
 		"GlobalStat" {
 			"StatName" "equips.asw_weapon_heavy_rifle.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
-		}
-		"BuiltinModelTransform" {
-			"Y" "-6"
 		}
 		"Facts" {
 			"DamagePerShot" {
@@ -2115,6 +2294,10 @@
 			"StatName" "equips.asw_weapon_medrifle.ff_damage"
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
+		"GlobalStat" {
+			"StatName" "medrifle_heals"
+			"Caption" "#rd_so_stat_healing"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_medrifle_dmg_base"
@@ -2158,7 +2341,14 @@
 			"Z" "8"
 			"Pitch" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_fire_extinguisher.primary"
+			"Caption" "#rd_so_stat_equip_primary"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_fire_extinguisher.secondary"
+			"Caption" "#rd_so_stat_equip_secondary"
+		}
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_extinguishes_fires"
@@ -2326,9 +2516,29 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_medkit.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "medkits_used"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "medkit_heals_self"
+			"Caption" "#rd_so_stat_healing_self"
+		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/healing"
+				"Caption" "#rd_weapon_fact_healing"
+				"Skill" "ASW_MARINE_SKILL_HEALING"
+				"SubSkill" "ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/warning"
+				"Caption" "#rd_weapon_fact_medkit_infestation"
+			}
 		}
 	}
 	"WEAPON" {
@@ -2338,15 +2548,35 @@
 			"Y" "-8"
 			"Yaw" "180"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_welder.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
-			// TODO
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_welder_time"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_welder_partial"
+			}
+			"Generic" {
+				"Icon" "swarm/swarmopedia/fact/door_defense"
+				"Caption" "#rd_weapon_fact_welder_reinforce"
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_flares"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flares.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "flares_used"
+			"Caption" "#rd_so_stat_deployed"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2369,7 +2599,26 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_laser_mines"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_laser_mines.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_laser_mines.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_laser_mines.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_laser_mines.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_laser_mines.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2381,7 +2630,14 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_normal_armor"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_normal_armor.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "normal_armor_reduction"
+			"Caption" "#rd_so_stat_damage_blocked"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -2389,7 +2645,14 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_buff_grenade"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_buff_grenade.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "normal_armor_reduction"
+			"Caption" "#rd_so_stat_damage_blocked"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2419,12 +2682,51 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_hornet_barrage"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_hornet_barrage.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_hornet_barrage.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_hornet_barrage.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_hornet_barrage.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_hornet_barrage.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast_rocket"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_COUNT"
+				"SkillValueIsClipSize" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
+					"BaseMultiplier" "0"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_INTERVAL"
+				}
 			}
 		}
 	}
@@ -2434,7 +2736,22 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_freeze_grenades.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "freeze_grenades_thrown"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "grenade_freeze_aliens"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "grenade_extinguish_marines"
+			"Caption" "#rd_so_stat_extinguish_marines"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2460,15 +2777,58 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_stim"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_stim.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "adrenaline_used"
+			"Caption" "#rd_so_stat_deployed"
+		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_duration"
+				"Skill" "ASW_MARINE_SKILL_DRUGS"
+				"SubSkill" "ASW_MARINE_SUBSKILL_STIM_DURATION"
+			}
+			"Generic" {
+				"Caption" "#rd_weapon_fact_stim_skill"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_stim_slowdown"
+				"CVar" "asw_stim_time_scale"
+				"BaseMultiplier" "100"
+			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_tesla_trap"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_trap.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "tesla_traps_deployed"
+			"Caption" "#rd_so_stat_deployed"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_trap.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_trap.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_trap.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_tesla_trap.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Ammo" {
 				"Icon" "swarm/swarmopedia/fact/ammo"
@@ -2510,7 +2870,18 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_electrified_armor"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_electrified_armor.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "electric_armor_used"
+			"Caption" "#rd_so_stat_damage_blocked"
+		}
+		"GlobalStat" {
+			"StatName" "electric_armor_reduction"
+			"Caption" "#rd_so_stat_damage_blocked"
+		}
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/duration"
@@ -2536,7 +2907,26 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mines.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mines.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mines.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mines.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_mines.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			// TODO
 			"Generic" {
@@ -2551,7 +2941,10 @@
 		"BuiltinModelTransform" {
 			"Yaw" "90"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_flashlight.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			"Generic" {
 				"Caption" "#rd_weapon_fact_flashlight_toggle"
@@ -2561,7 +2954,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_fist"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_fist.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/damage_club"
@@ -2584,7 +2980,26 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenades.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenades.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenades.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenades.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_grenades.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"DamagePerShot" {
 				"CVar" "rd_grenades_dmg_base"
@@ -2615,7 +3030,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_night_vision"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_night_vision.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -2623,12 +3041,51 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_smart_bomb"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_smart_bomb.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_smart_bomb.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_smart_bomb.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_smart_bomb.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_smart_bomb.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
-			// TODO
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast_rocket"
+				"Skill" "ASW_MARINE_SKILL_GRENADES"
+				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT"
+				"SkillValueIsClipSize" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
+					"BaseMultiplier" "0"
+				}
+				"FireRate" {
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL"
+				}
 			}
 		}
 	}
@@ -2638,7 +3095,26 @@
 		"BuiltinModelTransform" {
 			"Yaw" "270"
 		}
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_gas_grenades.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_gas_grenades.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_gas_grenades.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_gas_grenades.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_gas_grenades.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
@@ -2668,19 +3144,47 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_t75"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_t75.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_blast"
+			}
+			"Deployed" {
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_arm_time"
+					// 3 seconds to arm manually, followed by 0.1 second pause, followed by 5 second countdown
+					"Base" "5.1"
+				}
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Base" "600"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Base" "250"
+				}
 			}
 		}
 	}
 	"WEAPON" {
 		"ClassName" "asw_weapon_blink"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_blink.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/duration"
@@ -2703,7 +3207,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_jump_jet"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_jump_jet.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			// TODO
 		}
@@ -2711,7 +3218,10 @@
 	"WEAPON" {
 		"ClassName" "asw_weapon_bait"
 		"Builtin" "1"
-		// TODO: GlobalStat
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_bait.total"
+			"Caption" "#rd_so_stat_equip_extra"
+		}
 		"Facts" {
 			"Ammo" {
 				"CVar" "asw_bonus_charges"

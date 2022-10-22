@@ -225,7 +225,7 @@ bool IGameSystem::InitAllSystems()
 		Q_snprintf( sz, sizeof( sz ), "%s->Init():Start", sys->Name() );
 		XBX_rTimeStampLog( Plat_FloatTime(), sz );
 #endif
-		bool valid = sys->Init();
+		bool valid = sys ? sys->Init() : false;
 
 #if defined( _X360 )
 		Q_snprintf( sz, sizeof( sz ), "%s->Init():Finish", sys->Name() );

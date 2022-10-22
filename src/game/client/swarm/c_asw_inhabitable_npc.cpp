@@ -8,6 +8,8 @@
 #include "tier0/memdbgon.h"
 
 
+ConVar rd_highlight_active_character( "rd_highlight_active_character", "0", FCVAR_ARCHIVE );
+
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_Inhabitable_NPC )
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
 	RecvPropEHandle( RECVINFO( m_hUsingEntity ) ),
@@ -20,7 +22,9 @@ BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
 END_PREDICTION_DATA()
 
-C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC()
+C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
+	m_GlowObject( this ),
+	m_MotionBlurObject( this, 0.0f )
 {
 	m_fRedNamePulse = 0;
 	m_bRedNamePulseUp = true;
@@ -114,6 +118,25 @@ void C_ASW_Inhabitable_NPC::InitPredictable( C_BasePlayer *pOwner )
 {
 	SetLocalVelocity( vec3_origin );
 	BaseClass::InitPredictable( pOwner );
+}
+
+void C_ASW_Inhabitable_NPC::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( rd_highlight_active_character.GetBool() && pPlayer && pPlayer->GetViewNPC() == this )
+	{
+		m_GlowObject.SetRenderFlags( true, true );
+	}
+	else if ( IsAlien() && pPlayer && pPlayer->IsSniperScopeActive() )
+	{
+		m_GlowObject.SetRenderFlags( true, true );
+	}
+	else
+	{
+		m_GlowObject.SetRenderFlags( false, false );
+	}
 }
 
 const Vector &C_ASW_Inhabitable_NPC::GetFacingPoint()

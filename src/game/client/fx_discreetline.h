@@ -27,7 +27,7 @@ class CFXDiscreetLine : public CClientSideEffect
 public:
 
 	CFXDiscreetLine ( const char *name, const Vector& start, const Vector& direction, float velocity, 
-		float length, float clipLength, float scale, float life, const char *shader );
+		float length, float clipLength, float scale, float life, const char *shader, Vector vecColor );
 	~CFXDiscreetLine ( void );
 
 	virtual void	Draw( double frametime );
@@ -39,7 +39,7 @@ protected:
 
 	IMaterial		*m_pMaterial;
 	float			m_fLife;
-	Vector			m_vecOrigin, m_vecDirection;
+	Vector			m_vecOrigin, m_vecDirection, m_vecColor;
 	float			m_fVelocity;
 	float			m_fStartTime;
 	float			m_fClipLength;
