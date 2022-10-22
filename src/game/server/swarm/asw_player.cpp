@@ -1287,7 +1287,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						CASW_Marine* hMarine = pMR->GetMarineEntity();
 						if (hMarine)
 						{
-							hMarine->m_vecCustLaserColor.Set(vecColor);
+							hMarine->m_vecCustLaserColor.SetDirect(vecColor);
 						}
 					}
 				}
