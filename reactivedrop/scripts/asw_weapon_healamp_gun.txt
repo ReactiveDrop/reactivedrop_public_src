@@ -26,7 +26,7 @@ WeaponData
 	// asw properties
 	"reload_time"			"2.2"
 	"fire_rate"				"0.33"
-	"equipicon"				"swarm/EquipIcons/EquipHealGun"
+	"equipicon"				"swarm/EquipIcons/EquipHealAmpGun"
 	"equiplongname"			"#asw_weaponl_healampgun"
 	"RequiresFirstAid"		"1"
 	"ShowCharges"			"1"
