@@ -988,7 +988,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 				Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
 
-				m_vecLobbyLaserColor.Set(vecColor);
+				m_vecLobbyLaserColor.SetDirect(vecColor);
 
 				return true;
 			}
