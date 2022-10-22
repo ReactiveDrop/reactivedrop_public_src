@@ -19,7 +19,7 @@
 
 extern ConVar sv_force_transmit_ents;
 extern ConVar mm_max_players;
-ConVar rd_adjust_sv_maxrate( "rd_adjust_sv_maxrate", "1", FCVAR_ARCHIVE, "If 1 for 8 slot listen server sv_maxrate will be set to 60000" );
+ConVar rd_adjust_sv_maxrate( "rd_adjust_sv_maxrate", "0", FCVAR_ARCHIVE, "If 1 for 8 slot listen server sv_maxrate will be set to 60000" );
 
 // -------------------------------------------------------------------------------------------- //
 // Mod-specific CServerGameClients implementation.

@@ -123,7 +123,6 @@
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 #include "matchmaking/imatchframework.h"
-#include "rd_defaults.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -709,7 +708,7 @@ ConVar rd_default_weapon( "rd_default_weapon", "0",  FCVAR_CHEAT | FCVAR_REPLICA
 ConVar asw_player_avoidance( "asw_player_avoidance", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Enable/Disable player avoidance." );
 #ifdef GAME_DLL
 static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue );
-ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "-1", FCVAR_ARCHIVE, "-1(default)-uses asw_gamerules setting, 0-disable rotation, 1-enable rotation", true, -1, true, 1, &UpdateGameRulesOverrideAllowRotateCamera );
+ConVar rd_override_allow_rotate_camera( "rd_override_allow_rotate_camera", "1", FCVAR_ARCHIVE, "-1 uses asw_gamerules setting, 0-disable rotation, 1-allow rotation", true, -1, true, 1, &UpdateGameRulesOverrideAllowRotateCamera );
 static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	CAlienSwarm *pASW = ASWGameRules();
@@ -1435,8 +1434,6 @@ const char* CAlienSwarm::GetGameDescription( void )
 CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 {
 	m_bShuttingDown = false;
-
-	rd_apply_new_server_defaults();
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
