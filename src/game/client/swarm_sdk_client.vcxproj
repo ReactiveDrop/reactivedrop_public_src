@@ -512,6 +512,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\predictioncopy_test.cpp" />
     <ClCompile Include="..\shared\props_shared.cpp" />
     <ClCompile Include="..\shared\ragdoll_shared.cpp" />
+    <ClCompile Include="..\shared\RGB_StatsReportColors_Shared.cpp" />
     <ClCompile Include="..\shared\rope_helpers.cpp" />
     <ClCompile Include="..\shared\saverestore.cpp" />
     <ClCompile Include="..\shared\sceneentity_shared.cpp" />
@@ -2235,6 +2236,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\predictable_entity.h" />
     <ClInclude Include="..\shared\predictioncopy.h" />
     <ClInclude Include="..\shared\ragdoll_shared.h" />
+    <ClInclude Include="..\shared\RGB_StatsReportColors_Shared.h" />
     <ClInclude Include="..\shared\rope_helpers.h" />
     <ClInclude Include="..\shared\saverestore.h" />
     <ClInclude Include="..\shared\saverestore_bitstring.h" />

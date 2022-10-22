@@ -8,6 +8,7 @@
 #include "asw_playeranimstate.h"
 #include "asw_lag_compensation.h"
 #include "iasw_server_usable_entity.h"
+#include "asw_shareddefs.h"
 
 class CASW_Player;
 class CASW_Marine_Resource;
@@ -33,6 +34,8 @@ class CAI_Hint;
 class CASW_Alien_Goo;
 class CASW_BuffGrenade_Projectile;
 class CBaseTrigger;
+
+extern Color g_rgbaStatsReportPlayerColors[ASW_MAX_MARINE_RESOURCES];
 
 #define ASW_MAX_FOLLOWERS 6
 #define ASW_INVALID_FOLLOW_SLOT -1

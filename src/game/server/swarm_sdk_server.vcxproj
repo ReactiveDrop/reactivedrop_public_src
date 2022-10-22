@@ -476,6 +476,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\props_shared.cpp" />
     <ClCompile Include="..\shared\querycache.cpp" />
     <ClCompile Include="..\shared\ragdoll_shared.cpp" />
+    <ClCompile Include="..\shared\RGB_StatsReportColors_Shared.cpp" />
     <ClCompile Include="..\shared\rope_helpers.cpp" />
     <ClCompile Include="..\shared\saverestore.cpp" />
     <ClCompile Include="..\shared\SceneCache.cpp" />
@@ -1453,6 +1454,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\props_shared.h" />
     <ClInclude Include="..\shared\querycache.h" />
     <ClInclude Include="..\shared\ragdoll_shared.h" />
+    <ClInclude Include="..\shared\RGB_StatsReportColors_Shared.h" />
     <ClInclude Include="..\shared\rope_helpers.h" />
     <ClInclude Include="..\shared\saverestore.h" />
     <ClInclude Include="..\shared\saverestore_bitstring.h" />

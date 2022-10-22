@@ -1222,6 +1222,15 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 	{
 		m_MarineResource = pMR;
 
+		int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex(pMR);
+		if (nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
+		{
+			Color vecCol = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
+			m_vecCustLaserColor.GetForModify().x = vecCol.r();
+			m_vecCustLaserColor.GetForModify().y = vecCol.g();
+			m_vecCustLaserColor.GetForModify().z = vecCol.b();
+		}
+
 		if ( pMR )
 		{
 			PrecacheSpeech();
