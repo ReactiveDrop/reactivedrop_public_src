@@ -82,7 +82,7 @@ public:
 	void LaunchOutroFrame();
 	void LaunchMissionCompleteFrame(bool bSuccess);
 	void CloseBriefingFrame();
-	bool C_ASW_Player::IsBriefingActive();
+	bool IsBriefingActive();
 	
 	// contacting the server for briefing stuff
 	void StartReady();	// player is ready to start the mission
@@ -262,7 +262,7 @@ public:
 	// status of selecting marine/weapons in the briefing
 	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
-	CNetworkVar( Vector, m_vecLobbyLaserColor );
+	CNetworkVector( m_vecLobbyLaserColor );
 
 	// BenLubar(spectator-mouse)
 	short m_iScreenWidth;

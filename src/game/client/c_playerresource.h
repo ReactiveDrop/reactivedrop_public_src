@@ -75,6 +75,6 @@ protected:
 };
 
 extern C_PlayerResource *g_PR;
-static CUtlVector<uint64> MutedList;
+extern CUtlVector<uint64> MutedList;
 
 #endif // C_PLAYERRESOURCE_H

@@ -106,7 +106,7 @@ extern ConVar rd_show_others_laser_pointer;
 
 void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
-	if (engine->IsConnected() && engine->IsInGame())
+	if (engine->IsInGame())
 	{
 		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if (pPlayer)
