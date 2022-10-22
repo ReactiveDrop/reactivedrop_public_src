@@ -14,7 +14,7 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 
-static bool g_bLaserIndexInUse[8]{}; //LS INDEX SIZE 8
+extern bool g_bLaserIndexInUse[8]; //LS INDEX SIZE 8
 
 
 
