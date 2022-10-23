@@ -963,19 +963,16 @@ Color CASW_Briefing::GetMarineLaserColor(int nLobbySlot)
 {
 	UpdateLobbySlotMapping();
 
-	C_ASW_Player* pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
-	if (!pPlayer)
-		return Color(255, 0, 0);
+	C_ASW_Marine_Resource* pMR = m_LobbySlotMapping[nLobbySlot].m_hMR;
 
-	//if (pPlayer->m_vecLobbyLaserColor.Get() == NULL)
-	//	return Color(255, 0, 0);
+	if (pMR)
+	{
+		int outR, outG, outB, outUnused;
+		LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
+		return Color(outR, outG, outB);
+	}
 
-	int outR, outG, outB, outUnused;
-	LaserHelper::GetDecodedLaserColor(pPlayer->m_iLobbyLaserColor, outR, outG, outB, outUnused);
-
-	//Vector vecCol = Vector(outR, outG, outB);
-
-	return Color(outR, outG, outB);
+	return Color(255, 0, 0);
 }
 
 bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )

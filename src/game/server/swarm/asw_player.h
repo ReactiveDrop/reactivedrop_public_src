@@ -245,7 +245,7 @@ public:
 	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
 	//CNetworkVector( m_vecLobbyLaserColor );
-	CNetworkVar(int, m_iLobbyLaserColor);
+	//CNetworkVar(int, m_iLobbyLaserColor);
 
 	// experience
 	int GetLevel();

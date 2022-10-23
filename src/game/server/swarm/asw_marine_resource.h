@@ -45,6 +45,7 @@ public:
 	CNetworkVar( bool, m_bHealthHalved );		
 	
 	CNetworkVar( int, m_iServerFiring );
+	CNetworkVar( int, m_iLaserColor );
 
 	// stats
 	int m_iShotsFired;	

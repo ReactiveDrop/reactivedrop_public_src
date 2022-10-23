@@ -51,6 +51,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Mar
 	RecvPropInt		(RECVINFO(m_iBotFrags)),
 	RecvPropInt		(RECVINFO(m_iScore)),
 	RecvPropFloat	(RECVINFO(m_flFinishedMissionTime)),
+	RecvPropInt		(RECVINFO(m_iLaserColor)),
 END_RECV_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -326,6 +327,42 @@ void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 			}
 		}
 		SetNextClientThink(gpGlobals->curtime);
+	}
+
+	C_ASW_Marine* pMarine = GetMarineEntity();
+
+	if (pMarine)
+	{
+		if (pMarine->m_LastLaserColor != m_iLaserColor)
+		{
+			C_ASW_Weapon* pWeapon = pMarine->GetActiveASWWeapon();
+
+			if (pWeapon)
+			{
+				if (pWeapon->m_pLaserPointerEffect)
+				{
+					pWeapon->RemoveLaserPointerEffect();
+
+
+					int iAttachment = pWeapon->GetMuzzleAttachment();
+					if (iAttachment > 0)
+					{
+						bool bLocalPlayer = false;
+						C_ASW_Player* pPlayer = GetCommander();
+						C_ASW_Player* pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+
+						if (pPlayer == pLocalPlayer && IsInhabited())
+						{
+							bLocalPlayer = true;
+						}
+						pWeapon->CreateLaserPointerEffect(bLocalPlayer, iAttachment);
+					}
+				}
+			}
+
+			//m_LastLaserColor = m_vecCustLaserColor;
+			pMarine->m_LastLaserColor = m_iLaserColor;
+		}
 	}
 	BaseClass::OnDataChanged(updateType);
 }

@@ -289,7 +289,7 @@ public:
 	virtual Disposition_t IRelationType( CBaseEntity *pTarget );	// BenLubar(deathmatch-improvements):
 
 	//CNetworkVector(m_vecCustLaserColor);
-	CNetworkVar(int, m_iLaserColor);
+	//CNetworkVar(int, m_iLaserColor);
 
 	// Custom conditions, schedules and tasks
 	enum

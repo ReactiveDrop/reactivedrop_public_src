@@ -1292,7 +1292,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						if (hMarine)
 						{
 							//hMarine->m_vecCustLaserColor.SetDirect(vecColor);
-							hMarine->m_iLaserColor = LaserHelper::GetEncodedLaserColor(rchan, gchan, bchan, unused);
+							pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(rchan, gchan, bchan, unused);
 						}
 					}
 				}

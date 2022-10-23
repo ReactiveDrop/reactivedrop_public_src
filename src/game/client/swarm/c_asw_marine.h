@@ -334,7 +334,7 @@ public:
 	//RGB LASER
 	//CNetworkVar(Vector, m_vecCustLaserColor);
 	//Vector m_LastLaserColor = Vector(0, 0, 0);
-	CNetworkVar(int, m_iLaserColor);
+	//CNetworkVar(int, m_iLaserColor);
 	int m_LastLaserColor = 0;
 
 	CNetworkVar( bool, m_bAICrouch );		// if set, the AI will appear crouched when still

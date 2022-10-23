@@ -201,7 +201,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat   ( RECVINFO( m_fJumpJetAnimationDurationOverride )),
 	RecvPropBool	( RECVINFO( m_bForceWalking )),
 	//RecvPropVector	( RECVINFO( m_vecCustLaserColor ) ),
-	RecvPropInt		( RECVINFO( m_iLaserColor ) ),
+	//RecvPropInt		( RECVINFO( m_iLaserColor ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )
@@ -1180,6 +1180,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 	UpdateFireEmitters();
 
 	//if (m_LastLaserColor != m_vecCustLaserColor)
+	/*
 	if (m_LastLaserColor != m_iLaserColor)
 	{
 		C_ASW_Weapon* pWeapon = GetActiveASWWeapon();
@@ -1210,6 +1211,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		//m_LastLaserColor = m_vecCustLaserColor;
 		m_LastLaserColor = m_iLaserColor;
 	}
+	*/
 }
 
 // note: this function doesn't seem to be used in sp. Maybe just in a netgame?

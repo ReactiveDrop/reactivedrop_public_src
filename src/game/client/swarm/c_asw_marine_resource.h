@@ -111,6 +111,7 @@ public:
 	CNetworkVar(bool, m_bUsingEngineeringAura);
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );
+	CNetworkVar( int, m_iLaserColor );
 
 private:
 	C_ASW_Marine_Resource( const C_ASW_Marine_Resource & ); // not defined, not accessible

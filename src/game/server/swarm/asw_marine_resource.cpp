@@ -10,6 +10,7 @@
 #include "asw_director.h"
 #include "asw_gamestats.h"
 #include "asw_gamerules.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -74,6 +75,7 @@ BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_iAliensKilledByBouncingBullets, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iScore, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flFinishedMissionTime, FIELD_FLOAT ),
+	DEFINE_FIELD( m_iLaserColor, FIELD_INTEGER ),
 END_DATADESC()
 
 void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
@@ -119,6 +121,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
 	SendPropInt		(SENDINFO(m_iBotFrags)),
 	SendPropInt		(SENDINFO(m_iScore)),
 	SendPropFloat	(SENDINFO(m_flFinishedMissionTime)),
+	SendPropInt		(SENDINFO(m_iLaserColor)),
 END_SEND_TABLE()
 
 extern ConVar asw_leadership_radius;
@@ -213,6 +216,12 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 
 	memset( m_iInitialWeaponsInSlots, -1, sizeof( m_iInitialWeaponsInSlots ) );
 	memset( const_cast<int*>( m_iWeaponsInSlots.Base() ), -1, sizeof( m_iInitialWeaponsInSlots ) );
+
+	Vector vecCol = Vector(0, 0, 0);
+	Vector vecHSV = Vector(RandomFloat(0.0f, 360.0f), RandomFloat(0.0f, 255.0f), 255.0);
+	HSVtoRGB(vecHSV, vecCol);
+
+	m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.x, vecCol.y, vecCol.z, 0);
 }
 
 
