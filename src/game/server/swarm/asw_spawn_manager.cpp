@@ -342,9 +342,16 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 		}
 
 		// reactivedrop: preventing wanderers from spawning behind closed airlocks
-		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
+		if ( UTIL_ASW_BrushBlockingRoute( pRoute, MASK_NPCSOLID_BRUSHONLY, ASW_COLLISION_GROUP_ALIEN ) )
 		{
-			DeleteRoute(pRoute);
+			DeleteRoute( pRoute );
+			continue;
+		}
+
+		// reactivedrop: preventing wanderers from spawning behind closed airlocks x2
+		if ( UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER, ASW_COLLISION_GROUP_ALIEN ) )
+		{
+			DeleteRoute( pRoute );
 			continue;
 		}
 
@@ -624,6 +631,17 @@ bool CASW_Spawn_Manager::FindHordePos( bool bNorth, const CUtlVector<int> &candi
 			if ( asw_director_debug.GetInt() >= 2 )
 			{
 				DevMsg( "  Discarding horde node %d as there's a brush in the way.\n", iChosen );
+			}
+			DeleteRoute( pRoute );
+			continue;
+		}
+
+		// reactivedrop: since airlock has collision now and brushes were removed from certain maps
+		if ( UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER, ASW_COLLISION_GROUP_ALIEN ) )
+		{
+			if ( asw_director_debug.GetInt() >= 2 )
+			{
+				DevMsg( "  Discarding horde node %d as there's an airlock in the way.\n", iChosen );
 			}
 			DeleteRoute( pRoute );
 			continue;

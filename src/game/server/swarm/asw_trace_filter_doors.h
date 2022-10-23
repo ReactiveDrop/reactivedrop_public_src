@@ -6,6 +6,7 @@
 
 class CASW_Door;
 struct AI_Waypoint_t;
+class CDynamicProp;
 
 class CASW_Trace_Filter_Doors : public CTraceFilterEntitiesOnly
 {
@@ -29,5 +30,5 @@ public:
 
 CASW_Door* UTIL_ASW_DoorBlockingRoute( AI_Waypoint_t *pRoute, bool bRequireLockedOrSealed );
 bool UTIL_ASW_BrushBlockingRoute( AI_Waypoint_t *pRoute, const int nCollisionMask, const int nCollisionGroup );
-
+CDynamicProp* UTIL_ASW_AirlockBlockingRoute( AI_Waypoint_t* pRoute, const int nCollisionMask, const int nCollisionGroup );
 #endif // _INCLUDED_ASW_TRACE_FILTER_DOORS
