@@ -23,6 +23,7 @@
 #include "asw_gamerules.h"
 #include "game_timescale_shared.h"
 #include "vgui/ILocalize.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -961,21 +962,33 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 	{
 		C_ASW_Marine* marine = GetMarine();
 
-		float rchan, gchan, bchan;
+		float rchan, gchan, bchan, unused;
+		int outR, outG, outB, outUnused;
 
 
 		Vector colorMul = Vector(255, 0, 0);
 		if (marine)
 		{
+			LaserHelper::GetDecodedLaserColor(marine->m_iLaserColor, outR, outG, outB, outUnused);
+			/*
 			rchan = marine->m_vecCustLaserColor.m_Value.x;
 			gchan = marine->m_vecCustLaserColor.m_Value.y;
 			bchan = marine->m_vecCustLaserColor.m_Value.z;
+			*/
+			rchan = outR;
+			gchan = outG;
+			bchan = outB;
 
 			rchan = rchan / 255;
 			gchan = gchan / 255;
 			bchan = bchan / 255;
 
 
+			//int test_input, outRed, outGreen, outBlue, outUnused;
+			//test_input = GetEncodedLaserColor(1111, 61, 69, 82);
+			//GetDecodedLaserColor(test_input, outRed, outGreen, outBlue, outUnused);
+
+			//test_input = GetEncodedLaserColor(outRed, outGreen, outBlue, outUnused);
 
 			colorMul = Vector(rchan, gchan, bchan);
 			if (bLocalPlayer)
