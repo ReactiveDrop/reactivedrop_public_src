@@ -104,7 +104,7 @@ extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
-static bool g_bLaserIndexInUse[8]{}; //LS INDEX SIZE 8
+//static bool g_bLaserIndexInUse[8]{}; //LS INDEX SIZE 8
 
 void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
@@ -916,6 +916,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	m_bLocalPlayerControlling = bLocalPlayer;
 }
 
+/*
 int C_ASW_Weapon::GetFreeLaserIndex(bool bSetAsTaken)
 {
 	int index = 0;
@@ -947,6 +948,7 @@ void C_ASW_Weapon::FreeLaserIndex()
 	}
 	m_iUsingLSIndex = -1;
 }
+*/
 
 void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 {
@@ -962,7 +964,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 		float rchan, gchan, bchan;
 
 
-
+		Vector colorMul = Vector(255, 0, 0);
 		if (marine)
 		{
 			rchan = marine->m_vecCustLaserColor.m_Value.x;
@@ -975,13 +977,14 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 
 
 
-			Vector colorMul = Vector(rchan, gchan, bchan);
+			colorMul = Vector(rchan, gchan, bchan);
 			if (bLocalPlayer)
 			{
-				m_pLaserPointerEffect = ParticleProp()->Colored_Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment, colorMul);
+				m_pLaserPointerEffect = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
 			}
 			else
 			{
+				/*
 				int iUsingLaserIndex = GetFreeLaserIndex();
 				char sLaserName[32];
 				if (iUsingLaserIndex > -1)
@@ -994,17 +997,20 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 				{
 					snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other");
 				}
-				m_pLaserPointerEffect = ParticleProp()->Colored_Create(sLaserName, PATTACH_POINT_FOLLOW, iAttachment, colorMul);
+				*/
+				m_pLaserPointerEffect = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment, colorMul);
 			}
 		}
 		else
 		{
-			m_pLaserPointerEffect = ParticleProp()->Create("weapon_laser_sight_other", PATTACH_POINT_FOLLOW, iAttachment);
+			m_pLaserPointerEffect = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment);
 		}
 		if (m_pLaserPointerEffect)
 		{
 			ParticleProp()->AddControlPoint(m_pLaserPointerEffect, 1, this, PATTACH_CUSTOMORIGIN);
 			ParticleProp()->AddControlPoint(m_pLaserPointerEffect, 2, this, PATTACH_CUSTOMORIGIN);
+
+			m_pLaserPointerEffect->SetControlPoint(10, colorMul);
 		}
 	}
 }
@@ -1012,7 +1018,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 //--------------------------------------------------------------------------------------------------------
 void C_ASW_Weapon::RemoveLaserPointerEffect( void )
 {
-	FreeLaserIndex();
+	//FreeLaserIndex();
 	if ( m_pLaserPointerEffect )
 	{
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_pLaserPointerEffect );
