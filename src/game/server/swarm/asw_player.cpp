@@ -232,7 +232,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
 	//SendPropVector	(SENDINFO(m_vecLobbyLaserColor ) ),
-	SendPropInt		(SENDINFO( m_iLobbyLaserColor ) ),
+	//SendPropInt		(SENDINFO( m_iLobbyLaserColor ) ),
 
 	// BenLubar(spectator-mouse)
 	SendPropInt( SENDINFO( m_iScreenWidth ) ),
@@ -991,8 +991,17 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				//Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
 
 				//m_vecLobbyLaserColor.SetDirect(vecColor);
+				const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
 
-				 LaserHelper::GetEncodedLaserColor(m_iLobbyLaserColor, atoi(args[1]), atoi(args[2]), atoi(args[3]));
+				for (int i = 0; i < numMarineResources; i++)
+				{
+					CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+					if (pMR && pMR->IsInhabited() && pMR->GetCommander() == this)
+					{
+						LaserHelper::GetEncodedLaserColor(pMR->m_iLaserColor, atoi(args[1]), atoi(args[2]), atoi(args[3]));
+						break;
+					}
+				}
 
 				return true;
 			}
