@@ -24,9 +24,12 @@
 #include "game_timescale_shared.h"
 #include "vgui/ILocalize.h"
 #include "LaserHelperFunctions_shared.h"
+#include "c_asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern class C_ASW_Marine_Resource;
 
 BEGIN_NETWORK_TABLE_NOBASE( C_ASW_Weapon, DT_ASWLocalWeaponData )
 	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip2 )),
@@ -969,49 +972,55 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 		Vector colorMul = Vector(255, 0, 0);
 		if (marine)
 		{
-			LaserHelper::GetDecodedLaserColor(marine->m_iLaserColor, outR, outG, outB, outUnused);
-			/*
-			rchan = marine->m_vecCustLaserColor.m_Value.x;
-			gchan = marine->m_vecCustLaserColor.m_Value.y;
-			bchan = marine->m_vecCustLaserColor.m_Value.z;
-			*/
-			rchan = outR;
-			gchan = outG;
-			bchan = outB;
-
-			rchan = rchan / 255;
-			gchan = gchan / 255;
-			bchan = bchan / 255;
-
-
-			//int test_input, outRed, outGreen, outBlue, outUnused;
-			//test_input = GetEncodedLaserColor(1111, 61, 69, 82);
-			//GetDecodedLaserColor(test_input, outRed, outGreen, outBlue, outUnused);
-
-			//test_input = GetEncodedLaserColor(outRed, outGreen, outBlue, outUnused);
-
-			colorMul = Vector(rchan, gchan, bchan);
-			if (bLocalPlayer)
+			C_ASW_Marine_Resource* pMR = marine->GetMarineResource();
+			if (pMR)
 			{
-				m_pLaserPointerEffect = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
-			}
-			else
-			{
+				LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
+
 				/*
-				int iUsingLaserIndex = GetFreeLaserIndex();
-				char sLaserName[32];
-				if (iUsingLaserIndex > -1)
+				rchan = marine->m_vecCustLaserColor.m_Value.x;
+				gchan = marine->m_vecCustLaserColor.m_Value.y;
+				bchan = marine->m_vecCustLaserColor.m_Value.z;
+				*/
+
+				rchan = outR;
+				gchan = outG;
+				bchan = outB;
+
+				rchan = rchan / 255;
+				gchan = gchan / 255;
+				bchan = bchan / 255;
+
+
+				//int test_input, outRed, outGreen, outBlue, outUnused;
+				//test_input = GetEncodedLaserColor(1111, 61, 69, 82);
+				//GetDecodedLaserColor(test_input, outRed, outGreen, outBlue, outUnused);
+
+				//test_input = GetEncodedLaserColor(outRed, outGreen, outBlue, outUnused);
+
+				colorMul = Vector(rchan, gchan, bchan);
+				if (bLocalPlayer)
 				{
-					snprintf(sLaserName, sizeof(sLaserName), "other_laser%d", (iUsingLaserIndex + 1));
-					MarkLaserIndexAsTaken(iUsingLaserIndex);
-					m_iUsingLSIndex = iUsingLaserIndex;
+					m_pLaserPointerEffect = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
 				}
 				else
 				{
-					snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other");
+					/*
+					int iUsingLaserIndex = GetFreeLaserIndex();
+					char sLaserName[32];
+					if (iUsingLaserIndex > -1)
+					{
+						snprintf(sLaserName, sizeof(sLaserName), "other_laser%d", (iUsingLaserIndex + 1));
+						MarkLaserIndexAsTaken(iUsingLaserIndex);
+						m_iUsingLSIndex = iUsingLaserIndex;
+					}
+					else
+					{
+						snprintf(sLaserName, sizeof(sLaserName), "weapon_laser_sight_other");
+					}
+					*/
+					m_pLaserPointerEffect = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment, colorMul);
 				}
-				*/
-				m_pLaserPointerEffect = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment, colorMul);
 			}
 		}
 		else
