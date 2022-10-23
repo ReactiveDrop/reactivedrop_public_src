@@ -53,6 +53,7 @@
 #include "asw_trace_filter.h"
 #include "env_tonemap_controller.h"
 #include "fogvolume.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -230,7 +231,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropInt	(SENDINFO( m_iMapVoted ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
-	SendPropVector	(SENDINFO(m_vecLobbyLaserColor ) ),
+	//SendPropVector	(SENDINFO(m_vecLobbyLaserColor ) ),
+	SendPropInt		(SENDINFO( m_iLobbyLaserColor ) ),
 
 	// BenLubar(spectator-mouse)
 	SendPropInt( SENDINFO( m_iScreenWidth ) ),
@@ -986,9 +988,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 
-				Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
+				//Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
 
-				m_vecLobbyLaserColor.SetDirect(vecColor);
+				//m_vecLobbyLaserColor.SetDirect(vecColor);
+
+				 LaserHelper::GetEncodedLaserColor(m_iLobbyLaserColor, atoi(args[1]), atoi(args[2]), atoi(args[3]));
 
 				return true;
 			}
@@ -1275,7 +1279,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 
-				Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
+				int rchan = atoi(args[1]), gchan = atoi(args[2]), bchan = atoi(args[3]), unused = 0;
 
 				const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
 
@@ -1287,7 +1291,8 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						CASW_Marine* hMarine = pMR->GetMarineEntity();
 						if (hMarine)
 						{
-							hMarine->m_vecCustLaserColor.SetDirect(vecColor);
+							//hMarine->m_vecCustLaserColor.SetDirect(vecColor);
+							hMarine->m_iLaserColor = LaserHelper::GetEncodedLaserColor(rchan, gchan, bchan, unused);
 						}
 					}
 				}

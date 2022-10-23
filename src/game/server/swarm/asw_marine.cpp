@@ -86,6 +86,7 @@
 #include "asw_triggers.h"
 #include "triggers.h"
 #include "EnvLaser.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -269,7 +270,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
-	SendPropVector  ( SENDINFO( m_vecCustLaserColor)),
+	//SendPropVector  ( SENDINFO( m_vecCustLaserColor)),
+	SendPropInt		( SENDINFO(m_iLaserColor) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -641,9 +643,12 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	Vector vecHSV = Vector(RandomFloat(0.0f, 360.0f), RandomFloat(0.0f, 255.0f), 255.0);
 	HSVtoRGB(vecHSV, vecCol);
 
-	m_vecCustLaserColor.GetForModify().x = vecCol.x;
-	m_vecCustLaserColor.GetForModify().y = vecCol.y;
-	m_vecCustLaserColor.GetForModify().z = vecCol.z;
+	m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.x, vecCol.y, vecCol.z, 0);
+
+	//m_vecCustLaserColor.GetForModify().x = vecCol.x;
+	//m_vecCustLaserColor.GetForModify().y = vecCol.y;
+	//m_vecCustLaserColor.GetForModify().z = vecCol.z;
+
 
 }
 
@@ -1117,16 +1122,22 @@ void CASW_Marine::InhabitedBy( CASW_Player *player )
 
 		if (szSplitFloats.Count() >= 3)
 		{
+			m_iLaserColor = LaserHelper::GetEncodedLaserColor(atof(szSplitFloats[0]), atof(szSplitFloats[1]), atof(szSplitFloats[2]), 0);
+			/*
 			m_vecCustLaserColor.GetForModify().x = atof(szSplitFloats[0]);
 			m_vecCustLaserColor.GetForModify().y = atof(szSplitFloats[1]);
 			m_vecCustLaserColor.GetForModify().z = atof(szSplitFloats[2]);
+			*/
 		}
 		else
 		{
+			m_iLaserColor = LaserHelper::GetEncodedLaserColor(255, 0, 0, 0);
+			/*
 			Vector vecCustColor = m_vecCustLaserColor.GetForModify();
 			vecCustColor.x = 255.0f;
 			vecCustColor.y = 0.0f;
 			vecCustColor.z = 0.0f;
+			*/
 		}
 	}
 
@@ -1226,9 +1237,12 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 		if (nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
 		{
 			Color vecCol = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
+			m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.r(), vecCol.g(), vecCol.b(), 0);
+			/*
 			m_vecCustLaserColor.GetForModify().x = vecCol.r();
 			m_vecCustLaserColor.GetForModify().y = vecCol.g();
 			m_vecCustLaserColor.GetForModify().z = vecCol.b();
+			*/
 		}
 
 		if ( pMR )

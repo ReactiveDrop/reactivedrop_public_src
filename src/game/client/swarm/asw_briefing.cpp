@@ -17,6 +17,7 @@
 #include "voice_status.h"
 #include "asw_deathmatch_mode.h"
 #include "rd_lobby_utils.h"
+#include "LaserHelperFunctions_shared.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -969,9 +970,12 @@ Color CASW_Briefing::GetMarineLaserColor(int nLobbySlot)
 	//if (pPlayer->m_vecLobbyLaserColor.Get() == NULL)
 	//	return Color(255, 0, 0);
 
-	Vector vecCol = pPlayer->m_vecLobbyLaserColor.Get();
+	int outR, outG, outB, outUnused;
+	LaserHelper::GetDecodedLaserColor(pPlayer->m_iLobbyLaserColor, outR, outG, outB, outUnused);
 
-	return Color(vecCol.x, vecCol.y, vecCol.z);
+	//Vector vecCol = Vector(outR, outG, outB);
+
+	return Color(outR, outG, outB);
 }
 
 bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )

@@ -244,7 +244,8 @@ public:
 	// status of selecting marine/weapons in the briefing
 	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
-	CNetworkVector( m_vecLobbyLaserColor );
+	//CNetworkVector( m_vecLobbyLaserColor );
+	CNetworkVar(int, m_iLobbyLaserColor);
 
 	// experience
 	int GetLevel();
