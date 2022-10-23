@@ -492,6 +492,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\hintmessage.cpp" />
     <ClCompile Include="..\shared\hintsystem.cpp" />
     <ClCompile Include="..\shared\igamesystem.cpp" />
+    <ClCompile Include="..\shared\LaserHelperFunctions_shared.cpp" />
     <ClCompile Include="..\shared\mapentities_shared.cpp" />
     <ClCompile Include="..\shared\movevars_shared.cpp" />
     <ClCompile Include="..\shared\mp_shareddefs.cpp" />
@@ -2214,6 +2215,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\ipredictionsystem.h" />
     <ClInclude Include="..\shared\itempents.h" />
     <ClInclude Include="..\shared\IVehicle.h" />
+    <ClInclude Include="..\shared\LaserHelperFunctions_shared.h" />
     <ClInclude Include="..\shared\mapdata_shared.h" />
     <ClInclude Include="..\shared\mapentities_shared.h" />
     <ClInclude Include="..\shared\movevars_shared.h" />
