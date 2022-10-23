@@ -86,6 +86,7 @@
 #include "asw_triggers.h"
 #include "triggers.h"
 #include "EnvLaser.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
