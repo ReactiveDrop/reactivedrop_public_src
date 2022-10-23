@@ -342,9 +342,9 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode( CASW_Spawn_Definition *pSpawn 
 		}
 
 		// reactivedrop: preventing wanderers from spawning behind closed airlocks
-		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
+		if ( UTIL_ASW_BrushBlockingRoute( pRoute, MASK_NPCSOLID_BRUSHONLY, ASW_COLLISION_GROUP_ALIEN ) )
 		{
-			DeleteRoute(pRoute);
+			DeleteRoute( pRoute );
 			continue;
 		}
 
