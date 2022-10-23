@@ -200,43 +200,6 @@ CNewParticleEffect *CParticleProperty::Create( const char *pszParticleName, Part
 	return Create( pDef, iAttachType, iAttachmentPoint, vecOriginOffset, matOffset );
 }
 
-CNewParticleEffect* CParticleProperty::Colored_Create(const char* pszParticleName, ParticleAttachment_t iAttachType, int iAttachmentPoint, Vector colorMul, Vector vecOriginOffset, matrix3x4_t* matOffset)
-{
-	CParticleSystemDefinition* pDef = g_pParticleSystemMgr->FindParticleSystem(pszParticleName);
-	if (!pDef)
-	{
-		//		AssertMsg( 0, "Attempting to create unknown particle system" );
-		Warning("Attempting to create unknown particle system '%s' \n", pszParticleName);
-		return NULL;
-	}
-
-	int maxIndex = pDef->m_Initializers.Count();
-	int index = 0;
-	while (index < maxIndex)
-	{
-		CParticleOperatorInstance* tempInst = pDef->m_Initializers[index];
-		
-		
-		C_INIT_RandomColor* testColor = dynamic_cast<C_INIT_RandomColor*>(tempInst);
-		if (testColor)
-		{
-			testColor->m_ColorMin.SetColor(255, 255, 255, 255);
-			testColor->m_ColorMax.SetColor(255, 255, 255, 255);
-			testColor->m_flNormColorMax.x = colorMul.x;
-			testColor->m_flNormColorMax.y = colorMul.y;
-			testColor->m_flNormColorMax.z = colorMul.z;
-
-			testColor->m_flNormColorMin.x = colorMul.x;
-			testColor->m_flNormColorMin.y = colorMul.y;
-			testColor->m_flNormColorMin.z = colorMul.z;
-		}
-		
-		index += 1;
-	}
-
-	return Create(pDef, iAttachType, iAttachmentPoint, vecOriginOffset, matOffset);
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
