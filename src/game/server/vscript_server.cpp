@@ -1028,14 +1028,24 @@ static void Script_AddThinkToEnt( HSCRIPT entity, const char *funcName )
 	pEntity->SetContextThink( &CBaseEntity::ScriptThink, gpGlobals->curtime, "ScriptThink" );
 }
 
-static void Script_GetDecodedLaserColor(int laserColor, int& outRed, int& outGreen, int& outBlue, int& outVal)
+static void Script_GetDecodedLaserColor(int laserColor, HSCRIPT hTable)
 {
-	LaserHelper::GetDecodedLaserColor(laserColor, outRed, outGreen, outBlue, outVal);
+	if (!g_pScriptVM) return;
+
+	if (hTable)
+	{
+		int outRed, outGreen, outBlue, outVal;
+		LaserHelper::GetDecodedLaserColor(laserColor, outRed, outGreen, outBlue, outVal);
+
+		g_pScriptVM->SetValue(hTable, "red", outRed);
+		g_pScriptVM->SetValue(hTable, "green", outGreen);
+		g_pScriptVM->SetValue(hTable, "blue", outBlue);
+	}
 }
 
-static int Script_GetEncodedLaserColor(int red, int green, int blue, int val)
+static ScriptVariant_t Script_GetEncodedLaserColor(int red, int green, int blue, int val)
 {
-	return LaserHelper::GetEncodedLaserColor(red, green, blue, val);
+	return ScriptVariant_t(LaserHelper::GetEncodedLaserColor(red, green, blue, val));
 }
 
 static void DoEntFire( const char *pszTarget, const char *pszAction, const char *pszValue, float delay, HSCRIPT hActivator, HSCRIPT hCaller )

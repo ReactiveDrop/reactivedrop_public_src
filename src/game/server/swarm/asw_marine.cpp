@@ -3604,16 +3604,28 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 	}
 }
 
-const void CASW_Marine::Script_GetLaserColor(int& outRed, int& outGreen, int& outBlue, int& outVal)
+void CASW_Marine::Script_GetLaserColor(HSCRIPT hTable)
 {
-	CASW_Marine_Resource* pMR = GetMarineResource();
-	if (pMR)
+	int outRed, outGreen, outBlue, outVal;
+
+	if (!g_pScriptVM) return;
+
+	if (hTable)
 	{
-		LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outRed, outGreen, outBlue, outVal);
+		CASW_Marine_Resource* pMR = GetMarineResource();
+		if (pMR)
+		{
+			int outRed, outGreen, outBlue, outVal;
+			LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outRed, outGreen, outBlue, outVal);
+
+			g_pScriptVM->SetValue(hTable, "red", outRed);
+			g_pScriptVM->SetValue(hTable, "green", outGreen);
+			g_pScriptVM->SetValue(hTable, "blue", outBlue);
+		}
 	}
 }
 
-const void CASW_Marine::Script_SetLaserColor(int red, int green, int blue, int val)
+void CASW_Marine::Script_SetLaserColor(int red, int green, int blue, int val)
 {
 	CASW_Marine_Resource* pMR = GetMarineResource();
 	if (pMR)
