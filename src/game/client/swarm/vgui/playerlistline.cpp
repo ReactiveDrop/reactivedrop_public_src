@@ -269,12 +269,12 @@ const wchar_t *PlayerListLine::GetMarineNames()
 		{
 			if ( iMarines == 0 )
 			{
-				V_snwprintf( marines, sizeof( marines ), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
+				V_snwprintf( marines, ARRAYSIZE( marines ), L"%s", g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
 			}
 			else
 			{
-				V_snwprintf( buffer, sizeof( buffer ), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
-				V_snwprintf( marines, sizeof( marines ), L"%s", buffer );
+				V_snwprintf( buffer, ARRAYSIZE( buffer ), L"%s, %s", marines, g_pVGuiLocalize->FindSafe( pMR->GetProfile()->m_ShortName ) );
+				V_snwprintf( marines, ARRAYSIZE( marines ), L"%s", buffer );
 			}
 			iMarines++;
 		}

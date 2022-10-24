@@ -425,9 +425,9 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 		const char *pszItem = item->GetName();
 		const wchar_t *wLocalizedItem = g_pVGuiLocalize->Find( pszItem );
 
-		V_snwprintf( wItem, sizeof( wItem )/ sizeof( wchar_t ), L"%d. %ls\n", i+1, wLocalizedItem );
+		V_snwprintf( wItem, ARRAYSIZE( wItem ), L"%d. %ls\n", i+1, wLocalizedItem );
 
-		V_snwprintf( g_szMenuString, sizeof( g_szMenuString )/ sizeof( wchar_t ), L"%ls%ls", g_szMenuString, wItem );
+		V_snwprintf( g_szMenuString, ARRAYSIZE( g_szMenuString ), L"%ls%ls", g_szMenuString, wItem );
 
 		i++;
 	}
@@ -435,9 +435,9 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 	// put a cancel on the end
 	m_bitsValidSlots |= (1<<9);
 
-	V_snwprintf( wItem, sizeof( wItem )/ sizeof( wchar_t ), L"0. %ls", g_pVGuiLocalize->Find( "#Cancel" ) );
+	V_snwprintf( wItem, ARRAYSIZE( wItem ), L"0. %ls", g_pVGuiLocalize->Find( "#Cancel" ) );
 
-	V_snwprintf( g_szMenuString, sizeof( g_szMenuString )/ sizeof( wchar_t ), L"%ls\n%ls", g_szMenuString, wItem );
+	V_snwprintf( g_szMenuString, ARRAYSIZE( g_szMenuString ), L"%ls\n%ls", g_szMenuString, wItem );
 
 	ProcessText();
 
