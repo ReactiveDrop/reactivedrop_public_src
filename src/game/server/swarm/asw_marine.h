@@ -544,8 +544,8 @@ public:
 	// DEPRECATED - Use Script_GetInventoryTable instead!
 	ScriptVariant_t Script_GetInvTable();
 	void Script_GetInventoryTable( HSCRIPT hTable );
-	const void Script_GetLaserColor(int& outRed, int& outGreen, int& outBlue, int& outVal);
-	const void Script_SetLaserColor(int red, int green, int blue, int val);
+	void Script_GetLaserColor(HSCRIPT hTable);
+	void Script_SetLaserColor(int red, int green, int blue, int val);
 	const char* Script_GetMarineName();
 	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );
 
