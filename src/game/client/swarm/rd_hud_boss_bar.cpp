@@ -369,7 +369,7 @@ void CRD_Hud_Boss_Bar_Container::Paint()
 		case BOSS_BAR_NUMERIC_VALUE:
 		{
 			wchar_t wszNumericValue[12];
-			int iNumberCharCount = V_snwprintf( wszNumericValue, sizeof( wszNumericValue ), L"%d", int( MAX( pBar->m_flBarValue, 0 ) ) );
+			int iNumberCharCount = V_snwprintf( wszNumericValue, ARRAYSIZE( wszNumericValue ), L"%d", int( MAX( pBar->m_flBarValue, 0 ) ) );
 
 			int iTextWidth, iTextHeight;
 			g_pMatSystemSurface->GetTextSize( m_hFont, wszNumericValue, iTextWidth, iTextHeight );

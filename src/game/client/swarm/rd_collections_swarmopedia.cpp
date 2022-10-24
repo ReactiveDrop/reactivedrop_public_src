@@ -177,7 +177,7 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 		Assert( SteamUserStats() );
 
 		wchar_t wszDays[4]{};
-		V_snwprintf( wszDays, sizeof( wszDays ), L"%d", m_nStatsDays );
+		V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
 
 		FOR_EACH_VEC( pAlien->GlobalStats, i )
 		{
@@ -257,7 +257,7 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntryLocked( const RD_Swarmopedi
 
 		if ( buf[0] != L'\0' )
 		{
-			V_snwprintf( buf, sizeof( buf ), L"%s\n\n%s", buf, line );
+			V_snwprintf( buf, ARRAYSIZE( buf ), L"%s\n\n%s", buf, line );
 		}
 		else
 		{

@@ -511,7 +511,7 @@ void MissionStatsPanel::InitFrom( C_ASW_Debrief_Stats *pStats )
 		int iMinutes = iTotalSeconds / 60;
 		int iSeconds = iTotalSeconds - ( iMinutes * 60 );
 
-		V_snwprintf( number, sizeof( number ), L"%.2d:%02d", iMinutes, iSeconds );
+		V_snwprintf( number, ARRAYSIZE( number ), L"%.2d:%02d", iMinutes, iSeconds );
 
 		g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
 			g_pVGuiLocalize->Find( "#asw_beat_speedrun_format" ), 1,
@@ -531,7 +531,7 @@ void MissionStatsPanel::InitFrom( C_ASW_Debrief_Stats *pStats )
 		int iMinutes = iTotalSeconds / 60;
 		int iSeconds = iTotalSeconds - ( iMinutes * 60 );
 
-		V_snwprintf( number, sizeof( number ), L"%.2d:%02d", iMinutes, iSeconds );
+		V_snwprintf( number, ARRAYSIZE( number ), L"%.2d:%02d", iMinutes, iSeconds );
 
 		if ( bNewRecordTime )
 		{
@@ -549,7 +549,7 @@ void MissionStatsPanel::InitFrom( C_ASW_Debrief_Stats *pStats )
 		m_pBestTimeLabel->SetText( buf );
 
 		// format the best kills
-		V_snwprintf( number, sizeof( number ), L"%d", pStats->GetBestKills() );
+		V_snwprintf( number, ARRAYSIZE( number ), L"%d", pStats->GetBestKills() );
 
 		if ( bNewRecordKills )
 		{

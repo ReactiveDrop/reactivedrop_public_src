@@ -56,7 +56,7 @@ const wchar_t *C_ASW_Objective_Triggered::GetObjectiveTitle()
 		}
 		else
 		{
-			V_snwprintf( m_wszObjectiveTitle, sizeof( m_wszObjectiveTitle ), L"%s %d/%d", BaseClass::GetObjectiveTitle(), m_nProgress.Get(), m_nMaxProgress.Get() );
+			V_snwprintf( m_wszObjectiveTitle, ARRAYSIZE( m_wszObjectiveTitle ), L"%s %d/%d", BaseClass::GetObjectiveTitle(), m_nProgress.Get(), m_nMaxProgress.Get() );
 		}
 
 		m_bNeedsUpdate = false;
