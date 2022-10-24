@@ -59,8 +59,6 @@ public:
 	//virtual void OnKeyCodePressed(vgui::KeyCode code);
 	//virtual void OnKeyCodeTyped(vgui::KeyCode code);
 
-	void UpdateChangingSlot();
-
 	void SetHSV_Hue(float outputHue);
 	void SetHSV_Sat(float outputSat);
 	void SetHSV_Val(float outputVal);

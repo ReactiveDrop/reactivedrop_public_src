@@ -88,6 +88,7 @@ void CHSVColorSquarePanel::CheckHSVUpdate()
 		else
 		{
 			m_LeftMousePressed = false;
+			GetControllerFocus()->SetIsRawOverride(false);
 		}
 	}
 }
@@ -96,6 +97,11 @@ void CHSVColorSquarePanel::OnMousePressed(vgui::MouseCode code)
 {
 	if (code == MOUSE_LEFT)
 	{
+		Cnb_lobby_laser_rgb_menu* parentRGB = dynamic_cast<Cnb_lobby_laser_rgb_menu*>(GetParent());
+		parentRGB->m_CurrentFocusMode = LaserRGBMenuFocusMode::HSVSquare;
+		GetControllerFocus()->SetIsRawOverride(true);
+		GetControllerFocus()->SetFocusPanel(this);
+
 		m_LeftMousePressed = true;
 	}
 }
@@ -105,6 +111,7 @@ void CHSVColorSquarePanel::OnMouseReleased(vgui::MouseCode code)
 	if (code == MOUSE_LEFT)
 	{
 		m_LeftMousePressed = false;
+		GetControllerFocus()->SetIsRawOverride(false);
 	}
 }
 

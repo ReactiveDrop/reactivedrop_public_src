@@ -158,7 +158,6 @@ void Cnb_lobby_laser_rgb_menu::OnThink()
 	BaseClass::OnThink();
 
 	UpdateDetails();
-	UpdateChangingSlot();
 }
 
 void Cnb_lobby_laser_rgb_menu::UpdateDetails()
@@ -814,11 +813,6 @@ void Cnb_lobby_laser_rgb_menu::SetHSVMarkerPos()
 	m_pHSVSliderMarker->SetMouseInputEnabled(false);
 
 
-}
-
-void Cnb_lobby_laser_rgb_menu::UpdateChangingSlot()
-{
-	
 }
 
 void Cnb_lobby_laser_rgb_menu::OnMousePressed(vgui::MouseCode code)
