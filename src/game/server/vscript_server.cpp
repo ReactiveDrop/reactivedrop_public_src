@@ -26,8 +26,6 @@
 #include "player_voice_listener.h"
 #include "ColorText_Shared.h"
 #include "LaserHelperFunctions_shared.h"
-#include "asw_marine.h"
-#include "asw_marine_resource.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
