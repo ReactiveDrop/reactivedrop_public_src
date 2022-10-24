@@ -25,6 +25,9 @@
 #include "decals.h"
 #include "player_voice_listener.h"
 #include "ColorText_Shared.h"
+#include "LaserHelperFunctions_shared.h"
+#include "asw_marine.h"
+#include "asw_marine_resource.h"
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
@@ -1027,6 +1030,16 @@ static void Script_AddThinkToEnt( HSCRIPT entity, const char *funcName )
 	pEntity->SetContextThink( &CBaseEntity::ScriptThink, gpGlobals->curtime, "ScriptThink" );
 }
 
+static void Script_GetDecodedLaserColor(int laserColor, int& outRed, int& outGreen, int& outBlue, int& outVal)
+{
+	LaserHelper::GetDecodedLaserColor(laserColor, outRed, outGreen, outBlue, outVal);
+}
+
+static int Script_GetEncodedLaserColor(int red, int green, int blue, int val)
+{
+	return LaserHelper::GetEncodedLaserColor(red, green, blue, val);
+}
+
 static void DoEntFire( const char *pszTarget, const char *pszAction, const char *pszValue, float delay, HSCRIPT hActivator, HSCRIPT hCaller )
 {
 	const char *target = "", *action = "Use";
@@ -1750,7 +1763,9 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_EntIndexToHScript, "EntIndexToHScript", "Returns the script handle for the given entity index." );
 
-				
+				ScriptRegisterFunctionNamed(g_pScriptVM, Script_GetDecodedLaserColor, "GetDecodedLaserColor", "Gives you the decoded color channels.");
+				ScriptRegisterFunctionNamed(g_pScriptVM, Script_GetEncodedLaserColor, "GetEncodedLaserColor", "Gives you the encoded color.");
+
 				if ( GameRules() )
 				{
 					GameRules()->RegisterScriptFunctions();

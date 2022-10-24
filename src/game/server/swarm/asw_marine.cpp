@@ -398,6 +398,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_SetLaserColor, "SetLaserColor", "Sets the laser color.")
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetLaserColor, "GetLaserColor", "Gets the laser color.")
 END_SCRIPTDESC()
 
 extern ConVar weapon_showproficiency;
@@ -3599,6 +3601,24 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 			Q_snprintf( szInvSlot, sizeof(szInvSlot), "slot%i", i );
 			g_pScriptVM->SetValue( hTable, szInvSlot, ToHScript(pWep) );
 		}
+	}
+}
+
+const void CASW_Marine::Script_GetLaserColor(int& outRed, int& outGreen, int& outBlue, int& outVal)
+{
+	CASW_Marine_Resource* pMR = GetMarineResource();
+	if (pMR)
+	{
+		LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outRed, outGreen, outBlue, outVal);
+	}
+}
+
+const void CASW_Marine::Script_SetLaserColor(int red, int green, int blue, int val)
+{
+	CASW_Marine_Resource* pMR = GetMarineResource();
+	if (pMR)
+	{
+		pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(red, green, blue, val);
 	}
 }
 
