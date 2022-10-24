@@ -152,6 +152,7 @@ bool CReactiveDropWorkshop::Init()
 			CUtlBuffer buf;
 			int32 iSize = SteamRemoteStorage()->GetFileSize( WORKSHOP_DISABLED_ADDONS_FILENAME );
 			SteamRemoteStorage()->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
+			buf.SeekPut( CUtlBuffer::SEEK_HEAD, iSize );
 			filesystem->WriteFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf );
 			buf.SetBufferType( true, true );
 			bLoaded = UTIL_RD_LoadKeyValues( pKV, WORKSHOP_DISABLED_ADDONS_FILENAME, buf );
