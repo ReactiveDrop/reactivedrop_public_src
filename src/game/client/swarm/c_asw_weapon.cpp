@@ -25,9 +25,11 @@
 #include "vgui/ILocalize.h"
 #include "LaserHelperFunctions_shared.h"
 #include "c_asw_marine_resource.h"
+#include "RGB_StatsReportColors_Shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+#include <c_asw_game_resource.h>
 
 extern class C_ASW_Marine_Resource;
 
@@ -126,7 +128,7 @@ void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 	}
 }
 
-void OnClassicLasersModeChanged(IConVar* var, const char* pOldValue, float flOldValue)
+void OnLasersSettingsChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
 	if (engine->IsInGame())
 	{
@@ -168,6 +170,11 @@ void OnClassicLasersModeChanged(IConVar* var, const char* pOldValue, float flOld
 	}
 }
 
+void OnClassicLasersModeChanged(IConVar* var, const char* pOldValue, float flOldValue)
+{
+	OnLasersSettingsChanged(var, pOldValue, flOldValue);
+}
+
 ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.", OnClientLaserChanged);
 
 ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
@@ -180,11 +187,23 @@ ConVar cl_asw_archived_lsc7("cl_asw_archived_lsc7", "255 8 224", FCVAR_ARCHIVE, 
 ConVar cl_asw_archived_lsc8("cl_asw_archived_lsc8", "255 205 58", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 8.");
 ConVar cl_asw_archived_lsc9("cl_asw_archived_lsc9", "255 255 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 9.");
 
-ConVar cl_asw_extended_team_lasers("cl_asw_extended_team_lasers", "1", FCVAR_ARCHIVE, "Shows teammates with extended lasers.");
+ConVar cl_asw_extended_team_lasers("cl_asw_extended_team_lasers", "0", FCVAR_ARCHIVE, "Shows teammates with extended lasers.");
 ConVar cl_asw_force_classic_lasers("cl_asw_force_classic_lasers", "0", FCVAR_ARCHIVE, "Use classic lasers without RGB.", OnClassicLasersModeChanged);
 
-C_ASW_Weapon::C_ASW_Weapon() :
-m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
+ConVar cl_asw_laser_display_mode("cl_asw_laser_display_mode", "0", FCVAR_ARCHIVE, "Use network colors<0> Use local stats colors<1> Use local profile convar colors<2>", OnLasersSettingsChanged);
+
+ConVar cl_asw_laser_local_override("cl_asw_laser_local_override", "0", FCVAR_ARCHIVE, "Allows cl_asw_laser_sight_color convar to take priority over laser display modes for the local player", OnLasersSettingsChanged);
+
+ConVar cl_asw_laser_color_sarge("cl_asw_laser_color_sarge", "255 255 255", FCVAR_ARCHIVE, "The color used for Sarge when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_wildcat("cl_asw_laser_color_wildcat", "255 255 255", FCVAR_ARCHIVE, "The color used for Wildcat when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_faith("cl_asw_laser_color_faith", "255 255 255", FCVAR_ARCHIVE, "The color used for Faith when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_crash("cl_asw_laser_color_crash", "255 255 255", FCVAR_ARCHIVE, "The color used for Crash when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_jaeger("cl_asw_laser_color_jaeger", "255 255 255", FCVAR_ARCHIVE, "The color used for Jaeger when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_wolfe("cl_asw_laser_color_wolfe", "255 255 255", FCVAR_ARCHIVE, "The color used for Wolfe when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_bastille("cl_asw_laser_color_bastille", "255 255 255", FCVAR_ARCHIVE, "The color used for Bastille when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+ConVar cl_asw_laser_color_vegas("cl_asw_laser_color_vegas", "255 255 255", FCVAR_ARCHIVE, "The color used for Vegas when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
+
+C_ASW_Weapon::C_ASW_Weapon() : m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
 {
 	SetPredictionEligible( true );
 	m_iEquipmentListIndex = -1;
@@ -974,40 +993,6 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	m_bLocalPlayerControlling = bLocalPlayer;
 }
 
-/*
-int C_ASW_Weapon::GetFreeLaserIndex(bool bSetAsTaken)
-{
-	int index = 0;
-	while (index < 8) //LS INDEX SIZE 8
-	{
-		if (!g_bLaserIndexInUse[index])
-		{
-			if (bSetAsTaken)
-			{
-				g_bLaserIndexInUse[index] = true;
-			}
-			return index;
-		}
-			index += 1;
-	}
-	return -1;
-}
-
-void C_ASW_Weapon::MarkLaserIndexAsTaken(int index)
-{
-	g_bLaserIndexInUse[index] = true;
-}
-
-void C_ASW_Weapon::FreeLaserIndex()
-{
-	if (m_iUsingLSIndex > -1)
-	{
-		g_bLaserIndexInUse[m_iUsingLSIndex] = false;
-	}
-	m_iUsingLSIndex = -1;
-}
-*/
-
 void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 {
 	if (m_pLaserPointerEffect)
@@ -1045,28 +1030,125 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment)
 				C_ASW_Marine_Resource* pMR = marine->GetMarineResource();
 				if (pMR)
 				{
-					LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
+					if (cl_asw_laser_local_override.GetBool() && bLocalPlayer)
+					{
+						Color laserCol = cl_asw_laser_sight_color.GetColor();
+						rchan = laserCol.r();
+						gchan = laserCol.g();
+						bchan = laserCol.b();
+						outUnused = 0;
+					}
+					else
+					{
+						if (cl_asw_laser_display_mode.GetInt() == 0) //NETWORK RGB
+						{
+							LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
 
-					/*
-					rchan = marine->m_vecCustLaserColor.m_Value.x;
-					gchan = marine->m_vecCustLaserColor.m_Value.y;
-					bchan = marine->m_vecCustLaserColor.m_Value.z;
-					*/
-
-					rchan = outR;
-					gchan = outG;
-					bchan = outB;
-
+							rchan = outR;
+							gchan = outG;
+							bchan = outB;
+							outUnused = 0;
+						}
+						else if (cl_asw_laser_display_mode.GetInt() == 1) //STAT COLORS OVERRIDE
+						{
+							C_ASW_Game_Resource* pGameResource = ASWGameResource();
+							if (pGameResource != NULL)
+							{
+								for (int i = 0; i < pGameResource->GetMaxMarineResources(); i++)
+								{
+									C_ASW_Marine_Resource* pMR2 = pGameResource->GetMarineResource(i);
+									if (pMR2 != NULL && pMR2->GetMarineEntity() == marine)
+									{
+										if (i < NELEMS(g_rgbaStatsReportPlayerColors))
+										{
+											Color statColor = g_rgbaStatsReportPlayerColors[i];
+											rchan = statColor.r();
+											gchan = statColor.g();
+											bchan = statColor.b();
+											outUnused = 0;
+										}
+									}
+								}
+							}
+						}
+						else if (cl_asw_laser_display_mode.GetInt() == 2) //PROFILE CONVAR OVERRIDE
+						{
+							if (pMR->m_MarineProfileIndex == 0)
+							{
+								Color profileColor = cl_asw_laser_color_sarge.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 1)
+							{
+								Color profileColor = cl_asw_laser_color_wildcat.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 2)
+							{
+								Color profileColor = cl_asw_laser_color_faith.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 3)
+							{
+								Color profileColor = cl_asw_laser_color_crash.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 4)
+							{
+								Color profileColor = cl_asw_laser_color_jaeger.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 5)
+							{
+								Color profileColor = cl_asw_laser_color_wolfe.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 6)
+							{
+								Color profileColor = cl_asw_laser_color_bastille.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+							else if (pMR->m_MarineProfileIndex == 7)
+							{
+								Color profileColor = cl_asw_laser_color_vegas.GetColor();
+								rchan = profileColor.r();
+								gchan = profileColor.g();
+								bchan = profileColor.b();
+								outUnused = 0;
+							}
+						}
+						else //INVALID LASER MODE
+						{
+							rchan = 255;
+							gchan = 255;
+							bchan = 255;
+							outUnused = 0;
+						}
+					}
 					rchan = rchan / 255;
 					gchan = gchan / 255;
 					bchan = bchan / 255;
-
-
-					//int test_input, outRed, outGreen, outBlue, outUnused;
-					//test_input = GetEncodedLaserColor(1111, 61, 69, 82);
-					//GetDecodedLaserColor(test_input, outRed, outGreen, outBlue, outUnused);
-
-					//test_input = GetEncodedLaserColor(outRed, outGreen, outBlue, outUnused);
 
 					colorMul = Vector(rchan, gchan, bchan);
 					if (bLocalPlayer)
