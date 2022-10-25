@@ -260,7 +260,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	if ( pEquip->m_pLockedLabel->IsVisible() )
 	{
 		wchar_t wszRequiredLevel[12]{};
-		V_snwprintf( wszRequiredLevel, sizeof( wszRequiredLevel ), L"%d", pEquip->m_pWeapon->RequiredLevel );
+		V_snwprintf( wszRequiredLevel, ARRAYSIZE( wszRequiredLevel ), L"%d", pEquip->m_pWeapon->RequiredLevel );
 
 		wchar_t wszBuf[1024]{};
 		g_pVGuiLocalize->ConstructString( wszBuf, sizeof( wszBuf ),
@@ -284,7 +284,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			Assert( SteamUserStats() );
 
 			wchar_t wszDays[4]{};
-			V_snwprintf( wszDays, sizeof( wszDays ), L"%d", m_nStatsDays );
+			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
 
 			FOR_EACH_VEC( pEquip->m_pWeapon->GlobalStats, i )
 			{
@@ -465,7 +465,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 		m_pCantEquipLabel->SetVisible( false );
 
 		wchar_t wszLevel[12];
-		V_snwprintf( wszLevel, sizeof( wszLevel ), L"%d", m_pWeapon->RequiredLevel );
+		V_snwprintf( wszLevel, ARRAYSIZE( wszLevel ), L"%d", m_pWeapon->RequiredLevel );
 		m_pLockedLabel->SetText( wszLevel );
 	}
 	else
@@ -867,26 +867,26 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		wchar_t wszAmmoClips[128];
 		if ( m_pFact->SkillValueIsClipSize )
 		{
-			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, flBaseValue );
-			V_snwprintf( wszSize, sizeof( wszSize ), L"%.0f", flSkillValue );
+			V_snwprintf( wszClips, ARRAYSIZE( wszClips ), L"%.*f", iPrecision, flBaseValue );
+			V_snwprintf( wszSize, ARRAYSIZE( wszSize ), L"%.0f", flSkillValue );
 		}
 		else
 		{
-			V_snwprintf( wszClips, sizeof( wszClips ), L"%.*f", iPrecision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
-			V_snwprintf( wszSize, sizeof( wszSize ), L"%d", m_pFact->ClipSize );
+			V_snwprintf( wszClips, ARRAYSIZE( wszClips ), L"%.*f", iPrecision, ( flBaseValue + flSkillValue ) / m_pFact->ClipSize );
+			V_snwprintf( wszSize, ARRAYSIZE( wszSize ), L"%d", m_pFact->ClipSize );
 		}
 		g_pVGuiLocalize->ConstructString( wszAmmoClips, sizeof( wszAmmoClips ),
 			g_pVGuiLocalize->Find( "#rd_weapon_fact_ammo_clips" ),
 			2, wszClips, wszSize );
-		V_snwprintf( buf, sizeof( buf ), L"%s%s%s%s%s", wszBefore, wszBeforeNum, wszAmmoClips, wszAfterNum, wszAfter );
+		V_snwprintf( buf, ARRAYSIZE( buf ), L"%s%s%s%s%s", wszBefore, wszBeforeNum, wszAmmoClips, wszAfterNum, wszAfter );
 	}
 	else if ( flBaseValue == 0.0f || flSkillValue == 0.0f )
 	{
-		V_snwprintf( buf, sizeof( buf ), L"%s%s%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfterNum, wszAfter );
+		V_snwprintf( buf, ARRAYSIZE( buf ), L"%s%s%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue == 0.0f ? flSkillValue : flBaseValue, wszAfterNum, wszAfter );
 	}
 	else
 	{
-		V_snwprintf( buf, sizeof( buf ), L"%s%s%.*f+%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue, iPrecision, flSkillValue, wszAfterNum, wszAfter );
+		V_snwprintf( buf, ARRAYSIZE( buf ), L"%s%s%.*f+%.*f%s%s", wszBefore, wszBeforeNum, iPrecision, flBaseValue, iPrecision, flSkillValue, wszAfterNum, wszAfter );
 	}
 
 	m_pLblValue->SetText( buf );

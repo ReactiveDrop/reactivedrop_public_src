@@ -469,7 +469,7 @@ public:
 
 		// append the recommended flag
 		wchar_t newText[512];
-		V_snwprintf( newText, sizeof(newText) / sizeof(wchar_t), L"%s *", text );
+		V_snwprintf( newText, ARRAYSIZE( newText ), L"%s *", text );
 
 		// reset
 		combo->UpdateItem(iItem, newText, NULL);
@@ -478,7 +478,7 @@ public:
 	int FindMSAAMode( int nAASamples, int nAAQuality )
 	{
 		// Run through the AA Modes supported by the device
-        for ( int nAAMode = 0; nAAMode < m_nNumAAModes; nAAMode++ )
+		for ( int nAAMode = 0; nAAMode < m_nNumAAModes; nAAMode++ )
 		{
 			// If we found the mode that matches what we're looking for, return the index
 			if ( ( m_nAAModes[nAAMode].m_nNumSamples == nAASamples) && ( m_nAAModes[nAAMode].m_nQualityLevel == nAAQuality) )
