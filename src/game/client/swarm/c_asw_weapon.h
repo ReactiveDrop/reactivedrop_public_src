@@ -14,6 +14,8 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 
+extern Color g_rgbaStatsReportPlayerColors[ASW_MAX_MARINE_RESOURCES];
+
 //extern bool g_bLaserIndexInUse[8]; //LS INDEX SIZE 8
 
 
