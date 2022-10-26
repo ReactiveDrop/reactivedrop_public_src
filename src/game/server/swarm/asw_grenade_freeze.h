@@ -13,6 +13,7 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Precache();
+	virtual void Spawn();
 	virtual void DoExplosion();
 	virtual void CreateEffects();
 	virtual float GetEarliestTouchDetonationTime();
