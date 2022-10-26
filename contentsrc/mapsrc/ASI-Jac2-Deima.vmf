@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3298"
+	"mapversion" "3301"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -80,7 +80,7 @@ viewsettings
 world
 {
 	"id" "182379"
-	"mapversion" "3298"
+	"mapversion" "3301"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -152170,7 +152170,7 @@ entity
 {
 	"id" "1100744"
 	"classname" "trigger_multiple"
-	"origin" "8032 6880 -8"
+	"origin" "7872 6880 -8"
 	"spawnflags" "16"
 	"StartDisabled" "0"
 	"wait" "1"
@@ -152184,7 +152184,7 @@ entity
 		side
 		{
 			"id" "159062"
-			"plane" "(8016 6752 48) (8016 7008 48) (8048 7008 48)"
+			"plane" "(7856 6752 48) (7856 7008 48) (7888 7008 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 1 0 0] 0.25"
@@ -152195,7 +152195,7 @@ entity
 		side
 		{
 			"id" "159061"
-			"plane" "(8016 7008 -64) (8016 6752 -64) (8048 6752 -64)"
+			"plane" "(7856 7008 -64) (7856 6752 -64) (7888 6752 -64)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 1 0 0] 0.25"
@@ -152206,7 +152206,7 @@ entity
 		side
 		{
 			"id" "159060"
-			"plane" "(8048 7008 -64) (8048 6752 -64) (8048 6752 48)"
+			"plane" "(7888 7008 -64) (7888 6752 -64) (7888 6752 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[0 -1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -152217,7 +152217,7 @@ entity
 		side
 		{
 			"id" "159059"
-			"plane" "(8016 6752 -64) (8016 7008 -64) (8016 7008 48)"
+			"plane" "(7856 6752 -64) (7856 7008 -64) (7856 7008 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[0 -1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -152228,7 +152228,7 @@ entity
 		side
 		{
 			"id" "159058"
-			"plane" "(8048 6752 -64) (8016 6752 -64) (8016 6752 48)"
+			"plane" "(7888 6752 -64) (7856 6752 -64) (7856 6752 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -152239,7 +152239,7 @@ entity
 		side
 		{
 			"id" "159057"
-			"plane" "(8016 7008 -64) (8048 7008 -64) (8048 7008 48)"
+			"plane" "(7856 7008 -64) (7888 7008 -64) (7888 7008 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -164083,7 +164083,7 @@ entity
 {
 	"id" "1100771"
 	"classname" "trigger_multiple"
-	"origin" "8104 6872 -8"
+	"origin" "8472 6872 -8"
 	"spawnflags" "16"
 	"StartDisabled" "0"
 	"wait" "1"
@@ -164097,7 +164097,7 @@ entity
 		side
 		{
 			"id" "159074"
-			"plane" "(8088 6744 48) (8088 7000 48) (8120 7000 48)"
+			"plane" "(7984 6744 48) (7984 7000 48) (8960 7000 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 -32] 0.25"
 			"vaxis" "[0 1 0 32] 0.25"
@@ -164108,7 +164108,7 @@ entity
 		side
 		{
 			"id" "159073"
-			"plane" "(8088 7000 -64) (8088 6744 -64) (8120 6744 -64)"
+			"plane" "(7984 7000 -64) (7984 6744 -64) (8960 6744 -64)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 -32] 0.25"
 			"vaxis" "[0 1 0 32] 0.25"
@@ -164119,7 +164119,7 @@ entity
 		side
 		{
 			"id" "159072"
-			"plane" "(8120 7000 -64) (8120 6744 -64) (8120 6744 48)"
+			"plane" "(8960 7000 -64) (8960 6744 -64) (8960 6744 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[0 -1 0 -32] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -164130,7 +164130,7 @@ entity
 		side
 		{
 			"id" "159071"
-			"plane" "(8088 6744 -64) (8088 7000 -64) (8088 7000 48)"
+			"plane" "(7984 6744 -64) (7984 7000 -64) (7984 7000 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[0 -1 0 -32] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -164141,7 +164141,7 @@ entity
 		side
 		{
 			"id" "159070"
-			"plane" "(8120 6744 -64) (8088 6744 -64) (8088 6744 48)"
+			"plane" "(8960 6744 -64) (7984 6744 -64) (7984 6744 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 -32] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -164152,7 +164152,7 @@ entity
 		side
 		{
 			"id" "159069"
-			"plane" "(8088 7000 -64) (8120 7000 -64) (8120 7000 48)"
+			"plane" "(7984 7000 -64) (8960 7000 -64) (8960 7000 48)"
 			"material" "TOOLS/TOOLSTRIGGER"
 			"uaxis" "[-1 0 0 -32] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -171881,8 +171881,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[5567.23 1058.48 -213.927]"
-		"look" "[5382.8 872.502 -174.193]"
+		"position" "[7940.15 6771.15 234.838]"
+		"look" "[7933.95 6851.01 -17.6771]"
 	}
 }
 cordons
