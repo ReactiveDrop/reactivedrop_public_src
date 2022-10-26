@@ -42,6 +42,13 @@ void CASW_Grenade_Freeze::Precache()
 	PrecacheScriptSound( "ASW_Freeze_Grenade.Explode" );
 }
 
+void CASW_Grenade_Freeze::Spawn()
+{
+	BaseClass::Spawn();
+
+	m_nSkin = 1;
+}
+
 CASW_Grenade_Freeze* CASW_Grenade_Freeze::Freeze_Grenade_Create( float flDamage, float flFreezeAmount, float fRadius, int iClusters, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon )
 {
 	CASW_Grenade_Freeze *pGrenade = (CASW_Grenade_Freeze *)CreateEntityByName( "asw_grenade_freeze" );
