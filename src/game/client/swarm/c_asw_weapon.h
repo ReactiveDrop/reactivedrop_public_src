@@ -57,7 +57,9 @@ public:
 
 	// effects
 	virtual int		GetMuzzleAttachment( void );
+	int				GetMuzzle2Attachment(void);
 	virtual void	SetMuzzleAttachment( int nNewAttachment );
+	void			SetMuzzle2Attachment(int nNewAttachment);
 	virtual float	GetMuzzleFlashScale( void );
 	virtual Vector	GetMuzzleFlashTint();
 	virtual void	ProcessMuzzleFlashEvent();
@@ -177,6 +179,7 @@ public:
 	bool m_bFastReloadFailure;
 	float m_flReloadFailTime;			// time from when you fail an active reload until you can shoot again
 	// attachments
+	int m_nMuzzle2Attachment;
 	int m_nMuzzleAttachment;
 	int m_nLastMuzzleAttachment;
 
@@ -208,14 +211,17 @@ public:
 	virtual bool ShouldShowLaserPointer();
 	virtual bool ShouldAlignWeaponToLaserPointer();
 	void SimulateLaserPointer();
-	void CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment );
-	void RemoveLaserPointerEffect();
+	void CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment, int laserIndex = -1);
+	void RemoveLaserPointerEffect( int laserIndex = -1);
 	CUtlReference<CNewParticleEffect> m_pLaserPointerEffect;
+	CUtlReference<CNewParticleEffect> m_pLeftLaserPointerEffect;
 	virtual float GetLaserPointerRange( void ) { return 600; }
 	void SetLaserTargetEntity( C_BaseEntity* pEnt ) { m_hLaserTargetEntity = pEnt; }
 	C_BaseEntity* GetLaserTargetEntity() { return m_hLaserTargetEntity.Get(); }
+	C_BaseEntity* GetLeftLaserTargetEntity() { return m_hLeftLaserTargetEntity.Get(); }
 	bool m_bLocalPlayerControlling;
 	EHANDLE m_hLaserTargetEntity;
+	EHANDLE m_hLeftLaserTargetEntity;
 	Vector m_vecLaserPointerDirection;
 
 	// muzzle flash
