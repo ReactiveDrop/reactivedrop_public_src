@@ -78,7 +78,8 @@ END_SCRIPTDESC();
 void CASW_Grenade_Cluster::Spawn( void )
 {
 	Precache();
-	SetModel(CLUSTER_GRENADE_MODEL);
+	SetModel( CLUSTER_GRENADE_MODEL );
+	m_nSkin = 0;
 	
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 
