@@ -729,7 +729,8 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 	if ( pWeapon && pWeapon->IsOffensiveWeapon() )
 	{
 		C_BaseEntity *pEnt = pWeapon->GetLaserTargetEntity();
-		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+		C_BaseEntity* pEnt2 = pWeapon->GetLeftLaserTargetEntity();
+		if (( pEnt && pEnt->Classify() == CLASS_ASW_MARINE ) || (pEnt2 && pEnt2->Classify() == CLASS_ASW_MARINE))
 		{
 			// perform team check
 			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
