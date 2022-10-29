@@ -30,9 +30,9 @@ static bool IsAlphabet( char category )
 		{
 			s_chAlphabet = 'C'; // Cyrillic
 		}
-		else if ( !V_strcmp( szLang, "schinese" ) )
+		else if ( !V_strcmp( szLang, "koreana" ) || !V_strcmp( szLang, "schinese" ) )
 		{
-			s_chAlphabet = 'H'; // Han
+			s_chAlphabet = 'H'; // Han/Hangul
 		}
 		else
 		{
