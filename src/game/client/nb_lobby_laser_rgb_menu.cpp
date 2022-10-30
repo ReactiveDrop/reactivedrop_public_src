@@ -840,7 +840,7 @@ void Cnb_lobby_laser_rgb_menu::OnCursorMoved(int x, int y)
 	m_localMouseY = y;
 }
 
-void Cnb_lobby_laser_rgb_menu::SetChangingLaserColor(Color rgbColor)
+void Cnb_lobby_laser_rgb_menu::SetChangingLaserColor(int laser)
 {
-	GetMainPanel()->SetChangingLaserColor(rgbColor);
+	GetMainPanel()->SetChangingLaserColor(laser);
 }
