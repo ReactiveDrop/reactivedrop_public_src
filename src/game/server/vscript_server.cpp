@@ -1034,18 +1034,20 @@ static void Script_GetDecodedLaserColor(int laserColor, HSCRIPT hTable)
 
 	if (hTable)
 	{
-		int outRed, outGreen, outBlue, outVal;
-		LaserHelper::GetDecodedLaserColor(laserColor, outRed, outGreen, outBlue, outVal);
+		int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+		LaserHelper::GetDecodedLaserColor(laserColor, outRed, outGreen, outBlue, outStyle, outSize);
 
 		g_pScriptVM->SetValue(hTable, "red", outRed);
 		g_pScriptVM->SetValue(hTable, "green", outGreen);
 		g_pScriptVM->SetValue(hTable, "blue", outBlue);
+		g_pScriptVM->SetValue(hTable, "style", outStyle);
+		g_pScriptVM->SetValue(hTable, "size", outSize);
 	}
 }
 
-static ScriptVariant_t Script_GetEncodedLaserColor(int red, int green, int blue, int val)
+static ScriptVariant_t Script_GetEncodedLaserColor(int red, int green, int blue, int style, int size)
 {
-	return ScriptVariant_t(LaserHelper::GetEncodedLaserColor(red, green, blue, val));
+	return ScriptVariant_t(LaserHelper::GetEncodedLaserColor(red, green, blue, style, size));
 }
 
 static void DoEntFire( const char *pszTarget, const char *pszAction, const char *pszValue, float delay, HSCRIPT hActivator, HSCRIPT hCaller )

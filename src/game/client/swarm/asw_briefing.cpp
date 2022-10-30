@@ -967,8 +967,8 @@ Color CASW_Briefing::GetMarineLaserColor(int nLobbySlot)
 
 	if (pMR)
 	{
-		int outR, outG, outB, outUnused;
-		LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
+		int outR, outG, outB, outStyle, outSize;
+		LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outStyle, outSize);
 		return Color(outR, outG, outB);
 	}
 

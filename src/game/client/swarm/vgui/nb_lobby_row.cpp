@@ -21,7 +21,7 @@
 #include "gameui/swarm/vhybridbutton.h"
 #include "rd_inventory_shared.h"
 #include "c_asw_player.h"
-//#include "convar.h"
+#include "LaserHelperFunctions_shared.h"
 
 #include "c_asw_weapon.h"
 
@@ -169,8 +169,8 @@ void CNB_Lobby_Row::OnThink()
 void CNB_Lobby_Row::UpdateDetails()
 {
 	int screenWidth = ScreenWidth(), screenHeight = ScreenHeight();
-	float widthMod = screenWidth / 640;
-	float heightMod = screenHeight / 480;
+	//float widthMod = screenWidth / 640;
+	//float heightMod = screenHeight / 480;
 
 	color32 white;
 	white.r = 255;
@@ -469,9 +469,9 @@ void CNB_Lobby_Row::UpdateDetails()
 	if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && Briefing()->IsLobbySlotLocal(m_nLobbySlot) && !Briefing()->IsLobbySlotBot(m_nLobbySlot))
 	{
 
-
-
-		Color _inputRGBColor = cl_asw_laser_sight_color.GetColor();
+		int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+		LaserHelper::SplitLaserConvar(&cl_asw_laser_sight_color, outRed, outGreen, outBlue, outStyle, outSize);
+		Color _inputRGBColor = Color(outRed, outGreen, outBlue);
 		color32 rgbLaserColor = color32();
 		rgbLaserColor.r = _inputRGBColor.r();
 		rgbLaserColor.g = _inputRGBColor.g();
@@ -498,8 +498,8 @@ void CNB_Lobby_Row::UpdateDetails()
 	}
 	else if (Briefing()->IsLobbySlotOccupied(m_nLobbySlot) && !Briefing()->IsLobbySlotLocal(m_nLobbySlot) && Briefing()->IsFullyConnected(m_nLobbySlot) && !Briefing()->IsLobbySlotBot(m_nLobbySlot))
 	{
-		CASW_Briefing* ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
-		Color _BoopColor = ASW_Briefing->GetMarineLaserColor(m_nLobbySlot); //Do not defy the power of the boop!
+		CASW_Briefing* _ASW_Briefing = dynamic_cast<CASW_Briefing*>(Briefing());
+		Color _BoopColor = _ASW_Briefing->GetMarineLaserColor(m_nLobbySlot); //Do not defy the power of the boop!
 
 
 		color32 rgbLaserColor = color32();

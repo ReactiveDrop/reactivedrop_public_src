@@ -65,7 +65,7 @@ public:
 	void RecalculateHSVColor();
 	void UpdateHSVColor();
 	void SetHSVMarkerPos();
-	void SetColorData(Color datCol);
+	void SetColorData(Color datCol, int style, int size);
 
 	void SetChangingLaserColor(Color rgbColor);
 

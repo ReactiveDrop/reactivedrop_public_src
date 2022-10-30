@@ -121,8 +121,10 @@ void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 		{
 			if (!pPlayer->IsBriefingActive())
 			{
-				Color laserCol = ((ConVar*)var)->GetColor();
-				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d", laserCol.r(), laserCol.g(), laserCol.b()));
+				int outRed, outGreen, outBlue, outStyle = 0, outSize = 0;
+				LaserHelper::SplitLaserConvar( ((ConVar*)var) , outRed, outGreen, outBlue, outStyle, outSize);
+
+				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d %d %d", outRed, outGreen, outBlue, outStyle, outSize));
 			}
 		}
 	}
@@ -178,7 +180,7 @@ void OnClassicLasersModeChanged(IConVar* var, const char* pOldValue, float flOld
 	OnLasersSettingsChanged(var, pOldValue, flOldValue);
 }
 
-ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight.", OnClientLaserChanged);
+ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight. (Red Green Blue Style Size", OnClientLaserChanged);
 
 ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
 ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");
@@ -920,11 +922,6 @@ void C_ASW_Weapon::SimulateLaserPointer()
 
 	GetAttachment( iAttachment, vecOrigin, angWeapon );
 
-	if (iAttachment2 > 0)
-	{
-		GetAttachment(iAttachment2, vecOrigin2, angWeapon2);
-	}
-
 	float flDistance = GetLaserPointerRange();
 	float alpha = 0.65f;
 	float alphaFF = 0;
@@ -978,22 +975,11 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	// used to call GetWeaponRange() which was defined per weapon
 	UTIL_TraceLine( vecOrigin, vecOrigin + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
-	if (iAttachment2 > 0)
-	{
-		UTIL_TraceLine(vecOrigin2, vecOrigin2 + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr2);
-		m_hLeftLaserTargetEntity = tr2.m_pEnt;
-	}
-
 	m_hLaserTargetEntity = tr.m_pEnt;
 
 	if ( !m_pLaserPointerEffect )
 	{
 		CreateLaserPointerEffect( bLocalPlayer, iAttachment, 0);
-	}
-
-	if (iAttachment2 > 0 && !m_pLeftLaserPointerEffect && cl_asw_dual_laser.GetBool())
-	{
-		CreateLaserPointerEffect(bLocalPlayer, iAttachment2, 1);
 	}
 
 	if ( m_pLaserPointerEffect )
@@ -1015,23 +1001,36 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		m_pLaserPointerEffect->SetControlPoint( 3, Vector( alpha, alphaFF, 0 ) );
 	}
 
-	if (m_pLeftLaserPointerEffect)
+	if (iAttachment2 > 0)
 	{
-		// if we switched which marine we are controlling, destroy the old effect and create the new one
-		if (m_bLocalPlayerControlling != bLocalPlayer)
+		GetAttachment(iAttachment2, vecOrigin2, angWeapon2);
+
+		UTIL_TraceLine(vecOrigin2, vecOrigin2 + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr2);
+		m_hLeftLaserTargetEntity = tr2.m_pEnt;
+
+		if (!m_pLeftLaserPointerEffect && cl_asw_dual_laser.GetBool())
 		{
 			CreateLaserPointerEffect(bLocalPlayer, iAttachment2, 1);
 		}
 
-		m_pLeftLaserPointerEffect->SetControlPoint(1, vecOrigin2);
-		m_pLeftLaserPointerEffect->SetControlPoint(2, tr2.endpos);
-		m_vecLaserPointerDirection = vecDirShooting;
-		m_pLeftLaserPointerEffect->SetControlPointForwardVector(1, vecDirShooting);
-		Vector vecImpactY, vecImpactZ;
-		VectorVectors(tr2.plane.normal, vecImpactY, vecImpactZ);
-		vecImpactY *= -1.0f;
-		m_pLeftLaserPointerEffect->SetControlPointOrientation(2, vecImpactY, vecImpactZ, tr2.plane.normal);
-		m_pLeftLaserPointerEffect->SetControlPoint(3, Vector(alpha, alphaFF, 0));
+		if (m_pLeftLaserPointerEffect)
+		{
+			// if we switched which marine we are controlling, destroy the old effect and create the new one
+			if (m_bLocalPlayerControlling != bLocalPlayer)
+			{
+				CreateLaserPointerEffect(bLocalPlayer, iAttachment2, 1);
+			}
+
+			m_pLeftLaserPointerEffect->SetControlPoint(1, vecOrigin2);
+			m_pLeftLaserPointerEffect->SetControlPoint(2, tr2.endpos);
+			m_vecLaserPointerDirection = vecDirShooting;
+			m_pLeftLaserPointerEffect->SetControlPointForwardVector(1, vecDirShooting);
+			Vector vecImpactY, vecImpactZ;
+			VectorVectors(tr2.plane.normal, vecImpactY, vecImpactZ);
+			vecImpactY *= -1.0f;
+			m_pLeftLaserPointerEffect->SetControlPointOrientation(2, vecImpactY, vecImpactZ, tr2.plane.normal);
+			m_pLeftLaserPointerEffect->SetControlPoint(3, Vector(alpha, alphaFF, 0));
+		}
 	}
 
 	if ( !m_pMuzzleFlashEffect )
@@ -1075,6 +1074,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 		RemoveLaserPointerEffect(laserIndex);
 	}
 
+
 	if (!(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect))
 	{
 		if (cl_asw_force_classic_lasers.GetBool())
@@ -1095,7 +1095,9 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 		{
 			C_ASW_Marine* marine = GetMarine();
 
-			float rchan = 0.0f, gchan = 0.0f, bchan = 0.0f, unused = 0.0f;
+			float rchan = 0.0f, gchan = 0.0f, bchan = 0.0f, laserSize = 1.0f;
+			int laserStyle = 0;
+
 
 
 			Vector colorMul = Vector(255, 0, 0);
@@ -1106,22 +1108,29 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 				{
 					if (cl_asw_laser_local_override.GetBool() && bLocalPlayer)
 					{
-						Color laserCol = cl_asw_laser_sight_color.GetColor();
-						rchan = laserCol.r();
-						gchan = laserCol.g();
-						bchan = laserCol.b();
+						int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+						LaserHelper::SplitLaserConvar(&cl_asw_laser_sight_color, outR, outG, outB, outLaserStyle, outLaserSize);
+
+						rchan = outR;
+						gchan = outG;
+						bchan = outB;
+
+						laserStyle = outLaserStyle;
+						laserSize += (outLaserSize * 0.03f);
 					}
 					else
 					{
 						if (cl_asw_laser_display_mode.GetInt() == 0) //NETWORK RGB
 						{
-							int outR, outG, outB, outUnused;
-							LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outUnused);
+							int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+							LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outR, outG, outB, outLaserStyle, outLaserSize);
 
 							rchan = outR;
 							gchan = outG;
 							bchan = outB;
-							outUnused = 0;
+							laserStyle = outLaserStyle;
+							laserSize += (outLaserSize * 0.03f);
+
 						}
 						else if (cl_asw_laser_display_mode.GetInt() == 1) //STAT COLORS OVERRIDE
 						{
@@ -1148,65 +1157,99 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 						{
 							if (pMR->m_MarineProfileIndex == 0)
 							{
-								Color profileColor = cl_asw_laser_color_sarge.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_sarge, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 1)
 							{
-								Color profileColor = cl_asw_laser_color_wildcat.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_wildcat, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 2)
 							{
-								Color profileColor = cl_asw_laser_color_faith.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_faith, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 3)
 							{
-								Color profileColor = cl_asw_laser_color_crash.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_crash, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 4)
 							{
-								Color profileColor = cl_asw_laser_color_jaeger.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_jaeger, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 5)
 							{
-								Color profileColor = cl_asw_laser_color_wolfe.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_wolfe, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 6)
 							{
-								Color profileColor = cl_asw_laser_color_bastille.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_bastille, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else if (pMR->m_MarineProfileIndex == 7)
 							{
-								Color profileColor = cl_asw_laser_color_vegas.GetColor();
-								rchan = profileColor.r();
-								gchan = profileColor.g();
-								bchan = profileColor.b();
+								int outR = 0, outG = 0, outB = 0, outLaserStyle = 0, outLaserSize = 0;
+								LaserHelper::SplitLaserConvar(&cl_asw_laser_color_vegas, outR, outG, outB, outLaserStyle, outLaserSize);
+
+								rchan = outR;
+								gchan = outG;
+								bchan = outB;
+								laserStyle = outLaserStyle;
+								laserSize += (outLaserSize * 0.03f);
 							}
 							else
 							{
 								rchan = 255;
 								gchan = 255;
 								bchan = 255;
+								laserStyle = 0;
+								laserSize = 1.0;
 							}
 						}
 						else //INVALID LASER MODE
@@ -1214,6 +1257,8 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 							rchan = 255;
 							gchan = 255;
 							bchan = 255;
+							laserStyle = 0;
+							laserSize = 1.0;
 						}
 					}
 					rchan = rchan / 255;
@@ -1223,19 +1268,20 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 					colorMul = Vector(rchan, gchan, bchan);
 					if (bLocalPlayer)
 					{
-						//m_pLaserPointerEffect = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
-						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
+						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create(LaserHelper::GetParticleStyle(laserStyle) , PATTACH_POINT_FOLLOW, iAttachment);
+						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(15.0f*laserSize, 0.0f, 0.0f));
 					}
 					else
 					{
-						//m_pLaserPointerEffect = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment);
-						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment);
+						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create(LaserHelper::GetParticleStyle(laserStyle), PATTACH_POINT_FOLLOW, iAttachment);
+						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(9.0f*laserSize, 0.0f, 0.0f));
 					}
 				}
 			}
 			else
 			{
-			(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create("other_laser1", PATTACH_POINT_FOLLOW, iAttachment);
+				(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
+				(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(9.0f, 0.0f, 0.0f));
 			}
 			if ((laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect))
 			{

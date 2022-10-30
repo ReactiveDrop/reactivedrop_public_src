@@ -40,7 +40,7 @@ public:
 
 	void ChangeMarine( int nLobbySlot );
 	bool ChangeLaserColor(int nLobbySlot);
-	void SetChangingLaserColor(Color rgbColor);
+	void SetChangingLaserColor(int laser);
 	void AddBot();
 	void ChangeWeapon( int nLobbySlot, int nInventorySlot );
 	void SpendSkillPointsOnMarine( int nProfileIndex );
@@ -87,7 +87,7 @@ public:
 	bool m_bHSVIsActive = false;
 
 	float m_lastColorNetworkUpdate = -999.0f;
-	Color m_LastNetworkSentColor = Color(255, 255, 255);
+	int m_LastNetworkSentColor = 0;
 };
 
 #endif // _INCLUDED_NB_MAIN_PANEL_H

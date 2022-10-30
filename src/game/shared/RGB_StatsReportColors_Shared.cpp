@@ -1,4 +1,7 @@
 #include "cbase.h"
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
 Color g_rgbaStatsReportPlayerColors[] =
 {
 	Color(225, 60, 60, 255),

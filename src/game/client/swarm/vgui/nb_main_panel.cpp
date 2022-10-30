@@ -40,6 +40,7 @@
 #include "nb_leaderboard_panel.h"
 #include "controller_focus.h"
 #include "nb_lobby_laser_rgb_menu.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -141,7 +142,7 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	GetControllerFocus()->AddToFocusList( m_pAddBotButton );
 	GetControllerFocus()->AddToFocusList( m_pDeselectMarinesButton );
 
-	SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
+	SetChangingLaserColor(LaserHelper::ConvarToLaser(&cl_asw_laser_sight_color));
 }
 
 CNB_Main_Panel::~CNB_Main_Panel()
@@ -390,11 +391,14 @@ void CNB_Main_Panel::OnTick()
 
 
 	//Check Color Network updates
+	int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+	LaserHelper::SplitLaserConvar(&cl_asw_laser_sight_color, outRed, outGreen, outBlue, outStyle, outSize);
+	int laser = LaserHelper::ConvarToLaser(&cl_asw_laser_sight_color);
 
-	if (m_LastNetworkSentColor != cl_asw_laser_sight_color.GetColor() && gpGlobals->curtime > m_lastColorNetworkUpdate + 0.25f)
+	if (m_LastNetworkSentColor != laser && gpGlobals->curtime > m_lastColorNetworkUpdate + 0.25f)
 	{
-		SetChangingLaserColor(cl_asw_laser_sight_color.GetColor());
-		m_LastNetworkSentColor = cl_asw_laser_sight_color.GetColor();
+		SetChangingLaserColor(laser);
+		m_LastNetworkSentColor = laser;
 		m_lastColorNetworkUpdate = gpGlobals->curtime;
 	}
 }
@@ -590,6 +594,10 @@ void CNB_Main_Panel::OnCommand( const char *command )
 			{
 				if ( Briefing()->AreOtherPlayersReady() )
 				{
+					if (m_hSubScreen)
+					{
+						m_hSubScreen->MarkForDeletion();
+					}
 					Briefing()->StartMission();
 				}
 				else
@@ -700,7 +708,9 @@ void CNB_Main_Panel::ShowLeaderboard()
 	m_hSubScreen = pPanel;
 }
 
-void CNB_Main_Panel::SetChangingLaserColor(Color rgbColor)
+void CNB_Main_Panel::SetChangingLaserColor(int laser)
 {
-	engine->ClientCmd(VarArgs("cl_editing_lasercolor %d %d %d", rgbColor.r(), rgbColor.g(), rgbColor.b()));
+	int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+	LaserHelper::GetDecodedLaserColor(laser, outRed, outGreen, outBlue, outStyle, outSize);
+	engine->ClientCmd(VarArgs("cl_editing_lasercolor %d %d %d %d %d", outRed, outGreen, outBlue, outStyle, outSize));
 }

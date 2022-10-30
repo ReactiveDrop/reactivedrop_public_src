@@ -25,6 +25,7 @@
 #include "HSVSliderPanel.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/ISystem.h>
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -45,7 +46,10 @@ extern ConVar cl_asw_archived_lsc9;
 
 Cnb_lobby_laser_rgb_menu::Cnb_lobby_laser_rgb_menu(vgui::Panel* parent, const char* name) : BaseClass(parent, name)
 {
-	SetColorData(cl_asw_laser_sight_color.GetColor());
+	int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+	LaserHelper::SplitLaserConvar(&cl_asw_laser_sight_color, outRed, outGreen, outBlue, outStyle, outSize);
+	Color laserCol = Color(outRed, outGreen, outBlue);
+	SetColorData(laserCol, outStyle, outSize);
 
 	m_pBackground = new vgui::ImagePanel(this, "Background");
 	m_pHSVSquare = new CHSVColorSquarePanel(this, "HSVSquare");
@@ -162,7 +166,10 @@ void Cnb_lobby_laser_rgb_menu::OnThink()
 
 void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 {
-	Color _inputRGBColor = cl_asw_laser_sight_color.GetColor();
+	int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+	LaserHelper::SplitLaserConvar(&cl_asw_laser_sight_color, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputLaserColor = Color(outRed, outGreen, outBlue);
+
 	color32 rgbLaserColor = color32();
 	rgbLaserColor.r = _inputRGBColor.r();
 	rgbLaserColor.g = _inputRGBColor.g();
@@ -513,7 +520,7 @@ void Cnb_lobby_laser_rgb_menu::CheckTooltip(CNB_Lobby_Tooltip* pTooltip)
 
 extern ConVar developer;
 
-void Cnb_lobby_laser_rgb_menu::SetColorData(Color datCol)
+void Cnb_lobby_laser_rgb_menu::SetColorData(Color datCol, int style, int size)
 {
 	m_currentLSColor.r = datCol.r();
 	m_currentLSColor.g = datCol.g();
@@ -527,6 +534,9 @@ void Cnb_lobby_laser_rgb_menu::SetColorData(Color datCol)
 	m_fHSV_Hue = vecHSV.x;
 	m_fHSV_Sat = vecHSV.y;
 	m_fHSV_Val = vecHSV.z;
+
+	m_currentLaserStyle = style;
+	m_currentLaserSize = size;
 }
 
 void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
@@ -537,22 +547,21 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 
 	if (!Q_stricmp(command, "SetLaserColor"))
 	{
-		char sLaserColor[16]{};
-		snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-		cl_asw_laser_sight_color.SetValue(sLaserColor);
+		LaserHelper::SetLaserConvar(&cl_asw_laser_sight_color, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 	}
 	else if (!Q_stricmp(command, "SetCustLaser1"))
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc1.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc1, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc1.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc1, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -563,14 +572,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc2.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc2, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc2.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc2, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -581,14 +591,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc3.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc3, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc3.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc3, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -599,14 +610,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc4.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc4, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc4.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc4, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -617,14 +629,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc5.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc5, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc5.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc5, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -635,14 +648,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc6.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc6, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc6.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc6, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -653,14 +667,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc7.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc7, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc7.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc7, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -671,14 +686,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc8.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc8, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc8.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc8, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -689,14 +705,15 @@ void Cnb_lobby_laser_rgb_menu::OnCommand(const char* command)
 	{
 		if (m_bReplaceColor)
 		{
-			char sLaserColor[16]{};
-			snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-			cl_asw_archived_lsc9.SetValue(sLaserColor);
+			LaserHelper::SetLaserConvar(&cl_asw_archived_lasc9, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 			m_bReplaceColor = false;
 		}
 		else
 		{
-			SetColorData(cl_asw_archived_lsc9.GetColor());
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+			LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc9, outRed, outGreen, outBlue, outStyle, outSize);
+			Color colorDat = Color(outRed, outGreen, outBlue);
+			SetColorData(colorDat, outStyle, outSize);
 
 			SetHSVMarkerPos();
 			RecalculateHSVColor();
@@ -759,9 +776,7 @@ void Cnb_lobby_laser_rgb_menu::RecalculateHSVColor()
 
 void Cnb_lobby_laser_rgb_menu::UpdateHSVColor()
 {
-	char sLaserColor[16]{};
-	snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b);
-	cl_asw_laser_sight_color.SetValue(sLaserColor);
+	LaserHelper::SetLaserConvar(cl_asw_laser_sight_color, m_currentLSColor.r, m_currentLSColor.g, m_currentLSColor.b, m_currentLaserStyle, m_currentLaserSize);
 }
 
 void Cnb_lobby_laser_rgb_menu::SetHSVMarkerPos()

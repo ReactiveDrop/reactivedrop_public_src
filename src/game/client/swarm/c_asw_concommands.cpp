@@ -35,6 +35,7 @@
 #include "asw_deathmatch_mode.h"
 #include "asw_medal_store.h"
 #include "asw_weapon_parse.h"
+#include "LaserHelperFunctions_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1130,9 +1131,7 @@ void ASW_ChangeLaser_f(const CCommand& args)
 {
 	if (args.ArgC() >= 4)
 	{
-		char sLaserColor[64]{};
-		snprintf(sLaserColor, sizeof(sLaserColor), "%d %d %d", atoi(args[1]), atoi(args[2]), atoi(args[3]));
-		cl_asw_laser_sight_color.SetValue(sLaserColor);
+		LaserHelper::SetLaserConvar(&cl_asw_laser_sight_color, atoi(args[1]), atoi(args[2]), atoi(args[3]), args.ArgC() > 4 ? atoi(args[4]) : 0, args.ArgC() > 5 ? atoi(args[5]) : 0);
 	}
 }
 ConCommand ASW_ChangeLaser("ASW_ChangeLaser", ASW_ChangeLaser_f, "Change your laser color while in a mission.", 0);
