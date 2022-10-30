@@ -291,8 +291,6 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropInt( RECVINFO( m_iMapVoted ) ),
 	RecvPropInt( RECVINFO( m_iNetworkedXP ) ),
 	RecvPropInt( RECVINFO( m_iNetworkedPromotion ) ),
-	//RecvPropVector( RECVINFO(m_vecLobbyLaserColor ) ),
-	RecvPropInt( RECVINFO(m_iLobbyLaserColor) ),
 
 	// BenLubar(spectator-mouse)
 	RecvPropInt( RECVINFO( m_iScreenWidth ) ),

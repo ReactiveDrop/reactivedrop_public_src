@@ -231,8 +231,6 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropInt	(SENDINFO( m_iMapVoted ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
 	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
-	//SendPropVector	(SENDINFO(m_vecLobbyLaserColor ) ),
-	//SendPropInt		(SENDINFO( m_iLobbyLaserColor ) ),
 
 	// BenLubar(spectator-mouse)
 	SendPropInt( SENDINFO( m_iScreenWidth ) ),
