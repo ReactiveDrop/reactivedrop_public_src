@@ -65,13 +65,14 @@ public:
 	void RecalculateHSVColor();
 	void UpdateHSVColor();
 	void SetHSVMarkerPos();
-	void SetColorData(Color datCol, int style, int size);
+	void SetColorData(Color datCol, int laserStyle, int laserSize);
 
 	void SetChangingLaserColor(int laser);
 
 	color32 m_currentLSColor = color32();
 	int m_currentLaserStyle = 0;
 	int m_currentLaserSize = 0;
+
 
 	vgui::ImagePanel* m_pBackground;
 	vgui::ImagePanel*  m_pHSVSquare;
