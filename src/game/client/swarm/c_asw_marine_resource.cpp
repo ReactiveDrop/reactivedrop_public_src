@@ -360,7 +360,6 @@ void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 				}
 			}
 
-			//m_LastLaserColor = m_vecCustLaserColor;
 			pMarine->m_LastLaserColor = m_iLaserColor;
 		}
 	}
