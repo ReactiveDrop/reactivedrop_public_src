@@ -110,6 +110,9 @@ ConVar rd_server_marine_backpacks_alt_position("rd_server_marine_backpacks_alt_p
 ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");
 ConVar rda_marine_strafe_push_hor_velocity("rda_marine_strafe_push_hor_velocity", "520", FCVAR_CHEAT, "Horizontal velocity for strafe push");
 ConVar rda_marine_strafe_push_vert_velocity("rda_marine_strafe_push_vert_velocity", "260", FCVAR_CHEAT, "Vertical velocity for strafe push");
+
+extern ConVar cl_asw_laser_sight_color;
+
 #define ADD_STAT( field, amount ) \
 		if ( CASW_Marine_Resource *pMR = GetMarineResource() ) \
 		{ \
@@ -270,8 +273,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
-	//SendPropVector  ( SENDINFO( m_vecCustLaserColor)),
-	//SendPropInt		( SENDINFO(m_iLaserColor) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -639,19 +640,6 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	m_iPoisonHeal = 0;
 	m_flNextPoisonHeal = -1;
-
-	/*
-	Vector vecCol = Vector(0, 0, 0);
-	Vector vecHSV = Vector(RandomFloat(0.0f, 360.0f), RandomFloat(0.0f, 255.0f), 255.0);
-	HSVtoRGB(vecHSV, vecCol);
-
-	m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.x, vecCol.y, vecCol.z, 0);
-	*/
-	//m_vecCustLaserColor.GetForModify().x = vecCol.x;
-	//m_vecCustLaserColor.GetForModify().y = vecCol.y;
-	//m_vecCustLaserColor.GetForModify().z = vecCol.z;
-
-
 }
 
 
@@ -1113,41 +1101,25 @@ void CASW_Marine::InhabitedBy( CASW_Player *player )
 
 	int entIndex = player->entindex();
 
+
 	const char* szLSValue = engine->GetClientConVarValue(entIndex, "cl_asw_laser_sight_color");
-
-
 
 	if (szLSValue)
 	{
-		CUtlStringList szSplitFloats;
-		V_SplitString(szLSValue, " ", szSplitFloats);
-
-		if (szSplitFloats.Count() >= 3)
+		int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+		LaserHelper::SplitLaserConvar(szLSValue, outRed, outGreen, outBlue, outStyle, outSize);
+		CASW_Marine_Resource* pMR = GetMarineResource();
+		if (pMR)
 		{
-			CASW_Marine_Resource* pMR = GetMarineResource();
-			if (pMR)
-			{
-				pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(atof(szSplitFloats[0]), atof(szSplitFloats[1]), atof(szSplitFloats[2]), 0);
-				/*
-				m_vecCustLaserColor.GetForModify().x = atof(szSplitFloats[0]);
-				m_vecCustLaserColor.GetForModify().y = atof(szSplitFloats[1]);
-				m_vecCustLaserColor.GetForModify().z = atof(szSplitFloats[2]);
-				*/
-			}
+			pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(outRed, outGreen, outBlue, outStyle, outSize);
 		}
-		else
+	}
+	else
+	{
+		CASW_Marine_Resource* pMR = GetMarineResource();
+		if (pMR)
 		{
-			CASW_Marine_Resource* pMR = GetMarineResource();
-			if (pMR)
-			{
-				pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(255, 0, 0, 0);
-				/*
-				Vector vecCustColor = m_vecCustLaserColor.GetForModify();
-				vecCustColor.x = 255.0f;
-				vecCustColor.y = 0.0f;
-				vecCustColor.z = 0.0f;
-				*/
-			}
+			pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(255, 0, 0, 0, 0);
 		}
 	}
 
@@ -1247,12 +1219,7 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 		if (nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
 		{
 			Color vecCol = g_rgbaStatsReportPlayerColors[nMarineResourceIndex];
-			pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.r(), vecCol.g(), vecCol.b(), 0);
-			/*
-			m_vecCustLaserColor.GetForModify().x = vecCol.r();
-			m_vecCustLaserColor.GetForModify().y = vecCol.g();
-			m_vecCustLaserColor.GetForModify().z = vecCol.b();
-			*/
+			pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.r(), vecCol.g(), vecCol.b(), 0, 0);
 		}
 
 		if ( pMR )
@@ -3606,8 +3573,6 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 
 void CASW_Marine::Script_GetLaserColor(HSCRIPT hTable)
 {
-	int outRed, outGreen, outBlue, outVal;
-
 	if (!g_pScriptVM) return;
 
 	if (hTable)
@@ -3615,22 +3580,24 @@ void CASW_Marine::Script_GetLaserColor(HSCRIPT hTable)
 		CASW_Marine_Resource* pMR = GetMarineResource();
 		if (pMR)
 		{
-			int outRed, outGreen, outBlue, outVal;
-			LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outRed, outGreen, outBlue, outVal);
+			int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize;
+			LaserHelper::GetDecodedLaserColor(pMR->m_iLaserColor, outRed, outGreen, outBlue, outStyle, outSize);
 
 			g_pScriptVM->SetValue(hTable, "red", outRed);
 			g_pScriptVM->SetValue(hTable, "green", outGreen);
 			g_pScriptVM->SetValue(hTable, "blue", outBlue);
+			g_pScriptVM->SetValue(hTable, "style", outStyle);
+			g_pScriptVM->SetValue(hTable, "size", outSize);
 		}
 	}
 }
 
-void CASW_Marine::Script_SetLaserColor(int red, int green, int blue, int val)
+void CASW_Marine::Script_SetLaserColor(int red, int green, int blue, int style, int size)
 {
 	CASW_Marine_Resource* pMR = GetMarineResource();
 	if (pMR)
 	{
-		pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(red, green, blue, val);
+		pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(red, green, blue, style, size);
 	}
 }
 

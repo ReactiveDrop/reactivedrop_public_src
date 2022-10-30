@@ -221,7 +221,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	Vector vecHSV = Vector(RandomFloat(0.0f, 360.0f), RandomFloat(0.0f, 255.0f), 255.0);
 	HSVtoRGB(vecHSV, vecCol);
 
-	m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.x, vecCol.y, vecCol.z, 0);
+	m_iLaserColor = LaserHelper::GetEncodedLaserColor(vecCol.x, vecCol.y, vecCol.z, 0, 0);
 }
 
 

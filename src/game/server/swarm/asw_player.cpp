@@ -988,9 +988,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 
-				//Vector vecColor = Vector(atoi(args[1]), atoi(args[2]), atoi(args[3]));
-
-				//m_vecLobbyLaserColor.SetDirect(vecColor);
 				const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
 
 				for (int i = 0; i < numMarineResources; i++)
@@ -998,7 +995,16 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 					if (pMR && pMR->IsInhabited() && pMR->GetCommander() == this)
 					{
-						LaserHelper::GetEncodedLaserColor(pMR->m_iLaserColor, atoi(args[1]), atoi(args[2]), atoi(args[3]));
+						int laserStyle = 0, laserSize = 0;
+						if (args.ArgC() > 4)
+						{
+							laserStyle = atoi(args[4]);
+							if (args.ArgC() > 5)
+							{
+								laserSize = atoi(args[4]);
+							}
+						}
+						pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(atoi(args[1]), atoi(args[2]), atoi(args[3]), laserStyle, laserSize);
 						break;
 					}
 				}
@@ -1288,7 +1294,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 
-				int rchan = atoi(args[1]), gchan = atoi(args[2]), bchan = atoi(args[3]), unused = 0;
+				int rchan = atoi(args[1]), gchan = atoi(args[2]), bchan = atoi(args[3]), laserStyle = args.ArgC()>4?atoi(args[4]):0, laserSize = args.ArgC()>5?atoi(args[5]):0;
 
 				const int numMarineResources = ASWGameResource()->GetMaxMarineResources();
 
@@ -1300,8 +1306,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						CASW_Marine* hMarine = pMR->GetMarineEntity();
 						if (hMarine)
 						{
-							//hMarine->m_vecCustLaserColor.SetDirect(vecColor);
-							pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(rchan, gchan, bchan, unused);
+							pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(rchan, gchan, bchan, laserStyle, laserSize);
 						}
 					}
 				}
