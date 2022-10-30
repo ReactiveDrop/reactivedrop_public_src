@@ -13,11 +13,6 @@
 				"1" "#RD_AdvancedSettings_HUD_CrosshairStyle_Crescent"
 			}
 		}
-		TOGGLE
-		{
-			title "#RD_AdvancedSettings_HUD_LaserSight"
-			cvar "asw_laser_sight"
-		}
 		SELECT
 		{
 			title "#RD_AdvancedSettings_HUD_VoiceIcon"
@@ -426,6 +421,47 @@
 		{
 			title "#RD_AdvancedSettings_VisualEffects_ReduceMotion"
 			cvar "rd_reduce_motion"
+		}
+	}
+
+	SECTION
+	{
+		title "#RD_AdvancedSettings_LaserSettings_Title"
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_HUD_LaserSight"
+			cvar "asw_laser_sight"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_LaserSettings_extendedlaser"
+			cvar "cl_asw_extended_team_lasers"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_LaserSettings_forceclassic"
+			cvar "cl_asw_force_classic_lasers"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_LaserSettings_laserdisplaymode"
+			cvar "cl_asw_laser_display_mode"
+			options
+			{
+				"0" "#RD_AdvancedSettings_LaserSettings_laserdisplaymode_UseNetwork"
+				"1" "#RD_AdvancedSettings_LaserSettings_laserdisplaymode_UseLocalStats"
+				"2" "#RD_AdvancedSettings_LaserSettings_laserdisplaymode_UseLocalConvars"
+			}
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_LaserSettings_duallasers"
+			cvar "cl_asw_laser_dual_wielding"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_LaserSettings_laserlocaloverride"
+			cvar "cl_asw_laser_local_override"
 		}
 	}
 

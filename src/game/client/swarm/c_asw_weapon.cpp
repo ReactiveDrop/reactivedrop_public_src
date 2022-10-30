@@ -199,7 +199,7 @@ ConVar cl_asw_laser_display_mode("cl_asw_laser_display_mode", "0", FCVAR_ARCHIVE
 
 ConVar cl_asw_laser_local_override("cl_asw_laser_local_override", "0", FCVAR_ARCHIVE, "Allows cl_asw_laser_sight_color convar to take priority over laser display modes for the local player", OnLasersSettingsChanged);
 
-ConVar cl_asw_dual_laser("cl_asw_dual_laser", "0", FCVAR_ARCHIVE, "Show second laser for dual welding", OnLasersSettingsChanged);
+ConVar cl_asw_laser_dual_wielding("cl_asw_laser_dual_wielding", "1", FCVAR_ARCHIVE, "Show second laser for dual wielding weapons", OnLasersSettingsChanged);
 
 ConVar cl_asw_laser_color_sarge("cl_asw_laser_color_sarge", "255 255 255", FCVAR_ARCHIVE, "The color used for Sarge when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
 ConVar cl_asw_laser_color_wildcat("cl_asw_laser_color_wildcat", "255 255 255", FCVAR_ARCHIVE, "The color used for Wildcat when laser display mode is set to use local profile convar colors", OnLasersSettingsChanged);
@@ -1008,7 +1008,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		UTIL_TraceLine(vecOrigin2, vecOrigin2 + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr2);
 		m_hLeftLaserTargetEntity = tr2.m_pEnt;
 
-		if (!m_pLeftLaserPointerEffect && cl_asw_dual_laser.GetBool())
+		if (!m_pLeftLaserPointerEffect && cl_asw_laser_dual_wielding.GetBool())
 		{
 			CreateLaserPointerEffect(bLocalPlayer, iAttachment2, 1);
 		}
@@ -1060,7 +1060,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 	if (laserIndex == -1)
 	{
 		CreateLaserPointerEffect(bLocalPlayer, iAttachment, 0);
-		if (cl_asw_dual_laser.GetBool())
+		if (cl_asw_laser_dual_wielding.GetBool())
 		{
 			CreateLaserPointerEffect(bLocalPlayer, iAttachment, 1); //Attachment doesn't need to change as it doesn't appear to do anything important.
 		}
