@@ -360,7 +360,7 @@ void CASW_Alien_Shover::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( nEvent == AE_ALIEN_SHOVER_SHOVE_PHYSOBJECT )
 	{
-		if ( m_hPhysicsTarget == NULL )
+		if ( m_hPhysicsTarget == NULL || GetEnemy() == NULL )
 		{
 			// Disrupt other objects near us anyway
 			ImpactShock( WorldSpaceCenter(), 150, 250.0f );
