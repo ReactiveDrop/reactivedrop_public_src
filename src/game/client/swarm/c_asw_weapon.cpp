@@ -110,8 +110,6 @@ extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
-//static bool g_bLaserIndexInUse[8]{}; //LS INDEX SIZE 8
-
 void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
 	if (engine->IsInGame())
