@@ -193,8 +193,9 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	lightgrey.b = 255;
 	lightgrey.a = 255;
 
-
-	Color _inputRGBCustColor1 = cl_asw_archived_lsc1.GetColor();
+	int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc1, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor1 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor1 = color32();
 	rgbLaserCustColor1.r = _inputRGBCustColor1.r();
 	rgbLaserCustColor1.g = _inputRGBCustColor1.g();
@@ -204,7 +205,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor1);
 	m_pCustomColor1->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor1);
 
-	Color _inputRGBCustColor2 = cl_asw_archived_lsc2.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc2, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor2 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor2 = color32();
 	rgbLaserCustColor2.r = _inputRGBCustColor2.r();
 	rgbLaserCustColor2.g = _inputRGBCustColor2.g();
@@ -214,7 +216,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor2);
 	m_pCustomColor2->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor2);
 
-	Color _inputRGBCustColor3 = cl_asw_archived_lsc3.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc3, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor3 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor3 = color32();
 	rgbLaserCustColor3.r = _inputRGBCustColor3.r();
 	rgbLaserCustColor3.g = _inputRGBCustColor3.g();
@@ -224,7 +227,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor3);
 	m_pCustomColor3->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor3);
 
-	Color _inputRGBCustColor4 = cl_asw_archived_lsc4.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc4, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor4 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor4 = color32();
 	rgbLaserCustColor4.r = _inputRGBCustColor4.r();
 	rgbLaserCustColor4.g = _inputRGBCustColor4.g();
@@ -234,7 +238,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor4);
 	m_pCustomColor4->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor4);
 
-	Color _inputRGBCustColor5 = cl_asw_archived_lsc5.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc5, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor5 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor5 = color32();
 	rgbLaserCustColor5.r = _inputRGBCustColor5.r();
 	rgbLaserCustColor5.g = _inputRGBCustColor5.g();
@@ -245,7 +250,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor5->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor5);
 
 
-	Color _inputRGBCustColor6= cl_asw_archived_lsc6.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc6, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor6 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor6 = color32();
 	rgbLaserCustColor6.r = _inputRGBCustColor6.r();
 	rgbLaserCustColor6.g = _inputRGBCustColor6.g();
@@ -255,7 +261,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor6);
 	m_pCustomColor6->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor6);
 
-	Color _inputRGBCustColor7 = cl_asw_archived_lsc7.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc7, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor7 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor7 = color32();
 	rgbLaserCustColor7.r = _inputRGBCustColor7.r();
 	rgbLaserCustColor7.g = _inputRGBCustColor7.g();
@@ -265,7 +272,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor7);
 	m_pCustomColor7->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor7);
 
-	Color _inputRGBCustColor8 = cl_asw_archived_lsc8.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc8, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor8 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor8 = color32();
 	rgbLaserCustColor8.r = _inputRGBCustColor8.r();
 	rgbLaserCustColor8.g = _inputRGBCustColor8.g();
@@ -275,7 +283,8 @@ void Cnb_lobby_laser_rgb_menu::UpdateDetails()
 	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/swarm/color/color_highlight", rgbLaserCustColor8);
 	m_pCustomColor8->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", rgbLaserCustColor8);
 
-	Color _inputRGBCustColor9 = cl_asw_archived_lsc9.GetColor();
+	LaserHelper::SplitLaserConvar(&cl_asw_archived_lsc9, outRed, outGreen, outBlue, outStyle, outSize);
+	Color _inputRGBCustColor9 = Color(outRed, outGreen, outBlue);
 	color32 rgbLaserCustColor9 = color32();
 	rgbLaserCustColor9.r = _inputRGBCustColor9.r();
 	rgbLaserCustColor9.g = _inputRGBCustColor9.g();
