@@ -121,7 +121,7 @@ namespace LaserHelper
 	char* GetParticleStyle(int index)
 	{
 		if (index > 2 || index < 0)
-			return g_LaserSightStyleParticles[index];
+			return g_LaserSightStyleParticles[0];
 		return g_LaserSightStyleParticles[index];
 	}
 }
