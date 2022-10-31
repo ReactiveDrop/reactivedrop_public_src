@@ -999,7 +999,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 							laserStyle = atoi(args[4]);
 							if (args.ArgC() > 5)
 							{
-								laserSize = atoi(args[4]);
+								laserSize = atoi(args[5]);
 							}
 						}
 						pMR->m_iLaserColor = LaserHelper::GetEncodedLaserColor(atoi(args[1]), atoi(args[2]), atoi(args[3]), laserStyle, laserSize);
