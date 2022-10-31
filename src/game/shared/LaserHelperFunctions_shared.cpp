@@ -94,6 +94,15 @@ namespace LaserHelper
 					{
 						outSize = atof(szSplitFloats[4]);
 					}
+					else
+					{
+						outSize = 0;
+					}
+				}
+				else
+				{
+					outStyle = 0;
+					outSize = 0;
 				}
 				return;
 			}
