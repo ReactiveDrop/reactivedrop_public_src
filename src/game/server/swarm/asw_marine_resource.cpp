@@ -31,7 +31,6 @@ BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_bInhabited, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_iServerFiring, FIELD_INTEGER ),	
 	DEFINE_FIELD( m_iCommanderIndex, FIELD_INTEGER ),
-	DEFINE_FIELD( m_MarineProfileIndex, FIELD_INTEGER ),	
 	DEFINE_FIELD( m_iShotsFired, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iPlayerShotsFired, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iPlayerShotsMissed, FIELD_INTEGER ),
