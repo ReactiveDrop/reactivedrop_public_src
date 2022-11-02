@@ -1,0 +1,11 @@
+Sprite
+{
+$basetexture "particle/beam_laser_style4.vtf"
+$additive 0
+$translucent 1
+$vertexcolor 1
+
+$overbrightfactor 6
+$spriterendermode 5
+$splinetype 1
+}

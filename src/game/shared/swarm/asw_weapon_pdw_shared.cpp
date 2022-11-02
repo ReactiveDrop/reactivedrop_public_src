@@ -51,6 +51,7 @@ extern ConVar asw_weapon_force_scale;
 
 CASW_Weapon_PDW::CASW_Weapon_PDW()
 {
+	m_currentSMG = ASW_WEAPON_SMG_LEFT;
 }
 
 
@@ -139,8 +140,23 @@ void CASW_Weapon_PDW::PrimaryAttack()
 		}
 #endif
 
+		int iAttachment = (m_currentSMG == ASW_WEAPON_SMG_RIGHT ? LookupAttachment("muzzle") : LookupAttachment("muzzle_flash_l"));
+		Vector attachOrigin, shootOrigin = pMarine->Weapon_ShootPosition();
+
+
+		if (iAttachment > 0)
+		{
+			GetAttachment(iAttachment, attachOrigin);
+			attachOrigin.z = shootOrigin.z; //Alter Z position to match height of shoot position.
+		}
+		else
+		{
+			attachOrigin = shootOrigin;
+		}
+
 		FireBulletsInfo_t info;
-		info.m_vecSrc = pMarine->Weapon_ShootPosition( );
+		info.m_vecSrc = attachOrigin;
+
 		if ( pPlayer && pMarine->IsInhabited() )
 		{
 			info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -227,7 +243,15 @@ void CASW_Weapon_PDW::PrimaryAttack()
 		}
 #endif
 
-	}	
+	}
+	if (m_currentSMG == ASW_WEAPON_SMG_LEFT)
+	{
+		m_currentSMG = ASW_WEAPON_SMG_RIGHT;
+	}
+	else
+	{
+		m_currentSMG = ASW_WEAPON_SMG_LEFT;
+	}
 }
 
 int CASW_Weapon_PDW::ASW_SelectWeaponActivity(int idealActivity)
@@ -273,7 +297,15 @@ float CASW_Weapon_PDW::GetWeaponDamage()
 // user message based tracer type
 const char* CASW_Weapon_PDW::GetUTracerType()
 {
-	return "ASWUTracerDual";
+	//return "ASWUTracerDual";
+	if (m_currentSMG == ASW_WEAPON_SMG_LEFT) //INVERTED because we swap after primary fire method
+	{
+		return "ASWUTracerDualRight";
+	}
+	else
+	{
+		return "ASWUTracerDualLeft";
+	}
 }
 
 float CASW_Weapon_PDW::GetFireRate()

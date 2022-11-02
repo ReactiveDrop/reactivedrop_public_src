@@ -9,6 +9,7 @@ namespace LaserHelper
 		"laser_rgb_main",
 		"laser_rgb_main_style2",
 		"laser_rgb_main_style3",
+		"laser_rgb_main_style4",
 	};
 
 	constexpr int CLAMP_BYTERANGE(int value)
@@ -129,7 +130,7 @@ namespace LaserHelper
 
 	char* GetParticleStyle(int index)
 	{
-		if (index > 2 || index < 0)
+		if (index > 3 || index < 0)
 			return g_LaserSightStyleParticles[0];
 		return g_LaserSightStyleParticles[index];
 	}

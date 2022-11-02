@@ -1,0 +1,13 @@
+"SpriteCard"
+{
+	"$basetexture" "particle/beam_laser_style3.vtf"
+	$addself 2
+	$additive 	"1"
+	$overbrightfactor 2
+	$translucent 	1
+
+	$splinetype	1
+}
+
+
+

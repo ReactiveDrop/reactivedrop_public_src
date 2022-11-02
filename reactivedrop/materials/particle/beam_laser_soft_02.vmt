@@ -1,0 +1,9 @@
+SpriteCard
+{
+$basetexture "particle/beam_laser_soft_02.vtf"
+$addself 2
+$overbrightfactor 6
+$translucent 1
+
+$splinetype 1
+}

@@ -20,6 +20,12 @@ public:
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
+	enum ASW_Weapon_SMGHand_t
+	{
+		ASW_WEAPON_SMG_RIGHT,
+		ASW_WEAPON_SMG_LEFT
+	};
+
 	CASW_Weapon_PDW();
 	virtual ~CASW_Weapon_PDW();
 	void Precache();
@@ -59,6 +65,9 @@ public:
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PDW; }
+
+protected:
+	ASW_Weapon_SMGHand_t m_currentSMG;
 };
 
 

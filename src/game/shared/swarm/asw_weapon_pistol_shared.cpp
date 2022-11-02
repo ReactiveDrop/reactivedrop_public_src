@@ -142,8 +142,22 @@ void CASW_Weapon_Pistol::PrimaryAttack( void )
 		}
 #endif
 
+		int iAttachment = (m_currentPistol == ASW_WEAPON_PISTOL_RIGHT?LookupAttachment("muzzle"):LookupAttachment("muzzle_flash_l"));
+		Vector attachOrigin, shootOrigin = pMarine->Weapon_ShootPosition();
+
+
+		if (iAttachment > 0)
+		{
+			GetAttachment(iAttachment, attachOrigin);
+			attachOrigin.z = shootOrigin.z; //Alter Z position to match height of shoot position.
+		}
+		else
+		{
+			attachOrigin = shootOrigin;
+		}
+
 		FireBulletsInfo_t info;
-		info.m_vecSrc = pMarine->Weapon_ShootPosition( );
+		info.m_vecSrc = attachOrigin;
 		if ( pPlayer && pMarine->IsInhabited() )
 		{
 			info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187

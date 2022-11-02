@@ -1093,7 +1093,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 		{
 			C_ASW_Marine* marine = GetMarine();
 
-			float rchan = 0.0f, gchan = 0.0f, bchan = 0.0f, laserSize = 1.0f;
+			float rchan = 0.0f, gchan = 0.0f, bchan = 0.0f, laserSize = 8.0f;
 			int laserStyle = 0;
 
 
@@ -1114,7 +1114,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 						bchan = outB;
 
 						laserStyle = outLaserStyle;
-						laserSize += (outLaserSize * 0.03f);
+						laserSize = outLaserSize;
 					}
 					else
 					{
@@ -1127,8 +1127,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 							gchan = outG;
 							bchan = outB;
 							laserStyle = outLaserStyle;
-							laserSize += (outLaserSize * 0.03f);
-
+							laserSize = outLaserSize;
 						}
 						else if (cl_asw_laser_display_mode.GetInt() == 1) //STAT COLORS OVERRIDE
 						{
@@ -1162,7 +1161,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 1)
 							{
@@ -1173,7 +1172,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 2)
 							{
@@ -1184,7 +1183,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 3)
 							{
@@ -1195,7 +1194,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 4)
 							{
@@ -1206,7 +1205,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 5)
 							{
@@ -1217,7 +1216,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 6)
 							{
@@ -1228,7 +1227,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else if (pMR->m_MarineProfileIndex == 7)
 							{
@@ -1239,7 +1238,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = outG;
 								bchan = outB;
 								laserStyle = outLaserStyle;
-								laserSize += (outLaserSize * 0.03f);
+								laserSize = outLaserSize;
 							}
 							else
 							{
@@ -1247,7 +1246,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 								gchan = 255;
 								bchan = 255;
 								laserStyle = 0;
-								laserSize = 1.0;
+								laserSize = 0.0;
 							}
 						}
 						else //INVALID LASER MODE
@@ -1256,7 +1255,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 							gchan = 255;
 							bchan = 255;
 							laserStyle = 0;
-							laserSize = 1.0;
+							laserSize = 0.0;
 						}
 					}
 					rchan = rchan / 255;
@@ -1264,22 +1263,33 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 					bchan = bchan / 255;
 
 					colorMul = Vector(rchan, gchan, bchan);
+
+					float laserSizeMod = laserSize / 15;
+
 					if (bLocalPlayer)
 					{
+						float maxSize = 18.0f;
+						float minSize = 10.0f;
+						float sizeDiff = maxSize - minSize;
+						float outputSize = minSize + (sizeDiff * laserSizeMod);
 						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create(LaserHelper::GetParticleStyle(laserStyle) , PATTACH_POINT_FOLLOW, iAttachment);
-						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(15.0f*laserSize, 0.0f, 0.0f));
+						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(outputSize, 0.0f, 0.0f));
 					}
 					else
 					{
+						float maxSize = 9.0f;
+						float minSize = 4.0f;
+						float sizeDiff = maxSize - minSize;
+						float outputSize = minSize + (sizeDiff * laserSizeMod);
 						((laserIndex == 0) ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create(LaserHelper::GetParticleStyle(laserStyle), PATTACH_POINT_FOLLOW, iAttachment);
-						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(9.0f*laserSize, 0.0f, 0.0f));
+						(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(outputSize, 0.0f, 0.0f));
 					}
 				}
 			}
 			else
 			{
 				(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect) = ParticleProp()->Create("laser_rgb_main", PATTACH_POINT_FOLLOW, iAttachment);
-				(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(9.0f, 0.0f, 0.0f));
+				(laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect)->SetControlPoint(11, Vector(0.0f, 0.0f, 0.0f));
 			}
 			if ((laserIndex == 0 ? m_pLaserPointerEffect : m_pLeftLaserPointerEffect))
 			{
