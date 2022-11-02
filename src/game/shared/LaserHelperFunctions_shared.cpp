@@ -68,12 +68,6 @@ namespace LaserHelper
 		return LaserHelper::GetEncodedLaserColor(255, 0, 0, 0, 0);
 	}
 
-	void SetLaserConvar(ConVar* convar, int Red, int Green, int Blue, int Style, int Size)
-	{
-		char buffer[256]{};
-		Q_snprintf(buffer, sizeof(buffer), "%d %d %d %d %d", Red, Green, Blue, Style, Size);
-		convar->SetValue(buffer);
-	}
 
 	void SplitLaserConvar(const char* szLSValue, int& outRed, int& outGreen, int& outBlue, int& outStyle, int& outSize)
 	{
@@ -119,6 +113,16 @@ namespace LaserHelper
 	{
 		const char* szLSValue = convar->GetString();
 		SplitLaserConvar(szLSValue, outRed, outGreen, outBlue, outStyle, outSize);
+	}
+
+	void SetLaserConvar(ConVar* convar, int Red, int Green, int Blue, int Style, int Size)
+	{
+		int outRed = 0, outGreen = 0, outBlue = 0, outStyle = 0, outSize = 0;
+		SplitLaserConvar(convar, outRed, outGreen, outBlue, outStyle, outSize);
+
+		char buffer[256]{};
+		Q_snprintf(buffer, sizeof(buffer), "%d %d %d %d %d", Red>-1?Red:outRed, Green>-1?Green:outGreen, Blue>-1?Blue:outBlue, Style>-1?Style:outStyle, Size>-1?Size:outSize);
+		convar->SetValue(buffer);
 	}
 
 	int ConvarToLaser(ConVar* convar)
