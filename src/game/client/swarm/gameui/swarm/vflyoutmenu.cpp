@@ -165,7 +165,7 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 		}
 
 		int yButtonCompensate = 0;
-		BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom );
+		BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom.Get() );
 		if ( button )
 		{
 			button->SetOpen();
@@ -284,7 +284,7 @@ void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 		m_listener->OnFlyoutMenuClose( flyTo );
 	}
 
-	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom );
+	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom.Get() );
 	if ( button )
 	{
 		button->SetClosed();
