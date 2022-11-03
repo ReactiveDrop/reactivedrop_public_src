@@ -923,6 +923,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	float flDistance = GetLaserPointerRange();
 	float alpha = 0.65f;
 	float alphaFF = 0;
+	float alphaFF_L = 0;
 	
 	if ( !bLocalPlayer )
 	{
@@ -936,13 +937,18 @@ void C_ASW_Weapon::SimulateLaserPointer()
 			alpha = 0.3f;
 		}
 		alphaFF = 0;
+		alphaFF_L = 0;
 	}
 	else if ( IsOffensiveWeapon() )
 	{
 		C_BaseEntity *pEnt = GetLaserTargetEntity();
 		C_BaseEntity* pEnt2 = GetLeftLaserTargetEntity();
-		if (( pEnt && pEnt->Classify() == CLASS_ASW_MARINE ) || (pEnt2 && pEnt2->Classify() == CLASS_ASW_MARINE))
+		if (( pEnt && pEnt->Classify() == CLASS_ASW_MARINE ))
 			alphaFF = 0.65f;
+		if (pEnt2 && pEnt2->Classify() == CLASS_ASW_MARINE)
+		{
+			alphaFF_L = 0.65f;
+		}
 	}
 
 	if ( IsReloading() || pMarine->GetCurrentMeleeAttack() || m_bSwitchingWeapons
@@ -952,11 +958,13 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	{
 		alpha = 0;
 		alphaFF = 0;
+		alphaFF_L = 0;
 	}
 	else if ( IsFiring() )
 	{
 		alpha *= 0.06f;
 		alphaFF *= 1.5f;
+		alphaFF_L *= 1.5f;
 	}
 
 	// Only apply the new laser sight correction code if dealing with a local player
@@ -1027,7 +1035,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 			VectorVectors(tr2.plane.normal, vecImpactY, vecImpactZ);
 			vecImpactY *= -1.0f;
 			m_pLeftLaserPointerEffect->SetControlPointOrientation(2, vecImpactY, vecImpactZ, tr2.plane.normal);
-			m_pLeftLaserPointerEffect->SetControlPoint(3, Vector(alpha, alphaFF, 0));
+			m_pLeftLaserPointerEffect->SetControlPoint(3, Vector(alpha, alphaFF_L, 0));
 		}
 	}
 
