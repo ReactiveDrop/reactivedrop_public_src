@@ -112,6 +112,25 @@ extern ConVar rd_show_others_laser_pointer;
 
 void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 {
+	int outOldRed, outOldGreen, outOldBlue, outOldStyle = 0, outOldSize = 0;
+	int outRed, outGreen, outBlue, outStyle = 0, outSize = 0;
+	int finalRed = 0, finalGreen = 0, finalBlue = 0, finalStyle = 0, finalSize = 0;
+	LaserHelper::SplitLaserConvar(pOldValue, outOldRed, outOldGreen, outOldBlue, outOldStyle, outOldSize);
+	LaserHelper::SplitLaserConvar(((ConVar*)var), outRed, outGreen, outBlue, outStyle, outSize);
+
+	finalRed = outRed < 0 ? outOldRed < 0 ? 0 : outOldRed : outRed;
+	finalGreen = outGreen < 0 ? outOldGreen < 0 ? 0 : outOldGreen : outGreen;
+	finalBlue = outBlue < 0 ? outOldBlue < 0 ? 0 : outOldBlue : outBlue;
+	finalStyle = outStyle < 0 ? outOldStyle < 0 ? 0 : outOldStyle : outStyle;
+	finalSize = outSize < 0 ? outOldSize < 0 ? 0 : outOldSize : outSize;
+
+	if (outRed != finalRed || outGreen != finalGreen || outBlue != finalBlue || outStyle != finalStyle || outSize != finalSize)
+	{
+		LaserHelper::SetLaserConvar(((ConVar*)var), finalRed, finalGreen, finalBlue, finalStyle, finalSize);
+		return;
+	}
+
+
 	if (engine->IsInGame())
 	{
 		C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
@@ -119,10 +138,7 @@ void OnClientLaserChanged(IConVar* var, const char* pOldValue, float flOldValue)
 		{
 			if (!pPlayer->IsBriefingActive())
 			{
-				int outRed, outGreen, outBlue, outStyle = 0, outSize = 0;
-				LaserHelper::SplitLaserConvar( ((ConVar*)var) , outRed, outGreen, outBlue, outStyle, outSize);
-
-				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d %d %d", outRed, outGreen, outBlue, outStyle, outSize));
+				engine->ClientCmd(VarArgs("cl_changelaser %d %d %d %d %d", finalRed, finalGreen, finalBlue, finalStyle, finalSize));
 			}
 		}
 	}
