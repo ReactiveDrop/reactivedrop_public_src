@@ -30,6 +30,8 @@ public:
 	bool	Reload();
 	void	ItemPostFrame();
 	virtual bool ShouldMarineMoveSlow() { return false; }	// firing mines doesn't slow the marine down
+	bool	ValidateThrow( int nMineNumber, int nMinesPerShot, Vector vecSrc, Vector vecAiming, float flSpread, bool& bOnGround, CBaseEntity* pParent, trace_t& tr, Vector& vecMineAiming );
+	int		GetThrownMineCount( int nMinesPerShot, Vector vecSrc, Vector vecAiming, float flSpread );
 	
 	Activity	GetPrimaryAttackActivity( void );
 
