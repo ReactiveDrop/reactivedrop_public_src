@@ -31,7 +31,6 @@ public:
 
 	constexpr static const char *s_szCheat[] =
 	{
-		// Servers can send this concommand to client's console and break their map files.
 		"buildcubemaps",
 	};
 
