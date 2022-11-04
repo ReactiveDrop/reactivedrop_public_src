@@ -66,7 +66,7 @@ CExperienceReport::CExperienceReport( vgui::Panel *parent, const char *name ) : 
 	m_pCheatsUsedLabel->SetVisible( ASWGameRules() && ASWGameRules()->m_bCheated.Get() );
 
 	m_pUnofficialMapLabel = new vgui::Label( this, "UnofficialMapLabel", "#asw_unofficial_map" );
-	m_pUnofficialMapLabel->SetVisible( false ); //GetClientModeASW() && !GetClientModeASW()->IsOfficialMap() );
+	m_pUnofficialMapLabel->SetVisible( false );
 
 	m_pLeaderboard = new CReactiveDrop_VGUI_Leaderboard_Panel( this, "Leaderboard" );
 
@@ -198,7 +198,7 @@ void CExperienceReport::OnThink()
 		m_pCheatsUsedLabel->SetVisible( bShowCheatsLabel );
 		InvalidateLayout();
 	}
-	bool bShowUnofficialMapLabel = false; //( GetClientModeASW() && !GetClientModeASW()->IsOfficialMap() );
+	bool bShowUnofficialMapLabel = false;
 	if ( bShowUnofficialMapLabel != m_pUnofficialMapLabel->IsVisible() )
 	{
 		m_pUnofficialMapLabel->SetVisible( bShowUnofficialMapLabel );

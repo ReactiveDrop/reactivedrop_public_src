@@ -127,7 +127,7 @@ void CNB_Vote_Panel::UpdateVotePanelStatus()
 
 void CNB_Vote_Panel::UpdateVisibility()
 {
-	if ( m_VotePanelStatus == VPS_NONE )
+	if ( m_VotePanelStatus == VPS_NONE || ( m_VotePanelType == VPT_INGAME && ASWGameRules() && ASWGameRules()->GetGameState() <= ASW_GS_BRIEFING ) )
 	{
 		SetVisible( false );
 		return;

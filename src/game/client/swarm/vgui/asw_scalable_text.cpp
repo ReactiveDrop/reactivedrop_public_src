@@ -30,9 +30,9 @@ static bool IsAlphabet( char category )
 		{
 			s_chAlphabet = 'C'; // Cyrillic
 		}
-		else if ( !V_strcmp( szLang, "schinese" ) )
+		else if ( !V_strcmp( szLang, "koreana" ) || !V_strcmp( szLang, "schinese" ) )
 		{
-			s_chAlphabet = 'H'; // Han
+			s_chAlphabet = 'H'; // Han/Hangul
 		}
 		else
 		{
@@ -139,6 +139,15 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_8d25", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_9057", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_987a", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_b8cc", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_bb34", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c2e4", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c644", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c784", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c791", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c804", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_d328", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_d568", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_ff01", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_3002_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_4e86_glow", IsAlphabet( 'H' ) )
@@ -161,6 +170,15 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_8d25_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_9057_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_987a_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_b8cc_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_bb34_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c2e4_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c644_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c784_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c791_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c804_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_d328_glow", IsAlphabet( 'H' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_d568_glow", IsAlphabet( 'H' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_ff01_glow", IsAlphabet( 'H' ) )
 PRECACHE_REGISTER_END()
 

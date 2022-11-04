@@ -1267,7 +1267,7 @@ void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBy
 		wchar_t *pLocalized = g_pVGuiLocalize->Find( token );
 		if ( pLocalized )
 		{
-			V_snwprintf( unicode, unicodeBufferSizeInBytes, L"%s", pLocalized );
+			V_snwprintf( unicode, unicodeBufferSizeInBytes / sizeof( wchar_t ), L"%s", pLocalized );
 			return;
 		}
 	}

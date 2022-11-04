@@ -1022,7 +1022,7 @@ void C_ASW_Player::ClientThink()
 		if ( m_nLastInactiveKickWarning != nInactiveKickSeconds )
 		{
 			wchar_t buffer[12]{};
-			V_snwprintf( buffer, sizeof( buffer ), L"%d", nInactiveKickSeconds );
+			V_snwprintf( buffer, ARRAYSIZE( buffer ), L"%d", nInactiveKickSeconds );
 			char *szBuffer = reinterpret_cast< char * >( &buffer[0] ); // FIXME: ClientPrint is weird on the client-side.
 			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", szBuffer );
 

@@ -706,7 +706,7 @@ namespace ReactiveDropInventory
 			{
 				// special case: m_unQuantity is not stored in dynamic_props
 				SteamItemDetails_t details = GetItemDetails( hResult, index );
-				V_snwprintf( wszTokenReplacement, sizeof( wszTokenReplacement ), L"%d", details.m_unQuantity );
+				V_snwprintf( wszTokenReplacement, ARRAYSIZE( wszTokenReplacement ), L"%d", details.m_unQuantity );
 			}
 
 			const wchar_t *wszReplacement = pKV->GetWString( szToken, wszTokenReplacement );

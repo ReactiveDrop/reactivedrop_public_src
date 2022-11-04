@@ -1268,14 +1268,13 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			
 			if ( m_DentAmount == ASWDD_NONE )
 			{
-				SetBodygroup( 0 , 4 );
-				m_DentAmount = ASWDD_COMPLETE;
-
 				if ( DoorNeedsFlip() )
 				{
-					SetBodygroup( 0 , 2 );
 					FlipDoor();
 				}
+
+				m_DentAmount = ASWDD_COMPLETE;
+				SetDentSequence();
 
 				Event_Killed( newInfo );
 

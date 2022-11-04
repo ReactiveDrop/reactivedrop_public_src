@@ -62,7 +62,7 @@ FlyoutMenu::FlyoutMenu( vgui::Panel *parent, const char* panelName )
 
 FlyoutMenu::~FlyoutMenu()
 {
-	if ( sm_pActiveMenu == this )
+	if ( sm_pActiveMenu.Get() == this )
 	{
 		CloseMenu( NULL );
 	}
@@ -165,7 +165,7 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 		}
 
 		int yButtonCompensate = 0;
-		BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom );
+		BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom.Get() );
 		if ( button )
 		{
 			button->SetOpen();
@@ -234,7 +234,7 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 		footer->SetButtonText( FB_BBUTTON, "#L4D360UI_Cancel" );
 	}
 
-	if ( sm_pActiveMenu == NULL )
+	if ( sm_pActiveMenu.Get() == NULL )
 	{
 		GetControllerFocus()->PushModal();
 	}
@@ -261,8 +261,8 @@ void FlyoutMenu::OpenMenu( vgui::Panel * flyFrom, vgui::Panel* initialSelection,
 
 void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 {
-	Assert( sm_pActiveMenu == NULL || sm_pActiveMenu == this );		// if we think there is an active menu right now, it should be us
-	bool bActuallyClosing = sm_pActiveMenu == this;
+	Assert( sm_pActiveMenu.Get() == NULL || sm_pActiveMenu.Get() == this);		// if we think there is an active menu right now, it should be us
+	bool bActuallyClosing = sm_pActiveMenu.Get() == this;
 	sm_pActiveMenu = NULL;
 
 	//clear any items that may have been highlighted
@@ -284,7 +284,7 @@ void FlyoutMenu::CloseMenu( vgui::Panel * flyTo )
 		m_listener->OnFlyoutMenuClose( flyTo );
 	}
 
-	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom );
+	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( m_navFrom.Get() );
 	if ( button )
 	{
 		button->SetClosed();
@@ -642,4 +642,4 @@ void FlyoutMenu::SetOriginalTall( int t )
 	m_FromOriginalTall = t;
 }
 
-FlyoutMenu *FlyoutMenu::sm_pActiveMenu = NULL;
+vgui::DHANDLE<FlyoutMenu> FlyoutMenu::sm_pActiveMenu{};

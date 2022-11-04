@@ -115,7 +115,7 @@ void CNPC_Spawns_Panel::Paint()
 			vgui::surface()->DrawSetTextFont( m_hTextFont );
 			vgui::surface()->DrawSetTextColor( Color( 255, 255, 255, 255 ) );
 
-			V_snwprintf( szAlienList, sizeof(szAlienList)/sizeof(wchar_t), L"" );
+			V_snwprintf( szAlienList, ARRAYSIZE( szAlienList ), L"" );
 			for ( int d = 0; d < pEncounter->GetNumSpawnDefs(); d++ )
 			{
 				IASWSpawnDefinition* pSpawnDef = pEncounter->GetSpawnDef( d );
@@ -126,7 +126,7 @@ void CNPC_Spawns_Panel::Paint()
 					pEntry->GetSpawnCountRange( minAliens, maxAliens );
 					iAliens += ( ( minAliens + maxAliens ) / 2 );
 					g_pVGuiLocalize->ConvertANSIToUnicode( pEntry->GetNPCClassname(), szconverted, sizeof(szconverted)  );
-					V_snwprintf( szAlienList, sizeof(szAlienList)/sizeof(wchar_t), L"%s (%d/%d)", szconverted, minAliens, maxAliens );
+					V_snwprintf( szAlienList, ARRAYSIZE( szAlienList ), L"%s (%d/%d)", szconverted, minAliens, maxAliens );
 
 					vgui::surface()->DrawSetTextPos( vecPos.x , ypos );
 					vgui::surface()->DrawPrintText( szAlienList, wcslen( szAlienList ) );

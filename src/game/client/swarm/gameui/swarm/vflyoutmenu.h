@@ -66,13 +66,13 @@ protected:
 	virtual void LoadControlSettings( const char *dialogResourceName, const char *pathID = NULL, KeyValues *pPreloadedKeyValues = NULL, KeyValues *pConditions = NULL );
 	virtual void PaintBackground();
 
-	vgui::Panel *m_navFrom; //the control that is 'attached' to the flyout menu
+	vgui::PHandle m_navFrom; //the control that is 'attached' to the flyout menu
 	vgui::Panel *m_defaultControl;
 	vgui::Panel *m_lastChildNotified;
 
 	FlyoutMenuListener* m_listener;
 
-	static FlyoutMenu *sm_pActiveMenu;			// what menu is currently open
+	static vgui::DHANDLE<FlyoutMenu> sm_pActiveMenu;			// what menu is currently open
 
 	int m_offsetX, m_offsetY;
 	char m_resFile[ DEFAULT_STR_LEN ];

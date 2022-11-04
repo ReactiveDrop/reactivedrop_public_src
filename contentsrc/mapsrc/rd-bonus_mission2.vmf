@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "242"
+	"mapversion" "246"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -14,13 +14,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "32"
+	"nGridSpacing" "1"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "242"
+	"mapversion" "246"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from asw_rapture17_m1.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -39263,7 +39263,7 @@ entity
 	"scale" ".25"
 	"spawnflags" "1"
 	"targetname" "sprite_4"
-	"origin" "-6568 -11016 152"
+	"origin" "-6565 -11016 149"
 	editor
 	{
 		"color" "20 140 20"
@@ -69693,7 +69693,7 @@ entity
 	"nearz" "4.0"
 	"parentname" "rot_light1"
 	"shadowquality" "1"
-	"spawnflags" "2"
+	"spawnflags" "3"
 	"targetname" "light_spin_ele_bottom"
 	"texturename" "effects/flashlight001"
 	"origin" "-6488 -11131.3 95.9993"
@@ -90740,6 +90740,7 @@ entity
 	connections
 	{
 		"OnTrigger" "event_proxy_general_hintGenerateEvent0-1"
+		"OnTrigger" "light_spin_ele_bottomTurnOff0-1"
 	}
 	solid
 	{
@@ -92031,6 +92032,7 @@ entity
 	"InvertAllow" "0"
 	"maxs" "80 16 64"
 	"mins" "-80 -16 -16"
+	"nodeid" "310"
 	"priority" "0"
 	"targetname" "airlock_block02"
 	"useairlinkradius" "0"
@@ -92051,6 +92053,7 @@ entity
 	"InvertAllow" "0"
 	"maxs" "16 80 64"
 	"mins" "-16 -80 -16"
+	"nodeid" "311"
 	"priority" "0"
 	"targetname" "airlock_block01"
 	"useairlinkradius" "0"
@@ -92063,13 +92066,47 @@ entity
 		"logicalpos" "[0 4500]"
 	}
 }
+entity
+{
+	"id" "288995"
+	"classname" "asw_gamerules"
+	"disallowcamerarotation" "0"
+	"jumpjettype" "0"
+	"speedruntime" "120"
+	"speedruntimesp" "0"
+	"targetname" "gamerules"
+	"origin" "-10430.5 -10101.6 24"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "296030"
+	"classname" "rd_briefing_camera"
+	"angles" "26.5 30 0"
+	"fov" "69"
+	"targetname" "briefcam"
+	"origin" "-6728 -11374 164"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5238.96 -9595.2 547.918]"
-		"look" "[-4999.06 -9570.64 434.743]"
+		"position" "[-6629.64 -11056.8 185.247]"
+		"look" "[-6448.93 -10928.1 37.8396]"
 	}
 	camera
 	{

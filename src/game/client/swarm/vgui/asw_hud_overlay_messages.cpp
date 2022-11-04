@@ -129,7 +129,7 @@ void CASWHudOverlayMessages::VidInit()
 void CASWHudOverlayMessages::OnThink()
 {
 	VPROF_BUDGET( "CASWHudOverlayMessages::OnThink", VPROF_BUDGETGROUP_ASW_CLIENT );
-	SetPaintEnabled(asw_draw_hud.GetBool());
+	SetPaintEnabled( asw_draw_hud.GetBool() && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_LAUNCHING );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	C_ASW_Inhabitable_NPC *pSpectatingNPC = pPlayer ? pPlayer->GetSpectatingNPC() : NULL;

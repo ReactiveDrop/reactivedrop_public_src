@@ -209,6 +209,8 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 	return m_szName[iIndex];
 }
 
+CUtlVector<uint64> MutedList;
+
 void C_PlayerResource::TogglePlayerMuteState( int slot, bool bMuteDontCache )
 {	
 	CVoiceStatus* pVoiceMgr = GetClientVoiceMgr();

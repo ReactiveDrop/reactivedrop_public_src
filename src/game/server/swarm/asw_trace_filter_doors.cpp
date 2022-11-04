@@ -101,8 +101,7 @@ bool UTIL_ASW_BrushBlockingRoute( AI_Waypoint_t *pRoute, const int nCollisionMas
 	while ( pRoute )
 	{
 		CTraceFilterSimple traceFilter( NULL, nCollisionGroup );
-		UTIL_TraceLine( pLastPoint->GetPos() + vecShiftUp, pRoute->GetPos() + vecShiftUp,
-			nCollisionMask, &traceFilter, &tr );
+		UTIL_TraceLine( pLastPoint->GetPos() + vecShiftUp, pRoute->GetPos() + vecShiftUp, nCollisionMask, &traceFilter, &tr );
 
 		if ( asw_blink_debug.GetBool() )
 		{
@@ -128,4 +127,40 @@ bool UTIL_ASW_BrushBlockingRoute( AI_Waypoint_t *pRoute, const int nCollisionMas
 	}
 
 	return false;
+}
+
+CDynamicProp* UTIL_ASW_AirlockBlockingRoute( AI_Waypoint_t* pRoute, const int nCollisionMask, const int nCollisionGroup )
+{
+	if ( !pRoute )
+		return NULL;
+
+	AI_Waypoint_t* pLastPoint = pRoute;
+	pRoute = pRoute->GetNext();
+	trace_t tr;
+	Vector vecShiftUp = Vector( 0, 0, 20 );
+
+	while ( pRoute )
+	{
+		CTraceFilterSimple traceFilter( NULL, nCollisionGroup );
+		UTIL_TraceLine( pLastPoint->GetPos() + vecShiftUp, pRoute->GetPos() + vecShiftUp, nCollisionMask, &traceFilter, &tr );
+
+		if ( asw_blink_debug.GetBool() )
+		{
+			DebugDrawLine( pLastPoint->GetPos() + vecShiftUp, pRoute->GetPos() + vecShiftUp, 0, 0, 255, true, 30.0f );
+		}
+
+		if ( tr.DidHit() )
+		{
+			CDynamicProp* pAirlock = dynamic_cast< CDynamicProp* >( tr.m_pEnt );
+			if ( pAirlock && FStrEq( STRING( tr.m_pEnt->GetModelName() ), "models/props/doors/slow_heavy_door/slow_heavy_door.mdl" ) )
+			{
+				return pAirlock;
+			}
+		}
+
+		pLastPoint = pRoute;
+		pRoute = pRoute->GetNext();
+	}
+
+	return NULL;
 }
