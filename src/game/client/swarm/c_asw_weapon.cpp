@@ -194,9 +194,9 @@ void OnClassicLasersModeChanged(IConVar* var, const char* pOldValue, float flOld
 	OnLasersSettingsChanged(var, pOldValue, flOldValue);
 }
 
-ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 0 0 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight. (Red Green Blue Style Size", OnClientLaserChanged);
+ConVar cl_asw_laser_sight_color("cl_asw_laser_sight_color", "255 55 0 0 0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Sets color of marine's lasersight. (Red Green Blue Style Size)", OnClientLaserChanged);
 
-ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 0 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
+ConVar cl_asw_archived_lsc1("cl_asw_archived_lsc1", "255 55 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 1.");
 ConVar cl_asw_archived_lsc2("cl_asw_archived_lsc2", "255 255 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 2.");
 ConVar cl_asw_archived_lsc3("cl_asw_archived_lsc3", "0 255 0", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 3.");
 ConVar cl_asw_archived_lsc4("cl_asw_archived_lsc4", "170 243 255", FCVAR_ARCHIVE, "Saved custom laser sight color in channel 4.");
