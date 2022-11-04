@@ -29,6 +29,12 @@ public:
 		"showbudget_texture",
 	};
 
+	constexpr static const char *s_szCheat[] =
+	{
+		// Servers can send this concommand to client's console and break their map files.
+		"buildcubemaps",
+	};
+
 	constexpr static const char *s_szAddArchive[] =
 	{
 		// Depth blur strength is a setting (0 or -1), so we need it to be saved.
@@ -49,6 +55,16 @@ public:
 				continue;
 
 			pCmd->RemoveFlags( FCVAR_CHEAT );
+		}
+
+		for ( int i = 0; i < NELEMS( s_szCheat ); i++ )
+		{
+			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szCheat[i] );
+			Assert( pCmd );
+			if ( !pCmd )
+				continue;
+
+			pCmd->AddFlags( FCVAR_CHEAT );
 		}
 
 		for ( int i = 0; i < NELEMS( s_szAddArchive ); i++ )
