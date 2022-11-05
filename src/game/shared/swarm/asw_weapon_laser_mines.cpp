@@ -112,10 +112,22 @@ void CASW_Weapon_Laser_Mines::PrimaryAttack( void )
 #ifdef CLIENT_DLL
 		if ( !prediction->InPrediction() || prediction->IsFirstTimePredicted() )
 		{
-			pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
+#endif	
+			Vector vecSrc = pMarine->GetAbsOrigin();
+			vecSrc.z += 16.0f;	// place lower to catch shorter aliens
+			Vector	vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
+			vecAiming.z = 0;
+			vecAiming.NormalizeInPlace();
+
+			const int nMinesPerShot = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES );
+			const float flSpread = 30.0f; // spread of mine throwing in degrees	
+
+			// try to predict whether mine throw is valid, if not then dont do the animation.
+			// small problem: this prediction happens a little earlier than the actual throw, so there will be occassional cases when the animation does play when it shouldnt have or it will not play when it should have. though still better than always playing imo. 
+			if ( GetThrownMineCount( nMinesPerShot, vecSrc, vecAiming, flSpread ) > 0 )
+				pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
+#ifdef CLIENT_DLL
 		}
-#else
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
 #endif
 
 		// start our delayed attack
@@ -162,125 +174,14 @@ void CASW_Weapon_Laser_Mines::DelayedAttack( void )
 
 	for ( int i = 0; i < nMinesPerShot; i++ )
 	{
-		// throw each mine out at a different angle
-		QAngle angRot = vec3_angle;
-		Vector vecMineAiming = vecAiming;
-		angRot[ YAW ] = ( (float) i / (float) nMinesPerShot ) * flSpread - ( 0.5f * flSpread );
-		VectorRotate( vecAiming, angRot, vecMineAiming );
-
-		// trace for a wall in front of the marine
-		const float flDeployDistance = 180.0f;
-		//if ( i != 1 )		// randomize all but the middle mine's distance slightly
-		//{
-			//flDeployDistance += SharedRandomFloat( "LaserMineVariation", -20.0f, 20.0f );
-		//}
-		trace_t tr;
-
-		if ( !pMarine->IsInhabited() )
-		{			
-			bOnGround = true;
-#ifndef CLIENT_DLL	
-
-			Vector vecDest = pMarine->m_vecOffhandItemSpot;
-
-			vecDest.z += 16;
-			if ( i == 0 || i == 2 )		// drop to the side
-			{
-				Vector vecPerpendicular;
-				VectorRotate( vecAiming, QAngle( 0, 90, 0 ), vecPerpendicular );
-				Vector vecNewDest = vecDest + vecPerpendicular * ( ( i == 0 ) ? 32 : -32 );
-				UTIL_TraceLine( vecDest, vecNewDest, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );		// trace out to the sides
-				if ( tr.startsolid )
-					continue;
-
-				if ( !tr.DidHit() )
-				{
-					// trace down again
-					vecDest = vecNewDest;
-					UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-				}
-			}
-			else
-			{
-				UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-			}
-			if ( tr.startsolid )
-				continue;
-
-			if ( !tr.DidHit() )
-				continue;
-#endif
-		}
-		else
-		{					
-			UTIL_TraceLine( vecSrc, vecSrc + vecMineAiming * flDeployDistance, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-
-			if ( tr.startsolid )		// if we started in solid, trace again from the marine's center
-			{
-				vecSrc.x = pMarine->WorldSpaceCenter().x;
-				vecSrc.y = pMarine->WorldSpaceCenter().y;
-				UTIL_TraceLine( vecSrc, vecSrc + vecMineAiming * flDeployDistance, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-				if ( tr.startsolid )
-					continue;
-			}
-
-			if ( !tr.DidHit() )
-			{
-				// do another trace to try and put it on the ground
-#ifndef CLIENT_DLL		
-				Vector vecDest = pPlayer->GetCrosshairTracePos();
-				if ( vecDest.DistTo( vecSrc ) > flDeployDistance )
-				{
-					trace_t tr2;
-					UTIL_TraceLine( tr.endpos, tr.endpos + Vector( 0, 0, -128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr2 );
-					tr = tr2;
-				}
-				else
-				{
-					// just put it under the xhair
-					vecDest.z += 16;
-					if ( i == 0 || i == 2 )		// drop to the side
-					{
-						Vector vecPerpendicular;
-						VectorRotate( vecAiming, QAngle( 0, 90, 0 ), vecPerpendicular );
-						Vector vecNewDest = vecDest + vecPerpendicular * ( ( i == 0 ) ? 32 : -32 );
-						UTIL_TraceLine( vecDest, vecNewDest, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );		// trace out to the sides
-						if ( tr.startsolid )
-							continue;
-
-						if ( !tr.DidHit() )
-						{
-							// trace down again
-							vecDest = vecNewDest;
-							UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-						}
-					}
-					else
-					{
-						UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
-					}
-				}
-				
-				if ( tr.startsolid )
-					continue;
-
-				if ( !tr.DidHit() )
-					continue;
-#endif
-				bOnGround = true;
-			}
-		}
-
-#ifndef CLIENT_DLL
 		CBaseEntity *pParent = NULL;
-		if ( tr.m_pEnt && !tr.m_pEnt->IsWorld() )
-		{
-			pParent = tr.m_pEnt;
-		}
-		// no attaching to alien noses
-		if ( pParent && ( pParent->IsNPC() || pParent->Classify() == CLASS_ASW_STATUE ) )
+		trace_t tr;
+		Vector vecMineAiming = vecAiming;
+		
+		if ( !ValidateThrow( i, nMinesPerShot, vecSrc, vecAiming, flSpread, bOnGround, pParent, tr, vecMineAiming ) )
 			continue;
 
+#ifndef CLIENT_DLL
 		// calculate the laser aim offset relative to the mine facing
 		QAngle angFacing, angLaser, angLaserOffset;
 		VectorAngles( tr.plane.normal, angFacing );
@@ -328,6 +229,154 @@ void CASW_Weapon_Laser_Mines::DelayedAttack( void )
 		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
+}
+
+bool CASW_Weapon_Laser_Mines::ValidateThrow( int nMineNumber, int nMinesPerShot, Vector vecSrc, Vector vecAiming, float flSpread, bool &bOnGround, CBaseEntity *pParent, trace_t &tr, Vector &vecMineAiming )
+{
+	CASW_Player *pPlayer = GetCommander();
+	if ( !pPlayer )
+		return false;
+
+	CASW_Marine *pMarine = GetMarine();
+	if ( !pMarine || pMarine->GetWaterLevel() == 3 )
+		return false;
+	
+	// throw each mine out at a different angle
+	QAngle angRot = vec3_angle;
+	angRot[ YAW ] = ( (float) nMineNumber / (float) nMinesPerShot ) * flSpread - ( 0.5f * flSpread );
+	VectorRotate( vecAiming, angRot, vecMineAiming );
+
+	// trace for a wall in front of the marine
+	const float flDeployDistance = 180.0f;
+	//if ( i != 1 )		// randomize all but the middle mine's distance slightly
+	//{
+		//flDeployDistance += SharedRandomFloat( "LaserMineVariation", -20.0f, 20.0f );
+	//}
+
+	if ( !pMarine->IsInhabited() )
+	{			
+		bOnGround = true;
+#ifndef CLIENT_DLL	
+
+		Vector vecDest = pMarine->m_vecOffhandItemSpot;
+
+		vecDest.z += 16;
+		if ( nMineNumber == 0 || nMineNumber == 2 )		// drop to the side
+		{
+			Vector vecPerpendicular;
+			VectorRotate( vecAiming, QAngle( 0, 90, 0 ), vecPerpendicular );
+			Vector vecNewDest = vecDest + vecPerpendicular * ( ( nMineNumber == 0 ) ? 32 : -32 );
+			UTIL_TraceLine( vecDest, vecNewDest, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );		// trace out to the sides
+			if ( tr.startsolid )
+				return false;
+
+			if ( !tr.DidHit() )
+			{
+				// trace down again
+				vecDest = vecNewDest;
+				UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+			}
+		}
+		else
+		{
+			UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+		}
+		if ( tr.startsolid )
+			return false;
+
+		if ( !tr.DidHit() )
+			return false;
+#endif
+	}
+	else
+	{					
+		UTIL_TraceLine( vecSrc, vecSrc + vecMineAiming * flDeployDistance, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+
+		if ( tr.startsolid )		// if we started in solid, trace again from the marine's center
+		{
+			vecSrc.x = pMarine->WorldSpaceCenter().x;
+			vecSrc.y = pMarine->WorldSpaceCenter().y;
+			UTIL_TraceLine( vecSrc, vecSrc + vecMineAiming * flDeployDistance, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+			if ( tr.startsolid )
+				return false;
+		}
+
+		if ( !tr.DidHit() )
+		{
+			// do another trace to try and put it on the ground
+//#ifndef CLIENT_DLL		
+			Vector vecDest = pPlayer->GetCrosshairTracePos();
+			if ( vecDest.DistTo( vecSrc ) > flDeployDistance )
+			{
+				trace_t tr2;
+				UTIL_TraceLine( tr.endpos, tr.endpos + Vector( 0, 0, -128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr2 );
+				tr = tr2;
+			}
+			else
+			{
+				// just put it under the xhair
+				vecDest.z += 16;
+				if ( nMineNumber == 0 || nMineNumber == 2 )		// drop to the side
+				{
+					Vector vecPerpendicular;
+					VectorRotate( vecAiming, QAngle( 0, 90, 0 ), vecPerpendicular );
+					Vector vecNewDest = vecDest + vecPerpendicular * ( ( nMineNumber == 0 ) ? 32 : -32 );
+					UTIL_TraceLine( vecDest, vecNewDest, MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );		// trace out to the sides
+					if ( tr.startsolid )
+						return false;
+
+					if ( !tr.DidHit() )
+					{
+						// trace down again
+						vecDest = vecNewDest;
+						UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+					}
+				}
+				else
+				{
+					UTIL_TraceLine( vecDest, vecDest - Vector( 0, 0, 128 ), MASK_SOLID, pMarine, COLLISION_GROUP_NONE, &tr );
+				}
+			}
+				
+			if ( tr.startsolid )
+				return false;
+
+			if ( !tr.DidHit() )
+				return false;
+//#endif
+			bOnGround = true;
+		}
+	}
+
+//#ifndef CLIENT_DLL
+	if ( tr.m_pEnt && !tr.m_pEnt->IsWorld() )
+	{
+		pParent = tr.m_pEnt;
+	}
+	// no attaching to alien noses
+	if ( pParent && (pParent->IsNPC() || pParent->Classify() == CLASS_ASW_STATUE) )
+		return false;
+//#endif
+
+	return true;
+}
+
+int CASW_Weapon_Laser_Mines::GetThrownMineCount( int nMinesPerShot, Vector vecSrc, Vector vecAiming, float flSpread )
+{
+	int nThrown = 0;
+	
+	for ( int i = 0; i < nMinesPerShot; i++ )
+	{
+		CBaseEntity *pParent = NULL;
+		trace_t tr;
+		Vector vecMineAiming = vecAiming;
+		bool bOnGround = false;
+		
+		if ( ValidateThrow( i, nMinesPerShot, vecSrc, vecAiming, flSpread, bOnGround, pParent, tr, vecMineAiming ) )
+			nThrown++;
+	}
+
+	return nThrown;
 }
 
 void CASW_Weapon_Laser_Mines::Precache()
