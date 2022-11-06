@@ -936,7 +936,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 
 	GetAttachment( iAttachment, vecOrigin, angWeapon );
 
-	float flDistance = GetLaserPointerRange();
+	float flDistance = cl_asw_force_classic_lasers.GetBool()?GetLaserPointerRange():MAX(600.0f, GetLaserPointerRange()); //New laser sights look better when they aren't shortened so I'm capping distance minimum
 	float alpha = 0.65f;
 	float alphaFF = 0;
 	float alphaFF_L = 0;
@@ -1292,7 +1292,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect(bool bLocalPlayer, int iAttachment, 
 
 					if (bLocalPlayer)
 					{
-						float maxSize = 18.0f;
+						float maxSize = 16.0f;
 						float minSize = 10.0f;
 						float sizeDiff = maxSize - minSize;
 						float outputSize = minSize + (sizeDiff * laserSizeMod);
