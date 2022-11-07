@@ -112,11 +112,6 @@ extern ConVar asw_difficulty_alien_damage_step;
 
 static const char *s_pDoorAnimThink = "DoorAnimThink";
 
-enum
-{
-	AE_DOOR_FALL = 1,	// The door has fallen
-};
-
 namespace
 {
 	void UTIL_ComputeAABBForBounds( const Vector &mins1, const Vector &maxs1, const Vector &mins2, const Vector &maxs2, Vector *destMins, Vector *destMaxs )
