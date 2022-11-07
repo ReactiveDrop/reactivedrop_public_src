@@ -1351,10 +1351,10 @@ void CASW_Door::SetDoorDamage()
 {
 	// Body groups for doors (in order):
 	// - Undamaged
-	// - Partially dented from front (toward +y)
-	// - Completely dented from front (toward +y) (door_rear_fall)
-	// - Partially dented from rear (toward -y)
-	// - Completely dented from rear (toward -y) (door_front_fall)
+	// - Partially dented from front (toward +x)
+	// - Completely dented from front (toward +x) (door_rear_fall)
+	// - Partially dented from rear (toward -x)
+	// - Completely dented from rear (toward -x) (door_front_fall)
 
 	int iDamageGroup;
 	switch ( m_DentAmount )
