@@ -226,9 +226,7 @@ struct ObjectiveMapMark
 #define EGG_FLAG_DIE					0x0004
 #define EGG_FLAG_GRUBSACK_DIE			0x0008
 
-// door healths and break fractions
-#define ASW_DOOR_REINFORCED_HEALTH 2400
-#define ASW_DOOR_NORMAL_HEALTH 1800
+// door break fractions (max health is a convar)
 #define ASW_DOOR_PARTIAL_DENT_HEALTH 0.66f
 #define ASW_DOOR_COMPLETE_DENT_HEALTH 0.33f
 

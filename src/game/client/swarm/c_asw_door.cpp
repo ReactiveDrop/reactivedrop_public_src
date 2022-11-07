@@ -13,25 +13,25 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Door, DT_ASW_Door, CASW_Door )
-	RecvPropFloat		(RECVINFO(m_flTotalSealTime)),
-	RecvPropFloat		(RECVINFO(m_flCurrentSealTime)),
-	RecvPropInt			(RECVINFO(m_iDoorStrength)),
-	RecvPropInt			(RECVINFO(m_iDoorType)),	
-	RecvPropInt			(RECVINFO(m_lifeState)),
-	RecvPropInt			(RECVINFO(m_iHealth) ),
-	RecvPropBool		(RECVINFO(m_bAutoOpen)),
-	RecvPropBool		(RECVINFO(m_bBashable)),
-	RecvPropBool		(RECVINFO(m_bShootable)),
-	RecvPropBool		(RECVINFO(m_bCanCloseToWeld)),
-	RecvPropBool		(RECVINFO(m_bCanPlayerWeld)),
-	RecvPropBool		(RECVINFO(m_bRecommendedSeal)),
-	RecvPropBool		(RECVINFO(m_bWasWeldedByMarine)),
-	RecvPropFloat		(RECVINFO(m_fLastMomentFlipDamage)),
-	RecvPropVector		(RECVINFO(m_vecClosedPosition)),
-	RecvPropBool		(RECVINFO(m_bSkillMarineHelping)),	
+	RecvPropFloat		( RECVINFO( m_flTotalSealTime ) ),
+	RecvPropFloat		( RECVINFO( m_flCurrentSealTime ) ),
+	RecvPropInt			( RECVINFO( m_iDoorStrength ) ),
+	RecvPropInt			( RECVINFO( m_iDoorType ) ),
+	RecvPropInt			( RECVINFO( m_lifeState ) ),
+	RecvPropInt			( RECVINFO( m_iHealth ) ),
+	RecvPropBool		( RECVINFO( m_bAutoOpen ) ),
+	RecvPropBool		( RECVINFO( m_bBashable ) ),
+	RecvPropBool		( RECVINFO( m_bShootable ) ),
+	RecvPropBool		( RECVINFO( m_bCanCloseToWeld ) ),
+	RecvPropBool		( RECVINFO( m_bCanPlayerWeld ) ),
+	RecvPropBool		( RECVINFO( m_bRecommendedSeal ) ),
+	RecvPropBool		( RECVINFO( m_bWasWeldedByMarine ) ),
+	RecvPropFloat		( RECVINFO( m_fLastMomentFlipDamage ) ),
+	RecvPropVector		( RECVINFO( m_vecClosedPosition ) ),
+	RecvPropBool		( RECVINFO( m_bSkillMarineHelping ) ),
 END_RECV_TABLE()
 
-ConVar asw_door_normal_health_base( "asw_door_normal_health_base", MKSTRING( ASW_DOOR_NORMAL_HEALTH ), FCVAR_CHEAT | FCVAR_REPLICATED, "Base health for a non-reinforced door on Normal." );
+ConVar asw_door_normal_health_base( "asw_door_normal_health_base", "1800", FCVAR_CHEAT | FCVAR_REPLICATED, "Base health for a non-reinforced door on Normal." );
 ConVar asw_door_normal_health_step( "asw_door_normal_health_step", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Increase/decrease in health for a non-reinforced door on for every mission difficulty above/below 5." );
 
 bool C_ASW_Door::s_bLoadedSealedIconTexture = false;
@@ -40,38 +40,38 @@ int  C_ASW_Door::s_nSealedIconTextureID = -1;
 int  C_ASW_Door::s_nFullySealedIconTextureID = -1;
 
 // for mousing over door health
-CUtlVector<C_ASW_Door*>	g_ClientDoorList;
+CUtlVector<C_ASW_Door *>	g_ClientDoorList;
 
 C_ASW_Door::C_ASW_Door()
 {
 	m_fLastWeldedTime = 0.0f;
 
-	Q_snprintf(m_szSealedIconTexture, sizeof(m_szSealedIconTexture), "vgui/swarm/UseIcons/UseIconDoorPartlySealed");
+	Q_snprintf( m_szSealedIconTexture, sizeof( m_szSealedIconTexture ), "vgui/swarm/UseIcons/UseIconDoorPartlySealed" );
 
-	g_ClientDoorList.AddToTail(this);
+	g_ClientDoorList.AddToTail( this );
 }
 
 C_ASW_Door::~C_ASW_Door()
 {
-	g_ClientDoorList.FindAndRemove(this);
+	g_ClientDoorList.FindAndRemove( this );
 }
 
 // returns how sealed this door is, from 0 to 1.0
 float C_ASW_Door::GetSealAmount()
 {
-	if (m_flTotalSealTime <= 0)
+	if ( m_flTotalSealTime <= 0 )
 		return 0;
 
-	return (m_flCurrentSealTime/m_flTotalSealTime);
+	return ( m_flCurrentSealTime / m_flTotalSealTime );
 }
 
 int C_ASW_Door::GetSealedIconTextureID()
 {
-	if (!s_bLoadedSealedIconTexture)
+	if ( !s_bLoadedSealedIconTexture )
 	{
 		// load the portrait textures
-		s_nSealedIconTextureID = vgui::surface()->CreateNewTextureID();		
-		vgui::surface()->DrawSetTextureFile( s_nSealedIconTextureID, m_szSealedIconTexture, true, false);
+		s_nSealedIconTextureID = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( s_nSealedIconTextureID, m_szSealedIconTexture, true, false );
 		s_bLoadedSealedIconTexture = true;
 	}
 
@@ -80,17 +80,17 @@ int C_ASW_Door::GetSealedIconTextureID()
 
 int C_ASW_Door::GetFullySealedIconTextureID()
 {
-	if (!s_bLoadedFullySealedIconTexture)
+	if ( !s_bLoadedFullySealedIconTexture )
 	{
-		s_nFullySealedIconTextureID = vgui::surface()->CreateNewTextureID();		
-		vgui::surface()->DrawSetTextureFile( s_nFullySealedIconTextureID, "vgui/swarm/UseIcons/UseIconDoorFullySealed", true, false);
+		s_nFullySealedIconTextureID = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( s_nFullySealedIconTextureID, "vgui/swarm/UseIcons/UseIconDoorFullySealed", true, false );
 		s_bLoadedFullySealedIconTexture = true;
 	}
 
 	return s_nFullySealedIconTextureID;
 }
 
-const char* C_ASW_Door::GetSealedIconText()
+const char *C_ASW_Door::GetSealedIconText()
 {
 	if ( gpGlobals->curtime > m_fLastWeldedTime + 1.0f )
 	{
@@ -127,51 +127,51 @@ bool C_ASW_Door::IsOpen()
 {
 	Vector diff = GetAbsOrigin() - m_vecClosedPosition;
 	float dist = diff.LengthSqr();
-	return (dist > 2);	// 2 to allow for network rounding...
+	return ( dist > 2 );	// 2 to allow for network rounding...
 }
 
 bool C_ASW_Door::IsMoving()
 {
 	Vector vel;
-	EstimateAbsVelocity(vel);
+	EstimateAbsVelocity( vel );
 	return vel.LengthSqr() > 0;
 }
 
 #define DOOR_CORNER_DISTANCE 62.0f
 #define DOOR_HEIGHT 135.0f
 
-Vector C_ASW_Door::GetWeldFacingPoint(C_BaseEntity* pOther)
+Vector C_ASW_Door::GetWeldFacingPoint( C_BaseEntity *pOther )
 {
 	// work out which side of the door the marine is on
 	Vector diff = pOther->GetAbsOrigin() - GetAbsOrigin();
-	VectorNormalize(diff);
+	VectorNormalize( diff );
 	QAngle angDoorFacing = GetAbsAngles();
 	Vector vecDoorFacing = vec3_origin;
-	AngleVectors(angDoorFacing, &vecDoorFacing);
-	bool bFrontSide = (DotProduct(vecDoorFacing, diff) > 0);
+	AngleVectors( angDoorFacing, &vecDoorFacing );
+	bool bFrontSide = ( DotProduct( vecDoorFacing, diff ) > 0 );
 
 	// depending on the side, get one of the corners
 	angDoorFacing.y -= bFrontSide ? 81 : 102;
-	AngleVectors(angDoorFacing, &vecDoorFacing);
+	AngleVectors( angDoorFacing, &vecDoorFacing );
 	Vector result = GetAbsOrigin() + vecDoorFacing * DOOR_CORNER_DISTANCE;
 
 	// correct by height
-	result.z += DOOR_HEIGHT * (1.0f - GetSealAmount());
+	result.z += DOOR_HEIGHT * ( 1.0f - GetSealAmount() );
 
 	return result;
 }
 
-Vector C_ASW_Door::GetSparkNormal( C_BaseEntity* pOther )
+Vector C_ASW_Door::GetSparkNormal( C_BaseEntity *pOther )
 {
 	// work out which side of the door the marine is on
 	Vector diff = pOther->GetAbsOrigin() - GetAbsOrigin();
-	VectorNormalize(diff);
+	VectorNormalize( diff );
 	QAngle angDoorFacing = GetAbsAngles();
 	Vector vecDoorFacing = vec3_origin;
-	AngleVectors(angDoorFacing, &vecDoorFacing);
-	bool bFrontSide = (DotProduct(vecDoorFacing, diff) > 0);
+	AngleVectors( angDoorFacing, &vecDoorFacing );
+	bool bFrontSide = ( DotProduct( vecDoorFacing, diff ) > 0 );
 
-	if (bFrontSide)
+	if ( bFrontSide )
 		return vecDoorFacing;
 
 	return -vecDoorFacing;
@@ -180,19 +180,19 @@ Vector C_ASW_Door::GetSparkNormal( C_BaseEntity* pOther )
 // checks the client door list for a door near this position
 //  NOTE: currently only returns damaged doors
 #define ASW_DOOR_NEAR_PADDING 20
-C_ASW_Door* C_ASW_Door::GetDoorNear(Vector vecSrc)
+C_ASW_Door *C_ASW_Door::GetDoorNear( Vector vecSrc )
 {
-	for (int i=0;i<g_ClientDoorList.Count();i++)
-	{			
+	for ( int i = 0; i < g_ClientDoorList.Count(); i++ )
+	{
 		C_ASW_Door *pEnt = g_ClientDoorList[i];
 		int iDoorType;
-		if (!pEnt || pEnt->GetHealth() <= 0 || pEnt->GetHealthFraction(iDoorType) >= 1.0f)
+		if ( !pEnt || pEnt->GetHealth() <= 0 || pEnt->GetHealthFraction( iDoorType ) >= 1.0f )
 			continue;
 
 		Vector mins, maxs;
-		
+
 		// get the size of the door
-		pEnt->GetRenderBoundsWorldspace(mins,maxs);
+		pEnt->GetRenderBoundsWorldspace( mins, maxs );
 
 		// pull out all 8 corners of this volume
 		Vector worldPos[8];
@@ -207,7 +207,7 @@ C_ASW_Door* C_ASW_Door::GetDoorNear(Vector vecSrc)
 		worldPos[7] = maxs; worldPos[7].z = mins.z;
 
 		// convert them to screen space
-		for (int k=0;k<8;k++)
+		for ( int k = 0; k < 8; k++ )
 		{
 			debugoverlay->ScreenPosition( worldPos[k], screenPos[k] );
 		}
@@ -215,12 +215,12 @@ C_ASW_Door* C_ASW_Door::GetDoorNear(Vector vecSrc)
 		// find the rectangle bounding all screen space points
 		Vector topLeft = screenPos[0];
 		Vector bottomRight = screenPos[0];
-		for (int k=0;k<8;k++)
+		for ( int k = 0; k < 8; k++ )
 		{
-			topLeft.x = MIN(screenPos[k].x, topLeft.x);
-			topLeft.y = MIN(screenPos[k].y, topLeft.y);
-			bottomRight.x = MAX(screenPos[k].x, bottomRight.x);
-			bottomRight.y = MAX(screenPos[k].y, bottomRight.y);
+			topLeft.x = MIN( screenPos[k].x, topLeft.x );
+			topLeft.y = MIN( screenPos[k].y, topLeft.y );
+			bottomRight.x = MAX( screenPos[k].x, bottomRight.x );
+			bottomRight.y = MAX( screenPos[k].y, bottomRight.y );
 		}
 		int BracketSize = 5;	// todo: set by screen res?
 
@@ -234,17 +234,17 @@ C_ASW_Door* C_ASW_Door::GetDoorNear(Vector vecSrc)
 		int x, y;
 		vgui::input()->GetCursorPos( x, y );
 
-		if (x >= topLeft.x && x <= bottomRight.x &&
-			y >= topLeft.y && y <= bottomRight.y)
+		if ( x >= topLeft.x && x <= bottomRight.x &&
+			y >= topLeft.y && y <= bottomRight.y )
 		{
 			return pEnt;
-		}	
+		}
 	}
 
 	return NULL;
 }
 
-float C_ASW_Door::GetHealthFraction(int &iDoorType) const
+float C_ASW_Door::GetHealthFraction( int &iDoorType ) const
 {
 	if ( m_iDoorStrength == 0 )	// indestructable
 	{
@@ -267,7 +267,7 @@ void C_ASW_Door::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( !IsAlive() && VPhysicsGetObject())
+	if ( !IsAlive() && VPhysicsGetObject() )
 	{
 		VPhysicsDestroyObject();
 	}
@@ -285,14 +285,14 @@ void C_ASW_Door::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImp
 	Assert( pTrace->m_pEnt );
 
 	CBaseEntity *pEntity = pTrace->m_pEnt;
- 
+
 	// Build the impact data
 	CEffectData data;
 	data.m_vOrigin = pTrace->endpos;
 	data.m_vStart = pTrace->startpos;
-	data.m_nSurfaceProp = pTrace->surface.surfaceProps;	
-	if (!m_bShootable)
-		data.m_nSurfaceProp = physprops->GetSurfaceIndex("metal");
+	data.m_nSurfaceProp = pTrace->surface.surfaceProps;
+	if ( !m_bShootable )
+		data.m_nSurfaceProp = physprops->GetSurfaceIndex( "metal" );
 	data.m_nDamageType = iDamageType;
 	data.m_nHitBox = pTrace->hitbox;
 #ifdef CLIENT_DLL

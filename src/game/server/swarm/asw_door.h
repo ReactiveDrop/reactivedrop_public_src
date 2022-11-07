@@ -106,7 +106,6 @@ public:
 	bool m_bDoneDoorShout;
 	bool m_bDoBreachedShout;
 	bool m_bDoAutoShootChatter;
-	bool m_bRotateOnFlip;
 	// SCARY NOTE: a float defined here was taking on strange values
 	float m_fSkillMarineHelping;	// last time an engineering marine was nearby helping a weld
 	CNetworkVar(bool, m_bSkillMarineHelping);		// is an engineer helping a weld on this door currently?
