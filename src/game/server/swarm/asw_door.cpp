@@ -3,6 +3,7 @@
 #include "asw_door_padding.h"
 #include "doors.h"
 #include "asw_trace_filter_door_crush.h"
+#include "eventqueue.h"
 #include "func_asw_fade.h"
 #include "prop_asw_fade.h"
 #include "asw_marine.h"
@@ -16,7 +17,6 @@
 #include "vcollide_parse.h"
 #include "cvisibilitymonitor.h"
 #include "soundent.h"
-#include "eventqueue.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
