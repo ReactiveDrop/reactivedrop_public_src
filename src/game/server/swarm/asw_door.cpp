@@ -1819,27 +1819,39 @@ void CASW_Door::FallCrush()
 	}
 
 	AngleVectors( ang, &vForward );
-	// adjust the sweep of destruction by how far fallen over the door is
-	float length = 80.0f;
-	float start_offset = 99;
-	if ( m_iFallingStage == 1 )
+
+	KeyValues::AutoDelete pKV( "" );
+	CUtlBuffer buf( 1024, 0, CUtlBuffer::TEXT_BUFFER );
+	if ( modelinfo->GetModelKeyValue( GetModel(), buf ) )
 	{
-		length *= 0.333f;
-		start_offset = 40;
+		pKV->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), buf );
 	}
-	if ( m_iFallingStage == 2 )
+
+	// adjust the sweep of destruction by how far fallen over the door is
+	float length, start_offset;
+	switch ( m_iFallingStage )
 	{
-		length *= 0.666f;
-		start_offset = 49;
+	case 1:
+		length = pKV->GetFloat( "asw_door/crush_length_1", 26.64f );
+		start_offset = pKV->GetFloat( "asw_door/crush_offset_1", 40 );
+		break;
+	case 2:
+		length = pKV->GetFloat( "asw_door/crush_length_2", 53.28f );
+		start_offset = pKV->GetFloat( "asw_door/crush_offset_2", 49 );
+		break;
+	default:
+		length = pKV->GetFloat( "asw_door/crush_length_3", 80.0f );
+		start_offset = pKV->GetFloat( "asw_door/crush_offset_3", 99 );
+		break;
 	}
 
 	Vector vStart = GetAbsOrigin() + vForward * start_offset;
 	Vector vEnd = vStart + vForward * length;
 
 	// compute a bounding box that encompasses the door, no matter its angle
-	float wide = 60;
-	float deep = 10;
-	float tall = 140;
+	float wide = pKV->GetFloat( "asw_door/wide", 60 );
+	float deep = pKV->GetFloat( "asw_door/deep", 10 );
+	float tall = pKV->GetFloat( "asw_door/tall", 140 );
 	Vector pre_top_left( -deep, -wide, 0 );
 	Vector pre_top_right( deep, -wide, 0 );
 	Vector pre_bottom_right( deep, wide, tall );
