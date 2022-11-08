@@ -1624,6 +1624,12 @@ void CASW_Door::InputDisableAutoOpen( inputdata_t &inputdata )
 
 void CASW_Door::InputRecommendWeld( inputdata_t &inputdata )
 {
+	if ( m_lifeState == LIFE_DEAD || m_DentAmount != ASWDD_NONE )
+	{
+		// Can't weld a broken door.
+		return;
+	}
+
 	m_bRecommendedSeal = true;
 
 	IGameEvent *event = gameeventmanager->CreateEvent( "door_recommend_weld" );
