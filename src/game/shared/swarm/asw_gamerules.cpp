@@ -7821,31 +7821,23 @@ void CAlienSwarm::UpdateVote()
 				//ASWGameStats()->AddMapRecord();
 
 			const char *szCampaignName = GetCurrentVoteCampaignName();
-			if ( !szCampaignName || !szCampaignName[0] )
-			{
-				// changes level into single mission mode
-				engine->ChangeLevel( GetCurrentVoteName(), NULL );
-			}
-			else
-			{
-				// start a new campaign on the specified mission
-				IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-				if ( !pSource )
-					return;
+			// start a new campaign on the specified mission
+			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+			if ( !pSource )
+				return;
 
-				char szSaveFilename[MAX_PATH];
-				szSaveFilename[0] = 0;
-				const char *szStartingMission = GetCurrentVoteName();
-				if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, ( gpGlobals->maxClients > 1 ), szStartingMission ) )
-				{
-					Msg( "Unable to create new save game.\n" );
-					return;
-				}
-				engine->ServerCommand( CFmtStr( "%s %s campaign %s\n",
-					"changelevel",
-					szStartingMission ? szStartingMission : "lobby",
-					szSaveFilename ) );
+			char szSaveFilename[MAX_PATH];
+			szSaveFilename[0] = 0;
+			const char *szStartingMission = GetCurrentVoteName();
+			if ( !pSource->ASW_Campaign_CreateNewSaveGame( &szSaveFilename[0], sizeof( szSaveFilename ), szCampaignName, ( gpGlobals->maxClients > 1 ), szStartingMission ) )
+			{
+				Msg( "Unable to create new save game.\n" );
+				return;
 			}
+			engine->ServerCommand( CFmtStr( "changelevel %s %s %s\n",
+				szStartingMission ? szStartingMission : "lobby",
+				szCampaignName && szCampaignName[0] ? "campaign" : "single_mission",
+				szSaveFilename ) );
 		}
 		else if ( m_iCurrentVoteType == ASW_VOTE_SAVED_CAMPAIGN )
 		{
