@@ -4100,6 +4100,7 @@
 		4: "In Air" : 0		// shakes objects even if they are not onground
 		8: "Physics" : 0	// shakes physically as well as the camera
 		16: "Ropes" : 0		// shakes ropes too.
+		64: "Force shake on client (bypasses asw_camera_shake 0)" : 0
 	]
 
 	amplitude(float) : "Amplitude (0-16)" : "4" : "The amount of noise in the screen shake. Should be a range between 0 and 16."

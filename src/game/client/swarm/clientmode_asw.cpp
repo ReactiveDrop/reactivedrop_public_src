@@ -556,7 +556,6 @@ void ASW_Handle_Fixed_Input( bool active )
 	s_bFixedInputActive = active;
 }
 
-ConVar asw_camera_shake( "asw_camera_shake", "1", FCVAR_NONE, "Enable camera shakes" );
 ConVar asw_fix_cam( "asw_fix_cam", "-1", FCVAR_CHEAT, "Set to 1 to fix the camera in place." );
 
 void ClientModeASW::OverrideView( CViewSetup *pSetup )
@@ -575,10 +574,8 @@ void ClientModeASW::OverrideView( CViewSetup *pSetup )
 		int omx, omy;
 		ASWInput()->ASW_GetCameraLocation(pPlayer, pSetup->origin, pSetup->angles, omx, omy, true);
 #ifdef CLIENT_DLL
-		if ( asw_camera_shake.GetBool() )
-		{
-			GetViewEffects()->ApplyShake( pSetup->origin, pSetup->angles, 1.0 );
-		}
+
+		GetViewEffects()->ApplyShake( pSetup->origin, pSetup->angles, 1.0 );
 #endif
 	}
 	else if (::input->CAM_IsOrthographic())

@@ -121,6 +121,7 @@ END_DATADESC()
 #define SF_ASW_SHAKE_PHYSICS	0x0008		// Shake physically (not just camera)
 #define SF_ASW_SHAKE_ROPES		0x0010		// Shake ropes too.
 #define SF_ASW_SHAKE_NO_VIEW	0x0020		// DON'T shake the view (only ropes and/or physics objects)
+#define SF_ASW_SHAKE_FORCE		0x0040		// Force shake even for clients with asw_camera_shake 0.
 
 
 //-----------------------------------------------------------------------------
@@ -194,6 +195,7 @@ void CASWEnvShake::ApplyShake( ShakeCommand_t command, CASW_Marine *pOnlyMarine 
 		switch( command )
 		{
 		case SHAKE_START:
+		case SHAKE_FORCE_START:
 			{
 				m_stopTime = gpGlobals->curtime + Duration();
 				m_nextShake = 0;
@@ -249,7 +251,10 @@ void CASWEnvShake::ApplyShake( ShakeCommand_t command, CASW_Marine *pOnlyMarine 
 //-----------------------------------------------------------------------------
 void CASWEnvShake::InputStartShake( inputdata_t &inputdata )
 {
-	ApplyShake( SHAKE_START );
+	if ( HasSpawnFlags( SF_ASW_SHAKE_FORCE ) )
+		ApplyShake( SHAKE_FORCE_START );
+	else
+		ApplyShake( SHAKE_START );
 }
 
 
@@ -273,7 +278,10 @@ void CASWEnvShake::InputStartShakeForMarine( inputdata_t &inputdata )
 		return;
 	}
 
-	ApplyShake( SHAKE_START, pMarine );
+	if ( HasSpawnFlags( SF_ASW_SHAKE_FORCE ) )
+		ApplyShake( SHAKE_FORCE_START, pMarine );
+	else
+		ApplyShake( SHAKE_START, pMarine );
 }
 
 
@@ -366,4 +374,4 @@ void CC_ASW_Shake( void )
 	}
 }
 
-static ConCommand asw_shake("asw_shake", CC_ASW_Shake, "Shake the screen.", FCVAR_CHEAT );
+static ConCommand asw_shake("asw_shake", CC_ASW_Shake, "Shake the screen. Requires asw_camera_shake 1.", FCVAR_CHEAT );
