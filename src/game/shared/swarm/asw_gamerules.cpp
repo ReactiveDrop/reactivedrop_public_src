@@ -7821,6 +7821,13 @@ void CAlienSwarm::UpdateVote()
 				//ASWGameStats()->AddMapRecord();
 
 			const char *szCampaignName = GetCurrentVoteCampaignName();
+			const char *szMissionMode = "campaign";
+			if ( !szCampaignName || !szCampaignName[0] )
+			{
+				szMissionMode = "single_mission";
+				szCampaignName = asw_default_campaign.GetString();
+			}
+
 			// start a new campaign on the specified mission
 			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
 			if ( !pSource )
@@ -7836,7 +7843,7 @@ void CAlienSwarm::UpdateVote()
 			}
 			engine->ServerCommand( CFmtStr( "changelevel %s %s %s\n",
 				szStartingMission ? szStartingMission : "lobby",
-				szCampaignName && szCampaignName[0] ? "campaign" : "single_mission",
+				szMissionMode,
 				szSaveFilename ) );
 		}
 		else if ( m_iCurrentVoteType == ASW_VOTE_SAVED_CAMPAIGN )
