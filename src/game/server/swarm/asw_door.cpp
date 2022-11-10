@@ -28,7 +28,9 @@ BEGIN_DATADESC( CASW_Door )
 	DEFINE_KEYFIELD( m_flTotalSealTime, FIELD_FLOAT, "totalsealtime" ),
 	DEFINE_KEYFIELD( m_flCurrentSealTime, FIELD_FLOAT, "currentsealtime" ),
 	DEFINE_KEYFIELD( m_iDoorType, FIELD_INTEGER, "doortype" ),
+	DEFINE_KEYFIELD( m_iCustomMaxHealth, FIELD_INTEGER, "CustomMaxHealth" ),
 	DEFINE_KEYFIELD( m_DentAmount, FIELD_INTEGER, "dentamount" ),
+	DEFINE_KEYFIELD( m_flCustomDentPercentage, FIELD_FLOAT, "CustomDentPercentage" ),
 	DEFINE_KEYFIELD( m_bShowsOnScanner, FIELD_BOOLEAN, "showsonscanner" ),
 	DEFINE_KEYFIELD( m_bAutoOpen, FIELD_BOOLEAN, "autoopen" ),
 	DEFINE_KEYFIELD( m_bCanCloseToWeld, FIELD_BOOLEAN, "CanCloseToWeld" ),
@@ -189,29 +191,45 @@ void CASW_Door::Spawn()
 		m_flTotalSealTime = 10.0f;
 
 	// set door strength and skin according to breakable or not:
-	if ( m_iDoorType == 0 )	// normal weak door
+	switch ( m_iDoorType )
 	{
-		m_bBashable = true;
-		m_bShootable = true;
-		m_iDoorStrength = asw_door_normal_health_base.GetInt();
-		m_nSkin = 0;
-	}
-	else if ( m_iDoorType == 1 )
-	{
-		m_bBashable = true;
-		m_bShootable = true;
-		m_iDoorStrength = asw_door_reinforced_health_base.GetInt();
-		m_nSkin = 1;
-	}
-	else if ( m_iDoorType == 2 )	// indestructable
-	{
-		m_bBashable = false;
-		m_bShootable = false;
-		m_iDoorStrength = 0;
-		m_nSkin = 2;
-	}
+	case ASWDT_NORMAL:
+		{
+			m_bBashable = true;
+			m_bShootable = true;
+			m_iDoorStrength = asw_door_normal_health_base.GetInt();
+			m_nSkin = 0;
 
-	//m_iDoorStrength = 100;	//temp for testing
+			break;
+		}
+	case ASWDT_REINFORCED:
+		{
+			m_bBashable = true;
+			m_bShootable = true;
+			m_iDoorStrength = asw_door_reinforced_health_base.GetInt();
+			m_nSkin = 1;
+
+			break;
+		}
+	case ASWDT_INDESTRUCTABLE:
+		{
+			m_bBashable = false;
+			m_bShootable = false;
+			m_iDoorStrength = 0;
+			m_nSkin = 2;
+
+			break;
+		}
+	case ASWDT_CUSTOM:
+		{
+			m_bBashable = true;
+			m_bShootable = true;
+			m_iDoorStrength = m_iCustomMaxHealth <= 0 ? asw_door_normal_health_base.GetInt() : m_iCustomMaxHealth;
+			m_nSkin = 0;
+
+			break;
+		}
+	}
 
 	m_bSetSide = false;
 	m_bFlipped = false;
@@ -234,16 +252,26 @@ void CASW_Door::Spawn()
 		m_takedamage = DAMAGE_YES;
 		m_iHealth = m_iDoorStrength;
 
-		if ( m_DentAmount == ASWDD_PARTIAL )
+		if ( m_flCustomDentPercentage > 0.001f && m_flCustomDentPercentage < 1.0f )
 		{
-			m_iHealth = ASW_DOOR_PARTIAL_DENT_HEALTH * m_iDoorStrength;
-			SetDentSequence();
+			m_iHealth = m_flCustomDentPercentage * m_iDoorStrength;
+
+			if ( m_iHealth == 0 )
+				m_iHealth = 1;
 		}
-		else if ( m_DentAmount == ASWDD_COMPLETE )
+		else
 		{
-			m_iHealth = ASW_DOOR_COMPLETE_DENT_HEALTH * m_iDoorStrength;
-			SetDentSequence();
+			if ( m_DentAmount == ASWDD_PARTIAL )
+			{
+				m_iHealth = ASW_DOOR_PARTIAL_DENT_HEALTH * m_iDoorStrength;
+			}
+			else if ( m_DentAmount == ASWDD_COMPLETE )
+			{
+				m_iHealth = ASW_DOOR_COMPLETE_DENT_HEALTH * m_iDoorStrength;
+			}
 		}
+
+		SetDentSequence();
 		SetMaxHealth( m_iHealth );
 	}
 	else
@@ -1909,10 +1937,10 @@ void CASW_Door::ComputeDoorExtent( Extent *extent, unsigned int extentType )
 
 void CASW_Door::UpdateDoorHealthOnMissionStart( int iDifficulty )
 {
-	if ( m_iDoorType == 2 )
+	if ( m_iDoorType == ASWDT_INDESTRUCTABLE || m_iDoorType == ASWDT_CUSTOM || m_flCustomDentPercentage > 0.001f )
 		return;
 
-	Assert( ( m_iDoorType == 0 && m_iDoorStrength == asw_door_normal_health_base.GetInt() ) || ( m_iDoorType == 1 && m_iDoorStrength == asw_door_reinforced_health_base.GetInt() ) );
+	Assert( ( m_iDoorType == ASWDT_NORMAL && m_iDoorStrength == asw_door_normal_health_base.GetInt() ) || ( m_iDoorType == ASWDT_REINFORCED && m_iDoorStrength == asw_door_reinforced_health_base.GetInt() ) );
 	Assert( m_DentAmount == ASWDD_NONE || m_DentAmount == ASWDD_PARTIAL || m_DentAmount == ASWDD_COMPLETE );
 
 	float flScale = 1.0f;
@@ -1928,7 +1956,7 @@ void CASW_Door::UpdateDoorHealthOnMissionStart( int iDifficulty )
 	Assert( m_iHealth == m_iMaxHealth );
 	Assert( m_iHealth == int( m_iDoorStrength * flScale ) );
 
-	if ( m_iDoorType == 0 )
+	if ( m_iDoorType == ASWDT_NORMAL )
 	{
 		m_iDoorStrength = asw_door_normal_health_base.GetInt() + ( iDifficulty - 5 ) * asw_door_normal_health_step.GetInt();
 	}
