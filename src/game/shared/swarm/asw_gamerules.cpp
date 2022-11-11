@@ -1,6 +1,5 @@
 #include "cbase.h"
 #include "ammodef.h"
-#include "highres_timer.h"
 
 #ifdef CLIENT_DLL
 	#include "c_asw_marine.h"
@@ -96,6 +95,7 @@
 	#include "team.h"
 	#include "asw_pickup_equipment.h"
 	#include "Sprite.h"
+	#include "highres_timer.h"
 	#include "env_tonemap_controller.h"
 	#include "asw_marine_hint.h"
 	#include "eventqueue.h"
@@ -1450,9 +1450,6 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
 		mod_dont_load_vertices.SetValue( 1 );
 	}
-
-	// try optimize cpu set allocation
-	check_cpu_allocation();
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
