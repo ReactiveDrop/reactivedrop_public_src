@@ -685,6 +685,7 @@ screenshake_t *CViewEffects::FindLongestShake()
 }
 
 ConVar asw_camera_shake( "asw_camera_shake", "1", FCVAR_NONE, "Enable camera shakes" );
+ConVar asw_camera_shake_forced( "asw_camera_shake_forced", "1", FCVAR_NONE, "Disables forced camera shakes. Forced camera shakes are used by few maps and perform a screen shake even when asw_camera_shake is set to 0." );
 //-----------------------------------------------------------------------------
 // Purpose: Message hook to parse ScreenShake messages
 // Input  : pszName - 
@@ -694,16 +695,21 @@ ConVar asw_camera_shake( "asw_camera_shake", "1", FCVAR_NONE, "Enable camera sha
 //-----------------------------------------------------------------------------
 void CViewEffects::Shake( const ScreenShake_t &data )
 {
+	if ( prediction && prediction->InPrediction() && !prediction->IsFirstTimePredicted() )
+		return;
+	
 	ShakeCommand_t command = data.command;
 	
 	if ( !asw_camera_shake.GetBool() && ( command == SHAKE_START || command == SHAKE_START_RUMBLEONLY || command == SHAKE_START_NORUMBLE ) )
 		return;
 
 	if ( command == SHAKE_FORCE_START || command == SHAKE_FORCE_START_RUMBLEONLY || command == SHAKE_FORCE_START_NORUMBLE )
+	{
+		if ( !asw_camera_shake_forced.GetBool() )
+			return;
+		
 		command = static_cast<ShakeCommand_t>( command - 1 );	// fallback to non-force command
-	
-	if ( prediction && prediction->InPrediction() && !prediction->IsFirstTimePredicted() )
-		return;
+	}
 
 	if ( ( command == SHAKE_START || command == SHAKE_START_RUMBLEONLY ) && ( m_ShakeList.Count() < MAX_SHAKES ) )
 	{
