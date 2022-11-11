@@ -123,7 +123,7 @@ void CASWHudHealth::OnThink()
 	{
 		C_ASW_Door *pDoor = g_ClientDoorList[i];
 		int iDoorType = 0;
-		if ( !pDoor || pDoor->GetHealthFraction(iDoorType) <= 0.0f|| pDoor->GetHealthFraction(iDoorType) >= 1.0f || pDoor->IsDormant() || pDoor->IsOpen() )
+		if ( !pDoor || pDoor->GetHealthFraction(iDoorType) <= 0.0f|| pDoor->GetHealthFraction(iDoorType) >= 1.0f || pDoor->IsDormant() || pDoor->IsOpen() || pDoor->GetAbsOrigin().DistTo( pPlayer->EyePosition() ) > 1024.0f )
 			continue;
 
 		// assign a tooltip panel to show this door's health
