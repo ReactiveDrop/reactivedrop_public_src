@@ -4204,7 +4204,12 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
 		return;
 
-	const char* szWeaponClass = STRING( ASWEquipmentList()->GetItemForSlot( iSlot, iEquipIndex )->m_EquipClass );
+	CASW_EquipItem *pEquip = ASWEquipmentList()->GetItemForSlot( iSlot, iEquipIndex );
+	Assert( pEquip );
+	if ( !pEquip )
+		return;
+
+	const char* szWeaponClass = STRING( pEquip->m_EquipClass );
 	Assert( szWeaponClass );
 	if ( !szWeaponClass )
 		return;
