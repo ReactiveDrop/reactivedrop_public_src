@@ -685,7 +685,7 @@ screenshake_t *CViewEffects::FindLongestShake()
 }
 
 ConVar asw_camera_shake( "asw_camera_shake", "1", FCVAR_NONE, "Enable camera shakes" );
-ConVar asw_camera_shake_forced( "asw_camera_shake_forced", "1", FCVAR_NONE, "Disables forced camera shakes. Forced camera shakes are used by few maps and perform a screen shake even when asw_camera_shake is set to 0." );
+ConVar asw_camera_shake_forced( "asw_camera_shake_forced", "1", FCVAR_NONE, "Enables forced camera shakes. Forced camera shakes are used by few maps and perform a screen shake even when asw_camera_shake is set to 0." );
 //-----------------------------------------------------------------------------
 // Purpose: Message hook to parse ScreenShake messages
 // Input  : pszName - 
