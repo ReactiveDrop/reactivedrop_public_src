@@ -4376,7 +4376,7 @@ void CASW_MarineGameMovement::FinishUnDuck( void )
 //-----------------------------------------------------------------------------
 void CASW_MarineGameMovement::UpdateDuckJumpEyeOffset( void )
 {
-	if ( player->m_Local.m_nDuckJumpTimeMsecs != 0 )
+	if ( player && player->m_Local.m_nDuckJumpTimeMsecs != 0 )
 	{
 		int nDuckMilliseconds = MAX( 0, GAMEMOVEMENT_DUCK_TIME - player->m_Local.m_nDuckJumpTimeMsecs );
 		if ( nDuckMilliseconds > TIME_TO_UNDUCK_MSECS )
