@@ -1471,6 +1471,7 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	m_MapResetFilter.AddKeepEntity( "scene_manager" );
 	m_MapResetFilter.AddKeepEntity( "event_queue_saveload_proxy" );
 	m_MapResetFilter.AddKeepEntity( "ai_network" );
+	m_MapResetFilter.AddKeepEntity( "ai_hint" );
 	m_MapResetFilter.AddKeepEntity( "info_node" );
 	m_MapResetFilter.AddKeepEntity( "info_hint" );
 	m_MapResetFilter.AddKeepEntity( "info_node_hint" );
