@@ -164,6 +164,9 @@ private:
 	float	m_flDistance;				// How far to slide
 	QAngle	m_angSlideAngle;				// The angle the door slides in relative to its own angle
 
+	int		m_iCustomMaxHealth;			// If door type = Custom, use this number for max health
+	float	m_flCustomDentPercentage;	// If set to >0.001 and <1.0, set door's health to this percentage
+
 	ASW_DoorSpawnPos_t m_eSpawnPosition;
 
 	Vector	m_vecOpenPosition;

@@ -3510,12 +3510,14 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	doortype(choices) : "Door Type" : 0 : "Reinforced doors have twice the strength of normal doors.  Indestructible doors cannot be shot or bashed down by aliens." =
+	doortype(choices) : "Door Type" : 0 : "Reinforced doors have twice the strength of normal doors.  Indestructible doors cannot be shot or bashed down by aliens. Custom is a normal door which uses the custom max health." =
 	[
 		0 : "Normal"
 		1 : "Reinforced"
 		2 : "Indestructible"
-	]	
+		3 : "Custom"
+	]
+	CustomMaxHealth(integer) : "Custom Max Health" : 1800 : "If door type is Custom, this number is used for door health"
 	dentamount(choices) : "Damaged" : 0 : "Whether the door is already damaged or not" =
 	[
 		0 : "Undamaged"
@@ -3524,6 +3526,7 @@
 		3 : "Damaged (Flipped)"
 		4 : "Very damaged (Flipped)"
 	]
+	CustomDentPercentage(float) : "Custom Dent Percentage" : 0 : "If higher than 0.001, this value is used for custom damaged percentage. Must be a number between 0.001 and 1. 0 means fully damaged, 1 means not damaged"
 	CanCloseToWeld(choices) : "Can Close To Weld" : 1 : "Whether the welding tool can make this door close to start welding when it's open." =
 	[
 		0 : "No"

@@ -230,6 +230,14 @@ struct ObjectiveMapMark
 #define ASW_DOOR_PARTIAL_DENT_HEALTH 0.66f
 #define ASW_DOOR_COMPLETE_DENT_HEALTH 0.33f
 
+enum ASW_DoorType_t
+{
+	ASWDT_NORMAL = 0,
+	ASWDT_REINFORCED,
+	ASWDT_INDESTRUCTABLE,
+	ASWDT_CUSTOM,
+};
+
 // DamageCustom flags for CTakeDamageInfo
 #define DAMAGE_FLAG_WEAKSPOT			0x0001
 #define DAMAGE_FLAG_CRITICAL			0x0002
