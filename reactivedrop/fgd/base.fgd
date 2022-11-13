@@ -2007,6 +2007,8 @@
 		16: "Ropes" : 0		// shakes ropes too.
 		32: "DON'T shake view (for shaking ropes or physics only)" : 0
 		64: "DON'T Rumble Controller" : 0
+		128: "Screen tilt: Ease In/Ease Out" : 0
+		256: "Force shake on client (bypasses asw_camera_shake 0)" : 0
 	]
 
 	amplitude(float) : "Amplitude (0-16)" : "4" : "The amount of noise in the screen shake. Should be a range between 0 and 16."

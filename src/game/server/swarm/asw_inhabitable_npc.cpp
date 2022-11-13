@@ -156,6 +156,12 @@ void CASW_Inhabitable_NPC::SetFacingPoint( const Vector &vec, float fDuration )
 	m_fStopFacingPointTime = gpGlobals->curtime + fDuration;
 }
 
+int CASW_Inhabitable_NPC::TranslateSchedule( int scheduleType )
+{
+	// skip CAI_PlayerAlly as it makes enemies back up when they hit an obstacle
+	return BaseClass::BaseClass::TranslateSchedule( scheduleType );
+}
+
 float CASW_Inhabitable_NPC::MaxSpeed()
 {
 	return 300;
