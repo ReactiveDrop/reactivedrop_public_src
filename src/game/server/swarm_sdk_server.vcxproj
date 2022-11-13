@@ -773,6 +773,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="hl2\npc_crow.cpp" />
     <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
     <ClCompile Include="GameStats_BasicStatsFunctions.cpp">
@@ -1724,6 +1725,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="func_breakablesurf.h" />
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="hl2\npc_crow.h" />
     <ClInclude Include="serverhelper.h" />
     <ClInclude Include="gameinterface.h" />
     <ClInclude Include="gameweaponmanager.h" />

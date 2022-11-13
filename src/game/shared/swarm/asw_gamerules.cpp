@@ -4376,97 +4376,14 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_ALIENS, D_HATE, 0 );
 
-	/*
-	// --------------------------------------------------------------
-	// First initialize table so we can report missing relationships
-	// --------------------------------------------------------------
-	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
-	for (int i=0;i<iNumClasses;i++)
+	// Matching HL2 defaults: Wildlife is scared of everything except other wildlife, barnacles (if we ever add them), and invisible NPCs.
+	for ( int nClass = CLASS_NONE; nClass < LAST_ASW_ENTITY_CLASS; nClass++ )
 	{
-		for (int j=0;j<iNumClasses;j++)
+		if ( nClass != CLASS_EARTH_FAUNA && nClass != CLASS_BARNACLE && nClass != CLASS_BULLSEYE )
 		{
-			// By default all relationships are neutral of priority zero
-			CBaseCombatCharacter::SetDefaultRelationship( (Class_T)i, (Class_T)j, D_NU, 0 );
+			CBaseCombatCharacter::SetDefaultRelationship( CLASS_EARTH_FAUNA, (Class_T)nClass, D_HT, 0 );
 		}
 	}
-
-	// In Alien Swarm:
-	//   CLASS_ANTLION = drones
-	//   CLASS_COMBINE_HUNTER = shieldbug
-	//   CLASS_HEADCRAB = parasites
-	//	 CLASS_MANHACK = buzzers
-	//	 CLASS_VORTIGAUNT = harvester
-	//   CLASS_EARTH_FAUNA = grub
-	//   
-	//   CLASS_HACKED_ROLLERMINE = computer/button panel
-	//   CLASS_MILITARY = door
-	//
-	//   CLASS_PLAYER_ALLY_VITAL = marines
-	//   CLASS_PLAYER_ALLY = colonists
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER_ALLY,			D_HT, 0);	
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER_ALLY,			D_HT, 0);
-	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER_ALLY,			D_HT, 0);
-	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_PLAYER,				D_LI, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_PLAYER_ALLY,			D_LI, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_ANTLION,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_HEADCRAB,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_MANHACK,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_VORTIGAUNT,			D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_COMBINE_HUNTER,		D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_EARTH_FAUNA,			D_NU, 0);
-	*/
 }
 
 CASW_Mission_Manager* CAlienSwarm::GetMissionManager()

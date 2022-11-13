@@ -4585,3 +4585,36 @@
 
 	output OnEscapeRoomStart(void) : "Fired when marine enters the escape room with all objectives (except for escape) complete.  NOTE: If you rely on this output, you must ship the .layout file along with your map."
 ]
+
+@NPCClass base(BaseNPC) studio("models/crow.mdl") = npc_crow : "Crow"
+[
+	input FlyAway( string ) : "Forces the crow to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
+]
+
+@NPCClass base(BaseNPC) studio("models/seagull.mdl") = npc_seagull : "Seagull"
+[
+	input FlyAway( string ) : "Forces the seagull to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
+]
+
+@NPCClass base(BaseNPC) studio("models/pigeon.mdl") = npc_pigeon : "Pigeon"
+[
+	input FlyAway( string ) : "Forces the pigeon to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
+]

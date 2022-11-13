@@ -54,6 +54,7 @@ game_sounds_manifest
 	"precache_file"		"scripts/npc_sounds_antlion.txt"
 	"precache_file"		"scripts/npc_sounds_antlionguard.txt"
 	"precache_file"		"scripts/level_sounds_e3_town.txt"
+	"precache_file"		"scripts/npc_sounds_birds.txt"
 	"precache_file"		"scripts/npc_sounds_fastzombie.txt"
 	"precache_file"		"scripts/npc_sounds_fastheadcrab.txt"
 	"precache_file"		"scripts/npc_sounds_headcrab.txt"
