@@ -4356,16 +4356,25 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_COMBINE, D_HATE, 0 );
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ALIENS, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_MARINES, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_BAIT, D_HATE, 999 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_COMBINE, D_HATE, 0 );
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_MARINES, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_COMBINE, D_NEUTRAL, 0 );
+
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_COMBINE, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_MARINES, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_ALIENS, D_HATE, 0 );
 
 	/*
 	// --------------------------------------------------------------
@@ -4945,9 +4954,9 @@ void CAlienSwarm::RemoveAllAliens()
 	m_fRemoveAliensTime = 0;
 	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
 	{
+		string_t iszClassName = ASWSpawnManager()->GetAlienClass( i )->m_iszAlienClass;
 		CBaseEntity *ent = NULL;
-		// BenLubar(deathmatch-improvements): refactor
-		while ( ( ent = gEntList.FindEntityByClassnameFast( ent, ASWSpawnManager()->GetAlienClass( i )->m_iszAlienClass ) ) != NULL )
+		while ( ( ent = gEntList.FindEntityByClassnameFast( ent, iszClassName ) ) != NULL )
 		{
 			UTIL_Remove( ent );
 		}
@@ -4957,7 +4966,6 @@ void CAlienSwarm::RemoveAllAliens()
 void CAlienSwarm::RemoveNoisyWeapons()
 {
 	CBaseEntity *ent = NULL;
-	// BenLubar(deathmatch-improvements): refactor
 	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_weapon_chainsaw" ) ) != NULL )
 	{
 		UTIL_Remove( ent );
@@ -5412,7 +5420,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 			if ( ( iFragsForMedkit && nFrags % iFragsForMedkit == 0 ) || ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 ) )	//DRAVEN ~FRAGD0~
 			{
 				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
-				if (pNetwork)
+				if ( pNetwork && pAlien )
 				{
 					GroundNodeFilter filter;
 					int nNode = pNetwork->NearestNodeToPoint(NULL, pAlien->GetAbsOrigin(), false, &filter);
@@ -5716,8 +5724,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	if ( collisionGroup1 == ASW_COLLISION_GROUP_PLAYER_MISSILE )
 	{
 		if ( collisionGroup0 == ASW_COLLISION_GROUP_PLAYER_MISSILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || 
-			collisionGroup0 == COLLISION_GROUP_DEBRIS || 
+			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET ||
+			collisionGroup0 == COLLISION_GROUP_DEBRIS ||
 			collisionGroup0 == COLLISION_GROUP_WEAPON ||
 			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
 			// reactivedrop: smartbomb now hit players in PvP
@@ -5726,11 +5734,11 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		{
 			return false;
 		}
-        // allow missile-player collisions for deathmatch
-        if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
-        {
-            return false;
-        }
+		// allow missile-player collisions for deathmatch
+		if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
+		{
+			return false;
+		}
 	}
 
 	// HL2 collision rules
@@ -8162,10 +8170,15 @@ void CAlienSwarm::BroadcastSound( const char *sound )
 
 void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
+	if ( !pPlayer )
+	{
+		return;
+	}
+
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
 
-	if ( rd_auto_kick_high_ping_player.GetInt() != 0 && pPlayer )
+	if ( rd_auto_kick_high_ping_player.GetInt() != 0 )
 	{
 		int ping, packetloss;
 		UTIL_GetPlayerConnectionInfo( pPlayer->entindex(), ping, packetloss );
@@ -8187,7 +8200,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	// if brutal or asbi/asb2
 	if ( (GetSkillLevel() >= iBrutal || V_strstr(rd_challenge.GetString(), "asbi") != NULL || V_strstr(rd_challenge.GetString(), "asb2") != NULL ) && rd_auto_kick_low_level_player_if_brutal_or_asbi.GetBool() ) bDifficultyRestricted = true;
 
-	if ( bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
+	if ( bDifficultyRestricted && engine->IsDedicatedServer() )
 	{
 		// players below level 30 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 30 ) )

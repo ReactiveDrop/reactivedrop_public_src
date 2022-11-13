@@ -243,6 +243,7 @@
 		2 : "Aliens"
 		3 : "Bait"
 		4 : "Neutral"
+		5 : "Combine"
 	]
 	damagemultipliersamefaction(float) : "Same Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by the faction the bullseye is a member of."
 	damagemultiplierotherfaction(float) : "Different Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by a faction the bullseye is NOT a member of."
