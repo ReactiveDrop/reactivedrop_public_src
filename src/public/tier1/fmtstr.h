@@ -56,9 +56,10 @@ public:
 	}
 
 	// Use this for pass-through formatting
-	CFmtStrN(const char ** ppszFormat, ...)
+	CFmtStrN( const char **ppszFormat, va_list params )
 	{
-		FmtStrVSNPrintf( m_szBuf, SIZE_BUF, ppszFormat, ppszFormat );
+		V_vsnprintf( m_szBuf, SIZE_BUF, *ppszFormat, params );
+		m_szBuf[SIZE_BUF - 1] = 0;
 	}
 
 	// Explicit reformat
@@ -69,9 +70,10 @@ public:
 	}
 
 	// Use this for pass-through formatting
-	void VSprintf(const char **ppszFormat, ...)
+	void VSprintf( const char **ppszFormat, va_list params )
 	{
-		FmtStrVSNPrintf( m_szBuf, SIZE_BUF, ppszFormat, ppszFormat );
+		V_vsnprintf( m_szBuf, SIZE_BUF, *ppszFormat, params );
+		m_szBuf[SIZE_BUF - 1] = 0;
 	}
 
 	// Use for access
