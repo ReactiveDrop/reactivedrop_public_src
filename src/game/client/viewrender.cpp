@@ -2364,6 +2364,9 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 
 	m_CurrentView = view;
 
+	if ( building_cubemaps.GetBool() )
+		m_CurrentView.fov = RAD2DEG( 2.0f * atanf( 64.0f / ( 64 - 0.5f ) ) );
+
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
 
