@@ -621,7 +621,7 @@ int CNewParticleEffect::DrawModel( int flags, const RenderableInstance_t &instan
 		pRenderContext->PushMatrix();
 		pRenderContext->LoadIdentity();
 
-		if ( materials->GetThreadMode() == MATERIAL_QUEUED_THREADED && pRenderContext->GetCurrentMaterial() && pCameraObject) 
+		if ( materials->GetThreadMode() != MATERIAL_QUEUED_THREADED || ( pRenderContext->GetCurrentMaterial() && pCameraObject) )
 			Render( pRenderContext, vecDiffuseModulation, ( flags & STUDIO_TRANSPARENCY ) ? IsTwoPass() : false, pCameraObject );
 
 		pRenderContext->MatrixMode( MATERIAL_MODEL );
