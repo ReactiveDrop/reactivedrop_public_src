@@ -47,6 +47,7 @@ public:
 	CNetworkVar( Vector, m_vecFacingPointFromServer );
 	float m_fStopFacingPointTime;
 
+	virtual int TranslateSchedule( int scheduleType ) override;
 	virtual float MaxSpeed();
 	int m_nOldButtons;
 	CNetworkVar( bool, m_bWalking );

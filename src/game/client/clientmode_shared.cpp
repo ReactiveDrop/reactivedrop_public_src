@@ -52,6 +52,7 @@ static vgui::HContext s_hVGuiContext = DEFAULT_VGUI_CONTEXT;
 
 ConVar cl_drawhud( "cl_drawhud", "1", FCVAR_CHEAT, "Enable the rendering of the hud" );
 ConVar hud_takesshots( "hud_takesshots", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Auto-save a scoreboard screenshot at the end of a map." );
+ConVar rd_allow_chat_in_singleplayer( "rd_allow_chat_in_singleplayer", "1", FCVAR_NONE, "Allow opening the chat panel when maxplayers is set to 1." );
 
 extern ConVar v_viewmodel_fov;
 
@@ -659,7 +660,7 @@ vgui::Panel *ClientModeShared::GetMessagePanel()
 void ClientModeShared::StartMessageMode( int iMessageModeType )
 {
 	// Can only show chat UI in multiplayer!!!
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->maxClients == 1 && !rd_allow_chat_in_singleplayer.GetBool() )
 	{
 		return;
 	}

@@ -119,6 +119,7 @@ END_DATADESC()
 #define SF_SHAKE_NO_VIEW	0x0020		// DON'T shake the view (only ropes and/or physics objects)
 #define SF_SHAKE_NO_RUMBLE	0x0040		// DON'T Rumble the XBox Controller
 #define SF_TILT_EASE_INOUT	0x0080		// Ease in and out of the tilt
+#define SF_SHAKE_FORCE		0x0100		// Force shake even for clients with asw_camera_shake 0.
 
 
 //-----------------------------------------------------------------------------
@@ -211,6 +212,9 @@ void CEnvShake::ApplyShake( ShakeCommand_t command )
 		case SHAKE_START:
 		case SHAKE_START_NORUMBLE:
 		case SHAKE_START_RUMBLEONLY:
+		case SHAKE_FORCE_START:
+		case SHAKE_FORCE_START_NORUMBLE:
+		case SHAKE_FORCE_START_RUMBLEONLY:
 			{
 				m_stopTime = gpGlobals->curtime + Duration();
 				m_nextShake = 0;
@@ -268,18 +272,21 @@ void CEnvShake::ApplyShake( ShakeCommand_t command )
 //-----------------------------------------------------------------------------
 void CEnvShake::InputStartShake( inputdata_t &inputdata )
 {
+	ShakeCommand_t command = SHAKE_START;
+	
 	if ( HasSpawnFlags( SF_SHAKE_NO_RUMBLE ) )
 	{
-		ApplyShake( SHAKE_START_NORUMBLE );
+		command = SHAKE_START_NORUMBLE;
 	}
 	else if ( HasSpawnFlags( SF_SHAKE_NO_VIEW ) )
 	{
-		ApplyShake( SHAKE_START_RUMBLEONLY );
+		command = SHAKE_START_RUMBLEONLY;
 	}
-	else
-	{
-		ApplyShake( SHAKE_START );
-	}
+
+	if ( HasSpawnFlags( SF_SHAKE_FORCE ) )
+		command = static_cast<ShakeCommand_t>( command + 1 );
+
+	ApplyShake( command );
 }
 
 

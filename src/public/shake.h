@@ -17,11 +17,14 @@
 enum ShakeCommand_t
 {
 	SHAKE_START = 0,		// Starts the screen shake for all players within the radius.
+	SHAKE_FORCE_START,		// Starts a shake which applies even with asw_camera_shake 0. Must be below SHAKE_START
 	SHAKE_STOP,				// Stops the screen shake for all players within the radius.
 	SHAKE_AMPLITUDE,		// Modifies the amplitude of an active screen shake for all players within the radius.
 	SHAKE_FREQUENCY,		// Modifies the frequency of an active screen shake for all players within the radius.
 	SHAKE_START_RUMBLEONLY,	// Starts a shake effect that only rumbles the controller, no screen effect.
+	SHAKE_FORCE_START_RUMBLEONLY,	// Must be below SHAKE_START_RUMBLEONLY
 	SHAKE_START_NORUMBLE,	// Starts a shake that does NOT rumble the controller.
+	SHAKE_FORCE_START_NORUMBLE,		// Must be below SHAKE_START_NORUMBLE
 };
 
 // This structure must have a working copy/assignment constructor. 

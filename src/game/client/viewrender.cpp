@@ -2364,6 +2364,9 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 
 	m_CurrentView = view;
 
+	if ( building_cubemaps.GetBool() )
+		m_CurrentView.fov = RAD2DEG( 2.0f * atanf( 64.0f / ( 64 - 0.5f ) ) );
+
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
 
@@ -4093,12 +4096,32 @@ static inline bool BlurTest( IClientRenderable *pRenderable, int drawFlags, bool
 	return false;
 }
 
+//-----------------------------------------------------------------------------
+// Render entity
+//-----------------------------------------------------------------------------
+static inline void DrawRenderableEntity( IClientRenderable* pEnt, int flags, const RenderableInstance_t& instance )
+{
+	Assert( view->GetCurrentlyDrawingEntity() == NULL );
+
+	view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown() && pEnt->GetIClientUnknown()->GetClientRenderable() ? pEnt->GetIClientUnknown()->GetBaseEntity() : NULL );
+
+	//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
+	//if( !bBlockNormalDraw )
+		pEnt->DrawModel( flags, instance );
+	//BlurTest( pEnt, flags, false, instance );
+	
+	view->SetCurrentlyDrawingEntity( NULL );
+}
+
 
 //-----------------------------------------------------------------------------
 // Unified bit of draw code for opaque and translucent renderables
 //-----------------------------------------------------------------------------
 static inline void DrawRenderable( IClientRenderable *pEnt, int flags, const RenderableInstance_t &instance )
 {
+	if ( !pEnt ) 
+		return;
+
 	float *pRenderClipPlane = NULL;
 	if( r_entityclips.GetBool() )
 		pRenderClipPlane = pEnt->GetRenderClipPlane();
@@ -4110,26 +4133,15 @@ static inline void DrawRenderable( IClientRenderable *pEnt, int flags, const Ren
 			pRenderContext->PushCustomClipPlane( pRenderClipPlane );
 		else
 			DrawClippedDepthBox( pEnt, pRenderClipPlane );
-		Assert( view->GetCurrentlyDrawingEntity() == NULL );
-		view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown()->GetBaseEntity() );
-		//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
-		//if( !bBlockNormalDraw )
-			pEnt->DrawModel( flags, instance );
-		//BlurTest( pEnt, flags, false, instance );
-		view->SetCurrentlyDrawingEntity( NULL );
+
+		DrawRenderableEntity( pEnt, flags, instance );
 
 		if( !materials->UsingFastClipping() )	
 			pRenderContext->PopCustomClipPlane();
 	}
 	else
 	{
-		Assert( view->GetCurrentlyDrawingEntity() == NULL );
-		view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown()->GetBaseEntity() );
-		//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
-		//if( !bBlockNormalDraw )
-			pEnt->DrawModel( flags, instance );
-		//BlurTest( pEnt, flags, false, instance );
-		view->SetCurrentlyDrawingEntity( NULL );
+		DrawRenderableEntity( pEnt, flags, instance );
 	}
 }
 

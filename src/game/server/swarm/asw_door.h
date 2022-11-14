@@ -106,7 +106,6 @@ public:
 	bool m_bDoneDoorShout;
 	bool m_bDoBreachedShout;
 	bool m_bDoAutoShootChatter;
-	bool m_bRotateOnFlip;
 	// SCARY NOTE: a float defined here was taking on strange values
 	float m_fSkillMarineHelping;	// last time an engineering marine was nearby helping a weld
 	CNetworkVar(bool, m_bSkillMarineHelping);		// is an engineer helping a weld on this door currently?
@@ -164,6 +163,9 @@ private:
 
 	float	m_flDistance;				// How far to slide
 	QAngle	m_angSlideAngle;				// The angle the door slides in relative to its own angle
+
+	int		m_iCustomMaxHealth;			// If door type = Custom, use this number for max health
+	float	m_flCustomDentPercentage;	// If set to >0.001 and <1.0, set door's health to this percentage
 
 	ASW_DoorSpawnPos_t m_eSpawnPosition;
 

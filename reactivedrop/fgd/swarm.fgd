@@ -243,6 +243,7 @@
 		2 : "Aliens"
 		3 : "Bait"
 		4 : "Neutral"
+		5 : "Combine"
 	]
 	damagemultipliersamefaction(float) : "Same Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by the faction the bullseye is a member of."
 	damagemultiplierotherfaction(float) : "Different Faction Damage Scale" : "1.0" : "Amount to scale damage by when attacked by a faction the bullseye is NOT a member of."
@@ -3510,12 +3511,14 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	doortype(choices) : "Door Type" : 0 : "Reinforced doors have twice the strength of normal doors.  Indestructible doors cannot be shot or bashed down by aliens." =
+	doortype(choices) : "Door Type" : 0 : "Reinforced doors have twice the strength of normal doors.  Indestructible doors cannot be shot or bashed down by aliens. Custom is a normal door which uses the custom max health." =
 	[
 		0 : "Normal"
 		1 : "Reinforced"
 		2 : "Indestructible"
-	]	
+		3 : "Custom"
+	]
+	CustomMaxHealth(integer) : "Custom Max Health" : 1800 : "If door type is Custom, this number is used for door health"
 	dentamount(choices) : "Damaged" : 0 : "Whether the door is already damaged or not" =
 	[
 		0 : "Undamaged"
@@ -3524,6 +3527,7 @@
 		3 : "Damaged (Flipped)"
 		4 : "Very damaged (Flipped)"
 	]
+	CustomDentPercentage(float) : "Custom Dent Percentage" : 0 : "If higher than 0.001, this value is used for custom damaged percentage. Must be a number between 0.001 and 1. 0 means fully damaged, 1 means not damaged"
 	CanCloseToWeld(choices) : "Can Close To Weld" : 1 : "Whether the welding tool can make this door close to start welding when it's open." =
 	[
 		0 : "No"
@@ -4100,6 +4104,8 @@
 		4: "In Air" : 0		// shakes objects even if they are not onground
 		8: "Physics" : 0	// shakes physically as well as the camera
 		16: "Ropes" : 0		// shakes ropes too.
+		32: "DON'T shake view (for shaking ropes or physics only)" : 0
+		64: "Force shake on client (bypasses asw_camera_shake 0)" : 0
 	]
 
 	amplitude(float) : "Amplitude (0-16)" : "4" : "The amount of noise in the screen shake. Should be a range between 0 and 16."
@@ -4578,4 +4584,37 @@
 	input SpawnHordeSoon(void) : "Tries to spawn a horde within the next few seconds. Hordes must be enabled for this to have any effect."
 
 	output OnEscapeRoomStart(void) : "Fired when marine enters the escape room with all objectives (except for escape) complete.  NOTE: If you rely on this output, you must ship the .layout file along with your map."
+]
+
+@NPCClass base(BaseNPC) studio("models/crow.mdl") = npc_crow : "Crow"
+[
+	input FlyAway( string ) : "Forces the crow to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
+]
+
+@NPCClass base(BaseNPC) studio("models/seagull.mdl") = npc_seagull : "Seagull"
+[
+	input FlyAway( string ) : "Forces the seagull to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
+]
+
+@NPCClass base(BaseNPC) studio("models/pigeon.mdl") = npc_pigeon : "Pigeon"
+[
+	input FlyAway( string ) : "Forces the pigeon to fly to the nearest crow flyto hint node."
+
+	deaf(choices) : "Deaf?" : 0 =
+	[
+		0 : "No."
+		1 : "Yes. Ignore sounds."
+	]
 ]
