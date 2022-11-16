@@ -457,6 +457,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\game_timescale_shared.cpp" />
     <ClCompile Include="..\shared\hintmessage.cpp" />
     <ClCompile Include="..\shared\hintsystem.cpp" />
+    <ClCompile Include="..\shared\hl2\env_headcrabcanister_shared.cpp" />
     <ClCompile Include="..\shared\igamesystem.cpp" />
     <ClCompile Include="..\shared\mapentities_shared.cpp" />
     <ClCompile Include="..\shared\ModelSoundsCache.cpp" />
@@ -774,6 +775,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="hl2\env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\npc_crow.cpp" />
     <ClCompile Include="hl2\script_intro.cpp" />
     <ClCompile Include="serverhelper.cpp" />
@@ -1423,6 +1425,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\groundlink.h" />
     <ClInclude Include="..\shared\hintmessage.h" />
     <ClInclude Include="..\shared\hintsystem.h" />
+    <ClInclude Include="..\shared\hl2\env_headcrabcanister_shared.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
     <ClInclude Include="..\shared\IEffects.h" />
     <ClInclude Include="..\shared\igamemovement.h" />
