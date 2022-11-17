@@ -38,15 +38,15 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_normal_armor );
 
 ConVar rd_marine_passive_armor_layers_enabled( "rd_marine_passive_armor_layers_enabled", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "heavy armor can restore protection level" );
 ConVar rd_marine_passive_armor_layers_amount( "rd_marine_passive_armor_layers_amount", "5", FCVAR_CHEAT | FCVAR_REPLICATED, "heavy armor has this many exta layers of nanites" );
+ConVar asw_marine_passive_armor_scale( "asw_marine_passive_armor_scale", "0.85", FCVAR_CHEAT | FCVAR_REPLICATED, "heavy armor will scale damage taken by this much" );
+ConVar rd_marine_passive_armor_layer_protection_value( "rd_marine_passive_armor_layer_protection_value", "0.04", FCVAR_CHEAT | FCVAR_REPLICATED, "proportion of damage one layer of heavy armor absorbs" );
+ConVar rd_marine_passive_armor_layer_update_interval( "rd_marine_passive_armor_layer_update_interval", "2", FCVAR_CHEAT | FCVAR_REPLICATED, "how much time it takes each subsequent layer of heavy armor to restore" );
+ConVar rd_marine_passive_armor_layer_update_interval_initial( "rd_marine_passive_armor_layer_update_interval_initial", "4", FCVAR_CHEAT | FCVAR_REPLICATED, "how much time it takes one layer of heavy armor to restore after damage" );
+
 
 #ifndef CLIENT_DLL
 
 #define LAYER_RESTORE_CONTEXT "LayerRestoreContext"
-
-ConVar asw_marine_passive_armor_scale( "asw_marine_passive_armor_scale", "0.85", FCVAR_CHEAT, "heavy armor will scale damage taken by this much" );
-ConVar rd_marine_passive_armor_layer_protection_value( "rd_marine_passive_armor_layer_protection_value", "0.04", FCVAR_CHEAT, "proportion of damage one layer of heavy armor absorbs" );
-ConVar rd_marine_passive_armor_layer_update_interval( "rd_marine_passive_armor_layer_update_interval", "2", FCVAR_CHEAT, "how much time it takes each subsequent layer of heavy armor to restore" );
-ConVar rd_marine_passive_armor_layer_update_interval_initial( "rd_marine_passive_armor_layer_update_interval_initial", "4", FCVAR_CHEAT, "how much time it takes one layer of heavy armor to restore after damage" );
 
 //---------------------------------------------------------
 // Save/Restore (really?)
