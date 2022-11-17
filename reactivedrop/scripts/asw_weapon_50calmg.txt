@@ -31,7 +31,7 @@ WeaponData
 	"equiplongname"			"#rd_weaponl_50calmg"
 	"equipdescription1"		"#rd_wdesc_50calmg"
 //	"altfiretext"			"#rd_weapon_50calmg_altfire"
-//	"attributestext"		"#rd_weapon_50calmg_attributes"
+	"attributestext"		"#rd_weapon_50calmg_attributes"
 	
 	// flinching
 	"FlinchChance"              "0.60"

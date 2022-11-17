@@ -29,7 +29,8 @@ WeaponData
 	"equipicon"			"swarm/EquipIcons/EquipMiningLaser"
 	"equiplongname"			"#asw_weaponl_mining_laser"
 	"equipdescription1"		"#asw_wdesc_mlaser"
-	
+	"attributestext"		"#asw_weapon_mining_laser_attributes"
+
 	// flinching
 	"FlinchChance"              "0"
 	"StoppingPowerFlinchBonus"  "0"

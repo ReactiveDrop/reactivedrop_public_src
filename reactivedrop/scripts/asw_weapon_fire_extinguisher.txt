@@ -28,6 +28,7 @@ WeaponData
 	"equipicon"			"swarm/EquipIcons/EquipFireExt"
 	"equiplongname"			"#asw_weaponl_fire_extinguisher"
 	"equipdescription1"		"#asw_wdesc_extinguisher"
+	"attributestext"		"#asw_weapon_fire_extinguisher_attributes"
 	"ExtraItem"			"0"
 	"OffhandSwitch"		"1"
 	
