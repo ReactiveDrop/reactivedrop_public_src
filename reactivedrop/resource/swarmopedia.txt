@@ -3212,7 +3212,7 @@
 			"Caption" "#rd_so_stat_equip_extra"
 		}
 		"Facts" {
-			// TODO
+			"Ammo" {}
 		}
 	}
 	"WEAPON" {
