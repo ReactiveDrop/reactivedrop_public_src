@@ -1,0 +1,56 @@
+// Reactive Drop .50 caliber Machine Gun
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#rd_weapon_50calmg"
+	"viewmodel"				"models/weapons/50calmg/50calmg.mdl"
+	"playermodel"			"models/weapons/50calmg/50calmg.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"200"
+	"default_clip"			"200"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_50CALMG"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"reload_time"			"2.0"
+	"base_damage"			"160"
+	"fire_rate"				"0.14"
+
+	"equipicon"				"swarm/EquipIcons/equip50calmg"
+	"equiplongname"			"#rd_weaponl_50calmg"
+	"equipdescription1"		"#rd_wdesc_50calmg"
+//	"altfiretext"			"#rd_weapon_50calmg_altfire"
+	"attributestext"		"#rd_weapon_50calmg_attributes"
+	
+	// flinching
+	"FlinchChance"              "0.60"
+	"StoppingPowerFlinchBonus"  "0.60"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      	"0"
+	"ShowGrenadesOnHUD"      "0"
+	
+	"HUDIconOffsetX" 		"-7"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"				"ASW_Weapon.Empty"
+		"special3"			"ASW_Weapon.Reload3"				// weapon switch
+
+		"single_shot"		"ASW_Weapon_50calmg.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_50calmg.Single"		// sound for other marines
+	}
+}

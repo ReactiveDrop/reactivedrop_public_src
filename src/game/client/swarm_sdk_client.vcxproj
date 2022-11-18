@@ -491,6 +491,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\game_timescale_shared.cpp" />
     <ClCompile Include="..\shared\hintmessage.cpp" />
     <ClCompile Include="..\shared\hintsystem.cpp" />
+    <ClCompile Include="..\shared\hl2\env_headcrabcanister_shared.cpp" />
     <ClCompile Include="..\shared\igamesystem.cpp" />
     <ClCompile Include="..\shared\mapentities_shared.cpp" />
     <ClCompile Include="..\shared\movevars_shared.cpp" />
@@ -515,6 +516,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\rope_helpers.cpp" />
     <ClCompile Include="..\shared\saverestore.cpp" />
     <ClCompile Include="..\shared\sceneentity_shared.cpp" />
+    <ClCompile Include="..\shared\script_intro_shared.cpp" />
     <ClCompile Include="..\shared\sequence_Transitioner.cpp" />
     <ClCompile Include="..\shared\sheetsimulator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -867,9 +869,11 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="history_resource.cpp" />
     <ClCompile Include="hl2\c_antlion_dust.cpp" />
     <ClCompile Include="hl2\c_ar2_explosion.cpp" />
+    <ClCompile Include="hl2\c_env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\C_Func_Monitor.cpp" />
     <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
     <ClCompile Include="hl2\c_rotorwash.cpp" />
+    <ClCompile Include="hl2\c_script_intro.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
     <ClCompile Include="hltvcamera.cpp" />
     <ClCompile Include="hud.cpp" />
@@ -2198,6 +2202,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\hintmessage.h" />
     <ClInclude Include="..\shared\hintsystem.h" />
     <ClInclude Include="..\shared\hl2\basehlcombatweapon_shared.h" />
+    <ClInclude Include="..\shared\hl2\env_headcrabcanister_shared.h" />
     <ClInclude Include="..\shared\hl2\hl2_player_shared.h" />
     <ClInclude Include="..\shared\hl2\hl_movedata.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
