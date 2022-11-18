@@ -2620,10 +2620,32 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/throwable"
 				"Caption" "#rd_weapon_fact_throwable"
+			}
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_mines"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
+					"Base" "100" // rd_laser_mine_dmg
+					"UseWeaponInfo" "0"
+				}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/grenade_cluster"
+					"Caption" "#rd_weapon_fact_mines_per_use"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/blast_radius"
+					"Caption" "#rd_weapon_fact_blast_radius"
+					"Base" "256" // rd_laser_mine_dmg_radius
+				}
 			}
 		}
 	}
@@ -2639,7 +2661,32 @@
 			"Caption" "#rd_so_stat_damage_blocked"
 		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_damage_reduction_base"
+				"Base" "-1"
+				"CVar" "asw_marine_passive_armor_scale"
+				"BaseMultiplier" "-100"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_damage_reduction_per_layer"
+				"CVar" "rd_marine_passive_armor_layer_protection_value"
+				"BaseMultiplier" "100"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/recharges"
+				"Caption" "#rd_weapon_fact_armor_max_layers"
+				"CVar" "rd_marine_passive_armor_layers_amount"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_armor_recharge_initial"
+				"CVar" "rd_marine_passive_armor_layer_update_interval_initial"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_armor_recharge_cycle"
+				"CVar" "rd_marine_passive_armor_layer_update_interval"
+			}
 		}
 	}
 	"WEAPON" {
@@ -2928,10 +2975,41 @@
 			"Caption" "#rd_so_stat_friendly_fire_damage"
 		}
 		"Facts" {
-			// TODO
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/deployable"
 				"Caption" "#rd_weapon_fact_deployable"
+			}
+			"Ammo" {
+				"Icon" "swarm/swarmopedia/fact/ammo_blast"
+				"Caption" "#rd_weapon_fact_ammo_mines"
+			}
+			"Deployed" {
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"Icon" "swarm/swarmopedia/fact/damage_burn"
+					"Caption" "#rd_weapon_fact_damage_per_shot_burn"
+					"Base" "7"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_ignites"
+				}
+				"Generic" {
+					"Caption" "#rd_weapon_fact_burning_dps"
+				}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/grenade_cluster"
+					"Caption" "#rd_weapon_fact_firewall_width"
+					"Base" "1"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_MINES_FIRES"
+					"SkillMultiplier" "2"
+				}
+				"Numeric" {
+					"Icon" "swarm/swarmopedia/fact/duration"
+					"Caption" "#rd_weapon_fact_duration"
+					"Skill" "ASW_MARINE_SKILL_GRENADES"
+					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_MINES_DURATION"
+				}
 			}
 		}
 	}
@@ -3035,7 +3113,16 @@
 			"Caption" "#rd_so_stat_equip_extra"
 		}
 		"Facts" {
-			// TODO
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/recharges"
+				"Caption" "#rd_weapon_fact_time_scale_recharge"
+				"Base" "140"
+			}
+			"Numeric" {
+				"Icon" "swarm/swarmopedia/fact/duration"
+				"Caption" "#rd_weapon_fact_duration"
+				"CVar" "asw_night_vision_duration"
+			}
 		}
 	}
 	"WEAPON" {
