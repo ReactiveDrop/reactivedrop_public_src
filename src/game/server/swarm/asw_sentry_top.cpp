@@ -20,14 +20,16 @@
 LINK_ENTITY_TO_CLASS( asw_sentry_top, CASW_Sentry_Top );
 PRECACHE_REGISTER( asw_sentry_top );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Top, DT_ASW_Sentry_Top)
+IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Top, DT_ASW_Sentry_Top )
 	SendPropEHandle( SENDINFO( m_hSentryBase ) ),
-	SendPropInt( SENDINFO( m_iSentryAngle ) ),	
-	SendPropFloat( SENDINFO ( m_fDeployYaw ) ),  // TODO: compact to less bits
-	SendPropBool( SENDINFO( m_bLowAmmo ) ),	
+	SendPropInt( SENDINFO( m_iSentryAngle ) ),
+	SendPropAngle( SENDINFO( m_fDeployYaw ), 11 ),
+	SendPropAngle( SENDINFO( m_fCenterAimYaw ), 11, SPROP_CHANGES_OFTEN ),
+	SendPropBool( SENDINFO( m_bLowAmmo ) ),
 END_SEND_TABLE()
 
-ConVar asw_sentry_friendly_target("asw_sentry_friendly_target", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Whether the sentry targets friendlies or not");
+ConVar asw_sentry_friendly_target( "asw_sentry_friendly_target", "0", FCVAR_CHEAT, "If 1, sentries ignore AI relationships and fire at all targets." );
+ConVar rd_sentry_rotates_aim_instantly( "rd_sentry_rotates_aim_instantly", "1", FCVAR_CHEAT, "If 1, rotating a sentry will instantly change its enemy acquisition arc. Otherwise, the arc changes as the sentry turns while idle." );
 extern ConVar asw_sentry_friendly_fire_scale;
 
 
@@ -36,24 +38,25 @@ extern ConVar asw_sentry_friendly_fire_scale;
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_THINKFUNC( AnimThink ),
-	
+
 	DEFINE_FIELD( m_fTurnRate, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTimeFirstFired, FIELD_TIME ),	
+	DEFINE_FIELD( m_flTimeFirstFired, FIELD_TIME ),
 	DEFINE_FIELD( m_fLastThinkTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fNextFireTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fGoalYaw, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fDeployYaw, FIELD_FLOAT ),
+	DEFINE_FIELD( m_fCenterAimYaw, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fCurrentYaw, FIELD_FLOAT ),
 	DEFINE_FIELD( m_iEnemySkip, FIELD_INTEGER ),
 	DEFINE_FIELD( m_hEnemy, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iCanSeeError, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flNextTurnSound, FIELD_TIME ),
-	// DEFINE_FIELD( m_hSentryBase, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iBaseTurnRate, FIELD_INTEGER ),	
+	DEFINE_FIELD( m_hSentryBase, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_iBaseTurnRate, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iSentryAngle, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fTurnRate, FIELD_FLOAT ),
 	DEFINE_KEYFIELD( m_flShootRange, FIELD_FLOAT, "TurretRange" ),
-	DEFINE_FIELD( m_bHasHysteresis, FIELD_BOOLEAN ),	
+	DEFINE_FIELD( m_bHasHysteresis, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
 END_DATADESC()
 
@@ -67,17 +70,15 @@ END_SCRIPTDESC()
 CASW_Sentry_Top::CASW_Sentry_Top()
 {
 	m_flShootRange = ASW_SENTRY_RANGE;
-	m_iAmmoType = GetAmmoDef()->Index("ASW_R");
+	m_iAmmoType = GetAmmoDef()->Index( "ASW_R" );
 	m_iBaseTurnRate = ASW_SENTRY_TURNRATE;
 	m_iSentryAngle = ASW_SENTRY_ANGLE;
 	m_bLowAmmo = false;
 }
-#undef ASW_SENTRY_RANGE 
 
 
 CASW_Sentry_Top::~CASW_Sentry_Top()
 {
-
 }
 
 //-----------------------------------------------------------------------------
@@ -100,6 +101,7 @@ void CASW_Sentry_Top::Spawn( void )
 	ChangeFaction( FACTION_MARINES );
 
 	m_fDeployYaw = GetAbsAngles().y;
+	m_fCenterAimYaw = GetAbsAngles().y;
 	m_fCurrentYaw = GetAbsAngles().y;
 
 	if ( GetMoveParent() )
@@ -113,15 +115,15 @@ void CASW_Sentry_Top::Spawn( void )
 
 void CASW_Sentry_Top::Precache()
 {
-	PrecacheModel(SENTRY_TOP_MODEL);
+	PrecacheModel( SENTRY_TOP_MODEL );
 	PrecacheModel( "models/sentry_gun/freeze_top.mdl" );
- 	PrecacheModel( "models/sentry_gun/grenade_top.mdl" );
+	PrecacheModel( "models/sentry_gun/grenade_top.mdl" );
 	PrecacheModel( "models/sentry_gun/flame_top.mdl" );
-	PrecacheScriptSound("ASW_Sentry.Fire");
-	PrecacheScriptSound("ASW_Sentry.Turn");
-	PrecacheScriptSound("ASW_Sentry.AmmoWarning");
-	PrecacheScriptSound("ASW_Sentry.OutOfAmmo");
-	PrecacheScriptSound("ASW_Sentry.Deploy");	
+	PrecacheScriptSound( "ASW_Sentry.Fire" );
+	PrecacheScriptSound( "ASW_Sentry.Turn" );
+	PrecacheScriptSound( "ASW_Sentry.AmmoWarning" );
+	PrecacheScriptSound( "ASW_Sentry.OutOfAmmo" );
+	PrecacheScriptSound( "ASW_Sentry.Deploy" );
 	PrecacheScriptSound( "ASW_Sentry.CannonFire" );
 	PrecacheScriptSound( "ASW_Sentry.FlameLoop" );
 	PrecacheScriptSound( "ASW_Sentry.FlameStop" );
@@ -134,7 +136,7 @@ void CASW_Sentry_Top::Precache()
 
 void CASW_Sentry_Top::SetTopModel()
 {
-	SetModel(SENTRY_TOP_MODEL);
+	SetModel( SENTRY_TOP_MODEL );
 }
 
 int CASW_Sentry_Top::ShouldTransmit( const CCheckTransmitInfo *pInfo )
@@ -164,6 +166,7 @@ void CASW_Sentry_Top::AnimThink( void )
 		m_iEnemySkip = 0;
 		FindEnemy();
 	}
+
 	UpdateGoal();
 	TurnToGoal(deltatime);
 	CheckFiring();
@@ -202,18 +205,18 @@ void CASW_Sentry_Top::SetDeployYaw( float yaw )
 
 void CASW_Sentry_Top::UpdateGoal()
 {
-	if (!m_hEnemy.IsValid() || !m_hEnemy.Get())
+	if ( !m_hEnemy.IsValid() || !m_hEnemy.Get() )
 	{
 		m_fGoalYaw = GetDeployYaw();
 	}
 	else
 	{
 		// set our goal yaw to point at the enemy
-		m_fGoalYaw = GetYawTo(m_hEnemy);
+		m_fGoalYaw = GetYawTo( m_hEnemy );
 	}
 }
 
-void CASW_Sentry_Top::TurnToGoal(float deltatime)
+void CASW_Sentry_Top::TurnToGoal( float deltatime )
 {
 	float fDist = m_fGoalYaw - m_fCurrentYaw;
 
@@ -235,7 +238,7 @@ void CASW_Sentry_Top::TurnToGoal(float deltatime)
 		if ( m_hEnemy.IsValid() && m_hEnemy.Get() )
 			fTurnRate = ASW_SENTRY_TURNRATE;
 
-		if ( fabs( fDist ) < deltatime * fTurnRate)
+		if ( fabs( fDist ) < deltatime * fTurnRate )
 		{
 			m_fCurrentYaw = m_fGoalYaw;
 		}
@@ -253,11 +256,16 @@ void CASW_Sentry_Top::TurnToGoal(float deltatime)
 				m_fCurrentYaw -= 360.0f;
 			}
 		}
+
+		if ( !m_hEnemy.IsValid() || !m_hEnemy.Get() )
+		{
+			m_fCenterAimYaw = m_fCurrentYaw;
+		}
 	}
 
 	QAngle ang = GetAbsAngles();
 	ang.y = m_fCurrentYaw;
-	SetAbsAngles(ang);
+	SetAbsAngles( ang );
 }
 
 void CASW_Sentry_Top::FindEnemy()
@@ -301,7 +309,7 @@ void CASW_Sentry_Top::FindEnemy()
 Vector CASW_Sentry_Top::GetEnemyVelocity( CBaseEntity *pEnemy )
 {
 	if ( !pEnemy )
-		pEnemy = m_hEnemy.Get() ;
+		pEnemy = m_hEnemy.Get();
 
 	// hacky quick hacky and dirty hack hack hack to deal with GetVelocity() returning
 	// ideal rather than actual velocity for drones
@@ -309,12 +317,12 @@ Vector CASW_Sentry_Top::GetEnemyVelocity( CBaseEntity *pEnemy )
 	{
 		if ( pEnemy->Classify() == CLASS_ASW_DRONE )
 		{
-			return assert_cast<CASW_Drone_Advanced*>(pEnemy)->GetMotor()->GetCurVel();
+			return assert_cast< CASW_Drone_Advanced * >( pEnemy )->GetMotor()->GetCurVel();
 		}
 		else
 		{
 			Vector vel;
-			pEnemy->GetVelocity(&vel);
+			pEnemy->GetVelocity( &vel );
 			return vel;
 		}
 	}
@@ -344,9 +352,6 @@ CAI_BaseNPC *CASW_Sentry_Top::SelectOptimalEnemy()
 		}
 	}
 
-	// todo: should evaluate valid targets and pick the best one?
-	//   (didn't do this for ASv1 and it was fine...)
-
 	return NULL;
 }
 
@@ -358,11 +363,6 @@ void CASW_Sentry_Top::PlayTurnSound()
 		m_flNextTurnSound = gpGlobals->curtime + 0.5f;
 	}
 }
-
-//ITraceFilter *CASW_Sentry_Top::GetVisibilityTraceFilter()
-//{
-//	return new CTraceFilterSimple( GetSentryBase() , COLLISION_GROUP_NONE );
-//}
 
 void CASW_Sentry_Top::Fire( void )
 {
@@ -389,20 +389,20 @@ void CASW_Sentry_Top::OnLowAmmo( void )
 void CASW_Sentry_Top::OnOutOfAmmo( void )
 {
 	EmitSound( "ASW_Sentry.OutOfAmmo" );
-    if ( ASWDeathmatchMode() ) 
-    {
+	if ( ASWDeathmatchMode() )
+	{
 		//Msg ("Sentry top taking damage to death %i \n", GetSentryBase()->GetHealth() + 1);
-        CTakeDamageInfo info(this, 
-                             this, 
-                             GetSentryBase()->GetHealth() + 1,
-                             DMG_GENERIC );
-        GetSentryBase()->TakeDamage(info);
-    }
+		CTakeDamageInfo info( this,
+			this,
+			GetSentryBase()->GetHealth() + 1,
+			DMG_GENERIC );
+		GetSentryBase()->TakeDamage( info );
+	}
 }
 
-bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
+bool CASW_Sentry_Top::CanSee( CBaseEntity *pEnt )
 {
-	if (!pEnt)
+	if ( !pEnt )
 		return false;
 	// check if it's a valid target
 	// check if its in range
@@ -416,31 +416,32 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 		return false;
 	}
 	// check the z angle is within X degrees of horizontal, if the z diff is significant
-	if (fabs(diff.z) > 50.0f)
+	if ( fabs( diff.z ) > 50.0f )
 	{
-		float fPitchDiff = fabs(UTIL_AngleDiff(GetPitchTo(pEnt), 0));
-		if (fPitchDiff > 360.0f)
+		float fPitchDiff = fabs( UTIL_AngleDiff( GetPitchTo( pEnt ), 0 ) );
+		if ( fPitchDiff > 360.0f )
 			fPitchDiff -= 360.0f;
-		if (fabs(fPitchDiff) > 30.0f)
+		if ( fabs( fPitchDiff ) > 30.0f )
 		{
 			m_iCanSeeError = 1;
 			return false;
 		}
 	}
 	// check if the angle is within X degrees of our deploy radius
-	float fYawDiff = fabs( UTIL_AngleDiff( CASW_Sentry_Top::GetYawTo( pEnt ), GetDeployYaw() ) );
-	if (fYawDiff > 360.0f)
+	float fYawDiff = fabs( UTIL_AngleDiff( CASW_Sentry_Top::GetYawTo( pEnt ), rd_sentry_rotates_aim_instantly.GetBool() ? GetDeployYaw() : m_fCenterAimYaw ) );
+	if ( fYawDiff > 360.0f )
 		fYawDiff -= 360.0f;
 
-	if (fabs(fYawDiff) > ASW_SENTRY_ANGLE)
+	if ( fabs( fYawDiff ) > ASW_SENTRY_ANGLE )
 	{
 		m_iCanSeeError = 1;
 		return false;
 	}
+
 	// do a trace from our shoot position to the enemy
 	trace_t		tr;
-	
-	if( Classify() == CLASS_ASW_SENTRY_FLAMER )
+
+	if ( Classify() == CLASS_ASW_SENTRY_FLAMER )
 	{
 		CTraceFilterSkipClassname traceFilter( GetSentryBase(), "asw_flamer_projectile", COLLISION_GROUP_NONE );
 		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS, &traceFilter, &tr );
@@ -455,37 +456,39 @@ bool CASW_Sentry_Top::CanSee(CBaseEntity* pEnt)
 		CTraceFilterSimple traceFilter( GetSentryBase(), COLLISION_GROUP_NONE );
 		UTIL_TraceLine( vFiringPos, pEnt->WorldSpaceCenter(), MASK_OPAQUE_AND_NPCS, &traceFilter, &tr );
 	}
-	
+
 	m_iCanSeeError = 2;
 	bool bClear = tr.fraction == 1.0;
-	if (!bClear)
+	if ( !bClear )
 	{
-		if (tr.m_pEnt == pEnt)
+		if ( tr.m_pEnt == pEnt )
 			return true;
 	}
 	return bClear;
 }
 
-float CASW_Sentry_Top::GetYawTo(CBaseEntity* pEnt)
+float CASW_Sentry_Top::GetYawTo( CBaseEntity *pEnt )
 {
-	if (!pEnt)
-		return GetDeployYaw();
-	Vector diff = pEnt->WorldSpaceCenter() - GetAbsOrigin();
-	if (diff.x == 0 && diff.y == 0 && diff.z == 0)
-		return GetDeployYaw();
+	if ( !pEnt )
+		return m_fCenterAimYaw;
 
-	return UTIL_VecToYaw(diff);
+	Vector diff = pEnt->WorldSpaceCenter() - GetAbsOrigin();
+	if ( diff.x == 0 && diff.y == 0 && diff.z == 0 )
+		return m_fCenterAimYaw;
+
+	return UTIL_VecToYaw( diff );
 }
 
-float CASW_Sentry_Top::GetPitchTo(CBaseEntity* pEnt)
+float CASW_Sentry_Top::GetPitchTo( CBaseEntity *pEnt )
 {
-	if (!pEnt)
-		return 0;
-	Vector diff = pEnt->WorldSpaceCenter() - GetFiringPosition();
-	if (diff.x == 0 && diff.y == 0 && diff.z == 0)
+	if ( !pEnt )
 		return 0;
 
-	return UTIL_VecToPitch(diff);	
+	Vector diff = pEnt->WorldSpaceCenter() - GetFiringPosition();
+	if ( diff.x == 0 && diff.y == 0 && diff.z == 0 )
+		return 0;
+
+	return UTIL_VecToPitch( diff );
 }
 
 bool CASW_Sentry_Top::IsValidEnemy( CAI_BaseNPC *pNPC )
@@ -503,13 +506,13 @@ void CASW_Sentry_Top::CheckFiring()
 {
 	if ( gpGlobals->curtime > m_fNextFireTime && HasAmmo() && ( m_bHasHysteresis || m_hEnemy.Get() ) )
 	{
-		float flDist = fabs(m_fGoalYaw - m_fCurrentYaw);
+		float flDist = fabs( m_fGoalYaw - m_fCurrentYaw );
 		flDist = fsel( flDist - 180, 360 - flDist, flDist );
 
-		if ( (flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD) || ( m_bHasHysteresis && !m_hEnemy ) )
+		if ( ( flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD ) || ( m_bHasHysteresis && !m_hEnemy ) )
 		{
 			Fire();
-		}	
+		}
 	}
 }
 
@@ -523,16 +526,12 @@ Vector CASW_Sentry_Top::GetFiringPosition()
 
 CASW_Sentry_Base* CASW_Sentry_Top::GetSentryBase()
 {	
-	return assert_cast<CASW_Sentry_Base*>(m_hSentryBase.Get());
+	return m_hSentryBase.Get();
 }
 
 int CASW_Sentry_Top::GetSentryDamage()
 {
 	float flDamage = 10.0f;
-	if ( ASWGameRules() )
-	{
-		ASWGameRules()->ModifyAlienDamageBySkillLevel( flDamage );
-	}
 
 	return flDamage * ( GetSentryBase() ? GetSentryBase()->m_fDamageScale : 1.0f );
 }
@@ -544,12 +543,12 @@ bool CASW_Sentry_Top::HasAmmo()
 		return true;
 	}
 
-	return (GetSentryBase() && GetSentryBase()->GetAmmo() > 0);
+	return ( GetSentryBase() && GetSentryBase()->GetAmmo() > 0 );
 }
 
 int CASW_Sentry_Top::GetAmmo()
 {
-	return (GetSentryBase() ? GetSentryBase()->GetAmmo() : 0);
+	return ( GetSentryBase() ? GetSentryBase()->GetAmmo() : 0 );
 }
 
 void CASW_Sentry_Top::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
@@ -557,9 +556,9 @@ void CASW_Sentry_Top::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr,
 	CBroadcastRecipientFilter filter;
 	
 	UserMessageBegin( filter, "ASWSentryTracer" );
-	WRITE_SHORT( entindex() );
-	WRITE_FLOAT( tr.endpos.x );
-	WRITE_FLOAT( tr.endpos.y );
-	WRITE_FLOAT( tr.endpos.z );
+		WRITE_SHORT( entindex() );
+		WRITE_FLOAT( tr.endpos.x );
+		WRITE_FLOAT( tr.endpos.y );
+		WRITE_FLOAT( tr.endpos.z );
 	MessageEnd();
 }

@@ -11,26 +11,23 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Sentry_Top, DT_ASW_Sentry_Top, CASW_Sentry_Top)
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Top, DT_ASW_Sentry_Top, CASW_Sentry_Top )
 	RecvPropEHandle( RECVINFO( m_hSentryBase ) ),
-	RecvPropInt( RECVINFO( m_iSentryAngle ) ),	
-	RecvPropFloat( RECVINFO( m_fDeployYaw ) ),	
-	RecvPropBool( RECVINFO( m_bLowAmmo ) ),	
+	RecvPropInt( RECVINFO( m_iSentryAngle ) ),
+	RecvPropFloat( RECVINFO( m_fDeployYaw ) ),
+	RecvPropFloat( RECVINFO( m_fCenterAimYaw ) ),
+	RecvPropBool( RECVINFO( m_bLowAmmo ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Sentry_Top )
 
 END_PREDICTION_DATA()
 
-//---------------------------------------------------------
-// Save/Restore
-//---------------------------------------------------------
-//BEGIN_DATADESC( C_ASW_Sentry_Top )
-//	DEFINE_FIELD( m_hSentryBase, FIELD_EHANDLE ),
-//END_DATADESC()
-
-C_ASW_Sentry_Top::C_ASW_Sentry_Top()
+C_ASW_Sentry_Top::C_ASW_Sentry_Top() :
+	m_iv_fCenterAimYaw( "C_ASW_Sentry_Top::m_iv_fCenterAimYaw" )
 {
+	AddVar( &m_fCenterAimYaw, &m_iv_fCenterAimYaw, LATCH_SIMULATION_VAR );
+
 	m_bSpawnedDisplayEffects = false;
 }
 
@@ -59,8 +56,7 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 {
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		SetNextClientThink(gpGlobals->curtime);
-		m_fPrevDeployYaw = GetDeployYaw();
+		SetNextClientThink( gpGlobals->curtime );
 	}
 
 	if ( m_bLowAmmo && !m_hWarningLight )
@@ -120,15 +116,14 @@ float C_ASW_Sentry_Top::GetMuzzleFlashScale( void )
 void C_ASW_Sentry_Top::ProcessMuzzleFlashEvent()
 {
 	// attach muzzle flash particle system effect
-	int iAttachment = GetMuzzleAttachment();		
-	
+	int iAttachment = GetMuzzleAttachment();
+
 	if ( iAttachment > 0 )
-	{		
+	{
 		float flScale = GetMuzzleFlashScale();
-		FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );	
-		//EjectParticleBrass( "weapon_shell_casing_rifle", iAttachment );
-//#endif
+		FX_ASW_MuzzleEffectAttached( flScale, GetRefEHandle(), iAttachment, NULL, false );
 	}
+
 	BaseClass::ProcessMuzzleFlashEvent();
 }
 
@@ -148,7 +143,7 @@ void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 	{
 		return;
 	}
-	
+
 	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd );
 
 	C_BaseAnimating::PopBoneAccess( "sentgun" );
@@ -156,8 +151,8 @@ void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 
 void __MsgFunc_ASWSentryTracer( bf_read &msg )
 {
-	int iSentry = msg.ReadShort();		
-	C_ASW_Sentry_Top *pSentry = dynamic_cast<C_ASW_Sentry_Top*>( ClientEntityList().GetEnt( iSentry ) );		// turn iMarine ent index into the marine
+	int iSentry = msg.ReadShort();
+	C_ASW_Sentry_Top *pSentry = dynamic_cast< C_ASW_Sentry_Top * >( ClientEntityList().GetEnt( iSentry ) );
 
 	Vector vecEnd;
 	vecEnd.x = msg.ReadFloat();
@@ -171,19 +166,19 @@ void __MsgFunc_ASWSentryTracer( bf_read &msg )
 }
 USER_MESSAGE_REGISTER( ASWSentryTracer );
 
-C_ASW_Sentry_Base* C_ASW_Sentry_Top::GetSentryBase()
-{	
-	return dynamic_cast<C_ASW_Sentry_Base*>(m_hSentryBase.Get());
+C_ASW_Sentry_Base *C_ASW_Sentry_Top::GetSentryBase()
+{
+	return m_hSentryBase.Get();
 }
 
 int C_ASW_Sentry_Top::GetSentryAngle( void )
-{ 
+{
 	return m_iSentryAngle;
 }
 
 void C_ASW_Sentry_Top::Scan()
 {
-	C_ASW_Sentry_Base * RESTRICT pBase = GetSentryBase();
+	C_ASW_Sentry_Base *RESTRICT pBase = GetSentryBase();
 	if ( !pBase )
 	{
 		if ( m_hRadiusDisplay )
@@ -225,14 +220,9 @@ void C_ASW_Sentry_Top::Scan()
 	}
 	else if ( !m_bLowAmmo && m_hWarningLight )
 	{
-		m_hWarningLight->StopEmission(false, false, true);
+		m_hWarningLight->StopEmission( false, false, true );
 		m_hWarningLight = NULL;
 	}
-
-	//if( gpGlobals->curtime >= m_flTimeNextScanPing )
-	//{
-	//	m_flTimeNextScanPing = gpGlobals->curtime + 1.0f;
-	//}
 
 	QAngle	scanAngle;
 	Vector	forward;
@@ -271,48 +261,12 @@ void C_ASW_Sentry_Top::Scan()
 
 		// now move the sweeping beams
 		QAngle baseAngle = pBase->GetAbsAngles();
-		baseAngle.y = m_fPrevDeployYaw;
-		float fDeployYaw = GetDeployYaw();
-		if ( fDeployYaw != m_fPrevDeployYaw )
-		{
-			//baseAngle.y = Approach( fDeployYaw, m_fPrevDeployYaw, 20.0f );
-			//m_fPrevDeployYaw = baseAngle.y;
+		baseAngle.y = m_fCenterAimYaw;
 
-			float flDeltatime = 0.05f;
-			float flDir = fDeployYaw > m_fPrevDeployYaw ? 1 : -1 ;
-			float flDist = fabs(fDeployYaw - m_fPrevDeployYaw);
-
-			if (flDist > 180)
-			{
-				flDist = 360 - flDist;
-				flDir = -flDir;
-			}
-
-			// set our turn rate depending on if we have an enemy or not
-			float fTurnRate = 150 * 0.5f; // 150 = ASW_SENTRY_TURNRATE
-
-			if (fabs(flDist) < flDeltatime * fTurnRate)
-			{
-				m_fPrevDeployYaw = fDeployYaw;
-			}
-			else
-			{
-				// turn it		
-				m_fPrevDeployYaw += flDeltatime * fTurnRate * flDir;
-			}
-
-			if (m_fPrevDeployYaw < 0)
-				m_fPrevDeployYaw += 360;
-			else if (m_fPrevDeployYaw >= 360)
-				m_fPrevDeployYaw -= 360;
-
-			baseAngle.y = m_fPrevDeployYaw;
-		}
-
-		AngleVectors( baseAngle + QAngle( 0, -GetSentryAngle(), 0), &forward, NULL, NULL );
+		AngleVectors( baseAngle + QAngle( 0, -GetSentryAngle(), 0 ), &forward, NULL, NULL );
 		AdjustRadiusBeamEdges( vecEye, forward, 1 );
 
-		AngleVectors( baseAngle + QAngle( 0, GetSentryAngle(), 0), &forward, NULL, NULL );
+		AngleVectors( baseAngle + QAngle( 0, GetSentryAngle(), 0 ), &forward, NULL, NULL );
 		AdjustRadiusBeamEdges( vecEye, forward, 2 );
 
 		AngleVectors( baseAngle, &forward, NULL, NULL );
@@ -362,4 +316,3 @@ float C_ASW_Sentry_Top::GetDeployYaw()
 
 	return fCurrentYaw + anglemod( fDeployYaw - fCurrentYaw );
 }
-
