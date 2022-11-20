@@ -1235,16 +1235,21 @@ void CAI_Expresser::SpeechMsg( CBaseEntity *pFlex, const char *pszFormat, ... )
 	if ( !DebuggingSpeech() )
 		return;
 
+	va_list args;
+
+	va_start( args, pszFormat );
 	if ( pFlex->MyNPCPointer() )
 	{
 
-		DevMsg( pFlex->MyNPCPointer(), CFmtStr( &pszFormat ) );
+		DevMsg( pFlex->MyNPCPointer(), "%s", CFmtStr( &pszFormat, args ).Access() );
 	}
 	else 
 	{
-		DevMsg( CFmtStr( &pszFormat ) );
+		DevMsg( "%s", CFmtStr( &pszFormat, args ).Access() );
 	}
-	UTIL_LogPrintf( (char *) ( (const char *) CFmtStr( &pszFormat ) ) );
+	char szFormat[] = "%s"; // UTIL_LogPrintf wants a mutable format string for some reason
+	UTIL_LogPrintf( szFormat, CFmtStr( &pszFormat, args ).Access() );
+	va_end( args );
 }
 
 //-----------------------------------------------------------------------------

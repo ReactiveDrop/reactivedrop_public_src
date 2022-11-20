@@ -30,7 +30,8 @@ There are two branches in this repository:
 
 ### How to compile the project ###
 
-* Download and install Visual Studio 2022 Community (https://visualstudio.microsoft.com/downloads/).
+* Download Visual Studio 2022 Community (https://visualstudio.microsoft.com/downloads/)
+* While installing Visual Studio 2022 select the 'Game development with C++' workload
 * Open reactivedrop_vs13.sln using Visual Studio
 * Select configuration Debug or Release
 * Build

@@ -31,7 +31,7 @@ WeaponData
 	"equiplongname"			"#rd_weaponl_combat_rifle"
 	"equipdescription1"		"#rd_wdesc_combat_rifle"
 	"altfiretext"			"#rd_weapon_combat_rifle_altfire"
-	//"attributestext"		"#rd_weapon_combat_rifle_attributes"
+	"attributestext"		"#rd_weapon_combat_rifle_attributes"
 	
 	// flinching
 	"FlinchChance"              "0.20"

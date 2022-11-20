@@ -1471,6 +1471,7 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	m_MapResetFilter.AddKeepEntity( "scene_manager" );
 	m_MapResetFilter.AddKeepEntity( "event_queue_saveload_proxy" );
 	m_MapResetFilter.AddKeepEntity( "ai_network" );
+	m_MapResetFilter.AddKeepEntity( "ai_hint" );
 	m_MapResetFilter.AddKeepEntity( "info_node" );
 	m_MapResetFilter.AddKeepEntity( "info_hint" );
 	m_MapResetFilter.AddKeepEntity( "info_node_hint" );
@@ -4355,108 +4356,34 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_COMBINE, D_HATE, 0 );
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ALIENS, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_MARINES, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_BAIT, D_HATE, 999 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_COMBINE, D_HATE, 0 );
 
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_MARINES, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_COMBINE, D_NEUTRAL, 0 );
 
-	/*
-	// --------------------------------------------------------------
-	// First initialize table so we can report missing relationships
-	// --------------------------------------------------------------
-	int iNumClasses = GameRules() ? GameRules()->NumEntityClasses() : LAST_SHARED_ENTITY_CLASS;
-	for (int i=0;i<iNumClasses;i++)
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_COMBINE, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_MARINES, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_ALIENS, D_HATE, 0 );
+
+	// Matching HL2 defaults: Wildlife is scared of everything except other wildlife, barnacles (if we ever add them), and invisible NPCs.
+	for ( int nClass = CLASS_NONE; nClass < LAST_ASW_ENTITY_CLASS; nClass++ )
 	{
-		for (int j=0;j<iNumClasses;j++)
+		if ( nClass != CLASS_EARTH_FAUNA && nClass != CLASS_BARNACLE && nClass != CLASS_BULLSEYE )
 		{
-			// By default all relationships are neutral of priority zero
-			CBaseCombatCharacter::SetDefaultRelationship( (Class_T)i, (Class_T)j, D_NU, 0 );
+			CBaseCombatCharacter::SetDefaultRelationship( CLASS_EARTH_FAUNA, (Class_T)nClass, D_HT, 0 );
 		}
 	}
-
-	// In Alien Swarm:
-	//   CLASS_ANTLION = drones
-	//   CLASS_COMBINE_HUNTER = shieldbug
-	//   CLASS_HEADCRAB = parasites
-	//	 CLASS_MANHACK = buzzers
-	//	 CLASS_VORTIGAUNT = harvester
-	//   CLASS_EARTH_FAUNA = grub
-	//   
-	//   CLASS_HACKED_ROLLERMINE = computer/button panel
-	//   CLASS_MILITARY = door
-	//
-	//   CLASS_PLAYER_ALLY_VITAL = marines
-	//   CLASS_PLAYER_ALLY = colonists
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ANTLION,				CLASS_PLAYER_ALLY,			D_HT, 0);	
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_COMBINE_HUNTER,		CLASS_PLAYER_ALLY,			D_HT, 0);
-	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_HEADCRAB,			CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_MANHACK,				CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_EARTH_FAUNA,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_VORTIGAUNT,			CLASS_PLAYER_ALLY,			D_HT, 0);
-
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER,				D_HT, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_ANTLION,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_HEADCRAB,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_MANHACK,				D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_VORTIGAUNT,			D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_COMBINE_HUNTER,		D_LI, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER_ALLY_VITAL,	D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_EARTH_FAUNA,			CLASS_PLAYER_ALLY,			D_HT, 0);
-	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_PLAYER,				D_LI, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_PLAYER_ALLY,			D_LI, 0);	
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_ANTLION,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_HEADCRAB,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_MANHACK,				D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_VORTIGAUNT,			D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_COMBINE_HUNTER,		D_HT, 0);
-	CBaseCombatCharacter::SetDefaultRelationship(CLASS_PLAYER_ALLY_VITAL,	CLASS_EARTH_FAUNA,			D_NU, 0);
-	*/
 }
 
 CASW_Mission_Manager* CAlienSwarm::GetMissionManager()
@@ -4944,9 +4871,9 @@ void CAlienSwarm::RemoveAllAliens()
 	m_fRemoveAliensTime = 0;
 	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
 	{
+		string_t iszClassName = ASWSpawnManager()->GetAlienClass( i )->m_iszAlienClass;
 		CBaseEntity *ent = NULL;
-		// BenLubar(deathmatch-improvements): refactor
-		while ( ( ent = gEntList.FindEntityByClassnameFast( ent, ASWSpawnManager()->GetAlienClass( i )->m_iszAlienClass ) ) != NULL )
+		while ( ( ent = gEntList.FindEntityByClassnameFast( ent, iszClassName ) ) != NULL )
 		{
 			UTIL_Remove( ent );
 		}
@@ -4956,7 +4883,6 @@ void CAlienSwarm::RemoveAllAliens()
 void CAlienSwarm::RemoveNoisyWeapons()
 {
 	CBaseEntity *ent = NULL;
-	// BenLubar(deathmatch-improvements): refactor
 	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_weapon_chainsaw" ) ) != NULL )
 	{
 		UTIL_Remove( ent );
@@ -5411,7 +5337,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 			if ( ( iFragsForMedkit && nFrags % iFragsForMedkit == 0 ) || ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 ) )	//DRAVEN ~FRAGD0~
 			{
 				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
-				if (pNetwork)
+				if ( pNetwork && pAlien )
 				{
 					GroundNodeFilter filter;
 					int nNode = pNetwork->NearestNodeToPoint(NULL, pAlien->GetAbsOrigin(), false, &filter);
@@ -5715,8 +5641,8 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	if ( collisionGroup1 == ASW_COLLISION_GROUP_PLAYER_MISSILE )
 	{
 		if ( collisionGroup0 == ASW_COLLISION_GROUP_PLAYER_MISSILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || 
-			collisionGroup0 == COLLISION_GROUP_DEBRIS || 
+			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET ||
+			collisionGroup0 == COLLISION_GROUP_DEBRIS ||
 			collisionGroup0 == COLLISION_GROUP_WEAPON ||
 			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
 			// reactivedrop: smartbomb now hit players in PvP
@@ -5725,11 +5651,11 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		{
 			return false;
 		}
-        // allow missile-player collisions for deathmatch
-        if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
-        {
-            return false;
-        }
+		// allow missile-player collisions for deathmatch
+		if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
+		{
+			return false;
+		}
 	}
 
 	// HL2 collision rules
@@ -8161,10 +8087,15 @@ void CAlienSwarm::BroadcastSound( const char *sound )
 
 void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
+	if ( !pPlayer )
+	{
+		return;
+	}
+
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
 
-	if ( rd_auto_kick_high_ping_player.GetInt() != 0 && pPlayer )
+	if ( rd_auto_kick_high_ping_player.GetInt() != 0 )
 	{
 		int ping, packetloss;
 		UTIL_GetPlayerConnectionInfo( pPlayer->entindex(), ping, packetloss );
@@ -8186,7 +8117,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	// if brutal or asbi/asb2
 	if ( (GetSkillLevel() >= iBrutal || V_strstr(rd_challenge.GetString(), "asbi") != NULL || V_strstr(rd_challenge.GetString(), "asb2") != NULL ) && rd_auto_kick_low_level_player_if_brutal_or_asbi.GetBool() ) bDifficultyRestricted = true;
 
-	if ( bDifficultyRestricted && engine->IsDedicatedServer() && pPlayer )
+	if ( bDifficultyRestricted && engine->IsDedicatedServer() )
 	{
 		// players below level 30 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 30 ) )

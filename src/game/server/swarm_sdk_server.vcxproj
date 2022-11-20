@@ -457,6 +457,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\game_timescale_shared.cpp" />
     <ClCompile Include="..\shared\hintmessage.cpp" />
     <ClCompile Include="..\shared\hintsystem.cpp" />
+    <ClCompile Include="..\shared\hl2\env_headcrabcanister_shared.cpp" />
     <ClCompile Include="..\shared\igamesystem.cpp" />
     <ClCompile Include="..\shared\LaserHelperFunctions_shared.cpp" />
     <ClCompile Include="..\shared\mapentities_shared.cpp" />
@@ -482,6 +483,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\saverestore.cpp" />
     <ClCompile Include="..\shared\SceneCache.cpp" />
     <ClCompile Include="..\shared\sceneentity_shared.cpp" />
+    <ClCompile Include="..\shared\script_intro_shared.cpp" />
     <ClCompile Include="..\shared\sequence_Transitioner.cpp" />
     <ClCompile Include="..\shared\sheetsimulator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -775,6 +777,9 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="hl2\env_headcrabcanister.cpp" />
+    <ClCompile Include="hl2\npc_crow.cpp" />
+    <ClCompile Include="hl2\script_intro.cpp" />
     <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
     <ClCompile Include="GameStats_BasicStatsFunctions.cpp">
@@ -1130,6 +1135,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\env_sprite_asw_fade.cpp" />
     <ClCompile Include="swarm\func_asw_fade.cpp" />
     <ClCompile Include="swarm\prop_asw_fade.cpp" />
+    <ClCompile Include="swarm\rd_ai_network.cpp" />
     <ClCompile Include="swarm\rd_briefing_camera.cpp" />
     <ClCompile Include="swarm\rd_director_triggers.cpp" />
     <ClCompile Include="swarm\rd_boss_bar.cpp" />
@@ -1421,6 +1427,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\groundlink.h" />
     <ClInclude Include="..\shared\hintmessage.h" />
     <ClInclude Include="..\shared\hintsystem.h" />
+    <ClInclude Include="..\shared\hl2\env_headcrabcanister_shared.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
     <ClInclude Include="..\shared\IEffects.h" />
     <ClInclude Include="..\shared\igamemovement.h" />
@@ -1727,6 +1734,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="func_breakablesurf.h" />
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="hl2\npc_crow.h" />
+    <ClInclude Include="hl2\script_intro.h" />
     <ClInclude Include="serverhelper.h" />
     <ClInclude Include="gameinterface.h" />
     <ClInclude Include="gameweaponmanager.h" />

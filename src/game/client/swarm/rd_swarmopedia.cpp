@@ -765,6 +765,8 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
 		switch ( iDamageType )
 		{
+		case 0:
+			break;
 		case DMG_BULLET:
 			szSuffix = "_bullet";
 			break;

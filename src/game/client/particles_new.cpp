@@ -615,11 +615,15 @@ int CNewParticleEffect::DrawModel( int flags, const RenderableInstance_t &instan
 			 ( GetControlPointEntity( m_pDef->m_nAllowRenderControlPoint ) != pCameraObject ) ) ) )
 			return 0;
 
+
 		Vector4D vecDiffuseModulation( 1.0f, 1.0f, 1.0f, 1.0f ); //instance.m_nAlpha / 255.0f );
 		pRenderContext->MatrixMode( MATERIAL_MODEL );
 		pRenderContext->PushMatrix();
 		pRenderContext->LoadIdentity();
-		Render( pRenderContext, vecDiffuseModulation, ( flags & STUDIO_TRANSPARENCY ) ? IsTwoPass() : false, pCameraObject );
+
+		if ( materials->GetThreadMode() != MATERIAL_QUEUED_THREADED || ( pRenderContext->GetCurrentMaterial() && pCameraObject) )
+			Render( pRenderContext, vecDiffuseModulation, ( flags & STUDIO_TRANSPARENCY ) ? IsTwoPass() : false, pCameraObject );
+
 		pRenderContext->MatrixMode( MATERIAL_MODEL );
 		pRenderContext->PopMatrix();
 	}
