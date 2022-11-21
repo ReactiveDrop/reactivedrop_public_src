@@ -174,6 +174,7 @@ public:
 	CNetworkVar(bool, m_bPreventMovement);
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
+	CNetworkVar( bool, m_bRolls );
 
 	// orders
 	CNetworkVar(int, m_ASWOrders);

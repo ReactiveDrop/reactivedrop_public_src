@@ -393,6 +393,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInventoryTable, "GetInventoryTable", "Fills the passed table with the marine's inventory." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetMarineRolls, "SetMarineRolls", "Send true to make marine roll, send false to make marine jump" )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
@@ -634,6 +635,9 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	m_iPoisonHeal = 0;
 	m_flNextPoisonHeal = -1;
+
+	ConVarRef asw_marine_rolls( "asw_marine_rolls" );
+	m_bRolls = asw_marine_rolls.GetBool();
 }
 
 
@@ -3556,6 +3560,11 @@ void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char 
 
 	AIConcept_t concept( pszConcept );
 	QueueSpeak( concept, this, delay, criteria );
+}
+
+void CASW_Marine::ScriptSetMarineRolls( bool bRolls )
+{
+	m_bRolls = bRolls;
 }
 
 // healing

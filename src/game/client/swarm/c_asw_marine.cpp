@@ -487,6 +487,9 @@ C_ASW_Marine::C_ASW_Marine() :
 
 	m_PrevRenderAlpha = 255;
 	m_bIsHiddenLocal = false;
+
+	ConVarRef asw_marine_rolls( "asw_marine_rolls" );
+	m_bRolls = asw_marine_rolls.GetBool();
 }
 
 
