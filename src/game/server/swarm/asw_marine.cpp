@@ -269,6 +269,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
+	SendPropBool	( SENDINFO( m_bRolls ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -636,7 +637,7 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_iPoisonHeal = 0;
 	m_flNextPoisonHeal = -1;
 
-	ConVarRef asw_marine_rolls( "asw_marine_rolls" );
+	extern ConVar asw_marine_rolls;
 	m_bRolls = asw_marine_rolls.GetBool();
 }
 
