@@ -541,7 +541,7 @@ public:
 	void Script_GetInventoryTable( HSCRIPT hTable );
 	const char* Script_GetMarineName();
 	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );
-	void ScriptSetMarineRolls( bool bRolls );
+	void SetMarineRolls( bool bRolls );
 
 	void DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	int m_iDamageAttributeEffects;
