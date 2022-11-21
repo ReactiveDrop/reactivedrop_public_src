@@ -168,6 +168,7 @@ public:
 	const char *GetSkillName( ASW_Skill nSkillIndex );
 	const char *GetSkillDescription( ASW_Skill nSkillIndex );
 #endif
+	int GetSkillPoints( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex );
 	int GetMaxSkillPoints( ASW_Skill nSkillIndex );
 };
 
