@@ -184,6 +184,7 @@ public:
 	bool TeleportToFreeNode( CASW_Marine *pTarget = NULL, float fNearestDist = -1 );
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
+	CNetworkVar( bool, m_bRolls );
 
 	CASW_Lag_Compensation m_LagCompensation;
 
@@ -540,6 +541,7 @@ public:
 	void Script_GetInventoryTable( HSCRIPT hTable );
 	const char* Script_GetMarineName();
 	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );
+	void SetMarineRolls( bool bRolls );
 
 	void DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	int m_iDamageAttributeEffects;

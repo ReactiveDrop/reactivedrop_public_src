@@ -2696,7 +2696,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	if ( !truemarine || truemarine->IsHacking() )
 		return false;
 
-	if ( asw_marine_rolls.GetBool() )
+	if ( truemarine->m_bRolls )
 		return false;
 
 	// If we are in the water most of the way...

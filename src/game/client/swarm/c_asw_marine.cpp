@@ -200,6 +200,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat   ( RECVINFO( m_fJumpJetDurationOverride )),
 	RecvPropFloat   ( RECVINFO( m_fJumpJetAnimationDurationOverride )),
 	RecvPropBool	( RECVINFO( m_bForceWalking )),
+	RecvPropBool	( RECVINFO( m_bRolls )),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )
@@ -487,6 +488,9 @@ C_ASW_Marine::C_ASW_Marine() :
 
 	m_PrevRenderAlpha = 255;
 	m_bIsHiddenLocal = false;
+
+	extern ConVar asw_marine_rolls;
+	m_bRolls = asw_marine_rolls.GetBool();
 }
 
 
