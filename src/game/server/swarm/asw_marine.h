@@ -92,7 +92,6 @@ public:
 	virtual void	Spawn( void );
 	virtual void	NPCInit();
 	virtual void	UpdateOnRemove();
-	void	SetModelFromProfile();
 	void	SelectModelFromProfile();
 	void	SelectModel();
 	

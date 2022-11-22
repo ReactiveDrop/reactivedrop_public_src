@@ -3411,6 +3411,11 @@ void CASW_Marine::RecalculateAIYawOffset()
 	{
 		m_bAICrouch = !m_bAICrouch;
 	}
+	// If we don't have a gun, don't crouch because it looks bad.
+	if ( !GetActiveASWWeapon() )
+	{
+		m_bAICrouch = false;
+	}
 	m_flNextYawOffsetTime = gpGlobals->curtime + RandomFloat( asw_marine_yaw_interval_min.GetFloat(), asw_marine_yaw_interval_max.GetFloat() );
 }
 

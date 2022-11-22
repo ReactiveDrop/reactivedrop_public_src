@@ -3542,8 +3542,6 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	pMarine->SetMaxHealth(iMarineMaxHealth);
 	pMR->m_TimelineHealth.RecordValue( iMarineHealth );
 
-	pMarine->SetModelFromProfile();
-	UTIL_SetSize(pMarine, pMarine->GetHullMins(),pMarine->GetHullMaxs());
 	pMR->SetMarineEntity(pMarine);
 
 	if ( ASWHoldoutMode() && bResurrection )
@@ -3561,23 +3559,23 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 				int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) );
 				GiveStartingWeaponToMarine( pMarine, weapon_id , 0 );
 			}
-            else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() || 
-					  ( rd_deathmatch_loadout_allowed.GetBool() && 
-					    ASWDeathmatchMode()->IsDeathmatchEnabled() ) )
-            {
-                // give the pMarine the equipment selected on the briefing screen
-                for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+			else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ||
+				( rd_deathmatch_loadout_allowed.GetBool() &&
+					ASWDeathmatchMode()->IsDeathmatchEnabled() ) )
+			{
+				// give the pMarine the equipment selected on the briefing screen
+				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 				{
-					int weapon_index = pMR->m_iInitialWeaponsInSlots[ iWpnSlot ];
+					int weapon_index = pMR->m_iInitialWeaponsInSlots[iWpnSlot];
 					if ( weapon_index < 0 )
 					{
 						Warning( "When spawning marine the weapon_index is -1 \n" );
 						weapon_index = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
 					}
-                    GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
+					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
 				}
-            }
-            else 
+			}
+			else
 			{
 				// give the pistols only in deathmatch, railgun in InstaGib
 				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0 );
@@ -3588,7 +3586,6 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 					GiveStartingWeaponToMarine( pMarine, 11, 1 );
 				}
 			}
-			
 		}
 		else
 		{

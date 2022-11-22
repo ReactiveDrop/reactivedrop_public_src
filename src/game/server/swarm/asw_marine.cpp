@@ -778,6 +778,13 @@ void CASW_Marine::SetHeightLook( float flHeightLook )
 //-----------------------------------------------------------------------------
 void CASW_Marine::SelectModel()
 {
+	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || ( m_MarineResource == NULL ) != ( m_nMarineProfile == -1 ) );
+	if ( m_MarineResource == NULL && m_nMarineProfile == -1 )
+	{
+		// use sarge so we don't crash if ent_create spawns a marine
+		m_nMarineProfile = 0;
+	}
+
 	SelectModelFromProfile();
 }
 
@@ -800,6 +807,7 @@ void CASW_Marine::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
+	SetBodygroup( 1, m_nSkin );
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -835,9 +843,9 @@ void CASW_Marine::Spawn( void )
 	{
 		SetInhabited( false );
 	}
-	
-	m_ASWOrders = ASW_ORDER_FOLLOW;
-	m_bWasFollowing = true;
+
+	m_bWasFollowing = m_nMarineProfile == -1;
+	m_ASWOrders = m_bWasFollowing ? ASW_ORDER_FOLLOW : ASW_ORDER_HOLD_POSITION;
 	m_flFieldOfView = ASW_HOLD_POSITION_FOV_DOT;
 
 	SetDistLook( ASW_HOLD_POSITION_SIGHT_RANGE );
@@ -863,6 +871,8 @@ void CASW_Marine::Spawn( void )
 
 		gameeventmanager->FireEvent( event );
 	}
+
+	UTIL_SetSize( this, GetHullMins(), GetHullMaxs() );
 }
 
 void CASW_Marine::NPCInit()
@@ -4452,8 +4462,8 @@ void CASW_Marine::PhysicsShove()
 
 CASW_Marine_Resource* CASW_Marine::GetMarineResource() const
 {
-	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || m_MarineResource );
-	return assert_cast<CASW_Marine_Resource*>(m_MarineResource.Get());
+	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || m_MarineResource || m_nMarineProfile != -1 );
+	return m_MarineResource.Get();
 }
 
 void CASW_Marine::Suicide()
@@ -4527,7 +4537,7 @@ void CASW_Marine::SelectModelFromProfile()
 	CASW_Marine_Profile *pProfile = GetMarineProfile();
 	if (pProfile)
 	{
-		SetModelName(MAKE_STRING(pProfile->m_ModelName));
+		SetModelName( MAKE_STRING( pProfile->m_ModelName ) );
 		m_nSkin = pProfile->m_SkinNum;
 		//Msg("%s Setting skin number to %d\n", pProfile->m_ShortName, m_nSkin);
 	}
@@ -4535,27 +4545,6 @@ void CASW_Marine::SelectModelFromProfile()
 	{
 		SetModelName( AllocPooledString( ASW_DEFAULT_MARINE_MODEL ) );
 		//Msg("Warning (SelectModelFromProfile) couldn't get model from profile as profile doesn't exist yet\n");
-	}
-}
-
-void CASW_Marine::SetModelFromProfile()
-{
-	CASW_Marine_Profile *pProfile = GetMarineProfile();
-	if (pProfile)
-	{
-		SetModelName(MAKE_STRING(pProfile->m_ModelName));
-		SetModel(pProfile->m_ModelName);
-		m_nSkin = pProfile->m_SkinNum;
-		//set the backpack bodygroup
-		SetBodygroup ( 1, m_nSkin );
-		
-		//Msg("%s Setting skin number to %d\n", pProfile->m_ShortName, m_nSkin);
-	}
-	else
-	{
-		SetModelName( AllocPooledString( ASW_DEFAULT_MARINE_MODEL ) );
-		SetModel(ASW_DEFAULT_MARINE_MODEL);
-		Msg("Warning (SetModelFromProfile) couldn't get model from profile as profile doesn't exist yet\n");
 	}
 }
 
