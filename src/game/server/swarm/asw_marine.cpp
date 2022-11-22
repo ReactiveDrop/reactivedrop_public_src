@@ -270,6 +270,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
 	SendPropBool	( SENDINFO( m_bRolls ) ),
+	SendPropInt		( SENDINFO( m_nMarineProfile ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -376,6 +377,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_iPowerupType, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flPowerupExpireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
+	DEFINE_KEYFIELD( m_nMarineProfile, FIELD_INTEGER, "MarineProfile" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
@@ -639,6 +641,8 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	extern ConVar asw_marine_rolls;
 	m_bRolls = asw_marine_rolls.GetBool();
+
+	m_nMarineProfile = -1;
 }
 
 
@@ -1045,22 +1049,6 @@ void CASW_Marine::Think( void )
 	}
 }
 
-CBaseCombatWeapon* CASW_Marine::ASWAnim_GetActiveWeapon()
-{
-	return GetActiveWeapon();
-}
-
-CASW_Marine_Profile* CASW_Marine::GetMarineProfile()
-{
-	CASW_Marine_Resource* pMR = GetMarineResource();
-	if ( !pMR )
-	{
-		return NULL;
-	}
-
-	return pMR->GetProfile();
-}
-
 bool CASW_Marine::IsCurTaskContinuousMove()
 {
 	const Task_t* pTask = GetTask();
@@ -1080,11 +1068,6 @@ bool CASW_Marine::IsCurTaskContinuousMove()
 		return BaseClass::IsCurTaskContinuousMove();
 		break;
 	}
-}
-
-bool CASW_Marine::ASWAnim_CanMove()
-{
-	return true;
 }
 
 // called when a player takes direct control of this marine
@@ -1200,27 +1183,11 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 void CASW_Marine::DoImpactEffect( trace_t &tr, int nDamageType )
 {
 	// don't do impact effects, they're simulated clientside by the tracer usermessage
-	return;
-	BaseClass::DoImpactEffect(tr, nDamageType);
 }
 
 void CASW_Marine::DoMuzzleFlash()
 {
-	return;	 // asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
-
-	// Our weapon takes our muzzle flash command
-	CBaseCombatWeapon *pWeapon = GetActiveWeapon();
-	if ( pWeapon )
-	{
-		pWeapon->DoMuzzleFlash();
-		//NOTENOTE: We do not chain to the base here
-		//m_nMuzzleFlashParity = (m_nMuzzleFlashParity+1) & ((1 << EF_MUZZLEFLASH_BITS) - 1);
-		BaseClass::BaseClass::DoMuzzleFlash();
-	}
-	else
-	{
-		BaseClass::DoMuzzleFlash();
-	}
+	// asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
 }
 
 extern ConVar rd_marine_ff_fist;
@@ -1507,6 +1474,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	static int iLeadershipResCount = 0;
 	if (random->RandomFloat() < fChance)
 	{
+		// TODO: leadership particle effect?
+
 		float fNewDamage = newInfo.GetDamage() * 0.5f;
 		if (fNewDamage <= 0)
 			return 0;

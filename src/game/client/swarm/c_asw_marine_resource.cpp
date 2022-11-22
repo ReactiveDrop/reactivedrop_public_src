@@ -67,10 +67,8 @@ C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 	m_fLastHealthPercent = 0;
 	m_fHurtPulse = 0;
 	m_bTakenWoundDamage = 0;
-	m_fNextLeadershipTest = 0;
-	m_fLeadershipResist = 0;
 	m_iServerFiring = 0;
-	m_fNextMedsCountTime = 0;	
+	m_fNextMedsCountTime = 0;
 	m_fCachedMedsPercent = 0;
 	m_MedalsAwarded[0] = '\0';
 	m_bUsingEngineeringAura = false;
@@ -392,27 +390,7 @@ void C_ASW_Marine_Resource::ClientThink()
 	}
 	m_fLastHealthPercent = flHealth;
 
-	if (gpGlobals->curtime > m_fNextLeadershipTest)
-	{
-		UpdateLeadershipBonus();
-	}
-
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
-}
-
-void C_ASW_Marine_Resource::UpdateLeadershipBonus()
-{
-	if (GetMarineEntity() && GetHealthPercent() > 0)
-	{
-		m_fLeadershipResist = MarineSkills()->GetHighestSkillValueNearby(GetMarineEntity()->GetAbsOrigin(),
-			asw_leadership_radius.GetFloat(),
-				ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_DAMAGE_RESIST);		
-		m_fNextLeadershipTest = gpGlobals->curtime + 0.5f;
-	}
-	else
-	{
-		m_fNextLeadershipTest = gpGlobals->curtime + 2.0f;
-	}
 }
 
 // note: assumes marine entity is networked to all clients...

@@ -90,12 +90,6 @@ public:
 	CNetworkHandle( C_ASW_Player, m_Commander );
 	CNetworkVar( int, m_iCommanderIndex );
 
-	// leadership effect bonus
-	void UpdateLeadershipBonus();
-	float GetLeadershipResist() { return m_fLeadershipResist; }	// chance of nearby leadership skill reducing damage
-	float m_fLeadershipResist;
-	float m_fNextLeadershipTest;
-
 	// counting medical charges
 	float GetMedsPercent();
 	float m_fCachedMedsPercent;

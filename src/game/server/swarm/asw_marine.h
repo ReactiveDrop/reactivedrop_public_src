@@ -126,9 +126,10 @@ public:
 	
 	// Marine resource
 	void SetMarineResource(CASW_Marine_Resource *pMR);
-	CASW_Marine_Resource* GetMarineResource() const;
-	CASW_Marine_Profile* GetMarineProfile();
-	EHANDLE m_MarineResource;
+	CASW_Marine_Resource *GetMarineResource() const;
+	CHandle<CASW_Marine_Resource> m_MarineResource;
+	CASW_Marine_Profile *GetMarineProfile();
+	CNetworkVar( int, m_nMarineProfile );
 
 	// Commander/Inhabiting
 	bool IsInhabited();

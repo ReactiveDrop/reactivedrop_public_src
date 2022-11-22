@@ -135,6 +135,7 @@ public:
 	bool IsInhabited();
 	CHandle<C_ASW_Marine_Resource> m_hMarineResource;
 	CASW_Marine_Profile* GetMarineProfile();
+	CNetworkVar( int, m_nMarineProfile );
 
 	// scanner
 	inline float GetBlipStrength() { return m_CurrentBlipStrength; }

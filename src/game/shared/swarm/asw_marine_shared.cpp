@@ -527,11 +527,33 @@ CASW_Remote_Turret* CASW_Marine::GetRemoteTurret()
 	return m_hRemoteTurret.Get();
 }
 
+CBaseCombatWeapon *CASW_Marine::ASWAnim_GetActiveWeapon()
+{
+	return GetActiveWeapon();
+}
+
+bool CASW_Marine::ASWAnim_CanMove()
+{
+	return true;
+}
+
 bool CASW_Marine::IsInhabited()
 {
 	if ( !GetMarineResource() )
 		return false;
+
 	return GetMarineResource()->IsInhabited();
+}
+
+CASW_Marine_Profile *CASW_Marine::GetMarineProfile()
+{
+	CASW_Marine_Resource *pMR = GetMarineResource();
+	if ( !pMR )
+	{
+		return m_nMarineProfile != -1 ? MarineProfileList()->GetProfile( m_nMarineProfile ) : NULL;
+	}
+
+	return pMR->GetProfile();
 }
 
 void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
