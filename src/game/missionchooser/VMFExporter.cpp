@@ -620,8 +620,6 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 			if ( *pEntityKeys->GetString( szKey ) != '\0' )
 			{
 				iszGlob = "tilegen/instances/";
-				iszGlob += m_pRoom->m_pRoomTemplate->m_pLevelTheme->m_szName;
-				iszGlob += '/';
 				iszGlob += pEntityKeys->GetString( szKey );
 			}
 
