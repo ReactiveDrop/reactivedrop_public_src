@@ -7,8 +7,6 @@
 #include "TileSource/MapLayout.h"
 #include "TileGenDialog.h"
 
-#include <string>
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
@@ -595,7 +593,7 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 
 	struct InstanceChoice
 	{
-		std::string m_iszPath;
+		CUtlString m_iszPath;
 		float m_flWeight;
 	};
 
@@ -605,7 +603,7 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 	for ( int i = 1; i <= 9; i++ )
 	{
 		char szKey[16];
-		Q_snprintf( szKey, sizeof(szKey), "weight%d", i );
+		V_snprintf( szKey, sizeof( szKey ), "weight%d", i );
 		float flWeight = pEntityKeys->GetFloat( szKey );
 
 		KeyValues *pRemoveKey = pEntityKeys->FindKey( szKey );
@@ -615,70 +613,71 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 			pRemoveKey->deleteThis();
 		}
 
-		Q_snprintf( szKey, sizeof(szKey), "glob%d", i );
+		V_snprintf( szKey, sizeof( szKey ), "glob%d", i );
 		if ( flWeight > 0 )
 		{
-			std::string iszGlob;
-			if ( *pEntityKeys->GetString(szKey) != '\0' )
+			CUtlString iszGlob;
+			if ( *pEntityKeys->GetString( szKey ) != '\0' )
 			{
-				iszGlob = "tilegen/instance/";
+				iszGlob = "tilegen/instances/";
 				iszGlob += m_pRoom->m_pRoomTemplate->m_pLevelTheme->m_szName;
 				iszGlob += '/';
-				iszGlob += pEntityKeys->GetString(szKey);
+				iszGlob += pEntityKeys->GetString( szKey );
 			}
-			if (iszGlob.find('*') != std::string::npos)
+
+			if ( V_strrchr( iszGlob, '*' ) )
 			{
 				int nCount = 0;
 				FileFindHandle_t ffh;
-				for (const char *pszFilename = g_pFullFileSystem->FindFirstEx(iszGlob.c_str(), "GAME", &ffh); pszFilename; pszFilename = g_pFullFileSystem->FindNext(ffh))
+				for ( const char *pszFilename = g_pFullFileSystem->FindFirstEx( iszGlob, "GAME", &ffh ); pszFilename; pszFilename = g_pFullFileSystem->FindNext( ffh ) )
 				{
-					choices.AddToTail(InstanceChoice{ iszGlob.substr(0, iszGlob.rfind('/') + 1) + std::string(pszFilename), flWeight });
+					choices.AddToTail( InstanceChoice{ iszGlob.Slice( 0, V_strrchr( iszGlob, '/' ) - iszGlob + 1 ) + pszFilename, flWeight } );
 					nCount++;
 				}
-				g_pFullFileSystem->FindClose(ffh);
+				g_pFullFileSystem->FindClose( ffh );
 
-				if (!nCount)
+				if ( !nCount )
 				{
-					Warning("[TileGen] no results for instance glob '%s'\n", iszGlob.c_str());
+					Warning( "[TileGen] no results for instance glob '%s'\n", iszGlob.Get() );
 					return false;
 				}
 
 				// If we have, for example, lights_*.vmf at weight 1 with 4 matches and poster_of_gaben.vmf at weight 2 with
 				// 1 match (obviously, there is only one gaben), we want to have the poster be twice as common as the lights,
 				// not half as common.
-				for (int j = 1; j <= nCount; j++)
+				for ( int j = 1; j <= nCount; j++ )
 				{
-					choices[choices.Count() - j].m_flWeight /= (float) nCount;
+					choices[choices.Count() - j].m_flWeight /= ( float )nCount;
 				}
 			}
 			else
 			{
-				choices.AddToTail(InstanceChoice{ iszGlob, flWeight });
+				choices.AddToTail( InstanceChoice{ iszGlob, flWeight } );
 			}
 			flTotalWeight += flWeight;
 		}
 
-		pRemoveKey = pEntityKeys->FindKey(szKey);
-		if (pRemoveKey)
+		pRemoveKey = pEntityKeys->FindKey( szKey );
+		if ( pRemoveKey )
 		{
-			pEntityKeys->RemoveSubKey(pRemoveKey);
+			pEntityKeys->RemoveSubKey( pRemoveKey );
 			pRemoveKey->deleteThis();
 		}
 	}
 
-	float flChoice = fmodf( ( flTotalWeight * ( (float) m_pRoom->m_nInstanceSeed / (float) INT_MAX ) ) + m_iEntityCount, flTotalWeight );
+	float flChoice = fmodf( ( flTotalWeight * ( ( float )m_pRoom->m_nInstanceSeed / ( float )INT_MAX ) ) + m_iEntityCount, flTotalWeight );
 	for ( int i = 0; i < choices.Count(); i++ )
 	{
 		flChoice -= choices[i].m_flWeight;
-		if (flChoice < 0)
+		if ( flChoice < 0 )
 		{
-			if (choices[i].m_iszPath.empty())
+			if ( choices[i].m_iszPath.IsEmpty() )
 			{
-				pEntityKeys->SetString("file", "");
+				pEntityKeys->SetString( "file", "" );
 			}
 			else
 			{
-				pEntityKeys->SetString("file", ( "../" + choices[i].m_iszPath ).c_str());
+				pEntityKeys->SetString( "file", choices[i].m_iszPath.Get() + V_strlen( "tilegen/instances" ) );
 			}
 			choices.Purge();
 			return true;
