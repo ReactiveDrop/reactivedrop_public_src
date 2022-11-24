@@ -146,6 +146,8 @@ static bool ShouldIgnoreCampaign( const char *szName )
 }
 
 #ifdef GAME_DLL
+ConVar rd_debug_string_tables( "rd_debug_string_tables", "0", FCVAR_NONE, "log the creation of string tables for the mission chooser" );
+
 void ReactiveDropMissions::CreateNetworkStringTables()
 {
 	g_StringTableReactiveDropCampaigns = networkstringtable->CreateStringTable( RD_CAMPAIGNS_STRINGTABLE_NAME, RD_MAX_CAMPAIGNS );
@@ -165,12 +167,18 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 
 		if ( ShouldIgnoreCampaign( szBaseName ) )
 		{
-			DevMsg( 2, "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu (official)\n", szBaseName, metadata.WorkshopID );
+			if ( rd_debug_string_tables.GetBool() )
+			{
+				Msg( "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu (official)\n", szBaseName, metadata.WorkshopID );
+			}
 			continue;
 		}
 
 		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
-		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
+		if ( rd_debug_string_tables.GetBool() )
+		{
+			Msg( "Adding campaign %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
+		}
 	}
 
 	for ( int i = 0; i < NELEMS( s_szMissionNamesFirst ); i++ )
@@ -180,7 +188,10 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 		metadata.SetFromFile( szKVFileName );
 
 		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, sizeof( metadata ), &metadata );
-		DevMsg( 2, "Adding mission %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
+		if ( rd_debug_string_tables.GetBool() )
+		{
+			Msg( "Adding mission %d to string table: %s, workshop %llu (official)\n", index, szBaseName, metadata.WorkshopID );
+		}
 	}
 
 	char szBaseName[MAX_PATH];
@@ -193,12 +204,18 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 
 		if ( ShouldIgnoreCampaign( szBaseName ) )
 		{
-			DevMsg( 2, "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu\n", szBaseName, metadata.WorkshopID );
+			if ( rd_debug_string_tables.GetBool() )
+			{
+				Msg( "Not adding campaign to string table (marked as single mission by admin): %s, workshop %llu\n", szBaseName, metadata.WorkshopID );
+			}
 			continue;
 		}
 
 		int index = g_StringTableReactiveDropCampaigns->AddString( true, szBaseName, sizeof( metadata ), &metadata );
-		DevMsg( 2, "Adding campaign %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
+		if ( rd_debug_string_tables.GetBool() )
+		{
+			Msg( "Adding campaign %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
+		}
 	}
 	filesystem->FindClose( hFind );
 
@@ -209,7 +226,10 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 		metadata.SetFromFile( szKVFileName );
 
 		int index = g_StringTableReactiveDropMissions->AddString( true, szBaseName, sizeof( metadata ), &metadata );
-		DevMsg( 2, "Adding mission %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
+		if ( rd_debug_string_tables.GetBool() )
+		{
+			Msg( "Adding mission %d to string table: %s, workshop %llu\n", index, szBaseName, metadata.WorkshopID );
+		}
 	}
 	filesystem->FindClose( hFind );
 
