@@ -663,7 +663,9 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 		}
 	}
 
-	float flChoice = fmodf( ( flTotalWeight * ( ( float )m_pRoom->m_nInstanceSeed / ( float )INT_MAX ) ) + m_iEntityCount, flTotalWeight );
+	CUniformRandomStream random;
+	random.SetSeed( m_pRoom->m_nInstanceSeed + pEntityKeys->GetInt( "id" ) );
+	float flChoice = random.RandomFloat( 0.0f, flTotalWeight );
 	for ( int i = 0; i < choices.Count(); i++ )
 	{
 		flChoice -= choices[i].m_flWeight;
@@ -677,12 +679,26 @@ bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
 			{
 				pEntityKeys->SetString( "file", choices[i].m_iszPath.Get() + V_strlen( "tilegen/instances" ) );
 			}
-			choices.Purge();
 			return true;
 		}
 	}
+	Assert( choices.Count() );
+	// We got here through a rounding error. Just take the last choice.
+	if ( choices.Count() )
+	{
+		int i = choices.Count() - 1;
+		if ( choices[i].m_iszPath.IsEmpty() )
+		{
+			pEntityKeys->SetString( "file", "" );
+		}
+		else
+		{
+			pEntityKeys->SetString( "file", choices[i].m_iszPath.Get() + V_strlen( "tilegen/instances" ) );
+		}
+		return true;
+	}
+
 	Warning( "[TileGen] no choices in rd_tilegen_instance\n" );
-	Assert( 0 );
 	return false;
 }
 
