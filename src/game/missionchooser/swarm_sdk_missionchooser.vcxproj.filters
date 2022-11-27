@@ -62,6 +62,11 @@
     <ClCompile Include="TileSource\Room.cpp" />
     <ClCompile Include="TileSource\RoomTemplate.cpp" />
     <ClCompile Include="TileSource\TagList.cpp" />
+    <ClCompile Include="..\..\fgdlib\gamedata.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdclass.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdvar.cpp" />
+    <ClCompile Include="..\..\fgdlib\inputoutput.cpp" />
+    <ClCompile Include="..\..\fgdlib\wckeyvalues.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asw_key_values_database.h" />
@@ -134,7 +139,6 @@
   <ItemGroup>
     <Library Include="..\..\lib\public\bitmap.lib" />
     <Library Include="..\..\lib\public\dmxloader.lib" />
-    <Library Include="..\..\lib\public\fgdlib.lib" />
     <Library Include="..\..\lib\public\interfaces.lib" />
     <Library Include="..\..\lib\common\jpeglib.lib" />
     <Library Include="..\..\lib\public\mathlib.lib" />

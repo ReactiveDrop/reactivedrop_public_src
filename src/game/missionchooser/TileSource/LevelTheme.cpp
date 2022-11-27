@@ -15,7 +15,7 @@ bool CLevelTheme::s_bLoadedThemes = false;
 
 static FileFindHandle_t	g_hthemefind = FILESYSTEM_INVALID_FIND_HANDLE;
 
-ConVar asw_tilegen_theme( "asw_tilegen_theme", "Rydberg", FCVAR_ARCHIVE, "Default theme selected in TileGen" );
+ConVar asw_tilegen_theme( "asw_tilegen_theme", "example", FCVAR_ARCHIVE, "Default theme selected in TileGen" );
 
 // Loads in all level themes found in tilegen/themes/
 void CLevelTheme::LoadLevelThemes()

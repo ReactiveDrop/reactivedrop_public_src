@@ -1,5 +1,7 @@
 #include "VMFExporter.h"
 #include "KeyValues.h"
+#include "fgdlib/fgdlib.h"
+#include "tier2/fileutils.h"
 
 #include "TileSource/RoomTemplate.h"
 #include "TileSource/Room.h"
@@ -10,11 +12,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-// we can't use instances for rooms if we want rd_tilegen_instance to work.
-ConVar tilegen_use_instancing( "tilegen_use_instancing", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-
-// TODO: Read room templates into keyvalues and output them after the whole room template has been loaded
-//       This way we can modify state based on the complete picture of that room, rather than just making changes on a key by key basis
+ConVar rd_tilegen_seal_material( "rd_tilegen_seal_material", "TOOLS/TOOLSSKYBOX", FCVAR_NONE );
+ConVar rd_tilegen_seal_texscale( "rd_tilegen_seal_texscale", "4", FCVAR_NONE );
+ConVar rd_tilegen_seal_lightmap( "rd_tilegen_seal_lightmap", "256", FCVAR_NONE );
+ConVar rd_tilegen_seal_height( "rd_tilegen_seal_height", "2048", FCVAR_NONE );
+ConVar rd_tilegen_seal_padding( "rd_tilegen_seal_padding", "32", FCVAR_NONE );
 
 VMFExporter::VMFExporter()
 {
@@ -31,15 +33,13 @@ VMFExporter::~VMFExporter()
 void VMFExporter::Init()
 {
 	m_szLastExporterError[0] = '\0';
-	m_SideTranslations.Purge();
-	m_NodeTranslations.Purge();
 	m_vecLastPlaneOffset = vec3_origin;
-	m_bWritingLevelContainer = false;
 	m_iEntityCount = 1;	// 1 already, from the worldspawn
+	m_iSolidCount = 0;
 	m_iSideCount = 0;
-	m_pTemplateKeys = NULL;
-	
-	m_iNextNodeID = 0;
+	m_iNodeCount = 0;
+	m_iInstanceCount = 0;
+
 	m_pRoom = NULL;
 	m_iCurrentRoom = 0;
 
@@ -49,7 +49,11 @@ void VMFExporter::Init()
 	m_iMapExtents_YMax = 0;
 	m_pExportKeys = NULL;
 	m_vecStartRoomOrigin = vec3_origin;
+
 	ClearExportErrors();
+
+	m_GD.ClearData();
+	m_RemoveEntities.Purge();
 }
 
 void VMFExporter::ExportError( const char *pMsg, ... )
@@ -57,7 +61,7 @@ void VMFExporter::ExportError( const char *pMsg, ... )
 	char msg[4096];
 	va_list marker;
 	va_start( marker, pMsg );
-	Q_vsnprintf( msg, sizeof( msg ), pMsg, marker );
+	V_vsnprintf( msg, sizeof( msg ), pMsg, marker );
 	va_end( marker );
 
 	m_ExportErrors.AddToTail( TileGenCopyString( msg ) );
@@ -72,17 +76,19 @@ bool VMFExporter::ShowExportErrors()
 {
 	if ( m_ExportErrors.Count() <= 0 )
 		return false;
-	char msg[4096];
-	msg[0] = 0;
-	for ( int i=0; i<m_ExportErrors.Count(); i++ )
+
+	char msg[4096]{};
+	for ( int i = 0; i < m_ExportErrors.Count(); i++ )
 	{
-		Q_snprintf( msg, sizeof( msg ), "%s\n%s", msg, m_ExportErrors[i] );
+		V_snprintf( msg, sizeof( msg ), "%s\n%s", msg, m_ExportErrors[i] );
 	}
+
 	VGUIMessageBox( g_pTileGenDialog, "Export problems:", msg );
+
 	return true;
 }
 
-bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPopupWarnings )
+bool VMFExporter::ExportVMF( CMapLayout *pLayout, const char *mapname, bool bPopupWarnings )
 {
 	m_bPopupWarnings = bPopupWarnings;
 
@@ -92,13 +98,13 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 
 	if ( pLayout->m_PlacedRooms.Count() <= 0 )
 	{
-		Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to export: No rooms placed in the map layout!\n" );
+		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to export: No rooms placed in the map layout!\n" );
 		return false;
 	}
 
 	// see if we have a start room
 	bool bHasStartRoom = false;
-	for ( int i = 0 ; i < pLayout->m_PlacedRooms.Count() ; i++ )
+	for ( int i = 0; i < pLayout->m_PlacedRooms.Count(); i++ )
 	{
 		if ( pLayout->m_PlacedRooms[i]->m_pRoomTemplate->IsStartRoom() )
 		{
@@ -109,10 +115,7 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 			break;
 		}
 	}
-	LoadUniqueKeyList();
 
-	m_iNextNodeID = 0;
-		
 	m_pExportKeys = new KeyValues( "ExportKeys" );
 
 	m_pExportKeys->AddSubKey( GetVersionInfo() );
@@ -121,95 +124,33 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 	m_pExportWorldKeys = GetDefaultWorldChunk();
 	if ( !m_pExportWorldKeys )
 	{
-		Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to save world chunk start\n");
+		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to save world chunk start\n" );
 		return false;
 	}
 	m_pExportKeys->AddSubKey( m_pExportWorldKeys );
 
-	
+
 	// save out the big cube the whole level sits in	
 	if ( !AddLevelContainer() )
 	{
-		Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to save level container\n");
+		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to save level container\n" );
 		return false;
 	}
 
-	if ( tilegen_use_instancing.GetBool() )
+	// add each room as an instance
+	int nLogicalRooms = m_pMapLayout->m_LogicalRooms.Count();
+	int nPlacedRooms = m_pMapLayout->m_PlacedRooms.Count();
+
+	m_pRoom = NULL;
+	for ( int i = 0; i < nLogicalRooms; ++i )
 	{
-		int nLogicalRooms = m_pMapLayout->m_LogicalRooms.Count();
-		int nPlacedRooms = m_pMapLayout->m_PlacedRooms.Count();
-
-		m_pRoom = NULL;
-		for ( int i = 0; i < nLogicalRooms; ++ i )
-		{
-			AddRoomInstance( m_pMapLayout->m_LogicalRooms[i] );
-		}
-
-		for ( int i = 0; i < nPlacedRooms; ++ i )
-		{
-			m_pRoom = m_pMapLayout->m_PlacedRooms[i];
-			AddRoomInstance( m_pRoom->m_pRoomTemplate, i );
-		}
+		AddRoomInstance( m_pMapLayout->m_LogicalRooms[i] );
 	}
-	else
+
+	for ( int i = 0; i < nPlacedRooms; ++i )
 	{
-		// write out logical room solids
-		int iLogicalRooms = m_pMapLayout->m_LogicalRooms.Count();
-		m_pRoom = NULL;
-		for ( int i = 0 ; i < iLogicalRooms ; i++ )
-		{
-			// start logical room IDs at 5000 (assumes we'll never place 5000 real rooms)
-			m_iCurrentRoom = 5000 + i;
-			CRoomTemplate *pRoomTemplate = m_pMapLayout->m_LogicalRooms[i];
-			if ( !pRoomTemplate )
-				continue;
-
-			if ( !AddRoomTemplateSolids( pRoomTemplate ) )
-				return false;
-		}
-
-		// go through each CRoom and write out its world solids
-		int iRooms = m_pMapLayout->m_PlacedRooms.Count();
-		for ( m_iCurrentRoom = 0 ; m_iCurrentRoom<iRooms ; m_iCurrentRoom++)
-		{
-			m_pRoom = m_pMapLayout->m_PlacedRooms[m_iCurrentRoom];
-			if (!m_pRoom)
-				continue;
-			const CRoomTemplate *pRoomTemplate = m_pRoom->m_pRoomTemplate;
-			if (!pRoomTemplate)
-				continue;
-
-			if ( !AddRoomTemplateSolids( pRoomTemplate ) )
-				return false;
-		}
-
-		// write out logical room entities
-		m_pRoom = NULL;
-		for ( int i = 0 ; i < iLogicalRooms ; i++ )
-		{
-			// start logical room IDs at 5000 (assumes we'll never place 5000 real rooms)
-			m_iCurrentRoom = 5000 + i;
-			CRoomTemplate *pRoomTemplate = m_pMapLayout->m_LogicalRooms[i];
-			if ( !pRoomTemplate )
-				continue;
-
-			if ( !AddRoomTemplateEntities( pRoomTemplate ) )
-				return false;
-		}
-
-		// go through each CRoom and add its entities
-		for ( m_iCurrentRoom = 0 ; m_iCurrentRoom<iRooms ; m_iCurrentRoom++)
-		{
-			m_pRoom = m_pMapLayout->m_PlacedRooms[m_iCurrentRoom];
-			if (!m_pRoom)
-				continue;
-			const CRoomTemplate *pRoomTemplate = m_pRoom->m_pRoomTemplate;
-			if (!pRoomTemplate)
-				continue;
-
-			if ( !AddRoomTemplateEntities( pRoomTemplate ) )
-				return false;
-		}
+		m_pRoom = m_pMapLayout->m_PlacedRooms[i];
+		AddRoomInstance( m_pRoom->m_pRoomTemplate, i );
 	}
 
 	// add some player starts to the map in the tile the user selected
@@ -218,695 +159,45 @@ bool VMFExporter::ExportVMF( CMapLayout* pLayout, const char *mapname, bool bPop
 		m_pExportKeys->AddSubKey( GetPlayerStarts() );
 	}
 
-	m_pExportKeys->AddSubKey( GetGameRulesProxy() );
+	// now for the magic: flatten all of the instances
+	if ( !FlattenInstances() )
+	{
+		Warning( "Failed while processing TileGen map!\n" );
+		return false;
+	}
+
 	m_pExportKeys->AddSubKey( GetDefaultCamera() );
 
 	// save out the export keys
 	char filename[512];
-	Q_snprintf( filename, sizeof(filename), "maps\\%s", mapname );
-	Q_SetExtension( filename, "vmf", sizeof( filename ) );
+	V_snprintf( filename, sizeof( filename ), "maps\\%s", mapname );
+	V_SetExtension( filename, "vmf", sizeof( filename ) );
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
 	for ( KeyValues *pKey = m_pExportKeys->GetFirstSubKey(); pKey; pKey = pKey->GetNextKey() )
 	{
-		pKey->RecursiveSaveToFile( buf, 0 );			
+		pKey->RecursiveSaveToFile( buf, 0 );
 	}
 	if ( !g_pFullFileSystem->WriteFile( filename, "MOD", buf ) )
 	{
-		Msg( "Failed to SaveToFile %s\n", filename );
+		Warning( "Failed to SaveToFile %s\n", filename );
 		return false;
 	}
-	
+
 	// save the map layout there (so the game can get information about rooms during play)
-	Q_snprintf( filename, sizeof( filename ), "maps\\%s", mapname );
-	Q_SetExtension( filename, "layout", sizeof( filename ) );
+	V_snprintf( filename, sizeof( filename ), "maps\\%s", mapname );
+	V_SetExtension( filename, "layout", sizeof( filename ) );
 	if ( !m_pMapLayout->SaveMapLayout( filename ) )
 	{
-		Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to save .layout file\n");
+		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to save .layout file\n" );
 		return false;
 	}
 
 	return true;
 }
 
-bool VMFExporter::AddRoomTemplateSolids( const CRoomTemplate *pRoomTemplate )
+const Vector &VMFExporter::GetCurrentRoomOffset()
 {
-	// open its vmf file
-	char roomvmfname[MAX_PATH];
-	Q_snprintf(roomvmfname, sizeof(roomvmfname), "tilegen/roomtemplates/%s/%s.vmf", 
-		pRoomTemplate->m_pLevelTheme->m_szName,
-		pRoomTemplate->GetFullName() );
-	m_pTemplateKeys = new KeyValues( "RoomTemplateVMF" );
-	m_pTemplateKeys->LoadFromFile( g_pFullFileSystem, roomvmfname, "GAME" );
-
-	// look for world key
-	for ( KeyValues *pKeys = m_pTemplateKeys; pKeys; pKeys = pKeys->GetNextKey() )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "world" ) )		// find the world key in our room template
-		{
-			if ( !ProcessWorld( pKeys ) )					// fix up solid positions
-			{
-				Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy world from room %s\n", pRoomTemplate->GetFullName() );
-				return false;
-			}
-			for ( KeyValues *pSubKey = pKeys->GetFirstSubKey(); pSubKey; pSubKey = pSubKey->GetNextKey() )		// convert each solid to a func_detail entity
-			{
-				if ( !Q_stricmp( pSubKey->GetName(), "solid" ) )
-				{
-					if ( IsDisplacementBrush( pSubKey ) )
-					{
-						// add to world section
-						m_pExportWorldKeys->AddSubKey( pSubKey->MakeCopy() );
-					}
-					else
-					{
-						// put into entity section as a func_detail
-						KeyValues *pFuncDetail = new KeyValues( "entity" );
-						pFuncDetail->SetInt( "id", ++m_iEntityCount );
-						pFuncDetail->SetString( "classname", "func_detail" );
-						pFuncDetail->AddSubKey( pSubKey->MakeCopy() );
-						m_pExportKeys->AddSubKey( pFuncDetail );
-					}
-				}
-			}			
-		}
-	}
-	m_pTemplateKeys->deleteThis();
-	m_pTemplateKeys = NULL;
-	return true;
-}
-
-bool VMFExporter::AddRoomTemplateEntities( const CRoomTemplate *pRoomTemplate )
-{
-	m_SideTranslations.PurgeAndDeleteElements();
-	m_NodeTranslations.PurgeAndDeleteElements();
-
-	// reopen the source vmf
-	char roomvmfname[MAX_PATH];
-	Q_snprintf( roomvmfname, sizeof(roomvmfname), "tilegen/roomtemplates/%s/%s.vmf", 
-		pRoomTemplate->m_pLevelTheme->m_szName,
-		pRoomTemplate->GetFullName() );
-	m_pTemplateKeys = new KeyValues( "RoomTemplateVMF" );
-	m_pTemplateKeys->LoadFromFile( g_pFullFileSystem, roomvmfname, "GAME" );
-
-	// make all node IDs unique
-	MakeNodeIDsUnique();		
-
-	// sets priority of objective entities based on the generation options
-	ReorderObjectives( pRoomTemplate, m_pTemplateKeys );
-
-	// look for entity keys
-	for ( KeyValues *pKeys = m_pTemplateKeys; pKeys; pKeys = pKeys->GetNextKey() )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "entity" ) )
-		{
-			if ( !ProcessEntity( pKeys ) )
-			{
-				Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy entity from room %s\n", pRoomTemplate->GetFullName());
-				return false;
-			}
-			if ( !Q_stricmp( pKeys->GetString("classname"), "func_instance" ) && !Q_stricmp(pKeys ->GetString( "file" ), "" ) )
-			{
-				// skip instances with no filename (for rd_tilegen_instance)
-				continue;
-			}
-			m_pExportKeys->AddSubKey( pKeys->MakeCopy() );
-		}
-	}
-	
-	m_pTemplateKeys->deleteThis();
-	m_pTemplateKeys = NULL;
-	return true;
-};
-
-bool VMFExporter::IsDisplacementBrush( KeyValues *pSolidKeys )
-{
-	// go through each side
-	for ( KeyValues *pKeys = pSolidKeys->GetFirstSubKey(); pKeys; pKeys = pKeys->GetNextKey() )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "side" ) && pKeys->FindKey( "dispinfo" ) )
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool VMFExporter::ProcessWorld( KeyValues *pWorldKeys )
-{
-	// look for solid keys
-	KeyValues *pSolidKeys = pWorldKeys->GetFirstSubKey();
-	while ( pSolidKeys )
-	{
-		if ( !Q_stricmp( pSolidKeys->GetName(), "solid" ) )
-		{
-			if ( !ProcessSolid( pSolidKeys ) )
-				return false;
-		}
-		pSolidKeys = pSolidKeys->GetNextKey();
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessSolid( KeyValues *pSolidKey )
-{
-	pSolidKey->SetInt( "id", ++m_iEntityCount );
-	
-	// now process each side
-	KeyValues *pKeys = pSolidKey->GetFirstSubKey();
-	while ( pKeys )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "side" ) )
-		{
-			if ( !ProcessSide( pKeys ) )
-				return false;
-		}
-		else
-		{
-			if ( !ProcessGenericRecursive( pKeys ) )
-				return false;
-		}
-		pKeys = pKeys->GetNextKey();
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessSide( KeyValues *pSideKey )
-{		
-	for ( KeyValues *pKeys = pSideKey->GetFirstSubKey(); pKeys; pKeys = pKeys->GetNextKey() )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "dispinfo" ) )
-		{
-			if ( !ProcessGenericRecursive( pKeys ) )
-				return false;
-		}
-		else
-		{
-			if ( !ProcessSideKey( pKeys ) )
-				return false;
-		}
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessGenericRecursive( KeyValues *pKey )
-{
-	const char *szKey = pKey->GetName();
-	const char *szValue = pKey->GetString();
-
-	if ( !Q_stricmp( szKey, "startposition" ) )
-	{
-		Vector Origin;
-		int nRead = sscanf(szValue, "[%f %f %f]", &Origin[0], &Origin[1], &Origin[2]);
-
-		if (nRead != 3)		
-			return false;
-
-		// move the points to where our room is
-		Origin += GetCurrentRoomOffset();
-
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "[%f %f %f]", Origin[0], Origin[1], Origin[2]);
-
-		pKey->SetStringValue( buffer );
-	}
-
-	if ( pKey->GetFirstSubKey() )		// if this keyvalues entry has subkeys, then process them
-	{
-		for ( KeyValues *pKeys = pKey->GetFirstSubKey(); pKeys; pKeys = pKeys->GetNextKey() )
-		{
-			if ( !ProcessGenericRecursive( pKeys ) )
-				return false;
-		}
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessSideKey( KeyValues *pKey )
-{
-	const char *szKey = pKey->GetName();
-	const char *szValue = pKey->GetString();
-
-	if (!stricmp(szKey, "id"))
-	{
-		// store the side
-		SideTranslation_t *pSideTranslation = new SideTranslation_t;
-		pSideTranslation->m_iOriginalSide = atoi( szValue );
-
-		// give this side a unique ID
-		char buffer[32];
-		Q_snprintf(buffer, sizeof(buffer), "%d", ++m_iSideCount );
-		pKey->SetStringValue( buffer );
-
-		pSideTranslation->m_iNewSide = m_iSideCount;
-		m_SideTranslations.AddToTail( pSideTranslation );
-
-		return true;
-	}
-	else if (!stricmp(szKey, "plane"))
-	{
-		Vector planepts[3];
-		int nRead = sscanf(szValue, "(%f %f %f) (%f %f %f) (%f %f %f)", 
-			&planepts[0][0], &planepts[0][1], &planepts[0][2],
-			&planepts[1][0], &planepts[1][1], &planepts[1][2],
-			&planepts[2][0], &planepts[2][1], &planepts[2][2]);
-
-		if (nRead != 9)		
-			return false;
-
-		if (m_bWritingLevelContainer)
-		{
-			// we're currently writing out the big cube that the level sits in
-			// need to adjust the x and y coordinates of this box to encase the whole map layout
-
-			for (int p=0;p<3;p++)
-			{
-				if (planepts[p][0] < 0)
-					planepts[p][0] += m_iMapExtents_XMin * ASW_TILE_SIZE;
-				else
-					planepts[p][0] += m_iMapExtents_XMax * ASW_TILE_SIZE;
-				if (planepts[p][1] < 0)
-					planepts[p][1] += m_iMapExtents_YMin * ASW_TILE_SIZE;
-				else
-					planepts[p][1] += m_iMapExtents_YMax * ASW_TILE_SIZE;
-			}
-		}
-		else
-		{
-
-			// move the points to where our room is
-			for (int p=0;p<3;p++)
-			{
-				planepts[p] += GetCurrentRoomOffset();
-			}
-
-			// store these so we know how much to shift texture alignment
-			m_vecLastPlaneOffset = GetCurrentRoomOffset();
-		}
-
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "(%f %f %f) (%f %f %f) (%f %f %f)",
-			planepts[0][0], planepts[0][1], planepts[0][2],
-			planepts[1][0], planepts[1][1], planepts[1][2],
-			planepts[2][0], planepts[2][1], planepts[2][2]);
-
-		pKey->SetStringValue( buffer );
-		return true;
-	}
-	else if ( !stricmp(szKey, "uaxis") || !stricmp(szKey, "vaxis") )		// fix texture alignment (similar to moving a brush with texture lock turned on in hammer)
-	{
-		// NOTE: This assumes the plane was read in previously and set m_vecLastPlaneOffset
-		Vector axis;
-		float offset, scale;
-		offset = 0;
-		scale = 1.0f;
-		if ( sscanf( szValue, "[%f %f %f %f] %f", &axis.x, &axis.y, &axis.z, &offset, &scale ) == 5 )
-		{
-			offset -= m_vecLastPlaneOffset.Dot( axis ) / scale;
-
-			char buffer[256];
-			Q_snprintf( buffer, sizeof(buffer), "[%f %f %f %f] %f",
-				axis.x, axis.y, axis.z, offset, scale );
-
-			pKey->SetStringValue( buffer );
-			return true;
-		}
-		else
-		{
-			Msg( "Error loading in uvaxis\n" );
-		}
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessEntity( KeyValues *pEntityKeys )
-{
-	if ( !Q_stricmp( pEntityKeys->GetString( "classname" ), "rd_tilegen_instance" ) )
-	{
-		if ( !ProcessInstance( pEntityKeys ) )
-		{
-			return false;
-		}
-	}
-
-	for ( KeyValues *pKeys = pEntityKeys->GetFirstSubKey(); pKeys; )
-	{
-		if ( pKeys->GetFirstSubKey() )
-		{
-			if ( !Q_stricmp( pKeys->GetName(), "solid" ) )
-			{
-				if ( !ProcessSolid( pKeys ) )
-					return false;
-			}
-			else if ( !Q_stricmp( pKeys->GetName(), "connections" ) )
-			{
-				if ( !ProcessConnections( pKeys ) )
-					return false;
-			}
-			else if ( !Q_stricmp( pKeys->GetName(), "editor" ) )	// remove editor keys
-			{
-				KeyValues *pRemoveKey = pKeys;
-				pKeys = pKeys->GetNextKey();
-				pEntityKeys->RemoveSubKey( pRemoveKey );
-				pRemoveKey->deleteThis();
-				continue;
-			}
-		}
-		else
-		{
-			if ( !ProcessEntityKey( pKeys ) )
-				return false;
-		}
-		pKeys = pKeys->GetNextKey();
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessInstance( KeyValues *pEntityKeys )
-{
-	pEntityKeys->SetString( "classname", "func_instance" );
-
-	struct InstanceChoice
-	{
-		CUtlString m_iszPath;
-		float m_flWeight;
-	};
-
-	CUtlVector<InstanceChoice> choices;
-	float flTotalWeight = 0;
-
-	for ( int i = 1; i <= 9; i++ )
-	{
-		char szKey[16];
-		V_snprintf( szKey, sizeof( szKey ), "weight%d", i );
-		float flWeight = pEntityKeys->GetFloat( szKey );
-
-		KeyValues *pRemoveKey = pEntityKeys->FindKey( szKey );
-		if ( pRemoveKey )
-		{
-			pEntityKeys->RemoveSubKey( pRemoveKey );
-			pRemoveKey->deleteThis();
-		}
-
-		V_snprintf( szKey, sizeof( szKey ), "glob%d", i );
-		if ( flWeight > 0 )
-		{
-			CUtlString iszGlob;
-			if ( *pEntityKeys->GetString( szKey ) != '\0' )
-			{
-				iszGlob = "tilegen/instances/";
-				iszGlob += pEntityKeys->GetString( szKey );
-			}
-
-			if ( V_strrchr( iszGlob, '*' ) )
-			{
-				int nCount = 0;
-				FileFindHandle_t ffh;
-				for ( const char *pszFilename = g_pFullFileSystem->FindFirstEx( iszGlob, "GAME", &ffh ); pszFilename; pszFilename = g_pFullFileSystem->FindNext( ffh ) )
-				{
-					choices.AddToTail( InstanceChoice{ iszGlob.Slice( 0, V_strrchr( iszGlob, '/' ) - iszGlob + 1 ) + pszFilename, flWeight } );
-					nCount++;
-				}
-				g_pFullFileSystem->FindClose( ffh );
-
-				if ( !nCount )
-				{
-					Warning( "[TileGen] no results for instance glob '%s'\n", iszGlob.Get() );
-					return false;
-				}
-
-				// If we have, for example, lights_*.vmf at weight 1 with 4 matches and poster_of_gaben.vmf at weight 2 with
-				// 1 match (obviously, there is only one gaben), we want to have the poster be twice as common as the lights,
-				// not half as common.
-				for ( int j = 1; j <= nCount; j++ )
-				{
-					choices[choices.Count() - j].m_flWeight /= ( float )nCount;
-				}
-			}
-			else
-			{
-				choices.AddToTail( InstanceChoice{ iszGlob, flWeight } );
-			}
-			flTotalWeight += flWeight;
-		}
-
-		pRemoveKey = pEntityKeys->FindKey( szKey );
-		if ( pRemoveKey )
-		{
-			pEntityKeys->RemoveSubKey( pRemoveKey );
-			pRemoveKey->deleteThis();
-		}
-	}
-
-	CUniformRandomStream random;
-	random.SetSeed( m_pRoom->m_nInstanceSeed + pEntityKeys->GetInt( "id" ) );
-	float flChoice = random.RandomFloat( 0.0f, flTotalWeight );
-	for ( int i = 0; i < choices.Count(); i++ )
-	{
-		flChoice -= choices[i].m_flWeight;
-		if ( flChoice < 0 )
-		{
-			if ( choices[i].m_iszPath.IsEmpty() )
-			{
-				pEntityKeys->SetString( "file", "" );
-			}
-			else
-			{
-				pEntityKeys->SetString( "file", choices[i].m_iszPath.Get() + V_strlen( "tilegen/instances" ) );
-			}
-			return true;
-		}
-	}
-	Assert( choices.Count() );
-	// We got here through a rounding error. Just take the last choice.
-	if ( choices.Count() )
-	{
-		int i = choices.Count() - 1;
-		if ( choices[i].m_iszPath.IsEmpty() )
-		{
-			pEntityKeys->SetString( "file", "" );
-		}
-		else
-		{
-			pEntityKeys->SetString( "file", choices[i].m_iszPath.Get() + V_strlen( "tilegen/instances" ) );
-		}
-		return true;
-	}
-
-	Warning( "[TileGen] no choices in rd_tilegen_instance\n" );
-	return false;
-}
-
-bool VMFExporter::ProcessEntityKey( KeyValues *pKey )
-{
-	const char *szKey = pKey->GetName();
-	const char *szValue = pKey->GetString();
-
-	if (!stricmp(szKey, "id"))
-	{
-		// give this entity a unique ID
-		char buffer[32];
-		Q_snprintf(buffer, sizeof(buffer), "%d", ++m_iEntityCount );
-		pKey->SetStringValue( buffer );
-
-		return true;
-	}
-	else if (!stricmp(szKey, "origin"))
-	{
-		Vector Origin;
-		int nRead = sscanf(szValue, "%f %f %f", &Origin[0], &Origin[1], &Origin[2]);
-
-		if (nRead != 3)		
-			return false;
-
-		// move the points to where our room is
-		Origin += GetCurrentRoomOffset();
-
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "%f %f %f", Origin[0], Origin[1], Origin[2]);
-		pKey->SetStringValue( buffer );
-
-		return true;
-	}
-	// check for overlay values
-	if (!stricmp(szKey, "sides"))
-	{
-		// just deal with one side for now
-		// TODO: handle multiple sides in the value and handle sides in the world block
-		int iSide = atoi(szValue);
-		for (int i=0;i<m_SideTranslations.Count();i++)
-		{
-			SideTranslation_t *pSideTranslation = m_SideTranslations[i];
-			if ( pSideTranslation->m_iOriginalSide == iSide )
-			{
-				char buffer[32];
-				Q_snprintf(buffer, sizeof(buffer), "%d", pSideTranslation->m_iNewSide );
-				pKey->SetStringValue( buffer );
-				return true;
-			}
-		}
-	}
-	else if (!stricmp(szKey, "BasisOrigin"))
-	{
-		Vector Origin;
-		int nRead = sscanf(szValue, "%f %f %f", &Origin[0], &Origin[1], &Origin[2]);
-
-		if (nRead != 3)		
-			return false;
-
-		// move the points to where our room is
-		Origin += GetCurrentRoomOffset();
-
-		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "%f %f %f", Origin[0], Origin[1], Origin[2]);
-
-		pKey->SetStringValue( buffer );
-		return true;
-	}
-
-	// check for unique string keys (targetname, etc.)
-	int nCount = m_UniqueKeys.Count();
-	for ( int i = 0; i < nCount; ++i )
-	{
-		const char *pUnique = m_UniqueKeys[i];
-		if ( !stricmp(szKey, pUnique) && szValue && szValue[0] != '@' )		// don't make names unique if they start with special character
-		{
-			// prepend room id to make this unique
-			char buffer[256];
-			Q_snprintf( buffer, sizeof(buffer), "Room%d_%s", m_iCurrentRoom, szValue );
-
-			pKey->SetStringValue( buffer );
-			return true;
-		}
-	}
-
-	// remap node IDs
-	nCount = m_NodeIDKeys.Count();
-	for ( int i = 0; i < nCount; ++i )
-	{
-		const char *pNodeKey = m_NodeIDKeys[i];
-		if (!stricmp(szKey, pNodeKey))
-		{
-			int iNodeID = atoi(szValue);
-			for (int j=0;j<m_NodeTranslations.Count();j++)
-			{
-				NodeTranslation_t *pTranslation = m_NodeTranslations[j];
-				if ( pTranslation->m_iOriginalNodeID == iNodeID )
-				{
-
-					char buffer[32];
-					Q_snprintf(buffer, sizeof(buffer), "%d", pTranslation->m_iNewNodeID );
-					pKey->SetStringValue( buffer );
-					return true;
-				}
-			}
-		}
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessConnections( KeyValues *pConnections )
-{	
-	for ( KeyValues *pKeys = pConnections->GetFirstSubKey(); pKeys; pKeys = pKeys->GetNextKey() )
-	{
-		if ( !ProcessConnectionsKey( pKeys ) )
-			return false;		
-	}
-
-	return true;
-}
-
-bool VMFExporter::ProcessConnectionsKey( KeyValues *pKey )
-{
-	const char *szValue = pKey->GetString();
-
-	char buffer[256];
-	// prepend room id to targetname
-	if ( szValue && szValue[0] != '@' )		// don't make names unique if they start with special character
-	{
-		Q_snprintf( buffer, sizeof( buffer ), "Room%d_%s", m_iCurrentRoom, szValue );		
-	}
-	else
-	{
-		Q_snprintf( buffer, sizeof( buffer ), "%s", szValue );
-	}
-
-	pKey->SetStringValue( buffer );
-	return true;
-}
-
-// sets priority of objective entities based on the order the rooms were listed in the mission/objective txt
-void VMFExporter::ReorderObjectives( const CRoomTemplate *pTemplate, KeyValues *pTemplateKeys )
-{	
-	KeyValues *pKeys = m_pTemplateKeys;
-	while ( pKeys )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "entity" ) && !Q_strnicmp( pKeys->GetString( "classname" ), "asw_objective", 13 ) )
-		{
-			if ( pKeys->GetFloat( "Priority" ) != 0 )	// if level designer has already set priority, then don't override it
-			{
-				pKeys = pKeys->GetNextKey();
-				continue;
-			}
-
-			int iPriority = 100;
-			// We no longer have a requested rooms array, so this code is not valid.  Need to replace it with something else to ensure priorities are set correctly.
-// 			for ( int i = 0; i < m_pMapLayout->m_pRequestedRooms.Count(); i++ )
-// 			{
-// 				if ( m_pMapLayout->m_pRequestedRooms[i]->m_pRoomTemplate == pTemplate )
-// 				{
-// 					iPriority = m_pMapLayout->m_pRequestedRooms[i]->m_iMissionTextOrder;
-// 				}
-// 			}
-			pKeys->SetFloat( "Priority", iPriority );
-		}
-		pKeys = pKeys->GetNextKey();
-	}
-}
-
-int VMFExporter::MakeNodeIDsUnique()
-{
-	int iNodes = 0;
-	KeyValues *pKeys = m_pTemplateKeys;
-	while ( pKeys )
-	{
-		if ( !Q_stricmp( pKeys->GetName(), "entity" ) )		// go through all entities in this room
-		{
-			KeyValues *pFieldKey = pKeys->GetFirstSubKey();
-			while ( pFieldKey )								// go through all properties of this entity
-			{
-				if ( !pFieldKey->GetFirstSubKey() )			// leaf
-				{
-					if ( !stricmp(pFieldKey->GetName(), "nodeid" ) )
-					{
-						NodeTranslation_t *pNodeTranslation = new NodeTranslation_t;		// store a translation so we can fix up info links
-						pNodeTranslation->m_iOriginalNodeID = atoi( pFieldKey->GetString() );
-						pNodeTranslation->m_iNewNodeID = m_iNextNodeID;
-						m_NodeTranslations.AddToTail( pNodeTranslation );
-						char buffer[16];
-						Q_snprintf( buffer, sizeof( buffer ), "%d", m_iNextNodeID);
-						pFieldKey->SetStringValue( buffer );
-						m_iNextNodeID++;
-						iNodes++;
-					}
-				}		
-				pFieldKey = pFieldKey->GetNextKey();
-			}
-		}
-		pKeys = pKeys->GetNextKey();
-	}
-	return iNodes;
-}
-
-const Vector& VMFExporter::GetCurrentRoomOffset()
-{
-	static Vector s_vecCurrentRoomOffset = vec3_origin;	
+	static Vector s_vecCurrentRoomOffset = vec3_origin;
 
 	if ( m_pRoom )
 	{
@@ -925,44 +216,10 @@ const Vector& VMFExporter::GetCurrentRoomOffset()
 	return s_vecCurrentRoomOffset;
 }
 
-#define UNIQUE_KEYS_FILE "tilegen/unique_keys.txt"
-void VMFExporter::LoadUniqueKeyList()
-{
-	m_UniqueKeys.RemoveAll();
-	m_NodeIDKeys.RemoveAll();
-
-	// Open the manifest file, and read the particles specified inside it
-	KeyValues *manifest = new KeyValues( UNIQUE_KEYS_FILE );
-	if ( manifest->LoadFromFile( g_pFullFileSystem, UNIQUE_KEYS_FILE, "GAME" ) )
-	{
-		for ( KeyValues *sub = manifest->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
-		{
-			if ( !Q_stricmp( sub->GetName(), "key" ) )
-			{
-				m_UniqueKeys.AddToTail( sub->GetString() );
-				continue;
-			}
-			if ( !Q_stricmp( sub->GetName(), "NodeID" ) )
-			{
-				m_NodeIDKeys.AddToTail( sub->GetString() );
-				continue;
-			}
-
-			Warning( "VMFExporter::LoadUniqueKeyList:  Manifest '%s' with bogus file type '%s', expecting 'key' or 'NodeID'\n", UNIQUE_KEYS_FILE, sub->GetName() );
-		}
-	}
-	else
-	{
-		Warning( "VMFExporter: Unable to load manifest file '%s'\n", UNIQUE_KEYS_FILE );
-	}
-
-	manifest->deleteThis();
-}
-
 void VMFExporter::AddRoomInstance( const CRoomTemplate *pRoomTemplate, int nPlacedRoomIndex )
 {
 	KeyValues *pFuncInstance = new KeyValues( "entity" );
-	pFuncInstance->SetInt( "id", ++ m_iEntityCount );
+	pFuncInstance->SetInt( "id", ++m_iEntityCount );
 	pFuncInstance->SetString( "classname", "func_instance" );
 	pFuncInstance->SetString( "angles", "0 0 0" );
 
@@ -970,22 +227,31 @@ void VMFExporter::AddRoomInstance( const CRoomTemplate *pRoomTemplate, int nPlac
 	if ( nPlacedRoomIndex != -1 )
 	{
 		pFuncInstance->SetInt( "PlacedRoomIndex", nPlacedRoomIndex );
+
+		char szRoomPrefix[128];
+		V_snprintf( szRoomPrefix, sizeof( szRoomPrefix ), "Room%d", nPlacedRoomIndex );
+		pFuncInstance->SetString( "targetname", szRoomPrefix );
 	}
-	
+
+	if ( m_pRoom )
+	{
+		pFuncInstance->SetInt( "InstanceSeed", m_pRoom->m_nInstanceSeed );
+	}
+
 	char vmfName[MAX_PATH];
-	Q_snprintf( vmfName, sizeof( vmfName ), "tilegen/roomtemplates/%s/%s.vmf", pRoomTemplate->m_pLevelTheme->m_szName, pRoomTemplate->GetFullName() );
+	V_snprintf( vmfName, sizeof( vmfName ), "tilegen/roomtemplates/%s/%s.vmf", pRoomTemplate->m_pLevelTheme->m_szName, pRoomTemplate->GetFullName() );
 	// Convert backslashes to forward slashes to please the VMF parser
-	int nStrLen = Q_strlen( vmfName );
-	for ( int i = 0; i < nStrLen; ++ i )
+	int nStrLen = V_strlen( vmfName );
+	for ( int i = 0; i < nStrLen; ++i )
 	{
 		if ( vmfName[i] == '\\' ) vmfName[i] = '/';
 	}
-	
+
 	pFuncInstance->SetString( "file", vmfName );
 
 	Vector vOrigin = GetCurrentRoomOffset();
 	char buf[128];
-	Q_snprintf( buf, 128, "%f %f %f", vOrigin.x, vOrigin.y, vOrigin.z );
+	V_snprintf( buf, sizeof( buf ), "%f %f %f", vOrigin.x, vOrigin.y, vOrigin.z );
 	pFuncInstance->SetString( "origin", buf );
 	m_pExportKeys->AddSubKey( pFuncInstance );
 }
@@ -995,7 +261,7 @@ void VMFExporter::AddRoomInstance( const CRoomTemplate *pRoomTemplate, int nPlac
 // Input  : *pFile - 
 // Output : Returns ChunkFile_Ok on success, an error code on failure.
 //-----------------------------------------------------------------------------
-KeyValues* VMFExporter::GetVersionInfo()
+KeyValues *VMFExporter::GetVersionInfo()
 {
 	KeyValues *pKeys = new KeyValues( "versioninfo" );
 	pKeys->SetInt( "editorversion", 400 );
@@ -1007,13 +273,13 @@ KeyValues* VMFExporter::GetVersionInfo()
 }
 
 // just save out an empty visgroups section
-KeyValues* VMFExporter::GetDefaultVisGroups()
+KeyValues *VMFExporter::GetDefaultVisGroups()
 {
 	KeyValues *pKeys = new KeyValues( "visgroups" );
 	return pKeys;
 }
 
-KeyValues* VMFExporter::GetViewSettings()
+KeyValues *VMFExporter::GetViewSettings()
 {
 	KeyValues *pKeys = new KeyValues( "viewsettings" );
 	pKeys->SetBool( "bSnapToGrid", true );
@@ -1024,7 +290,7 @@ KeyValues* VMFExporter::GetViewSettings()
 	return pKeys;
 }
 
-KeyValues* VMFExporter::GetDefaultCamera()
+KeyValues *VMFExporter::GetDefaultCamera()
 {
 	KeyValues *pKeys = new KeyValues( "cameras" );
 	pKeys->SetInt( "activecamera", 0 );
@@ -1033,14 +299,14 @@ KeyValues* VMFExporter::GetDefaultCamera()
 	pSubKeys->SetString( "position", "[135.491 -60.314 364.02]" );
 	pSubKeys->SetString( "look", "[141.195 98.7571 151.25]" );
 	pKeys->AddSubKey( pSubKeys );
-	
+
 	return pKeys;
 }
 
-KeyValues* VMFExporter::GetPlayerStarts()
+KeyValues *VMFExporter::GetPlayerStarts()
 {
 	KeyValues *pKeys = new KeyValues( "entity" );
-	pKeys->SetInt( "id", m_iEntityCount++ );
+	pKeys->SetInt( "id", ++m_iEntityCount );
 	pKeys->SetString( "classname", "info_player_start" );
 	pKeys->SetString( "angles", "0 0 0" );
 
@@ -1048,40 +314,17 @@ KeyValues* VMFExporter::GetPlayerStarts()
 	float player_start_x = 128.0f;
 	float player_start_y = 128.0f;
 	int half_map_size = MAP_LAYOUT_TILES_WIDE * 0.5f;
-	player_start_x += (m_pMapLayout->m_iPlayerStartTileX - half_map_size) * ASW_TILE_SIZE;
-	player_start_y += (m_pMapLayout->m_iPlayerStartTileY - half_map_size) * ASW_TILE_SIZE;
-	
+	player_start_x += ( m_pMapLayout->m_iPlayerStartTileX - half_map_size ) * ASW_TILE_SIZE;
+	player_start_y += ( m_pMapLayout->m_iPlayerStartTileY - half_map_size ) * ASW_TILE_SIZE;
+
 	char buffer[128];
-	Q_snprintf(buffer, sizeof(buffer), "%f %f 1.0", player_start_x, player_start_y);
+	V_snprintf( buffer, sizeof( buffer ), "%f %f 1.0", player_start_x, player_start_y );
 	pKeys->SetString( "origin", buffer );
 
 	return pKeys;
 }
 
-KeyValues* VMFExporter::GetGameRulesProxy()
-{
-	KeyValues *pKeys = new KeyValues( "entity" );
-	pKeys->SetInt( "id", m_iEntityCount++ );
-	pKeys->SetString( "classname", "asw_gamerules" );
-	pKeys->SetString( "targetname", "@asw_gamerules" );
-	
-	char buffer[128];
-	Q_snprintf(buffer, sizeof(buffer), "%f %f %f", m_vecStartRoomOrigin.x, m_vecStartRoomOrigin.y, m_vecStartRoomOrigin.z);
-	pKeys->SetString( "origin", buffer );
-	
-	KeyValues *pGenerationOptions = m_pMapLayout->GetGenerationOptions();
-	int nDifficultyModifier = 0;
-	if ( pGenerationOptions != NULL )
-	{
-		nDifficultyModifier = pGenerationOptions->GetInt( "Difficulty", 5 ) - 5;
-	}
-	
-	pKeys->SetInt( "difficultymodifier", nDifficultyModifier );
-
-	return pKeys;
-}
-
-KeyValues* VMFExporter::GetDefaultWorldChunk()
+KeyValues *VMFExporter::GetDefaultWorldChunk()
 {
 	KeyValues *pKeys = new KeyValues( "world" );
 	pKeys->SetInt( "id", 1 );
@@ -1095,62 +338,715 @@ KeyValues* VMFExporter::GetDefaultWorldChunk()
 	return pKeys;
 }
 
+KeyValues *VMFExporter::CreateBasicSolid( const char *szMaterial, float textureScale, int lightmapScale, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax )
+{
+	KeyValues *pSolid = new KeyValues( "solid" );
+	pSolid->SetInt( "id", ++m_iSolidCount );
+
+	KeyValues::AutoDelete pSide( "side" );
+	pSide->SetString( "material", szMaterial );
+	pSide->SetInt( "rotation", 0 );
+	pSide->SetInt( "lightmapscale", lightmapScale );
+	pSide->SetInt( "smoothing_groups", 0 );
+
+	char temp[256];
+
+	// top
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[1 0 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 -1 0 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMin, yMax, zMax, xMax, yMax, zMax, xMax, yMin, zMax );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	// bottom
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[1 0 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 -1 0 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMin, yMin, zMin, xMax, yMin, zMin, xMax, yMax, zMin );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	// west
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[0 1 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 0 -1 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMin, yMax, zMax, xMin, yMin, zMax, xMin, yMin, zMin );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	// east
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[0 1 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 0 -1 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMax, yMax, zMin, xMax, yMin, zMin, xMax, yMin, zMax );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	// north
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[1 0 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 0 -1 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMax, yMax, zMax, xMin, yMax, zMax, xMin, yMax, zMin );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	// south
+	pSide->SetInt( "id", ++m_iSideCount );
+	V_snprintf( temp, sizeof( temp ), "[1 0 0 0] %f", textureScale );
+	pSide->SetString( "uaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "[0 0 -1 0] %f", textureScale );
+	pSide->SetString( "vaxis", temp );
+	V_snprintf( temp, sizeof( temp ), "(%f %f %f) (%f %f %f) (%f %f %f)", xMax, yMin, zMin, xMin, yMin, zMin, xMin, yMin, zMax );
+	pSide->SetString( "plane", temp );
+	pSolid->AddSubKey( pSide->MakeCopy() );
+
+	return pSolid;
+}
+
 bool VMFExporter::AddLevelContainer()
 {
-	KeyValues *pLevelContainerKeys = new KeyValues( "LevelContainer" );
-	if ( !pLevelContainerKeys->LoadFromFile( g_pFullFileSystem, "tilegen/roomtemplates/levelcontainer.vmf.no_func_detail", "GAME" ) )
-		return false;
-
-	m_bWritingLevelContainer = true;
-
 	// set the extents of the map
-	m_pMapLayout->GetExtents(m_iMapExtents_XMin, m_iMapExtents_XMax, m_iMapExtents_YMin, m_iMapExtents_YMax);
-	Msg( "Layout extents: Topleft: %f %f - Lower right: %f %f\n", m_iMapExtents_XMin, m_iMapExtents_YMin, m_iMapExtents_XMax, m_iMapExtents_YMax );
+	m_pMapLayout->GetExtents( m_iMapExtents_XMin, m_iMapExtents_XMax, m_iMapExtents_YMin, m_iMapExtents_YMax );
+	DevMsg( "Layout extents: Topleft: %d %d - Lower right: %d %d\n", m_iMapExtents_XMin, m_iMapExtents_YMin, m_iMapExtents_XMax, m_iMapExtents_YMax );
 	// adjust to be relative to the centre of the map
-	int half_map_size = MAP_LAYOUT_TILES_WIDE * 0.5f;
+	const int half_map_size = MAP_LAYOUT_TILES_WIDE * 0.5f;
 	m_iMapExtents_XMin -= half_map_size;
 	m_iMapExtents_XMax -= half_map_size;
 	m_iMapExtents_YMin -= half_map_size;
 	m_iMapExtents_YMax -= half_map_size;
-	// pad them by 2 blocks, so the player doesn't move his camera into the wall when at an edge block
-	m_iMapExtents_XMin -= 2;
-	m_iMapExtents_XMax += 2;
-	m_iMapExtents_YMin -= 2;
-	m_iMapExtents_YMax += 2;
+	// pad them by 3 blocks, so the player doesn't move his camera into the wall when at an edge block
+	m_iMapExtents_XMin -= 3;
+	m_iMapExtents_XMax += 3;
+	m_iMapExtents_YMin -= 3;
+	m_iMapExtents_YMax += 3;
 
-	Msg( "   Adjusted to: Topleft: %d %d - Lower right: %d %d\n", m_iMapExtents_XMin, m_iMapExtents_YMin, m_iMapExtents_XMax, m_iMapExtents_YMax );
+	DevMsg( "   Adjusted to: Topleft: %d %d - Lower right: %d %d\n", m_iMapExtents_XMin, m_iMapExtents_YMin, m_iMapExtents_XMax, m_iMapExtents_YMax );
 
-	// find world keys
-	KeyValues *pWorldKeys = NULL;
-	for ( KeyValues *pKeys = pLevelContainerKeys; pKeys; pKeys = pKeys->GetNextKey() )		
+	KeyValues *pEntity = new KeyValues( "entity" );
+	m_pExportKeys->AddSubKey( pEntity );
+
+	pEntity->SetInt( "id", ++m_iEntityCount );
+	pEntity->SetString( "classname", "func_brush" );
+	pEntity->SetString( "origin", "0 0 0" );
+	pEntity->SetString( "targetname", "structure_seal" );
+
+	const char *const szMaterial = rd_tilegen_seal_material.GetString();
+	const float flTexScale = rd_tilegen_seal_texscale.GetFloat();
+	const int nLightmapScale = rd_tilegen_seal_lightmap.GetInt();
+	const float flHeight = rd_tilegen_seal_height.GetFloat();
+	const float flPadding = rd_tilegen_seal_padding.GetFloat();
+
+	// top
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMin * ASW_TILE_SIZE, m_iMapExtents_YMin * ASW_TILE_SIZE, flHeight,
+		m_iMapExtents_XMax * ASW_TILE_SIZE, m_iMapExtents_YMax * ASW_TILE_SIZE, flHeight + flPadding
+	) );
+	// bottom
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMin * ASW_TILE_SIZE, m_iMapExtents_YMin * ASW_TILE_SIZE, -flHeight - flPadding,
+		m_iMapExtents_XMax * ASW_TILE_SIZE, m_iMapExtents_YMax * ASW_TILE_SIZE, -flHeight
+	) );
+	// west
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMin * ASW_TILE_SIZE - flPadding, m_iMapExtents_YMin * ASW_TILE_SIZE, -flHeight,
+		m_iMapExtents_XMin * ASW_TILE_SIZE, m_iMapExtents_YMax * ASW_TILE_SIZE, flHeight
+	) );
+	// east
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMax * ASW_TILE_SIZE, m_iMapExtents_YMin * ASW_TILE_SIZE, -flHeight,
+		m_iMapExtents_XMax * ASW_TILE_SIZE + flPadding, m_iMapExtents_YMax * ASW_TILE_SIZE, flHeight
+	) );
+	// north
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMin * ASW_TILE_SIZE, m_iMapExtents_YMax * ASW_TILE_SIZE, -flHeight,
+		m_iMapExtents_XMax * ASW_TILE_SIZE, m_iMapExtents_YMax * ASW_TILE_SIZE + flPadding, flHeight
+	) );
+	// south
+	pEntity->AddSubKey( CreateBasicSolid( szMaterial, flTexScale, nLightmapScale,
+		m_iMapExtents_XMin * ASW_TILE_SIZE, m_iMapExtents_YMin * ASW_TILE_SIZE - flPadding, -flHeight,
+		m_iMapExtents_XMax * ASW_TILE_SIZE, m_iMapExtents_YMin * ASW_TILE_SIZE, flHeight
+	) );
+
+	return true;
+}
+
+bool VMFExporter::FlattenInstances()
+{
+	// This function is largely based on src/utils/vbsp/map.cpp from Source SDK 2013.
+	// TODO: split this function out as a standalone tool; see https://github.com/ReactiveDrop/reactivedrop_public_src/issues/416
+	// problem is, the standalone tool won't be able to load workshop addons without pretending to be AS:RD in Steam.
+
+	if ( !LoadGameInfo() )
 	{
-		const char *szName = pKeys->GetName();
-		if ( !Q_stricmp( szName, "world" ) )
-		{
-			pWorldKeys = pKeys;
-			break;
-		}
-	}
-	if ( !pWorldKeys || !ProcessWorld( pWorldKeys ) )
-	{
-		Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy level container\n" );
 		return false;
 	}
 
-	m_bWritingLevelContainer = false;
-
-	for ( KeyValues *pKeys = pWorldKeys->GetFirstSubKey(); pKeys; pKeys = pKeys->GetNextKey() )
+	for ( KeyValues *pEntity = m_pExportKeys->GetFirstSubKey(); pEntity; pEntity = pEntity->GetNextKey() )
 	{
-		const char *szName = pKeys->GetName();
-		if ( !Q_stricmp( szName, "solid" ) )
+		if ( V_strcmp( pEntity->GetName(), "entity" ) )
 		{
-			m_pExportWorldKeys->AddSubKey( pKeys->MakeCopy() );
+			continue;
+		}
+
+		if ( !ProcessEntity( pEntity ) )
+		{
+			return false;
 		}
 	}
-	pLevelContainerKeys->deleteThis();
 
-	m_pTemplateKeys->deleteThis();
-	m_pTemplateKeys = NULL;
+	FOR_EACH_VEC( m_RemoveEntities, i )
+	{
+		m_pExportKeys->RemoveSubKey( m_RemoveEntities[i] );
+		m_RemoveEntities[i]->deleteThis();
+	}
+
+	m_RemoveEntities.Purge();
 
 	return true;
+}
+
+static VMFExporter *m_pExporterLoadingGameData = NULL;
+static void GameDataErrorHelper( int level, const char *format, ... )
+{
+	Assert( m_pExporterLoadingGameData );
+	if ( !m_pExporterLoadingGameData )
+	{
+		return;
+	}
+
+	char msg[4096];
+	va_list marker;
+	va_start( marker, format );
+	V_vsnprintf( msg, sizeof( msg ), format, marker );
+	va_end( marker );
+
+	m_pExporterLoadingGameData->m_ExportErrors.AddToTail( TileGenCopyString( msg ) );
+}
+
+bool VMFExporter::LoadGameInfo()
+{
+	m_szInstancePath[0] = '\0';
+
+	KeyValues::AutoDelete pGameInfo( "GameInfo" );
+	if ( !pGameInfo->LoadFromFile( g_pFullFileSystem, "GameInfo.txt", "MOD" ) )
+	{
+		ExportError( "Could not locate GameInfo.txt for Instance Remapping\n" );
+		return false;
+	}
+
+	const char *szInstancePath = pGameInfo->GetString( "InstancePath", NULL );
+	if ( szInstancePath )
+	{
+		V_strncpy( m_szInstancePath, szInstancePath, sizeof( m_szInstancePath ) );
+		V_strlower( m_szInstancePath );
+		V_FixSlashes( m_szInstancePath );
+	}
+
+	const char *szGameDataFile = pGameInfo->GetString( "GameData", NULL );
+	if ( !szGameDataFile )
+	{
+		ExportError( "Could not locate 'GameData' key in GameInfo.txt\n" );
+		return false;
+	}
+
+	CUtlVector<CUtlString> GameBinPath;
+	GetSearchPath( GameBinPath, "EXECUTABLE_PATH" );
+
+	// The filesystem interface can't make a relative path absolute without truncating the result, so we're doing it manually.
+	Assert( GameBinPath.Count() == 1 );
+	CUtlString szFGDPath = CUtlString::PathJoin( GameBinPath[0], szGameDataFile );
+	if ( !g_pFullFileSystem->FileExists( szFGDPath ) )
+	{
+		ExportError( "Could not locate GameData file %s\n", szGameDataFile );
+		return false;
+	}
+
+	GDSetMessageFunc( &GameDataErrorHelper );
+	m_pExporterLoadingGameData = this;
+	bool bSuccess = m_GD.Load( szFGDPath );
+	m_pExporterLoadingGameData = NULL;
+	if ( !bSuccess )
+	{
+		ExportError( "Failed to load game data from %s\n", szFGDPath.Get() );
+		return false;
+	}
+
+	return true;
+}
+
+bool VMFExporter::ProcessEntity( KeyValues *pEntity )
+{
+	const char *szClassName = pEntity->GetString( "classname" );
+	if ( !V_stricmp( szClassName, "func_instance" ) )
+	{
+		return ProcessInstance( pEntity );
+	}
+
+	if ( !V_stricmp( szClassName, "rd_tilegen_instance" ) || !V_stricmp( szClassName, "func_instance_random" ) )
+	{
+		return ProcessRandomInstance( pEntity );
+	}
+
+	return true;
+}
+
+struct RandomInstanceChoice_t
+{
+	char szInstanceFile[MAX_PATH];
+	float flMaxRandom;
+};
+
+bool VMFExporter::ProcessRandomInstance( KeyValues *pEntity )
+{
+	CUtlVector<RandomInstanceChoice_t> choices;
+	float flMaxRandom = 0.0f;
+
+	for ( int i = 1; i <= 9; i++ )
+	{
+		char szKey[16];
+		V_snprintf( szKey, sizeof( szKey ), "weight%d", i );
+
+		float flWeight = pEntity->GetFloat( szKey );
+		if ( flWeight <= 0 )
+		{
+			continue;
+		}
+
+		V_snprintf( szKey, sizeof( szKey ), "glob%d", i );
+
+		const char *szGlob = pEntity->GetString( szKey );
+		if ( szGlob[0] == '\0' )
+		{
+			choices.AddToTail( RandomInstanceChoice_t
+				{
+					{'\0'},
+					( flMaxRandom += flWeight )
+				} );
+			continue;
+		}
+
+		char szSearchPath[MAX_PATH];
+		V_snprintf( szSearchPath, sizeof( szSearchPath ), "%s%s", m_szInstancePath, szGlob );
+		V_SetExtension( szSearchPath, ".vmf", sizeof( szSearchPath ) );
+		V_FixSlashes( szSearchPath );
+
+		CUtlStringList names;
+		FileFindHandle_t ffh;
+		for ( const char *szName = g_pFullFileSystem->FindFirstEx( szSearchPath, "GAME", &ffh ); szName; szName = g_pFullFileSystem->FindNext( ffh ) )
+		{
+			names.CopyAndAddToTail( szName );
+		}
+
+		g_pFullFileSystem->FindClose( ffh );
+
+		if ( !names.Count() )
+		{
+			Warning( "[TileGen] no results for instance pattern '%s'\n", szSearchPath );
+			continue;
+		}
+
+		V_StripFilename( szSearchPath );
+
+		flWeight /= names.Count();
+
+		FOR_EACH_VEC( names, j )
+		{
+			RandomInstanceChoice_t choice{};
+			V_snprintf( choice.szInstanceFile, sizeof( choice.szInstanceFile ), "%s%s", szSearchPath, names[j] );
+			choice.flMaxRandom = ( flMaxRandom += flWeight );
+			choices.AddToTail( choice );
+		}
+	}
+
+	if ( flMaxRandom <= 0 || !choices.Count() )
+	{
+		return MergeInstance( pEntity, "" );
+	}
+
+	CUniformRandomStream random;
+	random.SetSeed( pEntity->GetInt( "InstanceSeed" ) + pEntity->GetInt( "id" ) );
+	float flChoice = random.RandomFloat( 0.0f, flMaxRandom );
+
+	FOR_EACH_VEC( choices, i )
+	{
+		if ( choices[i].flMaxRandom <= flChoice )
+		{
+			continue;
+		}
+
+		return MergeInstance( pEntity, choices[i].szInstanceFile );
+	}
+
+	return MergeInstance( pEntity, choices[choices.Count() - 1].szInstanceFile );
+}
+
+bool VMFExporter::ProcessInstance( KeyValues *pEntity )
+{
+	const char *szFileName = pEntity->GetString( "file" );
+	if ( szFileName[0] == '\0' )
+	{
+		return MergeInstance( pEntity, "" );
+	}
+
+	char szFixedFileName[MAX_PATH];
+	V_strncpy( szFixedFileName, szFileName, sizeof( szFixedFileName ) );
+	V_SetExtension( szFixedFileName, ".vmf", sizeof( szFixedFileName ) );
+	V_FixSlashes( szFixedFileName );
+
+	if ( g_pFullFileSystem->FileExists( szFixedFileName, "GAME" ) )
+	{
+		return MergeInstance( pEntity, szFixedFileName );
+	}
+
+	char szInstanceFileName[MAX_PATH];
+	V_snprintf( szInstanceFileName, sizeof( szInstanceFileName ), "%s%s", m_szInstancePath, szFixedFileName );
+	if ( g_pFullFileSystem->FileExists( szInstanceFileName, "GAME" ) )
+	{
+		return MergeInstance( pEntity, szInstanceFileName );
+	}
+
+	ExportError( "Cannot find instance '%s'\n", szFixedFileName );
+	return false;
+}
+
+bool VMFExporter::MergeInstance( KeyValues *pEntity, const char *szFile )
+{
+	m_RemoveEntities.AddToTail( pEntity );
+
+	if ( szFile[0] == '\0' )
+	{
+		// no filename; just delete instance entity
+		return true;
+	}
+
+	m_iInstanceCount++;
+	m_pInstanceEntity = pEntity;
+
+	int iRoomID = pEntity->GetInt( "PlacedRoomIndex", -1 );
+	if ( iRoomID >= 0 )
+	{
+		Assert( iRoomID < m_pMapLayout->m_PlacedRooms.Count() );
+		m_iCurrentRoom = iRoomID;
+		m_pRoom = m_pMapLayout->m_PlacedRooms[iRoomID];
+	}
+
+	m_vecInstanceOrigin = vec3_origin;
+	( void )sscanf( pEntity->GetString( "origin" ), "%f %f %f", &m_vecInstanceOrigin.x, &m_vecInstanceOrigin.y, &m_vecInstanceOrigin.z );
+	m_angInstanceAngles = vec3_angle;
+	( void )sscanf( pEntity->GetString( "angles" ), "%f %f %f", &m_angInstanceAngles.x, &m_angInstanceAngles.y, &m_angInstanceAngles.z );
+
+	AngleMatrix( m_angInstanceAngles, m_vecInstanceOrigin, m_matInstanceTransform );
+
+	if ( const char *szTargetName = pEntity->GetString( "targetname", NULL ) )
+	{
+		V_strncpy( m_szFixupName, szTargetName, sizeof( m_szFixupName ) );
+	}
+	else if ( const char *szName = pEntity->GetString( "name", NULL ) )
+	{
+		V_strncpy( m_szFixupName, szName, sizeof( m_szFixupName ) );
+	}
+	else
+	{
+		V_snprintf( m_szFixupName, sizeof( m_szFixupName ), "InstanceAuto%d", m_iInstanceCount );
+	}
+
+	m_iFixupStyle = ( GameData::TNameFixup )pEntity->GetInt( "fixup_style" );
+
+	m_iMaxEntity = 0;
+	m_iMaxSolid = 0;
+	m_iMaxSide = 0;
+	m_iMaxNode = 0;
+
+	KeyValues::AutoDelete pInstanceMap( "" );
+	if ( !pInstanceMap->LoadFromFile( g_pFullFileSystem, szFile, "GAME" ) )
+	{
+		ExportError( "Failed to load instance '%s'\n", szFile );
+		return false;
+	}
+
+	for ( KeyValues *pKey = pInstanceMap; pKey; pKey = pKey->GetNextKey() )
+	{
+		const char *szName = pKey->GetName();
+		if ( !V_strcmp( szName, "versioninfo" ) || !V_strcmp( szName, "visgroups" ) || !V_strcmp( szName, "viewsettings" ) || !V_strcmp( szName, "cameras" ) || !V_strcmp( szName, "cordons" ) )
+		{
+			// don't need these
+			continue;
+		}
+
+		KeyValues *pEditor = pKey->FindKey( "editor" );
+		if ( pEditor )
+		{
+			pKey->RemoveSubKey( pEditor );
+			pEditor->deleteThis();
+		}
+
+		if ( !V_strcmp( szName, "world" ) )
+		{
+			MergeWorld( pKey );
+			continue;
+		}
+
+		Assert( !V_strcmp( szName, "entity" ) );
+		if ( !V_strcmp( szName, "entity" ) )
+		{
+			MergeEntity( pKey );
+			continue;
+		}
+
+		KeyValuesDumpAsDevMsg( pKey );
+		Warning( "Unhandled top-level vmf data type: %s\n", szName );
+	}
+
+	m_iEntityCount += m_iMaxEntity;
+	m_iSolidCount += m_iMaxSolid;
+	m_iSideCount += m_iMaxSide;
+	m_iNodeCount += m_iMaxNode;
+
+	return true;
+}
+
+void VMFExporter::MergeWorld( KeyValues *pWorld )
+{
+	MergeSolids( pWorld, true );
+}
+
+void VMFExporter::MergeEntity( KeyValues *pEntity )
+{
+	int id = pEntity->GetInt( "id" );
+	m_iMaxEntity = MAX( m_iMaxEntity, id );
+	pEntity->SetInt( "id", id + m_iEntityCount );
+
+	MergeSolids( pEntity, false );
+
+	const char *szClassName = pEntity->GetString( "classname" );
+
+	FOR_EACH_VALUE( pEntity, pValue )
+	{
+		ReplaceVariables( pValue );
+	}
+
+	GameData::TNameFixup iFixup = m_iFixupStyle;
+	if ( !V_strcmp( szClassName, "func_brush" ) && !V_strncmp( pEntity->GetString( "targetname" ), "structure_", strlen( "structure_" ) ) )
+	{
+		// Special case: don't rename func_brush that will be moved to worldspawn by vbsp
+		iFixup = GameData::NAME_FIXUP_NONE;
+	}
+
+	char temp[2048];
+	GDclass *pEntClass = m_GD.BeginInstanceRemap( szClassName, m_szFixupName, m_vecInstanceOrigin, m_angInstanceAngles );
+	if ( pEntClass )
+	{
+		for ( int i = 0; i < pEntClass->GetVariableCount(); i++ )
+		{
+			GDinputvariable *pEntVar = pEntClass->GetVariableAt( i );
+			const char *pValue = pEntity->GetString( pEntVar->GetName() );
+			if ( pValue[0] == '\0' )
+			{
+				continue;
+			}
+
+			if ( m_GD.RemapKeyValue( pEntVar->GetName(), pValue, temp, iFixup ) )
+			{
+				Assert( pEntVar->GetType() != ivSide && pEntVar->GetType() != ivSideList && pEntVar->GetType() != ivNodeID && pEntVar->GetType() != ivNodeDest );
+
+				pEntity->SetString( pEntVar->GetName(), temp );
+			}
+			else if ( pEntVar->GetType() == ivSide || pEntVar->GetType() == ivSideList )
+			{
+				CSplitString sides( pValue, " " );
+				temp[0] = '\0';
+				FOR_EACH_VEC( sides, i )
+				{
+					int id = atoi( sides[i] );
+					m_iMaxSide = MAX( m_iMaxSide, id );
+					V_snprintf( temp, sizeof( temp ), "%s %d", temp, id + m_iSideCount );
+				}
+
+				pEntity->SetString( pEntVar->GetName(), temp + 1 );
+			}
+			else if ( pEntVar->GetType() == ivNodeID || pEntVar->GetType() == ivNodeDest )
+			{
+				int id = pEntity->GetInt( pEntVar->GetName() );
+				m_iMaxNode = MAX( m_iMaxNode, id );
+				pEntity->SetInt( pEntVar->GetName(), id + m_iNodeCount );
+			}
+		}
+	}
+	else
+	{
+		Warning( "No entity definition found for %s\n", szClassName );
+	}
+
+
+	if ( KeyValues *pConnections = pEntity->FindKey( "connections" ) )
+	{
+		FOR_EACH_VALUE( pConnections, pConnection )
+		{
+			ReplaceVariables( pConnection );
+
+			char szOrigValue[4096];
+			V_strncpy( szOrigValue, pConnection->GetString(), sizeof( szOrigValue ) );
+
+			char *pComma = strchr( szOrigValue, ',' );
+			if ( pComma )
+			{
+				*pComma = '\0';
+				pComma++;
+			}
+
+			if ( m_GD.RemapNameField( szOrigValue, temp, iFixup ) )
+			{
+				if ( pComma )
+				{
+					V_snprintf( temp, sizeof( temp ), "%s,%s", temp, pComma );
+				}
+
+				pConnection->SetStringValue( temp );
+			}
+		}
+	}
+
+	// Propagate room information through instances.
+	if ( !V_strcmp( szClassName, "func_instance" ) || !V_strcmp( szClassName, "rd_tilegen_instance" ) || !V_strcmp( szClassName, "func_instance_random" ) )
+	{
+		if ( m_pRoom )
+		{
+			pEntity->SetInt( "PlacedRoomIndex", m_pRoom->m_nPlacementIndex );
+			pEntity->SetInt( "InstanceSeed", m_pRoom->m_nInstanceSeed );
+		}
+	}
+
+	m_pExportKeys->AddSubKey( pEntity->MakeCopy() );
+}
+
+void VMFExporter::ReplaceVariables( KeyValues *pValue )
+{
+	char szValue[MAX_KEYVALUE_LEN], szNewValue[MAX_KEYVALUE_LEN];
+	bool bOverwritten = false;
+
+	V_strncpy( szNewValue, pValue->GetString(), sizeof( szNewValue ) );
+	FOR_EACH_VALUE( m_pInstanceEntity, pProperty )
+	{
+		if ( V_strnicmp( pProperty->GetName(), "replace", strlen( "replace" ) ) )
+		{
+			continue;
+		}
+
+		char szInstanceVariable[MAX_KEYVALUE_LEN];
+
+		V_strncpy( szInstanceVariable, pProperty->GetString(), sizeof( szInstanceVariable ) );
+
+		char *pReplaceValue = strchr( szInstanceVariable, ' ' );
+		if ( !pReplaceValue )
+		{
+			continue;
+		}
+
+		*pReplaceValue = '\0';
+		pReplaceValue++;
+
+		V_strncpy( szValue, szNewValue, sizeof( szValue ) );
+		if ( !V_StrSubst( szValue, szInstanceVariable, pReplaceValue, szNewValue, sizeof( szNewValue ), false ) )
+		{
+			bOverwritten = true;
+		}
+	}
+
+	if ( !bOverwritten && V_strcmp( pValue->GetString(), szNewValue ) )
+	{
+		pValue->SetStringValue( szNewValue );
+	}
+}
+
+void VMFExporter::MergeSolids( KeyValues *pContainer, bool bAddToWorld )
+{
+	char temp[2048];
+
+	FOR_EACH_TRUE_SUBKEY( pContainer, pSolid )
+	{
+		if ( V_strcmp( pSolid->GetName(), "solid" ) )
+		{
+			continue;
+		}
+
+		int id = pSolid->GetInt( "id" );
+		m_iMaxSolid = MAX( m_iMaxSolid, id );
+		pSolid->SetInt( "id", id + m_iSolidCount );
+
+		if ( KeyValues *pEditor = pSolid->FindKey( "editor" ) )
+		{
+			pSolid->RemoveSubKey( pEditor );
+			pEditor->deleteThis();
+		}
+
+		FOR_EACH_TRUE_SUBKEY( pSolid, pSide )
+		{
+			if ( V_strcmp( pSide->GetName(), "side" ) )
+			{
+				continue;
+			}
+
+			id = pSide->GetInt( "id" );
+			m_iMaxSide = MAX( m_iMaxSide, id );
+			pSide->SetInt( "id", id + m_iSideCount );
+
+			// adjust plane
+			Vector a1, b1, c1;
+			( void )sscanf( pSide->GetString( "plane" ), "(%f %f %f) (%f %f %f) (%f %f %f)", &a1.x, &a1.y, &a1.z, &b1.x, &b1.y, &b1.z, &c1.x, &c1.y, &c1.z );
+
+			Vector a2, b2, c2;
+			VectorTransform( a1, m_matInstanceTransform, a2 );
+			VectorTransform( b1, m_matInstanceTransform, b2 );
+			VectorTransform( c1, m_matInstanceTransform, c2 );
+
+			V_snprintf( temp, sizeof( temp ), "(%g %g %g) (%g %g %g) (%g %g %g)", a2.x, a2.y, a2.z, b2.x, b2.y, b2.z, c2.x, c2.y, c2.z );
+			pSide->SetString( "plane", temp );
+
+			// adjust UV
+			Vector u1, v1;
+			float shiftU, shiftV, texelSizeU, texelSizeV;
+			( void )sscanf( pSide->GetString( "uaxis" ), "[%f %f %f %f] %f", &u1.x, &u1.y, &u1.z, &shiftU, &texelSizeU );
+			( void )sscanf( pSide->GetString( "vaxis" ), "[%f %f %f %f] %f", &v1.x, &v1.y, &v1.z, &shiftV, &texelSizeV );
+
+			Vector u2, v2;
+			VectorRotate( u1, m_matInstanceTransform, u2 );
+			VectorRotate( v1, m_matInstanceTransform, v2 );
+			shiftU -= m_vecInstanceOrigin.Dot( u1 ) / texelSizeU;
+			shiftV -= m_vecInstanceOrigin.Dot( v1 ) / texelSizeV;
+
+			V_snprintf( temp, sizeof( temp ), "[%g %g %g %g] %g", u2.x, u2.y, u2.z, shiftU, texelSizeU );
+			pSide->SetString( "uaxis", temp );
+			V_snprintf( temp, sizeof( temp ), "[%g %g %g %g] %g", v2.x, v2.y, v2.z, shiftV, texelSizeV );
+			pSide->SetString( "vaxis", temp );
+
+			if ( KeyValues *pDispInfo = pSide->FindKey( "dispinfo" ) )
+			{
+				// adjust displacement start position
+				Vector vecStartPosition;
+				( void )sscanf( "startposition", "[%f %f %f]", &vecStartPosition.x, &vecStartPosition.y, &vecStartPosition.z );
+
+				Vector vecTransformedStartPosition;
+				VectorTransform( vecStartPosition, m_matInstanceTransform, vecTransformedStartPosition );
+
+				V_snprintf( temp, sizeof( temp ), "[%g %g %g]", vecTransformedStartPosition.x, vecTransformedStartPosition.y, vecTransformedStartPosition.z );
+				pDispInfo->SetString( "startposition", temp );
+			}
+		}
+
+		if ( bAddToWorld )
+		{
+			m_pExportWorldKeys->AddSubKey( pSolid->MakeCopy() );
+		}
+	}
 }

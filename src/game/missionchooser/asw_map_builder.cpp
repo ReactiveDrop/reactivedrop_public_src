@@ -6,11 +6,6 @@
 #include "threadtools.h"
 #include "KeyValues.h"
 #include "asw_mission_chooser.h"
-#ifdef SUPPORT_VBSP_2
-#include "vbsp2lib/serializesimplebspfile.h"
-#include "vbsp2lib/simplemapfile.h"
-#include "vbsp2lib/simplebspfile.h"
-#endif
 #include "vstdlib/random.h"
 #include "tilegen_core.h"
 #include "MapLayout.h"
@@ -31,10 +26,7 @@
 
 // @TODO: Nuke all of the switches for VBSP1 vs VBSP2 and old mission system vs new mission system.  Move level generation to the background thread.
 
-static ConVar asw_vbsp2( "asw_vbsp2", "0", FCVAR_REPLICATED ); // 0 = Use default map builder (VBSP.EXE), 1 = Use new, experimental level builder (VBSP2LIB.LIB)
 static ConVar tilegen_retry_count( "tilegen_retry_count", "20", FCVAR_CHEAT, "The number of level generation retries to attempt after which tilegen will give up." );
-ConVar asw_regular_floor_texture( "asw_regular_floor_texture", "REGULAR_FLOOR", FCVAR_NONE, "Regular floor texture to replace" );
-ConVar asw_alien_floor_texture( "asw_alien_floor_texture", "ALIEN_FLOOR", FCVAR_NONE, "Alien floor texture used for replacement" );
 
 DEFINE_LOGGING_CHANNEL_NO_TAGS( LOG_TilegenGeneral, "TilegenGeneral" );
 
@@ -60,138 +52,6 @@ static const char *g_ProgressLabels[] =
 	"Done!"
 };
 
-enum MapBuilderCommand_t
-{
-	MBC_PROCESS_MAP = 0,
-	MBC_SHUTDOWN = 1
-};
-
-#ifdef SUPPORT_VBSP_2
-// Callback passed in to CSimpleMapFile::ResolveInstances to perform fix-up on instanced maps before the BSP process.
-static void FixupInstance( void *pContext, CSimpleMapFile *pInstanceMapFile, MapEntityKeyValuePair_t *pFuncInstanceKeyValuePairs, int nNumKeyValuePairs );
-#endif
-
-//-----------------------------------------------------------------------------
-// Worker thread implementation to handle building maps.
-//-----------------------------------------------------------------------------
-class CMapBuilderWorkerThread : public CWorkerThread
-{
-public:
-	CMapBuilderWorkerThread( CASW_Map_Builder *pMapBuilder ) :
-	m_pMapBuilder( pMapBuilder )
-	{
-	}
-
-	virtual int Run()
-	{
-		while ( true )
-		{
-			WaitForCall();
-
-			if ( GetCallParam() == MBC_SHUTDOWN )
-			{
-				// exit cleanly
-				return 0;
-			}
-			else
-			{
-#ifdef SUPPORT_VBSP_2
-				char filename[MAX_PATH];
-				// Safe to access m_szVBSP2MapName because it will not be changed by the main thread while this is happening.
-				Q_snprintf( filename, sizeof( filename ), "maps\\%s", m_pMapBuilder->m_szVBSP2MapName );
-				CSimpleMapFile *pSimpleMapFile;
-				m_pMapBuilder->m_nVBSP2Progress = g_ProgressAmounts[1];
-				CSimpleMapFile::LoadFromFile( g_pFullFileSystem, filename, &pSimpleMapFile );
-				m_pMapBuilder->m_nVBSP2Progress = g_ProgressAmounts[2];
-				pSimpleMapFile->ResolveInstances( CSimpleMapFile::CONVERT_STRUCTURAL_TO_DETAIL, FixupInstance, m_pMapBuilder );
-				m_pMapBuilder->m_nVBSP2Progress = g_ProgressAmounts[3];
-
-				// mess with the pSimpleMapFile here
-				/*
-				CMapLayout *pLayout = m_pMapBuilder->GetCurrentlyBuildingMapLayout();
-				
-				// find the alien floor texture
-				int iBrushes = pSimpleMapFile->GetBrushCount();
-				const MapBrush_t *pBrushes = pSimpleMapFile->GetBrushes();
-				const MapBrushSide_t *pBrushSides = pSimpleMapFile->GetBrushSides();
-				MapTextureInfo_t *pTextureInfos = pSimpleMapFile->GetTextureInfos();
-				MapTextureData_t *pTextureDatas = pSimpleMapFile->GetTextureData();
-				const MapTextureInfo_t *pAlienFloorTextureInfo = NULL;			// a texture info that's using the alien floor material
-				for ( int i = 0; i < iBrushes; i++ )
-				{
-					for ( int side = pBrushes[i].m_nFirstSideIndex; side < pBrushes[i].m_nFirstSideIndex + pBrushes[i].m_nNumSides; side++ )
-					{
-						const MapTextureInfo_t *pTextureInfo = &pTextureInfos[ pBrushSides[ side ].m_nTextureInfoIndex ];
-						const MapTextureData_t *pTextureData = &pTextureDatas[ pTextureInfo->m_nTextureDataIndex ];
-						if ( !Q_stricmp( pTextureData->m_MaterialName, asw_alien_floor_texture.GetString() ) )
-						{
-							pAlienFloorTextureInfo = pTextureInfo;
-							break;
-						}
-					}
-				}
-
-				if ( pAlienFloorTextureInfo )
-				{
-					// now find all sides using the regular floor texture
-					for ( int i = 0; i < iBrushes; i++ )
-					{
-						// is this brush in an encounter room? - just check the center for now
-						Vector vecCenter = ( pBrushes[i].m_vMinBounds + pBrushes[i].m_vMaxBounds ) * 0.5f;
-						CRoom *pRoom = pLayout->GetRoom( vecCenter );
-						if ( !pRoom || !pRoom->HasAlienEncounter() )
-							continue;
-
-						for ( int side = pBrushes[i].m_nFirstSideIndex; side < pBrushes[i].m_nFirstSideIndex + pBrushes[i].m_nNumSides; side++ )
-						{
-							MapTextureInfo_t *pTextureInfo = &pTextureInfos[ pBrushSides[ side ].m_nTextureInfoIndex ];
-							MapTextureData_t *pTextureData = &pTextureDatas[ pTextureInfo->m_nTextureDataIndex ];
-							if ( !Q_stricmp( pTextureData->m_MaterialName, asw_regular_floor_texture.GetString() ) )
-							{
-								// switch regular floor over to using the new texture index
-								pTextureInfo->m_nTextureDataIndex = pAlienFloorTextureInfo->m_nTextureDataIndex;
-							}
-						}
-					}
-				}
-				else
-				{
-					Warning( "Couldn't find alien floor texture in map\n" );
-				}
-				*/
-
-				// re-resolve if necessary
-				//pSimpleMapFile->ResolveInstances( CSimpleMapFile::CONVERT_STRUCTURAL_TO_DETAIL, NULL, NULL );
-
-				char bspFilename[MAX_PATH];
-				Q_strncpy( bspFilename, filename, MAX_PATH );
-				Q_SetExtension( bspFilename, ".bsp", MAX_PATH );
-				CUtlStreamBuffer outputBSPFile( bspFilename, NULL );
-				CSimpleBSPFile *pBSPFile = new CSimpleBSPFile();
-				pBSPFile->CreateFromMapFile( pSimpleMapFile );
-				m_pMapBuilder->m_nVBSP2Progress = g_ProgressAmounts[4];
-				SaveToFile( &outputBSPFile, pBSPFile );
-				outputBSPFile.Close();
-				delete pBSPFile;
-				delete pSimpleMapFile;
-
-				// Commit all reads/writes before ending task
-				ThreadMemoryBarrier();
-				m_pMapBuilder->m_nVBSP2Progress = g_ProgressAmounts[5];
-
-				Reply( 0 );
-#else
-				return 0;
-#endif
-			}
-		}
-		return 0;
-	}
-
-private:
-	CASW_Map_Builder *m_pMapBuilder;
-};
-
 CASW_Map_Builder::CASW_Map_Builder() :
 m_flStartProcessingTime( 0.0f ),
 m_iBuildStage( STAGE_NONE ),
@@ -202,21 +62,17 @@ m_pBuildingMapLayout( NULL ),
 m_pLayoutSystem( NULL ),
 m_nLevelGenerationRetryCount( 0 ),
 m_pMissionSettings( NULL ),
-m_pMissionDefinition( NULL ),
-m_pWorkerThread( NULL )
+m_pMissionDefinition( NULL )
 {
 	m_szLayoutName[0] = '\0';
 	m_iCurrentBuildSearch = 0;
 	m_bRunningProcess = false;
 	m_bFinishedExecution = false;	
-	
-	Q_snprintf( m_szStatusMessage, sizeof( m_szStatusMessage ), "Generating map..." );
+
+	V_snprintf( m_szStatusMessage, sizeof( m_szStatusMessage ), "Generating map..." );
 
 	m_pMapBuilderOptions = new KeyValues( "map_builder_options" );
 	m_pMapBuilderOptions->LoadFromFile( g_pFullFileSystem, "resource/map_builder_options.txt", "GAME" );
-
-	m_pWorkerThread = new CMapBuilderWorkerThread( this );
-	m_pWorkerThread->Start();
 }
 
 CASW_Map_Builder::~CASW_Map_Builder()
@@ -226,10 +82,6 @@ CASW_Map_Builder::~CASW_Map_Builder()
 	delete m_pGeneratedMapLayout;
 	delete m_pBuildingMapLayout;
 	delete m_pLayoutSystem;
-
-	// Tell the worker thread to shutdown and block until finished
-	m_pWorkerThread->CallWorker( MBC_SHUTDOWN );
-	delete m_pWorkerThread;
 }
 
 void CASW_Map_Builder::Update( float flEngineTime )
@@ -244,10 +96,6 @@ void CASW_Map_Builder::Update( float flEngineTime )
 		{
 			BuildMap();
 		}
-	}
-	else if ( m_iBuildStage == STAGE_VBSP2 )
-	{
-		UpdateVBSP2Progress();
 	}
 	else if ( m_iBuildStage == STAGE_GENERATE )
 	{
@@ -623,123 +471,18 @@ void CASW_Map_Builder::BuildMap()
 		delete m_pBuildingMapLayout;
 		m_pBuildingMapLayout = NULL;
 	}
-	
-	if ( asw_vbsp2.GetInt() )
-	{
-		m_iBuildStage = STAGE_VBSP2;
-		m_nVBSP2Progress = 0;
-		Q_strncpy( m_szVBSP2MapName, vmfFilename, MAX_PATH );
-		// Guarantee all reads/writes committed before kicking off the thread.  Probably unnecessary in practice due to lag between operations, but whatever...
-		ThreadMemoryBarrier();
 
-		// Call with a 0 ms timeout to return immediately
-		m_pWorkerThread->CallWorker( MBC_PROCESS_MAP, 0 );
-	}
-	else
-	{
-		// Building map layout is ignored in VBSP1 codepath
-		delete m_pBuildingMapLayout;
-		m_pBuildingMapLayout = NULL;
+	// Building map layout is ignored in VBSP1 codepath
+	delete m_pBuildingMapLayout;
+	m_pBuildingMapLayout = NULL;
 
-		m_iBuildStage = STAGE_VBSP;
+	m_iBuildStage = STAGE_VBSP;
 
-		char buffer[512];
-		Q_snprintf( buffer, sizeof(buffer), "-game ..\\ %s %s", m_pMapBuilderOptions->GetString( "vbsp", "" ), vmfFilename );
-		Execute( "bin/vbsp.exe", buffer );
+	char buffer[512];
+	Q_snprintf( buffer, sizeof(buffer), "-game ..\\ %s %s", m_pMapBuilderOptions->GetString( "vbsp", "" ), vmfFilename );
+	Execute( "bin/vbsp.exe", buffer );
 
-		m_iCurrentBuildSearch = 0;
-		m_iOutputBufferPos = 0;
-		Q_memset( &m_szOutputBuffer, 0, sizeof( m_szOutputBuffer ) );
-	}
+	m_iCurrentBuildSearch = 0;
+	m_iOutputBufferPos = 0;
+	Q_memset( &m_szOutputBuffer, 0, sizeof( m_szOutputBuffer ) );
 }
-
-void CASW_Map_Builder::UpdateVBSP2Progress()
-{
-	// Make sure any reads/writes are committed before reading progress from the background thread.
-	ThreadMemoryBarrier();
-	
-	int nProgress = m_nVBSP2Progress;
-	m_flProgress = ( nProgress == 100 ) ? 1.0f : (float) nProgress / 100.0f;
-	
-	int nNumProgressLevels = _countof( g_ProgressAmounts );
-	for ( int i = nNumProgressLevels - 1; i >= 0; -- i )
-	{
-		if ( nProgress >= g_ProgressAmounts[i] )
-		{
-			Q_strncpy( m_szStatusMessage, g_ProgressLabels[i], _countof( m_szStatusMessage ) );
-			break;
-		}
-	}
-	if ( nProgress == 100 )
-	{
-		delete m_pBuildingMapLayout;
-		m_pBuildingMapLayout = NULL;
-		m_iBuildStage = STAGE_NONE;
-	}
-}
-
-
-static CUniformRandomStream s_Random;
-
-#ifdef SUPPORT_VBSP_2
-static void AddFuncInstance( CSimpleMapFile *pInstanceMapFile, CInstanceSpawn *pInstanceSpawn, const Vector &vPosition )
-{
-	CUtlVector< MapEntityKeyValuePair_t > replacePairs;
-	replacePairs.AddMultipleToTail( pInstanceSpawn->GetAdditionalKeyValueCount() );
-	for ( int i = 0; i < pInstanceSpawn->GetAdditionalKeyValueCount(); ++ i )
-	{
-		replacePairs[i].m_pKey = pInstanceSpawn->GetAdditionalKeyValues()[i].m_Key;
-		replacePairs[i].m_pValue = pInstanceSpawn->GetAdditionalKeyValues()[i].m_Value;
-	}
-	pInstanceMapFile->AddFuncInstance( pInstanceSpawn->GetInstanceFilename(), QAngle( 0, 0, 0 ), vPosition, replacePairs.Base(), replacePairs.Count() );
-}
-
-// Sup dawg, I herd u like instances in yo instances...
-static void FixupInstance( void *pContext, CSimpleMapFile *pInstanceMapFile, MapEntityKeyValuePair_t *pFuncInstanceKeyValuePairs, int nNumKeyValuePairs )
-{
-	CASW_Map_Builder *pMapBuilder = ( CASW_Map_Builder * )pContext;
-	CMapLayout *pMapLayout = pMapBuilder->GetCurrentlyBuildingMapLayout();
-
-	int nPlacedRoomIndex = 0;
-	MapEntityKeyValuePair_t *pPair = FindPair( "PlacedRoomIndex", pFuncInstanceKeyValuePairs, nNumKeyValuePairs );
-	if ( pPair != NULL )
-	{
-		nPlacedRoomIndex = atoi( pPair->m_pValue );
-	}
-	else
-	{
-		// Only fix up placed room instances
-		return;
-	}
-
-	CUtlVector< Vector > infoNodeLocations;
-
-	// Populate the info node list only once
-	// Technically we don't need to do this if we don't acutally have instances to spawn in this instance
-	int nIndex = 0;
-	while ( ( nIndex = pInstanceMapFile->FindEntity( "info_node", NULL, NULL, nIndex ) ) != -1 )
-	{
-		const MapEntity_t *pEntity = &pInstanceMapFile->GetEntities()[nIndex];
-		infoNodeLocations.AddToTail( pEntity->m_vOrigin );
-		++ nIndex;
-	}
-	
-	if ( infoNodeLocations.Count() == 0 )
-	{
-		// No places to spawn instances in this instance
-		return;
-	}
-
-	for ( int i = 0; i < pMapLayout->m_InstanceSpawns.Count(); ++ i )
-	{
-		CInstanceSpawn *pInstanceSpawn = &pMapLayout->m_InstanceSpawns[i];
-		if ( pInstanceSpawn->GetPlacedRoomIndex() == nPlacedRoomIndex )
-		{
-			if ( pInstanceSpawn->GetInstanceSpawningMethod() == ISM_ADD_AT_RANDOM_NODE )
-			{
-				AddFuncInstance( pInstanceMapFile, pInstanceSpawn, infoNodeLocations[pInstanceSpawn->GetRandomSeed() % infoNodeLocations.Count()] );
-			}
-		}
-	}
-}
-#endif
