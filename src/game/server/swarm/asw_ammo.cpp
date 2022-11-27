@@ -348,7 +348,7 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 40, "ASW_F", this ) )
+	if ( ASW_GiveAmmo( pNPC, 80, "ASW_F", this ) )
 	{
 		UTIL_Remove( this );
 	}
