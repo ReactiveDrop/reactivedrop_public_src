@@ -631,7 +631,7 @@
 			"Caption" "#rd_so_requirement_kill_this_alien"
 			"StatName" "lifetime_alien_kills.npc_antlionguard_normal"
 			"StatName" "lifetime_alien_kills.npc_antlionguard_cavern"
-			"MinValue" "5"
+			"MinValue" "1"
 		}
 		"GlobalStat" {
 			"StatName" "lifetime_alien_kills.asw_antlionguard_normal"
