@@ -20,19 +20,19 @@ public:
 	CASW_Sentry_Top();
 	virtual ~CASW_Sentry_Top();
 	virtual void Spawn( void );
-	void	AnimThink( void );
-	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );
+	void AnimThink( void );
+	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	int UpdateTransmitState();
-	void SetSentryBase(CASW_Sentry_Base* pSentryBase);
+	void SetSentryBase( CASW_Sentry_Base *pSentryBase );
 	void SetDeployYaw( float yaw );
 	float GetDeployYaw();
-	void SetCurrentYaw(float yaw) { m_fCurrentYaw = anglemod(yaw); }
+	void SetCurrentYaw( float yaw ) { m_fCurrentYaw = anglemod( yaw ); }
 	virtual int GetSentryDamage();
 	virtual void SetTopModel();
 	void PlayTurnSound();
 
 	void UpdateGoal();
-	void TurnToGoal(float deltatime);
+	void TurnToGoal( float deltatime );
 	void FindEnemy();
 	virtual bool IsValidEnemy( CAI_BaseNPC *pNPC );
 	virtual void CheckFiring();
@@ -41,10 +41,9 @@ public:
 	virtual void OnUsedQuarterAmmo( void );
 	virtual void OnLowAmmo( void );
 	virtual void OnOutOfAmmo( void );
-	bool CanSee(CBaseEntity* pEnt);
-	//virtual ITraceFilter *GetVisibilityTraceFilter(); // new's up and returns a pointer to a trace filter. you must delete this trace filter after use. //Do not use this due to missing virtual destructor by design
-	virtual float GetYawTo(CBaseEntity* pEnt);
-	float GetPitchTo(CBaseEntity* pEnt);
+	bool CanSee( CBaseEntity *pEnt );
+	virtual float GetYawTo( CBaseEntity *pEnt );
+	float GetPitchTo( CBaseEntity *pEnt );
 	Vector GetFiringPosition();
 	float GetRange();
 	void ScriptPreventFiringUntil( float fNextFireTime );
@@ -53,46 +52,45 @@ public:
 	float m_fNextFireTime;
 	float m_fGoalYaw, m_fCurrentYaw;
 
-	CNetworkVar(float, m_fDeployYaw);
-	CNetworkVar(bool, m_bLowAmmo);
+	CNetworkVar( float, m_fDeployYaw );
+	CNetworkVar( float, m_fCenterAimYaw );
+	CNetworkVar( bool, m_bLowAmmo );
 
-	int m_iEnemySkip;	
-	EHANDLE m_hEnemy;	
+	int m_iEnemySkip;
+	EHANDLE m_hEnemy;
 	int m_iCanSeeError;
 	int m_iAmmoType;
-	int m_iBaseTurnRate;	// angles per second
-	CNetworkVar(int, m_iSentryAngle);
-	//float m_flTimeNextScanPing;
-	float m_fTurnRate;		// actual turn rate	
+	int m_iBaseTurnRate; // angles per second
+	CNetworkVar( int, m_iSentryAngle );
+	float m_fTurnRate; // actual turn rate
 
 	float m_flTimeFirstFired;
 	
 	// sound stuff
 	float m_flNextTurnSound;
 
-	virtual const Vector& GetBulletSpread( void )
+	virtual const Vector &GetBulletSpread( void )
 	{
 		static Vector cone;
-		
+
 		cone = VECTOR_CONE_5DEGREES;
 
 		return cone;
 	}
 
-	CASW_Sentry_Base* GetSentryBase();
+	CASW_Sentry_Base *GetSentryBase();
 	bool HasAmmo();
 	int GetAmmo();
-	//EHANDLE m_hSentryBase;
-	CNetworkHandle(CBaseEntity, m_hSentryBase);
+	CNetworkHandle( CASW_Sentry_Base, m_hSentryBase );
 
-	/// Constants:
+	// Constants:
 	enum
 	{
-		ASW_SENTRY_TURNRATE=	150,		// angles per second
-		ASW_SENTRY_ANGLE= 60,			// spread on each side
-		ASW_SENTRY_FIRING_HEIGHT= 50,
-		ASW_SENTRY_FIRE_ANGLE_THRESHOLD= 3,
-		ASW_SENTRY_RANGE= 525, // just the default
+		ASW_SENTRY_TURNRATE = 150, // angles per second
+		ASW_SENTRY_ANGLE = 60, // spread on each side
+		ASW_SENTRY_FIRING_HEIGHT = 50,
+		ASW_SENTRY_FIRE_ANGLE_THRESHOLD = 3,
+		ASW_SENTRY_RANGE = 525, // just the default
 	};
 
 protected:

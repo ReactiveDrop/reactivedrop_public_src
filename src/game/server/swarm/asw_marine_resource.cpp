@@ -397,6 +397,8 @@ float CASW_Marine_Resource::OnFired_GetDamageScale()
 		static int iLeadershipAccCount = 0;
 		if ( f < fChance )
 		{
+			// TODO: leadership particle effect?
+
 			iLeadershipAccCount++;
 
 			flDamageScale *= 2.0f;

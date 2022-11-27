@@ -108,12 +108,21 @@ static const char *CantEquipReason( CRD_Collection_Tab_Equipment *pTab, const RD
 CRD_Collection_Tab_Equipment::CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, int nInventorySlot )
 	: BaseClass( parent, szLabel )
 {
+	Assert( MarineSkills() );
+
 	m_pCollection = NULL;
 	m_pProfile = pProfile;
 	m_nInventorySlot = nInventorySlot;
 
 	m_pBriefing = NULL;
 	m_nLobbySlot = -1;
+
+	for ( int i = 0; i < NELEMS( m_nSkillValue ); i++ )
+	{
+		m_nSkillValue[i] = pProfile ?
+			MarineSkills()->GetSkillPoints( pProfile, ( ASW_Skill )i ) :
+			MarineSkills()->GetMaxSkillPoints( ( ASW_Skill )i ) / 2 + 1;
+	}
 }
 
 CRD_Collection_Tab_Equipment::~CRD_Collection_Tab_Equipment()
@@ -564,9 +573,11 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void PerformLayout() override;
+	virtual void OnCommand( const char *command ) override;
 
 	vgui::ImagePanel *m_pIcon;
-	vgui::ImagePanel *m_pSkillIcon;
+	CBitmapButton *m_pSkillIcon;
+	vgui::ImagePanel *m_pSkillPips[5];
 	vgui::Label *m_pLblName;
 	vgui::Label *m_pLblValue;
 
@@ -582,7 +593,15 @@ CRD_Equipment_WeaponFact::CRD_Equipment_WeaponFact( vgui::Panel *parent, const c
 	m_pFact = pFact;
 
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
-	m_pSkillIcon = new vgui::ImagePanel( this, "SkillIcon" );
+	m_pSkillIcon = new CBitmapButton( this, "SkillIcon", "" );
+	m_pSkillIcon->AddActionSignalTarget( this );
+	m_pSkillIcon->SetCommand( "SkillCycle" );
+	for ( int i = 0; i < NELEMS( m_pSkillPips ); i++ )
+	{
+		m_pSkillPips[i] = new vgui::ImagePanel( this, "SkillPip" );
+		m_pSkillPips[i]->SetShouldScaleImage( true );
+		m_pSkillPips[i]->SetSize( YRES( 6 ), YRES( 6 ) );
+	}
 	m_pLblName = new vgui::Label( this, "LblName", L"" );
 	m_pLblValue = new vgui::Label( this, "LblValue", L"" );
 }
@@ -597,6 +616,10 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_iOriginalTall = GetTall();
 
 	m_pSkillIcon->SetVisible( false );
+	for ( int i = 0; i < NELEMS( m_pSkillPips ); i++ )
+	{
+		m_pSkillPips[i]->SetVisible( false );
+	}
 
 	if ( !m_pFact )
 	{
@@ -773,19 +796,33 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	float flSkillValue = 0.0f;
 	if ( m_pFact->Skill != ASW_MARINE_SKILL_INVALID )
 	{
-		m_pSkillIcon->SetImage( MarineSkills()->GetSkillImage( m_pFact->Skill ) );
+		CFmtStr szSkillImage( "vgui/%s", MarineSkills()->GetSkillImage( m_pFact->Skill ) );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_ENABLED, szSkillImage, color32{ 255, 255, 255, 255 } );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szSkillImage, color32{ 255, 255, 255, 255 } );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_PRESSED, szSkillImage, color32{ 255, 255, 255, 255 } );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_DISABLED, szSkillImage, color32{ 255, 255, 255, 255 } );
 		m_pSkillIcon->SetVisible( true );
+		m_pSkillIcon->SetEnabled( !m_pTab->m_pProfile );
+		m_pSkillIcon->GetTooltip()->SetText( MarineSkills()->GetSkillName( m_pFact->Skill ) );
 
-		if ( m_pTab->m_pProfile )
+		int iMaxSkillPoints = MarineSkills()->GetMaxSkillPoints( m_pFact->Skill );
+		int iSkillValue = m_pTab->m_nSkillValue[m_pFact->Skill];
+
+		int x, y;
+		m_pSkillIcon->GetPos( x, y );
+		Assert( NELEMS( m_pSkillPips ) >= iMaxSkillPoints );
+		for ( int i = 0; i < NELEMS( m_pSkillPips ); i++ )
 		{
-			flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill );
+			m_pSkillPips[i]->SetVisible( i < iMaxSkillPoints );
+			m_pSkillPips[i]->SetImage( i < iSkillValue ? "swarm/swarmopedia/skill_full" : "swarm/swarmopedia/skill_empty" );
+
+			if ( i < iMaxSkillPoints )
+			{
+				m_pSkillPips[i]->SetPos( x - YRES( 6 ), y + ( iMaxSkillPoints - i ) * m_pSkillIcon->GetTall() / ( iMaxSkillPoints + 2 ) );
+			}
 		}
-		else
-		{
-			// TODO: better than this
-			int iMidSkill = ( MarineSkills()->GetMaxSkillPoints( m_pFact->Skill ) - 1 ) / 2 + 1;
-			flSkillValue = MarineSkills()->GetSkillBasedValue( NULL, m_pFact->Skill, m_pFact->SubSkill, iMidSkill );
-		}
+
+		flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill, iSkillValue );
 	}
 
 	flSkillValue *= m_pFact->SkillMultiplier;
@@ -943,6 +980,24 @@ void CRD_Equipment_WeaponFact::PerformLayout()
 	m_pLblName->SetTall( iNewTall );
 	m_pLblValue->SetTall( iNewTall );
 	SetTall( iNewTall );
+}
+
+void CRD_Equipment_WeaponFact::OnCommand( const char *command )
+{
+	if ( !V_strcmp( command, "SkillCycle" ) )
+	{
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+
+		Assert( m_pFact->Skill != ASW_MARINE_SKILL_INVALID );
+		m_pTab->m_nSkillValue[m_pFact->Skill]++;
+		m_pTab->m_nSkillValue[m_pFact->Skill] %= MarineSkills()->GetMaxSkillPoints( m_pFact->Skill ) + 1;
+
+		m_pTab->m_pParent->m_hOverridePanel->InvalidateLayout( false, true );
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
 }
 
 CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )

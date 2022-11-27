@@ -55,14 +55,7 @@
 
 //extern ConVar cl_predict;
 static ConVar	cl_asw_smooth		( "cl_asw_smooth", "1", 0, "Smooth marine's render origin after prediction errors" );
-static ConVar	cl_asw_smoothtime	( 
-	"cl_asw_smoothtime", 
-	"0.1", 
-	0, 
-	"Smooth marine's render origin after prediction error over this many seconds",
-	true, 0.01,	// min/max is 0.01/2.0
-	true, 2.0
-	 );
+static ConVar	cl_asw_smoothtime	( "cl_asw_smoothtime", "0.1", 0, "Smooth marine's render origin after prediction error over this many seconds", true, 0.01, true, 2.0 );
 ConVar asw_flashlight_dlight_radius("asw_flashlight_dlight_radius", "500", FCVAR_NONE, "Radius of the light around the marine.");
 ConVar asw_flashlight_dlight_offsetx("asw_flashlight_dlight_offsetx", "60", FCVAR_NONE, "Offset of the flashlight dlight");
 ConVar asw_flashlight_dlight_offsety("asw_flashlight_dlight_offsety", "0", FCVAR_CHEAT, "Offset of the flashlight dlight");
@@ -200,6 +193,8 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat   ( RECVINFO( m_fJumpJetDurationOverride )),
 	RecvPropFloat   ( RECVINFO( m_fJumpJetAnimationDurationOverride )),
 	RecvPropBool	( RECVINFO( m_bForceWalking )),
+	RecvPropBool	( RECVINFO( m_bRolls )),
+	RecvPropInt		( RECVINFO( m_nMarineProfile ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )
@@ -487,6 +482,9 @@ C_ASW_Marine::C_ASW_Marine() :
 
 	m_PrevRenderAlpha = 255;
 	m_bIsHiddenLocal = false;
+
+	extern ConVar asw_marine_rolls;
+	m_bRolls = asw_marine_rolls.GetBool();
 }
 
 
@@ -663,25 +661,6 @@ void C_ASW_Marine::GetPredictionErrorSmoothingVector( Vector &vOffset )
 	vOffset = m_vecPredictionError * errorAmount;
 }
 
-CBaseCombatWeapon* C_ASW_Marine::ASWAnim_GetActiveWeapon()
-{
-	return GetActiveWeapon();
-}
-
-CASW_Marine_Profile* C_ASW_Marine::GetMarineProfile()
-{
-	C_ASW_Marine_Resource* pMR = GetMarineResource();
-	if (!pMR)
-		return NULL;
-
-	return pMR->GetProfile();
-}
-
-bool C_ASW_Marine::ASWAnim_CanMove()
-{
-	return true;
-}
-
 const QAngle& C_ASW_Marine::GetRenderAngles()
 {
 	//if (ShouldPredict())
@@ -704,7 +683,14 @@ const QAngle& C_ASW_Marine::GetRenderAngles()
 C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
 {
 	if ( m_hMarineResource.Get() != NULL )
+	{
 		return m_hMarineResource.Get();
+	}
+
+	if ( m_nMarineProfile != -1 )
+	{
+		return NULL;
+	}
 
 	// find our marine info
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();

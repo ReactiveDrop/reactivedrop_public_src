@@ -364,6 +364,7 @@
 				"ModelName" "models/aliens/mortar/mortar.mdl"
 				"Animation" "idle"
 			}
+			"LightingPreset" "1"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_350hp"

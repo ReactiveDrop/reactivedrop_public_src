@@ -1,0 +1,4 @@
+"UnlitGeneric" {
+	"$basetexture" "particle/particle_flares/particle_flare_002"
+	"$translucent" "1"
+}

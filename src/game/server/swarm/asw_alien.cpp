@@ -376,6 +376,11 @@ void CASW_Alien::Precache()
 	BaseClass::Precache();
 
 	const char *szModel = STRING( GetModelName() );
+	if ( !szModel || !*szModel )
+	{
+		szModel = m_pszAlienModelName;
+	}
+
 	PrecacheModel( szModel );
 	
 	//pre-cache any models used by particle gib effects

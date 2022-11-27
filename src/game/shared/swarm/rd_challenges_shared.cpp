@@ -52,6 +52,8 @@ static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileN
 }
 
 #ifdef GAME_DLL
+extern ConVar rd_debug_string_tables;
+
 void ReactiveDropChallenges::CreateNetworkStringTables()
 {
 	g_StringTableReactiveDropChallenges = networkstringtable->CreateStringTable( RD_CHALLENGES_STRINGTABLE_NAME, RD_MAX_CHALLENGES );
@@ -76,7 +78,10 @@ void ReactiveDropChallenges::CreateNetworkStringTables()
 		int nDataSize = offsetof( RD_Challenge_t, Title ) + V_strlen( summary.Title ) + 1;
 
 		int index = g_StringTableReactiveDropChallenges->AddString( true, szChallengeName, nDataSize, &summary );
-		DevMsg( 2, "Adding challenge %d to string table: %s, payload size %d\n", index, szChallengeName, nDataSize );
+		if ( rd_debug_string_tables.GetBool() )
+		{
+			Msg( "Adding challenge %d to string table: %s, payload size %d\n", index, szChallengeName, nDataSize );
+		}
 	}
 	filesystem->FindClose( hFind );
 }
