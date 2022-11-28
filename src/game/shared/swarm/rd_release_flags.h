@@ -9,7 +9,7 @@
 
 // build includes 6th anniversary campaigns
 #define RD_6A_CAMPAIGNS_ACCIDENT32
-//#define RD_6A_CAMPAIGNS_ADANAXIS
+#define RD_6A_CAMPAIGNS_ADANAXIS
 
 // features that are not ready for prime time
 #define RD_COLLECTIONS_WEAPONS_ENABLED
