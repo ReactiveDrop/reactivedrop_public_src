@@ -58,5 +58,7 @@ particles_manifest
 	"file"		"particles/skybox_smoke.pcf"
 
 	"file"		"particles/rd-tarnor_fx.pcf"
+	"file"		"particles/ap_particles.pcf"
+	"file"		"particles/newcamp_particles.pcf"
 	"file"		"particles/rd-adanaxis_fx.pcf"
 }
