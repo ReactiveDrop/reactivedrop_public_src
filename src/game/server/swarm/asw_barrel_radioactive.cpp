@@ -101,7 +101,6 @@ void CASW_Barrel_Radioactive::Burst( const CTakeDamageInfo &info )
 	if (m_bBurst)
 		return;
 
-	m_OnBurst.FireOutput( info.GetInflictor(), this );
 	m_bBurst = true;
 	
 	// spawn a jet in the direction of the damage
@@ -168,6 +167,8 @@ void CASW_Barrel_Radioactive::Burst( const CTakeDamageInfo &info )
 		WRITE_FLOAT( 150.0f );
 		WRITE_FLOAT( 400.0f );
 	MessageEnd();
+
+	m_OnBurst.FireOutput( info.GetInflictor(), this );
 }
 
 void CASW_Barrel_Radioactive::InputBurst( inputdata_t &inputdata )
