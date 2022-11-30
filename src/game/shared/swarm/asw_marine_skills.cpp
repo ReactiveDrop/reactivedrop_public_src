@@ -188,28 +188,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 {
 	if ( iSkillPoints == -1 )
 	{
-		CASW_Game_Resource *pGameResource = ASWGameResource();
-		Assert( pGameResource );
-		Assert( MarineProfileList() );
-		Assert( pProfile );
-		if ( !pGameResource || !MarineProfileList() || ( !pProfile ) )
-			return 0;
-
-		int iProfileIndex = pProfile->m_ProfileIndex;
-		Assert( iProfileIndex >= 0 && iProfileIndex < MarineProfileList()->m_NumProfiles );
-		if ( iProfileIndex < 0 || iProfileIndex >= MarineProfileList()->m_NumProfiles )
-			return 0;
-
-		int nSkillSlot = pGameResource->GetSlotForSkill( iProfileIndex, iSkillIndex );
-		if ( nSkillSlot == -1 )
-		{
-			iSkillPoints = 0;		// assume zero skill points if the marine doesn't have this skill
-		}
-		else
-		{
-			// get the skill points from the ASWGameResource
-			iSkillPoints = pGameResource->GetMarineSkill( iProfileIndex, nSkillSlot );
-		}
+		iSkillPoints = GetSkillPoints( pProfile, iSkillIndex );
 	}
 
 	Assert( iSkillPoints >= 0 );
@@ -614,6 +593,30 @@ const char *CASW_Marine_Skills::GetSkillDescription( ASW_Skill nSkillIndex )
 	return s_szSkillDescription[nSkillIndex];
 }
 #endif
+
+int CASW_Marine_Skills::GetSkillPoints( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex )
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	Assert( pGameResource );
+	Assert( MarineProfileList() );
+	Assert( pProfile );
+	if ( !pGameResource || !MarineProfileList() || ( !pProfile ) )
+		return 0;
+
+	int iProfileIndex = pProfile->m_ProfileIndex;
+	Assert( iProfileIndex >= 0 && iProfileIndex < MarineProfileList()->m_NumProfiles );
+	if ( iProfileIndex < 0 || iProfileIndex >= MarineProfileList()->m_NumProfiles )
+		return 0;
+
+	int nSkillSlot = pGameResource->GetSlotForSkill( iProfileIndex, iSkillIndex );
+	if ( nSkillSlot != -1 )
+	{
+		// get the skill points from the ASWGameResource
+		return pGameResource->GetMarineSkill( iProfileIndex, nSkillSlot );
+	}
+
+	return 0; // assume zero skill points if the marine doesn't have this skill
+}
 
 int CASW_Marine_Skills::GetMaxSkillPoints( ASW_Skill nSkillIndex )
 {

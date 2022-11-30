@@ -272,9 +272,16 @@ void CASW_Alien::Spawn()
 
 	// get pointers to behaviors
 	GetBehavior( &m_pFlinchBehavior );
-	// Precache.
+
+	const char *szModel = STRING( GetModelName() );
+	if ( !szModel || !*szModel )
+	{
+		szModel = m_pszAlienModelName;
+		SetModelName( AllocPooledString( szModel ) );
+	}
+
 	Precache();
-	SetModel( m_pszAlienModelName );
+	SetModel( szModel );
 
 	SetHullSizeNormal();
 
@@ -366,14 +373,18 @@ void CASW_Alien::Spawn()
 
 void CASW_Alien::Precache()
 {
-
 	BaseClass::Precache();
 
+	const char *szModel = STRING( GetModelName() );
+	if ( !szModel || !*szModel )
+	{
+		szModel = m_pszAlienModelName;
+	}
 
-	PrecacheModel( m_pszAlienModelName );
+	PrecacheModel( szModel );
 	
 	//pre-cache any models used by particle gib effects
-	int modelIndex = modelinfo->GetModelIndex( m_pszAlienModelName );
+	int modelIndex = modelinfo->GetModelIndex( szModel );
 	const model_t *model = modelinfo->GetModel( modelIndex );
 	if ( model )
 	{

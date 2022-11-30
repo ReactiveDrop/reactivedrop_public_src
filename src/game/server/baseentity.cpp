@@ -5533,6 +5533,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 //-----------------------------------------------------------------------------
 int CBaseEntity::PrecacheModel( const char *name )
 {
+	Assert( name && *name );
 	if ( !name || !*name )
 	{
 		Msg( "Attempting to precache model, but model name is NULL\n");

@@ -269,6 +269,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	( SENDINFO( m_fJumpJetDurationOverride ) ),
 	SendPropFloat	( SENDINFO( m_fJumpJetAnimationDurationOverride ) ),
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
+	SendPropBool	( SENDINFO( m_bRolls ) ),
+	SendPropInt		( SENDINFO( m_nMarineProfile ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -375,6 +377,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_iPowerupType, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flPowerupExpireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
+	DEFINE_KEYFIELD( m_nMarineProfile, FIELD_INTEGER, "MarineProfile" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
@@ -393,6 +396,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInventoryTable, "GetInventoryTable", "Fills the passed table with the marine's inventory." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
+	DEFINE_SCRIPTFUNC( SetMarineRolls, "Send true to make marine roll, send false to make marine jump" )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
@@ -634,6 +638,11 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 
 	m_iPoisonHeal = 0;
 	m_flNextPoisonHeal = -1;
+
+	extern ConVar asw_marine_rolls;
+	m_bRolls = asw_marine_rolls.GetBool();
+
+	m_nMarineProfile = -1;
 }
 
 
@@ -769,6 +778,13 @@ void CASW_Marine::SetHeightLook( float flHeightLook )
 //-----------------------------------------------------------------------------
 void CASW_Marine::SelectModel()
 {
+	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || ( m_MarineResource == NULL ) != ( m_nMarineProfile == -1 ) );
+	if ( m_MarineResource == NULL && m_nMarineProfile == -1 )
+	{
+		// use sarge so we don't crash if ent_create spawns a marine
+		m_nMarineProfile = 0;
+	}
+
 	SelectModelFromProfile();
 }
 
@@ -791,6 +807,7 @@ void CASW_Marine::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
+	SetBodygroup( 1, m_nSkin );
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -826,9 +843,9 @@ void CASW_Marine::Spawn( void )
 	{
 		SetInhabited( false );
 	}
-	
-	m_ASWOrders = ASW_ORDER_FOLLOW;
-	m_bWasFollowing = true;
+
+	m_bWasFollowing = m_nMarineProfile == -1;
+	m_ASWOrders = m_bWasFollowing ? ASW_ORDER_FOLLOW : ASW_ORDER_HOLD_POSITION;
 	m_flFieldOfView = ASW_HOLD_POSITION_FOV_DOT;
 
 	SetDistLook( ASW_HOLD_POSITION_SIGHT_RANGE );
@@ -854,6 +871,8 @@ void CASW_Marine::Spawn( void )
 
 		gameeventmanager->FireEvent( event );
 	}
+
+	UTIL_SetSize( this, GetHullMins(), GetHullMaxs() );
 }
 
 void CASW_Marine::NPCInit()
@@ -1040,22 +1059,6 @@ void CASW_Marine::Think( void )
 	}
 }
 
-CBaseCombatWeapon* CASW_Marine::ASWAnim_GetActiveWeapon()
-{
-	return GetActiveWeapon();
-}
-
-CASW_Marine_Profile* CASW_Marine::GetMarineProfile()
-{
-	CASW_Marine_Resource* pMR = GetMarineResource();
-	if ( !pMR )
-	{
-		return NULL;
-	}
-
-	return pMR->GetProfile();
-}
-
 bool CASW_Marine::IsCurTaskContinuousMove()
 {
 	const Task_t* pTask = GetTask();
@@ -1075,11 +1078,6 @@ bool CASW_Marine::IsCurTaskContinuousMove()
 		return BaseClass::IsCurTaskContinuousMove();
 		break;
 	}
-}
-
-bool CASW_Marine::ASWAnim_CanMove()
-{
-	return true;
 }
 
 // called when a player takes direct control of this marine
@@ -1195,27 +1193,11 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 void CASW_Marine::DoImpactEffect( trace_t &tr, int nDamageType )
 {
 	// don't do impact effects, they're simulated clientside by the tracer usermessage
-	return;
-	BaseClass::DoImpactEffect(tr, nDamageType);
 }
 
 void CASW_Marine::DoMuzzleFlash()
 {
-	return;	 // asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
-
-	// Our weapon takes our muzzle flash command
-	CBaseCombatWeapon *pWeapon = GetActiveWeapon();
-	if ( pWeapon )
-	{
-		pWeapon->DoMuzzleFlash();
-		//NOTENOTE: We do not chain to the base here
-		//m_nMuzzleFlashParity = (m_nMuzzleFlashParity+1) & ((1 << EF_MUZZLEFLASH_BITS) - 1);
-		BaseClass::BaseClass::DoMuzzleFlash();
-	}
-	else
-	{
-		BaseClass::DoMuzzleFlash();
-	}
+	// asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
 }
 
 extern ConVar rd_marine_ff_fist;
@@ -1502,6 +1484,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	static int iLeadershipResCount = 0;
 	if (random->RandomFloat() < fChance)
 	{
+		// TODO: leadership particle effect?
+
 		float fNewDamage = newInfo.GetDamage() * 0.5f;
 		if (fNewDamage <= 0)
 			return 0;
@@ -3558,6 +3542,11 @@ void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char 
 	QueueSpeak( concept, this, delay, criteria );
 }
 
+void CASW_Marine::SetMarineRolls( bool bRolls )
+{
+	m_bRolls = bRolls;
+}
+
 // healing
 void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Marine *pMedic, CBaseEntity* pHealingWeapon /*= NULL */ )
 {
@@ -4473,8 +4462,8 @@ void CASW_Marine::PhysicsShove()
 
 CASW_Marine_Resource* CASW_Marine::GetMarineResource() const
 {
-	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || m_MarineResource );
-	return assert_cast<CASW_Marine_Resource*>(m_MarineResource.Get());
+	Assert( !ASWGameRules() || ASWGameRules()->GetGameState() == ASW_GS_NONE || m_MarineResource || m_nMarineProfile != -1 );
+	return m_MarineResource.Get();
 }
 
 void CASW_Marine::Suicide()
@@ -4548,7 +4537,7 @@ void CASW_Marine::SelectModelFromProfile()
 	CASW_Marine_Profile *pProfile = GetMarineProfile();
 	if (pProfile)
 	{
-		SetModelName(MAKE_STRING(pProfile->m_ModelName));
+		SetModelName( MAKE_STRING( pProfile->m_ModelName ) );
 		m_nSkin = pProfile->m_SkinNum;
 		//Msg("%s Setting skin number to %d\n", pProfile->m_ShortName, m_nSkin);
 	}
@@ -4556,27 +4545,6 @@ void CASW_Marine::SelectModelFromProfile()
 	{
 		SetModelName( AllocPooledString( ASW_DEFAULT_MARINE_MODEL ) );
 		//Msg("Warning (SelectModelFromProfile) couldn't get model from profile as profile doesn't exist yet\n");
-	}
-}
-
-void CASW_Marine::SetModelFromProfile()
-{
-	CASW_Marine_Profile *pProfile = GetMarineProfile();
-	if (pProfile)
-	{
-		SetModelName(MAKE_STRING(pProfile->m_ModelName));
-		SetModel(pProfile->m_ModelName);
-		m_nSkin = pProfile->m_SkinNum;
-		//set the backpack bodygroup
-		SetBodygroup ( 1, m_nSkin );
-		
-		//Msg("%s Setting skin number to %d\n", pProfile->m_ShortName, m_nSkin);
-	}
-	else
-	{
-		SetModelName( AllocPooledString( ASW_DEFAULT_MARINE_MODEL ) );
-		SetModel(ASW_DEFAULT_MARINE_MODEL);
-		Msg("Warning (SetModelFromProfile) couldn't get model from profile as profile doesn't exist yet\n");
 	}
 }
 

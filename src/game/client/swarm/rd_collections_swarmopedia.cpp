@@ -20,7 +20,7 @@
 #ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
 
 ConVar rd_swarmopedia_global_stat_window_days( "rd_swarmopedia_global_stat_window_days", "30", FCVAR_ARCHIVE, "Number of days to sum for global stats in the Swarmopedia. 0 for all time.", true, 0, true, 60 );
-ConVar rd_swarmopedia_global_stat_update_seconds( "rd_swarmopedia_global_stat_update_seconds", "60", FCVAR_HIDDEN, "", true, 30, true, 10000000 );
+ConVar rd_swarmopedia_global_stat_update_seconds( "rd_swarmopedia_global_stat_update_seconds", "600", FCVAR_HIDDEN, "", true, 30, true, 10000000 );
 
 CRD_Collection_Tab_Swarmopedia::CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel )
 	: BaseClass( parent, szLabel )

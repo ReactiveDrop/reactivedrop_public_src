@@ -262,6 +262,11 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missi
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\fgdlib\gamedata.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdclass.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdvar.cpp" />
+    <ClCompile Include="..\..\fgdlib\inputoutput.cpp" />
+    <ClCompile Include="..\..\fgdlib\wckeyvalues.cpp" />
     <ClCompile Include="..\..\public\chunkfile.cpp" />
     <ClCompile Include="..\..\public\tier0\memoverride.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -400,7 +405,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missi
     <Library Include="..\..\lib\common\jpeglib.lib" />
     <Library Include="..\..\lib\public\bitmap.lib" />
     <Library Include="..\..\lib\public\dmxloader.lib" />
-    <Library Include="..\..\lib\public\fgdlib.lib" />
     <Library Include="..\..\lib\public\interfaces.lib" />
     <Library Include="..\..\lib\public\mathlib.lib" />
     <Library Include="..\..\lib\public\matsys_controls.lib" />

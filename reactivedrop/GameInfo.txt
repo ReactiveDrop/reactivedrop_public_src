@@ -1,53 +1,26 @@
 "GameInfo"
 {
-	"game"			"Alien Swarm: Reactive Drop"
-	"title"			"    "	// asw - leave this blank as we have a texture logo
-	"type"			"multiplayer_only"
-	// the GameData path is relative to steamapps/common/Alien Swarm/bin.
-	GameData		"reactivedrop.fgd"
-	InstancePath 	"tilegen/instances/"
+	"game"		"Alien Swarm: Reactive Drop"
+	"title"		"    "	// asw - leave this blank as we have a texture logo
+	"type"		"multiplayer_only"
 
-	developer		"RD Dev Team"
-	developer_url	"http://www.moddb.com/mods/reactivedrop"
+	GameData	"reactivedrop.fgd"
+	InstancePath "tilegen/instances/"
+
+	developer		"Reactive Drop Team"
+	developer_url	"https://store.steampowered.com/developer/reactivedrop/"
 	icon			"materials/reactivedrop"
-	
+
 	SupportsDX8     0
-	
+
 	"FileSystem"
 	{
 		"SteamAppId"	"563560"
-		"ToolsAppId"	"211"
-		
+		"ToolsAppId"	"593000"
+
 		"SearchPaths"
 		{
 			"Game"	"|gameinfo_path|."
-			"Game"  "|gameinfo_path|content/area9800"
-			"Game"  "|gameinfo_path|content/biogen_corporation"
-			"Game"  "|gameinfo_path|content/bonus"
-			"Game"  "|gameinfo_path|content/csgo"
-			"Game"  "|gameinfo_path|content/deadcity"
-			"Game"  "|gameinfo_path|content/dota2"
-			"Game"  "|gameinfo_path|content/ep2"
-			"Game"  "|gameinfo_path|content/episodic"
-			"Game"  "|gameinfo_path|content/ex"
-			"Game"  "|gameinfo_path|content/hl1"
-			"Game"  "|gameinfo_path|content/hl2"
-			"Game"  "|gameinfo_path|content/lanasescape"
-			"Game"  "|gameinfo_path|content/left4dead2"
-			"Game"  "|gameinfo_path|content/lostcoast"
-			"Game"  "|gameinfo_path|content/magister"
-			"Game"  "|gameinfo_path|content/nest"
-			"Game"  "|gameinfo_path|content/ocs"
-			"Game"  "|gameinfo_path|content/orange"
-			"Game"  "|gameinfo_path|content/paranoia"
-			"Game"  "|gameinfo_path|content/portal"
-			"Game"  "|gameinfo_path|content/portal2"
-			"Game"  "|gameinfo_path|content/reduction"
-			"Game"  "|gameinfo_path|content/research7"
-			"Game"  "|gameinfo_path|content/tarnor"
-			"Game"  "|gameinfo_path|content/texturescom"
-			"Game"  "|gameinfo_path|content/tf2"
-			"Game"	"reactivedrop"
 			"Game"	"platform"
 		}
 	}

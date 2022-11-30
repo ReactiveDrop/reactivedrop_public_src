@@ -2,6 +2,7 @@
 
 #include "tabbedgriddetails.h"
 #include "asw_model_panel.h"
+#include "asw_marine_skills.h"
 #include "steam/steam_api.h"
 
 class CASW_WeaponInfo;
@@ -71,6 +72,7 @@ public:
 
 	RD_Swarmopedia::Collection *m_pCollection;
 	CASW_Marine_Profile *m_pProfile;
+	int m_nSkillValue[ASW_NUM_MARINE_SKILLS];
 	int m_nInventorySlot;
 	IBriefing *m_pBriefing;
 	int m_nLobbySlot;

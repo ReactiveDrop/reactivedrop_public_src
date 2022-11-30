@@ -3542,8 +3542,6 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	pMarine->SetMaxHealth(iMarineMaxHealth);
 	pMR->m_TimelineHealth.RecordValue( iMarineHealth );
 
-	pMarine->SetModelFromProfile();
-	UTIL_SetSize(pMarine, pMarine->GetHullMins(),pMarine->GetHullMaxs());
 	pMR->SetMarineEntity(pMarine);
 
 	if ( ASWHoldoutMode() && bResurrection )
@@ -3561,23 +3559,23 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 				int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) );
 				GiveStartingWeaponToMarine( pMarine, weapon_id , 0 );
 			}
-            else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() || 
-					  ( rd_deathmatch_loadout_allowed.GetBool() && 
-					    ASWDeathmatchMode()->IsDeathmatchEnabled() ) )
-            {
-                // give the pMarine the equipment selected on the briefing screen
-                for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+			else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ||
+				( rd_deathmatch_loadout_allowed.GetBool() &&
+					ASWDeathmatchMode()->IsDeathmatchEnabled() ) )
+			{
+				// give the pMarine the equipment selected on the briefing screen
+				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 				{
-					int weapon_index = pMR->m_iInitialWeaponsInSlots[ iWpnSlot ];
+					int weapon_index = pMR->m_iInitialWeaponsInSlots[iWpnSlot];
 					if ( weapon_index < 0 )
 					{
 						Warning( "When spawning marine the weapon_index is -1 \n" );
 						weapon_index = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
 					}
-                    GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
+					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
 				}
-            }
-            else 
+			}
+			else
 			{
 				// give the pistols only in deathmatch, railgun in InstaGib
 				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0 );
@@ -3588,7 +3586,6 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 					GiveStartingWeaponToMarine( pMarine, 11, 1 );
 				}
 			}
-			
 		}
 		else
 		{
@@ -5418,279 +5415,214 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	if ( collisionGroup0 > collisionGroup1 )
 	{
 		// swap so that lowest is always first
-		int tmp = collisionGroup0;
-		collisionGroup0 = collisionGroup1;
-		collisionGroup1 = tmp;
+		V_swap( collisionGroup0, collisionGroup1 );
 	}
 
-#ifndef CLIENT_DLL
-	// reactivedrop: allow drones and shieldbugs to pass but not shieldbugs and other shieldbugs
-	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN && asw_springcol.GetBool() )
-	{
-		return false;
-	}
-#endif
+#define SHOULD_COLLIDE( group0, group1, should ) \
+	ASSERT_INVARIANT( group0 <= group1 ); \
+	if ( collisionGroup0 == group0 && collisionGroup1 == group1 ) \
+		return should
+#define ALWAYS_COLLIDE( group, should ) \
+	if ( collisionGroup0 == group || collisionGroup1 == group ) \
+		return should
 
 	// players don't collide with buzzers (since the buzzers use vphysics collision and that makes the player get stuck)
-	if (collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == ASW_COLLISION_GROUP_BUZZER)
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_BUZZER, false );
 
 	// this collision group only blocks drones
-	if (collisionGroup1 == ASW_COLLISION_GROUP_BLOCK_DRONES)
-	{
-		if (collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
-			return true;
-		else
-			return false;
-	}
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_BLOCK_DRONES, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BLOCK_DRONES, ASW_COLLISION_GROUP_BIG_ALIEN, true );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_BLOCK_DRONES, false );
 
 	// marines don't collide with other marines
 	if ( !asw_marine_collision.GetBool() )
 	{
-		if (collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == COLLISION_GROUP_PLAYER)
-		{
-			return false;
-		}
+		SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, COLLISION_GROUP_PLAYER, false );
 	}
 
 	// eggs and parasites don't collide
-	if (collisionGroup1 == ASW_COLLISION_GROUP_EGG
-		&& collisionGroup0 == ASW_COLLISION_GROUP_PARASITE)
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_EGG, false );
 	
 	// so our parasites don't stop gibs from flying out of people alongside them
-	if (collisionGroup0 == COLLISION_GROUP_DEBRIS
-		&& collisionGroup1 == ASW_COLLISION_GROUP_PARASITE)
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_PARASITE, false );
 
 	// parasites don't get blocked by big aliens (reactivedrop: and normal aliens)
-	if (collisionGroup0 == ASW_COLLISION_GROUP_PARASITE
-		&& ( collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN || collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ))
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_BIG_ALIEN, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_ALIEN, false );
 
 	// turn our prediction collision into normal player collision and pass it up
-	if (collisionGroup0 == ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION)
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION )
 		collisionGroup0 = COLLISION_GROUP_PLAYER;
-	if (collisionGroup1 == ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION)
+	if ( collisionGroup1 == ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION )
 		collisionGroup1 = COLLISION_GROUP_PLAYER;
 
+	if ( collisionGroup0 > collisionGroup1 )
+	{
+		// we may have just messed up the order, so fix it if we did
+		V_swap( collisionGroup0, collisionGroup1 );
+	}
+
 	// grubs don't collide with zombies, aliens or marines
-	if (collisionGroup1 == ASW_COLLISION_GROUP_GRUBS &&
-		(collisionGroup0 == COLLISION_GROUP_PLAYER ||
-		 collisionGroup0 == COLLISION_GROUP_NPC ||
-		 collisionGroup0 == ASW_COLLISION_GROUP_BOTS ) )
-		
-	{
-		return false;
-	}
-	if (collisionGroup0 == ASW_COLLISION_GROUP_GRUBS)
-	{
-		if (collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ||
-			collisionGroup1 == COLLISION_GROUP_PLAYER ||
-			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN  ||
-			collisionGroup1 == ASW_COLLISION_GROUP_BOTS )
-		return false;
-	}
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_GRUBS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_GRUBS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_ALIEN, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_BIG_ALIEN, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_BOTS, false );
 
 	// reactivedrop: bots don't collide with zombies, aliens, marines, grenades and sentries
-	if (collisionGroup1 == ASW_COLLISION_GROUP_BOTS &&
-		(collisionGroup0 == COLLISION_GROUP_PLAYER ||
-		 collisionGroup0 == COLLISION_GROUP_NPC ||
-		 collisionGroup0 == ASW_COLLISION_GROUP_GRENADES || 
-		 collisionGroup0 == ASW_COLLISION_GROUP_ALIEN ||
-		 collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN  ||
-		 collisionGroup0 == ASW_COLLISION_GROUP_SENTRY ) )
-	{
-		return false;
-	}
-	if (collisionGroup0 == ASW_COLLISION_GROUP_BOTS)
-	{
-		if (collisionGroup1 == ASW_COLLISION_GROUP_ALIEN ||
-			collisionGroup1 == COLLISION_GROUP_PLAYER ||
-			collisionGroup1 == ASW_COLLISION_GROUP_BIG_ALIEN ||
-			collisionGroup1 == ASW_COLLISION_GROUP_GRENADES  ||
-			collisionGroup1 == ASW_COLLISION_GROUP_SENTRY )
-		return false;
-	}
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BIG_ALIEN, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_BOTS, false );
 
-	if (collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET && collisionGroup1 == ASW_COLLISION_GROUP_SHOTGUN_PELLET )
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_SHOTGUN_PELLET, false );
 
-	// the pellets that the flamer shoots.  Doesn not collide with small aliens or marines, DOES collide with doors and shieldbugs
-	if (collisionGroup1 == ASW_COLLISION_GROUP_FLAMER_PELLETS)
-	{
-		if (collisionGroup0 == ASW_COLLISION_GROUP_EGG || collisionGroup0 == ASW_COLLISION_GROUP_PARASITE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == COLLISION_GROUP_NPC || collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_FLAMER_PELLETS || 
-			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == COLLISION_GROUP_WEAPON ||
-			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES)
-		{
-			return false;
-		}
-		else
-			return true;
-	}
+	// the pellets that the flamer shoots.  Doesn't collide with small aliens or marines, DOES collide with doors and shieldbugs
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EGG, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_FLAMER_PELLETS, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_FLAMER_PELLETS, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY_PROJECTILE, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_IGNORE_NPCS, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_FLAMER_PELLETS, true );
 
 	// the pellets that the extinguisher shoots. Unlike flamer pellets collides with aliens and marines
-	if (collisionGroup1 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS)
-	{
-		if (collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_FLAMER_PELLETS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SENTRY || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS || collisionGroup0 == COLLISION_GROUP_WEAPON ||
-			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES)
-		{
-			return false;
-		}
-		else
-			return true;
-	}
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_FLAMER_PELLETS, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY_PROJECTILE, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, false );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS, true );
+
+	if ( collisionGroup1 == ASW_COLLISION_GROUP_PASSABLE )
+		return false;
+	Assert( collisionGroup0 != ASW_COLLISION_GROUP_PASSABLE );
 
 	// fire wall pieces don't get blocked by aliens/marines
-	if (collisionGroup1 == ASW_COLLISION_GROUP_IGNORE_NPCS)
-	{
-		if (collisionGroup0 == ASW_COLLISION_GROUP_EGG || collisionGroup0 == ASW_COLLISION_GROUP_PARASITE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == COLLISION_GROUP_NPC || collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || collisionGroup0 == ASW_COLLISION_GROUP_GRENADES ||
-			collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
-		{
-			return false;
-		}
-		else
-			return true;
-	}
-
-	if (collisionGroup1 == ASW_COLLISION_GROUP_PASSABLE)
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EGG, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_IGNORE_NPCS, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_IGNORE_NPCS, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BIG_ALIEN, ASW_COLLISION_GROUP_IGNORE_NPCS, false );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_IGNORE_NPCS, true );
 
 	// Only let projectile blocking debris collide with grenades
-	if ( collisionGroup0 == COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE && ( collisionGroup1 == ASW_COLLISION_GROUP_GRENADES || collisionGroup1 == ASW_COLLISION_GROUP_NPC_GRENADES ) )
-		return true;
-
-	if ( collisionGroup0 == ASW_COLLISION_GROUP_NPC_GRENADES && collisionGroup1 == ASW_COLLISION_GROUP_NPC_GRENADES )
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE, ASW_COLLISION_GROUP_GRENADES, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE, ASW_COLLISION_GROUP_NPC_GRENADES, true );
 
 	// Grenades hit everything but debris, weapons, other projectiles and marines
-	if ( collisionGroup1 == ASW_COLLISION_GROUP_GRENADES )
-	{
-		if ( collisionGroup0 == COLLISION_GROUP_DEBRIS || 
-			collisionGroup0 == COLLISION_GROUP_WEAPON ||
-			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_GRENADES ||
-			collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == ASW_COLLISION_GROUP_BOTS ||
-			collisionGroup0 == COLLISION_GROUP_DOOR_BLOCKER )
-		{
-			return false;
-		}
-	}
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_NPC_GRENADES, ASW_COLLISION_GROUP_NPC_GRENADES, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_GRENADES, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_GRENADES, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PROJECTILE, ASW_COLLISION_GROUP_GRENADES, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_GRENADES, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_GRENADES, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_BOTS, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DOOR_BLOCKER, ASW_COLLISION_GROUP_GRENADES, false );
 
 	// sentries dont collide with marines or their own projectiles
-	if ( collisionGroup1 == ASW_COLLISION_GROUP_SENTRY )
-	{
-		if ( collisionGroup0 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE || 
-			collisionGroup0 == ASW_COLLISION_GROUP_PLAYER_MISSILE || 
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || 
-			collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == ASW_COLLISION_GROUP_BOTS)
-		{
-			return false;
-		}
-	}
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PLAYER_MISSILE, ASW_COLLISION_GROUP_SENTRY, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_SENTRY, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_SENTRY, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_BOTS, false );
 
 #ifndef CLIENT_DLL	// this isn't necessary on client
 	// reactivedrop: sentries don't collide with aliens
-	if ( collisionGroup0 == ASW_COLLISION_GROUP_ALIEN && collisionGroup1 == ASW_COLLISION_GROUP_SENTRY && !rd_sentry_block_aliens.GetBool() )
+	if ( !rd_sentry_block_aliens.GetBool() )
 	{
-		return false;
+		SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_SENTRY, false );
 	}
 #endif
 
 	// sentry projectiles only collide with doors, walls and shieldbugs
-	if ( collisionGroup1 == ASW_COLLISION_GROUP_SENTRY_PROJECTILE )
-	{
-		if (collisionGroup0 == ASW_COLLISION_GROUP_EGG || collisionGroup0 == ASW_COLLISION_GROUP_PARASITE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == COLLISION_GROUP_PLAYER ||
-			collisionGroup0 == COLLISION_GROUP_NPC || collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET ||
-			collisionGroup0 == ASW_COLLISION_GROUP_IGNORE_NPCS || collisionGroup0 == ASW_COLLISION_GROUP_SENTRY ||
-			collisionGroup0 == COLLISION_GROUP_WEAPON)
-		{
-			return false;
-		}
-		else
-			return true;
-	}
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EGG, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_SENTRY_PROJECTILE, false );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_SENTRY_PROJECTILE, true );
 
-	if ( collisionGroup1 == ASW_COLLISION_GROUP_ALIEN_MISSILE )
-	{
-		if ( collisionGroup0 == COLLISION_GROUP_NPC ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET || 
-			collisionGroup0 == COLLISION_GROUP_WEAPON ||
-			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN_MISSILE ||
-			collisionGroup0 == COLLISION_GROUP_PLAYER )	// NOTE: alien projectiles do not collide with marines using their normal touch functions.  Instead we do lag comped traces
-		{
-			return false;
-		}
-	}
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_ALIEN_MISSILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_ALIEN_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_ALIEN_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PROJECTILE, ASW_COLLISION_GROUP_ALIEN_MISSILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN_MISSILE, ASW_COLLISION_GROUP_ALIEN_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_ALIEN_MISSILE, false ); // NOTE: alien projectiles do not collide with marines using their normal touch functions.  Instead we do lag comped traces
 
-	if ( collisionGroup1 == ASW_COLLISION_GROUP_PLAYER_MISSILE )
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PLAYER_MISSILE, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_WEAPON, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+	SHOULD_COLLIDE( COLLISION_GROUP_PROJECTILE, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN_MISSILE, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+
+	// allow missile-player collisions for deathmatch
+	if ( !ASWDeathmatchMode() )
 	{
-		if ( collisionGroup0 == ASW_COLLISION_GROUP_PLAYER_MISSILE ||
-			collisionGroup0 == ASW_COLLISION_GROUP_SHOTGUN_PELLET ||
-			collisionGroup0 == COLLISION_GROUP_DEBRIS ||
-			collisionGroup0 == COLLISION_GROUP_WEAPON ||
-			collisionGroup0 == COLLISION_GROUP_PROJECTILE ||
-			// reactivedrop: smartbomb now hit players in PvP
-			//collisionGroup0 == COLLISION_GROUP_PLAYER ||	
-			collisionGroup0 == ASW_COLLISION_GROUP_ALIEN_MISSILE )
-		{
-			return false;
-		}
-		// allow missile-player collisions for deathmatch
-		if ( collisionGroup0 == COLLISION_GROUP_PLAYER && !ASWDeathmatchMode() )
-		{
-			return false;
-		}
+		SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_PLAYER_MISSILE, false );
+		SHOULD_COLLIDE( ASW_COLLISION_GROUP_PLAYER_MISSILE, ASW_COLLISION_GROUP_BOTS, false );
 	}
 
 	// HL2 collision rules
 	//If collisionGroup0 is not a player then NPC_ACTOR behaves just like an NPC.
+	ASSERT_INVARIANT( COLLISION_GROUP_PLAYER <= COLLISION_GROUP_NPC_ACTOR );
 	if ( collisionGroup1 == COLLISION_GROUP_NPC_ACTOR && collisionGroup0 != COLLISION_GROUP_PLAYER )
 	{
 		collisionGroup1 = COLLISION_GROUP_NPC;
 	}
 
+	if ( collisionGroup0 > collisionGroup1 )
+	{
+		// once again, we may have messed up the order
+		V_swap( collisionGroup0, collisionGroup1 );
+	}
+
 	// grubs don't collide with each other
-	if (collisionGroup0 == ASW_COLLISION_GROUP_GRUBS && collisionGroup1 == ASW_COLLISION_GROUP_GRUBS )
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_GRUBS, false );
 
 	// parasites don't collide with each other (fixes double head jumping and crazy leaps when multiple parasites exit a victim)
-	if ( ( collisionGroup0 == ASW_COLLISION_GROUP_PARASITE ) && ( collisionGroup1 == ASW_COLLISION_GROUP_PARASITE ) )
-		return false;
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_PARASITE, false );
 
 	// weapons and NPCs don't collide
+	ASSERT_INVARIANT( COLLISION_GROUP_WEAPON <= HL2COLLISION_GROUP_FIRST_NPC && HL2COLLISION_GROUP_FIRST_NPC <= HL2COLLISION_GROUP_LAST_NPC );
 	if ( collisionGroup0 == COLLISION_GROUP_WEAPON && (collisionGroup1 >= HL2COLLISION_GROUP_FIRST_NPC && collisionGroup1 <= HL2COLLISION_GROUP_LAST_NPC ) )
 		return false;
 
 	//players don't collide against NPC Actors.
 	//I could've done this up where I check if collisionGroup0 is NOT a player but I decided to just
 	//do what the other checks are doing in this function for consistency sake.
-	if ( collisionGroup1 == COLLISION_GROUP_NPC_ACTOR && collisionGroup0 == COLLISION_GROUP_PLAYER )
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, COLLISION_GROUP_NPC_ACTOR, false );
 
 	// In cases where NPCs are playing a script which causes them to interpenetrate while riding on another entity,
 	// such as a train or elevator, you need to disable collisions between the actors so the mover can move them.
-	if ( collisionGroup0 == COLLISION_GROUP_NPC_SCRIPTED && collisionGroup1 == COLLISION_GROUP_NPC_SCRIPTED )
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC_SCRIPTED, COLLISION_GROUP_NPC_SCRIPTED, false );
 
 	// reactivedrop: players don't collide with unborrowing aliens
-	if ( collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == COLLISION_GROUP_NPC_SCRIPTED )
-		return false;
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, COLLISION_GROUP_NPC_SCRIPTED, false );
 
 	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 ); 
 }

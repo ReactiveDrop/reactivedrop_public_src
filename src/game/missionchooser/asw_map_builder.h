@@ -9,7 +9,6 @@
 class KeyValues;
 class CMapLayout;
 class CLayoutSystem;
-class CMapBuilderWorkerThread;
 
 enum MapBuildStage
 {
@@ -22,9 +21,6 @@ enum MapBuildStage
 	STAGE_VBSP, // executing VBSP.EXE (.VMF -> .BSP)
 	STAGE_VVIS, // executing VVIS.EXE on .BSP 
 	STAGE_VRAD, // executing VRAD.EXE on .BSP
-	
-	// VBSP2 states
-	STAGE_VBSP2, // converts .VMF -> .BSP with vis information
 };
 
 static const int MAP_BUILD_OUTPUT_BUFFER_SIZE = 4096;
@@ -106,12 +102,6 @@ private:
 	KeyValues *m_pMissionSettings;
 	// Specification for building the mission layout.
 	KeyValues *m_pMissionDefinition;
-		
-	// Handles updating asynchronous VBSP2 status
-	void UpdateVBSP2Progress();
-
-	// Background thread for VBSP2 processing
-	CMapBuilderWorkerThread *m_pWorkerThread;
 };
 
 #endif // _INCLUDED_ASW_MAP_BUILDER_H
