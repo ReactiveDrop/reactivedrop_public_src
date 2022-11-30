@@ -21,7 +21,8 @@ BEGIN_DATADESC( CASW_Barrel_Radioactive )
 	DEFINE_FIELD(m_hRadCloud, FIELD_EHANDLE),
 	DEFINE_FIELD(m_bBurst, FIELD_BOOLEAN),
 
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),	
+	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),
+	DEFINE_OUTPUT( m_OnBurst, "OnBurst" ),
 END_DATADESC()
 
 CASW_Barrel_Radioactive::CASW_Barrel_Radioactive()
@@ -100,6 +101,7 @@ void CASW_Barrel_Radioactive::Burst( const CTakeDamageInfo &info )
 	if (m_bBurst)
 		return;
 
+	m_OnBurst.FireOutput( info.GetInflictor(), this );
 	m_bBurst = true;
 	
 	// spawn a jet in the direction of the damage
