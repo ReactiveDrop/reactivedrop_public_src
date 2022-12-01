@@ -32,6 +32,8 @@ public:
 	CHandle<CASW_Emitter> m_hRadCloud;
 	CHandle<CASW_Radiation_Volume> m_hRadVolume;
 
+	COutputEvent m_OnBurst;
+
 	// sound
 	virtual void			StopLoopingSounds();
 	virtual void			StartRadLoopSound();
