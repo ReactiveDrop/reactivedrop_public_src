@@ -23,11 +23,7 @@
 #include "asw_gamerules.h"
 #include "asw_melee_system.h"
 #include "asw_trace_filter.h"
-// commented as it is not needed to be included here
-//#ifdef _WIN32
-//#undef INVALID_HANDLE_VALUE
-//#include <windows.h>
-//#endif
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1397,10 +1393,16 @@ void ASW_UpdateControllerCodes()
 
 const char *ASW_FindKeyBoundTo( const char *binding )
 {
-	const char *pKeyText = engine->Key_LookupBindingEx( binding, -1, 0, ASWInput()->ControllerModeActive() );
+	const char *pKeyText = g_RD_Steam_Input.Key_LookupBindingEx( binding, -1, 0, ASWInput()->ControllerModeActive() );
 	if ( !pKeyText )
 	{
 		return "#GameUI_KeyNames_Not_Bound";
+	}
+
+	const char *szSteamName = g_RD_Steam_Input.NameForOrigin( pKeyText );
+	if ( szSteamName )
+	{
+		return szSteamName;
 	}
 
 	return MakeHumanReadable( pKeyText );

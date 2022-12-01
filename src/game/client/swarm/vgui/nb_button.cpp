@@ -4,6 +4,7 @@
 #include "vgui/ILocalize.h"
 #include "inputsystem/iinputsystem.h"
 #include "controller_focus.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -137,19 +138,8 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 	// TODO: is there a better way of knowing out-of-game whether a controller is active than just whether it's plugged in?
 	if ( m_szControllerButton && g_pInputSystem->GetJoystickCount() )
 	{
-		const wchar_t *wszControllerButton = g_pVGuiLocalize->Find( m_szControllerButton );
-		Assert( wszControllerButton );
-		if ( m_hButtonFont != INVALID_FONT && wszControllerButton )
-		{
-			int nLabelLen = V_wcslen( wszControllerButton );
-			int buttonWide, buttonTall;
-			surface()->GetTextSize( m_hButtonFont, wszControllerButton, buttonWide, buttonTall );
-			int buttonPadding = ( tall - buttonTall ) / 2;
-			surface()->DrawSetTextFont( m_hButtonFont );
-			surface()->DrawSetTextColor( 255, 255, 255, 255 );
-			surface()->DrawSetTextPos( x + buttonPadding, y + buttonPadding );
-			surface()->DrawPrintText( wszControllerButton, nLabelLen );
-		}
+		int padding = ( tall - surface()->GetFontTall( m_hButtonFont ) ) / 2;
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( m_szControllerButton, x + padding, y + padding, false, false, m_hButtonFont );
 	}
 }
 
@@ -158,52 +148,52 @@ void CNB_Button::SetControllerButton( KeyCode code )
 	switch ( code )
 	{
 	case KEY_XBUTTON_A:
-		m_szControllerButton = "#GameUI_Icons_A_BUTTON";
+		m_szControllerButton = "A_BUTTON";
 		break;
 	case KEY_XBUTTON_B:
-		m_szControllerButton = "#GameUI_Icons_B_BUTTON";
+		m_szControllerButton = "B_BUTTON";
 		break;
 	case KEY_XBUTTON_X:
-		m_szControllerButton = "#GameUI_Icons_X_BUTTON";
+		m_szControllerButton = "X_BUTTON";
 		break;
 	case KEY_XBUTTON_Y:
-		m_szControllerButton = "#GameUI_Icons_Y_BUTTON";
+		m_szControllerButton = "Y_BUTTON";
 		break;
 	case KEY_XBUTTON_UP:
-		m_szControllerButton = "#GameUI_Icons_UP_DPAD";
+		m_szControllerButton = "UP_DPAD";
 		break;
 	case KEY_XBUTTON_DOWN:
-		m_szControllerButton = "#GameUI_Icons_DOWN_DPAD";
+		m_szControllerButton = "DOWN_DPAD";
 		break;
 	case KEY_XBUTTON_LEFT:
-		m_szControllerButton = "#GameUI_Icons_LEFT_DPAD";
+		m_szControllerButton = "LEFT_DPAD";
 		break;
 	case KEY_XBUTTON_RIGHT:
-		m_szControllerButton = "#GameUI_Icons_RIGHT_DPAD";
+		m_szControllerButton = "RIGHT_DPAD";
 		break;
 	case KEY_XBUTTON_LTRIGGER:
-		m_szControllerButton = "#GameUI_Icons_LEFT_TRIGGER";
+		m_szControllerButton = "LEFT_TRIGGER";
 		break;
 	case KEY_XBUTTON_RTRIGGER:
-		m_szControllerButton = "#GameUI_Icons_RIGHT_TRIGGER";
+		m_szControllerButton = "RIGHT_TRIGGER";
 		break;
 	case KEY_XBUTTON_LEFT_SHOULDER:
-		m_szControllerButton = "#GameUI_Icons_LEFT_BUMPER";
+		m_szControllerButton = "LEFT_BUMPER";
 		break;
 	case KEY_XBUTTON_RIGHT_SHOULDER:
-		m_szControllerButton = "#GameUI_Icons_RIGHT_BUMPER";
+		m_szControllerButton = "RIGHT_BUMPER";
 		break;
 	case KEY_XBUTTON_BACK:
-		m_szControllerButton = "#GameUI_Icons_BACK_BUTTON";
+		m_szControllerButton = "BACK_BUTTON";
 		break;
 	case KEY_XBUTTON_START:
-		m_szControllerButton = "#GameUI_Icons_START_BUTTON";
+		m_szControllerButton = "START_BUTTON";
 		break;
 	case KEY_XBUTTON_STICK1:
-		m_szControllerButton = "#GameUI_Icons_LEFT_STICK";
+		m_szControllerButton = "LEFT_STICK";
 		break;
 	case KEY_XBUTTON_STICK2:
-		m_szControllerButton = "#GameUI_Icons_RIGHT_STICK";
+		m_szControllerButton = "RIGHT_STICK";
 		break;
 	default:
 		Warning( "CNB_Button: Unhandled controller button code %d\n", code );
