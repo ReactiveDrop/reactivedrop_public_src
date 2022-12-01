@@ -54,7 +54,7 @@ VMFs = [
 ##		MapInfo("rd-dc1_omega_city", "1500", "0"),
 ##		MapInfo("rd-dc2_breaking_an_entry", "750", "0"),
 ##		MapInfo("rd-dc3_search_and_rescue", "750", "0"),
-##		MapInfo("rd-lan1_bridge", "2500", "0"),
+##		MapInfo("rd-lan1_bridge", "2000", "0"),
 ##		MapInfo("rd-lan2_sewer", "1500", "0"),
 ##		MapInfo("rd-lan3_maintenance", "750", "0"),
 ##		MapInfo("rd-lan4_vent", "1500", "0"),
