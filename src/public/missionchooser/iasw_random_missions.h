@@ -15,38 +15,6 @@ class Vector;
 class KeyValues;
 class IASW_Encounter;
 
-enum
-{
-	ASW_TILETYPE_UNKNOWN = 0,
-	ASW_TILETYPE_OUTDOOR1,
-	ASW_TILETYPE_OUTDOOR2,
-	ASW_TILETYPE_ARENA1,
-	ASW_TILETYPE_ARENA2,
-	ASW_TILETYPE_ARENA3,
-	ASW_TILETYPE_ROOM2,
-	ASW_TILETYPE_ROOM1,
-	ASW_TILETYPE_CORRIDOR1,
-	ASW_TILETYPE_CORRIDOR2,
-	ASW_TILETYPE_VENTS,
-
-	ASW_TILETYPE_COUNT
-};
-
-static const char *g_szASWTileTypeStrings[ASW_TILETYPE_COUNT] = 
-{
-	"Unknown",
-	"Outdoor1",
-	"Outdoor2",
-	"Arena1",
-	"Arena2",
-	"Arena3",
-	"Room1",
-	"Room2",
-	"Corridor1",
-	"Corridor2",
-	"Vents"
-};
-
 class IASW_Room_Details
 {
 public:
@@ -63,8 +31,6 @@ public:
 	virtual void			GetTheme( char* szOut, int iBufferSize ) = 0;
 	virtual const Vector&	GetAmbientLight() = 0;
 	virtual bool			HasAlienEncounter() = 0;
-	virtual int				GetTileType() = 0;
-	virtual const char*		GetTileTypeName( int nType ) = 0;
 	virtual int				GetRoomIndex() const = 0;
 
 	// location

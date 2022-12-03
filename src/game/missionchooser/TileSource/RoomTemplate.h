@@ -97,10 +97,6 @@ public:
 	int GetSpawnWeight() const { return m_nSpawnWeight; }
 	void SetSpawnWeight( int nSpawnWeight ) { m_nSpawnWeight = MAX( MIN( nSpawnWeight, MAX_SPAWN_WEIGHT ), MIN_SPAWN_WEIGHT ); }
 
-	// Tile types.
-	int GetTileType() const			{ return m_nTileType; }
-	void SetTileType( int nType )	{ Assert( nType >= ASW_TILETYPE_UNKNOWN && nType < ASW_TILETYPE_COUNT ); m_nTileType = nType; }
-
 	static const int m_nMaxDescriptionLength = 512;
 	static const int m_nMaxSoundscapeLength = 64;
 
@@ -119,8 +115,6 @@ private:
 
 	int m_nTilesX;
 	int m_nTilesY;
-
-	int	m_nTileType;
 };
 
 #endif TILEGEN_ROOM_TEMPLATE_H

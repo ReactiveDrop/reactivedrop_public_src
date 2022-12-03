@@ -66,40 +66,6 @@ extern ConVar joy_pan_camera;
 
 #define	DIST	 2
 
-// Camera height distances!
-float s_flCameraHeights[ASW_TILETYPE_COUNT] = 
-{ 
-  500.0f,			// Unknown
-  600.0f,			// Outdoor1
-  800.0f,			// Outdoor2
-  550.0f,			// Arena1
-  650.0f,			// Arena2
-  750.0f,			// Arena3
-  450.0f,			// Room1
-  550.0f,			// Room2
-  300.0f,			// Corridor1
-  400.0f,			// Corridor1
-  250.0f			// Vents
-};
-
-float s_flCameraHeights55[ASW_TILETYPE_COUNT] = 
-{
-	900.0f,			// Unknown
-	1080.0f,		// Outdoor1
-	1440.0f,		// Outdoor2
-	990.0f,			// Arena1
-	1170.0f,		// Arena2
-	1350.0f,		// Arena3
-	810.0f,			// Room1
-	990.0f,			// Room2
-	540.0f,			// Corridor1
-	720.0f,			// Corridor1
-	450.0f			// Vents
-};
-// Panning to much when pulled further out
-
-
-
 //-----------------------------------------------------------------------------
 // Purpose: Alien Swarm camera pitch.
 //-----------------------------------------------------------------------------

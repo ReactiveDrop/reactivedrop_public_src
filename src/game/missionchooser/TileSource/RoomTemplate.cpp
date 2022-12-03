@@ -40,7 +40,6 @@ m_nTilesY( 1 )
 	m_TemplateName[0] = '\0';
 	m_Description[0] = '\0';
 	m_Soundscape[0] = '\0';
-	m_nTileType = ASW_TILETYPE_UNKNOWN;
 }
 
 CRoomTemplate::~CRoomTemplate()
@@ -58,8 +57,6 @@ void CRoomTemplate::LoadFromKeyValues( const char *pRoomName, KeyValues *pKeyVal
 
 	Q_strncpy( m_Description, pKeyValues->GetString( "RoomTemplateDescription", "" ), m_nMaxDescriptionLength );
 	Q_strncpy( m_Soundscape, pKeyValues->GetString( "Soundscape", "" ), m_nMaxSoundscapeLength );
-
-	SetTileType( pKeyValues->GetInt( "TileType", ASW_TILETYPE_UNKNOWN ) );
 
 	m_Tags.RemoveAll();
 
@@ -126,7 +123,6 @@ bool CRoomTemplate::SaveRoomTemplate()
 	pRoomTemplateKeyValues->SetInt( "SpawnWeight", m_nSpawnWeight );
 	pRoomTemplateKeyValues->SetString( "RoomTemplateDescription", m_Description );
 	pRoomTemplateKeyValues->SetString( "Soundscape", m_Soundscape );
-	pRoomTemplateKeyValues->SetInt( "TileType", m_nTileType );
 
 	// exits
 	int iExits = m_Exits.Count();

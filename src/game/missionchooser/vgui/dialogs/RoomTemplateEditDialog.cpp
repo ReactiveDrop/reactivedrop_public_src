@@ -71,17 +71,6 @@ CRoomTemplateEditDialog::CRoomTemplateEditDialog( Panel *parent, const char *nam
 	m_pSpawnWeightSlider->SetNumTicks( MAX_SPAWN_WEIGHT - MIN_SPAWN_WEIGHT );
 	m_pSpawnWeightValue = new Label( this, "SpawnWeightValueLabel", "0" );
 
-	// Combo box for room types
-	m_pTileTypeBox = new vgui::ComboBox( this, "TileTypeCombo", ASW_TILETYPE_COUNT, false );
-	for ( int iType = 0; iType < ASW_TILETYPE_COUNT; ++iType )
-	{
-		m_pTileTypeBox->AddItem( g_szASWTileTypeStrings[iType], NULL );
-	}
-	if ( m_pTileTypeBox->IsItemIDValid( ASW_TILETYPE_COUNT ) )
-	{
-		m_pTileTypeBox->SetText( g_szASWTileTypeStrings[ASW_TILETYPE_UNKNOWN] );
-	}
-
 	char buffer[256];
 	Q_snprintf( buffer, _countof( buffer ), "%d", MAX_ROOM_SIZE );
 	m_pTilesXSlider = new vgui::Slider(this, "TilesXSlider");
@@ -144,13 +133,6 @@ CRoomTemplateEditDialog::CRoomTemplateEditDialog( Panel *parent, const char *nam
 		m_pTilesXValue->SetText( buffer );
 		Q_snprintf( buffer, _countof( buffer ), "%d", m_pRoomTemplate->GetTilesY() );
 		m_pTilesYValue->SetText( buffer );
-
-		// Set value for tile type.
-		int nTileType = m_pRoomTemplate->GetTileType();
-		if ( m_pTileTypeBox->IsItemIDValid( nTileType ) )
-		{
-			m_pTileTypeBox->SetText( g_szASWTileTypeStrings[nTileType] );
-		}
 	}
 
 	SetDeleteSelfOnClose( true );
@@ -574,24 +556,3 @@ const char* CRoomTemplateEditDialog::GetVMFFilename()
 	
 	return buffer;
 }
-
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CRoomTemplateEditDialog::OnTextChanged( vgui::Panel *pPanel )
-{
-	// Check that this is the combo box we want.
-	if ( pPanel == m_pTileTypeBox )
-	{
-		vgui::ComboBox *pComboBox = dynamic_cast<vgui::ComboBox*>( pPanel );
-		if ( !pComboBox )
-			return;
-
-		int nItem = pComboBox->GetActiveItem();
-		m_pRoomTemplate->SetTileType( nItem );
-	}
-}
-
-
-

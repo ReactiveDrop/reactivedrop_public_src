@@ -74,8 +74,6 @@ public:
 	virtual void			GetTheme( char* szOut, int iBufferSize );
 	virtual const Vector&	GetAmbientLight();
 	virtual bool			HasAlienEncounter() { return m_bHasAlienEncounter; }
-	virtual int				GetTileType();
-	virtual const char*		GetTileTypeName( int nType );
 	virtual int				GetRoomIndex() const { return m_iNumChildren; }
 
 	// location

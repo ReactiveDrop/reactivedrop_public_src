@@ -43,7 +43,6 @@ public:
 
 	MESSAGE_FUNC_PTR( OnSliderMoved, "SliderMoved", panel );
 	MESSAGE_FUNC_PTR( OnCheckButtonChecked, "CheckButtonChecked", panel );
-	MESSAGE_FUNC_PTR( OnTextChanged, "TextChanged", panel );
 	MESSAGE_FUNC_PARAMS( OnCheckOutFromP4, "CheckOutFromP4", pKV );
 	MESSAGE_FUNC_PARAMS( OnAddToP4, "AddToP4", pKV );
 	DECLARE_PANELMAP();	
@@ -61,8 +60,6 @@ public:
 
 	vgui::Slider* m_pSpawnWeightSlider;
 	vgui::Label* m_pSpawnWeightValue;
-
-	vgui::ComboBox* m_pTileTypeBox;
 
 	vgui::Slider* m_pTilesXSlider;
 	vgui::Slider* m_pTilesYSlider;
