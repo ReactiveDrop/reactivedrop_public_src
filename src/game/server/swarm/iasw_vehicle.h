@@ -25,6 +25,7 @@ public:
 	virtual int ASWGetSeatPosition( int i, Vector &origin, QAngle &angles ) = 0;
 	virtual void ASWStartEngine() = 0;
 	virtual void ASWStopEngine() = 0;
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) = 0;
 	virtual void SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) = 0;
 	virtual void ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 

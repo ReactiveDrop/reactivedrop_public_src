@@ -25,6 +25,7 @@ public:
 	virtual bool ValidUseTarget() = 0;
 	virtual void ASWStartEngine() = 0;
 	virtual void ASWStopEngine() = 0;
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) = 0;
 	virtual void SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) = 0;
 	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 

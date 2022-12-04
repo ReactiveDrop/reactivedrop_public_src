@@ -331,6 +331,8 @@ IMPLEMENT_SERVERCLASS_ST(CPropVehicleDriveable, DT_PropVehicleDriveable)
 	SendPropInt(SENDINFO(m_nHasBoost), 1, SPROP_UNSIGNED),
 	SendPropInt(SENDINFO(m_nScannerDisabledWeapons), 1, SPROP_UNSIGNED),
 	SendPropInt(SENDINFO(m_nScannerDisabledVehicle), 1, SPROP_UNSIGNED),
+	SendPropBool(SENDINFO(m_bLocked)),
+	SendPropFloat(SENDINFO(m_flMinimumSpeedToEnterExit)),
 	SendPropInt(SENDINFO(m_bEnterAnimOn), 1, SPROP_UNSIGNED ),
 	SendPropInt(SENDINFO(m_bExitAnimOn), 1, SPROP_UNSIGNED ),
 	SendPropInt(SENDINFO(m_bUnableToFire), 1, SPROP_UNSIGNED ),

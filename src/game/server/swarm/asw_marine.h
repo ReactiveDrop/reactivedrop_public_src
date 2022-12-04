@@ -112,6 +112,7 @@ public:
 	// Camera
 	virtual const QAngle& ASWEyeAngles( void );
 	Vector EyePosition(void);
+	QAngle m_AIEyeAngles;
 
 	// Classification
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MARINE; }

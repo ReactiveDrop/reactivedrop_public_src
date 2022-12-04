@@ -34,6 +34,8 @@ IMPLEMENT_CLIENTCLASS_DT(C_PropVehicleDriveable, DT_PropVehicleDriveable, CPropV
 	RecvPropInt( RECVINFO( m_nHasBoost ) ),
 	RecvPropInt( RECVINFO( m_nScannerDisabledWeapons ) ),
 	RecvPropInt( RECVINFO( m_nScannerDisabledVehicle ) ),
+	RecvPropBool( RECVINFO( m_bLocked ) ),
+	RecvPropFloat( RECVINFO( m_flMinimumSpeedToEnterExit ) ),
 	RecvPropInt( RECVINFO( m_bEnterAnimOn ) ),
 	RecvPropInt( RECVINFO( m_bExitAnimOn ) ),
 	RecvPropInt( RECVINFO( m_bUnableToFire ) ),

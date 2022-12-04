@@ -70,7 +70,6 @@ ConVar asw_flashlight_marine_ambient("asw_flashlight_marine_ambient", "0.1", FCV
 ConVar asw_flashlight_marine_lightscale("asw_flashlight_marine_lightscale", "1.0", FCVAR_CHEAT, "Light scale on the marine with flashlight on");
 ConVar asw_left_hand_ik("asw_left_hand_ik", "0", FCVAR_CHEAT, "IK the marine's left hand to his weapon");
 ConVar asw_marine_shoulderlight("asw_marine_shoulderlight", "2", 0, "Should marines have a shoulder light effect on them.");
-ConVar asw_hide_local_marine("asw_hide_local_marine", "0", FCVAR_CHEAT, "If enabled, your current marine will be invisible");
 ConVar asw_override_footstep_volume( "asw_override_footstep_volume", "0", FCVAR_CHEAT, "Overrides footstep volume instead of it being surface dependent" );
 ConVar asw_marine_object_motion_blur_scale( "asw_marine_object_motion_blur_scale", "0.0" );
 ConVar asw_damage_spark_rate( "asw_damage_spark_rate", "0.24", FCVAR_CHEAT, "Base number of seconds between spark sounds/effects at critical damage." );
@@ -574,7 +573,7 @@ void C_ASW_Marine::UpdateClientSideAnimation()
 
 	C_ASW_Player *pPlayer = GetCommander();
 		
-	if ( pPlayer && C_BasePlayer::IsLocalPlayer( pPlayer ) && pPlayer->GetNPC() == this && !IsControllingTurret() )
+	if ( pPlayer && !IsInVehicle() && C_BasePlayer::IsLocalPlayer(pPlayer) && pPlayer->GetNPC() == this && !IsControllingTurret() )
 	{
 		m_PlayerAnimState->Update( pPlayer->EyeAngles()[YAW], pPlayer->EyeAngles()[PITCH] );
 		m_fLastYawHack = pPlayer->EyeAngles()[YAW];
@@ -932,7 +931,9 @@ void C_ASW_Marine::ClientThink()
 		m_vecFacingPoint = vec3_origin;
 	}
 
-	if ( GetViewMarine() == this )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Marine *pViewMarine = pPlayer ? AsMarine( pPlayer->GetViewNPC() ) : NULL;
+	if ( pViewMarine == this )
 	{
 		g_fMarinePoisonDuration = m_fPoison;
 	}
@@ -946,7 +947,7 @@ void C_ASW_Marine::ClientThink()
 	UpdateElectrifiedArmor();
 
 	extern ConVar asw_allow_detach;
-	if ( GetViewMarine() == this && asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	if ( pViewMarine == this && pPlayer && pPlayer->GetASWControls() == ASWC_FIRSTPERSON && !asw_allow_detach.GetBool() )
 	{
 		if ( !m_bIsHiddenLocal || GetRenderAlpha() )
 		{
@@ -977,7 +978,6 @@ void C_ASW_Marine::ClientThink()
 			}
 			case 1:
 			{
-				C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 				int nTeam = pPlayer ? pPlayer->GetSpectatingNPC() ? pPlayer->GetSpectatingNPC()->GetTeamNumber() : pPlayer->GetTeamNumber() : TEAM_ALPHA;
 				if ( nTeam == GetTeamNumber() )
 				{

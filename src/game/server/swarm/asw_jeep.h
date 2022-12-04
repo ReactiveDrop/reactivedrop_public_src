@@ -33,6 +33,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_PropJeep( void );
 
@@ -85,9 +86,33 @@ public:
 	virtual CBaseEntity *GetEntity() override { return this; }
 	virtual void ASWStartEngine() override { StartEngine(); }
 	virtual void ASWStopEngine() override { StopEngine(); }
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) override;
+	virtual bool IsUsable( CBaseEntity *pUser ) override;
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) override {}
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) override {}
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float fDeltaTime ) override {}
+	virtual bool NeedsLOSCheck() override { return false; }
 	CNetworkArray( CHandle<CASW_Marine>, m_hPassenger, 10 );
 	int m_iPassengerAttachment[10];
 	CNetworkVar( unsigned int, m_iPassengerBits );
+
+	// script wrapper funcs
+	int ScriptGetCameraControls();
+	void ScriptSetCameraControls( int controls );
+	float ScriptGetCameraPitch();
+	void ScriptSetCameraPitch( float pitch );
+	float ScriptGetCameraDist();
+	void ScriptSetCameraDist( float dist );
+	float ScriptGetCameraHeight();
+	void ScriptSetCameraHeight( float height );
+	HSCRIPT ScriptGetDriver();
+	HSCRIPT ScriptGetPassenger( int seat );
+	int ScriptGetSpeed();
+	int ScriptGetMaxSpeed();
+	int ScriptGetRPM();
+	float ScriptGetThrottle();
+	bool ScriptHasBoost();
+	int ScriptBoostTimeLeft();
 
 private:
 
@@ -156,12 +181,11 @@ private:
 
 	CNetworkVar( bool, m_bHeadlightIsOn );
 
-	// IASW_Server_Usable_Entity
-	virtual bool IsUsable( CBaseEntity *pUser );
-	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pNPC ) {}
-	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) {}
-	virtual void NPCUsing( CASW_Inhabitable_NPC *pNPC, float fDeltaTime ) {}
-	virtual bool NeedsLOSCheck() { return false; }
+	// Camera overrides
+	CNetworkVar( int, m_iCamControlsOverride );
+	CNetworkVar( float, m_flCamPitchOverride );
+	CNetworkVar( float, m_flCamDistOverride );
+	CNetworkVar( float, m_flCamHeightOverride );
 };
 
 #endif // _INCLUDED_ASW_VEHICLE_JEEP_H

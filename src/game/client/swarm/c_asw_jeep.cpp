@@ -32,6 +32,10 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_PropJeep, DT_ASW_PropJeep, CASW_PropJeep )
 	RecvPropInt( RECVINFO( m_iPassengerBits ) ),
 
 	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
+	RecvPropInt( RECVINFO( m_iCamControlsOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamPitchOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamDistOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamHeightOverride ) ),
 END_RECV_TABLE()
 
 C_ASW_PropJeep::C_ASW_PropJeep()
@@ -411,6 +415,18 @@ int C_ASW_PropJeep::GetRideIconTexture()
 	return s_nRideIconTextureID;
 }
 
+void C_ASW_PropJeep::ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight )
+{
+	if ( pControls && m_iCamControlsOverride >= 0 )
+		*pControls = m_iCamControlsOverride;
+	if ( pPitch && m_flCamPitchOverride >= 0 )
+		*pPitch = m_flCamPitchOverride;
+	if ( pDist && m_flCamDistOverride >= 0 )
+		*pDist = m_flCamDistOverride;
+	if ( pHeight && m_flCamHeightOverride >= 0 )
+		*pHeight = m_flCamHeightOverride;
+}
+
 int C_ASW_PropJeep::FindClosestEmptySeat( Vector vecPoint )
 {
 	int iBestSeat = -1;
@@ -448,6 +464,9 @@ bool C_ASW_PropJeep::MarineInVehicle()
 
 bool C_ASW_PropJeep::IsUsable( C_BaseEntity *pUser )
 {
+	if ( m_bLocked || m_nSpeed > m_flMinimumSpeedToEnterExit )
+		return false;
+
 	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 

@@ -8,6 +8,7 @@
 #include "missionchooser/iasw_random_missions.h"
 #include "holdout_resupply_frame.h"
 #include "igameevents.h"
+#include "iasw_client_vehicle.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -52,16 +53,21 @@ ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_CH
 
 // Vehicle Camera ConVars.
 ConVar asw_vehicle_cam_height( "asw_vehicle_cam_height", "0", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_pitch( "asw_vehicle_cam_pitch", "45", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "412", FCVAR_CHEAT );
+ConVar asw_vehicle_cam_pitch( "asw_vehicle_cam_pitch", "5", FCVAR_CHEAT );
+ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "380", FCVAR_CHEAT );
+ConVar asw_vehicle_cam_speed( "asw_vehicle_cam_speed", "200", FCVAR_CHEAT );
 ConVar asw_vehicle_cam_shift_enable( "asw_vehicle_cam_shift_enable", "0", FCVAR_CHEAT );
+
+ConVar asw_cam_marine_dist_2( "asw_cam_marine_dist_2", "80", FCVAR_CHEAT, "offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_pitch_2( "asw_cam_marine_pitch_2", "10", FCVAR_CHEAT, "pitch offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_yaw_2( "asw_cam_marine_yaw_2", "20", FCVAR_CHEAT, "yaw offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_speed_2( "asw_cam_marine_speed_2", "50", FCVAR_CHEAT, "speed going back to full distance of camera in asw_controls 2" );
 
 // ASWTODO - allow thirdperson but cheat protect first person
 //static ConCommand thirdperson( "thirdperson", ::CAM_ToThirdPerson, "Switch to thirdperson camera." );
 //static ConCommand firstperson( "firstperson", ::CAM_ToFirstPerson, "Switch to firstperson camera.", FCVAR_CHEAT );
 
 extern kbutton_t in_zoom;
-extern ConVar asw_hide_local_marine;
 extern ConVar cam_command;
 extern ConVar joy_pan_camera;
 
@@ -74,6 +80,10 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 {
 	// Get the given pitch.
 	float flPitch = asw_cam_marine_pitch.GetFloat();
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer && pPlayer->GetASWControls() == ASWC_THIRDPERSONSHOULDER )
+		flPitch = 50; // XXFIXMEXX
 
 	float fDeathCamInterp;
 	if ( pfDeathCamInterp )
@@ -91,7 +101,6 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	}
 
 	// Check to see if we are in a camera volume.
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
 	if ( pNPC )
 	{
@@ -99,6 +108,11 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 		if ( pMarine && pMarine->IsInVehicle() )
 		{
 			flPitch = asw_vehicle_cam_pitch.GetFloat();
+
+			if ( IASW_Client_Vehicle *pVehicle = pMarine->GetASWVehicle() )
+			{
+				pVehicle->ASWGetCameraOverrides( NULL, &flPitch, NULL, NULL );
+			}
 		}
 
 		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pNPC->GetAbsOrigin() );
@@ -315,23 +329,91 @@ void CASWInput::CAM_Think( void )
 		break;
 	}
 
-	if( !GetPerUser().m_fCameraInThirdPerson )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer )
 		return;
 
-	GetPerUser().m_vecCameraOffset[ PITCH ] = ASW_GetCameraPitch();
-	GetPerUser().m_vecCameraOffset[ YAW ]   = ASW_GetCameraYaw();
-	GetPerUser().m_vecCameraOffset[ DIST ]  = 0;
+	switch ( pPlayer->GetASWControls() )
+	{
+	case ASWC_FIRSTPERSON:
+	{
+		break;
+	}
+	case ASWC_TOPDOWN:
+	{
+		GetPerUser().m_vecCameraOffset[PITCH] = ASW_GetCameraPitch();
+		GetPerUser().m_vecCameraOffset[YAW] = ASW_GetCameraYaw();
+		GetPerUser().m_vecCameraOffset[DIST] = ASW_GetCameraDist();
+		break;
+	}
+	case ASWC_THIRDPERSONSHOULDER:
+	{
+		CASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+		CBaseCombatCharacter *pCharacter = pNPC;
+		if ( pNPC && pNPC->IsInhabited() )
+			pCharacter = pNPC->GetCommander();
+		if ( !pCharacter )
+			pCharacter = pPlayer;
+
+
+		float flPitch = asw_cam_marine_pitch_2.GetFloat();
+		float flYaw = asw_cam_marine_yaw_2.GetFloat();
+		float flDist = asw_cam_marine_dist_2.GetFloat();
+		float flHeight = 0.0f;
+		float flSpeed = asw_cam_marine_speed_2.GetFloat();
+
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+#ifdef GAME_DLL
+		IASW_Vehicle *pVehicle = pMarine && pMarine->IsInVehicle() ? pMarine->GetASWVehicle() : NULL;
+#else
+		IASW_Client_Vehicle *pVehicle = pMarine && pMarine->IsInVehicle() ? pMarine->GetASWVehicle() : NULL;
+#endif
+		if ( pVehicle )
+		{
+			flPitch = asw_vehicle_cam_pitch.GetFloat();
+			flYaw = 0.0f;
+			flDist = asw_vehicle_cam_dist.GetFloat();
+			flHeight = asw_vehicle_cam_height.GetFloat();
+			flSpeed = asw_vehicle_cam_speed.GetFloat();
+			pVehicle->ASWGetCameraOverrides( NULL, &flPitch, &flDist, &flHeight );
+		}
+
+		QAngle angles = pCharacter->EyeAngles();
+		angles[PITCH] += flPitch;
+		angles[YAW] += flYaw;
+		GetPerUser().m_vecCameraOffset[PITCH] = angles[PITCH];
+		GetPerUser().m_vecCameraOffset[YAW] = angles[YAW];
+
+		Vector forward;
+		AngleVectors( angles, &forward );
+
+		Vector position = pNPC ? pNPC->EyePosition() : pCharacter->EyePosition();
+		position.z += flHeight;
+		trace_t tr;
+		CTraceFilterSkipTwoEntities filter( pCharacter, pVehicle ? pVehicle->GetEntity() : NULL, ASW_COLLISION_GROUP_PASSABLE );
+		UTIL_TraceHull( position, position - forward * flDist, Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), MASK_VISIBLE, &filter, &tr );
+
+		float flTraceDist = tr.fraction * flDist;
+		if ( GetPerUser().m_vecCameraOffset[DIST] > flTraceDist )
+		{
+			GetPerUser().m_vecCameraOffset[DIST] = flTraceDist;
+		}
+		else
+		{
+			GetPerUser().m_vecCameraOffset[DIST] = MIN( GetPerUser().m_vecCameraOffset[DIST] + flSpeed * gpGlobals->frametime, flTraceDist );
+		}
+		break;
+	}
+	}
 }
 
 void CASWInput::CAM_ToThirdPerson(void)
 {
-	asw_hide_local_marine.SetValue(0);
 	CInput::CAM_ToThirdPerson();
 }
 
 void CASWInput::CAM_ToFirstPerson(void)
 {
-	asw_hide_local_marine.SetValue(1);
 	CInput::CAM_ToFirstPerson();
 }
 

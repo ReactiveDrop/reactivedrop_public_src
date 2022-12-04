@@ -294,8 +294,8 @@ public:
 protected:
 	// Entering / Exiting
 	bool		m_bEngineLocked;	// Mapmaker override on whether the vehicle's allowed to be turned on/off
-	bool		m_bLocked;
-	float		m_flMinimumSpeedToEnterExit;
+	CNetworkVar( bool, m_bLocked );
+	CNetworkVar( float, m_flMinimumSpeedToEnterExit );
 	CNetworkVar( bool, m_bEnterAnimOn );
 	CNetworkVar( bool, m_bExitAnimOn );
 	

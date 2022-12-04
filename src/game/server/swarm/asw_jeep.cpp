@@ -125,7 +125,31 @@ IMPLEMENT_SERVERCLASS_ST( CASW_PropJeep, DT_ASW_PropJeep )
 	SendPropInt( SENDINFO( m_iPassengerBits ) ),
 
 	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
+	SendPropInt( SENDINFO( m_iCamControlsOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamPitchOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamDistOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamHeightOverride ) ),
 END_SEND_TABLE();
+
+BEGIN_ENT_SCRIPTDESC( CASW_PropJeep, CBaseAnimating, "Vehicles" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraControls, "GetCameraControls", "Gets the asw_controls_vehicle override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraControls, "SetCameraControls", "Overrides the control scheme for this vehicle. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraPitch, "GetCameraPitch", "Gets the asw_vehicle_cam_pitch override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraPitch, "SetCameraPitch", "Overrides the camera pitch. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraDist, "GetCameraDist", "Gets the asw_vehicle_cam_dist override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraDist, "SetCameraDist", "Overrides the camera distance. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraHeight, "GetCameraHeight", "Gets the asw_vehicle_cam_height override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraHeight, "SetCameraHeight", "Overrides the camera height. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ASWGetNumPassengers, "MaxPassengers", "Returns the number of passenger seats." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDriver, "GetDriver", "Get the driver entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetPassenger, "GetPassenger", "Get a passenger entity; seat must be between 0 and MaxPassengers() - 1." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSpeed, "GetSpeed", "vehicle statistics")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxSpeed, "GetMaxSpeed", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetRPM, "GetRPM", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetThrottle, "GetThrottle", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptHasBoost, "HasBoost", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptBoostTimeLeft, "BoostTimeLeft", "vehicle statistics" )
+END_SCRIPTDESC();
 
 // This is overriden for the episodic jeep
 #ifndef HL2_EPISODIC
@@ -157,6 +181,11 @@ CASW_PropJeep::CASW_PropJeep( void )
 	{
 		m_iPassengerAttachment[i] = -1;
 	}
+
+	m_iCamControlsOverride = -1;
+	m_flCamPitchOverride = -1.0f;
+	m_flCamDistOverride = -1.0f;
+	m_flCamHeightOverride = -1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1604,7 +1633,107 @@ void CASW_PropJeep::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	}
 }
 
+void CASW_PropJeep::ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight )
+{
+	if ( pControls && m_iCamControlsOverride >= 0 )
+		*pControls = m_iCamControlsOverride;
+	if ( pPitch && m_flCamPitchOverride >= 0 )
+		*pPitch = m_flCamPitchOverride;
+	if ( pDist && m_flCamDistOverride >= 0 )
+		*pDist = m_flCamDistOverride;
+	if ( pHeight && m_flCamHeightOverride >= 0 )
+		*pHeight = m_flCamHeightOverride;
+}
+
 bool CASW_PropJeep::IsUsable( CBaseEntity *pUser )
 {
+	if ( m_bLocked || m_nSpeed > m_flMinimumSpeedToEnterExit )
+		return false;
+
 	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
+}
+
+int CASW_PropJeep::ScriptGetCameraControls()
+{
+	return m_iCamControlsOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraControls( int controls )
+{
+	m_iCamControlsOverride = controls;
+}
+
+float CASW_PropJeep::ScriptGetCameraPitch()
+{
+	return m_flCamPitchOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraPitch( float pitch )
+{
+	m_flCamPitchOverride = pitch;
+}
+
+float CASW_PropJeep::ScriptGetCameraDist()
+{
+	return m_flCamDistOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraDist( float dist )
+{
+	m_flCamDistOverride = dist;
+}
+
+float CASW_PropJeep::ScriptGetCameraHeight()
+{
+	return m_flCamHeightOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraHeight( float height )
+{
+	m_flCamHeightOverride = height;
+}
+
+HSCRIPT CASW_PropJeep::ScriptGetDriver()
+{
+	return ToHScript( ASWGetDriver() );
+}
+
+HSCRIPT CASW_PropJeep::ScriptGetPassenger( int seat )
+{
+	if ( seat < 0 || seat >= ASWGetNumPassengers() )
+	{
+		return NULL;
+	}
+
+	return ToHScript( ASWGetPassenger( seat ) );
+}
+
+int CASW_PropJeep::ScriptGetSpeed()
+{
+	return GetPhysics()->GetSpeed();
+}
+
+int CASW_PropJeep::ScriptGetMaxSpeed()
+{
+	return GetPhysics()->GetMaxSpeed();
+}
+
+int CASW_PropJeep::ScriptGetRPM()
+{
+	return GetPhysics()->GetRPM();
+}
+
+float CASW_PropJeep::ScriptGetThrottle()
+{
+	return GetPhysics()->GetThrottle();
+}
+
+bool CASW_PropJeep::ScriptHasBoost()
+{
+	return GetPhysics()->HasBoost();
+}
+
+int CASW_PropJeep::ScriptBoostTimeLeft()
+{
+	return GetPhysics()->BoostTimeLeft();
 }
