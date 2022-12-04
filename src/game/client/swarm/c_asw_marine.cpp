@@ -135,7 +135,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat		( RECVINFO( m_fFFGuardTime ) ),	
 	RecvPropEHandle		( RECVINFO( m_hGroundEntity ) ),	// , RecvProxy_Marine_GroundEnt
 	RecvPropEHandle		( RECVINFO( m_hMarineFollowTarget ) ),
-	
+
 	RecvPropTime		( RECVINFO(m_fStopMarineTime) ),
 	RecvPropTime		( RECVINFO(m_fNextMeleeTime) ),
 	RecvPropTime		( RECVINFO( m_flNextAttack ) ),
@@ -156,8 +156,8 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 
 	// driving
 	RecvPropEHandle (RECVINFO(m_hASWVehicle)),
-	RecvPropBool	(RECVINFO(m_bDriving)),	
-	RecvPropBool	(RECVINFO(m_bIsInVehicle)),	
+	RecvPropInt		(RECVINFO(m_iVehicleSeat)),
+	RecvPropBool	(RECVINFO(m_bIsInVehicle)),
 
 	// falling over
 	RecvPropBool	(RECVINFO(m_bKnockedOut)),
@@ -454,7 +454,6 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_vecFacingPoint = vec3_origin;	
 	m_fStopFacingPointTime = 0;	
 	m_fStopMarineTime = 0;
-	m_bHasClientsideVehicle = false;
 	m_vecPredictionError.Init();
 	m_flPredictionErrorTime = 0;
 	m_pFlashlightBeam = NULL;
@@ -1039,13 +1038,6 @@ void C_ASW_Marine::DoWaterRipples()
 		//static Vector s_MarineWaterSplashColor( 0.5, 0.5, 0.5 );
 		//FX_ASWWaterRipple(data.m_vOrigin, 1.0f, &s_MarineWaterSplashColor, 1.5f, 0.1f);
 	}	
-}
-
-void C_ASW_Marine::SetClientsideVehicle(IASW_Client_Vehicle* pVehicle)
-{
-	m_pClientsideVehicle = pVehicle;
-
-	m_bHasClientsideVehicle = (m_pClientsideVehicle != NULL);
 }
 
 void C_ASW_Marine::CreateWeaponEmitters()

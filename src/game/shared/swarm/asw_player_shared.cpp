@@ -18,7 +18,6 @@
 	#include "iinput.h"
 	#include "asw_input.h"
 	#include "iclientvehicle.h"
-	#include "c_asw_jeep_clientside.h"
 	#include "iasw_client_vehicle.h"
 	#include "c_asw_weapon.h"
 	#include "c_asw_game_resource.h"
@@ -170,61 +169,19 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	}
 
 	// process vehicle movement
-#ifdef GAME_DLL
-	if ( pMarine && pMarine->IsDriving() && gpGlobals->maxClients == 1 )
+	if ( pMarine && pMarine->IsDriving() )
 	{
+#ifdef GAME_DLL
 		IASW_Vehicle *pVehicle = pMarine->GetASWVehicle();
+#else
+		IASW_Client_Vehicle *pVehicle = pMarine->GetASWVehicle();
+#endif
 		if ( pVehicle )
 		{
 			pVehicle->SetupMove( this, ucmd, moveHelper, g_pMoveData );
 			pVehicle->ProcessMovement( this, g_pMoveData );
 		}
 	}
-
-	// store light level for stats tracking
-	//if ( pMarine )
-	//{
-		//pMarine->m_iLightLevel = ucmd->light_level;
-	//}
-#else
-	if ( pMarine && gpGlobals->maxClients > 1 )
-	{
-		IASW_Client_Vehicle *pVehicle = pMarine->GetClientsideVehicle();
-		if ( pMarine->IsDriving() )
-		{
-			if ( pVehicle )
-			{
-				pVehicle->SetupMove( this, ucmd, moveHelper, g_pMoveData );
-				pVehicle->ProcessMovement( this, g_pMoveData );
-			}
-			else if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() &&
-				pMarine->GetASWVehicle()->ASWGetDriver() == pMarine )
-			{
-				// need to create a clientside vehicle for us to drive			
-				CBaseEntity *pEnt = pMarine->GetASWVehicle()->GetEntity();
-				C_ASW_PropJeep_Clientside *pJeep = C_ASW_PropJeep_Clientside::CreateNew( false );
-				pJeep->SetAbsOrigin( pEnt->GetAbsOrigin() );
-				pJeep->SetAbsAngles( pEnt->GetAbsAngles() );
-				// todo: set poseparameters too?
-				pJeep->Initialize();
-				pMarine->SetClientsideVehicle( pJeep );
-
-				// hide the dummy for this client only
-				pMarine->GetASWVehicle()->GetEntity()->UpdateVisibility();
-			}
-		}
-		else
-		{
-			if ( pMarine->GetClientsideVehicle() )
-			{
-				pMarine->GetClientsideVehicle()->ASWStopEngine();	// destroys it
-				pMarine->SetClientsideVehicle( NULL );
-				// the dummy will show itself in its next clientthink...
-			}
-		}
-	}
-
-#endif
 
 
 #ifdef GAME_DLL	
@@ -558,11 +515,11 @@ Vector CASW_Player::EyePosition( )
 		if ( pMarine && pMarine->IsInVehicle() )
 		{
 			ang[PITCH] = asw_vehicle_cam_pitch.GetFloat();
-			ang[YAW] = pMarine->EyeAngles()[YAW] - 90;
+			ang[YAW] = m_flMovementAxisYaw;
 			ang[ROLL] = 0;
 			AngleVectors( ang, &org );
-			//if (input->CAM_IsThirdPerson())
-				//org *= -asw_vehicle_cam_dist.GetFloat();
+			if ( bIsThirdPerson )
+				org *= -asw_vehicle_cam_dist.GetFloat();
 			org += m_vecLastMarineOrigin;
 			org.z += asw_vehicle_cam_height.GetFloat();
 		}
@@ -1054,12 +1011,9 @@ const QAngle& CASW_Player::EyeAngles( )
 		// if we're driving, return the angle
 		if ( pMarine->IsInVehicle() )
 		{
-#ifdef CLIENT_DLL
-			if ( pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity() )
-				return pMarine->GetClientsideVehicle()->GetEntity()->GetAbsAngles();
-#endif
-			if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() )
-				return pMarine->GetASWVehicle()->GetEntity()->GetAbsAngles();
+			Vector origin;
+			pMarine->GetASWVehicle()->ASWGetSeatPosition( pMarine->m_iVehicleSeat, origin, angAdjustedEyes );
+			return angAdjustedEyes;
 		}
 
 		// if we're spectating a turret, use the turret's eye angles

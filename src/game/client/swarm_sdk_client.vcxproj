@@ -996,7 +996,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_asw_door.cpp" />
     <ClCompile Include="swarm\c_asw_door_area.cpp" />
     <ClCompile Include="swarm\c_asw_drone_advanced.cpp" />
-    <ClCompile Include="swarm\c_asw_dummy_vehicle.cpp" />
     <ClCompile Include="swarm\c_asw_dynamic_light.cpp" />
     <ClCompile Include="swarm\c_asw_egg.cpp" />
     <ClCompile Include="swarm\c_asw_entity_dissolve.cpp" />
@@ -1018,7 +1017,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_asw_hack_computer.cpp" />
     <ClCompile Include="swarm\c_asw_hack_wire_tile.cpp" />
     <ClCompile Include="swarm\c_asw_jeep.cpp" />
-    <ClCompile Include="swarm\c_asw_jeep_clientside.cpp" />
     <ClCompile Include="swarm\c_asw_jukebox.cpp" />
     <ClCompile Include="swarm\c_asw_laser_mine.cpp" />
     <ClCompile Include="swarm\c_asw_lesson.cpp" />
@@ -2611,7 +2609,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\c_asw_door.h" />
     <ClInclude Include="swarm\c_asw_door_area.h" />
     <ClInclude Include="swarm\c_asw_drone_advanced.h" />
-    <ClInclude Include="swarm\c_asw_dummy_vehicle.h" />
     <ClInclude Include="swarm\c_asw_dynamic_light.h" />
     <ClInclude Include="swarm\c_asw_egg.h" />
     <ClInclude Include="swarm\c_asw_entity_dissolve.h" />
@@ -2632,7 +2629,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\c_asw_hack_computer.h" />
     <ClInclude Include="swarm\c_asw_hack_wire_tile.h" />
     <ClInclude Include="swarm\c_asw_jeep.h" />
-    <ClInclude Include="swarm\c_asw_jeep_clientside.h" />
     <ClInclude Include="swarm\c_asw_jukebox.h" />
     <ClInclude Include="swarm\c_asw_laser_mine.h" />
     <ClInclude Include="swarm\c_asw_level_exploder.h" />

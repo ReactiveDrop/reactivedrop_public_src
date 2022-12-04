@@ -54,6 +54,7 @@ ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_CH
 ConVar asw_vehicle_cam_height( "asw_vehicle_cam_height", "0", FCVAR_CHEAT );
 ConVar asw_vehicle_cam_pitch( "asw_vehicle_cam_pitch", "45", FCVAR_CHEAT );
 ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "412", FCVAR_CHEAT );
+ConVar asw_vehicle_cam_shift_enable( "asw_vehicle_cam_shift_enable", "0", FCVAR_CHEAT );
 
 // ASWTODO - allow thirdperson but cheat protect first person
 //static ConCommand thirdperson( "thirdperson", ::CAM_ToThirdPerson, "Switch to thirdperson camera." );
@@ -94,6 +95,12 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
 	if ( pNPC )
 	{
+		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
+		if ( pMarine && pMarine->IsInVehicle() )
+		{
+			flPitch = asw_vehicle_cam_pitch.GetFloat();
+		}
+
 		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pNPC->GetAbsOrigin() );
 		if ( fCameraVolumePitch != -1 )
 		{
@@ -340,6 +347,10 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	flShiftY = 0.0f;
 
 	if ( !asw_cam_marine_shift_enable.GetBool() )
+		return;
+
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer ? pPlayer->GetViewNPC() : NULL );
+	if ( pMarine && pMarine->IsInVehicle() && !asw_vehicle_cam_shift_enable.GetBool() )
 		return;
 
 	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingNPC() && !pPlayer->GetSpectatingNPC()->IsInhabited() ) )

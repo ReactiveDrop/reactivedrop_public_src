@@ -1016,7 +1016,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_drone_movement.cpp" />
     <ClCompile Include="swarm\asw_drone_navigator.cpp" />
     <ClCompile Include="swarm\asw_drone_uber.cpp" />
-    <ClCompile Include="swarm\asw_dummy_vehicle.cpp" />
     <ClCompile Include="swarm\asw_dynamic_light.cpp" />
     <ClCompile Include="swarm\asw_egg.cpp" />
     <ClCompile Include="swarm\asw_entityflame.cpp" />
@@ -1904,7 +1903,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_drone_movement.h" />
     <ClInclude Include="swarm\asw_drone_navigator.h" />
     <ClInclude Include="swarm\asw_drone_uber.h" />
-    <ClInclude Include="swarm\asw_dummy_vehicle.h" />
     <ClInclude Include="swarm\asw_dynamic_light.h" />
     <ClInclude Include="swarm\asw_egg.h" />
     <ClInclude Include="swarm\asw_entityflame.h" />

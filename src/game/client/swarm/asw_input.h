@@ -159,7 +159,6 @@ private:
 	void CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, float flDeltaY, float &flShiftX, float &flShiftY );
 	void SmoothCamera( C_ASW_Player *pPlayer, Vector &vecCameraLocation );
 
-	virtual bool			ASWWriteVehicleMessage( bf_write *buf );	
 	void EngageControllerMode();
 
 	int m_iOrderingMarine;	// entindex of marine we're ordering around

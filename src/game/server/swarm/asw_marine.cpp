@@ -86,6 +86,7 @@
 #include "asw_triggers.h"
 #include "triggers.h"
 #include "EnvLaser.h"
+#include "iservervehicle.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -229,13 +230,13 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	(SENDINFO(bEmoteStop)),
 	SendPropBool	(SENDINFO(bEmoteGo)),
 	SendPropBool	(SENDINFO(bEmoteExclaim)),
-	SendPropBool	(SENDINFO(bEmoteAnimeSmile)),	
-	SendPropBool	(SENDINFO(bEmoteQuestion)),	
+	SendPropBool	(SENDINFO(bEmoteAnimeSmile)),
+	SendPropBool	(SENDINFO(bEmoteQuestion)),
 
 	// driving
 	SendPropEHandle( SENDINFO ( m_hASWVehicle ) ),
-	SendPropBool	(SENDINFO(m_bDriving)),	
-	SendPropBool	(SENDINFO(m_bIsInVehicle)),	
+	SendPropInt		(SENDINFO(m_iVehicleSeat)),
+	SendPropBool	(SENDINFO(m_bIsInVehicle)),
 
 	// knocked out
 	SendPropBool	(SENDINFO(m_bKnockedOut)),
@@ -281,7 +282,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_iSlowHealAmount, FIELD_INTEGER ),
 	DEFINE_FIELD( m_hRemoteTurret, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hASWVehicle, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bDriving, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_iVehicleSeat, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bIsInVehicle, FIELD_BOOLEAN ),
 	DEFINE_FIELD( bEmoteMedic, FIELD_BOOLEAN ),
 	DEFINE_FIELD( bEmoteAmmo, FIELD_BOOLEAN ),
@@ -1108,7 +1109,19 @@ void CASW_Marine::InhabitedBy( CASW_Player *player )
 	SetPoseParameter( "move_x", 0.0f );
 	SetPoseParameter( "move_y", 0.0f );
 	SetMoveType( MOVETYPE_WALK );
-	Teleport( &GetAbsOrigin(), NULL, &m_vecSmoothedVelocity );
+	if ( IsInVehicle() )
+	{
+		Vector origin;
+		QAngle angles;
+		GetASWVehicle()->ASWGetSeatPosition( m_iVehicleSeat, origin, angles );
+		SetParent( NULL );
+		Teleport( &origin, &angles, &vec3_origin );
+		SetParent( m_hASWVehicle );
+	}
+	else
+	{
+		Teleport( &GetAbsOrigin(), NULL, &m_vecSmoothedVelocity );
+	}
 
 	m_iLightLevel = 255;	// reset light level - will get set correctly by first usercmd after this marine is inhabited
 }
@@ -2177,6 +2190,15 @@ void CASW_Marine::PostThink()
 void CASW_Marine::ASWThinkEffects()
 {
 	float fDeltaTime = gpGlobals->curtime - m_fLastASWThink;
+
+	if ( IsInVehicle() )
+	{
+		Vector origin;
+		QAngle angles;
+		GetASWVehicle()->ASWGetSeatPosition( m_iVehicleSeat, origin, angles );
+		SetAbsOrigin( origin );
+		SetAbsAngles( angles );
+	}
 
 	if ( gpGlobals->curtime > m_flNextPositionHistoryTime )
 	{
@@ -4337,61 +4359,75 @@ IASW_Vehicle* CASW_Marine::GetASWVehicle()
 }
 
 // make the marine start driving a particular vehicle
-void CASW_Marine::StartDriving(IASW_Vehicle* pVehicle)
+void CASW_Marine::EnterVehicle( IASW_Vehicle *pVehicle, int iSeat )
 {
-	if (!pVehicle || IsDriving() || IsInVehicle() || pVehicle->ASWGetDriver()!=NULL)
+	if ( !pVehicle || IsDriving() || IsInVehicle() || ( iSeat < 0 ? pVehicle->ASWGetDriver() : pVehicle->ASWGetPassenger( iSeat ) ) )
 		return;
 
-	CBaseEntity* pEnt = pVehicle->GetEntity();
-	if (!pEnt)
+	CBaseEntity *pEnt = pVehicle->GetEntity();
+	if ( !pEnt )
 		return;
 
-	//Must be able to stow our weapon
-	CBaseCombatWeapon *pWeapon = GetActiveWeapon();	
-	if ( ( pWeapon != NULL ) && ( pWeapon->Holster( NULL ) == false ) )
-		return;
+	m_flPreventLaserSightTime = -1.0f;
 
-	pVehicle->ASWSetDriver(this);
-	pVehicle->ASWStartEngine();
+	if ( iSeat < 0 )
+	{
+		pVehicle->ASWSetDriver( this );
+		pVehicle->ASWStartEngine();
+	}
+	else
+	{
+		pVehicle->ASWSetPassenger( iSeat, this );
+	}
 
-	m_bDriving = true;
+	m_iVehicleSeat = iSeat;
 	m_bIsInVehicle = true;
 	m_hASWVehicle = pEnt;
 
-	AddEffects( EF_NODRAW );
+	Vector origin;
+	QAngle angles;
+	pVehicle->ASWGetSeatPosition( iSeat, origin, angles );
+	Teleport( &origin, &angles, &vec3_origin );
+	SetParent( pEnt );
+
 	SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE );
 	m_takedamage = DAMAGE_NO;
 }
 
-void CASW_Marine::StopDriving(IASW_Vehicle* pVehicle)
+void CASW_Marine::ExitVehicle( IASW_Vehicle *pVehicle )
 {
-	if (!pVehicle || !IsDriving())
+	if ( !pVehicle || !IsInVehicle() )
 		return;
 
-	CBaseEntity* pEnt = pVehicle->GetEntity();
-	if (!pEnt)
+	CBaseEntity *pEnt = pVehicle->GetEntity();
+	if ( !pEnt )
 		return;
 
 	// try and place the marine outside the vehicle
-	Vector v = pEnt->GetAbsOrigin() - UTIL_YawToVector(pEnt->GetAbsAngles().y) * 50;
+	Vector v = pEnt->GetAbsOrigin() - UTIL_YawToVector( pEnt->GetAbsAngles().y ) * 60;
 	trace_t tr;
 	Ray_t ray;
-	ray.Init( v + Vector(0,0,1), v, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs() );
+	ray.Init( v + Vector( 0, 0, 30 ), v, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs() );
 	UTIL_TraceRay( ray, MASK_PLAYERSOLID, this, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-	if ( tr.fraction < 1.0 )
+	if ( tr.startsolid )
 		return;	// blocked
-	SetAbsOrigin(v);
+	SetParent( NULL );
+	Teleport( &tr.endpos, NULL, NULL );
 
-	// todo: get weapon out again?
+	m_flPreventLaserSightTime = 0.0f;
 
-	pVehicle->ASWStopEngine();
-	pVehicle->ASWSetDriver(NULL);
+	if ( m_iVehicleSeat < 0 )
+	{
+		pVehicle->ASWStopEngine();
+		pVehicle->ASWSetDriver( NULL );
+	}
+	else
+	{
+		pVehicle->ASWSetPassenger( m_iVehicleSeat, NULL );
+	}
 
-	m_bDriving = false;
 	m_bIsInVehicle = false;
 	m_hASWVehicle = NULL;
-
-	
 
 	RemoveEffects( EF_NODRAW );
 	SetCollisionGroup( COLLISION_GROUP_PLAYER );

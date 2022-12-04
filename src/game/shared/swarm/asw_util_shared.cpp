@@ -2509,3 +2509,33 @@ const wchar_t *UTIL_RD_CommaNumber( int64_t num )
 
 	return pBuf;
 }
+
+// get the index of the nth bit that is set to 1
+int UTIL_RD_IndexToBit( unsigned bits, int n )
+{
+	int i = -1;
+	while ( i < n )
+	{
+		Assert( bits );
+		if ( !bits )
+		{
+			// return a bad value that probably won't cause crashes
+			return 0;
+		}
+
+		if ( bits & 1 )
+		{
+			i++;
+		}
+
+		bits >>= 1;
+	}
+
+	return i;
+}
+
+// the reverse of UTIL_RD_IndexToBit
+int UTIL_RD_BitToIndex( unsigned bits, int n )
+{
+	return UTIL_CountNumBitsSet( bits & ( ( 1 << n ) - 1 ) );
+}

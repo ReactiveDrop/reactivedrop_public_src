@@ -48,7 +48,6 @@ public:
 
 	// CBaseEntity
 	void			Think(void);
-	virtual void			ThinkTick();	// asw
 	void			Precache( void );
 	void			Spawn( void ); 
 
@@ -73,18 +72,22 @@ public:
 	void HeadlightTurnOn( void ) { m_bHeadlightIsOn = true; }
 	void HeadlightTurnOff( void ) { m_bHeadlightIsOn = false; }
 
-	void DestroyAndReplace();	// asw
+	int FindClosestEmptySeat( Vector vecPoint );
 
 	// implement our asw vehicle interface
-	virtual int ASWGetNumPassengers() { return 0; }		// todo: implement
-	virtual void ASWSetDriver(CASW_Marine* pDriver) { m_hDriver = pDriver; }
-	virtual CASW_Marine* ASWGetDriver();
-	virtual CASW_Marine* ASWGetPassenger(int i) { return NULL; }	// todo: implement
-	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );
-	virtual CBaseEntity* GetEntity() { return this; }
-	virtual void ASWStartEngine() { StartEngine(); }
-	virtual void ASWStopEngine() { StopEngine(); }
-	CNetworkHandle(CASW_Marine, m_hDriver);
+	virtual int ASWGetNumPassengers() override;
+	virtual void ASWSetDriver( CASW_Marine *pDriver ) override;
+	virtual CASW_Marine *ASWGetDriver() override;
+	virtual void ASWSetPassenger( int i, CASW_Marine *pPassenger ) override;
+	virtual CASW_Marine *ASWGetPassenger( int i ) override;
+	virtual int ASWGetSeatPosition( int i, Vector &origin, QAngle &angles ) override;
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType ) override;
+	virtual CBaseEntity *GetEntity() override { return this; }
+	virtual void ASWStartEngine() override { StartEngine(); }
+	virtual void ASWStopEngine() override { StopEngine(); }
+	CNetworkArray( CHandle<CASW_Marine>, m_hPassenger, 10 );
+	int m_iPassengerAttachment[10];
+	CNetworkVar( unsigned int, m_iPassengerBits );
 
 private:
 

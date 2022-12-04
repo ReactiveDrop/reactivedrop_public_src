@@ -322,19 +322,11 @@ bool CASW_Marine::TickEmote(float d, bool bEmote, bool& bClientEmote, float& fEm
 Vector CASW_Marine::EyePosition( void ) 
 {
 	// if we're driving, return the position of our vehicle
-	if (IsInVehicle())
+	if ( IsInVehicle() )
 	{
-#ifdef CLIENT_DLL
-		if (GetClientsideVehicle() && GetClientsideVehicle()->GetEntity())
-			return GetClientsideVehicle()->GetEntity()->GetAbsOrigin();
-#endif
-		if (GetASWVehicle() && GetASWVehicle()->GetEntity())
+		if ( GetASWVehicle() && GetASWVehicle()->GetEntity() )
 			return GetASWVehicle()->GetEntity()->GetAbsOrigin();
 	}
-	//if (IsControllingTurret())
-	//{
-		//return GetRemoteTurret()->GetTurretCamPosition();
-	//}
 #ifdef CLIENT_DLL
 	//if (m_bUseLastRenderedEyePosition)
 		//return m_vecLastRenderedPos + GetViewOffset();
@@ -371,10 +363,6 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 	if (IsInVehicle() && GetASWVehicle() && GetASWVehicle()->GetEntity())
 	{
 		v = GetASWVehicle()->GetEntity()->GetAbsOrigin();
-#ifdef CLIENT_DLL
-		if (gpGlobals->maxClients>1 && GetClientsideVehicle() && GetClientsideVehicle()->GetEntity())
-			v = GetClientsideVehicle()->GetEntity()->GetAbsOrigin();		
-#endif
 	}
 
 	QAngle ang = ASWEyeAngles();

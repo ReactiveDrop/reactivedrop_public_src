@@ -13,7 +13,6 @@
 #include "clientmode_asw.h"
 #include "asw_vgui_edit_emitter.h"
 #include "engine/IEngineSound.h"
-#include "c_asw_jeep_clientside.h"
 #include "vgui\asw_hud_minimap.h"
 #include "asw_vgui_manipulator.h"
 #include "c_asw_camera_volume.h"
@@ -346,66 +345,6 @@ ConCommand ASW_ActivatePrimary( "ASW_ActivatePrimary", ASW_ActivatePrimary_f, "A
 ConCommand ASW_ActivateSecondary( "ASW_ActivateSecondary", ASW_ActivateSecondary_f, "Activates the item in your secondary inventory slot", 0 );
 ConCommand ASW_ActivateTertiary( "ASW_ActivateTertiary", ASW_ActivateTertiary_f, "Activates the item in your tertiary (temporary) inventory slot", 0 );
 ConCommand ASW_ActivateExtra( "ASW_ActivateExtra", ASW_ActivateExtra_f, "Activates the item in your extra inventory slot", 0 );
-
-C_ASW_PropJeep_Clientside* g_pJeep = NULL;
-void asw_make_jeep_f()
-{
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
-	{
-		C_ASW_PropJeep_Clientside* pJeep = C_ASW_PropJeep_Clientside::CreateNew(false);
-		pJeep->SetAbsOrigin(pPlayer->GetAbsOrigin());
-		pJeep->Initialize();
-		g_pJeep = pJeep;
-		// need to set player?
-	}
-}
-ConCommand asw_make_jeep( "asw_make_jeep", asw_make_jeep_f, "Creates a clientside jeep", FCVAR_CHEAT );
-
-
-void asw_make_jeep_phys_f()
-{
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && g_pJeep)
-	{
-		g_pJeep->InitPhysics();
-	}
-}
-ConCommand asw_make_jeep_phys( "asw_make_jeep_phys", asw_make_jeep_phys_f, "Creates physics for test clientside jeep", FCVAR_CHEAT );
-
-/*
-void asw_snow_test_f()
-{
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
-	{
-		int i = atoi( args[1] );
-		if (i == 0)
-		{
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bLocalCoordSpace = false;
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bWrapParticlesToSpawnBounds = false;
-		}
-		else if (i == 1)
-		{
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bLocalCoordSpace = true;
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bWrapParticlesToSpawnBounds = false;
-		}
-		else if (i == 2)
-		{
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bLocalCoordSpace = true;
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bWrapParticlesToSpawnBounds = true;
-		}
-		else if (i == 3)
-		{
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bLocalCoordSpace = false;
-			pPlayer->GetMarine()->m_hSnowEmitter->m_bWrapParticlesToSpawnBounds = true;
-		}
-	}
-}
-ConCommand asw_snow_test( "asw_snow_test", asw_snow_test_f, "Changes snow emitter state", FCVAR_CHEAT );
-*/
-
-
 
 
 void asw_minimap_scale_f( const CCommand &args )

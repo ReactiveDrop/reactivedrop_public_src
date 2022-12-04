@@ -678,13 +678,13 @@ public:
 		fEmoteGoTime, fEmoteExclaimTime, fEmoteAnimeSmileTime, fEmoteQuestionTime;
 
 	// driving
-	virtual void StartDriving(IASW_Vehicle* pVehicle);
-	virtual void StopDriving(IASW_Vehicle* pVehicle);
-	IASW_Vehicle* GetASWVehicle();
-	bool IsDriving() { return m_bDriving; }
+	virtual void EnterVehicle( IASW_Vehicle *pVehicle, int iSeat );
+	virtual void ExitVehicle( IASW_Vehicle *pVehicle );
+	IASW_Vehicle *GetASWVehicle();
+	bool IsDriving() { return m_bIsInVehicle && m_iVehicleSeat < 0; }
 	bool IsInVehicle() { return m_bIsInVehicle; }
 	CNetworkHandle( CBaseEntity, m_hASWVehicle );
-	CNetworkVar( bool, m_bDriving );
+	CNetworkVar( int, m_iVehicleSeat );
 	CNetworkVar( bool, m_bIsInVehicle );
 
 	// controlling a turret

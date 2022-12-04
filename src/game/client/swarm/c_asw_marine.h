@@ -306,15 +306,11 @@ public:
 	float m_flLastMedicCall, m_flLastAmmoCall;
 
 	// driving
-	IASW_Client_Vehicle* GetASWVehicle();
-	IASW_Client_Vehicle* GetClientsideVehicle() { return m_pClientsideVehicle; }
-	bool m_bHasClientsideVehicle;
-	void SetClientsideVehicle(IASW_Client_Vehicle* pVehicle);
-	bool IsDriving() { return m_bDriving; }
+	IASW_Client_Vehicle *GetASWVehicle();
+	bool IsDriving() { return m_bIsInVehicle && m_iVehicleSeat < 0; }
 	bool IsInVehicle() { return m_bIsInVehicle; }
 	CNetworkHandle( CBaseEntity, m_hASWVehicle );
-	IASW_Client_Vehicle* m_pClientsideVehicle;
-	bool m_bDriving;
+	int m_iVehicleSeat;
 	bool m_bIsInVehicle;
 
 	// controlling a turret
