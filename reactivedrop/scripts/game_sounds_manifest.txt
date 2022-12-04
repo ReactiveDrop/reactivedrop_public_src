@@ -49,6 +49,7 @@ game_sounds_manifest
 	
 	// ep2 // Episode 2
 	"precache_file"		"scripts/npc_sounds_antlionguard_episodic2.txt"
+	"precache_file"		"scripts/game_sounds_vehicles_ep2.txt"
 	
 	// hl2
 	"precache_file"		"scripts/npc_sounds_antlion.txt"
