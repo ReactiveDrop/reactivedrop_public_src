@@ -1038,7 +1038,7 @@ const QAngle& CASW_Player::EyeAngles( )
 #else
 		IASW_Client_Vehicle *pVehicle = pMarine->GetASWVehicle();
 #endif
-		if ( pVehicle && !asw_vehicle_cam_shift_2_enable.GetBool() )
+		if ( !asw_allow_detach.GetBool() && pVehicle && !asw_vehicle_cam_shift_2_enable.GetBool() && GetASWControls() == ASWC_THIRDPERSONSHOULDER )
 		{
 			Vector vehicleOrigin;
 			QAngle vehicleAngle;
