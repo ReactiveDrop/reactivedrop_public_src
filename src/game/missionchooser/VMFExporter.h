@@ -86,7 +86,7 @@ public:
 	KeyValues *m_pInstanceEntity;
 	Vector m_vecInstanceOrigin;
 	QAngle m_angInstanceAngles;
-	matrix3x4a_t m_matInstanceTransform;
+	matrix3x4_t m_matInstanceTransform;
 	char m_szFixupName[128];
 	GameData::TNameFixup m_iFixupStyle;
 };
