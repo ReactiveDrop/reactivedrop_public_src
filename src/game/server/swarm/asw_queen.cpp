@@ -150,7 +150,7 @@ void CASW_Queen::Spawn( void )
 #ifdef ASW_QUEEN_STATIONARY
 	UTIL_SetSize(this,	Vector(-140, -40, 0), Vector(140, 40, 200) );
 #else
-	UTIL_SetSize(this, Vector(-120,-120,0), Vector(120,120,160));
+	SetHullSizeNormal();
 #endif
 
 	SetHealthByDifficultyLevel();	
