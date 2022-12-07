@@ -9,6 +9,7 @@
 
 
 ConVar rd_highlight_active_character( "rd_highlight_active_character", "0", FCVAR_ARCHIVE );
+extern ConVar asw_controls;
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_Inhabitable_NPC )
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
@@ -16,6 +17,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropVector( RECVINFO( m_vecFacingPointFromServer ) ),
 	RecvPropBool( RECVINFO( m_bInhabited ) ),
 	RecvPropBool( RECVINFO( m_bWalking ) ),
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_iControlsOverride ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -31,6 +33,7 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
 
 	m_nOldButtons = 0;
 	m_bInhabited = false;
+	m_iControlsOverride = -1;
 
 	m_surfaceProps = 0;
 	m_pSurfaceData = NULL;
@@ -216,4 +219,14 @@ float C_ASW_Inhabitable_NPC::GetBasePlayerYawRate()
 {
 	extern ConVar asw_marine_linear_turn_rate;
 	return asw_marine_linear_turn_rate.GetFloat();
+}
+
+ASW_Controls_t C_ASW_Inhabitable_NPC::GetASWControls()
+{
+	if ( m_iControlsOverride >= 0 )
+	{
+		return ( ASW_Controls_t )m_iControlsOverride.Get();
+	}
+
+	return ( ASW_Controls_t )asw_controls.GetInt();
 }

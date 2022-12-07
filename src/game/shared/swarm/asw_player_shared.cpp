@@ -1375,8 +1375,10 @@ ASW_Controls_t CASW_Player::GetASWControls()
 		return ( ASW_Controls_t )asw_controls_spectator_override.GetInt();
 #endif
 
+	CASW_Inhabitable_NPC *pNPC = GetViewNPC();
+
 	// if we're in a vehicle, see if the vehicle wants to change the asw_controls setting.
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetViewNPC() );
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( pMarine && pMarine->IsInVehicle() )
 	{
 		int nControls = asw_controls_vehicle.GetInt();
@@ -1395,6 +1397,12 @@ ASW_Controls_t CASW_Player::GetASWControls()
 		}
 	}
 
-	// for now, the controls setting is global.
+	// if we have a character, use their controls.
+	if ( pNPC )
+	{
+		return pNPC->GetASWControls();
+	}
+
+	// otherwise, use the global controls setting.
 	return ( ASW_Controls_t )asw_controls.GetInt();
 }

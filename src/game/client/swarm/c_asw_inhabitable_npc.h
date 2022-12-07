@@ -7,6 +7,7 @@
 #include "c_ai_basenpc.h"
 #include "glow_outline_effect.h"
 #include "object_motion_blur_effect.h"
+#include "asw_player_shared.h"
 
 class C_ASW_Player;
 class C_ASW_Weapon;
@@ -57,6 +58,8 @@ public:
 	int m_nOldButtons;
 	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bInhabited );
+	ASW_Controls_t GetASWControls();
+	CNetworkVar( int, m_iControlsOverride );
 
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;

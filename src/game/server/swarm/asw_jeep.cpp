@@ -53,6 +53,7 @@
 ConVar	asw_sk_jeep_gauss_damage( "asw_sk_jeep_gauss_damage", "15" );
 ConVar	asw_hud_jeephint_numentries( "asw_hud_jeephint_numentries", "10", FCVAR_NONE );
 ConVar	asw_g_jeepexitspeed( "asw_g_jeepexitspeed", "100", FCVAR_CHEAT );
+extern ConVar asw_controls;
 
 //=============================================================================
 //
@@ -1630,6 +1631,9 @@ void CASW_PropJeep::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 			pMarine->ExitVehicle( pMarine->GetASWVehicle() );
 		else
 			pMarine->EnterVehicle( this, FindClosestEmptySeat( pNPC->GetAbsOrigin() ) - 1 );
+
+		// trigger control scheme update callback
+		asw_controls.SetValue( asw_controls.GetString() );
 	}
 }
 
