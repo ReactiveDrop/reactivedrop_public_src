@@ -2,6 +2,7 @@
 #include "KeyValues.h"
 #include "fgdlib/fgdlib.h"
 #include "tier2/fileutils.h"
+#include "mathlib/mathlib.h"
 
 #include "TileSource/RoomTemplate.h"
 #include "TileSource/Room.h"
@@ -847,6 +848,65 @@ void VMFExporter::MergeEntity( KeyValues *pEntity )
 	GDclass *pEntClass = m_GD.BeginInstanceRemap( szClassName, m_szFixupName, m_vecInstanceOrigin, m_angInstanceAngles );
 	if ( pEntClass )
 	{
+		// Special case: overlays (it's not handled by the library because these are already no longer entities by the time vbsp gets here)
+		if ( !V_stricmp( szClassName, "info_overlay" ) || !V_stricmp( szClassName, "info_overlay_transition" ) )
+		{
+			Vector vecOriginal, vecTransformed;
+			( void )sscanf( pEntity->GetString( "BasisOrigin" ), "%f %f %f", &vecOriginal.x, &vecOriginal.y, &vecOriginal.z );
+			VectorTransform( vecOriginal, m_matInstanceTransform, vecTransformed );
+			V_snprintf( temp, sizeof( temp ), "%g %g %g", vecTransformed.x, vecTransformed.y, vecTransformed.z );
+			pEntity->SetString( "BasisOrigin", temp );
+
+			// the remainder of this block is based on Overlay_Translate from Source SDK 2013 VBSP overlay.cpp
+			VMatrix matOverlay{ m_matInstanceTransform };
+			matOverlay.SetTranslation( vec3_origin );
+
+			if ( !matOverlay.IsIdentity() )
+			{
+				Vector vecU, vecOrigU, vecV, vecOrigV, vecNormal;
+
+				( void )sscanf( pEntity->GetString( "BasisU" ), "%f %f %f", &vecOrigU.x, &vecOrigU.y, &vecOrigU.z );
+				vecOrigU.NormalizeInPlace();
+				matOverlay.V3Mul( vecOrigU, vecU );
+				( void )sscanf( pEntity->GetString( "BasisV" ), "%f %f %f", &vecOrigV.x, &vecOrigV.y, &vecOrigV.z );
+				vecOrigV.NormalizeInPlace();
+				matOverlay.V3Mul( vecOrigV, vecV );
+				( void )sscanf( pEntity->GetString( "BasisNormal" ), "%f %f %f", &vecOriginal.x, &vecOriginal.y, &vecOriginal.z );
+				vecOriginal.NormalizeInPlace();
+				matOverlay.V3Mul( vecOriginal, vecNormal );
+
+				float fScaleU = vecU.Length();
+				float fScaleV = vecV.Length();
+				float flScaleNormal = vecNormal.Length();
+
+				bool bIsUnit = ( CloseEnough( fScaleU, 1.0f, 0.0001 ) && CloseEnough( fScaleV, 1.0f, 0.0001 ) && CloseEnough( flScaleNormal, 1.0f, 0.0001 ) );
+				bool bIsPerp = ( CloseEnough( DotProduct( vecU, vecV ), 0.0f, 0.0025 ) && CloseEnough( DotProduct( vecU, vecNormal ), 0.0f, 0.0025 ) && CloseEnough( DotProduct( vecV, vecNormal ), 0.0f, 0.0025 ) );
+				if ( bIsUnit && bIsPerp )
+				{
+					V_snprintf( temp, sizeof( temp ), "%g %g %g", vecU.x, vecU.y, vecU.z );
+					pEntity->SetString( "BasisU", temp );
+					V_snprintf( temp, sizeof( temp ), "%g %g %g", vecV.x, vecV.y, vecV.z );
+					pEntity->SetString( "BasisV", temp );
+					V_snprintf( temp, sizeof( temp ), "%g %g %g", vecNormal.x, vecNormal.y, vecNormal.z );
+					pEntity->SetString( "BasisNormal", temp );
+				}
+				else
+				{
+					// more complex transformation, move UV coordinates, but leave base axes 
+					for ( int i = 0; i < 4; i++ )
+					{
+						char szKey[8];
+						V_snprintf( szKey, sizeof( szKey ), "uv%d", i );
+						( void )sscanf( pEntity->GetString( szKey ), "%f %f %f", &vecOriginal.x, &vecOriginal.y, &vecOriginal.z );
+						vecOriginal = vecOriginal.x * vecOrigU + vecOriginal.y * vecOrigV;
+						matOverlay.V3Mul( vecOriginal, vecTransformed );
+						V_snprintf( temp, sizeof( temp ), "%g %g %g", vecOrigU.Dot( vecTransformed ), vecOrigV.Dot( vecTransformed ), 0.0f );
+						pEntity->SetString( szKey, temp );
+					}
+				}
+			}
+		}
+
 		for ( int i = 0; i < pEntClass->GetVariableCount(); i++ )
 		{
 			GDinputvariable *pEntVar = pEntClass->GetVariableAt( i );

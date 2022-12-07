@@ -3,5 +3,5 @@ map_builder_options
 	// arguments used for compiling maps from within the game
 	"vbsp"		"-alldetail -nodrawtriggers"
 	"vvis"		"-radius_override 2500"
-	"vrad"		"-hdr -StaticPropLighting -nossprop -bounce 3"
+	"vrad"		"-hdr -StaticPropLighting -nossprops -bounce 3"
 }
