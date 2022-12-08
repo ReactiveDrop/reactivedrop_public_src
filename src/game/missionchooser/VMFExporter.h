@@ -82,6 +82,7 @@ public:
 	GameData m_GD;
 	char m_szInstancePath[MAX_PATH];
 	CUtlVector<KeyValues *> m_RemoveEntities;
+	CUtlVector<KeyValues *> m_FuncASWFade;
 
 	KeyValues *m_pInstanceEntity;
 	Vector m_vecInstanceOrigin;
