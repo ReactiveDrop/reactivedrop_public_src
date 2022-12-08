@@ -737,6 +737,7 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 #endif
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
+ConVar rd_anniversary_week_debug( "rd_anniversary_week_debug", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Set to 1 to force anniversary week logic; 0 to force off" );
 
 #define ADD_STAT( field, amount ) \
 			ConVarRef asw_stats_verbose( "asw_stats_verbose" );\
@@ -8238,15 +8239,21 @@ bool CAlienSwarm::IsAnniversaryWeek()
 	if ( !pUtils )
 		pUtils = SteamGameServerUtils();
 #endif
-
+	Assert( pUtils );
 	if ( !pUtils )
 	{
 		return false;
 	}
 
-	// previously, this was in local time; however, we need it to be the same on the client and the server
-	// therefore, we are moving it to GMT and extending the week by 1 day to compensate
-	// the anniversary week now takes place from the 20th to the 27th
+	// Require sv_cheats as well so this convar can't easily be used to make a double experience "challenge".
+	if ( rd_anniversary_week_debug.GetInt() != -1 && ConVarRef( "sv_cheats" ).GetBool() )
+	{
+		return rd_anniversary_week_debug.GetBool();
+	}
+
+	// Previously, this was in local time; however, we need it to be the same on the client and the server.
+	// Therefore, we are moving it to GMT and extending the week by 1 day to compensate.
+	// The anniversary week now takes place from the 20th to the 27th.
 	tm curtime;
 	Plat_gmtime( pUtils->GetServerRealTime(), &curtime );
 	return ( curtime.tm_mday >= 20 && curtime.tm_mday <= 27 ) && curtime.tm_mon == 3;
