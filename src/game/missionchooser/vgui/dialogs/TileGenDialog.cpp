@@ -848,7 +848,11 @@ void CTileGenDialog::OnKeyCodeTyped( vgui::KeyCode code )
 		{
 			// note: deleting the CRoom objects causes them to be removed from the CMapLayout and their panels deleted
 			// so we're deleting them and clearing out our selected room list at the same time
-			m_SelectedRooms.PurgeAndDeleteElements();
+			FOR_EACH_VEC_BACK( m_SelectedRooms, i )
+			{
+				delete m_SelectedRooms[i];
+			}
+			m_SelectedRooms.Purge();
 			Repaint();
 		}
 	}
