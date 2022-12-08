@@ -18,11 +18,14 @@ abstract_class IASW_Vehicle : public IASW_Server_Usable_Entity
 {
 public:
 	virtual int ASWGetNumPassengers() = 0;
-	virtual void ASWSetDriver(CASW_Marine* pDriver) = 0;
-	virtual CASW_Marine* ASWGetDriver() = 0;
-	virtual CASW_Marine* ASWGetPassenger(int i) = 0;
+	virtual void ASWSetDriver( CASW_Marine *pDriver ) = 0;
+	virtual CASW_Marine *ASWGetDriver() = 0;
+	virtual void ASWSetPassenger( int i, CASW_Marine *pPassenger ) = 0;
+	virtual CASW_Marine *ASWGetPassenger( int i ) = 0;
+	virtual int ASWGetSeatPosition( int i, Vector &origin, QAngle &angles ) = 0;
 	virtual void ASWStartEngine() = 0;
 	virtual void ASWStopEngine() = 0;
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) = 0;
 	virtual void SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) = 0;
 	virtual void ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 

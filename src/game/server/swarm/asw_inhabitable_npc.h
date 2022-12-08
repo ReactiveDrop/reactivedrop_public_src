@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ai_playerally.h"
+#include "asw_player_shared.h"
 
 class CASW_Player;
 class CASW_Weapon;
@@ -52,6 +53,9 @@ public:
 	int m_nOldButtons;
 	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bInhabited );
+	ASW_Controls_t GetASWControls();
+	CNetworkVar( int, m_iControlsOverride );
+	void ScriptSetControls( int iControls );
 
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;

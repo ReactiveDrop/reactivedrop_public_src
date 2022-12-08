@@ -109,6 +109,8 @@ protected:
 	bool						m_bScannerVehicleIcon;
 
 	float						m_flSequenceChangeTime;
+	bool						m_bLocked;
+	float						m_flMinimumSpeedToEnterExit;
 	bool						m_bEnterAnimOn;
 	bool						m_bExitAnimOn;
 	float						m_flFOV;

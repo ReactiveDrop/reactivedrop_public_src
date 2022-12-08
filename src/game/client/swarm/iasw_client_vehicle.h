@@ -19,15 +19,13 @@ abstract_class IASW_Client_Vehicle : public IASW_Client_Usable_Entity
 {
 public:
 	virtual int ASWGetNumPassengers() = 0;
-	virtual C_ASW_Marine* ASWGetDriver() = 0;
-	virtual C_ASW_Marine* ASWGetPassenger(int i) = 0;
-	virtual int GetDriveIconTexture() = 0;
-	virtual int GetRideIconTexture() = 0;
-	virtual const char* GetDriveIconText() = 0;
-	virtual const char* GetRideIconText() = 0;
+	virtual C_ASW_Marine *ASWGetDriver() = 0;
+	virtual C_ASW_Marine *ASWGetPassenger( int i ) = 0;
+	virtual int ASWGetSeatPosition( int i, Vector &origin, QAngle &angles ) = 0;
 	virtual bool ValidUseTarget() = 0;
 	virtual void ASWStartEngine() = 0;
 	virtual void ASWStopEngine() = 0;
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) = 0;
 	virtual void SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) = 0;
 	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) = 0;
 

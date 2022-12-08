@@ -256,6 +256,14 @@ bool CASW_Marine::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 
 const QAngle& CASW_Marine::ASWEyeAngles( void )
 {
+	// if we're driving, return the angle
+	if ( IsInVehicle() && GetASWVehicle() )
+	{
+		Vector origin;
+		GetASWVehicle()->ASWGetSeatPosition( m_iVehicleSeat, origin, m_AIEyeAngles );
+		return m_AIEyeAngles;
+	}
+
 	if ( GetCommander() && IsInhabited() )
 		return GetCommander()->EyeAngles();
 
@@ -321,20 +329,6 @@ bool CASW_Marine::TickEmote(float d, bool bEmote, bool& bClientEmote, float& fEm
 // asw fixme to be + eye height (crouch/no)
 Vector CASW_Marine::EyePosition( void ) 
 {
-	// if we're driving, return the position of our vehicle
-	if (IsInVehicle())
-	{
-#ifdef CLIENT_DLL
-		if (GetClientsideVehicle() && GetClientsideVehicle()->GetEntity())
-			return GetClientsideVehicle()->GetEntity()->GetAbsOrigin();
-#endif
-		if (GetASWVehicle() && GetASWVehicle()->GetEntity())
-			return GetASWVehicle()->GetEntity()->GetAbsOrigin();
-	}
-	//if (IsControllingTurret())
-	//{
-		//return GetRemoteTurret()->GetTurretCamPosition();
-	//}
 #ifdef CLIENT_DLL
 	//if (m_bUseLastRenderedEyePosition)
 		//return m_vecLastRenderedPos + GetViewOffset();
@@ -367,15 +361,6 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 	Vector forward, right, up, v;
 
 	v = GetAbsOrigin();
-
-	if (IsInVehicle() && GetASWVehicle() && GetASWVehicle()->GetEntity())
-	{
-		v = GetASWVehicle()->GetEntity()->GetAbsOrigin();
-#ifdef CLIENT_DLL
-		if (gpGlobals->maxClients>1 && GetClientsideVehicle() && GetClientsideVehicle()->GetEntity())
-			v = GetClientsideVehicle()->GetEntity()->GetAbsOrigin();		
-#endif
-	}
 
 	QAngle ang = ASWEyeAngles();
 	ang.x = 0;	// clear out pitch, so we're matching the fixes point of our autoaim calcs

@@ -76,7 +76,6 @@
 #include "c_asw_weapon.h"
 #include "asw_marineandobjectenumerator.h"
 #include "asw_usableobjectsenumerator.h"
-#include "c_asw_jeep_clientside.h"
 #include "obstacle_pushaway.h"
 #include "asw_shareddefs.h"
 #include "c_asw_camera_volume.h"

@@ -18,9 +18,9 @@
 #include "ai_hint.h"
 #include "globalstate.h"
 #include "asw_jeep.h"
-#include "asw_dummy_vehicle.h"
 #include "asw_player.h"
 #include "asw_marine.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -53,6 +53,7 @@
 ConVar	asw_sk_jeep_gauss_damage( "asw_sk_jeep_gauss_damage", "15" );
 ConVar	asw_hud_jeephint_numentries( "asw_hud_jeephint_numentries", "10", FCVAR_NONE );
 ConVar	asw_g_jeepexitspeed( "asw_g_jeepexitspeed", "100", FCVAR_CHEAT );
+extern ConVar asw_controls;
 
 //=============================================================================
 //
@@ -80,6 +81,7 @@ public:
 	bool		NPC_HasPrimaryWeapon( void ) { return true; }
 	void		NPC_AimPrimaryWeapon( Vector vecTarget );
 	int			GetExitAnimToUse( Vector &vecEyeExitEndpoint, bool &bAllPointsBlocked );
+	bool		IsPassengerVisible( int nRole ) override { return true; }
 };
 
 BEGIN_DATADESC( CASW_PropJeep )
@@ -111,32 +113,44 @@ BEGIN_DATADESC( CASW_PropJeep )
 
 	DEFINE_FIELD( m_flPlayerExitedTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flLastSawPlayerAt, FIELD_TIME ),
-	DEFINE_FIELD( m_hLastPlayerInVehicle, FIELD_EHANDLE ),		
-	DEFINE_FIELD( m_hDriver , FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hLastPlayerInVehicle, FIELD_EHANDLE ),
+	DEFINE_AUTO_ARRAY( m_hPassenger, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_iPassengerBits, FIELD_INTEGER ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "StartRemoveTauCannon", InputStartRemoveTauCannon ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "FinishRemoveTauCannon", InputFinishRemoveTauCannon ),
-	
-	DEFINE_THINKFUNC( DestroyAndReplace ),
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST( CASW_PropJeep, DT_ASW_PropJeep )
-	//SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
-	//SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),	
-	//SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
-	//SendPropExclude( "DT_BaseAnimating", "m_nNewSequenceParity" ),
-	//SendPropExclude( "DT_BaseAnimating", "m_nResetEventsParity" ),
-	SendPropEHandle( SENDINFO( m_hDriver ) ),
-	//SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
+	SendPropArray3( SENDINFO_ARRAY3( m_hPassenger ), SendPropEHandle( SENDINFO_ARRAY( m_hPassenger ) ) ),
+	SendPropInt( SENDINFO( m_iPassengerBits ) ),
 
-	////SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
-	
-	// asw_playeranimstate and clientside animation takes care of these on the client
-	//SendPropExclude( "DT_ServerAnimationData" , "m_flCycle" ),	
-	//SendPropExclude( "DT_AnimTimeMustBeFirst" , "m_flAnimTime" ),
-	
 	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
+	SendPropInt( SENDINFO( m_iCamControlsOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamPitchOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamDistOverride ) ),
+	SendPropFloat( SENDINFO( m_flCamHeightOverride ) ),
 END_SEND_TABLE();
+
+BEGIN_ENT_SCRIPTDESC( CASW_PropJeep, CBaseAnimating, "Vehicles" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraControls, "GetCameraControls", "Gets the asw_controls_vehicle override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraControls, "SetCameraControls", "Overrides the control scheme for this vehicle. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraPitch, "GetCameraPitch", "Gets the asw_vehicle_cam_pitch override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraPitch, "SetCameraPitch", "Overrides the camera pitch. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraDist, "GetCameraDist", "Gets the asw_vehicle_cam_dist override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraDist, "SetCameraDist", "Overrides the camera distance. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCameraHeight, "GetCameraHeight", "Gets the asw_vehicle_cam_height override for this vehicle." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetCameraHeight, "SetCameraHeight", "Overrides the camera height. Negative numbers disable the override." )
+	DEFINE_SCRIPTFUNC_NAMED( ASWGetNumPassengers, "MaxPassengers", "Returns the number of passenger seats." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDriver, "GetDriver", "Get the driver entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetPassenger, "GetPassenger", "Get a passenger entity; seat must be between 0 and MaxPassengers() - 1." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSpeed, "GetSpeed", "vehicle statistics")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxSpeed, "GetMaxSpeed", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetRPM, "GetRPM", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetThrottle, "GetThrottle", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptHasBoost, "HasBoost", "vehicle statistics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptBoostTimeLeft, "BoostTimeLeft", "vehicle statistics" )
+END_SCRIPTDESC();
 
 // This is overriden for the episodic jeep
 #ifndef HL2_EPISODIC
@@ -163,6 +177,16 @@ CASW_PropJeep::CASW_PropJeep( void )
 
 	m_bUnableToFire = true;
 	m_flAmmoCrateCloseTime = 0;
+
+	for ( int i = 0; i < NELEMS( m_iPassengerAttachment ); i++ )
+	{
+		m_iPassengerAttachment[i] = -1;
+	}
+
+	m_iCamControlsOverride = -1;
+	m_flCamPitchOverride = -1.0f;
+	m_flCamDistOverride = -1.0f;
+	m_flCamHeightOverride = -1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -231,20 +255,20 @@ void CASW_PropJeep::Spawn( void )
 	CAmmoDef *pAmmoDef = GetAmmoDef();
 	m_nAmmoType = pAmmoDef->Index("GaussEnergy");
 
-	// normal HL2 vehicles don't feel nice in a network game
-	//  so destroy ourselves and spawn the serverside component of our custom ASW client authorative vehicle system
-}
+	m_iPassengerBits = 0;
 
-void CASW_PropJeep::DestroyAndReplace()
-{
-	Msg("Replacing normal jeep with a dummy jeep\n");
-	Vector vecVehicle = GetAbsOrigin();
-	QAngle angVehicle = GetAbsAngles();
-	UTIL_Remove(this);
-	CASW_Dummy_Vehicle *pDummy = dynamic_cast<CASW_Dummy_Vehicle*>(CreateEntityByName("asw_dummy_vehicle"));
-	pDummy->SetAbsOrigin(vecVehicle);
-	pDummy->SetAbsAngles(angVehicle);
-	pDummy->Spawn();
+	CStudioHdr *pStudioHdr = GetModelPtr();
+	Assert( pStudioHdr );
+	for ( int i = 0; i < m_hPassenger.Count(); i++ )
+	{
+		// Avoiding LookupAttachment because we don't want assertions to fail when we can't find the attachments.
+		int iAttachment = Studio_FindAttachment( pStudioHdr, UTIL_VarArgs( "vehicle_feet_passenger%d", i ) );
+		if ( iAttachment >= 0 && Studio_FindAttachment( pStudioHdr, UTIL_VarArgs( "passenger_zombie%d", i ) ) < 0 )
+		{
+			m_iPassengerAttachment[i] = iAttachment + 1;
+			m_iPassengerBits |= ( 1 << i );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -646,18 +670,6 @@ void CASW_PropJeep::CreateRipple( const Vector &vecPosition )
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CASW_PropJeep::Think(void)
-{
-	if (gpGlobals->maxClients > 1)
-	{
-		DestroyAndReplace();
-	}
-	else
-	{
-		ThinkTick();
-	}
-}
-
-void CASW_PropJeep::ThinkTick()
 {
 	m_VehiclePhysics.Think();
 
@@ -1257,7 +1269,7 @@ void CASW_PropJeep::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 		m_bUnableToFire = true;
 		
 		tmp = (*ucmd);
-		tmp.buttons &= ~(IN_FORWARD|IN_BACK|IN_SPEED);
+		tmp.buttons &= ~(IN_FORWARD|IN_BACK|IN_SPEED|IN_WALK);
 		// asw comment, no tampering with buttons at this time
 		//ucmd = &tmp;
 	}
@@ -1531,11 +1543,80 @@ int CASWJeepFourWheelServerVehicle::GetExitAnimToUse( Vector &vecEyeExitEndpoint
 	return BaseClass::GetExitAnimToUse( vecEyeExitEndpoint, bAllPointsBlocked );
 }
 
+int CASW_PropJeep::FindClosestEmptySeat( Vector vecPoint )
+{
+	int iBestSeat = -1;
+	float flBestDistance = COORD_EXTENT * COORD_EXTENT;
+
+	for ( int i = 0, j = 0; i < m_hPassenger.Count(); i++ )
+	{
+		if ( !( m_iPassengerBits & ( 1 << i ) ) )
+			continue;
+
+		if ( !m_hPassenger.Get( i ) )
+		{
+			Vector vecSeat;
+			GetAttachment( UTIL_VarArgs( "vehicle_feet_passenger%d", i ), vecSeat );
+			float flDistance = vecPoint.DistToSqr( vecSeat );
+			if ( flDistance < flBestDistance )
+			{
+				iBestSeat = j;
+				flBestDistance = flDistance;
+			}
+		}
+
+		j++;
+	}
+
+	return iBestSeat;
+}
 
 // implement driver interface
-CASW_Marine* CASW_PropJeep::ASWGetDriver()
+int CASW_PropJeep::ASWGetNumPassengers()
 {
-	return dynamic_cast<CASW_Marine*>(m_hDriver.Get());
+	return UTIL_CountNumBitsSet( m_iPassengerBits ) - 1;
+}
+
+void CASW_PropJeep::ASWSetDriver( CASW_Marine *pDriver )
+{
+	m_hPassenger.Set( VEHICLE_ROLE_DRIVER, pDriver );
+}
+
+CASW_Marine *CASW_PropJeep::ASWGetDriver()
+{
+	return m_hPassenger[VEHICLE_ROLE_DRIVER];
+}
+
+void CASW_PropJeep::ASWSetPassenger( int i, CASW_Marine *pPassenger )
+{
+	int j = UTIL_RD_IndexToBit( m_iPassengerBits, i + 1 );
+	Assert( j );
+
+	if ( j )
+	{
+		m_hPassenger.Set( j, pPassenger );
+	}
+}
+
+CASW_Marine *CASW_PropJeep::ASWGetPassenger( int i )
+{
+	int j = UTIL_RD_IndexToBit( m_iPassengerBits, i + 1 );
+
+	return j ? m_hPassenger[j] : NULL;
+}
+
+int CASW_PropJeep::ASWGetSeatPosition( int i, Vector &origin, QAngle &angles )
+{
+	int j = UTIL_RD_IndexToBit( m_iPassengerBits, i + 1 );
+	int iAttachment = m_iPassengerAttachment[j];
+	if ( iAttachment == -1 )
+	{
+		m_iPassengerAttachment[j] = iAttachment = LookupAttachment( UTIL_VarArgs( "vehicle_feet_passenger%d", j ) );
+	}
+
+	GetAttachment( iAttachment, origin, angles );
+
+	return iAttachment;
 }
 
 void CASW_PropJeep::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
@@ -1547,13 +1628,116 @@ void CASW_PropJeep::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	if ( pMarine )
 	{
 		if ( pMarine->IsInVehicle() )
-			pMarine->StopDriving( this );
+			pMarine->ExitVehicle( pMarine->GetASWVehicle() );
 		else
-			pMarine->StartDriving( this );
+			pMarine->EnterVehicle( this, FindClosestEmptySeat( pNPC->GetAbsOrigin() ) - 1 );
+
+		// trigger control scheme update callback
+		asw_controls.SetValue( asw_controls.GetString() );
 	}
+}
+
+void CASW_PropJeep::ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight )
+{
+	if ( pControls && m_iCamControlsOverride >= 0 )
+		*pControls = m_iCamControlsOverride;
+	if ( pPitch && m_flCamPitchOverride >= 0 )
+		*pPitch = m_flCamPitchOverride;
+	if ( pDist && m_flCamDistOverride >= 0 )
+		*pDist = m_flCamDistOverride;
+	if ( pHeight && m_flCamHeightOverride >= 0 )
+		*pHeight = m_flCamHeightOverride;
 }
 
 bool CASW_PropJeep::IsUsable( CBaseEntity *pUser )
 {
+	if ( m_bLocked || m_nSpeed > m_flMinimumSpeedToEnterExit )
+		return false;
+
 	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS );	// near enough?
+}
+
+int CASW_PropJeep::ScriptGetCameraControls()
+{
+	return m_iCamControlsOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraControls( int controls )
+{
+	m_iCamControlsOverride = controls;
+}
+
+float CASW_PropJeep::ScriptGetCameraPitch()
+{
+	return m_flCamPitchOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraPitch( float pitch )
+{
+	m_flCamPitchOverride = pitch;
+}
+
+float CASW_PropJeep::ScriptGetCameraDist()
+{
+	return m_flCamDistOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraDist( float dist )
+{
+	m_flCamDistOverride = dist;
+}
+
+float CASW_PropJeep::ScriptGetCameraHeight()
+{
+	return m_flCamHeightOverride;
+}
+
+void CASW_PropJeep::ScriptSetCameraHeight( float height )
+{
+	m_flCamHeightOverride = height;
+}
+
+HSCRIPT CASW_PropJeep::ScriptGetDriver()
+{
+	return ToHScript( ASWGetDriver() );
+}
+
+HSCRIPT CASW_PropJeep::ScriptGetPassenger( int seat )
+{
+	if ( seat < 0 || seat >= ASWGetNumPassengers() )
+	{
+		return NULL;
+	}
+
+	return ToHScript( ASWGetPassenger( seat ) );
+}
+
+int CASW_PropJeep::ScriptGetSpeed()
+{
+	return GetPhysics()->GetSpeed();
+}
+
+int CASW_PropJeep::ScriptGetMaxSpeed()
+{
+	return GetPhysics()->GetMaxSpeed();
+}
+
+int CASW_PropJeep::ScriptGetRPM()
+{
+	return GetPhysics()->GetRPM();
+}
+
+float CASW_PropJeep::ScriptGetThrottle()
+{
+	return GetPhysics()->GetThrottle();
+}
+
+bool CASW_PropJeep::ScriptHasBoost()
+{
+	return GetPhysics()->HasBoost();
+}
+
+int CASW_PropJeep::ScriptBoostTimeLeft()
+{
+	return GetPhysics()->BoostTimeLeft();
 }

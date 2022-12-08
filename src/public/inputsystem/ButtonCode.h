@@ -207,6 +207,9 @@ enum ButtonCode_t
 	KEY_XSTICK2_LEFT,							// UAXIS NEGATIVE
 	KEY_XSTICK2_DOWN,							// VAXIS POSITIVE
 	KEY_XSTICK2_UP,								// VAXIS NEGATIVE
+
+	// AS:RD - this keycode means a button has been "pressed" by a Steam Input config
+	KEY_STEAM_INPUT = JOYSTICK_BUTTON_INTERNAL( 0, JOYSTICK_MAX_BUTTON_COUNT - 1 )
 };
 
 inline bool IsAlpha( ButtonCode_t code )

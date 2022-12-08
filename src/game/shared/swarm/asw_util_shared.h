@@ -140,4 +140,7 @@ const char *UTIL_RD_EResultToString( EResult eResult );
 
 const wchar_t *UTIL_RD_CommaNumber( int64_t num );
 
+int UTIL_RD_IndexToBit( unsigned bits, int n );
+int UTIL_RD_BitToIndex( unsigned bits, int n );
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

@@ -222,6 +222,7 @@ protected:
 	bool		m_fJoystickAdvancedInit;
 	// Accumulated mouse deltas
 
+public:
 	struct PerUserInput_t
 	{
 		PerUserInput_t()

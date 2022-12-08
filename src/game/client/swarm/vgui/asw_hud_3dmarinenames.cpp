@@ -540,14 +540,6 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 	Vector vMarinePos = pMarine->GetRenderOrigin();
 	//bool bMarineIsKnockedOut = pMarine->m_hKnockedOutRagdoll.Get() || pMarine->IsIncap() ;
 	bool bMarineIsKnockedOut = false;
-	if ( pMarine->IsInVehicle() && pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() )
-	{
-		vMarinePos = pMarine->GetASWVehicle()->GetEntity()->GetAbsOrigin();
-		if ( gpGlobals->maxClients>1 && pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity() )
-		{
-			vMarinePos = pMarine->GetClientsideVehicle()->GetEntity()->GetAbsOrigin();		
-		}
-	}
 	//if ( bMarineIsKnockedOut )
 	//{
 	//	CBaseEntity *pRagdoll = pMarine->m_hKnockedOutRagdoll.Get();

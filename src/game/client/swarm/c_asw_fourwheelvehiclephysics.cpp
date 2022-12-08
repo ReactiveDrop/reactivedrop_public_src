@@ -1175,7 +1175,7 @@ void C_ASW_FourWheelVehiclePhysics::UpdateDriverControls( CUserCmd *cmd, float f
 		m_controls.brake = 0.0f;
 	}
 
-	if ( ( nButtons & IN_SPEED ) && !IsEngineDisabled() )
+	if ( ( nButtons & ( IN_SPEED | IN_WALK ) ) && !IsEngineDisabled() )
 	{
 		m_controls.boost = 1.0f;
 	}

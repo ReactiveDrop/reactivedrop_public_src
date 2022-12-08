@@ -8,6 +8,8 @@
 #include "tier0/memdbgon.h"
 
 
+extern ConVar asw_controls;
+
 LINK_ENTITY_TO_CLASS( funCASW_Inhabitable_NPC, CASW_Inhabitable_NPC );
 
 IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
@@ -16,6 +18,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropVector( SENDINFO( m_vecFacingPointFromServer ), 0, SPROP_NOSCALE ),
 	SendPropBool( SENDINFO( m_bInhabited ) ),
 	SendPropBool( SENDINFO( m_bWalking ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iControlsOverride ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -27,11 +30,13 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_hPostProcessController, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hColorCorrection, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hTonemapController, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_iControlsOverride, FIELD_INTEGER )
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
 	DEFINE_SCRIPTFUNC( IsInhabited, "Returns true if a player is controlling this character, false if it is AI-controlled." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "Get the player entity that is \"owns\" this character, eg. the player that is playing this marine or added this marine bot to the lobby." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetControls, "SetControls", "Force this character to use a specific value for asw_controls." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetFogController, "SetFogController", "Force this character to use a specific env_fog_controller." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetPostProcessController, "SetPostProcessController", "Force this character to use a specific postprocess_controller." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetColorCorrection, "SetColorCorrection", "Force this character to use a specific color_correction." )
@@ -41,6 +46,7 @@ END_SCRIPTDESC()
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
 	m_nOldButtons = 0;
+	m_iControlsOverride = -1;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
@@ -165,6 +171,24 @@ int CASW_Inhabitable_NPC::TranslateSchedule( int scheduleType )
 float CASW_Inhabitable_NPC::MaxSpeed()
 {
 	return 300;
+}
+
+ASW_Controls_t CASW_Inhabitable_NPC::GetASWControls()
+{
+	if ( m_iControlsOverride >= 0 )
+	{
+		return ( ASW_Controls_t )m_iControlsOverride.Get();
+	}
+
+	return ( ASW_Controls_t )asw_controls.GetInt();
+}
+
+void CASW_Inhabitable_NPC::ScriptSetControls( int iControls )
+{
+	m_iControlsOverride = MAX( -1, iControls );
+
+	// trigger control scheme update callback
+	asw_controls.SetValue( asw_controls.GetString() );
 }
 
 #define IMPLEMENT_SCRIPT_SET_CONTROLLER_ENT_FUNC( FuncName, EntityClass, MemberVariable, HammerClassName ) \

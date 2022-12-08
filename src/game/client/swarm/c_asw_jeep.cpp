@@ -28,8 +28,14 @@ ConVar asw_r_JeepFOV( "asw_r_JeepFOV", "90", FCVAR_CHEAT );
 	//DEFINE_PHYSPTR_ARRAY( m_VehiclePhysics.m_pWheels ),
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_PropJeep, DT_ASW_PropJeep, CASW_PropJeep )
+	RecvPropArray3( RECVINFO_ARRAY( m_hPassenger ), RecvPropEHandle( RECVINFO( m_hPassenger[0] ) ) ),
+	RecvPropInt( RECVINFO( m_iPassengerBits ) ),
+
 	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
-	RecvPropEHandle( RECVINFO( m_hDriver ) ),
+	RecvPropInt( RECVINFO( m_iCamControlsOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamPitchOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamDistOverride ) ),
+	RecvPropFloat( RECVINFO( m_flCamHeightOverride ) ),
 END_RECV_TABLE()
 
 C_ASW_PropJeep::C_ASW_PropJeep()
@@ -38,6 +44,11 @@ C_ASW_PropJeep::C_ASW_PropJeep()
 	m_flViewAngleDeltaTime = 0.0f;
 	m_pHeadlight = NULL;
 	m_ViewSmoothingData.flFOV = asw_r_JeepFOV.GetFloat();
+
+	for ( int i = 0; i < NELEMS( m_iPassengerAttachment ); i++ )
+	{
+		m_iPassengerAttachment[i] = -1;
+	}
 }
 
 C_ASW_PropJeep::~C_ASW_PropJeep()
@@ -323,10 +334,54 @@ void ASWWheelDustCallback( const CEffectData &data )
 
 DECLARE_CLIENT_EFFECT( ASWWheelDust, ASWWheelDustCallback );
 
-// implement driver interface
-C_ASW_Marine* C_ASW_PropJeep::ASWGetDriver()
+int C_ASW_PropJeep::ASWGetSeatPosition( int i, Vector &origin, QAngle &angles )
 {
-	return dynamic_cast<C_ASW_Marine*>(m_hDriver.Get());
+	int j = UTIL_RD_IndexToBit( m_iPassengerBits, i + 1 );
+	int iAttachment = m_iPassengerAttachment[j];
+	if ( iAttachment == -1 )
+	{
+		m_iPassengerAttachment[j] = iAttachment = LookupAttachment( UTIL_VarArgs( "vehicle_feet_passenger%d", j ) );
+	}
+
+	GetAttachment( iAttachment, origin, angles );
+
+	return iAttachment;
+}
+
+// implement driver interface
+int C_ASW_PropJeep::ASWGetNumPassengers()
+{
+	return UTIL_CountNumBitsSet( m_iPassengerBits ) - 1;
+}
+
+C_ASW_Marine *C_ASW_PropJeep::ASWGetDriver()
+{
+	return m_hPassenger[VEHICLE_ROLE_DRIVER];
+}
+
+C_ASW_Marine *C_ASW_PropJeep::ASWGetPassenger( int i )
+{
+	// find the position of the i'th bit that is set in m_iPassengerBits
+	unsigned bits = m_iPassengerBits >> 1;
+	int j = 1;
+	while ( i )
+	{
+		if ( bits & 1 )
+		{
+			j++;
+			i--;
+		}
+
+		bits >>= 1;
+
+		Assert( !i || bits );
+		if ( i && !bits )
+		{
+			return NULL;
+		}
+	}
+
+	return m_hPassenger[j];
 }
 
 // implement client vehicle interface
@@ -360,38 +415,63 @@ int C_ASW_PropJeep::GetRideIconTexture()
 	return s_nRideIconTextureID;
 }
 
+void C_ASW_PropJeep::ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight )
+{
+	if ( pControls && m_iCamControlsOverride >= 0 )
+		*pControls = m_iCamControlsOverride;
+	if ( pPitch && m_flCamPitchOverride >= 0 )
+		*pPitch = m_flCamPitchOverride;
+	if ( pDist && m_flCamDistOverride >= 0 )
+		*pDist = m_flCamDistOverride;
+	if ( pHeight && m_flCamHeightOverride >= 0 )
+		*pHeight = m_flCamHeightOverride;
+}
+
+int C_ASW_PropJeep::FindClosestEmptySeat( Vector vecPoint )
+{
+	int iBestSeat = -1;
+	float flBestDistance = COORD_EXTENT * COORD_EXTENT;
+
+	for ( int i = 0, j = 0; i < m_hPassenger.Count(); i++ )
+	{
+		if ( !( m_iPassengerBits & ( 1 << i ) ) )
+			continue;
+
+		if ( !m_hPassenger.Get( i ) )
+		{
+			Vector vecSeat;
+			GetAttachment( VarArgs( "vehicle_feet_passenger%d", i ), vecSeat );
+			float flDistance = vecPoint.DistToSqr( vecSeat );
+			if ( flDistance < flBestDistance )
+			{
+				iBestSeat = j;
+				flBestDistance = flDistance;
+			}
+		}
+
+		j++;
+	}
+
+	return iBestSeat;
+}
+
 bool C_ASW_PropJeep::MarineInVehicle()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
+	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() ) : NULL;
 	return pMarine && pMarine->IsInVehicle();
 }
 
-const char* C_ASW_PropJeep::GetDriveIconText()
+bool C_ASW_PropJeep::IsUsable( C_BaseEntity *pUser )
 {
-	if (MarineInVehicle())
-		return "Exit Vehicle";
+	if ( m_bLocked || m_nSpeed > m_flMinimumSpeedToEnterExit )
+		return false;
 
-	return "Drive";
-}
-
-const char* C_ASW_PropJeep::GetRideIconText()
-{
-	if (MarineInVehicle())
-		return "Exit Vehicle";
-
-	return "Passenger";
-}
-
-bool C_ASW_PropJeep::IsUsable(C_BaseEntity *pUser)
-{
-	return (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS);	// near enough?
+	return ( pUser && pUser->Classify() == CLASS_ASW_MARINE && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 
 bool C_ASW_PropJeep::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
-	action.iUseIconTexture = GetDriveIconTexture();
-	TryLocalize( GetDriveIconText(), action.wszText, sizeof( action.wszText ) );
 	action.UseTarget = GetEntity();
 	action.fProgress = -1;
 	action.UseIconRed = 255;
@@ -399,5 +479,36 @@ bool C_ASW_PropJeep::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *
 	action.UseIconBlue = 255;
 	action.bShowUseKey = true;
 	action.iInventorySlot = -1;
+
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pUser );
+	if ( pMarine && pMarine->IsInVehicle() )
+	{
+		action.iUseIconTexture = pMarine->IsDriving() ? GetDriveIconTexture() : GetRideIconTexture();
+		TryLocalize( "#rd_exit_vehicle", action.wszText, sizeof( action.wszText ) );
+
+		return true;
+	}
+
+	int seat = FindClosestEmptySeat( pUser->GetAbsOrigin() );
+	if ( seat == -1 )
+	{
+		action.bShowUseKey = false;
+		action.iUseIconTexture = GetRideIconTexture();
+		TryLocalize( "#rd_enter_vehicle_full", action.wszText, sizeof( action.wszText ) );
+
+		return true;
+	}
+
+	if ( seat == 0 )
+	{
+		action.iUseIconTexture = GetDriveIconTexture();
+		TryLocalize( "#rd_enter_vehicle_driver", action.wszText, sizeof( action.wszText ) );
+
+		return true;
+	}
+
+	action.iUseIconTexture = GetRideIconTexture();
+	TryLocalize( "#rd_enter_vehicle_passenger", action.wszText, sizeof( action.wszText ) );
+
 	return true;
 }

@@ -43,35 +43,38 @@ public:
 	void DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
 	void DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
 	void ComputePDControllerCoefficients( float *pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
-	
+
 	// implement our asw vehicle interface
-	virtual int ASWGetNumPassengers() { return 0; }		// todo: implement
-	virtual C_ASW_Marine* ASWGetDriver();
-	virtual C_ASW_Marine* ASWGetPassenger(int i) { return NULL; }	// todo: implement
-	CNetworkHandle(C_ASW_Marine, m_hDriver);
+	virtual int ASWGetSeatPosition( int i, Vector &origin, QAngle &angles ) override;
+	virtual int ASWGetNumPassengers() override;
+	virtual C_ASW_Marine *ASWGetDriver() override;
+	virtual C_ASW_Marine *ASWGetPassenger( int i ) override;
+	CNetworkArray( CHandle<CASW_Marine>, m_hPassenger, 10 );
+	int m_iPassengerAttachment[10];
+	CNetworkVar( unsigned int, m_iPassengerBits );
 	// implement client vehicle interface
-	virtual bool ValidUseTarget() { return true; }
-	virtual int GetDriveIconTexture();
-	virtual int GetRideIconTexture();
-	virtual const char* GetDriveIconText();
-	virtual const char* GetRideIconText();
-	virtual C_BaseEntity* GetEntity() { return this; }
+	virtual bool ValidUseTarget() override { return true; }
+	int GetDriveIconTexture();
+	int GetRideIconTexture();
+	virtual C_BaseEntity* GetEntity() override { return this; }
 	static bool s_bLoadedRideIconTexture;
 	static int s_nRideIconTextureID;
 	static bool s_bLoadedDriveIconTexture;
 	static int s_nDriveIconTextureID;
 	// no clientside prediction for this kind of vehicle
-	virtual void SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) { } 
-	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) { }
-	virtual void ASWStartEngine() { } 
-	virtual void ASWStopEngine() { }
+	virtual void SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) override { } 
+	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) override {}
+	virtual void ASWStartEngine() override {}
+	virtual void ASWStopEngine() override {}
+	virtual void ASWGetCameraOverrides( int *pControls, float *pPitch, float *pDist, float *pHeight ) override;
 
-	bool MarineInVehicle();
+	int FindClosestEmptySeat( Vector vecPoint );
+	static bool MarineInVehicle();
 
-	virtual bool IsUsable(C_BaseEntity *pUser);
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser);
-	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) { }
-	virtual bool ShouldPaintBoxAround() { return (ASWGetDriver() == NULL); }
+	virtual bool IsUsable(C_BaseEntity *pUser) override;
+	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser) override;
+	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon) override {}
+	virtual bool ShouldPaintBoxAround() override { return !MarineInVehicle(); }
 
 protected:
 
@@ -85,7 +88,13 @@ protected:
 
 	float		m_flJeepFOV;
 	CHeadlightEffect *m_pHeadlight;
-	bool		m_bHeadlightIsOn;	
+	bool		m_bHeadlightIsOn;
+
+	// Camera overrides
+	int m_iCamControlsOverride;
+	float m_flCamPitchOverride;
+	float m_flCamDistOverride;
+	float m_flCamHeightOverride;
 };
 
 #endif // _INCLUDED_C_ASW_JEEP_H

@@ -11,7 +11,6 @@
 IMPLEMENT_AUTO_LIST( IASW_Fade_List_ );
 
 ConVar asw_fade_duration( "asw_fade_duration", "0.5", FCVAR_ARCHIVE, "", true, 0.01f, false, 0 );
-extern ConVar asw_hide_local_marine;
 extern ConVar asw_allow_detach;
 
 int IASW_Fade_List::s_iFadeReflectionDepth = 0;
@@ -40,7 +39,8 @@ void IASW_Fade_List::DisableFading()
 		pEnt->SetRenderAlpha( pItem->m_nNormalOpacity );
 	}
 
-	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer && pPlayer->GetASWControls() == ASWC_FIRSTPERSON && !asw_allow_detach.GetBool() )
 	{
 		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
 		if ( pViewMarine )
@@ -65,7 +65,8 @@ void IASW_Fade_List::EnableFading()
 		pEnt->SetRenderAlpha( pItem->m_nSavedAlpha );
 	}
 
-	if ( asw_hide_local_marine.GetBool() && !asw_allow_detach.GetBool() )
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer && pPlayer->GetASWControls() == ASWC_FIRSTPERSON && !asw_allow_detach.GetBool() )
 	{
 		C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
 		if ( pViewMarine )

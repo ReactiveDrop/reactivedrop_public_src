@@ -1956,7 +1956,7 @@ void FoundGames::AddServersToList()
 		{
 			V_strncpy( fi.mchOtherTitle, szModDir, sizeof( fi.mchOtherTitle ) );
 		}
-		else if ( V_strcmp( pGameDetails->GetString( "system/game_version" ), engine->GetProductVersionString() ) )
+		else if ( V_strcmp( pGameDetails->GetString( "system/game_version", engine->GetProductVersionString() ), engine->GetProductVersionString() ) )
 		{
 			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", pGameDetails->GetString( "system/game_version", "?" ) ), sizeof( fi.mchOtherTitle ) );
 		}

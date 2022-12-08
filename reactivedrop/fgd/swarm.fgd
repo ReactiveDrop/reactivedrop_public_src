@@ -4290,6 +4290,7 @@
 	output OnBreak(void) : "Fired when this breakable breaks."
 	output OnTakeDamage(void) : "Fired each time this breakable takes any damage."
 	output OnHealthChanged(float) : "Fired when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
+	output OnBurst(void) : "Fired when the barrel starts emitting gas."
 ]
 
 @PointClass base(BasePropPhysics) studioprop("models/swarm/Barrel/barrel.mdl") = asw_barrel_explosive :

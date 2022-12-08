@@ -21,7 +21,8 @@ BEGIN_DATADESC( CASW_Barrel_Radioactive )
 	DEFINE_FIELD(m_hRadCloud, FIELD_EHANDLE),
 	DEFINE_FIELD(m_bBurst, FIELD_BOOLEAN),
 
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),	
+	DEFINE_INPUTFUNC( FIELD_VOID,	"Burst",	InputBurst ),
+	DEFINE_OUTPUT( m_OnBurst, "OnBurst" ),
 END_DATADESC()
 
 CASW_Barrel_Radioactive::CASW_Barrel_Radioactive()
@@ -166,6 +167,8 @@ void CASW_Barrel_Radioactive::Burst( const CTakeDamageInfo &info )
 		WRITE_FLOAT( 150.0f );
 		WRITE_FLOAT( 400.0f );
 	MessageEnd();
+
+	m_OnBurst.FireOutput( info.GetInflictor(), this );
 }
 
 void CASW_Barrel_Radioactive::InputBurst( inputdata_t &inputdata )

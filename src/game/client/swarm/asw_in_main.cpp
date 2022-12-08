@@ -660,49 +660,6 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 
 // asw
 
-bool CASWInput::ASWWriteVehicleMessage( bf_write *buf )
-{
-	int startbit = buf->GetNumBitsWritten();
-
-	if (!PlayerDriving())
-		return false;
-
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pMarine = pPlayer ? C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
-	if ( !pMarine || !pMarine->GetClientsideVehicle() )
-		return false;
-
-	C_BaseAnimating *pAnimating = dynamic_cast< C_BaseAnimating * >( pMarine->GetClientsideVehicle()->GetEntity() );
-	if ( !pAnimating )
-		return false;
-
-	// = static_cast<C_BaseAnimating*>(s_pCVehicle->GetVehicleEnt());
-	buf->WriteBitVec3Coord(pAnimating->GetAbsOrigin());
-	buf->WriteBitAngles(pAnimating->GetAbsAngles());
-	//todo: velocity?
-
-	// poseparams
-	//Msg(" Client params: ");
-	for (int i=0;i<12;i++)
-	{
-		buf->WriteBitFloat(pAnimating->GetPoseParameterRaw(i));
-		//Msg("%f ", pAnimating->GetPoseParameter(i));
-	}
-	//Msg("\n");
-
-	if ( buf->IsOverflowed() )
-	{
-		int endbit = buf->GetNumBitsWritten();
-
-		Msg( "WARNING! ASW Vehicle packet buffer overflow, last cmd was %i bits long\n",
-			endbit - startbit );
-
-		return false;
-	}
-
-	return true;
-}
-
 int CASWInput::GetButtonBits( bool bResetState )
 {
 	int bits = CInput::GetButtonBits( bResetState );

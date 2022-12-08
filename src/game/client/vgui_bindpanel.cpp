@@ -4,6 +4,7 @@
 #include <vgui/isurface.h>
 #include <vgui/ivgui.h>
 #include "asw_input.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -73,7 +74,7 @@ void CBindPanel::SetBind( const char *szBind, int iSlot )
 void CBindPanel::UpdateKey()
 {
 	MEM_ALLOC_CREDIT();
-	const char *key = engine->Key_LookupBindingEx( *m_szBind == '+' ? m_szBind + 1 : m_szBind, m_iSlot, 0, ASWInput()->ControllerModeActive() );
+	const char *key = g_RD_Steam_Input.Key_LookupBindingEx( *m_szBind == '+' ? m_szBind + 1 : m_szBind, m_iSlot, 0, ASWInput()->ControllerModeActive() );
 	if ( key )
 	{
 		Q_snprintf( m_szKey, sizeof( m_szKey ), key );
@@ -99,6 +100,7 @@ void CBindPanel::UpdateKey()
 void CBindPanel::UpdateBackgroundImage()
 {
 	m_fWidthScale = 1.0f;
+	m_bController = false;
 	m_bDrawKeyText = true;
 	Q_strcpy( m_szBackgroundTextureName, "icon_blank" );
 
@@ -307,26 +309,7 @@ void CBindPanel::DrawBindingName()
 	}
 	else
 	{
-		// Draw the caption
-		wchar	wszCaption[ 64 ];
-
-		vgui::surface()->DrawSetTextFont( m_hButtonFont );
-		int fontTall = vgui::surface()->GetFontTall( m_hButtonFont );
-
-		char szBinding[ 256 ];
-
-		// Turn localized string into icon character
-		Q_snprintf( szBinding, sizeof( szBinding ), "#GameUI_Icons_%s", m_szKey );
-		g_pVGuiLocalize->ConstructString( wszCaption, sizeof( wszCaption ), g_pVGuiLocalize->Find( szBinding ), 0 );
-		g_pVGuiLocalize->ConvertUnicodeToANSI( wszCaption, szBinding, sizeof( szBinding ) );
-
-		int iWidth = GetScreenWidthForCaption( wszCaption, m_hButtonFont );
-
-		// Draw the button
-		vgui::surface()->DrawSetTextColor( 255,255,255, 255 );
-		vgui::surface()->DrawSetTextPos( x - (iWidth>>1), y - (fontTall >>1) );
-		vgui::surface()->DrawUnicodeString( wszCaption );
-
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( m_szKey, x, y, true, true, m_hButtonFont );
 	}
 }
 

@@ -233,32 +233,6 @@ const Vector& CRoom::GetAmbientLight()
 }
 
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-int CRoom::GetTileType()
-{
-	if ( !m_pRoomTemplate )
-		return -1;
-
-	return m_pRoomTemplate->GetTileType();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-const char *CRoom::GetTileTypeName( int nType )
-{
-	// This is the default, I didn't find anything value for GetTileType
-	if ( nType == -1 )
-		return NULL;
-
-	Assert( nType >= ASW_TILETYPE_UNKNOWN && nType < ASW_TILETYPE_COUNT );
-	return g_szASWTileTypeStrings[nType];
-}
-
-
 void CRoom::GetWorldBounds( Vector *vecWorldMins, Vector *vecWorldMaxs )
 {
 	if ( !m_pRoomTemplate )

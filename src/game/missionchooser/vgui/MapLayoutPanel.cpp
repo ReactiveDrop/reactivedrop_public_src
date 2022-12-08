@@ -49,7 +49,7 @@ void CMapLayoutPanel::PerformLayout()
 	m_pPlayerStartImagePanel->SetSize(g_pTileGenDialog->RoomTemplatePanelTileSize(), g_pTileGenDialog->RoomTemplatePanelTileSize());
 	// position playerstart within the grid
 	int pos_y = GetMapLayout()->m_iPlayerStartTileY;
-	pos_y = g_pTileGenDialog->MapLayoutTilesWide() - pos_y;	// reverse the Y axis	
+	pos_y = g_pTileGenDialog->MapLayoutTilesWide() - pos_y - 1;	// reverse the Y axis	
 	
 	int pos_x = GetMapLayout()->m_iPlayerStartTileX * g_pTileGenDialog->RoomTemplatePanelTileSize();
 	pos_y *= g_pTileGenDialog->RoomTemplatePanelTileSize();

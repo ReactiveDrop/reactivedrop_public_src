@@ -1118,6 +1118,16 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 
 bool CASW_Spawn_Manager::ValidSpawnPoint( const Vector &vecPosition, const Vector &vecMins, const Vector &vecMaxs, bool bCheckGround, float flMarineNearDistance )
 {
+	// check if there's a brush telling us to not spawn there
+	FOR_EACH_VEC( IRD_No_Director_Aliens::AutoList(), d )
+	{
+		CRD_No_Director_Aliens *pNoDirectorAliens = assert_cast< CRD_No_Director_Aliens * >( IRD_No_Director_Aliens::AutoList()[d] );
+		if ( !pNoDirectorAliens->m_bDisabled && pNoDirectorAliens->CollisionProp()->IsPointInBounds( vecPosition ) )
+		{
+			return false;
+		}
+	}
+
 	// check if we can fit there
 	trace_t tr;
 	UTIL_TraceHull( vecPosition,

@@ -45,9 +45,8 @@ void CASW_Simple_Grub::Spawn(void)
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );
 	SetModel( SWARM_GRUB_MODEL );
 
-	SetHullType( HULL_TINY ); 
-	AddSolidFlags(FSOLID_TRIGGER);
-	UTIL_SetSize(this, Vector(-12,-12,   0),	Vector(12, 12, 12));
+	SetHullType( HULL_TINY );
+	AddSolidFlags( FSOLID_TRIGGER );
 
 	SetTouch( &CASW_Simple_Grub::GrubTouch );
 

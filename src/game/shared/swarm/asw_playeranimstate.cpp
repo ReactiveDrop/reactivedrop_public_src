@@ -1050,15 +1050,7 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 	{
 		Activity idealActivity = ACT_IDLE;
 
-		// asw - commented out crouching for now
-		//if ( m_pOuter->GetFlags() & FL_DUCKING )
-		//{
-			//if ( flOuterSpeed > 0.1f )
-				//idealActivity = ACT_RUN_CROUCH;
-			//else
-				//idealActivity = ACT_CROUCHIDLE;
-		//}
-		//else
+		if ( !pMarine->IsInVehicle() )
 		{
 			if ( flOuterSpeed > 0.1f )
 			{
