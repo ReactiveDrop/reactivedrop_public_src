@@ -67,6 +67,9 @@ typedef enum
 	ACT_ALIEN_BURROW_IDLE,
 	ACT_ALIEN_BURROW_OUT,
 
+	ACT_DRIVING,			// being the driver in a vehicle
+	ACT_RIDING,				// being a passenger in a vehicle
+
 	ACT_SIGNAL1,
 	ACT_SIGNAL2,
 	ACT_SIGNAL3,

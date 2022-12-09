@@ -1108,6 +1108,10 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 				}
 			}
 		}
+		else
+		{
+			idealActivity = pMarine->IsDriving() ? ACT_DRIVING : ACT_RIDING;
+		}
 		return idealActivity;
 	}
 }
