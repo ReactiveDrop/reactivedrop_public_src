@@ -8363,7 +8363,7 @@ void CheatsChangeCallback( IConVar *pConVar, const char *pOldString, float flOld
 #ifdef GAME_DLL
 static void CreateCake( const char *mapname )
 {
-	Vector origin(0, 0, 0);
+	Vector origin( 0, 0, 0 );
 	if ( FStrEq( mapname, "asi-jac1-landingbay_01" ) )
 	{
 		origin = Vector( -8444, -468, 852 );
@@ -8629,35 +8629,35 @@ static void CreateCake( const char *mapname )
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )
 	{
-		// TODO: cake
+		origin = Vector( 2236, -1496, 1520 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_nexus_subnode" ) )
 	{
-		// TODO: cake
+		origin = Vector( -1732, 1848, 381 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_neon_carnage" ) )
 	{
-		// TODO: cake
+		origin = Vector( 3730, -3524, 84 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_fuel_junction" ) )
 	{
-		// TODO: cake
+		origin = Vector( -652, 3390, 348 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_dark_path" ) )
 	{
-		// TODO: cake
+		origin = Vector( -7592, -5936, 524 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_forbidden_outpost" ) )
 	{
-		// TODO: cake
+		origin = Vector( 2300, 3796, -568 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_new_beginning" ) )
 	{
-		// TODO: cake
+		origin = Vector( -480, -734, 1132 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_anomaly" ) )
 	{
-		// TODO: cake
+		origin = Vector( -3808, -1632, 452 );
 	}
 #endif
 
@@ -8675,7 +8675,7 @@ static void CreateCake( const char *mapname )
 	// UTIL_DropToFloor( pCake, MASK_SOLID );
 	pCake->SetMoveType( MOVETYPE_NONE );
 
-	CSprite *pCakeSprite = static_cast<CSprite*>( CreateEntityByName( "env_sprite" ) );
+	CSprite *pCakeSprite = assert_cast< CSprite * >( CreateEntityByName( "env_sprite" ) );
 	pCakeSprite->SetModelName( AllocPooledString( "materials/sprites/light_glow03.vmt") );
 	pCakeSprite->Precache();
 	pCakeSprite->SetGlowProxySize( 2.0f );
@@ -8809,8 +8809,8 @@ void CAlienSwarm::LevelInitPostEntity()
 	SetMaxMarines();
 
 	// create the burning system
-	CASW_Burning *pFire = dynamic_cast<CASW_Burning*>( CreateEntityByName( "asw_burning" ) );
-	if (pFire)
+	CASW_Burning *pFire = assert_cast< CASW_Burning * >( CreateEntityByName( "asw_burning" ) );
+	if ( pFire )
 		pFire->Spawn();
 
 	if ( !sv_cheats )
