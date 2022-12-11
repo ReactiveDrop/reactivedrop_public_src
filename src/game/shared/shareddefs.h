@@ -837,8 +837,7 @@ bool IsHeadTrackingEnabled();
 // If this is defined, all of the scopeguard objects are NULL'd out to reduce overhead
 // #define SPLIT_SCREEN_STUBS
 
-
-	#define MAX_SPLITSCREEN_PLAYERS 1
+	#define MAX_SPLITSCREEN_PLAYERS 4
 
 
 inline bool IsSplitScreenSupported()
