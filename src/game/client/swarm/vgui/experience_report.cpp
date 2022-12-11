@@ -282,13 +282,13 @@ void CExperienceReport::OnThink()
 		if ( bShowAnniversaryBonus )
 			flTotalXP = floorf( flTotalXP ) * 2;
 
+		m_pXPBonusEventScaleNumber->SetText( "x2" );
+		m_pXPBonusEventScaleTitle->SetText( "#rd_xp_bonus_anniversary" );
+
 		if ( bShowAnniversaryBonus != m_pXPBonusEventScaleNumber->IsVisible() )
 		{
 			m_pXPBonusEventScaleNumber->SetVisible( bShowAnniversaryBonus );
 			m_pXPBonusEventScaleTitle->SetVisible( bShowAnniversaryBonus );
-
-			m_pXPBonusEventScaleNumber->SetText( "x2" );
-			m_pXPBonusEventScaleTitle->SetText( "#rd_xp_bonus_anniversary" );
 
 			InvalidateLayout();
 		}
