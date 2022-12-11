@@ -19,7 +19,7 @@
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
 
 ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE, "Shrink controller glyphs until they are a power-of-two size to avoid scaling artifacts." );
-ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_NONE, "Use a specific controller button set for UI hints.", true, -1, true, k_ESteamInputType_Count - 1 );
+ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_NONE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 
 CRD_Steam_Input g_RD_Steam_Input;
 
@@ -60,6 +60,13 @@ CRD_Steam_Input::CRD_Steam_Input() :
 
 void CRD_Steam_Input::PostInit()
 {
+	Assert( !m_bInitialized );
+	if ( m_bInitialized )
+	{
+		Warning( "Steam Input is already initialized.\n" );
+		return;
+	}
+
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( !pSteamInput )
@@ -124,6 +131,8 @@ void CRD_Steam_Input::Shutdown()
 	Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::Shutdown returned failure status\n" );
+
+	m_Controllers.PurgeAndDeleteElements();
 
 	m_bInitialized = false;
 }
@@ -418,8 +427,8 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 				*flMoveY = 0;
 			}
 
-			*flMoveX += data.x;
-			*flMoveY += data.y;
+			*flMoveX += data.x * MAX_BUTTONSAMPLE;
+			*flMoveY -= data.y * MAX_BUTTONSAMPLE;
 		}
 
 		data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Look );
@@ -432,11 +441,24 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 				*flLookY = 0;
 			}
 
-			*flLookX += data.x;
-			*flLookY += data.y;
+			*flLookX += data.x * MAX_BUTTONSAMPLE;
+			*flLookY -= data.y * MAX_BUTTONSAMPLE;
 		}
 	}
 #endif
+
+	// ensure added values from multiple controllers are within expected range
+	if ( bFoundMove )
+	{
+		*flMoveX = clamp<float>( *flMoveX, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+		*flMoveY = clamp<float>( *flMoveY, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+	}
+
+	if ( bFoundLook )
+	{
+		*flLookX = clamp<float>( *flLookX, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+		*flLookY = clamp<float>( *flLookY, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+	}
 
 	return bFoundMove || bFoundLook;
 }
@@ -591,4 +613,14 @@ CON_COMMAND_F( rd_reload_controller_glyphs, "force all controller glyphs to be r
 	}
 
 	g_RD_Steam_Input.m_GlyphTextures.Purge();
+}
+
+CON_COMMAND( rd_steam_input_enable, "" )
+{
+	g_RD_Steam_Input.PostInit();
+}
+
+CON_COMMAND( rd_steam_input_disable, "" )
+{
+	g_RD_Steam_Input.Shutdown();
 }
