@@ -10,6 +10,7 @@
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "asw_marine_profile.h"
+#include "inputsystem/iinputsystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -17,7 +18,8 @@
 #define RD_INPUT_GLYPH_SIZE k_ESteamInputGlyphSize_Medium
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
 
-ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE );
+ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE, "Shrink controller glyphs until they are a power-of-two size to avoid scaling artifacts." );
+ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_NONE, "Use a specific controller button set for UI hints.", true, -1, true, k_ESteamInputType_Count - 1 );
 
 CRD_Steam_Input g_RD_Steam_Input;
 
@@ -84,6 +86,7 @@ void CRD_Steam_Input::PostInit()
 #ifdef RD_STEAM_INPUT_ACTIONS
 #define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSets.name ); if ( !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
 #define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSetLayers.name ); if ( !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
+#define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( m_AnalogActions.name ); if ( !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
 
 	// Action Sets
 	INIT_ACTION_SET( InGame );
@@ -98,6 +101,10 @@ void CRD_Steam_Input::PostInit()
 		if ( !pBind->m_hAction )
 			Warning( "Could not find Steam Input digital action '%s'\n", pBind->m_szActionName );
 	}
+
+	// Analog Actions
+	INIT_ANALOG_ACTION( Move );
+	INIT_ANALOG_ACTION( Look );
 #endif
 
 	m_bInitialized = true;
@@ -130,6 +137,8 @@ void CRD_Steam_Input::Update( float frametime )
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return;
+
+	pSteamInput->RunFrame();
 
 	FOR_EACH_VEC( m_Controllers, i )
 	{
@@ -166,16 +175,35 @@ CRD_Steam_Controller *CRD_Steam_Input::FindOrAddController( InputHandle_t hContr
 	return pController;
 }
 
+int CRD_Steam_Input::GetJoystickCount()
+{
+	int iCount = 0;
+	FOR_EACH_VEC( m_Controllers, i )
+	{
+		if ( m_Controllers[i]->m_bConnected )
+		{
+			iCount++;
+		}
+	}
+
+	return iCount ? iCount : inputsystem->GetJoystickCount();
+}
+
 vgui::HTexture CRD_Steam_Input::GlyphForOrigin( EInputActionOrigin eOrigin )
 {
-	ushort index = m_GlyphTextures.Find( eOrigin );
-	if ( m_GlyphTextures.IsValidIndex( index ) )
-		return m_GlyphTextures[index];
-
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return NULL;
+
+	if ( rd_force_controller_glyph_set.GetInt() >= 0 )
+	{
+		eOrigin = pSteamInput->TranslateActionOrigin( static_cast< ESteamInputType >( rd_force_controller_glyph_set.GetInt() ), eOrigin );
+	}
+
+	ushort index = m_GlyphTextures.Find( eOrigin );
+	if ( m_GlyphTextures.IsValidIndex( index ) )
+		return m_GlyphTextures[index];
 
 	const char *szGlyphPath = pSteamInput->GetGlyphPNGForActionOrigin( eOrigin, RD_INPUT_GLYPH_SIZE, RD_INPUT_GLYPH_STYLE );
 	Assert( szGlyphPath );
@@ -361,6 +389,56 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 	vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawSetTextPos( x, y );
 	vgui::surface()->DrawPrintText( wszLegacy, V_wcslen( wszLegacy ) );
+}
+
+bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY )
+{
+	ISteamInput *pSteamInput = SteamInput();
+	Assert( pSteamInput );
+	if ( !pSteamInput )
+		return false;
+
+	bool bFoundMove = false, bFoundLook = false;
+
+#ifdef RD_STEAM_INPUT_ACTIONS
+	FOR_EACH_VEC( m_Controllers, i )
+	{
+		if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != nSlot )
+		{
+			continue;
+		}
+
+		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Move );
+		if ( data.bActive )
+		{
+			if ( !bFoundMove )
+			{
+				bFoundMove = true;
+				*flMoveX = 0;
+				*flMoveY = 0;
+			}
+
+			*flMoveX += data.x;
+			*flMoveY += data.y;
+		}
+
+		data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Look );
+		if ( data.bActive )
+		{
+			if ( !bFoundLook )
+			{
+				bFoundLook = true;
+				*flLookX = 0;
+				*flLookY = 0;
+			}
+
+			*flLookX += data.x;
+			*flLookY += data.y;
+		}
+	}
+#endif
+
+	return bFoundMove || bFoundLook;
 }
 
 void CRD_Steam_Input::OnSteamInputDeviceConnected( SteamInputDeviceConnected_t *pParam )

@@ -1820,7 +1820,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 bool CASWInput::JoyStickActive()
 {
 	// verify joystick is available and that the user wants to use it
-	if ( !in_joystick.GetInt() || 0 == inputsystem->GetJoystickCount() )
+	if ( !in_joystick.GetInt() || 0 == g_RD_Steam_Input.GetJoystickCount() )
 		return false; 
 	
 	return true;

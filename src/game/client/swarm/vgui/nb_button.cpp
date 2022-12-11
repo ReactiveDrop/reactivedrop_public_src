@@ -136,7 +136,7 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 	}
 
 	// TODO: is there a better way of knowing out-of-game whether a controller is active than just whether it's plugged in?
-	if ( m_szControllerButton && g_pInputSystem->GetJoystickCount() )
+	if ( m_szControllerButton && g_RD_Steam_Input.GetJoystickCount() )
 	{
 		int padding = ( tall - surface()->GetFontTall( m_hButtonFont ) ) / 2;
 		g_RD_Steam_Input.DrawLegacyControllerGlyph( m_szControllerButton, x + padding, y + padding, false, false, m_hButtonFont );
