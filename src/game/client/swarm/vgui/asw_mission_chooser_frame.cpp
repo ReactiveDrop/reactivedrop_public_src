@@ -7,6 +7,7 @@
 #include "rd_missions_shared.h"
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
+#include <vgui/ISystem.h>
 #include "campaignmapsearchlights.h"
 #include "fmtstr.h"
 
@@ -688,6 +689,21 @@ void CASW_Mission_Chooser_Entry::ApplyEntry()
 {
 	CASW_Mission_Chooser_Tab *pTab = assert_cast< CASW_Mission_Chooser_Tab * >( m_pParent->m_pParent );
 	CASW_Mission_Chooser_Frame *pFrame = assert_cast< CASW_Mission_Chooser_Frame * >( pTab->m_pParent );
+
+	if ( m_WorkshopChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
+	{
+		CFmtStr szWorkshopURL( VarArgs( "https://steamcommunity.com/workshop/browse/?appid=563560&requiredtags[0]=%s", s_WorkshopChooserTypeTag[( int )m_WorkshopChooserType] ) );
+		if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+		{
+			SteamFriends()->ActivateGameOverlayToWebPage( szWorkshopURL, k_EActivateGameOverlayToWebPageMode_Modal );
+		}
+		else
+		{
+			vgui::system()->ShellExecute( "open", szWorkshopURL );
+		}
+
+		return;
+	}
 
 	if ( m_szMission[0] )
 	{
