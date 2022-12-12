@@ -27,12 +27,11 @@ public:
 	wchar_t *m_pAlienSingularText;
 	bool m_bFoundText;
 
-	wchar_t m_dest_buffer[64];
-	int m_iKillsLeft;
+	wchar_t m_wszTitleBuffer[64];
+	int m_iLastKills;
 
 private:
-	C_ASW_Objective_Kill_Eggs( const C_ASW_Objective_Kill_Eggs & ); // not defined, not accessible
+	C_ASW_Objective_Kill_Eggs( const C_ASW_Objective_Kill_Eggs & ) = delete; // not defined, not accessible
 };
-
 
 #endif // _INCLUDED_C_ASW_OBJECTIVE_KILL_EGGS_H
