@@ -214,6 +214,8 @@ void CReactiveDropWorkshop::InitNonWorkshopAddons()
 		return;
 	}
 
+	s_NonWorkshopAddons.PurgeAndDeleteElements();
+
 	PublishedFileId_t nFakePublishedFileId = 0;
 
 	FOR_EACH_VALUE( pKV, pAddonName )
