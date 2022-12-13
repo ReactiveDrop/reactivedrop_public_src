@@ -3,7 +3,6 @@
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/ScrollBar.h"
 #include "vgui_bitmapbutton.h"
-#include "nb_select_weapon_entry.h"
 #include "asw_input.h"
 #include "controller_focus.h"
 
@@ -374,19 +373,6 @@ void CNB_Horiz_List::SetHighlight( int nEntryIndex )
 	if ( nEntryIndex < 0 || nEntryIndex >= m_Entries.Count() )
 		return;
 
-#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
-
-	if ( m_nHighlightedEntry != -1 && m_Entries[ m_nHighlightedEntry ].Get() != m_Entries[ nEntryIndex ].Get() )
-	{
-		CNB_Select_Weapon_Entry *pWeaponEntry = dynamic_cast<CNB_Select_Weapon_Entry*>( m_Entries[ m_nHighlightedEntry ].Get() );
-		if ( pWeaponEntry )
-		{
-			pWeaponEntry->m_pWeaponImage->NavigateFrom();
-		}
-	}
-
-#endif
-
 	m_nHighlightedEntry = nEntryIndex;
 }
 
@@ -436,16 +422,6 @@ void CNB_Horiz_List::OnSliderMoved( int position )
 		if ( !m_bAutoScrollChange )
 		{
 			SetHighlight( nClosestEntry );
-
-#ifndef RD_COLLECTIONS_WEAPONS_CHOOSER
-
-			CNB_Select_Weapon_Entry *pWeaponEntry = dynamic_cast<CNB_Select_Weapon_Entry*>( hClosestPanel.Get() );
-			if ( pWeaponEntry && pWeaponEntry->m_bCanEquip )
-			{
-				pWeaponEntry->m_pWeaponImage->NavigateTo();
-			}
-
-#endif
 		}
 	}
 

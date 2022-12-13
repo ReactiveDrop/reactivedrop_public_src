@@ -56,8 +56,6 @@ private:
 	bool m_bDisplayChanged;
 };
 
-#if defined(RD_COLLECTIONS_WEAPONS_ENABLED) || defined(RD_COLLECTIONS_WEAPONS_CHOOSER)
-
 class CRD_Collection_Tab_Equipment : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
@@ -149,8 +147,6 @@ public:
 	const RD_Swarmopedia::Weapon *m_pWeapon;
 };
 
-#endif
-
 class CRD_Collection_Tab_Inventory : public TGD_Tab
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Inventory, TGD_Tab );
@@ -201,8 +197,6 @@ public:
 	int m_Index;
 	SteamItemDetails_t m_Details;
 };
-
-#ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
 
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
 {
@@ -276,5 +270,3 @@ public:
 	const RD_Swarmopedia::Alien *m_pAlien;
 	int m_iCurrentDisplay;
 };
-
-#endif

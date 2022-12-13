@@ -9,12 +9,8 @@
 #include "nb_lobby_row.h"
 #include "nb_lobby_row_small.h"
 #include "nb_select_marine_panel.h"
-#ifdef RD_COLLECTIONS_WEAPONS_CHOOSER
 #include "tabbedgriddetails.h"
 #include "rd_collections.h"
-#else
-#include "nb_select_weapon_panel.h"
-#endif
 #include "nb_vote_panel.h"
 #include "asw_briefing.h"
 #include <vgui/ILocalize.h>
@@ -456,7 +452,6 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	if ( nProfileIndex == -1 )
 		return;
 
-#ifdef RD_COLLECTIONS_WEAPONS_CHOOSER
 	TabbedGridDetails *pWeaponPanel = new TabbedGridDetails();
 	if ( nInventorySlot == ASW_INVENTORY_SLOT_PRIMARY )
 		pWeaponPanel->SetTitle( "#nb_select_weapon_one", true );
@@ -470,14 +465,6 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	pWeaponPanel->AddTab( pTab );
 
 	pWeaponPanel->ShowFullScreen();
-#else
-	CNB_Select_Weapon_Panel *pWeaponPanel = new CNB_Select_Weapon_Panel( this, "Select_Weapon_Panel" );	
-	pWeaponPanel->SelectWeapon( nProfileIndex, nInventorySlot );
-	pWeaponPanel->InitWeaponList();
-	pWeaponPanel->MoveToFront();
-
-	Briefing()->SetChangingWeaponSlot( nLobbySlot, 2 + nInventorySlot );
-#endif
 
 	m_hSubScreen = pWeaponPanel;
 }

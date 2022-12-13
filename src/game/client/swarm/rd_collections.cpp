@@ -29,13 +29,9 @@ void LaunchCollectionsFrame()
 	pFrame = new TabbedGridDetails();
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
-#ifdef RD_COLLECTIONS_WEAPONS_ENABLED
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_equipment", NULL, ASW_INVENTORY_SLOT_EXTRA ) );
-#endif
-#ifdef RD_COLLECTIONS_SWARMOPEDIA_ENABLED
 	pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
-#endif
 	pFrame->RememberTabIndex( &rd_collections_last_tab );
 	pFrame->ShowFullScreen();
 

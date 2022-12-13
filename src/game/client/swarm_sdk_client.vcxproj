@@ -1826,8 +1826,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\nb_select_marine_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_save_entry.cpp" />
     <ClCompile Include="swarm\vgui\nb_select_save_panel.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_weapon_entry.cpp" />
-    <ClCompile Include="swarm\vgui\nb_select_weapon_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_skill_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_spend_skill_points.cpp" />
     <ClCompile Include="swarm\vgui\nb_suggest_difficulty.cpp" />
@@ -2909,8 +2907,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\nb_select_marine_panel.h" />
     <ClInclude Include="swarm\vgui\nb_select_save_entry.h" />
     <ClInclude Include="swarm\vgui\nb_select_save_panel.h" />
-    <ClInclude Include="swarm\vgui\nb_select_weapon_entry.h" />
-    <ClInclude Include="swarm\vgui\nb_select_weapon_panel.h" />
     <ClInclude Include="swarm\vgui\nb_skill_panel.h" />
     <ClInclude Include="swarm\vgui\nb_spend_skill_points.h" />
     <ClInclude Include="swarm\vgui\nb_suggest_difficulty.h" />
