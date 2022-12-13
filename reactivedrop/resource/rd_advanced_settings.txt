@@ -482,11 +482,6 @@
 				"2" "#RD_AdvancedSettings_Misc_WireHackClick_LeftRev"
 			}
 		}
-		TOGGLE
-		{
-			title "#RD_AdvancedSettings_Misc_StreamlinedWeaponChooser"
-			cvar "rda_better_weapon_chooser"
-		}
 		SELECT
 		{
 			title "#RD_AdvancedSettings_Misc_Interpolation"
@@ -515,6 +510,17 @@
 				"-1" "#RD_AdvancedSettings_Misc_CameraRotation_MapperDefined"
 				"0" "#RD_AdvancedSettings_Misc_CameraRotation_Never"
 				"1" "#RD_AdvancedSettings_Misc_CameraRotation_Always"
+			}
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Misc_SwarmopediaUnits"
+			cvar "rd_swarmopedia_units_preference"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Hammer"
+				"1" "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Metric"
+				"2" "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Imperial"
 			}
 		}
 	}
