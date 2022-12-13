@@ -19,7 +19,7 @@
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
 
 ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE, "Shrink controller glyphs until they are a power-of-two size to avoid scaling artifacts." );
-ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_NONE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
+ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 
 CRD_Steam_Input g_RD_Steam_Input;
 

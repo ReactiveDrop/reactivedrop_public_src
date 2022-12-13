@@ -108,6 +108,19 @@
 				"1" "#RD_AdvancedSettings_HUD_MapDrawing_AllowMinimap"
 			}
 		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_HUD_ControllerIcons"
+			cvar "rd_force_controller_glyph_set"
+			options
+			{
+				"-1" "#RD_AdvancedSettings_HUD_ControllerIcons_Default"
+				"3" "#RD_AdvancedSettings_HUD_ControllerIcons_XboxOne"
+				"10" "#RD_AdvancedSettings_HUD_ControllerIcons_Switch"
+				"13" "#RD_AdvancedSettings_HUD_ControllerIcons_PS5"
+				"14" "#RD_AdvancedSettings_HUD_ControllerIcons_SteamDeck"
+			}
+		}
 	}
 
 	SECTION
@@ -421,6 +434,17 @@
 		{
 			title "#RD_AdvancedSettings_VisualEffects_MarineGibs"
 			cvar "rd_marine_explodes_into_gibs"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_VisualEffects_ScreenShake"
+			cvar "rd_camera_shake"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Toggle_Off"
+				"1" "#RD_AdvancedSettings_VisualEffects_ScreenShake_Reduced"
+				"2" "#RD_AdvancedSettings_Toggle_On"
+			}
 		}
 		TOGGLE
 		{
