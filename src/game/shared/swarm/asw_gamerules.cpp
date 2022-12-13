@@ -8418,6 +8418,18 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -3746, -1314, -52 );
 	}
+	else if ( FStrEq( mapname, "example_map_1" ) )
+	{
+		origin = Vector( -128, -832, 12 );
+	}
+	else if ( FStrEq( mapname, "example_map_2" ) )
+	{
+		origin = Vector( -240, -240, -52 );
+	}
+	else if ( FStrEq( mapname, "example_map_3" ) )
+	{
+		origin = Vector( -128, 3136, 12 );
+	}
 	else if ( FStrEq( mapname, "rd-area9800lz" ) )
 	{
 		origin = Vector( -1829, 2136, 12 );
