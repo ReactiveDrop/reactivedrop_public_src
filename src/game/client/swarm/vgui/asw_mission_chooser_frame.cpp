@@ -692,7 +692,7 @@ void CASW_Mission_Chooser_Entry::ApplyEntry()
 
 	if ( m_WorkshopChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
 	{
-		CFmtStr szWorkshopURL( VarArgs( "https://steamcommunity.com/workshop/browse/?appid=563560&requiredtags[0]=%s", s_WorkshopChooserTypeTag[( int )m_WorkshopChooserType] ) );
+		CFmtStr szWorkshopURL( VarArgs( "https://steamcommunity.com/workshop/browse/?appid=563560&requiredtags[]=%s&browsesort=playtime_trend", s_WorkshopChooserTypeTag[( int )m_WorkshopChooserType] ) );
 		if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 		{
 			SteamFriends()->ActivateGameOverlayToWebPage( szWorkshopURL, k_EActivateGameOverlayToWebPageMode_Modal );
