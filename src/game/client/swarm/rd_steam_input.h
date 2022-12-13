@@ -19,10 +19,11 @@ public:
 	CRD_Steam_Controller *FindOrAddController( InputHandle_t hController );
 	int GetJoystickCount();
 	const char *Key_LookupBindingEx( const char *pBinding, int iUserId = -1, int iStartCount = 0, int iAllowJoystick = -1 );
+	bool IsOriginPlaceholderString( const char *szKey );
 	const char *NameForOrigin( EInputActionOrigin eOrigin );
 	const char *NameForOrigin( const char *szKey );
 	vgui::HTexture GlyphForOrigin( EInputActionOrigin eOrigin );
-	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, bool bCenterX, bool bCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
+	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
 	bool GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY );
 
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );

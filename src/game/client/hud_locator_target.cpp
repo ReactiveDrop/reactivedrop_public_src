@@ -572,7 +572,8 @@ const char *CLocatorTarget::UseBindingImage( char *pchIconTextureName, size_t bu
 	}
 
 	if ( input->ControllerModeActive() && 
-		 ( Q_strcmp( pchBinding, "A_BUTTON" ) == 0 || 
+		 ( g_RD_Steam_Input.IsOriginPlaceholderString( pchBinding ) ||
+		   Q_strcmp( pchBinding, "A_BUTTON" ) == 0 || 
 		   Q_strcmp( pchBinding, "B_BUTTON" ) == 0 || 
 		   Q_strcmp( pchBinding, "X_BUTTON" ) == 0 || 
 		   Q_strcmp( pchBinding, "Y_BUTTON" ) == 0 || 

@@ -273,6 +273,8 @@ static EInputActionOrigin OriginFromPlaceholderString( const char *szKey )
 
 const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUserId, int iStartCount, int iAllowJoystick )
 {
+	int iRealUserId = iUserId == -1 ? GET_ACTIVE_SPLITSCREEN_SLOT() : iUserId;
+
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( iAllowJoystick != 0 && pSteamInput )
@@ -286,7 +288,7 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 
 			FOR_EACH_VEC( m_Controllers, i )
 			{
-				if ( !m_Controllers[i]->m_bConnected || ( iUserId != -1 && m_Controllers[i]->m_SplitScreenPlayerIndex != iUserId ) )
+				if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != iRealUserId )
 					continue;
 
 				EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS]{};
@@ -312,7 +314,31 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 		}
 	}
 
-	return engine->Key_LookupBindingEx( pBinding, iUserId, iStartCount, iAllowJoystick );
+	const char *szEngineBind = engine->Key_LookupBindingEx( pBinding, iUserId, iStartCount, iAllowJoystick );
+	if ( szEngineBind )
+	{
+		for ( int i = 0; i < NELEMS( s_XInputTable ); i++ )
+		{
+			if ( V_strcmp( s_XInputTable[i].BindingName, szEngineBind ) )
+				continue;
+
+
+			FOR_EACH_VEC( m_Controllers, j )
+			{
+				if ( !m_Controllers[j]->m_bConnected || m_Controllers[j]->m_SplitScreenPlayerIndex != iRealUserId )
+					continue;
+
+				return OriginPlaceholderString( pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[j]->m_hController, s_XInputTable[i].XBoxOrigin ) );
+			}
+		}
+	}
+
+	return szEngineBind;
+}
+
+bool CRD_Steam_Input::IsOriginPlaceholderString( const char *szKey )
+{
+	return OriginFromPlaceholderString( szKey ) != k_EInputActionOrigin_None;
 }
 
 const char *CRD_Steam_Input::NameForOrigin( EInputActionOrigin eOrigin )
@@ -328,7 +354,7 @@ const char *CRD_Steam_Input::NameForOrigin( const char *szKey )
 	return eOrigin ? NameForOrigin( eOrigin ) : NULL;
 }
 
-void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y, bool bCenterX, bool bCenterY, vgui::HFont hFont, int nSlot )
+void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot )
 {
 	EInputActionOrigin eOrigin = OriginFromPlaceholderString( szKey );
 	EXboxOrigin eXboxOrigin = k_EXboxOrigin_Count;
@@ -354,11 +380,11 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 		tall = scaledTall;
 	}
 
-	if ( bCenterX )
-		x -= tall / 2;
+	if ( iCenterX )
+		x -= tall * iCenterX / 2;
 
-	if ( bCenterY )
-		y -= tall / 2;
+	if ( iCenterY )
+		y -= tall * iCenterY / 2;
 
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );

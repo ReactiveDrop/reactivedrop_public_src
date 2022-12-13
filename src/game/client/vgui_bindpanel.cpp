@@ -128,7 +128,8 @@ void CBindPanel::UpdateBackgroundImage()
 		}
 	}
 	else if ( in_joystick.GetInt() && 
-		( Q_strcmp( m_szKey, "A_BUTTON" ) == 0 || 
+		( g_RD_Steam_Input.IsOriginPlaceholderString( m_szKey ) ||
+		Q_strcmp( m_szKey, "A_BUTTON" ) == 0 || 
 		Q_strcmp( m_szKey, "B_BUTTON" ) == 0 || 
 		Q_strcmp( m_szKey, "X_BUTTON" ) == 0 || 
 		Q_strcmp( m_szKey, "Y_BUTTON" ) == 0 || 
