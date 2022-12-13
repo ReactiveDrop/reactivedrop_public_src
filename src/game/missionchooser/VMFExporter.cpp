@@ -1003,6 +1003,7 @@ void VMFExporter::MergeEntity( KeyValues *pEntity )
 			"fade_opacity",
 			"StartDisabled",
 			"Solidity",
+			"CollideWithGrenades",
 			"renderamt",
 			"solidbsp",
 			"rendercolor",

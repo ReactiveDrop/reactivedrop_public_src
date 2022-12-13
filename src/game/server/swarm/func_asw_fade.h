@@ -16,7 +16,10 @@ public:
 
 	CFunc_ASW_Fade();
 
+	virtual void Spawn() override;
+
 protected:
+	bool m_bCollideWithGrenades;
 	CNetworkVar( byte, m_nFadeOpacity );
 	CNetworkVar( bool, m_bAllowFade );
 };

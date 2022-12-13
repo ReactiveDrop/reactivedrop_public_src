@@ -107,6 +107,7 @@
 		1 : "Never Solid"
 		2 : "Always Solid"
 	]
+	CollideWithGrenades(boolean) : "Collide With Grenades" : 0 : "If this entity is solid and this is not set, grenades will pass through it."
 	excludednpc(string) : "NPC class excluded from collisions" : "" : "If an NPC classname is specified here, NPCs of that type won't collide with these brushes. In Episodic, you may also specify an individual entity's name."
 	invert_exclusion(choices) : "Invert NPC class exclusion" : 0 : "If set, then the excluded NPC class will consider this brush solid, and all other NPC classes will consider it non-solid." =
 	[
@@ -122,7 +123,7 @@
 	AllowFade(boolean) : "Allow Fade" : 1 : ""
 
 	input SetExcluded( string ) : "Change the NPC class excluded from collisions"
-	input SetInvert( integer ) : "Set the state of invversion for NPC class exclusion (0 or 1)"
+	input SetInvert( integer ) : "Set the state of inversion for NPC class exclusion (0 or 1)"
 	input AllowFade( integer ) : "Enable or disable fading (0 or 1)"
 ]
 
