@@ -387,6 +387,8 @@ void CASW_Mission_Chooser_Tab::OnThink()
 	}
 
 	m_nDataResets = ReactiveDropMissions::s_nDataResets;
+
+	InvalidateLayout();
 }
 
 void CASW_Mission_Chooser_Tab::BuildCampaignList( const char *szRequiredTag )
