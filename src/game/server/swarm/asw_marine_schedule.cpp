@@ -147,7 +147,11 @@ bool CASW_Marine::FInViewCone( const Vector &vecSpot )
 
 	// BenLubar(deathmatch-improvements): see 360 in deathmatch mode
 	if ( ASWDeathmatchMode() )
+	{
+		// remember last angle
+		m_fHoldingYaw = GetLocalAngles()[YAW];
 		return true;
+	}
 
 	if ( GetASWOrders() == ASW_ORDER_HOLD_POSITION )
 	{
@@ -318,9 +322,12 @@ int CASW_Marine::SelectSchedule()
 	{
 		return SCHED_ASW_RAPPEL;
 	}
-	
+
 	if (m_bPreventMovement)
 		return SCHED_ASW_HOLD_POSITION;
+
+	if ( ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_DEBRIEF )
+		return SCHED_IDLE_STAND;
 
 	// if we acquire a new enemy, create our aim error offset
 	if (HasCondition(COND_NEW_ENEMY))
@@ -2240,7 +2247,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 	CheckForAIWeaponSwitch();
 
 	// check for firing on the move, if our enemy is in range, with LOS and we're facing him
-	if (GetASWOrders() == ASW_ORDER_MOVE_TO || GetASWOrders() == ASW_ORDER_FOLLOW)
+	if (GetASWOrders() == ASW_ORDER_MOVE_TO || GetASWOrders() == ASW_ORDER_FOLLOW || ASWDeathmatchMode())
 	{
 		bool bMelee = GetCurSchedule()->GetId() == GetGlobalScheduleId( SCHED_MELEE_ATTACK_PROP1 );
 
@@ -2323,6 +2330,12 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 
 				NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + facingDir * 200, 0, 0, 255, true, 0.1f );
 				NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + los * 200, 255, 0, 0, true, 0.1f );
+			}
+
+			if ( ASWDeathmatchMode() && pTask->iTask == TASK_WAIT_FOR_MOVEMENT )
+			{
+				// rotate to face our target while pathing in deathmatch
+				UpdateFacing();
 			}
 		}
 	}

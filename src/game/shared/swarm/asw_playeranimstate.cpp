@@ -1106,6 +1106,14 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 				{
 					idealActivity = ACT_CROUCHIDLE;
 				}
+
+#ifdef GAME_DLL
+				if ( pMarine->IsCurTaskContinuousMove() )
+				{
+					// don't allow the marine to stop animating movement
+					idealActivity = ACT_RUN;
+				}
+#endif
 			}
 		}
 		else
