@@ -51,7 +51,7 @@ namespace BaseModUI
 		DECLARE_CLASS_SIMPLE( ReactiveDropChallengeSelection, vgui::EditablePanel );
 
 	public:
-		ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName );
+		ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch );
 		virtual ~ReactiveDropChallengeSelection();
 
 		bool SetSelectedChallenge( const char *szName );
@@ -73,6 +73,7 @@ namespace BaseModUI
 		vgui::Label *m_lblAuthor;
 
 		bool m_bIgnoreSelectionChange;
+		bool m_bDeathmatch;
 	};
 }
 

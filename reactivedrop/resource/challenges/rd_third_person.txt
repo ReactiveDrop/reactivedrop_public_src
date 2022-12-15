@@ -1,0 +1,10 @@
+"CHALLENGE" {
+	"name"	"#rd_challenge_name_third_person"
+	"description"	"#rd_challenge_desc_third_person"
+	"allowed_mode"	"coop"
+	"allowed_mode"	"deathmatch"
+
+	"convars" {
+		"asw_controls"	"2"
+	}
+}

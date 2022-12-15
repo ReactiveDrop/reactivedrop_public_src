@@ -9149,11 +9149,39 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 {
 	extern ConVar rd_challenge;
 
+	const RD_Challenge_t *pSummary = ReactiveDropChallenges::GetSummary( szChallengeName );
+	if ( !pSummary || ( ASWDeathmatchMode() ? !pSummary->AllowDeathmatch : !pSummary->AllowCoop ) )
+	{
+		if ( pSummary )
+		{
+			Warning( "Challenge '%s' is not allowed in this game mode.\n", szChallengeName );
+		}
+
+		szChallengeName = "0";
+	}
+
 	bool bChanged = !!V_strcmp( rd_challenge.GetString(), szChallengeName );
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
 	bool bEnabled = ReactiveDropChallenges::ReadData( pKV, szChallengeName );
 
 	ResetChallengeConVars();
+	if ( ASWDeathmatchMode() )
+	{
+		ASWDeathmatchMode()->ApplyDeathmatchConVars();
+
+		// we can change challenge modes mid-round for deathmatch, which needs a little bit of clean-up.
+		CBaseEntity *pThinker = NULL;
+		while ( ( pThinker = gEntList.FindEntityByClassname( pThinker, "asw_challenge_thinker" ) ) != NULL )
+		{
+			UTIL_Remove( pThinker );
+		}
+
+		if ( g_pScriptVM )
+		{
+			g_pScriptVM->ClearValue( "g_ModeScript" );
+		}
+	}
+
 	if ( bEnabled )
 	{
 		ApplyChallengeConVars( pKV );
@@ -9301,7 +9329,7 @@ LINK_ENTITY_TO_CLASS( asw_challenge_thinker, CASW_Challenge_Thinker );
 
 void CAlienSwarm::ApplyChallenge()
 {
-	if ( ASWDeathmatchMode() || IsTutorialMap() )
+	if ( IsTutorialMap() )
 	{
 		EnableChallenge( "0" );
 	}

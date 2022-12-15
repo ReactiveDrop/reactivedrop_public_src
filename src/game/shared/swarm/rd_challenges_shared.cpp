@@ -19,11 +19,8 @@ INetworkStringTable *g_StringTableReactiveDropChallenges = NULL;
 
 static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileName )
 {
-	summary.ForceOnslaught = false;
-	summary.IsOnslaught = false;
-	summary.ForceHardcore = false;
-	summary.IsHardcore = false;
-	V_memset( summary.Title, 0, sizeof( summary.Title ) );
+	V_memset( &summary, 0, sizeof( summary ) );
+	summary.AllowCoop = true;
 
 	summary.WorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szKVFileName );
 
@@ -34,6 +31,34 @@ static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileN
 	}
 
 	V_strncpy( summary.Title, pKV->GetString( "name" ), sizeof( summary.Title ) );
+
+	bool bAnyAllowedModes = false;
+	FOR_EACH_VALUE( pKV, pValue )
+	{
+		if ( V_stricmp( pValue->GetName(), "allowed_mode" ) )
+		{
+			continue;
+		}
+
+		if ( !bAnyAllowedModes )
+		{
+			bAnyAllowedModes = true;
+			summary.AllowCoop = false;
+		}
+
+		if ( !V_stricmp( pValue->GetString(), "coop" ) )
+		{
+			summary.AllowCoop = true;
+		}
+		else if ( !V_stricmp( pValue->GetString(), "deathmatch" ) )
+		{
+			summary.AllowDeathmatch = true;
+		}
+		else
+		{
+			DevWarning( "unhandled allowed_mode '%s' in challenge '%s'\n", pValue->GetString(), szKVFileName );
+		}
+	}
 
 	if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
 	{
@@ -338,6 +363,7 @@ static const char *s_szOfficialChallenges[] =
 	"one_hit",
 	"riflemod_classic",
 	"rd_first_person",
+	"rd_third_person",
 };
 
 bool ReactiveDropChallenges::IsOfficial( const char *pszChallengeName )

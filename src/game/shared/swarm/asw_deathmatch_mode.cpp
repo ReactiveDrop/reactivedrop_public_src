@@ -136,6 +136,38 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 
 	// apply deathmatch rules
 #ifdef GAME_DLL
+	ApplyDeathmatchConVars();
+
+	ResetFragsLeftSaid();
+
+	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_HATE, 0 );
+#endif	// GAME_DLL
+}
+
+CASW_Deathmatch_Mode::~CASW_Deathmatch_Mode()
+{
+	Assert( g_pDeathmatchMode == this );
+	g_pDeathmatchMode = NULL;
+
+#ifdef GAME_DLL
+	// store the current game mode in convar for map change preserving
+	rd_deathmatch_last_game_mode.SetValue( m_iGameMode );
+
+	// clear global teams if we have them 
+	for ( int i = 0; i < g_Teams.Count(); i++ )
+	{
+		UTIL_Remove( g_Teams[i] );
+	}
+	g_Teams.Purge();
+
+	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
+#endif
+}
+
+#ifdef GAME_DLL // for server only
+
+void CASW_Deathmatch_Mode::ApplyDeathmatchConVars()
+{
 	SaveSetConvar( asw_cam_marine_dist, 600 );
 	SaveSetConvar( asw_blink_charge_time, 5 );	// 5 seconds to reload blink
 	SaveSetConvar( asw_marine_names, 0 );
@@ -194,34 +226,7 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	SaveSetConvar( rd_deagle_dmg_base, 22 );	// was 104
 	SaveSetConvar( rd_devastator_dmg_base, 15 );
 	SaveSetConvar( rd_medrifle_dmg_base, 5 );
-
-	ResetFragsLeftSaid();
-
-	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_HATE, 0 );
-#endif	// GAME_DLL
 }
-
-CASW_Deathmatch_Mode::~CASW_Deathmatch_Mode()
-{
-	Assert( g_pDeathmatchMode == this );
-	g_pDeathmatchMode = NULL;
-
-#ifdef GAME_DLL
-	// store the current game mode in convar for map change preserving
-	rd_deathmatch_last_game_mode.SetValue( m_iGameMode );
-
-	// clear global teams if we have them 
-	for ( int i = 0; i < g_Teams.Count(); i++ )
-	{
-		UTIL_Remove( g_Teams[i] );
-	}
-	g_Teams.Purge();
-
-	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
-#endif
-}
-
-#ifdef GAME_DLL // for server only
 
 void CASW_Deathmatch_Mode::OnMissionStart()
 {

@@ -33,6 +33,7 @@
 #include "nb_button.h"
 
 #include "rd_workshop.h"
+#include "rd_missions_shared.h"
 
 #include "rd_challenges_shared.h"
 #include "rd_challenge_selection.h"
@@ -197,12 +198,10 @@ void GameSettings::Activate()
 
 	//bool showGameAccess = !Q_stricmp( "create", m_pSettings->GetString( "options/action", "" ) ) &&
 							//!IsEditingExistingLobby();
-	// players below level 30 are considered new
-	bool bShowNumSlots = UTIL_ASW_CommanderLevelAtLeast( NULL, 30 );
 
 	bool showServerType = false; //!Q_stricmp( "LIVE", szNetwork );
 	bool showGameAccess = !Q_stricmp( "LIVE", szNetwork );
-	bool showNumSlots = showGameAccess || ( !Q_stricmp( "offline", szNetwork ) && bShowNumSlots );
+	bool showNumSlots = showGameAccess || ( !Q_stricmp( "offline", szNetwork ) );
 	
 	// On X360 we cannot allow selecting server type until the
 	// session is actually created
@@ -1318,7 +1317,16 @@ void GameSettings::ShowChallengeSelect()
 
 	if ( m_pSettings )
 	{
-		ReactiveDropChallengeSelection *pPanel = new ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection" );
+		bool bIsDeathmatch = false;
+		if ( !V_strcmp( m_pSettings->GetString( "game/mode" ), "single_mission" ) )
+		{
+			if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( m_pSettings->GetString( "game/mission" ) ) )
+			{
+				bIsDeathmatch = pMission->HasTag( "deathmatch" );
+			}
+		}
+
+		ReactiveDropChallengeSelection *pPanel = new ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection", bIsDeathmatch );
 		pPanel->SetSelectedChallenge( m_pSettings->GetString( "game/challenge", "0" ) );
 		pPanel->MoveToFront();
 		pPanel->m_gplChallenges->RequestFocus();
@@ -1329,6 +1337,15 @@ void GameSettings::ShowChallengeSelect()
 
 void GameSettings::UpdateChallenge( const char *szChallengeName )
 {
+	bool bIsDeathmatch = false;
+	if ( !V_strcmp( m_pSettings->GetString( "game/mode" ), "single_mission" ) )
+	{
+		if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( m_pSettings->GetString( "game/mission" ) ) )
+		{
+			bIsDeathmatch = pMission->HasTag( "deathmatch" );
+		}
+	}
+
 	bool bForceOnslaughtOn = false;
 	bool bForceOnslaughtOff = false;
 	bool bForceHardcoreFFOn = false;
@@ -1336,6 +1353,13 @@ void GameSettings::UpdateChallenge( const char *szChallengeName )
 
 	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( szChallengeName ) )
 	{
+		if ( bIsDeathmatch ? !pChallenge->AllowDeathmatch : !pChallenge->AllowCoop )
+		{
+			DevMsg( "disabling challenge as it is not allowed in this mode\n" );
+			OnCommand( "cmd_challenge_selected_0" );
+			return;
+		}
+
 		bForceOnslaughtOn = pChallenge->ForceOnslaught && pChallenge->IsOnslaught;
 		bForceOnslaughtOff = pChallenge->ForceOnslaught && !pChallenge->IsOnslaught;
 		bForceHardcoreFFOn = pChallenge->ForceHardcore && pChallenge->IsHardcore;
@@ -1347,6 +1371,16 @@ void GameSettings::UpdateChallenge( const char *szChallengeName )
 		UpdateSessionSettings( pUpdate );
 	}
 
+	if ( bIsDeathmatch )
+	{
+		bForceHardcoreFFOn = true;
+		bForceHardcoreFFOff = false;
+	}
+
+	if ( m_drpDifficulty )
+	{
+		m_drpDifficulty->SetVisible( !bIsDeathmatch );
+	}
 	if ( m_drpOnslaught )
 	{
 		if ( bForceOnslaughtOn )

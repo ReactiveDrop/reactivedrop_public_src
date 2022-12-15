@@ -57,6 +57,7 @@ public:
 
 	void LevelInitPostEntity();
 
+	void ApplyDeathmatchConVars();
 	void OnMissionStart();
 	void OnMarineKilled( const CTakeDamageInfo &info, CASW_Marine *marine );
 	void OnPlayerFullyJoined( CASW_Player *pPlayer );

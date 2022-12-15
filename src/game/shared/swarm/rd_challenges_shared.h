@@ -14,6 +14,10 @@ struct RD_Challenge_t
 	bool IsOnslaught : 1;
 	bool ForceHardcore : 1;
 	bool IsHardcore : 1;
+	bool AllowCoop : 1;
+	bool AllowDeathmatch : 1;
+	bool _Reserved1 : 1;
+	bool _Reserved2 : 1;
 	// Title must be last in this struct
 	char Title[255];
 };
