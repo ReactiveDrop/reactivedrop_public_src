@@ -8061,7 +8061,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		// players below level 30 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 30 ) )
 		{
-			engine->ServerCommand( CFmtStr( "kickid %s 'This difficulty level is restricted to players of level 30 or above'\n", pPlayer->GetASWNetworkID() ) );
+			engine->ServerCommand( CFmtStr( "kickid %s 'This server restricts this difficulty level to players of level 30 or above'\n", pPlayer->GetASWNetworkID() ) );
 		}
 	}
 
