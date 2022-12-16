@@ -610,7 +610,7 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 
 		trace_t tr;
 		CASW_Trace_Filter filter( pMarine, COLLISION_GROUP_NONE );
-		UTIL_TraceLine( pMarine->EyePosition(), pMarine->EyePosition() + vecFacing * ASW_MAX_AIM_TRACE, MASK_VISIBLE_AND_NPCS, &filter, &tr );
+		UTIL_TraceLine( pPlayer->EyePosition(), pPlayer->EyePosition() + vecFacing * ASW_MAX_AIM_TRACE, MASK_VISIBLE_AND_NPCS, &filter, &tr );
 
 		cmd->crosshairtrace = tr.endpos;
 		cmd->crosshair_entity = MAX( tr.GetEntityIndex(), 0 );
@@ -621,7 +621,7 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 			VectorSubtract( tr.endpos, pMarine->Weapon_ShootPosition(), vecAimDelta );
 			QAngle angIdealAim;
 			VectorAngles( vecAimDelta, angIdealAim );
-			cmd->aimangleoffset = angIdealAim - cmd->viewangles;
+			cmd->aimangleoffset = angIdealAim - pPlayer->EyeAngles();
 			cmd->aimangleoffset.z = 0;
 			NormalizeAngles( cmd->aimangleoffset );
 		}

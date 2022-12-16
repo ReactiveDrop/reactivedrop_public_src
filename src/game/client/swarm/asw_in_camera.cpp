@@ -81,10 +81,6 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	// Get the given pitch.
 	float flPitch = asw_cam_marine_pitch.GetFloat();
 
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer && pPlayer->GetASWControls() == ASWC_THIRDPERSONSHOULDER )
-		flPitch = 50; // XXFIXMEXX
-
 	float fDeathCamInterp;
 	if ( pfDeathCamInterp )
 	{
@@ -100,7 +96,7 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 		flPitch = ( 1.0f - fDeathCamInterp ) * flPitch + fDeathCamInterp * asw_cam_marine_pitch_death.GetFloat();
 	}
 
-	// Check to see if we are in a camera volume.
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
 	if ( pNPC )
 	{
@@ -452,36 +448,6 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	flShiftX = flDeltaX * asw_cam_marine_shift_maxx.GetFloat() * m_fShiftFraction;
 	float camshifty = (flDeltaY < 0) ? asw_cam_marine_shift_maxy.GetFloat() : asw_cam_marine_shift_maxy_south.GetFloat();
 	flShiftY = flDeltaY * camshifty * m_fShiftFraction;
-
-
-	return;
-
-	// Calculate the shift, spherically, based on the cursor distance from the player.
-	float flDistance = FastSqrt( flDeltaX * flDeltaX + flDeltaY * flDeltaY );
-	if ( flDistance > asw_cam_marine_sphere_min.GetFloat() )
-	{
-		flDistance -= asw_cam_marine_sphere_min.GetFloat();
-
-		float flRatio = 1.0f;
-		if ( m_flCurrentCameraDist < asw_cam_marine_dist.GetFloat() )
-		{
-			flRatio = ( m_flCurrentCameraDist / asw_cam_marine_dist.GetFloat() ) * 0.8f;
-		}
-
-		float flTemp = flDistance / ( asw_cam_marine_sphere_max.GetFloat() * flRatio );
-		flTemp = clamp( flTemp, 0.0f, 1.0f );
-
-		float flAngle = atan2( (float)flDeltaY, (float)flDeltaX );
-		flShiftX = cos( flAngle ) * flTemp * ( asw_cam_marine_shift_maxx.GetFloat() * flRatio );
-		if ( flDeltaY < 0 )
-		{
-			flShiftY = sin( flAngle ) * flTemp * ( asw_cam_marine_shift_maxy.GetFloat() * flRatio );
-		}
-		else
-		{
-			flShiftY = sin( flAngle ) * flTemp * ( asw_cam_marine_shift_maxy_south.GetFloat() * flRatio );
-		}
-	}
 }
 
 
@@ -516,14 +482,6 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	Assert( ASWInput() != NULL );
 	if ( !ASWInput() )
 		return;
-
-	// If we've already calculated the camera position on this frame, then just return the previous result.
-// 	if ( pPlayer->m_nLastCameraFrame == gpGlobals->framecount )
-// 	{
-// 		vecCameraLocation = pPlayer->m_vecLastCameraPosition;
-// 		angCamera = pPlayer->m_angLastCamera;
-// 		return;
-// 	}
 
 	// Get the current camera position.
 	vecCameraLocation = pPlayer->EyePosition();
