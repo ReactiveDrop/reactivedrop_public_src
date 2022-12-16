@@ -82,8 +82,19 @@ extern ConVar rd_debug_string_tables;
 void ReactiveDropChallenges::CreateNetworkStringTables()
 {
 	g_StringTableReactiveDropChallenges = networkstringtable->CreateStringTable( RD_CHALLENGES_STRINGTABLE_NAME, RD_MAX_CHALLENGES );
-
 	Assert( g_StringTableReactiveDropChallenges );
+
+	ClearServerCache();
+}
+void ReactiveDropChallenges::ClearServerCache()
+{
+	if ( !g_StringTableReactiveDropChallenges )
+	{
+		// not initialized yet
+		return;
+	}
+
+	// TODO: purge old data
 
 	RD_Challenge_t summary;
 	char szKVFileName[MAX_PATH];

@@ -1573,14 +1573,41 @@ static bool ReadToken( CUtlBuffer &buf, KeyValuesFilePos &pos, const CUtlVector<
 
 	if ( *c == '"' )
 	{
-		int len = buf.PeekDelimitedStringLength( pConv );
+		int len = buf.PeekDelimitedStringLength( pConv, false );
 		if ( len >= nBufLength )
 		{
 			ReportKeyValuesError( pos, tokenStack, "token too long" );
 		}
 
 		bWasQuoted = true;
-		buf.GetDelimitedString( pConv, szBuf, nBufLength );
+		// This fails on strings like "vgui\white" where the escape code is unknown.
+		// What we want is "vgui\\white", but we parse it as "vgui".
+		//buf.GetDelimitedString( pConv, szBuf, nBufLength );
+
+		buf.SeekGet( CUtlBuffer::SEEK_CURRENT, pConv->GetDelimiterLength() );
+		len -= pConv->GetDelimiterLength() + 1;
+		buf.Get( szBuf, len );
+		Assert( !V_strncmp( &szBuf[len - pConv->GetDelimiterLength()], pConv->GetDelimiter(), pConv->GetDelimiterLength() ) );
+		szBuf[len - pConv->GetDelimiterLength()] = '\0';
+		len -= pConv->GetDelimiterLength();
+
+		for ( int i = 0; i < len; i++ )
+		{
+			if ( szBuf[i] == pConv->GetEscapeChar() )
+			{
+				int iEscapeLen = 0;
+				char ch = pConv->FindConversion( &szBuf[i + 1], &iEscapeLen );
+				// here's where the original algorithm goes wrong - the nonexistent
+				// \w is replaced with \0w instead of leaving it alone.
+				if ( ch )
+				{
+					V_memcpy( &szBuf[i + 1], &szBuf[i + 1 + iEscapeLen], len - i - iEscapeLen );
+					len -= iEscapeLen;
+					szBuf[i] = ch;
+				}
+			}
+		}
+
 		return true;
 	}
 

@@ -20,6 +20,7 @@ namespace ReactiveDropMissions
 
 #ifdef GAME_DLL
 	void CreateNetworkStringTables();
+	void ClearServerCache();
 #else
 	void InstallStringTableCallback( const char *tableName );
 	void ClearClientCache();

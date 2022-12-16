@@ -189,9 +189,7 @@ bool CReactiveDropWorkshop::Init()
 		}
 		s_bStartingUp = false;
 
-#ifdef CLIENT_DLL
 		RestartEnabledAddonsQuery();
-#endif
 	}
 
 #ifdef CLIENT_DLL
@@ -492,10 +490,8 @@ void CReactiveDropWorkshop::OnSubscribed( RemoteStoragePublishedFileSubscribed_t
 
 	UpdateAndLoadAddon( pSubscribed->m_nPublishedFileId, true );
 
-#ifdef CLIENT_DLL
 	m_EnabledAddonsForQuery.AddToTail( pSubscribed->m_nPublishedFileId );
 	RestartEnabledAddonsQuery();
-#endif
 }
 
 void CReactiveDropWorkshop::OnUnsubscribed( RemoteStoragePublishedFileUnsubscribed_t *pUnsubscribed )
@@ -1086,10 +1082,7 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 
 	ReactiveDropMissions::ClearClientCache();
 #else
-	if ( engine->IsDedicatedServer() )
-	{
-		ClearCaches( "successfully retrieved workshop metadata" );
-	}
+	ClearCaches( "successfully retrieved workshop metadata" );
 #endif
 }
 
@@ -1593,6 +1586,9 @@ static void ClearCaches( const char *szReason )
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; rd_loc_reload; snd_updateaudiocache; snd_restart" );
 	bRestartSoundEngine = true;
 	//
+#else
+	ReactiveDropChallenges::ClearServerCache();
+	ReactiveDropMissions::ClearServerCache();
 #endif
 	missionchooser->LocalMissionSource()->ClearCache();
 
