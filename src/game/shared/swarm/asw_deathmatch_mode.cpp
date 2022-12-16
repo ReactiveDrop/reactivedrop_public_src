@@ -147,7 +147,8 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 CASW_Deathmatch_Mode::~CASW_Deathmatch_Mode()
 {
 	Assert( g_pDeathmatchMode == this );
-	g_pDeathmatchMode = NULL;
+	if ( g_pDeathmatchMode == this )
+		g_pDeathmatchMode = NULL;
 
 #ifdef GAME_DLL
 	// store the current game mode in convar for map change preserving
