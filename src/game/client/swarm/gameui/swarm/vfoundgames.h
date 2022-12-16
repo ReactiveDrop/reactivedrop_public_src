@@ -125,6 +125,8 @@ public:
 	void SetFocusBgColor( Color focusColor );
 	void SetOutOfFocusBgColor( Color outOfFocusBgColor );
 
+	bool IsHardcoreDifficulty();
+
 	wchar_t m_wszChallengeName[256];
 
 protected:
@@ -233,6 +235,7 @@ protected:
 
 	float m_LastEngineSpinnerTime;
 	int m_CurrentSpinnerValue;
+	bool m_bShowHardcoreDifficulties;
 
 	uint64 m_SelectedGamePlayerID;
 	uint64 m_flyoutPlayerId;

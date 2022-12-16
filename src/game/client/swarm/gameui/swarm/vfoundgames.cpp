@@ -1021,6 +1021,15 @@ void FoundGameListItem::OnMouseDoublePressed(MouseCode code)
 */	
 }
 
+bool FoundGameListItem::IsHardcoreDifficulty()
+{
+	if ( !m_FullInfo.mpGameDetails )
+		return false;
+
+	const char *szDifficulty = m_FullInfo.mpGameDetails->GetString( "game/difficulty", "normal" );
+	return !V_stricmp( szDifficulty, "insane" ) || !V_stricmp( szDifficulty, "imba" );
+}
+
 //=============================================================================
 void FoundGameListItem::ApplySettings( KeyValues *inResourceData )
 {
@@ -1213,6 +1222,8 @@ void FoundGames::Activate()
 {
 	BaseClass::Activate();
 
+	m_bShowHardcoreDifficulties = true;
+
 	AddFrameListener( this );
 
 	UpdateGameDetails();
@@ -1301,7 +1312,23 @@ void FoundGames::OnCommand( const char *command )
 		FoundGameListItem *pSelectedItem = 	static_cast< FoundGameListItem * >( m_GplGames->GetSelectedPanelItem() );
 		if ( pSelectedItem )
 		{
-			PostMessage( pSelectedItem, new KeyValues( "JoinGame" ) );
+			if ( m_bShowHardcoreDifficulties || !pSelectedItem->IsHardcoreDifficulty() )
+			{
+				PostMessage( pSelectedItem, new KeyValues( "JoinGame" ) );
+			}
+			else
+			{
+				CBaseModPanel::GetSingleton().PlayUISound( UISOUND_DENY );
+
+				CBaseModFrame *pWaitScreen = CBaseModPanel::GetSingleton().GetWindow( WT_GENERICWAITSCREEN );
+				if ( pWaitScreen )
+				{
+					return;
+				}
+
+				CUIGameData::Get()->OpenWaitScreen( "#rd_reach_level_to_unlock_public_difficulty" );
+				CUIGameData::Get()->CloseWaitScreen( NULL, NULL );
+			}
 		}
 	}
 	else if ( !V_strcmp( command, "DownloadSelected" ) || !V_strcmp( command, "Website" ) )
