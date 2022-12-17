@@ -12,6 +12,7 @@
 #endif
 
 #include "bittools.h"
+#include "rd_release_flags.h"
 
 #define TICK_INTERVAL			(gpGlobals->interval_per_tick)
 
@@ -837,8 +838,11 @@ bool IsHeadTrackingEnabled();
 // If this is defined, all of the scopeguard objects are NULL'd out to reduce overhead
 // #define SPLIT_SCREEN_STUBS
 
-
+#ifdef RD_SPLITSCREEN_ENABLED
+	#define MAX_SPLITSCREEN_PLAYERS 4
+#else
 	#define MAX_SPLITSCREEN_PLAYERS 1
+#endif
 
 
 inline bool IsSplitScreenSupported()

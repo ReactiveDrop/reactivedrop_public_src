@@ -34,6 +34,7 @@
 #else
 #include "../common/xbox/xboxstubs.h"
 #endif
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -813,6 +814,14 @@ void CInput::JoyStickSampleAxes( float &forward, float &side, float &pitch, floa
 		unsigned int idx = user.m_rgAxes[i].AxisMap;
 		gameAxes[idx].value = fAxisValue;
 		gameAxes[idx].controlType = user.m_rgAxes[i].ControlMap;
+	}
+
+	if ( g_RD_Steam_Input.GetGameAxes( nSlot, &gameAxes[GAME_AXIS_SIDE].value, &gameAxes[GAME_AXIS_FORWARD].value, &gameAxes[GAME_AXIS_YAW].value, &gameAxes[GAME_AXIS_PITCH].value ) )
+	{
+		gameAxes[GAME_AXIS_SIDE].controlType = JOY_ABSOLUTE_AXIS;
+		gameAxes[GAME_AXIS_FORWARD].controlType = JOY_ABSOLUTE_AXIS;
+		gameAxes[GAME_AXIS_YAW].controlType = JOY_ABSOLUTE_AXIS;
+		gameAxes[GAME_AXIS_PITCH].controlType = JOY_ABSOLUTE_AXIS;
 	}
 
 	// Re-map the axis values if necessary, based on the joystick configuration

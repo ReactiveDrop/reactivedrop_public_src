@@ -214,7 +214,7 @@ const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSel
 	return emptyWorkshopItem;
 }
 
-BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
+BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch ) : BaseClass( parent, panelName )
 {
 	SetProportional( true );
 
@@ -236,6 +236,8 @@ BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui:
 	m_lblAuthor = new vgui::Label( this, "LblAuthor", "" );
 
 	m_bIgnoreSelectionChange = false;
+
+	m_bDeathmatch = bDeathmatch;
 
 	GetControllerFocus()->PushModal();
 	PopulateChallenges();
@@ -315,9 +317,13 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 	int iCount = ReactiveDropChallenges::Count();
 	for ( int i = 0; i < iCount; i++ )
 	{
-		ReactiveDropChallengeSelectionListItem *pChallenge = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
-		pChallenge->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
-		GetControllerFocus()->AddToFocusList( pChallenge, true, true );
+		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
+		if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
+		{
+			ReactiveDropChallengeSelectionListItem *pChallenge = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
+			pChallenge->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
+			GetControllerFocus()->AddToFocusList( pChallenge, true, true );
+		}
 	}
 }
 

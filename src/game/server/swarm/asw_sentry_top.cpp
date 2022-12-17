@@ -238,7 +238,7 @@ void CASW_Sentry_Top::TurnToGoal( float deltatime )
 		if ( m_hEnemy.IsValid() && m_hEnemy.Get() )
 			fTurnRate = ASW_SENTRY_TURNRATE;
 
-		if ( fabs( fDist ) < deltatime * fTurnRate )
+		if ( fabsf( fDist ) < deltatime * fTurnRate )
 		{
 			m_fCurrentYaw = m_fGoalYaw;
 		}
@@ -257,7 +257,7 @@ void CASW_Sentry_Top::TurnToGoal( float deltatime )
 			}
 		}
 
-		if ( !m_hEnemy.IsValid() || !m_hEnemy.Get() )
+		if ( fabsf( AngleDiff( m_fGoalYaw, m_fCurrentYaw ) ) < fabsf( AngleDiff( m_fGoalYaw, m_fCenterAimYaw ) ) )
 		{
 			m_fCenterAimYaw = m_fCurrentYaw;
 		}

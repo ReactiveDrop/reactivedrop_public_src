@@ -20,12 +20,9 @@
 #include "tier0/memdbgon.h"
 
 
-ConVar rd_swarmopedia_units_preference( "rd_swarmopedia_units_preference", "0", FCVAR_ARCHIVE, "0=hammer, 1=metric, 2=imperial" );
+ConVar rd_swarmopedia_units_preference( "rd_swarmopedia_units_preference", "1", FCVAR_ARCHIVE, "0=hammer, 1=metric, 2=imperial" );
 ConVar rd_swarmopedia_units_per_foot( "rd_swarmopedia_units_per_foot", "16", FCVAR_NONE, "recommended: 12 to 16" );
 ConVar rd_swarmopedia_units_per_meter( "rd_swarmopedia_units_per_meter", "52.49", FCVAR_NONE, "recommended: 39.37 to 52.49" );
-
-#if defined(RD_COLLECTIONS_WEAPONS_ENABLED) || defined(RD_COLLECTIONS_WEAPONS_CHOOSER)
-
 extern ConVar asw_unlock_all_weapons;
 extern ConVar rd_weapons_show_hidden;
 extern ConVar rd_weapons_regular_class_unrestricted;
@@ -1135,5 +1132,3 @@ void CRD_Collection_Panel_Equipment::AddWeaponFact( const RD_Swarmopedia::Weapon
 		AddWeaponFact( pFact->Facts[i] );
 	}
 }
-
-#endif

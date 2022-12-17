@@ -1252,6 +1252,26 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
+			else if ( FStrEq( pcmd, "rd_set_challenge" ) && ASWDeathmatchMode() )
+			{
+				if ( args.ArgC() < 2 )
+				{
+					Warning( "Player sent a bad rd_set_challenge command\n" );
+					return false;
+				}
+
+				if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+				{
+					const char *szChallengeName = args[1];
+
+					if ( ASWGameRules() )
+					{
+						ASWGameRules()->EnableChallenge( szChallengeName );
+						ASWGameRules()->ApplyChallenge();
+					}
+				}
+				return true;
+			}
 
 			break;
 		}

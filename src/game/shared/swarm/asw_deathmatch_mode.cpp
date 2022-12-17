@@ -26,8 +26,10 @@
 #include "c_asw_game_resource.h"
 #include "c_playerresource.h"
 #endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Deathmatch_Mode, DT_ASW_Deathmatch_Mode )
 
@@ -47,15 +49,12 @@ END_NETWORK_TABLE()
 LINK_ENTITY_TO_CLASS( asw_deathmatch_mode, CASW_Deathmatch_Mode );
 
 BEGIN_DATADESC( CASW_Deathmatch_Mode )
-
-	DEFINE_THINKFUNC(DeathmatchThink),
-	
+	DEFINE_THINKFUNC( DeathmatchThink ),
 END_DATADESC()
-
 #endif
 
 CASW_Deathmatch_Mode *g_pDeathmatchMode = NULL;
-CASW_Deathmatch_Mode* ASWDeathmatchMode() { return g_pDeathmatchMode; }
+CASW_Deathmatch_Mode *ASWDeathmatchMode() { return g_pDeathmatchMode; }
 
 extern ConVar asw_blink_charge_time;
 extern ConVar asw_cam_marine_dist;
@@ -71,7 +70,6 @@ extern ConVar asw_world_healthbars;
 extern ConVar asw_world_usingbars;
 extern ConVar asw_marine_rolls;
 extern ConVar asw_vindicator_grenade_fuse;
-//extern ConVar rd_deathmatch_ending_time;	not needed to change
 extern ConVar rd_default_weapon;
 extern ConVar rd_chatter_about_ff;
 extern ConVar rd_chatter_about_marine_death;
@@ -114,11 +112,16 @@ extern ConVar rd_deagle_dmg_base;
 extern ConVar rd_devastator_dmg_base;
 extern ConVar rd_medrifle_dmg_base;
 
-ConVar rd_killingspree_time_limit( "rd_killingspree_time_limit", "3",  FCVAR_REPLICATED, "Time in seconds. If player doesn't kill anybody during this time his killing spree is ended");
-ConVar rd_quake_sounds( "rd_quake_sounds", "2",  FCVAR_REPLICATED, "Enable or disable quake sounds like doublekill, monsterkill");
+ConVar rd_killingspree_time_limit( "rd_killingspree_time_limit", "3", FCVAR_REPLICATED, "Time in seconds. If player doesn't kill anybody during this time his killing spree is ended" );
+ConVar rd_quake_sounds( "rd_quake_sounds", "2", FCVAR_REPLICATED, "Enable or disable quake sounds like doublekill, monsterkill" );
+#ifdef GAME_DLL
+ConVar rd_deathmatch_last_game_mode( "rd_deathmatch_last_game_mode", "0", FCVAR_ARCHIVE );
+ConVar rd_deathmatch_spawn_bots_in_singleplayer( "rd_deathmatch_spawn_bots_in_singleplayer", "1", FCVAR_NONE, "Causes Deathmatch mode to add random bots when a player marine is selected and maxplayers is 1." );
+ConVar rd_deathmatch_gungame_equipment_order( "rd_deathmatch_gungame_equipment_order", "8,16,12,0,4,1,3,2,21,22,23,15,10,20,18", FCVAR_CHEAT );
+#endif
 
 template<typename T>
-static void SaveSetConvar( ConVar & cvar, T value )
+static void SaveSetConvar( ConVar &cvar, T value )
 {
 	Assert( ASWGameRules() );
 
@@ -133,8 +136,41 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 
 	// apply deathmatch rules
 #ifdef GAME_DLL
+	ApplyDeathmatchConVars();
+
+	ResetFragsLeftSaid();
+
+	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_HATE, 0 );
+#endif	// GAME_DLL
+}
+
+CASW_Deathmatch_Mode::~CASW_Deathmatch_Mode()
+{
+	Assert( g_pDeathmatchMode == this );
+	if ( g_pDeathmatchMode == this )
+		g_pDeathmatchMode = NULL;
+
+#ifdef GAME_DLL
+	// store the current game mode in convar for map change preserving
+	rd_deathmatch_last_game_mode.SetValue( m_iGameMode );
+
+	// clear global teams if we have them 
+	for ( int i = 0; i < g_Teams.Count(); i++ )
+	{
+		UTIL_Remove( g_Teams[i] );
+	}
+	g_Teams.Purge();
+
+	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
+#endif
+}
+
+#ifdef GAME_DLL // for server only
+
+void CASW_Deathmatch_Mode::ApplyDeathmatchConVars()
+{
 	SaveSetConvar( asw_cam_marine_dist, 600 );
-	SaveSetConvar( asw_blink_charge_time, 5 );	// 5 seconds to reload blink 
+	SaveSetConvar( asw_blink_charge_time, 5 );	// 5 seconds to reload blink
 	SaveSetConvar( asw_marine_names, 0 );
 	SaveSetConvar( asw_marine_death_cam_slowdown, 1 );
 
@@ -175,7 +211,7 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	SaveSetConvar( rd_paint_scanner_blips, 0 );
 	SaveSetConvar( rd_reassign_marines, 0 );
 	SaveSetConvar( rd_request_experience, 0 );
-	
+
 	SaveSetConvar( rd_show_arrow_to_marine, 0 );
 	SaveSetConvar( rd_show_others_laser_pointer, 0 );
 
@@ -191,65 +227,24 @@ CASW_Deathmatch_Mode::CASW_Deathmatch_Mode()
 	SaveSetConvar( rd_deagle_dmg_base, 22 );	// was 104
 	SaveSetConvar( rd_devastator_dmg_base, 15 );
 	SaveSetConvar( rd_medrifle_dmg_base, 5 );
-
-
-	spawn_point = NULL;
-	ResetFragsLeftSaid();
-
-	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_HATE, 0 );
-#endif	// GAME_DLL 
 }
 
-CASW_Deathmatch_Mode::~CASW_Deathmatch_Mode()
+void CASW_Deathmatch_Mode::OnMissionStart()
 {
-	Assert( g_pDeathmatchMode == this );
-	g_pDeathmatchMode = NULL;
-
-#ifdef GAME_DLL
-	// store the current game mode in static variable for map change preserving 
-	game_mode_		 = (RdGameModes)m_iGameMode.Get();
-
-	// clear global teams if we have them 
-	for ( int i = 0; i < g_Teams.Count(); ++i )
+	switch ( rd_deathmatch_last_game_mode.GetInt() )
 	{
-		UTIL_Remove( g_Teams[i] );
-	}
-	g_Teams.Purge();
-
-	spawn_point = NULL;
-
-	CAI_BaseNPC::SetDefaultFactionRelationship( FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
-
-#endif
-}
-
-#ifdef GAME_DLL // for server only
-
-RdGameModes CASW_Deathmatch_Mode::game_mode_ = GAMEMODE_DEATHMATCH;
-CBaseEntity *CASW_Deathmatch_Mode::spawn_point = NULL;
-
-void CASW_Deathmatch_Mode::OnMissionStart() 
-{
-	// enable InstaGib game mode after the map was changed
-	if ( GAMEMODE_INSTAGIB == game_mode_ )
-	{
+	case GAMEMODE_INSTAGIB:
 		InstagibEnable();
-	}
-	else if ( GAMEMODE_GUNGAME == game_mode_ )
-	{
+		break;
+	case GAMEMODE_GUNGAME:
 		GunGameEnable();
-	}
-	else if ( GAMEMODE_TEAMDEATHMATCH == game_mode_ )
-	{
+		break;
+	case GAMEMODE_TEAMDEATHMATCH:
 		TeamDeathmatchEnable();
-	}
-	else if ( GAMEMODE_DEATHMATCH == game_mode_)
-	{
-		// do nothing
-	}
-	else 
-	{
-		Warning( "Unknown game mode on mission start \n" );
+		break;
+	default:
+		rd_deathmatch_last_game_mode.SetValue( GAMEMODE_DEATHMATCH );
+		break;
 	}
 }
 
@@ -334,12 +329,12 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 			KillingSpreeIncrease( pOtherMR );
 		}
 
-		int frags_left = rd_frags_limit.GetInt() - GetFragCount( pOtherMR );
+		int iFragsLeft = rd_frags_limit.GetInt() - GetFragCount( pOtherMR );
 
 		if ( IsGunGameEnabled() )
 		{
 			Assert( m_iGunGameWeaponCount > 0 );
-			frags_left = m_iGunGameWeaponCount - GetFragCount( pOtherMR );
+			iFragsLeft = m_iGunGameWeaponCount - GetFragCount( pOtherMR );
 		}
 		else if ( GAMEMODE_TEAMDEATHMATCH == GetGameMode() )
 		{
@@ -347,69 +342,67 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 			{
 				int team1frags = GetGlobalTeam( TEAM_ALPHA )->GetScore();
 				int team2frags = GetGlobalTeam( TEAM_BETA )->GetScore();
-				frags_left = rd_frags_limit.GetInt() - MAX( team1frags, team2frags );
+				iFragsLeft = rd_frags_limit.GetInt() - MAX( team1frags, team2frags );
 			}
 			else
 			{
-				Warning( "Can't find one of the teams TEAM_ALPHA or TEAM_BETA" );
+				Warning( "Can't find one of the teams TEAM_ALPHA or TEAM_BETA\n" );
 			}
 		}
 
-		switch ( frags_left )
+		switch ( iFragsLeft )
 		{
-			case 0:
-				ASWGameRules()->FinishDeathmatchRound( pOtherMR );
-				ASWGameRules()->BroadcastSound( "rd_song.round_end_music" );
-				break;
-			case 1:
-				if ( !frags_left_said[1] )
-				{
-					ASWGameRules()->BroadcastSound( "DM.one_frag_left" );
-					frags_left_said[1] = true;
-				}
-				break;
-			case 2:
-				if ( !frags_left_said[2] )
-				{
-					ASWGameRules()->BroadcastSound( "DM.two_frags_left" );
-					frags_left_said[2] = true;
-				}
-				break;
-			case 3:
-				if ( !frags_left_said[3] )
-				{
-					ASWGameRules()->BroadcastSound( "DM.three_frags_left" );
-					frags_left_said[3] = true;
-				}
-				break;
-			case 4:
-				if ( !frags_left_said[4] )
-				{
-					ASWGameRules()->BroadcastSound( "DM.four_frags_left" );
-					frags_left_said[4] = true;
-				}
-				break;
-			case 5:
-				if ( !frags_left_said[5] )
-				{
-					ASWGameRules()->BroadcastSound( "DM.five_frags_left" );
-					frags_left_said[5] = true;
-				}
-				break;
-			//default:
-				// do nothing
+		case 0:
+			ASWGameRules()->FinishDeathmatchRound( pOtherMR );
+			ASWGameRules()->BroadcastSound( "rd_song.round_end_music" );
+			break;
+		case 1:
+			if ( !s_bPlayedFragLimitSound[1] )
+			{
+				ASWGameRules()->BroadcastSound( "DM.one_frag_left" );
+				s_bPlayedFragLimitSound[1] = true;
+			}
+			break;
+		case 2:
+			if ( !s_bPlayedFragLimitSound[2] )
+			{
+				ASWGameRules()->BroadcastSound( "DM.two_frags_left" );
+				s_bPlayedFragLimitSound[2] = true;
+			}
+			break;
+		case 3:
+			if ( !s_bPlayedFragLimitSound[3] )
+			{
+				ASWGameRules()->BroadcastSound( "DM.three_frags_left" );
+				s_bPlayedFragLimitSound[3] = true;
+			}
+			break;
+		case 4:
+			if ( !s_bPlayedFragLimitSound[4] )
+			{
+				ASWGameRules()->BroadcastSound( "DM.four_frags_left" );
+				s_bPlayedFragLimitSound[4] = true;
+			}
+			break;
+		case 5:
+			if ( !s_bPlayedFragLimitSound[5] )
+			{
+				ASWGameRules()->BroadcastSound( "DM.five_frags_left" );
+				s_bPlayedFragLimitSound[5] = true;
+			}
+			break;
 		}
 
 		// remove current weapon and give new one
 		if ( ASWDeathmatchMode()->IsGunGameEnabled() )
 		{
-			for (int i = 0; i < 3; ++i)
+			for ( int i = 0; i < ASW_MAX_EQUIP_SLOTS; i++ )
 			{
 				pOtherMarine->RemoveWeapon( i, true );
 			}
 
-			int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( GetFragCount( pOtherMR ) );
-			ASWGameRules()->GiveStartingWeaponToMarine( pOtherMarine, weapon_id, 0 );
+			int iWeaponID = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( GetFragCount( pOtherMR ) );
+			ASWGameRules()->GiveStartingWeaponToMarine( pOtherMarine, iWeaponID, 0 );
 		}
 	}
 	else // else if marine was killed by aliens or anything else decrement frags
@@ -418,28 +411,27 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 	}
 }
 
-
-void CASW_Deathmatch_Mode::OnPlayerFullyJoined(CASW_Player *pPlayer) 
+void CASW_Deathmatch_Mode::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
 	if ( GAMEMODE_TEAMDEATHMATCH == GetGameMode() )
 	{
 		// assign player to the team which have least players
-		CTeam *alpha = GetGlobalTeam( TEAM_ALPHA );
-		CTeam *beta  = GetGlobalTeam( TEAM_BETA );
-		Assert( alpha );
-		Assert( beta );
-		if ( alpha && beta )
+		CTeam *pAlpha = GetGlobalTeam( TEAM_ALPHA );
+		CTeam *pBeta = GetGlobalTeam( TEAM_BETA );
+		Assert( pAlpha );
+		Assert( pBeta );
+		if ( pAlpha && pBeta )
 		{
-			int team_id_for_new_player = alpha->GetNumPlayers() < beta->GetNumPlayers() ? TEAM_ALPHA : TEAM_BETA;
-			pPlayer->ChangeTeam( team_id_for_new_player );
+			int iNewPlayerTeamID = pAlpha->GetNumPlayers() < pBeta->GetNumPlayers() ? TEAM_ALPHA : TEAM_BETA;
+			pPlayer->ChangeTeam( iNewPlayerTeamID );
 		}
 	}
 }
 
-static void RemoveEntitiesByClassName( const char *entity_class_name )
+static void RemoveEntitiesByClassName( const char *szEntityClass )
 {
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, entity_class_name )) != NULL)
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, szEntityClass ) ) != NULL )
 	{
 		UTIL_Remove( pEntity );
 	}
@@ -447,33 +439,32 @@ static void RemoveEntitiesByClassName( const char *entity_class_name )
 
 void CASW_Deathmatch_Mode::DeathmatchEnable()
 {
-	if (IsGunGameEnabled())
-		GunGameDisable(true);	// false - don't turn on weapon respawn timer
-
-	if (IsTeamDeathmatchEnabled())
-		TeamDeathmatchDisable(true);
-
-	if (IsInstagibEnabled())
-		InstagibDisable(true); // false - don't turn on weapon respawn timer
-}
-
-
-void CASW_Deathmatch_Mode::InstagibEnable() 
-{
 	if ( IsGunGameEnabled() )
-		GunGameDisable(false);	// false - don't turn on weapon respawn timer
+		GunGameDisable( true );
 
 	if ( IsTeamDeathmatchEnabled() )
-		TeamDeathmatchDisable(false);
+		TeamDeathmatchDisable( true );
+
+	if ( IsInstagibEnabled() )
+		InstagibDisable( true );
+}
+
+void CASW_Deathmatch_Mode::InstagibEnable()
+{
+	if ( IsGunGameEnabled() )
+		GunGameDisable( false );
+
+	if ( IsTeamDeathmatchEnabled() )
+		TeamDeathmatchDisable( false );
 
 	m_iGameMode = GAMEMODE_INSTAGIB;
 
-	/* 
+	/*
 		- set default weapon to rail rifle
 		- set rail rifle damage to a high value (it's done in railgun code)
 		- disable 1 HP protection and enable Hardcore FF
 		- kill players
-		- disable respawn of weapons: 
+		- disable respawn of weapons:
 			disable respawn timer
 			remove all pickup items
 		- reset scores
@@ -487,41 +478,41 @@ void CASW_Deathmatch_Mode::InstagibEnable()
 	RemoveAllWeaponsFromMap();
 	PrepareMarinesForGunGameOrInstagib( rd_default_weapon.GetInt() );
 
-	this->ResetScores();
+	ResetScores();
 
 	ASWGameRules()->BroadcastSound( "DM.instagib_activated" );
 
-	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_instagib_activated");
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_instagib_activated" );
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
-void CASW_Deathmatch_Mode::InstagibDisable(bool enable_weapon_respawn_timer/* = true*/) 
+void CASW_Deathmatch_Mode::InstagibDisable( bool bEnableWeaponRespawnTimer )
 {
 	m_iGameMode = GAMEMODE_DEATHMATCH;
 
-	/**
+	/*
 		- Revert default weapon
 		- Enable Weapon Respawn
 		- Reset Scores
 	*/
 
-	ConVarRef ref( &rd_default_weapon );
-	ASWGameRules()->RevertSingleConvar( ref );
+	static ConVarRef rd_default_weapon_ref( &rd_default_weapon );
+	ASWGameRules()->RevertSingleConvar( rd_default_weapon_ref );
 
-	if ( enable_weapon_respawn_timer )
+	if ( bEnableWeaponRespawnTimer )
 	{
 		EnableWeaponRespawnTimer();
 	}
 
-	this->ResetScores();
+	ResetScores();
 
-	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_instagib_deactivated");
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_instagib_deactivated" );
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
-void CASW_Deathmatch_Mode::GunGameEnable() 
+void CASW_Deathmatch_Mode::GunGameEnable()
 {
 	/*
 		Stop weapon respawn timer
@@ -538,110 +529,112 @@ void CASW_Deathmatch_Mode::GunGameEnable()
 	*/
 
 	if ( IsInstagibEnabled() )
-		InstagibDisable(false); // false - don't turn on weapon respawn timer
+		InstagibDisable( false );
 
 	if ( IsTeamDeathmatchEnabled() )
-		TeamDeathmatchDisable(false);
+		TeamDeathmatchDisable( false );
 
-	m_iGameMode = GAMEMODE_GUNGAME; 
+	m_iGameMode = GAMEMODE_GUNGAME;
 
-	// TODO load from config or generate random
-	const int weapons_ids[] = { 8, 16, 12, 0, 4, 1, 3, 2, 21, 22, 23, 15, 10, 20, 18 };
-	m_iGunGameWeaponCount = NELEMS( weapons_ids );
-	for ( int i = 0; i < m_iGunGameWeaponCount; i++ )
+	CSplitString WeaponIDs( rd_deathmatch_gungame_equipment_order.GetString(), "," );
+	m_iGunGameWeaponCount = clamp( WeaponIDs.Count(), 0, RD_MAX_GUNGAME_WEAPONS );
+	if ( !m_iGunGameWeaponCount )
 	{
-		m_iGunGameWeapons.Set( i, weapons_ids[i] );
+		m_iGunGameWeaponCount = 1;
+		m_iGunGameWeapons.Set( 0, 0 );
+	}
+	else
+	{
+		for ( int i = 0; i < m_iGunGameWeaponCount; i++ )
+		{
+			int iWeaponID = atoi( WeaponIDs[i] );
+			Assert( ASWEquipmentList()->GetRegular( iWeaponID ) );
+			m_iGunGameWeapons.Set( i, iWeaponID );
+		}
 	}
 
 	DisableWeaponRespawnTimer();
 	RemoveAllWeaponsFromMap();
 	PrepareMarinesForGunGameOrInstagib( -1 );
 
-	this->ResetScores();
+	ResetScores();
 
 	ASWGameRules()->BroadcastSound( "DM.gungame_activated" );
 
-	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_gungame_activated");
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_gungame_activated" );
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
-void CASW_Deathmatch_Mode::GunGameDisable(bool enable_weapon_respawn_timer /*= true*/) 
+void CASW_Deathmatch_Mode::GunGameDisable( bool bEnableWeaponRespawnTimer )
 {
 	if ( !IsGunGameEnabled() )
 		return;
 
 	m_iGameMode = GAMEMODE_DEATHMATCH;
 
-	/**
+	/*
 		- Enable Weapon Respawn
 		- Reset Scores
 	*/
 
-	if ( enable_weapon_respawn_timer )
+	if ( bEnableWeaponRespawnTimer )
 	{
 		EnableWeaponRespawnTimer();
 	}
 
-	this->ResetScores();
+	ResetScores();
 
-	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_gungame_deactivated");
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_gungame_deactivated" );
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
-#pragma warning( push )
-#pragma warning( disable: 4706 )
-void CASW_Deathmatch_Mode::TeamDeathmatchEnable() 
+void CASW_Deathmatch_Mode::TeamDeathmatchEnable()
 {
 	if ( IsInstagibEnabled() )
-		InstagibDisable(false); // false - don't turn on weapon respawn timer 
+		InstagibDisable( false ); // false - don't turn on weapon respawn timer 
 
 	if ( IsGunGameEnabled() )
-		GunGameDisable(false);	// false - don't turn on weapon respawn timer 
+		GunGameDisable( false );	// false - don't turn on weapon respawn timer 
 
-	m_iGameMode = GAMEMODE_TEAMDEATHMATCH; 
+	m_iGameMode = GAMEMODE_TEAMDEATHMATCH;
 
 	EnableWeaponRespawnTimer();
-	//DisableWeaponRespawnTimer();
-	//RemoveAllWeaponsFromMap();
 
 	// create teams 
-	CTeam * t0 = (CTeam*) CreateEntityByName( "rd_team" );
+	CTeam *t0 = ( CTeam * )CreateEntityByName( "rd_team" );
 	t0->Init( "Unassigned", TEAM_UNASSIGNED );
-	
-	CTeam *t1 = (CTeam*) CreateEntityByName( "rd_team" );
-	t1->Init ( "Spectator", TEAM_SPECTATOR );
 
-	CTeam *t2 = (CTeam*) CreateEntityByName( "rd_team" );
+	CTeam *t1 = ( CTeam * )CreateEntityByName( "rd_team" );
+	t1->Init( "Spectator", TEAM_SPECTATOR );
+
+	CTeam *t2 = ( CTeam * )CreateEntityByName( "rd_team" );
 	t2->Init( "Terrorists", TEAM_ALPHA );
 
-	CTeam *t3 = (CTeam*) CreateEntityByName( "rd_team" );
+	CTeam *t3 = ( CTeam * )CreateEntityByName( "rd_team" );
 	t3->Init( "Counter-Terrorists", TEAM_BETA );
 
 	CTeamSpawnPoint *p = NULL;
-	// Fill each CTeam with spawnpoints 
-	while ( p = (CTeamSpawnPoint*)gEntList.FindEntityByClassname(p, "info_player_start_team1") )
+	while ( ( p = assert_cast< CTeamSpawnPoint * >( gEntList.FindEntityByClassname( p, "info_player_start_team1" ) ) ) != NULL )
 	{
 		t2->AddSpawnpoint( p );
 	}
 
-	p = NULL;
-
-	while ( p = (CTeamSpawnPoint*)gEntList.FindEntityByClassname(p, "info_player_start_team2") )
+	while ( ( p = assert_cast< CTeamSpawnPoint * >( gEntList.FindEntityByClassname( p, "info_player_start_team2" ) ) ) != NULL )
 	{
 		t3->AddSpawnpoint( p );
 	}
-#pragma warning( pop )
-	int count = 0;
-	// Move each player to a random team 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+
+	int iCount = 0;
+	// Split players between teams.
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 		if ( !pPlayer || !pPlayer->IsConnected() )
 			continue;
-		pPlayer->ChangeTeam( count % 2 ? TEAM_ALPHA : TEAM_BETA, false, true );
-		count++;
+		pPlayer->ChangeTeam( iCount % 2 ? TEAM_ALPHA : TEAM_BETA, false, true );
+		iCount++;
 	}
 
 	// Set team number for every marine resource
@@ -657,8 +650,8 @@ void CASW_Deathmatch_Mode::TeamDeathmatchEnable()
 
 		if ( !pMR->IsInhabited() )
 		{
-			pMR->ChangeTeam( count % 2 ? TEAM_ALPHA : TEAM_BETA );
-			count++;
+			pMR->ChangeTeam( iCount % 2 ? TEAM_ALPHA : TEAM_BETA );
+			iCount++;
 		}
 		else if ( pMR->GetCommander() )
 		{
@@ -667,13 +660,7 @@ void CASW_Deathmatch_Mode::TeamDeathmatchEnable()
 	}
 
 	// Kill each marine 
-	ASWGameRules()->KillAllMarines(); 
-
-	// decrease moving speed 
-//	SaveSetConvar( asw_marine_speed_scale_easy, 0.9f );
-//	SaveSetConvar( asw_marine_speed_scale_normal, 0.9f );
-//	SaveSetConvar( asw_marine_speed_scale_hard, 0.9f );
-//	SaveSetConvar( asw_marine_speed_scale_insane, 0.9f );
+	ASWGameRules()->KillAllMarines();
 
 	// show team members names and healths 
 	SaveSetConvar( asw_world_healthbars, 1 );
@@ -685,37 +672,37 @@ void CASW_Deathmatch_Mode::TeamDeathmatchEnable()
 
 	ASWGameRules()->BroadcastSound( "DM.tdm_activated" );
 
-	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "Team Deathmatch Activated "); // "#rd_teamdeathmatch_activated"
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_teamdeathmatch_activated" );
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
 
-void CASW_Deathmatch_Mode::TeamDeathmatchDisable(bool enable_weapon_respawn_timer/* = true*/) 
+void CASW_Deathmatch_Mode::TeamDeathmatchDisable( bool bEnableWeaponRespawnTimer/* = true*/ )
 {
 	if ( !IsTeamDeathmatchEnabled() )
 		return;
 
 	m_iGameMode = GAMEMODE_DEATHMATCH;
 
-	/**
-		- Remove and delete teams 
+	/*
+		- Remove and delete teams
 		- Enable Weapon Respawn
-		- Reset Scores 
+		- Reset Scores
 		- Restore moving speed
 	*/
 
-	for ( int i = 0; i < g_Teams.Count(); ++i )
+	for ( int i = 0; i < g_Teams.Count(); i++ )
 	{
 		UTIL_Remove( g_Teams[i] );
 	}
 	g_Teams.Purge();
 
-	if ( enable_weapon_respawn_timer ) 
+	if ( bEnableWeaponRespawnTimer )
 	{
-		EnableWeaponRespawnTimer(); 
+		EnableWeaponRespawnTimer();
 	}
 
-	this->ResetScores(); 
+	ResetScores();
 
 	SaveSetConvar( asw_marine_speed_scale_easy, 1.5f );
 	SaveSetConvar( asw_marine_speed_scale_normal, 1.5f );
@@ -728,7 +715,6 @@ void CASW_Deathmatch_Mode::TeamDeathmatchDisable(bool enable_weapon_respawn_time
 
 	ASWGameRules()->OnSkillLevelChanged( ASWGameRules()->m_iSkillLevel );
 }
-
 
 void CASW_Deathmatch_Mode::SpawnMarine( CASW_Player *player )
 {
@@ -743,8 +729,7 @@ void CASW_Deathmatch_Mode::SpawnMarine( CASW_Player *player )
 
 		CASW_Marine_Resource *pMR = NULL;
 
-		const int max_marines = ASWGameResource()->GetMaxMarineResources();
-		for ( int i = 0; i < max_marines; ++i )
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
 			pMR = ASWGameResource()->GetMarineResource( i );
 			if ( pMR && pMR->GetCommander() == player && pMR->IsInhabited() && pMR->GetHealthPercent() <= 0 )
@@ -765,10 +750,10 @@ void CASW_Deathmatch_Mode::SpawnMarine( CASW_Player *player )
 			Assert( t != NULL );
 			if ( t )
 			{
-				CBaseEntity *spawn_point_for_marine = t->SpawnPlayer(player);
+				CBaseEntity *spawn_point_for_marine = t->SpawnPlayer( player );
 				if ( spawn_point_for_marine )
 				{
-					ASWGameRules()->SpawnMarineAt( pMR, spawn_point_for_marine->GetAbsOrigin(), spawn_point_for_marine->GetAbsAngles(), false);
+					ASWGameRules()->SpawnMarineAt( pMR, spawn_point_for_marine->GetAbsOrigin(), spawn_point_for_marine->GetAbsAngles(), false );
 					player->SwitchMarine( pMR );
 				}
 				else
@@ -783,37 +768,36 @@ void CASW_Deathmatch_Mode::SpawnMarine( CASW_Player *player )
 		}
 		else
 		{
-			spawn_point = ASWGameRules()->GetMarineSpawnPoint(spawn_point);
-			if (!spawn_point)
-				spawn_point = ASWGameRules()->GetMarineSpawnPoint(NULL);
-			if (spawn_point) {
-				ASWGameRules()->SpawnMarineAt( pMR, spawn_point->GetAbsOrigin(), spawn_point->GetAbsAngles(), false);
+			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( CASW_Player::spawn_point );
+			if ( !CASW_Player::spawn_point )
+				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( NULL );
+			if ( CASW_Player::spawn_point )
+			{
+				ASWGameRules()->SpawnMarineAt( pMR, CASW_Player::spawn_point->GetAbsOrigin(), CASW_Player::spawn_point->GetAbsAngles(), false );
 				player->SwitchMarine( pMR );
 			}
 		}
 	}
 }
 
-
-void CASW_Deathmatch_Mode::DisableWeaponRespawnTimer() 
+void CASW_Deathmatch_Mode::DisableWeaponRespawnTimer()
 {
-	// disabling respawn timer 
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByName( pEntity, "wpn_respawn_timer" )) != NULL)
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByName( pEntity, "wpn_respawn_timer" ) ) != NULL )
 	{
-		CTimerEntity* respawn_timer = dynamic_cast<CTimerEntity*>(pEntity);
-		if (respawn_timer)
+		CTimerEntity *pRespawnTimer = dynamic_cast< CTimerEntity * >( pEntity );
+		if ( pRespawnTimer )
 		{
-			respawn_timer->Disable();
+			pRespawnTimer->Disable();
 		}
 		else
 		{
-			Warning("wpn_respawn_timer not found! \n");
+			Warning( "wpn_respawn_timer not found! \n" );
 		}
 	}
 }
 
-void CASW_Deathmatch_Mode::RemoveAllWeaponsFromMap() 
+void CASW_Deathmatch_Mode::RemoveAllWeaponsFromMap()
 {
 	// remove all pickup items
 	RemoveEntitiesByClassName( "asw_pickup_flamer" );
@@ -836,103 +820,68 @@ void CASW_Deathmatch_Mode::RemoveAllWeaponsFromMap()
 	RemoveEntitiesByClassName( "asw_pickup_grenades" );
 	RemoveEntitiesByClassName( "asw_pickup_rifle" );
 
-	RemoveEntitiesByClassName( "asw_weapon_rifle" );
-	RemoveEntitiesByClassName( "asw_weapon_prifle" );
-	RemoveEntitiesByClassName( "asw_weapon_autogun" );
-	RemoveEntitiesByClassName( "asw_weapon_vindicator" );
-	RemoveEntitiesByClassName( "asw_weapon_pistol" );
-	RemoveEntitiesByClassName( "asw_weapon_sentry" );
-	RemoveEntitiesByClassName( "asw_weapon_heal_grenade" );
-	RemoveEntitiesByClassName( "asw_weapon_ammo_satchel" );
-	RemoveEntitiesByClassName( "asw_weapon_shotgun" );
-	RemoveEntitiesByClassName( "asw_weapon_tesla_gun" );
-	RemoveEntitiesByClassName( "asw_weapon_railgun" );
-	RemoveEntitiesByClassName( "asw_weapon_heal_gun" );
-	RemoveEntitiesByClassName( "asw_weapon_healamp_gun" );
-	RemoveEntitiesByClassName( "asw_weapon_pdw" );
-	RemoveEntitiesByClassName( "asw_weapon_flamer" );
-	RemoveEntitiesByClassName( "asw_weapon_sentry_freeze" );
-	RemoveEntitiesByClassName( "asw_weapon_minigun" );
-	RemoveEntitiesByClassName( "asw_weapon_sniper_rifle" );
-	RemoveEntitiesByClassName( "asw_weapon_sentry_flamer" );
-	RemoveEntitiesByClassName( "asw_weapon_chainsaw" );
-	RemoveEntitiesByClassName( "asw_weapon_sentry_cannon" );    
-	RemoveEntitiesByClassName( "asw_weapon_grenade_launcher" );
-	RemoveEntitiesByClassName( "asw_weapon_medkit" );
-	RemoveEntitiesByClassName( "asw_weapon_welder" );
-	RemoveEntitiesByClassName( "asw_weapon_flares" );
-	RemoveEntitiesByClassName( "asw_weapon_gas_grenades" );
-	RemoveEntitiesByClassName( "asw_weapon_laser_mines" );
-	RemoveEntitiesByClassName( "asw_weapon_normal_armor" );
-	RemoveEntitiesByClassName( "asw_weapon_buff_grenade" );
-	RemoveEntitiesByClassName( "asw_weapon_hornet_barrage" );
-	RemoveEntitiesByClassName( "asw_weapon_freeze_grenades" );
-	RemoveEntitiesByClassName( "asw_weapon_stim" );    
-	RemoveEntitiesByClassName( "asw_weapon_tesla_trap" );
-	RemoveEntitiesByClassName( "asw_weapon_electrified_armor" );
-	RemoveEntitiesByClassName( "asw_weapon_mines" );
-	RemoveEntitiesByClassName( "asw_weapon_flashlight" );
-	RemoveEntitiesByClassName( "asw_weapon_grenades" );
-	RemoveEntitiesByClassName( "asw_weapon_night_vision" );
-	RemoveEntitiesByClassName( "asw_weapon_smart_bomb" );
-	RemoveEntitiesByClassName( "asw_weapon_fire_extinguisher" );
-	RemoveEntitiesByClassName( "asw_weapon_mining_laser" );
-	RemoveEntitiesByClassName( "asw_weapon_t75" );    
-	RemoveEntitiesByClassName( "asw_weapon_blink" );
-	RemoveEntitiesByClassName( "asw_weapon_jump_jet" );
+	int iCount = ASWEquipmentList()->GetNumRegular( true );
+	for ( int i = 0; i < iCount; i++ )
+	{
+		RemoveEntitiesByClassName( STRING( ASWEquipmentList()->GetRegular( i )->m_EquipClass ) );
+	}
+
+	iCount = ASWEquipmentList()->GetNumExtra( true );
+	for ( int i = 0; i < iCount; i++ )
+	{
+		RemoveEntitiesByClassName( STRING( ASWEquipmentList()->GetExtra( i )->m_EquipClass ) );
+	}
 }
 
-void CASW_Deathmatch_Mode::EnableWeaponRespawnTimer() 
+void CASW_Deathmatch_Mode::EnableWeaponRespawnTimer()
 {
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByName( pEntity, "wpn_respawn_timer" )) != NULL)
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByName( pEntity, "wpn_respawn_timer" ) ) != NULL )
 	{
-		CTimerEntity* respawn_timer = dynamic_cast<CTimerEntity*>(pEntity);
-		if (respawn_timer)
+		CTimerEntity *pRespawnTimer = dynamic_cast< CTimerEntity * >( pEntity );
+		if ( pRespawnTimer )
 		{
-			respawn_timer->Enable();
-			respawn_timer->FireTimer();
+			pRespawnTimer->Enable();
+			pRespawnTimer->FireTimer();
 		}
 		else
 		{
-			Warning("wpn_respawn_timer not found. \n");
+			Warning( "wpn_respawn_timer not found. \n" );
 		}
 	}
 }
 
-
-
-void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = -1*/) 
+void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib( int iWeaponID/* = -1*/ )
 {
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( !pGameResource )
 		return;
 
-	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
-		if (pGameResource->GetMarineResource(i) != NULL && pGameResource->GetMarineResource(i)->GetMarineEntity())
+		if ( pGameResource->GetMarineResource( i ) != NULL && pGameResource->GetMarineResource( i )->GetMarineEntity() )
 		{
-			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
+			CASW_Marine *pMarine = pGameResource->GetMarineResource( i )->GetMarineEntity();
 
 			// remove all weapons from marine
 			for ( int j = 0; j < 3; ++j )
 			{
-				pMarine->RemoveWeapon(j, true); // true - no swap to other weapon
+				pMarine->RemoveWeapon( j, true ); // true - no swap to other weapon
 			}
 
 			// give default weapon
 			if ( ASWGameRules() )
 			{
-				if ( weapon_id == -1) 
+				if ( iWeaponID == -1 )
 				{
-					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, GetWeaponIndexByFragsCount(0), 0);
+					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, GetWeaponIndexByFragsCount( 0 ), 0 );
 				}
-				else 
+				else
 				{
-					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, weapon_id, 0);
+					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, iWeaponID, 0 );
 				}
 			}
-			
+
 			// heal marine
 			pMarine->AddSlowHeal( pMarine->GetMaxHealth() - pMarine->GetHealth(), 3, NULL );
 
@@ -947,25 +896,13 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib(int weapon_id/* = 
 	}
 }
 
-void CASW_Deathmatch_Mode::BroadcastLoadoutScreen() 
+void CASW_Deathmatch_Mode::BroadcastLoadoutScreen()
 {
-/*	// 2 ways of doing this, one is commented
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
-	{
-		CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( !pPlayer || !pPlayer->IsConnected() )
-			continue;
+	CReliableBroadcastRecipientFilter filter;
 
-		engine->ClientCommand( pPlayer->edict(), "cl_select_loadout_noclose");
-	} 
-*/	
-	CBroadcastRecipientFilter filter;
-	filter.MakeReliable();
-
-	UserMessageBegin ( filter, "BroadcastClientCmd" );
+	UserMessageBegin( filter, "BroadcastClientCmd" );
 		WRITE_STRING( "cl_select_loadout_noclose" );
 	MessageEnd();
-
 }
 
 void CASW_Deathmatch_Mode::ResetScores()
@@ -1020,7 +957,7 @@ void CASW_Deathmatch_Mode::KillingSpreeIncrease( CASW_Marine_Resource *pMR )
 	// reactivedrop: 3 seconds for checking for killingspree
 	if ( gpGlobals->curtime - *pflLastFragTime < rd_killingspree_time_limit.GetFloat() )
 	{
-		(*piKillingSpree)++;
+		( *piKillingSpree )++;
 		switch ( *piKillingSpree )
 		{
 		case 2:
@@ -1069,16 +1006,23 @@ void CASW_Deathmatch_Mode::KillingSpreeReset( CASW_Marine_Resource *pMR )
 
 void CASW_Deathmatch_Mode::DeathmatchThink()
 {
-	// respawn bots 
+	// respawn bots
+	int iFilledMarineResources = 0;
 	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
 		if ( ASWGameRules()->m_fDeathmatchFinishTime > 0 )
 		{
 			// don't allow respawning after the round ends
+			iFilledMarineResources = -1;
 			break;
 		}
 
 		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR )
+		{
+			iFilledMarineResources++;
+		}
+
 		if ( pMR && !pMR->GetMarineEntity() && !pMR->IsInhabited() )
 		{
 			if ( IsTeamDeathmatchEnabled() )
@@ -1093,26 +1037,66 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 						if ( pBot )
 							pBot->SetASWOrders( ASW_ORDER_HOLD_POSITION ); // suprisingly but this makes them find enemy marines and chase them
 					}
+
+					iFilledMarineResources = -1;
 					break;
 				}
 				continue;
 			}
-			spawn_point = ASWGameRules()->GetMarineSpawnPoint( spawn_point );
-			if (!spawn_point)
+
+			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( CASW_Player::spawn_point );
+			if ( !CASW_Player::spawn_point )
 			{
-				spawn_point = ASWGameRules()->GetMarineSpawnPoint( NULL );
+				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( NULL );
 			}
 
-			if ( spawn_point )
+			if ( CASW_Player::spawn_point )
 			{
-				if ( ASWGameRules()->SpawnMarineAt( pMR, spawn_point->GetAbsOrigin(), spawn_point->GetAbsAngles(), false ) )
+				if ( ASWGameRules()->SpawnMarineAt( pMR, CASW_Player::spawn_point->GetAbsOrigin(), CASW_Player::spawn_point->GetAbsAngles(), false ) )
 				{
 					CASW_Marine *pBot = pMR->GetMarineEntity();
 					if ( pBot )
 						pBot->SetASWOrders( ASW_ORDER_HOLD_POSITION ); // suprisingly but this makes them find enemy marines and chase them
 				}
 			}
+
+			iFilledMarineResources = -1;
 			break; // don't do two in a frame
+		}
+	}
+
+	if ( gpGlobals->maxClients == 1 && rd_deathmatch_spawn_bots_in_singleplayer.GetBool() )
+	{
+		extern ConVar mm_max_players;
+
+		if ( iFilledMarineResources > 0 && iFilledMarineResources < ASW_NUM_MARINE_PROFILES && iFilledMarineResources < mm_max_players.GetInt() )
+		{
+			int AvailableProfiles[ASW_NUM_MARINE_PROFILES];
+			for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+			{
+				AvailableProfiles[i] = i;
+			}
+
+			int iAvailableProfiles = ASW_NUM_MARINE_PROFILES;
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( pMR )
+				{
+					int iProfile = pMR->GetProfileIndex();
+					for ( int j = 0; j < iAvailableProfiles; j++ )
+					{
+						if ( AvailableProfiles[j] == iProfile )
+						{
+							memcpy( &AvailableProfiles[j], &AvailableProfiles[j + 1], sizeof( int ) * ( iAvailableProfiles - j - 1 ) );
+							iAvailableProfiles--;
+							break;
+						}
+					}
+				}
+			}
+
+			ASWGameRules()->RosterSelect( ASWGameResource()->GetLeader(), AvailableProfiles[RandomInt( 0, iAvailableProfiles - 1 )], -1 );
 		}
 	}
 
@@ -1120,17 +1104,13 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 	SetNextThink( gpGlobals->curtime + 1.0f );
 }
 
-
 void CASW_Deathmatch_Mode::LevelInitPostEntity()
 {
-	DevMsg( "CASW_Deathmatch_Mode::LevelInitPostEntity()\n" );
 	SetThink( &CASW_Deathmatch_Mode::DeathmatchThink );
 	SetNextThink( gpGlobals->curtime + 1.0f );
 }
 
-
-
-#endif	// ifdef GAME_DLL
+#endif	// GAME_DLL
 
 int CASW_Deathmatch_Mode::GetFragCount( CASW_Marine_Resource *pMR )
 {
@@ -1149,7 +1129,6 @@ int CASW_Deathmatch_Mode::GetFragCount( CASW_Marine_Resource *pMR )
 	}
 	return pMR->m_iBotFrags;
 }
-
 
 int CASW_Deathmatch_Mode::GetSmallestTeamNumber()
 {
@@ -1176,5 +1155,5 @@ int CASW_Deathmatch_Mode::GetWeaponIndexByFragsCount( int nFrags )
 	Assert( m_iGunGameWeaponCount > 0 );
 
 	// it can be < 0 if marine suicided
-	return m_iGunGameWeapons[MAX(nFrags, 0) % m_iGunGameWeaponCount];
+	return m_iGunGameWeapons[MAX( nFrags, 0 ) % m_iGunGameWeaponCount];
 }

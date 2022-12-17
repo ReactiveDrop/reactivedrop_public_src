@@ -30,12 +30,12 @@ using namespace vgui;
 using namespace BaseModUI;
 
 //=============================================================================
-static ConVar ui_public_lobby_filter_difficulty2( "ui_public_lobby_filter_difficulty2", "normal", FCVAR_ARCHIVE, "Filter type for difficulty on the public lobby display" );
-static ConVar ui_public_lobby_filter_onslaught( "ui_public_lobby_filter_onslaught", "0", FCVAR_ARCHIVE, "Filter type for Onslaught mode on the public lobby display");
-static ConVar ui_public_lobby_filter_distance( "ui_public_lobby_filter_distance", "", FCVAR_ARCHIVE, "Filter type for distance on the public lobby display" );
-static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challenge", "none", FCVAR_ARCHIVE, "Filter type for challenge on the public lobby display" );
-static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "none", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
-ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "official", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
+static ConVar ui_public_lobby_filter_difficulty2( "ui_public_lobby_filter_difficulty2", "", FCVAR_ARCHIVE, "Filter type for difficulty on the public lobby display" );
+static ConVar ui_public_lobby_filter_onslaught( "ui_public_lobby_filter_onslaught", "", FCVAR_ARCHIVE, "Filter type for Onslaught mode on the public lobby display");
+static ConVar ui_public_lobby_filter_distance( "ui_public_lobby_filter_distance", "worldwide", FCVAR_ARCHIVE, "Filter type for distance on the public lobby display" );
+static ConVar ui_public_lobby_filter_challenge( "ui_public_lobby_filter_challenge", "", FCVAR_ARCHIVE, "Filter type for challenge on the public lobby display" );
+static ConVar ui_public_lobby_filter_deathmatch( "ui_public_lobby_filter_deathmatch", "", FCVAR_ARCHIVE, "Filter type for deathmatch on the public lobby display" );
+ConVar ui_public_lobby_filter_campaign( "ui_public_lobby_filter_campaign", "", FCVAR_ARCHIVE, "Filter type for campaigns on the public lobby display" );
 ConVar ui_public_lobby_filter_status( "ui_public_lobby_filter_status", "", FCVAR_ARCHIVE, "Filter type for game status on the public lobby display" );
 ConVar ui_public_lobby_filter_dedicated_servers( "ui_public_lobby_filter_dedicated_servers", "0", FCVAR_NONE, "Filter dedicated servers from the public lobby display" );
 extern ConVar rd_lobby_ping_low;
@@ -633,16 +633,14 @@ void FoundPublicGames::Activate()
 	if ( Panel *pLabelX = FindChildByName( "LblPressX" ) )
 		pLabelX->SetVisible( CanCreateGame() );
 
-	// players below level 30 are considered new
-	bool bShowHardcoreDifficulties = UTIL_ASW_CommanderLevelAtLeast( NULL, 30 ); // used to hide Insane, Brutal and any challenges
+	m_bShowHardcoreDifficulties = UTIL_ASW_CommanderLevelAtLeast( NULL, 15 );
 
 	if ( m_drpDifficulty )
 	{
 		m_drpDifficulty->SetCurrentSelection( CFmtStr( "filter_difficulty_%s", ui_public_lobby_filter_difficulty2.GetString() ) );
 
-		m_drpDifficulty->SetFlyoutItemEnabled( "BtnAny", bShowHardcoreDifficulties );
-		m_drpDifficulty->SetFlyoutItemEnabled( "BtnExpert", bShowHardcoreDifficulties );
-		m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", bShowHardcoreDifficulties );
+		m_drpDifficulty->SetFlyoutItemEnabled( "BtnExpert", m_bShowHardcoreDifficulties );
+		m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", m_bShowHardcoreDifficulties );
 	}
 
 	if ( m_drpOnslaught )
@@ -668,9 +666,6 @@ void FoundPublicGames::Activate()
 	if ( m_drpChallenge )
 	{
 		m_drpChallenge->SetCurrentSelection( CFmtStr( "filter_challenge_%s", ui_public_lobby_filter_challenge.GetString() ) );
-
-		m_drpChallenge->SetFlyoutItemEnabled( "BtnAny", bShowHardcoreDifficulties );
-		m_drpChallenge->SetFlyoutItemEnabled( "BtnRequired", bShowHardcoreDifficulties );
 	}
 
 	if ( m_drpDeathmatch )

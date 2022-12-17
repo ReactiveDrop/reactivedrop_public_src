@@ -23,6 +23,7 @@
 #include "stats_report.h"
 #include "rd_weapon_generic_object_shared.h"
 #include "asw_util_shared.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -177,10 +178,6 @@ void CASW_Hud_Master::VidInit()
 			}
 		}
 	}
-
-	m_LocalMarineVideo.SetLoopVideo( ASW_VIDEO_FACE_HEALTHY, 1, 0.3f );
-	m_nLocalMarineVideoTextureID = surface()->CreateNewTextureID( true );
-	g_pMatSystemSurface->DrawSetTextureMaterial( m_nLocalMarineVideoTextureID, m_LocalMarineVideo.GetMaterial() );
 }
 
 void CASW_Hud_Master::ApplySchemeSettings( IScheme *scheme )
@@ -188,42 +185,6 @@ void CASW_Hud_Master::ApplySchemeSettings( IScheme *scheme )
 	BaseClass::ApplySchemeSettings( scheme );
 
 	m_pLblTimer->SetFont( scheme->GetFont( "DefaultExtraLarge", true ) );
-}
-
-void CASW_Hud_Master::UpdatePortraitVideo()
-{
-	if ( m_pLocalMarineResource )
-	{
-		// TODO: Play an infested video
-// 		if ( m_pLocalMarineResource->IsInfested() )
-// 		{
-// 			m_LocalMarineVideo.SetLoopVideo( "test_infested" );
-// 		}
-// 		else
-		{
-			bool bHealthChanged = ( m_nLastLocalMarineHealth != m_nLocalMarineHealth );
-			if ( bHealthChanged )
-			{
-				if ( m_nLocalMarineHealth < m_nLastLocalMarineHealth )		// marine has taken damage
-				{
-					// TODO: Do we need to add a timer so we don't restart this too often?
-					m_LocalMarineVideo.PlayTempVideo( ASW_VIDEO_FACE_PAIN, ASW_VIDEO_FACE_STATIC );
-				}
-
-				float flHealthPercent = m_pLocalMarineResource->GetHealthPercent();
-				if ( flHealthPercent < 0.5f )
-				{
-					m_LocalMarineVideo.SetLoopVideo( ASW_VIDEO_FACE_NEEDHEALTH );
-				}
-				else
-				{
-					m_LocalMarineVideo.SetLoopVideo( ASW_VIDEO_FACE_HEALTHY, 1, 0.3f );
-				}
-			}
-		}
-	}
-
-	m_nLastLocalMarineHealth = m_nLocalMarineHealth;
 }
 
 void CASW_Hud_Master::OnThink()
@@ -1508,32 +1469,36 @@ void CASW_Hud_Master::PaintText()
 				surface()->DrawUnicodeString( wszQuantity );
 			}		
 
-			if ( pInfo->m_bShowLocalPlayerHotkey )
+			if ( pInfo->m_bShowLocalPlayerHotkey && !C_ASW_Player::GetLocalASWPlayer()->GetSpectatingNPC() )
 			{
 				// show hotkey for this marine's extra item
-				const char *pszKey = ASW_FindKeyBoundTo( "+grenade1" );
-				
-				if ( pszKey )
+				const char *szBind = g_RD_Steam_Input.Key_LookupBindingEx( "+grenade1", -1, 0, ASWInput()->ControllerModeActive() );
+				if ( g_RD_Steam_Input.IsOriginPlaceholderString( szBind ) )
 				{
-					wchar_t wszKey[ 12 ];
+					g_RD_Steam_Input.DrawLegacyControllerGlyph( szBind, m_nMarinePortrait_x + m_nExtraItem_hotkey_x, m_nMarinePortrait_y + m_nExtraItem_hotkey_y, 2, 1, m_hButtonFont );
+				}
+				else
+				{
+					const char *pszKey = ASW_FindKeyBoundTo( "+grenade1" );
 
-					wchar_t *pwchKeyName = g_pVGuiLocalize->Find( pszKey );
-					if ( !pwchKeyName || !pwchKeyName[ 0 ] )
+					if ( pszKey )
 					{
-						char szKey[ 12 ];
-						Q_snprintf( szKey, sizeof(szKey), "%s", pszKey );
-						Q_strupr( szKey );
+						wchar_t wszKey[64];
 
-						g_pVGuiLocalize->ConvertANSIToUnicode( pszKey, wszKey, sizeof( wszKey )  );
-						pwchKeyName = wszKey;
+						wchar_t *pwchKeyName = g_pVGuiLocalize->Find( pszKey );
+						if ( !pwchKeyName || !pwchKeyName[0] )
+						{
+							g_pVGuiLocalize->ConvertANSIToUnicode( pszKey, wszKey, sizeof( wszKey ) );
+							pwchKeyName = wszKey;
+						}
+
+						surface()->DrawSetTextColor( m_SquadMate_ExtraItem_hotkey_color );
+						surface()->DrawSetTextFont( m_hDefaultFont );
+						surface()->GetTextSize( m_hDefaultFont, pwchKeyName, w, t );
+						surface()->DrawSetTextPos( m_nExtraItem_hotkey_x + m_nMarinePortrait_x - w,
+							m_nExtraItem_hotkey_y + m_nMarinePortrait_y );
+						surface()->DrawUnicodeString( pwchKeyName );
 					}
-
-					surface()->DrawSetTextColor( m_SquadMate_ExtraItem_hotkey_color );
-					surface()->DrawSetTextFont( m_hDefaultFont );	
-					surface()->GetTextSize( m_hDefaultFont, pwchKeyName, w, t );
-					surface()->DrawSetTextPos( m_nExtraItem_hotkey_x + m_nMarinePortrait_x - w,
-						m_nExtraItem_hotkey_y + m_nMarinePortrait_y );
-					surface()->DrawUnicodeString( pwchKeyName );
 				}
 			}
 		}

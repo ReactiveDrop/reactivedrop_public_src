@@ -31,5 +31,6 @@ RD_STEAM_INPUT_BIND( EmoteQuestion, "cl_emote 7" );
 // UI
 RD_STEAM_INPUT_BIND( PlayerList, "playerlist" );
 RD_STEAM_INPUT_BIND( InGameBriefing, "ingamebriefing" );
+RD_STEAM_INPUT_BIND( Menu, "gameui_activate" );
 RD_STEAM_INPUT_BIND( VoteYes, "vote_yes" );
 RD_STEAM_INPUT_BIND( VoteNo, "vote_no" );

@@ -7,7 +7,6 @@
 #include "asw_hudelement.h"
 #include "asw_shareddefs.h"
 #include <vgui_controls/Panel.h>
-#include "asw_video.h"
 #include "vgui_avatarimage.h"
 
 class C_ASW_Marine;
@@ -103,9 +102,6 @@ protected:
 	virtual void OnThink();
 
 	virtual bool LookupElementBounds( const char *elementName, int &x, int &y, int &wide, int &tall );
-
-
-	void UpdatePortraitVideo();
 
 	void PaintLocalMarinePortrait();
 	void PaintSquadMemberStatus( int nPosition );
@@ -291,9 +287,6 @@ protected:
 	int m_nMarinePortrait_bar_y;
 	int m_nMarinePortrait_bar_y2;
 
-	CASW_Video m_LocalMarineVideo;
-	int m_nLocalMarineVideoTextureID;
-
 	int m_nMostFrags[8];
 	int m_hMostFragsImage[8];
 	CAvatarImage *m_pMostFragsAvatar[8];
@@ -304,6 +297,7 @@ protected:
 	CPanelAnimationVar( vgui::HFont, m_hDefaultSmallFont, "DefaultSmallFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultFont, "DefaultFont", "Default" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultLargeFont, "DefaultLargeFont", "DefaultLarge" );
+	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "DefaultButtonFont", "GameUIButtonsTiny" );
 	
 	CUtlVector<HudSheet_t> m_HudSheets;
 

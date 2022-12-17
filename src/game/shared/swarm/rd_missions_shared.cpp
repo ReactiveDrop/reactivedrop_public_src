@@ -80,6 +80,11 @@ struct NetworkedMissionMetadata_t
 	bool TagBonus : 1;
 	bool TagDeathmatch : 1;
 	bool TagEndless : 1;
+	bool _Reserved1 : 1;
+	bool _Reserved2 : 1;
+	bool _Reserved3 : 1;
+	bool _Reserved4 : 1;
+	bool _Reserved5 : 1;
 
 	constexpr void Clear()
 	{
@@ -155,6 +160,20 @@ void ReactiveDropMissions::CreateNetworkStringTables()
 
 	g_StringTableReactiveDropMissions = networkstringtable->CreateStringTable( RD_MISSIONS_STRINGTABLE_NAME, RD_MAX_MISSIONS );
 	Assert( g_StringTableReactiveDropMissions );
+
+	ClearServerCache();
+}
+void ReactiveDropMissions::ClearServerCache()
+{
+	if ( !g_StringTableReactiveDropCampaigns )
+	{
+		Assert( !g_StringTableReactiveDropMissions );
+		// not initialized yet
+		return;
+	}
+	Assert( g_StringTableReactiveDropMissions );
+
+	// TODO: purge old data
 
 	char szKVFileName[MAX_PATH];
 	NetworkedMissionMetadata_t metadata{};

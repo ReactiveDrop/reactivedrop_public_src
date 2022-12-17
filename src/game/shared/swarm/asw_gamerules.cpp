@@ -737,6 +737,7 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 #endif
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
+ConVar rd_anniversary_week_debug( "rd_anniversary_week_debug", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Set to 1 to force anniversary week logic; 0 to force off" );
 
 #define ADD_STAT( field, amount ) \
 			ConVarRef asw_stats_verbose( "asw_stats_verbose" );\
@@ -5479,6 +5480,12 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_SHOTGUN_PELLET, false );
 
+	// grenades don't collide with ceilings
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRENADES, ASW_COLLISION_GROUP_CEILINGS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_NPC_GRENADES, ASW_COLLISION_GROUP_CEILINGS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PLAYER_MISSILE, ASW_COLLISION_GROUP_CEILINGS, false );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN_MISSILE, ASW_COLLISION_GROUP_CEILINGS, false );
+
 	// the pellets that the flamer shoots.  Doesn't collide with small aliens or marines, DOES collide with doors and shieldbugs
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EGG, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_FLAMER_PELLETS, false );
@@ -8054,7 +8061,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		// players below level 30 are considered new
 		if ( !UTIL_ASW_CommanderLevelAtLeast( pPlayer, 30 ) )
 		{
-			engine->ServerCommand( CFmtStr( "kickid %s 'This difficulty level is restricted to players of level 30 or above'\n", pPlayer->GetASWNetworkID() ) );
+			engine->ServerCommand( CFmtStr( "kickid %s 'This server restricts this difficulty level to players of level 30 or above'\n", pPlayer->GetASWNetworkID() ) );
 		}
 	}
 
@@ -8238,15 +8245,21 @@ bool CAlienSwarm::IsAnniversaryWeek()
 	if ( !pUtils )
 		pUtils = SteamGameServerUtils();
 #endif
-
+	Assert( pUtils );
 	if ( !pUtils )
 	{
 		return false;
 	}
 
-	// previously, this was in local time; however, we need it to be the same on the client and the server
-	// therefore, we are moving it to GMT and extending the week by 1 day to compensate
-	// the anniversary week now takes place from the 20th to the 27th
+	// Require sv_cheats as well so this convar can't easily be used to make a double experience "challenge".
+	if ( rd_anniversary_week_debug.GetInt() != -1 && ConVarRef( "sv_cheats" ).GetBool() )
+	{
+		return rd_anniversary_week_debug.GetBool();
+	}
+
+	// Previously, this was in local time; however, we need it to be the same on the client and the server.
+	// Therefore, we are moving it to GMT and extending the week by 1 day to compensate.
+	// The anniversary week now takes place from the 20th to the 27th.
 	tm curtime;
 	Plat_gmtime( pUtils->GetServerRealTime(), &curtime );
 	return ( curtime.tm_mday >= 20 && curtime.tm_mday <= 27 ) && curtime.tm_mon == 3;
@@ -8356,7 +8369,7 @@ void CheatsChangeCallback( IConVar *pConVar, const char *pOldString, float flOld
 #ifdef GAME_DLL
 static void CreateCake( const char *mapname )
 {
-	Vector origin(0, 0, 0);
+	Vector origin( 0, 0, 0 );
 	if ( FStrEq( mapname, "asi-jac1-landingbay_01" ) )
 	{
 		origin = Vector( -8444, -468, 852 );
@@ -8404,6 +8417,18 @@ static void CreateCake( const char *mapname )
 	else if ( FStrEq( mapname, "dm_testlab" ) )
 	{
 		origin = Vector( -3746, -1314, -52 );
+	}
+	else if ( FStrEq( mapname, "example_map_1" ) )
+	{
+		origin = Vector( -128, -832, 12 );
+	}
+	else if ( FStrEq( mapname, "example_map_2" ) )
+	{
+		origin = Vector( -240, -240, -52 );
+	}
+	else if ( FStrEq( mapname, "example_map_3" ) )
+	{
+		origin = Vector( -128, 3136, 12 );
 	}
 	else if ( FStrEq( mapname, "rd-area9800lz" ) )
 	{
@@ -8622,35 +8647,35 @@ static void CreateCake( const char *mapname )
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )
 	{
-		// TODO: cake
+		origin = Vector( 2236, -1496, 1520 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_nexus_subnode" ) )
 	{
-		// TODO: cake
+		origin = Vector( -1732, 1848, 381 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_neon_carnage" ) )
 	{
-		// TODO: cake
+		origin = Vector( 3730, -3524, 84 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_fuel_junction" ) )
 	{
-		// TODO: cake
+		origin = Vector( -652, 3390, 348 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_dark_path" ) )
 	{
-		// TODO: cake
+		origin = Vector( -7592, -5936, 524 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_forbidden_outpost" ) )
 	{
-		// TODO: cake
+		origin = Vector( 2300, 3796, -568 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_new_beginning" ) )
 	{
-		// TODO: cake
+		origin = Vector( -480, -734, 1132 );
 	}
 	else if ( FStrEq( mapname, "rd-ada_anomaly" ) )
 	{
-		// TODO: cake
+		origin = Vector( -3808, -1632, 452 );
 	}
 #endif
 
@@ -8668,7 +8693,7 @@ static void CreateCake( const char *mapname )
 	// UTIL_DropToFloor( pCake, MASK_SOLID );
 	pCake->SetMoveType( MOVETYPE_NONE );
 
-	CSprite *pCakeSprite = static_cast<CSprite*>( CreateEntityByName( "env_sprite" ) );
+	CSprite *pCakeSprite = assert_cast< CSprite * >( CreateEntityByName( "env_sprite" ) );
 	pCakeSprite->SetModelName( AllocPooledString( "materials/sprites/light_glow03.vmt") );
 	pCakeSprite->Precache();
 	pCakeSprite->SetGlowProxySize( 2.0f );
@@ -8802,8 +8827,8 @@ void CAlienSwarm::LevelInitPostEntity()
 	SetMaxMarines();
 
 	// create the burning system
-	CASW_Burning *pFire = dynamic_cast<CASW_Burning*>( CreateEntityByName( "asw_burning" ) );
-	if (pFire)
+	CASW_Burning *pFire = assert_cast< CASW_Burning * >( CreateEntityByName( "asw_burning" ) );
+	if ( pFire )
 		pFire->Spawn();
 
 	if ( !sv_cheats )
@@ -9124,11 +9149,39 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 {
 	extern ConVar rd_challenge;
 
+	const RD_Challenge_t *pSummary = ReactiveDropChallenges::GetSummary( szChallengeName );
+	if ( !pSummary || ( ASWDeathmatchMode() ? !pSummary->AllowDeathmatch : !pSummary->AllowCoop ) )
+	{
+		if ( pSummary )
+		{
+			Warning( "Challenge '%s' is not allowed in this game mode.\n", szChallengeName );
+		}
+
+		szChallengeName = "0";
+	}
+
 	bool bChanged = !!V_strcmp( rd_challenge.GetString(), szChallengeName );
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
 	bool bEnabled = ReactiveDropChallenges::ReadData( pKV, szChallengeName );
 
 	ResetChallengeConVars();
+	if ( ASWDeathmatchMode() )
+	{
+		ASWDeathmatchMode()->ApplyDeathmatchConVars();
+
+		// we can change challenge modes mid-round for deathmatch, which needs a little bit of clean-up.
+		CBaseEntity *pThinker = NULL;
+		while ( ( pThinker = gEntList.FindEntityByClassname( pThinker, "asw_challenge_thinker" ) ) != NULL )
+		{
+			UTIL_Remove( pThinker );
+		}
+
+		if ( g_pScriptVM )
+		{
+			g_pScriptVM->ClearValue( "g_ModeScript" );
+		}
+	}
+
 	if ( bEnabled )
 	{
 		ApplyChallengeConVars( pKV );
@@ -9276,7 +9329,7 @@ LINK_ENTITY_TO_CLASS( asw_challenge_thinker, CASW_Challenge_Thinker );
 
 void CAlienSwarm::ApplyChallenge()
 {
-	if ( ASWDeathmatchMode() || IsTutorialMap() )
+	if ( IsTutorialMap() )
 	{
 		EnableChallenge( "0" );
 	}

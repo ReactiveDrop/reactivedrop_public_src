@@ -13,48 +13,37 @@ END_RECV_TABLE()
 
 C_ASW_Objective_Kill_Goo::C_ASW_Objective_Kill_Goo()
 {
-	m_dest_buffer[0] = '\0';
-	m_iKillsLeft = -1;
-}
-
-void C_ASW_Objective_Kill_Goo::OnDataChanged(DataUpdateType_t updateType)
-{
-	if ( updateType == DATA_UPDATE_CREATED )
-	{
-		//FindText();
-	}
-	BaseClass::OnDataChanged(updateType);
+	m_wszTitleBuffer[0] = '\0';
+	m_iLastKills = -1;
 }
 
 bool C_ASW_Objective_Kill_Goo::NeedsTitleUpdate()
-{	
-	int iKillsLeft = m_iTargetKills - m_iCurrentKills;
-	if (iKillsLeft == 0)
-		iKillsLeft = m_iTargetKills;
-	return (iKillsLeft != m_iKillsLeft);
-}
-
-const wchar_t* C_ASW_Objective_Kill_Goo::GetObjectiveTitle()
 {
 	int iKills = MIN( m_iTargetKills.Get(), m_iCurrentKills.Get() );
 
-	if ( iKills != m_iKillsLeft )	// update the string
-	{		
-		m_iKillsLeft = iKills;
-		char number_buffer[12];
-		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", iKills);
-		wchar_t wnumber_buffer[24];
-		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer, sizeof( wnumber_buffer ));
+	return iKills != m_iLastKills;
+}
 
-		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", m_iTargetKills.Get());
-		wchar_t wnumber_buffer2[24];
-		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer2, sizeof( wnumber_buffer ));
-				
-		g_pVGuiLocalize->ConstructString( m_dest_buffer, sizeof(m_dest_buffer),
-			g_pVGuiLocalize->Find("#asw_kill_goo_objective_format"), 2,
-			wnumber_buffer, wnumber_buffer2 );
+const wchar_t *C_ASW_Objective_Kill_Goo::GetObjectiveTitle()
+{
+	int iKills = MIN( m_iTargetKills.Get(), m_iCurrentKills.Get() );
+
+	if ( iKills != m_iLastKills )	// update the string
+	{
+		m_iLastKills = iKills;
+
+		wchar_t wszNum[24];
+		V_snwprintf( wszNum, NELEMS( wszNum ), L"%d", iKills );
+
+		wchar_t wszNum2[24];
+		V_snwprintf( wszNum2, NELEMS( wszNum2 ), L"%d", m_iTargetKills.Get() );
+
+		g_pVGuiLocalize->ConstructString( m_wszTitleBuffer, sizeof( m_wszTitleBuffer ),
+			g_pVGuiLocalize->Find( "#asw_kill_goo_objective_format" ), 2,
+			wszNum, wszNum2 );
 	}
-	return m_dest_buffer;
+
+	return m_wszTitleBuffer;
 }
 
 float C_ASW_Objective_Kill_Goo::GetObjectiveProgress()
@@ -62,7 +51,7 @@ float C_ASW_Objective_Kill_Goo::GetObjectiveProgress()
 	if ( m_iTargetKills <= 0 )
 		return BaseClass::GetObjectiveProgress();
 
-	float flProgress = (float) m_iCurrentKills.Get() / (float) m_iTargetKills.Get();
+	float flProgress = ( float )m_iCurrentKills.Get() / ( float )m_iTargetKills.Get();
 	flProgress = clamp<float>( flProgress, 0.0f, 1.0f );
 
 	return flProgress;

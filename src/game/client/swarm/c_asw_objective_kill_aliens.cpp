@@ -19,8 +19,8 @@ C_ASW_Objective_Kill_Aliens::C_ASW_Objective_Kill_Aliens()
 	m_pAlienPluralText = NULL;
 	m_pAlienSingularText = NULL;
 	m_bFoundText = false;
-	m_dest_buffer[0] = '\0';
-	m_iKillsLeft = -1;
+	m_wszTitleBuffer[0] = '\0';
+	m_iLastKills = -1;
 }
 
 void C_ASW_Objective_Kill_Aliens::OnDataChanged(DataUpdateType_t updateType)
@@ -33,44 +33,42 @@ void C_ASW_Objective_Kill_Aliens::OnDataChanged(DataUpdateType_t updateType)
 }
 
 bool C_ASW_Objective_Kill_Aliens::NeedsTitleUpdate()
-{	
-	int iKillsLeft = m_iTargetKills - m_iCurrentKills;
-	if (iKillsLeft == 0)
-		iKillsLeft = m_iTargetKills;
-	return (iKillsLeft != m_iKillsLeft);
+{
+	int iKills = MIN( m_iTargetKills.Get(), m_iCurrentKills.Get() );
+
+	return m_iLastKills != iKills;
 }
 
-const wchar_t* C_ASW_Objective_Kill_Aliens::GetObjectiveTitle()
+const wchar_t *C_ASW_Objective_Kill_Aliens::GetObjectiveTitle()
 {
-	if (!m_bFoundText || !m_pKillText || !m_pAlienPluralText || !m_pAlienSingularText)
+	if ( !m_bFoundText || !m_pKillText || !m_pAlienPluralText || !m_pAlienSingularText )
 	{
 		return L"";
 	}
 
 	int iKills = MIN( m_iTargetKills.Get(), m_iCurrentKills.Get() );
 
-	if ( iKills != m_iKillsLeft )	// update the string
-	{		
-		m_iKillsLeft = iKills;
-		char number_buffer[12];
-		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", iKills);
-		wchar_t wnumber_buffer[24];
-		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer, sizeof( wnumber_buffer ));
+	if ( iKills != m_iLastKills )	// update the string
+	{
+		m_iLastKills = iKills;
 
-		Q_snprintf(number_buffer, sizeof(number_buffer), "%d", m_iTargetKills.Get());
-		wchar_t wnumber_buffer2[24];
-		g_pVGuiLocalize->ConvertANSIToUnicode(number_buffer, wnumber_buffer2, sizeof( wnumber_buffer ));
-		
-		g_pVGuiLocalize->ConstructString( m_dest_buffer, sizeof(m_dest_buffer),
-			g_pVGuiLocalize->Find("#asw_kill_objective_format"), 4,
-			m_pKillText, m_pAlienPluralText, wnumber_buffer, wnumber_buffer2 );
+		wchar_t wszNum[24];
+		V_snwprintf( wszNum, NELEMS( wszNum ), L"%d", iKills );
+
+		wchar_t wszNum2[24];
+		V_snwprintf( wszNum2, NELEMS( wszNum2 ), L"%d", m_iTargetKills.Get() );
+
+		g_pVGuiLocalize->ConstructString( m_wszTitleBuffer, sizeof( m_wszTitleBuffer ),
+			g_pVGuiLocalize->Find( "#asw_kill_objective_format" ), 4,
+			m_pKillText, m_pAlienPluralText, wszNum, wszNum2 );
 	}
-	return m_dest_buffer;
+
+	return m_wszTitleBuffer;
 }
 
 void C_ASW_Objective_Kill_Aliens::FindText()
 {
-	m_pKillText = g_pVGuiLocalize->Find("#asw_kill");
+	m_pKillText = g_pVGuiLocalize->Find( "#asw_kill" );
 	m_pAlienPluralText = GetPluralText();
 	m_pAlienSingularText = GetSingularText();
 	m_bFoundText = true;
@@ -101,7 +99,7 @@ float C_ASW_Objective_Kill_Aliens::GetObjectiveProgress()
 	if ( m_iTargetKills <= 0 )
 		return BaseClass::GetObjectiveProgress();
 
-	float flProgress = (float) m_iCurrentKills.Get() / (float) m_iTargetKills.Get();
+	float flProgress = ( float )m_iCurrentKills.Get() / ( float )m_iTargetKills.Get();
 	flProgress = clamp<float>( flProgress, 0.0f, 1.0f );
 
 	return flProgress;

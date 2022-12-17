@@ -11,7 +11,6 @@ public:
 
 	C_ASW_Objective_Kill_Goo();
 
-	virtual void OnDataChanged(DataUpdateType_t updateType);
 	virtual const wchar_t* GetObjectiveTitle();
 	virtual bool NeedsTitleUpdate();
 	virtual float GetObjectiveProgress();
@@ -22,12 +21,11 @@ public:
 	CNetworkVar(int, m_iTargetKills);
 	CNetworkVar(int, m_iCurrentKills);
 	
-	wchar_t m_dest_buffer[64];
-	int m_iKillsLeft;
+	wchar_t m_wszTitleBuffer[64];
+	int m_iLastKills;
 
 private:
-	C_ASW_Objective_Kill_Goo( const C_ASW_Objective_Kill_Goo & ); // not defined, not accessible
+	C_ASW_Objective_Kill_Goo( const C_ASW_Objective_Kill_Goo & ) = delete; // not defined, not accessible
 };
-
 
 #endif // _INCLUDED_C_ASW_OBJECTIVE_KILL_GOO_H

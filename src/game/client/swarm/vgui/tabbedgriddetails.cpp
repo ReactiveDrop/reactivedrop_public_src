@@ -9,6 +9,7 @@
 #include "gameui/swarm/basemodui.h"
 #include "inputsystem/iinputsystem.h"
 #include <vgui/IInput.h>
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -69,7 +70,7 @@ void TabbedGridDetails::PerformLayout()
 		return;
 	}
 
-	bool bHaveGamepad = g_pInputSystem->GetJoystickCount() > 0 && m_Tabs.Count() > 1;
+	bool bHaveGamepad = g_RD_Steam_Input.GetJoystickCount() > 0 && m_Tabs.Count() > 1;
 	m_pTabLeftHint->SetVisible( bHaveGamepad );
 	m_pTabRightHint->SetVisible( bHaveGamepad );
 

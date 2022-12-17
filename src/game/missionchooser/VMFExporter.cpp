@@ -929,20 +929,20 @@ void VMFExporter::MergeEntity( KeyValues *pEntity )
 			{
 				CSplitString sides( pValue, " " );
 				temp[0] = '\0';
-				FOR_EACH_VEC( sides, i )
+				FOR_EACH_VEC( sides, j )
 				{
-					int id = atoi( sides[i] );
-					m_iMaxSide = MAX( m_iMaxSide, id );
-					V_snprintf( temp, sizeof( temp ), "%s %d", temp, id + m_iSideCount );
+					int iSide = atoi( sides[j] );
+					m_iMaxSide = MAX( m_iMaxSide, iSide );
+					V_snprintf( temp, sizeof( temp ), "%s %d", temp, iSide + m_iSideCount );
 				}
 
 				pEntity->SetString( pEntVar->GetName(), temp + 1 );
 			}
 			else if ( pEntVar->GetType() == ivNodeID || pEntVar->GetType() == ivNodeDest )
 			{
-				int id = pEntity->GetInt( pEntVar->GetName() );
-				m_iMaxNode = MAX( m_iMaxNode, id );
-				pEntity->SetInt( pEntVar->GetName(), id + m_iNodeCount );
+				int iNode = pEntity->GetInt( pEntVar->GetName() );
+				m_iMaxNode = MAX( m_iMaxNode, iNode );
+				pEntity->SetInt( pEntVar->GetName(), iNode + m_iNodeCount );
 			}
 		}
 	}
@@ -1003,6 +1003,7 @@ void VMFExporter::MergeEntity( KeyValues *pEntity )
 			"fade_opacity",
 			"StartDisabled",
 			"Solidity",
+			"CollideWithGrenades",
 			"renderamt",
 			"solidbsp",
 			"rendercolor",

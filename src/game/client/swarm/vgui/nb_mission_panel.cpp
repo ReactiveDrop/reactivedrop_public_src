@@ -214,63 +214,63 @@ void CNB_Mission_Panel::OnThink()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bLeader = ( pPlayer && (pPlayer->entindex() == iLeaderIndex ) );
 
-	m_drpDifficulty->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
-	m_drpFriendlyFire->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader && !ForceHardcoreFF() );
-	const bool bDeathmatchIngme =  ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME;
+	const bool bDeathmatchIngame =  ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME;
 	const bool bInBriefing = ASWGameRules()->GetGameState() == ASW_GS_BRIEFING;
-	m_drpGameMode->SetEnabled( ( bDeathmatchIngme || bInBriefing ) && bLeader );
-	m_drpOnslaught->SetEnabled( (bDeathmatchIngme || bInBriefing) && bLeader && !ForceOnslaught() );
-	m_drpChallenge->SetEnabled( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader);
-	m_drpFixedSkillPoints->SetEnabled( false ); //ASWGameRules()->GetGameState() == ASW_GS_BRIEFING && bLeader );
+	m_drpDifficulty->SetEnabled( bInBriefing && bLeader );
+	m_drpGameMode->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader );
+	m_drpOnslaught->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader && !ForceOnslaught() );
+	m_drpFriendlyFire->SetEnabled( bInBriefing && bLeader && !ForceHardcoreFF() );
+	m_drpChallenge->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader );
+	m_drpFixedSkillPoints->SetEnabled( false );
 
-	if (m_iLastSkillLevel != ASWGameRules()->GetSkillLevel())
+	if ( m_iLastSkillLevel != ASWGameRules()->GetSkillLevel() )
 	{
 		m_iLastSkillLevel = ASWGameRules()->GetSkillLevel();
-		if (m_iLastSkillLevel == 4)
+		if ( m_iLastSkillLevel == 4 )
 		{
-			m_drpDifficulty->SetCurrentSelection("#L4D360UI_Difficulty_insane");
+			m_drpDifficulty->SetCurrentSelection( "#L4D360UI_Difficulty_insane" );
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_insaned" );
 		}
-		else if (m_iLastSkillLevel == 3)
+		else if ( m_iLastSkillLevel == 3 )
 		{
-			m_drpDifficulty->SetCurrentSelection("#L4D360UI_Difficulty_hard");
+			m_drpDifficulty->SetCurrentSelection( "#L4D360UI_Difficulty_hard" );
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_hardd" );
 		}
-		else if (m_iLastSkillLevel == 1)
+		else if ( m_iLastSkillLevel == 1 )
 		{
-			m_drpDifficulty->SetCurrentSelection("#L4D360UI_Difficulty_easy");
+			m_drpDifficulty->SetCurrentSelection( "#L4D360UI_Difficulty_easy" );
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_easyd" );
 		}
-		else if (m_iLastSkillLevel == 5)
+		else if ( m_iLastSkillLevel == 5 )
 		{
-			m_drpDifficulty->SetCurrentSelection("#L4D360UI_Difficulty_imba");
+			m_drpDifficulty->SetCurrentSelection( "#L4D360UI_Difficulty_imba" );
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_imbad" );
 		}
-		else 
+		else
 		{
-			m_drpDifficulty->SetCurrentSelection("#L4D360UI_Difficulty_normal");
+			m_drpDifficulty->SetCurrentSelection( "#L4D360UI_Difficulty_normal" );
 			//m_pDifficultyDescription->SetText( "#asw_difficulty_chooser_normald" );
 		}
 	}
 
-	if (ASWDeathmatchMode() && m_iLastGameMode != ASWDeathmatchMode()->GetGameMode())
+	if ( ASWDeathmatchMode() && m_iLastGameMode != ASWDeathmatchMode()->GetGameMode() )
 	{
 		m_iLastGameMode = ASWDeathmatchMode()->GetGameMode();
-		if (m_iLastGameMode == GAMEMODE_TEAMDEATHMATCH)
+		if ( m_iLastGameMode == GAMEMODE_TEAMDEATHMATCH )
 		{
-			m_drpGameMode->SetCurrentSelection("#rdui_tdm_title");
+			m_drpGameMode->SetCurrentSelection( "#rdui_tdm_title" );
 		}
-		else if (m_iLastGameMode == GAMEMODE_INSTAGIB)
+		else if ( m_iLastGameMode == GAMEMODE_INSTAGIB )
 		{
-			m_drpGameMode->SetCurrentSelection("#rdui_instagib_title");
+			m_drpGameMode->SetCurrentSelection( "#rdui_instagib_title" );
 		}
-		else if (m_iLastGameMode == GAMEMODE_GUNGAME)
+		else if ( m_iLastGameMode == GAMEMODE_GUNGAME )
 		{
-			m_drpGameMode->SetCurrentSelection("#rdui_gungame_title");
+			m_drpGameMode->SetCurrentSelection( "#rdui_gungame_title" );
 		}
-		else if (m_iLastGameMode == GAMEMODE_DEATHMATCH)
+		else if ( m_iLastGameMode == GAMEMODE_DEATHMATCH )
 		{
-			m_drpGameMode->SetCurrentSelection("#rdui_deathmatch_title");
+			m_drpGameMode->SetCurrentSelection( "#rdui_deathmatch_title" );
 		}
 	}
 
@@ -313,11 +313,6 @@ void CNB_Mission_Panel::OnThink()
 	{
 		m_pDifficultyDescription->SetText( footer->GetHelpText() );
 	}
-
-	// reactivedrop: commented. To enable Insane and Brutal for singleplayer
-	// // only show insane in multiplayer
-	// m_drpDifficulty->SetFlyoutItemEnabled( "BtnImpossible", gpGlobals->maxClients > 1 );
-	// m_drpDifficulty->SetFlyoutItemEnabled( "BtnImba", gpGlobals->maxClients > 1 );
 
 	// reactivedrop: hide difficulty drop down for deathmatch
 	// and show game mode selection instead
@@ -368,7 +363,7 @@ void CNB_Mission_Panel::OnCommand( const char *command )
 	else if ( !Q_stricmp( command, "cmd_change_challenge" ) )
 	{
 		extern ConVar rd_challenge;
-		BaseModUI::ReactiveDropChallengeSelection *pPanel = new BaseModUI::ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection" );
+		BaseModUI::ReactiveDropChallengeSelection *pPanel = new BaseModUI::ReactiveDropChallengeSelection( this, "ReactiveDropChallengeSelection", ASWDeathmatchMode() != NULL );
 		pPanel->SetSelectedChallenge( rd_challenge.GetString() );
 		pPanel->MoveToFront();
 
