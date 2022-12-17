@@ -24,6 +24,7 @@
 #include "asw_melee_system.h"
 #include "asw_trace_filter.h"
 #include "rd_steam_input.h"
+#include "radialmenu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1771,7 +1772,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	{
 		TurnTowardController( viewangles );
 	}
-	else
+	else if ( !IsRadialMenuOpen( NULL, false ) )
 	{
 		viewangles[PITCH] += pitch;
 		viewangles[YAW] -= yaw;
