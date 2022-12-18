@@ -2020,6 +2020,12 @@ void CASW_Player::SetNPC( CASW_Inhabitable_NPC *pNPC )
 			}
 		}
 
+		if ( GetASWControls() != ASWC_TOPDOWN )
+		{
+			// make sure we're facing the right way when we start controlling a character in first/third person
+			SnapEyeAngles( pNPC->GetLocalAngles() );
+		}
+
 		m_hInhabiting = pNPC;
 		// make sure our list of usable entities is refreshed
 		FindUseEntities();

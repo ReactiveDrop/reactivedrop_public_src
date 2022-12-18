@@ -15,6 +15,7 @@
 #define MAX_DYNAMIC_AA_MODES 10
 #define MAX_DYNAMIC_VIDEO_MODES 15
 
+class CNB_Button;
 class CNB_Header_Footer;
 
 namespace BaseModUI {
@@ -106,8 +107,8 @@ private:
 	CNB_Header_Footer *m_pHeaderFooter;
 
 	BaseModHybridButton	*m_btnUseRecommended;
-	BaseModHybridButton	*m_btnCancel;
-	BaseModHybridButton	*m_btnDone;
+	CNB_Button	*m_btnCancel;
+	CNB_Button	*m_btnDone;
 
 	BaseModHybridButton	*m_btn3rdPartyCredits;
 

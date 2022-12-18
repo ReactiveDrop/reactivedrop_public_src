@@ -6,6 +6,7 @@
 #include "vgui_controls/AnimationController.h"
 #include "vgui_controls/ImagePanel.h"
 #include <vgui/ILocalize.h>
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -20,11 +21,23 @@ CNB_Promotion_Panel::CNB_Promotion_Panel( vgui::Panel *parent, const char *name 
 	m_pMedalIcon = new vgui::ImagePanel( this, "MedalIcon" );
 	m_pBackButton = new CNB_Button( this, "BackButton", "", this, "BackButton" );
 	m_pAcceptButton = new CNB_Button( this, "AcceptButton", "", this, "AcceptButton" );
+
+	if ( GetControllerFocus() )
+	{
+		GetControllerFocus()->PushModal();
+		GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
+		GetControllerFocus()->AddToFocusList( m_pAcceptButton, false, true );
+	}
 }
 
 CNB_Promotion_Panel::~CNB_Promotion_Panel()
 {
-
+	if ( GetControllerFocus() )
+	{
+		GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
+		GetControllerFocus()->RemoveFromFocusList( m_pAcceptButton );
+		GetControllerFocus()->PopModal();
+	}
 }
 
 void CNB_Promotion_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -40,6 +53,11 @@ void CNB_Promotion_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CNB_Promotion_Panel::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
+	if ( GetControllerFocus() )
+	{
+		GetControllerFocus()->SetFocusPanel( m_pBackButton );
+	}
 }
 
 void CNB_Promotion_Panel::OnThink()
