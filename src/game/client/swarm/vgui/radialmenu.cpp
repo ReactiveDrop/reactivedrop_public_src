@@ -1647,9 +1647,9 @@ bool IsRadialMenuOpen( const char *menuName, bool includeFadingOut )
 	if ( !pMenu )
 		return false;
 
-	if ( menuName == NULL || FStrEq( s_radialMenuName[ nSlot ], menuName ) )
+	if ( menuName == NULL || FStrEq( s_radialMenuName[nSlot], menuName ) )
 	{
-		bool wasOpen = pMenu->IsVisible() && ( !pMenu->IsFading() || includeFadingOut );
+		bool wasOpen = pMenu->GetAlpha() > 0 && ( !pMenu->IsFading() || includeFadingOut );
 		if ( wasOpen )
 		{
 			return true;
@@ -1678,7 +1678,7 @@ void OpenRadialMenu( const char *menuName )
 
 	if ( FStrEq( s_radialMenuName[ nSlot ], menuName ) )
 	{
-		bool wasOpen = pMenu->IsVisible() && !pMenu->IsFading();
+		bool wasOpen = IsRadialMenuOpen( menuName, false );
 		if ( wasOpen )
 		{
 			return;
@@ -1780,7 +1780,7 @@ void closeradialmenu( void )
 	if ( !pMenu )
 		return;
 
-	bool wasOpen = pMenu->IsVisible() && !pMenu->IsFading();
+	bool wasOpen = IsRadialMenuOpen( NULL, false );
 
 	if ( wasOpen )
 	{
@@ -1816,7 +1816,7 @@ void CloseRadialMenu( const char *menuName, bool sendCommand )
 		if ( !pMenu )
 			return;
 
-		bool wasOpen = pMenu->IsVisible() && !pMenu->IsFading();
+		bool wasOpen = IsRadialMenuOpen( NULL, false );
 
 		if ( wasOpen )
 		{

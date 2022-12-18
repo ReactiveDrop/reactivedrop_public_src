@@ -1281,7 +1281,10 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 			joy_yaw = last_joy_yaw;
 
 		float lag = MAX( 1, 1 + asw_controller_lag.GetFloat() );
-		joy_yaw = MoveToward( last_joy_yaw, joy_yaw, lag );
+		if ( !IsRadialMenuOpen( NULL, false ) )
+		{
+			joy_yaw = MoveToward( last_joy_yaw, joy_yaw, lag );
+		}
 		last_joy_yaw = joy_yaw;
 		joy_yaw = ( 360.0f - joy_yaw ) + 90.0f;
 		if ( joy_yaw > 360 )
@@ -1292,11 +1295,12 @@ void CASWInput::GetSimulatedFullscreenMousePosFromController( int *mx, int *my, 
 			DevMsg( "joy yaw %f len %f p %f y %f last %f ", joy_yaw, length, m_fJoypadPitch, m_fJoypadYaw, last_joy_yaw );	
 			DevMsg( "cos %f sin %f\n", cos(DEG2RAD(joy_yaw)), sin(DEG2RAD(joy_yaw)) );
 		}
-		// float dist_fraction = 1.0f;	// always put crosshair a fixed distance from the marine
-		//float dist_fraction = length;
-		//if (dist_fraction < 0.9f)
-		//dist_fraction = 0.9f;
-		if ( rd_controller_analog_radius.GetBool() )
+
+		if ( IsRadialMenuOpen( NULL, false ) )
+		{
+			flForwardFraction *= length * 0.5f;
+		}
+		else if ( rd_controller_analog_radius.GetBool() )
 		{
 			flForwardFraction *= clamp( length, rd_controller_analog_radius_min.GetFloat(), 1.0 );
 		}
@@ -1764,6 +1768,11 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 		m_fJoypadYaw = yaw;
 	}
 
+	if ( IsRadialMenuOpen( NULL, false ) )
+	{
+		return;
+	}
+
 	// Get view angles from engine
 	QAngle	viewangles;
 	engine->GetViewAngles( viewangles );
@@ -1772,7 +1781,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	{
 		TurnTowardController( viewangles );
 	}
-	else if ( !IsRadialMenuOpen( NULL, false ) )
+	else
 	{
 		viewangles[PITCH] += pitch;
 		viewangles[YAW] -= yaw;
