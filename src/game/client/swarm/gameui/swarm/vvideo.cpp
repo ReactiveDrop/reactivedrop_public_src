@@ -19,6 +19,7 @@
 #include "nb_header_footer.h"
 #include "materialsystem/materialsystem_config.h"
 #include "cdll_util.h"
+#include "nb_button.h"
 
 #ifdef _X360
 #include "xbox/xbox_launch.h"
@@ -715,6 +716,16 @@ void Video::Activate( bool bRecommendedSettings )
 		}
 	}
 
+	if ( m_btnDone )
+	{
+		m_btnDone->SetControllerButton( KEY_XBUTTON_X );
+	}
+
+	if ( m_btnCancel )
+	{
+		m_btnCancel->SetControllerButton( KEY_XBUTTON_B );
+	}
+
 	UpdateFooter();
 	
 	if ( !bRecommendedSettings )
@@ -836,18 +847,18 @@ void Video::OnThink()
 		m_btnUseRecommended = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnUseRecommended" ) );
 		needsActivate = true;
 	}
-// 
-// 	if( !m_btnCancel )
-// 	{
-// 		m_btnCancel = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnCancel" ) );
-// 		needsActivate = true;
-// 	}
 
-// 	if( !m_btnDone )
-// 	{
-// 		m_btnDone = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnDone" ) );
-// 		needsActivate = true;
-// 	}
+	if( !m_btnCancel )
+	{
+		m_btnCancel = dynamic_cast< CNB_Button* >( FindChildByName( "BtnCancel" ) );
+		needsActivate = true;
+	}
+
+	if( !m_btnDone )
+	{
+		m_btnDone = dynamic_cast< CNB_Button* >( FindChildByName( "BtnDone" ) );
+		needsActivate = true;
+	}
 
 	if( !m_btn3rdPartyCredits )
 	{
@@ -876,7 +887,12 @@ void Video::OnKeyCodePressed(KeyCode code)
 		// nav back
 		if ( !m_bBackPressed )
 			m_bDirtyValues = false;
-		BaseClass::OnKeyCodePressed(code);
+		BaseClass::OnKeyCodePressed( code );
+		break;
+
+	case KEY_XBUTTON_X:
+		m_bBackPressed = true;
+		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, joystick ) );
 		break;
 
 	default:
@@ -999,20 +1015,6 @@ void Video::OnCommand(const char *command)
 			int iXPos, iYPos;
 			m_btnUseRecommended->GetPos( iXPos, iYPos );
 			m_btnUseRecommended->SetPos( iXPos, iBtnUseRecommendedYPos );
-		}
-
-		if ( m_btnCancel )
-		{
-			int iXPos, iYPos;
-			m_btnCancel->GetPos( iXPos, iYPos );
-			m_btnCancel->SetPos( iXPos, iBtnCancelYPos );
-		}
-
-		if ( m_btnDone )
-		{
-			int iXPos, iYPos;
-			m_btnDone->GetPos( iXPos, iYPos );
-			m_btnDone->SetPos( iXPos, iBtnDoneYPos );
 		}
 
 		FlyoutMenu::CloseActiveMenu();
@@ -1618,24 +1620,6 @@ void Video::ApplySchemeSettings( vgui::IScheme *pScheme )
 		int iXPos;
 		m_btnUseRecommended->GetPos( iXPos, iBtnUseRecommendedYPos );
 		m_btnUseRecommended->SetPos( iXPos, iNextButtonPos );
-
-		iNextButtonPos += iButtonSpacing;
-	}
-
-	if ( m_btnCancel )
-	{
-		int iXPos;
-		m_btnCancel->GetPos( iXPos, iBtnCancelYPos );
-		m_btnCancel->SetPos( iXPos, iNextButtonPos );
-
-		iNextButtonPos += iButtonSpacing;
-	}
-
-	if ( m_btnDone )
-	{
-		int iXPos;
-		m_btnDone->GetPos( iXPos, iBtnDoneYPos );
-		m_btnDone->SetPos( iXPos, iNextButtonPos );
 
 		iNextButtonPos += iButtonSpacing;
 	}
