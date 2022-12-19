@@ -196,11 +196,11 @@ void CASWHud3DMarineNames::Paint()
 					PaintAutoaimCrosshairOn(pPlayer->m_ASWLocal.m_hAutoAimTarget.Get());
 			}			
 		}
-		*/
 		if (pPlayer->GetHighlightEntity())
 		{
 			PaintBoxAround(pPlayer->GetHighlightEntity(), 6);
 		}
+		*/
 	}
 
 	if ( ASWInput() && ASWInput()->GetAutoaimEntity() )
