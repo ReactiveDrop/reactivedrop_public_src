@@ -3983,7 +3983,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 		CASW_Player *pPlayer = GetCommander();
 		if ( pPlayer && pPlayer->GetNPC() == this )
 		{
-			if ( UTIL_ASW_NumCommandedMarines( pPlayer ) >= 1 )
+			if ( !ASWDeathmatchMode() && UTIL_ASW_NumCommandedMarines( pPlayer ) >= 1 )
 			{
 				IGameEvent *event = gameeventmanager->CreateEvent( "player_should_switch" );
 				if ( event )
