@@ -62,6 +62,7 @@ PRECACHE_REGISTER_END()
 extern ConVar asw_draw_hud;
 extern ConVar asw_debug_hud;
 extern ConVar rd_respawn_time;
+ConVar rd_deathmatch_respawn_hints( "rd_deathmatch_respawn_hints", "1", FCVAR_ARCHIVE, "Show keybind hints for spawning in Deathmatch mode." );
 extern int g_asw_iGUIWindowsOpen;
 
 using namespace vgui;
@@ -196,7 +197,7 @@ void CASWHudUseArea::Paint()
 	if (!pPlayer)
 		return;
 
-	if ( ASWDeathmatchMode() && ASWGameResource() && m_pUseIcon && ASWGameRules() && ASWGameRules()->m_szDeathmatchWinnerName[0] == '\0' )
+	if ( ASWDeathmatchMode() && ASWGameResource() && m_pUseIcon && ASWGameRules() && ASWGameRules()->m_szDeathmatchWinnerName[0] == '\0' && ASWGameRules()->GetGameState() == ASW_GS_INGAME && rd_deathmatch_respawn_hints.GetBool() )
 	{
 		C_ASW_Marine_Resource *pMR = NULL;
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
