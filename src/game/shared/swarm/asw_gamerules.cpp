@@ -4435,6 +4435,20 @@ void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 		{
 			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_invulnurable", m_szDeathmatchWinnerName );
 			pWinnerMarine->m_takedamage = DAMAGE_NO;
+
+			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+			{
+				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+				if ( !pPlayer )
+				{
+					continue;
+				}
+
+				if ( pPlayer->GetSpectatingNPC() || !pPlayer->GetNPC() || !pPlayer->GetNPC()->IsAlive() || pPlayer->GetNPC()->GetHealth() <= 0 )
+				{
+					pPlayer->SetSpectatingNPC( pWinnerMarine );
+				}
+			}
 		}
 	}
 
