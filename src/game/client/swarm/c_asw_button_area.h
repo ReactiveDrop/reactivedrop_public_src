@@ -44,11 +44,6 @@ public:
 	CNetworkVar(float, m_fHackProgress);
 	CNetworkVar(float, m_flHoldTime);
 	
-	virtual const char* GetNoPowerMessage() { return m_NoPowerMessage; }
-	virtual const char* GetUseIconMessage() { return m_UsePanelMessage; }
-	virtual const char* GetLockedIconMessage() { return m_NeedTechMessage; }
-	virtual const char* GetExitPanelMessage() { return m_ExitPanelMessage; }
-	virtual const char* GetHackPanelMessage() { return m_HackPanelMessage; }
 	char		m_NoPowerMessage[255];
 	char		m_UsePanelMessage[255];	
 	char		m_OpenMessage[255];	

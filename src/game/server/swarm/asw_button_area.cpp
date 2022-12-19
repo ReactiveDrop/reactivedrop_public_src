@@ -96,6 +96,11 @@ CASW_Button_Area::CASW_Button_Area()
 
 	m_flHoldTime = -1;
 	m_bDestroyHeldObject = false;
+
+	m_UsePanelMessage.GetForModify()[0] = '\0';
+	m_NeedTechMessage.GetForModify()[0] = '\0';
+	m_ExitPanelMessage.GetForModify()[0] = '\0';
+	m_HackPanelMessage.GetForModify()[0] = '\0';
 }
 
 CASW_Button_Area::~CASW_Button_Area()

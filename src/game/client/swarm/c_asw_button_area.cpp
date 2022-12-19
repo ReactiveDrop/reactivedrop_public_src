@@ -198,7 +198,7 @@ bool C_ASW_Button_Area::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC
 
 const char *C_ASW_Button_Area::GetNoPowerText()
 {
-	const char *szCustom = GetNoPowerMessage();
+	const char *szCustom = m_NoPowerMessage;
 	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
 		return "#asw_no_power";
 
@@ -207,7 +207,7 @@ const char *C_ASW_Button_Area::GetNoPowerText()
 
 const char *C_ASW_Button_Area::GetUseIconText()
 {
-	const char *szCustom = GetUseIconMessage();
+	const char *szCustom = m_UsePanelMessage;
 	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
 		return "#asw_use_panel";
 
@@ -216,7 +216,7 @@ const char *C_ASW_Button_Area::GetUseIconText()
 
 const char *C_ASW_Button_Area::GetLockedIconText()
 {
-	const char *szCustom = GetLockedIconMessage();
+	const char *szCustom = m_NeedTechMessage;
 	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
 		return "#asw_requires_tech";
 
@@ -227,14 +227,14 @@ const char *C_ASW_Button_Area::GetHackIconText( C_ASW_Inhabitable_NPC *pUser )
 {
 	if ( m_bIsInUse && pUser && pUser->m_hUsingEntity.Get() == this )
 	{
-		const char *szCustomExitPanelMessage = GetExitPanelMessage();
+		const char *szCustomExitPanelMessage = m_ExitPanelMessage;
 		if ( !szCustomExitPanelMessage || Q_strlen( szCustomExitPanelMessage ) <= 0 )
 			return "#asw_exit_panel";
 
 		return szCustomExitPanelMessage;
 	}
 
-	const char *szCustomHackPanelMessage = GetHackPanelMessage();
+	const char *szCustomHackPanelMessage = m_HackPanelMessage;
 	if ( !szCustomHackPanelMessage || Q_strlen( szCustomHackPanelMessage ) <= 0 )
 		return "#asw_hack_panel";
 
