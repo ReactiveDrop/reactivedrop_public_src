@@ -805,7 +805,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	else if ( IsOffensiveWeapon() )
 	{
 		C_BaseEntity *pEnt = GetLaserTargetEntity();
-		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE )
+		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE && ( !ASWDeathmatchMode() || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pEnt->GetTeamNumber() == pMarine->GetTeamNumber() ) ) )
 			alphaFF = 0.65f;
 	}
 
