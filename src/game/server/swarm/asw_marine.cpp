@@ -1389,7 +1389,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 	
 	// don't allow FF from melee attacks
-	bool bFriendlyFire = pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE;
+	bool bFriendlyFire = pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE && IRelationType( pAttacker ) == D_LI;
 	if ( bFriendlyFire )
 	{
 		CASW_Marine *pOtherMarine = assert_cast<CASW_Marine*>(pAttacker);
