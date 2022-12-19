@@ -413,6 +413,7 @@ public:
 	Vector m_vMarineDeathPosDeathmatch;
 	int m_nMarineForDeathCamDeathmatch;
 #endif
+	CNetworkString( m_szDeathmatchWinnerName, MAX_PLAYER_NAME_LENGTH );
 
 	// voting
 	CNetworkString(m_szCurrentVoteDescription, 128);

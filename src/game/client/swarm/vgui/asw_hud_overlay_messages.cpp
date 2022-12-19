@@ -439,19 +439,27 @@ void CASWHudOverlayMessages::PaintStimStatus( int &yPos )
 
 bool CASWHudOverlayMessages::PaintDeathMessage()
 {
-	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( !pGameResource || !ASWGameRules() || ASWGameRules()->GetMarineDeathCamInterp( true ) <= 0.0f )
+	C_AlienSwarm *pGameRules = ASWGameRules();
+	if ( !pGameRules )
 		return false;
 
-	C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( ASWGameRules()->m_nMarineForDeathCam );
-	if ( !pMR )
+	bool bDeathmatchVictory = pGameRules->m_szDeathmatchWinnerName[0] != '\0';
+	if ( !bDeathmatchVictory && pGameRules->GetMarineDeathCamInterp( true ) <= 0.0f )
+		return false;
+
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return false;
+
+	C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( pGameRules->m_nMarineForDeathCam );
+	if ( !bDeathmatchVictory && !pMR )
 		return false;
 		
-	CASW_Marine_Profile *pProfile = pMR->GetProfile();
-	if ( !pProfile )
+	CASW_Marine_Profile *pProfile = pMR ? pMR->GetProfile() : NULL;
+	if ( !bDeathmatchVictory && !pProfile )
 		return false;
 
-	CASW_Player *pLocalPlayer = static_cast< CASW_Player* >( C_BasePlayer::GetLocalPlayer() );
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pLocalPlayer )
 		return false;
 
@@ -472,8 +480,8 @@ bool CASWHudOverlayMessages::PaintDeathMessage()
 	flSkullFadeAmount *= flSkullFadeAmount;
 	flSkullFadeAmount *= flSkullFadeAmount;
 
-	const char *szMarineName = pProfile->GetShortName();
-	if ( gpGlobals->maxClients > 1 && pMR->IsInhabited() && pLocalPlayer != pMR->GetCommander() )
+	const char *szMarineName = pProfile ? pProfile->GetShortName() : "";
+	if ( gpGlobals->maxClients > 1 && pMR && pMR->IsInhabited() && pLocalPlayer != pMR->GetCommander() )
 	{
 		szMarineName = g_PR->GetPlayerName( pMR->m_iCommanderIndex );
 	}
@@ -490,8 +498,13 @@ bool CASWHudOverlayMessages::PaintDeathMessage()
 		g_pVGuiLocalize->ConvertANSIToUnicode( szMarineName, wszMarineName, sizeof( wszMarineName ) );
 	}
 
-	wchar_t wszMarineDeathMessage[ 64 ];
-	if ( pLocalPlayer == pMR->GetCommander() && pMR->IsInhabited() && ( pLocalPlayer->GetNPC() == NULL || pLocalPlayer->GetNPC()->GetHealth() <= 0 ) )
+	wchar_t wszMarineDeathMessage[255];
+	if ( bDeathmatchVictory )
+	{
+		V_UTF8ToUnicode( ASWGameRules()->m_szDeathmatchWinnerName, wszMarineName, sizeof( wszMarineName ) );
+		g_pVGuiLocalize->ConstructString( wszMarineDeathMessage, sizeof( wszMarineDeathMessage ), g_pVGuiLocalize->Find( "#asw_player_won_deathmatch_short" ), 1, wszMarineName );
+	}
+	else if ( pLocalPlayer == pMR->GetCommander() && pMR->IsInhabited() && ( pLocalPlayer->GetNPC() == NULL || pLocalPlayer->GetNPC()->GetHealth() <= 0 ) )
 	{
 		V_snwprintf( wszMarineDeathMessage, ARRAYSIZE( wszMarineDeathMessage ), L"%s", g_pVGuiLocalize->Find( "#asw_hud_you_died" ) );
 	}
@@ -499,7 +512,7 @@ bool CASWHudOverlayMessages::PaintDeathMessage()
 	{
 		g_pVGuiLocalize->ConstructString( wszMarineDeathMessage, sizeof( wszMarineDeathMessage ), g_pVGuiLocalize->Find( "#asw_hud_died" ), 1, wszMarineName );
 	}
-	_wcsupr_s( wszMarineDeathMessage, 64 );		// upper case it
+	_wcsupr_s( wszMarineDeathMessage );		// upper case it
 
 	int nMarineNameWidth = 0, nMarineNameHeight = 0;
 	g_pMatSystemSurface->GetTextSize( m_hOverlayFont, wszMarineDeathMessage, nMarineNameWidth, nMarineNameHeight );

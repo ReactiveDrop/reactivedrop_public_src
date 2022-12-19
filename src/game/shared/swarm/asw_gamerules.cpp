@@ -785,6 +785,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 		RecvPropString(RECVINFO(m_szBriefingVideo)),
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
+		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -820,6 +821,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 		SendPropString(SENDINFO(m_szBriefingVideo)),
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
+		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1559,6 +1561,7 @@ void CAlienSwarm::FullReset()
 	m_fRemoveAliensTime = 0;
 
 	m_fDeathmatchFinishTime = 0.0f;
+	V_memset( m_szDeathmatchWinnerName.GetForModify(), 0, sizeof( m_szDeathmatchWinnerName ) );
 
 	m_fNextLaunchingStep = 0;
 	m_iMarinesSpawned = 0;
@@ -4397,13 +4400,12 @@ void CAlienSwarm::CheatCompleteMission()
 
 void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 {
-	char szName[ MAX_PLAYER_NAME_LENGTH ];
-	winner->GetDisplayName( szName, sizeof( szName ) );
+	winner->GetDisplayName( m_szDeathmatchWinnerName.GetForModify(), sizeof( m_szDeathmatchWinnerName ) );
 
 	if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
 	{
 		int iTeam = winner->GetTeamNumber();
-		Q_strncpy( szName, GetGlobalTeam( iTeam )->GetName(), sizeof( szName ) );
+		V_strncpy( m_szDeathmatchWinnerName.GetForModify(), GetGlobalTeam( iTeam )->GetName(), sizeof( m_szDeathmatchWinnerName.GetForModify() ) );
 
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
@@ -4431,12 +4433,12 @@ void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 		CASW_Marine *pWinnerMarine = winner->GetMarineEntity();
 		if ( pWinnerMarine )
 		{
-			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_invulnurable", szName );
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_invulnurable", m_szDeathmatchWinnerName );
 			pWinnerMarine->m_takedamage = DAMAGE_NO;
 		}
 	}
 
-	UTIL_ClientPrintAll( HUD_PRINTCENTER, "#asw_player_won_deathmatch", szName );
+	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_won_deathmatch", m_szDeathmatchWinnerName );
 	
 	m_fDeathmatchFinishTime = gpGlobals->curtime + rd_deathmatch_ending_time.GetFloat();
 	m_iDeathmatchFinishCount = rd_deathmatch_ending_time.GetInt();
@@ -7982,7 +7984,8 @@ void CAlienSwarm::CheckDeathmatchFinish()
 	if (gpGlobals->curtime >= m_fDeathmatchFinishTime)
 	{
 		m_fDeathmatchFinishTime = 0.0f;
-		MissionComplete(true);
+		V_memset( m_szDeathmatchWinnerName.GetForModify(), 0, sizeof( m_szDeathmatchWinnerName ) );
+		MissionComplete( true );
 	}
 }
 
