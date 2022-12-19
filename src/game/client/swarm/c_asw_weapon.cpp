@@ -834,6 +834,14 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	}
 
 	trace_t tr;
+	UTIL_TraceLine( pMarine->WorldSpaceCenter(), vecOrigin, MASK_SHOT_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
+	if ( tr.DidHit() )
+	{
+		// if the laser would start on the other side of a wall from the marine, don't draw it at all.
+		alpha = 0;
+		alphaFF = 0;
+	}
+
 	// used to call GetWeaponRange() which was defined per weapon
 	UTIL_TraceLine( vecOrigin, vecOrigin + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
