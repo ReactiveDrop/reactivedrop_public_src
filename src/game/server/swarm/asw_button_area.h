@@ -39,7 +39,12 @@ public:
 	CNetworkVar( bool, m_bNoPower );
 	CNetworkVar( bool, m_bWaitingForInput );
 	CNetworkVar( bool, m_bNeedsTech );
+
 	CNetworkString( m_NoPowerMessage, 255 );
+	CNetworkString( m_UsePanelMessage, 255 );
+	CNetworkString( m_NeedTechMessage, 255 );
+	CNetworkString( m_ExitPanelMessage, 255 );
+	CNetworkString( m_HackPanelMessage, 255 );
 
 	// settings for the wire puzzle
 	int m_iWireColumns;
