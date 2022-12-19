@@ -3691,6 +3691,10 @@
 		1 : "No Power"
 	]
 	nopowermessage(string) : "No Power Message" : "" : "Message to show on the use icon when this panel has no power."
+	usepanelmessage(string) : "Use Panel Message" : "" : "Message to show on the use icon when this panel can be used."
+	needtechmessage(string) : "Need Tech Message" : "" : "Message to show on the use icon when this panel requires tech."
+	exitpanelmessage(string) : "Exit Panel Message" : "" : "Message to show on the use icon when this panel can be exited."
+	hackpanelmessage(string) : "Hack Panel Message" : "" : "Message to show on the use icon when this panel can be hacked."
 	HoldTime(float) : "Button Hold Time" : "-1" : "Amount of time button must be held down to activate it. If this value is not positive, the button does not need to be held."
 
 	HeldObjectName(target_destination) : "Required Held Object" : : "The targetname of the rd_weapon_generic_object a marine must be holding to push this button."

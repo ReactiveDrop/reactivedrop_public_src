@@ -20,7 +20,13 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Button_Area, DT_ASW_Button_Area, CASW_Button_Are
 	RecvPropFloat(RECVINFO(m_fHackProgress)),	
 	RecvPropBool(RECVINFO(m_bNoPower)),
 	RecvPropBool(RECVINFO(m_bWaitingForInput)),
+
 	RecvPropString( RECVINFO( m_NoPowerMessage ) ),
+	RecvPropString		(RECVINFO(m_UsePanelMessage)),
+	RecvPropString		(RECVINFO(m_NeedTechMessage)),
+	RecvPropString		(RECVINFO(m_ExitPanelMessage)),
+	RecvPropString		(RECVINFO(m_HackPanelMessage)),
+
 	RecvPropBool		(RECVINFO(m_bNeedsTech)),
 	RecvPropFloat		(RECVINFO(m_flHoldTime)),
 END_RECV_TABLE()
@@ -199,10 +205,38 @@ const char *C_ASW_Button_Area::GetNoPowerText()
 	return szCustom;
 }
 
+const char *C_ASW_Button_Area::GetUseIconText()
+{
+	const char *szCustom = GetUseIconMessage();
+	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
+		return "#asw_use_panel";
+
+	return szCustom;
+}
+
+const char *C_ASW_Button_Area::GetLockedIconText()
+{
+	const char *szCustom = GetLockedIconMessage();
+	if ( !szCustom || Q_strlen( szCustom ) <= 0 )
+		return "#asw_requires_tech";
+
+	return szCustom;
+}
+
 const char *C_ASW_Button_Area::GetHackIconText( C_ASW_Inhabitable_NPC *pUser )
 {
 	if ( m_bIsInUse && pUser && pUser->m_hUsingEntity.Get() == this )
-		return "#asw_exit_panel";
+	{
+		const char *szCustomExitPanelMessage = GetExitPanelMessage();
+		if ( !szCustomExitPanelMessage || Q_strlen( szCustomExitPanelMessage ) <= 0 )
+			return "#asw_exit_panel";
 
-	return "#asw_hack_panel";
+		return szCustomExitPanelMessage;
+	}
+
+	const char *szCustomHackPanelMessage = GetHackPanelMessage();
+	if ( !szCustomHackPanelMessage || Q_strlen( szCustomHackPanelMessage ) <= 0 )
+		return "#asw_hack_panel";
+
+	return szCustomHackPanelMessage;
 }
