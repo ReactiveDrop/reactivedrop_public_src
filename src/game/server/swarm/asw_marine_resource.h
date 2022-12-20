@@ -79,7 +79,8 @@ public:
 	void SetCommander(CASW_Player* commander);
 	CASW_Player* GetCommander();
 
-	void GetDisplayName( char *pwchDisplayName, int nMaxBytes );
+	void GetDisplayName( char *pchDisplayName, int nMaxBytes );
+	void GetDisplayName( wchar_t *pwchDisplayName, int nMaxBytes );
 
 	void SetMarineEntity(CASW_Marine* marine);
 	CASW_Marine* GetMarineEntity();
