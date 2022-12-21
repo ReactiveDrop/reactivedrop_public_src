@@ -69,6 +69,10 @@ ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
 
+#ifdef IS_WINDOWS_PC
+static const char *( *const wine_get_version )( void ) = static_cast< const char *( * )( void ) >( Plat_GetProcAddress( "ntdll.dll", "wine_get_version" ) );
+#endif
+
 //=============================================================================
 MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	BaseClass( parent, panelName, true, true, false, false )
@@ -1283,3 +1287,19 @@ CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 	}
 }
 #endif
+
+CON_COMMAND( rd_debug_wine_version, "" )
+{
+#ifdef IS_WINDOWS_PC
+	if ( !wine_get_version )
+	{
+		Msg( "Cannot find function ntdll.dll!wine_get_version - probably not running Wine.\n" );
+		return;
+	}
+
+	const char *szVersion = wine_get_version();
+	Msg( "Wine Version: %s\n", szVersion );
+#else
+	Msg( "Not running a Windows build.\n" );
+#endif
+}
