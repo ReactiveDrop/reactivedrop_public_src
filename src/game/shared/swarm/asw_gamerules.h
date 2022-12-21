@@ -414,6 +414,7 @@ public:
 	int m_nMarineForDeathCamDeathmatch;
 #endif
 	CNetworkString( m_szDeathmatchWinnerName, MAX_PLAYER_NAME_LENGTH );
+	CNetworkString( m_szDeathmatchNextMap, MAX_MAP_NAME );
 
 	// voting
 	CNetworkString(m_szCurrentVoteDescription, 128);

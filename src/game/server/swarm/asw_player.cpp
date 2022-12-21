@@ -53,6 +53,8 @@
 #include "asw_trace_filter.h"
 #include "env_tonemap_controller.h"
 #include "fogvolume.h"
+#include "missionchooser/iasw_mission_chooser.h"
+#include "missionchooser/iasw_mission_chooser_source.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -69,6 +71,7 @@ extern ConVar asw_rts_controls;
 extern ConVar asw_DebugAutoAim;
 extern ConVar asw_debug_marine_damage;
 extern ConVar rd_respawn_time;
+extern ConVar asw_default_campaign;
 
 ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game");
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
@@ -1579,6 +1582,30 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			&& ASWGameResource() && ASWGameResource()->GetLeader() == this)
 		{
 			ASWGameRules()->CampaignSaveAndShowCampaignMap(this, false);
+		}
+		return true;
+	}
+	else if ( FStrEq( pcmd, "cl_deathmatchnext" ) )
+	{
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_DEBRIEF
+			&& ASWGameResource() && ASWGameResource()->GetLeader() == this
+			&& ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
+		{
+			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
+			if ( !pSource )
+			{
+				Warning( "Failed to load next Deathmatch map: no mission chooser source\n" );
+				return true;
+			}
+
+			char szSaveFilename[MAX_PATH]{};
+			if ( !pSource->ASW_Campaign_CreateNewSaveGame( szSaveFilename, sizeof( szSaveFilename ), asw_default_campaign.GetString(), gpGlobals->maxClients > 1, ASWGameRules()->m_szDeathmatchNextMap ) )
+			{
+				Warning( "Failed to load next Deathmatch map: could not create save\n" );
+				return true;
+			}
+
+			engine->ServerCommand( CFmtStr( "changelevel %s single_mission %s\n", ASWGameRules()->m_szDeathmatchNextMap.Get(), szSaveFilename ) );
 		}
 		return true;
 	}

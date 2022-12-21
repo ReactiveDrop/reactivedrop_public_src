@@ -446,6 +446,7 @@ ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLI
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
 ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
+ConVar rd_deathmatch_mapcycle( "rd_deathmatch_mapcycle", "1", FCVAR_REPLICATED, "Loop through each Deathmatch map in mission chooser order" );
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
@@ -786,6 +787,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropString(RECVINFO(m_szBriefingVideo)),
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
+		RecvPropString( RECVINFO( m_szDeathmatchNextMap ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -822,6 +824,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropString(SENDINFO(m_szBriefingVideo)),
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
+		SendPropString( SENDINFO( m_szDeathmatchNextMap ) ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1562,6 +1565,7 @@ void CAlienSwarm::FullReset()
 
 	m_fDeathmatchFinishTime = 0.0f;
 	V_memset( m_szDeathmatchWinnerName.GetForModify(), 0, sizeof( m_szDeathmatchWinnerName ) );
+	V_memset( m_szDeathmatchNextMap.GetForModify(), 0, sizeof( m_szDeathmatchNextMap ) );
 
 	m_fNextLaunchingStep = 0;
 	m_iMarinesSpawned = 0;
@@ -4533,6 +4537,52 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 
 	// Clear out any force ready state if we fail or succeed in the middle so that we always give a chance to award XP
 	SetForceReady( ASW_FR_NONE );
+
+	if ( ASWDeathmatchMode() )
+	{
+		switch ( rd_deathmatch_mapcycle.GetInt() )
+		{
+		case 0:
+			break;
+		case 1:
+		{
+			int iMission = ReactiveDropMissions::GetMissionIndex( STRING( gpGlobals->mapname ) );
+			if ( iMission == -1 )
+				break;
+			Assert( ReactiveDropMissions::GetMission( iMission )->HasTag( "deathmatch" ) );
+
+			bool bFound = false;
+			for ( int iNextMission = iMission + 1; iNextMission < ReactiveDropMissions::CountMissions(); iNextMission++ )
+			{
+				const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
+				if ( pNextMission->HasTag( "deathmatch" ) )
+				{
+					V_strncpy( m_szDeathmatchNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szDeathmatchNextMap ) );
+					bFound = true;
+					break;
+				}
+			}
+
+			if ( bFound )
+				break;
+
+			for ( int iNextMission = 0; iNextMission < iMission; iNextMission++ )
+			{
+				const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
+				if ( pNextMission->HasTag( "deathmatch" ) )
+				{
+					V_strncpy( m_szDeathmatchNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szDeathmatchNextMap ) );
+					break;
+				}
+			}
+
+			break;
+		}
+		default:
+			Warning( "Unhandled rd_deathmatch_mapcycle mode: %d\n", rd_deathmatch_mapcycle.GetInt() );
+			break;
+		}
+	}
 
 	bool bSinglePlayer = false;
 

@@ -427,20 +427,21 @@ void MissionCompletePanel::UpdateVisibleButtons()
 			m_pReadyCheckImage->SetVisible( false );
 			if ( m_bSuccess )
 			{
-				if ( m_bLastMission )
+				if ( !m_bLastMission )
 				{
-					if ( !m_bCreditsSeen )
-					{
-						m_pContinueButton->SetText( "#asw_button_credits" );
-					}
-					else
-					{
-						m_pContinueButton->SetText( "#asw_button_new_campaign" );
-					}
+					m_pContinueButton->SetText( "#asw_button_continue" );
+				}
+				else if ( !m_bCreditsSeen )
+				{
+					m_pContinueButton->SetText( "#asw_button_credits" );
+				}
+				else if ( ASWGameRules() && ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
+				{
+					m_pContinueButton->SetText( "#asw_button_continue" );
 				}
 				else
 				{
-					m_pContinueButton->SetText( "#asw_button_continue" );
+					m_pContinueButton->SetText( "#asw_button_new_campaign" );
 				}
 
 				m_pContinueButton->SetVisible( true );
@@ -582,6 +583,10 @@ void MissionCompletePanel::OnCommand(const char* command)
 					m_bCreditsSeen = true;
 					UpdateVisibleButtons();
 				}
+			}
+			else if ( ASWGameRules() && ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
+			{
+				engine->ClientCmd( "cl_deathmatchnext" );
 			}
 			else
 			{
