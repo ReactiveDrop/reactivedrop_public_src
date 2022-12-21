@@ -75,6 +75,7 @@ public:
 
 	void SpawnMarine( CASW_Player *player );
 	void BroadcastLoadoutScreen();
+	void PlayRoundEndMusic();
 
 	void KillingSpreeIncrease( CASW_Marine_Resource *pMR );
 	void KillingSpreeReset( CASW_Marine_Resource *pMR );
