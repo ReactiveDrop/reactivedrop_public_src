@@ -509,6 +509,7 @@ void TGD_Grid::PerformLayout()
 	int totalTall = GetTall();
 
 	int eachWide, eachTall;
+	m_Entries[0]->MakeReadyForUse();
 	m_Entries[0]->GetSize( eachWide, eachTall );
 
 	int perRow = MAX( totalWide / eachWide, 1 );
@@ -527,6 +528,7 @@ void TGD_Grid::PerformLayout()
 
 	FOR_EACH_VEC( m_Entries, i )
 	{
+		m_Entries[i]->MakeReadyForUse();
 		Assert( m_Entries[i]->GetWide() == eachWide );
 		Assert( m_Entries[i]->GetTall() == eachTall );
 
