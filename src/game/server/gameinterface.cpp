@@ -959,6 +959,18 @@ bool CServerGameDLL::GameInit( void )
 void CServerGameDLL::GameShutdown( void )
 {
 	ResetGlobalState();
+
+#ifdef INFESTED_DLL
+	// BenLubar: clear network string table pointers so modifying workshop
+	// subscriptions on the main menu after hosting a map doesn't crash the game.
+	extern INetworkStringTable *g_StringTableReactiveDropCampaigns;
+	extern INetworkStringTable *g_StringTableReactiveDropMissions;
+	extern INetworkStringTable *g_StringTableReactiveDropChallenges;
+
+	g_StringTableReactiveDropCampaigns = NULL;
+	g_StringTableReactiveDropMissions = NULL;
+	g_StringTableReactiveDropChallenges = NULL;
+#endif
 }
 
 static bool g_OneWayTransition = false;
