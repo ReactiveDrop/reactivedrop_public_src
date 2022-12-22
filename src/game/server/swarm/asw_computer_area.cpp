@@ -391,7 +391,7 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
-		if ( m_bIsInUse && GetDownloadProgress() < 1.0f )
+		if ( m_bIsInUse && m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f )
 		{
 			float flOldHackProgress = m_fDownloadProgress;
 			float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
