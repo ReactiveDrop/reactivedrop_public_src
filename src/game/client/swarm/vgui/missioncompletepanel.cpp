@@ -454,7 +454,7 @@ void MissionCompletePanel::UpdateVisibleButtons()
 				{
 					m_pContinueButton->SetText( "#asw_button_credits" );
 				}
-				else if ( ASWGameRules() && ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
+				else if ( ASWGameRules() && ASWGameRules()->m_szCycleNextMap.Get()[0] != '\0' )
 				{
 					m_pContinueButton->SetText( "#asw_button_continue" );
 				}
@@ -474,15 +474,15 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		}
 		else
 		{
-			if ( m_bSuccess && m_bLastMission )
+			if ( m_bSuccess && m_bLastMission && ( !m_bCreditsSeen || !ASWGameRules() || ASWGameRules()->m_szCycleNextMap.Get()[0] == '\0' ) )
 			{
-				if ( !m_bCreditsSeen )
+				if ( m_bCreditsSeen )
 				{
-					m_pContinueButton->SetText( "#asw_button_credits" );
+					m_pContinueButton->SetText( "#asw_button_new_campaign" );
 				}
 				else
 				{
-					m_pContinueButton->SetText( "#asw_button_new_campaign" );
+					m_pContinueButton->SetText( "#asw_button_credits" );
 				}
 
 				m_pContinueButton->SetVisible( true );
@@ -588,37 +588,30 @@ void MissionCompletePanel::OnCommand(const char* command)
 	}
 	else if ( !Q_stricmp( command, "Continue" ) )
 	{
-		if ( m_bSuccess && m_bLastMission )
+		if ( m_bSuccess && m_bLastMission && !m_bCreditsSeen )
 		{
-			if ( !m_bCreditsSeen )
+			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+			if ( pPlayer )
 			{
-				C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-				if ( pPlayer )
-				{
-					m_pStatsPanel->m_pDebrief->m_pPara[0]->SetVisible( false );
-					m_pStatsPanel->m_pDebrief->m_pPara[1]->SetVisible( false );
-					m_pStatsPanel->m_pDebrief->m_pPara[2]->SetVisible( false );
-					pPlayer->LaunchCredits( m_pStatsPanel->m_pDebrief->m_pBackground->m_pBackgroundInner );
-					m_bCreditsSeen = true;
-					UpdateVisibleButtons();
-				}
+				m_pStatsPanel->m_pDebrief->m_pPara[0]->SetVisible( false );
+				m_pStatsPanel->m_pDebrief->m_pPara[1]->SetVisible( false );
+				m_pStatsPanel->m_pDebrief->m_pPara[2]->SetVisible( false );
+				pPlayer->LaunchCredits( m_pStatsPanel->m_pDebrief->m_pBackground->m_pBackgroundInner );
+				m_bCreditsSeen = true;
+				UpdateVisibleButtons();
 			}
-			else if ( ASWGameRules() && ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
-			{
-				engine->ClientCmd( "cl_deathmatchnext" );
-			}
-			else
-			{
-				// Vote on a new mission
-				engine->ClientCmd( VarArgs( "asw_mission_chooser callvote %s\n", ASWDeathmatchMode() ? "deathmatch" : "campaign" ) );
-			}
+		}
+		else if ( m_bSuccess && m_bLastMission && ( !ASWGameRules() || ASWGameRules()->m_szCycleNextMap.Get()[0] == '\0' ) )
+		{
+			// Vote on a new mission
+			engine->ClientCmd( VarArgs( "asw_mission_chooser callvote %s\n", ASWDeathmatchMode() ? "deathmatch" : "campaign" ) );
 		}
 		else if ( bLeader )
 		{
 			bool bAllReady = pGameResource->AreAllOtherPlayersReady( pPlayer->entindex() );
 			if ( bAllReady )
 			{
-				if ( ASWGameRules()->IsCampaignGame() && ASWGameRules()->GetMissionSuccess() )   // completed a campaign map
+				if ( ASWGameRules()->GetMissionSuccess() )   // completed a campaign map
 				{
 					pPlayer->CampaignSaveAndShow();
 				}

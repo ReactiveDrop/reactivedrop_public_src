@@ -1568,7 +1568,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		// make sure we're leader
 		if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex())
 		{
-			if (ASWGameRules() && ASWGameRules()->GetCampaignSave())
+			if ( ASWGameRules() && ASWGameRules()->GetCampaignSave() )
 			{
 				ASWGameRules()->RequestCampaignMove( ASWGameResource()->m_iNextCampaignMission.Get() );
 				//ASWGameRules()->GetCampaignSave()->ForceNextMissionLaunch();
@@ -1582,30 +1582,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			&& ASWGameResource() && ASWGameResource()->GetLeader() == this)
 		{
 			ASWGameRules()->CampaignSaveAndShowCampaignMap(this, false);
-		}
-		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_deathmatchnext" ) )
-	{
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_DEBRIEF
-			&& ASWGameResource() && ASWGameResource()->GetLeader() == this
-			&& ASWGameRules()->m_szDeathmatchNextMap.Get()[0] != '\0' )
-		{
-			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-			if ( !pSource )
-			{
-				Warning( "Failed to load next Deathmatch map: no mission chooser source\n" );
-				return true;
-			}
-
-			char szSaveFilename[MAX_PATH]{};
-			if ( !pSource->ASW_Campaign_CreateNewSaveGame( szSaveFilename, sizeof( szSaveFilename ), asw_default_campaign.GetString(), gpGlobals->maxClients > 1, ASWGameRules()->m_szDeathmatchNextMap ) )
-			{
-				Warning( "Failed to load next Deathmatch map: could not create save\n" );
-				return true;
-			}
-
-			engine->ServerCommand( CFmtStr( "changelevel %s single_mission %s\n", ASWGameRules()->m_szDeathmatchNextMap.Get(), szSaveFilename ) );
 		}
 		return true;
 	}

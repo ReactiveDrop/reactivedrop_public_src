@@ -403,6 +403,41 @@ void CampaignPanel::OnThink()
 				vgui::GetAnimationController()->RunAnimationCommand( m_pBackDrop, "alpha", 128, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 			}
 		}
+		else if ( ASWGameRules() && ASWGameRules()->m_szCycleNextMap.Get()[0] != '\0' )
+		{
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( ASWGameRules()->m_szCycleNextMap );
+			Assert( pMission );
+
+			if ( pMission && !m_bSetTitle )
+			{
+				m_bSetTitle = true;
+
+				wchar_t missionbuffer[128];
+				if ( const wchar_t *pwszMissionName = g_pVGuiLocalize->Find( STRING( pMission->MissionTitle ) ) )
+				{
+					V_wcsncpy( missionbuffer, pwszMissionName, sizeof( missionbuffer ) );
+				}
+				else
+				{
+					g_pVGuiLocalize->ConvertANSIToUnicode( STRING( pMission->MissionTitle ), missionbuffer, sizeof( missionbuffer ) );
+				}
+
+				wchar_t wbuffer[256];
+				g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+					g_pVGuiLocalize->Find( "#nb_next_mission_title" ), 1,
+					missionbuffer );
+				m_pHeaderFooter->SetTitle( wbuffer );
+
+				m_pSurfaceMap->SetImage( VarArgs( "../%s", STRING( pMission->BriefingMaterial ) ) );
+				m_pSurfaceMapLayer[0]->SetImage( "swarm/campaign/campaignmap_emptylayer" );
+				m_pSurfaceMapLayer[1]->SetImage( "swarm/campaign/campaignmap_emptylayer" );
+				m_pSurfaceMapLayer[2]->SetImage( "swarm/campaign/campaignmap_emptylayer" );
+
+				m_pBackDrop->SetImage( STRING( pMission->Image ) );
+
+				vgui::GetAnimationController()->RunAnimationCommand( m_pBackDrop, "alpha", 128, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+			}
+		}
 	}
 
 	// check for animating the current location
@@ -1120,6 +1155,13 @@ void CampaignPanel::SetHighlightedMission( int iMission )
 // updates the text on the right to the current location and fades it in
 void CampaignPanel::UpdateLocationLabels()
 {
+	if ( ASWGameRules()->m_szCycleNextMap.Get()[0] != '\0' )
+	{
+		m_pMissionDetails->m_pNonCampaignMission.SetMission( ASWGameRules()->m_szCycleNextMap );
+		m_pMissionDetails->SetAlpha( 255 );
+		return;
+	}
+
 	const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
 	if ( !pCampaign || !ASWGameResource() )
 		return;

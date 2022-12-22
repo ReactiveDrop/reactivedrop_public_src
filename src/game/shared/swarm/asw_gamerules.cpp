@@ -196,6 +196,10 @@ extern ConVar old_radius_damage;
 	ConVar rd_dedicated_high_resolution_timer_ms( "rd_dedicated_high_resolution_timer_ms", "0.01", FCVAR_NONE, "Acquire timer with specified resolution in ms" );
 	ConVar rd_radial_damage_no_falloff_distance( "rd_radial_damage_no_falloff_distance", "16", FCVAR_CHEAT, "Distance from an explosion where damage starts to decrease based on distance.", true, 0, false, 0 );
 	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
+	ConVar rd_mapcycle_deathmatch( "rd_mapcycle_deathmatch", "1", FCVAR_ARCHIVE, "Automatically select the next Deathmatch mission." );
+	ConVar rd_mapcycle_endless( "rd_mapcycle_endless", "0", FCVAR_ARCHIVE, "Automatically select the next Endless mission." );
+	ConVar rd_mapcycle_bonus( "rd_mapcycle_bonus", "2", FCVAR_ARCHIVE, "Automatically select the next Bonus mission." );
+	ConVar rd_mapcycle_ignore( "rd_mapcycle_ignore", "", FCVAR_ARCHIVE, "Comma-separated list of map filenames (no .bsp) that cannot be selected by map cycle." );
 
 	// allow updateing the high res timer realtime
 	inline void HighResTimerChangeCallback( IConVar* pConVar, const char* pOldString, float flOldValue )
@@ -446,7 +450,6 @@ ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLI
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
 ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
-ConVar rd_deathmatch_mapcycle( "rd_deathmatch_mapcycle", "1", FCVAR_REPLICATED, "Loop through each Deathmatch map in mission chooser order" );
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
@@ -787,7 +790,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropString(RECVINFO(m_szBriefingVideo)),
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
-		RecvPropString( RECVINFO( m_szDeathmatchNextMap ) ),
+		RecvPropString( RECVINFO( m_szCycleNextMap ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -824,7 +827,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropString(SENDINFO(m_szBriefingVideo)),
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
-		SendPropString( SENDINFO( m_szDeathmatchNextMap ) ),
+		SendPropString( SENDINFO( m_szCycleNextMap ) ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1540,10 +1543,11 @@ void CAlienSwarm::FullReset()
 	DispatchSpawn( m_pMissionManager );
 
 	m_fVoteEndTime = 0;
-	Q_snprintf(m_szCurrentVoteDescription.GetForModify(), 128, "");
-	Q_snprintf(m_szCurrentVoteMapName.GetForModify(), 128, "");
-	Q_snprintf(m_szCurrentVoteCampaignName.GetForModify(), 128, "");
-	
+	V_memset( m_szCurrentVoteDescription.GetForModify(), 0, sizeof( m_szCurrentVoteDescription ) );
+	V_memset( m_szCurrentVoteMapName.GetForModify(), 0, sizeof( m_szCurrentVoteMapName ) );
+	V_memset( m_szCurrentVoteCampaignName.GetForModify(), 0, sizeof( m_szCurrentVoteCampaignName ) );
+	V_memset( m_szCycleNextMap.GetForModify(), 0, sizeof( m_szCycleNextMap ) );
+
 	m_szCurrentVoteName[0] = '\0';
 	m_iCurrentVoteYes = 0;
 	m_iCurrentVoteNo = 0;
@@ -1565,7 +1569,6 @@ void CAlienSwarm::FullReset()
 
 	m_fDeathmatchFinishTime = 0.0f;
 	V_memset( m_szDeathmatchWinnerName.GetForModify(), 0, sizeof( m_szDeathmatchWinnerName ) );
-	V_memset( m_szDeathmatchNextMap.GetForModify(), 0, sizeof( m_szDeathmatchNextMap ) );
 
 	m_fNextLaunchingStep = 0;
 	m_iMarinesSpawned = 0;
@@ -3178,12 +3181,6 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 			return;
 	}
 
-	if ( !IsCampaignGame() || !GetCampaignInfo() )
-	{
-		Msg("Unable to CampaignSaveAndShowCampaignMap as this isn't a campaign game!\n");
-		return;
-	}
-
 	if (m_iGameState != ASW_GS_DEBRIEF)
 	{
 		Msg("Unable to CampaignSaveAndShowCampaignMap as game isn't at the debriefing\n");
@@ -3200,6 +3197,19 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 	if (!pSave)
 	{
 		Msg("Unable to CampaignSaveAndShowCampaignMap as we have no campaign savegame loaded!\n");
+		return;
+	}
+
+	if ( IsCampaignGame() == 0 && ASWGameRules() && ASWGameRules()->m_szCycleNextMap.Get()[0] != '\0' )
+	{
+		// just advance to the transition screen; we don't need to update the save as it will be going away.
+		SetGameState( ASW_GS_CAMPAIGNMAP );
+		return;
+	}
+
+	if ( IsCampaignGame() != 1 || !GetCampaignInfo() )
+	{
+		Msg( "Unable to CampaignSaveAndShowCampaignMap as this isn't a campaign game!\n" );
 		return;
 	}
 
@@ -3328,16 +3338,31 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 }
 
 // moves the marines from one location to another
-bool CAlienSwarm::RequestCampaignMove(int iTargetMission)
+bool CAlienSwarm::RequestCampaignMove( int iTargetMission )
 {
 	// only allow campaign moves if the campaign map is up
-	if (m_iGameState != ASW_GS_CAMPAIGNMAP)
+	if ( m_iGameState != ASW_GS_CAMPAIGNMAP )
 		return false;
 
-	if (!GetCampaignSave() || !GetCampaignInfo())
+	if ( !GetCampaignSave() )
 		return false;
 
-	GetCampaignSave()->SetMoveDestination(iTargetMission);
+	if ( m_szCycleNextMap.Get()[0] != '\0' )
+	{
+		GetCampaignSave()->SaveGameToFile();
+
+		if ( ASWGameResource() )
+			ASWGameResource()->RememberLeaderID();
+
+		ChangeLevel_Campaign( m_szCycleNextMap );
+
+		return true;
+	}
+
+	if ( !GetCampaignInfo() )
+		return false;
+
+	GetCampaignSave()->SetMoveDestination( iTargetMission );
 
 	return true;
 }
@@ -4538,49 +4563,153 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	// Clear out any force ready state if we fail or succeed in the middle so that we always give a chance to award XP
 	SetForceReady( ASW_FR_NONE );
 
-	if ( ASWDeathmatchMode() )
+	Assert( m_szCycleNextMap.Get()[0] == '\0' ); // shouldn't be initialized yet
+	if ( IsCampaignGame() == 0 )
 	{
-		switch ( rd_deathmatch_mapcycle.GetInt() )
+		int iMission = ReactiveDropMissions::GetMissionIndex( STRING( gpGlobals->mapname ) );
+		if ( iMission != -1 )
 		{
-		case 0:
-			break;
-		case 1:
-		{
-			int iMission = ReactiveDropMissions::GetMissionIndex( STRING( gpGlobals->mapname ) );
-			if ( iMission == -1 )
-				break;
-			Assert( ReactiveDropMissions::GetMission( iMission )->HasTag( "deathmatch" ) );
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( iMission );
+			Assert( pMission );
 
-			bool bFound = false;
-			for ( int iNextMission = iMission + 1; iNextMission < ReactiveDropMissions::CountMissions(); iNextMission++ )
+			int iMode = 0;
+			const char *szTag = "unknown";
+			if ( pMission->HasTag( "deathmatch" ) )
 			{
-				const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
-				if ( pNextMission->HasTag( "deathmatch" ) )
-				{
-					V_strncpy( m_szDeathmatchNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szDeathmatchNextMap ) );
-					bFound = true;
-					break;
-				}
+				iMode = rd_mapcycle_deathmatch.GetInt();
+				szTag = "deathmatch";
+			}
+			else if ( pMission->HasTag( "endless" ) )
+			{
+				iMode = rd_mapcycle_endless.GetInt();
+				szTag = "endless";
+			}
+			else if ( pMission->HasTag( "bonus" ) )
+			{
+				iMode = rd_mapcycle_bonus.GetInt();
+				szTag = "bonus";
+			}
+			else
+			{
+				Assert( !"mission is not campaign, bonus, endless, or deathmatch." );
+				Warning( "Mission is in mission chooser but is not Campaign, Bonus, Endless, or Deathmatch. Tell Ben!\n" );
 			}
 
-			if ( bFound )
-				break;
+			CSplitString IgnoreMissions( rd_mapcycle_ignore.GetString(), "," );
 
-			for ( int iNextMission = 0; iNextMission < iMission; iNextMission++ )
+			switch ( iMode )
 			{
-				const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
-				if ( pNextMission->HasTag( "deathmatch" ) )
-				{
-					V_strncpy( m_szDeathmatchNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szDeathmatchNextMap ) );
-					break;
-				}
+			case 0:
+			{
+				// Mode 0: no cycle; show "New Campaign" button instead of "Continue"
+				break;
 			}
+			case 1:
+			{
+				// Mode 1: cycle in mission chooser order for missions with the same tag; if this is the only mission, show "New Campaign" instead
 
-			break;
-		}
-		default:
-			Warning( "Unhandled rd_deathmatch_mapcycle mode: %d\n", rd_deathmatch_mapcycle.GetInt() );
-			break;
+				bool bFound = false;
+				for ( int iNextMission = iMission + 1; iNextMission < ReactiveDropMissions::CountMissions(); iNextMission++ )
+				{
+					const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
+					Assert( pNextMission );
+
+					bool bIgnore = false;
+					FOR_EACH_VEC( IgnoreMissions, i )
+					{
+						if ( !V_stricmp( pNextMission->BaseName, IgnoreMissions[i] ) )
+						{
+							bIgnore = true;
+							break;
+						}
+					}
+
+					if ( !bIgnore && pNextMission->HasTag( szTag ) )
+					{
+						V_strncpy( m_szCycleNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szCycleNextMap ) );
+						bFound = true;
+						break;
+					}
+				}
+
+				if ( bFound )
+					break;
+
+				for ( int iNextMission = 0; iNextMission < iMission; iNextMission++ )
+				{
+					const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
+					Assert( pNextMission );
+
+					bool bIgnore = false;
+					FOR_EACH_VEC( IgnoreMissions, i )
+					{
+						if ( !V_stricmp( pNextMission->BaseName, IgnoreMissions[i] ) )
+						{
+							bIgnore = true;
+							break;
+						}
+					}
+
+					if ( !bIgnore && pNextMission->HasTag( szTag ) )
+					{
+						V_strncpy( m_szCycleNextMap.GetForModify(), pNextMission->BaseName, sizeof( m_szCycleNextMap ) );
+						break;
+					}
+				}
+
+				break;
+			}
+			case 2:
+			{
+				// Mode 2: like mode 1 but cycle in a random order (not remembered, so this isn't a shuffle and it can repeat a mission before all missions are played)
+
+				int iChosenMission = -1;
+				int nPossibilities = 0;
+				for ( int iNextMission = 0; iNextMission < ReactiveDropMissions::CountMissions(); iNextMission++ )
+				{
+					if ( iMission == iNextMission )
+						continue;
+
+					const RD_Mission_t *pNextMission = ReactiveDropMissions::GetMission( iNextMission );
+					Assert( pNextMission );
+
+					bool bIgnore = false;
+					FOR_EACH_VEC( IgnoreMissions, i )
+					{
+						if ( !V_stricmp( pNextMission->BaseName, IgnoreMissions[i] ) )
+						{
+							bIgnore = true;
+							break;
+						}
+					}
+
+					if ( !bIgnore && pNextMission->HasTag( szTag ) )
+					{
+						if ( RandomInt( 0, nPossibilities ) == 0 )
+						{
+							iChosenMission = iNextMission;
+						}
+
+						nPossibilities++;
+					}
+				}
+
+				if ( iChosenMission != -1 )
+				{
+					const RD_Mission_t *pChosenMission = ReactiveDropMissions::GetMission( iChosenMission );
+					Assert( pChosenMission );
+
+					V_strncpy( m_szCycleNextMap.GetForModify(), pChosenMission->BaseName, sizeof( m_szCycleNextMap ) );
+				}
+
+				break;
+			}
+			default:
+			{
+				Warning( "rd_mapcycle_%s has an unknown mode number %d\n", szTag, iMode );
+				break;
+			}
+			}
 		}
 	}
 
