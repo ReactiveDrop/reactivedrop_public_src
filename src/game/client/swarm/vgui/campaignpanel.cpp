@@ -40,6 +40,7 @@
 using namespace vgui;
 
 extern ConVar asw_client_build_maps;
+extern ConVar rd_reduce_motion;
 
 CampaignPanel::CampaignPanel( Panel *parent, const char *name ) : vgui::EditablePanel( parent, name )
 {
@@ -100,6 +101,10 @@ CampaignPanel::CampaignPanel( Panel *parent, const char *name ) : vgui::Editable
 	m_pSurfaceMapLayer[2]->SetAlpha( 0 );
 	m_pBracket->SetAlpha( 0 );
 	m_bSetTitle = false;
+
+	m_pSurfaceMapLayer[0]->SetVisible( !rd_reduce_motion.GetBool() );
+	m_pSurfaceMapLayer[1]->SetVisible( !rd_reduce_motion.GetBool() );
+	m_pSurfaceMapLayer[2]->SetVisible( !rd_reduce_motion.GetBool() );
 
 	m_pMapLabels[0] = new vgui::Label( m_pGalacticMap, "GalacticMapLabel", "#asw_galactic_map_core_systems" );
 	m_pMapLabels[1] = new vgui::Label( m_pGalacticMap, "GalacticMapLabel", "#asw_galactic_map_syntek_megacorporation" );
