@@ -99,8 +99,27 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pMainElements = new vgui::Panel( this, "MainElements" );
 
 	m_bSuccess = bSuccess;
-	m_bLastMission = ASWGameRules() && ( !ASWGameRules()->IsCampaignGame() || ASWGameRules()->CampaignMissionsLeft() <= 1 );
+	m_bLastMission = ASWGameRules() && ( ASWGameRules()->IsCampaignGame() != 1 || ASWGameRules()->CampaignMissionsLeft() <= 1 );
 	m_bCreditsSeen = false;
+
+	const char *szCreditsPrefix = "scripts/asw_credits";
+	bool bOfficial = false;
+	if ( const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo() )
+	{
+		szCreditsPrefix = STRING( pCampaign->CustomCreditsFile );
+		bOfficial = !V_stricmp( pCampaign->BaseName, "jacob" );
+	}
+	else if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() ) )
+	{
+		szCreditsPrefix = STRING( pMission->CustomCreditsFile );
+		bOfficial = pMission->Builtin;
+	}
+
+	if ( !bOfficial && !V_strcmp( szCreditsPrefix, "scripts/asw_credits" ) )
+	{
+		// don't default to Valve credits for custom missions
+		m_bCreditsSeen = true;
+	}
 	
 	vgui::Panel *pParent = m_pMainElements;
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
