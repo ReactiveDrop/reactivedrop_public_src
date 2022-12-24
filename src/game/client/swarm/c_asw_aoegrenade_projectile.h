@@ -6,11 +6,14 @@ struct dlight_t;
 
 #include "c_pixel_visibility.h"
 
-class C_ASW_AOEGrenade_Projectile : public C_BaseCombatCharacter
+DECLARE_AUTO_LIST( IASW_AOEGrenade_Projectile_List );
+
+class C_ASW_AOEGrenade_Projectile : public C_BaseCombatCharacter, public IASW_AOEGrenade_Projectile_List
 {
 public:
 	DECLARE_CLASS( C_ASW_AOEGrenade_Projectile, C_BaseCombatCharacter );
 	DECLARE_CLIENTCLASS();
+	IMPLEMENT_AUTO_LIST_GET();
 
 	C_ASW_AOEGrenade_Projectile();
 	virtual ~C_ASW_AOEGrenade_Projectile();

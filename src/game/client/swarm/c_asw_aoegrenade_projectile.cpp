@@ -66,9 +66,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_AOEGrenade_Projectile, DT_ASW_AOEGrenade_Project
 	RecvPropFloat( RECVINFO( m_flRadius ) ),
 END_RECV_TABLE()
 
-// aoegrenades maintain a linked list of themselves, for quick checking for autoaim
-C_ASW_AOEGrenade_Projectile* g_pHeadAOEGrenade = NULL;
-
+IMPLEMENT_AUTO_LIST( IASW_AOEGrenade_Projectile_List );
 
 //-----------------------------------------------------------------------------
 // Constructor

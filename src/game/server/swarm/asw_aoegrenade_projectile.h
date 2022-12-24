@@ -5,12 +5,15 @@
 class CSprite;
 class CSpriteTrail;
 
-class CASW_AOEGrenade_Projectile : public CBaseCombatCharacter
+DECLARE_AUTO_LIST( IASW_AOEGrenade_Projectile_List );
+
+class CASW_AOEGrenade_Projectile : public CBaseCombatCharacter, public IASW_AOEGrenade_Projectile_List
 {
 	DECLARE_CLASS( CASW_AOEGrenade_Projectile, CBaseCombatCharacter );
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	IMPLEMENT_AUTO_LIST_GET();
 
 	CASW_AOEGrenade_Projectile();
 	virtual ~CASW_AOEGrenade_Projectile();
