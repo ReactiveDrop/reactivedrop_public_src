@@ -22,7 +22,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar asw_simple_hacking( "asw_simple_hacking", "0", FCVAR_CHEAT, "Use simple progress bar computer hacking" );
-ConVar asw_ai_computer_hacking_scale( "asw_ai_computer_hacking_scale", "0.1", FCVAR_CHEAT, "Computer hacking speed scale for AI marines" );
+ConVar asw_ai_computer_hacking_scale( "asw_ai_computer_hacking_scale", "0.2", FCVAR_CHEAT, "Computer hacking speed scale for AI marines" );
 extern ConVar asw_tech_order_hack_range;
 
 #define ASW_MEDAL_WORTHY_COMPUTER_HACK 20
@@ -391,13 +391,12 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
-		if ( m_bIsInUse && m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f )
+		if ( m_bIsInUse && ( m_bIsLocked || ( m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f ) ) )
 		{
 			float flOldHackProgress = m_fDownloadProgress;
-			float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
+			float fTime = deltatime / ( MAX( m_bIsLocked ? m_iHackLevel : 1, 1 ) / asw_ai_computer_hacking_scale.GetFloat() + MAX( m_DownloadObjectiveName.Get()[0] != '\0' ? m_fDownloadTime : 0, 0 ) );
 			// boost fTime by the marine's hack skill
 			fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
-			fTime *= asw_ai_computer_hacking_scale.GetFloat();
 			m_fDownloadProgress += fTime;
 
 			if ( GetDownloadProgress() > 0.0f && flOldHackProgress == 0.0f )
