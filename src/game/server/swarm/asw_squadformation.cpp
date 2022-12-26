@@ -25,7 +25,8 @@ ConVar asw_squad_debug( "asw_squad_debug", "1", FCVAR_CHEAT, "Draw debug overlay
 ConVar rd_bots_ignore_bombs("rd_bots_ignore_bombs", "1", FCVAR_NONE, "If 0 AI marines will try to find safe place when they see mortar's or boomer's bomb");
 ConVar rd_use_info_nodes("rd_use_info_nodes", "0", FCVAR_NONE, "If there are no info_marine_hint nodes, info_node will be used instead");
 
-#define OUT_OF_BOOMER_BOMB_RANGE FLT_MAX
+// max boomer blob explosion radius is 240 units; marine hull is 26x26-ish
+#define OUT_OF_BOOMER_BOMB_RANGE ( 254.0f * 254.0f )
 
 void CASW_SquadFormation::LevelInitPostEntity()
 {
