@@ -13,16 +13,17 @@
 #include "tier0/memdbgon.h"
 
 ConVar asw_marine_ai_followspot( "asw_marine_ai_followspot", "0", FCVAR_CHEAT );
+ConVar asw_follow_hint_debug( "asw_follow_hint_debug", "0", FCVAR_CHEAT );
+ConVar asw_squad_debug( "asw_squad_debug", "0", FCVAR_CHEAT, "Draw debug overlays for squad movement" );
+
 ConVar asw_follow_hint_max_range( "asw_follow_hint_max_range", "300", FCVAR_NONE, "If bot is this far from leader it starts to move closer" );
 ConVar rd_follow_hint_max_search_range("rd_follow_hint_max_search_range", "300", FCVAR_CHEAT, "A range around leader used to search for a node to move bot to" );
 ConVar asw_follow_hint_max_z_dist( "asw_follow_hint_max_z_dist", "120", FCVAR_CHEAT );
 ConVar asw_follow_use_hints( "asw_follow_use_hints", "2", FCVAR_NONE, "0 = follow formation, 1 = use hints when in combat, 2 = always use hints" );
 ConVar rd_follow_hint_delay( "rd_follow_hint_delay", "5", FCVAR_NONE, "The number of seconds marines will ignore follow hints after being told to follow" );
-ConVar asw_follow_hint_debug( "asw_follow_hint_debug", "0", FCVAR_CHEAT );
 ConVar asw_follow_velocity_predict( "asw_follow_velocity_predict", "0.3", FCVAR_CHEAT, "Marines travelling in diamond follow formation will predict their leader's movement ahead by this many seconds" );
 ConVar asw_follow_threshold( "asw_follow_threshold", "40", FCVAR_CHEAT, "Marines in diamond formation will move after leader has moved this much" );
-ConVar asw_squad_debug( "asw_squad_debug", "1", FCVAR_CHEAT, "Draw debug overlays for squad movement" );
-ConVar rd_bots_ignore_bombs("rd_bots_ignore_bombs", "1", FCVAR_NONE, "If 0 AI marines will try to find safe place when they see mortar's or boomer's bomb");
+ConVar rd_bots_ignore_bombs("rd_bots_ignore_bombs", "0", FCVAR_NONE, "If 0 AI marines will try to find safe place when they see mortar's or boomer's bomb");
 ConVar rd_use_info_nodes("rd_use_info_nodes", "0", FCVAR_NONE, "If there are no info_marine_hint nodes, info_node will be used instead");
 
 // max boomer blob explosion radius is 240 units; marine hull is 26x26-ish
@@ -32,10 +33,10 @@ void CASW_SquadFormation::LevelInitPostEntity()
 {
 	BaseClass::LevelInitPostEntity();
 
+#ifdef HL2_HINTS
 	CHintCriteria hintCriteria;
 	hintCriteria.SetHintType( HINT_FOLLOW_WAIT_POINT );
 
-#ifdef HL2_HINTS
 	m_bLevelHasFollowHints = ( CAI_HintManager::FindHint( vec3_origin, hintCriteria ) != NULL );
 #else
 	m_bLevelHasFollowHints = ( MarineHintManager()->GetHintCount() > 0 );
@@ -184,10 +185,6 @@ float CASW_SquadFormation::GetYaw( unsigned slotnum )
 #ifdef HL2_HINTS
 		if ( m_hFollowHint[ slotnum ].Get() )
 		{
-// 			if ( m_bRearGuard[ slotnum ] )
-// 			{
-// 				return m_hFollowHint[ slotnum ]->Yaw() + 180.0f;
-// 			}
 			return m_hFollowHint[ slotnum ]->Yaw();
 		}
 #else
@@ -195,23 +192,12 @@ float CASW_SquadFormation::GetYaw( unsigned slotnum )
 			Msg("MarineHintManager() returns NULL");
 		if ( m_nMarineHintIndex[ slotnum ] != INVALID_HINT_INDEX && MarineHintManager())
 		{
-			// 			if ( m_bRearGuard[ slotnum ] )
-			// 			{
-			// 				return m_hFollowHint[ slotnum ]->Yaw() + 180.0f;
-			// 			}
 			return MarineHintManager()->GetHintYaw( m_nMarineHintIndex[ slotnum ] );
 		}
 #endif
 		else
 		{
 			return anglemod( m_flCurrentForwardAbsoluteEulerYaw + s_MarineFollowDirection[ slotnum ] );
-
-// 			CASW_Marine *pMarine = Squaddie( slotnum );
-// 			if ( pMarine )
-// 			{
-// 				return pMarine->ASWEyeAngles()[ YAW ];
-// 			}
-// 			return 0.0f;
 		}
 	}
 	// face our formation direction
@@ -328,7 +314,16 @@ void CASW_SquadFormation::RecomputeFollowerOrder(  const Vector &vProjectedLeade
 
 		if ( asw_marine_ai_followspot.GetBool() )
 		{
-			static float colors[3][3] =	{ { 255, 127, 127 }, { 127, 255, 127 }, { 127, 127, 255 }	};
+			static const int colors[7][3] =
+			{
+				{ 225, 60, 60 },
+				{ 200, 200, 60 },
+				{ 60, 225, 60 },
+				{ 30, 90, 225 },
+				{ 225, 150, 30 },
+				{ 225, 60, 150 },
+				{ 120, 80, 250 },
+			};
 			for ( int ii = 0 ; ii < MAX_SQUAD_SIZE ; ++ii )
 			{
 				NDebugOverlay::HorzArrow( m_hSquad[ii]->GetAbsOrigin(), m_vFollowPositions[ii], 3, 
