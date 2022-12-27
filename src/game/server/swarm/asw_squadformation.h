@@ -53,7 +53,7 @@ public:
 	void UpdateFollowPositions();
 
 	/// should the squaddie positions be recomputed -- assumed this function is called from a marine's Think
-	bool ShouldUpdateFollowPositions() const ;
+	bool ShouldUpdateFollowPositions();
 
 	// follow in tight formation instead of using hints for asw_follow_hint_delay seconds
 	void FollowCommandUsed();
@@ -86,7 +86,8 @@ protected:
 	int m_nMarineHintIndex[MAX_SQUAD_SIZE];
 	bool m_bRearGuard[MAX_SQUAD_SIZE];			// is this hint the rearmost? if so, marine faces backwards
 	bool m_bStandingInBeacon[MAX_SQUAD_SIZE];
-	bool m_bFleeingBoomerBombs[MAX_SQUAD_SIZE];
+
+	float m_flLastDangerTime;
 
 	// clumsy holdovers from old system, should be replaced
 	// with proper movement histories with prediction
@@ -114,7 +115,7 @@ private:
 	bool m_bLevelHasFollowHints;
 
 	// thou shalt not copy
-	CASW_SquadFormation( const CASW_SquadFormation & );
+	CASW_SquadFormation( const CASW_SquadFormation & ) = delete;
 };
 
 extern CASW_SquadFormation g_ASWSquadFormation;

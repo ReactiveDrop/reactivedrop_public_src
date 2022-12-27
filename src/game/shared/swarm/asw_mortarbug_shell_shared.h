@@ -40,7 +40,6 @@ public:
 
 	bool m_bDoScreenShake;
 
-private:
 	float	m_flDamage;
 	float	m_DmgRadius;
 	bool	m_bModelOpening;
