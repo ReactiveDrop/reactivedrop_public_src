@@ -99,7 +99,11 @@ ConVar rd_stuck_bot_teleport_max_range( "rd_stuck_bot_teleport_max_range", "400"
 ConVar rd_stuck_bot_teleport_required_failures( "rd_stuck_bot_teleport_required_failures", "16", FCVAR_CHEAT, "Teleport stuck bots only after they've failed this many move attempts in the same number of seconds", true, 1, true, 64 );
 ConVar rd_stuck_bot_teleport_to_marine( "rd_stuck_bot_teleport_to_marine", "0", FCVAR_CHEAT, "Teleport stuck bots directly to a marine instead of to the nearest node" );
 ConVar rd_marine_heal_range_max( "rd_marine_heal_range_max", "1536", FCVAR_CHEAT, "Maximum distance the AI medic will run to heal", true, 1, false, 0 );
-ConVar rd_bot_melee( "rd_bot_melee", "1", FCVAR_NONE, "should bots melee if they are out of ammo" );
+ConVar rd_bot_melee_object( "rd_bot_melee_object", "1", FCVAR_NONE, "should bots melee attack crates that are in their way" );
+ConVar rd_bot_melee_noammo( "rd_bot_melee_noammo", "1", FCVAR_NONE, "should bots melee if they are out of ammo" );
+ConVar rd_bot_melee_mobbed( "rd_bot_melee_mobbed", "1", FCVAR_NONE, "should bots melee if they are mobbed by enemies" );
+ConVar rd_bot_melee_losblocked( "rd_bot_melee_losblocked", "1", FCVAR_NONE, "should bots melee if there is a friend between them and their enemy" );
+ConVar rd_bot_melee_combo( "rd_bot_melee_combo", "1", FCVAR_NONE, "can bots do melee combo attacks" );
 
 extern ConVar ai_lead_time;
 extern CMoveData *g_pMoveData;
@@ -339,7 +343,9 @@ int CASW_Marine::SelectSchedule()
 	// we prevent melee schedule if out of ammo because 
 	// AI marines run away and die there swarmed by aliens 
 	// on high difficulties 
-	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || ( rd_bot_melee.GetBool() && ( HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) || HasCondition( COND_MOBBED_BY_ENEMIES ) ) ) )
+	if ( ( rd_bot_melee_object.GetBool() && HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) ) ||
+		( rd_bot_melee_noammo.GetBool() && HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) ) ||
+		( rd_bot_melee_mobbed.GetBool() && HasCondition( COND_MOBBED_BY_ENEMIES ) ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
@@ -1769,7 +1775,7 @@ int CASW_Marine::SelectFollowSchedule()
 		return SCHED_ASW_HOLD_POSITION;
 	}
 
-	if ( NeedToFollowMove() && ( !rd_bot_melee.GetBool() || !HasCondition( COND_MOBBED_BY_ENEMIES ) ) )
+	if ( NeedToFollowMove() && ( !rd_bot_melee_mobbed.GetBool() || !HasCondition( COND_MOBBED_BY_ENEMIES ) ) )
 	{
 		return SCHED_ASW_FOLLOW_MOVE;
 	}
@@ -1783,12 +1789,11 @@ int CASW_Marine::SelectFollowSchedule()
 			return SCHED_RANGE_ATTACK1;
 	}	
 
-	if ( ( IsOutOfAmmo() || ( rd_bot_melee.GetBool() && HasCondition( COND_WEAPON_BLOCKED_BY_FRIEND ) ) ) && GetEnemy() )
+	if ( GetEnemy() && ( ( rd_bot_melee_noammo.GetBool() && IsOutOfAmmo() ) || ( rd_bot_melee_losblocked.GetBool() && HasCondition( COND_WEAPON_BLOCKED_BY_FRIEND ) ) ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
 			return iMeleeSchedule;
-		return SCHED_ASW_FOLLOW_MOVE; // reactivedrop: make bots follow leader when out of ammo
 	}
 
 	if ( NeedToFollowMove() )
@@ -2713,7 +2718,7 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 			SetMoveType( oldMoveType );
 
 			// combo if we have a nearby enemy.
-			m_bMeleeKeyReleased = rd_bot_melee.GetBool() && GetEnemy() && GetEnemy()->IsAlive() && GetEnemyLKP().DistToSqr( GetAbsOrigin() ) <= Square( 40 );
+			m_bMeleeKeyReleased = rd_bot_melee_combo.GetBool() && GetEnemy() && GetEnemy()->IsAlive() && GetEnemyLKP().DistToSqr( GetAbsOrigin() ) <= Square( 40 );
 		}
 		break;
 
