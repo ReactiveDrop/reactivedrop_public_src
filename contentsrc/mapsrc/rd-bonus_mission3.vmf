@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "309"
+	"mapversion" "310"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "309"
+	"mapversion" "310"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -79784,6 +79784,7 @@ entity
 	"spawnflags" "2"
 	"StartDisabled" "0"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_pull_lever"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -90875,6 +90876,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tnt_areas"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -91919,6 +91921,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tnt_areas"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -92098,6 +92101,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tnt_areas"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -92323,6 +92327,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tnt_areas"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -92502,6 +92507,7 @@ entity
 	"spawnflags" "2"
 	"StartDisabled" "0"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_collect_document"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -92621,6 +92627,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tnt_areas"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -93351,115 +93358,6 @@ entity
 	editor
 	{
 		"color" "0 0 255"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 500]"
-	}
-}
-entity
-{
-	"id" "210041"
-	"classname" "trigger_asw_button_area"
-	"changepanelskin" "1"
-	"disableafteruse" "0"
-	"hacklevel" "5"
-	"HoldTime" "-1"
-	"locked" "0"
-	"needstech" "1"
-	"nopower" "0"
-	"numwires" "2"
-	"origin" "10274 4263 -838.69"
-	"panelpropname" "floorplan"
-	"playersrequired" "1"
-	"spawnflags" "2"
-	"StartDisabled" "0"
-	"useafterhack" "1"
-	"wait" "1"
-	"wirecolumns" "5"
-	"wirerows" "2"
-	connections
-	{
-		"OnTrigger" "floorplanTurnOn0-1"
-	}
-	solid
-	{
-		"id" "210042"
-		side
-		{
-			"id" "40822"
-			"plane" "(10157 4340 -819.188) (10157 4434 -819.188) (10258 4434 -819.188)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 52] 0.25"
-			"vaxis" "[0 -1 0 -40] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "40821"
-			"plane" "(10157 4434 -858.188) (10157 4340 -858.188) (10258 4340 -858.188)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 52] 0.25"
-			"vaxis" "[0 -1 0 -40] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "40820"
-			"plane" "(10157 4340 -858.188) (10157 4434 -858.188) (10157 4434 -819.186)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 40] 0.25"
-			"vaxis" "[0 0 -1 -43.9981] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "40819"
-			"plane" "(10258 4434 -858.188) (10258 4340 -858.188) (10258 4340 -819.186)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 40] 0.25"
-			"vaxis" "[0 0 -1 -43.9981] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "40818"
-			"plane" "(10157 4434 -858.188) (10258 4434 -858.188) (10258 4434 -819.186)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 52] 0.25"
-			"vaxis" "[0 0 -1 -43.9981] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "40817"
-			"plane" "(10258 4340 -858.188) (10157 4340 -858.188) (10157 4340 -819.185)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 52] 0.25"
-			"vaxis" "[0 0 -1 -43.9981] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "220 30 220"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	editor
-	{
-		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 500]"
@@ -97535,6 +97433,7 @@ entity
 	"spawnflags" "2"
 	"StartDisabled" "0"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_flip_switch"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -126780,8 +126679,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[9561.31 4824.35 -663.378]"
-		"look" "[9811.22 4919.27 -817.715]"
+		"position" "[8066 3154 -824]"
+		"look" "[8066 3462.68 -824]"
 	}
 }
 cordons

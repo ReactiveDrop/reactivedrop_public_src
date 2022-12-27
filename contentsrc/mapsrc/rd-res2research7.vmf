@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "518"
+	"mapversion" "519"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "518"
+	"mapversion" "519"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -30803,6 +30803,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "2"
 	"distance" "130"
 	"dmg" "0"
@@ -31312,6 +31313,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -32449,6 +32451,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "0"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "130"
 	"DoBreachedShout" "1"
@@ -39125,6 +39128,7 @@ entity
 	"StartDisabled" "0"
 	"targetname" "rodtrigger"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_pull_lever"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -50710,6 +50714,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "0"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "50"
@@ -50746,6 +50751,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "0"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "50"
@@ -66542,8 +66548,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2552 4589.1 310.026]"
-		"look" "[2291.37 4718.03 136.69]"
+		"position" "[808 2204 100]"
+		"look" "[808 2542.52 100]"
 	}
 }
 cordons

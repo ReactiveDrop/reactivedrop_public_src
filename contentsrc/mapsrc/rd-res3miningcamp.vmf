@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "586"
+	"mapversion" "587"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "586"
+	"mapversion" "587"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -93299,6 +93299,7 @@ entity
 	"StartDisabled" "1"
 	"targetname" "tntplant"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"usetargetname" "tnt1"
 	"wait" "1"
 	"wirecolumns" "5"
@@ -113030,6 +113031,7 @@ entity
 	"StartDisabled" "0"
 	"targetname" "tntpickup"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_collect_explosives"
 	"usetargetname" "tnt1"
 	"wait" "1"
 	"wirecolumns" "5"
@@ -129935,6 +129937,7 @@ entity
 	"classname" "trigger_asw_button_area"
 	"changepanelskin" "0"
 	"disableafteruse" "0"
+	"hackpanelmessage" "#asw_repair_circuit"
 	"HoldTime" "-1"
 	"locked" "0"
 	"needstech" "0"
