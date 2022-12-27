@@ -498,6 +498,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 		if ( m_flFailedPathingTime[NELEMS( m_flFailedPathingTime ) - rd_stuck_bot_teleport_required_failures.GetInt()] > gpGlobals->curtime - rd_stuck_bot_teleport_required_failures.GetInt() )
 		{
 			CASW_Marine *pLeader = GetSquadLeader();
+			unsigned squaddie = GetSquadFormation() ? GetSquadFormation()->Find( this ) : CASW_SquadFormation::INVALID_SQUADDIE;
 
 			if ( !pLeader || !pLeader->IsInhabited() )
 			{
@@ -506,6 +507,12 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 			else if ( rd_stuck_bot_teleport_to_marine.GetBool() )
 			{
 				Teleport( &pLeader->GetAbsOrigin(), &pLeader->GetAbsAngles(), &pLeader->GetAbsVelocity() );
+			}
+			else if ( squaddie != CASW_SquadFormation::INVALID_SQUADDIE )
+			{
+				Vector vecIdealPos = GetSquadFormation()->GetIdealPosition( squaddie );
+				QAngle angIdeal( 0, GetSquadFormation()->GetYaw( squaddie ), 0 );
+				Teleport( &vecIdealPos, &angIdeal, &vec3_origin );
 			}
 			else if ( TeleportToFreeNode( pLeader, rd_stuck_bot_teleport_max_range.GetFloat() ) )
 			{
