@@ -70,11 +70,7 @@ public:
 
 	void Reset();
 
-#ifdef HL2_HINTS
-	static int FollowHintSortFunc( CAI_Hint* const *pHint1, CAI_Hint* const *pHint2 );
-#else
 	static int FollowHintSortFunc( HintData_t* const *pHint1, HintData_t* const *pHint2 );
-#endif
 
 	void DrawDebugGeometryOverlays();
 
@@ -87,11 +83,7 @@ protected:
 	Vector m_vFollowPositions[MAX_SQUAD_SIZE];	
 
 	// hint nodes for use in combat
-#ifdef HL2_HINTS
-	CHandle<CAI_Hint> m_hFollowHint[MAX_SQUAD_SIZE];
-#else
 	int m_nMarineHintIndex[MAX_SQUAD_SIZE];
-#endif
 	bool m_bRearGuard[MAX_SQUAD_SIZE];			// is this hint the rearmost? if so, marine faces backwards
 	bool m_bStandingInBeacon[MAX_SQUAD_SIZE];
 	bool m_bFleeingBoomerBombs[MAX_SQUAD_SIZE];
