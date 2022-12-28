@@ -208,7 +208,7 @@ bool C_ASW_Hack_Computer::CanOverrideHack()
 		return pFrame->m_iBackdropType == 1 || pFrame->m_bPlayingSplash;
 	}
 
-	return pArea->m_DownloadObjectiveName[0] != '\0' && !pArea->m_bDownloadedDocs && pFrame->m_pHackComputer->m_iShowOption == 0;
+	return pFrame->m_bPlayingSplash;
 }
 
 int C_ASW_Hack_Computer::GetTumblerPosition(int i)

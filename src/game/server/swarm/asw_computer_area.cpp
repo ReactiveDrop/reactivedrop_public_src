@@ -278,10 +278,9 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 			return;
 		}
 
-		if ( pMarine->GetMarineProfile()->CanHack() && GetCurrentHack() && !m_bIsLocked && GetCurrentHack()->m_iShowOption == 0 && m_DownloadObjectiveName.Get()[0] != '\0' && !m_bDownloadedDocs )
+		if ( pMarine->GetMarineProfile()->CanHack() && GetCurrentHack() && !m_bLoggedIn && !m_bIsLocked )
 		{
-			Assert( GetCurrentHack()->GetOptionTypeForEntry( ASW_HACK_OPTION_ICON_1 ) == ASW_COMPUTER_OPTION_TYPE_DOWNLOAD_DOCS );
-			GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_ICON_1 );
+			GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_OVERRIDE );
 			return;
 		}
 		
