@@ -243,7 +243,8 @@ bool StandardFilterRules( IHandleEntity *pHandleEntity, int fContentsMask )
 	}
 
 	// This code is used to cull out tests against see-thru entities
-	if ( !(fContentsMask & CONTENTS_WINDOW) )
+	// BenLubar: don't allow single-pass semi-transparent NPCs to be culled by this
+	if ( !(fContentsMask & CONTENTS_WINDOW) && !pCollide->IsNPC() )
 	{
 #ifdef CLIENT_DLL
 		if ( g_pClientLeafSystem->GetTranslucencyType( pCollide->RenderHandle() ) == RENDERABLE_IS_TRANSLUCENT )
