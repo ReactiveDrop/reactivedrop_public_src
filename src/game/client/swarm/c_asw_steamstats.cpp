@@ -1368,9 +1368,9 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, eSortMethod, eDisplayType );
 		m_LeaderboardFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardFindResultCallback );
 	}
-	else
+	else if ( asw_stats_leaderboard_debug.GetBool() )
 	{
-		DevWarning( "Not sending leaderboard entry: Not whitelisted %s\n", szLeaderboardName );
+		DevMsg( "Not sending leaderboard entry: Not whitelisted %s\n", szLeaderboardName );
 	}
 
 	if ( IsLBWhitelisted( szDifficultyLeaderboardName ) )
@@ -1378,9 +1378,9 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
 		m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
 	}
-	else
+	else if ( asw_stats_leaderboard_debug.GetBool() )
 	{
-		DevWarning( "Not sending leaderboard entry: Not whitelisted %s\n", szDifficultyLeaderboardName );
+		DevMsg( "Not sending leaderboard entry: Not whitelisted %s\n", szDifficultyLeaderboardName );
 	}
 }
 
