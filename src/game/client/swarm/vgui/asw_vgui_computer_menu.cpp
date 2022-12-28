@@ -433,6 +433,7 @@ void CASW_VGUI_Computer_Menu::OnThink()
 			{
 				m_iPrepareHackOption = m_iAutodownload;
 				m_iAutodownload = -1;
+				HideMenu( true );
 			}
 			else
 			{

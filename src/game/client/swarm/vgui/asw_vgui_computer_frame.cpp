@@ -88,7 +88,8 @@ void CASW_VGUI_Computer_Frame::SplashFinished()
 {
 	if ( m_bPlayingSplash && m_pMenuPanel && !m_pMenuPanel->IsHacking() )
 	{
-		m_pMenuPanel->ShowMenu();
+		if ( !m_pMenuPanel->m_hCurrentPage )
+			m_pMenuPanel->ShowMenu();
 		m_bPlayingSplash = false;
 	}
 }
