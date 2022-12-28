@@ -23,6 +23,7 @@
 
 ConVar asw_simple_hacking( "asw_simple_hacking", "0", FCVAR_CHEAT, "Use simple progress bar computer hacking" );
 ConVar asw_ai_computer_hacking_scale( "asw_ai_computer_hacking_scale", "0.2", FCVAR_CHEAT, "Computer hacking speed scale for AI marines" );
+ConVar asw_auto_override_computer_delay( "asw_auto_override_computer_delay", "10", FCVAR_CHEAT, "Number of seconds after opening a locked computer to automatically use the override command" );
 extern ConVar asw_tech_order_hack_range;
 
 #define ASW_MEDAL_WORTHY_COMPUTER_HACK 20
@@ -310,7 +311,7 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 				}
 
 				m_OnComputerActivated.FireOutput(pMarine, this);
-				m_fAutoOverrideTime = gpGlobals->curtime + 4.0f;
+				m_fAutoOverrideTime = gpGlobals->curtime + asw_auto_override_computer_delay.GetFloat();
 
 				// if doing complex hacking, launch the interface for it
 				if ( ShouldShowComputer() && pMarine->IsInhabited() )
