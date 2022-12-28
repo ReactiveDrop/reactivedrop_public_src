@@ -2018,7 +2018,7 @@ int CLocatorPanel::GetScreenWidthForCaption( const wchar_t *pString, vgui::HFont
 //-----------------------------------------------------------------------------
 void CLocatorPanel::DrawBindingName( CLocatorTarget *pTarget, const char *pchBindingName, int x, int y, bool bController )
 {
-	if ( !bController && !IsConsole() )
+	if ( !bController && !g_RD_Steam_Input.IsOriginPlaceholderString( pchBindingName ) && !IsConsole() )
 	{
 		// Draw the caption
 		vgui::surface()->DrawSetTextFont( m_hKeysFont );
