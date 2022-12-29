@@ -624,7 +624,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 			}
 			else
 			{
-				if ( ASWGameRules()->GetMissionSuccess() && ASWGameRules()->IsCampaignGame() )
+				if ( ASWGameRules()->GetMissionSuccess() )
 				{
 					// ForceReadyPanel* pForceReady = 
 					engine->ClientCmd("cl_wants_continue");	// notify other players that we're waiting on them
