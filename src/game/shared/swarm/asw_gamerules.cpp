@@ -4445,7 +4445,7 @@ void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 	if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
 	{
 		int iTeam = winner->GetTeamNumber();
-		V_strncpy( m_szDeathmatchWinnerName.GetForModify(), GetGlobalTeam( iTeam )->GetName(), sizeof( m_szDeathmatchWinnerName.GetForModify() ) );
+		V_strncpy( m_szDeathmatchWinnerName.GetForModify(), GetGlobalTeam( iTeam )->GetName(), sizeof( m_szDeathmatchWinnerName ) );
 
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
