@@ -1,13 +1,10 @@
-// Changes from ASB2:
-// - Jacob's Rest has been redone so that the spawn weights in the overlays are positive.
-// - asw_parasite_defanged has been removed as its presence should always indicate a harvester.
-// - asw_harvester has increased in weight by 1/10 of the asw_parasite_defanged weight.
-// - asw_shaman have been decreased in weight by a factor of 4, but 4 will spawn at once.
+// This file defines spawn sets for challenges based on Alien Swarm: Beyond Insane (ASBI) and Beyond Brutal (ASB2).
+// To use these spawn sets in your challenge, set the "rd_override_alien_selection_challenge" convar to "asbi".
 //
 // See the comment in alien_selection.txt for information on how to create spawn sets.
 
 "SpawnSet" {
-	"Name"	"ASB2 - default"
+	"Name"	"ASBI - default"
 	"Map"	"*"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -162,7 +159,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - easy"
+	"Name"	"ASBI - easy"
 	"Map"	"*"
 	"MinSkill"	"1"
 	"MaxSkill"	"1"
@@ -172,8 +169,12 @@
 	"MaxHordeWanderers"	"3"
 }
 
+//////////////////
+// JACOB'S REST //
+//////////////////
+
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Landing Bay"
+	"Name"	"ASBI - Jacob's Rest - Landing Bay"
 	"Map"	"ASI-Jac1-LandingBay_01"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -182,7 +183,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Cargo Elevator"
+	"Name"	"ASBI - Jacob's Rest - Cargo Elevator"
 	"Map"	"ASI-Jac1-LandingBay_02"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -190,19 +191,19 @@
 	"MaxWanderers"	"7"
 
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"4"
+		"SelectionWeight"	"15"
 		"NPC" {
 			"AlienClass"	"asw_shieldbug"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"2"
+		"SelectionWeight"	"9"
 		"NPC" {
 			"AlienClass"	"asw_harvester"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"2"
+		"SelectionWeight"	"9"
 		"NPC" {
 			"AlienClass"	"asw_mortarbug"
 		}
@@ -210,7 +211,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Deima Surface Bridge"
+	"Name"	"ASBI - Jacob's Rest - Deima Surface Bridge"
 	"Map"	"ASI-Jac2-Deima"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -218,7 +219,7 @@
 	"MaxWanderers"	"3"
 
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"2"
+		"SelectionWeight"	"30"
 		"NPC" {
 			"AlienClass"	"asw_ranger"
 		}
@@ -226,7 +227,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Rydberg Reactor"
+	"Name"	"ASBI - Jacob's Rest - Rydberg Reactor"
 	"Map"	"ASI-Jac3-Rydberg"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -234,7 +235,7 @@
 	"MaxWanderers"	"5"
 
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"15"
+		"SelectionWeight"	"35"
 		"NPC" {
 			"AlienClass"	"asw_buzzer"
 		}
@@ -245,10 +246,16 @@
 			"AlienClass"	"asw_ranger"
 		}
 	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - SynTek Residential"
+	"Name"	"ASBI - Jacob's Rest - SynTek Residential"
 	"Map"	"ASI-Jac4-Residential"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -256,7 +263,7 @@
 	"MaxWanderers"	"4"
 
 	"HORDE" {
-		"SelectionWeight"	"0.0526316"
+		"SelectionWeight"	"0.0625" // 1 in 17 chance
 		"NPC" {
 			"AlienClass"	"asw_parasite"
 		}
@@ -276,7 +283,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Sewer Junction B5"
+	"Name"	"ASBI - Jacob's Rest - Sewer Junction B5"
 	"Map"	"ASI-Jac6-SewerJunction"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -284,25 +291,25 @@
 	"MaxWanderers"	"5"
 
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"7"
+		"SelectionWeight"	"20"
 		"NPC" {
 			"AlienClass"	"asw_parasite"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"7"
+		"SelectionWeight"	"15"
 		"NPC" {
 			"AlienClass"	"asw_shieldbug"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"3"
+		"SelectionWeight"	"5"
 		"NPC" {
 			"AlienClass"	"asw_harvester"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"5"
+		"SelectionWeight"	"8"
 		"NPC" {
 			"AlienClass"	"asw_mortarbug"
 		}
@@ -310,7 +317,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Jacob's Rest - Timor Station"
+	"Name"	"ASBI - Jacob's Rest - Timor Station"
 	"Map"	"ASI-Jac7-TimorStation"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -318,31 +325,31 @@
 	"MaxWanderers"	"4"
 
 	"WANDERER" {
-		"SelectionWeight"	"20"
+		"SelectionWeight"	"50"
 		"NPC" {
 			"AlienClass"	"asw_drone"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"10"
+		"SelectionWeight"	"20"
 		"NPC" {
 			"AlienClass"	"asw_drone_jumper"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"20"
+		"SelectionWeight"	"30"
 		"NPC" {
 			"AlienClass"	"asw_buzzer"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"15"
+		"SelectionWeight"	"25"
 		"NPC" {
 			"AlienClass"	"asw_ranger"
 		}
 	}
 	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"1"
+		"SelectionWeight"	"5"
 		"NPC" {
 			"AlienClass"	"asw_harvester"
 		}
@@ -350,7 +357,135 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Paranoia - Unexpected Encounter"
+	"Name"	"ASBI - Landing Bay + Cargo Elevator"
+	"Map"	"rd_bonus_mission4"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"2"
+	"MaxWanderers"	"7"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"AfterObjective"	"DownloadData"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"9"
+		"AfterObjective"	"DownloadData"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"9"
+		"AfterObjective"	"DownloadData"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+}
+
+//////////////////////////
+// Operation Cleansweep //
+//////////////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Operation Cleansweep - Storage Facility"
+	"Map"	"rd-ocs1storagefacility"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: parasites, some boomers and buzzers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Operation Cleansweep - Landing Bay 7"
+	"Map"	"rd-ocs2landingbay7"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: buzzers, rangers, some mortars
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Operation Cleansweep - U.S.C. Medusa"
+	"Map"	"rd-ocs3uscmedusa"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: parasites, harvesters, some ubers
+}
+
+/////////////////
+// Nam Humanum //
+/////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Nam Humanum - Logistics Area"
+	"Map"	"rd-nh01_logisticsarea"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: buzzers, jumpers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Nam Humanum - Platform XVII"
+	"Map"	"rd-nh02_platformxvii"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: buzzers, rangers, jumpers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Nam Humanum - Groundwork Labs"
+	"Map"	"rd-nh03_groundworklabs"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: boomers, ubers, some mortars
+}
+
+//////////////////////
+// Tears for Tarnor //
+//////////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tears for Tarnor - Insertion Point"
+	"Map"	"rd-tft1desertoutpost"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: rangers, boomers after hack
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tears for Tarnor - Abandoned Maintenance Tunnels"
+	"Map"	"rd-tft2abandonedmaintenance"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: parasites, harvesters
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tears for Tarnor - Oasis Colony Spaceport"
+	"Map"	"rd-tft3spaceport"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: boomers, some rangers
+}
+
+//////////////
+// Paranoia //
+//////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Paranoia - Unexpected Encounter"
 	"Map"	"as_paranoia1"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -393,42 +528,8 @@
 	}
 }
 
-// Spawn sets after this point are new in AS:RD and were not part of ASB2.
-// They are still named ASB2 for consistency.
-
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Landing Bay + Cargo Elevator"
-	"Map"	"rd_bonus_mission4"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-	"MinWanderers"	"2"
-	"MaxWanderers"	"7"
-
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"4"
-		"AfterObjective"	"DownloadData"
-		"NPC" {
-			"AlienClass"	"asw_shieldbug"
-		}
-	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"2"
-		"AfterObjective"	"DownloadData"
-		"NPC" {
-			"AlienClass"	"asw_harvester"
-		}
-	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"2"
-		"AfterObjective"	"DownloadData"
-		"NPC" {
-			"AlienClass"	"asw_mortarbug"
-		}
-	}
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Paranoia - Hostile Places"
+	"Name"	"ASBI - Paranoia - Hostile Places"
 	"Map"	"as_paranoia2"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -437,7 +538,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Paranoia - Close Contact"
+	"Name"	"ASBI - Paranoia - Close Contact"
 	"Map"	"as_paranoia3"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -446,7 +547,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Paranoia - High Tension"
+	"Name"	"ASBI - Paranoia - High Tension"
 	"Map"	"as_paranoia4"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -455,7 +556,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Paranoia - Crucial Point"
+	"Name"	"ASBI - Paranoia - Crucial Point"
 	"Map"	"as_paranoia5"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -464,7 +565,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Hostile Places + Close Contact"
+	"Name"	"ASBI - Hostile Places + Close Contact"
 	"Map"	"rd_bonus_mission5"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -473,7 +574,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - High Tension + Crucial Point"
+	"Name"	"ASBI - High Tension + Crucial Point"
 	"Map"	"rd_bonus_mission6"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -481,350 +582,12 @@
 	// TODO
 }
 
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Area 9800 - Landing Zone"
-	"Map"	"rd-area9800lz"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
+/////////////////
+// Accident 32 //
+/////////////////
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Area 9800 - Power Plant's Cooling Pump"
-	"Map"	"rd-area9800pp1"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Area 9800 - Power Plant's Generator"
-	"Map"	"rd-area9800pp2"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Area 9800 - Wastelands"
-	"Map"	"rd-area9800wl"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Power Plant"
-	"Map"	"rd_bonus_mission7"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Space Port Catastrophe"
-	"Map"	"rd_bonus_mission1"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Rapture"
-	"Map"	"rd_bonus_mission2"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Bunker"
-	"Map"	"rd_bonus_mission3"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Operation Cleansweep - Storage Facility"
-	"Map"	"rd-ocs1storagefacility"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Operation Cleansweep - Landing Bay 7"
-	"Map"	"rd-ocs2landingbay7"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Operation Cleansweep - U.S.C. Medusa"
-	"Map"	"rd-ocs3uscmedusa"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Research 7 - Transport Facility"
-	"Map"	"rd-res1forestentrance"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Research 7 - Research 7"
-	"Map"	"rd-res2research7"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Research 7 - Illyn Forest"
-	"Map"	"rd-res3miningcamp"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Research 7 - Jericho Mines"
-	"Map"	"rd-res4mines"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tears for Tarnor - Insertion Point"
-	"Map"	"rd-tft1desertoutpost"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tears for Tarnor - Abandoned Maintenance Tunnels"
-	"Map"	"rd-tft2abandonedmaintenance"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tears for Tarnor - Oasis Colony Spaceport"
-	"Map"	"rd-tft3spaceport"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Lana's Escape - Lana's Bridge"
-	"Map"	"rd-lan1_bridge"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Lana's Escape - Lana's Sewer"
-	"Map"	"rd-lan2_sewer"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Lana's Escape - Lana's Maintenance"
-	"Map"	"rd-lan3_maintenance"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Lana's Escape - Lana's Vents"
-	"Map"	"rd-lan4_vent"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Lana's Escape - Lana's Complex"
-	"Map"	"rd-lan5_complex"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Midnight Port"
-	"Map"	"rd-til1midnightport"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Road to Dawn"
-	"Map"	"rd-til2roadtodawn"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Arctic Infiltration"
-	"Map"	"rd-til3arcticinfiltration"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Area 9800"
-	"Map"	"rd-til4area9800"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Cold Catwalks"
-	"Map"	"rd-til5coldcatwalks"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Yanaurus Mine"
-	"Map"	"rd-til6yanaurusmine"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Forgotten Factory"
-	"Map"	"rd-til7factory"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - Communication Center"
-	"Map"	"rd-til8comcenter"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Tilarus-5 - SynTek Hospital"
-	"Map"	"rd-til9syntekhospital"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Nam Humanum - Logistics Area"
-	"Map"	"rd-nh01_logisticsarea"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Nam Humanum - Platform XVII"
-	"Map"	"rd-nh02_platformxvii"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Nam Humanum - Groundwork Labs"
-	"Map"	"rd-nh03_groundworklabs"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - BioGen Corporation - Operation x5"
-	"Map"	"rd-bio1operationx5"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - BioGen Corporation - Invisible Threat"
-	"Map"	"rd-bio2invisiblethreat"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - BioGen Corporation - BioGen Labs"
-	"Map"	"rd-bio3biogenlabs"
-	"MinSkill"	"1"
-	"MaxSkill"	"5"
-
-	// TODO
-}
-
-"SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - Information Department"
+	"Name"	"ASBI - Accident 32 - Information Department"
 	"Map"	"rd-acc1_infodep"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -833,7 +596,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - Powerhood"
+	"Name"	"ASBI - Accident 32 - Powerhood"
 	"Map"	"rd-acc2_powerhood"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -842,7 +605,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - Research Center"
+	"Name"	"ASBI - Accident 32 - Research Center"
 	"Map"	"rd-acc3_rescenter"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -851,7 +614,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - Confined Facility"
+	"Name"	"ASBI - Accident 32 - Confined Facility"
 	"Map"	"rd-acc4_confacility"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -860,7 +623,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - J5 Connector"
+	"Name"	"ASBI - Accident 32 - J5 Connector"
 	"Map"	"rd-acc5_j5connector"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -869,7 +632,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - Lab Ruins"
+	"Name"	"ASBI - Accident 32 - Lab Ruins"
 	"Map"	"rd-acc6_labruins"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -878,7 +641,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Accident 32 - AMBER Complex"
+	"Name"	"ASBI - Accident 32 - AMBER Complex"
 	"Map"	"rd-acc_complex"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -886,8 +649,61 @@
 	// TODO
 }
 
+///////////////
+// Area 9800 //
+///////////////
+
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Sector A9"
+	"Name"	"ASBI - Area 9800 - Landing Zone"
+	"Map"	"rd-area9800lz"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: buzzers, rangers, some shieldbugs
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Area 9800 - Power Plant's Cooling Pump"
+	"Map"	"rd-area9800pp1"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Area 9800 - Power Plant's Generator"
+	"Map"	"rd-area9800pp2"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Area 9800 - Wastelands"
+	"Map"	"rd-area9800wl"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: harvesters, ubers, jumpers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Power Plant"
+	"Map"	"rd_bonus_mission7"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+//////////////
+// Adanaxis //
+//////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Adanaxis - Sector A9"
 	"Map"	"rd-ada_sector_a9"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -896,7 +712,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Nexus SubNode"
+	"Name"	"ASBI - Adanaxis - Nexus SubNode"
 	"Map"	"rd-ada_nexus_subnode"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -905,7 +721,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Neon Carnage"
+	"Name"	"ASBI - Adanaxis - Neon Carnage"
 	"Map"	"rd-ada_neon_carnage"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -914,7 +730,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Fuel Junction"
+	"Name"	"ASBI - Adanaxis - Fuel Junction"
 	"Map"	"rd-ada_fuel_junction"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -923,7 +739,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Dark Path"
+	"Name"	"ASBI - Adanaxis - Dark Path"
 	"Map"	"rd-ada_dark_path"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -932,7 +748,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Forbidden Outpost"
+	"Name"	"ASBI - Adanaxis - Forbidden Outpost"
 	"Map"	"rd-ada_forbidden_outpost"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -941,7 +757,7 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - New Beginning"
+	"Name"	"ASBI - Adanaxis - New Beginning"
 	"Map"	"rd-ada_new_beginning"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
@@ -950,8 +766,244 @@
 }
 
 "SpawnSetOverlay" {
-	"Name"	"ASB2 - Adanaxis - Anomaly"
+	"Name"	"ASBI - Adanaxis - Anomaly"
 	"Map"	"rd-ada_anomaly"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+///////////////
+// Tilarus-5 //
+///////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Midnight Port"
+	"Map"	"rd-til1midnightport"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Road to Dawn"
+	"Map"	"rd-til2roadtodawn"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Arctic Infiltration"
+	"Map"	"rd-til3arcticinfiltration"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Area 9800"
+	"Map"	"rd-til4area9800"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Cold Catwalks"
+	"Map"	"rd-til5coldcatwalks"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Yanaurus Mine"
+	"Map"	"rd-til6yanaurusmine"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Forgotten Factory"
+	"Map"	"rd-til7factory"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - Communication Center"
+	"Map"	"rd-til8comcenter"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Tilarus-5 - SynTek Hospital"
+	"Map"	"rd-til9syntekhospital"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+////////////////////////
+// BioGen Corporation //
+////////////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - BioGen Corporation - Operation x5"
+	"Map"	"rd-bio1operationx5"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: rangers, some boomers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - BioGen Corporation - Invisible Threat"
+	"Map"	"rd-bio2invisiblethreat"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: parasites, some harvesters
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - BioGen Corporation - BioGen Labs"
+	"Map"	"rd-bio3biogenlabs"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: shieldbugs, parasites, harvesters, some boomers
+}
+
+////////////////
+// Research 7 //
+////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Research 7 - Transport Facility"
+	"Map"	"rd-res1forestentrance"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Research 7 - Research 7"
+	"Map"	"rd-res2research7"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Research 7 - Illyn Forest"
+	"Map"	"rd-res3miningcamp"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Research 7 - Jericho Mines"
+	"Map"	"rd-res4mines"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+///////////////////
+// Lana's Escape //
+///////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Lana's Escape - Lana's Bridge"
+	"Map"	"rd-lan1_bridge"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Lana's Escape - Lana's Sewer"
+	"Map"	"rd-lan2_sewer"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO: shamans, some parasites, some buzzers
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Lana's Escape - Lana's Maintenance"
+	"Map"	"rd-lan3_maintenance"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Lana's Escape - Lana's Vents"
+	"Map"	"rd-lan4_vent"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Lana's Escape - Lana's Complex"
+	"Map"	"rd-lan5_complex"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+/////////////////////////////////
+// Unaffiliated Bonus Missions //
+/////////////////////////////////
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Space Port Catastrophe"
+	"Map"	"rd_bonus_mission1"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Rapture"
+	"Map"	"rd_bonus_mission2"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	// TODO
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASBI - Bunker"
+	"Map"	"rd_bonus_mission3"
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
