@@ -1,0 +1,366 @@
+// Changes from ASB2:
+// - Jacob's Rest has been redone so that the spawn weights in the overlays are positive.
+// - asw_parasite_defanged has been removed as its presence should always indicate a harvester.
+// - asw_harvester has increased in weight by 1/10 of the asw_parasite_defanged weight.
+// - asw_shaman have been decreased in weight by a factor of 4, but 4 will spawn at once.
+//
+// See the comment in alien_selection.txt for information on how to create spawn sets.
+
+"SpawnSet" {
+	"Name"	"ASB2 - default"
+	"Map"	"*"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinHordeSize"	"9"
+	"MaxHordeSize"	"30"
+	"MinWanderers"	"2"
+	"MaxWanderers"	"6"
+	"MinHordeWanderers"	"2"
+	"MaxHordeWanderers"	"4"
+	"MinPrespawn"	"1"
+	"MaxPrespawn"	"5"
+	"MinPacks"	"0"
+	"MaxPacks"	"5"
+
+	"HORDE" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"50"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"8"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"4"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"3"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"0.75"
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+	}
+	"PRESPAWN" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"PRESPAWN" {
+		"SelectionWeight"	"1"
+		"NPC" {
+		"AlienClass"	"asw_drone_uber"
+		"VScript"	"drone_mutation_carrier"
+		}
+	}
+	"PACK" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+			"SpawnChance"	"0.75"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+			"SpawnChance"	"0.5"
+		}
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+			"SpawnChance"	"0.25"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - Cargo Elevator"
+	"Map"	"ASI-Jac1-LandingBay_02"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"3"
+	"MaxWanderers"	"7"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"4"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"2"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"2"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - Deima Surface Bridge"
+	"Map"	"ASI-Jac2-Deima"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"1"
+	"MaxWanderers"	"3"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"2"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - Rydberg Reactor"
+	"Map"	"ASI-Jac3-Rydberg"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"2"
+	"MaxWanderers"	"5"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - SynTek Residential"
+	"Map"	"ASI-Jac4-Residential"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"1"
+	"MaxWanderers"	"4"
+
+	"HORDE" {
+		"SelectionWeight"	"0.0526316"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - Sewer Junction B5"
+	"Map"	"ASI-Jac6-SewerJunction"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"2"
+	"MaxWanderers"	"5"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"3"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Jacob's Rest - Timor Station"
+	"Map"	"ASI-Jac7-TimorStation"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+	"MinWanderers"	"2"
+	"MaxWanderers"	"4"
+
+	"WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"1"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - Paranoia - Unexpected Encounter"
+	"Map"	"as_paranoia1"
+	"MinSkill"	"1"
+	"MaxSkill"	"5"
+
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"4"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+}
+
+"SpawnSetOverlay" {
+	"Name"	"ASB2 - easy"
+	"Map"	"*"
+	"MinSkill"	"1"
+	"MaxSkill"	"1"
+	"MinHordeSize"	"20"
+	"MaxHordeSize"	"30"
+	"MinHordeWanderers"	"6"
+	"MaxHordeWanderers"	"10"
+}
