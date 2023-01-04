@@ -13,13 +13,11 @@
 #include "tier0/memdbgon.h"
 
 ConVar rd_biomass_ignite_from_flares( "rd_biomass_ignite_from_flares", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1, biomass will ignite from a flare" );
-
+ConVar asw_flare_lifetime( "asw_flare_lifetime", "30", FCVAR_CHEAT, "Time before a thrown flare burns out." );
 extern ConVar sk_plr_dmg_asw_flares;
 extern ConVar sk_npc_dmg_asw_flares;
 
 #define FLARE_MODEL "models/swarm/Flare/flareweapon.mdl"
-	//"models/weapons/flare.mdl"
-#define ASW_FLARE_LIFETIME 30.0f
 
 LINK_ENTITY_TO_CLASS( asw_flare_projectile, CASW_Flare_Projectile );
 
@@ -175,9 +173,9 @@ void CASW_Flare_Projectile::Spawn( void )
 	
 	SetThink( &CASW_Flare_Projectile::FlareThink );
 
-	if ( ASW_FLARE_LIFETIME > 0 )
+	if ( asw_flare_lifetime.GetFloat() > 0 )
 	{
-		m_flTimeBurnOut = gpGlobals->curtime + ASW_FLARE_LIFETIME;
+		m_flTimeBurnOut = gpGlobals->curtime + asw_flare_lifetime.GetFloat();
 	}
 	else
 	{
@@ -188,7 +186,7 @@ void CASW_Flare_Projectile::Spawn( void )
 
 unsigned int CASW_Flare_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
+	return MASK_SOLID;
 }
 
 void CASW_Flare_Projectile::FlareThink( void )
