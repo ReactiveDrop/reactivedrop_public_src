@@ -21,8 +21,8 @@
 
 	// Base total weights:
 	// HORDE = 1
-	// WANDERER = 117.75
-	// HORDE_WANDERER = 67.75
+	// WANDERER = 120
+	// HORDE_WANDERER = 70
 	// PRESPAWN = 2.5
 	// PACK = 1
 
@@ -105,6 +105,18 @@
 		}
 		"NPC" {
 			"AlienClass"	"asw_shaman"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"1.125"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_normal"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"1.125"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_cavern"
 		}
 	}
 	"PRESPAWN" {
@@ -534,7 +546,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, buzzers, some harvesters, antlion guards/guardians
 }
 
 "SpawnSetOverlay" {
@@ -543,7 +555,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: boomers, shamans
 }
 
 "SpawnSetOverlay" {
@@ -552,7 +564,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, buzzers, boomers, some harvesters, parasites
 }
 
 "SpawnSetOverlay" {
@@ -561,7 +573,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: shieldbugs, jumpers, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -570,7 +582,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: boomers, rangers, harvesters
 }
 
 "SpawnSetOverlay" {
@@ -579,7 +591,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: shieldbugs, buzzers, some parasites
 }
 
 /////////////////
@@ -592,7 +604,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, jumpers
 }
 
 "SpawnSetOverlay" {
@@ -601,7 +613,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, buzzers, some jumpers
 }
 
 "SpawnSetOverlay" {
@@ -610,7 +622,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, parasites, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -619,7 +631,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, parasites, some jumpers
 }
 
 "SpawnSetOverlay" {
@@ -628,7 +640,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: buzzers, parasites, rangers, harvesters
 }
 
 "SpawnSetOverlay" {
@@ -637,7 +649,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, boomers, some antlion guardians, big buzzer (rare)
 }
 
 "SpawnSetOverlay" {
@@ -646,7 +658,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, jumpers, buzzers
 }
 
 ///////////////
@@ -668,7 +680,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: boomers, buzzers, jumpers, some harvesters
 }
 
 "SpawnSetOverlay" {
@@ -677,7 +689,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, boomers, some antlion guards
 }
 
 "SpawnSetOverlay" {
@@ -695,7 +707,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: boomers, buzzers, jumpers
 }
 
 //////////////
@@ -708,7 +720,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: boomers, rangers, harvesters, parasites
 }
 
 "SpawnSetOverlay" {
@@ -717,7 +729,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: harvesters, parasites, rangers
 }
 
 "SpawnSetOverlay" {
@@ -726,7 +738,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: antlion workers, rangers, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -735,7 +747,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: harvesters, boomers, some buzzers
 }
 
 "SpawnSetOverlay" {
@@ -744,7 +756,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: parasites, rangers, harvesters, boomers, some mortarbugs, shieldbugs, antlion guards
 }
 
 "SpawnSetOverlay" {
@@ -753,7 +765,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: parasites, boomers, harvesters
 }
 
 "SpawnSetOverlay" {
@@ -762,7 +774,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: parasites, boomers, some mortarbugs
 }
 
 "SpawnSetOverlay" {
@@ -771,7 +783,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, parasites, some buzzers, boomers
 }
 
 ///////////////
@@ -784,7 +796,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, boomers, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -793,7 +805,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, boomers, rangers, shamans (horde wanderer only)
 }
 
 "SpawnSetOverlay" {
@@ -802,7 +814,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, harvesters, rangers
 }
 
 "SpawnSetOverlay" {
@@ -811,7 +823,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, buzzers, buzzer horde?
 }
 
 "SpawnSetOverlay" {
@@ -820,7 +832,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, rangers, some harvesters
 }
 
 "SpawnSetOverlay" {
@@ -829,7 +841,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, parasites, harvesters, some rangers
 }
 
 "SpawnSetOverlay" {
@@ -838,7 +850,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, parasites, boomers
 }
 
 "SpawnSetOverlay" {
@@ -847,7 +859,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, harvesters, buzzers, some rangers
 }
 
 "SpawnSetOverlay" {
@@ -856,7 +868,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, parasites, boomers, some harvesters, buzzers
 }
 
 ////////////////////////
@@ -900,7 +912,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: jumpers, rangers, harvesters
 }
 
 "SpawnSetOverlay" {
@@ -909,7 +921,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: jumpers, parasites, rangers
 }
 
 "SpawnSetOverlay" {
@@ -918,7 +930,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: jumpers, parasites, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -927,7 +939,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: ubers, jumpers, buzzers, some boomers
 }
 
 ///////////////////
@@ -940,7 +952,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: buzzers, rangers
 }
 
 "SpawnSetOverlay" {
@@ -958,7 +970,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, boomers, buzzers
 }
 
 "SpawnSetOverlay" {
@@ -967,7 +979,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: parasites, buzzers, some harvesters
 }
 
 "SpawnSetOverlay" {
@@ -976,7 +988,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: parasites, ubers, jumpers, some rangers
 }
 
 /////////////////////////////////
@@ -989,7 +1001,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: harvesters, rangers, boomers
 }
 
 "SpawnSetOverlay" {
@@ -998,7 +1010,7 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: buzzers, parasites
 }
 
 "SpawnSetOverlay" {
@@ -1007,5 +1019,5 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO
+	// TODO: rangers, ubers, parasites
 }
