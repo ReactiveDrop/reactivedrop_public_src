@@ -409,7 +409,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, some boomers and buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -418,7 +435,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, rangers, some mortars
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -427,7 +461,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, harvesters, some ubers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
 }
 
 /////////////////
@@ -440,7 +491,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"30"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -449,7 +511,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, rangers, jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -458,7 +537,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, ubers, some mortars
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
 }
 
 //////////////////////
@@ -471,7 +567,19 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, boomers after hack
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"30"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"35"
+		"AfterObjective"	"objective_computer"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -480,7 +588,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -489,7 +608,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, some rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 //////////////
@@ -546,7 +676,36 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, buzzers, some harvesters, antlion guards/guardians
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_normal"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"7"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_cavern"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -555,7 +714,21 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, shamans
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -564,7 +737,36 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, buzzers, boomers, some harvesters, parasites
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -573,7 +775,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: shieldbugs, jumpers, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -582,7 +801,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, rangers, harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -591,7 +827,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: shieldbugs, buzzers, some parasites
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
 }
 
 /////////////////
@@ -604,7 +857,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -613,7 +877,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, buzzers, some jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -622,7 +903,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, parasites, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -631,7 +929,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, parasites, some jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -649,7 +964,32 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, boomers, some antlion guardians, big buzzer (rare)
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_cavern"
+		}
+	}
+	"WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+			"SizeScale"	"2"
+			"SpeedScale"	"0.75"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -658,7 +998,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, jumpers, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 ///////////////
@@ -671,7 +1028,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, rangers, some shieldbugs
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -680,7 +1054,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, buzzers, jumpers, some harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -689,7 +1086,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, boomers, some antlion guards
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_normal"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -698,7 +1112,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: harvesters, ubers, jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -707,7 +1138,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, buzzers, jumpers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
 }
 
 //////////////
@@ -720,7 +1168,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: boomers, rangers, harvesters, parasites
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -729,7 +1200,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: harvesters, parasites, rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -738,7 +1226,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: antlion workers, rangers, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"npc_antlion_worker"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -747,7 +1252,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: harvesters, boomers, some buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -756,7 +1278,48 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, rangers, harvesters, boomers, some mortarbugs, shieldbugs, antlion guards
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"npc_antlionguard_normal"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -765,7 +1328,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, boomers, harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -774,7 +1354,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, boomers, some mortarbugs
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_mortarbug"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -783,7 +1380,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, parasites, some buzzers, boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 ///////////////
@@ -796,7 +1416,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, boomers, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -805,7 +1442,33 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, boomers, rangers, shamans (horde wanderer only)
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -814,7 +1477,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, harvesters, rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -823,7 +1503,27 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, buzzers, buzzer horde?
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"HORDE" {
+		"SelectionWeight"	"0.05"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -832,7 +1532,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, rangers, some harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -841,7 +1558,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, parasites, harvesters, some rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -850,7 +1590,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, parasites, boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -859,7 +1616,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, harvesters, buzzers, some rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -868,7 +1648,36 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, parasites, boomers, some harvesters, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"5"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 ////////////////////////
@@ -881,7 +1690,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, some boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"30"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -890,7 +1710,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, some harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"30"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -899,7 +1730,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: shieldbugs, parasites, harvesters, some boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_shieldbug"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 ////////////////
@@ -912,7 +1766,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: jumpers, rangers, harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -921,7 +1792,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: jumpers, parasites, rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -930,7 +1818,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: jumpers, parasites, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -939,7 +1844,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: ubers, jumpers, buzzers, some boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 ///////////////////
@@ -952,7 +1880,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -961,7 +1900,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: shamans, some parasites, some buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_shaman"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -970,7 +1926,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, boomers, buzzers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -979,7 +1952,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, buzzers, some harvesters
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"25"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -988,7 +1978,30 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: parasites, ubers, jumpers, some rangers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_jumper"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"10"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
 }
 
 /////////////////////////////////
@@ -1001,7 +2014,24 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: harvesters, rangers, boomers
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_harvester"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_boomer"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -1010,7 +2040,18 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: buzzers, parasites
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_buzzer"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
 }
 
 "SpawnSetOverlay" {
@@ -1019,5 +2060,22 @@
 	"MinSkill"	"1"
 	"MaxSkill"	"5"
 
-	// TODO: rangers, ubers, parasites
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"20"
+		"NPC" {
+			"AlienClass"	"asw_ranger"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_drone_uber"
+		}
+	}
+	"WANDERER+HORDE_WANDERER" {
+		"SelectionWeight"	"15"
+		"NPC" {
+			"AlienClass"	"asw_parasite"
+		}
+	}
 }
