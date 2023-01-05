@@ -2196,6 +2196,8 @@ int CDynamicProp::UpdateTransmitState()
 		return SetTransmitState( FL_EDICT_ALWAYS );
 	if ( FStrEq( STRING( GetModelName() ), "models/props/doors/slow_heavy_door/slow_heavy_door.mdl") )
 		return SetTransmitState( FL_EDICT_ALWAYS );
+	if ( FStrEq( STRING( GetModelName() ), "models/props/doors/slow_heavy_door/slow_heavy_door_v2.mdl") )
+		return SetTransmitState( FL_EDICT_ALWAYS );
 	if ( FStrEq( STRING( GetModelName() ), "models/props/machinery/elevators/elevator_landingbay_ramp.mdl" ) )
 		return SetTransmitState( FL_EDICT_ALWAYS );
 	if ( FStrEq( STRING( GetModelName() ), "models/props/destructable_pipe_set/destroyed_pipe.mdl" ) )
