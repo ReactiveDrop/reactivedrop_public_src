@@ -4600,7 +4600,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 				iMode = rd_mapcycle_bonus.GetInt();
 				szTag = "bonus";
 			}
-			else
+			else if ( GetCampaignSave() )
 			{
 				Assert( !"mission is not campaign, bonus, endless, or deathmatch." );
 				Warning( "Mission is in mission chooser but is not Campaign, Bonus, Endless, or Deathmatch. Tell Ben!\n" );

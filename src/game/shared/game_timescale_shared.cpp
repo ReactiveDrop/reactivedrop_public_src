@@ -10,6 +10,10 @@
 #include "tier0/memdbgon.h"
 
 
+#ifdef CLIENT_DLL
+ConVar rd_scale_rates( "rd_scale_rates", "1", FCVAR_NONE, "Automatically change cl_updaterate and cl_cmdrate during slow motion." );
+#endif
+
 CGameTimescale g_GameTimescale;
 CGameTimescale* GameTimescale() { return &g_GameTimescale; }
 
@@ -26,6 +30,20 @@ CGameTimescale::~CGameTimescale()
 
 bool CGameTimescale::Init()
 {
+#ifdef CLIENT_DLL
+	m_pUpdateRate = g_pCVar->FindVar( "cl_updaterate" );
+	Assert( m_pUpdateRate );
+	m_flBaseUpdateRate = m_pUpdateRate->GetFloat();
+	m_pUpdateRate->InstallChangeCallback( &UpdateRateChangedManually );
+
+	m_pCmdRate = g_pCVar->FindVar( "cl_cmdrate" );
+	Assert( m_pCmdRate );
+	m_flBaseCmdRate = m_pCmdRate->GetFloat();
+	m_pCmdRate->InstallChangeCallback( &CmdRateChangedManually );
+
+	m_bUpdatingRates = false;
+#endif
+
 	ResetTimescale();
 
 	return true;
@@ -81,6 +99,14 @@ void CGameTimescale::SetCurrentTimescale( float flTimescale )
 	UserMessageBegin( filter, "CurrentTimescale" );
 		WRITE_FLOAT( m_flCurrentTimescale );
 	MessageEnd();
+#else
+	if ( rd_scale_rates.GetBool() )
+	{
+		m_bUpdatingRates = true;
+		m_pUpdateRate->SetValue( m_flBaseUpdateRate / flTimescale );
+		m_pCmdRate->SetValue( m_flBaseCmdRate / flTimescale );
+		m_bUpdatingRates = false;
+	}
 #endif
 }
 
@@ -161,6 +187,16 @@ void CGameTimescale::UpdateTimescale( void )
 			}
 
 			m_flCurrentTimescale = m_flStartTimescale * ( 1.0f - flInterp ) + m_flDesiredTimescale * flInterp;
+
+#ifdef CLIENT_DLL
+			if ( rd_scale_rates.GetBool() )
+			{
+				m_bUpdatingRates = true;
+				m_pUpdateRate->SetValue( m_flBaseUpdateRate / MIN( m_flCurrentTimescale, m_flDesiredTimescale ) );
+				m_pCmdRate->SetValue( m_flBaseCmdRate / MIN( m_flCurrentTimescale, m_flDesiredTimescale ) );
+				m_bUpdatingRates = false;
+			}
+#endif
 		}
 	}
 
@@ -182,10 +218,36 @@ void CGameTimescale::ResetTimescale( void )
 	m_flStartBlendRealtime = 0.0f;
 
 	engine->SetTimescale( 1.0f );
+
+#ifdef CLIENT_DLL
+	if ( rd_scale_rates.GetBool() )
+	{
+		m_bUpdatingRates = true;
+		m_pUpdateRate->SetValue( m_flBaseUpdateRate );
+		m_pCmdRate->SetValue( m_flBaseCmdRate );
+		m_bUpdatingRates = false;
+	}
+#endif
 }
 
 
 #ifdef CLIENT_DLL
+
+void CGameTimescale::UpdateRateChangedManually( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	if ( !g_GameTimescale.m_bUpdatingRates )
+	{
+		g_GameTimescale.m_flBaseUpdateRate = ConVarRef( var ).GetFloat();
+	}
+}
+
+void CGameTimescale::CmdRateChangedManually( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	if ( !g_GameTimescale.m_bUpdatingRates )
+	{
+		g_GameTimescale.m_flBaseCmdRate = ConVarRef( var ).GetFloat();
+	}
+}
 
 void __MsgFunc_CurrentTimescale( bf_read &msg )
 {

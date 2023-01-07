@@ -70,6 +70,18 @@ private:
 	float m_flStartTimescale;
 	float m_flStartBlendTime;
 	float m_flStartBlendRealtime;
+
+#ifdef CLIENT_DLL
+	static void UpdateRateChangedManually( IConVar *var, const char *pOldValue, float flOldValue );
+	static void CmdRateChangedManually( IConVar *var, const char *pOldValue, float flOldValue );
+
+	ConVar *m_pUpdateRate;
+	ConVar *m_pCmdRate;
+
+	float m_flBaseUpdateRate;
+	float m_flBaseCmdRate;
+	bool m_bUpdatingRates;
+#endif
 };
 
 CGameTimescale *GameTimescale();
