@@ -64,7 +64,7 @@ int CASW_Spawn_Manager::GetNumAlienClasses()
 	return NELEMS( g_Aliens );
 }
 
-ASW_Alien_Class_Entry* CASW_Spawn_Manager::GetAlienClass( int i )
+const ASW_Alien_Class_Entry* CASW_Spawn_Manager::GetAlienClass( int i )
 {
 	Assert( i >= 0 && i < NELEMS( g_Aliens ) );
 	return &g_Aliens[ i ];

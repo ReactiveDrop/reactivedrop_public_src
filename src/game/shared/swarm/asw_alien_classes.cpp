@@ -10,40 +10,42 @@
 // == Master list of alien classes ==
 // ==================================
 
-ASW_Alien_Class_Entry::ASW_Alien_Class_Entry( const char *szClass, int nHullType )
+ASW_Alien_Class_Entry::ASW_Alien_Class_Entry( const char *szClass, int nHullType, Vector vecRealHullMins, Vector vecRealHullMaxs )
 {
 	m_pszAlienClass = szClass;
 	m_nHullType = nHullType;
+	m_vecRealHullMins = vecRealHullMins;
+	m_vecRealHullMaxs = vecRealHullMins;
 }
 
 // NOTE: If you add new entries to this list, update the asw_spawner choices in swarm.fgd.
 //       Do not rearrange the order or you will be changing what spawns in all the maps.
 
-ASW_Alien_Class_Entry g_Aliens[] =
+const ASW_Alien_Class_Entry g_Aliens[] =
 {
-	ASW_Alien_Class_Entry( "asw_drone", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_buzzer", HULL_TINY_CENTERED ),
-	ASW_Alien_Class_Entry( "asw_parasite", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_grub", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_harvester", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_queen", HULL_TINY ),
-	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "asw_ranger", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT ),
-	ASW_Alien_Class_Entry( "asw_shaman", HULL_MEDIUM ),
-	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE ),
-	ASW_Alien_Class_Entry( "npc_antlion", HULL_MEDIUM ),
-	ASW_Alien_Class_Entry( "npc_antlion_worker", HULL_MEDIUM ),
-	ASW_Alien_Class_Entry( "npc_zombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_zombie_torso", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_poisonzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie", HULL_HUMAN ),
-	ASW_Alien_Class_Entry( "npc_fastzombie_torso", HULL_HUMAN )
+	ASW_Alien_Class_Entry( "asw_drone", HULL_MEDIUMBIG, Vector( -17, -17, 0 ), Vector( 17, 17, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_buzzer", HULL_TINY_CENTERED, Vector( -10, -10, -10 ), Vector( 10, 10, 10 ) ),
+	ASW_Alien_Class_Entry( "asw_parasite", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "asw_shieldbug", HULL_WIDE_SHORT, Vector( -40, -40, 0 ), Vector( 40, 40, 72 ) ),
+	ASW_Alien_Class_Entry( "asw_grub", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG, Vector( -17, -17, 0 ), Vector( 17, 17, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_harvester", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "asw_queen", HULL_LARGE_CENTERED, Vector( -120, -120, 0 ), Vector( 120, 120, 160 ) ),
+	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
+	ASW_Alien_Class_Entry( "asw_ranger", HULL_MEDIUMBIG, Vector( -20, -20, 0 ), Vector( 20, 20, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_shaman", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) ),
+	ASW_Alien_Class_Entry( "asw_drone_uber", HULL_MEDIUMBIG, Vector( -17, -17, 0 ), Vector( 17, 17, 69 ) ),
+	ASW_Alien_Class_Entry( "npc_antlionguard_normal", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
+	ASW_Alien_Class_Entry( "npc_antlionguard_cavern", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
+	ASW_Alien_Class_Entry( "npc_antlion", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) ),
+	ASW_Alien_Class_Entry( "npc_antlion_worker", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) ),
+	ASW_Alien_Class_Entry( "npc_zombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_zombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_poisonzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_fastzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_fastzombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
 };
 
 int GetAlienClassIndex( CBaseEntity *pAlien )
@@ -82,6 +84,15 @@ public:
 		for ( int i = 0; i < NELEMS( g_Aliens ); i++ )
 		{
 			g_Aliens[i].m_iszAlienClass = AllocPooledString( g_Aliens[i].m_pszAlienClass );
+
+#ifdef GAME_DLL
+			Assert( NAI_Hull::Mins( g_Aliens[i].m_nHullType ).x <= g_Aliens[i].m_vecRealHullMins.x );
+			Assert( NAI_Hull::Mins( g_Aliens[i].m_nHullType ).y <= g_Aliens[i].m_vecRealHullMins.y );
+			Assert( NAI_Hull::Mins( g_Aliens[i].m_nHullType ).z <= g_Aliens[i].m_vecRealHullMins.z );
+			Assert( NAI_Hull::Maxs( g_Aliens[i].m_nHullType ).x >= g_Aliens[i].m_vecRealHullMaxs.x );
+			Assert( NAI_Hull::Maxs( g_Aliens[i].m_nHullType ).y >= g_Aliens[i].m_vecRealHullMaxs.y );
+			Assert( NAI_Hull::Maxs( g_Aliens[i].m_nHullType ).z >= g_Aliens[i].m_vecRealHullMaxs.z );
+#endif
 		}
 	}
 } s_ASW_Alien_Class_Strings;

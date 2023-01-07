@@ -835,7 +835,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 	m_pAlienClass = NULL;
 	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
 	{
-		ASW_Alien_Class_Entry *pAlienClass = ASWSpawnManager()->GetAlienClass( i );
+		const ASW_Alien_Class_Entry *pAlienClass = ASWSpawnManager()->GetAlienClass( i );
 		if ( !Q_stricmp( pKV->GetString( "AlienClass" ), pAlienClass->m_pszAlienClass ) )
 		{
 			m_pAlienClass = pAlienClass;

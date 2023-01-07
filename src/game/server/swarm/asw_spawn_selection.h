@@ -124,7 +124,7 @@ public:
 	CASW_Spawn_NPC( const CASW_Spawn_NPC & npc );
 	void Dump();
 
-	ASW_Alien_Class_Entry *m_pAlienClass;
+	const ASW_Alien_Class_Entry *m_pAlienClass;
 	int m_iHealthBonus;
 	float m_flSpeedScale;
 	float m_flSizeScale;
