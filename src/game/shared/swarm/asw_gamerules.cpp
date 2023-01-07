@@ -3085,6 +3085,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	gEntList.CleanupDeleteList();
 
 	engine->AllowImmediateEdictReuse();
+	debugoverlay->ClearAllOverlays();
 
 	RevertSavedConvars();
 
