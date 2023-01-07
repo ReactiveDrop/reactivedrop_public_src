@@ -500,6 +500,8 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 			CASW_Marine *pLeader = GetSquadLeader();
 			unsigned squaddie = GetSquadFormation() ? GetSquadFormation()->Find( this ) : CASW_SquadFormation::INVALID_SQUADDIE;
 
+			Vector vecPrevOrigin = GetAbsOrigin();
+
 			if ( !pLeader || !pLeader->IsInhabited() )
 			{
 				DevMsg( this, "Could not find an inhabited marine to teleport to.\n" );
@@ -522,6 +524,8 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 			{
 				DevMsg( this, "Could not teleport stuck marine.\n" );
 			}
+
+			PhysicsTouchTriggers( &vecPrevOrigin );
 
 			for ( int i = 0; i < NELEMS( m_flFailedPathingTime ); i++ )
 			{
