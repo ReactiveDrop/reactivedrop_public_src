@@ -7,6 +7,7 @@
 #include <vgui/IInput.h>
 #include <vgui_controls/AnimationController.h>
 #include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/ScrollBar.h>
 #include "vgui_controls/TextImage.h"
 #include "vgui/ILocalize.h"
 #include "WrappedLabel.h"
@@ -43,16 +44,31 @@ CASW_VGUI_Computer_News::CASW_VGUI_Computer_News( vgui::Panel *pParent, const ch
 	m_pBackButton->SetCommand( msg->MakeCopy() );
 	m_pBackButton->SetCancelCommand( msg );
 	m_pBackButton->SetAlpha( 0 );
+
+	m_pMoreButton = new ImageButton( this, "BackButton", "#asw_SynTekMoreButton" );
+	m_pMoreButton->AddActionSignalTarget( this );
+	KeyValues *moremsg = new KeyValues( "Command" );
+	moremsg->SetString( "command", "More" );
+	m_pMoreButton->SetCommand( moremsg );
+	m_pMoreButton->SetAlpha( 0 );
+
 	m_pTitleLabel = new vgui::Label( this, "TitleLabel", "#asw_SynTekNews" );
 	m_pTitleIcon = new vgui::ImagePanel( this, "TitleIcon" );
 	m_pTitleIconShadow = new vgui::ImagePanel( this, "TitleIconShadow" );
 
-	m_pBodyLabel = new vgui::Label( this, "TitleLabel", "" );
+	m_pBodyList = new vgui::PanelListPanel( this, "BodyList" );
 
 	for ( int i = 0; i < 4; i++ )
 	{
 		m_pBody[i] = new vgui::WrappedLabel( this, "NewsBody", "" );
+		m_pBodyList->AddItem( NULL, m_pBody[i] );
 	}
+
+	m_pBodyImageWrapper = new vgui::Panel( this, "NewsBodyImageWrapper" );
+	m_pBodyImage = new vgui::ImagePanel( m_pBodyImageWrapper, "NewsBodyImage" );
+	m_pBodyImage->SetShouldScaleImage( true );
+	m_pBodyList->AddItem( NULL, m_pBodyImageWrapper );
+
 	m_pHeadlineBackdrop = new vgui::Panel( this, "HeadlineBG" );
 	m_pHeadline = new vgui::Label( this, "Headline", "" );
 	m_pHeadlineDate = new vgui::Label( this, "HeadlineDate", "" );
@@ -63,6 +79,7 @@ CASW_VGUI_Computer_News::CASW_VGUI_Computer_News( vgui::Panel *pParent, const ch
 	if ( GetControllerFocus() )
 	{
 		GetControllerFocus()->AddToFocusList( m_pBackButton );
+		GetControllerFocus()->AddToFocusList( m_pMoreButton );
 		GetControllerFocus()->SetFocusPanel( m_pBackButton );
 	}
 }
@@ -81,6 +98,7 @@ CASW_VGUI_Computer_News::~CASW_VGUI_Computer_News()
 	if ( GetControllerFocus() )
 	{
 		GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
+		GetControllerFocus()->RemoveFromFocusList( m_pMoreButton );
 	}
 }
 
@@ -133,6 +151,11 @@ void CASW_VGUI_Computer_News::SetLabelsFromFile()
 	}
 	m_pHeadline->SetText( m_pKeyValues->GetWString( "Headline" ) );
 	m_pHeadlineDate->SetText( m_pKeyValues->GetWString( "HeadlineDate" ) );
+
+	m_pBodyImage->SetWide( vgui::scheme()->GetProportionalScaledValue( m_pKeyValues->GetInt( "ImageWide" ) ) );
+	m_pBodyImage->SetTall( vgui::scheme()->GetProportionalScaledValue( m_pKeyValues->GetInt( "ImageTall" ) ) );
+	m_pBodyImageWrapper->SetTall( m_pBodyImage->GetTall() );
+	m_pBodyImage->SetImage( m_pKeyValues->GetString( "Image", "white" ) );
 }
 
 void CASW_VGUI_Computer_News::PerformLayout()
@@ -147,11 +170,14 @@ void CASW_VGUI_Computer_News::PerformLayout()
 
 	m_pBackButton->SetPos( w * 0.75, h * 0.9 );
 	m_pBackButton->SetSize( 128 * m_fScale, 28 * m_fScale );
+
+	m_pMoreButton->SetBounds( w * 0.75 - 136 * m_fScale, h * 0.9, 128 * m_fScale, 28 * m_fScale );
+
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
 
 	m_pTitleLabel->SetSize( w, h * 0.2f );
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
-	m_pTitleLabel->SetPos( 0, 0 );//h*0.65f);
+	m_pTitleLabel->SetPos( 0, 0 );
 	m_pTitleLabel->SetZPos( 160 );
 
 	const float ypos = 0.3f * h;
@@ -167,8 +193,8 @@ void CASW_VGUI_Computer_News::PerformLayout()
 
 	m_pTitleIcon->SetShouldScaleImage( true );
 	int ix, iy, iw, it;
-	ix = w * 0.05f;//w*0.25f;
-	iy = h * 0.05f;//h*0.15f;
+	ix = w * 0.05f;
+	iy = h * 0.05f;
 	iw = w * 0.5f;
 	it = h * 0.5f;
 	m_pTitleIcon->SetPos( ix, iy );
@@ -181,12 +207,10 @@ void CASW_VGUI_Computer_News::PerformLayout()
 	m_pTitleIcon->SetZPos( 155 );
 	m_pTitleIconShadow->SetShouldScaleImage( true );
 	m_pTitleIconShadow->SetSize( iw * 1.3f, it * 1.3f );
-	//m_pTitleIconShadow[i]->SetAlpha(m_pMenuIcon[i]->GetAlpha()*0.5f);
 	m_pTitleIconShadow->SetZPos( 154 );
 	m_pTitleIconShadow->SetPos( ix - iw * 0.25f, iy + it * 0.0f );
 
 	const float left_edge = 0.05f * w;
-	//const float row_height = 0.05f * h;	
 	const float full_width = 0.9 * w;
 	for ( int i = 0; i < 4; i++ )
 	{
@@ -197,11 +221,12 @@ void CASW_VGUI_Computer_News::PerformLayout()
 		m_pBody[i]->InvalidateLayout();
 	}
 
-	m_pBodyLabel->SetPos( left_edge, ypos );
-	m_pBodyLabel->SetSize( full_width, 0.85f * h - ypos );
+	m_pBodyList->SetFirstColumnWidth( 0 );
+	m_pBodyList->SetPos( left_edge, ypos );
+	m_pBodyList->SetSize( full_width, 0.85f * h - ypos );
 
 	// make sure all the labels expand to cover the new sizes	 
-	m_pBodyLabel->InvalidateLayout();
+	m_pBodyList->InvalidateLayout();
 	m_pTitleLabel->InvalidateLayout();
 	m_pHeadline->InvalidateLayout();
 	m_pHeadlineDate->InvalidateLayout();
@@ -240,8 +265,15 @@ void CASW_VGUI_Computer_News::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pBackButton->SetColors( white, white, white, white, blue );
 	m_pBackButton->SetPaintBackgroundType( 2 );
 
+	m_pMoreButton->SetFont( LabelFont );
+	m_pMoreButton->SetPaintBackgroundEnabled( true );
+	m_pMoreButton->SetContentAlignment( vgui::Label::a_center );
+	m_pMoreButton->SetBgColor( Color( 19, 20, 40, 255 ) );
+	m_pMoreButton->SetBorders( "TitleButtonBorder", "TitleButtonBorder" );
+	m_pMoreButton->SetColors( white, white, white, white, blue );
+	m_pMoreButton->SetPaintBackgroundType( 2 );
+
 	vgui::HFont LargeTitleFont = pScheme->GetFont( "DefaultLarge", IsProportional() );
-	//vgui::HFont TitleFont = pScheme->GetFont("Default");
 
 	m_pTitleLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
 	m_pTitleLabel->SetFont( LargeTitleFont );
@@ -254,9 +286,7 @@ void CASW_VGUI_Computer_News::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pBody[i]->SetContentAlignment( vgui::Label::a_northwest );
 		m_pBody[i]->SetBgColor( Color( 0, 0, 0, 0 ) ); // no bg on each paragraph, the bodylabel fills in a large black area for the body text
 	}
-	m_pBodyLabel->SetFont( LabelFont );
-	ApplySettingAndFadeLabelIn( m_pBodyLabel );
-	m_pBodyLabel->SetContentAlignment( vgui::Label::a_northwest );
+	ApplySettingAndFadeLabelIn( m_pBodyList );
 
 	m_pHeadline->SetFont( LargeTitleFont );
 	ApplySettingAndFadeLabelIn( m_pHeadline );
@@ -295,11 +325,11 @@ void CASW_VGUI_Computer_News::ApplySchemeSettings( vgui::IScheme *pScheme )
 	{
 		m_pTitleIconShadow->SetAlpha( 30 );
 		m_pHeadlineBackdrop->SetAlpha( 255 );
-		m_pBodyLabel->SetAlpha( 255 );
+		m_pBodyList->SetAlpha( 255 );
 	}
 }
 
-void CASW_VGUI_Computer_News::ApplySettingAndFadeLabelIn( vgui::Label *pLabel )
+void CASW_VGUI_Computer_News::ApplySettingAndFadeLabelIn( vgui::Panel *pLabel )
 {
 	pLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
 	pLabel->SetBgColor( Color( 0, 0, 0, 96 ) );
@@ -318,19 +348,13 @@ void CASW_VGUI_Computer_News::OnThink()
 
 	SetPos( 0, 0 );
 
-	//const float full_width = 0.9 * w;
-	const float left_edge = 0.05f * w;
-	float cursor_y = 0.3f * t;
 	for ( int i = 0; i < 4; i++ )
 	{
-		// todo: resize these based on their content
-		m_pBody[i]->SetPos( left_edge, cursor_y );
-		//m_pBody[i]->SetSize(full_width, 0.7f * t - ypos);
 		int cw, ch;
 		m_pBody[i]->GetTextImage()->GetContentSize( cw, ch );
 		m_pBody[i]->SetTall( ch );
-		cursor_y += ch + 0.01f * t;
 	}
+	m_pBodyList->InvalidateLayout();
 
 	int x, y;
 	ASWInput()->GetSimulatedFullscreenMousePos( &x, &y );
@@ -348,6 +372,35 @@ void CASW_VGUI_Computer_News::OnThink()
 		m_pBackButton->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
 
+	if ( m_pMoreButton->IsWithin( x, y ) )
+	{
+		m_pMoreButton->SetBgColor( Color( 255, 255, 255, m_pBackButton->GetAlpha() ) );
+	}
+	else
+	{
+		m_pMoreButton->SetBgColor( Color( 19, 20, 40, m_pBackButton->GetAlpha() ) );
+	}
+
+	if ( m_pBodyList && m_pBodyList->GetScrollBar() )
+	{
+		int smin, smax;
+		int rw = m_pBodyList->GetScrollBar()->GetRangeWindow();
+		m_pBodyList->GetScrollBar()->GetRange( smin, smax );
+		if ( smax > rw )
+		{
+			m_pMoreButton->SetVisible( true );
+			m_pBodyList->SetShowScrollBar( true );
+			m_pBodyList->GetScrollBar()->GetButton( 0 )->SetVisible( false );
+			m_pBodyList->GetScrollBar()->GetButton( 1 )->SetVisible( false );
+			m_pMoreButton->SetPaintBackgroundType( 2 );
+		}
+		else
+		{
+			m_pMoreButton->SetVisible( false );
+			m_pBodyList->SetShowScrollBar( false );
+		}
+	}
+
 	m_fLastThinkTime = gpGlobals->curtime;
 }
 
@@ -361,6 +414,11 @@ bool CASW_VGUI_Computer_News::MouseClick( int x, int y, bool bRightClick, bool b
 		{
 			pMenu->FadeCurrentPage();
 		}
+		return true;
+	}
+	if ( m_pMoreButton->IsCursorOver() && !bDown )
+	{
+		ScrollNews();
 		return true;
 	}
 	return true;
@@ -378,5 +436,25 @@ void CASW_VGUI_Computer_News::OnCommand( char const *command )
 		}
 		return;
 	}
+	else if ( !Q_strcmp( command, "More" ) )
+	{
+		ScrollNews();
+		return;
+	}
 	BaseClass::OnCommand( command );
+}
+
+void CASW_VGUI_Computer_News::ScrollNews()
+{
+	if ( !m_pBodyList || !m_pBodyList->GetScrollBar() )
+		return;
+
+	int val = m_pBodyList->GetScrollBar()->GetValue();
+	m_pBodyList->GetScrollBar()->SetValue( val + m_pBodyList->GetScrollBar()->GetRangeWindow() );
+	// no more room to scroll down?
+	if ( m_pBodyList->GetScrollBar()->GetValue() == val )
+	{
+		// put us back to the top
+		m_pBodyList->GetScrollBar()->SetValue( 0 );
+	}
 }

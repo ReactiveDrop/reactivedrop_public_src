@@ -101,7 +101,7 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 		msg->SetString( "command", buffer );
 		m_pMailSubject[i]->SetCommand( msg );
 	}
-	//m_pBodyLabel = new vgui::Label(this, "MailBodyLabel", " ");	
+
 	m_pBodyList = new vgui::PanelListPanel( this, "BodyList" );
 
 	for ( int i = 0; i < 4; i++ )
@@ -109,6 +109,12 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 		m_pBody[i] = new vgui::WrappedLabel( this, "MailBody", "" );
 		m_pBodyList->AddItem( NULL, m_pBody[i] );
 	}
+
+	m_pBodyImageWrapper = new vgui::Panel( this, "MailBodyImageWrapper" );
+	m_pBodyImage = new vgui::ImagePanel( m_pBodyImageWrapper, "MailBodyImage" );
+	m_pBodyImage->SetShouldScaleImage( true );
+	m_pBodyList->AddItem( NULL, m_pBodyImageWrapper );
+
 	m_pAccountLabel = new vgui::Label( this, "MailAccount", "#asw_SynTekMailAccount" );
 	m_pName = new vgui::Label( this, "MailName", "" );
 
@@ -178,6 +184,13 @@ void CASW_VGUI_Computer_Mail::ShowMail( int i )
 	m_pBody[2]->SetText( m_pMailKeyValues->GetWString( buffer ) );
 	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dD", i + 1 );
 	m_pBody[3]->SetText( m_pMailKeyValues->GetWString( buffer ) );
+	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImageWide", i + 1 );
+	m_pBodyImage->SetWide( vgui::scheme()->GetProportionalScaledValue( m_pMailKeyValues->GetInt( buffer ) ) );
+	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImageTall", i + 1 );
+	m_pBodyImage->SetTall( vgui::scheme()->GetProportionalScaledValue( m_pMailKeyValues->GetInt( buffer ) ) );
+	m_pBodyImageWrapper->SetTall( m_pBodyImage->GetTall() );
+	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImage", i + 1 );
+	m_pBodyImage->SetImage( m_pMailKeyValues->GetString( buffer, "white" ) );
 
 	// todo: stop these lines all overlapping
 
@@ -257,11 +270,6 @@ void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 		}
 	}
 
-	//m_pBodyLabel->SetText("#asw_MailBodyLabel");
-	m_pBody[0]->SetText( m_pMailKeyValues->GetWString( "MailBody1A" ) );
-	m_pBody[1]->SetText( m_pMailKeyValues->GetWString( "MailBody1B" ) );
-	m_pBody[2]->SetText( m_pMailKeyValues->GetWString( "MailBody1C" ) );
-	m_pBody[3]->SetText( m_pMailKeyValues->GetWString( "MailBody1D" ) );
 	m_pAccountLabel->SetText( "#asw_MailAccount" );
 	m_pName->SetText( m_pMailKeyValues->GetString( "MailAccountName" ) );
 }
@@ -283,7 +291,7 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 
 	m_pTitleLabel->SetSize( w, h * 0.2f );
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
-	m_pTitleLabel->SetPos( 0, 0 );//h*0.65f);
+	m_pTitleLabel->SetPos( 0, 0 );
 	m_pTitleLabel->SetZPos( 160 );
 	m_pTitleLabel->InvalidateLayout();
 
@@ -291,8 +299,7 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 	m_pInboxIcon[0]->SetShouldScaleImage( true );
 	m_pInboxIcon[1]->SetShouldScaleImage( true );
 	int ix, iy, iw, it;
-	//ix = w*0.05f;//w*0.25f;	
-	iy = h * 0.05f;//h*0.15f;
+	iy = h * 0.05f;
 	iw = w * 0.5f;
 	it = h * 0.5f;
 	ix = w * 0.05f - iw;
@@ -306,7 +313,6 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 	m_pTitleIcon->SetZPos( 155 );
 	m_pTitleIconShadow->SetShouldScaleImage( true );
 	m_pTitleIconShadow->SetSize( iw * 1.3f, it * 1.3f );
-	//m_pTitleIconShadow[i]->SetAlpha(m_pMenuIcon[i]->GetAlpha()*0.5f);
 	m_pTitleIconShadow->SetZPos( 154 );
 	m_pTitleIconShadow->SetPos( ix - iw * 0.25f, iy + it * 0.0f );
 
@@ -349,18 +355,14 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 	{
 		// these get resized these based on their content in onthink
 		const float ypos = rows_top + row_height * ( ASW_MAIL_ROWS )+i * 0.12f;
-		//m_pBody[i]->SetPos(left_edge, ypos);
 		float body_width = m_pBodyList->GetWide() - ( m_pBodyList->GetScrollBar()->GetWide() + 15 );
 		m_pBody[i]->SetSize( body_width, 0.7f * h - ypos );
 		m_pBody[i]->GetTextImage()->SetDrawWidth( body_width );
 		int texwide, texttall;
-		//m_pBody[i]->GetTextImage()->PerformLayout(true);
 		m_pBody[i]->GetTextImage()->GetContentSize( texwide, texttall );
 		m_pBody[i]->SetSize( texwide, texttall );
 		m_pBody[i]->InvalidateLayout();
 	}
-	//m_pBodyLabel->SetPos(left_edge, ypos);
-	//m_pBodyLabel->SetSize(full_width, 0.85f * h - ypos);
 	const float right_labels_edge = 0.6f * w;
 	const float right_labels_width = 0.35f * w;
 	m_pAccountLabel->SetPos( right_labels_edge, 0.05f * h );
@@ -371,9 +373,7 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 	// make sure all the labels expand to cover the new sizes
 	m_pAccountLabel->InvalidateLayout();
 	m_pName->InvalidateLayout();
-	//m_pBodyLabel->InvalidateLayout();
 }
-
 
 void CASW_VGUI_Computer_Mail::ASWInit()
 {
@@ -426,8 +426,6 @@ void CASW_VGUI_Computer_Mail::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pTitleLabel->SetFont( LargeTitleFont );
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
 
-
-	//vgui::HFont SmallFont = pScheme->GetFont("DefaultSmall");
 	m_pInboxLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
 	m_pInboxLabel->SetFont( TitleFont );
 	m_pInboxLabel->SetContentAlignment( vgui::Label::a_west );
@@ -476,9 +474,6 @@ void CASW_VGUI_Computer_Mail::ApplySchemeSettings( vgui::IScheme *pScheme )
 		ApplySettingAndFadeLabelIn( m_pBody[i] );
 		m_pBody[i]->SetBgColor( Color( 0, 0, 0, 0 ) ); // no bg on each paragraph, the bodylabel fills in a large black area for the mail body text
 	}
-	//m_pBodyLabel->SetFont(LabelFont);
-	//m_pBodyLabel->SetContentAlignment(vgui::Label::a_northwest);
-	//ApplySettingAndFadeLabelIn(m_pBodyLabel);
 
 	m_pAccountLabel->SetFont( TitleFont );
 	m_pAccountLabel->SetContentAlignment( vgui::Label::a_northwest );
@@ -632,7 +627,6 @@ bool CASW_VGUI_Computer_Mail::MouseClick( int x, int y, bool bRightClick, bool b
 		{
 			int mx, my, mw, mt;
 			m_pMailSubject[i]->GetBounds( mx, my, mw, mt );
-			//m_pMailSubject[i]->LocalToScreen(mx,my);
 			if ( y >= my && y <= my + mt )
 			{
 				ShowMail( i );
