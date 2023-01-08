@@ -3184,20 +3184,17 @@ void CNPC_AntlionGuard::RunTask( const Task_t *pTask )
 				else if ( moveTrace.pObstruction )
 				{
 					// If we hit an antlion, don't stop, but kill it
-					if ( moveTrace.pObstruction->Classify() == CLASS_ANTLION )
+					if ( moveTrace.pObstruction->Classify() == CLASS_ASW_ANTLIONGUARD )
 					{
-						if ( FClassnameIs( moveTrace.pObstruction, "npc_antlionguard" ) )
+						// Crash unless we're trying to stop already
+						if ( eActivity != ACT_ANTLIONGUARD_CHARGE_STOP )
 						{
-							// Crash unless we're trying to stop already
-							if ( eActivity != ACT_ANTLIONGUARD_CHARGE_STOP )
-							{
-								SetActivity( ACT_ANTLIONGUARD_CHARGE_STOP );
-							}
+							SetActivity( ACT_ANTLIONGUARD_CHARGE_STOP );
 						}
-						else
-						{
-							ApplyChargeDamage( this, moveTrace.pObstruction, moveTrace.pObstruction->GetHealth() );
-						}
+					}
+					else if ( moveTrace.pObstruction->Classify() == CLASS_ANTLION )
+					{
+						ApplyChargeDamage( this, moveTrace.pObstruction, moveTrace.pObstruction->GetHealth() );
 					}
 				}
 			}

@@ -408,20 +408,17 @@ void CAI_ASW_ChargeBehavior::RunTask( const Task_t *pTask )
 					else if ( moveTrace.pObstruction )
 					{
 						// If we hit an antlion, don't stop, but kill it
-						if ( moveTrace.pObstruction->Classify() == CLASS_ANTLION )
+						if ( moveTrace.pObstruction->Classify() == CLASS_ASW_ANTLIONGUARD )
 						{
-							if ( FClassnameIs( moveTrace.pObstruction, "npc_antlionguard" ) )
+							// Crash unless we're trying to stop already
+							if ( eActivity != ACT_ALIEN_CHARGE_STOP && HaveSequenceForActivity( ACT_ALIEN_CHARGE_STOP ) )
 							{
-								// Crash unless we're trying to stop already
-								if ( eActivity != ACT_ALIEN_CHARGE_STOP && HaveSequenceForActivity( ACT_ALIEN_CHARGE_STOP ) )
-								{
-									SetActivity( ACT_ALIEN_CHARGE_STOP );
-								}
+								SetActivity( ACT_ALIEN_CHARGE_STOP );
 							}
-							else
-							{
-								ApplyChargeDamage( moveTrace.pObstruction, moveTrace.pObstruction->GetHealth() );
-							}
+						}
+						else if ( moveTrace.pObstruction->Classify() == CLASS_ANTLION )
+						{
+							ApplyChargeDamage( moveTrace.pObstruction, moveTrace.pObstruction->GetHealth() );
 						}
 					}
 				}
